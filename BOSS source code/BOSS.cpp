@@ -147,7 +147,7 @@ int main() {
 	} //if
 
 	//get date for oblivion.esm.
-	if ((_stat64("oblivion.esm", &buf)!=0)&&(_stat64("morrowind.esm", &buf)!=0)&&(_stat64("fo3.esm", &buf)!=0)){					
+	if ((_stat64("oblivion.esm", &buf)!=0)&&(_stat64("morrowind.esm", &buf)!=0)&&(_stat64("fallout3.esm", &buf)!=0)){					
 		cerr << endl << "Critical Error: Master .ESM file not found (or not accessable)!" << endl;
 		cerr <<         "Make sure you're running this in your Data folder." <<endl;
 		cerr <<         "! Utility will end now." << endl;
