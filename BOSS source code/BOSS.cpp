@@ -1,9 +1,9 @@
-/*		Better Oblivion Sorting Software
-		1.4
-		Quick and Dirty Load Order Utility
-		(Making C++ look like the scripting language it isn't.)
+/*	Better Oblivion Sorting Software
+	1.41
+	Quick and Dirty Load Order Utility
+	(Making C++ look like the scripting language it isn't.)
 
-    	Copyright (C) 2008  Random/Random007/jpearce
+    	Copyright (C) 2009  Random/Random007/jpearce
     	http://creativecommons.org/licenses/by-nc-nd/3.0/
 */
 
@@ -66,7 +66,7 @@ void ChangeFileDate(string textbuf, struct tm modfiletime)  {
 	ut.actime = _mkgmtime64(&modfiletime);			//set up ut structure for _utime64.
 	ut.modtime = _mkgmtime64(&modfiletime);	
 	a = _utime64(textbuf.c_str(), &ut);				//finally, change the file date.
-	if (a!=0) cerr << endl << "Program error - file " << textbuf << " could not have its date changed, code " << a << endl;		
+	if (a!=0) cout << endl << "Program error - file " << textbuf << " could not have its date changed, code " << a << endl;		
 }
 
 bool IsMod(string textbuf) {
@@ -125,28 +125,32 @@ int main() {
 
 	cout << endl << endl << "-----------------------------------------------------------" << endl;
 	cout <<                 " Better Oblivion Sorting Software       Load Order Utility " << endl << endl;
-	cout <<                 " (c) Random007 & the BOSS development team, 2009           " << endl;
-	cout <<                 "  Some rights reserved.                                    " << endl;
-	cout <<                 "  CC Attribution-Noncommercial-No Derivative Works 3.0     " << endl;
-	cout <<                 "  http://creativecommons.org/licenses/by-nc-nd/3.0/        " << endl;
-	cout <<                 "  v1.4 (31 August 09)                                      " << endl;
+	cout <<                 "   (c) Random007 & the BOSS development team, 2009         " << endl;
+	cout <<                 "   Some rights reserved.                                   " << endl;
+	cout <<                 "   CC Attribution-Noncommercial-No Derivative Works 3.0    " << endl;
+	cout <<                 "   http://creativecommons.org/licenses/by-nc-nd/3.0/       " << endl;
+	cout <<                 " v1.41 (31 August 09)                                       " << endl;
 	cout <<                 "-----------------------------------------------------------" << endl << endl;
 
 	//open masterlist.txt
 	order.open("masterlist.txt");	
 	if (order.fail()) {							
-		cerr << endl << "Critical Error! masterlist.TXT does not exist or can't be read!" << endl; 
-		cerr <<         "! Uitlity will end now." << endl;
+		cout << endl << "Critical Error! masterlist.TXT does not exist or can't be read!" << endl; 
+		cout <<         "! Uitlity will end now." << endl;
 		exit (1); //fail in screaming heap.
 	} //if
 
 	//get date for oblivion.esm.
-	if ((_stat64("oblivion.esm", &buf)!=0)&&(_stat64("morrowind.esm", &buf)!=0)&&(_stat64("fallout3.esm", &buf)!=0)){					
-		cerr << endl << "Critical Error: Master .ESM file not found (or not accessable)!" << endl;
-		cerr <<         "Make sure you're running this in your Data folder." <<endl;
-		cerr <<         "! Utility will end now." << endl;
+	if (FileExists("oblivion.esm")) _stat64("oblivion.esm", &buf);
+	else if (FileExists("morrowind.esm")) _stat64("morrowind.esm", &buf);
+	else if (FileExists("fallout3.esm")) _stat64("fallout3.esm", &buf);
+	else {				
+		cout << endl << "Critical Error: Master .ESM file not found (or not accessable)!" << endl;
+		cout <<         "Make sure you're running this in your Data folder." <<endl;
+		cout <<         "! Utility will end now." << endl;
 		exit (1); //fail in screaming heap.
-	} //if
+	} //else
+
 	_gmtime64_s(&esmtime, &buf.st_mtime);		//convert _stat64 modification date data to date/time struct.
 
 	//Display oblivion.esm's modification date (mostly for debugging)
@@ -171,9 +175,9 @@ int main() {
 	//Open modlist.txt file and verify success																
 	modlist.open("modlist.txt");			
 	if (modlist.fail()) {
-		cerr << endl << "Critical Error! Internal program error! modlist.txt should have been created but it wasn't." << endl;
-		cerr <<         "Make sure you are running as Administrator if using Windows Vista." << endl;
-		cerr <<         "! Utility will end now." << endl;
+		cout << endl << "Critical Error! Internal program error! modlist.txt should have been created but it wasn't." << endl;
+		cout <<         "Make sure you are running as Administrator if using Windows Vista." << endl;
+		cout <<         "! Utility will end now." << endl;
 		exit(1); //fail in screaming heap.
 	} //if
 
