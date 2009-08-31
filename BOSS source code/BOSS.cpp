@@ -1,5 +1,5 @@
 /*		Better Oblivion Sorting Software
-		1.35
+		1.4
 		Quick and Dirty Load Order Utility
 		(Making C++ look like the scripting language it isn't.)
 
