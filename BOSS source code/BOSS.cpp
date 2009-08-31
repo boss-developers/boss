@@ -1,25 +1,17 @@
 /*		Better Oblivion Sorting Software
-		1.1
+		1.35
 		Quick and Dirty Load Order Utility
 		(Making C++ look like the scripting language it isn't.)
 
-    	Copyright (C) 2008  Random/Random007/jpearce  GPL3
-
-    	This program is free software: you can redistribute it and/or modify
-    	it under the terms of the GNU General Public License as published by
-    	the Free Software Foundation, version 3.
-
-    	This program is distributed in the hope that it will be useful,
-    	but WITHOUT ANY WARRANTY; without even the implied warranty of
-    	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    	GNU General Public License for more details.
-
-    	<http://www.gnu.org/licenses/>.
+    	Copyright (C) 2008  Random/Random007/jpearce
+    	http://creativecommons.org/licenses/by-nc-nd/3.0/
 */
 
 // Now supports master ESM files from Morrowind and Fallout 3. Notes regarding Oblivion apply equally to those games too.
+// The B.O.S.S. project does not support the creation of Morrowind or Fallout 3 masterlists but others are free to try based on this program. 
 
 #include <stdio.h>
+#include <stdafx.h>
 #include <windows.h>
 #include <time.h>
 #include <sys/types.h>
@@ -31,8 +23,8 @@
 #include <string>
 #include <ctype.h>
 
-#define SIZE 26 				//used in convertion of date/time struct to a string.
-#define MAXLENGTH 256			//maximum length of a file name.
+#define SIZE 26 				//used in convertion of date/time struct to a string. Has to be this length.
+#define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitary number.
 
 using namespace std;
 
@@ -86,7 +78,7 @@ bool IsMessage(string textbuf) {
 }
 
 bool IsValidLine(string textbuf) {
-	return (((textbuf.length()>1) && (Tidy(textbuf)!="oblivion.esm")));
+	return ((textbuf.length()>1) && (Tidy(textbuf)!="Oblivion.esm") && (Tidy(textbuf)!="fallout3.esm") && (Tidy(textbuf)!="Morrowind.esm"));
 }
 
 void ShowMessage(string textbuf, bool fcom) {
@@ -125,17 +117,19 @@ int main() {
 	int x;							//random useful integers
 	string textbuf,textbuf2;		//a line of text from a file (should usually end up being be a file name); 			
 	struct __stat64 buf;			//temp buffer of info for _stat function
-	struct tm obliviontime;			//the modification date/time of oblivion.esm
+	struct tm esmtime;			    //the modification date/time of the main .esm file
 	struct tm modfiletime;			//useful variable to store a file's date/time
 	bool found;						
 	string modfilestring;			//used to convert stuff.
 	char modfilechar [SIZE];		//used to convert stuff.
 
 	cout << endl << endl << "-----------------------------------------------------------" << endl;
-	cout <<                 " Better Oblivion Sorting Software       Load Order Utility " << endl;
-	cout <<					" also supporting Fallout 3 and Morrowind					" << endl << endl;
-	cout <<                 " (c) Random007, 2009, GPL3: http://www.gnu.org/licenses/	" << endl;
-	cout <<                 " v1.1 (6 MAR 09)											" << endl;
+	cout <<                 " Better Oblivion Sorting Software       Load Order Utility " << endl << endl;
+	cout <<                 " (c) Random007 & the BOSS development team, 2009           " << endl;
+	cout <<                 "  Some rights reserved.                                    " << endl;
+	cout <<                 "  CC Attribution-Noncommercial-No Derivative Works 3.0     " << endl;
+	cout <<                 "  http://creativecommons.org/licenses/by-nc-nd/3.0/        " << endl;
+	cout <<                 "  v1.4 (31 August 09)                                      " << endl;
 	cout <<                 "-----------------------------------------------------------" << endl << endl;
 
 	//open masterlist.txt
@@ -153,7 +147,7 @@ int main() {
 		cerr <<         "! Utility will end now." << endl;
 		exit (1); //fail in screaming heap.
 	} //if
-	_gmtime64_s(&obliviontime, &buf.st_mtime);		//convert _stat64 modification date data to date/time struct.
+	_gmtime64_s(&esmtime, &buf.st_mtime);		//convert _stat64 modification date data to date/time struct.
 
 	//Display oblivion.esm's modification date (mostly for debugging)
 	_ctime64_s (modfilechar, SIZE, &buf.st_mtime);	//convert date/time to printable string for output.
@@ -189,7 +183,7 @@ int main() {
 		textbuf=ReadLine("modlist");
 		if (IsValidLine(textbuf)) {
 			x++;				
-			modfiletime=obliviontime;
+			modfiletime=esmtime;
 			modfiletime.tm_mon+=1;					//shuffle all mods foward a month 
 			modfiletime.tm_min=x;					//and order (in minutes) to original order
 			ChangeFileDate(textbuf, modfiletime);
@@ -211,7 +205,7 @@ int main() {
 					found=TRUE;
 					cout << endl << textbuf << endl;		// show which mod file is being processed.
 					x++;
-					modfiletime=obliviontime;
+					modfiletime=esmtime;
 					modfiletime.tm_min += x;				//files are ordered in minutes after oblivion.esp .
 					ChangeFileDate(textbuf, modfiletime);
 				} //if
@@ -224,7 +218,7 @@ int main() {
 	//Find and show found mods not recognised. Parse each file in modlist.txt and try finding it in masterlist.txt. If not found, unknown.
 	cout <<   endl << "-----------------------------------------------------------------" << endl;
 	cout <<           "Unrecognised mod files:                                          " << endl;
-	cout <<           " Reorder these by hand using your favourite mod ordering utility." << endl;
+	cout <<           "Reorder these by hand using your favourite mod ordering utility. " << endl;
 	cout <<           "-----------------------------------------------------------------" << endl << endl;
 	modlist.clear();						//reset position in modlist.txt to start.
 	modlist.seekg (0, ios.beg);				// "
