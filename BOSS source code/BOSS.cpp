@@ -1,17 +1,16 @@
 /*	Better Oblivion Sorting Software
-	1.41
+	1.5
 	Quick and Dirty Load Order Utility
 	(Making C++ look like the scripting language it isn't.)
 
-    	Copyright (C) 2009  Random/Random007/jpearce
+    	Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
     	http://creativecommons.org/licenses/by-nc-nd/3.0/
 */
 
 // Now supports master ESM files from Morrowind and Fallout 3. Notes regarding Oblivion apply equally to those games too.
-// The B.O.S.S. project does not support the creation of Morrowind or Fallout 3 masterlists but others are free to try based on this program. 
+// However MW & FO3 specific versions are also available which will work better/do more.
 
 #include <stdio.h>
-#include <stdafx.h>
 #include <windows.h>
 #include <time.h>
 #include <sys/types.h>
@@ -31,6 +30,7 @@ using namespace std;
 ifstream order;					//masterlist.txt - the grand mod order list
 ifstream modlist;				//modlist.txt - list of esm/esp files in oblivion/data
 bool fcom;						//true if key fcom files are found.
+bool ooo;                       //true if OOO esm is found
 
 string StringToLower (string str) {					//changes uppercase to lowercase.		
 	unsigned int i;
@@ -70,21 +70,27 @@ void ChangeFileDate(string textbuf, struct tm modfiletime)  {
 }
 
 bool IsMod(string textbuf) {
-	return (((textbuf[0]!='\\') && (textbuf[0]!='*') && (textbuf[0]!='\?') && (textbuf[0]!='%')));
+	return (((textbuf[0]!='\\') && (textbuf[0]!='*') && (textbuf[0]!='\?') && (textbuf[0]!='%') && (textbuf[0]!=':') && (textbuf[0]!='$')));
 }
 
 bool IsMessage(string textbuf) {
-	return (((textbuf[0]=='\?') || (textbuf[0]=='*') || (textbuf[0]=='%')));
+	return (((textbuf[0]=='\?') || (textbuf[0]=='*') || (textbuf[0]=='%') || (textbuf[0]==':') || (textbuf[0]=='$')));
 }
 
 bool IsValidLine(string textbuf) {
 	return ((textbuf.length()>1) && (Tidy(textbuf)!="Oblivion.esm") && (Tidy(textbuf)!="fallout3.esm") && (Tidy(textbuf)!="Morrowind.esm"));
 }
 
-void ShowMessage(string textbuf, bool fcom) {
+void ShowMessage(string textbuf, bool fcom, bool ooo) {
 	switch (textbuf[0]) {	
 		case '*':
 			if (fcom) cout << "  !!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << endl;
+		break;
+		case ':':
+			cout << " . Requires: " << textbuf.substr(1) << endl;
+		break;
+		case '$':
+			if (ooo) cout << " . OOO Specific Note: " << textbuf.substr(1) << endl;
 		break;
 		case '%':
 			cout << "  . Bashed Patch tag suggestion: " << textbuf.substr(1) << endl;
@@ -125,11 +131,11 @@ int main() {
 
 	cout << endl << endl << "-----------------------------------------------------------" << endl;
 	cout <<                 " Better Oblivion Sorting Software       Load Order Utility " << endl << endl;
-	cout <<                 "   (c) Random007 & the BOSS development team, 2009         " << endl;
+	cout <<                 "   (c) Random007 & the BOSS development team, 2009-2010    " << endl;
 	cout <<                 "   Some rights reserved.                                   " << endl;
 	cout <<                 "   CC Attribution-Noncommercial-No Derivative Works 3.0    " << endl;
 	cout <<                 "   http://creativecommons.org/licenses/by-nc-nd/3.0/       " << endl;
-	cout <<                 " v1.41 (31 August 09)                                       " << endl;
+	cout <<                 "   v1.5 (23 March 2010)                                    " << endl;
 	cout <<                 "-----------------------------------------------------------" << endl << endl;
 
 	//open masterlist.txt
@@ -159,10 +165,14 @@ int main() {
 	cout << "Master .ESM date: " << modfilestring;
 
 	//Check if FCOM or not
-	if (fcom=FileExists("FCOM_Convergence.esm")) cout << "FCOM detected." << endl << endl;
-		else cout << "FCOM not detected." << endl << endl;
-	if (FileExists("FCOM_Convergence.esp") && !fcom) cout << "WARNING: FCOM_Convergence.esm seems to be missing." << endl << endl;
-	
+	if (fcom=FileExists("FCOM_Convergence.esm")) cout << "FCOM detected." << endl;
+		else cout << "FCOM not detected." << endl;
+	if (FileExists("FCOM_Convergence.esp") && !fcom) cout << "WARNING: FCOM_Convergence.esm seems to be missing." << endl;
+	//Check if OOO or not
+	if (ooo=FileExists("Oscuro's_Oblivion_Overhaul.esm")) cout << "OOO detected." << endl;
+		else cout << "OOO not detected." << endl;
+	cout << endl;
+
 	//Generate list of all .esp or .esm files.
 	//also, clear file attributes.
 	system ("attrib -R -H -S *.*");		//clear any read only attriutes from oblivion/data.
@@ -215,7 +225,7 @@ int main() {
 				} //if
 				else found=FALSE;
 			} //if
-			else if (found) ShowMessage(textbuf, fcom);		//Deal with message lines here.
+			else if (found) ShowMessage(textbuf, fcom, ooo);		//Deal with message lines here.
 		} //if
 	} //while
 
@@ -225,12 +235,12 @@ int main() {
 	cout <<           "Reorder these by hand using your favourite mod ordering utility. " << endl;
 	cout <<           "-----------------------------------------------------------------" << endl << endl;
 	modlist.clear();						//reset position in modlist.txt to start.
-	modlist.seekg (0, ios.beg);				// "
+	modlist.seekg (0, order.beg);				// "
 	while (!modlist.eof()) {	
 		textbuf=ReadLine("modlist");
 		found=FALSE;
 		order.clear ();						//reset position in masterlist.txt to start.
-		order.seekg (0, ios.beg);			// "
+		order.seekg (0, order.beg);			// "
 		while (!order.eof() && !found) {	//repeat until end of masterlist.txt or file found.				
 			textbuf2=ReadLine("order");
 			if (IsMod(textbuf2)) if (Tidy(textbuf)==Tidy(textbuf2)) found=TRUE;		//filter out comment, blank and message lines when checking for match - speeds process up.
@@ -243,4 +253,3 @@ int main() {
 	cout << "Done.";
 	return (0);
 }
-
