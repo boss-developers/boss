@@ -29,8 +29,9 @@ using namespace std;
 
 ifstream order;					//masterlist.txt - the grand mod order list
 ifstream modlist;				//modlist.txt - list of esm/esp files in oblivion/data
-bool fcom;						//true if key fcom files are found.
-bool ooo;                       //true if OOO esm is found
+bool fcom;						//true if key FCOM files are found.
+bool ooo;                       //true if OOO esm is found.
+bool bc;                        //true if Better Cities esm is found.
 
 string StringToLower (string str) {					//changes uppercase to lowercase.		
 	unsigned int i;
@@ -70,18 +71,18 @@ void ChangeFileDate(string textbuf, struct tm modfiletime)  {
 }
 
 bool IsMod(string textbuf) {
-	return (((textbuf[0]!='\\') && (textbuf[0]!='*') && (textbuf[0]!='\?') && (textbuf[0]!='%') && (textbuf[0]!=':') && (textbuf[0]!='$')));
+	return (((textbuf[0]!='\\') && (textbuf[0]!='*') && (textbuf[0]!='\?') && (textbuf[0]!='%') && (textbuf[0]!=':') && (textbuf[0]!='$') &&(textbuf[0]=='^') && (textbuf[0]=='"')));
 }
 
 bool IsMessage(string textbuf) {
-	return (((textbuf[0]=='\?') || (textbuf[0]=='*') || (textbuf[0]=='%') || (textbuf[0]==':') || (textbuf[0]=='$')));
+	return (((textbuf[0]=='\?') || (textbuf[0]=='*') || (textbuf[0]=='%') || (textbuf[0]==':') || (textbuf[0]=='$') || (textbuf[0]=='^') || (textbuf[0]=='"')));
 }
 
 bool IsValidLine(string textbuf) {
 	return ((textbuf.length()>1) && (Tidy(textbuf)!="Oblivion.esm") && (Tidy(textbuf)!="fallout3.esm") && (Tidy(textbuf)!="Morrowind.esm"));
 }
 
-void ShowMessage(string textbuf, bool fcom, bool ooo) {
+void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc) {
 	switch (textbuf[0]) {	
 		case '*':
 			if (fcom) cout << "  !!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << endl;
@@ -97,6 +98,12 @@ void ShowMessage(string textbuf, bool fcom, bool ooo) {
 		break;
 		case '\?':
 			cout << "  . Note: " << textbuf.substr(1) << endl;
+		break;
+		case '"':
+			cout << "  . Incompatible with: " << textbuf.substr(1) << endl;
+		break;
+		case '^':
+			cout << "  . Better Cities Specific Note: " << textbuf.substr(1) <<endl;
 		break;
 	} //switch
 }
@@ -135,14 +142,14 @@ int main() {
 	cout <<                 "   Some rights reserved.                                   " << endl;
 	cout <<                 "   CC Attribution-Noncommercial-No Derivative Works 3.0    " << endl;
 	cout <<                 "   http://creativecommons.org/licenses/by-nc-nd/3.0/       " << endl;
-	cout <<                 "   v1.5 (23 March 2010)                                    " << endl;
+	cout <<                 "   v2.0 Beta (10 July 2010)                                " << endl;
 	cout <<                 "-----------------------------------------------------------" << endl << endl;
 
 	//open masterlist.txt
 	order.open("masterlist.txt");	
 	if (order.fail()) {							
 		cout << endl << "Critical Error! masterlist.TXT does not exist or can't be read!" << endl; 
-		cout <<         "! Uitlity will end now." << endl;
+		cout <<         "! Utility will end now." << endl;
 		exit (1); //fail in screaming heap.
 	} //if
 
@@ -171,11 +178,14 @@ int main() {
 	//Check if OOO or not
 	if (ooo=FileExists("Oscuro's_Oblivion_Overhaul.esm")) cout << "OOO detected." << endl;
 		else cout << "OOO not detected." << endl;
+	//Check if Better Cities or not
+	if (bc=FileExists("Better Cities Resources.esm")) cout << "Better Cities detected." << endl;
+		else cout << "Better Cities not detected." << endl;
 	cout << endl;
 
 	//Generate list of all .esp or .esm files.
 	//also, clear file attributes.
-	system ("attrib -R -H -S *.*");		//clear any read only attriutes from oblivion/data.
+	system ("attrib -R -H -S *.*");		//clear any read only attributes from oblivion/data.
 	if (FileExists ("modlist.txt")) {	//add an additional undo level just in case.
 		system ("del modlist.old");
 		system ("ren modlist.txt modlist.old");
@@ -225,7 +235,7 @@ int main() {
 				} //if
 				else found=FALSE;
 			} //if
-			else if (found) ShowMessage(textbuf, fcom, ooo);		//Deal with message lines here.
+			else if (found) ShowMessage(textbuf, fcom, ooo, bc);		//Deal with message lines here.
 		} //if
 	} //while
 
