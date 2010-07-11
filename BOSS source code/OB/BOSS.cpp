@@ -71,7 +71,7 @@ void ChangeFileDate(string textbuf, struct tm modfiletime)  {
 }
 
 bool IsMod(string textbuf) {
-	return (((textbuf[0]!='\\') && (textbuf[0]!='*') && (textbuf[0]!='\?') && (textbuf[0]!='%') && (textbuf[0]!=':') && (textbuf[0]!='$') &&(textbuf[0]=='^') && (textbuf[0]=='"')));
+	return (((textbuf[0]!='\\') && (textbuf[0]!='*') && (textbuf[0]!='\?') && (textbuf[0]!='%') && (textbuf[0]!=':') && (textbuf[0]!='$') &&(textbuf[0]!='^') && (textbuf[0]!='"')));
 }
 
 bool IsMessage(string textbuf) {
