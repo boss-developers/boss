@@ -1,0 +1,23 @@
+BOSS - Better Oblivion Sorting Software (including BOSS-F and BOSS-MW)
+Build Instructions:
+
+[b]Preparing Your Environment/Getting Prerequisites:[/b]
+Presuming you're building on windows, if not you hopefully know what to do because pacificmorrowind doesn't.
+[spoiler](If you're already have some coding experience you may want to use your favorite C++ build environment instead - if so just ignore all of this until we talk about the checking out the BOSS Source Code and you'll have to set up your own solution/project/make files depending on system and make the references work yourself... feel free to PM pacificmorrowind but he doesn't know any non Visual Studio build systems so if your using MingW or CMake or something better to ask someone else but he'll try his best to help you whatever your build system)[/spoiler]
+Download and Install:
+    -[url=]Microsoft Visual Studio 2010 express[/url]
+    -[url=]MSBuild stuff[/url]
+
+Do a checkout of the SVN source from https://better-oblivion-sorting-software.googlecode.com/svn to wherever you want (for example C:\BOSS - location refered to as $BOSS throughout instructions)
+
+- Download the [url=https://sourceforge.net/projects/boost/files/boost/1.43.0/]BOOST libraries[/url] (.7z version recomended?????????????????????????)
+- Extract that archive to $BOSS\BOSS source code\$BOOST_ROOT
+- Start a Command Prompt and cd to $BOSS\BOSS source code\$BOOST_ROOT and run bootstrap.bat
+- Edit the file project-config.jam in $BOSS\BOSS source code\$BOOST_ROOT to refer to your version of Visual Studio - for Visual Studio 2010 (and with no other options set you would enter [code]using msvc : 10.0 ;[/code] - for Visual Studio 2008 that would be 9.0 instead of 10.0.
+- in the Command Prompt run [code]bjam.exe --build-type=complete[/code]
+
+now [i]finally[/i] you are ready to actually change the code and build it etc.
+[b]Building[/b]
+Just open $BOSS\BOSS source code\$BOOST_ROOT\BOSS.sln in Visual Studio 2010
+then select desired build type (release or debug) and run BUILD on whichever project(s) you are interested in (Oblivion, Fallout) or just run Build All.
+The generated exe(s) will be located in $BOSS\BOSS source code\%BUILDTYPE%\
