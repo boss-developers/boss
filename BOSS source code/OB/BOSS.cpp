@@ -8,7 +8,7 @@
 */
 
 // Now supports master ESM files from Morrowind and Fallout 3. Notes regarding Oblivion apply equally to those games too.
-// Now covers the same FOOK2 detection support for Fallout 3 as the BOSS-F does, and more!
+// Now covers the same FOOK2 detection support for Fallout 3 as BOSS-F does, and more!
 
 #include <stdio.h>
 #include <windows.h>
@@ -23,17 +23,6 @@
 #include <ctype.h>
 #include <direct.h>
 
-/* Update masterlist requirements, but it's disabled for now, so comment these out.
-#include <svn_client.h>
-#include <svn_pools.h>
-#include <svn_fs.h>
-#pragma comment(lib, "libsvn_client-1.lib")
-#pragma comment(lib, "libsvn_fs-1.lib")
-#pragma comment(lib, "libsvn_subr-1.lib")
-#include <urlmon.h>					//Currently required for masterlist update, but requires Windows SDK.
-#pragma comment(lib, "urlmon.lib")	//Currently required for masterlist update, but requires Windows SDK.
-*/
-
 #define SIZE 26 				//used in convertion of date/time struct to a string. Has to be this length.
 #define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitary number.
 
@@ -41,7 +30,7 @@ using namespace std;
 
 ifstream order;						//masterlist.txt - the grand mod order list
 ifstream modlist;					//modlist.txt - list of esm/esp files in oblivion/data
-ofstream bosslog;					//Output file.
+ofstream bosslog;					//BOSSlog.txt - output file.
 bool fcom;							//true if key FCOM files are found.
 bool ooo;                      	 	//true if OOO esm is found.
 bool bc;                        	//true if Better Cities esm is found.
@@ -135,97 +124,6 @@ string ReadLine (string file) {						//Read a line from a file. Could be rewritt
 	return (textbuf);
 }
 
-bool UpdateMasterlist(string path, int game) {
-	/*Two update methods: using URLDownloadToFile to grab the raw file from Google Code, or using SVN to Export the latest revision from Google Code.
-	The former has a few downsides, in that it doesn't include SVN info, requires the Windows SDK to build (a large download for 1 function),
-	and sometimes results in false positives from virus scanners.
-	The latter is more complicated, but only requires the SVN development files (~6.5MB). It also seems to require a whole host of dll files too. :(
-	And it causes BOSS to crash whenever you try to update, so I'll disable updating for now.
-	*/
-	return false;
-	//The URLDownloadToFile() method:
-	/*
-	LPCTSTR url;
-	if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/masterlist.txt";
-	else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/FO3Masterlist/masterlist.txt";
-	else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/MWmasterlist/masterlist.txt";
-	HRESULT hr = URLDownloadToFile(NULL, url, path.c_str(), 0, NULL);
-	if (hr == 0) return true;
-	else return false;
-	*/
-
-	//The SVN method:
-	/*
-	svn_revnum_t *result_rev;
-	char *from;
-	char *to;
-	svn_opt_revision_t peg_revision;
-	svn_opt_revision_t revision;
-	svn_client_ctx_t *ctx;
-	apr_pool_t *pool;
-	svn_error_t *err;
-
-	pool = svn_pool_create (NULL);
-
-	// Initialize the FS library.
-	err = svn_fs_initialize (pool);
-	if (err) {
-      svn_handle_error2 (err, stderr, FALSE, "minimal_client: ");
-      return false;
-    }
-
-  // Make sure the ~/.subversion run-time config files exist
-  err = svn_config_ensure (NULL, pool);
-  if (err)
-    {
-      svn_handle_error2 (err, stderr, FALSE, "minimal_client: ");
-      return false;
-    }
-
-  // All clients need to fill out a client_ctx object.
-  {
-    // Initialize and allocate the client_ctx object.
-    if ((err = svn_client_create_context (&ctx, pool)))
-      {
-        svn_handle_error2 (err, stderr, FALSE, "minimal_client: ");
-        return false;
-      }
-
-    // Load the run-time config file into a hash
-    if ((err = svn_config_get_config (&(ctx->config), NULL, pool)))
-      {
-        svn_handle_error2 (err, stderr, FALSE, "minimal_client: ");
-        return false;
-      }
-  } // end of client_ctx setup
-
-  revision.kind = svn_opt_revision_head;
-  peg_revision.kind = svn_opt_revision_head;
-  from = "http://better-oblivion-sorting-software.googlecode.com/svn/masterlist.txt";
-  to = "masterlist.txt";
-
-  err = svn_client_export4(result_rev,
-							from,
-							to,
-							&peg_revision,
-							&revision,
-							TRUE,
-							TRUE,
-							svn_depth_empty,
-							NULL,
-							ctx,
-							pool
-							);
-
-if (err) {
-	svn_handle_error2 (err, stderr, FALSE, "SVN Export: ");
-	return false;
-}
-
-  return true;
-  */
-}
-
 //BOSS.exe [--update | -u] [[--masterlist | -m] "masterlist parent directory"] [[--plugins | -p] "plugins directory"] [[--output | -o] "output directory"] [--help | -h]
 int main(int argc, char *argv[]) {					
 	
@@ -280,9 +178,10 @@ int main(int argc, char *argv[]) {
 	else if (FileExists(plugindir+"morrowind.esm")) game = 3;
 
 	if (update == true) {
-		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
-		if (UpdateMasterlist(listdir+"masterlist.txt", game) == true) cout << listdir+"masterlist.txt updated!" << endl;
-		else cout << "Masterlist update failed." << endl;
+		//cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
+		//if (UpdateMasterlist(listdir+"masterlist.txt", game) == true) cout << listdir+"masterlist.txt updated!" << endl;
+		//else cout << "Masterlist update failed." << endl;
+		cout << "The masterlist update option is currently disabled while it is worked on." << endl;
 	}
 
 	cout << endl << "Better Oblivion Sorting Software working..." << endl;
