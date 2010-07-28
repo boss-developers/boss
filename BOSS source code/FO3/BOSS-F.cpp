@@ -30,6 +30,7 @@ using namespace std;
 ifstream order;					//masterlist.txt - the grand mod order list
 ifstream modlist;				//modlist.txt - list of esm/esp files in oblivion/data
 bool FOOK2;						//true if key FOOK2 files are found.
+bool FWE;
 
 string StringToLower (string str) {					//changes uppercase to lowercase.		
 	unsigned int i;
@@ -69,18 +70,18 @@ void ChangeFileDate(string textbuf, struct tm modfiletime)  {
 }
 
 bool IsMod(string textbuf) {
-	return (((textbuf[0]!='\\') && (textbuf[0]!='*') && (textbuf[0]!='\?') && (textbuf[0]!='%')));
+	return (((textbuf[0]!='\\') && (textbuf[0]!='*') && (textbuf[0]!='\?') && (textbuf[0]!='%') && (textbuf[0]!='$')));
 }
 
 bool IsMessage(string textbuf) {
-	return (((((textbuf[0]==':') || (textbuf[0]=='"') || (textbuf[0]=='%') || (textbuf[0]=='*') || (textbuf[0]=='\?')))));
+	return (((textbuf[0]==':') || (textbuf[0]=='"') || (textbuf[0]=='%') || (textbuf[0]=='*') || (textbuf[0]=='\?') || (textbuf[0]=='$')));
 }
 
 bool IsValidLine(string textbuf) {
 	return ((textbuf.length()>1) && (Tidy(textbuf)!="Oblivion.esm") && (Tidy(textbuf)!="fallout3.esm") && (Tidy(textbuf)!="Morrowind.esm"));
 }
 
-void ShowMessage(string textbuf, bool FOOK2) {
+void ShowMessage(string textbuf, bool FOOK2, bool FWE) {
 	switch (textbuf[0]) {	
 		case '*':
 			if (FOOK2) cout << "  !!! FOOK2 INSTALLATION ERROR: " << textbuf.substr(1) << endl;
@@ -96,6 +97,9 @@ void ShowMessage(string textbuf, bool FOOK2) {
 		break;
 		case '"' :
 			cout << "  . Conflicts with: " << textbuf.substr(1) << endl;
+		break;
+		case '$':
+			if (FWE) cout << "  . FWE Specific Note: " << textbuf.substr(1) << endl;
 		break;
 	} //switch
 }
@@ -130,11 +134,11 @@ int main() {
 
 	cout << endl << endl << "-----------------------------------------------------------" << endl;
 	cout <<                 " Better Oblivion Sorting Software       Load Order Utility " << endl << endl;
-	cout <<                 "   (c) Random007 & the BOSS development team, 2009         " << endl;
+	cout <<                 "   (c) Random007 & the BOSS development team, 2009-2010    " << endl;
 	cout <<                 "   Some rights reserved.                                   " << endl;
 	cout <<                 "   CC Attribution-Noncommercial-No Derivative Works 3.0    " << endl;
 	cout <<                 "   http://creativecommons.org/licenses/by-nc-nd/3.0/       " << endl;
-	cout <<                 " v1.41 (31 August 09)                                       " << endl;
+	cout <<                 " v1.5 (28 June 10)											" << endl;
 	cout <<                 "-----------------------------------------------------------" << endl << endl;
 
 	//open masterlist.txt
@@ -164,9 +168,12 @@ int main() {
 	cout << "Master .ESM date: " << modfilestring;
 
 	//Check if FOOK2 or not
-	if (FOOK2=FileExists("FOOK2 - Main.esm")) cout << "FOOK2 Detected" << endl << endl;
-		else cout << "FOOK2 not detected." << endl << endl;
-	if (FileExists("FOOK2 - Main.esp") && !FOOK2) cout << "WARNING: FOOK2.esm seems to be missing." << endl << endl;
+	if (FOOK2=FileExists("FOOK2 - Main.esm")) cout << "FOOK2 Detected" << endl;
+		else cout << "FOOK2 not detected." << endl;
+	if (FileExists("FOOK2 - Main.esp") && !FOOK2) cout << "WARNING: FOOK2.esm seems to be missing." << endl;
+	//Check if FWE or not
+	if (FWE=FileExists("FO3 Wanderers Edition - Main File.esm")) cout << "FWE detected." << endl;
+		else cout << "FWE not detected." << endl;
 	
 	//Generate list of all .esp or .esm files.
 	//also, clear file attributes.
@@ -220,7 +227,7 @@ int main() {
 				} //if
 				else found=FALSE;
 			} //if
-			else if (found) ShowMessage(textbuf, FOOK2);		//Deal with message lines here.
+			else if (found) ShowMessage(textbuf, FOOK2, FWE);		//Deal with message lines here.
 		} //if
 	} //while
 
@@ -230,12 +237,12 @@ int main() {
 	cout <<           "Reorder these by hand using your favourite mod ordering utility. " << endl;
 	cout <<           "-----------------------------------------------------------------" << endl << endl;
 	modlist.clear();						//reset position in modlist.txt to start.
-	modlist.seekg (0, ios.beg);				// "
+	modlist.seekg (0, order.beg);				// "
 	while (!modlist.eof()) {	
 		textbuf=ReadLine("modlist");
 		found=FALSE;
 		order.clear ();						//reset position in masterlist.txt to start.
-		order.seekg (0, ios.beg);			// "
+		order.seekg (0, order.beg);			// "
 		while (!order.eof() && !found) {	//repeat until end of masterlist.txt or file found.				
 			textbuf2=ReadLine("order");
 			if (IsMod(textbuf2)) if (Tidy(textbuf)==Tidy(textbuf2)) found=TRUE;		//filter out comment, blank and message lines when checking for match - speeds process up.
