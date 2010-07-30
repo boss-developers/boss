@@ -25,10 +25,14 @@
 #include <curl/types.h>
 #include <curl/easy.h>
 
+#include <Support/Types.h>
+#include <Support/ModFormat.h>
+
 #define SIZE 26 				//used in convertion of date/time struct to a string. Has to be this length.
 #define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitary number.
 
 using namespace std;
+using namespace boss;
 
 ifstream order;						//masterlist.txt - the grand mod order list
 ifstream modlist;					//modlist.txt - list of esm/esp files in oblivion/data
@@ -205,7 +209,37 @@ int UpdateMasterlist(int game) {
 	return end;
 }
 
-//BOSS [--update | -u] [--help | -h]
+/// GetModHeader(string textbuf):
+///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
+///
+string GetModHeader(const string& filename) {
+
+	ostringstream out;
+
+	// Read mod's header now...
+	ModHeader header = ReadHeader(filename);
+
+	// Fill the mod information string in this format '[' <KIND> [',' <VERSION> ] ']', the last part only appears if found.
+	string master = header.IsMaster ? "Master" : "Plugin";
+
+	// The current mod's version if found, or empty otherwise.
+	string version = header.Version;
+
+	// Output the mod information...
+	out << endl << filename;	// show which mod file is being processed.
+	out << " ==> [" << master;	// show mod type: master|plugin
+
+	// If version's found the show it...
+	if (! version.empty()) {
+		out << ", version: " << version;
+	}
+
+	out << "]";
+
+	return out.str();
+}
+
+//BOSS [--update | -u] [--help | -h] [--version-check | -V]
 int main(int argc, char *argv[]) {					
 	
 	int x;							//random useful integers
@@ -217,6 +251,7 @@ int main(int argc, char *argv[]) {
 	char modfilechar [SIZE];		//used to convert stuff.
 
 	bool update = false;			//To update masterlist or not?
+	bool version_parse = false;		//Enable parsing of mod's headers to look for version strings
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
 
 	//Parse command line arguments.
@@ -224,12 +259,14 @@ int main(int argc, char *argv[]) {
 		for (int i=0; i < argc; i++) {
 			if (strcmp("--update", argv[i]) == 0 || strcmp("-u", argv[i]) == 0) {
 				update = true;
-			}else if (strcmp("--help", argv[i]) == 0 || strcmp("-h", argv[i]) == 0) {
-				cout << endl << "BOSS [--update | -u] [--help | -h]" << endl << endl;
+			} else if (strcmp("--version-check", argv[i]) == 0 || strcmp("-V", argv[i]) == 0) {
+				version_parse = true;
+			} else if (strcmp("--help", argv[i]) == 0 || strcmp("-h", argv[i]) == 0) {
 				cout << "Better Oblivion Sorting Software is a utility that sorts the load order of TESIV: Oblivion, TESIII: Morrowind and Fallout 3 mods according to their relative positions on a frequently-updated masterlist ";
 				cout << "to ensure proper load order and minimise incompatibilities between mods." << endl << endl;
 				cout << "Optional Parameters" << endl << endl;
-				cout << "-u" << endl << "--update" << endl << "Automatically updates the local copy of the masterlist using the latest version available on the Google Code repository." << endl << endl;
+				cout << "-u, --update: " << endl << "    Automatically updates the local copy of the masterlist using the latest version available on the Google Code repository." << endl << endl;
+				cout << "-V, --version-check: " << endl << "    Enables the parsing of each mod's description and if found extracts from there the author stamped mod's version and prints it along other data in the generated bosslog.txt." << endl << endl;
 				exit (0);
 			}
 		}
@@ -368,7 +405,11 @@ int main(int argc, char *argv[]) {
 			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
 				if (FileExists(textbuf)) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
 					found=TRUE;
-					bosslog << endl << textbuf << endl;		// show which mod file is being processed.
+
+					string text = version_parse ? GetModHeader(textbuf) : textbuf;
+
+					bosslog << endl << text << endl;		// show which mod file is being processed.
+
 					x++;
 					modfiletime=esmtime;
 					modfiletime.tm_min += x;				//files are ordered in minutes after oblivion.esp .
