@@ -1,14 +1,11 @@
 /*	Better Oblivion Sorting Software
-	2.0 Beta
-	Quick and Dirty Load Order Utility
+	2.1
+	Quick and Dirty Load Order Utility for Oblivion and Fallout 3
 	(Making C++ look like the scripting language it isn't.)
 
-    	Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
-    	http://creativecommons.org/licenses/by-nc-nd/3.0/
+    Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
+    http://creativecommons.org/licenses/by-nc-nd/3.0/
 */
-
-// Now supports master ESM files from Morrowind and Fallout 3. Notes regarding Oblivion apply equally to those games too.
-// Now covers the same FOOK2 detection support for Fallout 3 as BOSS-F does, and more!
 
 #include <stdio.h>
 #include <windows.h>
@@ -22,9 +19,15 @@
 #include <string>
 #include <ctype.h>
 #include <direct.h>
+#include <sstream>
+#define CURL_STATICLIB			//Tells the compiler to use curl as a static library.
+#include <curl/curl.h>
+#include <curl/types.h>
+#include <curl/easy.h>
 
 #define SIZE 26 				//used in convertion of date/time struct to a string. Has to be this length.
 #define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitary number.
+
 
 using namespace std;
 
@@ -34,8 +37,8 @@ ofstream bosslog;					//BOSSlog.txt - output file.
 bool fcom;							//true if key FCOM files are found.
 bool ooo;                      	 	//true if OOO esm is found.
 bool bc;                        	//true if Better Cities esm is found.
-bool FOOK2;							//true if key FOOK2 files are found.
-bool FWE;							//true if FWE esm is found
+bool fook2;							//true if key fook2 files are found.
+bool fwe;							//true if fwe esm is found
 
 string Tidy(string filename) {						//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
 	int endpos = filename.find_last_not_of(" \t");
@@ -49,7 +52,7 @@ string Tidy(string filename) {						//Changes uppercase to lowercase and removes
 }
 
 bool FileExists(string filename) {
-//file-exists check function				
+//file-exists check function			r4	
 	struct __stat64 fileinfo;						//variable that holds the result of _stat
 	string str = Tidy(filename);
 
@@ -79,18 +82,18 @@ bool IsValidLine(string textbuf) {
 	return ((textbuf.length()>1) && (Tidy(textbuf)!="Oblivion.esm") && (Tidy(textbuf)!="fallout3.esm") && (Tidy(textbuf)!="Morrowind.esm"));
 }
 
-void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc, bool FOOK2, bool FWE) {
+void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc, bool fook2, bool fwe) {
 	switch (textbuf[0]) {	
 		case '*':
 			if (fcom) bosslog << "  !!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << endl;
-			else if (FOOK2) bosslog << "  !!! FOOK2 INSTALLATION ERROR: " << textbuf.substr(1) << endl;
+			else if (fook2) bosslog << "  !!! fook2 INSTALLATION ERROR: " << textbuf.substr(1) << endl;
 		break;
 		case ':':
 			bosslog << " . Requires: " << textbuf.substr(1) << endl;
 		break;
 		case '$':
 			if (ooo) bosslog << " . OOO Specific Note: " << textbuf.substr(1) << endl;
-			else if (FWE) bosslog << "  . FWE Specific Note: " << textbuf.substr(1) << endl;
+			else if (fwe) bosslog << "  . fwe Specific Note: " << textbuf.substr(1) << endl;
 		break;
 		case '%':
 			bosslog << "  . Bashed Patch tag suggestion: " << textbuf.substr(1) << endl;
@@ -124,7 +127,86 @@ string ReadLine (string file) {						//Read a line from a file. Could be rewritt
 	return (textbuf);
 }
 
-//BOSS.exe [--update | -u] [[--masterlist | -m] "masterlist parent directory"] [[--plugins | -p] "plugins directory"] [[--output | -o] "output directory"] [--help | -h]
+int writer(char *data, size_t size, size_t nmemb, string *buffer){
+	int result = 0;
+	if(buffer != NULL) {
+		buffer -> append(data, size * nmemb);
+		result = size * nmemb;
+	}
+	return result;
+} 
+
+int UpdateMasterlist(string path, int game) {
+	char *url;					//Masterlist file url
+	CURL *curl;					//Some cURL resource...
+	string buffer,revision,oldline,newline;		//A bunch of strings.
+	int start,end;				//Position holders for trimming strings.
+	ifstream in;				//Input stream.
+	ofstream out;				//Output stream.
+	char cbuffer[MAXLENGTH];	//Another buffer for holding lines to be processed.
+
+	//Which masterlist to get?
+	if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/masterlist.txt";
+	else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/FO3Masterlist/masterlist.txt";
+	else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/MWmasterlist/masterlist.txt";
+
+	//Get SVN masterlist file.
+    curl = curl_easy_init();
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
+        curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+		out.open((path+".tmp").c_str());
+		out << buffer;
+		out.close();
+    }
+
+	//Get HEAD revision number from http://better-oblivion-sorting-software.googlecode.com/svn/ page text.
+	curl = curl_easy_init();
+	if (curl){
+		curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/");
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer );
+		curl_easy_perform(curl);
+		curl_easy_cleanup(curl);
+	}
+	start = buffer.find("Revision ");
+	end = buffer.find(": /");
+	end = end - (start+9);
+	revision = buffer.substr(start+9,end);
+	stringstream ss(revision);
+	ss >> end;
+
+	//Add revision number to masterlist and fix the line breaks.
+	oldline = "? Masterlist Information: $Revision$, $Date$, $LastChangedBy$";
+	newline = "? Masterlist Revision: "+revision;
+	in.open((path+".tmp").c_str());
+	out.open(path.c_str());
+	while (!in.eof()) {	
+		in.getline(cbuffer,MAXLENGTH);
+		buffer = (string)cbuffer;
+		if (buffer.length()>0) {
+			int pos = buffer.find(oldline);
+			if (pos > -1) {
+				out << newline << endl;
+			} else {
+				pos = buffer.find("\r");
+				buffer.replace(pos,2,"\n");
+				out << buffer;
+			}
+		}
+	}
+	in.close();
+	out.close();
+	//Remove temporary masterlist file.
+	system (("del "+path+".tmp").c_str());
+	//Return revision number.
+	return end;
+}
+
+//BOSS [--update | -u] [--help | -h]
 int main(int argc, char *argv[]) {					
 	
 	int x;							//random useful integers
@@ -135,10 +217,6 @@ int main(int argc, char *argv[]) {
 	bool found;						
 	char modfilechar [SIZE];		//used to convert stuff.
 
-	string listdir;					//stores masterlist parent directory.
-	string plugindir;				//stores plugins directory.
-	string logdir;					//stores output files directory.
-	char *rwd;						//stores working directory at runtime.
 	bool update = false;			//To update masterlist or not?
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
 
@@ -147,47 +225,32 @@ int main(int argc, char *argv[]) {
 		for (int i=0; i < argc; i++) {
 			if (strcmp("--update", argv[i]) == 0 || strcmp("-u", argv[i]) == 0) {
 				update = true;
-			} else if (strcmp("--masterlist", argv[i]) == 0 || strcmp("-m", argv[i]) == 0) {
-				listdir = argv[i + 1];
-			} else if (strcmp("--plugins", argv[i]) == 0 || strcmp("-p", argv[i]) == 0) {
-				plugindir = argv[i + 1];
-			} else if (strcmp("--output", argv[i]) == 0 || strcmp("-o", argv[i]) == 0) {
-				logdir = argv[i + 1];
 			}else if (strcmp("--help", argv[i]) == 0 || strcmp("-h", argv[i]) == 0) {
-				cout << endl << "BOSS [--update | -u] [[--masterlist | -m] \"file parent directory\"] [[--plugins | -p] \"plugins directory\"] [[--output | -o] \"output directory\"] [--help | -h]" << endl << endl;
+				cout << endl << "BOSS [--update | -u] [--help | -h]" << endl << endl;
 				cout << "Better Oblivion Sorting Software is a utility that sorts the load order of TESIV: Oblivion, TESIII: Morrowind and Fallout 3 mods according to their relative positions on a frequently-updated masterlist ";
-				cout << "to ensure proper load order and minimise incompatibilities between mods. If no optional parameters are set, all paths are set to BOSS's parent directory." << endl << endl;
+				cout << "to ensure proper load order and minimise incompatibilities between mods." << endl << endl;
 				cout << "Optional Parameters" << endl << endl;
-				cout << "NOTE: Directory paths are given using backslashes, as per normal Windows operation, ie: \"C:\\Users\\\" not \"C:/Users/\".";
-				cout << "The trailing backslash must be present. Paths with spaces must be encapsulated in double quotes (\"\")." << endl << endl;
-				cout << "-m" << endl << "--masterlist" << endl << "Specify the directory containing the masterlist to be used to sort the mods, and to be updated if the update parameter is set." << endl << endl;
-				cout << "-o" << endl << "--output" << endl << "Specify BOSS's output directory, where modlist.txt, BOSSlog.txt and modlist.old (if modlist.txt already exists in that location) will be written to." << endl << endl;
-				cout << "-p" << endl << "--plugins" << endl << "Specify the directory that contains the mod plugins to be sorted." << endl << endl;
 				cout << "-u" << endl << "--update" << endl << "Automatically updates the local copy of the masterlist using the latest version available on the Google Code repository." << endl << endl;
 				exit (0);
 			}
 		}
-	} else {
-		listdir = "";
-		plugindir = "";
-		logdir = "";
 	}
 
-	if (FileExists(plugindir+"oblivion.esm")) game = 1;
-	else if (FileExists(plugindir+"fallout3.esm")) game = 2;
-	else if (FileExists(plugindir+"morrowind.esm")) game = 3;
+	if (FileExists("oblivion.esm")) game = 1;
+	else if (FileExists("fallout3.esm")) game = 2;
+	else if (FileExists("morrowind.esm")) game = 3;
 
 	if (update == true) {
-		//cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
-		//if (UpdateMasterlist(listdir+"masterlist.txt", game) == true) cout << listdir+"masterlist.txt updated!" << endl;
-		//else cout << "Masterlist update failed." << endl;
-		cout << "The masterlist update option is currently disabled while it is worked on." << endl;
+		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
+		int rev = UpdateMasterlist("masterlist.txt", game);
+		if (rev > 0) cout << "masterlist.txt updated to revision " << rev << endl;
+		else cout << "Masterlist update failed." << endl;
 	}
 
 	cout << endl << "Better Oblivion Sorting Software working..." << endl;
 	
 	//Check for creation of BOSSlog.txt.
-	bosslog.open(logdir+"BOSSlog.txt");
+	bosslog.open("BOSSlog.txt");
 	if (bosslog.fail()) {							
 		cout << endl << "Critical Error! BOSSlog.txt should have been created but it wasn't." << endl;
 		cout << 		"Make sure you are running as Administrator if using Windows Vista or Windows 7." << endl;
@@ -205,25 +268,25 @@ int main(int argc, char *argv[]) {
 	bosslog <<                 "-----------------------------------------------------------" << endl << endl;
 
 	//open masterlist.txt
-	order.open(listdir+"masterlist.txt");	
+	order.open("masterlist.txt");	
 	if (order.fail()) {							
 		bosslog << endl << "Critical Error! masterlist.txt does not exist or can't be read!" << endl; 
 		bosslog <<         "! Utility will end now." << endl;
 		bosslog.close();
-		system (("start "+logdir+"BOSSlog.txt").c_str());	//Displays the BOSSlog.txt.
+		system ("start BOSSlog.txt");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //if
 
 	//get date for oblivion.esm.
-	if (game == 1) _stat64((plugindir+"oblivion.esm").c_str(), &buf);
-	else if (game == 2) _stat64((plugindir+"fallout3.esm").c_str(), &buf);
-	else if (game == 3) _stat64((plugindir+"morrowind.esm").c_str(), &buf);
-	else {				
+	if (game == 1) _stat64("oblivion.esm", &buf);
+	else if (game == 2) _stat64("fallout3.esm", &buf);
+	else if (game == 3) _stat64("morrowind.esm", &buf);
+	else {
 		bosslog << endl << "Critical Error: Master .ESM file not found (or not accessible)!" << endl;
 		bosslog <<         "Make sure you're running this in your Data folder." <<endl;
 		bosslog <<         "! Utility will end now." << endl;
 		bosslog.close();
-		system (("start "+logdir+"BOSSlog.txt").c_str());	//Displays the BOSSlog.txt.
+		system ("start BOSSlog.txt");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //else
 
@@ -235,50 +298,49 @@ int main(int argc, char *argv[]) {
 
 	if (game == 1) {
 		//Check if FCOM or not
-		if (fcom=FileExists(plugindir+"FCOM_Convergence.esm")) bosslog << "FCOM detected." << endl;
+		if (fcom=FileExists("FCOM_Convergence.esm")) bosslog << "FCOM detected." << endl;
 			else bosslog << "FCOM not detected." << endl;
-		if (FileExists(plugindir+"FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing." << endl;
+		if (FileExists("FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing." << endl;
 		//Check if OOO or not
-		if (ooo=FileExists(plugindir+"Oscuro's_Oblivion_Overhaul.esm")) bosslog << "OOO detected." << endl;
+		if (ooo=FileExists("Oscuro's_Oblivion_Overhaul.esm")) bosslog << "OOO detected." << endl;
 			else bosslog << "OOO not detected." << endl;
 		//Check if Better Cities or not
-		if (bc=FileExists(plugindir+"Better Cities Resources.esm")) bosslog << "Better Cities detected." << endl;
+		if (bc=FileExists("Better Cities Resources.esm")) bosslog << "Better Cities detected." << endl;
 			else bosslog << "Better Cities not detected." << endl;
 	} else if (game == 2) {
-		//Check if FOOK2 or not
-		if (FOOK2=FileExists(plugindir+"FOOK2 - Main.esm")) bosslog << "FOOK2 Detected" << endl;
-			else bosslog << "FOOK2 not detected." << endl;
-		if (FileExists(plugindir+"FOOK2 - Main.esp") && !FOOK2) bosslog << "WARNING: FOOK2.esm seems to be missing." << endl;
-		//Check if FWE or not
-		if (FWE=FileExists(plugindir+"FO3 Wanderers Edition - Main File.esm")) bosslog << "FWE detected." << endl;
-			else bosslog << "FWE not detected." << endl;
+		//Check if fook2 or not
+		if (fook2=FileExists("fook2 - Main.esm")) bosslog << "fook2 Detected" << endl;
+			else bosslog << "fook2 not detected." << endl;
+		if (FileExists("fook2 - Main.esp") && !fook2) bosslog << "WARNING: fook2.esm seems to be missing." << endl;
+		//Check if fwe or not
+		if (fwe=FileExists("FO3 Wanderers Edition - Main File.esm")) bosslog << "fwe detected." << endl;
+			else bosslog << "fwe not detected." << endl;
 	}
 	bosslog << endl;
 
 	//Generate list of all .esp or .esm files.
-	if (FileExists (logdir+"modlist.txt")) {	//add an additional undo level just in case.
-		if (FileExists (logdir+"modlist.old")) {
-			system (("attrib -r "+logdir+"modlist.old").c_str());	//Clears read only attribute of modlist.old if present, so we can delete the file.
-			system (("del "+logdir+"modlist.old").c_str());
+	if (FileExists ("modlist.txt")) {	//add an additional undo level just in case.
+		if (FileExists ("modlist.old")) {
+			system ("attrib -r modlist.old");	//Clears read only attribute of modlist.old if present, so we can delete the file.
+			system ("del modlist.old");
 		}
-		system (("cd "+logdir+" && ren modlist.txt modlist.old").c_str());
+		system ("attrib -r modlist.txt");	//Clears read only attribute of modlist.txt if present, so we can rename the file.
+		system ("ren modlist.txt modlist.old");
 	} //if
-	system (("dir "+plugindir+"*.es? /a:-d /b /o:d /t:w > "+logdir+"modlist.txt").c_str()); // quick way to list the mod files: pipe them into a text file.
+	system ("dir *.es? /a:-d /b /o:d /t:w > modlist.txt"); // quick way to list the mod files: pipe them into a text file.
 
 	//Open modlist.txt file and verify success																
-	modlist.open(logdir+"modlist.txt");			
+	modlist.open("modlist.txt");			
 	if (modlist.fail()) {
 		bosslog << endl << "Critical Error! Internal program error! modlist.txt should have been created but it wasn't." << endl;
 		bosslog <<         "Make sure you are running as Administrator if using Windows Vista." << endl;
 		bosslog <<         "! Utility will end now." << endl;
 		bosslog.close();
-		system (("start "+logdir+"BOSSlog.txt").c_str());	//Displays the BOSSlog.txt.
+		system ("start BOSSlog.txt");	//Displays the BOSSlog.txt.
 		exit(1); //fail in screaming heap.
 	} //if
 
-	//Save current working directory for later, change working directory to plugin directory, and remove any read only attributes from esm/esp files if present.
-	rwd = _getcwd(NULL,0);
-	_chdir(plugindir.c_str());
+	//Remove any read only attributes from esm/esp files if present.
 	system("attrib -r *.es?");
 
 	//Change mod date of each file in the list to oblivion.esm date _plus_ 1 year. Ensures unknown mods go last in original order.
@@ -315,7 +377,7 @@ int main(int argc, char *argv[]) {
 				} //if
 				else found=FALSE;
 			} //if
-			else if (found) ShowMessage(textbuf, fcom, ooo, bc, FOOK2, FWE);		//Deal with message lines here.
+			else if (found) ShowMessage(textbuf, fcom, ooo, bc, fook2, fwe);		//Deal with message lines here.
 		} //if
 	} //while
 
@@ -342,7 +404,6 @@ int main(int argc, char *argv[]) {
 	bosslog <<   endl << endl << "-----------------------------------------------------------" << endl;
 	bosslog << "Done.";
 	bosslog.close();
-	_chdir(rwd);
-	system (("start "+logdir+"BOSSlog.txt").c_str());	//Displays the BOSSlog.txt.
+	system ("start BOSSlog.txt");	//Displays the BOSSlog.txt.
 	return (0);
 }
