@@ -1,6 +1,6 @@
 /*	Better Oblivion Sorting Software
 	2.1
-	Quick and Dirty Load Order Utility for Oblivion and Fallout 3
+	Quick and Dirty Load Order Utility for Oblivion, Fallout 3 and Morrowind
 	(Making C++ look like the scripting language it isn't.)
 
     Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
@@ -28,7 +28,6 @@
 #define SIZE 26 				//used in convertion of date/time struct to a string. Has to be this length.
 #define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitary number.
 
-
 using namespace std;
 
 ifstream order;						//masterlist.txt - the grand mod order list
@@ -37,8 +36,8 @@ ofstream bosslog;					//BOSSlog.txt - output file.
 bool fcom;							//true if key FCOM files are found.
 bool ooo;                      	 	//true if OOO esm is found.
 bool bc;                        	//true if Better Cities esm is found.
-bool fook2;							//true if key fook2 files are found.
-bool fwe;							//true if fwe esm is found
+bool fook2;							//true if key FOOK2 files are found.
+bool fwe;							//true if FWE esm is found
 
 string Tidy(string filename) {						//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
 	int endpos = filename.find_last_not_of(" \t");
@@ -52,7 +51,7 @@ string Tidy(string filename) {						//Changes uppercase to lowercase and removes
 }
 
 bool FileExists(string filename) {
-//file-exists check function			r4	
+//file-exists check function
 	struct __stat64 fileinfo;						//variable that holds the result of _stat
 	string str = Tidy(filename);
 
@@ -86,14 +85,14 @@ void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc, bool fook2, bool 
 	switch (textbuf[0]) {	
 		case '*':
 			if (fcom) bosslog << "  !!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << endl;
-			else if (fook2) bosslog << "  !!! fook2 INSTALLATION ERROR: " << textbuf.substr(1) << endl;
+			else if (fook2) bosslog << "  !!! FOOK2 INSTALLATION ERROR: " << textbuf.substr(1) << endl;
 		break;
 		case ':':
 			bosslog << " . Requires: " << textbuf.substr(1) << endl;
 		break;
 		case '$':
 			if (ooo) bosslog << " . OOO Specific Note: " << textbuf.substr(1) << endl;
-			else if (fwe) bosslog << "  . fwe Specific Note: " << textbuf.substr(1) << endl;
+			else if (fwe) bosslog << "  . FWE Specific Note: " << textbuf.substr(1) << endl;
 		break;
 		case '%':
 			bosslog << "  . Bashed Patch tag suggestion: " << textbuf.substr(1) << endl;
@@ -136,7 +135,7 @@ int writer(char *data, size_t size, size_t nmemb, string *buffer){
 	return result;
 } 
 
-int UpdateMasterlist(string path, int game) {
+int UpdateMasterlist(int game) {
 	char *url;					//Masterlist file url
 	CURL *curl;					//Some cURL resource...
 	string buffer,revision,oldline,newline;		//A bunch of strings.
@@ -158,7 +157,7 @@ int UpdateMasterlist(string path, int game) {
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
         curl_easy_perform(curl);
         curl_easy_cleanup(curl);
-		out.open((path+".tmp").c_str());
+		out.open("masterlist.tmp");
 		out << buffer;
 		out.close();
     }
@@ -182,8 +181,8 @@ int UpdateMasterlist(string path, int game) {
 	//Add revision number to masterlist and fix the line breaks.
 	oldline = "? Masterlist Information: $Revision$, $Date$, $LastChangedBy$";
 	newline = "? Masterlist Revision: "+revision;
-	in.open((path+".tmp").c_str());
-	out.open(path.c_str());
+	in.open("masterlist.tmp");
+	out.open("masterlist.txt");
 	while (!in.eof()) {	
 		in.getline(cbuffer,MAXLENGTH);
 		buffer = (string)cbuffer;
@@ -201,7 +200,7 @@ int UpdateMasterlist(string path, int game) {
 	in.close();
 	out.close();
 	//Remove temporary masterlist file.
-	system (("del "+path+".tmp").c_str());
+	system ("del masterlist.tmp");
 	//Return revision number.
 	return end;
 }
@@ -242,7 +241,7 @@ int main(int argc, char *argv[]) {
 
 	if (update == true) {
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
-		int rev = UpdateMasterlist("masterlist.txt", game);
+		int rev = UpdateMasterlist(game);
 		if (rev > 0) cout << "masterlist.txt updated to revision " << rev << endl;
 		else cout << "Masterlist update failed." << endl;
 	}
@@ -264,7 +263,7 @@ int main(int argc, char *argv[]) {
 	bosslog <<                 "   Some rights reserved.                                   " << endl;
 	bosslog <<                 "   CC Attribution-Noncommercial-No Derivative Works 3.0    " << endl;
 	bosslog <<                 "   http://creativecommons.org/licenses/by-nc-nd/3.0/       " << endl;
-	bosslog <<                 "   v2.0 Beta (10 July 2010)							       " << endl;
+	bosslog <<                 "   v2.1 (30 July 2010)									   " << endl;
 	bosslog <<                 "-----------------------------------------------------------" << endl << endl;
 
 	//open masterlist.txt
@@ -309,12 +308,12 @@ int main(int argc, char *argv[]) {
 			else bosslog << "Better Cities not detected." << endl;
 	} else if (game == 2) {
 		//Check if fook2 or not
-		if (fook2=FileExists("fook2 - Main.esm")) bosslog << "fook2 Detected" << endl;
-			else bosslog << "fook2 not detected." << endl;
-		if (FileExists("fook2 - Main.esp") && !fook2) bosslog << "WARNING: fook2.esm seems to be missing." << endl;
+		if (fook2=FileExists("FOOK2 - Main.esm")) bosslog << "FOOK2 Detected" << endl;
+			else bosslog << "FOOK2 not detected." << endl;
+		if (FileExists("FOOK2 - Main.esp") && !fook2) bosslog << "WARNING: FOOK2.esm seems to be missing." << endl;
 		//Check if fwe or not
-		if (fwe=FileExists("FO3 Wanderers Edition - Main File.esm")) bosslog << "fwe detected." << endl;
-			else bosslog << "fwe not detected." << endl;
+		if (fwe=FileExists("FO3 Wanderers Edition - Main File.esm")) bosslog << "FWE detected." << endl;
+			else bosslog << "FWE not detected." << endl;
 	}
 	bosslog << endl;
 
