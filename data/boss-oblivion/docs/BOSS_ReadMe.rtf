@@ -1,0 +1,93 @@
+{\rtf1\ansi\ansicpg1252\deff0\deflang3081\deflangfe3081{\fonttbl{\f0\fswiss\fprq2\fcharset0 Arial;}{\f1\froman\fprq2\fcharset2 Symbol;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Msftedit 5.41.21.2509;}\viewkind4\uc1\pard\sa240\qc\ul\b\f0\fs36 BETTER OBLIVION SORTING SOFTWARE\ulnone\b0\fs24\line\line A simple "one-click" program for users to quickly optimise and avoid detrimental conflicts in their oblivion mod load-order.\par
+\pard\line\b Features:\b0\par
+\pard\fi-360\li720\sb100\sa100\tx720\f1\fs20\'b7\tab\b\f0\fs24 Checks and correctly positions all the mod files involved with an 'FCOM Convergence' installation including partial or complete installations of OOO, MMM, Fran's, Oblivion WarCry, Bob's Armory, Loth's Blunt Weapons (for NPCs), COBL, Tamriel Travellers, Exnem's Runeskulls and so on.\par
+\pard\fi-360\li720\sb100\sa100\b0\f1\fs20\'b7\tab\b\f0\fs24 Correctly positions all the mod files involved with OOO, MMM, Better Cities, Open Cities and other very large mods.\par
+\b0\f1\fs20\'b7\tab\b\f0\fs24 Supports over 9000 mods and counting.\par
+\b0\f1\fs20\'b7\tab\b\f0\fs24 Warns the user about any commonly miss-installed FCOM related files.\par
+\b0\f1\fs20\'b7\tab\b\f0\fs24 Provides useful load order notes.\par
+\b0\f1\fs20\'b7\tab\b\f0\fs24 Provides Wrye Bash with Bash Patch tag suggestions which it will import.\par
+\b0\f1\fs20\'b7\tab\b\f0\fs24 Is mostly right (most of the time)!\par
+\b0\f1\fs20\'b7\tab\b\f0\fs24 Is under constant development and improvement by a team of modders and Oblivion experts.\par
+\pard\li360\sb100\sa100\b0\f1\fs20\'b7\tab\b\f0\fs24 Differentiates between FCOM and non-FCOM set-ups.\par
+\pard\fi-360\li720\sb100\sa100\par
+\pard\b0 Better Oblivion Sorting Software (BOSS) will reorder all the mods it knows about (listed in the masterlist.txt database file) and puts ones it doesn't know after. The unknown mods will be in the same order as you had them before running BOSS.\line\line BOSS is designed to assist installing FCOM, MMM and a wide variety of other mods and help mod users avoid serious conflicts. It isn\rquote t a complete solution to load ordering issues as there are far too many mods out there (estimated at about 30 thousand). To properly place mods the program doesn\rquote t know about, a good working knowledge of Oblivion mod load ordering is going to be necessary. Some research and documentation reading will go a long way.\line\line\line\ul\fs27 REQUIREMENTS:\ulnone\fs24\line\line Windows (or Wine), Oblivion, and mods.\line\line\line\ul\fs27 DOWNLOADS:\ulnone\fs24\line\line{\field{\*\fldinst{HYPERLINK "http://www.tesnexus.com/downloads/file.php?id=20516"}}{\fldrslt{\cf1\ul Better Oblivion Sorting Software on TES Nexus}}}\cf0\ulnone\f0\fs24\par
+\line There are no official mirrors at this time.\line\line\line\ul\fs27 INSTALLATION AND USE:\ulnone\fs24\line\line 1. Backup your load order with OBMM or Wrye Bash.\line\line 2. If you have Wrye Bash, make sure it has its "Lock Times" function deactivated.\par
+\par
+3. Wine users may need to run Winetricks to register the libraries properly \sub (thanks to John.Moonsugar for that info)\nosupersub\par
+\par
+4. Unzip the BOSS.zip\~ archive to your ...\\Oblivion\\Data folder. Don\rquote t use a sub-folder!\line\line 5. Run BOSS.exe.\line\line Once the program has run, the output will be automatically displayed. Read any notes, FCOM install errors if applicable and/or Wrye Bash Bashed Patch suggestions. Wrye Bash can import suggestions from BOSS and apply them automatically.\line\line You will need to re-order "unknown" mods by hand with ObMM or Wrye Bash.\line\line Wrye Bash can integrate BOSS's Bashed Patch suggestions from the masterlist.txt file. Some Bashed Patch suggestion can come with conditions and notes that require human intervention so read the suggestions BOSS makes thoroughly and adjust tags by hand if necessary.\par
+\line\line\ul\fs27 UNINSTALLATION:\ulnone\fs24\line\line Delete BOSS.bat,\~ BOSS.exe and masterlist.txt.\line\line Also delete BOSSlog.txt, modlist.txt and modlist.old if BOSS has been run.\line\line\line\ul\fs27 TROUBLESHOOTING:\par
+\par
+\ulnone\b\fs24 Won't run: Using BOSS version under 1.51:\par
+\b0\par
+Update to version 1.51.\line\line\b Won\rquote t run: BOSS not extracted (unzipped) to ...\\oblivion\\data but a sub-folder or the Oblivion folder. \b0\line\line All BOSS files must share the same folder as your mods.\line\line Check you have:\par
+\pard\fi-360\li720\sb100\sa100\tx720\f1\fs20\'b7\tab\f0\fs24 BOSS.exe\par
+\pard\fi-360\li720\sb100\sa100\f1\fs20\'b7\tab\f0\fs24 masterlist.txt\par
+\pard in your ...\\oblivion\\data folder.\line\line\b Won\rquote t change load order: OS is Vista and Oblivion is installed in Program Files.\b0\line\line Install Oblivion outside the Program Files folder where possible. Otherwise temporarily deactivate UAC.\line\b\line Won't Change load order and generating a blank text file: OS is Windows 7:\par
+\par
+\b0 Give group or users name: BATCH controls of the Oblivion folder\line\line\b Won\rquote t change load order: Wrye Bash's load order locking feature is enabled. \b0\line\line Disable before changing load order.\line\line\line\ul\fs27 FURTHER DETAILS:\ulnone\fs24\line\line BOSS has a couple of command line switches. The syntax is:\par
+\par
+\b BOSS [--update | -u] [--help | -h] [--version-check | -V]\par
+\par
+-h, --help:\b0\tab\par
+\par
+This will print a short description of BOSS, and information on the function of the command line switches.\par
+\par
+\b -u, --update:\b0  \tab\par
+\par
+BOSS will automatically update the local copy of the masterlist \tab using the latest version available on the Google Code repository before sorting your mods. Since the masterlist.txt file is replaced, don't run this if you're using an edited masterlist and you want to keep the changes. \par
+\par
+\b -V, --version-check:\b0\tab\par
+\par
+Enables the parsing of each mod's description and if found extracts from there the author stamped mod's version and prints it along other data in the generated bosslog.txt.\par
+\par
+\par
+You can also update your masterlist using the BOSS - Update Masterlist.bat file included in the BOSS archive.\line\line The only thing this tool does is re-date files and create a couple of text files including one that is displayed to the user with (hopefully!) handy comments and/or FCOM install error messages.\line\line Oblivion.esm is never touched and all file dates are derived from it.\line\line The program archive contains masterlist.txt which is, obviously, the master list of mods the program recognises and is the most frequently updated component of BOSS.\line\line The output for the user to read is called BOSSlog.txt and is saved as a text file and displayed by Window's default text file handling program once BOSS has finished re-dating files.\line\line The program generates a text file called modlist.txt which is your list of mods prior to re-ordering. \line\line The changes BOSS makes can be undone in the following way:\par
+\pard\fi-360\li720\sb100\sa100\tx720 1.\tab Rename masterlist.txt to masterlist.old (or any temporary name).\par
+\pard\fi-360\li720\sb100\sa100 2.\tab Rename modlist.txt to masterlist.txt .\par
+3.\tab Run BOSS.bat .\par
+4.\tab Delete masterlist.txt .\par
+5.\tab Rename masterlist.old to masterlist.txt .\par
+\pard If modlist.txt already exists (when you run the program for the second time or more), it will be renamed to modlist.old before a new modlist.txt file is created. This gives you two levels of undo.\line\line One of the best ways more experienced users can use BOSS is to edit your own copy of masterlist.txt and include there any mods not listed. You can "merge" in new updates with the excellent free open-source WinMerge software. {\field{\*\fldinst{HYPERLINK "http://www.winmerge.org"}}{\fldrslt{\ul\cf1 http://www.winmerge.org}}}\f0\fs24\line\line\line\ul\fs27 CONTRIBUTIONS AND HELP:\ulnone\fs24\line\line Questions, suggestions, unrecognised mods and general discussion takes place {\field{\*\fldinst{HYPERLINK "http://www.bethsoft.com/bgsforums/index.php?s=&showtopic=995808&" }}{\fldrslt{\cf1\ul HERE}}}\cf0\ulnone\f0\fs24 .\line\line User corrections to the masterlist are vital. Let us know what you know.\line\line Lists of unrecognised mods are welcome but the only way we can include them in the database in a timely way is if we get: \par
+\pard\fi-360\li720\sb100\sa100\tx720 1.\tab The ESP/ESM file name(s) and \par
+\pard\fi-360\li720\sb100\sa100 2.\tab A link to where the description, download or readme can be found to read or download. \par
+3.\tab A brief description of each mod will also help. Feel free to make load order suggestions.\par
+\pard\line\ul\fs27 UPDATES:\ulnone\fs24\line\line Updates are published from TES Nexus: {\field{\*\fldinst{HYPERLINK "http://www.tesnexus.com/downloads/file.php?id=20516"}}{\fldrslt{\ul\cf1 http://www.tesnexus.com/downloads/file.php?id=20516}}}\f0\fs24  . \par
+\par
+The latest masterlist is always on the Google Code repository:\par
+{\field{\*\fldinst{HYPERLINK "http://code.google.com/p/better-oblivion-sorting-software/"}}{\fldrslt{\ul\cf1 http://code.google.com/p/better-oblivion-sorting-software/}}}\f0\fs24\par
+\line Files on Nexus are updated once a week or so. Always use latest dated files.\line\line\line\ul\fs27 ADDITIONAL FILES: \ulnone\fs24\line\line FCOM-only masterlist.txt database file. Using it instead of the normal one will move all FCOM files to the start in the correct order (and check for problems, show comments as usual) but leave all other mods' load order the same as before running BOSS. Useful for troubleshooting purposes and useful to anyone who wants to keep their existing mod load order then add FCOM and finalise everything by hand. This file is getting very old but it does the job (sort of).\line\line\line\ul\fs27 CREDITS:\ulnone\fs24\line\line Sources for the mod list and its order include: Agiel's Annotated Load Order; Fivefries load order; dev_akm's official expanded FCOM load order (FCOM 0.9.9); suggestions and instructions from Mart's Monster Mod, Better Cities, Open Cities and Open Better Cities developers; suggestions and instructions from many other modders; lots of advice and information from users. Some people have gone out of their way and provided continuing, expert and detailed help - thank you very much!\line\line Thanks go to Wrye for implementing the importing of BOSS's Bashed Patch tag suggestions into {\field{\*\fldinst{HYPERLINK "http://wrye.ufrealms.net/Wrye%20Bash.html" }}{\fldrslt{\cf1\ul Wrye Bash}}}\cf0\ulnone\f0\fs24 .\line\line\line\ul\fs27 PROJECT MEMBERS\ulnone\fs24\line\line BOSS since the middle of 2009 has been a collaborative project on Google Code using the SVN version tracking and editing engine. In alphabetical order:\line\line\b Google Code Administrators: \b0\par
+\pard\fi-360\li720\sb100\sa100\tx720\f1\fs20\'b7\tab\f0\fs24 Arthmoor\par
+\f1\fs20\'b7\tab\f0\fs24 PacificMorrowind\par
+\f1\fs20\'b7\tab\f0\fs24 Random007\par
+\pard\fi-360\li720\sb100\sa100\f1\fs20\'b7\tab\f0\fs24 WrinklyNinja\par
+\par
+\pard\b Oblivion Masterlist Developers:\b0\par
+\pard\fi-360\li720\sb100\sa100\tx720\f1\fs20\'b7\tab\f0\fs24 Alithelord\par
+\f1\fs20\'b7\tab\f0\fs24 Arthmoor\par
+\f1\fs20\'b7\tab\f0\fs24 PacificMorrowind\par
+\f1\fs20\'b7\tab\f0\fs24 Random007\par
+\f1\fs20\'b7\tab\f0\fs24 RiddlingLynx\par
+\f1\fs20\'b7\tab\f0\fs24 Tokc/Tokc.D.K.\par
+\f1\fs20\'b7\tab\f0\fs24 Vacuity \par
+\pard\fi-360\li720\sb100\sa100\f1\fs20\'b7\tab\f0\fs24 WrinklyNinja\par
+\f1\fs20\'b7\tab\f0\fs24 ZiggyX\par
+\par
+\pard\b Fallout 3 Masterlist Developers:\b0\par
+\pard\fi-360\li720\sb100\sa100\tx720\f1\fs20\'b7\tab\f0\fs24 Alithelord\par
+\f1\fs20\'b7\tab\f0\fs24 Arthmoor\par
+\f1\fs20\'b7\tab\f0\fs24 PacificMorrowind\par
+\f1\fs20\'b7\tab\f0\fs24 Valda\par
+\pard\par
+\par
+Project members can be contacted on the Bethesda Game Studios Oblivion modding forum.\line\line\line\ul\fs27 LICENSE:\ulnone\fs24\line\line Better Oblivion Sorting Software and periodic updates are distributed under the {\field{\*\fldinst{HYPERLINK "http://creativecommons.org/licenses/by-nc-nd/3.0" }}{\fldrslt{\cf1\ul Creative Commons Attribution Noncommercial No Derivative Works 3.0 Unported}}}\cf0\ulnone\f0\fs24  copyright license, some rights reserved, 2009. Copyright is owned wholly by the Better Oblivion Sorting Software development team (see list of project members).\par
+\pard\fi-360\li720\sb100\sa100\tx720\f1\fs20\'b7\tab\f0\fs24 BOSS may be copied and distributed freely as long as it is not changed and includes all the original files including this documentation.\par
+\pard\fi-360\li720\sb100\sa100\f1\fs20\'b7\tab\f0\fs24 Commercial use of this software or masterlist.txt file is not permitted without permission.\par
+\f1\fs20\'b7\tab\f0\fs24 Publishing derivations and customisations of the program or masterlist.txt file is not permitted without permission. Ask first.\par
+\pard\sa200\sl276\slmult1\line\ul\fs27 QUICK LINKS:\ulnone\fs24\line\pard\line{\field{\*\fldinst{HYPERLINK "http://www.tesnexus.com/downloads/file.php?id=20516" }}{\fldrslt{\cf1\ul BOSS on TES Nexus}}}\cf0\ulnone\f0\fs24\line\line{\field{\*\fldinst{HYPERLINK "http://www.bethsoft.com/bgsforums/index.php?showtopic=1005780&st=0&p=14552270&" \\\\l "entry14552270"}}{\fldrslt{\cf1\ul Bethesda Game Studios Oblivion modding forum}}}\cf0\ulnone\f0\fs24\par
+\par
+{\field{\*\fldinst{HYPERLINK "http://code.google.com/p/better-oblivion-sorting-software/" }}{\fldrslt{\cf1\ul Google Code repository}}}\cf0\ulnone\f0\fs24\line\line Due to a 200 maximum post limit, a new "official" thread is created periodically (with the end of one thread providing a link to the next) so the link provided may refer to an old thread by the time you read this. Just navigate your way through to the latest thread to post a message.\line\line You must register for free to post messages.\line\line\fs22\par
+}
+ 
