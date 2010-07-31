@@ -219,22 +219,18 @@ string GetModHeader(const string& filename) {
 	// Read mod's header now...
 	ModHeader header = ReadHeader(filename);
 
-	// Fill the mod information string in this format '[' <KIND> [',' <VERSION> ] ']', the last part only appears if found.
-	string master = header.IsMaster ? "Master" : "Plugin";
-
 	// The current mod's version if found, or empty otherwise.
 	string version = header.Version;
 
 	// Output the mod information...
 	out << endl << filename;	// show which mod file is being processed.
-	out << " ==> [" << master;	// show mod type: master|plugin
 
 	// If version's found the show it...
 	if (! version.empty()) {
-		out << ", version: " << version;
+		out << " ==> Version: [";
+		out << version;
+		out << "]";
 	}
-
-	out << "]";
 
 	return out.str();
 }
