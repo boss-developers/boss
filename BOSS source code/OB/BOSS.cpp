@@ -439,7 +439,7 @@ int main(int argc, char *argv[]) {
 				if (IsMod(textbuf2)) if (Tidy(textbuf)==Tidy(textbuf2)) found=TRUE;		//filter out comment, blank and message lines when checking for match - speeds process up.
 			}
 		} // while
-		if (!found) bosslog << "Unknown mod file: " << textbuf << endl;
+		if (!found && textbuf.length()>1) bosslog << "Unknown mod file: " << textbuf << endl;
 	} //while
 
 	//Let people know the program has stopped.
