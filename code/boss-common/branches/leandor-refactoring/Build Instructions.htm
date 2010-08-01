@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+	<title>BOSS Build Instructions</title>
+  </head>
+  <body>
+	<h1>BOSS - Better Oblivion Sorting Software<br />Build Instructions</h1>
+	
+	<p>This guide presumes that you are building on Windows. If not, presumably you are experienced enough to know what you're doing. 
+	If after following this guide, you are still having trouble compiling BOSS, feel free to PM pacificmorrowind or WrinklyNinja for help.</p>
+	
+	<h3>Preparing Your Environment/Getting Prerequisites</h3>
+	<p><h4>Download and install:</h4><ul>
+	<li><a href="http://www.microsoft.com/express/">Microsoft Visual C++ 2010 Express Edition</a> (if you've already got Visual Studio, just use that)</li>
+	<li><a href="http://msdn.microsoft.com/en-us/windows/bb980924.aspx">Windows SDK</a> - You only need to install the "x86 Libraries" and "Windows Headers" from the "Windows Headers And Libraries" section.</li>
+	<li><a href="http://curl.haxx.se/download.html">Curl Source Code</a> - Download the latest zipped source code from the top of the page.</li>
+	<li><a href="https://sourceforge.net/projects/boost/files/boost/1.43.0/">BOOST C++ libraries</a></li>
+	<li>An SVN client of your choice.</li>
+	</ul>
+	<h4>Preparing BOSS and BOOST</h4><ol>
+	<li>Perform a SVN Checkout from <a href="https://better-oblivion-sorting-software.googlecode.com/svn">https://better-oblivion-sorting-software.googlecode.com/svn</a>
+	to a local directory of your own choice to create your working copy. (This directory shall be referred to as <em>$BOSS</em> from here on in.)</li>
+	<li>Extract the BOOST libaries archive you downloaded to <em>$BOSS\</em>code\boss-common\trunk\boost. (The extracted archive has normally a "boos_n_mm" directory, <em>'n'</em> and <em>'mm'</em> are version numbers, but you should rename it to simply "boost") </li>
+	<li>Start a Command Prompt and cd to <code><em>$BOSS\</em>code\boss-common\trunk\boost</code> and run <code>bootstrap.bat</code></li>
+    <li>Edit the file project-config.jam in <code><em>$BOSS\</em>code\boss-common\trunk\boost</code> to refer to your version of Visual Studio - for
+    Visual Studio 2010 this is <code>using msvc : 10.0 ; </code>. (For Visual Studio 2008, it would be <code>using msvc : 9.0 ; </code>)</li>
+	<li>In the Command Prompt, run <code>bjam.exe --build-type=complete</code>. This will take a while. Once that is done, you are ready to build BOSS.</li></ol></p>
+	
+	<h4>Preparing Curl dependency</h4>
+	<p>We are going to be building the curl requirements from source, since the Windows curl packages are often not up-to-date. We don't need to compile all of curl though, just the static library. 
+	To do so, follow these steps:<ol>
+	<li>Extract the curl archive to <code><em>$BOSS</em>\code\boss-common\trunk\curl</code> (there should be the README file, etc in this directory, not a curl-x.xx.x folder).</li>
+	<li>Open the libcurl.vcproj file found in <code><em>$BOSS\</em>code\boss-common\trunk\curl\lib</code> in Visual C++ 2010.</li>
+	<li>Set the build type to Release. In Project->Properties->Configuration Properties->C/C++->Code Generation, set the Runtime Library to "Multi-threaded (/MT)".</li>
+	<li>Build the libcurl project. This will create a libcurl.lib file in the lib/Release directory.</li></ol></p><br />
+	
+	<h3>Building BOSS</h3>
+	<p>Open <code><em>$BOSS\</em>code\boss-common\trunk\BOSS.sln</code> in Visual C++ 2010, then select the desired build type (Release or Debug) and run Build on the Oblivion project (it works for Fallout 3 and Morrowind too), or just run Build All.
+	The generated exe(s) will be located in <code><em>$BOSS\</em>code\boss-common\trunk\<em>%BUILDTYPE%</em>\</code></p>
+  </body>
+</html>
