@@ -21,6 +21,10 @@
 namespace boss {
 	using namespace std;
 
+	const string SVN_REVISION_KW	= "$" "Revision" "$";			// Left as separated parts to avoid keyword expansion
+	const string SVN_DATE_KW		= "$" "Date" "$";				// Left as separated parts to avoid keyword expansion
+	const string SVN_CHANGEDBY_KW	= "$" "LastChangedBy" "$";		// Left as separated parts to avoid keyword expansion
+
 	int writer(char *data, size_t size, size_t nmemb, string *buffer){
 		int result = 0;
 		if(buffer != NULL) {
@@ -74,7 +78,7 @@ namespace boss {
 		ss >> end;
 
 		//Add revision number to masterlist and fix the line breaks.
-		oldline = "? Masterlist Information: $Revision$, $Date$, $LastChangedBy$";
+		oldline = "? Masterlist Information: " + SVN_REVISION_KW + ", " + SVN_DATE_KW + ", " + SVN_CHANGEDBY_KW;
 		newline = "? Masterlist Revision: "+revision;
 		in.open("masterlist.tmp");
 		out.open("masterlist.txt");
