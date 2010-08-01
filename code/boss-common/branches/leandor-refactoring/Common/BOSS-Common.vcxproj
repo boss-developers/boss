@@ -25,7 +25,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5414EFAE-A1AB-477F-8897-3C99131B634D}</ProjectGuid>
     <RootNamespace>BOSSOblivion</RootNamespace>
-    <ProjectName>Oblivion</ProjectName>
+    <ProjectName>BOSS-Common</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
