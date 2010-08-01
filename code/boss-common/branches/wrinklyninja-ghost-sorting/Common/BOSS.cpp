@@ -212,12 +212,15 @@ int UpdateMasterlist(int game) {
 /// GetModHeader(string textbuf):
 ///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
 ///
-string GetModHeader(const string& filename) {
+string GetModHeader(const string& filename, bool ghosted) {
 
 	ostringstream out;
+	ModHeader header;
 
 	// Read mod's header now...
-	ModHeader header = ReadHeader(filename);
+	if (ghosted) header = ReadHeader(filename+".ghost");
+	else header = ReadHeader(filename);
+	
 
 	// The current mod's version if found, or empty otherwise.
 	string version = header.Version;
@@ -245,10 +248,10 @@ int main(int argc, char *argv[]) {
 	struct tm modfiletime;			//useful variable to store a file's date/time
 	bool found;						
 	char modfilechar [SIZE];		//used to convert stuff.
-
 	bool update = false;			//To update masterlist or not?
 	bool version_parse = false;		//Enable parsing of mod's headers to look for version strings
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
+	bool isghost;					//Is the file ghosted or not?
 
 	//Parse command line arguments.
 	if (argc > 1) {
@@ -399,17 +402,21 @@ int main(int argc, char *argv[]) {
 		textbuf=ReadLine("order");
 		if (IsValidLine(textbuf) && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
 			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
-				if (FileExists(textbuf)) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
+				isghost = false;
+				if (FileExists(textbuf+".ghost") && !FileExists(textbuf)) isghost = true;
+				if (FileExists(textbuf) || isghost) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
 					found=TRUE;
-
-					string text = version_parse ? GetModHeader(textbuf) : textbuf;
-
-					bosslog << endl << text << endl;		// show which mod file is being processed.
-
+					string text = version_parse ? GetModHeader(textbuf, isghost) : textbuf;
 					x++;
 					modfiletime=esmtime;
 					modfiletime.tm_min += x;				//files are ordered in minutes after oblivion.esp .
-					ChangeFileDate(textbuf, modfiletime);
+
+					if (isghost) {
+						text += " (*Ghosted*)";
+						ChangeFileDate(textbuf+".ghost", modfiletime);
+					} else ChangeFileDate(textbuf, modfiletime);
+
+					bosslog << endl << text << endl;		// show which mod file is being processed.
 				} //if
 				else found=FALSE;
 			} //if
