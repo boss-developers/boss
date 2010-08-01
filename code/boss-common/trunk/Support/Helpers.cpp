@@ -13,6 +13,7 @@
 #include <strstream>
 
 #include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <Support/Types.h>
 #include <Support/Helpers.h>
@@ -67,36 +68,36 @@ string ReadString(char*& bufptr, ushort size){
 // Tries to parse the textual string to find a suitable version indication.
 string ParseVersion(const string& text){
 
-	istrstream iss(text.c_str(), text.length());
-	string data;
+	smatch what;
 
-	while (ReadLine(iss, data)) {
-		if (data.empty()){
-			continue;
-		}
+	regex* re;
+	for(int i = 0; re = version_checks[i]; i++) {
 
-		smatch what;
+		string data;
+		istrstream iss(text.c_str(), text.length());
+		while (ReadLine(iss, data)) {
 
-		regex* re;
-		for(int i = 0; re = version_checks[i]; i++) {
+			if (data.empty()){
+				continue;
+			}
+
 			if (regex_match(data, what, *re)){
 				
 				if (what.empty()){
 					continue;
 				}
 
-				ssub_match match = what[3];
+				ssub_match match = what[2];
 		
 				if (!match.matched) {
 					continue;
 				}
 
-				string result;
-				result.assign(match.first, match.second);
-				return result;
+				return trim_copy(string(match.first, match.second));
 			}
 		}
 	}
+
 	return string();
 }
 
