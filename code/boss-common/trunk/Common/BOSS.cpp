@@ -1,5 +1,5 @@
 /*	Better Oblivion Sorting Software
-	2.1
+	1.6
 	Quick and Dirty Load Order Utility for Oblivion, Fallout 3 and Morrowind
 	(Making C++ look like the scripting language it isn't.)
 
@@ -149,9 +149,9 @@ int UpdateMasterlist(int game) {
 	char cbuffer[MAXLENGTH];	//Another buffer for holding lines to be processed.
 
 	//Which masterlist to get?
-	if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/masterlist.txt";
-	else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/FO3Masterlist/masterlist.txt";
-	else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/MWmasterlist/masterlist.txt";
+	if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
+	else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
+	else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-morrowind/masterlist.txt";
 
 	//Get SVN masterlist file.
     curl = curl_easy_init();
@@ -296,7 +296,7 @@ int main(int argc, char *argv[]) {
 	bosslog <<                 "   Some rights reserved.                                   " << endl;
 	bosslog <<                 "   CC Attribution-Noncommercial-No Derivative Works 3.0    " << endl;
 	bosslog <<                 "   http://creativecommons.org/licenses/by-nc-nd/3.0/       " << endl;
-	bosslog <<                 "   v2.1 (30 July 2010)									   " << endl;
+	bosslog <<                 "   v1.6 (1 August 2010)									   " << endl;
 	bosslog <<                 "-----------------------------------------------------------" << endl << endl;
 
 	//open masterlist.txt
