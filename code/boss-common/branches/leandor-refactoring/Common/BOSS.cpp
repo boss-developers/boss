@@ -1,5 +1,5 @@
 /*	Better Oblivion Sorting Software
-	2.1
+	1.6
 	Quick and Dirty Load Order Utility for Oblivion, Fallout 3 and Morrowind
 	(Making C++ look like the scripting language it isn't.)
 
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 	bosslog <<                 "   Some rights reserved.                                   " << endl;
 	bosslog <<                 "   CC Attribution-Noncommercial-No Derivative Works 3.0    " << endl;
 	bosslog <<                 "   http://creativecommons.org/licenses/by-nc-nd/3.0/       " << endl;
-	bosslog <<                 "   v2.1 (30 July 2010)									   " << endl;
+	bosslog <<                 "   v1.6 (1 August 2010)									   " << endl;
 	bosslog <<                 "-----------------------------------------------------------" << endl << endl;
 
 	//open masterlist.txt

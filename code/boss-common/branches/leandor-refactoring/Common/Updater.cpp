@@ -40,9 +40,9 @@ namespace boss {
 		char cbuffer[MAXLENGTH];	//Another buffer for holding lines to be processed.
 
 		//Which masterlist to get?
-		if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/masterlist.txt";
-		else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/FO3Masterlist/masterlist.txt";
-		else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/MWmasterlist/masterlist.txt";
+		if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
+		else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
+		else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-morrowind/masterlist.txt";
 
 		//Get SVN masterlist file.
 		curl = curl_easy_init();
