@@ -43,6 +43,9 @@ bool bc;                        	//true if Better Cities esm is found.
 bool fook2;							//true if key FOOK2 files are found.
 bool fwe;							//true if FWE esm is found
 
+ifstream userlist;
+fstream masterlist;
+
 string Tidy(string filename) {						//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
 	int endpos = filename.find_last_not_of(" \t");
 	
@@ -118,7 +121,9 @@ string ReadLine (string file) {						//Read a line from a file. Could be rewritt
 	string textbuf;
 
 	if (file=="order") order.getline(cbuffer,MAXLENGTH);				//get a line of text from the masterlist.txt text file
-	if (file=="modlist") modlist.getline(cbuffer,MAXLENGTH);			//get a line of text from the modlist.txt text file
+	else if (file=="modlist") modlist.getline(cbuffer,MAXLENGTH);			//get a line of text from the modlist.txt text file
+	else if (file=="userlist") userlist.getline(cbuffer,MAXLENGTH);			//get a line of text from the userlist.txt text file
+	else if (file=="masterlist") masterlist.getline(cbuffer,MAXLENGTH);			//get a line of text from the masterlist.txt text file
 	//No internal error handling here.
 	textbuf=cbuffer;
 	if (file=="order") {		//If parsing masterlist.txt, parse only lines that start with > or < depending on FCOM installation. Allows both FCOM and nonFCOM differentiaton.
@@ -126,7 +131,8 @@ string ReadLine (string file) {						//Read a line from a file. Could be rewritt
 		if ((textbuf[0]=='>') && (!fcom)) textbuf='\\';
 		if ((textbuf[0]=='<') && (!fcom)) textbuf.erase(0,1);
 		if ((textbuf[0]=='<') && (fcom)) textbuf='\\';
-	} //if
+	} else if (file=="masterlist" && (textbuf[0]=='>' || textbuf[0]=='<')) textbuf.erase(0,1);
+
 	return (textbuf);
 }
 
@@ -298,6 +304,61 @@ int main(int argc, char *argv[]) {
 	bosslog <<                 "   http://creativecommons.org/licenses/by-nc-nd/3.0/       " << endl;
 	bosslog <<                 "   v1.6 (1 August 2010)									   " << endl;
 	bosslog <<                 "-----------------------------------------------------------" << endl << endl;
+
+	//Enter The Userlist...
+	//Yeah, this is a bit of a dump, but I can always streamline it after I've got it working.
+	string textbuf3;
+	userlist.open("userlist.txt");
+	bosslog << endl << "------------------" << endl << "Userlist Messages:" << endl << "------------------" << endl << endl;
+	if (userlist.fail()) {
+		bosslog << "userlist.txt not found. No custom sorting rules shall be imported." << endl << endl;
+	} else bosslog << "Userlist.txt found. Any custom sorting rules it defines shall be imported." << endl << endl;
+	masterlist.open("masterlist.txt",ios::in|ios::out);
+	if (masterlist.fail()) {							
+		bosslog << endl << "Critical Error! masterlist.txt does not exist or can't be read!" << endl; 
+		bosslog <<         "! Utility will end now." << endl;
+		bosslog.close();
+		system ("start BOSSlog.txt");	//Displays the BOSSlog.txt.
+		exit (1); //fail in screaming heap.
+	}
+	while (!userlist.eof()) {	
+		textbuf=ReadLine("userlist");
+		masterlist.clear();						//reset position in masterlist.txt to start.
+		masterlist.seekg(0, masterlist.beg);			// "
+		if (IsValidLine(textbuf) && IsMod(textbuf) && FileExists(textbuf)) {	//Check that it's a valid line, it lists a mod, and the mod exists.
+			found=FALSE;
+			while (!masterlist.eof()) {	//repeat until end of masterlist.txt.
+				textbuf2=ReadLine("masterlist");
+				if (IsValidLine(textbuf2) && IsMod(textbuf2)) if (Tidy(textbuf)==Tidy(textbuf2)) { //Is masterlist line a valid mod line? Does it match with the userlist line?
+					found=TRUE;
+					break;
+				}
+			}
+			if (found) bosslog << textbuf << " already present in masterlist.txt. Custom sorting rule skipped." << endl << endl;
+			else textbuf3 = textbuf; //Store the mod file for later.
+		} else if (IsValidLine(textbuf) && IsMod(textbuf) && (textbuf[0]=='>' || textbuf[0]=='<') && !found) {	//Is the line a valid mod line, and starts with < or >, and was the last mod found or not.
+			char c = textbuf[0];
+			textbuf.erase(0,1);
+			while (!masterlist.eof()) {	//repeat until end of masterlist.txt.
+				textbuf2=ReadLine("masterlist");
+				if (IsValidLine(textbuf2) && !IsMessage(textbuf2)) if (Tidy(textbuf)==Tidy(textbuf2)) { //Is masterlist line a valid mod line? Does it match with the userlist line?
+					if (c=='>') {
+						//Damn it, why won't this work!
+						masterlist.seekp(masterlist.tellg());
+						masterlist << textbuf3 << endl;					//Adds rule mod line after the 'load after' mod.
+						bosslog << textbuf3 << " added to masterlist after " << textbuf2 << endl << endl;
+					} else if (c=='<') {			//Have to move the put pointer back to the start of the line, and then write.
+						
+						masterlist << textbuf3+"\n";	//Adds rule mod line before the 'load before' mod.
+					}
+					break;
+				}
+			}
+		}
+	}
+	userlist.close();
+	masterlist.close();
+	bosslog << endl << "-----" << endl << "Notes" << endl << "-----" << endl << endl;
 
 	//open masterlist.txt
 	order.open("masterlist.txt");	
