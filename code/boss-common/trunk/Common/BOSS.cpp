@@ -227,7 +227,7 @@ string GetModHeader(const string& filename) {
 
 	// If version's found the show it...
 	if (! version.empty()) {
-		out << " ==> Version: [";
+		out << " [Version ";
 		out << version;
 		out << "]";
 	}
