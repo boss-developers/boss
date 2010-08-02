@@ -34,7 +34,8 @@
 using namespace std;
 using namespace boss;
 
-ifstream order;						//masterlist.txt - the grand mod order list
+fstream order;						//masterlist.txt - the grand mod order list
+ifstream userlist;					//userlist.txt - holds custom user sorting rules for mods not in masterlist.
 ifstream modlist;					//modlist.txt - list of esm/esp files in oblivion/data
 ofstream bosslog;					//BOSSlog.txt - output file.
 bool fcom;							//true if key FCOM files are found.
@@ -43,7 +44,7 @@ bool bc;                        	//true if Better Cities esm is found.
 bool fook2;							//true if key FOOK2 files are found.
 bool fwe;							//true if FWE esm is found
 
-ifstream userlist;
+
 fstream masterlist;
 
 string Tidy(string filename) {						//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
@@ -123,9 +124,8 @@ string ReadLine (string file) {						//Read a line from a file. Could be rewritt
 	if (file=="order") order.getline(cbuffer,MAXLENGTH);				//get a line of text from the masterlist.txt text file
 	else if (file=="modlist") modlist.getline(cbuffer,MAXLENGTH);			//get a line of text from the modlist.txt text file
 	else if (file=="userlist") userlist.getline(cbuffer,MAXLENGTH);			//get a line of text from the userlist.txt text file
-	else if (file=="masterlist") masterlist.getline(cbuffer,MAXLENGTH);			//get a line of text from the masterlist.txt text file
 	//No internal error handling here.
-	textbuf=cbuffer;
+	textbuf=(string)cbuffer;
 	if (file=="order") {		//If parsing masterlist.txt, parse only lines that start with > or < depending on FCOM installation. Allows both FCOM and nonFCOM differentiaton.
 		if ((textbuf[0]=='>') && (fcom)) textbuf.erase(0,1);
 		if ((textbuf[0]=='>') && (!fcom)) textbuf='\\';
@@ -167,7 +167,7 @@ int UpdateMasterlist(int game) {
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
         curl_easy_perform(curl);
         curl_easy_cleanup(curl);
-		out.open("masterlist.tmp");
+		out.open("BOSS\\masterlist.tmp");
 		out << buffer;
 		out.close();
     }
@@ -191,8 +191,8 @@ int UpdateMasterlist(int game) {
 	//Add revision number to masterlist and fix the line breaks.
 	oldline = "? Masterlist Information: $Revision$, $Date$, $LastChangedBy$";
 	newline = "? Masterlist Revision: "+revision;
-	in.open("masterlist.tmp");
-	out.open("masterlist.txt");
+	in.open("BOSS\\masterlist.tmp");
+	out.open("BOSS\\masterlist.txt");
 	while (!in.eof()) {	
 		in.getline(cbuffer,MAXLENGTH);
 		buffer = (string)cbuffer;
@@ -210,7 +210,7 @@ int UpdateMasterlist(int game) {
 	in.close();
 	out.close();
 	//Remove temporary masterlist file.
-	system ("del masterlist.tmp");
+	system ("del BOSS\\masterlist.tmp");
 	//Return revision number.
 	return end;
 }
@@ -245,7 +245,7 @@ string GetModHeader(const string& filename) {
 int main(int argc, char *argv[]) {					
 	
 	int x;							//random useful integers
-	string textbuf,textbuf2;		//a line of text from a file (should usually end up being be a file name); 			
+	string textbuf,textbuf2,textbuf3;		//a line of text from a file (should usually end up being be a file name); 			
 	struct __stat64 buf;			//temp buffer of info for _stat function
 	struct tm esmtime;			    //the modification date/time of the main .esm file
 	struct tm modfiletime;			//useful variable to store a file's date/time
@@ -278,6 +278,9 @@ int main(int argc, char *argv[]) {
 	else if (FileExists("fallout3.esm")) game = 2;
 	else if (FileExists("morrowind.esm")) game = 3;
 
+	//Create BOSS/ directory.
+	CreateDirectory("BOSS\\",NULL);
+
 	if (update == true) {
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		int rev = UpdateMasterlist(game);
@@ -288,7 +291,7 @@ int main(int argc, char *argv[]) {
 	cout << endl << "Better Oblivion Sorting Software working..." << endl;
 	
 	//Check for creation of BOSSlog.txt.
-	bosslog.open("BOSSlog.txt");
+	bosslog.open("BOSS\\BOSSlog.txt");
 	if (bosslog.fail()) {							
 		cout << endl << "Critical Error! BOSSlog.txt should have been created but it wasn't." << endl;
 		cout << 		"Make sure you are running as Administrator if using Windows Vista or Windows 7." << endl;
@@ -307,66 +310,65 @@ int main(int argc, char *argv[]) {
 
 	//Enter The Userlist...
 	//Yeah, this is a bit of a dump, but I can always streamline it after I've got it working.
-	string textbuf3;
-	userlist.open("userlist.txt");
+	userlist.open("BOSS\\userlist.txt");
 	bosslog << endl << "------------------" << endl << "Userlist Messages:" << endl << "------------------" << endl << endl;
 	if (userlist.fail()) {
 		bosslog << "userlist.txt not found. No custom sorting rules shall be imported." << endl << endl;
-	} else bosslog << "Userlist.txt found. Any custom sorting rules it defines shall be imported." << endl << endl;
-	masterlist.open("masterlist.txt",ios::in|ios::out);
-	if (masterlist.fail()) {							
+	} else bosslog << "userlist.txt found. Any custom sorting rules it defines shall be imported." << endl << endl;
+	order.open("BOSS\\masterlist.txt",ios::in|ios::out);
+	if (order.fail()) {							
 		bosslog << endl << "Critical Error! masterlist.txt does not exist or can't be read!" << endl; 
 		bosslog <<         "! Utility will end now." << endl;
 		bosslog.close();
-		system ("start BOSSlog.txt");	//Displays the BOSSlog.txt.
+		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
-	while (!userlist.eof()) {	
+/*	while (!userlist.eof()) {	
 		textbuf=ReadLine("userlist");
-		masterlist.clear();						//reset position in masterlist.txt to start.
-		masterlist.seekg(0, masterlist.beg);			// "
+		order.clear();								//reset masterlist error flags.
+		order.seekg(0, order.beg);			//reset position in masterlist.txt to start.
 		if (IsValidLine(textbuf) && IsMod(textbuf) && FileExists(textbuf)) {	//Check that it's a valid line, it lists a mod, and the mod exists.
-			found=FALSE;
-			while (!masterlist.eof()) {	//repeat until end of masterlist.txt.
+			found=false;
+			while (!order.eof()) {	//repeat until end of masterlist.txt.
 				textbuf2=ReadLine("masterlist");
 				if (IsValidLine(textbuf2) && IsMod(textbuf2)) if (Tidy(textbuf)==Tidy(textbuf2)) { //Is masterlist line a valid mod line? Does it match with the userlist line?
-					found=TRUE;
+					found=true;
 					break;
 				}
 			}
 			if (found) bosslog << textbuf << " already present in masterlist.txt. Custom sorting rule skipped." << endl << endl;
-			else textbuf3 = textbuf; //Store the mod file for later.
+			else textbuf3 = textbuf; //Store the mod file name for later.
 		} else if (IsValidLine(textbuf) && IsMod(textbuf) && (textbuf[0]=='>' || textbuf[0]=='<') && !found) {	//Is the line a valid mod line, and starts with < or >, and was the last mod found or not.
 			char c = textbuf[0];
 			textbuf.erase(0,1);
-			while (!masterlist.eof()) {	//repeat until end of masterlist.txt.
+			while (!order.eof()) {	//repeat until end of masterlist.txt.
 				textbuf2=ReadLine("masterlist");
 				if (IsValidLine(textbuf2) && !IsMessage(textbuf2)) if (Tidy(textbuf)==Tidy(textbuf2)) { //Is masterlist line a valid mod line? Does it match with the userlist line?
 					if (c=='>') {
 						//Damn it, why won't this work!
-						masterlist.seekp(masterlist.tellg());
-						masterlist << textbuf3 << endl;					//Adds rule mod line after the 'load after' mod.
+						order.seekp(masterlist.tellg());
+						order << textbuf3 << endl;					//Adds rule mod line after the 'load after' mod.
 						bosslog << textbuf3 << " added to masterlist after " << textbuf2 << endl << endl;
 					} else if (c=='<') {			//Have to move the put pointer back to the start of the line, and then write.
 						
-						masterlist << textbuf3+"\n";	//Adds rule mod line before the 'load before' mod.
+						order << textbuf3+"\n";	//Adds rule mod line before the 'load before' mod.
 					}
 					break;
 				}
 			}
 		}
 	}
-	userlist.close();
-	masterlist.close();
+*/	userlist.close();
+	order.close();
 	bosslog << endl << "-----" << endl << "Notes" << endl << "-----" << endl << endl;
 
 	//open masterlist.txt
-	order.open("masterlist.txt");	
+	order.open("BOSS\\masterlist.txt");	
 	if (order.fail()) {							
 		bosslog << endl << "Critical Error! masterlist.txt does not exist or can't be read!" << endl; 
 		bosslog <<         "! Utility will end now." << endl;
 		bosslog.close();
-		system ("start BOSSlog.txt");	//Displays the BOSSlog.txt.
+		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //if
 
@@ -379,7 +381,7 @@ int main(int argc, char *argv[]) {
 		bosslog <<         "Make sure you're running this in your Data folder." <<endl;
 		bosslog <<         "! Utility will end now." << endl;
 		bosslog.close();
-		system ("start BOSSlog.txt");	//Displays the BOSSlog.txt.
+		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //else
 
@@ -412,24 +414,24 @@ int main(int argc, char *argv[]) {
 	bosslog << endl;
 
 	//Generate list of all .esp or .esm files.
-	if (FileExists ("modlist.txt")) {	//add an additional undo level just in case.
-		if (FileExists ("modlist.old")) {
-			system ("attrib -r modlist.old");	//Clears read only attribute of modlist.old if present, so we can delete the file.
-			system ("del modlist.old");
+	if (FileExists ("BOSS\\modlist.txt")) {	//add an additional undo level just in case.
+		if (FileExists ("BOSS\\modlist.old")) {
+			system ("attrib -r BOSS\\modlist.old");	//Clears read only attribute of modlist.old if present, so we can delete the file.
+			system ("del BOSS\\modlist.old");
 		}
-		system ("attrib -r modlist.txt");	//Clears read only attribute of modlist.txt if present, so we can rename the file.
-		system ("ren modlist.txt modlist.old");
+		system ("attrib -r BOSS\\modlist.txt");	//Clears read only attribute of modlist.txt if present, so we can rename the file.
+		system ("ren BOSS\\modlist.txt modlist.old");
 	} //if
-	system ("dir *.es? /a:-d /b /o:d /t:w > modlist.txt"); // quick way to list the mod files: pipe them into a text file.
+	system ("dir *.es? /a:-d /b /o:d /t:w > BOSS\\modlist.txt"); // quick way to list the mod files: pipe them into a text file.
 
 	//Open modlist.txt file and verify success																
-	modlist.open("modlist.txt");			
+	modlist.open("BOSS\\modlist.txt");			
 	if (modlist.fail()) {
 		bosslog << endl << "Critical Error! Internal program error! modlist.txt should have been created but it wasn't." << endl;
 		bosslog <<         "Make sure you are running as Administrator if using Windows Vista." << endl;
 		bosslog <<         "! Utility will end now." << endl;
 		bosslog.close();
-		system ("start BOSSlog.txt");	//Displays the BOSSlog.txt.
+		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
 		exit(1); //fail in screaming heap.
 	} //if
 
@@ -503,6 +505,6 @@ int main(int argc, char *argv[]) {
 	bosslog <<   endl << endl << "-----------------------------------------------------------" << endl;
 	bosslog << "Done.";
 	bosslog.close();
-	system ("start BOSSlog.txt");	//Displays the BOSSlog.txt.
+	system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
 	return (0);
 }
