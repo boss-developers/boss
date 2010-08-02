@@ -1,0 +1,804 @@
+FILENAME:(DC) Sutch Reborn.esp
+ DESCRIP:Sutch Reborn 9.0|==============|No Requirement on DCRP||Huge town and quest expansion, please see the readme for more details, or the dl description for even more details||biulding
+ VERSION:
+
+FILENAME:1em_Vilja.esp
+ DESCRIP:Meet companion Vilja in the Bloated Float at the Imperial City Waterfront and help her in her mission to get her imprisoned sister out of jail.||Ver 2.1 - please read the readme||Contact address: emma9158@hotmail.com
+ VERSION:2.1 - please read the readme
+
+FILENAME:7lbsBedrolls-OBSE.esp
+ DESCRIP:Allows you to pick up Bedrolls in Oblivion and take them with you. Click on the Bedroll in your inventory to drop it again.
+ VERSION:
+
+FILENAME:AFK_Weye.esp
+ DESCRIP:Adds various people, buildings, and quests to the village of Weye, including an archery shop that sells magical arrows, a very rich merchant, and a player-ownable house, plus much, much more!||Version 2.0.COBL
+ VERSION:2.0.COBL
+
+FILENAME:Alchemy Pocket.esp
+ DESCRIP:Version 1.1||Not satisfied with the existing portable alchemy sorters I decided to make one of my own using Common Oblivion's built in alchemy sorter.||I do not consider it unbalancing because:|    -  The total weight of the items in it determine the weight of the Alchemy Pocket itself.|    - You can only use it to store ingredients, potions and scrolls. Any other object has it's weight multiplied by 10.
+ VERSION:1.1
+
+FILENAME:All Natural - Real Lights.esp
+ DESCRIP:Real Lights updated and made compatible with All Natural.|OPTIONAL.||Version: 0.9.9.5||{{BASH:Graphics,Scripts}}
+ VERSION:0.9.9.5
+
+FILENAME:All Natural - SI.esp
+ DESCRIP:Contains All Natural's SI support and changes.||OPTIONAL.||Version 0.9.9.5||{{BASH:C.Climate}}
+ VERSION:0.9.9.5
+
+FILENAME:All Natural Base.esm
+ DESCRIP:Master file for All Natural. ||REQUIRED.||Version 0.9.9.5
+ VERSION:0.9.9.5
+
+FILENAME:All Natural.esp
+ DESCRIP:Contains interior cell changes for All Natural. ||REQUIRED.||Version 0.9.9.5||{{BASH:C.Climate}}
+ VERSION:0.9.9.5
+
+FILENAME:AmbientTownSounds.esp
+ DESCRIP:Adds ambient sounds to towns and cities, both for day and night period.
+ VERSION:
+
+FILENAME:Armamentarium.esm
+ DESCRIP:Armamentarium Complete v1.3 |Version: 1.3|(August 2009)||This is the core file of Armametarium. It contains info about over 1000 of new weapons, staves, shields, bows, arrows, and various pieces of armour.||Enjoy it! ^_^||Version: 1.3
+ VERSION:1.3
+
+FILENAME:ArmamentariumArtifacts.esp
+ DESCRIP:Armamentarium Complete|Artifacts of Armamentarium|v1.3 (August 2009)||This part of A.C. deals with quest and special items.||Enjoy it! ^_^||Version: 1.3
+ VERSION:1.3
+
+FILENAME:Artifacts.esm
+ DESCRIP:Artifacts v1.0|(31st of July 2008 - 17th of June, 2009)||Core file of Artifacts. It adds hundreds of new items to the game. It is required by other plugins from this mod.||And just enjoy the content...
+ VERSION:1.0
+
+FILENAME:Artifacts.esp
+ DESCRIP:Artifacts v1.0|(31st of July 2008 - 17th of June, 2009)||Core file of Artifacts. It adds hundreds of new items to the game. It is required by other plugins from this mod.||And just enjoy the content...
+ VERSION:1.0
+
+FILENAME:Atmospheric Loading Screens - Random Quotes.esp
+ DESCRIP:{{BASH:Graphics,NoMerge}}|Replaces the loading screens with DarkUI loading screens focused on the environment.|*****|Random Quotes - Text is changed to random quotes from various authors.
+ VERSION:eplaces the loading screens with DarkUI loading screens focused on the environment.
+
+FILENAME:bartholm - EE patch.esp
+ DESCRIP:Patch for Enhanced Economy to make trades with Bartholm merchants work better.||The buyable house costs 210,000.||Version 4.2
+ VERSION:4.2
+
+FILENAME:bartholm.esp
+ DESCRIP:v7.0
+ VERSION:7.0
+
+FILENAME:Bashed Patch, Liana 4.esp
+ DESCRIP:Updated: 7/29/2010 10:45:07 PM||Records Changed: 39150
+ VERSION:7/29/2010 10:45:07 PM
+
+FILENAME:bgBalancingEVCore.esp
+ DESCRIP:{{BASH: Hair,Eyes}}|Race Balancing Project|Core File - Default||Version 10.5EV-D
+ VERSION:10.5EV-D
+
+FILENAME:bgIntegrationEV.esp
+ DESCRIP:Integration: The Stranded Light||Requires:|Race Balancing Project EV-D 10.5|Less Annoying Magic Experience 1.7|Shivering Isles||No one is reading these descriptions anyway, so no more infos here. Pff.||Version 0.993
+ VERSION:0.993
+
+FILENAME:bgMagicAlchemy.esp
+ DESCRIP:Less Annoying Magic Experience|Optional File||Makes selfmade potions a bit weaker and less of a gold mine.||Macht selbstgebraute Tr‰nke ein biﬂchen schw‰cher und weniger wertvoll.||Version 1.57, all languages.
+ VERSION:1.57
+
+FILENAME:bgMagicBonus.esp
+ DESCRIP:"Less Annoying Magic Experience"|Optional Module||I didn't like all those greater power and fortify abilities you get during the game - I myself forget always to use them. So this makes small permanent and useful abilities out of them.||Important: Without the ItemSigil module it could be a bit unbalancing, because here you'll get bonuses for free, which may be too much with some of the standard enchantments.||- Nirn Stone included and put into the world|- Fixes Skeleton Key bug||Version 1.7EV
+ VERSION:1.7EV
+
+FILENAME:bgMagicEV.esp
+ DESCRIP:{{BASH:Relev,Delev,Names}}|"Less Annoying Magic Experience"|(LAME)|Main file||Content:|- makes magic less annoying|- special expert and master spells|- many new spells to former uninteresting magic schools|- and many things more!||Version 1.7EV
+ VERSION:1.7EV
+
+FILENAME:bgMagicEVPaperChase.esp
+ DESCRIP:Less Annoying Magic Experience |Optional Module||Adds a mini quest to the game: Find new master spells, instead of simply buying them. Warning: Hard riddles, no quest markers, not even journal entries.||Configureable (and clues) with|startquest paperchase||Version 1.68EV
+ VERSION:1.68EV
+
+FILENAME:bgMagicEV_Conjuration_for_Supreme_Magicka.esp
+ DESCRIP:{{BASH:Merge}}|"Less Annoying Magic Experience"|Override Module for Supreme Magicka||Only use this if:|- you're using LAME and Supreme Magicka|AND|- you're loading Supreme Magicka after LAME|AND|- you want to have LAME's new summons||Version 1.5|SM Version: 0.86
+ VERSION:1.5
+
+FILENAME:bgMagicPotionNumberSoulGemValue.esp
+ DESCRIP:Less Annoying Magic Experience|Optional File - Tweak||This file combines two tweaks:|1. Alchemy now affects how many potions you can drink.|- Novice:          1|- Apprentice:   2|- Journeyman: 3|- Expert:          4|- Master:          5||2. Soulgem values are now "prettier".|- Petty:       250|- Small:        500|- Common:  750|- Great:     1250|- Grand:    1750||Version 1.68UV (all languages)||Can be used as standalone, without LAME.
+ VERSION:1.68UV
+
+FILENAME:BHC_Expanded.esp
+ DESCRIP:Black Horse Courier Expanded|Version 1.0||Expands the Black Horse Courier by adding 35 new quest-related and non-quest related articles.
+ VERSION:1.0
+
+FILENAME:Blackmarsh.esp
+ DESCRIP:Under the sign of the dragon - Tamriel heightmaps -|Blackmarsh V.2.0
+ VERSION:2.0
+
+FILENAME:Bob's Armory Oblivion.esp
+ DESCRIP:Bob's Armory: Oblivion v1.1|Updates:|Fixed .obj export issues once and for all!|Added flamberge mod.|Added several new weapons.|Toned down a few alpha channels on bump maps so folks who use HDR won't get cataracts.
+ VERSION:1.1
+
+FILENAME:Camera Tweaks.esp
+ DESCRIP:ChaseCameraMod.esp|EnableFreeLook.esp|VanityCameraSmoother.esp
+ VERSION:
+
+FILENAME:CampfireBehavior.esp
+ DESCRIP:Rev. 1.0|Campfires and braziers may be stomped out (rained out) or lighted, and most outdoor fires are on a day/night schedule.
+ VERSION:1.0
+
+FILENAME:Castle_Dunkerlore_V1.esp
+ DESCRIP:Castle Dunkerlore V1.1.2|(compatible with "Vile Lair")||New home for the player!||Castle Dunkerlore can be found on an island located in the Topal Bay.
+ VERSION:1.1.2
+
+FILENAME:Cobl Glue.esp
+ DESCRIP:Version 1.72|Requires: Cobl 1.72||Glues Common Oblivion elements into the rest of the world, adding books to vendors, etc.
+ VERSION:1.72
+
+FILENAME:Cobl Main.esm
+ DESCRIP:Version: 1.72|Group: Library||Common Oblivion provides a shared library of items, factions, scripts, etc.||Read-me:|http://wrye.ufrealms.net/Cobl.html||Modders' Manual:|http://www.uesp.net/wiki/Tes4Mod:Cobl/Modding
+ VERSION:1.72
+
+FILENAME:Cobl Si.esp
+ DESCRIP:Version 1.63|Requires: Cobl 1.63|Group: Library||Cobl Shivering Isles additions/tweaks.
+ VERSION:1.63
+
+FILENAME:CustomSpellIcons.esm
+ DESCRIP:
+ VERSION:
+
+FILENAME:DirenniAlchemyApparatus.esp
+ DESCRIP:Adds a special set of alchemical equipment to the game.||The 4 pieces can be purchased at The Main Ingredient and The Gilded Carafe in the Imperial City, All Things Alchemical in Skingrad, and A Warlock's Luck in Bravil.
+ VERSION:
+
+FILENAME:Display Stats.esp
+ DESCRIP:Displays hidden stats for weapon and armour||Version 1.2
+ VERSION:1.2
+
+FILENAME:DLCBattlehornCastle.esp
+ DESCRIP:In the rolling hills of the Colovian Highlands stands Battlehorn Castle, the last bastion of the exiled Knights of the True Horn and the new home for warrior class players.
+ VERSION:
+
+FILENAME:DLCFrostcrag.esp
+ DESCRIP:Located to the north in the frozen mountains of Cyrodiil stands Frostcrag Spire, an amazing tower of wonders for your magic-oriented character to call home.
+ VERSION:
+
+FILENAME:DLCHorseArmor.esp
+ DESCRIP:Tamriel is a dangerous place. Protect your horse from danger with this beautiful handcrafted armor.
+ VERSION:
+
+FILENAME:DLCMehrunesRazor.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:DLCOrrery.esp
+ DESCRIP:Harness the power of the stars.  Rebuild the defiled Orrery and unlock the secrets of this Mage Guild Inner Sanctum.
+ VERSION:
+
+FILENAME:DLCShiveringIsles.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:DLCSpellTomes.esp
+ DESCRIP:Adds spell tomes -- books that you can learn spells from -- to dungeon loot lists.
+ VERSION:
+
+FILENAME:DLCThievesDen.esp
+ DESCRIP:Uncover a famous pirate's lost ship and claim as your own with this expansion designed for stealth-based characters.
+ VERSION:
+
+FILENAME:DLCVileLair.esp
+ DESCRIP:Hidden away from prying eyes, Deepscorn Hollow is an underground refuge for the wicked; a place where your evil character can finally feel at home.
+ VERSION:
+
+FILENAME:Drop Lit Torches Weight.esp
+ DESCRIP:Version 1.6 with messages removed.||If you have a torch equipped it will be immediately thrown to the floor still lit when you draw your weapon. If you pick it back up once you've sheathed your weapon it will be immediately equipped. |
+ VERSION:1.6
+
+FILENAME:DS Flaming Arrows.esp
+ DESCRIP:Applies magic effect shaders to in-flight arrows - now your arrows will burn, drip poison, and more! Affects NPCs arrows as well.||Now also provides glowing effects for nocked magic arrows.||Version 1.2|Requires OBSE v18
+ VERSION:1.2
+
+FILENAME:DS Portable Sorters.esp
+ DESCRIP:Provides three portable sorters - one each for ingredients, scrolls, and potions - that use the COBL sorter scripts.||Version 1.1||Requires COBL 1.48 or later|Requires OBSE v17
+ VERSION:1.1
+
+FILENAME:Dude Wheres My Horse.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:Duke Patricks - Actors Can Miss Now.esp
+ DESCRIP:Mark II|Magic and Arrow projectiles can miss.|Makes the NPC seem more real!||http://www.spookyfx.com/book/tromp.html
+ VERSION:
+
+FILENAME:Duke Patricks - Basic Hypothermia.esp
+ DESCRIP:Duke Patricks  Basic Hypothermia II|Rev 1.5||http://www.spookyfx.com/book/tromp.html|
+ VERSION:1.5
+
+FILENAME:Duke Patricks - BASIC Script Effect Silencer.esp
+ DESCRIP:Makes the script effect invisible and silent.
+ VERSION:
+
+FILENAME:Duke Patricks - Bottle Shoot Archery Practice.esp
+ DESCRIP:Shoot Ale bottles to raise marksmanship.||Beta 1.1|http://www.spookyfx.com/book/tromp.html|
+ VERSION:
+
+FILENAME:Duke Patricks - Combat Archery.esp
+ DESCRIP:Version 3.1a|Rate of fire, and other draw the arrow effects, Damage adjustments, arrows bounce off armor, move backward tripping over real world objects and other realistic features for archery based on my RL combat archery experience.|http://www.spookyfx.com/book/tromp.html|
+ VERSION:3.1a
+
+FILENAME:Duke Patricks - Friendship Ring For Companion Detection.esp
+ DESCRIP:rev 1.4||Alows mods that are Compaion Freiendship Ring enacted to detect your compaion.|
+ VERSION:1.4
+
+FILENAME:Duke Patricks - Near Miss Magic And Arrows Alert The Target.esp
+ DESCRIP:Rev 5|Now targets can detect arrows or magic shot at them including fly bys! Poor marksman will hate this mod!||http://www.spookyfx.com/book/tromp.html|
+ VERSION:5
+
+FILENAME:Duke Patricks - SCA Melee Combat with NO RECOIL.esp
+ DESCRIP:Rev 4.5||Changes the combat to feel more like SCA combat. (a worldwide full contact medieval fighting sports club).||New version with No Magic Components. ||||http://www.spookyfx.com/book/tromp.html|
+ VERSION:4.5
+
+FILENAME:ElegantVests.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:ElsweyrAnequina.esp
+ DESCRIP:Elsweyr, the Deserts of Anequina (January 2010)
+ VERSION:
+
+FILENAME:Emma's Four New Abodes.esp
+ DESCRIP:ALESWELL COTTAGE|BRAVIL BRIDGE COTTAGE|ROXEY COTTAGE|FISHERMAN'S COTTAGE
+ VERSION:
+
+FILENAME:EnchantmentRestore.esp
+ DESCRIP:This mod slowly restores your weapon's enchantment charges over time.
+ VERSION:
+
+FILENAME:Enhanced Economy.esp
+ DESCRIP:Version 4.2||Overhauls the economic game
+ VERSION:4.2
+
+FILENAME:Enhanced Water v2.0 HD.esp
+ DESCRIP:Realistic looking water for TES IV: Oblivion||-Use this one if you are running the game with high water detail
+ VERSION:
+
+FILENAME:Enhanced Water v2.0 ND.esp
+ DESCRIP:Realistic looking water for TES IV: Oblivion||-Use this one if you are running the game with normal water detail
+ VERSION:
+
+FILENAME:Eska Cair.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:EVE_ShiveringIslesEasterEggs.esp
+ DESCRIP:Hides Syl's Dress, Thadon's Robe, and Haskill's Suit in the Shivering Isles.  For use with EVE_StockEquipmentReplacer.esp, which makes these clothing items playable.  See readme for locations of hidden items, or stumble upon them as you play.
+ VERSION:
+
+FILENAME:Faregyl+Anequina Patch.esp
+ DESCRIP:Patch to make the Eleswyr-Faregyl road compatible with Faregyl Village.
+ VERSION:
+
+FILENAME:Faregyl.esp
+ DESCRIP:{{BASH:Relations}}|A farming village built around the Faregyl Inn area. Includes a local smithy and an abandoned gold mine. What happened in the mine?||Version 1.0.10||Uses resources by Mr Silka and Alien Slof.
+ VERSION:1.0.10
+
+FILENAME:FCOM_ArcheryRealSwords.esp
+ DESCRIP:{{BASH:Merge}}||FCOM Optional Add-On|* Francesco's mod makes archery a lot more deadly than it is in Oscuro's Oblivion Overhaul. This patch merges Fran's bow and ammo rebalance with the new archery items from FCOM_RealSwords.||Version: 1
+ VERSION:1
+
+FILENAME:FCOM_BobsArmory.esp
+ DESCRIP:{{BASH: Relev,Delev}}||FCOM Bob's Armory Support File|(Items Releveler & OMOBS Rebalance)||Version: 0.9.9
+ VERSION:0.9.9
+
+FILENAME:FCOM_Convergence.esm
+ DESCRIP:FCOM Base Master File||Provides master support objects for FCOM.||Version: 0.9.9MB3
+ VERSION:0.9.9MB3
+
+FILENAME:FCOM_Convergence.esp
+ DESCRIP:{{BASH: Relev,Delev}}|FCOM Convergence plugin|Version: 0.9.9Mb3||* Requires MMM 3.7b3 and OOO 1.34.|* Complete Unity of MMM and OOO.|* Includes hand-merged spawn and item lists, Diverse Creature Skins and MOU (Unity project).
+ VERSION:0.9.9Mb3
+
+FILENAME:FCOM_FrancescosNamedBosses.esp
+ DESCRIP:FCOM Optional Add-On|* Adds Fran's Named Bosses to FCOM.|* Supports Francesco v4.5b.||Version: 0.9.9
+ VERSION:0.9.9
+
+FILENAME:FCOM_KDCircletsOOOOptimizedNPCEquip.esp
+ DESCRIP:{{BASH:Delev,Merge,Relev}}||FCOM Optional plugin for compatibility with KDCircletsOOOOptimized - NPC Equip 1.2.||Version: 0.9.9
+ VERSION:0.9.9
+
+FILENAME:FCOM_RealSwords.esp
+ DESCRIP:{{BASH: Relev,Delev}}||FCOM RealSwords|* Integrates Waalx RealSwords into FCOM using race-specific weapon lists.||Version: 0.9.9
+ VERSION:0.9.9
+
+FILENAME:FCOM_WarCry.esp
+ DESCRIP:{{BASH: Relev,Delev}}||FCOM WarCry Support File|* Unified creatures and factions|* Items & Spawn Releveler|* Makes Flayer Knife playable.||Version: 0.9.9MB3
+ VERSION:0.9.9MB3
+
+FILENAME:Francesco's Leveled Creatures-Items Mod.esm
+ DESCRIP:Francesco's Leveled Creatures-Items. Info in the readme.||Ver:4.5bSI|Language:English|Loot:Hardcore|Combat Behavior:Yes|MOBS:Yes
+ VERSION:4.5bSI
+
+FILENAME:Francesco's Optional Chance of More Enemies.esp
+ DESCRIP:Adds a chance to find more enemies in dungeons. More info in the readme.||Hardcore:Yes|SI:Yes
+ VERSION:
+
+FILENAME:Francesco's Optional Chance of Stronger Bosses.esp
+ DESCRIP:A small % of named, stronger bosses with better loot, see the readme for more details.||Language:English|SI:Yes
+ VERSION:
+
+FILENAME:Francesco's Optional Chance of Stronger Enemies.esp
+ DESCRIP:Adds a small chance to spawn stronger enemies compared with the normal ones, the chance will vary on how far you are in the wilderness and from dungeon to dungeon. Humanoids spawned by this part of the mod have names and personalized combat styles and loot.||Language:English|SI:Yes
+ VERSION:
+
+FILENAME:Francesco's Optional Leveled Guards.esp
+ DESCRIP:Tweaks guards to give some of them level caps. Stronger guards usually defend more important places. Night guards are sometimes a little weaker. See the readme for more details.||Language:English|SI:Yes
+ VERSION:
+
+FILENAME:Francesco's Optional New Items Add-On.esm
+ DESCRIP:Adds new weapons and armors to my mod and its loot lists. Requires the original Francesco's Leveled Creatures-Items mod.||Ver:4.5bSI|Language:English|MOBS:Yes|Living Economy:No
+ VERSION:4.5bSI
+
+FILENAME:Fran_Lv30Item_Maltz.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:GlenvarCastle.esp
+ DESCRIP:Glenvar Castle v. 2.10|(c) 2007-2008 Quartz||The castle is located on the Green Road, a few miles south of the Imperial City.|The quest starts in the nearby Inn of Ill Omen, where a merchant named Vilandor will ask you to help him.|
+ VERSION:2.10
+
+FILENAME:Hammerfell.esp
+ DESCRIP:Hammerfell and High Rock Heightmap Version 2.1
+ VERSION:2.1
+
+FILENAME:Harvest [Flora].esp
+ DESCRIP:This mod will make all flora change appearance when harvest.|||Version: 3.0.0|
+ VERSION:3.0.0
+
+FILENAME:HotkeyCasting.esp
+ DESCRIP:This mod adds extra cast keys so you can cast different spells without having to switch spells.||Performance update and some bugfixes by Marty81.
+ VERSION:
+
+FILENAME:KDCircletsOOOOptimized - NPC Equip.esp
+ DESCRIP:KD's Cirlcets rebalanced for OOO 1.32 with new enchanted circlets added. Added to all relevent leveled / loot lists. Requires Wrye Bash and 1.2 patch.||Version 1.2
+ VERSION:1.2
+
+FILENAME:KDDwemerSpectacles.esp
+ DESCRIP:Adds glasses to the game, which can be purchased at the jewelry store in the IC Market District.
+ VERSION:
+
+FILENAME:KDQ - Rural Line Additions.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:Knights.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:Kragenir's Death Quest.esp
+ DESCRIP:V2.0
+ VERSION:2.0
+
+FILENAME:KragenirsDeathQuest-LetThePeopleDrink patch.esp
+ DESCRIP:Compatibility patch for Kragenir's Death Quest and Let the People Drink|Load after both mods.|If using Better Cities, load this before Better Cities.
+ VERSION:
+
+FILENAME:kuerteeCleanUp.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:kuerteeGoldIsAnInventoryItem.esp
+ DESCRIP:Gold is an inventory item.|It is weighted.|And can be dropped or put in containers.
+ VERSION:
+
+FILENAME:kuerteeHorseCommands.esp
+ DESCRIP:horse commands|horse speed equals player speed|own stolen horses|simple saddlebags|
+ VERSION:
+
+FILENAME:kuerteeSittableRocks.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:kuerteeWanderingEncounters.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:Kvatch Rebuilt - Leveled Guards - FCOM.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:Kvatch Rebuilt.esm
+ DESCRIP:v1.0 |Main esm. Please ensure Kvatch Rebuilt.esp is also activated||Rebuilds Kvatch brick by brick. New locations, new NPC's, a new arena, new armour and the chance to be Count(ess)!||http://kvatch.net||
+ VERSION:1.0
+
+FILENAME:Kvatch Rebuilt.esp
+ DESCRIP:v1.0 |Main esp. Please ensure Kvatch Rebuilt.esm is also activated||Rebuilds Kvatch brick by brick. New locations, new NPC's, a new arena, new armour and the chance to be Count(ess)!||http://kvatch.net||
+ VERSION:1.0
+
+FILENAME:LetThePeopleDrink.esp
+ DESCRIP:Version: 2.5|Requires: Cobl 1.18|"Let the People Drink" breathes life into the very dry Imperial City, it adds a multitude of fountains as well as a Great Aqueduct running from Charcoal Cave to the city.
+ VERSION:2.5
+
+FILENAME:Lightweight Potions.esp
+ DESCRIP:Version 1.1||Set all player-made potions to the same weight regardless of ingredient weight.||Optionally set other potion's weight as well.
+ VERSION:1.1
+
+FILENAME:Loth's Blunt Weapons for Npcs.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:M.O.E. - Main Quest Delayer Patch.esp
+ DESCRIP:Modular Oblivion Enhanced: Main Quest Delayer|Version: 3||You're no longer forced to play the main quest. You start off in Anvil (having just arrived by ship from another province). The Emperor is still alive and Kvatch has not yet been invaded. To start the main quest, simply commit a crime and surrender to an Imperial Watch Captain or Commander. The main quest will not start if you are arrested by a regular guard.
+ VERSION:3
+
+FILENAME:M.O.E. - Main Quest Delayer.esp
+ DESCRIP:Modular Oblivion Enhanced: Main Quest Delayer|Version: 3||You're no longer forced to play the main quest. You start off in Anvil (having just arrived by ship from another province). The Emperor is still alive and Kvatch has not yet been invaded. To start the main quest, simply commit a crime and surrender to an Imperial Watch Captain or Commander. The main quest will not start if you are arrested by a regular guard.
+ VERSION:3
+
+FILENAME:Map Marker Overhaul - SI additions.esp
+ DESCRIP:Adds Obelisks of Order and player-added markers to the Shivering Isles||Version 3.5
+ VERSION:3.5
+
+FILENAME:Map Marker Overhaul.esp
+ DESCRIP:Everything you need for the map markers||Version 3.5.1
+ VERSION:3.5.1
+
+FILENAME:Mart's Monster Mod.esm
+ DESCRIP:Martigen's Monster Mod|Version: 3.7b3p3||The ultimate creature mod. More than 200+ new creatures and NPCs, advanced behaviour and combat AI, hand-tailored loot drops, dynamic size and stat scaling, interfaction relationships, and much more!
+ VERSION:3.7b3p3
+
+FILENAME:MergedMaps.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:Message Tweaks.esp
+ DESCRIP:No More Annoying Comments.esp|NoMoreIFoundMessages.esp
+ VERSION:
+
+FILENAME:MidasSpells.esp
+ DESCRIP:Midas Spells||This mod adds 295+ new and unique spell types.  It adds beam, spray and projectile attacks. Turn bodies to gold, summon your own magic carpet,  or protect yourself with a ring of fire.  Without changes to the base spell system of oblivion.
+ VERSION:
+
+FILENAME:MiniMap.esp
+ DESCRIP:Adds a minimap HUD element to your game.||v0.7.1b
+ VERSION:0.7.1b
+
+FILENAME:Morrowind Lockpicking.esp
+ DESCRIP:Realtime lockpicking! Visually different lockpicks! Completely seamless integration!|Morrowind-style!||- Should be fine at any place in the load order.|- This mod should be tagged as Relev for the Bashed Patch.
+ VERSION:
+
+FILENAME:MountainShack.esp
+ DESCRIP:(R1.05) Abandoned Mountain Shack, SE of Bruma.  Free, if you are willing to fix it up.
+ VERSION:1.05
+
+FILENAME:mythsandlegends.esp
+ DESCRIP:Myths and Legends : Weapons|Version : 2.0||This mod adds 14 new weapons into Cyrodil, and several Books.||In order to get the weapons, you must read the stories within these books, and follow there clues.|
+ VERSION:2.0
+
+FILENAME:NRB4+UL-II+LtPD Patch.esp
+ DESCRIP:Patch file for:||New Roads & Bridges 4.5|Unique Landscapes Imperial Isle 1.6.5|Let the People Drink||Fixes path grids, landscape, and various items blocking any pathways.||Version 3.0.1
+ VERSION:3.0.1
+
+FILENAME:Oblivifall - Ambiant Dungeon SFX.esp
+ DESCRIP:Oblivifall "Vengeance of the Classic"|Ambiant Dungeons SFX|Version 1.1||Adds 17 new sound ambiances to every dungeon in Cyrodiil that fit the occupants of those dungeons. (Regular, Haunted, Daedric)
+ VERSION:1.1
+
+FILENAME:Oblivion Graphics Extender Support.esp
+ DESCRIP:Adds options to modify shader varaibles at runtime.||Requires: OBGEv2|Version: 0.2|Group: Misc.
+ VERSION:0.2
+
+FILENAME:Oblivion WarCry EV.esp
+ DESCRIP:v. 1.08a  ENGLISH                             |View readme for details.
+ VERSION:1.08a
+
+FILENAME:Oblivion.esm
+ DESCRIP:
+ VERSION:
+
+FILENAME:OBSE-Storms & Sound SI.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:OC+Integration Patch.esp
+ DESCRIP:Version 1.0
+ VERSION:1.0
+
+FILENAME:OCC-KOTN-Patch.esp
+ DESCRIP:Compatibility patch for using Open Cities Complete with Knights of the Nine.||Version: 2.1
+ VERSION:2.1
+
+FILENAME:OCC-OOO-Patch.esp
+ DESCRIP:Compatibility patch to allow Oscuro's Oblivion Overhaul to work with OCC.||Version 2.2
+ VERSION:2.2
+
+FILENAME:OCOD+FrostcragSpire Patch.esp
+ DESCRIP:Changes the destination of the Arcane University telepad to the open worldspace.||Load after DLCFrostcrag.esp.
+ VERSION:
+
+FILENAME:OOO-Sutch patch.esp
+ DESCRIP:Relocates Yeleri Ruins and reverts several edits that are in conflict with Imperial City of Sutch
+ VERSION:
+
+FILENAME:Open Cities Full + Leyawiin Reborn.esp
+ DESCRIP:No more load screens for cities. Walk right through the gates. Or ride your horse. Flee from beasts to get the town guards to aid you.||Version: 3.3.3
+ VERSION:3.3.3
+
+FILENAME:Open Cities New Sheoth.esp
+ DESCRIP:Transfers the cities of Bliss and Crucible into the SEWorld worldspace.||Version 1.1||Uses models modified courtesy of Sjors Boomscors.
+ VERSION:1.1
+
+FILENAME:Open Cities Outer Districts.esp
+ DESCRIP:Transfers the Imperial Prison district and the Arcane University district into the Tamriel worldspace.||Meshes making this possible were provided by Sjors Boomscors.||Version 3.3.2
+ VERSION:3.3.2
+
+FILENAME:Open Cities Resources.esm
+ DESCRIP:No more load screens for cities. Walk right through the gates. Or ride your horse. Flee from beasts to get the town guards to aid you.||Version: 3.3.2
+ VERSION:3.3.2
+
+FILENAME:Oscuro's_Oblivion_Overhaul.esm
+ DESCRIP:Oscuro's Oblivion Overhaul 1.34 Beta 5|master file.|Oscuro9@msn.com|http://jorgeoscuro.googlepages.com/home|1.34 Version 11/24/2008 by devnull.devakm@gmail.com|http://devnull.sweetdanger.com/OOO/|Version: 1.34 Beta 5
+ VERSION:1.34 Beta 5
+
+FILENAME:Oscuro's_Oblivion_Overhaul.esp
+ DESCRIP:{{BASH: Relev,Delev,Stats,Relations,Names}}|Oscuro's Oblivion Overhaul 1.34 Beta 5|FULL Version ESP|Oscuro9@msn.com|http://jorgeoscuro.googlepages.com/home|1.34 Version 11/24/2008 by devnull.devakm@gmail.com|http://devnull.sweetdanger.com/OOO/|Version: 1.34 Beta 5
+ VERSION:1.34 Beta 5
+
+FILENAME:P1DlookHereYou.esp
+ DESCRIP:Makes the player character look where it's going.
+ VERSION:
+
+FILENAME:P1DseeYouSleep - DLCVileLair.esp
+ DESCRIP:See You Sleep patch for Vile Lair.
+ VERSION:
+
+FILENAME:P1DseeYouSleep.esp
+ DESCRIP:See yourself sleeping.
+ VERSION:
+
+FILENAME:PCSoundJaheira.esp
+ DESCRIP:Name: Oblivion Sound Sets|Version: 2.6|Date: 03/07/2008|Category: Gameplay Effects and Changes|Requirements: Oblivion Patch 1.2.0.214|Author: brucevayne|Source:http://www.tesnexus.com/downloads/file.php?id=12588|Forum thread: http://forums.spellholdstudios.net/index.php?showtopic=28920||Description:||This mod gives your character ability to speak. From now on you will hear your character commenting various events through the game. Look for the readme for more info.
+ VERSION:2.6
+
+FILENAME:personality_idles_custom.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:phinix_portable_tent.esp
+ DESCRIP:Grants the player the ability to set up an Ashlander style tent wherever they may be (outdoors only), which they can enter to rest and store supplies. Exiting returns you to exactly where you entered.
+ VERSION:
+
+FILENAME:Portable Campsite - Quickstart.esp
+ DESCRIP:Compilation of Aridale's Portable Bedroll, Campfire, Tent and Stool and sj_bee's Backpack.  Many tweaks, fixes and new features.
+ VERSION:
+
+FILENAME:PrivateQuarters.esp
+ DESCRIP:Summonable Private Quarters|by LazyMonk|Version: 2.33||A small, usefull room for the purpose of storing your gear, resting your head when needed, and making your spells and potions in peace and solitude.
+ VERSION:2.33
+
+FILENAME:Progress - Merged Plugins.esp
+ DESCRIP:Includes: |* ProgressGSD|* ProgressMBSP|* ProgressSBSP|* ProgressRBSP|* ProgressRacial|* ProgressArmorer|* ProgressMercantile|
+ VERSION:
+
+FILENAME:Progress.esm
+ DESCRIP:Progress: Configurable Skill Advancement|Version 2.2||See Data\_tejon\Progress.ini for options.
+ VERSION:2.2
+
+FILENAME:PTRoamingNPCs.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:Q - More and Moldy Ingredients v1.1.esp
+ DESCRIP:Adds moldy versions of certain ingredients to spawn randomly with the fresh food. There is a higher percentage to find them in the lower class food containers. Since they are moldy, all effects they give are negative/offensive (except for some neutral ones), which makes them excellent for poisons.
+ VERSION:
+
+FILENAME:qazSteerHorsesWithMouse.esp
+ DESCRIP:Steer horses with the mouse.
+ VERSION:
+
+FILENAME:Quest Log Manager.esp
+ DESCRIP:Version 1.2||Hide quests you're not currently interested in, and re-activate them again later.
+ VERSION:1.2
+
+FILENAME:RAEVWD Cities.esp
+ DESCRIP:Places real copies of the building meshes and other larger items as well as all trees from inside the cities. Does not cover Kvatch or the Imperial City.||LOD must be regenerated after activating this plugin, or you will still see the stock LOD houses.||Version 1.7
+ VERSION:1.7
+
+FILENAME:RAEVWD Imperial City.esp
+ DESCRIP:Places select structures and larger objects for the Imperial City for more visually appealing LOD of the capital of the empire.||Version 1.7
+ VERSION:1.7
+
+FILENAME:Real Hunger, Cobl.esp
+ DESCRIP:Version: 1.6.1|Requires: Cobl 1.23||Cobl version of Real Hunger.
+ VERSION:1.6.1
+
+FILENAME:RealisticFatigue.esp
+ DESCRIP:Realistic Fatigue|-----------------||Tweaks all fatigue/encumbrance/movement settings to be more realistic and provide better gameplay. Adds immersive blur/pant fatigue warnings. Adds to all actors fatigue drains for health/encumbrance, fatigue burns for lifting/walking/climbing, fatigue/movement based chance of stagger/trip, and NPC panting. Includes repair fatigue utility to repair leftover fatigue drains.
+ VERSION:
+
+FILENAME:RealisticLeveling.esp
+ DESCRIP:Realistic Leveling|----------------------------||This mod changes leveling and attribute gains to be more realistic and provide better game play. Level and attributes will increase naturally as your skills improve, without the need to micromanage them or worry about what skills to use to optimise your advancement.
+ VERSION:
+
+FILENAME:RealSleepExtended.esp
+ DESCRIP:Version 2.4.1||If you don't sleep, you get tired!||Can also automatically adjust timescale
+ VERSION:2.4.1
+
+FILENAME:RefScope.esp
+ DESCRIP:Version: 2.0.2|Requires: OBSE v0018||Displays internal information about references and base objects.  Intended for modders and power users.
+ VERSION:2.0.2
+
+FILENAME:Region Revive - Lake Rumare.esp
+ DESCRIP:Adds Quests,NPC's and Houses in the Vicinity of Imperial City and around Lake Rumare.||v1.3
+ VERSION:1.3
+
+FILENAME:RegionReviveLakeRumare-ImperialIsle patch.esp
+ DESCRIP:Compatibility patch for UL Imperial Isle and Region Revive: Lake Rumare
+ VERSION:
+
+FILENAME:road+bridges.esp
+ DESCRIP:Version 4.5.5||Original mod by Ukrr.||Adds several roads and new bridges to make navigating Cyrodiil easier. Especially around the Imperial Isle.
+ VERSION:4.5.5
+
+FILENAME:RshAlchemy.esp
+ DESCRIP:Replaces the original alchemy menu and offers a set of new features and mechanics, including brewing in batches, flexible ingredient filtering, an integrated recipe system, refiners to mask ingredient effects, and customizable calculations of potion weight, cost, and effect magnitude.|
+ VERSION:
+
+FILENAME:Rumare-AFK_Weye Patch.esp
+ DESCRIP:Compatibiity patch for:||Region Revive: Lake Rumare 1.3+|AFK_Weye 2.0+||Must be loaded after both mods in order to take affect.||Version 2.0
+ VERSION:2.0
+
+FILENAME:Salan's Cellar.esp
+ DESCRIP:Version 09|Requires: Cobl 1.23|A storage cellar
+ VERSION:09
+
+FILENAME:Shadow Ranger.esp
+ DESCRIP:Shadow Ranger||by: Hobbs|www.firingsquad.us|hobbs@firingsquad.us||Version 2.9.2|
+ VERSION:2.9.2
+
+FILENAME:Shadow Steed.esp
+ DESCRIP:Shadow Steed||by: Hobbs|www.firingsquad.us||Reins by: AlienSlof|
+ VERSION:
+
+FILENAME:Shezrie's Villages.esp
+ DESCRIP:A compilation of all my village mods; Lakewood Village, Ravenview Village and Woodland Village.
+ VERSION:
+
+FILENAME:Side's Backpacks (COBL).esp
+ DESCRIP:VERSION 1.0
+ VERSION:1.0
+
+FILENAME:Side's Backpacks.esp
+ DESCRIP:VERSION 1.0||this mod adds backpacks to oblivion.
+ VERSION:1.0
+
+FILENAME:Side's Sailing Ships.esp
+ DESCRIP:VERSION 0.93.1 BETA
+ VERSION:0.93.1 BETA
+
+FILENAME:Slof's Oblivion Robe Trader.esp
+ DESCRIP:Robes, robes and more robes! Replaces most of the in-game robes and adds unenchanted versions of them as well as lots of new ones. Robes all fit male and female characters.||Check in at Rindir's Staffs for the new robes, Stonewall Shields for the armoured robes and the trader in Bliss for the Shivering isles robes.||Stonewall Shields stocks the armoured robes.||
+ VERSION:
+
+FILENAME:SM_EnchantStaff.esp
+ DESCRIP:This plugin adds unenchanted staffs and allows you to enchant them into working magic staffs.||Version: 0.80
+ VERSION:0.80
+
+FILENAME:SM_MMM.esp
+ DESCRIP:Compatability patch for MMM. Fixes levels and equipment for summoned creatures.||For MMM 3.5.5 - 3.7|Version: 0.89
+ VERSION:0.89
+
+FILENAME:SM_ShiveringIsles.esp
+ DESCRIP:This plugin adds Supreme Magicka support to Shivering Isles.||Version: 0.86
+ VERSION:0.86
+
+FILENAME:SPAWN.esp
+ DESCRIP:Interior respawn mechanisms were never this good !||Requires: OBSE|Version: 0.3|Group: Misc.
+ VERSION:0.3
+
+FILENAME:sr_super_hotkeys.esp
+ DESCRIP:version 0.54|THE hotkey mod.
+ VERSION:0.54
+
+FILENAME:StealthOverhaul.esp
+ DESCRIP:JOG's Stealth Overhaul..esp v1.2||Ads various modifications to stealth (Armor penalty, differing backstab multipliers) and new "Gear" Quick Keys)||Requires Oblivion Script Extender v7+
+ VERSION:1.2
+
+FILENAME:Stirk_Compatibility_Patch.esp
+ DESCRIP:Compatibility patch for Stirk and any mod that conflicts with it in Anvil harbour.
+ VERSION:
+
+FILENAME:Streamline 3.1.esp
+ DESCRIP:The objective of Streamline is to enhance the performance of Oblivion; reducing both stuttering and lag and smoothing out gameplay.  It does this by maintaining much cleaner cell buffer and video ram caches while the game is running and the player is moving from place to place.
+ VERSION:
+
+FILENAME:Summerset.esp
+ DESCRIP:Under the sign of the dragon -Tamriel heightmaps -|Summerset Isles V.2.0
+ VERSION:2.0
+
+FILENAME:SupremeMagicka.esp
+ DESCRIP:This mod overhauls the magic system of Oblivion and adds many unique spells and effects.||Version: 0.90
+ VERSION:0.90
+
+FILENAME:talkwithyourhands PI4.esp
+ DESCRIP:Unlocks the conversation animations for NPCs when they're talking to the player. You might want to change the INI value fDlgFocus to 6 to get the full effect. Personality Idles 4 compatible version.
+ VERSION:
+
+FILENAME:Tegeals Extra Robes.esp
+ DESCRIP:-v3a|-Adds 15 new robes into oblivion for players to purchase.|-Robes can be purchased at various shops in many of Cyrodils towns,  mainly the trade good stores and Mage shops.|-Certain shops have a chance to sell  unique rare robes with enchantments.||
+ VERSION:3a
+
+FILENAME:The Ayleid Steps.esp
+ DESCRIP:Version: 3.3.2|Requires: Cobl 1.72 and OBSE 18||The Ayleid Steps: Discover the ancient Ayleid teleporting network of Step stones, find out how to activate it, and then use the Steps to discover a new way of traveling around Cyrodiil, and search for new unknown Ayleid sites.|(c) Ervvin 2009
+ VERSION:3.3.2
+
+FILENAME:The Ranger's House.esp
+ DESCRIP:This mod adds the Great Tree to the south of Cheydinhal, near the Nornal ayleid ruins. There is also abandoned house near, which you can use - but the house is hidden, so you have to find it :)||See readme.txt for additional information.
+ VERSION:
+
+FILENAME:Toaster Says Share Faction Recruitment.esp
+ DESCRIP:v3.11||Addon- dependent on Toaster Says Share.||Allows you to hire Fighters Guild and Blackwood Company members, and order around your subordinates in the Fighters and Mages Guilds.
+ VERSION:3.11
+
+FILENAME:Toaster Says Share v3.esm
+ DESCRIP:v3.27||Allows you to recruit and command NPCs, influence disposition by giving gifts, lend and borrow items to and from friendly NPCs. ||To recruit an NPC, you'll typically need a disposition of around 65, modified by the level difference between you.
+ VERSION:3.27
+
+FILENAME:Toggleable Quantity Prompt.esp
+ DESCRIP:Version 3.1.1|Requires: OBSE v0016 or greater||With this mod, you can disable the quantity prompt ("How many?") and confirmation prompt that you get when manipulating an item by holding down hotkeys. These hotkeys may be customized ingame.
+ VERSION:3.1.1
+
+FILENAME:TR_OoT_Main.esm
+ DESCRIP:Data Files for the Oblivion Mods by Tamriel Rebuilt
+ VERSION:
+
+FILENAME:TR_Stirk.esp
+ DESCRIP:Stirk version 1.2 by Tamriel Rebuilt.
+ VERSION:1.2
+
+FILENAME:UndiesUnderneath.esm
+ DESCRIP:Instead of having to reequip your underwear every time you take your pants off, all you have to do is equip my special underwear. Once your new underwear is equipped you can then put on any clothes or armor and when you remove them your underwear will automatically reappear on your character.
+ VERSION:
+
+FILENAME:Unofficial Oblivion Patch.esp
+ DESCRIP:This mod is a joint effort to fix the vast amount of bugs currently existing in Oblivion, fixing over 1,800 bugs so far!||This mod should be set to load before all other mods to avoid conflicts (file date set to 2001 by default).||{{BASH:Actors.AIData,Actors.AIPackages,Actors.CombatStyle,Actors.DeathItem,Actors.Stats,C.Climate,C.Light,C.Name,C.Owner,Creatures.Blood,Delev,Factions,Invent,Names,Relations,Relev,Scripts,Stats}}||Version: 3.2.6
+ VERSION:3.2.6
+
+FILENAME:Unofficial Shivering Isles Patch.esp
+ DESCRIP:This mod is a joint effort to fix the bugs currently existing in the official Oblivion expansion pack The Shivering Isles, fixing over 270 bugs so far!||Created for Oblivion version 1.2.0416, using otherwise may have unexpected results.||This mod should be set to load before all other mods as to avoid conflicts (file date set to 2002 by default).||Version: 1.3.0
+ VERSION:1.3.0
+
+FILENAME:Useful Houses.esp
+ DESCRIP:Makes houses useful||Version 1.1
+ VERSION:1.1
+
+FILENAME:UU_Female_Undies.esp
+ DESCRIP:Adds UU undies to most Vanilla and SI femele NPCs.
+ VERSION:
+
+FILENAME:Valenwood.esp
+ DESCRIP:Under the sign of the dragon -Tamriel heightmaps -|Valenwood_Elsweyr V.2.2
+ VERSION:2.2
+
+FILENAME:Valenwood_Anequina_Patch.esp
+ DESCRIP:Under the sign of the dragon - Tamriel heightmaps -|Valenwood_Anequina Patch V.2.2
+ VERSION:2.2
+
+FILENAME:Weather Debug Ring.esp
+ DESCRIP:Weather Debug Ring - Equip and it prints the current weather FormID, TimeScale and GameMonth to the console.
+ VERSION:
+
+FILENAME:West Roads.esp
+ DESCRIP:Two new roads between Anvil and Skingrad going North to Chorrol.
+ VERSION:
+
+FILENAME:Windfall.esm
+ DESCRIP:Windfall v1.0 ||Release Date:   Jan 16, 2009     or thereabouts.||This is the Main ESM File. You also need the matching ESP and BSA Files.
+ VERSION:1.0
+
+FILENAME:Windfall.esp
+ DESCRIP:Windfall v1.0 ||Release Date:   Jan 16, 2009     or thereabouts.||This is the ESP File. You also need the matching ESM and BSA Files.
+ VERSION:1.0
+
+FILENAME:Wondrous_Inventory_v091.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:xulImperialIsle.esp
+ DESCRIP:The majesticness that is the Imperial Isle is finally brought to life through this Unique Landscape. Small shrines now dot the Isle, where travelers can rest and take in the view. Even the wildlife look better in this new environment...will make you think twice before slaughtering that venison for your next meal.||Version: 1.6.3
+ VERSION:1.6.3
+
