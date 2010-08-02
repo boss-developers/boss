@@ -140,13 +140,30 @@ int writer(char *data, size_t size, size_t nmemb, string *buffer){
 } 
 
 int UpdateMasterlist(int game) {
-	char *url;					//Masterlist file url
-	CURL *curl;					//Some cURL resource...
+	char *url;									//Masterlist file url
+	CURL *curl;									//Some cURL resource...
 	string buffer,revision,oldline,newline;		//A bunch of strings.
-	int start,end;				//Position holders for trimming strings.
-	ifstream in;				//Input stream.
-	ofstream out;				//Output stream.
-	char cbuffer[MAXLENGTH];	//Another buffer for holding lines to be processed.
+	int start,end;								//Position holders for trimming strings.
+	ofstream out;								//Output stream.
+	const string SVN_REVISION_KW = "$" "Revision" "$";                   // Left as separated parts to avoid keyword expansion
+    const string SVN_DATE_KW = "$" "Date" "$";                           // Left as separated parts to avoid keyword expansion
+    const string SVN_CHANGEDBY_KW= "$" "LastChangedBy" "$";              // Left as separated parts to avoid keyword expansion
+
+	//Get HEAD revision number from http://better-oblivion-sorting-software.googlecode.com/svn/ page text.
+	curl = curl_easy_init();
+	if (curl){
+		curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/");
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &revision );
+		curl_easy_perform(curl);
+		curl_easy_cleanup(curl);
+	}
+	start = revision.find("Revision ");
+	end = revision.find(": /");
+	end = end - (start+9);
+	revision = revision.substr(start+9,end);
+	stringstream ss(revision);
+	ss >> end;
 
 	//Which masterlist to get?
 	if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
@@ -154,6 +171,8 @@ int UpdateMasterlist(int game) {
 	else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-morrowind/masterlist.txt";
 
 	//Get SVN masterlist file.
+	oldline = "? Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
+	newline = "? Masterlist Revision: "+revision;
     curl = curl_easy_init();
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, url);
@@ -161,50 +180,18 @@ int UpdateMasterlist(int game) {
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
         curl_easy_perform(curl);
         curl_easy_cleanup(curl);
-		out.open("BOSS\\masterlist.tmp");
+		//Correct formatting and replace SVN keywords with revision number.
+		out.open("BOSS\\masterlist.txt",ios::in|ios::trunc);
+		int pos = buffer.find(oldline);
+		buffer.replace(pos,oldline.length(),newline);
+		pos = buffer.find("\r");
+		while (pos > -1) {
+			buffer.replace(pos,2,"\n");
+			pos = buffer.find("\r");
+		}
 		out << buffer;
 		out.close();
     }
-
-	//Get HEAD revision number from http://better-oblivion-sorting-software.googlecode.com/svn/ page text.
-	curl = curl_easy_init();
-	if (curl){
-		curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/");
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer );
-		curl_easy_perform(curl);
-		curl_easy_cleanup(curl);
-	}
-	start = buffer.find("Revision ");
-	end = buffer.find(": /");
-	end = end - (start+9);
-	revision = buffer.substr(start+9,end);
-	stringstream ss(revision);
-	ss >> end;
-
-	//Add revision number to masterlist and fix the line breaks.
-	oldline = "? Masterlist Information: $Revision$, $Date$, $LastChangedBy$";
-	newline = "? Masterlist Revision: "+revision;
-	in.open("BOSS\\masterlist.tmp");
-	out.open("BOSS\\masterlist.txt");
-	while (!in.eof()) {	
-		in.getline(cbuffer,MAXLENGTH);
-		buffer = (string)cbuffer;
-		if (buffer.length()>0) {
-			int pos = buffer.find(oldline);
-			if (pos > -1) {
-				out << newline << endl;
-			} else {
-				pos = buffer.find("\r");
-				buffer.replace(pos,2,"\n");
-				out << buffer;
-			}
-		}
-	}
-	in.close();
-	out.close();
-	//Remove temporary masterlist file.
-	system ("del BOSS\\masterlist.tmp");
 	//Return revision number.
 	return end;
 }
