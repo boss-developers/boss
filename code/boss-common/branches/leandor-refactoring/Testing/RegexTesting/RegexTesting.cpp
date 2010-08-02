@@ -18,7 +18,29 @@ using namespace boost::filesystem;
 using namespace boost::algorithm;
 using namespace boss;
 
-boost::format InvalidInputError = boost::format("Invalid input file format. Expected: '%1%' but found '%2%'");
+
+string Get(istream& iss)
+{
+	string value = GetLine(iss);
+	if (value.empty()) {
+		throw exception("No more data to read.");
+	}
+
+	return value;
+}
+
+string Consume(string& data, const string value)
+{
+	static boost::format InvalidInputError = boost::format("Invalid input file format. Expected: '%1%' but found '%2%'");
+
+	trim(data);
+	if (!starts_with(data, value)) {
+		throw exception((InvalidInputError % value % data).str().c_str());
+	}
+	replace_first(data, value, "");
+
+	return data;
+}
 
 int main(int argc, char* argv[])
 {
@@ -33,50 +55,31 @@ int main(int argc, char* argv[])
 		cout << "Reading: " << inname.filename() << endl << endl;
 	
 		string line;
-		while (in) {
+		int total = 0;
+		int failures = 0;
+		while (GetLine(in, line)) {
 	
-			while (in) {
-				if (! ReadLine(in, line)) {
-					return 0;
-				}
-
-				trim(line);
-
-				if (! line.empty()) 
-					break;
-			}
+			string modfile = Consume(line, "FILENAME:");
 	
-			if (!starts_with(line, "FILENAME:")) throw exception((InvalidInputError % "FILENAME:" % line).str().c_str());
-			replace_first(line, "FILENAME:", "");
-			trim(line);
-			string modfile = line;
+			line = Get(in);
+			string descr = Consume(line, "DESCRIP:");
+			string text = ParseVersion(replace_all_copy(descr, "|", "\n"));
 	
-			if (! ReadLine(in, line)) {
-				throw exception("No more data to read.");
-			}
+			line = Get(in);
+			string version = Consume(line, "VERSION:");		
 	
-			trim(line);
-			if (!starts_with(line, "DESCRIP:")) throw exception((InvalidInputError % "DESCRIP:" % line).str().c_str());
-			replace_first(line, "DESCRIP:", "");
-			replace_all(line, "|", "\n");
-			string descr = line;
-	
-			if (! ReadLine(in, line)) {
-				throw exception("No more data to read.");
-			}
-	
-			trim(line);
-			if (!starts_with(line, "VERSION:")) throw exception((InvalidInputError % "VERSION:" % line).str().c_str());
-			replace_first(line, "VERSION:", "");
-			string version = line;		
-	
-			string text = ParseVersion(descr);
-	
+			string state = "OK";
 			if (!equals(text, version)) {
-				cout << (boost::format("%1%: Failed.\n - Expected: [%2%]\n - Extracted [%3%]") % modfile % version % text).str() << endl << endl;
+				state = "Failed";
+				++failures;
 			}
+
+			cout << (boost::format("%1%: %2%.\n - Expected: [%3%]\n - Extracted: [%4%]\n - Description: [%5%]") % modfile % state % version % text % descr).str() << endl << endl;
+			++total;
 		}
 		
+		cout << "Total processed: " << total << ", failed: " << failures << endl;
+
 		return 0;
 	}
 	catch (exception& e)
