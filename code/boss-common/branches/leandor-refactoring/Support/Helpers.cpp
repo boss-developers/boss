@@ -115,7 +115,7 @@ namespace boss {
 					continue;
 				}
 
-				ssub_match match = what[2];
+				ssub_match match = what[1];
 		
 				if (!match.matched) {
 					continue;
