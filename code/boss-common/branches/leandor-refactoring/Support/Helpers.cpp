@@ -60,6 +60,32 @@ namespace boss {
 		return !s.empty();
 	}
 
+	// Reads a text line skipping all the empty lines along the way
+	bool GetLine(istream& is, string& s) 
+	{
+		while (is && ReadLine(is, s)) {
+			trim_right(s);
+
+			if (!s.empty()) {
+				break;
+			}
+		}
+
+		return is && !s.empty();
+	}
+
+	// Reads a text line skipping all the empty lines along the way
+	string GetLine(istream& is) 
+	{
+		string line;
+		if (GetLine(is, line)){
+			return line;
+		}
+
+		return string();
+	}
+
+
 	// Reads a string until the terminator char is found or the complete buffer is consumed.
 	string ReadString(char*& bufptr, ushort size){
 		string data;

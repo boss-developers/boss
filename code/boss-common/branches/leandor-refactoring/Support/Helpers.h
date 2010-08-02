@@ -38,6 +38,14 @@ namespace boss {
 	//
 	bool ReadLine(istream& is, string& s);
 
+	/// bool GetLine(istream& is, string& s)
+	///  - Reads a text line skipping all the empty lines along the way
+	bool GetLine(istream& is, string& s);
+
+	/// bool GetLine(istream& is, string& s)
+	///  - Reads a text line skipping all the empty lines along the way
+	string GetLine(istream& is);
+
 	//
 	// string ReadString(pointer&, maxsize):
 	//	- Reads a consecutive array of charactes up to maxsize length and 
