@@ -38,8 +38,10 @@ namespace boss {
 			// Get next char in input buffer
 			char c = static_cast<char>(is.get());
 
+			if (!is) break;
+
 			// Check for termination conditions
-			if (c <= 0 || c == '\r' || c == '\n') {
+			if (c == '\r' || c == '\n') {
 				if (c > 0){
 					// If EOLN then consume the second char in the '\r\n' pair
 					c = static_cast<char>(is.peek());
@@ -48,7 +50,7 @@ namespace boss {
 					}
 				}
 
-				return true;
+				break;
 			}
 
 			// While termination condition not found -> append chars to result string
@@ -73,33 +75,28 @@ namespace boss {
 	// Tries to parse the textual string to find a suitable version indication.
 	string ParseVersion(const string& text){
 
-		smatch what;
+		string::const_iterator begin, end;
 
-		regex* re;
-		for(int i = 0; re = version_checks[i]; i++) {
+		begin = text.begin();
+		end = text.end();
 
-			string data;
-			istrstream iss(text.c_str(), text.length());
-			while (ReadLine(iss, data)) {
+		for(int i = 0; regex* re = version_checks[i]; i++) {
 
-				if (data.empty()){
+			smatch what;
+			while (regex_search(begin, end, what, *re)) {
+
+				if (what.empty()){
 					continue;
 				}
 
-				if (regex_match(data, what, *re)){
-				
-					if (what.empty()){
-						continue;
-					}
-
-					ssub_match match = what[2];
+				ssub_match match = what[2];
 		
-					if (!match.matched) {
-						continue;
-					}
-
-					return trim_copy(string(match.first, match.second));
+				if (!match.matched) {
+					continue;
 				}
+
+				return trim_copy(string(match.first, match.second));
+
 			}
 		}
 
