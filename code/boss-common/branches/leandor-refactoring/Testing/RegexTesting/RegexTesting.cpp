@@ -68,13 +68,22 @@ int main(int argc, char* argv[])
 			line = Get(in);
 			string version = Consume(line, "VERSION:");		
 	
+			bool ok = equals(text, version);
 			string state = "OK";
-			if (!equals(text, version)) {
+			if (!ok) {
 				state = "Failed";
 				++failures;
 			}
 
-			cout << (boost::format("%1%: %2%.\n - Expected: [%3%]\n - Extracted: [%4%]\n - Description: [%5%]") % modfile % state % version % text % descr).str() << endl << endl;
+			bool print = !ok;
+			if (argc > 1 && equals(argv[1], "--all")) {
+				print = true;
+			}
+
+			if (print){
+				cout << (boost::format("%1%: %2%.\n - Expected: [%3%]\n - Extracted: [%4%]\n - Description: [%5%]") % modfile % state % version % text % descr).str() << endl << endl;
+			}
+
 			++total;
 		}
 		
