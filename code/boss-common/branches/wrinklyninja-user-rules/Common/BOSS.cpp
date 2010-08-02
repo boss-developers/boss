@@ -24,6 +24,7 @@
 #include <curl/curl.h>
 #include <curl/types.h>
 #include <curl/easy.h>
+#include <vector>
 
 #include <Support/Types.h>
 #include <Support/ModFormat.h>
@@ -34,7 +35,7 @@
 using namespace std;
 using namespace boss;
 
-fstream order;						//masterlist.txt - the grand mod order list
+ifstream order;						//masterlist.txt - the grand mod order list
 ifstream userlist;					//userlist.txt - holds custom user sorting rules for mods not in masterlist.
 ifstream modlist;					//modlist.txt - list of esm/esp files in oblivion/data
 ofstream bosslog;					//BOSSlog.txt - output file.
@@ -43,9 +44,6 @@ bool ooo;                      	 	//true if OOO esm is found.
 bool bc;                        	//true if Better Cities esm is found.
 bool fook2;							//true if key FOOK2 files are found.
 bool fwe;							//true if FWE esm is found
-
-
-fstream masterlist;
 
 string Tidy(string filename) {						//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
 	int endpos = filename.find_last_not_of(" \t");
@@ -124,6 +122,7 @@ string ReadLine (string file) {						//Read a line from a file. Could be rewritt
 	if (file=="order") order.getline(cbuffer,MAXLENGTH);				//get a line of text from the masterlist.txt text file
 	else if (file=="modlist") modlist.getline(cbuffer,MAXLENGTH);			//get a line of text from the modlist.txt text file
 	else if (file=="userlist") userlist.getline(cbuffer,MAXLENGTH);			//get a line of text from the userlist.txt text file
+	else if (file=="masterlist") order.getline(cbuffer,MAXLENGTH);
 	//No internal error handling here.
 	textbuf=(string)cbuffer;
 	if (file=="order") {		//If parsing masterlist.txt, parse only lines that start with > or < depending on FCOM installation. Allows both FCOM and nonFCOM differentiaton.
@@ -146,13 +145,30 @@ int writer(char *data, size_t size, size_t nmemb, string *buffer){
 } 
 
 int UpdateMasterlist(int game) {
-	char *url;					//Masterlist file url
-	CURL *curl;					//Some cURL resource...
+	char *url;									//Masterlist file url
+	CURL *curl;									//Some cURL resource...
 	string buffer,revision,oldline,newline;		//A bunch of strings.
-	int start,end;				//Position holders for trimming strings.
-	ifstream in;				//Input stream.
-	ofstream out;				//Output stream.
-	char cbuffer[MAXLENGTH];	//Another buffer for holding lines to be processed.
+	int start,end;								//Position holders for trimming strings.
+	ofstream out;								//Output stream.
+	const string SVN_REVISION_KW = "$" "Revision" "$";                   // Left as separated parts to avoid keyword expansion
+    const string SVN_DATE_KW = "$" "Date" "$";                           // Left as separated parts to avoid keyword expansion
+    const string SVN_CHANGEDBY_KW= "$" "LastChangedBy" "$";              // Left as separated parts to avoid keyword expansion
+
+	//Get HEAD revision number from http://better-oblivion-sorting-software.googlecode.com/svn/ page text.
+	curl = curl_easy_init();
+	if (curl){
+		curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/");
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &revision );
+		curl_easy_perform(curl);
+		curl_easy_cleanup(curl);
+	}
+	start = revision.find("Revision ");
+	end = revision.find(": /");
+	end = end - (start+9);
+	revision = revision.substr(start+9,end);
+	stringstream ss(revision);
+	ss >> end;
 
 	//Which masterlist to get?
 	if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
@@ -160,6 +176,8 @@ int UpdateMasterlist(int game) {
 	else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-morrowind/masterlist.txt";
 
 	//Get SVN masterlist file.
+	oldline = "? Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
+	newline = "? Masterlist Revision: "+revision;
     curl = curl_easy_init();
     if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, url);
@@ -167,50 +185,18 @@ int UpdateMasterlist(int game) {
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
         curl_easy_perform(curl);
         curl_easy_cleanup(curl);
-		out.open("BOSS\\masterlist.tmp");
+		//Correct formatting and replace SVN keywords with revision number.
+		out.open("BOSS\\masterlist.txt",ios::in|ios::trunc);
+		int pos = buffer.find(oldline);
+		buffer.replace(pos,oldline.length(),newline);
+		pos = buffer.find("\r");
+		while (pos > -1) {
+			buffer.replace(pos,2,"\n");
+			pos = buffer.find("\r");
+		}
 		out << buffer;
 		out.close();
     }
-
-	//Get HEAD revision number from http://better-oblivion-sorting-software.googlecode.com/svn/ page text.
-	curl = curl_easy_init();
-	if (curl){
-		curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/");
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer );
-		curl_easy_perform(curl);
-		curl_easy_cleanup(curl);
-	}
-	start = buffer.find("Revision ");
-	end = buffer.find(": /");
-	end = end - (start+9);
-	revision = buffer.substr(start+9,end);
-	stringstream ss(revision);
-	ss >> end;
-
-	//Add revision number to masterlist and fix the line breaks.
-	oldline = "? Masterlist Information: $Revision$, $Date$, $LastChangedBy$";
-	newline = "? Masterlist Revision: "+revision;
-	in.open("BOSS\\masterlist.tmp");
-	out.open("BOSS\\masterlist.txt");
-	while (!in.eof()) {	
-		in.getline(cbuffer,MAXLENGTH);
-		buffer = (string)cbuffer;
-		if (buffer.length()>0) {
-			int pos = buffer.find(oldline);
-			if (pos > -1) {
-				out << newline << endl;
-			} else {
-				pos = buffer.find("\r");
-				buffer.replace(pos,2,"\n");
-				out << buffer;
-			}
-		}
-	}
-	in.close();
-	out.close();
-	//Remove temporary masterlist file.
-	system ("del BOSS\\masterlist.tmp");
 	//Return revision number.
 	return end;
 }
@@ -245,7 +231,7 @@ string GetModHeader(const string& filename) {
 int main(int argc, char *argv[]) {					
 	
 	int x;							//random useful integers
-	string textbuf,textbuf2,textbuf3;		//a line of text from a file (should usually end up being be a file name); 			
+	string textbuf,textbuf2;		//a line of text from a file (should usually end up being be a file name); 			
 	struct __stat64 buf;			//temp buffer of info for _stat function
 	struct tm esmtime;			    //the modification date/time of the main .esm file
 	struct tm modfiletime;			//useful variable to store a file's date/time
@@ -310,56 +296,93 @@ int main(int argc, char *argv[]) {
 
 	//Enter The Userlist...
 	//Yeah, this is a bit of a dump, but I can always streamline it after I've got it working.
-	userlist.open("BOSS\\userlist.txt");
-	bosslog << endl << "------------------" << endl << "Userlist Messages:" << endl << "------------------" << endl << endl;
+	userlist.open("BOSS\\userlist.txt");	//File need not exist for BOSS to work, so allow BOSS to keep running if it's not there.
 	if (userlist.fail()) {
-		bosslog << "userlist.txt not found. No custom sorting rules shall be imported." << endl << endl;
-	} else bosslog << "userlist.txt found. Any custom sorting rules it defines shall be imported." << endl << endl;
-	order.open("BOSS\\masterlist.txt",ios::in|ios::out);
-	if (order.fail()) {							
-		bosslog << endl << "Critical Error! masterlist.txt does not exist or can't be read!" << endl; 
-		bosslog <<         "! Utility will end now." << endl;
-		bosslog.close();
-		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
-		exit (1); //fail in screaming heap.
-	}
-/*	while (!userlist.eof()) {	
-		textbuf=ReadLine("userlist");
-		order.clear();								//reset masterlist error flags.
-		order.seekg(0, order.beg);			//reset position in masterlist.txt to start.
-		if (IsValidLine(textbuf) && IsMod(textbuf) && FileExists(textbuf)) {	//Check that it's a valid line, it lists a mod, and the mod exists.
-			found=false;
-			while (!order.eof()) {	//repeat until end of masterlist.txt.
-				textbuf2=ReadLine("masterlist");
-				if (IsValidLine(textbuf2) && IsMod(textbuf2)) if (Tidy(textbuf)==Tidy(textbuf2)) { //Is masterlist line a valid mod line? Does it match with the userlist line?
-					found=true;
-					break;
-				}
-			}
-			if (found) bosslog << textbuf << " already present in masterlist.txt. Custom sorting rule skipped." << endl << endl;
-			else textbuf3 = textbuf; //Store the mod file name for later.
-		} else if (IsValidLine(textbuf) && IsMod(textbuf) && (textbuf[0]=='>' || textbuf[0]=='<') && !found) {	//Is the line a valid mod line, and starts with < or >, and was the last mod found or not.
-			char c = textbuf[0];
-			textbuf.erase(0,1);
-			while (!order.eof()) {	//repeat until end of masterlist.txt.
-				textbuf2=ReadLine("masterlist");
-				if (IsValidLine(textbuf2) && !IsMessage(textbuf2)) if (Tidy(textbuf)==Tidy(textbuf2)) { //Is masterlist line a valid mod line? Does it match with the userlist line?
-					if (c=='>') {
-						//Damn it, why won't this work!
-						order.seekp(masterlist.tellg());
-						order << textbuf3 << endl;					//Adds rule mod line after the 'load after' mod.
-						bosslog << textbuf3 << " added to masterlist after " << textbuf2 << endl << endl;
-					} else if (c=='<') {			//Have to move the put pointer back to the start of the line, and then write.
-						
-						order << textbuf3+"\n";	//Adds rule mod line before the 'load before' mod.
-					}
-					break;
-				}
+//		bosslog << "userlist.txt does not exist or can't be read. No custom sort rules will be imported." << endl << endl;
+	} else {
+		bosslog << endl << "------------------" << endl << "Userlist Messages:" << endl << "------------------" << endl << endl;
+		order.open("BOSS\\masterlist.txt");
+		if (order.fail()) {							
+			bosslog << endl << "Critical Error! masterlist.txt does not exist or can't be read!" << endl
+							<< "! Utility will end now." << endl;
+			bosslog.close();
+			system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
+			exit (1); //fail in screaming heap.
+		}
+		/* Parse userlist, looking for looking for rule definitions consisting of a mod line and a rule line.
+		When a mod line is found, search the masterlist for it. If it is in the masterlist, print an error and move to the next rule.
+		If it isn't in the masterlist, record the line contents (mod filename), then search the masterlist for the rule line
+		(minus the rule character (< or >)). Once the rule character is found, insert the mod line at the end of the line containing
+		the rule line in the masterlist. */
+		//First store rules in memory.
+		vector<string> modlines;
+		vector<string> rulelines;
+		vector<int> index;
+		while (!userlist.eof()) {
+			textbuf=ReadLine("userlist");
+			if (IsValidLine(textbuf) && IsMod(textbuf) && !(textbuf[0]=='>' || textbuf[0]=='<')) {	//Check that it's a valid line, it lists a mod, and it's not a rule line.
+				modlines.push_back(textbuf);
+				found = true;
+			} else if (IsValidLine(textbuf) && IsMod(textbuf) && (textbuf[0]=='>' || textbuf[0]=='<') && found) {
+				rulelines.push_back(textbuf);
 			}
 		}
+		//Now iterate through modlines, searching masterlist for each one.
+		for (int i = 0; i < (int)modlines.size(); i++) {
+			order.clear();
+			order.seekg(0, order.beg);
+			while (!order.eof()) {
+				textbuf=ReadLine("masterlist");
+				if (Tidy(textbuf) == Tidy(modlines[i])) index.push_back(i);
+			}
+		}
+		//Remove matched indices.
+		for (int i=0;i<(int)index.size();i++) {
+			bosslog << "\"" << modlines[index[i]-i] << "\" already present in masterlist.txt. Custom sorting rule skipped." << endl << endl;
+		//	modlines[index[i]] = "\\";
+		//	rulelines[index[i]] = "\\";
+			modlines.erase(modlines.begin()+index[i]-i);
+			rulelines.erase(rulelines.begin()+index[i]-i);
+		}
+		//And finally, add to the masterlist.
+		//However, we can't add a line directly after the rule line match, since that mod may have comments attached.
+		//We must add to before the next mod line instead.
+			ofstream outfile;
+			outfile.open("BOSS\\masterlist.tmp");
+			order.clear();
+			order.seekg(0, order.beg);
+			found = false;
+			while (!order.eof()) {
+				textbuf=ReadLine("masterlist");
+					if (IsValidLine(textbuf) && IsMod(textbuf) && rulelines.size() > 0) {
+							if (!found) {										//If we haven't found a load after line, we can keep looking.
+								for (int i = 0; i < (int)rulelines.size(); i++) {
+							//		if (rulelines[i] != "\\") {
+										if (Tidy(textbuf) == Tidy(rulelines[i].substr(1))) {
+											if (rulelines[i][0] == '>') {
+												textbuf2 = modlines[i];								//Store till we find another mod line.
+												found = true;
+												outfile << textbuf << endl;
+											} else if (rulelines[i][0] == '<') {
+												outfile << modlines[i] << endl << textbuf << endl;
+												bosslog << "\"" << modlines[i] << "\" added to masterlist before " << textbuf << endl << endl;
+											}
+										} else if (i == (int)rulelines.size()-1) outfile << textbuf << endl;
+							//		} else outfile << textbuf << endl;
+								}
+							} else {				//Found a load after line, so we need to find the next mod and load before, then reset the found flag.
+								outfile << textbuf2 << endl << textbuf << endl;
+								bosslog << "\"" << textbuf2 << "\" added to masterlist after " << textbuf << endl << endl;
+								found = false;
+							}
+					} else outfile << textbuf << endl;		//Not the line we were looking for, so pass it without any changes.
+			}
+		outfile.close();
+		order.close();
+		userlist.close();
+		system ("del BOSS\\masterlist.txt");
+		system ("ren BOSS\\masterlist.tmp masterlist.txt");
 	}
-*/	userlist.close();
-	order.close();
 	bosslog << endl << "-----" << endl << "Notes" << endl << "-----" << endl << endl;
 
 	//open masterlist.txt
