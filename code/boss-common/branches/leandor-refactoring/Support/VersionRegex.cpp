@@ -23,27 +23,30 @@ namespace boss {
 	///    2. The version string itself.
 
 	const char* regex1 = 
-		"(?:\s*)"
-		"(?:version(?:[:.\\- \\t]*)|revision(?:[:.\\- \\t]*))[ ]*"
+		"^(?:\\bversion\\b[ ]*(?:[:.\\-]?)|\\brevision\\b(?:[:.\\-]?))[ ]*"
 		"([-0-9a-zA-Z._ ]+\\+?)$"
 		;
 
 	const char* regex2 = 
-		"(?:\s*)"
-		"(?:ver(?:[:.\\- \\t]*)|rev(?:[:.\\- \\t]*))[ ]*"
-		"([-0-9a-zA-Z._ ]+\\+?)$"
+		"(?:\\bversion\\b(?:[ :]?)|\\brevision\\b(?:[:.\\-]?))[ ]*"
+		"([0-9][-0-9a-zA-Z._]+\\+?)"
+		;
+
+	const char* regex3 = 
+		"(?:\\bver(?:[:.]?)|\\brev(?:[:.]?))[ ]*"
+		"([-0-9a-zA-Z._]+\\+?)$"
 		;
 
 	// Matches "Updated: <date>" for the Bashed patch
-	const char* regex3 = 
+	const char* regex4 = 
 		"(?:Updated:)\\s*"
 		"([-0-9aAmMpP/ :]+)$"
 		;
 
 	// Matches isolated versions as last resort
-	const char* regex4 = 
-		"(?:(?:v|r)(?:\s?)(?:[-.:])?(?:\s*))"
-		"((?:(?:alpha)?|(?:beta)?|(?:mark)?)\s*[0-9][-0-9a-zA-Z._]*\\+?)"
+	const char* regex5 = 
+		"(?:(?:\\bv|\\br)(?:\\s?)(?:[-.:])?(?:\\s*))"
+		"((?:(?:\\balpha\\b)?|(?:\\bbeta\\b)?|(?:\\bmark\\b)?)\\s*[0-9][-0-9a-zA-Z._]*\\+?)"
 		;
 
 	/// Array used to try each of the expressions defined above using 
@@ -53,6 +56,7 @@ namespace boss {
 			new regex(regex2, regex::icase),
 			new regex(regex3, regex::icase),
 			new regex(regex4, regex::icase),
+			new regex(regex5, regex::icase),
 			//new regex(re2, regex::icase | regex::extended | regex::nosubs),
 			//new regex(re3, regex::icase | regex::extended | regex::nosubs),
 			0
