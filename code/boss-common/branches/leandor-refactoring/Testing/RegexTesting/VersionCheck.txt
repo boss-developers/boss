@@ -1,14 +1,22 @@
 FILENAME:(DC) Sutch Reborn.esp
  DESCRIP:Sutch Reborn 9.0|==============|No Requirement on DCRP||Huge town and quest expansion, please see the readme for more details, or the dl description for even more details||biulding
- VERSION:
+ VERSION:9.0
 
 FILENAME:1em_Vilja.esp
  DESCRIP:Meet companion Vilja in the Bloated Float at the Imperial City Waterfront and help her in her mission to get her imprisoned sister out of jail.||Ver 2.1 - please read the readme||Contact address: emma9158@hotmail.com
- VERSION:2.1 - please read the readme
+ VERSION:2.1
+
+FILENAME:300_Combat Sounds.esp
+ DESCRIP:
+ VERSION:
 
 FILENAME:7lbsBedrolls-OBSE.esp
  DESCRIP:Allows you to pick up Bedrolls in Oblivion and take them with you. Click on the Bedroll in your inventory to drop it again.
  VERSION:
+
+FILENAME:AdenseEpicDungeon.esp
+ DESCRIP:A huge 32-cell dungeon with caverns, ruins, and hidden horrors.  Originally it was an attempt to just make a good-looking dungeon, but it ended up being full of horror content.  (Version 1_6)
+ VERSION:1_6
 
 FILENAME:AFK_Weye.esp
  DESCRIP:Adds various people, buildings, and quests to the village of Weye, including an archery shop that sells magical arrows, a very rich merchant, and a player-ownable house, plus much, much more!||Version 2.0.COBL
@@ -17,6 +25,10 @@ FILENAME:AFK_Weye.esp
 FILENAME:Alchemy Pocket.esp
  DESCRIP:Version 1.1||Not satisfied with the existing portable alchemy sorters I decided to make one of my own using Common Oblivion's built in alchemy sorter.||I do not consider it unbalancing because:|    -  The total weight of the items in it determine the weight of the Alchemy Pocket itself.|    - You can only use it to store ingredients, potions and scrolls. Any other object has it's weight multiplied by 10.
  VERSION:1.1
+
+FILENAME:All Natural - Indoor Weather Filter For Mods.esp
+ DESCRIP:*DO NOT ACTIVATE!!!*||This patch is meant to be used only by Wrye Bash and must be imported without being activated.||{{BASH:Filter,C.Climate}}||Version 0.9.9.5
+ VERSION:0.9.9.5
 
 FILENAME:All Natural - Real Lights.esp
  DESCRIP:Real Lights updated and made compatible with All Natural.|OPTIONAL.||Version: 0.9.9.5||{{BASH:Graphics,Scripts}}
@@ -38,6 +50,10 @@ FILENAME:AmbientTownSounds.esp
  DESCRIP:Adds ambient sounds to towns and cities, both for day and night period.
  VERSION:
 
+FILENAME:Anequina-Fallenleaf-Patch.esp
+ DESCRIP:Resolves a land tear issue where Elsweyr Anequina meets up with UL Fallenleaf Everglade.
+ VERSION:
+
 FILENAME:Armamentarium.esm
  DESCRIP:Armamentarium Complete v1.3 |Version: 1.3|(August 2009)||This is the core file of Armametarium. It contains info about over 1000 of new weapons, staves, shields, bows, arrows, and various pieces of armour.||Enjoy it! ^_^||Version: 1.3
  VERSION:1.3
@@ -45,6 +61,22 @@ FILENAME:Armamentarium.esm
 FILENAME:ArmamentariumArtifacts.esp
  DESCRIP:Armamentarium Complete|Artifacts of Armamentarium|v1.3 (August 2009)||This part of A.C. deals with quest and special items.||Enjoy it! ^_^||Version: 1.3
  VERSION:1.3
+
+FILENAME:ArmamentariumLL4OOO.esp
+ DESCRIP:Armamentarium Complete for OOO|Version: 2.0|(August 2009)||Leveled Lists and OMOBS rebalance for Oscuro's Oblivion Overhaul||This part of A.C. rebalances the weapons for OOO and distributes all items via leveled lists so they will be found on NPCs and loot.
+ VERSION:2.0
+
+FILENAME:ArmamentariumLLMagicOOO.esp
+ DESCRIP:Armamentarium Complete|Enchanted for OOO|v1.3 (September 2009)||for OOO/FCOM||This Part of A. C. Adds Enchanted Version of Armamentarium Weapons to magic level list for Npcs and also to dungeon Loot||Version: 1.3 Beta
+ VERSION:1.3 Beta
+
+FILENAME:Armamentium female.esp
+ DESCRIP:{{BASH:Graphics,NoMerge}}
+ VERSION:
+
+FILENAME:Artifacts - ArmaCompleteAddon.esp
+ DESCRIP:Artifacts Addon for Armamentarium Complete|by TEAM Arma||Adds Weapons and Armor from Trollf New Artifacts Store Mod onto Npc using Existing Leveledlist from Arma Complete Itself..||Version: 0.20
+ VERSION:0.20
 
 FILENAME:Artifacts.esm
  DESCRIP:Artifacts v1.0|(31st of July 2008 - 17th of June, 2009)||Core file of Artifacts. It adds hundreds of new items to the game. It is required by other plugins from this mod.||And just enjoy the content...
@@ -54,9 +86,13 @@ FILENAME:Artifacts.esp
  DESCRIP:Artifacts v1.0|(31st of July 2008 - 17th of June, 2009)||Core file of Artifacts. It adds hundreds of new items to the game. It is required by other plugins from this mod.||And just enjoy the content...
  VERSION:1.0
 
+FILENAME:ArtifactsFemaleArmor.esp
+ DESCRIP:
+ VERSION:
+
 FILENAME:Atmospheric Loading Screens - Random Quotes.esp
  DESCRIP:{{BASH:Graphics,NoMerge}}|Replaces the loading screens with DarkUI loading screens focused on the environment.|*****|Random Quotes - Text is changed to random quotes from various authors.
- VERSION:eplaces the loading screens with DarkUI loading screens focused on the environment.
+ VERSION:
 
 FILENAME:bartholm - EE patch.esp
  DESCRIP:Patch for Enhanced Economy to make trades with Bartholm merchants work better.||The buyable house costs 210,000.||Version 4.2
@@ -66,6 +102,10 @@ FILENAME:bartholm.esp
  DESCRIP:v7.0
  VERSION:7.0
 
+FILENAME:Bashed Delayers E - MERGE ONLY.esp
+ DESCRIP:{{BASH: Filter}}|Version: 1.08|Essential Companions||>>> DO NOT ACTIVATE! <<<|Merge into the Bashed Patch.
+ VERSION:1.08
+
 FILENAME:Bashed Patch, Liana 4.esp
  DESCRIP:Updated: 7/29/2010 10:45:07 PM||Records Changed: 39150
  VERSION:7/29/2010 10:45:07 PM
@@ -73,6 +113,14 @@ FILENAME:Bashed Patch, Liana 4.esp
 FILENAME:bgBalancingEVCore.esp
  DESCRIP:{{BASH: Hair,Eyes}}|Race Balancing Project|Core File - Default||Version 10.5EV-D
  VERSION:10.5EV-D
+
+FILENAME:bgBalancingEVOptionalBetterRedguards.esp
+ DESCRIP:Race Balancing Project|Optional File - Better Redguards||Installation: First install Better Redguards, but don't check it's .esp files. Use this file instead. Workaround for Redguards at startup necessary: Reset their face once (this is caused by an en
+ VERSION:
+
+FILENAME:bgBalancingEVOptionalNPCDiversity, TNR Merge Better Redguards.esp
+ DESCRIP:NPCDiversity:|Race Balancing Project|Optional File - Faces||Only use this for Wrye Bash's bashed patch feature!||{{BASH: NpcFaces,Invent,NoMerge}}||Version 10.0EV-D||TNR: Changes the visual appearance (geometry) of 1079 NPCs. Now NPCs are far more distinguishable from one another, and the races themselves are also far more distinct.
+ VERSION:10.0EV-D
 
 FILENAME:bgIntegrationEV.esp
  DESCRIP:Integration: The Stranded Light||Requires:|Race Balancing Project EV-D 10.5|Less Annoying Magic Experience 1.7|Shivering Isles||No one is reading these descriptions anyway, so no more infos here. Pff.||Version 0.993
@@ -90,17 +138,45 @@ FILENAME:bgMagicEV.esp
  DESCRIP:{{BASH:Relev,Delev,Names}}|"Less Annoying Magic Experience"|(LAME)|Main file||Content:|- makes magic less annoying|- special expert and master spells|- many new spells to former uninteresting magic schools|- and many things more!||Version 1.7EV
  VERSION:1.7EV
 
+FILENAME:bgMagicEVAddEnVar.esp
+ DESCRIP:Less Annoying Magic Experience|Optional Module||REQUIRES SHIVERING ISLES!||Adds some new spells to enemies.||{{BASH:Relev}}|Version 1.68EV
+ VERSION:1.68EV
+
 FILENAME:bgMagicEVPaperChase.esp
  DESCRIP:Less Annoying Magic Experience |Optional Module||Adds a mini quest to the game: Find new master spells, instead of simply buying them. Warning: Hard riddles, no quest markers, not even journal entries.||Configureable (and clues) with|startquest paperchase||Version 1.68EV
+ VERSION:1.68EV
+
+FILENAME:bgMagicEVShader.esp
+ DESCRIP:{{BASH:NoMerge,Graphics}}|"Less Annoying Magic Experience"|Optional Module||Replaces and enhances some shader effects in game (e.g. makes fire enchanted swords actually burn).||Version 1.7EV
+ VERSION:1.7EV
+
+FILENAME:bgMagicEVStartspells.esp
+ DESCRIP:"Less Annoying Magic Experience"|Optional Module||Removes standard start spells and includes a choice to pick your start spells (e.g. if you want to play a druid, you don't have to take the Scamp as Conjuration start spell).||Works as soon as you leave the sewers.||Version 1.68EV
  VERSION:1.68EV
 
 FILENAME:bgMagicEV_Conjuration_for_Supreme_Magicka.esp
  DESCRIP:{{BASH:Merge}}|"Less Annoying Magic Experience"|Override Module for Supreme Magicka||Only use this if:|- you're using LAME and Supreme Magicka|AND|- you're loading Supreme Magicka after LAME|AND|- you want to have LAME's new summons||Version 1.5|SM Version: 0.86
  VERSION:1.5
 
+FILENAME:bgMagicItemSigil.esp
+ DESCRIP:Less Annoying Magic Experience|Optional Module||Balances and changes all Sigil Stones and premade item enchantments.||Version 1.68EV
+ VERSION:1.68EV
+
+FILENAME:bgMagicLightningbolt.esp
+ DESCRIP:Less Annoying Magic Experience|Optional File||Turns shock damage bolts into... well, into lightnings instead of swirling bolts.
+ VERSION:
+
 FILENAME:bgMagicPotionNumberSoulGemValue.esp
  DESCRIP:Less Annoying Magic Experience|Optional File - Tweak||This file combines two tweaks:|1. Alchemy now affects how many potions you can drink.|- Novice:          1|- Apprentice:   2|- Journeyman: 3|- Expert:          4|- Master:          5||2. Soulgem values are now "prettier".|- Petty:       250|- Small:        500|- Common:  750|- Great:     1250|- Grand:    1750||Version 1.68UV (all languages)||Can be used as standalone, without LAME.
  VERSION:1.68UV
+
+FILENAME:bgMagicShaderLifeDetect.esp
+ DESCRIP:Less Annoying Magic Experience|Optional File - All Languages||Replaces the standard Detect Life effect with something... more interesting.||Version 1.68
+ VERSION:1.68
+
+FILENAME:bgMagicSpellTomes_for_WryeBash.esp
+ DESCRIP:Less Annoying Magic Experience ||Adds spell tomes to various leveled lists, so you can find new spells not only at J'shivrizza.||Only use this when you're using Wrye Bash's bashed patch. Without it would conflict with many major overhaul mods.||Simply rebuilding your patch is enough.||Version 1.68EV
+ VERSION:1.68EV
 
 FILENAME:BHC_Expanded.esp
  DESCRIP:Black Horse Courier Expanded|Version 1.0||Expands the Black Horse Courier by adding 35 new quest-related and non-quest related articles.
@@ -114,6 +190,10 @@ FILENAME:Bob's Armory Oblivion.esp
  DESCRIP:Bob's Armory: Oblivion v1.1|Updates:|Fixed .obj export issues once and for all!|Added flamberge mod.|Added several new weapons.|Toned down a few alpha channels on bump maps so folks who use HDR won't get cataracts.
  VERSION:1.1
 
+FILENAME:Book Jackets Oblivion.esp
+ DESCRIP:Unique covers for in-game books. This version is NOT compatible with Book Placement.
+ VERSION:
+
 FILENAME:Camera Tweaks.esp
  DESCRIP:ChaseCameraMod.esp|EnableFreeLook.esp|VanityCameraSmoother.esp
  VERSION:
@@ -126,6 +206,14 @@ FILENAME:Castle_Dunkerlore_V1.esp
  DESCRIP:Castle Dunkerlore V1.1.2|(compatible with "Vile Lair")||New home for the player!||Castle Dunkerlore can be found on an island located in the Topal Bay.
  VERSION:1.1.2
 
+FILENAME:ChaseCameraMod.esp
+ DESCRIP:v1.01||This mod changes the behavior of the camera when in 3rd person view.||- Removes camera swing delay.  |- Removes elastic camera when moving forward and backward.|- Removes camera shake when moving.|
+ VERSION:1.01
+
+FILENAME:Cobl Filter Late MERGE ONLY.esp
+ DESCRIP:>>> DO NOT ACTIVATE! <<<|Instead, merge into the Bashed Patch. ||{{BASH: Filter}}|Version: 1.53|Group: Last -1|Adds more foods to the Cobl Dinner Plate. Requires OBSE and Wrye Bash.
+ VERSION:1.53
+
 FILENAME:Cobl Glue.esp
  DESCRIP:Version 1.72|Requires: Cobl 1.72||Glues Common Oblivion elements into the rest of the world, adding books to vendors, etc.
  VERSION:1.72
@@ -137,6 +225,14 @@ FILENAME:Cobl Main.esm
 FILENAME:Cobl Si.esp
  DESCRIP:Version 1.63|Requires: Cobl 1.63|Group: Library||Cobl Shivering Isles additions/tweaks.
  VERSION:1.63
+
+FILENAME:CSR - Fine Iron.esp
+ DESCRIP:Default hair and dunmer eye changes|Merged TNR added|Dremora enabled, described and hair added|Argonian extra hairs added|Dremora levelled list changes, towers removed|Helmet and robe changes to reflect model changes|Loadscreen quotes|Inc textures from unofficial patch
+ VERSION:
+
+FILENAME:CSR - Golden Saint.esp
+ DESCRIP:
+ VERSION:
 
 FILENAME:CustomSpellIcons.esm
  DESCRIP:
@@ -204,7 +300,7 @@ FILENAME:Dude Wheres My Horse.esp
 
 FILENAME:Duke Patricks - Actors Can Miss Now.esp
  DESCRIP:Mark II|Magic and Arrow projectiles can miss.|Makes the NPC seem more real!||http://www.spookyfx.com/book/tromp.html
- VERSION:
+ VERSION:Mark II
 
 FILENAME:Duke Patricks - Basic Hypothermia.esp
  DESCRIP:Duke Patricks  Basic Hypothermia II|Rev 1.5||http://www.spookyfx.com/book/tromp.html|
@@ -250,6 +346,18 @@ FILENAME:EnchantmentRestore.esp
  DESCRIP:This mod slowly restores your weapon's enchantment charges over time.
  VERSION:
 
+FILENAME:EnchantmentRestore_Wells.esp
+ DESCRIP:This plugin adds enchantment restoration abilities to Ayleid Wells.
+ VERSION:
+
+FILENAME:Enhanced Economy - House prices.esp
+ DESCRIP:Makes buyable houses cost 3 times as much as in OOO (6-15 x vanilla).||Version 1.0
+ VERSION:1.0
+
+FILENAME:Enhanced Economy - Soulgems.esp
+ DESCRIP:Reprices soulgems when they get filled.||Version 4.2
+ VERSION:4.2
+
 FILENAME:Enhanced Economy.esp
  DESCRIP:Version 4.2||Overhauls the economic game
  VERSION:4.2
@@ -266,11 +374,31 @@ FILENAME:Eska Cair.esp
  DESCRIP:
  VERSION:
 
+FILENAME:EVE_KhajiitFix.esp
+ DESCRIP:Fixes the problem with female khajiits using the male foot texture.  If you are using other mods that alter the race information, you will need to use Wyre Bash to make a Bashed Patch. ||{{BASH:Body-F}}
+ VERSION:
+
+FILENAME:EVE_KnightsoftheNine.esp
+ DESCRIP:Adds female version of the Armor of the Crusader.  For use with EVE_StockClothingReplacer.esp
+ VERSION:
+
 FILENAME:EVE_ShiveringIslesEasterEggs.esp
  DESCRIP:Hides Syl's Dress, Thadon's Robe, and Haskill's Suit in the Shivering Isles.  For use with EVE_StockEquipmentReplacer.esp, which makes these clothing items playable.  See readme for locations of hidden items, or stumble upon them as you play.
  VERSION:
 
+FILENAME:EVE_StockEquipmentReplacer4FCOM.esp
+ DESCRIP:Adds new female versions of clothing and armor that previously had no distinct female versions. Designed to be used with FCOM||{{BASH:Graphics}}||Version: 1.01
+ VERSION:1.01
+
+FILENAME:EyelashesVannilaRaces.esp
+ DESCRIP:
+ VERSION:
+
 FILENAME:Faregyl+Anequina Patch.esp
+ DESCRIP:Patch to make the Eleswyr-Faregyl road compatible with Faregyl Village.
+ VERSION:
+
+FILENAME:Faregyl-FGRoad-Patch.esp
  DESCRIP:Patch to make the Eleswyr-Faregyl road compatible with Faregyl Village.
  VERSION:
 
@@ -278,12 +406,24 @@ FILENAME:Faregyl.esp
  DESCRIP:{{BASH:Relations}}|A farming village built around the Faregyl Inn area. Includes a local smithy and an abandoned gold mine. What happened in the mine?||Version 1.0.10||Uses resources by Mr Silka and Alien Slof.
  VERSION:1.0.10
 
+FILENAME:FCOM_Archery.esp
+ DESCRIP:{{BASH:Merge}}||FCOM Optional Add-On|* Francesco's mod makes archery a lot more deadly than it is in Oscuro's Oblivion Overhaul. This patch merges Fran's bow and ammo rebalance with the new archery items from OOO.||Version: 0.9.9
+ VERSION:0.9.9
+
 FILENAME:FCOM_ArcheryRealSwords.esp
  DESCRIP:{{BASH:Merge}}||FCOM Optional Add-On|* Francesco's mod makes archery a lot more deadly than it is in Oscuro's Oblivion Overhaul. This patch merges Fran's bow and ammo rebalance with the new archery items from FCOM_RealSwords.||Version: 1
  VERSION:1
 
 FILENAME:FCOM_BobsArmory.esp
  DESCRIP:{{BASH: Relev,Delev}}||FCOM Bob's Armory Support File|(Items Releveler & OMOBS Rebalance)||Version: 0.9.9
+ VERSION:0.9.9
+
+FILENAME:FCOM_BobsGuardUnity.esp
+ DESCRIP:{{BASH:Merge}}|FCOM Optional Patch for Bob's Armory and FCOM DiverseGuardUnity plugin. |* Merges Imperial Legion changes from Bob's Armory with OOO and MMM's Diverse Legion Armor, inspired by nb_nmare's Unity project.||Version: 0.9.9
+ VERSION:0.9.9
+
+FILENAME:FCOM_Cobl.esp
+ DESCRIP:{{BASH:Delev,Merge,Relev}}||FCOM Optional Support File for Cobl. Mainly this focuses on Tarnsman's Tamrielic Ingredients part of Cobl.|* Adds the ingredient loot drops from Cobl Ingredients to OOO and MMM. ||Version: 0.9.9
  VERSION:0.9.9
 
 FILENAME:FCOM_Convergence.esm
@@ -294,21 +434,61 @@ FILENAME:FCOM_Convergence.esp
  DESCRIP:{{BASH: Relev,Delev}}|FCOM Convergence plugin|Version: 0.9.9Mb3||* Requires MMM 3.7b3 and OOO 1.34.|* Complete Unity of MMM and OOO.|* Includes hand-merged spawn and item lists, Diverse Creature Skins and MOU (Unity project).
  VERSION:0.9.9Mb3
 
+FILENAME:FCOM_DiverseGuardUnity.esp
+ DESCRIP:{{BASH:Merge}}||FCOM Optional Add-On|*Merges MMM - Diverse Legion Armor with OOO guards. Based on nb_nmare's Unity project (MOU).||Use instead of Diverse Legion Armor.||Version: 0.9.9
+ VERSION:0.9.9
+
+FILENAME:FCOM_DurabilityAndDamage.esp
+ DESCRIP:FCOM option to increase melee damage from weapons. This is similar to the MMM - Durability & Damage option, but with settings that work well with Oscuro's Oblivion Overhaul. Potentially unbalancing unless you also use a mod that makes magicka more powerful,||Version: 0.9.9
+ VERSION:0.9.9
+
+FILENAME:FCOM_Francescos.esp
+ DESCRIP:{{BASH:Delev,Merge,Relev}}||FCOM Francesco's Support File|(Item and Spawn Releveler)|* Integrates Fran Items|* Blocks Fran Spawns in Cyrodiil, * Allows Fran spawns in SI (if present)||Version: 0.9.9
+ VERSION:0.9.9
+
+FILENAME:FCOM_FrancescosItemsAddOn.esp
+ DESCRIP:{{BASH:Delev,Merge,Relev}}||FCOM Support file for Francesco's Optional New Items Add-On|* Makes new items less rare.|* Fixes several circular loot lists in Fran 4.5b||Version: 0.9.9
+ VERSION:0.9.9
+
 FILENAME:FCOM_FrancescosNamedBosses.esp
  DESCRIP:FCOM Optional Add-On|* Adds Fran's Named Bosses to FCOM.|* Supports Francesco v4.5b.||Version: 0.9.9
+ VERSION:0.9.9
+
+FILENAME:FCOM_HungersUnitySI.esp
+ DESCRIP:{{BASH:Merge}}||FCOM Optional Support File for Shivering Isles. Makes the Hungers from MMM and OOO use the SI Hungers rather than the ones from Lore Creatures.||Version: 0.9.9
  VERSION:0.9.9
 
 FILENAME:FCOM_KDCircletsOOOOptimizedNPCEquip.esp
  DESCRIP:{{BASH:Delev,Merge,Relev}}||FCOM Optional plugin for compatibility with KDCircletsOOOOptimized - NPC Equip 1.2.||Version: 0.9.9
  VERSION:0.9.9
 
+FILENAME:FCOM_Knights.esp
+ DESCRIP:{{BASH:Relev,Delev,Merge}}||FCOM Optional Support File for the official Knights of the Nine mod. |*Adds Oscuro/MOBS rebalance to to the weapons from Knights.esp|*Makes Umaril a lot tougher.||Version: 0.9.9Mb3
+ VERSION:0.9.9Mb3
+
+FILENAME:FCOM_LothsBluntWeapons.esp
+ DESCRIP:{{BASH:Merge,Relev}}||FCOM Support File for Loth's Blunt Weapons for NPCs|* This Releveler adjusts Loth's leveled item lists to match FCOM rarity. |* Adds OMOBS-rebalanced stats for Loth's blunt weapons.||Version: 0.9.9
+ VERSION:0.9.9
+
 FILENAME:FCOM_RealSwords.esp
  DESCRIP:{{BASH: Relev,Delev}}||FCOM RealSwords|* Integrates Waalx RealSwords into FCOM using race-specific weapon lists.||Version: 0.9.9
  VERSION:0.9.9
 
+FILENAME:FCOM_SlofsRobeTrader.esp
+ DESCRIP:{{BASH:Delev,Merge,Relev}}||FCOM Optional Support File for Slof's Robe Trader.||Version: 0.9.9
+ VERSION:0.9.9
+
+FILENAME:FCOM_SpawnRatesStronger.esp
+ DESCRIP:{{BASH:Delev,Merge,Relev}}||FCOM Optional plugin to slightly reduce enemy spawns but make them stronger. Produces smaller, stonger mobs. Does not reduce chance of encounters. Use this instead of MMM - Spawn Rates - Reduced.||Version: 0.9.9Mb3
+ VERSION:0.9.9Mb3
+
 FILENAME:FCOM_WarCry.esp
  DESCRIP:{{BASH: Relev,Delev}}||FCOM WarCry Support File|* Unified creatures and factions|* Items & Spawn Releveler|* Makes Flayer Knife playable.||Version: 0.9.9MB3
  VERSION:0.9.9MB3
+
+FILENAME:Francesco's day lenght rescale 1-12.esp
+ DESCRIP:This simple mod changes game days to last longer.
+ VERSION:
 
 FILENAME:Francesco's Leveled Creatures-Items Mod.esm
  DESCRIP:Francesco's Leveled Creatures-Items. Info in the readme.||Ver:4.5bSI|Language:English|Loot:Hardcore|Combat Behavior:Yes|MOBS:Yes
@@ -334,6 +514,10 @@ FILENAME:Francesco's Optional New Items Add-On.esm
  DESCRIP:Adds new weapons and armors to my mod and its loot lists. Requires the original Francesco's Leveled Creatures-Items mod.||Ver:4.5bSI|Language:English|MOBS:Yes|Living Economy:No
  VERSION:4.5bSI
 
+FILENAME:Fransfemale.esp
+ DESCRIP:
+ VERSION:
+
 FILENAME:Fran_Lv30Item_Maltz.esp
  DESCRIP:
  VERSION:
@@ -342,17 +526,61 @@ FILENAME:GlenvarCastle.esp
  DESCRIP:Glenvar Castle v. 2.10|(c) 2007-2008 Quartz||The castle is located on the Green Road, a few miles south of the Imperial City.|The quest starts in the nearby Inn of Ill Omen, where a merchant named Vilandor will ask you to help him.|
  VERSION:2.10
 
+FILENAME:GlenvarCastlePatch.esp
+ DESCRIP:Glenvar Castle v. 1.11||The castle is located on the Green Road, a few miles south of the Imperial City.|The quest starts in the nearby Inn of Ill Omen, where a merchant named Vilandor will ask you to help him.
+ VERSION:1.11
+
+FILENAME:GTAesgaard.esp
+ DESCRIP:GATES TO AESGAARD - EPISODE 1||A supernatural horror action quest.|Requires , oblivion patch v1.2||(c) KoukouStudios & Thepriest909
+ VERSION:1.2
+
 FILENAME:Hammerfell.esp
  DESCRIP:Hammerfell and High Rock Heightmap Version 2.1
  VERSION:2.1
+
+FILENAME:Harvest [Flora] - DLCFrostcrag.esp
+ DESCRIP:Adds support for the new flora added in the official mod: Frostcrag Spire.|||Version: 3.0.0|
+ VERSION:3.0.0
+
+FILENAME:Harvest [Flora] - DLCVileLair.esp
+ DESCRIP:Adds support for the new flora added in the official mod: The Vile Lair.|||Version: 3.0.0|
+ VERSION:3.0.0
+
+FILENAME:Harvest [Flora] - Shivering Isles.esp
+ DESCRIP:Adds support for the new flora added in the official expansion pack: Shivering Isles.|||Version: 3.0.0|
+ VERSION:3.0.0
 
 FILENAME:Harvest [Flora].esp
  DESCRIP:This mod will make all flora change appearance when harvest.|||Version: 3.0.0|
  VERSION:3.0.0
 
+FILENAME:HauntedHouse.esp
+ DESCRIP:The Haunted House is just S.E. of the Imperial city on the Red Ring Road. (just N of the great bridge)|Very difficult mod. Read the enclosed text file.
+ VERSION:
+
+FILENAME:Hear-Me-Not.esp
+ DESCRIP:
+ VERSION:
+
 FILENAME:HotkeyCasting.esp
  DESCRIP:This mod adds extra cast keys so you can cast different spells without having to switch spells.||Performance update and some bugfixes by Marty81.
  VERSION:
+
+FILENAME:Item interchange - Extraction.esp
+ DESCRIP:{{BASH:Merge,Filter}}|Version 0.76|Group: Library||This is REQUIRED for full population of Item Interchange's meta-library.  Without this plugin the mod will not work properly.
+ VERSION:0.76
+
+FILENAME:Item interchange - Option, Ingredients in Bulk.esp
+ DESCRIP:{{BASH:Merge,Filter,IIM,Relev}}|Version 0.76|Group: Last-1||Optional placement plugin.  Use this to greatly increase the quantity of food and alchemy ingredients for sale at vendors.
+ VERSION:0.76
+
+FILENAME:Item interchange - Placement for FCOM.esp
+ DESCRIP:{{BASH:Merge,Filter,IIM,Invent,Delev,Relev}}|Version 0.76|Group: Last-1||Optional placement plugin for FCOM.  Without this Item Interchange will do almost nothing.
+ VERSION:0.76
+
+FILENAME:Item interchange - Placement for Frostcrag.esp
+ DESCRIP:{{BASH:Merge,Filter,IIM,Invent}}|Version 0.76|Group: Last-1||Optional placement plugin for Bethesda's Frostcrag.  Do not use this plugin if you use any other version of DLCFrostcrag.esp
+ VERSION:0.76
 
 FILENAME:KDCircletsOOOOptimized - NPC Equip.esp
  DESCRIP:KD's Cirlcets rebalanced for OOO 1.32 with new enchanted circlets added. Added to all relevent leveled / loot lists. Requires Wrye Bash and 1.2 patch.||Version 1.2
@@ -402,6 +630,14 @@ FILENAME:Kvatch Rebuilt - Leveled Guards - FCOM.esp
  DESCRIP:
  VERSION:
 
+FILENAME:Kvatch Rebuilt - OOO Compatibility.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:Kvatch Rebuilt Weather Patch.esp
+ DESCRIP:Patch for Kvatch Rebuilt.||Fixes Kvatch Rebuilt's weather control script. Can be used with vanilla or any weather mod.
+ VERSION:
+
 FILENAME:Kvatch Rebuilt.esm
  DESCRIP:v1.0 |Main esm. Please ensure Kvatch Rebuilt.esp is also activated||Rebuilds Kvatch brick by brick. New locations, new NPC's, a new arena, new armour and the chance to be Count(ess)!||http://kvatch.net||
  VERSION:1.0
@@ -410,13 +646,29 @@ FILENAME:Kvatch Rebuilt.esp
  DESCRIP:v1.0 |Main esp. Please ensure Kvatch Rebuilt.esm is also activated||Rebuilds Kvatch brick by brick. New locations, new NPC's, a new arena, new armour and the chance to be Count(ess)!||http://kvatch.net||
  VERSION:1.0
 
+FILENAME:LadyDeadlock_LoveYourHorse.esp
+ DESCRIP:
+ VERSION:
+
 FILENAME:LetThePeopleDrink.esp
  DESCRIP:Version: 2.5|Requires: Cobl 1.18|"Let the People Drink" breathes life into the very dry Imperial City, it adds a multitude of fountains as well as a Great Aqueduct running from Charcoal Cave to the city.
  VERSION:2.5
 
+FILENAME:Liana's Face.esp
+ DESCRIP:Face dump from save game.
+ VERSION:
+
 FILENAME:Lightweight Potions.esp
  DESCRIP:Version 1.1||Set all player-made potions to the same weight regardless of ingredient weight.||Optionally set other potion's weight as well.
  VERSION:1.1
+
+FILENAME:ln.esp
+ DESCRIP:
+ VERSION:
+
+FILENAME:Lock Bash Omega.esp
+ DESCRIP:Lock Bash Omega|Version 1.5 -- requires OBSE 0018+|The last lock bashing mod you'll ever use. (Unless it isn't.)
+ VERSION:1.5
 
 FILENAME:Loth's Blunt Weapons for Npcs.esp
  DESCRIP:
@@ -438,6 +690,10 @@ FILENAME:Map Marker Overhaul.esp
  DESCRIP:Everything you need for the map markers||Version 3.5.1
  VERSION:3.5.1
 
+FILENAME:Mart's Monster Mod - Shivering Isles.esp
+ DESCRIP:Activate MMMforSI
+ VERSION:
+
 FILENAME:Mart's Monster Mod.esm
  DESCRIP:Martigen's Monster Mod|Version: 3.7b3p3||The ultimate creature mod. More than 200+ new creatures and NPCs, advanced behaviour and combat AI, hand-tailored loot drops, dynamic size and stat scaling, interfaction relationships, and much more!
  VERSION:3.7b3p3
@@ -452,6 +708,10 @@ FILENAME:Message Tweaks.esp
 
 FILENAME:MidasSpells.esp
  DESCRIP:Midas Spells||This mod adds 295+ new and unique spell types.  It adds beam, spray and projectile attacks. Turn bodies to gold, summon your own magic carpet,  or protect yourself with a ring of fire.  Without changes to the base spell system of oblivion.
+ VERSION:
+
+FILENAME:MIEO-ae.esp
+ DESCRIP:Changes nearly all the ingredient effects of nearly all ingredients.
  VERSION:
 
 FILENAME:MiniMap.esp
@@ -469,6 +729,18 @@ FILENAME:MountainShack.esp
 FILENAME:mythsandlegends.esp
  DESCRIP:Myths and Legends : Weapons|Version : 2.0||This mod adds 14 new weapons into Cyrodil, and several Books.||In order to get the weapons, you must read the stories within these books, and follow there clues.|
  VERSION:2.0
+
+FILENAME:nGCD.esp
+ DESCRIP:nGCD v0b21|(not Galsiah's Character Development)|Requires OBSE v0017!
+ VERSION:0b21
+
+FILENAME:NRB4 OCLR Road Record.esp
+ DESCRIP:{{BASH:Roads}}|Provides correct pathing to allow NPCs to use the new roads.||Use only when Open Cities Leyawiin Reborn is installed.
+ VERSION:
+
+FILENAME:NRB4+RR Patch.esp
+ DESCRIP:Compatibility patch for:||Region Revive - Lake Rumare|New Roads & Bridges Revised||Version 2.1
+ VERSION:2.1
 
 FILENAME:NRB4+UL-II+LtPD Patch.esp
  DESCRIP:Patch file for:||New Roads & Bridges 4.5|Unique Landscapes Imperial Isle 1.6.5|Let the People Drink||Fixes path grids, landscape, and various items blocking any pathways.||Version 3.0.1
@@ -606,6 +878,10 @@ FILENAME:Real Hunger, Cobl.esp
  DESCRIP:Version: 1.6.1|Requires: Cobl 1.23||Cobl version of Real Hunger.
  VERSION:1.6.1
 
+FILENAME:Real Lava 1.3.esp
+ DESCRIP:
+ VERSION:
+
 FILENAME:RealisticFatigue.esp
  DESCRIP:Realistic Fatigue|-----------------||Tweaks all fatigue/encumbrance/movement settings to be more realistic and provide better gameplay. Adds immersive blur/pant fatigue warnings. Adds to all actors fatigue drains for health/encumbrance, fatigue burns for lifting/walking/climbing, fatigue/movement based chance of stagger/trip, and NPC panting. Includes repair fatigue utility to repair leftover fatigue drains.
  VERSION:
@@ -634,9 +910,17 @@ FILENAME:road+bridges.esp
  DESCRIP:Version 4.5.5||Original mod by Ukrr.||Adds several roads and new bridges to make navigating Cyrodiil easier. Especially around the Imperial Isle.
  VERSION:4.5.5
 
+FILENAME:RR - LTPDPatch.esp
+ DESCRIP:
+ VERSION:
+
 FILENAME:RshAlchemy.esp
  DESCRIP:Replaces the original alchemy menu and offers a set of new features and mechanics, including brewing in batches, flexible ingredient filtering, an integrated recipe system, refiners to mask ingredient effects, and customizable calculations of potion weight, cost, and effect magnitude.|
  VERSION:
+
+FILENAME:RTT.esp
+ DESCRIP:RUINED-TAIL'S TALE 3.0||Paul 'Simyaz' Thomson
+ VERSION:3.0
 
 FILENAME:Rumare-AFK_Weye Patch.esp
  DESCRIP:Compatibiity patch for:||Region Revive: Lake Rumare 1.3+|AFK_Weye 2.0+||Must be loaded after both mods in order to take affect.||Version 2.0
@@ -666,6 +950,10 @@ FILENAME:Side's Backpacks.esp
  DESCRIP:VERSION 1.0||this mod adds backpacks to oblivion.
  VERSION:1.0
 
+FILENAME:Side's Sailing Ships (COBL).esp
+ DESCRIP:VERSION 1.2||alchemical sorter and water sources...
+ VERSION:1.2
+
 FILENAME:Side's Sailing Ships.esp
  DESCRIP:VERSION 0.93.1 BETA
  VERSION:0.93.1 BETA
@@ -674,6 +962,14 @@ FILENAME:Slof's Oblivion Robe Trader.esp
  DESCRIP:Robes, robes and more robes! Replaces most of the in-game robes and adds unenchanted versions of them as well as lots of new ones. Robes all fit male and female characters.||Check in at Rindir's Staffs for the new robes, Stonewall Shields for the armoured robes and the trader in Bliss for the Shivering isles robes.||Stonewall Shields stocks the armoured robes.||
  VERSION:
 
+FILENAME:SM_COBL.esp
+ DESCRIP:{{BASH:Merge}}|Poison effect added to admantium fillings, lloramar spines, luminous russula, noble sedge flowers and violet coprinus. But is more of a visual than practical, since "poison poisons" are only slightly stronger and longer lasting versions of damage health poisons.||Levitation effect added to coda flower, racer plumes, sweetpulp and trama root. Levitation cost is so high that these potions only last a few seconds.||But overall, just like in Morrowind!||Version: 0.86
+ VERSION:0.86
+
+FILENAME:SM_DLCSpellTome.esp
+ DESCRIP:This plugin balances the Spell tome spells to fit with supreme magicka related systems.||Version: 0.80
+ VERSION:0.80
+
 FILENAME:SM_EnchantStaff.esp
  DESCRIP:This plugin adds unenchanted staffs and allows you to enchant them into working magic staffs.||Version: 0.80
  VERSION:0.80
@@ -681,6 +977,18 @@ FILENAME:SM_EnchantStaff.esp
 FILENAME:SM_MMM.esp
  DESCRIP:Compatability patch for MMM. Fixes levels and equipment for summoned creatures.||For MMM 3.5.5 - 3.7|Version: 0.89
  VERSION:0.89
+
+FILENAME:SM_NoSpellLights.esp
+ DESCRIP:This plugin removes the lights from all spells you cast.||Version: 0.70
+ VERSION:0.70
+
+FILENAME:SM_OOO.esp
+ DESCRIP:Compatability plugin for OOO if supreme magicka is loading after OOO load this after supreme magicka to ensure prices of items match OOO.||Version: 0.89
+ VERSION:0.89
+
+FILENAME:SM_Scrolls.esp
+ DESCRIP:Balances Scroll spells to match supreme magicka balance.||Version: 0.84
+ VERSION:0.84
 
 FILENAME:SM_ShiveringIsles.esp
  DESCRIP:This plugin adds Supreme Magicka support to Shivering Isles.||Version: 0.86
@@ -778,6 +1086,10 @@ FILENAME:Valenwood_Anequina_Patch.esp
  DESCRIP:Under the sign of the dragon - Tamriel heightmaps -|Valenwood_Anequina Patch V.2.2
  VERSION:2.2
 
+FILENAME:VA_UniqueKatana1Replace.esp
+ DESCRIP:Replaces the unique Akaviri Katanas with custom meshes of my own creation - Godai and Itami.
+ VERSION:
+
 FILENAME:Weather Debug Ring.esp
  DESCRIP:Weather Debug Ring - Equip and it prints the current weather FormID, TimeScale and GameMonth to the console.
  VERSION:
@@ -801,4 +1113,16 @@ FILENAME:Wondrous_Inventory_v091.esp
 FILENAME:xulImperialIsle.esp
  DESCRIP:The majesticness that is the Imperial Isle is finally brought to life through this Unique Landscape. Small shrines now dot the Isle, where travelers can rest and take in the view. Even the wildlife look better in this new environment...will make you think twice before slaughtering that venison for your next meal.||Version: 1.6.3
  VERSION:1.6.3
+
+FILENAME:xulPantherRiver.esp
+ DESCRIP:Unique Landscapes: Panther River v1.1|14th of October, 2008||This mod beautifies the Panther River west of Bravil. It focuses on the river and its banks, making it a quietly and peacefully flowing stream through the lush forest.||Enjoy it!|^_^
+ VERSION:1.1
+
+FILENAME:Younger Hotter NPC's v1.0.esp
+ DESCRIP:YOUNGER HOTTER NPC's - Women|---------------------------------------------|version 1.0 - Women|by nenina||Makes human and elven women younger and prettier. Includes bandits, necromancers, etc. Excludes city beggars, vampires, blind moth priests and other exceptions. Fixes rest of body/face color matching errors from v0.99
+ VERSION:1.0 - Women
+
+FILENAME:[GFX]_Initial_Glow-all.esp
+ DESCRIP:Removes persistent glow from membrane shaders for positive enchantments.||{{BASH:Graphics,NoMerge}}
+ VERSION:
 
