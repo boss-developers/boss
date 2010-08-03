@@ -231,7 +231,7 @@ string GetModHeader(const string& filename) {
 int main(int argc, char *argv[]) {					
 	
 	int x;							//random useful integers
-	string textbuf,textbuf2;		//a line of text from a file (should usually end up being be a file name); 			
+	string textbuf,textbuf2,textbuf3;		//a line of text from a file (should usually end up being be a file name); 			
 	struct __stat64 buf;			//temp buffer of info for _stat function
 	struct tm esmtime;			    //the modification date/time of the main .esm file
 	struct tm modfiletime;			//useful variable to store a file's date/time
@@ -297,9 +297,7 @@ int main(int argc, char *argv[]) {
 	//Enter The Userlist...
 	//Yeah, this is a bit of a dump, but I can always streamline it after I've got it working.
 	userlist.open("BOSS\\userlist.txt");	//File need not exist for BOSS to work, so allow BOSS to keep running if it's not there.
-	if (userlist.fail()) {
-//		bosslog << "userlist.txt does not exist or can't be read. No custom sort rules will be imported." << endl << endl;
-	} else {
+	if (userlist.good()) {
 		bosslog << endl << "------------------" << endl << "Userlist Messages:" << endl << "------------------" << endl << endl;
 		order.open("BOSS\\masterlist.txt");
 		if (order.fail()) {							
@@ -320,68 +318,85 @@ int main(int argc, char *argv[]) {
 		vector<int> index;
 		while (!userlist.eof()) {
 			textbuf=ReadLine("userlist");
-			if (IsValidLine(textbuf) && IsMod(textbuf) && !(textbuf[0]=='>' || textbuf[0]=='<')) {	//Check that it's a valid line, it lists a mod, and it's not a rule line.
+			if (IsValidLine(textbuf) && IsMod(textbuf.substr(1)) && (textbuf[0]=='\?' || textbuf[0]==':')) {	//Check that it's a valid line, it lists a mod, and it's got a mod symbol.
 				modlines.push_back(textbuf);
-				found = true;
-			} else if (IsValidLine(textbuf) && IsMod(textbuf) && (textbuf[0]=='>' || textbuf[0]=='<') && found) {
+			} else if (IsValidLine(textbuf) && IsMod(textbuf) && (textbuf[0]=='>' || textbuf[0]=='<')) {	//Check that it's a valid line, it lists a mod, and it's got a sort symbol.
 				rulelines.push_back(textbuf);
 			}
 		}
-		//Now iterate through modlines, searching masterlist for each one.
-		for (int i = 0; i < (int)modlines.size(); i++) {
-			order.clear();
-			order.seekg(0, order.beg);
-			while (!order.eof()) {
-				textbuf=ReadLine("masterlist");
-				if (Tidy(textbuf) == Tidy(modlines[i])) index.push_back(i);
+		//Now iterate through modlines. If the modline starts with "?", searching masterlist for it, and note it's position in the vector for later removal.
+		if (modlines.size()>0) {
+			for (int i = 0; i < (int)modlines.size(); i++) {
+				if (modlines[i][0]=='\?') {
+					order.clear();
+					order.seekg(0, order.beg);
+					while (!order.eof()) {
+						textbuf=ReadLine("masterlist");
+						if (Tidy(textbuf) == Tidy(modlines[i].substr(1))) index.push_back(i);
+					}
+				}
 			}
 		}
-		//Remove matched indices.
-		for (int i=0;i<(int)index.size();i++) {
-			bosslog << "\"" << modlines[index[i]-i] << "\" already present in masterlist.txt. Custom sorting rule skipped." << endl << endl;
-		//	modlines[index[i]] = "\\";
-		//	rulelines[index[i]] = "\\";
-			modlines.erase(modlines.begin()+index[i]-i);
-			rulelines.erase(rulelines.begin()+index[i]-i);
+		//Remove recorded positions.
+		if (index.size()>0) {
+			for (int i=0;i<(int)index.size();i++) {
+				bosslog << "\"" << modlines[index[i]-i].substr(1) << "\" already present in masterlist.txt. Custom sorting rule skipped." << endl << endl;
+				modlines.erase(modlines.begin()+index[i]-i);
+				rulelines.erase(rulelines.begin()+index[i]-i);
+			}
 		}
 		//And finally, add to the masterlist.
 		//However, we can't add a line directly after the rule line match, since that mod may have comments attached.
 		//We must add to before the next mod line instead.
-			ofstream outfile;
-			outfile.open("BOSS\\masterlist.tmp");
-			order.clear();
-			order.seekg(0, order.beg);
-			found = false;
-			while (!order.eof()) {
-				textbuf=ReadLine("masterlist");
-					if (IsValidLine(textbuf) && IsMod(textbuf) && rulelines.size() > 0) {
-							if (!found) {										//If we haven't found a load after line, we can keep looking.
-								for (int i = 0; i < (int)rulelines.size(); i++) {
-							//		if (rulelines[i] != "\\") {
-										if (Tidy(textbuf) == Tidy(rulelines[i].substr(1))) {
-											if (rulelines[i][0] == '>') {
-												textbuf2 = modlines[i];								//Store till we find another mod line.
-												found = true;
-												outfile << textbuf << endl;
-											} else if (rulelines[i][0] == '<') {
-												outfile << modlines[i] << endl << textbuf << endl;
-												bosslog << "\"" << modlines[i] << "\" added to masterlist before " << textbuf << endl << endl;
-											}
-										} else if (i == (int)rulelines.size()-1) outfile << textbuf << endl;
-							//		} else outfile << textbuf << endl;
-								}
-							} else {				//Found a load after line, so we need to find the next mod and load before, then reset the found flag.
-								outfile << textbuf2 << endl << textbuf << endl;
-								bosslog << "\"" << textbuf2 << "\" added to masterlist after " << textbuf << endl << endl;
-								found = false;
+		//We've now got to take account of differences in addition and override rules.
+		ofstream outfile;
+		outfile.open("BOSS\\masterlist.tmp");
+		order.clear();
+		order.seekg(0, order.beg);
+		found = false;
+		bool overr = false;
+		vector<string> tbuff;
+		while (!order.eof()) {
+			textbuf=ReadLine("masterlist");
+				if (IsValidLine(textbuf) && IsMod(textbuf) && rulelines.size() > 0) {
+					if (!found) {										//If we haven't found a load after line, we can keep looking for ruleline matches in general.
+						for (int i = 0; i < (int)rulelines.size(); i++) {
+							if (Tidy(textbuf) == Tidy(modlines[i].substr(1))) {		//Found the modline in the masterlist. Will only occur for override rules, and only once per line.
+								//Override removes original mod line, so prevent original line being written.
+								//It then functions as an addition rule.
+								overr = true;
+								break;
 							}
-					} else outfile << textbuf << endl;		//Not the line we were looking for, so pass it without any changes.
+							if (Tidy(textbuf) == Tidy(rulelines[i].substr(1))) {	//Found the ruleline in the masterlist.
+								if (rulelines[i][0] == '>') {
+									tbuff.push_back(modlines[i].substr(1));							//Add line to vector string containing lines to be added before next mod line.
+									textbuf2 = textbuf;												//Store till we find another mod line.
+									found = true;
+								} else if (rulelines[i][0] == '<') {
+									outfile << modlines[i].substr(1) << endl;						//Add the modline before passing the original line.
+									bosslog << "\"" << modlines[i].substr(1) << "\" added to masterlist before \"" << textbuf << "\"" << endl << endl;
+								}
+							}
+						}
+						if (!overr) outfile << textbuf << endl;			//Write the original line once only, and only if not overridden.
+						else overr = false;
+					} else {	//We have found a load after rule line, so we add the stored modline to the beginning of the next line containing a mod.
+						for (int i=0;i<(int)tbuff.size();i++) {					//Loop through all members of tbuff.
+							outfile << tbuff[i] << endl;
+							bosslog << "\"" << tbuff[i] << "\" added to masterlist after \"" << textbuf2 << "\"" << endl << endl;
+						}
+						outfile << textbuf << endl;			//Write the original line once only.
+						found = false;						//Reset conditions.
+						tbuff.clear();						//Reset conditions.
+					}
+				} else outfile << textbuf << endl;		//Not a mod line, or there are no rules, so pass it without any changes.
 			}
 		outfile.close();
 		order.close();
 		userlist.close();
 		system ("del BOSS\\masterlist.txt");
 		system ("ren BOSS\\masterlist.tmp masterlist.txt");
+		bosslog << "Finished importing userlist.txt sorting rules." << endl << endl;
 	}
 	bosslog << endl << "-----" << endl << "Notes" << endl << "-----" << endl << endl;
 
