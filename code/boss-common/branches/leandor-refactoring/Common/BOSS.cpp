@@ -78,26 +78,26 @@ int main(int argc, char *argv[]) {
 	//Check for creation of BOSSlog.txt.
 	bosslog.open("BOSS\\BOSSlog.txt");
 	if (bosslog.fail()) {							
-		cout << endl << "Critical Error! BOSSlog.txt should have been created but it wasn't." << endl;
-		cout << 		"Make sure you are running as Administrator if using Windows Vista or Windows 7." << endl;
-		cout <<    		"! Utility will end now." << endl;
+		cout << endl << "Critical Error! BOSSlog.txt should have been created but it wasn't." << endl
+					 << "Make sure you are running as Administrator if using Windows Vista or Windows 7." << endl
+					 << "! Utility will end now." << endl;
 		exit (1); //fail in screaming heap.
 	}
 
-	bosslog << endl << endl << "-----------------------------------------------------------" << endl;
-	bosslog <<                 " Better Oblivion Sorting Software       Load Order Utility " << endl << endl;
-	bosslog <<                 "   (c) Random007 & the BOSS development team, 2009-2010    " << endl;
-	bosslog <<                 "   Some rights reserved.                                   " << endl;
-	bosslog <<                 "   CC Attribution-Noncommercial-No Derivative Works 3.0    " << endl;
-	bosslog <<                 "   http://creativecommons.org/licenses/by-nc-nd/3.0/       " << endl;
-	bosslog <<                 "   v1.6 (1 August 2010)									   " << endl;
-	bosslog <<                 "-----------------------------------------------------------" << endl << endl;
+	bosslog << endl << endl << "-----------------------------------------------------------" << endl
+							<< " Better Oblivion Sorting Software       Load Order Utility " << endl << endl
+							<< "   (c) Random007 & the BOSS development team, 2009-2010    " << endl
+							<< "   Some rights reserved.                                   " << endl
+							<< "   CC Attribution-Noncommercial-No Derivative Works 3.0    " << endl
+							<< "   http://creativecommons.org/licenses/by-nc-nd/3.0/       " << endl
+							<< "   v1.6 (1 August 2010)									   " << endl
+							<< "-----------------------------------------------------------" << endl << endl;
 
 	//open masterlist.txt
 	order.open("BOSS\\masterlist.txt");	
 	if (order.fail()) {							
-		bosslog << endl << "Critical Error! masterlist.txt does not exist or can't be read!" << endl; 
-		bosslog <<         "! Utility will end now." << endl;
+		bosslog << endl << "Critical Error! masterlist.txt does not exist or can't be read!" << endl
+						<< "! Utility will end now." << endl;
 		bosslog.close();
 		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
@@ -108,9 +108,9 @@ int main(int argc, char *argv[]) {
 	else if (game == 2) _stat64("fallout3.esm", &buf);
 	else if (game == 3) _stat64("morrowind.esm", &buf);
 	else {
-		bosslog << endl << "Critical Error: Master .ESM file not found (or not accessible)!" << endl;
-		bosslog <<         "Make sure you're running this in your Data folder." <<endl;
-		bosslog <<         "! Utility will end now." << endl;
+		bosslog << endl << "Critical Error: Master .ESM file not found (or not accessible)!" << endl
+						<< "Make sure you're running this in your Data folder." << endl
+						<< "! Utility will end now." << endl;
 		bosslog.close();
 		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
@@ -158,9 +158,9 @@ int main(int argc, char *argv[]) {
 	//Open modlist.txt file and verify success																
 	modlist.open("BOSS\\modlist.txt");
 	if (modlist.fail()) {
-		bosslog << endl << "Critical Error! Internal program error! modlist.txt should have been created but it wasn't." << endl;
-		bosslog <<         "Make sure you are running as Administrator if using Windows Vista." << endl;
-		bosslog <<         "! Utility will end now." << endl;
+		bosslog << endl << "Critical Error! Internal program error! modlist.txt should have been created but it wasn't." << endl
+						<< "Make sure you are running as Administrator if using Windows Vista." << endl
+						<< "! Utility will end now." << endl;
 		bosslog.close();
 		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
 		exit(1); //fail in screaming heap.
@@ -184,9 +184,9 @@ int main(int argc, char *argv[]) {
 
 	//Re-order .esp/.esm files to masterlist.txt order	and output messages
 	//Note: \, *, % and ? were chosen as parse switches because they are not valid file name characters and can't appear in an ESP or ESM file name
-	bosslog <<   endl << "------------------------------------" << endl;
-	bosslog <<           "Recognised and re-ordered mod files:" << endl;
-	bosslog <<           "------------------------------------" << endl;
+	bosslog << endl << "------------------------------------" << endl
+					<< "Recognised and re-ordered mod files:" << endl
+					<< "------------------------------------" << endl;
 	x=0;
 	found=FALSE;
 	while (!order.eof()) {					
@@ -216,10 +216,10 @@ int main(int argc, char *argv[]) {
 	} //while
 
 	//Find and show found mods not recognised. Parse each file in modlist.txt and try finding it in masterlist.txt. If not found, unknown.
-	bosslog <<   endl << "-----------------------------------------------------------------" << endl;
-	bosslog <<           "Unrecognised mod files:                                          " << endl;
-	bosslog <<           "Reorder these by hand using your favourite mod ordering utility. " << endl;
-	bosslog <<           "-----------------------------------------------------------------" << endl << endl;
+	bosslog << endl << "-----------------------------------------------------------------" << endl
+					<< "Unrecognised mod files:                                          " << endl
+					<< "Reorder these by hand using your favourite mod ordering utility. " << endl
+					<< "-----------------------------------------------------------------" << endl << endl;
 	modlist.clear();						//reset position in modlist.txt to start.
 	modlist.seekg (0, order.beg);				// "
 	while (!modlist.eof()) {	
@@ -237,7 +237,7 @@ int main(int argc, char *argv[]) {
 	} //while
 
 	//Let people know the program has stopped.
-	bosslog <<   endl << endl << "-----------------------------------------------------------" << endl;
+	bosslog << endl << endl << "-----------------------------------------------------------" << endl;
 	bosslog << "Done.";
 	bosslog.close();
 	system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.

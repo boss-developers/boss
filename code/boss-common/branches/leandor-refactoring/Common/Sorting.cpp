@@ -100,11 +100,7 @@ namespace boss {
 		out << endl << filename;	// show which mod file is being processed.
 
 		// If version's found the show it...
-		if (! version.empty()) {
-			out << " [Version ";
-			out << version;
-			out << "]";
-		}
+		if (! version.empty()) out << " [Version " << version << "]";
 
 		return out.str();
 	}
