@@ -24,7 +24,7 @@ namespace boss {
 
 	const char* regex1 = 
 		"^(?:\\bversion\\b[ ]*(?:[:.\\-]?)|\\brevision\\b(?:[:.\\-]?))[ ]*"
-		"([-0-9a-zA-Z._ ]+\\+?)$"
+		"((?:alpha|beta|test|debug)?\\s*[-0-9a-zA-Z._+]+\\s*(?:alpha|beta|test|debug)?\\s*(?:[0-9]*))$"
 		;
 
 	const char* regex2 = 
@@ -33,8 +33,8 @@ namespace boss {
 		;
 
 	const char* regex3 = 
-		"(?:\\bver(?:[:.]?)|\\brev(?:[:.]?))[ ]*"
-		"([0-9][-0-9a-zA-Z._]*\\+?)$"
+		"(?:\\bver(?:[:.]?)|\\brev(?:[:.]?))\\s*"
+		"([0-9][-0-9a-zA-Z._]*\\+?)"
 		;
 
 	// Matches "Updated: <date>" for the Bashed patch
@@ -46,12 +46,16 @@ namespace boss {
 	// Matches isolated versions as last resort
 	const char* regex5 = 
 		"(?:(?:\\bv|\\br)(?:\\s?)(?:[-.:])?(?:\\s*))"
-		"((?:(?:\\balpha\\b)?|(?:\\bbeta\\b)?|(?:\\bmark\\b)?)\\s*[0-9][-0-9a-zA-Z._]*\\+?)"
+		"((?:(?:\\balpha\\b)?|(?:\\bbeta\\b)?)\\s*[0-9][-0-9a-zA-Z._]*\\+?)"
 		;
 
 	// Matches isolated versions as last resort
 	const char* regex6 = 
-		"((?:(?:\\balpha\\b)?|(?:\\bbeta\\b)?|(?:\\bmark\\b)?)\\s*\\b[0-9][-0-9a-zA-Z._]*\\+?)$"
+		"((?:(?:\\balpha\\b)?|(?:\\bbeta\\b)?)\\s*\\b[0-9][-0-9a-zA-Z._]*\\+?)$"
+		;
+
+	const char* regex7 = 
+		"(^\\bmark\\b\\s*\\b[IVX0-9][-0-9a-zA-Z._+]*\\s*(?:alpha|beta|test|debug)?\\s*(?:[0-9]*)?)$"
 		;
 
 	/// Array used to try each of the expressions defined above using 
@@ -63,6 +67,7 @@ namespace boss {
 			new regex(regex4, regex::icase),
 			new regex(regex5, regex::icase),
 			new regex(regex6, regex::icase),
+			new regex(regex7, regex::icase),
 			0
 			};
 

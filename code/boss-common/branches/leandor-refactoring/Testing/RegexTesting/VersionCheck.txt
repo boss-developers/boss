@@ -312,7 +312,7 @@ FILENAME:Duke Patricks - BASIC Script Effect Silencer.esp
 
 FILENAME:Duke Patricks - Bottle Shoot Archery Practice.esp
  DESCRIP:Shoot Ale bottles to raise marksmanship.||Beta 1.1|http://www.spookyfx.com/book/tromp.html|
- VERSION:
+ VERSION:Beta 1.1
 
 FILENAME:Duke Patricks - Combat Archery.esp
  DESCRIP:Version 3.1a|Rate of fire, and other draw the arrow effects, Damage adjustments, arrows bounce off armor, move backward tripping over real world objects and other realistic features for archery based on my RL combat archery experience.|http://www.spookyfx.com/book/tromp.html|
@@ -1120,7 +1120,7 @@ FILENAME:xulPantherRiver.esp
 
 FILENAME:Younger Hotter NPC's v1.0.esp
  DESCRIP:YOUNGER HOTTER NPC's - Women|---------------------------------------------|version 1.0 - Women|by nenina||Makes human and elven women younger and prettier. Includes bandits, necromancers, etc. Excludes city beggars, vampires, blind moth priests and other exceptions. Fixes rest of body/face color matching errors from v0.99
- VERSION:1.0 - Women
+ VERSION:1.0
 
 FILENAME:[GFX]_Initial_Glow-all.esp
  DESCRIP:Removes persistent glow from membrane shaders for positive enchantments.||{{BASH:Graphics,NoMerge}}
