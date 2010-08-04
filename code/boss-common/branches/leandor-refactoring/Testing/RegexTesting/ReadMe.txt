@@ -1,40 +1,15 @@
-========================================================================
-    CONSOLE APPLICATION : RegexTesting Project Overview
-========================================================================
+Use this program to check the validity of the regular expressions extracting the version string from mod's descriptions.
 
-AppWizard has created this RegexTesting application for you.
+To use it, copy the VersionCheck.txt to the Release directory where the program is located and run the EXE, it will dump to the console the result of evaluating every mod on  the chack list (VersionCheck.txt), and if there are any failures, it will dump the mods that didn't pass the check.
 
-This file contains a summary of what you will find in each of the files that
-make up your RegexTesting application.
+The check is basically:
 
+- Read a VersionCheck.txt entry,
+- Get the Description from it
+- Parse the string to get the version
+- Check that version extracted to the one the VersionCheck.txt says it should have
+- If different => fail the check
 
-RegexTesting.vcxproj
-    This is the main project file for VC++ projects generated using an Application Wizard.
-    It contains information about the version of Visual C++ that generated the file, and
-    information about the platforms, configurations, and project features selected with the
-    Application Wizard.
+The VersionCheck.txt can be generated for your whole load order using the DumpHeaders project. Run it with your Oblivion\Data as working directory and it will create a new modinfo.txt file with the content of all the ESP/ESMs found on yout Data folder in the correct format for the RegexTesting. 
 
-RegexTesting.vcxproj.filters
-    This is the filters file for VC++ projects generated using an Application Wizard. 
-    It contains information about the association between the files in your project 
-    and the filters. This association is used in the IDE to show grouping of files with
-    similar extensions under a specific node (for e.g. ".cpp" files are associated with the
-    "Source Files" filter).
-
-RegexTesting.cpp
-    This is the main application source file.
-
-/////////////////////////////////////////////////////////////////////////////
-Other standard files:
-
-StdAfx.h, StdAfx.cpp
-    These files are used to build a precompiled header (PCH) file
-    named RegexTesting.pch and a precompiled types file named StdAfx.obj.
-
-/////////////////////////////////////////////////////////////////////////////
-Other notes:
-
-AppWizard uses "TODO:" comments to indicate parts of the source code you
-should add to or customize.
-
-/////////////////////////////////////////////////////////////////////////////
+Before using that file, edit by hand the versions missed by the extraction process, then you can try to edit the regexes and test them using the RegextTesting.exe to try your changes.
