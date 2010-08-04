@@ -37,10 +37,10 @@ int main(int argc, char *argv[]) {
 	struct tm modfiletime;			//useful variable to store a file's date/time
 	bool found;						
 	char modfilechar [SIZE];		//used to convert stuff.
-
 	bool update = false;			//To update masterlist or not?
 	bool version_parse = false;		//Enable parsing of mod's headers to look for version strings
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
+	bool isghost;					//Is the file ghosted or not?
 
 	//Parse command line arguments.
 	if (argc > 1) {
@@ -64,6 +64,8 @@ int main(int argc, char *argv[]) {
 	else if (FileExists("fallout3.esm")) game = 2;
 	else if (FileExists("morrowind.esm")) game = 3;
 
+	CreateDirectory("BOSS\\",NULL);
+
 	if (update == true) {
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		int rev = UpdateMasterlist(game);
@@ -74,7 +76,7 @@ int main(int argc, char *argv[]) {
 	cout << endl << "Better Oblivion Sorting Software working..." << endl;
 	
 	//Check for creation of BOSSlog.txt.
-	bosslog.open("BOSSlog.txt");
+	bosslog.open("BOSS\\BOSSlog.txt");
 	if (bosslog.fail()) {							
 		cout << endl << "Critical Error! BOSSlog.txt should have been created but it wasn't." << endl;
 		cout << 		"Make sure you are running as Administrator if using Windows Vista or Windows 7." << endl;
@@ -92,12 +94,12 @@ int main(int argc, char *argv[]) {
 	bosslog <<                 "-----------------------------------------------------------" << endl << endl;
 
 	//open masterlist.txt
-	order.open("masterlist.txt");	
+	order.open("BOSS\\masterlist.txt");	
 	if (order.fail()) {							
 		bosslog << endl << "Critical Error! masterlist.txt does not exist or can't be read!" << endl; 
 		bosslog <<         "! Utility will end now." << endl;
 		bosslog.close();
-		system ("start BOSSlog.txt");	//Displays the BOSSlog.txt.
+		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //if
 
@@ -110,7 +112,7 @@ int main(int argc, char *argv[]) {
 		bosslog <<         "Make sure you're running this in your Data folder." <<endl;
 		bosslog <<         "! Utility will end now." << endl;
 		bosslog.close();
-		system ("start BOSSlog.txt");	//Displays the BOSSlog.txt.
+		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //else
 
@@ -143,24 +145,24 @@ int main(int argc, char *argv[]) {
 	bosslog << endl;
 
 	//Generate list of all .esp or .esm files.
-	if (FileExists ("modlist.txt")) {	//add an additional undo level just in case.
-		if (FileExists ("modlist.old")) {
-			system ("attrib -r modlist.old");	//Clears read only attribute of modlist.old if present, so we can delete the file.
-			system ("del modlist.old");
+	if (FileExists ("BOSS\\modlist.txt")) {	//add an additional undo level just in case.
+		if (FileExists ("BOSS\\modlist.old")) {
+			system ("attrib -r BOSS\\modlist.old");	//Clears read only attribute of modlist.old if present, so we can delete the file.
+			system ("del BOSS\\modlist.old");
 		}
-		system ("attrib -r modlist.txt");	//Clears read only attribute of modlist.txt if present, so we can rename the file.
-		system ("ren modlist.txt modlist.old");
+		system ("attrib -r BOSS\\modlist.txt");	//Clears read only attribute of modlist.txt if present, so we can rename the file.
+		system ("ren BOSS\\modlist.txt modlist.old");
 	} //if
-	system ("dir *.es? /a:-d /b /o:d /t:w > modlist.txt"); // quick way to list the mod files: pipe them into a text file.
+	system ("dir *.es? /a:-d /b /o:d /t:w > BOSS\\modlist.txt"); // quick way to list the mod files: pipe them into a text file.
 
 	//Open modlist.txt file and verify success																
-	modlist.open("modlist.txt");			
+	modlist.open("BOSS\\modlist.txt");
 	if (modlist.fail()) {
 		bosslog << endl << "Critical Error! Internal program error! modlist.txt should have been created but it wasn't." << endl;
 		bosslog <<         "Make sure you are running as Administrator if using Windows Vista." << endl;
 		bosslog <<         "! Utility will end now." << endl;
 		bosslog.close();
-		system ("start BOSSlog.txt");	//Displays the BOSSlog.txt.
+		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
 		exit(1); //fail in screaming heap.
 	} //if
 
@@ -191,17 +193,21 @@ int main(int argc, char *argv[]) {
 		textbuf=ReadLine("order");
 		if (IsValidLine(textbuf) && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
 			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
-				if (FileExists(textbuf)) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
+				isghost = false;
+				if (FileExists(textbuf+".ghost") && !FileExists(textbuf)) isghost = true;
+				if (FileExists(textbuf) || isghost) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
 					found=TRUE;
-
-					string text = version_parse ? GetModHeader(textbuf) : textbuf;
-
-					bosslog << endl << text << endl;		// show which mod file is being processed.
-
+					string text = version_parse ? GetModHeader(textbuf, isghost) : textbuf;
 					x++;
 					modfiletime=esmtime;
 					modfiletime.tm_min += x;				//files are ordered in minutes after oblivion.esp .
-					ChangeFileDate(textbuf, modfiletime);
+
+					if (isghost) {
+						text += " (*Ghosted*)";
+						ChangeFileDate(textbuf+".ghost", modfiletime);
+					} else ChangeFileDate(textbuf, modfiletime);
+
+					bosslog << endl << text << endl;		// show which mod file is being processed.
 				} //if
 				else found=FALSE;
 			} //if
@@ -234,6 +240,6 @@ int main(int argc, char *argv[]) {
 	bosslog <<   endl << endl << "-----------------------------------------------------------" << endl;
 	bosslog << "Done.";
 	bosslog.close();
-	system ("start BOSSlog.txt");	//Displays the BOSSlog.txt.
+	system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
 	return (0);
 }

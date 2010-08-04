@@ -84,12 +84,14 @@ namespace boss {
 	/// GetModHeader(string textbuf):
 	///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
 	///
-	string GetModHeader(const string& filename) {
+	string GetModHeader(const string& filename, bool ghosted) {
 
 		ostringstream out;
+		ModHeader header;
 
 		// Read mod's header now...
-		ModHeader header = ReadHeader(filename);
+		if (ghosted) header = ReadHeader(filename+".ghost");
+		else header = ReadHeader(filename);
 
 		// The current mod's version if found, or empty otherwise.
 		string version = header.Version;

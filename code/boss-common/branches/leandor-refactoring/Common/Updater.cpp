@@ -56,7 +56,7 @@ namespace boss {
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
 			curl_easy_perform(curl);
 			curl_easy_cleanup(curl);
-			out.open("masterlist.tmp");
+			out.open("BOSS\\masterlist.tmp");
 			out << buffer;
 			out.close();
 		}
@@ -80,8 +80,8 @@ namespace boss {
 		//Add revision number to masterlist and fix the line breaks.
 		oldline = "? Masterlist Information: " + SVN_REVISION_KW + ", " + SVN_DATE_KW + ", " + SVN_CHANGEDBY_KW;
 		newline = "? Masterlist Revision: "+revision;
-		in.open("masterlist.tmp");
-		out.open("masterlist.txt");
+		in.open("BOSS\\masterlist.tmp");
+		out.open("BOSS\\masterlist.txt");
 		while (!in.eof()) {	
 			in.getline(cbuffer,MAXLENGTH);
 			buffer = (string)cbuffer;
@@ -99,7 +99,7 @@ namespace boss {
 		in.close();
 		out.close();
 		//Remove temporary masterlist file.
-		system ("del masterlist.tmp");
+		system ("del BOSS\\masterlist.tmp");
 		//Return revision number.
 		return end;
 	}

@@ -39,6 +39,6 @@ namespace boss {
 
 	/// GetModHeader(string textbuf):
 	///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
-	string GetModHeader(const string& filename);
+	string GetModHeader(const string& filename, bool ghosted);
 };
 #endif __BOSS_SORTING_H__
