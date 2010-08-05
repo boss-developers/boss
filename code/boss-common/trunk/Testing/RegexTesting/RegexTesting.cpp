@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/convenience.hpp>
@@ -18,47 +19,82 @@ using namespace boost::algorithm;
 using namespace boss;
 
 
-string Trim(string& text) {
-	
-	return text;
+string Get(istream& iss)
+{
+	string value = GetLine(iss);
+	if (value.empty()) {
+		throw exception("No more data to read.");
+	}
+
+	return value;
+}
+
+string Consume(string& data, const string value)
+{
+	static boost::format InvalidInputError = boost::format("Invalid input file format. Expected: '%1%' but found '%2%'");
+
+	trim(data);
+	if (!starts_with(data, value)) {
+		throw exception((InvalidInputError % value % data).str().c_str());
+	}
+	replace_first(data, value, "");
+
+	return data;
 }
 
 int main(int argc, char* argv[])
 {
-	directory_iterator end;
-	path root = current_path();
-
-	path outname = root / "testing.txt";
-	remove(outname);
-
-	ofstream out(outname.filename());
-	out << "Running on: " << root << endl << endl;
-
-	for (directory_iterator it(root); it != end; it++) {
-
-		if (is_directory(it->status())) {
-			continue;
-		}
-
-		path item = it->path();
-		
-		string ext = extension(*it);
-		to_lower(ext);
-
-		if (ext == ".esp" || ext == ".esm") {
-
-			ModHeader header = ReadHeader(item.filename());
-
-			out << " * " << item.filename() << endl;
-
-			if (!header.Version.empty()) {
-				out << "  * VERSION: [" << trim_copy(header.Version) << "]" << endl;
+	try
+	{
+		path root = current_path();
+	
+		path inname = root / "VersionCheck.txt";
+	
+		ifstream in(inname.filename());
+	
+		cout << "Reading: " << inname.filename() << endl << endl;
+	
+		string line;
+		int total = 0;
+		int failures = 0;
+		while (GetLine(in, line)) {
+	
+			string modfile = Consume(line, "FILENAME:");
+	
+			line = Get(in);
+			string descr = Consume(line, "DESCRIP:");
+			string text = ParseVersion(replace_all_copy(descr, "|", "\n"));
+	
+			line = Get(in);
+			string version = Consume(line, "VERSION:");		
+	
+			bool ok = equals(text, version);
+			string state = "OK";
+			if (!ok) {
+				state = "Failed";
+				++failures;
 			}
 
-			out << "  * DESCR: [" << replace_all_copy(header.Description, "\r\n", "|") << "]" << endl << endl;
+			bool print = !ok;
+			if (argc > 1 && equals(argv[1], "--all")) {
+				print = true;
+			}
+
+			if (print){
+				cout << (boost::format("%1%: %2%.\n - Expected: [%3%]\n - Extracted: [%4%]\n - Description: [%5%]") % modfile % state % version % text % descr).str() << endl << endl;
+			}
+
+			++total;
 		}
+		
+		cout << "Total processed: " << total << ", failed: " << failures << endl;
+
+		return 0;
 	}
-	
-	return 0;
+	catch (exception& e)
+	{
+		cerr << "Error: " << e.what() << endl;
+		return 1;
+	}
 }
 

@@ -9,10 +9,6 @@
 
 #include <stdio.h>
 #include <windows.h>
-#include <time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/utime.h>
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -20,206 +16,16 @@
 #include <ctype.h>
 #include <direct.h>
 #include <sstream>
-#define CURL_STATICLIB			//Tells the compiler to use curl as a static library.
-#include <curl/curl.h>
-#include <curl/types.h>
-#include <curl/easy.h>
+#include <time.h>
+#include <sys/stat.h>
+#include <sys/utime.h>
 
-#include <Support/Types.h>
-#include <Support/ModFormat.h>
+#include "BOSS.h"
 
-#define SIZE 26 				//used in convertion of date/time struct to a string. Has to be this length.
-#define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitary number.
+#define SIZE 26 				//used in conversion of date/time struct to a string. Has to be this length.
+#define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitrary number.
 
-using namespace std;
 using namespace boss;
-
-ifstream order;						//masterlist.txt - the grand mod order list
-ifstream modlist;					//modlist.txt - list of esm/esp files in oblivion/data
-ofstream bosslog;					//BOSSlog.txt - output file.
-bool fcom;							//true if key FCOM files are found.
-bool ooo;                      	 	//true if OOO esm is found.
-bool bc;                        	//true if Better Cities esm is found.
-bool fook2;							//true if key FOOK2 files are found.
-bool fwe;							//true if FWE esm is found
-
-string Tidy(string filename) {						//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
-	int endpos = filename.find_last_not_of(" \t");
-	
-	if (filename.npos == endpos) return (""); 			//sanity check for empty string
-	else {
-		filename = filename.substr(0, endpos+1);
-		for (unsigned int i = 0; i < filename.length(); i++) filename[i] = tolower(filename[i]);
-		return (filename);
-	}
-}
-
-bool FileExists(string filename) {
-//file-exists check function
-	struct __stat64 fileinfo;						//variable that holds the result of _stat
-	string str = Tidy(filename);
-
-	return (_stat64(str.c_str(),&fileinfo)==0);		//will be true if stat opened successfully
-}
-
-void ChangeFileDate(string textbuf, struct tm modfiletime)  {
-//changes a file's modification date
-	struct __utimbuf64 ut;							//way to change time data for Windows _utime function
-		int a;										//holds result of file changes
-
-	ut.actime = _mkgmtime64(&modfiletime);			//set up ut structure for _utime64.
-	ut.modtime = _mkgmtime64(&modfiletime);	
-	a = _utime64(textbuf.c_str(), &ut);				//finally, change the file date.
-	if (a!=0) bosslog << endl << "Program error - file " << textbuf << " could not have its date changed, code " << a << endl;		
-}
-
-bool IsMod(string textbuf) {
-	return (((textbuf[0]!='\\') && (textbuf[0]!='*') && (textbuf[0]!='\?') && (textbuf[0]!='%') && (textbuf[0]!=':') && (textbuf[0]!='$') &&(textbuf[0]!='^') && (textbuf[0]!='"')));
-}
-
-bool IsMessage(string textbuf) {
-	return (((textbuf[0]=='\?') || (textbuf[0]=='*') || (textbuf[0]=='%') || (textbuf[0]==':') || (textbuf[0]=='$') || (textbuf[0]=='^') || (textbuf[0]=='"')));
-}
-
-bool IsValidLine(string textbuf) {
-	return ((textbuf.length()>1) && (Tidy(textbuf)!="Oblivion.esm") && (Tidy(textbuf)!="fallout3.esm") && (Tidy(textbuf)!="Morrowind.esm"));
-}
-
-void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc, bool fook2, bool fwe) {
-	switch (textbuf[0]) {	
-		case '*':
-			if (fcom) bosslog << "  !!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << endl;
-			else if (fook2) bosslog << "  !!! FOOK2 INSTALLATION ERROR: " << textbuf.substr(1) << endl;
-		break;
-		case ':':
-			bosslog << " . Requires: " << textbuf.substr(1) << endl;
-		break;
-		case '$':
-			if (ooo) bosslog << " . OOO Specific Note: " << textbuf.substr(1) << endl;
-			else if (fwe) bosslog << "  . FWE Specific Note: " << textbuf.substr(1) << endl;
-		break;
-		case '%':
-			bosslog << "  . Bashed Patch tag suggestion: " << textbuf.substr(1) << endl;
-		break;
-		case '\?':
-			bosslog << "  . Note: " << textbuf.substr(1) << endl;
-		break;
-		case '"':
-			bosslog << "  . Incompatible with: " << textbuf.substr(1) << endl;
-		break;
-		case '^':
-			bosslog << "  . Better Cities Specific Note: " << textbuf.substr(1) <<endl;
-		break;
-	} //switch
-}
-
-string ReadLine (string file) {						//Read a line from a file. Could be rewritten better.
-	char cbuffer[MAXLENGTH];						//character buffer.
-	string textbuf;
-
-	if (file=="order") order.getline(cbuffer,MAXLENGTH);				//get a line of text from the masterlist.txt text file
-	if (file=="modlist") modlist.getline(cbuffer,MAXLENGTH);			//get a line of text from the modlist.txt text file
-	//No internal error handling here.
-	textbuf=cbuffer;
-	if (file=="order") {		//If parsing masterlist.txt, parse only lines that start with > or < depending on FCOM installation. Allows both FCOM and nonFCOM differentiaton.
-		if ((textbuf[0]=='>') && (fcom)) textbuf.erase(0,1);
-		if ((textbuf[0]=='>') && (!fcom)) textbuf='\\';
-		if ((textbuf[0]=='<') && (!fcom)) textbuf.erase(0,1);
-		if ((textbuf[0]=='<') && (fcom)) textbuf='\\';
-	} //if
-	return (textbuf);
-}
-
-int writer(char *data, size_t size, size_t nmemb, string *buffer){
-	int result = 0;
-	if(buffer != NULL) {
-		buffer -> append(data, size * nmemb);
-		result = size * nmemb;
-	}
-	return result;
-} 
-
-int UpdateMasterlist(int game) {
-	char *url;									//Masterlist file url
-	CURL *curl;									//Some cURL resource...
-	string buffer,revision,oldline,newline;		//A bunch of strings.
-	int start,end;								//Position holders for trimming strings.
-	ofstream out;								//Output stream.
-	const string SVN_REVISION_KW = "$" "Revision" "$";                   // Left as separated parts to avoid keyword expansion
-    const string SVN_DATE_KW = "$" "Date" "$";                           // Left as separated parts to avoid keyword expansion
-    const string SVN_CHANGEDBY_KW= "$" "LastChangedBy" "$";              // Left as separated parts to avoid keyword expansion
-
-	//Get HEAD revision number from http://better-oblivion-sorting-software.googlecode.com/svn/ page text.
-	curl = curl_easy_init();
-	if (curl){
-		curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/");
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &revision );
-		curl_easy_perform(curl);
-		curl_easy_cleanup(curl);
-	}
-	start = revision.find("Revision ");
-	end = revision.find(": /");
-	end = end - (start+9);
-	revision = revision.substr(start+9,end);
-	stringstream ss(revision);
-	ss >> end;
-
-	//Which masterlist to get?
-	if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
-	else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
-	else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-morrowind/masterlist.txt";
-
-	//Get SVN masterlist file.
-	oldline = "? Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
-	newline = "? Masterlist Revision: "+revision;
-    curl = curl_easy_init();
-    if (curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, url);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
-        curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
-		//Correct formatting and replace SVN keywords with revision number.
-		out.open("BOSS\\masterlist.txt",ios::in|ios::trunc);
-		int pos = buffer.find(oldline);
-		buffer.replace(pos,oldline.length(),newline);
-		pos = buffer.find("\r");
-		while (pos > -1) {
-			buffer.replace(pos,2,"\n");
-			pos = buffer.find("\r");
-		}
-		out << buffer;
-		out.close();
-    }
-	//Return revision number.
-	return end;
-}
-
-/// GetModHeader(string textbuf):
-///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
-///
-string GetModHeader(const string& filename, bool ghosted) {
-
-	ostringstream out;
-	ModHeader header;
-
-	// Read mod's header now...
-	if (ghosted) header = ReadHeader(filename+".ghost");
-	else header = ReadHeader(filename);
-	
-
-	// The current mod's version if found, or empty otherwise.
-	string version = header.Version;
-
-	// Output the mod information...
-	out << endl << filename;	// show which mod file is being processed.
-
-	// If version's found the show it...
-	if (!version.empty()) out << " [Version " << version << "]";
-
-	return out.str();
-}
 
 //BOSS [--update | -u] [--help | -h] [--version-check | -V]
 int main(int argc, char *argv[]) {					

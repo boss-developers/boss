@@ -1,19 +1,20 @@
 /*	Better Oblivion Sorting Software
-	2.0 Beta
+	
 	Quick and Dirty Load Order Utility
 	(Making C++ look like the scripting language it isn't.)
 
-    	Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
-    	http://creativecommons.org/licenses/by-nc-nd/3.0/
+    Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
+    http://creativecommons.org/licenses/by-nc-nd/3.0/
 
-	 $Id: VersionRegex.cpp 1200 2010-07-29 22:51:09Z leandor@gmail.com $
-	$URL: https://better-oblivion-sorting-software.googlecode.com/svn/BOSS%20source%20code/Support/VersionRegex.cpp $
+	$Revision$, $Date$
 */
 
+#include <string>
 #include <boost/regex.hpp>
 
 namespace boss {
 
+	using namespace std;
 	using namespace boost;
 
 	/// REGEX expression definition
@@ -21,40 +22,52 @@ namespace boss {
 	///    1. The marker string "version", "ver", "rev", "v" or "r"
 	///    2. The version string itself.
 
-	// Matches "Version: 12.33", "Ver 1.23", "Rev 1.23"
-	const char* re1 = 
-			"(version[:\\. ]*|ver[:\\. ]*|rev[:\\. ]*) *"
-			"([-0-9a-zA-Z\\._ ]+\\+?)"
-			"(.*)"
-			;
+	const char* regex1 = 
+		"^(?:\\bversion\\b[ ]*(?:[:.\\-]?)|\\brevision\\b(?:[:.\\-]?))[ ]*"
+		"((?:alpha|beta|test|debug)?\\s*[-0-9a-zA-Z._+]+\\s*(?:alpha|beta|test|debug)?\\s*(?:[0-9]*))$"
+		;
 
-	// Matches "R12.3" and "V1.23"
-	const char* re2 = 
-			"(\\(?r[:\\. ]*\\)?|\\(?v[:\\. ]*\\)?) *"
-			"([-0-9a-zA-Z\\._ ]+\\+?)"
-			"(.*)"
-			;
+	const char* regex2 = 
+		"(?:\\bversion\\b(?:[ :]?)|\\brevision\\b(?:[:.\\-]?))[ ]*"
+		"([0-9][-0-9a-zA-Z._]+\\+?)"
+		;
+
+	const char* regex3 = 
+		"(?:\\bver(?:[:.]?)|\\brev(?:[:.]?))\\s*"
+		"([0-9][-0-9a-zA-Z._]*\\+?)"
+		;
 
 	// Matches "Updated: <date>" for the Bashed patch
-	const char* re3 = 
-			"(Updated:) *"
-			"([-0-9a-zA-Z/\\._ ]+\\+?)"
-			"(.*)"
-			;
+	const char* regex4 = 
+		"(?:Updated:)\\s*"
+		"([-0-9aAmMpP/ :]+)$"
+		;
 
 	// Matches isolated versions as last resort
-	const char* re4 = 
-			"([^0-9]+) *"
-			"([0-9][-0-9a-zA-Z\\._ ]*\\+?)"
-			"(.*)"
-			;
+	const char* regex5 = 
+		"(?:(?:\\bv|\\br)(?:\\s?)(?:[-.:])?(?:\\s*))"
+		"((?:(?:\\balpha\\b)?|(?:\\bbeta\\b)?)\\s*[0-9][-0-9a-zA-Z._]*\\+?)"
+		;
+
+	// Matches isolated versions as last resort
+	const char* regex6 = 
+		"((?:(?:\\balpha\\b)?|(?:\\bbeta\\b)?)\\s*\\b[0-9][-0-9a-zA-Z._]*\\+?)$"
+		;
+
+	const char* regex7 = 
+		"(^\\bmark\\b\\s*\\b[IVX0-9][-0-9a-zA-Z._+]*\\s*(?:alpha|beta|test|debug)?\\s*(?:[0-9]*)?)$"
+		;
 
 	/// Array used to try each of the expressions defined above using 
 	/// an iteration for each of them.
 	regex* version_checks[] = {
-			new regex(re1, regex::icase | regex::extended),
-			new regex(re2, regex::icase | regex::extended),
-			new regex(re3, regex::icase | regex::extended),
+			new regex(regex1, regex::icase),
+			new regex(regex2, regex::icase),
+			new regex(regex3, regex::icase),
+			new regex(regex4, regex::icase),
+			new regex(regex5, regex::icase),
+			new regex(regex6, regex::icase),
+			new regex(regex7, regex::icase),
 			0
 			};
 

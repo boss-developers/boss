@@ -9,20 +9,17 @@
 	$Revision$, $Date$
 */
 
-#ifndef __SUPPORT_VERSIONREGEX__HPP__
-#define __SUPPORT_VERSIONREGEX__HPP__
+#ifndef __BOSS_MASTERLIST_H__
+#define __BOSS_MASTERLIST_H__
 
-#include <boost/regex.hpp>
+#include <string>
 
 namespace boss {
+	using namespace std;
 
-	using namespace boost;
+	bool IsMod(string textbuf);
+	bool IsMessage(string textbuf);
+	bool IsValidLine(string textbuf);
+}
 
-	/// Array used to try each of the expressions defined above using 
-	/// an iteration for each of them.
-	regex* version_checks[];
-
-};
-
-
-#endif __SUPPORT_VERSIONREGEX__HPP__
+#endif __BOSS_MASTERLIST_H__

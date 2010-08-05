@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="BOSS.cpp" />
     <ClCompile Include="..\Support\Helpers.cpp">
       <Filter>Support</Filter>
     </ClCompile>
@@ -11,10 +10,35 @@
     <ClCompile Include="..\Support\VersionRegex.cpp">
       <Filter>Support</Filter>
     </ClCompile>
+    <ClCompile Include="Masterlist.cpp">
+      <Filter>Masterlist</Filter>
+    </ClCompile>
+    <ClCompile Include="Updater.cpp">
+      <Filter>Updater</Filter>
+    </ClCompile>
+    <ClCompile Include="BOSS.cpp" />
+    <ClCompile Include="Sorting.cpp">
+      <Filter>Sorting</Filter>
+    </ClCompile>
+    <ClCompile Include="Globals.cpp">
+      <Filter>Globals</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support">
       <UniqueIdentifier>{4cc2d3c9-6316-4c73-9626-c777c252397c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Masterlist">
+      <UniqueIdentifier>{bdd935b7-3faf-46b4-b332-4945a5c4f787}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sorting">
+      <UniqueIdentifier>{a89cfbe9-ab64-4030-ba8a-7d494cee717b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Updater">
+      <UniqueIdentifier>{f8cf259d-a738-46ea-bfeb-f34b2d1989ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Globals">
+      <UniqueIdentifier>{c8c250b9-403a-48ff-b4f8-2582ac08f2c7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -29,6 +53,19 @@
     </ClInclude>
     <ClInclude Include="..\Support\VersionRegex.h">
       <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="Masterlist.h">
+      <Filter>Masterlist</Filter>
+    </ClInclude>
+    <ClInclude Include="Updater.h">
+      <Filter>Updater</Filter>
+    </ClInclude>
+    <ClInclude Include="Sorting.h">
+      <Filter>Sorting</Filter>
+    </ClInclude>
+    <ClInclude Include="BOSS.h" />
+    <ClInclude Include="Globals.h">
+      <Filter>Globals</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

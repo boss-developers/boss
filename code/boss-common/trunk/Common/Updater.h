@@ -9,20 +9,18 @@
 	$Revision$, $Date$
 */
 
-#ifndef __SUPPORT_VERSIONREGEX__HPP__
-#define __SUPPORT_VERSIONREGEX__HPP__
+#ifndef __BOSS_UPDATER_H__
+#define __BOSS_UPDATER_H__
 
-#include <boost/regex.hpp>
+#define CURL_STATICLIB			//Tells the compiler to use curl as a static library.
+#include <curl/curl.h>
+#include <curl/types.h>
+#include <curl/easy.h>
 
 namespace boss {
 
-	using namespace boost;
+	int UpdateMasterlist(int game);
 
-	/// Array used to try each of the expressions defined above using 
-	/// an iteration for each of them.
-	regex* version_checks[];
+}
 
-};
-
-
-#endif __SUPPORT_VERSIONREGEX__HPP__
+#endif __BOSS_UPDATER_H__

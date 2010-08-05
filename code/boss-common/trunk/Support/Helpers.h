@@ -1,13 +1,12 @@
 /*	Better Oblivion Sorting Software
-	2.0 Beta
+	
 	Quick and Dirty Load Order Utility
 	(Making C++ look like the scripting language it isn't.)
 
-    	Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
-    	http://creativecommons.org/licenses/by-nc-nd/3.0/
+    Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
+    http://creativecommons.org/licenses/by-nc-nd/3.0/
 
-	 $Id: Helpers.h 1200 2010-07-29 22:51:09Z leandor@gmail.com $
-	$URL: https://better-oblivion-sorting-software.googlecode.com/svn/BOSS%20source%20code/Support/Helpers.h $
+	$Revision$, $Date$
 */
 
 #ifndef __SUPPORT_HELPERS__HPP__
@@ -19,58 +18,70 @@
 #include <Support/Types.h>
 
 namespace boss {
+	using namespace std;
 
-using namespace std;
-
-
-//////////////////////////////////////////////////////////////////////////
-// Helper functions
-//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	// Helper functions
+	//////////////////////////////////////////////////////////////////////////
 
 
-//
-// string ParseVersion(string&):
-//	- Tries to extract the version string value from the given text,
-//	using the above defined regexes to do the dirty work.
-//
-string ParseVersion(const string& text);
+	//
+	// string ParseVersion(string&):
+	//	- Tries to extract the version string value from the given text,
+	//	using the above defined regexes to do the dirty work.
+	//
+	string ParseVersion(const string& text);
 
-//
-// bool ReadLine(InputStream, OutputString&):
-//	- Reads a text line from the received input stream.
-//
-bool ReadLine(istream& is, string& s);
+	//
+	// bool ReadLine(InputStream, OutputString&):
+	//	- Reads a text line from the received input stream.
+	//
+	bool ReadLine(istream& is, string& s);
 
-//
-// string ReadString(pointer&, maxsize):
-//	- Reads a consecutive array of charactes up to maxsize length and 
-//	returns them as a new string.
-//
-string ReadString(char*& bufptr, ushort size = 512);
+	/// bool GetLine(istream& is, string& s)
+	///  - Reads a text line skipping all the empty lines along the way
+	bool GetLine(istream& is, string& s);
 
-//
-// T Read<T>(pointer&):
-//	- Tries to extract a value of the specified type T from the 
-//	received buffer, incrementing the pointer to point past the readen 
-//	value.
-//
-template <typename T> 
-inline T Read(char*& buffer) {
-	T value = Peek<T>(buffer);
-	buffer += sizeof(T);
-	return value;
-}
+	/// bool GetLine(istream& is, string& s)
+	///  - Reads a text line skipping all the empty lines along the way
+	string GetLine(istream& is);
 
-//
-// T Peek<T>(pointer&):
-//	- Peeks into the received buffer and returns the value pointed 
-//	converting it to the type T.
-//
-template <typename T> 
-T Peek(char* buffer) {
-	return *reinterpret_cast<T*>(buffer);
-}
+	//
+	// string ReadString(pointer&, maxsize):
+	//	- Reads a consecutive array of charactes up to maxsize length and 
+	//	returns them as a new string.
+	//
+	string ReadString(char*& bufptr, ushort size = 512);
 
+	//
+	// T Read<T>(pointer&):
+	//	- Tries to extract a value of the specified type T from the 
+	//	received buffer, incrementing the pointer to point past the readen 
+	//	value.
+	//
+	template <typename T> 
+	inline T Read(char*& buffer) {
+		T value = Peek<T>(buffer);
+		buffer += sizeof(T);
+		return value;
+	}
+
+	//
+	// T Peek<T>(pointer&):
+	//	- Peeks into the received buffer and returns the value pointed 
+	//	converting it to the type T.
+	//
+	template <typename T> 
+	T Peek(char* buffer) {
+		return *reinterpret_cast<T*>(buffer);
+	}
+
+
+	//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
+	string Tidy(string filename);
+
+	//Check if the given file-exists
+	bool FileExists(string filename);
 };
 
 #endif __SUPPORT_HELPERS__HPP__
