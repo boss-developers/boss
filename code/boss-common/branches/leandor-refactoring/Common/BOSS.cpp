@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 	bool found;						
 	char modfilechar [SIZE];		//used to convert stuff.
 	bool update = false;			//To update masterlist or not?
-	bool version_parse = false;		//Enable parsing of mod's headers to look for version strings
+	bool version_parse = true;		//Enable parsing of mod's headers to look for version strings
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
 	bool isghost;					//Is the file ghosted or not?
 
@@ -47,14 +47,14 @@ int main(int argc, char *argv[]) {
 		for (int i=0; i < argc; i++) {
 			if (strcmp("--update", argv[i]) == 0 || strcmp("-u", argv[i]) == 0) {
 				update = true;
-			} else if (strcmp("--version-check", argv[i]) == 0 || strcmp("-V", argv[i]) == 0) {
-				version_parse = true;
+			} else if (strcmp("--disable-version-parse", argv[i]) == 0 || strcmp("-V-", argv[i]) == 0) {
+				version_parse = false;
 			} else if (strcmp("--help", argv[i]) == 0 || strcmp("-h", argv[i]) == 0) {
 				cout << "Better Oblivion Sorting Software is a utility that sorts the load order of TESIV: Oblivion, TESIII: Morrowind and Fallout 3 mods according to their relative positions on a frequently-updated masterlist ";
 				cout << "to ensure proper load order and minimise incompatibilities between mods." << endl << endl;
 				cout << "Optional Parameters" << endl << endl;
 				cout << "-u, --update: " << endl << "    Automatically updates the local copy of the masterlist using the latest version available on the Google Code repository." << endl << endl;
-				cout << "-V, --version-check: " << endl << "    Enables the parsing of each mod's description and if found extracts from there the author stamped mod's version and prints it along other data in the generated bosslog.txt." << endl << endl;
+				cout << "-V-, --disable-version-parse: " << endl << "    Enables the parsing of each mod's description and if found extracts from there the author stamped mod's version and prints it along other data in the generated bosslog.txt." << endl << endl;
 				exit (0);
 			}
 		}
