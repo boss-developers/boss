@@ -23,6 +23,6 @@ namespace boss {
 	}
 	
 	bool IsValidLine(string textbuf) {
-		return ((textbuf.length()>1) && (Tidy(textbuf)!="oblivion.esm") && (Tidy(textbuf)!="fallout3.esm") && (Tidy(textbuf)!="morrowind.esm"));
+		return ((textbuf.length()>1) && (Tidy(textbuf)!="Oblivion.esm") && (Tidy(textbuf)!="Fallout3.esm") && (Tidy(textbuf)!="Morrowind.esm"));
 	}
 }
