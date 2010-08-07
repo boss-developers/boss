@@ -221,19 +221,21 @@ int main(int argc, char *argv[]) {
 					<< "Reorder these by hand using your favourite mod ordering utility. " << endl
 					<< "-----------------------------------------------------------------" << endl << endl;
 	modlist.clear();						//reset position in modlist.txt to start.
-	modlist.seekg (0, order.beg);				// "
+	modlist.seekg (0, order.beg);			// "
 	while (!modlist.eof()) {	
 		textbuf=ReadLine("modlist");
-		found=FALSE;
-		order.clear ();						//reset position in masterlist.txt to start.
-		order.seekg (0, order.beg);			// "
-		while (!order.eof() && !found) {	//repeat until end of masterlist.txt or file found.				
-			textbuf2=ReadLine("order");
-			if (IsValidLine(textbuf) && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
-				if (IsMod(textbuf2)) if (Tidy(textbuf)==Tidy(textbuf2)) found=TRUE;		//filter out comment, blank and message lines when checking for match - speeds process up.
-			}
-		} // while
-		if (!found && textbuf.length()>1) bosslog << "Unknown mod file: " << textbuf << endl;
+		if (IsValidLine(textbuf) && textbuf[0]!='\\')  { //Filter out blank lines, oblivion.esm and remark lines starting with \.
+			found=FALSE;
+			order.clear ();						//reset position in masterlist.txt to start.
+			order.seekg (0, order.beg);			// "
+			while (!order.eof() && !found) {	//repeat until end of masterlist.txt or file found.				
+				textbuf2=ReadLine("order");	
+				if (IsMod(textbuf2))			//filter out comment, blank and message lines when checking for match - speeds process up.
+					if (Tidy(textbuf)==Tidy(textbuf2))
+						found=TRUE;
+			} // while
+			if (!found && textbuf.length()>1) bosslog << "Unknown mod file: " << textbuf << endl;
+		}
 	} //while
 
 	//Let people know the program has stopped.
