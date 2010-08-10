@@ -30,6 +30,7 @@
     <ClInclude Include="Masterlist.h" />
     <ClInclude Include="Sorting.h" />
     <ClInclude Include="Updater.h" />
+    <ClInclude Include="Userlist.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5414EFAE-A1AB-477F-8897-3C99131B634D}</ProjectGuid>

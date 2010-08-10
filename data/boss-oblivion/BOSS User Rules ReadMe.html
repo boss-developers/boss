@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+	<title>BOSS User Rules ReadMe</title>
+	<style type="text/css">
+	#body {font-family:Calibri,Arial,Verdana,sans-serifs;}
+	#title {font-size:2.4em; font-weight:bold; text-align: center;}
+	div > span {font-weight:bold; font-size:1.3em;}
+	.subtitle {font-weight: normal;font-size:1.3em;}
+	.definition {text-indent:-1.4em; margin-left: 2.5em;}
+	ol li {margin-bottom:10px;}
+	ul li {margin-bottom:10px;}
+	</style>
+  </head>
+	<body id="body">
+	<div id="title">Better Oblivion Sorting Software</div>
+	<div id="title">User Rules Documentation</div><br /><br />
+
+	<div><span>Introduction</span>
+	<p style="color:red">NOTE: This readme is for features unique to the wrinklyninja-user-rules branch. Nothing discussed in this readme has been 
+	implemented yet. It is an outline of the user rules implementation, and is subject to change, although I expect that
+	very little will. Once everything is confirmed as working correctly, the branch will be merged into the trunk, and these features become a part of
+	the official BOSS.
+	<br />-WrinklyNinja</p>
+	<p>While BOSS is able to sort the large number of mods listed in its masterlist without any user input, you may find that you wish to customise 
+	the sorting of your mods to a degree. This may be to include mods not listed in the masterlist (eg. temporary plugins or private mods that would 
+	serve no benefit being in the masterlist), or it could be to rearrange mods present in the masterlist that can be loaded in a different configuration 
+	for different results (eg. LAME and Supreme Magicka files). You may also wish to add extra messages to mods, or edit existing messages.</p>
+	<p>One possible solution is to edit your copy of the masterlist to include the desired changes. However, as updating your masterlist will remove 
+	these edits, this is not very suitable as a long term solution.</p>
+	<p>This is where user rules comes in. Using a separate userlist file, you can define as many rules for sorting specific mods or 
+	groups of mods as you like, or for adding or overriding the messages attached to mods, and these rules will not be lost when you update your masterlist.</p>
+	</div><br /><br />
+  
+	<div><span>Getting Started With The Userlist (or: Dictatorship In A Nutshell)</span>
+	<p style="color:purple">NOTE: In this readme, the words 'mod' and 'plugin' are used interchangeably, meaning 'one individual file with a .esp or 
+	.esm extension'. Unless explicitely stated, the 'name' of a 'mod' or 'plugin' refers to its filename, including the extension.</p>
+	<p>The userlist is the file which contains your custom rules for sorting mods and editing mods' messages. It is found at "Data\BOSS\userlist.txt". If it 
+	does not exist, simply create a new text file there with the same name.</p>
+	<p>Within this file, which you can open up in Notepad to edit, you list your rules definitions. There are three main types of rules that you can define:
+	<ol class="list">
+		<li><em>Plugin rules.</em> These sort plugins relative to other plugins. These plugins may be .esp or .esm files. You can add new plugins to sort, or override 
+		the positions of plugins already found in the masterlist with new positions.</li>
+		<li><em>Group rules.</em> These sort groups of plugins relative to other groups of plugins. These groups are all pre-defined in the BOSS masterlist, and are 
+		marked out by  "\BeginGroup	\:  Group Name" and "\EndGroup\\" lines. You cannot define new groups to add to the masterlist, only move those which 
+		already exist.</li>
+		<li><em>Message rules.</em> These allow you to add or override any of the message types that can be attached to mods. The message types are: Bash Tag suggestions, 
+		general comments, critical FCOM install errors, installation requirements, specific incompatibilities, comments specific to when using OOO, and comments 
+		specific to when using Better Cities.</li>
+	</ol>
+	The rule definition syntax is simple and concise, and is explained below.</p>
+	</div><br /><br />
+	
+	<div><span>Rule Definition Syntax (or: Righting Rules)</span>
+	<div>
+	<span class="subtitle">Sorting Rules</span>
+	<p>Plugin and Group type rules are also known as <em>sorting rules</em>, since they affect the load position of mods. Sorting rules consist of two lines of text:</p>
+	<ol>
+		<li><em>The sort line.</em> This consists of a <em>sort symbol</em> which defines the type of rule, and a <em>sort mod</em> or <em>sort group</em> which defines the mod or group the rule is 
+		applied to respectively.</li>
+		<li><em>The match line.</em> This consists of a <em>match symbol</em> which defines how the sort mod/group is ordered, and a <em>match mod</em> or <em>match group</em> which defines what the 
+		sort mod/group is ordered relative to.</li>
+	</ol>
+	<p>When you define sort and match mods, the filenames of those mods are used. When you define sort and match groups, the names of those groups are used as they appear 
+	in the masterlist. For example, if you wanted to sort or match the group of mods that begins with <code>\BeginGroup\: Supreme Magicka</code>, you would put it in the rule as 
+	<code>Supreme Magicka</code>.</p>
+	<p>The sort symbols are:</p>
+	<p class="definition">?&nbsp;&nbsp;&nbsp;&nbsp;This is used to signify the rule is of the <em>plugin addition</em> type, adding a mod not in the masterlist to a specific position in the masterlist.</p>
+	<p class="definition">:&nbsp;&nbsp;&nbsp;&nbsp;This is used to signify the rule is of the <em>plugin override</em> type, overriding the current position of a mod already in the masterlist with a new 
+	position specified by the rule.</p>
+	<p class="definition">*&nbsp;&nbsp;&nbsp;&nbsp;This is used to signify the rule is of the <em>group override</em> type, as it overrides the current position of a group in the masterlist with a 
+	new position specified by the rule.</p>
+	<p>The match symbols are:</p>
+	<p class="definition">&gt;&nbsp;&nbsp;&nbsp;&nbsp;This states that the sort mod or group given on the previous line is to load immediately after the match mod or group given after the match symbol.</p>
+	<p class="definition">&lt;&nbsp;&nbsp;&nbsp;&nbsp;This states that the sort mod or group given on the previous line is to load immediately before the match mod or group given after the match symbol.</p>
+	<p>You may not mix and match mods and groups within rules. A mod must be sorted relative to other mods, and a group must be sorted relative to another group, using the appropriate sort symbol.</p>
+	<p>Some examples:</p>
+	<blockquote><code>
+	?MyModToAdd.esp<br />
+	&gt;LoadAfterThis.esm<br /><br />
+	:MyModToOverride.esp<br />
+	&lt;LoadBeforeThis.esp<br /><br />
+	*L.A.M.E.<br />
+	&lt;Supreme Magicka
+	</code></blockquote>
+	<p>It should be self-evident, but the first example basically says <q>add MyModToAdd.esp to the masterlist after LoadAfterThis.esm</q> and the second says <q>remove MyModToOverride.esp from its current position 
+	in the masterlist, then add it before LoadBeforeThis.esp</q>. The third example says <q>remove the group L.A.M.E. and its contents from the masterlist, then add it and its contents before the Supreme Magicka group</q>.</p>
+	</div><br />
+	
+	<div><span class="subtitle">Messages</span>
+	<p>Before we can go on to explain message rules, we must first understand message types. Each of the seven message types begins with a <em>symbol code</em> that signifies what type of message it is, and 
+	then the message itself follows it. The message is just a standard line of text. In addition, Bash Tag suggestion comments also have a special syntax for the suggestions they include. The symbol 
+	codes for the different message types are:</p>
+	<p class="definition">%&nbsp;&nbsp;&nbsp;&nbsp;Bash Tag Suggestion</p>
+	<p class="definition">?&nbsp;&nbsp;&nbsp;&nbsp;General Comment</p>
+	<p class="definition">*&nbsp;&nbsp;&nbsp;&nbsp;Critical FCOM Install Error</p>
+	<p class="definition">:&nbsp;&nbsp;&nbsp;&nbsp;Installation Requirement</p>
+	<p class="definition">"&nbsp;&nbsp;&nbsp;&nbsp;Specific Incompatibility</p>
+	<p class="definition">$&nbsp;&nbsp;&nbsp;&nbsp;OOO specific comment. This will only be displayed if the user has OOO in their load order.</p>
+	<p class="definition">^&nbsp;&nbsp;&nbsp;&nbsp;Better Cities specific comment. This will only be displayed if the user has Better Cities in their load order.</p>
+	<p>The syntax for a Bash Tag suggestion is:<br /><br />
+	% {{BASH:list suggested tags separated by commas here}} you may also have some text here.</p>
+	<p>For example:</p>
+	<blockquote><code>% {{BASH:Names,Graphics}} to prevent changes being lost when using overhauls.</code></blockquote>
+	</div><br />
+	
+	<div><span class="subtitle">Message Rules</span>
+	<p><em>Message rules</em> are different from sorting rules in that they do not affect the load order of plugins, but can be used to display information specific to a plugin. They have a slightly different 
+	syntax due to these differences, but still consist of two lines of text:</p>
+	<ol>
+		<li><em>The message line.</em> This line consists of the <em>message symbol</em> followed by the full comment line as it would appear in the masterlist, complete with opening symbol code.</li>
+		<li><em>The mod line.</em> This consists of a <em>mod symbol</em> followed by the name of the mod that you wish to add the message to, or override an existing message of.</li>
+	</ol>
+	<p>Messages can only be applied to specific mods, not groups. There is only one message symbol, and this is:</p>
+	<p class="definition">"&nbsp;&nbsp;&nbsp;&nbsp;This is the message symbol. It signifies that the rule is a message rule.</p>
+	<p>The mod symbols are:</p>
+	<p class="definition">/&nbsp;&nbsp;&nbsp;&nbsp;This states that the message is to be added to the mod that is given after the mod symbol.</p>
+	<p class="definition">|&nbsp;&nbsp;&nbsp;&nbsp;This states that the message is to overwrite any existing message or messages of the same type attached to the mod that is given after the mod symbol.</p>
+	<p>Here are two examples:</p>
+	<blockquote><code>
+	"% {{BASH:R.Teeth}}<br />
+	/bgBalancingEVOptionalFangs.esp<br /><br />
+	"? This is a replacement message.<br />
+	|Unofficial Shivering Isles Patch.esp
+	</code></blockquote>
+	<p>The first example says <q>add the Bash Tag suggestion '{{BASH:R.Teeth}}' to the mod bgBalancingEVOptionalFangs.esp</q>. The second says <q>replace the current general comments attached to 'Unofficial Shivering 
+	Isles Patch.esp' with 'This is a replacement message.'</q>.</p>
+	</div>
+	</div><br /><br />
+	
+	<div><span>Further Notes On Rules (or: Rules Have Rules)</span>
+	<p>You saw how to define simple rules with the examples at the end of the last section. Here are some further notes on defining rules that may not be evident, particularily when using multiple rules.</p>
+	<ol>
+		<li>You do not need to have blank lines between your rules, though it is neater and easier to read, especially when you have lots of rules.</li>
+		<li>The names of mods and groups are not case-sensitive.</li>
+		<li><b>You must never sort a mod or group twice</b>. When using a mix of mod and group rules, be very careful to ensure that none of the sort mods are contained in any of the sort groups.</li>
+		<li>
+			Rules are applied in the order they are listed, except that 'load before' rules are applied before 'load after' rules. This means that you can have several rules loading different sort mods 
+			or groups before or after the same match mod or group, eg:<br />
+			<blockquote><code>
+			?Mod3.esp<br />
+			&gt;RTT.esp<br /><br />
+			?Mod5.esp<br />
+			&gt;RTT.esp<br /><br />
+			?Mod1.esp<br />
+			&lt;RTT.esp<br /><br />
+			?Mod4.esp<br />
+			&gt;RTT.esp<br /><br />
+			?Mod2.esp<br />
+			&lt;RTT.esp
+			</code></blockquote>
+			will give an order of:
+			<blockquote>Mod1.esp<br />
+			Mod2.esp<br />
+			RTT.esp<br />
+			Mod3.esp<br />
+			Mod5.esp<br />
+			Mod4.esp</blockquote>
+		</li>
+		<li>
+			You may have the sort mod or group of one mod being the match mod or group of others, so long as it is first sorted in one rule and then matched in later rules. <b>Do not have your rules 
+			listed so that mods or groups are sorted after being matched.</b> An example of a correct set of rule-dependent rules is:<br />
+			<blockquote><code>
+			?Mod1.esp<br />
+			&lt;LoadBeforeThis.esp<br /><br />
+			:xulAspenWood.esp<br />
+			&gt;Mod1.esp<br /><br />
+			?Mod2.esp<br />
+			&lt;Mod1.esp
+			</code></blockquote>
+			which will order the mods as:
+			<blockquote>Mod2.esp<br />
+			Mod1.esp<br />
+			xulAspenWood.esp<br />
+			LoadBeforeThis.esp</blockquote>
+		</li>
+		<li>Message rules are also applied in the order they are listed, with no exceptions. You may use this to add or override multiple messages to the same mod using a series of rules, with 
+		each rule adding or overriding another message.</li>
+		<li><b>You must never add and override the same type of message for the same mod.</b> Instead, just include whatever you wished to add as part of the message in the override message rule.</li>
+	</ol>
+	<p>The functionality described in point 5 does not allow you to do anything that cannot be done using the functionality described in point 4. You can get the same result simply by ordering your 
+	rules a certain way. For instance:</p>
+	<blockquote><code>
+	?Mod2.esp<br />
+	&lt;LoadBeforeThis.esp<br /><br />
+	?Mod1.esp<br />
+	&lt;LoadBeforeThis.esp<br /><br />
+	:xulAspenWood.esp<br />
+	&lt;LoadBeforeThis.esp<br /><br />
+	</code></blockquote>
+	<p>will have the same effect as the rules in point 5. While rule-dependent rules can be simpler to understand, they carry a greater risk of resulting in an incorrect load order if you do not list 
+	them properly. Therefore, it is advisable that you rely on rule ordering over rule-dependence wherever possible.</p>
+	</div><br /><br />
+	
+	<div><span>Enforcing Your Rules (or: How To Be The BOSS)</span>
+	<p>When BOSS is run, it will look for a userlist.txt. If it finds one, and the file contains at least one rule, it will apply all the rules it finds. It will print messages 
+	detailing the results of the rule application(s) into your BOSSlog.txt, in a section headed "Userlist Messages" near the top. There are two types of message that can be found:</p>
+	<ol>
+		<li>A <em>success</em> message, detailing what mod or group was added, and where. A success message for a message rule will detail the type of rule added or overridden and to what mod the message was 
+		attached. It will not display the message itself, for brevity's sake.</li>
+		<li>A <em>failure</em> message. This only occurs for 'plugin addition' type rules, if BOSS finds that the sort mod of that rule is already present in the masterlist. In this case, the message will be 
+		of the form: <code>"<em>Mod Name</em>" already present in masterlist.txt. Custom sorting rule skipped.</code></li>
+	</ol>
+	<p>Rule application does not alter your masterlist.txt, only making its changes while BOSS is running. This means that if you want to undo the application of
+	a rule, all you need to do is remove it from your userlist.txt and re-run BOSS.</p>
+	</div><br /><br />
+	
+	<div><span>Compatibility With BOSS Master List Manager (BOMM)</span>
+	<p>Compatibility with BOMM has not been tested. However, as BOMM includes similar functionality, it would be advisable to only use one method of implementing custom 
+	rules until a definite compatibility status has been determined, unless you are specifically interested in helping test the compatibility of the two. </p>
+	<div><br /><br />
+	</body>
+</html>

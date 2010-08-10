@@ -40,6 +40,9 @@
     <Filter Include="Globals">
       <UniqueIdentifier>{c8c250b9-403a-48ff-b4f8-2582ac08f2c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Userlist">
+      <UniqueIdentifier>{e71913a2-ec4f-41d5-b803-4dac118f5085}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Support\Helpers.h">
@@ -66,6 +69,9 @@
     <ClInclude Include="BOSS.h" />
     <ClInclude Include="Globals.h">
       <Filter>Globals</Filter>
+    </ClInclude>
+    <ClInclude Include="Userlist.h">
+      <Filter>Userlist</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
