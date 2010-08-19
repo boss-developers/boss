@@ -21,13 +21,14 @@
 #include <sys/utime.h>
 
 #include "BOSS.h"
+#include "Userlist.h"
 
 #define SIZE 26 				//used in conversion of date/time struct to a string. Has to be this length.
 #define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitrary number.
 
 using namespace boss;
 
-//BOSS [--update | -u] [--help | -h] [--version-check | -V]
+//BOSS [--update | -u] [--help | -h] [--version-check | -V] [--revert-level | -r]
 int main(int argc, char *argv[]) {					
 	
 	int x;							//random useful integers
@@ -41,6 +42,7 @@ int main(int argc, char *argv[]) {
 	bool version_parse = false;		//Enable parsing of mod's headers to look for version strings
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
 	bool isghost;					//Is the file ghosted or not?
+	int revert;						//What level to revert to?
 
 	//Parse command line arguments.
 	if (argc > 1) {
@@ -49,6 +51,9 @@ int main(int argc, char *argv[]) {
 				update = true;
 			} else if (strcmp("--version-check", argv[i]) == 0 || strcmp("-V", argv[i]) == 0) {
 				version_parse = true;
+			} else if (strcmp("--revert-level", argv[i]) == 0 || strcmp("-r", argv[i]) == 0) {
+				revert = stoi(argv[i+1]);
+				cout << revert;
 			} else if (strcmp("--help", argv[i]) == 0 || strcmp("-h", argv[i]) == 0) {
 				cout << "Better Oblivion Sorting Software is a utility that sorts the load order of TESIV: Oblivion, TESIII: Morrowind and Fallout 3 mods according to their relative positions on a frequently-updated masterlist ";
 				cout << "to ensure proper load order and minimise incompatibilities between mods." << endl << endl;
@@ -63,6 +68,14 @@ int main(int argc, char *argv[]) {
 	if (FileExists("oblivion.esm")) game = 1;
 	else if (FileExists("fallout3.esm")) game = 2;
 	else if (FileExists("morrowind.esm")) game = 3;
+	else {
+		bosslog << endl << "Critical Error: Master .ESM file not found (or not accessible)!" << endl
+						<< "Make sure you're running this in your Data folder." << endl
+						<< "! Utility will end now." << endl;
+		bosslog.close();
+		system("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
+		exit (1); //fail in screaming heap.
+	}
 
 	CreateDirectory("BOSS\\",NULL);
 
@@ -74,6 +87,10 @@ int main(int argc, char *argv[]) {
 	}
 
 	cout << endl << "Better Oblivion Sorting Software working..." << endl;
+
+	Mods modlist;
+	modlist.AddMods();
+	if (revert<1) modlist.SaveModList();
 	
 	//Check for creation of BOSSlog.txt.
 	bosslog.open("BOSS\\BOSSlog.txt");
@@ -83,7 +100,7 @@ int main(int argc, char *argv[]) {
 					 << "! Utility will end now." << endl;
 		exit (1); //fail in screaming heap.
 	}
-			
+
 	bosslog << endl << endl << "-----------------------------------------------------------" << endl
 							<< " Better Oblivion Sorting Software       Load Order Utility " << endl << endl
 							<< "   (c) Random007 & the BOSS development team, 2009-2010    " << endl
@@ -94,33 +111,16 @@ int main(int argc, char *argv[]) {
 							<< "-----------------------------------------------------------" << endl << endl;
 
 	//open masterlist.txt
-	order.open("BOSS\\masterlist.txt");	
+	if (revert==1) order.open("BOSS\\modlist.txt");	
+	else if (revert==2) order.open("BOSS\\modlist.old");	
+	else order.open("BOSS\\masterlist.txt");	
 	if (order.fail()) {							
 		bosslog << endl << "Critical Error! masterlist.txt does not exist or can't be read!" << endl 
 						<< "! Utility will end now." << endl;
 		bosslog.close();
-		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
+		system("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //if
-
-	//get date for oblivion.esm.
-	if (game == 1) _stat64("oblivion.esm", &buf);
-	else if (game == 2) _stat64("fallout3.esm", &buf);
-	else if (game == 3) _stat64("morrowind.esm", &buf);
-	else {
-		bosslog << endl << "Critical Error: Master .ESM file not found (or not accessible)!" << endl
-						<< "Make sure you're running this in your Data folder." << endl
-						<< "! Utility will end now." << endl;
-		bosslog.close();
-		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
-		exit (1); //fail in screaming heap.
-	} //else
-
-	_gmtime64_s(&esmtime, &buf.st_mtime);		//convert _stat64 modification date data to date/time struct.
-
-	//Display oblivion.esm's modification date (mostly for debugging)
-	_ctime64_s (modfilechar, SIZE, &buf.st_mtime);	//convert date/time to printable string for output.
-	bosslog << "Master .ESM date: " << (string)modfilechar;
 
 	if (game == 1) {
 		//Check if FCOM or not
@@ -144,43 +144,26 @@ int main(int argc, char *argv[]) {
 	}
 	bosslog << endl;
 
-	//Generate list of all .esp or .esm files.
-	if (FileExists ("BOSS\\modlist.txt")) {	//add an additional undo level just in case.
-		if (FileExists ("BOSS\\modlist.old")) {
-			system ("attrib -r BOSS\\modlist.old");	//Clears read only attribute of modlist.old if present, so we can delete the file.
-			system ("del BOSS\\modlist.old");
-		}
-		system ("attrib -r BOSS\\modlist.txt");	//Clears read only attribute of modlist.txt if present, so we can rename the file.
-		system ("ren BOSS\\modlist.txt modlist.old");
-	} //if
-	system ("dir *.es? /a:-d /b /o:d /t:w > BOSS\\modlist.txt"); // quick way to list the mod files: pipe them into a text file.
-
-	//Open modlist.txt file and verify success																
-	modlist.open("BOSS\\modlist.txt");
-	if (modlist.fail()) {
-		bosslog << endl << "Critical Error! Internal program error! modlist.txt should have been created but it wasn't." << endl
-						<< "Make sure you are running as Administrator if using Windows Vista." << endl
-						<< "! Utility will end now." << endl;
-		bosslog.close();
-		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
-		exit(1); //fail in screaming heap.
-	} //if
-
 	//Remove any read only attributes from esm/esp files if present.
 	system("attrib -r *.es?");
 
-	//Change mod date of each file in the list to oblivion.esm date _plus_ 1 year. Ensures unknown mods go last in original order.
+	//get date for oblivion.esm.
+	if (game == 1) _stat64("oblivion.esm", &buf);
+	else if (game == 2) _stat64("fallout3.esm", &buf);
+	else if (game == 3) _stat64("morrowind.esm", &buf);
+	_gmtime64_s(&esmtime, &buf.st_mtime);		//convert _stat64 modification date data to date/time struct.
+
+	//Change mod date of each file in the list to oblivion.esm date _plus_ 1 month. Ensures unknown mods go last in original order.
 	x=0;
-	while (!modlist.eof()) {	
-		textbuf=ReadLine("modlist");
-		if (IsValidLine(textbuf)) {
+	for (int i=0;i<(int)modlist.mods.size();i++) {
+		if (IsValidLine(modlist.mods[i])) {
 			x++;				
 			modfiletime=esmtime;
 			modfiletime.tm_mon+=1;					//shuffle all mods foward a month 
 			modfiletime.tm_min=x;					//and order (in minutes) to original order
-			ChangeFileDate(textbuf, modfiletime);
+			ChangeFileDate(modlist.mods[i], modfiletime);
 		} //if
-	} //while
+	}
 
 	//Re-order .esp/.esm files to masterlist.txt order	and output messages
 	//Note: \, *, % and ? were chosen as parse switches because they are not valid file name characters and can't appear in an ESP or ESM file name
@@ -220,26 +203,23 @@ int main(int argc, char *argv[]) {
 					<< "Unrecognised mod files:                                          " << endl
 					<< "Reorder these by hand using your favourite mod ordering utility. " << endl
 					<< "-----------------------------------------------------------------" << endl << endl;
-	modlist.clear();						//reset position in modlist.txt to start.
-	modlist.seekg (0, order.beg);				// "
-	while (!modlist.eof()) {	
-		textbuf=ReadLine("modlist");
+	for (int i=0;i<(int)modlist.mods.size();i++) {
 		found=FALSE;
 		order.clear ();						//reset position in masterlist.txt to start.
 		order.seekg (0, order.beg);			// "
 		while (!order.eof() && !found) {	//repeat until end of masterlist.txt or file found.				
 			textbuf2=ReadLine("order");
-			if (IsValidLine(textbuf) && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
-				if (IsMod(textbuf2)) if (Tidy(textbuf)==Tidy(textbuf2)) found=TRUE;		//filter out comment, blank and message lines when checking for match - speeds process up.
+			if (IsValidLine(modlist.mods[i])) {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
+				if (IsMod(textbuf2)) if (Tidy(modlist.mods[i])==Tidy(textbuf2)) found=TRUE;		//filter out comment, blank and message lines when checking for match - speeds process up.
 			}
 		} // while
-		if (!found && textbuf.length()>1) bosslog << "Unknown mod file: " << textbuf << endl;
+		if (!found && modlist.mods[i].length()>1) bosslog << "Unknown mod file: " << modlist.mods[i] << endl;
 	} //while
 
 	//Let people know the program has stopped.
 	bosslog << endl << endl << "-----------------------------------------------------------" << endl;
 	bosslog << "Done.";
 	bosslog.close();
-	system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
+	system("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
 	return (0);
 }
