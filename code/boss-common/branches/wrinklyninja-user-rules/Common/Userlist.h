@@ -29,6 +29,15 @@ namespace fs = boost::filesystem;
 
 namespace boss {
 	using namespace std;
+
+	//Date comparison, used for sorting mods in modlist class.
+	bool SortByDate(string mod1,string mod2) {
+			time_t t1 = fs::last_write_time(mod1) ;
+			time_t t2 = fs::last_write_time(mod2) ;
+
+			if (difftime(t1,t2)>0) return false;
+			else return true;
+	}
 	
 	//Rules class contains storage objects for all 4 parts of a rule.
 	//Also contains constructor-ish function to load all rules.
@@ -131,8 +140,7 @@ namespace boss {
 		void SaveModList();
 	};
 
-	//Adds mods in directory to Modlist.
-	//Doesn't list them in date order yet.
+	//Adds mods in directory to Modlist in date order (same as current load order, basically).
 	void Mods::AddMods() {
 		fs::path p(".");
 		if (fs::is_directory(p)) {
@@ -142,6 +150,7 @@ namespace boss {
 				}
 			}
 		}
+		sort(mods.begin(),mods.end(),SortByDate);
 	}
 
 	//Save mod list to modlist.txt.
@@ -154,7 +163,6 @@ namespace boss {
 		for (int i=0;i<(int)mods.size();i++) {
 			modlist << mods[i] << endl;
 		}
-		//system ("dir *.es? /a:-d /b /o:d /t:w > BOSS\\modlist.txt");
 	}
 
 	//Debug output function.
