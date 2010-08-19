@@ -237,12 +237,17 @@
 	It will print messages detailing the results of the rule application(s) into your BOSSlog.txt, in a section headed "Userlist Messages" near the top. 
 	There are two types of message that can be found:</p>
 	<ol>
-		<li>A <em>success</em> message. For a sorting rule, this details what mod or group was added or moved, and where. For a message rule its will detail the 
-		message and to what mod the message was appended or replaced.</li>
-		<li>A <em>failure</em> message. This can occur for two cases:<div style="height:0.65em;"></div>
+		<li>A <em>success</em> message. This will have one of two forms:<div style="height:0.65em;"></div>
 			<ol>
-				<li>If the rule references mods that are not present in your Data folder, it will print a message of the form: <code>Rule references "<em>Mod Name</em>",
-				which is not present in your Data folder. Rule application skipped.</code></li>
+				<li>For a sorting rule, it will be: <code>"<em>Mod/Group Name</em>" added to masterlist <em>before/after</em> "<em>Mod/Group Name</em>".</code></li>
+				<li>For a message rule it will be: <code>"<em>Message</em>" <em>appended to/replaced</em> messages attached to "<em>Mod Name</em>".</code></li>
+			</ol>
+		<li>A <em>failure</em> message. This can occur for three cases:<div style="height:0.65em;"></div>
+			<ol>
+				<li>If the rule does not follow the correct syntax, it will print a message of the form: <code>The rule beginning "<em>First Line Of Rule</em>" does not 
+				have the correct syntax. Rule application skipped.</code></li>
+				<li>If the rule references mods that are not present in your Data folder, it will print a message of the form: <code>The rule beginning 
+				"<em>First Line Of Rule</em>" references a mod that is not present in your Data folder. Rule application skipped.</code></li>
 				<li>If the rule is an addition-type sorting rule and it tries to add a mod already present in the masterlist, it will print a message of the
 				form: <code>"<em>Mod Name</em>" already present in masterlist.txt. Rule application skipped.</code></li>
 			</ol>

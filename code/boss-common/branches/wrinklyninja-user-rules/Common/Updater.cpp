@@ -12,10 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <strstream>
-
 #include <Support/Types.h>
-
 #include "Updater.h"
 
 namespace boss {
@@ -68,8 +65,6 @@ namespace boss {
 		end = revision.find(": /");
 		end = end - (start+9);
 		revision = revision.substr(start+9,end);
-		stringstream ss(revision);
-		ss >> end;
 		oldline = "? Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
 		newline = "? Masterlist Revision: "+revision;
 		//Correct masterlist formatting and replace SVN keywords with revision number.
@@ -77,13 +72,13 @@ namespace boss {
 		int pos = buffer.find(oldline);
 		buffer.replace(pos,oldline.length(),newline);
 		pos = buffer.find("\r");
-		while (pos > -1) {
+		while (pos!=string::npos) {
 			buffer.replace(pos,2,"\n");
 			pos = buffer.find("\r");
 		}
 		out << buffer;
 		out.close();
 		//Return revision number.
-		return end;
+		return stoi(revision);
 	}
 };
