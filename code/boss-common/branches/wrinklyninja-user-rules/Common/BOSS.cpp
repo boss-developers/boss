@@ -37,12 +37,11 @@ int main(int argc, char *argv[]) {
 	struct tm esmtime;			    //the modification date/time of the main .esm file
 	struct tm modfiletime;			//useful variable to store a file's date/time
 	bool found;						
-	char modfilechar [SIZE];		//used to convert stuff.
 	bool update = false;			//To update masterlist or not?
 	bool version_parse = false;		//Enable parsing of mod's headers to look for version strings
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
 	bool isghost;					//Is the file ghosted or not?
-	int revert;						//What level to revert to?
+	int revert = 0;						//What level to revert to?
 
 	//Parse command line arguments.
 	if (argc > 1) {
@@ -147,26 +146,13 @@ int main(int argc, char *argv[]) {
 	//Remove any read only attributes from esm/esp files if present.
 	system("attrib -r *.es?");
 
-	//get date for oblivion.esm.
+	//get date for master .esm.
 	if (game == 1) _stat64("oblivion.esm", &buf);
 	else if (game == 2) _stat64("fallout3.esm", &buf);
 	else if (game == 3) _stat64("morrowind.esm", &buf);
 	_gmtime64_s(&esmtime, &buf.st_mtime);		//convert _stat64 modification date data to date/time struct.
 
-	//Change mod date of each file in the list to oblivion.esm date _plus_ 1 month. Ensures unknown mods go last in original order.
-	x=0;
-	for (int i=0;i<(int)modlist.mods.size();i++) {
-		if (IsValidLine(modlist.mods[i])) {
-			x++;				
-			modfiletime=esmtime;
-			modfiletime.tm_mon+=1;					//shuffle all mods foward a month 
-			modfiletime.tm_min=x;					//and order (in minutes) to original order
-			ChangeFileDate(modlist.mods[i], modfiletime);
-		} //if
-	}
-
-	//Re-order .esp/.esm files to masterlist.txt order	and output messages
-	//Note: \, *, % and ? were chosen as parse switches because they are not valid file name characters and can't appear in an ESP or ESM file name
+	//Re-order .esp/.esm files to masterlist.txt order and output messages
 	bosslog << endl << "------------------------------------" << endl
 					<< "Recognised and re-ordered mod files:" << endl
 					<< "------------------------------------" << endl;
@@ -184,12 +170,15 @@ int main(int argc, char *argv[]) {
 					x++;
 					modfiletime=esmtime;
 					modfiletime.tm_min += x;				//files are ordered in minutes after oblivion.esp .
-
+					int i;
 					if (isghost) {
 						text += " (*Ghosted*)";
 						ChangeFileDate(textbuf+".ghost", modfiletime);
-					} else ChangeFileDate(textbuf, modfiletime);
-
+						if ((i = modlist.GetModIndex(textbuf+".ghost")) > -1) modlist.mods.erase(modlist.mods.begin()+i);	//Remove ordered files from modlist class.
+					} else {
+						ChangeFileDate(textbuf, modfiletime);
+						if ((i = modlist.GetModIndex(textbuf)) > -1) modlist.mods.erase(modlist.mods.begin()+i);		//Remove ordered files from modlist class.
+					}
 					bosslog << endl << text << endl;		// show which mod file is being processed.
 				} //if
 				else found=FALSE;
@@ -198,22 +187,20 @@ int main(int argc, char *argv[]) {
 		} //if
 	} //while
 
-	//Find and show found mods not recognised. Parse each file in modlist.txt and try finding it in masterlist.txt. If not found, unknown.
+	//Find and show found mods not recognised. These are the mods that still remain in the modlist.
+	//Order their dates to be +1 month after the master esm to ensure they load last.
 	bosslog << endl << "-----------------------------------------------------------------" << endl
 					<< "Unrecognised mod files:                                          " << endl
 					<< "Reorder these by hand using your favourite mod ordering utility. " << endl
 					<< "-----------------------------------------------------------------" << endl << endl;
 	for (int i=0;i<(int)modlist.mods.size();i++) {
-		found=FALSE;
-		order.clear ();						//reset position in masterlist.txt to start.
-		order.seekg (0, order.beg);			// "
-		while (!order.eof() && !found) {	//repeat until end of masterlist.txt or file found.				
-			textbuf2=ReadLine("order");
-			if (IsValidLine(modlist.mods[i])) {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
-				if (IsMod(textbuf2)) if (Tidy(modlist.mods[i])==Tidy(textbuf2)) found=TRUE;		//filter out comment, blank and message lines when checking for match - speeds process up.
-			}
-		} // while
-		if (!found && modlist.mods[i].length()>1) bosslog << "Unknown mod file: " << modlist.mods[i] << endl;
+		if (modlist.mods[i].length()>1) {
+			bosslog << "Unknown mod file: " << modlist.mods[i] << endl;
+			modfiletime=esmtime;
+			modfiletime.tm_mon+=1;					//shuffle all mods foward a month 
+			modfiletime.tm_min=i+1;					//and order (in minutes) to original order
+			ChangeFileDate(modlist.mods[i], modfiletime);
+		}
 	} //while
 
 	//Let people know the program has stopped.

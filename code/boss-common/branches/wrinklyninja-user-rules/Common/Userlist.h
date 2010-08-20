@@ -138,6 +138,7 @@ namespace boss {
 		void AddMods();
 		void PrintModList(ofstream& out);
 		void SaveModList();
+		int GetModIndex(string mod);
 	};
 
 	//Adds mods in directory to Modlist in date order (same as current load order, basically).
@@ -172,6 +173,12 @@ namespace boss {
 		}
 	}
 
+	int Mods::GetModIndex(string mod) {
+		for (int i=0;i<(int)mods.size();i++) {
+			if (Tidy(mods[i])==Tidy(mod)) return i;
+		}
+		return -1;
+	}
 }
 
 #endif __BOSS_USERLIST_H__
