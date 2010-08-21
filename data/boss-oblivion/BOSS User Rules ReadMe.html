@@ -147,8 +147,8 @@
 		<li><b>You must never sort a mod or group twice</b>. When using a mix of rules sorting mods and groups, be very careful to ensure that none 
 		of the sort mods are contained in any of the sort groups.</li>
 		<li>
-			Rules are applied in the order they are listed, except that 'load before' rules are applied before 'load after' rules. This means that 
-			you can have several rules loading different sort mods or groups before or after the same match mod or group, eg:<br />
+			Rules are applied in the order they are listed. This means that you can have several rules loading different sort mods or groups before or 
+			after the same match mod or group, eg:<br />
 			<blockquote><code>
 			ADD: Mod3.esp<br />
 			AFTER: RTT.esp<br /><br />
@@ -165,9 +165,9 @@
 			<blockquote>Mod1.esp<br />
 			Mod2.esp<br />
 			RTT.esp<br />
-			Mod3.esp<br />
+			Mod4.esp<br />
 			Mod5.esp<br />
-			Mod4.esp</blockquote>
+			Mod3.esp</blockquote>
 		</li>
 		<li>
 			You may have the sort mod or group of one rule being the match mod or group of others, so long as it is first sorted in one rule and then 
@@ -189,10 +189,9 @@
 		</li>
 		<li>A single mod may be the match mod of multiple message rules, allowing you to attach multiple messages to a single mod.</li>
 		<li>
-			Message rules are applied in the order they are listed. There are no restrictions to the ordering of messages, but bear in mind that replace-type
-			message rules will replace all messages that were present before its application, including messages appended by previous rules. If you wish to replace 
-			a set of messages with another set, you must use a replace rule for the first message of the new set followed by multiple append rules for the remaining 
-			members of the new set. For example:<br />
+			As with sorting rules, message rules are applied in the order they are listed.Bear in mind that replace-type message rules will replace all messages that 
+			were present before its application, including messages appended by previous rules. If you wish to replace a set of messages with another set, you must 
+			use a replace rule for the first message of the new set followed by multiple append rules for the remaining members of the new set. For example:<br />
 			<blockquote><code>
 			APPEND: % {{BASH:Factions,Invent}}<br />
 			FOR: Unofficial Shivering Isles Patch.esp<br /><br />
@@ -239,7 +238,7 @@
 	<ol>
 		<li>A <em>success</em> message. This will have one of two forms:<div style="height:0.65em;"></div>
 			<ol>
-				<li>For a sorting rule, it will be: <code>"<em>Mod/Group Name</em>" added to masterlist <em>before/after</em> "<em>Mod/Group Name</em>".</code></li>
+				<li>For a sorting rule, it will be: <code>"<em>Mod/Group Name</em>" <em>placed/moved</em> <em>before/after</em> "<em>Mod/Group Name</em>".</code></li>
 				<li>For a message rule it will be: <code>"<em>Message</em>" <em>appended to/replaced</em> messages attached to "<em>Mod Name</em>".</code></li>
 			</ol>
 		<li>A <em>failure</em> message. This can occur for three cases:<div style="height:0.65em;"></div>
@@ -253,8 +252,6 @@
 			</ol>
 		</li>
 	</ol>
-	<p>When BOSS imports your rules, it will check their syntax, and skip any rules that do not follow the correct syntax. This is done without any errors being reported,
-	so if a rule has neither a success or a failure message, make sure that you correct its syntax and re-run BOSS.</p>
 	<p>Rule application does not alter your masterlist.txt or userlist.txt. This means that if you want to undo the application of
 	a rule, all you need to do is remove it from your userlist.txt and re-run BOSS.</p>
 	</div><br /><br />
