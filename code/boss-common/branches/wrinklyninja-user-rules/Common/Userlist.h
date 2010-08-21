@@ -44,7 +44,7 @@ namespace boss {
 	//And a few other useful functions.
 	class Rules {
 	public:
-		vector<string> l1obj,l2obj,objectcontent,l1key,l2key;
+		vector<string> l1obj,l2obj,l1key,l2key;
 		string messages;
 		void AddRules();
 		void PrintRules(ofstream& output);
@@ -94,7 +94,6 @@ namespace boss {
 			}
 		}
 		userlist.close();
-		objectcontent.resize(l1obj.size());
 		vector<int> indicies;
 		for (int i=0;i<(int)l1obj.size();i++) {
 			if (!IsValidMessageRule(i) && !IsValidSortRule(i)) {
@@ -112,7 +111,6 @@ namespace boss {
 			for (int i=0;i<(int)indicies.size();i++) {
 				l1obj.erase(l1obj.begin()+indicies[i]-i);
 				l2obj.erase(l2obj.begin()+indicies[i]-i);
-				objectcontent.erase(objectcontent.begin()+indicies[i]-i);
 				l1key.erase(l1key.begin()+indicies[i]-i);
 				l2key.erase(l2key.begin()+indicies[i]-i);
 			}
@@ -145,7 +143,7 @@ namespace boss {
 	//Class to replace current modlist implementation.
 	class Mods {
 	public:
-		vector<string> mods;			//Stores the mods in your data folder.
+		vector<string> mods,unknownmods;			//Stores the mods in your data folder. Stores the mods not recognised by masterlist or userlist.
 		vector<vector<string>> modmessages;		//Stores the messages attached to each mod. First dimension matches up with the mods vector, then second lists the messages attached to that mod.
 		void AddMods();
 		void PrintModList(ofstream& out);
