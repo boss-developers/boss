@@ -52,6 +52,7 @@ namespace boss {
 		bool IsValidMessageRule(int i);
 		bool IsValidSortRule(int i);
 		bool IsModSortRule(int i);
+		int GetRuleIndex(string object,int line);
 	};
 
 	//Debug function, just prints the object contents to the output file stream given.
@@ -107,12 +108,14 @@ namespace boss {
 				messages += "The rule beginning \""+l1key[i]+": "+l1obj[i]+"\" references a mod that is not present in your Data folder. Rule application skipped.\n";
 			}
 		}
-		for (int i=0;i<(int)indicies.size();i++) {
-			l1obj.erase(l1obj.begin()+indicies[i]-i);
-			l2obj.erase(l2obj.begin()+indicies[i]-i);
-			objectcontent.erase(objectcontent.begin()+indicies[i]-i);
-			l1key.erase(l1key.begin()+indicies[i]-i);
-			l2key.erase(l2key.begin()+indicies[i]-i);
+		if (indicies.size()>0) {
+			for (int i=0;i<(int)indicies.size();i++) {
+				l1obj.erase(l1obj.begin()+indicies[i]-i);
+				l2obj.erase(l2obj.begin()+indicies[i]-i);
+				objectcontent.erase(objectcontent.begin()+indicies[i]-i);
+				l1key.erase(l1key.begin()+indicies[i]-i);
+				l2key.erase(l2key.begin()+indicies[i]-i);
+			}
 		}
 	}
 
@@ -131,10 +134,19 @@ namespace boss {
 		return ((l2obj[i].find(".esp")!=string::npos || l2obj[i].find(".esm")!=string::npos) && (l1obj[i].find(".esp")!=string::npos || l1obj[i].find(".esm")!=string::npos));
 	}
 
+	int Rules::GetRuleIndex(string object,int line) {
+		for (int i=0;i<(int)l1obj.size();i++) {
+			if (line=1) if (Tidy(l1obj[i])==Tidy(object)) return i;
+			else if (line=2) if (Tidy(l2obj[i])==Tidy(object)) return i;
+		}
+		return -1;
+	}
+
 	//Class to replace current modlist implementation.
 	class Mods {
 	public:
-		vector<string> mods;
+		vector<string> mods;			//Stores the mods in your data folder.
+		vector<vector<string>> modmessages;		//Stores the messages attached to each mod. First dimension matches up with the mods vector, then second lists the messages attached to that mod.
 		void AddMods();
 		void PrintModList(ofstream& out);
 		void SaveModList();
@@ -179,6 +191,9 @@ namespace boss {
 		}
 		return -1;
 	}
+
+	//Class to replace current masterlist implementation.
+
 }
 
 #endif __BOSS_USERLIST_H__

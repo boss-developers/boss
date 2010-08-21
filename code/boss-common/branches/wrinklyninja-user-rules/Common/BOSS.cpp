@@ -108,8 +108,6 @@ int main(int argc, char *argv[]) {
 	modlist.AddMods();
 	if (revert<1) modlist.SaveModList();
 	
-
-	
 	bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
 	if (game == 1) {
 		//Check if FCOM or not
@@ -131,6 +129,165 @@ int main(int argc, char *argv[]) {
 		if (fwe=FileExists("FO3 Wanderers Edition - Main File.esm")) bosslog << "FWE detected.<br />" << endl;
 			else bosslog << "FWE not detected.<br />" << endl;
 	}
+	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
+
+	bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
+	Rules userlist;
+	userlist.AddRules();
+	//We can implement mod sorting and message rules soley using the modlist class combined with the userlist class.
+	//In this implementation, ADD and OVERRIDE rules are not differentiated, since OVERRIDE just in addition stops the masterlist
+	//placing it in what it says is the right place. The same with APPEND and REPLACE message rules. Because of this, this must 
+	//be done after the masterlist is applied.
+	for (int i=0;i<(int)userlist.l1obj.size();i++) {
+		//Only look at mod sorting rules.
+		if (userlist.IsModSortRule(i)) {
+			//Look for the modlist line which contains the sort mod of the rule.
+			int index1 = modlist.GetModIndex(userlist.l1obj[i]);
+			//And the modlist line that contains the match mod of the rule.
+			int index2 = modlist.GetModIndex(userlist.l2obj[i]);
+			//Remove the index where the mod currently is, and add it back to the index where the rule says the mod will be.
+			modlist.mods.erase(modlist.mods.begin()+index1);
+			if (userlist.l2key[i]=="BEFORE") modlist.mods.insert(modlist.mods.begin()+index2,userlist.l1obj[i]);
+			else if (userlist.l2key[i]=="AFTER") modlist.mods.insert(modlist.mods.begin()+index2+1,userlist.l1obj[i]);
+		} else if (userlist.IsValidMessageRule(i)) {
+			//Look for the modlist line that contains the match mod of the rule.
+			int index = modlist.GetModIndex(userlist.l2obj[i]);
+			//Attach the rule message to the mod's messages list.
+			modlist.modmessages[index].push_back(userlist.l1obj[i]);
+		}
+	}
+	//Below is hacky userlist stuff. This is just my old userlist implementation tweaked a little bit.
+	//It doesn't work, surprisingly enough. Just keeping it for reference really.
+	/*order.open("BOSS\\masterlist.txt");
+	if (order.fail()) {							
+		bosslog << endl << "Critical Error! masterlist.txt does not exist or can't be read!" << endl
+						<< "! Utility will end now." << endl
+						<< "</body>"<<endl<<"</html>";
+		bosslog.close();
+		system ("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		exit (1); //fail in screaming heap.
+	}
+	
+	//Remove existing add rules from list.
+	if (userlist.l1obj.size()>0) {
+		vector<int> indicies;
+		for (int i = 0; i < (int)userlist.l1obj.size(); i++) {
+			order.clear();
+			order.seekg(0, order.beg);
+			while(GetLine(order,textbuf)) {
+				if (userlist.l1key[i]=="ADD" && Tidy(textbuf) == Tidy(userlist.l1obj[i])) indicies.push_back(i);
+			}
+		}
+		if (indicies.size()>0) {
+			for (int i=0;i<(int)indicies.size();i++) {
+				userlist.l1obj.erase(userlist.l1obj.begin()+indicies[i]-i);
+				userlist.l2obj.erase(userlist.l2obj.begin()+indicies[i]-i);
+				userlist.objectcontent.erase(userlist.objectcontent.begin()+indicies[i]-i);
+				userlist.l1key.erase(userlist.l1key.begin()+indicies[i]-i);
+				userlist.l2key.erase(userlist.l2key.begin()+indicies[i]-i);
+			}
+		}
+	}
+	//WARNING: !!!Super-messy-hacky implementation below.!!!
+	ofstream outfile;
+	outfile.open("BOSS\\masterlist.tmp");
+	order.clear();
+	order.seekg(0, order.beg);
+	found = false;
+	bool overr = false;
+	bool groupoverr = false;
+	int nest = 0;
+	vector<string> tbuff;
+	while (!order.eof()) {
+		textbuf=ReadLine("masterlist");
+		if (IsValidLine(textbuf) && userlist.l1obj.size() > 0) {	//Deal with plugin-type rules.
+			if (IsMod(textbuf) && !groupoverr) {					//The line is a mod line and isn't in a group that's currently being removed.
+				if (!found) {										//If we haven't found a load after line, we can keep looking for ruleline matches in general.
+					for (int i = 0; i < (int)userlist.l2obj.size(); i++) {
+						if (Tidy(textbuf) == Tidy(userlist.l1obj[i])) {		//Found the sortline in the masterlist. Will only occur for override rules, and only once per line.
+							//Override removes original mod line, so prevent original line being written. Once that's done, it behaves as an addition rule.
+							overr = true;
+							break;
+						}
+						if (Tidy(textbuf) == Tidy(userlist.l2obj[i])) {	//Found the ruleline in the masterlist.
+							if (userlist.l2obj[i] == "AFTER") {
+								tbuff.push_back(userlist.l1obj[i]);							//Add line to vector string containing lines to be added before next mod line.
+								textbuf2 = textbuf;												//Store till we find another mod line.
+								found = true;
+							} else if (userlist.l2obj[i] == "BEFORE") {
+								outfile << userlist.l1obj[i] << endl;						//Add the modline before passing the original line.
+								bosslog << "\"" << userlist.l1obj[i] << "\" added to masterlist before \"" << textbuf << "\"" << endl << endl;
+							}
+						}
+					}
+					if (!overr) outfile << textbuf << endl;			//Write the original line once only, and only if not overridden.
+					else overr = false;
+				} else {	//We have found a load after rule line, so we add the stored modline to the beginning of the next line containing a mod.
+					for (int i=0;i<(int)tbuff.size();i++) {					//Loop through all members of tbuff.
+						outfile << tbuff[i] << endl;
+						bosslog << "\"" << tbuff[i] << "\" added to masterlist after \"" << textbuf2 << "\"" << endl << endl;
+					}
+					outfile << textbuf << endl;			//Write the original line once only.
+					found = false;						//Reset conditions.
+					tbuff.clear();						//Reset conditions.
+				}
+			} else {				//Line is either not a mod line, or is part of a group being removed.
+				if (!IsMessage(textbuf) && !IsMod(textbuf)) {		//It's a commented-out line, could be a group line.
+					if (!groupoverr) {		//The override has not been set yet, so we can look for a group match.
+						if (textbuf.find("BeginGroup")!=string::npos) { //The line begins a group, so check to see if it matches a rule.
+							if (!found) {										//If we haven't found a load after line, we can keep looking for ruleline matches in general.
+								for (int i=0; i<(int)userlist.l1obj.size(); i++) {
+									if (Tidy(textbuf) == Tidy("\\BeginGroup\\: "+userlist.l1obj[i]) && tbuff.size()==0) {	//Found the sortline of a group rule. Only occurs for override rules, and only once per line. The tbuff is also empty, so we can start to fill it.
+										groupoverr = true;
+										tbuff.push_back(textbuf);		//Add group line to group buffer.
+		//								bosslog << "Found start of group " << sortlines[i].substr(1) << endl;
+										break;
+									}
+									if (Tidy(textbuf) == Tidy("\\BeginGroup\\: "+userlist.l2obj[i])) {	//Found the matchline in the masterlist.
+										if (tbuff.size()>0 && tbuff[0]=="\\BeginGroup\\: "+userlist.l1obj[i]) {
+										if (userlist.l2obj[i]=="AFTER") {	//The group loads after this group.
+												textbuf2 = textbuf.substr(14);								//Store till we find another mod line.
+												found = true;
+										} else if (userlist.l2obj[i]=="BEFORE") {	//The group loads before this group.
+												for (int i=0;i<(int)tbuff.size();i++) outfile << tbuff[i] << endl;
+												bosslog << "\"" << tbuff[0].substr(14) << "\" added to masterlist before \"" << textbuf.substr(14) << "\"" << endl << endl;
+												tbuff.clear();						//Reset conditions.
+											}
+										}
+									}
+								}
+								if (!groupoverr) outfile << textbuf << endl;			//Write the original line once only, and only if not overridden.
+							} else {	//We have found a load after rule line, so we add the stored modline to the beginning of the next line containing a mod.
+								for (int i=0;i<(int)tbuff.size();i++) outfile << tbuff[i] << endl;
+								bosslog << "\"" << tbuff[0].substr(14) << "\" added to masterlist after \"" << textbuf2 << "\"" << endl << endl;
+								tbuff.clear();						//Reset conditions.
+								outfile << textbuf << endl;			//Write the original line once only.
+								found = false;						//Reset conditions.
+							}
+						}
+					} else {				//The override has already been set. Add the line to the buffer, modify counter if needed and release override if an endgroup is found when counter==0
+						tbuff.push_back(textbuf);
+						if (textbuf.find("BeginGroup")!=string::npos) {
+							//A nested begingroup has been found. Increase counter by 1.
+							nest += 1;
+						} else if (textbuf.find("EndGroup")!=string::npos) {
+							if (nest==0) {
+								groupoverr = false;
+	//							bosslog << "Found end of group " << tbuff[0].substr(14) << endl;
+							} else {
+								nest -= 1;
+							}
+						}
+					}
+				} else if (groupoverr) tbuff.push_back(textbuf);	//It's either a mod line or a message line or some some random comment in the override group. Add it to the buffer.
+				else if (!groupoverr) outfile << textbuf << endl;			//Write the original line once only, and only if not overridden.
+			}
+		} else outfile << textbuf << endl;		//Not a valid line, or there are no rules, so pass it without any changes.
+	}
+	outfile.close();
+	order.close();
+	system ("del BOSS\\masterlist.txt");
+	system ("ren BOSS\\masterlist.tmp masterlist.txt");*/
 	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 
 	//Remove any read only attributes from esm/esp files if present.
