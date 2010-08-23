@@ -46,7 +46,8 @@ namespace boss {
 	public:
 		vector<string> l1obj,l2obj,l1key,l2key;
 		string messages;
-		void AddRules();
+		Rules();
+		~Rules();
 		void PrintRules(ofstream& output);
 		void PrintMessages(ofstream& output);
 		bool IsValidMessageRule(int i);
@@ -59,8 +60,8 @@ namespace boss {
 	void Rules::PrintRules(ofstream& output) {
 		output << "Rule dump commencing..." << endl << endl;
 		for (int i=0;i<(int)l1obj.size();i++) {
-			output << l1key[i] << ": " << l1obj[i] << endl
-					<< l2key[i] << ": " << l2obj[i] << endl << endl;
+			output << l1key[i] << ": " << l1obj[i] << "<br />" << endl
+					<< l2key[i] << ": " << l2obj[i] << "<br />" << endl << "<br />" << endl;
 		}
 		output << "Rule dump finished.";
 	}
@@ -74,7 +75,7 @@ namespace boss {
 	//Then checks rule syntax and discards rules with incorrect structures.
 	//Also checks if the mods referenced by rules are in your Data folder, and discards rule that reference missing mods.
 	//Generates error messages for rules that are discarded.
-	void Rules::AddRules() {
+	Rules::Rules() {
 		ifstream userlist;
 		string line,key,object;
 		int pos;
@@ -98,13 +99,13 @@ namespace boss {
 		for (int i=0;i<(int)l1obj.size();i++) {
 			if (!IsValidMessageRule(i) && !IsValidSortRule(i)) {
 				indicies.push_back(i);
-				messages += "The rule beginning \""+l1key[i]+": "+l1obj[i]+"\" does not have the correct syntax. Rule application skipped.\n";
+				messages += "The rule beginning \""+l1key[i]+": "+l1obj[i]+"\" does not have the correct syntax. Rule application skipped.<br/><br />";
 			} else if (IsModSortRule(i) && (!FileExists(l1obj[i]) || !FileExists(l2obj[i]))) {
 				indicies.push_back(i);
-				messages += "The rule beginning \""+l1key[i]+": "+l1obj[i]+"\" references one or more mods that are not present in your Data folder. Rule application skipped.\n";
+				messages += "The rule beginning \""+l1key[i]+": "+l1obj[i]+"\" references one or more mods that are not present in your Data folder. Rule application skipped.<br/><br />";
 			} else if (IsValidMessageRule(i) && (!FileExists(l2obj[i]))) { 
 				indicies.push_back(i);
-				messages += "The rule beginning \""+l1key[i]+": "+l1obj[i]+"\" references a mod that is not present in your Data folder. Rule application skipped.\n";
+				messages += "The rule beginning \""+l1key[i]+": "+l1obj[i]+"\" references a mod that is not present in your Data folder. Rule application skipped.<br/><br />";
 			}
 		}
 		if (indicies.size()>0) {
@@ -115,6 +116,14 @@ namespace boss {
 				l2key.erase(l2key.begin()+indicies[i]-i);
 			}
 		}
+	}
+
+	Rules::~Rules() {
+		delete &l1obj;
+		delete &l2obj;
+		delete &l1key;
+		delete &l2key;
+		delete &messages;
 	}
 
 	//Checks if the ith rule is a valid message rule.
@@ -156,11 +165,12 @@ namespace boss {
 		fs::path p(".");
 		if (fs::is_directory(p)) {
 			for (fs::directory_iterator itr(p); itr!=fs::directory_iterator(); ++itr) {
-				if (fs::is_regular_file(itr->status()) && (fs::extension(itr->filename())==".esp" || fs::extension(itr->filename())==".esm")) {
+				if (fs::is_regular_file(itr->status()) && (fs::extension(itr->filename())==".esp" || fs::extension(itr->filename())==".esm" || fs::extension(itr->filename())==".ghost")) {
 					mods.push_back(itr->filename());
 				}
 			}
 		}
+		modmessages.resize((int)mods.size());
 		sort(mods.begin(),mods.end(),SortByDate);
 	}
 
@@ -179,7 +189,7 @@ namespace boss {
 	//Debug output function.
 	void Mods::PrintModList(ofstream& out) {
 		for (int i=0;i<(int)mods.size();i++) {
-			out << mods[i] << endl;
+			out << mods[i] << "<br />" << endl;
 		}
 	}
 
