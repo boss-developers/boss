@@ -107,6 +107,8 @@ int main(int argc, char *argv[]) {
 	Mods modlist;
 	modlist.AddMods();
 	if (revert<1) modlist.SaveModList();
+	Rules userlist;
+	if (boost::filesystem::exists("BOSS\\userlist.txt")) userlist.AddRules();
 	
 	bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
 	if (game == 1) {
@@ -165,90 +167,57 @@ int main(int argc, char *argv[]) {
 					else i = modlist.GetModIndex(textbuf);		//Remove ordered files from modlist class.
 					modlist.mods.erase(modlist.mods.begin()+i);
 					modlist.mods.insert(modlist.mods.begin()+x,textbuf);
+					i = userlist.GetRuleIndex(textbuf);
+					if (i>-1 && userlist.keys[i]=="ADD" && revert<1) {
+						userlist.messages += "\""+userlist.objects[i]+"\" is already in the masterlist. Rule skipped.<br /><br />";
+						userlist.keys.erase(userlist.keys.begin()+i, userlist.keys.begin()+i+2);
+						userlist.objects.erase(userlist.objects.begin()+i, userlist.objects.begin()+i+2);
+					}
 					x++;
 				} //if
 				else found=false;
 			} //if
-			else if (found) {
-				modlist.modmessages[x-1].push_back(textbuf);
-				}
+			else if (found) modlist.modmessages[x-1].push_back(textbuf);
 		} //if
 	} //while
 	order.close();		//Close the masterlist stream, as it's not needed any more.
-	cout << x;
 
 	if (boost::filesystem::exists("BOSS\\Userlist.txt")) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
-		//Now the fun begins! This should all happen after the masterlist is applied though.
-		//Perhaps apart from group sort rule application, I haven't decided how that'll work yet.
-		Rules userlist;
-		//Remove existing add rules from list. This is still a bit hacky in the absence of a masterlist class.
-		order.open("BOSS\\masterlist.txt");	
-		if (order.fail()) {							
-			bosslog << endl << "<p style='color:red;'>Critical Error! BOSS\\masterlist.txt does not exist or can't be read!<br />" << endl 
-							<< "Utility will end now.</p>" << endl
-							<< "</body>"<<endl<<"</html>";
-			bosslog.close();
-			system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
-			exit (1); //fail in screaming heap.
-		} //if
-		if (userlist.l1obj.size()>0) {
-			vector<int> indicies;
-			for (int i = 0; i < (int)userlist.l1obj.size(); i++) {
-				if (userlist.l1key[i]=="ADD") {
-					order.clear();
-					order.seekg(0, order.beg);
-					while (GetLine(order,textbuf)) if (Tidy(textbuf) == Tidy(userlist.l1obj[i])) indicies.push_back(i);
-				}
-			}
-			if (indicies.size()>0) {
-				for (int i=0;i<(int)indicies.size();i++) {
-					userlist.l1obj.erase(userlist.l1obj.begin()+indicies[i]-i);
-					userlist.l2obj.erase(userlist.l2obj.begin()+indicies[i]-i);
-					userlist.l1key.erase(userlist.l1key.begin()+indicies[i]-i);
-					userlist.l2key.erase(userlist.l2key.begin()+indicies[i]-i);
-				}
-			}
-		}
-		order.close();
-		//We can implement mod sorting and message rules soley using the modlist class combined with the userlist class.
-		//This application should take place after the masterlist is applied, to ensure that its changes are overriden by
-		//any userlist changes to the same things.
-		for (int i=0;i<(int)userlist.l1obj.size();i++) {
-			//Only look at mod sorting rules.
-			if (userlist.IsModSortRule(i)) {
-				//Remove the index where the sort mod currently is.
-				int index1 = modlist.GetModIndex(userlist.l1obj[i]);
+		for (int i=0;i<(int)userlist.keys.size();i++) {
+			if ((userlist.keys[i]=="ADD" || userlist.keys[i]=="OVERRIDE") && IsPlugin(userlist.objects[i])) {
+				if (userlist.keys[i]=="ADD") x++;
+				vector<string> currentmessages;
+				//Get current mod messages and remove mod from current modlist position.
+				int index1 = modlist.GetModIndex(userlist.objects[i]);
+				currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
 				modlist.mods.erase(modlist.mods.begin()+index1);
-				//Add the sort rule to the correct position relative to the match rule.
-				int index = modlist.GetModIndex(userlist.l2obj[i]);
-				if (userlist.l2key[i]=="BEFORE") modlist.mods.insert(modlist.mods.begin()+index,userlist.l1obj[i]);
-				else if (userlist.l2key[i]=="AFTER") modlist.mods.insert(modlist.mods.begin()+index+1,userlist.l1obj[i]);
-				userlist.messages += "\"" + userlist.l1obj[i] + "\"";
-				if (userlist.l1key[i]=="ADD") {
-					x++;
-					userlist.messages += " placed ";
-				} else if (userlist.l1key[i]=="OVERRIDE") userlist.messages += " moved ";
-				userlist.messages += Tidy(userlist.l2key[i]) + " \"" + userlist.l2obj[i] + "\".<br /><br />";
-			} else if (userlist.IsValidMessageRule(i)) {
+				modlist.modmessages.erase(modlist.modmessages.begin()+index1);
+				//Need to insert mod and mod's messages to a specific position.
+				int index = modlist.GetModIndex(userlist.objects[i+1]);
+				if (userlist.keys[i+1]=="AFTER") index += 1;
+				modlist.mods.insert(modlist.mods.begin()+index,userlist.objects[i]);
+				modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
+				userlist.messages += "\""+userlist.objects[i]+"\" sorted "+Tidy(userlist.keys[i+1]) + " \"" + userlist.objects[i+1] + "\".<br /><br />";
+			} else if (userlist.keys[i]=="FOR") {
 				//Look for the modlist line that contains the match mod of the rule.
-				int index = modlist.GetModIndex(userlist.l2obj[i]);
-				userlist.messages += "\"" + userlist.l1obj[i] + "\"";
-				if (userlist.l1key[i]=="APPEND") {			//Attach the rule message to the mod's messages list.
-					modlist.modmessages[index].push_back(userlist.l1obj[i]);
+				int index = modlist.GetModIndex(userlist.objects[i]);
+				userlist.messages += "\"" + userlist.objects[i+1] + "\"";
+				if (userlist.keys[i+1]=="APPEND") {			//Attach the rule message to the mod's messages list.
+					modlist.modmessages[index].push_back(userlist.objects[i+1]);
 					userlist.messages += " appended to ";
-				} else if (userlist.l1key[i]=="REPLACE") {	//Clear the message list and then attach the message.
+				} else if (userlist.keys[i+1]=="REPLACE") {	//Clear the message list and then attach the message.
 					modlist.modmessages[index].clear();
-					modlist.modmessages[index].push_back(userlist.l1obj[i]);
+					modlist.modmessages[index].push_back(userlist.objects[i+1]);
 					userlist.messages += " replaced ";
 				}
-				userlist.messages += "messages attached to \"" + userlist.l2obj[i] + "\".<br /><br />";
+				userlist.messages += "messages attached to \"" + userlist.objects[i] + "\".<br /><br />";
 			}
 		}
 		userlist.PrintMessages(bosslog);
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	}
-	cout << x;
+
 	//Remove any read only attributes from esm/esp files if present.
 	system("attrib -r *.es?");
 

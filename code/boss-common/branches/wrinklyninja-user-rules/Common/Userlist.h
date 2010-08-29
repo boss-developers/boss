@@ -38,30 +38,29 @@ namespace boss {
 			if (difftime(t1,t2)>0) return false;
 			else return true;
 	}
+
+	bool IsPlugin(string object) {
+		return (object.find(".esp")!=string::npos || object.find(".esm")!=string::npos || object.find(".ghost")!=string::npos);
+	}
 	
 	//Rules class contains storage objects for all 4 parts of a rule.
 	//Also contains constructor-ish function to load all rules.
 	//And a few other useful functions.
 	class Rules {
 	public:
-		vector<string> l1obj,l2obj,l1key,l2key;
+		vector<string> keys,objects;
 		string messages;
-		Rules();
-		~Rules();
+		void AddRules();
 		void PrintRules(ofstream& output);
 		void PrintMessages(ofstream& output);
-		bool IsValidMessageRule(int i);
-		bool IsValidSortRule(int i);
-		bool IsModSortRule(int i);
-		int GetRuleIndex(string object,int line);
+		int GetRuleIndex(string object);
 	};
 
 	//Debug function, just prints the object contents to the output file stream given.
 	void Rules::PrintRules(ofstream& output) {
 		output << "Rule dump commencing..." << endl << endl;
-		for (int i=0;i<(int)l1obj.size();i++) {
-			output << l1key[i] << ": " << l1obj[i] << "<br />" << endl
-					<< l2key[i] << ": " << l2obj[i] << "<br />" << endl << "<br />" << endl;
+		for (int i=0;i<(int)objects.size();i++) {
+			output << keys[i] << ": " << objects[i] << "<br />" << endl;
 		}
 		output << "Rule dump finished.";
 	}
@@ -75,76 +74,59 @@ namespace boss {
 	//Then checks rule syntax and discards rules with incorrect structures.
 	//Also checks if the mods referenced by rules are in your Data folder, and discards rule that reference missing mods.
 	//Generates error messages for rules that are discarded.
-	Rules::Rules() {
+	void Rules::AddRules() {
 		ifstream userlist;
 		string line,key,object;
 		int pos;
+		bool skip = true;
 		userlist.open("BOSS\\userlist.txt");
 		while(GetLine(userlist,line)) {
 			if (line.substr(0,2)!="//") {
 				pos = line.find(':');
 				key = line.substr(0,pos);
 				object = line.substr(pos+2);
-				if (key=="APPEND" || key=="REPLACE" || key=="ADD" || key=="OVERRIDE") {
-					l1obj.push_back(object);
-					l1key.push_back(key);
-				} else if (key=="BEFORE" || key=="AFTER" || key=="FOR") {
-					l2obj.push_back(object);
-					l2key.push_back(key);
+				if (key=="ADD" || key=="OVERRIDE"|| key=="FOR") {
+					if (IsPlugin(object) && !fs::exists(object)) {
+						messages += "\""+object+"\" is not installed. Rule skipped.<br /><br />";
+						skip = true;
+					} else {
+						keys.push_back(key);
+						objects.push_back(object);
+						skip = false;
+					}
+				} else if ((key=="BEFORE" || key=="AFTER") && !skip) {
+					if (IsPlugin(object) && !fs::exists(object)) {
+						messages += "\""+object+"\" is not installed. Rule skipped.<br /><br />";
+						keys.pop_back();
+						objects.pop_back();
+					} else {
+						if ((IsPlugin(object) && IsPlugin(objects.back())) || (!IsPlugin(object) && !IsPlugin(objects.back()))) {
+							keys.push_back(key);
+							objects.push_back(object);
+						} else {
+							messages += "The rule beginning \""+keys.back()+": "+objects.back()+"\" does not have the correct syntax. Rule skipped.<br/><br />";
+							keys.pop_back();
+							objects.pop_back();
+						}
+					}
+				} else if ((key=="APPEND" || key=="REPLACE") && !skip) {
+					if (IsPlugin(objects.back())) {
+						keys.push_back(key);
+						objects.push_back(object);
+					} else {
+						messages += "The rule beginning \""+keys.back()+": "+objects.back()+"\" does not have the correct syntax. Rule skipped.<br/><br />";
+						keys.pop_back();
+						objects.pop_back();
+					}
 				}
 			}
 		}
 		userlist.close();
-		vector<int> indicies;
-		for (int i=0;i<(int)l1obj.size();i++) {
-			if (!IsValidMessageRule(i) && !IsValidSortRule(i)) {
-				indicies.push_back(i);
-				messages += "The rule beginning \""+l1key[i]+": "+l1obj[i]+"\" does not have the correct syntax. Rule application skipped.<br/><br />";
-			} else if (IsModSortRule(i) && (!FileExists(l1obj[i]) || !FileExists(l2obj[i]))) {
-				indicies.push_back(i);
-				messages += "The rule beginning \""+l1key[i]+": "+l1obj[i]+"\" references one or more mods that are not present in your Data folder. Rule application skipped.<br/><br />";
-			} else if (IsValidMessageRule(i) && (!FileExists(l2obj[i]))) { 
-				indicies.push_back(i);
-				messages += "The rule beginning \""+l1key[i]+": "+l1obj[i]+"\" references a mod that is not present in your Data folder. Rule application skipped.<br/><br />";
-			}
-		}
-		if (indicies.size()>0) {
-			for (int i=0;i<(int)indicies.size();i++) {
-				l1obj.erase(l1obj.begin()+indicies[i]-i);
-				l2obj.erase(l2obj.begin()+indicies[i]-i);
-				l1key.erase(l1key.begin()+indicies[i]-i);
-				l2key.erase(l2key.begin()+indicies[i]-i);
-			}
-		}
 	}
 
-	Rules::~Rules() {
-		delete &l1obj;
-		delete &l2obj;
-		delete &l1key;
-		delete &l2key;
-		delete &messages;
-	}
-
-	//Checks if the ith rule is a valid message rule.
-	bool Rules::IsValidMessageRule(int i) {
-		return ((l1key[i]=="APPEND" || l1key[i]=="REPLACE") && l2key[i]=="FOR" && (l2obj[i].find(".esp")!=string::npos || l2obj[i].find(".esm")!=string::npos) && l1obj[i].length()>1);
-	}
-
-	//Checks if the ith rule is a valid sorting rule.
-	bool Rules::IsValidSortRule(int i) {
-		return ((l1key[i]=="ADD" || l1key[i]=="OVERRIDE") && (l2key[i]=="BEFORE" || l2key[i]=="AFTER") && (((l2obj[i].find(".esp")!=string::npos || l2obj[i].find(".esm")!=string::npos) && (l1obj[i].find(".esp")!=string::npos || l1obj[i].find(".esm")!=string::npos)) || (l2obj[i].find(".esp")==string::npos && l2obj[i].find(".esm")==string::npos && l1obj[i].find(".esp")==string::npos && l1obj[i].find(".esm")==string::npos)));
-	}
-
-	//Checks if the sort rule sorts mods or not. If not, it sorts groups (obviously).
-	bool Rules::IsModSortRule(int i) {
-		return ((l2obj[i].find(".esp")!=string::npos || l2obj[i].find(".esm")!=string::npos) && (l1obj[i].find(".esp")!=string::npos || l1obj[i].find(".esm")!=string::npos));
-	}
-
-	int Rules::GetRuleIndex(string object,int line) {
-		for (int i=0;i<(int)l1obj.size();i++) {
-			if (line=1) if (Tidy(l1obj[i])==Tidy(object)) return i;
-			else if (line=2) if (Tidy(l2obj[i])==Tidy(object)) return i;
+	int Rules::GetRuleIndex(string object) {
+		for (int i=0;i<(int)objects.size();i++) {
+			if (Tidy(objects[i])==Tidy(object)) return i;
 		}
 		return -1;
 	}
