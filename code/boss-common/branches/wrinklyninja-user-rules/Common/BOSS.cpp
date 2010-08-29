@@ -170,8 +170,8 @@ int main(int argc, char *argv[]) {
 					i = userlist.GetRuleIndex(textbuf);
 					if (i>-1 && userlist.keys[i]=="ADD" && revert<1) {
 						userlist.messages += "\""+userlist.objects[i]+"\" is already in the masterlist. Rule skipped.<br /><br />";
-						userlist.keys.erase(userlist.keys.begin()+i, userlist.keys.begin()+i+2);
-						userlist.objects.erase(userlist.objects.begin()+i, userlist.objects.begin()+i+2);
+						userlist.keys.erase(userlist.keys.begin()+i+1);
+						userlist.objects.erase(userlist.objects.begin()+i+1);
 					}
 					x++;
 				} //if
@@ -184,34 +184,44 @@ int main(int argc, char *argv[]) {
 
 	if (boost::filesystem::exists("BOSS\\Userlist.txt")) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
-		for (int i=0;i<(int)userlist.keys.size();i++) {
-			if ((userlist.keys[i]=="ADD" || userlist.keys[i]=="OVERRIDE") && IsPlugin(userlist.objects[i])) {
-				if (userlist.keys[i]=="ADD") x++;
-				vector<string> currentmessages;
-				//Get current mod messages and remove mod from current modlist position.
-				int index1 = modlist.GetModIndex(userlist.objects[i]);
-				currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
-				modlist.mods.erase(modlist.mods.begin()+index1);
-				modlist.modmessages.erase(modlist.modmessages.begin()+index1);
-				//Need to insert mod and mod's messages to a specific position.
-				int index = modlist.GetModIndex(userlist.objects[i+1]);
-				if (userlist.keys[i+1]=="AFTER") index += 1;
-				modlist.mods.insert(modlist.mods.begin()+index,userlist.objects[i]);
-				modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
-				userlist.messages += "\""+userlist.objects[i]+"\" sorted "+Tidy(userlist.keys[i+1]) + " \"" + userlist.objects[i+1] + "\".<br /><br />";
-			} else if (userlist.keys[i]=="FOR") {
-				//Look for the modlist line that contains the match mod of the rule.
-				int index = modlist.GetModIndex(userlist.objects[i]);
-				userlist.messages += "\"" + userlist.objects[i+1] + "\"";
-				if (userlist.keys[i+1]=="APPEND") {			//Attach the rule message to the mod's messages list.
-					modlist.modmessages[index].push_back(userlist.objects[i+1]);
-					userlist.messages += " appended to ";
-				} else if (userlist.keys[i+1]=="REPLACE") {	//Clear the message list and then attach the message.
-					modlist.modmessages[index].clear();
-					modlist.modmessages[index].push_back(userlist.objects[i+1]);
-					userlist.messages += " replaced ";
+		//Go through each rule.
+		for (int i=0;i<(int)userlist.rules.size();i++) {
+			int start = userlist.rules[i];
+			int end;
+			if (i==(int)userlist.rules.size()-1) end = (int)userlist.keys.size();
+			else end = userlist.rules[i+1];
+			bosslog << start << ", " << end << endl;
+			//Go through each line of the rule. The first line is given by keys[start] and objects[start].
+			for (int j=start;j<end;j++) {
+				//A sorting line.
+				if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && IsPlugin(userlist.objects[j])) {
+					if (userlist.keys[start]=="ADD") x++;
+					vector<string> currentmessages;
+					//Get current mod messages and remove mod from current modlist position.
+					int index1 = modlist.GetModIndex(userlist.objects[start]);
+					currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
+					modlist.mods.erase(modlist.mods.begin()+index1);
+					modlist.modmessages.erase(modlist.modmessages.begin()+index1);
+					//Need to insert mod and mod's messages to a specific position.
+					int index = modlist.GetModIndex(userlist.objects[j]);
+					if (userlist.keys[j]=="AFTER") index += 1;
+					modlist.mods.insert(modlist.mods.begin()+index,userlist.objects[start]);
+					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
+					userlist.messages += "\""+userlist.objects[start]+"\" sorted "+Tidy(userlist.keys[j]) + " \"" + userlist.objects[j] + "\".<br /><br />";
+				} else if (userlist.keys[j]=="APPEND" || userlist.keys[j]=="REPLACE") {
+					//Look for the modlist line that contains the match mod of the rule.
+					int index = modlist.GetModIndex(userlist.objects[start]);
+					userlist.messages += "\"" + userlist.objects[j] + "\"";
+					if (userlist.keys[j]=="APPEND") {			//Attach the rule message to the mod's messages list.
+						modlist.modmessages[index].push_back(userlist.objects[j]);
+						userlist.messages += " appended to ";
+					} else if (userlist.keys[j]=="REPLACE") {	//Clear the message list and then attach the message.
+						modlist.modmessages[index].clear();
+						modlist.modmessages[index].push_back(userlist.objects[j]);
+						userlist.messages += " replaced ";
+					}
+					userlist.messages += "messages attached to \"" + userlist.objects[start] + "\".<br /><br />";
 				}
-				userlist.messages += "messages attached to \"" + userlist.objects[i] + "\".<br /><br />";
 			}
 		}
 		userlist.PrintMessages(bosslog);

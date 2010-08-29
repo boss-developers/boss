@@ -19,7 +19,7 @@
 
 	<div><span>Introduction</span>
 	<p style="color:red">NOTE: This readme is for features unique to the wrinklyninja-user-rules branch. It is an outline of the user rules implementation, 
-	and is subject to change. Of the features explained in this readme, only group sorting rules have not been implemented.
+	and is subject to change. Of the features explained in this readme, only the sorting of groups has not been implemented.
 	Once everything is confirmed as working correctly, the branch will be merged into the trunk, and these features become a part of
 	the official BOSS.
 	<br />-WrinklyNinja</p>
@@ -38,62 +38,20 @@
 	.esm extension'. Unless explicitely stated, the 'name' of a 'mod' or 'plugin' refers to its filename, including the extension.</p>
 	<p>The userlist is the file which contains your custom rules for sorting mods and editing mods' messages. It is found at <code>Data\BOSS\userlist.txt</code>. If it 
 	does not exist, simply create a new text file there with the same name.</p>
-	<p>Within this file, which you can open up in Notepad to edit, you list your rules definitions. There are two main types of rules that you can define:
+	<p>Within this file, which you can open up in Notepad to edit, you list your rule definitions. Rules can make two types of changes:
 	<ol class="list">
-		<li><em>Sorting</em> rules. These affect the load order of mods, and can be used to sort plugins relative to other plugins, or groups of plugins 
+		<li><em>Sort mods or groups.</em> You can sort plugins relative to other plugins, or groups of plugins 
 		relative to other groups of plugins. Plugins may be .esp or .esm files. Groups are all pre-defined in the BOSS masterlist, marked out by the 
 		<code>\BeginGroup\:  <em>Group Name</em></code> and <code>\EndGroup\\</code> lines. You may override the positions of mods and groups in the 
-		masterlist with new positions, and add new plugins to the masterlist, but you cannot add new groups to the masterlist.</li>
-		<li><em>Message</em> rules. These allow you to add to or replace the messages that are attached to mods. The messages can be: 
-		Bash Tag suggestions, general comments, critical FCOM install errors, installation requirements, specific incompatibilities, comments specific 
-		to when using OOO, and comments specific to when using Better Cities.</li>
+		masterlist with new positions, and add new plugins to be sorted, but you cannot add new groups.</li>
+		<li><em>Edit BOSS messages.</em> You can add to or replace the messages that are attached to mods in the masterlist and that are displayed in the BOSSlog.
+		See <em>The BOSS Message Format</em> below for more details on the message types and syntax.</li>
 	</ol>
-	The rule definition syntax is simple and concise, and is explained below.</p>
+	The rule definition syntax is simple and concise, and is explained below, just beneath the information of the BOSS message format.</p>
 	</div><br /><br />
 	
-	<div><span>Rule Definition Syntax (or: Righting Rules)</span>
-	<div><br />
-	<span class="subtitle">Sorting Rules</span>
-	<p>Sorting rules consist of two lines of text with the following structure:</p>
-	<blockquote><code>
-	&lt;TYPE KEYWORD&gt;: &lt;SORT OBJECT&gt;<br />
-	&lt;LOAD KEYWORD&gt;: &lt;MATCH OBJECT&gt;
-	</code></blockquote>
-	<p>The <em>sort object</em> is the plugin or group that will be sorted. The <em>match object</em> is the plugin or group that you wish the sort object 
-	to be positioned relative to. When you define sort and match groups, the names of those groups are used as they appear in the masterlist. For example, 
-	if you wanted to sort or match the group of mods that begins with <code>\BeginGroup\: Supreme Magicka</code>, you would put it in the rule as 
-	<code>Supreme Magicka</code>.</p>
-	<p>You may not mix and match mods and groups within rules. A mod must be sorted relative to another mod, and a group must be sorted relative to another 
-	group.</p>
-	<p>The <em>type keywords</em> are:</p>
-	<ul>
-		<li><em>ADD</em>: This signifies the sorting rule is of the addition type, which adds plugins (not groups) that are not already present in the 
-		masterlist to a specific position in it.</li>
-		<li><em>OVERRIDE</em>: This signifies the sorting rule is of the override type, which overrides the current position of a mod or group already 
-		in the masterlist with a new specific position.</li>
-	</ul>
-	<p>The <em>load keywords</em> are:</p>
-	<ul>
-		<li><em>BEFORE</em>: This states that the sort object is to load immediately before the match object.</li>
-		<li><em>AFTER</em>: This states that the sort object is to load immediately after the match object.</li>
-	</ul>
-	<p>Some examples:</p>
-	<blockquote><code>
-	ADD: MyModToAdd.esp<br />
-	AFTER: LoadAfterThis.esm<br /><br />
-	OVERRIDE: MyModToOverride.esp<br />
-	BEFORE: LoadBeforeThis.esp<br /><br />
-	OVERRIDE: L.A.M.E.<br />
-	BEFORE: Supreme Magicka
-	</code></blockquote>
-	<p>It should be self-evident, but the first example basically says <q>add MyModToAdd.esp to the masterlist after LoadAfterThis.esm</q> and the 
-	second says <q>move MyModToOverride.esp from its current position 
-	in the masterlist to before LoadBeforeThis.esp</q>. The third example says <q>move the group L.A.M.E. and its contents from its current position 
-	in the masterlist to before the Supreme Magicka group</q>.</p>
-	</div><br />
-	
-	<div><span class="subtitle">Messages</span>
-	<p>Before we can go on to explain message rules, we must first understand message types. Each of the seven message types begins with a 
+	<div><span>The BOSS Message Format</span>
+	<p>Understanding the BOSS message format is important if you wish to edit mods' messages. Each of the seven message types begins with a 
 	<em>symbol code</em> that signifies what type of message it is, and then the message itself follows it. The message is just a standard line of text. 
 	In addition, Bash Tag suggestion comments also have a special syntax for the suggestions they include. The symbol codes for the different message 
 	types are:</p>
@@ -108,31 +66,88 @@
 	% {{BASH:list suggested tags separated by commas here}} you may also have some text here.</p>
 	<p>For example:</p>
 	<blockquote><code>% {{BASH:Names,Graphics}} to prevent changes being lost when using overhauls.</code></blockquote>
-	</div><br />
+	</div><br /><br />
 	
-	<div><span class="subtitle">Message Rules</span>
-	<p><em>Message rules</em> are different from sorting rules in that they do not affect the load order of plugins, but can be used to display 
-	information specific to a plugin. They have a slightly different to these differences, but still consist of two lines of structured text:</p>
-	<blockquote><code>
-	&lt;TYPE KEYWORD&gt;: &lt;MESSAGE&gt;<br />
-	FOR: &lt;MATCH MOD&gt;
-	</code></blockquote>
-	<p>Messages can only be applied to specific mods, not groups. The <em>match mod</em> is the plugin that the message should be attached to. 
-	The <em>message</em> is the formatted message to be attached. You may only attach one message per rule.</p>
-	<p>The <em>type keywords</em> are:</p>
-	<ul>
-		<li><em>APPEND</em>: This states that the message is to be appended to the list of messages attached to the given mod.</li>
-		<li><em>REPLACE</em>: This states that the message is to replace any existing message or messages attached to the given mod.</li>
+	<div><span>Rule Definition Syntax (or: Righting Rules)</span>
+	<p>User rules have a specific structure and syntax which your rules must follow to be applied. This structure is:</p>
+	<blockquote>
+	<code>&lt;RULE KEYWORD&gt;: &lt;RULE OBJECT&gt;</code> (The <em>rule line</em>)<br />
+	<code>&lt;SORT KEYWORD&gt;: &lt;SORT OBJECT&gt;</code> (The <em>sort line</em>)<br />
+	<code>&lt;MESSAGE KEYWORD&gt;: &lt;MESSAGE CONTENT&gt;</code> (The <em>message line</em>)
+	</blockquote>
+	
+	<br /><span class="subtitle">Keywords</span>
+	<p>The <em>rule keywords</em> are:</p>
+		<ul>
+		<li><em>ADD</em>: This signifies that the rule adds plugins (not groups) that are not already present in the 
+		masterlist to a specific position in it. The rule may also edit attached messages.</li>
+		<li><em>OVERRIDE</em>: This signifies that the rule overrides the current position of a mod or group already 
+		in the masterlist with a new specific position. The rule may also edit attached messages.</li>
+		<li><em>FOR</em>: This signifies that the rule does not alter the position of the mod in your load order, and only edits the messages attached to it.</li>
 	</ul>
-	<p>Here are two examples:</p>
+	<p>The <em>sort keywords</em> are:</p>
+	<ul>
+		<li><em>BEFORE</em>: This states that the rule object is to load immediately before the sort object.</li>
+		<li><em>AFTER</em>: This states that the rule object is to load immediately after the sort object.</li>
+	</ul>
+	<p>The <em>message keywords</em> are:</p>
+	<ul>
+		<li><em>APPEND</em>: This states that the message is to be appended to the list of messages attached to the rule mod.</li>
+		<li><em>REPLACE</em>: This states that the message is to replace any existing message or messages attached to the rule mod.</li>
+	</ul>
+	
+	<br /><span class="subtitle">Objects And Message Content</span>
+	<p>An object can be a mod or group. If one object is a mod, then the other must be too, and vice-versa. You cannot mix mods and groups in rules.</p>
+	<p>The <em>rule object</em> is the mod or group that the rule is applied to. The <em>sort object</em> is the plugin or group that you wish the rule object 
+	to be positioned relative to. When you define rule and sort groups, the names of those groups are used as they appear in the masterlist. For example, 
+	if you wanted to sort or match the group of mods that begins with <code>\BeginGroup\: Supreme Magicka</code>, you would put it in the rule as 
+	<code>Supreme Magicka</code>.</p>
+	<p>The <em>message content</em> is the message, complete with symbol code, that you wish to attach to the mod defined by the rule object. You cannot attach messages to groups.</p>
+	
+	<br /><span class="subtitle">Structure Notes</span>
+	<p>There are a few important points you should note about rule structure. These are:</p>
+	<ol>
+		<li>If a rule's rule keyword is ADD or OVERRIDE, the rule line must be followed by a sort line. If the rule keyword is FOR, the rule line must instead be followed by a message line, and the rule must not contain a sort line.</li>
+		<li>Message lines may be attached to any rule, irrespective of whether the rule keyword is ADD, OVERRIDE or FOR. They are only a requirement of FOR rules though. You may have multiple message lines in a rule.
+		<li>If a rule sorts a mod and also adds messages to it, the message lines must come after the sort line.</li>
+	</ol>
+	<p>This means that although the rule structure shown at the top of this section gives three lines, a rule may consist of two lines or more, with no limit to the maximum number of message lines in a rule.</p>
+	
+	<br /><span class="subtitle">Examples</span>
+	<p>Here is the contents of an example userlist:</p>
 	<blockquote><code>
-	APPEND: % {{BASH:R.Teeth}}<br />
-	FOR: bgBalancingEVOptionalFangs.esp<br /><br />
+	ADD: MyModToAdd.esp<br />
+	AFTER: LoadAfterThis.esm<br />
+	APPEND: ? Adding a general comment.<br />
+	APPEND: $ Incompatible with OOO!<br /><br />
+	
+	OVERRIDE: MyModToOverride.esp<br />
+	BEFORE: LoadBeforeThis.esp<br /><br />
+	
+	OVERRIDE: L.A.M.E.<br />
+	BEFORE: Supreme Magicka<br /><br />
+	
+	FOR: bgBalancingEVOptionalNPCDiversity, Vanilla.esp<br />
 	REPLACE: ? This is a replacement message.<br />
-	FOR: Unofficial Shivering Isles Patch.esp
+	APPEND: % {{BASH:NpcFaces,NoMerge}}
 	</code></blockquote>
-	<p>The first example says <q>add the Bash Tag suggestion '{{BASH:R.Teeth}}' to the mod bgBalancingEVOptionalFangs.esp</q>. The second says 
-	<q>replace the all the messages attached to 'Unofficial Shivering Isles Patch.esp' with the general comment 'This is a replacement message.'</q>.</p>
+	<p>This is the equivalent of the masterlist having:</p>
+	<blockquote>
+	...<br />
+	LoadAfterThis.esm<br />
+	MyModToAdd.esp<br />
+	? Adding a general comment.<br />
+	$ Incompatible with OOO!<br />
+	...<br />
+	MyModToOverride.esp<br />
+	LoadBeforeThis.esp<br />
+	...<br />
+	bgBalancingEVOptionalNPCDiversity, Vanilla.esp<br />
+	? This is a replacement message.<br />
+	% {{BASH:NpcFaces,NoMerge}}<br />
+	...<br />
+	</blockquote>
+	<p>The rule sorting the two groups L.A.M.E. and Supreme Magicka simply moves the L.A.M.E. group from its current position to before the Supreme Magicka group.</p>
 	</div>
 	</div><br /><br />
 	
@@ -142,13 +157,14 @@
 	<ol>
 		<li>You do not need to have blank lines between your rules, though it is neater and easier to read, especially when you have lots of rules.</li>
 		<li>The names of mods and groups are not case-sensitive.</li>
-		<li><b>All mods referenced in rules must be in your Data folder.</b> The sort and match mods of mod sorting rules and the match mod of message rules
+		<li><b>All mods referenced in rules must be in your Data folder.</b> The rule mods and sort mods of rules
 		must be plugins that are present in your Data folder when you run BOSS. If they are not present, the relevant rules will not be applied.</li>
 		<li><b>You must never sort a mod or group twice</b>. When using a mix of rules sorting mods and groups, be very careful to ensure that none 
-		of the sort mods are contained in any of the sort groups.</li>
+		of the rule mods are contained in any of the sort groups, and that none of the rule groups are located inside any other rule groups.</li>
+		<li>You may not define the same rule object for multiple rules. Each rule must affect a different mod or group.</li>
 		<li>
-			Rules are applied in the order they are listed. This means that you can have several rules loading different sort mods or groups before or 
-			after the same match mod or group, eg:<br />
+			Rules are applied in the order they are listed. This means that you can have several rules loading different rule mods or groups before or 
+			after the same sort mod or group, eg:<br />
 			<blockquote><code>
 			ADD: Mod3.esp<br />
 			AFTER: RTT.esp<br /><br />
@@ -170,8 +186,8 @@
 			Mod3.esp</blockquote>
 		</li>
 		<li>
-			You may have the sort mod or group of one rule being the match mod or group of others, so long as it is first sorted in one rule and then 
-			matched in later rules. <b>Do not have your rules listed so that mods or groups are sorted after being matched.</b> An example of a correct 
+			You may have the rule mod or group of one rule being the sort mod or group of others, so long as it is first sorted in one rule and then 
+			referenced as a sort object in later rules. <b>Do not have your rules listed so that mods or groups are sorted after being referenced as sort objects.</b> An example of a correct 
 			set of rule-dependent rules is:<br />
 			<blockquote><code>
 			ADD: Mod1.esp<br />
@@ -187,36 +203,8 @@
 			xulAspenWood.esp<br />
 			LoadBeforeThis.esp</blockquote>
 		</li>
-		<li>A single mod may be the match mod of multiple message rules, allowing you to attach multiple messages to a single mod.</li>
-		<li>
-			As with sorting rules, message rules are applied in the order they are listed.Bear in mind that replace-type message rules will replace all messages that 
-			were present before its application, including messages appended by previous rules. If you wish to replace a set of messages with another set, you must 
-			use a replace rule for the first message of the new set followed by multiple append rules for the remaining members of the new set. For example:<br />
-			<blockquote><code>
-			APPEND: % {{BASH:Factions,Invent}}<br />
-			FOR: Unofficial Shivering Isles Patch.esp<br /><br />
-			REPLACE: ? This is a replacement message.<br />
-			FOR: Unofficial Shivering Isles Patch.esp
-			</code></blockquote>
-			will result in:
-			<blockquote>Unofficial Shivering Isles Patch.esp<br />
-			? This is a replacement message.
-			</blockquote>
-			but:
-			<blockquote><code>
-			REPLACE: ? This is a replacement message.<br />
-			FOR: Unofficial Shivering Isles Patch.esp<br /><br />
-			APPEND: % {{BASH:Factions,Invent}}<br />
-			FOR: Unofficial Shivering Isles Patch.esp
-			</code></blockquote>
-			will result in:
-			<blockquote>Unofficial Shivering Isles Patch.esp<br />
-			? This is a replacement message.<br />
-			% {{BASH:Factions,Invent}}
-			</blockquote>
-		</li>
 	</ol>
-	<p>The functionality described in point 5 does not allow you to do anything that cannot be done using the functionality described in point 4. You can 
+	<p>The functionality described in point 7 does not allow you to do anything that cannot be done using the functionality described in point 6. You can 
 	get the same result simply by ordering your rules a certain way. For instance:</p>
 	<blockquote><code>
 	ADD: Mod2.esp<br />
@@ -226,9 +214,7 @@
 	OVERRIDE: xulAspenWood.esp<br />
 	BEFORE: LoadBeforeThis.esp<br /><br />
 	</code></blockquote>
-	<p>will have the same effect as the rules in point 5. While rule-dependent rules can be simpler to understand, they carry a greater risk of resulting 
-	in an incorrect load order if you do not list them properly. Therefore, it is advisable that you rely on rule ordering over rule-dependence wherever 
-	possible.</p>
+	<p>will have the same effect as the rules in point 7.</p>
 	</div><br /><br />
 	
 	<div><span>Enforcing Your Rules (or: How To Be The BOSS)</span>
@@ -236,29 +222,37 @@
 	It will print messages detailing the results of the rule application(s) into your BOSSlog.txt, in a section headed "Userlist Messages" near the top. 
 	There are two types of message that can be found:</p>
 	<ol>
-		<li>A <em>success</em> message. This will have one of two forms:<div style="height:0.65em;"></div>
+		<li><em>Success</em> messages. These can have one of two forms:<div style="height:0.65em;"></div>
 			<ol>
-				<li>For a sorting rule, it will be: <code>"<em>Mod/Group Name</em>" <em>placed/moved</em> <em>before/after</em> "<em>Mod/Group Name</em>".</code></li>
-				<li>For a message rule it will be: <code>"<em>Message</em>" <em>appended to/replaced</em> messages attached to "<em>Mod Name</em>".</code></li>
+				<li>For a sorting part of a rule, it will be: <code>"<em>Mod/Group Name</em>" <em>placed/moved</em> <em>before/after</em> "<em>Mod/Group Name</em>".</code></li>
+				<li>For a message editing part of a rule it will be: <code>"<em>Message</em>" <em>appended to/replaced</em> messages attached to "<em>Mod Name</em>".</code></li>
 			</ol>
-		<li>A <em>failure</em> message. This can occur for three cases:<div style="height:0.65em;"></div>
+		<li><em>Failure</em> messages. These can occur for three cases:<div style="height:0.65em;"></div>
 			<ol>
 				<li>If the rule does not follow the correct syntax, it will print a message of the form: <code>The rule beginning "<em>First Line Of Rule</em>" does not 
-				have the correct syntax. Rule application skipped.</code></li>
-				<li>If the rule references mods that are not present in your Data folder, it will print a message of the form: <code>The rule beginning 
-				"<em>First Line Of Rule</em>" references a mod that is not present in your Data folder. Rule application skipped.</code></li>
+				have the correct syntax. Rule skipped.</code></li>
+				<li>If the rule references a mod that is not present in your Data folder, it will print a message of the form: <code> "<em>Mod Name</em>" is not installed. 
+				Rule skipped.</code></li>
 				<li>If the rule is an addition-type sorting rule and it tries to add a mod already present in the masterlist, it will print a message of the
-				form: <code>"<em>Mod Name</em>" already present in masterlist.txt. Rule application skipped.</code></li>
+				form: <code>"<em>Mod Name</em>" is already in the masterlist. Rule skipped.</code></li>
 			</ol>
 		</li>
 	</ol>
-	<p>Rule application does not alter your masterlist.txt or userlist.txt. This means that if you want to undo the application of
+	<p><b>Rule application does not alter your masterlist.txt or userlist.txt.</b> This means that if you want to undo the application of
 	a rule, all you need to do is remove it from your userlist.txt and re-run BOSS.</p>
 	</div><br /><br />
 	
 	<div><span>Compatibility With BOSS Master List Manager (BOMM)</span>
 	<p>Compatibility with BOMM has not been tested. However, as BOMM includes similar functionality, it would be advisable to only use one method of implementing user 
 	rules until a definite compatibility status has been determined, unless you are specifically interested in helping test the compatibility of the two. </p>
+	<p>Preliminary observations show that due to BOMM rules altering the masterlist.txt and running before BOSS rules, the following occurs:</p>
+	<ol>
+		<li>All BOMM rules are applied.</li>
+		<li>If BOMM and BOSS both add a mod, the BOSS rule will be ignored, since BOMM already added it.</li>
+		<li>If BOMM and BOSS both override a mod position, the BOSS rule would override the changes made by the BOMM rule, and the mod would be moved to the BOSS position.</li>
+		<li>If BOMM and BOSS both append message(s) to a mod, all the BOMM and BOSS messages are applied, but BOSS messages are only visible in BOSSlog (as usual), whereas BOMM messages are visible in the masterlist too (as usual).</li>
+		<li>If BOMM and BOSS both override messages attached to a mod, the BOSS message overrides the BOMM message, though the BOMM message is still visible in the masterlist.</li>
+	</ol>
 	<div><br /><br />
 	</body>
 </html>

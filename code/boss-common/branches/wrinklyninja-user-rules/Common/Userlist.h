@@ -49,6 +49,7 @@ namespace boss {
 	class Rules {
 	public:
 		vector<string> keys,objects;
+		vector<int> rules;
 		string messages;
 		void AddRules();
 		void PrintRules(ofstream& output);
@@ -85,38 +86,33 @@ namespace boss {
 				pos = line.find(':');
 				key = line.substr(0,pos);
 				object = line.substr(pos+2);
-				if (key=="ADD" || key=="OVERRIDE"|| key=="FOR") {
+				if (key=="ADD" || key=="OVERRIDE" || key=="FOR") {
 					if (IsPlugin(object) && !fs::exists(object)) {
 						messages += "\""+object+"\" is not installed. Rule skipped.<br /><br />";
 						skip = true;
 					} else {
 						keys.push_back(key);
 						objects.push_back(object);
+						rules.push_back(keys.size()-1);
 						skip = false;
 					}
 				} else if ((key=="BEFORE" || key=="AFTER") && !skip) {
 					if (IsPlugin(object) && !fs::exists(object)) {
 						messages += "\""+object+"\" is not installed. Rule skipped.<br /><br />";
-						keys.pop_back();
-						objects.pop_back();
 					} else {
-						if ((IsPlugin(object) && IsPlugin(objects.back())) || (!IsPlugin(object) && !IsPlugin(objects.back()))) {
+						if ((IsPlugin(object) && IsPlugin(objects.back())) || (!IsPlugin(object) && !IsPlugin(objects.back())) && (keys.back()=="ADD" || keys.back()=="OVERRIDE")) {
 							keys.push_back(key);
 							objects.push_back(object);
 						} else {
 							messages += "The rule beginning \""+keys.back()+": "+objects.back()+"\" does not have the correct syntax. Rule skipped.<br/><br />";
-							keys.pop_back();
-							objects.pop_back();
 						}
 					}
 				} else if ((key=="APPEND" || key=="REPLACE") && !skip) {
-					if (IsPlugin(objects.back())) {
+					if (IsPlugin(objects[rules.back()])) {
 						keys.push_back(key);
 						objects.push_back(object);
 					} else {
-						messages += "The rule beginning \""+keys.back()+": "+objects.back()+"\" does not have the correct syntax. Rule skipped.<br/><br />";
-						keys.pop_back();
-						objects.pop_back();
+						messages += "The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" does not have the correct syntax. Rule skipped.<br/><br />";
 					}
 				}
 			}
@@ -134,7 +130,7 @@ namespace boss {
 	//Class to replace current modlist implementation.
 	class Mods {
 	public:
-		vector<string> mods,unknownmods;			//Stores the mods in your data folder. Stores the mods not recognised by masterlist or userlist.
+		vector<string> mods;			//Stores the mods in your data folder. Stores the mods not recognised by masterlist or userlist.
 		vector<vector<string>> modmessages;		//Stores the messages attached to each mod. First dimension matches up with the mods vector, then second lists the messages attached to that mod.
 		void AddMods();
 		void PrintModList(ofstream& out);
@@ -181,9 +177,6 @@ namespace boss {
 		}
 		return -1;
 	}
-
-	//Class to replace current masterlist implementation.
-
 }
 
 #endif __BOSS_USERLIST_H__
