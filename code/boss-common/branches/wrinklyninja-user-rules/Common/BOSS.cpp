@@ -169,9 +169,15 @@ int main(int argc, char *argv[]) {
 					modlist.mods.insert(modlist.mods.begin()+x,textbuf);
 					i = userlist.GetRuleIndex(textbuf);
 					if (i>-1 && userlist.keys[i]=="ADD" && revert<1) {
+						int ruleindex;
+						for (int j=0;j<(int)userlist.rules.size();j++) {
+							if (i<userlist.rules[j]) {
+								ruleindex = j-1;
+								break;
+							}
+						}
+						userlist.rules.erase(userlist.rules.begin()+ruleindex);
 						userlist.messages += "\""+userlist.objects[i]+"\" is already in the masterlist. Rule skipped.<br /><br />";
-						userlist.keys.erase(userlist.keys.begin()+i+1);
-						userlist.objects.erase(userlist.objects.begin()+i+1);
 					}
 					x++;
 				} //if
@@ -182,7 +188,7 @@ int main(int argc, char *argv[]) {
 	} //while
 	order.close();		//Close the masterlist stream, as it's not needed any more.
 
-	if (boost::filesystem::exists("BOSS\\Userlist.txt")) {
+	if (boost::filesystem::exists("BOSS\\userlist.txt")) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
 		//Go through each rule.
 		for (int i=0;i<(int)userlist.rules.size();i++) {
@@ -190,7 +196,6 @@ int main(int argc, char *argv[]) {
 			int end;
 			if (i==(int)userlist.rules.size()-1) end = (int)userlist.keys.size();
 			else end = userlist.rules[i+1];
-			bosslog << start << ", " << end << endl;
 			//Go through each line of the rule. The first line is given by keys[start] and objects[start].
 			for (int j=start;j<end;j++) {
 				//A sorting line.

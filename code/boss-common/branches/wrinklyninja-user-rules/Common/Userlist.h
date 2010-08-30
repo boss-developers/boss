@@ -59,7 +59,7 @@ namespace boss {
 
 	//Debug function, just prints the object contents to the output file stream given.
 	void Rules::PrintRules(ofstream& output) {
-		output << "Rule dump commencing..." << endl << endl;
+		output << "Rule dump commencing..." << "<br />" << endl;
 		for (int i=0;i<(int)objects.size();i++) {
 			output << keys[i] << ": " << objects[i] << "<br />" << endl;
 		}
@@ -79,7 +79,7 @@ namespace boss {
 		ifstream userlist;
 		string line,key,object;
 		int pos;
-		bool skip = true;
+		bool skip = false;
 		userlist.open("BOSS\\userlist.txt");
 		while(GetLine(userlist,line)) {
 			if (line.substr(0,2)!="//") {
@@ -87,35 +87,44 @@ namespace boss {
 				key = line.substr(0,pos);
 				object = line.substr(pos+2);
 				if (key=="ADD" || key=="OVERRIDE" || key=="FOR") {
+					if (skip) {
+						keys.erase(keys.begin()+rules.back(), keys.end());
+						objects.erase(objects.begin()+rules.back(), objects.end());
+						rules.pop_back();
+					}
+						keys.push_back(key);
+						objects.push_back(object);
+						rules.push_back((int)keys.size()-1);
+						skip = false;
 					if (IsPlugin(object) && !fs::exists(object)) {
 						messages += "\""+object+"\" is not installed. Rule skipped.<br /><br />";
 						skip = true;
-					} else {
-						keys.push_back(key);
-						objects.push_back(object);
-						rules.push_back(keys.size()-1);
-						skip = false;
 					}
-				} else if ((key=="BEFORE" || key=="AFTER") && !skip) {
+				} else if ((key=="BEFORE" || key=="AFTER")) {
+					keys.push_back(key);
+					objects.push_back(object);
 					if (IsPlugin(object) && !fs::exists(object)) {
 						messages += "\""+object+"\" is not installed. Rule skipped.<br /><br />";
-					} else {
-						if ((IsPlugin(object) && IsPlugin(objects.back())) || (!IsPlugin(object) && !IsPlugin(objects.back())) && (keys.back()=="ADD" || keys.back()=="OVERRIDE")) {
-							keys.push_back(key);
-							objects.push_back(object);
-						} else {
-							messages += "The rule beginning \""+keys.back()+": "+objects.back()+"\" does not have the correct syntax. Rule skipped.<br/><br />";
-						}
+						skip = true;
 					}
-				} else if ((key=="APPEND" || key=="REPLACE") && !skip) {
-					if (IsPlugin(objects[rules.back()])) {
-						keys.push_back(key);
-						objects.push_back(object);
-					} else {
+					if (!((IsPlugin(object) && IsPlugin(objects.back())) || (!IsPlugin(object) && !IsPlugin(objects.back())))) {
 						messages += "The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" does not have the correct syntax. Rule skipped.<br/><br />";
+						skip = true;
+					}
+				} else if ((key=="APPEND" || key=="REPLACE")) {
+					keys.push_back(key);
+					objects.push_back(object);
+					if (!IsPlugin(objects[rules.back()])) {
+						messages += "The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" does not have the correct syntax. Rule skipped.<br/><br />";
+						skip = true;
 					}
 				}
 			}
+		}
+		if (skip) {
+			keys.erase(keys.begin()+rules.back(), keys.end());
+						objects.erase(objects.begin()+rules.back(), objects.end());
+			rules.pop_back();
 		}
 		userlist.close();
 	}

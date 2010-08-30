@@ -39,8 +39,8 @@ namespace boss {
 	void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc, bool fook2, bool fwe) {
 		switch (textbuf[0]) {	
 		case '*':
-			if (fcom) bosslog << "<li>!!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
-			else if (fook2) bosslog << "<li>!!! FOOK2 INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
+			if (fcom) bosslog << "<li style='color:red;'>!!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
+			else if (fook2) bosslog << "<li style='color:red;'>!!! FOOK2 INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case ':':
 			bosslog << "<li>Requires: " << textbuf.substr(1) << "</li>" << endl;
