@@ -8,20 +8,16 @@
 */
 
 #include <stdio.h>
-#include <windows.h>
 #include <iostream>
 #include <fstream>
 #include <cstring>
 #include <string>
 #include <ctype.h>
-#include <direct.h>
-#include <sstream>
 #include <time.h>
 #include <sys/stat.h>
 #include <sys/utime.h>
 
 #include "BOSS.h"
-#include "Userlist.h"
 
 #define SIZE 26 				//used in conversion of date/time struct to a string. Has to be this length.
 #define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitrary number.
@@ -48,7 +44,6 @@ int main(int argc, char *argv[]) {
 				version_parse = true;
 			} else if (strcmp("--revert-level", argv[i]) == 0 || strcmp("-r", argv[i]) == 0) {
 				revert = stoi(argv[i+1]);
-				cout << revert;
 			} else if (strcmp("--help", argv[i]) == 0 || strcmp("-h", argv[i]) == 0) {
 				cout << "Better Oblivion Sorting Software is a utility that sorts the load order of TESIV: Oblivion, TESIII: Morrowind and Fallout 3 mods according to their relative positions on a frequently-updated masterlist ";
 				cout << "to ensure proper load order and minimise incompatibilities between mods." << endl << endl;
@@ -59,6 +54,8 @@ int main(int argc, char *argv[]) {
 			}
 		}
 	}
+
+	boost::filesystem::create_directory("BOSS\\");
 
 	//Check for creation of BOSSlog.txt.
 	bosslog.open("BOSS\\BOSSlog.html");
@@ -93,7 +90,7 @@ int main(int argc, char *argv[]) {
 		exit (1); //fail in screaming heap.
 	}
 
-	CreateDirectory("BOSS\\",NULL);
+	
 
 	if (update == true) {
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
@@ -108,30 +105,32 @@ int main(int argc, char *argv[]) {
 	modlist.AddMods();
 	if (revert<1) modlist.SaveModList();
 	Rules userlist;
-	if (boost::filesystem::exists("BOSS\\userlist.txt")) userlist.AddRules();
+	if (boost::filesystem::exists("BOSS\\userlist.txt") && revert<1) userlist.AddRules();
 	
-	bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
-	if (game == 1) {
-		//Check if FCOM or not
-		if (fcom=FileExists("FCOM_Convergence.esm")) bosslog << "FCOM detected.<br />" << endl;
-			else bosslog << "FCOM not detected.<br />" << endl;
-		if (FileExists("FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing.<br />" << endl;
-		//Check if OOO or not
-		if (ooo=FileExists("Oscuro's_Oblivion_Overhaul.esm")) bosslog << "OOO detected.<br />" << endl;
-			else bosslog << "OOO not detected.<br />" << endl;
-		//Check if Better Cities or not
-		if (bc=FileExists("Better Cities Resources.esm")) bosslog << "Better Cities detected.<br />" << endl;
-			else bosslog << "Better Cities not detected.<br />" << endl;
-	} else if (game == 2) {
-		//Check if fook2 or not
-		if (fook2=FileExists("FOOK2 - Main.esm")) bosslog << "FOOK2 Detected.<br />" << endl;
-			else bosslog << "FOOK2 not detected.<br />" << endl;
-		if (FileExists("FOOK2 - Main.esp") && !fook2) bosslog << "WARNING: FOOK2.esm seems to be missing.<br />" << endl;
-		//Check if fwe or not
-		if (fwe=FileExists("FO3 Wanderers Edition - Main File.esm")) bosslog << "FWE detected.<br />" << endl;
-			else bosslog << "FWE not detected.<br />" << endl;
+	if (revert<1) {
+		bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
+		if (game == 1) {
+			//Check if FCOM or not
+			if (fcom=FileExists("FCOM_Convergence.esm")) bosslog << "FCOM detected.<br />" << endl;
+				else bosslog << "FCOM not detected.<br />" << endl;
+			if (FileExists("FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing.<br />" << endl;
+			//Check if OOO or not
+			if (ooo=FileExists("Oscuro's_Oblivion_Overhaul.esm")) bosslog << "OOO detected.<br />" << endl;
+				else bosslog << "OOO not detected.<br />" << endl;
+			//Check if Better Cities or not
+			if (bc=FileExists("Better Cities Resources.esm")) bosslog << "Better Cities detected.<br />" << endl;
+				else bosslog << "Better Cities not detected.<br />" << endl;
+		} else if (game == 2) {
+			//Check if fook2 or not
+			if (fook2=FileExists("FOOK2 - Main.esm")) bosslog << "FOOK2 Detected.<br />" << endl;
+				else bosslog << "FOOK2 not detected.<br />" << endl;
+			if (FileExists("FOOK2 - Main.esp") && !fook2) bosslog << "WARNING: FOOK2.esm seems to be missing.<br />" << endl;
+			//Check if fwe or not
+			if (fwe=FileExists("FO3 Wanderers Edition - Main File.esm")) bosslog << "FWE detected.<br />" << endl;
+				else bosslog << "FWE not detected.<br />" << endl;
+		}
+		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	}
-	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 
 	//open masterlist.txt
 	if (revert==1) order.open("BOSS\\modlist.txt");	
@@ -166,18 +165,25 @@ int main(int argc, char *argv[]) {
 					if (isghost) i = modlist.GetModIndex(textbuf+".ghost");
 					else i = modlist.GetModIndex(textbuf);		//Remove ordered files from modlist class.
 					modlist.mods.erase(modlist.mods.begin()+i);
-					modlist.mods.insert(modlist.mods.begin()+x,textbuf);
-					i = userlist.GetRuleIndex(textbuf);
-					if (i>-1 && userlist.keys[i]=="ADD" && revert<1) {
-						int ruleindex;
-						for (int j=0;j<(int)userlist.rules.size();j++) {
-							if (i<userlist.rules[j]) {
-								ruleindex = j-1;
-								break;
+					if (isghost) modlist.mods.insert(modlist.mods.begin()+x,textbuf+".ghost");
+					else modlist.mods.insert(modlist.mods.begin()+x,textbuf);
+					if (revert<1) {
+						i = userlist.GetRuleIndex(textbuf);
+						if (i>-1 && userlist.keys[i]=="ADD") {
+							userlist.messages += "\""+userlist.objects[i]+"\" is already in the masterlist. Rule skipped.<br /><br />";
+							int ruleindex;
+							for (int j=0;j<(int)userlist.rules.size();j++) {
+								if (i==userlist.rules[j]) {
+									ruleindex = j;
+									break;
+								}
 							}
+							for (int j=i;j<userlist.rules[ruleindex+1];j++) {
+								userlist.keys[j]="";
+								userlist.objects[j]="";
+							}
+							userlist.rules.erase(userlist.rules.begin()+ruleindex);
 						}
-						userlist.rules.erase(userlist.rules.begin()+ruleindex);
-						userlist.messages += "\""+userlist.objects[i]+"\" is already in the masterlist. Rule skipped.<br /><br />";
 					}
 					x++;
 				} //if
@@ -188,7 +194,7 @@ int main(int argc, char *argv[]) {
 	} //while
 	order.close();		//Close the masterlist stream, as it's not needed any more.
 
-	if (boost::filesystem::exists("BOSS\\userlist.txt")) {
+	if (boost::filesystem::exists("BOSS\\userlist.txt") && revert<1) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
 		//Go through each rule.
 		for (int i=0;i<(int)userlist.rules.size();i++) {
@@ -204,13 +210,14 @@ int main(int argc, char *argv[]) {
 					vector<string> currentmessages;
 					//Get current mod messages and remove mod from current modlist position.
 					int index1 = modlist.GetModIndex(userlist.objects[start]);
+					string filename = modlist.mods[index1];
 					currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
 					modlist.mods.erase(modlist.mods.begin()+index1);
 					modlist.modmessages.erase(modlist.modmessages.begin()+index1);
 					//Need to insert mod and mod's messages to a specific position.
 					int index = modlist.GetModIndex(userlist.objects[j]);
 					if (userlist.keys[j]=="AFTER") index += 1;
-					modlist.mods.insert(modlist.mods.begin()+index,userlist.objects[start]);
+					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 					userlist.messages += "\""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " \"" + userlist.objects[j] + "\".<br /><br />";
 				} else if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && !IsPlugin(userlist.objects[j])) {
@@ -313,25 +320,38 @@ int main(int argc, char *argv[]) {
 
 	//Remove any read only attributes from esm/esp files if present.
 	system("attrib -r *.es?");
+	system("attrib -r *.ghost");
 
 	//get date for master .esm.
-	if (game == 1) _stat64("oblivion.esm", &buf);
-	else if (game == 2) _stat64("fallout3.esm", &buf);
+	if (game == 1) _stat64("Oblivion.esm", &buf);
+	else if (game == 2) _stat64("Fallout3.esm", &buf);
 	else if (game == 3) _stat64("morrowind.esm", &buf);
 	_gmtime64_s(&esmtime, &buf.st_mtime);		//convert _stat64 modification date data to date/time struct.
 
 	//Re-order .esp/.esm files to masterlist.txt order and output messages
-	bosslog << "<div><span>Recognised And Re-ordered Mod Files</span>"<<endl<<"<p>";
+	if (revert<1) bosslog << "<div><span>Recognised And Re-ordered Mod Files</span>"<<endl<<"<p>";
+	else if (revert==1) bosslog << "<div><span>Restored Load Order (Using modlist.txt)</span>"<<endl<<"<p>";
+	else if (revert==2) bosslog << "<div><span>Restored Load Order (Using modlist.old)</span>"<<endl<<"<p>";
 	for (int i=0;i<x;i++) {
-		string text = version_parse ? GetModHeader(modlist.mods[i],false) : modlist.mods[i];
-		if (Tidy(modlist.mods[i].substr(modlist.mods[i].length()-6))==".ghost") text += " (*Ghosted*)";
-		if (i!=0) bosslog << "</ul></li>"<<endl;
-		bosslog << "<li style='list-style-type:none;'>" << text << "<ul>" << endl;		// show which mod file is being processed.
+		bool ghosted = false;
+		string filename;
+		if (Tidy(modlist.mods[i].substr(modlist.mods[i].length()-6))==".ghost") {
+			ghosted=true;
+			filename = modlist.mods[i].substr(0,modlist.mods[i].length()-6);
+		} else filename = modlist.mods[i];
+		string text = version_parse ? GetModHeader(filename,ghosted) : filename;
+		if (ghosted) text += " (*Ghosted*)";
+		if (modlist.modmessages[i].size()>0) bosslog << "<b>" << text << "</b>" << endl;		// show which mod file is being processed.
+		else bosslog << text << "<br /><br />" << endl;
 		modfiletime=esmtime;
 		modfiletime.tm_min += i;				//files are ordered in minutes after oblivion.esp .
 		ChangeFileDate(modlist.mods[i], modfiletime);
-		for (int j=0;j<(int)modlist.modmessages[i].size();j++) {
-			ShowMessage(modlist.modmessages[i][j], fcom, ooo, bc, fook2, fwe);		//Deal with message lines here.
+		if (modlist.modmessages[i].size()>0) {
+			bosslog << "<ul>" << endl;
+			for (int j=0;j<(int)modlist.modmessages[i].size();j++) {
+				ShowMessage(modlist.modmessages[i][j], fcom, ooo, bc, fook2, fwe);		//Deal with message lines here.
+			}
+			bosslog << "</ul>" << endl;
 		}
 	}
 

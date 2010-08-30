@@ -9,10 +9,8 @@
 	$Revision$, $Date$
 */
 
-#include <iostream>
 #include <fstream>
 #include <sstream>
-#include <Support/Types.h>
 #include "Updater.h"
 
 namespace boss {

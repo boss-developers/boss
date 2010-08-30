@@ -18,11 +18,7 @@
 
 #include <string>
 #include <fstream>
-#include "Globals.h"
-#include <Support/Types.h>
-#include <Support/Helpers.h>
 #include <vector>
-
 #include "boost/filesystem.hpp"
 
 namespace fs = boost::filesystem;
@@ -81,6 +77,7 @@ namespace boss {
 		int pos;
 		bool skip = false;
 		userlist.open("BOSS\\userlist.txt");
+		messages += "<p>";
 		while(GetLine(userlist,line)) {
 			if (line.substr(0,2)!="//") {
 				pos = line.find(':');
@@ -96,31 +93,36 @@ namespace boss {
 						objects.push_back(object);
 						rules.push_back((int)keys.size()-1);
 						skip = false;
-					if (IsPlugin(object) && !fs::exists(object)) {
-						messages += "\""+object+"\" is not installed. Rule skipped.<br /><br />";
+					if (IsPlugin(object) && !(fs::exists(object) || fs::exists(object+".ghost"))) {
+						messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "\""+object+"\" is not installed.<br />";
 						skip = true;
 					}
 				} else if ((key=="BEFORE" || key=="AFTER")) {
 					keys.push_back(key);
 					objects.push_back(object);
-					if (IsPlugin(object) && !fs::exists(object)) {
-						messages += "<div style='color:red;'>\""+object+"\" is not installed. Rule skipped.</div><br />";
+					if (IsPlugin(object) && !(fs::exists(object) || fs::exists(object+".ghost"))) {
+						if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span style='color:red;'>\""+object+"\" is not installed.</span><br />";
 						skip = true;
 					}
-					if (!((IsPlugin(object) && IsPlugin(objects.back())) || (!IsPlugin(object) && !IsPlugin(objects.back())))) {
-						messages += "<div style='color:red;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" references a mod and a group. Rule skipped.</div><br/>";
+					if ((IsPlugin(object) && !IsPlugin(objects[rules.back()])) || (!IsPlugin(object) && IsPlugin(objects[rules.back()]))) {
+						if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span style='color:red;'>It references a mod and a group.</span><br />";
 						skip = true;
 					}
 				} else if ((key=="APPEND" || key=="REPLACE")) {
 					keys.push_back(key);
 					objects.push_back(object);
 					if (!IsPlugin(objects[rules.back()])) {
-						messages += "<div style='color:red;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" tries to attach a message to a group. Rule skipped.</div><br/>";
+						if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span style='color:red;'>It tries to attach a message to a group.</span><br />";
 						skip = true;
 					}
 				}
 			}
 		}
+		messages += "</p>";
 		if (skip) {
 			keys.erase(keys.begin()+rules.back(), keys.end());
 						objects.erase(objects.begin()+rules.back(), objects.end());
@@ -180,9 +182,10 @@ namespace boss {
 		}
 	}
 
+	//Look for a mod in the modlist, even if the mod in question is ghosted.
 	int Mods::GetModIndex(string mod) {
 		for (int i=0;i<(int)mods.size();i++) {
-			if (Tidy(mods[i])==Tidy(mod)) return i;
+			if (Tidy(mods[i])==Tidy(mod) || Tidy(mods[i])==Tidy(mod+".ghost")) return i;
 		}
 		return -1;
 	}
