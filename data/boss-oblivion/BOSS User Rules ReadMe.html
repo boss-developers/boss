@@ -32,9 +32,10 @@
 
 	<div id="intro"><span>Introduction</span>
 	<p style="color:red">NOTE: This readme is for features unique to the wrinklyninja-user-rules branch. It is an outline of the user rules implementation, 
-	and is subject to change. Of the features explained in this readme, only the sorting of groups has not been implemented.
+	and is subject to change. Everything in this readme has been implemented, and is undergoing testing.
 	Once everything is confirmed as working correctly, the branch will be merged into the trunk, and these features become a part of
-	the official BOSS.
+	the official BOSS. <br />The one caveat to note that should hopefully change by the time that BOSS is released is that Wrye Bash will not automatically apply Bash
+	Tag suggestions given to mods in rules. Oh, and because of a bug in one of BOSS's functions, if the first line of the userlist is blank, the file will not be read.
 	<br />-WrinklyNinja</p>
 	<p>While BOSS is able to sort the large number of mods listed in its masterlist without any user input, you may find that you wish to customise 
 	the sorting of your mods to a degree. This may be to include mods not listed in the masterlist (eg. temporary plugins or private mods that would 
@@ -76,7 +77,7 @@
 	ADD: &lt;RULE MOD&gt;<br />
 	BEFORE: &lt;SORT MOD&gt;
 	</code></blockquote>
-	<p>The <em>rule mod</em> is the mod you want to sort, and the <em>sort mod</em> is the mod you want to sort it relative to. Both mods must be installed in your Data directory.</p>
+	<p>The <em>rule mod</em> is the mod you want to add, and the <em>sort mod</em> is the mod you want to sort it relative to (ie. it's position in your load order). Both mods must be installed in your Data directory.</p>
 	<p>Some examples:</p>
 	<blockquote><code>
 	ADD: Mod1.esp<br />
@@ -118,7 +119,7 @@
 	...
 	</blockquote>
 	
-	<br /><span class="subtitle">Editing A Mod's BOSSlog Messages</span>
+	<br /><span class="subtitle">Editing A Mod's BOSSlog Messages And Bash Tag Suggestions</span>
 	<p>To add a message to a mod for display in the BOSSlog:</p>
 	<blockquote><code>
 	FOR: &lt;RULE MOD&gt;<br />
@@ -134,8 +135,8 @@
 	<blockquote><code>
 	FOR: Unofficial Oblivion Patch.esp<br />
 	REPLACE: ? Overrided!<br /><br />
-	FOR: DLCShiveringIsles.esp<br />
-	APPEND: ? Adding a new comment.
+	FOR: bgMagicEV.esp.esp<br />
+	APPEND: % {{BASH:Names,Delev,Relev}}
 	</code></blockquote>
 	<p>This will print in the BOSSlog:</p>
 	<blockquote>
@@ -146,8 +147,8 @@
 	</ul></li>
 	<li style='list-style-type:none;'>...<ul></ul></li>
 	<li style='list-style-type:none;'>
-	DLCShiveringIsles.esp<ul>
-	<li>Note:  Adding a new comment.</li>
+	bgMagicEV.esp.esp<ul>
+	<li>Bashed Patch tag suggestion:  % {{BASH:Names,Delev,Relev}}</li>
 	</ul></li>
 	<li style='list-style-type:none;'>...<ul></ul></li>
 	</blockquote>
@@ -243,7 +244,8 @@
 	<p>If a rule is found to have errors in its syntax or when it is applied, it will print one or more error messages depending on the type of error:</p>
 	<ol>
 		<li>If the rule references a mod that is not installed in your Data folder, the message will be of the form: <code>"<em>Mod Name</em>" is not installed. Rule skipped.</code></li>
-		<li>If the rule does not follow the correct syntax in some other way, the message will be of the form: <code>The rule beginning "<em>First Line Of Rule</em>" does not have the correct syntax. Rule skipped.</code></li>
+		<li>If the rule tries to sort a mod relative to a group or vice versa, the message will be of the form: <code>The rule beginning "<em>First Line Of Rule</em>" references a mod and a group. Rule skipped.</code></li>
+		<li>If the rule tries to add a message to a group, the message will be of the form: <code>The rule beginning "<em>First Line Of Rule</em>" tries to attach a message to a group. Rule skipped.</code></li>
 		<li>If the rule has the correct syntax, but adds a mod that is already in the masterlist, it will print a message of the form: <code>"<em>Mod Name</em>" is already in the masterlist. Rule skipped.</code></li>
 	</ol>
 	<p><b>Rule application does not alter your masterlist.txt or userlist.txt.</b> This means that if you want to undo the application of
@@ -257,6 +259,8 @@
 		<li>You do not need to have blank lines between your rules, though it is neater and easier to read, especially when you have lots of rules.</li>
 		<li>The names of mods and groups are not case-sensitive.</li>
 		<li><b>All mods referenced in rules must be in your Data folder.</b> If a mod is not installed when BOSS is run, the rule it is part of will not be applied.</li>
+		<li><b>You must never sort a mod or group twice</b>. When using a mix of rules sorting mods and groups, be very careful to ensure that none 
+        of the rule mods are contained in any of the sort groups, and that none of the rule groups are located inside any other rule groups.</li>
 		<li>
 			Rules are applied in the order they are listed. This means that you can have several rules loading different rule mods or groups before or 
 			after the same sort mod or group, eg:<br />

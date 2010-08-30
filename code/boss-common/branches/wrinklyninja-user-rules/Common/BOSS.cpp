@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
 	//open masterlist.txt
 	if (revert==1) order.open("BOSS\\modlist.txt");	
 	else if (revert==2) order.open("BOSS\\modlist.old");	
-	else order.open("BOSS\\masterlist.txt");	
+	else order.open("BOSS\\masterlist.txt");
 	if (order.fail()) {							
 		bosslog << endl << "<p style='color:red;'>Critical Error! ";
 
@@ -212,7 +212,85 @@ int main(int argc, char *argv[]) {
 					if (userlist.keys[j]=="AFTER") index += 1;
 					modlist.mods.insert(modlist.mods.begin()+index,userlist.objects[start]);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
-					userlist.messages += "\""+userlist.objects[start]+"\" sorted "+Tidy(userlist.keys[j]) + " \"" + userlist.objects[j] + "\".<br /><br />";
+					userlist.messages += "\""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " \"" + userlist.objects[j] + "\".<br /><br />";
+				} else if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && !IsPlugin(userlist.objects[j])) {
+					//Search masterlist for rule group. Once found, search it for mods in modlist, recording the mods that match.
+					//Then search masterlist for sort group. Again, search and record matching modlist mods.
+					//If sort keyword is BEFORE, discard all but the first recorded sort group mod, and if it is AFTER, discard all but the last recorded sort group mod.
+					//Then insert the recorded rule group mods before or after the remaining sort group mod and erase them from their old positions.
+					//Remember to move their messages too.
+					//Seriously hacky this is, but I can't think of a better solution with what we've got.
+
+					order.open("BOSS\\masterlist.txt");
+					int count=0;
+					bool lookforrulemods,lookforsortmods;
+					vector<string> rulemods,sortmods,currentmessages;
+					while (!order.eof()) {					
+						textbuf=ReadLine("order");
+						if (IsValidLine(textbuf) && (textbuf.substr(1,10)=="BeginGroup" || textbuf.substr(1,8)=="EndGroup")) {
+							//A group starts or ends. Search rules to see if it matches any.
+							if (textbuf.substr(1,10)=="BeginGroup") {
+								if (Tidy(userlist.objects[start])==Tidy(textbuf.substr(14))) {
+									//Rule match. Now search for a line that matches something in modlist.
+									lookforrulemods=true;
+									lookforsortmods=false;
+									count = 0;
+								} else if (Tidy(userlist.objects[j])==Tidy(textbuf.substr(14))) {
+									lookforsortmods=true;
+									lookforrulemods=false;
+									count = 0;
+								}
+								count += 1;
+							} else if (count>0 && textbuf.substr(1,8)=="EndGroup") {
+								count -= 1;
+								if (count==0) {
+									//The end of the matched group has been found. Stop searching for mods to move.
+									lookforrulemods=false;
+									lookforsortmods=false;
+								}
+							}
+						} else if ((lookforrulemods || lookforsortmods)  && textbuf[0]!='\\') {
+							if (!IsMessage(textbuf)) {
+								isghost = false;
+								if (FileExists(textbuf+".ghost") && !FileExists(textbuf)) isghost = true;
+								if (FileExists(textbuf) || isghost) {
+									//Found a mod.
+									int i;
+									if (isghost) i = modlist.GetModIndex(textbuf+".ghost");
+									else i = modlist.GetModIndex(textbuf);
+									if (lookforrulemods) {
+										rulemods.push_back(modlist.mods[i]);
+									} else if (lookforsortmods) {
+										sortmods.push_back(modlist.mods[i]);
+									}
+								}
+							}
+						}
+					}
+					order.close();
+					if (userlist.keys[j]=="BEFORE") {
+						for (int k=0;k<(int)rulemods.size();k++) {
+							int index = modlist.GetModIndex(sortmods.front())-1;
+							int index1 = modlist.GetModIndex(rulemods[k]);
+							currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
+							modlist.mods.erase(modlist.mods.begin()+index1);
+							modlist.modmessages.erase(modlist.modmessages.begin()+index1);
+							modlist.mods.insert(modlist.mods.begin()+index,rulemods[k]);
+							modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
+						}
+					} else if (userlist.keys[j]=="AFTER") {	
+						for (int k=(int)rulemods.size()-1;k>-1;k--) {
+							int index = modlist.GetModIndex(sortmods.back());
+							int index1 = modlist.GetModIndex(rulemods[k]);
+							currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
+							modlist.mods.erase(modlist.mods.begin()+index1);
+							modlist.modmessages.erase(modlist.modmessages.begin()+index1);
+							modlist.mods.insert(modlist.mods.begin()+index,rulemods[k]);
+							modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
+						}
+					}
+					userlist.messages += "The group \""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " the group \"" + userlist.objects[j] + "\".<br /><br />";
+
 				} else if (userlist.keys[j]=="APPEND" || userlist.keys[j]=="REPLACE") {
 					//Look for the modlist line that contains the match mod of the rule.
 					int index = modlist.GetModIndex(userlist.objects[start]);

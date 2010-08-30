@@ -104,18 +104,18 @@ namespace boss {
 					keys.push_back(key);
 					objects.push_back(object);
 					if (IsPlugin(object) && !fs::exists(object)) {
-						messages += "\""+object+"\" is not installed. Rule skipped.<br /><br />";
+						messages += "<div style='color:red;'>\""+object+"\" is not installed. Rule skipped.</div><br />";
 						skip = true;
 					}
 					if (!((IsPlugin(object) && IsPlugin(objects.back())) || (!IsPlugin(object) && !IsPlugin(objects.back())))) {
-						messages += "The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" does not have the correct syntax. Rule skipped.<br/><br />";
+						messages += "<div style='color:red;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" references a mod and a group. Rule skipped.</div><br/>";
 						skip = true;
 					}
 				} else if ((key=="APPEND" || key=="REPLACE")) {
 					keys.push_back(key);
 					objects.push_back(object);
 					if (!IsPlugin(objects[rules.back()])) {
-						messages += "The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" does not have the correct syntax. Rule skipped.<br/><br />";
+						messages += "<div style='color:red;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" tries to attach a message to a group. Rule skipped.</div><br/>";
 						skip = true;
 					}
 				}
