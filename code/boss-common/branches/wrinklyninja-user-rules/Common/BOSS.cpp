@@ -178,11 +178,18 @@ int main(int argc, char *argv[]) {
 									break;
 								}
 							}
-							for (int j=i;j<userlist.rules[ruleindex+1];j++) {
-								userlist.keys[j]="";
-								userlist.objects[j]="";
+							if (ruleindex+1==(int)userlist.rules.size()) {
+								for (int j=i;j<(int)userlist.keys.size();j++) {
+									userlist.keys[j]="";
+									userlist.objects[j]="";
+								}
+							} else {
+								for (int j=i;j<userlist.rules[ruleindex+1];j++) {
+									userlist.keys[j]="";
+									userlist.objects[j]="";
+								}
 							}
-							userlist.rules.erase(userlist.rules.begin()+ruleindex);
+							userlist.rules.erase(userlist.rules.begin()+ruleindex);		
 						}
 					}
 					x++;

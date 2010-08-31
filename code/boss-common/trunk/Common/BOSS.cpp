@@ -60,32 +60,35 @@ int main(int argc, char *argv[]) {
 	boost::filesystem::create_directory("BOSS\\");
 
 	//Check for creation of BOSSlog.txt.
-	bosslog.open("BOSS\\BOSSlog.txt");
+	bosslog.open("BOSS\\BOSSlog.html");
 	if (bosslog.fail()) {							
-		cout << endl << "Critical Error! BOSSlog.txt should have been created but it wasn't." << endl
+		cout << endl << "Critical Error! BOSSlog.html should have been created but it wasn't." << endl
 					 << "Make sure you are running as Administrator if using Windows Vista or Windows 7." << endl
 					 << "! Utility will end now." << endl;
 		exit (1); //fail in screaming heap.
 	}
 
-	bosslog << endl << endl << "-----------------------------------------------------------" << endl
-							<< " Better Oblivion Sorting Software       Load Order Utility " << endl << endl
-							<< "   (c) Random007 & the BOSS development team, 2009-2010    " << endl
-							<< "   Some rights reserved.                                   " << endl
-							<< "   CC Attribution-Noncommercial-No Derivative Works 3.0    " << endl
-							<< "   http://creativecommons.org/licenses/by-nc-nd/3.0/       " << endl
-							<< "   v1.6 (1 August 2010)									   " << endl
-							<< "-----------------------------------------------------------" << endl << endl;
+	//Output HTML start and <head>
+	bosslog << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
+			<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl<<"#body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
+			<< "#title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl<<"div > span {font-weight:bold; font-size:1.3em;}"<<endl
+			<< "ul li {margin-bottom:10px;}"<<endl<<"</style>"<<endl<<"</head>"<<endl
+			//Output start of <body>
+			<< "<body id='body'>"<<endl<<"<div id='title'>Better Oblivion Sorting Software Log</div><br />"<<endl
+			<< "<div style='text-align:center;'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />"<<endl
+			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
+			<< "v1.6 (20 August 2010)"<<endl<<"</div><br /><br />";
 
 	if (FileExists("oblivion.esm")) game = 1;
 	else if (FileExists("fallout3.esm")) game = 2;
 	else if (FileExists("morrowind.esm")) game = 3;
 	else {
-		bosslog << endl << "Critical Error: Master .ESM file not found (or not accessible)!" << endl
-						<< "Make sure you're running this in your Data folder." << endl
-						<< "! Utility will end now." << endl;
+		bosslog << endl << "<p style='color:red;'>Critical Error: Master .ESM file not found (or not accessible)!<br />" << endl
+						<< "Make sure you're running this in your Data folder.<br />" << endl
+						<< "Utility will end now.</p>" << endl
+						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
+		system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //else
 
@@ -98,35 +101,37 @@ int main(int argc, char *argv[]) {
 
 	cout << endl << "Better Oblivion Sorting Software working..." << endl;
 
+	bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
 	if (game == 1) {
 		//Check if FCOM or not
-		if (fcom=FileExists("FCOM_Convergence.esm")) bosslog << "FCOM detected." << endl;
-			else bosslog << "FCOM not detected." << endl;
-		if (FileExists("FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing." << endl;
+		if (fcom=FileExists("FCOM_Convergence.esm")) bosslog << "FCOM detected.<br />" << endl;
+			else bosslog << "FCOM not detected.<br />" << endl;
+		if (FileExists("FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing.<br />" << endl;
 		//Check if OOO or not
-		if (ooo=FileExists("Oscuro's_Oblivion_Overhaul.esm")) bosslog << "OOO detected." << endl;
-			else bosslog << "OOO not detected." << endl;
+		if (ooo=FileExists("Oscuro's_Oblivion_Overhaul.esm")) bosslog << "OOO detected.<br />" << endl;
+			else bosslog << "OOO not detected.<br />" << endl;
 		//Check if Better Cities or not
-		if (bc=FileExists("Better Cities Resources.esm")) bosslog << "Better Cities detected." << endl;
-			else bosslog << "Better Cities not detected." << endl;
+		if (bc=FileExists("Better Cities Resources.esm")) bosslog << "Better Cities detected.<br />" << endl;
+			else bosslog << "Better Cities not detected.<br />" << endl;
 	} else if (game == 2) {
 		//Check if fook2 or not
-		if (fook2=FileExists("FOOK2 - Main.esm")) bosslog << "FOOK2 Detected" << endl;
-			else bosslog << "FOOK2 not detected." << endl;
-		if (FileExists("FOOK2 - Main.esp") && !fook2) bosslog << "WARNING: FOOK2.esm seems to be missing." << endl;
+		if (fook2=FileExists("FOOK2 - Main.esm")) bosslog << "FOOK2 Detected.<br />" << endl;
+			else bosslog << "FOOK2 not detected.<br />" << endl;
+		if (FileExists("FOOK2 - Main.esp") && !fook2) bosslog << "WARNING: FOOK2.esm seems to be missing.<br />" << endl;
 		//Check if fwe or not
-		if (fwe=FileExists("FO3 Wanderers Edition - Main File.esm")) bosslog << "FWE detected." << endl;
-			else bosslog << "FWE not detected." << endl;
+		if (fwe=FileExists("FO3 Wanderers Edition - Main File.esm")) bosslog << "FWE detected.<br />" << endl;
+			else bosslog << "FWE not detected.<br />" << endl;
 	}
-	bosslog << endl;
+	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 
 	//open masterlist.txt
 	order.open("BOSS\\masterlist.txt");	
 	if (order.fail()) {							
-		bosslog << endl << "Critical Error! masterlist.txt does not exist or can't be read!" << endl 
-						<< "! Utility will end now." << endl;
+		bosslog << endl << "<p style='color:red;'>Critical Error! masterlist.txt does not exist or can't be read!<br />" << endl 
+						<< "! Utility will end now.</p>" << endl
+						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
+		system ("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //if
 
@@ -144,11 +149,12 @@ int main(int argc, char *argv[]) {
 	//Open modlist.txt file and verify success																
 	modlist.open("BOSS\\modlist.txt");
 	if (modlist.fail()) {
-		bosslog << endl << "Critical Error! Internal program error! modlist.txt should have been created but it wasn't." << endl
-						<< "Make sure you are running as Administrator if using Windows Vista." << endl
-						<< "! Utility will end now." << endl;
+		bosslog << endl << "<p style='color:red;'>Critical Error! Internal program error! modlist.txt should have been created but it wasn't.<br />" << endl
+						<< "Make sure you are running as Administrator if using Windows Vista.<br />" << endl
+						<< "! Utility will end now.</p>" << endl
+						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
+		system ("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit(1); //fail in screaming heap.
 	} //if
 
@@ -178,9 +184,9 @@ int main(int argc, char *argv[]) {
 
 	//Re-order .esp/.esm files to masterlist.txt order	and output messages
 	//Note: \, *, % and ? were chosen as parse switches because they are not valid file name characters and can't appear in an ESP or ESM file name
-	bosslog << endl << "------------------------------------" << endl
-					<< "Recognised and re-ordered mod files:" << endl
-					<< "------------------------------------" << endl;
+	bosslog << "<div><span>Recognised And Re-ordered Mod Files</span>"<<endl<<"<p>";
+	//This next line is only needed until the modlist class gets implemented in trunk.
+	bosslog << "<ul>" << endl;
 	x=0;
 	found=FALSE;
 	while (!order.eof()) {					
@@ -192,28 +198,28 @@ int main(int argc, char *argv[]) {
 				if (FileExists(textbuf) || isghost) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
 					found=TRUE;
 					string text = version_parse ? GetModHeader(textbuf, isghost) : textbuf;
-					x++;
+					
 					modfiletime=esmtime;
 					modfiletime.tm_min += x;				//files are ordered in minutes after oblivion.esp .
-
+					x++;
 					if (isghost) {
 						text += " (*Ghosted*)";
 						ChangeFileDate(textbuf+".ghost", modfiletime);
 					} else ChangeFileDate(textbuf, modfiletime);
 
-					bosslog << endl << text << endl;		// show which mod file is being processed.
+					bosslog << "</ul>" << endl << text << endl << "<ul>" << endl;		// show which mod file is being processed.
 				} //if
 				else found=FALSE;
 			} //if
 			else if (found) ShowMessage(textbuf, fcom, ooo, bc, fook2, fwe);		//Deal with message lines here.
 		} //if
 	} //while
+	//Again, this line is only needed until the modlist class is implemented.
+	bosslog << "<ul>" << endl;
+	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 
 	//Find and show found mods not recognised. Parse each file in modlist.txt and try finding it in masterlist.txt. If not found, unknown.
-	bosslog << endl << "-----------------------------------------------------------------" << endl
-					<< "Unrecognised mod files:                                          " << endl
-					<< "Reorder these by hand using your favourite mod ordering utility. " << endl
-					<< "-----------------------------------------------------------------" << endl << endl;
+	bosslog << "<div><span>Unrecogised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>"<<endl<<"<p>";
 	modlist.clear();						//reset position in modlist.txt to start.
 	modlist.seekg (0, order.beg);			// "
 	while (!modlist.eof()) {	
@@ -228,14 +234,14 @@ int main(int argc, char *argv[]) {
 					if (Tidy(textbuf)==Tidy(textbuf2))
 						found=TRUE;
 			} // while
-			if (!found && textbuf.length()>1) bosslog << "Unknown mod file: " << textbuf << endl;
+			if (!found && textbuf.length()>1) bosslog << "Unknown mod file: " << textbuf << "<br /><br />" << endl;
 		}
 	} //while
+	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 
 	//Let people know the program has stopped.
-	bosslog << endl << endl << "-----------------------------------------------------------" << endl;
-	bosslog << "Done.";
+	bosslog <<"<div><span>Done.</span></div><br /><br />"<<endl<<"</body>"<<endl<<"</html>";
 	bosslog.close();
-	system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
+	system ("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 	return (0);
 }

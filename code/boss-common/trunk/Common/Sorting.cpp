@@ -39,27 +39,27 @@ namespace boss {
 	void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc, bool fook2, bool fwe) {
 		switch (textbuf[0]) {	
 		case '*':
-			if (fcom) bosslog << "  !!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << endl;
-			else if (fook2) bosslog << "  !!! FOOK2 INSTALLATION ERROR: " << textbuf.substr(1) << endl;
+			if (fcom) bosslog << "<li style='color:red;'>!!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
+			else if (fook2) bosslog << "<li style='color:red;'>!!! FOOK2 INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case ':':
-			bosslog << " . Requires: " << textbuf.substr(1) << endl;
+			bosslog << "<li>Requires: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '$':
-			if (ooo) bosslog << " . OOO Specific Note: " << textbuf.substr(1) << endl;
-			else if (fwe) bosslog << "  . FWE Specific Note: " << textbuf.substr(1) << endl;
+			if (ooo) bosslog << "<li>OOO Specific Note: " << textbuf.substr(1) << "</li>" << endl;
+			else if (fwe) bosslog << "<li>FWE Specific Note: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '%':
-			bosslog << "  . Bashed Patch tag suggestion: " << textbuf.substr(1) << endl;
+			bosslog << "<li>Bashed Patch tag suggestion: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '\?':
-			bosslog << "  . Note: " << textbuf.substr(1) << endl;
+			bosslog << "<li>Note: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '"':
-			bosslog << "  . Incompatible with: " << textbuf.substr(1) << endl;
+			bosslog << "<li>Incompatible with: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '^':
-			bosslog << "  . Better Cities Specific Note: " << textbuf.substr(1) <<endl;
+			bosslog << "<li>Better Cities Specific Note: " << textbuf.substr(1) << "</li>" <<endl;
 			break;
 		} //switch
 	}

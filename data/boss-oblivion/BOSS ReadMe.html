@@ -80,6 +80,12 @@
 			<li><b>Issue:</b> Google Code repository down.</li>
 			<li><b>Solution:</b> Check the official BOSS thread and/or Google Code repository for any relevant messages, and try again later.</li>
 		</ul>
+		<br />
+		<li><b>Symptom:</b> When BOSS is run, a "<code>File not found - *.ghost</code>" message is displayed in the console window.<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> BOSS cannot find any ghosted mods.</li>
+			<li><b>Solution:</b> This is normal BOSS behaviour, and does not indicate anything being wrong with it or your mods. It is displayed when BOSS tries to remove the read-only attribute of any mods ghosted by Wrye Bash, but cannot find any. Therefore, if you are not ghosting any mods, BOSS will display the message.</li>
+		</ul>
 	</ul>
 	</div><br /><br />
 	
@@ -93,7 +99,7 @@
 	<p>If this switch is used, BOSS will automatically update the local copy of the masterlist using the latest version on the Google Code repository, and then sort your mods. Since this replaces your current 
 	masterlist, don't run this if you have an edited copy and wish to keep the changes. The "BOSS - Update Masterlist.bat" runs BOSS with this switch.</p>
 	<p><b>-V-, --disable-version-parse:</b></p>
-	<p>Disables the parsing of each mod's description to extract the author's version information, so it is not printed alongside other data in the generated BOSSlog.txt. This can be used if the version 
+	<p>Disables the parsing of each mod's description to extract the author's version information, so it is not printed alongside other data in the generated BOSSlog.html. This can be used if the version 
 	parsing is not working properly for some of your mods, and you wish to remove the version notes.</p>
 	</div>
 	<p>The only changes BOSS makes to your Oblivion install are to re-date the .esp and .esm files in your Data folder, to create a BOSS folder there, and create a few text files in that BOSS folder. Oblivion.esm 
@@ -101,7 +107,7 @@
 	<div>The text files that are used and created by BOSS are all found in the ..\Oblivion\Data\BOSS folder, and they are:
 	<ul>
 		<li><i>masterlist.txt</i> - This is the master list of mods that BOSS recognises, listing them in order and which includes notes attached to them. It is the most frequently updated component of BOSS, receiving updates almost every day.</li>
-		<li><i>BOSSlog.txt</i> - This log is where the output that BOSS generates and displays once the program ends is stored. It is replaced every time you run BOSS. You can view it in any text editor.</li>
+		<li><i>BOSSlog.html</i> - This log is where the output that BOSS generates and displays once the program ends is stored. It is replaced every time you run BOSS. You can view it in any web browser.</li>
 		<li><i>modlist.txt</i> - This file contains the list of your mods in the order they were before you last ran BOSS, which can be used as a undo changes to your load order.</li>
 		<li><i>modlist.old</i> - This file contains the contents of your modlist.txt before you last ran BOSS, providing a second level of undo for load order changes.</li>
 	</ul>
