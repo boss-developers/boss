@@ -19,7 +19,6 @@
 
 #include "BOSS.h"
 
-#define SIZE 26 				//used in conversion of date/time struct to a string. Has to be this length.
 #define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitrary number.
 
 using namespace boss;
@@ -29,9 +28,7 @@ int main(int argc, char *argv[]) {
 	
 	int x;							//random useful integers
 	string textbuf,textbuf2;		//a line of text from a file (should usually end up being be a file name); 			
-	struct __stat64 buf;			//temp buffer of info for _stat function
-	struct tm esmtime;			    //the modification date/time of the main .esm file
-	struct tm modfiletime;			//useful variable to store a file's date/time
+	time_t esmtime,modfiletime;		//File modification times.
 	bool found=false,update=false,version_parse=true,isghost;		//Mod found? Update masterlist? Parse versions? Is mod a ghost?
 	int game=0,revert=0;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind. What level to revert to?
 
@@ -88,10 +85,26 @@ int main(int argc, char *argv[]) {
 			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
 			<< "v1.6 (20 August 2010)"<<endl<<"</div><br /><br />";
 
-	if (FileExists("oblivion.esm")) game = 1;
-	else if (FileExists("fallout3.esm")) game = 2;
-	else if (FileExists("morrowind.esm")) game = 3;
+	if (boost::filesystem::exists("Oblivion.esm")) game = 1;
+	else if (boost::filesystem::exists("Fallout3.esm")) game = 2;
+	else if (boost::filesystem::exists("Morrowind.esm")) game = 3;
 	else {
+		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file cannot be read.<br />" << endl
+						<< "Make sure you're running this in your Data folder.<br />" << endl
+						<< "Utility will end now.</p>" << endl
+						<< "</body>"<<endl<<"</html>";
+		bosslog.close();
+		system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		exit (1); //fail in screaming heap.
+	}
+
+	//Get the master esm's modification date. 
+	//Not sure if this needs exception handling, since by this point the file definitely exists. Do it anyway.
+	try {
+		if (game == 1) esmtime = boost::filesystem::last_write_time("Oblivion.esm");
+		else if (game == 2) esmtime = boost::filesystem::last_write_time("Fallout3.esm");
+		else if (game == 3) esmtime = boost::filesystem::last_write_time("Morrowind.esm");
+	} catch(boost::filesystem::filesystem_error e) {
 		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file cannot be read.<br />" << endl
 						<< "Make sure you're running this in your Data folder.<br />" << endl
 						<< "Utility will end now.</p>" << endl
@@ -346,14 +359,7 @@ int main(int argc, char *argv[]) {
 	//I'd also like to be able to print error messages if this doesn't work.
 	system("attrib -r *.es?");
 	system("attrib -r *.ghost");
-
-	//get date for master .esm. Again, a filesystem interaction, we should have error handling for this.
-	//Now this CAN be done with BOOST, which would be better since it's more standard. I'll possibly convert it later.
-	if (game == 1) _stat64("Oblivion.esm", &buf);
-	else if (game == 2) _stat64("Fallout3.esm", &buf);
-	else if (game == 3) _stat64("morrowind.esm", &buf);
-	_gmtime64_s(&esmtime, &buf.st_mtime);		//convert _stat64 modification date data to date/time struct.
-
+	
 	//Re-order .esp/.esm files to masterlist.txt order and output messages
 	if (revert<1) bosslog << "<div><span>Recognised And Re-ordered Mod Files</span>"<<endl<<"<p>";
 	else if (revert==1) bosslog << "<div><span>Restored Load Order (Using modlist.txt)</span>"<<endl<<"<p>";
@@ -370,8 +376,8 @@ int main(int argc, char *argv[]) {
 		if (modlist.modmessages[i].size()>0) bosslog << "<b>" << text << "</b>" << endl;		// show which mod file is being processed.
 		else bosslog << text << "<br /><br />" << endl;
 		modfiletime=esmtime;
-		modfiletime.tm_min += i;				//files are ordered in minutes after the master esm file. Again, a filesystem interaction, we should have error handling for this.
-		ChangeFileDate(modlist.mods[i], modfiletime);
+		modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+		boost::filesystem::last_write_time(modlist.mods[i],modfiletime);
 		if (modlist.modmessages[i].size()>0) {
 			bosslog << "<ul>" << endl;
 			for (int j=0;j<(int)modlist.modmessages[i].size();j++) {
@@ -391,9 +397,9 @@ int main(int argc, char *argv[]) {
 		if (modlist.mods[i].length()>1) {
 			bosslog << "Unknown mod file: " << modlist.mods[i] << "<br /><br />" << endl;
 			modfiletime=esmtime;
-			modfiletime.tm_mon+=1;					//shuffle all mods foward a month 
-			modfiletime.tm_min=i;					//and order (in minutes) to original order
-			ChangeFileDate(modlist.mods[i], modfiletime);
+			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
+			boost::filesystem::last_write_time(modlist.mods[i],modfiletime);
 		}
 	} //while
 	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;

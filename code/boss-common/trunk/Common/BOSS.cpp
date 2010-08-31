@@ -20,7 +20,6 @@
 
 #include "BOSS.h"
 
-#define SIZE 26 				//used in conversion of date/time struct to a string. Has to be this length.
 #define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitrary number.
 
 using namespace boss;
@@ -29,10 +28,8 @@ using namespace boss;
 int main(int argc, char *argv[]) {					
 	
 	int x;							//random useful integers
-	string textbuf,textbuf2;		//a line of text from a file (should usually end up being be a file name); 			
-	struct __stat64 buf;			//temp buffer of info for _stat function
-	struct tm esmtime;			    //the modification date/time of the main .esm file
-	struct tm modfiletime;			//useful variable to store a file's date/time
+	string textbuf,textbuf2;		//a line of text from a file (should usually end up being be a file name);
+	time_t esmtime,modfiletime;		//File modification times.
 	bool found;
 	bool update = false;			//To update masterlist or not?
 	bool version_parse = true;		//Enable parsing of mod's headers to look for version strings
@@ -57,7 +54,16 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	boost::filesystem::create_directory("BOSS\\");
+	//Try to create BOSS sub-directory.
+	try { boost::filesystem::create_directory("BOSS\\");
+	} catch(boost::filesystem::filesystem_error e) {
+		cout << "Critical Error! Sub-directory \"Data\\BOSS\\\" could not be created." << endl
+			 << "Check your permissions and make sure you have write access to your Data folder." << endl
+			 << "! Utility will end now." << endl << endl;
+		cout << "Press ENTER to quit...";
+		cin.ignore(1,'\n');
+		exit(1); //fail in screaming heap.
+	}
 
 	//Check for creation of BOSSlog.txt.
 	bosslog.open("BOSS\\BOSSlog.html");
@@ -65,6 +71,8 @@ int main(int argc, char *argv[]) {
 		cout << endl << "Critical Error! BOSSlog.html should have been created but it wasn't." << endl
 					 << "Make sure you are running as Administrator if using Windows Vista or Windows 7." << endl
 					 << "! Utility will end now." << endl;
+		cout << "Press ENTER to quit...";
+		cin.ignore(1,'\n');
 		exit (1); //fail in screaming heap.
 	}
 
@@ -91,6 +99,22 @@ int main(int argc, char *argv[]) {
 		system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //else
+
+	//Get the master esm's modification date. 
+	//Not sure if this needs exception handling, since by this point the file definitely exists. Do it anyway.
+	try {
+		if (game == 1) esmtime = boost::filesystem::last_write_time("Oblivion.esm");
+		else if (game == 2) esmtime = boost::filesystem::last_write_time("Fallout3.esm");
+		else if (game == 3) esmtime = boost::filesystem::last_write_time("Morrowind.esm");
+	} catch(boost::filesystem::filesystem_error e) {
+		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file cannot be read.<br />" << endl
+						<< "Make sure you're running this in your Data folder.<br />" << endl
+						<< "Utility will end now.</p>" << endl
+						<< "</body>"<<endl<<"</html>";
+		bosslog.close();
+		system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		exit (1); //fail in screaming heap.
+	}
 
 	if (update == true) {
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
@@ -163,12 +187,6 @@ int main(int argc, char *argv[]) {
 	system("attrib -r *.es?");
 	system("attrib -r *.ghost");
 
-	//get date for oblivion.esm.
-	if (game == 1) _stat64("oblivion.esm", &buf);
-	else if (game == 2) _stat64("fallout3.esm", &buf);
-	else if (game == 3) _stat64("morrowind.esm", &buf);
-	_gmtime64_s(&esmtime, &buf.st_mtime);		//convert _stat64 modification date data to date/time struct.
-
 	//Change mod date of each file in the list to oblivion.esm date _plus_ 1 year. Ensures unknown mods go last in original order.
 	x=0;
 	while (!modlist.eof()) {	
@@ -176,9 +194,9 @@ int main(int argc, char *argv[]) {
 		if (IsValidLine(textbuf)) {
 			x++;				
 			modfiletime=esmtime;
-			modfiletime.tm_mon+=1;					//shuffle all mods foward a month 
-			modfiletime.tm_min=x;					//and order (in minutes) to original order
-			ChangeFileDate(textbuf, modfiletime);
+			modfiletime += x*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+			modfiletime += x*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
+			boost::filesystem::last_write_time(textbuf,modfiletime);
 		} //if
 	} //while
 
@@ -199,13 +217,12 @@ int main(int argc, char *argv[]) {
 					found=true;
 					string text = version_parse ? GetModHeader(textbuf, isghost) : textbuf;
 					modfiletime=esmtime;
-					modfiletime.tm_min += x;				//files are ordered in minutes after oblivion.esp .
+					modfiletime += x*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 					x++;
 					if (isghost) {
 						text += " (*Ghosted*)";
-						ChangeFileDate(textbuf+".ghost", modfiletime);
-					} else ChangeFileDate(textbuf, modfiletime);
-
+						boost::filesystem::last_write_time(textbuf+".ghost",modfiletime);
+					} else boost::filesystem::last_write_time(textbuf,modfiletime);
 					bosslog << "</ul>" << endl << text << endl << "<ul>" << endl;		// show which mod file is being processed.
 				} //if
 				else found=false;
