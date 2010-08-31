@@ -8,17 +8,15 @@
 */
 
 #include <stdio.h>
-#include <windows.h>
 #include <iostream>
 #include <fstream>
 #include <cstring>
 #include <string>
 #include <ctype.h>
-#include <direct.h>
-#include <sstream>
 #include <time.h>
 #include <sys/stat.h>
 #include <sys/utime.h>
+#include "boost/filesystem.hpp"
 
 #include "BOSS.h"
 
@@ -35,8 +33,7 @@ int main(int argc, char *argv[]) {
 	struct __stat64 buf;			//temp buffer of info for _stat function
 	struct tm esmtime;			    //the modification date/time of the main .esm file
 	struct tm modfiletime;			//useful variable to store a file's date/time
-	bool found;						
-	char modfilechar [SIZE];		//used to convert stuff.
+	bool found;
 	bool update = false;			//To update masterlist or not?
 	bool version_parse = true;		//Enable parsing of mod's headers to look for version strings
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
@@ -60,21 +57,8 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	if (FileExists("oblivion.esm")) game = 1;
-	else if (FileExists("fallout3.esm")) game = 2;
-	else if (FileExists("morrowind.esm")) game = 3;
+	boost::filesystem::create_directory("BOSS\\");
 
-	CreateDirectory("BOSS\\",NULL);
-
-	if (update == true) {
-		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
-		int rev = UpdateMasterlist(game);
-		if (rev > 0) cout << "masterlist.txt updated to revision " << rev << endl;
-		else cout << "Masterlist update failed." << endl;
-	}
-
-	cout << endl << "Better Oblivion Sorting Software working..." << endl;
-	
 	//Check for creation of BOSSlog.txt.
 	bosslog.open("BOSS\\BOSSlog.txt");
 	if (bosslog.fail()) {							
@@ -83,7 +67,7 @@ int main(int argc, char *argv[]) {
 					 << "! Utility will end now." << endl;
 		exit (1); //fail in screaming heap.
 	}
-			
+
 	bosslog << endl << endl << "-----------------------------------------------------------" << endl
 							<< " Better Oblivion Sorting Software       Load Order Utility " << endl << endl
 							<< "   (c) Random007 & the BOSS development team, 2009-2010    " << endl
@@ -93,20 +77,9 @@ int main(int argc, char *argv[]) {
 							<< "   v1.6 (1 August 2010)									   " << endl
 							<< "-----------------------------------------------------------" << endl << endl;
 
-	//open masterlist.txt
-	order.open("BOSS\\masterlist.txt");	
-	if (order.fail()) {							
-		bosslog << endl << "Critical Error! masterlist.txt does not exist or can't be read!" << endl 
-						<< "! Utility will end now." << endl;
-		bosslog.close();
-		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
-		exit (1); //fail in screaming heap.
-	} //if
-
-	//get date for oblivion.esm.
-	if (game == 1) _stat64("oblivion.esm", &buf);
-	else if (game == 2) _stat64("fallout3.esm", &buf);
-	else if (game == 3) _stat64("morrowind.esm", &buf);
+	if (FileExists("oblivion.esm")) game = 1;
+	else if (FileExists("fallout3.esm")) game = 2;
+	else if (FileExists("morrowind.esm")) game = 3;
 	else {
 		bosslog << endl << "Critical Error: Master .ESM file not found (or not accessible)!" << endl
 						<< "Make sure you're running this in your Data folder." << endl
@@ -116,11 +89,14 @@ int main(int argc, char *argv[]) {
 		exit (1); //fail in screaming heap.
 	} //else
 
-	_gmtime64_s(&esmtime, &buf.st_mtime);		//convert _stat64 modification date data to date/time struct.
+	if (update == true) {
+		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
+		int rev = UpdateMasterlist(game);
+		if (rev > 0) cout << "masterlist.txt updated to revision " << rev << endl;
+		else cout << "Masterlist update failed." << endl;
+	}
 
-	//Display oblivion.esm's modification date (mostly for debugging)
-	_ctime64_s (modfilechar, SIZE, &buf.st_mtime);	//convert date/time to printable string for output.
-	bosslog << "Master .ESM date: " << (string)modfilechar;
+	cout << endl << "Better Oblivion Sorting Software working..." << endl;
 
 	if (game == 1) {
 		//Check if FCOM or not
@@ -143,6 +119,16 @@ int main(int argc, char *argv[]) {
 			else bosslog << "FWE not detected." << endl;
 	}
 	bosslog << endl;
+
+	//open masterlist.txt
+	order.open("BOSS\\masterlist.txt");	
+	if (order.fail()) {							
+		bosslog << endl << "Critical Error! masterlist.txt does not exist or can't be read!" << endl 
+						<< "! Utility will end now." << endl;
+		bosslog.close();
+		system ("start BOSS\\BOSSlog.txt");	//Displays the BOSSlog.txt.
+		exit (1); //fail in screaming heap.
+	} //if
 
 	//Generate list of all .esp or .esm files.
 	if (FileExists ("BOSS\\modlist.txt")) {	//add an additional undo level just in case.
@@ -167,7 +153,15 @@ int main(int argc, char *argv[]) {
 	} //if
 
 	//Remove any read only attributes from esm/esp files if present.
+	//This way pops up an error message in console if there are no ghosted files. Is there a better way?
 	system("attrib -r *.es?");
+	system("attrib -r *.ghost");
+
+	//get date for oblivion.esm.
+	if (game == 1) _stat64("oblivion.esm", &buf);
+	else if (game == 2) _stat64("fallout3.esm", &buf);
+	else if (game == 3) _stat64("morrowind.esm", &buf);
+	_gmtime64_s(&esmtime, &buf.st_mtime);		//convert _stat64 modification date data to date/time struct.
 
 	//Change mod date of each file in the list to oblivion.esm date _plus_ 1 year. Ensures unknown mods go last in original order.
 	x=0;
