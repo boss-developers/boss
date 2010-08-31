@@ -50,19 +50,30 @@ int main(int argc, char *argv[]) {
 				cout << "Optional Parameters" << endl << endl;
 				cout << "-u, --update: " << endl << "    Automatically updates the local copy of the masterlist using the latest version available on the Google Code repository." << endl << endl;
 				cout << "-V, --version-check: " << endl << "    Enables the parsing of each mod's description and if found extracts from there the author stamped mod's version and prints it along other data in the generated bosslog.txt." << endl << endl;
-				exit (0);
+				exit(0);
 			}
 		}
 	}
 
-	boost::filesystem::create_directory("BOSS\\");
+	//Try to create BOSS sub-directory.
+	try { boost::filesystem::create_directory("BOSS\\");
+	} catch(boost::filesystem::filesystem_error e) {
+		cout << "Critical Error! Sub-directory \"Data\\BOSS\\\" could not be created." << endl
+			 << "Check your permissions and make sure you have write access to your Data folder." << endl
+			 << "! Utility will end now." << endl << endl;
+		cout << "Press ENTER to quit...";
+		cin.ignore(1,'\n');
+		exit(1); //fail in screaming heap.
+	}
 
 	//Check for creation of BOSSlog.txt.
 	bosslog.open("BOSS\\BOSSlog.html");
 	if (bosslog.fail()) {							
-		cout << endl << "Critical Error! BOSSlog.txt should have been created but it wasn't." << endl
-					 << "Make sure you are running as Administrator if using Windows Vista or Windows 7." << endl
-					 << "! Utility will end now." << endl;
+		cout << endl << "Critical Error! BOSSlog.html could not be written to." << endl
+					 << "Check your permissions and make sure you have write access to your Data\\BOSS folder." << endl
+					 << "! Utility will end now." << endl << endl;
+		cout << "Press ENTER to quit...";
+		cin.ignore(1,'\n');
 		exit (1); //fail in screaming heap.
 	}
 
@@ -70,7 +81,7 @@ int main(int argc, char *argv[]) {
 	bosslog << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
 			<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl<<"#body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
 			<< "#title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl<<"div > span {font-weight:bold; font-size:1.3em;}"<<endl
-			<< "ul li {margin-bottom:10px;}"<<endl<<"</style>"<<endl<<"</head>"<<endl
+			<< "ul li {margin-bottom:10px;}"<<endl<<".error {color:red;}"<<endl<<"</style>"<<endl<<"</head>"<<endl
 			//Output start of <body>
 			<< "<body id='body'>"<<endl<<"<div id='title'>Better Oblivion Sorting Software Log</div><br />"<<endl
 			<< "<div style='text-align:center;'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />"<<endl
@@ -81,7 +92,7 @@ int main(int argc, char *argv[]) {
 	else if (FileExists("fallout3.esm")) game = 2;
 	else if (FileExists("morrowind.esm")) game = 3;
 	else {
-		bosslog << endl << "<p style='color:red;'>Critical Error: Master .ESM file not found (or not accessible)!<br />" << endl
+		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file cannot be read.<br />" << endl
 						<< "Make sure you're running this in your Data folder.<br />" << endl
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
@@ -89,8 +100,6 @@ int main(int argc, char *argv[]) {
 		system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
-
-	
 
 	if (update == true) {
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
@@ -103,7 +112,13 @@ int main(int argc, char *argv[]) {
 
 	Mods modlist;
 	modlist.AddMods();
-	if (revert<1) modlist.SaveModList();
+	if (revert<1) {
+		if (!modlist.SaveModList(bosslog)) {
+			bosslog.close();
+			system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+			exit (1); //fail in screaming heap.
+		}
+	}
 	Rules userlist;
 	if (boost::filesystem::exists("BOSS\\userlist.txt") && revert<1) userlist.AddRules();
 	
@@ -137,13 +152,13 @@ int main(int argc, char *argv[]) {
 	else if (revert==2) order.open("BOSS\\modlist.old");	
 	else order.open("BOSS\\masterlist.txt");
 	if (order.fail()) {							
-		bosslog << endl << "<p style='color:red;'>Critical Error! ";
+		bosslog << endl << "<p class='error'>Critical Error! ";
 
 		if (revert==1) bosslog << "BOSS\\modlist.txt";	
 		else if (revert==2) bosslog << "BOSS\\modlist.old";	
 		else bosslog << "BOSS\\masterlist.txt";
 
-		bosslog << " does not exist or can't be read!<br />" << endl 
+		bosslog << " cannot be read. Make sure it exists.<br />" << endl
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
@@ -326,10 +341,14 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Remove any read only attributes from esm/esp files if present.
+	//This isn't very neat, since it'll print an error message if you don't have any ghosted plugins. Also, apparently system() calls are evil.
+	//I'm not aware that you can do it with BOOST though. :(
+	//I'd also like to be able to print error messages if this doesn't work.
 	system("attrib -r *.es?");
 	system("attrib -r *.ghost");
 
-	//get date for master .esm.
+	//get date for master .esm. Again, a filesystem interaction, we should have error handling for this.
+	//Now this CAN be done with BOOST, which would be better since it's more standard. I'll possibly convert it later.
 	if (game == 1) _stat64("Oblivion.esm", &buf);
 	else if (game == 2) _stat64("Fallout3.esm", &buf);
 	else if (game == 3) _stat64("morrowind.esm", &buf);
@@ -347,11 +366,11 @@ int main(int argc, char *argv[]) {
 			filename = modlist.mods[i].substr(0,modlist.mods[i].length()-6);
 		} else filename = modlist.mods[i];
 		string text = version_parse ? GetModHeader(filename,ghosted) : filename;
-		if (ghosted) text += " (*Ghosted*)";
+		if (ghosted) text += " <em> - Ghosted</em>";
 		if (modlist.modmessages[i].size()>0) bosslog << "<b>" << text << "</b>" << endl;		// show which mod file is being processed.
 		else bosslog << text << "<br /><br />" << endl;
 		modfiletime=esmtime;
-		modfiletime.tm_min += i;				//files are ordered in minutes after oblivion.esp .
+		modfiletime.tm_min += i;				//files are ordered in minutes after the master esm file. Again, a filesystem interaction, we should have error handling for this.
 		ChangeFileDate(modlist.mods[i], modfiletime);
 		if (modlist.modmessages[i].size()>0) {
 			bosslog << "<ul>" << endl;
@@ -366,6 +385,7 @@ int main(int argc, char *argv[]) {
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 	//Order their dates to be +1 month after the master esm to ensure they load last.
+	//Again, a filesystem interaction, we should have error handling for this.
 	bosslog << "<div><span>Unrecogised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>"<<endl<<"<p>";
 	for (int i=x;i<(int)modlist.mods.size();i++) {
 		if (modlist.mods[i].length()>1) {

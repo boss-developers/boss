@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
 	bosslog << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
 			<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl<<"#body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
 			<< "#title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl<<"div > span {font-weight:bold; font-size:1.3em;}"<<endl
-			<< "ul li {margin-bottom:10px;}"<<endl<<"</style>"<<endl<<"</head>"<<endl
+			<< "ul li {margin-bottom:10px;}"<<endl<<".error {color:red;}"<<endl<<"</style>"<<endl<<"</head>"<<endl
 			//Output start of <body>
 			<< "<body id='body'>"<<endl<<"<div id='title'>Better Oblivion Sorting Software Log</div><br />"<<endl
 			<< "<div style='text-align:center;'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />"<<endl
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 	else if (FileExists("fallout3.esm")) game = 2;
 	else if (FileExists("morrowind.esm")) game = 3;
 	else {
-		bosslog << endl << "<p style='color:red;'>Critical Error: Master .ESM file not found (or not accessible)!<br />" << endl
+		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file not found (or not accessible)!<br />" << endl
 						<< "Make sure you're running this in your Data folder.<br />" << endl
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
 	//open masterlist.txt
 	order.open("BOSS\\masterlist.txt");	
 	if (order.fail()) {							
-		bosslog << endl << "<p style='color:red;'>Critical Error! masterlist.txt does not exist or can't be read!<br />" << endl 
+		bosslog << endl << "<p class='error'>Critical Error! masterlist.txt does not exist or can't be read!<br />" << endl 
 						<< "! Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
 	//Open modlist.txt file and verify success																
 	modlist.open("BOSS\\modlist.txt");
 	if (modlist.fail()) {
-		bosslog << endl << "<p style='color:red;'>Critical Error! Internal program error! modlist.txt should have been created but it wasn't.<br />" << endl
+		bosslog << endl << "<p class='error'>Critical Error! Internal program error! modlist.txt should have been created but it wasn't.<br />" << endl
 						<< "Make sure you are running as Administrator if using Windows Vista.<br />" << endl
 						<< "! Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
@@ -188,7 +188,7 @@ int main(int argc, char *argv[]) {
 	//This next line is only needed until the modlist class gets implemented in trunk.
 	bosslog << "<ul>" << endl;
 	x=0;
-	found=FALSE;
+	found=false;
 	while (!order.eof()) {					
 		textbuf=ReadLine("order");
 		if (IsValidLine(textbuf) && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
@@ -196,9 +196,8 @@ int main(int argc, char *argv[]) {
 				isghost = false;
 				if (FileExists(textbuf+".ghost") && !FileExists(textbuf)) isghost = true;
 				if (FileExists(textbuf) || isghost) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
-					found=TRUE;
+					found=true;
 					string text = version_parse ? GetModHeader(textbuf, isghost) : textbuf;
-					
 					modfiletime=esmtime;
 					modfiletime.tm_min += x;				//files are ordered in minutes after oblivion.esp .
 					x++;
@@ -209,7 +208,7 @@ int main(int argc, char *argv[]) {
 
 					bosslog << "</ul>" << endl << text << endl << "<ul>" << endl;		// show which mod file is being processed.
 				} //if
-				else found=FALSE;
+				else found=false;
 			} //if
 			else if (found) ShowMessage(textbuf, fcom, ooo, bc, fook2, fwe);		//Deal with message lines here.
 		} //if
@@ -225,14 +224,14 @@ int main(int argc, char *argv[]) {
 	while (!modlist.eof()) {	
 		textbuf=ReadLine("modlist");
 		if (IsValidLine(textbuf) && textbuf[0]!='\\')  { //Filter out blank lines, oblivion.esm and remark lines starting with \.
-			found=FALSE;
+			found=false;
 			order.clear ();						//reset position in masterlist.txt to start.
 			order.seekg (0, order.beg);			// "
 			while (!order.eof() && !found) {	//repeat until end of masterlist.txt or file found.				
 				textbuf2=ReadLine("order");	
 				if (IsMod(textbuf2))			//filter out comment, blank and message lines when checking for match - speeds process up.
 					if (Tidy(textbuf)==Tidy(textbuf2))
-						found=TRUE;
+						found=true;
 			} // while
 			if (!found && textbuf.length()>1) bosslog << "Unknown mod file: " << textbuf << "<br /><br />" << endl;
 		}

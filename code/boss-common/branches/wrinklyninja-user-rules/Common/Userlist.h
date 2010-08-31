@@ -103,12 +103,12 @@ namespace boss {
 					objects.push_back(object);
 					if (IsPlugin(object) && !(fs::exists(object) || fs::exists(object+".ghost"))) {
 						if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-						messages += "<span style='color:red;'>\""+object+"\" is not installed.</span><br />";
+						messages += "<span class='error'>\""+object+"\" is not installed.</span><br />";
 						skip = true;
 					}
 					if ((IsPlugin(object) && !IsPlugin(objects[rules.back()])) || (!IsPlugin(object) && IsPlugin(objects[rules.back()]))) {
 						if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-						messages += "<span style='color:red;'>It references a mod and a group.</span><br />";
+						messages += "<span class='error'>It references a mod and a group.</span><br />";
 						skip = true;
 					}
 				} else if ((key=="APPEND" || key=="REPLACE")) {
@@ -116,7 +116,7 @@ namespace boss {
 					objects.push_back(object);
 					if (!IsPlugin(objects[rules.back()])) {
 						if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-						messages += "<span style='color:red;'>It tries to attach a message to a group.</span><br />";
+						messages += "<span class='error'>It tries to attach a message to a group.</span><br />";
 						skip = true;
 					}
 				}
@@ -145,7 +145,7 @@ namespace boss {
 		vector<vector<string>> modmessages;		//Stores the messages attached to each mod. First dimension matches up with the mods vector, then second lists the messages attached to that mod.
 		void AddMods();
 		void PrintModList(ofstream& out);
-		void SaveModList();
+		bool SaveModList(ofstream& out);
 		int GetModIndex(string mod);
 	};
 
@@ -165,14 +165,34 @@ namespace boss {
 
 	//Save mod list to modlist.txt.
 	//Backs up old modlist.txt as modlist.old first.
-	void Mods::SaveModList() {
+	bool Mods::SaveModList(ofstream& out) {
 		ofstream modlist;
-		if (fs::exists("BOSS\\modlist.old")) fs::remove("BOSS\\modlist.old");
-		if (fs::exists("BOSS\\modlist.txt")) fs::rename("BOSS\\modlist.txt", "BOSS\\modlist.old");
+		try {
+			//There's a bug in the boost rename function - it should replace existing files, but it throws an exception instead, so remove the file first.
+			//This bug will be fixed in BOOST 1.45, but that will break the AddMods() function and possibly other things, so be sure to change that when we upgrade.
+			if (fs::exists("BOSS\\modlist.old")) fs::remove("BOSS\\modlist.old");
+			if (fs::exists("BOSS\\modlist.txt")) fs::rename("BOSS\\modlist.txt", "BOSS\\modlist.old");
+		} catch(boost::filesystem::filesystem_error e) {
+			//Couldn't rename the file, print an error message.
+			out << "<p class='error'>Critical Error! modlist.old could not be written to.<br />" << endl
+						<< "Check your permissions and make sure you have write access to your Data\\BOSS folder.<br />" << endl
+						<< "! Utility will end now.</p>" << endl
+						<< "</body>"<<endl<<"</html>";
+			return false;
+		}
 		modlist.open("BOSS\\modlist.txt");
+		//Provide error message if it can't be written.
+		if (modlist.fail()) {
+			out << endl << "<p class='error'>Critical Error! modlist.txt should have been could not be written to.<br />" << endl
+						<< "Check your permissions and make sure you have write access to your Data\\BOSS folder.<br />" << endl
+						<< "! Utility will end now.</p>" << endl
+						<< "</body>"<<endl<<"</html>";
+			return false;
+		}
 		for (int i=0;i<(int)mods.size();i++) {
 			modlist << mods[i] << endl;
 		}
+		return true;
 	}
 
 	//Debug output function.
