@@ -25,10 +25,6 @@
 namespace boss {
 	using namespace std;
 
-	/// ChangeFileDate(string textbuf, struct tm modfiletime)
-	///  - changes a file's modification date
-	void ChangeFileDate(string textbuf, struct tm modfiletime);
-
 	/// ShowMessage(string textbuf, ...)
 	///  - Produces a message to the BOSSLOG.txt
 	void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc, bool fook2, bool fwe);

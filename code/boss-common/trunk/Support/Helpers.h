@@ -76,12 +76,8 @@ namespace boss {
 		return *reinterpret_cast<T*>(buffer);
 	}
 
-
 	//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
 	string Tidy(string filename);
-
-	//Check if the given file-exists
-	bool FileExists(string filename);
 };
 
 #endif __SUPPORT_HELPERS__HPP__

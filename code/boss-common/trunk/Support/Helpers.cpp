@@ -13,8 +13,6 @@
 #include <stdio.h>
 #include <time.h>
 #include <sys/types.h>
-#include <sys/utime.h>
-#include <sys/stat.h>
 #include <strstream>
 
 #include <boost/regex.hpp>
@@ -138,13 +136,5 @@ namespace boss {
 			for (unsigned int i = 0; i < filename.length(); i++) filename[i] = tolower(filename[i]);
 			return (filename);
 		}
-	}
-
-	bool FileExists(string filename) {
-		//file-exists check function
-		struct __stat64 fileinfo;						//variable that holds the result of _stat
-		string str = Tidy(filename);
-
-		return (_stat64(str.c_str(), &fileinfo) == 0);	//will be true if stat opened successfully
 	}
 };

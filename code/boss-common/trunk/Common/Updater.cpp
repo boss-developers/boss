@@ -67,6 +67,8 @@ namespace boss {
 		newline = "? Masterlist Revision: "+revision;
 		//Correct masterlist formatting and replace SVN keywords with revision number.
 		out.open("BOSS\\masterlist.txt",ios::in|ios::trunc);
+		//If the masterlist can't be opened, exit with a failure.
+		if (out.fail()) return -1;
 		int pos = buffer.find(oldline);
 		buffer.replace(pos,oldline.length(),newline);
 		pos = buffer.find("\r");

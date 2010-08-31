@@ -14,13 +14,12 @@
 #include <string>
 #include <ctype.h>
 #include <time.h>
-#include <sys/stat.h>
-#include <sys/utime.h>
 
 #include "BOSS.h"
 
 #define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitrary number.
 
+namespace fs = boost::filesystem;
 using namespace boss;
 
 //BOSS [--update | -u] [--help | -h] [--version-check | -V] [--revert-level | -r]
@@ -53,8 +52,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Try to create BOSS sub-directory.
-	try { boost::filesystem::create_directory("BOSS\\");
-	} catch(boost::filesystem::filesystem_error e) {
+	try { fs::create_directory("BOSS\\");
+	} catch(fs::filesystem_error e) {
 		cout << "Critical Error! Sub-directory \"Data\\BOSS\\\" could not be created." << endl
 			 << "Check your permissions and make sure you have write access to your Data folder." << endl
 			 << "! Utility will end now." << endl << endl;
@@ -85,9 +84,9 @@ int main(int argc, char *argv[]) {
 			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
 			<< "v1.6 (20 August 2010)"<<endl<<"</div><br /><br />";
 
-	if (boost::filesystem::exists("Oblivion.esm")) game = 1;
-	else if (boost::filesystem::exists("Fallout3.esm")) game = 2;
-	else if (boost::filesystem::exists("Morrowind.esm")) game = 3;
+	if (fs::exists("Oblivion.esm")) game = 1;
+	else if (fs::exists("Fallout3.esm")) game = 2;
+	else if (fs::exists("Morrowind.esm")) game = 3;
 	else {
 		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file cannot be read.<br />" << endl
 						<< "Make sure you're running this in your Data folder.<br />" << endl
@@ -101,10 +100,10 @@ int main(int argc, char *argv[]) {
 	//Get the master esm's modification date. 
 	//Not sure if this needs exception handling, since by this point the file definitely exists. Do it anyway.
 	try {
-		if (game == 1) esmtime = boost::filesystem::last_write_time("Oblivion.esm");
-		else if (game == 2) esmtime = boost::filesystem::last_write_time("Fallout3.esm");
-		else if (game == 3) esmtime = boost::filesystem::last_write_time("Morrowind.esm");
-	} catch(boost::filesystem::filesystem_error e) {
+		if (game == 1) esmtime = fs::last_write_time("Oblivion.esm");
+		else if (game == 2) esmtime = fs::last_write_time("Fallout3.esm");
+		else if (game == 3) esmtime = fs::last_write_time("Morrowind.esm");
+	} catch(fs::filesystem_error e) {
 		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file cannot be read.<br />" << endl
 						<< "Make sure you're running this in your Data folder.<br />" << endl
 						<< "Utility will end now.</p>" << endl
@@ -133,28 +132,28 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	Rules userlist;
-	if (boost::filesystem::exists("BOSS\\userlist.txt") && revert<1) userlist.AddRules();
+	if (fs::exists("BOSS\\userlist.txt") && revert<1) userlist.AddRules();
 	
 	if (revert<1) {
 		bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
 		if (game == 1) {
 			//Check if FCOM or not
-			if (fcom=FileExists("FCOM_Convergence.esm")) bosslog << "FCOM detected.<br />" << endl;
+			if (fcom=fs::exists("FCOM_Convergence.esm")) bosslog << "FCOM detected.<br />" << endl;
 				else bosslog << "FCOM not detected.<br />" << endl;
-			if (FileExists("FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing.<br />" << endl;
+			if (fs::exists("FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing.<br />" << endl;
 			//Check if OOO or not
-			if (ooo=FileExists("Oscuro's_Oblivion_Overhaul.esm")) bosslog << "OOO detected.<br />" << endl;
+			if (ooo=fs::exists("Oscuro's_Oblivion_Overhaul.esm")) bosslog << "OOO detected.<br />" << endl;
 				else bosslog << "OOO not detected.<br />" << endl;
 			//Check if Better Cities or not
-			if (bc=FileExists("Better Cities Resources.esm")) bosslog << "Better Cities detected.<br />" << endl;
+			if (bc=fs::exists("Better Cities Resources.esm")) bosslog << "Better Cities detected.<br />" << endl;
 				else bosslog << "Better Cities not detected.<br />" << endl;
 		} else if (game == 2) {
 			//Check if fook2 or not
-			if (fook2=FileExists("FOOK2 - Main.esm")) bosslog << "FOOK2 Detected.<br />" << endl;
+			if (fook2=fs::exists("FOOK2 - Main.esm")) bosslog << "FOOK2 Detected.<br />" << endl;
 				else bosslog << "FOOK2 not detected.<br />" << endl;
-			if (FileExists("FOOK2 - Main.esp") && !fook2) bosslog << "WARNING: FOOK2.esm seems to be missing.<br />" << endl;
+			if (fs::exists("FOOK2 - Main.esp") && !fook2) bosslog << "WARNING: FOOK2.esm seems to be missing.<br />" << endl;
 			//Check if fwe or not
-			if (fwe=FileExists("FO3 Wanderers Edition - Main File.esm")) bosslog << "FWE detected.<br />" << endl;
+			if (fwe=fs::exists("FO3 Wanderers Edition - Main File.esm")) bosslog << "FWE detected.<br />" << endl;
 				else bosslog << "FWE not detected.<br />" << endl;
 		}
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
@@ -186,8 +185,8 @@ int main(int argc, char *argv[]) {
 		if (IsValidLine(textbuf) && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
 			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
 				isghost = false;
-				if (FileExists(textbuf+".ghost") && !FileExists(textbuf)) isghost = true;
-				if (FileExists(textbuf) || isghost) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
+				if (fs::exists(textbuf+".ghost") && !fs::exists(textbuf)) isghost = true;
+				if (fs::exists(textbuf) || isghost) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
 					found=true;
 					int i;
 					if (isghost) i = modlist.GetModIndex(textbuf+".ghost");
@@ -229,7 +228,7 @@ int main(int argc, char *argv[]) {
 	} //while
 	order.close();		//Close the masterlist stream, as it's not needed any more.
 
-	if (boost::filesystem::exists("BOSS\\userlist.txt") && revert<1) {
+	if (fs::exists("BOSS\\userlist.txt") && revert<1) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
 		//Go through each rule.
 		for (int i=0;i<(int)userlist.rules.size();i++) {
@@ -294,8 +293,8 @@ int main(int argc, char *argv[]) {
 						} else if ((lookforrulemods || lookforsortmods)  && textbuf[0]!='\\') {
 							if (!IsMessage(textbuf)) {
 								isghost = false;
-								if (FileExists(textbuf+".ghost") && !FileExists(textbuf)) isghost = true;
-								if (FileExists(textbuf) || isghost) {
+								if (fs::exists(textbuf+".ghost") && !fs::exists(textbuf)) isghost = true;
+								if (fs::exists(textbuf) || isghost) {
 									//Found a mod.
 									int i;
 									if (isghost) i = modlist.GetModIndex(textbuf+".ghost");
@@ -374,10 +373,15 @@ int main(int argc, char *argv[]) {
 		string text = version_parse ? GetModHeader(filename,ghosted) : filename;
 		if (ghosted) text += " <em> - Ghosted</em>";
 		if (modlist.modmessages[i].size()>0) bosslog << "<b>" << text << "</b>" << endl;		// show which mod file is being processed.
-		else bosslog << text << "<br /><br />" << endl;
+		else bosslog << text << endl;
 		modfiletime=esmtime;
 		modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-		boost::filesystem::last_write_time(modlist.mods[i],modfiletime);
+		//Re-date file. Provide exception handling, though in my testing I couldn't get an exception to be thrown (I set a file to read-only, but it was re-dated anyway).
+		try { fs::last_write_time(modlist.mods[i],modfiletime);
+		} catch(fs::filesystem_error e) {
+			bosslog << "<br /><span class='error'>Could not change the date of file " << modlist.mods[i] << ", make sure you have write access to it.</span>" << endl;
+		}
+		if (modlist.modmessages[i].size()==0) bosslog << "<br /><br />" << endl;
 		if (modlist.modmessages[i].size()>0) {
 			bosslog << "<ul>" << endl;
 			for (int j=0;j<(int)modlist.modmessages[i].size();j++) {
@@ -395,11 +399,16 @@ int main(int argc, char *argv[]) {
 	bosslog << "<div><span>Unrecogised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>"<<endl<<"<p>";
 	for (int i=x;i<(int)modlist.mods.size();i++) {
 		if (modlist.mods[i].length()>1) {
-			bosslog << "Unknown mod file: " << modlist.mods[i] << "<br /><br />" << endl;
+			bosslog << "Unknown mod file: " << modlist.mods[i] << "<br />" << endl;
 			modfiletime=esmtime;
 			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
-			boost::filesystem::last_write_time(modlist.mods[i],modfiletime);
+			//Re-date file. Provide exception handling, though in my testing I couldn't get an exception to be thrown (I set a file to read-only, but it was re-dated anyway).
+			try { fs::last_write_time(modlist.mods[i],modfiletime);
+			} catch(fs::filesystem_error e) {
+				bosslog << "<span class='error'>Could not change the date of file " << modlist.mods[i] << ", make sure you have write access to it.</span><br />" << endl;
+			}
+			bosslog << "<br />" << endl;
 		}
 	} //while
 	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;

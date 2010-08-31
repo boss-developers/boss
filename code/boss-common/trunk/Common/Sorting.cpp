@@ -13,28 +13,12 @@
 #include <fstream>
 #include <sstream>
 #include <time.h>
-#include <sys/stat.h>
-#include <sys/utime.h>
 
 #include "Globals.h"
 #include "Sorting.h"
 
 namespace boss {
 	using namespace std;
-
-	void ChangeFileDate(string textbuf, tm modfiletime) {
-		//changes a file's modification date
-		struct __utimbuf64 ut;							//way to change time data for Windows _utime function
-		int a;											//holds result of file changes
-
-		ut.actime = _mkgmtime64(&modfiletime);			//set up ut structure for _utime64.
-		ut.modtime = _mkgmtime64(&modfiletime);	
-		a = _utime64(textbuf.c_str(), &ut);				//finally, change the file date.
-
-		if (a != 0) {
-			bosslog << endl << "Program error - file " << textbuf << " could not have its date changed, code " << a << endl;
-		}
-	}
 
 	void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc, bool fook2, bool fwe) {
 		switch (textbuf[0]) {	
