@@ -201,28 +201,24 @@ int main(int argc, char *argv[]) {
 					if (isghost) modlist.mods.insert(modlist.mods.begin()+x,textbuf+".ghost");
 					else modlist.mods.insert(modlist.mods.begin()+x,textbuf);
 					if (revert<1) {
-						i = userlist.GetRuleIndex(textbuf);
-						if (i>-1 && userlist.keys[i]=="ADD") {
+						i = userlist.GetRuleIndex(textbuf, "ADD");
+						if (i>-1) {
 							userlist.messages += "\""+userlist.objects[i]+"\" is already in the masterlist. Rule skipped.<br /><br />";
-							int ruleindex;
+							int ruleindex,max;
 							for (int j=0;j<(int)userlist.rules.size();j++) {
 								if (i==userlist.rules[j]) {
 									ruleindex = j;
 									break;
 								}
 							}
-							if (ruleindex+1==(int)userlist.rules.size()) {
-								for (int j=i;j<(int)userlist.keys.size();j++) {
-									userlist.keys[j]="";
-									userlist.objects[j]="";
-								}
-							} else {
-								for (int j=i;j<userlist.rules[ruleindex+1];j++) {
-									userlist.keys[j]="";
-									userlist.objects[j]="";
-								}
+							if (ruleindex+1==(int)userlist.rules.size()) max = (int)userlist.keys.size();
+							else max = userlist.rules[ruleindex+1];
+							for (int j=i;j<max;j++) {
+								userlist.keys[j]="";
+								userlist.objects[j]="";
 							}
-							userlist.rules.erase(userlist.rules.begin()+ruleindex);		
+							userlist.rules.erase(userlist.rules.begin()+ruleindex);
+							i = userlist.GetRuleIndex(textbuf,"ADD");
 						}
 					}
 					x++;

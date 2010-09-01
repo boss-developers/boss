@@ -40,7 +40,7 @@ namespace boss {
 		void AddRules();						//Populates object vectors with rules from userlist.txt.
 		void PrintRules(ofstream& output);		//Debug function, prints rules to output file stream.
 		void PrintMessages(ofstream& output);	//Prints the output messages.
-		int GetRuleIndex(string object);		//Finds the rule line which references the given object.
+		int GetRuleIndex(string object, string key);		//Finds the rule line which references the given object.
 	};
 
 	//Class to store and use modlist.

@@ -109,9 +109,9 @@ namespace boss {
 	}
 
 	//Find the line in the keys/objects vectors that contains the given object.
-	int Rules::GetRuleIndex(string object) {
+	int Rules::GetRuleIndex(string object, string key) {
 		for (int i=0;i<(int)objects.size();i++) {
-			if (Tidy(objects[i])==Tidy(object)) return i;
+			if (Tidy(objects[i])==Tidy(object) && keys[i]==key) return i;
 		}
 		return -1;
 	}
