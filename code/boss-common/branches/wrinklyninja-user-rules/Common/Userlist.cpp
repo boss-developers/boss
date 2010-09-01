@@ -96,6 +96,11 @@ namespace boss {
 						messages += "<span class='error'>It tries to attach a message to a group.</span><br />";
 						skip = true;
 					}
+				} else {			//Key not written correctly. Cannot tell if this was the start of a rule, or in the middle of a rule.
+									//Therefore to prevent problems, skip the rule. If it is the start of a new rule, that rule and the previous rule will be skipped.
+					messages += "</p><p style='margin-left:40px; text-indent:-40px;'><span class='error'>The line \""+key+": "+object+"\" has a keyword that was not recognised.<br />Make sure that you have spelt the keyword correctly and it is written in block capitals.<br />";
+					messages += "The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" will be skipped to prevent problems. If the line with the unrecognised keyword is the start of a new rule, that rule will also be skipped.</span><br />";
+					skip = true;
 				}
 			}
 		}

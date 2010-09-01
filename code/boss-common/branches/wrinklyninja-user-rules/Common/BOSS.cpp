@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
 					else modlist.mods.insert(modlist.mods.begin()+x,textbuf);
 					if (revert<1) {
 						i = userlist.GetRuleIndex(textbuf, "ADD");
-						if (i>-1) {
+						while (i>-1) {
 							userlist.messages += "\""+userlist.objects[i]+"\" is already in the masterlist. Rule skipped.<br /><br />";
 							int ruleindex,max;
 							for (int j=0;j<(int)userlist.rules.size();j++) {
