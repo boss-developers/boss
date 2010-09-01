@@ -53,43 +53,6 @@
 	<p>Delete BOSS.exe, "BOSS - Update Masterlist.bat" and, if BOSS has been run, the BOSS folder in your ..\Oblivion\Data folder.</p>
 	</div><br /><br />
 	
-	<div><span>Troubleshooting</span>
-	<ul>
-		<li><b>Symptom:</b> BOSS won't run.<div style="height:0.65em;"></div>
-		<ul>
-			<li><b>Issue:</b> Using BOSS version under 1.6.</li>
-			<li><b>Solution:</b> Update to version 1.6.</li>
-			<li><b>Issue:</b> BOSS not in the correct folder.</li>
-			<li><b>Solution:</b> BOSS.exe and "BOSS - Update Masterlist.bat" must be in the Data folder alongside your mods. Double check you have installed BOSS to the correct location.</li>
-		</ul>
-		</li>
-		<br />
-		<li><b>Symptom:</b> No change in load order.<div style="height:0.65em;"></div>
-		<ul>
-			<li><b>Issue:</b> OS is Windows Vista or 7 and Oblivion is installed in Program Files or Program Files (x86).</li>
-			<li><b>Solution:</b> Do one of the following: Install Oblivion outside the Program Files (or Program Files (x86)) folder, deactivate UAC, or give yourself Full Control permissions over your ..\Oblivion\Data folder.</li>
-			<li><b>Issue:</b> Wrye Bash's "Lock Times" load order locking feature is enabled.</li>
-			<li><b>Solution:</b> Disable "Lock Times" before running BOSS.</li>
-		</ul>
-		</li>
-		<br />
-		<li><b>Symptom:</b> Updating the masterlist gives a "Masterlist update failed." message.<div style="height:0.65em;"></div>
-		<ul>
-			<li><b>Issue:</b> BOSS cannot write to the masterlist.</li>
-			<li><b>Solution:</b> Make sure that you have write permissions for BOSS\masterlist.txt if it exists, and the BOSS folder.</li>
-			<li><b>Solution:</b> Check your internet connection and, if connected, try updating again.</li>
-			<li><b>Issue:</b> Google Code repository down.</li>
-			<li><b>Solution:</b> Check the official BOSS thread and/or Google Code repository for any relevant messages, and try again later.</li>
-		</ul>
-		<br />
-		<li><b>Symptom:</b> When BOSS is run, a "<code>File not found - *.ghost</code>" message is displayed in the console window.<div style="height:0.65em;"></div>
-		<ul>
-			<li><b>Issue:</b> BOSS cannot find any ghosted mods.</li>
-			<li><b>Solution:</b> This is normal BOSS behaviour, and does not indicate anything being wrong with it or your mods. It is displayed when BOSS tries to remove the read-only attribute of any mods ghosted by Wrye Bash, but cannot find any. Therefore, if you are not ghosting any mods, BOSS will display the message.</li>
-		</ul>
-	</ul>
-	</div><br /><br />
-	
 	<div><span>Further Details</span>
 	<p>BOSS has a few command-line switches. The syntax is:</p>
 	<div>
@@ -148,6 +111,111 @@
 	<p>FCOM-only masterlist.txt database file. Using it instead of the normal one will move all FCOM files to the start in the correct order (and check for problems, show comments as usual) but leave all other mods' 
 	load order the same as before running BOSS. Useful for troubleshooting purposes and useful to anyone who wants to keep their existing mod load order then add FCOM and finalise everything by hand. This file is getting 
 	very old but it does the job (sort of).</p>
+	</div><br /><br />
+	
+	<div><span>Troubleshooting</span>
+	<p>Under some circumstances, BOSS may not be able to run properly due to a variety of reasons. In such cases, BOSS should be able to provide an error message detailing the typle of fault. If the program unexpectedly crashes, the crash and the circumstances in which it occurred should be reported to the official BOSS thread (linked to in the <em>Quick Links</em> section below), so that we may fix it.
+	Here is a list of the error messages and their common causes:</p>
+	<ul>
+		<li><b>Message:</b> Critical Error: Sub-directory "Data\BOSS\" could not be created!<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> BOSS does not have permission to write to the Data folder.</li>
+			<li><b>Solution:</b> Make sure that your Data folder is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
+		</ul>
+		</li>
+		<br />	
+		<li><b>Message:</b> Critical Error: BOSSlog.html could not be written to!<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> BOSS does not have permission to write to the BOSS folder, or the BOSSlog.html file if it exists.</li>
+			<li><b>Solution:</b> Make sure that your BOSS folder (and BOSSlog.html if it exists) is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
+		</ul>
+		</li>
+		<br />	
+		<li><b>Message:</b> Critical Error: Master .ESM file not found!<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> BOSS is not being run in the correct folder.</li>
+			<li><b>Solution:</b> Move BOSS into your Data folder.</li>
+		</ul>
+		</li>
+		<br />	
+		<li><b>Message:</b> Critical Error: Master .ESM file cannot be read!<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> This error should never occur. If you see it, please report it to the BOSS team as soon as possible.</li>
+			<li><b>Solution:</b> If this error is displayed, it means that your master .ESM file exists, but its date cannot be read. This can only take place under very specialised circumstances, such as corruption of your master .ESM file, and probably means you will have to seek expert help.</li>
+		</ul>
+		</li>
+		<br />
+
+		<li><b>Message:</b> Error: Masterlist update failed.<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> No Internet connection.</li>
+			<li><b>Solution:</b> Double-check that your Internet connection is working, and try again.</li>
+			<li><b>Issue:</b> Your masterlist.txt cannot be written to.</li>
+			<li><b>Solution:</b> Make sure that your BOSS folder (and masterlist.txt if it exists) is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
+			<li><b>Issue:</b> The masterlist is not available at Google Code.</li>
+			<li><b>Solution:</b> Check the official forum thread for any information as to why the masterlist is not available. You can also check the Google Code repository to see if Google has posted any messages about maintenance that might result in the repository being unavailable.</li>
+		</ul>
+		</li>
+		<br />
+		<li><b>Message:</b> Critical Error: masterlist.txt cannot be read!<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> Your masterlist.txt does not exist, or is in the wrong place.</li>
+			<li><b>Solution:</b> Make sure that your masterlist.txt is in your Data\BOSS folder, or use the masterlist updater to download a new masterlist to the correct place.</li>
+		</ul>
+		</li>
+		<br />
+		<li><b>Message:</b> Critical Error: modlist.txt could not be written to!<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> BOSS does not have permission to write to the BOSS folder your modlist.txt (if it exists).</li>
+			<li><b>Solution:</b> Make sure that your BOSS folder (and modlist.txt if it exists) is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
+		</ul>
+		</li>
+		<br />
+		<li><b>Message:</b> Error: Could not change the date of file <em>filename</em>, make sure you have write access to it.</spa<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> BOSS does not have permission to write to the plugin given.</li>
+			<li><b>Solution:</b> Check that the plugin is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
+		</ul>
+		</li>
+	</ul>
+	<p>In addition to the specific error messages above, BOSS may also fail to work properly, or appear to do so, for a few general reasons:</p>
+	<ul>
+		<li><b>Symptom:</b> BOSS won't run.<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> Using BOSS version under 1.6.</li>
+			<li><b>Solution:</b> Update to version 1.6.</li>
+		</ul>
+		</li>
+		<br />
+		<li><b>Symptom:</b> No change in load order.<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> Wrye Bash's "Lock Times" load order locking feature is enabled.</li>
+			<li><b>Solution:</b> Disable "Lock Times" before running BOSS.</li>
+		</ul>
+		</li>
+		<br />
+		<li><b>Symptom:</b> When BOSS is run, a "<code>File not found - *.ghost</code>" message is displayed in the console window.<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> BOSS cannot find any ghosted mods.</li>
+			<li><b>Solution:</b> This is normal BOSS behaviour, and does not indicate anything being wrong with it or your mods. It is displayed when BOSS tries to remove the read-only attribute of any mods ghosted by Wrye Bash, but cannot find any. Therefore, if you are not ghosting any mods, BOSS will display the message.</li>
+		</ul>
+	</ul>
+	<br />
+	<p>If you are running Windows Vista or Windows 7, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:</p>
+	<ol>
+		<li>Install Oblivion outside the Program Files (or Program Files (x86) folder if on 64 bit Windows). UAC prevents unauthorised edits to these folders, so by installing Oblivion outside of them, you remove it from UAC's reach, allowing you to use mods more easily.</li>
+		<li>Deactivate UAC. This can be done from the Control Panel, and will turn UAC off across the whole of your computer. It is up to you whether you feel that you have adequate security measures in place to do this without risk.</li>
+		<li>Give yourself Full Control permissions over your Oblivion install. This will allow you to make any edits you desire while keeping UAC active and on guard for any edits made by programs you do not run, and also means that you do not need to reinstall Oblivion to a new location. For BOSS to run unhindered, only Full Control over the Data folder is required, though if using other modding programs such as Wrye Bash or Oblivion Mod Manager, you may find it more useful to give yourself Full Control over your Bethesda Softworks folder.</li>
+		<li>Run BOSS as an Administrator. Right-click the BOSS.exe, and select "Run as administrator".</li>
+	</ol>
+	<p>For those that wish to take the third option and give themselves Full Control permissions, here is a guide:</p>
+	<ol>
+		<li>Right-click the folder you wish to change the permissions for, and select "Properties".</li>
+		<li>In Properties, select the "Security" tab, and click the "Edit..." button. A UAC prompt may appear, simply allow yourself to continue.</li>
+		<li>In the "Group or user names" box, select the "Users" option.</li>
+		<li>In the lower box, check the box opposite "Full Control" in the "Allow" column. Press OK to exit. If a UAC prompt appears, allow the change.</li>
+		<li>In the Properties window, select OK to exit. You should now have Full Control permissions over your chosen folder.</li>
+	</ol>
 	</div><br /><br />
 	
 	<div><span>Credits</span>

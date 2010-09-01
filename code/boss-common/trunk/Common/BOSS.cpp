@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 	//Try to create BOSS sub-directory.
 	try { fs::create_directory("BOSS\\");
 	} catch(fs::filesystem_error e) {
-		cout << "Critical Error! Sub-directory \"Data\\BOSS\\\" could not be created." << endl
+		cout << "Critical Error: Sub-directory \"Data\\BOSS\\\" could not be created!" << endl
 			 << "Check your permissions and make sure you have write access to your Data folder." << endl
 			 << "! Utility will end now." << endl << endl;
 		cout << "Press ENTER to quit...";
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 	//Check for creation of BOSSlog.txt.
 	bosslog.open("BOSS\\BOSSlog.html");
 	if (bosslog.fail()) {							
-		cout << endl << "Critical Error! BOSSlog.html should have been created but it wasn't." << endl
+		cout << endl << "Critical Error: BOSSlog.html could not be written to!" << endl
 					 << "Make sure you are running as Administrator if using Windows Vista or Windows 7." << endl
 					 << "! Utility will end now." << endl;
 		cout << "Press ENTER to quit...";
@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
 	else if (fs::exists("Fallout3.esm")) game = 2;
 	else if (fs::exists("Morrowind.esm")) game = 3;
 	else {
-		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file not found (or not accessible)!<br />" << endl
+		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file not found!<br />" << endl
 						<< "Make sure you're running this in your Data folder.<br />" << endl
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
 		else if (game == 2) esmtime = fs::last_write_time("Fallout3.esm");
 		else if (game == 3) esmtime = fs::last_write_time("Morrowind.esm");
 	} catch(fs::filesystem_error e) {
-		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file cannot be read.<br />" << endl
+		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file cannot be read!<br />" << endl
 						<< "Make sure you're running this in your Data folder.<br />" << endl
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		int rev = UpdateMasterlist(game);
 		if (rev > 0) cout << "masterlist.txt updated to revision " << rev << endl;
-		else cout << "Masterlist update failed." << endl;
+		else cout << "Error: Masterlist update failed." << endl;
 	}
 
 	cout << endl << "Better Oblivion Sorting Software working..." << endl;
@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
 	//open masterlist.txt
 	order.open("BOSS\\masterlist.txt");	
 	if (order.fail()) {							
-		bosslog << endl << "<p class='error'>Critical Error! masterlist.txt does not exist or can't be read!<br />" << endl 
+		bosslog << endl << "<p class='error'>Critical Error: masterlist.txt cannot be read!<br />" << endl 
 						<< "! Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
@@ -173,8 +173,8 @@ int main(int argc, char *argv[]) {
 	//Open modlist.txt file and verify success																
 	modlist.open("BOSS\\modlist.txt");
 	if (modlist.fail()) {
-		bosslog << endl << "<p class='error'>Critical Error! Internal program error! modlist.txt should have been created but it wasn't.<br />" << endl
-						<< "Make sure you are running as Administrator if using Windows Vista.<br />" << endl
+		bosslog << endl << "<p class='error'>Critical Error: modlist.txt could not be written to!<br />" << endl
+						<< "Make sure you are running as Administrator if using Windows Vista or Windows 7.<br />" << endl
 						<< "! Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();

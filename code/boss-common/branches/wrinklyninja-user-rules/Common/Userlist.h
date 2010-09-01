@@ -174,7 +174,7 @@ namespace boss {
 			if (fs::exists("BOSS\\modlist.txt")) fs::rename("BOSS\\modlist.txt", "BOSS\\modlist.old");
 		} catch(boost::filesystem::filesystem_error e) {
 			//Couldn't rename the file, print an error message.
-			out << "<p class='error'>Critical Error! modlist.old could not be written to.<br />" << endl
+			out << "<p class='error'>Critical Error: modlist.old could not be written to!<br />" << endl
 						<< "Check your permissions and make sure you have write access to your Data\\BOSS folder.<br />" << endl
 						<< "! Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
@@ -183,7 +183,7 @@ namespace boss {
 		modlist.open("BOSS\\modlist.txt");
 		//Provide error message if it can't be written.
 		if (modlist.fail()) {
-			out << endl << "<p class='error'>Critical Error! modlist.txt should have been could not be written to.<br />" << endl
+			out << endl << "<p class='error'>Critical Error: modlist.txt could not be written to!<br />" << endl
 						<< "Check your permissions and make sure you have write access to your Data\\BOSS folder.<br />" << endl
 						<< "! Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
