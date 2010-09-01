@@ -35,7 +35,7 @@
 	and is subject to change. Everything in this readme has been implemented, and is undergoing testing.
 	Once everything is confirmed as working correctly, the branch will be merged into the trunk, and these features become a part of
 	the official BOSS. <br />The one caveat to note that should hopefully change by the time that BOSS is released is that Wrye Bash will not automatically apply Bash
-	Tag suggestions given to mods in rules. Oh, and because of a bug in one of BOSS's functions, if the first line of the userlist is blank, the file will not be read.
+	Tag suggestions given to mods in rules. Oh, and because of a bug in one of BOSS's functions, if the first line of the userlist is blank, the file will not be read. The same bug will also skip anything after two consecutive blank lines.
 	<br />-WrinklyNinja</p>
 	<p>While BOSS is able to sort the large number of mods listed in its masterlist without any user input, you may find that you wish to customise 
 	the sorting of your mods to a degree. This may be to include mods not listed in the masterlist (eg. temporary plugins or private mods that would 
@@ -258,6 +258,7 @@
 	<ol>
 		<li>You do not need to have blank lines between your rules, though it is neater and easier to read, especially when you have lots of rules.</li>
 		<li>The names of mods and groups are not case-sensitive.</li>
+		<li>Keywords <b>must</b> be written in block capitals (all the letters must be uppercase). If a keyword is not written this way, it will not be recognised, which will lead to the rule not applying properly.</li>
 		<li><b>All mods referenced in rules must be in your Data folder.</b> If a mod is not installed when BOSS is run, the rule it is part of will not be applied.</li>
 		<li><b>You must never sort a mod or group twice</b>. When using a mix of rules sorting mods and groups, be very careful to ensure that none 
         of the rule mods are contained in any of the sort groups, and that none of the rule groups are located inside any other rule groups.</li>

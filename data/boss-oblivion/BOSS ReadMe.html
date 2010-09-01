@@ -124,10 +124,10 @@
 		</ul>
 		</li>
 		<br />	
-		<li><b>Message:</b> Critical Error: BOSSlog.html could not be written to!<div style="height:0.65em;"></div>
+		<li><b>Message:</b> Critical Error: <em>filename</em> could not be written to!<div style="height:0.65em;"></div>
 		<ul>
-			<li><b>Issue:</b> BOSS does not have permission to write to the BOSS folder, or the BOSSlog.html file if it exists.</li>
-			<li><b>Solution:</b> Make sure that your BOSS folder (and BOSSlog.html if it exists) is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
+			<li><b>Issue:</b> BOSS does not have permission to write to the BOSS folder, or the given file if it exists.</li>
+			<li><b>Solution:</b> Make sure that your BOSS folder (and the file, if it exists) is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
 		</ul>
 		</li>
 		<br />	
@@ -161,13 +161,6 @@
 		<ul>
 			<li><b>Issue:</b> Your masterlist.txt does not exist, or is in the wrong place.</li>
 			<li><b>Solution:</b> Make sure that your masterlist.txt is in your Data\BOSS folder, or use the masterlist updater to download a new masterlist to the correct place.</li>
-		</ul>
-		</li>
-		<br />
-		<li><b>Message:</b> Critical Error: modlist.txt could not be written to!<div style="height:0.65em;"></div>
-		<ul>
-			<li><b>Issue:</b> BOSS does not have permission to write to the BOSS folder your modlist.txt (if it exists).</li>
-			<li><b>Solution:</b> Make sure that your BOSS folder (and modlist.txt if it exists) is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
 		</ul>
 		</li>
 		<br />
@@ -226,7 +219,7 @@
 	</div><br /><br />
 	
 	<div><span>Project Members</span>
-	<p>Since the middle of 2009, BOSS has been a collaborative project on Google Code using the SVN version tracking and editing engine. In alphabetical order, the project members are:</p>
+	<p>Since June 2009, BOSS has been a collaborative project on Google Code using the SVN version tracking and editing engine. In alphabetical order, the project members are:</p>
 	<div><b>Google Code Administrators</b>
 	<ul>
 		<li>Arthmoor</li>
@@ -288,6 +281,50 @@
 	<p>Due to a 200 maximum post limit, a new official thread is created periodically (with the end of one thread providing a link to the rest), so the link provided may refer to an old 
 	thread when you read this. Just navigate through to the latest thread to post a message.</p>
 	<p>You must register for free to post messages.</p>
+	</div><br /><br />
+	
+	<div><span>Version History</span>
+	<p>Only updates to the BOSS program are recorded here, not masterlist updates, as that is update far too frequently to be concisely recorded. A full record of changes made to the masterlist may be viewed by browsing the Google Code repository.</p>
+	<p><b>Version 1.6</b></p>
+	<ul>
+		<li>Added Fallout Wanderers Edition (FWE) specific message type for the Fallout 3 masterlist.</li>
+		<li>Added masterlist updater functionality to BOSS, accessible via a command-line switch and a .bat file.</li>
+		<li>Added mod version display to BOSSlog output, with command-line off switch.</li>
+		<li>Added sorting of ghosted plugins.</li>
+		<li><b>Not yet done:</b>Added hardcoded undo functionality to make it easier to undo BOSS's changes.</li>
+		<li><b>Not yet done:</b>Added custom user rules functionality to allow users to customise how BOSS sorts their files, and more.</li>
+		<li>Removed need for BOSS.bat.</li>
+		<li>Moved BOSS's input and output files to Data\BOSS\.</li>
+		<li>Converted Readme from RTF to HTML format.</li>
+		<li>Converted BOSSlog from text to HTML format.</li>
+		<li>Fixed Fallout3.esm being reported as an 'unknown mod file'.</li>
+		<li>Improved error support to catch more errors and provide more useful error messages when BOSS doesn't work properly.</li>
+		<li>Improved portability of source code.</li>
+		<li>Merged BOSS and BOSS-F source code, allowing one EXE to support both Oblivion and Fallout 3.</li>
+		<li><b>Not yet done:</b>Major refactoring and rewrite of BOSS source code, resulting in a significant performance improvement.</li>
+		</ul>
+	<p><b>Version 1.51</b></p>
+	<ul>
+		<li>Added OOO-specific message type.</li>
+		<li>Added requirement message type.</li>
+		<li>Added incompatibility message type.</li>
+		<li>Added Better Cities-specific message type.</li>
+		<li>Switched source code project and solution files to Visual Studio 2010.</li>
+	</ul>
+	<p><b>Version 1.5</b></p>
+	<ul>
+		<li>Added a masterlist for Fallout 3.</li>
+		<li>Added masterlist version numbering when exporting via SVN.</li>
+		<li>Added Fallout 3 specific BOSS source code (BOSS-F).</li>
+	</ul>
+	<p><b>Version 1.41</b></p>
+	<ul>
+		<li>Fixed incorrect master file defined for Fallout 3.</li>
+		<li>Fixed error messages not being displayed on some machines.</li>
+	</ul>
+	<p><b>Versions 1.0 - 1.35</b><br /><br />
+	Changes Not Recorded.</p>
+	
 	</div><br /><br />
 	</body>
 </html>
