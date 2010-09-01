@@ -88,6 +88,11 @@ namespace boss {
 						messages += "<span class='error'>It references a mod and a group.</span><br />";
 						skip = true;
 					}
+					if (keys[rules.back()]=="FOR") {
+						if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span class='error'>It includes a sort line in a rule with a FOR rule keyword.</span><br />";
+						skip = true;
+					}
 				} else if ((key=="APPEND" || key=="REPLACE")) {
 					keys.push_back(key);
 					objects.push_back(object);
@@ -98,7 +103,7 @@ namespace boss {
 					}
 				} else {			//Key not written correctly. Cannot tell if this was the start of a rule, or in the middle of a rule.
 									//Therefore to prevent problems, skip the rule. If it is the start of a new rule, that rule and the previous rule will be skipped.
-					messages += "</p><p style='margin-left:40px; text-indent:-40px;'><span class='error'>The line \""+key+": "+object+"\" has a keyword that was not recognised.<br />Make sure that you have spelt the keyword correctly and it is written in block capitals.<br />";
+					messages += "</p><p><span class='error'>The line \""+key+": "+object+"\" has a keyword that was not recognised.<br />Make sure that you have spelt the keyword correctly and that it is written in block capitals.<br />";
 					messages += "The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" will be skipped to prevent problems. If the line with the unrecognised keyword is the start of a new rule, that rule will also be skipped.</span><br />";
 					skip = true;
 				}

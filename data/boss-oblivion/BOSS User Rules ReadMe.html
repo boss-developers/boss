@@ -258,13 +258,12 @@
 	<ol>
 		<li>You do not need to have blank lines between your rules, though it is neater and easier to read, especially when you have lots of rules.</li>
 		<li>The names of mods and groups are not case-sensitive.</li>
-		<li>Keywords <b>must</b> be written in block capitals (all the letters must be uppercase). If a keyword is not written this way, it will not be recognised, which will lead to the rule not applying properly.</li>
+		<li>Keywords <b>must</b> be written in BLOCK CAPITALS (all the letters must be uppercase). If a keyword is not written this way, it will not be recognised, and the rule it belongs to (and perhaps the previous rule) will be skipped.</li>
 		<li><b>All mods referenced in rules must be in your Data folder.</b> If a mod is not installed when BOSS is run, the rule it is part of will not be applied.</li>
-		<li><b>You must never sort a mod or group twice</b>. When using a mix of rules sorting mods and groups, be very careful to ensure that none 
-        of the rule mods are contained in any of the sort groups, and that none of the rule groups are located inside any other rule groups.</li>
+		<li><b>You must never add a mod or sort a group more than once</b>. When using multiple rules sorting groups, make sure none of the groups you are sorting are located inside any of the other groups you are sorting.</li>
 		<li>Rules are applied to mods ghosted by Wrye Bash. Ghosted files will be treated no different from non-ghosted files, and can be referenced in rules with their ".ghost" extension or without it.</li>
 		<li>
-			Rules are applied in the order they are listed. This means that you can have several rules loading different rule mods or groups before or 
+			<b>Rules are applied in the order they are listed</b>. This means that you can have several rules loading different rule mods or groups before or 
 			after the same sort mod or group, eg:<br />
 			<blockquote><code>
 			ADD: Mod3.esp<br />
@@ -287,9 +286,7 @@
 			Mod3.esp</blockquote>
 		</li>
 		<li>
-			You may have the rule mod or group of one rule being the sort mod or group of others, so long as it is first sorted in one rule and then 
-			referenced as a sort object in later rules. <b>Do not have your rules listed so that mods or groups are sorted after being referenced as sort objects.</b> An example of a correct 
-			set of rule-dependent rules is:<br />
+			Because rules are applied in the order they are listed, you can have rules sorting mods relative to mods which are sorted in other rules. For example:
 			<blockquote><code>
 			ADD: Mod1.esp<br />
 			BEFORE: LoadBeforeThis.esp<br /><br />
@@ -303,19 +300,11 @@
 			Mod1.esp<br />
 			xulAspenWood.esp<br />
 			LoadBeforeThis.esp</blockquote>
+			Take care when writing such rules though, 
+			as a small difference in the order of the rules in your userlist can have a very large difference on the resulting load order.
 		</li>
+		<li>When sorting mods relative to other mods also sorted by rules, be sure to <b>never sort relative to a mod that has not yet been added</b>. Otherwise, the mods that you sort will simply appear at the end of your load order.</li>
 	</ol>
-	<p>The functionality described in point 5 does not allow you to do anything that cannot be done using the functionality described in point 4. You can 
-	get the same result simply by ordering your rules a certain way. For instance:</p>
-	<blockquote><code>
-	ADD: Mod2.esp<br />
-	BEFORE: LoadBeforeThis.esp<br /><br />
-	ADD: Mod1.esp<br />
-	BEFORE: LoadBeforeThis.esp<br /><br />
-	OVERRIDE: xulAspenWood.esp<br />
-	BEFORE: LoadBeforeThis.esp<br /><br />
-	</code></blockquote>
-	<p>will have the same effect as the rules in point 5.</p>
 	</div><br /><br />
 	
 	<div id="messages"><span>The BOSS Message Format</span>
