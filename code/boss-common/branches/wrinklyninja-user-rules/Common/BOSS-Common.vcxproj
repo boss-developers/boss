@@ -19,6 +19,7 @@
     <ClCompile Include="Masterlist.cpp" />
     <ClCompile Include="Sorting.cpp" />
     <ClCompile Include="Updater.cpp" />
+    <ClCompile Include="Userlist.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Support\Helpers.h" />

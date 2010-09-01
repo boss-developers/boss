@@ -125,7 +125,13 @@ int main(int argc, char *argv[]) {
 	Mods modlist;
 	modlist.AddMods();
 	if (revert<1) {
-		if (!modlist.SaveModList(bosslog)) {
+		int i=modlist.SaveModList();
+		if (i!=0) {
+			if (i==1) bosslog << endl << "<p class='error'>Critical Error: modlist.old could not be written to!<br />" << endl;
+			else bosslog << endl << "<p class='error'>Critical Error: modlist.txt could not be written to!<br />" << endl;
+			bosslog << "Check your permissions and make sure you have write access to your Data\\BOSS folder.<br />" << endl
+					<< "! Utility will end now.</p>" << endl
+					<< "</body>"<<endl<<"</html>";
 			bosslog.close();
 			system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 			exit (1); //fail in screaming heap.

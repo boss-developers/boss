@@ -23,6 +23,9 @@
     <ClCompile Include="Globals.cpp">
       <Filter>Globals</Filter>
     </ClCompile>
+    <ClCompile Include="Userlist.cpp">
+      <Filter>Userlist</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support">

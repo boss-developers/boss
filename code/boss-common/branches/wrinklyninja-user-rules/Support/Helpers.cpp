@@ -36,32 +36,24 @@ namespace boss {
 			// Get next char in input buffer
 			char c = static_cast<char>(is.get());
 
-			if (!is) break;
+			if (!is) 
+				break;
 
 			// Check for termination conditions
-			if (c == '\r' || c == '\n') {
-				if (c > 0){
-					// If EOLN then consume the second char in the '\r\n' pair
-					c = static_cast<char>(is.peek());
-					if (c == '\n' || c == '\r') {
-						is.get();
-					}
-				}
-
+			if (c == '\n') 
 				break;
-			}
 
 			// While termination condition not found -> append chars to result string
 			s.append(1, c);
 		}
 
-		return !s.empty();
+		return (is != 0);
 	}
 
 	// Reads a text line skipping all the empty lines along the way
 	bool GetLine(istream& is, string& s) 
 	{
-		while (is && ReadLine(is, s)) {
+		while (ReadLine(is, s)) {
 			trim_right(s);
 
 			if (!s.empty()) {
