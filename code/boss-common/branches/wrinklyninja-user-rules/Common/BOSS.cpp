@@ -39,7 +39,12 @@ int main(int argc, char *argv[]) {
 			} else if (strcmp("--version-check", argv[i]) == 0 || strcmp("-V", argv[i]) == 0) {
 				version_parse = true;
 			} else if (strcmp("--revert-level", argv[i]) == 0 || strcmp("-r", argv[i]) == 0) {
-				revert = stoi(argv[i+1]);
+				//If the correct argument is given, use it. If not, assume that they meant to roll back one level.
+				if (i+1<argc) {
+					if (strcmp("1", argv[i+1]) == 0 || strcmp("2", argv[i+1]) == 0) revert = stoi(argv[i+1]);
+					else revert = 1;
+				} else revert = 1;
+				cout << revert;
 			} else if (strcmp("--help", argv[i]) == 0 || strcmp("-h", argv[i]) == 0) {
 				cout << "Better Oblivion Sorting Software is a utility that sorts the load order of TESIV: Oblivion, TESIII: Morrowind and Fallout 3 mods according to their relative positions on a frequently-updated masterlist ";
 				cout << "to ensure proper load order and minimise incompatibilities between mods." << endl << endl;
