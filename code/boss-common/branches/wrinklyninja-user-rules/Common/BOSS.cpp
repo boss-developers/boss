@@ -22,7 +22,7 @@
 namespace fs = boost::filesystem;
 using namespace boss;
 
-//BOSS [--update | -u] [--help | -h] [--version-check | -V] [--revert-level | -r]
+//BOSS [--update | -u] [--help | -h] [--version-check | -V] [--revert-level | -r] [1 | 2]
 int main(int argc, char *argv[]) {					
 	
 	int x;							//random useful integers
@@ -81,12 +81,12 @@ int main(int argc, char *argv[]) {
 	bosslog << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
 			<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl<<"#body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
 			<< "#title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl<<"div > span {font-weight:bold; font-size:1.3em;}"<<endl
-			<< "ul li {margin-bottom:10px;}"<<endl<<".error {color:red;}"<<endl<<"</style>"<<endl<<"</head>"<<endl
+			<< "ul li {margin-bottom:10px;}"<<endl<<".error {color:red; font-weight:normal; font-size:1em;}"<<endl<<"</style>"<<endl<<"</head>"<<endl
 			//Output start of <body>
 			<< "<body id='body'>"<<endl<<"<div id='title'>Better Oblivion Sorting Software Log</div><br />"<<endl
 			<< "<div style='text-align:center;'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />"<<endl
 			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
-			<< "v1.6 (20 August 2010)"<<endl<<"</div><br /><br />";
+			<< "v1.6 (03 Spetember 2010)"<<endl<<"</div><br /><br />";
 
 	if (fs::exists("Oblivion.esm")) game = 1;
 	else if (fs::exists("Fallout3.esm")) game = 2;
@@ -372,9 +372,9 @@ int main(int argc, char *argv[]) {
 	system("attrib -r *.ghost");
 	
 	//Re-order .esp/.esm files to masterlist.txt order and output messages
-	if (revert<1) bosslog << "<div><span>Recognised And Re-ordered Mod Files</span>"<<endl<<"<p>";
-	else if (revert==1) bosslog << "<div><span>Restored Load Order (Using modlist.txt)</span>"<<endl<<"<p>";
-	else if (revert==2) bosslog << "<div><span>Restored Load Order (Using modlist.old)</span>"<<endl<<"<p>";
+	if (revert<1) bosslog << "<div><span>Recognised And Re-ordered Mod Files</span>"<<endl<<"<p>"<<endl;
+	else if (revert==1) bosslog << "<div><span>Restored Load Order (Using modlist.txt)</span>"<<endl<<"<p>"<<endl;
+	else if (revert==2) bosslog << "<div><span>Restored Load Order (Using modlist.old)</span>"<<endl<<"<p>"<<endl;
 	for (int i=0;i<x;i++) {
 		bool ghosted = false;
 		string filename;
@@ -384,18 +384,19 @@ int main(int argc, char *argv[]) {
 		} else filename = modlist.mods[i];
 		string text = version_parse ? GetModHeader(filename,ghosted) : filename;
 		if (ghosted) text += " <em> - Ghosted</em>";
-		if (modlist.modmessages[i].size()>0) bosslog << "<b>" << text << "</b>" << endl;		// show which mod file is being processed.
-		else bosslog << text << endl;
+		if (modlist.modmessages[i].size()>0) bosslog << "<b>" << text << "</b>";		// show which mod file is being processed.
+		else bosslog << text;
 		modfiletime=esmtime;
 		modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 		//Re-date file. Provide exception handling, though in my testing I couldn't get an exception to be thrown (I set a file to read-only, but it was re-dated anyway).
+		//One of the beta testers is finding exceptions thrown on some of their files. I wonder what's special about them?
 		try { fs::last_write_time(modlist.mods[i],modfiletime);
 		} catch(fs::filesystem_error e) {
-			bosslog << "<br /><span class='error'>Could not change the date of file " << modlist.mods[i] << ", make sure you have write access to it.</span>" << endl;
+			bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", make sure you have write access to it.</span>";
 		}
-		if (modlist.modmessages[i].size()==0) bosslog << "<br /><br />" << endl;
+		if (modlist.modmessages[i].size()==0) bosslog << endl << "<br /><br />" << endl;
 		if (modlist.modmessages[i].size()>0) {
-			bosslog << "<ul>" << endl;
+			bosslog << endl << "<ul>" << endl;
 			for (int j=0;j<(int)modlist.modmessages[i].size();j++) {
 				ShowMessage(modlist.modmessages[i][j], fcom, ooo, bc, fook2, fwe);		//Deal with message lines here.
 			}
@@ -411,16 +412,16 @@ int main(int argc, char *argv[]) {
 	bosslog << "<div><span>Unrecogised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>"<<endl<<"<p>";
 	for (int i=x;i<(int)modlist.mods.size();i++) {
 		if (modlist.mods[i].length()>1) {
-			bosslog << "Unknown mod file: " << modlist.mods[i] << "<br />" << endl;
+			bosslog << "Unknown mod file: " << modlist.mods[i];
 			modfiletime=esmtime;
 			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
 			//Re-date file. Provide exception handling, though in my testing I couldn't get an exception to be thrown (I set a file to read-only, but it was re-dated anyway).
 			try { fs::last_write_time(modlist.mods[i],modfiletime);
 			} catch(fs::filesystem_error e) {
-				bosslog << "<span class='error'>Could not change the date of file " << modlist.mods[i] << ", make sure you have write access to it.</span><br />" << endl;
+				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", make sure you have write access to it.</span>";
 			}
-			bosslog << "<br />" << endl;
+			bosslog << endl << "<br /><br />" << endl;
 		}
 	} //while
 	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;

@@ -23,6 +23,9 @@
     <ClCompile Include="Globals.cpp">
       <Filter>Globals</Filter>
     </ClCompile>
+    <ClCompile Include="Userlist.cpp">
+      <Filter>Userlist</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support">
@@ -39,6 +42,9 @@
     </Filter>
     <Filter Include="Globals">
       <UniqueIdentifier>{c8c250b9-403a-48ff-b4f8-2582ac08f2c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Userlist">
+      <UniqueIdentifier>{3ae81265-eb1a-4c1a-a997-67dca1ac95fc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +72,9 @@
     <ClInclude Include="BOSS.h" />
     <ClInclude Include="Globals.h">
       <Filter>Globals</Filter>
+    </ClInclude>
+    <ClInclude Include="Userlist.h">
+      <Filter>Userlist</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

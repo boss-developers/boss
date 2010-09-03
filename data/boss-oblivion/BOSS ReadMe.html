@@ -56,16 +56,19 @@
 	<div><span>Further Details</span>
 	<p>BOSS has a few command-line switches. The syntax is:</p>
 	<div>
-	<p><b>BOSS [--update | -u] [--help | -h] [--disable-version-parse | -V-]</b></p>
-	<p><b>-h, --help:</b></p>
+	<p><code>BOSS [--update | -u] [--help | -h] [--disable-version-parse | -V-] [--revert-level | -r] [level]</code></p>
+	<p><code>-h, --help</code>:</p>
 	<p>This prints a short description of BOSS and some information on the function of the command line switches.</p>
-	<p><b>-u, --update:</b></p>
+	<p><code>-u, --update</code>:</p>
 	<p>If this switch is used, BOSS will automatically update the local copy of the masterlist using the latest version on the Google Code repository, and then sort your mods. Since this replaces your current 
 	masterlist, don't run this if you have an edited copy and wish to keep the changes. The "BOSS - Update Masterlist.bat" runs BOSS with this switch.</p>
-	<p><b>-V-, --disable-version-parse:</b></p>
+	<p><code>-V-, --disable-version-parse</code>:</p>
 	<p>Disables the parsing of each mod's description to extract the author's version information, so it is not printed alongside other data in the generated BOSSlog.html. This can be used if the version 
 	parsing is not working properly for some of your mods, and you wish to remove the version notes.</p>
-	</div>
+	<p><code>-r, --revert-level</code>:</p>
+	<p>Sets BOSS to undo its changes by reverting back the number of levels given by <code>level</code> to the load order at that point. <code>level</code> can take values of 1 or 2. A value of 1 will restore the load order to that stored in modlist.txt. 
+	A value of 2 will restore the load order to that stored in modlist.old. If the modlist that you are reverting to does not exist, BOSS will cancel the undo and display an error message. The modlist files are not updated when BOSS is run with this parameter.</p>
+	</div><br />
 	<p>The only changes BOSS makes to your Oblivion install are to re-date the .esp and .esm files in your Data folder, to create a BOSS folder there, and create a few text files in that BOSS folder. Oblivion.esm 
 	is never touched, and all dates are derived from it.</p>
 	<div>The text files that are used and created by BOSS are all found in the ..\Oblivion\Data\BOSS folder, and they are:
@@ -75,16 +78,15 @@
 		<li><i>modlist.txt</i> - This file contains the list of your mods in the order they were before you last ran BOSS, which can be used as a undo changes to your load order.</li>
 		<li><i>modlist.old</i> - This file contains the contents of your modlist.txt before you last ran BOSS, providing a second level of undo for load order changes.</li>
 	</ul>
-	</div>
-	<div>The following procedure will undo the changes BOSS makes to your load order:
+	</div><br />
+	<div><p>To undo the changes BOSS makes to your load order, you can use the included "BOSS - Undo Last Run.bat" file.
+	The .bat file will, by default, revert to the load order before the last run of BOSS, as stored in modlist.txt. If you want to revert back to the load order before that, as stored in modlist.old, you will need to edit your "BOSS - Undo Last Run.bat"
+	file:
 	<ol>
-		<li>Delete masterlist.txt, or rename it to any temporary name.</li>
-		<li>Rename modlist.txt (for reverting one run of BOSS) or modlist.old (for reverting two runs of BOSS) to masterlist.txt.</li>
-		<li>Run BOSS.exe.</li>
-		<li>Delete the renamed modlist file, now called masterlist.txt.</li>
-		<li>If you deleted your original masterlist, run "BOSS - Update Masterlist.bat". If you renamed it, rename it back to masterlist.txt again.</li>
-	</ol>
-	</div>
+		<li>Right-click it and select "Edit" to open it up in Notepad.</li>
+		<li>On the line containing "<code>BOSS.exe -r 1</code>", replace the 1 with a 2 to give "<code>BOSS.exe -r 2</code>".</li>
+		<li>Then save the file and run it to revert your load order back two levels.</li>
+	</p></div><br />
 	<p>One of the best ways more experienced users can use BOSS is to edit your own copy of masterlist.txt and include there any mods not listed. You can "merge" in new updates 
 	(provided you don't use the built-in updater, but download the update manually) with the excellent free open-source <a href="http://www.winmerge.org">WinMerge</a> software.</p>
 	<p>An alternative is to use the <a href="http://www.tesnexus.com/downloads/file.php?id=29790">BOSS Master List Manager (BOMM)</a> by surazel, which is a Word 2003, 2007 and 2010 Macro that provides many useful features including powerful masterlist editing options.</p>
@@ -145,7 +147,6 @@
 		</ul>
 		</li>
 		<br />
-
 		<li><b>Message:</b> Error: Masterlist update failed.<div style="height:0.65em;"></div>
 		<ul>
 			<li><b>Issue:</b> No Internet connection.</li>
@@ -157,14 +158,14 @@
 		</ul>
 		</li>
 		<br />
-		<li><b>Message:</b> Critical Error: masterlist.txt cannot be read!<div style="height:0.65em;"></div>
+		<li><b>Message:</b> Critical Error: <em>filename</em> cannot be read!<div style="height:0.65em;"></div>
 		<ul>
 			<li><b>Issue:</b> Your masterlist.txt does not exist, or is in the wrong place.</li>
 			<li><b>Solution:</b> Make sure that your masterlist.txt is in your Data\BOSS folder, or use the masterlist updater to download a new masterlist to the correct place.</li>
 		</ul>
 		</li>
 		<br />
-		<li><b>Message:</b> Error: Could not change the date of file <em>filename</em>, make sure you have write access to it.</spa<div style="height:0.65em;"></div>
+		<li><b>Message:</b> Error: Could not change the date of "<em>filename</em>", make sure you have write access to it.</spa<div style="height:0.65em;"></div>
 		<ul>
 			<li><b>Issue:</b> BOSS does not have permission to write to the plugin given.</li>
 			<li><b>Solution:</b> Check that the plugin is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
@@ -291,17 +292,17 @@
 		<li>Added masterlist updater functionality to BOSS, accessible via a command-line switch and a .bat file.</li>
 		<li>Added mod version display to BOSSlog output, with command-line off switch.</li>
 		<li>Added sorting of ghosted plugins.</li>
-		<li><b>Not yet done:</b>Added hardcoded undo functionality to make it easier to undo BOSS's changes.</li>
-		<li><b>Not yet done:</b>Added custom user rules functionality to allow users to customise how BOSS sorts their files, and more.</li>
+		<li>Added hardcoded undo functionality to make it easier to undo BOSS's changes.</li>
+		<li><b>Not yet done:</b> Added custom user rules functionality to allow users to customise how BOSS sorts their files, and more.</li>
 		<li>Removed need for BOSS.bat.</li>
 		<li>Moved BOSS's input and output files to Data\BOSS\.</li>
 		<li>Converted Readme from RTF to HTML format.</li>
-		<li>Converted BOSSlog from text to HTML format.</li>
+		<li>Converted BOSSlog from plain text to HTML format.</li>
 		<li>Fixed Fallout3.esm being reported as an 'unknown mod file'.</li>
 		<li>Improved error support to catch more errors and provide more useful error messages when BOSS doesn't work properly.</li>
 		<li>Improved portability of source code.</li>
 		<li>Merged BOSS and BOSS-F source code, allowing one EXE to support both Oblivion and Fallout 3.</li>
-		<li><b>Not yet done:</b>Major refactoring and rewrite of BOSS source code, resulting in a significant performance improvement.</li>
+		<li>Major refactoring and rewrite of BOSS source code, resulting in a significant performance improvement.</li>
 		</ul>
 	<p><b>Version 1.51</b></p>
 	<ul>

@@ -80,7 +80,7 @@ namespace boss {
 		string version = header.Version;
 
 		// Output the mod information...
-		out << endl << filename;	// show which mod file is being processed.
+		out << filename;	// show which mod file is being processed.
 
 		// If version's found the show it...
 		if (! version.empty()) out << " [Version " << version << "]";

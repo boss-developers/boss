@@ -16,5 +16,6 @@
 #include "Sorting.h"
 #include "Updater.h"
 #include "Masterlist.h"
+#include "Userlist.h"
 
 #endif __BOSS_H__
