@@ -55,7 +55,12 @@ namespace boss {
 		bool skip = false;
 		userlist.open("BOSS\\userlist.txt");
 		messages += "<p>";
-		while(GetLine(userlist,line)) {
+		while (!userlist.eof()) {
+			char cbuffer[MAXLENGTH];
+			userlist.getline(cbuffer,MAXLENGTH);
+			line=cbuffer;
+		//while(GetLine(userlist,line)) {
+			if (line.length()>0) {
 			if (line.substr(0,2)!="//") {
 				pos = line.find(':');
 				key = line.substr(0,pos);
@@ -73,6 +78,11 @@ namespace boss {
 					if (IsPlugin(object) && !(fs::exists(object) || fs::exists(object+".ghost"))) {
 						messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
 						messages += "\""+object+"\" is not installed.<br />";
+						skip = true;
+					}
+					if (key=="ADD" && !IsPlugin(object)) {
+						if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span class='error'>It tries to add a group.</span><br />";
 						skip = true;
 					}
 				} else if ((key=="BEFORE" || key=="AFTER")) {
@@ -108,6 +118,7 @@ namespace boss {
 					skip = true;
 				}
 			}
+		}
 		}
 		messages += "</p>";
 		if (skip) {

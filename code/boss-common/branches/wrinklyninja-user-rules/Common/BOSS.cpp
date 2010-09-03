@@ -44,7 +44,6 @@ int main(int argc, char *argv[]) {
 					if (strcmp("1", argv[i+1]) == 0 || strcmp("2", argv[i+1]) == 0) revert = stoi(argv[i+1]);
 					else revert = 1;
 				} else revert = 1;
-				cout << revert;
 			} else if (strcmp("--help", argv[i]) == 0 || strcmp("-h", argv[i]) == 0) {
 				cout << "Better Oblivion Sorting Software is a utility that sorts the load order of TESIV: Oblivion, TESIII: Morrowind and Fallout 3 mods according to their relative positions on a frequently-updated masterlist ";
 				cout << "to ensure proper load order and minimise incompatibilities between mods." << endl << endl;
@@ -284,6 +283,7 @@ int main(int argc, char *argv[]) {
 									lookforsortmods=false;
 									count = 0;
 								} else if (Tidy(userlist.objects[j])==Tidy(textbuf.substr(14))) {
+									//Sort match. Now search for lines that match something in modlist.
 									lookforsortmods=true;
 									lookforrulemods=false;
 									count = 0;
@@ -318,27 +318,32 @@ int main(int argc, char *argv[]) {
 					order.close();
 					if (userlist.keys[j]=="BEFORE") {
 						for (int k=0;k<(int)rulemods.size();k++) {
-							int index = modlist.GetModIndex(sortmods.front())-1;
 							int index1 = modlist.GetModIndex(rulemods[k]);
 							currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
 							modlist.mods.erase(modlist.mods.begin()+index1);
 							modlist.modmessages.erase(modlist.modmessages.begin()+index1);
+							//Position of mod to load rulemods before. Insert adds in front of this, so don't change the value.
+							//As you move mods around, this will change, so look for it again in each loop.
+							int index = modlist.GetModIndex(sortmods.front());
 							modlist.mods.insert(modlist.mods.begin()+index,rulemods[k]);
 							modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 						}
 					} else if (userlist.keys[j]=="AFTER") {	
+						//Iterate backwards to make sure they're added in the right order.
 						for (int k=(int)rulemods.size()-1;k>-1;k--) {
-							int index = modlist.GetModIndex(sortmods.back());
 							int index1 = modlist.GetModIndex(rulemods[k]);
 							currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
 							modlist.mods.erase(modlist.mods.begin()+index1);
 							modlist.modmessages.erase(modlist.modmessages.begin()+index1);
+							//Position of mod to load rulemods before. Insert adds in front of this, so add one to make sure they're added after.
+							//As you move mods around, this will change, so look for it again in each loop.
+							int index = modlist.GetModIndex(sortmods.back())+1;
 							modlist.mods.insert(modlist.mods.begin()+index,rulemods[k]);
 							modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 						}
 					}
 					userlist.messages += "The group \""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " the group \"" + userlist.objects[j] + "\".<br /><br />";
-
+					
 				} else if (userlist.keys[j]=="APPEND" || userlist.keys[j]=="REPLACE") {
 					//Look for the modlist line that contains the match mod of the rule.
 					int index = modlist.GetModIndex(userlist.objects[start]);
@@ -358,7 +363,7 @@ int main(int argc, char *argv[]) {
 		userlist.PrintMessages(bosslog);
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	}
-
+	
 	//Remove any read only attributes from esm/esp files if present.
 	//This isn't very neat, since it'll print an error message if you don't have any ghosted plugins. Also, apparently system() calls are evil.
 	//I'm not aware that you can do it with BOOST though. :(
@@ -397,7 +402,7 @@ int main(int argc, char *argv[]) {
 			bosslog << "</ul>" << endl;
 		}
 	}
-
+	
 	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
