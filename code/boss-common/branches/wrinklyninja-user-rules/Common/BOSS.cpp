@@ -50,6 +50,7 @@ int main(int argc, char *argv[]) {
 				cout << "Optional Parameters" << endl << endl;
 				cout << "-u, --update: " << endl << "    Automatically updates the local copy of the masterlist using the latest version available on the Google Code repository." << endl << endl;
 				cout << "-V, --version-check: " << endl << "    Enables the parsing of each mod's description and if found extracts from there the author stamped mod's version and prints it along other data in the generated bosslog.txt." << endl << endl;
+				cout << "-r, --revert-level : " << endl << "	Can accept values of 1 or 2. Sets BOSS to revert its changes back the given number of levels." << endl << endl;
 				exit(0);
 			}
 		}
@@ -59,8 +60,8 @@ int main(int argc, char *argv[]) {
 	try { fs::create_directory("BOSS\\");
 	} catch(fs::filesystem_error e) {
 		cout << "Critical Error: Sub-directory \"Data\\BOSS\\\" could not be created!" << endl
-			 << "Check your permissions and make sure you have write access to your Data folder." << endl
-			 << "! Utility will end now." << endl << endl;
+			 << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl
+			 << "Utility will end now." << endl << endl;
 		cout << "Press ENTER to quit...";
 		cin.ignore(1,'\n');
 		exit(1); //fail in screaming heap.
@@ -70,8 +71,8 @@ int main(int argc, char *argv[]) {
 	bosslog.open("BOSS\\BOSSlog.html");
 	if (bosslog.fail()) {							
 		cout << endl << "Critical Error: BOSSlog.html could not be written to!" << endl
-					 << "Check your permissions and make sure you have write access to your Data\\BOSS folder." << endl
-					 << "! Utility will end now." << endl << endl;
+					 << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl
+					 << "Utility will end now." << endl << endl;
 		cout << "Press ENTER to quit...";
 		cin.ignore(1,'\n');
 		exit (1); //fail in screaming heap.
@@ -93,7 +94,7 @@ int main(int argc, char *argv[]) {
 	else if (fs::exists("Morrowind.esm")) game = 3;
 	else {
 		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file not found!<br />" << endl
-						<< "Make sure you're running this in your Data folder.<br />" << endl
+						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
@@ -109,7 +110,7 @@ int main(int argc, char *argv[]) {
 		else if (game == 3) esmtime = fs::last_write_time("Morrowind.esm");
 	} catch(fs::filesystem_error e) {
 		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file cannot be read!<br />" << endl
-						<< "Make sure you're running this in your Data folder.<br />" << endl
+						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
@@ -121,7 +122,7 @@ int main(int argc, char *argv[]) {
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		int rev = UpdateMasterlist(game);
 		if (rev > 0) cout << "masterlist.txt updated to revision " << rev << endl;
-		else cout << "Error: Masterlist update failed." << endl;
+		else cout << "Error: Masterlist update failed." << endl << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
 	}
 
 	cout << endl << "Better Oblivion Sorting Software working..." << endl;
@@ -133,8 +134,8 @@ int main(int argc, char *argv[]) {
 		if (i!=0) {
 			if (i==1) bosslog << endl << "<p class='error'>Critical Error: modlist.old could not be written to!<br />" << endl;
 			else bosslog << endl << "<p class='error'>Critical Error: modlist.txt could not be written to!<br />" << endl;
-			bosslog << "Check your permissions and make sure you have write access to your Data\\BOSS folder.<br />" << endl
-					<< "! Utility will end now.</p>" << endl
+			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
+					<< "Utility will end now.</p>" << endl
 					<< "</body>"<<endl<<"</html>";
 			bosslog.close();
 			system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
@@ -181,6 +182,7 @@ int main(int argc, char *argv[]) {
 		else bosslog << "BOSS\\masterlist.txt";
 
 		bosslog << " cannot be read!<br />" << endl
+				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
@@ -266,7 +268,6 @@ int main(int argc, char *argv[]) {
 					//If sort keyword is BEFORE, discard all but the first recorded sort group mod, and if it is AFTER, discard all but the last recorded sort group mod.
 					//Then insert the recorded rule group mods before or after the remaining sort group mod and erase them from their old positions.
 					//Remember to move their messages too.
-					//Seriously hacky this is, but I can't think of a better solution with what we've got.
 
 					order.open("BOSS\\masterlist.txt");
 					int count=0;
@@ -363,14 +364,7 @@ int main(int argc, char *argv[]) {
 		userlist.PrintMessages(bosslog);
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	}
-	
-	//Remove any read only attributes from esm/esp files if present.
-	//This isn't very neat, since it'll print an error message if you don't have any ghosted plugins. Also, apparently system() calls are evil.
-	//I'm not aware that you can do it with BOOST though. :(
-	//I'd also like to be able to print error messages if this doesn't work.
-	system("attrib -r *.es?");
-	system("attrib -r *.ghost");
-	
+
 	//Re-order .esp/.esm files to masterlist.txt order and output messages
 	if (revert<1) bosslog << "<div><span>Recognised And Re-ordered Mod Files</span>"<<endl<<"<p>"<<endl;
 	else if (revert==1) bosslog << "<div><span>Restored Load Order (Using modlist.txt)</span>"<<endl<<"<p>"<<endl;
@@ -388,11 +382,12 @@ int main(int argc, char *argv[]) {
 		else bosslog << text;
 		modfiletime=esmtime;
 		modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-		//Re-date file. Provide exception handling, though in my testing I couldn't get an exception to be thrown (I set a file to read-only, but it was re-dated anyway).
-		//One of the beta testers is finding exceptions thrown on some of their files. I wonder what's special about them?
-		try { fs::last_write_time(modlist.mods[i],modfiletime);
-		} catch(fs::filesystem_error e) {
-			bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", make sure you have write access to it.</span>";
+		if (i!=0) {
+			//Re-date file. Provide exception handling in case their permissions are wrong.
+			try { fs::last_write_time(modlist.mods[i],modfiletime);
+			} catch(fs::filesystem_error e) {
+				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
+			}
 		}
 		if (modlist.modmessages[i].size()==0) bosslog << endl << "<br /><br />" << endl;
 		if (modlist.modmessages[i].size()>0) {
@@ -408,7 +403,6 @@ int main(int argc, char *argv[]) {
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 	//Order their dates to be +1 month after the master esm to ensure they load last.
-	//Again, a filesystem interaction, we should have error handling for this.
 	bosslog << "<div><span>Unrecogised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>"<<endl<<"<p>";
 	for (int i=x;i<(int)modlist.mods.size();i++) {
 		if (modlist.mods[i].length()>1) {
@@ -416,10 +410,10 @@ int main(int argc, char *argv[]) {
 			modfiletime=esmtime;
 			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
-			//Re-date file. Provide exception handling, though in my testing I couldn't get an exception to be thrown (I set a file to read-only, but it was re-dated anyway).
+			//Re-date file. Provide exception handling in case their permissions are wrong.
 			try { fs::last_write_time(modlist.mods[i],modfiletime);
 			} catch(fs::filesystem_error e) {
-				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", make sure you have write access to it.</span>";
+				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
 			}
 			bosslog << endl << "<br /><br />" << endl;
 		}

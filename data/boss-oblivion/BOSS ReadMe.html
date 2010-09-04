@@ -187,14 +187,9 @@
 			<li><b>Solution:</b> Disable "Lock Times" before running BOSS.</li>
 		</ul>
 		</li>
-		<br />
-		<li><b>Symptom:</b> When BOSS is run, a "<code>File not found - *.ghost</code>" message is displayed in the console window.<div style="height:0.65em;"></div>
-		<ul>
-			<li><b>Issue:</b> BOSS cannot find any ghosted mods.</li>
-			<li><b>Solution:</b> This is normal BOSS behaviour, and does not indicate anything being wrong with it or your mods. It is displayed when BOSS tries to remove the read-only attribute of any mods ghosted by Wrye Bash, but cannot find any. Therefore, if you are not ghosting any mods, BOSS will display the message.</li>
-		</ul>
 	</ul>
 	<br />
+	<p>The Data\BOSS folder and all the files in it must not be read-only. If a file in this folder, or the folder itself, is read-only, BOSS will not function correctly, resulting in some of the errors listed above.</p>
 	<p>If you are running Windows Vista or Windows 7, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:</p>
 	<ol>
 		<li>Install Oblivion outside the Program Files (or Program Files (x86) folder if on 64 bit Windows). UAC prevents unauthorised edits to these folders, so by installing Oblivion outside of them, you remove it from UAC's reach, allowing you to use mods more easily.</li>
