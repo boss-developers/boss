@@ -196,7 +196,7 @@ int main(int argc, char *argv[]) {
 	found=false;
 		while (!order.eof()) {					
 		textbuf=ReadLine("order");
-		if (IsValidLine(textbuf) && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
+		if (textbuf.length()>1 && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
 			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
 				isghost = false;
 				if (fs::exists(textbuf+".ghost") && !fs::exists(textbuf)) isghost = true;
@@ -234,7 +234,7 @@ int main(int argc, char *argv[]) {
 		else bosslog << text;
 		modfiletime=esmtime;
 		modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-		if (i!=0) {
+		if (IsValidLine(modlist.mods[i])) {
 			//Re-date file. Provide exception handling in case their permissions are wrong.
 			try { fs::last_write_time(modlist.mods[i],modfiletime);
 			} catch(fs::filesystem_error e) {
@@ -255,7 +255,6 @@ int main(int argc, char *argv[]) {
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 	//Order their dates to be +1 month after the master esm to ensure they load last.
-	//Again, a filesystem interaction, we should have error handling for this.
 	bosslog << "<div><span>Unrecogised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>"<<endl<<"<p>";
 	for (int i=x;i<(int)modlist.mods.size();i++) {
 		if (modlist.mods[i].length()>1) {

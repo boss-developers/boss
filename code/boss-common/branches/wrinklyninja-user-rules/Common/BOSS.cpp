@@ -142,6 +142,8 @@ int main(int argc, char *argv[]) {
 			exit (1); //fail in screaming heap.
 		}
 	}
+	if (fs::exists("BOSS\\userlist.txt")) bosslog << "<h1>Debug Message: If you can see this message, BOSS can see your userlist.</h1>" << endl;
+	if (revert>0) bosslog << "<h1>Debug Message: If you can see this message, you are running BOSS to revert changes.</h1>" << endl;
 	Rules userlist;
 	if (fs::exists("BOSS\\userlist.txt") && revert<1) userlist.AddRules();
 	
@@ -194,7 +196,7 @@ int main(int argc, char *argv[]) {
 	found=false;
 		while (!order.eof()) {					
 		textbuf=ReadLine("order");
-		if (IsValidLine(textbuf) && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
+		if (textbuf.length()>1 && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
 			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
 				isghost = false;
 				if (fs::exists(textbuf+".ghost") && !fs::exists(textbuf)) isghost = true;
@@ -238,6 +240,7 @@ int main(int argc, char *argv[]) {
 
 	if (fs::exists("BOSS\\userlist.txt") && revert<1) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
+		if ((int)userlist.rules.size()==0) bosslog << "There were no rules found in your userlist.txt.<br />" << endl;
 		//Go through each rule.
 		for (int i=0;i<(int)userlist.rules.size();i++) {
 			int start = userlist.rules[i];
@@ -275,7 +278,7 @@ int main(int argc, char *argv[]) {
 					vector<string> rulemods,sortmods,currentmessages;
 					while (!order.eof()) {					
 						textbuf=ReadLine("order");
-						if (IsValidLine(textbuf) && (textbuf.substr(1,10)=="BeginGroup" || textbuf.substr(1,8)=="EndGroup")) {
+						if (textbuf.length()>1 && (textbuf.substr(1,10)=="BeginGroup" || textbuf.substr(1,8)=="EndGroup")) {
 							//A group starts or ends. Search rules to see if it matches any.
 							if (textbuf.substr(1,10)=="BeginGroup") {
 								if (Tidy(userlist.objects[start])==Tidy(textbuf.substr(14))) {
@@ -382,7 +385,7 @@ int main(int argc, char *argv[]) {
 		else bosslog << text;
 		modfiletime=esmtime;
 		modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-		if (i!=0) {
+		if (IsValidLine(modlist.mods[i])) {
 			//Re-date file. Provide exception handling in case their permissions are wrong.
 			try { fs::last_write_time(modlist.mods[i],modfiletime);
 			} catch(fs::filesystem_error e) {

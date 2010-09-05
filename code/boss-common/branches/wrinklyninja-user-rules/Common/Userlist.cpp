@@ -85,6 +85,16 @@ namespace boss {
 						messages += "<span class='error'>It tries to add a group.</span><br />";
 						skip = true;
 					}
+					if (!IsPlugin(object) && Tidy(object)=="esms" && key=="OVERRIDE") {
+						if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span class='error'>It tries to sort the group \"ESMs\".</span><br />";
+						skip = true;
+					}
+					if ((Tidy(object)=="oblivion.esm" || Tidy(object)=="fallout3.esm" || Tidy(object)=="morrowind.esm") && key=="OVERRIDE") {
+						if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span class='error'>It tries to sort the master .ESM file.</span><br />";
+						skip = true;
+					}
 				} else if ((key=="BEFORE" || key=="AFTER")) {
 					keys.push_back(key);
 					objects.push_back(object);
@@ -103,6 +113,17 @@ namespace boss {
 						messages += "<span class='error'>It includes a sort line in a rule with a FOR rule keyword.</span><br />";
 						skip = true;
 					}
+					if (Tidy(object)=="esms" && key=="BEFORE") {
+						if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span class='error'>It tries to sort a group before the group \"ESMs\".</span><br />";
+						skip = true;
+					}
+					if ((Tidy(object)=="oblivion.esm" || Tidy(object)=="fallout3.esm" || Tidy(object)=="morrowind.esm") && key=="BEFORE") {
+						if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span class='error'>It tries to sort a mod before the master .ESM file.</span><br />";
+						skip = true;
+					}
+					
 				} else if ((key=="APPEND" || key=="REPLACE")) {
 					keys.push_back(key);
 					objects.push_back(object);
