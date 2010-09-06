@@ -7,6 +7,7 @@
 	#body {font-family:Calibri,Arial,Verdana,sans-serifs;}
 	#title {font-size:2.4em; font-weight:bold; text-align: center;}
 	div > span {font-weight:bold; font-size:1.3em;}
+	.subtitle {font-weight: normal;font-size:1.3em;}
 	ol li {margin-bottom:10px;}
 	ul li {margin-bottom:10px;}
 	</style>
@@ -18,7 +19,7 @@
 	
 	<div><span>Features</span>
 	<ul>
-		<li>Correctly positions over 9000 mods and counting, including all the mod files found in such popular mods as FCOM, OOO, MMM, Better Cities, Open Cities, Race Balancing Project and many other large mods.</li>
+		<li>Correctly positions over 10,000 mods and counting, including all the mod files found in such popular mods as FCOM, OOO, MMM, Better Cities, Open Cities, Race Balancing Project and many other large mods.</li>
 		<li>Checks all the mod files used in an 'FCOM Convergence' installation, including partial or complete installations of OOO, MMM, Fran's, Oblivion WarCry, Bob's Armory, Loth's Blunt Weapons for NPCs, Cobl, Tamriel Travellers, Exnem's Runeskulls and more.</li>
 		<li>Detects common FCOM installation mistakes and warns the user about them.</li>
 		<li>Differentiates between FCOM and non-FCOM setups.</li>
@@ -27,6 +28,7 @@
 		<li>Displays the version number of mods when it is available.</li>
 		<li>Sorts mod files ghosted by Wrye Bash.</li>
 		<li>Is mostly right (most of the time)!</li>
+		<li>Allows easy user customisation of mod positions and the messages provided.</li>
 		<li>Is under constant development and improvement by a team of modders and Oblivion experts.</li>
 	</ul>
 	<p>Better Oblivion Sorting Software (BOSS) will reorder your mods to their correct positions (as listed in the masterlist.txt database file), putting any mods it doesn't recognise after them, in the same order as they were before BOSS was run.</p>
@@ -50,15 +52,16 @@
 	</div><br /><br />
 	
 	<div><span>Uninstallation</span>
-	<p>Delete BOSS.exe, "BOSS - Update Masterlist.bat" and, if BOSS has been run, the BOSS folder in your ..\Oblivion\Data folder.</p>
+	<p>Delete BOSS.exe, "BOSS - Update Masterlist.bat", "BOSS - Undo Last Run.bat" and, if BOSS has been run, the BOSS folder in your ..\Oblivion\Data folder.</p>
 	</div><br /><br />
 	
-	<div><span>Further Details</span>
-	<p>BOSS has a few command-line switches. The syntax is:</p>
+	<div><span>Further Details</span><br />
+	<br /><span class="subtitle">Command Line Arguments</span>
+	<p>BOSS has a few command-line arguments. The syntax is:</p>
 	<div>
 	<p><code>BOSS [--update | -u] [--help | -h] [--disable-version-parse | -V-] [--revert-level | -r] [level]</code></p>
 	<p><code>-h, --help</code>:</p>
-	<p>This prints a short description of BOSS and some information on the function of the command line switches.</p>
+	<p>This prints a short description of BOSS and some information on the function of the command line arguments.</p>
 	<p><code>-u, --update</code>:</p>
 	<p>If this switch is used, BOSS will automatically update the local copy of the masterlist using the latest version on the Google Code repository, and then sort your mods. Since this replaces your current 
 	masterlist, don't run this if you have an edited copy and wish to keep the changes. The "BOSS - Update Masterlist.bat" runs BOSS with this switch.</p>
@@ -69,16 +72,19 @@
 	<p>Sets BOSS to undo its changes by reverting back the number of levels given by <code>level</code> to the load order at that point. <code>level</code> can take values of 1 or 2. A value of 1 will restore the load order to that stored in modlist.txt. 
 	A value of 2 will restore the load order to that stored in modlist.old. If the modlist that you are reverting to does not exist, BOSS will cancel the undo and display an error message. The modlist files are not updated when BOSS is run with this parameter.</p>
 	</div><br />
+	<br /><span class="subtitle">BOSS Changes and Files</span>
 	<p>The only changes BOSS makes to your Oblivion install are to re-date the .esp and .esm files in your Data folder, to create a BOSS folder there, and create a few text files in that BOSS folder. Oblivion.esm 
 	is never touched, and all dates are derived from it.</p>
 	<div>The text files that are used and created by BOSS are all found in the ..\Oblivion\Data\BOSS folder, and they are:
 	<ul>
 		<li><i>masterlist.txt</i> - This is the master list of mods that BOSS recognises, listing them in order and which includes notes attached to them. It is the most frequently updated component of BOSS, receiving updates almost every day.</li>
 		<li><i>BOSSlog.html</i> - This log is where the output that BOSS generates and displays once the program ends is stored. It is replaced every time you run BOSS. You can view it in any web browser.</li>
-		<li><i>modlist.txt</i> - This file contains the list of your mods in the order they were before you last ran BOSS, which can be used as a undo changes to your load order.</li>
+		<li><i>modlist.txt</i> - This file contains the list of your mods in the order they were before you last ran BOSS, which can be used to undo changes to your load order.</li>
 		<li><i>modlist.old</i> - This file contains the contents of your modlist.txt before you last ran BOSS, providing a second level of undo for load order changes.</li>
+		<li><i>userlist.txt</i> - This file contains your custom rules to be implemented by the User Rules feature.</li>
 	</ul>
 	</div><br />
+	<br /><span class="subtitle">Undoing Changes</span>
 	<div><p>To undo the changes BOSS makes to your load order, you can use the included "BOSS - Undo Last Run.bat" file.
 	The .bat file will, by default, revert to the load order before the last run of BOSS, as stored in modlist.txt. If you want to revert back to the load order before that, as stored in modlist.old, you will need to edit your "BOSS - Undo Last Run.bat"
 	file:
@@ -87,13 +93,14 @@
 		<li>On the line containing "<code>BOSS.exe -r 1</code>", replace the 1 with a 2 to give "<code>BOSS.exe -r 2</code>".</li>
 		<li>Then save the file and run it to revert your load order back two levels.</li>
 	</p></div><br />
-	<p>One of the best ways more experienced users can use BOSS is to edit your own copy of masterlist.txt and include there any mods not listed. You can "merge" in new updates 
-	(provided you don't use the built-in updater, but download the update manually) with the excellent free open-source <a href="http://www.winmerge.org">WinMerge</a> software.</p>
+	<br /><span class="subtitle">Customising How BOSS Works</span>
+	<p>The best way that users can customise how BOSS works is by using the included User Rules feature. This feature allows you to define the positions of mods not in the masterlist, and to override the masterlist positions of mods,
+	as well as edit the output messages of mods, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes shall not be lost. All the information on the User Rules feature can be found in the "BOSS User Rules ReadMe.html" file.</p>
 	<p>An alternative is to use the <a href="http://www.tesnexus.com/downloads/file.php?id=29790">BOSS Master List Manager (BOMM)</a> by surazel, which is a Word 2003, 2007 and 2010 Macro that provides many useful features including powerful masterlist editing options.</p>
 	</div><br /><br />
 	
 	<div><span>Contributions and Help</span>
-	<p>General discussion, and the submission of questions, suggestions and unrecognised mods, takes place in the Bethesda Softworks Oblivion Mods forum's <a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=995808">official BOSS thread</a>.</p>
+	<p>General discussion, and the submission of questions, suggestions and unrecognised mods, takes place in the Bethesda Softworks Oblivion Mods forum's <a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=1111761">official BOSS thread</a>.</p>
 	<p>User contribution of additions and corrections to the masterlist are vital to the upkeep of BOSS. Let us know what you know.</p>
 	<p>Lists of unrecognised mods are welcome but the only way we can include them in the database in a timely way is if we get:</p>
 	<ul>
@@ -271,7 +278,7 @@
 	
 	<div><span>Quick Links</span>
 	<p><a href="http://www.tesnexus.com/downloads/file.php?id=20516">BOSS on TES Nexus</a></p>
-	<p><a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=995808">Bethesda Game Studios Oblivion Mods forum BOSS thread</a></p>
+	<p><a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=1111761">Bethesda Game Studios Oblivion Mods forum BOSS thread</a></p>
 	<p><a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a></p>
 	<p><a href="http://www.tesnexus.com/downloads/file.php?id=29790">BOSS Master List Manager</a></p>
 	<p>Due to a 200 maximum post limit, a new official thread is created periodically (with the end of one thread providing a link to the rest), so the link provided may refer to an old 
@@ -288,7 +295,7 @@
 		<li>Added mod version display to BOSSlog output, with command-line off switch.</li>
 		<li>Added sorting of ghosted plugins.</li>
 		<li>Added hardcoded undo functionality to make it easier to undo BOSS's changes.</li>
-		<li><b>Not yet done:</b> Added custom user rules functionality to allow users to customise how BOSS sorts their files, and more.</li>
+		<li>Added custom user rules functionality to allow users to customise how BOSS sorts their files, and more.</li>
 		<li>Removed need for BOSS.bat.</li>
 		<li>Moved BOSS's input and output files to Data\BOSS\.</li>
 		<li>Converted Readme from RTF to HTML format.</li>
