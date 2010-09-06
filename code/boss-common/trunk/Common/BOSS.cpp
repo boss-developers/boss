@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 	bool version_parse = true;		//Enable parsing of mod's headers to look for version strings
 	bool isghost;					//Is the file ghosted or not?
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
-	int revert;						//What level to revert to?
+	int revert=0;						//What level to revert to?
 
 	//Parse command line arguments.
 	if (argc > 1) {

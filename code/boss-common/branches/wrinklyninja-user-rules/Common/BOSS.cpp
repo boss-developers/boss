@@ -142,8 +142,6 @@ int main(int argc, char *argv[]) {
 			exit (1); //fail in screaming heap.
 		}
 	}
-	if (fs::exists("BOSS\\userlist.txt")) bosslog << "<h1>Debug Message: If you can see this message, BOSS can see your userlist.</h1>" << endl;
-	if (revert>0) bosslog << "<h1>Debug Message: If you can see this message, you are running BOSS to revert changes.</h1>" << endl;
 	Rules userlist;
 	if (fs::exists("BOSS\\userlist.txt") && revert<1) userlist.AddRules();
 	
