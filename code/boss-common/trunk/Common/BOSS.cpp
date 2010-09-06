@@ -146,6 +146,8 @@ int main(int argc, char *argv[]) {
 			exit (1); //fail in screaming heap.
 		}
 	}
+	Rules userlist;
+	if (fs::exists("BOSS\\userlist.txt") && revert<1) userlist.AddRules();
 
 	if (revert<1) {
 		bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
@@ -208,6 +210,27 @@ int main(int argc, char *argv[]) {
 					modlist.mods.erase(modlist.mods.begin()+i);
 					if (isghost) modlist.mods.insert(modlist.mods.begin()+x,textbuf+".ghost");
 					else modlist.mods.insert(modlist.mods.begin()+x,textbuf);
+					if (revert<1) {
+						i = userlist.GetRuleIndex(textbuf, "ADD");
+						while (i>-1) {
+							userlist.messages += "\""+userlist.objects[i]+"\" is already in the masterlist. Rule skipped.<br /><br />";
+							int ruleindex,max;
+							for (int j=0;j<(int)userlist.rules.size();j++) {
+								if (i==userlist.rules[j]) {
+									ruleindex = j;
+									break;
+								}
+							}
+							if (ruleindex+1==(int)userlist.rules.size()) max = (int)userlist.keys.size();
+							else max = userlist.rules[ruleindex+1];
+							for (int j=i;j<max;j++) {
+								userlist.keys[j]="";
+								userlist.objects[j]="";
+							}
+							userlist.rules.erase(userlist.rules.begin()+ruleindex);
+							i = userlist.GetRuleIndex(textbuf,"ADD");
+						}
+					}
 					x++;
 				} //if
 				else found=false;
@@ -216,6 +239,136 @@ int main(int argc, char *argv[]) {
 		} //if
 	} //while
 	order.close();		//Close the masterlist stream, as it's not needed any more.
+
+	if (fs::exists("BOSS\\userlist.txt") && revert<1) {
+		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
+		if ((int)userlist.rules.size()==0) bosslog << "There were no rules found in your userlist.txt.<br />" << endl;
+		//Go through each rule.
+		for (int i=0;i<(int)userlist.rules.size();i++) {
+			int start = userlist.rules[i];
+			int end;
+			if (i==(int)userlist.rules.size()-1) end = (int)userlist.keys.size();
+			else end = userlist.rules[i+1];
+			//Go through each line of the rule. The first line is given by keys[start] and objects[start].
+			for (int j=start;j<end;j++) {
+				//A sorting line.
+				if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && IsPlugin(userlist.objects[j])) {
+					if (userlist.keys[start]=="ADD") x++;
+					vector<string> currentmessages;
+					//Get current mod messages and remove mod from current modlist position.
+					int index1 = modlist.GetModIndex(userlist.objects[start]);
+					string filename = modlist.mods[index1];
+					currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
+					modlist.mods.erase(modlist.mods.begin()+index1);
+					modlist.modmessages.erase(modlist.modmessages.begin()+index1);
+					//Need to insert mod and mod's messages to a specific position.
+					int index = modlist.GetModIndex(userlist.objects[j]);
+					if (userlist.keys[j]=="AFTER") index += 1;
+					modlist.mods.insert(modlist.mods.begin()+index,filename);
+					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
+					userlist.messages += "\""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " \"" + userlist.objects[j] + "\".<br /><br />";
+				} else if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && !IsPlugin(userlist.objects[j])) {
+					//Search masterlist for rule group. Once found, search it for mods in modlist, recording the mods that match.
+					//Then search masterlist for sort group. Again, search and record matching modlist mods.
+					//If sort keyword is BEFORE, discard all but the first recorded sort group mod, and if it is AFTER, discard all but the last recorded sort group mod.
+					//Then insert the recorded rule group mods before or after the remaining sort group mod and erase them from their old positions.
+					//Remember to move their messages too.
+
+					order.open("BOSS\\masterlist.txt");
+					int count=0;
+					bool lookforrulemods,lookforsortmods;
+					vector<string> rulemods,sortmods,currentmessages;
+					while (!order.eof()) {					
+						textbuf=ReadLine("order");
+						if (textbuf.length()>1 && (textbuf.substr(1,10)=="BeginGroup" || textbuf.substr(1,8)=="EndGroup")) {
+							//A group starts or ends. Search rules to see if it matches any.
+							if (textbuf.substr(1,10)=="BeginGroup") {
+								if (Tidy(userlist.objects[start])==Tidy(textbuf.substr(14))) {
+									//Rule match. Now search for a line that matches something in modlist.
+									lookforrulemods=true;
+									lookforsortmods=false;
+									count = 0;
+								} else if (Tidy(userlist.objects[j])==Tidy(textbuf.substr(14))) {
+									//Sort match. Now search for lines that match something in modlist.
+									lookforsortmods=true;
+									lookforrulemods=false;
+									count = 0;
+								}
+								count += 1;
+							} else if (count>0 && textbuf.substr(1,8)=="EndGroup") {
+								count -= 1;
+								if (count==0) {
+									//The end of the matched group has been found. Stop searching for mods to move.
+									lookforrulemods=false;
+									lookforsortmods=false;
+								}
+							}
+						} else if ((lookforrulemods || lookforsortmods)  && textbuf[0]!='\\') {
+							if (!IsMessage(textbuf)) {
+								isghost = false;
+								if (fs::exists(textbuf+".ghost") && !fs::exists(textbuf)) isghost = true;
+								if (fs::exists(textbuf) || isghost) {
+									//Found a mod.
+									int i;
+									if (isghost) i = modlist.GetModIndex(textbuf+".ghost");
+									else i = modlist.GetModIndex(textbuf);
+									if (lookforrulemods) {
+										rulemods.push_back(modlist.mods[i]);
+									} else if (lookforsortmods) {
+										sortmods.push_back(modlist.mods[i]);
+									}
+								}
+							}
+						}
+					}
+					order.close();
+					if (userlist.keys[j]=="BEFORE") {
+						for (int k=0;k<(int)rulemods.size();k++) {
+							int index1 = modlist.GetModIndex(rulemods[k]);
+							currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
+							modlist.mods.erase(modlist.mods.begin()+index1);
+							modlist.modmessages.erase(modlist.modmessages.begin()+index1);
+							//Position of mod to load rulemods before. Insert adds in front of this, so don't change the value.
+							//As you move mods around, this will change, so look for it again in each loop.
+							int index = modlist.GetModIndex(sortmods.front());
+							modlist.mods.insert(modlist.mods.begin()+index,rulemods[k]);
+							modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
+						}
+					} else if (userlist.keys[j]=="AFTER") {	
+						//Iterate backwards to make sure they're added in the right order.
+						for (int k=(int)rulemods.size()-1;k>-1;k--) {
+							int index1 = modlist.GetModIndex(rulemods[k]);
+							currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
+							modlist.mods.erase(modlist.mods.begin()+index1);
+							modlist.modmessages.erase(modlist.modmessages.begin()+index1);
+							//Position of mod to load rulemods before. Insert adds in front of this, so add one to make sure they're added after.
+							//As you move mods around, this will change, so look for it again in each loop.
+							int index = modlist.GetModIndex(sortmods.back())+1;
+							modlist.mods.insert(modlist.mods.begin()+index,rulemods[k]);
+							modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
+						}
+					}
+					userlist.messages += "The group \""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " the group \"" + userlist.objects[j] + "\".<br /><br />";
+					
+				} else if (userlist.keys[j]=="APPEND" || userlist.keys[j]=="REPLACE") {
+					//Look for the modlist line that contains the match mod of the rule.
+					int index = modlist.GetModIndex(userlist.objects[start]);
+					userlist.messages += "\"" + userlist.objects[j] + "\"";
+					if (userlist.keys[j]=="APPEND") {			//Attach the rule message to the mod's messages list.
+						modlist.modmessages[index].push_back(userlist.objects[j]);
+						userlist.messages += " appended to ";
+					} else if (userlist.keys[j]=="REPLACE") {	//Clear the message list and then attach the message.
+						modlist.modmessages[index].clear();
+						modlist.modmessages[index].push_back(userlist.objects[j]);
+						userlist.messages += " replaced ";
+					}
+					userlist.messages += "messages attached to \"" + userlist.objects[start] + "\".<br /><br />";
+				}
+			}
+		}
+		userlist.PrintMessages(bosslog);
+		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
+	}
 
 	//Re-order .esp/.esm files to masterlist.txt order and output messages
 	if (revert<1) bosslog << "<div><span>Recognised And Re-ordered Mod Files</span>"<<endl<<"<p>"<<endl;
