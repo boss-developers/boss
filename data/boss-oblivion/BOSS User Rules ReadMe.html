@@ -31,9 +31,8 @@
 	</div><br /><br />
 
 	<div id="intro"><span>Introduction</span>
-	<p style="color:red">NOTE: This readme holds all the information there is for BOSS user rules, which undergoing testing prior to release. As refinements are made, the documentation may change.
-	<br />The one caveat to note that should hopefully change by the time that BOSS is released is that Wrye Bash will not automatically apply Bash
-	Tag suggestions given to mods in rules.
+	<p style="color:red">NOTE: This readme holds all the information there is for BOSS user rules, which is undergoing testing prior to release. As refinements are made, the documentation may change.
+	<br />The one caveat to note that will hopefully change is that Wrye Bash will not automatically apply Bash Tag suggestions given to mods by rules.
 	<br />-WrinklyNinja</p>
 	<p>While BOSS is able to sort the large number of mods listed in its masterlist without any user input, you may find that you wish to customise 
 	the sorting of your mods to a degree. This may be to include mods not listed in the masterlist (eg. temporary plugins or private mods that would 
@@ -76,7 +75,8 @@
 	ADD: &lt;RULE MOD&gt;<br />
 	BEFORE: &lt;SORT MOD&gt;
 	</code></blockquote>
-	<p>The <em>rule mod</em> is the mod you want to add, and the <em>sort mod</em> is the mod you want to sort it relative to (ie. it's position in your load order). Both mods must be installed in your Data directory.</p>
+	<p>The <em>rule mod</em> is the mod you want to add, and the <em>sort mod</em> is the mod you want to sort it relative to (ie. it's position in your load order). Both mods must be installed in your Data directory.
+	You cannot add mods before your game's master .ESM.</p>
 	<p>Some examples:</p>
 	<blockquote><code>
 	ADD: Mod1.esp<br />
@@ -104,7 +104,8 @@
 	OVERRIDE: &lt;RULE MOD&gt;<br />
 	BEFORE: &lt;SORT MOD&gt;
 	</code></blockquote>
-	<p>The <em>rule mod</em> is the mod you want to sort, and the <em>sort mod</em> is the mod you want to sort it relative to. Both mods must be installed in your Data directory. The mod will be moved from the place it is given in the masterlist to the place you specify.</p>
+	<p>The <em>rule mod</em> is the mod you want to sort, and the <em>sort mod</em> is the mod you want to sort it relative to. Both mods must be installed in your Data directory. 
+	You cannot move mods before your game's master .ESM, or move the master .ESM file itself. The mod will be moved from the place it is given in the masterlist to the place you specify.</p>
 	<p>An example:</p>
 	<blockquote><code>
 	OVERRIDE: bgBalancingEVCore.esp<br />
@@ -147,7 +148,7 @@
 	<li style='list-style-type:none;'>...<ul></ul></li>
 	<li style='list-style-type:none;'>
 	bgMagicEV.esp.esp<ul>
-	<li>Bashed Patch tag suggestion:  % {{BASH:Names,Delev,Relev}}</li>
+	<li>Bashed Patch tag suggestion: {{BASH:Names,Delev,Relev}}</li>
 	</ul></li>
 	<li style='list-style-type:none;'>...<ul></ul></li>
 	</blockquote>
@@ -180,8 +181,8 @@
 		<li><em>AFTER</em>: This states that the rule object is to load immediately after the sort object.</li>
 	</ul>
 	<p>The <em>sort object</em> is the plugin or group that you wish the rule object 
-	to be positioned relative to. If the rule object is a mod, the sort object must also be a mod, and the same if the rule object is a group. Mods must be sorted relative to other mods, and groups must be sorted relative to groups. You cannot sort mods relative to groups, or vice versa. You also cannot sort groups before the group "ESMs".</p>
-	<p>If the sort object is a mod, it must be installed in your Data folder. You cannot sort your game's master .ESM file. A rule with a FOR rule keyword <b>must not</b> include a sort line.</p>
+	to be positioned relative to. If the rule object is a mod, the sort object must also be a mod, and the same if the rule object is a group. Mods must be sorted relative to other mods, and groups must be sorted relative to groups. You cannot sort mods relative to groups, or vice versa. You also cannot sort your game's master .ESM, sort other mods before it, or sort groups before the "ESMs" group.</p>
+	<p>If the sort object is a mod, it must be installed in your Data folder. A rule with a FOR rule keyword <b>must not</b> include a sort line.</p>
 	
 	<br /><span class="subtitle">The Message Line</span>
 	<p>If a rule's rule keyword is FOR, it <b>must</b> include at least one <em>message line</em>, which has the structure:</p>
@@ -269,10 +270,10 @@
 		<li>You do not need to have blank lines between your rules, though it is neater and easier to read, especially when you have lots of rules.</li>
 		<li>The names of mods and groups are not case-sensitive.</li>
 		<li>You cannot sort the group "ESMs", or sort another group before it, as this group must always load first.</li>
-		<li>You cannot sort the game's master ESM file, or sort another mod before it, as this must always load first.</li>
+		<li>You cannot sort the game's master .ESM file, or sort another mod before it, as this plugin must always load first.</li>
 		<li>Keywords <b>must</b> be written in BLOCK CAPITALS (all the letters must be uppercase). If a keyword is not written this way, it will not be recognised, and the rule it belongs to (and perhaps the previous rule) will be skipped.</li>
 		<li><b>All mods referenced in rules must be in your Data folder.</b> If a mod is not installed when BOSS is run, the rule it is part of will not be applied.</li>
-		<li><b>You must never add a mod or sort a group more than once</b>. When using multiple rules sorting groups, make sure none of the groups you are sorting are located inside any of the other groups you are sorting.</li>
+		<li><b>You must never add a mod, or sort a group, more than once</b>. When using multiple rules sorting groups, make sure none of the groups you are sorting are located inside any of the other groups you are sorting.</li>
 		<li>Rules are applied to mods ghosted by Wrye Bash. Ghosted files will be treated no different from non-ghosted files, and can be referenced in rules with their ".ghost" extension or without it.</li>
 		<li>
 			<b>Rules are applied in the order they are listed</b>. This means that you can have several rules loading different rule mods or groups before or 
@@ -315,7 +316,7 @@
 			Take care when writing such rules though, 
 			as a small difference in the order of the rules in your userlist can have a very large difference on the resulting load order.
 		</li>
-		<li>When sorting mods relative to other mods also sorted by rules, be sure to <b>never sort relative to a mod that has not yet been added</b>. Otherwise, the mods that you sort will simply appear at the end of your load order.</li>
+		<li>When sorting mods relative to other mods also sorted by rules, be sure to <b>never sort relative to a mod that is not in the masterlist, and has not yet been added</b>. Otherwise, the mods that you sort will simply appear at the end of your load order.</li>
 	</ol>
 	</div><br /><br />
 	
