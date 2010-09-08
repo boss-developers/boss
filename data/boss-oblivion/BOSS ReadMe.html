@@ -26,6 +26,7 @@
 		<li><a href="#help">Contributions &amp; Help</a></li>
 		<li><a href="#updates">Updates</a></li>
 		<li><a href="#troubleshooting">Troubleshooting</a></li>
+		<li><a href="#linux">Running BOSS Under Linux</a></li>
 		<li><a href="#credits">Credits</a></li>
 		<li><a href="#team">Project Members</a></li>
 		<li><a href="#license">License</a></li>
@@ -57,10 +58,10 @@
 	<div id="install"><span>Installation &amp; Basic Usage</span>
 	<ol>
 		<li>If you have Wrye Bash, make sure the "Lock Times" function is deactivated.</li>
-		<li>Wine users may need to run Winetricks to register the libraries properly. (thanks to John.Moonsugar for this info)</li>
 		<li>If upgrading from an earlier version of BOSS, delete your BOSS.bat, modlist.txt, modlist.old, masterlist.txt and BOSSlog.txt files in your Data folder. If you have an edited masterlist, make sure to keep a backup so that your edits are not lost.</li>
 		<li>Unzip the BOSS.zip to your ..\Oblivion\Data folder, so that BOSS.exe is in the same folder as your mods.</li>
 		<li>Run the "BOSS - Update Masterlist.bat" file to get the latest masterlist from the Internet and sort your mods.</li>
+		<li>When running BOSS normally, do so from the BOSS.exe, but remember to run the "BOSS - Update Masterlist.bat" regularly to ensure you have a recent masterlist.</li>
 	</ol>
 	<p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, FCOM installation errors if applicable, and make any relevant changes that are suggested by them. Wrye Bash will automatically import and apply Bash Tag 
 	suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions makes thoroughly and adjust tags by hand in Wrye Bash if necessary.</p>
@@ -118,7 +119,7 @@
 	</div><br /><br />
 	
 	<div id="help"><span>Contributions &amp; Help</span>
-	<p>General discussion, and the submission of questions, suggestions and unrecognised mods, takes place in the Bethesda Softworks Oblivion Mods forum's <a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=1111761">official BOSS thread</a>.</p>
+	<p>General discussion, and the submission of questions, suggestions and unrecognised mods, takes place in the Bethesda Softworks Oblivion Mods Forum's <a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=1111761">official BOSS thread</a>.</p>
 	<p>User contribution of additions and corrections to the masterlist are vital to the upkeep of BOSS. Let us know what you know.</p>
 	<p>Lists of unrecognised mods are welcome but the only way we can include them in the database in a timely way is if we get:</p>
 	<ul>
@@ -129,9 +130,9 @@
 	</div><br /><br />
 	
 	<div id="updates"><span>Updates</span>
-	<p>Updates are published from <a href="http://www.tesnexus.com/downloads/file.php?id=20516">TES Nexus</a>.</p>
-	<p>The latest masterlist is always on the <a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a>.</p>
-	<p>Files on Nexus are updated once a week or so. Always use the latest dated files.</p>
+	<p>Updates are published at the <a href="http://www.tesnexus.com/downloads/file.php?id=20516">TES Nexus BOSS page</a>.</p>
+	<p>For those not using the masterlist updater, the latest masterlist is always on the <a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a>.</p>
+	<p>Always make sure to use the latest release of the BOSS program, and the latest masterlist.</p>
 	</div><br /><br />
 	
 	<div id="troubleshooting"><span>Troubleshooting</span>
@@ -226,11 +227,21 @@
 	</ol>
 	</div><br /><br />
 	
+	<div id="linux"><span>Running BOSS Under Linux</span>
+	<p>It is possible to run BOSS on Linux through the Wine compatibility layer, though no official support for doing so is given. Installation and usage is as on Windows. While all the features work as they do in Windows, there are a few issues:</p>
+	<ul>
+		<li>BOSS runs noticeably slower on Linux through Wine than it does natively on Windows.</li>
+		<li>It may be that the BOSSlog is not automatically displayed once BOSS has run. In this case, you will have to open <code>Data/BOSS/BOSSlog.html</code> manually to see it.</li>
+	</ul>
+	<p>Remember, the BOSS Team does not provide any support for those running BOSS under Linux. If you wish to do so, then it is at your own risk. If you encounter problems, you must find solutions yourself. However, if you do so, the BOSS Team will be happy to incorporate the solutions in future releases to help others, provided you report the issue and solution to us.</p>
+	</div><br /><br />
+	
 	<div id="credits"><span>Credits</span>
 	<p>Sources for the mod list and its order include: Agiel's Annotated Load Order; Fivefries load order; dev_akm's official expanded FCOM load order (FCOM 0.9.9); suggestions and instructions from Mart's Monster Mod, 
 	Better Cities, Open Cities and Open Better Cities developers; suggestions and instructions from many other modders; lots of advice and information from users. Some people have gone out of their way and provided 
 	continuing, expert and detailed help - thank you very much!</p>
 	<p>Thanks go to Wrye for implementing the importing of BOSS's Bashed Patch tag suggestions into <a href="http://wrye.ufrealms.net/Wrye%20Bash.html">Wrye Bash</a>.</p>
+	<p>Thanks also go to the Beta Testing &amp; Analysis Guild at TESAlliance for testing v1.6 prior to release.</p>
 	</div><br /><br />
 	
 	<div id="team"><span>Project Members</span>
@@ -275,7 +286,7 @@
 		<li>WrinklyNinja</li>
 	</ul>
 	</div>
-	<p>Most project members can be contacted on the Bethesda Game Studios forums, in the Oblivion Mods and Fallout 3 Mods sub-forums. Most can also be contacted on TES Nexus/FO3 Nexus.</p>
+	<p>Most project members can be contacted on the Bethesda Game Studios forums, in the Oblivion Mods and Fallout 3 Mods sub-forums. Most can also be contacted on TES Nexus/Fallout 3 Nexus.</p>
 	</div><br /><br />
 	
 	<div id="license"><span>License</span>
@@ -290,10 +301,13 @@
 	
 	<div id="links"><span>Quick Links</span>
 	<p><a href="http://www.tesnexus.com/downloads/file.php?id=20516">BOSS on TES Nexus</a></p>
-	<p><a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=1111761">Bethesda Game Studios Oblivion Mods forum BOSS thread</a></p>
-	<p><a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a></p>
+	<p><a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">BOSS (for Fallout 3) on Fallout 3 Nexus</a></p>
+	<p><a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code SVN repository</a></p>
+	<p><a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=1111761">Bethesda Game Studios Oblivion Mods Forum BOSS thread</a></p>
+	<p><a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=1098111">Bethesda Game Studios Fallout 3 Mods Forum BOSS (for Fallout 3) thread</a></p>
 	<p><a href="http://www.tesnexus.com/downloads/file.php?id=29790">BOSS Master List Manager</a></p>
-	<p>Due to a 200 maximum post limit, a new official thread is created periodically (with the end of one thread providing a link to the rest), so the link provided may refer to an old 
+	<p><a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative Commons Attribution Noncommercial No Derivative Works 3.0 Unported Copyright License</a></p>
+	<p>Due to a 200 maximum post limit, a new official thread is created periodically (with the end of one thread providing a link to the next), so the link provided may refer to an old 
 	thread when you read this. Just navigate through to the latest thread to post a message.</p>
 	<p>You must register for free to post messages.</p>
 	</div><br /><br />
