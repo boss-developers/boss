@@ -14,7 +14,11 @@
 
 #include <cstring>
 
+#ifdef WIN32
 #include <Support/Types.h>
+#else
+#include "../Support/Types.h"
+#endif
 
 namespace boss {
 
@@ -42,4 +46,4 @@ namespace boss {
 	ModHeader ReadHeader(string filename);
 };
 
-#endif __SUPPORT_MODFORMAT__HPP__
+#endif

@@ -8,6 +8,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -45,7 +46,7 @@ int main(int argc, char *argv[]) {
 			} else if (strcmp("--revert-level", argv[i]) == 0 || strcmp("-r", argv[i]) == 0) {
 				//If the correct argument is given, use it. If not, assume that they meant to roll back one level.
 				if (i+1<argc) {
-					if (strcmp("1", argv[i+1]) == 0 || strcmp("2", argv[i+1]) == 0) revert = stoi(argv[i+1]);
+					if (strcmp("1", argv[i+1]) == 0 || strcmp("2", argv[i+1]) == 0) revert = atoi(argv[i+1]);
 					else revert = 1;
 				} else revert = 1;
 			} else if (strcmp("--help", argv[i]) == 0 || strcmp("-h", argv[i]) == 0) {
@@ -153,22 +154,22 @@ int main(int argc, char *argv[]) {
 		bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
 		if (game == 1) {
 			//Check if FCOM or not
-			if (fcom=fs::exists("FCOM_Convergence.esm")) bosslog << "FCOM detected.<br />" << endl;
+			if ((fcom=fs::exists("FCOM_Convergence.esm"))) bosslog << "FCOM detected.<br />" << endl;
 				else bosslog << "FCOM not detected.<br />" << endl;
 			if (fs::exists("FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing.<br />" << endl;
 			//Check if OOO or not
-			if (ooo=fs::exists("Oscuro's_Oblivion_Overhaul.esm")) bosslog << "OOO detected.<br />" << endl;
+			if ((ooo=fs::exists("Oscuro's_Oblivion_Overhaul.esm"))) bosslog << "OOO detected.<br />" << endl;
 				else bosslog << "OOO not detected.<br />" << endl;
 			//Check if Better Cities or not
-			if (bc=fs::exists("Better Cities Resources.esm")) bosslog << "Better Cities detected.<br />" << endl;
+			if ((bc=fs::exists("Better Cities Resources.esm"))) bosslog << "Better Cities detected.<br />" << endl;
 				else bosslog << "Better Cities not detected.<br />" << endl;
 		} else if (game == 2) {
 			//Check if fook2 or not
-			if (fook2=fs::exists("FOOK2 - Main.esm")) bosslog << "FOOK2 Detected.<br />" << endl;
+			if ((fook2=fs::exists("FOOK2 - Main.esm"))) bosslog << "FOOK2 Detected.<br />" << endl;
 				else bosslog << "FOOK2 not detected.<br />" << endl;
 			if (fs::exists("FOOK2 - Main.esp") && !fook2) bosslog << "WARNING: FOOK2.esm seems to be missing.<br />" << endl;
 			//Check if fwe or not
-			if (fwe=fs::exists("FO3 Wanderers Edition - Main File.esm")) bosslog << "FWE detected.<br />" << endl;
+			if ((fwe=fs::exists("FO3 Wanderers Edition - Main File.esm"))) bosslog << "FWE detected.<br />" << endl;
 				else bosslog << "FWE not detected.<br />" << endl;
 		}
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
@@ -309,13 +310,13 @@ int main(int argc, char *argv[]) {
 								if (fs::exists(textbuf+".ghost") && !fs::exists(textbuf)) isghost = true;
 								if (fs::exists(textbuf) || isghost) {
 									//Found a mod.
-									int i;
-									if (isghost) i = modlist.GetModIndex(textbuf+".ghost");
-									else i = modlist.GetModIndex(textbuf);
+									int gm;
+									if (isghost) gm = modlist.GetModIndex(textbuf+".ghost");
+									else gm = modlist.GetModIndex(textbuf);
 									if (lookforrulemods) {
-										rulemods.push_back(modlist.mods[i]);
+										rulemods.push_back(modlist.mods[gm]);
 									} else if (lookforsortmods) {
-										sortmods.push_back(modlist.mods[i]);
+										sortmods.push_back(modlist.mods[gm]);
 									}
 								}
 							}

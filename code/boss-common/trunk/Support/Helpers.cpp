@@ -13,14 +13,20 @@
 #include <stdio.h>
 #include <time.h>
 #include <sys/types.h>
-#include <strstream>
+#include <sstream>
 
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 
+#ifdef WIN32
 #include <Support/Types.h>
 #include <Support/Helpers.h>
 #include <Support/VersionRegex.h>
+#else
+#include "../Support/Types.h"
+#include "../Support/Helpers.h"
+#include "../Support/VersionRegex.h"
+#endif
 
 namespace boss {
 	using namespace std;

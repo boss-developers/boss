@@ -9,6 +9,7 @@
 	$Revision$, $Date$
 */
 
+#include <stdlib.h>
 #include <fstream>
 #include <sstream>
 #include "Updater.h"
@@ -26,7 +27,7 @@ namespace boss {
 	} 
 
 	int UpdateMasterlist(int game) {
-		char *url;									//Masterlist file url
+		const char *url;									//Masterlist file url
 		CURL *curl;									//Some cURL resource...
 		string buffer,revision,oldline,newline;		//A bunch of strings.
 		int start,end;								//Position holders for trimming strings.
@@ -79,6 +80,6 @@ namespace boss {
 		out << buffer;
 		out.close();
 		//Return revision number.
-		return stoi(revision);
+		return atoi(revision.c_str());
 	}
 };

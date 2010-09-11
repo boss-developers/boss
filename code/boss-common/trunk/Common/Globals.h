@@ -27,4 +27,4 @@ namespace boss {
 	extern bool fwe;							//true if FWE esm is found
 };
 
-#endif __BOSS_GLOBALS_H__
+#endif

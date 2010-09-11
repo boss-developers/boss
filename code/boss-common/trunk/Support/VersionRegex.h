@@ -25,4 +25,4 @@ namespace boss {
 };
 
 
-#endif __SUPPORT_VERSIONREGEX__HPP__
+#endif

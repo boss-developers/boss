@@ -15,7 +15,11 @@
 #include <cstring>
 #include <iostream>
 
+#ifdef WIN32
 #include <Support/Types.h>
+#else
+#include "../Support/Types.h"
+#endif
 
 namespace boss {
 	using namespace std;
@@ -54,6 +58,16 @@ namespace boss {
 	string ReadString(char*& bufptr, ushort size = 512);
 
 	//
+	// T Peek<T>(pointer&):
+	//	- Peeks into the received buffer and returns the value pointed 
+	//	converting it to the type T.
+	//
+	template <typename T> 
+	T Peek(char* buffer) {
+		return *reinterpret_cast<T*>(buffer);
+	}
+
+	//
 	// T Read<T>(pointer&):
 	//	- Tries to extract a value of the specified type T from the 
 	//	received buffer, incrementing the pointer to point past the readen 
@@ -66,18 +80,8 @@ namespace boss {
 		return value;
 	}
 
-	//
-	// T Peek<T>(pointer&):
-	//	- Peeks into the received buffer and returns the value pointed 
-	//	converting it to the type T.
-	//
-	template <typename T> 
-	T Peek(char* buffer) {
-		return *reinterpret_cast<T*>(buffer);
-	}
-
 	//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
 	string Tidy(string filename);
 };
 
-#endif __SUPPORT_HELPERS__HPP__
+#endif

@@ -22,4 +22,4 @@ namespace boss {
 	bool IsValidLine(string textbuf);
 }
 
-#endif __BOSS_MASTERLIST_H__
+#endif

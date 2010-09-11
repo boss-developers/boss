@@ -12,9 +12,15 @@
 #include <cstring>
 #include <fstream>
 
+#ifdef WIN32
 #include <Support/Types.h>
 #include <Support/Helpers.h>
 #include <Support/ModFormat.h>
+#else
+#include "../Support/Types.h"
+#include "../Support/Helpers.h"
+#include "../Support/ModFormat.h"
+#endif
 
 namespace boss {
 	using namespace std;

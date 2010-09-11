@@ -19,7 +19,12 @@
 #include <fstream>
 #include <vector>
 #include "boost/filesystem.hpp"
+
+#ifdef WIN32
 #include <Support/Helpers.h>
+#else
+#include "../Support/Helpers.h"
+#endif
 
 namespace boss {
 	using namespace std;
@@ -46,7 +51,7 @@ namespace boss {
 	class Mods {
 	public:
 		vector<string> mods;					//Stores the mods in your data folder.
-		vector<vector<string>> modmessages;		//Stores the messages attached to each mod. First dimension matches up with the mods vector, then second lists the messages attached to that mod.
+		vector< vector<string> > modmessages;		//Stores the messages attached to each mod. First dimension matches up with the mods vector, then second lists the messages attached to that mod.
 		void AddMods();							//Adds mods in directory to modlist in date order (AKA load order).
 		void PrintModList(ofstream& out);		//Debug output function.
 		int SaveModList();						//Save mod list to modlist.txt. Backs up old modlist.txt as modlist.old first.
@@ -54,4 +59,4 @@ namespace boss {
 	};
 }
 
-#endif __BOSS_USERLIST_H__
+#endif

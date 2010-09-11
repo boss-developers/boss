@@ -18,4 +18,4 @@
 #include "Masterlist.h"
 #include "Userlist.h"
 
-#endif __BOSS_H__
+#endif
