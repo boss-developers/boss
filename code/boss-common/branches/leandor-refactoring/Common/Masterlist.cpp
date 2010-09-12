@@ -9,7 +9,12 @@
 	$Revision$, $Date$
 */
 
+#ifdef WIN32
 #include <Support/Helpers.h>
+#else
+#include "../Support/Helpers.h"
+#endif
+
 #include "Masterlist.h"
 
 namespace boss {
@@ -23,6 +28,6 @@ namespace boss {
 	}
 	
 	bool IsValidLine(string textbuf) {
-		return ((textbuf.length()>1) && (Tidy(textbuf)!="Oblivion.esm") && (Tidy(textbuf)!="fallout3.esm") && (Tidy(textbuf)!="Morrowind.esm"));
+		return ((textbuf.length()>1) && (Tidy(textbuf)!="oblivion.esm") && (Tidy(textbuf)!="fallout3.esm") && (Tidy(textbuf)!="morrowind.esm"));
 	}
 }

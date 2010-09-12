@@ -14,9 +14,15 @@
 
 #include <string>
 
+#ifdef WIN32
 #include <Support/Types.h>
 #include <Support/ModFormat.h>
 #include <Support/Helpers.h>
+#else
+#include "../Support/Types.h"
+#include "../Support/ModFormat.h"
+#include "../Support/Helpers.h"
+#endif
 
 #include "Globals.h"
 #include "Updater.h"
@@ -24,10 +30,6 @@
 
 namespace boss {
 	using namespace std;
-
-	/// ChangeFileDate(string textbuf, struct tm modfiletime)
-	///  - changes a file's modification date
-	void ChangeFileDate(string textbuf, struct tm modfiletime);
 
 	/// ShowMessage(string textbuf, ...)
 	///  - Produces a message to the BOSSLOG.txt
@@ -41,4 +43,4 @@ namespace boss {
 	///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
 	string GetModHeader(const string& filename, bool ghosted);
 };
-#endif __BOSS_SORTING_H__
+#endif

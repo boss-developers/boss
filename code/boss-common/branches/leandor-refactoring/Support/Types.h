@@ -30,4 +30,4 @@ namespace boss {
 	const ulong MAXLENGTH = 4096UL;
 };
 
-#endif __SUPPORT_TYPES__HPP__
+#endif

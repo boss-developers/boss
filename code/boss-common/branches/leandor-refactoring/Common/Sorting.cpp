@@ -13,8 +13,6 @@
 #include <fstream>
 #include <sstream>
 #include <time.h>
-#include <sys/stat.h>
-#include <sys/utime.h>
 
 #include "Globals.h"
 #include "Sorting.h"
@@ -22,44 +20,30 @@
 namespace boss {
 	using namespace std;
 
-	void ChangeFileDate(string textbuf, tm modfiletime) {
-		//changes a file's modification date
-		struct __utimbuf64 ut;							//way to change time data for Windows _utime function
-		int a;											//holds result of file changes
-
-		ut.actime = _mkgmtime64(&modfiletime);			//set up ut structure for _utime64.
-		ut.modtime = _mkgmtime64(&modfiletime);	
-		a = _utime64(textbuf.c_str(), &ut);				//finally, change the file date.
-
-		if (a != 0) {
-			bosslog << endl << "Program error - file " << textbuf << " could not have its date changed, code " << a << endl;
-		}
-	}
-
 	void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc, bool fook2, bool fwe) {
 		switch (textbuf[0]) {	
 		case '*':
-			if (fcom) bosslog << "  !!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << endl;
-			else if (fook2) bosslog << "  !!! FOOK2 INSTALLATION ERROR: " << textbuf.substr(1) << endl;
+			if (fcom) bosslog << "<li class='error'>!!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
+			else if (fook2) bosslog << "<li class='error'>!!! FOOK2 INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case ':':
-			bosslog << " . Requires: " << textbuf.substr(1) << endl;
+			bosslog << "<li>Requires: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '$':
-			if (ooo) bosslog << " . OOO Specific Note: " << textbuf.substr(1) << endl;
-			else if (fwe) bosslog << "  . FWE Specific Note: " << textbuf.substr(1) << endl;
+			if (ooo) bosslog << "<li>OOO Specific Note: " << textbuf.substr(1) << "</li>" << endl;
+			else if (fwe) bosslog << "<li>FWE Specific Note: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '%':
-			bosslog << "  . Bashed Patch tag suggestion: " << textbuf.substr(1) << endl;
+			bosslog << "<li>Bashed Patch tag suggestion: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '\?':
-			bosslog << "  . Note: " << textbuf.substr(1) << endl;
+			bosslog << "<li>Note: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '"':
-			bosslog << "  . Incompatible with: " << textbuf.substr(1) << endl;
+			bosslog << "<li>Incompatible with: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '^':
-			bosslog << "  . Better Cities Specific Note: " << textbuf.substr(1) <<endl;
+			bosslog << "<li>Better Cities Specific Note: " << textbuf.substr(1) << "</li>" <<endl;
 			break;
 		} //switch
 	}
@@ -69,7 +53,6 @@ namespace boss {
 		string textbuf;
 
 		if (file=="order") order.getline(cbuffer,MAXLENGTH);				//get a line of text from the masterlist.txt text file
-		if (file=="modlist") modlist.getline(cbuffer,MAXLENGTH);			//get a line of text from the modlist.txt text file
 		//No internal error handling here.
 		textbuf=cbuffer;
 		if (file=="order") {		//If parsing masterlist.txt, parse only lines that start with > or < depending on FCOM installation. Allows both FCOM and nonFCOM differentiaton.
@@ -97,7 +80,7 @@ namespace boss {
 		string version = header.Version;
 
 		// Output the mod information...
-		out << endl << filename;	// show which mod file is being processed.
+		out << filename;	// show which mod file is being processed.
 
 		// If version's found the show it...
 		if (! version.empty()) out << " [Version " << version << "]";

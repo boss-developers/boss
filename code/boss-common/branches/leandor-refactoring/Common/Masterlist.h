@@ -13,6 +13,7 @@
 #define __BOSS_MASTERLIST_H__
 
 #include <string>
+#include <list>
 
 namespace boss {
 	using namespace std;
@@ -20,6 +21,30 @@ namespace boss {
 	bool IsMod(string textbuf);
 	bool IsMessage(string textbuf);
 	bool IsValidLine(string textbuf);
+
+
+	class Masterlist 
+	{
+	public:
+		Masterlist();
+		~Masterlist();
+
+		void Add(string modName);
+
+	private:
+		class Entry;
+
+		list<Entry> entries;
+
+
+		class Entry 
+		{
+			string modName;
+
+
+		};
+	};
+
 }
 
-#endif __BOSS_MASTERLIST_H__
+#endif

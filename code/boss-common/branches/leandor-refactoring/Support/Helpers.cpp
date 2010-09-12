@@ -13,16 +13,20 @@
 #include <stdio.h>
 #include <time.h>
 #include <sys/types.h>
-#include <sys/utime.h>
-#include <sys/stat.h>
-#include <strstream>
+#include <sstream>
 
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 
+#ifdef WIN32
 #include <Support/Types.h>
 #include <Support/Helpers.h>
 #include <Support/VersionRegex.h>
+#else
+#include "../Support/Types.h"
+#include "../Support/Helpers.h"
+#include "../Support/VersionRegex.h"
+#endif
 
 namespace boss {
 	using namespace std;
@@ -130,13 +134,5 @@ namespace boss {
 			for (unsigned int i = 0; i < filename.length(); i++) filename[i] = tolower(filename[i]);
 			return (filename);
 		}
-	}
-
-	bool FileExists(string filename) {
-		//file-exists check function
-		struct __stat64 fileinfo;						//variable that holds the result of _stat
-		string str = Tidy(filename);
-
-		return (_stat64(str.c_str(), &fileinfo) == 0);	//will be true if stat opened successfully
 	}
 };

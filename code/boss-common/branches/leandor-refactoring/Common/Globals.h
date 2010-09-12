@@ -19,7 +19,6 @@ namespace boss {
 	using namespace std;
 
 	extern ifstream order;						//masterlist.txt - the grand mod order list
-	extern ifstream modlist;					//modlist.txt - list of esm/esp files in oblivion/data
 	extern ofstream bosslog;					//BOSSlog.txt - output file.
 	extern bool fcom;							//true if key FCOM files are found.
 	extern bool ooo;                      	 	//true if OOO esm is found.
@@ -28,4 +27,4 @@ namespace boss {
 	extern bool fwe;							//true if FWE esm is found
 };
 
-#endif __BOSS_GLOBALS_H__
+#endif

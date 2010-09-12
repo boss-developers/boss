@@ -23,4 +23,4 @@ namespace boss {
 
 }
 
-#endif __BOSS_UPDATER_H__
+#endif
