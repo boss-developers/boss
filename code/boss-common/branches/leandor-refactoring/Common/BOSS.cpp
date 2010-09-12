@@ -209,8 +209,13 @@ int main(int argc, char *argv[]) {
 					if (isghost) i = modlist.GetModIndex(textbuf+".ghost");
 					else i = modlist.GetModIndex(textbuf);		//Remove ordered files from modlist class.
 					modlist.mods.erase(modlist.mods.begin()+i);
-					if (isghost) modlist.mods.insert(modlist.mods.begin()+x,textbuf+".ghost");
-					else modlist.mods.insert(modlist.mods.begin()+x,textbuf);
+
+					int n = modlist.mods.size();
+					int pos = x <= n ? x : n;
+					vector<string>::iterator at = modlist.mods.begin() + pos;
+
+					if (isghost) modlist.mods.insert(at, textbuf+".ghost");
+					else modlist.mods.insert(at, textbuf);
 					if (revert<1) {
 						i = userlist.GetRuleIndex(textbuf, "ADD");
 						while (i>-1) {
