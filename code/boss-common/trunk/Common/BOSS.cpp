@@ -243,7 +243,6 @@ int main(int argc, char *argv[]) {
 
 	if (fs::exists("BOSS\\userlist.txt") && revert<1) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
-		if ((int)userlist.rules.size()==0) bosslog << "There were no rules found in your userlist.txt.<br />" << endl;
 		//Go through each rule.
 		for (int i=0;i<(int)userlist.rules.size();i++) {
 			int start = userlist.rules[i];
@@ -368,6 +367,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		userlist.PrintMessages(bosslog);
+		if ((int)userlist.rules.size()==0) bosslog << "No valid rules were found in your userlist.txt.<br />" << endl;
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	}
 
