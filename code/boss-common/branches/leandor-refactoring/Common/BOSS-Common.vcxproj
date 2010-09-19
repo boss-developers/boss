@@ -17,11 +17,16 @@
     <ClCompile Include="BOSS.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="Masterlist.cpp" />
+    <ClCompile Include="MessageList.cpp" />
+    <ClCompile Include="Mod.cpp" />
+    <ClCompile Include="ModList.cpp" />
+    <ClCompile Include="Ordering.cpp" />
     <ClCompile Include="Sorting.cpp" />
     <ClCompile Include="Updater.cpp" />
     <ClCompile Include="Userlist.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Support\Container.h" />
     <ClInclude Include="..\Support\Helpers.h" />
     <ClInclude Include="..\Support\ModFormat.h" />
     <ClInclude Include="..\Support\Types.h" />
@@ -29,6 +34,7 @@
     <ClInclude Include="BOSS.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="Masterlist.h" />
+    <ClInclude Include="Mods.h" />
     <ClInclude Include="Sorting.h" />
     <ClInclude Include="Updater.h" />
     <ClInclude Include="Userlist.h" />

@@ -12,8 +12,12 @@
 #ifndef __BOSS_MASTERLIST_H__
 #define __BOSS_MASTERLIST_H__
 
+
+#include "Mods.h"
+
 #include <string>
 #include <list>
+#include <map>
 
 namespace boss {
 	using namespace std;
@@ -26,23 +30,23 @@ namespace boss {
 	class Masterlist 
 	{
 	public:
+		typedef typename Ordering::Iterator			Iterator;
+		typedef typename Ordering::ConstIterator	ConstIterator;
+
+	public:
 		Masterlist();
 		~Masterlist();
 
-		void Add(string modName);
+	public:
+		void LoadAll(istream& masterlist, ModList& modlist);
 
 	private:
-		class Entry;
-
-		list<Entry> entries;
+		void Add(ItemType mod);
 
 
-		class Entry 
-		{
-			string modName;
-
-
-		};
+	private:
+		Ordering ordering;
+		map<string, Iterator> groups;
 	};
 
 }

@@ -55,13 +55,14 @@ namespace boss {
 		if (file=="order") order.getline(cbuffer,MAXLENGTH);				//get a line of text from the masterlist.txt text file
 		//No internal error handling here.
 		textbuf=cbuffer;
-		if (textbuf.length() > 0)
-			if (file=="order") {		//If parsing masterlist.txt, parse only lines that start with > or < depending on FCOM installation. Allows both FCOM and nonFCOM differentiaton.
-				if ((textbuf[0]=='>') && (fcom)) textbuf.erase(0,1);
-				else if ((textbuf[0]=='>') && (!fcom)) textbuf='\\';
-				else if ((textbuf[0]=='<') && (!fcom)) textbuf.erase(0,1);
-				else if ((textbuf[0]=='<') && (fcom)) textbuf='\\';
-			} //if
+		if (textbuf.length() < 1)
+			return "";
+		if (file=="order") {		//If parsing masterlist.txt, parse only lines that start with > or < depending on FCOM installation. Allows both FCOM and nonFCOM differentiaton.
+			if ((textbuf[0]=='>') && (fcom)) textbuf.erase(0,1);
+			else if ((textbuf[0]=='>') && (!fcom)) textbuf='\\';
+			else if ((textbuf[0]=='<') && (!fcom)) textbuf.erase(0,1);
+			else if ((textbuf[0]=='<') && (fcom)) textbuf='\\';
+		} //if
 		return (textbuf);
 	}
 

@@ -26,6 +26,18 @@
     <ClCompile Include="Userlist.cpp">
       <Filter>Userlist</Filter>
     </ClCompile>
+    <ClCompile Include="ModList.cpp">
+      <Filter>Sorting</Filter>
+    </ClCompile>
+    <ClCompile Include="Mod.cpp">
+      <Filter>Sorting</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageList.cpp">
+      <Filter>Sorting</Filter>
+    </ClCompile>
+    <ClCompile Include="Ordering.cpp">
+      <Filter>Sorting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support">
@@ -75,6 +87,12 @@
     </ClInclude>
     <ClInclude Include="Userlist.h">
       <Filter>Userlist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Support\Container.h">
+      <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="Mods.h">
+      <Filter>Sorting</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
