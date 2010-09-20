@@ -209,8 +209,13 @@ int main(int argc, char *argv[]) {
 					if (isghost) i = modlist.GetModIndex(textbuf+".ghost");
 					else i = modlist.GetModIndex(textbuf);		//Remove ordered files from modlist class.
 					modlist.mods.erase(modlist.mods.begin()+i);
-					if (isghost) modlist.mods.insert(modlist.mods.begin()+x,textbuf+".ghost");
-					else modlist.mods.insert(modlist.mods.begin()+x,textbuf);
+
+					int n = modlist.mods.size();
+					int pos = x <= n ? x : n;
+					vector<string>::iterator at = modlist.mods.begin() + pos;
+
+					if (isghost) modlist.mods.insert(at, textbuf+".ghost");
+					else modlist.mods.insert(at, textbuf);
 					if (revert<1) {
 						i = userlist.GetRuleIndex(textbuf, "ADD");
 						while (i>-1) {
@@ -375,7 +380,7 @@ int main(int argc, char *argv[]) {
 	if (revert<1) bosslog << "<div><span>Recognised And Re-ordered Mod Files</span>"<<endl<<"<p>"<<endl;
 	else if (revert==1) bosslog << "<div><span>Restored Load Order (Using modlist.txt)</span>"<<endl<<"<p>"<<endl;
 	else if (revert==2) bosslog << "<div><span>Restored Load Order (Using modlist.old)</span>"<<endl<<"<p>"<<endl;
-	for (int i=0;i<x;i++) {
+	for (int i=0;i<modlist.mods.size();i++) {
 		bool ghosted = false;
 		string filename;
 		if (Tidy(modlist.mods[i].substr(modlist.mods[i].length()-6))==".ghost") {
