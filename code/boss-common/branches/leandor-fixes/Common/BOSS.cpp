@@ -383,7 +383,7 @@ int main(int argc, char *argv[]) {
 	if (revert<1) bosslog << "<div><span>Recognised And Re-ordered Mod Files</span>"<<endl<<"<p>"<<endl;
 	else if (revert==1) bosslog << "<div><span>Restored Load Order (Using modlist.txt)</span>"<<endl<<"<p>"<<endl;
 	else if (revert==2) bosslog << "<div><span>Restored Load Order (Using modlist.old)</span>"<<endl<<"<p>"<<endl;
-	for (int i=0;i<modlist.mods.size();i++) {
+	for (int i=0;i<x;i++) {
 		bool ghosted = false;
 		string filename;
 		if (Tidy(modlist.mods[i].substr(modlist.mods[i].length()-6))==".ghost") {
