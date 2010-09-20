@@ -20,9 +20,14 @@ namespace boss {
 	bool SortByDate(string mod1,string mod2) {
 			time_t t1 = fs::last_write_time(mod1) ;
 			time_t t2 = fs::last_write_time(mod2) ;
+			double diff = difftime(t1,t2);
 
-			if (difftime(t1,t2)>0) return false;
-			else return true;
+			if (diff>0) 
+				return false;
+			else if (diff < 0)
+				return true;
+			else
+				return mod1 < mod2;
 	}
 
 	//Checks if a given object is an esp, an esm or a ghosted mod.
