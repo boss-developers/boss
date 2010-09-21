@@ -7,9 +7,12 @@
     http://creativecommons.org/licenses/by-nc-nd/3.0/
 */
 
+#define NOMINMAX // we don't want the dummy min/max macros since they overlap with the std:: algorithms
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <algorithm>
 #include <fstream>
 #include <cstring>
 #include <string>
@@ -204,13 +207,27 @@ int main(int argc, char *argv[]) {
 				isghost = false;
 				if (fs::exists(textbuf+".ghost") && !fs::exists(textbuf)) isghost = true;
 				if (fs::exists(textbuf) || isghost) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
+
+					const string& filename = isghost ? textbuf+".ghost" : textbuf;
+
 					found=true;
-					int i;
-					if (isghost) i = modlist.GetModIndex(textbuf+".ghost");
-					else i = modlist.GetModIndex(textbuf);		//Remove ordered files from modlist class.
+
+					int i = modlist.GetModIndex(filename);
+
+					// Save current mod's messages for later
+					vector<string> messages = modlist.modmessages[i];
+
+					// Erase data from current mod's position
 					modlist.mods.erase(modlist.mods.begin()+i);
-					if (isghost) modlist.mods.insert(modlist.mods.begin()+x,textbuf+".ghost");
-					else modlist.mods.insert(modlist.mods.begin()+x,textbuf);
+					modlist.modmessages.erase(modlist.modmessages.begin()+i);
+
+					// Use x only if it doesn't overruns the vector size
+					int newpos = std::min(x, int(modlist.mods.size()));
+
+					// Adds the mod and its messages to the new position					
+					modlist.mods.insert(modlist.mods.begin() + newpos, filename);
+					modlist.modmessages.insert(modlist.modmessages.begin() + newpos, messages);
+
 					if (revert<1) {
 						i = userlist.GetRuleIndex(textbuf, "ADD");
 						while (i>-1) {
@@ -375,6 +392,9 @@ int main(int argc, char *argv[]) {
 	if (revert<1) bosslog << "<div><span>Recognised And Re-ordered Mod Files</span>"<<endl<<"<p>"<<endl;
 	else if (revert==1) bosslog << "<div><span>Restored Load Order (Using modlist.txt)</span>"<<endl<<"<p>"<<endl;
 	else if (revert==2) bosslog << "<div><span>Restored Load Order (Using modlist.old)</span>"<<endl<<"<p>"<<endl;
+
+	x = min(x, int(modlist.mods.size()));
+
 	for (int i=0;i<x;i++) {
 		bool ghosted = false;
 		string filename;
