@@ -41,7 +41,7 @@ namespace boss {
 		else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
 		else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-morrowind/masterlist.txt";
 
-		//Use curl to get HEAD revision number and latest masterlist file from SVN repository.
+		//Use curl to get HEAD revision number from SVN repository.
 		//Get HEAD revision number from http://better-oblivion-sorting-software.googlecode.com/svn/ page text.
 		curl = curl_easy_init();
 		if (curl) {
@@ -51,6 +51,29 @@ namespace boss {
 			curl_easy_perform(curl);
 			//If download fails, curl_easy_perform != 0.
 			if (curl_easy_perform(curl)!=0) return -1;
+		}
+		//Extract revision number from page text.
+		start = revision.find("Revision ");
+		end = revision.find(": /");
+		end = end - (start+9);
+		revision = revision.substr(start+9,end);
+		//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
+		newline = "? Masterlist Revision: "+revision;
+		ifstream mlist;
+		string line;
+		mlist.open("BOSS\\masterlist.txt");
+		while (!mlist.eof()) {
+			char cbuffer[4096];
+			mlist.getline(cbuffer,4096);
+			line=cbuffer;
+			if (line.find("? Masterlist") != string::npos) {
+				if (line.find(newline) != string::npos) return 0;
+				else break;
+			}
+		}
+		mlist.close();
+		// Use curl to get latest masterlist file from SVN repository
+		if (curl) {
 			curl_easy_setopt(curl, CURLOPT_URL, url);
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
@@ -59,19 +82,13 @@ namespace boss {
 			if (curl_easy_perform(curl)!=0) return -1;
 			curl_easy_cleanup(curl);
 		}
-		//Extract revision number from page text.
-		start = revision.find("Revision ");
-		end = revision.find(": /");
-		end = end - (start+9);
-		revision = revision.substr(start+9,end);
 		oldline = "? Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
-		newline = "? Masterlist Revision: "+revision;
 		//Correct masterlist formatting and replace SVN keywords with revision number.
+		int pos = buffer.find(oldline);
+		buffer.replace(pos,oldline.length(),newline);
 		out.open("BOSS\\masterlist.txt",ios::in|ios::trunc);
 		//If the masterlist can't be opened, exit with a failure.
 		if (out.fail()) return -1;
-		int pos = buffer.find(oldline);
-		buffer.replace(pos,oldline.length(),newline);
 		out << buffer;
 		out.close();
 		//Return revision number.
