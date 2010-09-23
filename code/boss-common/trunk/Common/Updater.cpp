@@ -15,6 +15,7 @@
 #include "Updater.h"
 
 namespace boss {
+	namespace fs = boost::filesystem;
 	using namespace std;
 
 	int writer(char *data, size_t size, size_t nmemb, string *buffer){
@@ -58,20 +59,23 @@ namespace boss {
 		end = end - (start+9);
 		revision = revision.substr(start+9,end);
 		//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
-		newline = "? Masterlist Revision: "+revision;
-		ifstream mlist;
-		string line;
-		mlist.open("BOSS\\masterlist.txt");
-		while (!mlist.eof()) {
-			char cbuffer[4096];
-			mlist.getline(cbuffer,4096);
-			line=cbuffer;
-			if (line.find("? Masterlist") != string::npos) {
-				if (line.find(newline) != string::npos) return 0;
-				else break;
+		//Only if local masterlist exists, of course. :P
+		if (fs::exists("BOSS\\masterlist.txt")) {
+			newline = "? Masterlist Revision: "+revision;
+			ifstream mlist;
+			string line;
+			mlist.open("BOSS\\masterlist.txt");
+			while (!mlist.eof()) {
+				char cbuffer[4096];
+				mlist.getline(cbuffer,4096);
+				line=cbuffer;
+				if (line.find("? Masterlist") != string::npos) {
+					if (line.find(newline) != string::npos) return 0;
+					else break;
+				}
 			}
+			mlist.close();
 		}
-		mlist.close();
 		// Use curl to get latest masterlist file from SVN repository
 		if (curl) {
 			curl_easy_setopt(curl, CURLOPT_URL, url);
