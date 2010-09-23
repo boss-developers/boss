@@ -130,6 +130,7 @@ int main(int argc, char *argv[]) {
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		int rev = UpdateMasterlist(game);
 		if (rev > 0) cout << "masterlist.txt updated to revision " << rev << endl;
+		if (rev == 0) cout << "masterlist.txt is already at the latest version." << endl;
 		else cout << "Error: Masterlist update failed." << endl << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
 	}
 
