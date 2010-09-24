@@ -197,6 +197,7 @@ namespace boss {
 		for (int i=0;i<(int)mods.size();i++) {
 			modlist << mods[i] << endl;
 		}
+		modlist.close();
 		return 0;
 	}
 

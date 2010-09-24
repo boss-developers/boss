@@ -127,11 +127,22 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (update == true) {
+		bosslog << "<div><span>Masterlist Update</span>"<<endl<<"<p>";
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		int rev = UpdateMasterlist(game);
-		if (rev > 0) cout << "masterlist.txt updated to revision " << rev << endl;
-		else if (rev == 0) cout << "masterlist.txt is already at the latest version." << endl;
-		else cout << "Error: Masterlist update failed." << endl << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
+		if (rev > 0) {
+			cout << "masterlist.txt updated to revision " << rev << endl;
+			bosslog << "masterlist.txt updated to revision " << rev << "<br />" << endl;
+		} else if (rev == 0) {
+			cout << "masterlist.txt is already at the latest version. Update skipped." << endl;
+			bosslog << "masterlist.txt is already at the latest version. Update skipped.<br />" << endl;
+		} else {
+			cout << "Error: Masterlist update failed." << endl 
+				 << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
+			bosslog << "Error: Masterlist update failed.<br />" << endl
+					<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
+		}
+		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	}
 
 	cout << endl << "Better Oblivion Sorting Software working..." << endl;
