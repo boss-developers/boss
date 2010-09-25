@@ -29,9 +29,11 @@ namespace boss {
 
 	int UpdateMasterlist(int game) {
 		const char *url;							//Masterlist file url
+		char cbuffer[4096];
 		CURL *curl;									//cURL handle
-		string buffer,revision,newline;				//A bunch of strings.
+		string buffer,revision,newline,line;		//A bunch of strings.
 		int start,end;								//Position holders for trimming strings.
+		ifstream mlist;								//Input stream.
 		ofstream out;								//Output stream.
 		const string SVN_REVISION_KW = "$" "Revision" "$";                   // Left as separated parts to avoid keyword expansion
 		const string SVN_DATE_KW = "$" "Date" "$";                           // Left as separated parts to avoid keyword expansion
@@ -61,12 +63,9 @@ namespace boss {
 
 		//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
 		if (fs::exists("BOSS\\masterlist.txt")) {
-			ifstream mlist;
-			string line;
 			mlist.open("BOSS\\masterlist.txt");
 			if (mlist.fail()) return -1;	//If the masterlist can't be opened, exit with a failure.
 			while (!mlist.eof()) {
-				char cbuffer[4096];
 				mlist.getline(cbuffer,4096);
 				line=cbuffer;
 				if (line.find("? Masterlist") != string::npos) {
