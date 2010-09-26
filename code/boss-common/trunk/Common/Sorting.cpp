@@ -25,7 +25,6 @@ namespace boss {
 		case '*':
 			if (fcom && game == 1) bosslog << "<li class='error'>!!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
 			else if (fcom && game == 2) bosslog << "<li class='error'>!!! FOOK2 INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
-			else if (game == 3) bosslog << "<li class='error'>!!! NEHRIM INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case ':':
 			bosslog << "<li>Requires: " << textbuf.substr(1) << "</li>" << endl;
@@ -44,7 +43,7 @@ namespace boss {
 			bosslog << "<li>Incompatible with: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '^':
-			bosslog << "<li>Better Cities Specific Note: " << textbuf.substr(1) << "</li>" <<endl;
+			if (game == 1) bosslog << "<li>Better Cities Specific Note: " << textbuf.substr(1) << "</li>" <<endl;
 			break;
 		} //switch
 	}

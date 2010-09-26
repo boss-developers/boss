@@ -110,6 +110,16 @@ int main(int argc, char *argv[]) {
 		exit (1); //fail in screaming heap.
 	} //else
 
+	if (game==1 && fs::exists("Nehrim.esm")) {
+		bosslog << endl << "<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />" << endl
+						<< "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.<br />" << endl
+						<< "Utility will end now.</p>" << endl
+						<< "</body>"<<endl<<"</html>";
+		bosslog.close();
+		system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		exit (1); //fail in screaming heap.
+	}
+
 	//Get the master esm's modification date. 
 	//Not sure if this needs exception handling, since by this point the file definitely exists. Do it anyway.
 	try {
