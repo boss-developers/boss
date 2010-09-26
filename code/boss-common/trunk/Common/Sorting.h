@@ -33,7 +33,7 @@ namespace boss {
 
 	/// ShowMessage(string textbuf, ...)
 	///  - Produces a message to the BOSSLOG.txt
-	void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc, bool fook2, bool fwe);
+	void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc, int game);
 
 	/// ReadLine (string file):
 	///  - Read a line from a file. Could be rewritten better.

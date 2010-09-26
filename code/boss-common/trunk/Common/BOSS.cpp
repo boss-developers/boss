@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
 
 	if (fs::exists("Oblivion.esm")) game = 1;
 	else if (fs::exists("Fallout3.esm")) game = 2;
-	else if (fs::exists("Morrowind.esm")) game = 3;
+	else if (fs::exists("Nehrim.esm")) game = 3;
 	else {
 		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file not found!<br />" << endl
 						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
 	try {
 		if (game == 1) esmtime = fs::last_write_time("Oblivion.esm");
 		else if (game == 2) esmtime = fs::last_write_time("Fallout3.esm");
-		else if (game == 3) esmtime = fs::last_write_time("Morrowind.esm");
+		else if (game == 3) esmtime = fs::last_write_time("Nehrim.esm");
 	} catch(fs::filesystem_error e) {
 		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file cannot be read!<br />" << endl
 						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
@@ -180,11 +180,11 @@ int main(int argc, char *argv[]) {
 				else bosslog << "Better Cities not detected.<br />" << endl;
 		} else if (game == 2) {
 			//Check if fook2 or not
-			if ((fook2=fs::exists("FOOK2 - Main.esm"))) bosslog << "FOOK2 Detected.<br />" << endl;
+			if ((fcom=fs::exists("FOOK2 - Main.esm"))) bosslog << "FOOK2 Detected.<br />" << endl;
 				else bosslog << "FOOK2 not detected.<br />" << endl;
-			if (fs::exists("FOOK2 - Main.esp") && !fook2) bosslog << "WARNING: FOOK2.esm seems to be missing.<br />" << endl;
+			if (fs::exists("FOOK2 - Main.esp") && !fcom) bosslog << "WARNING: FOOK2.esm seems to be missing.<br />" << endl;
 			//Check if fwe or not
-			if ((fwe=fs::exists("FO3 Wanderers Edition - Main File.esm"))) bosslog << "FWE detected.<br />" << endl;
+			if ((ooo=fs::exists("FO3 Wanderers Edition - Main File.esm"))) bosslog << "FWE detected.<br />" << endl;
 				else bosslog << "FWE not detected.<br />" << endl;
 		}
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
@@ -431,7 +431,7 @@ int main(int argc, char *argv[]) {
 		if (modlist.modmessages[i].size()>0) {
 			bosslog << endl << "<ul>" << endl;
 			for (int j=0;j<(int)modlist.modmessages[i].size();j++) {
-				ShowMessage(modlist.modmessages[i][j], fcom, ooo, bc, fook2, fwe);		//Deal with message lines here.
+				ShowMessage(modlist.modmessages[i][j], fcom, ooo, bc, game);		//Deal with message lines here.
 			}
 			bosslog << "</ul>" << endl;
 		}
@@ -444,7 +444,7 @@ int main(int argc, char *argv[]) {
 	bosslog << "<div><span>Unrecogised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>"<<endl<<"<p>";
 	for (int i=x;i<(int)modlist.mods.size();i++) {
 		if (modlist.mods[i].length()>1) {
-			if (modlist.mods[i].find(".ghost") != string::npos) bosslog << "Unknown mod file: " << modlist.mods[i].substr(0,modlist.mods[i].length()-6);
+			if (modlist.mods[i].find(".ghost") != string::npos) bosslog << "Unknown mod file: " << modlist.mods[i].substr(0,modlist.mods[i].length()-6) << " <em> - Ghosted</em>";
 			else bosslog << "Unknown mod file: " << modlist.mods[i];
 			modfiletime=esmtime;
 			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.

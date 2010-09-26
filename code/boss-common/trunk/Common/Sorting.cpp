@@ -20,18 +20,19 @@
 namespace boss {
 	using namespace std;
 
-	void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc, bool fook2, bool fwe) {
+	void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc, int game) {
 		switch (textbuf[0]) {	
 		case '*':
-			if (fcom) bosslog << "<li class='error'>!!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
-			else if (fook2) bosslog << "<li class='error'>!!! FOOK2 INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
+			if (fcom && game == 1) bosslog << "<li class='error'>!!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
+			else if (fcom && game == 2) bosslog << "<li class='error'>!!! FOOK2 INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
+			else if (game == 3) bosslog << "<li class='error'>!!! NEHRIM INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case ':':
 			bosslog << "<li>Requires: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '$':
-			if (ooo) bosslog << "<li>OOO Specific Note: " << textbuf.substr(1) << "</li>" << endl;
-			else if (fwe) bosslog << "<li>FWE Specific Note: " << textbuf.substr(1) << "</li>" << endl;
+			if (ooo && game == 1) bosslog << "<li>OOO Specific Note: " << textbuf.substr(1) << "</li>" << endl;
+			else if (ooo && game == 2) bosslog << "<li>FWE Specific Note: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '%':
 			bosslog << "<li>Bashed Patch tag suggestion: " << textbuf.substr(1) << "</li>" << endl;
