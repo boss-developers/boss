@@ -15,6 +15,7 @@
 #include "Updater.h"
 
 namespace boss {
+	namespace fs = boost::filesystem;
 	using namespace std;
 
 	int writer(char *data, size_t size, size_t nmemb, string *buffer){
@@ -27,58 +28,72 @@ namespace boss {
 	} 
 
 	int UpdateMasterlist(int game) {
-		const char *url;									//Masterlist file url
-		CURL *curl;									//Some cURL resource...
-		string buffer,revision,oldline,newline;		//A bunch of strings.
+		const char *url;							//Masterlist file url
+		char cbuffer[4096];
+		CURL *curl;									//cURL handle
+		string buffer,revision,newline,line;		//A bunch of strings.
 		int start,end;								//Position holders for trimming strings.
+		ifstream mlist;								//Input stream.
 		ofstream out;								//Output stream.
 		const string SVN_REVISION_KW = "$" "Revision" "$";                   // Left as separated parts to avoid keyword expansion
 		const string SVN_DATE_KW = "$" "Date" "$";                           // Left as separated parts to avoid keyword expansion
 		const string SVN_CHANGEDBY_KW= "$" "LastChangedBy" "$";              // Left as separated parts to avoid keyword expansion
+		string oldline = "? Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
 
 		//Which masterlist to get?
 		if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
 		else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
-		else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-morrowind/masterlist.txt";
+		else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/masterlist.txt";
 
-
-		//Use curl to get HEAD revision number and latest masterlist file from SVN repository.
-		//Get HEAD revision number from http://better-oblivion-sorting-software.googlecode.com/svn/ page text.
+		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
-		if (curl) {
-			curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/");
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
-			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &revision );
-			curl_easy_perform(curl);
-			//If download fails, curl_easy_perform != 0.
-			if (curl_easy_perform(curl)!=0) return -1;
-			curl_easy_setopt(curl, CURLOPT_URL, url);
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
-			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
-			//If download fails, curl_easy_perform != 0.
-			if (curl_easy_perform(curl)!=0) return -1;
-			curl_easy_cleanup(curl);
-		}
+		if (!curl) return -1;		//If curl is null, resource failed to be initialised so exit with error.
+
+		//Get HEAD revision number from http://better-oblivion-sorting-software.googlecode.com/svn/ page text.
+		curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/");
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &revision );
+		if (curl_easy_perform(curl)!=0) return -1;		//If download fails, exit with a failure.
+
 		//Extract revision number from page text.
-		start = revision.find("Revision ");
-		end = revision.find(": /");
-		end = end - (start+9);
-		revision = revision.substr(start+9,end);
-		oldline = "? Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
+		start = revision.find("Revision ") + 9;
+		end = revision.find(": /") - start;
+		revision = revision.substr(start,end);
 		newline = "? Masterlist Revision: "+revision;
-		//Correct masterlist formatting and replace SVN keywords with revision number.
-		out.open("BOSS\\masterlist.txt",ios::in|ios::trunc);
-		//If the masterlist can't be opened, exit with a failure.
-		if (out.fail()) return -1;
+
+		//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
+		if (fs::exists("BOSS\\masterlist.txt")) {
+			mlist.open("BOSS\\masterlist.txt");
+			if (mlist.fail()) return -1;	//If the masterlist can't be opened, exit with a failure.
+			while (!mlist.eof()) {
+				mlist.getline(cbuffer,4096);
+				line=cbuffer;
+				if (line.find("? Masterlist") != string::npos) {
+					if (line.find(newline) != string::npos) return 0;
+					else break;
+				}
+			}
+			mlist.close();
+		}
+
+		// Use curl to get latest masterlist file from SVN repository
+		//Change url and data structure settings, writefunction setting is retained.
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
+		curl_easy_setopt(curl, CURLOPT_CRLF);
+		if (curl_easy_perform(curl)!=0) return -1; //If download fails, exit with a failure.
+
+		//Clean up and close curl handle now that it's finished with.
+		curl_easy_cleanup(curl);
+
+		//Replace SVN keywords with revision number and replace current masterlist, or write a new one if it doesn't already exist.
 		int pos = buffer.find(oldline);
 		buffer.replace(pos,oldline.length(),newline);
-		pos = buffer.find("\r");
-		while (pos!=string::npos) {
-			buffer.replace(pos,2,"\n");
-			pos = buffer.find("\r");
-		}
+		out.open("BOSS\\masterlist.txt", ios_base::trunc);
+		if (out.fail()) return -1;	//If the masterlist can't be opened, exit with a failure.
 		out << buffer;
 		out.close();
+
 		//Return revision number.
 		return atoi(revision.c_str());
 	}
