@@ -405,7 +405,7 @@ int main(int argc, char *argv[]) {
 	else if (revert==1) bosslog << "<div><span>Restored Load Order (Using modlist.txt)</span>"<<endl<<"<p>"<<endl;
 	else if (revert==2) bosslog << "<div><span>Restored Load Order (Using modlist.old)</span>"<<endl<<"<p>"<<endl;
 
-	x = min(x, int(modlist.mods.size()));
+	x = min(x - 1, int(modlist.mods.size()));
 
 	for (int i=0;i<x;i++) {
 		bool ghosted = false;
