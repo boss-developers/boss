@@ -14,7 +14,7 @@
   </head>
   <body id="body">
 	<div id="title">Better Oblivion Sorting Software</div><br />
-	<div style="text-align:center;">A simple "one-click" program for users that quickly optimises and avoids detrimental conflicts in their Oblivion mod load order.</div>
+	<div style="text-align:center;">A simple "one-click" program for users that quickly optimises and avoids detrimental conflicts in their Oblivion mod load order. It also supports Fallout 3 and the Nehrim total conversion for Oblivion.</div>
     <br /><br />
 	
 	<div><span>Contents</span>
@@ -37,35 +37,51 @@
 	
 	<div id="features"><span>Features &amp; Introduction</span>
 	<ul>
-		<li>Correctly positions over 10,000 mods and counting, including all the mod files found in such popular mods as FCOM, OOO, MMM, Better Cities, Open Cities, Race Balancing Project and many other large mods.</li>
-		<li>Checks all the mod files used in an 'FCOM Convergence' installation, including partial or complete installations of OOO, MMM, Fran's, Oblivion WarCry, Bob's Armory, Loth's Blunt Weapons for NPCs, Cobl, Tamriel Travellers, Exnem's Runeskulls and more.</li>
-		<li>Detects common FCOM installation mistakes and warns the user about them.</li>
-		<li>Differentiates between FCOM and non-FCOM setups.</li>
-		<li>Provides Wrye Bash Bash Tag suggestions that are automatically applied by Wrye Bash.</li>
+		<li>Correctly positions over 10,400 Oblivion mods and counting, including all the mod files found in such popular mods as FCOM, OOO, MMM, Better Cities, Open Cities, Race Balancing Project and many other large mods.</li>
+		<li>For Oblivion, it can provide specific messages for when using OOO and Better Cities, and differentiates between FCOM and non-FCOM setups. It also detects common FCOM installation mistakes and warns the user about them.</li>
+		<li>Correctly positions over 1,800 Fallout 3 mods and counting.
+		<li>Provides support for Nehrim installs.</li>
 		<li>Provides useful load order notes for many mods.</li>
 		<li>Displays the version number of mods when it is available.</li>
-		<li>Sorts mod files ghosted by Wrye Bash.</li>
-		<li>Is mostly right (most of the time)!</li>
 		<li>Allows easy user customisation of mod positions and the messages provided.</li>
-		<li>Is under constant development and improvement by a team of modders and Oblivion experts.</li>
+		<li>Provides Bash Tag suggestions that are automatically applied by Wrye Bash (in Oblivion) or Wrye Flash (in Fallout 3).</li>
+		<li>Sorts mod files ghosted by Wrye Bash/Flash.</li>
+		<li>Is under constant development and improvement by a team of modders and experts on Oblivion and Fallout 3.</li>	
 	</ul>
 	<p>Better Oblivion Sorting Software (BOSS) will reorder your mods to their correct positions (as listed in the masterlist.txt database file), putting any mods it doesn't recognise after them, in the same order as they were before BOSS was run.</p>
-	<p>BOSS is designed to assist in the installation and usage of mods, especially more complex mods such as FCOM and MMM, and help mod users avoid serious conflicts. It is not a complete solution to load ordering issues, as there are far more mods out there 
-	(estimated at about 30,000) than BOSS knows about. To properly place mods BOSS doesn't know about, a good working knowledge of Oblivion mod load ordering is still necessary, for which some research and documentation reading will go a long way.</p>
+	<p>BOSS is designed to assist in the installation and usage of mods, especially more complex mods such as FCOM, MMM and FOOK, and help mod users avoid serious conflicts. It is not a complete solution to load ordering issues, as there are far more mods out there 
+	(estimated at about 30,000 for Oblivion, and about 11,000 for Fallout 3) than BOSS knows about. To properly place mods BOSS doesn't know about, a good working knowledge of Oblivion mod load ordering is still necessary, for which some research and documentation reading will go a long way.</p>
 	</div>
 	<br /><br />
 	
 	<div id="install"><span>Installation &amp; Basic Usage</span>
+	<p>BOSS can be installed for use with Oblivion, Fallout 3 or Nehrim (a Total Conversion mod for Oblivion). The only differences in installation and usage are minor, mostly to do with the different locations to install to.</p>
+	<p>For Oblivion:</p>
 	<ol>
 		<li>If you have Wrye Bash, make sure the "Lock Times" function is deactivated.</li>
 		<li>If upgrading from an earlier version of BOSS, delete your BOSS.bat, modlist.txt, modlist.old, masterlist.txt and BOSSlog.txt files in your Data folder. If you have an edited masterlist, make sure to keep a backup so that your edits are not lost.</li>
-		<li>Unzip the BOSS.zip to your ..\Oblivion\Data folder, so that BOSS.exe is in the same folder as your mods.</li>
+		<li>Extract the BOSS archive you downloaded to your ..\Oblivion\Data folder, so that BOSS.exe is in the same folder as Oblivion.esm.</li>
 		<li>Run the "BOSS - Update Masterlist.bat" file to get the latest masterlist from the Internet and sort your mods.</li>
 		<li>When running BOSS normally, do so from the BOSS.exe, but remember to run the "BOSS - Update Masterlist.bat" regularly to ensure you have a recent masterlist.</li>
 	</ol>
-	<p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, FCOM installation errors if applicable, and make any relevant changes that are suggested by them. Wrye Bash will automatically import and apply Bash Tag 
-	suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions makes thoroughly and adjust tags by hand in Wrye Bash if necessary.</p>
-	<p>You will need to reorder "unknown" mods by hand using OBMM or Wrye Bash.</p>
+	<p>For Fallout 3:</p>
+	<ol>
+		<li>If you have Wrye Flash, make sure the "Lock Times" function is deactivated.</li>
+		<li>If upgrading from an earlier version of BOSS (also known as BOSS-F), delete your BOSS-F.bat, modlist.txt, modlist.old, masterlist.txt and BOSSlog.txt files in your Data folder. If you have an edited masterlist, make sure to keep a backup so that your edits are not lost.</li>
+		<li>Extract the BOSS archive you downloaded to your ..\Fallout 3\Data folder, so that BOSS.exe is in the same folder as Fallout3.esm.</li>
+		<li>Run the "BOSS - Update Masterlist.bat" file to get the latest masterlist from the Internet and sort your mods.</li>
+		<li>When running BOSS normally, do so from the BOSS.exe, but remember to run the "BOSS - Update Masterlist.bat" regularly to ensure you have a recent masterlist.</li>
+	</ol>
+	<p>For Nehrim:</p>
+	<ol>
+		<li>If you have Wrye Bash, make sure the "Lock Times" function is deactivated.</li>
+		<li>Extract the BOSS archive you downloaded to your ..\Nehrim\Data folder, so that BOSS.exe is in the same folder as Nehrim.esm.</li>
+		<li>Run the "BOSS - Update Masterlist.bat" file to get the latest masterlist from the Internet and sort your mods.</li>
+		<li>When running BOSS normally, do so from the BOSS.exe, but remember to run the "BOSS - Update Masterlist.bat" regularly to ensure you have a recent masterlist.</li>
+	</ol>
+	<p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. Wrye Bash/Flash will automatically import and apply Bash Tag 
+	suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions makes thoroughly and adjust tags by hand in Wrye Bash/Flash if necessary.</p>
+	<p>You will need to reorder "unknown" mods by hand using OBMM/FOMM or Wrye Bash/Flash.</p>
 	<p>You can update your masterlist to the latest version by running the "BOSS - Update Masterlist.bat" file. This will replace your copy with the latest available online, and then run BOSS as normal using the updated masterlist. <b>If you 
 	have an edited masterlist, using this updater will cause you to lose all your edits.</b></p>
 	</div><br /><br />
@@ -94,7 +110,7 @@
 	<br /><span class="subtitle">BOSS Changes and Files</span>
 	<p>The only changes BOSS makes to your Oblivion install are to re-date the .esp and .esm files in your Data folder, to create a BOSS folder there, and create a few text files in that BOSS folder. Oblivion.esm 
 	is never touched, and all dates are derived from it.</p>
-	<div>The text files that are used and created by BOSS are all found in the ..\Oblivion\Data\BOSS folder, and they are:
+	<div>The text files that are used and created by BOSS are all found in the ..\Data\BOSS folder, and they are:
 	<ul>
 		<li><i>masterlist.txt</i> - This is the master list of mods that BOSS recognises, listing them in order and which includes notes attached to them. It is the most frequently updated component of BOSS, receiving updates almost every day.</li>
 		<li><i>BOSSlog.html</i> - This log is where the output that BOSS generates and displays once the program ends is stored. It is replaced every time you run BOSS. You can view it in any web browser.</li>
@@ -115,11 +131,11 @@
 	<br /><span class="subtitle">Customising How BOSS Works</span>
 	<p>The best way that users can customise how BOSS works is by using the included User Rules feature. This feature allows you to define the positions of mods not in the masterlist, and to override the masterlist positions of mods,
 	as well as edit the output messages of mods, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes shall not be lost. All the information on the User Rules feature can be found in the "BOSS User Rules ReadMe.html" file.</p>
-	<p>An alternative is to use the <a href="http://www.tesnexus.com/downloads/file.php?id=29790">BOSS Master List Manager (BOMM)</a> by Surazal, which is a Word 2003, 2007 and 2010 Macro that provides similar features.</p>
+	<p>An alternative is to use the <a href="http://www.tesnexus.com/downloads/file.php?id=29790">BOSS Master List Manager (BOMM)</a> by Surazal, which is a Word 2003, 2007 and 2010 Macro that provides similar features, and is compatible with both Oblivion and Fallout 3.</p>
 	</div><br /><br />
 	
 	<div id="help"><span>Contributions &amp; Help</span>
-	<p>General discussion, and the submission of questions, suggestions and unrecognised mods, takes place in the Bethesda Softworks Oblivion Mods Forum's <a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=1117093">official BOSS thread</a>.</p>
+	<p>General discussion, and the submission of questions, suggestions and unrecognised mods, takes place in BOSS's official threads. The official thread for Oblivion and Nehrim is found <a href="http://forums.bethsoft.com/?showtopic=1117093">here</a>, and the official thread for Fallout 3 is found <a href="http://forums.bethsoft.com/?showtopic=1098111">here</a>.</p>
 	<p>User contribution of additions and corrections to the masterlist are vital to the upkeep of BOSS. Let us know what you know.</p>
 	<p>Lists of unrecognised mods are welcome but the only way we can include them in the database in a timely way is if we get:</p>
 	<ul>
@@ -130,7 +146,7 @@
 	</div><br /><br />
 	
 	<div id="updates"><span>Updates</span>
-	<p>Updates are published at the <a href="http://www.tesnexus.com/downloads/file.php?id=20516">TES Nexus BOSS page</a>.</p>
+	<p>Updates are published at the <a href="http://www.tesnexus.com/downloads/file.php?id=20516">TES Nexus BOSS page</a> and the <a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">Fallout 3 Nexus BOSS page</a>.</p>
 	<p>For those not using the masterlist updater, the latest masterlist is always on the <a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a>.</p>
 	<p>Always make sure to use the latest release of the BOSS program, and the latest masterlist.</p>
 	</div><br /><br />
@@ -214,7 +230,7 @@
 	<ol>
 		<li>Install Oblivion outside the Program Files (or Program Files (x86) folder if on 64 bit Windows). UAC prevents unauthorised edits to these folders, so by installing Oblivion outside of them, you remove it from UAC's reach, allowing you to use mods more easily.</li>
 		<li>Deactivate UAC. This can be done from the Control Panel, and will turn UAC off across the whole of your computer. It is up to you whether you feel that you have adequate security measures in place to do this without risk.</li>
-		<li>Give yourself Full Control permissions over your Oblivion install. This will allow you to make any edits you desire while keeping UAC active and on guard for any edits made by programs you do not run, and also means that you do not need to reinstall Oblivion to a new location. For BOSS to run unhindered, only Full Control over the Data folder is required, though if using other modding programs such as Wrye Bash or Oblivion Mod Manager, you may find it more useful to give yourself Full Control over your Bethesda Softworks folder.</li>
+		<li>Give yourself Full Control permissions over your game install folder. This will allow you to make any edits you desire while keeping UAC active and on guard for any edits made by programs you do not run, and also means that you do not need to reinstall your game to a new location. For BOSS to run unhindered, only Full Control over the Data folder is required, though if using other modding programs such as Wrye Bash/Flash, Oblivion Mod Manager or Fallout Mod Manager, you may find it more useful to give yourself Full Control over your Bethesda Softworks folder.</li>
 		<li>Run BOSS as an Administrator. Right-click the BOSS.exe, and select "Run as administrator".</li>
 	</ol>
 	<p>For those that wish to take the third option and give themselves Full Control permissions, here is a guide:</p>
@@ -301,14 +317,14 @@
 	
 	<div id="links"><span>Quick Links</span>
 	<p><a href="http://www.tesnexus.com/downloads/file.php?id=20516">BOSS on TES Nexus</a></p>
-	<p><a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">BOSS (for Fallout 3) on Fallout 3 Nexus</a></p>
+	<p><a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">BOSS on Fallout 3 Nexus</a></p>
 	<p><a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code SVN repository</a></p>
 	<p><a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=1117093">Bethesda Game Studios Oblivion Mods Forum BOSS thread</a></p>
-	<p><a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=1098111">Bethesda Game Studios Fallout 3 Mods Forum BOSS (for Fallout 3) thread</a></p>
+	<p><a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=1098111">Bethesda Game Studios Fallout 3 Mods Forum BOSS thread</a></p>
 	<p><a href="http://www.tesnexus.com/downloads/file.php?id=29790">BOSS Master List Manager</a></p>
 	<p><a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative Commons Attribution Noncommercial No Derivative Works 3.0 Unported Copyright License</a></p>
-	<p>Due to a 200 maximum post limit, a new official thread is created periodically (with the end of one thread providing a link to the next), so the link provided may refer to an old 
-	thread when you read this. Just navigate through to the latest thread to post a message.</p>
+	<p>Due to a 200 maximum post limit, new official threads are created periodically (with the end of one thread providing a link to the next), so the links provided may refer to old 
+	threads when you read this. Just navigate through to the latest thread to post a message.</p>
 	<p>You must register for free to post messages.</p>
 	</div><br /><br />
 	
@@ -322,6 +338,7 @@
 		<li>Added sorting of ghosted plugins.</li>
 		<li>Added hardcoded undo functionality to make it easier to undo BOSS's changes.</li>
 		<li>Added custom user rules functionality to allow users to customise how BOSS sorts their files, and more.</li>
+		<li>Added support for use with the Nehrim total conversion.</li>
 		<li>Removed need for BOSS.bat.</li>
 		<li>Moved BOSS's input and output files to Data\BOSS\.</li>
 		<li>Converted Readme from RTF to HTML format.</li>
