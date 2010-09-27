@@ -44,7 +44,7 @@
 	<div id="start"><span>Getting Started With The Userlist</span>
 	<p style="color:purple">NOTE: In this readme, the words 'mod' and 'plugin' are used interchangeably, meaning 'one individual file with a .esp or 
 	.esm extension'. Unless explicitely stated, the 'name' of a 'mod' or 'plugin' refers to its filename, including the extension.<br /><br />
-	Also, while the examples in this ReadMe are written for Oblivion, the functionality will work for Oblivion and Fallout 3. When your game's master .ESM file is mentioned, this refers to Oblivion.esm or Fallout3.esm for Oblivion or Fallout 3 respectively.</p>
+	Also, while the examples in this ReadMe are written for Oblivion, the functionality will work for Oblivion, Nehrim and Fallout 3. When your game's master .ESM file is mentioned, this refers to Oblivion.esm, Nehrim.esm or Fallout3.esm for Oblivion, Nehrim or Fallout 3 respectively.</p>
 	<p>The userlist is the file which contains your custom rules for sorting mods and editing mods' messages. It is found at <code>Data\BOSS\userlist.txt</code>. If it 
 	does not exist, simply create a new text file there with the same name. Make sure that the full filename is "userlist.txt" and not "userlist.txt.txt", as can sometimes occur if file extensions are hidden.</p>
 	<p>Within this file, which you can open up in Notepad to edit, you list your rule definitions. Rules can make two types of changes:
@@ -52,8 +52,8 @@
 		<li><em>Sort mods or groups.</em> You can sort plugins relative to other plugins, or groups of plugins 
 		relative to other groups of plugins. Plugins may be .esp or .esm files. Groups are all pre-defined in the BOSS masterlist, marked out by the 
 		<code>\BeginGroup\:  <em>Group Name</em></code> and <code>\EndGroup\\</code> lines. You may override the positions of mods and groups in the 
-		masterlist with new positions, and add new plugins to be sorted, but you cannot add new groups.</li>
-		<li><em>Edit BOSS messages.</em> You can add to or replace the messages that are attached to mods in the masterlist and that are displayed in the BOSSlog.
+		masterlist with new positions, and sort plugins not in the masterlist, but you cannot add new groups.</li>
+		<li><em>Edit BOSS messages.</em> You can add to or replace the mod-specific messages that are displayed in the BOSSlog.
 		See <em>The BOSS Message Format</em> below for more details on the message types and syntax.</li>
 	</ol>
 	The rule definition syntax is simple and concise, and is explained below.</p>
@@ -61,7 +61,7 @@
 	
 	<div id="basics"><span>Rule Basics</span>
 	<p>While it is strongly suggested that you read the <em>Rule Definition Syntax</em> section below to gain a proper understanding of user rules, here is a quick start guide for some simple rules.</p>
-	<span class="subtitle">Adding A New Mod</span>
+	<span class="subtitle">Sorting An Unknown Mod</span>
 	<p>To sort a mod that is not in the masterlist after another mod:</p>
 	<blockquote><code>
 	ADD: &lt;RULE MOD&gt;<br />
@@ -90,7 +90,7 @@
 	...
 	</blockquote>
 	
-	<br /><span class="subtitle">Changing An Existing Mod's Position</span>
+	<br /><span class="subtitle">Changing A Recognised Mod's Position</span>
 	<p>To sort a mod that is already in the masterlist after another mod:</p>
 	<blockquote><code>
 	OVERRIDE: &lt;RULE MOD&gt;<br />
@@ -258,18 +258,16 @@
 	</ol>
 	<p><b>Rule application does not alter your masterlist.txt or userlist.txt.</b> This means that if you want to undo the application of
 	a rule, all you need to do is remove it from your userlist.txt and re-run BOSS.</p>
-	<p>It is important to note that any changes to mods' Bash Tags by rules are not automatically applied by Wrye Bash, and so must be applied manually. If you remove a Bash Tag suggestion, the suggested Tag will not automatically be removed from the mod, just as any Tag suggestions added will not be automatically added to the mod.</p>
 	</div><br /><br />
 	
 	<div id="notes"><span>Further Notes On Rules</span>
 	<p>While the <em>Rule Definition Syntax</em> section gave you most of the rules of defining rules, here are some further general notes on defining rules that may 
 	not be evident.</p>
 	<ol>
-		<li>You do not need to have blank lines between your rules, though it is neater and easier to read, especially when you have lots of rules.</li>
-		<li>The names of mods and groups are not case-sensitive.</li>
+		<li>Blank lines in your userlist are ignored - you can have no blank lines, or as many blank lines both within and between rules, and it will make no difference to how they are applied. Therefore, you can use blank lines to provide a more readable structure for your userlist.</li>
+		<li>The names of mods and groups are not case-sensitive. However, the keywords used in rules are case-sensitive, and <b>must</b> be written in BLOCK CAPTIALS. If a keyword is not written this way, it will not be recognised, and the rule it belongs to (and perhaps the previous rule) will be skipped.</li>
 		<li>You cannot sort the group "ESMs", or sort another group before it, as this group must always load first.</li>
 		<li>You cannot sort the game's master .ESM file, or sort another mod before it, as this plugin must always load first.</li>
-		<li>Keywords <b>must</b> be written in BLOCK CAPITALS (all the letters must be uppercase). If a keyword is not written this way, it will not be recognised, and the rule it belongs to (and perhaps the previous rule) will be skipped.</li>
 		<li><b>All mods referenced in rules must be in your Data folder.</b> If a mod is not installed when BOSS is run, the rule it is part of will not be applied.</li>
 		<li><b>You must never add a mod, or sort a group, more than once</b>. When using multiple rules sorting groups, make sure none of the groups you are sorting are located inside any of the other groups you are sorting.</li>
 		<li>Rules are applied to mods ghosted by Wrye Bash. Ghosted files will be treated no different from non-ghosted files, and can be referenced in rules with their ".ghost" extension or without it.</li>
@@ -314,7 +312,7 @@
 			Take care when writing such rules though, 
 			as a small difference in the order of the rules in your userlist can have a very large difference on the resulting load order.
 		</li>
-		<li>When sorting mods relative to other mods also sorted by rules, be sure to <b>never sort relative to a mod that is not in the masterlist, and has not yet been added</b>. Otherwise, the mods that you sort will simply appear at the end of your load order.</li>
+		<li>When sorting mods relative to other mods also sorted by rules, be sure to <b>never sort relative to a mod that is not in the masterlist, and has not yet been sorted by a rule</b>. Otherwise, the mods that you sort will simply appear at the end of your load order.</li>
 	</ol>
 	</div><br /><br />
 	
