@@ -26,7 +26,7 @@
 namespace fs = boost::filesystem;
 using namespace boss;
 
-//BOSS [--update | -u] [--help | -h] [--version-check | -V]  [--revert-level | -r] [1 | 2]
+//BOSS [--update | -u] [--help | -h] [--disable-version-parse | -V-]  [--revert-level | -r] [1 | 2]
 int main(int argc, char *argv[]) {					
 	
 	int x;							//random useful integers
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 	bool version_parse = true;		//Enable parsing of mod's headers to look for version strings
 	bool isghost;					//Is the file ghosted or not?
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
-	int revert=0;						//What level to revert to?
+	int revert=0;					//What level to revert to?
 
 	//Parse command line arguments.
 	if (argc > 1) {
