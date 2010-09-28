@@ -292,7 +292,6 @@ int main(int argc, char *argv[]) {
 			for (int j=start;j<end;j++) {
 				//A sorting line.
 				if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && IsPlugin(userlist.objects[j])) {
-					if (userlist.keys[start]=="ADD") x++;
 					vector<string> currentmessages;
 					//Get current mod messages and remove mod from current modlist position.
 					int index1 = modlist.GetModIndex(userlist.objects[start]);
@@ -306,6 +305,12 @@ int main(int argc, char *argv[]) {
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 					userlist.messages += "\""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " \"" + userlist.objects[j] + "\".<br /><br />";
+
+					// Only increment 'x' if we've taken the 'source' mod from below the 'last-sorted' mark
+					if (userlist.keys[start]=="ADD" && index1 >= x) {
+						x++;
+					}
+
 				} else if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && !IsPlugin(userlist.objects[j])) {
 					//Search masterlist for rule group. Once found, search it for mods in modlist, recording the mods that match.
 					//Then search masterlist for sort group. Again, search and record matching modlist mods.
