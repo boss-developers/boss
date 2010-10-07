@@ -29,6 +29,7 @@ namespace boss {
 
 	int UpdateMasterlist(int game) {
 		const char *url;							//Masterlist file url
+		const char *revurl;                         //Revision number url
 		char cbuffer[4096];
 		CURL *curl;									//cURL handle
 		string buffer,revision,newline,line;		//A bunch of strings.
@@ -45,19 +46,27 @@ namespace boss {
 		else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
 		else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/masterlist.txt";
 
+		//Which Revision number to get
+		if (game == 1) revurl = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
+		else if (game == 2) revurl = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
+		else if (game == 3) revurl = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/masterlist.txt";
+
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
 		if (!curl) return -1;		//If curl is null, resource failed to be initialised so exit with error.
 
-		//Get HEAD revision number from http://better-oblivion-sorting-software.googlecode.com/svn/ page text.
-		curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/");
+		//Get revision number from revurl page text.
+		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &revision );
 		if (curl_easy_perform(curl)!=0) return -1;		//If download fails, exit with a failure.
 
 		//Extract revision number from page text.
-		start = revision.find("Revision ") + 9;
-		end = revision.find(": /") - start;
+		if (game == 1) start = revision.find("boss-oblivion");
+		else if (game == 2) start = revision.find("boss-fallout");
+		else if (game == 3) start = revision.find("boss-nehrim");
+		start = revision.find("KB\",\"", start) + 5; 
+		end = revision.find("\"",start) - start;
 		revision = revision.substr(start,end);
 		newline = "? Masterlist Revision: "+revision;
 
