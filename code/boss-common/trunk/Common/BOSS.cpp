@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
 	bool found;
 	bool update = false;			//To update masterlist or not?
 	bool version_parse = true;		//Enable parsing of mod's headers to look for version strings
+	bool silent = false;            //Silent mode?
 	bool isghost;					//Is the file ghosted or not?
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
 	int revert=0;					//What level to revert to?
@@ -44,6 +45,8 @@ int main(int argc, char *argv[]) {
 		for (int i=0; i < argc; i++) {
 			if (strcmp("--update", argv[i]) == 0 || strcmp("-u", argv[i]) == 0) {
 				update = true;
+			}if (strcmp("--silent-mode", argv[i]) == 0 || strcmp("-s", argv[i]) == 0) {
+				silent = true;
 			} else if (strcmp("--disable-version-parse", argv[i]) == 0 || strcmp("-V-", argv[i]) == 0) {
 				version_parse = false;
 			} else if (strcmp("--revert-level", argv[i]) == 0 || strcmp("-r", argv[i]) == 0) {
@@ -57,8 +60,9 @@ int main(int argc, char *argv[]) {
 				cout << "to ensure proper load order and minimise incompatibilities between mods." << endl << endl;
 				cout << "Optional Parameters" << endl << endl;
 				cout << "-u, --update: " << endl << "    Automatically updates the local copy of the masterlist using the latest version available on the Google Code repository." << endl << endl;
-				cout << "-V-, --disable-version-parse: " << endl << "    Enables the parsing of each mod's description and if found extracts from there the author stamped mod's version and prints it along other data in the generated bosslog.txt." << endl << endl;
+				cout << "-V-, --disable-version-parse: " << endl << "    Enables the parsing of each mod's description and if found extracts from there the author stamped mod's version and prints it along other data in the generated bosslog.html." << endl << endl;
 				cout << "-r, --revert-level : " << endl << "	Can accept values of 1 or 2. Sets BOSS to revert its changes back the given number of levels." << endl << endl;
+				cout << "-s, --silent-mode: " << endl << "    Disables launch of the log; just runs silently.." << endl << endl;
 				exit (0);
 			}
 		}
@@ -106,7 +110,7 @@ int main(int argc, char *argv[]) {
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //else
 
@@ -116,7 +120,7 @@ int main(int argc, char *argv[]) {
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent )  system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
@@ -132,7 +136,7 @@ int main(int argc, char *argv[]) {
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
@@ -168,7 +172,7 @@ int main(int argc, char *argv[]) {
 					<< "Utility will end now.</p>" << endl
 					<< "</body>"<<endl<<"</html>";
 			bosslog.close();
-			system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+			if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 			exit (1); //fail in screaming heap.
 		}
 	}
@@ -216,7 +220,7 @@ int main(int argc, char *argv[]) {
 				<< "Utility will end now.</p>" << endl
 				<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //if
 
@@ -457,6 +461,6 @@ int main(int argc, char *argv[]) {
 	//Let people know the program has stopped.
 	bosslog <<"<div><span>Done.</span></div><br /><br />"<<endl<<"</body>"<<endl<<"</html>";
 	bosslog.close();
-	system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+	if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 	return (0);
 }
