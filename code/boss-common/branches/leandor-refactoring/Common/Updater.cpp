@@ -49,15 +49,18 @@ namespace boss {
 		curl = curl_easy_init();
 		if (!curl) return -1;		//If curl is null, resource failed to be initialised so exit with error.
 
-		//Get HEAD revision number from http://better-oblivion-sorting-software.googlecode.com/svn/ page text.
-		curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/");
+		//Get revision number from http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn page text.
+		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &revision );
 		if (curl_easy_perform(curl)!=0) return -1;		//If download fails, exit with a failure.
 
 		//Extract revision number from page text.
-		start = revision.find("Revision ") + 9;
-		end = revision.find(": /") - start;
+		if (game == 1) start = revision.find("boss-oblivion");
+		else if (game == 2) start = revision.find("boss-fallout");
+		else if (game == 3) start = revision.find("boss-nehrim");
+		start = revision.find("KB\",\"", start) + 5; 
+		end = revision.find("\"",start) - start;
 		revision = revision.substr(start,end);
 		newline = "? Masterlist Revision: "+revision;
 

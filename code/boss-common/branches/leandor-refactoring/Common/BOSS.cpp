@@ -26,7 +26,7 @@
 namespace fs = boost::filesystem;
 using namespace boss;
 
-//BOSS [--update | -u] [--help | -h] [--version-check | -V]  [--revert-level | -r] [1 | 2]
+//BOSS [--update | -u] [--help | -h] [--disable-version-parse | -V-]  [--revert-level | -r] [1 | 2]
 int main(int argc, char *argv[]) {					
 	
 	int x;							//random useful integers
@@ -35,15 +35,18 @@ int main(int argc, char *argv[]) {
 	bool found;
 	bool update = false;			//To update masterlist or not?
 	bool version_parse = true;		//Enable parsing of mod's headers to look for version strings
+	bool silent = false;            //Silent mode?
 	bool isghost;					//Is the file ghosted or not?
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
-	int revert=0;						//What level to revert to?
+	int revert=0;					//What level to revert to?
 
 	//Parse command line arguments.
 	if (argc > 1) {
 		for (int i=0; i < argc; i++) {
 			if (strcmp("--update", argv[i]) == 0 || strcmp("-u", argv[i]) == 0) {
 				update = true;
+			}if (strcmp("--silent-mode", argv[i]) == 0 || strcmp("-s", argv[i]) == 0) {
+				silent = true;
 			} else if (strcmp("--disable-version-parse", argv[i]) == 0 || strcmp("-V-", argv[i]) == 0) {
 				version_parse = false;
 			} else if (strcmp("--revert-level", argv[i]) == 0 || strcmp("-r", argv[i]) == 0) {
@@ -57,8 +60,9 @@ int main(int argc, char *argv[]) {
 				cout << "to ensure proper load order and minimise incompatibilities between mods." << endl << endl;
 				cout << "Optional Parameters" << endl << endl;
 				cout << "-u, --update: " << endl << "    Automatically updates the local copy of the masterlist using the latest version available on the Google Code repository." << endl << endl;
-				cout << "-V-, --disable-version-parse: " << endl << "    Enables the parsing of each mod's description and if found extracts from there the author stamped mod's version and prints it along other data in the generated bosslog.txt." << endl << endl;
+				cout << "-V-, --disable-version-parse: " << endl << "    Enables the parsing of each mod's description and if found extracts from there the author stamped mod's version and prints it along other data in the generated bosslog.html." << endl << endl;
 				cout << "-r, --revert-level : " << endl << "	Can accept values of 1 or 2. Sets BOSS to revert its changes back the given number of levels." << endl << endl;
+				cout << "-s, --silent-mode: " << endl << "    Disables launch of the log; just runs silently.." << endl << endl;
 				exit (0);
 			}
 		}
@@ -106,7 +110,7 @@ int main(int argc, char *argv[]) {
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //else
 
@@ -116,7 +120,7 @@ int main(int argc, char *argv[]) {
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent )  system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
@@ -132,7 +136,7 @@ int main(int argc, char *argv[]) {
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
@@ -168,7 +172,7 @@ int main(int argc, char *argv[]) {
 					<< "Utility will end now.</p>" << endl
 					<< "</body>"<<endl<<"</html>";
 			bosslog.close();
-			system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+			if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 			exit (1); //fail in screaming heap.
 		}
 	}
@@ -216,7 +220,7 @@ int main(int argc, char *argv[]) {
 				<< "Utility will end now.</p>" << endl
 				<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //if
 
@@ -250,27 +254,6 @@ int main(int argc, char *argv[]) {
 					modlist.mods.insert(modlist.mods.begin() + newpos, filename);
 					modlist.modmessages.insert(modlist.modmessages.begin() + newpos, messages);
 
-					if (revert<1) {
-						i = userlist.GetRuleIndex(textbuf, "ADD");
-						while (i>-1) {
-							userlist.messages += "\""+userlist.objects[i]+"\" is already in the masterlist. Rule skipped.<br /><br />";
-							int ruleindex,max;
-							for (int j=0;j<(int)userlist.rules.size();j++) {
-								if (i==userlist.rules[j]) {
-									ruleindex = j;
-									break;
-								}
-							}
-							if (ruleindex+1==(int)userlist.rules.size()) max = (int)userlist.keys.size();
-							else max = userlist.rules[ruleindex+1];
-							for (int j=i;j<max;j++) {
-								userlist.keys[j]="";
-								userlist.objects[j]="";
-							}
-							userlist.rules.erase(userlist.rules.begin()+ruleindex);
-							i = userlist.GetRuleIndex(textbuf,"ADD");
-						}
-					}
 					x++;
 				} //if
 				else found=false;
@@ -290,11 +273,18 @@ int main(int argc, char *argv[]) {
 			else end = userlist.rules[i+1];
 			//Go through each line of the rule. The first line is given by keys[start] and objects[start].
 			for (int j=start;j<end;j++) {
-				//A sorting line.
+				//A mod sorting line.
 				if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && IsPlugin(userlist.objects[j])) {
 					vector<string> currentmessages;
 					//Get current mod messages and remove mod from current modlist position.
 					int index1 = modlist.GetModIndex(userlist.objects[start]);
+					// Only increment 'x' if we've taken the 'source' mod from below the 'last-sorted' mark
+					if (userlist.keys[start]=="ADD" && index1 >= x) x++;
+					//If it adds a mod already sorted, skip the rule.
+					else if (userlist.keys[start]=="ADD"  && index1 < x) {
+						userlist.messages += "\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.<br /><br />";
+						break;
+					}
 					string filename = modlist.mods[index1];
 					currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
 					modlist.mods.erase(modlist.mods.begin()+index1);
@@ -305,12 +295,7 @@ int main(int argc, char *argv[]) {
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 					userlist.messages += "\""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " \"" + userlist.objects[j] + "\".<br /><br />";
-
-					// Only increment 'x' if we've taken the 'source' mod from below the 'last-sorted' mark
-					if (userlist.keys[start]=="ADD" && index1 >= x) {
-						x++;
-					}
-
+				//A group sorting line.
 				} else if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && !IsPlugin(userlist.objects[j])) {
 					//Search masterlist for rule group. Once found, search it for mods in modlist, recording the mods that match.
 					//Then search masterlist for sort group. Again, search and record matching modlist mods.
@@ -393,19 +378,18 @@ int main(int argc, char *argv[]) {
 						}
 					}
 					userlist.messages += "The group \""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " the group \"" + userlist.objects[j] + "\".<br /><br />";
-					
+				//A message line.
 				} else if (userlist.keys[j]=="APPEND" || userlist.keys[j]=="REPLACE") {
 					//Look for the modlist line that contains the match mod of the rule.
 					int index = modlist.GetModIndex(userlist.objects[start]);
 					userlist.messages += "\"" + userlist.objects[j] + "\"";
 					if (userlist.keys[j]=="APPEND") {			//Attach the rule message to the mod's messages list.
-						modlist.modmessages[index].push_back(userlist.objects[j]);
 						userlist.messages += " appended to ";
 					} else if (userlist.keys[j]=="REPLACE") {	//Clear the message list and then attach the message.
 						modlist.modmessages[index].clear();
-						modlist.modmessages[index].push_back(userlist.objects[j]);
 						userlist.messages += " replaced ";
 					}
+					modlist.modmessages[index].push_back(userlist.objects[j]);
 					userlist.messages += "messages attached to \"" + userlist.objects[start] + "\".<br /><br />";
 				}
 			}
@@ -477,6 +461,6 @@ int main(int argc, char *argv[]) {
 	//Let people know the program has stopped.
 	bosslog <<"<div><span>Done.</span></div><br /><br />"<<endl<<"</body>"<<endl<<"</html>";
 	bosslog.close();
-	system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+	if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 	return (0);
 }
