@@ -1,9 +1,11 @@
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/qi_no_skip.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/phoenix_fusion.hpp>
 #include <boost/spirit/include/phoenix_stl.hpp>
+#include <boost/spirit/include/phoenix_object.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/variant/recursive_variant.hpp>
 #include <boost/foreach.hpp>
@@ -23,7 +25,7 @@ namespace test {
 	namespace fusion = boost::fusion;
 	namespace phoenix = boost::phoenix;
 	namespace qi = boost::spirit::qi;
-	namespace ascii = boost::spirit::ascii;
+	namespace iso8859_1 = boost::spirit::iso8859_1;
 
 	using qi::lit;
 	using qi::lexeme;
@@ -43,29 +45,42 @@ namespace test {
 	{
 		struct Scope 
 		{
-			enum
+			enum ScopeValue
 			{
 				Always,
 				Fcom				=	'>',
 				NonFcom				=	'<',
 				OOO					=	'$',
 				BC					=	'^',
-			}  value;
+			}; 
+			
+			ScopeValue value;
 
+			Scope() : value(Always) { };
+			Scope(const ScopeValue value) : value(value) { };
+			Scope(const Scope& scope) : value(scope.value) { };
 		};
 	
 		struct Type
 		{
-			enum
+			enum TypeValue
 			{
+				Unknown,
 				Comment				=	'\\',
 				Remark				=	'?',
 				Tags				=	'%',
 				Error				=	'*',	
 				Requirement			=	':',
 				Incompatibility		=	'"',
-			} value;
+			};
 
+
+			TypeValue value;
+
+
+			Type() : value(Unknown) { };
+			Type(const TypeValue value) : value(value) { };
+			Type(const Type& type) : value(type.value) { };
 		};
 	
 		Scope	scope;
@@ -126,7 +141,7 @@ namespace test {
 		void operator()(Rule const& data) const
 		{
 			tab(indent);
-			std::cout << " * RULE " << data.scope << ':' << data.type << " -> " << data.text << std::endl;
+			std::cout << " * RULE " << data.scope.value << ':' << data.type.value << " -> " << data.text << std::endl;
 		}
 
 		int indent;
@@ -254,62 +269,77 @@ namespace test {
 	} rule_type;
 
 
-
 	template <typename Iterator>
+	struct Skipper
+		: qi::grammar<Iterator, void(), iso8859_1::space_type>
+	{
+		Skipper()
+			: Skipper::base_type(start, "skipper")
+		{
+			using qi::eol;
+			using iso8859_1::space;
+
+			start %= space - eol;
+		} 
+
+		qi::rule<Iterator, void(), iso8859_1::space_type> start;
+	};
+
+	template <typename Iterator, typename Skipper>
 	struct Grammar
-		: qi::grammar<Iterator, Masterlist(), ascii::space_type>
+		: qi::grammar<Iterator, Masterlist(), Skipper>
 	{
 		Grammar()
 			: Grammar::base_type(masterlist, "masterlist")
 		{
-			using ascii::char_;
-			using ascii::string;
+			using iso8859_1::char_;
+			using iso8859_1::string;
 			using namespace qi::labels;
+			using qi::on_error;
+			using qi::fail;
+			using phoenix::construct;
+			using phoenix::val;
+			using boost::spirit::no_skip;
 
 			text
-				%=	lexeme[+char_ - eol];
+				%=	lexeme[+char_] > eol;
 
 			mod
-				%=	- comments
-				>>	text 
-				>>	eol
-				>>	rules
+				%=	comments
+				>>	text >	eol
+				>>	-rules
 				;
 
 			mods
-				%=	mod 
-				%	eol
+				%=	mod % eol
 				;
 
 			rule
-				%=	- comments
-				>>	(rule_scope | lit(Rule::Always))
+				%=	comments
+				>>	-rule_scope
 				>>	rule_type
 				>>	text
 				;
 
 			rules		
-				%=	rule 
-				%	eol
+				%=	rule % eol
 				;
 
 			group		
-				%=	- comments
-				>>	begin_group
+				%=	comments
+				>	begin_group > eol
 				>>	mods
-				>>	end_group
+				>	end_group	> eol
 				;
 
 			groups		
-				%=	group 
-				%	eol
+				%=	group % eol
 				;
 
 			masterlist 
-				%= - comments
+				%=  comments
 				>>	groups
-				>> - comments
-				>> eoi
+				>>  comments
 				;
 
 			comment	
@@ -320,42 +350,174 @@ namespace test {
 				;
 
 			comments 
-				%=	*comment
-				>>	-eol
+				%=	comment % eol
 				;
 
 
 			begin_group	
 				%=	lit('\\')
-				>> 	lit("BeginGroup")
-				>> 	lit('\\')
-				>> 	lit(':')
+				> 	lit("BeginGroup")
+				> 	lit('\\')
+				> 	lit(':')
 				>>	text
-				>>	eol
 				;
 
 			end_group	
 				%=	lit('\\')
-				>> 	lit("EndGroup")
+				> 	lit("EndGroup")
 				>>	+lit('\\')
-				>> 	lit(':')
-				>>	eol
+				> 	lit(':')
 				;
+
+
+			masterlist.name("MASTERLIST");
+			text.name("TEXT");
+			comments.name("COMMENTS");
+			comment.name("COMMENT");
+			mods.name("MODS");
+			mod.name("MOD");
+			rules.name("RULES");
+			rule.name("RULE");
+			groups.name("GROUPS");
+			end_group.name("GROUP END");
+			begin_group.name("GROUP START");
+			group.name("GROUP");
+
+
+			on_error<fail>(masterlist, 
+				std::cout
+				<< val("Error! Expecting ")
+				<< _4 // what failed?
+				<< val(" here: \"")
+				<< construct<std::string>(_3, _2) // iterators to error-pos, end
+				<< val("\"")
+				<< std::endl
+				);
+
+			on_error<fail>(rule, 
+				std::cout
+				<< val("Error! Expecting ")
+				<< _4 // what failed?
+				<< val(" here: \"")
+				<< construct<std::string>(_3, _2) // iterators to error-pos, end
+				<< val("\"")
+				<< std::endl
+				);
+
+			on_error<fail>(rules, 
+				std::cout
+				<< val("Error! Expecting ")
+				<< _4 // what failed?
+				<< val(" here: \"")
+				<< construct<std::string>(_3, _2) // iterators to error-pos, end
+				<< val("\"")
+				<< std::endl
+				);
+
+			on_error<fail>(mod, 
+				std::cout
+				<< val("Error! Expecting ")
+				<< _4 // what failed?
+				<< val(" here: \"")
+				<< construct<std::string>(_3, _2) // iterators to error-pos, end
+				<< val("\"")
+				<< std::endl
+				);
+
+			on_error<fail>(mods, 
+				std::cout
+				<< val("Error! Expecting ")
+				<< _4 // what failed?
+				<< val(" here: \"")
+				<< construct<std::string>(_3, _2) // iterators to error-pos, end
+				<< val("\"")
+				<< std::endl
+				);
+
+			on_error<fail>(group, 
+				std::cout
+				<< val("Error! Expecting ")
+				<< _4 // what failed?
+				<< val(" here: \"")
+				<< construct<std::string>(_3, _2) // iterators to error-pos, end
+				<< val("\"")
+				<< std::endl
+				);
+
+			on_error<fail>(groups, 
+				std::cout
+				<< val("Error! Expecting ")
+				<< _4 // what failed?
+				<< val(" here: \"")
+				<< construct<std::string>(_3, _2) // iterators to error-pos, end
+				<< val("\"")
+				<< std::endl
+				);
+
+			on_error<fail>(begin_group, 
+				std::cout
+				<< val("Error! Expecting ")
+				<< _4 // what failed?
+				<< val(" here: \"")
+				<< construct<std::string>(_3, _2) // iterators to error-pos, end
+				<< val("\"")
+				<< std::endl
+				);
+
+			on_error<fail>(end_group, 
+				std::cout
+				<< val("Error! Expecting ")
+				<< _4 // what failed?
+				<< val(" here: \"")
+				<< construct<std::string>(_3, _2) // iterators to error-pos, end
+				<< val("\"")
+				<< std::endl
+				);
+
+			on_error<fail>(comment, 
+				std::cout
+				<< val("Error! Expecting ")
+				<< _4 // what failed?
+				<< val(" here: \"")
+				<< construct<std::string>(_3, _2) // iterators to error-pos, end
+				<< val("\"")
+				<< std::endl
+				);
+
+			on_error<fail>(comments, 
+				std::cout
+				<< val("Error! Expecting ")
+				<< _4 // what failed?
+				<< val(" here: \"")
+				<< construct<std::string>(_3, _2) // iterators to error-pos, end
+				<< val("\"")
+				<< std::endl
+				);
+
+			on_error<fail>(text, 
+				std::cout
+				<< val("Error! Expecting ")
+				<< _4 // what failed?
+				<< val(" here: \"")
+				<< construct<std::string>(_3, _2) // iterators to error-pos, end
+				<< val("\"")
+				<< std::endl
+				);
 
 		}
 
-		qi::rule<Iterator, Masterlist(), ascii::space_type> masterlist;
-		qi::rule<Iterator, Rule(), ascii::space_type> rule;
-		qi::rule<Iterator, std::vector<Rule>(), ascii::space_type> rules;
-		qi::rule<Iterator, Mod(), ascii::space_type> mod;
-		qi::rule<Iterator, std::vector<Mod>(), ascii::space_type> mods;
-		qi::rule<Iterator, Group(), ascii::space_type> group;
-		qi::rule<Iterator, std::vector<Group>(), ascii::space_type> groups;
-		qi::rule<Iterator, std::string(), ascii::space_type> text;
-		qi::rule<Iterator, void(), ascii::space_type> comment;
-		qi::rule<Iterator, void(), ascii::space_type> comments;
-		qi::rule<Iterator, std::string(), ascii::space_type> begin_group;
-		qi::rule<Iterator, void(), ascii::space_type> end_group;
+		qi::rule<Iterator, Masterlist(), Skipper> masterlist;
+		qi::rule<Iterator, Rule()> rule;
+		qi::rule<Iterator, std::vector<Rule>()> rules;
+		qi::rule<Iterator, Mod()> mod;
+		qi::rule<Iterator, std::vector<Mod>()> mods;
+		qi::rule<Iterator, Group()> group;
+		qi::rule<Iterator, std::vector<Group>()> groups;
+		qi::rule<Iterator, std::string()> text;
+		qi::rule<Iterator, void()> comment;
+		qi::rule<Iterator, void()> comments;
+		qi::rule<Iterator, std::string()> begin_group;
+		qi::rule<Iterator, void()> end_group;
 	};
 };
 
@@ -366,13 +528,13 @@ namespace test {
 
 int main(int argc, char* argv[])
 {
-
 	//namespace fusion = boost::fusion;
 	//namespace phoenix = boost::phoenix;
+	namespace iso8859_1 = boost::spirit::iso8859_1;
 	namespace qi = boost::spirit::qi;
-	//namespace ascii = boost::spirit::ascii;
 
 	using qi::eol;
+	using iso8859_1::space;
 
 	char const* filename;
 	if (argc > 1)
@@ -400,14 +562,16 @@ int main(int argc, char* argv[])
 		std::istream_iterator<char>(),
 		std::back_inserter(storage));
 
-	typedef test::Grammar<std::string::const_iterator> Grammar;
+	typedef test::Skipper<std::string::const_iterator> Skipper;
+	typedef test::Grammar<std::string::const_iterator, qi::space_type> Grammar;
+
 	Grammar grammar; // Our grammar
+	Skipper skipper; // Our grammar
 	test::Masterlist data; // Our tree
 
-	using boost::spirit::ascii::space;
 	std::string::const_iterator iter = storage.begin();
 	std::string::const_iterator end = storage.end();
-	bool r = phrase_parse(iter, end, grammar, space - eol, data);
+	bool r = phrase_parse(iter, end, grammar, qi::space, data);
 
 	if (r && iter == end)
 	{
