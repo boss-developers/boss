@@ -33,6 +33,9 @@
     <ClInclude Include="Updater.h" />
     <ClInclude Include="Userlist.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BOSS_version.rc" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5414EFAE-A1AB-477F-8897-3C99131B634D}</ProjectGuid>
     <RootNamespace>BOSSOblivion</RootNamespace>
@@ -100,6 +103,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)curl\lib\Release;$(SolutionDir)boost\stage\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>libcurl.lib;winmm.lib;wldap32.lib;ws2_32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>1.6.1</Version>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
