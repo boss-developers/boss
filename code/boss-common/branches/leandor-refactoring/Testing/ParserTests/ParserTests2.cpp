@@ -1,7 +1,9 @@
 
 #define BOOST_SPIRIT_ASSERT_EXCEPTION
 #define	BOOST_SPIRIT_DEBUG
+
 #define	BOOST_SPIRIT_DEBUG_TRACENODE
+#define BOOST_SPIRIT_DEBUG_OUT std::cout
 
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/qi.hpp>
@@ -66,8 +68,10 @@ namespace test {
 				= space - eol;
 
 			comment	
-				=	lit("\\") >> -string
-				;
+				=	lit("\\") 
+				>>	!lit("BeginGroup")
+				>>	!lit("EndGroup")
+				>> -string
 				;
 
 			comments
@@ -101,32 +105,132 @@ namespace test {
 
 	// Real grammar
 
-	typedef std::string text_type;
-	typedef std::vector<text_type> masterlist_type;
+	typedef 
+		std::string 
+		mod_type;
 
+	struct Group;
 
-	void print_text(std::string const& x)
+	typedef 
+		Group 
+		group_type;
+
+	typedef
+		boost::variant<
+				boost::recursive_wrapper<group_type>
+			,	mod_type
+			>
+		node_type;
+
+	typedef 
+		std::vector<node_type> 
+		nodes_type;
+
+	struct Group
 	{
-		std::cout << x << std::endl;
+		string name;
+		nodes_type nodes;
+	};
+
+	typedef 
+		std::vector<group_type> 
+		groups_type;
+
+	typedef 
+		groups_type 
+		masterlist_type;
+
+};
+
+namespace test {
+
+	int const tabsize = 4;
+
+	void tab(int indent)
+	{
+		for (int i = 0; i < indent; ++i)
+			std::cout << ' ';
 	}
 
-	void print(masterlist_type const& x)
+	struct group_printer
 	{
-		for (masterlist_type::const_iterator it = x.begin(); it != x.end(); it++)
+		group_printer(int indent = 0)
+			: indent(indent)
 		{
-			print_text(*it);
+		}
+
+		void operator()(group_type const& group) const;
+
+		int indent;
+	};
+
+	struct node_printer : boost::static_visitor<>
+	{
+		node_printer(int indent = 0)
+			: indent(indent)
+		{
+		}
+
+		void operator()(group_type const& group) const
+		{
+			group_printer(indent+tabsize)(group);
+		}
+
+		void operator()(mod_type const& mod) const
+		{
+			tab(indent+tabsize);
+			std::cout << "mod: \"" << mod << '"' << std::endl;
+		}
+
+		int indent;
+	};
+
+	void group_printer::operator()(group_type const& group) const
+	{
+		tab(indent);
+		std::cout << "group: " << group.name << std::endl;
+		tab(indent);
+		std::cout << "begin" << std::endl;
+
+		BOOST_FOREACH(node_type const& node, group.nodes)
+		{
+			boost::apply_visitor(node_printer(indent), node);
+		}
+
+		tab(indent);
+		std::cout << "end" << std::endl;
+	}
+
+	void print(groups_type const& groups)
+	{
+		group_printer printer;
+
+		BOOST_FOREACH(group_type const& group, groups)
+		{
+			printer(group);
 		}
 	}
+};
+
+BOOST_FUSION_ADAPT_STRUCT(
+	test::Group,
+	(std::string, name)
+	(test::nodes_type, nodes)
+	)
+
+
+namespace test {
 
 	template <typename Iterator, typename Skipper>
 	struct Grammar
-		: qi::grammar<Iterator, masterlist_type(), Skipper>
+		: qi::grammar<Iterator, groups_type(), Skipper>
 	{
 		Grammar()
 			: Grammar::base_type(masterlist, "masterlist")
 		{
 			using iso8859_1::char_;
 			using namespace qi::labels;
+			using qi::space;
 			using qi::on_error;
 			using qi::fail;
 			using qi::no_skip;
@@ -134,24 +238,77 @@ namespace test {
 			using phoenix::val;
 
 			text
-				%=	*eol >> no_skip[string[&test::print_text]];
+				%=	skip[string];
 
 			masterlist 
-				%=  text % eol >> *eol
+				%=  group % eol >> *eol
 				;
 
 			string
 				=	+(char_ - eol)
 				;
 
+			mod %=	!endgroup 
+				>>	!begingroup
+				>>	text;
+
+			//mods 
+			//	%=	mod % eol >> -eol;
+
+			node
+				%=	*eol 
+				>>	(
+						group
+					|	mod
+					)
+				;
+
+			nodes
+				%=	node % eol >> *eol
+				;
+
+			begingroup 
+				%=	lit("\\BeginGroup\\:")
+				>>	text 
+				>	eol
+				;
+
+			endgroup
+				=	lit("\\EndGroup\\\\");
+
+			group
+				%=	*eol
+				>>	begingroup
+				>>	nodes
+				>	endgroup
+				;
+
+			//groups 
+			//	%= group % eol >> -eol
+			//	;
 
 			masterlist.name("masterlist");
 			string.name("string");
 			text.name("text");
+			mod.name("mod");
+			//mods.name("mods");
+			group.name("group");
+			node.name("node");
+			nodes.name("nodes");
+			begingroup.name("begin_group");
+			endgroup.name("end_group");
 
-			//debug(masterlist);
-			//debug(string);
-			//debug(text);
+			debug(masterlist);
+			debug(group);
+			//debug(groups);
+			debug(nodes);
+			debug(node);
+			debug(begingroup);
+			debug(endgroup);
+			debug(string);
+			debug(text);
+			//debug(mods);
+			debug(mod);
 
 			on_error<fail>(masterlist, 
 				std::cout
@@ -175,8 +332,16 @@ namespace test {
 		}
 
 		qi::rule<Iterator, masterlist_type(), Skipper> masterlist;
-		qi::rule<Iterator, std::string()> string;
-		qi::rule<Iterator, text_type()> text;
+		qi::rule<Iterator, std::string(), Skipper> string;
+		qi::rule<Iterator, std::string(), Skipper> text;
+		qi::rule<Iterator, mod_type(), Skipper> mod;
+		//qi::rule<Iterator, mods_type()> mods;
+		qi::rule<Iterator, node_type(), Skipper> node;
+		qi::rule<Iterator, nodes_type(), Skipper> nodes;
+		qi::rule<Iterator, group_type(), Skipper> group;
+		//qi::rule<Iterator, groups_type()> groups;
+		qi::rule<Iterator, std::string(), Skipper> begingroup;
+		qi::rule<Iterator, Skipper> endgroup;
 	};
 };
 
@@ -225,7 +390,7 @@ int main(int argc, char* argv[])
 	Grammar grammar; // Our grammar
 	Skipper skipper; // Our skipper
 
-	test::masterlist_type data;
+	test::groups_type data;
 
 	std::string::const_iterator iter = storage.begin();
 	std::string::const_iterator end = storage.end();
