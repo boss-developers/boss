@@ -236,9 +236,11 @@ int main(int argc, char *argv[]) {
 
 					const string& filename = isghost ? textbuf+".ghost" : textbuf;
 
-					found=true;
-
 					int i = modlist.GetModIndex(filename);
+					if (i < 0 || i >= modlist.mods.size())
+						continue;
+					
+					found=true;
 
 					// Save current mod's messages for later
 					vector<string> messages = modlist.modmessages[i];
