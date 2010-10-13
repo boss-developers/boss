@@ -9,12 +9,15 @@
 	$Revision: 1437 $, $Date: 2010-08-31 22:22:32 +0100 (Tue, 31 Aug 2010) $
 */
 
+#include <boost/algorithm/string.hpp>
 #include "Userlist.h"
 
 namespace fs = boost::filesystem;
 
 namespace boss {
 	using namespace std;
+	using boost::algorithm::to_lower_copy;
+	using boost::algorithm::to_lower;
 
 	//Date comparison, used for sorting mods in modlist class.
 	bool SortByDate(string mod1,string mod2) {
@@ -32,6 +35,7 @@ namespace boss {
 
 	//Checks if a given object is an esp, an esm or a ghosted mod.
 	bool IsPlugin(string object) {
+		to_lower(object);
 		return (object.find(".esp")!=string::npos || object.find(".esm")!=string::npos);
 	}
 
@@ -151,8 +155,10 @@ namespace boss {
 		fs::path p(".");
 		if (fs::is_directory(p)) {
 			for (fs::directory_iterator itr(p); itr!=fs::directory_iterator(); ++itr) {
-				if (fs::is_regular_file(itr->status()) && (fs::extension(itr->filename())==".esp" || fs::extension(itr->filename())==".esm" || fs::extension(itr->filename())==".ghost")) {
-					mods.push_back(itr->filename());
+				const string filename = itr->filename();
+				const string ext = to_lower_copy(fs::extension(filename));
+				if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
+					mods.push_back(filename);
 				}
 			}
 		}
