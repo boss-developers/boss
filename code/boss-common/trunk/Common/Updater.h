@@ -17,10 +17,11 @@
 #include <curl/types.h>
 #include <curl/easy.h>
 #include "boost/filesystem.hpp"
+#include "Globals.h"
 
 namespace boss {
 
-	int UpdateMasterlist(int game);
+	void UpdateMasterlist(int game);
 
 }
 

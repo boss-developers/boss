@@ -187,12 +187,12 @@
 		<br />
 		<li><b>Message:</b> Error: Masterlist update failed.<div style="height:0.65em;"></div>
 		<ul>
-			<li><b>Issue:</b> No Internet connection.</li>
-			<li><b>Solution:</b> Double-check that your Internet connection is working, and try again.</li>
-			<li><b>Issue:</b> Your masterlist.txt cannot be written to.</li>
+			<li><b>Issue:</b> Masterlist cannot be opened.</li>
 			<li><b>Solution:</b> Make sure that your BOSS folder (and masterlist.txt if it exists) is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
-			<li><b>Issue:</b> The masterlist is not available at Google Code.</li>
-			<li><b>Solution:</b> Check the official forum thread for any information as to why the masterlist is not available. You can also check the Google Code repository to see if Google has posted any messages about maintenance that might result in the repository being unavailable.</li>
+			<li><b>Issue:</b> Curl error.</li>
+			<li><b>Solution:</b> There was a problem in getting information from the Internet. Depending on the error given, make sure your Internet connection is working correctly, or try again later.</li>
+			<li><b>Issue:</b> Cannot find online masterlist revision number.</li>
+			<li><b>Solution:</b> The layout of the Google Code page has changed, and a program update will be required to take account of this. Please report this issue in the official forum thread.</li>
 		</ul>
 		</li>
 		<br />
@@ -298,7 +298,7 @@
 	<div><b>Source Code Developers</b>
 	<ul>
 		<li>Alithelord</li>
-		<li>leandor</li>
+		<li>Leandro Conde</li>
 		<li>Leus</li>
 		<li>PacificMorrowind</li>
 		<li>WrinklyNinja</li>
@@ -321,7 +321,7 @@
 	<p><a href="http://www.tesnexus.com/downloads/file.php?id=20516">BOSS on TES Nexus</a></p>
 	<p><a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">BOSS on Fallout 3 Nexus</a></p>
 	<p><a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code SVN repository</a></p>
-	<p><a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=1117093">Bethesda Game Studios Oblivion Mods Forum BOSS thread</a></p>
+	<p><a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=1119720">Bethesda Game Studios Oblivion Mods Forum BOSS thread</a></p>
 	<p><a href="http://www.bethsoft.com/bgsforums/index.php?showtopic=1098111">Bethesda Game Studios Fallout 3 Mods Forum BOSS thread</a></p>
 	<p><a href="http://www.tesnexus.com/downloads/file.php?id=29790">BOSS Master List Manager</a></p>
 	<p><a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative Commons Attribution Noncommercial No Derivative Works 3.0 Unported Copyright License</a></p>
@@ -332,6 +332,16 @@
 	
 	<div id="history"><span>Version History</span>
 	<p>Only updates to the BOSS program are recorded here, not masterlist updates, as that is update far too frequently to be concisely recorded. A full record of changes made to the masterlist may be viewed by browsing the Google Code repository.</p>
+	<p><b>Version 1.61</b></p>
+	<ul>
+		<li>Added silent -s command line switch to suppress the automatic opening of the BOSSlog when BOSS is run.</li>
+		<li>Added version info to BOSS.exe to make Wrye Bash integration/debugging easier.</li>
+		<li>Fixed non-lowercase plugin extensions not being recognised and causing crashes and load order mistakes.</li>
+		<li>Fixed a potential bug with the masterlist updater causing memory issues.</li>
+		<li>Fixed several compiler warnings when compiling on Linux.</li>
+		<li>Increased timout delay for the masterlist updater to prevent the updater failing when Google Code is slow.</li>
+		<li>Reworked masterlist updater error reporting to be more verbose, and to take messages directly from curl when curl fails.</li>
+	</ul>
 	<p><b>Version 1.6</b></p>
 	<ul>
 		<li>Added Fallout Wanderers Edition (FWE) specific message type for the Fallout 3 masterlist.</li>
@@ -350,7 +360,7 @@
 		<li>Improved portability of source code.</li>
 		<li>Merged BOSS and BOSS-F source code, allowing one EXE to support both Oblivion and Fallout 3.</li>
 		<li>Major refactoring and rewrite of BOSS source code, resulting in a significant performance improvement.</li>
-		</ul>
+	</ul>
 	<p><b>Version 1.51</b></p>
 	<ul>
 		<li>Added OOO-specific message type.</li>
