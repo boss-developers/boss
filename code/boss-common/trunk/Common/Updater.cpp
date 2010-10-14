@@ -44,6 +44,7 @@ namespace boss {
 		if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
 		else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
 		else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/masterlist.txt";
+		else return -1;
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
@@ -59,6 +60,7 @@ namespace boss {
 		if (game == 1) start = revision.find("boss-oblivion");
 		else if (game == 2) start = revision.find("boss-fallout");
 		else if (game == 3) start = revision.find("boss-nehrim");
+		else return -1;
 		start = revision.find("KB\",\"", start) + 5; 
 		end = revision.find("\"",start) - start;
 		revision = revision.substr(start,end);
@@ -83,7 +85,7 @@ namespace boss {
 		//Change url and data structure settings, writefunction setting is retained.
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
-		curl_easy_setopt(curl, CURLOPT_CRLF);
+		curl_easy_setopt(curl, CURLOPT_CRLF, 1);
 		if (curl_easy_perform(curl)!=0) return -1; //If download fails, exit with a failure.
 
 		//Clean up and close curl handle now that it's finished with.
@@ -100,4 +102,4 @@ namespace boss {
 		//Return revision number.
 		return atoi(revision.c_str());
 	}
-};
+}

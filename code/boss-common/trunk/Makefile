@@ -1,18 +1,39 @@
-#Makefile for use in Linux
+#
+# Makefile for use in Linux
+#
+# build requirements: boost, curl
 
-CC      = g++
 
-C_FLAGS = -Wall -Wshadow -Wformat-security -Wpointer-arith -Wcast-align -Wredundant-decls
+#
+# Variables
+#
 
-C_FILES = Common/BOSS.cpp Common/Globals.cpp Common/Masterlist.cpp Common/Sorting.cpp Common/Updater.cpp Common/Userlist.cpp \
-          Support/VersionRegex.cpp Support/ModFormat.cpp Support/Helpers.cpp
+TARGET = BOSS
 
-O_FILES = $(C_FILES:.cpp=.o)
+SRCS := $(wildcard Common/*cpp) $(wildcard Support/*cpp)
+OBJS := $(SRCS:.cpp=.o)
+DEPS := $(SRCS:.cpp=.d)
 
-.cpp.o:
-	$(CC) $(C_FLAGS) -c $<
+CXX      := g++
+CXXFLAGS := -O2 -pipe -Wall -Wno-multichar
+LIBS     := boost_system boost_regex boost_filesystem curl
 
-all: boss
 
-boss: $(O_FILES)
-	$(CC) -o BOSS $(O_FILES)
+#
+# Targets
+#
+
+.PHONY: all clean
+
+all: $(TARGET)
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -MMD -MP -MF $(<:.cpp=.d) -o $@ -c $<
+
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $(addprefix -l,$(LIBS)) $^
+
+clean:
+	$(RM) $(TARGET) $(OBJS) $(DEPS)
+
+-include $(DEPS)

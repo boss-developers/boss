@@ -20,7 +20,7 @@ namespace boss {
 
 	/// Array used to try each of the expressions defined above using 
 	/// an iteration for each of them.
-	regex* version_checks[];
+	extern regex* version_checks[];
 
 };
 

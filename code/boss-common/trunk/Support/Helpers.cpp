@@ -126,7 +126,7 @@ namespace boss {
 	}
 
 	string Tidy(string filename) {						//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
-		int endpos = filename.find_last_not_of(" \t");
+		size_t endpos = filename.find_last_not_of(" \t");
 	
 		if (filename.npos == endpos) return (""); 			//sanity check for empty string
 		else {

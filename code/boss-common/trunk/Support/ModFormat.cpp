@@ -53,7 +53,7 @@ namespace boss {
 		}
 
 		// Next field is the total header size
-		ulong headerSize = Read<ulong>(bufptr);
+		/*ulong headerSize =*/ Read<ulong>(bufptr);
 
 		// Next comes the header record Flags
 		ulong flags = Read<ulong>(bufptr);
@@ -75,10 +75,10 @@ namespace boss {
 	
 		// HEDR record has fields: DataSize, Version (0.8 o 1.0), Record Count 
 		//	and Next Object Id
-		ushort dataSize = Read<ushort>(bufptr);
-		float version = Read<float>(bufptr);
-		long numRecords = Read<long>(bufptr);
-		ulong nextObjId = Read<ulong>(bufptr);
+		/*ushort dataSize =*/ Read<ushort>(bufptr);
+		/*float version =*/ Read<float>(bufptr);
+		/*long numRecords =*/ Read<long>(bufptr);
+		/*ulong nextObjId =*/ Read<ulong>(bufptr);
 
 		// Then comes the sub-records
 		ulong signature = Read<ulong>(bufptr);

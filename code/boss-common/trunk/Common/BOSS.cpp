@@ -39,6 +39,7 @@ int main(int argc, char *argv[]) {
 	bool isghost;					//Is the file ghosted or not?
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
 	int revert=0;					//What level to revert to?
+	int system_ret;                 //records the return value of system() calls
 
 	//Parse command line arguments.
 	if (argc > 1) {
@@ -110,7 +111,7 @@ int main(int argc, char *argv[]) {
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent ) system_ret = system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //else
 
@@ -120,7 +121,7 @@ int main(int argc, char *argv[]) {
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		if ( !silent )  system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent ) system_ret = system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
@@ -136,7 +137,7 @@ int main(int argc, char *argv[]) {
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent ) system_ret = system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
@@ -172,7 +173,7 @@ int main(int argc, char *argv[]) {
 					<< "Utility will end now.</p>" << endl
 					<< "</body>"<<endl<<"</html>";
 			bosslog.close();
-			if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+			if ( !silent ) system_ret = system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 			exit (1); //fail in screaming heap.
 		}
 	}
@@ -220,7 +221,7 @@ int main(int argc, char *argv[]) {
 				<< "Utility will end now.</p>" << endl
 				<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent ) system_ret = system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //if
 
@@ -307,7 +308,7 @@ int main(int argc, char *argv[]) {
 
 					order.open("BOSS\\masterlist.txt");
 					int count=0;
-					bool lookforrulemods,lookforsortmods;
+					bool lookforrulemods=false,lookforsortmods=false;
 					vector<string> rulemods,sortmods,currentmessages;
 					while (!order.eof()) {					
 						textbuf=ReadLine("order");
@@ -432,7 +433,7 @@ int main(int argc, char *argv[]) {
 		if (modlist.modmessages[i].size()>0) {
 			bosslog << endl << "<ul>" << endl;
 			for (int j=0;j<(int)modlist.modmessages[i].size();j++) {
-				ShowMessage(modlist.modmessages[i][j], fcom, ooo, bc, game);		//Deal with message lines here.
+				ShowMessage(modlist.modmessages[i][j], game);		//Deal with message lines here.
 			}
 			bosslog << "</ul>" << endl;
 		}
@@ -463,6 +464,6 @@ int main(int argc, char *argv[]) {
 	//Let people know the program has stopped.
 	bosslog <<"<div><span>Done.</span></div><br /><br />"<<endl<<"</body>"<<endl<<"</html>";
 	bosslog.close();
-	if ( !silent ) system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+	if ( !silent ) system_ret = system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
 	return (0);
 }

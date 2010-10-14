@@ -20,7 +20,7 @@
 namespace boss {
 	using namespace std;
 
-	void ShowMessage(string textbuf, bool fcom, bool ooo, bool bc, int game) {
+	void ShowMessage(string textbuf, int game) {
 		switch (textbuf[0]) {	
 		case '*':
 			if (fcom && game == 1) bosslog << "<li class='error'>!!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
