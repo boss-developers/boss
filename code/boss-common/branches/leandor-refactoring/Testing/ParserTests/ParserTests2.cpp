@@ -223,7 +223,7 @@ namespace test {
 
 	template <typename Iterator, typename Skipper>
 	struct Grammar
-		: qi::grammar<Iterator, groups_type(), Skipper>
+		: qi::grammar<Iterator, masterlist_type(), Skipper>
 	{
 		Grammar()
 			: Grammar::base_type(masterlist, "masterlist")
@@ -232,20 +232,21 @@ namespace test {
 			using namespace qi::labels;
 			using qi::space;
 			using qi::on_error;
+			using qi::eps;
 			using qi::fail;
 			using qi::no_skip;
 			using phoenix::construct;
 			using phoenix::val;
 
 			text
-				%=	skip[string];
+				%=	skip[eps] >> string;
 
 			masterlist 
 				%=  group % eol >> *eol
 				;
 
 			string
-				=	+(char_ - eol)
+				=	no_skip[+(char_ - eol)]
 				;
 
 			mod %=	!endgroup 
