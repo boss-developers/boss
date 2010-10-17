@@ -31,8 +31,6 @@ namespace boss {
 		return result;
 	} 
 
-	//Note on errors: they will be passed to main() as negative return values. Values from -1->-76 are curl error codes.
-	//These will be turned into error strings after being made positive. Values < -76 are other errors, which are explicitly defined in the function.
 	void UpdateMasterlist(int game) {
 		const char *url;							//Masterlist file url
 		char cbuffer[4096];

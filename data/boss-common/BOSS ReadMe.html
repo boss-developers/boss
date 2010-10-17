@@ -331,14 +331,14 @@
 	</div><br /><br />
 	
 	<div id="history"><span>Version History</span>
-	<p>Only updates to the BOSS program are recorded here, not masterlist updates, as that is update far too frequently to be concisely recorded. A full record of changes made to the masterlist may be viewed by browsing the Google Code repository.</p>
+	<p>Only updates to the BOSS program are recorded here, not masterlist updates, as that is updated far too frequently to be concisely recorded. A full record of changes made to the masterlist may be viewed by browsing the Google Code repository.</p>
 	<p><b>Version 1.61</b></p>
 	<ul>
 		<li>Added silent -s command line switch to suppress the automatic opening of the BOSSlog when BOSS is run.</li>
 		<li>Added version info to BOSS.exe to make Wrye Bash integration/debugging easier.</li>
 		<li>Fixed non-lowercase plugin extensions not being recognised and causing crashes and load order mistakes.</li>
 		<li>Fixed a potential bug with the masterlist updater causing memory issues.</li>
-		<li>Fixed several compiler warnings when compiling on Linux.</li>
+		<li>Fixed several compiler warnings when compiling on Linux. NOTE: BOSS doesn't run natively on Linux, despite this change.</li>
 		<li>Increased timout delay for the masterlist updater to prevent the updater failing when Google Code is slow.</li>
 		<li>Reworked masterlist updater error reporting to be more verbose, and to take messages directly from curl when curl fails.</li>
 	</ul>
