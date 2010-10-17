@@ -9,13 +9,15 @@
 	$Revision$, $Date$
 */
 
+
+#include "Globals.h"
+#include "Sorting.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <time.h>
 
-#include "Globals.h"
-#include "Sorting.h"
 
 namespace boss {
 	using namespace std;
@@ -88,4 +90,4 @@ namespace boss {
 
 		return out.str();
 	}
-};
+}

@@ -9,13 +9,10 @@
 	$Revision$, $Date$
 */
 
-#ifdef WIN32
-#include <Support/Helpers.h>
-#else
-#include "../Support/Helpers.h"
-#endif
 
+#include "Support/Helpers.h"
 #include "Masterlist.h"
+
 
 namespace boss {
 

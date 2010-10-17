@@ -19,4 +19,4 @@ namespace boss {
 	bool fcom;					//true if key FCOM or FOOK2 files are found.
 	bool ooo;                   	//true if OOO or FWE esm is found.
 	bool bc;                        	//true if Better Cities esm is found.
-};
+}

@@ -9,24 +9,20 @@
 	$Revision$, $Date$
 */
 
+
+#include "Types.h"
+#include "Helpers.h"
+#include "VersionRegex.h"
+
+#include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include <ctype.h>
 #include <stdio.h>
 #include <time.h>
 #include <sys/types.h>
 #include <sstream>
 
-#include <boost/regex.hpp>
-#include <boost/algorithm/string.hpp>
-
-#ifdef WIN32
-#include <Support/Types.h>
-#include <Support/Helpers.h>
-#include <Support/VersionRegex.h>
-#else
-#include "../Support/Types.h"
-#include "../Support/Helpers.h"
-#include "../Support/VersionRegex.h"
-#endif
 
 namespace boss {
 	using namespace std;
@@ -135,4 +131,4 @@ namespace boss {
 			return (filename);
 		}
 	}
-};
+}

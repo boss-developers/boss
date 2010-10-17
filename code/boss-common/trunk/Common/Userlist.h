@@ -6,7 +6,7 @@
     Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
     http://creativecommons.org/licenses/by-nc-nd/3.0/
 
-	$Revision: 1284 $, $Date: 2010-08-05 03:43:59 +0100 (Thu, 05 Aug 2010) $
+	$Revision$, $Date$
 */
 
 //This is the start of implementing userlist and modlist classes into trunk. 
@@ -15,16 +15,14 @@
 #ifndef __BOSS_USERLIST_H__
 #define __BOSS_USERLIST_H__
 
+
+#include "Support/Helpers.h"
+
 #include <string>
 #include <fstream>
 #include <vector>
 #include "boost/filesystem.hpp"
 
-#ifdef WIN32
-#include <Support/Helpers.h>
-#else
-#include "../Support/Helpers.h"
-#endif
 
 namespace boss {
 	using namespace std;

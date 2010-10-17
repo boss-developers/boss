@@ -3,17 +3,20 @@
 	Quick and Dirty Load Order Utility
 	(Making C++ look like the scripting language it isn't.)
 
-    Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
-    http://creativecommons.org/licenses/by-nc-nd/3.0/
+	Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
+	http://creativecommons.org/licenses/by-nc-nd/3.0/
 
 	$Revision$, $Date$
 */
+
+
+#include "Updater.h"
 
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "Updater.h"
+
 
 namespace boss {
 	namespace fs = boost::filesystem;
@@ -49,6 +52,11 @@ namespace boss {
 		if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
 		else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
 		else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/masterlist.txt";
+		else {
+			cout << "Error: invalid setting for 'game': " << game << endl;
+			bosslog << "Error: invalid setting for 'game': " << game << "<br />" << endl;
+			return;
+		}
 		
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();

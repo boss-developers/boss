@@ -6,13 +6,16 @@
     Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
     http://creativecommons.org/licenses/by-nc-nd/3.0/
 
-	$Revision: 1437 $, $Date: 2010-08-31 22:22:32 +0100 (Tue, 31 Aug 2010) $
+	$Revision$, $Date$
 */
 
-#include <boost/algorithm/string.hpp>
+
 #include "Userlist.h"
+#include <boost/algorithm/string.hpp>
+
 
 namespace fs = boost::filesystem;
+
 
 namespace boss {
 	using namespace std;

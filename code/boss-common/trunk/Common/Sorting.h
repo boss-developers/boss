@@ -12,21 +12,17 @@
 #ifndef __BOSS_SORTING_H__
 #define __BOSS_SORTING_H__
 
-#include <string>
-
-#ifdef WIN32
-#include <Support/Types.h>
-#include <Support/ModFormat.h>
-#include <Support/Helpers.h>
-#else
-#include "../Support/Types.h"
-#include "../Support/ModFormat.h"
-#include "../Support/Helpers.h"
-#endif
 
 #include "Globals.h"
 #include "Updater.h"
 #include "Masterlist.h"
+
+#include "Support/Types.h"
+#include "Support/ModFormat.h"
+#include "Support/Helpers.h"
+
+#include <string>
+
 
 namespace boss {
 	using namespace std;
@@ -42,5 +38,6 @@ namespace boss {
 	/// GetModHeader(string textbuf):
 	///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
 	string GetModHeader(const string& filename, bool ghosted);
-};
+}
+
 #endif

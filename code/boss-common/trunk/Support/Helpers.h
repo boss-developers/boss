@@ -12,14 +12,12 @@
 #ifndef __SUPPORT_HELPERS__HPP__
 #define __SUPPORT_HELPERS__HPP__
 
+
+#include "Types.h"
+
 #include <cstring>
 #include <iostream>
 
-#ifdef WIN32
-#include <Support/Types.h>
-#else
-#include "../Support/Types.h"
-#endif
 
 namespace boss {
 	using namespace std;
@@ -82,6 +80,6 @@ namespace boss {
 
 	//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
 	string Tidy(string filename);
-};
+}
 
 #endif

@@ -7,7 +7,10 @@
     http://creativecommons.org/licenses/by-nc-nd/3.0/
 */
 
+
 #define NOMINMAX // we don't want the dummy min/max macros since they overlap with the std:: algorithms
+
+#include "BOSS.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,12 +22,12 @@
 #include <ctype.h>
 #include <time.h>
 
-#include "BOSS.h"
-
 #define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitrary number.
+
 
 namespace fs = boost::filesystem;
 using namespace boss;
+
 
 //BOSS [--update | -u] [--help | -h] [--disable-version-parse | -V-]  [--revert-level | -r] [1 | 2]
 int main(int argc, char *argv[]) {					

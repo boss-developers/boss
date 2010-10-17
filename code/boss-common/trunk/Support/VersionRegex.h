@@ -12,7 +12,9 @@
 #ifndef __SUPPORT_VERSIONREGEX__HPP__
 #define __SUPPORT_VERSIONREGEX__HPP__
 
+
 #include <boost/regex.hpp>
+
 
 namespace boss {
 
@@ -22,7 +24,6 @@ namespace boss {
 	/// an iteration for each of them.
 	extern regex* version_checks[];
 
-};
-
+}
 
 #endif
