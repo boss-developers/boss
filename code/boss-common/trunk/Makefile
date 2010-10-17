@@ -39,7 +39,7 @@ else
 endif
 INCLUDES := .
 
-PROG_BOSS   := BOSS
+PROG_BOSS   := boss
 BUILD_DIR   := build
 TARGET_BOSS := $(BUILD_DIR)/$(PROG_BOSS)
 BOSS_LIBS   := boost_system boost_regex boost_filesystem curl
