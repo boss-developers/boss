@@ -105,8 +105,18 @@ namespace test {
 
 	// Real grammar
 
+	typedef
+		std::string
+		rule_type;
+
+	typedef
+		std::vector<rule_type>
+		rules_type;
+
+	struct Mod;
+
 	typedef 
-		std::string 
+		Mod
 		mod_type;
 
 	struct Group;
@@ -132,6 +142,12 @@ namespace test {
 		nodes_type nodes;
 	};
 
+	struct Mod 
+	{
+		string name;
+		rules_type rules;
+	};
+
 	typedef 
 		std::vector<group_type> 
 		groups_type;
@@ -148,7 +164,7 @@ namespace test {
 
 	void tab(int indent)
 	{
-		for (int i = 0; i < indent; ++i)
+		for (int i = 0; i < indent * tabsize; ++i)
 			std::cout << ' ';
 	}
 
@@ -164,6 +180,49 @@ namespace test {
 		int indent;
 	};
 
+	struct rule_printer
+	{
+		rule_printer(int indent)
+			: indent(indent)
+		{
+		}
+
+		void operator()(rule_type const& rule) const
+		{
+			tab(indent);
+			std::cout << "rule: \"" << rule << '"' << std::endl;
+		}
+
+		int indent;
+	};
+
+
+	struct mod_printer
+	{
+		mod_printer(int indent)
+			: indent(indent)
+		{
+		}
+
+		void operator()(mod_type const& mod) const
+		{
+			tab(indent); std::cout << "mod: \"" << mod.name << '"' << std::endl;
+
+			print(mod.rules);
+		}
+
+		void print(rules_type const& rules) const
+		{
+			rule_printer printer(indent + 1);
+			BOOST_FOREACH(rule_type const& rule, rules)
+			{
+				printer(rule);
+			}
+		}
+
+		int indent;
+	};
+
 	struct node_printer : boost::static_visitor<>
 	{
 		node_printer(int indent = 0)
@@ -173,13 +232,14 @@ namespace test {
 
 		void operator()(group_type const& group) const
 		{
-			group_printer(indent+tabsize)(group);
+			group_printer printer(indent);
+			printer(group);
 		}
 
 		void operator()(mod_type const& mod) const
 		{
-			tab(indent+tabsize);
-			std::cout << "mod: \"" << mod << '"' << std::endl;
+			mod_printer printer(indent);
+			printer(mod);
 		}
 
 		int indent;
@@ -187,18 +247,16 @@ namespace test {
 
 	void group_printer::operator()(group_type const& group) const
 	{
-		tab(indent);
-		std::cout << "group: " << group.name << std::endl;
-		tab(indent);
-		std::cout << "begin" << std::endl;
+		tab(indent); std::cout << "group: " << group.name << std::endl;
+		tab(indent); std::cout << "begin" << std::endl;
 
+		node_printer printer(indent + 1);
 		BOOST_FOREACH(node_type const& node, group.nodes)
 		{
-			boost::apply_visitor(node_printer(indent), node);
+			boost::apply_visitor(printer, node);
 		}
 
-		tab(indent);
-		std::cout << "end" << std::endl;
+		tab(indent); std::cout << "end" << std::endl;
 	}
 
 	void print(groups_type const& groups)
@@ -216,6 +274,12 @@ BOOST_FUSION_ADAPT_STRUCT(
 	test::Group,
 	(std::string, name)
 	(test::nodes_type, nodes)
+	)
+
+BOOST_FUSION_ADAPT_STRUCT(
+	test::Mod,
+	(std::string, name)
+	(test::rules_type, rules)
 	)
 
 
@@ -251,10 +315,33 @@ namespace test {
 
 			mod %=	!endgroup 
 				>>	!begingroup
-				>>	text;
+				>>	text
+				>>	-rules;
 
 			//mods 
 			//	%=	mod % eol >> -eol;
+
+			marker 
+				=	lit('?')
+				|	lit('>')
+				|	lit('<')
+				|	lit('"')
+				|	lit(':')
+				|	lit('%')
+				|	lit('*')
+				|	lit('^')
+				|	lit('$')
+				;
+
+			rules
+				%=	rule % eol
+				;
+
+			rule
+				%=	*eol
+				>>	marker
+				>>	text
+				;
 
 			node
 				%=	*eol 
@@ -292,24 +379,27 @@ namespace test {
 			string.name("string");
 			text.name("text");
 			mod.name("mod");
-			//mods.name("mods");
+			rule.name("rule");
+			rules.name("rules");
 			group.name("group");
 			node.name("node");
 			nodes.name("nodes");
+			marker.name("marker");
 			begingroup.name("begin_group");
 			endgroup.name("end_group");
 
 			debug(masterlist);
 			debug(group);
-			//debug(groups);
 			debug(nodes);
 			debug(node);
 			debug(begingroup);
 			debug(endgroup);
 			debug(string);
 			debug(text);
-			//debug(mods);
 			debug(mod);
+			debug(rules);
+			debug(rule);
+			debug(marker);
 
 			on_error<fail>(masterlist, 
 				std::cout
@@ -336,13 +426,14 @@ namespace test {
 		qi::rule<Iterator, std::string(), Skipper> string;
 		qi::rule<Iterator, std::string(), Skipper> text;
 		qi::rule<Iterator, mod_type(), Skipper> mod;
-		//qi::rule<Iterator, mods_type()> mods;
+		qi::rule<Iterator, rules_type(), Skipper> rules;
+		qi::rule<Iterator, rule_type(), Skipper> rule;
 		qi::rule<Iterator, node_type(), Skipper> node;
 		qi::rule<Iterator, nodes_type(), Skipper> nodes;
 		qi::rule<Iterator, group_type(), Skipper> group;
-		//qi::rule<Iterator, groups_type()> groups;
 		qi::rule<Iterator, std::string(), Skipper> begingroup;
 		qi::rule<Iterator, Skipper> endgroup;
+		qi::rule<Iterator, Skipper> marker;
 	};
 };
 
