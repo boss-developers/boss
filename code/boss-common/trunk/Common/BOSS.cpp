@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 	//Try to create BOSS sub-directory.
 	try { fs::create_directory(boss_path);
 	} catch(fs::filesystem_error e) {
-		cout << "Critical Error: Sub-directory \"Data\\BOSS\\\" could not be created!" << endl
+		cout << "Critical Error: Sub-directory '" << boss_path << "' could not be created!" << endl
 			 << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl
 			 << "Utility will end now." << endl << endl;
 		cout << "Press ENTER to quit...";
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Check for creation of BOSSlog.txt.
-	bosslog.open(bosslog_path.external_file_string());
+	bosslog.open(bosslog_path.external_file_string().c_str());
 	if (bosslog.fail()) {							
 		cout << endl << "Critical Error: BOSSlog.html could not be written to!" << endl
 					 << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl
@@ -201,7 +201,7 @@ int main(int argc, char *argv[]) {
 	else if (revert==2) sortfile = prev_modlist_path;
 	else sortfile = masterlist_path;
 
-	order.open(sortfile.external_file_string());
+	order.open(sortfile.external_file_string().c_str());
 
 	if (order.fail()) {							
 		bosslog << endl << "<p class='error'>Critical Error: ";
@@ -298,7 +298,7 @@ int main(int argc, char *argv[]) {
 					//Then insert the recorded rule group mods before or after the remaining sort group mod and erase them from their old positions.
 					//Remember to move their messages too.
 
-					order.open(masterlist_path.external_file_string());
+					order.open(masterlist_path.external_file_string().c_str());
 					int count=0;
 					bool lookforrulemods=false,lookforsortmods=false;
 					vector<string> rulemods,sortmods,currentmessages;

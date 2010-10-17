@@ -56,7 +56,7 @@ namespace boss {
 		string line,key,object;
 		int pos;
 		bool skip = false;
-		userlist.open(userlist_path.external_file_string());
+		userlist.open(userlist_path.external_file_string().c_str());
 		messages += "<p>";
 		while (!userlist.eof()) {
 			char cbuffer[MAXLENGTH];
@@ -182,7 +182,7 @@ namespace boss {
 			return 1;
 		}
 		
-		modlist.open(curr_modlist_path.external_file_string());
+		modlist.open(curr_modlist_path.external_file_string().c_str());
 		//Provide error message if it can't be written.
 		if (modlist.fail()) {
 			return 2;
