@@ -1,17 +1,21 @@
-// RegexTesting.cpp : Defines the entry point for the console application.
 //
+// RegexTesting.cpp : Defines the entry point for the console application.
 
-#include <string>
-#include <iostream>
-#include <iomanip>
+
+#include "Support/Types.h"
+#include "Support/Helpers.h"
+#include "Support/ModFormat.h"
+
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <Support/Types.h>
-#include <Support/Helpers.h>
-#include <Support/ModFormat.h>
+#include <string>
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+
 
 using namespace std;
 using namespace boost::filesystem;
@@ -23,7 +27,7 @@ string Get(istream& iss)
 {
 	string value = GetLine(iss);
 	if (value.empty()) {
-		throw exception("No more data to read.");
+		throw runtime_error("No more data to read.");
 	}
 
 	return value;
@@ -35,7 +39,7 @@ string Consume(string& data, const string value)
 
 	trim(data);
 	if (!starts_with(data, value)) {
-		throw exception((InvalidInputError % value % data).str().c_str());
+		throw runtime_error((InvalidInputError % value % data).str().c_str());
 	}
 	replace_first(data, value, "");
 
@@ -50,7 +54,7 @@ int main(int argc, char* argv[])
 	
 		path inname = root / "VersionCheck.txt";
 	
-		ifstream in(inname.filename());
+		ifstream in(inname.filename().c_str());
 	
 		cout << "Reading: " << inname.filename() << endl << endl;
 	
@@ -97,4 +101,3 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 }
-
