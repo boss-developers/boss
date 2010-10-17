@@ -56,7 +56,7 @@ namespace boss {
 		string line,key,object;
 		int pos;
 		bool skip = false;
-		userlist.open("BOSS\\userlist.txt");
+		userlist.open(userlist_path.external_file_string());
 		messages += "<p>";
 		while (!userlist.eof()) {
 			char cbuffer[MAXLENGTH];
@@ -175,13 +175,14 @@ namespace boss {
 		try {
 			//There's a bug in the boost rename function - it should replace existing files, but it throws an exception instead, so remove the file first.
 			//This bug will be fixed in BOOST 1.45, but that will break the AddMods() function and possibly other things, so be sure to change that when we upgrade.
-			if (fs::exists("BOSS\\modlist.old")) fs::remove("BOSS\\modlist.old");
-			if (fs::exists("BOSS\\modlist.txt")) fs::rename("BOSS\\modlist.txt", "BOSS\\modlist.old");
+			if (fs::exists(prev_modlist_path)) fs::remove(prev_modlist_path);
+			if (fs::exists(curr_modlist_path)) fs::rename(curr_modlist_path, prev_modlist_path);
 		} catch(boost::filesystem::filesystem_error e) {
 			//Couldn't rename the file, print an error message.
 			return 1;
 		}
-		modlist.open("BOSS\\modlist.txt");
+		
+		modlist.open(curr_modlist_path.external_file_string());
 		//Provide error message if it can't be written.
 		if (modlist.fail()) {
 			return 2;

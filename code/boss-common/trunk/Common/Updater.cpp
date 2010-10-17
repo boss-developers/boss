@@ -102,8 +102,8 @@ namespace boss {
 		newline = "? Masterlist Revision: "+revision;
 
 		//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
-		if (fs::exists("BOSS\\masterlist.txt")) {
-			mlist.open("BOSS\\masterlist.txt");
+		if (fs::exists(masterlist_path)) {
+			mlist.open(masterlist_path.external_file_string());
 			if (mlist.fail()) {
 				cout << "Error: Masterlist update failed!" << endl;
 				bosslog << "Error: Masterlist update failed!<br />" << endl;
@@ -147,7 +147,7 @@ namespace boss {
 		//Replace SVN keywords with revision number and replace current masterlist, or write a new one if it doesn't already exist.
 		int pos = buffer.find(oldline);
 		buffer.replace(pos,oldline.length(),newline);
-		out.open("BOSS\\masterlist.txt", ios_base::trunc);
+		out.open(masterlist_path.external_file_string(), ios_base::trunc);
 		if (out.fail()) {
 			cout << "Error: Masterlist update failed!" << endl;
 			bosslog << "Error: Masterlist update failed!<br />" << endl;

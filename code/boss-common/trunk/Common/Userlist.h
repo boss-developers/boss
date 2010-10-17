@@ -16,6 +16,7 @@
 #define __BOSS_USERLIST_H__
 
 
+#include "Globals.h"
 #include "Support/Helpers.h"
 
 #include <string>

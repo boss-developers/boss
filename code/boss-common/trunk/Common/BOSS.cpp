@@ -25,7 +25,6 @@
 #define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitrary number.
 
 
-namespace fs = boost::filesystem;
 using namespace boss;
 
 
@@ -43,7 +42,7 @@ int main(int argc, char *argv[]) {
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
 	int revert=0;					//What level to revert to?
 	int system_ret;                 //records the return value of system() calls
-
+	
 	//Parse command line arguments.
 	if (argc > 1) {
 		for (int i=0; i < argc; i++) {
@@ -73,7 +72,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Try to create BOSS sub-directory.
-	try { fs::create_directory("BOSS\\");
+	try { fs::create_directory(boss_path);
 	} catch(fs::filesystem_error e) {
 		cout << "Critical Error: Sub-directory \"Data\\BOSS\\\" could not be created!" << endl
 			 << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl
@@ -84,7 +83,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Check for creation of BOSSlog.txt.
-	bosslog.open("BOSS\\BOSSlog.html");
+	bosslog.open(bosslog_path.external_file_string());
 	if (bosslog.fail()) {							
 		cout << endl << "Critical Error: BOSSlog.html could not be written to!" << endl
 					 << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl
@@ -169,7 +168,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	Rules userlist;
-	if (fs::exists("BOSS\\userlist.txt") && revert<1) userlist.AddRules();
+	if (fs::exists(userlist_path) && revert<1) userlist.AddRules();
 
 	if (revert<1) {
 		bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
@@ -197,15 +196,17 @@ int main(int argc, char *argv[]) {
 	}
 
 	//open masterlist.txt
-	if (revert==1) order.open("BOSS\\modlist.txt");	
-	else if (revert==2) order.open("BOSS\\modlist.old");	
-	else order.open("BOSS\\masterlist.txt");
+	fs::path sortfile;
+	if (revert==1) sortfile = curr_modlist_path;	
+	else if (revert==2) sortfile = prev_modlist_path;
+	else sortfile = masterlist_path;
+
+	order.open(sortfile.external_file_string());
+
 	if (order.fail()) {							
 		bosslog << endl << "<p class='error'>Critical Error: ";
 
-		if (revert==1) bosslog << "BOSS\\modlist.txt";	
-		else if (revert==2) bosslog << "BOSS\\modlist.old";	
-		else bosslog << "BOSS\\masterlist.txt";
+		bosslog << sortfile.external_file_string();
 
 		bosslog << " cannot be read!<br />" << endl
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
@@ -257,7 +258,7 @@ int main(int argc, char *argv[]) {
 	} //while
 	order.close();		//Close the masterlist stream, as it's not needed any more.
 
-	if (fs::exists("BOSS\\userlist.txt") && revert<1) {
+	if (fs::exists(userlist_path) && revert<1) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
 		//Go through each rule.
 		for (int i=0;i<(int)userlist.rules.size();i++) {
@@ -297,7 +298,7 @@ int main(int argc, char *argv[]) {
 					//Then insert the recorded rule group mods before or after the remaining sort group mod and erase them from their old positions.
 					//Remember to move their messages too.
 
-					order.open("BOSS\\masterlist.txt");
+					order.open(masterlist_path.external_file_string());
 					int count=0;
 					bool lookforrulemods=false,lookforsortmods=false;
 					vector<string> rulemods,sortmods,currentmessages;
