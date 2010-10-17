@@ -25,6 +25,7 @@
 #include "../Common/Masterlist.h"
 
 
+// Definitions
 namespace test {
 
 	using namespace std;
@@ -40,11 +41,12 @@ namespace test {
 	using qi::eol;
 	using qi::eoi;
 	using qi::omit;
+	using fusion::unused_type;
 };
 
-
+// Skipper
 namespace test {
-	
+
 	// Skipper grammar
 
 	template <typename Iterator>
@@ -102,62 +104,142 @@ namespace test {
 		qi::rule<Iterator> comment;
 		qi::rule<Iterator> comments;
 	};
+}
 
-	// Real grammar
-
-	typedef
-		std::string
-		rule_type;
-
-	typedef
-		std::vector<rule_type>
-		rules_type;
-
-	struct Mod;
-
-	typedef 
-		Mod
-		mod_type;
-
+// AST
+namespace test {
+	
 	struct Group;
+	struct Mod;
+	struct Rule;
 
-	typedef 
-		Group 
-		group_type;
+	typedef
+		std::vector<Rule>
+		Rules;
 
 	typedef
 		boost::variant<
-				boost::recursive_wrapper<group_type>
-			,	mod_type
+				boost::recursive_wrapper<Group>
+			,	Mod
+			,	unused_type
 			>
-		node_type;
+		Node;
 
 	typedef 
-		std::vector<node_type> 
-		nodes_type;
+		std::vector<Node> 
+		Nodes;
 
 	struct Group
 	{
 		string name;
-		nodes_type nodes;
+		Nodes nodes;
 	};
 
 	struct Mod 
 	{
 		string name;
-		rules_type rules;
+		Rules rules;
 	};
 
-	typedef 
-		std::vector<group_type> 
-		groups_type;
+	struct Rule 
+	{
+		struct Scope 
+		{
+			enum ScopeValue
+			{
+				Always,
+				Fcom				=	'>',
+				NonFcom				=	'<',
+				OOO					=	'$',
+				BC					=	'^',
+			}; 
+
+			ScopeValue value;
+
+			Scope() : value(Always) { };
+			Scope(const ScopeValue value) : value(value) { };
+			Scope(const Scope& scope) : value(scope.value) { };
+		};
+
+		struct Kind
+		{
+			enum KindValue
+			{
+				Unknown,
+				Remark				=	'?',
+				Tags				=	'%',
+				Error				=	'*',	
+				Requirement			=	':',
+				Incompatibility		=	'"',
+			};
+
+			KindValue value;
+
+			Kind() : value(Unknown) { };
+			Kind(const KindValue value) : value(value) { };
+			Kind(const Kind& type) : value(type.value) { };
+		};
+
+		Scope	scope;
+		Kind	kind;
+		string	text;
+	};
+
+	ostream& operator<< (ostream& os, Rule const& rule)
+	{
+		return os << rule.text;
+	}
+
+	ostream& operator<< (ostream& os, Rule::Scope const& scope)
+	{
+		switch (scope.value)
+		{
+			case Rule::Scope::Fcom :
+				return os << "FCOM only";
+			case Rule::Scope::NonFcom :
+				return os << "Non-FCOM only";
+			case Rule::Scope::OOO :
+				return os << "OOO only";
+			case Rule::Scope::BC :
+				return os << "Better Cities only";
+			case Rule::Scope::Always :
+				return os << "Always";
+		}
+
+		return os;
+	}
+
+	ostream& operator<< (ostream& os, Rule::Kind const& kind)
+	{
+		switch (kind.value)
+		{
+			case Rule::Kind::Error :
+				return os << "ERROR";
+			case Rule::Kind::Incompatibility :
+				return os << "INCOMPATIBILITY";
+			case Rule::Kind::Remark :
+				return os << "REMARK";
+			case Rule::Kind::Requirement :
+				return os << "REQUIREMENT";
+			case Rule::Kind::Tags :
+				return os << "TAG";
+				
+			return os;
+		}
+
+		return os;
+	}
 
 	typedef 
-		groups_type 
-		masterlist_type;
+		std::vector<Group> 
+		Groups;
 
+	typedef 
+		Groups
+		Masterlist;
 };
 
+// Print functors
 namespace test {
 
 	int const tabsize = 4;
@@ -175,7 +257,7 @@ namespace test {
 		{
 		}
 
-		void operator()(group_type const& group) const;
+		void operator()(Group const& group) const;
 
 		int indent;
 	};
@@ -187,15 +269,14 @@ namespace test {
 		{
 		}
 
-		void operator()(rule_type const& rule) const
+		void operator()(Rule const& rule) const
 		{
 			tab(indent);
-			std::cout << "rule: \"" << rule << '"' << std::endl;
+			std::cout << "RULE [" << rule.scope  << "] " << rule.kind << ": \"" << rule.text << "\"" << std::endl;
 		}
 
 		int indent;
 	};
-
 
 	struct mod_printer
 	{
@@ -204,17 +285,17 @@ namespace test {
 		{
 		}
 
-		void operator()(mod_type const& mod) const
+		void operator()(Mod const& mod) const
 		{
-			tab(indent); std::cout << "mod: \"" << mod.name << '"' << std::endl;
+			tab(indent); std::cout << "MOD: \"" << mod.name << '"' << std::endl;
 
 			print(mod.rules);
 		}
 
-		void print(rules_type const& rules) const
+		void print(Rules const& rules) const
 		{
 			rule_printer printer(indent + 1);
-			BOOST_FOREACH(rule_type const& rule, rules)
+			BOOST_FOREACH(Rule const& rule, rules)
 			{
 				printer(rule);
 			}
@@ -230,40 +311,44 @@ namespace test {
 		{
 		}
 
-		void operator()(group_type const& group) const
+		void operator()(Group const& group) const
 		{
 			group_printer printer(indent);
 			printer(group);
 		}
 
-		void operator()(mod_type const& mod) const
+		void operator()(Mod const& mod) const
 		{
 			mod_printer printer(indent);
 			printer(mod);
 		}
 
+		void operator()(unused_type const&) const
+		{
+		}
+
 		int indent;
 	};
 
-	void group_printer::operator()(group_type const& group) const
+	void group_printer::operator()(Group const& group) const
 	{
-		tab(indent); std::cout << "group: " << group.name << std::endl;
-		tab(indent); std::cout << "begin" << std::endl;
+		tab(indent); std::cout << "GROUP: \"" << group.name << "\"" << std::endl;
+		tab(indent); std::cout << "BEGIN" << std::endl;
 
 		node_printer printer(indent + 1);
-		BOOST_FOREACH(node_type const& node, group.nodes)
+		BOOST_FOREACH(Node const& node, group.nodes)
 		{
 			boost::apply_visitor(printer, node);
 		}
 
-		tab(indent); std::cout << "end" << std::endl;
+		tab(indent); std::cout << "END" << std::endl;
 	}
 
-	void print(groups_type const& groups)
+	void print(Groups const& groups)
 	{
 		group_printer printer;
 
-		BOOST_FOREACH(group_type const& group, groups)
+		BOOST_FOREACH(Group const& group, groups)
 		{
 			printer(group);
 		}
@@ -273,21 +358,57 @@ namespace test {
 BOOST_FUSION_ADAPT_STRUCT(
 	test::Group,
 	(std::string, name)
-	(test::nodes_type, nodes)
+	(test::Nodes, nodes)
 	)
 
 BOOST_FUSION_ADAPT_STRUCT(
 	test::Mod,
 	(std::string, name)
-	(test::rules_type, rules)
+	(test::Rules, rules)
 	)
 
+BOOST_FUSION_ADAPT_STRUCT(
+	test::Rule,
+	(test::Rule::Scope, scope)
+	(test::Rule::Kind, kind)
+	(std::string, text)
+	)
 
+// Real grammar
 namespace test {
+
+	struct rule_scope_ : qi::symbols<char, Rule::Scope>
+	{
+		rule_scope_()
+		{
+			add
+				(">"    , Rule::Scope::Fcom)
+				("<"	, Rule::Scope::NonFcom)
+				("$"	, Rule::Scope::OOO)
+				("^"	, Rule::Scope::BC)
+				;
+		}
+
+	} rule_scope;
+
+	struct rule_type_ : qi::symbols<char, Rule::Kind>
+	{
+		rule_type_()
+		{
+			add
+				("?"    , Rule::Kind::Remark)
+				("%"    , Rule::Kind::Tags)
+				("*"    , Rule::Kind::Error)
+				(":"    , Rule::Kind::Requirement)
+				("\""   , Rule::Kind::Incompatibility)
+				;
+		}
+
+	} rule_type;
 
 	template <typename Iterator, typename Skipper>
 	struct Grammar
-		: qi::grammar<Iterator, masterlist_type(), Skipper>
+		: qi::grammar<Iterator, Masterlist(), Skipper>
 	{
 		Grammar()
 			: Grammar::base_type(masterlist, "masterlist")
@@ -318,28 +439,14 @@ namespace test {
 				>>	text
 				>>	-rules;
 
-			//mods 
-			//	%=	mod % eol >> -eol;
-
-			marker 
-				=	lit('?')
-				|	lit('>')
-				|	lit('<')
-				|	lit('"')
-				|	lit(':')
-				|	lit('%')
-				|	lit('*')
-				|	lit('^')
-				|	lit('$')
-				;
-
 			rules
 				%=	rule % eol
 				;
 
 			rule
 				%=	*eol
-				>>	marker
+				>>	-rule_scope
+				>>	rule_type
 				>>	text
 				;
 
@@ -348,6 +455,7 @@ namespace test {
 				>>	(
 						group
 					|	mod
+					|	eoi
 					)
 				;
 
@@ -362,7 +470,8 @@ namespace test {
 				;
 
 			endgroup
-				=	lit("\\EndGroup\\\\");
+				=	lit("\\EndGroup\\\\")
+				|	eoi;
 
 			group
 				%=	*eol
@@ -370,10 +479,6 @@ namespace test {
 				>>	nodes
 				>	endgroup
 				;
-
-			//groups 
-			//	%= group % eol >> -eol
-			//	;
 
 			masterlist.name("masterlist");
 			string.name("string");
@@ -384,7 +489,6 @@ namespace test {
 			group.name("group");
 			node.name("node");
 			nodes.name("nodes");
-			marker.name("marker");
 			begingroup.name("begin_group");
 			endgroup.name("end_group");
 
@@ -399,7 +503,6 @@ namespace test {
 			debug(mod);
 			debug(rules);
 			debug(rule);
-			debug(marker);
 
 			on_error<fail>(masterlist, 
 				std::cout
@@ -422,24 +525,18 @@ namespace test {
 				);
 		}
 
-		qi::rule<Iterator, masterlist_type(), Skipper> masterlist;
+		qi::rule<Iterator, Masterlist(), Skipper> masterlist;
 		qi::rule<Iterator, std::string(), Skipper> string;
 		qi::rule<Iterator, std::string(), Skipper> text;
-		qi::rule<Iterator, mod_type(), Skipper> mod;
-		qi::rule<Iterator, rules_type(), Skipper> rules;
-		qi::rule<Iterator, rule_type(), Skipper> rule;
-		qi::rule<Iterator, node_type(), Skipper> node;
-		qi::rule<Iterator, nodes_type(), Skipper> nodes;
-		qi::rule<Iterator, group_type(), Skipper> group;
+		qi::rule<Iterator, Mod(), Skipper> mod;
+		qi::rule<Iterator, Rules(), Skipper> rules;
+		qi::rule<Iterator, Rule(), Skipper> rule;
+		qi::rule<Iterator, Node(), Skipper> node;
+		qi::rule<Iterator, Nodes(), Skipper> nodes;
+		qi::rule<Iterator, Group(), Skipper> group;
 		qi::rule<Iterator, std::string(), Skipper> begingroup;
 		qi::rule<Iterator, Skipper> endgroup;
-		qi::rule<Iterator, Skipper> marker;
 	};
-};
-
-
-namespace test {
-
 };
 
 int main(int argc, char* argv[])
@@ -482,18 +579,18 @@ int main(int argc, char* argv[])
 	Grammar grammar; // Our grammar
 	Skipper skipper; // Our skipper
 
-	test::groups_type data;
+	test::Masterlist masterlist;
 
 	std::string::const_iterator iter = storage.begin();
 	std::string::const_iterator end = storage.end();
-	bool r = phrase_parse(iter, end, grammar, skipper, data);
+	bool r = phrase_parse(iter, end, grammar, skipper, masterlist);
 
 	if (r && iter == end)
 	{
 		std::cout << "-------------------------\n";
 		std::cout << "Parsing succeeded\n";
 		std::cout << "-------------------------\n";
-		test::print(data);
+		test::print(masterlist);
 		return 0;
 	}
 	else
