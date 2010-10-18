@@ -29,6 +29,12 @@ namespace boss {
 	using namespace boost;
 
 
+#if _WIN32 || _WIN64
+	const string launcher_cmd = "start";
+#else
+	const string launcher_cmd = "xdg-open";
+#endif
+
 	// Reads a text line from the input stream
 	bool ReadLine(istream& is, string& s)
 	{
@@ -130,5 +136,11 @@ namespace boss {
 			for (unsigned int i = 0; i < filename.length(); i++) filename[i] = tolower(filename[i]);
 			return (filename);
 		}
+	}
+
+	int Launch(const string& filename)
+	{
+		const string cmd = launcher_cmd + " " + filename;
+		return ::system(cmd.c_str());
 	}
 }

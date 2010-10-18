@@ -80,6 +80,9 @@ namespace boss {
 
 	//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
 	string Tidy(string filename);
+
+	// Launches the specified file using the most appropriate program for viewing it.
+	int Launch(const string& filename);
 }
 
 #endif

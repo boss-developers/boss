@@ -113,7 +113,8 @@ int main(int argc, char *argv[]) {
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		if ( !silent ) system_ret = system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent ) 
+			system_ret = Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //else
 
@@ -123,7 +124,8 @@ int main(int argc, char *argv[]) {
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		if ( !silent ) system_ret = system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent ) 
+			system_ret = Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
@@ -139,7 +141,8 @@ int main(int argc, char *argv[]) {
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		if ( !silent ) system_ret = system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent ) 
+			system_ret = Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
@@ -163,7 +166,8 @@ int main(int argc, char *argv[]) {
 					<< "Utility will end now.</p>" << endl
 					<< "</body>"<<endl<<"</html>";
 			bosslog.close();
-			if ( !silent ) system_ret = system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+			if ( !silent ) 
+				system_ret = Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 			exit (1); //fail in screaming heap.
 		}
 	}
@@ -213,7 +217,8 @@ int main(int argc, char *argv[]) {
 				<< "Utility will end now.</p>" << endl
 				<< "</body>"<<endl<<"</html>";
 		bosslog.close();
-		if ( !silent ) system_ret = system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+		if ( !silent ) 
+			system_ret = Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //if
 
@@ -456,6 +461,7 @@ int main(int argc, char *argv[]) {
 	//Let people know the program has stopped.
 	bosslog <<"<div><span>Done.</span></div><br /><br />"<<endl<<"</body>"<<endl<<"</html>";
 	bosslog.close();
-	if ( !silent ) system_ret = system("start BOSS\\BOSSlog.html");	//Displays the BOSSlog.txt.
+	if ( !silent ) 
+		system_ret = Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 	return (0);
 }
