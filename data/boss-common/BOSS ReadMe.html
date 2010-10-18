@@ -94,7 +94,7 @@
 	<br /><span class="subtitle">Command Line Arguments</span>
 	<p>BOSS has a few command-line arguments. The syntax is:</p>
 	<div>
-	<p><code>BOSS [--update | -u] [--help | -h] [--disable-version-parse | -V-] [--revert-level | -r] [level]</code></p>
+	<p><code>BOSS [--update | -u] [--help | -h] [--disable-version-parse | -V-] [--revert-level | -r] [level] [--silent-mode | -s]</code></p>
 	<p><code>-h, --help</code>:</p>
 	<p>This prints a short description of BOSS and some information on the function of the command line arguments.</p>
 	<p><code>-u, --update</code>:</p>
@@ -228,7 +228,7 @@
 	</ul>
 	<br />
 	<p>The Data\BOSS folder and all the files in it must not be read-only. If a file in this folder, or the folder itself, is read-only, BOSS will not function correctly, resulting in some of the errors listed above.</p>
-	<p>If you are running Windows Vista or Windows 7, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:</p>
+	<p>If you are running Windows Vista or Windows 7, also in some situations limited users accounts on XP, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:</p>
 	<ol>
 		<li>Install the game outside the Program Files (or Program Files (x86) folder if on 64 bit Windows). UAC prevents unauthorised edits to these folders, so by installing the game outside of them, you remove it from UAC's reach, allowing you to use mods more easily.</li>
 		<li>Deactivate UAC. This can be done from the Control Panel, and will turn UAC off across the whole of your computer. It is up to you whether you feel that you have adequate security measures in place to do this without risk.</li>
@@ -243,6 +243,7 @@
 		<li>In the lower box, check the box opposite "Full Control" in the "Allow" column. Press OK to exit. If a UAC prompt appears, allow the change.</li>
 		<li>In the Properties window, select OK to exit. You should now have Full Control permissions over your chosen folder.</li>
 	</ol>
+    <p> for dealing with limited accounts on XP you can run this console cmd <code>cacls drive:\path to relevant folder\*.* /e /t /p users:c</code>. However note that if you set it wrong it can mess things up so if you decide to do so use care (and do so at your own risk of course).
 	</div><br /><br />
 	
 	<div id="linux"><span>Running BOSS Under Linux</span>
