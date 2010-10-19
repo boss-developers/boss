@@ -250,10 +250,11 @@
 	<p>It is possible to run BOSS on Linux through the Wine compatibility layer, though no official support for doing so is given. Installation and usage is as on Windows. While all the features work as they do in Windows, there are a few issues:</p>
 	<ul>
 		<li>BOSS runs noticeably slower on Linux through Wine than it does natively on Windows.</li>
-		<li>It may be that the BOSSlog is not automatically displayed once BOSS has run. In this case, you will have to open <code>Data/BOSS/BOSSlog.html</code> manually to see it.</li>
+		<li>The BOSSlog is not automatically displayed once BOSS has run. In this case, you will have to open <code>Data/BOSS/BOSSlog.html</code> manually to see it.</li>
 	</ul>
 	<p>Remember, the BOSS Team does not provide any support for those running BOSS under Linux. If you wish to do so, then it is at your own risk. If you encounter problems, you must find solutions yourself. However, if you do so, the BOSS Team will be happy to incorporate the solutions in future releases to help others, provided you report the issue and solution to us.</p>
-	</div><br /><br />
+	<p>You can also choose to compile BOSS on Linux and run it as a native application. The major advantages to this are a large performance increase, and automatic display of the BOSSlog. However, there is a disadvantage in that due to the case-sensitivity of Linux filenames, mods listed in the masterlist that are not exact case-matches of their plugin name counterparts in your Data folder will not be recognised, unlike in Windows, where the masterlist behaves case-insensitively.</p>
+	<p>The BOSS Team does not supply pre-compiled Linux binaries or instructions for building BOSS in Linux at this time, although a makefile is included in the source code to ease the process.</div><br /><br />
 	
 	<div id="credits"><span>Credits</span>
 	<p>Sources for the mod list and its order include: Agiel's Annotated Load Order; Fivefries load order; dev_akm's official expanded FCOM load order (FCOM 0.9.9); suggestions and instructions from Mart's Monster Mod, 
@@ -339,7 +340,7 @@
 		<li>Added version info to BOSS.exe to make Wrye Bash integration/debugging easier.</li>
 		<li>Fixed non-lowercase plugin extensions not being recognised and causing crashes and load order mistakes.</li>
 		<li>Fixed a potential bug with the masterlist updater causing memory issues.</li>
-		<li>Fixed several compiler warnings when compiling on Linux. NOTE: BOSS doesn't run natively on Linux, despite this change.</li>
+		<li>Fixed several compiler warnings when compiling on Linux.</li>
 		<li>Increased timout delay for the masterlist updater to prevent the updater failing when Google Code is slow.</li>
 		<li>Reworked masterlist updater error reporting to be more verbose, and to take messages directly from curl when curl fails.</li>
 	</ul>

@@ -41,7 +41,6 @@ int main(int argc, char *argv[]) {
 	bool isghost;					//Is the file ghosted or not?
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
 	int revert=0;					//What level to revert to?
-	int system_ret;                 //records the return value of system() calls
 	
 	//Parse command line arguments.
 	if (argc > 1) {
@@ -114,7 +113,7 @@ int main(int argc, char *argv[]) {
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
 		if ( !silent ) 
-			system_ret = Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
+			Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //else
 
@@ -125,7 +124,7 @@ int main(int argc, char *argv[]) {
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
 		if ( !silent ) 
-			system_ret = Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
+			Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
@@ -142,7 +141,7 @@ int main(int argc, char *argv[]) {
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
 		if ( !silent ) 
-			system_ret = Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
+			Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
@@ -167,7 +166,7 @@ int main(int argc, char *argv[]) {
 					<< "</body>"<<endl<<"</html>";
 			bosslog.close();
 			if ( !silent ) 
-				system_ret = Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
+				Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 			exit (1); //fail in screaming heap.
 		}
 	}
@@ -218,7 +217,7 @@ int main(int argc, char *argv[]) {
 				<< "</body>"<<endl<<"</html>";
 		bosslog.close();
 		if ( !silent ) 
-			system_ret = Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
+			Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //if
 
@@ -462,6 +461,6 @@ int main(int argc, char *argv[]) {
 	bosslog <<"<div><span>Done.</span></div><br /><br />"<<endl<<"</body>"<<endl<<"</html>";
 	bosslog.close();
 	if ( !silent ) 
-		system_ret = Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
+		Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 	return (0);
 }
