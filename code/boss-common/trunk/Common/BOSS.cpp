@@ -1,6 +1,6 @@
 /*	Better Oblivion Sorting Software
 	1.6
-	Quick and Dirty Load Order Utility for Oblivion, Fallout 3 and Morrowind
+	Quick and Dirty Load Order Utility for Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas
 	(Making C++ look like the scripting language it isn't.)
 
     Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 	bool version_parse = true;		//Enable parsing of mod's headers to look for version strings
 	bool silent = false;            //Silent mode?
 	bool isghost;					//Is the file ghosted or not?
-	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Morrowind.
+	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
 	int revert=0;					//What level to revert to?
 	
 	//Parse command line arguments.
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 					else revert = 1;
 				} else revert = 1;
 			} else if (strcmp("--help", argv[i]) == 0 || strcmp("-h", argv[i]) == 0) {
-				cout << "Better Oblivion Sorting Software is a utility that sorts the load order of TESIV: Oblivion, TESIII: Morrowind and Fallout 3 mods according to their relative positions on a frequently-updated masterlist ";
+				cout << "Better Oblivion Sorting Software is a utility that sorts the load order of TESIV: Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas mods according to their relative positions on a frequently-updated masterlist ";
 				cout << "to ensure proper load order and minimise incompatibilities between mods." << endl << endl;
 				cout << "Optional Parameters" << endl << endl;
 				cout << "-u, --update: " << endl << "    Automatically updates the local copy of the masterlist using the latest version available on the Google Code repository." << endl << endl;
@@ -106,6 +106,7 @@ int main(int argc, char *argv[]) {
 	if (fs::exists("Oblivion.esm")) game = 1;
 	else if (fs::exists("Fallout3.esm")) game = 2;
 	else if (fs::exists("Nehrim.esm")) game = 3;
+	else if (fs::exists("FalloutNV.esm")) game = 4;
 	else {
 		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file not found!<br />" << endl
 						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
@@ -134,6 +135,7 @@ int main(int argc, char *argv[]) {
 		if (game == 1) esmtime = fs::last_write_time("Oblivion.esm");
 		else if (game == 2) esmtime = fs::last_write_time("Fallout3.esm");
 		else if (game == 3) esmtime = fs::last_write_time("Nehrim.esm");
+		else if (game == 4) esmtime = fs::last_write_time("FalloutNV.esm");
 	} catch(fs::filesystem_error e) {
 		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file cannot be read!<br />" << endl
 						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl

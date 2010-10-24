@@ -50,6 +50,7 @@ namespace boss {
 		if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
 		else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
 		else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/masterlist.txt";
+		else if (game == 4) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-new-vegas/masterlist.txt";
 		else {
 			cout << "Error: invalid setting for 'game': " << game << endl;
 			bosslog << "Error: invalid setting for 'game': " << game << "<br />" << endl;
@@ -87,6 +88,7 @@ namespace boss {
 		if (game == 1) start = revision.find("boss-oblivion");
 		else if (game == 2) start = revision.find("boss-fallout");
 		else if (game == 3) start = revision.find("boss-nehrim");
+		else if (game == 4) start = revision.find("boss-fallout-new-vegas");
 		else {
 			cout << "Error: Masterlist update failed!" << endl;
 			bosslog << "Error: Masterlist update failed!<br />" << endl;

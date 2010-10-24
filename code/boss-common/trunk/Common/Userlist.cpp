@@ -92,7 +92,7 @@ namespace boss {
 							messages += "<span class='error'>It tries to sort the group \"ESMs\".</span><br />";
 							skip = true;
 						}
-						if ((Tidy(object)=="oblivion.esm" || Tidy(object)=="fallout3.esm" || Tidy(object)=="nehrim.esm") && key=="OVERRIDE") {
+						if ((Tidy(object)=="oblivion.esm" || Tidy(object)=="fallout3.esm" || Tidy(object)=="nehrim.esm" || Tidy(object)=="falloutnv.esm") && key=="OVERRIDE") {
 							if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
 							messages += "<span class='error'>It tries to sort the master .ESM file.</span><br />";
 							skip = true;
@@ -120,7 +120,7 @@ namespace boss {
 							messages += "<span class='error'>It tries to sort a group before the group \"ESMs\".</span><br />";
 							skip = true;
 						}
-						if ((Tidy(object)=="oblivion.esm" || Tidy(object)=="fallout3.esm" || Tidy(object)=="nehrim.esm") && key=="BEFORE") {
+						if ((Tidy(object)=="oblivion.esm" || Tidy(object)=="fallout3.esm" || Tidy(object)=="nehrim.esm" || Tidy(object)=="falloutnv.esm") && key=="BEFORE") {
 							if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
 							messages += "<span class='error'>It tries to sort a mod before the master .ESM file.</span><br />";
 							skip = true;
