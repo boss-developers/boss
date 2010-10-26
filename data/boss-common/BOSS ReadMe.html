@@ -14,7 +14,7 @@
   </head>
   <body id="body">
 	<div id="title">Better Oblivion Sorting Software</div><br />
-	<div style="text-align:center;">A simple "one-click" program for users that quickly optimises and avoids detrimental conflicts in their Oblivion, Fallout 3 and Nehrim mod load orders.</div>
+	<div style="text-align:center;">A simple "one-click" program for users that quickly optimises and avoids detrimental conflicts in their Oblivion, Fallout 3, Nehrim - At Fate's Edge and Fallout: New Vegas mod load orders.</div>
     <br /><br />
 	
 	<div><span>Contents</span>
@@ -40,22 +40,22 @@
 		<li>Correctly positions over 10,400 Oblivion mods and counting, including all the mod files found in such popular mods as FCOM, OOO, MMM, Better Cities, Open Cities, Race Balancing Project and many other large mods.</li>
 		<li>For Oblivion, it can provide specific messages for when using OOO and Better Cities, and differentiates between FCOM and non-FCOM setups. It also detects common FCOM installation mistakes and warns the user about them.</li>
 		<li>Correctly positions over 1,800 Fallout 3 mods and counting.
-		<li>Provides support for sorting mods used in Nehrim installs.</li>
+		<li>Provides support for sorting mods used in Nehrim - At Fate's Edge and Fallout: New Vegas installs.</li>
 		<li>Provides useful load order notes for many mods.</li>
 		<li>Displays the version number of mods when it is available.</li>
 		<li>Allows easy user customisation of mod positions and the messages provided.</li>
 		<li>Provides Bash Tag suggestions that are automatically applied by Wrye Bash (in Oblivion) or Wrye Flash (in Fallout 3).</li>
 		<li>Sorts mod files ghosted by Wrye Bash/Flash.</li>
-		<li>Is under constant development and improvement by a team of modders and experts on Oblivion and Fallout 3.</li>	
+		<li>Is under constant development and improvement by a team of modders and experts on all supported games.</li>	
 	</ul>
 	<p>Better Oblivion Sorting Software (BOSS) will reorder your mods to their correct positions (as listed in the masterlist.txt database file), putting any mods it doesn't recognise after them, in the same order as they were before BOSS was run.</p>
 	<p>BOSS is designed to assist in the installation and usage of mods, especially more complex mods such as FCOM, MMM and FOOK, and help mod users avoid serious conflicts. It is not a complete solution to load ordering issues, as there are far more mods out there 
-	(estimated at about 30,000 for Oblivion, and about 11,000 for Fallout 3) than BOSS knows about. To properly place mods BOSS doesn't know about, a good working knowledge of mod load ordering for Oblivion/Fallout 3/Nehrim is still necessary, for which some research and documentation reading will go a long way.</p>
+	(estimated at about 30,000 for Oblivion, and about 11,000 for Fallout 3) than BOSS knows about. To properly place mods BOSS doesn't know about, a good working knowledge of mod load ordering for the relevant game is still necessary, for which some research and documentation reading will go a long way.</p>
 	</div>
 	<br /><br />
 	
 	<div id="install"><span>Installation &amp; Basic Usage</span>
-	<p>BOSS can be installed for use with Oblivion, Fallout 3 or Nehrim (a Total Conversion mod for Oblivion). The only differences in installation and usage are minor, mostly to do with the different locations to install to.</p>
+	<p>BOSS can be installed for use with Oblivion, Fallout 3, Fallout: New Vegas or Nehrim - At Fate's Edge (a Total Conversion mod for Oblivion). The only differences in installation and usage are minor, mostly to do with the different locations to install to.</p>
 	<p>For Oblivion:</p>
 	<ol>
 		<li>If you have Wrye Bash, make sure the "Lock Times" function is deactivated.</li>
@@ -72,10 +72,16 @@
 		<li>Run the "BOSS - Update Masterlist.bat" file to get the latest masterlist from the Internet and sort your mods.</li>
 		<li>When running BOSS normally, do so from the BOSS.exe, but remember to run the "BOSS - Update Masterlist.bat" regularly to ensure you have a recent masterlist.</li>
 	</ol>
-	<p>For Nehrim:</p>
+	<p>For Nehrim - At Fate's Edge:</p>
 	<ol>
 		<li>If you have Wrye Bash, make sure the "Lock Times" function is deactivated.</li>
 		<li>Extract the BOSS archive you downloaded to your ..\Nehrim\Data folder, so that BOSS.exe is in the same folder as Nehrim.esm.</li>
+		<li>Run the "BOSS - Update Masterlist.bat" file to get the latest masterlist from the Internet and sort your mods.</li>
+		<li>When running BOSS normally, do so from the BOSS.exe, but remember to run the "BOSS - Update Masterlist.bat" regularly to ensure you have a recent masterlist.</li>
+	</ol>
+	<p>For Fallout: New Vegas:</p>
+	<ol>
+		<li>Extract the BOSS archive you downloaded to your ..\steamapps\common\fallout new vegas\data folder, so that BOSS.exe is in the same folder as FalloutNV.esm.</li>
 		<li>Run the "BOSS - Update Masterlist.bat" file to get the latest masterlist from the Internet and sort your mods.</li>
 		<li>When running BOSS normally, do so from the BOSS.exe, but remember to run the "BOSS - Update Masterlist.bat" regularly to ensure you have a recent masterlist.</li>
 	</ol>
@@ -110,9 +116,9 @@
 	<p>Stops BOSS from automatically opening up the BOSSlog after it has finished running.</p>
 	</div><br />
 	<br /><span class="subtitle">BOSS Changes and Files</span>
-	<p>The only changes BOSS makes to your game install are to re-date the .esp and .esm files in your Data folder, to create a BOSS folder there, and create a few text files in that BOSS folder. Your game's master file (Oblivion.esm, Fallout3.esm or Nehrim.esm) 
+	<p>The only changes BOSS makes to your game install are to re-date the .esp and .esm files in your Data folder, to create a BOSS folder there, and create a few text files in that BOSS folder. Your game's master file (Oblivion.esm, Fallout3.esm, Nehrim.esm or FalloutNV.esm) 
 	is never touched, and all dates are derived from it.</p>
-	<div>The text files that are used and created by BOSS are all found in the ..\Data\BOSS folder, and they are:
+	<div>The files that are used and created by BOSS are all found in the ..\Data\BOSS folder, and they are:
 	<ul>
 		<li><i>masterlist.txt</i> - This is the master list of mods that BOSS recognises, listing them in order and which includes notes attached to them. It is the most frequently updated component of BOSS, receiving updates almost every day.</li>
 		<li><i>BOSSlog.html</i> - This log is where the output that BOSS generates and displays once the program ends is stored. It is replaced every time you run BOSS. You can view it in any web browser.</li>
@@ -137,7 +143,7 @@
 	</div><br /><br />
 	
 	<div id="help"><span>Contributions &amp; Help</span>
-	<p>General discussion, and the submission of questions, suggestions and unrecognised mods, takes place in BOSS's official threads. The official thread for Oblivion and Nehrim is found <a href="http://forums.bethsoft.com/?showtopic=1117093">here</a>, and the official thread for Fallout 3 is found <a href="http://forums.bethsoft.com/?showtopic=1098111">here</a>.</p>
+	<p>General discussion, and the submission of questions, suggestions and unrecognised mods, takes place in BOSS's official threads. The official thread for Oblivion is found <a href="http://forums.bethsoft.com/?showtopic=1117093">here</a>, and the official thread for Fallout 3 is found <a href="http://forums.bethsoft.com/?showtopic=1098111">here</a>.</p>
 	<p>User contribution of additions and corrections to the masterlist are vital to the upkeep of BOSS. Let us know what you know.</p>
 	<p>Lists of unrecognised mods are welcome but the only way we can include them in the database in a timely way is if we get:</p>
 	<ul>
@@ -243,7 +249,7 @@
 		<li>In the lower box, check the box opposite "Full Control" in the "Allow" column. Press OK to exit. If a UAC prompt appears, allow the change.</li>
 		<li>In the Properties window, select OK to exit. You should now have Full Control permissions over your chosen folder.</li>
 	</ol>
-    <p> for dealing with limited accounts on XP you can run this console cmd <code>cacls drive:\path to relevant folder\*.* /e /t /p users:c</code>. However note that if you set it wrong it can mess things up so if you decide to do so use care (and do so at your own risk of course).
+    <p>For dealing with limited accounts on XP you can run this console command: <code>cacls drive:\path to relevant folder\*.* /e /t /p users:c</code>. However note that if you set it wrong it can mess things up so if you decide to do so, use care (and do so at your own risk).
 	</div><br /><br />
 	
 	<div id="linux"><span>Running BOSS Under Linux</span>
@@ -252,9 +258,9 @@
 		<li>BOSS runs noticeably slower on Linux through Wine than it does natively on Windows.</li>
 		<li>The BOSSlog is not automatically displayed once BOSS has run. In this case, you will have to open <code>Data/BOSS/BOSSlog.html</code> manually to see it.</li>
 	</ul>
-	<p>Remember, the BOSS Team does not provide any support for those running BOSS under Linux. If you wish to do so, then it is at your own risk. If you encounter problems, you must find solutions yourself. However, if you do so, the BOSS Team will be happy to incorporate the solutions in future releases to help others, provided you report the issue and solution to us.</p>
-	<p>You can also choose to compile BOSS on Linux and run it as a native application. The major advantages to this are a large performance increase, and automatic display of the BOSSlog. However, there is a disadvantage in that due to the case-sensitivity of Linux filenames, mods listed in the masterlist that are not exact case-matches of their plugin name counterparts in your Data folder will not be recognised, unlike in Windows, where the masterlist behaves case-insensitively.</p>
-	<p>The BOSS Team does not supply pre-compiled Linux binaries or instructions for building BOSS in Linux at this time, although a makefile is included in the source code to ease the process.</div><br /><br />
+	<p>It is also possible to compile BOSS from the source code as a native application on Linux. Again, no support is given for doing so, and this has the disadvantage of making the masterlist case-sensitive, so if the case of a plugin's name in the masterlist does not match the case of the plugin in your Data folder, it will remain unrecognised. If you come across any such plugins, let us know and we will update the masterlist to use the correct case.</p>
+	<p>The BOSS Team does not supply pre-compiled Linux binaries or instructions for building BOSS in Linux at this time, although a makefile is included in the source code to ease the process.</p>
+	</div><br /><br />
 	
 	<div id="credits"><span>Credits</span>
 	<p>Sources for the mod list and its order include: Agiel's Annotated Load Order; Fivefries load order; dev_akm's official expanded FCOM load order (FCOM 0.9.9); suggestions and instructions from Mart's Monster Mod, 
@@ -266,15 +272,14 @@
 	
 	<div id="team"><span>Project Members</span>
 	<p>Since June 2009, BOSS has been a collaborative project on Google Code using the SVN version tracking and editing engine. In alphabetical order, the project members are:</p>
-	<div><b>Google Code Administrators</b>
+	<b>Google Code Administrators</b>
 	<ul>
 		<li>Arthmoor</li>
 		<li>PacificMorrowind</li>
 		<li>Random007</li>
 		<li>WrinklyNinja</li>
 	</ul>
-	</div>
-	<div><b>Oblivion Masterlist Developers</b>
+	<b>Oblivion Masterlist Developers</b>
 	<ul>
 		<li>Alithelord</li>
 		<li>Arthmoor</li>
@@ -286,8 +291,7 @@
 		<li>WrinklyNinja</li>
 		<li>ZiggyX</li>
 	</ul>
-	</div>
-	<div><b>Fallout 3 Masterlist Developers</b>
+	<b>Fallout 3 Masterlist Developers</b>
 	<ul>
 		<li>Alithelord</li>
 		<li>Arthmoor</li>
@@ -296,8 +300,15 @@
 		<li>PacificMorrowind</li>
 		<li>Valda</li>
 	</ul>
-	</div>
-	<div><b>Source Code Developers</b>
+	<b>Fallout: New Vegas Masterlist Developers</b>
+	<ul>
+		<li>jacksonleist</li>
+	</ul>
+	<b>Nehrim - At Fate's Edge Masterlist Developers</b>
+	<ul>
+		<li>Psymon</li>
+	</ul>
+	<b>Source Code Developers</b>
 	<ul>
 		<li>Alithelord</li>
 		<li>Leandro Conde</li>
@@ -305,7 +316,6 @@
 		<li>PacificMorrowind</li>
 		<li>WrinklyNinja</li>
 	</ul>
-	</div>
 	<p>Most project members can be contacted on the Bethesda Game Studios forums, in the Oblivion Mods and Fallout 3 Mods sub-forums. Most can also be contacted on TES Nexus/Fallout 3 Nexus.</p>
 	</div><br /><br />
 	
@@ -334,6 +344,10 @@
 	
 	<div id="history"><span>Version History</span>
 	<p>Only updates to the BOSS program are recorded here, not masterlist updates, as that is updated far too frequently to be concisely recorded. A full record of changes made to the masterlist may be viewed by browsing the Google Code repository.</p>
+	<p><b>Version 1.62</b></p>
+	<ul>
+		<li>Added support for Fallout: New Vegas.</li>
+	</ul>
 	<p><b>Version 1.61</b></p>
 	<ul>
 		<li>Added silent -s command line switch to suppress the automatic opening of the BOSSlog when BOSS is run.</li>
@@ -352,7 +366,7 @@
 		<li>Added sorting of ghosted plugins.</li>
 		<li>Added hardcoded undo functionality to make it easier to undo BOSS's changes.</li>
 		<li>Added custom user rules functionality to allow users to customise how BOSS sorts their files, and more.</li>
-		<li>Added support for use with the Nehrim total conversion.</li>
+		<li>Added support for use with the Nehrim - At Fate's Edge total conversion.</li>
 		<li>Removed need for BOSS.bat.</li>
 		<li>Moved BOSS's input and output files to Data\BOSS\.</li>
 		<li>Converted Readme from RTF to HTML format.</li>
