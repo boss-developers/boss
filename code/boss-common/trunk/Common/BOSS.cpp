@@ -1,5 +1,5 @@
 /*	Better Oblivion Sorting Software
-	1.6
+	1.62
 	Quick and Dirty Load Order Utility for Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas
 	(Making C++ look like the scripting language it isn't.)
 
@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
 			<< "<body id='body'>"<<endl<<"<div id='title'>Better Oblivion Sorting Software Log</div><br />"<<endl
 			<< "<div style='text-align:center;'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />"<<endl
 			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
-			<< "v1.6 (23 Spetember 2010)"<<endl<<"</div><br /><br />";
+			<< "v1.62 (29 October 2010)"<<endl<<"</div><br /><br />";
 
 	if (fs::exists("Oblivion.esm")) game = 1;
 	else if (fs::exists("Fallout3.esm")) game = 2;
@@ -311,7 +311,7 @@ int main(int argc, char *argv[]) {
 					while (!order.eof()) {					
 						textbuf=ReadLine("order");
 						if (textbuf.length()>1 && (textbuf.substr(1,10)=="BeginGroup" || textbuf.substr(1,8)=="EndGroup")) {
-							//A group starts or ends. Search rules to see if it matches any.
+							//A group starts or ends. Check rule to see if it matches any.
 							if (textbuf.substr(1,10)=="BeginGroup") {
 								if (Tidy(userlist.objects[start])==Tidy(textbuf.substr(14))) {
 									//Rule match. Now search for a line that matches something in modlist.
@@ -379,6 +379,73 @@ int main(int argc, char *argv[]) {
 						}
 					}
 					userlist.messages += "The group \""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " the group \"" + userlist.objects[j] + "\".<br /><br />";
+				//An insertion line.
+				} else if (userlist.keys[j]=="INTO TOP" || userlist.keys[j]=="INTO BOTTOM") {
+					vector<string> currentmessages;
+					//Get current mod messages and remove mod from current modlist position.
+					int index1 = modlist.GetModIndex(userlist.objects[start]);
+					// Only increment 'x' if we've taken the 'source' mod from below the 'last-sorted' mark
+					if (userlist.keys[start]=="ADD" && index1 >= x) x++;
+					//If it adds a mod already sorted, skip the rule.
+					else if (userlist.keys[start]=="ADD"  && index1 < x) {
+						userlist.messages += "\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.<br /><br />";
+						break;
+					}
+					string filename = modlist.mods[index1];
+					currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
+					modlist.mods.erase(modlist.mods.begin()+index1);
+					modlist.modmessages.erase(modlist.modmessages.begin()+index1);
+					//Need to insert mod and mod's messages to a specific position.
+					//This is the tricky bit.
+					order.open(masterlist_path.external_file_string().c_str());
+					int count=0;
+					bool lookforsortmods=false;
+					vector<string> sortmods;
+					while (!order.eof()) {					
+						textbuf=ReadLine("order");
+						if (textbuf.length()>1 && (textbuf.substr(1,10)=="BeginGroup" || textbuf.substr(1,8)=="EndGroup")) {
+							//A group starts or ends. Check rule to see if it matches.
+							if (textbuf.substr(1,10)=="BeginGroup") {
+								if (Tidy(userlist.objects[j])==Tidy(textbuf.substr(14))) {
+									//Sort group match. Now search for lines that match something in modlist.
+									lookforsortmods=true;
+									count = 0;
+								}
+								count += 1;
+							} else if (count>0 && textbuf.substr(1,8)=="EndGroup") {
+								count -= 1;
+								if (count==0) {
+									//The end of the matched group has been found. Stop searching for mods to move.
+									lookforsortmods=false;
+								}
+							}
+						} else if (lookforsortmods && textbuf[0]!='\\') {
+							if (!IsMessage(textbuf)) {
+								isghost = false;
+								if (fs::exists(textbuf+".ghost") && !fs::exists(textbuf)) isghost = true;
+								if (fs::exists(textbuf) || isghost) {
+									//Found a mod.
+									int gm;
+									if (isghost) gm = modlist.GetModIndex(textbuf+".ghost");
+									else gm = modlist.GetModIndex(textbuf);
+									sortmods.push_back(modlist.mods[gm]);
+								}
+							}
+						}
+					}
+					order.close();
+					int index;
+					if (userlist.keys[j]=="INTO TOP") 
+						index = modlist.GetModIndex(sortmods.front());
+					else if (userlist.keys[j]=="INTO BOTTOM") 
+						index = modlist.GetModIndex(sortmods.back())+1;
+					modlist.mods.insert(modlist.mods.begin()+index,filename);
+					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
+					if (userlist.keys[j]=="INTO TOP") 
+						userlist.messages += "\""+userlist.objects[start]+"\" has been inserted into the top of group \"" + userlist.objects[j] + "\".<br /><br />";
+					else if (userlist.keys[j]=="INTO BOTTOM") 
+						userlist.messages += "\""+userlist.objects[start]+"\" has been inserted into the bottom of group \"" + userlist.objects[j] + "\".<br /><br />";
+			
 				//A message line.
 				} else if (userlist.keys[j]=="APPEND" || userlist.keys[j]=="REPLACE") {
 					//Look for the modlist line that contains the match mod of the rule.

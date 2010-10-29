@@ -125,7 +125,25 @@ namespace boss {
 							messages += "<span class='error'>It tries to sort a mod before the master .ESM file.</span><br />";
 							skip = true;
 						}
-					
+					} else if ((key=="INTO TOP" || key=="INTO BOTTOM")) {
+						keys.push_back(key);
+						objects.push_back(object);
+						if (keys[rules.back()]=="FOR") {
+							if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+							messages += "<span class='error'>It includes a sort line in a rule with a FOR rule keyword.</span><br />";
+							skip = true;
+						}
+						if (Tidy(object)=="esms" && key=="INTO TOP") {
+							if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+							messages += "<span class='error'>It tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.</span><br />";
+							skip = true;
+						}
+						if ((!IsPlugin(objects[rules.back()])) || IsPlugin(object)) {
+							if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+							messages += "<span class='error'>It tries to insert a group or insert a mod into another mod.</span><br />";
+							skip = true;
+						}
+
 					} else if ((key=="APPEND" || key=="REPLACE")) {
 						keys.push_back(key);
 						objects.push_back(object);
