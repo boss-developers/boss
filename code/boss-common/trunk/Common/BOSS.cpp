@@ -380,7 +380,7 @@ int main(int argc, char *argv[]) {
 					}
 					userlist.messages += "The group \""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " the group \"" + userlist.objects[j] + "\".<br /><br />";
 				//An insertion line.
-				} else if (userlist.keys[j]=="INTO TOP" || userlist.keys[j]=="INTO BOTTOM") {
+				} else if (userlist.keys[j]=="TOP" || userlist.keys[j]=="BOTTOM") {
 					vector<string> currentmessages;
 					//Get current mod messages and remove mod from current modlist position.
 					int index1 = modlist.GetModIndex(userlist.objects[start]);
@@ -435,16 +435,16 @@ int main(int argc, char *argv[]) {
 					}
 					order.close();
 					int index;
-					if (userlist.keys[j]=="INTO TOP") 
+					if (userlist.keys[j]=="TOP") 
 						index = modlist.GetModIndex(sortmods.front());
-					else if (userlist.keys[j]=="INTO BOTTOM") 
+					else if (userlist.keys[j]=="BOTTOM") 
 						index = modlist.GetModIndex(sortmods.back())+1;
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
-					if (userlist.keys[j]=="INTO TOP") 
-						userlist.messages += "\""+userlist.objects[start]+"\" has been inserted into the top of group \"" + userlist.objects[j] + "\".<br /><br />";
-					else if (userlist.keys[j]=="INTO BOTTOM") 
-						userlist.messages += "\""+userlist.objects[start]+"\" has been inserted into the bottom of group \"" + userlist.objects[j] + "\".<br /><br />";
+					if (userlist.keys[j]=="TOP") 
+						userlist.messages += "\""+userlist.objects[start]+"\" inserted into the top of group \"" + userlist.objects[j] + "\".<br /><br />";
+					else if (userlist.keys[j]=="BOTTOM") 
+						userlist.messages += "\""+userlist.objects[start]+"\" inserted into the bottom of group \"" + userlist.objects[j] + "\".<br /><br />";
 			
 				//A message line.
 				} else if (userlist.keys[j]=="APPEND" || userlist.keys[j]=="REPLACE") {
