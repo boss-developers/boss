@@ -1,5 +1,5 @@
 /*	Better Oblivion Sorting Software
-	1.62
+
 	Quick and Dirty Load Order Utility for Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas
 	(Making C++ look like the scripting language it isn't.)
 
@@ -11,6 +11,9 @@
 #define NOMINMAX // we don't want the dummy min/max macros since they overlap with the std:: algorithms
 
 #include "BOSS.h"
+#include "Support/Logger.h"
+
+#include <boost/program_options.hpp>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,70 +29,158 @@
 
 
 using namespace boss;
+using namespace std;
+namespace po = boost::program_options;
 
 
-//BOSS [--update | -u] [--help | -h] [--disable-version-parse | -V-]  [--revert-level | -r] [1 | 2]
-int main(int argc, char *argv[]) {					
-	
+const string g_version     = "1.6.2";
+const string g_releaseDate = "October 26, 2010";
+
+
+void ShowVersion() {
+	cout << "BOSS: Better Oblivion Sorting Software" << endl;
+	cout << "Version " << g_version << " (" << g_releaseDate << ")" << endl;
+}
+
+void ShowUsage(po::options_description opts) {
+
+	static string progName =
+#if _WIN32 || _WIN64
+		"BOSS";
+#else
+		"boss";
+#endif
+
+    ShowVersion();
+	cout << endl << "Description:" << endl;
+	cout << "  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, Nehrim," << endl;
+	cout << "  Fallout 3, and Fallout: New Vegas according to a frequently updated" << endl;
+	cout << "  masterlist to minimise incompatibilities between mods." << endl << endl;
+	cout << opts << endl;
+	cout << "Examples:" << endl;
+	cout << "  " << progName << " -u" << endl;
+	cout << "    updates the masterlist, sorts your mods, and shows the log" << endl << endl;
+	cout << "  " << progName << " -sr" << endl;
+	cout << "    reverts your load order 1 level and skips showing the log" << endl << endl;
+	cout << "  " << progName << " -r 2" << endl;
+	cout << "    reverts your load order 2 levels and shows the log" << endl << endl;
+}
+
+void Fail() {
+#if _WIN32 || _WIN64
+    cout << "Press ENTER to quit...";
+    cin.ignore(1, '\n');
+#endif
+
+    exit(1);
+}
+
+int main(int argc, char *argv[]) {
+
 	int x;							//random useful integers
-	string textbuf,textbuf2;		//a line of text from a file (should usually end up being be a file name);
-	time_t esmtime,modfiletime;		//File modification times.
+	string textbuf;                 //a line of text from a file (should usually end up being be a file name);
+	time_t esmtime, modfiletime;	//File modification times.
 	bool found;
-	bool update = false;			//To update masterlist or not?
-	bool version_parse = true;		//Enable parsing of mod's headers to look for version strings
-	bool silent = false;            //Silent mode?
 	bool isghost;					//Is the file ghosted or not?
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
-	int revert=0;					//What level to revert to?
+
+	// set option defaults
+	bool update             = false; // update masterlist?
+	bool silent             = false; // silent mode?
+	bool skip_version_parse = false; // enable parsing of mod's headers to look for version strings
+	int  revert             = 0;     // what level to revert to
+	int  verbosity          = 0;     // log levels above INFO to output
+	bool debug              = false; // whether to include origin information in logging statements
+
+	// declare the supported options
+	po::options_description opts("Options");
+	opts.add_options()
+		("help,h",				"produces this help message")
+		("version,V",			"prints the version banner")
+		("update,u", po::value(&update)->zero_tokens(),
+								"automatically update the local copy of the"
+								" masterlist to the latest version"
+								" available on the web")
+		("silent,s", po::value(&silent)->zero_tokens(),
+								"don't launch a browser to show the HTML log"
+								" at program completion")
+		("no-version-parse,n", po::value(&skip_version_parse)->zero_tokens(),
+								"don't extract mod version numbers for"
+								" printing in the HTML log")
+		("revert,r", po::value<int>(&revert)->implicit_value(1, ""),
+								"revert to a previous load order.  this"
+								" parameter optionally accepts values of 1 or"
+								" 2, indicating how many undo steps to apply."
+								"  if no option value is specified, it"
+								" defaults to 1")
+		("verbose,v", po::value(&verbosity)->implicit_value(1, ""),
+                                "specify verbosity level (0-3).  0 is the"
+                                " default, showing only WARN and ERROR messges."
+                                " 1 (INFO and above) is implied if this option"
+                                " is specified without an argument.  higher"
+                                " values increase the verbosity further")
+		("debug,d", po::value(&debug)->zero_tokens(),
+                                "add source file references to logging statements");
+
+	// parse command line arguments
+	po::variables_map vm;
+	try{
+		po::store(po::command_line_parser(argc, argv).options(opts).run(), vm);
+		po::notify(vm);
+	}catch (po::multiple_occurrences & e){
+		LOG_ERROR("cannot specify options multiple times; please use the '--help' option to see usage instructions");
+		Fail();
+	}catch (exception & e){
+		LOG_ERROR("%s; please use the '--help' option to see usage instructions", e.what());
+		Fail();
+	}
 	
-	//Parse command line arguments.
-	if (argc > 1) {
-		for (int i=0; i < argc; i++) {
-			if (strcmp("--update", argv[i]) == 0 || strcmp("-u", argv[i]) == 0) {
-				update = true;
-			}if (strcmp("--silent-mode", argv[i]) == 0 || strcmp("-s", argv[i]) == 0) {
-				silent = true;
-			} else if (strcmp("--disable-version-parse", argv[i]) == 0 || strcmp("-V-", argv[i]) == 0) {
-				version_parse = false;
-			} else if (strcmp("--revert-level", argv[i]) == 0 || strcmp("-r", argv[i]) == 0) {
-				//If the correct argument is given, use it. If not, assume that they meant to roll back one level.
-				if (i+1<argc) {
-					if (strcmp("1", argv[i+1]) == 0 || strcmp("2", argv[i+1]) == 0) revert = atoi(argv[i+1]);
-					else revert = 1;
-				} else revert = 1;
-			} else if (strcmp("--help", argv[i]) == 0 || strcmp("-h", argv[i]) == 0) {
-				cout << "Better Oblivion Sorting Software is a utility that sorts the load order of TESIV: Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas mods according to their relative positions on a frequently-updated masterlist ";
-				cout << "to ensure proper load order and minimise incompatibilities between mods." << endl << endl;
-				cout << "Optional Parameters" << endl << endl;
-				cout << "-u, --update: " << endl << "    Automatically updates the local copy of the masterlist using the latest version available on the Google Code repository." << endl << endl;
-				cout << "-V-, --disable-version-parse: " << endl << "    Enables the parsing of each mod's description and if found extracts from there the author stamped mod's version and prints it along other data in the generated bosslog.html." << endl << endl;
-				cout << "-r, --revert-level : " << endl << "	Can accept values of 1 or 2. Sets BOSS to revert its changes back the given number of levels." << endl << endl;
-				cout << "-s, --silent-mode: " << endl << "    Disables launch of the log; just runs silently.." << endl << endl;
-				exit (0);
-			}
+    // set whether to track log statement origins
+    g_logger.setOriginTracking(debug);
+
+    if (vm.count("verbose")) {
+        if (0 > verbosity) {
+            LOG_ERROR("invalid option for 'verbose' parameter: %d", verbosity);
+			Fail();
+		}
+
+        // it's ok if this number is too high.  setVerbosity will handle it
+        g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + verbosity));
+    }
+	if (vm.count("help")) {
+		ShowUsage(opts);
+	    exit(0);
+	}
+	if (vm.count("version")) {
+		ShowVersion();
+	    exit(0);
+	}
+	if (vm.count("revert")) {
+		// sanity check argument
+		if (revert < 1 || revert > 2) {
+            LOG_ERROR("invalid option for 'revert' parameter: %d", revert);
+			Fail();
 		}
 	}
 
-	//Try to create BOSS sub-directory.
+	LOG_DEBUG("creating BOSS sub-directory");
 	try { fs::create_directory(boss_path);
 	} catch(fs::filesystem_error e) {
-		cout << "Critical Error: Sub-directory '" << boss_path << "' could not be created!" << endl
-			 << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl
-			 << "Utility will end now." << endl << endl;
-		cout << "Press ENTER to quit...";
-		cin.ignore(1,'\n');
-		exit(1); //fail in screaming heap.
+        LOG_ERROR("subdirectory '%s' could not be created; check the"
+                  " Troubleshooting section of the ReadMe for more"
+                  " information and possible solutions",
+                  boss_path.external_file_string().c_str());
+		Fail();
 	}
 
-	//Check for creation of BOSSlog.txt.
-	bosslog.open(bosslog_path.external_file_string().c_str());
+    const string bosslogFilename = bosslog_path.external_file_string();
+	LOG_DEBUG("opening '%s'", bosslogFilename.c_str());
+	bosslog.open(bosslogFilename.c_str());
 	if (bosslog.fail()) {							
-		cout << endl << "Critical Error: BOSSlog.html could not be written to!" << endl
-					 << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl
-					 << "Utility will end now." << endl << endl;
-		cout << "Press ENTER to quit...";
-		cin.ignore(1,'\n');
-		exit (1); //fail in screaming heap.
+        LOG_ERROR("file '%s' could not be accessed for writing; check the"
+                  " Troubleshooting section of the ReadMe for more"
+                  " information and possible solutions", bosslogFilename.c_str());
+		Fail();
 	}
 
 	//Output HTML start and <head>
@@ -522,7 +613,7 @@ int main(int argc, char *argv[]) {
 			ghosted=true;
 			filename = modlist.mods[i].substr(0,modlist.mods[i].length()-6);
 		} else filename = modlist.mods[i];
-		string text = version_parse ? GetModHeader(filename,ghosted) : filename;
+		string text = skip_version_parse ? filename : GetModHeader(filename, ghosted);
 		if (ghosted) text += " <em> - Ghosted</em>";
 		if (modlist.modmessages[i].size()>0) bosslog << "<b>" << text << "</b>";		// show which mod file is being processed.
 		else bosslog << text;

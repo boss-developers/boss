@@ -26,6 +26,9 @@
     <ClCompile Include="Userlist.cpp">
       <Filter>Userlist</Filter>
     </ClCompile>
+    <ClCompile Include="..\Support\Logger.cpp">
+      <Filter>Support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support">
@@ -75,6 +78,9 @@
     </ClInclude>
     <ClInclude Include="Userlist.h">
       <Filter>Userlist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Support\Logger.h">
+      <Filter>Support</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
