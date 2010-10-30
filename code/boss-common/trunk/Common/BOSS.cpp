@@ -372,13 +372,9 @@ int main(int argc, char *argv[]) {
 							}
 						} else if ((lookforrulemods || lookforsortmods)  && textbuf[0]!='\\') {
 							if (!IsMessage(textbuf)) {
-								isghost = false;
-								if (fs::exists(textbuf+".ghost") && !fs::exists(textbuf)) isghost = true;
-								if (fs::exists(textbuf) || isghost) {
+								if (fs::exists(textbuf) || fs::exists(textbuf+".ghost")) {
 									//Found a mod.
-									int gm;
-									if (isghost) gm = modlist.GetModIndex(textbuf+".ghost");
-									else gm = modlist.GetModIndex(textbuf);
+									int gm = modlist.GetModIndex(textbuf);
 									if (lookforrulemods) {
 										rulemods.push_back(modlist.mods[gm]);
 									} else if (lookforsortmods) {
@@ -436,7 +432,7 @@ int main(int argc, char *argv[]) {
 					//This is the tricky bit.
 					order.open(masterlist_path.external_file_string().c_str());
 					int count=0;
-					bool lookforsortmods=false;
+					bool lookforsortmods=false,overtime=false;
 					vector<string> sortmods;
 					while (!order.eof()) {					
 						textbuf=ReadLine("order");
@@ -452,30 +448,38 @@ int main(int argc, char *argv[]) {
 							} else if (count>0 && textbuf.substr(1,8)=="EndGroup") {
 								count -= 1;
 								if (count==0) {
-									//The end of the matched group has been found. Stop searching for mods to move.
-									lookforsortmods=false;
+									if ((int)sortmods.size()>0) {
+										//The end of the matched group has been found, and we have found at least one mod in that group. Stop searching for installed mods.
+										lookforsortmods=false;
+										break;
+									} else {
+										//The end of the matched group was found, but we still don't have any mods to sort relative to.
+										//Keep searching for mods, but now TOP and BOTTOM both mean "before the mod found next".
+										overtime=true;
+									}
 								}
 							}
 						} else if (lookforsortmods && textbuf[0]!='\\') {
 							if (!IsMessage(textbuf)) {
-								isghost = false;
-								if (fs::exists(textbuf+".ghost") && !fs::exists(textbuf)) isghost = true;
-								if (fs::exists(textbuf) || isghost) {
+								if (fs::exists(textbuf) || fs::exists(textbuf+".ghost")) {
 									//Found a mod.
-									int gm;
-									if (isghost) gm = modlist.GetModIndex(textbuf+".ghost");
-									else gm = modlist.GetModIndex(textbuf);
+									int gm = modlist.GetModIndex(textbuf);
 									sortmods.push_back(modlist.mods[gm]);
+									if (overtime) break;	//Stop looking for more mods immediately.
 								}
 							}
 						}
 					}
 					order.close();
 					int index;
-					if (userlist.keys[j]=="TOP") 
-						index = modlist.GetModIndex(sortmods.front());
-					else if (userlist.keys[j]=="BOTTOM") 
-						index = modlist.GetModIndex(sortmods.back())+1;
+					if ((int)sortmods.size()>0) {
+						if (userlist.keys[j]=="TOP") 
+							index = modlist.GetModIndex(sortmods.front());
+						else if (userlist.keys[j]=="BOTTOM") {
+							index = modlist.GetModIndex(sortmods.back());
+							if (!overtime) index += 1;
+						}
+					} else index = (int)modlist.mods.size();
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 					if (userlist.keys[j]=="TOP") 
