@@ -479,7 +479,7 @@ int main(int argc, char *argv[]) {
 							index = modlist.GetModIndex(sortmods.back());
 							if (!overtime) index += 1;
 						}
-					} else index = (int)modlist.mods.size();
+					} else index = x-1;		//Not really sure why this works, but it does. IMO it should be =x when using OVERRIDE, but =x-1 works fine.
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 					if (userlist.keys[j]=="TOP") 
