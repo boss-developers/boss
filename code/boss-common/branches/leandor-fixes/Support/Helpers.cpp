@@ -9,29 +9,31 @@
 	$Revision$, $Date$
 */
 
+
+#include "Types.h"
+#include "Helpers.h"
+#include "VersionRegex.h"
+
+#include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include <ctype.h>
 #include <stdio.h>
 #include <time.h>
 #include <sys/types.h>
 #include <sstream>
 
-#include <boost/regex.hpp>
-#include <boost/algorithm/string.hpp>
-
-#ifdef WIN32
-#include <Support/Types.h>
-#include <Support/Helpers.h>
-#include <Support/VersionRegex.h>
-#else
-#include "../Support/Types.h"
-#include "../Support/Helpers.h"
-#include "../Support/VersionRegex.h"
-#endif
 
 namespace boss {
 	using namespace std;
 	using namespace boost;
 
+
+#if _WIN32 || _WIN64
+	const string launcher_cmd = "start";
+#else
+	const string launcher_cmd = "xdg-open";
+#endif
 
 	// Reads a text line from the input stream
 	bool ReadLine(istream& is, string& s)
@@ -126,7 +128,7 @@ namespace boss {
 	}
 
 	string Tidy(string filename) {						//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
-		int endpos = filename.find_last_not_of(" \t");
+		size_t endpos = filename.find_last_not_of(" \t");
 	
 		if (filename.npos == endpos) return (""); 			//sanity check for empty string
 		else {
@@ -135,4 +137,10 @@ namespace boss {
 			return (filename);
 		}
 	}
-};
+
+	int Launch(const string& filename)
+	{
+		const string cmd = launcher_cmd + " " + filename;
+		return ::system(cmd.c_str());
+	}
+}

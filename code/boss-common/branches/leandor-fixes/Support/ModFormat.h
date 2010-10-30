@@ -12,13 +12,11 @@
 #ifndef __SUPPORT_MODFORMAT__HPP__
 #define __SUPPORT_MODFORMAT__HPP__
 
+
+#include "Types.h"
+
 #include <cstring>
 
-#ifdef WIN32
-#include <Support/Types.h>
-#else
-#include "../Support/Types.h"
-#endif
 
 namespace boss {
 
@@ -44,6 +42,6 @@ namespace boss {
 	};
 
 	ModHeader ReadHeader(string filename);
-};
+}
 
 #endif

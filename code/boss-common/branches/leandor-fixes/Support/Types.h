@@ -12,6 +12,7 @@
 #ifndef __SUPPORT_TYPES__HPP__
 #define __SUPPORT_TYPES__HPP__
 
+
 namespace boss {
 
 	//////////////////////////////////////////////////////////////////////////
@@ -19,6 +20,7 @@ namespace boss {
 	//////////////////////////////////////////////////////////////////////////
 
 	typedef unsigned long	ulong;
+	typedef unsigned int	uint;
 	typedef unsigned short	ushort;
 
 	
@@ -28,6 +30,6 @@ namespace boss {
 
 	// An arbitrary large number. Controls the size of some buffers used to read data from files.
 	const ulong MAXLENGTH = 4096UL;
-};
+}
 
 #endif

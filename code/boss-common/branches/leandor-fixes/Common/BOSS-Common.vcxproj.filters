@@ -77,4 +77,7 @@
       <Filter>Userlist</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BOSS_version.rc" />
+  </ItemGroup>
 </Project>

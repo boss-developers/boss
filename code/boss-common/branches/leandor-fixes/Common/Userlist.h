@@ -6,7 +6,7 @@
     Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
     http://creativecommons.org/licenses/by-nc-nd/3.0/
 
-	$Revision: 1284 $, $Date: 2010-08-05 03:43:59 +0100 (Thu, 05 Aug 2010) $
+	$Revision$, $Date$
 */
 
 //This is the start of implementing userlist and modlist classes into trunk. 
@@ -15,16 +15,15 @@
 #ifndef __BOSS_USERLIST_H__
 #define __BOSS_USERLIST_H__
 
+
+#include "Globals.h"
+#include "Support/Helpers.h"
+
 #include <string>
 #include <fstream>
 #include <vector>
 #include "boost/filesystem.hpp"
 
-#ifdef WIN32
-#include <Support/Helpers.h>
-#else
-#include "../Support/Helpers.h"
-#endif
 
 namespace boss {
 	using namespace std;
@@ -42,18 +41,15 @@ namespace boss {
 		vector<int> rules;						//Tells BOSS where each rule starts.
 		string messages;						//Stores output messages.
 		void AddRules();						//Populates object vectors with rules from userlist.txt.
-		void PrintRules(ofstream& output);		//Debug function, prints rules to output file stream.
 		void PrintMessages(ofstream& output);	//Prints the output messages.
-		int GetRuleIndex(string object, string key);		//Finds the rule line which references the given object.
 	};
 
 	//Class to store and use modlist.
 	class Mods {
 	public:
 		vector<string> mods;					//Stores the mods in your data folder.
-		vector< vector<string> > modmessages;		//Stores the messages attached to each mod. First dimension matches up with the mods vector, then second lists the messages attached to that mod.
+		vector< vector<string> > modmessages;	//Stores the messages attached to each mod. First dimension matches up with the mods vector, then second lists the messages attached to that mod.
 		void AddMods();							//Adds mods in directory to modlist in date order (AKA load order).
-		void PrintModList(ofstream& out);		//Debug output function.
 		int SaveModList();						//Save mod list to modlist.txt. Backs up old modlist.txt as modlist.old first.
 		int GetModIndex(string mod);			//Look for a mod in the modlist, even if the mod in question is ghosted.
 	};

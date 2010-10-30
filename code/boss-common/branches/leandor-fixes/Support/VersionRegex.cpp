@@ -9,8 +9,10 @@
 	$Revision$, $Date$
 */
 
+
 #include <string>
 #include <boost/regex.hpp>
+
 
 namespace boss {
 
@@ -71,4 +73,4 @@ namespace boss {
 			0
 			};
 
-};
+}
