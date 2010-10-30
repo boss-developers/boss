@@ -101,11 +101,6 @@ namespace boss {
 						} else if ((key=="BEFORE" || key=="AFTER")) {
 							keys.push_back(key);
 							objects.push_back(object);
-							if (IsPlugin(object) && !(fs::exists(object) || fs::exists(object+".ghost"))) {
-								if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-								messages += "<span class='error'>\""+object+"\" is not installed.</span><br />";
-								skip = true;
-							}
 							if ((IsPlugin(object) && !IsPlugin(objects[rules.back()])) || (!IsPlugin(object) && IsPlugin(objects[rules.back()]))) {
 								if (skip==false) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
 								messages += "<span class='error'>It references a mod and a group.</span><br />";

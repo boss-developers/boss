@@ -277,8 +277,9 @@ int main(int argc, char *argv[]) {
 				//A mod sorting line.
 				if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && IsPlugin(userlist.objects[j])) {
 					vector<string> currentmessages;
+					int index,index1;
 					//Get current mod messages and remove mod from current modlist position.
-					int index1 = modlist.GetModIndex(userlist.objects[start]);
+					index1 = modlist.GetModIndex(userlist.objects[start]);
 					// Only increment 'x' if we've taken the 'source' mod from below the 'last-sorted' mark
 					if (userlist.keys[start]=="ADD" && index1 >= x) x++;
 					//If it adds a mod already sorted, skip the rule.
@@ -291,7 +292,43 @@ int main(int argc, char *argv[]) {
 					modlist.mods.erase(modlist.mods.begin()+index1);
 					modlist.modmessages.erase(modlist.modmessages.begin()+index1);
 					//Need to insert mod and mod's messages to a specific position.
-					int index = modlist.GetModIndex(userlist.objects[j]);
+					index = modlist.GetModIndex(userlist.objects[j]);
+
+					//Let's take this up to 11 - super awesome stuff beginning.
+					//The sort mod isn't installed - so scour the [s]Shire[/s] masterlist for it.
+					if (index < 0 || index >= int(modlist.mods.size())) {
+						bool lookforinstalledmod=false;
+						order.open(masterlist_path.external_file_string().c_str());
+						while (!order.eof()) {
+							textbuf=ReadLine("order");
+							if (textbuf.length()>1 && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
+								if (!IsMessage(textbuf)) {		//Awww, it's a mod.
+									if (Tidy(userlist.objects[j])==Tidy(textbuf)) {
+										//The mod in this masterlist line matches the sort mod. Start looking for the next mod that is installed.
+										lookforinstalledmod=true;
+									} else if (lookforinstalledmod) {
+										//Look to see if the mod is installed.
+										int i = modlist.GetModIndex(textbuf);
+										if (i < 0 || i >= int(modlist.mods.size()))
+											continue;
+										index = i;
+										lookforinstalledmod=false;
+										if (userlist.keys[j]=="AFTER") index -= 1;
+										break;
+									}
+								}
+							}
+						}
+						order.close();
+						if (index < 0 || index >= int(modlist.mods.size())) {
+							userlist.messages += "\""+userlist.objects[j]+"\" is not installed, and is not in the masterlist. Rule skipped.<br /><br />";
+							modlist.mods.insert(modlist.mods.begin()+index1,filename);
+							modlist.modmessages.insert(modlist.modmessages.begin()+index1,currentmessages);
+							break;
+						}
+					}
+					//Uh oh, the awesomesauce ran out...
+
 					if (userlist.keys[j]=="AFTER") index += 1;
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);

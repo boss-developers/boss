@@ -72,7 +72,7 @@
 	ADD: &lt;RULE MOD&gt;<br />
 	BEFORE: &lt;SORT MOD&gt;
 	</code></blockquote>
-	<p>The <em>rule mod</em> is the mod you want to add, and the <em>sort mod</em> is the mod you want to sort it relative to (ie. it's position in your load order). Both mods must be installed in your Data directory.
+	<p>The <em>rule mod</em> is the mod you want to add, and the <em>sort mod</em> is the mod you want to sort it relative to (ie. its position in your load order). The rule mod must be installed in your Data directory, and the sort mod must either be in your Data directory or in the masterlist.
 	You cannot add mods before your game's master .ESM.</p>
 	<p>Some examples:</p>
 	<blockquote><code>
@@ -101,7 +101,7 @@
 	OVERRIDE: &lt;RULE MOD&gt;<br />
 	BEFORE: &lt;SORT MOD&gt;
 	</code></blockquote>
-	<p>The <em>rule mod</em> is the mod you want to sort, and the <em>sort mod</em> is the mod you want to sort it relative to. Both mods must be installed in your Data directory. 
+	<p>The <em>rule mod</em> is the mod you want to sort, and the <em>sort mod</em> is the mod you want to sort it relative to. The rule mod must be installed in your Data directory, and the sort mod must either be in your Data directory or in the masterlist.
 	You cannot move mods before your game's master .ESM, or move the master .ESM file itself. The mod will be moved from the place it is given in the masterlist to the place you specify.</p>
 	<p>An example:</p>
 	<blockquote><code>
@@ -180,10 +180,10 @@
 		<li><em>BOTTOM</em>: This states that the rule object (which must be a mod) is to be inserted into the sort object (which must be a group) at the bottom. The rule object will then load after anything else in the sort object.</li>
 	</ul>
 	<p>When using the BEFORE or AFTER sort keywords, the <em>sort object</em> is the plugin or group that you wish the rule object 
-	to be positioned relative to. If the rule object is a mod, the sort object must also be a mod, and the same if the rule object is a group. Mods must be sorted relative to other mods, and groups must be sorted relative to groups. You cannot sort mods relative to groups, or vice versa. You also cannot sort your game's master .ESM, sort other mods before it, or sort groups before the "ESMs" group.</p>
+	to be positioned relative to. Mods must be sorted relative to other mods, and groups must be sorted relative to groups. You cannot sort mods relative to groups, or vice versa. You also cannot sort your game's master .ESM, sort other mods before it, or sort groups before the "ESMs" group.</p>
 	<p>When using the TOP or BOTTOM sort keywords, the <em>sort object</em> is the <b>group</b> that you wish to insert the rule object (which must be a mod) into. You cannot insert groups into anything, mods into mods, or insert anything into the top of the "ESMs" group.</p>
 	
-	<p>If the sort object is a mod, it must be installed in your Data folder. A rule with a FOR rule keyword <b>must not</b> include a sort line.</p>
+	<p>If the sort object is a mod, it must either be installed in your Data folder or be present in the masterlist. A rule with a FOR rule keyword <b>must not</b> include a sort line.</p>
 	
 	<br /><span class="subtitle">The Message Line</span>
 	<p>If a rule's rule keyword is FOR, it <b>must</b> include at least one <em>message line</em>, which has the structure:</p>
@@ -246,17 +246,18 @@
 	<p>If a rule is found to have errors in its syntax or it is found to add a mod that is already in the masterlist, it will print one or more error messages depending on the type of error:</p>
 	<ol>
 		<li>If the rule has the correct syntax, but adds a mod that is already in the masterlist, it will print a message of the form: <code>"<em>Mod Name</em>" is already in the masterlist. Rule skipped.</code></li>
+		<li>If the rule's sort mod is not installed, and is not in the masterlist, it will print a message of the form: <code>"<em>Mod Name</em>" is not installed, and is not in the masterlist. Rule skipped.</code></li>
 		<li>If the rule contains a keyword that is unrecognised (eg. written in lowercase, spelt wrong), it will print a message detailing the line with the error and will skip the last rule detected. If the line with the error is the first line of a new rule, that rule will also be skipped.</li>
 		<li>If the rule has one or more other syntax errors, it will print a list of them under a line of the form: <code>The rule beginning "<em>First Line Of Rule</em>" has been skipped as it has the following problem(s):</code> and the error messages for each syntax error are:<div style="height:0.65em;"></div>
 		<ul>
-			<li>If a mod referenced is not found in your Data folder, the message will be: <code>"<em>Mod Name</em>" is not installed.</code></li>
 			<li>If the rule tries to sort (not insert) a mod relative to a group, or vice versa, the message will be: <code>It references a mod and a group.</code></li>
+			<li>If the rule references a group and contains a message line, the message will be: <code>It tries to attach a message to a group.</code></li>
+			<li>If the rule's rule mod is not found in your Data folder, the message will be: <code>"<em>Mod Name</em>" is not installed.</code></li>
+			<li>If the rule's rule mod is your game's master .ESM file and the rule contains a sort line, the message will be: <code>It tries to sort the master .ESM file.</code></li>
+			<li>If the rule's rule group is "ESMs", the message will be: <code>It tries to sort the group "ESMs".</code></li>
 			<li>If the rule's rule keyword is FOR and it includes a sort line, the message will be: <code>It includes a sort line in a rule with a FOR rule keyword.</code></li>
 			<li>If the rule's rule keyword is ADD and it references a group, the message will be: <code>It tries to add a group.</code></li>
-			<li>If the rule references a group and contains a message line, the message will be: <code>It tries to attach a message to a group.</code></li>
-			<li>If the rule's rule group is "ESMs", the message will be: <code>It tries to sort the group "ESMs".</code></li>
 			<li>If the rule's sort keyword is BEFORE and the sort group is "ESMs", the message will be: <code>It tries to sort a group before the group "ESMs".</code></li>
-			<li>If the rule's rule mod is your game's master .ESM file and the rule contains a sort line, the message will be: <code>It tries to sort the master .ESM file.</code></li>
 			<li>If the rule's sort keyword is BEFORE and the sort mod is your game's master .ESM file, the message will be: <code>It tries to sort a mod before the master .ESM file.</code></li>
 			<li>If the rule's sort keyword is TOP or BOTTOM and the sort object is a mod, or the rule object is a group, the message will be: <code>It tries to insert a group or insert a mod into another mod.</code></li>
 			<li>If the rule's sort keyword is TOP and the sort object is the "ESMs" group, the message will be: <code>It tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.</code></li>
@@ -275,8 +276,8 @@
 		<li>The names of mods and groups are not case-sensitive. However, the keywords used in rules are case-sensitive, and <b>must</b> be written in BLOCK CAPTIALS. If a keyword is not written this way, it will not be recognised, and the rule it belongs to (and perhaps the previous rule) will be skipped.</li>
 		<li>You cannot sort the group "ESMs", or sort another group before it, as this group must always load first.</li>
 		<li>You cannot sort the game's master .ESM file, or sort another mod before it, or insert another mod into the top of the "ESMs" group, as this plugin must always load first.</li>
-		<li><b>All mods referenced in rules must be in your Data folder.</b> If a mod is not installed when BOSS is run, the rule it is part of will not be applied.</li>
-		<li><b>You must never add a mod, or sort a group, more than once</b>. When using multiple rules sorting groups, make sure none of the groups you are sorting are located inside any of the other groups you are sorting.</li>
+		<li><b>Rule mods must be in your Data folder, and sort mods must be in your Data folder or the masterlist.</b> If this is not the case when BOSS is run, the offending rule(s) will not be applied.</li>
+		<li><b>You must never sort a group more than once</b>. When using multiple rules sorting groups, make sure none of the groups you are sorting are located inside any of the other groups you are sorting.</li>
 		<li>Rules are applied to mods ghosted by Wrye Bash. Ghosted files will be treated no different from non-ghosted files, and can be referenced in rules with their ".ghost" extension or without it.</li>
 		<li>
 			<b>Rules are applied in the order they are listed</b>. This means that you can have several rules loading different rule mods or groups before or 
