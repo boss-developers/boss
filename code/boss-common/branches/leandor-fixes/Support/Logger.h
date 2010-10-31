@@ -15,6 +15,7 @@
 #ifndef __SUPPORT_LOGGER__HPP__
 #define __SUPPORT_LOGGER__HPP__
 
+#include "Platform.h"
 #include <stdarg.h>
 
 
@@ -59,10 +60,7 @@ namespace boss
 
 		// if a message is of a sufficient verbosity, outputs the given message
 		inline void log (LogVerbosity verbosity, const char * fileName,
-						 int lineNo, const char * formatStr, ...)
-					#if defined(__GNUC__)
-						__attribute__((__format__ (__printf__, 5, 6)))
-					#endif
+						 int lineNo, const char * formatStr, ...) __attribute__((__format__ (__printf__, 5, 6)))
 		{
 			if (_isVerbosityEnabled(verbosity))
 			{

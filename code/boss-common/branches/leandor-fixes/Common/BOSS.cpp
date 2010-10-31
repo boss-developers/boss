@@ -380,7 +380,7 @@ int main(int argc, char *argv[]) {
 	if (fs::exists(userlist_path) && revert<1) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
 		//Go through each rule.
-		LOG_INFO("Starting userlist sort process... Total %zd user rules statements to process.", userlist.rules.size());
+		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlist.rules.size());
 		for (int i=0;i<(int)userlist.rules.size();i++) {
 			int start = userlist.rules[i];
 			int end;

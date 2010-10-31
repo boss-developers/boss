@@ -26,6 +26,7 @@
     <ClInclude Include="..\Support\Helpers.h" />
     <ClInclude Include="..\Support\Logger.h" />
     <ClInclude Include="..\Support\ModFormat.h" />
+    <ClInclude Include="..\Support\Platform.h" />
     <ClInclude Include="..\Support\Types.h" />
     <ClInclude Include="..\Support\VersionRegex.h" />
     <ClInclude Include="BOSS.h" />

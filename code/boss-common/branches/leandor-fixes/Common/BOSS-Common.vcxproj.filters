@@ -82,6 +82,9 @@
     <ClInclude Include="..\Support\Logger.h">
       <Filter>Support</Filter>
     </ClInclude>
+    <ClInclude Include="..\Support\Platform.h">
+      <Filter>Support</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BOSS_version.rc" />
