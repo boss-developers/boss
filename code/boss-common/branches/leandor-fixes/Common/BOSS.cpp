@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
 	try{
 		po::store(po::command_line_parser(argc, argv).options(opts).run(), vm);
 		po::notify(vm);
-	}catch (po::multiple_occurrences & e){
+	}catch (po::multiple_occurrences &){
 		LOG_ERROR("cannot specify options multiple times; please use the '--help' option to see usage instructions");
 		Fail();
 	}catch (exception & e){
@@ -136,6 +136,8 @@ int main(int argc, char *argv[]) {
 	
 	// set whether to track log statement origins
 	g_logger.setOriginTracking(debug);
+
+	LOG_INFO("BOSS starting...");
 
 	if (vm.count("verbose")) {
 		if (0 > verbosity) {
@@ -309,6 +311,7 @@ int main(int argc, char *argv[]) {
 	else if (revert==2) sortfile = prev_modlist_path;
 	else sortfile = masterlist_path;
 
+	LOG_INFO("Using sorting file: %s", sortfile.filename().c_str());
 	order.open(sortfile.external_file_string().c_str());
 
 	if (order.fail()) {							
@@ -321,6 +324,7 @@ int main(int argc, char *argv[]) {
 				<< "Utility will end now.</p>" << endl
 				<< "</body>"<<endl<<"</html>";
 		bosslog.close();
+		LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().c_str());
 		if ( !silent ) 
 			Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
@@ -328,14 +332,18 @@ int main(int argc, char *argv[]) {
 
 	x=0;
 	found=false;
-		while (!order.eof()) {					
+	LOG_INFO("Starting main sort process...");
+	while (!order.eof()) {
 		textbuf=ReadLine("order");
+
+		LOG_TRACE(">> Text line read from sort file: \"%s\"", textbuf.c_str());
 		if (textbuf.length()>1 && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
 			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
 				isghost = false;
 				if (fs::exists(textbuf+".ghost") && !fs::exists(textbuf)) isghost = true;
 				if (fs::exists(textbuf) || isghost) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
 
+					LOG_DEBUG("-- Sorting %smod: \"%s\" into position: %d", isghost ? "ghosted " : "", textbuf.c_str(), x);
 					const string& filename = isghost ? textbuf+".ghost" : textbuf;
 
 					int i = modlist.GetModIndex(filename);
@@ -343,6 +351,7 @@ int main(int argc, char *argv[]) {
 						continue;
 					
 					found=true;
+					LOG_DEBUG("  >> Mod found at index: %d in load order.", i);
 
 					// Save current mod's messages for later
 					vector<string> messages = modlist.modmessages[i];
@@ -366,18 +375,22 @@ int main(int argc, char *argv[]) {
 		} //if
 	} //while
 	order.close();		//Close the masterlist stream, as it's not needed any more.
+	LOG_INFO("Main sort process finished.");
 
 	if (fs::exists(userlist_path) && revert<1) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
 		//Go through each rule.
+		LOG_INFO("Starting userlist sort process... Total %d user rules statements to process.", userlist.rules.size());
 		for (int i=0;i<(int)userlist.rules.size();i++) {
 			int start = userlist.rules[i];
 			int end;
 			if (i==(int)userlist.rules.size()-1) end = (int)userlist.keys.size();
 			else end = userlist.rules[i+1];
 			//Go through each line of the rule. The first line is given by keys[start] and objects[start].
+			LOG_DEBUG(" -- Processing rule #%d starting at: %d and ending at %d.", i, start, end);
 			for (int j=start;j<end;j++) {
 				//A mod sorting line.
+				LOG_TRACE("  -- Processing line: %d.", j);
 				if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && IsPlugin(userlist.objects[j])) {
 					vector<string> currentmessages;
 					int index,index1;
@@ -388,8 +401,10 @@ int main(int argc, char *argv[]) {
 					//If it adds a mod already sorted, skip the rule.
 					else if (userlist.keys[start]=="ADD"  && index1 < x) {
 						userlist.messages += "\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.<br /><br />";
+						LOG_WARN(" * \"%s\" is already in the masterlist.", userlist.objects[start]);
 						break;
 					}
+
 					string filename = modlist.mods[index1];
 					currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
 					modlist.mods.erase(modlist.mods.begin()+index1);
@@ -400,6 +415,7 @@ int main(int argc, char *argv[]) {
 					//Let's take this up to 11 - super awesome stuff beginning.
 					//The sort mod isn't installed - so scour the [s]Shire[/s] masterlist for it.
 					if (index < 0 || index >= int(modlist.mods.size())) {
+						LOG_TRACE(" --> Referenced mod: ""%s"" is not installed, searching for it.", userlist.objects[j]);
 						bool lookforinstalledmod=false;
 						order.open(masterlist_path.external_file_string().c_str());
 						while (!order.eof()) {
@@ -436,6 +452,7 @@ int main(int argc, char *argv[]) {
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 					userlist.messages += "\""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " \"" + userlist.objects[j] + "\".<br /><br />";
+
 				//A group sorting line.
 				} else if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && !IsPlugin(userlist.objects[j])) {
 					//Search masterlist for rule group. Once found, search it for mods in modlist, recording the mods that match.
@@ -537,7 +554,8 @@ int main(int argc, char *argv[]) {
 					int count=0;
 					bool lookforsortmods=false,overtime=false;
 					vector<string> sortmods;
-					while (!order.eof()) {					
+					LOG_TRACE(" --> Looking in masterlist for the referenced group: ""%s"".", userlist.objects[j]);
+					while (!order.eof()) {
 						textbuf=ReadLine("order");
 						if (textbuf.length()>1 && (textbuf.substr(1,10)=="BeginGroup" || textbuf.substr(1,8)=="EndGroup")) {
 							//A group starts or ends. Check rule to see if it matches.
@@ -609,6 +627,7 @@ int main(int argc, char *argv[]) {
 		userlist.PrintMessages(bosslog);
 		if ((int)userlist.rules.size()==0) bosslog << "No valid rules were found in your userlist.txt.<br />" << endl;
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
+		LOG_INFO("Userlist sorting process finished.");
 	}
 
 	//Re-order .esp/.esm files to masterlist.txt order and output messages
@@ -618,6 +637,7 @@ int main(int argc, char *argv[]) {
 
 	x = min(x, int(modlist.mods.size()));
 
+	LOG_INFO("Applying calculated ordering to user files...");
 	for (int i=0;i<x;i++) {
 		bool ghosted = false;
 		string filename;
@@ -633,6 +653,7 @@ int main(int argc, char *argv[]) {
 		modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 		if (IsValidLine(modlist.mods[i])) {
 			//Re-date file. Provide exception handling in case their permissions are wrong.
+			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
 			try { fs::last_write_time(modlist.mods[i],modfiletime);
 			} catch(fs::filesystem_error e) {
 				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
@@ -647,12 +668,14 @@ int main(int argc, char *argv[]) {
 			bosslog << "</ul>" << endl;
 		}
 	}
+	LOG_INFO("User file ordering applied successfully.");
 	
 	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 	//Order their dates to be +1 month after the master esm to ensure they load last.
 	bosslog << "<div><span>Unrecogised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>"<<endl<<"<p>";
+	LOG_INFO("Reporting unrecognized mods...");
 	for (int i=x;i<(int)modlist.mods.size();i++) {
 		if (modlist.mods[i].length()>1) {
 			if (modlist.mods[i].find(".ghost") != string::npos) bosslog << "Unknown mod file: " << modlist.mods[i].substr(0,modlist.mods[i].length()-6) << " <em> - Ghosted</em>";
@@ -661,6 +684,7 @@ int main(int argc, char *argv[]) {
 			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
 			//Re-date file. Provide exception handling in case their permissions are wrong.
+			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
 			try { fs::last_write_time(modlist.mods[i],modfiletime);
 			} catch(fs::filesystem_error e) {
 				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
@@ -669,11 +693,14 @@ int main(int argc, char *argv[]) {
 		}
 	} //while
 	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
+	LOG_INFO("Unrecognized mods reported.");
 
 	//Let people know the program has stopped.
 	bosslog <<"<div><span>Done.</span></div><br /><br />"<<endl<<"</body>"<<endl<<"</html>";
 	bosslog.close();
+	LOG_INFO("Launching boss log in browser.");
 	if ( !silent ) 
 		Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
+	LOG_INFO("BOSS finished.");
 	return (0);
 }
