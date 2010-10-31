@@ -19,7 +19,7 @@
 
 
 #define _LOG_IMPL(verbosity, formatStr, ...) \
-    boss::g_logger.log(verbosity, __FILE__, __LINE__, formatStr, ##__VA_ARGS__)
+	boss::g_logger.log(verbosity, __FILE__, __LINE__, formatStr, ##__VA_ARGS__)
 
 // convenience macros
 #define LOG_ERROR(formatStr, ...) _LOG_IMPL(boss::LV_ERROR, formatStr, ##__VA_ARGS__)
@@ -31,61 +31,64 @@
 
 namespace boss
 {
-    enum LogVerbosity
-    {
-        LV_OFF   = 0,
-        LV_ERROR = 1,
-        LV_WARN  = 2,
-        LV_INFO  = 3,
-        LV_DEBUG = 4,
-        LV_TRACE = 5
-    };
+	enum LogVerbosity
+	{
+		LV_OFF   = 0,
+		LV_ERROR = 1,
+		LV_WARN  = 2,
+		LV_INFO  = 3,
+		LV_DEBUG = 4,
+		LV_TRACE = 5
+	};
 
-    // A simple logging class.  Not implemented to be thread safe.
-    class Logger
-    {
-    public:
-        Logger();
+	// A simple logging class.  Not implemented to be thread safe.
+	class Logger
+	{
+	public:
+		Logger();
 
-        // sets the verbosity limit
-        void setVerbosity (LogVerbosity verbosity);
+		// sets the verbosity limit
+		void setVerbosity (LogVerbosity verbosity);
 
-        // sets whether filename and line number will be output with each message
-        void setOriginTracking (bool enabled);
+		// sets whether filename and line number will be output with each message
+		void setOriginTracking (bool enabled);
 
-        // for use when calculating the arguments to a LOG macro would be expensive
-        inline bool isDebugEnabled () { return _isVerbosityEnabled(LV_DEBUG); }
-        inline bool isTraceEnabled () { return _isVerbosityEnabled(LV_TRACE); }
+		// for use when calculating the arguments to a LOG macro would be expensive
+		inline bool isDebugEnabled () { return _isVerbosityEnabled(LV_DEBUG); }
+		inline bool isTraceEnabled () { return _isVerbosityEnabled(LV_TRACE); }
 
-        // if a message is of a sufficient verbosity, outputs the given message
-        inline void log (LogVerbosity verbosity, const char * fileName,
-                         int lineNo, const char * formatStr, ...)
-        {
-            if (_isVerbosityEnabled(verbosity))
-            {
-                va_list ap;
-                va_start(ap, formatStr);
-                _log(verbosity, fileName, lineNo, formatStr, ap);
-                va_end(ap);
-            }
-        }
+		// if a message is of a sufficient verbosity, outputs the given message
+		inline void log (LogVerbosity verbosity, const char * fileName,
+						 int lineNo, const char * formatStr, ...)
+					#if defined(__GNUC__)
+						__attribute__((__format__ (__printf__, 3, 4)))
+					#endif
+		{
+			if (_isVerbosityEnabled(verbosity))
+			{
+				va_list ap;
+				va_start(ap, formatStr);
+				_log(verbosity, fileName, lineNo, formatStr, ap);
+				va_end(ap);
+			}
+		}
 
-    private:
-        LogVerbosity m_verbosity;
-        bool         m_originTracking;
+	private:
+		LogVerbosity m_verbosity;
+		bool         m_originTracking;
 
-    private:
-        inline bool _isVerbosityEnabled (LogVerbosity verbosity)
-        {
-            return verbosity <= m_verbosity;
-        }
+	private:
+		inline bool _isVerbosityEnabled (LogVerbosity verbosity)
+		{
+			return verbosity <= m_verbosity;
+		}
 
-        void _log (LogVerbosity verbosity, const char * fileName, 
-                   int lineNo, const char * formatStr, va_list ap);
-    };
+		void _log (LogVerbosity verbosity, const char * fileName, 
+				   int lineNo, const char * formatStr, va_list ap);
+	};
 
-    // declare global logger
-    extern Logger g_logger;
+	// declare global logger
+	extern Logger g_logger;
 }
 
 #endif // __SUPPORT_LOGGER__HPP__

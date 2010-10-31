@@ -184,7 +184,7 @@ namespace boss {
 		}
 		modmessages.resize((int)mods.size());
 		sort(mods.begin(),mods.end(),SortByDate);
-		LOG_DEBUG("Reading user mods done: %d total mods found.", mods.size());
+		LOG_DEBUG("Reading user mods done: %zd total mods found.", mods.size());
 	}
 
 	//Save mod list to modlist.txt. Backs up old modlist.txt as modlist.old first.

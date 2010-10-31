@@ -380,7 +380,7 @@ int main(int argc, char *argv[]) {
 	if (fs::exists(userlist_path) && revert<1) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
 		//Go through each rule.
-		LOG_INFO("Starting userlist sort process... Total %d user rules statements to process.", userlist.rules.size());
+		LOG_INFO("Starting userlist sort process... Total %zd user rules statements to process.", userlist.rules.size());
 		for (int i=0;i<(int)userlist.rules.size();i++) {
 			int start = userlist.rules[i];
 			int end;
@@ -401,7 +401,7 @@ int main(int argc, char *argv[]) {
 					//If it adds a mod already sorted, skip the rule.
 					else if (userlist.keys[start]=="ADD"  && index1 < x) {
 						userlist.messages += "\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.<br /><br />";
-						LOG_WARN(" * \"%s\" is already in the masterlist.", userlist.objects[start]);
+						LOG_WARN(" * \"%s\" is already in the masterlist.", userlist.objects[start].c_str());
 						break;
 					}
 
@@ -415,7 +415,7 @@ int main(int argc, char *argv[]) {
 					//Let's take this up to 11 - super awesome stuff beginning.
 					//The sort mod isn't installed - so scour the [s]Shire[/s] masterlist for it.
 					if (index < 0 || index >= int(modlist.mods.size())) {
-						LOG_TRACE(" --> Referenced mod: ""%s"" is not installed, searching for it.", userlist.objects[j]);
+						LOG_TRACE(" --> Referenced mod: \"%s\" is not installed, searching for it.", userlist.objects[j].c_str());
 						bool lookforinstalledmod=false;
 						order.open(masterlist_path.external_file_string().c_str());
 						while (!order.eof()) {
@@ -554,7 +554,7 @@ int main(int argc, char *argv[]) {
 					int count=0;
 					bool lookforsortmods=false,overtime=false;
 					vector<string> sortmods;
-					LOG_TRACE(" --> Looking in masterlist for the referenced group: ""%s"".", userlist.objects[j]);
+					LOG_TRACE(" --> Looking in masterlist for the referenced group: \"%s\".", userlist.objects[j].c_str());
 					while (!order.eof()) {
 						textbuf=ReadLine("order");
 						if (textbuf.length()>1 && (textbuf.substr(1,10)=="BeginGroup" || textbuf.substr(1,8)=="EndGroup")) {
