@@ -21,7 +21,7 @@
 
 // the values in the LogVerbosity enum refer to indices in this array
 static const char * LOG_VERBOSITY_NAMES[] =
-    { "OFF", "ERROR", "WARN", "INFO", "DEBUG", "TRACE" };
+    { "OFF  ", "ERROR", "WARN ", "INFO ", "DEBUG", "TRACE" };
 
 
 namespace boss
