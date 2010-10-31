@@ -61,7 +61,7 @@ namespace boss
 		inline void log (LogVerbosity verbosity, const char * fileName,
 						 int lineNo, const char * formatStr, ...)
 					#if defined(__GNUC__)
-						__attribute__((__format__ (__printf__, 3, 4)))
+						__attribute__((__format__ (__printf__, 5, 6)))
 					#endif
 		{
 			if (_isVerbosityEnabled(verbosity))
