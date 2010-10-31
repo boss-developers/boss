@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Support\Helpers.cpp" />
+    <ClCompile Include="..\Support\Logger.cpp" />
     <ClCompile Include="..\Support\ModFormat.cpp" />
     <ClCompile Include="..\Support\VersionRegex.cpp" />
     <ClCompile Include="BOSS.cpp" />
@@ -23,7 +24,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Support\Helpers.h" />
+    <ClInclude Include="..\Support\Logger.h" />
     <ClInclude Include="..\Support\ModFormat.h" />
+    <ClInclude Include="..\Support\Platform.h" />
     <ClInclude Include="..\Support\Types.h" />
     <ClInclude Include="..\Support\VersionRegex.h" />
     <ClInclude Include="BOSS.h" />
@@ -103,7 +106,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)curl\lib\Release;$(SolutionDir)boost\stage\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>libcurl.lib;winmm.lib;wldap32.lib;ws2_32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <Version>1.6.1</Version>
+      <Version>1.6.2</Version>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

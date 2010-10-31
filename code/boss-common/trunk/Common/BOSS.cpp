@@ -1,16 +1,18 @@
 /*	Better Oblivion Sorting Software
-	1.62
+
 	Quick and Dirty Load Order Utility for Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas
 	(Making C++ look like the scripting language it isn't.)
 
-    Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
-    http://creativecommons.org/licenses/by-nc-nd/3.0/
+	Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
+	http://creativecommons.org/licenses/by-nc-nd/3.0/
 */
 
 
 #define NOMINMAX // we don't want the dummy min/max macros since they overlap with the std:: algorithms
 
 #include "BOSS.h"
+
+#include <boost/program_options.hpp>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,70 +28,160 @@
 
 
 using namespace boss;
+using namespace std;
+namespace po = boost::program_options;
 
 
-//BOSS [--update | -u] [--help | -h] [--disable-version-parse | -V-]  [--revert-level | -r] [1 | 2]
-int main(int argc, char *argv[]) {					
-	
+const string g_version     = "1.6.2";
+const string g_releaseDate = "October 26, 2010";
+
+
+void ShowVersion() {
+	cout << "BOSS: Better Oblivion Sorting Software" << endl;
+	cout << "Version " << g_version << " (" << g_releaseDate << ")" << endl;
+}
+
+void ShowUsage(po::options_description opts) {
+
+	static string progName =
+#if _WIN32 || _WIN64
+		"BOSS";
+#else
+		"boss";
+#endif
+
+	ShowVersion();
+	cout << endl << "Description:" << endl;
+	cout << "  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, Nehrim," << endl;
+	cout << "  Fallout 3, and Fallout: New Vegas according to a frequently updated" << endl;
+	cout << "  masterlist to minimise incompatibilities between mods." << endl << endl;
+	cout << opts << endl;
+	cout << "Examples:" << endl;
+	cout << "  " << progName << " -u" << endl;
+	cout << "    updates the masterlist, sorts your mods, and shows the log" << endl << endl;
+	cout << "  " << progName << " -sr" << endl;
+	cout << "    reverts your load order 1 level and skips showing the log" << endl << endl;
+	cout << "  " << progName << " -r 2" << endl;
+	cout << "    reverts your load order 2 levels and shows the log" << endl << endl;
+}
+
+void Fail() {
+#if _WIN32 || _WIN64
+	cout << "Press ENTER to quit...";
+	cin.ignore(1, '\n');
+#endif
+
+	exit(1);
+}
+
+int main(int argc, char *argv[]) {
+
 	int x;							//random useful integers
-	string textbuf,textbuf2;		//a line of text from a file (should usually end up being be a file name);
-	time_t esmtime,modfiletime;		//File modification times.
+	string textbuf;                 //a line of text from a file (should usually end up being be a file name);
+	time_t esmtime, modfiletime;	//File modification times.
 	bool found;
-	bool update = false;			//To update masterlist or not?
-	bool version_parse = true;		//Enable parsing of mod's headers to look for version strings
-	bool silent = false;            //Silent mode?
 	bool isghost;					//Is the file ghosted or not?
 	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
-	int revert=0;					//What level to revert to?
+
+	// set option defaults
+	bool update             = false; // update masterlist?
+	bool silent             = false; // silent mode?
+	bool skip_version_parse = false; // enable parsing of mod's headers to look for version strings
+	int  revert             = 0;     // what level to revert to
+	int  verbosity          = 0;     // log levels above INFO to output
+	bool debug              = false; // whether to include origin information in logging statements
+
+	// declare the supported options
+	po::options_description opts("Options");
+	opts.add_options()
+		("help,h",				"produces this help message")
+		("version,V",			"prints the version banner")
+		("update,u", po::value(&update)->zero_tokens(),
+								"automatically update the local copy of the"
+								" masterlist to the latest version"
+								" available on the web")
+		("silent,s", po::value(&silent)->zero_tokens(),
+								"don't launch a browser to show the HTML log"
+								" at program completion")
+		("no-version-parse,n", po::value(&skip_version_parse)->zero_tokens(),
+								"don't extract mod version numbers for"
+								" printing in the HTML log")
+		("revert,r", po::value<int>(&revert)->implicit_value(1, ""),
+								"revert to a previous load order.  this"
+								" parameter optionally accepts values of 1 or"
+								" 2, indicating how many undo steps to apply."
+								"  if no option value is specified, it"
+								" defaults to 1")
+		("verbose,v", po::value(&verbosity)->implicit_value(1, ""),
+								"specify verbosity level (0-3).  0 is the"
+								" default, showing only WARN and ERROR messges."
+								" 1 (INFO and above) is implied if this option"
+								" is specified without an argument.  higher"
+								" values increase the verbosity further")
+		("debug,d", po::value(&debug)->zero_tokens(),
+								"add source file references to logging statements");
+
+	// parse command line arguments
+	po::variables_map vm;
+	try{
+		po::store(po::command_line_parser(argc, argv).options(opts).run(), vm);
+		po::notify(vm);
+	}catch (po::multiple_occurrences &){
+		LOG_ERROR("cannot specify options multiple times; please use the '--help' option to see usage instructions");
+		Fail();
+	}catch (exception & e){
+		LOG_ERROR("%s; please use the '--help' option to see usage instructions", e.what());
+		Fail();
+	}
 	
-	//Parse command line arguments.
-	if (argc > 1) {
-		for (int i=0; i < argc; i++) {
-			if (strcmp("--update", argv[i]) == 0 || strcmp("-u", argv[i]) == 0) {
-				update = true;
-			}if (strcmp("--silent-mode", argv[i]) == 0 || strcmp("-s", argv[i]) == 0) {
-				silent = true;
-			} else if (strcmp("--disable-version-parse", argv[i]) == 0 || strcmp("-V-", argv[i]) == 0) {
-				version_parse = false;
-			} else if (strcmp("--revert-level", argv[i]) == 0 || strcmp("-r", argv[i]) == 0) {
-				//If the correct argument is given, use it. If not, assume that they meant to roll back one level.
-				if (i+1<argc) {
-					if (strcmp("1", argv[i+1]) == 0 || strcmp("2", argv[i+1]) == 0) revert = atoi(argv[i+1]);
-					else revert = 1;
-				} else revert = 1;
-			} else if (strcmp("--help", argv[i]) == 0 || strcmp("-h", argv[i]) == 0) {
-				cout << "Better Oblivion Sorting Software is a utility that sorts the load order of TESIV: Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas mods according to their relative positions on a frequently-updated masterlist ";
-				cout << "to ensure proper load order and minimise incompatibilities between mods." << endl << endl;
-				cout << "Optional Parameters" << endl << endl;
-				cout << "-u, --update: " << endl << "    Automatically updates the local copy of the masterlist using the latest version available on the Google Code repository." << endl << endl;
-				cout << "-V-, --disable-version-parse: " << endl << "    Enables the parsing of each mod's description and if found extracts from there the author stamped mod's version and prints it along other data in the generated bosslog.html." << endl << endl;
-				cout << "-r, --revert-level : " << endl << "	Can accept values of 1 or 2. Sets BOSS to revert its changes back the given number of levels." << endl << endl;
-				cout << "-s, --silent-mode: " << endl << "    Disables launch of the log; just runs silently.." << endl << endl;
-				exit (0);
-			}
+	// set whether to track log statement origins
+	g_logger.setOriginTracking(debug);
+
+	LOG_INFO("BOSS starting...");
+
+	if (vm.count("verbose")) {
+		if (0 > verbosity) {
+			LOG_ERROR("invalid option for 'verbose' parameter: %d", verbosity);
+			Fail();
+		}
+
+		// it's ok if this number is too high.  setVerbosity will handle it
+		g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + verbosity));
+	}
+	if (vm.count("help")) {
+		ShowUsage(opts);
+		exit(0);
+	}
+	if (vm.count("version")) {
+		ShowVersion();
+		exit(0);
+	}
+	if (vm.count("revert")) {
+		// sanity check argument
+		if (revert < 1 || revert > 2) {
+			LOG_ERROR("invalid option for 'revert' parameter: %d", revert);
+			Fail();
 		}
 	}
 
-	//Try to create BOSS sub-directory.
+	LOG_DEBUG("creating BOSS sub-directory");
 	try { fs::create_directory(boss_path);
 	} catch(fs::filesystem_error e) {
-		cout << "Critical Error: Sub-directory '" << boss_path << "' could not be created!" << endl
-			 << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl
-			 << "Utility will end now." << endl << endl;
-		cout << "Press ENTER to quit...";
-		cin.ignore(1,'\n');
-		exit(1); //fail in screaming heap.
+		LOG_ERROR("subdirectory '%s' could not be created; check the"
+				  " Troubleshooting section of the ReadMe for more"
+				  " information and possible solutions",
+				  boss_path.external_file_string().c_str());
+		Fail();
 	}
 
-	//Check for creation of BOSSlog.txt.
-	bosslog.open(bosslog_path.external_file_string().c_str());
+	const string bosslogFilename = bosslog_path.external_file_string();
+	LOG_DEBUG("opening '%s'", bosslogFilename.c_str());
+	bosslog.open(bosslogFilename.c_str());
 	if (bosslog.fail()) {							
-		cout << endl << "Critical Error: BOSSlog.html could not be written to!" << endl
-					 << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl
-					 << "Utility will end now." << endl << endl;
-		cout << "Press ENTER to quit...";
-		cin.ignore(1,'\n');
-		exit (1); //fail in screaming heap.
+		LOG_ERROR("file '%s' could not be accessed for writing; check the"
+				  " Troubleshooting section of the ReadMe for more"
+				  " information and possible solutions", bosslogFilename.c_str());
+		Fail();
 	}
 
 	//Output HTML start and <head>
@@ -103,11 +195,13 @@ int main(int argc, char *argv[]) {
 			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
 			<< "v1.62 (29 October 2010)"<<endl<<"</div><br /><br />";
 
+	LOG_DEBUG("Detecting game...");
 	if (fs::exists("Oblivion.esm")) game = 1;
 	else if (fs::exists("Fallout3.esm")) game = 2;
 	else if (fs::exists("Nehrim.esm")) game = 3;
 	else if (fs::exists("FalloutNV.esm")) game = 4;
 	else {
+		LOG_ERROR("None of the supported games were detected...");
 		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file not found!<br />" << endl
 						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
 						<< "Utility will end now.</p>" << endl
@@ -118,12 +212,15 @@ int main(int argc, char *argv[]) {
 		exit (1); //fail in screaming heap.
 	} //else
 
+	LOG_INFO("Game detected: %d", game);
+
 	if (game==1 && fs::exists("Nehrim.esm")) {
 		bosslog << endl << "<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />" << endl
 						<< "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.<br />" << endl
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
+		LOG_ERROR("Installation error found: check BOSSLOG.");
 		if ( !silent ) 
 			Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
@@ -142,6 +239,7 @@ int main(int argc, char *argv[]) {
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
+		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.what());
 		if ( !silent ) 
 			Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
@@ -150,7 +248,9 @@ int main(int argc, char *argv[]) {
 	if (update == true) {
 		bosslog << "<div><span>Masterlist Update</span>"<<endl<<"<p>";
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
+		LOG_DEBUG("Updating masterlist...");
 		UpdateMasterlist(game);
+		LOG_DEBUG("Masterlist updated successfully.");
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	}
 
@@ -176,6 +276,7 @@ int main(int argc, char *argv[]) {
 	if (fs::exists(userlist_path) && revert<1) userlist.AddRules();
 
 	if (revert<1) {
+		LOG_DEBUG("Checking for special mods...");
 		bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
 		if (game == 1) {
 			//Check if FCOM or not
@@ -188,6 +289,8 @@ int main(int argc, char *argv[]) {
 			//Check if Better Cities or not
 			if ((bc=fs::exists("Better Cities Resources.esm"))) bosslog << "Better Cities detected.<br />" << endl;
 				else bosslog << "Better Cities not detected.<br />" << endl;
+				
+			LOG_INFO("Special mods found: %s %s %s", fcom ? "FCOM" : "", ooo ? "OOO" : "", bc ? "BC" : "");
 		} else if (game == 2) {
 			//Check if fook2 or not
 			if ((fcom=fs::exists("FOOK2 - Main.esm"))) bosslog << "FOOK2 Detected.<br />" << endl;
@@ -196,6 +299,8 @@ int main(int argc, char *argv[]) {
 			//Check if fwe or not
 			if ((ooo=fs::exists("FO3 Wanderers Edition - Main File.esm"))) bosslog << "FWE detected.<br />" << endl;
 				else bosslog << "FWE not detected.<br />" << endl;
+			
+			LOG_INFO("Special mods found: %s %s", fcom ? "FOOK2" : "", ooo ? "FWE" : "");
 		}
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	}
@@ -206,6 +311,7 @@ int main(int argc, char *argv[]) {
 	else if (revert==2) sortfile = prev_modlist_path;
 	else sortfile = masterlist_path;
 
+	LOG_INFO("Using sorting file: %s", sortfile.filename().c_str());
 	order.open(sortfile.external_file_string().c_str());
 
 	if (order.fail()) {							
@@ -218,6 +324,7 @@ int main(int argc, char *argv[]) {
 				<< "Utility will end now.</p>" << endl
 				<< "</body>"<<endl<<"</html>";
 		bosslog.close();
+		LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().c_str());
 		if ( !silent ) 
 			Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
@@ -225,14 +332,18 @@ int main(int argc, char *argv[]) {
 
 	x=0;
 	found=false;
-		while (!order.eof()) {					
+	LOG_INFO("Starting main sort process...");
+	while (!order.eof()) {
 		textbuf=ReadLine("order");
+
+		LOG_TRACE(">> Text line read from sort file: \"%s\"", textbuf.c_str());
 		if (textbuf.length()>1 && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
 			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
 				isghost = false;
 				if (fs::exists(textbuf+".ghost") && !fs::exists(textbuf)) isghost = true;
 				if (fs::exists(textbuf) || isghost) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
 
+					LOG_DEBUG("-- Sorting %smod: \"%s\" into position: %d", isghost ? "ghosted " : "", textbuf.c_str(), x);
 					const string& filename = isghost ? textbuf+".ghost" : textbuf;
 
 					int i = modlist.GetModIndex(filename);
@@ -240,6 +351,7 @@ int main(int argc, char *argv[]) {
 						continue;
 					
 					found=true;
+					LOG_DEBUG("  >> Mod found at index: %d in load order.", i);
 
 					// Save current mod's messages for later
 					vector<string> messages = modlist.modmessages[i];
@@ -263,18 +375,22 @@ int main(int argc, char *argv[]) {
 		} //if
 	} //while
 	order.close();		//Close the masterlist stream, as it's not needed any more.
+	LOG_INFO("Main sort process finished.");
 
 	if (fs::exists(userlist_path) && revert<1) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
 		//Go through each rule.
+		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlist.rules.size());
 		for (int i=0;i<(int)userlist.rules.size();i++) {
 			int start = userlist.rules[i];
 			int end;
 			if (i==(int)userlist.rules.size()-1) end = (int)userlist.keys.size();
 			else end = userlist.rules[i+1];
 			//Go through each line of the rule. The first line is given by keys[start] and objects[start].
+			LOG_DEBUG(" -- Processing rule #%d starting at: %d and ending at %d.", i, start, end);
 			for (int j=start;j<end;j++) {
 				//A mod sorting line.
+				LOG_TRACE("  -- Processing line: %d.", j);
 				if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && IsPlugin(userlist.objects[j])) {
 					vector<string> currentmessages;
 					int index,index1;
@@ -285,8 +401,10 @@ int main(int argc, char *argv[]) {
 					//If it adds a mod already sorted, skip the rule.
 					else if (userlist.keys[start]=="ADD"  && index1 < x) {
 						userlist.messages += "\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.<br /><br />";
+						LOG_WARN(" * \"%s\" is already in the masterlist.", userlist.objects[start].c_str());
 						break;
 					}
+
 					string filename = modlist.mods[index1];
 					currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
 					modlist.mods.erase(modlist.mods.begin()+index1);
@@ -297,6 +415,7 @@ int main(int argc, char *argv[]) {
 					//Let's take this up to 11 - super awesome stuff beginning.
 					//The sort mod isn't installed - so scour the [s]Shire[/s] masterlist for it.
 					if (index < 0 || index >= int(modlist.mods.size())) {
+						LOG_TRACE(" --> Referenced mod: \"%s\" is not installed, searching for it.", userlist.objects[j].c_str());
 						bool lookforinstalledmod=false;
 						order.open(masterlist_path.external_file_string().c_str());
 						while (!order.eof()) {
@@ -333,6 +452,7 @@ int main(int argc, char *argv[]) {
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 					userlist.messages += "\""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " \"" + userlist.objects[j] + "\".<br /><br />";
+
 				//A group sorting line.
 				} else if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && !IsPlugin(userlist.objects[j])) {
 					//Search masterlist for rule group. Once found, search it for mods in modlist, recording the mods that match.
@@ -434,7 +554,8 @@ int main(int argc, char *argv[]) {
 					int count=0;
 					bool lookforsortmods=false,overtime=false;
 					vector<string> sortmods;
-					while (!order.eof()) {					
+					LOG_TRACE(" --> Looking in masterlist for the referenced group: \"%s\".", userlist.objects[j].c_str());
+					while (!order.eof()) {
 						textbuf=ReadLine("order");
 						if (textbuf.length()>1 && (textbuf.substr(1,10)=="BeginGroup" || textbuf.substr(1,8)=="EndGroup")) {
 							//A group starts or ends. Check rule to see if it matches.
@@ -471,7 +592,7 @@ int main(int argc, char *argv[]) {
 						}
 					}
 					order.close();
-					int index;
+					int index = 0;
 					if ((int)sortmods.size()>0) {
 						if (userlist.keys[j]=="TOP") 
 							index = modlist.GetModIndex(sortmods.front());
@@ -506,6 +627,7 @@ int main(int argc, char *argv[]) {
 		userlist.PrintMessages(bosslog);
 		if ((int)userlist.rules.size()==0) bosslog << "No valid rules were found in your userlist.txt.<br />" << endl;
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
+		LOG_INFO("Userlist sorting process finished.");
 	}
 
 	//Re-order .esp/.esm files to masterlist.txt order and output messages
@@ -515,6 +637,7 @@ int main(int argc, char *argv[]) {
 
 	x = min(x, int(modlist.mods.size()));
 
+	LOG_INFO("Applying calculated ordering to user files...");
 	for (int i=0;i<x;i++) {
 		bool ghosted = false;
 		string filename;
@@ -522,7 +645,7 @@ int main(int argc, char *argv[]) {
 			ghosted=true;
 			filename = modlist.mods[i].substr(0,modlist.mods[i].length()-6);
 		} else filename = modlist.mods[i];
-		string text = version_parse ? GetModHeader(filename,ghosted) : filename;
+		string text = skip_version_parse ? filename : GetModHeader(filename, ghosted);
 		if (ghosted) text += " <em> - Ghosted</em>";
 		if (modlist.modmessages[i].size()>0) bosslog << "<b>" << text << "</b>";		// show which mod file is being processed.
 		else bosslog << text;
@@ -530,6 +653,7 @@ int main(int argc, char *argv[]) {
 		modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 		if (IsValidLine(modlist.mods[i])) {
 			//Re-date file. Provide exception handling in case their permissions are wrong.
+			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
 			try { fs::last_write_time(modlist.mods[i],modfiletime);
 			} catch(fs::filesystem_error e) {
 				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
@@ -544,12 +668,14 @@ int main(int argc, char *argv[]) {
 			bosslog << "</ul>" << endl;
 		}
 	}
+	LOG_INFO("User file ordering applied successfully.");
 	
 	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 	//Order their dates to be +1 month after the master esm to ensure they load last.
 	bosslog << "<div><span>Unrecogised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>"<<endl<<"<p>";
+	LOG_INFO("Reporting unrecognized mods...");
 	for (int i=x;i<(int)modlist.mods.size();i++) {
 		if (modlist.mods[i].length()>1) {
 			if (modlist.mods[i].find(".ghost") != string::npos) bosslog << "Unknown mod file: " << modlist.mods[i].substr(0,modlist.mods[i].length()-6) << " <em> - Ghosted</em>";
@@ -558,6 +684,7 @@ int main(int argc, char *argv[]) {
 			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
 			//Re-date file. Provide exception handling in case their permissions are wrong.
+			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
 			try { fs::last_write_time(modlist.mods[i],modfiletime);
 			} catch(fs::filesystem_error e) {
 				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
@@ -566,11 +693,14 @@ int main(int argc, char *argv[]) {
 		}
 	} //while
 	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
+	LOG_INFO("Unrecognized mods reported.");
 
 	//Let people know the program has stopped.
 	bosslog <<"<div><span>Done.</span></div><br /><br />"<<endl<<"</body>"<<endl<<"</html>";
 	bosslog.close();
+	LOG_INFO("Launching boss log in browser.");
 	if ( !silent ) 
 		Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
+	LOG_INFO("BOSS finished.");
 	return (0);
 }

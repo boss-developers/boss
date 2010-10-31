@@ -9,7 +9,7 @@
 	$Revision$, $Date$
 */
 
-
+#include "Support/Logger.h"
 #include "Userlist.h"
 #include <boost/algorithm/string.hpp>
 
@@ -54,7 +54,7 @@ namespace boss {
 	void Rules::AddRules() {
 		ifstream userlist;
 		string line,key,object;
-		int pos;
+		size_t pos;
 		bool skip = false;
 		userlist.open(userlist_path.external_file_string().c_str());
 		messages += "<p>";
@@ -170,42 +170,49 @@ namespace boss {
 
 	//Adds mods in directory to modlist in date order (AKA load order).
 	void Mods::AddMods() {
+		LOG_DEBUG("Reading user mods...");
 		fs::path p(".");
 		if (fs::is_directory(p)) {
 			for (fs::directory_iterator itr(p); itr!=fs::directory_iterator(); ++itr) {
 				const string filename = itr->filename();
 				const string ext = to_lower_copy(fs::extension(filename));
 				if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
+					LOG_TRACE("-- Found mod: '%s'", filename.c_str());
 					mods.push_back(filename);
 				}
 			}
 		}
 		modmessages.resize((int)mods.size());
 		sort(mods.begin(),mods.end(),SortByDate);
+		LOG_DEBUG("Reading user mods done: %" PRIuS " total mods found.", mods.size());
 	}
 
 	//Save mod list to modlist.txt. Backs up old modlist.txt as modlist.old first.
 	int Mods::SaveModList() {
 		ofstream modlist;
 		try {
+			LOG_DEBUG("Saving backup of current modlist...");
 			//There's a bug in the boost rename function - it should replace existing files, but it throws an exception instead, so remove the file first.
 			//This bug will be fixed in BOOST 1.45, but that will break the AddMods() function and possibly other things, so be sure to change that when we upgrade.
 			if (fs::exists(prev_modlist_path)) fs::remove(prev_modlist_path);
 			if (fs::exists(curr_modlist_path)) fs::rename(curr_modlist_path, prev_modlist_path);
 		} catch(boost::filesystem::filesystem_error e) {
 			//Couldn't rename the file, print an error message.
+			LOG_ERROR("Backup of modlist failed with error: %s", e.what());
 			return 1;
 		}
 		
 		modlist.open(curr_modlist_path.external_file_string().c_str());
 		//Provide error message if it can't be written.
 		if (modlist.fail()) {
+			LOG_ERROR("Backup cannot be saved.");
 			return 2;
 		}
 		for (int i=0;i<(int)mods.size();i++) {
 			modlist << mods[i] << endl;
 		}
 		modlist.close();
+		LOG_INFO("Backup saved successfully.");
 		return 0;
 	}
 
