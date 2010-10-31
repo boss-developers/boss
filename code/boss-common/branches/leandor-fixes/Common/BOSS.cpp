@@ -3,15 +3,14 @@
 	Quick and Dirty Load Order Utility for Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas
 	(Making C++ look like the scripting language it isn't.)
 
-    Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
-    http://creativecommons.org/licenses/by-nc-nd/3.0/
+	Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
+	http://creativecommons.org/licenses/by-nc-nd/3.0/
 */
 
 
 #define NOMINMAX // we don't want the dummy min/max macros since they overlap with the std:: algorithms
 
 #include "BOSS.h"
-#include "Support/Logger.h"
 
 #include <boost/program_options.hpp>
 
@@ -51,7 +50,7 @@ void ShowUsage(po::options_description opts) {
 		"boss";
 #endif
 
-    ShowVersion();
+	ShowVersion();
 	cout << endl << "Description:" << endl;
 	cout << "  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, Nehrim," << endl;
 	cout << "  Fallout 3, and Fallout: New Vegas according to a frequently updated" << endl;
@@ -68,11 +67,11 @@ void ShowUsage(po::options_description opts) {
 
 void Fail() {
 #if _WIN32 || _WIN64
-    cout << "Press ENTER to quit...";
-    cin.ignore(1, '\n');
+	cout << "Press ENTER to quit...";
+	cin.ignore(1, '\n');
 #endif
 
-    exit(1);
+	exit(1);
 }
 
 int main(int argc, char *argv[]) {
@@ -114,13 +113,13 @@ int main(int argc, char *argv[]) {
 								"  if no option value is specified, it"
 								" defaults to 1")
 		("verbose,v", po::value(&verbosity)->implicit_value(1, ""),
-                                "specify verbosity level (0-3).  0 is the"
-                                " default, showing only WARN and ERROR messges."
-                                " 1 (INFO and above) is implied if this option"
-                                " is specified without an argument.  higher"
-                                " values increase the verbosity further")
+								"specify verbosity level (0-3).  0 is the"
+								" default, showing only WARN and ERROR messges."
+								" 1 (INFO and above) is implied if this option"
+								" is specified without an argument.  higher"
+								" values increase the verbosity further")
 		("debug,d", po::value(&debug)->zero_tokens(),
-                                "add source file references to logging statements");
+								"add source file references to logging statements");
 
 	// parse command line arguments
 	po::variables_map vm;
@@ -135,30 +134,30 @@ int main(int argc, char *argv[]) {
 		Fail();
 	}
 	
-    // set whether to track log statement origins
-    g_logger.setOriginTracking(debug);
+	// set whether to track log statement origins
+	g_logger.setOriginTracking(debug);
 
-    if (vm.count("verbose")) {
-        if (0 > verbosity) {
-            LOG_ERROR("invalid option for 'verbose' parameter: %d", verbosity);
+	if (vm.count("verbose")) {
+		if (0 > verbosity) {
+			LOG_ERROR("invalid option for 'verbose' parameter: %d", verbosity);
 			Fail();
 		}
 
-        // it's ok if this number is too high.  setVerbosity will handle it
-        g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + verbosity));
-    }
+		// it's ok if this number is too high.  setVerbosity will handle it
+		g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + verbosity));
+	}
 	if (vm.count("help")) {
 		ShowUsage(opts);
-	    exit(0);
+		exit(0);
 	}
 	if (vm.count("version")) {
 		ShowVersion();
-	    exit(0);
+		exit(0);
 	}
 	if (vm.count("revert")) {
 		// sanity check argument
 		if (revert < 1 || revert > 2) {
-            LOG_ERROR("invalid option for 'revert' parameter: %d", revert);
+			LOG_ERROR("invalid option for 'revert' parameter: %d", revert);
 			Fail();
 		}
 	}
@@ -166,20 +165,20 @@ int main(int argc, char *argv[]) {
 	LOG_DEBUG("creating BOSS sub-directory");
 	try { fs::create_directory(boss_path);
 	} catch(fs::filesystem_error e) {
-        LOG_ERROR("subdirectory '%s' could not be created; check the"
-                  " Troubleshooting section of the ReadMe for more"
-                  " information and possible solutions",
-                  boss_path.external_file_string().c_str());
+		LOG_ERROR("subdirectory '%s' could not be created; check the"
+				  " Troubleshooting section of the ReadMe for more"
+				  " information and possible solutions",
+				  boss_path.external_file_string().c_str());
 		Fail();
 	}
 
-    const string bosslogFilename = bosslog_path.external_file_string();
+	const string bosslogFilename = bosslog_path.external_file_string();
 	LOG_DEBUG("opening '%s'", bosslogFilename.c_str());
 	bosslog.open(bosslogFilename.c_str());
 	if (bosslog.fail()) {							
-        LOG_ERROR("file '%s' could not be accessed for writing; check the"
-                  " Troubleshooting section of the ReadMe for more"
-                  " information and possible solutions", bosslogFilename.c_str());
+		LOG_ERROR("file '%s' could not be accessed for writing; check the"
+				  " Troubleshooting section of the ReadMe for more"
+				  " information and possible solutions", bosslogFilename.c_str());
 		Fail();
 	}
 
@@ -194,11 +193,13 @@ int main(int argc, char *argv[]) {
 			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
 			<< "v1.62 (29 October 2010)"<<endl<<"</div><br /><br />";
 
+	LOG_DEBUG("Detecting game...");
 	if (fs::exists("Oblivion.esm")) game = 1;
 	else if (fs::exists("Fallout3.esm")) game = 2;
 	else if (fs::exists("Nehrim.esm")) game = 3;
 	else if (fs::exists("FalloutNV.esm")) game = 4;
 	else {
+		LOG_ERROR("None of the supported games were detected...");
 		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file not found!<br />" << endl
 						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
 						<< "Utility will end now.</p>" << endl
@@ -209,12 +210,15 @@ int main(int argc, char *argv[]) {
 		exit (1); //fail in screaming heap.
 	} //else
 
+	LOG_INFO("Game detected: %d", game);
+
 	if (game==1 && fs::exists("Nehrim.esm")) {
 		bosslog << endl << "<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />" << endl
 						<< "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.<br />" << endl
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
+		LOG_ERROR("Installation error found: check BOSSLOG.");
 		if ( !silent ) 
 			Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
@@ -233,6 +237,7 @@ int main(int argc, char *argv[]) {
 						<< "Utility will end now.</p>" << endl
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
+		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.what());
 		if ( !silent ) 
 			Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
@@ -241,7 +246,9 @@ int main(int argc, char *argv[]) {
 	if (update == true) {
 		bosslog << "<div><span>Masterlist Update</span>"<<endl<<"<p>";
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
+		LOG_DEBUG("Updating masterlist...");
 		UpdateMasterlist(game);
+		LOG_DEBUG("Masterlist updated successfully.");
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	}
 
@@ -267,6 +274,7 @@ int main(int argc, char *argv[]) {
 	if (fs::exists(userlist_path) && revert<1) userlist.AddRules();
 
 	if (revert<1) {
+		LOG_DEBUG("Checking for special mods...");
 		bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
 		if (game == 1) {
 			//Check if FCOM or not
@@ -279,6 +287,8 @@ int main(int argc, char *argv[]) {
 			//Check if Better Cities or not
 			if ((bc=fs::exists("Better Cities Resources.esm"))) bosslog << "Better Cities detected.<br />" << endl;
 				else bosslog << "Better Cities not detected.<br />" << endl;
+				
+			LOG_INFO("Special mods found: %s %s %s", fcom ? "FCOM" : "", ooo ? "OOO" : "", bc ? "BC" : "");
 		} else if (game == 2) {
 			//Check if fook2 or not
 			if ((fcom=fs::exists("FOOK2 - Main.esm"))) bosslog << "FOOK2 Detected.<br />" << endl;
@@ -287,6 +297,8 @@ int main(int argc, char *argv[]) {
 			//Check if fwe or not
 			if ((ooo=fs::exists("FO3 Wanderers Edition - Main File.esm"))) bosslog << "FWE detected.<br />" << endl;
 				else bosslog << "FWE not detected.<br />" << endl;
+			
+			LOG_INFO("Special mods found: %s %s", fcom ? "FOOK2" : "", ooo ? "FWE" : "");
 		}
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	}
