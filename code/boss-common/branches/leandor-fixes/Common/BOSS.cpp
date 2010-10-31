@@ -562,7 +562,7 @@ int main(int argc, char *argv[]) {
 						}
 					}
 					order.close();
-					int index;
+					int index = 0;
 					if ((int)sortmods.size()>0) {
 						if (userlist.keys[j]=="TOP") 
 							index = modlist.GetModIndex(sortmods.front());

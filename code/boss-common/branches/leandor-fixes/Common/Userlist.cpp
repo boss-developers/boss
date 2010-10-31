@@ -54,7 +54,7 @@ namespace boss {
 	void Rules::AddRules() {
 		ifstream userlist;
 		string line,key,object;
-		int pos;
+		size_t pos;
 		bool skip = false;
 		userlist.open(userlist_path.external_file_string().c_str());
 		messages += "<p>";
