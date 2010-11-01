@@ -99,22 +99,28 @@
 	
 	<div id="details"><span>Further Details</span><br />
 	<br /><span class="subtitle">Command Line Arguments</span>
-	<p>BOSS has a few command-line arguments. The syntax is:</p>
+	<p>BOSS has a number of command-line arguments. The syntax is:</p>
 	<div>
-	<p><code>BOSS [--update | -u] [--help | -h] [--disable-version-parse | -V-] [--revert-level | -r] [level] [--silent-mode | -s]</code></p>
-	<p><code>-h, --help</code>:</p>
+	<p><code>BOSS [--update | -u] [--help | -h] [--no-version-parse | -n] [[--revert | -r] [level]] [--silent | -s] [--version | -V] [[--verbose | -v] [level]] [--debug | -d]</code></p>
+	<p><code>-h</code></p>
 	<p>This prints a short description of BOSS and some information on the function of the command line arguments.</p>
-	<p><code>-u, --update</code>:</p>
-	<p>If this switch is used, BOSS will automatically update the local copy of the masterlist using the latest version on the Google Code repository, and then sort your mods. Since this replaces your current 
+	<p><code>-V</code></p>
+	<p>Prints the a banner displaying the program name and version number to the command line.</p>
+	<p><code>-u</code></p>
+	<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then sorts your mods. Since this replaces your current 
 	masterlist, don't run this if you have an edited copy and wish to keep the changes. The "BOSS - Update Masterlist.bat" runs BOSS with this switch.</p>
-	<p><code>-V-, --disable-version-parse</code>:</p>
+	<p><code>-s</code></p>
+	<p>Stops BOSS from automatically opening up the BOSSlog in your web browser after it has finished running.</p>
+	<p><code>-n</code></p>
 	<p>Disables the parsing of each mod's description to extract the author's version information, so it is not printed alongside other data in the generated BOSSlog.html. This can be used if the version 
 	parsing is not working properly for some of your mods, and you wish to remove the version notes.</p>
-	<p><code>-r <i>level</i>, --revert-level <i>level</i></code>:</p>
-	<p>Sets BOSS to undo its changes by reverting back the number of levels given by <code>level</code> to the load order at that point. <code>level</code> can take values of 1 or 2. A value of 1 will restore the load order to that stored in modlist.txt. 
+	<p><code>-r</code></p>
+	<p>Revert to a previous load order. This parameter optionally accepts values of 1 or 2, indicating how many undo steps to apply. If no option is specified, it defaults to 1. A value of 1 will restore the load order to that stored in modlist.txt. 
 	A value of 2 will restore the load order to that stored in modlist.old. If the modlist that you are reverting to does not exist, BOSS will cancel the undo and display an error message. The modlist files are not updated when BOSS is run with this parameter.</p>
-	<p><code>-s, --silent-mode</code>:</p>
-	<p>Stops BOSS from automatically opening up the BOSSlog after it has finished running.</p>
+	<p><code>-v</code></p>
+	<p>Specify verbosity level (0-3). 0 is the default, showing only warning and error messages. 1 (warning, error and informational messages) is implied if this option is specified without an argument. Higher values increase the verbosity further.</p>
+	<p><code>-d</code></p>
+	<p>Adds source file references (filenames and line numbers) to logging statements.</p>
 	</div><br />
 	<br /><span class="subtitle">BOSS Changes and Files</span>
 	<p>The only changes BOSS makes to your game install are to re-date the .esp and .esm files in your Data folder, to create a BOSS folder there, and create a few text files in that BOSS folder. Your game's master file (Oblivion.esm, Fallout3.esm, Nehrim.esm or FalloutNV.esm) 
@@ -155,7 +161,7 @@
 	</div><br /><br />
 	
 	<div id="updates"><span>Updates</span>
-	<p>Updates are published at the <a href="http://www.tesnexus.com/downloads/file.php?id=20516">TES Nexus BOSS page</a> and the <a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">Fallout 3 Nexus BOSS page</a>.</p>
+	<p>Updates are published at the <a href="http://www.tesnexus.com/downloads/file.php?id=20516">TES Nexus</a>, <a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">Fallout 3 Nexus</a> and <a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">New Vegas Nexus</a> BOSS pages. The most up-to-date release of the program is most likely to be found on the TES Nexus page, as this is updated first.</p>
 	<p>For those not using the masterlist updater, the latest masterlist is always on the <a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a>.</p>
 	<p>Always make sure to use the latest release of the BOSS program, and the latest masterlist.</p>
 	</div><br /><br />
@@ -268,7 +274,7 @@
 	Better Cities, Open Cities and Open Better Cities developers; suggestions and instructions from many other modders; lots of advice and information from users. Some people have gone out of their way and provided 
 	continuing, expert and detailed help - thank you very much!</p>
 	<p>Thanks go to Wrye and the rest of the Wrye Bash Team for implementing the importing of BOSS's Bashed Patch tag suggestions into <a href="http://wrye.ufrealms.net/Wrye%20Bash.html">Wrye Bash</a>.</p>
-	<p>Thanks also go to the Beta Testing &amp; Analysis Guild at TESAlliance and Surazal for testing and giving feedback on v1.6 prior to release, and to myk002 for code contributions.</p>
+	<p>Thanks also go to the Beta Testing &amp; Analysis Guild at TESAlliance and Surazal for testing and giving feedback on v1.6 prior to release. Thanks also go to myk002 for extensive code contributions.</p>
 	</div><br /><br />
 	
 	<div id="team"><span>Project Members</span>
@@ -334,6 +340,7 @@
 	<div id="links"><span>Quick Links</span>
 	<p><a href="http://www.tesnexus.com/downloads/file.php?id=20516">BOSS on TES Nexus</a></p>
 	<p><a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">BOSS on Fallout 3 Nexus</a></p>
+	<a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">BOSS on New Vegas Nexus</a>
 	<p><a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code SVN repository</a></p>
 	<p><a href="http://forums.bethsoft.com/?showtopic=1126021">Official BOSS Oblivion thread</a></p>
 	<p><a href="http://forums.bethsoft.com/?showtopic=1132338">Official BOSS Nehrim thread</a></p>
@@ -351,9 +358,21 @@
 	<p><b>Version 1.62</b></p>
 	<ul>
 		<li>Added support for Fallout: New Vegas.</li>
-		<li>Added ability to insert mods into groups using user rules functionality.</li>
-		<li>Added ability to sort mods relative to mods that are not installed, but are in the masterlist.</li>
+		<li>Added ability to insert mods into groups to user rules functionality.</li>
+		<li>Added ability to sort mods relative to mods that are not installed, but are in the masterlist to user rules functionality.</li>
 		<li>Fixed crashing when userlist contains badly formatted lines.</li>
+		<li>Changed command line processing to use more standardised parameters:
+		<ul><div style="height:0.65em;"></div>
+			<li>Changed --disable-version-parse,-V- parameter to --no-version-parse,-n.</li>
+			<li>Changed --silent-mode,-s parameter to --silent,-s.</li>
+			<li>Changed --revert-level,-r parameter to --revert,-r.</li>
+		
+		</ul>
+		</li>
+		<li>Added logging statements to cover all BOSS processing, enabled by --verbose,-v&lt;N&gt; where N goes from 1 to 3 with increasing verbosity.</li>
+		<li>Added --version,-V parameter to show BOSS version.</li>
+		<li>Added --debug,-d parameter which adds filename and line numbers to each log message.</li>
+		<li>Many code portability enhancements.</li>
 	</ul>
 	<p><b>Version 1.61</b></p>
 	<ul>
