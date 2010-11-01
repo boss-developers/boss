@@ -44,7 +44,7 @@
 	<div id="start"><span>Getting Started With The Userlist</span>
 	<p style="color:purple">NOTE: In this readme, the words 'mod' and 'plugin' are used interchangeably, meaning 'one individual file with a .esp or 
 	.esm extension'. Unless explicitely stated, the 'name' of a 'mod' or 'plugin' refers to its filename, including the extension.<br /><br />
-	Also, while the examples in this ReadMe reference Oblivion and some of its mods, the functionality will work for all supported games - namely Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas. When your game's master .ESM file is mentioned, this refers to Oblivion.esm, Nehrim.esm, Fallout3.esm or FalloutNV.esm for Oblivion, Nehrim, Fallout 3 or Fallout: New Vegas respectively.</p>
+	Also, while the examples in this ReadMe reference Oblivion and some of its mods, the functionality will work for all the games BOSS supports. When your game's master .ESM file is mentioned, this refers to Oblivion.esm, Nehrim.esm, Fallout3.esm or FalloutNV.esm for Oblivion, Nehrim, Fallout 3 or Fallout: New Vegas respectively.</p>
 	<p>The userlist is the file which contains your custom rules for sorting mods and editing mods' messages. It is found at <code>Data\BOSS\userlist.txt</code>. If it 
 	does not exist, simply create a new text file there with the same name. Make sure that the full filename is "userlist.txt" and not "userlist.txt.txt", as can sometimes occur if file extensions are hidden.</p>
 	<p>Within this file, which you can open up in Notepad to edit, you list your rule definitions. Rules can make two types of changes:
@@ -159,9 +159,9 @@
 	<p>This is the <em>rule line</em>. The <em>rule keyword</em> can be one of:</p>
 	<ul>
 		<li><em>ADD</em>: This tells BOSS that the rule sorts a mod that is not in the 
-		masterlist. The rule may also add messages to that mod.</li>
+		masterlist. The rule may also add and edit messages attached to that mod.</li>
 		<li><em>OVERRIDE</em>: This tells BOSS that the rule overrides the current position of a mod or group in the masterlist with a new position. 
-		The rule may also edit attached messages.</li>
+		The rule may also add and edit messages attached to that mod.</li>
 		<li><em>FOR</em>: This tells BOSS that the rule edits the messages attached to a mod, but does not sort it.</li>
 	</ul>
 	<p>The <em>rule object</em> is the mod or group that the rule is applied to. If the rule keyword is FOR, the rule object must be a mod. If the rule object is a mod, it must be installed in your Data folder.</p>
@@ -183,7 +183,7 @@
 	to be positioned relative to. Mods must be sorted relative to other mods, and groups must be sorted relative to groups. You cannot sort mods relative to groups, or vice versa. You also cannot sort your game's master .ESM, sort other mods before it, or sort groups before the "ESMs" group.</p>
 	<p>When using the TOP or BOTTOM sort keywords, the <em>sort object</em> is the <b>group</b> that you wish to insert the rule object (which must be a mod) into. You cannot insert groups into anything, mods into mods, or insert anything into the top of the "ESMs" group.</p>
 	
-	<p>If the sort object is a mod, it must either be installed in your Data folder or be present in the masterlist. A rule with a FOR rule keyword <b>must not</b> include a sort line.</p>
+	<p>If the sort object is a mod, it must either be installed in your Data folder or be present in the masterlist, or both. A rule with a FOR rule keyword <b>must not</b> include a sort line.</p>
 	
 	<br /><span class="subtitle">The Message Line</span>
 	<p>If a rule's rule keyword is FOR, it <b>must</b> include at least one <em>message line</em>, which has the structure:</p>
@@ -276,7 +276,7 @@
 		<li>The names of mods and groups are not case-sensitive. However, the keywords used in rules are case-sensitive, and <b>must</b> be written in BLOCK CAPTIALS. If a keyword is not written this way, it will not be recognised, and the rule it belongs to (and perhaps the previous rule) will be skipped.</li>
 		<li>You cannot sort the group "ESMs", or sort another group before it, as this group must always load first.</li>
 		<li>You cannot sort the game's master .ESM file, or sort another mod before it, or insert another mod into the top of the "ESMs" group, as this plugin must always load first.</li>
-		<li><b>Rule mods must be in your Data folder, and sort mods must be in your Data folder or the masterlist.</b> If this is not the case when BOSS is run, the offending rule(s) will not be applied.</li>
+		<li><b>Rule mods must be in your Data folder, and sort mods must be in your Data folder and/or the masterlist.</b> If this is not the case when BOSS is run, the offending rule(s) will not be applied.</li>
 		<li><b>You must never sort a group more than once</b>. When using multiple rules sorting groups, make sure none of the groups you are sorting are located inside any of the other groups you are sorting.</li>
 		<li>Rules are applied to mods ghosted by Wrye Bash. Ghosted files will be treated no different from non-ghosted files, and can be referenced in rules with their ".ghost" extension or without it.</li>
 		<li>
