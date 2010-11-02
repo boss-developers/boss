@@ -114,10 +114,10 @@
 	<p><code>-n [ --no-version-parse ]</code></p>
 	<p>Disables the parsing of each mod's description to extract the author's version information, so it is not printed alongside other data in the generated BOSSlog.html. This can be used if the version 
 	parsing is not working properly for some of your mods, and you wish to remove the version notes.</p>
-	<p><code>-r [ --revert ] level</code></p>
+	<p><code>-r [ --revert ] [ level ]</code></p>
 	<p>Revert to a previous load order. This parameter optionally accepts values of 1 or 2, indicating how many undo steps to apply. If no option is specified, it defaults to 1. A value of 1 will restore the load order to that stored in modlist.txt. 
 	A value of 2 will restore the load order to that stored in modlist.old. If the modlist that you are reverting to does not exist, BOSS will cancel the undo and display an error message. The modlist files are not updated when BOSS is run with this parameter.</p>
-	<p><code>-v [ --verbose ] level</code></p>
+	<p><code>-v [ --verbose ] [ level ]</code></p>
 	<p>Specify verbosity level (0-3). 0 is the default, showing only warning and error messages. 1 (warning, error and informational messages) is implied if this option is specified without an argument. Higher values increase the verbosity further.</p>
 	<p><code>-d [ --debug ]</code></p>
 	<p>Adds source file references (filenames and line numbers) to logging statements.</p>

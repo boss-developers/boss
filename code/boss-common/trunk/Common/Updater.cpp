@@ -37,7 +37,7 @@ namespace boss {
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		string buffer,revision,newline,line;		//A bunch of strings.
-		int start,end;								//Position holders for trimming strings.
+		int start=-1,end;								//Position holders for trimming strings.
 		CURLcode ret;
 		ifstream mlist;								//Input stream.
 		ofstream out;								//Output stream.
@@ -89,7 +89,7 @@ namespace boss {
 		else if (game == 2) start = revision.find("boss-fallout");
 		else if (game == 3) start = revision.find("boss-nehrim");
 		else if (game == 4) start = revision.find("boss-fallout-nv");
-		else {
+		if (start == string::npos || start == -1) {
 			cout << "Error: Masterlist update failed!" << endl;
 			bosslog << "Error: Masterlist update failed!<br />" << endl;
 			cout << "Cannot find online masterlist revision number." << endl;
@@ -99,7 +99,25 @@ namespace boss {
 			return;
 		}
 		start = revision.find("KB\",\"", start) + 5; 
+		if (start == string::npos) {
+			cout << "Error: Masterlist update failed!" << endl;
+			bosslog << "Error: Masterlist update failed!<br />" << endl;
+			cout << "Cannot find online masterlist revision number." << endl;
+			bosslog << "Cannot find online masterlist revision number.<br />" << endl;
+			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
+			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
+			return;
+		}
 		end = revision.find("\"",start) - start;
+		if (end == string::npos) {
+			cout << "Error: Masterlist update failed!" << endl;
+			bosslog << "Error: Masterlist update failed!<br />" << endl;
+			cout << "Cannot find online masterlist revision number." << endl;
+			bosslog << "Cannot find online masterlist revision number.<br />" << endl;
+			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
+			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
+			return;
+		}
 		revision = revision.substr(start,end);
 		newline = "? Masterlist Revision: "+revision;
 
@@ -148,7 +166,8 @@ namespace boss {
 
 		//Replace SVN keywords with revision number and replace current masterlist, or write a new one if it doesn't already exist.
 		int pos = buffer.find(oldline);
-		buffer.replace(pos,oldline.length(),newline);
+		if (pos != string::npos)
+			buffer.replace(pos,oldline.length(),newline);
 		out.open(masterlist_path.external_file_string().c_str(), ios_base::trunc);
 		if (out.fail()) {
 			cout << "Error: Masterlist update failed!" << endl;
