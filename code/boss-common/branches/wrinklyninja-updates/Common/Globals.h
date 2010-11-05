@@ -12,7 +12,7 @@
 #ifndef __BOSS_GLOBALS_H__
 #define __BOSS_GLOBALS_H__
 
-
+#define BOOST_FILESYSTEM_VERSION 3
 #include <string>
 #include <fstream>
 #include <boost/filesystem.hpp>
