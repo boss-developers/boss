@@ -347,7 +347,7 @@ int main(int argc, char *argv[]) {
 					const string& filename = isghost ? textbuf+".ghost" : textbuf;
 
 					int i = modlist.GetModIndex(filename);
-					if (i < 0 || i >= int(modlist.mods.size()))
+					if (i < 0 || i >= int(modlist.mods.size()) || i < x)	//The last option is to prevent mods being sorted twice and screwing everything up.)
 						continue;
 					
 					found=true;
