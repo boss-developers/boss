@@ -24,8 +24,8 @@ namespace boss {
 
 	//Date comparison, used for sorting mods in modlist class.
 	bool SortByDate(string mod1,string mod2) {
-			time_t t1 = fs::last_write_time(mod1) ;
-			time_t t2 = fs::last_write_time(mod2) ;
+			time_t t1 = fs::last_write_time(data_path / mod1) ;
+			time_t t2 = fs::last_write_time(data_path / mod2) ;
 			double diff = difftime(t1,t2);
 
 			if (diff>0) 
@@ -78,7 +78,7 @@ namespace boss {
 								objects.push_back(object);
 								rules.push_back((int)keys.size()-1);
 								skip = false;
-							if (IsPlugin(object) && !(fs::exists(object) || fs::exists(object+".ghost"))) {
+							if (IsPlugin(object) && !(fs::exists(data_path / object) || fs::exists(data_path / fs::path(object+".ghost")))) {
 								messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
 								messages += "\""+object+"\" is not installed.<br />";
 								skip = true;
@@ -171,15 +171,16 @@ namespace boss {
 	//Adds mods in directory to modlist in date order (AKA load order).
 	void Mods::AddMods() {
 		LOG_DEBUG("Reading user mods...");
-		for (fs::directory_iterator itr("."); itr!=fs::directory_iterator(); ++itr) {
-			const string ext = to_lower_copy(fs::extension(itr->path()));
+		for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
+			const string filename = itr->path().filename().string();
+			const string ext = to_lower_copy(itr->path().extension().string());
 			if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
-				LOG_TRACE("-- Found mod: '%s'", itr->path().filename().c_str());
-				mods.push_back(itr->path().filename().string());
+				LOG_TRACE("-- Found mod: '%s'", filename.c_str());
+				mods.push_back(filename);
 			}
 		}
 		modmessages.resize((int)mods.size());
-		sort(mods.begin(),mods.end(),SortByDate);
+		//sort(mods.begin(),mods.end(),SortByDate);
 		LOG_DEBUG("Reading user mods done: %" PRIuS " total mods found.", mods.size());
 	}
 

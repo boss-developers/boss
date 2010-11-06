@@ -20,10 +20,10 @@ namespace boss {
 	bool ooo;							//true if OOO or FWE esm is found.
 	bool bc;							//true if Better Cities esm is found.
 
-	const fs::path boss_path			= "BOSS";	
-	const fs::path bosslog_path			= boss_path / "BOSSlog.html";
-	const fs::path masterlist_path		= boss_path / "masterlist.txt";
-	const fs::path userlist_path		= boss_path / "userlist.txt";
-	const fs::path curr_modlist_path	= boss_path / "modlist.txt";
-	const fs::path prev_modlist_path	= boss_path / "modlist.old";
+	const fs::path data_path			= fs::path("..") / "Data";
+	const fs::path bosslog_path			= "BOSSlog.html";
+	const fs::path masterlist_path		= "masterlist.txt";
+	const fs::path userlist_path		= "userlist.txt";
+	const fs::path curr_modlist_path	= "modlist.txt";
+	const fs::path prev_modlist_path	= "modlist.old";
 }

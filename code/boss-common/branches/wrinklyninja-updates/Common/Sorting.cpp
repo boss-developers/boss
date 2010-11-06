@@ -76,8 +76,8 @@ namespace boss {
 		ModHeader header;
 
 		// Read mod's header now...
-		if (ghosted) header = ReadHeader(filename+".ghost");
-		else header = ReadHeader(filename);
+		if (ghosted) header = ReadHeader(data_path.string()+"/"+filename+".ghost");
+		else header = ReadHeader(data_path.string()+"/"+filename);
 
 		// The current mod's version if found, or empty otherwise.
 		string version = header.Version;
