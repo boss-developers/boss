@@ -1,13 +1,20 @@
-#include <string>
-#include <iostream>
-#include <iomanip>
+//
+// DumpHeaders.cpp
+
+
+#include "Support/Types.h"
+#include "Support/Helpers.h"
+#include "Support/ModFormat.h"
+
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <Support/Types.h>
-#include <Support/Helpers.h>
-#include <Support/ModFormat.h>
+#include <string>
+#include <iomanip>
+#include <fstream>
+#include <iostream>
+
 
 using namespace std;
 using namespace boost::filesystem;
@@ -25,7 +32,7 @@ int main(int argc, char* argv[])
 	path outname = root / "modinfo.txt";
 	remove(outname);
 
-	ofstream out(outname.filename());
+	ofstream out(outname.filename().c_str());
 
 	for (directory_iterator it(root); it != end; it++) {
 
@@ -54,4 +61,3 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
-

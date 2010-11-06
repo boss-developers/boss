@@ -12,7 +12,9 @@
 #ifndef __BOSS_MASTERLIST_H__
 #define __BOSS_MASTERLIST_H__
 
+
 #include <string>
+
 
 namespace boss {
 	using namespace std;

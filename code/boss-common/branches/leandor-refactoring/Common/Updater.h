@@ -12,15 +12,17 @@
 #ifndef __BOSS_UPDATER_H__
 #define __BOSS_UPDATER_H__
 
+#include "Globals.h"
+#include <boost/filesystem.hpp>
+
 #define CURL_STATICLIB			//Tells the compiler to use curl as a static library.
 #include <curl/curl.h>
 #include <curl/types.h>
 #include <curl/easy.h>
-#include "boost/filesystem.hpp"
 
 namespace boss {
 
-	int UpdateMasterlist(int game);
+	void UpdateMasterlist(int game);
 
 }
 

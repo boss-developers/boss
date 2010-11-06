@@ -12,6 +12,7 @@
 #ifndef __BOSS_H__
 #define __BOSS_H__
 
+#include "Support/Logger.h"
 #include "Globals.h"
 #include "Sorting.h"
 #include "Updater.h"

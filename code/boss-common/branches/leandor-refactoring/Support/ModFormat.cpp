@@ -9,18 +9,14 @@
 	$Revision$, $Date$
 */
 
+
+#include "Types.h"
+#include "Helpers.h"
+#include "ModFormat.h"
+
 #include <cstring>
 #include <fstream>
 
-#ifdef WIN32
-#include <Support/Types.h>
-#include <Support/Helpers.h>
-#include <Support/ModFormat.h>
-#else
-#include "../Support/Types.h"
-#include "../Support/Helpers.h"
-#include "../Support/ModFormat.h"
-#endif
 
 namespace boss {
 	using namespace std;
@@ -44,75 +40,75 @@ namespace boss {
 	
 		modHeader.Name = filename;
 
-		// Reads the first MAXLENGHT bytes into the buffer
+		// Reads the first MAXLENGTH bytes into the buffer
 		file.read(&buffer[0], sizeof(buffer));
 
 		// Check for the 'magic' marker at start
-		if (Read<ulong>(bufptr) != Record::TES4){
+		if (Read<uint>(bufptr) != Record::TES4){
 			return modHeader;
 		}
 
 		// Next field is the total header size
-		ulong headerSize = Read<ulong>(bufptr);
+		/*uint headerSize =*/ Read<uint>(bufptr);
 
 		// Next comes the header record Flags
-		ulong flags = Read<ulong>(bufptr);
+		uint flags = Read<uint>(bufptr);
 
 		// LSb of this record's flags is used to indicate if the 
 		//	mod is a master or a plugin
 		modHeader.IsMaster = (flags & 0x1) != 0;
 
 		// Next comes the FormID...
-		ulong dummy = Read<ulong>(bufptr); // skip formID
+		/*uint formId =*/ Read<uint>(bufptr); // skip formID
 
 		// ...and extra flags
-		dummy = Read<ulong>(bufptr); // skip flags2
+		/*uint flags2 =*/ Read<uint>(bufptr); // skip flags2
 	
 		// Here the Header record starts, check for its signature 'HEDR'
-		if (Read<ulong>(bufptr) != Record::HEDR){
+		if (Read<uint>(bufptr) != Record::HEDR){
 			return modHeader;
 		}
 	
 		// HEDR record has fields: DataSize, Version (0.8 o 1.0), Record Count 
 		//	and Next Object Id
-		ushort dataSize = Read<ushort>(bufptr);
-		float version = Read<float>(bufptr);
-		long numRecords = Read<long>(bufptr);
-		ulong nextObjId = Read<ulong>(bufptr);
+		/*ushort dataSize =*/ Read<ushort>(bufptr);
+		/*float version =*/ Read<float>(bufptr);
+		/*int numRecords =*/ Read<int>(bufptr);
+		/*uint nextObjId =*/ Read<uint>(bufptr);
 
 		// Then comes the sub-records
-		ulong signature = Read<ulong>(bufptr);
+		uint signature = Read<uint>(bufptr);
 
-		// OFST records are optional, skip it if it's present.
-		if ( signature == Record::OFST){
-			ushort size = Read<ushort>(bufptr);
-			bufptr += size; // skip
-			signature = Read<ulong>(bufptr);
-		}
+        // skip optional records
+        bool loop = true;
+        while (loop){
+            switch (signature)
+            {
+            case Record::OFST:
+            case Record::DELE:
+                bufptr += Read<ushort>(bufptr); // skip
+                signature = Read<uint>(bufptr);
+                break;
 
-		// Same for DELE...
-		if ( signature == Record::DELE){
-			ushort size = Read<ushort>(bufptr);
-			bufptr += size; // skip
-			signature = Read<ulong>(bufptr);
-		}
+		    // extract author name, if present
+            case Record::CNAM:
+                modHeader.Author = ReadString(bufptr, Read<ushort>(bufptr));
+                signature = Read<uint>(bufptr);
+                break;
 
-		// Then check for CNAM, which is author name
-		if ( signature == Record::CNAM){
-			ushort size = Read<ushort>(bufptr);
-			modHeader.Author = ReadString(bufptr, size);
-			signature = Read<ulong>(bufptr);
-		}
+		    // extract description and version, if present
+            case Record::SNAM:
+                modHeader.Description = ReadString(bufptr, Read<ushort>(bufptr));
+			    modHeader.Version     = ParseVersion(modHeader.Description);
+                signature = Read<uint>(bufptr);
+                break;
 
-		// Then check for SNAM, which is the mod's description field.
-		if ( signature == Record::SNAM){
-			ushort size = Read<ushort>(bufptr);
-			modHeader.Description = ReadString(bufptr, size);
-			modHeader.Version = ParseVersion(modHeader.Description);
-		}
+            default:
+                loop = false;
+            }
+        }
 
 		// We should have all the required information.
 		return modHeader;
 	}
-
-};
+}
