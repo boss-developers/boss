@@ -109,6 +109,43 @@ namespace test {
 // AST
 namespace test {
 	
+	struct Scope 
+	{
+		enum ScopeValue
+		{
+			Always,
+			Fcom				=	'>',
+			NonFcom				=	'<',
+			OOO					=	'$',
+			BC					=	'^',
+		}; 
+
+		ScopeValue value;
+
+		Scope() : value(Always) { };
+		Scope(const ScopeValue value) : value(value) { };
+		Scope(const Scope& scope) : value(scope.value) { };
+	};
+
+	struct Kind
+	{
+		enum KindValue
+		{
+			Unknown,
+			Remark				=	'?',
+			Tags				=	'%',
+			Error				=	'*',	
+			Requirement			=	':',
+			Incompatibility		=	'"',
+		};
+
+		KindValue value;
+
+		Kind() : value(Unknown) { };
+		Kind(const KindValue value) : value(value) { };
+		Kind(const Kind& type) : value(type.value) { };
+	};
+
 	struct Group;
 	struct Mod;
 	struct Rule;
@@ -137,98 +174,18 @@ namespace test {
 
 	struct Mod 
 	{
-		string name;
-		Rules rules;
+		Scope	scope;
+		string	name;
+		Rules	rules;
 	};
+
 
 	struct Rule 
 	{
-		struct Scope 
-		{
-			enum ScopeValue
-			{
-				Always,
-				Fcom				=	'>',
-				NonFcom				=	'<',
-				OOO					=	'$',
-				BC					=	'^',
-			}; 
-
-			ScopeValue value;
-
-			Scope() : value(Always) { };
-			Scope(const ScopeValue value) : value(value) { };
-			Scope(const Scope& scope) : value(scope.value) { };
-		};
-
-		struct Kind
-		{
-			enum KindValue
-			{
-				Unknown,
-				Remark				=	'?',
-				Tags				=	'%',
-				Error				=	'*',	
-				Requirement			=	':',
-				Incompatibility		=	'"',
-			};
-
-			KindValue value;
-
-			Kind() : value(Unknown) { };
-			Kind(const KindValue value) : value(value) { };
-			Kind(const Kind& type) : value(type.value) { };
-		};
-
 		Scope	scope;
 		Kind	kind;
 		string	text;
 	};
-
-	ostream& operator<< (ostream& os, Rule const& rule)
-	{
-		return os << rule.text;
-	}
-
-	ostream& operator<< (ostream& os, Rule::Scope const& scope)
-	{
-		switch (scope.value)
-		{
-			case Rule::Scope::Fcom :
-				return os << "FCOM only";
-			case Rule::Scope::NonFcom :
-				return os << "Non-FCOM only";
-			case Rule::Scope::OOO :
-				return os << "OOO only";
-			case Rule::Scope::BC :
-				return os << "Better Cities only";
-			case Rule::Scope::Always :
-				return os << "Always";
-		}
-
-		return os;
-	}
-
-	ostream& operator<< (ostream& os, Rule::Kind const& kind)
-	{
-		switch (kind.value)
-		{
-			case Rule::Kind::Error :
-				return os << "ERROR";
-			case Rule::Kind::Incompatibility :
-				return os << "INCOMPATIBILITY";
-			case Rule::Kind::Remark :
-				return os << "REMARK";
-			case Rule::Kind::Requirement :
-				return os << "REQUIREMENT";
-			case Rule::Kind::Tags :
-				return os << "TAG";
-				
-			return os;
-		}
-
-		return os;
-	}
 
 	typedef 
 		std::vector<Group> 
@@ -241,6 +198,51 @@ namespace test {
 
 // Print functors
 namespace test {
+
+	ostream& operator<< (ostream& os, Rule const& rule)
+	{
+		return os << rule.text;
+	}
+
+	ostream& operator<< (ostream& os, Scope const& scope)
+	{
+		switch (scope.value)
+		{
+		case Scope::Fcom :
+			return os << "FCOM only";
+		case Scope::NonFcom :
+			return os << "Non-FCOM only";
+		case Scope::OOO :
+			return os << "OOO only";
+		case Scope::BC :
+			return os << "Better Cities only";
+		case Scope::Always :
+			return os << "Always";
+		}
+
+		return os;
+	}
+
+	ostream& operator<< (ostream& os, Kind const& kind)
+	{
+		switch (kind.value)
+		{
+		case Kind::Error :
+			return os << "ERROR";
+		case Kind::Incompatibility :
+			return os << "INCOMPATIBILITY";
+		case Kind::Remark :
+			return os << "REMARK";
+		case Kind::Requirement :
+			return os << "REQUIREMENT";
+		case Kind::Tags :
+			return os << "TAG";
+
+			return os;
+		}
+
+		return os;
+	}
 
 	int const tabsize = 4;
 
@@ -287,7 +289,7 @@ namespace test {
 
 		void operator()(Mod const& mod) const
 		{
-			tab(indent); std::cout << "MOD: \"" << mod.name << '"' << std::endl;
+			tab(indent); std::cout << "MOD [" << mod.scope << "]: \"" << mod.name << '"' << std::endl;
 
 			print(mod.rules);
 		}
@@ -363,48 +365,49 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 BOOST_FUSION_ADAPT_STRUCT(
 	test::Mod,
+	(test::Scope, scope)
 	(std::string, name)
 	(test::Rules, rules)
 	)
 
 BOOST_FUSION_ADAPT_STRUCT(
 	test::Rule,
-	(test::Rule::Scope, scope)
-	(test::Rule::Kind, kind)
+	(test::Scope, scope)
+	(test::Kind, kind)
 	(std::string, text)
 	)
 
 // Real grammar
 namespace test {
 
-	struct rule_scope_ : qi::symbols<char, Rule::Scope>
+	struct scope_ : qi::symbols<char, Scope>
 	{
-		rule_scope_()
+		scope_()
 		{
 			add
-				(">"    , Rule::Scope::Fcom)
-				("<"	, Rule::Scope::NonFcom)
-				("$"	, Rule::Scope::OOO)
-				("^"	, Rule::Scope::BC)
+				(">"    , Scope::Fcom)
+				("<"	, Scope::NonFcom)
+				("$"	, Scope::OOO)
+				("^"	, Scope::BC)
 				;
 		}
 
-	} rule_scope;
+	} scope;
 
-	struct rule_type_ : qi::symbols<char, Rule::Kind>
+	struct kind_ : qi::symbols<char, Kind>
 	{
-		rule_type_()
+		kind_()
 		{
 			add
-				("?"    , Rule::Kind::Remark)
-				("%"    , Rule::Kind::Tags)
-				("*"    , Rule::Kind::Error)
-				(":"    , Rule::Kind::Requirement)
-				("\""   , Rule::Kind::Incompatibility)
+				("?"    , Kind::Remark)
+				("%"    , Kind::Tags)
+				("*"    , Kind::Error)
+				(":"    , Kind::Requirement)
+				("\""   , Kind::Incompatibility)
 				;
 		}
 
-	} rule_type;
+	} kind;
 
 	template <typename Iterator, typename Skipper>
 	struct Grammar
@@ -436,6 +439,7 @@ namespace test {
 
 			mod %=	!endgroup 
 				>>	!begingroup
+				>>	-scope
 				>>	text
 				>>	-rules;
 
@@ -445,9 +449,9 @@ namespace test {
 
 			rule
 				%=	*eol
-				>>	-rule_scope
-				>>	rule_type
-				>>	text
+				>>	-scope
+				>	kind
+				>	text
 				;
 
 			node
