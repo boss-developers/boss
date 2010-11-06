@@ -450,8 +450,8 @@ namespace test {
 			rule
 				%=	*eol
 				>>	-scope
-				>	kind
-				>	text
+				>>	kind
+				>>	text
 				;
 
 			node
