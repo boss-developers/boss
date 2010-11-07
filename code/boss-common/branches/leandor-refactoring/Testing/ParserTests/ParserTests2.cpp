@@ -1,6 +1,6 @@
 
 #define BOOST_SPIRIT_ASSERT_EXCEPTION
-#define	BOOST_SPIRIT_DEBUG
+//#define	BOOST_SPIRIT_DEBUG
 
 #define	BOOST_SPIRIT_DEBUG_TRACENODE
 #define BOOST_SPIRIT_DEBUG_OUT std::cout
@@ -16,6 +16,7 @@
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/variant/recursive_variant.hpp>
 #include <boost/foreach.hpp>
+#include <boost/progress.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -90,12 +91,6 @@ namespace test {
 			string.name("chars");
 			comment.name("comment");
 			comments.name("comments");
-
-			//debug(start);
-			//debug(spc);
-			//debug(string);
-			//debug(comment);
-			//debug(comments);
 		} 
 
 		qi::rule<Iterator> start;
@@ -496,6 +491,7 @@ namespace test {
 			begingroup.name("begin_group");
 			endgroup.name("end_group");
 
+			#ifdef BOOST_SPIRIT_DEBUG
 			debug(masterlist);
 			debug(group);
 			debug(nodes);
@@ -507,7 +503,7 @@ namespace test {
 			debug(mod);
 			debug(rules);
 			debug(rule);
-
+			#endif
 			on_error<fail>(masterlist, 
 				std::cout
 				<< val("Error! Expecting ")
@@ -587,8 +583,13 @@ int main(int argc, char* argv[])
 
 	std::string::const_iterator iter = storage.begin();
 	std::string::const_iterator end = storage.end();
-	bool r = phrase_parse(iter, end, grammar, skipper, masterlist);
 
+	
+	bool r;
+	{
+		boost::progress_timer timer(std::cout);
+		r = phrase_parse(iter, end, grammar, skipper, masterlist);
+	}
 	if (r && iter == end)
 	{
 		std::cout << "-------------------------\n";
