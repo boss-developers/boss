@@ -20,6 +20,7 @@ namespace fs = boost::filesystem;
 namespace boss {
 	using namespace std;
 	using boost::algorithm::to_lower_copy;
+	using boost::algorithm::to_upper_copy;
 	using boost::algorithm::to_lower;
 
 	//Date comparison, used for sorting mods in modlist class.
@@ -66,7 +67,7 @@ namespace boss {
 				if (line.substr(0,2)!="//") {
 					pos = line.find(": ");
 					if (pos!=string::npos) {
-						key = line.substr(0,pos);
+						key = to_upper_copy(line.substr(0,pos));
 						object = line.substr(pos+2);
 						if (key=="ADD" || key=="OVERRIDE" || key=="FOR") {
 							if ((int)rules.size()>0) {

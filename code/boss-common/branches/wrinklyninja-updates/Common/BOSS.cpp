@@ -386,11 +386,16 @@ int main(int argc, char *argv[]) {
 					//Get current mod messages and remove mod from current modlist position.
 					index1 = modlist.GetModIndex(userlist.objects[start]);
 					// Only increment 'x' if we've taken the 'source' mod from below the 'last-sorted' mark
-					if (userlist.keys[start]=="ADD" && index1 >= x) x++;
+					if (userlist.keys[start]=="ADD" && index1 >= x) 
+						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (userlist.keys[start]=="ADD"  && index1 < x) {
 						userlist.messages += "\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.<br /><br />";
 						LOG_WARN(" * \"%s\" is already in the masterlist.", userlist.objects[start].c_str());
+						break;
+					} else if (userlist.keys[start]=="OVERRIDE" && index1 >= x) {
+						userlist.messages += "\""+userlist.objects[start]+"\" is not in the masterlist, cannot override. Rule skipped.<br /><br />";
+						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlist.objects[start].c_str());
 						break;
 					}
 
