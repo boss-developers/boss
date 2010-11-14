@@ -336,7 +336,7 @@ int main(int argc, char *argv[]) {
 					const string& filename = isghost ? textbuf+".ghost" : textbuf;
 
 					int i = modlist.GetModIndex(filename);
-					if (i < 0 || i >= int(modlist.mods.size()) || i < x)	//The last option is to prevent mods being sorted twice and screwing everything up.
+					if (i < x || i >= int(modlist.mods.size()))	//The last option is to prevent mods being sorted twice and screwing everything up.
 						continue;
 					
 					found=true;
@@ -437,10 +437,20 @@ int main(int argc, char *argv[]) {
 							userlist.messages += "\""+userlist.objects[j]+"\" is not installed, and is not in the masterlist. Rule skipped.<br /><br />";
 							modlist.mods.insert(modlist.mods.begin()+index1,filename);
 							modlist.modmessages.insert(modlist.modmessages.begin()+index1,currentmessages);
+							LOG_WARN(" * \"%s\" is not installed or in the masterlist.", userlist.objects[j].c_str());
 							break;
 						}
 					}
 					//Uh oh, the awesomesauce ran out...
+					if (index >= x || (userlist.keys[start]=="ADD" && index >= x-1)) {
+						if (userlist.keys[start]=="ADD")
+							x--;
+						userlist.messages += "\""+userlist.objects[j]+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.<br /><br />";
+						modlist.mods.insert(modlist.mods.begin()+index1,filename);
+						modlist.modmessages.insert(modlist.modmessages.begin()+index1,currentmessages);
+						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", userlist.objects[start].c_str());
+						break;
+					}
 
 					if (userlist.keys[j]=="AFTER") index += 1;
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
