@@ -1,14 +1,15 @@
 #pragma once
 
 #include "Parsing.h"
+#include "Model/Model.h"
 
 namespace boss { namespace parsing {
 
 	// Rules management interface which used by the parser to define the elements as they are parsed.
-	class IRulesManager {
-		virtual void Add() = 0;
-		virtual void Override() = 0;
-		virtual void For() = 0;
+	class IRulesManager 
+	{
+	public:
+		virtual void AddRule(Rule const& rule) = 0;
 	};
 
 }}

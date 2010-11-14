@@ -13,91 +13,99 @@
 #include <vector>
 
 #include "Parsing.h"
-#include "Model/IRulesManager.h"
 #include "Model/Keywords.h"
+#include "Model/IRulesManager.h"
+#include "Model/Model.h"
 
+
+/*
+ TODO: Make operation and action keywords case-insensitive.
+ TODO: Fix the grammar to be more EOLN insensitive. 
+	Just need to use the fact that text strings that acts as arguments 
+	for operations and actions should contain only valid characters not EOLN, 
+	but the rest of the grammar should be independent of EOLN placement.
+ */
 
 namespace boss { namespace parsing {
 
 	// Defines the mapping from the strings to the keywords.
-	struct rule_operation_ : qi::symbols<char, RuleOperation>
+	struct rule_operation_ : qi::symbols<char, OperationKeyword>
 	{
 		rule_operation_()
 		{
 			add
-				("ADD"			, RuleOperation::ADD)
-				("OVERRIDE"		, RuleOperation::OVERRIDE)
-				("FOR"			, RuleOperation::FOR)
+				("ADD"			, OperationKeyword::ADD)
+				("OVERRIDE"		, OperationKeyword::OVERRIDE)
+				("FOR"			, OperationKeyword::FOR)
 				;
 		}
 
-	} operation;
+	} operation_;
 
 
 	// Defines the mapping from the strings to the keywords.
-	struct rule_action_ : qi::symbols<char, RuleAction>
+	struct rule_action_ : qi::symbols<char, ActionKeyword>
 	{
 		rule_action_()
 		{
 			add
-				("BEFORE"		, RuleAction::BEFORE)
-				("AFTER"		, RuleAction::AFTER)
-				("TOP"			, RuleAction::TOP)
-				("BOTTOM"		, RuleAction::BOTTOM)
-				("APPEND"		, RuleAction::APPEND)
-				("REPLACE"		, RuleAction::REPLACE)
+				("BEFORE"		, ActionKeyword::BEFORE)
+				("AFTER"		, ActionKeyword::AFTER)
+				("TOP"			, ActionKeyword::TOP)
+				("BOTTOM"		, ActionKeyword::BOTTOM)
+				("APPEND"		, ActionKeyword::APPEND)
+				("REPLACE"		, ActionKeyword::REPLACE)
 				;
 		}
 
-	} action;
+	} action_;
 
 	template <typename Iterator, typename Skipper>
 	class Userlist: public qi::grammar<Iterator, Skipper>
 	{
 	public:
-		Userlist();
+		Userlist(IRulesManager& manager);
 		~Userlist()
 		{
 		}
 
-		
 
 	private:
-		qi::rule<Iterator, Skipper> rule;
+		void AddRule(Rule const& rule);
+
+	private:
+		IRulesManager& manager;
+
+	private:
 		qi::rule<Iterator, Skipper> rules;
-		qi::rule<Iterator, Skipper> header;
-		qi::rule<Iterator, Skipper> body;
-		qi::rule<Iterator, Skipper> directive;
-		qi::rule<Iterator, Skipper> directives;
-		qi::rule<Iterator, Skipper> message_line;
+		qi::rule<Iterator, Skipper> rule;
+		qi::rule<Iterator, RuleHeader(), Skipper> header;
+		qi::rule<Iterator, Rule(), Skipper> body;
+		qi::rule<Iterator, RuleAction(), Skipper> action;
+		qi::rule<Iterator, RuleActions(), Skipper> actions;
 		qi::rule<Iterator, std::string(), Skipper> text;
 		qi::rule<Iterator, std::string(), Skipper> string;
 	};
 
 }}
 
+BOOST_FUSION_ADAPT_STRUCT(
+	boss::parsing::Rule,
+	(boss::parsing::RuleHeader, header)
+	(boss::parsing::RuleActions, actions)
+)
 
-namespace boss { namespace parsing {
+BOOST_FUSION_ADAPT_STRUCT(
+	boss::parsing::RuleHeader,
+	(boss::parsing::OperationKeyword, key)
+	(std::string, subject)
+)
 
-
-	class Rule 
-	{
-
-	private:
-		RuleOperation		kind;
-		std::string		object;
-	};
-
-	class Rules
-	{
-
-
-	private:
-		std::vector<Rule> rules;
-	};
-
-}}
-
+BOOST_FUSION_ADAPT_STRUCT(
+	boss::parsing::RuleAction,
+	(boss::parsing::ActionKeyword, key)
+	(std::string, argument)
+)
 
 namespace boss { namespace parsing {
 
@@ -110,46 +118,46 @@ namespace boss { namespace parsing {
 	using qi::eps;
 
 	template <typename Iterator, typename Skipper>
-	inline Userlist<Iterator, Skipper>::Userlist()
-		: Userlist::base_type(rules, "userlist")
+	inline Userlist<Iterator, Skipper>::Userlist(IRulesManager& manager)
+		: Userlist::base_type(rules, "userlist"), manager(manager)
 	{
 	
 		// USERLIST :== list of RULE_LINE
 		rules 
-			= rule  %	eol
+			%= rule  %	eol
 			;  
 
 		// RULE_LINE :== RULE HEADER followed by one or more SORT_LINEs
 		rule 
-			=	*eol	// skip any dangling EOLN
+			%=	*eol	// skip any dangling EOLN
 			>>	(
-					body	// either a rule body
+					body [ phoenix::bind(&Userlist<Iterator, Skipper>::AddRule, this, qi::_1)  ]	// either a rule body
 				|	eoi		// or we're done. (EOI :== END OF INPUT)
 				)
 			;
 
 		// The RULE HEADER :== KEYWORD followed by ':' and then an object name just before the EOLN.
 		header 
-			=	operation
+			%=	operation_
 			>	lit(":") 
 			>	text
 			;
 
 		body
-			=	header
+			%=	header
 			>	eol		// eat the header terminator: expect an EOLN before the sort lines start
-			>>	directives
+			>>	actions
 			;
 
 		// SORT_LINEs :== list of SORT_LINE separated by EOLN
-		directives 
-			=	*eol	// skip any dangling EOLN
-			>>	directive % eol
+		actions 
+			%=	*eol	// skip any dangling EOLN
+			>>	action % eol
 			;
 
 		// SORT_LINE :== KEYWORD followed by ':' and then the header argument.
-		directive
-			=	action
+		action
+			%=	action_
 			>	lit(":")
 			>	text
 			// Don't eat the EOLN terminator!
@@ -157,12 +165,12 @@ namespace boss { namespace parsing {
 
 		// TEXT :== sequence of any chars until an EOLN
 		text 
-			=	skip[eps] 
+			%=	skip[eps] 
 			>>	string
 			;
 
 		string
-			=	lexeme[				
+			%=	lexeme[				
 					+(char_ - eol)
 				]
 			;
@@ -171,11 +179,16 @@ namespace boss { namespace parsing {
 		BOOST_SPIRIT_DEBUG_NODE(rules);
 		BOOST_SPIRIT_DEBUG_NODE(header);
 		BOOST_SPIRIT_DEBUG_NODE(body);
-		BOOST_SPIRIT_DEBUG_NODE(directive);
-		BOOST_SPIRIT_DEBUG_NODE(directives);
+		BOOST_SPIRIT_DEBUG_NODE(action);
+		BOOST_SPIRIT_DEBUG_NODE(actions);
 		BOOST_SPIRIT_DEBUG_NODE(text);
 	}
 
+	template <typename Iterator, typename Skipper>
+	inline void Userlist<Iterator, Skipper>::AddRule(Rule const& rule)
+	{
+		manager.AddRule(rule);
+	}
 }}
 
 #endif

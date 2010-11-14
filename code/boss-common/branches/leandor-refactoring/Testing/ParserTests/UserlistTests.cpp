@@ -1,5 +1,5 @@
 #define BOOST_SPIRIT_ASSERT_EXCEPTION
-#define	BOOST_SPIRIT_DEBUG
+//#define	BOOST_SPIRIT_DEBUG
 #define	BOOST_SPIRIT_DEBUG_TRACENODE
 #define BOOST_SPIRIT_DEBUG_OUT std::cout
 
@@ -46,6 +46,18 @@ namespace test {
 	using fusion::unused_type;
 };
 
+class RulesMgr : public virtual boss::parsing::IRulesManager
+{
+protected:
+	virtual void AddRule(boss::parsing::Rule const& rule);
+};
+
+
+void RulesMgr::AddRule(boss::parsing::Rule const& rule)
+{
+	std::cout << rule << std::endl;
+};
+
 int main(int argc, char* argv[])
 {
 	namespace qi = boost::spirit::qi;
@@ -84,13 +96,13 @@ int main(int argc, char* argv[])
 	typedef boss::parsing::Skipper<std::string::const_iterator> Skipper;
 	typedef boss::parsing::Userlist<std::string::const_iterator, Skipper> UserlistGrammar;
 
+	RulesMgr mgr;
 	Skipper skipper;
-	UserlistGrammar grammar; // Our grammar
+	UserlistGrammar grammar(mgr); // Our grammar
 
 	std::string::const_iterator iter = storage.begin();
 	std::string::const_iterator end = storage.end();
 
-	
 	bool r;
 	{
 		boost::progress_timer timer(std::cout);
@@ -101,6 +113,7 @@ int main(int argc, char* argv[])
 		std::cout << "-------------------------\n";
 		std::cout << "Parsing succeeded\n";
 		std::cout << "-------------------------\n";
+
 		return 0;
 	}
 	else

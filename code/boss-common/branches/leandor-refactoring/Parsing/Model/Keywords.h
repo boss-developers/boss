@@ -5,26 +5,29 @@
 namespace boss { namespace parsing {
 
 	// Defines the Rule starting keywords
-	struct RuleOperation
+	struct OperationKeyword
 	{
-		enum Operation
+		enum OperationValue
 		{
+			Empty,
 			ADD,
 			OVERRIDE,
 			FOR
 		}; 
 
-		Operation Value;
+		OperationValue Value;
 
-		RuleOperation(const Operation value) : Value(value) { };
-		RuleOperation(const RuleOperation& keyword) : Value(keyword.Value) { };
+		OperationKeyword() : Value(OperationKeyword::Empty) { };
+		OperationKeyword(const OperationValue value) : Value(value) { };
+		OperationKeyword(const OperationKeyword& keyword) : Value(keyword.Value) { };
 	};
 
 	// Defines the Rule starting keywords
-	struct RuleAction
+	struct ActionKeyword
 	{
-		enum Action
+		enum ActionValue
 		{
+			Empty,
 			BEFORE,
 			AFTER,
 			TOP,
@@ -33,10 +36,11 @@ namespace boss { namespace parsing {
 			REPLACE,
 		}; 
 
-		Action Value;
+		ActionValue Value;
 
-		RuleAction(const Action value) : Value(value) { };
-		RuleAction(const RuleAction& keyword) : Value(keyword.Value) { };
+		ActionKeyword() : Value(ActionKeyword::Empty) { };
+		ActionKeyword(const ActionValue value) : Value(value) { };
+		ActionKeyword(const ActionKeyword& keyword) : Value(keyword.Value) { };
 	};
 
 }}
