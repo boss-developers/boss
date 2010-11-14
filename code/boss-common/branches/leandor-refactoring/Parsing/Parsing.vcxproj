@@ -90,11 +90,11 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="Private\Defines.h" />
     <ClInclude Include="Keywords.h" />
-    <ClInclude Include="Private\Grammars\Skipper.h" />
-    <ClInclude Include="Private\Grammars\Userlist.h" />
+    <ClInclude Include="Private\Skipper.h" />
+    <ClInclude Include="Private\Userlist\Userlist.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Private\Model.cpp" />
+    <ClCompile Include="Private\Userlist\Model.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

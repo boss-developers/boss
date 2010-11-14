@@ -7,12 +7,6 @@
     <ClInclude Include="Private\Defines.h">
       <Filter>Private</Filter>
     </ClInclude>
-    <ClInclude Include="Private\Grammars\Skipper.h">
-      <Filter>Private\Grammars</Filter>
-    </ClInclude>
-    <ClInclude Include="Private\Grammars\Userlist.h">
-      <Filter>Private\Grammars</Filter>
-    </ClInclude>
     <ClInclude Include="IRulesManager.h">
       <Filter>Model</Filter>
     </ClInclude>
@@ -21,6 +15,12 @@
     </ClInclude>
     <ClInclude Include="Keywords.h">
       <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\Userlist\Userlist.h">
+      <Filter>Private\Grammars</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\Skipper.h">
+      <Filter>Private\Grammars</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -35,6 +35,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Private\Model.cpp" />
+    <ClCompile Include="Private\Userlist\Model.cpp" />
   </ItemGroup>
 </Project>
