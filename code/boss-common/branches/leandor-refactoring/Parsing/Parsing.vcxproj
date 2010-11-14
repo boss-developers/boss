@@ -86,12 +86,15 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Model\IRulesManager.h" />
-    <ClInclude Include="Model\Model.h" />
-    <ClInclude Include="Parsing.h" />
-    <ClInclude Include="Model\Keywords.h" />
-    <ClInclude Include="Grammar\Skipper.h" />
-    <ClInclude Include="Grammar\Userlist.h" />
+    <ClInclude Include="IRulesManager.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="Private\Defines.h" />
+    <ClInclude Include="Keywords.h" />
+    <ClInclude Include="Private\Grammars\Skipper.h" />
+    <ClInclude Include="Private\Grammars\Userlist.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Private\Model.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

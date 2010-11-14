@@ -4,27 +4,37 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Parsing.h" />
-    <ClInclude Include="Grammar\Userlist.h">
-      <Filter>Grammars</Filter>
+    <ClInclude Include="Private\Defines.h">
+      <Filter>Private</Filter>
     </ClInclude>
-    <ClInclude Include="Grammar\Skipper.h">
-      <Filter>Grammars</Filter>
+    <ClInclude Include="Private\Grammars\Skipper.h">
+      <Filter>Private\Grammars</Filter>
     </ClInclude>
-    <ClInclude Include="Model\IRulesManager.h">
+    <ClInclude Include="Private\Grammars\Userlist.h">
+      <Filter>Private\Grammars</Filter>
+    </ClInclude>
+    <ClInclude Include="IRulesManager.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="Model\Keywords.h">
+    <ClInclude Include="Model.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="Model\Model.h" />
+    <ClInclude Include="Keywords.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Grammars">
-      <UniqueIdentifier>{6337642a-523b-4166-aaed-c6daa2d40e01}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Model">
       <UniqueIdentifier>{02cc08aa-760f-4f35-ad72-b2c307836031}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Private">
+      <UniqueIdentifier>{d9b207f7-dbd7-4a1e-a698-e4b7cc4183eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Grammars">
+      <UniqueIdentifier>{6337642a-523b-4166-aaed-c6daa2d40e01}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Private\Model.cpp" />
   </ItemGroup>
 </Project>

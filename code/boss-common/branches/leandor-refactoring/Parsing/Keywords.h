@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Parsing.h"
-
 namespace boss { namespace parsing {
 
 	// Defines the Rule starting keywords

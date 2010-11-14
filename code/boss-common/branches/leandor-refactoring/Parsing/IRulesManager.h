@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Parsing.h"
-#include "Model/Model.h"
+#include "Model.h"
 
 namespace boss { namespace parsing {
 

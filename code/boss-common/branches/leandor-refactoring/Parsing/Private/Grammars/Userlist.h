@@ -12,10 +12,12 @@
 #include <string>
 #include <vector>
 
-#include "Parsing.h"
-#include "Model/Keywords.h"
-#include "Model/IRulesManager.h"
-#include "Model/Model.h"
+#include "Keywords.h"
+#include "IRulesManager.h"
+#include "Model.h"
+
+
+#include "../Defines.h"
 
 
 /*
