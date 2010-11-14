@@ -5,13 +5,26 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Parsing.h" />
-    <ClInclude Include="Skipper.h">
+    <ClInclude Include="Grammar\Userlist.h">
       <Filter>Grammars</Filter>
     </ClInclude>
+    <ClInclude Include="Grammar\Skipper.h">
+      <Filter>Grammars</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\IRulesManager.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\Keywords.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\Model.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Grammars">
       <UniqueIdentifier>{6337642a-523b-4166-aaed-c6daa2d40e01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{02cc08aa-760f-4f35-ad72-b2c307836031}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
