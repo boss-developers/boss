@@ -1,4 +1,5 @@
-#include "Model.h"
+// bring on the public stuff
+#include "Parsing.h"
 
 namespace boss { namespace parsing {
 

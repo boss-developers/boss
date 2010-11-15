@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Defines.h"
+#include "Private/Defines.h"
 
-namespace boss { namespace parsing {
+namespace boss { namespace parsing { namespace detail {
 
 	template <typename Iterator>
 	struct Skipper
@@ -55,4 +55,4 @@ namespace boss { namespace parsing {
 		qi::rule<Iterator> comments;
 	};
 
-}}
+}}}

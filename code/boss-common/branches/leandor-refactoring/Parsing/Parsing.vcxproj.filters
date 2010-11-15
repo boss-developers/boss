@@ -7,21 +7,24 @@
     <ClInclude Include="Private\Defines.h">
       <Filter>Private</Filter>
     </ClInclude>
-    <ClInclude Include="IRulesManager.h">
-      <Filter>Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Keywords.h">
-      <Filter>Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Private\Userlist\Userlist.h">
-      <Filter>Private\Grammars</Filter>
-    </ClInclude>
     <ClInclude Include="Private\Skipper.h">
       <Filter>Private\Grammars</Filter>
     </ClInclude>
+    <ClInclude Include="Userlist\Model.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Userlist\Keywords.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Userlist\IRulesManager.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Userlist\Parser.h" />
+    <ClInclude Include="Private\Userlist\Grammar\Symbols.h" />
+    <ClInclude Include="Private\Userlist\Grammar\Grammar.h">
+      <Filter>Private\Grammars</Filter>
+    </ClInclude>
+    <ClInclude Include="Parsing.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Model">
@@ -36,5 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Private\Userlist\Model.cpp" />
+    <ClCompile Include="Private\Userlist\Parser.cpp" />
+    <ClCompile Include="Private\Userlist\Grammar\Grammar.cpp" />
   </ItemGroup>
 </Project>
