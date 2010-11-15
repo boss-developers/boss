@@ -401,11 +401,11 @@ int main(int argc, char *argv[]) {
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (userlist.keys[start]=="ADD"  && index1 < x) {
-						userlist.messages += "\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.<br /><br />";
+						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is already in the masterlist.", userlist.objects[start].c_str());
 						break;
 					} else if (userlist.keys[start]=="OVERRIDE" && index1 >= x) {
-						userlist.messages += "\""+userlist.objects[start]+"\" is not in the masterlist, cannot override. Rule skipped.<br /><br />";
+						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlist.objects[start].c_str());
 						break;
 					}
@@ -445,7 +445,7 @@ int main(int argc, char *argv[]) {
 						}
 						order.close();
 						if (index < 0 || index >= int(modlist.mods.size())) {
-							userlist.messages += "\""+userlist.objects[j]+"\" is not installed, and is not in the masterlist. Rule skipped.<br /><br />";
+							userlist.messages += "<span class='error'>\""+userlist.objects[j]+"\" is not installed, and is not in the masterlist. Rule skipped.</span><br /><br />";
 							modlist.mods.insert(modlist.mods.begin()+index1,filename);
 							modlist.modmessages.insert(modlist.modmessages.begin()+index1,currentmessages);
 							LOG_WARN(" * \"%s\" is not installed or in the masterlist.", userlist.objects[j].c_str());
@@ -453,13 +453,13 @@ int main(int argc, char *argv[]) {
 						}
 					}
 					//Uh oh, the awesomesauce ran out...
-					if (index >= x || (userlist.keys[start]=="ADD" && index >= x-1)) {
+					if (index >= x-1) {
 						if (userlist.keys[start]=="ADD")
 							x--;
-						userlist.messages += "\""+userlist.objects[j]+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.<br /><br />";
+						userlist.messages += "<span class='error'>\""+userlist.objects[j]+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</span><br /><br />";
 						modlist.mods.insert(modlist.mods.begin()+index1,filename);
 						modlist.modmessages.insert(modlist.modmessages.begin()+index1,currentmessages);
-						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", userlist.objects[start].c_str());
+						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", userlist.objects[j].c_str());
 						break;
 					}
 
@@ -557,10 +557,10 @@ int main(int argc, char *argv[]) {
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (userlist.keys[start]=="ADD"  && index1 < x) {
-						userlist.messages += "\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.<br /><br />";
+						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
 						break;
 					} else if (userlist.keys[start]=="OVERRIDE" && index1 >= x) {
-						userlist.messages += "\""+userlist.objects[start]+"\" is not in the masterlist, cannot override. Rule skipped.<br /><br />";
+						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlist.objects[start].c_str());
 						break;
 					}
@@ -620,7 +620,7 @@ int main(int argc, char *argv[]) {
 							index = modlist.GetModIndex(sortmods.back());
 							if (!overtime) index += 1;
 						}
-					} else index = x-1;		//Not really sure why this works, but it does. IMO it should be =x when using OVERRIDE, but =x-1 works fine.
+					} else index = x-1;
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 					if (userlist.keys[j]=="TOP") 
