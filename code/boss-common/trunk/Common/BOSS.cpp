@@ -32,8 +32,8 @@ using namespace std;
 namespace po = boost::program_options;
 
 
-const string g_version     = "1.6.2";
-const string g_releaseDate = "October 26, 2010";
+const string g_version     = "1.6.3";
+const string g_releaseDate = "November 15, 2010";
 
 
 void ShowVersion() {
@@ -193,7 +193,7 @@ int main(int argc, char *argv[]) {
 			<< "<body id='body'>"<<endl<<"<div id='title'>Better Oblivion Sorting Software Log</div><br />"<<endl
 			<< "<div style='text-align:center;'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />"<<endl
 			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
-			<< "v1.62 (29 October 2010)"<<endl<<"</div><br /><br />";
+			<< "v"<<g_version<<" ("<<g_releaseDate<<")"<<endl<<"</div><br /><br />";
 
 	LOG_DEBUG("Detecting game...");
 	if (fs::exists("Oblivion.esm")) game = 1;
