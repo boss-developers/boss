@@ -442,7 +442,7 @@ int main(int argc, char *argv[]) {
 						}
 					}
 					//Uh oh, the awesomesauce ran out...
-					if (index >= x || (userlist.keys[start]=="ADD" && index >= x-1)) {
+					if (index >= x-1) {
 						if (userlist.keys[start]=="ADD")
 							x--;
 						userlist.messages += "\""+userlist.objects[j]+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.<br /><br />";
@@ -609,7 +609,7 @@ int main(int argc, char *argv[]) {
 							index = modlist.GetModIndex(sortmods.back());
 							if (!overtime) index += 1;
 						}
-					} else index = x-1;		//Not really sure why this works, but it does. IMO it should be =x when using OVERRIDE, but =x-1 works fine.
+					} else index = x-1;
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 					if (userlist.keys[j]=="TOP") 
