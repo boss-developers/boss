@@ -4,6 +4,7 @@
 
 namespace boss { namespace parsing { namespace detail {
 
+
 	template <typename Iterator>
 	struct Skipper
 		: qi::grammar<Iterator>
@@ -11,6 +12,7 @@ namespace boss { namespace parsing { namespace detail {
 		Skipper()
 			: Skipper::base_type(start, "skipper")
 		{
+			using qi::lit;
 			using qi::eol;
 			using iso8859_1::char_;
 			using namespace qi::labels;

@@ -11,7 +11,9 @@
 #include <boost/spirit/include/phoenix_bind.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 
-namespace boss { namespace parsing { namespace detail {
+namespace boss { namespace parsing { 
+	
+	namespace detail {
 
 		namespace spirit	= boost::spirit;
 		namespace qi		= boost::spirit::qi;
@@ -21,5 +23,9 @@ namespace boss { namespace parsing { namespace detail {
 
 		using fusion::unused_type;
 
-}}}
+	}
+
+	namespace qi		= boost::spirit::qi;
+
+}}
 

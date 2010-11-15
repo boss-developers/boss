@@ -90,10 +90,9 @@ namespace boss { namespace parsing { namespace detail {
 	}
 
 	template <typename Iterator, typename Skipper>
-	inline void Grammar<Iterator, Skipper>::AddRule(Rule const& rule)
+	void Grammar<Iterator, Skipper>::AddRule(Rule const& rule)
 	{
 		manager.AddRule(rule);
 	}
 
 }}}
-

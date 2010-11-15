@@ -25,6 +25,7 @@
       <Filter>Private\Grammars</Filter>
     </ClInclude>
     <ClInclude Include="Parsing.h" />
+    <ClInclude Include="Private\Userlist\Grammar\GrammarCode.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Model">
@@ -40,6 +41,5 @@
   <ItemGroup>
     <ClCompile Include="Private\Userlist\Model.cpp" />
     <ClCompile Include="Private\Userlist\Parser.cpp" />
-    <ClCompile Include="Private\Userlist\Grammar\Grammar.cpp" />
   </ItemGroup>
 </Project>

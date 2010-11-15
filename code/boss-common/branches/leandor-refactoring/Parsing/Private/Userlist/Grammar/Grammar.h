@@ -69,6 +69,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 	(std::string, argument)
 )
 
+#include "Private/Userlist/Grammar/GrammarCode.h"
 
 #endif
 

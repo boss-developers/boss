@@ -86,6 +86,7 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Private\Userlist\Grammar\GrammarCode.h" />
     <ClInclude Include="Parsing.h" />
     <ClInclude Include="Private\Userlist\Grammar\Symbols.h" />
     <ClInclude Include="Userlist\IRulesManager.h" />
@@ -97,7 +98,6 @@
     <ClInclude Include="Userlist\Parser.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Private\Userlist\Grammar\Grammar.cpp" />
     <ClCompile Include="Private\Userlist\Model.cpp" />
     <ClCompile Include="Private\Userlist\Parser.cpp" />
   </ItemGroup>

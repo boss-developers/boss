@@ -10,8 +10,8 @@ namespace boss { namespace parsing {
 	class Userlist 
 	{
 	public:
-		static void Parse(std::istream& is, IRulesManager& manager);
-		static void Parse(std::string& text, IRulesManager& manager);
+		static bool Parse(std::istream& in, IRulesManager& manager);
+		static bool Parse(std::string& text, IRulesManager& manager);
 	};
 
 }}
