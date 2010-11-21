@@ -5,7 +5,7 @@
 #include <iostream>
 #include <boost/foreach.hpp>
 
-#include "Keywords.h"
+#include "Userlist/Keywords.h"
 
 namespace boss { namespace parsing {
 

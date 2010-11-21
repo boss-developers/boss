@@ -6,12 +6,12 @@
 
 // Examples taken from User Rules Readme
 
-ADD: MyModToAdd.esp
-    AFTER: LoadAfterThis.esm
-    APPEND: ? Adding a general comment.
-    APPEND: $ Incompatible with OOO!
+add: MyModToAdd.esp
+    after: LoadAfterThis.esm
+    append: ? Adding a general comment.
+    append: $ Incompatible with OOO!
 
-OVERRIDE: MyModToOverride.esp
+override: MyModToOverride.esp
     BEFORE: LoadBeforeThis.esp
 
 OVERRIDE: L.A.M.E.
@@ -25,14 +25,14 @@ FOR: bgBalancingEVOptionalNPCDiversity, Vanilla.esp
     REPLACE: ? This is a replacement message.
     APPEND: % {{BASH:NpcFaces,NoMerge}}
 
-FOR: Unofficial Oblivion Patch.esp
+For: Unofficial Oblivion Patch.esp
     REPLACE: ? Overrided!
 
 FOR: bgMagicEV.esp.esp
     APPEND: % {{BASH:Names,Delev,Relev}}
     
     
-OVERRIDE: SampleMod.esp
+Override: SampleMod.esp
     TOP: L.A.M.E.
     
     

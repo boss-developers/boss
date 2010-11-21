@@ -25,6 +25,8 @@
 
 namespace boss { namespace parsing { namespace detail {
 
+	using spirit::info;
+
 	template <typename Iterator, typename Skipper>
 	class Grammar: public qi::grammar<Iterator, Skipper>
 	{
@@ -34,6 +36,7 @@ namespace boss { namespace parsing { namespace detail {
 
 	private:
 		void AddRule(Rule const& rule);
+		void SyntaxError(const Iterator& first, const Iterator& last, const Iterator& errorpos, info const& what);
 
 	private:
 		IRulesManager& manager;
@@ -43,8 +46,10 @@ namespace boss { namespace parsing { namespace detail {
 		qi::rule<Iterator, Skipper> rule;
 		qi::rule<Iterator, RuleHeader(), Skipper> header;
 		qi::rule<Iterator, Rule(), Skipper> body;
+		qi::rule<Iterator, OperationKeyword(), Skipper> operation_keyword;
 		qi::rule<Iterator, RuleAction(), Skipper> action;
 		qi::rule<Iterator, RuleActions(), Skipper> actions;
+		qi::rule<Iterator, ActionKeyword(), Skipper> action_keyword;
 		qi::rule<Iterator, std::string(), Skipper> text;
 		qi::rule<Iterator, std::string(), Skipper> string;
 	};

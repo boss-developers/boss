@@ -26,7 +26,6 @@ namespace boss { namespace parsing {
 		namespace iso8859_1 = boost::spirit::iso8859_1;
 
 		using fusion::unused_type;
-
 	}
 
 	namespace qi		= boost::spirit::qi;
