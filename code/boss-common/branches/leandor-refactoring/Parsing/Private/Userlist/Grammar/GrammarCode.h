@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/spirit/include/qi_no_case.hpp>
+
 // bring on the public stuff
 #include "Parsing.h"
 
@@ -16,6 +18,7 @@ namespace boss { namespace parsing { namespace detail {
 	using qi::eoi;
 	using qi::skip;
 	using qi::eps;
+	using iso8859_1::no_case;
 
 	template <typename Iterator, typename Skipper>
 	Grammar<Iterator, Skipper>::Grammar(IRulesManager& manager)
@@ -38,7 +41,7 @@ namespace boss { namespace parsing { namespace detail {
 
 		// The RULE HEADER :== KEYWORD followed by ':' and then an object name just before the EOLN.
 		header 
-			%=	operation_
+			%=	no_case[operation_]
 			>	lit(":") 
 			>	text
 			;
@@ -57,7 +60,7 @@ namespace boss { namespace parsing { namespace detail {
 
 		// SORT_LINE :== KEYWORD followed by ':' and then the header argument.
 		action
-			%=	action_
+			%=	no_case[action_]
 			>	lit(":")
 			>	text
 			// Don't eat the EOLN terminator!

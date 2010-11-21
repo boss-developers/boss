@@ -22,21 +22,17 @@ void RulesMgr::AddRule(boss::parsing::Rule const& rule)
 
 int main(int argc, char* argv[])
 {
-	char const* filename;
-	if (argc > 1)
+	if (argc < 1)
 	{
-		filename = argv[1];
-	}
-	else
-	{
-		filename = "BOSS\\masterlist.txt";
+		std::cerr << "Error: You must specify a file to open in the command line." << std::endl;
+		return 1;
 	}
 
-	std::ifstream in(filename, std::ios_base::in);
+	std::ifstream in(argv[1], std::ios_base::in);
 
 	if (!in)
 	{
-		std::cerr << "Error: Could not open input file: " << filename << std::endl;
+		std::cerr << "Error: Could not open input file: " << argv[1] << std::endl;
 		return 1;
 	}
 

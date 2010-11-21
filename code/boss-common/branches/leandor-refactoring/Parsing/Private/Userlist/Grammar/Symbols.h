@@ -16,9 +16,9 @@ namespace boss { namespace parsing { namespace detail {
 		rule_operation_()
 		{
 			add
-				("ADD"			, OperationKeyword::ADD)
-				("OVERRIDE"		, OperationKeyword::OVERRIDE)
-				("FOR"			, OperationKeyword::FOR)
+				("add"			, OperationKeyword::ADD)
+				("override"		, OperationKeyword::OVERRIDE)
+				("for"			, OperationKeyword::FOR)
 				;
 		}
 
@@ -31,12 +31,12 @@ namespace boss { namespace parsing { namespace detail {
 		rule_action_()
 		{
 			add
-				("BEFORE"		, ActionKeyword::BEFORE)
-				("AFTER"		, ActionKeyword::AFTER)
-				("TOP"			, ActionKeyword::TOP)
-				("BOTTOM"		, ActionKeyword::BOTTOM)
-				("APPEND"		, ActionKeyword::APPEND)
-				("REPLACE"		, ActionKeyword::REPLACE)
+				("before"		, ActionKeyword::BEFORE)
+				("after"		, ActionKeyword::AFTER)
+				("top"			, ActionKeyword::TOP)
+				("bottom"		, ActionKeyword::BOTTOM)
+				("append"		, ActionKeyword::APPEND)
+				("replace"		, ActionKeyword::REPLACE)
 				;
 		}
 
