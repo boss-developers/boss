@@ -60,12 +60,49 @@ InstType "Minimal"
   Page custom PAGE_SELECT_GAMES PAGE_SELECT_GAMES_Leave
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_INSTFILES
+  !define MUI_FINISHPAGE_TITLE "Finished Installing BOSS - Better Oblivion Sorting Software [version 1.6.3]"
+  !define MUI_FINISHPAGE_TITLE_3LINES
+  !define MUI_FINISHPAGE_CANCEL_ENABLED
+  !define MUI_FINISHPAGE_RUN
+  !define MUI_FINISHPAGE_RUN_TEXT "Download latest masterlist for all installed game versions?"
+  !define MUI_FINISHPAGE_RUN_FUNCTION updateMasterlist
+  !insertmacro MUI_PAGE_FINISH
   
   !insertmacro MUI_UNPAGE_WELCOME
   UninstPage custom un.PAGE_SELECT_GAMES un.PAGE_SELECT_GAMES_Leave
   !insertmacro MUI_UNPAGE_INSTFILES
 
 ;--------------------------------
+
+Function updateMasterlist
+    ReadRegStr $Path_OB HKLM "Software\BOSS" "Oblivion Path"
+    ReadRegStr $Path_FO HKLM "Software\BOSS" "Fallout3 Path"
+    ReadRegStr $Path_NV HKLM "Software\BOSS" "NewVegas Path"
+    ReadRegStr $Path_Other HKLM "Software\BOSS" "Other Path"
+    ReadRegStr $Path_Nehrim HKLM "Software\BOSS" "Nehrim Path"
+    
+    ${If} $Path_OB != $Empty
+        StrCpy $OUTDIR $Path_OB
+        Exec '"$Path_OB\Data\Boss.exe" --update-only -s'
+    ${EndIf}
+    ${If} $Path_FO != $Empty
+        StrCpy $OUTDIR $Path_FO
+        Exec '"$Path_FO\Data\Boss.exe" --update-only -s'
+    ${EndIf}
+    ${If} $Path_NV != $Empty
+        StrCpy $OUTDIR $Path_NV
+        Exec '"$Path_NV\Data\Boss.exe" --update-only -s'
+    ${EndIf}
+    ${If} $Path_Other != $Empty
+        StrCpy $OUTDIR $Path_Other
+        Exec '"$Path_Other\Data\Boss.exe" --update-only -s'
+    ${EndIf}
+    ${If} $Path_Nehrim != $Empty
+        StrCpy $OUTDIR $Path_Nehrim
+        Exec '"$Path_Nehrim\Data\Boss.exe" --update-only -s'
+    ${EndIf}
+FunctionEnd
+
 Function un.onInit
     ReadRegStr $Path_OB HKLM "Software\BOSS" "Oblivion Path"
     ReadRegStr $Path_FO HKLM "Software\BOSS" "Fallout3 Path"
@@ -84,17 +121,40 @@ Function .onInit
 
     ${If} $Path_OB == $Empty
         ReadRegStr $Path_OB HKLM "Software\Bethesda Softworks\Oblivion" "Installed Path"
+        ${If} $Path_OB == $Empty
+            ReadRegStr $Path_OB HKLM "SOFTWARE\Wow6432Node\Bethesda Softworks\Oblivion" "Installed Path"
+        ${EndIf}
+    ${Else}
+        StrCpy $CheckState_OB ${BST_CHECKED}
     ${EndIf}
     ${If} $Path_FO == $Empty
         ReadRegStr $Path_FO HKLM "Software\Bethesda Softworks\Fallout3" "Installed Path"
+        ${If} $Path_FO == $Empty
+            ReadRegStr $Path_FO HKLM "SOFTWARE\Wow6432Node\Bethesda Softworks\Fallout3" "Installed Path"
+        ${EndIf}
+    ${Else}
+        StrCpy $CheckState_FO ${BST_CHECKED}
     ${EndIf}
     ${If} $Path_NV == $Empty
-        ReadRegStr $Path_NV HKLM "Software\Bethesda Softworks\NewVegas" "Installed Path"
+        ReadRegStr $Path_NV HKLM "Software\Bethesda Softworks\FalloutNV" "Installed Path"
+        ${If} $Path_NV == $Empty
+            ReadRegStr $Path_FO HKLM "SOFTWARE\Wow6432Node\Bethesda Softworks\FalloutNV" "Installed Path"
+        ${EndIf}
+    ${Else}
+        StrCpy $CheckState_NV ${BST_CHECKED}
+    ${EndIf}
+    ${If} $Path_Nehrim == $Empty
+        ReadRegStr $Path_Nehrim HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Nehrim - At Fate's Edge_is1" "InstallLocation"
+    ${Else}
+        StrCpy $CheckState_Nehrim ${BST_CHECKED}
+    ${EndIf}
+    ${If} $Path_Other != $Empty
+        StrCpy $CheckState_Other ${BST_CHECKED}
     ${EndIf}
 FunctionEnd
 
 Function PAGE_SELECT_GAMES
-
+    !insertmacro MUI_HEADER_TEXT $(PAGE_SELECT_GAMES_TITLE) $(PAGE_SELECT_GAMES_SUBTITLE)
     GetFunctionAddress $Function_Browse OnClick_Browse
     
 	nsDialogs::Create 1018
@@ -250,22 +310,53 @@ SectionGroup "Start Menu Shortcuts" Shortcuts_SM
         CreateDirectory "$SMPROGRAMS\BOSS"
         CreateShortCut "$SMPROGRAMS\BOSS\Uninstall.lnk" "$COMMONFILES\BOSS\uninstall.exe" "" "$COMMONFILES\BOSS\uninstall.exe" 0
         ${If} $CheckState_OB == ${BST_CHECKED}
+            SetOutPath "$Path_OB\Data"
             CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Oblivion.lnk" "$Path_OB\Data\BOSS.exe" "" "$Path_OB\Data\BOSS.exe" 0
         ${EndIf}
         ${If} $CheckState_FO == ${BST_CHECKED}
+            SetOutPath "$Path_FO\Data"
             CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Fallout3.lnk" "$Path_FO\Data\BOSS.exe" "" "$Path_FO\Data\BOSS.exe" 0
         ${EndIf}
         ${If} $CheckState_NV == ${BST_CHECKED}
+            SetOutPath "$Path_NV\Data"
             CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Fallout NewVegas.lnk" "$Path_NV\Data\BOSS.exe" "" "$Path_NV\Data\BOSS.exe" 0
         ${EndIf}
         ${If} $CheckState_Nehrim == ${BST_CHECKED}
+            SetOutPath "$Path_Nehrim\Data"
             CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Nehrim.lnk" "$Path_Nehrim\Data\BOSS.exe" "" "$Path_Nehrim\Data\BOSS.exe" 0
         ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
+            SetOutPath "$Path_Other\Data"
             CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Other.lnk" "$Path_Other\Data\BOSS.exe" "" "$Path_Other\Data\BOSS.exe" 0
         ${EndIf}
     SectionEnd
 
+    Section "Update Masterlist Start Menu Shortcuts" StartMenuUpdate
+        SectionIn 1
+        CreateDirectory "$SMPROGRAMS\BOSS"
+        CreateShortCut "$SMPROGRAMS\BOSS\Uninstall.lnk" "$COMMONFILES\BOSS\uninstall.exe" "-u" "$COMMONFILES\BOSS\uninstall.exe" 0
+        ${If} $CheckState_OB == ${BST_CHECKED}
+            SetOutPath "$Path_OB\Data"
+            CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Oblivion - Update Masterlist.lnk" "$Path_OB\Data\BOSS.exe" "-u" "$Path_OB\Data\BOSS.exe" 0
+        ${EndIf}
+        ${If} $CheckState_FO == ${BST_CHECKED}
+            SetOutPath "$Path_FO\Data"
+            CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Fallout3 - Update Masterlist.lnk" "$Path_FO\Data\BOSS.exe" "-u" "$Path_FO\Data\BOSS.exe" 0
+        ${EndIf}
+        ${If} $CheckState_NV == ${BST_CHECKED}
+            SetOutPath "$Path_NV\Data"
+            CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Fallout NewVegas - Update Masterlist.lnk" "$Path_NV\Data\BOSS.exe" "-u" "$Path_NV\Data\BOSS.exe" 0
+        ${EndIf}
+        ${If} $CheckState_Nehrim == ${BST_CHECKED}
+            SetOutPath "$Path_Nehrim\Data"
+            CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Nehrim - Update Masterlist.lnk" "$Path_Nehrim\Data\BOSS.exe" "-u" "$Path_Nehrim\Data\BOSS.exe" 0
+        ${EndIf}
+        ${If} $CheckState_Other == ${BST_CHECKED}
+            SetOutPath "$Path_Other\Data"
+            CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Other - Update Masterlist.lnk" "$Path_Other\Data\BOSS.exe" "-u" "$Path_Other\Data\BOSS.exe" 0
+        ${EndIf}
+    SectionEnd
+    
     Section "Documentation Shortcuts" Shortcuts_SM_Docs
         SectionIn 1
         CreateShortCut "$SMPROGRAMS\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
@@ -279,22 +370,27 @@ Section "Documentation" Documentation
     File "data\boss-common\BOSS ReadMe.html"
     File "data\boss-common\BOSS User Rules ReadMe.html"
     ${If} $CheckState_OB == ${BST_CHECKED}
+        CreateDirectory "$Path_OB\Data\BOSS"
         CreateShortCut "$Path_OB\Data\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
         CreateShortCut "$Path_OB\Data\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
     ${EndIf}
     ${If} $CheckState_FO == ${BST_CHECKED}
+            CreateDirectory "$Path_FO\Data\BOSS"
         CreateShortCut "$Path_FO\Data\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
         CreateShortCut "$Path_FO\Data\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
     ${EndIf}
     ${If} $CheckState_NV == ${BST_CHECKED}
+        CreateDirectory "$Path_NV\Data\BOSS"
         CreateShortCut "$Path_NV\Data\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
         CreateShortCut "$Path_NV\Data\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
     ${EndIf}
     ${If} $CheckState_Nehrim == ${BST_CHECKED}
+        CreateDirectory "$Path_Nehrim\Data\BOSS"
         CreateShortCut "$Path_Nehrim\Data\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
         CreateShortCut "$Path_Nehrim\Data\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
     ${EndIf}
     ${If} $CheckState_Other == ${BST_CHECKED}
+        CreateDirectory "$Path_Other\Data\BOSS"
         CreateShortCut "$Path_Other\Data\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
         CreateShortCut "$Path_Other\Data\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
     ${EndIf} 
@@ -334,6 +430,10 @@ SectionEnd
   LangString DESC_Shortcuts_SM_Docs ${LANG_ENGLISH} "StartMenu Shortcuts for the BOSS Documentation."
   LangString DESC_Documentation ${LANG_ENGLISH} "The documentation."
   LangString DESC_Batch_Files ${LANG_ENGLISH} "Batch files to enable quicker use of the command functions Update and Revert (Level 1) and Debug print out (level 2)."
+  LangString PAGE_SELECT_GAMES_TITLE ${LANG_ENGLISH} "Choose Games"
+  LangString PAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select which game(s) you want to install BOSS for, and confirm the desired install path."
+  LangString unPAGE_SELECT_GAMES_TITLE ${LANG_ENGLISH} "Choose Games"
+  LangString unPAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select which game(s) you want to uninstall BOSS from."
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -345,7 +445,7 @@ SectionEnd
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Function un.PAGE_SELECT_GAMES
-
+    !insertmacro MUI_HEADER_TEXT $(unPAGE_SELECT_GAMES_TITLE) $(u PAGE_SELECT_GAMES_SUBTITLE)
     GetFunctionAddress $unFunction_Browse un.OnClick_Browse
     
 	nsDialogs::Create 1018
