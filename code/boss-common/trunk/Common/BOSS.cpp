@@ -85,6 +85,7 @@ int main(int argc, char *argv[]) {
 
 	// set option defaults
 	bool update             = false; // update masterlist?
+	bool updateonly         = false; // only update the masterlist and don't sort currently.
 	bool silent             = false; // silent mode?
 	bool skip_version_parse = false; // enable parsing of mod's headers to look for version strings
 	int  revert             = 0;     // what level to revert to
@@ -100,6 +101,10 @@ int main(int argc, char *argv[]) {
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
 								" available on the web")
+		("update-only,o", po::value(&updateonly)->zero_tokens(),
+								"automatically update the local copy of the"
+								" masterlist to the latest version"
+								" available on the web but don't sort right now")
 		("silent,s", po::value(&silent)->zero_tokens(),
 								"don't launch a browser to show the HTML log"
 								" at program completion")
@@ -252,6 +257,10 @@ int main(int argc, char *argv[]) {
 		UpdateMasterlist(game);
 		LOG_DEBUG("Masterlist updated successfully.");
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
+	}
+	
+	if (updateonly == true) {
+		return (0);
 	}
 
 	cout << endl << "Better Oblivion Sorting Software working..." << endl;
