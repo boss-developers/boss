@@ -1,5 +1,5 @@
 // bring on the public stuff
-#include "Parsing.h"
+#include "Parsing/Parsing.h"
 
 namespace boss { namespace parsing {
 
@@ -7,43 +7,45 @@ namespace boss { namespace parsing {
 	{
 		switch (action.Value)
 		{
-		case ActionKeyword::AFTER :
-			return os << "AFTER";
+            case ActionKeyword::AFTER :
+                return os << "AFTER";
 
-		case ActionKeyword::APPEND :
-			return os << "APPEND";
+            case ActionKeyword::APPEND :
+                return os << "APPEND";
 
-		case ActionKeyword::BEFORE :
-			return os << "BEFORE";
+            case ActionKeyword::BEFORE :
+                return os << "BEFORE";
 
-		case ActionKeyword::BOTTOM :
-			return os << "BOTTOM";
+            case ActionKeyword::BOTTOM :
+                return os << "BOTTOM";
 
-		case ActionKeyword::REPLACE :
-			return os << "REPLACE";
+            case ActionKeyword::REPLACE :
+                return os << "REPLACE";
 
-		case ActionKeyword::TOP :
-			return os << "TOP";
+            case ActionKeyword::TOP :
+                return os << "TOP";
+
+            default:
+                return os;
 		}
-
-		return os;
 	};
 
 	std::ostream& operator<< (std::ostream& os, OperationKeyword const& operation)
 	{
 		switch (operation.Value)
 		{
-		case OperationKeyword::ADD :
-			return os << "ADD";
+            case OperationKeyword::ADD :
+                return os << "ADD";
 
-		case OperationKeyword::OVERRIDE :
-			return os << "OVERRIDE";
+            case OperationKeyword::OVERRIDE :
+                return os << "OVERRIDE";
 
-		case OperationKeyword::FOR :
-			return os << "FOR";
-		}
+            case OperationKeyword::FOR :
+                return os << "FOR";
 
-		return os;
+            default:
+                return os;
+        }
 	};
 
 	std::ostream& operator<< (std::ostream& os, RuleHeader const& header)

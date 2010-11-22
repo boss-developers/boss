@@ -4,6 +4,7 @@
 //#include <boost/format.hpp>
 
 #include <algorithm>
+#include <sstream>
 
 // bring on the public stuff
 #include "Parsing.h"
@@ -56,7 +57,7 @@ namespace boss { namespace parsing { namespace detail {
 		body
 			%=	header
 			>	eol		// eat the header terminator: expect an EOLN before the sort lines start
-			>	actions
+			>>	actions
 			;
 
 		// SORT_LINEs :== list of SORT_LINE separated by EOLN
@@ -163,9 +164,10 @@ namespace boss { namespace parsing { namespace detail {
 
 	template <typename Iterator, typename Skipper>
 	void Grammar<Iterator, Skipper>::SyntaxError(Iterator const& first, Iterator const& last, Iterator const& errorpos, info const& what)
-	{			
-		const std::string context(errorpos, errorpos + 10);
-		std::cerr << "Syntax Error: Unable to parse: '" << what << "' from this context: '" << context << "'." << std::endl;
+	{
+		std::ostringstream value; 
+		value << what;
+		manager.SyntaxError(first, last, errorpos, value.str());
 	}
 
 }}}
