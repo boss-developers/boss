@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
 								" available on the web")
-		("onlyupdate,o", po::value(&updateonly)->zero_tokens(),
+		("only-update,o", po::value(&updateonly)->zero_tokens(),
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
 								" available on the web but don't sort right now")
@@ -529,6 +529,15 @@ int main(int argc, char *argv[]) {
 						}
 					}
 					order.close();
+					if (rulemods.empty()) {
+						userlist.messages += "<span class='error'>The group \""+userlist.objects[start]+"\" does not contain any installed mods, or is not in the masterlist. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" does not contain any mods, or is not in the masterlist.", userlist.objects[start].c_str());
+						break;
+					} else if (sortmods.empty()) {
+						userlist.messages += "<span class='error'>The group \""+userlist.objects[j]+"\" does not contain any installed mods, or is not in the masterlist. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" does not contain any mods, or is not in the masterlist.", userlist.objects[j].c_str());
+						break;
+					}
 					if (userlist.keys[j]=="BEFORE") {
 						for (int k=0;k<(int)rulemods.size();k++) {
 							int index1 = modlist.GetModIndex(rulemods[k]);

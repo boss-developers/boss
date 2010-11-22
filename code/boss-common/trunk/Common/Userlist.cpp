@@ -22,7 +22,7 @@ namespace boss {
 	using boost::algorithm::to_lower_copy;
 	using boost::algorithm::to_lower;
 	using boost::algorithm::to_upper_copy;
-	using boost::algorithm::trim_right_copy;
+	using boost::algorithm::trim_copy;
 
 	//Date comparison, used for sorting mods in modlist class.
 	bool SortByDate(string mod1,string mod2) {
@@ -66,10 +66,10 @@ namespace boss {
 			line=cbuffer;
 			if (line.length()>0) {
 				if (line.substr(0,2)!="//") {
-					pos = line.find(": ");
+					pos = line.find(":");
 					if (pos!=string::npos) {
-						key = to_upper_copy(line.substr(0,pos));
-						object = trim_right_copy(line.substr(pos+2));
+						key = to_upper_copy(trim_copy(line.substr(0,pos)));
+						object = trim_copy(line.substr(pos+1));
 						if (key=="ADD" || key=="OVERRIDE" || key=="FOR") {
 							if (skip) {
 								keys.erase(keys.begin()+rules.back(), keys.end());
