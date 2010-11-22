@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
 								" available on the web")
-		("update-only,o", po::value(&updateonly)->zero_tokens(),
+		("onlyupdate,o", po::value(&updateonly)->zero_tokens(),
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
 								" available on the web but don't sort right now")
@@ -250,7 +250,7 @@ int main(int argc, char *argv[]) {
 		exit (1); //fail in screaming heap.
 	}
 
-	if (update == true) {
+	if (update == true || updateonly == true) {
 		bosslog << "<div><span>Masterlist Update</span>"<<endl<<"<p>";
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		LOG_DEBUG("Updating masterlist...");
