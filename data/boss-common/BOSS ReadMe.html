@@ -101,7 +101,7 @@
 	<br /><span class="subtitle">Command Line Arguments</span>
 	<p>BOSS has a number of command-line arguments. The syntax is:</p>
 	<div>
-	<p><code>boss [-hVusnd] [-r [level]] [-v [level]]</code></p>
+	<p><code>boss [-hVuosnd] [-r [level]] [-v [level]]</code></p>
 	<p><code>-h [ --help ]</code></p>
 	<p>This prints a short description of BOSS and some information on the function of the command line arguments, then exits.</p>
 	<p><code>-V [ --version ]</code></p>
@@ -109,6 +109,9 @@
 	<p><code>-u [ --update ]</code></p>
 	<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then sorts your mods. Since this replaces your current 
 	masterlist, don't run this if you have an edited copy and wish to keep the changes. The "BOSS - Update Masterlist.bat" runs BOSS with this switch.</p>
+	<p><code>-o [ --onlyupdate ]</code></p>
+	<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then does NOT sort your mods. Since this replaces your current 
+	masterlist, don't run this if you have an edited copy and wish to keep the changes..</p>
 	<p><code>-s [ --silent ]</code></p>
 	<p>Stops BOSS from automatically opening up the BOSSlog in your web browser after it has finished running.</p>
 	<p><code>-n [ --no-version-parse ]</code></p>
@@ -356,6 +359,10 @@
 	
 	<div id="history"><span>Version History</span>
 	<p>Only updates to the BOSS program are recorded here, not masterlist updates, as that is updated far too frequently to be concisely recorded. A full record of changes made to the masterlist may be viewed by browsing the Google Code repository.</p>
+	<p><b>Version 1.64</b></p>
+	<ul>
+		<li>added --onlyupdate, -o to only update masterlist without sorting.</li>
+	</ul>
 	<p><b>Version 1.63</b></p>
 	<ul>
 		<li>Fixed a crash when updating the masterlist if downloading an incorrectly formatted masterlist.</li>
