@@ -32,8 +32,8 @@ using namespace std;
 namespace po = boost::program_options;
 
 
-const string g_version     = "1.6.3";
-const string g_releaseDate = "November 15, 2010";
+const string g_version     = "1.6.4";
+const string g_releaseDate = "November 23, 2010";
 
 
 void ShowVersion() {
