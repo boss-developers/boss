@@ -64,6 +64,7 @@
     Var UpdateState_Nehrim
     Var UpdateState_Other
     Var Check_Readme
+    Var Check_DeleteOldFiles
     Var Function_Browse
     Var Function_DirPrompt
     Var Function_RadioButton
@@ -322,11 +323,17 @@
                 nsDialogs::OnClick $Update_Other $Function_RadioButton
             IntOp $0 $0 + 15
         ${EndIf}
-        IfFileExists "$COMMONFILES\BOSS\BOSS ReadMe.html" 0 +5
-            ${NSD_CreateCheckBox} 0 $0u 100% 8u "View Readme"
+        IntOp $1 0 + 0
+        IfFileExists "$COMMONFILES\BOSS\BOSS ReadMe.html" 0 +6
+            ${NSD_CreateCheckBox} $1% $0u 25% 8u "View Readme"
                 Pop $Check_Readme
                 ${NSD_AddStyle} $Check_Readme ${WS_GROUP}
                 ${NSD_SetState} $Check_Readme ${BST_CHECKED}
+                IntOp $1 $1 + 25
+        ${NSD_CreateCheckBox} $1% $0u 75% 8u "Delete files from old BOSS versions"
+            Pop $Check_DeleteOldFiles
+            ${NSD_AddStyle} $Check_DeleteOldFiles ${WS_GROUP}
+            ${NSD_SetState} $Check_DeleteOldFiles ${BST_CHECKED}
         nsDialogs::Show
         FunctionEnd
     Function PAGE_FINISH_Leave
@@ -380,7 +387,45 @@
         ${If} $0 == ${BST_CHECKED}
             SetOutPath "$COMMONFILES\BOSS"
             ExecShell "open" '"$COMMONFILES\BOSS\BOSS ReadMe.html"'
-        ${EndIf} 
+        ${EndIf}
+        ${NSD_GetState} $Check_DeleteOldFiles $0
+        ${If} $0 == ${BST_CHECKED}
+            ${If} $Path_OB != $Empty
+                Delete "$Path_OB\Data\BOSS.bat"
+                Delete "$Path_OB\Data\modlist.*"
+                Delete "$Path_OB\Data\masterlist.txt"
+                Delete "$Path_OB\Data\BOSSlog.txt"
+                Delete "$Path_OB\Data\BOSS_ReadMe.rtf"
+            ${EndIf}
+            ${If} $Path_FO != $Empty
+                Delete "$Path_FO\Data\BOSS.bat"
+                Delete "$Path_FO\Data\modlist.*"
+                Delete "$Path_FO\Data\masterlist.txt"
+                Delete "$Path_FO\Data\BOSSlog.txt"
+                Delete "$Path_FO\Data\BOSS_ReadMe.rtf"
+            ${EndIf}
+            ${If} $Path_NV != $Empty
+                Delete "$Path_NV\Data\BOSS.bat"
+                Delete "$Path_NV\Data\modlist.*"
+                Delete "$Path_NV\Data\masterlist.txt"
+                Delete "$Path_NV\Data\BOSSlog.txt"
+                Delete "$Path_NV\Data\BOSS_ReadMe.rtf"
+            ${EndIf}
+            ${If} $Path_Nehrim != $Empty
+                Delete "$Path_Nehrim\Data\BOSS.bat"
+                Delete "$Path_Nehrim\Data\modlist.*"
+                Delete "$Path_Nehrim\Data\masterlist.txt"
+                Delete "$Path_Nehrim\Data\BOSSlog.txt"
+                Delete "$Path_Nehrim\Data\BOSS_ReadMe.rtf"
+            ${EndIf}
+            ${If} $Path_Other != $Empty
+                Delete "$Path_Other\Data\BOSS.bat"
+                Delete "$Path_Other\Data\modlist.*"
+                Delete "$Path_Other\Data\masterlist.txt"
+                Delete "$Path_Other\Data\BOSSlog.txt"
+                Delete "$Path_Other\Data\BOSS_ReadMe.rtf"
+            ${EndIf}
+        ${EndIf}
         FunctionEnd
     Function OnClick_Browse
         Pop $0
