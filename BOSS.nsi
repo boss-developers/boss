@@ -4,7 +4,7 @@
   !include LogicLib.nsh
   !include nsDialogs.nsh
 ;-------------------------------- Basic Installer Info:
-    Name "BOSS [Version 1.6.4]"
+    Name "BOSS v1.6.4"
     OutFile "BOSS Installer.exe"
     ; Request application privileges for Windows Vista
     RequestExecutionLevel admin
@@ -148,7 +148,7 @@
             Abort
         ${EndIf}
         
-        ${NSD_CreateLabel} 0 0 100% 8u "Please Select Game(s) to Install BOSS for:"
+        ${NSD_CreateLabel} 0 0 100% 8u "Please select which game(s) to install BOSS for:"
             Pop $Label
         
         IntOp $0 0 + 9
@@ -201,7 +201,7 @@
             IntOp $0 $0 + 13
         ${EndIf}
         ;------Path_Other:
-            ${NSD_CreateCheckBox} 0 $0u 100% 13u "Other Location (f.e. an undetected game.)"
+            ${NSD_CreateCheckBox} 0 $0u 100% 13u "Other Location (e.g. an undetected game)."
                 Pop $Check_Other
                 ${NSD_SetState} $Check_Other $CheckState_Other
             IntOp $0 $0 + 13
@@ -659,7 +659,7 @@
             Abort
         ${EndIf}
         
-        ${NSD_CreateLabel} 0 0 100% 8u "Please Select Game(s) to uninstall BOSS from:"
+        ${NSD_CreateLabel} 0 0 100% 8u "Please select which game(s) to uninstall BOSS from:"
         Pop $Label
         
         IntOp $0 0 + 9
@@ -712,7 +712,7 @@
             IntOp $0 $0 + 13
         ${EndIf}
         ${If} $Path_Other != $Empty 
-            ${NSD_CreateCheckBox} 0 $0u 100% 13u "Other Location (f.e. an undetected game.)"
+            ${NSD_CreateCheckBox} 0 $0u 100% 13u "Other Location (e.g. an undetected game)."
                 Pop $Check_Other
                 ${NSD_SetState} $Check_Other $CheckState_Other
             IntOp $0 $0 + 13
@@ -849,15 +849,15 @@
 
   ;Language strings
   !insertmacro MUI_LANGUAGE "English"
-  LangString DESC_Main ${LANG_ENGLISH} "The main Executable."
-  LangString DESC_Shortcuts_SM ${LANG_ENGLISH} "StartMenu Shortcuts for the uninstaller & BOSS.exe for each game."
-  LangString DESC_Shortcuts_SM_Docs ${LANG_ENGLISH} "StartMenu Shortcuts for the BOSS Documentation."
+  LangString DESC_Main ${LANG_ENGLISH} "The main executable."
+  LangString DESC_Shortcuts_SM ${LANG_ENGLISH} "Start Menu shortcuts for the uninstaller & BOSS.exe for each game."
+  LangString DESC_Shortcuts_SM_Docs ${LANG_ENGLISH} "Start Menu shortcuts for the BOSS Documentation."
   LangString DESC_Documentation ${LANG_ENGLISH} "The documentation."
-  LangString DESC_Batch_Files ${LANG_ENGLISH} "Batch files to enable quicker use of the command functions Update and Revert (Level 1) and Debug print out (level 2)."
+  LangString DESC_Batch_Files ${LANG_ENGLISH} "Batch files to enable quicker use of the command functions Update, Revert (Level 1) and Debug output (level 2)."
   LangString PAGE_SELECT_GAMES_TITLE ${LANG_ENGLISH} "Choose Games"
   LangString PAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select which game(s) you want to install BOSS for, and confirm the desired install path."
   LangString unPAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select which game(s) you want to uninstall BOSS from."
-  LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished Installing BOSS - Better Oblivion Sorting Software [version 1.6.4]"
+  LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished installing BOSS - Better Oblivion Sorting Software v1.6.4"
   LangString PAGE_FINISH_SUBTITLE ${LANG_ENGLISH} "Please select post-install tasks."
 
   ;Assign language strings to sections
