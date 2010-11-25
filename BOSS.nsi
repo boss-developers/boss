@@ -28,11 +28,13 @@
     Var Check_NV
     Var Check_Nehrim
     Var Check_Other
+    Var Check_RemoveUserFiles
     Var CheckState_OB
     Var CheckState_FO
     Var CheckState_NV
     Var CheckState_Nehrim
     Var CheckState_Other
+    Var CheckState_RemoveUserFiles
     Var PathDialogue_OB
     Var PathDialogue_FO
     Var PathDialogue_NV
@@ -721,7 +723,11 @@
             ${NSD_CreateBrowseButton} -10% $0u 5% 13u "..."
                 Pop $Browse_Other
                 nsDialogs::OnClick $Browse_Other $Function_Browse
+            IntOp $0 $0 + 13
         ${EndIf}
+         ${NSD_CreateCheckBox} 0 $0u 100% 13u "Uninstall userlist if it exists."
+                Pop $Check_RemoveUserFiles
+                ${NSD_SetState} $Check_RemoveUserFiles ${BST_CHECKED}
         nsDialogs::Show
         FunctionEnd
     Function un.PAGE_SELECT_GAMES_Leave
@@ -735,6 +741,7 @@
         ${NSD_GetState} $Check_NV $CheckState_NV
         ${NSD_GetState} $Check_Nehrim $CheckState_Nehrim
         ${NSD_GetState} $Check_Other $CheckState_Other
+        ${NSD_GetState} $Check_RemoveUserFiles $CheckState_RemoveUserFiles
         FunctionEnd
     Function un.OnClick_Browse
         Pop $0
@@ -766,7 +773,10 @@
             Delete "$Path_OB\Data\BOSS\masterlist.txt"
             Delete "$Path_OB\Data\BOSS*.bat"
             Delete "$Path_OB\Data\BOSS\modlist.*"
-            Delete "$Path_OB\Data\BOSS\uninstall.exe"
+            Delete "$Path_OB\Data\BOSS\BOSSlog.html"
+            ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
+                Delete "$Path_OB\Data\BOSS\userlist.txt"
+            ${EndIf}
             RMDir "$Path_OB\Data\BOSS"
             Delete "$Path_OB\Data\BOSS.exe"
             Delete "$SMPROGRAMS\BOSS\BOSS - Oblivion.lnk"
@@ -779,7 +789,10 @@
             Delete "$Path_FO\Data\BOSS\masterlist.txt"
             Delete "$Path_FO\Data\BOSS*.bat"
             Delete "$Path_FO\Data\BOSS\modlist.*"
-            Delete "$Path_FO\Data\BOSS\uninstall.exe"
+            Delete "$Path_FO\Data\BOSS\BOSSlog.html"
+            ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
+                Delete "$Path_FO\Data\BOSS\userlist.txt"
+            ${EndIf}
             RMDir "$Path_FO\Data\BOSS"
             Delete "$Path_FO\Data\BOSS.exe"
             Delete "$SMPROGRAMS\BOSS\BOSS - Fallout3.lnk"
@@ -792,7 +805,10 @@
             Delete "$Path_NV\Data\BOSS\masterlist.txt"
             Delete "$Path_NV\Data\BOSS*.bat"
             Delete "$Path_NV\Data\BOSS\modlist.*"
-            Delete "$Path_NV\Data\BOSS\uninstall.exe"
+            Delete "$Path_NV\Data\BOSS\BOSSlog.html"
+            ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
+                Delete "$Path_NV\Data\BOSS\userlist.txt"
+            ${EndIf}
             RMDir "$Path_NV\Data\BOSS"
             Delete "$Path_NV\Data\BOSS.exe"
             Delete "$SMPROGRAMS\BOSS\BOSS - Fallout NewVegas.lnk"
@@ -805,7 +821,10 @@
             Delete "$Path_Nehrim\Data\BOSS\masterlist.txt"
             Delete "$Path_Nehrim\Data\BOSS*.bat"
             Delete "$Path_Nehrim\Data\BOSS\modlist.*"
-            Delete "$Path_Nehrim\Data\BOSS\uninstall.exe"
+            Delete "$Path_Nehrim\Data\BOSS\BOSSlog.html"
+            ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
+                Delete "$Path_Nehrim\Data\BOSS\userlist.txt"
+            ${EndIf}
             RMDir "$Path_Nehrim\Data\BOSS"
             Delete "$Path_Nehrim\Data\BOSS.exe"
             Delete "$SMPROGRAMS\BOSS\BOSS - Nehrim.lnk"
@@ -818,7 +837,10 @@
             Delete "$Path_Other\Data\BOSS\masterlist.txt"
             Delete "$Path_Other\Data\BOSS*.bat"
             Delete "$Path_Other\Data\BOSS\modlist.*"
-            Delete "$Path_Other\Data\BOSS\uninstall.exe"
+            Delete "$Path_Other\Data\BOSS\BOSSlog.html"
+            ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
+                Delete "$Path_Other\Data\BOSS\userlist.txt"
+            ${EndIf}
             RMDir "$Path_Other\Data\BOSS"
             Delete "$Path_Other\Data\BOSS.exe"
             Delete "$SMPROGRAMS\BOSS\BOSS - Other.lnk"
