@@ -527,6 +527,7 @@
         ${EndIf}
       
       ; Write the uninstall keys for Windows
+      WriteRegStr HKLM "Software\BOSS" "Installer Path" "$EXEPATH"
       WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayName" "BOSS"
       WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "UninstallString" '"$COMMONFILES\BOSS\uninstall.exe"'
       WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "URLInfoAbout" 'http://better-oblivion-sorting-software.googlecode.com/'
@@ -725,9 +726,9 @@
                 nsDialogs::OnClick $Browse_Other $Function_Browse
             IntOp $0 $0 + 13
         ${EndIf}
-         ${NSD_CreateCheckBox} 0 $0u 100% 13u "Uninstall userlist if it exists."
-                Pop $Check_RemoveUserFiles
-                ${NSD_SetState} $Check_RemoveUserFiles ${BST_CHECKED}
+        ${NSD_CreateCheckBox} 0 $0u 100% 13u "Uninstall userlist if it exists."
+            Pop $Check_RemoveUserFiles
+            ${NSD_SetState} $Check_RemoveUserFiles ${BST_CHECKED}
         nsDialogs::Show
         FunctionEnd
     Function un.PAGE_SELECT_GAMES_Leave
@@ -782,6 +783,19 @@
             Delete "$SMPROGRAMS\BOSS\BOSS - Oblivion.lnk"
             Delete "$SMPROGRAMS\BOSS\BOSS - Oblivion - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "Oblivion Path"
+            ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\Data\BOSS.exe"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\Data\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\Data\BOSS.exe"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\Data\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_OB\Data\BOSS.exe"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_OB\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_OB\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_OB\Data\BOSS - Update Masterlist.bat"
             StrCpy $Path_OB $Empty
         ${EndIf}
         ${If} $CheckState_FO == ${BST_CHECKED}
@@ -798,6 +812,19 @@
             Delete "$SMPROGRAMS\BOSS\BOSS - Fallout3.lnk"
             Delete "$SMPROGRAMS\BOSS\BOSS - Fallout3 - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "Fallout3 Path"
+            ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\Data\BOSS.exe"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\Data\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\Data\BOSS.exe"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\Data\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_FO\Data\BOSS.exe"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_FO\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_FO\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_FO\Data\BOSS - Update Masterlist.bat"
             StrCpy $Path_FO $Empty
         ${EndIf}
         ${If} $CheckState_NV == ${BST_CHECKED}
@@ -814,6 +841,19 @@
             Delete "$SMPROGRAMS\BOSS\BOSS - Fallout NewVegas.lnk"
             Delete "$SMPROGRAMS\BOSS\BOSS - Fallout NewVegas - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "NewVegas Path"
+            ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\Data\BOSS.exe"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\Data\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\Data\BOSS.exe"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\Data\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_NV\Data\BOSS.exe"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_NV\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_NV\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_NV\Data\BOSS - Update Masterlist.bat"
             StrCpy $Path_NV $Empty
         ${EndIf}
         ${If} $CheckState_Nehrim == ${BST_CHECKED}
@@ -830,6 +870,19 @@
             Delete "$SMPROGRAMS\BOSS\BOSS - Nehrim.lnk"
             Delete "$SMPROGRAMS\BOSS\BOSS - Nehrim - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "Nehrim Path"
+            ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\Data\BOSS.exe"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\Data\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\Data\BOSS.exe"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\Data\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Nehrim\Data\BOSS.exe"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Nehrim\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Nehrim\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Nehrim\Data\BOSS - Update Masterlist.bat"
             StrCpy $Path_Nehrim $Empty
         ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
@@ -846,6 +899,19 @@
             Delete "$SMPROGRAMS\BOSS\BOSS - Other.lnk"
             Delete "$SMPROGRAMS\BOSS\BOSS - Other - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "Other Path"
+            ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\Data\BOSS.exe"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\Data\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\Data\BOSS.exe"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\Data\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Other\Data\BOSS.exe"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Other\Data\BOSS - Print Debug Info.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Other\Data\BOSS - Undo Last Run.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Other\Data\BOSS - Update Masterlist.bat"
             StrCpy $Path_Other $Empty
         ${EndIf}
         
@@ -856,7 +922,16 @@
                     ${If} $Path_Nehrim == $Empty
                         ${If} $Path_Other == $Empty
                             DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS"
-                            DeleteRegKey HKLM "SOFTWARE\BOSS" 
+                            ReadRegStr $0 HKLM "Software\BOSS" "Installer Path"
+                            DeleteRegKey HKLM "SOFTWARE\BOSS"
+                            ;Delete stupid Windows created registry keys:
+                                DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\App Management\ARPCache\BOSS"
+                                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$COMMONFILES\BOSS\Uninstall.exe"
+                                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$COMMONFILES\BOSS\Uninstall.exe"
+                                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$COMMONFILES\BOSS\Uninstall.exe"
+                                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$0"
+                                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$0"
+                                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$0"
                             Delete "$SMPROGRAMS\BOSS\*.*"
                             RMDir "$SMPROGRAMS\BOSS"
                             Delete "$COMMONFILES\BOSS\*.*"
