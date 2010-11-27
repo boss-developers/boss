@@ -19,6 +19,7 @@ namespace boss { namespace parsing {
 		using std::ios;
 		using std::istream_iterator;
 		using std::copy;
+		using std::back_inserter;
 
 		string storage; // We will read the contents here.
 		in.unsetf(ios::skipws); // No white space skipping!
@@ -45,8 +46,8 @@ namespace boss { namespace parsing {
 		bool success = qi::phrase_parse(iter, end, grammar, skipper) && (iter == end);
 
 		if (!success) {
-			while (*iter == '\n') { 
-				iter++; 
+			while (*iter == '\n') {
+				iter++;
 			}
 
 			string::difference_type lines = 1 + count(storage.begin(), iter, '\n');

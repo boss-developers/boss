@@ -1,5 +1,5 @@
 // bring on the public stuff
-#include "Parsing/Parsing.h"
+#include "Parsing.h"
 
 namespace boss { namespace parsing {
 

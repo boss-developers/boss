@@ -17,15 +17,15 @@
 
 /*
  TODO: Make operation and action keywords case-insensitive.
- TODO: Fix the grammar to be more EOLN insensitive. 
-	Just need to use the fact that text strings that acts as arguments 
-	for operations and actions should contain only valid characters not EOLN, 
+ TODO: Fix the grammar to be more EOLN insensitive.
+	Just need to use the fact that text strings that acts as arguments
+	for operations and actions should contain only valid characters not EOLN,
 	but the rest of the grammar should be independent of EOLN placement.
  */
 
 namespace boss { namespace parsing { namespace detail {
 
-	using spirit::info;
+	using boost::spirit::info;
 
 	template <typename Iterator, typename Skipper>
 	class Grammar: public qi::grammar<Iterator, Skipper>
