@@ -92,7 +92,8 @@ namespace boss
         if (m_originTracking) { printf(" %s:%d", fileName, lineNo); }
 
         printf(": ");
-        vprintf(formatStr, ap);
+		vprintf(formatStr, ap);
         printf("\n");
+		fflush(stdout);
     }
 }

@@ -26,16 +26,19 @@ namespace boss {
 
 	//Date comparison, used for sorting mods in modlist class.
 	bool SortByDate(string mod1,string mod2) {
-			time_t t1 = fs::last_write_time(mod1) ;
-			time_t t2 = fs::last_write_time(mod2) ;
-			double diff = difftime(t1,t2);
+		time_t t1,t2;
+		try {
+			t1 = fs::last_write_time(mod1);
+			t2 = fs::last_write_time(mod2);
+		}catch (fs::filesystem_error e){
+			LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.", e.what());
+		}
+		double diff = difftime(t1,t2);
 
-			if (diff>0) 
-				return false;
-			else if (diff < 0)
-				return true;
-			else
-				return mod1 < mod2;
+		if (diff > 0)
+			return false;
+		else
+			return true;
 	}
 
 	//Checks if a given object is an esp, an esm or a ghosted mod.
