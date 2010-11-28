@@ -175,11 +175,11 @@ int main(int argc, char *argv[]) {
 		LOG_ERROR("subdirectory '%s' could not be created; check the"
 				  " Troubleshooting section of the ReadMe for more"
 				  " information and possible solutions",
-				  boss_path.external_file_string().c_str());
+				  boss_path.c_str());
 		Fail();
 	}
 
-	const string bosslogFilename = bosslog_path.external_file_string();
+	const string bosslogFilename = bosslog_path.string();
 	LOG_DEBUG("opening '%s'", bosslogFilename.c_str());
 	bosslog.open(bosslogFilename.c_str());
 	if (bosslog.fail()) {							
@@ -213,7 +213,7 @@ int main(int argc, char *argv[]) {
 						<< "</body>"<<endl<<"</html>";
 		bosslog.close();
 		if ( !silent ) 
-			Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
+			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //else
 
@@ -227,7 +227,7 @@ int main(int argc, char *argv[]) {
 		bosslog.close();
 		LOG_ERROR("Installation error found: check BOSSLOG.");
 		if ( !silent ) 
-			Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
+			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
@@ -246,7 +246,7 @@ int main(int argc, char *argv[]) {
 		bosslog.close();
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.what());
 		if ( !silent ) 
-			Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
+			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
@@ -277,7 +277,7 @@ int main(int argc, char *argv[]) {
 					<< "</body>"<<endl<<"</html>";
 			bosslog.close();
 			if ( !silent ) 
-				Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
+				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 			exit (1); //fail in screaming heap.
 		}
 	}
@@ -321,12 +321,12 @@ int main(int argc, char *argv[]) {
 	else sortfile = masterlist_path;
 
 	LOG_INFO("Using sorting file: %s", sortfile.filename().c_str());
-	order.open(sortfile.external_file_string().c_str());
+	order.open(sortfile.c_str());
 
 	if (order.fail()) {							
 		bosslog << endl << "<p class='error'>Critical Error: ";
 
-		bosslog << sortfile.external_file_string();
+		bosslog << sortfile.string();
 
 		bosslog << " cannot be read!<br />" << endl
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
@@ -335,7 +335,7 @@ int main(int argc, char *argv[]) {
 		bosslog.close();
 		LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().c_str());
 		if ( !silent ) 
-			Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
+			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	} //if
 
@@ -431,7 +431,7 @@ int main(int argc, char *argv[]) {
 					if (index < 0 || index >= int(modlist.mods.size())) {
 						LOG_TRACE(" --> Referenced mod: \"%s\" is not installed, searching for it.", userlist.objects[j].c_str());
 						bool lookforinstalledmod=false;
-						order.open(masterlist_path.external_file_string().c_str());
+						order.open(masterlist_path.c_str());
 						while (!order.eof()) {
 							textbuf=ReadLine("order");
 							if (textbuf.length()>1 && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
@@ -485,7 +485,7 @@ int main(int argc, char *argv[]) {
 					//Then insert the recorded rule group mods before or after the remaining sort group mod and erase them from their old positions.
 					//Remember to move their messages too.
 
-					order.open(masterlist_path.external_file_string().c_str());
+					order.open(masterlist_path.c_str());
 					int count=0;
 					bool lookforrulemods=false,lookforsortmods=false;
 					vector<string> rulemods,sortmods,currentmessages;
@@ -588,7 +588,7 @@ int main(int argc, char *argv[]) {
 					modlist.modmessages.erase(modlist.modmessages.begin()+index1);
 					//Need to insert mod and mod's messages to a specific position.
 					//This is the tricky bit.
-					order.open(masterlist_path.external_file_string().c_str());
+					order.open(masterlist_path.c_str());
 					int count=0;
 					bool lookforsortmods=false,overtime=false;
 					vector<string> sortmods;
@@ -738,7 +738,7 @@ int main(int argc, char *argv[]) {
 	bosslog.close();
 	LOG_INFO("Launching boss log in browser.");
 	if ( !silent ) 
-		Launch(bosslog_path.external_file_string());	//Displays the BOSSlog.txt.
+		Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 	LOG_INFO("BOSS finished.");
 	return (0);
 }

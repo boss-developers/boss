@@ -12,6 +12,8 @@
 #ifndef __BOSS_GLOBALS_H__
 #define __BOSS_GLOBALS_H__
 
+#define BOOST_FILESYSTEM_VERSION 3
+#define BOOST_FILESYSTEM_NO_DEPRECATED
 
 #include <string>
 #include <fstream>

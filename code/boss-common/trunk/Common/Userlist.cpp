@@ -62,7 +62,7 @@ namespace boss {
 		size_t pos;
 		bool skip = false;
 		messages += "<p>";
-		userlist.open(userlist_path.external_file_string().c_str());
+		userlist.open(userlist_path.c_str());
 		while (!userlist.eof()) {
 			char cbuffer[MAXLENGTH];
 			userlist.getline(cbuffer,MAXLENGTH);
@@ -215,8 +215,8 @@ namespace boss {
 		fs::path p(".");
 		if (fs::is_directory(p)) {
 			for (fs::directory_iterator itr(p); itr!=fs::directory_iterator(); ++itr) {
-				const string filename = itr->filename();
-				const string ext = to_lower_copy(fs::extension(filename));
+				const string filename = itr->path().filename().string();
+				const string ext = to_lower_copy(itr->path().extension().string());
 				if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
 					LOG_TRACE("-- Found mod: '%s'", filename.c_str());
 					mods.push_back(filename);
@@ -233,9 +233,6 @@ namespace boss {
 		ofstream modlist;
 		try {
 			LOG_DEBUG("Saving backup of current modlist...");
-			//There's a bug in the boost rename function - it should replace existing files, but it throws an exception instead, so remove the file first.
-			//This bug will be fixed in BOOST 1.45, but that will break the AddMods() function and possibly other things, so be sure to change that when we upgrade.
-			if (fs::exists(prev_modlist_path)) fs::remove(prev_modlist_path);
 			if (fs::exists(curr_modlist_path)) fs::rename(curr_modlist_path, prev_modlist_path);
 		} catch(boost::filesystem::filesystem_error e) {
 			//Couldn't rename the file, print an error message.
@@ -243,7 +240,7 @@ namespace boss {
 			return 1;
 		}
 		
-		modlist.open(curr_modlist_path.external_file_string().c_str());
+		modlist.open(curr_modlist_path.c_str());
 		//Provide error message if it can't be written.
 		if (modlist.fail()) {
 			LOG_ERROR("Backup cannot be saved.");
