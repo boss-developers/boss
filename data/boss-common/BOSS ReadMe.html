@@ -56,36 +56,14 @@
 	
 	<div id="install"><span>Installation &amp; Basic Usage</span>
 	<p>BOSS can be installed for use with Oblivion, Fallout 3, Fallout: New Vegas or Nehrim - At Fate's Edge (a Total Conversion mod for Oblivion). Installation may either be automated, using the BOSS Installer package, or manually, using the archive package. Either method is simple, and instructions for manual installation are given below.</p>
-	<p>For Oblivion:</p>
 	<ol>
-		<li>If you have Wrye Bash, make sure the "Lock Times" function is deactivated.</li>
-		<li>If upgrading from an earlier version of BOSS, delete your BOSS.bat, modlist.txt, modlist.old, masterlist.txt and BOSSlog.txt files in your Data folder. If you have an edited masterlist, make sure to keep a backup so that your edits are not lost.</li>
-		<li>Extract the BOSS archive you downloaded to your ..\Oblivion\Data folder, so that BOSS.exe is in the same folder as Oblivion.esm.</li>
-		<li>Run the "BOSS - Update Masterlist.bat" file to get the latest masterlist from the Internet and sort your mods.</li>
+		<li>If you have Wrye Bash, Wrye Flash or Wrye Flash NV, make sure the "Lock Times" function is deactivated.</li>
+		<li>If upgrading from an earlier version of BOSS, delete all BOSS files and folders in your game's Data folder (including the BOSS folder, BOSS.exe, masterlist.txt, modlist.txt, modlist.old, BOSSlog.txt and any of BOSS's .bat files).  If you have an edited masterlist, make sure to keep a backup so that your edits are not lost.</li>
+		<li>Extract the BOSS archive you downloaded to your game's installation directory (ie. the one containing the Data folder and the game's executable, so one of "Oblivion", "Fallout 3", "Nehrim" or "fallout new vegas" depending on your game), so that there is now a BOSS folder alongside the Data folder and the game's executable.</li>
+		<li>In the BOSS folder, run the "BOSS - Update Masterlist.bat" file to get the latest masterlist from the Internet and sort your mods.</li>
 		<li>When running BOSS normally, do so from the BOSS.exe, but remember to run the "BOSS - Update Masterlist.bat" regularly to ensure you have a recent masterlist.</li>
 	</ol>
-	<p>For Fallout 3:</p>
-	<ol>
-		<li>If you have Wrye Flash, make sure the "Lock Times" function is deactivated.</li>
-		<li>If upgrading from an earlier version of BOSS (also known as BOSS-F), delete your BOSS-F.bat, modlist.txt, modlist.old, masterlist.txt and BOSSlog.txt files in your Data folder. If you have an edited masterlist, make sure to keep a backup so that your edits are not lost.</li>
-		<li>Extract the BOSS archive you downloaded to your ..\Fallout 3\Data folder, so that BOSS.exe is in the same folder as Fallout3.esm.</li>
-		<li>Run the "BOSS - Update Masterlist.bat" file to get the latest masterlist from the Internet and sort your mods.</li>
-		<li>When running BOSS normally, do so from the BOSS.exe, but remember to run the "BOSS - Update Masterlist.bat" regularly to ensure you have a recent masterlist.</li>
-	</ol>
-	<p>For Nehrim - At Fate's Edge:</p>
-	<ol>
-		<li>If you have Wrye Bash, make sure the "Lock Times" function is deactivated.</li>
-		<li>Extract the BOSS archive you downloaded to your ..\Nehrim\Data folder, so that BOSS.exe is in the same folder as Nehrim.esm.</li>
-		<li>Run the "BOSS - Update Masterlist.bat" file to get the latest masterlist from the Internet and sort your mods.</li>
-		<li>When running BOSS normally, do so from the BOSS.exe, but remember to run the "BOSS - Update Masterlist.bat" regularly to ensure you have a recent masterlist.</li>
-	</ol>
-	<p>For Fallout: New Vegas:</p>
-	<ol>
-		<li>If you have Wrye Flash NV, make sure the "Lock Times" function is deactivated.</li>
-		<li>Extract the BOSS archive you downloaded to your ..\steamapps\common\fallout new vegas\data folder, so that BOSS.exe is in the same folder as FalloutNV.esm.</li>
-		<li>Run the "BOSS - Update Masterlist.bat" file to get the latest masterlist from the Internet and sort your mods.</li>
-		<li>When running BOSS normally, do so from the BOSS.exe, but remember to run the "BOSS - Update Masterlist.bat" regularly to ensure you have a recent masterlist.</li>
-	</ol>
+	<p>If you have more than one of the supported games installed, you should install BOSS separately for each one.</p>
 	<p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. Wrye Bash/Flash will automatically import and apply Bash Tag 
 	suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions makes thoroughly and adjust tags by hand in Wrye Bash/Flash if necessary.</p>
 	<p>You will need to reorder "unknown" mods by hand using OBMM/FOMM or Wrye Bash/Flash.</p>
@@ -94,7 +72,7 @@
 	</div><br /><br />
 	
 	<div id="remove"><span>Uninstallation</span>
-	<p>Delete BOSS.exe, "BOSS - Update Masterlist.bat", "BOSS - Undo Last Run.bat", "BOSS - Print Debug Info.bat" and, if BOSS has been run, the BOSS folder in your ..\Data folder.</p>
+	<p>Delete the BOSS folder in your game's installation folder (ie. the one containing the Data folder and the game's executable, so one of "Oblivion", "Fallout 3", "Nehrim" or "fallout new vegas" depending on your game).</p>
 	</div><br /><br />
 	
 	<div id="details"><span>Further Details</span><br />
@@ -126,9 +104,9 @@
 	<p>Adds source file references (filenames and line numbers) to logging statements.</p>
 	</div><br />
 	<br /><span class="subtitle">BOSS Changes and Files</span>
-	<p>The only changes BOSS makes to your game install are to re-date the .esp and .esm files in your Data folder, to create a BOSS folder there, and create a few text files in that BOSS folder. Your game's master file (Oblivion.esm, Fallout3.esm, Nehrim.esm or FalloutNV.esm) 
+	<p>The only changes BOSS makes to your game install are to re-date the .esp and .esm files in your Data folder, and create a few text files in your BOSS folder. Your game's master file (Oblivion.esm, Fallout3.esm, Nehrim.esm or FalloutNV.esm) 
 	is never touched, and all dates are derived from it.</p>
-	<div>The files that are used and created by BOSS are all found in the ..\Data\BOSS folder, and they are:
+	<div>BOSS's files are all found in the BOSS folder, and they are:
 	<ul>
 		<li><i>masterlist.txt</i> - This is the master list of mods that BOSS recognises, listing them in order and which includes notes attached to them. It is the most frequently updated component of BOSS, receiving updates almost every day.</li>
 		<li><i>BOSSlog.html</i> - This log is where the output that BOSS generates and displays once the program ends is stored. It is replaced every time you run BOSS. You can view it in any web browser.</li>
@@ -173,24 +151,17 @@
 	<p>Under some circumstances, BOSS may not be able to run properly due to a variety of reasons. In such cases, BOSS should be able to provide an error message detailing the type of fault. If the program unexpectedly crashes, the crash and the circumstances in which it occurred should be reported to the official BOSS thread (linked to in the <em>Quick Links</em> section below), so that we may fix it.
 	Here is a list of the error messages and their common causes:</p>
 	<ul>
-		<li><b>Message:</b> ERROR: Sub-directory 'BOSS' could not be created;<div style="height:0.65em;"></div>
-		<ul>
-			<li><b>Issue:</b> BOSS does not have permission to write to the Data folder.</li>
-			<li><b>Solution:</b> Make sure that your Data folder is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
-		</ul>
-		</li>
-		<br />	
 		<li><b>Message:</b> ERROR: file '<em>filename</em>' could not be accessed for writing;<div style="height:0.65em;"></div>
 		<ul>
-			<li><b>Issue:</b> BOSS does not have permission to write to the BOSS folder, or the given file if it exists.</li>
-			<li><b>Solution:</b> Make sure that your BOSS folder (and the file, if it exists) is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
+			<li><b>Issue:</b> BOSS does not have permission to write to the given file if it exists.</li>
+			<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
 		</ul>
 		</li>
 		<br />	
 		<li><b>Message:</b> Critical Error: Master .ESM file not found!<div style="height:0.65em;"></div>
 		<ul>
 			<li><b>Issue:</b> BOSS is not being run in the correct folder.</li>
-			<li><b>Solution:</b> Move BOSS into your Data folder.</li>
+			<li><b>Solution:</b> Move the BOSS folder containing all of BOSS's files into your game's installation folder, which is the one that contains the Data folder.</li>
 		</ul>
 		</li>
 		<br />	
@@ -215,7 +186,7 @@
 		<li><b>Message:</b> Critical Error: <em>filename</em> cannot be read!<div style="height:0.65em;"></div>
 		<ul>
 			<li><b>Issue:</b> Your masterlist.txt does not exist, or is in the wrong place.</li>
-			<li><b>Solution:</b> Make sure that your masterlist.txt is in your Data\BOSS folder, or use the masterlist updater to download a new masterlist to the correct place.</li>
+			<li><b>Solution:</b> Make sure that your masterlist.txt is in your BOSS folder, or use the masterlist updater to download a new masterlist to the correct place.</li>
 		</ul>
 		</li>
 		<br />
@@ -232,8 +203,8 @@
 	<ul>
 		<li><b>Symptom:</b> BOSS won't run.<div style="height:0.65em;"></div>
 		<ul>
-			<li><b>Issue:</b> Using BOSS version under 1.6.</li>
-			<li><b>Solution:</b> Update to version 1.6.</li>
+			<li><b>Issue:</b> Using BOSS version under 1.7.</li>
+			<li><b>Solution:</b> Update to version 1.7.</li>
 		</ul>
 		</li>
 		<br />
@@ -245,12 +216,12 @@
 		</li>
 	</ul>
 	<br />
-	<p>The Data\BOSS folder and all the files in it must not be read-only. If a file in this folder, or the folder itself, is read-only, BOSS will not function correctly, resulting in some of the errors listed above.</p>
+	<p>The BOSS folder and all the files in it must not be read-only. If a file in this folder, or the folder itself, is read-only, BOSS will not function correctly, resulting in some of the errors listed above.</p>
 	<p>If you are running Windows Vista or Windows 7, also in some situations limited users accounts on XP, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:</p>
 	<ol>
 		<li>Install the game outside the Program Files (or Program Files (x86) folder if on 64 bit Windows). UAC prevents unauthorised edits to these folders, so by installing the game outside of them, you remove it from UAC's reach, allowing you to use mods more easily.</li>
 		<li>Deactivate UAC. This can be done from the Control Panel, and will turn UAC off across the whole of your computer. It is up to you whether you feel that you have adequate security measures in place to do this without risk.</li>
-		<li>Give yourself Full Control permissions over your game install folder. This will allow you to make any edits you desire while keeping UAC active and on guard for any edits made by programs you do not run, and also means that you do not need to reinstall your game to a new location. For BOSS to run unhindered, only Full Control over the Data folder is required, though if using other modding programs such as Wrye Bash/Flash, Oblivion Mod Manager or Fallout Mod Manager, you may find it more useful to give yourself Full Control over your Bethesda Softworks folder.</li>
+		<li>Give yourself Full Control permissions over your game install folder. This will allow you to make any edits you desire while keeping UAC active and on guard for any edits made by programs you do not run, and also means that you do not need to reinstall your game to a new location.</li>
 		<li>Run BOSS as an Administrator. Right-click the BOSS.exe, and select "Run as administrator".</li>
 	</ol>
 	<p>For those that wish to take the third option and give themselves Full Control permissions, here is a guide:</p>
@@ -362,6 +333,10 @@
 	
 	<div id="history"><span>Version History</span>
 	<p>Only updates to the BOSS program are recorded here, not masterlist updates, as that is updated far too frequently to be concisely recorded. A full record of changes made to the masterlist may be viewed by browsing the Google Code repository.</p>
+	<p><b>Version 1.7</b></p>
+	<ul>
+		<li>Moved BOSS and all its files to the BOSS folder, which is moved to the game's installation directory, one level above the Data folder.</li>
+	</ul>
 	<p><b>Version 1.64</b></p>
 	<ul>
 		<li>Added --only-update, -o parameter to only update the masterlist without then sorting any mods.</li>
