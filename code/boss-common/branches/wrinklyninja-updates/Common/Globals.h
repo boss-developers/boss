@@ -14,6 +14,7 @@
 
 #define BOOST_FILESYSTEM_VERSION 3
 #define BOOST_FILESYSTEM_NO_DEPRECATED
+
 #include <string>
 #include <fstream>
 #include <boost/filesystem.hpp>
@@ -30,7 +31,7 @@ namespace boss {
 	extern bool ooo;							//true if OOO or FWE esm is found.
 	extern bool bc;								//true if Better Cities esm is found.
 
-	extern const fs::path data_path;			// Holds the path to the data directory.	
+	extern const fs::path data_path;			// Holds the path to the data directory.
 	extern const fs::path bosslog_path;			// BOSSlog full file name
 	extern const fs::path masterlist_path;		// Hold both location and file name for masterlist.txt
 	extern const fs::path userlist_path;		// Hold both location and file name for userlist.txt 

@@ -22,20 +22,24 @@ namespace boss {
 	using boost::algorithm::to_lower_copy;
 	using boost::algorithm::to_upper_copy;
 	using boost::algorithm::to_lower;
+	using boost::algorithm::to_upper_copy;
 	using boost::algorithm::trim_copy;
 
 	//Date comparison, used for sorting mods in modlist class.
 	bool SortByDate(string mod1,string mod2) {
-			time_t t1 = fs::last_write_time(data_path / mod1) ;
-			time_t t2 = fs::last_write_time(data_path / mod2) ;
-			double diff = difftime(t1,t2);
+		time_t t1,t2;
+		try {
+			t1 = fs::last_write_time(data_path / mod1);
+			t2 = fs::last_write_time(data_path / mod2);
+		}catch (fs::filesystem_error e){
+			LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.", e.what());
+		}
+		double diff = difftime(t1,t2);
 
-			if (diff>0) 
-				return false;
-			else if (diff < 0)
-				return true;
-			else
-				return mod1 < mod2;
+		if (diff > 0)
+			return false;
+		else
+			return true;
 	}
 
 	//Checks if a given object is an esp, an esm or a ghosted mod.
@@ -81,7 +85,7 @@ namespace boss {
 							rules.push_back((int)keys.size()-1);
 							skip = false;
 							if (object.empty()) {
-								if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+key+": "+object+"\" has been skipped as it has the following problem(s):<br />";
+								if (!skip)  messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
 								messages += "<span class='error'>The line with keyword \""+key+"\" has an undefined object.</span><br />";
 								skip = true;
 							} else {
@@ -115,7 +119,7 @@ namespace boss {
 									skip = true;
 								}
 								if (object.empty()) {
-									if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+key+": "+object+"\" has been skipped as it has the following problem(s):<br />";
+									if (!skip)  messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
 									messages += "<span class='error'>The line with keyword \""+key+"\" has an undefined object.</span><br />";
 									skip = true;
 								} else {
@@ -145,7 +149,7 @@ namespace boss {
 									skip = true;
 								}
 								if (object.empty()) {
-									if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+key+": "+object+"\" has been skipped as it has the following problem(s):<br />";
+									if (!skip)  messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
 									messages += "<span class='error'>The line with keyword \""+key+"\" has an undefined object.</span><br />";
 									skip = true;
 								} else {
@@ -171,7 +175,7 @@ namespace boss {
 								keys.push_back(key);
 								objects.push_back(object);
 								if (object.empty()) {
-									if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+key+": "+object+"\" has been skipped as it has the following problem(s):<br />";
+									if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
 									messages += "<span class='error'>The line with keyword \""+key+"\" has an undefined object.</span><br />";
 									skip = true;
 								}
@@ -181,12 +185,17 @@ namespace boss {
 									skip = true;
 								}
 							} else {
-								//Line does not contain a recognised keyword. Skip it.
-								messages += "<p><span class='error'>The line \""+key+": "+object+"\" does not contain a recognised keyword. Line skipped.</span><p>";
+								//Line does not contain a recognised keyword. Skip it and the rule containing it. If it is a rule line, then the previous rule will also be skipped.
+								if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+								messages += "<span class='error'>The line \""+key+": "+object+"\" does not contain a recognised keyword. If this line is the start of a rule, that rule will also be skipped.</span><br />";
+								skip = true;
 							}
 						} else {
 							//Line is not a rule line, and appears before the first rule line, so does not belong to a rule. Skip it.
-							messages += "<p><span class='error'>The line \""+key+": "+object+"\" does not belong to a rule. Line skipped.</span><p>";
+							if (key=="BEFORE" || key=="AFTER" || key=="TOP" || key=="BOTTOM" || key=="APPEND" || key=="REPLACE") 
+								messages += "<p><span class='error'>The line \""+key+": "+object+"\" appears before the first recognised rule line. Line skipped.</span><p>";
+							else
+								messages += "<p><span class='error'>The line \""+key+": "+object+"\" does not contain a recognised keyword, and appears before the first recognised rule line. Line skipped.";
 						}
 					}
 				}
@@ -204,12 +213,14 @@ namespace boss {
 	//Adds mods in directory to modlist in date order (AKA load order).
 	void Mods::AddMods() {
 		LOG_DEBUG("Reading user mods...");
-		for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
-			const string filename = itr->path().filename().string();
-			const string ext = to_lower_copy(itr->path().extension().string());
-			if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
-				LOG_TRACE("-- Found mod: '%s'", filename.c_str());
-				mods.push_back(filename);
+		if (fs::is_directory(data_path)) {
+			for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
+				const string filename = itr->path().filename().string();
+				const string ext = to_lower_copy(itr->path().extension().string());
+				if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
+					LOG_TRACE("-- Found mod: '%s'", filename.c_str());
+					mods.push_back(filename);
+				}
 			}
 		}
 		modmessages.resize((int)mods.size());

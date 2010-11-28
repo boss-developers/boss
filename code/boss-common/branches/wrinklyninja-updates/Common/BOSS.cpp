@@ -31,8 +31,8 @@ using namespace std;
 namespace po = boost::program_options;
 
 
-const string g_version     = "1.6.2";
-const string g_releaseDate = "October 26, 2010";
+const string g_version     = "1.6.4";
+const string g_releaseDate = "November 23, 2010";
 
 
 void ShowVersion() {
@@ -84,6 +84,7 @@ int main(int argc, char *argv[]) {
 
 	// set option defaults
 	bool update             = false; // update masterlist?
+	bool updateonly         = false; // only update the masterlist and don't sort currently.
 	bool silent             = false; // silent mode?
 	bool skip_version_parse = false; // enable parsing of mod's headers to look for version strings
 	int  revert             = 0;     // what level to revert to
@@ -99,6 +100,10 @@ int main(int argc, char *argv[]) {
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
 								" available on the web")
+		("only-update,o", po::value(&updateonly)->zero_tokens(),
+								"automatically update the local copy of the"
+								" masterlist to the latest version"
+								" available on the web but don't sort right now")
 		("silent,s", po::value(&silent)->zero_tokens(),
 								"don't launch a browser to show the HTML log"
 								" at program completion")
@@ -182,7 +187,7 @@ int main(int argc, char *argv[]) {
 			<< "<body id='body'>"<<endl<<"<div id='title'>Better Oblivion Sorting Software Log</div><br />"<<endl
 			<< "<div style='text-align:center;'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />"<<endl
 			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
-			<< "v1.62 (29 October 2010)"<<endl<<"</div><br /><br />";
+			<< "v"<<g_version<<" ("<<g_releaseDate<<")"<<endl<<"</div><br /><br />";
 
 	LOG_DEBUG("Detecting game...");
 	if (fs::exists(data_path / "Oblivion.esm")) game = 1;
@@ -234,13 +239,17 @@ int main(int argc, char *argv[]) {
 		exit (1); //fail in screaming heap.
 	}
 
-	if (update == true) {
+	if (update == true || updateonly == true) {
 		bosslog << "<div><span>Masterlist Update</span>"<<endl<<"<p>";
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		LOG_DEBUG("Updating masterlist...");
 		UpdateMasterlist(game);
 		LOG_DEBUG("Masterlist updated successfully.");
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
+	}
+	
+	if (updateonly == true) {
+		return (0);
 	}
 
 	cout << endl << "Better Oblivion Sorting Software working..." << endl;
@@ -336,7 +345,7 @@ int main(int argc, char *argv[]) {
 					const string& filename = isghost ? textbuf+".ghost" : textbuf;
 
 					int i = modlist.GetModIndex(filename);
-					if (i < x || i >= int(modlist.mods.size()))	//The last option is to prevent mods being sorted twice and screwing everything up.
+					if (i < x || i >= int(modlist.mods.size()))	//The first check is to prevent mods being sorted twice and screwing everything up.
 						continue;
 					
 					found=true;
@@ -390,11 +399,11 @@ int main(int argc, char *argv[]) {
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (userlist.keys[start]=="ADD"  && index1 < x) {
-						userlist.messages += "\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.<br /><br />";
+						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is already in the masterlist.", userlist.objects[start].c_str());
 						break;
 					} else if (userlist.keys[start]=="OVERRIDE" && index1 >= x) {
-						userlist.messages += "\""+userlist.objects[start]+"\" is not in the masterlist, cannot override. Rule skipped.<br /><br />";
+						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlist.objects[start].c_str());
 						break;
 					}
@@ -434,7 +443,7 @@ int main(int argc, char *argv[]) {
 						}
 						order.close();
 						if (index < 0 || index >= int(modlist.mods.size())) {
-							userlist.messages += "\""+userlist.objects[j]+"\" is not installed, and is not in the masterlist. Rule skipped.<br /><br />";
+							userlist.messages += "<span class='error'>\""+userlist.objects[j]+"\" is not installed, and is not in the masterlist. Rule skipped.</span><br /><br />";
 							modlist.mods.insert(modlist.mods.begin()+index1,filename);
 							modlist.modmessages.insert(modlist.modmessages.begin()+index1,currentmessages);
 							LOG_WARN(" * \"%s\" is not installed or in the masterlist.", userlist.objects[j].c_str());
@@ -445,10 +454,10 @@ int main(int argc, char *argv[]) {
 					if (index >= x-1) {
 						if (userlist.keys[start]=="ADD")
 							x--;
-						userlist.messages += "\""+userlist.objects[j]+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.<br /><br />";
+						userlist.messages += "<span class='error'>\""+userlist.objects[j]+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</span><br /><br />";
 						modlist.mods.insert(modlist.mods.begin()+index1,filename);
 						modlist.modmessages.insert(modlist.modmessages.begin()+index1,currentmessages);
-						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", userlist.objects[start].c_str());
+						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", userlist.objects[j].c_str());
 						break;
 					}
 
@@ -509,6 +518,15 @@ int main(int argc, char *argv[]) {
 						}
 					}
 					order.close();
+					if (rulemods.empty()) {
+						userlist.messages += "<span class='error'>The group \""+userlist.objects[start]+"\" does not contain any installed mods, or is not in the masterlist. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" does not contain any mods, or is not in the masterlist.", userlist.objects[start].c_str());
+						break;
+					} else if (sortmods.empty()) {
+						userlist.messages += "<span class='error'>The group \""+userlist.objects[j]+"\" does not contain any installed mods, or is not in the masterlist. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" does not contain any mods, or is not in the masterlist.", userlist.objects[j].c_str());
+						break;
+					}
 					if (userlist.keys[j]=="BEFORE") {
 						for (int k=0;k<(int)rulemods.size();k++) {
 							int index1 = modlist.GetModIndex(rulemods[k]);
@@ -546,10 +564,10 @@ int main(int argc, char *argv[]) {
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (userlist.keys[start]=="ADD"  && index1 < x) {
-						userlist.messages += "\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.<br /><br />";
+						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
 						break;
 					} else if (userlist.keys[start]=="OVERRIDE" && index1 >= x) {
-						userlist.messages += "\""+userlist.objects[start]+"\" is not in the masterlist, cannot override. Rule skipped.<br /><br />";
+						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlist.objects[start].c_str());
 						break;
 					}
