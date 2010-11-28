@@ -28,8 +28,8 @@ namespace boss {
 	bool SortByDate(string mod1,string mod2) {
 		time_t t1,t2;
 		try {
-			t1 = fs::last_write_time(mod1);
-			t2 = fs::last_write_time(mod2);
+			t1 = fs::last_write_time(data_path / mod1);
+			t2 = fs::last_write_time(data_path / mod2);
 		}catch (fs::filesystem_error e){
 			LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.", e.what());
 		}
@@ -88,7 +88,7 @@ namespace boss {
 								messages += "<span class='error'>The line with keyword \""+key+"\" has an undefined object.</span><br />";
 								skip = true;
 							} else {
-								if (IsPlugin(object) && !(fs::exists(object) || fs::exists(object+".ghost"))) {
+								if (IsPlugin(object) && !(fs::exists(data_path / object) || fs::exists(data_path / fs::path(object+".ghost")))) {
 									if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
 									messages += "\""+object+"\" is not installed.<br />";
 									skip = true;
@@ -212,9 +212,8 @@ namespace boss {
 	//Adds mods in directory to modlist in date order (AKA load order).
 	void Mods::AddMods() {
 		LOG_DEBUG("Reading user mods...");
-		fs::path p(".");
-		if (fs::is_directory(p)) {
-			for (fs::directory_iterator itr(p); itr!=fs::directory_iterator(); ++itr) {
+		if (fs::is_directory(data_path)) {
+			for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
 				const string filename = itr->path().filename().string();
 				const string ext = to_lower_copy(itr->path().extension().string());
 				if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {

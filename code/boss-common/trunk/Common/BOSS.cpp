@@ -169,16 +169,6 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	LOG_DEBUG("creating BOSS sub-directory");
-	try { fs::create_directory(boss_path);
-	} catch(fs::filesystem_error e) {
-		LOG_ERROR("subdirectory '%s' could not be created; check the"
-				  " Troubleshooting section of the ReadMe for more"
-				  " information and possible solutions",
-				  boss_path.c_str());
-		Fail();
-	}
-
 	const string bosslogFilename = bosslog_path.string();
 	LOG_DEBUG("opening '%s'", bosslogFilename.c_str());
 	bosslog.open(bosslogFilename.c_str());
@@ -201,10 +191,10 @@ int main(int argc, char *argv[]) {
 			<< "v"<<g_version<<" ("<<g_releaseDate<<")"<<endl<<"</div><br /><br />";
 
 	LOG_DEBUG("Detecting game...");
-	if (fs::exists("Oblivion.esm")) game = 1;
-	else if (fs::exists("Fallout3.esm")) game = 2;
-	else if (fs::exists("Nehrim.esm")) game = 3;
-	else if (fs::exists("FalloutNV.esm")) game = 4;
+	if (fs::exists(data_path / "Oblivion.esm")) game = 1;
+	else if (fs::exists(data_path / "Fallout3.esm")) game = 2;
+	else if (fs::exists(data_path / "Nehrim.esm")) game = 3;
+	else if (fs::exists(data_path / "FalloutNV.esm")) game = 4;
 	else {
 		LOG_ERROR("None of the supported games were detected...");
 		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file not found!<br />" << endl
@@ -219,7 +209,7 @@ int main(int argc, char *argv[]) {
 
 	LOG_INFO("Game detected: %d", game);
 
-	if (game==1 && fs::exists("Nehrim.esm")) {
+	if (game==1 && fs::exists(data_path / "Nehrim.esm")) {
 		bosslog << endl << "<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />" << endl
 						<< "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.<br />" << endl
 						<< "Utility will end now.</p>" << endl
@@ -234,10 +224,10 @@ int main(int argc, char *argv[]) {
 	//Get the master esm's modification date. 
 	//Not sure if this needs exception handling, since by this point the file definitely exists. Do it anyway.
 	try {
-		if (game == 1) esmtime = fs::last_write_time("Oblivion.esm");
-		else if (game == 2) esmtime = fs::last_write_time("Fallout3.esm");
-		else if (game == 3) esmtime = fs::last_write_time("Nehrim.esm");
-		else if (game == 4) esmtime = fs::last_write_time("FalloutNV.esm");
+		if (game == 1) esmtime = fs::last_write_time(data_path / "Oblivion.esm");
+		else if (game == 2) esmtime = fs::last_write_time(data_path / "Fallout3.esm");
+		else if (game == 3) esmtime = fs::last_write_time(data_path / "Nehrim.esm");
+		else if (game == 4) esmtime = fs::last_write_time(data_path / "FalloutNV.esm");
 	} catch(fs::filesystem_error e) {
 		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file cannot be read!<br />" << endl
 						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
@@ -289,24 +279,24 @@ int main(int argc, char *argv[]) {
 		bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
 		if (game == 1) {
 			//Check if FCOM or not
-			if ((fcom=fs::exists("FCOM_Convergence.esm"))) bosslog << "FCOM detected.<br />" << endl;
+			if ((fcom=fs::exists(data_path / "FCOM_Convergence.esm"))) bosslog << "FCOM detected.<br />" << endl;
 				else bosslog << "FCOM not detected.<br />" << endl;
-			if (fs::exists("FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing.<br />" << endl;
+			if (fs::exists(data_path / "FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing.<br />" << endl;
 			//Check if OOO or not
-			if ((ooo=fs::exists("Oscuro's_Oblivion_Overhaul.esm"))) bosslog << "OOO detected.<br />" << endl;
+			if ((ooo=fs::exists(data_path / "Oscuro's_Oblivion_Overhaul.esm"))) bosslog << "OOO detected.<br />" << endl;
 				else bosslog << "OOO not detected.<br />" << endl;
 			//Check if Better Cities or not
-			if ((bc=fs::exists("Better Cities Resources.esm"))) bosslog << "Better Cities detected.<br />" << endl;
+			if ((bc=fs::exists(data_path / "Better Cities Resources.esm"))) bosslog << "Better Cities detected.<br />" << endl;
 				else bosslog << "Better Cities not detected.<br />" << endl;
 				
 			LOG_INFO("Special mods found: %s %s %s", fcom ? "FCOM" : "", ooo ? "OOO" : "", bc ? "BC" : "");
 		} else if (game == 2) {
 			//Check if fook2 or not
-			if ((fcom=fs::exists("FOOK2 - Main.esm"))) bosslog << "FOOK2 Detected.<br />" << endl;
+			if ((fcom=fs::exists(data_path / "FOOK2 - Main.esm"))) bosslog << "FOOK2 Detected.<br />" << endl;
 				else bosslog << "FOOK2 not detected.<br />" << endl;
-			if (fs::exists("FOOK2 - Main.esp") && !fcom) bosslog << "WARNING: FOOK2.esm seems to be missing.<br />" << endl;
+			if (fs::exists(data_path / "FOOK2 - Main.esp") && !fcom) bosslog << "WARNING: FOOK2.esm seems to be missing.<br />" << endl;
 			//Check if fwe or not
-			if ((ooo=fs::exists("FO3 Wanderers Edition - Main File.esm"))) bosslog << "FWE detected.<br />" << endl;
+			if ((ooo=fs::exists(data_path / "FO3 Wanderers Edition - Main File.esm"))) bosslog << "FWE detected.<br />" << endl;
 				else bosslog << "FWE not detected.<br />" << endl;
 			
 			LOG_INFO("Special mods found: %s %s", fcom ? "FOOK2" : "", ooo ? "FWE" : "");
@@ -349,8 +339,8 @@ int main(int argc, char *argv[]) {
 		if (textbuf.length()>1 && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
 			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
 				isghost = false;
-				if (fs::exists(textbuf+".ghost") && !fs::exists(textbuf)) isghost = true;
-				if (fs::exists(textbuf) || isghost) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
+				if (fs::exists(data_path / fs::path(textbuf+".ghost"))) isghost = true;
+				if (fs::exists(data_path / textbuf) || isghost) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
 
 					LOG_DEBUG("-- Sorting %smod: \"%s\" into position: %d", isghost ? "ghosted " : "", textbuf.c_str(), x);
 					const string& filename = isghost ? textbuf+".ghost" : textbuf;
@@ -516,7 +506,7 @@ int main(int argc, char *argv[]) {
 							}
 						} else if ((lookforrulemods || lookforsortmods)  && textbuf[0]!='\\') {
 							if (!IsMessage(textbuf)) {
-								if (fs::exists(textbuf) || fs::exists(textbuf+".ghost")) {
+								if (fs::exists(data_path / textbuf) || fs::exists(data_path / fs::path(textbuf+".ghost"))) {
 									//Found a mod.
 									int gm = modlist.GetModIndex(textbuf);
 									if (lookforrulemods) {
@@ -620,7 +610,7 @@ int main(int argc, char *argv[]) {
 							}
 						} else if (lookforsortmods && textbuf[0]!='\\') {
 							if (!IsMessage(textbuf)) {
-								if (fs::exists(textbuf) || fs::exists(textbuf+".ghost")) {
+								if (fs::exists(data_path / textbuf) || fs::exists(data_path / fs::path(textbuf+".ghost"))) {
 									//Found a mod.
 									int gm = modlist.GetModIndex(textbuf);
 									sortmods.push_back(modlist.mods[gm]);
@@ -692,7 +682,7 @@ int main(int argc, char *argv[]) {
 		if (IsValidLine(modlist.mods[i])) {
 			//Re-date file. Provide exception handling in case their permissions are wrong.
 			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
-			try { fs::last_write_time(modlist.mods[i],modfiletime);
+			try { fs::last_write_time(data_path / modlist.mods[i],modfiletime);
 			} catch(fs::filesystem_error e) {
 				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
 			}
@@ -723,7 +713,7 @@ int main(int argc, char *argv[]) {
 			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
 			//Re-date file. Provide exception handling in case their permissions are wrong.
 			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
-			try { fs::last_write_time(modlist.mods[i],modfiletime);
+			try { fs::last_write_time(data_path / modlist.mods[i],modfiletime);
 			} catch(fs::filesystem_error e) {
 				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
 			}
