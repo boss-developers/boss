@@ -158,11 +158,6 @@ namespace boss {
 										skip = true;
 									}
 									if (objects[rules.back()].length()>0) {
-										if ((IsPlugin(object) && !IsPlugin(objects[rules.back()])) || (!IsPlugin(object) && IsPlugin(objects[rules.back()]))) {
-											if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-											messages += "<span class='error'>It references a mod and a group.</span><br />";
-											skip = true;
-										}
 										if (!IsPlugin(objects[rules.back()]) || IsPlugin(object)) {
 											if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
 											messages += "<span class='error'>It tries to insert a group or insert a mod into another mod.</span><br />";

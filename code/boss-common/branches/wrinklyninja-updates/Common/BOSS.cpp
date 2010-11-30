@@ -389,20 +389,20 @@ int main(int argc, char *argv[]) {
 			for (int j=start;j<end;j++) {
 				//A mod sorting line.
 				LOG_TRACE("  -- Processing line: %d.", j);
-				if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && IsPlugin(userlist.objects[j])) {
+				if ((userlist.keys[j]=="before" || userlist.keys[j]=="after") && IsPlugin(userlist.objects[j])) {
 					vector<string> currentmessages;
 					int index,index1;
 					//Get current mod messages and remove mod from current modlist position.
 					index1 = modlist.GetModIndex(userlist.objects[start]);
 					// Only increment 'x' if we've taken the 'source' mod from below the 'last-sorted' mark
-					if (userlist.keys[start]=="ADD" && index1 >= x) 
+					if (userlist.keys[start]=="add" && index1 >= x) 
 						x++;
 					//If it adds a mod already sorted, skip the rule.
-					else if (userlist.keys[start]=="ADD"  && index1 < x) {
+					else if (userlist.keys[start]=="add"  && index1 < x) {
 						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is already in the masterlist.", userlist.objects[start].c_str());
 						break;
-					} else if (userlist.keys[start]=="OVERRIDE" && index1 >= x) {
+					} else if (userlist.keys[start]=="override" && index1 >= x) {
 						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlist.objects[start].c_str());
 						break;
@@ -435,7 +435,7 @@ int main(int argc, char *argv[]) {
 											continue;
 										index = i;
 										lookforinstalledmod=false;
-										if (userlist.keys[j]=="AFTER") index -= 1;
+										if (userlist.keys[j]=="after") index -= 1;
 										break;
 									}
 								}
@@ -452,7 +452,7 @@ int main(int argc, char *argv[]) {
 					}
 					//Uh oh, the awesomesauce ran out...
 					if (index >= x-1) {
-						if (userlist.keys[start]=="ADD")
+						if (userlist.keys[start]=="add")
 							x--;
 						userlist.messages += "<span class='error'>\""+userlist.objects[j]+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</span><br /><br />";
 						modlist.mods.insert(modlist.mods.begin()+index1,filename);
@@ -461,16 +461,16 @@ int main(int argc, char *argv[]) {
 						break;
 					}
 
-					if (userlist.keys[j]=="AFTER") index += 1;
+					if (userlist.keys[j]=="after") index += 1;
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 					userlist.messages += "\""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " \"" + userlist.objects[j] + "\".<br /><br />";
 
 				//A group sorting line.
-				} else if ((userlist.keys[j]=="BEFORE" || userlist.keys[j]=="AFTER") && !IsPlugin(userlist.objects[j])) {
+				} else if ((userlist.keys[j]=="before" || userlist.keys[j]=="after") && !IsPlugin(userlist.objects[j])) {
 					//Search masterlist for rule group. Once found, search it for mods in modlist, recording the mods that match.
 					//Then search masterlist for sort group. Again, search and record matching modlist mods.
-					//If sort keyword is BEFORE, discard all but the first recorded sort group mod, and if it is AFTER, discard all but the last recorded sort group mod.
+					//If sort keyword is before, discard all but the first recorded sort group mod, and if it is after, discard all but the last recorded sort group mod.
 					//Then insert the recorded rule group mods before or after the remaining sort group mod and erase them from their old positions.
 					//Remember to move their messages too.
 
@@ -527,7 +527,7 @@ int main(int argc, char *argv[]) {
 						LOG_WARN(" * \"%s\" does not contain any mods, or is not in the masterlist.", userlist.objects[j].c_str());
 						break;
 					}
-					if (userlist.keys[j]=="BEFORE") {
+					if (userlist.keys[j]=="before") {
 						for (int k=0;k<(int)rulemods.size();k++) {
 							int index1 = modlist.GetModIndex(rulemods[k]);
 							currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
@@ -539,7 +539,7 @@ int main(int argc, char *argv[]) {
 							modlist.mods.insert(modlist.mods.begin()+index,rulemods[k]);
 							modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 						}
-					} else if (userlist.keys[j]=="AFTER") {	
+					} else if (userlist.keys[j]=="after") {	
 						//Iterate backwards to make sure they're added in the right order.
 						for (int k=(int)rulemods.size()-1;k>-1;k--) {
 							int index1 = modlist.GetModIndex(rulemods[k]);
@@ -555,18 +555,18 @@ int main(int argc, char *argv[]) {
 					}
 					userlist.messages += "The group \""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " the group \"" + userlist.objects[j] + "\".<br /><br />";
 				//An insertion line.
-				} else if (userlist.keys[j]=="TOP" || userlist.keys[j]=="BOTTOM") {
+				} else if (userlist.keys[j]=="top" || userlist.keys[j]=="bottom") {
 					vector<string> currentmessages;
 					//Get current mod messages and remove mod from current modlist position.
 					int index1 = modlist.GetModIndex(userlist.objects[start]);
 					// Only increment 'x' if we've taken the 'source' mod from below the 'last-sorted' mark
-					if (userlist.keys[start]=="ADD" && index1 >= x) 
+					if (userlist.keys[start]=="add" && index1 >= x) 
 						x++;
 					//If it adds a mod already sorted, skip the rule.
-					else if (userlist.keys[start]=="ADD"  && index1 < x) {
+					else if (userlist.keys[start]=="add"  && index1 < x) {
 						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
 						break;
-					} else if (userlist.keys[start]=="OVERRIDE" && index1 >= x) {
+					} else if (userlist.keys[start]=="override" && index1 >= x) {
 						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlist.objects[start].c_str());
 						break;
@@ -602,7 +602,7 @@ int main(int argc, char *argv[]) {
 										break;
 									} else {
 										//The end of the matched group was found, but we still don't have any mods to sort relative to.
-										//Keep searching for mods, but now TOP and BOTTOM both mean "before the mod found next".
+										//Keep searching for mods, but now top and bottom both mean "before the mod found next".
 										overtime=true;
 									}
 								}
@@ -621,28 +621,28 @@ int main(int argc, char *argv[]) {
 					order.close();
 					int index = 0;
 					if ((int)sortmods.size()>0) {
-						if (userlist.keys[j]=="TOP") 
+						if (userlist.keys[j]=="top") 
 							index = modlist.GetModIndex(sortmods.front());
-						else if (userlist.keys[j]=="BOTTOM") {
+						else if (userlist.keys[j]=="bottom") {
 							index = modlist.GetModIndex(sortmods.back());
 							if (!overtime) index += 1;
 						}
 					} else index = x-1;
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
-					if (userlist.keys[j]=="TOP") 
+					if (userlist.keys[j]=="top") 
 						userlist.messages += "\""+userlist.objects[start]+"\" inserted into the top of group \"" + userlist.objects[j] + "\".<br /><br />";
-					else if (userlist.keys[j]=="BOTTOM") 
+					else if (userlist.keys[j]=="bottom") 
 						userlist.messages += "\""+userlist.objects[start]+"\" inserted into the bottom of group \"" + userlist.objects[j] + "\".<br /><br />";
 			
 				//A message line.
-				} else if (userlist.keys[j]=="APPEND" || userlist.keys[j]=="REPLACE") {
+				} else if (userlist.keys[j]=="append" || userlist.keys[j]=="replace") {
 					//Look for the modlist line that contains the match mod of the rule.
 					int index = modlist.GetModIndex(userlist.objects[start]);
 					userlist.messages += "\"" + userlist.objects[j] + "\"";
-					if (userlist.keys[j]=="APPEND") {			//Attach the rule message to the mod's messages list.
+					if (userlist.keys[j]=="append") {			//Attach the rule message to the mod's messages list.
 						userlist.messages += " appended to ";
-					} else if (userlist.keys[j]=="REPLACE") {	//Clear the message list and then attach the message.
+					} else if (userlist.keys[j]=="replace") {	//Clear the message list and then attach the message.
 						modlist.modmessages[index].clear();
 						userlist.messages += " replaced ";
 					}
