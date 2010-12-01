@@ -26,7 +26,7 @@ namespace boss {
 
 	//Date comparison, used for sorting mods in modlist class.
 	bool SortByDate(string mod1,string mod2) {
-		time_t t1,t2;
+		time_t t1 = 0, t2 = 0;
 		try {
 			t1 = fs::last_write_time(data_path / mod1);
 			t2 = fs::last_write_time(data_path / mod2);

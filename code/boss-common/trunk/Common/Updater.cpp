@@ -37,7 +37,7 @@ namespace boss {
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		string buffer,revision,newline,line;		//A bunch of strings.
-		int start=-1,end;								//Position holders for trimming strings.
+		size_t start=-1,end;								//Position holders for trimming strings.
 		CURLcode ret;
 		ifstream mlist;								//Input stream.
 		ofstream out;								//Output stream.
@@ -89,7 +89,7 @@ namespace boss {
 		else if (game == 2) start = revision.find("boss-fallout");
 		else if (game == 3) start = revision.find("boss-nehrim");
 		else if (game == 4) start = revision.find("boss-fallout-nv");
-		if (start == string::npos || start == -1) {
+		if (start == string::npos) {
 			cout << "Error: Masterlist update failed!" << endl;
 			bosslog << "Error: Masterlist update failed!<br />" << endl;
 			cout << "Cannot find online masterlist revision number." << endl;
@@ -165,7 +165,7 @@ namespace boss {
 		curl_easy_cleanup(curl);
 
 		//Replace SVN keywords with revision number and replace current masterlist, or write a new one if it doesn't already exist.
-		int pos = buffer.find(oldline);
+		size_t pos = buffer.find(oldline);
 		if (pos != string::npos)
 			buffer.replace(pos,oldline.length(),newline);
 		out.open(masterlist_path.c_str(), ios_base::trunc);

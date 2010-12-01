@@ -34,6 +34,9 @@ namespace boss {
 	//Checks if a given object is an esp, an esm or a ghosted mod.
 	bool IsPlugin(string object);
 	
+	//Checks if the plugin is in the Data directory, even if ghosted.
+	bool PluginExists(fs::path plugin);
+
 	//Class to store userlist rules.
 	class Rules {
 	public:

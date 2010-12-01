@@ -31,8 +31,8 @@ using namespace std;
 namespace po = boost::program_options;
 
 
-const string g_version     = "1.6.4";
-const string g_releaseDate = "November 23, 2010";
+const string g_version     = "1.7";
+const string g_releaseDate = "December 1, 2010";
 
 
 void ShowVersion() {
@@ -181,8 +181,9 @@ int main(int argc, char *argv[]) {
 	//Output HTML start and <head>
 	bosslog << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
 			<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl<<"#body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
-			<< "#title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl<<"div > span {font-weight:bold; font-size:1.3em;}"<<endl
-			<< "ul li {margin-bottom:10px;}"<<endl<<".error {color:red; font-weight:normal; font-size:1em;}"<<endl<<"</style>"<<endl<<"</head>"<<endl
+			<< "#title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl<<"div > span:first-child {font-weight:bold; font-size:1.3em;}"<<endl
+			<< "ul {margin-top:0px; list-style:none; margin-bottom:1.1em;}"<<endl<<"ul li {margin-left:-1em; margin-bottom:0.4em;}"<<endl
+			<<".error {color:red;}"<<endl<<".success {color:green}"<<endl<<".warn {color:#FF6600;}"<<endl<<".version {color:teal;}"<<endl<<".ghosted {font-style:italic; color:grey;}"<<endl<<"</style>"<<endl<<"</head>"<<endl
 			//Output start of <body>
 			<< "<body id='body'>"<<endl<<"<div id='title'>Better Oblivion Sorting Software Log</div><br />"<<endl
 			<< "<div style='text-align:center;'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />"<<endl
@@ -278,24 +279,24 @@ int main(int argc, char *argv[]) {
 		bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
 		if (game == 1) {
 			//Check if FCOM or not
-			if ((fcom=fs::exists(data_path / "FCOM_Convergence.esm"))) bosslog << "FCOM detected.<br />" << endl;
+			if ((fcom=PluginExists(data_path / "FCOM_Convergence.esm"))) bosslog << "FCOM detected.<br />" << endl;
 				else bosslog << "FCOM not detected.<br />" << endl;
-			if (fs::exists(data_path / "FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing.<br />" << endl;
+			if (PluginExists(data_path / "FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing.<br />" << endl;
 			//Check if OOO or not
-			if ((ooo=fs::exists(data_path / "Oscuro's_Oblivion_Overhaul.esm"))) bosslog << "OOO detected.<br />" << endl;
+			if ((ooo=PluginExists(data_path / "Oscuro's_Oblivion_Overhaul.esm"))) bosslog << "OOO detected.<br />" << endl;
 				else bosslog << "OOO not detected.<br />" << endl;
 			//Check if Better Cities or not
-			if ((bc=fs::exists(data_path / "Better Cities Resources.esm"))) bosslog << "Better Cities detected.<br />" << endl;
+			if ((bc=PluginExists(data_path / "Better Cities Resources.esm"))) bosslog << "Better Cities detected.<br />" << endl;
 				else bosslog << "Better Cities not detected.<br />" << endl;
 				
 			LOG_INFO("Special mods found: %s %s %s", fcom ? "FCOM" : "", ooo ? "OOO" : "", bc ? "BC" : "");
 		} else if (game == 2) {
 			//Check if fook2 or not
-			if ((fcom=fs::exists(data_path / "FOOK2 - Main.esm"))) bosslog << "FOOK2 Detected.<br />" << endl;
+			if ((fcom=PluginExists(data_path / "FOOK2 - Main.esm"))) bosslog << "FOOK2 Detected.<br />" << endl;
 				else bosslog << "FOOK2 not detected.<br />" << endl;
-			if (fs::exists(data_path / "FOOK2 - Main.esp") && !fcom) bosslog << "WARNING: FOOK2.esm seems to be missing.<br />" << endl;
+			if (PluginExists(data_path / "FOOK2 - Main.esp") && !fcom) bosslog << "WARNING: FOOK2.esm seems to be missing.<br />" << endl;
 			//Check if fwe or not
-			if ((ooo=fs::exists(data_path / "FO3 Wanderers Edition - Main File.esm"))) bosslog << "FWE detected.<br />" << endl;
+			if ((ooo=PluginExists(data_path / "FO3 Wanderers Edition - Main File.esm"))) bosslog << "FWE detected.<br />" << endl;
 				else bosslog << "FWE not detected.<br />" << endl;
 			
 			LOG_INFO("Special mods found: %s %s", fcom ? "FOOK2" : "", ooo ? "FWE" : "");
@@ -399,7 +400,7 @@ int main(int argc, char *argv[]) {
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (userlist.keys[start]=="add"  && index1 < x) {
-						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
+						userlist.messages += "<span class='warn'>\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is already in the masterlist.", userlist.objects[start].c_str());
 						break;
 					} else if (userlist.keys[start]=="override" && index1 >= x) {
@@ -443,7 +444,7 @@ int main(int argc, char *argv[]) {
 						}
 						order.close();
 						if (index < 0 || index >= int(modlist.mods.size())) {
-							userlist.messages += "<span class='error'>\""+userlist.objects[j]+"\" is not installed, and is not in the masterlist. Rule skipped.</span><br /><br />";
+							userlist.messages += "<span class='warn'>\""+userlist.objects[j]+"\" is not installed, and is not in the masterlist. Rule skipped.</span><br /><br />";
 							modlist.mods.insert(modlist.mods.begin()+index1,filename);
 							modlist.modmessages.insert(modlist.modmessages.begin()+index1,currentmessages);
 							LOG_WARN(" * \"%s\" is not installed or in the masterlist.", userlist.objects[j].c_str());
@@ -464,7 +465,7 @@ int main(int argc, char *argv[]) {
 					if (userlist.keys[j]=="after") index += 1;
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
-					userlist.messages += "\""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " \"" + userlist.objects[j] + "\".<br /><br />";
+					userlist.messages += "<span class='success'>\""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " \"" + userlist.objects[j] + "\".</span><br /><br />";
 
 				//A group sorting line.
 				} else if ((userlist.keys[j]=="before" || userlist.keys[j]=="after") && !IsPlugin(userlist.objects[j])) {
@@ -505,7 +506,7 @@ int main(int argc, char *argv[]) {
 							}
 						} else if ((lookforrulemods || lookforsortmods)  && textbuf[0]!='\\') {
 							if (!IsMessage(textbuf)) {
-								if (fs::exists(data_path / textbuf) || fs::exists(data_path / fs::path(textbuf+".ghost"))) {
+								if (PluginExists(data_path / textbuf)) {
 									//Found a mod.
 									int gm = modlist.GetModIndex(textbuf);
 									if (lookforrulemods) {
@@ -553,7 +554,7 @@ int main(int argc, char *argv[]) {
 							modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 						}
 					}
-					userlist.messages += "The group \""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " the group \"" + userlist.objects[j] + "\".<br /><br />";
+					userlist.messages += "<span class='success'>The group \""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " the group \"" + userlist.objects[j] + "\".</span><br /><br />";
 				//An insertion line.
 				} else if (userlist.keys[j]=="top" || userlist.keys[j]=="bottom") {
 					vector<string> currentmessages;
@@ -564,7 +565,7 @@ int main(int argc, char *argv[]) {
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (userlist.keys[start]=="add"  && index1 < x) {
-						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
+						userlist.messages += "<span class='warn'>\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
 						break;
 					} else if (userlist.keys[start]=="override" && index1 >= x) {
 						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
@@ -609,7 +610,7 @@ int main(int argc, char *argv[]) {
 							}
 						} else if (lookforsortmods && textbuf[0]!='\\') {
 							if (!IsMessage(textbuf)) {
-								if (fs::exists(data_path / textbuf) || fs::exists(data_path / fs::path(textbuf+".ghost"))) {
+								if (PluginExists(data_path / textbuf)) {
 									//Found a mod.
 									int gm = modlist.GetModIndex(textbuf);
 									sortmods.push_back(modlist.mods[gm]);
@@ -619,6 +620,11 @@ int main(int argc, char *argv[]) {
 						}
 					}
 					order.close();
+					if (sortmods.empty()) {
+						userlist.messages += "<span class='error'>The group \""+userlist.objects[j]+"\" does not contain any installed mods, or is not in the masterlist. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" does not contain any mods, or is not in the masterlist.", userlist.objects[j].c_str());
+						break;
+					}
 					int index = 0;
 					if ((int)sortmods.size()>0) {
 						if (userlist.keys[j]=="top") 
@@ -631,15 +637,15 @@ int main(int argc, char *argv[]) {
 					modlist.mods.insert(modlist.mods.begin()+index,filename);
 					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
 					if (userlist.keys[j]=="top") 
-						userlist.messages += "\""+userlist.objects[start]+"\" inserted into the top of group \"" + userlist.objects[j] + "\".<br /><br />";
+						userlist.messages += "<span class='success'>\""+userlist.objects[start]+"\" inserted into the top of group \"" + userlist.objects[j] + "\".</span><br /><br />";
 					else if (userlist.keys[j]=="bottom") 
-						userlist.messages += "\""+userlist.objects[start]+"\" inserted into the bottom of group \"" + userlist.objects[j] + "\".<br /><br />";
+						userlist.messages += "<span class='success'>\""+userlist.objects[start]+"\" inserted into the bottom of group \"" + userlist.objects[j] + "\".</span><br /><br />";
 			
 				//A message line.
 				} else if (userlist.keys[j]=="append" || userlist.keys[j]=="replace") {
 					//Look for the modlist line that contains the match mod of the rule.
 					int index = modlist.GetModIndex(userlist.objects[start]);
-					userlist.messages += "\"" + userlist.objects[j] + "\"";
+					userlist.messages += "<span class='success'>\"" + userlist.objects[j] + "\"";
 					if (userlist.keys[j]=="append") {			//Attach the rule message to the mod's messages list.
 						userlist.messages += " appended to ";
 					} else if (userlist.keys[j]=="replace") {	//Clear the message list and then attach the message.
@@ -647,7 +653,7 @@ int main(int argc, char *argv[]) {
 						userlist.messages += " replaced ";
 					}
 					modlist.modmessages[index].push_back(userlist.objects[j]);
-					userlist.messages += "messages attached to \"" + userlist.objects[start] + "\".<br /><br />";
+					userlist.messages += "messages attached to \"" + userlist.objects[start] + "\".</span><br /><br />";
 				}
 			}
 		}
@@ -665,6 +671,7 @@ int main(int argc, char *argv[]) {
 	x = min(x, int(modlist.mods.size()));
 
 	LOG_INFO("Applying calculated ordering to user files...");
+	bosslog << "<div></div>" << endl; //This fixes the Oblivion.esm comment (or first block element, really) being displayed irrespective of CSS.
 	for (int i=0;i<x;i++) {
 		bool ghosted = false;
 		string filename;
@@ -672,10 +679,11 @@ int main(int argc, char *argv[]) {
 			ghosted=true;
 			filename = modlist.mods[i].substr(0,modlist.mods[i].length()-6);
 		} else filename = modlist.mods[i];
-		string text = skip_version_parse ? filename : GetModHeader(filename, ghosted);
-		if (ghosted) text += " <em> - Ghosted</em>";
-		if (modlist.modmessages[i].size()>0) bosslog << "<b>" << text << "</b>";		// show which mod file is being processed.
-		else bosslog << text;
+		string text = "<b>";
+		text += skip_version_parse ? filename : GetModHeader(filename, ghosted);
+		text += "</b>";
+		if (ghosted) text += " <span class='ghosted'> - Ghosted</span>";
+		bosslog << text;		// show which mod file is being processed.
 		modfiletime=esmtime;
 		modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 		if (IsValidLine(modlist.mods[i])) {
@@ -716,7 +724,7 @@ int main(int argc, char *argv[]) {
 			} catch(fs::filesystem_error e) {
 				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
 			}
-			bosslog << endl << "<br /><br />" << endl;
+			bosslog << endl << "<br />" << endl;
 		}
 	} //while
 	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;

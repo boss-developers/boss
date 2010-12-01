@@ -51,6 +51,10 @@ namespace boss {
 		output << messages;
 	}
 
+	bool PluginExists(fs::path plugin) {
+		return (fs::exists(plugin) || fs::exists(plugin.string()+".ghost"));
+	}
+
 	//Add rules from userlist.txt into the rules object.
 	//Then checks rule syntax and discards rules with incorrect structures.
 	//Also checks if the mods referenced by rules are in your Data folder, and discards rule that reference missing mods.
@@ -87,7 +91,7 @@ namespace boss {
 								messages += "<span class='error'>The line with keyword \""+key+"\" has an undefined object.</span><br />";
 								skip = true;
 							} else {
-								if (IsPlugin(object) && !(fs::exists(data_path / object) || fs::exists(data_path / fs::path(object+".ghost")))) {
+								if (IsPlugin(object) && !PluginExists(data_path / object)) {
 									if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
 									messages += "\""+object+"\" is not installed.<br />";
 									skip = true;
@@ -113,7 +117,7 @@ namespace boss {
 								objects.push_back(object);
 								if (keys[rules.back()]=="for") {
 									if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-									messages += "<span class='error'>It includes a sort line in a rule with a for rule keyword.</span><br />";
+									messages += "<span class='error'>It includes a sort line in a rule with a FOR rule keyword.</span><br />";
 									skip = true;
 								}
 								if (object.empty()) {
@@ -143,7 +147,7 @@ namespace boss {
 								objects.push_back(object);
 								if (keys[rules.back()]=="for") {
 									if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-									messages += "<span class='error'>It includes a sort line in a rule with a for rule keyword.</span><br />";
+									messages += "<span class='error'>It includes a sort line in a rule with a FOR rule keyword.</span><br />";
 									skip = true;
 								}
 								if (object.empty()) {

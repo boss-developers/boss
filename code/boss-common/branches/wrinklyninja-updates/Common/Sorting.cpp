@@ -36,7 +36,7 @@ namespace boss {
 			else if (ooo && game == 2) bosslog << "<li>FWE Specific Note: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '%':
-			bosslog << "<li>Bashed Patch tag suggestion: " << textbuf.substr(1) << "</li>" << endl;
+			bosslog << "<li>Bash Tag suggestion(s): " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '\?':
 			bosslog << "<li>Note: " << textbuf.substr(1) << "</li>" << endl;
@@ -86,7 +86,7 @@ namespace boss {
 		out << filename;	// show which mod file is being processed.
 
 		// If version's found the show it...
-		if (! version.empty()) out << " [Version " << version << "]";
+		if (! version.empty()) out << " <span class='version'>[Version " << version << "]</span>";
 
 		return out.str();
 	}
