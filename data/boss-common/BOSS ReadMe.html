@@ -79,7 +79,7 @@
 	<br /><span class="subtitle">Command Line Arguments</span>
 	<p>BOSS has a number of command-line arguments. The syntax is:</p>
 	<div>
-	<p><code>boss [-hVuosnd] [-r [level]] [-v [level]]</code></p>
+	<p><code>boss [-hVuosnd] [-g game] [-r [level]] [-v [level]]</code></p>
 	<p><code>-h [ --help ]</code></p>
 	<p>This prints a short description of BOSS and some information on the function of the command line arguments, then exits.</p>
 	<p><code>-V [ --version ]</code></p>
@@ -90,6 +90,9 @@
 	<p><code>-o [ --only-update ]</code></p>
 	<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then does NOT sort your mods. Since this replaces your current 
 	masterlist, don't run this if you have an edited copy and wish to keep the changes.</p>
+	<p><code>-g [ --game ] game</code></p>
+	<p>Overrides game autodetection. The valid values of the argument are valid values are: 'Oblivion', 'Nehrim', 'Fallout3', and 'Fallout3NV'. This only allows the masterlist to be updated, so should be used in conjunction with -o or BOSS will still fail before any mods are sorted
+	if the game you specify is not the game BOSS is installed for, or no game is present.</p>
 	<p><code>-s [ --silent ]</code></p>
 	<p>Stops BOSS from automatically opening up the BOSSlog in your web browser after it has finished running.</p>
 	<p><code>-n [ --no-version-parse ]</code></p>
