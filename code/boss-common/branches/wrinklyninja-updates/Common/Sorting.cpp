@@ -23,6 +23,16 @@ namespace boss {
 	using namespace std;
 
 	void ShowMessage(string textbuf, int game) {
+		size_t pos1,pos2;
+		string link;
+		pos1 = textbuf.find("http");
+		while (pos1 != string::npos) {
+			pos2 = textbuf.find(" ",pos1);
+			link = textbuf.substr(pos1,pos2-pos1);
+			link = "<a href='"+link+"'>"+link+"</a>";
+			textbuf.replace(pos1,pos2-pos1,link);
+			pos1 = textbuf.find("http",pos1 + link.length());
+		}
 		switch (textbuf[0]) {	
 		case '*':
 			if (fcom && game == 1) bosslog << "<li class='error'>!!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
@@ -72,7 +82,7 @@ namespace boss {
 	///
 	string GetModHeader(const string& filename, bool ghosted) {
 
-		ostringstream out;
+	//	ostringstream out;
 		ModHeader header;
 
 		// Read mod's header now...
@@ -82,12 +92,7 @@ namespace boss {
 		// The current mod's version if found, or empty otherwise.
 		string version = header.Version;
 
-		// Output the mod information...
-		out << filename;	// show which mod file is being processed.
-
-		// If version's found the show it...
-		if (! version.empty()) out << " <span class='version'>[Version " << version << "]</span>";
-
-		return out.str();
+		//Return the version if found, otherwise an empty string.
+		return version;
 	}
 }

@@ -674,15 +674,21 @@ int main(int argc, char *argv[]) {
 	bosslog << "<div></div>" << endl; //This fixes the Oblivion.esm comment (or first block element, really) being displayed irrespective of CSS.
 	for (int i=0;i<x;i++) {
 		bool ghosted = false;
-		string filename;
+		string filename,version;
 		if (Tidy(modlist.mods[i].substr(modlist.mods[i].length()-6))==".ghost") {
 			ghosted=true;
 			filename = modlist.mods[i].substr(0,modlist.mods[i].length()-6);
-		} else filename = modlist.mods[i];
-		string text = "<b>";
-		text += skip_version_parse ? filename : GetModHeader(filename, ghosted);
+		} else 
+			filename = modlist.mods[i];
+		string text = "<b>"+filename;
+		if (!skip_version_parse) {
+			version = GetModHeader(filename, ghosted);
+			if (!version.empty())
+				text += " <span class='version'>[Version "+version+"]</span>";
+		}
 		text += "</b>";
-		if (ghosted) text += " <span class='ghosted'> - Ghosted</span>";
+		if (ghosted) 
+			text += " <span class='ghosted'> - Ghosted</span>";
 		bosslog << text;		// show which mod file is being processed.
 		modfiletime=esmtime;
 		modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
@@ -694,14 +700,14 @@ int main(int argc, char *argv[]) {
 				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
 			}
 		}
-		if (modlist.modmessages[i].size()==0) bosslog << endl << "<br /><br />" << endl;
 		if (modlist.modmessages[i].size()>0) {
 			bosslog << endl << "<ul>" << endl;
 			for (int j=0;j<(int)modlist.modmessages[i].size();j++) {
 				ShowMessage(modlist.modmessages[i][j], game);		//Deal with message lines here.
 			}
 			bosslog << "</ul>" << endl;
-		}
+		} else 
+			bosslog << endl << "<br /><br />" << endl;
 	}
 	LOG_INFO("User file ordering applied successfully.");
 	
