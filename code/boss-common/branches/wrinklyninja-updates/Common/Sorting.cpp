@@ -9,7 +9,7 @@
 	$Revision$, $Date$
 */
 
-
+#include <boost/algorithm/string/replace.hpp>
 #include "Globals.h"
 #include "Sorting.h"
 
@@ -46,7 +46,18 @@ namespace boss {
 			else if (ooo && game == 2) bosslog << "<li>FWE Specific Note: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '%':
-			bosslog << "<li>Bash Tag suggestion(s): " << textbuf.substr(1) << "</li>" << endl;
+			pos1 = textbuf.find("{{BASH:");
+			if (pos1 != string::npos) {
+				pos2 = textbuf.find("}}",pos1);
+				size_t pos3;
+				pos3 = textbuf.find(",",pos1);
+				while (pos3 != string::npos && pos3 < pos2) {
+					textbuf.replace(pos3,1,", ");
+					pos3 = textbuf.find(",",pos3+9);
+				}
+			}
+			boost::algorithm::ireplace_all(textbuf,"remove","<span class='error'>remove</span>");
+			bosslog << "<li><t>Bash Tag suggestion(s):</t> " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '\?':
 			bosslog << "<li>Note: " << textbuf.substr(1) << "</li>" << endl;

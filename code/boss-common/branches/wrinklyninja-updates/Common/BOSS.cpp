@@ -180,10 +180,19 @@ int main(int argc, char *argv[]) {
 
 	//Output HTML start and <head>
 	bosslog << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
-			<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl<<"#body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
-			<< "#title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl<<"div > span:first-child {font-weight:bold; font-size:1.3em;}"<<endl
-			<< "ul {margin-top:0px; list-style:none; margin-bottom:1.1em;}"<<endl<<"ul li {margin-left:-1em; margin-bottom:0.4em;}"<<endl
-			<<".error {color:red;}"<<endl<<".success {color:green}"<<endl<<".warn {color:#FF6600;}"<<endl<<".version {color:teal;}"<<endl<<".ghosted {font-style:italic; color:grey;}"<<endl<<"</style>"<<endl<<"</head>"<<endl
+			<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
+			<<"#body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
+			<< "#title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl
+			<<"div > span:first-child {font-weight:bold; font-size:1.3em;}"<<endl
+			<< "ul {margin-top:0px; list-style:none; margin-bottom:1.1em;}"<<endl
+			<<"ul li {margin-left:-1em; margin-bottom:0.4em;}"<<endl
+			<<".error {color:red;}"<<endl
+			<<".success {color:green}"<<endl
+			<<".warn {color:#FF6600;}"<<endl
+			<<"v {color:teal;}"<<endl
+			<<"g {font-style:italic; color:grey;}"<<endl
+			<<"t {color:maroon;}"<<endl
+			<<"</style>"<<endl<<"</head>"<<endl
 			//Output start of <body>
 			<< "<body id='body'>"<<endl<<"<div id='title'>Better Oblivion Sorting Software Log</div><br />"<<endl
 			<< "<div style='text-align:center;'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />"<<endl
@@ -684,11 +693,11 @@ int main(int argc, char *argv[]) {
 		if (!skip_version_parse) {
 			version = GetModHeader(filename, ghosted);
 			if (!version.empty())
-				text += " <span class='version'>[Version "+version+"]</span>";
+				text += " <v>[Version "+version+"]</v>";
 		}
 		text += "</b>";
 		if (ghosted) 
-			text += " <span class='ghosted'> - Ghosted</span>";
+			text += " <g> - Ghosted</g>";
 		bosslog << text;		// show which mod file is being processed.
 		modfiletime=esmtime;
 		modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
