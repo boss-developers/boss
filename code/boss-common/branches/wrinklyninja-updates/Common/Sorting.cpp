@@ -23,7 +23,7 @@ namespace boss {
 	using namespace std;
 
 	void ShowMessage(string textbuf, int game) {
-		size_t pos1,pos2;
+		size_t pos1,pos2,pos3;
 		string link;
 		pos1 = textbuf.find("http");
 		while (pos1 != string::npos) {
@@ -49,7 +49,6 @@ namespace boss {
 			pos1 = textbuf.find("{{BASH:");
 			if (pos1 != string::npos) {
 				pos2 = textbuf.find("}}",pos1);
-				size_t pos3;
 				pos3 = textbuf.find(",",pos1);
 				while (pos3 != string::npos && pos3 < pos2) {
 					textbuf.replace(pos3,1,", ");

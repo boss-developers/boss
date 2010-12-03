@@ -11,6 +11,7 @@
 
 #include "BOSS.h"
 
+#include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
 
 #include <stdio.h>
@@ -77,20 +78,21 @@ int main(int argc, char *argv[]) {
 
 	int x;							//random useful integers
 	string textbuf;                 //a line of text from a file (should usually end up being be a file name);
-	time_t esmtime, modfiletime;	//File modification times.
+	time_t esmtime = 0, modfiletime;	//File modification times.
 	bool found;
 	bool isghost;					//Is the file ghosted or not?
-	int game;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
+	int game = 0;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
 
 	// set option defaults
 	bool update             = false; // update masterlist?
 	bool updateonly         = false; // only update the masterlist and don't sort currently.
 	bool silent             = false; // silent mode?
 	bool skip_version_parse = false; // enable parsing of mod's headers to look for version strings
-	int  revert             = 0;     // what level to revert to
-	int  verbosity          = 0;     // log levels above INFO to output
+	int revert              = 0;     // what level to revert to
+	int verbosity           = 0;     // log levels above INFO to output
+	string gameStr;                  // allow for autodetection override
 	bool debug              = false; // whether to include origin information in logging statements
-
+	
 	// declare the supported options
 	po::options_description opts("Options");
 	opts.add_options()
@@ -99,18 +101,19 @@ int main(int argc, char *argv[]) {
 		("update,u", po::value(&update)->zero_tokens(),
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
-								" available on the web")
+								" available on the web before sorting")
 		("only-update,o", po::value(&updateonly)->zero_tokens(),
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
-								" available on the web but don't sort right now")
+								" available on the web but don't sort right"
+								" now")
 		("silent,s", po::value(&silent)->zero_tokens(),
 								"don't launch a browser to show the HTML log"
 								" at program completion")
 		("no-version-parse,n", po::value(&skip_version_parse)->zero_tokens(),
 								"don't extract mod version numbers for"
 								" printing in the HTML log")
-		("revert,r", po::value<int>(&revert)->implicit_value(1, ""),
+		("revert,r", po::value(&revert)->implicit_value(1, ""),
 								"revert to a previous load order.  this"
 								" parameter optionally accepts values of 1 or"
 								" 2, indicating how many undo steps to apply."
@@ -122,6 +125,10 @@ int main(int argc, char *argv[]) {
 								" 1 (INFO and above) is implied if this option"
 								" is specified without an argument.  higher"
 								" values increase the verbosity further")
+		("game,g", po::value(&gameStr),
+								"override game autodetection.  valid values"
+								" are: 'Oblivion', 'Nehrim', 'Fallout3', and"
+								" 'Fallout3NV'")
 		("debug,d", po::value(&debug)->zero_tokens(),
 								"add source file references to logging statements");
 
@@ -168,6 +175,20 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+	if (vm.count("game")) {
+		// sanity check and parse argument
+		if      (boost::iequals("Oblivion",   gameStr)) { game = 1; }
+		else if (boost::iequals("Fallout3",   gameStr)) { game = 2; }
+		else if (boost::iequals("Nehrim",     gameStr)) { game = 3; }
+		else if (boost::iequals("Fallout3NV", gameStr)) { game = 4; }
+		else {
+			LOG_ERROR("invalid option for 'game' parameter: '%s'", gameStr.c_str());
+			Fail();
+		}
+	
+		LOG_DEBUG("game autodectection overridden with: '%s' (%d)", gameStr.c_str(), game);
+	}
+
 	const string bosslogFilename = bosslog_path.string();
 	LOG_DEBUG("opening '%s'", bosslogFilename.c_str());
 	bosslog.open(bosslogFilename.c_str());
@@ -199,24 +220,39 @@ int main(int argc, char *argv[]) {
 			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
 			<< "v"<<g_version<<" ("<<g_releaseDate<<")"<<endl<<"</div><br /><br />";
 
-	LOG_DEBUG("Detecting game...");
-	if (fs::exists(data_path / "Oblivion.esm")) game = 1;
-	else if (fs::exists(data_path / "Fallout3.esm")) game = 2;
-	else if (fs::exists(data_path / "Nehrim.esm")) game = 3;
-	else if (fs::exists(data_path / "FalloutNV.esm")) game = 4;
-	else {
-		LOG_ERROR("None of the supported games were detected...");
-		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file not found!<br />" << endl
-						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
-						<< "Utility will end now.</p>" << endl
-						<< "</body>"<<endl<<"</html>";
-		bosslog.close();
-		if ( !silent ) 
-			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
-		exit (1); //fail in screaming heap.
-	} //else
+	if (0 == game) {
+		LOG_DEBUG("Detecting game...");
+		if (fs::exists(data_path / "Oblivion.esm")) game = 1;
+		else if (fs::exists(data_path / "Fallout3.esm")) game = 2;
+		else if (fs::exists(data_path / "Nehrim.esm")) game = 3;
+		else if (fs::exists(data_path / "FalloutNV.esm")) game = 4;
+		else {
+			LOG_ERROR("None of the supported games were detected...");
+			bosslog << endl << "<p class='error'>Critical Error: Master .ESM file not found!<br />" << endl
+							<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
+							<< "Utility will end now.</p>" << endl
+							<< "</body>"<<endl<<"</html>";
+			bosslog.close();
+			if ( !silent ) 
+				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
+			exit (1); //fail in screaming heap.
+		}
+	}
 
 	LOG_INFO("Game detected: %d", game);
+
+	if (update || updateonly) {
+		bosslog << "<div><span>Masterlist Update</span>"<<endl<<"<p>";
+		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
+		LOG_DEBUG("Updating masterlist...");
+		UpdateMasterlist(game);
+		LOG_DEBUG("Masterlist updated successfully.");
+		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
+	}
+	
+	if (updateonly == true) {
+		return (0);
+	}
 
 	if (game==1 && fs::exists(data_path / "Nehrim.esm")) {
 		bosslog << endl << "<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />" << endl
@@ -231,7 +267,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Get the master esm's modification date. 
-	//Not sure if this needs exception handling, since by this point the file definitely exists. Do it anyway.
 	try {
 		if (game == 1) esmtime = fs::last_write_time(data_path / "Oblivion.esm");
 		else if (game == 2) esmtime = fs::last_write_time(data_path / "Fallout3.esm");
@@ -247,19 +282,6 @@ int main(int argc, char *argv[]) {
 		if ( !silent ) 
 			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
-	}
-
-	if (update == true || updateonly == true) {
-		bosslog << "<div><span>Masterlist Update</span>"<<endl<<"<p>";
-		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
-		LOG_DEBUG("Updating masterlist...");
-		UpdateMasterlist(game);
-		LOG_DEBUG("Masterlist updated successfully.");
-		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
-	}
-	
-	if (updateonly == true) {
-		return (0);
 	}
 
 	cout << endl << "Better Oblivion Sorting Software working..." << endl;

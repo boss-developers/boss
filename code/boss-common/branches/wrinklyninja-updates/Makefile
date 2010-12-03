@@ -1,7 +1,7 @@
 #
 # Makefile
 #
-# system build requirements: boost, curl
+# system build requirements: >=boost-1.45.0, curl
 #
 # usage:
 #   make [options] [targets]
@@ -12,10 +12,10 @@
 #                                 between debug and non-debug builds.
 #
 # examples:
-#   make                        builds build/BOSS
+#   make                        builds build/boss
 #   make DumpHeaders            builds build/DumpHeaders
 #   make Testing                builds all projects under Testing/
-#   make debug=y                builds a debug version of build/BOSS
+#   make debug=y                builds a debug version of build/boss
 #   make debug=y Testing        builds debug versions of the test projects
 #
 # notes:
