@@ -29,15 +29,15 @@ namespace boss {
 
 	/// ShowMessage(string textbuf, ...)
 	///  - Produces a message to the BOSSLOG.txt
-	void ShowMessage(string textbuf, int game);
+	void ShowMessage(wstring textbuf, int game);
 
 	/// ReadLine (string file):
 	///  - Read a line from a file. Could be rewritten better.
-	string ReadLine (string file); 
+	wstring ReadLine (string file); 
 
 	/// GetModHeader(string textbuf):
 	///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
-	string GetModHeader(const string& filename, bool ghosted);
+	wstring GetModHeader(const wstring& filename, bool ghosted);
 }
 
 #endif

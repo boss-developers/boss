@@ -16,15 +16,15 @@
 
 namespace boss {
 
-	bool IsMod(string textbuf) {
+	bool IsMod(wstring textbuf) {
 		return (((textbuf[0]!='\\') && (textbuf[0]!='*') && (textbuf[0]!='\?') && (textbuf[0]!='%') && (textbuf[0]!=':') && (textbuf[0]!='$') &&(textbuf[0]!='^') && (textbuf[0]!='"')));
 	}
 	
-	bool IsMessage(string textbuf) {
+	bool IsMessage(wstring textbuf) {
 		return (((textbuf[0]=='\?') || (textbuf[0]=='*') || (textbuf[0]=='%') || (textbuf[0]==':') || (textbuf[0]=='$') || (textbuf[0]=='^') || (textbuf[0]=='"')));
 	}
 	
-	bool IsValidLine(string textbuf) {
-		return ((textbuf.length()>1) && (Tidy(textbuf)!="oblivion.esm") && (Tidy(textbuf)!="fallout3.esm") && (Tidy(textbuf)!="nehrim.esm") && (Tidy(textbuf)!="falloutnv.esm"));
+	bool IsValidLine(wstring textbuf) {
+		return ((textbuf.length()>1) && (Tidy(textbuf)!=L"oblivion.esm") && (Tidy(textbuf)!=L"fallout3.esm") && (Tidy(textbuf)!=L"nehrim.esm") && (Tidy(textbuf)!=L"falloutnv.esm"));
 	}
 }

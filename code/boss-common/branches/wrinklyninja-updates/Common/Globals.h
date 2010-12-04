@@ -14,6 +14,8 @@
 
 #define BOOST_FILESYSTEM_VERSION 3
 #define BOOST_FILESYSTEM_NO_DEPRECATED
+#define _UNICODE	// Tell C we're using Unicode, notice the _
+#include <tchar.h>	// Include Unicode support functions
 
 #include <string>
 #include <fstream>
@@ -25,8 +27,8 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-	extern ifstream order;						//masterlist.txt - the grand mod order list
-	extern ofstream bosslog;					//BOSSlog.txt - output file.
+	extern wifstream order;						//masterlist.txt - the grand mod order list
+	extern wofstream bosslog;					//BOSSlog.txt - output file.
 	extern bool fcom;							//true if key FCOM or FOOK2 files are found.
 	extern bool ooo;							//true if OOO or FWE esm is found.
 	extern bool bc;								//true if Better Cities esm is found.

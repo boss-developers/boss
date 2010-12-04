@@ -24,10 +24,10 @@ namespace boss {
 
 	// Structure for grouping the information gathered from each mod's header.
 	struct ModHeader {
-		string		Name;
-		string		Description;
-		string		Author;
-		string		Version;
+		wstring		Name;
+		wstring		Description;
+		wstring		Author;
+		wstring		Version;
 		bool		IsMaster;
 	};
 
@@ -41,7 +41,7 @@ namespace boss {
 		static const ulong SNAM	=	'MANS';
 	};
 
-	ModHeader ReadHeader(string filename);
+	ModHeader ReadHeader(wstring filename);
 }
 
 #endif
