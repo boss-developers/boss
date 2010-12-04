@@ -204,6 +204,45 @@ namespace boss {
 		}
 	}
 
+	void Rules::AddRule(parsing::Rule const& rule)
+	{
+		/*
+		A rule has been parsed in full:
+
+			Here goes: 
+				- the validation code found above in AddRules()
+				- Add the Rule definition to our local arrays for later use.			
+		*/
+	};
+
+	// Called when an error is detected while parsing the input file.
+	void Rules::SyntaxError(
+			string::const_iterator const& begin, 
+			string::const_iterator const& end, 
+			string::const_iterator const& error_pos, 
+			string const& what) 
+	{
+		std::string context(error_pos, std::min(error_pos + 50, end));
+		boost::trim_left(context);
+		boost::replace_all(context, "\n", "<EOL>");
+
+		std::cerr << "Syntax error while trying to parse Userlist.txt: '" << what << "' near this input: '" << context << "'." << std::endl;
+	};
+
+	void Rules::ParsingFailed(
+			string::const_iterator	const& begin, 
+			string::const_iterator	const& end, 
+			string::const_iterator	const& error_pos, 
+			string::difference_type lineNo)
+	{
+		string context(error_pos, std::min(error_pos + 50, end));
+		boost::trim_left(context);
+		boost::replace_all(context, "\n", "<EOL>");
+
+		std::cerr << "Userlist.txt parsing error at line#: " << lineNo << " while reading near this input: '" << context << "'." << std::endl;
+	};
+
+
 	//Adds mods in directory to modlist in date order (AKA load order).
 	void Mods::AddMods() {
 		LOG_DEBUG("Reading user mods...");

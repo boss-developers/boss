@@ -19,6 +19,8 @@
 #include "Globals.h"
 #include "Support/Helpers.h"
 
+#include "Parsing.h"
+
 #include <string>
 #include <fstream>
 #include <vector>
@@ -35,7 +37,23 @@ namespace boss {
 	bool IsPlugin(string object);
 	
 	//Class to store userlist rules.
-	class Rules {
+	class Rules : public parsing::IRulesManager  {
+
+	protected:
+		virtual void AddRule(parsing::Rule const& rule);
+
+		virtual void SyntaxError(
+				string::const_iterator const& begin, 
+				string::const_iterator const& end, 
+				string::const_iterator const& error_pos, 
+				string const& what);
+
+		virtual void ParsingFailed(
+				string::const_iterator const& begin, 
+				string::const_iterator const& end, 
+				string::const_iterator const& error_pos, 
+				string::difference_type lineNo);
+
 	public:
 		vector<string> keys,objects;			//Holds keys and objects for each rule line.
 		vector<int> rules;						//Tells BOSS where each rule starts.
