@@ -4,42 +4,55 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Parsing.h" />
     <ClInclude Include="Private\Defines.h">
       <Filter>Private</Filter>
     </ClInclude>
-    <ClInclude Include="Private\Skipper.h">
-      <Filter>Private\Grammars</Filter>
+    <ClInclude Include="Userlist\IRulesManager.h">
+      <Filter>Userlist</Filter>
     </ClInclude>
     <ClInclude Include="Userlist\Model.h">
-      <Filter>Model</Filter>
+      <Filter>Userlist</Filter>
     </ClInclude>
     <ClInclude Include="Userlist\Keywords.h">
-      <Filter>Model</Filter>
+      <Filter>Userlist</Filter>
     </ClInclude>
-    <ClInclude Include="Userlist\IRulesManager.h">
-      <Filter>Model</Filter>
+    <ClInclude Include="Private\Skipper.h">
+      <Filter>Private</Filter>
     </ClInclude>
-    <ClInclude Include="Userlist\Parser.h" />
-    <ClInclude Include="Private\Userlist\Grammar\Symbols.h" />
     <ClInclude Include="Private\Userlist\Grammar\Grammar.h">
-      <Filter>Private\Grammars</Filter>
+      <Filter>Private\Userlist\Grammar</Filter>
     </ClInclude>
-    <ClInclude Include="Parsing.h" />
-    <ClInclude Include="Private\Userlist\Grammar\GrammarCode.h" />
+    <ClInclude Include="Private\Userlist\Grammar\GrammarCode.h">
+      <Filter>Private\Userlist\Grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\Userlist\Grammar\Symbols.h">
+      <Filter>Private\Userlist\Grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="Userlist\Parser.h">
+      <Filter>Userlist</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Model">
-      <UniqueIdentifier>{02cc08aa-760f-4f35-ad72-b2c307836031}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Private">
-      <UniqueIdentifier>{d9b207f7-dbd7-4a1e-a698-e4b7cc4183eb}</UniqueIdentifier>
+      <UniqueIdentifier>{40b5531a-f2f6-4703-88f3-4a895ed061e0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Private\Grammars">
-      <UniqueIdentifier>{6337642a-523b-4166-aaed-c6daa2d40e01}</UniqueIdentifier>
+    <Filter Include="Userlist">
+      <UniqueIdentifier>{dedfcf7a-aba7-42f1-b086-f6344aa305f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Userlist">
+      <UniqueIdentifier>{9b99c6cb-473b-4f6e-a839-6c0094b34f6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Private\Userlist\Grammar">
+      <UniqueIdentifier>{737b67ab-6237-4b52-94b0-077e53451634}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Private\Userlist\Model.cpp" />
-    <ClCompile Include="Private\Userlist\Parser.cpp" />
+    <ClCompile Include="Private\Userlist\Model.cpp">
+      <Filter>Private\Userlist</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Userlist\Parser.cpp">
+      <Filter>Private\Userlist</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
