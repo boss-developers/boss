@@ -31,10 +31,10 @@ namespace boss {
 	using namespace std;
 
 	//Date comparison, used for sorting mods in modlist class.
-	bool SortByDate(string mod1,string mod2);
+	bool SortByDate(wstring mod1,wstring mod2);
 
 	//Checks if a given object is an esp, an esm or a ghosted mod.
-	bool IsPlugin(string object);
+	bool IsPlugin(wstring object);
 	
 	//Class to store userlist rules.
 	class Rules : public parsing::IRulesManager  {
@@ -55,21 +55,21 @@ namespace boss {
 				string::difference_type lineNo);
 
 	public:
-		vector<string> keys,objects;			//Holds keys and objects for each rule line.
+		vector<wstring> keys,objects;			//Holds keys and objects for each rule line.
 		vector<int> rules;						//Tells BOSS where each rule starts.
-		string messages;						//Stores output messages.
+		wstring messages;						//Stores output messages.
 		void AddRules();						//Populates object vectors with rules from userlist.txt.
-		void PrintMessages(ofstream& output);	//Prints the output messages.
+		void PrintMessages(wofstream& output);	//Prints the output messages.
 	};
 
 	//Class to store and use modlist.
 	class Mods {
 	public:
-		vector<string> mods;					//Stores the mods in your data folder.
-		vector< vector<string> > modmessages;	//Stores the messages attached to each mod. First dimension matches up with the mods vector, then second lists the messages attached to that mod.
+		vector<wstring> mods;					//Stores the mods in your data folder.
+		vector<vector<wstring>> modmessages;	//Stores the messages attached to each mod. First dimension matches up with the mods vector, then second lists the messages attached to that mod.
 		void AddMods();							//Adds mods in directory to modlist in date order (AKA load order).
 		int SaveModList();						//Save mod list to modlist.txt. Backs up old modlist.txt as modlist.old first.
-		int GetModIndex(string mod);			//Look for a mod in the modlist, even if the mod in question is ghosted.
+		int GetModIndex(wstring mod);			//Look for a mod in the modlist, even if the mod in question is ghosted.
 	};
 }
 

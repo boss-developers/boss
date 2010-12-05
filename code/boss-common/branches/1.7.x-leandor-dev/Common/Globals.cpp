@@ -14,8 +14,8 @@
 namespace boss {
 	using namespace std;
 
-	ifstream order;						//masterlist.txt - the grand mod order list
-	ofstream bosslog;					//BOSSlog.txt - output file.
+	wifstream order;						//masterlist.txt - the grand mod order list
+	wofstream bosslog;					//BOSSlog.txt - output file.
 	bool fcom;							//true if key FCOM or FOOK2 files are found.
 	bool ooo;							//true if OOO or FWE esm is found.
 	bool bc;							//true if Better Cities esm is found.

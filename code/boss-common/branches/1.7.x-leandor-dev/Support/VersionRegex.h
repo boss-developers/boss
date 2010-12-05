@@ -22,7 +22,7 @@ namespace boss {
 
 	/// Array used to try each of the expressions defined above using 
 	/// an iteration for each of them.
-	extern regex* version_checks[];
+	extern wregex* version_checks[];
 
 }
 

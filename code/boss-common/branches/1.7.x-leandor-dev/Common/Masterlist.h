@@ -19,9 +19,9 @@
 namespace boss {
 	using namespace std;
 
-	bool IsMod(string textbuf);
-	bool IsMessage(string textbuf);
-	bool IsValidLine(string textbuf);
+	bool IsMod(wstring textbuf);
+	bool IsMessage(wstring textbuf);
+	bool IsValidLine(wstring textbuf);
 }
 
 #endif
