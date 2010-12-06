@@ -24,6 +24,44 @@ namespace boss {
 	using boost::algorithm::to_upper_copy;
 	using boost::algorithm::trim_copy;
 
+	namespace { // Using an anonymous so local private declarations are only usable from inside this file.
+		
+		// alias for wformat to make its usage less verbose.
+		typedef boost::wformat fmt;
+
+		// Error messages for rule validation
+		static boost::wformat ESortLineInForRule(L"It includes a sort line in a rule with a FOR rule keyword.");
+		static boost::wformat ERuleHasUndefinedObject(L"The line with keyword '%1%' has an undefined object.");
+		static boost::wformat EPluginNotInstalled(L"'%1%' is not installed.");
+		static boost::wformat EAddingModGroup(L"It tries to add a group.");
+		static boost::wformat ESortingGroupEsms(L"It tries to sort the group \"ESMs\".");
+		static boost::wformat ESortingMasterEsm(L"It tries to sort the master .ESM file.");
+		static boost::wformat EReferencingModAndGroup(L"It references a mod and a group.");
+		static boost::wformat ESortingGroupBeforeEsms(L"It tries to sort a group before the group \"ESMs\".");
+		static boost::wformat ESortingModBeforeGameMaster(L"It tries to sort a mod before the master .ESM file.");
+		static boost::wformat EInsertingToTopOfEsms(L"It tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.");
+		static boost::wformat EInsertingGroupToGroupOrModToMod(L"It tries to insert a group or insert a mod into another mod.");
+		static boost::wformat EAttachingMessageToGroup(L"It tries to attach a message to a group.");
+		static boost::wformat EUnrecognisedKeyword(L"The line \"%1%: %2%\" does not contain a recognised keyword. If this line is the start of a rule, that rule will also be skipped.");
+		static boost::wformat EAppearsBeforeFirstRule(L"The line \"%1%: %2%\" appears before the first recognised rule line. Line skipped.");
+		static boost::wformat EUnrecognizedKeywordBeforeFirstRule(L"The line \"%1%: %2%\" does not contain a recognised keyword, and appears before the first recognised rule line. Line skipped.");
+
+		static boost::wformat MessageParagraphFormat(
+			L"<p style='margin-left:40px; text-indent:-40px;'\n"
+			 "	The rule beginning \" %1%: %2%\" has been skipped as it has the following problem(s):\n"
+			 "	<br/>\n"
+			 "	%3%\n"
+			 "	<br/>\n"
+			 "</p>\n"
+			);
+
+		static boost::wformat MessageSpanFormat(
+			L"	<span class='%1%'>\n"
+			 "		%2%\n"
+			 "	</span>\n"
+			);
+	}
+
 	//Date comparison, used for sorting mods in modlist class.
 	bool SortByDate(wstring mod1,wstring mod2) {
 		time_t t1 = 0,t2 = 0;
@@ -93,27 +131,26 @@ namespace boss {
 				objects.push_back(object);
 				rules.push_back((int)keys.size()-1);
 				skip = false;
+
+				const wstring rule = keys[rules.back()];
+				const wstring subject = objects[rules.back()];
+
 				if (object.empty()) {
-					if (!skip)  messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-					messages += L"<span class='error'>The line with keyword \""+key+L"\" has an undefined object.</span><br />";
+					AddError(skip, rule, subject, ERuleHasUndefinedObject % key);
 					skip = true;
 				} else {
-					if (IsPlugin(object) && !(fs::exists(data_path / object) || fs::exists(data_path / fs::path(object+".ghost")))) {
-						if (!skip) messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-						messages += L"\""+object+L"\" is not installed.<br />";
+					if (IsPlugin(object) && !(fs::exists(data_path / object) || fs::exists(data_path / fs::path(object + L".ghost")))) {
+						AddError(skip, rule, subject, EPluginNotInstalled % object);
 						skip = true;
 					} else if (key==L"add" && !IsPlugin(object)) {
-						if (!skip) messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-						messages += L"<span class='error'>It tries to add a group.</span><br />";
+						AddError(skip, rule, subject, EAddingModGroup);
 						skip = true;
 					} else if (key==L"override") {
 						if (Tidy(object)==L"esms") {
-							if (!skip) messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-							messages += L"<span class='error'>It tries to sort the group \"ESMs\".</span><br />";
+							AddError(skip, rule, subject, ESortingGroupEsms);
 							skip = true;
 						} else if (Tidy(object)==L"oblivion.esm" || Tidy(object)==L"fallout3.esm" || Tidy(object)==L"nehrim.esm" || Tidy(object)==L"falloutnv.esm") {
-							if (!skip) messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-							messages += L"<span class='error'>It tries to sort the master .ESM file.</span><br />";
+							AddError(skip, rule, subject, ESortingMasterEsm);
 							skip = true;
 						}
 					}
@@ -122,29 +159,28 @@ namespace boss {
 				if ((key==L"before" || key==L"after")) {
 					keys.push_back(key);
 					objects.push_back(object);
-					if (keys[rules.back()]==L"for") {
-						if (!skip) messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-						messages += L"<span class='error'>It includes a sort line in a rule with a FOR rule keyword.</span><br />";
+
+					const wstring rule = keys[rules.back()];
+					const wstring subject = objects[rules.back()];
+
+					if (rule==L"for") {
+						AddError(skip, rule, subject, ESortLineInForRule);
 						skip = true;
 					}
 					if (object.empty()) {
-						if (!skip)  messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-						messages += L"<span class='error'>The line with keyword \""+key+L"\" has an undefined object.</span><br />";
+						AddError(skip, rule, subject, ERuleHasUndefinedObject % key);
 						skip = true;
 					} else {
-						if (objects[rules.back()].length()>0 && ((IsPlugin(object) && !IsPlugin(objects[rules.back()])) || (!IsPlugin(object) && IsPlugin(objects[rules.back()])))) {
-							if (!skip) messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-							messages += L"<span class='error'>It references a mod and a group.</span><br />";
+						if (subject.length()>0 && ((IsPlugin(object) && !IsPlugin(subject)) || (!IsPlugin(object) && IsPlugin(subject)))) {
+							AddError(skip, rule, subject, EReferencingModAndGroup);
 							skip = true;
 						}
 						if (key==L"before") {
 							if (Tidy(object)==L"esms") {
-								if (!skip) messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-								messages += L"<span class='error'>It tries to sort a group before the group \"ESMs\".</span><br />";
+								AddError(skip, rule, subject, ESortingGroupBeforeEsms);
 								skip = true;
 							} else if (Tidy(object)==L"oblivion.esm" || Tidy(object)==L"fallout3.esm" || Tidy(object)==L"nehrim.esm" || Tidy(object)==L"falloutnv.esm") {
-								if (!skip) messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-								messages += L"<span class='error'>It tries to sort a mod before the master .ESM file.</span><br />";
+								AddError(skip, rule, subject, ESortingModBeforeGameMaster);
 								skip = true;
 							}
 						}
@@ -152,54 +188,60 @@ namespace boss {
 				} else if ((key==L"top" || key==L"bottom")) {
 					keys.push_back(key);
 					objects.push_back(object);
-					if (keys[rules.back()]==L"for") {
-						if (!skip) messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-						messages += L"<span class='error'>It includes a sort line in a rule with a FOR rule keyword.</span><br />";
+
+					const wstring rule = keys[rules.back()];
+					const wstring subject = objects[rules.back()];
+
+					if (rule==L"for") {
+						AddError(skip, rule, subject, ESortLineInForRule);
 						skip = true;
 					}
 					if (object.empty()) {
-						if (!skip)  messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-						messages += L"<span class='error'>The line with keyword \""+key+L"\" has an undefined object.</span><br />";
+						AddError(skip, rule, subject, ERuleHasUndefinedObject % key);
 						skip = true;
 					} else {
 						if (Tidy(object)==L"esms" && key==L"top") {
-							if (!skip) messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-							messages += L"<span class='error'>It tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.</span><br />";
+							AddError(skip, rule, subject, EInsertingToTopOfEsms);
 							skip = true;
 						}
-						if (objects[rules.back()].length()>0) {
-							if (!IsPlugin(objects[rules.back()]) || IsPlugin(object)) {
-								if (!skip) messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-								messages += L"<span class='error'>It tries to insert a group or insert a mod into another mod.</span><br />";
+						if (subject.length()>0) {
+							if (!IsPlugin(subject) || IsPlugin(object)) {
+								AddError(skip, rule, subject, EInsertingGroupToGroupOrModToMod);
 								skip = true;
 							}
 						}
 					}
-				} else if ((key==L"append" || key==L"replace")) {
+				} else if ((key==L"append" || key==L"replace")) {					
 					keys.push_back(key);
 					objects.push_back(object);
+
+					const wstring rule = keys[rules.back()];
+					const wstring subject = objects[rules.back()];
+
 					if (object.empty()) {
-						if (!skip) messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-						messages += L"<span class='error'>The line with keyword \""+key+L"\" has an undefined object.</span><br />";
+						AddError(skip, rule, subject, ERuleHasUndefinedObject % key);
 						skip = true;
 					}
-					if (!IsPlugin(objects[rules.back()])) {
-						if (!skip) messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-						messages += L"<span class='error'>It tries to attach a message to a group.</span><br />";
+
+					if (!IsPlugin(subject)) {
+						AddError(skip, rule, subject, EAttachingMessageToGroup);
 						skip = true;
 					}
+
 				} else {
+					const wstring rule = keys[rules.back()];
+					const wstring subject = objects[rules.back()];
 					//Line does not contain a recognised keyword. Skip it and the rule containing it. If it is a rule line, then the previous rule will also be skipped.
-					if (!skip) messages += L"</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+L": "+objects[rules.back()]+L"\" has been skipped as it has the following problem(s):<br />";
-					messages += L"<span class='error'>The line \""+key+L": "+object+L"\" does not contain a recognised keyword. If this line is the start of a rule, that rule will also be skipped.</span><br />";
+					AddError(skip, rule, subject, EUnrecognisedKeyword % key % object);
 					skip = true;
 				}
+
 			} else {
 				//Line is not a rule line, and appears before the first rule line, so does not belong to a rule. Skip it.
 				if (key==L"before" || key==L"after" || key==L"top" || key==L"bottom" || key==L"append" || key==L"replace") 
-					messages += L"<p><span class='error'>The line \""+key+L": "+object+L"\" appears before the first recognised rule line. Line skipped.</span><p>";
+					AddError(EAppearsBeforeFirstRule % key % object);
 				else
-					messages += L"<p><span class='error'>The line \""+key+L": "+object+L"\" does not contain a recognised keyword, and appears before the first recognised rule line. Line skipped.";
+					AddError(EUnrecognizedKeywordBeforeFirstRule % key % object);
 			}
 		}
 
@@ -210,6 +252,36 @@ namespace boss {
 			objects.erase(objects.begin()+rules.back(), objects.end());
 			rules.pop_back();
 		}
+	}
+
+	const wstring Rules::FormatMesssage(wstring const& class_, wstring const& rule, wstring const& object, fmt const& message)
+	{
+		wstring const span = FormatMesssage(class_ , message);
+		return (MessageParagraphFormat % rule % object % span).str();
+	}
+
+	const wstring Rules::FormatMesssage(wstring const& class_, fmt const& message)
+	{
+		return (MessageSpanFormat % class_ % message.str()).str();
+	}
+
+	void Rules::AddMessage(bool skipped, wstring const& rule, wstring const& object, fmt const& message, wstring const& class_)
+	{
+		if (!skipped) {
+			messages += FormatMesssage(class_, rule, object, message) ;
+		} else {
+			messages += FormatMesssage(class_, message) ;
+		}
+	}
+
+	void Rules::AddError(bool skipped, wstring const& rule, wstring const& object, fmt const& message)
+	{
+		AddMessage(skipped, rule, object, message, L"error");
+	}
+
+	void Rules::AddError(fmt const& message)
+	{
+		messages += FormatMesssage(L"error", message);
 	}
 
 	void Rules::AddRule(parsing::Rule const& rule)

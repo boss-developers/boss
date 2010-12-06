@@ -24,7 +24,8 @@
 #include <string>
 #include <fstream>
 #include <vector>
-#include "boost/filesystem.hpp"
+#include <boost/format.hpp>
+#include <boost/filesystem.hpp>
 
 
 namespace boss {
@@ -38,7 +39,6 @@ namespace boss {
 	
 	//Class to store userlist rules.
 	class Rules : public parsing::IRulesManager  {
-
 	protected:
 		virtual void AddRule(parsing::Rule const& rule);
 
@@ -54,6 +54,13 @@ namespace boss {
 				string::const_iterator const& error_pos, 
 				string::difference_type lineNo);
 
+	private:
+		static const wstring FormatMesssage(wstring const& class_, wstring const& rule, wstring const& object, boost::wformat const& message);
+		static const wstring FormatMesssage(wstring const& class_, boost::wformat const& message);
+
+		void AddMessage(bool skipped, wstring const& rule, wstring const& object, boost::wformat const& message, wstring const& class_);
+		void AddError(bool skipped, wstring const& rule, wstring const& object, boost::wformat const& message);
+		void AddError(boost::wformat const& message);
 	public:
 		vector<wstring> keys,objects;			//Holds keys and objects for each rule line.
 		vector<int> rules;						//Tells BOSS where each rule starts.
