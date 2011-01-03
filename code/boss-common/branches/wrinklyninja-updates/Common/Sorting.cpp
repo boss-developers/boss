@@ -56,7 +56,7 @@ namespace boss {
 				}
 			}
 			boost::algorithm::ireplace_all(textbuf,L"remove",L"<span class='error'>remove</span>");
-			bosslog << L"<li><t>Bash Tag suggestion(s):</t> " << textbuf.substr(1) << L"</li>" << endl;
+			bosslog << L"<li><span class='tags'>Bash Tag suggestion(s):</span> " << textbuf.substr(1) << L"</li>" << endl;
 			break;
 		case '\?':
 			bosslog << L"<li>Note: " << textbuf.substr(1) << L"</li>" << endl;
@@ -95,9 +95,12 @@ namespace boss {
 	//	ostringstream out;
 		ModHeader header;
 
+		wstring utf16filename;
+		utf8::utf8to16(filename.begin(), filename.end(), back_inserter(utf16filename));
+
 		// Read mod's header now...
-		if (ghosted) header = ReadHeader(data_path.wstring()+L"/"+filename+L".ghost");
-		else header = ReadHeader(data_path.wstring()+L"/"+filename);
+		if (ghosted) header = ReadHeader(data_path.wstring()+L"/"+utf16filename+L".ghost");
+		else header = ReadHeader(data_path.wstring()+L"/"+utf16filename);
 
 		// The current mod's version if found, or empty otherwise.
 		wstring version = header.Version;
