@@ -18,7 +18,7 @@
 \BeginGroup\: ESMs
 \----
 Oblivion.esm
-? Masterlist Information: $Revision: 2108 $, $Date: 2011-01-02 12:31:08 +0000 (Sun, 02 Jan 2011) $, $LastChangedBy: wrinklyninja1@gmail.com $
+? Masterlist Information: $Revision$, $Date$, $LastChangedBy$
 Oblivion_1.1.esm
 ? A modding esm - do not use in game, deactivate.
 Oblivion_SI.esm
