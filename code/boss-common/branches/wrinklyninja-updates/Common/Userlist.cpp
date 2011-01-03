@@ -82,6 +82,10 @@ namespace boss {
 					pos = line.find(L":");
 					if (pos!=string::npos) {
 						key = to_lower_copy(trim_copy(line.substr(0,pos)));
+						//Remove UTF-8 BOM if present to prevent binary comparisons failing.
+						if (utf8::starts_with_bom(key.begin(),key.end())) 
+							key = key.substr(3);
+
 						object = trim_copy(line.substr(pos+1));
 						if (key==L"add" || key==L"override" || key==L"for") {
 							if (skip) {
