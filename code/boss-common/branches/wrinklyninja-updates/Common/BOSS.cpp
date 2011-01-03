@@ -202,20 +202,20 @@ int main(int argc, char *argv[]) {
 	//Output HTML start and <head>
 	bosslog << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
 			<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
-			<<"#body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
+			<< "body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
 			<< "#title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl
-			<<"div > span:first-child {font-weight:bold; font-size:1.3em;}"<<endl
+			<< "div > span:first-child {font-weight:bold; font-size:1.3em;}"<<endl
 			<< "ul {margin-top:0px; list-style:none; margin-bottom:1.1em;}"<<endl
-			<<"ul li {margin-left:-1em; margin-bottom:0.4em;}"<<endl
-			<<".error {color:red;}"<<endl
-			<<".success {color:green}"<<endl
-			<<".warn {color:#FF6600;}"<<endl
-			<<"v {color:teal;}"<<endl
-			<<"g {font-style:italic; color:grey;}"<<endl
-			<<"t {color:maroon;}"<<endl
-			<<"</style>"<<endl<<"</head>"<<endl
+			<< "ul li {margin-left:-1em; margin-bottom:0.4em;}"<<endl
+			<< ".error {color:red;}"<<endl
+			<< ".success {color:green}"<<endl
+			<< ".warn {color:#FF6600;}"<<endl
+			<< ".version {color:teal;}"<<endl
+			<< ".ghosted {font-style:italic; color:grey;}"<<endl
+			<< ".tags {color:maroon;}"<<endl
+			<< "</style>"<<endl<<"</head>"<<endl
 			//Output start of <body>
-			<< "<body id='body'>"<<endl<<"<div id='title'>Better Oblivion Sorting Software Log</div><br />"<<endl
+			<< "<body>"<<endl<<"<div id='title'>Better Oblivion Sorting Software Log</div><br />"<<endl
 			<< "<div style='text-align:center;'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />"<<endl
 			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
 			<< "v"<<g_version<<" ("<<g_releaseDate<<")"<<endl<<"</div><br /><br />";
@@ -365,13 +365,17 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Starting main sort process...");
 	while (!order.eof()) {
 		textbuf=ReadLine("order");
-
+		wstring textbuf2;
+		wstring::iterator end_it = utf8::find_invalid(textbuf.begin(), textbuf.end());
+		utf8::utf8to16(textbuf.begin(), end_it, back_inserter(textbuf2));
+		//Debug: print out the malformed line.
+		if (end_it != textbuf.end()) bosslog << textbuf << "<br />" <<endl;
 		LOG_TRACE(">> Text line read from sort file: \"%s\"", textbuf.c_str());
 		if (textbuf.length()>1 && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
 			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
 				isghost = false;
-				if (fs::exists(data_path / fs::path(textbuf+L".ghost"))) isghost = true;
-				if (fs::exists(data_path / textbuf) || isghost) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
+				if (fs::exists(data_path / fs::path(textbuf2+L".ghost"))) isghost = true;
+				if (fs::exists(data_path / textbuf2) || isghost) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
 
 					LOG_DEBUG("-- Sorting %smod: \"%s\" into position: %d", isghost ? "ghosted " : "", textbuf.c_str(), x);
 					const wstring& filename = isghost ? textbuf+L".ghost" : textbuf;
@@ -715,18 +719,20 @@ int main(int argc, char *argv[]) {
 		if (!skip_version_parse) {
 			version = GetModHeader(filename, ghosted);
 			if (!version.empty())
-				text += L" <v>[Version "+version+L"]</v>";
+				text += L" <span class='version'>[Version "+version+L"]</span>";
 		}
 		text += L"</b>";
 		if (ghosted) 
-			text += L" <g> - Ghosted</g>";
+			text += L" <span class='ghosted'> - Ghosted</span>";
 		bosslog << text;		// show which mod file is being processed.
 		modfiletime=esmtime;
 		modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 		if (IsValidLine(modlist.mods[i])) {
 			//Re-date file. Provide exception handling in case their permissions are wrong.
 			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
-			try { fs::last_write_time(data_path / modlist.mods[i],modfiletime);
+			wstring utf16filename;
+			utf8::utf8to16(modlist.mods[i].begin(), modlist.mods[i].end(), back_inserter(utf16filename));
+			try { fs::last_write_time(data_path / utf16filename,modfiletime);
 			} catch(fs::filesystem_error e) {
 				bosslog << L" - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << L"\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
 			}
@@ -750,14 +756,16 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Reporting unrecognized mods...");
 	for (int i=x;i<(int)modlist.mods.size();i++) {
 		if (modlist.mods[i].length()>1) {
-			if (modlist.mods[i].find(L".ghost") != string::npos) bosslog << L"Unknown mod file: " << modlist.mods[i].substr(0,modlist.mods[i].length()-6) << L" <em> - Ghosted</em>";
+			if (modlist.mods[i].find(L".ghost") != string::npos) bosslog << L"Unknown mod file: " << modlist.mods[i].substr(0,modlist.mods[i].length()-6) << L" <span class='ghosted'> - Ghosted</span>";
 			else bosslog << L"Unknown mod file: " << modlist.mods[i];
 			modfiletime=esmtime;
 			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
 			//Re-date file. Provide exception handling in case their permissions are wrong.
 			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
-			try { fs::last_write_time(data_path / modlist.mods[i],modfiletime);
+			wstring utf16filename;
+			utf8::utf8to16(modlist.mods[i].begin(), modlist.mods[i].end(), back_inserter(utf16filename));
+			try { fs::last_write_time(data_path / utf16filename,modfiletime);
 			} catch(fs::filesystem_error e) {
 				bosslog << L" - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << L"\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
 			}

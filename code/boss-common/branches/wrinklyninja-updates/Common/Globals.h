@@ -20,6 +20,7 @@
 #include <string>
 #include <fstream>
 #include <boost/filesystem.hpp>
+#include "../utf8/source/utf8.h"
 
 
 namespace boss {

@@ -26,9 +26,12 @@ namespace boss {
 	//Date comparison, used for sorting mods in modlist class.
 	bool SortByDate(wstring mod1,wstring mod2) {
 		time_t t1 = 0,t2 = 0;
+		wstring utf16mod1,utf16mod2;
+		utf8::utf8to16(mod1.begin(), mod1.end(), back_inserter(utf16mod1));
+		utf8::utf8to16(mod2.begin(), mod2.end(), back_inserter(utf16mod2));
 		try {
-			t1 = fs::last_write_time(data_path / mod1);
-			t2 = fs::last_write_time(data_path / mod2);
+			t1 = fs::last_write_time(data_path / utf16mod1);
+			t2 = fs::last_write_time(data_path / utf16mod2);
 		}catch (fs::filesystem_error e){
 			LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.", e.what());
 		}
@@ -52,7 +55,11 @@ namespace boss {
 	}
 
 	bool PluginExists(fs::path plugin) {
-		return (fs::exists(plugin) || fs::exists(plugin.string()+".ghost"));
+		//return (fs::exists(plugin) || fs::exists(plugin.wstring()+L".ghost"));
+		wstring utf16plugin,utf8plugin;
+		utf8plugin = plugin.wstring();
+		utf8::utf8to16(utf8plugin.begin(), utf8plugin.end(), back_inserter(utf16plugin));
+		return (fs::exists(utf16plugin) || fs::exists(utf16plugin+L".ghost"));
 	}
 
 	//Add rules from userlist.txt into the rules object.
@@ -62,12 +69,12 @@ namespace boss {
 	void Rules::AddRules() {
 		wifstream userlist;
 		wstring line,key,object;
+		wchar_t cbuffer[MAXLENGTH];
 		size_t pos;
 		bool skip = false;
 		messages += L"<p>";
 		userlist.open(userlist_path.c_str());
 		while (!userlist.eof()) {
-			wchar_t cbuffer[MAXLENGTH];
 			userlist.getline(cbuffer,MAXLENGTH);
 			line=cbuffer;
 			if (line.length()>0) {
@@ -212,12 +219,13 @@ namespace boss {
 		LOG_DEBUG("Reading user mods...");
 		if (fs::is_directory(data_path)) {
 			for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
-				const wstring filename = itr->path().filename().wstring();
-				wcout << filename.c_str() <<endl;
+				const wstring utf16filename = itr->path().filename().wstring();
+				wstring utf8filename; 
+				utf8::utf16to8(utf16filename.begin(), utf16filename.end(), back_inserter(utf8filename));
 				const wstring ext = to_lower_copy(itr->path().extension().wstring());
 				if (fs::is_regular_file(itr->status()) && (ext==L".esp" || ext==L".esm" || ext==L".ghost")) {
-					LOG_TRACE("-- Found mod: '%s'", filename.c_str());			
-					mods.push_back(filename);
+					LOG_TRACE("-- Found mod: '%s'", utf8filename.c_str());			
+					mods.push_back(utf8filename);
 				}
 			}
 		}
