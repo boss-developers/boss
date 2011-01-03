@@ -72,6 +72,8 @@ namespace boss {
 		wchar_t cbuffer[MAXLENGTH];
 		size_t pos;
 		bool skip = false;
+		unsigned short utf16BOM1 = 0xFE;
+		unsigned short utf16BOM2 = 0xFF;
 		messages += L"<p>";
 		userlist.open(userlist_path.c_str());
 		while (!userlist.eof()) {
@@ -79,13 +81,21 @@ namespace boss {
 			line=cbuffer;
 			if (line.length()>0) {
 				if (line.substr(0,2)!=L"//") {
+					if (line[0] == utf16BOM1 && line[1] == utf16BOM2) {
+						//Encoding is UTF-16 big endian. Userlist was saved in "Unicode big endian". Print error then stop parsing.
+						messages += L"<span class='error'>Error: UTF-16 encoding detected. Please resave your userlist.txt in UTF-8 encoding. See Troubleshooting section of the ReadMe for more information.</span>";
+						break;
+					} else if (line[0] == utf16BOM2 && line[1] == utf16BOM1) {
+						//Encoding is UTF-16 little endian. Userlist was saved in "Unicode". Print error then stop parsing.
+						messages += L"<span class='error'>Error: UTF-16 encoding detected. Please resave your userlist.txt in UTF-8 encoding. See Troubleshooting section of the ReadMe for more information.</span>";
+						break;
+					}
 					pos = line.find(L":");
 					if (pos!=string::npos) {
 						key = to_lower_copy(trim_copy(line.substr(0,pos)));
 						//Remove UTF-8 BOM if present to prevent binary comparisons failing.
 						if (utf8::starts_with_bom(key.begin(),key.end())) 
 							key = key.substr(3);
-
 						object = trim_copy(line.substr(pos+1));
 						if (key==L"add" || key==L"override" || key==L"for") {
 							if (skip) {

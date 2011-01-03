@@ -195,14 +195,20 @@
 		</ul>
 		</li>
 		<br />
-		<li><b>Message:</b> Error: Could not change the date of "<em>filename</em>", make sure you have write access to it.</spa<div style="height:0.65em;"></div>
+		<li><b>Message:</b> Error: Could not change the date of "<em>filename</em>", make sure you have write access to it.<div style="height:0.65em;"></div>
 		<ul>
 			<li><b>Issue:</b> BOSS does not have permission to write to the plugin given.</li>
 			<li><b>Solution:</b> Check that the plugin is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
-			<li><b>Issue:</b> The plugin filename may contain letters that are not found in the English alphabet, or other such symbols (non ASCII characters). These letters and symbols are not currently supported by BOSS (which only supports ASCII characters).</li>
-			<li><b>Solution:</b> Rename the affected plugin, removing any suspect characters.</li>
 		</ul>
 		</li>
+		<br />
+		<li><b>Message:</b> Error: UTF-16 encoding detected. Please resave your userlist.txt in UTF-8 encoding.<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> BOSS has detected that your userlist.txt is saved using the wrong encoding, and is unable to read it.</li>
+			<li><b>Solution:</b> Resave your userlist.txt in the correct "UTF-8" encoding. If you are unsure on how to do so, please see the instructions below on how to do so.</li>
+		</ul>
+		</li>
+		<br />
 	</ul>
 	<p>In addition to the specific error messages above, BOSS may also fail to work properly, or appear to do so, for a few general reasons:</p>
 	<ul>
@@ -219,10 +225,25 @@
 			<li><b>Solution:</b> Disable "Lock Times" before running BOSS.</li>
 		</ul>
 		</li>
+		<br />
+		<li><b>Symptom:</b> Your BOSSlog wrongly states that mods in your userlist are not installed, or are not in the masterlist.<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> BOSS can't find the mods in question, as their names in your userlist are either written wrong, or the userlist is in the wrong encoding.</li>
+			<li><b>Solution:</b> Check that your mods' filenames are spelled correctly, and resave your userlist.txt in the "UTF-8" encoding. If you are unsure on how to do so, please see the instructions below on how to do so.</li>
+		</ul>
+		</li>
 	</ul>
 	<br />
 	<p>The BOSS folder and all the files in it must not be read-only. If a file in this folder, or the folder itself, is read-only, BOSS will not function correctly, resulting in some of the errors listed above.</p>
-	<p>If you are running Windows Vista or Windows 7, also in some situations limited users accounts on XP, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:</p>
+	<p>BOSS provides support for sorting mods containing characters from any language via the Unicode character encoding, specifically UTF-8. Your userlist must therefore be encoded in UTF-8 to ensure that BOSS reads it correctly, although an ANSI-encoded userlist containing only ASCII characters will also work. If you are unsure, save your userlist in UTF-8. To do so, follow these instructions:</p>
+	<p>
+	<ol>
+		<li>Open your userlist.txt in Notepad.</li>
+		<li>Open the "File" menu, then select "Save As...".</li>
+		<li>In the Save As dialog window that opens, there is a drop-down list labelled "Encoding:". Select "UTF-8" from this list.</li>
+		<li>Click the "Save" button, answering "Yes" to any confirmation prompts.</li>
+	</ol>
+    <p>If you are running Windows Vista or Windows 7, also in some situations limited users accounts on XP, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:</p>
 	<ol>
 		<li>Install the game outside the Program Files (or Program Files (x86) folder if on 64 bit Windows). UAC prevents unauthorised edits to these folders, so by installing the game outside of them, you remove it from UAC's reach, allowing you to use mods more easily.</li>
 		<li>Deactivate UAC. This can be done from the Control Panel, and will turn UAC off across the whole of your computer. It is up to you whether you feel that you have adequate security measures in place to do this without risk.</li>
@@ -237,7 +258,7 @@
 		<li>In the lower box, check the box opposite "Full Control" in the "Allow" column. Press OK to exit. If a UAC prompt appears, allow the change.</li>
 		<li>In the Properties window, select OK to exit. You should now have Full Control permissions over your chosen folder.</li>
 	</ol>
-    <p>For dealing with limited accounts on XP you can run this console command: <code>cacls drive:\path to relevant folder\*.* /e /t /p users:c</code>. However note that if you set it wrong it can mess things up so if you decide to do so, use care (and do so at your own risk).
+	<p>For dealing with limited accounts on XP you can run this console command: <code>cacls drive:\path to relevant folder\*.* /e /t /p users:c</code>. However note that if you set it wrong it can mess things up so if you decide to do so, use care (and do so at your own risk).
 	<p>If the above information does not help you to solve any problems you are experiencing, please seek further support in one of the official BOSS threads.</div><br /><br />
 	
 	<div id="linux"><span>Running BOSS Under Linux</span>
@@ -341,6 +362,16 @@
 	<p><b>Version 1.7</b></p>
 	<ul>
 		<li>Moved BOSS and all its files to the BOSS folder, which is moved to the game's installation directory, one level above the Data folder.</li>
+		<li>Implemented support for Unicode in BOSS, allowing the sorting of mods with international characters in their names.
+		<ul><div style="height:0.65em;"></div>
+			<li>Switched from using ANSI/ASCII as the internal encoding of the BOSS program to UTF-8.</li>
+			<li>Converted the masterlists and modlists from ANSI to UTF-8 encoding.</li>
+			<li>Users' userlists must now be encoded in UTF-8 to ensure proper behaviour, though the ANSI encoding will also work provided only ASCII characters are used.</li>
+		</ul>
+		</li>
+		<li>Improved the formatting of the BOSSlog, improving ease of reading and presentation.</li>
+		<li>URLs displayed in the BOSSlog are now hyperlinks that can be clicked on to take you to the URL's page.</li>
+		<li>Added --game, -g &lt;game&gt; parameter to override game autodetection, allowing the update of the specified game's masterlist even if the game's master ESM file is not present.</li>
 	</ul>
 	<p><b>Version 1.65</b></p>
 	<ul>
