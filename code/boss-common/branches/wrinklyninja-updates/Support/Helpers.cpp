@@ -17,6 +17,8 @@
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 
+#include "../utf8/source/utf8.h"
+
 #include <ctype.h>
 #include <stdio.h>
 #include <time.h>
@@ -142,5 +144,29 @@ namespace boss {
 	{
 		const string cmd = launcher_cmd + " " + filename;
 		return ::system(cmd.c_str());
+	}
+
+	//Converts a utf8 encoded string to utf16, but only when compiled on Windows, otherwise returns the input string.
+	//This is because only Windows has a UTF16 filesystem, and Linux uses UTF8, so needs no conversion.
+	wstring utf8ToUTF16(wstring utf8str) {
+		wstring utf16str;
+		#if _WIN32 || _WIN64
+			utf8::utf8to16(utf8str.begin(), utf8str.end(), back_inserter(utf16str));
+		#else
+			utf16str = utf8str;
+		#endif
+		return utf16str;
+	}
+
+	//Converts a utf16 encoded string to utf8, but only when compiled on Windows, otherwise returns the input string.
+	//This is because only Windows has a UTF16 filesystem, and Linux uses UTF8, so needs no conversion.
+	wstring utf16ToUTF8(wstring utf16str) {
+		wstring utf8str;
+		#if _WIN32 || _WIN64
+			utf8::utf16to8(utf16str.begin(), utf16str.end(), back_inserter(utf8str));
+		#else
+			utf8str = utf16str;
+		#endif
+		return utf8str;
 	}
 }

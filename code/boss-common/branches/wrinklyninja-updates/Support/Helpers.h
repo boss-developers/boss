@@ -83,6 +83,12 @@ namespace boss {
 
 	// Launches the specified file using the most appropriate program for viewing it.
 	int Launch(const string& filename);
+
+	//Converts a utf8 encoded string to utf16, but only when compiled on Windows, otherwise returns the input string.
+	wstring utf8ToUTF16(wstring utf8str);
+
+	//Converts a utf16 encoded string to utf8, but only when compiled on Windows, otherwise returns the input string.
+	wstring utf16ToUTF8(wstring utf16str);
 }
 
 #endif

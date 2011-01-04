@@ -95,9 +95,8 @@ namespace boss {
 	//	ostringstream out;
 		ModHeader header;
 
-		wstring utf16filename;
-		utf8::utf8to16(filename.begin(), filename.end(), back_inserter(utf16filename));
-
+		wstring utf16filename = utf8ToUTF16(filename);
+		
 		// Read mod's header now...
 		if (ghosted) header = ReadHeader(data_path.wstring()+L"/"+utf16filename+L".ghost");
 		else header = ReadHeader(data_path.wstring()+L"/"+utf16filename);

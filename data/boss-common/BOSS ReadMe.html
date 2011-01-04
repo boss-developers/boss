@@ -367,11 +367,14 @@
 			<li>Switched from using ANSI/ASCII as the internal encoding of the BOSS program to UTF-8.</li>
 			<li>Converted the masterlists and modlists from ANSI to UTF-8 encoding.</li>
 			<li>Users' userlists must now be encoded in UTF-8 to ensure proper behaviour, though the ANSI encoding will also work provided only ASCII characters are used.</li>
+			<li>Added a UTF-8 validator to BOSS that will check the masterlist for any lines that don't have the correct characters and report them in the BOSSlog.</li>
 		</ul>
 		</li>
 		<li>Improved the formatting of the BOSSlog, improving ease of reading and presentation.</li>
 		<li>URLs displayed in the BOSSlog are now hyperlinks that can be clicked on to take you to the URL's page.</li>
 		<li>Added --game, -g &lt;game&gt; parameter to override game autodetection, allowing the update of the specified game's masterlist even if the game's master ESM file is not present.</li>
+		<li>Fixed the updater potentially showing the wrong version for the masterlist if the order of file as listed on the repository web page was altered.</li>
+		
 	</ul>
 	<p><b>Version 1.65</b></p>
 	<ul>

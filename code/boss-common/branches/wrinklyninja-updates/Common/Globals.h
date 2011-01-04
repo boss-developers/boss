@@ -15,7 +15,6 @@
 #define BOOST_FILESYSTEM_VERSION 3
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #define _UNICODE	// Tell C we're using Unicode, notice the _
-#include <tchar.h>	// Include Unicode support functions
 
 #include <string>
 #include <fstream>

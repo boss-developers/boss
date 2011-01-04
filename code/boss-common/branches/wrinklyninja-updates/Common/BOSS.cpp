@@ -377,9 +377,8 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Starting main sort process...");
 	while (!order.eof()) {
 		textbuf=ReadLine("order");
-		wstring textbuf2;
 		wstring::iterator end_it = utf8::find_invalid(textbuf.begin(), textbuf.end());
-		utf8::utf8to16(textbuf.begin(), end_it, back_inserter(textbuf2));
+		wstring textbuf2 = utf8ToUTF16(textbuf);
 		LOG_TRACE(">> Text line read from sort file: \"%s\"", textbuf.c_str());
 		if (textbuf.length()>1 && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
 			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
@@ -740,8 +739,7 @@ int main(int argc, char *argv[]) {
 		if (IsValidLine(modlist.mods[i])) {
 			//Re-date file. Provide exception handling in case their permissions are wrong.
 			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
-			wstring utf16filename;
-			utf8::utf8to16(modlist.mods[i].begin(), modlist.mods[i].end(), back_inserter(utf16filename));
+			wstring utf16filename = utf8ToUTF16(modlist.mods[i]);
 			try { fs::last_write_time(data_path / utf16filename,modfiletime);
 			} catch(fs::filesystem_error e) {
 				bosslog << L" - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << L"\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
@@ -773,8 +771,7 @@ int main(int argc, char *argv[]) {
 			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
 			//Re-date file. Provide exception handling in case their permissions are wrong.
 			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
-			wstring utf16filename;
-			utf8::utf8to16(modlist.mods[i].begin(), modlist.mods[i].end(), back_inserter(utf16filename));
+			wstring utf16filename = utf8ToUTF16(modlist.mods[i]);
 			try { fs::last_write_time(data_path / utf16filename,modfiletime);
 			} catch(fs::filesystem_error e) {
 				bosslog << L" - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << L"\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
