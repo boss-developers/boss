@@ -89,6 +89,10 @@ namespace boss {
 						//Encoding is UTF-16 little endian. Userlist was saved in "Unicode". Print error then stop parsing.
 						messages += L"<span class='error'>Error: UTF-16 encoding detected. Please resave your userlist.txt in UTF-8 encoding. See Troubleshooting section of the ReadMe for more information.</span>";
 						break;
+					} else if (!utf8::is_valid(line.begin(), line.end())) {
+						//Encoding is not valid UTF-8.
+						messages += L"<span class='error'>Error: Line \""+line+L"\" is not valid UTF-8. Skipping this and all subsequent lines. Please resave your userlist.txt in UTF-8 encoding. See Troubleshooting section of the ReadMe for more information.</span>";
+						break;
 					}
 					pos = line.find(L":");
 					if (pos!=string::npos) {

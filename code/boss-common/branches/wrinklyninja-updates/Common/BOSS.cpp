@@ -220,16 +220,6 @@ int main(int argc, char *argv[]) {
 			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
 			<< "v"<<g_version<<" ("<<g_releaseDate<<")"<<endl<<"</div><br /><br />";
 
-	order.open(masterlist_path.c_str());
-	if (order.fail()) Fail();
-	while (!order.eof()) {
-		textbuf=ReadLine("order");
-		wstring::iterator end_it = utf8::find_invalid(textbuf.begin(), textbuf.end());
-		//Debug: print out the malformed line.
-		if (end_it != textbuf.end()) bosslog << textbuf << "<br />" <<endl;
-	}
-	order.close();
-
 	if (0 == game) {
 		LOG_DEBUG("Detecting game...");
 		if (fs::exists(data_path / "Oblivion.esm")) game = 1;
@@ -259,6 +249,18 @@ int main(int argc, char *argv[]) {
 		LOG_DEBUG("Masterlist updated successfully.");
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	}
+
+	//Masterlist UTF-8 validator.
+	order.open(masterlist_path.c_str());
+	if (!order.fail()) {
+		while (!order.eof()) {
+			textbuf=ReadLine("order");
+			wstring::iterator end_it = utf8::find_invalid(textbuf.begin(), textbuf.end());
+			//Debug: print out the malformed line.
+			if (end_it != textbuf.end()) bosslog << "<span class='error'>Error: Masterlist line \"" << textbuf << "\" is not valid UTF-8. Report the line in question to an official BOSS thread." << "<br />" <<endl;
+		}
+	}
+	order.close();
 	
 	if (updateonly == true) {
 		return (0);
