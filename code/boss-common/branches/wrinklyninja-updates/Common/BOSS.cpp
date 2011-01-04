@@ -220,6 +220,16 @@ int main(int argc, char *argv[]) {
 			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
 			<< "v"<<g_version<<" ("<<g_releaseDate<<")"<<endl<<"</div><br /><br />";
 
+	order.open(masterlist_path.c_str());
+	if (order.fail()) Fail();
+	while (!order.eof()) {
+		textbuf=ReadLine("order");
+		wstring::iterator end_it = utf8::find_invalid(textbuf.begin(), textbuf.end());
+		//Debug: print out the malformed line.
+		if (end_it != textbuf.end()) bosslog << textbuf << "<br />" <<endl;
+	}
+	order.close();
+
 	if (0 == game) {
 		LOG_DEBUG("Detecting game...");
 		if (fs::exists(data_path / "Oblivion.esm")) game = 1;
@@ -368,8 +378,6 @@ int main(int argc, char *argv[]) {
 		wstring textbuf2;
 		wstring::iterator end_it = utf8::find_invalid(textbuf.begin(), textbuf.end());
 		utf8::utf8to16(textbuf.begin(), end_it, back_inserter(textbuf2));
-		//Debug: print out the malformed line.
-		if (end_it != textbuf.end()) bosslog << textbuf << "<br />" <<endl;
 		LOG_TRACE(">> Text line read from sort file: \"%s\"", textbuf.c_str());
 		if (textbuf.length()>1 && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
 			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
