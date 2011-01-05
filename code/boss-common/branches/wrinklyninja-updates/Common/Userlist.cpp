@@ -71,6 +71,7 @@ namespace boss {
 		bool skip = false;
 		unsigned short utf16BOM1 = 0xFE;
 		unsigned short utf16BOM2 = 0xFF;
+		bool invalidEnc = false;
 		messages += L"<p>";
 		userlist.open(userlist_path.c_str());
 		while (!userlist.eof()) {
@@ -78,17 +79,15 @@ namespace boss {
 			line=cbuffer;
 			if (line.length()>0) {
 				if (line.substr(0,2)!=L"//") {
-					if (line[0] == utf16BOM1 && line[1] == utf16BOM2) {
+					if ((line[0] == utf16BOM1 && line[1] == utf16BOM2) || (line[0] == utf16BOM2 && line[1] == utf16BOM1)) {
 						//Encoding is UTF-16 big endian. Userlist was saved in "Unicode big endian". Print error then stop parsing.
-						messages += L"<span class='error'>Error: UTF-16 encoding detected. Please resave your userlist.txt in UTF-8 encoding. See Troubleshooting section of the ReadMe for more information.</span>";
-						break;
-					} else if (line[0] == utf16BOM2 && line[1] == utf16BOM1) {
-						//Encoding is UTF-16 little endian. Userlist was saved in "Unicode". Print error then stop parsing.
-						messages += L"<span class='error'>Error: UTF-16 encoding detected. Please resave your userlist.txt in UTF-8 encoding. See Troubleshooting section of the ReadMe for more information.</span>";
+						messages += L"<span class='error'>Error: UTF-16 encoding detected. No rules will be applied. Re-save your userlist.txt in UTF-8 encoding. See Troubleshooting section of the ReadMe for more information.</span>";
+						invalidEnc = true;
 						break;
 					} else if (!utf8::is_valid(line.begin(), line.end())) {
 						//Encoding is not valid UTF-8.
-						messages += L"<span class='error'>Error: Line \""+line+L"\" is not valid UTF-8. Skipping this and all subsequent lines. Please resave your userlist.txt in UTF-8 encoding. See Troubleshooting section of the ReadMe for more information.</span>";
+						messages += L"<span class='error'>Error: The line \""+line+L"\" is not valid UTF-8. No rules will be applied. Re-save your userlist.txt in UTF-8 encoding. See Troubleshooting section of the ReadMe for more information.</span>";
+						invalidEnc = true;
 						break;
 					}
 					pos = line.find(L":");
@@ -226,6 +225,11 @@ namespace boss {
 			keys.erase(keys.begin()+rules.back(), keys.end());
 			objects.erase(objects.begin()+rules.back(), objects.end());
 			rules.pop_back();
+		}
+		if (invalidEnc) {
+			keys.clear();
+			objects.clear();
+			rules.clear();
 		}
 	}
 

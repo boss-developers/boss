@@ -202,14 +202,21 @@
 		</ul>
 		</li>
 		<br />
-		<li><b>Message:</b> Error: UTF-16 encoding detected. Please resave your userlist.txt in UTF-8 encoding.<div style="height:0.65em;"></div>
+		<li><b>Message:</b> Error: UTF-16 encoding detected. No rules will be applied. Re-save your userlist.txt in UTF-8 encoding.<div style="height:0.65em;"></div>
 		<ul>
 			<li><b>Issue:</b> BOSS has detected that your userlist.txt is saved using the wrong encoding, and is unable to read it.</li>
-			<li><b>Solution:</b> Resave your userlist.txt in the correct "UTF-8" encoding. If you are unsure on how to do so, please see the instructions below on how to do so.</li>
+			<li><b>Solution:</b> Re-save your userlist.txt in the correct "UTF-8" encoding. If you are unsure on how to do so, please see the instructions below on how to do so.</li>
 		</ul>
 		</li>
 		<br />
+		<li><b>Message:</b> Error: The line "<em>line</em>" is not valid UTF-8. No rules will be applied. Re-save your userlist.txt in UTF-8 encoding.<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> BOSS has detected that your userlist.txt is saved using the wrong encoding, and is unable to read it.</li>
+			<li><b>Solution:</b> Re-save your userlist.txt in the correct "UTF-8" encoding. If you are unsure on how to do so, please see the instructions below on how to do so.</li>
+		</ul>
+		</li>
 	</ul>
+	<br />
 	<p>In addition to the specific error messages above, BOSS may also fail to work properly, or appear to do so, for a few general reasons:</p>
 	<ul>
 		<li><b>Symptom:</b> BOSS won't run.<div style="height:0.65em;"></div>
@@ -225,17 +232,10 @@
 			<li><b>Solution:</b> Disable "Lock Times" before running BOSS.</li>
 		</ul>
 		</li>
-		<br />
-		<li><b>Symptom:</b> Your BOSSlog wrongly states that mods in your userlist are not installed, or are not in the masterlist.<div style="height:0.65em;"></div>
-		<ul>
-			<li><b>Issue:</b> BOSS can't find the mods in question, as their names in your userlist are either written wrong, or the userlist is in the wrong encoding.</li>
-			<li><b>Solution:</b> Check that your mods' filenames are spelled correctly, and resave your userlist.txt in the "UTF-8" encoding. If you are unsure on how to do so, please see the instructions below on how to do so.</li>
-		</ul>
-		</li>
 	</ul>
 	<br />
 	<p>The BOSS folder and all the files in it must not be read-only. If a file in this folder, or the folder itself, is read-only, BOSS will not function correctly, resulting in some of the errors listed above.</p>
-	<p>BOSS provides support for sorting mods containing characters from any language via the Unicode character encoding, specifically UTF-8. Your userlist must therefore be encoded in UTF-8 to ensure that BOSS reads it correctly, although an ANSI-encoded userlist containing only ASCII characters will also work. If you are unsure, save your userlist in UTF-8. To do so, follow these instructions:</p>
+	<p>BOSS provides support for sorting mods containing characters from any language via the Unicode character encoding, specifically UTF-8. Your userlist must therefore be encoded in UTF-8 to ensure that BOSS reads it correctly, although an ANSI-encoded userlist containing only ASCII characters will also work. To save your userlist in the UTF-8 encoding, follow these instructions:</p>
 	<p>
 	<ol>
 		<li>Open your userlist.txt in Notepad.</li>
