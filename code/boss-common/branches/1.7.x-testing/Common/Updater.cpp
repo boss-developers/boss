@@ -9,7 +9,6 @@
 	$Revision$, $Date$
 */
 
-
 #include "Updater.h"
 
 #include <stdio.h>
@@ -98,7 +97,8 @@ namespace boss {
 			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
 			return;
 		}
-		start = revision.find("KB\",\"", start) + 5; 
+		start = revision.find("\"masterlist.txt\"", start);
+		start = revision.find("B\",\"", start) + 4; 
 		if (start == string::npos) {
 			cout << "Error: Masterlist update failed!" << endl;
 			bosslog << "Error: Masterlist update failed!<br />" << endl;

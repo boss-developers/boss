@@ -32,7 +32,7 @@ namespace boss {
 	//			http://www.uesp.net/wiki/Tes4Mod:Mod_File_Format/TES4
 	//
 
-	ModHeader ReadHeader(string filename) {
+	ModHeader ReadHeader(wstring filename) {
 		char		buffer[MAXLENGTH];
 		char*		bufptr = buffer;
 		ModHeader	modHeader;

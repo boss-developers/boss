@@ -17,6 +17,8 @@
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 
+#include "../utf8/source/utf8.h"
+
 #include <ctype.h>
 #include <stdio.h>
 #include <time.h>
@@ -85,8 +87,8 @@ namespace boss {
 
 
 	// Reads a string until the terminator char is found or the complete buffer is consumed.
-	string ReadString(char*& bufptr, ushort size){
-		string data;
+	wstring ReadString(char*& bufptr, ushort size){
+		wstring data;
 	
 		data.reserve(size + 1);
 		while (char c = *bufptr++) {
@@ -97,40 +99,40 @@ namespace boss {
 	}
 
 	// Tries to parse the textual string to find a suitable version indication.
-	string ParseVersion(const string& text){
+	wstring ParseVersion(const wstring& text){
 
-		string::const_iterator begin, end;
+		wstring::const_iterator begin, end;
 
 		begin = text.begin();
 		end = text.end();
 
-		for(int i = 0; regex* re = version_checks[i]; i++) {
+		for(int i = 0; wregex* re = version_checks[i]; i++) {
 
-			smatch what;
+			wsmatch what;
 			while (regex_search(begin, end, what, *re)) {
 
 				if (what.empty()){
 					continue;
 				}
 
-				ssub_match match = what[1];
+				wssub_match match = what[1];
 		
 				if (!match.matched) {
 					continue;
 				}
 
-				return trim_copy(string(match.first, match.second));
+				return trim_copy(wstring(match.first, match.second));
 
 			}
 		}
 
-		return string();
+		return wstring();
 	}
 
-	string Tidy(string filename) {						//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
-		size_t endpos = filename.find_last_not_of(" \t");
+	wstring Tidy(wstring filename) {						//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
+		size_t endpos = filename.find_last_not_of(L" \t");
 	
-		if (filename.npos == endpos) return (""); 			//sanity check for empty string
+		if (filename.npos == endpos) return (L""); 			//sanity check for empty string
 		else {
 			filename = filename.substr(0, endpos+1);
 			for (unsigned int i = 0; i < filename.length(); i++) filename[i] = tolower(filename[i]);
@@ -142,5 +144,29 @@ namespace boss {
 	{
 		const string cmd = launcher_cmd + " " + filename;
 		return ::system(cmd.c_str());
+	}
+
+	//Converts a utf8 encoded string to utf16, but only when compiled on Windows, otherwise returns the input string.
+	//This is because only Windows has a UTF16 filesystem, and Linux uses UTF8, so needs no conversion.
+	wstring utf8ToUTF16(wstring utf8str) {
+		wstring utf16str;
+		#if _WIN32 || _WIN64
+			utf8::utf8to16(utf8str.begin(), utf8str.end(), back_inserter(utf16str));
+		#else
+			utf16str = utf8str;
+		#endif
+		return utf16str;
+	}
+
+	//Converts a utf16 encoded string to utf8, but only when compiled on Windows, otherwise returns the input string.
+	//This is because only Windows has a UTF16 filesystem, and Linux uses UTF8, so needs no conversion.
+	wstring utf16ToUTF8(wstring utf16str) {
+		wstring utf8str;
+		#if _WIN32 || _WIN64
+			utf8::utf16to8(utf16str.begin(), utf16str.end(), back_inserter(utf8str));
+		#else
+			utf8str = utf16str;
+		#endif
+		return utf8str;
 	}
 }

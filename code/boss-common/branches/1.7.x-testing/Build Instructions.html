@@ -18,11 +18,13 @@
 	<li><a href="http://www.microsoft.com/express/">Microsoft Visual C++ 2010 Express Edition</a></li>
 	<li><a href="http://curl.haxx.se/download.html">Curl Source Code</a> - Download the latest zipped source code from the top of the page.</li>
 	<li><a href="https://sourceforge.net/projects/boost/files/boost/1.43.0/">BOOST C++ libraries</a> - BOSS requires version 1.45.0, it will not work with earlier versions, later versions can be tried, but might also break something.</li>
+	<li><a href="http://sourceforge.net/projects/utfcpp/">UTF8-CPP</a> - Download the latest version.</li>
 	<li>An SVN client of your choice.</li>
 	</ul>
-	<h4>Preparing BOSS and BOOST</h4><ol>
+	<h4>Preparing BOSS, UTF8-CPP and BOOST</h4><ol>
 	<li>Perform a SVN Checkout from <a href="https://better-oblivion-sorting-software.googlecode.com/svn">https://better-oblivion-sorting-software.googlecode.com/svn</a>
 	to a local directory of your own choice to create your working copy. (This directory shall be referred to as <em>$BOSS</em> from here on in.)</li>
+	<li>Extract the contents of the <code>utf8_vx_x</code> (x is a number) archive to <code><em>$BOSS</em>\code\boss-common\trunk\utf8\</code>, so that your utf8 folder contains a 'doc' and 'source' folder.</li>
 	<li>Extract the contents of the <code>boost-x.xx.x</code> (x is a number) folder in the BOOST libaries archive you downloaded to <code><em>$BOSS</em>\code\boss-common\trunk\boost\</code> (you should have lib, include, boostrap.bat, etc. in this folder).</li>
 	<li>Start a Command Prompt and cd to <code><em>$BOSS</em>\code\boss-common\trunk\boost</code> and run <code>bootstrap.bat</code></li>
 	<li>In the Command Prompt, run <code>bjam --toolset=msvc-10.0 --build-type=complete</code> . This will take a while. Once that is done, you may close the Command Prompt window.</ol></p>

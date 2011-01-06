@@ -32,7 +32,7 @@ namespace boss {
 	//	- Tries to extract the version string value from the given text,
 	//	using the above defined regexes to do the dirty work.
 	//
-	string ParseVersion(const string& text);
+	wstring ParseVersion(const wstring& text);
 
 	//
 	// bool ReadLine(InputStream, OutputString&):
@@ -53,7 +53,7 @@ namespace boss {
 	//	- Reads a consecutive array of charactes up to maxsize length and 
 	//	returns them as a new string.
 	//
-	string ReadString(char*& bufptr, ushort size = 512);
+	wstring ReadString(char*& bufptr, ushort size = 512);
 
 	//
 	// T Peek<T>(pointer&):
@@ -79,10 +79,16 @@ namespace boss {
 	}
 
 	//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
-	string Tidy(string filename);
+	wstring Tidy(wstring filename);
 
 	// Launches the specified file using the most appropriate program for viewing it.
 	int Launch(const string& filename);
+
+	//Converts a utf8 encoded string to utf16, but only when compiled on Windows, otherwise returns the input string.
+	wstring utf8ToUTF16(wstring utf8str);
+
+	//Converts a utf16 encoded string to utf8, but only when compiled on Windows, otherwise returns the input string.
+	wstring utf16ToUTF8(wstring utf16str);
 }
 
 #endif
