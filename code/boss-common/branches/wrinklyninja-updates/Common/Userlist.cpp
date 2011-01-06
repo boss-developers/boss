@@ -32,7 +32,7 @@ namespace boss {
 			t1 = fs::last_write_time(data_path / utf16mod1);
 			t2 = fs::last_write_time(data_path / utf16mod2);
 		}catch (fs::filesystem_error e){
-			LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.", e.what());
+			LOG_WARN(L"%s; Report the mod in question with a download link to an official BOSS thread.", e.what());
 		}
 		double diff = difftime(t1,t2);
 
@@ -235,46 +235,46 @@ namespace boss {
 
 	//Adds mods in directory to modlist in date order (AKA load order).
 	void Mods::AddMods() {
-		LOG_DEBUG("Reading user mods...");
+		LOG_DEBUG(L"Reading user mods...");
 		if (fs::is_directory(data_path)) {
 			for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
 				const wstring utf16filename = itr->path().filename().wstring();
 				const wstring utf8filename = utf16ToUTF8(utf16filename);
 				const wstring ext = to_lower_copy(itr->path().extension().wstring());
 				if (fs::is_regular_file(itr->status()) && (ext==L".esp" || ext==L".esm" || ext==L".ghost")) {
-					LOG_TRACE("-- Found mod: '%s'", utf8filename.c_str());			
+					LOG_TRACE(L"-- Found mod: '%s'", utf8filename.c_str());			
 					mods.push_back(utf8filename);
 				}
 			}
 		}
 		modmessages.resize((int)mods.size());
 		sort(mods.begin(),mods.end(),SortByDate);
-		LOG_DEBUG("Reading user mods done: %" PRIuS " total mods found.", mods.size());
+		LOG_DEBUG(L"Reading user mods done: %" PRIuS L" total mods found.", mods.size());
 	}
 
 	//Save mod list to modlist.txt. Backs up old modlist.txt as modlist.old first.
 	int Mods::SaveModList() {
 		wofstream modlist;
 		try {
-			LOG_DEBUG("Saving backup of current modlist...");
+			LOG_DEBUG(L"Saving backup of current modlist...");
 			if (fs::exists(curr_modlist_path)) fs::rename(curr_modlist_path, prev_modlist_path);
 		} catch(boost::filesystem::filesystem_error e) {
 			//Couldn't rename the file, print an error message.
-			LOG_ERROR("Backup of modlist failed with error: %s", e.what());
+			LOG_ERROR(L"Backup of modlist failed with error: %s", e.what());
 			return 1;
 		}
 		
 		modlist.open(curr_modlist_path.c_str());
 		//Provide error message if it can't be written.
 		if (modlist.fail()) {
-			LOG_ERROR("Backup cannot be saved.");
+			LOG_ERROR(L"Backup cannot be saved.");
 			return 2;
 		}
 		for (int i=0;i<(int)mods.size();i++) {
 			modlist << mods[i] << endl;
 		}
 		modlist.close();
-		LOG_INFO("Backup saved successfully.");
+		LOG_INFO(L"Backup saved successfully.");
 		return 0;
 	}
 

@@ -20,14 +20,14 @@
 // windows-specific stuff
 
 // for specifying size_t parameters to printf-like functions
-# define PRIuS "Iu"
+# define PRIuS L"Iu"
 
 // ignore gnu __attribute__ specifiers
 # define __attribute__(x)
 
 #else
 // everything other than windows
-# define PRIuS "zu"
+# define PRIuS L"zu"
 #endif
 
 #endif // __SUPPORT_PLATFORM__HPP__

@@ -60,7 +60,7 @@ namespace boss
 
 		// if a message is of a sufficient verbosity, outputs the given message
 		inline void log (LogVerbosity verbosity, const char * fileName,
-						 int lineNo, const char * formatStr, ...) __attribute__((__format__ (__printf__, 5, 6)))
+						 int lineNo, const wchar_t * formatStr, ...) __attribute__((__format__ (__printf__, 5, 6)))
 		{
 			if (_isVerbosityEnabled(verbosity))
 			{
@@ -82,7 +82,7 @@ namespace boss
 		}
 
 		void _log (LogVerbosity verbosity, const char * fileName, 
-				   int lineNo, const char * formatStr, va_list ap);
+				   int lineNo, const wchar_t * formatStr, va_list ap);
 	};
 
 	// declare global logger
