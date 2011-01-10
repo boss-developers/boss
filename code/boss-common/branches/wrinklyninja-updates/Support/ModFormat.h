@@ -25,9 +25,9 @@ namespace boss {
 	// Structure for grouping the information gathered from each mod's header.
 	struct ModHeader {
 		wstring		Name;
-		wstring		Description;
-		wstring		Author;
-		wstring		Version;
+		string		Description;
+		string		Author;
+		string		Version;
 		bool		IsMaster;
 	};
 

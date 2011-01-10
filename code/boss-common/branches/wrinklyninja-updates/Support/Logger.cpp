@@ -37,14 +37,14 @@ namespace boss
     {
         if (LV_OFF > verbosity)
         {
-            LOG_WARN(L"invalid verbosity: %d", verbosity);
+            LOG_WARN("invalid verbosity: %d", verbosity);
             return false;
         }
 
         if (LV_TRACE < verbosity)
         {
-            LOG_DEBUG(L"verbosity not defined: %d;"
-                      L" bumping down to LV_TRACE", verbosity);
+            LOG_DEBUG("verbosity not defined: %d;"
+                      " bumping down to LV_TRACE", verbosity);
 
             verbosity = LV_TRACE;
         }
@@ -77,7 +77,7 @@ namespace boss
 
     // formats the message and prints to stdout
     void Logger::_log (LogVerbosity verbosity, const char * fileName, 
-                       int lineNo, const wchar_t * formatStr, va_list ap)
+                       int lineNo, const char * formatStr, va_list ap)
     {
         if (!_checkVerbosity(verbosity))
         {
@@ -92,7 +92,7 @@ namespace boss
         if (m_originTracking) { printf(" %s:%d", fileName, lineNo); }
 
         printf(": ");
-		vwprintf(formatStr, ap);
+		vprintf(formatStr, ap);
         printf("\n");
 		fflush(stdout);
     }

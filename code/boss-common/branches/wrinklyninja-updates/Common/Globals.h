@@ -27,8 +27,8 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-	extern wifstream order;						//masterlist.txt - the grand mod order list
-	extern wofstream bosslog;					//BOSSlog.txt - output file.
+	extern ifstream order;						//masterlist.txt - the grand mod order list
+	extern ofstream bosslog;					//BOSSlog.txt - output file.
 	extern bool fcom;							//true if key FCOM or FOOK2 files are found.
 	extern bool ooo;							//true if OOO or FWE esm is found.
 	extern bool bc;								//true if Better Cities esm is found.
