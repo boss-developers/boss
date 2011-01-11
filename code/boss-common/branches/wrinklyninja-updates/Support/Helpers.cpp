@@ -163,7 +163,7 @@ namespace boss {
 	//Windows: convert from UTF8 narrow to UTF16 wide.
 	//Linux: convert from UTF8 narrow to UTF8 wide.
 	wstring narrowToWide(string narrow) {
-		string utf8;
+		wstring utf8;
 		wstring utf16;
 		#if _WIN32 || _WIN64
 			utf8::utf8to16(narrow.begin(), narrow.end(), back_inserter(utf16));

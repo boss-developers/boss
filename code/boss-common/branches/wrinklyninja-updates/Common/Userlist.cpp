@@ -26,11 +26,9 @@ namespace boss {
 	//Date comparison, used for sorting mods in modlist class.
 	bool SortByDate(string mod1,string mod2) {
 		time_t t1 = 0,t2 = 0;
-		wstring utf16mod1 = narrowToWide(mod1);
-		wstring utf16mod2 = narrowToWide(mod2);
 		try {
-			t1 = fs::last_write_time(data_path / utf16mod1);
-			t2 = fs::last_write_time(data_path / utf16mod2);
+			t1 = fs::last_write_time(data_path / fs::path(mod1));
+			t2 = fs::last_write_time(data_path / fs::path(mod2));
 		}catch (fs::filesystem_error e){
 			LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.", e.what());
 		}
@@ -55,8 +53,8 @@ namespace boss {
 
 	bool PluginExists(fs::path plugin) {
 		//return (fs::exists(plugin) || fs::exists(plugin.string()+".ghost"));
-		wstring utf16plugin = narrowToWide(plugin.string());
-		return (fs::exists(utf16plugin) || fs::exists(utf16plugin+L".ghost"));
+		//wstring utf16plugin = narrowToWide(plugin.string());
+		return (fs::exists(plugin) || fs::exists(plugin.native()+fs::path(".ghost").native()));
 	}
 
 	//Add rules from userlist.txt into the rules object.

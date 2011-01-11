@@ -95,11 +95,11 @@ namespace boss {
 	//	ostringstream out;
 		ModHeader header;
 
-		wstring utf16filename = narrowToWide(filename);
+		//wstring utf16filename = narrowToWide(filename);
 		
 		// Read mod's header now...
-		if (ghosted) header = ReadHeader(data_path.wstring()+L"/"+utf16filename+L".ghost");
-		else header = ReadHeader(data_path.wstring()+L"/"+utf16filename);
+		if (ghosted) header = ReadHeader(data_path / fs::path(filename+".ghost"));
+		else header = ReadHeader(data_path.wstring() / fs::path(filename));
 
 		// The current mod's version if found, or empty otherwise.
 		string version = header.Version;
