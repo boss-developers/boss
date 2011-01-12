@@ -19,9 +19,6 @@
 #include <string>
 #include <fstream>
 #include <boost/filesystem.hpp>
-#include "../utf8/source/utf8.h"
-#include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
-#include <locale.h>
 
 
 namespace boss {

@@ -17,8 +17,6 @@
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "../utf8/source/utf8.h"
-
 #include <ctype.h>
 #include <stdio.h>
 #include <time.h>
@@ -144,34 +142,5 @@ namespace boss {
 	{
 		const string cmd = launcher_cmd + " " + filename;
 		return ::system(cmd.c_str());
-	}
-
-	//Windows: convert from UTF16 wide to UTF8 narrow.
-	//Linux: convert from UTF8 wide to UTF8 narrow.
-	string wideToNarrow(wstring wide) {
-		string utf8;
-		wstring utf16;
-		#if _WIN32 || _WIN64
-			utf8::utf16to8(wide.begin(), wide.end(), back_inserter(utf8));
-		#else
-			utf8::utf8to16(wide.begin(), wide.end(), back_inserter(utf16));
-			utf8::utf16to8(utf16.begin(), utf16.end(), back_inserter(utf8));
-		#endif
-		return utf8;
-	}
-
-	//Windows: convert from UTF8 narrow to UTF16 wide.
-	//Linux: convert from UTF8 narrow to UTF8 wide.
-	wstring narrowToWide(string narrow) {
-		wstring utf8;
-		wstring utf16;
-		#if _WIN32 || _WIN64
-			utf8::utf8to16(narrow.begin(), narrow.end(), back_inserter(utf16));
-			return utf16;
-		#else
-			utf8::utf8to16(narrow.begin(), narrow.end(), back_inserter(utf16));
-			utf8::utf16to8(utf16.begin(), utf16.end(), back_inserter(utf8));
-			return utf8;
-		#endif
 	}
 }

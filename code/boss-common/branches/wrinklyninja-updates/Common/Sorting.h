@@ -37,7 +37,7 @@ namespace boss {
 
 	/// GetModHeader(string textbuf):
 	///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
-	string GetModHeader(const string& filename, bool ghosted);
+	string GetModHeader(const fs::path& filename, bool ghosted);
 }
 
 #endif

@@ -83,13 +83,6 @@ namespace boss {
 
 	// Launches the specified file using the most appropriate program for viewing it.
 	int Launch(const string& filename);
-
-	//Need to create class that will handle filesystem conversions:
-	//Windows needs wide->narrow UTF-16->UTF-8 and narrow->wide UTF-8->UTF-16 conversion.
-	//Linux needs wide->narrow and narrow->wide conversion.
-
-	string wideToNarrow(wstring wide);
-	wstring narrowToWide(string narrow);
 }
 
 #endif

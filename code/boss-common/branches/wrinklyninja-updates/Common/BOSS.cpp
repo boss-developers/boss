@@ -10,10 +10,13 @@
 #define NOMINMAX // we don't want the dummy min/max macros since they overlap with the std:: algorithms
 
 #include "BOSS.h"
+#include "../utf8/source/utf8.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
+#include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 
+#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -459,7 +462,7 @@ int main(int argc, char *argv[]) {
 						break;
 					}
 
-					string filename = modlist.mods[index1];
+					fs::path filename = modlist.mods[index1];
 					currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
 					modlist.mods.erase(modlist.mods.begin()+index1);
 					modlist.modmessages.erase(modlist.modmessages.begin()+index1);
@@ -528,7 +531,8 @@ int main(int argc, char *argv[]) {
 					order.open(masterlist_path.c_str());
 					int count=0;
 					bool lookforrulemods=false,lookforsortmods=false;
-					vector<string> rulemods,sortmods,currentmessages;
+					vector<fs::path> rulemods,sortmods;
+					vector<string> currentmessages;
 					while (!order.eof()) {					
 						textbuf=ReadLine("order");
 						if (textbuf.length()>1 && (textbuf.substr(1,10)=="BeginGroup" || textbuf.substr(1,8)=="EndGroup")) {
@@ -622,7 +626,7 @@ int main(int argc, char *argv[]) {
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlist.objects[start].c_str());
 						break;
 					}
-					string filename = modlist.mods[index1];
+					fs::path filename = modlist.mods[index1];
 					currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
 					modlist.mods.erase(modlist.mods.begin()+index1);
 					modlist.modmessages.erase(modlist.modmessages.begin()+index1);
@@ -631,7 +635,7 @@ int main(int argc, char *argv[]) {
 					order.open(masterlist_path.c_str());
 					int count=0;
 					bool lookforsortmods=false,overtime=false;
-					vector<string> sortmods;
+					vector<fs::path> sortmods;
 					LOG_TRACE(" --> Looking in masterlist for the referenced group: \"%s\".", userlist.objects[j].c_str());
 					while (!order.eof()) {
 						textbuf=ReadLine("order");
@@ -724,13 +728,14 @@ int main(int argc, char *argv[]) {
 	bosslog << "<div></div>" << endl; //This fixes the Oblivion.esm comment (or first block element, really) being displayed irrespective of CSS.
 	for (int i=0;i<x;i++) {
 		bool ghosted = false;
-		string filename,version;
-		if (Tidy(modlist.mods[i].substr(modlist.mods[i].length()-6))==".ghost") {
+		fs::path filename;
+		string version;
+		if (Tidy(modlist.mods[i].string().substr(modlist.mods[i].string().length()-6))==".ghost") {
 			ghosted=true;
-			filename = modlist.mods[i].substr(0,modlist.mods[i].length()-6);
+			filename = fs::path(modlist.mods[i].string().substr(0,modlist.mods[i].string().length()-6));
 		} else 
 			filename = modlist.mods[i];
-		string text = "<b>"+filename;
+		string text = "<b>"+filename.string();
 		if (!skip_version_parse) {
 			version = GetModHeader(filename, ghosted);
 			if (!version.empty())
@@ -742,7 +747,7 @@ int main(int argc, char *argv[]) {
 		bosslog << text;		// show which mod file is being processed.
 		modfiletime=esmtime;
 		modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-		if (IsValidLine(modlist.mods[i])) {
+		if (IsValidLine(modlist.mods[i].string())) {
 			//Re-date file. Provide exception handling in case their permissions are wrong.
 			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
 			//wstring utf16filename = narrowToWide(modlist.mods[i]);
@@ -769,8 +774,8 @@ int main(int argc, char *argv[]) {
 	bosslog << "<div><span>Unrecogised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>"<<endl<<"<p>";
 	LOG_INFO("Reporting unrecognized mods...");
 	for (int i=x;i<(int)modlist.mods.size();i++) {
-		if (modlist.mods[i].length()>1) {
-			if (modlist.mods[i].find(".ghost") != string::npos) bosslog << "Unknown mod file: " << modlist.mods[i].substr(0,modlist.mods[i].length()-6) << " <span class='ghosted'> - Ghosted</span>";
+		if (modlist.mods[i].string().length()>1) {
+			if (modlist.mods[i].string().find(".ghost") != string::npos) bosslog << "Unknown mod file: " << modlist.mods[i].string().substr(0,modlist.mods[i].string().length()-6) << " <span class='ghosted'> - Ghosted</span>";
 			else bosslog << "Unknown mod file: " << modlist.mods[i];
 			modfiletime=esmtime;
 			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.

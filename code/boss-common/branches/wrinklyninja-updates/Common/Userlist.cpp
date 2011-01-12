@@ -13,6 +13,7 @@
 #include "Userlist.h"
 #include <boost/algorithm/string.hpp>
 #define BOOST_FILESYSTEM_VERSION 3
+#include "../utf8/source/utf8.h"
 
 namespace fs = boost::filesystem;
 
@@ -24,11 +25,11 @@ namespace boss {
 	using boost::algorithm::trim_copy;
 
 	//Date comparison, used for sorting mods in modlist class.
-	bool SortByDate(string mod1,string mod2) {
+	bool SortByDate(fs::path mod1,fs::path mod2) {
 		time_t t1 = 0,t2 = 0;
 		try {
-			t1 = fs::last_write_time(data_path / fs::path(mod1));
-			t2 = fs::last_write_time(data_path / fs::path(mod2));
+			t1 = fs::last_write_time(data_path / mod1);
+			t2 = fs::last_write_time(data_path / mod2);
 		}catch (fs::filesystem_error e){
 			LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.", e.what());
 		}
@@ -236,11 +237,11 @@ namespace boss {
 		LOG_DEBUG("Reading user mods...");
 		if (fs::is_directory(data_path)) {
 			for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
-				const string utf8filename = wideToNarrow(itr->path().filename().wstring());
+                const fs::path filename = itr->path().filename();
 				const string ext = to_lower_copy(itr->path().extension().string());
 				if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
-					LOG_TRACE("-- Found mod: '%s'", utf8filename.c_str());			
-					mods.push_back(utf8filename);
+					LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());			
+					mods.push_back(filename);
 				}
 			}
 		}
@@ -276,9 +277,9 @@ namespace boss {
 	}
 
 	//Look for a mod in the modlist, even if the mod in question is ghosted.
-	int Mods::GetModIndex(string mod) {
+	int Mods::GetModIndex(fs::path mod) {
 		for (int i=0;i<(int)mods.size();i++) {
-			if (Tidy(mods[i])==Tidy(mod) || Tidy(mods[i])==Tidy(mod+".ghost")) return i;
+			if (Tidy(mods[i].string())==Tidy(mod.string()) || Tidy(mods[i].string())==Tidy(mod.string()+".ghost")) return i;
 		}
 		return -1;
 	}
