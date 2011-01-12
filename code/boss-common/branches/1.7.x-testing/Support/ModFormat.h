@@ -12,10 +12,14 @@
 #ifndef __SUPPORT_MODFORMAT__HPP__
 #define __SUPPORT_MODFORMAT__HPP__
 
+#define BOOST_FILESYSTEM_VERSION 3
+#define BOOST_FILESYSTEM_NO_DEPRECATED
 
 #include "Types.h"
 
 #include <cstring>
+#include <boost/filesystem.hpp>
+
 
 
 namespace boss {
@@ -24,10 +28,10 @@ namespace boss {
 
 	// Structure for grouping the information gathered from each mod's header.
 	struct ModHeader {
-		wstring		Name;
-		wstring		Description;
-		wstring		Author;
-		wstring		Version;
+		string		Name;
+		string		Description;
+		string		Author;
+		string		Version;
 		bool		IsMaster;
 	};
 
@@ -41,7 +45,7 @@ namespace boss {
 		static const ulong SNAM	=	'MANS';
 	};
 
-	ModHeader ReadHeader(wstring filename);
+	ModHeader ReadHeader(boost::filesystem::path filename);
 }
 
 #endif
