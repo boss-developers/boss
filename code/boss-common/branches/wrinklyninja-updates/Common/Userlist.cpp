@@ -53,8 +53,6 @@ namespace boss {
 	}
 
 	bool PluginExists(fs::path plugin) {
-		//return (fs::exists(plugin) || fs::exists(plugin.string()+".ghost"));
-		//wstring utf16plugin = narrowToWide(plugin.string());
 		return (fs::exists(plugin) || fs::exists(plugin.native()+fs::path(".ghost").native()));
 	}
 
@@ -79,7 +77,7 @@ namespace boss {
 			if (line.length()>0) {
 				if (line.substr(0,2)!="//") {
 					if ((line[0] == utf16BOM1 && line[1] == utf16BOM2) || (line[0] == utf16BOM2 && line[1] == utf16BOM1)) {
-						//Encoding is UTF-16 big endian. Userlist was saved in "Unicode big endian". Print error then stop parsing.
+						//Encoding is UTF-16. Print error then stop parsing.
 						messages += "<span class='error'>Error: UTF-16 encoding detected. No rules will be applied. Re-save your userlist.txt in UTF-8 encoding. See Troubleshooting section of the ReadMe for more information.</span>";
 						invalidEnc = true;
 						break;

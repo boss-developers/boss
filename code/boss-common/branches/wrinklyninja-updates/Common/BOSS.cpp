@@ -387,7 +387,6 @@ int main(int argc, char *argv[]) {
 	while (!order.eof()) {
 		textbuf=ReadLine("order");
 		string::iterator end_it = utf8::find_invalid(textbuf.begin(), textbuf.end());
-		//wstring textbuf2 = narrowToWide(textbuf);
 		LOG_TRACE(">> Text line read from sort file: \"%s\"", textbuf.c_str());
 		if (textbuf.length()>1 && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
 			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
@@ -750,7 +749,6 @@ int main(int argc, char *argv[]) {
 		if (IsValidLine(modlist.mods[i].string())) {
 			//Re-date file. Provide exception handling in case their permissions are wrong.
 			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
-			//wstring utf16filename = narrowToWide(modlist.mods[i]);
 			try { fs::last_write_time(data_path / fs::path(modlist.mods[i]),modfiletime);
 			} catch(fs::filesystem_error e) {
 				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
@@ -782,7 +780,6 @@ int main(int argc, char *argv[]) {
 			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
 			//Re-date file. Provide exception handling in case their permissions are wrong.
 			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
-			//wstring utf16filename = narrowToWide(modlist.mods[i]);
 			try { fs::last_write_time(data_path / fs::path(modlist.mods[i]),modfiletime);
 			} catch(fs::filesystem_error e) {
 				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
