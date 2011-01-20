@@ -56,6 +56,43 @@ namespace boss {
 		int SaveModList();						//Save mod list to modlist.txt. Backs up old modlist.txt as modlist.old first.
 		int GetModIndex(fs::path mod);			//Look for a mod in the modlist, even if the mod in question is ghosted.
 	};
+
+
+	//Now a dumping ground for un-sorted testing code.
+	//Try implementing a BOSSLogger function or something.
+	enum attr {
+		NO_ATTR = 0,
+		BR = 1,
+		START_DIV = 2,
+		START_PARA = 3,
+		END_DIV = 4,
+		END_PARA = 5,
+		END_LOG = 6
+	};
+
+	enum styleType {
+		NO_STYLE = 0,
+		TITLE = 1,
+		LINK = 2,
+		ERR = 3,
+		SUCCESS = 4,
+		WARN = 5,
+		GHOST = 6,
+		VER = 7,
+		TAG = 8,
+		SUBTITLE = 9,
+		LI = 10
+	};
+
+	enum logFormat {
+		HTML = 0,
+		PLAINTEXT = 1
+	};
+
+	void printHTMLHead(ofstream& log);
+
+	void printLogText(ofstream& log, string text, logFormat format, attr attribute, styleType style);
+	void printLogText(ofstream& log, string text, string link, logFormat format, attr attribute, styleType style);
 }
 
 #endif

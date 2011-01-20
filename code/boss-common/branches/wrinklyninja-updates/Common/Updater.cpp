@@ -30,7 +30,7 @@ namespace boss {
 		return result;
 	} 
 
-	void UpdateMasterlist(int game) {
+	int UpdateMasterlist(int game) {
 		const char *url;							//Masterlist file url
 		char cbuffer[4096];
 		char errbuff[CURL_ERROR_SIZE];
@@ -53,7 +53,7 @@ namespace boss {
 		else {
 			cout << "Error: invalid setting for 'game': " << game << endl;
 			bosslog << "Error: invalid setting for 'game': " << game << "<br />" << endl;
-			return;
+			return 1;
 		}
 		
 		//curl will be used to get stuff from the internet, so initialise it.
@@ -65,7 +65,7 @@ namespace boss {
 			bosslog << "Curl error: " << "Curl could not be initialised.<br />" << endl;
 			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
 			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-			return;
+			return 1;
 		}
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10);		//Set connection timeout to 10s.
@@ -80,7 +80,7 @@ namespace boss {
 			bosslog << "Error: Masterlist update failed!<br />" << endl << "Curl error: " << errbuff << "<br />" << endl;
 			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
 			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-			return;
+			return 1;
 		}
 		
 		//Extract revision number from page text.
@@ -95,7 +95,7 @@ namespace boss {
 			bosslog << "Cannot find online masterlist revision number.<br />" << endl;
 			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
 			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-			return;
+			return 1;
 		}
 		start = revision.find("\"masterlist.txt\"", start);
 		start = revision.find("B\",\"", start) + 4; 
@@ -106,7 +106,7 @@ namespace boss {
 			bosslog << "Cannot find online masterlist revision number.<br />" << endl;
 			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
 			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-			return;
+			return 1;
 		}
 		end = revision.find("\"",start) - start;
 		if (end == string::npos) {
@@ -116,7 +116,7 @@ namespace boss {
 			bosslog << "Cannot find online masterlist revision number.<br />" << endl;
 			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
 			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-			return;
+			return 1;
 		}
 		revision = revision.substr(start,end);
 		newline = "? Masterlist Revision: "+revision;
@@ -131,7 +131,7 @@ namespace boss {
 				bosslog << "Masterlist cannot be opened.<br />" << endl;
 				cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
 				bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-				return;
+				return 1;
 			}
 			while (!mlist.eof()) {
 				mlist.getline(cbuffer,4096);
@@ -140,7 +140,7 @@ namespace boss {
 					if (line.find(newline) != string::npos) {
 						cout << "masterlist.txt is already at the latest version. Update skipped." << endl;
 						bosslog << "masterlist.txt is already at the latest version. Update skipped.<br />" << endl;
-						return;
+						return 1;
 					} else break;
 				}
 			}
@@ -158,7 +158,7 @@ namespace boss {
 			bosslog << "Error: Masterlist update failed!<br />" << endl << "Curl error: " << errbuff << "<br />" << endl;
 			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
 			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-			return;
+			return 1;
 		}
 
 		//Clean up and close curl handle now that it's finished with.
@@ -176,7 +176,7 @@ namespace boss {
 			bosslog << "Masterlist cannot be opened.<br />" << endl;
 			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
 			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-			return;
+			return 1;
 		}
 		out << buffer;
 		out.close();
@@ -184,6 +184,6 @@ namespace boss {
 		//Return revision number.
 		cout << "masterlist.txt updated to revision " << atoi(revision.c_str()) << endl;
 		bosslog << "masterlist.txt updated to revision " << atoi(revision.c_str()) << "<br />" << endl;
-		return;
+		return 0;
 	}
 }

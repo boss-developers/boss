@@ -95,6 +95,7 @@ int main(int argc, char *argv[]) {
 	int verbosity           = 0;     // log levels above INFO to output
 	string gameStr;                  // allow for autodetection override
 	bool debug              = false; // whether to include origin information in logging statements
+	logFormat format		= HTML;  // Format of the BOSSlog.
 
 	//Set the locale to get encoding conversions working correctly.
 	setlocale(LC_CTYPE, "");
@@ -208,26 +209,15 @@ int main(int argc, char *argv[]) {
 		Fail();
 	}
 
-	//Output HTML start and <head>
-	bosslog << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
-			<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
-			<< "body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
-			<< "#title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl
-			<< "div > span:first-child {font-weight:bold; font-size:1.3em;}"<<endl
-			<< "ul {margin-top:0px; list-style:none; margin-bottom:1.1em;}"<<endl
-			<< "ul li {margin-left:-1em; margin-bottom:0.4em;}"<<endl
-			<< ".error {color:red;}"<<endl
-			<< ".success {color:green}"<<endl
-			<< ".warn {color:#FF6600;}"<<endl
-			<< ".version {color:teal;}"<<endl
-			<< ".ghosted {font-style:italic; color:grey;}"<<endl
-			<< ".tags {color:maroon;}"<<endl
-			<< "</style>"<<endl<<"</head>"<<endl
-			//Output start of <body>
-			<< "<body>"<<endl<<"<div id='title'>Better Oblivion Sorting Software Log</div><br />"<<endl
-			<< "<div style='text-align:center;'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />"<<endl
-			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
-			<< "v"<< g_version<<" ("<<g_releaseDate<<")"<<endl<<"</div><br /><br />";
+	//Output HTML <head> and start of <body>
+	printHTMLHead(bosslog);
+	printLogText(bosslog,"Better Oblivion Sorting Software Log",format,NO_ATTR,TITLE);
+	printLogText(bosslog,"&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.",format,START_DIV,NO_STYLE);
+	printLogText(bosslog,"",format,BR,NO_STYLE);
+	printLogText(bosslog,"CC Attribution-Noncommercial-No Derivative Works 3.0","http://creativecommons.org/licenses/by-nc-nd/3.0/",format,BR,LINK);
+	printLogText(bosslog, "v"+g_version+" ("+g_releaseDate+")",format,END_DIV,NO_STYLE);
+	printLogText(bosslog,"",format,BR,NO_STYLE);
+	printLogText(bosslog,"",format,BR,NO_STYLE);
 
 	if (0 == game) {
 		LOG_DEBUG("Detecting game...");
@@ -237,10 +227,11 @@ int main(int argc, char *argv[]) {
 		else if (fs::exists(data_path / "FalloutNV.esm")) game = 4;
 		else {
 			LOG_ERROR("None of the supported games were detected...");
-			bosslog << endl << "<p class='error'>Critical Error: Master .ESM file not found!<br />" << endl
-							<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
-							<< "Utility will end now.</p>" << endl
-							<< "</body>"<<endl<<"</html>";
+			printLogText(bosslog, "", format, START_PARA, NO_STYLE);
+			printLogText(bosslog, "Critical Error: Master .ESM file not found!", format, BR, ERR);
+			printLogText(bosslog, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.", format, BR, ERR);
+			printLogText(bosslog, "Utility will end now.", format, END_PARA, ERR);
+			printLogText(bosslog, "",format, END_LOG, NO_STYLE);
 			bosslog.close();
 			if ( !silent ) 
 				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -251,12 +242,14 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Game detected: %d", game);
 
 	if (update || updateonly) {
-		bosslog << "<div><span>Masterlist Update</span>"<<endl<<"<p>";
+		printLogText(bosslog,"Masterlist Update", format, START_DIV, SUBTITLE);
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		LOG_DEBUG("Updating masterlist...");
-		UpdateMasterlist(game);
+		UpdateMasterlist(game);  //Need to sort out the output of this - ATM it's very messy.
+		printLogText(bosslog,"", format, END_DIV, NO_STYLE);
+		printLogText(bosslog,"",format,BR,NO_STYLE);
+		printLogText(bosslog,"",format,BR,NO_STYLE);
 		LOG_DEBUG("Masterlist updated successfully.");
-		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	}
 
 	//Masterlist UTF-8 validator.
@@ -266,7 +259,8 @@ int main(int argc, char *argv[]) {
 			textbuf=ReadLine("order");
 			string::iterator end_it = utf8::find_invalid(textbuf.begin(), textbuf.end());
 			//Debug: print out the malformed line.
-			if (end_it != textbuf.end()) bosslog << "<span class='error'>Error: Masterlist line \"" << textbuf << "\" is not valid UTF-8. Report the line in question to an official BOSS thread." << "<br />" <<endl;
+			if (end_it != textbuf.end()) 
+				printLogText(bosslog,"Error: Masterlist line \""+textbuf+"\" is not valid UTF-8. Report the line in question to an official BOSS thread.", format, BR, ERR);
 		}
 	}
 	order.close();
@@ -276,10 +270,11 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (game==1 && fs::exists(data_path / "Nehrim.esm")) {
-		bosslog << endl << "<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />" << endl
-						<< "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.<br />" << endl
-						<< "Utility will end now.</p>" << endl
-						<< "</body>"<<endl<<"</html>";
+		printLogText(bosslog, "", format, START_PARA, NO_STYLE);
+		printLogText(bosslog, "Critical Error: Oblivion.esm and Nehrim.esm have both been found!", format, BR, ERR);
+		printLogText(bosslog, "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.", format, BR, ERR);
+		printLogText(bosslog, "Utility will end now.", format, END_PARA, ERR);
+		printLogText(bosslog, "",format, END_LOG, NO_STYLE);
 		bosslog.close();
 		LOG_ERROR("Installation error found: check BOSSLOG.");
 		if ( !silent ) 
@@ -294,10 +289,11 @@ int main(int argc, char *argv[]) {
 		else if (game == 3) esmtime = fs::last_write_time(data_path / "Nehrim.esm");
 		else if (game == 4) esmtime = fs::last_write_time(data_path / "FalloutNV.esm");
 	} catch(fs::filesystem_error e) {
-		bosslog << endl << "<p class='error'>Critical Error: Master .ESM file cannot be read!<br />" << endl
-						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
-						<< "Utility will end now.</p>" << endl
-						<< "</body>"<<endl<<"</html>";
+		printLogText(bosslog, "", format, START_PARA, NO_STYLE);
+		printLogText(bosslog, "Critical Error: Master .ESM file cannot be read!", format, BR, ERR);
+		printLogText(bosslog, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.", format, BR, ERR);
+		printLogText(bosslog, "Utility will end now.", format, END_PARA, ERR);
+		printLogText(bosslog, "",format, END_LOG, NO_STYLE);
 		bosslog.close();
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.what());
 		if ( !silent ) 
@@ -312,11 +308,14 @@ int main(int argc, char *argv[]) {
 	if (revert<1) {
 		int i=modlist.SaveModList();
 		if (i!=0) {
-			if (i==1) bosslog << endl << "<p class='error'>Critical Error: modlist.old could not be written to!<br />" << endl;
-			else bosslog << endl << "<p class='error'>Critical Error: modlist.txt could not be written to!<br />" << endl;
-			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
-					<< "Utility will end now.</p>" << endl
-					<< "</body>"<<endl<<"</html>";
+			printLogText(bosslog, "", format, START_PARA, NO_STYLE);
+			if (i==1) 
+				printLogText(bosslog, "Critical Error: modlist.old could not be written to!", format, BR, ERR);
+			else 
+				printLogText(bosslog, "Critical Error: modlist.txt could not be written to!", format, BR, ERR);
+			printLogText(bosslog, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.", format, BR, ERR);
+			printLogText(bosslog, "Utility will end now.", format, END_PARA, ERR);
+			printLogText(bosslog, "",format, END_LOG, NO_STYLE);
 			bosslog.close();
 			if ( !silent ) 
 				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -328,7 +327,9 @@ int main(int argc, char *argv[]) {
 
 	if (revert<1) {
 		LOG_DEBUG("Checking for special mods...");
-		bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
+		printLogText(bosslog,"Special Mod Detection",format,NO_ATTR,SUBTITLE);
+		printLogText(bosslog,"",format,START_PARA,NO_STYLE);
+		//bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
 		if (game == 1) {
 			//Check if FCOM or not
 			if ((fcom=PluginExists(data_path / "FCOM_Convergence.esm"))) bosslog << "FCOM detected.<br />" << endl;
@@ -353,7 +354,9 @@ int main(int argc, char *argv[]) {
 			
 			LOG_INFO("Special mods found: %s %s", fcom ? "FOOK2" : "", ooo ? "FWE" : "");
 		}
-		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
+		//bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
+		printLogText(bosslog,"", format, END_PARA, NO_STYLE);
+		printLogText(bosslog,"",format,BR,NO_STYLE);
 	}
 
 	//open masterlist.txt
@@ -724,7 +727,6 @@ int main(int argc, char *argv[]) {
 	x = min(x, int(modlist.mods.size()));
 
 	LOG_INFO("Applying calculated ordering to user files...");
-	bosslog << "<div></div>" << endl; //This fixes the Oblivion.esm comment (or first block element, really) being displayed irrespective of CSS.
 	for (int i=0;i<x;i++) {
 		bool ghosted = false;
 		fs::path filename;

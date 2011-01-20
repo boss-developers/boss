@@ -22,7 +22,7 @@
 
 namespace boss {
 
-	void UpdateMasterlist(int game);
+	int UpdateMasterlist(int game);
 
 }
 
