@@ -74,146 +74,148 @@ namespace boss {
 		while (!userlist.eof()) {
 			userlist.getline(cbuffer,MAXLENGTH);
 			line=cbuffer;
-			if (line.length()>0) {
-				if (line.substr(0,2)!="//") {
-					if ((line[0] == utf16BOM1 && line[1] == utf16BOM2) || (line[0] == utf16BOM2 && line[1] == utf16BOM1)) {
-						//Encoding is UTF-16. Print error then stop parsing.
-						messages += "<span class='error'>Error: UTF-16 encoding detected. No rules will be applied. Re-save your userlist.txt in UTF-8 encoding. See Troubleshooting section of the ReadMe for more information.</span>";
-						invalidEnc = true;
-						break;
-					} else if (!utf8::is_valid(line.begin(), line.end())) {
-						//Encoding is not valid UTF-8.
-						messages += "<span class='error'>Error: The line \""+line+"\" is not valid UTF-8. No rules will be applied. Re-save your userlist.txt in UTF-8 encoding. See Troubleshooting section of the ReadMe for more information.</span>";
-						invalidEnc = true;
-						break;
-					}
-					pos = line.find(":");
-					if (pos!=string::npos) {
-						key = to_lower_copy(trim_copy(line.substr(0,pos)));
-						//Remove UTF-8 BOM if present to prevent binary comparisons failing.
-						if (utf8::starts_with_bom(key.begin(),key.end())) 
-							key = key.substr(3);
-						object = trim_copy(line.substr(pos+1));
-						if (key=="add" || key=="override" || key=="for") {
-							if (skip) {
-								keys.erase(keys.begin()+rules.back(), keys.end());
-								objects.erase(objects.begin()+rules.back(), objects.end());
-								rules.pop_back();
-							}
-							keys.push_back(key);
-							objects.push_back(object);
-							rules.push_back((int)keys.size()-1);
-							skip = false;
-							if (object.empty()) {
-								if (!skip)  messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-								messages += "<span class='error'>The line with keyword \""+key+"\" has an undefined object.</span><br />";
-								skip = true;
-							} else {
-								if (IsPlugin(object) && !PluginExists(data_path / object)) {
-									if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-									messages += "\""+object+"\" is not installed.<br />";
-									skip = true;
-								} else if (key=="add" && !IsPlugin(object)) {
-									if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-									messages += "<span class='error'>It tries to add a group.</span><br />";
-									skip = true;
-								} else if (key=="override") {
-									if (Tidy(object)=="esms") {
-										if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-										messages += "<span class='error'>It tries to sort the group \"ESMs\".</span><br />";
-										skip = true;
-									} else if (Tidy(object)=="oblivion.esm" || Tidy(object)=="fallout3.esm" || Tidy(object)=="nehrim.esm" || Tidy(object)=="falloutnv.esm") {
-										if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-										messages += "<span class='error'>It tries to sort the master .ESM file.</span><br />";
-										skip = true;
-									}
-								}
-							}
-						} else if (!rules.empty()) {
-							if ((key=="before" || key=="after")) {
-								keys.push_back(key);
-								objects.push_back(object);
-								if (keys[rules.back()]=="for") {
-									if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-									messages += "<span class='error'>It includes a sort line in a rule with a FOR rule keyword.</span><br />";
-									skip = true;
-								}
-								if (object.empty()) {
-									if (!skip)  messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-									messages += "<span class='error'>The line with keyword \""+key+"\" has an undefined object.</span><br />";
-									skip = true;
-								} else {
-									if (objects[rules.back()].length()>0 && ((IsPlugin(object) && !IsPlugin(objects[rules.back()])) || (!IsPlugin(object) && IsPlugin(objects[rules.back()])))) {
-										if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-										messages += "<span class='error'>It references a mod and a group.</span><br />";
-										skip = true;
-									}
-									if (key=="before") {
-										if (Tidy(object)=="esms") {
-											if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-											messages += "<span class='error'>It tries to sort a group before the group \"ESMs\".</span><br />";
-											skip = true;
-										} else if (Tidy(object)=="oblivion.esm" || Tidy(object)=="fallout3.esm" || Tidy(object)=="nehrim.esm" || Tidy(object)=="falloutnv.esm") {
-											if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-											messages += "<span class='error'>It tries to sort a mod before the master .ESM file.</span><br />";
-											skip = true;
-										}
-									}
-								}
-							} else if ((key=="top" || key=="bottom")) {
-								keys.push_back(key);
-								objects.push_back(object);
-								if (keys[rules.back()]=="for") {
-									if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-									messages += "<span class='error'>It includes a sort line in a rule with a FOR rule keyword.</span><br />";
-									skip = true;
-								}
-								if (object.empty()) {
-									if (!skip)  messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-									messages += "<span class='error'>The line with keyword \""+key+"\" has an undefined object.</span><br />";
-									skip = true;
-								} else {
-									if (Tidy(object)=="esms" && key=="top") {
-										if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-										messages += "<span class='error'>It tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.</span><br />";
-										skip = true;
-									}
-									if (objects[rules.back()].length()>0) {
-										if (!IsPlugin(objects[rules.back()]) || IsPlugin(object)) {
-											if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-											messages += "<span class='error'>It tries to insert a group or insert a mod into another mod.</span><br />";
-											skip = true;
-										}
-									}
-								}
-							} else if ((key=="append" || key=="replace")) {
-								keys.push_back(key);
-								objects.push_back(object);
-								if (object.empty()) {
-									if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-									messages += "<span class='error'>The line with keyword \""+key+"\" has an undefined object.</span><br />";
-									skip = true;
-								}
-								if (!IsPlugin(objects[rules.back()])) {
-									if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-									messages += "<span class='error'>It tries to attach a message to a group.</span><br />";
-									skip = true;
-								}
-							} else {
-								//Line does not contain a recognised keyword. Skip it and the rule containing it. If it is a rule line, then the previous rule will also be skipped.
-								if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
-								messages += "<span class='error'>The line \""+key+": "+object+"\" does not contain a recognised keyword. If this line is the start of a rule, that rule will also be skipped.</span><br />";
-								skip = true;
-							}
-						} else {
-							//Line is not a rule line, and appears before the first rule line, so does not belong to a rule. Skip it.
-							if (key=="before" || key=="after" || key=="top" || key=="bottom" || key=="append" || key=="replace") 
-								messages += "<p><span class='error'>The line \""+key+": "+object+"\" appears before the first recognised rule line. Line skipped.</span><p>";
-							else
-								messages += "<p><span class='error'>The line \""+key+": "+object+"\" does not contain a recognised keyword, and appears before the first recognised rule line. Line skipped.";
+
+			if (line.length() == 0) continue;
+
+			if (line.substr(0,2) == "//") continue;
+
+			if ((line[0] == utf16BOM1 && line[1] == utf16BOM2) || (line[0] == utf16BOM2 && line[1] == utf16BOM1)) {
+				//Encoding is UTF-16. Print error then stop parsing.
+				messages += "<span class='error'>Error: UTF-16 encoding detected. No rules will be applied. Re-save your userlist.txt in UTF-8 encoding. See Troubleshooting section of the ReadMe for more information.</span>";
+				invalidEnc = true;
+				break;
+			} else if (!utf8::is_valid(line.begin(), line.end())) {
+				//Encoding is not valid UTF-8.
+				messages += "<span class='error'>Error: The line \""+line+"\" is not valid UTF-8. No rules will be applied. Re-save your userlist.txt in UTF-8 encoding. See Troubleshooting section of the ReadMe for more information.</span>";
+				invalidEnc = true;
+				break;
+			}
+
+			pos = line.find(":");
+			if (pos == string::npos) continue;
+
+			key = to_lower_copy(trim_copy(line.substr(0,pos)));
+			//Remove UTF-8 BOM if present to prevent binary comparisons failing.
+			if (utf8::starts_with_bom(key.begin(),key.end())) 
+				key = key.substr(3);
+			object = trim_copy(line.substr(pos+1));
+			if (key=="add" || key=="override" || key=="for") {
+				if (skip) {
+					keys.erase(keys.begin()+rules.back(), keys.end());
+					objects.erase(objects.begin()+rules.back(), objects.end());
+					rules.pop_back();
+				}
+				keys.push_back(key);
+				objects.push_back(object);
+				rules.push_back((int)keys.size()-1);
+				skip = false;
+				if (object.empty()) {
+					if (!skip)  messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+					messages += "<span class='error'>The line with keyword \""+key+"\" has an undefined object.</span><br />";
+					skip = true;
+				} else {
+					if (IsPlugin(object) && !PluginExists(data_path / object)) {
+						if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "\""+object+"\" is not installed.<br />";
+						skip = true;
+					} else if (key=="add" && !IsPlugin(object)) {
+						if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span class='error'>It tries to add a group.</span><br />";
+						skip = true;
+					} else if (key=="override") {
+						if (Tidy(object)=="esms") {
+							if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+							messages += "<span class='error'>It tries to sort the group \"ESMs\".</span><br />";
+							skip = true;
+						} else if (Tidy(object)=="oblivion.esm" || Tidy(object)=="fallout3.esm" || Tidy(object)=="nehrim.esm" || Tidy(object)=="falloutnv.esm") {
+							if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+							messages += "<span class='error'>It tries to sort the master .ESM file.</span><br />";
+							skip = true;
 						}
 					}
 				}
+			} else if (!rules.empty()) {
+				if ((key=="before" || key=="after")) {
+					keys.push_back(key);
+					objects.push_back(object);
+					if (keys[rules.back()]=="for") {
+						if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span class='error'>It includes a sort line in a rule with a FOR rule keyword.</span><br />";
+						skip = true;
+					}
+					if (object.empty()) {
+						if (!skip)  messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span class='error'>The line with keyword \""+key+"\" has an undefined object.</span><br />";
+						skip = true;
+					} else {
+						if (objects[rules.back()].length()>0 && ((IsPlugin(object) && !IsPlugin(objects[rules.back()])) || (!IsPlugin(object) && IsPlugin(objects[rules.back()])))) {
+							if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+							messages += "<span class='error'>It references a mod and a group.</span><br />";
+							skip = true;
+						}
+						if (key=="before") {
+							if (Tidy(object)=="esms") {
+								if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+								messages += "<span class='error'>It tries to sort a group before the group \"ESMs\".</span><br />";
+								skip = true;
+							} else if (Tidy(object)=="oblivion.esm" || Tidy(object)=="fallout3.esm" || Tidy(object)=="nehrim.esm" || Tidy(object)=="falloutnv.esm") {
+								if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+								messages += "<span class='error'>It tries to sort a mod before the master .ESM file.</span><br />";
+								skip = true;
+							}
+						}
+					}
+				} else if ((key=="top" || key=="bottom")) {
+					keys.push_back(key);
+					objects.push_back(object);
+					if (keys[rules.back()]=="for") {
+						if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span class='error'>It includes a sort line in a rule with a FOR rule keyword.</span><br />";
+						skip = true;
+					}
+					if (object.empty()) {
+						if (!skip)  messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span class='error'>The line with keyword \""+key+"\" has an undefined object.</span><br />";
+						skip = true;
+					} else {
+						if (Tidy(object)=="esms" && key=="top") {
+							if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+							messages += "<span class='error'>It tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.</span><br />";
+							skip = true;
+						}
+						if (objects[rules.back()].length()>0) {
+							if (!IsPlugin(objects[rules.back()]) || IsPlugin(object)) {
+								if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+								messages += "<span class='error'>It tries to insert a group or insert a mod into another mod.</span><br />";
+								skip = true;
+							}
+						}
+					}
+				} else if ((key=="append" || key=="replace")) {
+					keys.push_back(key);
+					objects.push_back(object);
+					if (object.empty()) {
+						if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span class='error'>The line with keyword \""+key+"\" has an undefined object.</span><br />";
+						skip = true;
+					}
+					if (!IsPlugin(objects[rules.back()])) {
+						if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+						messages += "<span class='error'>It tries to attach a message to a group.</span><br />";
+						skip = true;
+					}
+				} else {
+					//Line does not contain a recognised keyword. Skip it and the rule containing it. If it is a rule line, then the previous rule will also be skipped.
+					if (!skip) messages += "</p><p style='margin-left:40px; text-indent:-40px;'>The rule beginning \""+keys[rules.back()]+": "+objects[rules.back()]+"\" has been skipped as it has the following problem(s):<br />";
+					messages += "<span class='error'>The line \""+key+": "+object+"\" does not contain a recognised keyword. If this line is the start of a rule, that rule will also be skipped.</span><br />";
+					skip = true;
+				}
+			} else {
+				//Line is not a rule line, and appears before the first rule line, so does not belong to a rule. Skip it.
+				if (key=="before" || key=="after" || key=="top" || key=="bottom" || key=="append" || key=="replace") 
+					messages += "<p><span class='error'>The line \""+key+": "+object+"\" appears before the first recognised rule line. Line skipped.</span><p>";
+				else
+					messages += "<p><span class='error'>The line \""+key+": "+object+"\" does not contain a recognised keyword, and appears before the first recognised rule line. Line skipped.";
 			}
 		}
 		userlist.close();
