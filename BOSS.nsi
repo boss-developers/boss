@@ -538,7 +538,7 @@
       WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoRepair" 1
       CreateDirectory "$COMMONFILES\BOSS"
       WriteUninstaller "$COMMONFILES\BOSS\uninstall.exe"
-        SectionEnd
+    SectionEnd
     SectionGroup "Start Menu Shortcuts" Shortcuts_SM
         Section "Main" StartMenu
             SectionIn 1
