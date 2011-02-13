@@ -321,6 +321,12 @@ int main(int argc, char *argv[]) {
 				else bosslog << "FWE not detected.<br />" << endl;
 			
 			LOG_INFO("Special mods found: %s %s", fcom ? "FOOK2" : "", ooo ? "FWE" : "");
+		} else if (game == 4) {
+			//Check if nVamp or not
+			if ((fcom=fs::exists(data_path / "nVamp - Core.esm"))) bosslog << "nVamp Detected.<br />" << endl;
+				else bosslog << "FOOK2 not detected.<br />" << endl;
+			if (fs::exists(data_path / "nVamp - Core.esp") && !fcom) bosslog << "WARNING: nVamp - Core.esm seems to be missing.<br />" << endl;
+			LOG_INFO("Special mods found: %s", fcom ? "nVamp" : "");
 		}
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	}
