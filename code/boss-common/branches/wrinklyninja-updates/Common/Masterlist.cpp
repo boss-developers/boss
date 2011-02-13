@@ -27,4 +27,8 @@ namespace boss {
 	bool IsValidLine(string textbuf) {
 		return ((textbuf.length()>1) && (Tidy(textbuf)!="oblivion.esm") && (Tidy(textbuf)!="fallout3.esm") && (Tidy(textbuf)!="nehrim.esm") && (Tidy(textbuf)!="falloutnv.esm"));
 	}
+
+	bool IsCondition(string textbuf) {
+		return ((textbuf.substr(0,3) == "IF:") || (textbuf.substr(0,6) == "IFNOT:"));
+	}
 }

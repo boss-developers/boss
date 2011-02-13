@@ -22,6 +22,7 @@ namespace boss {
 	bool IsMod(string textbuf);
 	bool IsMessage(string textbuf);
 	bool IsValidLine(string textbuf);
+	bool IsCondition(string textbuf);
 }
 
 #endif

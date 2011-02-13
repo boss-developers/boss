@@ -33,6 +33,7 @@
 using namespace boss;
 using namespace std;
 namespace po = boost::program_options;
+using boost::algorithm::trim_copy;
 
 
 const string g_version     = "1.7";
@@ -389,9 +390,23 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Starting main sort process...");
 	while (!order.eof()) {
 		textbuf=ReadLine("order");
-		string::iterator end_it = utf8::find_invalid(textbuf.begin(), textbuf.end());
 		LOG_TRACE(">> Text line read from sort file: \"%s\"", textbuf.c_str());
 		if (textbuf.length()>1 && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
+			if (IsCondition(textbuf)) {
+				string condition;
+				size_t pos1,pos2;
+				pos1 = textbuf.find(":")+1;
+				pos2 = textbuf.find(" THEN:");
+				condition = trim_copy(textbuf.substr(pos1,pos2-pos1));
+				if (textbuf.substr(0,3) == "IF:") {
+					if (!fs::exists(data_path / fs::path(condition+".ghost")) && !fs::exists(data_path / fs::path(condition)))
+					continue;
+				} else if (textbuf.substr(0,6) == "IFNOT:") {
+					if (fs::exists(data_path / fs::path(condition+".ghost")) || fs::exists(data_path / fs::path(condition)))
+						continue;
+				}
+				textbuf = trim_copy(textbuf.substr(pos2+6));
+			}
 			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
 				isghost = false;
 				if (fs::exists(data_path / fs::path(textbuf+".ghost"))) isghost = true;
