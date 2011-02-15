@@ -16,8 +16,10 @@
     <ClCompile Include="..\Support\ModFormat.cpp" />
     <ClCompile Include="..\Support\VersionRegex.cpp" />
     <ClCompile Include="BOSS.cpp" />
+    <ClCompile Include="BOSSLog.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="Masterlist.cpp" />
+    <ClCompile Include="Modlist.cpp" />
     <ClCompile Include="Sorting.cpp" />
     <ClCompile Include="Updater.cpp" />
     <ClCompile Include="Userlist.cpp" />
@@ -30,8 +32,10 @@
     <ClInclude Include="..\Support\Types.h" />
     <ClInclude Include="..\Support\VersionRegex.h" />
     <ClInclude Include="BOSS.h" />
+    <ClInclude Include="BOSSLog.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="Masterlist.h" />
+    <ClInclude Include="Modlist.h" />
     <ClInclude Include="Sorting.h" />
     <ClInclude Include="Updater.h" />
     <ClInclude Include="Userlist.h" />

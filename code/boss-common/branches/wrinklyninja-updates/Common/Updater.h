@@ -21,9 +21,7 @@
 #include <curl/easy.h>
 
 namespace boss {
-
 	int UpdateMasterlist(int game);
-
 }
 
 #endif

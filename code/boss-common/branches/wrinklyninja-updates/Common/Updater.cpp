@@ -49,26 +49,16 @@ namespace boss {
 		if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
 		else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
 		else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/masterlist.txt";
-		else if (game == 4) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/masterlist.txt";
-		else {
-			cout << "Error: invalid setting for 'game': " << game << endl;
-			bosslog << "Error: invalid setting for 'game': " << game << "<br />" << endl;
-			return 1;
-		}
+		else url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/masterlist.txt";
 		
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
 		if (!curl) {
-			cout << "Error: Masterlist update failed!." << endl;
-			bosslog << "Error: Masterlist update failed!.<br />" << endl;
-			cout << "Curl error: " << "Curl could not be initialised." << endl;
-			bosslog << "Curl error: " << "Curl could not be initialised.<br />" << endl;
-			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
-			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-			return 1;
+			const char * err = "Curl could not be initialised.";
+			throw err;
 		}
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
-		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10);		//Set connection timeout to 10s.
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 10s.
 		
 		//Get revision number from http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn page text.
 		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn");
@@ -76,11 +66,8 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &revision );
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
-			cout << "Error: Masterlist update failed!" << endl << "Curl error: " << errbuff << endl;
-			bosslog << "Error: Masterlist update failed!<br />" << endl << "Curl error: " << errbuff << "<br />" << endl;
-			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
-			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-			return 1;
+			const char * err = errbuff;
+			throw err;
 		}
 		
 		//Extract revision number from page text.
@@ -89,34 +76,19 @@ namespace boss {
 		else if (game == 3) start = revision.find("boss-nehrim");
 		else if (game == 4) start = revision.find("boss-fallout-nv");
 		if (start == string::npos) {
-			cout << "Error: Masterlist update failed!" << endl;
-			bosslog << "Error: Masterlist update failed!<br />" << endl;
-			cout << "Cannot find online masterlist revision number." << endl;
-			bosslog << "Cannot find online masterlist revision number.<br />" << endl;
-			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
-			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-			return 1;
+			const char * err = "Cannot find online masterlist revision number.";
+			throw err;
 		}
 		start = revision.find("\"masterlist.txt\"", start);
 		start = revision.find("B\",\"", start) + 4; 
 		if (start == string::npos) {
-			cout << "Error: Masterlist update failed!" << endl;
-			bosslog << "Error: Masterlist update failed!<br />" << endl;
-			cout << "Cannot find online masterlist revision number." << endl;
-			bosslog << "Cannot find online masterlist revision number.<br />" << endl;
-			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
-			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-			return 1;
+			const char * err = "Cannot find online masterlist revision number.";
+			throw err;
 		}
 		end = revision.find("\"",start) - start;
 		if (end == string::npos) {
-			cout << "Error: Masterlist update failed!" << endl;
-			bosslog << "Error: Masterlist update failed!<br />" << endl;
-			cout << "Cannot find online masterlist revision number." << endl;
-			bosslog << "Cannot find online masterlist revision number.<br />" << endl;
-			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
-			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-			return 1;
+			const char * err = "Cannot find online masterlist revision number.";
+			throw err;
 		}
 		revision = revision.substr(start,end);
 		newline = "? Masterlist Revision: "+revision;
@@ -125,22 +97,15 @@ namespace boss {
 		if (fs::exists(masterlist_path)) {
 			mlist.open(masterlist_path.c_str());
 			if (mlist.fail()) {
-				cout << "Error: Masterlist update failed!" << endl;
-				bosslog << "Error: Masterlist update failed!<br />" << endl;
-				cout << "Masterlist cannot be opened." << endl;
-				bosslog << "Masterlist cannot be opened.<br />" << endl;
-				cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
-				bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-				return 1;
+				const char * err = "Masterlist cannot be opened.";
+				throw err;
 			}
 			while (!mlist.eof()) {
 				mlist.getline(cbuffer,4096);
 				line=cbuffer;
 				if (line.find("? Masterlist") != string::npos) {
 					if (line.find(newline) != string::npos) {
-						cout << "masterlist.txt is already at the latest version. Update skipped." << endl;
-						bosslog << "masterlist.txt is already at the latest version. Update skipped.<br />" << endl;
-						return 1;
+						return 0;  //Masterlist already at latest revision.
 					} else break;
 				}
 			}
@@ -154,11 +119,8 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_CRLF, 1);
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
-			cout << "Error: Masterlist update failed!" << endl << "Curl error: " << errbuff << endl;
-			bosslog << "Error: Masterlist update failed!<br />" << endl << "Curl error: " << errbuff << "<br />" << endl;
-			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
-			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-			return 1;
+			const char * err = errbuff;
+			throw err;
 		}
 
 		//Clean up and close curl handle now that it's finished with.
@@ -170,20 +132,13 @@ namespace boss {
 			buffer.replace(pos,oldline.length(),newline);
 		out.open(masterlist_path.c_str(), ios_base::trunc);
 		if (out.fail()) {
-			cout << "Error: Masterlist update failed!" << endl;
-			bosslog << "Error: Masterlist update failed!<br />" << endl;
-			cout << "Masterlist cannot be opened." << endl;
-			bosslog << "Masterlist cannot be opened.<br />" << endl;
-			cout << "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << endl;
-			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
-			return 1;
+			const char * err = "Masterlist cannot be opened.";
+			throw err;
 		}
 		out << buffer;
 		out.close();
 
 		//Return revision number.
-		cout << "masterlist.txt updated to revision " << atoi(revision.c_str()) << endl;
-		bosslog << "masterlist.txt updated to revision " << atoi(revision.c_str()) << "<br />" << endl;
-		return 0;
+		return atoi(revision.c_str());
 	}
 }

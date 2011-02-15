@@ -9,6 +9,7 @@
 
 #define NOMINMAX // we don't want the dummy min/max macros since they overlap with the std:: algorithms
 
+
 #include "BOSS.h"
 #include "../utf8/source/utf8.h"
 
@@ -27,7 +28,6 @@
 #include <ctype.h>
 #include <time.h>
 
-#define MAXLENGTH 4096			//maximum length of a file name or comment. Big arbitrary number.
 
 
 using namespace boss;
@@ -51,7 +51,7 @@ void ShowUsage(po::options_description opts) {
 #if _WIN32 || _WIN64
 		"BOSS";
 #else
-		"boss";
+		"BOSS";
 #endif
 
 	ShowVersion();
@@ -246,7 +246,17 @@ int main(int argc, char *argv[]) {
 		printLogText(bosslog,"Masterlist Update", format, START_DIV, SUBTITLE);
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		LOG_DEBUG("Updating masterlist...");
-		UpdateMasterlist(game);  //Need to sort out the output of this - ATM it's very messy.
+		try {
+			int revision = UpdateMasterlist(game);  //Need to sort out the output of this - ATM it's very messy.
+			if (revision == 0) 
+				bosslog << "masterlist.txt is already at the latest version. Update skipped.<br />" << endl;
+			else
+				bosslog << "masterlist.txt updated to revision " << revision << "<br />" << endl;
+		} catch (char *err) {
+			bosslog << "Error: Masterlist update failed!.<br />" << endl;
+			bosslog << "Details: " << err << "<br />" << endl;
+			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl;
+		}
 		printLogText(bosslog,"", format, END_DIV, NO_STYLE);
 		printLogText(bosslog,"",format,BR,NO_STYLE);
 		printLogText(bosslog,"",format,BR,NO_STYLE);
@@ -307,13 +317,10 @@ int main(int argc, char *argv[]) {
 	Mods modlist;
 	modlist.AddMods();
 	if (revert<1) {
-		int i=modlist.SaveModList();
-		if (i!=0) {
-			printLogText(bosslog, "", format, START_PARA, NO_STYLE);
-			if (i==1) 
-				printLogText(bosslog, "Critical Error: modlist.old could not be written to!", format, BR, ERR);
-			else 
-				printLogText(bosslog, "Critical Error: modlist.txt could not be written to!", format, BR, ERR);
+		try {
+			modlist.SaveModList();
+		} catch (char *err) {
+			bosslog << "Critical Error: " << err << "<br />" << endl;
 			printLogText(bosslog, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.", format, BR, ERR);
 			printLogText(bosslog, "Utility will end now.", format, END_PARA, ERR);
 			printLogText(bosslog, "",format, END_LOG, NO_STYLE);
@@ -325,40 +332,6 @@ int main(int argc, char *argv[]) {
 	}
 	Rules userlist;
 	if (fs::exists(userlist_path) && revert<1) userlist.AddRules();
-
-	if (revert<1) {
-		LOG_DEBUG("Checking for special mods...");
-		printLogText(bosslog,"Special Mod Detection",format,NO_ATTR,SUBTITLE);
-		printLogText(bosslog,"",format,START_PARA,NO_STYLE);
-		//bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
-		if (game == 1) {
-			//Check if FCOM or not
-			if ((fcom=PluginExists(data_path / "FCOM_Convergence.esm"))) bosslog << "FCOM detected.<br />" << endl;
-				else bosslog << "FCOM not detected.<br />" << endl;
-			if (PluginExists(data_path / "FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing.<br />" << endl;
-			//Check if OOO or not
-			if ((ooo=PluginExists(data_path / "Oscuro's_Oblivion_Overhaul.esm"))) bosslog << "OOO detected.<br />" << endl;
-				else bosslog << "OOO not detected.<br />" << endl;
-			//Check if Better Cities or not
-			if ((bc=PluginExists(data_path / "Better Cities Resources.esm"))) bosslog << "Better Cities detected.<br />" << endl;
-				else bosslog << "Better Cities not detected.<br />" << endl;
-				
-			LOG_INFO("Special mods found: %s %s %s", fcom ? "FCOM" : "", ooo ? "OOO" : "", bc ? "BC" : "");
-		} else if (game == 2) {
-			//Check if fook2 or not
-			if ((fcom=PluginExists(data_path / "FOOK2 - Main.esm"))) bosslog << "FOOK2 Detected.<br />" << endl;
-				else bosslog << "FOOK2 not detected.<br />" << endl;
-			if (PluginExists(data_path / "FOOK2 - Main.esp") && !fcom) bosslog << "WARNING: FOOK2.esm seems to be missing.<br />" << endl;
-			//Check if fwe or not
-			if ((ooo=PluginExists(data_path / "FO3 Wanderers Edition - Main File.esm"))) bosslog << "FWE detected.<br />" << endl;
-				else bosslog << "FWE not detected.<br />" << endl;
-			
-			LOG_INFO("Special mods found: %s %s", fcom ? "FOOK2" : "", ooo ? "FWE" : "");
-		}
-		//bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
-		printLogText(bosslog,"", format, END_PARA, NO_STYLE);
-		printLogText(bosslog,"",format,BR,NO_STYLE);
-	}
 
 	//open masterlist.txt
 	fs::path sortfile;

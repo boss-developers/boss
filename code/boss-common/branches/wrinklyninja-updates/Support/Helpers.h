@@ -12,12 +12,22 @@
 #ifndef __SUPPORT_HELPERS__HPP__
 #define __SUPPORT_HELPERS__HPP__
 
+#ifndef BOOST_FILESYSTEM_VERSION
+#define BOOST_FILESYSTEM_VERSION 3
+#endif
+
+#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+#define BOOST_FILESYSTEM_NO_DEPRECATED
+#endif
+
 
 #include "Types.h"
 
 #include <cstring>
 #include <iostream>
+#include "boost/filesystem.hpp"
 
+namespace fs = boost::filesystem;
 
 namespace boss {
 	using namespace std;
@@ -83,6 +93,16 @@ namespace boss {
 
 	// Launches the specified file using the most appropriate program for viewing it.
 	int Launch(const string& filename);
+
+	//Checks if a given object is an esp, an esm or a ghosted mod.
+	bool IsPlugin(string object);
+	
+	//Checks if the plugin is in the Data directory, even if ghosted.
+	bool PluginExists(fs::path plugin);
+
+	/// GetModHeader(string textbuf):
+	///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
+	string GetModHeader(const fs::path& filename, bool ghosted);
 }
 
 #endif

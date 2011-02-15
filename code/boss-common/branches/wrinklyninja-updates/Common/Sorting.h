@@ -12,17 +12,7 @@
 #ifndef __BOSS_SORTING_H__
 #define __BOSS_SORTING_H__
 
-
-#include "Globals.h"
-#include "Updater.h"
-#include "Masterlist.h"
-
-#include "Support/Types.h"
-#include "Support/ModFormat.h"
-#include "Support/Helpers.h"
-
 #include <string>
-
 
 namespace boss {
 	using namespace std;
@@ -34,10 +24,6 @@ namespace boss {
 	/// ReadLine (string file):
 	///  - Read a line from a file. Could be rewritten better.
 	string ReadLine (string file); 
-
-	/// GetModHeader(string textbuf):
-	///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
-	string GetModHeader(const fs::path& filename, bool ghosted);
 }
 
 #endif

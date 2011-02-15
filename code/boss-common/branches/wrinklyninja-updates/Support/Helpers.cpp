@@ -10,9 +10,10 @@
 */
 
 
-#include "Types.h"
 #include "Helpers.h"
 #include "VersionRegex.h"
+#include "ModFormat.h"
+#include "../Common/Globals.h"
 
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
@@ -127,7 +128,8 @@ namespace boss {
 		return string();
 	}
 
-	string Tidy(string filename) {						//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
+/*	string Tidy(string filename) {						//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
+		
 		size_t endpos = filename.find_last_not_of(" \t");
 	
 		if (filename.npos == endpos) return (""); 			//sanity check for empty string
@@ -137,10 +139,46 @@ namespace boss {
 			return (filename);
 		}
 	}
+*/
+	string Tidy(string filename) {
+		boost::algorithm::trim(filename);
+		boost::algorithm::to_lower(filename);
+		return filename;
+	}
 
 	int Launch(const string& filename)
 	{
 		const string cmd = launcher_cmd + " " + filename;
 		return ::system(cmd.c_str());
+	}
+
+	//Checks if a given object is an esp, an esm or a ghosted mod.
+	bool IsPlugin(string object) {
+		to_lower(object);
+		return (object.find(".esp")!=string::npos || object.find(".esm")!=string::npos);
+	}
+
+	//Checks if a plugin exists, even if ghosted.
+	bool PluginExists(fs::path plugin) {
+		return (fs::exists(plugin) || fs::exists(plugin.native()+fs::path(".ghost").native()));
+	}
+
+	/// GetModHeader(string textbuf):
+	///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
+	///
+	string GetModHeader(const fs::path& filename, bool ghosted) {
+
+	//	ostringstream out;
+		ModHeader header;
+
+		// Read mod's header now...
+		if (ghosted) header = ReadHeader(data_path / fs::path(filename.string()+".ghost"));
+		else header = ReadHeader(data_path / filename);
+
+		// The current mod's version if found, or empty otherwise.
+		string version = header.Version;
+
+		//Return the version if found, otherwise an empty string.
+		return version;
 	}
 }

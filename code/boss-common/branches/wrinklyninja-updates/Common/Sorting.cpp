@@ -10,14 +10,13 @@
 */
 
 #include <boost/algorithm/string/replace.hpp>
-#include "Globals.h"
 #include "Sorting.h"
-
+#include "Globals.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <time.h>
-
+#include "Support/Types.h"
 
 namespace boss {
 	using namespace std;
@@ -35,15 +34,13 @@ namespace boss {
 		}
 		switch (textbuf[0]) {	
 		case '*':
-			if (fcom && game == 1) bosslog << "<li class='error'>!!! FCOM INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
-			else if (fcom && game == 2) bosslog << "<li class='error'>!!! FOOK2 INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
+			bosslog << "<li class='error'>!!! CRITICAL INSTALLATION ERROR: " << textbuf.substr(1) << "</li>" << endl;
+			break;
+		case '"':
+			bosslog << "<li class='warn'>Warning: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case ':':
 			bosslog << "<li>Requires: " << textbuf.substr(1) << "</li>" << endl;
-			break;
-		case '$':
-			if (ooo && game == 1) bosslog << "<li>OOO Specific Note: " << textbuf.substr(1) << "</li>" << endl;
-			else if (ooo && game == 2) bosslog << "<li>FWE Specific Note: " << textbuf.substr(1) << "</li>" << endl;
 			break;
 		case '%':
 			pos1 = textbuf.find("{{BASH:");
@@ -61,48 +58,14 @@ namespace boss {
 		case '\?':
 			bosslog << "<li>Note: " << textbuf.substr(1) << "</li>" << endl;
 			break;
-		case '"':
-			bosslog << "<li>Incompatible with: " << textbuf.substr(1) << "</li>" << endl;
-			break;
-		case '^':
-			if (game == 1) bosslog << "<li>Better Cities Specific Note: " << textbuf.substr(1) << "</li>" <<endl;
-			break;
 		} //switch
 	}
 
 	string ReadLine (string file) {						//Read a line from a file. Could be rewritten better.
 		char cbuffer[MAXLENGTH];						//character buffer.
 		string textbuf;
-
-		if (file=="order") order.getline(cbuffer,MAXLENGTH);				//get a line of text from the masterlist.txt text file
-		//No internal error handling here.
-		textbuf=cbuffer;
-		if (textbuf.length() > 0)
-			if (file=="order") {		//If parsing masterlist.txt, parse only lines that start with > or < depending on FCOM installation. Allows both FCOM and nonFCOM differentiaton.
-				if ((textbuf[0]=='>') && (fcom)) textbuf.erase(0,1);
-				else if ((textbuf[0]=='>') && (!fcom)) textbuf='\\';
-				else if ((textbuf[0]=='<') && (!fcom)) textbuf.erase(0,1);
-				else if ((textbuf[0]=='<') && (fcom)) textbuf='\\';
-			} //if
-		return (textbuf);
-	}
-
-	/// GetModHeader(string textbuf):
-	///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
-	///
-	string GetModHeader(const fs::path& filename, bool ghosted) {
-
-	//	ostringstream out;
-		ModHeader header;
-
-		// Read mod's header now...
-		if (ghosted) header = ReadHeader(data_path / fs::path(filename.string()+".ghost"));
-		else header = ReadHeader(data_path / filename);
-
-		// The current mod's version if found, or empty otherwise.
-		string version = header.Version;
-
-		//Return the version if found, otherwise an empty string.
-		return version;
+		order.getline(cbuffer,MAXLENGTH);				//get a line of text from the masterlist.txt text file
+		textbuf=cbuffer;								//No internal error handling here.
+		return textbuf;
 	}
 }

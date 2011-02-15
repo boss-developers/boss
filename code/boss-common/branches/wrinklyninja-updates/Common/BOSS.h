@@ -13,10 +13,13 @@
 #define __BOSS_H__
 
 #include "Support/Logger.h"
+#include "Support/Helpers.h"
 #include "Globals.h"
 #include "Sorting.h"
 #include "Updater.h"
 #include "Masterlist.h"
 #include "Userlist.h"
+#include "Modlist.h"
+#include "BOSSLog.h"
 
 #endif
