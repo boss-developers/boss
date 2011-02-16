@@ -10,27 +10,59 @@
 */
 
 //Contains the various functions/classes required for varied BOSSlog output formattings,etc.
+//Still at the brainstorming stage.
+//The idea is to separate the unformatted text from the formatting. Unformatted text is generated in main() and passed through something found
+//here to be formatted appropriately.
 
 #ifndef __BOSS_BOSSLOG_H__
 #define __BOSS_BOSSLOG_H__
-
+/*
 #include <fstream>
 #include <string>
+#include "Globals.h"
 
 namespace boss {
 	using namespace std;
 
+	class BOSSLog {
+	private:
+		int logFormat;
+		ofstream bosslog;
+	public:
+		enum logType {
+			HTML = 0,
+			PLAINTEXT = 1
+		};
+		enum textType {
+			NO_TYPE = 0,
+			TITLE = 1,
+			LINK = 2,
+			ERR = 3,
+			SUCCESS = 4,
+			WARN = 5,
+			GHOST = 6,
+			VER = 7,
+			TAG = 8,
+			SUBTITLE = 9,
+			LI = 10
+		};
+		enum divType {
+			DIV = 0,
+			PARA = 1
+		};
+		void setLogType(logType type);
+		void startLog();  //Print header for HTML, nothing for plaintext.
+		void writeText(string text, textType type);
+		void writeLink(string link, string text);
+		void endl(int number);
+		void startDiv(divType type);
+		void endDiv(divType type);
+		void endLog(); //Print closing tags for HTML, nothing for plaintext.
+		bool open(boost::filesystem::path file);
+	}
+
 	//Now a dumping ground for un-sorted testing code.
 	//Try implementing a BOSSLogger function or something.
-	enum attr {
-		NO_ATTR = 0,
-		BR = 1,
-		START_DIV = 2,
-		START_PARA = 3,
-		END_DIV = 4,
-		END_PARA = 5,
-		END_LOG = 6
-	};
 
 	enum styleType {
 		NO_STYLE = 0,
@@ -46,14 +78,9 @@ namespace boss {
 		LI = 10
 	};
 
-	enum logFormat {
-		HTML = 0,
-		PLAINTEXT = 1
-	};
-
 	void printHTMLHead(ofstream& log);
 
-	void printLogText(ofstream& log, string text, logFormat format, attr attribute, styleType style);
-	void printLogText(ofstream& log, string text, string link, logFormat format, attr attribute, styleType style);
-}
+	void printBOSSLogText(ofstream& log, string text, logFormat format, attr attribute, styleType style);
+	void printBOSSLogText(ofstream& log, string text, string link, logFormat format, attr attribute, styleType style);
+}*/
 #endif

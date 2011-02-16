@@ -21,5 +21,6 @@
 #include "Userlist.h"
 #include "Modlist.h"
 #include "BOSSLog.h"
+#include "Error.h"
 
 #endif

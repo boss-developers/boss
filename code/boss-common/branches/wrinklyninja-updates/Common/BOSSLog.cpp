@@ -11,28 +11,125 @@
 
 #include "BOSSLog.h"
 
-
+/*
 namespace boss {
 	using namespace std;
 
-//What it says on the tin.
-	void printHTMLHead(ofstream& log) {
-		log << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
-			<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
-			<< "body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
-			<< "#title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl
-			<< "#title + div {text-align: center;}"<<endl
-			<< "div > span:first-child {font-weight:bold; font-size:1.3em;}"<<endl
-			<< "ul {margin-top:0px; list-style:none; margin-bottom:1.1em;}"<<endl
-			<< "ul li {margin-left:-1em; margin-bottom:0.4em;}"<<endl
-			<< ".error {color:red;}"<<endl
-			<< ".success {color:green}"<<endl
-			<< ".warn {color:#FF6600;}"<<endl
-			<< ".version {color:teal;}"<<endl
-			<< ".ghosted {font-style:italic; color:grey;}"<<endl
-			<< ".tags {color:maroon;}"<<endl
-			<< "</style>"<<endl<<"</head>"<<endl<<"<body>"<<endl;
+
+		void BOSSLog::setLogType(logType type) {
+			logFormat = type;
+		}
+
+
+		void BOSSLog::startLog() {
+			if (logFormat == HTML) {
+				bosslog << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
+						<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
+						<< "body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
+						<< "#title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl
+						<< "#title + div {text-align: center;}"<<endl
+						<< "div > span:first-child {font-weight:bold; font-size:1.3em;}"<<endl
+						<< "ul {margin-top:0px; list-style:none; margin-bottom:1.1em;}"<<endl
+						<< "ul li {margin-left:-1em; margin-bottom:0.4em;}"<<endl
+						<< ".error {color:red;}"<<endl
+						<< ".success {color:green}"<<endl
+						<< ".warn {color:#FF6600;}"<<endl
+						<< ".version {color:teal;}"<<endl
+						<< ".ghosted {font-style:italic; color:grey;}"<<endl
+						<< ".tags {color:maroon;}"<<endl
+						<< "</style>"<<endl<<"</head>"<<endl<<"<body>"<<endl;
+			}
+		}
+
+
+		void BOSSLog::writeText(std::string text, textType type) {
+			if (logFormat == HTML) {
+				switch (type) {
+					case TITLE:
+						bosslog << "<div id='title'>" << text << "</div>" << endl;
+						break;
+					case ERR:
+						bosslog << "<span class='error'>" << text << "</span>";
+						break;
+					case SUCCESS:
+						bosslog << "<span class='success'>" << text << "</span>";
+						break;
+					case WARN:
+						bosslog << "<span class='warn'>" << text << "</span>";
+						break;
+					case GHOST:
+						bosslog << "<span class='ghosted'>" << text << "</span>";
+						break;
+					case VER:
+						bosslog << "<span class='version'>" << text << "</span>";
+						break;
+					case TAG:
+						bosslog << "<span class='tags'>" << text << "</span>";
+						break;
+					case SUBTITLE:
+						bosslog << "<span>" << text << "</span>";
+					case LI:
+						bosslog << "<li>" << text << "</li>";
+					default:
+						bosslog << text;
+						break;
+					}
+				}
+			} else {
+
+			}
+		}
+
+		void BOSSLog::writeLink(std::string text, textType type) {
+			if (logFormat == HTML) {
+				bosslog << "<a href='" << link << "'>" << text << "</a>";
+			} else {
+				bosslog << text << " (" << link << ") ";
+			}
+		}
+
+		void BOSSLog::endl(int number) {
+			if (logFormat == HTML)
+				bosslog << "<br />" << endl;
+			else
+				bosslog << endl;
+		}
+
+
+		void BOSSLog::startDiv(divType type) {
+			if (logFormat == HTML) {
+
+			} else {
+
+			}
+		}
+
+
+		void BOSSLog::endDiv(divType type) {
+			if (logFormat == HTML) {
+
+			} else {
+
+			}
+		}
+
+		//Print closing tags for HTML, nothing for plaintext.
+		void BOSSLog::endLog() {
+			if (logFormat == HTML) {
+
+			}
+		}
+
+		bool BOSSLog::open(boost::filesystem::path file) {
+			bosslog.open(file.c_str());
+			if (bosslog.fail())
+				return false;
+			else
+				return true;
+		}
 	}
+
+
 
 	void printLogText(ofstream& log, string text, logFormat format, attr attribute, styleType style) {
 		printLogText(log,text,"",format,attribute, style);
@@ -106,14 +203,18 @@ namespace boss {
 				text.replace(pos,pos+5,"&");
 			switch (attribute) {
 			case TITLE:
-				log << "-----------------------------------------------------------" << endl
+				log << "===========================================================" << endl << endl
 					<< text << endl
-					<< "-----------------------------------------------------------" << endl;
+					<< "===========================================================" << endl << endl;
 				break;
 			case LINK:
 				log << text << " (" << link << ") " << endl;
 				break;
+			case SUBTITLE:
+				log << "-----------------------------------------------------------" << endl
+					<< text << endl
+					<< "-----------------------------------------------------------" << endl << endl;
 			}
 		}
 	}
-}
+}*/

@@ -19,6 +19,7 @@
 #include <curl/curl.h>
 #include <curl/types.h>
 #include <curl/easy.h>
+#include "Error.h"
 
 namespace boss {
 	int UpdateMasterlist(int game);

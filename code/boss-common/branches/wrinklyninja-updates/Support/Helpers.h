@@ -27,10 +27,10 @@
 #include <iostream>
 #include "boost/filesystem.hpp"
 
-namespace fs = boost::filesystem;
 
 namespace boss {
 	using namespace std;
+	namespace fs = boost::filesystem;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Helper functions
@@ -103,6 +103,9 @@ namespace boss {
 	/// GetModHeader(string textbuf):
 	///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
 	string GetModHeader(const fs::path& filename, bool ghosted);
+
+	//Calculate the CRC of the given file for comparison purposes.
+	int GetCrc32(const fs::path& filename);
 }
 
 #endif

@@ -53,10 +53,8 @@ namespace boss {
 		
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
-		if (!curl) {
-			const char * err = "Curl could not be initialised.";
-			throw err;
-		}
+		if (!curl) 
+			throw boss_error() << err_detail("Curl could not be initialised.");
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 10s.
 		
@@ -65,41 +63,31 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &revision );
 		ret = curl_easy_perform(curl);
-		if (ret!=CURLE_OK) {
-			const char * err = errbuff;
-			throw err;
-		}
+		if (ret!=CURLE_OK)
+			throw boss_error() << err_detail(errbuff);
 		
 		//Extract revision number from page text.
 		if (game == 1) start = revision.find("boss-oblivion");
 		else if (game == 2) start = revision.find("boss-fallout");
 		else if (game == 3) start = revision.find("boss-nehrim");
 		else if (game == 4) start = revision.find("boss-fallout-nv");
-		if (start == string::npos) {
-			const char * err = "Cannot find online masterlist revision number.";
-			throw err;
-		}
+		if (start == string::npos)
+			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
 		start = revision.find("\"masterlist.txt\"", start);
 		start = revision.find("B\",\"", start) + 4; 
-		if (start == string::npos) {
-			const char * err = "Cannot find online masterlist revision number.";
-			throw err;
-		}
+		if (start == string::npos)
+			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
 		end = revision.find("\"",start) - start;
-		if (end == string::npos) {
-			const char * err = "Cannot find online masterlist revision number.";
-			throw err;
-		}
+		if (end == string::npos)
+			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
 		revision = revision.substr(start,end);
 		newline = "? Masterlist Revision: "+revision;
 
 		//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
 		if (fs::exists(masterlist_path)) {
 			mlist.open(masterlist_path.c_str());
-			if (mlist.fail()) {
-				const char * err = "Masterlist cannot be opened.";
-				throw err;
-			}
+			if (mlist.fail())
+				throw boss_error() << err_detail("Masterlist cannot be opened.");
 			while (!mlist.eof()) {
 				mlist.getline(cbuffer,4096);
 				line=cbuffer;
@@ -118,10 +106,8 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
 		curl_easy_setopt(curl, CURLOPT_CRLF, 1);
 		ret = curl_easy_perform(curl);
-		if (ret!=CURLE_OK) {
-			const char * err = errbuff;
-			throw err;
-		}
+		if (ret!=CURLE_OK)
+			throw boss_error() << err_detail(errbuff);
 
 		//Clean up and close curl handle now that it's finished with.
 		curl_easy_cleanup(curl);
@@ -131,10 +117,8 @@ namespace boss {
 		if (pos != string::npos)
 			buffer.replace(pos,oldline.length(),newline);
 		out.open(masterlist_path.c_str(), ios_base::trunc);
-		if (out.fail()) {
-			const char * err = "Masterlist cannot be opened.";
-			throw err;
-		}
+		if (out.fail())
+			throw boss_error() << err_detail("Masterlist cannot be opened.");
 		out << buffer;
 		out.close();
 

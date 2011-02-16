@@ -17,6 +17,7 @@
 
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/crc.hpp>
 
 #include <ctype.h>
 #include <stdio.h>
@@ -180,5 +181,12 @@ namespace boss {
 
 		//Return the version if found, otherwise an empty string.
 		return version;
+	}
+
+	//Calculate the CRC of the given file for comparison purposes.
+	int GetCrc32(const fs::path& filename) {
+		boost::crc_32_type result;
+		result.process_bytes(filename.string().data(), filename.string().length());
+		return result.checksum();
 	}
 }

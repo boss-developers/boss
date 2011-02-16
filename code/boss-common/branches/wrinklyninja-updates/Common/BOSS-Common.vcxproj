@@ -33,6 +33,7 @@
     <ClInclude Include="..\Support\VersionRegex.h" />
     <ClInclude Include="BOSS.h" />
     <ClInclude Include="BOSSLog.h" />
+    <ClInclude Include="Error.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="Masterlist.h" />
     <ClInclude Include="Modlist.h" />

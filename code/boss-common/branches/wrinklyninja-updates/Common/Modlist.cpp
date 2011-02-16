@@ -19,8 +19,6 @@
 namespace boss {
 	using namespace std;
 	using boost::algorithm::to_lower_copy;
-	using boost::algorithm::to_lower;
-	using boost::algorithm::trim_copy;
 
 	//Date comparison, used for sorting mods in modlist class.
 	bool SortByDate(fs::path mod1,fs::path mod2) {
@@ -66,15 +64,14 @@ namespace boss {
 		} catch(boost::filesystem::filesystem_error e) {
 			//Couldn't rename the file, print an error message.
 			LOG_ERROR("Backup of modlist failed with error: %s", e.what());
-			throw e.what();
+			throw boss_error() << err_detail(e.what());
 		}
 		
 		modlist.open(curr_modlist_path.c_str());
 		//Provide error message if it can't be written.
 		if (modlist.fail()) {
 			LOG_ERROR("Backup cannot be saved.");
-			const char *err = "Backup cannot be saved.";
-			throw err;
+			throw boss_error() << err_detail("Backup cannot be saved.");
 		}
 		for (int i=0;i<(int)mods.size();i++) {
 			modlist << mods[i] << endl;

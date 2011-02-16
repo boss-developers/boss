@@ -25,11 +25,11 @@
 #include <string>
 #include <vector>
 #include "boost/filesystem.hpp"
-
-namespace fs = boost::filesystem;
+#include "Error.h"
 
 namespace boss {
 	using namespace std;
+	namespace fs = boost::filesystem;
 
 	//Date comparison, used for sorting mods in modlist class.
 	bool SortByDate(fs::path mod1, fs::path mod2);

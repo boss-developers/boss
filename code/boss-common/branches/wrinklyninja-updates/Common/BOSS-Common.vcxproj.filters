@@ -106,6 +106,9 @@
     <ClInclude Include="BOSSLog.h">
       <Filter>BOSSLog</Filter>
     </ClInclude>
+    <ClInclude Include="Error.h">
+      <Filter>Support</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BOSS_version.rc" />
