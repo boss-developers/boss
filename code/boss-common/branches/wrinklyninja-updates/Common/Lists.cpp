@@ -12,12 +12,13 @@
 //Contains some helpful functions for dealing with the modlist (inc. masterlist) and userlist data structures.
 //DOES NOT CONTAIN ANYTHING TO DO WITH THE FILE PARSERS.
 
+#include "Support/Helpers.h"
 #include "Support/Logger.h"
 #include "Lists.h"
+#include "Error.h"
+#include "Globals.h"
 #include <boost/algorithm/string.hpp>
 #include "../utf8/source/utf8.h"
-#include "Globals.h"
-#include "Support/Helpers.h"
 
 namespace boss {
 	using namespace std;
@@ -89,7 +90,7 @@ namespace boss {
 		//Back up file if it already exists.
 		try {
 			LOG_DEBUG("Saving backup of current modlist...");
-			if (fs::exists(file)) fs::rename(file, file.string().substr(0,file.string().length()-4) + ".old");
+			if (fs::exists(file)) fs::rename(file, prev_modlist_path);
 		} catch(boost::filesystem::filesystem_error e) {
 			//Couldn't rename the file, print an error message.
 			LOG_ERROR("Backup of modlist failed with error: %s", e.what());

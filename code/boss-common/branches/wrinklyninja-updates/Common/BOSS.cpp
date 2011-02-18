@@ -291,19 +291,6 @@ int main(int argc, char *argv[]) {
 		return (0);
 	}
 
-	//Masterlist UTF-8 validator. Not really necessary. 
-	order.open(masterlist_path.c_str());
-	if (!order.fail()) {
-		while (!order.eof()) {
-			textbuf=ReadLine("order");
-			string::iterator end_it = utf8::find_invalid(textbuf.begin(), textbuf.end());
-			//Debug: print out the malformed line.
-			if (end_it != textbuf.end()) 
-				bosslog << "<span class='error'>Error: Masterlist line \"" << textbuf << "\" is not valid UTF-8. Report the line in question to an official BOSS thread." << "<br />" <<endl;
-		}
-	}
-	order.close();
-
 	cout << endl << "Better Oblivion Sorting Software working..." << endl;
 
 	//Get the master esm's modification date. 
@@ -572,7 +559,7 @@ int main(int argc, char *argv[]) {
 				text += " <span class='ghosted'> - Ghosted</span>";
 			bosslog << text;
 			//Now change the file's date, if it is not the game's master file.
-			if (IsValidLine(Modlist.items[i].name.string())) {
+			if (!IsMasterFile(Modlist.items[i].name.string())) {
 				//Calculate the new file time.
 				modfiletime=esmtime;
 				modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.

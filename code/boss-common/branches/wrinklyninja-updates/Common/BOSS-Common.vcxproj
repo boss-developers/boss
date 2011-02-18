@@ -19,11 +19,7 @@
     <ClCompile Include="BOSSLog.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="Lists.cpp" />
-    <ClCompile Include="Masterlist.cpp" />
-    <ClCompile Include="Modlist.cpp" />
-    <ClCompile Include="Sorting.cpp" />
     <ClCompile Include="Updater.cpp" />
-    <ClCompile Include="Userlist.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Support\Helpers.h" />
@@ -37,11 +33,7 @@
     <ClInclude Include="Error.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="Lists.h" />
-    <ClInclude Include="Masterlist.h" />
-    <ClInclude Include="Modlist.h" />
-    <ClInclude Include="Sorting.h" />
     <ClInclude Include="Updater.h" />
-    <ClInclude Include="Userlist.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BOSS_version.rc" />

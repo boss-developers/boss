@@ -106,6 +106,9 @@ namespace boss {
 
 	//Calculate the CRC of the given file for comparison purposes.
 	int GetCrc32(const fs::path& filename);
+
+	//Determines if a given mod is a game's main master file or not.
+	bool IsMasterFile(string plugin);
 }
 
 #endif

@@ -31,7 +31,6 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-	extern ifstream order;						//masterlist.txt - the grand mod order list
 	extern ofstream bosslog;					//BOSSlog.html output file
 
 	extern const fs::path data_path;			// Holds the path to the data directory.

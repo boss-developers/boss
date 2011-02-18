@@ -189,4 +189,9 @@ namespace boss {
 		result.process_bytes(filename.string().data(), filename.string().length());
 		return result.checksum();
 	}
+
+	//Determines if a given mod is a game's main master file or not.
+	bool IsMasterFile(string plugin) {
+		return (Tidy(plugin)=="oblivion.esm") || (Tidy(plugin)=="fallout3.esm") || (Tidy(plugin)=="nehrim.esm") || (Tidy(plugin)=="falloutnv.esm");
+	}
 }
