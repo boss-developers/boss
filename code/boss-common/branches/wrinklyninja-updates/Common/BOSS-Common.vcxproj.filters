@@ -35,6 +35,9 @@
     <ClCompile Include="BOSSLog.cpp">
       <Filter>BOSSLog</Filter>
     </ClCompile>
+    <ClCompile Include="Lists.cpp">
+      <Filter>Lists</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support">
@@ -63,6 +66,9 @@
     </Filter>
     <Filter Include="Parser-Replaceable\Sorting">
       <UniqueIdentifier>{a89cfbe9-ab64-4030-ba8a-7d494cee717b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lists">
+      <UniqueIdentifier>{7cc10196-2e42-4a43-802e-9c3a7ad9f3ff}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -108,6 +114,9 @@
     </ClInclude>
     <ClInclude Include="Error.h">
       <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="Lists.h">
+      <Filter>Lists</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

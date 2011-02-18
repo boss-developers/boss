@@ -74,7 +74,7 @@ namespace boss {
 			throw boss_error() << err_detail("Backup cannot be saved.");
 		}
 		for (int i=0;i<(int)mods.size();i++) {
-			modlist << mods[i] << endl;
+			modlist << mods[i].string() << endl;
 		}
 		modlist.close();
 		LOG_INFO("Backup saved successfully.");

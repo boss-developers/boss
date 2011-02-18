@@ -18,6 +18,7 @@
     <ClCompile Include="BOSS.cpp" />
     <ClCompile Include="BOSSLog.cpp" />
     <ClCompile Include="Globals.cpp" />
+    <ClCompile Include="Lists.cpp" />
     <ClCompile Include="Masterlist.cpp" />
     <ClCompile Include="Modlist.cpp" />
     <ClCompile Include="Sorting.cpp" />
@@ -35,6 +36,7 @@
     <ClInclude Include="BOSSLog.h" />
     <ClInclude Include="Error.h" />
     <ClInclude Include="Globals.h" />
+    <ClInclude Include="Lists.h" />
     <ClInclude Include="Masterlist.h" />
     <ClInclude Include="Modlist.h" />
     <ClInclude Include="Sorting.h" />

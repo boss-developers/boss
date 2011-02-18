@@ -16,6 +16,19 @@
 
 #ifndef __BOSS_BOSSLOG_H__
 #define __BOSS_BOSSLOG_H__
+
+#include <fstream>
+#include <string>
+#include "Globals.h"
+#include "Lists.h"
+
+namespace boss {
+	using namespace std;
+
+	//Prints a given message to the bosslog. Not format-safe ATM.
+	void ShowMessage(message message, ofstream &log);
+}
+
 /*
 #include <fstream>
 #include <string>

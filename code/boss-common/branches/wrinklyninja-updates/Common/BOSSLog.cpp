@@ -11,6 +11,46 @@
 
 #include "BOSSLog.h"
 
+namespace boss {
+	using namespace std;
+
+	void ShowMessage(message message, ofstream &log) {
+		size_t pos1,pos2,pos3;
+		string link;
+		//Replace web addresses with hyperlinks.
+		pos1 = message.data.find("http");
+		while (pos1 != string::npos) {
+			pos2 = message.data.find(" ",pos1);
+			link = message.data.substr(pos1,pos2-pos1);
+			link = "<a href='"+link+"'>"+link+"</a>";
+			message.data.replace(pos1,pos2-pos1,link);
+			pos1 = message.data.find("http",pos1 + link.length());
+		}
+		//Select message formatting.
+		if (message.key=="TAG") {
+			//Insert spaces in tag list to allow wrapping.
+			pos1 = message.data.find("{{BASH:");
+			if (pos1 != string::npos) {
+				pos2 = message.data.find("}}",pos1);
+				pos3 = message.data.find(",",pos1);
+				while (pos3 != string::npos && pos3 < pos2) {
+					message.data.replace(pos3,1,", ");
+					pos3 = message.data.find(",",pos3+9);
+				}
+			}
+			bosslog << "<li><span class='tags'>Bash Tag suggestion(s):</span> " << message.data << "</li>" << endl;
+		} else if (message.key=="SAY") {
+			bosslog << "<li>Note: " << message.data << "</li>" << endl;
+		} else if (message.key=="REQ") {
+			bosslog << "<li>Requires: " << message.data << "</li>" << endl;
+		} else if (message.key=="WARN") {
+			bosslog << "<li class='warn'>Warning: " << message.data << "</li>" << endl;
+		} else if (message.key=="ERROR") {
+			bosslog << "<li class='error'>!!! CRITICAL INSTALLATION ERROR: " << message.data << "</li>" << endl;
+		}
+	}
+}
+
 /*
 namespace boss {
 	using namespace std;

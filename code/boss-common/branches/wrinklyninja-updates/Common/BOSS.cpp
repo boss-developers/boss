@@ -35,6 +35,7 @@ using namespace boss;
 using namespace std;
 namespace po = boost::program_options;
 using boost::algorithm::trim_copy;
+using boost::algorithm::to_lower_copy;
 
 
 const string g_version     = "1.7";
@@ -81,11 +82,9 @@ void Fail() {
 
 int main(int argc, char *argv[]) {
 
-	int x;							//random useful integers
+	int x=0;							//random useful integers
 	string textbuf;                 //a line of text from a file (should usually end up being be a file name);
 	time_t esmtime = 0, modfiletime;	//File modification times.
-	bool found;
-	bool isghost;					//Is the file ghosted or not?
 	int game = 0;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
 
 	// set option defaults
@@ -234,12 +233,23 @@ int main(int argc, char *argv[]) {
 
 	if (0 == game) {
 		LOG_DEBUG("Detecting game...");
-		if (fs::exists(data_path / "Oblivion.esm")) game = 1;
-		else if (fs::exists(data_path / "Fallout3.esm")) game = 2;
+		if (fs::exists(data_path / "Oblivion.esm")) {
+			game = 1;
+			if (fs::exists(data_path / "Nehrim.esm")) {
+				bosslog << endl << "<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />" << endl
+						<< "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.<br />" << endl
+						<< "Utility will end now.</p>" << endl
+						<< "</body>"<<endl<<"</html>";
+				bosslog.close();
+				LOG_ERROR("Installation error found: check BOSSLOG.");
+				if ( !silent ) 
+					Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
+				exit (1); //fail in screaming heap.
+			}
+		} else if (fs::exists(data_path / "Fallout3.esm")) game = 2;
 		else if (fs::exists(data_path / "Nehrim.esm")) game = 3;
 		else if (fs::exists(data_path / "FalloutNV.esm")) game = 4;
 		else {
-			LOG_ERROR("None of the supported games were detected...");
 			LOG_ERROR("None of the supported games were detected...");
 			bosslog << endl << "<p class='error'>Critical Error: Master .ESM file not found!<br />" << endl
 							<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
@@ -277,7 +287,11 @@ int main(int argc, char *argv[]) {
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	}
 
-	//Masterlist UTF-8 validator.
+	if (updateonly == true) {
+		return (0);
+	}
+
+	//Masterlist UTF-8 validator. Not really necessary. 
 	order.open(masterlist_path.c_str());
 	if (!order.fail()) {
 		while (!order.eof()) {
@@ -289,22 +303,8 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	order.close();
-	
-	if (updateonly == true) {
-		return (0);
-	}
 
-	if (game==1 && fs::exists(data_path / "Nehrim.esm")) {
-		bosslog << endl << "<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />" << endl
-						<< "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.<br />" << endl
-						<< "Utility will end now.</p>" << endl
-						<< "</body>"<<endl<<"</html>";
-		bosslog.close();
-		LOG_ERROR("Installation error found: check BOSSLOG.");
-		if ( !silent ) 
-			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
-		exit (1); //fail in screaming heap.
-	}
+	cout << endl << "Better Oblivion Sorting Software working..." << endl;
 
 	//Get the master esm's modification date. 
 	try {
@@ -324,14 +324,13 @@ int main(int argc, char *argv[]) {
 		exit (1); //fail in screaming heap.
 	}
 
-	cout << endl << "Better Oblivion Sorting Software working..." << endl;
-
-	Mods modlist;
-	modlist.AddMods();
+	//Build and save modlist.
+	modlist Modlist;
+	BuildModlist(Modlist);
 	if (revert<1) {
 		try {
-			modlist.SaveModList();
-		} catch (boss_error & e) {
+			SaveModlist(Modlist, curr_modlist_path);
+		} catch (boss_error &e) {
 			string const * detail = boost::get_error_info<err_detail>(e);
 			bosslog << "Critical Error: " << *detail << "<br />" << endl;
 			bosslog << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
@@ -343,437 +342,291 @@ int main(int argc, char *argv[]) {
 			exit (1); //fail in screaming heap.
 		}
 	}
-	Rules userlist;
-	if (fs::exists(userlist_path) && revert<1) userlist.AddRules();
 
-	//open masterlist.txt
+	//Parse userlist.
+	userlist Userlist;
+	if (revert<1 && fs::exists(userlist_path)) {
+		//Parse userlist file into data structure.
+	}
+
+	//Parse masterlist/modlist backup
+	modlist Masterlist;
 	fs::path sortfile;
 	if (revert==1) sortfile = curr_modlist_path;	
 	else if (revert==2) sortfile = prev_modlist_path;
 	else sortfile = masterlist_path;
+	LOG_INFO("Using sorting file: %s", sortfile.c_str());
+	//Parse masterlist/modlist backup into data structure.
 
-	LOG_INFO("Using sorting file: %s", sortfile.filename().c_str());
-	order.open(sortfile.c_str());
+	//Compare masterlist and modlist. Remove any mods found in both from the modlist.
+	if (Masterlist.items.size()>0) {
+		for (int i=0; i<(int)Masterlist.items.size(); i++) {
+			int pos = GetModPos(Modlist,Masterlist.items[i].name.string());
+			if (pos >= 0)
+				Modlist.items.erase(Modlist.items.begin()+pos);
+		}
+		//Record position of last sorted mod.
+		x = Masterlist.items.size()-1;
+	}
+	//Add modlist's mods to masterlist.
+	item group;
+	group.type = GROUPBEGIN;
+	group.name = fs::path("Unsorted");
+	Masterlist.items.push_back(group);
+	Masterlist.items.insert(Masterlist.items.end(),Modlist.items.begin(),Modlist.items.end());
+	group.type = GROUPEND;
+	Masterlist.items.push_back(group);
+	//Now set the modlist to the masterlist (because the modlist is a more sensible named var to work with) and delete the masterlist var.
+	Modlist = Masterlist;
+	delete &Masterlist;
 
-	if (order.fail()) {							
-		bosslog << endl << "<p class='error'>Critical Error: " << sortfile.string() << " cannot be read!<br />" << endl
-				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
-				<< "Utility will end now.</p>" << endl
-				<< "</body>"<<endl<<"</html>";
-		bosslog.close();
-		LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().c_str());
-		if ( !silent ) 
-			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
-		exit (1); //fail in screaming heap.
-	} //if
+	x = Modlist.items.size()-1; //Debug line. Remove if masterlist parser implemented.
 
-	x=0;
-	found=false;
-	LOG_INFO("Starting main sort process...");
-	while (!order.eof()) {
-		textbuf=ReadLine("order");
-		LOG_TRACE(">> Text line read from sort file: \"%s\"", textbuf.c_str());
-		if (textbuf.length()>1 && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
-			if (!IsMessage(textbuf)) {						//Deal with mod lines only here. Message lines will be dealt with below.
-				isghost = false;
-				if (fs::exists(data_path / fs::path(textbuf+".ghost"))) isghost = true;
-				if (fs::exists(data_path / fs::path(textbuf)) || isghost) {					//Tidy function not needed as file system removes trailing spaces and isn't case sensitive
-
-					LOG_DEBUG("-- Sorting %smod: \"%s\" into position: %d", isghost ? "ghosted " : "", textbuf.c_str(), x);
-					const string& filename = isghost ? textbuf+".ghost" : textbuf;
-
-					int i = modlist.GetModIndex(filename);
-					if (i < x || i >= int(modlist.mods.size()))	//The first check is to prevent mods being sorted twice and screwing everything up.
-						continue;
-					
-					found=true;
-					LOG_DEBUG("  >> Mod found at index: %d in load order.", i);
-
-					// Save current mod's messages for later
-					vector<string> messages = modlist.modmessages[i];
-
-					// Erase data from current mod's position
-					modlist.mods.erase(modlist.mods.begin()+i);
-					modlist.modmessages.erase(modlist.modmessages.begin()+i);
-
-					// Use x only if it doesn't overruns the vector size
-					int newpos = std::min(x, int(modlist.mods.size()));
-
-					// Adds the mod and its messages to the new position					
-					modlist.mods.insert(modlist.mods.begin() + newpos, filename);
-					modlist.modmessages.insert(modlist.modmessages.begin() + newpos, messages);
-
-					x++;
-				} //if
-				else found=false;
-			} //if
-			else if (found) modlist.modmessages[x-1].push_back(textbuf);
-		} //if
-	} //while
-	order.close();		//Close the masterlist stream, as it's not needed any more.
-	LOG_INFO("Main sort process finished.");
-
-	if (fs::exists(userlist_path) && revert<1) {
+	//Apply userlist rules to modlist data structure (refered to simply as modlist from here on in).
+	if (revert<1 && fs::exists(userlist_path)) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
 		//Go through each rule.
-		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlist.rules.size());
-		for (int i=0;i<(int)userlist.rules.size();i++) {
-			int start = userlist.rules[i];
-			int end;
-			if (i==(int)userlist.rules.size()-1) end = (int)userlist.keys.size();
-			else end = userlist.rules[i+1];
-			//Go through each line of the rule. The first line is given by keys[start] and objects[start].
-			LOG_DEBUG(" -- Processing rule #%d starting at: %d and ending at %d.", i, start, end);
-			for (int j=start;j<end;j++) {
-				//A mod sorting line.
-				LOG_TRACE("  -- Processing line: %d.", j);
-				if ((userlist.keys[j]=="before" || userlist.keys[j]=="after") && IsPlugin(userlist.objects[j])) {
-					vector<string> currentmessages;
-					int index,index1;
-					//Get current mod messages and remove mod from current modlist position.
-					index1 = modlist.GetModIndex(userlist.objects[start]);
-					// Only increment 'x' if we've taken the 'source' mod from below the 'last-sorted' mark
-					if (userlist.keys[start]=="add" && index1 >= x) 
+		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", Userlist.rules.size());
+		for (int i=0;i<(int)Userlist.rules.size();i++) {
+			//Go through each line of the rule.
+			LOG_DEBUG(" -- Processing rule #%d.", i);
+			for (int j=0; j<(int)Userlist.rules[i].lines.size(); j++) {
+				//A mod sorting rule.
+				if ((Userlist.rules[i].lines[j].key == "before" || Userlist.rules[i].lines[j].key == "after") && IsPlugin(Userlist.rules[i].lines[j].object)) {
+					int index1,index2;
+					item mod;
+					index1 = GetModPos(Modlist,Userlist.rules[i].lines[0].object);  //Find the rule mod in the modlist.
+					mod = Modlist.items[index1];  //Record the rule mod in a new variable.
+					//Do checks/increments.
+					if (Userlist.rules[i].lines[0].key=="add" && index1 > x) 
 						x++;
 					//If it adds a mod already sorted, skip the rule.
-					else if (userlist.keys[start]=="add"  && index1 < x) {
-						userlist.messages += "<span class='warn'>\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" is already in the masterlist.", userlist.objects[start].c_str());
+					else if (Userlist.rules[i].lines[0].key=="add"  && index1 <= x) {
+						bosslog << "<span class='warn'>\""+Userlist.rules[i].lines[0].object+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is already in the masterlist.", Userlist.rules[i].lines[0].object.c_str());
 						break;
-					} else if (userlist.keys[start]=="override" && index1 >= x) {
-						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlist.objects[start].c_str());
+					} else if (Userlist.rules[i].lines[0].key=="override" && index1 > x) {
+						bosslog << "<span class='error'>\""+Userlist.rules[i].lines[0].object+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", Userlist.rules[i].lines[0].object.c_str());
 						break;
 					}
-
-					fs::path filename = modlist.mods[index1];
-					currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
-					modlist.mods.erase(modlist.mods.begin()+index1);
-					modlist.modmessages.erase(modlist.modmessages.begin()+index1);
-					//Need to insert mod and mod's messages to a specific position.
-					index = modlist.GetModIndex(userlist.objects[j]);
-
-					//Let's take this up to 11 - super awesome stuff beginning.
-					//The sort mod isn't installed - so scour the [s]Shire[/s] masterlist for it.
-					if (index < 0 || index >= int(modlist.mods.size())) {
-						LOG_TRACE(" --> Referenced mod: \"%s\" is not installed, searching for it.", userlist.objects[j].c_str());
-						bool lookforinstalledmod=false;
-						order.open(masterlist_path.c_str());
-						while (!order.eof()) {
-							textbuf=ReadLine("order");
-							if (textbuf.length()>1 && textbuf[0]!='\\') {		//Filter out blank lines, oblivion.esm and remark lines starting with \.
-								if (!IsMessage(textbuf)) {		//Awww, it's a mod.
-									if (Tidy(userlist.objects[j])==Tidy(textbuf)) {
-										//The mod in this masterlist line matches the sort mod. Start looking for the next mod that is installed.
-										lookforinstalledmod=true;
-									} else if (lookforinstalledmod) {
-										//Look to see if the mod is installed.
-										int i = modlist.GetModIndex(textbuf);
-										if (i < 0 || i >= int(modlist.mods.size()))
-											continue;
-										index = i;
-										lookforinstalledmod=false;
-										if (userlist.keys[j]=="after") index -= 1;
-										break;
-									}
-								}
-							}
-						}
-						order.close();
-						if (index < 0 || index >= int(modlist.mods.size())) {
-							userlist.messages += "<span class='warn'>\""+userlist.objects[j]+"\" is not installed, and is not in the masterlist. Rule skipped.</span><br /><br />";
-							modlist.mods.insert(modlist.mods.begin()+index1,filename);
-							modlist.modmessages.insert(modlist.modmessages.begin()+index1,currentmessages);
-							LOG_WARN(" * \"%s\" is not installed or in the masterlist.", userlist.objects[j].c_str());
-							break;
-						}
+					//Remove the rule mod from its current position.
+					Modlist.items.erase(Modlist.items.begin()+index1);
+					//Find the sort mod in the modlist.
+					index2 = GetModPos(Modlist,Userlist.rules[i].lines[j].object);
+					//Handle case of mods that don't exist at all.
+					if (index2 < 0) {
+						Modlist.items.insert(Modlist.items.begin()+index1,mod);
+						bosslog << "<span class='warn'>\""+Userlist.rules[i].lines[j].object+"\" is not installed, and is not in the masterlist. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is not installed or in the masterlist.", Userlist.rules[i].lines[j].object.c_str());
+						break;
 					}
-					//Uh oh, the awesomesauce ran out...
-					if (index >= x-1) {
-						if (userlist.keys[start]=="add")
+					//Handle the case of a rule sorting a mod into a position in unsorted mod territory.
+					if (index2 > x) {
+						if (Userlist.rules[i].lines[0].key=="add")
 							x--;
-						userlist.messages += "<span class='error'>\""+userlist.objects[j]+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</span><br /><br />";
-						modlist.mods.insert(modlist.mods.begin()+index1,filename);
-						modlist.modmessages.insert(modlist.modmessages.begin()+index1,currentmessages);
-						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", userlist.objects[j].c_str());
+						Modlist.items.insert(Modlist.items.begin()+index1,mod);
+						bosslog << "<span class='error'>\""+Userlist.rules[i].lines[j].object+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", Userlist.rules[i].lines[j].object.c_str());
 						break;
 					}
-
-					if (userlist.keys[j]=="after") index += 1;
-					modlist.mods.insert(modlist.mods.begin()+index,filename);
-					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
-					userlist.messages += "<span class='success'>\""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " \"" + userlist.objects[j] + "\".</span><br /><br />";
-
+					//Insert the mod into its new position.
+					if (Userlist.rules[i].lines[j].key=="after") 
+						index2 += 1;
+					Modlist.items.insert(Modlist.items.begin()+index2,mod);
+					bosslog << "<span class='success'>\""+Userlist.rules[i].lines[0].object+"\" has been sorted "+Userlist.rules[i].lines[j].key+ " \"" + Userlist.rules[i].lines[j].object + "\".</span><br /><br />";
 				//A group sorting line.
-				} else if ((userlist.keys[j]=="before" || userlist.keys[j]=="after") && !IsPlugin(userlist.objects[j])) {
-					//Search masterlist for rule group. Once found, search it for mods in modlist, recording the mods that match.
-					//Then search masterlist for sort group. Again, search and record matching modlist mods.
-					//If sort keyword is before, discard all but the first recorded sort group mod, and if it is after, discard all but the last recorded sort group mod.
-					//Then insert the recorded rule group mods before or after the remaining sort group mod and erase them from their old positions.
-					//Remember to move their messages too.
-
-					order.open(masterlist_path.c_str());
-					int count=0;
-					bool lookforrulemods=false,lookforsortmods=false;
-					vector<fs::path> rulemods,sortmods;
-					vector<string> currentmessages;
-					while (!order.eof()) {					
-						textbuf=ReadLine("order");
-						if (textbuf.length()>1 && (textbuf.substr(1,10)=="BeginGroup" || textbuf.substr(1,8)=="EndGroup")) {
-							//A group starts or ends. Check rule to see if it matches any.
-							if (textbuf.substr(1,10)=="BeginGroup") {
-								if (Tidy(userlist.objects[start])==Tidy(textbuf.substr(14))) {
-									//Rule match. Now search for a line that matches something in modlist.
-									lookforrulemods=true;
-									lookforsortmods=false;
-									count = 0;
-								} else if (Tidy(userlist.objects[j])==Tidy(textbuf.substr(14))) {
-									//Sort match. Now search for lines that match something in modlist.
-									lookforsortmods=true;
-									lookforrulemods=false;
-									count = 0;
-								}
-								count += 1;
-							} else if (count>0 && textbuf.substr(1,8)=="EndGroup") {
-								count -= 1;
-								if (count==0) {
-									//The end of the matched group has been found. Stop searching for mods to move.
-									lookforrulemods=false;
-									lookforsortmods=false;
-								}
-							}
-						} else if ((lookforrulemods || lookforsortmods)  && textbuf[0]!='\\') {
-							if (!IsMessage(textbuf)) {
-								if (PluginExists(data_path / textbuf)) {
-									//Found a mod.
-									int gm = modlist.GetModIndex(textbuf);
-									if (lookforrulemods) {
-										rulemods.push_back(modlist.mods[gm]);
-									} else if (lookforsortmods) {
-										sortmods.push_back(modlist.mods[gm]);
-									}
-								}
-							}
-						}
-					}
-					order.close();
-					if (rulemods.empty()) {
-						userlist.messages += "<span class='error'>The group \""+userlist.objects[start]+"\" does not contain any installed mods, or is not in the masterlist. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" does not contain any mods, or is not in the masterlist.", userlist.objects[start].c_str());
-						break;
-					} else if (sortmods.empty()) {
-						userlist.messages += "<span class='error'>The group \""+userlist.objects[j]+"\" does not contain any installed mods, or is not in the masterlist. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" does not contain any mods, or is not in the masterlist.", userlist.objects[j].c_str());
+				} else if ((Userlist.rules[i].lines[j].key=="before" || Userlist.rules[i].lines[j].key=="after") && !IsPlugin(Userlist.rules[i].lines[j].object)) {
+					vector<item> group;
+					int index1, index2;
+					//Look for group to sort. Find start and end positions.
+					index1 = GetModPos(Modlist, Userlist.rules[i].lines[0].object);
+					index2 = GetGroupEndPos(Modlist, Userlist.rules[i].lines[0].object);
+					//Check to see group actually exists.
+					if (index1 < 0 || index2 < 0) {
+						bosslog << "<span class='error'>The group \""+Userlist.rules[i].lines[0].object+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist.rules[i].lines[0].object.c_str());
 						break;
 					}
-					if (userlist.keys[j]=="before") {
-						for (int k=0;k<(int)rulemods.size();k++) {
-							int index1 = modlist.GetModIndex(rulemods[k]);
-							currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
-							modlist.mods.erase(modlist.mods.begin()+index1);
-							modlist.modmessages.erase(modlist.modmessages.begin()+index1);
-							//Position of mod to load rulemods before. Insert adds in front of this, so don't change the value.
-							//As you move mods around, this will change, so look for it again in each loop.
-							int index = modlist.GetModIndex(sortmods.front());
-							modlist.mods.insert(modlist.mods.begin()+index,rulemods[k]);
-							modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
-						}
-					} else if (userlist.keys[j]=="after") {	
-						//Iterate backwards to make sure they're added in the right order.
-						for (int k=(int)rulemods.size()-1;k>-1;k--) {
-							int index1 = modlist.GetModIndex(rulemods[k]);
-							currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
-							modlist.mods.erase(modlist.mods.begin()+index1);
-							modlist.modmessages.erase(modlist.modmessages.begin()+index1);
-							//Position of mod to load rulemods before. Insert adds in front of this, so add one to make sure they're added after.
-							//As you move mods around, this will change, so look for it again in each loop.
-							int index = modlist.GetModIndex(sortmods.back())+1;
-							modlist.mods.insert(modlist.mods.begin()+index,rulemods[k]);
-							modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
-						}
+					//Copy the start, end and everything in between to a new variable.
+					group.assign(Modlist.items.begin()+index1,Modlist.items.begin()+index2+1);
+					//Now erase group from modlist.
+					Modlist.items.erase(Modlist.items.begin()+index1,Modlist.items.begin()+index2+1);
+					//Find the group to sort relative to and insert it before or after it as appropriate.
+					if (Userlist.rules[i].lines[j].key=="before")
+						index2 = GetModPos(Modlist, Userlist.rules[i].lines[j].object);  //Find the start.
+					else
+						index2 = GetGroupEndPos(Modlist, Userlist.rules[i].lines[j].object)+1;  //Find the end, and add one, as inserting works before the given element.
+					//Check that the sort group actually exists.
+					if (index2 < 0) {
+						Modlist.items.insert(Modlist.items.begin()+index1,group.begin(),group.end());  //Insert the group back in its old position.
+						bosslog << "<span class='error'>The group \""+Userlist.rules[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist.rules[i].lines[j].object.c_str());
+						break;
 					}
-					userlist.messages += "<span class='success'>The group \""+userlist.objects[start]+"\" has been sorted "+Tidy(userlist.keys[j]) + " the group \"" + userlist.objects[j] + "\".</span><br /><br />";
+					//Now insert the group.
+					Modlist.items.insert(Modlist.items.begin()+index2,group.begin(),group.end());
+					//Print success message.
+					bosslog << "<span class='success'>The group \""+Userlist.rules[i].lines[0].object+"\" has been sorted "+Userlist.rules[i].lines[j].key+" the group \""+Userlist.rules[i].lines[j].object+"\".</span><br /><br />";
 				//An insertion line.
-				} else if (userlist.keys[j]=="top" || userlist.keys[j]=="bottom") {
-					vector<string> currentmessages;
-					//Get current mod messages and remove mod from current modlist position.
-					int index1 = modlist.GetModIndex(userlist.objects[start]);
-					// Only increment 'x' if we've taken the 'source' mod from below the 'last-sorted' mark
-					if (userlist.keys[start]=="add" && index1 >= x) 
+				} else if (Userlist.rules[i].lines[j].key=="top" || Userlist.rules[i].lines[j].key=="bottom") {
+					int index1,index2;
+					item mod;
+					index1 = GetModPos(Modlist,Userlist.rules[i].lines[0].object);  //Find the rule mod in the modlist.
+					mod = Modlist.items[index1];  //Record the rule mod in a new variable.
+					//Do checks/increments.
+					if (Userlist.rules[i].lines[0].key=="add" && index1 > x) 
 						x++;
 					//If it adds a mod already sorted, skip the rule.
-					else if (userlist.keys[start]=="add"  && index1 < x) {
-						userlist.messages += "<span class='warn'>\""+userlist.objects[start]+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
+					else if (Userlist.rules[i].lines[0].key=="add"  && index1 <= x) {
+						bosslog << "<span class='warn'>\""+Userlist.rules[i].lines[0].object+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is already in the masterlist.", Userlist.rules[i].lines[0].object.c_str());
 						break;
-					} else if (userlist.keys[start]=="override" && index1 >= x) {
-						userlist.messages += "<span class='error'>\""+userlist.objects[start]+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlist.objects[start].c_str());
-						break;
-					}
-					fs::path filename = modlist.mods[index1];
-					currentmessages.assign(modlist.modmessages[index1].begin(),modlist.modmessages[index1].end());
-					modlist.mods.erase(modlist.mods.begin()+index1);
-					modlist.modmessages.erase(modlist.modmessages.begin()+index1);
-					//Need to insert mod and mod's messages to a specific position.
-					//This is the tricky bit.
-					order.open(masterlist_path.c_str());
-					int count=0;
-					bool lookforsortmods=false,overtime=false;
-					vector<fs::path> sortmods;
-					LOG_TRACE(" --> Looking in masterlist for the referenced group: \"%s\".", userlist.objects[j].c_str());
-					while (!order.eof()) {
-						textbuf=ReadLine("order");
-						if (textbuf.length()>1 && (textbuf.substr(1,10)=="BeginGroup" || textbuf.substr(1,8)=="EndGroup")) {
-							//A group starts or ends. Check rule to see if it matches.
-							if (textbuf.substr(1,10)=="BeginGroup") {
-								if (Tidy(userlist.objects[j])==Tidy(textbuf.substr(14))) {
-									//Sort group match. Now search for lines that match something in modlist.
-									lookforsortmods=true;
-									count = 0;
-								}
-								count += 1;
-							} else if (count>0 && textbuf.substr(1,8)=="EndGroup") {
-								count -= 1;
-								if (count==0) {
-									if ((int)sortmods.size()>0) {
-										//The end of the matched group has been found, and we have found at least one mod in that group. Stop searching for installed mods.
-										lookforsortmods=false;
-										break;
-									} else {
-										//The end of the matched group was found, but we still don't have any mods to sort relative to.
-										//Keep searching for mods, but now top and bottom both mean "before the mod found next".
-										overtime=true;
-									}
-								}
-							}
-						} else if (lookforsortmods && textbuf[0]!='\\') {
-							if (!IsMessage(textbuf)) {
-								if (PluginExists(data_path / textbuf)) {
-									//Found a mod.
-									int gm = modlist.GetModIndex(textbuf);
-									sortmods.push_back(modlist.mods[gm]);
-									if (overtime) break;	//Stop looking for more mods immediately.
-								}
-							}
-						}
-					}
-					order.close();
-					if (sortmods.empty()) {
-						userlist.messages += "<span class='error'>The group \""+userlist.objects[j]+"\" does not contain any installed mods, or is not in the masterlist. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" does not contain any mods, or is not in the masterlist.", userlist.objects[j].c_str());
+					} else if (Userlist.rules[i].lines[0].key=="override" && index1 > x) {
+						bosslog << "<span class='error'>\""+Userlist.rules[i].lines[0].object+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", Userlist.rules[i].lines[0].object.c_str());
 						break;
 					}
-					int index = 0;
-					if ((int)sortmods.size()>0) {
-						if (userlist.keys[j]=="top") 
-							index = modlist.GetModIndex(sortmods.front());
-						else if (userlist.keys[j]=="bottom") {
-							index = modlist.GetModIndex(sortmods.back());
-							if (!overtime) index += 1;
-						}
-					} else index = x-1;
-					modlist.mods.insert(modlist.mods.begin()+index,filename);
-					modlist.modmessages.insert(modlist.modmessages.begin()+index,currentmessages);
-					if (userlist.keys[j]=="top") 
-						userlist.messages += "<span class='success'>\""+userlist.objects[start]+"\" inserted into the top of group \"" + userlist.objects[j] + "\".</span><br /><br />";
-					else if (userlist.keys[j]=="bottom") 
-						userlist.messages += "<span class='success'>\""+userlist.objects[start]+"\" inserted into the bottom of group \"" + userlist.objects[j] + "\".</span><br /><br />";
-			
+					//Remove the rule mod from its current position.
+					Modlist.items.erase(Modlist.items.begin()+index1);
+					//Find the position of the group to sort it to.
+					//Find the group to sort relative to and insert it before or after it as appropriate.
+					if (Userlist.rules[i].lines[j].key=="top")
+						index2 = GetModPos(Modlist, Userlist.rules[i].lines[j].object);  //Find the start.
+					else
+						index2 = GetGroupEndPos(Modlist, Userlist.rules[i].lines[j].object);  //Find the end.
+					//Check that the sort group actually exists.
+					if (index2 < 0) {
+						Modlist.items.insert(Modlist.items.begin()+index1,mod);  //Insert the mod back in its old position.
+						bosslog << "<span class='error'>The group \""+Userlist.rules[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist.rules[i].lines[j].object.c_str());
+						break;
+					}
+					//Now insert the mod into the group.
+					Modlist.items.insert(Modlist.items.begin()+index2,mod);
+					//Print success message.
+					bosslog << "<span class='success'>\""+Userlist.rules[i].lines[0].object+"\" inserted into the "+Userlist.rules[i].lines[j].key+" of group \"" + Userlist.rules[i].lines[j].object + "\".</span><br /><br />";
 				//A message line.
-				} else if (userlist.keys[j]=="append" || userlist.keys[j]=="replace") {
-					//Look for the modlist line that contains the match mod of the rule.
-					int index = modlist.GetModIndex(userlist.objects[start]);
-					userlist.messages += "<span class='success'>\"" + userlist.objects[j] + "\"";
-					if (userlist.keys[j]=="append") {			//Attach the rule message to the mod's messages list.
-						userlist.messages += " appended to ";
-					} else if (userlist.keys[j]=="replace") {	//Clear the message list and then attach the message.
-						modlist.modmessages[index].clear();
-						userlist.messages += " replaced ";
+				} else if (Userlist.rules[i].lines[j].key=="append" || Userlist.rules[i].lines[j].key=="replace") {
+					int index, pos;
+					string key,data;
+					message newMessage;
+					//Find the mod which will have its messages edited.
+					index = GetModPos(Modlist,Userlist.rules[i].lines[0].object);
+					//Split the provided message string into a keyword and a data string.
+					pos = Userlist.rules[i].lines[j].object.find(":");
+					if (pos!=string::npos) {
+						newMessage.key = to_lower_copy(trim_copy(Userlist.rules[i].lines[j].object.substr(0,pos)));
+						newMessage.data = trim_copy(Userlist.rules[i].lines[j].object.substr(pos+1));
 					}
-					modlist.modmessages[index].push_back(userlist.objects[j]);
-					userlist.messages += "messages attached to \"" + userlist.objects[start] + "\".</span><br /><br />";
+					//If the rule is to replace messages, clear existing messages.
+					if (Userlist.rules[i].lines[j].key=="replace")
+						Modlist.items[index].messages.clear();
+					//Append message to message list of mod.
+					Modlist.items[index].messages.push_back(newMessage);
+
+					//Output confirmation.
+					bosslog << "<span class='success'>\"" + Userlist.rules[i].lines[j].object + "\"";
+					if (Userlist.rules[i].lines[j].key=="append")
+						bosslog << " appended to ";
+					else
+						bosslog << " replaced ";
+					bosslog << "messages attached to \"" + Userlist.rules[i].lines[0].object + "\".</span><br /><br />";
 				}
 			}
 		}
-		userlist.PrintMessages(bosslog);
-		if ((int)userlist.rules.size()==0) bosslog << "No valid rules were found in your userlist.txt.<br />" << endl;
+		if ((int)Userlist.rules.size()==0) 
+			bosslog << "No valid rules were found in your userlist.txt.<br />" << endl;
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 		LOG_INFO("Userlist sorting process finished.");
 	}
 
-	//Re-order .esp/.esm files to masterlist.txt order and output messages
+	//Re-date .esp/.esm files according to order in modlist and output messages
 	if (revert<1) bosslog << "<div><span>Recognised And Re-ordered Mod Files</span>"<<endl<<"<p>"<<endl;
 	else if (revert==1) bosslog << "<div><span>Restored Load Order (Using modlist.txt)</span>"<<endl<<"<p>"<<endl;
 	else if (revert==2) bosslog << "<div><span>Restored Load Order (Using modlist.old)</span>"<<endl<<"<p>"<<endl;
 
-	x = min(x, int(modlist.mods.size()));
+	x = min(x, int(Modlist.items.size()));  //Not sure why this is needed.
 
 	LOG_INFO("Applying calculated ordering to user files...");
-	for (int i=0;i<x;i++) {
-		bool ghosted = false;
-		fs::path filename;
-		string version;
-		if (Tidy(modlist.mods[i].string().substr(modlist.mods[i].string().length()-6))==".ghost") {
-			ghosted=true;
-			filename = fs::path(modlist.mods[i].string().substr(0,modlist.mods[i].string().length()-6));
-		} else 
-			filename = modlist.mods[i];
-		string text = "<b>"+filename.string();
-		if (!skip_version_parse) {
-			version = GetModHeader(filename, ghosted);
-			if (!version.empty())
-				text += " <span class='version'>[Version "+version+"]</span>";
-		}
-		text += "</b>";
-		if (ghosted) 
-			text += " <span class='ghosted'> - Ghosted</span>";
-		bosslog << text;		// show which mod file is being processed.
-		modfiletime=esmtime;
-		modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-		if (IsValidLine(modlist.mods[i].string())) {
-			//Re-date file. Provide exception handling in case their permissions are wrong.
-			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
-			try { fs::last_write_time(data_path / fs::path(modlist.mods[i]),modfiletime);
-			} catch(fs::filesystem_error e) {
-				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
+	for (int i=0;i<=x;i++) {
+		//Only act on mods that exist.
+		if (Modlist.items[i].type == MOD && (fs::exists(data_path / Modlist.items[i].name) || fs::exists(data_path / fs::path(Modlist.items[i].name.string()+".ghost")))) {
+			bool ghosted = false;
+			fs::path name;
+			string version;
+			if (Tidy(Modlist.items[i].name.string().substr(Modlist.items[i].name.string().length()-6))==".ghost") {
+				ghosted = true;
+				name = fs::path(Modlist.items[i].name.string().substr(Modlist.items[i].name.string().length()-6));
+			} else 
+				name = Modlist.items[i].name;
+			//Start outputting stuff to log.
+			string text = "<b>"+name.string();
+			if (!skip_version_parse) {
+				version = GetModHeader(name, ghosted);
+				if (!version.empty())
+					text += " <span class='version'>[Version "+version+"]</span>";
 			}
-		}
-		if (modlist.modmessages[i].size()>0) {
-			bosslog << endl << "<ul>" << endl;
-			for (int j=0;j<(int)modlist.modmessages[i].size();j++) {
-				ShowMessage(modlist.modmessages[i][j], game);		//Deal with message lines here.
+			text += "</b>";
+			if (ghosted) 
+				text += " <span class='ghosted'> - Ghosted</span>";
+			bosslog << text;
+			//Now change the file's date, if it is not the game's master file.
+			if (IsValidLine(Modlist.items[i].name.string())) {
+				//Calculate the new file time.
+				modfiletime=esmtime;
+				modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+				//Re-date file. Provide exception handling in case their permissions are wrong.
+				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist.items[i].name.c_str());
+				try { 
+					fs::last_write_time(data_path / Modlist.items[i].name,modfiletime);
+				} catch(fs::filesystem_error e) {
+					bosslog << " - <span class='error'>Error: Could not change the date of \"" << Modlist.items[i].name.string() << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
+				}
 			}
-			bosslog << "</ul>" << endl;
-		} else 
-			bosslog << endl << "<br /><br />" << endl;
+			//Finally, print the mod's messages.
+			if (Modlist.items[i].messages.size()>0) {
+				bosslog << endl << "<ul>" << endl;
+				for (int j=0;j<(int)Modlist.items[i].messages.size();j++) {
+					//Print messages.
+					ShowMessage(Modlist.items[i].messages[j],bosslog);
+				}
+				bosslog << "</ul>" << endl;
+			} else 
+				bosslog << endl << "<br /><br />" << endl;
+		}
 	}
+	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	LOG_INFO("User file ordering applied successfully.");
 	
-	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
-	//Order their dates to be +1 month after the master esm to ensure they load last.
+	//Order their dates to be i days after the master esm to ensure they load last.
 	bosslog << "<div><span>Unrecogised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>"<<endl<<"<p>";
 	LOG_INFO("Reporting unrecognized mods...");
-	for (int i=x;i<(int)modlist.mods.size();i++) {
-		if (modlist.mods[i].string().length()>1) {
-			if (modlist.mods[i].string().find(".ghost") != string::npos) bosslog << "Unknown mod file: " << modlist.mods[i].string().substr(0,modlist.mods[i].string().length()-6) << " <span class='ghosted'> - Ghosted</span>";
-			else bosslog << "Unknown mod file: " << modlist.mods[i];
+	for (int i=x;i<(int)Modlist.items.size();i++) {
+		//Only act on mods that exist.
+		if (Modlist.items[i].type == MOD && (fs::exists(data_path / Modlist.items[i].name) || fs::exists(data_path / fs::path(Modlist.items[i].name.string()+".ghost")))) {
+			if (Modlist.items[i].name.string().find(".ghost") != string::npos) 
+				bosslog << "Unknown mod file: " << Modlist.items[i].name.string().substr(0,Modlist.items[i].name.string().length()-6) << " <span class='ghosted'> - Ghosted</span>";
+			else 
+				bosslog << "Unknown mod file: " << Modlist.items[i].name.string();
 			modfiletime=esmtime;
 			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
 			//Re-date file. Provide exception handling in case their permissions are wrong.
-			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist.mods[i].c_str());
-			try { fs::last_write_time(data_path / fs::path(modlist.mods[i]),modfiletime);
+			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist.items[i].name.c_str());
+			try { 
+				fs::last_write_time(data_path / Modlist.items[i].name,modfiletime);
 			} catch(fs::filesystem_error e) {
-				bosslog << " - <span class='error'>Error: Could not change the date of \"" << modlist.mods[i] << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
+				bosslog << " - <span class='error'>Error: Could not change the date of \"" << Modlist.items[i].name << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
 			}
 			bosslog << endl << "<br />" << endl;
 		}
-	} //while
+	}
 	bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 	LOG_INFO("Unrecognized mods reported.");
-
+	
 	//Let people know the program has stopped.
 	bosslog <<"<div><span>Done.</span></div><br /><br />"<<endl<<"</body>"<<endl<<"</html>";
 	bosslog.close();
