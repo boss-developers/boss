@@ -17,6 +17,7 @@
 #include <boost/program_options.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 #include "boost/exception/get_error_info.hpp"
+#include <boost/unordered_map.hpp>
 
 #include <locale.h>
 #include <stdio.h>
@@ -39,7 +40,7 @@ using boost::algorithm::to_lower_copy;
 
 
 const string g_version     = "1.7";
-const string g_releaseDate = "December 1, 2010";
+const string g_releaseDate = "February 18, 2011";
 
 
 void ShowVersion() {
@@ -96,6 +97,7 @@ int main(int argc, char *argv[]) {
 	int verbosity           = 0;     // log levels above INFO to output
 	string gameStr;                  // allow for autodetection override
 	bool debug              = false; // whether to include origin information in logging statements
+	formatType format		= HTML;  // what format the output should be in.
 
 	//Set the locale to get encoding conversions working correctly.
 	setlocale(LC_CTYPE, "");
@@ -209,37 +211,24 @@ int main(int argc, char *argv[]) {
 		Fail();
 	}
 
-	//Output HTML <head> and start of <body>
 	//Output HTML start and <head>
-	bosslog << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
-			<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
-			<< "body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
-			<< "#title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl
-			<< "div > span:first-child {font-weight:bold; font-size:1.3em;}"<<endl
-			<< "ul {margin-top:0px; list-style:none; margin-bottom:1.1em;}"<<endl
-			<< "ul li {margin-left:-1em; margin-bottom:0.4em;}"<<endl
-			<< ".error {color:red;}"<<endl
-			<< ".success {color:green}"<<endl
-			<< ".warn {color:#FF6600;}"<<endl
-			<< ".version {color:teal;}"<<endl
-			<< ".ghosted {font-style:italic; color:grey;}"<<endl
-			<< ".tags {color:maroon;}"<<endl
-			<< "</style>"<<endl<<"</head>"<<endl
-			//Output start of <body>
-			<< "<body>"<<endl<<"<div id='title'>Better Oblivion Sorting Software Log</div><br />"<<endl
-			<< "<div style='text-align:center;'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />"<<endl
-			<< "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />"<<endl
-			<< "v"<< g_version<<" ("<<g_releaseDate<<")"<<endl<<"</div><br /><br />";
+	OutputHeader(bosslog,format);
+	//Output start of <body>
+	Output(bosslog,format, "<div id='title'>Better Oblivion Sorting Software Log</div><br />");
+	Output(bosslog,format, "<div style='text-align:center;'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />");
+	Output(bosslog,format, "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />");
+	Output(bosslog,format, "v"+g_version+" ("+g_releaseDate+")</div><br /><br />");
+	//Output(bosslog,format, );
 
 	if (0 == game) {
 		LOG_DEBUG("Detecting game...");
 		if (fs::exists(data_path / "Oblivion.esm")) {
 			game = 1;
 			if (fs::exists(data_path / "Nehrim.esm")) {
-				bosslog << endl << "<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />" << endl
-						<< "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.<br />" << endl
-						<< "Utility will end now.</p>" << endl
-						<< "</body>"<<endl<<"</html>";
+				Output(bosslog,format, "<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />");
+				Output(bosslog,format, "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.<br />");
+				Output(bosslog,format, "Utility will end now.</p>");
+				Output(bosslog,format, "</body></html>");
 				bosslog.close();
 				LOG_ERROR("Installation error found: check BOSSLOG.");
 				if ( !silent ) 
@@ -345,16 +334,63 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Using sorting file: %s", sortfile.c_str());
 	//Parse masterlist/modlist backup into data structure.
 
-	//Compare masterlist and modlist. Remove any mods found in both from the modlist.
+
+	//Need to compare masterlist against modlist and userlist and weed out:
+	//1. Mods that are not referenced in the userlist or modlist. Remove these from the masterlist. (Weeding out unreferenced)
+	//2. Mods that are referenced in the modlist. Remove these from the modlist. (Weeding out the sorted from the unsorted)
+
+	//To optimise this, create a hashmap of all the mods in the userlist and modlist as keys, all having logical '1' values.
+	boost::unordered_map<string, bool> hashmap;
+	//Add all modlist mods to hashmap.
+	for (int i=0; i<(int)Modlist.items.size(); i++) {
+		if (Modlist.items[i].type == MOD)
+			hashmap[Tidy(Modlist.items[i].name.string())] = true;
+	}
+	//Add all userlist mods to hashmap.
+	for (int i=0; i<(int)Userlist.rules.size(); i++) {
+		for (int j=0; j<(int)Userlist.rules[i].lines.size(); j++) {
+			if (IsPlugin(Userlist.rules[i].lines[j].object))
+				hashmap[Tidy(Userlist.rules[i].lines[j].object)] = true;
+		}
+	}
+
+	//Now compare masterlist against hashmap.
 	if (Masterlist.items.size()>0) {
 		for (int i=0; i<(int)Masterlist.items.size(); i++) {
-			int pos = GetModPos(Modlist,Masterlist.items[i].name.string());
-			if (pos >= 0)
-				Modlist.items.erase(Modlist.items.begin()+pos);
+			if (Modlist.items[i].type == MOD) { //Only interested in mods.
+				bool found = false;
+				boost::unordered_map<string, bool>::iterator it = hashmap.begin();
+				for (it; it==hashmap.end(); it++) {
+					if ((*it).first == Masterlist.items[i].name.string()) { 
+						//The string in the hashmap at the iterator position matches the mod in the masterlist. Stop iterating the hashmap
+						found = true;
+						break;
+					}
+				}
+				if (found) {  //Mod was found in hashmap, so check if it's in the modlist, and if so, remove it.
+					int pos = GetModPos(Modlist,Masterlist.items[i].name.string());
+					if (pos >= 0)
+						Modlist.items.erase(Modlist.items.begin()+pos);  //Remove mod from modlist.
+				} else {  //Mod was not found in hashmap, so remove it from the masterlist.
+					Masterlist.items.erase(Masterlist.items.begin()+i);
+					//Since the current element was removed, all higher elements shift down by one, so what was the next element now has the current's position.
+					//Correct for that by decreasing the current index by one.
+					i--;
+				}
+			}
 		}
 		//Record position of last sorted mod.
 		x = Masterlist.items.size()-1;
 	}
+	/*Masterlist now contains:
+	1. All group markers.
+	2. Mods installed and recognised by BOSS, in their sorted order.
+	3. Mods recognised by BOSS and referred to in the userlist, in their sorted order.
+	
+	Modlist now contains only unrecognised mods that are installed.
+	Hence to complete the mod set, the modlist just needs to be appended to the masterlist.
+	*/
+
 	//Add modlist's mods to masterlist.
 	item group;
 	group.type = GROUPBEGIN;
@@ -363,9 +399,8 @@ int main(int argc, char *argv[]) {
 	Masterlist.items.insert(Masterlist.items.end(),Modlist.items.begin(),Modlist.items.end());
 	group.type = GROUPEND;
 	Masterlist.items.push_back(group);
-	//Now set the modlist to the masterlist (because the modlist is a more sensible named var to work with) and delete the masterlist var.
+	//Now set the modlist to the masterlist (because the modlist is a more sensible named var to work with).
 	Modlist = Masterlist;
-	delete &Masterlist;
 
 	x = Modlist.items.size()-1; //Debug line. Remove if masterlist parser implemented.
 

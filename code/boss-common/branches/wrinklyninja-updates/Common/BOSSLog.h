@@ -19,20 +19,70 @@
 
 #include <fstream>
 #include <string>
-#include "Globals.h"
 #include "Lists.h"
+
+#include "Globals.h"
+#include "Support/Helpers.h"
+#include "Parsing.h"
+#include <string>
+#include <fstream>
+#include <vector>
+#include <boost/format.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace boss {
 	using namespace std;
 
+	enum formatType {
+		HTML,
+		PLAINTEXT
+	};
+
 	//Prints a given message to the bosslog. Not format-safe ATM.
 	void ShowMessage(message message, ofstream &log);
+
+	//Prints ouptut with formatting according to format.
+	void Output(ofstream &log, formatType format, string text);
+
+	//Prints header if format is HTML, else nothing.
+	void OutputHeader(ofstream &log, formatType format);
+
+	//Userlist parser dump for now.
+	//Class to store userlist rules.
+	class Rules : public parsing::IRulesManager  {
+	protected:
+		virtual void AddRule(parsing::Rule const& rule);
+
+		virtual void SyntaxError(
+				string::const_iterator const& begin, 
+				string::const_iterator const& end, 
+				string::const_iterator const& error_pos, 
+				string const& what);
+
+		virtual void ParsingFailed(
+				string::const_iterator const& begin, 
+				string::const_iterator const& end, 
+				string::const_iterator const& error_pos, 
+				string::difference_type lineNo);
+
+		private:
+			static const string FormatMesssage(string const& class_, string const& rule, string const& object, boost::format const& message);
+			static const string FormatMesssage(string const& class_, boost::format const& message);
+
+			void AddMessage(bool skipped, string const& rule, string const& object, boost::format const& message, string const& class_);
+			void AddError(bool skipped, string const& rule, string const& object, boost::format const& message);
+			void AddError(boost::format const& message);
+		public:
+			vector<string> keys,objects;			//Holds keys and objects for each rule line.
+			vector<int> rules;						//Tells BOSS where each rule starts.
+			string messages;						//Stores output messages.
+			void AddRules();						//Populates object vectors with rules from userlist.txt.
+			void PrintMessages(ofstream& output);	//Prints the output messages.
+		};
 }
 
 /*
-#include <fstream>
-#include <string>
-#include "Globals.h"
 
 namespace boss {
 	using namespace std;

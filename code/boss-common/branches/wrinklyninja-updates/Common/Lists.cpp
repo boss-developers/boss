@@ -27,7 +27,7 @@ namespace boss {
 	//Find a mod by name. Will also find the starting position of a group.
 	int GetModPos(modlist list, string filename) {
 		for (int i=0; i<(int)list.items.size(); i++) {
-			if (list.items[i].name.string() == filename) {
+			if (Tidy(list.items[i].name.string()) == Tidy(filename)) {
 				return i;
 			}
 		}
@@ -37,10 +37,11 @@ namespace boss {
 	//Find the end of a group by name.
 	int GetGroupEndPos(modlist list, string groupname) {
 		for (int i=0; i<(int)list.items.size(); i++) {
-			if (list.items[i].type == GROUPEND && list.items[i].name.string() == groupname) {
+			if (list.items[i].type == GROUPEND && Tidy(list.items[i].name.string()) == Tidy(groupname)) {
 				return i;
 			}
 		}
+		return -1;
 	}
 
 	//Date comparison, used for sorting mods in modlist.
