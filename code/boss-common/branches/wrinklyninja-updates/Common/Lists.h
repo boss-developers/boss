@@ -56,42 +56,36 @@ namespace boss {
 		vector<item> items;
 	};
 
+	enum keyType {
+		//Userlist keywords.
+		ADD = 1,
+		OVERRIDE,
+		FOR,
+		BEFORE,
+		AFTER,
+		TOP,
+		BOTTOM,
+		APPEND,
+		REPLACE,
+	};
 
 	//Userlist data structure.
 	struct line {
-		string key;
-		string object;
+		keyType key;
+		std::string object;
 	};
 
 	struct rule {
-		vector<line> lines;
+		keyType ruleKey;
+		std::string ruleObject;
+		std::vector<line> lines;
 	};
 
+
+	//Change back to being a struct with items later
 	struct userlist {
-		vector<rule> rules;
+		std::vector<rule> rules;
 	};
-
-	/* NOTES: USERLIST GRAMMAR RULES.
-
-	Below are the grammar rules that the parser must follow. Noted here until they are implemented.
-
-	1. Userlist must be encoded in UTF-8 or UTF-8 compatible ANSI. Use checking functions and abort the userlist if mangled line found.
-	2. All lines must contain a recognised keyword and an object. If one is missing or unrecognised, abort the rule.
-	3. If a rule object is a mod, it must be installed. If not, abort the rule.
-	4. Groups cannot be added. If a rule tries, abort it.
-	5. The 'ESMs' group cannot be sorted. If a rule tries, abort it.
-	6. The game's main master file cannot be sorted. If a rule tries, abort it.
-	7. A rule with a FOR rule keyword must not contain a sort line. If a rule tries, ignore the line and print a warning message.
-	8. A rule may not reference a mod and a group unless its sort keyword is TOP or BOTTOM and the mod is the rule object.  If a rule tries, abort it.
-	9. No group may be sorted before the 'ESMs' group. If a rule tries, abort it.
-	10. No mod may be sorted before the game's main master file. If a rule tries, abort it.
-	11. No mod may be inserted into the top of the 'ESMs' group. If a rule tries, abort it.
-	12. No rule can insert a group into anything or insert anything into a mod. If a rule tries, abort it.
-	13. No rule may attach a message to a group. If a rule tries, abort it.
-	14. The first line of a rule must be a rule line. If there is a valid line before the first rule line, ignore it and print a warning message.
-
-	*/
-
 
 	//Helpful functions.
 

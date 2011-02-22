@@ -26,6 +26,12 @@
     <ClCompile Include="Lists.cpp">
       <Filter>Lists</Filter>
     </ClCompile>
+    <ClCompile Include="..\Parsing\Userlist\Grammar.cpp">
+      <Filter>Parsing\Userlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parsing\Userlist\Parser.cpp">
+      <Filter>Parsing\Userlist</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support">
@@ -42,6 +48,12 @@
     </Filter>
     <Filter Include="Lists">
       <UniqueIdentifier>{7cc10196-2e42-4a43-802e-9c3a7ad9f3ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parsing">
+      <UniqueIdentifier>{d0792f72-0ae4-420b-a834-ed8e0ae75054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parsing\Userlist">
+      <UniqueIdentifier>{602a28f9-0ef6-4da1-9a1c-acdce1435c1c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +90,15 @@
     </ClInclude>
     <ClInclude Include="Lists.h">
       <Filter>Lists</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parsing\Data.h">
+      <Filter>Parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parsing\Userlist\Grammar.h">
+      <Filter>Parsing\Userlist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parsing\Userlist\Parser.h">
+      <Filter>Parsing\Userlist</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
