@@ -8,13 +8,31 @@
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
-
 //Header file for userlist parser functions.
 
-#include "Grammar.h"
+#ifndef __BOSS_USERLIST_PARSER_H__
+#define __BOSS_USERLIST_PARSER_H__
 
-void fileToBuffer(fs::path file, std::string& buffer);
+#ifndef BOOST_FILESYSTEM_VERSION
+#define BOOST_FILESYSTEM_VERSION 3
+#endif
 
-bool parseUserlist(fs::path file, boss::userlist& list);
+#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+#define BOOST_FILESYSTEM_NO_DEPRECATED
+#endif
 
-void RuleCheck(boss::rule rule);
+#include <string>
+#include "boost/filesystem.hpp"
+#include "Common/Lists.h"
+
+namespace boss {
+	using namespace std;
+	namespace fs = boost::filesystem;
+
+	void fileToBuffer(fs::path file, string& buffer);
+
+	bool parseUserlist(fs::path file, userlist& list);
+
+	void RuleCheck(rule ruleToCheck);
+}
+#endif

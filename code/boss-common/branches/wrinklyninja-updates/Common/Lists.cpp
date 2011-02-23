@@ -25,8 +25,8 @@ namespace boss {
 	using boost::algorithm::to_lower_copy;
 
 	//Find a mod by name. Will also find the starting position of a group.
-	int GetModPos(modlist list, string filename) {
-		for (int i=0; i<(int)list.items.size(); i++) {
+	size_t GetModPos(modlist list, string filename) {
+		for (size_t i=0; i<list.items.size(); i++) {
 			if (Tidy(list.items[i].name.string()) == Tidy(filename)) {
 				return i;
 			}
@@ -35,8 +35,8 @@ namespace boss {
 	}
 
 	//Find the end of a group by name.
-	int GetGroupEndPos(modlist list, string groupname) {
-		for (int i=0; i<(int)list.items.size(); i++) {
+	size_t GetGroupEndPos(modlist list, string groupname) {
+		for (size_t i=0; i<list.items.size(); i++) {
 			if (list.items[i].type == GROUPEND && Tidy(list.items[i].name.string()) == Tidy(groupname)) {
 				return i;
 			}
@@ -105,7 +105,7 @@ namespace boss {
 		}
 
 		//Iterate through items, printing out all group markers, mods and messsages.
-		for (int i=0; i<(int)list.items.size(); i++) {
+		for (size_t i=0; i<list.items.size(); i++) {
 			if (list.items[i].type == GROUPBEGIN)
 				ofile << "BEGINGROUP: " << list.items[i].name.string() << endl;  //Print the group begin marker
 			else if (list.items[i].type == GROUPEND)
@@ -113,7 +113,7 @@ namespace boss {
 			else {
 				ofile << list.items[i].name.string() << endl;  //Print the mod name.
 				//Print the messages with the appropriate syntax.
-				for (int j=0; j<(int)list.items[i].messages.size(); j++) {
+				for (size_t j=0; j<list.items[i].messages.size(); j++) {
 					ofile << " " << list.items[i].messages[j].key << ": " << list.items[i].messages[j].data << endl;  
 				}
 			}

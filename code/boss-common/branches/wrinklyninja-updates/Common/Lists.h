@@ -81,8 +81,6 @@ namespace boss {
 		std::vector<line> lines;
 	};
 
-
-	//Change back to being a struct with items later
 	struct userlist {
 		std::vector<rule> rules;
 	};
@@ -90,10 +88,10 @@ namespace boss {
 	//Helpful functions.
 
 	//Find a mod by name. Will also find the starting position of a group.
-	int GetModPos(modlist list, string filename);
+	size_t GetModPos(modlist list, string filename);
 
 	//Find the end of a group by name.
-	int GetGroupEndPos(modlist list, string groupname);
+	size_t GetGroupEndPos(modlist list, string groupname);
 
 	//Date comparison, used for sorting mods in modlist.
 	bool SortModsByDate(item mod1, item mod2);

@@ -11,7 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Parsing\Userlist\Grammar.cpp" />
     <ClCompile Include="..\Parsing\Userlist\Parser.cpp" />
     <ClCompile Include="..\Support\Helpers.cpp" />
     <ClCompile Include="..\Support\Logger.cpp" />

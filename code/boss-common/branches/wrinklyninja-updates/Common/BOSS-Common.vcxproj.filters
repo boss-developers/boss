@@ -26,9 +26,6 @@
     <ClCompile Include="Lists.cpp">
       <Filter>Lists</Filter>
     </ClCompile>
-    <ClCompile Include="..\Parsing\Userlist\Grammar.cpp">
-      <Filter>Parsing\Userlist</Filter>
-    </ClCompile>
     <ClCompile Include="..\Parsing\Userlist\Parser.cpp">
       <Filter>Parsing\Userlist</Filter>
     </ClCompile>
