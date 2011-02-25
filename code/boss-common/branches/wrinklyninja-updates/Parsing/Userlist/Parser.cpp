@@ -12,10 +12,13 @@
 //File parser to handle BOSS masterlist/modlist. Working the way up from basics though.
 
 #include <fstream>
-#include <vector>
+
 
 #include "Parser.h"
 #include "Grammar.h"
+#include "Support/Helpers.h"
+#include "../../Common/BOSSLog.h"
+#include <boost/algorithm/string.hpp>
 
 namespace boss {
 	using namespace std;
@@ -34,70 +37,193 @@ namespace boss {
 		);
 	}
 
-	bool parseUserlist(fs::path file, userlist& list) {
+	bool parseUserlist(fs::path file, vector<rule>& ruleList) {
 		userlist_skipper<string::const_iterator> skipper;
 		userlist_grammar<string::const_iterator> grammar;
-		string::const_iterator begin, end;
+		string::iterator begin, end;
 		string contents;
 
 		fileToBuffer(file,contents);
 
 		begin = contents.begin();
 		end = contents.end();
-		bool r = qi::phrase_parse(begin, end, grammar, skipper, list.rules);
+		bool r = qi::phrase_parse(begin, end, grammar, skipper, ruleList);
 
 		 if (r && begin == end)
 			 return true;
-		 else
+		 else {
+			 while (*begin == '\n') {
+				begin++;
+			}
+			 string::difference_type lines = 1 + count(contents.begin(), begin, '\n');
+			 ParsingFailed(contents.begin(), end, begin, lines);
 			 return false;
+		 }
 	}
 
-		//Rule checker function. If a rule breaks the RULES, remove it somehow and print an error message.
-	void RuleCheck(rule ruleToCheck) {
-		//This check should be case insensitive. The required function isn't available ATM though.
-		if (ruleToCheck.ruleObject.find(".esp") != string::npos || ruleToCheck.ruleObject.find(".esm") != string::npos) {
-			//Rule object is a mod. 
-			//Check if it exists. If not, I AM ERROR.
-			if (!fs::exists(ruleToCheck.ruleObject) && !fs::exists(ruleToCheck.ruleObject + ".ghost")) {
-				cout << "ERROR: The mod: \"" << ruleToCheck.ruleObject << "\" does not exist." << endl;
-				//Throw a proper error once handling is in.
-			//Check that the mod isn't one of the main master files. If it is, ASK ERROR OF RUTO ABOUT THE PROBLEM.
-			} else if (ruleToCheck.ruleObject == "oblivion.esm") { //This should be using the general function.
-				cout << "ERROR: The game's main master file cannot be sorted." << endl;
-				//Throw a proper error once handling is in.
+/* NOTES: USERLIST GRAMMAR RULES.
+
+	Below are the grammar rules that the parser must follow. Noted here until they are implemented.
+
+S	1. Userlist must be encoded in UTF-8 or UTF-8 compatible ANSI. Use checking functions and abort the userlist if mangled line found.
+S	2. All lines must contain a recognised keyword and an object. If one is missing or unrecognised, abort the rule.
+T	3. If a rule object is a mod, it must be installed. If not, abort the rule.
+T	4. Groups cannot be added. If a rule tries, abort it.
+T	5. The 'ESMs' group cannot be sorted. If a rule tries, abort it.
+T	6. The game's main master file cannot be sorted. If a rule tries, abort it.
+T	7. A rule with a FOR rule keyword must not contain a sort line. If a rule tries, ignore the line and print a warning message.
+T	8. A rule may not reference a mod and a group unless its sort keyword is TOP or BOTTOM and the mod is the rule object.  If a rule tries, abort it.
+T	9. No group may be sorted before the 'ESMs' group. If a rule tries, abort it.
+T	10. No mod may be sorted before the game's main master file. If a rule tries, abort it.
+T	11. No mod may be inserted into the top of the 'ESMs' group. If a rule tries, abort it.
+T	12. No rule can insert a group into anything or insert anything into a mod. If a rule tries, abort it.
+T   13. No rule may attach a message to a group. If a rule tries, abort it.
+S	14. The first line of a rule must be a rule line. If there is a valid line before the first rule line, ignore it and print a warning message.
+*/
+
+	//Rule checker function, checks for syntax (not parsing) errors.
+	void RuleSyntaxCheck(rule currentRule) {
+
+		keyType ruleKey = currentRule.ruleKey;
+		string subject = currentRule.ruleObject;
+
+		try {
+			if (IsPlugin(subject)) {
+
+				if (!Exists(subject))
+					throw failure(ruleKey, subject, EPluginNotInstalled % subject);
+
+				if (IsMasterFile(subject))
+					throw failure(ruleKey, subject, ESortingMasterEsm);
+
+			} else {
+
+				if (Tidy(subject) == "esms")
+					throw failure(ruleKey, subject, ESortingGroupEsms);
+
+				if (ruleKey == ADD && !IsPlugin(subject))
+					throw failure(ruleKey, subject, EAddingModGroup);
+
+				else if (ruleKey == FOR)
+					throw failure(ruleKey, subject, EAttachingMessageToGroup);
+
 			}
-		} else {
-			//Rule object is a group.
-			//Check if the group is "ESMs". If it is, you know the drill.
-			//This should be case-insensitive. The required function isn't available ATM though.
-			if (ruleToCheck.ruleObject == "ESMs") {
-				cout << "ERROR: The group 'ESMs' cannot be the subject of a rule." << endl;
-				//Throw a proper error once handling is in.
-			}
-			if (ruleToCheck.ruleKey == ADD) {
-				cout << "ERROR: Groups cannot be added by a rule." << endl;
-				//Throw a proper error once handling is in.
-			} else if (ruleToCheck.ruleKey == boss::FOR) {
-				cout << "ERROR: Groups cannot have messages attached to them." << endl;
-				//Throw a proper error once handling is in.
-			}
-		}
-		for (size_t i=0; i<ruleToCheck.lines.size(); i++) {
-			//Does the rule try sorting a mod before the main master file or a group before ESMs?
-			if (ruleToCheck.lines[i].key == BEFORE) {
-				if (ruleToCheck.lines[i].object == "ESMs") { //This should be case-insensitive.
-					cout << "ERROR: Groups cannot be sorted before the group 'ESMs'." << endl;
-					//Throw a proper error once handling is in.
-				} else if (ruleToCheck.lines[i].object == "oblivion.esm") { //This should be using the general function.
-					cout << "ERROR: Mods cannot be sorted before the game's main master file." << endl;
-					//Throw a proper error once handling is in.
+			for (size_t i=0; i<currentRule.lines.size(); i++) {
+
+				keyType key = currentRule.lines[i].key;
+				subject = currentRule.lines[i].object;
+
+				if (key == BEFORE || key == AFTER) {
+
+					if (currentRule.ruleKey == FOR)
+						throw failure(ruleKey, subject, ESortLineInForRule);
+
+					if ((IsPlugin(currentRule.ruleObject) && !IsPlugin(subject)) || (!IsPlugin(currentRule.ruleObject) && IsPlugin(subject))) {
+						throw failure(ruleKey, subject, EReferencingModAndGroup);
+					}
+
+					if (key == BEFORE) {
+
+						if (Tidy(subject) == "esms")
+							throw failure(ruleKey, subject, ESortingGroupBeforeEsms);
+
+						else if (IsMasterFile(subject))
+							throw failure(ruleKey, subject, ESortingModBeforeGameMaster);
+
+					}
+
+				} else if (key == TOP || key == BOTTOM) {
+
+					if (ruleKey == FOR)
+						throw failure(ruleKey, subject, ESortLineInForRule);
+
+					if (key == TOP && Tidy(subject)=="esms")
+						throw failure(ruleKey, subject, EInsertingToTopOfEsms);
+						
+					if (!IsPlugin(currentRule.ruleObject) || IsPlugin(subject)) {
+						throw failure(ruleKey, subject, EInsertingGroupToGroupOrModToMod);
+					}
+				} else if (key == APPEND || key == REPLACE) {
+					if (!IsPlugin(currentRule.ruleObject))
+						throw failure(ruleKey, subject, EAttachingMessageToGroup);
 				}
-			} else if (ruleToCheck.lines[i].key == TOP) {
-				if (ruleToCheck.lines[i].object == "ESMs") { //This should be case-insensitive.
-					cout << "ERROR: Mods cannot be inserted into the top of the group 'ESMs'." << endl;
-					//Throw a proper error once handling is in.
-				}
 			}
+		} catch(failure const& e) {
+			AddError(e.rule, e.object, e.message);
 		}
 	}
+
+	/*
+		if (object.empty()) {
+			throw failure(skip, rule, subject, ERuleHasUndefinedObject % key);
+		}
+			//Line does not contain a recognised keyword. Skip it and the rule containing it. If it is a rule line, then the previous rule will also be skipped.
+			throw failure(skip, rule, subject, EUnrecognisedKeyword % key % object);
+		}
+
+		//Line is not a rule line, and appears before the first rule line, so does not belong to a rule. Skip it.
+		if (key=="before" || key=="after" || key=="top" || key=="bottom" || key=="append" || key=="replace") 
+			AddError(EAppearsBeforeFirstRule % key % object);
+		else
+			AddError(EUnrecognizedKeywordBeforeFirstRule % key % object);
+*/
+
+	const string FormatMesssage(string const& class_, format const& message)
+	{
+		return (MessageSpanFormat % class_ % message.str()).str();
+	}
+
+	const string FormatMesssage(string const& class_, keyType const& rule, string const& object, format const& message)
+	{
+		string const span = FormatMesssage(class_ , message);
+		return (MessageParagraphFormat % rule % object % span).str();
+	}
+
+	
+
+	void AddMessage(keyType const& rule, string const& object, format const& message, string const& class_)
+	{
+		string msg = FormatMesssage(class_, rule, object, message);
+		//Output message to BOSSlog using output function.
+		Output(bosslog,HTML,msg);
+	}
+
+	void AddError(keyType const& rule, string const& object, format const& message)
+	{
+		AddMessage(rule, object, message, "error");
+	}
+
+	void AddError(format const& message)
+	{
+		string msg = FormatMesssage("error", message);
+		//Output message to BOSSlog using output function.
+		Output(bosslog,HTML,msg);
+	}
+
+	// Called when an error is detected while parsing the input file.
+	void SyntaxError(
+			string::const_iterator const& begin, 
+			string::const_iterator const& end, 
+			string::const_iterator const& error_pos, 
+			string const& what) 
+	{
+		std::string context(error_pos, std::min(error_pos + 50, end));
+		boost::trim_left(context);
+		boost::replace_all(context, "\n", "<eol>");
+
+		std::cerr << "Syntax error while trying to parse Userlist.txt: '" << what << "' near this input: '" << context << "'." << std::endl;
+	};
+
+	void ParsingFailed(
+			string::const_iterator	const& begin, 
+			string::const_iterator	const& end, 
+			string::const_iterator	const& error_pos, 
+			string::difference_type lineNo)
+	{
+		string context(error_pos, std::min(error_pos + 50, end));
+		boost::trim_left(context);
+		boost::replace_all(context, "\n", "<eol>");
+
+		std::cerr << "Userlist.txt parsing error at line #" << lineNo << " while reading near this input: '" << context << "'." << std::endl;
+	};
 }

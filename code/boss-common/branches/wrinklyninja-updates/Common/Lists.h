@@ -15,14 +15,6 @@
 #ifndef __BOSS_LISTS_H__
 #define __BOSS_LISTS_H__
 
-#ifndef BOOST_FILESYSTEM_VERSION
-#define BOOST_FILESYSTEM_VERSION 3
-#endif
-
-#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#endif
-
 #include <string>
 #include <vector>
 #include "boost/filesystem.hpp"
@@ -72,18 +64,15 @@ namespace boss {
 	//Userlist data structure.
 	struct line {
 		keyType key;
-		std::string object;
+		string object;
 	};
 
 	struct rule {
 		keyType ruleKey;
-		std::string ruleObject;
-		std::vector<line> lines;
+		string ruleObject;
+		vector<line> lines;
 	};
 
-	struct userlist {
-		std::vector<rule> rules;
-	};
 
 	//Helpful functions.
 
@@ -104,6 +93,9 @@ namespace boss {
 	//This will likely just be one group and the list of filenames in that group, if it's the modlist.
 	//However, if used on the masterlist, could prove useful for debugging the parser.
 	void SaveModlist(modlist list, fs::path file);
+
+	//Returns a string representation of the given key, for use in output messages.
+	string GetKeyString(keyType key);
 }
 
 #endif

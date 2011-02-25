@@ -12,14 +12,6 @@
 #ifndef __SUPPORT_MODFORMAT__HPP__
 #define __SUPPORT_MODFORMAT__HPP__
 
-#ifndef BOOST_FILESYSTEM_VERSION
-#define BOOST_FILESYSTEM_VERSION 3
-#endif
-
-#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#endif
-
 #include "Types.h"
 #include <cstring>
 #include <boost/filesystem.hpp>

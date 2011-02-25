@@ -17,7 +17,7 @@
 #include <boost/program_options.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 #include "boost/exception/get_error_info.hpp"
-#include <boost/unordered_map.hpp>
+#include <boost/unordered_set.hpp>
 
 #include <locale.h>
 #include <stdio.h>
@@ -320,41 +320,21 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Parse userlist.
-	userlist Userlist;
+	vector<rule> userlistRules;
 	if (revert<1 && fs::exists(userlist_path)) {
-		userlist Userlist;
-		bool parsed = parseUserlist(userlist_path,Userlist);
-		if (parsed) {
-			cout << "Userlist parsed successfully!" << endl;
-		} else {
+		vector<rule> userlistRules;
+		bool parsed = parseUserlist(userlist_path,userlistRules);
+		if (!parsed) {
 			cout << "Userlist parse error!" << endl;
-		}
-		//Debug - print contents of Userlist structure.
-		cout << "Obtained:" << endl;
-		for (size_t i=0; i<Userlist.rules.size(); i++) {
-			if (Userlist.rules[i].ruleKey == ADD) 
-				cout << "ADD";
-			else if (Userlist.rules[i].ruleKey == FOR) 
-				cout << "FOR";
-			else
-				cout << "OVERRIDE";
-			cout << ":" << Userlist.rules[i].ruleObject << endl;
-			for (size_t j=0; j<Userlist.rules[i].lines.size(); j++) {
-				if (Userlist.rules[i].lines[j].key == BEFORE)
-					cout << "BEFORE";
-				else if (Userlist.rules[i].lines[j].key == AFTER)
-					cout << "AFTER";
-				else if (Userlist.rules[i].lines[j].key == TOP)
-					cout << "TOP";
-				else if (Userlist.rules[i].lines[j].key == BOTTOM)
-					cout << "BOTTOM";
-				else if (Userlist.rules[i].lines[j].key == APPEND)
-					cout << "APPEND";
-				else
-					cout << "REPLACE";
-				cout << ":" << Userlist.rules[i].lines[j].object << endl;
+		} else {
+			cout << "Userlist parsed successfully! Obtained:" << endl;
+			//Debug - print contents of Userlist structure.
+			for (size_t i=0; i<userlistRules.size(); i++) {
+				cout << GetKeyString(userlistRules[i].ruleKey) << ":" << userlistRules[i].ruleObject << endl;
+				for (size_t j=0; j<userlistRules[i].lines.size(); j++)
+					cout << GetKeyString(userlistRules[i].lines[j].key) << ":" << userlistRules[i].lines[j].object << endl;
+				cout << endl;
 			}
-			cout << endl;
 		}
 	}
 
@@ -373,17 +353,17 @@ int main(int argc, char *argv[]) {
 	//2. Mods that are referenced in the modlist. Remove these from the modlist. (Weeding out the sorted from the unsorted)
 
 	//To optimise this, create a hashmap of all the mods in the userlist and modlist as keys, all having logical '1' values.
-	boost::unordered_map<string, bool> hashmap;
+	boost::unordered_set<string> hashset;
 	//Add all modlist mods to hashmap.
 	for (size_t i=0; i<Modlist.items.size(); i++) {
 		if (Modlist.items[i].type == MOD)
-			hashmap[Tidy(Modlist.items[i].name.string())] = true;
+			hashset.insert(Tidy(Modlist.items[i].name.string()));
 	}
 	//Add all userlist mods to hashmap.
-	for (size_t i=0; i<Userlist.rules.size(); i++) {
-		for (size_t j=0; j<Userlist.rules[i].lines.size(); j++) {
-			if (IsPlugin(Userlist.rules[i].lines[j].object))
-				hashmap[Tidy(Userlist.rules[i].lines[j].object)] = true;
+	for (size_t i=0; i<userlistRules.size(); i++) {
+		for (size_t j=0; j<userlistRules[i].lines.size(); j++) {
+			if (IsPlugin(userlistRules[i].lines[j].object))
+				hashset.insert(Tidy(Modlist.items[i].name.string()));
 		}
 	}
 
@@ -391,16 +371,8 @@ int main(int argc, char *argv[]) {
 	if (Masterlist.items.size()>0) {
 		for (size_t i=0; i<Masterlist.items.size(); i++) {
 			if (Modlist.items[i].type == MOD) { //Only interested in mods.
-				bool found = false;
-				boost::unordered_map<string, bool>::iterator it = hashmap.begin();
-				for (it; it==hashmap.end(); it++) {
-					if ((*it).first == Masterlist.items[i].name.string()) { 
-						//The string in the hashmap at the iterator position matches the mod in the masterlist. Stop iterating the hashmap
-						found = true;
-						break;
-					}
-				}
-				if (found) {  //Mod was found in hashmap, so check if it's in the modlist, and if so, remove it.
+				boost::unordered_set<string>::iterator pos = hashset.find(Masterlist.items[i].name.string());
+				if(pos != hashset.end()) {
 					size_t pos = GetModPos(Modlist,Masterlist.items[i].name.string());
 					if (pos >= 0)
 						Modlist.items.erase(Modlist.items.begin()+pos);  //Remove mod from modlist.
@@ -441,69 +413,69 @@ int main(int argc, char *argv[]) {
 	if (revert<1 && fs::exists(userlist_path)) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
 		//Go through each rule.
-		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", Userlist.rules.size());
-		for (size_t i=0; i<Userlist.rules.size(); i++) {
+		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlistRules.size());
+		for (size_t i=0; i<userlistRules.size(); i++) {
 			//Go through each line of the rule.
 			LOG_DEBUG(" -- Processing rule #%d.", i);
-			for (size_t j=0; j<Userlist.rules[i].lines.size(); j++) {
+			for (size_t j=0; j<userlistRules[i].lines.size(); j++) {
 				//A mod sorting rule.
-				if ((Userlist.rules[i].lines[j].key == BEFORE || Userlist.rules[i].lines[j].key == AFTER) && IsPlugin(Userlist.rules[i].lines[j].object)) {
+				if ((userlistRules[i].lines[j].key == BEFORE || userlistRules[i].lines[j].key == AFTER) && IsPlugin(userlistRules[i].lines[j].object)) {
 					size_t index1,index2;
 					item mod;
-					index1 = GetModPos(Modlist,Userlist.rules[i].ruleObject);  //Find the rule mod in the modlist.
+					index1 = GetModPos(Modlist,userlistRules[i].ruleObject);  //Find the rule mod in the modlist.
 					mod = Modlist.items[index1];  //Record the rule mod in a new variable.
 					//Do checks/increments.
-					if (Userlist.rules[i].ruleKey == ADD && index1 > x) 
+					if (userlistRules[i].ruleKey == ADD && index1 > x) 
 						x++;
 					//If it adds a mod already sorted, skip the rule.
-					else if (Userlist.rules[i].ruleKey == ADD  && index1 <= x) {
-						bosslog << "<span class='warn'>\""+Userlist.rules[i].ruleObject+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" is already in the masterlist.", Userlist.rules[i].ruleObject.c_str());
+					else if (userlistRules[i].ruleKey == ADD  && index1 <= x) {
+						bosslog << "<span class='warn'>\""+userlistRules[i].ruleObject+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is already in the masterlist.", userlistRules[i].ruleObject.c_str());
 						break;
-					} else if (Userlist.rules[i].ruleKey == OVERRIDE && index1 > x) {
-						bosslog << "<span class='error'>\""+Userlist.rules[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", Userlist.rules[i].ruleObject.c_str());
+					} else if (userlistRules[i].ruleKey == OVERRIDE && index1 > x) {
+						bosslog << "<span class='error'>\""+userlistRules[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlistRules[i].ruleObject.c_str());
 						break;
 					}
 					//Remove the rule mod from its current position.
 					Modlist.items.erase(Modlist.items.begin()+index1);
 					//Find the sort mod in the modlist.
-					index2 = GetModPos(Modlist,Userlist.rules[i].lines[j].object);
+					index2 = GetModPos(Modlist,userlistRules[i].lines[j].object);
 					//Handle case of mods that don't exist at all.
 					if (index2 < 0) {
 						Modlist.items.insert(Modlist.items.begin()+index1,mod);
-						bosslog << "<span class='warn'>\""+Userlist.rules[i].lines[j].object+"\" is not installed, and is not in the masterlist. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" is not installed or in the masterlist.", Userlist.rules[i].lines[j].object.c_str());
+						bosslog << "<span class='warn'>\""+userlistRules[i].lines[j].object+"\" is not installed, and is not in the masterlist. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is not installed or in the masterlist.", userlistRules[i].lines[j].object.c_str());
 						break;
 					}
 					//Handle the case of a rule sorting a mod into a position in unsorted mod territory.
 					if (index2 > x) {
-						if (Userlist.rules[i].ruleKey == ADD)
+						if (userlistRules[i].ruleKey == ADD)
 							x--;
 						Modlist.items.insert(Modlist.items.begin()+index1,mod);
-						bosslog << "<span class='error'>\""+Userlist.rules[i].lines[j].object+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", Userlist.rules[i].lines[j].object.c_str());
+						bosslog << "<span class='error'>\""+userlistRules[i].lines[j].object+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", userlistRules[i].lines[j].object.c_str());
 						break;
 					}
 					//Insert the mod into its new position.
-					if (Userlist.rules[i].lines[j].key == AFTER) 
+					if (userlistRules[i].lines[j].key == AFTER) 
 						index2 += 1;
 					Modlist.items.insert(Modlist.items.begin()+index2,mod);
-					if (Userlist.rules[i].lines[j].key == AFTER) 
-						bosslog << "<span class='success'>\""+Userlist.rules[i].ruleObject+"\" has been sorted after \"" + Userlist.rules[i].lines[j].object + "\".</span><br /><br />";
+					if (userlistRules[i].lines[j].key == AFTER) 
+						bosslog << "<span class='success'>\""+userlistRules[i].ruleObject+"\" has been sorted after \"" + userlistRules[i].lines[j].object + "\".</span><br /><br />";
 					else
-						bosslog << "<span class='success'>\""+Userlist.rules[i].ruleObject+"\" has been sorted before \"" + Userlist.rules[i].lines[j].object + "\".</span><br /><br />";
+						bosslog << "<span class='success'>\""+userlistRules[i].ruleObject+"\" has been sorted before \"" + userlistRules[i].lines[j].object + "\".</span><br /><br />";
 				//A group sorting line.
-				} else if ((Userlist.rules[i].lines[j].key == BEFORE || Userlist.rules[i].lines[j].key == AFTER) && !IsPlugin(Userlist.rules[i].lines[j].object)) {
+				} else if ((userlistRules[i].lines[j].key == BEFORE || userlistRules[i].lines[j].key == AFTER) && !IsPlugin(userlistRules[i].lines[j].object)) {
 					vector<item> group;
 					size_t index1, index2;
 					//Look for group to sort. Find start and end positions.
-					index1 = GetModPos(Modlist, Userlist.rules[i].ruleObject);
-					index2 = GetGroupEndPos(Modlist, Userlist.rules[i].ruleObject);
+					index1 = GetModPos(Modlist, userlistRules[i].ruleObject);
+					index2 = GetGroupEndPos(Modlist, userlistRules[i].ruleObject);
 					//Check to see group actually exists.
 					if (index1 < 0 || index2 < 0) {
-						bosslog << "<span class='error'>The group \""+Userlist.rules[i].ruleObject+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist.rules[i].ruleObject.c_str());
+						bosslog << "<span class='error'>The group \""+userlistRules[i].ruleObject+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlistRules[i].ruleObject.c_str());
 						break;
 					}
 					//Copy the start, end and everything in between to a new variable.
@@ -511,95 +483,95 @@ int main(int argc, char *argv[]) {
 					//Now erase group from modlist.
 					Modlist.items.erase(Modlist.items.begin()+index1,Modlist.items.begin()+index2+1);
 					//Find the group to sort relative to and insert it before or after it as appropriate.
-					if (Userlist.rules[i].lines[j].key == BEFORE)
-						index2 = GetModPos(Modlist, Userlist.rules[i].lines[j].object);  //Find the start.
+					if (userlistRules[i].lines[j].key == BEFORE)
+						index2 = GetModPos(Modlist, userlistRules[i].lines[j].object);  //Find the start.
 					else
-						index2 = GetGroupEndPos(Modlist, Userlist.rules[i].lines[j].object)+1;  //Find the end, and add one, as inserting works before the given element.
+						index2 = GetGroupEndPos(Modlist, userlistRules[i].lines[j].object)+1;  //Find the end, and add one, as inserting works before the given element.
 					//Check that the sort group actually exists.
 					if (index2 < 0) {
 						Modlist.items.insert(Modlist.items.begin()+index1,group.begin(),group.end());  //Insert the group back in its old position.
-						bosslog << "<span class='error'>The group \""+Userlist.rules[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist.rules[i].lines[j].object.c_str());
+						bosslog << "<span class='error'>The group \""+userlistRules[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlistRules[i].lines[j].object.c_str());
 						break;
 					}
 					//Now insert the group.
 					Modlist.items.insert(Modlist.items.begin()+index2,group.begin(),group.end());
 					//Print success message.
-					if (Userlist.rules[i].lines[j].key == AFTER)
-						bosslog << "<span class='success'>The group \""+Userlist.rules[i].ruleObject+"\" has been sorted after the group \""+Userlist.rules[i].lines[j].object+"\".</span><br /><br />";
+					if (userlistRules[i].lines[j].key == AFTER)
+						bosslog << "<span class='success'>The group \""+userlistRules[i].ruleObject+"\" has been sorted after the group \""+userlistRules[i].lines[j].object+"\".</span><br /><br />";
 					else
-						bosslog << "<span class='success'>The group \""+Userlist.rules[i].ruleObject+"\" has been sorted before the group \""+Userlist.rules[i].lines[j].object+"\".</span><br /><br />";
+						bosslog << "<span class='success'>The group \""+userlistRules[i].ruleObject+"\" has been sorted before the group \""+userlistRules[i].lines[j].object+"\".</span><br /><br />";
 				//An insertion line.
-				} else if (Userlist.rules[i].lines[j].key == TOP || Userlist.rules[i].lines[j].key == BOTTOM) {
+				} else if (userlistRules[i].lines[j].key == TOP || userlistRules[i].lines[j].key == BOTTOM) {
 					size_t index1,index2;
 					item mod;
-					index1 = GetModPos(Modlist,Userlist.rules[i].ruleObject);  //Find the rule mod in the modlist.
+					index1 = GetModPos(Modlist,userlistRules[i].ruleObject);  //Find the rule mod in the modlist.
 					mod = Modlist.items[index1];  //Record the rule mod in a new variable.
 					//Do checks/increments.
-					if (Userlist.rules[i].ruleKey == ADD && index1 > x) 
+					if (userlistRules[i].ruleKey == ADD && index1 > x) 
 						x++;
 					//If it adds a mod already sorted, skip the rule.
-					else if (Userlist.rules[i].ruleKey == ADD  && index1 <= x) {
-						bosslog << "<span class='warn'>\""+Userlist.rules[i].ruleObject+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" is already in the masterlist.", Userlist.rules[i].ruleObject.c_str());
+					else if (userlistRules[i].ruleKey == ADD  && index1 <= x) {
+						bosslog << "<span class='warn'>\""+userlistRules[i].ruleObject+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is already in the masterlist.", userlistRules[i].ruleObject.c_str());
 						break;
-					} else if (Userlist.rules[i].ruleKey == OVERRIDE && index1 > x) {
-						bosslog << "<span class='error'>\""+Userlist.rules[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", Userlist.rules[i].ruleObject.c_str());
+					} else if (userlistRules[i].ruleKey == OVERRIDE && index1 > x) {
+						bosslog << "<span class='error'>\""+userlistRules[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlistRules[i].ruleObject.c_str());
 						break;
 					}
 					//Remove the rule mod from its current position.
 					Modlist.items.erase(Modlist.items.begin()+index1);
 					//Find the position of the group to sort it to.
 					//Find the group to sort relative to and insert it before or after it as appropriate.
-					if (Userlist.rules[i].lines[j].key == TOP)
-						index2 = GetModPos(Modlist, Userlist.rules[i].lines[j].object);  //Find the start.
+					if (userlistRules[i].lines[j].key == TOP)
+						index2 = GetModPos(Modlist, userlistRules[i].lines[j].object);  //Find the start.
 					else
-						index2 = GetGroupEndPos(Modlist, Userlist.rules[i].lines[j].object);  //Find the end.
+						index2 = GetGroupEndPos(Modlist, userlistRules[i].lines[j].object);  //Find the end.
 					//Check that the sort group actually exists.
 					if (index2 < 0) {
 						Modlist.items.insert(Modlist.items.begin()+index1,mod);  //Insert the mod back in its old position.
-						bosslog << "<span class='error'>The group \""+Userlist.rules[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
-						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist.rules[i].lines[j].object.c_str());
+						bosslog << "<span class='error'>The group \""+userlistRules[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
+						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlistRules[i].lines[j].object.c_str());
 						break;
 					}
 					//Now insert the mod into the group.
 					Modlist.items.insert(Modlist.items.begin()+index2,mod);
 					//Print success message.
-					if (Userlist.rules[i].lines[j].key == BOTTOM)
-						bosslog << "<span class='success'>\""+Userlist.rules[i].ruleObject+"\" inserted at the end of group \"" + Userlist.rules[i].lines[j].object + "\".</span><br /><br />";
+					if (userlistRules[i].lines[j].key == BOTTOM)
+						bosslog << "<span class='success'>\""+userlistRules[i].ruleObject+"\" inserted at the end of group \"" + userlistRules[i].lines[j].object + "\".</span><br /><br />";
 					else
-						bosslog << "<span class='success'>\""+Userlist.rules[i].ruleObject+"\" inserted at the start of group \"" + Userlist.rules[i].lines[j].object + "\".</span><br /><br />";
+						bosslog << "<span class='success'>\""+userlistRules[i].ruleObject+"\" inserted at the start of group \"" + userlistRules[i].lines[j].object + "\".</span><br /><br />";
 				//A message line.
-				} else if (Userlist.rules[i].lines[j].key == APPEND || Userlist.rules[i].lines[j].key == REPLACE) {
+				} else if (userlistRules[i].lines[j].key == APPEND || userlistRules[i].lines[j].key == REPLACE) {
 					size_t index, pos;
 					string key,data;
 					message newMessage;
 					//Find the mod which will have its messages edited.
-					index = GetModPos(Modlist,Userlist.rules[i].ruleObject);
+					index = GetModPos(Modlist,userlistRules[i].ruleObject);
 					//Split the provided message string into a keyword and a data string.
-					pos = Userlist.rules[i].lines[j].object.find(":");
+					pos = userlistRules[i].lines[j].object.find(":");
 					if (pos!=string::npos) {
-						newMessage.key = to_lower_copy(trim_copy(Userlist.rules[i].lines[j].object.substr(0,pos)));
-						newMessage.data = trim_copy(Userlist.rules[i].lines[j].object.substr(pos+1));
+						newMessage.key = to_lower_copy(trim_copy(userlistRules[i].lines[j].object.substr(0,pos)));
+						newMessage.data = trim_copy(userlistRules[i].lines[j].object.substr(pos+1));
 					}
 					//If the rule is to replace messages, clear existing messages.
-					if (Userlist.rules[i].lines[j].key == REPLACE)
+					if (userlistRules[i].lines[j].key == REPLACE)
 						Modlist.items[index].messages.clear();
 					//Append message to message list of mod.
 					Modlist.items[index].messages.push_back(newMessage);
 
 					//Output confirmation.
-					bosslog << "<span class='success'>\"" + Userlist.rules[i].lines[j].object + "\"";
-					if (Userlist.rules[i].lines[j].key == APPEND)
+					bosslog << "<span class='success'>\"" + userlistRules[i].lines[j].object + "\"";
+					if (userlistRules[i].lines[j].key == APPEND)
 						bosslog << " appended to ";
 					else
 						bosslog << " replaced ";
-					bosslog << "messages attached to \"" + Userlist.rules[i].ruleObject + "\".</span><br /><br />";
+					bosslog << "messages attached to \"" + userlistRules[i].ruleObject + "\".</span><br /><br />";
 				}
 			}
 		}
-		if (Userlist.rules.size()==0) 
+		if (userlistRules.size()==0) 
 			bosslog << "No valid rules were found in your userlist.txt.<br />" << endl;
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 		LOG_INFO("Userlist sorting process finished.");

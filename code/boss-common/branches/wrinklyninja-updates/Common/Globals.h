@@ -12,14 +12,6 @@
 #ifndef __BOSS_GLOBALS_H__
 #define __BOSS_GLOBALS_H__
 
-#ifndef BOOST_FILESYSTEM_VERSION
-#define BOOST_FILESYSTEM_VERSION 3
-#endif
-
-#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#endif
-
 #define _UNICODE	// Tell compiler we're using Unicode, notice the _
 
 #include <string>

@@ -160,7 +160,7 @@ namespace boss {
 	}
 
 	//Checks if a plugin exists, even if ghosted.
-	bool PluginExists(fs::path plugin) {
+	bool Exists(fs::path plugin) {
 		return (fs::exists(plugin) || fs::exists(plugin.native()+fs::path(".ghost").native()));
 	}
 

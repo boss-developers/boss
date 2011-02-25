@@ -12,15 +12,6 @@
 #ifndef __SUPPORT_HELPERS__HPP__
 #define __SUPPORT_HELPERS__HPP__
 
-#ifndef BOOST_FILESYSTEM_VERSION
-#define BOOST_FILESYSTEM_VERSION 3
-#endif
-
-#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#endif
-
-
 #include "Types.h"
 
 #include <cstring>
@@ -98,7 +89,7 @@ namespace boss {
 	bool IsPlugin(string object);
 	
 	//Checks if the plugin is in the Data directory, even if ghosted.
-	bool PluginExists(fs::path plugin);
+	bool Exists(fs::path plugin);
 
 	/// GetModHeader(string textbuf):
 	///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
