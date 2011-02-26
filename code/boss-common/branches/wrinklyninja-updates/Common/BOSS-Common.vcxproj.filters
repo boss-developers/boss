@@ -52,6 +52,9 @@
     <Filter Include="Parsing\Userlist">
       <UniqueIdentifier>{602a28f9-0ef6-4da1-9a1c-acdce1435c1c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Parsing\Modlist">
+      <UniqueIdentifier>{0b023587-0bc5-410f-bdf0-4d64998eb670}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Support\Helpers.h">
@@ -96,6 +99,12 @@
     </ClInclude>
     <ClInclude Include="..\Parsing\Userlist\Parser.h">
       <Filter>Parsing\Userlist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parsing\Modlist\Grammar.h">
+      <Filter>Parsing\Modlist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parsing\Skipper.h">
+      <Filter>Parsing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

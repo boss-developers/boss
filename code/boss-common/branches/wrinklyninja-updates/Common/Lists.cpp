@@ -25,9 +25,9 @@ namespace boss {
 	using boost::algorithm::to_lower_copy;
 
 	//Find a mod by name. Will also find the starting position of a group.
-	size_t GetModPos(modlist list, string filename) {
-		for (size_t i=0; i<list.items.size(); i++) {
-			if (Tidy(list.items[i].name.string()) == Tidy(filename)) {
+	size_t GetModPos(vector<item> list, string filename) {
+		for (size_t i=0; i<list.size(); i++) {
+			if (Tidy(list[i].name.string()) == Tidy(filename)) {
 				return i;
 			}
 		}
@@ -35,9 +35,9 @@ namespace boss {
 	}
 
 	//Find the end of a group by name.
-	size_t GetGroupEndPos(modlist list, string groupname) {
-		for (size_t i=0; i<list.items.size(); i++) {
-			if (list.items[i].type == GROUPEND && Tidy(list.items[i].name.string()) == Tidy(groupname)) {
+	size_t GetGroupEndPos(vector<item> list, string groupname) {
+		for (size_t i=0; i<list.size(); i++) {
+			if (list[i].type == ENDGROUP && Tidy(list[i].name.string()) == Tidy(groupname)) {
 				return i;
 			}
 		}
@@ -63,7 +63,7 @@ namespace boss {
 
 	//Build modlist (the one that gets saved to file, not the masterlist).
 	//Adds mods in directory to modlist in date order (AKA load order).
-	void BuildModlist(modlist &list) {
+	void BuildModlist(vector<item> &list) {
 		LOG_DEBUG("Reading user mods...");
 		if (fs::is_directory(data_path)) {
 			for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
@@ -75,18 +75,18 @@ namespace boss {
 					item mod;
 					mod.name = filename;
 					mod.type = MOD;
-					list.items.push_back(mod);
+					list.push_back(mod);
 				}
 			}
 		}
-		sort(list.items.begin(),list.items.end(),SortModsByDate);
-		LOG_DEBUG("Reading user mods done: %" PRIuS " total mods found.", list.items.size());
+		sort(list.begin(),list.end(),SortModsByDate);
+		LOG_DEBUG("Reading user mods done: %" PRIuS " total mods found.", list.size());
 	}
 
 	//Save the modlist (not masterlist) to a file, printing out all the information in the data structure.
 	//This will likely just be a list of filenames, if it's the modlist.
 	//However, if used on the masterlist, could prove useful for debugging the parser.
-	void SaveModlist(modlist list, fs::path file) {
+	void SaveModlist(vector<item> list, fs::path file) {
 		ofstream ofile;
 		//Back up file if it already exists.
 		try {
@@ -105,16 +105,16 @@ namespace boss {
 		}
 
 		//Iterate through items, printing out all group markers, mods and messsages.
-		for (size_t i=0; i<list.items.size(); i++) {
-			if (list.items[i].type == GROUPBEGIN)
-				ofile << "BEGINGROUP: " << list.items[i].name.string() << endl;  //Print the group begin marker
-			else if (list.items[i].type == GROUPEND)
-				ofile << "ENDGROUP: " << list.items[i].name.string() << endl;  //Print the group end marker
+		for (size_t i=0; i<list.size(); i++) {
+			if (list[i].type == BEGINGROUP)
+				ofile << "BEGINGROUP: " << list[i].name.string() << endl;  //Print the group begin marker
+			else if (list[i].type == ENDGROUP)
+				ofile << "ENDGROUP: " << list[i].name.string() << endl;  //Print the group end marker
 			else {
-				ofile << list.items[i].name.string() << endl;  //Print the mod name.
+				ofile << list[i].name.string() << endl;  //Print the mod name.
 				//Print the messages with the appropriate syntax.
-				for (size_t j=0; j<list.items[i].messages.size(); j++) {
-					ofile << " " << list.items[i].messages[j].key << ": " << list.items[i].messages[j].data << endl;  
+				for (size_t j=0; j<list[i].messages.size(); j++) {
+					ofile << " " << list[i].messages[j].key << ": " << list[i].messages[j].data << endl;  
 				}
 			}
 		}
@@ -127,22 +127,43 @@ namespace boss {
 	//Returns a string representation of the given key, for use in output messages.
 	string GetKeyString(keyType key) {
 		if (key == ADD)
-			return "ADD";
+			return "add";
 		else if (key == OVERRIDE)
-			return "OVERRIDE";
+			return "override";
 		else if (key == FOR)
-			return "FOR";
+			return "for";
 		else if (key == BEFORE)
-			return "BEFORE";
+			return "before";
 		else if (key == AFTER)
-			return "AFTER";
+			return "after";
 		else if (key == TOP)
-			return "TOP";
+			return "top";
 		else if (key == BOTTOM)
-			return "BOTTOM";
+			return "bottom";
 		else if (key == APPEND)
-			return "APPEND";
+			return "append";
 		else
-			return "REPLACE";
+			return "replace";
+	}
+
+	keyType GetStringKey(string key) {
+		if (key == "add")
+			return ADD;
+		else if (key == "override")
+			return OVERRIDE;
+		else if (key == "for")
+			return FOR;
+		else if (key == "before")
+			return BEFORE;
+		else if (key == "after")
+			return AFTER;
+		else if (key == "top")
+			return TOP;
+		else if (key == "bottom")
+			return BOTTOM;
+		else if (key == "append")
+			return APPEND;
+		else
+			return REPLACE;
 	}
 }

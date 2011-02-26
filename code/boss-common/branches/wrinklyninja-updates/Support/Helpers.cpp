@@ -194,4 +194,17 @@ namespace boss {
 	bool IsMasterFile(string plugin) {
 		return (Tidy(plugin)=="oblivion.esm") || (Tidy(plugin)=="fallout3.esm") || (Tidy(plugin)=="nehrim.esm") || (Tidy(plugin)=="falloutnv.esm");
 	}
+
+	//Reads an entire file into a string buffer.
+	void fileToBuffer(fs::path file, string& buffer) {
+		ifstream ifile(file.c_str());
+		if (ifile.fail())
+			return;
+		ifile.unsetf(ios::skipws); // No white space skipping!
+		copy(
+			istream_iterator<char>(ifile),
+			istream_iterator<char>(),
+			back_inserter(buffer)
+		);
+	}
 }

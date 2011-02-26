@@ -24,8 +24,6 @@ namespace boss {
 	namespace fs = boost::filesystem;
 	using boost::format;
 
-	void fileToBuffer(fs::path file, string& buffer);
-
 	bool parseUserlist(fs::path file, vector<rule>& ruleList);
 
 	void RuleSyntaxCheck(rule ruleToCheck);

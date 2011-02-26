@@ -54,9 +54,9 @@ BOSS_LIBS   := boost_system boost_regex boost_filesystem boost_program_options c
 # set default target before including other makefiles
 all: $(PROG_BOSS)
 
-include Support/Makefile.inc Common/Makefile.inc Testing/Makefile.inc
+include Support/Makefile.inc Parsing/Makefile.inc Common/Makefile.inc Testing/Makefile.inc
 
-$(PROG_BOSS): $(TARGET_SUPPORT) $(TARGET_COMMON) $(TARGET_BOSS)
+$(PROG_BOSS): $(TARGET_SUPPORT) $(TARGET_USERLIST) $(TARGET_COMMON) $(TARGET_BOSS)
 
 $(BUILD_DIR)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -MMD -MP -MT $@ -MF $(BUILD_DIR)/$(<:.cpp=.d) $(addprefix -I,$(INCLUDES)) -o $@ -c $<
@@ -64,5 +64,5 @@ $(BUILD_DIR)/%.o: %.cpp
 clean:
 	$(RM) -r $(BUILD_DIR)
 
-$(TARGET_BOSS): $(SUPPORT_OBJS) $(COMMON_OBJS)
+$(TARGET_BOSS): $(SUPPORT_OBJS) $(USERLIST_OBJS) $(COMMON_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(addprefix -l,$(BOSS_LIBS)) $^

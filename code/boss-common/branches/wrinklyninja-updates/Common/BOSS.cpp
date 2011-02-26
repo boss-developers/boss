@@ -301,7 +301,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Build and save modlist.
-	modlist Modlist;
+	vector<item> Modlist;
 	BuildModlist(Modlist);
 	if (revert<1) {
 		try {
@@ -339,7 +339,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Parse masterlist/modlist backup
-	modlist Masterlist;
+	vector<item> Masterlist;
 	fs::path sortfile;
 	if (revert==1) sortfile = curr_modlist_path;	
 	else if (revert==2) sortfile = prev_modlist_path;
@@ -355,29 +355,29 @@ int main(int argc, char *argv[]) {
 	//To optimise this, create a hashmap of all the mods in the userlist and modlist as keys, all having logical '1' values.
 	boost::unordered_set<string> hashset;
 	//Add all modlist mods to hashmap.
-	for (size_t i=0; i<Modlist.items.size(); i++) {
-		if (Modlist.items[i].type == MOD)
-			hashset.insert(Tidy(Modlist.items[i].name.string()));
+	for (size_t i=0; i<Modlist.size(); i++) {
+		if (Modlist[i].type == MOD)
+			hashset.insert(Tidy(Modlist[i].name.string()));
 	}
 	//Add all userlist mods to hashmap.
 	for (size_t i=0; i<userlistRules.size(); i++) {
 		for (size_t j=0; j<userlistRules[i].lines.size(); j++) {
 			if (IsPlugin(userlistRules[i].lines[j].object))
-				hashset.insert(Tidy(Modlist.items[i].name.string()));
+				hashset.insert(Tidy(Modlist[i].name.string()));
 		}
 	}
 
 	//Now compare masterlist against hashmap.
-	if (Masterlist.items.size()>0) {
-		for (size_t i=0; i<Masterlist.items.size(); i++) {
-			if (Modlist.items[i].type == MOD) { //Only interested in mods.
-				boost::unordered_set<string>::iterator pos = hashset.find(Masterlist.items[i].name.string());
+	if (Masterlist.size()>0) {
+		for (size_t i=0; i<Masterlist.size(); i++) {
+			if (Modlist[i].type == MOD) { //Only interested in mods.
+				boost::unordered_set<string>::iterator pos = hashset.find(Masterlist[i].name.string());
 				if(pos != hashset.end()) {
-					size_t pos = GetModPos(Modlist,Masterlist.items[i].name.string());
+					size_t pos = GetModPos(Modlist,Masterlist[i].name.string());
 					if (pos >= 0)
-						Modlist.items.erase(Modlist.items.begin()+pos);  //Remove mod from modlist.
+						Modlist.erase(Modlist.begin()+pos);  //Remove mod from modlist.
 				} else {  //Mod was not found in hashmap, so remove it from the masterlist.
-					Masterlist.items.erase(Masterlist.items.begin()+i);
+					Masterlist.erase(Masterlist.begin()+i);
 					//Since the current element was removed, all higher elements shift down by one, so what was the next element now has the current's position.
 					//Correct for that by decreasing the current index by one.
 					i--;
@@ -385,7 +385,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		//Record position of last sorted mod.
-		x = Masterlist.items.size()-1;
+		x = Masterlist.size()-1;
 	}
 	/*Masterlist now contains:
 	1. All group markers.
@@ -398,16 +398,16 @@ int main(int argc, char *argv[]) {
 
 	//Add modlist's mods to masterlist.
 	item group;
-	group.type = GROUPBEGIN;
+	group.type = BEGINGROUP;
 	group.name = fs::path("Unsorted");
-	Masterlist.items.push_back(group);
-	Masterlist.items.insert(Masterlist.items.end(),Modlist.items.begin(),Modlist.items.end());
-	group.type = GROUPEND;
-	Masterlist.items.push_back(group);
+	Masterlist.push_back(group);
+	Masterlist.insert(Masterlist.end(),Modlist.begin(),Modlist.end());
+	group.type = ENDGROUP;
+	Masterlist.push_back(group);
 	//Now set the modlist to the masterlist (because the modlist is a more sensible named var to work with).
 	Modlist = Masterlist;
 
-	x = Modlist.items.size()-1; //Debug line. Remove if masterlist parser implemented.
+	x = Modlist.size()-1; //Debug line. Remove if masterlist parser implemented.
 
 	//Apply userlist rules to modlist data structure (refered to simply as modlist from here on in).
 	if (revert<1 && fs::exists(userlist_path)) {
@@ -416,14 +416,14 @@ int main(int argc, char *argv[]) {
 		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlistRules.size());
 		for (size_t i=0; i<userlistRules.size(); i++) {
 			//Go through each line of the rule.
-			LOG_DEBUG(" -- Processing rule #%d.", i);
+			LOG_DEBUG(" -- Processing rule #%zd.", i);
 			for (size_t j=0; j<userlistRules[i].lines.size(); j++) {
 				//A mod sorting rule.
 				if ((userlistRules[i].lines[j].key == BEFORE || userlistRules[i].lines[j].key == AFTER) && IsPlugin(userlistRules[i].lines[j].object)) {
 					size_t index1,index2;
 					item mod;
 					index1 = GetModPos(Modlist,userlistRules[i].ruleObject);  //Find the rule mod in the modlist.
-					mod = Modlist.items[index1];  //Record the rule mod in a new variable.
+					mod = Modlist[index1];  //Record the rule mod in a new variable.
 					//Do checks/increments.
 					if (userlistRules[i].ruleKey == ADD && index1 > x) 
 						x++;
@@ -438,12 +438,12 @@ int main(int argc, char *argv[]) {
 						break;
 					}
 					//Remove the rule mod from its current position.
-					Modlist.items.erase(Modlist.items.begin()+index1);
+					Modlist.erase(Modlist.begin()+index1);
 					//Find the sort mod in the modlist.
 					index2 = GetModPos(Modlist,userlistRules[i].lines[j].object);
 					//Handle case of mods that don't exist at all.
 					if (index2 < 0) {
-						Modlist.items.insert(Modlist.items.begin()+index1,mod);
+						Modlist.insert(Modlist.begin()+index1,mod);
 						bosslog << "<span class='warn'>\""+userlistRules[i].lines[j].object+"\" is not installed, and is not in the masterlist. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is not installed or in the masterlist.", userlistRules[i].lines[j].object.c_str());
 						break;
@@ -452,7 +452,7 @@ int main(int argc, char *argv[]) {
 					if (index2 > x) {
 						if (userlistRules[i].ruleKey == ADD)
 							x--;
-						Modlist.items.insert(Modlist.items.begin()+index1,mod);
+						Modlist.insert(Modlist.begin()+index1,mod);
 						bosslog << "<span class='error'>\""+userlistRules[i].lines[j].object+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", userlistRules[i].lines[j].object.c_str());
 						break;
@@ -460,7 +460,7 @@ int main(int argc, char *argv[]) {
 					//Insert the mod into its new position.
 					if (userlistRules[i].lines[j].key == AFTER) 
 						index2 += 1;
-					Modlist.items.insert(Modlist.items.begin()+index2,mod);
+					Modlist.insert(Modlist.begin()+index2,mod);
 					if (userlistRules[i].lines[j].key == AFTER) 
 						bosslog << "<span class='success'>\""+userlistRules[i].ruleObject+"\" has been sorted after \"" + userlistRules[i].lines[j].object + "\".</span><br /><br />";
 					else
@@ -479,9 +479,9 @@ int main(int argc, char *argv[]) {
 						break;
 					}
 					//Copy the start, end and everything in between to a new variable.
-					group.assign(Modlist.items.begin()+index1,Modlist.items.begin()+index2+1);
+					group.assign(Modlist.begin()+index1,Modlist.begin()+index2+1);
 					//Now erase group from modlist.
-					Modlist.items.erase(Modlist.items.begin()+index1,Modlist.items.begin()+index2+1);
+					Modlist.erase(Modlist.begin()+index1,Modlist.begin()+index2+1);
 					//Find the group to sort relative to and insert it before or after it as appropriate.
 					if (userlistRules[i].lines[j].key == BEFORE)
 						index2 = GetModPos(Modlist, userlistRules[i].lines[j].object);  //Find the start.
@@ -489,13 +489,13 @@ int main(int argc, char *argv[]) {
 						index2 = GetGroupEndPos(Modlist, userlistRules[i].lines[j].object)+1;  //Find the end, and add one, as inserting works before the given element.
 					//Check that the sort group actually exists.
 					if (index2 < 0) {
-						Modlist.items.insert(Modlist.items.begin()+index1,group.begin(),group.end());  //Insert the group back in its old position.
+						Modlist.insert(Modlist.begin()+index1,group.begin(),group.end());  //Insert the group back in its old position.
 						bosslog << "<span class='error'>The group \""+userlistRules[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlistRules[i].lines[j].object.c_str());
 						break;
 					}
 					//Now insert the group.
-					Modlist.items.insert(Modlist.items.begin()+index2,group.begin(),group.end());
+					Modlist.insert(Modlist.begin()+index2,group.begin(),group.end());
 					//Print success message.
 					if (userlistRules[i].lines[j].key == AFTER)
 						bosslog << "<span class='success'>The group \""+userlistRules[i].ruleObject+"\" has been sorted after the group \""+userlistRules[i].lines[j].object+"\".</span><br /><br />";
@@ -506,7 +506,7 @@ int main(int argc, char *argv[]) {
 					size_t index1,index2;
 					item mod;
 					index1 = GetModPos(Modlist,userlistRules[i].ruleObject);  //Find the rule mod in the modlist.
-					mod = Modlist.items[index1];  //Record the rule mod in a new variable.
+					mod = Modlist[index1];  //Record the rule mod in a new variable.
 					//Do checks/increments.
 					if (userlistRules[i].ruleKey == ADD && index1 > x) 
 						x++;
@@ -521,7 +521,7 @@ int main(int argc, char *argv[]) {
 						break;
 					}
 					//Remove the rule mod from its current position.
-					Modlist.items.erase(Modlist.items.begin()+index1);
+					Modlist.erase(Modlist.begin()+index1);
 					//Find the position of the group to sort it to.
 					//Find the group to sort relative to and insert it before or after it as appropriate.
 					if (userlistRules[i].lines[j].key == TOP)
@@ -530,13 +530,13 @@ int main(int argc, char *argv[]) {
 						index2 = GetGroupEndPos(Modlist, userlistRules[i].lines[j].object);  //Find the end.
 					//Check that the sort group actually exists.
 					if (index2 < 0) {
-						Modlist.items.insert(Modlist.items.begin()+index1,mod);  //Insert the mod back in its old position.
+						Modlist.insert(Modlist.begin()+index1,mod);  //Insert the mod back in its old position.
 						bosslog << "<span class='error'>The group \""+userlistRules[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlistRules[i].lines[j].object.c_str());
 						break;
 					}
 					//Now insert the mod into the group.
-					Modlist.items.insert(Modlist.items.begin()+index2,mod);
+					Modlist.insert(Modlist.begin()+index2,mod);
 					//Print success message.
 					if (userlistRules[i].lines[j].key == BOTTOM)
 						bosslog << "<span class='success'>\""+userlistRules[i].ruleObject+"\" inserted at the end of group \"" + userlistRules[i].lines[j].object + "\".</span><br /><br />";
@@ -552,14 +552,14 @@ int main(int argc, char *argv[]) {
 					//Split the provided message string into a keyword and a data string.
 					pos = userlistRules[i].lines[j].object.find(":");
 					if (pos!=string::npos) {
-						newMessage.key = to_lower_copy(trim_copy(userlistRules[i].lines[j].object.substr(0,pos)));
+						newMessage.key = GetStringKey(Tidy(userlistRules[i].lines[j].object.substr(0,pos)));
 						newMessage.data = trim_copy(userlistRules[i].lines[j].object.substr(pos+1));
 					}
 					//If the rule is to replace messages, clear existing messages.
 					if (userlistRules[i].lines[j].key == REPLACE)
-						Modlist.items[index].messages.clear();
+						Modlist[index].messages.clear();
 					//Append message to message list of mod.
-					Modlist.items[index].messages.push_back(newMessage);
+					Modlist[index].messages.push_back(newMessage);
 
 					//Output confirmation.
 					bosslog << "<span class='success'>\"" + userlistRules[i].lines[j].object + "\"";
@@ -582,20 +582,20 @@ int main(int argc, char *argv[]) {
 	else if (revert==1) bosslog << "<div><span>Restored Load Order (Using modlist.txt)</span>"<<endl<<"<p>"<<endl;
 	else if (revert==2) bosslog << "<div><span>Restored Load Order (Using modlist.old)</span>"<<endl<<"<p>"<<endl;
 
-	x = min(int(x), int(Modlist.items.size()));  //Not sure why this is needed.
+	x = min(int(x), int(Modlist.size()));  //Not sure why this is needed.
 
 	LOG_INFO("Applying calculated ordering to user files...");
 	for (size_t i=0;i<=x;i++) {
 		//Only act on mods that exist.
-		if (Modlist.items[i].type == MOD && (fs::exists(data_path / Modlist.items[i].name) || fs::exists(data_path / fs::path(Modlist.items[i].name.string()+".ghost")))) {
+		if (Modlist[i].type == MOD && (fs::exists(data_path / Modlist[i].name) || fs::exists(data_path / fs::path(Modlist[i].name.string()+".ghost")))) {
 			bool ghosted = false;
 			fs::path name;
 			string version;
-			if (Tidy(Modlist.items[i].name.string().substr(Modlist.items[i].name.string().length()-6))==".ghost") {
+			if (Tidy(Modlist[i].name.string().substr(Modlist[i].name.string().length()-6))==".ghost") {
 				ghosted = true;
-				name = fs::path(Modlist.items[i].name.string().substr(Modlist.items[i].name.string().length()-6));
+				name = fs::path(Modlist[i].name.string().substr(Modlist[i].name.string().length()-6));
 			} else 
-				name = Modlist.items[i].name;
+				name = Modlist[i].name;
 			//Start outputting stuff to log.
 			string text = "<b>"+name.string();
 			if (!skip_version_parse) {
@@ -608,24 +608,24 @@ int main(int argc, char *argv[]) {
 				text += " <span class='ghosted'> - Ghosted</span>";
 			bosslog << text;
 			//Now change the file's date, if it is not the game's master file.
-			if (!IsMasterFile(Modlist.items[i].name.string())) {
+			if (!IsMasterFile(Modlist[i].name.string())) {
 				//Calculate the new file time.
 				modfiletime=esmtime;
 				modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 				//Re-date file. Provide exception handling in case their permissions are wrong.
-				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist.items[i].name.c_str());
+				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist[i].name.c_str());
 				try { 
-					fs::last_write_time(data_path / Modlist.items[i].name,modfiletime);
+					fs::last_write_time(data_path / Modlist[i].name,modfiletime);
 				} catch(fs::filesystem_error e) {
-					bosslog << " - <span class='error'>Error: Could not change the date of \"" << Modlist.items[i].name.string() << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
+					bosslog << " - <span class='error'>Error: Could not change the date of \"" << Modlist[i].name.string() << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
 				}
 			}
 			//Finally, print the mod's messages.
-			if (Modlist.items[i].messages.size()>0) {
+			if (Modlist[i].messages.size()>0) {
 				bosslog << endl << "<ul>" << endl;
-				for (size_t j=0; j<Modlist.items[i].messages.size(); j++) {
+				for (size_t j=0; j<Modlist[i].messages.size(); j++) {
 					//Print messages.
-					ShowMessage(Modlist.items[i].messages[j],bosslog);
+					ShowMessage(Modlist[i].messages[j],bosslog);
 				}
 				bosslog << "</ul>" << endl;
 			} else 
@@ -640,22 +640,22 @@ int main(int argc, char *argv[]) {
 	//Order their dates to be i days after the master esm to ensure they load last.
 	bosslog << "<div><span>Unrecogised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>"<<endl<<"<p>";
 	LOG_INFO("Reporting unrecognized mods...");
-	for (size_t i=x; i<Modlist.items.size(); i++) {
+	for (size_t i=x; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
-		if (Modlist.items[i].type == MOD && (fs::exists(data_path / Modlist.items[i].name) || fs::exists(data_path / fs::path(Modlist.items[i].name.string()+".ghost")))) {
-			if (Modlist.items[i].name.string().find(".ghost") != string::npos) 
-				bosslog << "Unknown mod file: " << Modlist.items[i].name.string().substr(0,Modlist.items[i].name.string().length()-6) << " <span class='ghosted'> - Ghosted</span>";
+		if (Modlist[i].type == MOD && (fs::exists(data_path / Modlist[i].name) || fs::exists(data_path / fs::path(Modlist[i].name.string()+".ghost")))) {
+			if (Modlist[i].name.string().find(".ghost") != string::npos) 
+				bosslog << "Unknown mod file: " << Modlist[i].name.string().substr(0,Modlist[i].name.string().length()-6) << " <span class='ghosted'> - Ghosted</span>";
 			else 
-				bosslog << "Unknown mod file: " << Modlist.items[i].name.string();
+				bosslog << "Unknown mod file: " << Modlist[i].name.string();
 			modfiletime=esmtime;
 			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
 			//Re-date file. Provide exception handling in case their permissions are wrong.
-			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist.items[i].name.c_str());
+			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist[i].name.c_str());
 			try { 
-				fs::last_write_time(data_path / Modlist.items[i].name,modfiletime);
+				fs::last_write_time(data_path / Modlist[i].name,modfiletime);
 			} catch(fs::filesystem_error e) {
-				bosslog << " - <span class='error'>Error: Could not change the date of \"" << Modlist.items[i].name << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
+				bosslog << " - <span class='error'>Error: Could not change the date of \"" << Modlist[i].name << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
 			}
 			bosslog << endl << "<br />" << endl;
 		}

@@ -9,21 +9,21 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-//Header file for userlist grammar definitions.
+//Header file for modlist grammar definition.
 
-/* Need to:
-1. Get error handling working properly (currently throws silent exceptions and doesn't specify area).
-2. Make error reports useful.
-2. Add content checks.
-3. Make content checks actually affect final parsing product.
+/* Starting with building a parser for the current format, and then working my way up to a parser for the new format.
 */
 
 #ifndef __BOSS_USERLIST_GRAM_H__
 #define __BOSS_USERLIST_GRAM_H__
 
-#include "Parsing/Data.h"
-#include "Parser.h"
+#ifndef BOOST_SPIRIT_UNICODE
+#define BOOST_SPIRIT_UNICODE
+#endif
 
+#include "Parsing/Data.h"
+#include "Parsing/Skipper.h"
+#include "Parser.h"
 #include <sstream>
 
 #include <boost/spirit/include/qi.hpp>
@@ -33,7 +33,7 @@
 #include <boost/spirit/include/phoenix_bind.hpp>
 
 namespace boss {
-	namespace ascii = boost::spirit::ascii;
+	namespace unicode = boost::spirit::unicode;
 	namespace phoenix = boost::phoenix;
 	namespace qi = boost::spirit::qi;
 
@@ -45,10 +45,10 @@ namespace boss {
 	using qi::fail;
 	using qi::lit;
 
-	using ascii::char_;
-	using ascii::space;
-	using ascii::space_type;
-	using ascii::no_case;
+	using unicode::char_;
+	using unicode::space;
+	using unicode::space_type;
+	using unicode::no_case;
 
 	using boost::spirit::info;
 
@@ -57,46 +57,21 @@ namespace boss {
 ////////////////////////////
 
 	template <typename Iterator>
-	struct userlist_skipper : qi::grammar<Iterator> {
-
-		userlist_skipper() : userlist_skipper::base_type(start, "userlist_skipper") {
-
-			start = 
-				spc
-				| comment
-				| eof;
-
-			spc = space - eol;
-
-			comment	
-				= lit("//") 
-				>> *(char_ - eol);
-
-			eof = *eol >> eoi;
-		}
-
-		qi::rule<Iterator> start;
-		qi::rule<Iterator> spc;
-		qi::rule<Iterator> comment;
-		qi::rule<Iterator> eof;
-	};
-
-	template <typename Iterator>
-	struct userlist_grammar : qi::grammar<Iterator, std::vector<rule>(), userlist_skipper<Iterator> > {
+	struct userlist_grammar : qi::grammar<Iterator, std::vector<rule>(), Skipper<Iterator> > {
 		userlist_grammar() : userlist_grammar::base_type(list, "userlist_grammar") {
 
-			list %= rule[&RuleSyntaxCheck] % eol; //A list is a vector of rules. Rules are separated by line endings.
+			list %= userlistRule[&RuleSyntaxCheck] % eol; //A list is a vector of rules. Rules are separated by line endings.
 
-			rule %=
-				*eol			//Soak up excess emtpty lines.
-				> (((headerKey
+			userlistRule %=
+				*eol			//Soak up excess empty lines.
+				> ((headerKey
 				> ':'
 				> object)
 				> eol
-				> body));
+				> body);
 
 			body %= 
-				*eol			//Soak up excess emtpty lines.
+				*eol			//Soak up excess empty lines.
 				> (bodyLine % +eol);
 
 			bodyLine %=
@@ -112,7 +87,7 @@ namespace boss {
 
 			//Give each rule names.
 			list.name("list");
-			rule.name("rule");
+			userlistRule.name("userlistRule");
 			body.name("body");
 			bodyLine.name("bodyLine");
 			headerKey.name("headerKey");
@@ -120,7 +95,7 @@ namespace boss {
 			bodyKey.name("bodyKey");
 		
 			on_error<fail>(list,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(rule,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
+			on_error<fail>(userlistRule,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
 			on_error<fail>(body,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
 			on_error<fail>(bodyLine,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
 			on_error<fail>(headerKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
@@ -128,10 +103,10 @@ namespace boss {
 			on_error<fail>(bodyKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
 		}
 
-		typedef userlist_skipper<Iterator> skipper;
+		typedef Skipper<Iterator> skipper;
 
 		qi::rule<Iterator, std::vector<rule>(), skipper> list;
-		qi::rule<Iterator, rule(), skipper> rule;
+		qi::rule<Iterator, rule(), skipper> userlistRule;
 		qi::rule<Iterator, std::vector<line>(), skipper> body;
 		qi::rule<Iterator, line(), skipper> bodyLine;
 		qi::rule<Iterator, keyType(), skipper> headerKey,bodyKey;

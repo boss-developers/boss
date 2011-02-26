@@ -100,6 +100,9 @@ namespace boss {
 
 	//Determines if a given mod is a game's main master file or not.
 	bool IsMasterFile(string plugin);
+
+	//Reads an entire file into a string buffer.
+	void fileToBuffer(fs::path file, string& buffer);
 }
 
 #endif

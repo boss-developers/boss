@@ -25,22 +25,10 @@ namespace boss {
 	namespace qi = boost::spirit::qi;
 	namespace ascii = boost::spirit::ascii;
 
-	void fileToBuffer(fs::path file, string& buffer) {
-		ifstream ifile(file.c_str());
-		if (ifile.fail())
-			return;
-		ifile.unsetf(ios::skipws); // No white space skipping!
-		copy(
-			istream_iterator<char>(ifile),
-			istream_iterator<char>(),
-			back_inserter(buffer)
-		);
-	}
-
 	bool parseUserlist(fs::path file, vector<rule>& ruleList) {
-		userlist_skipper<string::const_iterator> skipper;
+		Skipper<string::const_iterator> skipper;
 		userlist_grammar<string::const_iterator> grammar;
-		string::iterator begin, end;
+		string::const_iterator begin, end;
 		string contents;
 
 		fileToBuffer(file,contents);
@@ -55,8 +43,9 @@ namespace boss {
 			 while (*begin == '\n') {
 				begin++;
 			}
-			 string::difference_type lines = 1 + count(contents.begin(), begin, '\n');
-			 ParsingFailed(contents.begin(), end, begin, lines);
+			 const string & const_contents(contents);
+			 string::difference_type lines = 1 + count(const_contents.begin(), begin, '\n');
+			 ParsingFailed(const_contents.begin(), end, begin, lines);
 			 return false;
 		 }
 	}

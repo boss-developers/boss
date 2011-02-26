@@ -27,7 +27,7 @@ namespace boss {
 			pos1 = message.data.find("http",pos1 + link.length());
 		}
 		//Select message formatting.
-		if (message.key=="TAG") {
+		if (message.key==TAG) {
 			//Insert spaces in tag list to allow wrapping.
 			pos1 = message.data.find("{{BASH:");
 			if (pos1 != string::npos) {
@@ -39,13 +39,13 @@ namespace boss {
 				}
 			}
 			log << "<li><span class='tags'>Bash Tag suggestion(s):</span> " << message.data << "</li>" << endl;
-		} else if (message.key=="SAY") {
+		} else if (message.key==SAY) {
 			log << "<li>Note: " << message.data << "</li>" << endl;
-		} else if (message.key=="REQ") {
+		} else if (message.key==REQ) {
 			log << "<li>Requires: " << message.data << "</li>" << endl;
-		} else if (message.key=="WARN") {
+		} else if (message.key==WARN) {
 			log << "<li class='warn'>Warning: " << message.data << "</li>" << endl;
-		} else if (message.key=="ERROR") {
+		} else if (message.key==ERR) {
 			log << "<li class='error'>!!! CRITICAL INSTALLATION ERROR: " << message.data << "</li>" << endl;
 		}
 	}
