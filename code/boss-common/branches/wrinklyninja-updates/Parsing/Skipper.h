@@ -16,22 +16,19 @@
 #ifndef __BOSS_PARSER_SKIPPER_H__
 #define __BOSS_PARSER_SKIPPER_H__
 
-#ifndef BOOST_SPIRIT_UNICODE
-#define BOOST_SPIRIT_UNICODE
-#endif
-
 #include <boost/spirit/include/qi.hpp>
 
 namespace boss {
-	namespace unicode = boost::spirit::unicode;
+	namespace ascii = boost::spirit::ascii;
+	namespace iso8859_1 = boost::spirit::iso8859_1;
 	namespace qi = boost::spirit::qi;
 
 	using qi::eol;
 	using qi::eoi;
 	using qi::lit;
 
-	using unicode::char_;
-	using unicode::space;
+	using iso8859_1::char_;
+	using iso8859_1::space;
 	
 	template <typename Iterator>
 	struct Skipper : qi::grammar<Iterator> {
@@ -41,12 +38,19 @@ namespace boss {
 			start = 
 				spc
 				| comment
+				| oldMasterlistComment
 				| eof;
 
 			spc = space - eol;
 
-			comment	
-				= lit("//") 
+			comment	= 
+				lit("//") 
+				>> *(char_ - eol);
+
+			//Need to skip lines that start with '\', but only if they don't follow with EndGroup or BeginGroup.
+			oldMasterlistComment = 
+				lit("\\")
+				>> !(lit("EndGroup") | lit("BeginGroup"))
 				>> *(char_ - eol);
 
 			eof = *eol >> eoi;
@@ -56,6 +60,7 @@ namespace boss {
 		qi::rule<Iterator> spc;
 		qi::rule<Iterator> comment;
 		qi::rule<Iterator> eof;
+		qi::rule<Iterator> oldMasterlistComment;
 	};
 }
 #endif

@@ -9,21 +9,22 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-//File parser to handle BOSS masterlist/modlist. Working the way up from basics though.
+//Contains functions for userlist and modlist/masterlist parsing.
 
 #include <fstream>
-
-
 #include "Parser.h"
-#include "Grammar.h"
+#include "Modlist/Grammar.h"
+#include "Userlist/Grammar.h"
 #include "Support/Helpers.h"
-#include "../../Common/BOSSLog.h"
+#include "Common/BOSSLog.h"
+#include "Common/Globals.h"
 #include <boost/algorithm/string.hpp>
 
 namespace boss {
 	using namespace std;
 	namespace qi = boost::spirit::qi;
-	namespace ascii = boost::spirit::ascii;
+
+	
 
 	bool parseUserlist(fs::path file, vector<rule>& ruleList) {
 		Skipper<string::const_iterator> skipper;
@@ -31,11 +32,47 @@ namespace boss {
 		string::const_iterator begin, end;
 		string contents;
 
+		
+
 		fileToBuffer(file,contents);
 
 		begin = contents.begin();
 		end = contents.end();
 		bool r = qi::phrase_parse(begin, end, grammar, skipper, ruleList);
+
+		 if (r && begin == end)
+			 return true;
+		 else {
+			 while (*begin == '\n') {
+				begin++;
+			}
+			 const string & const_contents(contents);
+			 string::difference_type lines = 1 + count(const_contents.begin(), begin, '\n');
+			 ParsingFailed(const_contents.begin(), end, begin, lines);
+			 return false;
+		 }
+	}
+
+	bool parseOldMasterlist(fs::path file, vector<item>& modList) {
+		Skipper<string::const_iterator> skipper;
+		modlist_old_grammar<string::const_iterator> grammar;
+		string::const_iterator begin, end;
+		string contents;
+
+		//Check for FCOM,OOO and BC.
+		if (fs::exists(data_path / "Oblivion.esm")) {
+			FCOM=fs::exists(data_path / "FCOM_Convergence.esm");
+			OOO=fs::exists(data_path / "Oscuro's_Oblivion_Overhaul.esm");
+			BC=fs::exists(data_path / "Better Cities Resources.esm");
+		} else if (fs::exists(data_path / "Fallout3.esm")) {
+			FCOM = fs::exists(data_path / "FOOK2 - Main.esm");
+			OOO = fs::exists(data_path / "FO3 Wanderers Edition - Main File.esm");
+		}
+		fileToBuffer(file,contents);
+
+		begin = contents.begin();
+		end = contents.end();
+		bool r = qi::phrase_parse(begin, end, grammar, skipper, modList);
 
 		 if (r && begin == end)
 			 return true;

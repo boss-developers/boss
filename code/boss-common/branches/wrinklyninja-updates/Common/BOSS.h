@@ -19,6 +19,6 @@
 #include "BOSSLog.h"
 #include "Error.h"
 #include "Lists.h"
-#include "Parsing/Userlist/Parser.h"
+#include "Parsing/Parser.h"
 
 #endif

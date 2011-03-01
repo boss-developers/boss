@@ -8,10 +8,11 @@
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
-//Header file for userlist parser functions.
 
-#ifndef __BOSS_USERLIST_PARSER_H__
-#define __BOSS_USERLIST_PARSER_H__
+//Contains functions for userlist and modlist/masterlist parsing.
+
+#ifndef __BOSS_PARSER_H__
+#define __BOSS_PARSER_H__
 
 #include <string>
 #include <vector>
@@ -25,6 +26,8 @@ namespace boss {
 	using boost::format;
 
 	bool parseUserlist(fs::path file, vector<rule>& ruleList);
+
+	bool parseOldMasterlist(fs::path file, vector<item>& modList);
 
 	void RuleSyntaxCheck(rule ruleToCheck);
 

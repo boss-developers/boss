@@ -12,7 +12,9 @@
 #ifndef __BOSS_GLOBALS_H__
 #define __BOSS_GLOBALS_H__
 
+#ifndef _UNICODE
 #define _UNICODE	// Tell compiler we're using Unicode, notice the _
+#endif
 
 #include <string>
 #include <fstream>

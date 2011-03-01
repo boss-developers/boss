@@ -341,12 +341,26 @@ int main(int argc, char *argv[]) {
 	//Parse masterlist/modlist backup
 	vector<item> Masterlist;
 	fs::path sortfile;
-	if (revert==1) sortfile = curr_modlist_path;	
-	else if (revert==2) sortfile = prev_modlist_path;
-	else sortfile = masterlist_path;
+	if (revert==1)
+		sortfile = curr_modlist_path;	
+	else if (revert==2) 
+		sortfile = prev_modlist_path;
+	else 
+		sortfile = masterlist_path;
 	LOG_INFO("Using sorting file: %s", sortfile.c_str());
 	//Parse masterlist/modlist backup into data structure.
-
+	bool parsed = parseOldMasterlist(sortfile,Masterlist);
+	if (!parsed) {
+		cout << "Masterlist parse error!" << endl;
+	} else {
+		cout << "Masterlist parsed successfully! Obtained:" << endl;
+	}
+	/*	for (size_t i = 0; i<Masterlist.size(); i++) {
+			cout << Masterlist[i].type << ":" << Masterlist[i].name.string() << endl;
+			for (size_t j=0; j<Masterlist[i].messages.size(); j++)
+				cout << Masterlist[i].messages[j].key << ":" << Masterlist[i].messages[j].data << endl;
+		}
+	*///}
 
 	//Need to compare masterlist against modlist and userlist and weed out:
 	//1. Mods that are not referenced in the userlist or modlist. Remove these from the masterlist. (Weeding out unreferenced)

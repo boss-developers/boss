@@ -9,21 +9,20 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-//Header file for modlist grammar definition.
+//Header file for userlist grammar definition.
 
-/* Starting with building a parser for the current format, and then working my way up to a parser for the new format.
+/* Need to:
+1. Get error handling working properly (currently throws silent exceptions and doesn't specify area).
+2. Make error reports useful.
+2. Add content checks.
+3. Make content checks actually affect final parsing product.
 */
-
 #ifndef __BOSS_USERLIST_GRAM_H__
 #define __BOSS_USERLIST_GRAM_H__
 
-#ifndef BOOST_SPIRIT_UNICODE
-#define BOOST_SPIRIT_UNICODE
-#endif
-
 #include "Parsing/Data.h"
 #include "Parsing/Skipper.h"
-#include "Parser.h"
+#include "Parsing/Parser.h"
 #include <sstream>
 
 #include <boost/spirit/include/qi.hpp>
@@ -33,7 +32,8 @@
 #include <boost/spirit/include/phoenix_bind.hpp>
 
 namespace boss {
-	namespace unicode = boost::spirit::unicode;
+	namespace ascii = boost::spirit::ascii;
+	namespace iso8859_1 = boost::spirit::iso8859_1;
 	namespace phoenix = boost::phoenix;
 	namespace qi = boost::spirit::qi;
 
@@ -45,78 +45,84 @@ namespace boss {
 	using qi::fail;
 	using qi::lit;
 
-	using unicode::char_;
-	using unicode::space;
-	using unicode::space_type;
-	using unicode::no_case;
+	using iso8859_1::char_;
+	using iso8859_1::space;
+	using iso8859_1::space_type;
+	using iso8859_1::no_case;
 
 	using boost::spirit::info;
 
-////////////////////////////
-//Userlist Grammar.
-////////////////////////////
+	////////////////////////////
+	//Userlist Grammar.
+	////////////////////////////
+
+	//Need to structure things to that it provides more meaningful error reporting.
+	//Need to know what specific component failed.
 
 	template <typename Iterator>
 	struct userlist_grammar : qi::grammar<Iterator, std::vector<rule>(), Skipper<Iterator> > {
-		userlist_grammar() : userlist_grammar::base_type(list, "userlist_grammar") {
+		userlist_grammar() : userlist_grammar::base_type(list, "userlist grammar") {
 
-			list %= userlistRule[&RuleSyntaxCheck] % eol; //A list is a vector of rules. Rules are separated by line endings.
+			//A list is a vector of rules. Rules are separated by line endings.
+			list %= userlistRule[&RuleSyntaxCheck] % eol; 
 
+			//A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
 			userlistRule %=
 				*eol			//Soak up excess empty lines.
-				> ((headerKey
-				> ':'
-				> object)
-				> eol
-				> body);
+				> ((ruleKey > ':' > object)
+				> +eol
+				> ((sortLine | messageLine) % +eol));
 
-			body %= 
-				*eol			//Soak up excess empty lines.
-				> (bodyLine % +eol);
-
-			bodyLine %=
-				bodyKey
+			sortLine %=
+				sortKey
 				> ':'
 				> object;
 
-			headerKey %= no_case[ruleKeys];
+			messageLine %=
+				messageKey
+				> ':'
+				> object;
 
 			object %= lexeme[skip("//" >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present.
 
-			bodyKey %= no_case[lineKeys];
+			ruleKey %= no_case[ruleKeys];
+
+			sortKey %= no_case[sortKeys];
+
+			messageKey %= no_case[messageKeys];
 
 			//Give each rule names.
 			list.name("list");
-			userlistRule.name("userlistRule");
-			body.name("body");
-			bodyLine.name("bodyLine");
-			headerKey.name("headerKey");
+			userlistRule.name("rule");
+			sortLine.name("sort line");
+			messageLine.name("message line");
 			object.name("object");
-			bodyKey.name("bodyKey");
+			ruleKey.name("rule keyword");
+			sortKey.name("sort keyword");
+			messageKey.name("message keyword");
 		
 			on_error<fail>(list,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
 			on_error<fail>(userlistRule,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(body,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(bodyLine,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(headerKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
+			on_error<fail>(sortLine,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
+			on_error<fail>(messageLine,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
 			on_error<fail>(object,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(bodyKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
+			on_error<fail>(ruleKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
+			on_error<fail>(sortKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
+			on_error<fail>(messageKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
 		}
 
 		typedef Skipper<Iterator> skipper;
 
 		qi::rule<Iterator, std::vector<rule>(), skipper> list;
 		qi::rule<Iterator, rule(), skipper> userlistRule;
-		qi::rule<Iterator, std::vector<line>(), skipper> body;
-		qi::rule<Iterator, line(), skipper> bodyLine;
-		qi::rule<Iterator, keyType(), skipper> headerKey,bodyKey;
+		qi::rule<Iterator, line(), skipper> sortLine, messageLine;
+		qi::rule<Iterator, keyType(), skipper> ruleKey, sortKey, messageKey;
 		qi::rule<Iterator, std::string(), skipper> object;
 	
 		void SyntaxError(Iterator const& first, Iterator const& last, Iterator const& errorpos, info const& what) {
 			std::ostringstream value; 
 			value << what;
 			boss::SyntaxError(first, last, errorpos, value.str());
-			
 		}
 	};
 }

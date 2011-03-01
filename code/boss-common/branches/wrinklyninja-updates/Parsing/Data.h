@@ -44,8 +44,8 @@ BOOST_FUSION_ADAPT_STRUCT(
 namespace boss {
 	namespace qi = boost::spirit::qi;
 
-	struct messageKey_ : qi::symbols<char, boss::keyType> {
-		messageKey_() {
+	struct masterlistMsgKey_ : qi::symbols<char, boss::keyType> {
+		masterlistMsgKey_() {
 			add
 				//Message keywords.
 				("SAY",boss::SAY)
@@ -55,7 +55,22 @@ namespace boss {
 				("ERROR",boss::ERR)
 			;
 		}
-	} messageKey;
+	} masterlistMsgKey;
+
+	struct oldMasterlistMsgKey_ : qi::symbols<char, boss::keyType> {
+		oldMasterlistMsgKey_() {
+			add
+				//Message keywords.
+				("?",boss::SAY)
+				("^",boss::SAY) //BC comment
+				("$",boss::SAY) //OOO comment
+				("%",boss::TAG)
+				(":",boss::REQ)
+				("\"",boss::WARN) //Incompatibility
+				("*",boss::ERR)
+			;
+		}
+	} oldMasterlistMsgKey;
 
 	//There must be a better way to do this...
 	struct groupKey_ : boost::spirit::qi::symbols<char, boss::itemType> {
@@ -64,6 +79,8 @@ namespace boss {
 				//Group keywords.
 				("BEGINGROUP",boss::BEGINGROUP)
 				("ENDGROUP",boss::ENDGROUP)
+				("\\BeginGroup\\:", boss::BEGINGROUP)
+				("\\EndGroup\\", boss::ENDGROUP)
 			;
 		}
 	} groupKey;
@@ -126,8 +143,8 @@ namespace boss {
 		}
 	} ruleKeys;
 
-	struct lineKeys_ : qi::symbols<char, keyType> {
-		lineKeys_() {
+	struct messageKeys_ : qi::symbols<char, keyType> {
+		messageKeys_() {
 			add
 				//Userlist keywords.
 				("before",BEFORE)
@@ -138,6 +155,20 @@ namespace boss {
 				("replace",REPLACE)
 			;
 		}
-	} lineKeys;
+	} messageKeys;
+
+	struct sortKeys_ : qi::symbols<char, keyType> {
+		sortKeys_() {
+			add
+				//Userlist keywords.
+				("before",BEFORE)
+				("after",AFTER)
+				("top",TOP)
+				("bottom",BOTTOM)
+				("append",APPEND)
+				("replace",REPLACE)
+			;
+		}
+	} sortKeys;
 }
 #endif

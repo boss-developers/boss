@@ -28,6 +28,7 @@ namespace boss {
 	////////////////////////////////////////
 
 	enum keyType {
+		NONE = 0,
 		//Userlist keywords.
 		ADD = 1,
 		OVERRIDE,
