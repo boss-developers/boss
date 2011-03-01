@@ -355,12 +355,12 @@ int main(int argc, char *argv[]) {
 	} else {
 		cout << "Masterlist parsed successfully! Obtained:" << endl;
 	}
-	/*	for (size_t i = 0; i<Masterlist.size(); i++) {
+		for (size_t i = 0; i<Masterlist.size(); i++) {
 			cout << Masterlist[i].type << ":" << Masterlist[i].name.string() << endl;
 			for (size_t j=0; j<Masterlist[i].messages.size(); j++)
 				cout << Masterlist[i].messages[j].key << ":" << Masterlist[i].messages[j].data << endl;
 		}
-	*///}
+	//}
 
 	//Need to compare masterlist against modlist and userlist and weed out:
 	//1. Mods that are not referenced in the userlist or modlist. Remove these from the masterlist. (Weeding out unreferenced)

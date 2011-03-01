@@ -83,7 +83,7 @@ namespace boss {
 
 			std::vector<boss::message> m;
 
-			modList %= listItem % eol;
+			modList %= listItem[&Memorize] % eol;
 
 			listItem %= 
 				*eol			//Soak up excess empty lines.
@@ -100,8 +100,9 @@ namespace boss {
 				| (groupKey > lit("\\"))
 				| eps[_val = MOD];
 
-			itemName = string[phoenix::bind(&ThePatherator, _val, qi::_1)]
-				| eps[phoenix::bind(&ThePatherator, _val, "ENDGROUP")];
+			itemName %= 
+				string[phoenix::bind(&ThePatherator, _val, qi::_1)]
+				| eps[phoenix::bind(&ThePatherator, _val, "")];
 
 			itemMessages %= itemMessage % +eol;
 
@@ -154,13 +155,25 @@ namespace boss {
 	};
 
 	void ThePatherator(fs::path& p, std::string const& str) {
-		p = fs::path(str);
+		if (str.length() == 0 && openGroups.size() > 0) 
+			p = fs::path(openGroups.back());
+		else
+			p = fs::path(str);
 		return;
 	}
 
 	void TheMessagizor(std::vector<message>& in) {
 		std::vector<message> out;
 		in = out;
+		return;
+	}
+
+	void Memorize(item in) {
+		if (in.type == BEGINGROUP) {
+			openGroups.push_back(in.name.string());
+		} else if (in.type == ENDGROUP) {
+			openGroups.pop_back();
+		}
 		return;
 	}
 

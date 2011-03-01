@@ -32,8 +32,6 @@ namespace boss {
 		string::const_iterator begin, end;
 		string contents;
 
-		
-
 		fileToBuffer(file,contents);
 
 		begin = contents.begin();
