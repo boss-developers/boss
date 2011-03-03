@@ -52,7 +52,6 @@ namespace boss {
 
 	//Prints ouptut with formatting according to format.
 	void Output(ofstream &log, formatType format, string text) {
-		size_t pos = 0;
 		if (format == HTML) {
 			log << text;
 			if (text.find("</div>") != string::npos)

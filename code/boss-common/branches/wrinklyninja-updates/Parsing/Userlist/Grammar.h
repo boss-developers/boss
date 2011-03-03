@@ -20,6 +20,10 @@
 #ifndef __BOSS_USERLIST_GRAM_H__
 #define __BOSS_USERLIST_GRAM_H__
 
+#ifndef BOOST_SPIRIT_UNICODE
+#define BOOST_SPIRIT_UNICODE 
+#endif
+
 #include "Parsing/Data.h"
 #include "Parsing/Skipper.h"
 #include "Parsing/Parser.h"
@@ -32,22 +36,18 @@
 #include <boost/spirit/include/phoenix_bind.hpp>
 
 namespace boss {
-	namespace iso8859_1 = boost::spirit::iso8859_1;
+	namespace unicode = boost::spirit::unicode;
 	namespace phoenix = boost::phoenix;
 	namespace qi = boost::spirit::qi;
 
 	using qi::skip;
 	using qi::eol;
-	using qi::eoi;
 	using qi::lexeme;
 	using qi::on_error;
 	using qi::fail;
-	using qi::lit;
 
-	using iso8859_1::char_;
-	using iso8859_1::space;
-	using iso8859_1::space_type;
-	using iso8859_1::no_case;
+	using unicode::char_;
+	using unicode::no_case;
 
 	using boost::spirit::info;
 

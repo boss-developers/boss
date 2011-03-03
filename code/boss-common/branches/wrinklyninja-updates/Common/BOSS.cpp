@@ -329,12 +329,12 @@ int main(int argc, char *argv[]) {
 		} else {
 			cout << "Userlist parsed successfully! Obtained:" << endl;
 			//Debug - print contents of Userlist structure.
-			for (size_t i=0; i<userlistRules.size(); i++) {
+		/*	for (size_t i=0; i<userlistRules.size(); i++) {
 				cout << GetKeyString(userlistRules[i].ruleKey) << ":" << userlistRules[i].ruleObject << endl;
 				for (size_t j=0; j<userlistRules[i].lines.size(); j++)
 					cout << GetKeyString(userlistRules[i].lines[j].key) << ":" << userlistRules[i].lines[j].object << endl;
 				cout << endl;
-			}
+			}*/
 		}
 	}
 
@@ -355,12 +355,11 @@ int main(int argc, char *argv[]) {
 	} else {
 		cout << "Masterlist parsed successfully! Obtained:" << endl;
 	}
-		for (size_t i = 0; i<Masterlist.size(); i++) {
-			cout << Masterlist[i].type << ":" << Masterlist[i].name.string() << endl;
-			for (size_t j=0; j<Masterlist[i].messages.size(); j++)
-				cout << Masterlist[i].messages[j].key << ":" << Masterlist[i].messages[j].data << endl;
-		}
-	//}
+	for (size_t i = 0; i<Masterlist.size(); i++) {
+		cout << GetTypeString(Masterlist[i].type) << ":" << Masterlist[i].name.string() << endl;
+		for (size_t j=0; j<Masterlist[i].messages.size(); j++)
+			cout << GetKeyString(Masterlist[i].messages[j].key) << ":" << Masterlist[i].messages[j].data << endl;
+	}
 
 	//Need to compare masterlist against modlist and userlist and weed out:
 	//1. Mods that are not referenced in the userlist or modlist. Remove these from the masterlist. (Weeding out unreferenced)
@@ -388,7 +387,7 @@ int main(int argc, char *argv[]) {
 				boost::unordered_set<string>::iterator pos = hashset.find(Masterlist[i].name.string());
 				if(pos != hashset.end()) {
 					size_t pos = GetModPos(Modlist,Masterlist[i].name.string());
-					if (pos >= 0)
+					if (pos != (size_t)-1)
 						Modlist.erase(Modlist.begin()+pos);  //Remove mod from modlist.
 				} else {  //Mod was not found in hashmap, so remove it from the masterlist.
 					Masterlist.erase(Masterlist.begin()+i);
@@ -421,7 +420,14 @@ int main(int argc, char *argv[]) {
 	//Now set the modlist to the masterlist (because the modlist is a more sensible named var to work with).
 	Modlist = Masterlist;
 
-	x = Modlist.size()-1; //Debug line. Remove if masterlist parser implemented.
+//	x = Modlist.size()-1; //Debug line. Remove if masterlist parser implemented.
+
+	//Output contents of modlist
+	/*for (size_t i = 0; i<Modlist.size(); i++) {
+		cout << GetTypeString(Modlist[i].type) << ":" << Modlist[i].name.string() << endl;
+		for (size_t j=0; j<Modlist[i].messages.size(); j++)
+			cout << GetKeyString(Modlist[i].messages[j].key) << ":" << Modlist[i].messages[j].data << endl;
+	}*/
 
 	//Apply userlist rules to modlist data structure (refered to simply as modlist from here on in).
 	if (revert<1 && fs::exists(userlist_path)) {
@@ -456,7 +462,7 @@ int main(int argc, char *argv[]) {
 					//Find the sort mod in the modlist.
 					index2 = GetModPos(Modlist,userlistRules[i].lines[j].object);
 					//Handle case of mods that don't exist at all.
-					if (index2 < 0) {
+					if (index2 == (size_t)-1) {
 						Modlist.insert(Modlist.begin()+index1,mod);
 						bosslog << "<span class='warn'>\""+userlistRules[i].lines[j].object+"\" is not installed, and is not in the masterlist. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is not installed or in the masterlist.", userlistRules[i].lines[j].object.c_str());
@@ -487,7 +493,7 @@ int main(int argc, char *argv[]) {
 					index1 = GetModPos(Modlist, userlistRules[i].ruleObject);
 					index2 = GetGroupEndPos(Modlist, userlistRules[i].ruleObject);
 					//Check to see group actually exists.
-					if (index1 < 0 || index2 < 0) {
+					if (index1 == (size_t)-1 || index2 == (size_t)-1) {
 						bosslog << "<span class='error'>The group \""+userlistRules[i].ruleObject+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlistRules[i].ruleObject.c_str());
 						break;
@@ -502,7 +508,7 @@ int main(int argc, char *argv[]) {
 					else
 						index2 = GetGroupEndPos(Modlist, userlistRules[i].lines[j].object)+1;  //Find the end, and add one, as inserting works before the given element.
 					//Check that the sort group actually exists.
-					if (index2 < 0) {
+					if (index2 == (size_t)-1) {
 						Modlist.insert(Modlist.begin()+index1,group.begin(),group.end());  //Insert the group back in its old position.
 						bosslog << "<span class='error'>The group \""+userlistRules[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlistRules[i].lines[j].object.c_str());
@@ -543,7 +549,7 @@ int main(int argc, char *argv[]) {
 					else
 						index2 = GetGroupEndPos(Modlist, userlistRules[i].lines[j].object);  //Find the end.
 					//Check that the sort group actually exists.
-					if (index2 < 0) {
+					if (index2 == (size_t)-1) {
 						Modlist.insert(Modlist.begin()+index1,mod);  //Insert the mod back in its old position.
 						bosslog << "<span class='error'>The group \""+userlistRules[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlistRules[i].lines[j].object.c_str());

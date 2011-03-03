@@ -31,7 +31,7 @@ namespace boss {
 				return i;
 			}
 		}
-		return -1;
+		return (size_t)-1;
 	}
 
 	//Find the end of a group by name.
@@ -41,7 +41,7 @@ namespace boss {
 				return i;
 			}
 		}
-		return -1;
+		return (size_t)-1;
 	}
 
 	//Date comparison, used for sorting mods in modlist.
@@ -142,10 +142,21 @@ namespace boss {
 			return "bottom";
 		else if (key == APPEND)
 			return "append";
-		else
+		else if (key == REPLACE)
 			return "replace";
+		else if (key == SAY)
+			return "SAY";
+		else if (key == TAG)
+			return "TAG";
+		else if (key == REQ)
+			return "REQ";
+		else if (key == WARN)
+			return "WARN";
+		else
+			return "ERROR";
 	}
 
+	//Returns a keyType representation of the given key string.
 	keyType GetStringKey(string key) {
 		if (key == "add")
 			return ADD;
@@ -163,7 +174,26 @@ namespace boss {
 			return BOTTOM;
 		else if (key == "append")
 			return APPEND;
-		else
+		else if (key == "replace")
 			return REPLACE;
+		else if (key == "SAY")
+			return SAY;
+		else if (key == "TAG")
+			return TAG;
+		else if (key == "REQ")
+			return REQ;
+		else if (key == "WARN")
+			return WARN;
+		else
+			return ERR;
+	}
+
+	string GetTypeString(itemType type) {
+		if (type == MOD)
+			return "MOD";
+		else if (type == BEGINGROUP)
+			return "BEGINGROUP";
+		else
+			return "ENDGROUP";
 	}
 }

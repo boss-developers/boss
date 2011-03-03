@@ -28,7 +28,6 @@ namespace boss {
 	////////////////////////////////////////
 
 	enum keyType {
-		NONE = 0,
 		//Userlist keywords.
 		ADD = 1,
 		OVERRIDE,
@@ -44,18 +43,12 @@ namespace boss {
 		TAG,
 		REQ,
 		WARN,
-		ERR,
-		IF,
-		IFNOT,
-		AND,
-		OR
+		ERR
 	};
 
 	////////////////////////////////////////
 	// Modlist/Masterlist data structures
 	////////////////////////////////////////
-
-	// Will work for both < 1.7 format and 1.7+ format.
 
 	enum itemType {
 		MOD,
@@ -68,11 +61,9 @@ namespace boss {
 		string data;
 	};
 
-	//items can be mods, group beginning markers and group end markers. All three have a type and a name, but the messages vector is only 
-	//non-zero size if the item is a mod with messages attached.
 	struct item {
 		itemType type;
-		fs::path name;  //Alternatively, make this a string. I'm pretty sure there's a reason why all mod names are stored as paths though.
+		fs::path name;
 		vector<message> messages;
 	};
 
@@ -115,11 +106,16 @@ namespace boss {
 	//However, if used on the masterlist, could prove useful for debugging the parser.
 	void SaveModlist(vector<item> modList, fs::path file);
 
+	//Pretty sure there's a better way of doing these two using some sort of table.
 	//Returns a string representation of the given key, for use in output messages.
 	string GetKeyString(keyType key);
 
 	//Returns a keyType representation of the given key string.
 	keyType GetStringKey(string key);
+
+	//Returns a string representation of the given itemType, for use in output messages.
+	//Probably only really to be used in debugging.
+	string GetTypeString(itemType type);
 }
 
 #endif

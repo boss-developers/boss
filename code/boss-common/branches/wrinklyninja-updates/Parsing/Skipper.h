@@ -11,36 +11,45 @@
 
 //Header file for skipper grammar definitions, ie. what the userlist and modlist parsers should silently skip.
 
-
-
 #ifndef __BOSS_PARSER_SKIPPER_H__
 #define __BOSS_PARSER_SKIPPER_H__
+
+#ifndef BOOST_SPIRIT_UNICODE
+#define BOOST_SPIRIT_UNICODE 
+#endif
 
 #include <boost/spirit/include/qi.hpp>
 
 namespace boss {
-	namespace iso8859_1 = boost::spirit::iso8859_1;
+	namespace unicode = boost::spirit::unicode;
 	namespace qi = boost::spirit::qi;
 
 	using qi::eol;
 	using qi::eoi;
 	using qi::lit;
 
-	using iso8859_1::char_;
-	using iso8859_1::space;
+	using unicode::char_;
+	using unicode::space;
 	
 	template <typename Iterator>
 	struct Skipper : qi::grammar<Iterator> {
 
 		Skipper() : Skipper::base_type(start, "Skipper") {
 
+		const unsigned short BOM1 = 0xEF;
+		const unsigned short BOM2 = 0xBB;
+		const unsigned short BOM3 = 0xBF;
+
 			start = 
 				spc
+				| UTF8
 				| comment
 				| oldMasterlistComment
 				| eof;
-
+			
 			spc = space - eol;
+
+			UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf");
 
 			comment	= 
 				lit("//") 
@@ -60,6 +69,7 @@ namespace boss {
 		qi::rule<Iterator> comment;
 		qi::rule<Iterator> eof;
 		qi::rule<Iterator> oldMasterlistComment;
+		qi::rule<Iterator> UTF8;
 	};
 }
 #endif

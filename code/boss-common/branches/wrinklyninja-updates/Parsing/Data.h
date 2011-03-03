@@ -84,32 +84,6 @@ namespace boss {
 			;
 		}
 	} groupKey;
-
-	struct condKey_ : boost::spirit::qi::symbols<char, boss::keyType> {
-		condKey_() {
-			add
-				("IF",boss::IF)
-				("IFNOT",boss::IFNOT)
-				;
-		}
-	} condKey;
-
-	struct condOp_ : boost::spirit::qi::symbols<char, boss::keyType> {
-		condOp_() {
-			add
-				("||",boss::OR)
-				("&&",boss::AND)
-				;
-		}
-	} condOp;
-
-	struct varKey_ : boost::spirit::qi::symbols<char, boss::keyType> {
-		varKey_() {
-			add
-				("SET",boss::OR)
-				;
-		}
-	} varKey;
 }
 
 //////////////////////////////

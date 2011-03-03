@@ -236,7 +236,7 @@ S	14. The first line of a rule must be a rule line. If there is a valid line bef
 		boost::replace_all(context, "\n", "<eol>");
 
 		std::cerr << "Syntax error while trying to parse Userlist.txt: '" << what << "' near this input: '" << context << "'." << std::endl;
-	};
+	}
 
 	void ParsingFailed(
 			string::const_iterator	const& begin, 
@@ -249,5 +249,5 @@ S	14. The first line of a rule must be a rule line. If there is a valid line bef
 		boost::replace_all(context, "\n", "<eol>");
 
 		std::cerr << "Userlist.txt parsing error at line #" << lineNo << " while reading near this input: '" << context << "'." << std::endl;
-	};
+	}
 }

@@ -12,6 +12,10 @@
 #ifndef __BOSS_MODLIST_GRAM_H__
 #define __BOSS_MODLIST_GRAM_H__
 
+#ifndef BOOST_SPIRIT_UNICODE
+#define BOOST_SPIRIT_UNICODE 
+#endif
+
 #include "Parsing/Data.h"
 #include "Parsing/Skipper.h"
 #include "Parsing/Parser.h"
@@ -24,7 +28,7 @@
 #include <boost/spirit/include/phoenix_bind.hpp>
 
 namespace boss {
-	namespace iso8859_1 = boost::spirit::iso8859_1;
+	namespace unicode = boost::spirit::unicode;
 	namespace phoenix = boost::phoenix;
 	namespace qi = boost::spirit::qi;
 
@@ -39,10 +43,8 @@ namespace boss {
 	using qi::omit;
 	using qi::eps;
 
-	using iso8859_1::char_;
-	using iso8859_1::space;
-	using iso8859_1::no_case;
-	using iso8859_1::upper;
+	using unicode::char_;
+	using unicode::upper;
 
 	using boost::spirit::info;
 
@@ -75,6 +77,30 @@ namespace boss {
 	bool OOO, BC, FCOM;  //Need to check for these specific mods in old format.
 	
 
+	void ThePatherator(fs::path& p, std::string const& str) {
+		if (str.length() == 0 && openGroups.size() > 0) 
+			p = fs::path(openGroups.back());
+		else
+			p = fs::path(str);
+		return;
+	}
+
+	void TheMessagizor(std::vector<message>& in) {
+		std::vector<message> out;
+		in = out;
+		return;
+	}
+
+	void Memorize(item in) {
+		if (in.type == BEGINGROUP) {
+			openGroups.push_back(in.name.string());
+		} else if (in.type == ENDGROUP) {
+			openGroups.pop_back();
+		}
+		return;
+	}
+
+
 	//Old format grammar.
 	template <typename Iterator>
 	struct modlist_old_grammar : qi::grammar<Iterator, std::vector<item>(), Skipper<Iterator> > {
@@ -86,7 +112,7 @@ namespace boss {
 
 			listItem %= 
 				*eol			//Soak up excess empty lines.
-				> ItemType > itemName
+				> ItemType > -(lit(">") | lit("<")) > itemName
 				> itemMessages;
 
 			ItemType %= 
@@ -102,7 +128,7 @@ namespace boss {
 				>> itemMessage % +eol)
 				| eps[qi::_1 = m];
 
-			itemMessage %= 
+			itemMessage %= -(lit(">") | lit("<")) >> 
 				messageKeyword
 				> string;
 
@@ -149,30 +175,6 @@ namespace boss {
 			boss::SyntaxError(first, last, errorpos, value.str());
 		}
 	};
-
-	void ThePatherator(fs::path& p, std::string const& str) {
-		if (str.length() == 0 && openGroups.size() > 0) 
-			p = fs::path(openGroups.back());
-		else
-			p = fs::path(str);
-		return;
-	}
-
-	void TheMessagizor(std::vector<message>& in) {
-		std::vector<message> out;
-		in = out;
-		return;
-	}
-
-	void Memorize(item in) {
-		if (in.type == BEGINGROUP) {
-			openGroups.push_back(in.name.string());
-		} else if (in.type == ENDGROUP) {
-			openGroups.pop_back();
-		}
-		return;
-	}
-
 }
 
 /*
