@@ -32,7 +32,6 @@
 #include <boost/spirit/include/phoenix_bind.hpp>
 
 namespace boss {
-	namespace ascii = boost::spirit::ascii;
 	namespace iso8859_1 = boost::spirit::iso8859_1;
 	namespace phoenix = boost::phoenix;
 	namespace qi = boost::spirit::qi;

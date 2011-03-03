@@ -19,7 +19,6 @@
 #include <boost/spirit/include/qi.hpp>
 
 namespace boss {
-	namespace ascii = boost::spirit::ascii;
 	namespace iso8859_1 = boost::spirit::iso8859_1;
 	namespace qi = boost::spirit::qi;
 

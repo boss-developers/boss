@@ -25,7 +25,6 @@
 
 namespace boss {
 	namespace iso8859_1 = boost::spirit::iso8859_1;
-	namespace ascii = boost::spirit::ascii;
 	namespace phoenix = boost::phoenix;
 	namespace qi = boost::spirit::qi;
 
@@ -87,24 +86,21 @@ namespace boss {
 
 			listItem %= 
 				*eol			//Soak up excess empty lines.
-				> (ItemType > itemName
-				> eps[qi::_1 = m]) 
-				| 
-				(ItemType > itemName
-				//> eps[qi::_1 = m]) 
-				> +eol > itemMessages)
-			;
+				> ItemType > itemName
+				> itemMessages;
 
 			ItemType %= 
-				groupKey 
-				| (groupKey > lit("\\"))
+				(groupKey > -lit("\\"))
 				| eps[_val = MOD];
 
 			itemName %= 
 				string[phoenix::bind(&ThePatherator, _val, qi::_1)]
 				| eps[phoenix::bind(&ThePatherator, _val, "")];
 
-			itemMessages %= itemMessage % +eol;
+			itemMessages %= 
+				(+eol
+				>> itemMessage % +eol)
+				| eps[qi::_1 = m];
 
 			itemMessage %= 
 				messageKeyword
@@ -178,81 +174,7 @@ namespace boss {
 	}
 
 }
-	/*
-	//Old format grammar.
-	template <typename Iterator>
-	struct old_modlist_grammar : qi::grammar<Iterator, std::vector<item>(), Skipper<Iterator> > {
-		old_modlist_grammar() : old_modlist_grammar::base_type(list, "old_modlist_grammar") {
 
-			list %= listItem % eol; //A list is a vector of rules. Rules are separated by line endings.
-
-			listItem = 
-				*eol			//Soak up excess empty lines.
-				> (string								
-				> eol 
-				> -itemMessages)				[phoenix::bind(&old_modlist_grammar<Iterator>::VarSet, this, _val, qi::_1, qi::_2)];
-
-			itemMessages %= 
-				*eol			//Soak up excess empty lines.
-				> (itemMessage % eol);
-
-			itemMessage %=
-				oldMasterlistMsgKey
-				> ':'
-				> string;
-
-			string %= lexeme[skip("//" >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present.
-
-			//Give each rule names.
-			list.name("list");
-			listItem.name("item");
-			itemMessages.name("messages");
-			itemMessage.name("message");
-			string.name("string");
-		
-			on_error<fail>(list,phoenix::bind(&old_modlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(listItem,phoenix::bind(&old_modlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(itemMessages,phoenix::bind(&old_modlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(itemMessage,phoenix::bind(&old_modlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(string,phoenix::bind(&old_modlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-		}
-
-		typedef Skipper<Iterator> skipper;
-
-		qi::rule<Iterator, std::vector<item>(), skipper> list;
-		qi::rule<Iterator, item(), skipper> listItem;
-		qi::rule<Iterator, std::vector<message>(), skipper> itemMessages;
-		qi::rule<Iterator, message(), skipper> itemMessage;
-		qi::rule<Iterator, std::string(), skipper> string;
-	
-		void SyntaxError(Iterator const& first, Iterator const& last, Iterator const& errorpos, info const& what) {
-			std::ostringstream value; 
-			value << what;
-	//		boss::SyntaxError(first, last, errorpos, value.str());
-			
-		}
-
-		void VarSet(item listItem, std::string strname, std::vector<message> itemMessages) {
-			if (strname.find("EndGroup")) {
-				listItem.type = ENDGROUP;
-				listItem.name = fs::path(openGroups.back());
-				openGroups.pop_back();
-				listItem.messages.clear();
-			} else if (strname.find("BeginGroup")) {
-				listItem.type = BEGINGROUP;
-				size_t pos = strname.find(":");
-				openGroups.push_back(strname.substr(pos+1));
-				listItem.name = fs::path(strname.substr(pos+1));
-				listItem.messages.clear();
-			} else {
-				listItem.type = MOD;
-				listItem.name = strname;
-				listItem.messages = itemMessages;
-			}
-		}
-	};
-}
-*/
 /*
 Modlist grammar is very complicated.
 
