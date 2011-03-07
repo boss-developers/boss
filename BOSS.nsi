@@ -67,6 +67,8 @@
     Var UpdateState_Other
     Var Check_Readme
     Var Check_DeleteOldFiles
+	Var Create_Userlist
+	Var CheckState_Userlist
     Var Function_Browse
     Var Function_DirPrompt
     Var Function_RadioButton
@@ -332,6 +334,11 @@
                 ${NSD_AddStyle} $Check_Readme ${WS_GROUP}
                 ${NSD_SetState} $Check_Readme ${BST_CHECKED}
                 IntOp $1 $1 + 25
+		${NSD_CreateCheckBox} $1% $0u 35% 8u "Create blank userlist(s)"
+			Pop $Create_Userlist
+			${NSD_AddStyle} $Create_Userlist ${WS_GROUP}
+			${NSD_SetState} $Create_Userlist ${BST_CHECKED}
+			IntOp $1 $1 + 35
         ${NSD_CreateCheckBox} $1% $0u 75% 8u "Delete files from old BOSS versions"
             Pop $Check_DeleteOldFiles
             ${NSD_AddStyle} $Check_DeleteOldFiles ${WS_GROUP}
@@ -344,9 +351,10 @@
         ${NSD_GetState} $Check_NV $CheckState_NV
         ${NSD_GetState} $Check_Nehrim $CheckState_Nehrim
         ${NSD_GetState} $Check_Other $CheckState_Other
+		${NSD_GetState} $Create_Userlist $CheckState_Userlist
         
         ${If} $CheckState_OB == ${BST_CHECKED}
-            SetOutPath "$Path_OB\Data"
+			SetOutPath "$Path_OB\Data"
             ${If} $UpdateState_OB == ${BST_CHECKED}
                 Exec '"$Path_OB\Data\Boss.exe" -o -s'
             ${Else}
@@ -362,7 +370,7 @@
             ${EndIf}
         ${EndIf}
         ${If} $CheckState_NV == ${BST_CHECKED}
-            SetOutPath "$Path_NV\Data"
+			SetOutPath "$Path_NV\Data"
             ${If} $UpdateState_NV == ${BST_CHECKED}
                 Exec '"$Path_NV\Data\Boss.exe" -o -s'
             ${Else}
@@ -428,6 +436,29 @@
                 Delete "$Path_Other\Data\BOSS_ReadMe.rtf"
             ${EndIf}
         ${EndIf}
+		${If} $CheckState_Userlist == ${BST_CHECKED}
+			${If} $Path_OB != $Empty
+				IfFileExists "$Path_OB\Data\Boss\userlist.txt" +2 0
+			    File /oname=$Path_OB\Data\Boss\userlist.txt Data\userlist.txt
+			${EndIf}
+			${If} $Path_FO != $Empty
+				IfFileExists "$Path_FO\Data\Boss\userlist.txt" +2 0
+			    File /oname=$Path_FO\Data\Boss\userlist.txt Data\userlist.txt
+			${EndIf}
+			${If} $Path_NV != $Empty
+				IfFileExists "$Path_NV\Data\Boss\userlist.txt" +2 0
+			    File /oname=$Path_NV\Data\Boss\userlist.txt Data\userlist.txt
+			${EndIf}
+			${If} $Path_Nehrim != $Empty
+				IfFileExists "$Path_Nehrim\Data\Boss\userlist.txt" +2 0
+			    File /oname=$Path_Nehrim\Data\Boss\userlist.txt Data\userlist.txt
+			${EndIf}
+			${If} $Path_Other != $Empty
+				IfFileExists "$Path_Other\Data\Boss\userlist.txt" +2 0
+			    File /oname=$Path_Other\Data\Boss\userlist.txt Data\userlist.txt
+			${EndIf}
+		${EndIf}
+		
         FunctionEnd
     Function OnClick_Browse
         Pop $0
