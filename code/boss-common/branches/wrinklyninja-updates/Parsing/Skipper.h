@@ -36,10 +36,6 @@ namespace boss {
 
 		Skipper() : Skipper::base_type(start, "Skipper") {
 
-		const unsigned short BOM1 = 0xEF;
-		const unsigned short BOM2 = 0xBB;
-		const unsigned short BOM3 = 0xBF;
-
 			start = 
 				spc
 				| UTF8
@@ -49,7 +45,7 @@ namespace boss {
 			
 			spc = space - eol;
 
-			UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf");
+			UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf"); //UTF8 BOM
 
 			comment	= 
 				lit("//") 

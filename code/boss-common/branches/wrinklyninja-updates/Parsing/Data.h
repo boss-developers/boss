@@ -44,43 +44,36 @@ BOOST_FUSION_ADAPT_STRUCT(
 namespace boss {
 	namespace qi = boost::spirit::qi;
 
-	struct masterlistMsgKey_ : qi::symbols<char, boss::keyType> {
+	struct masterlistMsgKey_ : qi::symbols<char, keyType> {
 		masterlistMsgKey_() {
 			add
-				//Message keywords.
-				("SAY",boss::SAY)
-				("TAG",boss::TAG)
-				("REQ",boss::REQ)
-				("WARN",boss::WARN)
-				("ERROR",boss::ERR)
+				//New Message keywords.
+				("SAY",SAY)
+				("TAG",TAG)
+				("REQ",REQ)
+				("WARN",WARN)
+				("ERROR",ERR)
+				//Old message symbols.
+				("?",SAY)
+				("$",SAY)  //OOO comment - treat like a normal comment because trying to parse it as a conditional is a PITA.
+				("^",SAY)  //BC comment - treat like a normal comment because trying to parse it as a conditional is a PITA.
+				("%",TAG)
+				(":",REQ)
+				("\"",WARN) //Incompatibility
+				("*",ERR)
 			;
 		}
 	} masterlistMsgKey;
 
-	struct oldMasterlistMsgKey_ : qi::symbols<char, boss::keyType> {
-		oldMasterlistMsgKey_() {
-			add
-				//Message keywords.
-				("?",boss::SAY)
-				("^",boss::SAY) //BC comment
-				("$",boss::SAY) //OOO comment
-				("%",boss::TAG)
-				(":",boss::REQ)
-				("\"",boss::WARN) //Incompatibility
-				("*",boss::ERR)
-			;
-		}
-	} oldMasterlistMsgKey;
-
 	//There must be a better way to do this...
-	struct groupKey_ : boost::spirit::qi::symbols<char, boss::itemType> {
+	struct groupKey_ : qi::symbols<char, itemType> {
 		groupKey_() {
 			add
 				//Group keywords.
-				("BEGINGROUP",boss::BEGINGROUP)
-				("ENDGROUP",boss::ENDGROUP)
-				("\\BeginGroup\\:", boss::BEGINGROUP)
-				("\\EndGroup\\", boss::ENDGROUP)
+				("BEGINGROUP",BEGINGROUP)
+				("ENDGROUP",ENDGROUP)
+				("\\BeginGroup\\:",BEGINGROUP)
+				("\\EndGroup\\\\",ENDGROUP)
 			;
 		}
 	} groupKey;
@@ -121,10 +114,6 @@ namespace boss {
 		messageKeys_() {
 			add
 				//Userlist keywords.
-				("before",BEFORE)
-				("after",AFTER)
-				("top",TOP)
-				("bottom",BOTTOM)
 				("append",APPEND)
 				("replace",REPLACE)
 			;
@@ -139,8 +128,6 @@ namespace boss {
 				("after",AFTER)
 				("top",TOP)
 				("bottom",BOTTOM)
-				("append",APPEND)
-				("replace",REPLACE)
 			;
 		}
 	} sortKeys;

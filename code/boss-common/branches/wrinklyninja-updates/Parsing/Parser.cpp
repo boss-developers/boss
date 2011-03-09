@@ -59,12 +59,17 @@ namespace boss {
 
 		//Check for FCOM,OOO and BC.
 		if (fs::exists(data_path / "Oblivion.esm")) {
-			FCOM=fs::exists(data_path / "FCOM_Convergence.esm");
-			OOO=fs::exists(data_path / "Oscuro's_Oblivion_Overhaul.esm");
-			BC=fs::exists(data_path / "Better Cities Resources.esm");
+			if (fs::exists(data_path / "FCOM_Convergence.esm"))
+				setVars.insert("FCOM");
+			if (fs::exists(data_path / "Oscuro's_Oblivion_Overhaul.esm"))
+				setVars.insert("OOO");
+			if (fs::exists(data_path / "Better Cities Resources.esm"))
+				setVars.insert("BC");
 		} else if (fs::exists(data_path / "Fallout3.esm")) {
-			FCOM = fs::exists(data_path / "FOOK2 - Main.esm");
-			OOO = fs::exists(data_path / "FO3 Wanderers Edition - Main File.esm");
+			if (fs::exists(data_path / "FOOK2 - Main.esm"))
+				setVars.insert("FOOK");
+			if (fs::exists(data_path / "FO3 Wanderers Edition - Main File.esm"))
+				setVars.insert("FWE");
 		}
 		fileToBuffer(file,contents);
 

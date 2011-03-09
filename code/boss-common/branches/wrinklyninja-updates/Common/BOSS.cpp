@@ -11,7 +11,6 @@
 
 
 #include "BOSS.h"
-#include "../utf8/source/utf8.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
@@ -420,7 +419,7 @@ int main(int argc, char *argv[]) {
 	//Now set the modlist to the masterlist (because the modlist is a more sensible named var to work with).
 	Modlist = Masterlist;
 
-//	x = Modlist.size()-1; //Debug line. Remove if masterlist parser implemented.
+	x = Modlist.size()-1; //Debug line. Remove if masterlist parser implemented.
 
 	//Output contents of modlist
 	/*for (size_t i = 0; i<Modlist.size(); i++) {
@@ -602,7 +601,7 @@ int main(int argc, char *argv[]) {
 	else if (revert==1) bosslog << "<div><span>Restored Load Order (Using modlist.txt)</span>"<<endl<<"<p>"<<endl;
 	else if (revert==2) bosslog << "<div><span>Restored Load Order (Using modlist.old)</span>"<<endl<<"<p>"<<endl;
 
-	x = min(int(x), int(Modlist.size()));  //Not sure why this is needed.
+	//x = min(int(x), int(Modlist.size()));  //Not sure why this is needed.
 
 	LOG_INFO("Applying calculated ordering to user files...");
 	for (size_t i=0;i<=x;i++) {

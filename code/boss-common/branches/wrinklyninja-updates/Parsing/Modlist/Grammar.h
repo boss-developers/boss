@@ -26,6 +26,10 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/home/phoenix/object/construct.hpp>
 #include <boost/spirit/include/phoenix_bind.hpp>
+#include <boost/spirit/include/phoenix_stl.hpp>
+
+
+#include <boost/unordered_set.hpp>
 
 namespace boss {
 	namespace unicode = boost::spirit::unicode;
@@ -75,6 +79,8 @@ namespace boss {
 
 	std::vector<std::string> openGroups; //Need to keep track of which groups are open to match up endings properly in old format.
 	bool OOO, BC, FCOM;  //Need to check for these specific mods in old format.
+	boost::unordered_set<string> setVars;
+	std::vector<boss::message> m;
 	
 
 	void ThePatherator(fs::path& p, std::string const& str) {
@@ -99,24 +105,66 @@ namespace boss {
 		}
 		return;
 	}
+	
+	void Evaluate(char condition, keyType& key) {
+		boost::unordered_set<std::string>::iterator pos;
+		bool eval = true;
+		if (condition == '>') {
+			pos = setVars.find("FCOM");
+			if (pos == setVars.end())
+				eval = false;
+		} else if (condition == '<') {
+			pos = setVars.find("FCOM");
+			if (pos != setVars.end())
+				eval = false;
+		}
+		if (!eval) {
+			key = NONE;
+		}
+		return;
+	}
 
+	/* Conditionals:
+	In old format, they are implied, not explicit, ie:
+
+	Old => New
+	-------------
+	$   => IF (OOO) SAY: ...
+	^   => IF (BC) SAY: ...
+	>   => IF (FCOM) ...
+	<   => IFNOT (FCOM) ...
+
+	Since new format has the explicit conditionals, the implicit conditionals should be translated, so both formats can use a
+	common evaluator.
+
+	How to do this? Variables will use a hashset, setVars, with each variable being a string key. Conditionals must be evaluated
+	mid-parsing. If it evaluates to true, the parser should continue with the current item/message, else it should skip it.
+
+	General format:
+	conditional = "IF" | "IFNOT" >> "(" >> string - ")" >> ")" >> -":";
+
+	The conditional should not be recorded. The final semicolon is optional because if it is followed by a message or set line, there
+	will be a keyword to follow, which will then have a semicolon after it.
+
+	Trick is to make the presence of a conditional optional, but if it is present, to make sure that it must be true to continue that item.
+
+	Cannot skip stuff during parsing, so either it must not go into data structures or it must be an emtpy item.
+	*/
 
 	//Old format grammar.
 	template <typename Iterator>
 	struct modlist_old_grammar : qi::grammar<Iterator, std::vector<item>(), Skipper<Iterator> > {
 		modlist_old_grammar() : modlist_old_grammar::base_type(modList, "modlist_old_grammar") {
 
-			std::vector<boss::message> m;
-
 			modList %= listItem[&Memorize] % eol;
 
 			listItem %= 
 				*eol			//Soak up excess empty lines.
-				> ItemType > -(lit(">") | lit("<")) > itemName
+				> ItemType > condition > itemName
 				> itemMessages;
 
 			ItemType %= 
-				(groupKey > -lit("\\"))
+				groupKey
 				| eps[_val = MOD];
 
 			itemName %= 
@@ -128,13 +176,15 @@ namespace boss {
 				>> itemMessage % +eol)
 				| eps[qi::_1 = m];
 
-			itemMessage %= -(lit(">") | lit("<")) >> 
+			itemMessage %= condition >>
 				messageKeyword
 				> string;
 
+			condition = lit('>') |  lit('<') | eps;
+
 			string %= lexeme[skip(lit("//") >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present.
 
-			messageKeyword %= oldMasterlistMsgKey;
+			messageKeyword %= masterlistMsgKey;
 
 			modList.name("modList");
 			listItem.name("listItem");
@@ -165,6 +215,7 @@ namespace boss {
 		qi::rule<Iterator, message(), skipper> itemMessage;
 		qi::rule<Iterator, std::string(), skipper> string;
 		qi::rule<Iterator, keyType(), skipper> messageKeyword;
+		qi::rule<Iterator, skipper> condition;
 		
 		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, info const& what) {
 			std::ostringstream value; 

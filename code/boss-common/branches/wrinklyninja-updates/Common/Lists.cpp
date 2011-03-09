@@ -18,7 +18,6 @@
 #include "Error.h"
 #include "Globals.h"
 #include <boost/algorithm/string.hpp>
-#include "../utf8/source/utf8.h"
 
 namespace boss {
 	using namespace std;
@@ -152,8 +151,10 @@ namespace boss {
 			return "REQ";
 		else if (key == WARN)
 			return "WARN";
-		else
+		else if (key == ERR)
 			return "ERROR";
+		else 
+			return "NONE";
 	}
 
 	//Returns a keyType representation of the given key string.
@@ -184,8 +185,10 @@ namespace boss {
 			return REQ;
 		else if (key == "WARN")
 			return WARN;
-		else
+		else if (key == "ERROR")
 			return ERR;
+		else
+			return NONE;
 	}
 
 	string GetTypeString(itemType type) {
