@@ -43,7 +43,9 @@ namespace boss {
 			log << "<li>Note: " << message.data << "</li>" << endl;
 		} else if (message.key==REQ) {
 			log << "<li>Requires: " << message.data << "</li>" << endl;
-		} else if (message.key==WARN) {
+		} else if (message.key==INC) {
+			log << "<li>Incompatible with: " << message.data << "</li>" << endl;
+			} else if (message.key==WARN) {
 			log << "<li class='warn'>Warning: " << message.data << "</li>" << endl;
 		} else if (message.key==ERR) {
 			log << "<li class='error'>!!! CRITICAL INSTALLATION ERROR: " << message.data << "</li>" << endl;

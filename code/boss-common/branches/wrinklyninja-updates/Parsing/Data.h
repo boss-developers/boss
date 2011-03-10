@@ -59,8 +59,8 @@ namespace boss {
 				("^",BCSAY)  //BC comment - treat like a normal comment because trying to parse it as a conditional is a PITA.
 				("%",TAG)
 				(":",REQ)
-				("\"",WARN) //Incompatibility
-				("*",ERR)
+				("\"",INC) //Incompatibility
+				("*",ERR) //FCOM install error.
 			;
 		}
 	} masterlistMsgKey;

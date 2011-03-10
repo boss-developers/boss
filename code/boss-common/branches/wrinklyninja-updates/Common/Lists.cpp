@@ -153,6 +153,8 @@ namespace boss {
 			return "WARN";
 		else if (key == ERR)
 			return "ERROR";
+		else if (key == INC)
+			return "INC";
 		else 
 			return "NONE";
 	}
@@ -187,6 +189,8 @@ namespace boss {
 			return WARN;
 		else if (key == "ERROR")
 			return ERR;
+		else if (key == "INC")
+			return INC;
 		else
 			return NONE;
 	}

@@ -47,7 +47,8 @@ namespace boss {
 		ERR,
 		//Special masterlist keywords.
 		OOOSAY,
-		BCSAY
+		BCSAY,
+		INC
 	};
 
 	////////////////////////////////////////

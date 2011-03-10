@@ -352,21 +352,22 @@ int main(int argc, char *argv[]) {
 	if (!parsed) {
 		cout << "Masterlist parse error!" << endl;
 	} else {
-		cout << "Masterlist parsed successfully! Obtained:" << endl;
+		cout << "Masterlist parsed successfully!" << endl;
 	}
+	/*cout << "Obtained:" << endl;
 	for (size_t i = 0; i<Masterlist.size(); i++) {
 		cout << GetTypeString(Masterlist[i].type) << ":" << Masterlist[i].name.string() << endl;
 		for (size_t j=0; j<Masterlist[i].messages.size(); j++)
 			cout << GetKeyString(Masterlist[i].messages[j].key) << ":" << Masterlist[i].messages[j].data << endl;
-	}
+	}*/
 
-	//Need to compare masterlist against modlist and userlist and weed out:
-	//1. Mods that are not referenced in the userlist or modlist. Remove these from the masterlist. (Weeding out unreferenced)
-	//2. Mods that are referenced in the modlist. Remove these from the modlist. (Weeding out the sorted from the unsorted)
-
-	//To optimise this, create a hashmap of all the mods in the userlist and modlist as keys, all having logical '1' values.
+	/*Need to compare masterlist against modlist and userlist and:
+	1. Remove mods in the masterlist that are not in the userlist or modlist.
+	2. Remove mods in the modlist that are in the masterlist, to separate out unknowns.*/
+	
+	//To optimise this, create a hashset of all the mods in the userlist and modlist.
 	boost::unordered_set<string> hashset;
-	//Add all modlist mods to hashmap.
+	//Add all modlist mods to hashset.
 	for (size_t i=0; i<Modlist.size(); i++) {
 		if (Modlist[i].type == MOD)
 			hashset.insert(Tidy(Modlist[i].name.string()));
@@ -380,48 +381,48 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Now compare masterlist against hashmap.
-	if (Masterlist.size()>0) {
-		for (size_t i=0; i<Masterlist.size(); i++) {
-			if (Modlist[i].type == MOD) { //Only interested in mods.
-				boost::unordered_set<string>::iterator pos = hashset.find(Masterlist[i].name.string());
-				if(pos != hashset.end()) {
-					size_t pos = GetModPos(Modlist,Masterlist[i].name.string());
-					if (pos != (size_t)-1)
-						Modlist.erase(Modlist.begin()+pos);  //Remove mod from modlist.
-				} else {  //Mod was not found in hashmap, so remove it from the masterlist.
-					Masterlist.erase(Masterlist.begin()+i);
-					//Since the current element was removed, all higher elements shift down by one, so what was the next element now has the current's position.
-					//Correct for that by decreasing the current index by one.
-					i--;
-				}
+	vector<item>::iterator iter = Masterlist.begin();
+	vector<item> holdingVec;
+	while (iter != Masterlist.end()) {
+		item Item = *iter;
+		if (Item.type == MOD) {
+			boost::unordered_set<string>::iterator pos = hashset.find(Tidy(Item.name.string()));  //Look for mods.
+			//We also want to remove those mods from the Modlist.
+			if (pos != hashset.end()) {  //Mod found in hashset. Record it in the holding vector.
+				holdingVec.push_back(Item);
+				//Also remove it from the Modlist.
+				size_t pos = GetModPos(Modlist,Item.name.string());
+				if (pos != (size_t)-1)
+					Modlist.erase(Modlist.begin()+pos);
 			}
-		}
-		//Record position of last sorted mod.
-		x = Masterlist.size()-1;
+		} else //Group lines must stay recorded.
+			holdingVec.push_back(Item);
+		++iter;
 	}
-	/*Masterlist now contains:
+	Masterlist = holdingVec;
+	//Record position of last sorted mod.
+	x = holdingVec.size()-1;
+
+	/*Holding vector now contains:
 	1. All group markers.
-	2. Mods installed and recognised by BOSS, in their sorted order.
-	3. Mods recognised by BOSS and referred to in the userlist, in their sorted order.
+	2. Mods recognised by BOSS that are either installed or referenced to in the userlist (or both), in their sorted order.
 	
 	Modlist now contains only unrecognised mods that are installed.
-	Hence to complete the mod set, the modlist just needs to be appended to the masterlist.
+	Hence to complete the mod set, the modlist just needs to be appended to the holding vector.
 	*/
 
-	//Add modlist's mods to masterlist.
+	//Add modlist's mods to holding vector.
 	item group;
 	group.type = BEGINGROUP;
 	group.name = fs::path("Unsorted");
-	Masterlist.push_back(group);
-	Masterlist.insert(Masterlist.end(),Modlist.begin(),Modlist.end());
+	holdingVec.push_back(group);
+	holdingVec.insert(holdingVec.end(),Modlist.begin(),Modlist.end());
 	group.type = ENDGROUP;
-	Masterlist.push_back(group);
-	//Now set the modlist to the masterlist (because the modlist is a more sensible named var to work with).
-	Modlist = Masterlist;
+	holdingVec.push_back(group);
+	//Now set the modlist to the holding vector (because the modlist is a more sensible named var to work with).
+	Modlist = holdingVec;
 
-	x = Modlist.size()-1; //Debug line. Remove if masterlist parser implemented.
-
-	//Output contents of modlist
+	//Output contents of modlist.
 	/*for (size_t i = 0; i<Modlist.size(); i++) {
 		cout << GetTypeString(Modlist[i].type) << ":" << Modlist[i].name.string() << endl;
 		for (size_t j=0; j<Modlist[i].messages.size(); j++)
