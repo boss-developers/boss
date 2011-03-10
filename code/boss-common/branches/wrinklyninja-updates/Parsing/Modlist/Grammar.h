@@ -81,6 +81,7 @@ namespace boss {
 	bool OOO, BC, FCOM;  //Need to check for these specific mods in old format.
 	boost::unordered_set<string> setVars;
 	std::vector<boss::message> m;
+	bool skipThis = false, skipMess = false;
 	
 
 	void ThePatherator(fs::path& p, std::string const& str) {
@@ -91,35 +92,65 @@ namespace boss {
 		return;
 	}
 
-	void TheMessagizor(std::vector<message>& in) {
-		std::vector<message> out;
-		in = out;
+	void Record(message m, std::vector<message>& messages) {
+		if (!skipMess) {
+			messages.push_back(m);
+		}
+		skipMess = false;
 		return;
 	}
 
-	void Memorize(item in) {
+	void Store(item in, std::vector<item>& list) {
 		if (in.type == BEGINGROUP) {
 			openGroups.push_back(in.name.string());
 		} else if (in.type == ENDGROUP) {
 			openGroups.pop_back();
 		}
+		if (!skipThis) {
+			list.push_back(in);
+		}
+		skipThis = false;
 		return;
 	}
 	
-	void Evaluate(char condition, keyType& key) {
+	void Evaluate(char condition) {
 		boost::unordered_set<std::string>::iterator pos;
-		bool eval = true;
 		if (condition == '>') {
 			pos = setVars.find("FCOM");
 			if (pos == setVars.end())
-				eval = false;
+				skipThis = true;
 		} else if (condition == '<') {
 			pos = setVars.find("FCOM");
 			if (pos != setVars.end())
-				eval = false;
+				skipThis = true;
 		}
-		if (!eval) {
-			key = NONE;
+		return;
+	}
+
+	void EvaluateMess(char condition) {
+		boost::unordered_set<std::string>::iterator pos;
+		if (condition == '>') {
+			pos = setVars.find("FCOM");
+			if (pos == setVars.end())
+				skipMess = true;
+		} else if (condition == '<') {
+			pos = setVars.find("FCOM");
+			if (pos != setVars.end())
+				skipMess = true;
+		}
+		return;
+	}
+
+	void EvalMessKey(keyType key) {
+		boost::unordered_set<std::string>::iterator pos;
+		if (key == OOOSAY) {
+			pos = setVars.find("OOO");
+			if (pos == setVars.end())
+				skipMess = true;
+		} else if (key == BCSAY) {
+			pos = setVars.find("BC");
+			if (pos == setVars.end())
+				skipMess = true;
 		}
 		return;
 	}
@@ -156,11 +187,11 @@ namespace boss {
 	struct modlist_old_grammar : qi::grammar<Iterator, std::vector<item>(), Skipper<Iterator> > {
 		modlist_old_grammar() : modlist_old_grammar::base_type(modList, "modlist_old_grammar") {
 
-			modList %= listItem[&Memorize] % eol;
+			modList = listItem[phoenix::bind(&Store, qi::_1, qi::_val)] % eol;
 
 			listItem %= 
 				*eol			//Soak up excess empty lines.
-				> ItemType > condition > itemName
+				> ItemType > omit[condition[&Evaluate]] > itemName
 				> itemMessages;
 
 			ItemType %= 
@@ -171,16 +202,16 @@ namespace boss {
 				string[phoenix::bind(&ThePatherator, _val, qi::_1)]
 				| eps[phoenix::bind(&ThePatherator, _val, "")];
 
-			itemMessages %= 
+			itemMessages = 
 				(+eol
-				>> itemMessage % +eol)
+				>> itemMessage[phoenix::bind(&Record, qi::_1, qi::_val)] % +eol)
 				| eps[qi::_1 = m];
 
-			itemMessage %= condition >>
-				messageKeyword
+			itemMessage %= omit[condition[&EvaluateMess]] >>
+				messageKeyword[&EvalMessKey]
 				> string;
 
-			condition = lit('>') |  lit('<') | eps;
+			condition = char_('>') |  char_('<') | eps;
 
 			string %= lexeme[skip(lit("//") >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present.
 
@@ -215,7 +246,7 @@ namespace boss {
 		qi::rule<Iterator, message(), skipper> itemMessage;
 		qi::rule<Iterator, std::string(), skipper> string;
 		qi::rule<Iterator, keyType(), skipper> messageKeyword;
-		qi::rule<Iterator, skipper> condition;
+		qi::rule<Iterator, char(), skipper> condition;
 		
 		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, info const& what) {
 			std::ostringstream value; 

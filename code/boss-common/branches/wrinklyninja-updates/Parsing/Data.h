@@ -55,8 +55,8 @@ namespace boss {
 				("ERROR",ERR)
 				//Old message symbols.
 				("?",SAY)
-				("$",SAY)  //OOO comment - treat like a normal comment because trying to parse it as a conditional is a PITA.
-				("^",SAY)  //BC comment - treat like a normal comment because trying to parse it as a conditional is a PITA.
+				("$",OOOSAY)  //OOO comment - treat like a normal comment because trying to parse it as a conditional is a PITA.
+				("^",BCSAY)  //BC comment - treat like a normal comment because trying to parse it as a conditional is a PITA.
 				("%",TAG)
 				(":",REQ)
 				("\"",WARN) //Incompatibility

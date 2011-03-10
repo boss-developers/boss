@@ -28,6 +28,7 @@ namespace boss {
 	////////////////////////////////////////
 
 	enum keyType {
+		NONE,
 		//Userlist keywords.
 		ADD = 1,
 		OVERRIDE,
@@ -43,7 +44,10 @@ namespace boss {
 		TAG,
 		REQ,
 		WARN,
-		ERR
+		ERR,
+		//Special masterlist keywords.
+		OOOSAY,
+		BCSAY
 	};
 
 	////////////////////////////////////////

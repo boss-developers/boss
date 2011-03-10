@@ -143,7 +143,7 @@ namespace boss {
 			return "append";
 		else if (key == REPLACE)
 			return "replace";
-		else if (key == SAY)
+		else if (key == SAY || key == OOOSAY || key == BCSAY)
 			return "SAY";
 		else if (key == TAG)
 			return "TAG";
