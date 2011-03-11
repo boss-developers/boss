@@ -51,6 +51,12 @@ namespace boss {
 		INC
 	};
 
+	enum metaType {
+		IF,
+		IFNOT,
+		SET
+	};
+
 	////////////////////////////////////////
 	// Modlist/Masterlist data structures
 	////////////////////////////////////////

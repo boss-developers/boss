@@ -326,15 +326,15 @@ int main(int argc, char *argv[]) {
 		if (!parsed) {
 			cout << "Userlist parse error!" << endl;
 		} else {
-			cout << "Userlist parsed successfully! Obtained:" << endl;
-			//Debug - print contents of Userlist structure.
-		/*	for (size_t i=0; i<userlistRules.size(); i++) {
-				cout << GetKeyString(userlistRules[i].ruleKey) << ":" << userlistRules[i].ruleObject << endl;
-				for (size_t j=0; j<userlistRules[i].lines.size(); j++)
-					cout << GetKeyString(userlistRules[i].lines[j].key) << ":" << userlistRules[i].lines[j].object << endl;
-				cout << endl;
-			}*/
+			cout << "Userlist parsed successfully!" << endl;
 		}
+	/*	cout << "Obtained:" << endl;
+		for (size_t i=0; i<userlistRules.size(); i++) {
+			cout << GetKeyString(userlistRules[i].ruleKey) << ":" << userlistRules[i].ruleObject << endl;
+			for (size_t j=0; j<userlistRules[i].lines.size(); j++)
+				cout << GetKeyString(userlistRules[i].lines[j].key) << ":" << userlistRules[i].lines[j].object << endl;
+			cout << endl;
+		}*/
 	}
 
 	//Parse masterlist/modlist backup
@@ -348,18 +348,22 @@ int main(int argc, char *argv[]) {
 		sortfile = masterlist_path;
 	LOG_INFO("Using sorting file: %s", sortfile.c_str());
 	//Parse masterlist/modlist backup into data structure.
-	bool parsed = parseOldMasterlist(sortfile,Masterlist);
+	bool parsed;
+	if (isNewMasterlist(sortfile))
+		parsed = parseMasterlist(sortfile,Masterlist);
+	else
+		parsed = parseOldMasterlist(sortfile,Masterlist);
 	if (!parsed) {
 		cout << "Masterlist parse error!" << endl;
 	} else {
 		cout << "Masterlist parsed successfully!" << endl;
 	}
-	/*cout << "Obtained:" << endl;
+	cout << "Obtained:" << endl;
 	for (size_t i = 0; i<Masterlist.size(); i++) {
 		cout << GetTypeString(Masterlist[i].type) << ":" << Masterlist[i].name.string() << endl;
 		for (size_t j=0; j<Masterlist[i].messages.size(); j++)
 			cout << GetKeyString(Masterlist[i].messages[j].key) << ":" << Masterlist[i].messages[j].data << endl;
-	}*/
+	}
 
 	/*Need to compare masterlist against modlist and userlist and:
 	1. Remove mods in the masterlist that are not in the userlist or modlist.

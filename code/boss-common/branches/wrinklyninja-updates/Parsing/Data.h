@@ -77,6 +77,17 @@ namespace boss {
 			;
 		}
 	} groupKey;
+
+	struct metaKey_ : qi::symbols<char, metaType> {
+		metaKey_() {
+			add
+				//Condition keywords.
+				("IF", IF)
+				("IFNOT", IFNOT)
+				("SET", SET) //Keyword for setting a variable.
+			;
+		}
+	} metaKey;
 }
 
 //////////////////////////////

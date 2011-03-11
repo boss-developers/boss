@@ -23,7 +23,7 @@ namespace boss {
 			pos2 = message.data.find(" ",pos1);
 			link = message.data.substr(pos1,pos2-pos1);
 			link = "<a href='"+link+"'>"+link+"</a>";
-			message.data.replace(pos1,pos2-pos1,link);
+	//		message.data.replace(pos1,pos2-pos1,link);
 			pos1 = message.data.find("http",pos1 + link.length());
 		}
 		//Select message formatting.
@@ -48,7 +48,7 @@ namespace boss {
 			} else if (message.key==WARN) {
 			log << "<li class='warn'>Warning: " << message.data << "</li>" << endl;
 		} else if (message.key==ERR) {
-			log << "<li class='error'>!!! CRITICAL INSTALLATION ERROR: " << message.data << "</li>" << endl;
+			log << "<li class='error'>ERROR: " << message.data << "</li>" << endl;
 		}
 	}
 

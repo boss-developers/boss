@@ -19,6 +19,8 @@
 #include "Parsing/Data.h"
 #include "Parsing/Skipper.h"
 #include "Parsing/Parser.h"
+#include "Common/Globals.h"
+#include "Support/Helpers.h"
 #include <sstream>
 
 #include <boost/spirit/include/qi.hpp>
@@ -26,8 +28,7 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/home/phoenix/object/construct.hpp>
 #include <boost/spirit/include/phoenix_bind.hpp>
-#include <boost/spirit/include/phoenix_stl.hpp>
-
+#include <boost/spirit/home/phoenix/container.hpp>
 
 #include <boost/unordered_set.hpp>
 
@@ -36,6 +37,9 @@ namespace boss {
 	namespace phoenix = boost::phoenix;
 	namespace qi = boost::spirit::qi;
 
+	using namespace std;
+	using namespace qi::labels;
+
 	using qi::skip;
 	using qi::eol;
 	using qi::eoi;
@@ -43,177 +47,129 @@ namespace boss {
 	using qi::on_error;
 	using qi::fail;
 	using qi::lit;
-	using qi::_val;
 	using qi::omit;
 	using qi::eps;
 
 	using unicode::char_;
 	using unicode::upper;
-
-	using boost::spirit::info;
+	using unicode::digit;
 
 	///////////////////////////////
 	//Modlist/Masterlist Grammar
 	///////////////////////////////
 
-	/*\ Leading symbol code:
-	\
-	\ \ A silent comment - will be ignored by the program.
-	\ % A Bashed Patch suggestion for the mod above.
-	\ ? A comment about the mod above.
-	\ * Flags a critical mistake for FCOM installation in relation to the mod above.
-	\ : An installation requirement (ie another mod or OBSE etc.).
-	\ " A specific incompatibility.
-	\ $ An OOO specific comment.
-	\ ^ A Better Cities specific comment
-	\
-	\ > process this line only if FCOM is installed.
-	\ < process this line only if FCOM isn't installed.
-	\
-	\ Multiple remark/comment/bash/error lines allowed.
-	\ Lines beginning with \ and blank lines are treated the same (ignored).
+	boost::unordered_set<string> setVars;  //Vars set by masterlist. For old format, this is FCOM, OOO and BC if they exist.
+	boost::unordered_set<string>::iterator pos;
+	bool skipItem = false, skipMessage = false;
 
-	\BeginGroup\: ESMs
-	\EndGroup\\
-	*/
+	///////////////////////////////
+	//Old Format Grammar Stuff
+	///////////////////////////////
 
-	std::vector<std::string> openGroups; //Need to keep track of which groups are open to match up endings properly in old format.
-	bool OOO, BC, FCOM;  //Need to check for these specific mods in old format.
-	boost::unordered_set<string> setVars;
-	std::vector<boss::message> m;
-	bool skipThis = false, skipMess = false;
-	
+	vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in old format.
 
-	void ThePatherator(fs::path& p, std::string const& str) {
-		if (str.length() == 0 && openGroups.size() > 0) 
+	void path(fs::path& p, string const itemName) {
+		if (itemName.length() == 0 && openGroups.size() > 0) 
 			p = fs::path(openGroups.back());
 		else
-			p = fs::path(str);
+			p = fs::path(itemName);
 		return;
 	}
 
-	void Record(message m, std::vector<message>& messages) {
-		if (!skipMess) {
-			messages.push_back(m);
-		}
-		skipMess = false;
+	void StoreMessage(vector<message>& messages, message currentMessage) {
+		if (skipMessage)
+			skipMessage = false;
+		else
+			messages.push_back(currentMessage);
 		return;
 	}
 
-	void Store(item in, std::vector<item>& list) {
-		if (in.type == BEGINGROUP) {
-			openGroups.push_back(in.name.string());
-		} else if (in.type == ENDGROUP) {
+	void StoreItem(vector<item>& list, item currentItem) {
+		if (currentItem.type == BEGINGROUP) {
+			openGroups.push_back(currentItem.name.string());
+		} else if (currentItem.type == ENDGROUP) {
 			openGroups.pop_back();
 		}
-		if (!skipThis) {
-			list.push_back(in);
-		}
-		skipThis = false;
+		if (skipItem)
+			skipItem = false;
+		else
+			list.push_back(currentItem);
 		return;
 	}
 	
-	void Evaluate(char condition) {
-		boost::unordered_set<std::string>::iterator pos;
+	void EvaluateItem(char condition) {
 		if (condition == '>') {
 			pos = setVars.find("FCOM");
 			if (pos == setVars.end())
-				skipThis = true;
+				skipItem = true;
 		} else if (condition == '<') {
 			pos = setVars.find("FCOM");
 			if (pos != setVars.end())
-				skipThis = true;
+				skipItem = true;
 		}
 		return;
 	}
 
-	void EvaluateMess(char condition) {
-		boost::unordered_set<std::string>::iterator pos;
+	void EvaluateMessage(char condition) {
 		if (condition == '>') {
 			pos = setVars.find("FCOM");
 			if (pos == setVars.end())
-				skipMess = true;
+				skipMessage = true;
 		} else if (condition == '<') {
 			pos = setVars.find("FCOM");
 			if (pos != setVars.end())
-				skipMess = true;
+				skipMessage = true;
 		}
 		return;
 	}
 
 	void EvalMessKey(keyType key) {
-		boost::unordered_set<std::string>::iterator pos;
 		if (key == OOOSAY) {
 			pos = setVars.find("OOO");
 			if (pos == setVars.end())
-				skipMess = true;
+				skipMessage = true;
 		} else if (key == BCSAY) {
 			pos = setVars.find("BC");
 			if (pos == setVars.end())
-				skipMess = true;
+				skipMessage = true;
 		}
 		return;
 	}
 
-	/* Conditionals:
-	In old format, they are implied, not explicit, ie:
-
-	Old => New
-	-------------
-	$   => IF (OOO) SAY: ...
-	^   => IF (BC) SAY: ...
-	>   => IF (FCOM) ...
-	<   => IFNOT (FCOM) ...
-
-	Since new format has the explicit conditionals, the implicit conditionals should be translated, so both formats can use a
-	common evaluator.
-
-	How to do this? Variables will use a hashset, setVars, with each variable being a string key. Conditionals must be evaluated
-	mid-parsing. If it evaluates to true, the parser should continue with the current item/message, else it should skip it.
-
-	General format:
-	conditional = "IF" | "IFNOT" >> "(" >> string - ")" >> ")" >> -":";
-
-	The conditional should not be recorded. The final semicolon is optional because if it is followed by a message or set line, there
-	will be a keyword to follow, which will then have a semicolon after it.
-
-	Trick is to make the presence of a conditional optional, but if it is present, to make sure that it must be true to continue that item.
-
-	Cannot skip stuff during parsing, so either it must not go into data structures or it must be an emtpy item.
-	*/
-
 	//Old format grammar.
 	template <typename Iterator>
-	struct modlist_old_grammar : qi::grammar<Iterator, std::vector<item>(), Skipper<Iterator> > {
+	struct modlist_old_grammar : qi::grammar<Iterator, vector<item>(), Skipper<Iterator> > {
 		modlist_old_grammar() : modlist_old_grammar::base_type(modList, "modlist_old_grammar") {
 
-			modList = listItem[phoenix::bind(&Store, qi::_1, qi::_val)] % eol;
+			vector<message> noMessages;  //An empty set of messages.
+
+			modList = listItem[phoenix::bind(&StoreItem, _val, _1)] % eol;
 
 			listItem %= 
 				*eol			//Soak up excess empty lines.
-				> ItemType > omit[condition[&Evaluate]] > itemName
+				> ItemType > omit[condition[&EvaluateItem]] > itemName
 				> itemMessages;
 
 			ItemType %= 
 				groupKey
 				| eps[_val = MOD];
 
-			itemName %= 
-				string[phoenix::bind(&ThePatherator, _val, qi::_1)]
-				| eps[phoenix::bind(&ThePatherator, _val, "")];
+			itemName = 
+				charString[phoenix::bind(&path, _val, _1)]
+				| eps[phoenix::bind(&path, _val, "")];
 
 			itemMessages = 
 				(+eol
-				>> itemMessage[phoenix::bind(&Record, qi::_1, qi::_val)] % +eol)
-				| eps[qi::_1 = m];
+				>> itemMessage[phoenix::bind(&StoreMessage, _val, _1)] % +eol)
+				| eps[_1 = noMessages];
 
-			itemMessage %= omit[condition[&EvaluateMess]] >>
+			itemMessage %= omit[condition[&EvaluateMessage]] >>
 				messageKeyword[&EvalMessKey]
-				> string;
+				> charString;
 
-			condition = char_('>') |  char_('<') | eps;
+			condition %= char_('>') |  char_('<') | eps;
 
-			string %= lexeme[skip(lit("//") >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present.
+			charString %= lexeme[+(char_ - eol)];
 
 			messageKeyword %= masterlistMsgKey;
 
@@ -223,177 +179,310 @@ namespace boss {
 			itemName.name("itemName");
 			itemMessages.name("itemMessages");
 			itemMessage.name("itemMessage");
-			string.name("string");
+			condition.name("condition");
+			charString.name("charString");
 			messageKeyword.name("messageKeyword");
 
-			on_error<fail>(modList,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(listItem,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(ItemType,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(itemName,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(itemMessages,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(itemMessage,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(string,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(messageKeyword,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr,this,qi::_1,qi::_2,qi::_3,qi::_4));
+			on_error<fail>(modList,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(listItem,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(ItemType,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(itemName,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(itemMessages,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(itemMessage,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(charString,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(condition,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(messageKeyword,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 		}
 
 		typedef Skipper<Iterator> skipper;
 
-		qi::rule<Iterator, std::vector<item>(), skipper> modList;
-		qi::rule<Iterator, item(), skipper> listItem;			//Needs to have components keyType, fs::path, vector<message>
+		qi::rule<Iterator, vector<item>(), skipper> modList;
+		qi::rule<Iterator, item(), skipper> listItem;
 		qi::rule<Iterator, itemType(), skipper> ItemType;
-		qi::rule<Iterator, fs::path(), skipper> itemName;			//
-		qi::rule<Iterator, std::vector<message>(), skipper> itemMessages;
+		qi::rule<Iterator, fs::path(), skipper> itemName;
+		qi::rule<Iterator, vector<message>(), skipper> itemMessages;
 		qi::rule<Iterator, message(), skipper> itemMessage;
-		qi::rule<Iterator, std::string(), skipper> string;
+		qi::rule<Iterator, string(), skipper> charString;
 		qi::rule<Iterator, keyType(), skipper> messageKeyword;
 		qi::rule<Iterator, char(), skipper> condition;
 		
-		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, info const& what) {
-			std::ostringstream value; 
+		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
+			ostringstream value; 
 			value << what;
-			std::string context(errorpos, std::min(errorpos + 50, last));
-			cout << "HOLY HELL, " << what << "JUST BROKE AT " << context << "!";
-			
+			boss::SyntaxError(first, last, errorpos, value.str());
+		}
+	};
+
+	///////////////////////////////
+	//New Format Grammar Stuff
+	///////////////////////////////
+
+	/*New format grammar is very much like the old format grammar, except that all items have explicit names and conditionals are
+	a lot more complex, and keywords and names/messages are separated by semicolons.
+
+	General format:
+	conditional = "IF" | "IFNOT" >> "(" >> string - ")" >> ")" >> -":";
+
+	The conditional should not be recorded. The final semicolon is optional because if it is followed by a message or set line, there
+	will be a keyword to follow, which will then have a semicolon after it.
+
+	Trick is to make the presence of a conditional optional, but if it is present, to make sure that it must be true to add that item/message.
+
+	// Syntax Info
+	//
+	// // 		A silent comment - will be ignored by the program.
+	//
+	// Outputting Keywords:
+	//
+	// TAG 		A Bashed Patch suggestion for the mod above. (Replaces %)
+	// SAY	 	A comment about the mod above. (Replaces ?)
+	// REQ		A non-mod requirement (OBSE, Wrye Bash, etc.). (Partially replaces :)
+	// WARN		Flags a non-critical installation mistake of the mod in question. Will show up in
+	//			yellow for HTML output. (Replaces " and the rest of :)
+	// ERROR 	Flags a critical installation mistake of the mod in question. Will show up in red 
+	//			for HTML output. (Replaces *)
+	//
+	// Operation Keywords:
+	//
+	// SET <var>	Defines a variable of the given name. Variable names must be in uppercase and contain
+	//				no numbers.
+	//
+	// Conditionals:
+	//
+	// IF (<condition>) <result>
+	// IFNOT (<condition>) <result>
+	//
+	// For the first, if the condition is true then the result will be parsed. If not, it will be ignored. 
+	// The second is the opposite of the first.
+	//
+	// The conditions can be:
+	// 
+	// A variable name		A string containing only uppercase letters. If the variable is defined, the 
+	//						condition will be true and vice-versa.
+	// A mod name			A string containing ".esp" or ".esm". If the mod exists, the condition will 
+	//						be true and vice-versa.
+	// A version number		A string that doesn't contain ".esp" or ".esm" and is preceded by an operator. 
+	//						The operators are = < >, and mean 'is equal to', 'is less than' and 
+	//						'is greater than' respectively. If the version of the mod currently being processed 
+	//						(ie. in the last mod line) fits the expression, then the condition will be true, 
+	//						otherwise it will be false.
+	// A checksum			A string that doesn't contain ".esp" or ".esm" and isn't preceded by an operator. 
+	//						The current mod will have its checksum calculated, and if it matches the given
+	//						checksum, the condition will be true, otherwise false.
+	//
+	// The colon : denotes the end of any keywords/conditions/functions in a line.
+	// All lines starting with a keyword or condition must have a leading space, ie: " IF ..."
+	// Multiple remark/comment/bash/error lines allowed.
+	//
+	// The other special keywords that are not to be mixed in the above expressions are:
+	//
+	// BEGINGROUP: <name>		Begins a group with the given name.
+	// ENDGROUP: <name>			Ends the group with the given name.
+
+	// Masterlist variable setup
+
+	//For Oblivion:
+	 IF (Oscuro's_Oblivion_Overhaul.esm) SET: OOO
+	 IF (Better Cities Resources.esm) SET: BC
+	 IF (FCOM_Convergence.esm) SET: FCOM
+	// (also remember to add "IFNOT (FCOM) ERROR: FCOM_Convergence.esm is missing." after FCOM_Convergence.esp)
+ 
+	//For Fallout 3:
+	 IF (FO3 Wanderers Edition - Main File.esm) SET: FWE
+	 IF (FOOK2 - Main.esm) SET: FOOK2
+	// (also remember to add "IFNOT (FOOK2) ERROR: FOOK2 - Main.esm is missing." after FOOK2 - Main.esp)
+ 
+	//For Fallout: New Vegas:
+	 IF (nVamp - Core.esm) SET: NVAMP
+	// (also remember to add "IFNOT (NVAMP) ERROR: FCOM_Convergence.esm is missing." after nVamp - Core.esp)
+
+	//Begin masterlist mod listing.
+	*/
+
+	void CheckVar(bool& result, string var) {
+		if (setVars.find(var) == setVars.end())
+			result = false;
+		else
+			result = true;
+		return;
+	}
+
+	void CheckMod(bool& result, string var) {
+		if (Exists(data_path / var))
+			result = true;
+		else
+			result = false;
+		return;
+	}
+
+	void CheckVersion(bool& result, string var) {
+		char comp = var[0];
+		size_t pos = var.find("|") + 1;
+		string version = var.substr(1,pos-1);
+		string mod = var.substr(pos+1);
+
+		result = false;
+
+		if (Exists(data_path / mod)) {
+			string trueVersion;
+			if (fs::exists(data_path / mod))
+				trueVersion = GetModHeader(data_path / mod, false);
+			else
+				trueVersion = GetModHeader(data_path / mod, true);
+
+			switch (comp) {
+			case '>':
+				if (version > trueVersion)
+					result = true;
+				break;
+			case '<':
+				if (version < trueVersion)
+					result = true;
+				break;
+			case '=':
+				if (version == trueVersion)
+					result = true;
+				break;
+			}
+		}
+		return;
+	}
+
+	void CheckSum(bool& result, string var) {
+		size_t pos = var.find("|") + 1;
+		string sum = var.substr(1,pos-1);
+		string mod = var.substr(pos+1);
+
+		result = false;
+
+		if (Exists(data_path / mod)) {
+			int CRC;
+			if (fs::exists(data_path / mod))
+				CRC = GetCrc32(data_path / mod);
+			else
+				CRC = GetCrc32(fs::path((data_path / mod).string()+".ghost"));
+
+			if (atoi(sum.c_str()) == CRC)
+				result = true;
+		}
+		return;
+	}
+
+	void StoreVar(string var) {
+		setVars.insert(var);
+		return;
+	}
+
+	//New format grammar.
+	template <typename Iterator>
+	struct modlist_grammar : qi::grammar<Iterator, vector<item>(), Skipper<Iterator> > {
+		modlist_grammar() : modlist_grammar::base_type(modList, "modlist_grammar") {
+
+			vector<message> noMessages;  //An empty set of messages.
+
+			//Three types of item: mod, group and meta. The third is the line that sets variables using SET: <varname>. It does not get recorded.
+			modList = (listItem | omit[metaLine]) % eol;
+
+			//Matches a line that sets a variable, eg. SET: FCOM. Vars must be uppercase letters. The expression may also be prepended by a conditional.
+			metaLine =
+				*eol			//Soak up excess empty lines.
+				> -conditional
+				>> (lit("SET")
+				> ':'
+				> (+upper));
+
+			//Mod or group item.
+			listItem =
+				*eol			//Soak up excess empty lines.
+				> ItemType
+				> omit[(conditional > ':') | eps]
+				> itemName
+				> itemMessages;
+
+			ItemType %= 
+				(groupKey > ':') 
+				| eps[_1 = MOD];
+
+			itemName = charString[phoenix::bind(&path, _val, _1)];
+
+			itemMessages = 
+				(+eol			//Soak up excess empty lines.
+				>> itemMessage[phoenix::bind(&StoreMessage, _val, _1)] % +eol)
+				| eps[_1 = noMessages];
+
+			itemMessage %= 
+				omit[conditional | eps] 
+				> messageKeyword 
+				> ':'
+				> charString;
+
+			charString %= lexeme[skip(lit("//") >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present.
+
+			messageKeyword %= masterlistMsgKey;
+
+			conditional = metaKey > '(' > condition > ')';  //Simple version, only one condition, later expand to n conditions in AND, OR combinations.
+
+			condition = 
+				variable[phoenix::bind(&CheckVar, _val, _1)]
+				| version[phoenix::bind(&CheckMod, _val, _1)]
+				| checksum[phoenix::bind(&CheckSum, _val, _1)]
+				| mod[phoenix::bind(&CheckVersion, _val, _1)];
+
+			variable %= +(upper - ')');  //A masterlist variable.
+
+			mod %= +(char_ - ')');  //A mod.
+
+			version %=   //A version, followed by the mod it applies to.
+				(char_('=') | char_('>') | char_('<'))
+				> +(char_ - '|')
+				> char_('|')
+				> mod;
+
+			checksum %=  //A CRC-32 checksum, as calculated by BOSS, followed by the mod it applies to.
+				+digit
+				> char_('|')
+				> mod;
+
+			modList.name("modList");
+			listItem.name("listItem");
+			ItemType.name("ItemType");
+			itemName.name("itemName");
+			itemMessages.name("itemMessages");
+			itemMessage.name("itemMessage");
+			conditional.name("condition");
+			charString.name("charString");
+			messageKeyword.name("messageKeyword");
+
+			on_error<fail>(modList,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(listItem,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(ItemType,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(itemName,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(itemMessages,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(itemMessage,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(charString,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(condition,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+		}
+
+		typedef Skipper<Iterator> skipper;
+
+		qi::rule<Iterator, vector<item>(), skipper> modList;
+		qi::rule<Iterator, item(), skipper> listItem;
+		qi::rule<Iterator, itemType(), skipper> ItemType;
+		qi::rule<Iterator, fs::path(), skipper> itemName;
+		qi::rule<Iterator, vector<message>(), skipper> itemMessages;
+		qi::rule<Iterator, message(), skipper> itemMessage;
+		qi::rule<Iterator, string(), skipper> charString, variable, mod, checksum, version;
+		qi::rule<Iterator, keyType(), skipper> messageKeyword;
+		qi::rule<Iterator, skipper> conditional;
+		qi::rule<Iterator, bool(), skipper> condition;
+		qi::rule<Iterator, skipper> metaLine;
+
+		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
+			ostringstream value; 
+			value << what;
 			boss::SyntaxError(first, last, errorpos, value.str());
 		}
 	};
 }
-
-/*
-Modlist grammar is very complicated.
-
-If the condition is 'ascii::upper' then the condition references a variable that is stored in memory somehow (probably a hash table)
-If the keyword is 'lit("SET")' and the string is 'ascii::upper', then the string needs to be stored in memory as a variable.
-
-Because of the complexity, and because not all the information is needed for the resulting data structure, but still plays a vital
-role in processing, it might be a better idea to tokenise the input first, then act on that, rather than parsing the file directly.
-
-
-//Hashmap of variables declared in the modlist/masterlist.
-boost::unordered_map<string, bool> hashmap;
-
-template <typename BaseLexer>
-struct modlist_tokens : lex::lexer<BaseLexer>
-{
-    modlist_tokens(): word_count_tokens::base_type(lex::match_flags::match_not_dot_newline)
-    {
-        // define tokens (the regular expression to match and the corresponding token id)
-		conditional = "IF|IFNOT";
-		messageKey = "TAG|SAY|REQ|WARN|ERROR"; //These might be better served in a symbol table since they are preserved.
-		varKey = "SET";
-		groupKey = "(BEGIN|END)GROUP"; //Perhaps also a candidate for a symbol table.
-		colon = ":";
-		versionComp = "[=\\>\\<]";
-		or = "\\|\\|";
-		and = "&&";
-		mod = "[^\t\n\\/:\\\"\\*\\?\\>\\<\\|]+(.esp|.esm)"; //A mod name. Warning: Could occur in a message or a condition, not just a mod entry.
-		listVar = ascii::upper; //An uppercase string.
-		//associate them with the lexer 
-        this->self =
-			conditional
-			| messageKey
-			| groupKey
-			| colon
-			| versionComp
-			| or
-			| and
-			| mod
-			| listVar
-        ;
-    }
-
-	lex::token_def<std::string> conditional;
-	lex::token_def<std::string> messageKey;
-	lex::token_def<std::string> groupKey;
-	lex::token_def<std::string> colon;
-	lex::token_def<std::string> versionComp;
-	lex::token_def<std::string> or;
-	lex::token_def<std::string> and;
-	lex::token_def<std::string> mod;
-	lex::token_def<std::string> listVar;
-};
-
-Grammar rules.
-
-Pretty complicated. One storage type: item(itemType,string,vector<message>).
-
-However, group lines have an empty vector<message> and mods might.
-At least, groups don't have their messages displayed. No reason why the parser shouldn't accept them though.
-This makes things easier.
-
-Hence the most basic format for an item is:
-header > eol > *(message % eol)
-
-The header will be of the form: header = groupKey > ':' > string 
-for a group. This would result in the correct format for the storage type.
-
-For a mod, the header is of the form: header = -(expression > ':') >> mod
-Expression is not parsed, since it has no keyword, but used to determine line validity. 
-The format is still missing an itemType. This may be attachable via a semantic action.
-
-Conditionals are important. They evaluate to true or false, and decide whether or not the next part of the line should be parsed or not.
-
-template <typename Iterator>
-struct modlist_grammar : qi::grammar<Iterator, boss::modlist(), modlist_skipper<Iterator> > {
-
-	//Grammar rules.
-    modlist_grammar() : modlist_grammar::base_type(list, "modlist_grammar") {
-
-		items = item % *eol;
-
-		item = 
-			(groupHeader | modHeader)
-			> eol
-			> -(messageLine % eol);
-			;
-
-		groupHeader = 
-			modlist::groupKey							//This needs to be used to figure out what type the item is, and record the type in boss::item.type.
-			> ':'
-			> string;							//This needs to turned into a path and recorded in boss::item.name
-
-
-		modItem = 
-			-(conditional > ':')				//This expression needs to be evaluated, but not recorded, although it will affect what is recorded. 
-			>> mod;								//This needs to turned into a path and recorded in boss::item.name. It is also what decides the type.
-
-		messageLine = 
-			-conditional 
-			>> keyword
-			> ':' 
-			> string;
-
-		string = skip("//" >> *(char_ - eol))[+(char_ - eol)];
-
-		conditional = 
-			modlist::condKey 
-			> '(' 
-			> condition 
-			> *( condOp > condition) 
-			>> ')'
-
-		mod = string - (".esp" | ".esm") > (".esp" | ".esm");
-
-		condition = 
-			ascii::upper 
-			| (versionComp > string)
-			| mod 
-			| string;
-
-		keyword = modlist::messageKey | modlist::varKey;
-
-		versionComp = '=' | '>' | '<';
-
-	}
-	typedef modlist_skipper<Iterator> skipper;
-
-	qi::rule<Iterator, std::vector<boss::item>, skipper> modlist;
-	qi::rule<Iterator, boss::item, skipper> item;
-	qi::rule<Iterator, fs::path, skipper> name;
-	qi::rule<Iterator, boss::itemType, skipper> type;
-	qi::rule<Iterator, boss::message, skipper> message;
-	qi::rule<Iterator, boss::keyType, skipper> messageKey;
-	qi::rule<Iterator, std::string, skipper> string;
-};
-*/
 #endif

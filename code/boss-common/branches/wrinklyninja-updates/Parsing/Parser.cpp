@@ -24,8 +24,6 @@ namespace boss {
 	using namespace std;
 	namespace qi = boost::spirit::qi;
 
-	
-
 	bool parseUserlist(fs::path file, vector<rule>& ruleList) {
 		Skipper<string::const_iterator> skipper;
 		userlist_grammar<string::const_iterator> grammar;
@@ -71,6 +69,7 @@ namespace boss {
 			if (fs::exists(data_path / "FO3 Wanderers Edition - Main File.esm"))
 				setVars.insert("FWE");
 		}
+
 		fileToBuffer(file,contents);
 
 		begin = contents.begin();
@@ -88,6 +87,51 @@ namespace boss {
 			 ParsingFailed(const_contents.begin(), end, begin, lines);
 			 return false;
 		 }
+	}
+
+	bool parseMasterlist(fs::path file, vector<item>& modList) {
+		Skipper<string::const_iterator> skipper;
+		modlist_grammar<string::const_iterator> grammar;
+		string::const_iterator begin, end;
+		string contents;
+
+		fileToBuffer(file,contents);
+
+		begin = contents.begin();
+		end = contents.end();
+		bool r = qi::phrase_parse(begin, end, grammar, skipper, modList);
+
+		 if (r && begin == end)
+			 return true;
+		 else {
+			 while (*begin == '\n') {
+				begin++;
+			}
+			 const string & const_contents(contents);
+			 string::difference_type lines = 1 + count(const_contents.begin(), begin, '\n');
+			 ParsingFailed(const_contents.begin(), end, begin, lines);
+			 return false;
+		 }
+	}
+
+	bool isNewMasterlist(fs::path file) {
+		unsigned short UTF8_1 = 0xEF;  //First character of UTF8 BOM
+		string contents;
+
+		fileToBuffer(file,contents);
+
+		if (contents[0] == UTF8_1) {
+			if (contents[3] == '/')
+				return true;
+			else
+				return false;
+		} else {
+			if (contents[0] == '/')
+				return true;
+			else
+				return false;
+		}
+		return false;
 	}
 
 /* NOTES: USERLIST GRAMMAR RULES.
