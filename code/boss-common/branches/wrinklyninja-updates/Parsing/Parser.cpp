@@ -163,7 +163,7 @@ S	14. The first line of a rule must be a rule line. If there is a valid line bef
 		try {
 			if (IsPlugin(subject)) {
 
-				if (!Exists(subject))
+				if (!Exists(data_path / subject))
 					throw failure(ruleKey, subject, EPluginNotInstalled % subject);
 
 				if (IsMasterFile(subject))

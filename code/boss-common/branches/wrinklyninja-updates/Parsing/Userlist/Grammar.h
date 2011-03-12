@@ -40,6 +40,9 @@ namespace boss {
 	namespace phoenix = boost::phoenix;
 	namespace qi = boost::spirit::qi;
 
+	using namespace std;
+	using namespace qi::labels;
+
 	using qi::skip;
 	using qi::eol;
 	using qi::lexeme;
@@ -59,7 +62,7 @@ namespace boss {
 	//Need to know what specific component failed.
 
 	template <typename Iterator>
-	struct userlist_grammar : qi::grammar<Iterator, std::vector<rule>(), Skipper<Iterator> > {
+	struct userlist_grammar : qi::grammar<Iterator, vector<rule>(), Skipper<Iterator> > {
 		userlist_grammar() : userlist_grammar::base_type(list, "userlist grammar") {
 
 			//A list is a vector of rules. Rules are separated by line endings.
@@ -100,26 +103,26 @@ namespace boss {
 			sortKey.name("sort keyword");
 			messageKey.name("message keyword");
 		
-			on_error<fail>(list,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(userlistRule,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(sortLine,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(messageLine,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(object,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(ruleKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(sortKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
-			on_error<fail>(messageKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,qi::_1,qi::_2,qi::_3,qi::_4));
+			on_error<fail>(list,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(userlistRule,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(sortLine,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(messageLine,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(object,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(ruleKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(sortKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(messageKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 		}
 
 		typedef Skipper<Iterator> skipper;
 
-		qi::rule<Iterator, std::vector<rule>(), skipper> list;
+		qi::rule<Iterator, vector<rule>(), skipper> list;
 		qi::rule<Iterator, rule(), skipper> userlistRule;
 		qi::rule<Iterator, line(), skipper> sortLine, messageLine;
 		qi::rule<Iterator, keyType(), skipper> ruleKey, sortKey, messageKey;
-		qi::rule<Iterator, std::string(), skipper> object;
+		qi::rule<Iterator, string(), skipper> object;
 	
 		void SyntaxError(Iterator const& first, Iterator const& last, Iterator const& errorpos, info const& what) {
-			std::ostringstream value; 
+			ostringstream value; 
 			value << what;
 			boss::SyntaxError(first, last, errorpos, value.str());
 		}

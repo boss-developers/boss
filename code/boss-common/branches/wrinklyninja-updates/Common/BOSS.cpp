@@ -321,7 +321,6 @@ int main(int argc, char *argv[]) {
 	//Parse userlist.
 	vector<rule> userlistRules;
 	if (revert<1 && fs::exists(userlist_path)) {
-		vector<rule> userlistRules;
 		bool parsed = parseUserlist(userlist_path,userlistRules);
 		if (!parsed) {
 			cout << "Userlist parse error!" << endl;
@@ -336,6 +335,7 @@ int main(int argc, char *argv[]) {
 			cout << endl;
 		}*/
 	}
+	cout << "Number of rules found:" << userlistRules.size() << endl;
 
 	//Parse masterlist/modlist backup
 	vector<item> Masterlist;
@@ -347,6 +347,23 @@ int main(int argc, char *argv[]) {
 	else 
 		sortfile = masterlist_path;
 	LOG_INFO("Using sorting file: %s", sortfile.c_str());
+	//Check if it actually exists, because the parser doesn't fail if there is no file...
+	if (!fs::exists(sortfile)) {                                                     
+                bosslog << endl << "<p class='error'>Critical Error: ";
+
+                bosslog << sortfile.string();
+
+                bosslog << " cannot be read!<br />" << endl
+                        << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
+                        << "Utility will end now.</p>" << endl
+                        << "</body>"<<endl<<"</html>";
+                bosslog.close();
+                LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().c_str());
+                if ( !silent ) 
+                        Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
+                exit (1); //fail in screaming heap.
+    }
+
 	//Parse masterlist/modlist backup into data structure.
 	bool parsed;
 	if (isNewMasterlist(sortfile))
@@ -358,12 +375,12 @@ int main(int argc, char *argv[]) {
 	} else {
 		cout << "Masterlist parsed successfully!" << endl;
 	}
-	cout << "Obtained:" << endl;
+	/*cout << "Obtained:" << endl;
 	for (size_t i = 0; i<Masterlist.size(); i++) {
 		cout << GetTypeString(Masterlist[i].type) << ":" << Masterlist[i].name.string() << endl;
 		for (size_t j=0; j<Masterlist[i].messages.size(); j++)
 			cout << GetKeyString(Masterlist[i].messages[j].key) << ":" << Masterlist[i].messages[j].data << endl;
-	}
+	}*/
 
 	/*Need to compare masterlist against modlist and userlist and:
 	1. Remove mods in the masterlist that are not in the userlist or modlist.
@@ -376,11 +393,11 @@ int main(int argc, char *argv[]) {
 		if (Modlist[i].type == MOD)
 			hashset.insert(Tidy(Modlist[i].name.string()));
 	}
-	//Add all userlist mods to hashmap.
+	//Add all userlist mods to hashset.
 	for (size_t i=0; i<userlistRules.size(); i++) {
 		for (size_t j=0; j<userlistRules[i].lines.size(); j++) {
 			if (IsPlugin(userlistRules[i].lines[j].object))
-				hashset.insert(Tidy(Modlist[i].name.string()));
+				hashset.insert(Tidy(userlistRules[i].lines[j].object));
 		}
 	}
 
@@ -415,25 +432,18 @@ int main(int argc, char *argv[]) {
 	Hence to complete the mod set, the modlist just needs to be appended to the holding vector.
 	*/
 
-	//Add modlist's mods to holding vector.
-	item group;
-	group.type = BEGINGROUP;
-	group.name = fs::path("Unsorted");
-	holdingVec.push_back(group);
+	//Add modlist's mods to holding vector, then set the modlist to the holding vector, since that's a more sensible name to work with.
 	holdingVec.insert(holdingVec.end(),Modlist.begin(),Modlist.end());
-	group.type = ENDGROUP;
-	holdingVec.push_back(group);
-	//Now set the modlist to the holding vector (because the modlist is a more sensible named var to work with).
 	Modlist = holdingVec;
 
-	//Output contents of modlist.
+	//Debug - Output contents of modlist.
 	/*for (size_t i = 0; i<Modlist.size(); i++) {
 		cout << GetTypeString(Modlist[i].type) << ":" << Modlist[i].name.string() << endl;
 		for (size_t j=0; j<Modlist[i].messages.size(); j++)
 			cout << GetKeyString(Modlist[i].messages[j].key) << ":" << Modlist[i].messages[j].data << endl;
 	}*/
 
-	//Apply userlist rules to modlist data structure (refered to simply as modlist from here on in).
+	//Apply userlist rules to modlist.
 	if (revert<1 && fs::exists(userlist_path)) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
 		//Go through each rule.
