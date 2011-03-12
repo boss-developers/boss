@@ -201,12 +201,12 @@ int main(int argc, char *argv[]) {
 	}
 
 	//BOSSLog bosslog;
-	LOG_DEBUG("opening '%s'", bosslog_path.c_str());
+	LOG_DEBUG("opening '%s'", bosslog_path.string().c_str());
 	bosslog.open(bosslog_path.c_str());
 	if (bosslog.fail()) {
 		LOG_ERROR("file '%s' could not be accessed for writing; check the"
 				  " Troubleshooting section of the ReadMe for more"
-				  " information and possible solutions", bosslog_path.c_str());
+				  " information and possible solutions", bosslog_path.string().c_str());
 		Fail();
 	}
 
@@ -335,7 +335,6 @@ int main(int argc, char *argv[]) {
 			cout << endl;
 		}*/
 	}
-	cout << "Number of rules found:" << userlistRules.size() << endl;
 
 	//Parse masterlist/modlist backup
 	vector<item> Masterlist;
@@ -346,7 +345,7 @@ int main(int argc, char *argv[]) {
 		sortfile = prev_modlist_path;
 	else 
 		sortfile = masterlist_path;
-	LOG_INFO("Using sorting file: %s", sortfile.c_str());
+	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
 	//Check if it actually exists, because the parser doesn't fail if there is no file...
 	if (!fs::exists(sortfile)) {                                                     
                 bosslog << endl << "<p class='error'>Critical Error: ";
@@ -358,7 +357,7 @@ int main(int argc, char *argv[]) {
                         << "Utility will end now.</p>" << endl
                         << "</body>"<<endl<<"</html>";
                 bosslog.close();
-                LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().c_str());
+                LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
                 if ( !silent ) 
                         Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
                 exit (1); //fail in screaming heap.
@@ -450,7 +449,7 @@ int main(int argc, char *argv[]) {
 		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlistRules.size());
 		for (size_t i=0; i<userlistRules.size(); i++) {
 			//Go through each line of the rule.
-			LOG_DEBUG(" -- Processing rule #%zd.", i);
+			LOG_DEBUG(" -- Processing rule #%" PRIuS ".", i+1);
 			for (size_t j=0; j<userlistRules[i].lines.size(); j++) {
 				//A mod sorting rule.
 				if ((userlistRules[i].lines[j].key == BEFORE || userlistRules[i].lines[j].key == AFTER) && IsPlugin(userlistRules[i].lines[j].object)) {
@@ -647,7 +646,7 @@ int main(int argc, char *argv[]) {
 				modfiletime=esmtime;
 				modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 				//Re-date file. Provide exception handling in case their permissions are wrong.
-				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist[i].name.c_str());
+				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist[i].name.string().c_str());
 				try { 
 					fs::last_write_time(data_path / Modlist[i].name,modfiletime);
 				} catch(fs::filesystem_error e) {
@@ -685,7 +684,7 @@ int main(int argc, char *argv[]) {
 			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
 			//Re-date file. Provide exception handling in case their permissions are wrong.
-			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist[i].name.c_str());
+			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist[i].name.string().c_str());
 			try { 
 				fs::last_write_time(data_path / Modlist[i].name,modfiletime);
 			} catch(fs::filesystem_error e) {
