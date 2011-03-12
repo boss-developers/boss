@@ -53,8 +53,7 @@ namespace boss {
 
 	enum metaType {
 		IF,
-		IFNOT,
-		SET
+		IFNOT
 	};
 
 	////////////////////////////////////////

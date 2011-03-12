@@ -132,7 +132,7 @@ namespace boss {
 		return;
 	}
 
-		void CheckVar(bool& result, string var) {
+	void CheckVar(bool& result, string var) {
 		if (setVars.find(var) == setVars.end())
 			result = false;
 		else
@@ -151,9 +151,8 @@ namespace boss {
 	void CheckVersion(bool& result, string var) {
 		char comp = var[0];
 		size_t pos = var.find("|") + 1;
-		string version = var.substr(1,pos-1);
-		string mod = var.substr(pos+1);
-
+		string version = var.substr(1,pos-2);
+		string mod = var.substr(pos);
 		result = false;
 
 		if (Exists(data_path / mod)) {
@@ -201,8 +200,18 @@ namespace boss {
 		return;
 	}
 
-	void StoreVar(string var) {
-		setVars.insert(var);
+	void StoreVar(bool result, string var) {
+		if (result)
+			setVars.insert(var);
+		return;
+	}
+
+	void EvaluateConditional(bool& result, metaType type, bool condition) {
+		result = false;
+		if (type == IF && condition == true)
+			result = true;
+		else if (type == IFNOT && condition == false)
+			result = true;
 		return;
 	}
 	
@@ -217,10 +226,10 @@ namespace boss {
 
 			metaLine =
 				*eol			//Soak up excess empty lines.
-				>> -conditional
-				>> (lit("SET")
+				>> (conditional
+				> lit("SET")
 				> ':'
-				> charString[&StoreVar]);
+				> upperString)[phoenix::bind(&StoreVar, _1, _2)];
 
 			listItem %= 
 				*eol			//Soak up excess empty lines.
@@ -256,21 +265,21 @@ namespace boss {
 
 			messageKeyword %= masterlistMsgKey;
 
-			conditional = (metaKey > '(' > condition > ')')[_val = true];  //Simple version, only one condition, later expand to n conditions in AND, OR combinations.
+			conditional = (metaKey > '(' > condition > ')')[phoenix::bind(&EvaluateConditional, _val, _1, _2)];  //Simple version, only one condition, later expand to n conditions in AND, OR combinations.
 
 			condition = 
 				variable[phoenix::bind(&CheckVar, _val, _1)]
-				| version[phoenix::bind(&CheckMod, _val, _1)]
+				| version[phoenix::bind(&CheckVersion, _val, _1)]
 				| checksum[phoenix::bind(&CheckSum, _val, _1)]
-				| mod[phoenix::bind(&CheckVersion, _val, _1)];
+				| mod[phoenix::bind(&CheckMod, _val, _1)];
 
 			variable %= '$' > +(upper - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
 
-			mod %= +(char_ - ')');  //A mod.
+			mod %= lexeme[+(char_ - ')')];  //A mod.
 
 			version %=   //A version, followed by the mod it applies to.
 				(char_('=') | char_('>') | char_('<'))
-				> +(char_ - '|')
+				> lexeme[+(char_ - '|')]
 				> char_('|')
 				> mod;
 
@@ -314,8 +323,7 @@ namespace boss {
 		
 		qi::rule<Iterator, skipper> metaLine;
 		qi::rule<Iterator, string(), skipper> upperString, variable, mod, checksum, version;
-		qi::rule<Iterator, bool(), skipper> conditional;
-		qi::rule<Iterator, bool(), skipper> condition;
+		qi::rule<Iterator, bool(), skipper> conditional, condition;
 		
 		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
 			ostringstream value; 
