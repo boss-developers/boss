@@ -349,9 +349,7 @@ int main(int argc, char *argv[]) {
 	//Check if it actually exists, because the parser doesn't fail if there is no file...
 	if (!fs::exists(sortfile)) {                                                     
                 bosslog << endl << "<p class='error'>Critical Error: ";
-
                 bosslog << sortfile.string();
-
                 bosslog << " cannot be read!<br />" << endl
                         << "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
                         << "Utility will end now.</p>" << endl
@@ -364,11 +362,7 @@ int main(int argc, char *argv[]) {
     }
 
 	//Parse masterlist/modlist backup into data structure.
-	bool parsed;
-	if (isNewMasterlist(sortfile))
-		parsed = parseMasterlist(sortfile,Masterlist);
-	else
-		parsed = parseOldMasterlist(sortfile,Masterlist);
+	bool parsed = parseMasterlist(sortfile,Masterlist);
 	if (!parsed) {
 		cout << "Masterlist parse error!" << endl;
 	} else {

@@ -84,7 +84,6 @@ namespace boss {
 				//Condition keywords.
 				("IF", IF)
 				("IFNOT", IFNOT)
-				("SET", SET) //Keyword for setting a variable.
 			;
 		}
 	} metaKey;

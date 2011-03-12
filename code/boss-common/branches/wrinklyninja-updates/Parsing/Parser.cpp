@@ -49,46 +49,6 @@ namespace boss {
 		 }
 	}
 
-	bool parseOldMasterlist(fs::path file, vector<item>& modList) {
-		Skipper<string::const_iterator> skipper;
-		modlist_old_grammar<string::const_iterator> grammar;
-		string::const_iterator begin, end;
-		string contents;
-
-		//Check for FCOM,OOO and BC.
-		if (fs::exists(data_path / "Oblivion.esm")) {
-			if (fs::exists(data_path / "FCOM_Convergence.esm"))
-				setVars.insert("FCOM");
-			if (fs::exists(data_path / "Oscuro's_Oblivion_Overhaul.esm"))
-				setVars.insert("OOO");
-			if (fs::exists(data_path / "Better Cities Resources.esm"))
-				setVars.insert("BC");
-		} else if (fs::exists(data_path / "Fallout3.esm")) {
-			if (fs::exists(data_path / "FOOK2 - Main.esm"))
-				setVars.insert("FOOK");
-			if (fs::exists(data_path / "FO3 Wanderers Edition - Main File.esm"))
-				setVars.insert("FWE");
-		}
-
-		fileToBuffer(file,contents);
-
-		begin = contents.begin();
-		end = contents.end();
-		bool r = qi::phrase_parse(begin, end, grammar, skipper, modList);
-
-		 if (r && begin == end)
-			 return true;
-		 else {
-			 while (*begin == '\n') {
-				begin++;
-			}
-			 const string & const_contents(contents);
-			 string::difference_type lines = 1 + count(const_contents.begin(), begin, '\n');
-			 ParsingFailed(const_contents.begin(), end, begin, lines);
-			 return false;
-		 }
-	}
-
 	bool parseMasterlist(fs::path file, vector<item>& modList) {
 		Skipper<string::const_iterator> skipper;
 		modlist_grammar<string::const_iterator> grammar;
@@ -112,26 +72,6 @@ namespace boss {
 			 ParsingFailed(const_contents.begin(), end, begin, lines);
 			 return false;
 		 }
-	}
-
-	bool isNewMasterlist(fs::path file) {
-		unsigned short UTF8_1 = 0xEF;  //First character of UTF8 BOM
-		string contents;
-
-		fileToBuffer(file,contents);
-
-		if (contents[0] == UTF8_1) {
-			if (contents[3] == '/')
-				return true;
-			else
-				return false;
-		} else {
-			if (contents[0] == '/')
-				return true;
-			else
-				return false;
-		}
-		return false;
 	}
 
 /* NOTES: USERLIST GRAMMAR RULES.

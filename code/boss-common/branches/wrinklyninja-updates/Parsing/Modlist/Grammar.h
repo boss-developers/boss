@@ -58,13 +58,9 @@ namespace boss {
 	//Modlist/Masterlist Grammar
 	///////////////////////////////
 
-	boost::unordered_set<string> setVars;  //Vars set by masterlist. For old format, this is FCOM, OOO and BC if they exist.
+	boost::unordered_set<string> setVars;  //Vars set by masterlist.
 	boost::unordered_set<string>::iterator pos;
 	bool skipItem = false, skipMessage = false;
-
-	///////////////////////////////
-	//Old Format Grammar Stuff
-	///////////////////////////////
 
 	vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in old format.
 
@@ -136,170 +132,7 @@ namespace boss {
 		return;
 	}
 
-	//Old format grammar.
-	template <typename Iterator>
-	struct modlist_old_grammar : qi::grammar<Iterator, vector<item>(), Skipper<Iterator> > {
-		modlist_old_grammar() : modlist_old_grammar::base_type(modList, "modlist_old_grammar") {
-
-			vector<message> noMessages;  //An empty set of messages.
-
-			modList = listItem[phoenix::bind(&StoreItem, _val, _1)] % eol;
-
-			listItem %= 
-				*eol			//Soak up excess empty lines.
-				> ItemType > omit[condition[&EvaluateItem]] > itemName
-				> itemMessages;
-
-			ItemType %= 
-				groupKey
-				| eps[_val = MOD];
-
-			itemName = 
-				charString[phoenix::bind(&path, _val, _1)]
-				| eps[phoenix::bind(&path, _val, "")];
-
-			itemMessages = 
-				(+eol
-				>> itemMessage[phoenix::bind(&StoreMessage, _val, _1)] % +eol)
-				| eps[_1 = noMessages];
-
-			itemMessage %= omit[condition[&EvaluateMessage]] >>
-				messageKeyword[&EvalMessKey]
-				> charString;
-
-			condition %= char_('>') |  char_('<') | eps;
-
-			charString %= lexeme[+(char_ - eol)];
-
-			messageKeyword %= masterlistMsgKey;
-
-			modList.name("modList");
-			listItem.name("listItem");
-			ItemType.name("ItemType");
-			itemName.name("itemName");
-			itemMessages.name("itemMessages");
-			itemMessage.name("itemMessage");
-			condition.name("condition");
-			charString.name("charString");
-			messageKeyword.name("messageKeyword");
-
-			on_error<fail>(modList,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(listItem,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(ItemType,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(itemName,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(itemMessages,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(itemMessage,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(charString,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(condition,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(messageKeyword,phoenix::bind(&modlist_old_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-		}
-
-		typedef Skipper<Iterator> skipper;
-
-		qi::rule<Iterator, vector<item>(), skipper> modList;
-		qi::rule<Iterator, item(), skipper> listItem;
-		qi::rule<Iterator, itemType(), skipper> ItemType;
-		qi::rule<Iterator, fs::path(), skipper> itemName;
-		qi::rule<Iterator, vector<message>(), skipper> itemMessages;
-		qi::rule<Iterator, message(), skipper> itemMessage;
-		qi::rule<Iterator, string(), skipper> charString;
-		qi::rule<Iterator, keyType(), skipper> messageKeyword;
-		qi::rule<Iterator, char(), skipper> condition;
-		
-		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
-			ostringstream value; 
-			value << what;
-			boss::SyntaxError(first, last, errorpos, value.str());
-		}
-	};
-
-	///////////////////////////////
-	//New Format Grammar Stuff
-	///////////////////////////////
-
-	/*New format grammar is very much like the old format grammar, except that all items have explicit names and conditionals are
-	a lot more complex, and keywords and names/messages are separated by semicolons.
-
-	General format:
-	conditional = "IF" | "IFNOT" >> "(" >> string - ")" >> ")" >> -":";
-
-	The conditional should not be recorded. The final semicolon is optional because if it is followed by a message or set line, there
-	will be a keyword to follow, which will then have a semicolon after it.
-
-	Trick is to make the presence of a conditional optional, but if it is present, to make sure that it must be true to add that item/message.
-
-	// Syntax Info
-	//
-	// // 		A silent comment - will be ignored by the program.
-	//
-	// Outputting Keywords:
-	//
-	// TAG 		A Bashed Patch suggestion for the mod above. (Replaces %)
-	// SAY	 	A comment about the mod above. (Replaces ?)
-	// REQ		A non-mod requirement (OBSE, Wrye Bash, etc.). (Partially replaces :)
-	// WARN		Flags a non-critical installation mistake of the mod in question. Will show up in
-	//			yellow for HTML output. (Replaces " and the rest of :)
-	// ERROR 	Flags a critical installation mistake of the mod in question. Will show up in red 
-	//			for HTML output. (Replaces *)
-	//
-	// Operation Keywords:
-	//
-	// SET <var>	Defines a variable of the given name. Variable names must be in uppercase and contain
-	//				no numbers.
-	//
-	// Conditionals:
-	//
-	// IF (<condition>) <result>
-	// IFNOT (<condition>) <result>
-	//
-	// For the first, if the condition is true then the result will be parsed. If not, it will be ignored. 
-	// The second is the opposite of the first.
-	//
-	// The conditions can be:
-	// 
-	// A variable name		A string containing only uppercase letters. If the variable is defined, the 
-	//						condition will be true and vice-versa.
-	// A mod name			A string containing ".esp" or ".esm". If the mod exists, the condition will 
-	//						be true and vice-versa.
-	// A version number		A string that doesn't contain ".esp" or ".esm" and is preceded by an operator. 
-	//						The operators are = < >, and mean 'is equal to', 'is less than' and 
-	//						'is greater than' respectively. If the version of the mod currently being processed 
-	//						(ie. in the last mod line) fits the expression, then the condition will be true, 
-	//						otherwise it will be false.
-	// A checksum			A string that doesn't contain ".esp" or ".esm" and isn't preceded by an operator. 
-	//						The current mod will have its checksum calculated, and if it matches the given
-	//						checksum, the condition will be true, otherwise false.
-	//
-	// The colon : denotes the end of any keywords/conditions/functions in a line.
-	// All lines starting with a keyword or condition must have a leading space, ie: " IF ..."
-	// Multiple remark/comment/bash/error lines allowed.
-	//
-	// The other special keywords that are not to be mixed in the above expressions are:
-	//
-	// BEGINGROUP: <name>		Begins a group with the given name.
-	// ENDGROUP: <name>			Ends the group with the given name.
-
-	// Masterlist variable setup
-
-	//For Oblivion:
-	 IF (Oscuro's_Oblivion_Overhaul.esm) SET: OOO
-	 IF (Better Cities Resources.esm) SET: BC
-	 IF (FCOM_Convergence.esm) SET: FCOM
-	// (also remember to add "IFNOT (FCOM) ERROR: FCOM_Convergence.esm is missing." after FCOM_Convergence.esp)
- 
-	//For Fallout 3:
-	 IF (FO3 Wanderers Edition - Main File.esm) SET: FWE
-	 IF (FOOK2 - Main.esm) SET: FOOK2
-	// (also remember to add "IFNOT (FOOK2) ERROR: FOOK2 - Main.esm is missing." after FOOK2 - Main.esp)
- 
-	//For Fallout: New Vegas:
-	 IF (nVamp - Core.esm) SET: NVAMP
-	// (also remember to add "IFNOT (NVAMP) ERROR: FCOM_Convergence.esm is missing." after nVamp - Core.esp)
-
-	//Begin masterlist mod listing.
-	*/
-
-	void CheckVar(bool& result, string var) {
+		void CheckVar(bool& result, string var) {
 		if (setVars.find(var) == setVars.end())
 			result = false;
 		else
@@ -372,55 +205,58 @@ namespace boss {
 		setVars.insert(var);
 		return;
 	}
-
-	//New format grammar.
+	
+	//Old and new formats grammar.
 	template <typename Iterator>
 	struct modlist_grammar : qi::grammar<Iterator, vector<item>(), Skipper<Iterator> > {
 		modlist_grammar() : modlist_grammar::base_type(modList, "modlist_grammar") {
 
 			vector<message> noMessages;  //An empty set of messages.
 
-			//Three types of item: mod, group and meta. The third is the line that sets variables using SET: <varname>. It does not get recorded.
-			modList = (listItem | omit[metaLine]) % eol;
+			modList = (omit[metaLine] | listItem[phoenix::bind(&StoreItem, _val, _1)]) % eol;
 
-			//Matches a line that sets a variable, eg. SET: FCOM. Vars must be uppercase letters. The expression may also be prepended by a conditional.
 			metaLine =
 				*eol			//Soak up excess empty lines.
-				> -conditional
+				>> -conditional
 				>> (lit("SET")
 				> ':'
-				> (+upper));
+				> charString[&StoreVar]);
 
-			//Mod or group item.
-			listItem =
+			listItem %= 
 				*eol			//Soak up excess empty lines.
-				> ItemType
-				> omit[(conditional > ':') | eps]
+				> ItemType 
+				> omit[oldCondition[&EvaluateItem] | (conditional > ':') | eps] 
 				> itemName
 				> itemMessages;
 
 			ItemType %= 
-				(groupKey > ':') 
-				| eps[_1 = MOD];
+				(groupKey >> -lit(":"))
+				| eps[_val = MOD];
 
-			itemName = charString[phoenix::bind(&path, _val, _1)];
+			itemName = 
+				charString[phoenix::bind(&path, _val, _1)]
+				| eps[phoenix::bind(&path, _val, "")];
 
 			itemMessages = 
-				(+eol			//Soak up excess empty lines.
+				(+eol
 				>> itemMessage[phoenix::bind(&StoreMessage, _val, _1)] % +eol)
 				| eps[_1 = noMessages];
 
 			itemMessage %= 
-				omit[conditional | eps] 
-				> messageKeyword 
-				> ':'
+				omit[oldCondition[&EvaluateMessage] | conditional | eps] 
+				>> messageKeyword[&EvalMessKey]
+				> -lit(":")
 				> charString;
+
+			oldCondition %= char_('>') |  char_('<');
 
 			charString %= lexeme[skip(lit("//") >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present.
 
+			upperString %= lexeme[skip(lit("//") >> *(char_ - eol))[+(upper - eol)]]; //String of uppercase letters, with comment skipper.
+
 			messageKeyword %= masterlistMsgKey;
 
-			conditional = metaKey > '(' > condition > ')';  //Simple version, only one condition, later expand to n conditions in AND, OR combinations.
+			conditional = (metaKey > '(' > condition > ')')[_val = true];  //Simple version, only one condition, later expand to n conditions in AND, OR combinations.
 
 			condition = 
 				variable[phoenix::bind(&CheckVar, _val, _1)]
@@ -428,7 +264,7 @@ namespace boss {
 				| checksum[phoenix::bind(&CheckSum, _val, _1)]
 				| mod[phoenix::bind(&CheckVersion, _val, _1)];
 
-			variable %= +(upper - ')');  //A masterlist variable.
+			variable %= '$' > +(upper - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
 
 			mod %= +(char_ - ')');  //A mod.
 
@@ -449,7 +285,7 @@ namespace boss {
 			itemName.name("itemName");
 			itemMessages.name("itemMessages");
 			itemMessage.name("itemMessage");
-			conditional.name("condition");
+			oldCondition.name("oldCondition");
 			charString.name("charString");
 			messageKeyword.name("messageKeyword");
 
@@ -460,7 +296,7 @@ namespace boss {
 			on_error<fail>(itemMessages,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(itemMessage,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(charString,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(condition,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(oldCondition,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 		}
 
@@ -472,17 +308,117 @@ namespace boss {
 		qi::rule<Iterator, fs::path(), skipper> itemName;
 		qi::rule<Iterator, vector<message>(), skipper> itemMessages;
 		qi::rule<Iterator, message(), skipper> itemMessage;
-		qi::rule<Iterator, string(), skipper> charString, variable, mod, checksum, version;
+		qi::rule<Iterator, string(), skipper> charString;
 		qi::rule<Iterator, keyType(), skipper> messageKeyword;
-		qi::rule<Iterator, skipper> conditional;
-		qi::rule<Iterator, bool(), skipper> condition;
+		qi::rule<Iterator, char(), skipper> oldCondition;
+		
 		qi::rule<Iterator, skipper> metaLine;
-
+		qi::rule<Iterator, string(), skipper> upperString, variable, mod, checksum, version;
+		qi::rule<Iterator, bool(), skipper> conditional;
+		qi::rule<Iterator, bool(), skipper> condition;
+		
 		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
 			ostringstream value; 
 			value << what;
 			boss::SyntaxError(first, last, errorpos, value.str());
 		}
 	};
+
+	///////////////////////////////
+	// Syntax Notes
+	///////////////////////////////
+
+	// Old syntax:
+	/*
+		\ Leading symbol code:
+		\
+		\ \ A silent comment - will be ignored by the program.
+		\ % A Bashed Patch suggestion for the mod above.
+		\ ? A comment about the mod above.
+		\ * Flags a critical mistake for FCOM installation in relation to the mod above.
+		\ : An installation requirement (ie another mod or OBSE etc.).
+		\ " A specific incompatibility.
+		\ $ An OOO specific comment.
+		\ ^ A Better Cities specific comment
+		\
+		\ > process this line only if FCOM is installed.
+		\ < process this line only if FCOM isn't installed.
+		\
+		\ Multiple remark/comment/bash/error lines allowed.
+		\ Lines beginning with \ and blank lines are treated the same (ignored).
+	*/
+
+	// New syntax:
+	/*
+		// Syntax Info
+		//
+		// // 		A silent comment - will be ignored by the program.
+		//
+		// Outputting Keywords:
+		//
+		// TAG 		A Bashed Patch suggestion for the mod above. (Replaces %)
+		// SAY	 	A comment about the mod above. (Replaces ?)
+		// REQ		A non-mod requirement (OBSE, Wrye Bash, etc.). (Partially replaces :)
+		// WARN		Flags a non-critical installation mistake of the mod in question. Will show up in
+		//			yellow for HTML output. (Replaces " and the rest of :)
+		// ERROR 	Flags a critical installation mistake of the mod in question. Will show up in red 
+		//			for HTML output. (Replaces *)
+		//
+		// Operation Keywords:
+		//
+		// SET <var>	Defines a variable of the given name. Variable names must be in uppercase and contain
+		//				no numbers.
+		//
+		// Conditionals:
+		//
+		// IF (<condition>) <result>
+		// IFNOT (<condition>) <result>
+		//
+		// For the first, if the condition is true then the result will be parsed. If not, it will be ignored. 
+		// The second is the opposite of the first.
+		//
+		// The conditions can be:
+		// 
+		// A variable name		A string containing only uppercase letters. If the variable is defined, the 
+		//						condition will be true and vice-versa.
+		// A mod name			A string containing ".esp" or ".esm". If the mod exists, the condition will 
+		//						be true and vice-versa.
+		// A version number		A string that doesn't contain ".esp" or ".esm" and is preceded by an operator. 
+		//						The operators are = < >, and mean 'is equal to', 'is less than' and 
+		//						'is greater than' respectively. If the version of the mod currently being processed 
+		//						(ie. in the last mod line) fits the expression, then the condition will be true, 
+		//						otherwise it will be false.
+		// A checksum			A string that doesn't contain ".esp" or ".esm" and isn't preceded by an operator. 
+		//						The current mod will have its checksum calculated, and if it matches the given
+		//						checksum, the condition will be true, otherwise false.
+		//
+		// The colon : denotes the end of any keywords/conditions/functions in a line.
+		// All lines starting with a keyword or condition must have a leading space, ie: " IF ..."
+		// Multiple remark/comment/bash/error lines allowed.
+		//
+		// The other special keywords that are not to be mixed in the above expressions are:
+		//
+		// BEGINGROUP: <name>		Begins a group with the given name.
+		// ENDGROUP: <name>			Ends the group with the given name.
+
+		// Masterlist variable setup
+
+		//For Oblivion:
+		 IF (Oscuro's_Oblivion_Overhaul.esm) SET: OOO
+		 IF (Better Cities Resources.esm) SET: BC
+		 IF (FCOM_Convergence.esm) SET: FCOM
+		// (also remember to add "IFNOT (FCOM) ERROR: FCOM_Convergence.esm is missing." after FCOM_Convergence.esp)
+ 
+		//For Fallout 3:
+		 IF (FO3 Wanderers Edition - Main File.esm) SET: FWE
+		 IF (FOOK2 - Main.esm) SET: FOOK2
+		// (also remember to add "IFNOT (FOOK2) ERROR: FOOK2 - Main.esm is missing." after FOOK2 - Main.esp)
+ 
+		//For Fallout: New Vegas:
+		 IF (nVamp - Core.esm) SET: NVAMP
+		// (also remember to add "IFNOT (NVAMP) ERROR: FCOM_Convergence.esm is missing." after nVamp - Core.esp)
+
+		//Begin masterlist mod listing.
+	*/
 }
 #endif

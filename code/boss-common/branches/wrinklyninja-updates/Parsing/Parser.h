@@ -27,11 +27,7 @@ namespace boss {
 
 	bool parseUserlist(fs::path file, vector<rule>& ruleList);
 
-	bool parseOldMasterlist(fs::path file, vector<item>& modList);
-
 	bool parseMasterlist(fs::path file, vector<item>& modList);
-
-	bool isNewMasterlist(fs::path file);
 
 	void RuleSyntaxCheck(rule ruleToCheck);
 
