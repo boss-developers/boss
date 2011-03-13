@@ -49,6 +49,7 @@ namespace boss {
 	using qi::lit;
 	using qi::omit;
 	using qi::eps;
+	using qi::int_;
 
 	using unicode::char_;
 	using unicode::upper;
@@ -121,21 +122,15 @@ namespace boss {
 	}
 
 	//Doesn't currently work - the BOSSLog outputs different checksums to what is calculated in this for some reason.
-	void CheckSum(bool& result, string var) {
-		size_t pos = var.find("|") + 1;
-		string sum = var.substr(0,pos-1);
-		string mod = var.substr(pos);
+	void CheckSum(bool& result, int sum, string mod) {
 		result = false;
-
 		if (Exists(data_path / mod)) {
 			int CRC;
 			if (fs::exists(data_path / mod))
 				CRC = GetCrc32(data_path / mod);
 			else
-				CRC = GetCrc32(fs::path((data_path / mod).string()+".ghost"));
-
-			cout << endl << "GIVEN SUM: " << sum << " REAL SUM: " << CRC << endl;
-			if (atoi(sum.c_str()) == CRC)
+				CRC = GetCrc32(data_path / fs::path(mod+".ghost"));
+			if (sum == CRC)
 				result = true;
 		}
 		return;
@@ -270,7 +265,7 @@ namespace boss {
 			condition = 
 				variable[phoenix::bind(&CheckVar, _val, _1)]
 				| version[phoenix::bind(&CheckVersion, _val, _1)]
-				| checksum[phoenix::bind(&CheckSum, _val, _1)]
+				| (int_ > '|' > mod)[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the mod it applies to.
 				| mod[phoenix::bind(&CheckMod, _val, _1)];
 
 			variable %= '$' > +(upper - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
@@ -280,12 +275,6 @@ namespace boss {
 			version %=   //A version, followed by the mod it applies to.
 				(char_('=') | char_('>') | char_('<'))
 				> lexeme[+(char_ - '|')]
-				> char_('|')
-				> mod;
-
-			checksum %=  //A CRC-32 checksum, as calculated by BOSS, followed by the mod it applies to.
-				-lit("-")  //It's a signed integer ...I think...
-				>> +digit
 				> char_('|')
 				> mod;
 
@@ -305,8 +294,7 @@ namespace boss {
 			variable.name("variable");
 			mod.name("mod");
 			version.name("version");
-			checksum.name("checksum");
-
+			
 			on_error<fail>(modList,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(listItem,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(ItemType,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
@@ -325,7 +313,7 @@ namespace boss {
 		qi::rule<Iterator, fs::path(), skipper> itemName;
 		qi::rule<Iterator, vector<message>(), skipper> itemMessages;
 		qi::rule<Iterator, message(), skipper> itemMessage;
-		qi::rule<Iterator, string(), skipper> charString, upperString, variable, mod, checksum, version;
+		qi::rule<Iterator, string(), skipper> charString, upperString, variable, mod, version;
 		qi::rule<Iterator, keyType(), skipper> messageKeyword;
 		qi::rule<Iterator, bool(), skipper> conditional, condition, oldConditional;
 		qi::rule<Iterator, skipper> metaLine;
@@ -371,16 +359,16 @@ namespace boss {
 		//
 		// TAG 		A Bashed Patch suggestion for the mod above. (Replaces %)
 		// SAY	 	A comment about the mod above. (Replaces ?)
-		// REQ		A non-mod requirement (OBSE, Wrye Bash, etc.). (Partially replaces :)
+		// REQ		A requirement for the mod above. (Replaces :)
+		// INC		An incompatibility for the mod above. (Replaces ")
 		// WARN		Flags a non-critical installation mistake of the mod in question. Will show up in
-		//			yellow for HTML output. (Replaces " and the rest of :)
+		//			yellow for HTML output.
 		// ERROR 	Flags a critical installation mistake of the mod in question. Will show up in red 
 		//			for HTML output. (Replaces *)
 		//
 		// Operation Keywords:
 		//
-		// SET <var>	Defines a variable of the given name. Variable names must be in uppercase and contain
-		//				no numbers.
+		// SET <var>	Defines a variable of the given name. Variable names must contain only uppercase letters.
 		//
 		// Conditionals:
 		//
@@ -390,23 +378,28 @@ namespace boss {
 		// For the first, if the condition is true then the result will be parsed. If not, it will be ignored. 
 		// The second is the opposite of the first.
 		//
-		// The conditions can be:
-		// 
-		// A variable name		A string containing only uppercase letters. If the variable is defined, the 
-		//						condition will be true and vice-versa.
-		// A mod name			A string containing ".esp" or ".esm". If the mod exists, the condition will 
-		//						be true and vice-versa.
-		// A version number		A string that doesn't contain ".esp" or ".esm" and is preceded by an operator. 
-		//						The operators are = < >, and mean 'is equal to', 'is less than' and 
-		//						'is greater than' respectively. If the version of the mod currently being processed 
-		//						(ie. in the last mod line) fits the expression, then the condition will be true, 
-		//						otherwise it will be false.
-		// A checksum			A string that doesn't contain ".esp" or ".esm" and isn't preceded by an operator. 
-		//						The current mod will have its checksum calculated, and if it matches the given
-		//						checksum, the condition will be true, otherwise false.
+		// There are four types of condition:
+		//
+		// Type			Syntax				Description
+		// ====================================================================================================================
+		// Variable		$<var>							A '$' character followed by a variable name, given in uppercase letters.
+		//												If the variable is defined, the condition evaluates to true, else false.
+		//
+		// Mod			"<mod>"							A mod filename, including the ".esp" or ".esm" extension, enclosed in double quotes.
+		//												If the mod is installed, the condition evaluates to true, else false.
+		//
+		// Checksum		<integer>|"<mod>"				A checksum integer as given by BOSS, including "-" sign if it is negative, followed 
+		//												by a "|" character and the mod the checksum is to be checked against. If the mod's 
+		//												checksum is equal to the given checksum, the condition evaluates to true, else false.
+		//
+		// Version		<comparator><version>|"<mod>"	The comparator can be one of "=", ">" or "<", meaning "is equal to", "is greater than"
+		//												and "is less than" respectively. The version is the version to check for, as given by BOSS.
+		//												The mod is the mod that shall have its version checked. If the equation or inequality of the
+		//												form '<version> <comparator> <mod version>' (eg. '1.5 > 1.2.5', which is true) holds true, 
+		//												the condition evaluates to true, else false.
+		//
 		//
 		// The colon : denotes the end of any keywords/conditions/functions in a line.
-		// All lines starting with a keyword or condition must have a leading space, ie: " IF ..."
 		// Multiple remark/comment/bash/error lines allowed.
 		//
 		// The other special keywords that are not to be mixed in the above expressions are:
@@ -417,21 +410,19 @@ namespace boss {
 		// Masterlist variable setup
 
 		//For Oblivion:
-		 IF (Oscuro's_Oblivion_Overhaul.esm) SET: OOO
-		 IF (Better Cities Resources.esm) SET: BC
-		 IF (FCOM_Convergence.esm) SET: FCOM
+		IF (Oscuro's_Oblivion_Overhaul.esm) SET: OOO
+		IF (Better Cities Resources.esm) SET: BC
+		IF (FCOM_Convergence.esm) SET: FCOM
 		// (also remember to add "IFNOT (FCOM) ERROR: FCOM_Convergence.esm is missing." after FCOM_Convergence.esp)
  
 		//For Fallout 3:
-		 IF (FO3 Wanderers Edition - Main File.esm) SET: FWE
-		 IF (FOOK2 - Main.esm) SET: FOOK2
+		IF (FO3 Wanderers Edition - Main File.esm) SET: FWE
+		IF (FOOK2 - Main.esm) SET: FOOK2
 		// (also remember to add "IFNOT (FOOK2) ERROR: FOOK2 - Main.esm is missing." after FOOK2 - Main.esp)
  
 		//For Fallout: New Vegas:
-		 IF (nVamp - Core.esm) SET: NVAMP
-		// (also remember to add "IFNOT (NVAMP) ERROR: FCOM_Convergence.esm is missing." after nVamp - Core.esp)
-
-		//Begin masterlist mod listing.
+		IF (nVamp - Core.esm) SET: NVAMP
+		// (also remember to add "IFNOT (NVAMP) ERROR: nVamp - Core.esm is missing." after nVamp - Core.esp)
 	*/
 }
 #endif

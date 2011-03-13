@@ -592,7 +592,6 @@ int main(int argc, char *argv[]) {
 						//First character is the keyword, the rest is the data.
 						newMessage.key = GetStringKey(userlistRules[i].lines[j].object.substr(0,1));
 						newMessage.data = trim_copy(userlistRules[i].lines[j].object.substr(1));
-						cout << newMessage.key << " - " << newMessage.data << endl;
 					}
 					//If the rule is to replace messages, clear existing messages.
 					if (userlistRules[i].lines[j].key == REPLACE)
@@ -647,7 +646,7 @@ int main(int argc, char *argv[]) {
 				text += " <span class='ghosted'> - Ghosted</span>";
 			if (showCRCs) {
 				stringstream out;
-				out << GetCrc32(Modlist[i].name.string());
+				out << GetCrc32(data_path / Modlist[i].name);
 				text += " Checksum: <i>" + out.str() + "</i>";
 			}
 			bosslog << text; 
