@@ -121,7 +121,6 @@ namespace boss {
 		return;
 	}
 
-	//Doesn't currently work - the BOSSLog outputs different checksums to what is calculated in this for some reason.
 	void CheckSum(bool& result, int sum, string mod) {
 		result = false;
 		if (Exists(data_path / mod)) {
@@ -207,6 +206,13 @@ namespace boss {
 		return;
 	}
 	
+	void Evaluate2ndConditional(bool& result, string andOr, bool condition2) {
+		if (andOr == "||" && condition2 == true)
+			result = true;
+		else if (andOr == "&&" && result == true && condition2 == false)
+			result = false;
+	}
+
 	//Old and new formats grammar.
 	template <typename Iterator>
 	struct modlist_grammar : qi::grammar<Iterator, vector<item>(), Skipper<Iterator> > {
@@ -218,7 +224,7 @@ namespace boss {
 
 			metaLine =
 				*eol			//Soak up excess empty lines.
-				>> (conditional
+				>> (conditionals
 				> lit("SET")
 				> ':'
 				> upperString)[phoenix::bind(&StoreVar, _1, _2)];
@@ -226,7 +232,7 @@ namespace boss {
 			listItem %= 
 				*eol			//Soak up excess empty lines.
 				> ItemType 
-				> omit[oldConditional[&EvaluateItem] | (conditional > ':')[&EvaluateItem] | eps]
+				> omit[oldConditional[&EvaluateItem] | (conditionals > ':')[&EvaluateItem] | eps]
 				> itemName
 				> itemMessages;
 
@@ -244,7 +250,7 @@ namespace boss {
 				| eps[_1 = noMessages];
 
 			itemMessage %= 
-				omit[oldConditional[&EvaluateMessage] | conditional[&EvaluateMessage] | eps] 
+				omit[oldConditional[&EvaluateMessage] | conditionals[&EvaluateMessage] | eps] 
 				>> messageKeyword[&EvalMessKey]
 				> -lit(":")
 				> charString;
@@ -258,6 +264,11 @@ namespace boss {
 			oldConditional = 
 				char_(">")			[phoenix::bind(&EvalOldFCOMConditional, _val, _1)]
 				|  char_("<")		[phoenix::bind(&EvalOldFCOMConditional, _val, _1)];
+
+			conditionals = 
+				conditional[_val = _1] > -(andOr > conditional)[phoenix::bind(&Evaluate2ndConditional, _val, _1, _2)];
+
+			andOr %= unicode::string("&&") | unicode::string("||");
 
 			conditional = 
 				(metaKey > '(' > condition > ')')[phoenix::bind(&EvaluateConditional, _val, _1, _2)];  //Simple version, only one condition, later expand to n conditions in AND, OR combinations.
@@ -289,6 +300,8 @@ namespace boss {
 			upperString.name("upperString");
 			messageKeyword.name("messageKeyword");
 			oldConditional.name("oldConditional");
+			conditionals.name("conditional");
+			andOr.name("andOr");
 			conditional.name("conditional");
 			condition.name("condition");
 			variable.name("variable");
@@ -313,9 +326,9 @@ namespace boss {
 		qi::rule<Iterator, fs::path(), skipper> itemName;
 		qi::rule<Iterator, vector<message>(), skipper> itemMessages;
 		qi::rule<Iterator, message(), skipper> itemMessage;
-		qi::rule<Iterator, string(), skipper> charString, upperString, variable, mod, version;
+		qi::rule<Iterator, string(), skipper> charString, upperString, variable, mod, version, andOr;
 		qi::rule<Iterator, keyType(), skipper> messageKeyword;
-		qi::rule<Iterator, bool(), skipper> conditional, condition, oldConditional;
+		qi::rule<Iterator, bool(), skipper> conditional, conditionals, condition, oldConditional;
 		qi::rule<Iterator, skipper> metaLine;
 		
 		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
@@ -375,8 +388,16 @@ namespace boss {
 		// IF (<condition>) <result>
 		// IFNOT (<condition>) <result>
 		//
-		// For the first, if the condition is true then the result will be parsed. If not, it will be ignored. 
-		// The second is the opposite of the first.
+		// The first evaluates to true if the condition evaluates to true, else it is false. The second evaluates to
+		// true if the condition evaluates to false, else it is false. If th conditional evaluates to true, then the 
+		// result will be parsed.
+		// A compound conditional may be formed by joining two conditionals with a logical AND ("&&") or a logical 
+		// OR ("||"), ie:
+		//
+		// IF (<condition1>) && IFNOT (<condition2>) <result>
+		//
+		// If joined by "&&", both conditionals must evaluate to true for the result to be parsed. If joined by "||", 
+		// only one conditional is required to evaluate to true (though both can) for the result to be parsed.
 		//
 		// There are four types of condition:
 		//
