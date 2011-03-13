@@ -179,17 +179,17 @@ namespace boss {
 			return APPEND;
 		else if (key == "replace")
 			return REPLACE;
-		else if (key == "SAY")
+		else if (key == "say" || key == "?" || key == "^" || key == "$")
 			return SAY;
-		else if (key == "TAG")
+		else if (key == "tag" || key == "%")
 			return TAG;
-		else if (key == "REQ")
+		else if (key == "req" || key == ":")
 			return REQ;
-		else if (key == "WARN")
+		else if (key == "warn")
 			return WARN;
-		else if (key == "ERROR")
+		else if (key == "error" || key == "*")
 			return ERR;
-		else if (key == "INC")
+		else if (key == "inc" || key == "\"")
 			return INC;
 		else
 			return NONE;

@@ -72,66 +72,6 @@ namespace boss {
 		return;
 	}
 
-	void StoreMessage(vector<message>& messages, message currentMessage) {
-		if (skipMessage)
-			skipMessage = false;
-		else
-			messages.push_back(currentMessage);
-		return;
-	}
-
-	void StoreItem(vector<item>& list, item currentItem) {
-		if (currentItem.type == BEGINGROUP) {
-			openGroups.push_back(currentItem.name.string());
-		} else if (currentItem.type == ENDGROUP) {
-			openGroups.pop_back();
-		}
-		if (skipItem)
-			skipItem = false;
-		else
-			list.push_back(currentItem);
-		return;
-	}
-	
-	void EvaluateItem(char condition) {
-		if (condition == '>') {
-			pos = setVars.find("FCOM");
-			if (pos == setVars.end())
-				skipItem = true;
-		} else if (condition == '<') {
-			pos = setVars.find("FCOM");
-			if (pos != setVars.end())
-				skipItem = true;
-		}
-		return;
-	}
-
-	void EvaluateMessage(char condition) {
-		if (condition == '>') {
-			pos = setVars.find("FCOM");
-			if (pos == setVars.end())
-				skipMessage = true;
-		} else if (condition == '<') {
-			pos = setVars.find("FCOM");
-			if (pos != setVars.end())
-				skipMessage = true;
-		}
-		return;
-	}
-
-	void EvalMessKey(keyType key) {
-		if (key == OOOSAY) {
-			pos = setVars.find("OOO");
-			if (pos == setVars.end())
-				skipMessage = true;
-		} else if (key == BCSAY) {
-			pos = setVars.find("BC");
-			if (pos == setVars.end())
-				skipMessage = true;
-		}
-		return;
-	}
-
 	void CheckVar(bool& result, string var) {
 		if (setVars.find(var) == setVars.end())
 			result = false;
@@ -164,11 +104,11 @@ namespace boss {
 
 			switch (comp) {
 			case '>':
-				if (version > trueVersion)
+				if (trueVersion.compare(version) > 0)
 					result = true;
 				break;
 			case '<':
-				if (version < trueVersion)
+				if (trueVersion.compare(version) < 0)
 					result = true;
 				break;
 			case '=':
@@ -180,11 +120,11 @@ namespace boss {
 		return;
 	}
 
+	//Doesn't currently work - the BOSSLog outputs different checksums to what is calculated in this for some reason.
 	void CheckSum(bool& result, string var) {
 		size_t pos = var.find("|") + 1;
-		string sum = var.substr(1,pos-1);
-		string mod = var.substr(pos+1);
-
+		string sum = var.substr(0,pos-1);
+		string mod = var.substr(pos);
 		result = false;
 
 		if (Exists(data_path / mod)) {
@@ -194,9 +134,31 @@ namespace boss {
 			else
 				CRC = GetCrc32(fs::path((data_path / mod).string()+".ghost"));
 
+			cout << endl << "GIVEN SUM: " << sum << " REAL SUM: " << CRC << endl;
 			if (atoi(sum.c_str()) == CRC)
 				result = true;
 		}
+		return;
+	}
+
+	void StoreMessage(vector<message>& messages, message currentMessage) {
+		if (skipMessage)
+			skipMessage = false;
+		else
+			messages.push_back(currentMessage);
+		return;
+	}
+
+	void StoreItem(vector<item>& list, item currentItem) {
+		if (currentItem.type == BEGINGROUP) {
+			openGroups.push_back(currentItem.name.string());
+		} else if (currentItem.type == ENDGROUP) {
+			openGroups.pop_back();
+		}
+		if (skipItem)
+			skipItem = false;
+		else
+			list.push_back(currentItem);
 		return;
 	}
 
@@ -214,6 +176,41 @@ namespace boss {
 			result = true;
 		return;
 	}
+
+	void EvalOldFCOMConditional(bool& result, char var) {
+		result = false;
+		pos = setVars.find("FCOM");
+		if (var == '>' && pos != setVars.end())
+				result = true;
+		else if (var == '<' && pos == setVars.end())
+				result = true;
+		return;
+	}
+
+	void EvaluateItem(bool conditional) {
+		if (!conditional)
+			skipItem = true;
+		return;
+	}
+
+	void EvaluateMessage(bool conditional) {
+		if (!conditional)
+			skipMessage = true;
+		return;
+	}
+
+	void EvalMessKey(keyType key) {
+		if (key == OOOSAY) {
+			pos = setVars.find("OOO");
+			if (pos == setVars.end())
+				skipMessage = true;
+		} else if (key == BCSAY) {
+			pos = setVars.find("BC");
+			if (pos == setVars.end())
+				skipMessage = true;
+		}
+		return;
+	}
 	
 	//Old and new formats grammar.
 	template <typename Iterator>
@@ -222,7 +219,7 @@ namespace boss {
 
 			vector<message> noMessages;  //An empty set of messages.
 
-			modList = (omit[metaLine] | listItem[phoenix::bind(&StoreItem, _val, _1)]) % eol;
+			modList = (metaLine | listItem[phoenix::bind(&StoreItem, _val, _1)]) % eol;
 
 			metaLine =
 				*eol			//Soak up excess empty lines.
@@ -234,7 +231,7 @@ namespace boss {
 			listItem %= 
 				*eol			//Soak up excess empty lines.
 				> ItemType 
-				> omit[oldCondition[&EvaluateItem] | (conditional > ':') | eps] 
+				> omit[oldConditional[&EvaluateItem] | (conditional > ':')[&EvaluateItem] | eps]
 				> itemName
 				> itemMessages;
 
@@ -252,12 +249,10 @@ namespace boss {
 				| eps[_1 = noMessages];
 
 			itemMessage %= 
-				omit[oldCondition[&EvaluateMessage] | conditional | eps] 
+				omit[oldConditional[&EvaluateMessage] | conditional[&EvaluateMessage] | eps] 
 				>> messageKeyword[&EvalMessKey]
 				> -lit(":")
 				> charString;
-
-			oldCondition %= char_('>') |  char_('<');
 
 			charString %= lexeme[skip(lit("//") >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present.
 
@@ -265,7 +260,12 @@ namespace boss {
 
 			messageKeyword %= masterlistMsgKey;
 
-			conditional = (metaKey > '(' > condition > ')')[phoenix::bind(&EvaluateConditional, _val, _1, _2)];  //Simple version, only one condition, later expand to n conditions in AND, OR combinations.
+			oldConditional = 
+				char_(">")			[phoenix::bind(&EvalOldFCOMConditional, _val, _1)]
+				|  char_("<")		[phoenix::bind(&EvalOldFCOMConditional, _val, _1)];
+
+			conditional = 
+				(metaKey > '(' > condition > ')')[phoenix::bind(&EvaluateConditional, _val, _1, _2)];  //Simple version, only one condition, later expand to n conditions in AND, OR combinations.
 
 			condition = 
 				variable[phoenix::bind(&CheckVar, _val, _1)]
@@ -275,7 +275,7 @@ namespace boss {
 
 			variable %= '$' > +(upper - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
 
-			mod %= lexeme[+(char_ - ')')];  //A mod.
+			mod %= lexeme['\"' > +(char_ - '\"') > '\"'];  //A mod, enclosed in quotes.
 
 			version %=   //A version, followed by the mod it applies to.
 				(char_('=') | char_('>') | char_('<'))
@@ -284,19 +284,28 @@ namespace boss {
 				> mod;
 
 			checksum %=  //A CRC-32 checksum, as calculated by BOSS, followed by the mod it applies to.
-				+digit
+				-lit("-")  //It's a signed integer ...I think...
+				>> +digit
 				> char_('|')
 				> mod;
 
 			modList.name("modList");
+			metaLine.name("metaLine");
 			listItem.name("listItem");
 			ItemType.name("ItemType");
 			itemName.name("itemName");
 			itemMessages.name("itemMessages");
 			itemMessage.name("itemMessage");
-			oldCondition.name("oldCondition");
 			charString.name("charString");
+			upperString.name("upperString");
 			messageKeyword.name("messageKeyword");
+			oldConditional.name("oldConditional");
+			conditional.name("conditional");
+			condition.name("condition");
+			variable.name("variable");
+			mod.name("mod");
+			version.name("version");
+			checksum.name("checksum");
 
 			on_error<fail>(modList,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(listItem,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
@@ -305,7 +314,6 @@ namespace boss {
 			on_error<fail>(itemMessages,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(itemMessage,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(charString,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(oldCondition,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 		}
 
@@ -317,13 +325,10 @@ namespace boss {
 		qi::rule<Iterator, fs::path(), skipper> itemName;
 		qi::rule<Iterator, vector<message>(), skipper> itemMessages;
 		qi::rule<Iterator, message(), skipper> itemMessage;
-		qi::rule<Iterator, string(), skipper> charString;
+		qi::rule<Iterator, string(), skipper> charString, upperString, variable, mod, checksum, version;
 		qi::rule<Iterator, keyType(), skipper> messageKeyword;
-		qi::rule<Iterator, char(), skipper> oldCondition;
-		
+		qi::rule<Iterator, bool(), skipper> conditional, condition, oldConditional;
 		qi::rule<Iterator, skipper> metaLine;
-		qi::rule<Iterator, string(), skipper> upperString, variable, mod, checksum, version;
-		qi::rule<Iterator, bool(), skipper> conditional, condition;
 		
 		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
 			ostringstream value; 

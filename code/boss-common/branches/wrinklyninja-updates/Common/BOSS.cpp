@@ -96,6 +96,7 @@ int main(int argc, char *argv[]) {
 	int verbosity           = 0;     // log levels above INFO to output
 	string gameStr;                  // allow for autodetection override
 	bool debug              = false; // whether to include origin information in logging statements
+	bool showCRCs			= false; // whether or not to show mod CRCs.
 	formatType format		= HTML;  // what format the output should be in.
 
 	//Set the locale to get encoding conversions working correctly.
@@ -141,7 +142,11 @@ int main(int argc, char *argv[]) {
 								" are: 'Oblivion', 'Nehrim', 'Fallout3', and"
 								" 'Fallout3NV'")
 		("debug,d", po::value(&debug)->zero_tokens(),
-								"add source file references to logging statements");
+								"add source file references to logging statements")
+		("crc-show,c", po::value(&showCRCs)->zero_tokens(),
+								"show mod file CRCs, so that a file's CRC can be"
+								" added to the masterlist in a conditional");
+		
 
 	// parse command line arguments
 	po::variables_map vm;
@@ -327,7 +332,7 @@ int main(int argc, char *argv[]) {
 		} else {
 			cout << "Userlist parsed successfully!" << endl;
 		}
-	/*	cout << "Obtained:" << endl;
+		/*cout << "Obtained:" << endl;
 		for (size_t i=0; i<userlistRules.size(); i++) {
 			cout << GetKeyString(userlistRules[i].ruleKey) << ":" << userlistRules[i].ruleObject << endl;
 			for (size_t j=0; j<userlistRules[i].lines.size(); j++)
@@ -576,11 +581,18 @@ int main(int argc, char *argv[]) {
 					message newMessage;
 					//Find the mod which will have its messages edited.
 					index = GetModPos(Modlist,userlistRules[i].ruleObject);
-					//Split the provided message string into a keyword and a data string.
-					pos = userlistRules[i].lines[j].object.find(":");
-					if (pos!=string::npos) {
+					//The provided message string could be using either the old format or the new format. Need to support both.
+					//Easiest way to check is to look for a colon ':' that isn't the first character - if found, it's the new format, otherwise it's the old.
+					pos = userlistRules[i].lines[j].object.find(":", 1);
+					if (pos != string::npos) {  //New format.
 						newMessage.key = GetStringKey(Tidy(userlistRules[i].lines[j].object.substr(0,pos)));
 						newMessage.data = trim_copy(userlistRules[i].lines[j].object.substr(pos+1));
+						cout << userlistRules[i].lines[j].object.substr(0,pos) << " - " << userlistRules[i].lines[j].object.substr(pos+1) << endl;
+					} else {  //Old format.
+						//First character is the keyword, the rest is the data.
+						newMessage.key = GetStringKey(userlistRules[i].lines[j].object.substr(0,1));
+						newMessage.data = trim_copy(userlistRules[i].lines[j].object.substr(1));
+						cout << newMessage.key << " - " << newMessage.data << endl;
 					}
 					//If the rule is to replace messages, clear existing messages.
 					if (userlistRules[i].lines[j].key == REPLACE)
@@ -614,7 +626,7 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Applying calculated ordering to user files...");
 	for (size_t i=0;i<=x;i++) {
 		//Only act on mods that exist.
-		if (Modlist[i].type == MOD && (fs::exists(data_path / Modlist[i].name) || fs::exists(data_path / fs::path(Modlist[i].name.string()+".ghost")))) {
+		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
 			bool ghosted = false;
 			fs::path name;
 			string version;
@@ -633,7 +645,13 @@ int main(int argc, char *argv[]) {
 			text += "</b>";
 			if (ghosted) 
 				text += " <span class='ghosted'> - Ghosted</span>";
-			bosslog << text;
+			if (showCRCs) {
+				stringstream out;
+				out << GetCrc32(Modlist[i].name.string());
+				text += " Checksum: <i>" + out.str() + "</i>";
+			}
+			bosslog << text; 
+				
 			//Now change the file's date, if it is not the game's master file.
 			if (!IsMasterFile(Modlist[i].name.string())) {
 				//Calculate the new file time.
@@ -669,7 +687,7 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Reporting unrecognized mods...");
 	for (size_t i=x; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
-		if (Modlist[i].type == MOD && (fs::exists(data_path / Modlist[i].name) || fs::exists(data_path / fs::path(Modlist[i].name.string()+".ghost")))) {
+		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
 			if (Modlist[i].name.string().find(".ghost") != string::npos) 
 				bosslog << "Unknown mod file: " << Modlist[i].name.string().substr(0,Modlist[i].name.string().length()-6) << " <span class='ghosted'> - Ghosted</span>";
 			else 
