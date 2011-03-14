@@ -18,7 +18,6 @@
 
 #include "Parsing/Data.h"
 #include "Parsing/Skipper.h"
-#include "Parsing/Parser.h"
 #include "Common/Globals.h"
 #include "Support/Helpers.h"
 #include <sstream>
@@ -29,7 +28,6 @@
 #include <boost/spirit/home/phoenix/object/construct.hpp>
 #include <boost/spirit/include/phoenix_bind.hpp>
 #include <boost/spirit/home/phoenix/container.hpp>
-
 #include <boost/unordered_set.hpp>
 
 namespace boss {
@@ -332,118 +330,8 @@ namespace boss {
 		qi::rule<Iterator, skipper> metaLine;
 		
 		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
-			ostringstream value; 
-			value << what;
-			boss::SyntaxError(first, last, errorpos, value.str());
+			cout << what;
 		}
 	};
-
-	///////////////////////////////
-	// Syntax Notes
-	///////////////////////////////
-
-	// Old syntax:
-	/*
-		\ Leading symbol code:
-		\
-		\ \ A silent comment - will be ignored by the program.
-		\ % A Bashed Patch suggestion for the mod above.
-		\ ? A comment about the mod above.
-		\ * Flags a critical mistake for FCOM installation in relation to the mod above.
-		\ : An installation requirement (ie another mod or OBSE etc.).
-		\ " A specific incompatibility.
-		\ $ An OOO specific comment.
-		\ ^ A Better Cities specific comment
-		\
-		\ > process this line only if FCOM is installed.
-		\ < process this line only if FCOM isn't installed.
-		\
-		\ Multiple remark/comment/bash/error lines allowed.
-		\ Lines beginning with \ and blank lines are treated the same (ignored).
-	*/
-
-	// New syntax:
-	/*
-		// Syntax Info
-		//
-		// // 		A silent comment - will be ignored by the program.
-		//
-		// Outputting Keywords:
-		//
-		// TAG 		A Bashed Patch suggestion for the mod above. (Replaces %)
-		// SAY	 	A comment about the mod above. (Replaces ?)
-		// REQ		A requirement for the mod above. (Replaces :)
-		// INC		An incompatibility for the mod above. (Replaces ")
-		// WARN		Flags a non-critical installation mistake of the mod in question. Will show up in
-		//			yellow for HTML output.
-		// ERROR 	Flags a critical installation mistake of the mod in question. Will show up in red 
-		//			for HTML output. (Replaces *)
-		//
-		// Operation Keywords:
-		//
-		// SET <var>	Defines a variable of the given name. Variable names must contain only uppercase letters.
-		//
-		// Conditionals:
-		//
-		// IF (<condition>) <result>
-		// IFNOT (<condition>) <result>
-		//
-		// The first evaluates to true if the condition evaluates to true, else it is false. The second evaluates to
-		// true if the condition evaluates to false, else it is false. If th conditional evaluates to true, then the 
-		// result will be parsed.
-		// A compound conditional may be formed by joining two conditionals with a logical AND ("&&") or a logical 
-		// OR ("||"), ie:
-		//
-		// IF (<condition1>) && IFNOT (<condition2>) <result>
-		//
-		// If joined by "&&", both conditionals must evaluate to true for the result to be parsed. If joined by "||", 
-		// only one conditional is required to evaluate to true (though both can) for the result to be parsed.
-		//
-		// There are four types of condition:
-		//
-		// Type			Syntax				Description
-		// ====================================================================================================================
-		// Variable		$<var>							A '$' character followed by a variable name, given in uppercase letters.
-		//												If the variable is defined, the condition evaluates to true, else false.
-		//
-		// Mod			"<mod>"							A mod filename, including the ".esp" or ".esm" extension, enclosed in double quotes.
-		//												If the mod is installed, the condition evaluates to true, else false.
-		//
-		// Checksum		<integer>|"<mod>"				A checksum integer as given by BOSS, including "-" sign if it is negative, followed 
-		//												by a "|" character and the mod the checksum is to be checked against. If the mod's 
-		//												checksum is equal to the given checksum, the condition evaluates to true, else false.
-		//
-		// Version		<comparator><version>|"<mod>"	The comparator can be one of "=", ">" or "<", meaning "is equal to", "is greater than"
-		//												and "is less than" respectively. The version is the version to check for, as given by BOSS.
-		//												The mod is the mod that shall have its version checked. If the equation or inequality of the
-		//												form '<version> <comparator> <mod version>' (eg. '1.5 > 1.2.5', which is true) holds true, 
-		//												the condition evaluates to true, else false.
-		//
-		//
-		// The colon : denotes the end of any keywords/conditions/functions in a line.
-		// Multiple remark/comment/bash/error lines allowed.
-		//
-		// The other special keywords that are not to be mixed in the above expressions are:
-		//
-		// BEGINGROUP: <name>		Begins a group with the given name.
-		// ENDGROUP: <name>			Ends the group with the given name.
-
-		// Masterlist variable setup
-
-		//For Oblivion:
-		IF (Oscuro's_Oblivion_Overhaul.esm) SET: OOO
-		IF (Better Cities Resources.esm) SET: BC
-		IF (FCOM_Convergence.esm) SET: FCOM
-		// (also remember to add "IFNOT (FCOM) ERROR: FCOM_Convergence.esm is missing." after FCOM_Convergence.esp)
- 
-		//For Fallout 3:
-		IF (FO3 Wanderers Edition - Main File.esm) SET: FWE
-		IF (FOOK2 - Main.esm) SET: FOOK2
-		// (also remember to add "IFNOT (FOOK2) ERROR: FOOK2 - Main.esm is missing." after FOOK2 - Main.esp)
- 
-		//For Fallout: New Vegas:
-		IF (nVamp - Core.esm) SET: NVAMP
-		// (also remember to add "IFNOT (NVAMP) ERROR: nVamp - Core.esm is missing." after nVamp - Core.esp)
-	*/
 }
 #endif

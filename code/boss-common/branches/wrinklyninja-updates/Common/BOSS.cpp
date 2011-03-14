@@ -327,11 +327,8 @@ int main(int argc, char *argv[]) {
 	vector<rule> userlistRules;
 	if (revert<1 && fs::exists(userlist_path)) {
 		bool parsed = parseUserlist(userlist_path,userlistRules);
-		if (!parsed) {
+		if (!parsed)
 			cout << "Userlist parse error!" << endl;
-		} else {
-			cout << "Userlist parsed successfully!" << endl;
-		}
 		/*cout << "Obtained:" << endl;
 		for (size_t i=0; i<userlistRules.size(); i++) {
 			cout << GetKeyString(userlistRules[i].ruleKey) << ":" << userlistRules[i].ruleObject << endl;
@@ -370,8 +367,6 @@ int main(int argc, char *argv[]) {
 	bool parsed = parseMasterlist(sortfile,Masterlist);
 	if (!parsed) {
 		cout << "Masterlist parse error!" << endl;
-	} else {
-		cout << "Masterlist parsed successfully!" << endl;
 	}
 	/*cout << "Obtained:" << endl;
 	for (size_t i = 0; i<Masterlist.size(); i++) {
@@ -444,6 +439,9 @@ int main(int argc, char *argv[]) {
 	//Apply userlist rules to modlist.
 	if (revert<1 && fs::exists(userlist_path)) {
 		bosslog << "<div><span>Userlist Messages</span>"<<endl<<"<p>";
+		//First print parser/syntax error messages.
+		for (size_t i=0; i<boss::messageBuffer.size(); i++)
+			Output(bosslog,HTML,messageBuffer[i]);
 		//Go through each rule.
 		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlistRules.size());
 		for (size_t i=0; i<userlistRules.size(); i++) {
@@ -461,11 +459,11 @@ int main(int argc, char *argv[]) {
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (userlistRules[i].ruleKey == ADD  && index1 <= x) {
-						bosslog << "<span class='warn'>\""+userlistRules[i].ruleObject+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
+						bosslog << "<p class='warn'>\""+userlistRules[i].ruleObject+"\" is already in the masterlist. Rule skipped.</p>";
 						LOG_WARN(" * \"%s\" is already in the masterlist.", userlistRules[i].ruleObject.c_str());
 						break;
 					} else if (userlistRules[i].ruleKey == OVERRIDE && index1 > x) {
-						bosslog << "<span class='error'>\""+userlistRules[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
+						bosslog << "<p class='error'>\""+userlistRules[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</p>";
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlistRules[i].ruleObject.c_str());
 						break;
 					}
@@ -476,7 +474,7 @@ int main(int argc, char *argv[]) {
 					//Handle case of mods that don't exist at all.
 					if (index2 == (size_t)-1) {
 						Modlist.insert(Modlist.begin()+index1,mod);
-						bosslog << "<span class='warn'>\""+userlistRules[i].lines[j].object+"\" is not installed, and is not in the masterlist. Rule skipped.</span><br /><br />";
+						bosslog << "<p class='warn'>\""+userlistRules[i].lines[j].object+"\" is not installed, and is not in the masterlist. Rule skipped.</p>";
 						LOG_WARN(" * \"%s\" is not installed or in the masterlist.", userlistRules[i].lines[j].object.c_str());
 						break;
 					}
@@ -485,7 +483,7 @@ int main(int argc, char *argv[]) {
 						if (userlistRules[i].ruleKey == ADD)
 							x--;
 						Modlist.insert(Modlist.begin()+index1,mod);
-						bosslog << "<span class='error'>\""+userlistRules[i].lines[j].object+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</span><br /><br />";
+						bosslog << "<p class='error'>\""+userlistRules[i].lines[j].object+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</p>";
 						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", userlistRules[i].lines[j].object.c_str());
 						break;
 					}
@@ -494,9 +492,9 @@ int main(int argc, char *argv[]) {
 						index2 += 1;
 					Modlist.insert(Modlist.begin()+index2,mod);
 					if (userlistRules[i].lines[j].key == AFTER) 
-						bosslog << "<span class='success'>\""+userlistRules[i].ruleObject+"\" has been sorted after \"" + userlistRules[i].lines[j].object + "\".</span><br /><br />";
+						bosslog << "<p class='success'>\""+userlistRules[i].ruleObject+"\" has been sorted after \"" + userlistRules[i].lines[j].object + "\".</p>";
 					else
-						bosslog << "<span class='success'>\""+userlistRules[i].ruleObject+"\" has been sorted before \"" + userlistRules[i].lines[j].object + "\".</span><br /><br />";
+						bosslog << "<p class='success'>\""+userlistRules[i].ruleObject+"\" has been sorted before \"" + userlistRules[i].lines[j].object + "\".</p>";
 				//A group sorting line.
 				} else if ((userlistRules[i].lines[j].key == BEFORE || userlistRules[i].lines[j].key == AFTER) && !IsPlugin(userlistRules[i].lines[j].object)) {
 					vector<item> group;
@@ -506,7 +504,7 @@ int main(int argc, char *argv[]) {
 					index2 = GetGroupEndPos(Modlist, userlistRules[i].ruleObject);
 					//Check to see group actually exists.
 					if (index1 == (size_t)-1 || index2 == (size_t)-1) {
-						bosslog << "<span class='error'>The group \""+userlistRules[i].ruleObject+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
+						bosslog << "<p class='error'>The group \""+userlistRules[i].ruleObject+"\" is not in the masterlist or is malformatted. Rule skipped.</p>";
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlistRules[i].ruleObject.c_str());
 						break;
 					}
@@ -522,7 +520,7 @@ int main(int argc, char *argv[]) {
 					//Check that the sort group actually exists.
 					if (index2 == (size_t)-1) {
 						Modlist.insert(Modlist.begin()+index1,group.begin(),group.end());  //Insert the group back in its old position.
-						bosslog << "<span class='error'>The group \""+userlistRules[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
+						bosslog << "<p class='error'>The group \""+userlistRules[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</p>";
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlistRules[i].lines[j].object.c_str());
 						break;
 					}
@@ -530,9 +528,9 @@ int main(int argc, char *argv[]) {
 					Modlist.insert(Modlist.begin()+index2,group.begin(),group.end());
 					//Print success message.
 					if (userlistRules[i].lines[j].key == AFTER)
-						bosslog << "<span class='success'>The group \""+userlistRules[i].ruleObject+"\" has been sorted after the group \""+userlistRules[i].lines[j].object+"\".</span><br /><br />";
+						bosslog << "<p class='success'>The group \""+userlistRules[i].ruleObject+"\" has been sorted after the group \""+userlistRules[i].lines[j].object+"\".</p>";
 					else
-						bosslog << "<span class='success'>The group \""+userlistRules[i].ruleObject+"\" has been sorted before the group \""+userlistRules[i].lines[j].object+"\".</span><br /><br />";
+						bosslog << "<p class='success'>The group \""+userlistRules[i].ruleObject+"\" has been sorted before the group \""+userlistRules[i].lines[j].object+"\".</p>";
 				//An insertion line.
 				} else if (userlistRules[i].lines[j].key == TOP || userlistRules[i].lines[j].key == BOTTOM) {
 					size_t index1,index2;
@@ -544,11 +542,11 @@ int main(int argc, char *argv[]) {
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (userlistRules[i].ruleKey == ADD  && index1 <= x) {
-						bosslog << "<span class='warn'>\""+userlistRules[i].ruleObject+"\" is already in the masterlist. Rule skipped.</span><br /><br />";
+						bosslog << "<p class='warn'>\""+userlistRules[i].ruleObject+"\" is already in the masterlist. Rule skipped.</p>";
 						LOG_WARN(" * \"%s\" is already in the masterlist.", userlistRules[i].ruleObject.c_str());
 						break;
 					} else if (userlistRules[i].ruleKey == OVERRIDE && index1 > x) {
-						bosslog << "<span class='error'>\""+userlistRules[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</span><br /><br />";
+						bosslog << "<p class='error'>\""+userlistRules[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</p>";
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlistRules[i].ruleObject.c_str());
 						break;
 					}
@@ -563,7 +561,7 @@ int main(int argc, char *argv[]) {
 					//Check that the sort group actually exists.
 					if (index2 == (size_t)-1) {
 						Modlist.insert(Modlist.begin()+index1,mod);  //Insert the mod back in its old position.
-						bosslog << "<span class='error'>The group \""+userlistRules[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</span><br /><br />";
+						bosslog << "<p class='error'>The group \""+userlistRules[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</p>";
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlistRules[i].lines[j].object.c_str());
 						break;
 					}
@@ -571,9 +569,9 @@ int main(int argc, char *argv[]) {
 					Modlist.insert(Modlist.begin()+index2,mod);
 					//Print success message.
 					if (userlistRules[i].lines[j].key == BOTTOM)
-						bosslog << "<span class='success'>\""+userlistRules[i].ruleObject+"\" inserted at the end of group \"" + userlistRules[i].lines[j].object + "\".</span><br /><br />";
+						bosslog << "<p class='success'>\""+userlistRules[i].ruleObject+"\" inserted at the end of group \"" + userlistRules[i].lines[j].object + "\".</p>";
 					else
-						bosslog << "<span class='success'>\""+userlistRules[i].ruleObject+"\" inserted at the start of group \"" + userlistRules[i].lines[j].object + "\".</span><br /><br />";
+						bosslog << "<p class='success'>\""+userlistRules[i].ruleObject+"\" inserted at the start of group \"" + userlistRules[i].lines[j].object + "\".</p>";
 				//A message line.
 				} else if (userlistRules[i].lines[j].key == APPEND || userlistRules[i].lines[j].key == REPLACE) {
 					size_t index, pos;
@@ -587,7 +585,6 @@ int main(int argc, char *argv[]) {
 					if (pos != string::npos) {  //New format.
 						newMessage.key = GetStringKey(Tidy(userlistRules[i].lines[j].object.substr(0,pos)));
 						newMessage.data = trim_copy(userlistRules[i].lines[j].object.substr(pos+1));
-						cout << userlistRules[i].lines[j].object.substr(0,pos) << " - " << userlistRules[i].lines[j].object.substr(pos+1) << endl;
 					} else {  //Old format.
 						//First character is the keyword, the rest is the data.
 						newMessage.key = GetStringKey(userlistRules[i].lines[j].object.substr(0,1));
@@ -600,17 +597,17 @@ int main(int argc, char *argv[]) {
 					Modlist[index].messages.push_back(newMessage);
 
 					//Output confirmation.
-					bosslog << "<span class='success'>\"" + userlistRules[i].lines[j].object + "\"";
+					bosslog << "<p class='success'>\"" + userlistRules[i].lines[j].object + "\"";
 					if (userlistRules[i].lines[j].key == APPEND)
 						bosslog << " appended to ";
 					else
 						bosslog << " replaced ";
-					bosslog << "messages attached to \"" + userlistRules[i].ruleObject + "\".</span><br /><br />";
+					bosslog << "messages attached to \"" + userlistRules[i].ruleObject + "\".</p>";
 				}
 			}
 		}
 		if (userlistRules.size()==0) 
-			bosslog << "No valid rules were found in your userlist.txt.<br />" << endl;
+			bosslog << "No valid rules were found in your userlist.txt." << endl;
 		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
 		LOG_INFO("Userlist sorting process finished.");
 	}

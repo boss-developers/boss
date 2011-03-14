@@ -10,7 +10,6 @@
 */
 
 //Contains the modlist (inc. masterlist) and userlist data structures, and some helpful functions for dealing with them.
-//DOES NOT CONTAIN ANYTHING TO DO WITH THE FILE PARSERS.
 
 #ifndef __BOSS_LISTS_H__
 #define __BOSS_LISTS_H__
@@ -92,7 +91,8 @@ namespace boss {
 		string ruleObject;
 		vector<line> lines;
 	};
-
+	
+	extern vector<string> messageBuffer;  //Holds any error messages generated during parsing for printing later.
 
 	////////////////////////////////////////
 	// Helpful functions
@@ -107,24 +107,21 @@ namespace boss {
 	//Date comparison, used for sorting mods in modlist.
 	bool SortModsByDate(item mod1, item mod2);
 
-	//Build modlist (the one that gets saved to file, not the masterlist).
 	//Adds mods in directory to modlist in date order (AKA load order).
 	void BuildModlist(vector<item> &modList);
 
-	//Save the modlist (not masterlist) to a file, printing out all the information in the data structure.
-	//This will likely just be one group and the list of filenames in that group, if it's the modlist.
-	//However, if used on the masterlist, could prove useful for debugging the parser.
+	//Save the modlist (or masterlist) to a file, printing out all the information in the data structure.
 	void SaveModlist(vector<item> modList, fs::path file);
 
-	//Pretty sure there's a better way of doing these two using some sort of table.
-	//Returns a string representation of the given key, for use in output messages.
-	string GetKeyString(keyType key);
-
 	//Returns a keyType representation of the given key string.
+	//Possibly a better way to do this.
 	keyType GetStringKey(string key);
 
-	//Returns a string representation of the given itemType, for use in output messages.
-	//Probably only really to be used in debugging.
+	//Returns a string representation of the given keyType.
+	//Possibly a better way to do this.
+	string GetKeyString(keyType key);
+
+	//Debug: returns a string representation of the given itemType.
 	string GetTypeString(itemType type);
 }
 

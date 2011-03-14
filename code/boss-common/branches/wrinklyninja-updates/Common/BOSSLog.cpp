@@ -28,16 +28,6 @@ namespace boss {
 		}
 		//Select message formatting.
 		if (message.key==TAG) {
-			//Insert spaces in tag list to allow wrapping.
-			pos1 = message.data.find("{{BASH:");
-			if (pos1 != string::npos) {
-				pos2 = message.data.find("}}",pos1);
-				pos3 = message.data.find(",",pos1);
-				while (pos3 != string::npos && pos3 < pos2) {
-					message.data.replace(pos3,1,", ");
-					pos3 = message.data.find(",",pos3+9);
-				}
-			}
 			log << "<li><span class='tags'>Bash Tag suggestion(s):</span> " << message.data << "</li>" << endl;
 		} else if (message.key==SAY) {
 			log << "<li>Note: " << message.data << "</li>" << endl;
