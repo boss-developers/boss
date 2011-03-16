@@ -10,53 +10,93 @@
 */
 
 #include "BOSSLog.h"
+#include <boost/algorithm/string.hpp>
+
+/*
+BOSSLog output notes.
+
+Bosslog output should be done via an interface that provides a conversion between generic formatting symbols
+and the required specific formatting for the given output type. It must also be streamed to the log, not
+held in a buffer, because in the event of a crash, the logged information is useful.
+
+It should be concise and flexible, with no limit to the number of formatting symbols.
+
+Using a generic symbol format means we can use BOOST's Spirit.Karma as an output generator, which is quite neat as we use Qi for input.
+It's almost certainly simpler than doing replace_all functions for every possible permutation of symbols.
+
+The generic symbols could be given in the form: $<type>$
+Symbols for formatting which wraps text could be given as $<type>$ ... $-<type>$
+Some wrapping formatting needs specific type identifiers (ie. classes, links). Perhaps: 
+$<type>|class=<class>$
+$link=<link>$
+
+Elements:
+
+|| HTML Syntax 			|| Plaintext Syntax || General Syntax 	||
+//////////////////////////////////////////////////////////////////
+|| <br />	   			|| \n			   	|| $br$			  	||
+|| <div>...</div>		|| ...\n			|| $block$			||
+|| <p>..</p>			|| ...\n\n			|| $para$			||
+|| <span>...</span>	 	|| ...\n===			|| $span$			|| //A span with no class. Plaintext is underlined. Remove underline if there is a class.
+|| <ul>...</ul>			|| \n...\n			|| $ul$				||
+|| <li>...</li>			|| * ...\n			|| $li$				||
+|| <a href=".">..</a>	|| .. (.)			|| $link=<link>$	||
+|| <b>...</b>			|| ...				|| $b$				||
+|| <i>...</i>			|| ...				|| $i$				||
+|| </body></html>		|| None				|| $end$			||
+
+Only the opening general syntax is shown, all but $br$ and $end$ also have a closing counterpart.
+
+Classes:
+
+|| Class	|| Plaintext Effect 		|| HTML Effect 												||
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+|| title	|| ===\n\n text \n\n ===	|| font-size:2.4em; font-weight:bold; text-align: center;	||
+|| center	|| None						|| text-align:center;										||
+|| error	|| Uppercase text			|| color:red;												||
+|| success	|| None						|| color:green;												||
+|| warn		|| None						|| color:#FF6600;											||
+|| version	|| None						|| color:teal;												||
+|| ghosted	|| None						|| font-style:italic; color:grey;							||
+|| tags		|| None						|| color:maroon;											||
+*/
 
 namespace boss {
 	using namespace std;
+	using boost::algorithm::replace_all;
 
-	void ShowMessage(message message, ofstream &log) {
-		size_t pos1,pos2,pos3;
+	void ShowMessage(ofstream &log, formatType format, message currentMessage) {
+		size_t pos1,pos2;
 		string link;
-		//Replace web addresses with hyperlinks.
-		pos1 = message.data.find("http");
+		//Wrap web addresses in generic link format.
+		pos1 = currentMessage.data.find("http");  //Start of link.
 		while (pos1 != string::npos) {
-			pos2 = message.data.find(" ",pos1);
-			link = message.data.substr(pos1,pos2-pos1);
-			link = "<a href='"+link+"'>"+link+"</a>";
-			message.data.replace(pos1,pos2-pos1,link);
-			pos1 = message.data.find("http",pos1 + link.length());
+			pos2 = currentMessage.data.find(" ",pos1);  //End of link.
+			link = currentMessage.data.substr(pos1,pos2-pos1);
+			link = "$link=" + link + "$" + link + "$-link$";
+			currentMessage.data.replace(pos1,pos2-pos1,link);
+			pos1 = currentMessage.data.find("http",pos1 + link.length());
 		}
 		//Select message formatting.
-		if (message.key==TAG) {
-			log << "<li><span class='tags'>Bash Tag suggestion(s):</span> " << message.data << "</li>" << endl;
-		} else if (message.key==SAY) {
-			log << "<li>Note: " << message.data << "</li>" << endl;
-		} else if (message.key==REQ) {
-			log << "<li>Requires: " << message.data << "</li>" << endl;
-		} else if (message.key==INC) {
-			log << "<li>Incompatible with: " << message.data << "</li>" << endl;
-			} else if (message.key==WARN) {
-			log << "<li class='warn'>Warning: " << message.data << "</li>" << endl;
-		} else if (message.key==ERR) {
-			log << "<li class='error'>ERROR: " << message.data << "</li>" << endl;
-		}
-	}
-
-	//Prints ouptut with formatting according to format.
-	void Output(ofstream &log, formatType format, string text) {
-		if (format == HTML) {
-			log << text;
-			if (text.find("</div>") != string::npos)
-				log << endl;
-			else if (text.find("</li>") != string::npos)
-				log << endl;
-			else if (text.find("</p>") != string::npos)
-				log << endl;
-			else if (text.find("</body>") != string::npos)
-				log << endl;
-			if (text.find("<br />") != string::npos)
-				log << endl;
-		} else {
+		switch(currentMessage.key) {
+		case TAG:
+			Output(log, format, "$li$ $span|class=tags$ Bash Tag suggestion(s):$-span$ " + currentMessage.data + "$-li$");
+			break;
+		case SAY:
+			Output(log, format, "$li$ Note: " + currentMessage.data + "$-li$");
+			break;
+		case REQ:
+			Output(log, format, "$li$ Requires: " + currentMessage.data + "$-li$");
+			break;
+		case INC:
+			Output(log, format, "$li$ Incompatible with: " + currentMessage.data + "$-li$");
+			break;
+		case WARN:
+			Output(log, format, "$li|class=warn$ Warning: " + currentMessage.data + "$-li$");
+			break;
+		case ERR:
+			Output(log, format, "$li|class=error$ ERROR: " + currentMessage.data + "$-li$");
+			break;
 		}
 	}
 
@@ -66,13 +106,13 @@ namespace boss {
 			log << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
 				<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
 				<< "body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
-				<< "#title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl
-				<< "#title + div {text-align: center;}"<<endl
+				<< ".title {font-size:2.4em; font-weight:bold; text-align: center;}"<<endl
 				<< "div > span:first-child {font-weight:bold; font-size:1.3em;}"<<endl
 				<< "ul {margin-top:0px; list-style:none; margin-bottom:1.1em;}"<<endl
 				<< "ul li {margin-left:-1em; margin-bottom:0.4em;}"<<endl
+				<< ".center {text-align:center;}" <<endl
 				<< ".error {color:red;}"<<endl
-				<< ".success {color:green}"<<endl
+				<< ".success {color:green;}"<<endl
 				<< ".warn {color:#FF6600;}"<<endl
 				<< ".version {color:teal;}"<<endl
 				<< ".ghosted {font-style:italic; color:grey;}"<<endl
@@ -80,190 +120,20 @@ namespace boss {
 				<< "</style>"<<endl<<"</head>"<<endl<<"<body>"<<endl;
 		}
 	}
+
+	//Prints ouptut with formatting according to format.
+	void Output(ofstream &log, formatType format, string text) {
+		if (format == HTML) {
+			replace_all(text, "$li$", "<li>");
+			replace_all(text, "$li|class=warn$", "<li class='warn'>");
+			replace_all(text, "$li|class=error$", "<li class='error'>");
+			replace_all(text, "$-li$", "</li>");
+			replace_all(text, "$span$", "</span>");
+			replace_all(text, "$span|class=tags$", "<span class='tags'>");
+			replace_all(text, "$-span$", "</span>");
+		} else {
+
+		}
+		log << text;
+	}
 }
-
-/*
-namespace boss {
-	using namespace std;
-
-
-		void BOSSLog::setLogType(logType type) {
-			logFormat = type;
-		}
-
-		void BOSSLog::writeText(std::string text, textType type) {
-			if (logFormat == HTML) {
-				switch (type) {
-					case TITLE:
-						bosslog << "<div id='title'>" << text << "</div>" << endl;
-						break;
-					case ERR:
-						bosslog << "<span class='error'>" << text << "</span>";
-						break;
-					case SUCCESS:
-						bosslog << "<span class='success'>" << text << "</span>";
-						break;
-					case WARN:
-						bosslog << "<span class='warn'>" << text << "</span>";
-						break;
-					case GHOST:
-						bosslog << "<span class='ghosted'>" << text << "</span>";
-						break;
-					case VER:
-						bosslog << "<span class='version'>" << text << "</span>";
-						break;
-					case TAG:
-						bosslog << "<span class='tags'>" << text << "</span>";
-						break;
-					case SUBTITLE:
-						bosslog << "<span>" << text << "</span>";
-					case LI:
-						bosslog << "<li>" << text << "</li>";
-					default:
-						bosslog << text;
-						break;
-					}
-				}
-			} else {
-
-			}
-		}
-
-		void BOSSLog::writeLink(std::string text, textType type) {
-			if (logFormat == HTML) {
-				bosslog << "<a href='" << link << "'>" << text << "</a>";
-			} else {
-				bosslog << text << " (" << link << ") ";
-			}
-		}
-
-		void BOSSLog::endl(int number) {
-			if (logFormat == HTML)
-				bosslog << "<br />" << endl;
-			else
-				bosslog << endl;
-		}
-
-
-		void BOSSLog::startDiv(divType type) {
-			if (logFormat == HTML) {
-
-			} else {
-
-			}
-		}
-
-
-		void BOSSLog::endDiv(divType type) {
-			if (logFormat == HTML) {
-
-			} else {
-
-			}
-		}
-
-		//Print closing tags for HTML, nothing for plaintext.
-		void BOSSLog::endLog() {
-			if (logFormat == HTML) {
-
-			}
-		}
-
-		bool BOSSLog::open(boost::filesystem::path file) {
-			bosslog.open(file.c_str());
-			if (bosslog.fail())
-				return false;
-			else
-				return true;
-		}
-	}
-
-
-
-	void printLogText(ofstream& log, string text, logFormat format, attr attribute, styleType style) {
-		printLogText(log,text,"",format,attribute, style);
-	}
-
-	void printLogText(ofstream& log, string text, string link, logFormat format, attr attribute, styleType style) {
-		if (format == 0) {
-			//Apply early attributes.
-			switch (attribute) {
-			case START_DIV:
-				log << "<div>" << endl;
-				break;
-			case START_PARA:
-				log << "<p>" << endl;
-				break;
-			}
-			//Apply text CSS style.
-			switch (style) {
-			case TITLE:
-				log << "<div id='title'>" << text << "</div>" << endl;
-				break;
-			case LINK:
-				log << "<a href='" << link << "'>" << text << "</a>";
-				break;
-			case ERR:
-				log << "<span class='error'>" << text << "</span>";
-				break;
-			case SUCCESS:
-				log << "<span class='success'>" << text << "</span>";
-				break;
-			case WARN:
-				log << "<span class='warn'>" << text << "</span>";
-				break;
-			case GHOST:
-				log << "<span class='ghosted'>" << text << "</span>";
-				break;
-			case VER:
-				log << "<span class='version'>" << text << "</span>";
-				break;
-			case TAG:
-				log << "<span class='tags'>" << text << "</span>";
-				break;
-			case SUBTITLE:
-				log << "<span>" << text << "</span>";
-			case LI:
-				log << "<li>" << text << "</li>";
-			default:
-				log << text;
-				break;
-			}
-			//Apply closing formatting.
-			switch (attribute) {
-			case BR:
-				log << "<br />" << endl;
-				break;
-			case END_DIV:
-				log << "</div>" << endl;
-				break;
-			case END_PARA:
-				log << "</p>" << endl;
-				break;
-			case END_LOG:
-				log << "</body>" << endl << "</html>" << endl;
-				break;
-			}
-		} else if (format == 1) {
-			size_t pos;
-			if ((pos = text.find("&copy;")) != string::npos)
-				text.replace(pos,pos+6,"(c)");
-			if ((pos = text.find("&amp;")) != string::npos)
-				text.replace(pos,pos+5,"&");
-			switch (attribute) {
-			case TITLE:
-				log << "===========================================================" << endl << endl
-					<< text << endl
-					<< "===========================================================" << endl << endl;
-				break;
-			case LINK:
-				log << text << " (" << link << ") " << endl;
-				break;
-			case SUBTITLE:
-				log << "-----------------------------------------------------------" << endl
-					<< text << endl
-					<< "-----------------------------------------------------------" << endl << endl;
-			}
-		}
-	}
-}*/

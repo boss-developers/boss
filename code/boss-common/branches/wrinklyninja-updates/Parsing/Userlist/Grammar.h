@@ -36,6 +36,7 @@
 #include <boost/spirit/include/phoenix_bind.hpp>
 
 #include <boost/format.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace boss {
 	namespace unicode = boost::spirit::unicode;
@@ -84,20 +85,7 @@ namespace boss {
 	14. The first line of a rule must be a rule line. If there is a valid line before the first rule line, ignore it and print a warning message.
 */
 
-/*
-	if (object.empty()) {
-		throw failure(skip, rule, subject, ERuleHasUndefinedObject % key);
-	}
-		//Line does not contain a recognised keyword. Skip it and the rule containing it. If it is a rule line, then the previous rule will also be skipped.
-		throw failure(skip, rule, subject, EUnrecognisedKeyword % key % object);
-	}
 
-	//Line is not a rule line, and appears before the first rule line, so does not belong to a rule. Skip it.
-	if (key=="before" || key=="after" || key=="top" || key=="bottom" || key=="append" || key=="replace") 
-		AddError(EAppearsBeforeFirstRule % key % object);
-	else
-		AddError(EUnrecognizedKeywordBeforeFirstRule % key % object);
-*/
 
 	// Error messages for rule validation
 	//Syntax errors
@@ -121,6 +109,10 @@ namespace boss {
 	//Syntax error formatting.
 	static format SyntaxErrorFormat("<p class='%1%'>"
 		"Syntax Error: The rule beginning \"%2%: %3%\" %4%"
+		"</p>");
+
+	static format ParsingErrorFormat("<p class='%1%'>"
+		"Parsing Error: Expected a %2% at \"%3%\". Userlist parsing aborted. No rules will be applied."
 		"</p>");
 
 	void AddSyntaxError(keyType const& rule, string const& object, format const& message) {
@@ -215,7 +207,7 @@ namespace boss {
 			//A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
 			userlistRule %=
 				*eol			//Soak up excess empty lines.
-				> ((ruleKey > ':' > object)
+				> (ruleKey > ':' > object
 				> +eol
 				> ((sortLine | messageLine) % +eol));
 
@@ -242,7 +234,7 @@ namespace boss {
 			userlistRule.name("rule");
 			sortLine.name("sort line");
 			messageLine.name("message line");
-			object.name("object");
+			object.name("line object");
 			ruleKey.name("rule keyword");
 			sortKey.name("sort keyword");
 			messageKey.name("message keyword");
@@ -266,7 +258,18 @@ namespace boss {
 		qi::rule<Iterator, string(), skipper> object;
 	
 		void SyntaxError(Iterator const& first, Iterator const& last, Iterator const& errorpos, info const& what) {
-			cout << what;
+			ostringstream out;
+			out << what;
+			string expect = out.str().substr(1);
+			expect = boost::algorithm::replace_all_copy(expect, "&lt;", "<");
+			expect = boost::algorithm::replace_all_copy(expect, "&gt;", ">");
+
+			string context(errorpos, std::min(errorpos +50, last));
+			boost::trim_left(context);
+
+			string msg = (ParsingErrorFormat % "error" % expect % context).str();
+			messageBuffer.push_back(msg);
+			return;
 		}
 	};
 }

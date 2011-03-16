@@ -38,8 +38,8 @@ using boost::algorithm::trim_copy;
 using boost::algorithm::to_lower_copy;
 
 
-const string g_version     = "1.7";
-const string g_releaseDate = "February 18, 2011";
+const string g_version     = "1.7 Dev";
+const string g_releaseDate = "March 16, 2011";
 
 
 void ShowVersion() {
@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
 								" 'Fallout3NV'")
 		("debug,d", po::value(&debug)->zero_tokens(),
 								"add source file references to logging statements")
-		("crc-show,c", po::value(&showCRCs)->zero_tokens(),
+		("crc-display,c", po::value(&showCRCs)->zero_tokens(),
 								"show mod file CRCs, so that a file's CRC can be"
 								" added to the masterlist in a conditional");
 		
@@ -218,8 +218,8 @@ int main(int argc, char *argv[]) {
 	//Output HTML start and <head>
 	OutputHeader(bosslog,format);
 	//Output start of <body>
-	Output(bosslog,format, "<div id='title'>Better Oblivion Sorting Software Log</div><br />");
-	Output(bosslog,format, "<div style='text-align:center;'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />");
+	Output(bosslog,format, "<div class='title'>Better Oblivion Sorting Software Log</div><br />");
+	Output(bosslog,format, "<div class='center'>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />");
 	Output(bosslog,format, "<a href='http://creativecommons.org/licenses/by-nc-nd/3.0/'>CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />");
 	Output(bosslog,format, "v"+g_version+" ("+g_releaseDate+")</div><br /><br />");
 	//Output(bosslog,format, );
@@ -328,7 +328,7 @@ int main(int argc, char *argv[]) {
 	if (revert<1 && fs::exists(userlist_path)) {
 		bool parsed = parseUserlist(userlist_path,userlistRules);
 		if (!parsed)
-			cout << "Userlist parse error!" << endl;
+			userlistRules.clear();
 		/*cout << "Obtained:" << endl;
 		for (size_t i=0; i<userlistRules.size(); i++) {
 			cout << GetKeyString(userlistRules[i].ruleKey) << ":" << userlistRules[i].ruleObject << endl;
@@ -362,7 +362,16 @@ int main(int argc, char *argv[]) {
                         Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
                 exit (1); //fail in screaming heap.
     }
-
+	//Validate file first.
+	if (!ValidateUTF8File(sortfile)) {
+		Output(bosslog, HTML, "<p class='error'>Critical Error: \""+sortfile.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.<br />");
+		Output(bosslog, HTML, "Utility will end now.</p></body></html>");
+		bosslog.close();
+		LOG_ERROR("File '%s' was not encoded in valid UTF-8.", sortfile.filename().string().c_str());
+		if ( !silent ) 
+                Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
+        exit (1); //fail in screaming heap.
+	}
 	//Parse masterlist/modlist backup into data structure.
 	bool parsed = parseMasterlist(sortfile,Masterlist);
 	if (!parsed) {
@@ -644,7 +653,7 @@ int main(int argc, char *argv[]) {
 			if (showCRCs) {
 				stringstream out;
 				out << GetCrc32(data_path / Modlist[i].name);
-				text += " Checksum: <i>" + out.str() + "</i>";
+				text += " - Checksum: <i>" + out.str() + "</i>";
 			}
 			bosslog << text; 
 				
@@ -666,7 +675,7 @@ int main(int argc, char *argv[]) {
 				bosslog << endl << "<ul>" << endl;
 				for (size_t j=0; j<Modlist[i].messages.size(); j++) {
 					//Print messages.
-					ShowMessage(Modlist[i].messages[j],bosslog);
+					ShowMessage(bosslog, HTML,Modlist[i].messages[j]);
 				}
 				bosslog << "</ul>" << endl;
 			} else 
@@ -688,6 +697,9 @@ int main(int argc, char *argv[]) {
 				bosslog << "Unknown mod file: " << Modlist[i].name.string().substr(0,Modlist[i].name.string().length()-6) << " <span class='ghosted'> - Ghosted</span>";
 			else 
 				bosslog << "Unknown mod file: " << Modlist[i].name.string();
+			if (showCRCs) {
+				bosslog << " - Checksum: <i>" << GetCrc32(data_path / Modlist[i].name) << "</i>";
+			}
 			modfiletime=esmtime;
 			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
@@ -705,7 +717,7 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Unrecognized mods reported.");
 	
 	//Let people know the program has stopped.
-	bosslog <<"<div><span>Done.</span></div><br /><br />"<<endl<<"</body>"<<endl<<"</html>";
+	bosslog <<"<div><span>Done.</span></div>"<<endl<<"</body>"<<endl<<"</html>";
 	bosslog.close();
 	LOG_INFO("Launching boss log in browser.");
 	if ( !silent ) 

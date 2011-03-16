@@ -16,6 +16,9 @@
 #include "Modlist/Grammar.h"
 #include "Userlist/Grammar.h"
 #include "Support/Helpers.h"
+#include "Common/BOSSLog.h"
+#include "utf8/source/utf8.h"
+#include "Support/Logger.h"
 
 namespace boss {
 	using namespace std;
@@ -27,10 +30,18 @@ namespace boss {
 		string::const_iterator begin, end;
 		string contents;
 
+		//Validate file first.
+		if (!ValidateUTF8File(file)) {
+			messageBuffer.push_back("<p class='error'>Critical Error: \""+file.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding. Userlist parsing aborted. No rules will be applied.</p>");
+			LOG_ERROR("File '%s' was not encoded in valid UTF-8.", file.filename().string().c_str());
+			return false;
+		}
+
 		fileToBuffer(file,contents);
 
 		begin = contents.begin();
 		end = contents.end();
+
 		bool r = qi::phrase_parse(begin, end, grammar, skipper, ruleList);
 
 		 if (r && begin == end)
@@ -55,5 +66,18 @@ namespace boss {
 			 return true;
 		 else
 			 return false;
+	}
+
+	//UTF-8 Validator
+	bool ValidateUTF8File(fs::path file) {
+		ifstream ifs(file.c_str());
+
+		istreambuf_iterator<char> it(ifs.rdbuf());
+		istreambuf_iterator<char> eos;
+
+		if (!utf8::is_valid(it, eos))
+			return false;
+		else
+			return true;
 	}
 }

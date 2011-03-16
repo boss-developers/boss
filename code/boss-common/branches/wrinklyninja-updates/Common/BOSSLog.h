@@ -17,20 +17,22 @@
 #ifndef __BOSS_BOSSLOG_H__
 #define __BOSS_BOSSLOG_H__
 
+#ifndef BOOST_SPIRIT_UNICODE
+#define BOOST_SPIRIT_UNICODE 
+#endif
+
 #include <fstream>
 #include <string>
 #include "Lists.h"
 
-#include "Globals.h"
-#include "Support/Helpers.h"
-#include <string>
-#include <fstream>
-#include <vector>
-#include <boost/format.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/algorithm/string.hpp>
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/karma.hpp>
 
 namespace boss {
+	namespace unicode = boost::spirit::unicode;
+	namespace qi = boost::spirit::qi;
+    namespace karma = boost::spirit::karma;
+
 	using namespace std;
 
 	enum formatType {
@@ -38,8 +40,31 @@ namespace boss {
 		PLAINTEXT
 	};
 
-	//Prints a given message to the bosslog. Not format-safe ATM.
-	void ShowMessage(message message, ofstream &log);
+	enum outputElement {
+		br,
+		block,
+		para,
+		span,
+		ul,
+		li,
+		link,
+		b,
+		i,
+		end
+	};
+
+	enum outputClass {
+		title,
+		error,
+		success,
+		warn,
+		version,
+		ghosted,
+		tags
+	};
+
+	//Prints a given message to the bosslog, using format-safe Output function below.
+	void ShowMessage(ofstream &log, formatType format, message currentMessage);
 
 	//Prints ouptut with formatting according to format.
 	void Output(ofstream &log, formatType format, string text);
@@ -47,68 +72,4 @@ namespace boss {
 	//Prints header if format is HTML, else nothing.
 	void OutputHeader(ofstream &log, formatType format);
 }
-/*
-
-namespace boss {
-	using namespace std;
-
-	class BOSSLog {
-	private:
-		int logFormat;
-		ofstream bosslog;
-	public:
-		enum logType {
-			HTML = 0,
-			PLAINTEXT = 1
-		};
-		enum textType {
-			NO_TYPE = 0,
-			TITLE = 1,
-			LINK = 2,
-			ERR = 3,
-			SUCCESS = 4,
-			WARN = 5,
-			GHOST = 6,
-			VER = 7,
-			TAG = 8,
-			SUBTITLE = 9,
-			LI = 10
-		};
-		enum divType {
-			DIV = 0,
-			PARA = 1
-		};
-		void setLogType(logType type);
-		void startLog();  //Print header for HTML, nothing for plaintext.
-		void writeText(string text, textType type);
-		void writeLink(string link, string text);
-		void endl(int number);
-		void startDiv(divType type);
-		void endDiv(divType type);
-		void endLog(); //Print closing tags for HTML, nothing for plaintext.
-		bool open(boost::filesystem::path file);
-	}
-
-	//Now a dumping ground for un-sorted testing code.
-	//Try implementing a BOSSLogger function or something.
-
-	enum styleType {
-		NO_STYLE = 0,
-		TITLE = 1,
-		LINK = 2,
-		ERR = 3,
-		SUCCESS = 4,
-		WARN = 5,
-		GHOST = 6,
-		VER = 7,
-		TAG = 8,
-		SUBTITLE = 9,
-		LI = 10
-	};
-
-	void printHTMLHead(ofstream& log);
-
-	void printBOSSLogText(ofstream& log, string text, logFormat format, attr attribute, styleType style);
-	void printBOSSLogText(ofstream& log, string text, string link, logFormat format, attr attribute, styleType style);
-}*/
 #endif

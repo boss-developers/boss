@@ -26,5 +26,8 @@ namespace boss {
 	bool parseUserlist(fs::path file, vector<rule>& ruleList);
 
 	bool parseMasterlist(fs::path file, vector<item>& modList);
+
+	//UTF-8 Validator
+	bool ValidateUTF8File(fs::path file);
 }
 #endif
