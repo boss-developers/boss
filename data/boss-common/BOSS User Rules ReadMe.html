@@ -289,39 +289,30 @@
 	
 	<div id="messages"><span>The BOSS Message Format</span>
 	<p>Understanding the BOSS message format is important if you wish to edit mods' messages. There are actually two masterlist formats, with different syntax for messages.
-	Format 1 is recognised by BOSS v1.5+, and Format 2 is recognised by BOSS v1.7+. If you are reading this, you can use either. Each of the seven message types begins with a 
+	Format 1 is recognised by BOSS v1.5+, and Format 2 is recognised by BOSS v1.7+. If you are reading this, you can use either. Each of the four message types that can be added via the userlist begins with a 
 	<em>message symbol</em> or <em>message keyword</em> depending on the format used. The symbol/keyword is then followed by the message itself. The message is just a standard 
 	line of text. In addition, Bash Tag suggestion comments also have a special syntax for the suggestions they include.</p>
-	<p>The message symbols, keywords and corresponding message types are listen in the table below:</p>
+	<p>The message message types, symbols and keywords are listen in the table below:</p>
 	<div style="float:left;">
-	<div style="border: 1px solid grey; width: 60px; padding: 5px; font-weight:bold;">Format 1</div>
-	<div style="border: 1px solid grey; width: 60px; padding: 5px;">%</div>
-	<div style="border: 1px solid grey; width: 60px; padding: 5px;">?</div>
-	<div style="border: 1px solid grey; width: 60px; padding: 5px;">&gt;*</div>
-	<div style="border: 1px solid grey; width: 60px; padding: 5px;">:</div>
-	<div style="border: 1px solid grey; width: 60px; padding: 5px;">"</div>
-	<div style="border: 1px solid grey; width: 60px; padding: 5px;">$</div>
-	<div style="border: 1px solid grey; width: 60px; padding: 5px;">^</div>
-	</div>
-	<div style="float:left;">
-	<div style="border: 1px solid grey; width: 130px; padding: 5px; font-weight:bold;">Format 2</div>
-	<div style="border: 1px solid grey; width: 130px; padding: 5px;">TAG:</div>
-	<div style="border: 1px solid grey; width: 130px; padding: 5px;">SAY:</div>
-	<div style="border: 1px solid grey; width: 130px; padding: 5px;">IF ($FCOM) ERROR:</div>
-	<div style="border: 1px solid grey; width: 130px; padding: 5px;">REQ:</div>
-	<div style="border: 1px solid grey; width: 130px; padding: 5px;">INC:</div>
-	<div style="border: 1px solid grey; width: 130px; padding: 5px;">IF ($OOO) SAY:</div>
-	<div style="border: 1px solid grey; width: 130px; padding: 5px;">IF ($BC) SAY:</div>
-	</div>
-	<div style="float:left;">
-	<div style="border: 1px solid grey; padding: 5px; font-weight:bold;">Description</div>
+	<div style="border: 1px solid grey; padding: 5px; font-weight:bold;">Message Type</div>
 	<div style="border: 1px solid grey; padding: 5px;">Bash Tag Suggestion</div>
 	<div style="border: 1px solid grey; padding: 5px;">General Comment</div>
-	<div style="border: 1px solid grey; padding: 5px;">Critical FCOM Install Error</div>
 	<div style="border: 1px solid grey; padding: 5px;">Installation Requirement</div>
 	<div style="border: 1px solid grey; padding: 5px;">Specific Incompatibility</div>
-	<div style="border: 1px solid grey; padding: 5px;">OOO specific comment. This will only be displayed if the user has OOO in their load order.</div>
-	<div style="border: 1px solid grey; padding: 5px;">Better Cities specific comment. This will only be displayed if the user has Better Cities in their load order.</div>
+	</div>
+	<div style="float:left;">
+	<div style="border: 1px solid grey; padding: 5px; font-weight:bold;">Format 1 Symbol</div>
+	<div style="border: 1px solid grey; padding: 5px;">%</div>
+	<div style="border: 1px solid grey; padding: 5px;">?</div>
+	<div style="border: 1px solid grey; padding: 5px;">:</div>
+	<div style="border: 1px solid grey; padding: 5px;">"</div>
+	</div>
+	<div style="float:left;">
+	<div style="border: 1px solid grey; padding: 5px; font-weight:bold;">Format 2 Keyword</div>
+	<div style="border: 1px solid grey; padding: 5px;">TAG:</div>
+	<div style="border: 1px solid grey; padding: 5px;">SAY:</div>
+	<div style="border: 1px solid grey; padding: 5px;">REQ:</div>
+	<div style="border: 1px solid grey; padding: 5px;">INC:</div>
 	</div>
 	<p style="clear:both;"><br />The syntax for a Bash Tag suggestion is:<br /><br />
 	% {{BASH:list suggested tags separated by ", " here}} you may also have some text here.<br />
