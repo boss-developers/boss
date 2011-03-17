@@ -29,7 +29,7 @@ namespace boss {
 	enum keyType {
 		NONE,
 		//Userlist keywords.
-		ADD = 1,
+		ADD,
 		OVERRIDE,
 		FOR,
 		BEFORE,
@@ -113,16 +113,16 @@ namespace boss {
 	//Save the modlist (or masterlist) to a file, printing out all the information in the data structure.
 	void SaveModlist(vector<item> modList, fs::path file);
 
-	//Returns a keyType representation of the given key string.
-	//Possibly a better way to do this.
-	keyType GetStringKey(string key);
-
 	//Returns a string representation of the given keyType.
 	//Possibly a better way to do this.
-	string GetKeyString(keyType key);
+	string KeyToString(keyType key);
+
+	//Returns a keyType representation of the given key string.
+	//Possibly a better way to do this.
+	keyType StringToKey(string key);
 
 	//Debug: returns a string representation of the given itemType.
-	string GetTypeString(itemType type);
+	string TypeToString(itemType type);
 }
 
 #endif

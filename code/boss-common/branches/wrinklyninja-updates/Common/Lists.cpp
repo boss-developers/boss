@@ -10,7 +10,6 @@
 */
 
 //Contains some helpful functions for dealing with the modlist (inc. masterlist) and userlist data structures.
-//DOES NOT CONTAIN ANYTHING TO DO WITH THE FILE PARSERS.
 
 #include "Support/Helpers.h"
 #include "Support/Logger.h"
@@ -126,7 +125,8 @@ namespace boss {
 	}
 
 	//Returns a string representation of the given key, for use in output messages.
-	string GetKeyString(keyType key) {
+	//Only really required for userlist keywords.
+	string KeyToString(keyType key) {
 		if (key == ADD)
 			return "add";
 		else if (key == OVERRIDE)
@@ -162,7 +162,8 @@ namespace boss {
 	}
 
 	//Returns a keyType representation of the given key string.
-	keyType GetStringKey(string key) {
+	//Only really required for masterlist message keys.
+	keyType StringToKey(string key) {
 		if (key == "add")
 			return ADD;
 		else if (key == "override")
@@ -197,7 +198,7 @@ namespace boss {
 			return NONE;
 	}
 
-	string GetTypeString(itemType type) {
+	string TypeToString(itemType type) {
 		if (type == MOD)
 			return "MOD";
 		else if (type == BEGINGROUP)

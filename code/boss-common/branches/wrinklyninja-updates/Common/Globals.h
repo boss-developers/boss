@@ -28,7 +28,8 @@ namespace boss {
 	extern ofstream bosslog;					//BOSSlog.html output file
 
 	extern const fs::path data_path;			// Holds the path to the data directory.
-	extern const fs::path bosslog_path;			// BOSSlog full file name
+	extern const fs::path bosslog_html_path;	// BOSSlog full HTML file name
+	extern const fs::path bosslog_text_path;	// BOSSlog full text file name
 	extern const fs::path masterlist_path;		// Hold both location and file name for masterlist.txt
 	extern const fs::path userlist_path;		// Hold both location and file name for userlist.txt 
 	extern const fs::path curr_modlist_path;	// Hold both location and file name for modlist.txt

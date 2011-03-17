@@ -40,7 +40,6 @@ namespace boss {
 
 	using qi::skip;
 	using qi::eol;
-	using qi::eoi;
 	using qi::lexeme;
 	using qi::on_error;
 	using qi::fail;
@@ -251,9 +250,11 @@ namespace boss {
 				omit[oldConditional[&EvaluateMessage] | conditionals[&EvaluateMessage] | eps] 
 				>> messageKeyword[&EvalMessKey]
 				> -lit(":")
-				> charString;
+				> messageString;
 
-			charString %= lexeme[skip(lit("//") >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present.
+			charString %= lexeme[skip(lit("//") >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present. Don't skip web links.
+
+			messageString %= lexeme[+(char_ - eol)]; //String, with no skipper. Used for messages, which can contain web links which the skipper would cut out.
 
 			upperString %= lexeme[skip(lit("//") >> *(char_ - eol))[+(upper - eol)]]; //String of uppercase letters, with comment skipper.
 
@@ -295,6 +296,7 @@ namespace boss {
 			itemMessages.name("itemMessages");
 			itemMessage.name("itemMessage");
 			charString.name("charString");
+			messageString.name("messageString");
 			upperString.name("upperString");
 			messageKeyword.name("messageKeyword");
 			oldConditional.name("oldConditional");
@@ -313,6 +315,7 @@ namespace boss {
 			on_error<fail>(itemMessages,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(itemMessage,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(charString,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(messageString,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 
 			on_error<fail>(metaLine,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
@@ -336,7 +339,7 @@ namespace boss {
 		qi::rule<Iterator, fs::path(), skipper> itemName;
 		qi::rule<Iterator, vector<message>(), skipper> itemMessages;
 		qi::rule<Iterator, message(), skipper> itemMessage;
-		qi::rule<Iterator, string(), skipper> charString, upperString, variable, mod, version, andOr;
+		qi::rule<Iterator, string(), skipper> charString, upperString, messageString, variable, mod, version, andOr;
 		qi::rule<Iterator, keyType(), skipper> messageKeyword;
 		qi::rule<Iterator, bool(), skipper> conditional, conditionals, condition, oldConditional;
 		qi::rule<Iterator, skipper> metaLine;

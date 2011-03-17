@@ -30,13 +30,6 @@ namespace boss {
 		string::const_iterator begin, end;
 		string contents;
 
-		//Validate file first.
-		if (!ValidateUTF8File(file)) {
-			messageBuffer.push_back("<p class='error'>Critical Error: \""+file.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding. Userlist parsing aborted. No rules will be applied.</p>");
-			LOG_ERROR("File '%s' was not encoded in valid UTF-8.", file.filename().string().c_str());
-			return false;
-		}
-
 		fileToBuffer(file,contents);
 
 		begin = contents.begin();

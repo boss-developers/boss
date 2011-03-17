@@ -17,7 +17,8 @@ namespace boss {
 	ofstream bosslog;					//BOSSlog.txt - output file.
 
 	const fs::path data_path			= fs::path("..") / "Data";
-	const fs::path bosslog_path			= "BOSSlog.html";
+	const fs::path bosslog_html_path	= "BOSSlog.html";
+	const fs::path bosslog_text_path	= "BOSSlog.txt";
 	const fs::path masterlist_path		= "masterlist.txt";
 	const fs::path userlist_path		= "userlist.txt";
 	const fs::path curr_modlist_path	= "modlist.txt";

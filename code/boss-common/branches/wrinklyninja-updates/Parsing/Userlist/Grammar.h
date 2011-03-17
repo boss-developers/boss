@@ -107,16 +107,16 @@ namespace boss {
 	static format EUnrecognizedKeywordBeforeFirstRule("The line \"%1%: %2%\" does not contain a recognised keyword, and appears before the first recognised rule line. Line skipped.");
 
 	//Syntax error formatting.
-	static format SyntaxErrorFormat("<p class='%1%'>"
+	static format SyntaxErrorFormat("{p=%1%]"
 		"Syntax Error: The rule beginning \"%2%: %3%\" %4%"
-		"</p>");
+		"[p}");
 
-	static format ParsingErrorFormat("<p class='%1%'>"
+	static format ParsingErrorFormat("{p=%1%]"
 		"Parsing Error: Expected a %2% at \"%3%\". Userlist parsing aborted. No rules will be applied."
-		"</p>");
+		"[p}");
 
 	void AddSyntaxError(keyType const& rule, string const& object, format const& message) {
-		string keystring = GetKeyString(rule);
+		string keystring = KeyToString(rule);
 		string const msg = (SyntaxErrorFormat % "error" % keystring % object % message.str()).str();
 		messageBuffer.push_back(msg);
 		return;

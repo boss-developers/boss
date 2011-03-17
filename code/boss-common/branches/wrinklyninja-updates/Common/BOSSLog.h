@@ -30,46 +30,47 @@
 
 namespace boss {
 	namespace unicode = boost::spirit::unicode;
-	namespace qi = boost::spirit::qi;
     namespace karma = boost::spirit::karma;
 
 	using namespace std;
 
-	enum formatType {
-		HTML,
-		PLAINTEXT
-	};
+	using karma::eol;
+	using karma::lit;
+	using karma::omit;
+	using karma::eps;
 
-	enum outputElement {
-		br,
-		block,
-		para,
-		span,
-		ul,
-		li,
-		link,
-		b,
-		i,
-		end
-	};
-
-	enum outputClass {
-		title,
-		error,
-		success,
-		warn,
-		version,
-		ghosted,
-		tags
-	};
+	using unicode::char_;
+	using unicode::upper;
+	using unicode::digit;
 
 	//Prints a given message to the bosslog, using format-safe Output function below.
-	void ShowMessage(ofstream &log, formatType format, message currentMessage);
+	void ShowMessage(ofstream &log, string format, message currentMessage);
 
 	//Prints ouptut with formatting according to format.
-	void Output(ofstream &log, formatType format, string text);
+	void Output(ofstream &log, string format, string text);
 
 	//Prints header if format is HTML, else nothing.
-	void OutputHeader(ofstream &log, formatType format);
+	void OutputHeader(ofstream &log, string format);
+
+	//Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
+	string IntToString(int n);
+
+	//Spirit.Karma Generator
+	template <typename OutputIterator>
+	struct bosslog_html_grammar : karma::grammar<OutputIterator, string()>
+	{
+		bosslog_html_grammar() : bosslog_html_grammar::base_type(start, "bosslog_grammar")
+		{
+
+			// Rule definitions
+			start = +char_;
+		}
+
+		karma::rule<OutputIterator, string()> charString;
+		karma::rule<OutputIterator, string()> element;
+
+		karma::rule<OutputIterator, string()> start;
+		// more rule declarations...
+	};
 }
 #endif
