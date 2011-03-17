@@ -37,10 +37,10 @@
 	
 	<div id="features"><span>Features &amp; Introduction</span>
 	<ul>
-		<li>Correctly positions over 11,000 Oblivion mods and counting, including all the mod files found in such popular mods as FCOM, OOO, MMM, Better Cities, Open Cities, Race Balancing Project and many other large mods.</li>
+		<li>Correctly positions over 11,400 Oblivion mods and counting, including all the mod files found in such popular mods as FCOM, OOO, MMM, Better Cities, Open Cities, Race Balancing Project and many other large mods.</li>
 		<li>For Oblivion, it can provide specific messages for when using OOO and Better Cities, and differentiates between FCOM and non-FCOM setups. It also detects common FCOM installation mistakes and warns the user about them.</li>
-		<li>Correctly positions over 1,800 Fallout 3 mods and counting.
-		<li>Correctly positions over 1,500 Fallout: New Vegas mods and counting.
+		<li>Correctly positions over 2,300 Fallout 3 mods and counting.
+		<li>Correctly positions over 1,800 Fallout: New Vegas mods and counting.
 		<li>Provides support for sorting mods used in Nehrim - At Fate's Edge installs.</li>
 		<li>Provides useful load order notes for many mods.</li>
 		<li>Displays the version number of mods when it is available.</li>
@@ -80,7 +80,7 @@
 	<br /><span class="subtitle">Command Line Arguments</span>
 	<p>BOSS has a number of command-line arguments. The syntax is:</p>
 	<div>
-	<p><code>boss [-hVuosnd] [-g game] [-r [level]] [-v [level]]</code></p>
+	<p><code>boss [-hVuosndc] [-g [game]] [-r [level]] [-v [level]] [-f [type]]</code></p>
 	<p><code>-h [ --help ]</code></p>
 	<p>This prints a short description of BOSS and some information on the function of the command line arguments, then exits.</p>
 	<p><code>-V [ --version ]</code></p>
@@ -91,8 +91,8 @@
 	<p><code>-o [ --only-update ]</code></p>
 	<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then does NOT sort your mods. Since this replaces your current 
 	masterlist, don't run this if you have an edited copy and wish to keep the changes.</p>
-	<p><code>-g [ --game ] game</code></p>
-	<p>Overrides game autodetection. The valid values of the argument are valid values are: 'Oblivion', 'Nehrim', 'Fallout3', and 'Fallout3NV'. This only allows the masterlist to be updated, so should be used in conjunction with -o or BOSS will still fail before any mods are sorted
+	<p><code>-g [ --game ] [ game ]</code></p>
+	<p>Overrides game autodetection. The valid values of the argument are: 'Oblivion', 'Nehrim', 'Fallout3', and 'Fallout3NV'. This only allows the masterlist to be updated, so should be used in conjunction with -o or BOSS will still fail before any mods are sorted
 	if the game you specify is not the game BOSS is installed for, or no game is present.</p>
 	<p><code>-s [ --silent ]</code></p>
 	<p>Stops BOSS from automatically opening up the BOSSlog in your web browser after it has finished running.</p>
@@ -106,6 +106,11 @@
 	<p>Specify verbosity level (0-3). 0 is the default, showing only warning and error messages. 1 (warning, error and informational messages) is implied if this option is specified without an argument. Higher values increase the verbosity further.</p>
 	<p><code>-d [ --debug ]</code></p>
 	<p>Adds source file references (filenames and line numbers) to logging statements.</p>
+	<p><code>-c [ --crc-display ]</code></p>
+	<p>Calculates the CRCs of all the plugins in your Data folder and displays them in your BOSSlog alongside the plugin names. The CRCs can be used in masterlist conditionals, as a highly precise method of version checking.</p>
+	<p><code>-f [ --format ] [ type ]</code></p>
+	<p>Allows the selection of the BOSSlog format. Valid argument values are: 'html' and 'text'. 'html' is the default output format used when this argument is not present.</p>
+	
 	</div><br />
 	<br /><span class="subtitle">BOSS Changes and Files</span>
 	<p>The only changes BOSS makes to your game install are to re-date the .esp and .esm files in your Data folder, and create a few text files in your BOSS folder. Your game's master file (Oblivion.esm, Fallout3.esm, Nehrim.esm or FalloutNV.esm) 
@@ -129,13 +134,12 @@
 		<li>Then save the file and run it to revert your load order back two levels.</li>
 	</p></div><br />
 	<br /><span class="subtitle">Customising How BOSS Works</span>
-	<p>The best way that users can customise how BOSS works is by using the included User Rules feature. This feature allows you to define the positions of mods not in the masterlist, and to override the masterlist positions of mods,
+	<p>Users can customise how BOSS works through the included User Rules feature. This feature allows you to define the positions of mods not in the masterlist, and to override the masterlist positions of mods,
 	as well as edit the output messages of mods, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes shall not be lost. All the information on the User Rules feature can be found in the "BOSS User Rules ReadMe.html" file.</p>
-	<p>An alternative is to use the <a href="http://www.tesnexus.com/downloads/file.php?id=29790">BOSS Master List Manager (BOMM)</a> by Surazal, which is a Word 2003, 2007 and 2010 Macro that provides similar features, and is compatible with both Oblivion and Fallout 3.</p>
 	</div><br /><br />
 	
 	<div id="help"><span>Contributions &amp; Help</span>
-	<p>General discussion, and the submission of questions, suggestions and unrecognised mods, takes place in BOSS's official threads for <a href="http://forums.bethsoft.com/?showtopic=1126021">Oblivion</a>, <a href="http://forums.bethsoft.com/?showtopic=1132338">Nehrim</a>, <a href="http://forums.bethsoft.com/?showtopic=1098111">Fallout 3</a> and <a href="http://forums.bethsoft.com/?showtopic=1135308">Fallout: New Vegas</a>.</p>
+	<p>General discussion, and the submission of questions, suggestions and unrecognised mods, takes place in BOSS's official threads for <a href="http://forums.bethsoft.com/?showtopic=1167297">Oblivion</a>, <a href="http://forums.bethsoft.com/?showtopic=1132338">Nehrim</a>, <a href="http://forums.bethsoft.com/?showtopic=1098111">Fallout 3</a> and <a href="http://forums.bethsoft.com/?showtopic=1173252">Fallout: New Vegas</a>.</p>
 	<p>User contribution of additions and corrections to the masterlist are vital to the upkeep of BOSS. Let us know what you know.</p>
 	<p>Lists of unrecognised mods are welcome but the only way we can include them in the database in a timely way is if we get:</p>
 	<ul>
@@ -155,7 +159,7 @@
 	<p>Under some circumstances, BOSS may not be able to run properly due to a variety of reasons. In such cases, BOSS should be able to provide an error message detailing the type of fault. If the program unexpectedly crashes, the crash and the circumstances in which it occurred should be reported to the official BOSS thread (linked to in the <em>Quick Links</em> section below), so that we may fix it.
 	Here is a list of the error messages and their common causes:</p>
 	<ul>
-		<li><b>Message:</b> ERROR: file '<em>filename</em>' could not be accessed for writing;<div style="height:0.65em;"></div>
+		<li><b>Message:</b> ERROR: file '<em>filename</em>' could not be accessed for writing.<div style="height:0.65em;"></div>
 		<ul>
 			<li><b>Issue:</b> BOSS does not have permission to write to the given file if it exists.</li>
 			<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
@@ -168,13 +172,6 @@
 			<li><b>Solution:</b> Move the BOSS folder containing all of BOSS's files into your game's installation folder, which is the one that contains the Data folder.</li>
 			<li><b>Issue:</b> Your master .ESM file is deactivated and ghosted by Wrye Bash/Flash.</li>
 			<li><b>Solution:</b> Re-activate your master .ESM file.</li>
-		</ul>
-		</li>
-		<br />	
-		<li><b>Message:</b> Critical Error: Master .ESM file cannot be read!<div style="height:0.65em;"></div>
-		<ul>
-			<li><b>Issue:</b> This error should never occur. If you see it, please report it to the BOSS team as soon as possible.</li>
-			<li><b>Solution:</b> If this error is displayed, it means that your master .ESM file exists, but its date cannot be read. This can only take place under very specialised circumstances, such as corruption of your master .ESM file, and probably means you will have to seek expert help.</li>
 		</ul>
 		</li>
 		<br />
@@ -191,8 +188,9 @@
 		<br />
 		<li><b>Message:</b> Critical Error: <em>filename</em> cannot be read!<div style="height:0.65em;"></div>
 		<ul>
-			<li><b>Issue:</b> Your masterlist.txt does not exist, or is in the wrong place.</li>
-			<li><b>Solution:</b> Make sure that your masterlist.txt is in your BOSS folder, or use the masterlist updater to download a new masterlist to the correct place.</li>
+			<li><b>Issue:</b> <em>filename</em> does not exist, is in the wrong place, or is corrupt in some way.</li>
+			<li><b>Solution:</b> If <em>filename</em> is your game's master .ESM file and this error is displayed, it means that your master .ESM file exists, but its date cannot be read. This can only take place under very specialised circumstances, such as corruption of your master .ESM file, and probably means you will have to seek expert help.</li>
+			<li><b>Solution:</b> If <em>filename</em> is 'masterlist.txt' and this error is displayed, make sure that your masterlist.txt is in your BOSS folder, or use the masterlist updater to download a new masterlist to the correct place.</li>
 		</ul>
 		</li>
 		<br />
@@ -203,14 +201,7 @@
 		</ul>
 		</li>
 		<br />
-		<li><b>Message:</b> Error: UTF-16 encoding detected. No rules will be applied. Re-save your userlist.txt in UTF-8 encoding.<div style="height:0.65em;"></div>
-		<ul>
-			<li><b>Issue:</b> BOSS has detected that your userlist.txt is saved using the wrong encoding, and is unable to read it.</li>
-			<li><b>Solution:</b> Re-save your userlist.txt in the correct "UTF-8" encoding. If you are unsure on how to do so, please see the instructions below on how to do so.</li>
-		</ul>
-		</li>
-		<br />
-		<li><b>Message:</b> Error: The line "<em>line</em>" is not valid UTF-8. No rules will be applied. Re-save your userlist.txt in UTF-8 encoding.<div style="height:0.65em;"></div>
+		<li><b>Message:</b> Critical Error: "<em>filename</em>" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.<div style="height:0.65em;"></div>
 		<ul>
 			<li><b>Issue:</b> BOSS has detected that your userlist.txt is saved using the wrong encoding, and is unable to read it.</li>
 			<li><b>Solution:</b> Re-save your userlist.txt in the correct "UTF-8" encoding. If you are unsure on how to do so, please see the instructions below on how to do so.</li>
@@ -220,33 +211,32 @@
 	<br />
 	<p>In addition to the specific error messages above, BOSS may also fail to work properly, or appear to do so, for a few general reasons:</p>
 	<ul>
-		<li><b>Symptom:</b> BOSS won't run.<div style="height:0.65em;"></div>
-		<ul>
-			<li><b>Issue:</b> Using BOSS version under 1.7.</li>
-			<li><b>Solution:</b> Update to version 1.7.</li>
-		</ul>
-		</li>
-		<br />
 		<li><b>Symptom:</b> No change in load order.<div style="height:0.65em;"></div>
 		<ul>
 			<li><b>Issue:</b> Wrye Bash's "Lock Times" load order locking feature is enabled.</li>
 			<li><b>Solution:</b> Disable "Lock Times" before running BOSS.</li>
 		</ul>
 		</li>
+		<br />
+		<li><b>Symptom:</b> BOSS does not change/update the BOSSlog and/or modlists correctly.<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> The BOSSlog and/or modlists are read-only, or the BOSS folder is read-only.</li>
+			<li><b>Solution:</b> Ensure that the BOSS folder and any files in it are not read-only.</li>
+		</ul>
+		</li>
 	</ul>
 	<br />
-	<p>The BOSS folder and all the files in it must not be read-only. If a file in this folder, or the folder itself, is read-only, BOSS will not function correctly, resulting in some of the errors listed above.</p>
-	<p>BOSS provides support for sorting mods containing characters from any language via the Unicode character encoding, specifically UTF-8. Your userlist must therefore be encoded in UTF-8 to ensure that BOSS reads it correctly, although an ANSI-encoded userlist containing only ASCII characters will also work. To save your userlist in the UTF-8 encoding, follow these instructions:</p>
-	<p>
+	<p>BOSS provides support for sorting mods containing characters from any language via the Unicode character encoding, specifically UTF-8. Your userlist must therefore be encoded in UTF-8 to ensure that BOSS reads it correctly. To save your userlist in the UTF-8 encoding, follow these instructions:</p>
 	<ol>
 		<li>Open your userlist.txt in Notepad.</li>
 		<li>Open the "File" menu, then select "Save As...".</li>
 		<li>In the Save As dialog window that opens, there is a drop-down list labelled "Encoding:". Select "UTF-8" from this list.</li>
 		<li>Click the "Save" button, answering "Yes" to any confirmation prompts.</li>
 	</ol>
-    <p>If you are running Windows Vista or Windows 7, also in some situations limited users accounts on XP, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:</p>
+	<p>The modlists and masterlist must also be encoded in UTF-8, but they should automatically be encoded correctly when BOSS creates them.</p>
+    <p>If you are running Windows Vista or Windows 7, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:</p>
 	<ol>
-		<li>Install the game outside the Program Files (or Program Files (x86) folder if on 64 bit Windows). UAC prevents unauthorised edits to these folders, so by installing the game outside of them, you remove it from UAC's reach, allowing you to use mods more easily.</li>
+		<li>Install the game outside the "Program Files" (or "Program Files (x86)" if on 64-bit Windows). UAC prevents unauthorised edits to these folders, so by installing the game outside of them, you remove it from UAC's reach, allowing you to use mods more easily.</li>
 		<li>Deactivate UAC. This can be done from the Control Panel, and will turn UAC off across the whole of your computer. It is up to you whether you feel that you have adequate security measures in place to do this without risk.</li>
 		<li>Give yourself Full Control permissions over your game install folder. This will allow you to make any edits you desire while keeping UAC active and on guard for any edits made by programs you do not run, and also means that you do not need to reinstall your game to a new location.</li>
 		<li>Run BOSS as an Administrator. Right-click the BOSS.exe, and select "Run as administrator".</li>
@@ -259,25 +249,36 @@
 		<li>In the lower box, check the box opposite "Full Control" in the "Allow" column. Press OK to exit. If a UAC prompt appears, allow the change.</li>
 		<li>In the Properties window, select OK to exit. You should now have Full Control permissions over your chosen folder.</li>
 	</ol>
-	<p>For dealing with limited accounts on XP you can run this console command: <code>cacls drive:\path to relevant folder\*.* /e /t /p users:c</code>. However note that if you set it wrong it can mess things up so if you decide to do so, use care (and do so at your own risk).
 	<p>If the above information does not help you to solve any problems you are experiencing, please seek further support in one of the official BOSS threads.</div><br /><br />
 	
 	<div id="linux"><span>Running BOSS Under Linux</span>
 	<p>It is possible to run BOSS on Linux through the Wine compatibility layer, though no official support for doing so is given. Installation and usage is as on Windows. While all the features work as they do in Windows, there are a few issues:</p>
 	<ul>
 		<li>BOSS runs noticeably slower on Linux through Wine than it does natively on Windows.</li>
-		<li>The BOSSlog is not automatically displayed once BOSS has run. In this case, you will have to open <code>Data/BOSS/BOSSlog.html</code> manually to see it.</li>
+		<li>The BOSSlog is not automatically displayed once BOSS has run. In this case, you will have to open <code>BOSS/BOSSlog.html</code> manually to see it.</li>
 	</ul>
-	<p>It is also possible to compile BOSS from the source code as a native application on Linux. Again, no support is given for doing so, and this has the disadvantage of making the masterlist case-sensitive, so if the case of a plugin's name in the masterlist does not match the case of the plugin in your Data folder, it will remain unrecognised. If you come across any such plugins, let us know and we will update the masterlist to use the correct case.</p>
-	<p>The BOSS Team does not supply pre-compiled Linux binaries or instructions for building BOSS in Linux at this time, although a makefile is included in the source code to ease the process.</p>
+	<p>It is also possible to compile BOSS from the source code as a native application on Linux. Again, no support is given for doing so. The BOSS Team does not supply pre-compiled Linux binaries or instructions for building BOSS in Linux at this time, although a makefile is included in the source code to ease the process.</p>
 	</div><br /><br />
 	
 	<div id="credits"><span>Credits</span>
-	<p>Sources for the mod list and its order include: Agiel's Annotated Load Order; Fivefries load order; dev_akm's official expanded FCOM load order (FCOM 0.9.9); suggestions and instructions from Mart's Monster Mod, 
-	Better Cities, Open Cities and Open Better Cities developers; suggestions and instructions from many other modders; lots of advice and information from users. Some people have gone out of their way and provided 
-	continuing, expert and detailed help - thank you very much!</p>
-	<p>Thanks go to Wrye and the rest of the Wrye Bash Team for implementing the importing of BOSS's Bashed Patch tag suggestions into <a href="http://wrye.ufrealms.net/Wrye%20Bash.html">Wrye Bash</a>.</p>
-	<p>Thanks also go to the Beta Testing &amp; Analysis Guild at TESAlliance and Surazal for testing and giving feedback on v1.6 prior to release. Thanks also go to myk002 for extensive code contributions and Hickory for the BOSS icon.</p>
+	<p>As BOSS is very much a community project, credit is due to a very large number of sources and people outside of the BOSS Team. Credit goes to the following:
+	<p>For load order information:</p>
+	<ul>
+		<li>Agiel's Annotated Load Order.</li>
+		<li>Fivefries load order.</li>
+		<li>dev_akm's expanded FCOM load order.</li>
+		<li>The Martigen's Monster Mod Team.</li>
+		<li>The Better Cities developers.</li>
+		<li>Many, many modders and users who have posted suggestions and instructions in the BOSS threads and on the Nexus sites.</li>
+	</ul>
+	<p>Some people have gone out of their way and provided continuing, expert and detailed help - thank you very much! In addition to the above, the following people are credited with additional non-load-order-related support:</p>
+	<ul>
+		<li>Wrye and the rest of the Wrye Bash Team: For implementing the importing of BOSS's Bashed Patch tag suggestions and general support for BOSS into <a href="http://wrye.ufrealms.net/Wrye%20Bash.html">Wrye Bash</a>.</li>
+		<li>The Beta Testing &amp; Analysis Guild at TESAlliance: For extensive testing and giving feedback on v1.6 prior to release.</li>
+		<li>Surazal: For extensive testing and feedback during developement of v1.6, and for providing the inspiration for many features through his BOSS Masterlist Manager macro for Microsoft Word.</li>
+		<li>myk002: For extensive code contributions and testing during development of v1.6+.</li>
+		<li>Hickory: For providing the icon used by the BOSS executable in v1.7.</li>
+	</ul>
 	</div><br /><br />
 	
 	<div id="team"><span>Project Members</span>
@@ -308,11 +309,13 @@
 		<li>SpaceOden</li>
 		<li>Mosanger</li>
 		<li>PacificMorrowind</li>
+		<li>Torrello</li>
 		<li>Valda</li>
 	</ul>
 	<b>Fallout: New Vegas Masterlist Developers</b>
 	<ul>
 		<li>Loucifer</li>
+		<li>Malonn</li>
 		<li>SpaceOden</li>
 		<li>Valda</li>
 	</ul>
@@ -329,7 +332,7 @@
 		<li>Random007</li>
 		<li>WrinklyNinja</li>
 	</ul>
-	<p>Most project members can be contacted on the Bethesda Game Studios forums, in the Oblivion Mods and Fallout 3 Mods sub-forums. Most can also be contacted on TES Nexus/Fallout 3 Nexus.</p>
+	<p>Most project members can be contacted on the Bethesda Game Studios forums, in the Oblivion Mods, Fallout 3 Mods and Fallout: New Vegas Mods sub-forums. Most can also be contacted on TES Nexus/Fallout 3/Fallout New Vegas Nexus.</p>
 	</div><br /><br />
 	
 	<div id="license"><span>License</span>
@@ -347,11 +350,10 @@
 	<p><a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">BOSS on Fallout 3 Nexus</a></p>
 	<a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">BOSS on New Vegas Nexus</a>
 	<p><a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code SVN repository</a></p>
-	<p><a href="http://forums.bethsoft.com/?showtopic=1126021">Official BOSS Oblivion thread</a></p>
+	<p><a href="http://forums.bethsoft.com/?showtopic=1167297">Official BOSS Oblivion thread</a></p>
 	<p><a href="http://forums.bethsoft.com/?showtopic=1132338">Official BOSS Nehrim thread</a></p>
 	<p><a href="http://forums.bethsoft.com/?showtopic=1098111">Official BOSS Fallout 3 thread</a></p>
-	<p><a href="http://forums.bethsoft.com/?showtopic=1135308">Official BOSS Fallout: New Vegas thread</a></p>
-	<p><a href="http://www.tesnexus.com/downloads/file.php?id=29790">BOSS Master List Manager</a></p>
+	<p><a href="http://forums.bethsoft.com/?showtopic=1173252">Official BOSS Fallout: New Vegas thread</a></p>
 	<p><a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative Commons Attribution Noncommercial No Derivative Works 3.0 Unported Copyright License</a></p>
 	<p>Due to a 200 maximum post limit, new official threads are created periodically (with the end of one thread providing a link to the next), so the links provided may refer to old 
 	threads when you read this. Just navigate through to the latest thread to post a message.</p>
@@ -362,20 +364,28 @@
 	<p>Only updates to the BOSS program are recorded here, not masterlist updates, as that is updated far too frequently to be concisely recorded. A full record of changes made to the masterlist may be viewed by browsing the Google Code repository.</p>
 	<p><b>Version 1.7</b></p>
 	<ul>
-		<li>Moved BOSS and all its files to the BOSS folder, which is moved to the game's installation directory, one level above the Data folder.</li>
-		<li>Implemented support for Unicode in BOSS, allowing the sorting of mods with international characters in their names.
+		<li>Fixed a bug in the masterlist updater causing the wrong masterlist version to be displayed.</li>
+		<li>Moved all BOSS's files into a new BOSS folder, located in the game's installation directory, one level above the Data folder.</li>
+		<li>Added two new command line parameters:
 		<ul><div style="height:0.65em;"></div>
-			<li>Switched from using ANSI/ASCII as the internal encoding of the BOSS program to UTF-8.</li>
-			<li>Converted the masterlists and modlists from ANSI to UTF-8 encoding.</li>
-			<li>Users' userlists must now be encoded in UTF-8 to ensure proper behaviour, though the ANSI encoding will also work provided only ASCII characters are used.</li>
-			<li>Added a UTF-8 validator to BOSS that will check the masterlist for any lines that don't have the correct characters and report them in the BOSSlog.</li>
+			<li>-g, --game [ game ]: Overrides game autodetection. To be used in conjunction with -o to allow updating of the masterlist on computers where the specified game is not installed.</li>
+			<li>-c, --crc-display: Enables calculation of plugin CRCs and displays them in the BOSSlog. CRCs can be used as accurate version checks in masterlist conditionals.</li>
 		</ul>
 		</li>
-		<li>Improved the formatting of the BOSSlog, improving ease of reading and presentation.</li>
-		<li>URLs displayed in the BOSSlog are now hyperlinks that can be clicked on to take you to the URL's page.</li>
-		<li>Added --game, -g &lt;game&gt; parameter to override game autodetection, allowing the update of the specified game's masterlist even if the game's master ESM file is not present.</li>
-		<li>Fixed the updater potentially showing the wrong version for the masterlist if the order of filea as listed on the repository web page was altered.</li>
-		<li>Added unique icon to BOSS executable, made by Hickory.</li>
+		<li>Switched to using the Unicode character encoding, allowing the sorting of mods with international characters in their names.
+		<ul><div style="height:0.65em;"></div>
+			<li>The BOSS program now uses the UTF-8 encoding for all its operations.</li>
+			<li>All BOSS files must now be encoded in UTF-8: this includes the modlists, masterlist and userlist.</li>
+			<li>Converted the masterlists and modlists to use the UTF-8 encoding.</li>
+			<li>Added a UTF-8 validator to ensure that the correct encoding for the required files is being used.</li>
+		</ul>
+		</li>
+		<li>Added a unique icon to the BOSS executable, made by Hickory.</li>
+		<li>Significant rewrite of source code, resulting in performance gains.</li>
+		<li>Implemented new	file parsers for the masterlist, modlists and userlist.</li>
+		<li>Added support for Masterlist Format 2, which offers an alternative syntax and a wide range of new features and capabilities.</li>
+		<li>Improved the formatting of the BOSSlog, making it more readable.</li>
+		<li>Links in the BOSSlog are now hyperlinks that can be clicked on to take you to the given URL.</li>
 	</ul>
 	<p><b>Version 1.65</b></p>
 	<ul>

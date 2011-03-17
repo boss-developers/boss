@@ -25,8 +25,7 @@
 		<li><a href="#syntax">Rule Definition Syntax</a></li>
 		<li><a href="#apply">Enforcing Your Rules</a></li>
 		<li><a href="#notes">Further Notes On Rules</a></li>
-		<li><a href="#messsages">The BOSS Message Format</a></li>
-		<li><a href="#bomm">Compatibility With BOSS Masterlist Manager (BOMM)</a></li>
+		<li><a href="#messages">The BOSS Message Format</a></li>
 	</ol>
 	</div><br /><br />
 
@@ -36,7 +35,7 @@
 	for different results (eg. LAME and Supreme Magicka files). You may also wish to add extra messages to mods, or edit existing messages.</p>
 	<p>One possible solution is to edit your copy of the masterlist to include the desired changes. However, as updating your masterlist will remove 
 	these edits, this is not very suitable as a long term solution.</p>
-	<p>This is where user rules comes in. Using a separate userlist file, you can define rules for sorting specific mods or groups of mods as you like, 
+	<p>This is where user rules come in. Using a separate userlist file, you can define rules for sorting specific mods or groups of mods as you like, 
 	as well as for adding or editing messages attached to mods, and these rules will not be lost when you update your masterlist.</p>
 	</div><br /><br />
   
@@ -44,8 +43,10 @@
 	<p style="color:purple">NOTE: In this readme, the words 'mod' and 'plugin' are used interchangeably, meaning 'one individual file with a .esp or 
 	.esm extension'. Unless explicitely stated, the 'name' of a 'mod' or 'plugin' refers to its filename, including the extension.<br /><br />
 	Also, while the examples in this ReadMe reference Oblivion and some of its mods, the functionality will work for all the games BOSS supports. When your game's master .ESM file is mentioned, this refers to Oblivion.esm, Nehrim.esm, Fallout3.esm or FalloutNV.esm for Oblivion, Nehrim, Fallout 3 or Fallout: New Vegas respectively.</p>
-	<p>The userlist is the file which contains your custom rules for sorting mods and editing mods' messages. It is found at <code>Data\BOSS\userlist.txt</code>. If it 
-	does not exist, simply create a new text file there with the same name. Make sure that the full filename is "userlist.txt" and not "userlist.txt.txt", as can sometimes occur if file extensions are hidden. Also make sure that when you save it, it is saved in the "UTF-8" encoding to ensure that BOSS can read it correctly. This is not Notepad's default encoding! See the Troubleshooting section of the main BOSS readme for details.</p>
+	<p>The userlist is the file which contains your custom rules for sorting mods and editing mods' messages. It is found at <code>BOSS\userlist.txt</code>. If it 
+	does not exist, simply create a new text file there with the same name.</p>
+
+	<p>Make sure that the full filename is "userlist.txt" and not "userlist.txt.txt", as can sometimes occur if file extensions are hidden. Also make sure that when you save it, it is saved in the "UTF-8" encoding to ensure that BOSS can read it correctly. This is not Notepad's default encoding! See the Troubleshooting section of the main BOSS readme for details.</p>
 	<p>Within this file, which you can edit in Notepad or any other text editor, you list your rule definitions. Rules can make two types of changes:
 	<ol class="list">
 		<li><em>Sort mods and groups.</em> You can:<div style="height:0.65em;"></div>
@@ -242,14 +243,9 @@
 		<li>If the rule includes a sort line and uses the sort keywords TOP or BOTTOM, it will print a message of the form: <code>"<em>Mod Name</em>" inserted into the <em>top/bottom</em> of group "<em>Group Name</em>".</code></li>
 		<li>If the rule includes one or more message lines, each message line will give a message of the form: <code>"<em>Message</em>" <em>appended to/replaced</em> messages attached to "<em>Mod Name</em>".</code></li>
 	</ol>
-	<p>If a rule is found to have errors in its syntax or it is found to add a mod that is already in the masterlist, it will print one or more error messages depending on the type of error:</p>
-	<ol>
-		<li>If the rule has the correct syntax, but adds a mod that is already in the masterlist, it will print a message of the form: <code>"<em>Mod Name</em>" is already in the masterlist. Rule skipped.</code></li>
-		<li>If the rule's sort mod is not installed, and is not in the masterlist, it will print a message of the form: <code>"<em>Mod Name</em>" is not installed, and is not in the masterlist. Rule skipped.</code></li>
-		<li>If the rule contains a keyword that is unrecognised (eg. written in lowercase, spelt wrong), it will print a message detailing the line with the error and will skip the last rule detected. If the line with the error is the first line of a new rule, that rule will also be skipped.</li>
-		<li>If the rule has one or more other syntax errors, it will print a list of them under a line of the form: <code>The rule beginning "<em>First Line Of Rule</em>" has been skipped as it has the following problem(s):</code> and then list below messages detailing the syntax errors.
-		</li>
-	</ol>
+	<p>If the parser finds a major grammatical error in your userlist, it will stop parsing and discard any rules it has found before printing an error message detailing the error and where it was found.</p>
+	<p>If a rule is found to have errors in its syntax, it will be skipped and an error message of the form: <code>Syntax Error: The rule beginning "<em>First Line Of Rule</em>" <em>details of error</em></code> will be printed to your BOSSlog.</p>
+	<p>If an error is encountered while trying to apply a rule, it will be skipped and an error message detailing the fault will be printed to your BOSSlog.</p>
 	<p><b>Rule application does not alter your masterlist.txt or userlist.txt.</b> This means that if you want to undo the application of
 	a rule, all you need to do is remove it from your userlist.txt and re-run BOSS.</p>
 	</div><br /><br />
@@ -292,33 +288,48 @@
 	</div><br /><br />
 	
 	<div id="messages"><span>The BOSS Message Format</span>
-	<p>Understanding the BOSS message format is important if you wish to edit mods' messages. Each of the seven message types begins with a 
-	<em>symbol code</em> that signifies what type of message it is, and then the message itself follows it. The message is just a standard line of text. 
-	In addition, Bash Tag suggestion comments also have a special syntax for the suggestions they include. The symbol codes for the different message 
-	types are:</p>
-	<p class="definition">%&nbsp;&nbsp;&nbsp;&nbsp;Bash Tag Suggestion</p>
-	<p class="definition">?&nbsp;&nbsp;&nbsp;&nbsp;General Comment</p>
-	<p class="definition">*&nbsp;&nbsp;&nbsp;&nbsp;Critical FCOM Install Error</p>
-	<p class="definition">:&nbsp;&nbsp;&nbsp;&nbsp;Installation Requirement</p>
-	<p class="definition">"&nbsp;&nbsp;&nbsp;&nbsp;Specific Incompatibility</p>
-	<p class="definition">$&nbsp;&nbsp;&nbsp;&nbsp;OOO specific comment. This will only be displayed if the user has OOO in their load order.</p>
-	<p class="definition">^&nbsp;&nbsp;&nbsp;&nbsp;Better Cities specific comment. This will only be displayed if the user has Better Cities in their load order.</p>
-	<p>The syntax for a Bash Tag suggestion is:<br /><br />
-	% {{BASH:list suggested tags separated by commas here}} you may also have some text here.</p>
+	<p>Understanding the BOSS message format is important if you wish to edit mods' messages. There are actually two masterlist formats, with different syntax for messages.
+	Format 1 is recognised by BOSS v1.5+, and Format 2 is recognised by BOSS v1.7+. If you are reading this, you can use either. Each of the seven message types begins with a 
+	<em>message symbol</em> or <em>message keyword</em> depending on the format used. The symbol/keyword is then followed by the message itself. The message is just a standard 
+	line of text. In addition, Bash Tag suggestion comments also have a special syntax for the suggestions they include.</p>
+	<p>The message symbols, keywords and corresponding message types are listen in the table below:</p>
+	<div style="float:left;">
+	<div style="border: 1px solid grey; width: 60px; padding: 5px; font-weight:bold;">Format 1</div>
+	<div style="border: 1px solid grey; width: 60px; padding: 5px;">%</div>
+	<div style="border: 1px solid grey; width: 60px; padding: 5px;">?</div>
+	<div style="border: 1px solid grey; width: 60px; padding: 5px;">&gt;*</div>
+	<div style="border: 1px solid grey; width: 60px; padding: 5px;">:</div>
+	<div style="border: 1px solid grey; width: 60px; padding: 5px;">"</div>
+	<div style="border: 1px solid grey; width: 60px; padding: 5px;">$</div>
+	<div style="border: 1px solid grey; width: 60px; padding: 5px;">^</div>
+	</div>
+	<div style="float:left;">
+	<div style="border: 1px solid grey; width: 130px; padding: 5px; font-weight:bold;">Format 2</div>
+	<div style="border: 1px solid grey; width: 130px; padding: 5px;">TAG:</div>
+	<div style="border: 1px solid grey; width: 130px; padding: 5px;">SAY:</div>
+	<div style="border: 1px solid grey; width: 130px; padding: 5px;">IF ($FCOM) ERROR:</div>
+	<div style="border: 1px solid grey; width: 130px; padding: 5px;">REQ:</div>
+	<div style="border: 1px solid grey; width: 130px; padding: 5px;">INC:</div>
+	<div style="border: 1px solid grey; width: 130px; padding: 5px;">IF ($OOO) SAY:</div>
+	<div style="border: 1px solid grey; width: 130px; padding: 5px;">IF ($BC) SAY:</div>
+	</div>
+	<div style="float:left;">
+	<div style="border: 1px solid grey; padding: 5px; font-weight:bold;">Description</div>
+	<div style="border: 1px solid grey; padding: 5px;">Bash Tag Suggestion</div>
+	<div style="border: 1px solid grey; padding: 5px;">General Comment</div>
+	<div style="border: 1px solid grey; padding: 5px;">Critical FCOM Install Error</div>
+	<div style="border: 1px solid grey; padding: 5px;">Installation Requirement</div>
+	<div style="border: 1px solid grey; padding: 5px;">Specific Incompatibility</div>
+	<div style="border: 1px solid grey; padding: 5px;">OOO specific comment. This will only be displayed if the user has OOO in their load order.</div>
+	<div style="border: 1px solid grey; padding: 5px;">Better Cities specific comment. This will only be displayed if the user has Better Cities in their load order.</div>
+	</div>
+	<p style="clear:both;"><br />The syntax for a Bash Tag suggestion is:<br /><br />
+	% {{BASH:list suggested tags separated by ", " here}} you may also have some text here.<br />
+	or:<br />
+	TAG: {{BASH:list suggested tags separated by ", " here}} you may also have some text here.</p>
 	<p>For example:</p>
-	<blockquote><code>% {{BASH:Names,Graphics}} to prevent changes being lost when using overhauls.</code></blockquote>
+	<blockquote><code>% {{BASH:Names, Graphics}} to prevent changes being lost when using overhauls.</code></blockquote>
+	<p>You can also mix the two formats, giving one message in one format and another message in the other. You are not restricted to using only one format.</p>
 	</div><br /><br />
-	
-	<div id="bomm"><span>Compatibility With BOSS Master List Manager (BOMM)</span>
-	<p>Since BOMM includes similar functionality, it would be advisable to only use one method of implementing user 
-	rules. If you decide to use both, due to BOMM rules altering the masterlist.txt and running before BOSS rules, the following occurs:</p>
-	<ol>
-		<li>All BOMM rules are applied.</li>
-		<li>If BOMM and BOSS both add a mod, the BOSS rule will be ignored, since BOMM already added it.</li>
-		<li>If BOMM and BOSS both override a mod position, the BOSS rule would override the changes made by the BOMM rule, and the mod would be moved to the BOSS position.</li>
-		<li>If BOMM and BOSS both append message(s) to a mod, all the BOMM and BOSS messages are applied, but BOSS messages are only visible in BOSSlog (as usual), whereas BOMM messages are visible in the masterlist too (as usual).</li>
-		<li>If BOMM and BOSS both override messages attached to a mod, the BOSS message overrides the BOMM message, though the BOMM message is still visible in the masterlist.</li>
-	</ol>
-	<div><br /><br />
 	</body>
 </html>
