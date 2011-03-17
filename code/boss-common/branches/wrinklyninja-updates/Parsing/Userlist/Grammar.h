@@ -25,6 +25,7 @@
 #include "Parsing/Data.h"
 #include "Parsing/Skipper.h"
 #include "Support/Helpers.h"
+#include "Support/Logger.h"
 #include "Common/Globals.h"
 #include "Common/BOSSLog.h"
 #include <sstream>
@@ -122,77 +123,68 @@ namespace boss {
 		return;
 	}
 
+	// Used to throw as exception when signaling a userlist syntax error, in order to make the code a bit more compact.
+	struct failure {
+		failure(keyType const& ruleKey, string const& ruleObject, format const& message) 
+			: ruleKey(ruleKey), ruleObject(ruleObject), message(message) {}
+
+		keyType ruleKey;
+		string ruleObject;
+		format message;
+	};
+
 	//Rule checker function, checks for syntax (not parsing) errors.
 	void RuleSyntaxCheck(vector<rule>& userlist, rule currentRule) {
 		bool skip = false;
-		keyType ruleKey = currentRule.ruleKey;
-		string ruleObject = currentRule.ruleObject;
-		if (IsPlugin(ruleObject)) {
-			if (!Exists(data_path / ruleObject)) {
-				AddSyntaxError(ruleKey, ruleObject, EPluginNotInstalled % ruleObject);
-				skip = true;
+		try {
+			keyType ruleKey = currentRule.ruleKey;
+			string ruleObject = currentRule.ruleObject;
+			if (IsPlugin(ruleObject)) {
+				if (!Exists(data_path / ruleObject))
+					throw failure(ruleKey, ruleObject, EPluginNotInstalled % ruleObject);
+				if (IsMasterFile(ruleObject))
+					throw failure(ruleKey, ruleObject, ESortingMasterEsm);
+			} else {
+				if (Tidy(ruleObject) == "esms")
+					throw failure(ruleKey, ruleObject, ESortingGroupEsms);
+				if (ruleKey == ADD && !IsPlugin(ruleObject))
+					throw failure(ruleKey, ruleObject, EAddingModGroup);
+				else if (ruleKey == FOR)
+					throw failure(ruleKey, ruleObject, EAttachingMessageToGroup);
 			}
-			if (IsMasterFile(ruleObject)) {
-				AddSyntaxError(ruleKey, ruleObject, ESortingMasterEsm);
-				skip = true;
-			}
-		} else {
-			if (Tidy(ruleObject) == "esms") {
-				AddSyntaxError(ruleKey, ruleObject, ESortingGroupEsms);
-				skip = true;
-			}
-			if (ruleKey == ADD && !IsPlugin(ruleObject)) {
-				AddSyntaxError(ruleKey, ruleObject, EAddingModGroup);
-				skip = true;
-			} else if (ruleKey == FOR) {
-				AddSyntaxError(ruleKey, ruleObject, EAttachingMessageToGroup);
-				skip = true;
-			}
-		}
-		for (size_t i=0; i<currentRule.lines.size(); i++) {
-			keyType key = currentRule.lines[i].key;
-			string subject = currentRule.lines[i].object;
-			if (key == BEFORE || key == AFTER) {
-				if (currentRule.ruleKey == FOR) {
-					AddSyntaxError(ruleKey, ruleObject, ESortLineInForRule);
-					skip = true;
-				}
-				if ((IsPlugin(ruleObject) && !IsPlugin(subject)) || (!IsPlugin(ruleObject) && IsPlugin(subject))) {
-					AddSyntaxError(ruleKey, ruleObject, EReferencingModAndGroup);
-					skip = true;
-				}
-				if (key == BEFORE) {
-					if (Tidy(subject) == "esms") {
-						AddSyntaxError(ruleKey, ruleObject, ESortingGroupBeforeEsms);
-						skip = true;
-					} else if (IsMasterFile(subject)) {
-						AddSyntaxError(ruleKey, ruleObject, ESortingModBeforeGameMaster);
-						skip = true;
+			for (size_t i=0; i<currentRule.lines.size(); i++) {
+				keyType key = currentRule.lines[i].key;
+				string subject = currentRule.lines[i].object;
+				if (key == BEFORE || key == AFTER) {
+					if (currentRule.ruleKey == FOR)
+						throw failure(ruleKey, ruleObject, ESortLineInForRule);
+					if ((IsPlugin(ruleObject) && !IsPlugin(subject)) || (!IsPlugin(ruleObject) && IsPlugin(subject)))
+						throw failure(ruleKey, ruleObject, EReferencingModAndGroup);
+					if (key == BEFORE) {
+						if (Tidy(subject) == "esms")
+							throw failure(ruleKey, ruleObject, ESortingGroupBeforeEsms);
+						else if (IsMasterFile(subject))
+							throw failure(ruleKey, ruleObject, ESortingModBeforeGameMaster);
 					}
-				}
-			} else if (key == TOP || key == BOTTOM) {
-				if (ruleKey == FOR) {
-					AddSyntaxError(ruleKey, ruleObject, ESortLineInForRule);
-					skip = true;
-				}
-				if (key == TOP && Tidy(subject)=="esms") {
-					AddSyntaxError(ruleKey, ruleObject, EInsertingToTopOfEsms);
-					skip = true;
-				}
-				if (!IsPlugin(ruleObject) || IsPlugin(subject)) {
-					AddSyntaxError(ruleKey, ruleObject, EInsertingGroupOrIntoMod);
-					skip = true;
-				}
-			} else if (key == APPEND || key == REPLACE) {
-				if (!IsPlugin(ruleObject)) {
-					AddSyntaxError(ruleKey, ruleObject, EAttachingMessageToGroup);
-					skip = true;
+				} else if (key == TOP || key == BOTTOM) {
+					if (ruleKey == FOR)
+						throw failure(ruleKey, ruleObject, ESortLineInForRule);
+					if (key == TOP && Tidy(subject)=="esms")
+						throw failure(ruleKey, ruleObject, EInsertingToTopOfEsms);
+					if (!IsPlugin(ruleObject) || IsPlugin(subject))
+						throw failure(ruleKey, ruleObject, EInsertingGroupOrIntoMod);
+				} else if (key == APPEND || key == REPLACE) {
+					if (!IsPlugin(ruleObject))
+						throw failure(ruleKey, ruleObject, EAttachingMessageToGroup);
 				}
 			}
+		} catch (failure const& e) {
+			skip = true;
+			AddSyntaxError(e.ruleKey, e.ruleObject, e.message);
+			string const keystring = KeyToString(e.ruleKey);
+			LOG_ERROR("Userlist Syntax Error: The rule beginning \"%s: %s\" %s", keystring.c_str(), e.ruleObject.c_str(), e.message.str().c_str());
 		}
-		if (skip)
-			skip = false;
-		else
+		if (!skip)
 			userlist.push_back(currentRule);
 		return;
 	}
