@@ -242,7 +242,7 @@ int main(int argc, char *argv[]) {
 	//Output start of <body>
 	Output(bosslog,format, "{div]Better Oblivion Sorting Software Log[div}");
 	Output(bosslog,format, "{div]{c} Random007 {&} the BOSS development team, 2009-2010. Some rights reserved.{br}");
-	Output(bosslog,format, "{a=\"http://creativecommons.org/licenses/by-nc-nd/3.0/CC\"]Attribution-Noncommercial-No Derivative Works 3.0[a}{br}");
+	Output(bosslog,format, "{a=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\"]CC Attribution-Noncommercial-No Derivative Works 3.0[a}{br}");
 	Output(bosslog,format, "v"+g_version+" ("+g_releaseDate+")[div}{br}{br}");
 
 	if (0 == game) {
