@@ -136,7 +136,7 @@ namespace boss {
 			replace_first(text, "{end}", "</body>\n</html>");
 			replace_first(text, "{c}", "&copy;");
 			replace_first(text, "{&}", "&amp;");
-			replace_first(text, "{ul]", "<ul>");
+			replace_first(text, "{ul]", "\n<ul>\n");
 			replace_first(text, "[ul}", "</ul>\n");
 			replace_first(text, "{b]", "<b>");
 			replace_first(text, "[b}", "</b>");

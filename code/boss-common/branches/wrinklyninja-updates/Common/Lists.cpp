@@ -27,9 +27,10 @@ namespace boss {
 	//Find a mod by name. Will also find the starting position of a group.
 	size_t GetModPos(vector<item> list, string filename) {
 		for (size_t i=0; i<list.size(); i++) {
-			if (Tidy(list[i].name.string()) == Tidy(filename)) {
+			if (Tidy(list[i].name.string()) == Tidy(filename))  //Look for exact match.
 				return i;
-			}
+			else if (Tidy(list[i].name.string()) == Tidy(filename + ".ghost"))  //Look for match with ghosted mod.
+				return i;
 		}
 		return (size_t)-1;
 	}
@@ -69,7 +70,7 @@ namespace boss {
 			for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
                 const fs::path filename = itr->path().filename();
 				const string ext = to_lower_copy(itr->path().extension().string());
-				if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm")) {
+				if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
 					LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());			
 					//Add file to modlist.
 					item mod;

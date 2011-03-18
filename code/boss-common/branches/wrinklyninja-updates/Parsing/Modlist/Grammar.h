@@ -94,7 +94,11 @@ namespace boss {
 		result = false;
 
 		if (Exists(data_path / mod)) {
-			string trueVersion = GetModHeader(data_path / mod);
+			string trueVersion;
+			if (IsGhosted(data_path / mod)) 
+				trueVersion = GetModHeader(data_path / fs::path(mod + ".ghost"));
+			else 
+				trueVersion = GetModHeader(data_path / mod);
 
 			switch (comp) {
 			case '>':
@@ -117,7 +121,12 @@ namespace boss {
 	void CheckSum(bool& result, int sum, string mod) {
 		result = false;
 		if (Exists(data_path / mod)) {
-			int CRC = GetCrc32(data_path / mod);
+			int CRC;
+			if (IsGhosted(data_path / mod)) 
+				CRC = GetCrc32(data_path / fs::path(mod + ".ghost"));
+			else
+				CRC = GetCrc32(data_path / mod);
+
 			if (sum == CRC)
 				result = true;
 		}

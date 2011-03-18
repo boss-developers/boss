@@ -129,18 +129,6 @@ namespace boss {
 		return string();
 	}
 
-/*	string Tidy(string filename) {						//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
-		
-		size_t endpos = filename.find_last_not_of(" \t");
-	
-		if (filename.npos == endpos) return (""); 			//sanity check for empty string
-		else {
-			filename = filename.substr(0, endpos+1);
-			for (unsigned int i = 0; i < filename.length(); i++) filename[i] = tolower(filename[i]);
-			return (filename);
-		}
-	}
-*/
 	int Launch(const string& filename)
 	{
 		const string cmd = launcher_cmd + " " + filename;
@@ -160,9 +148,9 @@ namespace boss {
 		return (object.find(".esp")!=string::npos || object.find(".esm")!=string::npos);
 	}
 
-	//Checks if a plugin exists.
+	//Checks if the plugin exists at the given location, even if ghosted.
 	bool Exists(const fs::path plugin) {
-		return (fs::exists(plugin));
+		return (fs::exists(plugin) || fs::exists(plugin.string() + ".ghost"));
 	}
 
 	//Reads the header from mod file and prints a string representation which includes the version text, if found.
@@ -206,5 +194,26 @@ namespace boss {
 			istream_iterator<char>(),
 			back_inserter(buffer)
 		);
+	}
+
+	//Removes the ".ghost" extension from ghosted filenames.
+	string TrimDotGhost(string plugin) {
+		fs::path pluginPath(plugin);
+		const string ext = to_lower_copy(pluginPath.extension().string());
+		if (ext == ".ghost")
+			return plugin.substr(0,plugin.length()-6);
+		else
+			return plugin;
+	}
+
+	//Checks if the given plugin is ghosted in the user's install.
+	bool IsGhosted(fs::path plugin) {
+		const string ext = to_lower_copy(plugin.extension().string());
+		if (ext != ".ghost")  //Doesn't have .ghost extension. Add it.
+			plugin = fs::path(plugin.string() + ".ghost");
+		if (fs::exists(plugin))
+			return true;
+		else
+			return false;
 	}
 }

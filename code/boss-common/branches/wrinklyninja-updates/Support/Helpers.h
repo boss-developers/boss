@@ -88,7 +88,7 @@ namespace boss {
 	//Checks if a given object is an esp or an esm.
 	bool IsPlugin(string object);
 	
-	//Checks if the plugin exists at the given location.
+	//Checks if the plugin exists at the given location, even if ghosted.
 	bool Exists(const fs::path plugin);
 
 	//Reads the header from mod file and prints a string representation which includes the version text, if found.
@@ -102,6 +102,13 @@ namespace boss {
 
 	//Reads an entire file into a string buffer.
 	void fileToBuffer(const fs::path file, string& buffer);
+
+	//Removes the ".ghost" extension from ghosted filenames. 
+	string TrimDotGhost(string plugin);
+
+	//Checks if the given plugin is ghosted in the user's install.
+	//NOT if the plugin given has a '.ghost' extension.
+	bool IsGhosted(fs::path plugin);
 }
 
 #endif

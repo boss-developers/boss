@@ -432,6 +432,15 @@ int main(int argc, char *argv[]) {
 				pos = GetModPos(Modlist,Item.name.string());  //Also remove it from the Modlist.
 				if (pos != (size_t)-1)
 					Modlist.erase(Modlist.begin()+pos);
+			} else {  //Mod not found. Look for ghosted mod.
+				setPos = hashset.find(Tidy(Item.name.string() + ".ghost"));
+				if (setPos != hashset.end()) {  //Mod found in hashset. Record it in the holding vector, with .ghost extension.
+					Item.name = fs::path(Item.name.string() + ".ghost");  //Add ghost extension to mod name.
+					holdingVec.push_back(Item);
+					pos = GetModPos(Modlist,Item.name.string());  //Also remove it from the Modlist.
+					if (pos != (size_t)-1)
+						Modlist.erase(Modlist.begin()+pos);
+				}
 			}
 		} else //Group lines must stay recorded.
 			holdingVec.push_back(Item);
@@ -641,17 +650,17 @@ int main(int argc, char *argv[]) {
 	for (size_t i=0; i<=x; i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			string text = "{b]" + Modlist[i].name.string();
+			string text = "{b]" + TrimDotGhost(Modlist[i].name.string());
 			if (!skip_version_parse) {
 				string version = GetModHeader(Modlist[i].name);
 				if (!version.empty())
 					text += " {span=version][Version "+version+"][span}";
 			}
 			text += "[b}";
-//			if (Modlist[i].name.string().find(".ghost") != string::npos) 
-//				text += " {span=ghosted] - Ghosted[span}";
+			if (IsGhosted(data_path / Modlist[i].name)) 
+				text += " {span=ghosted] - Ghosted[span}";
 			if (showCRCs)
-				text += " - Checksum: {i]" + IntToString(GetCrc32(data_path / Modlist[i].name)) + "[i}";
+				text += "{i] - Checksum: " + IntToString(GetCrc32(data_path / Modlist[i].name)) + "[i}";
 			Output(bosslog, format, text); 
 				
 			//Now change the file's date, if it is not the game's master file.
@@ -688,11 +697,11 @@ int main(int argc, char *argv[]) {
 	for (size_t i=x; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			string text = "Unknown mod file: " + Modlist[i].name.string();
-//			if (Modlist[i].name.string().find(".ghost") != string::npos) 
-//				text += " {span=ghosted] - Ghosted[span}";
+			string text = "Unknown mod file: " + TrimDotGhost(Modlist[i].name.string());
+			if (IsGhosted(data_path / Modlist[i].name)) 
+				text += " {span=ghosted] - Ghosted[span}";
 			if (showCRCs)
-				text += " - Checksum: {i]" + IntToString(GetCrc32(data_path / Modlist[i].name)) + "[i}";
+				text += "{i] - Checksum: " + IntToString(GetCrc32(data_path / Modlist[i].name)) + "[i}";
 			Output(bosslog, format, text); 
 
 			modfiletime=esmtime;
