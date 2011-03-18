@@ -69,7 +69,7 @@ namespace boss {
 			for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
                 const fs::path filename = itr->path().filename();
 				const string ext = to_lower_copy(itr->path().extension().string());
-				if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
+				if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm")) {
 					LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());			
 					//Add file to modlist.
 					item mod;

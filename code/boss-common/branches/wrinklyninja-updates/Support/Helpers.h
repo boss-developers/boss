@@ -79,30 +79,29 @@ namespace boss {
 		return value;
 	}
 
-	//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
-	string Tidy(string filename);
-
 	// Launches the specified file using the most appropriate program for viewing it.
 	int Launch(const string& filename);
 
-	//Checks if a given object is an esp, an esm or a ghosted mod.
+	//Changes uppercase to lowercase and removes preceding and trailing spaces.	
+	string Tidy(string text);
+
+	//Checks if a given object is an esp or an esm.
 	bool IsPlugin(string object);
 	
-	//Checks if the plugin is in the Data directory, even if ghosted.
-	bool Exists(fs::path plugin);
+	//Checks if the plugin exists at the given location.
+	bool Exists(const fs::path plugin);
 
-	/// GetModHeader(string textbuf):
-	///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
-	string GetModHeader(const fs::path& filename, bool ghosted);
+	//Reads the header from mod file and prints a string representation which includes the version text, if found.
+	string GetModHeader(const fs::path& filename);
 
 	//Calculate the CRC of the given file for comparison purposes.
 	int GetCrc32(const fs::path& filename);
 
 	//Determines if a given mod is a game's main master file or not.
-	bool IsMasterFile(string plugin);
+	bool IsMasterFile(const string plugin);
 
 	//Reads an entire file into a string buffer.
-	void fileToBuffer(fs::path file, string& buffer);
+	void fileToBuffer(const fs::path file, string& buffer);
 }
 
 #endif

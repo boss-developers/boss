@@ -641,24 +641,15 @@ int main(int argc, char *argv[]) {
 	for (size_t i=0; i<=x; i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			bool ghosted = false;
-			fs::path name;
-			string version;
-			if (Tidy(Modlist[i].name.string().substr(Modlist[i].name.string().length()-6))==".ghost") {
-				ghosted = true;
-				name = fs::path(Modlist[i].name.string().substr(Modlist[i].name.string().length()-6));
-			} else 
-				name = Modlist[i].name;
-			//Start outputting stuff to log.
-			string text = "{b]"+name.string();
+			string text = "{b]" + Modlist[i].name.string();
 			if (!skip_version_parse) {
-				version = GetModHeader(name, ghosted);
+				string version = GetModHeader(Modlist[i].name);
 				if (!version.empty())
 					text += " {span=version][Version "+version+"][span}";
 			}
 			text += "[b}";
-			if (ghosted) 
-				text += " {span=ghosted] - Ghosted[span}";
+//			if (Modlist[i].name.string().find(".ghost") != string::npos) 
+//				text += " {span=ghosted] - Ghosted[span}";
 			if (showCRCs)
 				text += " - Checksum: {i]" + IntToString(GetCrc32(data_path / Modlist[i].name)) + "[i}";
 			Output(bosslog, format, text); 
@@ -697,15 +688,13 @@ int main(int argc, char *argv[]) {
 	for (size_t i=x; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			if (Modlist[i].name.string().find(".ghost") != string::npos) 
-				Output(bosslog, format, "Unknown mod file: " + Modlist[i].name.string().substr(0,Modlist[i].name.string().length()-6) + " {span=ghosted] - Ghosted[span}");
-			else 
-				Output(bosslog, format, "Unknown mod file: " + Modlist[i].name.string());
-			if (showCRCs) {
-				stringstream out;
-				out << GetCrc32(data_path / Modlist[i].name);
-				Output(bosslog, format, " - Checksum: {i]" + out.str() + "[i}");
-			}
+			string text = "Unknown mod file: " + Modlist[i].name.string();
+//			if (Modlist[i].name.string().find(".ghost") != string::npos) 
+//				text += " {span=ghosted] - Ghosted[span}";
+			if (showCRCs)
+				text += " - Checksum: {i]" + IntToString(GetCrc32(data_path / Modlist[i].name)) + "[i}";
+			Output(bosslog, format, text); 
+
 			modfiletime=esmtime;
 			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.

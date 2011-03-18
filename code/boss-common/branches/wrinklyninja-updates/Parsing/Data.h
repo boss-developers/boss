@@ -55,8 +55,8 @@ namespace boss {
 				("ERROR",ERR)
 				//Old message symbols.
 				("?",SAY)
-				("$",OOOSAY)  //OOO comment - treat like a normal comment because trying to parse it as a conditional is a PITA.
-				("^",BCSAY)  //BC comment - treat like a normal comment because trying to parse it as a conditional is a PITA.
+				("$",OOOSAY)  //OOO comment
+				("^",BCSAY)  //BC comment
 				("%",TAG)
 				(":",REQ)
 				("\"",INC) //Incompatibility
@@ -65,7 +65,6 @@ namespace boss {
 		}
 	} masterlistMsgKey;
 
-	//There must be a better way to do this...
 	struct groupKey_ : qi::symbols<char, itemType> {
 		groupKey_() {
 			add
@@ -112,7 +111,6 @@ namespace boss {
 	struct ruleKeys_ : qi::symbols<char, keyType> {
 		ruleKeys_() {
 			add
-				//Userlist keywords.
 				("add",ADD)
 				("override",OVERRIDE)
 				("for",FOR)
@@ -123,7 +121,6 @@ namespace boss {
 	struct messageKeys_ : qi::symbols<char, keyType> {
 		messageKeys_() {
 			add
-				//Userlist keywords.
 				("append",APPEND)
 				("replace",REPLACE)
 			;
@@ -133,7 +130,6 @@ namespace boss {
 	struct sortKeys_ : qi::symbols<char, keyType> {
 		sortKeys_() {
 			add
-				//Userlist keywords.
 				("before",BEFORE)
 				("after",AFTER)
 				("top",TOP)

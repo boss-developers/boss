@@ -181,11 +181,11 @@ namespace boss {
 				pos1 = text.find("http",pos1 + 4);
 			}
 		}
-	/*	bosslog_html_grammar<string::iterator> grammar;
+		/*bosslog_html_grammar<back_insert_iterator<string>> grammar;
 		string generated;
-		string::iterator sink;
-		karma::generate(generated.begin(),grammar,text);
+		back_insert_iterator<string> sink(generated);
+		karma::generate(sink,grammar,text);
 		log << generated;
-	*/	log <<text;
+		*/log << text;
 	}
 }

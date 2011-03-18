@@ -141,40 +141,38 @@ namespace boss {
 		}
 	}
 */
-	string Tidy(string filename) {
-		boost::algorithm::trim(filename);
-		boost::algorithm::to_lower(filename);
-		return filename;
-	}
-
 	int Launch(const string& filename)
 	{
 		const string cmd = launcher_cmd + " " + filename;
 		return ::system(cmd.c_str());
 	}
 
-	//Checks if a given object is an esp, an esm or a ghosted mod.
+	//Changes uppercase to lowercase and removes preceding and trailing spaces.	
+	string Tidy(string filename) {
+		boost::algorithm::trim(filename);
+		boost::algorithm::to_lower(filename);
+		return filename;
+	}
+
+	//Checks if a given object is an esp or an esm.
 	bool IsPlugin(string object) {
 		to_lower(object);
 		return (object.find(".esp")!=string::npos || object.find(".esm")!=string::npos);
 	}
 
-	//Checks if a plugin exists, even if ghosted.
-	bool Exists(fs::path plugin) {
-		return (fs::exists(plugin) || fs::exists(plugin.native()+fs::path(".ghost").native()));
+	//Checks if a plugin exists.
+	bool Exists(const fs::path plugin) {
+		return (fs::exists(plugin));
 	}
 
-	/// GetModHeader(string textbuf):
-	///  - Reads the header from mod file and prints a string representation which includes the version text, if found.
-	///
-	string GetModHeader(const fs::path& filename, bool ghosted) {
+	//Reads the header from mod file and prints a string representation which includes the version text, if found.
+	string GetModHeader(const fs::path& filename) {
 
 	//	ostringstream out;
 		ModHeader header;
 
 		// Read mod's header now...
-		if (ghosted) header = ReadHeader(data_path / fs::path(filename.string()+".ghost"));
-		else header = ReadHeader(data_path / filename);
+		header = ReadHeader(data_path / filename);
 
 		// The current mod's version if found, or empty otherwise.
 		string version = header.Version;
@@ -193,12 +191,12 @@ namespace boss {
 	}
 
 	//Determines if a given mod is a game's main master file or not.
-	bool IsMasterFile(string plugin) {
+	bool IsMasterFile(const string plugin) {
 		return (Tidy(plugin)=="oblivion.esm") || (Tidy(plugin)=="fallout3.esm") || (Tidy(plugin)=="nehrim.esm") || (Tidy(plugin)=="falloutnv.esm");
 	}
 
 	//Reads an entire file into a string buffer.
-	void fileToBuffer(fs::path file, string& buffer) {
+	void fileToBuffer(const fs::path file, string& buffer) {
 		ifstream ifile(file.c_str());
 		if (ifile.fail())
 			return;
