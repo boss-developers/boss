@@ -23,8 +23,10 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
+	//Parses userlist into the given data structure.
 	bool parseUserlist(fs::path file, vector<rule>& ruleList);
 
+	//Parses the given masterlist into the given data structure. Also works for the modlist.
 	bool parseMasterlist(fs::path file, vector<item>& modList);
 
 	//UTF-8 Validator

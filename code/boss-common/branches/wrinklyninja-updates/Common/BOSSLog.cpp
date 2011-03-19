@@ -11,15 +11,15 @@
 
 #include "BOSSLog.h"
 #include <boost/algorithm/string.hpp>
-
+#include <boost/spirit/include/karma.hpp>
 /*
-BOSSLog output notes.
+BOSSLog generic output formatting notes.
 
-The generic symbols could be given in the form: {<type>}
-Symbols for formatting which wraps text could be given as {<type>] ... [<type>}
-Some wrapping formatting needs specific type identifiers (ie. classes, links). Perhaps: 
-{<type>=<class>]
-{a=<link>]
+Non-wrapping formatting: {<type>}
+Wrapping formatting: {<type>]...{<type>}
+Classes given by: {<type>=<class>]...[<type>}
+Links given by: {a="<link>"]...[link}
+
 HTML element names are used because HTML is both precisely defined and is the default formatting.
 Plaintext syntax is not derived straight from HTML tags because the generic syntax is simply shorter.
 
@@ -38,8 +38,7 @@ Elements:
 || <b>...</b>			|| ...				|| {b]				||
 || <i>...</i>			|| ...				|| {i]				||
 
-
-Only the opening general syntax is shown, all but {br} and {end} also have a closing counterpart.
+Only the generic opening syntax is shown.
 Elements can be supplied with classes, these do nothing for plaintext output, but are used as CSS classes for HTML output.
 Not sure how to translate non-class CSS into plaintext formatting yet.
 
@@ -51,14 +50,13 @@ Special characters:
 
 The ouput strings can be passed to a function that will somehow convert the general syntax into format-specific syntax.
 Spirit.Karma may be used. ATM it's just replace functions.
-
-Links are a bit tricky. They are currently broken.
 */
 
 namespace boss {
 	using namespace std;
 	using boost::algorithm::replace_all;
 	using boost::algorithm::replace_first;
+	namespace karma = boost::spirit::karma;
 
 	void ShowMessage(ofstream &log, string format, message currentMessage) {
 		size_t pos1,pos2;
@@ -181,11 +179,6 @@ namespace boss {
 				pos1 = text.find("http",pos1 + 4);
 			}
 		}
-		/*bosslog_html_grammar<back_insert_iterator<string>> grammar;
-		string generated;
-		back_insert_iterator<string> sink(generated);
-		karma::generate(sink,grammar,text);
-		log << generated;
-		*/log << text;
+		log << text;
 	}
 }

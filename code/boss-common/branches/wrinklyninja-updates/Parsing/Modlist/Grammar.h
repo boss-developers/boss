@@ -27,7 +27,6 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/home/phoenix/object/construct.hpp>
 #include <boost/spirit/include/phoenix_bind.hpp>
-#include <boost/spirit/home/phoenix/container.hpp>
 #include <boost/unordered_set.hpp>
 
 namespace boss {
@@ -58,18 +57,10 @@ namespace boss {
 
 	boost::unordered_set<string> setVars;  //Vars set by masterlist.
 	boost::unordered_set<string>::iterator pos;
-	bool skipItem = false, skipMessage = false;
-
+	bool storeItem = true, storeMessage = true;
 	vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in old format.
 
-	void path(fs::path& p, string const itemName) {
-		if (itemName.length() == 0 && openGroups.size() > 0) 
-			p = fs::path(openGroups.back());
-		else
-			p = fs::path(itemName);
-		return;
-	}
-
+	//Checks if a masterlist variable is defined.
 	void CheckVar(bool& result, string var) {
 		if (setVars.find(var) == setVars.end())
 			result = false;
@@ -78,14 +69,7 @@ namespace boss {
 		return;
 	}
 
-	void CheckMod(bool& result, string var) {
-		if (Exists(data_path / var))
-			result = true;
-		else
-			result = false;
-		return;
-	}
-
+	//Checks if the given mod has a version for which the comparison holds true.
 	void CheckVersion(bool& result, string var) {
 		char comp = var[0];
 		size_t pos = var.find("|") + 1;
@@ -118,6 +102,7 @@ namespace boss {
 		return;
 	}
 
+	//Checks if the given mod has the given checksum.
 	void CheckSum(bool& result, int sum, string mod) {
 		result = false;
 		if (Exists(data_path / mod)) {
@@ -133,33 +118,33 @@ namespace boss {
 		return;
 	}
 
+	//Stores a message, should it be appropriate.
 	void StoreMessage(vector<message>& messages, message currentMessage) {
-		if (skipMessage)
-			skipMessage = false;
-		else
+		if (storeMessage)
 			messages.push_back(currentMessage);
 		return;
 	}
 
+	//Stores the given item, should it be appropriate, and records any changes to open groups.
 	void StoreItem(vector<item>& list, item currentItem) {
 		if (currentItem.type == BEGINGROUP) {
 			openGroups.push_back(currentItem.name.string());
 		} else if (currentItem.type == ENDGROUP) {
 			openGroups.pop_back();
 		}
-		if (skipItem)
-			skipItem = false;
-		else
+		if (storeItem)
 			list.push_back(currentItem);
 		return;
 	}
 
+	//Defines the given masterlist variable, if appropriate.
 	void StoreVar(bool result, string var) {
 		if (result)
 			setVars.insert(var);
 		return;
 	}
 
+	//Evaluate a single conditional.
 	void EvaluateConditional(bool& result, metaType type, bool condition) {
 		result = false;
 		if (type == IF && condition == true)
@@ -169,6 +154,16 @@ namespace boss {
 		return;
 	}
 
+	//Evaluate the second half of a complex conditional.
+	void EvaluateCompoundConditional(bool& result, string andOr, bool condition) {
+		if (andOr == "||" && condition == true)
+			result = true;
+		else if (andOr == "&&" && result == true && condition == false)
+			result = false;
+	}
+
+	//MF1 compatibility function.
+	//Possibly a way to unify this with the MF2 check?
 	void EvalOldFCOMConditional(bool& result, char var) {
 		result = false;
 		pos = setVars.find("FCOM");
@@ -179,36 +174,28 @@ namespace boss {
 		return;
 	}
 
-	void EvaluateItem(bool conditional) {
-		if (!conditional)
-			skipItem = true;
-		return;
-	}
-
-	void EvaluateMessage(bool conditional) {
-		if (!conditional)
-			skipMessage = true;
-		return;
-	}
-
+	//MF1 compatibility function.
+	//Possibly a way to unify this with the MF2 check?
 	void EvalMessKey(keyType key) {
 		if (key == OOOSAY) {
 			pos = setVars.find("OOO");
 			if (pos == setVars.end())
-				skipMessage = true;
+				storeMessage = false;
 		} else if (key == BCSAY) {
 			pos = setVars.find("BC");
 			if (pos == setVars.end())
-				skipMessage = true;
+				storeMessage = false;
 		}
 		return;
 	}
 	
-	void Evaluate2ndConditional(bool& result, string andOr, bool condition2) {
-		if (andOr == "||" && condition2 == true)
-			result = true;
-		else if (andOr == "&&" && result == true && condition2 == false)
-			result = false;
+	//Turns a given string into a path. Can't be done directly because of the openGroups checks.
+	void path(fs::path& p, string const itemName) {
+		if (itemName.length() == 0 && openGroups.size() > 0) 
+			p = fs::path(openGroups.back());
+		else
+			p = fs::path(itemName);
+		return;
 	}
 
 	//Old and new formats grammar.
@@ -218,19 +205,18 @@ namespace boss {
 
 			vector<message> noMessages;  //An empty set of messages.
 
-			modList = (metaLine | listItem[phoenix::bind(&StoreItem, _val, _1)]) % eol;
+			modList = (metaLine | listItem[phoenix::bind(&StoreItem, _val, _1)]) % +eol;
 
 			metaLine =
-				*eol			//Soak up excess empty lines.
-				>> (conditionals
-				> lit("SET")
+				(conditionals
+				>> (lit("SET")
 				> ':'
-				> upperString)[phoenix::bind(&StoreVar, _1, _2)];
+				> charString))[phoenix::bind(&StoreVar, _1, _2)];
 
 			listItem %= 
-				*eol			//Soak up excess empty lines.
-				> ItemType 
-				> omit[oldConditional[&EvaluateItem] | (conditionals > ':')[&EvaluateItem] | eps]
+				omit[(oldConditional | (conditionals))[phoenix::ref(storeItem) = _1]]
+				> ItemType
+				> -lit(":")
 				> itemName
 				> itemMessages;
 
@@ -248,38 +234,35 @@ namespace boss {
 				| eps[_1 = noMessages];
 
 			itemMessage %= 
-				omit[oldConditional[&EvaluateMessage] | conditionals[&EvaluateMessage] | eps] 
+				omit[(oldConditional | conditionals)[phoenix::ref(storeMessage) = _1]]
 				>> messageKeyword[&EvalMessKey]
 				> -lit(":")
 				> messageString;
 
-			charString %= lexeme[skip(lit("//") >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present. Don't skip web links.
+			charString %= lexeme[skip(lit("//") >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present.
 
 			messageString %= lexeme[+(char_ - eol)]; //String, with no skipper. Used for messages, which can contain web links which the skipper would cut out.
 
-			upperString %= lexeme[skip(lit("//") >> *(char_ - eol))[+(upper - eol)]]; //String of uppercase letters, with comment skipper.
-
 			messageKeyword %= masterlistMsgKey;
 
-			oldConditional = 
-				char_(">")			[phoenix::bind(&EvalOldFCOMConditional, _val, _1)]
-				|  char_("<")		[phoenix::bind(&EvalOldFCOMConditional, _val, _1)];
+			oldConditional = (char_(">") |  char_("<"))		[phoenix::bind(&EvalOldFCOMConditional, _val, _1)];
 
 			conditionals = 
-				conditional[_val = _1] > -(andOr > conditional)[phoenix::bind(&Evaluate2ndConditional, _val, _1, _2)];
+				(conditional[_val = _1] 
+				> *((andOr > conditional)			[phoenix::bind(&EvaluateCompoundConditional, _val, _1, _2)]))
+				| eps[_val = true];
 
 			andOr %= unicode::string("&&") | unicode::string("||");
 
-			conditional = 
-				(metaKey > '(' > condition > ')')[phoenix::bind(&EvaluateConditional, _val, _1, _2)];  //Simple version, only one condition, later expand to n conditions in AND, OR combinations.
+			conditional = (metaKey > '(' > condition > ')')	[phoenix::bind(&EvaluateConditional, _val, _1, _2)];
 
 			condition = 
 				variable[phoenix::bind(&CheckVar, _val, _1)]
 				| version[phoenix::bind(&CheckVersion, _val, _1)]
 				| (int_ > '|' > mod)[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the mod it applies to.
-				| mod[phoenix::bind(&CheckMod, _val, _1)];
+				| mod[_val = phoenix::bind(&Exists, data_path / _1)];  //Checks if the given mod exists directly.
 
-			variable %= '$' > +(upper - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
+			variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
 
 			mod %= lexeme['\"' > +(char_ - '\"') > '\"'];  //A mod, enclosed in quotes.
 
@@ -346,7 +329,7 @@ namespace boss {
 		qi::rule<Iterator, skipper> metaLine;
 		
 		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
-			cout << what;
+			cout << "Masterlist parsing error: " << what;
 		}
 	};
 }

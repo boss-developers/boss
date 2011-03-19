@@ -27,7 +27,6 @@
 #include "Support/Helpers.h"
 #include "Support/Logger.h"
 #include "Common/Globals.h"
-#include "Common/BOSSLog.h"
 #include <sstream>
 
 #include <boost/spirit/include/qi.hpp>
@@ -63,31 +62,6 @@ namespace boss {
 	//Userlist Grammar.
 	////////////////////////////
 
-	//Need to structure things to that it provides more meaningful error reporting.
-	//Need to know what specific component failed.
-
-	/* NOTES: USERLIST GRAMMAR RULES.
-
-	Below are the grammar rules that the parser must follow. Noted here until they are implemented.
-
-	1. Userlist must be encoded in UTF-8 or UTF-8 compatible ANSI.
-	2. All lines must contain a recognised keyword and an object. If one is missing or unrecognised, abort the rule.
-	3. If a rule object is a mod, it must be installed. If not, abort the rule.
-	4. Groups cannot be added. If a rule tries, abort it.
-	5. The 'ESMs' group cannot be sorted. If a rule tries, abort it.
-	6. The game's main master file cannot be sorted. If a rule tries, abort it.
-	7. A rule with a FOR rule keyword must not contain a sort line. If a rule tries, ignore the line and print a warning message.
-	8. A rule may not reference a mod and a group unless its sort keyword is TOP or BOTTOM and the mod is the rule object.  If a rule tries, abort it.
-	9. No group may be sorted before the 'ESMs' group. If a rule tries, abort it.
-	10. No mod may be sorted before the game's main master file. If a rule tries, abort it.
-	11. No mod may be inserted into the top of the 'ESMs' group. If a rule tries, abort it.
-	12. No rule can insert a group into anything or insert anything into a mod. If a rule tries, abort it.
-    13. No rule may attach a message to a group. If a rule tries, abort it.
-	14. The first line of a rule must be a rule line. If there is a valid line before the first rule line, ignore it and print a warning message.
-*/
-
-
-
 	// Error messages for rule validation
 	//Syntax errors
 	static format ESortLineInForRule("includes a sort line in a rule with a FOR rule keyword.");
@@ -101,7 +75,7 @@ namespace boss {
 	static format EInsertingToTopOfEsms("tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.");
 	static format EInsertingGroupOrIntoMod("tries to insert a group or insert something into a mod.");
 	static format EAttachingMessageToGroup("tries to attach a message to a group.");
-	//Grammar errors.
+	//Grammar errors - not yet implemented.
 	static format ERuleHasUndefinedObject("The line with keyword '%1%' has an undefined object.");
 	static format EUnrecognisedKeyword("The line \"%1%: %2%\" does not contain a recognised keyword. If this line is the start of a rule, that rule will also be skipped.");
 	static format EAppearsBeforeFirstRule("The line \"%1%: %2%\" appears before the first recognised rule line. Line skipped.");
@@ -252,9 +226,7 @@ namespace boss {
 		void SyntaxError(Iterator const& first, Iterator const& last, Iterator const& errorpos, info const& what) {
 			ostringstream out;
 			out << what;
-			string expect = out.str().substr(1);
-			expect = boost::algorithm::replace_all_copy(expect, "&lt;", "<");
-			expect = boost::algorithm::replace_all_copy(expect, "&gt;", ">");
+			string expect = out.str().substr(1,out.str().length()-2);
 
 			string context(errorpos, std::min(errorpos +50, last));
 			boost::trim_left(context);

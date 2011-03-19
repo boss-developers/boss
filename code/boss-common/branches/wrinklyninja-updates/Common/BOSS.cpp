@@ -18,24 +18,18 @@
 #include "boost/exception/get_error_info.hpp"
 #include <boost/unordered_set.hpp>
 
-#include <locale.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <clocale>
+#include <cstdlib>
+#include <ctime>
+#include <string>
 #include <iostream>
 #include <algorithm>
-#include <fstream>
-#include <cstring>
-#include <string>
-#include <ctype.h>
-#include <time.h>
-
 
 
 using namespace boss;
 using namespace std;
 namespace po = boost::program_options;
 using boost::algorithm::trim_copy;
-using boost::algorithm::to_lower_copy;
 
 
 const string g_version     = "1.7 Dev";
@@ -103,8 +97,8 @@ int main(int argc, char *argv[]) {
 
 	//Set the locale to get encoding conversions working correctly.
 	setlocale(LC_CTYPE, "");
-	std::locale global_loc = std::locale();
-	std::locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
+	locale global_loc = locale();
+	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
 	boost::filesystem::path::imbue(loc);
 	
 	// declare the supported options
@@ -694,7 +688,7 @@ int main(int argc, char *argv[]) {
 	//Order their dates to be i days after the master esm to ensure they load last.
 	Output(bosslog, format, "{div]{span]Unrecogised Mod Files[span}{p]Reorder these by hand using your favourite mod ordering utility.[p}{p]");
 	LOG_INFO("Reporting unrecognized mods...");
-	for (size_t i=x; i<Modlist.size(); i++) {
+	for (size_t i=x+1; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
 			string text = "Unknown mod file: " + TrimDotGhost(Modlist[i].name.string());

@@ -16,14 +16,13 @@
 #include "Modlist/Grammar.h"
 #include "Userlist/Grammar.h"
 #include "Support/Helpers.h"
-#include "Common/BOSSLog.h"
 #include "utf8/source/utf8.h"
-#include "Support/Logger.h"
 
 namespace boss {
 	using namespace std;
 	namespace qi = boost::spirit::qi;
 
+	//Parses userlist into the given data structure.
 	bool parseUserlist(fs::path file, vector<rule>& ruleList) {
 		Skipper<string::const_iterator> skipper;
 		userlist_grammar<string::const_iterator> grammar;
@@ -43,6 +42,7 @@ namespace boss {
 			 return false;
 	}
 
+	//Parses the given masterlist into the given data structure. Also works for the modlist.
 	bool parseMasterlist(fs::path file, vector<item>& modList) {
 		Skipper<string::const_iterator> skipper;
 		modlist_grammar<string::const_iterator> grammar;
