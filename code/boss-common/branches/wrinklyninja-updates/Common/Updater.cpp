@@ -29,7 +29,7 @@ namespace boss {
 		return result;
 	} 
 
-	int UpdateMasterlist(int game) {
+	unsigned int UpdateMasterlist(int game) {
 		const char *url;							//Masterlist file url
 		char cbuffer[4096];
 		char errbuff[CURL_ERROR_SIZE];

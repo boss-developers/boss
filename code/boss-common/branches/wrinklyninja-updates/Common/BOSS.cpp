@@ -275,7 +275,7 @@ int main(int argc, char *argv[]) {
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		LOG_DEBUG("Updating masterlist...");
 		try {
-			int revision = UpdateMasterlist(game);  //Need to sort out the output of this - ATM it's very messy.
+			unsigned int revision = UpdateMasterlist(game);  //Need to sort out the output of this - ATM it's very messy.
 			if (revision == 0) {
 				Output(bosslog,format, "{p]masterlist.txt is already at the latest version. Update skipped.[p}");
 				cout << "masterlist.txt is already at the latest version. Update skipped." << endl;

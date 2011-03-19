@@ -22,7 +22,7 @@
 #include "Error.h"
 
 namespace boss {
-	int UpdateMasterlist(int game);
+	unsigned int UpdateMasterlist(int game);
 }
 
 #endif

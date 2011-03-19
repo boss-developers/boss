@@ -170,7 +170,7 @@ namespace boss {
 	}
 
 	//Calculate the CRC of the given file for comparison purposes.
-	int GetCrc32(const fs::path& filename) {
+	unsigned int GetCrc32(const fs::path& filename) {
 		boost::crc_32_type result;
 		string buffer;
 		fileToBuffer(filename, buffer);

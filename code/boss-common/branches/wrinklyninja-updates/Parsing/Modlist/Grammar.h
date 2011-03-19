@@ -45,11 +45,9 @@ namespace boss {
 	using qi::lit;
 	using qi::omit;
 	using qi::eps;
-	using qi::int_;
+	using qi::hex;
 
 	using unicode::char_;
-	using unicode::upper;
-	using unicode::digit;
 
 	///////////////////////////////
 	//Modlist/Masterlist Grammar
@@ -103,10 +101,10 @@ namespace boss {
 	}
 
 	//Checks if the given mod has the given checksum.
-	void CheckSum(bool& result, int sum, string mod) {
+	void CheckSum(bool& result, unsigned int sum, string mod) {
 		result = false;
 		if (Exists(data_path / mod)) {
-			int CRC;
+			unsigned int CRC;
 			if (IsGhosted(data_path / mod)) 
 				CRC = GetCrc32(data_path / fs::path(mod + ".ghost"));
 			else
@@ -162,8 +160,7 @@ namespace boss {
 			result = false;
 	}
 
-	//MF1 compatibility function.
-	//Possibly a way to unify this with the MF2 check?
+	//MF1 compatibility function. Evaluates the MF1 FCOM conditional. Like it says on the tin.
 	void EvalOldFCOMConditional(bool& result, char var) {
 		result = false;
 		pos = setVars.find("FCOM");
@@ -174,8 +171,7 @@ namespace boss {
 		return;
 	}
 
-	//MF1 compatibility function.
-	//Possibly a way to unify this with the MF2 check?
+	//MF1 compatibility function. Evaluates the MF1 OOO/BC conditional message symbols.
 	void EvalMessKey(keyType key) {
 		if (key == OOOSAY) {
 			pos = setVars.find("OOO");
@@ -220,9 +216,7 @@ namespace boss {
 				> itemName
 				> itemMessages;
 
-			ItemType %= 
-				(groupKey >> -lit(":"))
-				| eps[_val = MOD];
+			ItemType %= groupKey | eps[_val = MOD];
 
 			itemName = 
 				charString[phoenix::bind(&path, _val, _1)]
@@ -259,7 +253,7 @@ namespace boss {
 			condition = 
 				variable[phoenix::bind(&CheckVar, _val, _1)]
 				| version[phoenix::bind(&CheckVersion, _val, _1)]
-				| (int_ > '|' > mod)[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the mod it applies to.
+				| (hex > '|' > mod)[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the mod it applies to.
 				| mod[_val = phoenix::bind(&Exists, data_path / _1)];  //Checks if the given mod exists directly.
 
 			variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
@@ -281,7 +275,6 @@ namespace boss {
 			itemMessage.name("itemMessage");
 			charString.name("charString");
 			messageString.name("messageString");
-			upperString.name("upperString");
 			messageKeyword.name("messageKeyword");
 			oldConditional.name("oldConditional");
 			conditionals.name("conditional");
@@ -303,7 +296,6 @@ namespace boss {
 			on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 
 			on_error<fail>(metaLine,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(upperString,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(oldConditional,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(conditionals,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(andOr,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
@@ -323,7 +315,7 @@ namespace boss {
 		qi::rule<Iterator, fs::path(), skipper> itemName;
 		qi::rule<Iterator, vector<message>(), skipper> itemMessages;
 		qi::rule<Iterator, message(), skipper> itemMessage;
-		qi::rule<Iterator, string(), skipper> charString, upperString, messageString, variable, mod, version, andOr;
+		qi::rule<Iterator, string(), skipper> charString, messageString, variable, mod, version, andOr;
 		qi::rule<Iterator, keyType(), skipper> messageKeyword;
 		qi::rule<Iterator, bool(), skipper> conditional, conditionals, condition, oldConditional;
 		qi::rule<Iterator, skipper> metaLine;
