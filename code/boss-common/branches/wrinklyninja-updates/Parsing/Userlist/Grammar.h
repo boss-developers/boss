@@ -165,10 +165,10 @@ namespace boss {
 
 	template <typename Iterator>
 	struct userlist_grammar : qi::grammar<Iterator, vector<rule>(), Skipper<Iterator> > {
-		userlist_grammar() : userlist_grammar::base_type(list, "userlist grammar") {
+		userlist_grammar() : userlist_grammar::base_type(ruleList, "userlist grammar") {
 
 			//A list is a vector of rules. Rules are separated by line endings.
-			list = userlistRule[phoenix::bind(&RuleSyntaxCheck, _val, _1)] % +eol; 
+			ruleList = userlistRule[phoenix::bind(&RuleSyntaxCheck, _val, _1)] % +eol; 
 
 			//A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
 			userlistRule %=
@@ -195,7 +195,7 @@ namespace boss {
 			messageKey %= no_case[messageKeys];
 
 			//Give each rule names.
-			list.name("userlist");
+			ruleList.name("ruleList");
 			userlistRule.name("rule");
 			sortLine.name("sort line");
 			messageLine.name("message line");
@@ -204,7 +204,7 @@ namespace boss {
 			sortKey.name("sort keyword");
 			messageKey.name("message keyword");
 		
-			on_error<fail>(list,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(ruleList,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(userlistRule,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(sortLine,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(messageLine,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
@@ -216,7 +216,7 @@ namespace boss {
 
 		typedef Skipper<Iterator> skipper;
 
-		qi::rule<Iterator, vector<rule>(), skipper> list;
+		qi::rule<Iterator, vector<rule>(), skipper> ruleList;
 		qi::rule<Iterator, rule(), skipper> userlistRule;
 		qi::rule<Iterator, line(), skipper> sortLine, messageLine;
 		qi::rule<Iterator, keyType(), skipper> ruleKey, sortKey, messageKey;

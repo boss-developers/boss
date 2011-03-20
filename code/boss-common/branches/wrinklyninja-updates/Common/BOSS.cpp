@@ -660,7 +660,7 @@ int main(int argc, char *argv[]) {
 			if (IsGhosted(data_path / Modlist[i].name)) 
 				text += " {span=ghosted] - Ghosted[span}";
 			if (showCRCs)
-				text += "{i] - Checksum: " + IntToString(GetCrc32(data_path / Modlist[i].name)) + "[i}";
+				text += "{i] - Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "[i}";
 			Output(bosslog, format, text); 
 				
 			//Now change the file's date, if it is not the game's master file.
@@ -701,7 +701,7 @@ int main(int argc, char *argv[]) {
 			if (IsGhosted(data_path / Modlist[i].name)) 
 				text += " {span=ghosted] - Ghosted[span}";
 			if (showCRCs)
-				text += "{i] - Checksum: " + IntToString(GetCrc32(data_path / Modlist[i].name)) + "[i}";
+				text += "{i] - Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "[i}";
 			Output(bosslog, format, text); 
 
 			modfiletime=esmtime;

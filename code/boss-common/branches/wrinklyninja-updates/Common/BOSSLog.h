@@ -38,6 +38,9 @@ namespace boss {
 	//Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 	string IntToString(unsigned int n);
 
+	//Converts an integer to a hex string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
+	string IntToHexString(unsigned int n);
+
 	template <typename OutputIterator>
 	struct bosslog_grammar : karma::grammar<OutputIterator, string()>
 	{

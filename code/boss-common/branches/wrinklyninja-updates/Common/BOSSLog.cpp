@@ -125,6 +125,14 @@ namespace boss {
 	string IntToString(unsigned int n) {
 		string out;
 		back_insert_iterator<string> sink(out);
+		karma::generate(sink,karma::upper[karma::uint_],n);
+		return out;
+	}
+
+	//Converts an integer to a hex string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
+	string IntToHexString(unsigned int n) {
+		string out;
+		back_insert_iterator<string> sink(out);
 		karma::generate(sink,karma::upper[karma::hex],n);
 		return out;
 	}
