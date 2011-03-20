@@ -20,6 +20,8 @@
 #include "Parsing/Skipper.h"
 #include "Common/Globals.h"
 #include "Support/Helpers.h"
+#include "Support/Logger.h"
+
 #include <sstream>
 
 #include <boost/spirit/include/qi.hpp>
@@ -28,6 +30,8 @@
 #include <boost/spirit/home/phoenix/object/construct.hpp>
 #include <boost/spirit/include/phoenix_bind.hpp>
 #include <boost/unordered_set.hpp>
+#include <boost/format.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace boss {
 	namespace unicode = boost::spirit::unicode;
@@ -49,6 +53,9 @@ namespace boss {
 
 	using unicode::char_;
 
+	using boost::format;
+	using boost::spirit::info;
+
 	///////////////////////////////
 	//Modlist/Masterlist Grammar
 	///////////////////////////////
@@ -57,6 +64,12 @@ namespace boss {
 	boost::unordered_set<string>::iterator pos;
 	bool storeItem = true, storeMessage = true;
 	vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in old format.
+
+	//Parsing error message format.
+	static format MasterlistParsingErrorFormat("{p=error]"
+		"Masterlist Parsing Error: Expected a %1% at \"%2%\". Masterlist parsing aborted.{br}"
+		"Utility will end now."
+		"[p}");
 
 	//Checks if a masterlist variable is defined.
 	void CheckVar(bool& result, string var) {
@@ -229,9 +242,9 @@ namespace boss {
 
 			itemMessage %= 
 				omit[(oldConditional | conditionals)[phoenix::ref(storeMessage) = _1]]
-				>> messageKeyword[&EvalMessKey]
+				>>( messageKeyword[&EvalMessKey]
 				> -lit(":")
-				> messageString;
+				> messageString);
 
 			charString %= lexeme[skip(lit("//") >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present.
 
@@ -286,6 +299,7 @@ namespace boss {
 			version.name("version");
 			
 			on_error<fail>(modList,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(metaLine,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(listItem,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(ItemType,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(itemName,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
@@ -294,8 +308,6 @@ namespace boss {
 			on_error<fail>(charString,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(messageString,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-
-			on_error<fail>(metaLine,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(oldConditional,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(conditionals,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(andOr,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
@@ -321,7 +333,18 @@ namespace boss {
 		qi::rule<Iterator, skipper> metaLine;
 		
 		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
-			cout << "Masterlist parsing error: " << what;
+			ostringstream out;
+			out << what;
+			string expect = out.str().substr(1,out.str().length()-2);
+			expect = "{<}" + expect + "{>}";
+
+			string context(errorpos, std::min(errorpos +50, last));
+			boost::trim_left(context);
+
+			string msg = (MasterlistParsingErrorFormat % expect % context).str();
+			messageBuffer.push_back(msg);
+			LOG_ERROR("Masterlist Parsing Error: Expected a %s at \"%s\". Masterlist parsing aborted. Utility will end now.", expect.c_str(), context.c_str());
+			return;
 		}
 	};
 }

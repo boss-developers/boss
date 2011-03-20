@@ -20,9 +20,11 @@
 #include <fstream>
 #include <string>
 #include "Lists.h"
+#include <boost/spirit/include/karma.hpp>
 
 namespace boss {
 	using namespace std;
+	namespace karma = boost::spirit::karma;
 
 	//Prints a given message to the bosslog, using format-safe Output function below.
 	void ShowMessage(ofstream &log, string format, message currentMessage);
@@ -35,5 +37,16 @@ namespace boss {
 
 	//Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 	string IntToString(unsigned int n);
+
+	template <typename OutputIterator>
+	struct bosslog_grammar : karma::grammar<OutputIterator, string()>
+	{
+		bosslog_grammar() : bosslog_grammar::base_type(text, "bosslog_grammar")
+		{
+			text %= +karma::char_;
+		}
+
+		karma::rule<OutputIterator, string()> text;
+	};
 }
 #endif

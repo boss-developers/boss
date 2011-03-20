@@ -11,7 +11,7 @@
 
 #include "BOSSLog.h"
 #include <boost/algorithm/string.hpp>
-#include <boost/spirit/include/karma.hpp>
+
 /*
 BOSSLog generic output formatting notes.
 
@@ -47,6 +47,8 @@ Special characters:
 ////////////////////////////////////////////////////
 || {c}		 || c						|| &copy; ||
 || {&}		 || &						|| &amp;  ||
+|| {>}		 || >						|| &gt;   ||
+|| {<}		 || <						|| &lt;   ||
 
 The ouput strings can be passed to a function that will somehow convert the general syntax into format-specific syntax.
 Spirit.Karma may be used. ATM it's just replace functions.
@@ -56,7 +58,7 @@ namespace boss {
 	using namespace std;
 	using boost::algorithm::replace_all;
 	using boost::algorithm::replace_first;
-	namespace karma = boost::spirit::karma;
+
 
 	void ShowMessage(ofstream &log, string format, message currentMessage) {
 		size_t pos1,pos2;
@@ -134,6 +136,8 @@ namespace boss {
 			replace_first(text, "{end}", "</body>\n</html>");
 			replace_first(text, "{c}", "&copy;");
 			replace_first(text, "{&}", "&amp;");
+			replace_first(text, "{>}", "&gt;");
+			replace_first(text, "{<}", "&lt;");
 			replace_first(text, "{ul]", "\n<ul>\n");
 			replace_first(text, "[ul}", "</ul>\n");
 			replace_first(text, "{b]", "<b>");
@@ -179,6 +183,10 @@ namespace boss {
 				pos1 = text.find("http",pos1 + 4);
 			}
 		}
-		log << text;
+		string out;
+		bosslog_grammar<back_insert_iterator<string>> g;
+		back_insert_iterator<string> sink(out);
+		karma::generate(sink,g,text);
+		log << out;
 	}
 }

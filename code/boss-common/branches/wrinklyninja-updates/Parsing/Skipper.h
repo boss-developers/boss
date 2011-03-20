@@ -57,7 +57,7 @@ namespace boss {
 				>> !(lit("EndGroup") | lit("BeginGroup"))
 				>> *(char_ - eol);
 
-			eof = *(oldMasterlistComment | comment | spc | eol)>> eoi;
+			eof = *(spc | comment | oldMasterlistComment | eol) >> eoi;
 		}
 
 		qi::rule<Iterator> start;

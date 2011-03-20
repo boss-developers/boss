@@ -24,9 +24,10 @@
 
 #include "Parsing/Data.h"
 #include "Parsing/Skipper.h"
+#include "Common/Globals.h"
 #include "Support/Helpers.h"
 #include "Support/Logger.h"
-#include "Common/Globals.h"
+
 #include <sstream>
 
 #include <boost/spirit/include/qi.hpp>
@@ -34,7 +35,6 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/home/phoenix/object/construct.hpp>
 #include <boost/spirit/include/phoenix_bind.hpp>
-
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -82,17 +82,17 @@ namespace boss {
 	static format EUnrecognizedKeywordBeforeFirstRule("The line \"%1%: %2%\" does not contain a recognised keyword, and appears before the first recognised rule line. Line skipped.");
 
 	//Syntax error formatting.
-	static format SyntaxErrorFormat("{p=%1%]"
-		"Syntax Error: The rule beginning \"%2%: %3%\" %4%"
+	static format SyntaxErrorFormat("{p=error]"
+		"Syntax Error: The rule beginning \"%1%: %2%\" %3%"
 		"[p}");
 
-	static format ParsingErrorFormat("{p=%1%]"
-		"Parsing Error: Expected a %2% at \"%3%\". Userlist parsing aborted. No rules will be applied."
+	static format ParsingErrorFormat("{p=error]"
+		"Parsing Error: Expected a %1% at \"%2%\". Userlist parsing aborted. No rules will be applied."
 		"[p}");
 
 	void AddSyntaxError(keyType const& rule, string const& object, format const& message) {
 		string keystring = KeyToString(rule);
-		string const msg = (SyntaxErrorFormat % "error" % keystring % object % message.str()).str();
+		string const msg = (SyntaxErrorFormat % keystring % object % message.str()).str();
 		messageBuffer.push_back(msg);
 		return;
 	}
@@ -168,14 +168,13 @@ namespace boss {
 		userlist_grammar() : userlist_grammar::base_type(list, "userlist grammar") {
 
 			//A list is a vector of rules. Rules are separated by line endings.
-			list = userlistRule[phoenix::bind(&RuleSyntaxCheck, _val, _1)] % eol; 
+			list = userlistRule[phoenix::bind(&RuleSyntaxCheck, _val, _1)] % +eol; 
 
 			//A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
 			userlistRule %=
-				*eol			//Soak up excess empty lines.
-				> (ruleKey > ':' > object
+				ruleKey > ':' > object
 				> +eol
-				> ((sortLine | messageLine) % +eol));
+				> ((sortLine | messageLine) % +eol);
 
 			sortLine %=
 				sortKey
@@ -196,7 +195,7 @@ namespace boss {
 			messageKey %= no_case[messageKeys];
 
 			//Give each rule names.
-			list.name("list");
+			list.name("userlist");
 			userlistRule.name("rule");
 			sortLine.name("sort line");
 			messageLine.name("message line");
@@ -227,12 +226,16 @@ namespace boss {
 			ostringstream out;
 			out << what;
 			string expect = out.str().substr(1,out.str().length()-2);
+			if (expect == "eol")
+				expect = "end of line";
+			expect = "{<}" + expect + "{>}";
 
 			string context(errorpos, std::min(errorpos +50, last));
 			boost::trim_left(context);
 
-			string msg = (ParsingErrorFormat % "error" % expect % context).str();
+			string msg = (ParsingErrorFormat % expect % context).str();
 			messageBuffer.push_back(msg);
+			LOG_ERROR("Userlist Parsing Error: Expected a %s at \"%s\". Userlist parsing aborted. No rules will be applied.", expect.c_str(), context.c_str());
 			return;
 		}
 	};

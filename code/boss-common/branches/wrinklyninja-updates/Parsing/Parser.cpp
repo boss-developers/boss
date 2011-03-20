@@ -36,10 +36,10 @@ namespace boss {
 
 		bool r = qi::phrase_parse(begin, end, grammar, skipper, ruleList);
 
-		 if (r && begin == end)
-			 return true;
-		 else
-			 return false;
+		if (r && begin == end)
+			return true;
+		else
+			return false;
 	}
 
 	//Parses the given masterlist into the given data structure. Also works for the modlist.
@@ -58,7 +58,8 @@ namespace boss {
 		 if (r && begin == end)
 			 return true;
 		 else
-			 return false;
+			 return false;  //For some reason this isn't returning false when the parser fails.
+		 //More acturately, when the parser fails, it executes the failure function, then just keeps going.
 	}
 
 	//UTF-8 Validator

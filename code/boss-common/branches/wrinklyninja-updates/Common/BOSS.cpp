@@ -369,8 +369,14 @@ int main(int argc, char *argv[]) {
 	}
 	//Parse masterlist/modlist backup into data structure.
 	bool parsed = parseMasterlist(sortfile,Masterlist);
-	if (!parsed) {
-		cout << "Masterlist parse error!" << endl;
+	//Check if parsing failed - the parsed bool always returns true for some reason, so check size of messageBuffer.
+	if (messageBuffer.size() != 0) {
+		for (size_t i=0; i<messageBuffer.size(); i++)  //Print parser error messages.
+			Output(bosslog,format,messageBuffer[i]);
+		bosslog.close();
+		if ( !silent ) 
+                Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
+        exit (1); //fail in screaming heap.
 	}
 
 	/*
@@ -471,7 +477,7 @@ int main(int argc, char *argv[]) {
 	if (revert<1 && fs::exists(userlist_path)) {
 		Output(bosslog, format, "{div]{span]Userlist Messages[span}{p]");
 
-		for (size_t i=0; i<boss::messageBuffer.size(); i++)  //First print parser/syntax error messages.
+		for (size_t i=0; i<messageBuffer.size(); i++)  //First print parser/syntax error messages.
 			Output(bosslog,format,messageBuffer[i]);
 
 		//Now apply rules, one rule at a time, one line at a time.
@@ -630,7 +636,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		if (Userlist.size() == 0) 
-			bosslog << "No valid rules were found in your userlist.txt." << endl;
+			Output(bosslog, format, "No valid rules were found in your userlist.txt.");
 		Output(bosslog, format, "[p}[div}{br}{br}");
 		LOG_INFO("Userlist sorting process finished.");
 	}

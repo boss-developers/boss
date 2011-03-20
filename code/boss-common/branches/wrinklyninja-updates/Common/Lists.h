@@ -55,6 +55,8 @@ namespace boss {
 		IFNOT
 	};
 
+	extern vector<string> messageBuffer;  //Holds any error messages generated during parsing for printing later.
+
 	////////////////////////////////////////
 	// Modlist/Masterlist data structures
 	////////////////////////////////////////
@@ -91,8 +93,6 @@ namespace boss {
 		string ruleObject;
 		vector<line> lines;
 	};
-	
-	extern vector<string> messageBuffer;  //Holds any error messages generated during parsing for printing later.
 
 	////////////////////////////////////////
 	// Helpful functions
