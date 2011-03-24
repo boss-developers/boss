@@ -17,14 +17,20 @@
 #ifndef __BOSS_BOSSLOG_H__
 #define __BOSS_BOSSLOG_H__
 
+#ifndef BOOST_SPIRIT_UNICODE
+#define BOOST_SPIRIT_UNICODE 
+#endif
+
 #include <fstream>
 #include <string>
 #include "Lists.h"
-#include <boost/spirit/include/karma.hpp>
+
+#include <boost/spirit/include/lex_lexertl.hpp>
 
 namespace boss {
 	using namespace std;
-	namespace karma = boost::spirit::karma;
+	namespace unicode = boost::spirit::unicode;
+	namespace lex = boost::spirit::lex;
 
 	//Prints a given message to the bosslog, using format-safe Output function below.
 	void ShowMessage(ofstream &log, string format, message currentMessage);
@@ -41,15 +47,38 @@ namespace boss {
 	//Converts an integer to a hex string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 	string IntToHexString(unsigned int n);
 
-	template <typename OutputIterator>
-	struct bosslog_grammar : karma::grammar<OutputIterator, string()>
+	/*enum token_ids
 	{
-		bosslog_grammar() : bosslog_grammar::base_type(text, "bosslog_grammar")
+		ID_WORD = 1000,
+		ID_EOL,
+		ID_CHAR
+	};
+
+	template <typename Lexer>
+	struct word_count_tokens : lex::lexer<Lexer>
+	{
+		word_count_tokens()
+		  : c(0), w(0), l(0)
+		  , word("[^ \t\n]+")     // define tokens
+		  , eol("\n")
+		  , any(".")
 		{
-			text %= +karma::char_;
+			using boost::spirit::lex::_start;
+			using boost::spirit::lex::_end;
+			using boost::phoenix::ref;
+
+			// associate tokens with the lexer
+			this->self 
+				=   word  [++ref(w), ref(c) += distance(_start, _end)]
+				|   eol   [++ref(c), ++ref(l)] 
+				|   any   [++ref(c)]
+				;
 		}
 
-		karma::rule<OutputIterator, string()> text;
-	};
+		std::size_t c, w, l;
+		lex::token_def<> word, eol, any;
+	};*/
+
+
 }
 #endif

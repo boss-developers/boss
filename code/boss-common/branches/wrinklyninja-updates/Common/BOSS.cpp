@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
 	string gameStr;                  // allow for autodetection override
 	bool debug              = false; // whether to include origin information in logging statements
 	bool showCRCs			= false; // whether or not to show mod CRCs.
-	string format			= "HTML";  // what format the output should be in.
+	string format			= "html";  // what format the output should be in.
 
 	//Set the locale to get encoding conversions working correctly.
 	setlocale(LC_CTYPE, "");
@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
 								" added to the masterlist in a conditional")
 		("format,f", po::value(&format),
 								"select output format. valid values"
-								" are: 'HTML', 'text'");
+								" are: 'html', 'text'");
 	
 
 	// parse command line arguments
@@ -206,9 +206,7 @@ int main(int argc, char *argv[]) {
 
 	if (vm.count("format")) {
 		// sanity check and parse argument
-		if      (boost::iequals("HTML",   format)) { game = 1; }
-		else if (boost::iequals("text",   format)) { game = 2; }
-		else {
+		if (format != "html" && format != "text") {
 			LOG_ERROR("invalid option for 'format' parameter: '%s'", format.c_str());
 			Fail();
 		}
@@ -218,7 +216,7 @@ int main(int argc, char *argv[]) {
 
 	//BOSSLog bosslog;
 	fs::path bosslog_path;				//Path to BOSSlog being used.
-	if (format == "HTML")
+	if (format == "html")
 		bosslog_path = bosslog_html_path;
 	else
 		bosslog_path = bosslog_text_path;
@@ -314,6 +312,29 @@ int main(int argc, char *argv[]) {
 		if ( !silent ) 
 			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
+	}
+
+	//////////////////////////////////////////////////////
+	// Print version & checksum info for OBSE & plugins
+	//////////////////////////////////////////////////////
+
+	if (showCRCs) {
+		if (fs::exists("../obse_1_2_416.dll")) {
+			string CRC = IntToHexString(GetCrc32("../obse_1_2_416.dll"));
+			string version = GetModHeader("../obse_1_2_416.dll");  //Replace with OBSE version check.
+			Output(bosslog, format, "OBSE detected, version:, checksum:");
+		}
+
+		if (fs::is_directory(data_path / "OBSE/Plugins")) {
+			for (fs::directory_iterator itr(data_path / "OBSE/Plugins"); itr!=fs::directory_iterator(); ++itr) {
+				const fs::path filename = itr->path().filename();
+				const string ext = Tidy(itr->path().extension().string());
+				if (fs::is_regular_file(itr->status()) && ext==".dll") {
+					string CRC = IntToHexString(GetCrc32(itr->path()));
+					string version = GetModHeader(itr->path());  //Replace with OBSE plugin version check.
+				}
+			}
+		}
 	}
 
 	//////////////////////////////////////////////

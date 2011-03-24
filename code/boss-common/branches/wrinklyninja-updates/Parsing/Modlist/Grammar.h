@@ -85,15 +85,29 @@ namespace boss {
 		char comp = var[0];
 		size_t pos = var.find("|") + 1;
 		string version = var.substr(1,pos-2);
-		string mod = var.substr(pos);
+		string file = var.substr(pos);
 		result = false;
+		fs::path file_path;
 
-		if (Exists(data_path / mod)) {
+		if (file == "OBSE") {
+			file_path = "..";
+			file = "obse_1_2_416.dll";
+		} else {
+			fs::path p(file);
+			if (Tidy(p.extension().string()) == ".dll")
+				file_path = data_path / fs::path("OBSE/Plugins");
+			else
+				file_path = data_path;
+		}
+
+		if (Exists(file_path / file)) {
 			string trueVersion;
-			if (IsGhosted(data_path / mod)) 
-				trueVersion = GetModHeader(data_path / fs::path(mod + ".ghost"));
-			else 
-				trueVersion = GetModHeader(data_path / mod);
+			if (file_path == data_path) {
+				if (IsGhosted(file_path / file)) 
+					trueVersion = GetModHeader(file_path / fs::path(file + ".ghost"));
+				else 
+					trueVersion = GetModHeader(file_path / file);
+			}
 
 			switch (comp) {
 			case '>':
@@ -114,19 +128,45 @@ namespace boss {
 	}
 
 	//Checks if the given mod has the given checksum.
-	void CheckSum(bool& result, unsigned int sum, string mod) {
+	void CheckSum(bool& result, unsigned int sum, string file) {
 		result = false;
-		if (Exists(data_path / mod)) {
-			unsigned int CRC;
-			if (IsGhosted(data_path / mod)) 
-				CRC = GetCrc32(data_path / fs::path(mod + ".ghost"));
+		fs::path file_path;
+
+		if (file == "OBSE") {
+			file_path = "..";
+			file = "obse_1_2_416.dll";
+		} else {
+			fs::path p(file);
+			if (Tidy(p.extension().string()) == ".dll")
+				file_path = data_path / fs::path("OBSE/Plugins");
 			else
-				CRC = GetCrc32(data_path / mod);
+				file_path = data_path;
+		}
+
+		if (Exists(file_path / file)) {
+			unsigned int CRC;
+			if (IsGhosted(file_path / file)) 
+				CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
+			else
+				CRC = GetCrc32(file_path / file);
 
 			if (sum == CRC)
 				result = true;
 		}
 		return;
+	}
+
+	void CheckFile(bool& result, string file) {
+		result = false;
+		if (file == "OBSE")
+			result = fs::exists("../obse_1_2_416.dll");
+		else {
+			fs::path p(file);
+			if (Tidy(p.extension().string()) == ".dll")
+				result = fs::exists(data_path / fs::path("OBSE/Plugins") / p);
+			else
+				result = fs::exists(data_path / p);
+		}
 	}
 
 	//Stores a message, should it be appropriate.
@@ -264,20 +304,25 @@ namespace boss {
 			conditional = (metaKey > '(' > condition > ')')	[phoenix::bind(&EvaluateConditional, _val, _1, _2)];
 
 			condition = 
-				variable[phoenix::bind(&CheckVar, _val, _1)]
-				| version[phoenix::bind(&CheckVersion, _val, _1)]
-				| (hex > '|' > mod)[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the mod it applies to.
-				| mod[_val = phoenix::bind(&Exists, data_path / _1)];  //Checks if the given mod exists directly.
+				variable									[phoenix::bind(&CheckVar, _val, _1)]
+				| version									[phoenix::bind(&CheckVersion, _val, _1)]
+				| (hex > '|' > file)						[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
+				| file										[phoenix::bind(&CheckFile, _val, _1)]
+				;
 
 			variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
 
-			mod %= lexeme['\"' > +(char_ - '\"') > '\"'];  //A mod, enclosed in quotes.
+			file %= 
+				lexeme['\"' > +(char_ - '\"') > '\"']  //An OBSE plugin or a mod plugin.
+				| unicode::string("OBSE");  //OBSE itself.
 
 			version %=   //A version, followed by the mod it applies to.
 				(char_('=') | char_('>') | char_('<'))
 				> lexeme[+(char_ - '|')]
 				> char_('|')
-				> mod;
+				> file;
+
+			
 
 			modList.name("modList");
 			metaLine.name("metaLine");
@@ -295,7 +340,7 @@ namespace boss {
 			conditional.name("conditional");
 			condition.name("condition");
 			variable.name("variable");
-			mod.name("mod");
+			file.name("file");
 			version.name("version");
 			
 			on_error<fail>(modList,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
@@ -314,7 +359,7 @@ namespace boss {
 			on_error<fail>(conditional,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(condition,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(variable,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(mod,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(file,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 			on_error<fail>(version,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
 
 		}
@@ -327,7 +372,7 @@ namespace boss {
 		qi::rule<Iterator, fs::path(), skipper> itemName;
 		qi::rule<Iterator, vector<message>(), skipper> itemMessages;
 		qi::rule<Iterator, message(), skipper> itemMessage;
-		qi::rule<Iterator, string(), skipper> charString, messageString, variable, mod, version, andOr;
+		qi::rule<Iterator, string(), skipper> charString, messageString, variable, file, version, andOr;
 		qi::rule<Iterator, keyType(), skipper> messageKeyword;
 		qi::rule<Iterator, bool(), skipper> conditional, conditionals, condition, oldConditional;
 		qi::rule<Iterator, skipper> metaLine;

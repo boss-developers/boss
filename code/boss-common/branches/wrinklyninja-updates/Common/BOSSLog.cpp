@@ -11,6 +11,7 @@
 
 #include "BOSSLog.h"
 #include <boost/algorithm/string.hpp>
+#include <boost/spirit/include/karma.hpp>
 
 /*
 BOSSLog generic output formatting notes.
@@ -56,6 +57,7 @@ Spirit.Karma may be used. ATM it's just replace functions.
 
 namespace boss {
 	using namespace std;
+	namespace karma = boost::spirit::karma;
 	using boost::algorithm::replace_all;
 	using boost::algorithm::replace_first;
 
@@ -102,7 +104,7 @@ namespace boss {
 
 	//Prints header if format is HTML, else nothing.
 	void OutputHeader(ofstream &log, string format) {
-		if (format == "HTML") {
+		if (format == "html") {
 			log << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
 				<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
 				<< "body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
@@ -139,8 +141,8 @@ namespace boss {
 
 	//Prints ouptut with formatting according to output format.
 	void Output(ofstream &log, string format, string text) {
-		if (format == "HTML") {
-			//Yes. This really is as horrific as it looks. It's only temporary though. I hope...
+		if (format == "html") {
+			//Yes. This really is as horrific as it looks. It should be only temporary though.
 			replace_first(text, "{end}", "</body>\n</html>");
 			replace_first(text, "{c}", "&copy;");
 			replace_first(text, "{&}", "&amp;");
@@ -159,24 +161,22 @@ namespace boss {
 			replace_first(text, "=tags]", " class='tags'>");
 			replace_first(text, "=ghosted]", " class='ghosted'>");
 			replace_first(text, "=version]", " class='version'>");
-			replace_first(text, "=title]", " class='title'>");
-			replace_first(text, "=center]", " class='center'>");
-
-			replace_all(text, "{br}", "<br />\n");
 
 			replace_first(text, "{li]", "<li>");
 			replace_first(text, "{li", "<li");
 			replace_first(text, "[li}", "</li>\n");
-			
-			replace_all(text, "{span]", "<span>");
+			replace_first(text, "{span]", "<span>");
+			replace_first(text, "{div]", "<div>");
+			replace_first(text, "[div}", "</div>\n");
+			replace_first(text, "[p}", "</p>\n\n");	
+
+			replace_all(text, "{br}", "<br />\n");
 			replace_all(text, "{span", "<span");
 			replace_all(text, "[span}", "</span>");
-			replace_all(text, "{div]", "<div>");
 			replace_all(text, "{div", "<div");
-			replace_all(text, "[div}", "</div>\n");
+			
 			replace_all(text, "{p]", "<p>");
 			replace_all(text, "{p", "<p");
-			replace_all(text, "[p}", "</p>\n\n");	
 
 			//Convert from generic format into HTML hyperlinks.
 			size_t pos1,pos2;
@@ -188,13 +188,67 @@ namespace boss {
 				text.replace(pos1,3,"<a href=");
 				pos1 = text.find("[a}");
 				text.replace(pos1,3,"</a>");
-				pos1 = text.find("http",pos1 + 4);
+				pos1 = text.find("{a=",pos1 + 4);
+			}
+		} else {
+			string eol =
+			#if _WIN32 || _WIN64
+					"\r\n";
+			#else
+					"\n";
+			#endif
+
+			//Yes. This really is as horrific as it looks. It should be only temporary though.
+			replace_first(text, "{end}", "");
+			replace_first(text, "{c}", "c");
+			replace_first(text, "{&}", "&");
+			replace_first(text, "{>}", ">");
+			replace_first(text, "{<}", "<");
+			replace_first(text, "{ul]", eol+eol);
+			replace_first(text, "[ul}", eol);
+			replace_first(text, "{b]", "");
+			replace_first(text, "[b}", "");
+			replace_first(text, "{i]", "");
+			replace_first(text, "[i}", "");
+
+			replace_first(text, "{span]", "======================================"+eol);
+
+			replace_first(text, "=warn]", "]");
+			replace_first(text, "=error]", "]");
+			replace_first(text, "=success]", "]");
+			replace_first(text, "=tags]", "]");
+			replace_first(text, "=ghosted]", "]");
+			replace_first(text, "=version]", "]");
+
+			replace_first(text, "{li]", "*  ");
+			replace_first(text, "[li}", eol);
+			
+			replace_first(text, "[div}", eol);
+			replace_first(text, "[p}", eol+eol);	
+
+			replace_all(text, "{br}", eol);
+			replace_all(text, "{span]", "");
+			replace_all(text, "[span}", "");
+			replace_all(text, "{div]", eol);
+
+			replace_all(text, "{p]", eol);
+
+			//Convert from generic format into HTML hyperlinks.
+			size_t pos1,pos2;
+			string link;
+			pos1 = text.find("{a="); //Start of a link
+			while (pos1 != string::npos) {
+				text.replace(pos1,3,"");
+				pos1 = text.find("]",pos1);
+				pos2 = text.find("[a}", pos1);
+				text.replace(pos1, pos2-pos1+3,"");
+				//text.replace(pos1, pos2-pos1+1, "\"");  //Clears out the {a=""] bit, replacing it with '"'.
+				//pos1 = text.find("[a}", pos1);
+				//text.replace(pos1,3,"\"");
+				pos1 = text.find("{a=",pos1 + 4);
 			}
 		}
-		string out;
-		bosslog_grammar<back_insert_iterator<string>> g;
-		back_insert_iterator<string> sink(out);
-		karma::generate(sink,g,text);
-		log << out;
+		log << text;
+
 	}
 }
