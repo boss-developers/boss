@@ -82,13 +82,13 @@ namespace boss {
 	static format EUnrecognizedKeywordBeforeFirstRule("The line \"%1%: %2%\" does not contain a recognised keyword, and appears before the first recognised rule line. Line skipped.");
 
 	//Syntax error formatting.
-	static format SyntaxErrorFormat("{p=error]"
+	static format SyntaxErrorFormat("<p class='error'>"
 		"Syntax Error: The rule beginning \"%1%: %2%\" %3%"
-		"[p}");
+		"</p>\n\n");
 
-	static format ParsingErrorFormat("{p=error]"
+	static format ParsingErrorFormat("<p class='error'>"
 		"Parsing Error: Expected a %1% at \"%2%\". Userlist parsing aborted. No rules will be applied."
-		"[p}");
+		"</p>\n\n");
 
 	void AddSyntaxError(keyType const& rule, string const& object, format const& message) {
 		string keystring = KeyToString(rule);
@@ -228,14 +228,16 @@ namespace boss {
 			string expect = out.str().substr(1,out.str().length()-2);
 			if (expect == "eol")
 				expect = "end of line";
-			expect = "{<}" + expect + "{>}";
 
 			string context(errorpos, std::min(errorpos +50, last));
 			boost::trim_left(context);
 
+			LOG_ERROR("Userlist Parsing Error: Expected a %s at \"%s\". Userlist parsing aborted. No rules will be applied.", expect.c_str(), context.c_str());
+			
+			expect = "&lt;" + expect + "&gt;";
+			boost::replace_all(context, "\n", "<br />\n");
 			string msg = (ParsingErrorFormat % expect % context).str();
 			messageBuffer.push_back(msg);
-			LOG_ERROR("Userlist Parsing Error: Expected a %s at \"%s\". Userlist parsing aborted. No rules will be applied.", expect.c_str(), context.c_str());
 			return;
 		}
 	};

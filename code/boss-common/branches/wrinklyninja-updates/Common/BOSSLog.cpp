@@ -13,48 +13,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/spirit/include/karma.hpp>
 
-/*
-BOSSLog generic output formatting notes.
-
-Non-wrapping formatting: {<type>}
-Wrapping formatting: {<type>]...{<type>}
-Classes given by: {<type>=<class>]...[<type>}
-Links given by: {a="<link>"]...[link}
-
-HTML element names are used because HTML is both precisely defined and is the default formatting.
-Plaintext syntax is not derived straight from HTML tags because the generic syntax is simply shorter.
-
-Elements:
-
-|| HTML Syntax 			|| Plaintext Syntax || Generic Syntax 	||
-//////////////////////////////////////////////////////////////////
-|| <br />	   			|| \n			   	|| {br}			  	||
-|| </body></html>		|| None				|| {end}			||
-|| <div>...</div>		|| ...\n			|| {div]			||
-|| <p>..</p>			|| ...\n\n			|| {p]				||
-|| <ul>...</ul>			|| \n...\n			|| {ul]				||
-|| <li>...</li>			|| * ...\n			|| {li]				||
-|| <a href='.'>..</a>	|| .. (.)			|| {a="."]			||
-|| <span>...</span>	 	|| ...				|| {span]			||
-|| <b>...</b>			|| ...				|| {b]				||
-|| <i>...</i>			|| ...				|| {i]				||
-
-Only the generic opening syntax is shown.
-Elements can be supplied with classes, these do nothing for plaintext output, but are used as CSS classes for HTML output.
-Not sure how to translate non-class CSS into plaintext formatting yet.
-
-Special characters:
-|| Generic	 || Plaintext				|| HTML   ||
-////////////////////////////////////////////////////
-|| {c}		 || c						|| &copy; ||
-|| {&}		 || &						|| &amp;  ||
-|| {>}		 || >						|| &gt;   ||
-|| {<}		 || <						|| &lt;   ||
-
-The ouput strings can be passed to a function that will somehow convert the general syntax into format-specific syntax.
-Spirit.Karma may be used. ATM it's just replace functions.
-*/
-
 namespace boss {
 	using namespace std;
 	namespace karma = boost::spirit::karma;
@@ -65,13 +23,13 @@ namespace boss {
 	void ShowMessage(ofstream &log, string format, message currentMessage) {
 		size_t pos1,pos2;
 		string link;
-		//Wrap web addresses in generic link format. Skip those already in generic format.
+		//Wrap web addresses in HTML link format. Skip those already in HTML format.
 		pos1 = currentMessage.data.find("\"http");  //Start of a link.
 		while (pos1 != string::npos) {
-			if (currentMessage.data[pos1-1] != '=') {  //Link is (probably) not in generic format.
+			if (currentMessage.data[pos1-1] != '=') {  //Link is (probably) not in HTML format.
 				pos2 = currentMessage.data.find("\"",pos1+1)+1;  //First character after the end of the link.
 				link = currentMessage.data.substr(pos1,pos2-pos1);
-				link = "{a=" + link + "]" + link.substr(1,link.length()-2) + "[a}";  //Text is now: {a="link"]link[a}
+				link = "<a href=" + link + ">" + link.substr(1,link.length()-2) + "</a>";
 				currentMessage.data.replace(pos1,pos2-pos1,link);
 			}
 			pos1 = currentMessage.data.find("http",pos1 + link.length());
@@ -79,25 +37,25 @@ namespace boss {
 		//Select message formatting.
 		switch(currentMessage.key) {
 		case TAG:
-			Output(log, format, "{li]{span=tags]Bash Tag suggestion(s):[span} " + currentMessage.data + "[li}");
+			Output(log, format, "<li><span class='tags'>Bash Tag suggestion(s):</span> " + currentMessage.data + "</li>\n");
 			break;
 		case SAY:
-			Output(log, format, "{li]Note: " + currentMessage.data + "[li}");
+			Output(log, format, "<li>Note: " + currentMessage.data + "</li>\n");
 			break;
 		case REQ:
-			Output(log, format, "{li]Requires: " + currentMessage.data + "[li}");
+			Output(log, format, "<li>Requires: " + currentMessage.data + "</li>\n");
 			break;
 		case INC:
-			Output(log, format, "{li]Incompatible with: " + currentMessage.data + "[li}");
+			Output(log, format, "<li>Incompatible with: " + currentMessage.data + "</li>\n");
 			break;
 		case WARN:
-			Output(log, format, "{li=warn]Warning: " + currentMessage.data + "[li}");
+			Output(log, format, "<li class='warn'>Warning: " + currentMessage.data + "</li>\n");
 			break;
 		case ERR:
-			Output(log, format, "{li=error]ERROR: " + currentMessage.data + "[li}");
+			Output(log, format, "<li class='error'>ERROR: " + currentMessage.data + "</li>\n");
 			break;
 		default:
-			Output(log, format, "{li]Note: " + currentMessage.data + "[li}");
+			Output(log, format, "<li>Note: " + currentMessage.data + "</li>\n");
 			break;
 		}
 	}
@@ -141,56 +99,8 @@ namespace boss {
 
 	//Prints ouptut with formatting according to output format.
 	void Output(ofstream &log, string format, string text) {
-		if (format == "html") {
+		if (format == "text") {
 			//Yes. This really is as horrific as it looks. It should be only temporary though.
-			replace_first(text, "{end}", "</body>\n</html>");
-			replace_first(text, "{c}", "&copy;");
-			replace_first(text, "{&}", "&amp;");
-			replace_first(text, "{>}", "&gt;");
-			replace_first(text, "{<}", "&lt;");
-			replace_first(text, "{ul]", "\n<ul>\n");
-			replace_first(text, "[ul}", "</ul>\n");
-			replace_first(text, "{b]", "<b>");
-			replace_first(text, "[b}", "</b>");
-			replace_first(text, "{i]", "<i>");
-			replace_first(text, "[i}", "</i>");
-
-			replace_first(text, "=warn]", " class='warn'>");
-			replace_first(text, "=error]", " class='error'>");
-			replace_first(text, "=success]", " class='success'>");
-			replace_first(text, "=tags]", " class='tags'>");
-			replace_first(text, "=ghosted]", " class='ghosted'>");
-			replace_first(text, "=version]", " class='version'>");
-
-			replace_first(text, "{li]", "<li>");
-			replace_first(text, "{li", "<li");
-			replace_first(text, "[li}", "</li>\n");
-			replace_first(text, "{span]", "<span>");
-			replace_first(text, "{div]", "<div>");
-			replace_first(text, "[div}", "</div>\n");
-			replace_first(text, "[p}", "</p>\n\n");	
-
-			replace_all(text, "{br}", "<br />\n");
-			replace_all(text, "{span", "<span");
-			replace_all(text, "[span}", "</span>");
-			replace_all(text, "{div", "<div");
-			
-			replace_all(text, "{p]", "<p>");
-			replace_all(text, "{p", "<p");
-
-			//Convert from generic format into HTML hyperlinks.
-			size_t pos1,pos2;
-			string link;
-			pos1 = text.find("{a="); //Start of a link
-			while (pos1 != string::npos) {
-				pos2 = text.find("]",pos1);
-				text.replace(pos2,1,">");
-				text.replace(pos1,3,"<a href=");
-				pos1 = text.find("[a}");
-				text.replace(pos1,3,"</a>");
-				pos1 = text.find("{a=",pos1 + 4);
-			}
-		} else {
 			string eol =
 			#if _WIN32 || _WIN64
 					"\r\n";
@@ -199,53 +109,52 @@ namespace boss {
 			#endif
 
 			//Yes. This really is as horrific as it looks. It should be only temporary though.
-			replace_first(text, "{end}", "");
-			replace_first(text, "{c}", "c");
-			replace_first(text, "{&}", "&");
-			replace_first(text, "{>}", ">");
-			replace_first(text, "{<}", "<");
-			replace_first(text, "{ul]", eol+eol);
-			replace_first(text, "[ul}", eol);
-			replace_first(text, "{b]", "");
-			replace_first(text, "[b}", "");
-			replace_first(text, "{i]", "");
-			replace_first(text, "[i}", "");
-
-			replace_first(text, "{span]", "======================================"+eol);
-
-			replace_first(text, "=warn]", "]");
-			replace_first(text, "=error]", "]");
-			replace_first(text, "=success]", "]");
-			replace_first(text, "=tags]", "]");
-			replace_first(text, "=ghosted]", "]");
-			replace_first(text, "=version]", "]");
-
-			replace_first(text, "{li]", "*  ");
-			replace_first(text, "[li}", eol);
+			replace_first(text, "</body>\n</html>", "");
+			replace_first(text, "&copy;", "c");
+			replace_first(text, "&amp;", "&");
 			
-			replace_first(text, "[div}", eol);
-			replace_first(text, "[p}", eol+eol);	
+			replace_first(text, "\n<ul>\n", eol+eol);
+			replace_first(text, "</ul>\n", eol);
+			replace_first(text, "<b>", "");
+			replace_first(text, "</b>", "");
+			replace_first(text, "<i>", "");
+			replace_first(text, "</i>", "");
 
-			replace_all(text, "{br}", eol);
-			replace_all(text, "{span]", "");
-			replace_all(text, "[span}", "");
-			replace_all(text, "{div]", eol);
+			replace_first(text, "<span>", "======================================"+eol);
 
-			replace_all(text, "{p]", eol);
+			replace_first(text, " class='warn'>", ">");
+			replace_first(text, " class='error'>", ">");
+			replace_first(text, " class='success'>", ">");
+			replace_first(text, " class='tags'>", ">");
+			replace_first(text, " class='ghosted'>", ">");
+			replace_first(text, " class='version'>", ">");
+
+			replace_first(text, "<li>", "*  ");
+			replace_first(text, "</li>\n", eol);
+			
+			replace_first(text, "</div>\n", eol);
+			replace_first(text, "</p>\n\n", eol+eol);	
+
+			replace_all(text, "<br />\n", eol);
+			replace_all(text, "<span>", "");
+			replace_all(text, "</span>", "");
+			replace_all(text, "<div>", eol);
+
+			replace_all(text, "<p>", eol);
+
+			replace_first(text, "&gt;", ">");
+			replace_first(text, "&lt;", "<");
 
 			//Convert from generic format into HTML hyperlinks.
 			size_t pos1,pos2;
 			string link;
-			pos1 = text.find("{a="); //Start of a link
+			pos1 = text.find("<a href="); //Start of a link
 			while (pos1 != string::npos) {
-				text.replace(pos1,3,"");
-				pos1 = text.find("]",pos1);
-				pos2 = text.find("[a}", pos1);
-				text.replace(pos1, pos2-pos1+3,"");
-				//text.replace(pos1, pos2-pos1+1, "\"");  //Clears out the {a=""] bit, replacing it with '"'.
-				//pos1 = text.find("[a}", pos1);
-				//text.replace(pos1,3,"\"");
-				pos1 = text.find("{a=",pos1 + 4);
+				text.replace(pos1,8,"");
+				pos1 = text.find(">",pos1);
+				pos2 = text.find("</a>", pos1);
+				text.replace(pos1, pos2-pos1+4,"");
+				pos1 = text.find("<a href=",pos1);
 			}
 		}
 		log << text;

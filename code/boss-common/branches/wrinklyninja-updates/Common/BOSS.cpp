@@ -232,19 +232,19 @@ int main(int argc, char *argv[]) {
 	
 	OutputHeader(bosslog,format);  //Output HTML start and <head>
 	//Output start of <body>
-	Output(bosslog,format, "{div]Better Oblivion Sorting Software Log[div}");
-	Output(bosslog,format, "{div]{c} Random007 {&} the BOSS development team, 2009-2010. Some rights reserved.{br}");
-	Output(bosslog,format, "{a=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\"]CC Attribution-Noncommercial-No Derivative Works 3.0[a}{br}");
-	Output(bosslog,format, "v"+g_version+" ("+g_releaseDate+")[div}{br}{br}");
+	Output(bosslog,format, "<div>Better Oblivion Sorting Software Log</div>\n");
+	Output(bosslog,format, "<div>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />\n");
+	Output(bosslog,format, "<a href=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\">CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />\n");
+	Output(bosslog,format, "v"+g_version+" ("+g_releaseDate+")</div>\n<br />\n<br />\n");
 
 	if (0 == game) {
 		LOG_DEBUG("Detecting game...");
 		if (fs::exists(data_path / "Oblivion.esm")) {
 			game = 1;
 			if (fs::exists(data_path / "Nehrim.esm")) {
-				Output(bosslog,format, "{p=error]Critical Error: Oblivion.esm and Nehrim.esm have both been found!{br}");
-				Output(bosslog,format, "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.{br}");
-				Output(bosslog,format, "Utility will end now.[p}{end}");
+				Output(bosslog,format, "<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />\n");
+				Output(bosslog,format, "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.<br />\n");
+				Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
 				bosslog.close();
 				LOG_ERROR("Installation error found: check BOSSLOG.");
 				if ( !silent ) 
@@ -256,9 +256,9 @@ int main(int argc, char *argv[]) {
 		else if (fs::exists(data_path / "FalloutNV.esm")) game = 4;
 		else {
 			LOG_ERROR("None of the supported games were detected...");
-			Output(bosslog,format, "{p=error]Critical Error: Master .ESM file not found!{br}");
-			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.{br}");
-			Output(bosslog,format, "Utility will end now.[p}{end}");
+			Output(bosslog,format, "<p class='error'>Critical Error: Master .ESM file not found!<br />\n");
+			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
+			Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
 			bosslog.close();
 			if ( !silent ) 
 				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -269,26 +269,26 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Game detected: %d", game);
 
 	if (update || updateonly) {
-		Output(bosslog,format, "{div]{span]Masterlist Update[span}");
+		Output(bosslog,format, "<div><span>Masterlist Update</span>");
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		LOG_DEBUG("Updating masterlist...");
 		try {
 			unsigned int revision = UpdateMasterlist(game);  //Need to sort out the output of this - ATM it's very messy.
 			if (revision == 0) {
-				Output(bosslog,format, "{p]masterlist.txt is already at the latest version. Update skipped.[p}");
+				Output(bosslog,format, "<p>masterlist.txt is already at the latest version. Update skipped.</p>\n\n");
 				cout << "masterlist.txt is already at the latest version. Update skipped." << endl;
 			} else {
-				Output(bosslog,format, "{p]masterlist.txt updated to revision " + IntToString(revision) + ".[p}");
+				Output(bosslog,format, "<p>masterlist.txt updated to revision " + IntToString(revision) + ".</p>\n\n");
 				cout << "masterlist.txt updated to revision " << revision << endl;
 			}
 		} catch (boss_error & e) {
 			string const * detail = boost::get_error_info<err_detail>(e);
-			Output(bosslog,format, "{p=warn]Error: Masterlist update failed.{br}");
-			Output(bosslog,format, "Details: " + *detail + "{br}");
-			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.[p}");
+			Output(bosslog,format, "<p class='warn'>Error: Masterlist update failed.<br />\n");
+			Output(bosslog,format, "Details: " + *detail + "<br />\n");
+			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.</p>\n\n");
 		}
 		LOG_DEBUG("Masterlist updated successfully.");
-		Output(bosslog,format, "[div}{br}{br}");
+		Output(bosslog,format, "</div>\n<br />\n<br />\n");
 	}
 
 	if (updateonly == true) {
@@ -304,9 +304,9 @@ int main(int argc, char *argv[]) {
 		else if (game == 3) esmtime = fs::last_write_time(data_path / "Nehrim.esm");
 		else if (game == 4) esmtime = fs::last_write_time(data_path / "FalloutNV.esm");
 	} catch(fs::filesystem_error e) {
-		Output(bosslog,format, "{p=error]Critical Error: Master .ESM file cannot be read!{br}");
-		Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.{br}");
-		Output(bosslog,format, "Utility will end now.[p}{end}");
+		Output(bosslog,format, "<p class='error'>Critical Error: Master .ESM file cannot be read!<br />\n");
+		Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
+		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
 		bosslog.close();
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.what());
 		if ( !silent ) 
@@ -319,10 +319,12 @@ int main(int argc, char *argv[]) {
 	//////////////////////////////////////////////////////
 
 	if (showCRCs) {
+		Output(bosslog, format, "<div><span>OBSE &amp; OBSE Plugin Versions/Checksums</span><p>");
+
 		if (fs::exists("../obse_1_2_416.dll")) {
 			string CRC = IntToHexString(GetCrc32("../obse_1_2_416.dll"));
-			string version = GetModHeader("../obse_1_2_416.dll");  //Replace with OBSE version check.
-			Output(bosslog, format, "OBSE detected, version:, checksum:");
+		//	string version = GetModHeader("../obse_1_2_416.dll");  //Replace with OBSE version check.
+			Output(bosslog, format, "<b>OBSE</b> - <i>Checksum: " + CRC + "</i><br />\n<br />\n");
 		}
 
 		if (fs::is_directory(data_path / "OBSE/Plugins")) {
@@ -331,10 +333,13 @@ int main(int argc, char *argv[]) {
 				const string ext = Tidy(itr->path().extension().string());
 				if (fs::is_regular_file(itr->status()) && ext==".dll") {
 					string CRC = IntToHexString(GetCrc32(itr->path()));
-					string version = GetModHeader(itr->path());  //Replace with OBSE plugin version check.
+			//		string version = GetModHeader(itr->path());  //Replace with OBSE plugin version check.
+					Output(bosslog, format, "<b>" + filename.string() + "</b> - <i>Checksum: " + CRC + "</i><br />\n<br />\n");
 				}
 			}
 		}
+
+		Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
 	}
 
 	//////////////////////////////////////////////
@@ -348,9 +353,9 @@ int main(int argc, char *argv[]) {
 			SaveModlist(Modlist, curr_modlist_path);
 		} catch (boss_error &e) {
 			string const * detail = boost::get_error_info<err_detail>(e);
-			Output(bosslog,format, "{p=error]Critical Error: " + *detail + ".{br}");
-			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.{br}");
-			Output(bosslog,format, "Utility will end now.[p}{end}");
+			Output(bosslog,format, "<p class='error'>Critical Error: " + *detail + ".<br />\n");
+			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
+			Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
 			bosslog.close();
 			if ( !silent ) 
 				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -369,9 +374,9 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
 	//Check if it actually exists, because the parser doesn't fail if there is no file...
 	if (!fs::exists(sortfile)) {                                                     
-		Output(bosslog,format, "{p=error]Critical Error: \"" +sortfile.string() +"\" cannot be read!{br}");
-		Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.{br}");
-		Output(bosslog,format, "Utility will end now.[p}{end}");
+		Output(bosslog,format, "<p class='error'>Critical Error: \"" +sortfile.string() +"\" cannot be read!<br />\n");
+		Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
+		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
         bosslog.close();
         LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
         if ( !silent ) 
@@ -380,8 +385,8 @@ int main(int argc, char *argv[]) {
     }
 	//Now validate file.
 	if (!ValidateUTF8File(sortfile)) {
-		Output(bosslog,format, "{p=error]Critical Error: \""+sortfile.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.{br}");
-		Output(bosslog, format, "Utility will end now.[p}{end}");
+		Output(bosslog,format, "<p class='error'>Critical Error: \""+sortfile.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.<br />\n");
+		Output(bosslog, format, "Utility will end now.</p>\n\n</body>\n</html>");
 		bosslog.close();
 		LOG_ERROR("File '%s' was not encoded in valid UTF-8.", sortfile.filename().string().c_str());
 		if ( !silent ) 
@@ -413,7 +418,7 @@ int main(int argc, char *argv[]) {
 	if (revert<1 && fs::exists(userlist_path)) {
 		//Validate file first.
 		if (!ValidateUTF8File(userlist_path)) {
-			messageBuffer.push_back("{p=error]Critical Error: \""+userlist_path.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding. Userlist parsing aborted. No rules will be applied.[p}");
+			messageBuffer.push_back("<p class='error'>Critical Error: \""+userlist_path.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding. Userlist parsing aborted. No rules will be applied.</p>\n\n");
 			LOG_ERROR("File '%s' was not encoded in valid UTF-8.", userlist_path.filename().string().c_str());
 		} else {
 			bool parsed = parseUserlist(userlist_path,Userlist);
@@ -496,7 +501,7 @@ int main(int argc, char *argv[]) {
 
 	//Apply userlist rules to modlist.
 	if (revert<1 && fs::exists(userlist_path)) {
-		Output(bosslog, format, "{div]{span]Userlist Messages[span}{p]");
+		Output(bosslog, format, "<div><span>Userlist Messages</span><p>");
 
 		for (size_t i=0; i<messageBuffer.size(); i++)  //First print parser/syntax error messages.
 			Output(bosslog,format,messageBuffer[i]);
@@ -517,11 +522,11 @@ int main(int argc, char *argv[]) {
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (Userlist[i].ruleKey == ADD  && index1 <= x) {
-						Output(bosslog, format, "{p=warn]\""+Userlist[i].ruleObject+"\" is already in the masterlist. Rule skipped.[p}");
+						Output(bosslog, format, "<p class='warn'>\""+Userlist[i].ruleObject+"\" is already in the masterlist. Rule skipped.</p>\n\n");
 						LOG_WARN(" * \"%s\" is already in the masterlist.", Userlist[i].ruleObject.c_str());
 						break;
 					} else if (Userlist[i].ruleKey == OVERRIDE && index1 > x) {
-						Output(bosslog, format, "{p=error]\""+Userlist[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.[p}");
+						Output(bosslog, format, "<p class='error'>\""+Userlist[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</p>\n\n");
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", Userlist[i].ruleObject.c_str());
 						break;
 					}
@@ -532,7 +537,7 @@ int main(int argc, char *argv[]) {
 					//Handle case of mods that don't exist at all.
 					if (index2 == (size_t)-1) {
 						Modlist.insert(Modlist.begin()+index1,mod);
-						Output(bosslog, format, "{p=warn]\""+Userlist[i].lines[j].object+"\" is not installed, and is not in the masterlist. Rule skipped.[p}");
+						Output(bosslog, format, "<p class='warn'>\""+Userlist[i].lines[j].object+"\" is not installed, and is not in the masterlist. Rule skipped.</p>\n\n");
 						LOG_WARN(" * \"%s\" is not installed or in the masterlist.", Userlist[i].lines[j].object.c_str());
 						break;
 					}
@@ -541,7 +546,7 @@ int main(int argc, char *argv[]) {
 						if (Userlist[i].ruleKey == ADD)
 							x--;
 						Modlist.insert(Modlist.begin()+index1,mod);
-						Output(bosslog, format, "{p=error]\""+Userlist[i].lines[j].object+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.[p}");
+						Output(bosslog, format, "<p class='error'>\""+Userlist[i].lines[j].object+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</p>\n\n");
 						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", Userlist[i].lines[j].object.c_str());
 						break;
 					}
@@ -549,7 +554,7 @@ int main(int argc, char *argv[]) {
 					if (Userlist[i].lines[j].key == AFTER) 
 						index2 += 1;
 					Modlist.insert(Modlist.begin()+index2,mod);
-					Output(bosslog, format, "{p=success]\""+Userlist[i].ruleObject+"\" has been sorted "+ KeyToString(Userlist[i].lines[j].key) + " \"" + Userlist[i].lines[j].object + "\".[p}");
+					Output(bosslog, format, "<p class='success'>\""+Userlist[i].ruleObject+"\" has been sorted "+ KeyToString(Userlist[i].lines[j].key) + " \"" + Userlist[i].lines[j].object + "\".</p>\n\n");
 				//A group sorting line.
 				} else if ((Userlist[i].lines[j].key == BEFORE || Userlist[i].lines[j].key == AFTER) && !IsPlugin(Userlist[i].lines[j].object)) {
 					vector<item> group;
@@ -559,7 +564,7 @@ int main(int argc, char *argv[]) {
 					index2 = GetGroupEndPos(Modlist, Userlist[i].ruleObject);
 					//Check to see group actually exists.
 					if (index1 == (size_t)-1 || index2 == (size_t)-1) {
-						Output(bosslog, format, "{p=error]The group \""+Userlist[i].ruleObject+"\" is not in the masterlist or is malformatted. Rule skipped.[p}");
+						Output(bosslog, format, "<p class='error'>The group \""+Userlist[i].ruleObject+"\" is not in the masterlist or is malformatted. Rule skipped.</p>\n\n");
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist[i].ruleObject.c_str());
 						break;
 					}
@@ -575,14 +580,14 @@ int main(int argc, char *argv[]) {
 					//Check that the sort group actually exists.
 					if (index2 == (size_t)-1) {
 						Modlist.insert(Modlist.begin()+index1,group.begin(),group.end());  //Insert the group back in its old position.
-						Output(bosslog, format, "{p=error]The group \""+Userlist[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.[p}");
+						Output(bosslog, format, "<p class='error'>The group \""+Userlist[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</p>\n\n");
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist[i].lines[j].object.c_str());
 						break;
 					}
 					//Now insert the group.
 					Modlist.insert(Modlist.begin()+index2,group.begin(),group.end());
 					//Print success message.
-					Output(bosslog, format, "{p=success]The group \""+Userlist[i].ruleObject+"\" has been sorted "+ KeyToString(Userlist[i].lines[j].key) + " the group \""+Userlist[i].lines[j].object+"\".[p}");
+					Output(bosslog, format, "<p class='success'>The group \""+Userlist[i].ruleObject+"\" has been sorted "+ KeyToString(Userlist[i].lines[j].key) + " the group \""+Userlist[i].lines[j].object+"\".</p>\n\n");
 				//An insertion line.
 				} else if (Userlist[i].lines[j].key == TOP || Userlist[i].lines[j].key == BOTTOM) {
 					size_t index1,index2;
@@ -594,11 +599,11 @@ int main(int argc, char *argv[]) {
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (Userlist[i].ruleKey == ADD  && index1 <= x) {
-						Output(bosslog, format, "{p=warn]\""+Userlist[i].ruleObject+"\" is already in the masterlist. Rule skipped.[p}");
+						Output(bosslog, format, "<p class='warn'>\""+Userlist[i].ruleObject+"\" is already in the masterlist. Rule skipped.</p>\n\n");
 						LOG_WARN(" * \"%s\" is already in the masterlist.", Userlist[i].ruleObject.c_str());
 						break;
 					} else if (Userlist[i].ruleKey == OVERRIDE && index1 > x) {
-						Output(bosslog, format, "{p=error]\""+Userlist[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.[p}");
+						Output(bosslog, format, "<p class='error'>\""+Userlist[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</p>\n\n");
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", Userlist[i].ruleObject.c_str());
 						break;
 					}
@@ -613,14 +618,14 @@ int main(int argc, char *argv[]) {
 					//Check that the sort group actually exists.
 					if (index2 == (size_t)-1) {
 						Modlist.insert(Modlist.begin()+index1,mod);  //Insert the mod back in its old position.
-						Output(bosslog, format, "{p=error]The group \""+Userlist[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.[p}");
+						Output(bosslog, format, "<p class='error'>The group \""+Userlist[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</p>\n\n");
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist[i].lines[j].object.c_str());
 						break;
 					}
 					//Now insert the mod into the group.
 					Modlist.insert(Modlist.begin()+index2,mod);
 					//Print success message.
-					Output(bosslog, format, "{p=success]\""+Userlist[i].ruleObject+"\" inserted at the "+ KeyToString(Userlist[i].lines[j].key) + " of group \"" + Userlist[i].lines[j].object + "\".[p}");
+					Output(bosslog, format, "<p class='success'>\""+Userlist[i].ruleObject+"\" inserted at the "+ KeyToString(Userlist[i].lines[j].key) + " of group \"" + Userlist[i].lines[j].object + "\".</p>\n\n");
 				//A message line.
 				} else if (Userlist[i].lines[j].key == APPEND || Userlist[i].lines[j].key == REPLACE) {
 					size_t index, pos;
@@ -647,41 +652,41 @@ int main(int argc, char *argv[]) {
 					Modlist[index].messages.push_back(newMessage);
 
 					//Output confirmation.
-					Output(bosslog, format, "{p=success]\"" + Userlist[i].lines[j].object + "\"");
+					Output(bosslog, format, "<p class='success'>\"" + Userlist[i].lines[j].object + "\"");
 					if (Userlist[i].lines[j].key == APPEND)
 						Output(bosslog, format, " appended to ");
 					else
 						Output(bosslog, format, " replaced ");
-					Output(bosslog, format, "messages attached to \"" + Userlist[i].ruleObject + "\".[p}");
+					Output(bosslog, format, "messages attached to \"" + Userlist[i].ruleObject + "\".</p>\n\n");
 				}
 			}
 		}
 		if (Userlist.size() == 0) 
 			Output(bosslog, format, "No valid rules were found in your userlist.txt.");
-		Output(bosslog, format, "[p}[div}{br}{br}");
+		Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
 		LOG_INFO("Userlist sorting process finished.");
 	}
 
 	//Re-date .esp/.esm files according to order in modlist and output messages
-	if (revert<1) Output(bosslog, format, "{div]{span]Recognised And Re-ordered Mod Files[span}{p]");
-	else if (revert==1) Output(bosslog, format, "{div]{span]Restored Load Order (Using modlist.txt)[span}{p]");
-	else if (revert==2) Output(bosslog, format, "{div]{span]Restored Load Order (Using modlist.old)[span}{p]");
+	if (revert<1) Output(bosslog, format, "<div><span>Recognised And Re-ordered Mod Files</span><p>");
+	else if (revert==1) Output(bosslog, format, "<div><span>Restored Load Order (Using modlist.txt)</span><p>");
+	else if (revert==2) Output(bosslog, format, "<div><span>Restored Load Order (Using modlist.old)</span><p>");
 
 	LOG_INFO("Applying calculated ordering to user files...");
 	for (size_t i=0; i<=x; i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			string text = "{b]" + TrimDotGhost(Modlist[i].name.string());
+			string text = "<b>" + TrimDotGhost(Modlist[i].name.string());
 			if (!skip_version_parse) {
 				string version = GetModHeader(Modlist[i].name);
 				if (!version.empty())
-					text += " {span=version][Version "+version+"][span}";
+					text += " <span class='version'>[Version "+version+"]</span>";
 			}
-			text += "[b}";
+			text += "</b>";
 			if (IsGhosted(data_path / Modlist[i].name)) 
-				text += " {span=ghosted] - Ghosted[span}";
+				text += " <span class='ghosted'> - Ghosted</span>";
 			if (showCRCs)
-				text += "{i] - Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "[i}";
+				text += "<i> - Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</i>";
 			Output(bosslog, format, text); 
 				
 			//Now change the file's date, if it is not the game's master file.
@@ -694,35 +699,35 @@ int main(int argc, char *argv[]) {
 				try { 
 					fs::last_write_time(data_path / Modlist[i].name,modfiletime);
 				} catch(fs::filesystem_error e) {
-					Output(bosslog, format, " - {span=error]Error: Could not change the date of \"" + Modlist[i].name.string() + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.[span}");
+					Output(bosslog, format, " - <span class='error'>Error: Could not change the date of \"" + Modlist[i].name.string() + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>");
 				}
 			}
 			//Finally, print the mod's messages.
 			if (Modlist[i].messages.size()>0) {
-				Output(bosslog, format, "{ul]");
+				Output(bosslog, format, "\n<ul>\n");
 				for (size_t j=0; j<Modlist[i].messages.size(); j++)
 					ShowMessage(bosslog, format,Modlist[i].messages[j]);  //Print messages.
-				Output(bosslog, format, "[ul}");
+				Output(bosslog, format, "</ul>\n");
 			} else
-				Output(bosslog, format, "{br}{br}");
+				Output(bosslog, format, "<br />\n<br />\n");
 		}
 	}
-	Output(bosslog, format, "[p}[div}{br}{br}");
+	Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
 	LOG_INFO("User file ordering applied successfully.");
 	
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 	//Order their dates to be i days after the master esm to ensure they load last.
-	Output(bosslog, format, "{div]{span]Unrecogised Mod Files[span}{p]Reorder these by hand using your favourite mod ordering utility.[p}{p]");
+	Output(bosslog, format, "<div><span>Unrecogised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>\n\n<p>");
 	LOG_INFO("Reporting unrecognized mods...");
 	for (size_t i=x+1; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
 			string text = "Unknown mod file: " + TrimDotGhost(Modlist[i].name.string());
 			if (IsGhosted(data_path / Modlist[i].name)) 
-				text += " {span=ghosted] - Ghosted[span}";
+				text += " <span class='ghosted'> - Ghosted</span>";
 			if (showCRCs)
-				text += "{i] - Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "[i}";
+				text += "<i> - Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</i>";
 			Output(bosslog, format, text); 
 
 			modfiletime=esmtime;
@@ -733,16 +738,16 @@ int main(int argc, char *argv[]) {
 			try { 
 				fs::last_write_time(data_path / Modlist[i].name,modfiletime);
 			} catch(fs::filesystem_error e) {
-				Output(bosslog, format, " - {span=error]Error: Could not change the date of \"" + Modlist[i].name.string() + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.[span}");
+				Output(bosslog, format, " - <span class='error'>Error: Could not change the date of \"" + Modlist[i].name.string() + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>");
 			}
-			Output(bosslog, format, "{br}");
+			Output(bosslog, format, "<br />\n");
 		}
 	}
-	Output(bosslog, format, "[p}[div}{br}{br}");
+	Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
 	LOG_INFO("Unrecognized mods reported.");
 	
 	//Let people know the program has stopped.
-	Output(bosslog, format, "{div]{span]BOSS Execution Complete[span}[div}{end}");
+	Output(bosslog, format, "<div><span>BOSS Execution Complete</span></div>\n</body>\n</html>");
 	bosslog.close();
 	LOG_INFO("Launching boss log in browser.");
 	if ( !silent ) 

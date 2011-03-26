@@ -66,10 +66,10 @@ namespace boss {
 	vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in old format.
 
 	//Parsing error message format.
-	static format MasterlistParsingErrorFormat("{p=error]"
-		"Masterlist Parsing Error: Expected a %1% at \"%2%\". Masterlist parsing aborted.{br}"
+	static format MasterlistParsingErrorFormat("<p class='error'>"
+		"Masterlist Parsing Error: Expected a %1% at \"%2%\". Masterlist parsing aborted.<br />\n"
 		"Utility will end now."
-		"[p}");
+		"</p>\n\n");
 
 	//Checks if a masterlist variable is defined.
 	void CheckVar(bool& result, string var) {
@@ -381,7 +381,7 @@ namespace boss {
 			ostringstream out;
 			out << what;
 			string expect = out.str().substr(1,out.str().length()-2);
-			expect = "{<}" + expect + "{>}";
+			expect = "&lt;" + expect + "&gt;";
 
 			string context(errorpos, std::min(errorpos +50, last));
 			boost::trim_left(context);
