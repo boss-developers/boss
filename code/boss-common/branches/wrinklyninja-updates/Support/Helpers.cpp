@@ -173,17 +173,17 @@ namespace boss {
 	/* This gives a technically incorrect CRC, as fileToBuffer() does not use binary file streams.
 	   However, accuracy has a massive performance hit, and isn't required.
 	   All we require is that CRCs are consistent. 
-	   Since BOSS is always the source of file CRCs, consistency is achieved even with inaccurate CRCs. 
-	unsigned int GetCrc32(const fs::path filename) {
+	   Since BOSS is always the source of file CRCs, consistency is achieved even with inaccurate CRCs. */
+	unsigned int GetCrc32(const fs::path& filename) {
 		boost::crc_32_type result;
 		string buffer;
 		fileToBuffer(filename, buffer);
         result.process_bytes(buffer.data(), buffer.length());
 		return result.checksum();
-	}*/
+	}
 
 	//This is the correct CRC calculation code.
-	unsigned int GetCrc32(const fs::path& filename) {
+	/*unsigned int GetCrc32(const fs::path& filename) {
 		boost::crc_32_type result;
 		size_t const buffer_size = 1024;
 		ifstream ifile(filename.c_str(), ios::binary);
@@ -196,7 +196,7 @@ namespace boss {
 			return result.checksum();
 		} else
 			return 0;
-	}
+	}*/
 
 	//Determines if a given mod is a game's main master file or not.
 	bool IsMasterFile(const string plugin) {
