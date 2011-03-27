@@ -17,7 +17,6 @@
 #include <cstring>
 #include <fstream>
 
-
 namespace boss {
 	using namespace std;
 
@@ -32,13 +31,13 @@ namespace boss {
 	//			http://www.uesp.net/wiki/Tes4Mod:Mod_File_Format/TES4
 	//
 
-	ModHeader ReadHeader(string filename) {
+	ModHeader ReadHeader(boost::filesystem::path filename) {
 		char		buffer[MAXLENGTH];
 		char*		bufptr = buffer;
 		ModHeader	modHeader;
-		ifstream	file(filename.c_str(), ios_base::binary | ios_base::in);
+		ifstream	file(filename.native().c_str(), ios_base::binary | ios_base::in);
 	
-		modHeader.Name = filename;
+		modHeader.Name = filename.string();
 
 		// Reads the first MAXLENGTH bytes into the buffer
 		file.read(&buffer[0], sizeof(buffer));

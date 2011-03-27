@@ -19,11 +19,10 @@
 #include <curl/curl.h>
 #include <curl/types.h>
 #include <curl/easy.h>
+#include "Error.h"
 
 namespace boss {
-
-	void UpdateMasterlist(int game);
-
+	unsigned int UpdateMasterlist(int game);
 }
 
 #endif

@@ -12,8 +12,9 @@
 #ifndef __BOSS_GLOBALS_H__
 #define __BOSS_GLOBALS_H__
 
-#define BOOST_FILESYSTEM_VERSION 3
-#define BOOST_FILESYSTEM_NO_DEPRECATED
+#ifndef _UNICODE
+#define _UNICODE	// Tell compiler we're using Unicode, notice the _
+#endif
 
 #include <string>
 #include <fstream>
@@ -21,18 +22,14 @@
 
 
 namespace boss {
-
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-	extern ifstream order;						//masterlist.txt - the grand mod order list
-	extern ofstream bosslog;					//BOSSlog.txt - output file.
-	extern bool fcom;							//true if key FCOM or FOOK2 files are found.
-	extern bool ooo;							//true if OOO or FWE esm is found.
-	extern bool bc;								//true if Better Cities esm is found.
+	extern ofstream bosslog;					//BOSSlog.html output file
 
 	extern const fs::path data_path;			// Holds the path to the data directory.
-	extern const fs::path bosslog_path;			// BOSSlog full file name
+	extern const fs::path bosslog_html_path;	// BOSSlog full HTML file name
+	extern const fs::path bosslog_text_path;	// BOSSlog full text file name
 	extern const fs::path masterlist_path;		// Hold both location and file name for masterlist.txt
 	extern const fs::path userlist_path;		// Hold both location and file name for userlist.txt 
 	extern const fs::path curr_modlist_path;	// Hold both location and file name for modlist.txt

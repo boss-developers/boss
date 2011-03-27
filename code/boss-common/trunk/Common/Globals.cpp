@@ -14,14 +14,11 @@
 namespace boss {
 	using namespace std;
 
-	ifstream order;						//masterlist.txt - the grand mod order list
 	ofstream bosslog;					//BOSSlog.txt - output file.
-	bool fcom;							//true if key FCOM or FOOK2 files are found.
-	bool ooo;							//true if OOO or FWE esm is found.
-	bool bc;							//true if Better Cities esm is found.
 
 	const fs::path data_path			= fs::path("..") / "Data";
-	const fs::path bosslog_path			= "BOSSlog.html";
+	const fs::path bosslog_html_path	= "BOSSlog.html";
+	const fs::path bosslog_text_path	= "BOSSlog.txt";
 	const fs::path masterlist_path		= "masterlist.txt";
 	const fs::path userlist_path		= "userlist.txt";
 	const fs::path curr_modlist_path	= "modlist.txt";

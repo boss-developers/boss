@@ -10,35 +10,29 @@
     <ClCompile Include="..\Support\VersionRegex.cpp">
       <Filter>Support</Filter>
     </ClCompile>
-    <ClCompile Include="Masterlist.cpp">
-      <Filter>Masterlist</Filter>
-    </ClCompile>
     <ClCompile Include="Updater.cpp">
       <Filter>Updater</Filter>
     </ClCompile>
     <ClCompile Include="BOSS.cpp" />
-    <ClCompile Include="Sorting.cpp">
-      <Filter>Sorting</Filter>
-    </ClCompile>
     <ClCompile Include="Globals.cpp">
       <Filter>Globals</Filter>
     </ClCompile>
-    <ClCompile Include="Userlist.cpp">
-      <Filter>Userlist</Filter>
-    </ClCompile>
     <ClCompile Include="..\Support\Logger.cpp">
       <Filter>Support</Filter>
+    </ClCompile>
+    <ClCompile Include="BOSSLog.cpp">
+      <Filter>BOSSLog</Filter>
+    </ClCompile>
+    <ClCompile Include="Lists.cpp">
+      <Filter>Lists</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Parsing\Parser.cpp">
+      <Filter>Parsing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support">
       <UniqueIdentifier>{4cc2d3c9-6316-4c73-9626-c777c252397c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Masterlist">
-      <UniqueIdentifier>{bdd935b7-3faf-46b4-b332-4945a5c4f787}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sorting">
-      <UniqueIdentifier>{a89cfbe9-ab64-4030-ba8a-7d494cee717b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Updater">
       <UniqueIdentifier>{f8cf259d-a738-46ea-bfeb-f34b2d1989ba}</UniqueIdentifier>
@@ -46,8 +40,20 @@
     <Filter Include="Globals">
       <UniqueIdentifier>{c8c250b9-403a-48ff-b4f8-2582ac08f2c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Userlist">
-      <UniqueIdentifier>{3ae81265-eb1a-4c1a-a997-67dca1ac95fc}</UniqueIdentifier>
+    <Filter Include="BOSSLog">
+      <UniqueIdentifier>{6c50ab14-d38a-474b-95ba-313be331806c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lists">
+      <UniqueIdentifier>{7cc10196-2e42-4a43-802e-9c3a7ad9f3ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parsing">
+      <UniqueIdentifier>{d0792f72-0ae4-420b-a834-ed8e0ae75054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parsing\Userlist">
+      <UniqueIdentifier>{602a28f9-0ef6-4da1-9a1c-acdce1435c1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parsing\Modlist">
+      <UniqueIdentifier>{0b023587-0bc5-410f-bdf0-4d64998eb670}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,27 +69,42 @@
     <ClInclude Include="..\Support\VersionRegex.h">
       <Filter>Support</Filter>
     </ClInclude>
-    <ClInclude Include="Masterlist.h">
-      <Filter>Masterlist</Filter>
-    </ClInclude>
     <ClInclude Include="Updater.h">
       <Filter>Updater</Filter>
-    </ClInclude>
-    <ClInclude Include="Sorting.h">
-      <Filter>Sorting</Filter>
     </ClInclude>
     <ClInclude Include="BOSS.h" />
     <ClInclude Include="Globals.h">
       <Filter>Globals</Filter>
-    </ClInclude>
-    <ClInclude Include="Userlist.h">
-      <Filter>Userlist</Filter>
     </ClInclude>
     <ClInclude Include="..\Support\Logger.h">
       <Filter>Support</Filter>
     </ClInclude>
     <ClInclude Include="..\Support\Platform.h">
       <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="BOSSLog.h">
+      <Filter>BOSSLog</Filter>
+    </ClInclude>
+    <ClInclude Include="Error.h">
+      <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="Lists.h">
+      <Filter>Lists</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parsing\Data.h">
+      <Filter>Parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parsing\Userlist\Grammar.h">
+      <Filter>Parsing\Userlist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parsing\Skipper.h">
+      <Filter>Parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parsing\Parser.h">
+      <Filter>Parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parsing\Modlist\Grammar.h">
+      <Filter>Parsing\Modlist</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -12,10 +12,9 @@
 #ifndef __SUPPORT_MODFORMAT__HPP__
 #define __SUPPORT_MODFORMAT__HPP__
 
-
 #include "Types.h"
-
 #include <cstring>
+#include <boost/filesystem.hpp>
 
 
 namespace boss {
@@ -41,7 +40,7 @@ namespace boss {
 		static const ulong SNAM	=	'MANS';
 	};
 
-	ModHeader ReadHeader(string filename);
+	ModHeader ReadHeader(boost::filesystem::path filename);
 }
 
 #endif

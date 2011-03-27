@@ -12,15 +12,15 @@
 #ifndef __SUPPORT_HELPERS__HPP__
 #define __SUPPORT_HELPERS__HPP__
 
-
 #include "Types.h"
 
 #include <cstring>
 #include <iostream>
-
+#include "boost/filesystem.hpp"
 
 namespace boss {
 	using namespace std;
+	namespace fs = boost::filesystem;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Helper functions
@@ -78,11 +78,41 @@ namespace boss {
 		return value;
 	}
 
-	//Changes uppercase to lowercase and removes trailing spaces to do what Windows filesystem does to filenames.	
-	string Tidy(string filename);
-
 	// Launches the specified file using the most appropriate program for viewing it.
 	int Launch(const string& filename);
+
+	//Changes uppercase to lowercase and removes preceding and trailing spaces.	
+	string Tidy(string text);
+
+	//Checks if a given object is an esp or an esm.
+	bool IsPlugin(string object);
+	
+	//Checks if the plugin exists at the given location, even if ghosted.
+	bool Exists(const fs::path plugin);
+
+	//Reads the header from mod file and prints a string representation which includes the version text, if found.
+	string GetModHeader(const fs::path& filename);
+
+	//Calculate the CRC of the given file for comparison purposes.
+	unsigned int GetCrc32(const fs::path& filename);
+
+	//Determines if a given mod is a game's main master file or not.
+	bool IsMasterFile(const string plugin);
+
+	//Reads an entire file into a string buffer.
+	void fileToBuffer(const fs::path file, string& buffer);
+
+	//Removes the ".ghost" extension from ghosted filenames. 
+	string TrimDotGhost(string plugin);
+
+	//Checks if the given plugin is ghosted in the user's install.
+	//NOT if the plugin given has a '.ghost' extension.
+	bool IsGhosted(fs::path plugin);
+
+	//Gets the given OBSE dll or OBSE plugin dll's version number.
+	//Also works for FOSE and NVSE.
+	//NOT CROSS-PLATFORM. Requires Windows.h.
+	string GetOBSEVersion(const fs::path& filename);
 }
 
 #endif
