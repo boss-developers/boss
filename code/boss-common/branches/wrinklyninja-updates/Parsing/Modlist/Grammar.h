@@ -91,12 +91,23 @@ namespace boss {
 
 		if (file == "OBSE") {
 			file_path = "..";
-			file = "obse_1_2_416.dll";
+			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
+		} else if (file == "FOSE") {
+			file_path = "..";
+			file = "fose_loader.exe";
+		} else if (file == "NVSE") {
+			file_path = "..";
+			file = "nvse_loader.exe";
 		} else {
 			fs::path p(file);
-			if (Tidy(p.extension().string()) == ".dll")
-				file_path = data_path / fs::path("OBSE/Plugins");
-			else
+			if (Tidy(p.extension().string()) == ".dll") {
+				if (fs::exists(data_path / "OBSE"))
+					file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
+				else if (fs::exists(data_path / "FOSE"))
+					file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
+				else
+					file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+			} else
 				file_path = data_path;
 		}
 
@@ -107,7 +118,8 @@ namespace boss {
 					trueVersion = GetModHeader(file_path / fs::path(file + ".ghost"));
 				else 
 					trueVersion = GetModHeader(file_path / file);
-			}
+			} else
+				trueVersion = GetOBSEVersion(file_path / file);
 
 			switch (comp) {
 			case '>':
@@ -134,20 +146,34 @@ namespace boss {
 
 		if (file == "OBSE") {
 			file_path = "..";
-			file = "obse_1_2_416.dll";
+			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
+		} else if (file == "FOSE") {
+			file_path = "..";
+			file = "fose_loader.exe";
+		} else if (file == "NVSE") {
+			file_path = "..";
+			file = "nvse_loader.exe";
 		} else {
 			fs::path p(file);
-			if (Tidy(p.extension().string()) == ".dll")
-				file_path = data_path / fs::path("OBSE/Plugins");
-			else
+			if (Tidy(p.extension().string()) == ".dll") {
+				if (fs::exists(data_path / "OBSE"))
+					file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
+				else if (fs::exists(data_path / "FOSE"))
+					file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
+				else
+					file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+			} else
 				file_path = data_path;
 		}
 
 		if (Exists(file_path / file)) {
 			unsigned int CRC;
-			if (IsGhosted(file_path / file)) 
-				CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
-			else
+			if (file_path == data_path) {
+				if (IsGhosted(file_path / file)) 
+					CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
+				else
+					CRC = GetCrc32(file_path / file);
+			} else
 				CRC = GetCrc32(file_path / file);
 
 			if (sum == CRC)
@@ -159,12 +185,21 @@ namespace boss {
 	void CheckFile(bool& result, string file) {
 		result = false;
 		if (file == "OBSE")
-			result = fs::exists("../obse_1_2_416.dll");
+			result = fs::exists("../obse_1_2_416.dll");  //Don't look for the loader because steam users don't need it.
+		else if (file == "FOSE")
+			result = fs::exists("../fose_loader.exe");
+		else if (file == "NVSE")
+			result = fs::exists("../nvse_loader.exe");
 		else {
 			fs::path p(file);
-			if (Tidy(p.extension().string()) == ".dll")
-				result = fs::exists(data_path / fs::path("OBSE/Plugins") / p);
-			else
+			if (Tidy(p.extension().string()) == ".dll") {
+				if (fs::exists(data_path / "OBSE"))
+					result = fs::exists(data_path / fs::path("OBSE/Plugins") / p);  //Oblivion - OBSE plugins.
+				else if (fs::exists(data_path / "FOSE"))
+					result = fs::exists(data_path / fs::path("FOSE/Plugins") / p);  //Fallout 3 - FOSE plugins.
+				else
+					result = fs::exists(data_path / fs::path("NVSE/Plugins") / p);  //Fallout: New Vegas - NVSE plugins.
+			} else
 				result = fs::exists(data_path / p);
 		}
 	}
@@ -306,21 +341,23 @@ namespace boss {
 			condition = 
 				variable									[phoenix::bind(&CheckVar, _val, _1)]
 				| version									[phoenix::bind(&CheckVersion, _val, _1)]
-				| (hex > '|' > file)						[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
-				| file										[phoenix::bind(&CheckFile, _val, _1)]
+				| (hex > '|' > (file | scriptExtender))		[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
+				| (file | scriptExtender)					[phoenix::bind(&CheckFile, _val, _1)]
 				;
 
 			variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
 
-			file %= 
-				lexeme['\"' > +(char_ - '\"') > '\"']  //An OBSE plugin or a mod plugin.
-				| unicode::string("OBSE");  //OBSE itself.
+			file %= lexeme['\"' > +(char_ - '\"') > '\"'];  //An OBSE plugin or a mod plugin.
+
+			scriptExtender %= unicode::string("OBSE")
+				| unicode::string("FOSE")
+				| unicode::string("NVSE");
 
 			version %=   //A version, followed by the mod it applies to.
 				(char_('=') | char_('>') | char_('<'))
 				> lexeme[+(char_ - '|')]
 				> char_('|')
-				> file;
+				> (file | scriptExtender);
 
 			
 
@@ -372,7 +409,7 @@ namespace boss {
 		qi::rule<Iterator, fs::path(), skipper> itemName;
 		qi::rule<Iterator, vector<message>(), skipper> itemMessages;
 		qi::rule<Iterator, message(), skipper> itemMessage;
-		qi::rule<Iterator, string(), skipper> charString, messageString, variable, file, version, andOr;
+		qi::rule<Iterator, string(), skipper> charString, messageString, variable, file, version, andOr, scriptExtender;
 		qi::rule<Iterator, keyType(), skipper> messageKeyword;
 		qi::rule<Iterator, bool(), skipper> conditional, conditionals, condition, oldConditional;
 		qi::rule<Iterator, skipper> metaLine;
@@ -383,7 +420,7 @@ namespace boss {
 			string expect = out.str().substr(1,out.str().length()-2);
 			expect = "&lt;" + expect + "&gt;";
 
-			string context(errorpos, std::min(errorpos +50, last));
+			string context(errorpos, min(errorpos +50, last));
 			boost::trim_left(context);
 
 			string msg = (MasterlistParsingErrorFormat % expect % context).str();

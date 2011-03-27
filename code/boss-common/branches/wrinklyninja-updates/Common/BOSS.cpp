@@ -319,22 +319,45 @@ int main(int argc, char *argv[]) {
 	//////////////////////////////////////////////////////
 
 	if (showCRCs) {
-		Output(bosslog, format, "<div><span>OBSE &amp; OBSE Plugin Versions/Checksums</span><p>");
-
-		if (fs::exists("../obse_1_2_416.dll")) {
-			string CRC = IntToHexString(GetCrc32("../obse_1_2_416.dll"));
-		//	string version = GetModHeader("../obse_1_2_416.dll");  //Replace with OBSE version check.
-			Output(bosslog, format, "<b>OBSE</b> - <i>Checksum: " + CRC + "</i><br />\n<br />\n");
+		string SE, SELoc, SEPluginLoc;
+		if (game == 1 || game == 3) {  //Oblivion/Nehrim
+			SE = "OBSE";
+			SELoc = "../obse_1_2_416.dll";
+			SEPluginLoc = "OBSE/Plugins";
+		} else if (game == 2) {  //Fallout 3
+			SE = "FOSE";
+			SELoc = "../fose_loader.exe";
+			SEPluginLoc = "FOSE/Plugins";
+		} else {  //Fallout: New Vegas
+			SE = "NVSE";
+			SELoc = "../nvse_loader.exe";
+			SEPluginLoc = "NVSE/Plugins";
 		}
 
-		if (fs::is_directory(data_path / "OBSE/Plugins")) {
-			for (fs::directory_iterator itr(data_path / "OBSE/Plugins"); itr!=fs::directory_iterator(); ++itr) {
+		Output(bosslog, format, "<div><span>" + SE + " &amp; " + SE + " Plugin Versions/Checksums</span><p>");
+
+		if (fs::exists(SELoc)) {
+			string CRC = IntToHexString(GetCrc32(SELoc));
+			string ver = GetOBSEVersion(SELoc);
+			string text = "<b>" + SE;
+			if (ver.length() != 0)
+				text += " [Version: " + ver + "]";
+			text += "</b> - <i>Checksum: " + CRC + "</i><br />\n<br />\n";
+			Output(bosslog, format, text);
+		}
+
+		if (fs::is_directory(data_path / SEPluginLoc)) {
+			for (fs::directory_iterator itr(data_path / SEPluginLoc); itr!=fs::directory_iterator(); ++itr) {
 				const fs::path filename = itr->path().filename();
 				const string ext = Tidy(itr->path().extension().string());
 				if (fs::is_regular_file(itr->status()) && ext==".dll") {
 					string CRC = IntToHexString(GetCrc32(itr->path()));
-			//		string version = GetModHeader(itr->path());  //Replace with OBSE plugin version check.
-					Output(bosslog, format, "<b>" + filename.string() + "</b> - <i>Checksum: " + CRC + "</i><br />\n<br />\n");
+					string ver = GetOBSEVersion(itr->path());
+					string text = "<b>" + filename.string();
+					if (ver.length() != 0)
+						text += " [Version: " + ver + "]";
+					text += "</b> - <i>Checksum: " + CRC + "</i><br />\n<br />\n";
+					Output(bosslog, format, text);
 				}
 			}
 		}

@@ -18,7 +18,6 @@
 #include <iostream>
 #include "boost/filesystem.hpp"
 
-
 namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
@@ -109,6 +108,11 @@ namespace boss {
 	//Checks if the given plugin is ghosted in the user's install.
 	//NOT if the plugin given has a '.ghost' extension.
 	bool IsGhosted(fs::path plugin);
+
+	//Gets the given OBSE dll or OBSE plugin dll's version number.
+	//Also works for FOSE and NVSE.
+	//NOT CROSS-PLATFORM. Requires Windows.h.
+	string GetOBSEVersion(const fs::path& filename);
 }
 
 #endif

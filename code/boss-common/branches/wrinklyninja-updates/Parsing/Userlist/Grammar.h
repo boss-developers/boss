@@ -229,7 +229,7 @@ namespace boss {
 			if (expect == "eol")
 				expect = "end of line";
 
-			string context(errorpos, std::min(errorpos +50, last));
+			string context(errorpos, min(errorpos +50, last));
 			boost::trim_left(context);
 
 			LOG_ERROR("Userlist Parsing Error: Expected a %s at \"%s\". Userlist parsing aborted. No rules will be applied.", expect.c_str(), context.c_str());

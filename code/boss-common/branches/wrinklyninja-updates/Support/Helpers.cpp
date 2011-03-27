@@ -13,7 +13,8 @@
 #include "Helpers.h"
 #include "VersionRegex.h"
 #include "ModFormat.h"
-#include "../Common/Globals.h"
+#include "Common/Globals.h"
+#include "Common/BOSSLog.h"
 
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
@@ -25,6 +26,7 @@
 #include <sys/types.h>
 #include <sstream>
 
+#include "Windows.h"
 
 namespace boss {
 	using namespace std;
@@ -235,5 +237,37 @@ namespace boss {
 			return true;
 		else
 			return false;
+	}
+
+	//Gets the given OBSE dll or OBSE plugin dll's version number.
+	//Also works for FOSE and NVSE.
+	//NOT CROSS-PLATFORM. Requires Windows.h.
+	string GetOBSEVersion(const fs::path& filename) {
+
+		fs::path p = fs::current_path() / filename;  //WARNING - NOT VERY SAFE, SEE http://www.boost.org/doc/libs/1_46_1/libs/filesystem/v3/doc/reference.html#current_path
+		DWORD dummy = 0;
+		DWORD size = GetFileVersionInfoSize(p.string().c_str(), &dummy);
+
+		if (size > 0) {
+			LPBYTE point = new BYTE[size];
+			UINT uLen;
+			VS_FIXEDFILEINFO *info;
+			string ver;
+
+			GetFileVersionInfo(p.string().c_str(),0,size,point);
+
+			VerQueryValue(point,"\\",(LPVOID *)&info,&uLen);
+
+			DWORD dwLeftMost     = HIWORD(info->dwFileVersionMS);
+			DWORD dwSecondLeft   = LOWORD(info->dwFileVersionMS);
+			DWORD dwSecondRight  = HIWORD(info->dwFileVersionLS);
+			DWORD dwRightMost    = LOWORD(info->dwFileVersionLS);
+			
+			delete [] point;
+
+			ver = IntToString(dwLeftMost) + '.' + IntToString(dwSecondLeft) + '.' + IntToString(dwSecondRight) + '.' + IntToString(dwRightMost);
+			return ver;
+		}
+		return "";
 	}
 }
