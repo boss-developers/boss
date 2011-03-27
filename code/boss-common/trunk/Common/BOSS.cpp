@@ -76,12 +76,12 @@ void Fail() {
 
 int main(int argc, char *argv[]) {
 
-	int x;							//random useful integers
-	string textbuf;                 //a line of text from a file (should usually end up being be a file name);
+	size_t x=0;							//position of last recognised mod.
+	string textbuf;						//a text string.
 	time_t esmtime = 0, modfiletime;	//File modification times.
-	bool found;
-	bool isghost;					//Is the file ghosted or not?
-	int game = 0;					//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
+	int game = 0;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
+	vector<item> Modlist, Masterlist;	//Modlist and masterlist data structures.
+	vector<rule> Userlist;				//Userlist data structure.
 
 	// set option defaults
 	bool update             = false; // update masterlist?
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
 		("only-update,o", po::value(&updateonly)->zero_tokens(),
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
-								" available on the web, but don't sort right"
+								" available on the web but don't sort right"
 								" now")
 		("silent,s", po::value(&silent)->zero_tokens(),
 								"don't launch a browser to show the HTML log"
@@ -189,6 +189,7 @@ int main(int argc, char *argv[]) {
 			Fail();
 		}
 	}
+
 	if (vm.count("game")) {
 		// sanity check and parse argument
 		if      (boost::iequals("Oblivion",   gameStr)) { game = 1; }
@@ -199,15 +200,30 @@ int main(int argc, char *argv[]) {
 			LOG_ERROR("invalid option for 'game' parameter: '%s'", gameStr.c_str());
 			Fail();
 		}
-
+	
 		LOG_DEBUG("game autodectection overridden with: '%s' (%d)", gameStr.c_str(), game);
 	}
 
-	const string bosslogFilename = bosslog_path.string();
-	LOG_DEBUG("opening '%s'", bosslogFilename.c_str());
-	bosslog.open(bosslogFilename.c_str());
-	if (bosslog.fail()) {							
-		LOG_ERROR("file '%s' could not be accessed for writing; check the"
+	if (vm.count("format")) {
+		// sanity check and parse argument
+		if (format != "html" && format != "text") {
+			LOG_ERROR("invalid option for 'format' parameter: '%s'", format.c_str());
+			Fail();
+		}
+	
+		LOG_DEBUG("BOSSlog format set to: '%s'", format.c_str());
+	}
+
+	//BOSSLog bosslog;
+	fs::path bosslog_path;				//Path to BOSSlog being used.
+	if (format == "html")
+		bosslog_path = bosslog_html_path;
+	else
+		bosslog_path = bosslog_text_path;
+	LOG_DEBUG("opening '%s'", bosslog_path.string().c_str());
+	bosslog.open(bosslog_path.c_str());
+	if (bosslog.fail()) {
+		LOG_ERROR("file '%s' could not be accessed for writing. Check the"
 				  " Troubleshooting section of the ReadMe for more"
 				  " information and possible solutions.", bosslog_path.string().c_str());
 		Fail();
@@ -223,16 +239,26 @@ int main(int argc, char *argv[]) {
 
 	if (0 == game) {
 		LOG_DEBUG("Detecting game...");
-		if (fs::exists(data_path / "Oblivion.esm")) game = 1;
-		else if (fs::exists(data_path / "Fallout3.esm")) game = 2;
+		if (fs::exists(data_path / "Oblivion.esm")) {
+			game = 1;
+			if (fs::exists(data_path / "Nehrim.esm")) {
+				Output(bosslog,format, "<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />\n");
+				Output(bosslog,format, "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.<br />\n");
+				Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
+				bosslog.close();
+				LOG_ERROR("Installation error found: check BOSSLOG.");
+				if ( !silent ) 
+					Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
+				exit (1); //fail in screaming heap.
+			}
+		} else if (fs::exists(data_path / "Fallout3.esm")) game = 2;
 		else if (fs::exists(data_path / "Nehrim.esm")) game = 3;
 		else if (fs::exists(data_path / "FalloutNV.esm")) game = 4;
 		else {
 			LOG_ERROR("None of the supported games were detected...");
-			bosslog << endl << "<p class='error'>Critical Error: Master .ESM file not found!<br />" << endl
-							<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />" << endl
-							<< "Utility will end now.</p>" << endl
-							<< "</body>"<<endl<<"</html>";
+			Output(bosslog,format, "<p class='error'>Critical Error: Master .ESM file not found!<br />\n");
+			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
+			Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
 			bosslog.close();
 			if ( !silent ) 
 				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -243,28 +269,26 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Game detected: %d", game);
 
 	if (update || updateonly) {
-		bosslog << "<div><span>Masterlist Update</span>"<<endl<<"<p>";
+		Output(bosslog,format, "<div><span>Masterlist Update</span>");
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		LOG_DEBUG("Updating masterlist...");
-		UpdateMasterlist(game);
+		try {
+			unsigned int revision = UpdateMasterlist(game);  //Need to sort out the output of this - ATM it's very messy.
+			if (revision == 0) {
+				Output(bosslog,format, "<p>masterlist.txt is already at the latest version. Update skipped.</p>\n\n");
+				cout << "masterlist.txt is already at the latest version. Update skipped." << endl;
+			} else {
+				Output(bosslog,format, "<p>masterlist.txt updated to revision " + IntToString(revision) + ".</p>\n\n");
+				cout << "masterlist.txt updated to revision " << revision << endl;
+			}
+		} catch (boss_error & e) {
+			string const * detail = boost::get_error_info<err_detail>(e);
+			Output(bosslog,format, "<p class='warn'>Error: Masterlist update failed.<br />\n");
+			Output(bosslog,format, "Details: " + *detail + "<br />\n");
+			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.</p>\n\n");
+		}
 		LOG_DEBUG("Masterlist updated successfully.");
-		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
-	}
-	
-	if (updateonly == true) {
-		return (0);
-	}
-
-	if (game==1 && fs::exists(data_path / "Nehrim.esm")) {
-		bosslog << endl << "<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />" << endl
-						<< "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.<br />" << endl
-						<< "Utility will end now.</p>" << endl
-						<< "</body>"<<endl<<"</html>";
-		bosslog.close();
-		LOG_ERROR("Installation error found: check BOSSLOG.");
-		if ( !silent ) 
-			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
-		exit (1); //fail in screaming heap.
+		Output(bosslog,format, "</div>\n<br />\n<br />\n");
 	}
 
 	if (updateonly == true) {
@@ -290,6 +314,57 @@ int main(int argc, char *argv[]) {
 		exit (1); //fail in screaming heap.
 	}
 
+	//////////////////////////////////////////////////////
+	// Print version & checksum info for OBSE & plugins
+	//////////////////////////////////////////////////////
+
+	if (showCRCs) {
+		string SE, SELoc, SEPluginLoc;
+		if (game == 1 || game == 3) {  //Oblivion/Nehrim
+			SE = "OBSE";
+			SELoc = "../obse_1_2_416.dll";
+			SEPluginLoc = "OBSE/Plugins";
+		} else if (game == 2) {  //Fallout 3
+			SE = "FOSE";
+			SELoc = "../fose_loader.exe";
+			SEPluginLoc = "FOSE/Plugins";
+		} else {  //Fallout: New Vegas
+			SE = "NVSE";
+			SELoc = "../nvse_loader.exe";
+			SEPluginLoc = "NVSE/Plugins";
+		}
+
+		Output(bosslog, format, "<div><span>" + SE + " &amp; " + SE + " Plugin Versions/Checksums</span><p>");
+
+		if (fs::exists(SELoc)) {
+			string CRC = IntToHexString(GetCrc32(SELoc));
+			string ver = GetOBSEVersion(SELoc);
+			string text = "<b>" + SE;
+			if (ver.length() != 0)
+				text += " [Version: " + ver + "]";
+			text += "</b> - <i>Checksum: " + CRC + "</i><br />\n<br />\n";
+			Output(bosslog, format, text);
+		}
+
+		if (fs::is_directory(data_path / SEPluginLoc)) {
+			for (fs::directory_iterator itr(data_path / SEPluginLoc); itr!=fs::directory_iterator(); ++itr) {
+				const fs::path filename = itr->path().filename();
+				const string ext = Tidy(itr->path().extension().string());
+				if (fs::is_regular_file(itr->status()) && ext==".dll") {
+					string CRC = IntToHexString(GetCrc32(itr->path()));
+					string ver = GetOBSEVersion(itr->path());
+					string text = "<b>" + filename.string();
+					if (ver.length() != 0)
+						text += " [Version: " + ver + "]";
+					text += "</b> - <i>Checksum: " + CRC + "</i><br />\n<br />\n";
+					Output(bosslog, format, text);
+				}
+			}
+		}
+
+		Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
+	}
+
 	//////////////////////////////////////////////
 	// Parse & Build Mod-,Master- and Userlists
 	//////////////////////////////////////////////
@@ -311,40 +386,35 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	if (revert<1) {
-		LOG_DEBUG("Checking for special mods...");
-		bosslog << "<div><span>Special Mod Detection</span>"<<endl<<"<p>";
-		if (game == 1) {
-			//Check if FCOM or not
-			if ((fcom=fs::exists(data_path / "FCOM_Convergence.esm"))) bosslog << "FCOM detected.<br />" << endl;
-				else bosslog << "FCOM not detected.<br />" << endl;
-			if (fs::exists(data_path / "FCOM_Convergence.esp") && !fcom) bosslog << "WARNING: FCOM_Convergence.esm seems to be missing.<br />" << endl;
-			//Check if OOO or not
-			if ((ooo=fs::exists(data_path / "Oscuro's_Oblivion_Overhaul.esm"))) bosslog << "OOO detected.<br />" << endl;
-				else bosslog << "OOO not detected.<br />" << endl;
-			//Check if Better Cities or not
-			if ((bc=fs::exists(data_path / "Better Cities Resources.esm"))) bosslog << "Better Cities detected.<br />" << endl;
-				else bosslog << "Better Cities not detected.<br />" << endl;
-				
-			LOG_INFO("Special mods found: %s %s %s", fcom ? "FCOM" : "", ooo ? "OOO" : "", bc ? "BC" : "");
-		} else if (game == 2) {
-			//Check if fook2 or not
-			if ((fcom=fs::exists(data_path / "FOOK2 - Main.esm"))) bosslog << "FOOK2 Detected.<br />" << endl;
-				else bosslog << "FOOK2 not detected.<br />" << endl;
-			if (fs::exists(data_path / "FOOK2 - Main.esp") && !fcom) bosslog << "WARNING: FOOK2.esm seems to be missing.<br />" << endl;
-			//Check if fwe or not
-			if ((ooo=fs::exists(data_path / "FO3 Wanderers Edition - Main File.esm"))) bosslog << "FWE detected.<br />" << endl;
-				else bosslog << "FWE not detected.<br />" << endl;
-			
-			LOG_INFO("Special mods found: %s %s", fcom ? "FOOK2" : "", ooo ? "FWE" : "");
-		} else if (game == 4) {
-			//Check if nVamp or not
-			if ((fcom=fs::exists(data_path / "nVamp - Core.esm"))) bosslog << "nVamp Detected.<br />" << endl;
-				else bosslog << "FOOK2 not detected.<br />" << endl;
-			if (fs::exists(data_path / "nVamp - Core.esp") && !fcom) bosslog << "WARNING: nVamp - Core.esm seems to be missing.<br />" << endl;
-			LOG_INFO("Special mods found: %s", fcom ? "nVamp" : "");
-		}
-		bosslog <<"</p>"<<endl<<"</div><br /><br />"<<endl;
+	//Parse masterlist/modlist backup
+	fs::path sortfile;					//Modlist/masterlist to sort plugins using.
+	if (revert==1)
+		sortfile = curr_modlist_path;	
+	else if (revert==2) 
+		sortfile = prev_modlist_path;
+	else 
+		sortfile = masterlist_path;
+	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
+	//Check if it actually exists, because the parser doesn't fail if there is no file...
+	if (!fs::exists(sortfile)) {                                                     
+		Output(bosslog,format, "<p class='error'>Critical Error: \"" +sortfile.string() +"\" cannot be read!<br />\n");
+		Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
+		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
+        bosslog.close();
+        LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
+        if ( !silent ) 
+                Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
+        exit (1); //fail in screaming heap.
+    }
+	//Now validate file.
+	if (!ValidateUTF8File(sortfile)) {
+		Output(bosslog,format, "<p class='error'>Critical Error: \""+sortfile.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.<br />\n");
+		Output(bosslog, format, "Utility will end now.</p>\n\n</body>\n</html>");
+		bosslog.close();
+		LOG_ERROR("File '%s' was not encoded in valid UTF-8.", sortfile.filename().string().c_str());
+		if ( !silent ) 
+                Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
+        exit (1); //fail in screaming heap.
 	}
 	//Parse masterlist/modlist backup into data structure.
 	bool parsed = parseMasterlist(sortfile,Masterlist);

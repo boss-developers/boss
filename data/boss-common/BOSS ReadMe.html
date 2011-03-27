@@ -95,9 +95,9 @@
 	<p>Overrides game autodetection. The valid values of the argument are: 'Oblivion', 'Nehrim', 'Fallout3', and 'Fallout3NV'. This only allows the masterlist to be updated, so should be used in conjunction with -o or BOSS will still fail before any mods are sorted
 	if the game you specify is not the game BOSS is installed for, or no game is present.</p>
 	<p><code>-s [ --silent ]</code></p>
-	<p>Stops BOSS from automatically opening up the BOSSlog in your web browser after it has finished running.</p>
+	<p>Stops BOSS from automatically opening up the BOSSlog in your web browser (or text editor, depending on format chosen) after it has finished running.</p>
 	<p><code>-n [ --no-version-parse ]</code></p>
-	<p>Disables the parsing of each mod's description to extract the author's version information, so it is not printed alongside other data in the generated BOSSlog.html. This can be used if the version 
+	<p>Disables the parsing of each mod's description to extract the author's version information, so it is not printed alongside other data in the BOSSlog. This can be used if the version 
 	parsing is not working properly for some of your mods, and you wish to remove the version notes.</p>
 	<p><code>-r [ --revert ] [ level ]</code></p>
 	<p>Revert to a previous load order. This parameter optionally accepts values of 1 or 2, indicating how many undo steps to apply. If no option is specified, it defaults to 1. A value of 1 will restore the load order to that stored in modlist.txt. 
@@ -107,9 +107,9 @@
 	<p><code>-d [ --debug ]</code></p>
 	<p>Adds source file references (filenames and line numbers) to logging statements.</p>
 	<p><code>-c [ --crc-display ]</code></p>
-	<p>Calculates the CRCs of all the plugins in your Data folder and displays them in your BOSSlog alongside the plugin names. The CRCs can be used in masterlist conditionals, as a highly precise method of version checking.</p>
+	<p>Calculates the CRCs of all the plugins in your Data folder and displays them in your BOSSlog alongside the plugin names. The version numbers and CRCs of OBSE/FOSE/NVSE and its installed plugins will also be displayed in your BOSSlog. The CRCs can be used in masterlist conditionals, as a highly precise method of version checking when version numbers are not given.</p>
 	<p><code>-f [ --format ] [ type ]</code></p>
-	<p>Allows the selection of the BOSSlog format. Valid argument values are: 'html' and 'text'. 'html' is the default output format used when this argument is not present.</p>
+	<p>Allows the selection of the BOSSlog format. Valid argument values are: 'html' and 'text'. 'html' is the default output format used when this argument is not present. 'text' will print the BOSSlog as plaintext into a 'BOSSlog.txt' file, similar to the BOSSlog in BOSS v1.5 and below.</p>
 	
 	</div><br />
 	<br /><span class="subtitle">BOSS Changes and Files</span>
@@ -119,6 +119,7 @@
 	<ul>
 		<li><i>masterlist.txt</i> - This is the master list of mods that BOSS recognises, listing them in order and which includes notes attached to them. It is the most frequently updated component of BOSS, receiving updates almost every day.</li>
 		<li><i>BOSSlog.html</i> - This log is where the output that BOSS generates and displays once the program ends is stored. It is replaced every time you run BOSS. You can view it in any web browser.</li>
+		<li><i>BOSSlog.txt</i> - This file is the same as the above  BOSSlog.html, but the information is given in plaintext instead of with HTML formatting. It is only created if you specify the 'text' format when running BOSS. You can view it in any text editor.</li>
 		<li><i>modlist.txt</i> - This file contains the list of your mods in the order they were before you last ran BOSS, which can be used to undo changes to your load order.</li>
 		<li><i>modlist.old</i> - This file contains the contents of your modlist.txt before you last ran BOSS, providing a second level of undo for load order changes.</li>
 		<li><i>userlist.txt</i> - This file contains your custom rules to be implemented by the User Rules feature.</li>
@@ -350,9 +351,9 @@
 	<p><a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">BOSS on Fallout 3 Nexus</a></p>
 	<a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">BOSS on New Vegas Nexus</a>
 	<p><a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code SVN repository</a></p>
-	<p><a href="http://forums.bethsoft.com/?showtopic=1167297">Official BOSS Oblivion thread</a></p>
+	<p><a href="http://forums.bethsoft.com/?showtopic=1175363">Official BOSS Oblivion thread</a></p>
 	<p><a href="http://forums.bethsoft.com/?showtopic=1132338">Official BOSS Nehrim thread</a></p>
-	<p><a href="http://forums.bethsoft.com/?showtopic=1098111">Official BOSS Fallout 3 thread</a></p>
+	<p><a href="http://forums.bethsoft.com/?showtopic=1175276">Official BOSS Fallout 3 thread</a></p>
 	<p><a href="http://forums.bethsoft.com/?showtopic=1173252">Official BOSS Fallout: New Vegas thread</a></p>
 	<p><a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative Commons Attribution Noncommercial No Derivative Works 3.0 Unported Copyright License</a></p>
 	<p>Due to a 200 maximum post limit, new official threads are created periodically (with the end of one thread providing a link to the next), so the links provided may refer to old 
@@ -366,10 +367,11 @@
 	<ul>
 		<li>Fixed a bug in the masterlist updater causing the wrong masterlist version to be displayed.</li>
 		<li>Moved all BOSS's files into a new BOSS folder, located in the game's installation directory, one level above the Data folder.</li>
-		<li>Added two new command line parameters:
+		<li>Added three new command line parameters:
 		<ul><div style="height:0.65em;"></div>
 			<li>-g, --game [ game ]: Overrides game autodetection. To be used in conjunction with -o to allow updating of the masterlist on computers where the specified game is not installed.</li>
 			<li>-c, --crc-display: Enables calculation of plugin CRCs and displays them in the BOSSlog. CRCs can be used as accurate version checks in masterlist conditionals.</li>
+			<li>-f, --format [ format ]: Allows the user to select their preferred output format, choosing from either HTML or plaintext. HTML formatting is the default.</li>
 		</ul>
 		</li>
 		<li>Switched to using the Unicode character encoding, allowing the sorting of mods with international characters in their names.
