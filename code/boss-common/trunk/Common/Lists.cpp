@@ -22,7 +22,9 @@ namespace boss {
 	using namespace std;
 	using boost::algorithm::to_lower_copy;
 
-	vector<string> messageBuffer;  //Holds any error messages generated during parsing for printing later.
+	vector<string> errorMessageBuffer;  //Holds any error messages generated during parsing for printing later.
+
+	vector<message> globalMessageBuffer;  //Holds any global messages from the masterlist to be printed in BOSS.
 
 	//Find a mod by name. Will also find the starting position of a group.
 	size_t GetModPos(vector<item> list, string filename) {

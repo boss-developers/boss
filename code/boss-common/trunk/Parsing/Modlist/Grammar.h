@@ -66,10 +66,9 @@ namespace boss {
 	vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in old format.
 
 	//Parsing error message format.
-	static format MasterlistParsingErrorFormat("<p class='error'>"
-		"Masterlist Parsing Error: Expected a %1% at \"%2%\". Masterlist parsing aborted.<br />\n"
-		"Utility will end now."
-		"</p>\n\n");
+	static format MasterlistParsingErrorFormat("<p><span class='error'>Masterlist Parsing Error: Expected a %1% at:</span>"
+		"<blockquote style='font-style:italic;'>%2%</blockquote>"
+		"<span class='error'>Masterlist parsing aborted. Utility will end now.</span></p>\n\n");
 
 	//Checks if a masterlist variable is defined.
 	void CheckVar(bool& result, string var) {
@@ -78,6 +77,44 @@ namespace boss {
 		else
 			result = true;
 		return;
+	}
+
+	//Returns the true path based on what type of file or keyword it is.
+	void GetPath(fs::path& file_path, string& file) {
+		if (file == "OBSE") {
+			file_path = "..";
+			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
+		} else if (file == "FOSE") {
+			file_path = "..";
+			file = "fose_loader.exe";
+		} else if (file == "NVSE") {
+			file_path = "..";
+			file = "nvse_loader.exe";
+		} else if (file == "BOSS") {
+			file_path = ".";
+			file = "BOSS.exe";
+		} else if (file == "TES4") {
+			file_path = "..";
+			file = "Oblivion.exe";
+		} else if (file == "FO3") {
+			file_path = "..";
+			file = "Fallout3.exe";
+		} else if (file == "FONV") {
+			file_path = "..";
+			file = "FalloutNV.exe";
+		} else {
+			fs::path p(file);
+			if (Tidy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos) {
+				if (fs::exists(data_path / "OBSE"))
+					file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
+				else if (fs::exists(data_path / "FOSE"))
+					file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
+				else
+					file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+			} else
+				file_path = data_path;
+		}
+
 	}
 
 	//Checks if the given mod has a version for which the comparison holds true.
@@ -89,27 +126,7 @@ namespace boss {
 		result = false;
 		fs::path file_path;
 
-		if (file == "OBSE") {
-			file_path = "..";
-			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
-		} else if (file == "FOSE") {
-			file_path = "..";
-			file = "fose_loader.exe";
-		} else if (file == "NVSE") {
-			file_path = "..";
-			file = "nvse_loader.exe";
-		} else {
-			fs::path p(file);
-			if (Tidy(p.extension().string()) == ".dll") {
-				if (fs::exists(data_path / "OBSE"))
-					file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
-				else if (fs::exists(data_path / "FOSE"))
-					file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
-				else
-					file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-			} else
-				file_path = data_path;
-		}
+		GetPath(file_path,file);
 
 		if (Exists(file_path / file)) {
 			string trueVersion;
@@ -144,27 +161,7 @@ namespace boss {
 		result = false;
 		fs::path file_path;
 
-		if (file == "OBSE") {
-			file_path = "..";
-			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
-		} else if (file == "FOSE") {
-			file_path = "..";
-			file = "fose_loader.exe";
-		} else if (file == "NVSE") {
-			file_path = "..";
-			file = "nvse_loader.exe";
-		} else {
-			fs::path p(file);
-			if (Tidy(p.extension().string()) == ".dll") {
-				if (fs::exists(data_path / "OBSE"))
-					file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
-				else if (fs::exists(data_path / "FOSE"))
-					file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
-				else
-					file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-			} else
-				file_path = data_path;
-		}
+		GetPath(file_path,file);
 
 		if (Exists(file_path / file)) {
 			unsigned int CRC;
@@ -184,24 +181,9 @@ namespace boss {
 
 	void CheckFile(bool& result, string file) {
 		result = false;
-		if (file == "OBSE")
-			result = fs::exists("../obse_1_2_416.dll");  //Don't look for the loader because steam users don't need it.
-		else if (file == "FOSE")
-			result = fs::exists("../fose_loader.exe");
-		else if (file == "NVSE")
-			result = fs::exists("../nvse_loader.exe");
-		else {
-			fs::path p(file);
-			if (Tidy(p.extension().string()) == ".dll") {
-				if (fs::exists(data_path / "OBSE"))
-					result = fs::exists(data_path / fs::path("OBSE/Plugins") / p);  //Oblivion - OBSE plugins.
-				else if (fs::exists(data_path / "FOSE"))
-					result = fs::exists(data_path / fs::path("FOSE/Plugins") / p);  //Fallout 3 - FOSE plugins.
-				else
-					result = fs::exists(data_path / fs::path("NVSE/Plugins") / p);  //Fallout: New Vegas - NVSE plugins.
-			} else
-				result = fs::exists(data_path / p);
-		}
+		fs::path file_path;
+		GetPath(file_path,file);
+		result = fs::exists(file_path / file);
 	}
 
 	//Stores a message, should it be appropriate.
@@ -227,6 +209,17 @@ namespace boss {
 	void StoreVar(bool result, string var) {
 		if (result)
 			setVars.insert(var);
+		return;
+	}
+
+	//Defines the given masterlist variable, if appropriate.
+	void StoreGlobalMessage(bool result, keyType messageKey, string messageData) {
+		if (result) {
+			message m;
+			m.key = messageKey;
+			m.data = messageData;
+			globalMessageBuffer.push_back(m);
+		}
 		return;
 	}
 
@@ -289,13 +282,20 @@ namespace boss {
 
 			vector<message> noMessages;  //An empty set of messages.
 
-			modList = (metaLine | listItem[phoenix::bind(&StoreItem, _val, _1)]) % +eol;
+			modList = (metaLine | globalMessage | listItem[phoenix::bind(&StoreItem, _val, _1)]) % +eol;
 
 			metaLine =
 				(conditionals
 				>> (lit("SET")
 				> ':'
 				> charString))[phoenix::bind(&StoreVar, _1, _2)];
+
+			globalMessage =
+				(conditionals
+				>> lit("GLOBAL")
+				> messageKeyword
+				> ':'
+				> messageString)[phoenix::bind(&StoreGlobalMessage, _1, _2, _3)];
 
 			listItem %= 
 				omit[(oldConditional | (conditionals))[phoenix::ref(storeItem) = _1]]
@@ -317,7 +317,7 @@ namespace boss {
 
 			itemMessage %= 
 				omit[(oldConditional | conditionals)[phoenix::ref(storeMessage) = _1]]
-				>>( messageKeyword[&EvalMessKey]
+				>>(messageKeyword[&EvalMessKey]
 				> -lit(":")
 				> messageString);
 
@@ -341,23 +341,19 @@ namespace boss {
 			condition = 
 				variable									[phoenix::bind(&CheckVar, _val, _1)]
 				| version									[phoenix::bind(&CheckVersion, _val, _1)]
-				| (hex > '|' > (file | scriptExtender))		[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
-				| (file | scriptExtender)					[phoenix::bind(&CheckFile, _val, _1)]
+				| (hex > '|' > file)						[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
+				| file										[phoenix::bind(&CheckFile, _val, _1)]
 				;
 
 			variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
 
 			file %= lexeme['\"' > +(char_ - '\"') > '\"'];  //An OBSE plugin or a mod plugin.
 
-			scriptExtender %= unicode::string("OBSE")
-				| unicode::string("FOSE")
-				| unicode::string("NVSE");
-
 			version %=   //A version, followed by the mod it applies to.
 				(char_('=') | char_('>') | char_('<'))
 				> lexeme[+(char_ - '|')]
 				> char_('|')
-				> (file | scriptExtender);
+				> (file | keyword);
 
 			
 
@@ -409,23 +405,27 @@ namespace boss {
 		qi::rule<Iterator, fs::path(), skipper> itemName;
 		qi::rule<Iterator, vector<message>(), skipper> itemMessages;
 		qi::rule<Iterator, message(), skipper> itemMessage;
-		qi::rule<Iterator, string(), skipper> charString, messageString, variable, file, version, andOr, scriptExtender;
+		qi::rule<Iterator, string(), skipper> charString, messageString, variable, file, version, andOr, keyword;
 		qi::rule<Iterator, keyType(), skipper> messageKeyword;
 		qi::rule<Iterator, bool(), skipper> conditional, conditionals, condition, oldConditional;
-		qi::rule<Iterator, skipper> metaLine;
+		qi::rule<Iterator, skipper> metaLine, globalMessage;
 		
 		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
 			ostringstream out;
 			out << what;
 			string expect = out.str().substr(1,out.str().length()-2);
-			expect = "&lt;" + expect + "&gt;";
+			if (expect == "eol")
+				expect = "end of line";
 
 			string context(errorpos, min(errorpos +50, last));
 			boost::trim_left(context);
 
-			string msg = (MasterlistParsingErrorFormat % expect % context).str();
-			messageBuffer.push_back(msg);
 			LOG_ERROR("Masterlist Parsing Error: Expected a %s at \"%s\". Masterlist parsing aborted. Utility will end now.", expect.c_str(), context.c_str());
+			
+			expect = "&lt;" + expect + "&gt;";
+			boost::replace_all(context, "\n", "<br />\n");
+			string msg = (MasterlistParsingErrorFormat % expect % context).str();
+			errorMessageBuffer.push_back(msg);
 			return;
 		}
 	};

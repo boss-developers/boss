@@ -86,14 +86,14 @@ namespace boss {
 		"Syntax Error: The rule beginning \"%1%: %2%\" %3%"
 		"</p>\n\n");
 
-	static format ParsingErrorFormat("<p class='error'>"
-		"Parsing Error: Expected a %1% at \"%2%\". Userlist parsing aborted. No rules will be applied."
-		"</p>\n\n");
+	static format ParsingErrorFormat("<p><span class='error'>Parsing Error: Expected a %1% at:</span>"
+		"<blockquote style='font-style:italic;'>%2%</blockquote>"
+		"<span class='error'>Userlist parsing aborted. No rules will be applied.</span></p>\n\n");
 
 	void AddSyntaxError(keyType const& rule, string const& object, format const& message) {
 		string keystring = KeyToString(rule);
 		string const msg = (SyntaxErrorFormat % keystring % object % message.str()).str();
-		messageBuffer.push_back(msg);
+		errorMessageBuffer.push_back(msg);
 		return;
 	}
 
@@ -237,7 +237,7 @@ namespace boss {
 			expect = "&lt;" + expect + "&gt;";
 			boost::replace_all(context, "\n", "<br />\n");
 			string msg = (ParsingErrorFormat % expect % context).str();
-			messageBuffer.push_back(msg);
+			errorMessageBuffer.push_back(msg);
 			return;
 		}
 	};

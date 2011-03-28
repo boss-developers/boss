@@ -418,10 +418,10 @@ int main(int argc, char *argv[]) {
 	}
 	//Parse masterlist/modlist backup into data structure.
 	bool parsed = parseMasterlist(sortfile,Masterlist);
-	//Check if parsing failed - the parsed bool always returns true for some reason, so check size of messageBuffer.
-	if (messageBuffer.size() != 0) {
-		for (size_t i=0; i<messageBuffer.size(); i++)  //Print parser error messages.
-			Output(bosslog,format,messageBuffer[i]);
+	//Check if parsing failed - the parsed bool always returns true for some reason, so check size of errorMessageBuffer.
+	if (errorMessageBuffer.size() != 0) {
+		for (size_t i=0; i<errorMessageBuffer.size(); i++)  //Print parser error messages.
+			Output(bosslog,format,errorMessageBuffer[i]);
 		bosslog.close();
 		if ( !silent ) 
                 Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
@@ -441,7 +441,7 @@ int main(int argc, char *argv[]) {
 	if (revert<1 && fs::exists(userlist_path)) {
 		//Validate file first.
 		if (!ValidateUTF8File(userlist_path)) {
-			messageBuffer.push_back("<p class='error'>Critical Error: \""+userlist_path.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding. Userlist parsing aborted. No rules will be applied.</p>\n\n");
+			errorMessageBuffer.push_back("<p class='error'>Critical Error: \""+userlist_path.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding. Userlist parsing aborted. No rules will be applied.</p>\n\n");
 			LOG_ERROR("File '%s' was not encoded in valid UTF-8.", userlist_path.filename().string().c_str());
 		} else {
 			bool parsed = parseUserlist(userlist_path,Userlist);
@@ -526,8 +526,8 @@ int main(int argc, char *argv[]) {
 	if (revert<1 && fs::exists(userlist_path)) {
 		Output(bosslog, format, "<div><span>Userlist Messages</span><p>");
 
-		for (size_t i=0; i<messageBuffer.size(); i++)  //First print parser/syntax error messages.
-			Output(bosslog,format,messageBuffer[i]);
+		for (size_t i=0; i<errorMessageBuffer.size(); i++)  //First print parser/syntax error messages.
+			Output(bosslog,format,errorMessageBuffer[i]);
 
 		//Now apply rules, one rule at a time, one line at a time.
 		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", Userlist.size());
@@ -689,6 +689,21 @@ int main(int argc, char *argv[]) {
 		Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
 		LOG_INFO("Userlist sorting process finished.");
 	}
+
+	/////////////////////////////
+	// Display Global Messages
+	/////////////////////////////
+
+	if (globalMessageBuffer.size() > 0) {
+		Output(bosslog, format, "<div><span>General Messages</span><p>\n<ul>\n");
+		for (size_t i=0; i<globalMessageBuffer.size(); i++)
+			ShowMessage(bosslog, format, globalMessageBuffer[i]);  //Print messages.
+		Output(bosslog, format, "</ul>\n</p>\n</div>\n<br />\n<br />\n");
+	}
+
+	////////////////////////////////
+	// Re-date Files & Output Info
+	////////////////////////////////
 
 	//Re-date .esp/.esm files according to order in modlist and output messages
 	if (revert<1) Output(bosslog, format, "<div><span>Recognised And Re-ordered Mod Files</span><p>");

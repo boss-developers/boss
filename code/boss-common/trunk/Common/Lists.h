@@ -55,7 +55,7 @@ namespace boss {
 		IFNOT
 	};
 
-	extern vector<string> messageBuffer;  //Holds any error messages generated during parsing for printing later.
+	extern vector<string> errorMessageBuffer;  //Holds any error messages generated during parsing for printing later.
 
 	////////////////////////////////////////
 	// Modlist/Masterlist data structures
@@ -77,6 +77,8 @@ namespace boss {
 		fs::path name;
 		vector<message> messages;
 	};
+
+	extern vector<message> globalMessageBuffer;  //Holds any global messages from the masterlist to be printed in BOSS.
 
 	////////////////////////////////////////
 	// Userlist data structures
