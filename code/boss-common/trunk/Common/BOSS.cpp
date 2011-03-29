@@ -268,7 +268,7 @@ int main(int argc, char *argv[]) {
 
 	LOG_INFO("Game detected: %d", game);
 
-	if (update || updateonly) {
+	if (revert<1 && (update || updateonly)) {
 		Output(bosslog,format, "<div><span>Masterlist Update</span>");
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		LOG_DEBUG("Updating masterlist...");
