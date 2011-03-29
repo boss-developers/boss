@@ -401,43 +401,58 @@
         ${NSD_GetState} $Check_DeleteOldFiles $0
         ${If} $0 == ${BST_CHECKED}
             ${If} $Path_OB != $Empty
-                Delete "$Path_OB\Data\BOSS.bat"
+                Delete "$Path_OB\Data\BOSS.*"
                 Delete "$Path_OB\Data\modlist.*"
                 Delete "$Path_OB\Data\masterlist.txt"
                 Delete "$Path_OB\Data\BOSSlog.txt"
                 Delete "$Path_OB\Data\BOSS_ReadMe.rtf"
+				Delete "$Path_OB\Data\BOSS - Print Debug Info.bat"
+				Delete "$Path_OB\Data\BOSS - Undo Last Run.bat"
+				Delete "$Path_OB\Data\BOSS - Update Masterlist.bat"
 				RMDir /r "$Path_OB\Data\BOSS"
             ${EndIf}
             ${If} $Path_FO != $Empty
-                Delete "$Path_FO\Data\BOSS.bat"
+                Delete "$Path_FO\Data\BOSS.*"
                 Delete "$Path_FO\Data\modlist.*"
                 Delete "$Path_FO\Data\masterlist.txt"
                 Delete "$Path_FO\Data\BOSSlog.txt"
                 Delete "$Path_FO\Data\BOSS_ReadMe.rtf"
+				Delete "$Path_FO\Data\BOSS - Print Debug Info.bat"
+				Delete "$Path_FO\Data\BOSS - Undo Last Run.bat"
+				Delete "$Path_FO\Data\BOSS - Update Masterlist.bat"
 				RMDir /r "$Path_FO\Data\BOSS"
             ${EndIf}
             ${If} $Path_NV != $Empty
-                Delete "$Path_NV\Data\BOSS.bat"
+                Delete "$Path_NV\Data\BOSS.*"
                 Delete "$Path_NV\Data\modlist.*"
                 Delete "$Path_NV\Data\masterlist.txt"
                 Delete "$Path_NV\Data\BOSSlog.txt"
                 Delete "$Path_NV\Data\BOSS_ReadMe.rtf"
+				Delete "$Path_NV\Data\BOSS - Print Debug Info.bat"
+				Delete "$Path_NV\Data\BOSS - Undo Last Run.bat"
+				Delete "$Path_NV\Data\BOSS - Update Masterlist.bat"
 				RMDir /r "$Path_NV\Data\BOSS"
             ${EndIf}
             ${If} $Path_Nehrim != $Empty
-                Delete "$Path_Nehrim\Data\BOSS.bat"
+                Delete "$Path_Nehrim\Data\BOSS.*"
                 Delete "$Path_Nehrim\Data\modlist.*"
                 Delete "$Path_Nehrim\Data\masterlist.txt"
                 Delete "$Path_Nehrim\Data\BOSSlog.txt"
                 Delete "$Path_Nehrim\Data\BOSS_ReadMe.rtf"
+				Delete "$Path_Nehrim\Data\BOSS - Print Debug Info.bat"
+				Delete "$Path_Nehrim\Data\BOSS - Undo Last Run.bat"
+				Delete "$Path_Nehrim\Data\BOSS - Update Masterlist.bat"
 				RMDir /r "$Path_Nehrim\Data\BOSS"
             ${EndIf}
             ${If} $Path_Other != $Empty
-                Delete "$Path_Other\Data\BOSS.bat"
+                Delete "$Path_Other\Data\BOSS.*"
                 Delete "$Path_Other\Data\modlist.*"
                 Delete "$Path_Other\Data\masterlist.txt"
                 Delete "$Path_Other\Data\BOSSlog.txt"
                 Delete "$Path_Other\Data\BOSS_ReadMe.rtf"
+				Delete "$Path_Other\Data\BOSS - Print Debug Info.bat"
+				Delete "$Path_Other\Data\BOSS - Undo Last Run.bat"
+				Delete "$Path_Other\Data\BOSS - Update Masterlist.bat"
 				RMDir /r "$Path_Other\Data\BOSS"
             ${EndIf}
         ${EndIf}
