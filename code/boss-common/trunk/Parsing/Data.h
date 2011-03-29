@@ -123,19 +123,12 @@ namespace boss {
 			add
 				("append",APPEND)
 				("replace",REPLACE)
-			;
-		}
-	} messageKeys;
-
-	struct sortKeys_ : qi::symbols<char, keyType> {
-		sortKeys_() {
-			add
 				("before",BEFORE)
 				("after",AFTER)
 				("top",TOP)
 				("bottom",BOTTOM)
 			;
 		}
-	} sortKeys;
+	} sortOrMessageKeys;
 }
 #endif

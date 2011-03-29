@@ -129,6 +129,8 @@ namespace boss {
 			replace_first(text, " class='ghosted'>", ">");
 			replace_first(text, " class='version'>", ">");
 
+			replace_first(text, "<blockquote>", "\n\n");
+			replace_first(text, "</blockquote>", "\n\n");
 			replace_first(text, "<li>", "*  ");
 			replace_first(text, "</li>\n", eol);
 			

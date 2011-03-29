@@ -136,7 +136,7 @@ namespace boss {
 				else 
 					trueVersion = GetModHeader(file_path / file);
 			} else
-				trueVersion = GetOBSEVersion(file_path / file);
+				trueVersion = GetExeDllVersion(file_path / file);
 
 			switch (comp) {
 			case '>':

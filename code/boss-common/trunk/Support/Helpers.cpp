@@ -242,7 +242,7 @@ namespace boss {
 	//Gets the given OBSE dll or OBSE plugin dll's version number.
 	//Also works for FOSE and NVSE.
 	//NOT CROSS-PLATFORM. Requires Windows.h.
-	string GetOBSEVersion(const fs::path& filename) {
+	string GetExeDllVersion(const fs::path& filename) {
 
 		fs::path p = fs::current_path() / filename;  //WARNING - NOT VERY SAFE, SEE http://www.boost.org/doc/libs/1_46_1/libs/filesystem/v3/doc/reference.html#current_path
 		DWORD dummy = 0;

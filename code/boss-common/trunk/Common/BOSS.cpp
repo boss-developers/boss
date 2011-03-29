@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
 		("game,g", po::value(&gameStr),
 								"override game autodetection.  valid values"
 								" are: 'Oblivion', 'Nehrim', 'Fallout3', and"
-								" 'Fallout3NV'")
+								" 'FalloutNV'")
 		("debug,d", po::value(&debug)->zero_tokens(),
 								"add source file references to logging statements")
 		("crc-display,c", po::value(&showCRCs)->zero_tokens(),
@@ -195,7 +195,7 @@ int main(int argc, char *argv[]) {
 		if      (boost::iequals("Oblivion",   gameStr)) { game = 1; }
 		else if (boost::iequals("Fallout3",   gameStr)) { game = 2; }
 		else if (boost::iequals("Nehrim",     gameStr)) { game = 3; }
-		else if (boost::iequals("Fallout3NV", gameStr)) { game = 4; }
+		else if (boost::iequals("FalloutNV", gameStr)) { game = 4; }
 		else {
 			LOG_ERROR("invalid option for 'game' parameter: '%s'", gameStr.c_str());
 			Fail();
@@ -338,7 +338,7 @@ int main(int argc, char *argv[]) {
 
 		if (fs::exists(SELoc)) {
 			string CRC = IntToHexString(GetCrc32(SELoc));
-			string ver = GetOBSEVersion(SELoc);
+			string ver = GetExeDllVersion(SELoc);
 			string text = "<b>" + SE;
 			if (ver.length() != 0)
 				text += " [Version: " + ver + "]";
@@ -352,7 +352,7 @@ int main(int argc, char *argv[]) {
 				const string ext = Tidy(itr->path().extension().string());
 				if (fs::is_regular_file(itr->status()) && ext==".dll") {
 					string CRC = IntToHexString(GetCrc32(itr->path()));
-					string ver = GetOBSEVersion(itr->path());
+					string ver = GetExeDllVersion(itr->path());
 					string text = "<b>" + filename.string();
 					if (ver.length() != 0)
 						text += " [Version: " + ver + "]";
@@ -428,15 +428,6 @@ int main(int argc, char *argv[]) {
         exit (1); //fail in screaming heap.
 	}
 
-	/*
-	//Debug - masterlist data structure contents.
-	cout << "Obtained:" << endl;
-	for (size_t i = 0; i<Masterlist.size(); i++) {
-		cout << TypeToString(Masterlist[i].type) << ":" << Masterlist[i].name.string() << endl;
-		for (size_t j=0; j<Masterlist[i].messages.size(); j++)
-			cout << GetKeyString(Masterlist[i].messages[j].key) << ":" << Masterlist[i].messages[j].data << endl;
-	}*/
-
 	//Parse userlist.
 	if (revert<1 && fs::exists(userlist_path)) {
 		//Validate file first.
@@ -501,22 +492,6 @@ int main(int argc, char *argv[]) {
 	//Add modlist's mods to masterlist, then set the modlist to the masterlist, since that's a more sensible name to work with.
 	Masterlist.insert(Masterlist.end(),Modlist.begin(),Modlist.end());
 	Modlist = Masterlist;
-
-	//Debug - output contents of userlist.
-	/*cout << "Obtained:" << endl;
-	for (size_t i=0; i<Userlist.size(); i++) {
-		cout << GetKeyString(Userlist[i].ruleKey) << ":" << Userlist[i].ruleObject << endl;
-		for (size_t j=0; j<Userlist[i].lines.size(); j++)
-			cout << GetKeyString(Userlist[i].lines[j].key) << ":" << Userlist[i].lines[j].object << endl;
-		cout << endl;
-	}*/
-
-	//Debug - Output contents of modlist.
-	/*for (size_t i = 0; i<Modlist.size(); i++) {
-		cout << TypeToString(Modlist[i].type) << ":" << Modlist[i].name.string() << endl;
-		for (size_t j=0; j<Modlist[i].messages.size(); j++)
-			cout << GetKeyString(Modlist[i].messages[j].key) << ":" << Modlist[i].messages[j].data << endl;
-	}*/
 
 	//////////////////////////
 	// Apply Userlist Rules

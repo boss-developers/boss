@@ -173,16 +173,11 @@ namespace boss {
 			//A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
 			userlistRule %=
 				ruleKey > ':' > object
-				> +eol
-				> ((sortLine | messageLine) % +eol);
+				>> +eol
+				> sortOrMessageLine % +eol;
 
-			sortLine %=
-				sortKey
-				> ':'
-				> object;
-
-			messageLine %=
-				messageKey
+			sortOrMessageLine %=
+				sortOrMessageKey
 				> ':'
 				> object;
 
@@ -190,36 +185,30 @@ namespace boss {
 
 			ruleKey %= no_case[ruleKeys];
 
-			sortKey %= no_case[sortKeys];
-
-			messageKey %= no_case[messageKeys];
+			sortOrMessageKey %= no_case[sortOrMessageKeys];
 
 			//Give each rule names.
-			ruleList.name("ruleList");
+			ruleList.name("rules");
 			userlistRule.name("rule");
-			sortLine.name("sort line");
-			messageLine.name("message line");
+			sortOrMessageLine.name("sort or message line");
 			object.name("line object");
 			ruleKey.name("rule keyword");
-			sortKey.name("sort keyword");
-			messageKey.name("message keyword");
+			sortOrMessageKey.name("sort or message keyword");
 		
 			on_error<fail>(ruleList,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(userlistRule,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(sortLine,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(messageLine,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(sortOrMessageLine,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(object,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(ruleKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(sortKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(messageKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(sortOrMessageKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 		}
 
 		typedef Skipper<Iterator> skipper;
 
 		qi::rule<Iterator, vector<rule>(), skipper> ruleList;
 		qi::rule<Iterator, rule(), skipper> userlistRule;
-		qi::rule<Iterator, line(), skipper> sortLine, messageLine;
-		qi::rule<Iterator, keyType(), skipper> ruleKey, sortKey, messageKey;
+		qi::rule<Iterator, line(), skipper> sortOrMessageLine;
+		qi::rule<Iterator, keyType(), skipper> ruleKey, sortOrMessageKey;
 		qi::rule<Iterator, string(), skipper> object;
 	
 		void SyntaxError(Iterator const& first, Iterator const& last, Iterator const& errorpos, info const& what) {
