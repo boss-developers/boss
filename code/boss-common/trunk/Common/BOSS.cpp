@@ -292,6 +292,10 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (updateonly == true) {
+		Output(bosslog, format, "<div><span>BOSS Execution Complete</span></div>\n</body>\n</html>");
+		bosslog.close();
+		if ( !silent ) 
+			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 		return (0);
 	}
 
