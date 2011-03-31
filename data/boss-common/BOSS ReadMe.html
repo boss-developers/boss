@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
@@ -213,7 +213,15 @@
 		<li><b>Message:</b> Critical Error: "<em>filename</em>" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.<div style="height:0.65em;"></div>
 		<ul>
 			<li><b>Issue:</b> BOSS has detected that your userlist.txt is saved using the wrong encoding, and is unable to read it.</li>
-			<li><b>Solution:</b> Re-save the file given in the correct "UTF-8" encoding. If you are unsure on how to do so, please see the instructions below on how to do so.</li>
+			<li><b>Solution:</b> Re-save the file given in the correct "UTF-8" encoding. If you are unsure on how to do so, follow these instructions:</p>
+				<ol>
+					<li>Open the file given in Notepad.</li>
+					<li>Open the "File" menu, then select "Save As...".</li>
+					<li>In the Save As dialog window that opens, there is a drop-down list labelled "Encoding:". Select "UTF-8" from this list.</li>
+					<li>Click the "Save" button, answering "Yes" to any confirmation prompts.</li>
+				</ol>
+				A file only needs to be converted to the correct encoding once, thereafter it will continue to save in the correct encoding whenever you edit it.
+	</li>
 		</ul>
 		</li>
 	</ul>
@@ -233,17 +241,36 @@
 			<li><b>Solution:</b> Ensure that the BOSS folder and any files in it are not read-only.</li>
 		</ul>
 		</li>
+		<li><b>Symptom:</b> BOSS does not recognise the mods in my userlist correctly, and/or replaces some of the letters in their names with question marks.<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> Your userlist is not encoded in UTF-8.</li>
+			<li><b>Solution:</b> Save your userlist in the UTF-8 encoding.</li>
+			<li><b>Issue:</b> You had mods in your userlist with non-Latin letters in their names, and saved your userlist in a non-UTF8 encoding before saving it in UTF-8.</li>
+			<li><b>Solution:</b> Rewrite the filenames in your userlist, copy/pasting them from the files themselves to ensure they are correct.</li>
+		</ul>
+		</li>
 	</ul>
 	<br />
-	<p>BOSS provides support for sorting mods containing characters from any language via the Unicode character encoding, specifically UTF-8. Your userlist must therefore be encoded in UTF-8 to ensure that BOSS reads it correctly. To save your userlist in the UTF-8 encoding, follow these instructions:</p>
-	<ol>
-		<li>Open your userlist.txt in Notepad.</li>
-		<li>Open the "File" menu, then select "Save As...".</li>
-		<li>In the Save As dialog window that opens, there is a drop-down list labelled "Encoding:". Select "UTF-8" from this list.</li>
-		<li>Click the "Save" button, answering "Yes" to any confirmation prompts.</li>
-	</ol>
-	<p>The modlists and masterlist must also be encoded in UTF-8, but they should automatically be encoded correctly when BOSS creates them.</p>
-    <p>If you are running Windows Vista or Windows 7, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:</p>
+	<p>BOSS provides support for sorting mods containing characters from any language via the Unicode character encoding, specifically UTF-8. Your userlist must therefore be encoded in UTF-8 to ensure that BOSS reads it correctly. The modlists and masterlist must also be encoded in UTF-8, but they should automatically be encoded correctly when BOSS creates them. In case you find you need to convert a file's encoding, here are some instructions:</p>
+    <ul>
+		<li>Using Notepad:<div style="height:0.65em;"></div>
+			<ol>
+				<li>Open the file in Notepad.</li>
+				<li>Open the "File" menu, then select "Save As...".</li>
+				<li>In the Save As dialog window that opens, there is a drop-down list labelled "Encoding:". Select "UTF-8" from this list.</li>
+				<li>Click the "Save" button, answering "Yes" to any confirmation prompts.</li>
+			</ol>
+		</li>
+		<li>Using Notepad++:<div style="height:0.65em;"></div>
+			<ol>
+				<li>Open the file in Notepad++.</li>
+				<li>Open the "Encoding" menu, then select "Convert to UTF-8".</li>
+				<li>Save the file as normal.</li>
+			</ol>
+		</li>
+		A file only needs to be converted to the correct encoding once, thereafter it will continue to save in the correct encoding whenever you edit it.
+	</ul>
+	<p>If you are running Windows Vista or Windows 7, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:</p>
 	<ol>
 		<li>Install the game outside the "Program Files" (or "Program Files (x86)" if on 64-bit Windows). UAC prevents unauthorised edits to these folders, so by installing the game outside of them, you remove it from UAC's reach, allowing you to use mods more easily.</li>
 		<li>Deactivate UAC. This can be done from the Control Panel, and will turn UAC off across the whole of your computer. It is up to you whether you feel that you have adequate security measures in place to do this without risk.</li>

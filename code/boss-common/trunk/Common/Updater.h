@@ -15,12 +15,6 @@
 #include "Globals.h"
 #include <boost/filesystem.hpp>
 
-#define CURL_STATICLIB			//Tells the compiler to use curl as a static library.
-#include <curl/curl.h>
-#include <curl/types.h>
-#include <curl/easy.h>
-#include "Error.h"
-
 namespace boss {
 	unsigned int UpdateMasterlist(int game);
 }

@@ -13,6 +13,7 @@
 #include "Helpers.h"
 #include "VersionRegex.h"
 #include "ModFormat.h"
+#include "Logger.h"
 #include "Common/Globals.h"
 #include "Common/BOSSLog.h"
 
@@ -26,7 +27,9 @@
 #include <sys/types.h>
 #include <sstream>
 
-#include "Windows.h"
+#if _WIN32 || _WIN64
+#  include "Windows.h"
+#endif
 
 namespace boss {
 	using namespace std;
@@ -172,33 +175,41 @@ namespace boss {
 	}
 
 	//Calculate the CRC of the given file for comparison purposes.
-	/* This gives a technically incorrect CRC, as fileToBuffer() does not use binary file streams.
+	/* This gives a technically incorrect CRC on Windows, as fileToBuffer() does not use binary file streams.
 	   However, accuracy has a massive performance hit, and isn't required.
 	   All we require is that CRCs are consistent. 
 	   Since BOSS is always the source of file CRCs, consistency is achieved even with inaccurate CRCs. */
-	unsigned int GetCrc32(const fs::path& filename) {
+	/*unsigned int GetCrc32(const fs::path& filename) {
++       LOG_TRACE("calculating CRC for: '%s'", filename.string().c_str());
 		boost::crc_32_type result;
 		string buffer;
 		fileToBuffer(filename, buffer);
         result.process_bytes(buffer.data(), buffer.length());
-		return result.checksum();
-	}
+		int chksum = result.checksum();
+        LOG_DEBUG("CRC32('%s'): 0x%x", filenameStr.c_str(), chksum);
+		return chksum;
+	}*/
 
 	//This is the correct CRC calculation code.
-	/*unsigned int GetCrc32(const fs::path& filename) {
-		boost::crc_32_type result;
-		size_t const buffer_size = 1024;
+	unsigned int GetCrc32(const fs::path& filename) {
+		int chksum = 0;
+		static const size_t buffer_size = 8192;
+		char buffer[buffer_size];
 		ifstream ifile(filename.c_str(), ios::binary);
+		LOG_TRACE("calculating CRC for: '%s'", filename.string().c_str());
+		boost::crc_32_type result;
 		if (ifile) {
 			do {
-				char buffer[buffer_size];
 				ifile.read(buffer, buffer_size);
 				result.process_bytes(buffer, ifile.gcount());
 			} while (ifile);
 			return result.checksum();
-		} else
-			return 0;
-	}*/
+		} else {
+			LOG_WARN("unable to open file for CRC calculation: '%s'", filename.string().c_str());
+		}
+		LOG_DEBUG("CRC32('%s'): 0x%x", filename.string().c_str(), chksum);
+        return chksum;
+	}
 
 	//Determines if a given mod is a game's main master file or not.
 	bool IsMasterFile(const string plugin) {
@@ -242,11 +253,14 @@ namespace boss {
 	//Gets the given OBSE dll or OBSE plugin dll's version number.
 	//Also works for FOSE and NVSE.
 	//NOT CROSS-PLATFORM. Requires Windows.h.
-	string GetExeDllVersion(const fs::path& filename) {
-
-		fs::path p = fs::current_path() / filename;  //WARNING - NOT VERY SAFE, SEE http://www.boost.org/doc/libs/1_46_1/libs/filesystem/v3/doc/reference.html#current_path
+	string GetExeDllVersion(const fs::path& filepath) {
+		LOG_TRACE("extracting version from '%s'", filepath.string().c_str());
+		string retVal = "";
+#if _WIN32 || _WIN64
+		// WARNING - NOT VERY SAFE, SEE http://www.boost.org/doc/libs/1_46_1/libs/filesystem/v3/doc/reference.html#current_path
+		fs::path pStr = fs::current_path() / filepath;
 		DWORD dummy = 0;
-		DWORD size = GetFileVersionInfoSize(p.string().c_str(), &dummy);
+		DWORD size = GetFileVersionInfoSize(pStr.wstring().c_str(), &dummy);
 
 		if (size > 0) {
 			LPBYTE point = new BYTE[size];
@@ -254,9 +268,9 @@ namespace boss {
 			VS_FIXEDFILEINFO *info;
 			string ver;
 
-			GetFileVersionInfo(p.string().c_str(),0,size,point);
+			GetFileVersionInfo(pStr.wstring().c_str(),0,size,point);
 
-			VerQueryValue(point,"\\",(LPVOID *)&info,&uLen);
+			VerQueryValue(point,L"\\",(LPVOID *)&info,&uLen);
 
 			DWORD dwLeftMost     = HIWORD(info->dwFileVersionMS);
 			DWORD dwSecondLeft   = LOWORD(info->dwFileVersionMS);
@@ -265,9 +279,34 @@ namespace boss {
 			
 			delete [] point;
 
-			ver = IntToString(dwLeftMost) + '.' + IntToString(dwSecondLeft) + '.' + IntToString(dwSecondRight) + '.' + IntToString(dwRightMost);
-			return ver;
+			retVal = IntToString(dwLeftMost) + '.' + IntToString(dwSecondLeft) + '.' + IntToString(dwSecondRight) + '.' + IntToString(dwRightMost);
 		}
 		return "";
+#else
+        // ensure filename has no quote characters in it to avoid command injection attacks
+        if (string::npos != filename.find('"')) {
+    	    LOG_WARN("filename has embedded quotes; skipping to avoid command injection: '%s'", filepath.string().c_str());
+        } else {
+            // command mostly borrowed from the gnome-exe-thumbnailer.sh script
+            // wrestool is part of the icoutils package
+            string cmd = "wrestool --extract --raw --type=version \"" + filepath.string() + "\" | tr '\\0, ' '\\t.\\0' | sed 's/\\t\\t/_/g' | tr -c -d '[:print:]' | sed -r 's/.*Version[^0-9]*([0-9]+(\\.[0-9]+)+).*/\\1/'";
+
+            FILE *fp = popen(cmd.c_str(), "r");
+
+            // read out the version string
+            static const int BUFSIZE = 32;
+            char buf[BUFSIZE];
+            if (NULL == fgets(buf, BUFSIZE, fp)) {
+    	        LOG_DEBUG("failed to extract version from '%s'", filepath.string().c_str());
+            }
+            else {
+                retVal = string(buf);
+	   	        LOG_DEBUG("extracted version from '%s': %s", filepath.string().c_str(), retVal.c_str());
+            }
+
+            pclose(fp);
+        }
+#endif
+		return retVal;
 	}
 }

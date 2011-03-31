@@ -116,7 +116,7 @@ namespace boss {
 			if (IsPlugin(ruleObject)) {
 				if (!Exists(data_path / ruleObject))
 					throw failure(ruleKey, ruleObject, EPluginNotInstalled % ruleObject);
-				if (IsMasterFile(ruleObject))
+				if (ruleKey != FOR && IsMasterFile(ruleObject))
 					throw failure(ruleKey, ruleObject, ESortingMasterEsm);
 			} else {
 				if (Tidy(ruleObject) == "esms")
@@ -130,9 +130,9 @@ namespace boss {
 				keyType key = currentRule.lines[i].key;
 				string subject = currentRule.lines[i].object;
 				if (key == BEFORE || key == AFTER) {
-					if (currentRule.ruleKey == FOR)
+					if (ruleKey == FOR)
 						throw failure(ruleKey, ruleObject, ESortLineInForRule);
-					if ((IsPlugin(ruleObject) && !IsPlugin(subject)) || (!IsPlugin(ruleObject) && IsPlugin(subject)))
+					if ((IsPlugin(ruleObject) && !IsPlugin(subject)) || (!IsPlugin(ruleObject) && IsPlugin(subject))) 
 						throw failure(ruleKey, ruleObject, EReferencingModAndGroup);
 					if (key == BEFORE) {
 						if (Tidy(subject) == "esms")

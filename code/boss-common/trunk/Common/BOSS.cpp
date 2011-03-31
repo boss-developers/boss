@@ -47,7 +47,7 @@ void ShowUsage(po::options_description opts) {
 #if _WIN32 || _WIN64
 		"BOSS";
 #else
-		"BOSS";
+		"boss";
 #endif
 
 	ShowVersion();
@@ -340,7 +340,9 @@ int main(int argc, char *argv[]) {
 
 		Output(bosslog, format, "<div><span>" + SE + " &amp; " + SE + " Plugin Versions/Checksums</span><p>");
 
-		if (fs::exists(SELoc)) {
+		if (!fs::exists(SELoc)) {
+			LOG_DEBUG("OBSE DLL not detected");
+		} else {
 			string CRC = IntToHexString(GetCrc32(SELoc));
 			string ver = GetExeDllVersion(SELoc);
 			string text = "<b>" + SE;
@@ -350,7 +352,9 @@ int main(int argc, char *argv[]) {
 			Output(bosslog, format, text);
 		}
 
-		if (fs::is_directory(data_path / SEPluginLoc)) {
+		if (!fs::is_directory(data_path / SEPluginLoc)) {
+			LOG_DEBUG("OBSE plugins dir not detected");
+		} else {
 			for (fs::directory_iterator itr(data_path / SEPluginLoc); itr!=fs::directory_iterator(); ++itr) {
 				const fs::path filename = itr->path().filename();
 				const string ext = Tidy(itr->path().extension().string());
@@ -421,6 +425,7 @@ int main(int argc, char *argv[]) {
         exit (1); //fail in screaming heap.
 	}
 	//Parse masterlist/modlist backup into data structure.
+	LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
 	bool parsed = parseMasterlist(sortfile,Masterlist);
 	//Check if parsing failed - the parsed bool always returns true for some reason, so check size of errorMessageBuffer.
 	if (errorMessageBuffer.size() != 0) {
@@ -439,6 +444,7 @@ int main(int argc, char *argv[]) {
 			errorMessageBuffer.push_back("<p class='error'>Critical Error: \""+userlist_path.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding. Userlist parsing aborted. No rules will be applied.</p>\n\n");
 			LOG_ERROR("File '%s' was not encoded in valid UTF-8.", userlist_path.filename().string().c_str());
 		} else {
+			LOG_INFO("Starting to parse userlist.");
 			bool parsed = parseUserlist(userlist_path,Userlist);
 			if (!parsed)
 				Userlist.clear();
@@ -451,10 +457,12 @@ int main(int argc, char *argv[]) {
 
 	//Add all modlist and userlist mods to a hashset to optimise comparison against masterlist.
 	boost::unordered_set<string> hashset;  //Holds mods for checking against masterlist
+	LOG_INFO("Populating hashset with modlist.");
 	for (size_t i=0; i<Modlist.size(); i++) {
 		if (Modlist[i].type == MOD)
 			hashset.insert(Tidy(Modlist[i].name.string()));
 	}
+	LOG_INFO("Populating hashset with userlist.");
 	for (size_t i=0; i<Userlist.size(); i++) {
 		for (size_t j=0; j<Userlist[i].lines.size(); j++) {
 			if (IsPlugin(Userlist[i].lines[j].object))
@@ -467,6 +475,7 @@ int main(int argc, char *argv[]) {
 	vector<item> holdingVec;
 	boost::unordered_set<string>::iterator setPos;
 	size_t pos;
+	LOG_INFO("Comparing hashset against masterlist.");
 	while (iter != Masterlist.end()) {
 		item Item = *iter;
 		if (Item.type == MOD) {
@@ -496,6 +505,7 @@ int main(int argc, char *argv[]) {
 	//Add modlist's mods to masterlist, then set the modlist to the masterlist, since that's a more sensible name to work with.
 	Masterlist.insert(Masterlist.end(),Modlist.begin(),Modlist.end());
 	Modlist = Masterlist;
+	LOG_INFO("Modlist now filled with ordered mods and unknowns.");
 
 	//////////////////////////
 	// Apply Userlist Rules
@@ -538,6 +548,8 @@ int main(int argc, char *argv[]) {
 					index2 = GetModPos(Modlist,Userlist[i].lines[j].object);
 					//Handle case of mods that don't exist at all.
 					if (index2 == (size_t)-1) {
+						if (Userlist[i].ruleKey == ADD)
+							x--;
 						Modlist.insert(Modlist.begin()+index1,mod);
 						Output(bosslog, format, "<p class='warn'>\""+Userlist[i].lines[j].object+"\" is not installed, and is not in the masterlist. Rule skipped.</p>\n\n");
 						LOG_WARN(" * \"%s\" is not installed or in the masterlist.", Userlist[i].lines[j].object.c_str());
@@ -654,7 +666,7 @@ int main(int argc, char *argv[]) {
 					Modlist[index].messages.push_back(newMessage);
 
 					//Output confirmation.
-					Output(bosslog, format, "<p class='success'>\"" + Userlist[i].lines[j].object + "\"");
+					Output(bosslog, format, "<p class='success'>\"<span style='color: grey;'>" + Userlist[i].lines[j].object + "</span>\"");
 					if (Userlist[i].lines[j].key == APPEND)
 						Output(bosslog, format, " appended to ");
 					else

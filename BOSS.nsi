@@ -339,10 +339,19 @@
 			${NSD_AddStyle} $Create_Userlist ${WS_GROUP}
 			${NSD_SetState} $Create_Userlist ${BST_CHECKED}
 			IntOp $1 $1 + 35
-        ${NSD_CreateCheckBox} $1% $0u 75% 8u "Delete files from old BOSS versions"
+		IntOp $0 $0 + 15
+		IntOp $1 0 + 0
+		${NSD_CreateCheckBox} $1% $0u 75% 8u "Delete files from old BOSS versions"
             Pop $Check_DeleteOldFiles
             ${NSD_AddStyle} $Check_DeleteOldFiles ${WS_GROUP}
             ${NSD_SetState} $Check_DeleteOldFiles ${BST_CHECKED}
+			${NSD_CreateCheckBox} $1% $0u 75% 8u "Delete files from old BOSS versions"
+		IntOp $0 $0 + 13
+		IntOp $1 $1 + 4
+		 ${NSD_CreateCheckBox} $1% $0u 75% 8u "Remove userlists if present"
+			Pop $Check_RemoveUserFiles
+			${NSD_AddStyle} $Check_RemoveUserFiles ${WS_GROUP}
+            ${NSD_SetState} $Check_RemoveUserFiles ${BST_CHECKED}
         nsDialogs::Show
         FunctionEnd
     Function PAGE_FINISH_Leave
@@ -399,6 +408,7 @@
             ExecShell "open" '"$COMMONFILES\BOSS\BOSS ReadMe.html"'
         ${EndIf}
         ${NSD_GetState} $Check_DeleteOldFiles $0
+		${NSD_GetState} $Check_RemoveUserFiles $1
         ${If} $0 == ${BST_CHECKED}
             ${If} $Path_OB != $Empty
                 Delete "$Path_OB\Data\BOSS.*"
@@ -409,7 +419,10 @@
 				Delete "$Path_OB\Data\BOSS - Print Debug Info.bat"
 				Delete "$Path_OB\Data\BOSS - Undo Last Run.bat"
 				Delete "$Path_OB\Data\BOSS - Update Masterlist.bat"
-				RMDir /r "$Path_OB\Data\BOSS"
+				${If} $1 == ${BST_CHECKED}
+					Delete "$Path_OB\Data\BOSS\userlist.txt"
+				${EndIf}
+				RMDir  "$Path_OB\Data\BOSS"
             ${EndIf}
             ${If} $Path_FO != $Empty
                 Delete "$Path_FO\Data\BOSS.*"
@@ -420,7 +433,10 @@
 				Delete "$Path_FO\Data\BOSS - Print Debug Info.bat"
 				Delete "$Path_FO\Data\BOSS - Undo Last Run.bat"
 				Delete "$Path_FO\Data\BOSS - Update Masterlist.bat"
-				RMDir /r "$Path_FO\Data\BOSS"
+				${If} $1 == ${BST_CHECKED}
+					Delete "$Path_FO\Data\BOSS\userlist.txt"
+				${EndIf}
+				RMDir  "$Path_FO\Data\BOSS"
             ${EndIf}
             ${If} $Path_NV != $Empty
                 Delete "$Path_NV\Data\BOSS.*"
@@ -431,7 +447,10 @@
 				Delete "$Path_NV\Data\BOSS - Print Debug Info.bat"
 				Delete "$Path_NV\Data\BOSS - Undo Last Run.bat"
 				Delete "$Path_NV\Data\BOSS - Update Masterlist.bat"
-				RMDir /r "$Path_NV\Data\BOSS"
+				${If} $1 == ${BST_CHECKED}
+					Delete "$Path_NV\Data\BOSS\userlist.txt"
+				${EndIf}
+				RMDir  "$Path_NV\Data\BOSS"
             ${EndIf}
             ${If} $Path_Nehrim != $Empty
                 Delete "$Path_Nehrim\Data\BOSS.*"
@@ -442,7 +461,10 @@
 				Delete "$Path_Nehrim\Data\BOSS - Print Debug Info.bat"
 				Delete "$Path_Nehrim\Data\BOSS - Undo Last Run.bat"
 				Delete "$Path_Nehrim\Data\BOSS - Update Masterlist.bat"
-				RMDir /r "$Path_Nehrim\Data\BOSS"
+				${If} $1 == ${BST_CHECKED}
+					Delete "$Path_Nehrim\Data\BOSS\userlist.txt"
+				${EndIf}
+				RMDir  "$Path_Nehrim\Data\BOSS"
             ${EndIf}
             ${If} $Path_Other != $Empty
                 Delete "$Path_Other\Data\BOSS.*"
@@ -453,7 +475,10 @@
 				Delete "$Path_Other\Data\BOSS - Print Debug Info.bat"
 				Delete "$Path_Other\Data\BOSS - Undo Last Run.bat"
 				Delete "$Path_Other\Data\BOSS - Update Masterlist.bat"
-				RMDir /r "$Path_Other\Data\BOSS"
+				${If} $1 == ${BST_CHECKED}
+					Delete "$Path_Other\Data\BOSS\userlist.txt"
+				${EndIf}
+				RMDir  "$Path_Other\Data\BOSS"
             ${EndIf}
         ${EndIf}
 		${If} $CheckState_Userlist == ${BST_CHECKED}
