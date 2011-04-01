@@ -90,14 +90,14 @@ namespace boss {
 	//Checks if the plugin exists at the given location, even if ghosted.
 	bool Exists(const fs::path plugin);
 
+	//Determines if a given mod is a game's main master file or not.
+	bool IsMasterFile(const string plugin);
+
 	//Reads the header from mod file and prints a string representation which includes the version text, if found.
 	string GetModHeader(const fs::path& filename);
 
 	//Calculate the CRC of the given file for comparison purposes.
 	unsigned int GetCrc32(const fs::path& filename);
-
-	//Determines if a given mod is a game's main master file or not.
-	bool IsMasterFile(const string plugin);
 
 	//Reads an entire file into a string buffer.
 	void fileToBuffer(const fs::path file, string& buffer);

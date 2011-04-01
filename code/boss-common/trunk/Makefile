@@ -1,15 +1,22 @@
 #
 # Makefile
 #
-# system build requirements: >=boost-1.45.0, curl
+# build dependencies: >=boost-1.46.0, curl, utf8
+#   see Build Instructions.html for how to set up utf8
+#
+# runtime dependencies: wrestool, tr, sed
+#   wrestool is part of the icoutils package, and is called programatically
+#   to extract the version information from the OBSE dll
 #
 # usage:
 #   make [options] [targets]
 #
 # options:
-#   debug                       set to 'y' to enable the debug build.  you
-#                                 should run 'make clean' before switching
-#                                 between debug and non-debug builds.
+#     each of these options modify compilation flags, so you should run
+#     'make clean' before switching among combinations of them.
+#   debug                       set to 'y' to enable debug symbols
+#   profile                     set to 'y' to enable profiling (used by gprof)
+#   coverage                    set to 'y' to enable coverage analysis
 #
 # examples:
 #   make                        builds build/boss
@@ -31,11 +38,17 @@
 #
 
 CXX      := g++
-CXXFLAGS := -pipe -Wall -Wno-multichar -Wextra
+CXXFLAGS := -pipe --std=gnu++0x -Wall -Wextra -Wno-multichar
 ifeq (y,$(strip ${debug}))
   CXXFLAGS := -O0 -ggdb3 $(CXXFLAGS)
 else
   CXXFLAGS := -O2 $(CXXFLAGS)
+endif
+ifeq (y,$(strip ${profile}))
+  CXXFLAGS := -pg $(CXXFLAGS)
+endif
+ifeq (y,$(strip ${coverage}))
+  CXXFLAGS := --coverage $(CXXFLAGS)
 endif
 INCLUDES := .
 

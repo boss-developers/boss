@@ -150,12 +150,17 @@ namespace boss {
 	//Checks if a given object is an esp or an esm.
 	bool IsPlugin(string object) {
 		to_lower(object);
-		return (object.find(".esp")!=string::npos || object.find(".esm")!=string::npos);
+		return (object.find(".esp") != string::npos || object.find(".esm") != string::npos);
 	}
 
 	//Checks if the plugin exists at the given location, even if ghosted.
 	bool Exists(const fs::path plugin) {
 		return (fs::exists(plugin) || fs::exists(plugin.string() + ".ghost"));
+	}
+
+	//Determines if a given mod is a game's main master file or not.
+	bool IsMasterFile(const string plugin) {
+		return ((Tidy(plugin) == "oblivion.esm") || (Tidy(plugin) == "fallout3.esm") || (Tidy(plugin) == "nehrim.esm") || (Tidy(plugin) == "falloutnv.esm"));
 	}
 
 	//Reads the header from mod file and prints a string representation which includes the version text, if found.
@@ -211,11 +216,6 @@ namespace boss {
         return chksum;
 	}
 
-	//Determines if a given mod is a game's main master file or not.
-	bool IsMasterFile(const string plugin) {
-		return (Tidy(plugin)=="oblivion.esm") || (Tidy(plugin)=="fallout3.esm") || (Tidy(plugin)=="nehrim.esm") || (Tidy(plugin)=="falloutnv.esm");
-	}
-
 	//Reads an entire file into a string buffer.
 	void fileToBuffer(const fs::path file, string& buffer) {
 		ifstream ifile(file.c_str());
@@ -254,7 +254,8 @@ namespace boss {
 	//Also works for FOSE and NVSE.
 	//NOT CROSS-PLATFORM. Requires Windows.h.
 	string GetExeDllVersion(const fs::path& filepath) {
-		LOG_TRACE("extracting version from '%s'", filepath.string().c_str());
+		string filename = filepath.string();
+		LOG_TRACE("extracting version from '%s'", filename.c_str());
 		string retVal = "";
 #if _WIN32 || _WIN64
 		// WARNING - NOT VERY SAFE, SEE http://www.boost.org/doc/libs/1_46_1/libs/filesystem/v3/doc/reference.html#current_path
@@ -285,11 +286,11 @@ namespace boss {
 #else
         // ensure filename has no quote characters in it to avoid command injection attacks
         if (string::npos != filename.find('"')) {
-    	    LOG_WARN("filename has embedded quotes; skipping to avoid command injection: '%s'", filepath.string().c_str());
+    	    LOG_WARN("filename has embedded quotes; skipping to avoid command injection: '%s'", filename.c_str());
         } else {
             // command mostly borrowed from the gnome-exe-thumbnailer.sh script
             // wrestool is part of the icoutils package
-            string cmd = "wrestool --extract --raw --type=version \"" + filepath.string() + "\" | tr '\\0, ' '\\t.\\0' | sed 's/\\t\\t/_/g' | tr -c -d '[:print:]' | sed -r 's/.*Version[^0-9]*([0-9]+(\\.[0-9]+)+).*/\\1/'";
+            string cmd = "wrestool --extract --raw --type=version \"" + filename + "\" | tr '\\0, ' '\\t.\\0' | sed 's/\\t\\t/_/g' | tr -c -d '[:print:]' | sed -r 's/.*Version[^0-9]*([0-9]+(\\.[0-9]+)+).*/\\1/'";
 
             FILE *fp = popen(cmd.c_str(), "r");
 
@@ -297,11 +298,11 @@ namespace boss {
             static const int BUFSIZE = 32;
             char buf[BUFSIZE];
             if (NULL == fgets(buf, BUFSIZE, fp)) {
-    	        LOG_DEBUG("failed to extract version from '%s'", filepath.string().c_str());
+    	        LOG_DEBUG("failed to extract version from '%s'", filename.c_str());
             }
             else {
                 retVal = string(buf);
-	   	        LOG_DEBUG("extracted version from '%s': %s", filepath.string().c_str(), retVal.c_str());
+	   	        LOG_DEBUG("extracted version from '%s': %s", filename.c_str(), retVal.c_str());
             }
 
             pclose(fp);
