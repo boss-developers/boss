@@ -208,7 +208,7 @@ namespace boss {
 				ifile.read(buffer, buffer_size);
 				result.process_bytes(buffer, ifile.gcount());
 			} while (ifile);
-			return result.checksum();
+			chksum = result.checksum();
 		} else {
 			LOG_WARN("unable to open file for CRC calculation: '%s'", filename.string().c_str());
 		}
@@ -250,9 +250,7 @@ namespace boss {
 			return false;
 	}
 
-	//Gets the given OBSE dll or OBSE plugin dll's version number.
-	//Also works for FOSE and NVSE.
-	//NOT CROSS-PLATFORM. Requires Windows.h.
+	//Gets the given .exe or .dll file's version number.
 	string GetExeDllVersion(const fs::path& filepath) {
 		string filename = filepath.string();
 		LOG_TRACE("extracting version from '%s'", filename.c_str());

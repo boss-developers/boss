@@ -58,10 +58,7 @@ namespace boss {
 		}
 		double diff = difftime(t1,t2);
 
-		if (diff > 0)
-			return false;
-		else
-			return true;
+		return (diff < 0);
 	}
 
 	//Build modlist (the one that gets saved to file, not the masterlist).

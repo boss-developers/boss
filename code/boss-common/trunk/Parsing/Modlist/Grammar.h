@@ -30,6 +30,7 @@
 #include <boost/spirit/home/phoenix/object/construct.hpp>
 #include <boost/spirit/include/phoenix_bind.hpp>
 #include <boost/unordered_set.hpp>
+#include <boost/unordered_map.hpp>
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -63,7 +64,9 @@ namespace boss {
 	boost::unordered_set<string> setVars;  //Vars set by masterlist.
 	boost::unordered_set<string>::iterator pos;
 	bool storeItem = true, storeMessage = true;
-	vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in old format.
+	vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in MF1.
+	boost::unordered_map<string,unsigned int> fileCRCs;
+	boost::unordered_map<string,unsigned int>::iterator iter;
 
 	//Parsing error message format.
 	static format MasterlistParsingErrorFormat("<p><span class='error'>Masterlist Parsing Error: Expected a %1% at:</span>"
@@ -160,11 +163,14 @@ namespace boss {
 	void CheckSum(bool& result, unsigned int sum, string file) {
 		result = false;
 		fs::path file_path;
+		unsigned int CRC;
 
 		GetPath(file_path,file);
+		iter = fileCRCs.find(file);
 
-		if (Exists(file_path / file)) {
-			unsigned int CRC;
+		if (iter != fileCRCs.end()) {
+			CRC = fileCRCs.at(file);
+		} else if (Exists(file_path / file)) {
 			if (file_path == data_path) {
 				if (IsGhosted(file_path / file)) 
 					CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
@@ -172,10 +178,11 @@ namespace boss {
 					CRC = GetCrc32(file_path / file);
 			} else
 				CRC = GetCrc32(file_path / file);
-
-			if (sum == CRC)
-				result = true;
+			fileCRCs.emplace(file,CRC);
 		}
+
+		if (sum == CRC)
+			result = true;
 		return;
 	}
 
