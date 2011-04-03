@@ -337,7 +337,6 @@
 		${NSD_CreateCheckBox} $1% $0u 35% 8u "Create blank userlist(s)"
 			Pop $Create_Userlist
 			${NSD_AddStyle} $Create_Userlist ${WS_GROUP}
-			${NSD_SetState} $Create_Userlist ${BST_CHECKED}
 			IntOp $1 $1 + 35
 		IntOp $0 $0 + 15
 		IntOp $1 0 + 0
@@ -351,7 +350,6 @@
 		 ${NSD_CreateCheckBox} $1% $0u 75% 8u "Remove userlists if present"
 			Pop $Check_RemoveUserFiles
 			${NSD_AddStyle} $Check_RemoveUserFiles ${WS_GROUP}
-            ${NSD_SetState} $Check_RemoveUserFiles ${BST_CHECKED}
         nsDialogs::Show
         FunctionEnd
     Function PAGE_FINISH_Leave
@@ -615,6 +613,29 @@
       CreateDirectory "$COMMONFILES\BOSS"
       WriteUninstaller "$COMMONFILES\BOSS\uninstall.exe"
     SectionEnd
+	Section "BOSS GUI" GUI
+		SectionIn 1 2
+        ${If} $CheckState_OB == ${BST_CHECKED}
+            SetOutPath $Path_OB\BOSS
+            File "code\boss-gui\trunk\bin\Release\BOSS GUI.exe"
+        ${EndIf}
+        ${If} $CheckState_FO == ${BST_CHECKED}
+            SetOutPath $Path_FO\BOSS
+            File "code\boss-gui\trunk\bin\Release\BOSS GUI.exe"
+        ${EndIf}
+        ${If} $CheckState_NV == ${BST_CHECKED}
+            SetOutPath $Path_NV\BOSS
+            File "code\boss-gui\trunk\bin\Release\BOSS GUI.exe"
+        ${EndIf}
+        ${If} $CheckState_Nehrim == ${BST_CHECKED}
+            SetOutPath $Path_Nehrim\BOSS
+            File "code\boss-gui\trunk\bin\Release\BOSS GUI.exe"
+        ${EndIf}
+        ${If} $CheckState_Other == ${BST_CHECKED}
+            SetOutPath $Path_Other\BOSS
+            File "code\boss-gui\trunk\bin\Release\BOSS GUI.exe"
+        ${EndIf}
+    SectionEnd
     SectionGroup "Start Menu Shortcuts" Shortcuts_SM
         Section "Main" StartMenu
             SectionIn 1
@@ -623,22 +644,27 @@
             ${If} $CheckState_OB == ${BST_CHECKED}
                 SetOutPath "$Path_OB\BOSS"
                 CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Oblivion.lnk" "$Path_OB\BOSS\BOSS.exe" "" "$Path_OB\BOSS\BOSS.exe" 0
+				CreateShortCut "$SMPROGRAMS\BOSS\BOSS GUI - Oblivion.lnk" "$Path_OB\BOSS\BOSS GUI.exe" "" "$Path_OB\BOSS\BOSS GUI.exe" 0
             ${EndIf}
             ${If} $CheckState_FO == ${BST_CHECKED}
                 SetOutPath "$Path_FO\BOSS"
                 CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Fallout3.lnk" "$Path_FO\BOSS\BOSS.exe" "" "$Path_FO\BOSS\BOSS.exe" 0
+				CreateShortCut "$SMPROGRAMS\BOSS\BOSS GUI - Fallout3.lnk" "$Path_FO\BOSS\BOSS GUI.exe" "" "$Path_FO\BOSS\BOSS GUI.exe" 0
             ${EndIf}
             ${If} $CheckState_NV == ${BST_CHECKED}
                 SetOutPath "$Path_NV\BOSS"
-                CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Fallout NewVegas.lnk" "$Path_NV\BOSS\BOSS.exe" "" "$Path_NV\BOSS\BOSS.exe" 0
+                CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Fallout New Vegas.lnk" "$Path_NV\BOSS\BOSS.exe" "" "$Path_NV\BOSS\BOSS.exe" 0
+				CreateShortCut "$SMPROGRAMS\BOSS\BOSS GUI - Fallout New Vegas.lnk" "$Path_NV\BOSS\BOSS GUI.exe" "" "$Path_NV\BOSS\BOSS GUI.exe" 0
             ${EndIf}
             ${If} $CheckState_Nehrim == ${BST_CHECKED}
                 SetOutPath "$Path_Nehrim\BOSS"
                 CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Nehrim.lnk" "$Path_Nehrim\BOSS\BOSS.exe" "" "$Path_Nehrim\BOSS\BOSS.exe" 0
+				CreateShortCut "$SMPROGRAMS\BOSS\BOSS GUI - Nehrim.lnk" "$Path_Nehrim\BOSS\BOSS GUI.exe" "" "$Path_Nehrim\BOSS\BOSS GUI.exe" 0
             ${EndIf}
             ${If} $CheckState_Other == ${BST_CHECKED}
                 SetOutPath "$Path_Other\BOSS"
                 CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Other.lnk" "$Path_Other\BOSS\BOSS.exe" "" "$Path_Other\BOSS\BOSS.exe" 0
+				CreateShortCut "$SMPROGRAMS\BOSS\BOSS GUI - Other.lnk" "$Path_Other\BOSS\BOSS GUI.exe" "" "$Path_Other\BOSS\BOSS GUI.exe" 0
             ${EndIf}
             SectionEnd
         Section "Update Masterlist Start Menu Shortcuts" StartMenuUpdate
@@ -655,7 +681,7 @@
             ${EndIf}
             ${If} $CheckState_NV == ${BST_CHECKED}
                 SetOutPath "$Path_NV\BOSS"
-                CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Fallout NewVegas - Update Masterlist.lnk" "$Path_NV\BOSS\BOSS.exe" "-u" "$Path_NV\BOSS\BOSS.exe" 0
+                CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Fallout New Vegas - Update Masterlist.lnk" "$Path_NV\BOSS\BOSS.exe" "-u" "$Path_NV\BOSS\BOSS.exe" 0
             ${EndIf}
             ${If} $CheckState_Nehrim == ${BST_CHECKED}
                 SetOutPath "$Path_Nehrim\BOSS"
@@ -669,7 +695,7 @@
         Section "Documentation Shortcuts" Shortcuts_SM_Docs
             SectionIn 1
             CreateShortCut "$SMPROGRAMS\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
-            CreateShortCut "$SMPROGRAMS\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
+            CreateShortCut "$SMPROGRAMS\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
             SectionEnd
         SectionGroupEnd
     Section "Documentation" Documentation
@@ -702,29 +728,6 @@
             CreateShortCut "$Path_Other\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
             CreateShortCut "$Path_Other\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
         ${EndIf} 
-        SectionEnd
-    Section "Batch Files" Batch_Files
-        SectionIn 1
-        ${If} $CheckState_OB == ${BST_CHECKED}
-            SetOutPath $Path_OB\BOSS
-            File "data\boss-common\*.bat"
-        ${EndIf}
-        ${If} $CheckState_FO == ${BST_CHECKED}
-            SetOutPath $Path_FO\BOSS
-            File "data\boss-common\*.bat"
-        ${EndIf}
-        ${If} $CheckState_NV == ${BST_CHECKED}
-            SetOutPath $Path_NV\BOSS
-            File "data\boss-common\*.bat"
-        ${EndIf}
-        ${If} $CheckState_Nehrim == ${BST_CHECKED}
-            SetOutPath $Path_Nehrim\BOSS
-            File "data\boss-common\*.bat"
-        ${EndIf}
-        ${If} $CheckState_Other == ${BST_CHECKED}
-            SetOutPath $Path_Other\BOSS
-            File "data\boss-common\*.bat"
-        ${EndIf}
         SectionEnd
 ;-------------------------------- Custom Uninstallation Pages and their Functions:
     Function un.PAGE_SELECT_GAMES
@@ -848,151 +851,126 @@
         ${If} $CheckState_OB == ${BST_CHECKED}
             Delete "$Path_OB\BOSS\*.lnk"
             Delete "$Path_OB\BOSS\masterlist.txt"
-            Delete "$Path_OB\BOSS\*.bat"
             Delete "$Path_OB\BOSS\modlist.*"
             Delete "$Path_OB\BOSS\BOSSlog.html"
 			Delete "$Path_OB\BOSS\BOSSlog.txt"
 			Delete "$Path_OB\BOSS\BOSS.exe"
+			Delete "$Path_OB\BOSS\BOSS GUI.exe"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_OB\BOSS\userlist.txt"
             ${EndIf}
             RMDir "$Path_OB\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Oblivion.lnk"
+			Delete "$SMPROGRAMS\BOSS\BOSS GUI - Oblivion.lnk"
             Delete "$SMPROGRAMS\BOSS\BOSS - Oblivion - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "Oblivion Path"
             ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\BOSS\BOSS.exe"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\BOSS\BOSS.exe"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_OB\BOSS\BOSS.exe"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_OB\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_OB\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_OB\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_OB\BOSS\BOSS GUI.exe"
             StrCpy $Path_OB $Empty
         ${EndIf}
         ${If} $CheckState_FO == ${BST_CHECKED}
             Delete "$Path_FO\BOSS\*.lnk"
             Delete "$Path_FO\BOSS\masterlist.txt"
-            Delete "$Path_FO\BOSS\*.bat"
             Delete "$Path_FO\BOSS\modlist.*"
             Delete "$Path_FO\BOSS\BOSSlog.html"
 			Delete "$Path_FO\BOSS\BOSSlog.txt"
 			Delete "$Path_FO\BOSS\BOSS.exe"
+			Delete "$Path_FO\BOSS\BOSS GUI.exe"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_FO\BOSS\userlist.txt"
             ${EndIf}
             RMDir "$Path_FO\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Fallout3.lnk"
+			Delete "$SMPROGRAMS\BOSS\BOSS GUI - Fallout3.lnk"
             Delete "$SMPROGRAMS\BOSS\BOSS - Fallout3 - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "Fallout3 Path"
             ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\BOSS\BOSS.exe"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\BOSS\BOSS.exe"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_FO\BOSS\BOSS.exe"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_FO\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_FO\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_FO\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_FO\BOSS\BOSS GUI.exe"
             StrCpy $Path_FO $Empty
         ${EndIf}
         ${If} $CheckState_NV == ${BST_CHECKED}
             Delete "$Path_NV\BOSS\*.lnk"
             Delete "$Path_NV\BOSS\masterlist.txt"
-            Delete "$Path_NV\BOSS\*.bat"
             Delete "$Path_NV\BOSS\modlist.*"
             Delete "$Path_NV\BOSS\BOSSlog.html"
 			Delete "$Path_NV\BOSS\BOSSlog.txt"
 			Delete "$Path_NV\BOSS\BOSS.exe"
+			Delete "$Path_NV\BOSS\BOSS GUI.exe"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_NV\BOSS\userlist.txt"
             ${EndIf}
             RMDir "$Path_NV\BOSS"
-            Delete "$SMPROGRAMS\BOSS\BOSS - Fallout NewVegas.lnk"
-            Delete "$SMPROGRAMS\BOSS\BOSS - Fallout NewVegas - Update Masterlist.lnk"
+            Delete "$SMPROGRAMS\BOSS\BOSS - Fallout New Vegas.lnk"
+			Delete "$SMPROGRAMS\BOSS\BOSS GUI - Fallout New Vegas.lnk"
+            Delete "$SMPROGRAMS\BOSS\BOSS - Fallout New Vegas - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "NewVegas Path"
             ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\BOSS\BOSS.exe"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\BOSS\BOSS.exe"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_NV\BOSS\BOSS.exe"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_NV\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_NV\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_NV\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_NV\BOSS\BOSS GUI.exe"
             StrCpy $Path_NV $Empty
         ${EndIf}
         ${If} $CheckState_Nehrim == ${BST_CHECKED}
             Delete "$Path_Nehrim\BOSS\*.lnk"
             Delete "$Path_Nehrim\BOSS\masterlist.txt"
-            Delete "$Path_Nehrim\BOSS\*.bat"
             Delete "$Path_Nehrim\BOSS\modlist.*"
             Delete "$Path_Nehrim\BOSS\BOSSlog.html"
 			Delete "$Path_Nehrim\BOSS\BOSSlog.txt"
 			Delete "$Path_Nehrim\BOSS\BOSS.exe"
+			Delete "$Path_Nehrim\BOSS\BOSS GUI.exe"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_Nehrim\BOSS\userlist.txt"
             ${EndIf}
             RMDir "$Path_Nehrim\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Nehrim.lnk"
+			Delete "$SMPROGRAMS\BOSS\BOSS GUI - Nehrim.lnk"
             Delete "$SMPROGRAMS\BOSS\BOSS - Nehrim - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "Nehrim Path"
             ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\BOSS\BOSS.exe"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\BOSS\BOSS.exe"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Nehrim\BOSS\BOSS.exe"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Nehrim\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Nehrim\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Nehrim\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Nehrim\BOSS\BOSS GUI.exe"
             StrCpy $Path_Nehrim $Empty
         ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
             Delete "$Path_Other\BOSS\*.lnk"
             Delete "$Path_Other\BOSS\masterlist.txt"
-            Delete "$Path_Other\BOSS\*.bat"
             Delete "$Path_Other\BOSS\modlist.*"
             Delete "$Path_Other\BOSS\BOSSlog.html"
 			Delete "$Path_Other\BOSS\BOSSlog.txt"
 			Delete "$Path_Other\BOSS\BOSS.exe"
+			Delete "$Path_Other\BOSS\BOSS GUI.exe"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_Other\BOSS\userlist.txt"
             ${EndIf}
             RMDir "$Path_Other\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Other.lnk"
+			Delete "$SMPROGRAMS\BOSS\BOSS GUI - Other.lnk"
             Delete "$SMPROGRAMS\BOSS\BOSS - Other - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "Other Path"
             ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\BOSS\BOSS.exe"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\BOSS\BOSS.exe"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Other\BOSS\BOSS.exe"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Other\BOSS\BOSS - Print Debug Info.bat"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Other\BOSS\BOSS - Undo Last Run.bat"
-                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Other\BOSS\BOSS - Update Masterlist.bat"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Other\BOSS\BOSS GUI.exe"
             StrCpy $Path_Other $Empty
         ${EndIf}
         
@@ -1026,21 +1004,21 @@
   ;Language strings
   !insertmacro MUI_LANGUAGE "English"
   LangString DESC_Main ${LANG_ENGLISH} "The main executable."
+  LangString DESC_GUI ${LANG_ENGLISH} "The Graphical User Interface for BOSS."
   LangString DESC_Shortcuts_SM ${LANG_ENGLISH} "Start Menu shortcuts for the uninstaller & BOSS.exe for each game."
   LangString DESC_Shortcuts_SM_Docs ${LANG_ENGLISH} "Start Menu shortcuts for the BOSS Documentation."
   LangString DESC_Documentation ${LANG_ENGLISH} "The documentation."
-  LangString DESC_Batch_Files ${LANG_ENGLISH} "Batch files to enable quicker use of the command functions Update, Revert (Level 1) and Debug output (level 2)."
   LangString PAGE_SELECT_GAMES_TITLE ${LANG_ENGLISH} "Choose Games"
   LangString PAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select which game(s) you want to install BOSS for, and confirm the desired install path."
   LangString unPAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select which game(s) you want to uninstall BOSS from."
   LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished installing BOSS - Better Oblivion Sorting Software v1.7.0"
   LangString PAGE_FINISH_SUBTITLE ${LANG_ENGLISH} "Please select post-install tasks."
-
+  
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${Main} $(DESC_Main)
     !insertmacro MUI_DESCRIPTION_TEXT ${Shortcuts_SM} $(DESC_Shortcuts_SM)
     !insertmacro MUI_DESCRIPTION_TEXT ${Shortcuts_SM_Docs} $(DESC_Shortcuts_SM_Docs)
     !insertmacro MUI_DESCRIPTION_TEXT ${Documentation} $(DESC_Documentation)
-    !insertmacro MUI_DESCRIPTION_TEXT ${Batch_Files} $(DESC_Batch_Files)
+	!insertmacro MUI_DESCRIPTION_TEXT ${GUI} $(DESC_GUI)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END

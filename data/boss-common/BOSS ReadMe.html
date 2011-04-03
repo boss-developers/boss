@@ -10,11 +10,12 @@
 	.subtitle {font-weight: normal;font-size:1.3em;}
 	ol li {margin-bottom:10px;}
 	ul li {margin-bottom:10px;}
+	q {font-style:italic;}
 	</style>
   </head>
   <body id="body">
 	<div id="title">Better Oblivion Sorting Software</div><br />
-	<div style="text-align:center;">A simple "one-click" program for users that quickly optimises and avoids detrimental conflicts in their Oblivion, Fallout 3, Nehrim - At Fate's Edge and Fallout: New Vegas mod load orders.</div>
+	<div style="text-align:center;">A "one-click" program for users that quickly optimises and avoids detrimental conflicts in their Oblivion, Fallout 3, Nehrim - At Fate's Edge and Fallout: New Vegas mod load orders.</div>
     <br /><br />
 	
 	<div><span>Contents</span>
@@ -22,6 +23,7 @@
 		<li><a href="#features">Features &amp; Introduction</a></li>
 		<li><a href="#install">Installation &amp; Basic Usage</a></li>
 		<li><a href="#remove">Uninstallation</a></li>
+		<li><a href="#advanced">General &amp; Advanced Usage</a></li>
 		<li><a href="#details">Further Details</a></li>
 		<li><a href="#help">Contributions &amp; Help</a></li>
 		<li><a href="#updates">Updates</a></li>
@@ -30,25 +32,26 @@
 		<li><a href="#team">Project Members</a></li>
 		<li><a href="#license">License</a></li>
 		<li><a href="#links">Quick Links</a></li>
-		<li><a href="#history">Version History</a></li>
+		<li><a href="#history">BOSS Version History</a></li>
 	</ol>
 	</div><br /><br />
 	
 	<div id="features"><span>Features &amp; Introduction</span>
 	<ul>
-		<li>Correctly positions over 11,400 Oblivion mods and counting, including all the mod files found in such popular mods as FCOM, OOO, MMM, Better Cities, Open Cities, Race Balancing Project and many other large mods.</li>
-		<li>For Oblivion, it can provide specific messages for when using OOO and Better Cities, and differentiates between FCOM and non-FCOM setups. It also detects common FCOM installation mistakes and warns the user about them.</li>
+		<li>Correctly positions over 11,400 Oblivion mods and counting, including such popular mods as FCOM, <acronym title="Oscuro's Oblivion Overhaul">OOO</acronym>, <acronym title="Martigen's Monster Mod">MMM</acronym>, Better Cities, Open Cities, Race Balancing Project and many others.</li>
 		<li>Correctly positions over 2,300 Fallout 3 mods and counting.
 		<li>Correctly positions over 1,800 Fallout: New Vegas mods and counting.
 		<li>Provides support for sorting mods used in Nehrim - At Fate's Edge installs.</li>
-		<li>Provides useful load order notes for many mods.</li>
+		<li>Provides a large number of usage notes for many mods, including requirements, incompatibilities, updates and bug warnings.</li>
+		<li>Provides detection and warning of installation mistakes for some popular mods, such as FCOM.</li>
 		<li>Displays the version number of mods when it is available.</li>
-		<li>Allows easy user customisation of mod positions and the messages provided.</li>
 		<li>Provides Bash Tag suggestions that are automatically applied by Wrye Bash (for Oblivion), Wrye Flash (for Fallout 3) or Wrye Flash NV (for Fallout: New Vegas).</li>
 		<li>Sorts mod files ghosted by Wrye Bash/Flash.</li>
+		<li>Allows easy user customisation of mod positions and the messages provided.</li>
+		<li>Includes a <acronym title="Graphical User Interface">GUI</acronym> for easily accessing all of Better Oblivion Sorting Software's functions, including launching it with different settings.</li>
 		<li>Is under constant development and improvement by a team of modders and experts on all supported games.</li>	
 	</ul>
-	<p>Better Oblivion Sorting Software (BOSS) will reorder your mods to their correct positions (as listed in the masterlist.txt database file), putting any mods it doesn't recognise after them, in the same order as they were before BOSS was run.</p>
+	<p>Better Oblivion Sorting Software (BOSS) will re-order your mods to their correct positions, putting any mods it doesn't recognise after them, in the same order as they were before BOSS was run.</p>
 	<p>BOSS is designed to assist in the installation and usage of mods, especially more complex mods such as FCOM, MMM and FOOK, and help mod users avoid serious conflicts. It is not a complete solution to load ordering issues, as there are far more mods out there 
 	(estimated at about 30,000 for Oblivion, and about 11,000 for Fallout 3) than BOSS knows about. To properly place mods BOSS doesn't know about, a good working knowledge of mod load ordering for the relevant game is still necessary, for which some research and documentation reading will go a long way.</p>
 	</div>
@@ -57,27 +60,51 @@
 	<div id="install"><span>Installation &amp; Basic Usage</span>
 	<p>BOSS can be installed for use with Oblivion, Fallout 3, Fallout: New Vegas or Nehrim - At Fate's Edge (a Total Conversion mod for Oblivion). Installation may either be automated, using the BOSS Installer package, or manually, using the archive package. Either method is simple, and instructions for manual installation are given below.</p>
 	<ol>
-		<li>If you have Wrye Bash, Wrye Flash or Wrye Flash NV, make sure the "Lock Times" function is deactivated.</li>
+		<li>If you have Wrye Bash, Wrye Flash or Wrye Flash NV, make sure the <q>Lock Times</q> function is deactivated.</li>
 		<li>If upgrading from an earlier version of BOSS, delete all BOSS files and folders in your game's Data folder (including the BOSS folder, BOSS.exe, masterlist.txt, modlist.txt, modlist.old, BOSSlog.txt and any of BOSS's .bat files).  If you have an edited masterlist, make sure to keep a backup so that your edits are not lost.</li>
-		<li>Extract the BOSS archive you downloaded to your game's installation directory (ie. the one containing the Data folder and the game's executable, so one of "Oblivion", "Fallout 3", "Nehrim" or "fallout new vegas" depending on your game), so that there is now a BOSS folder alongside the Data folder and the game's executable.</li>
-		<li>In the BOSS folder, run the "BOSS - Update Masterlist.bat" file to get the latest masterlist from the Internet and sort your mods.</li>
-		<li>When running BOSS normally, do so from the BOSS.exe, but remember to run the "BOSS - Update Masterlist.bat" regularly to ensure you have a recent masterlist.</li>
+		<li>Extract the BOSS archive you downloaded to your game's installation directory (ie. the one containing the Data folder and the game's executable, so one of <q>Oblivion</q>, <q>Fallout 3</q>, <q>Nehrim</q> or <q>fallout new vegas</q> depending on your game), so that there is now a BOSS folder alongside the Data folder and the game's executable.</li>
+		<li>In the BOSS folder, run the <q>BOSS GUI.exe</q> and check the box for <q>Update Masterlist</q> under the <q>Sort Mods</q> run option, then click the <q>Run BOSS</q> button. This will download the latest masterlist from the Internet and then sort your mods.</li>
+		<li>When running BOSS, you may run BOSS directly from the BOSS.exe to simply sort your mods, or you can use the GUI to choose how BOSS runs. Remember to update the masterlist via the GUI options regularly.</li>
 	</ol>
 	<p>If you are installing BOSS manually and have more than one of the supported games installed, you should install BOSS separately for each one.</p>
 	<p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. Wrye Bash/Flash will automatically import and apply Bash Tag 
 	suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions makes thoroughly and adjust tags by hand in Wrye Bash/Flash if necessary.</p>
-	<p>You will need to reorder "unknown" mods by hand using OBMM/FOMM or Wrye Bash/Flash.</p>
-	<p>You can update your masterlist to the latest version by running the "BOSS - Update Masterlist.bat" file. This will replace your copy with the latest available online, and then run BOSS as normal using the updated masterlist. <b>If you 
+	<p>You will need to reorder "unknown" mods by hand using <acronym title="Oblivion Mod Manager">OBMM</acronym>/<acronym title="Fallout Mod Manager">FOMM</acronym> or Wrye Bash/Flash.</p>
+	<p>You can update your masterlist to the latest version by running the GUI and either selecting the <q>Update Masterlist Only</q> run option or checking the <q>Update Masterlist</q> box under the <q>Sort Mods</q> run option. This will replace your copy with the latest available online, and then run BOSS as normal using the updated masterlist. <b>If you 
 	have an edited masterlist, using this updater will cause you to lose all your edits.</b></p>
 	</div><br /><br />
 	
 	<div id="remove"><span>Uninstallation</span>
-	<p>Delete the BOSS folder in your game's installation folder (ie. the one containing the Data folder and the game's executable, so one of "Oblivion", "Fallout 3", "Nehrim" or "fallout new vegas" depending on your game).</p>
+	<p>Delete the BOSS folder in your game's installation folder (ie. the one containing the Data folder and the game's executable, so one of <q>Oblivion</q>, <q>Fallout 3</q>, <q>Nehrim</q> or <q>fallout new vegas</q> depending on your game).</p>
 	</div><br /><br />
+	
+	<div id="advanced"><span>General &amp; Advanced Usage</span><br /><br />
+	<span class="subtitle">The Graphical User Interface</span>
+	<p>BOSS comes with a <acronym title="Graphical User Interface">GUI</acronym> that provides easy access to all of BOSS's functions and features. With it, you can:</p>
+	<ul>
+		<li>Run BOSS in one of three modes: the first sorts your mods, the second only updates your masterlist, and the third lets you undo the changes BOSS makes to your load order, either one step back or two.</li>
+		<li>Specify BOSS's run options using a set of butttons, checkboxes and lists quickly and easily, avoiding the command line.</li>
+		<li>Open your BOSSlog for viewing and edit your userlist without having to navigate to them through Explorer.</li>
+		<li>View BOSS's main and User Rules ReadMes through handy Help menu shortcuts.</li>
+		<li>Check for updates to BOSS, the GUI and your masterlist.</li>
+	</ul>
+	<p>The GUI is also aware of what version of BOSS you are running, and will disable (grey out) any options that are not supported by the version of BOSS you have installed in order to minimise confusion. All the GUI's options should be self-explanatory, 
+	but if you have issues understanding what they do, each setting has a corresponding command line parameter, which all have detailed descriptions in the <a href="#details">Further Details</a> section below.</p><br />
+	
+	<span class="subtitle">Customising How BOSS Works</span>
+	<p>Users can customise how BOSS works through the included User Rules feature. This feature allows you to define the positions of mods not in the masterlist, and to override the masterlist positions of mods,
+	as well as edit the output messages of mods, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes are not lost. All the information on the User Rules feature can be found in the "BOSS User Rules ReadMe.html" file.
+	</p><br />
+	
+	<span class="subtitle">Running BOSS Under Linux</span>
+	<p>It is possible to run BOSS on Linux through the Wine compatibility layer, though no official support for doing so is given. Installation and usage is as on Windows.</p>
+	</div><br /><br />
+
+	
 	
 	<div id="details"><span>Further Details</span><br />
 	<br /><span class="subtitle">Command Line Arguments</span>
-	<p>BOSS has a number of command-line arguments. The syntax is:</p>
+	<p>The BOSS GUI acts as a frontend to BOSS, and its output and run options correspond to BOSS's command line arguments. The syntax for these arguments is:</p>
 	<div>
 	<p><code>boss [-hVuosndc] [-g [game]] [-r [level]] [-v [level]] [-f [type]]</code></p>
 	<p><code>-h [ --help ]</code></p>
@@ -86,7 +113,7 @@
 	<p>Prints the a banner displaying the program name and version number to the command line, then exits.</p>
 	<p><code>-u [ --update ]</code></p>
 	<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then sorts your mods. Since this replaces your current 
-	masterlist, don't run this if you have an edited copy and wish to keep the changes. The "BOSS - Update Masterlist.bat" runs BOSS with this switch.</p>
+	masterlist, don't run this if you have an edited copy and wish to keep the changes.</p>
 	<p><code>-o [ --only-update ]</code></p>
 	<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then does <b>not</b> sort your mods. Since this replaces your current 
 	masterlist, don't run this if you have an edited copy and wish to keep the changes.</p>
@@ -105,12 +132,12 @@
 	<p><code>-d [ --debug ]</code></p>
 	<p>Adds source file references (filenames and line numbers) to logging statements.</p>
 	<p><code>-c [ --crc-display ]</code></p>
-	<p>Calculates the CRCs of all the plugins in your Data folder and displays them in your BOSSlog alongside the plugin names. The version numbers and CRCs of OBSE/FOSE/NVSE and its installed plugins will also be displayed in your BOSSlog. These CRCs are not technically accurate, and should not be used for any purpose outside of BOSS functionality.</p>
+	<p>Calculates the <acronym title="Cyclic Redundancy Checks">CRCs</acronym> of all the plugins in your Data folder and displays them in your BOSSlog alongside the plugin names. The version numbers and CRCs of <acronym title="Oblivion Script Extender">OBSE</acronym>/<acronym title="Fallout Script Extender">FOSE</acronym>/<acronym title="New Vegas Script Extender">NVSE</acronym> and its installed plugins will also be displayed in your BOSSlog.</p>
 	<p><code>-f [ --format ] [ type ]</code></p>
-	<p>Allows the selection of the BOSSlog format. Valid argument values are: 'html' and 'text'. 'html' is the default output format used when this argument is not present. 'text' will print the BOSSlog as plain text into a 'BOSSlog.txt' file, similar to the BOSSlog in BOSS v1.5 and below.</p>
-	
+	<p>Allows the selection of the BOSSlog format. Valid argument values are: 'html' and 'text'. 'html' is the default output format. The 'text' value will print the BOSSlog as plain text into a 'BOSSlog.txt' file, similar to the BOSSlog in BOSS v1.5 and below.</p>
 	</div><br />
-	<br /><span class="subtitle">BOSS Changes and Files</span>
+	
+	<span class="subtitle">BOSS Changes and Files</span>
 	<p>The only changes BOSS makes to your game install are to re-date the .esp and .esm files in your Data folder, and create a few text files in your BOSS folder. Your game's master file (Oblivion.esm, Fallout3.esm, Nehrim.esm or FalloutNV.esm) 
 	is never touched, and all dates are derived from it.</p>
 	<div>BOSS's files are all found in the BOSS folder, and they are:
@@ -122,22 +149,7 @@
 		<li><i>modlist.old</i> - This file contains the contents of your modlist.txt before you last ran BOSS, providing a second level of undo for load order changes.</li>
 		<li><i>userlist.txt</i> - This file contains your custom rules to be implemented by the User Rules feature.</li>
 	</ul>
-	</div><br />
-	<br /><span class="subtitle">Undoing Changes</span>
-	<div><p>To undo the changes BOSS makes to your load order, you can use the included "BOSS - Undo Last Run.bat" file.
-	The .bat file will, by default, revert to the load order before the last run of BOSS, as stored in modlist.txt. If you want to revert back to the load order before that, as stored in modlist.old, you will need to edit your "BOSS - Undo Last Run.bat"
-	file:
-	<ol>
-		<li>Right-click it and select "Edit" to open it up in Notepad.</li>
-		<li>On the line containing "<code>BOSS.exe -r 1</code>", replace the 1 with a 2 to give "<code>BOSS.exe -r 2</code>".</li>
-		<li>Then save the file and run it to revert your load order back two levels.</li>
-	</p></div><br /><br />
-	<span class="subtitle">Customising How BOSS Works</span>
-	<p>Users can customise how BOSS works through the included User Rules feature. This feature allows you to define the positions of mods not in the masterlist, and to override the masterlist positions of mods,
-	as well as edit the output messages of mods, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes shall not be lost. All the information on the User Rules feature can be found in the "BOSS User Rules ReadMe.html" file.</p>
-	<br /><br />
-	<span class="subtitle">Running BOSS Under Linux</span>
-	<p>It is possible to run BOSS on Linux through the Wine compatibility layer, though no official support for doing so is given. Installation and usage is as on Windows.</p>
+	</div>
 	</div><br /><br />
 	
 	<div id="help"><span>Contributions &amp; Help</span>
@@ -156,12 +168,12 @@
 	</div><br /><br />
 	
 	<div id="updates"><span>Updates</span>
-	<p>Updates are published at the
+	<p>You can check if there are updates available for the BOSS program, the GUI or the masterlist through the GUI's <q>Check For Updates</q> option, found in the <q>Help</q> menu. Updates to BOSS and the GUI are published at the
 	<a href="http://www.tesnexus.com/downloads/file.php?id=20516">TES Nexus</a>, 
 	<a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">Fallout 3 Nexus</a> and 
 	<a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">New Vegas Nexus</a> BOSS pages.</p>
 	<p>For those not using the masterlist updater, the latest masterlist is always on the <a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a>.</p>
-	<p>Always make sure to use the latest release of the BOSS program, and the latest masterlist.</p>
+	<p>Always make sure to use the latest versions of the BOSS program, its GUI and the latest masterlist.</p>
 	</div><br /><br />
 	
 	<div id="troubleshooting"><span>Troubleshooting</span>
@@ -241,6 +253,7 @@
 			<li><b>Solution:</b> Ensure that the BOSS folder and any files in it are not read-only.</li>
 		</ul>
 		</li>
+		<br />
 		<li><b>Symptom:</b> BOSS does not recognise the mods in my userlist correctly, and/or replaces some of the letters in their names with question marks.<div style="height:0.65em;"></div>
 		<ul>
 			<li><b>Issue:</b> Your userlist is not encoded in UTF-8.</li>
@@ -298,13 +311,13 @@
 		<li>The Better Cities developers.</li>
 		<li>Many, many modders and users who have posted suggestions and instructions in the BOSS threads and on the Nexus sites.</li>
 	</ul>
-	<p>Some people have gone out of their way and provided continuing, expert and detailed help - thank you very much! In addition to the above, the following people are credited with additional non-load-order-related support:</p>
+	<p>Some people have gone out of their way and provided continuing, expert and detailed help - thank you very much! In addition to the above, the following are credited with additional non-load-order-related support:</p>
 	<ul>
 		<li>Wrye and the rest of the Wrye Bash Team: For implementing the importing of BOSS's Bashed Patch tag suggestions and general support for BOSS into <a href="http://wrye.ufrealms.net/Wrye%20Bash.html">Wrye Bash</a>.</li>
-		<li>The Beta Testing &amp; Analysis Guild at TESAlliance: For extensive testing and giving feedback on v1.6 prior to release.</li>
+		<li>The Beta Testing &amp; Analysis Guild at <a href="http://tesalliance.org/forums/">TESAlliance</a>: For extensive testing and giving feedback on v1.6 prior to release.</li>
 		<li>Surazal: For extensive testing and feedback during development of v1.6, and for providing the inspiration for many features through his BOSS Masterlist Manager macro for Microsoft Word.</li>
 		<li>myk002: For extensive code contributions and testing during development of v1.6+.</li>
-		<li>Hickory: For testing and feedback on v1.7 prior to release, and providing the icon used by the BOSS executable in v1.7.</li>
+		<li>Hickory: For testing and feedback on v1.7 prior to release, and providing the icon used by the BOSS and GUI executables in v1.7 and v1.0 respectively.</li>
 	</ul>
 	</div><br /><br />
 	
@@ -362,12 +375,12 @@
 	</div><br /><br />
 	
 	<div id="license"><span>License</span>
-	<p>Better Oblivion Sorting Software and periodic updates are distributed under the <a href="http://creativecommons.org/licenses/by-nc-nd/3.0">Creative Commons Attribution Noncommercial No Derivative Works 3.0 Unported</a> copyright license, 
+	<p>Better Oblivion Sorting Software, its GUI and periodic updates are distributed under the <a href="http://creativecommons.org/licenses/by-nc-nd/3.0">Creative Commons Attribution Noncommercial No Derivative Works 3.0 Unported</a> copyright license, 
 	some rights reserved, 2009-2011. Copyright is owned wholly by the Better Oblivion Sorting Software development team (see list of project members).</p>
 	<ul>
 		<li>BOSS may be copied and distributed freely as long as it is not changed and includes all the original files including this documentation.</li>
 		<li>Commercial use of this software or masterlist.txt file is not permitted without permission.</li>
-		<li>Publishing derivations and customisations of the program or masterlist.txt file is not permitted without permission. Ask first.</li>
+		<li>Publishing derivations and customisations of the BOSS or BOSS GUI programs or masterlist.txt file is not permitted without permission. Ask first.</li>
 	</ul>
 	</div><br /><br />
 	
@@ -387,8 +400,8 @@
 	</div><br /><br />
 	
 	<div id="history"><span>Version History</span>
-	<p>Only updates to the BOSS program are recorded here, not masterlist updates, as that is updated far too frequently to be concisely recorded. A full record of changes made to the masterlist may be viewed by browsing the Google Code repository.</p>
-	<p><b>Version 1.7</b></p>
+	<p>Updates to BOSS and the GUI are recorded below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.</p>
+	<p><b>BOSS Version 1.7</b> - <i></i></p>
 	<ul>
 		<li>Fixed a bug in the masterlist updater causing the wrong masterlist version to be displayed.</li>
 		<li>Moved all BOSS's files into a new BOSS folder, located in the game's installation directory, one level above the Data folder.</li>
@@ -415,12 +428,16 @@
 		<li>Links in the BOSSlog are now hyperlinks that can be clicked on to take you to the given URL.</li>
 		<li>Ghosted mods must now be referenced in user rules without their ".ghost" extension.</li>
 	</ul>
-	<p><b>Version 1.65</b></p>
+	<p><b>GUI Version 1.0</b> - <i></i></p>
+	<ul>
+		<li>Initial release.</li>
+	</ul>
+	<p><b>BOSS Version 1.65</b> - <i>1 December 2010</i></p>
 	<ul>
 		<li>Fixed userlist parser giving incorrect error messages for rules inserting mods into groups.</li>
 		<li>Fixed BOSS reporting some plugins as unknown when they are ghosted.</li>
 	</ul>
-	<p><b>Version 1.64</b></p>
+	<p><b>BOSS Version 1.64</b> - <i>28 November 2010</i></p>
 	<ul>
 		<li>Added --only-update, -o parameter to only update the masterlist without then sorting any mods.</li>
 		<li>Added "BOSS - Print Debug Info.bat" file to make debugging of BOSS errors simpler.</li>
@@ -429,7 +446,7 @@
 		<li>Slight improvements to user rule error reporting when sorting groups that do not exist.</li>
 		<li>Fixed non-ASCII characters in mod filenames causing crashes.</li>
 	</ul>
-	<p><b>Version 1.63</b></p>
+	<p><b>BOSS Version 1.63</b> - <i>15 November 2010</i></p>
 	<ul>
 		<li>Fixed a crash when updating the masterlist if downloading an incorrectly formatted masterlist.</li>
 		<li>Fixed mods with duplicate masterlist entries causing load order errors.</li>
@@ -438,7 +455,7 @@
 		<li>User rule keywords are now case-insensitive.</li>
 		<li>User rules can no longer sort a mod relative to a mod that is not in the masterlist and has not been sorted by another rule.</li>
 	</ul>
-	<p><b>Version 1.62</b></p>
+	<p><b>BOSS Version 1.62</b> - <i>1 November 2010</i></p>
 	<ul>
 		<li>Added support for Fallout: New Vegas.</li>
 		<li>Added ability to insert mods into groups to user rules functionality.</li>
@@ -457,7 +474,7 @@
 		<li>Added --debug,-d parameter which adds filename and line numbers to each log message.</li>
 		<li>Many code portability enhancements.</li>
 	</ul>
-	<p><b>Version 1.61</b></p>
+	<p><b>BOSS Version 1.61</b> - <i>19 October 2010</i></p>
 	<ul>
 		<li>Added silent -s command line switch to suppress the automatic opening of the BOSSlog when BOSS is run.</li>
 		<li>Added version info to BOSS.exe to make Wrye Bash integration/debugging easier.</li>
@@ -467,7 +484,7 @@
 		<li>Increased timout delay for the masterlist updater to prevent the updater failing when Google Code is slow.</li>
 		<li>Reworked masterlist updater error reporting to be more verbose, and to take messages directly from curl when curl fails.</li>
 	</ul>
-	<p><b>Version 1.6</b></p>
+	<p><b>BOSS Version 1.6</b> - <i>8 October 2010</i></p>
 	<ul>
 		<li>Added Fallout Wanderers Edition (FWE) specific message type for the Fallout 3 masterlist.</li>
 		<li>Added masterlist updater functionality to BOSS, accessible via a command-line switch and a .bat file.</li>
@@ -486,7 +503,7 @@
 		<li>Merged BOSS and BOSS-F source code, allowing one EXE to support both Oblivion and Fallout 3.</li>
 		<li>Major refactoring and rewrite of BOSS source code, resulting in a significant performance improvement.</li>
 	</ul>
-	<p><b>Version 1.5</b></p>
+	<p><b>BOSS Version 1.5</b> - <i>24 March 2010</i></p>
 	<ul>
 		<li>Added OOO-specific message type.</li>
 		<li>Added requirement message type.</li>
@@ -497,14 +514,15 @@
 		<li>Added masterlist version numbering when exporting via SVN.</li>
 		<li>Added Fallout 3 specific BOSS source code (BOSS-F).</li>
 	</ul>
-	<p><b>Version 1.41</b></p>
+	<p><b>BOSS Version 1.41</b> - <i>31 August 2009</i></p>
 	<ul>
 		<li>Fixed incorrect master file defined for Fallout 3.</li>
 		<li>Fixed error messages not being displayed on some machines.</li>
 	</ul>
-	<p><b>Versions 1.0 - 1.35</b><br /><br />
-	Changes Not Recorded.</p>
-	
+	<p><b>BOSS Versions 1.0 - 1.35</b> - <i>22 October 2008 to 24 June 2009</i></p>
+	<ul>
+		<li>Changes Not Recorded.</li>
+	</ul>
 	</div><br /><br />
 	</body>
 </html>
