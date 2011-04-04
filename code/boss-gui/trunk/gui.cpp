@@ -527,14 +527,15 @@ void EditFrame::OnClose( wxCommandEvent& event ) {
 
 //Called when program saves the userlist.
 void EditFrame::OnSave( wxCommandEvent& event ) {
-	std::string contents = EditBox->GetValue();
+	wxString contents = EditBox->GetValue();
+	const char * wstr = contents.ToUTF8().data();
 	//On windows, replace Unix line endings with Windows line endings.
 #if _WIN32 | _WIN64
-	boost::replace_all(contents, "\\n", "\\r\\n");
+//	boost::replace_all(wstr, "\\n", "\\r\\n");
 #endif
 	//Write to file.
 	std::ofstream out("userlist.txt");
-	out << contents;
+	out << wstr;
 	out.close();
 	this->SetStatusText("Userlist successfully saved!");
 }
