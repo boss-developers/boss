@@ -330,7 +330,7 @@ void MainFrame::OnAbout(wxCommandEvent& event) {
 	wxHyperlinkCtrl *link = new wxHyperlinkCtrl(frame, -1, "Better Oblivion Sorting Software","http://code.google.com/p/better-oblivion-sorting-software/");
 	link->SetBackgroundColour(wxColour(255,255,255));
 	box->Add(link, 0, wxBOTTOM | wxLEFT | wxRIGHT, 20);
-	box->Add(new wxStaticText(frame, -1, "© WrinklyNinja & the BOSS development team, 2011.\nSome rights reserved. Copyright license:"), 0, wxLEFT | wxRIGHT, 20);
+	box->Add(new wxStaticText(frame, -1, "© WrinklyNinja and the BOSS development team, 2011.\nSome rights reserved. Copyright license:"), 0, wxLEFT | wxRIGHT, 20);
 	link = new wxHyperlinkCtrl(frame, -1, "CC Attribution-Noncommercial-No Derivative Works 3.0","http://creativecommons.org/licenses/by-nc-nd/3.0/");
 	link->SetBackgroundColour(wxColour(255,255,255));
 	box->Add(link, 0, wxBOTTOM | wxLEFT | wxRIGHT, 20);
@@ -474,7 +474,7 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 	textBox->Add(new wxStaticText(frame,-1,"Masterlist updates can be downloaded through the built-in updater.\nBOSS program and BOSS GUI updates can be downloaded from \nthe following sites:"));
 	
 	wxBoxSizer *linkBox = new wxBoxSizer(wxVERTICAL);
-	link = new wxHyperlinkCtrl(frame,-1,"TES Nexus","http://www.tesnexus.com/downloads/file.php?id=20516");
+	wxHyperlinkCtrl *link = new wxHyperlinkCtrl(frame,-1,"TES Nexus","http://www.tesnexus.com/downloads/file.php?id=20516");
 	link->SetBackgroundColour(wxColour(255,255,255));
 	linkBox->Add(link);
 	link = new wxHyperlinkCtrl(frame,-1,"Fallout 3 Nexus","http://www.fallout3nexus.com/downloads/file.php?id=10193");
