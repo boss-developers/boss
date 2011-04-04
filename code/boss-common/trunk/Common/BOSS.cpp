@@ -233,7 +233,7 @@ int main(int argc, char *argv[]) {
 	OutputHeader(bosslog,format);  //Output HTML start and <head>
 	//Output start of <body>
 	Output(bosslog,format, "<div>Better Oblivion Sorting Software Log</div>\n");
-	Output(bosslog,format, "<div>&copy; Random007 &amp; the BOSS development team, 2009-2010. Some rights reserved.<br />\n");
+	Output(bosslog,format, "<div>&copy; Random007 &amp; the BOSS development team, 2009-2011. Some rights reserved.<br />\n");
 	Output(bosslog,format, "<a href=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\">CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />\n");
 	Output(bosslog,format, "v"+g_version+" ("+g_releaseDate+")</div>\n<br />\n<br />\n");
 
@@ -701,10 +701,15 @@ int main(int argc, char *argv[]) {
 	else if (revert==1) Output(bosslog, format, "<div><span>Restored Load Order (Using modlist.txt)</span><p>");
 	else if (revert==2) Output(bosslog, format, "<div><span>Restored Load Order (Using modlist.old)</span><p>");
 
+	int ghostedNo = 0;
+	int recModNo = 0;
+	int unrecModNo = 0;
+
 	LOG_INFO("Applying calculated ordering to user files...");
 	for (size_t i=0; i<=x; i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
+			recModNo++;
 			string text = "<b>" + TrimDotGhost(Modlist[i].name.string());
 			if (!skip_version_parse) {
 				string version = GetModHeader(Modlist[i].name);
@@ -712,8 +717,10 @@ int main(int argc, char *argv[]) {
 					text += " <span class='version'>[Version "+version+"]</span>";
 			}
 			text += "</b>";
-			if (IsGhosted(data_path / Modlist[i].name)) 
+			if (IsGhosted(data_path / Modlist[i].name)) {
 				text += " <span class='ghosted'> - Ghosted</span>";
+				ghostedNo++;
+			}
 			if (showCRCs)
 				text += "<i> - Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</i>";
 			Output(bosslog, format, text); 
@@ -752,9 +759,12 @@ int main(int argc, char *argv[]) {
 	for (size_t i=x+1; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
+			unrecModNo++;
 			string text = "Unknown mod file: " + TrimDotGhost(Modlist[i].name.string());
-			if (IsGhosted(data_path / Modlist[i].name)) 
+			if (IsGhosted(data_path / Modlist[i].name)) {
 				text += " <span class='ghosted'> - Ghosted</span>";
+				ghostedNo++;
+			}
 			if (showCRCs)
 				text += "<i> - Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</i>";
 			Output(bosslog, format, text); 
@@ -774,6 +784,14 @@ int main(int argc, char *argv[]) {
 	}
 	Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
 	LOG_INFO("Unrecognized mods reported.");
+
+	//Print out some numbers.
+	Output(bosslog, format, "<div><span>Plugin Numbers</span><p>");
+	Output(bosslog, format, "Number of recognised plugins: " + IntToString(recModNo) + "<br />");
+	Output(bosslog, format, "Number of unrecognised plugins: " + IntToString(unrecModNo) + "<br />");
+	Output(bosslog, format, "Number of ghosted plugins: " + IntToString(ghostedNo) + "<br />");
+	Output(bosslog, format, "Total number of plugins found: " + IntToString(recModNo+unrecModNo) + "<br />");
+	Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
 	
 	//Let people know the program has stopped.
 	Output(bosslog, format, "<div><span>BOSS Execution Complete</span></div>\n</body>\n</html>");
