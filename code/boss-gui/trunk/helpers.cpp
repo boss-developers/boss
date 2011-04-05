@@ -113,7 +113,7 @@ namespace boss {
 	void OpenInSysDefault(fs::path& file) {
 		string command =
 #if _WIN32 || _WIN64
-			"";
+			"start ";
 #else
 			"xdg-open ";
 #endif

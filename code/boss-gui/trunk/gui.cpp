@@ -259,8 +259,9 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 			ofile.close();
 		}
 		//Now open it.
-		EditFrame *UserlistEditor = new EditFrame(NULL, wxT("Edit Userlist"), 100, 100, 450, 340);
-		UserlistEditor->Show(TRUE);
+		//EditFrame *UserlistEditor = new EditFrame(NULL, wxT("Edit Userlist"), 100, 100, 450, 340);
+		//UserlistEditor->Show(TRUE);
+		boss::OpenInSysDefault(fs::path("userlist.txt"));
 	} else if (file == "bosslog") {
 		//There might possibly be two BOSSlogs - need to open the more recent.
 		if (fs::exists("BOSSlog.html") && fs::exists("BOSSlog.txt")) {
