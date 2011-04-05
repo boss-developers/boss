@@ -87,7 +87,7 @@ namespace boss {
 		"</p>\n\n");
 
 	static format ParsingErrorFormat("<p><span class='error'>Parsing Error: Expected a %1% at:</span>"
-		"<blockquote style='font-style:italic;'>%2%</blockquote>"
+		"<blockquote>%2%</blockquote>"
 		"<span class='error'>Userlist parsing aborted. No rules will be applied.</span></p>\n\n");
 
 	void AddSyntaxError(keyType const& rule, string const& object, string const& message) {
@@ -211,7 +211,7 @@ namespace boss {
 		qi::rule<Iterator, keyType(), skipper> ruleKey, sortOrMessageKey;
 		qi::rule<Iterator, string(), skipper> object;
 	
-		void SyntaxError(Iterator const& first, Iterator const& last, Iterator const& errorpos, info const& what) {
+		void SyntaxError(Iterator const& /*first*/, Iterator const& last, Iterator const& errorpos, info const& what) {
 			ostringstream out;
 			out << what;
 			string expect = out.str().substr(1,out.str().length()-2);

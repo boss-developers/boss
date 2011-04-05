@@ -31,7 +31,6 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_MENU ( OPTION_Run, MainFrame::OnRunBOSS )
 	EVT_MENU ( MENU_OpenMReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_OpenURReadMe, MainFrame::OnOpenFile )
-	EVT_MENU ( MENU_OpenGReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_CheckForUpdates, MainFrame::OnUpdateCheck )
 	EVT_MENU ( MENU_ShowAbout, MainFrame::OnAbout )
 	EVT_BUTTON ( OPTION_Run, MainFrame::OnRunBOSS )
@@ -50,11 +49,6 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_RADIOBUTTON ( RADIOBUTTON_SortOption, MainFrame::OnRunTypeChange )
 	EVT_RADIOBUTTON ( RADIOBUTTON_UpdateOption, MainFrame::OnRunTypeChange )
 	EVT_RADIOBUTTON ( RADIOBUTTON_UndoOption, MainFrame::OnRunTypeChange )
-END_EVENT_TABLE()
-
-BEGIN_EVENT_TABLE ( EditFrame, wxFrame )
-	EVT_MENU ( TEXTBOX_Quit, EditFrame::OnClose )
-	EVT_MENU ( TEXTBOX_Save, EditFrame::OnSave )
 END_EVENT_TABLE()
 
 IMPLEMENT_APP(BossGUI)
@@ -107,7 +101,6 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
     MenuBar->Append(FileMenu, _T("&File"));
     // About menu
     HelpMenu = new wxMenu();
-	HelpMenu->Append(MENU_OpenGReadMe, _T("Open &GUI ReadMe"), _T("Opens the GUI ReadMe in your default web browser."));
 	HelpMenu->Append(MENU_OpenMReadMe, _T("Open &Main ReadMe"), _T("Opens the main BOSS ReadMe in your default web browser."));
 	HelpMenu->Append(MENU_OpenURReadMe, _T("Open &User Rules ReadMe"), _T("Opens the User Rules ReadMe in your default web browser."));
 	HelpMenu->AppendSeparator();
@@ -188,6 +181,8 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 
 	//Tooltips
 	LoggingBox->SetToolTip("The output is logged to the BOSSDebugLog.txt file");
+	FormatBox->SetToolTip("This decides both the format of BOSSlog generated when you click the \"Run BOSS\" button and the BOSSlog format opened when you click the \"View BOSSlog\" button.");
+	OpenBOSSlogButton->SetToolTip("The format of BOSSlog this opens is decided by the setting of the \"BOSSlog Format\" Output Option above.");
 
 	//Set option values.
 	ShowLogBox->SetValue(true);
@@ -246,8 +241,6 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 		file = "userlist.txt";
 	else if (event.GetId() == OPTION_OpenBOSSlog)
 		file = "bosslog";
-	else if (event.GetId() == MENU_OpenGReadMe)
-		file = "BOSS GUI ReadMe";
 	else if (event.GetId() == MENU_OpenMReadMe)
 		file = "BOSS ReadMe";
 	else
@@ -263,7 +256,7 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 		//UserlistEditor->Show(TRUE);
 		boss::OpenInSysDefault(fs::path("userlist.txt"));
 	} else if (file == "bosslog") {
-		//There might possibly be two BOSSlogs - need to open the more recent.
+		/*//There might possibly be two BOSSlogs - need to open the more recent.
 		if (fs::exists("BOSSlog.html") && fs::exists("BOSSlog.txt")) {
 			time_t t1 = 0,t2 = 0;
 			try {
@@ -295,6 +288,29 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 			wxT("Error"),
 			wxOK | wxICON_INFORMATION,
 			this);
+		}*/
+		if (boss::format == 0) {  //Open HTML BOSSlog.
+			if (fs::exists("BOSSlog.html"))
+				boss::OpenInSysDefault(fs::path("BOSSlog.html"));
+			else {
+				wxMessageBox(wxString::Format(
+					wxT("Error: No BOSSlog.html found. Make sure you have run BOSS with the HTML output format selected, or run BOSS from BOSS.exe, at least once before attempting to open the BOSSlog in the HTML format.")
+				),
+				wxT("Error"),
+				wxOK | wxICON_INFORMATION,
+				this);
+			}
+		} else {  //Open text BOSSlog.
+			if (fs::exists("BOSSlog.txt"))
+				boss::OpenInSysDefault(fs::path("BOSSlog.txt"));
+			else {
+				wxMessageBox(wxString::Format(
+					wxT("Error: No BOSSlog.txt found. Make sure you have run BOSS at least once with the text output format selected before attempting to open the BOSSlog in the plain text format.")
+				),
+				wxT("Error"),
+				wxOK | wxICON_INFORMATION,
+				this);
+			}
 		}
 	} else {  //Readme files. They could be anywhere - this could be complicated.
 		//Simplify by looking for either the files themselves or shortcuts to them in the BOSS folder.
@@ -460,6 +476,7 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 	}
 
 	wxFrame *frame = new wxFrame(this, -1, "Check For Updates", wxPoint(100, 100), wxSize(450, 340),wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT);
+	
 	frame->SetBackgroundColour(wxColour(255,255,255));
 
 	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
@@ -493,50 +510,4 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 	frame->SetSizerAndFit(bigBox);
 
 	frame->Show(TRUE);
-}
-
-EditFrame::EditFrame(wxWindow *parent, const wxChar *title, int x, int y, int width, int height)
-    : wxFrame(parent, -1, title, wxPoint(x, y), wxSize(width, height),wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT) {
-		
-	this->SetBackgroundColour(wxColour(255,255,255));
-
-	CreateStatusBar(1);
-
-	EditBox = new wxTextCtrl(this, -1, "No userlist.", wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-
-	EditMenu = new wxMenuBar();
-	wxMenu *EditFileMenu = new wxMenu();
-	EditFileMenu->Append(TEXTBOX_Save, "&Save\tCtrl-S", "Save your changes");
-	EditFileMenu->Append(TEXTBOX_Quit, "&Quit", "Quit the editor\tCtrl-F4");
-	EditMenu->Append(EditFileMenu, "&File");
-	SetMenuBar(EditMenu);
-
-	EditBox->LoadFile(wxT("userlist.txt"));
-}
-
-//Called when program exits.
-void EditFrame::OnClose( wxCommandEvent& event ) {
-	if (EditBox->IsModified()) {
-		//Display confirmation message dialog.
-		int answer = wxMessageBox("Exit the userlist editor without saving your changes?","Exit without saving?", wxOK | wxCANCEL | wxCANCEL_DEFAULT);
-
-		if (answer == wxCANCEL)
-			return;
-	}
-	Close(TRUE); // Tells the OS to quit running this process
-}
-
-//Called when program saves the userlist.
-void EditFrame::OnSave( wxCommandEvent& event ) {
-	wxString contents = EditBox->GetValue();
-	const char * wstr = contents.ToUTF8().data();
-	//On windows, replace Unix line endings with Windows line endings.
-#if _WIN32 | _WIN64
-//	boost::replace_all(wstr, "\\n", "\\r\\n");
-#endif
-	//Write to file.
-	std::ofstream out("userlist.txt");
-	out << wstr;
-	out.close();
-	this->SetStatusText("Userlist successfully saved!");
 }

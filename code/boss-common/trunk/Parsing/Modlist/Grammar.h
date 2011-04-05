@@ -70,7 +70,7 @@ namespace boss {
 
 	//Parsing error message format.
 	static format MasterlistParsingErrorFormat("<p><span class='error'>Masterlist Parsing Error: Expected a %1% at:</span>"
-		"<blockquote style='font-style:italic;'>%2%</blockquote>"
+		"<blockquote>%2%</blockquote>"
 		"<span class='error'>Masterlist parsing aborted. Utility will end now.</span></p>\n\n");
 
 	//Checks if a masterlist variable is defined.
@@ -417,7 +417,7 @@ namespace boss {
 		qi::rule<Iterator, bool(), skipper> conditional, conditionals, condition, oldConditional;
 		qi::rule<Iterator, skipper> metaLine, globalMessage;
 		
-		void SyntaxErr(Iterator const& first, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
+		void SyntaxErr(Iterator const& /*first*/, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
 			ostringstream out;
 			out << what;
 			string expect = out.str().substr(1,out.str().length()-2);

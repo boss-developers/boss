@@ -71,6 +71,7 @@ namespace boss {
 				<< "div > span:first-child {font-weight:bold; font-size:1.3em;}"<<endl
 				<< "ul {margin-top:0px; list-style:none; margin-bottom:1.1em;}"<<endl
 				<< "ul li {margin-left:-1em; margin-bottom:0.4em;}"<<endl
+				<< "blockquote {font-style:italic;}"<<endl
 				<< ".error {color:red;}"<<endl
 				<< ".success {color:green;}"<<endl
 				<< ".warn {color:#FF6600;}"<<endl
@@ -101,29 +102,21 @@ namespace boss {
 	void Output(ofstream &log, string format, string text) {
 		if (format == "text") {
 			//Yes. This really is as horrific as it looks. It should be only temporary though.
-			string eol =
-			#if _WIN32 || _WIN64
-					"\r\n";
-			#else
-					"\n";
-			#endif
-
-			//Yes. This really is as horrific as it looks. It should be only temporary though.
 			replace_first(text, "</body>\n</html>", "");
 			replace_first(text, "&copy;", "c");
 			replace_first(text, "&amp;", "&");
 			
-			replace_first(text, "\n<ul>\n", eol+eol);
-			replace_first(text, "</ul>\n", eol);
+			replace_first(text, "<ul>", "");
+			replace_first(text, "</ul>", "");
 			replace_first(text, "<b>", "");
 			replace_first(text, "</b>", "");
 			replace_first(text, "<i>", "");
 			replace_first(text, "</i>", "");
 
-			replace_first(text, "<span>", "======================================"+eol);
+			replace_first(text, "<span>", "======================================\n");
 
 			replace_first(text, " class='warn'>", ">");
-			replace_first(text, " class='error'>", ">");
+			replace_all(text, " class='error'>", ">");
 			replace_first(text, " class='success'>", ">");
 			replace_first(text, " class='tags'>", ">");
 			replace_first(text, " class='ghosted'>", ">");
@@ -133,17 +126,17 @@ namespace boss {
 			replace_first(text, "<blockquote>", "\n\n");
 			replace_first(text, "</blockquote>", "\n\n");
 			replace_first(text, "<li>", "*  ");
-			replace_first(text, "</li>\n", eol);
+			replace_first(text, "</li>", "");
 			
-			replace_first(text, "</div>\n", eol);
-			replace_first(text, "</p>\n\n", eol+eol);	
+			replace_first(text, "</div>", "");
+			replace_first(text, "</p>", "");	
 
-			replace_all(text, "<br />\n", eol);
+			replace_all(text, "<br />", "");
 			replace_all(text, "<span>", "");
 			replace_all(text, "</span>", "");
-			replace_all(text, "<div>", eol);
+			replace_all(text, "<div>", "\n");
 
-			replace_all(text, "<p>", eol);
+			replace_all(text, "<p>", "\n");
 
 			replace_first(text, "&gt;", ">");
 			replace_first(text, "&lt;", "<");
@@ -161,6 +154,5 @@ namespace boss {
 			}
 		}
 		log << text;
-
 	}
 }

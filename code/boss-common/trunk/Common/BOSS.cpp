@@ -32,8 +32,8 @@ namespace po = boost::program_options;
 using boost::algorithm::trim_copy;
 
 
-const string g_version     = "1.7 Dev";
-const string g_releaseDate = "March 17, 2011";
+const string g_version     = "1.7";
+const string g_releaseDate = "April 05, 2011";
 
 
 void ShowVersion() {
@@ -426,7 +426,7 @@ int main(int argc, char *argv[]) {
 	}
 	//Parse masterlist/modlist backup into data structure.
 	LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
-	bool parsed = parseMasterlist(sortfile,Masterlist);
+	/*bool parsed =*/ parseMasterlist(sortfile,Masterlist);
 	//Check if parsing failed - the parsed bool always returns true for some reason, so check size of errorMessageBuffer.
 	if (errorMessageBuffer.size() != 0) {
 		for (size_t i=0; i<errorMessageBuffer.size(); i++)  //Print parser error messages.
@@ -787,10 +787,10 @@ int main(int argc, char *argv[]) {
 
 	//Print out some numbers.
 	Output(bosslog, format, "<div><span>Plugin Numbers</span><p>");
-	Output(bosslog, format, "Number of recognised plugins: " + IntToString(recModNo) + "<br />");
-	Output(bosslog, format, "Number of unrecognised plugins: " + IntToString(unrecModNo) + "<br />");
-	Output(bosslog, format, "Number of ghosted plugins: " + IntToString(ghostedNo) + "<br />");
-	Output(bosslog, format, "Total number of plugins found: " + IntToString(recModNo+unrecModNo) + "<br />");
+	Output(bosslog, format, "Number of recognised plugins: " + IntToString(recModNo) + "<br />\n");
+	Output(bosslog, format, "Number of unrecognised plugins: " + IntToString(unrecModNo) + "<br />\n");
+	Output(bosslog, format, "Number of ghosted plugins: " + IntToString(ghostedNo) + "<br />\n");
+	Output(bosslog, format, "Total number of plugins found: " + IntToString(recModNo+unrecModNo) + "<br />\n");
 	Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
 	
 	//Let people know the program has stopped.

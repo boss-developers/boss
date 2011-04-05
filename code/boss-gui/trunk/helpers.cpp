@@ -117,6 +117,8 @@ namespace boss {
 #else
 			"xdg-open ";
 #endif
+		if (file.extension() == ".lnk\"")
+			command = "";
 		command += file.string();
 		system(command.c_str());
 		return;

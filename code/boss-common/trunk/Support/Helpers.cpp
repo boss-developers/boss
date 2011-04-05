@@ -180,21 +180,6 @@ namespace boss {
 	}
 
 	//Calculate the CRC of the given file for comparison purposes.
-	/* This gives a technically incorrect CRC on Windows, as fileToBuffer() does not use binary file streams.
-	   However, accuracy has a massive performance hit, and isn't required.
-	   All we require is that CRCs are consistent. 
-	   Since BOSS is always the source of file CRCs, consistency is achieved even with inaccurate CRCs. */
-	/*unsigned int GetCrc32(const fs::path& filename) {
-+       LOG_TRACE("calculating CRC for: '%s'", filename.string().c_str());
-		boost::crc_32_type result;
-		string buffer;
-		fileToBuffer(filename, buffer);
-        result.process_bytes(buffer.data(), buffer.length());
-		int chksum = result.checksum();
-        LOG_DEBUG("CRC32('%s'): 0x%x", filenameStr.c_str(), chksum);
-		return chksum;
-	}*/
-
 	//This is the correct CRC calculation code.
 	unsigned int GetCrc32(const fs::path& filename) {
 		int chksum = 0;

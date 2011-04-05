@@ -20,17 +20,6 @@ public:
 	virtual bool OnInit();
 };
 
-class EditFrame : public wxFrame {
-public:
-	EditFrame(wxWindow *parent, const wxChar *title, int x, int y, int width, int height);
-	void OnClose(wxCommandEvent& event);
-	void OnSave(wxCommandEvent& event);
-	DECLARE_EVENT_TABLE()
-private:
-	wxMenuBar *EditMenu;
-	wxTextCtrl *EditBox;
-};
-
 //Main frame class.
 class MainFrame : public wxFrame {
 public:
@@ -82,12 +71,9 @@ enum {
     OPTION_OpenUserlist = wxID_HIGHEST + 1, // declares an id which will be used to call our button
 	OPTION_OpenBOSSlog,
 	OPTION_Run,
-	OPTION_Save,
-	OPTION_Close,
     MENU_Quit,
 	MENU_OpenMReadMe,
 	MENU_OpenURReadMe,
-	MENU_OpenGReadMe,
 	MENU_CheckForUpdates,
 	MENU_ShowAbout,
 	DROPDOWN_LogFormat,
@@ -103,8 +89,5 @@ enum {
 	RADIOBUTTON_SortOption,
 	RADIOBUTTON_UpdateOption,
 	RADIOBUTTON_UndoOption,
-	TEXTBOX,
-	TEXTBOX_Quit,
-	TEXTBOX_Save
 };
 #endif
