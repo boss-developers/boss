@@ -55,7 +55,7 @@ namespace boss {
 			Output(log, format, "<li class='error'>ERROR: " + currentMessage.data + "</li>\n");
 			break;
 		case DIRTY:
-			Output(log, format, "<li class='dirty'>Dirty mod: " + currentMessage.data + "</li>\n");
+			Output(log, format, "<li class='dirty'>Contains dirty edits: " + currentMessage.data + "</li>\n");
 			break;
 		default:
 			Output(log, format, "<li>Note: " + currentMessage.data + "</li>\n");
