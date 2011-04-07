@@ -51,6 +51,8 @@ namespace boss {
 				("SAY",SAY)
 				("TAG",TAG)
 				("REQ",REQ)
+				("INC", INC)
+				("DIRTY",DIRTY)
 				("WARN",WARN)
 				("ERROR",ERR)
 				//Old message symbols.

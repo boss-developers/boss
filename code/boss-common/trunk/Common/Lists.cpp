@@ -157,7 +157,9 @@ namespace boss {
 			return "ERROR";
 		else if (key == INC)
 			return "INC";
-		else 
+		else if (key == DIRTY)
+			return "DIRTY";
+		else
 			return "NONE";
 	}
 
@@ -194,6 +196,8 @@ namespace boss {
 			return ERR;
 		else if (key == "inc" || key == "\"")
 			return INC;
+		else if (key == "dirty")
+			return DIRTY;
 		else
 			return NONE;
 	}

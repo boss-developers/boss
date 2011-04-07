@@ -67,27 +67,83 @@ namespace boss {
 		//Get revision number from http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn page text.
 		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &revision );
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer );
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK)
 			throw boss_error() << err_detail(errbuff);
 		
 		//Extract revision number from page text.
-		if (game == 1) start = revision.find("boss-oblivion");
-		else if (game == 2) start = revision.find("boss-fallout");
-		else if (game == 3) start = revision.find("boss-nehrim");
-		else if (game == 4) start = revision.find("boss-fallout-nv");
+		if (game == 1) start = buffer.find("boss-oblivion");
+		else if (game == 2) start = buffer.find("boss-fallout");
+		else if (game == 3) start = buffer.find("boss-nehrim");
+		else if (game == 4) start = buffer.find("boss-fallout-nv");
 		if (start == string::npos)
 			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
-		start = revision.find("\"masterlist.txt\"", start);
-		start = revision.find("B\",\"", start) + 4; 
+		start = buffer.find("\"masterlist.txt\"", start);
+		start = buffer.find("B\",\"", start) + 4; 
 		if (start == string::npos)
 			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
-		end = revision.find("\"",start) - start;
+		end = buffer.find("\"",start) - start;
 		if (end == string::npos)
 			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
-		revision = revision.substr(start,end);
-		newline = "? Masterlist Revision: "+revision;
+		revision = buffer.substr(start,end);
+		//buffer.clear();
+
+		//Extract revision date from page text.
+		string date;
+		if (game == 1) start = buffer.find("boss-oblivion");
+		else if (game == 2) start = buffer.find("boss-fallout");
+		else if (game == 3) start = buffer.find("boss-nehrim");
+		else if (game == 4) start = buffer.find("boss-fallout-nv");
+		if (start == string::npos)
+			throw boss_error() << err_detail("Cannot find online masterlist revision date.");
+		start = buffer.find("\"masterlist.txt\"", start) + 1;
+		if (start == string::npos)
+			throw boss_error() << err_detail("Cannot find online masterlist revision date.");
+		//There are 5 quote marks between the m in masterlist.txt and quote mark at the start of the date. 
+		//Run through them and record the sixth.
+		for (size_t i=0; i<6; i++)  {
+			start = buffer.find("\"", start+1); 
+			if (start == string::npos)
+				throw boss_error() << err_detail("Cannot find online masterlist revision date.");
+		}  
+		//Now start is the first character of the date string.
+		end = buffer.find("\"",start+1);  //end is the position of the first character after the date string.
+		if (end == string::npos)
+			throw boss_error() << err_detail("Cannot find online masterlist revision date.");
+		date = buffer.substr(start+1,end - (start+1));  //Date string recorded.
+		buffer.clear();
+
+		//Now we need to get the date string extracted turned into a sensible absolute date.
+		if (date.find("Today") != string::npos) {
+			const time_t currTime = time(NULL);
+			char * time = ctime(&currTime);
+			date = time;
+			string monthday = date.substr(4,6);
+			string year = date.substr(date.length()-5);
+			date = monthday + ", " + year;
+		} else if (date.find("Yesterday") != string::npos) {
+			//Same as for Today, but we need to turn back one day.
+			time_t currTime = time(NULL);
+			currTime = currTime - 86400;  //Time travel!
+			char * time = ctime(&currTime);
+			date = time;
+			string monthday = date.substr(4,6);
+			string year = date.substr(date.length()-5,4);
+			date = monthday + ", " + year;
+		} else if (date.find("(") != string::npos) {
+			//Need to go from "Month Day (...)" to "Month Day, Year".
+			//Remove everything from the space before the bracket onwards.
+			start = date.find("(");
+			date.resize(start);
+			//Now get year from system and append.
+			const time_t currTime = time(NULL);
+			char * time = ctime(&currTime);
+			string year = time;
+			date += ", " + year.substr(year.length()-5);
+		} //Otherwise it's already in a sensible format.
+		
+		newline = "? Masterlist Revision: "+revision+" (updated "+date+")";
 
 		//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
 		if (fs::exists(masterlist_path)) {

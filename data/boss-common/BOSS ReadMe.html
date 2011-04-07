@@ -176,11 +176,84 @@
 	<p>Always make sure to use the latest versions of the BOSS program, its GUI and the latest masterlist.</p>
 	</div><br /><br />
 	
-	<div id="troubleshooting"><span>Troubleshooting</span>
-	<p>Under some circumstances, BOSS may not be able to run properly due to a variety of reasons. In such cases, BOSS should be able to provide an error message detailing the type of fault. If the program unexpectedly crashes, the crash and the circumstances in which it occurred should be reported to the official BOSS thread (linked to in the <em>Quick Links</em> section below), so that we may fix it.
-	Here is a list of the error messages and their common causes:</p>
+	<div id="troubleshooting"><span>Troubleshooting</span><br /><br />
+	<p>In some circumstances BOSS may not be able to run properly, due to a variety of possible reasons. In such cases, an error message detailing the problem should be provided. If the program unexpectedly crashes, or you experience 
+	a problem for which no error message is given, please report the crash or problem to an official BOSS thread (linked to in the <em>Quick Links</em> section below), so that we may fix it.</p>
+	<p>If the information below does not help you to solve any problems you are experiencing, please seek further support in one of the official BOSS threads.</p>
+	<span class="subtitle">General Problems</span>
+	<p>There are a few general reasons why BOSS may fail to function correctly. Check if any of the symptoms listed below fit your issue.</p>
+	
 	<ul>
-		<li><b>Message:</b> ERROR: file '<em>filename</em>' could not be accessed for writing.<div style="height:0.65em;"></div>
+		<li><b>Symptom:</b> No change in load order.<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> Wrye Bash's <q>Lock Times</q> load order locking feature is enabled.</li>
+			<li><b>Solution:</b> Disable <q>Lock Times</q> before running BOSS. If you are using Wrye Bash v277 or later and running BOSS from Wrye Bash, this is done for you, and <q>Lock Times</q> is then re-activated after BOSS has run.</li>
+		</ul>
+		</li>
+		<br />
+		<li><b>Symptom:</b> BOSS does not change/update the BOSSlog and/or modlists correctly.<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> The BOSSlog and/or modlists are read-only, or the BOSS folder is read-only.</li>
+			<li><b>Solution:</b> Ensure that the BOSS folder and any files in it are not read-only.</li>
+		</ul>
+		</li>
+		<br />
+		<li><b>Symptom:</b> BOSS does not recognise the mods in my userlist correctly, and/or replaces some of the letters in their names with question marks.<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> Your userlist is not encoded in UTF-8.</li>
+			<li><b>Solution:</b> Save your userlist in the UTF-8 encoding.</li>
+			<li><b>Issue:</b> You had mods in your userlist with non-Latin letters in their names, and saved your userlist in a non-UTF8 encoding before saving it in UTF-8.</li>
+			<li><b>Solution:</b> Rewrite the filenames in your userlist, copy/pasting them from the files themselves to ensure they are correct.</li>
+		</ul>
+		</li>
+	</ul>
+	<br />
+	
+	<span class="subtitle">File Permissions</span>
+	<p>If you are running Windows Vista or Windows 7, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:</p>
+	<ol>
+		<li>Install the game outside the <q>Program Files</q> (or <q>Program Files (x86)</q> if on 64-bit Windows). UAC prevents unauthorised edits to these folders, so by installing the game outside of them, you remove it from UAC's reach, allowing you to use mods more easily.</li>
+		<li>Deactivate UAC. This can be done from the Control Panel, and will turn UAC off across the whole of your computer. It is up to you whether you feel that you have adequate security measures in place to do this without risk.</li>
+		<li>Give yourself <q>Full Control</q> permissions over your game install folder. This will allow you to make any edits you desire while keeping UAC active and on guard for any edits made by programs you do not run, and also means that you do not need to reinstall your game to a new location.</li>
+		<li>Run BOSS as an Administrator. Right-click the BOSS.exe, and select <q>Run as administrator</q>.</li>
+	</ol>
+	<p>For those that wish to take the third option and give themselves <q>Full Control</q> permissions, here is a guide:</p>
+	<ol>
+		<li>Right-click the folder you wish to change the permissions for, and select <q>Properties</q>.</li>
+		<li>In <q>Properties</q>, select the <q>Security</q> tab, and click the <q>Edit...</q> button. A UAC prompt may appear, simply allow yourself to continue.</li>
+		<li>In the <q>Group or user names</q> box, select the <q>Users</q> option.</li>
+		<li>In the lower box, check the box opposite <q>Full Control</q> in the <q>Allow</q> column. Press OK to exit. If a UAC prompt appears, allow the change.</li>
+		<li>In the <q>Properties</q> window, select OK to exit. You should now have Full Control permissions over your chosen folder.</li>
+	</ol>
+	<br />
+	
+	<span class="subtitle">International Character Support</span>
+	<p>BOSS provides support for sorting mods containing characters from any language via the Unicode character encoding, specifically UTF-8. If your userlist contains any non-English characters, it <b>must</b>
+	be encoded in UTF-8 for BOSS to read it correctly. <b>This is not Notepad's default encoding!</b> If you need to convert a file's encoding, here are some instructions:</p>
+    <ul>
+		<li>Using Notepad:<div style="height:0.65em;"></div>
+			<ol>
+				<li>Open the file in Notepad.</li>
+				<li>Open the <q>File</q> menu, then select <q>Save As...</q>.</li>
+				<li>In the <q>Save As</q> dialog window that opens, there is a drop-down list labelled <q>Encoding:</q>. Select <q>UTF-8</q> from this list. Do <b>not</b> select any of the other Unicode encodings, they will not work.</li>
+				<li>Click the <q>Save</q> button, answering <q>Yes</q> to any confirmation prompts.</li>
+			</ol>
+		</li>
+		<li>Using Notepad++:<div style="height:0.65em;"></div>
+			<ol>
+				<li>Open the file in Notepad++.</li>
+				<li>Open the <q>Encoding</q> menu, then select <q>Convert to UTF-8</q>.</li>
+				<li>Save the file as normal.</li>
+			</ol>
+		</li>
+	</ul>
+	<p>A file only needs to be converted to the correct encoding once, thereafter it will continue to save in the correct encoding whenever you edit it.</p>
+	<br />
+	
+	<span class="subtitle">Error Messages</span>
+	<p>If BOSS can detect a specific reason for being unable to function correctly, it will print an error message detailing the problem. BOSS's error messages are listed below, along with details of the issues and possible solutions. The list does not include any messages related to user rule application.</p>
+	<ul>
+		<li><b>Message:</b> Error: file '<em>filename</em>' could not be accessed for writing.<div style="height:0.65em;"></div>
 		<ul>
 			<li><b>Issue:</b> BOSS does not have permission to write to the given file if it exists.</li>
 			<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
@@ -227,78 +300,17 @@
 			<li><b>Issue:</b> BOSS has detected that your userlist.txt is saved using the wrong encoding, and is unable to read it.</li>
 			<li><b>Solution:</b> Re-save the file given in the correct "UTF-8" encoding. If you are unsure on how to do so, follow these instructions:</p>
 				<ol>
-					<li>Open the file given in Notepad.</li>
-					<li>Open the "File" menu, then select "Save As...".</li>
-					<li>In the Save As dialog window that opens, there is a drop-down list labelled "Encoding:". Select "UTF-8" from this list.</li>
-					<li>Click the "Save" button, answering "Yes" to any confirmation prompts.</li>
+					<li>Open the file in Notepad.</li>
+					<li>Open the <q>File</q> menu, then select <q>Save As...</q>.</li>
+					<li>In the <q>Save As</q> dialog window that opens, there is a drop-down list labelled <q>Encoding:</q>. Select <q>UTF-8</q> from this list. Do <b>not</b> select any of the other Unicode encodings, they will not work.</li>
+					<li>Click the <q>Save</q> button, answering <q>Yes</q> to any confirmation prompts.</li>
 				</ol>
-				A file only needs to be converted to the correct encoding once, thereafter it will continue to save in the correct encoding whenever you edit it.
-	</li>
+				<p>A file only needs to be converted to the correct encoding once, thereafter it will continue to save in the correct encoding whenever you edit it.</p>
+			</li>
 		</ul>
 		</li>
 	</ul>
-	<br />
-	<p>In addition to the specific error messages above, BOSS may also fail to work properly, or appear to do so, for a few general reasons:</p>
-	<ul>
-		<li><b>Symptom:</b> No change in load order.<div style="height:0.65em;"></div>
-		<ul>
-			<li><b>Issue:</b> Wrye Bash's <q>Lock Times</q> load order locking feature is enabled.</li>
-			<li><b>Solution:</b> Disable <q>Lock Times</q> before running BOSS. If you are using Wrye Bash v277 or later and running BOSS from Wrye Bash, this is done for you, and <q>Lock Times</q> is then re-activated after BOSS has run.</li>
-		</ul>
-		</li>
-		<br />
-		<li><b>Symptom:</b> BOSS does not change/update the BOSSlog and/or modlists correctly.<div style="height:0.65em;"></div>
-		<ul>
-			<li><b>Issue:</b> The BOSSlog and/or modlists are read-only, or the BOSS folder is read-only.</li>
-			<li><b>Solution:</b> Ensure that the BOSS folder and any files in it are not read-only.</li>
-		</ul>
-		</li>
-		<br />
-		<li><b>Symptom:</b> BOSS does not recognise the mods in my userlist correctly, and/or replaces some of the letters in their names with question marks.<div style="height:0.65em;"></div>
-		<ul>
-			<li><b>Issue:</b> Your userlist is not encoded in UTF-8.</li>
-			<li><b>Solution:</b> Save your userlist in the UTF-8 encoding.</li>
-			<li><b>Issue:</b> You had mods in your userlist with non-Latin letters in their names, and saved your userlist in a non-UTF8 encoding before saving it in UTF-8.</li>
-			<li><b>Solution:</b> Rewrite the filenames in your userlist, copy/pasting them from the files themselves to ensure they are correct.</li>
-		</ul>
-		</li>
-	</ul>
-	<br />
-	<p>BOSS provides support for sorting mods containing characters from any language via the Unicode character encoding, specifically UTF-8. Your userlist must therefore be encoded in UTF-8 to ensure that BOSS reads it correctly. The modlists and masterlist must also be encoded in UTF-8, but they should automatically be encoded correctly when BOSS creates them. In case you find you need to convert a file's encoding, here are some instructions:</p>
-    <ul>
-		<li>Using Notepad:<div style="height:0.65em;"></div>
-			<ol>
-				<li>Open the file in Notepad.</li>
-				<li>Open the "File" menu, then select "Save As...".</li>
-				<li>In the Save As dialog window that opens, there is a drop-down list labelled "Encoding:". Select "UTF-8" from this list.</li>
-				<li>Click the "Save" button, answering "Yes" to any confirmation prompts.</li>
-			</ol>
-		</li>
-		<li>Using Notepad++:<div style="height:0.65em;"></div>
-			<ol>
-				<li>Open the file in Notepad++.</li>
-				<li>Open the "Encoding" menu, then select "Convert to UTF-8".</li>
-				<li>Save the file as normal.</li>
-			</ol>
-		</li>
-		A file only needs to be converted to the correct encoding once, thereafter it will continue to save in the correct encoding whenever you edit it.
-	</ul>
-	<p>If you are running Windows Vista or Windows 7, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:</p>
-	<ol>
-		<li>Install the game outside the "Program Files" (or "Program Files (x86)" if on 64-bit Windows). UAC prevents unauthorised edits to these folders, so by installing the game outside of them, you remove it from UAC's reach, allowing you to use mods more easily.</li>
-		<li>Deactivate UAC. This can be done from the Control Panel, and will turn UAC off across the whole of your computer. It is up to you whether you feel that you have adequate security measures in place to do this without risk.</li>
-		<li>Give yourself Full Control permissions over your game install folder. This will allow you to make any edits you desire while keeping UAC active and on guard for any edits made by programs you do not run, and also means that you do not need to reinstall your game to a new location.</li>
-		<li>Run BOSS as an Administrator. Right-click the BOSS.exe, and select "Run as administrator".</li>
-	</ol>
-	<p>For those that wish to take the third option and give themselves Full Control permissions, here is a guide:</p>
-	<ol>
-		<li>Right-click the folder you wish to change the permissions for, and select "Properties".</li>
-		<li>In Properties, select the "Security" tab, and click the "Edit..." button. A UAC prompt may appear, simply allow yourself to continue.</li>
-		<li>In the "Group or user names" box, select the "Users" option.</li>
-		<li>In the lower box, check the box opposite "Full Control" in the "Allow" column. Press OK to exit. If a UAC prompt appears, allow the change.</li>
-		<li>In the Properties window, select OK to exit. You should now have Full Control permissions over your chosen folder.</li>
-	</ol>
-	<p>If the above information does not help you to solve any problems you are experiencing, please seek further support in one of the official BOSS threads.</div><br /><br />
+	</div><br /><br />
 	
 	<div id="credits"><span>Credits</span>
 	<p>As BOSS is very much a community project, credit is due to a very large number of sources and people outside of the BOSS Team. Credit goes to the following:
@@ -427,6 +439,10 @@
 		<li>Improved the formatting of the BOSSlog, making it more readable.</li>
 		<li>Links in the BOSSlog are now hyperlinks that can be clicked on to take you to the given URL.</li>
 		<li>Ghosted mods must now be referenced in user rules without their ".ghost" extension.</li>
+		<li>Updated installer to reflect the various changes to BOSS's files and folders.</li>
+		<li>Removed batch files, which have been replaced by the GUI.</li>
+		<li>Added display of a plugin counter that shows the numbers of recognised, unrecognised, ghosted and total plugins to the end of the BOSSlog.</li>
+		<li>The release date of updated masterlists is now displayed beside the revision number in the BOSSlog.</li>
 	</ul>
 	<p><b>GUI Version 1.0</b> - <i></i></p>
 	<ul>

@@ -54,6 +54,9 @@ namespace boss {
 		case ERR:
 			Output(log, format, "<li class='error'>ERROR: " + currentMessage.data + "</li>\n");
 			break;
+		case DIRTY:
+			Output(log, format, "<li class='dirty'>Dirty mod: " + currentMessage.data + "</li>\n");
+			break;
 		default:
 			Output(log, format, "<li>Note: " + currentMessage.data + "</li>\n");
 			break;
@@ -78,6 +81,7 @@ namespace boss {
 				<< ".version {color:teal;}"<<endl
 				<< ".ghosted {font-style:italic; color:grey;}"<<endl
 				<< ".tags {color:maroon;}"<<endl
+				<< ".dirty {color:#996600;}"<<endl
 				<< "</style>"<<endl<<"</head>"<<endl<<"<body>"<<endl;
 		}
 	}
@@ -122,6 +126,7 @@ namespace boss {
 			replace_first(text, " class='ghosted'>", ">");
 			replace_first(text, " class='version'>", ">");
 			replace_first(text, " style='color: grey;'>", ">");
+			replace_first(text, " class='dirty'>", ">");
 
 			replace_first(text, "<blockquote>", "\n\n");
 			replace_first(text, "</blockquote>", "\n\n");

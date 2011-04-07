@@ -168,7 +168,7 @@ namespace boss {
 		userlist_grammar() : userlist_grammar::base_type(ruleList, "userlist grammar") {
 
 			//A list is a vector of rules. Rules are separated by line endings.
-			ruleList = *eol > userlistRule[phoenix::bind(&RuleSyntaxCheck, _val, _1)] % +eol; 
+			ruleList = *eol >> userlistRule[phoenix::bind(&RuleSyntaxCheck, _val, _1)] % +eol; 
 
 			//A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
 			userlistRule %=

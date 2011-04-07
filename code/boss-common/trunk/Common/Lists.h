@@ -42,12 +42,14 @@ namespace boss {
 		SAY,
 		TAG,
 		REQ,
+		INC,
+		DIRTY,
 		WARN,
 		ERR,
 		//Special masterlist keywords.
 		OOOSAY,
 		BCSAY,
-		INC
+		
 	};
 
 	enum metaType {
