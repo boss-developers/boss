@@ -754,7 +754,7 @@ int main(int argc, char *argv[]) {
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 	//Order their dates to be i days after the master esm to ensure they load last.
-	Output(bosslog, format, "<div><span>Unrecogised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>\n\n<p>");
+	Output(bosslog, format, "<div><span>Unrecognised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>\n\n<p>");
 	LOG_INFO("Reporting unrecognized mods...");
 	for (size_t i=x+1; i<Modlist.size(); i++) {
 		//Only act on mods that exist.

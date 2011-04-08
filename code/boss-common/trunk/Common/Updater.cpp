@@ -120,7 +120,7 @@ namespace boss {
 			char * time = ctime(&currTime);
 			date = time;
 			string monthday = date.substr(4,6);
-			string year = date.substr(date.length()-5);
+			string year = date.substr(date.length()-5,4);
 			date = monthday + ", " + year;
 		} else if (date.find("Yesterday") != string::npos) {
 			//Same as for Today, but we need to turn back one day.
@@ -140,10 +140,10 @@ namespace boss {
 			const time_t currTime = time(NULL);
 			char * time = ctime(&currTime);
 			string year = time;
-			date += ", " + year.substr(year.length()-5);
+			date += ", " + year.substr(year.length()-5,4);
 		} //Otherwise it's already in a sensible format.
 		
-		newline = "? Masterlist Revision: "+revision+" (updated "+date+")";
+		newline = "? Masterlist Revision: "+revision+" ("+date+")";
 
 		//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
 		if (fs::exists(masterlist_path)) {
