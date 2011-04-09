@@ -67,17 +67,19 @@ namespace boss {
 		}
 	} masterlistMsgKey;
 
-	struct groupKey_ : qi::symbols<char, itemType> {
-		groupKey_() {
+	struct typeKey_ : qi::symbols<char, itemType> {
+		typeKey_() {
 			add
 				//Group keywords.
 				("BEGINGROUP",BEGINGROUP)
+				("ENDGROUP",ENDGROUP)  //Just in case. Not really valid syntax...
 				("ENDGROUP",ENDGROUP)
 				("\\BeginGroup\\:",BEGINGROUP)
 				("\\EndGroup\\\\",ENDGROUP)
+				("MOD", MOD)
 			;
 		}
-	} groupKey;
+	} typeKey;
 
 	struct metaKey_ : qi::symbols<char, metaType> {
 		metaKey_() {

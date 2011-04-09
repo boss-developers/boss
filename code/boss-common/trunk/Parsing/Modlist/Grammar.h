@@ -311,7 +311,7 @@ namespace boss {
 				> itemName
 				> itemMessages;
 
-			ItemType %= groupKey | eps[_val = MOD];
+			ItemType %= typeKey |eps[_val = MOD];
 
 			itemName = 
 				charString[phoenix::bind(&path, _val, _1)]

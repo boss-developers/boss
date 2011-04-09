@@ -180,7 +180,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 
 
 	//Tooltips
-	LoggingBox->SetToolTip("The output is logged to the BOSSDebugLog.txt file");
+	LoggingBox->SetToolTip("The output is logged to the BOSSCommandLineLog.txt file");
 	FormatBox->SetToolTip("This decides both the format of BOSSlog generated when you click the \"Run BOSS\" button and the BOSSlog format opened when you click the \"View BOSSlog\" button.");
 	OpenBOSSlogButton->SetToolTip("The format of BOSSlog this opens is decided by the setting of the \"BOSSlog Format\" Output Option above.");
 

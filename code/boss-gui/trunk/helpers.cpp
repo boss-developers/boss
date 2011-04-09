@@ -31,7 +31,7 @@ namespace boss {
 	namespace karma = boost::spirit::karma;
 
 	//Version info.
-	const string gui_version     = "0.5";
+	const string gui_version     = "0.9";
 	const string gui_releaseDate = "April 04, 2011";
 
 	//The run type decides on which variables are applied, not all are appropriate for all run types.
@@ -103,7 +103,7 @@ namespace boss {
 
 		}
 		if (logCL)
-			params += " > BOSSCommandLineOutputLog.txt";
+			params += " > BOSSCommandLineLog.txt";
 		//Now actually run BOSS.
 		system(params.c_str());
 		return;
@@ -117,7 +117,7 @@ namespace boss {
 #else
 			"xdg-open ";
 #endif
-		if (file.extension() == ".lnk\"")
+		if (file.extension() == ".lnk\"" || file.extension() == ".html\"")
 			command = "";
 		command += file.string();
 		system(command.c_str());

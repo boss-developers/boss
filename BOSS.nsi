@@ -417,6 +417,9 @@
 				Delete "$Path_OB\Data\BOSS - Print Debug Info.bat"
 				Delete "$Path_OB\Data\BOSS - Undo Last Run.bat"
 				Delete "$Path_OB\Data\BOSS - Update Masterlist.bat"
+				Delete "$Path_OB\Data\BOSS\modlist.*"
+				Delete "$Path_OB\Data\BOSS\masterlist.txt"
+				Delete "$Path_OB\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
 				${If} $1 == ${BST_CHECKED}
 					Delete "$Path_OB\Data\BOSS\userlist.txt"
 				${EndIf}
@@ -431,6 +434,9 @@
 				Delete "$Path_FO\Data\BOSS - Print Debug Info.bat"
 				Delete "$Path_FO\Data\BOSS - Undo Last Run.bat"
 				Delete "$Path_FO\Data\BOSS - Update Masterlist.bat"
+				Delete "$Path_FO\Data\BOSS\modlist.*"
+				Delete "$Path_FO\Data\BOSS\masterlist.txt"
+				Delete "$Path_FO\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
 				${If} $1 == ${BST_CHECKED}
 					Delete "$Path_FO\Data\BOSS\userlist.txt"
 				${EndIf}
@@ -445,6 +451,9 @@
 				Delete "$Path_NV\Data\BOSS - Print Debug Info.bat"
 				Delete "$Path_NV\Data\BOSS - Undo Last Run.bat"
 				Delete "$Path_NV\Data\BOSS - Update Masterlist.bat"
+				Delete "$Path_NV\Data\BOSS\modlist.*"
+				Delete "$Path_NV\Data\BOSS\masterlist.txt"
+				Delete "$Path_NV\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
 				${If} $1 == ${BST_CHECKED}
 					Delete "$Path_NV\Data\BOSS\userlist.txt"
 				${EndIf}
@@ -459,6 +468,9 @@
 				Delete "$Path_Nehrim\Data\BOSS - Print Debug Info.bat"
 				Delete "$Path_Nehrim\Data\BOSS - Undo Last Run.bat"
 				Delete "$Path_Nehrim\Data\BOSS - Update Masterlist.bat"
+				Delete "$Path_Nehrim\Data\BOSS\modlist.*"
+				Delete "$Path_Nehrim\Data\BOSS\masterlist.txt"
+				Delete "$Path_Nehrim\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
 				${If} $1 == ${BST_CHECKED}
 					Delete "$Path_Nehrim\Data\BOSS\userlist.txt"
 				${EndIf}
@@ -473,6 +485,9 @@
 				Delete "$Path_Other\Data\BOSS - Print Debug Info.bat"
 				Delete "$Path_Other\Data\BOSS - Undo Last Run.bat"
 				Delete "$Path_Other\Data\BOSS - Update Masterlist.bat"
+				Delete "$Path_Other\Data\BOSS\modlist.*"
+				Delete "$Path_Other\Data\BOSS\masterlist.txt"
+				Delete "$Path_Other\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
 				${If} $1 == ${BST_CHECKED}
 					Delete "$Path_Other\Data\BOSS\userlist.txt"
 				${EndIf}
@@ -807,7 +822,7 @@
         ${EndIf}
         ${NSD_CreateCheckBox} 0 $0u 100% 13u "Uninstall userlist if it exists."
             Pop $Check_RemoveUserFiles
-            ${NSD_SetState} $Check_RemoveUserFiles ${BST_CHECKED}
+         #   ${NSD_SetState} $Check_RemoveUserFiles ${BST_CHECKED}
         nsDialogs::Show
         FunctionEnd
     Function un.PAGE_SELECT_GAMES_Leave
@@ -856,6 +871,7 @@
 			Delete "$Path_OB\BOSS\BOSSlog.txt"
 			Delete "$Path_OB\BOSS\BOSS.exe"
 			Delete "$Path_OB\BOSS\BOSS GUI.exe"
+			Delete "$Path_OB\BOSS\BOSSCommandLineLog.txt"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_OB\BOSS\userlist.txt"
             ${EndIf}
@@ -881,6 +897,7 @@
 			Delete "$Path_FO\BOSS\BOSSlog.txt"
 			Delete "$Path_FO\BOSS\BOSS.exe"
 			Delete "$Path_FO\BOSS\BOSS GUI.exe"
+			Delete "$Path_FO\BOSS\BOSSCommandLineLog.txt"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_FO\BOSS\userlist.txt"
             ${EndIf}
@@ -906,6 +923,7 @@
 			Delete "$Path_NV\BOSS\BOSSlog.txt"
 			Delete "$Path_NV\BOSS\BOSS.exe"
 			Delete "$Path_NV\BOSS\BOSS GUI.exe"
+			Delete "$Path_NV\BOSS\BOSSCommandLineLog.txt"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_NV\BOSS\userlist.txt"
             ${EndIf}
@@ -931,6 +949,7 @@
 			Delete "$Path_Nehrim\BOSS\BOSSlog.txt"
 			Delete "$Path_Nehrim\BOSS\BOSS.exe"
 			Delete "$Path_Nehrim\BOSS\BOSS GUI.exe"
+			Delete "$Path_Nehrim\BOSS\BOSSCommandLineLog.txt"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_Nehrim\BOSS\userlist.txt"
             ${EndIf}
@@ -956,6 +975,7 @@
 			Delete "$Path_Other\BOSS\BOSSlog.txt"
 			Delete "$Path_Other\BOSS\BOSS.exe"
 			Delete "$Path_Other\BOSS\BOSS GUI.exe"
+			Delete "$Path_Other\BOSS\BOSSCommandLineLog.txt"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_Other\BOSS\userlist.txt"
             ${EndIf}

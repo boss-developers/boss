@@ -52,16 +52,16 @@ namespace boss {
 		
 	};
 
-	enum metaType {
-		IF,
-		IFNOT
-	};
-
 	extern vector<string> errorMessageBuffer;  //Holds any error messages generated during parsing for printing later.
 
 	////////////////////////////////////////
 	// Modlist/Masterlist data structures
 	////////////////////////////////////////
+
+	enum metaType {
+		IF,
+		IFNOT
+	};
 
 	enum itemType {
 		MOD,
