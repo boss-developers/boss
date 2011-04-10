@@ -72,7 +72,6 @@ namespace boss {
 			add
 				//Group keywords.
 				("BEGINGROUP",BEGINGROUP)
-				("ENDGROUP",ENDGROUP)  //Just in case. Not really valid syntax...
 				("ENDGROUP",ENDGROUP)
 				("\\BeginGroup\\:",BEGINGROUP)
 				("\\EndGroup\\\\",ENDGROUP)

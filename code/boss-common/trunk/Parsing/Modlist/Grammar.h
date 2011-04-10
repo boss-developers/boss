@@ -305,13 +305,12 @@ namespace boss {
 				> messageString)[phoenix::bind(&StoreGlobalMessage, _1, _2, _3)];
 
 			listItem %= 
-				omit[(oldConditional | (conditionals))[phoenix::ref(storeItem) = _1]]
+				omit[(oldConditional | conditionals)[phoenix::ref(storeItem) = _1]]
 				> ItemType
-				> -lit(":")
 				> itemName
 				> itemMessages;
 
-			ItemType %= typeKey |eps[_val = MOD];
+			ItemType %= (typeKey >> ':') | eps[_val = MOD];
 
 			itemName = 
 				charString[phoenix::bind(&path, _val, _1)]
