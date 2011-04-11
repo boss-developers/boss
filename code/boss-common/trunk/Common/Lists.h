@@ -124,9 +124,6 @@ namespace boss {
 	//Returns a keyType representation of the given key string.
 	//Possibly a better way to do this.
 	keyType StringToKey(string key);
-
-	//Debug: returns a string representation of the given itemType.
-	string TypeToString(itemType type);
 }
 
 #endif

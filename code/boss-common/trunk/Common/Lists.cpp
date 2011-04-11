@@ -187,13 +187,4 @@ namespace boss {
 		else
 			return NONE;
 	}
-
-	string TypeToString(itemType type) {
-		if (type == MOD)
-			return "MOD";
-		else if (type == BEGINGROUP)
-			return "BEGINGROUP";
-		else
-			return "ENDGROUP";
-	}
 }
