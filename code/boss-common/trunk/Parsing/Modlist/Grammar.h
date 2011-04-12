@@ -310,7 +310,7 @@ namespace boss {
 				> itemName
 				> itemMessages;
 
-			ItemType %= (typeKey >> -lit(":")) | eps[_val = MOD];
+			ItemType %= typeKey | eps[_val = MOD];
 
 			itemName = 
 				charString[phoenix::bind(&path, _val, _1)]

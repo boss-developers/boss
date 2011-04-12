@@ -71,11 +71,12 @@ namespace boss {
 		typeKey_() {
 			add
 				//Group keywords.
-				("BEGINGROUP",BEGINGROUP)
+				("BEGINGROUP:",BEGINGROUP)  //Needs the colon there unfortunately.
+				("ENDGROUP:",ENDGROUP)  //Needs the colon there unfortunately.
 				("ENDGROUP",ENDGROUP)
 				("\\BeginGroup\\:",BEGINGROUP)
 				("\\EndGroup\\\\",ENDGROUP)
-				("MOD", MOD)
+				("MOD:", MOD)  //Needs the colon there unfortunately.
 			;
 		}
 	} typeKey;
