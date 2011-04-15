@@ -86,7 +86,7 @@
 		<li>Specify BOSS's run options using a set of butttons, checkboxes and lists quickly and easily, avoiding the command line.</li>
 		<li>Open your BOSSlog for viewing and edit your userlist without having to navigate to them through Explorer.</li>
 		<li>View BOSS's main and User Rules ReadMes through handy Help menu shortcuts.</li>
-		<li>Check for updates to BOSS, the GUI and your masterlist.</li>
+		<li>Check for updates to BOSS and your masterlist.</li>
 	</ul>
 	<p>The GUI is also aware of what version of BOSS you are running, and will disable (grey out) any options that are not supported by the version of BOSS you have installed in order to minimise confusion. All the GUI's options should be self-explanatory, 
 	but if you have issues understanding what they do, each setting has a corresponding command line parameter, which all have detailed descriptions in the <a href="#details">Further Details</a> section below.</p><br />
@@ -169,12 +169,12 @@
 	</div><br /><br />
 	
 	<div id="updates"><span>Updates</span>
-	<p>You can check if there are updates available for the BOSS program, the GUI or the masterlist through the GUI's <q>Check For Updates</q> option, found in the <q>Help</q> menu. Updates to BOSS and the GUI are published at the
+	<p>You can check if there are updates available for BOSS or its masterlists through the GUI's <q>Check For Updates</q> option, found in the <q>Help</q> menu. Updates to BOSS are published at the
 	<a href="http://www.tesnexus.com/downloads/file.php?id=20516">TES Nexus</a>, 
 	<a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">Fallout 3 Nexus</a> and 
 	<a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">New Vegas Nexus</a> BOSS pages.</p>
 	<p>For those not using the masterlist updater, the latest masterlist is always on the <a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a>.</p>
-	<p>Always make sure to use the latest versions of the BOSS program, its GUI and the latest masterlist.</p>
+	<p>Always make sure to use the latest version of the BOSS and the latest masterlist.</p>
 	</div><br /><br />
 	
 	<div id="troubleshooting"><span>Troubleshooting</span><br /><br />
@@ -330,7 +330,7 @@
 		<li>The Beta Testing &amp; Analysis Guild at <a href="http://tesalliance.org/forums/">TESAlliance</a>: For extensive testing and giving feedback on v1.6 prior to release.</li>
 		<li>Surazal: For extensive testing and feedback during development of v1.6, and for providing the inspiration for many features through his BOSS Masterlist Manager macro for Microsoft Word.</li>
 		<li>myk002: For extensive code contributions and testing during development of v1.6+.</li>
-		<li>Hickory: For testing and feedback on v1.7 prior to release, and providing the icon used by the BOSS and GUI executables in v1.7 and v1.0 respectively.</li>
+		<li>Hickory: For testing and feedback on v1.7 prior to release, and providing the icon used by the BOSS and GUI executables.</li>
 		<li>andalaybay: For testing and feedback on v1.7 prior to release.</li>
 	</ul>
 	</div><br /><br />
@@ -390,7 +390,7 @@
 	</div><br /><br />
 	
 	<div id="license"><span>License</span>
-	<p>Better Oblivion Sorting Software, its GUI and periodic updates are distributed under the <a href="http://creativecommons.org/licenses/by-nc-nd/3.0">Creative Commons Attribution Noncommercial No Derivative Works 3.0 Unported</a> copyright license, 
+	<p>Better Oblivion Sorting Software and periodic updates are distributed under the <a href="http://creativecommons.org/licenses/by-nc-nd/3.0">Creative Commons Attribution Noncommercial No Derivative Works 3.0 Unported</a> copyright license, 
 	some rights reserved, 2009-2011. Copyright is owned wholly by the Better Oblivion Sorting Software development team (see list of project members).</p>
 	<ul>
 		<li>BOSS may be copied and distributed freely as long as it is not changed and includes all the original files including this documentation.</li>
@@ -415,9 +415,10 @@
 	</div><br /><br />
 	
 	<div id="history"><span>Version History</span>
-	<p>Updates to BOSS and the GUI are recorded below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.</p>
-	<p><b>BOSS Version 1.7</b> - <i></i></p>
+	<p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.</p>
+	<p><b>Version 1.7</b> - <i></i></p>
 	<ul>
+		<li>Ghosted mods must now be referenced in user rules without their ".ghost" extension.</li>
 		<li>Fixed a bug in the masterlist updater causing the wrong masterlist version to be displayed.</li>
 		<li>Moved all BOSS's files into a new BOSS folder, located in the game's installation directory, one level above the Data folder.</li>
 		<li>Added three new command line parameters:
@@ -429,34 +430,30 @@
 		</li>
 		<li>Switched to using the Unicode character encoding, allowing the sorting of mods with international characters in their names.
 		<ul><div style="height:0.65em;"></div>
-			<li>The BOSS program now uses the UTF-8 encoding for all its operations.</li>
+			<li>BOSS now uses the UTF-8 encoding for all its operations.</li>
 			<li>All BOSS files must now be encoded in UTF-8: this includes the modlists, masterlist and userlist.</li>
 			<li>Converted the masterlists and modlists to use the UTF-8 encoding.</li>
 			<li>Added a UTF-8 validator to ensure that the correct encoding for the required files is being used.</li>
 		</ul>
 		</li>
-		<li>Added a unique icon to the BOSS executable, made by Hickory.</li>
+		<li>Replaced the batch files with a new GUI.</li>
+		<li>Added a unique icon to the executables, made by Hickory.</li>
 		<li>Significant rewrite of source code, resulting in performance gains.</li>
 		<li>Implemented new	file parsers for the masterlist, modlists and userlist.</li>
 		<li>Added support for Masterlist Format 2, which offers an alternative syntax and a wide range of new features and capabilities.</li>
 		<li>Improved the formatting of the BOSSlog, making it more readable.</li>
 		<li>Links in the BOSSlog are now hyperlinks that can be clicked on to take you to the given URL.</li>
-		<li>Ghosted mods must now be referenced in user rules without their ".ghost" extension.</li>
-		<li>Updated installer to reflect the various changes to BOSS's files and folders.</li>
-		<li>Removed batch files, which have been replaced by the GUI.</li>
 		<li>Added display of a plugin counter that shows the numbers of recognised, unrecognised, ghosted and total plugins to the end of the BOSSlog.</li>
 		<li>The release date of updated masterlists is now displayed beside the revision number in the BOSSlog.</li>
+		<li>Added new message type for providing information about cleaning mods with dirty edits.</li>
+		<li>Updated installer to reflect the various changes to BOSS's files and folders.</li>
 	</ul>
-	<p><b>GUI Version 1.0</b> - <i></i></p>
-	<ul>
-		<li>Initial release.</li>
-	</ul>
-	<p><b>BOSS Version 1.65</b> - <i>1 December 2010</i></p>
+	<p><b>Version 1.65</b> - <i>1 December 2010</i></p>
 	<ul>
 		<li>Fixed userlist parser giving incorrect error messages for rules inserting mods into groups.</li>
 		<li>Fixed BOSS reporting some plugins as unknown when they are ghosted.</li>
 	</ul>
-	<p><b>BOSS Version 1.64</b> - <i>28 November 2010</i></p>
+	<p><b>Version 1.64</b> - <i>28 November 2010</i></p>
 	<ul>
 		<li>Added --only-update, -o parameter to only update the masterlist without then sorting any mods.</li>
 		<li>Added "BOSS - Print Debug Info.bat" file to make debugging of BOSS errors simpler.</li>
@@ -465,7 +462,7 @@
 		<li>Slight improvements to user rule error reporting when sorting groups that do not exist.</li>
 		<li>Fixed non-ASCII characters in mod filenames causing crashes.</li>
 	</ul>
-	<p><b>BOSS Version 1.63</b> - <i>15 November 2010</i></p>
+	<p><b>Version 1.63</b> - <i>15 November 2010</i></p>
 	<ul>
 		<li>Fixed a crash when updating the masterlist if downloading an incorrectly formatted masterlist.</li>
 		<li>Fixed mods with duplicate masterlist entries causing load order errors.</li>
@@ -474,7 +471,7 @@
 		<li>User rule keywords are now case-insensitive.</li>
 		<li>User rules can no longer sort a mod relative to a mod that is not in the masterlist and has not been sorted by another rule.</li>
 	</ul>
-	<p><b>BOSS Version 1.62</b> - <i>1 November 2010</i></p>
+	<p><b>Version 1.62</b> - <i>1 November 2010</i></p>
 	<ul>
 		<li>Added support for Fallout: New Vegas.</li>
 		<li>Added ability to insert mods into groups to user rules functionality.</li>
@@ -493,7 +490,7 @@
 		<li>Added --debug,-d parameter which adds filename and line numbers to each log message.</li>
 		<li>Many code portability enhancements.</li>
 	</ul>
-	<p><b>BOSS Version 1.61</b> - <i>19 October 2010</i></p>
+	<p><b>Version 1.61</b> - <i>19 October 2010</i></p>
 	<ul>
 		<li>Added silent -s command line switch to suppress the automatic opening of the BOSSlog when BOSS is run.</li>
 		<li>Added version info to BOSS.exe to make Wrye Bash integration/debugging easier.</li>
@@ -503,7 +500,7 @@
 		<li>Increased timout delay for the masterlist updater to prevent the updater failing when Google Code is slow.</li>
 		<li>Reworked masterlist updater error reporting to be more verbose, and to take messages directly from curl when curl fails.</li>
 	</ul>
-	<p><b>BOSS Version 1.6</b> - <i>8 October 2010</i></p>
+	<p><b>Version 1.6</b> - <i>8 October 2010</i></p>
 	<ul>
 		<li>Added Fallout Wanderers Edition (FWE) specific message type for the Fallout 3 masterlist.</li>
 		<li>Added masterlist updater functionality to BOSS, accessible via a command-line switch and a .bat file.</li>
@@ -522,7 +519,7 @@
 		<li>Merged BOSS and BOSS-F source code, allowing one EXE to support both Oblivion and Fallout 3.</li>
 		<li>Major refactoring and rewrite of BOSS source code, resulting in a significant performance improvement.</li>
 	</ul>
-	<p><b>BOSS Version 1.5</b> - <i>24 March 2010</i></p>
+	<p><b>Version 1.5</b> - <i>24 March 2010</i></p>
 	<ul>
 		<li>Added OOO-specific message type.</li>
 		<li>Added requirement message type.</li>
@@ -533,12 +530,12 @@
 		<li>Added masterlist version numbering when exporting via SVN.</li>
 		<li>Added Fallout 3 specific BOSS source code (BOSS-F).</li>
 	</ul>
-	<p><b>BOSS Version 1.41</b> - <i>31 August 2009</i></p>
+	<p><b>Version 1.41</b> - <i>31 August 2009</i></p>
 	<ul>
 		<li>Fixed incorrect master file defined for Fallout 3.</li>
 		<li>Fixed error messages not being displayed on some machines.</li>
 	</ul>
-	<p><b>BOSS Versions 1.0 - 1.35</b> - <i>22 October 2008 to 24 June 2009</i></p>
+	<p><b>Versions 1.0 - 1.35</b> - <i>22 October 2008 to 24 June 2009</i></p>
 	<ul>
 		<li>Changes Not Recorded.</li>
 	</ul>

@@ -80,7 +80,7 @@ namespace boss {
 	typedef boost::error_info<struct tag_errno,string> err_detail;
 
 	//Checks if an update is available or not for the given item.
-	//Valid items are 'BOSS', 'BOSS-GUI' and 'masterlist'.
+	//Valid items are 'BOSS' and 'masterlist'.
 	string IsUpdateAvailable(string subject);
 }
 #endif

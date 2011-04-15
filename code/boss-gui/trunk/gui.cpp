@@ -443,7 +443,7 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 }
 
 void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
-	std::string mlistText,bossText,guiText;
+	std::string mlistText,bossText;
 	try {
 		mlistText = boss::IsUpdateAvailable("masterlist");
 		if (mlistText.length() == 0)
@@ -464,16 +464,6 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 		std::string const * detail = boost::get_error_info<boss::err_detail>(e);
 		bossText = "BOSS: Update check failed. Details: " + *detail;
 	}
-	try {
-		guiText = boss::IsUpdateAvailable("BOSS-GUI");
-		if (guiText.length() == 0)
-			guiText = "BOSS GUI: Update not available.";
-		else
-			guiText = "BOSS GUI: Update available! New version: " + guiText;
-	} catch (boss::update_error & e) {
-		std::string const * detail = boost::get_error_info<boss::err_detail>(e);
-		guiText = "BOSS GUI: Update check failed. Details: " + *detail;
-	}
 
 	wxFrame *frame = new wxFrame(this, -1, "Check For Updates", wxPoint(100, 100), wxSize(450, 340),wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT);
 	
@@ -486,10 +476,9 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 	updateBox->Add(text);
 	updateBox->Add(new wxStaticText(frame,-1,mlistText, wxDefaultPosition, wxDefaultSize, wxTE_BESTWRAP));
 	updateBox->Add(new wxStaticText(frame,-1,bossText));
-	updateBox->Add(new wxStaticText(frame,-1,guiText));
-
+	
 	wxBoxSizer *textBox = new wxBoxSizer(wxVERTICAL);
-	textBox->Add(new wxStaticText(frame,-1,"Masterlist updates can be downloaded through the built-in updater.\nBOSS program and BOSS GUI updates can be downloaded from \nthe following sites:"));
+	textBox->Add(new wxStaticText(frame,-1,"Masterlist updates can be downloaded through the built-in updater.\nBOSS updates can be downloaded from the following sites:"));
 	
 	wxBoxSizer *linkBox = new wxBoxSizer(wxVERTICAL);
 	wxHyperlinkCtrl *link = new wxHyperlinkCtrl(frame,-1,"TES Nexus","http://www.tesnexus.com/downloads/file.php?id=20516");
@@ -499,6 +488,9 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 	link->SetBackgroundColour(wxColour(255,255,255));
 	linkBox->Add(link);
 	link = new wxHyperlinkCtrl(frame,-1,"New Vegas Nexus","http://www.newvegasnexus.com/downloads/file.php?id=35999");
+	link->SetBackgroundColour(wxColour(255,255,255));
+	linkBox->Add(link);
+	link = new wxHyperlinkCtrl(frame,-1,"Google Code","http://code.google.com/p/better-oblivion-sorting-software/");
 	link->SetBackgroundColour(wxColour(255,255,255));
 	linkBox->Add(link);
 

@@ -31,8 +31,8 @@ namespace boss {
 	namespace karma = boost::spirit::karma;
 
 	//Version info.
-	const string gui_version     = "0.9";
-	const string gui_releaseDate = "April 04, 2011";
+	const string gui_version     = "1.7";
+	const string gui_releaseDate = "April 15, 2011";
 
 	//The run type decides on which variables are applied, not all are appropriate for all run types.
 	int run					= 1;     // 1 = sort mods, 2 = only update, 3 = undo changes.
@@ -273,31 +273,26 @@ namespace boss {
 			return remoteVersionStr;
 		} else {
 			//Get page containing version number.
-			curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/");
+			curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/downloads/list");
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &remoteVersionStr );
 			ret = curl_easy_perform(curl);
 			if (ret!=CURLE_OK)
 				throw update_error() << err_detail(errbuff);
 
-			if (subject == "BOSS") {
-				localVersion = GetBOSSVersion();
-				start = remoteVersionStr.find("Latest BOSS Version: ");
-				if (start == string::npos)
-					throw update_error() << err_detail("Cannot find online version number.");
-				start += 21;
-			} else if (subject == "BOSS-GUI") {
-				localVersion = versionStringToInt(gui_version);
-				start = remoteVersionStr.find("Latest BOSS GUI Version: ");
-				if (start == string::npos)
-					throw update_error() << err_detail("Cannot find online version number.");
-				start += 25;
-			}
+			localVersion = GetBOSSVersion();
+			start = remoteVersionStr.find("BOSS v");
+			if (start == string::npos)
+				throw update_error() << err_detail("Cannot find online version number.");
+			start += 6;
 
 			//Extract revision number from page text.
-			end = remoteVersionStr.find("</p>",start) - start;
-			if (end == string::npos)
-				throw update_error() << err_detail("Cannot find online version number.");
+			end = remoteVersionStr.find(" ",start) - start;
+			if (end == string::npos) {
+				end = remoteVersionStr.find("</a>",start) - start;
+				if (end == string::npos)
+					throw update_error() << err_detail("Cannot find online version number.");
+			}
 			remoteVersionStr = remoteVersionStr.substr(start,end);
 
 			//Now compare versions.
