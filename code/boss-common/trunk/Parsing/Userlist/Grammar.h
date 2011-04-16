@@ -11,10 +11,6 @@
 
 //Header file for userlist grammar definition.
 
-/* Need to:
-1. Get error handling working properly (currently throws silent exceptions and doesn't specify area).
-2. Make error reports useful.
-*/
 #ifndef __BOSS_USERLIST_GRAM_H__
 #define __BOSS_USERLIST_GRAM_H__
 
@@ -75,11 +71,12 @@ namespace boss {
 	static format EInsertingToTopOfEsms("tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.");
 	static format EInsertingGroupOrIntoMod("tries to insert a group or insert something into a mod.");
 	static format EAttachingMessageToGroup("tries to attach a message to a group.");
-	//Grammar errors - not yet implemented.
+	/*Grammar errors - not implemented.
 	static format ERuleHasUndefinedObject("The line with keyword '%1%' has an undefined object.");
 	static format EUnrecognisedKeyword("The line \"%1%: %2%\" does not contain a recognised keyword. If this line is the start of a rule, that rule will also be skipped.");
 	static format EAppearsBeforeFirstRule("The line \"%1%: %2%\" appears before the first recognised rule line. Line skipped.");
 	static format EUnrecognizedKeywordBeforeFirstRule("The line \"%1%: %2%\" does not contain a recognised keyword, and appears before the first recognised rule line. Line skipped.");
+	*/
 
 	//Syntax error formatting.
 	static format SyntaxErrorFormat("<p class='error'>"

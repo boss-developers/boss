@@ -104,7 +104,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	HelpMenu->Append(MENU_OpenMReadMe, _T("Open &Main ReadMe"), _T("Opens the main BOSS ReadMe in your default web browser."));
 	HelpMenu->Append(MENU_OpenURReadMe, _T("Open &User Rules ReadMe"), _T("Opens the User Rules ReadMe in your default web browser."));
 	HelpMenu->AppendSeparator();
-	HelpMenu->Append(MENU_CheckForUpdates, _T("&Check For Updates..."), _T("Checks for updates to BOSS, the masterlist and BOSS GUI."));
+	HelpMenu->Append(MENU_CheckForUpdates, _T("&Check For Updates..."), _T("Checks for updates to BOSS and your masterlist."));
 	HelpMenu->Append(MENU_ShowAbout, _T("&About BOSS GUI..."), _T("Shows information about BOSS GUI."));
     MenuBar->Append(HelpMenu, _T("&Help"));
     SetMenuBar(MenuBar);
@@ -183,6 +183,8 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	LoggingBox->SetToolTip("The output is logged to the BOSSCommandLineLog.txt file");
 	FormatBox->SetToolTip("This decides both the format of BOSSlog generated when you click the \"Run BOSS\" button and the BOSSlog format opened when you click the \"View BOSSlog\" button.");
 	OpenBOSSlogButton->SetToolTip("The format of BOSSlog this opens is decided by the setting of the \"BOSSlog Format\" Output Option above.");
+	DebugBox->SetToolTip("Adds source code references to command line output.");
+	VerbosityBox->SetToolTip("The higher the verbosity level, the more information is outputted to the command line.");
 
 	//Set option values.
 	ShowLogBox->SetValue(true);

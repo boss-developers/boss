@@ -166,6 +166,7 @@ namespace boss {
 	//Returns a keyType representation of the given key string.
 	//Only really required for masterlist message keys.
 	keyType StringToKey(string key) {
+		boost::algorithm::to_lower(key);
 		if (key == "add")
 			return ADD;
 		else if (key == "override")
@@ -184,6 +185,20 @@ namespace boss {
 			return APPEND;
 		else if (key == "replace")
 			return REPLACE;
+		else if (key == "say" || key == "?" || key == "^" || key == "$")
+			return SAY;
+		else if (key == "tag" || key == "%")
+			return TAG;
+		else if (key == "req" || key == ":")
+			return REQ;
+		else if (key == "warn")
+			return WARN;
+		else if (key == "error" || key == "*")
+			return ERR;
+		else if (key == "inc" || key == "\"")
+			return INC;
+		else if (key == "dirty")
+			return DIRTY;
 		else
 			return NONE;
 	}

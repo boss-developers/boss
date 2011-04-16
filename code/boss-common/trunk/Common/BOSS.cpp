@@ -590,7 +590,7 @@ int main(int argc, char *argv[]) {
 					if (Userlist[i].lines[j].key == BEFORE)
 						index2 = GetModPos(Modlist, Userlist[i].lines[j].object);  //Find the start.
 					else
-						index2 = GetGroupEndPos(Modlist, Userlist[i].lines[j].object)+1;  //Find the end, and add one, as inserting works before the given element.
+						index2 = GetGroupEndPos(Modlist, Userlist[i].lines[j].object);  //Find the end, and add one, as inserting works before the given element.
 					//Check that the sort group actually exists.
 					if (index2 == (size_t)-1) {
 						Modlist.insert(Modlist.begin()+index1,group.begin(),group.end());  //Insert the group back in its old position.
@@ -598,6 +598,8 @@ int main(int argc, char *argv[]) {
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist[i].lines[j].object.c_str());
 						break;
 					}
+					if (Userlist[i].lines[j].key == AFTER)
+						index2++;
 					//Now insert the group.
 					Modlist.insert(Modlist.begin()+index2,group.begin(),group.end());
 					//Print success message.

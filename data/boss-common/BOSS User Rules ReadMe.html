@@ -133,7 +133,7 @@
 	<p>An example:</p>
 	<blockquote><code>
 	FOR: Unofficial Oblivion Patch.esp<br />
-	REPLACE: ? Overrided!<br /><br />
+	REPLACE: ? Replaced!<br /><br />
 	FOR: bgMagicEV.esp.esp<br />
 	APPEND: % {{BASH:Names,Delev,Relev}}
 	</code></blockquote>
@@ -142,7 +142,7 @@
 	<li style='list-style-type:none;'>...<ul></ul></li>
 	<li style='list-style-type:none;'>
 	Unofficial Oblivion Patch.esp<ul>
-	<li>Note:  Overrided!</li>
+	<li>Note:  Replaced!</li>
 	</ul></li>
 	<li style='list-style-type:none;'>...<ul></ul></li>
 	<li style='list-style-type:none;'>
@@ -243,7 +243,7 @@
 		<li>If the rule includes a sort line and uses the sort keywords TOP or BOTTOM, it will print a message of the form: <code>"<em>Mod Name</em>" inserted into the <em>top/bottom</em> of group "<em>Group Name</em>".</code></li>
 		<li>If the rule includes one or more message lines, each message line will give a message of the form: <code>"<em>Message</em>" <em>appended to/replaced</em> messages attached to "<em>Mod Name</em>".</code></li>
 	</ol>
-	<p>If the parser finds a major grammatical error in your userlist, it will stop parsing and discard any rules it has found before printing an error message detailing the error and where it was found.</p>
+	<p>If the parser finds a major grammatical error in your userlist, it will stop parsing and discard any rules it has found before printing an error message detailing what was expected and where. Depending on where the error was found, more than one message may be displayed. In some cases, the expected item may not provide much useful meaning - in these cases look at where the error was found and determine the exact cause of the problem yourself.</p>
 	<p>If a rule is found to have errors in its syntax, it will be skipped and an error message of the form: <code>Syntax Error: The rule beginning "<em>First Line Of Rule</em>" <em>details of error</em></code> will be printed to your BOSSlog.</p>
 	<p>If an error is encountered while trying to apply a rule, it will be skipped and an error message detailing the fault will be printed to your BOSSlog.</p>
 	<p><b>Rule application does not alter your masterlist.txt or userlist.txt.</b> This means that if you want to undo the application of
@@ -261,7 +261,6 @@
 		<li>The group "ESMs" must always load first. You cannot sort this group or sort another group before it.</li>
 		<li>The game's master .ESM file must always load first. You cannot sort it, sort another mod before it, or insert another mod into the top of the "ESMs" group.</li>
 		<li>You cannot sort a mod relative to another mod that is not in the masterlist and has not been sorted by a previous rule.</li>
-		<li>You must <b>never</b> sort a group more than once. When using multiple rules sorting groups, make sure none of the groups you are sorting are located inside any of the other groups you are sorting.</li>
 		<li>
 			<b>Rules are applied in the order they are listed</b>. This means you can have several rules sorting different rule objects relative to the same sort object, or have rules sorting rule objects relative to sort objects that were sorted in previous rules.
 			For example:<br />
@@ -288,8 +287,8 @@
 	</div><br /><br />
 	
 	<div id="messages"><span>The BOSS Message Format</span>
-	<p>Understanding the BOSS message format is important if you wish to edit mods' messages. There are actually two masterlist formats, with different syntax for messages.
-	Format 1 is recognised by BOSS v1.5+, and Format 2 is recognised by BOSS v1.7+. If you are reading this, you can use either. Each of the four message types that can be added via the userlist begins with a 
+	<p>Understanding the BOSS message format is important if you wish to edit mods' messages. There are actually two formats, either of which may be used. 
+	Each of the four message types that can be added via the userlist begins with a 
 	<em>message symbol</em> or <em>message keyword</em> depending on the format used. The symbol/keyword is then followed by the message itself. The message is just a standard 
 	line of text. In addition, Bash Tag suggestion comments also have a special syntax for the suggestions they include.</p>
 	<p>The message message types, symbols and keywords are listen in the table below:</p>
