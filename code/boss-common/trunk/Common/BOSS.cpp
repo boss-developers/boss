@@ -473,26 +473,38 @@ int main(int argc, char *argv[]) {
 	//Now compare masterlist against hashset.
 	vector<item>::iterator iter = Masterlist.begin();
 	vector<item> holdingVec;
-	boost::unordered_set<string>::iterator setPos;
+	boost::unordered_set<string>::iterator setPos, addedPos;
+	boost::unordered_set<string> addedMods;
 	size_t pos;
 	LOG_INFO("Comparing hashset against masterlist.");
 	while (iter != Masterlist.end()) {
 		item Item = *iter;
 		if (Item.type == MOD) {
+			//Check to see if the mod is in the hashset. If it is, or its ghosted version is, also check if 
+			//the mod is already in the holding vector. If not, add it.
 			setPos = hashset.find(Tidy(Item.name.string()));
-			if (setPos != hashset.end()) {  //Mod found in hashset. Record it in the holding vector.
-				holdingVec.push_back(Item);
-				pos = GetModPos(Modlist,Item.name.string());  //Also remove it from the Modlist.
-				if (pos != (size_t)-1)
-					Modlist.erase(Modlist.begin()+pos);
-			} else {  //Mod not found. Look for ghosted mod.
-				setPos = hashset.find(Tidy(Item.name.string() + ".ghost"));
-				if (setPos != hashset.end()) {  //Mod found in hashset. Record it in the holding vector, with .ghost extension.
-					Item.name = fs::path(Item.name.string() + ".ghost");  //Add ghost extension to mod name.
-					holdingVec.push_back(Item);
-					pos = GetModPos(Modlist,Item.name.string());  //Also remove it from the Modlist.
+			addedPos = addedMods.find(Tidy(Item.name.string()));
+			if (setPos != hashset.end()) {										//Mod found in hashset. 
+				if (addedPos == addedMods.end()) {								//The mod is not already in the holding vector.
+					holdingVec.push_back(Item);									//Record it in the holding vector.
+					pos = GetModPos(Modlist,Item.name.string());				//Also remove it from the Modlist.
 					if (pos != (size_t)-1)
 						Modlist.erase(Modlist.begin()+pos);
+					addedMods.insert(Tidy(Item.name.string()));
+				}
+			} else {
+				//Mod not found. Look for ghosted mod.
+				Item.name = fs::path(Item.name.string() + ".ghost");		//Add ghost extension to mod name.
+				setPos = hashset.find(Tidy(Item.name.string()));
+				addedPos = addedMods.find(Tidy(Item.name.string()));
+				if (setPos != hashset.end()) {									//Mod found in hashset.
+					if (addedPos == addedMods.end()) {							//The mod is not already in the holding vector.
+						holdingVec.push_back(Item);								//Record it in the holding vector.
+						pos = GetModPos(Modlist,Item.name.string());			//Also remove it from the Modlist.
+						if (pos != (size_t)-1)
+							Modlist.erase(Modlist.begin()+pos);
+						addedMods.insert(Tidy(Item.name.string()));
+					}
 				}
 			}
 		} else //Group lines must stay recorded.
