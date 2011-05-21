@@ -732,9 +732,6 @@ int main(int argc, char *argv[]) {
 	int recModNo = 0;
 	int unrecModNo = 0;
 
-	//TESTING
-	SaveModlist(Modlist,"ModlistOutput.txt");
-
 	LOG_INFO("Applying calculated ordering to user files...");
 	for (size_t i=0; i<=x; i++) {
 		//Only act on mods that exist.
