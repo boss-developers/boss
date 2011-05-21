@@ -457,6 +457,11 @@ int main(int argc, char *argv[]) {
 
 	//Add all modlist and userlist mods to a hashset to optimise comparison against masterlist.
 	boost::unordered_set<string> hashset;  //Holds mods for checking against masterlist
+	boost::unordered_set<string>::iterator setPos;
+	/* Hashset must be a set of unique mods.
+	Ghosted mods take priority over non-ghosted mods, as they are specifically what is installed. 
+	*/
+
 	LOG_INFO("Populating hashset with modlist.");
 	for (size_t i=0; i<Modlist.size(); i++) {
 		if (Modlist[i].type == MOD)
@@ -465,15 +470,23 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Populating hashset with userlist.");
 	for (size_t i=0; i<Userlist.size(); i++) {
 		for (size_t j=0; j<Userlist[i].lines.size(); j++) {
-			if (IsPlugin(Userlist[i].lines[j].object))
-				hashset.insert(Tidy(Userlist[i].lines[j].object));
+			if (IsPlugin(Userlist[i].lines[j].object)) {
+				setPos = hashset.find(Tidy(Userlist[i].lines[j].object));
+				if (setPos == hashset.end()) {  //Mod not already in hashset.
+					setPos = hashset.find(Tidy(Userlist[i].lines[j].object + ".ghost"));
+					if (setPos == hashset.end()) {  //Ghosted mod not already in hashset. 
+						//Unique plugin, so add to hashset.
+						hashset.insert(Tidy(Userlist[i].lines[j].object));
+					}
+				}
+			}
 		}
 	}
 
 	//Now compare masterlist against hashset.
 	vector<item>::iterator iter = Masterlist.begin();
 	vector<item> holdingVec;
-	boost::unordered_set<string>::iterator setPos, addedPos;
+	boost::unordered_set<string>::iterator addedPos;
 	boost::unordered_set<string> addedMods;
 	size_t pos;
 	LOG_INFO("Comparing hashset against masterlist.");
