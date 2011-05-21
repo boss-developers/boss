@@ -719,11 +719,13 @@ int main(int argc, char *argv[]) {
 	int recModNo = 0;
 	int unrecModNo = 0;
 
+	//TESTING
+	SaveModlist(Modlist,"ModlistOutput.txt");
+
 	LOG_INFO("Applying calculated ordering to user files...");
 	for (size_t i=0; i<=x; i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			recModNo++;
 			string text = "<b>" + TrimDotGhost(Modlist[i].name.string());
 			if (!skip_version_parse) {
 				string version = GetModHeader(Modlist[i].name);
@@ -742,8 +744,7 @@ int main(int argc, char *argv[]) {
 			//Now change the file's date, if it is not the game's master file.
 			if (!IsMasterFile(Modlist[i].name.string())) {
 				//Calculate the new file time.
-				modfiletime=esmtime;
-				modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+				modfiletime = esmtime + recModNo*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 				//Re-date file. Provide exception handling in case their permissions are wrong.
 				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist[i].name.string().c_str());
 				try { 
@@ -760,6 +761,7 @@ int main(int argc, char *argv[]) {
 				Output(bosslog, format, "</ul>\n");
 			} else
 				Output(bosslog, format, "<br />\n<br />\n");
+			recModNo++;
 		}
 	}
 	Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
@@ -773,7 +775,6 @@ int main(int argc, char *argv[]) {
 	for (size_t i=x+1; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			unrecModNo++;
 			string text = "Unknown mod file: " + TrimDotGhost(Modlist[i].name.string());
 			if (IsGhosted(data_path / Modlist[i].name)) {
 				text += " <span class='ghosted'> - Ghosted</span>";
@@ -783,9 +784,7 @@ int main(int argc, char *argv[]) {
 				text += "<i> - Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</i>";
 			Output(bosslog, format, text); 
 
-			modfiletime=esmtime;
-			modfiletime += i*60; //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-			modfiletime += i*86400; //time_t is an integer number of seconds, so adding 86,400 on increases it by a day.
+			modfiletime = esmtime + 86400 + (recModNo + unrecModNo)*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute and adding 86,400 on increases it by a day. Using unrecModNo instead of i to avoid increases for group entries.
 			//Re-date file. Provide exception handling in case their permissions are wrong.
 			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist[i].name.string().c_str());
 			try { 
@@ -794,6 +793,7 @@ int main(int argc, char *argv[]) {
 				Output(bosslog, format, " - <span class='error'>Error: Could not change the date of \"" + Modlist[i].name.string() + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>");
 			}
 			Output(bosslog, format, "<br />\n");
+			unrecModNo++;
 		}
 	}
 	Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
