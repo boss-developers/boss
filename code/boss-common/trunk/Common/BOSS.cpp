@@ -724,7 +724,7 @@ int main(int argc, char *argv[]) {
 	////////////////////////////////
 
 	//Re-date .esp/.esm files according to order in modlist and output messages
-	if (revert<1) Output(bosslog, format, "<div><span>Recognised And Re-ordered Mod Files</span><p>");
+	if (revert<1) Output(bosslog, format, "<div><span>Recognised And Re-ordered Plugins</span><p>");
 	else if (revert==1) Output(bosslog, format, "<div><span>Restored Load Order (Using modlist.txt)</span><p>");
 	else if (revert==2) Output(bosslog, format, "<div><span>Restored Load Order (Using modlist.old)</span><p>");
 
@@ -780,7 +780,7 @@ int main(int argc, char *argv[]) {
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 	//Order their dates to be i days after the master esm to ensure they load last.
-	Output(bosslog, format, "<div><span>Unrecognised Mod Files</span><p>Reorder these by hand using your favourite mod ordering utility.</p>\n\n<p>");
+	Output(bosslog, format, "<div><span>Unrecognised Plugins</span><p>Reorder these by hand using your favourite mod ordering utility.</p>\n\n<p>");
 	LOG_INFO("Reporting unrecognized mods...");
 	for (size_t i=x+1; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
@@ -806,6 +806,8 @@ int main(int argc, char *argv[]) {
 			unrecModNo++;
 		}
 	}
+	if (unrecModNo == 0)
+		Output(bosslog, format, "<i>No unrecognised plugins.</i>");
 	Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
 	LOG_INFO("Unrecognized mods reported.");
 
@@ -818,7 +820,7 @@ int main(int argc, char *argv[]) {
 	Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
 	
 	//Let people know the program has stopped.
-	Output(bosslog, format, "<div><span>BOSS Execution Complete</span></div>\n</body>\n</html>");
+	Output(bosslog, format, "<div><span>Execution Complete</span></div>\n</body>\n</html>");
 	bosslog.close();
 	LOG_INFO("Launching boss log in browser.");
 	if ( !silent ) 
