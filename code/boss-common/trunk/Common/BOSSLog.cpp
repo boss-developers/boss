@@ -69,9 +69,14 @@ namespace boss {
 			log << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
 				<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
 				<< "body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
-				<< "body > div:first-child {font-size:2.4em; font-weight:bold; text-align: center; margin-bottom:20px;}"<<endl
+				<< "body > div:first-child {font-size:2.4em; font-weight:bold; text-align: center; margin-bottom:10px;}"<<endl
 				<< "body > div:first-child + div {text-align:center;}" <<endl
-				<< "div > span:first-child {font-weight:bold; font-size:1.3em;}"<<endl
+				<< "body > div > span:first-child {font-weight:bold; font-size:1.3em; cursor:pointer;}"<<endl
+				<< "body > div {margin-bottom: 65px;}"<<endl
+				<< "div > ul {padding-left:0; margin-top: 15px;}"<<endl
+				<< "body > div:last-child {margin:0;}"<<endl
+				<< "body > div:last-child > span:first-child {cursor:default;}"<<endl
+				<< "div > ul > li {margin-left:0;}"<<endl
 				<< "ul {margin-top:0px; list-style:none; margin-bottom:1.1em;}"<<endl
 				<< "ul li {margin-left:-1em; margin-bottom:0.4em;}"<<endl
 				<< "blockquote {font-style:italic;}"<<endl
@@ -82,7 +87,17 @@ namespace boss {
 				<< ".ghosted {font-style:italic; color:grey;}"<<endl
 				<< ".tags {color:maroon;}"<<endl
 				<< ".dirty {color:#996600;}"<<endl
-				<< "</style>"<<endl<<"</head>"<<endl<<"<body>"<<endl;
+				<< "</style>"<<endl
+				<< "<script type='text/javascript'>"<<endl
+				<< "function toggleDisplay(element) {"<<endl
+				<< "if (element.style.display == 'block' || element.style.display == '')"<<endl
+				<< "element.style.display = 'none';"<<endl
+				<< "else"<<endl
+				<< "element.style.display = 'block';"<<endl
+				<< "return;"<<endl
+				<< "}"<<endl
+				<< "</script>"<<endl
+				<<"</head>"<<endl<<"<body>"<<endl;
 		}
 	}
 

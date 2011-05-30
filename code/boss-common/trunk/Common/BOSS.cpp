@@ -33,7 +33,7 @@ using boost::algorithm::trim_copy;
 
 
 const string g_version     = "1.7";
-const string g_releaseDate = "April 05, 2011";
+const string g_releaseDate = "May 30, 2011";
 
 
 void ShowVersion() {
@@ -235,7 +235,7 @@ int main(int argc, char *argv[]) {
 	Output(bosslog,format, "<div>Better Oblivion Sorting Software Log</div>\n");
 	Output(bosslog,format, "<div>&copy; Random007 &amp; the BOSS development team, 2009-2011. Some rights reserved.<br />\n");
 	Output(bosslog,format, "<a href=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\">CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />\n");
-	Output(bosslog,format, "v"+g_version+" ("+g_releaseDate+")</div>\n<br />\n<br />\n");
+	Output(bosslog,format, "v"+g_version+" ("+g_releaseDate+")</div>\n");
 
 	if (0 == game) {
 		LOG_DEBUG("Detecting game...");
@@ -269,16 +269,16 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Game detected: %d", game);
 
 	if (revert<1 && (update || updateonly)) {
-		Output(bosslog,format, "<div><span>Masterlist Update</span>");
+		Output(bosslog,format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>Masterlist Update</span><div>");
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		LOG_DEBUG("Updating masterlist...");
 		try {
 			unsigned int revision = UpdateMasterlist(game);  //Need to sort out the output of this - ATM it's very messy.
 			if (revision == 0) {
-				Output(bosslog,format, "<p>masterlist.txt is already at the latest version. Update skipped.</p>\n\n");
+				Output(bosslog,format, "<p>masterlist.txt is already at the latest version. Update skipped.</p>");
 				cout << "masterlist.txt is already at the latest version. Update skipped." << endl;
 			} else {
-				Output(bosslog,format, "<p>masterlist.txt updated to revision " + IntToString(revision) + ".</p>\n\n");
+				Output(bosslog,format, "<p>masterlist.txt updated to revision " + IntToString(revision) + ".</p>");
 				cout << "masterlist.txt updated to revision " << revision << endl;
 			}
 		} catch (boss_error & e) {
@@ -288,7 +288,7 @@ int main(int argc, char *argv[]) {
 			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.</p>\n\n");
 		}
 		LOG_DEBUG("Masterlist updated successfully.");
-		Output(bosslog,format, "</div>\n<br />\n<br />\n");
+		Output(bosslog,format, "</div>\n</div>\n");
 	}
 
 	if (updateonly == true) {
@@ -316,61 +316,6 @@ int main(int argc, char *argv[]) {
 		if ( !silent ) 
 			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
-	}
-
-	//////////////////////////////////////////////////////
-	// Print version & checksum info for OBSE & plugins
-	//////////////////////////////////////////////////////
-
-	if (showCRCs) {
-		string SE, SELoc, SEPluginLoc;
-		if (game == 1 || game == 3) {  //Oblivion/Nehrim
-			SE = "OBSE";
-			SELoc = "../obse_1_2_416.dll";
-			SEPluginLoc = "OBSE/Plugins";
-		} else if (game == 2) {  //Fallout 3
-			SE = "FOSE";
-			SELoc = "../fose_loader.exe";
-			SEPluginLoc = "FOSE/Plugins";
-		} else {  //Fallout: New Vegas
-			SE = "NVSE";
-			SELoc = "../nvse_loader.exe";
-			SEPluginLoc = "NVSE/Plugins";
-		}
-
-		Output(bosslog, format, "<div><span>" + SE + " &amp; " + SE + " Plugin Versions/Checksums</span><p>");
-
-		if (!fs::exists(SELoc)) {
-			LOG_DEBUG("OBSE DLL not detected");
-		} else {
-			string CRC = IntToHexString(GetCrc32(SELoc));
-			string ver = GetExeDllVersion(SELoc);
-			string text = "<b>" + SE;
-			if (ver.length() != 0)
-				text += " [Version: " + ver + "]";
-			text += "</b> - <i>Checksum: " + CRC + "</i><br />\n<br />\n";
-			Output(bosslog, format, text);
-		}
-
-		if (!fs::is_directory(data_path / SEPluginLoc)) {
-			LOG_DEBUG("OBSE plugins dir not detected");
-		} else {
-			for (fs::directory_iterator itr(data_path / SEPluginLoc); itr!=fs::directory_iterator(); ++itr) {
-				const fs::path filename = itr->path().filename();
-				const string ext = Tidy(itr->path().extension().string());
-				if (fs::is_regular_file(itr->status()) && ext==".dll") {
-					string CRC = IntToHexString(GetCrc32(itr->path()));
-					string ver = GetExeDllVersion(itr->path());
-					string text = "<b>" + filename.string();
-					if (ver.length() != 0)
-						text += " [Version: " + ver + "]";
-					text += "</b> - <i>Checksum: " + CRC + "</i><br />\n<br />\n";
-					Output(bosslog, format, text);
-				}
-			}
-		}
-
-		Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
 	}
 
 	//////////////////////////////////////////////
@@ -532,13 +477,26 @@ int main(int argc, char *argv[]) {
 	Modlist = Masterlist;
 	LOG_INFO("Modlist now filled with ordered mods and unknowns.");
 
+	/////////////////////////////
+	// Display Global Messages
+	/////////////////////////////
+
+	if (globalMessageBuffer.size() > 0) {
+		Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>General Messages</span><ul>\n");
+		for (size_t i=0; i<globalMessageBuffer.size(); i++) {
+			ShowMessage(bosslog, format, globalMessageBuffer[i]);  //Print messages.
+			Output(bosslog,format, "<ul></ul>");
+		}
+		Output(bosslog, format, "</ul>\n</div>\n");
+	}
+
 	//////////////////////////
 	// Apply Userlist Rules
 	//////////////////////////
 
 	//Apply userlist rules to modlist.
 	if (revert<1 && fs::exists(userlist_path)) {
-		Output(bosslog, format, "<div><span>Userlist Messages</span><p>");
+		Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>Userlist Messages</span><div>");
 
 		for (size_t i=0; i<errorMessageBuffer.size(); i++)  //First print parser/syntax error messages.
 			Output(bosslog,format,errorMessageBuffer[i]);
@@ -704,19 +662,63 @@ int main(int argc, char *argv[]) {
 		}
 		if (Userlist.size() == 0) 
 			Output(bosslog, format, "No valid rules were found in your userlist.txt.");
-		Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
+		Output(bosslog, format, "</div>\n</div>\n");
 		LOG_INFO("Userlist sorting process finished.");
 	}
 
-	/////////////////////////////
-	// Display Global Messages
-	/////////////////////////////
+	//////////////////////////////////////////////////////
+	// Print version & checksum info for OBSE & plugins
+	//////////////////////////////////////////////////////
 
-	if (globalMessageBuffer.size() > 0) {
-		Output(bosslog, format, "<div><span>General Messages</span><p>\n<ul>\n");
-		for (size_t i=0; i<globalMessageBuffer.size(); i++)
-			ShowMessage(bosslog, format, globalMessageBuffer[i]);  //Print messages.
-		Output(bosslog, format, "</ul>\n</p>\n</div>\n<br />\n<br />\n");
+	if (showCRCs) {
+		string SE, SELoc, SEPluginLoc;
+		if (game == 1 || game == 3) {  //Oblivion/Nehrim
+			SE = "OBSE";
+			SELoc = "../obse_1_2_416.dll";
+			SEPluginLoc = "OBSE/Plugins";
+		} else if (game == 2) {  //Fallout 3
+			SE = "FOSE";
+			SELoc = "../fose_loader.exe";
+			SEPluginLoc = "FOSE/Plugins";
+		} else {  //Fallout: New Vegas
+			SE = "NVSE";
+			SELoc = "../nvse_loader.exe";
+			SEPluginLoc = "NVSE/Plugins";
+		}
+
+		if (!fs::exists(SELoc)) {
+			LOG_DEBUG("OBSE DLL not detected");
+		} else {
+			Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>" + SE + " And " + SE + " Plugin Checksums</span><ul>\n");
+
+			string CRC = IntToHexString(GetCrc32(SELoc));
+			string ver = GetExeDllVersion(SELoc);
+			string text = "<li><b>" + SE;
+			if (ver.length() != 0)
+				text += " <span class='version'>[Version: " + ver + "]</span>";
+			text += "</b> - <i>Checksum: " + CRC + "</i><ul></ul></li>\n\n";
+			Output(bosslog, format, text);
+
+			if (!fs::is_directory(data_path / SEPluginLoc)) {
+				LOG_DEBUG("OBSE plugins dir not detected");
+			} else {
+				for (fs::directory_iterator itr(data_path / SEPluginLoc); itr!=fs::directory_iterator(); ++itr) {
+					const fs::path filename = itr->path().filename();
+					const string ext = Tidy(itr->path().extension().string());
+					if (fs::is_regular_file(itr->status()) && ext==".dll") {
+						string CRC = IntToHexString(GetCrc32(itr->path()));
+						string ver = GetExeDllVersion(itr->path());
+						string text = "<li><b>" + filename.string();
+						if (ver.length() != 0)
+							text += " <span class='version'>[Version: " + ver + "]</span>";
+						text += "</b> - <i>Checksum: " + CRC + "</i><ul></ul></li>\n\n";
+						Output(bosslog, format, text);
+					}
+				}
+			}
+
+			Output(bosslog, format, "</ul>\n</div>\n");
+		}
 	}
 
 	////////////////////////////////
@@ -724,9 +726,9 @@ int main(int argc, char *argv[]) {
 	////////////////////////////////
 
 	//Re-date .esp/.esm files according to order in modlist and output messages
-	if (revert<1) Output(bosslog, format, "<div><span>Recognised And Re-ordered Plugins</span><p>");
-	else if (revert==1) Output(bosslog, format, "<div><span>Restored Load Order (Using modlist.txt)</span><p>");
-	else if (revert==2) Output(bosslog, format, "<div><span>Restored Load Order (Using modlist.old)</span><p>");
+	if (revert<1) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>Recognised And Re-ordered Plugins</span><ul>\n");
+	else if (revert==1) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>Restored Load Order (Using modlist.txt)</span><ul>\n");
+	else if (revert==2) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>Restored Load Order (Using modlist.old)</span><ul>\n");
 
 	int ghostedNo = 0;
 	int recModNo = 0;
@@ -736,7 +738,7 @@ int main(int argc, char *argv[]) {
 	for (size_t i=0; i<=x; i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			string text = "<b>" + TrimDotGhost(Modlist[i].name.string());
+			string text = "<li><b>" + TrimDotGhost(Modlist[i].name.string());
 			if (!skip_version_parse) {
 				string version = GetModHeader(Modlist[i].name);
 				if (!version.empty())
@@ -768,19 +770,19 @@ int main(int argc, char *argv[]) {
 				Output(bosslog, format, "\n<ul>\n");
 				for (size_t j=0; j<Modlist[i].messages.size(); j++)
 					ShowMessage(bosslog, format,Modlist[i].messages[j]);  //Print messages.
-				Output(bosslog, format, "</ul>\n");
+				Output(bosslog, format, "</ul>\n</li>\n\n");
 			} else
-				Output(bosslog, format, "<br />\n<br />\n");
+				Output(bosslog, format, "\n<ul></ul>\n</li>\n\n");
 			recModNo++;
 		}
 	}
-	Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
+	Output(bosslog, format, "</ul>\n</div>\n");
 	LOG_INFO("User file ordering applied successfully.");
 	
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 	//Order their dates to be i days after the master esm to ensure they load last.
-	Output(bosslog, format, "<div><span>Unrecognised Plugins</span><p>Reorder these by hand using your favourite mod ordering utility.</p>\n\n<p>");
+	Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>Unrecognised Plugins</span><div><p>Reorder these by hand using your favourite mod ordering utility.</p>");
 	LOG_INFO("Reporting unrecognized mods...");
 	for (size_t i=x+1; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
@@ -808,16 +810,16 @@ int main(int argc, char *argv[]) {
 	}
 	if (unrecModNo == 0)
 		Output(bosslog, format, "<i>No unrecognised plugins.</i>");
-	Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
+	Output(bosslog, format, "</div>\n</div>\n");
 	LOG_INFO("Unrecognized mods reported.");
 
 	//Print out some numbers.
-	Output(bosslog, format, "<div><span>Plugin Numbers</span><p>");
+	Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>Plugin Numbers</span><div><p>");
 	Output(bosslog, format, "Number of recognised plugins: " + IntToString(recModNo) + "<br />\n");
 	Output(bosslog, format, "Number of unrecognised plugins: " + IntToString(unrecModNo) + "<br />\n");
 	Output(bosslog, format, "Number of ghosted plugins: " + IntToString(ghostedNo) + "<br />\n");
 	Output(bosslog, format, "Total number of plugins found: " + IntToString(recModNo+unrecModNo) + "<br />\n");
-	Output(bosslog, format, "</p>\n\n</div>\n<br />\n<br />\n");
+	Output(bosslog, format, "</p></div>\n</div>\n");
 	
 	//Let people know the program has stopped.
 	Output(bosslog, format, "<div><span>Execution Complete</span></div>\n</body>\n</html>");

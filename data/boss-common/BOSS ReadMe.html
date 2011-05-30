@@ -38,9 +38,9 @@
 	
 	<div id="features"><span>Features &amp; Introduction</span>
 	<ul>
-		<li>Correctly positions over 11,400 Oblivion mods and counting, including such popular mods as FCOM, <acronym title="Oscuro's Oblivion Overhaul">OOO</acronym>, <acronym title="Martigen's Monster Mod">MMM</acronym>, Better Cities, Open Cities, Race Balancing Project and many others.</li>
-		<li>Correctly positions over 2,300 Fallout 3 mods and counting.
-		<li>Correctly positions over 1,800 Fallout: New Vegas mods and counting.
+		<li>Correctly positions over 11,800 Oblivion mods and counting, including such popular mods as FCOM, <acronym title="Oscuro's Oblivion Overhaul">OOO</acronym>, <acronym title="Martigen's Monster Mod">MMM</acronym>, Better Cities, Open Cities, Race Balancing Project and many others.</li>
+		<li>Correctly positions over 2,600 Fallout 3 mods and counting.
+		<li>Correctly positions over 2,200 Fallout: New Vegas mods and counting.
 		<li>Provides support for sorting mods used in Nehrim - At Fate's Edge installs.</li>
 		<li>Provides a large number of usage notes for many mods, including requirements, incompatibilities, updates and bug warnings.</li>
 		<li>Provides detection and warning of installation mistakes for some popular mods, such as FCOM.</li>
@@ -207,6 +207,13 @@
 			<li><b>Solution:</b> Rewrite the filenames in your userlist, copy/pasting them from the files themselves to ensure they are correct.</li>
 		</ul>
 		</li>
+		<br />
+		<li><b>Symptom:</b> Some mods have the wrong or no version number given in the BOSSlog.<div style="height:0.65em;"></div>
+		<ul>
+			<li><b>Issue:</b> This occurs because BOSS looks for the version number in the plugin's description field. If the mod author has forgotten to update the version number there or not provided one, an incorrect or no version number will be displayed.</li>
+			<li><b>Solution:</b> No solution, other than the mod author including a correct version number in the plugin's description field for a later release.</li>
+		</ul>
+		</li>
 	</ul>
 	<br />
 	
@@ -298,7 +305,7 @@
 		<br />
 		<li><b>Message:</b> Critical Error: "<em>filename</em>" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.<div style="height:0.65em;"></div>
 		<ul>
-			<li><b>Issue:</b> BOSS has detected that your userlist.txt is saved using the wrong encoding, and is unable to read it.</li>
+			<li><b>Issue:</b> If <em>filename</em> is 'userlist.txt', BOSS has detected that your userlist.txt is saved using the wrong encoding, and is unable to read it.</li>
 			<li><b>Solution:</b> Re-save the file given in the correct "UTF-8" encoding. If you are unsure on how to do so, follow these instructions:</p>
 				<ol>
 					<li>Open the file in Notepad.</li>
@@ -424,7 +431,7 @@
 		<li>Added three new command line parameters:
 		<ul><div style="height:0.65em;"></div>
 			<li>-g, --game [ game ]: Overrides game autodetection. To be used in conjunction with -o to allow updating of the masterlist on computers where the specified game is not installed.</li>
-			<li>-c, --crc-display: Enables calculation of plugin CRCs and displays them in the BOSSlog. CRCs can be used as accurate version checks in masterlist conditionals.</li>
+			<li>-c, --crc-display: Calculates and displays in the BOSSlog the CRCs of all your plugins. CRCs can be used as accurate version checks in masterlist conditionals.</li>
 			<li>-f, --format [ type ]: Allows the user to select their preferred output format, choosing from either HTML or plaintext. HTML formatting is the default.</li>
 		</ul>
 		</li>
@@ -443,9 +450,8 @@
 		<li>Added support for Masterlist Format 2, which offers an alternative syntax and a wide range of new features and capabilities.</li>
 		<li>Improved the formatting of the BOSSlog, making it more readable.</li>
 		<li>Links in the BOSSlog are now hyperlinks that can be clicked on to take you to the given URL.</li>
-		<li>Added display of a plugin counter that shows the numbers of recognised, unrecognised, ghosted and total plugins to the end of the BOSSlog.</li>
+		<li>Added display of the numbers of recognised, unrecognised, ghosted and total plugins to the end of the BOSSlog.</li>
 		<li>The release date of updated masterlists is now displayed beside the revision number in the BOSSlog.</li>
-		<li>Added new message type for providing information about cleaning mods with dirty edits.</li>
 		<li>Updated installer to reflect the various changes to BOSS's files and folders.</li>
 	</ul>
 	<p><b>Version 1.65</b> - <i>1 December 2010</i></p>

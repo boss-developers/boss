@@ -265,7 +265,6 @@ namespace boss {
 
 			retVal = IntToString(dwLeftMost) + '.' + IntToString(dwSecondLeft) + '.' + IntToString(dwSecondRight) + '.' + IntToString(dwRightMost);
 		}
-		return "";
 #else
         // ensure filename has no quote characters in it to avoid command injection attacks
         if (string::npos != filename.find('"')) {
