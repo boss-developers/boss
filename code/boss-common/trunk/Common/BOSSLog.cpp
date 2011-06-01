@@ -68,33 +68,40 @@ namespace boss {
 		if (format == "html") {
 			log << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
 				<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
-				<< "body {font-family:Calibri,Arial,Verdana,sans-serifs;}"<<endl
-				<< "body > div:first-child {font-size:2.4em; font-weight:bold; text-align: center; margin-bottom:10px;}"<<endl
+				<< "body {font-family:Calibri,Arial,sans-serifs;}"<<endl
+				<< "body > div:first-child {font-size:2.4em; font-weight:bold; text-align: center; margin-bottom:0.2em;}"<<endl
 				<< "body > div:first-child + div {text-align:center;}" <<endl
+				<< "body > div {margin-bottom: 4em;}"<<endl
 				<< "body > div > span:first-child {font-weight:bold; font-size:1.3em; cursor:pointer;}"<<endl
-				<< "body > div {margin-bottom: 65px;}"<<endl
-				<< "div > ul {padding-left:0; margin-top: 15px;}"<<endl
+				<< "body > div > span:first-child > span {display:inline-block; position:relative; top:0.05em; font-size:1.30em; width:0.6em;}"<<endl			
+				<< "div > ul {padding-left:0; margin-top: 1em;}"<<endl
 				<< "body > div:last-child {margin:0;}"<<endl
 				<< "body > div:last-child > span:first-child {cursor:default;}"<<endl
-				<< "div > ul > li {margin-left:0;}"<<endl
-				<< "ul {margin-top:0px; list-style:none; margin-bottom:1.1em;}"<<endl
+				<< "div > ul > li {margin-left:0; margin-bottom:2em;}"<<endl
+				<< "ul {list-style:none;}"<<endl
 				<< "ul li {margin-left:-1em; margin-bottom:0.4em;}"<<endl
+				<< "li ul {margin-top:0.4em;}"<<endl
 				<< "blockquote {font-style:italic;}"<<endl
 				<< ".error {color:red;}"<<endl
 				<< ".success {color:green;}"<<endl
 				<< ".warn {color:#FF6600;}"<<endl
-				<< ".version {color:teal;}"<<endl
-				<< ".ghosted {font-style:italic; color:grey;}"<<endl
+				<< ".version {background: #6699FF; color: white; margin-left: 15px; padding:0 4px 0 4px;}"<<endl
+				<< ".ghosted {background:#AAAAAA; color:white; margin-left: 15px; padding:0 4px 0 4px;}"<<endl
+				<< ".crc {background:#FFAA22; color:white; margin-left: 15px; padding:0 4px 0 4px;}"<<endl
+				<< ".mod {font-style:italic;}"<<endl
 				<< ".tags {color:maroon;}"<<endl
 				<< ".dirty {color:#996600;}"<<endl
 				<< "</style>"<<endl
 				<< "<script type='text/javascript'>"<<endl
 				<< "function toggleDisplay(element) {"<<endl
-				<< "if (element.style.display == 'block' || element.style.display == '')"<<endl
-				<< "element.style.display = 'none';"<<endl
-				<< "else"<<endl
-				<< "element.style.display = 'block';"<<endl
-				<< "return;"<<endl
+				<< "\tif (element.nextSibling.style.display == 'block' || element.nextSibling.style.display == '') {"<<endl
+				<< "\t\telement.nextSibling.style.display = 'none';"<<endl
+				<< "\t\telement.firstChild.innerHTML = '+';"<<endl
+				<< "\t} else {"<<endl
+				<< "\t\telement.nextSibling.style.display = 'block';"<<endl
+				<< "\t\telement.firstChild.innerHTML = '&#x2212;';"<<endl
+				<< "\t}"<<endl
+				<< "\treturn;"<<endl
 				<< "}"<<endl
 				<< "</script>"<<endl
 				<<"</head>"<<endl<<"<body>"<<endl;

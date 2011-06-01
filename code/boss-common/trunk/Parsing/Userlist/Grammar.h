@@ -79,13 +79,13 @@ namespace boss {
 	*/
 
 	//Syntax error formatting.
-	static format SyntaxErrorFormat("<p class='error'>"
+	static format SyntaxErrorFormat("<li class='error'>"
 		"Syntax Error: The rule beginning \"%1%: %2%\" %3%"
-		"</p>\n\n");
+		"</li>\n");
 
-	static format ParsingErrorFormat("<p><span class='error'>Parsing Error: Expected a %1% at:</span>"
+	static format ParsingErrorFormat("<li><span class='error'>Parsing Error: Expected a %1% at:</span>"
 		"<blockquote>%2%</blockquote>"
-		"<span class='error'>Userlist parsing aborted. No rules will be applied.</span></p>\n\n");
+		"<span class='error'>Userlist parsing aborted. No rules will be applied.</span></li>\n");
 
 	void AddSyntaxError(keyType const& rule, string const& object, string const& message) {
 		string keystring = KeyToString(rule);

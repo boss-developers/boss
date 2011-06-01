@@ -269,26 +269,26 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Game detected: %d", game);
 
 	if (revert<1 && (update || updateonly)) {
-		Output(bosslog,format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>Masterlist Update</span><div>");
+		Output(bosslog,format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> Masterlist Update</span><ul>\n");
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		LOG_DEBUG("Updating masterlist...");
 		try {
 			unsigned int revision = UpdateMasterlist(game);  //Need to sort out the output of this - ATM it's very messy.
 			if (revision == 0) {
-				Output(bosslog,format, "<p>masterlist.txt is already at the latest version. Update skipped.</p>");
+				Output(bosslog,format, "<li>masterlist.txt is already at the latest version. Update skipped.</li>");
 				cout << "masterlist.txt is already at the latest version. Update skipped." << endl;
 			} else {
-				Output(bosslog,format, "<p>masterlist.txt updated to revision " + IntToString(revision) + ".</p>");
+				Output(bosslog,format, "<li>masterlist.txt updated to revision " + IntToString(revision) + ".</li>");
 				cout << "masterlist.txt updated to revision " << revision << endl;
 			}
 		} catch (boss_error & e) {
 			string const * detail = boost::get_error_info<err_detail>(e);
-			Output(bosslog,format, "<p class='warn'>Error: Masterlist update failed.<br />\n");
+			Output(bosslog,format, "<li class='warn'>Error: Masterlist update failed.<br />\n");
 			Output(bosslog,format, "Details: " + *detail + "<br />\n");
-			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.</p>\n\n");
+			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.</li>\n");
 		}
 		LOG_DEBUG("Masterlist updated successfully.");
-		Output(bosslog,format, "</div>\n</div>\n");
+		Output(bosslog,format, "</ul>\n</div>\n");
 	}
 
 	if (updateonly == true) {
@@ -482,10 +482,9 @@ int main(int argc, char *argv[]) {
 	/////////////////////////////
 
 	if (globalMessageBuffer.size() > 0) {
-		Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>General Messages</span><ul>\n");
+		Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> General Messages</span><ul>\n");
 		for (size_t i=0; i<globalMessageBuffer.size(); i++) {
 			ShowMessage(bosslog, format, globalMessageBuffer[i]);  //Print messages.
-			Output(bosslog,format, "<ul></ul>");
 		}
 		Output(bosslog, format, "</ul>\n</div>\n");
 	}
@@ -496,7 +495,7 @@ int main(int argc, char *argv[]) {
 
 	//Apply userlist rules to modlist.
 	if (revert<1 && fs::exists(userlist_path)) {
-		Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>Userlist Messages</span><div>");
+		Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> Userlist Messages</span><ul>\n");
 
 		for (size_t i=0; i<errorMessageBuffer.size(); i++)  //First print parser/syntax error messages.
 			Output(bosslog,format,errorMessageBuffer[i]);
@@ -517,11 +516,11 @@ int main(int argc, char *argv[]) {
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (Userlist[i].ruleKey == ADD  && index1 <= x) {
-						Output(bosslog, format, "<p class='warn'>\""+Userlist[i].ruleObject+"\" is already in the masterlist. Rule skipped.</p>\n\n");
+						Output(bosslog, format, "<li class='warn'>\""+Userlist[i].ruleObject+"\" is already in the masterlist. Rule skipped.</li>\n");
 						LOG_WARN(" * \"%s\" is already in the masterlist.", Userlist[i].ruleObject.c_str());
 						break;
 					} else if (Userlist[i].ruleKey == OVERRIDE && index1 > x) {
-						Output(bosslog, format, "<p class='error'>\""+Userlist[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</p>\n\n");
+						Output(bosslog, format, "<li class='error'>\""+Userlist[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</li>\n");
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", Userlist[i].ruleObject.c_str());
 						break;
 					}
@@ -534,7 +533,7 @@ int main(int argc, char *argv[]) {
 						if (Userlist[i].ruleKey == ADD)
 							x--;
 						Modlist.insert(Modlist.begin()+index1,mod);
-						Output(bosslog, format, "<p class='warn'>\""+Userlist[i].lines[j].object+"\" is not installed, and is not in the masterlist. Rule skipped.</p>\n\n");
+						Output(bosslog, format, "<li class='warn'>\""+Userlist[i].lines[j].object+"\" is not installed, and is not in the masterlist. Rule skipped.</li>\n");
 						LOG_WARN(" * \"%s\" is not installed or in the masterlist.", Userlist[i].lines[j].object.c_str());
 						break;
 					}
@@ -543,7 +542,7 @@ int main(int argc, char *argv[]) {
 						if (Userlist[i].ruleKey == ADD)
 							x--;
 						Modlist.insert(Modlist.begin()+index1,mod);
-						Output(bosslog, format, "<p class='error'>\""+Userlist[i].lines[j].object+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</p>\n\n");
+						Output(bosslog, format, "<li class='error'>\""+Userlist[i].lines[j].object+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</li>\n");
 						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", Userlist[i].lines[j].object.c_str());
 						break;
 					}
@@ -551,7 +550,7 @@ int main(int argc, char *argv[]) {
 					if (Userlist[i].lines[j].key == AFTER) 
 						index2 += 1;
 					Modlist.insert(Modlist.begin()+index2,mod);
-					Output(bosslog, format, "<p class='success'>\""+Userlist[i].ruleObject+"\" has been sorted "+ KeyToString(Userlist[i].lines[j].key) + " \"" + Userlist[i].lines[j].object + "\".</p>\n\n");
+					Output(bosslog, format, "<li class='success'>\""+Userlist[i].ruleObject+"\" has been sorted "+ KeyToString(Userlist[i].lines[j].key) + " \"" + Userlist[i].lines[j].object + "\".</li>\n");
 				//A group sorting line.
 				} else if ((Userlist[i].lines[j].key == BEFORE || Userlist[i].lines[j].key == AFTER) && !IsPlugin(Userlist[i].lines[j].object)) {
 					vector<item> group;
@@ -561,7 +560,7 @@ int main(int argc, char *argv[]) {
 					index2 = GetGroupEndPos(Modlist, Userlist[i].ruleObject);
 					//Check to see group actually exists.
 					if (index1 == (size_t)-1 || index2 == (size_t)-1) {
-						Output(bosslog, format, "<p class='error'>The group \""+Userlist[i].ruleObject+"\" is not in the masterlist or is malformatted. Rule skipped.</p>\n\n");
+						Output(bosslog, format, "<li class='error'>The group \""+Userlist[i].ruleObject+"\" is not in the masterlist or is malformatted. Rule skipped.</p>\n");
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist[i].ruleObject.c_str());
 						break;
 					}
@@ -577,7 +576,7 @@ int main(int argc, char *argv[]) {
 					//Check that the sort group actually exists.
 					if (index2 == (size_t)-1) {
 						Modlist.insert(Modlist.begin()+index1,group.begin(),group.end());  //Insert the group back in its old position.
-						Output(bosslog, format, "<p class='error'>The group \""+Userlist[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</p>\n\n");
+						Output(bosslog, format, "<li class='error'>The group \""+Userlist[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</li>\n");
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist[i].lines[j].object.c_str());
 						break;
 					}
@@ -586,7 +585,7 @@ int main(int argc, char *argv[]) {
 					//Now insert the group.
 					Modlist.insert(Modlist.begin()+index2,group.begin(),group.end());
 					//Print success message.
-					Output(bosslog, format, "<p class='success'>The group \""+Userlist[i].ruleObject+"\" has been sorted "+ KeyToString(Userlist[i].lines[j].key) + " the group \""+Userlist[i].lines[j].object+"\".</p>\n\n");
+					Output(bosslog, format, "<li class='success'>The group \""+Userlist[i].ruleObject+"\" has been sorted "+ KeyToString(Userlist[i].lines[j].key) + " the group \""+Userlist[i].lines[j].object+"\".</li>\n");
 				//An insertion line.
 				} else if (Userlist[i].lines[j].key == TOP || Userlist[i].lines[j].key == BOTTOM) {
 					size_t index1,index2;
@@ -598,11 +597,11 @@ int main(int argc, char *argv[]) {
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (Userlist[i].ruleKey == ADD  && index1 <= x) {
-						Output(bosslog, format, "<p class='warn'>\""+Userlist[i].ruleObject+"\" is already in the masterlist. Rule skipped.</p>\n\n");
+						Output(bosslog, format, "<li class='warn'>\""+Userlist[i].ruleObject+"\" is already in the masterlist. Rule skipped.</li>\n");
 						LOG_WARN(" * \"%s\" is already in the masterlist.", Userlist[i].ruleObject.c_str());
 						break;
 					} else if (Userlist[i].ruleKey == OVERRIDE && index1 > x) {
-						Output(bosslog, format, "<p class='error'>\""+Userlist[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</p>\n\n");
+						Output(bosslog, format, "<li class='error'>\""+Userlist[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</li>\n");
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", Userlist[i].ruleObject.c_str());
 						break;
 					}
@@ -617,14 +616,14 @@ int main(int argc, char *argv[]) {
 					//Check that the sort group actually exists.
 					if (index2 == (size_t)-1) {
 						Modlist.insert(Modlist.begin()+index1,mod);  //Insert the mod back in its old position.
-						Output(bosslog, format, "<p class='error'>The group \""+Userlist[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</p>\n\n");
+						Output(bosslog, format, "<li class='error'>The group \""+Userlist[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</li>\n");
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist[i].lines[j].object.c_str());
 						break;
 					}
 					//Now insert the mod into the group.
 					Modlist.insert(Modlist.begin()+index2,mod);
 					//Print success message.
-					Output(bosslog, format, "<p class='success'>\""+Userlist[i].ruleObject+"\" inserted at the "+ KeyToString(Userlist[i].lines[j].key) + " of group \"" + Userlist[i].lines[j].object + "\".</p>\n\n");
+					Output(bosslog, format, "<li class='success'>\""+Userlist[i].ruleObject+"\" inserted at the "+ KeyToString(Userlist[i].lines[j].key) + " of group \"" + Userlist[i].lines[j].object + "\".</li>\n");
 				//A message line.
 				} else if (Userlist[i].lines[j].key == APPEND || Userlist[i].lines[j].key == REPLACE) {
 					size_t index, pos;
@@ -651,18 +650,18 @@ int main(int argc, char *argv[]) {
 					Modlist[index].messages.push_back(newMessage);
 
 					//Output confirmation.
-					Output(bosslog, format, "<p class='success'>\"<span style='color: grey;'>" + Userlist[i].lines[j].object + "</span>\"");
+					Output(bosslog, format, "<li class='success'>\"<span style='color: grey;'>" + Userlist[i].lines[j].object + "</span>\"");
 					if (Userlist[i].lines[j].key == APPEND)
 						Output(bosslog, format, " appended to ");
 					else
 						Output(bosslog, format, " replaced ");
-					Output(bosslog, format, "messages attached to \"" + Userlist[i].ruleObject + "\".</p>\n\n");
+					Output(bosslog, format, "messages attached to \"" + Userlist[i].ruleObject + "\".</li>\n");
 				}
 			}
 		}
 		if (Userlist.size() == 0) 
 			Output(bosslog, format, "No valid rules were found in your userlist.txt.");
-		Output(bosslog, format, "</div>\n</div>\n");
+		Output(bosslog, format, "</ul>\n</div>\n");
 		LOG_INFO("Userlist sorting process finished.");
 	}
 
@@ -689,14 +688,14 @@ int main(int argc, char *argv[]) {
 		if (!fs::exists(SELoc)) {
 			LOG_DEBUG("OBSE DLL not detected");
 		} else {
-			Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>" + SE + " And " + SE + " Plugin Checksums</span><ul>\n");
+			Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> " + SE + " And " + SE + " Plugin Checksums</span><ul>\n");
 
 			string CRC = IntToHexString(GetCrc32(SELoc));
 			string ver = GetExeDllVersion(SELoc);
-			string text = "<li><b>" + SE;
+			string text = "<li><span class='mod'>" + SE + "</span>";
 			if (ver.length() != 0)
-				text += " <span class='version'>[Version: " + ver + "]</span>";
-			text += "</b> - <i>Checksum: " + CRC + "</i><ul></ul></li>\n\n";
+				text += "<span class='version'>Version: " + ver + "</span>";
+			text += "<span class='crc'>Checksum: " + CRC + "</span></li>\n";
 			Output(bosslog, format, text);
 
 			if (!fs::is_directory(data_path / SEPluginLoc)) {
@@ -708,10 +707,10 @@ int main(int argc, char *argv[]) {
 					if (fs::is_regular_file(itr->status()) && ext==".dll") {
 						string CRC = IntToHexString(GetCrc32(itr->path()));
 						string ver = GetExeDllVersion(itr->path());
-						string text = "<li><b>" + filename.string();
+						string text = "<li><span class='mod'>" + filename.string() + "</span>";
 						if (ver.length() != 0)
-							text += " <span class='version'>[Version: " + ver + "]</span>";
-						text += "</b> - <i>Checksum: " + CRC + "</i><ul></ul></li>\n\n";
+							text += "<span class='version'>Version: " + ver + "</span>";
+						text += "<span class='crc'>Checksum: " + CRC + "</span></li>\n";
 						Output(bosslog, format, text);
 					}
 				}
@@ -726,9 +725,9 @@ int main(int argc, char *argv[]) {
 	////////////////////////////////
 
 	//Re-date .esp/.esm files according to order in modlist and output messages
-	if (revert<1) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>Recognised And Re-ordered Plugins</span><ul>\n");
-	else if (revert==1) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>Restored Load Order (Using modlist.txt)</span><ul>\n");
-	else if (revert==2) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>Restored Load Order (Using modlist.old)</span><ul>\n");
+	if (revert<1) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> Recognised And Re-ordered Plugins</span><ul>\n");
+	else if (revert==1) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> Restored Load Order (Using modlist.txt)</span><ul>\n");
+	else if (revert==2) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> Restored Load Order (Using modlist.old)</span><ul>\n");
 
 	int ghostedNo = 0;
 	int recModNo = 0;
@@ -738,19 +737,18 @@ int main(int argc, char *argv[]) {
 	for (size_t i=0; i<=x; i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			string text = "<li><b>" + TrimDotGhost(Modlist[i].name.string());
+			string text = "<li><span class='mod'>" + TrimDotGhost(Modlist[i].name.string()) + "</span>";
 			if (!skip_version_parse) {
 				string version = GetModHeader(Modlist[i].name);
 				if (!version.empty())
-					text += " <span class='version'>[Version "+version+"]</span>";
+					text += "<span class='version'>Version "+version+"</span>";
 			}
-			text += "</b>";
 			if (IsGhosted(data_path / Modlist[i].name)) {
-				text += " <span class='ghosted'> - Ghosted</span>";
+				text += "<span class='ghosted'>Ghosted</span>";
 				ghostedNo++;
 			}
 			if (showCRCs)
-				text += "<i> - Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</i>";
+				text += "<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
 			Output(bosslog, format, text); 
 				
 			//Now change the file's date, if it is not the game's master file.
@@ -782,18 +780,18 @@ int main(int argc, char *argv[]) {
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 	//Order their dates to be i days after the master esm to ensure they load last.
-	Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>Unrecognised Plugins</span><div><p>Reorder these by hand using your favourite mod ordering utility.</p>");
+	Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> Unrecognised Plugins</span><div>\n<p>Reorder these by hand using your favourite mod ordering utility.</p>\n");
 	LOG_INFO("Reporting unrecognized mods...");
 	for (size_t i=x+1; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			string text = "Unknown mod file: " + TrimDotGhost(Modlist[i].name.string());
+			string text = "<span class='mod'>" + TrimDotGhost(Modlist[i].name.string()) + "</span>";
 			if (IsGhosted(data_path / Modlist[i].name)) {
-				text += " <span class='ghosted'> - Ghosted</span>";
+				text += "<span class='ghosted'>Ghosted</span>";
 				ghostedNo++;
 			}
 			if (showCRCs)
-				text += "<i> - Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</i>";
+				text += "<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
 			Output(bosslog, format, text); 
 
 			modfiletime = esmtime + 86400 + (recModNo + unrecModNo)*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute and adding 86,400 on increases it by a day. Using unrecModNo instead of i to avoid increases for group entries.
@@ -814,12 +812,12 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Unrecognized mods reported.");
 
 	//Print out some numbers.
-	Output(bosslog, format, "<div><span onclick='toggleDisplay(event.target.nextSibling)'>Plugin Numbers</span><div><p>");
+	Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> Plugin Numbers</span><div>\n<p>\n");
 	Output(bosslog, format, "Number of recognised plugins: " + IntToString(recModNo) + "<br />\n");
 	Output(bosslog, format, "Number of unrecognised plugins: " + IntToString(unrecModNo) + "<br />\n");
 	Output(bosslog, format, "Number of ghosted plugins: " + IntToString(ghostedNo) + "<br />\n");
-	Output(bosslog, format, "Total number of plugins found: " + IntToString(recModNo+unrecModNo) + "<br />\n");
-	Output(bosslog, format, "</p></div>\n</div>\n");
+	Output(bosslog, format, "Total number of plugins: " + IntToString(recModNo+unrecModNo) + "<br />\n");
+	Output(bosslog, format, "</p>\n</div>\n</div>\n");
 	
 	//Let people know the program has stopped.
 	Output(bosslog, format, "<div><span>Execution Complete</span></div>\n</body>\n</html>");
