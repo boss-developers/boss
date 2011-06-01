@@ -1,4 +1,4 @@
-/*	Better Oblivion Sorting Software
+﻿/*	Better Oblivion Sorting Software
 	
 	Quick and Dirty Load Order Utility
 	(Making C++ look like the scripting language it isn't.)
@@ -91,17 +91,118 @@ namespace boss {
 				<< ".mod {font-style:italic;}"<<endl
 				<< ".tags {color:maroon;}"<<endl
 				<< ".dirty {color:#996600;}"<<endl
+				<< ".filters {border: 1px grey dashed; background: #F5F5F5; padding: 0.3em; display:table;}"<<endl
+				<< ".filters > li {display: inline-block; padding: 0.2em 1em 0.2em 1em; white-space: nowrap; margin:0;}"<<endl
 				<< "</style>"<<endl
 				<< "<script type='text/javascript'>"<<endl
 				<< "function toggleDisplay(element) {"<<endl
-				<< "\tif (element.nextSibling.style.display == 'block' || element.nextSibling.style.display == '') {"<<endl
-				<< "\t\telement.nextSibling.style.display = 'none';"<<endl
-				<< "\t\telement.firstChild.innerHTML = '+';"<<endl
-				<< "\t} else {"<<endl
-				<< "\t\telement.nextSibling.style.display = 'block';"<<endl
-				<< "\t\telement.firstChild.innerHTML = '&#x2212;';"<<endl
-				<< "\t}"<<endl
-				<< "\treturn;"<<endl
+				<< "	if (element.nextSibling.style.display == 'block' || element.nextSibling.style.display == '') {"<<endl
+				<< "		element.nextSibling.style.display = 'none';"<<endl
+				<< "		element.firstChild.innerHTML = '+';"<<endl
+				<< "	} else {"<<endl
+				<< "		element.nextSibling.style.display = 'block';"<<endl
+				<< "		element.firstChild.innerHTML = '&#x2212;';"<<endl
+				<< "	}"<<endl
+				<< "	return;"<<endl
+				<< "}"<<endl
+				<< "function toggleNoMessageMods() {"<<endl
+				<< "	var mods = document.getElementById('recognised').childNodes;"<<endl
+				<< "	for (i=0; i<mods.length; i++){ "<<endl
+				<< "		if (mods[i].nodeType == 1) {"<<endl
+				<< "			if (mods[i].getElementsByTagName('ul').length == 0) {"<<endl
+				<< "				if (mods[i].style.display == 'block' || mods[i].style.display == '') {"<<endl
+				<< "					mods[i].style.display = 'none';"<<endl
+				<< "				} else {"<<endl
+				<< "					mods[i].style.display = 'block';"<<endl
+				<< "				}"<<endl
+				<< "			}"<<endl
+				<< "		}"<<endl
+				<< "	}"<<endl
+				<< "	return;"<<endl
+				<< "}"<<endl
+				<< "function toggleGhostedMods(box) {"<<endl
+				<< "	var mods = document.getElementById('recognised').childNodes;"<<endl
+				<< "	for (i=0; i<mods.length; i++){ "<<endl
+				<< "		if (mods[i].nodeType == 1) {"<<endl
+				<< "			var childs = mods[i].getElementsByTagName('span');"<<endl
+				<< "			for (j=0; j<childs.length; j++){"<<endl
+				<< "				if (childs[j].className == 'ghosted') {"<<endl
+				<< "					if (box.checked == true) {"<<endl
+				<< "						mods[i].style.display = 'none';"<<endl
+				<< "					} else {"<<endl
+				<< "						mods[i].style.display = 'block';"<<endl
+				<< "					}"<<endl
+				<< "				}"<<endl
+				<< "			}"<<endl
+				<< "		}"<<endl
+				<< "	}"<<endl
+				<< "	return;"<<endl
+				<< "}"<<endl
+				<< "function toggleMessages(box) {"<<endl
+				<< "	var mods = document.getElementById('recognised').childNodes;"<<endl
+				<< "	for (i=0; i<mods.length; i++){ "<<endl
+				<< "		if (mods[i].nodeType == 1) {"<<endl
+				<< "			if (mods[i].getElementsByTagName('ul').length == 1) {"<<endl
+				<< "				var msgs = mods[i].getElementsByTagName('ul')[0];"<<endl
+				<< "				if (box.checked == true) {"<<endl
+				<< "					msgs.style.display = 'none';"<<endl
+				<< "				} else {"<<endl
+				<< "					msgs.style.display = 'block';"<<endl
+				<< "				}"<<endl
+				<< "			}"<<endl
+				<< "		}"<<endl
+				<< "	}"<<endl
+				<< "	return;"<<endl
+				<< "}"<<endl
+				<< "function toggleLabel(box, label) {"<<endl
+				<< "	var mods = document.getElementById('recognised').childNodes;"<<endl
+				<< "	for (i=0; i<mods.length; i++){ "<<endl
+				<< "		if (mods[i].nodeType == 1) {"<<endl
+				<< "			var childs = mods[i].getElementsByTagName('span');"<<endl
+				<< "			for (j=0; j<childs.length; j++){"<<endl
+				<< "				if (childs[j].className == label) {"<<endl
+				<< "					if (box.checked == true) {"<<endl
+				<< "						childs[j].style.display = 'none';"<<endl
+				<< "					} else {"<<endl
+				<< "						childs[j].style.display = 'inline';"<<endl
+				<< "					}"<<endl
+				<< "				}"<<endl
+				<< "			}"<<endl
+				<< "		}"<<endl
+				<< "	}"<<endl
+				<< "	if (document.getElementById('seplugins') != null) {"<<endl
+				<< "		mods = document.getElementById('seplugins').childNodes;"<<endl
+				<< "		for (i=0; i<mods.length; i++){ "<<endl
+				<< "			if (mods[i].nodeType == 1) {"<<endl
+				<< "				var childs = mods[i].getElementsByTagName('span');"<<endl
+				<< "				for (j=0; j<childs.length; j++){"<<endl
+				<< "					if (childs[j].className == label) {"<<endl
+				<< "						if (box.checked == true) {"<<endl
+				<< "							childs[j].style.display = 'none';"<<endl
+				<< "						} else {"<<endl
+				<< "							childs[j].style.display = 'inline';"<<endl
+				<< "						}"<<endl
+				<< "					}"<<endl
+				<< "				}"<<endl
+				<< "			}"<<endl
+				<< "		}"<<endl
+				<< "	}"<<endl
+				<< "	mods = document.getElementById('unrecognised').childNodes;"<<endl
+				<< "	for (i=1; i<mods.length; i++){ "<<endl
+				<< "		if (mods[i].nodeType == 1) {"<<endl
+				<< "			var childs = mods[i].getElementsByTagName('span');"<<endl
+				<< "			for (j=0; j<childs.length; j++){"<<endl
+				<< "				if (childs[j].className == label) {"<<endl
+				<< "					if (box.checked == true) {"<<endl
+				<< "						childs[j].style.display = 'none';"<<endl
+				<< "					} else {"<<endl
+				<< "						childs[j].style.display = 'inline';"<<endl
+				<< "					}"<<endl
+				<< "				}"<<endl
+				<< "			}"<<endl
+				<< "		}"<<endl
+				<< "	}"<<endl
+				<< "	return;"<<endl
 				<< "}"<<endl
 				<< "</script>"<<endl
 				<<"</head>"<<endl<<"<body>"<<endl;
@@ -131,8 +232,9 @@ namespace boss {
 			replace_first(text, "</body>\n</html>", "");
 			replace_first(text, "&copy;", "c");
 			replace_first(text, "&amp;", "&");
+			replace_first(text, "&#x2212;", "−");
 			
-			replace_first(text, "<ul>", "");
+			
 			replace_first(text, "</ul>", "");
 			replace_first(text, "<b>", "");
 			replace_first(text, "</b>", "");
@@ -149,9 +251,18 @@ namespace boss {
 			replace_first(text, " class='version'>", ">");
 			replace_first(text, " style='color: grey;'>", ">");
 			replace_first(text, " class='dirty'>", ">");
+			replace_first(text, " class='crc'>", ">");
+			replace_first(text, " class='mod'>", ">");
+			replace_first(text, " class='filters'>", ">");
+
+			replace_first(text, " onclick='toggleDisplay(event.currentTarget)'>", ">");
+			replace_first(text, " id='seplugins'>", ">");
+			replace_first(text, " id='recognised'>", ">");
+			replace_first(text, " id='unrecognised'>", ">");
 
 			replace_first(text, "<blockquote>", "\n\n");
 			replace_first(text, "</blockquote>", "\n\n");
+			replace_first(text, "<ul>", "");
 			replace_first(text, "<li>", "*  ");
 			replace_first(text, "</li>", "");
 			
