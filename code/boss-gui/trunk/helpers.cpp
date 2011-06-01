@@ -207,7 +207,7 @@ namespace boss {
 	}
 
 	//Checks if an update is available or not for the given item.
-	//Valid items are 'BOSS', 'BOSS-GUI' and 'masterlist'.
+	//Valid items are 'BOSS' and 'masterlist'.
 	string IsUpdateAvailable(string subject) {
 		int localVersion, remoteVersion;
 		string remoteVersionStr;
@@ -242,6 +242,7 @@ namespace boss {
 			else if (GetGame() == "Fallout 3") start = remoteVersionStr.find("boss-fallout");
 			else if (GetGame() == "Nehrim") start = remoteVersionStr.find("boss-nehrim");
 			else if (GetGame() == "Fallout: New Vegas") start = remoteVersionStr.find("boss-fallout-nv");
+			else throw update_error() << err_detail("No local masterlist found. Cannot determine which masterlist needs checking.");
 			if (start == string::npos)
 				throw update_error() << err_detail("Cannot find online masterlist revision number.");
 			start = remoteVersionStr.find("\"masterlist.txt\"", start);
@@ -273,7 +274,7 @@ namespace boss {
 			return remoteVersionStr;
 		} else {
 			//Get page containing version number.
-			curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/downloads/list");
+			curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-common/latestversion.txt");
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &remoteVersionStr );
 			ret = curl_easy_perform(curl);
@@ -281,22 +282,9 @@ namespace boss {
 				throw update_error() << err_detail(errbuff);
 
 			localVersion = GetBOSSVersion();
-			start = remoteVersionStr.find("BOSS v");
-			if (start == string::npos)
-				throw update_error() << err_detail("Cannot find online version number.");
-			start += 6;
-
-			//Extract revision number from page text.
-			end = remoteVersionStr.find(" ",start) - start;
-			if (end == string::npos) {
-				end = remoteVersionStr.find("</a>",start) - start;
-				if (end == string::npos)
-					throw update_error() << err_detail("Cannot find online version number.");
-			}
-			remoteVersionStr = remoteVersionStr.substr(start,end);
+			remoteVersion = versionStringToInt(remoteVersionStr);
 
 			//Now compare versions.
-			remoteVersion = versionStringToInt(remoteVersionStr);
 			if (remoteVersion > localVersion)
 				return remoteVersionStr;
 			else
