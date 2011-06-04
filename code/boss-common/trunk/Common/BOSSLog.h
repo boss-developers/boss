@@ -30,8 +30,11 @@ namespace boss {
 	//Prints ouptut with formatting according to format.
 	void Output(ofstream &log, string format, string text);
 
-	//Prints header if format is HTML, else nothing.
-	void OutputHeader(ofstream &log, string format);
+	//Prints HTML header.
+	void OutputHeader(ofstream &log);
+
+	//Prints Javascript for HTML BOSSlog.
+	void OutputJavascript(ofstream &log);
 
 	//Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 	string IntToString(unsigned int n);

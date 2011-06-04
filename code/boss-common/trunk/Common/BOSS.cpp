@@ -230,7 +230,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	
-	OutputHeader(bosslog,format);  //Output HTML start and <head>
+	if (format == "html") OutputHeader(bosslog);  //Output HTML start and <head>
 	//Output start of <body>
 	Output(bosslog,format, "<div>Better Oblivion Sorting Software Log</div>\n");
 	Output(bosslog,format, "<div>&copy; Random007 &amp; the BOSS development team, 2009-2011. Some rights reserved.<br />\n");
@@ -274,12 +274,18 @@ int main(int argc, char *argv[]) {
 	
 	if (format == "html") {
 		Output(bosslog, format, "<ul class='filters'>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='noMessageModFilter' onclick='toggleMods()' /> Hide message-less mods</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' /> Hide ghosted mods</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleMessages(event.currentTarget)' /> Hide mod messages</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleLabel(event.currentTarget,\"version\")' /> Hide version numbers</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleLabel(event.currentTarget,\"crc\")' /> Hide checksums</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleLabel(event.currentTarget,\"ghosted\")' /> Hide 'Ghosted' label</li>\n</ul>\n");
+		Output(bosslog, format, "<li><input type='checkbox' onclick='swapColorScheme(this)' />Use Dark Colour Scheme</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='noMessageModFilter' onclick='toggleMods()' />Hide message-less mods</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' />Hide ghosted mods</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' />Hide version numbers</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' />Hide 'Ghosted' label</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' />Hide checksums</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' />Hide mod messages</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\".note\",\"table\")' />Hide note messages</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' />Hide Bash Tag suggestions</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\".req\",\"table\")' />Hide requirement messages</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' />Hide incompatibility messages</li>\n");
+		Output(bosslog, format, "</ul>\n");
 	}
 
 	/////////////////////////////
@@ -287,7 +293,7 @@ int main(int argc, char *argv[]) {
 	/////////////////////////////
 
 	if (revert<1 && (update || updateonly)) {
-		Output(bosslog,format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>Masterlist Update</span><ul>\n");
+		Output(bosslog,format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Masterlist Update</span><ul>\n");
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		LOG_DEBUG("Updating masterlist...");
 		try {
@@ -310,7 +316,9 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (updateonly == true) {
-		Output(bosslog, format, "<div><span>BOSS Execution Complete</span></div>\n</body>\n</html>");
+		Output(bosslog, format, "<div><span>BOSS Execution Complete</span></div>\n</body>\n");
+		if (format == "html") OutputJavascript(bosslog);
+		Output(bosslog, format, "</html>");
 		bosslog.close();
 		if ( !silent ) 
 			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -328,7 +336,9 @@ int main(int argc, char *argv[]) {
 	} catch(fs::filesystem_error e) {
 		Output(bosslog,format, "<p class='error'>Critical Error: Master .ESM file cannot be read!<br />\n");
 		Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
-		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
+		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n");
+		if (format == "html") OutputJavascript(bosslog);
+		Output(bosslog, format, "</html>");
 		bosslog.close();
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.what());
 		if ( !silent ) 
@@ -349,7 +359,9 @@ int main(int argc, char *argv[]) {
 			string const * detail = boost::get_error_info<err_detail>(e);
 			Output(bosslog,format, "<p class='error'>Critical Error: " + *detail + ".<br />\n");
 			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
-			Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
+			Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n");
+			if (format == "html") OutputJavascript(bosslog);
+			Output(bosslog, format, "</html>");
 			bosslog.close();
 			if ( !silent ) 
 				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -370,7 +382,9 @@ int main(int argc, char *argv[]) {
 	if (!fs::exists(sortfile)) {                                                     
 		Output(bosslog,format, "<p class='error'>Critical Error: \"" +sortfile.string() +"\" cannot be read!<br />\n");
 		Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
-		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
+		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n");
+		if (format == "html") OutputJavascript(bosslog);
+		Output(bosslog, format, "</html>");
         bosslog.close();
         LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
         if ( !silent ) 
@@ -380,7 +394,9 @@ int main(int argc, char *argv[]) {
 	//Now validate file.
 	if (!ValidateUTF8File(sortfile)) {
 		Output(bosslog,format, "<p class='error'>Critical Error: \""+sortfile.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.<br />\n");
-		Output(bosslog, format, "Utility will end now.</p>\n\n</body>\n</html>");
+		Output(bosslog, format, "Utility will end now.</p>\n\n</body>\n");
+		if (format == "html") OutputJavascript(bosslog);
+		Output(bosslog, format, "</html>");
 		bosslog.close();
 		LOG_ERROR("File '%s' was not encoded in valid UTF-8.", sortfile.filename().string().c_str());
 		if ( !silent ) 
@@ -500,7 +516,7 @@ int main(int argc, char *argv[]) {
 	/////////////////////////////
 
 	if (globalMessageBuffer.size() > 0) {
-		Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>General Messages</span><ul>\n");
+		Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>General Messages</span><ul>\n");
 		for (size_t i=0; i<globalMessageBuffer.size(); i++) {
 			ShowMessage(bosslog, format, globalMessageBuffer[i]);  //Print messages.
 		}
@@ -513,7 +529,7 @@ int main(int argc, char *argv[]) {
 
 	//Apply userlist rules to modlist.
 	if (revert<1 && fs::exists(userlist_path)) {
-		Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>Userlist Messages</span><ul>\n");
+		Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Userlist Messages</span><ul>\n");
 
 		for (size_t i=0; i<errorMessageBuffer.size(); i++)  //First print parser/syntax error messages.
 			Output(bosslog,format,errorMessageBuffer[i]);
@@ -668,7 +684,7 @@ int main(int argc, char *argv[]) {
 					Modlist[index].messages.push_back(newMessage);
 
 					//Output confirmation.
-					Output(bosslog, format, "<li class='success'>\"<span style='color: grey;'>" + Userlist[i].lines[j].object + "</span>\"");
+					Output(bosslog, format, "<li class='success'>\"<span class='message'>" + Userlist[i].lines[j].object + "</span>\"");
 					if (Userlist[i].lines[j].key == APPEND)
 						Output(bosslog, format, " appended to ");
 					else
@@ -706,7 +722,7 @@ int main(int argc, char *argv[]) {
 		if (!fs::exists(SELoc)) {
 			LOG_DEBUG("OBSE DLL not detected");
 		} else {
-			Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>" + SE + " And " + SE + " Plugin Checksums</span><ul id='seplugins'>\n");
+			Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>" + SE + " And " + SE + " Plugin Checksums</span><ul id='seplugins'>\n");
 
 			string CRC = IntToHexString(GetCrc32(SELoc));
 			string ver = GetExeDllVersion(SELoc);
@@ -743,9 +759,9 @@ int main(int argc, char *argv[]) {
 	////////////////////////////////
 
 	//Re-date .esp/.esm files according to order in modlist and output messages
-	if (revert<1) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>Recognised And Re-ordered Plugins</span><ul id='recognised'>\n");
-	else if (revert==1) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>Restored Load Order (Using modlist.txt)</span><ul id='recognised'>\n");
-	else if (revert==2) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>Restored Load Order (Using modlist.old)</span><ul id='recognised'>\n");
+	if (revert<1) Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Recognised And Re-ordered Plugins</span><ul id='recognised'>\n");
+	else if (revert==1) Output(bosslog, format, "<div><span><span onclick='toggleSectionDisplay(this)'>&#x2212;</span>Restored Load Order (Using modlist.txt)</span><ul id='recognised'>\n");
+	else if (revert==2) Output(bosslog, format, "<div><span><span onclick='toggleSectionDisplay(this)'>&#x2212;</span>Restored Load Order (Using modlist.old)</span><ul id='recognised'>\n");
 
 	int ghostedNo = 0;
 	int recModNo = 0;
@@ -798,7 +814,7 @@ int main(int argc, char *argv[]) {
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 	//Order their dates to be i days after the master esm to ensure they load last.
-	Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>Unrecognised Plugins</span><div id='unrecognised'>\n<p>Reorder these by hand using your favourite mod ordering utility.</p>\n<ul>\n");
+	Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Unrecognised Plugins</span><div>\n<p>Reorder these by hand using your favourite mod ordering utility.</p>\n<ul id='unrecognised'>\n");
 	LOG_INFO("Reporting unrecognized mods...");
 	for (size_t i=x+1; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
@@ -830,7 +846,7 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Unrecognized mods reported.");
 
 	//Print out some numbers.
-	Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>Plugin Numbers</span><div>\n<p>\n");
+	Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Plugin Numbers</span><div>\n<p>\n");
 	Output(bosslog, format, "Number of recognised plugins: " + IntToString(recModNo) + "<br />\n");
 	Output(bosslog, format, "Number of unrecognised plugins: " + IntToString(unrecModNo) + "<br />\n");
 	Output(bosslog, format, "Number of ghosted plugins: " + IntToString(ghostedNo) + "<br />\n");
@@ -838,7 +854,9 @@ int main(int argc, char *argv[]) {
 	Output(bosslog, format, "</p>\n</div>\n</div>\n");
 	
 	//Let people know the program has stopped.
-	Output(bosslog, format, "<div><span>Execution Complete</span></div>\n</body>\n</html>");
+	Output(bosslog, format, "<div><span>Execution Complete</span></div>\n</body>\n");
+	if (format == "html") OutputJavascript(bosslog);
+	Output(bosslog, format, "</html>");
 	bosslog.close();
 	LOG_INFO("Launching boss log in browser.");
 	if ( !silent ) 

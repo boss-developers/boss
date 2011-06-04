@@ -37,16 +37,16 @@ namespace boss {
 		//Select message formatting.
 		switch(currentMessage.key) {
 		case TAG:
-			Output(log, format, "<li><span class='tags'>Bash Tag suggestion(s):</span> " + currentMessage.data + "</li>\n");
+			Output(log, format, "<li class='tag'><span class='tagPrefix'>Bash Tag suggestion(s):</span> " + currentMessage.data + "</li>\n");
 			break;
 		case SAY:
-			Output(log, format, "<li>Note: " + currentMessage.data + "</li>\n");
+			Output(log, format, "<li class='note'>Note: " + currentMessage.data + "</li>\n");
 			break;
 		case REQ:
-			Output(log, format, "<li>Requires: " + currentMessage.data + "</li>\n");
+			Output(log, format, "<li class='req'>Requires: " + currentMessage.data + "</li>\n");
 			break;
 		case INC:
-			Output(log, format, "<li>Incompatible with: " + currentMessage.data + "</li>\n");
+			Output(log, format, "<li class='inc'>Incompatible with: " + currentMessage.data + "</li>\n");
 			break;
 		case WARN:
 			Output(log, format, "<li class='warn'>Warning: " + currentMessage.data + "</li>\n");
@@ -58,148 +58,127 @@ namespace boss {
 			Output(log, format, "<li class='dirty'>Contains dirty edits: " + currentMessage.data + "</li>\n");
 			break;
 		default:
-			Output(log, format, "<li>Note: " + currentMessage.data + "</li>\n");
+			Output(log, format, "<li class='note'>Note: " + currentMessage.data + "</li>\n");
 			break;
 		}
 	}
 
 	//Prints header if format is HTML, else nothing.
-	void OutputHeader(ofstream &log, string format) {
-		if (format == "html") {
-			log << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
-				<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
-				<< "body {font-family:Calibri,Arial,sans-serifs;}"<<endl
-				<< "body > div:first-child {font-size:2.4em; font-weight:bold; text-align: center; margin-bottom:0.2em;}"<<endl
-				<< "body > div:first-child + div {text-align:center;}" <<endl
-				<< "body > div {margin-bottom: 4em;}"<<endl
-				<< "body > div > span:first-child {font-weight:bold; font-size:1.3em; cursor:pointer;}"<<endl
-				<< "body > div > span:first-child > span {display:inline-block; position:relative; top:0.05em; font-size:1.30em; width:0.6em;}"<<endl			
-				<< "div > ul {padding-left:0; margin-top: 1em;}"<<endl
-				<< "body > div:last-child {margin:0;}"<<endl
-				<< "body > div:last-child > span:first-child {cursor:default;}"<<endl
-				<< "div > ul > li {margin-left:0; margin-bottom:2em;}"<<endl
-				<< "ul {list-style:none;}"<<endl
-				<< "ul li {margin-bottom:0.4em;}"<<endl
-				<< "li ul {margin-top:0.4em;}"<<endl
-				<< "input[type='checkbox'] {position: relative; top:0.15em;}"<<endl
-				<< "blockquote {font-style:italic;}"<<endl
-				<< "#unrecognised > ul > li {margin-bottom: 1em;}"<<endl
-				<< ".error {background:red; color:white; display:table; padding: 0 4px 0 4px;}"<<endl
-				<< ".warn {background:orange; color:white; display:table; padding: 0 4px 0 4px;}"<<endl
-				<< ".success {color:green;}"<<endl
-				<< ".version {background: #6699FF; color: white; margin-left: 1.3em; padding:0 4px 0 4px;}"<<endl
-				<< ".ghosted {background:#AAAAAA; color:white; margin-left: 1.3em; padding:0 4px 0 4px;}"<<endl
-				<< ".crc {background:#CC9933; color:white; margin-left: 1.3em; padding:0 4px 0 4px;}"<<endl
-				<< ".mod {}"<<endl
-				<< ".tags {color:maroon;}"<<endl
-				<< ".dirty {color:#996600;}"<<endl
-				<< ".filters {border: 1px grey dashed; background: #F5F5F5; padding: 0.3em; display:table;}"<<endl
-				<< ".filters > li {display: inline-block; padding: 0.2em 1em 0.2em 1em; white-space: nowrap; margin:0;}"<<endl
-				<< "</style>"<<endl
-				<< "<script type='text/javascript'>"<<endl
-				<< "function toggleDisplay(element) {"<<endl
-				<< "	if (element.nextSibling.style.display == 'block' || element.nextSibling.style.display == '') {"<<endl
-				<< "		element.nextSibling.style.display = 'none';"<<endl
-				<< "		element.firstChild.innerHTML = '+';"<<endl
-				<< "	} else {"<<endl
-				<< "		element.nextSibling.style.display = 'block';"<<endl
-				<< "		element.firstChild.innerHTML = '&#x2212;';"<<endl
-				<< "	}"<<endl
-				<< "	return;"<<endl
-				<< "}"<<endl
-				<< "function toggleMods() {"<<endl
-				<< "	var hideNoMessageMods = document.getElementById('noMessageModFilter').checked;"<<endl
-				<< "	var hideGhostMods = document.getElementById('ghostModFilter').checked;"<<endl
-				<< "	var mods = document.getElementById('recognised').childNodes;"<<endl
-				<< "	for (i=0; i<mods.length; i++){ "<<endl
-				<< "		if (mods[i].nodeType == 1) {"<<endl
-				<< "			var ghosted = false;"<<endl
-				<< "			var childs = mods[i].getElementsByTagName('span');"<<endl
-				<< "			for (j=0; j<childs.length; j++){"<<endl
-				<< "				if (childs[j].className == 'ghosted') {"<<endl
-				<< "					ghosted = true;"<<endl
-				<< "				}"<<endl
-				<< "			}"<<endl
-				<< "			if (hideNoMessageMods && mods[i].getElementsByTagName('ul').length == 0) {"<<endl
-				<< "					mods[i].style.display = 'none';"<<endl
-				<< "			} else if (hideGhostMods && ghosted) {"<<endl
-				<< "					mods[i].style.display = 'none';"<<endl
-				<< "			} else {"<<endl
-				<< "				mods[i].style.display = 'block';"<<endl
-				<< "			}"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "	return;"<<endl
-				<< "}"<<endl
-				<< "function toggleMessages(box) {"<<endl
-				<< "	var mods = document.getElementById('recognised').childNodes;"<<endl
-				<< "	for (i=0; i<mods.length; i++){ "<<endl
-				<< "		if (mods[i].nodeType == 1) {"<<endl
-				<< "			if (mods[i].getElementsByTagName('ul').length == 1) {"<<endl
-				<< "				var msgs = mods[i].getElementsByTagName('ul')[0];"<<endl
-				<< "				if (box.checked == true) {"<<endl
-				<< "					msgs.style.display = 'none';"<<endl
-				<< "				} else {"<<endl
-				<< "					msgs.style.display = 'block';"<<endl
-				<< "				}"<<endl
-				<< "			}"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "	return;"<<endl
-				<< "}"<<endl
-				<< "function toggleLabel(box, label) {"<<endl
-				<< "	var mods = document.getElementById('recognised').childNodes;"<<endl
-				<< "	for (i=0; i<mods.length; i++){ "<<endl
-				<< "		if (mods[i].nodeType == 1) {"<<endl
-				<< "			var childs = mods[i].getElementsByTagName('span');"<<endl
-				<< "			for (j=0; j<childs.length; j++){"<<endl
-				<< "				if (childs[j].className == label) {"<<endl
-				<< "					if (box.checked == true) {"<<endl
-				<< "						childs[j].style.display = 'none';"<<endl
-				<< "					} else {"<<endl
-				<< "						childs[j].style.display = 'inline';"<<endl
-				<< "					}"<<endl
-				<< "				}"<<endl
-				<< "			}"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "	if (document.getElementById('seplugins') != null) {"<<endl
-				<< "		mods = document.getElementById('seplugins').childNodes;"<<endl
-				<< "		for (i=0; i<mods.length; i++){ "<<endl
-				<< "			if (mods[i].nodeType == 1) {"<<endl
-				<< "				var childs = mods[i].getElementsByTagName('span');"<<endl
-				<< "				for (j=0; j<childs.length; j++){"<<endl
-				<< "					if (childs[j].className == label) {"<<endl
-				<< "						if (box.checked == true) {"<<endl
-				<< "							childs[j].style.display = 'none';"<<endl
-				<< "						} else {"<<endl
-				<< "							childs[j].style.display = 'inline';"<<endl
-				<< "						}"<<endl
-				<< "					}"<<endl
-				<< "				}"<<endl
-				<< "			}"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "	mods = document.getElementById('unrecognised').childNodes;"<<endl
-				<< "	for (i=1; i<mods.length; i++){ "<<endl
-				<< "		if (mods[i].nodeType == 1) {"<<endl
-				<< "			var childs = mods[i].getElementsByTagName('span');"<<endl
-				<< "			for (j=0; j<childs.length; j++){"<<endl
-				<< "				if (childs[j].className == label) {"<<endl
-				<< "					if (box.checked == true) {"<<endl
-				<< "						childs[j].style.display = 'none';"<<endl
-				<< "					} else {"<<endl
-				<< "						childs[j].style.display = 'inline';"<<endl
-				<< "					}"<<endl
-				<< "				}"<<endl
-				<< "			}"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "	return;"<<endl
-				<< "}"<<endl
-				<< "</script>"<<endl
-				<<"</head>"<<endl<<"<body>"<<endl;
-		}
+	void OutputHeader(ofstream &log) {
+		log << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
+			<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
+			<< "body {font-family:Calibri,Arial,sans-serifs;}"<<endl
+			<< "body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:0.2em;}"<<endl
+			<< "body > div:first-child + div {text-align:center;}"<<endl
+			<< "body > div {margin-bottom:4em;}"<<endl
+			<< "body > div > span:first-child {font-weight:bold; font-size:1.3em; cursor:pointer;}"<<endl
+			<< "body > div > span:first-child > span {display:inline-block; position:relative; top:0.05em; font-size:1.30em; width:0.6em; margin-right:0.1em;}"<<endl			
+			<< "div > ul {padding-left:0; margin-top:1em;}"<<endl
+			<< "body > div:last-child {margin:0;}"<<endl
+			<< "body > div:last-child > span:first-child {cursor:default;}"<<endl
+			<< "div > ul > li {margin-left:0; margin-bottom:2em;}"<<endl
+			<< "ul {list-style:none;}"<<endl
+			<< "ul li {margin-bottom:0.4em;}"<<endl
+			<< "li ul {margin-top:0.4em;}"<<endl
+			<< "input[type='checkbox'] {position:relative; top:0.15em; margin-right:0.5em;}"<<endl
+			<< "blockquote {font-style:italic;}"<<endl
+			<< "#unrecognised > li {margin-bottom:1em;}"<<endl
+			<< ".error {background:red; color:white; display:table; padding:0 4px;}"<<endl
+			<< ".warn {background:orange; color:white; display:table; padding:0 4px;}"<<endl
+			<< ".success {color:green;}"<<endl
+			<< ".version {color:#6699FF; margin-left:1.3em; padding:0 4px;}"<<endl
+			<< ".ghosted {color:#AAAAAA; margin-left:1.3em; padding:0 4px;}"<<endl
+			<< ".crc {color:#CC9933; margin-left:1.3em; padding:0 4px;}"<<endl
+			<< ".tagPrefix {color:#CC6666;}"<<endl
+			<< ".dirty {color:#996600;}"<<endl
+			<< ".filters {border:1px grey dashed; background:#F5F5F5; padding:0.3em; display:table;}"<<endl
+			<< ".filters > li {display:inline-block; padding:0.2em 1em; white-space:nowrap; margin:0;}"<<endl
+			<< ".message {color:grey;}"<<endl
+			<< ".mod{} .tag{} .note{} .req{} .inc{}"<<endl
+			<< "</style></head><body>"<<endl;
+	}
+
+	void OutputJavascript(ofstream &log) {
+		log << "<script type='text/javascript'>"<<endl
+			<< "function toggleSectionDisplay(heading){"<<endl
+			<< "	if(heading.nextSibling.style.display=='block'||heading.nextSibling.style.display==''){"<<endl
+			<< "		heading.nextSibling.style.display='none';"<<endl
+			<< "		heading.firstChild.innerHTML='+';"<<endl
+			<< "	}else{"<<endl
+			<< "		heading.nextSibling.style.display='block';"<<endl
+			<< "		heading.firstChild.innerHTML='&#x2212;';"<<endl
+			<< "	}"<<endl
+			<< "	return;"<<endl
+			<< "}"<<endl
+			<< "function toggleMods(){"<<endl
+			<< "	var hideNoMessageMods=document.getElementById('noMessageModFilter').checked;"<<endl
+			<< "	var hideGhostMods=document.getElementById('ghostModFilter').checked;"<<endl
+			<< "	var mods=document.getElementById('recognised').childNodes;"<<endl
+			<< "	for(i=0;i<mods.length;i++){"<<endl
+			<< "		if(mods[i].nodeType==1){"<<endl
+			<< "			var ghosted=false;"<<endl
+			<< "			var childs=mods[i].getElementsByTagName('span');"<<endl
+			<< "			for(j=0;j<childs.length;j++){"<<endl
+			<< "				if(childs[j].className=='ghosted'){"<<endl
+			<< "					ghosted=true;"<<endl
+			<< "				}"<<endl
+			<< "			}"<<endl
+			<< "			if(hideNoMessageMods&&mods[i].getElementsByTagName('ul').length==0){"<<endl
+			<< "				mods[i].style.display='none';"<<endl
+			<< "			}else if(hideGhostMods&&ghosted){"<<endl
+			<< "				mods[i].style.display='none';"<<endl
+			<< "			}else{"<<endl
+			<< "				mods[i].style.display='block';"<<endl
+			<< "			}"<<endl
+			<< "		}"<<endl
+			<< "	}"<<endl
+			<< "	return;"<<endl
+			<< "}"<<endl
+			<< "function toggleDisplayCSS(box, selector, defaultDisplay){"<<endl
+			<< "	var theRules=new Array();"<<endl
+			<< "	if(document.styleSheets[0].cssRules){"<<endl
+			<< "		theRules=document.styleSheets[0].cssRules;"<<endl
+			<< "	}else if(document.styleSheets[0].rules){"<<endl
+			<< "		theRules=document.styleSheets[0].rules;"<<endl
+			<< "	}"<<endl
+			<< "	for(i=0;i<theRules.length;i++){"<<endl
+			<< "		if(theRules[i].selectorText.toLowerCase() == selector){"<<endl
+			<< "			if(box.checked){"<<endl
+			<< "				theRules[i].style.display='none';"<<endl
+			<< "			}else{"<<endl
+			<< "				theRules[i].style.display=defaultDisplay;"<<endl
+			<< "			}return;"<<endl
+			<< "		}"<<endl
+			<< "	}return;"<<endl
+			<< "}"<<endl
+			<< "function swapColorScheme(box) {"<<endl
+			<< "	var theRules=new Array();"<<endl
+			<< "	if(document.styleSheets[0].cssRules){"<<endl
+			<< "		theRules=document.styleSheets[0].cssRules;"<<endl
+			<< "	}else if(document.styleSheets[0].rules){"<<endl
+			<< "		theRules=document.styleSheets[0].rules;"<<endl
+			<< "	}"<<endl
+			<< "	for(i=0;i<theRules.length;i++){"<<endl
+			<< "		if(theRules[i].selectorText.toLowerCase() == 'body'){"<<endl
+			<< "			if(box.checked){"<<endl
+			<< "				theRules[i].style.color='white';"<<endl
+			<< "				theRules[i].style.background='black';"<<endl
+			<< "			}else{"<<endl
+			<< "				theRules[i].style.color='black';"<<endl
+			<< "				theRules[i].style.background='white';"<<endl
+			<< "			}"<<endl
+			<< "		}"<<endl
+			<< "		if(theRules[i].selectorText.toLowerCase() == '.filters'){"<<endl
+			<< "				if(box.checked){"<<endl
+			<< "					theRules[i].style.background='#333333';"<<endl
+			<< "				}else{"<<endl
+			<< "					theRules[i].style.background='#F5F5F5';"<<endl
+			<< "				}return;"<<endl
+			<< "			}"<<endl
+			<< "	}"<<endl
+			<< "	return;"<<endl
+			<< "}"<<endl
+			<< "</script>"<<endl;
 	}
 
 	//Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
@@ -242,13 +221,12 @@ namespace boss {
 			replace_first(text, " class='tags'>", ">");
 			replace_first(text, " class='ghosted'>", ">");
 			replace_first(text, " class='version'>", ">");
-			replace_first(text, " style='color: grey;'>", ">");
 			replace_first(text, " class='dirty'>", ">");
 			replace_first(text, " class='crc'>", ">");
 			replace_first(text, " class='mod'>", ">");
 			replace_first(text, " class='filters'>", ">");
 
-			replace_first(text, " onclick='toggleDisplay(event.currentTarget)'>", ">");
+			replace_first(text, " onclick='toggleDisplay(event.target)'>", ">");
 			replace_first(text, " id='seplugins'>", ">");
 			replace_first(text, " id='recognised'>", ">");
 			replace_first(text, " id='unrecognised'>", ">");
