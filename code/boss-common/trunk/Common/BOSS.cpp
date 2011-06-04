@@ -273,13 +273,13 @@ int main(int argc, char *argv[]) {
 	/////////////////////////////
 	
 	if (format == "html") {
-		Output(bosslog, format, "<ul class='filters'>");
-		Output(bosslog, format, "<li>Hide message-less mods: <input type='checkbox' onclick='toggleNoMessageMods(event.currentTarget)' /></li>");
-		Output(bosslog, format, "<li>Hide ghosted mods: <input type='checkbox' onclick='toggleGhostedMods(event.currentTarget)' /></li>");
-		Output(bosslog, format, "<li>Hide mod messages: <input type='checkbox' onclick='toggleMessages(event.currentTarget)' /></li>");
-		Output(bosslog, format, "<li>Hide version numbers: <input type='checkbox' onclick='toggleLabel(event.currentTarget,\"version\")' /></li>");
-		Output(bosslog, format, "<li>Hide checksums: <input type='checkbox' onclick='toggleLabel(event.currentTarget,\"crc\")' /></li>");
-		Output(bosslog, format, "<li>Hide 'Ghosted' label: <input type='checkbox' onclick='toggleLabel(event.currentTarget,\"ghosted\")' /></li></ul>");
+		Output(bosslog, format, "<ul class='filters'>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='noMessageModFilter' onclick='toggleMods()' /> Hide message-less mods</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' /> Hide ghosted mods</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleMessages(event.currentTarget)' /> Hide mod messages</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleLabel(event.currentTarget,\"version\")' /> Hide version numbers</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleLabel(event.currentTarget,\"crc\")' /> Hide checksums</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleLabel(event.currentTarget,\"ghosted\")' /> Hide 'Ghosted' label</li>\n</ul>\n");
 	}
 
 	/////////////////////////////
@@ -287,7 +287,7 @@ int main(int argc, char *argv[]) {
 	/////////////////////////////
 
 	if (revert<1 && (update || updateonly)) {
-		Output(bosslog,format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> Masterlist Update</span><ul>\n");
+		Output(bosslog,format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>Masterlist Update</span><ul>\n");
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		LOG_DEBUG("Updating masterlist...");
 		try {
@@ -500,7 +500,7 @@ int main(int argc, char *argv[]) {
 	/////////////////////////////
 
 	if (globalMessageBuffer.size() > 0) {
-		Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> General Messages</span><ul>\n");
+		Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>General Messages</span><ul>\n");
 		for (size_t i=0; i<globalMessageBuffer.size(); i++) {
 			ShowMessage(bosslog, format, globalMessageBuffer[i]);  //Print messages.
 		}
@@ -513,7 +513,7 @@ int main(int argc, char *argv[]) {
 
 	//Apply userlist rules to modlist.
 	if (revert<1 && fs::exists(userlist_path)) {
-		Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> Userlist Messages</span><ul>\n");
+		Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>Userlist Messages</span><ul>\n");
 
 		for (size_t i=0; i<errorMessageBuffer.size(); i++)  //First print parser/syntax error messages.
 			Output(bosslog,format,errorMessageBuffer[i]);
@@ -706,7 +706,7 @@ int main(int argc, char *argv[]) {
 		if (!fs::exists(SELoc)) {
 			LOG_DEBUG("OBSE DLL not detected");
 		} else {
-			Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> " + SE + " And " + SE + " Plugin Checksums</span><ul id='seplugins'>\n");
+			Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>" + SE + " And " + SE + " Plugin Checksums</span><ul id='seplugins'>\n");
 
 			string CRC = IntToHexString(GetCrc32(SELoc));
 			string ver = GetExeDllVersion(SELoc);
@@ -743,9 +743,9 @@ int main(int argc, char *argv[]) {
 	////////////////////////////////
 
 	//Re-date .esp/.esm files according to order in modlist and output messages
-	if (revert<1) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> Recognised And Re-ordered Plugins</span><ul id='recognised'>\n");
-	else if (revert==1) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> Restored Load Order (Using modlist.txt)</span><ul id='recognised'>\n");
-	else if (revert==2) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> Restored Load Order (Using modlist.old)</span><ul id='recognised'>\n");
+	if (revert<1) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>Recognised And Re-ordered Plugins</span><ul id='recognised'>\n");
+	else if (revert==1) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>Restored Load Order (Using modlist.txt)</span><ul id='recognised'>\n");
+	else if (revert==2) Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>Restored Load Order (Using modlist.old)</span><ul id='recognised'>\n");
 
 	int ghostedNo = 0;
 	int recModNo = 0;
@@ -798,12 +798,12 @@ int main(int argc, char *argv[]) {
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 	//Order their dates to be i days after the master esm to ensure they load last.
-	Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> Unrecognised Plugins</span><div id='unrecognised'>\n<p>Reorder these by hand using your favourite mod ordering utility.</p>\n");
+	Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>Unrecognised Plugins</span><div id='unrecognised'>\n<p>Reorder these by hand using your favourite mod ordering utility.</p>\n<ul>\n");
 	LOG_INFO("Reporting unrecognized mods...");
 	for (size_t i=x+1; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			string text = "<div><span class='mod'>" + TrimDotGhost(Modlist[i].name.string()) + "</span>";
+			string text = "<li><span class='mod'>" + TrimDotGhost(Modlist[i].name.string()) + "</span>";
 			if (IsGhosted(data_path / Modlist[i].name)) {
 				text += "<span class='ghosted'>Ghosted</span>";
 				ghostedNo++;
@@ -820,17 +820,17 @@ int main(int argc, char *argv[]) {
 			} catch(fs::filesystem_error e) {
 				Output(bosslog, format, " - <span class='error'>Error: Could not change the date of \"" + Modlist[i].name.string() + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>");
 			}
-			Output(bosslog, format, "</div>\n");
+			Output(bosslog, format, "</li>\n");
 			unrecModNo++;
 		}
 	}
 	if (unrecModNo == 0)
 		Output(bosslog, format, "<i>No unrecognised plugins.</i>");
-	Output(bosslog, format, "</div>\n</div>\n");
+	Output(bosslog, format, "</ul></div>\n</div>\n");
 	LOG_INFO("Unrecognized mods reported.");
 
 	//Print out some numbers.
-	Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span> Plugin Numbers</span><div>\n<p>\n");
+	Output(bosslog, format, "<div><span onclick='toggleDisplay(event.currentTarget)'><span>&#x2212;</span>Plugin Numbers</span><div>\n<p>\n");
 	Output(bosslog, format, "Number of recognised plugins: " + IntToString(recModNo) + "<br />\n");
 	Output(bosslog, format, "Number of unrecognised plugins: " + IntToString(unrecModNo) + "<br />\n");
 	Output(bosslog, format, "Number of ghosted plugins: " + IntToString(ghostedNo) + "<br />\n");

@@ -79,16 +79,18 @@ namespace boss {
 				<< "body > div:last-child > span:first-child {cursor:default;}"<<endl
 				<< "div > ul > li {margin-left:0; margin-bottom:2em;}"<<endl
 				<< "ul {list-style:none;}"<<endl
-				<< "ul li {margin-left:-1em; margin-bottom:0.4em;}"<<endl
+				<< "ul li {margin-bottom:0.4em;}"<<endl
 				<< "li ul {margin-top:0.4em;}"<<endl
+				<< "input[type='checkbox'] {position: relative; top:0.15em;}"<<endl
 				<< "blockquote {font-style:italic;}"<<endl
-				<< ".error {color:red;}"<<endl
+				<< "#unrecognised > ul > li {margin-bottom: 1em;}"<<endl
+				<< ".error {background:red; color:white; display:table; padding: 0 4px 0 4px;}"<<endl
+				<< ".warn {background:orange; color:white; display:table; padding: 0 4px 0 4px;}"<<endl
 				<< ".success {color:green;}"<<endl
-				<< ".warn {color:#FF6600;}"<<endl
-				<< ".version {background: #6699FF; color: white; margin-left: 15px; padding:0 4px 0 4px;}"<<endl
-				<< ".ghosted {background:#AAAAAA; color:white; margin-left: 15px; padding:0 4px 0 4px;}"<<endl
-				<< ".crc {background:#FFAA22; color:white; margin-left: 15px; padding:0 4px 0 4px;}"<<endl
-				<< ".mod {font-style:italic;}"<<endl
+				<< ".version {background: #6699FF; color: white; margin-left: 1.3em; padding:0 4px 0 4px;}"<<endl
+				<< ".ghosted {background:#AAAAAA; color:white; margin-left: 1.3em; padding:0 4px 0 4px;}"<<endl
+				<< ".crc {background:#CC9933; color:white; margin-left: 1.3em; padding:0 4px 0 4px;}"<<endl
+				<< ".mod {}"<<endl
 				<< ".tags {color:maroon;}"<<endl
 				<< ".dirty {color:#996600;}"<<endl
 				<< ".filters {border: 1px grey dashed; background: #F5F5F5; padding: 0.3em; display:table;}"<<endl
@@ -105,34 +107,25 @@ namespace boss {
 				<< "	}"<<endl
 				<< "	return;"<<endl
 				<< "}"<<endl
-				<< "function toggleNoMessageMods() {"<<endl
+				<< "function toggleMods() {"<<endl
+				<< "	var hideNoMessageMods = document.getElementById('noMessageModFilter').checked;"<<endl
+				<< "	var hideGhostMods = document.getElementById('ghostModFilter').checked;"<<endl
 				<< "	var mods = document.getElementById('recognised').childNodes;"<<endl
 				<< "	for (i=0; i<mods.length; i++){ "<<endl
 				<< "		if (mods[i].nodeType == 1) {"<<endl
-				<< "			if (mods[i].getElementsByTagName('ul').length == 0) {"<<endl
-				<< "				if (mods[i].style.display == 'block' || mods[i].style.display == '') {"<<endl
-				<< "					mods[i].style.display = 'none';"<<endl
-				<< "				} else {"<<endl
-				<< "					mods[i].style.display = 'block';"<<endl
-				<< "				}"<<endl
-				<< "			}"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "	return;"<<endl
-				<< "}"<<endl
-				<< "function toggleGhostedMods(box) {"<<endl
-				<< "	var mods = document.getElementById('recognised').childNodes;"<<endl
-				<< "	for (i=0; i<mods.length; i++){ "<<endl
-				<< "		if (mods[i].nodeType == 1) {"<<endl
+				<< "			var ghosted = false;"<<endl
 				<< "			var childs = mods[i].getElementsByTagName('span');"<<endl
 				<< "			for (j=0; j<childs.length; j++){"<<endl
 				<< "				if (childs[j].className == 'ghosted') {"<<endl
-				<< "					if (box.checked == true) {"<<endl
-				<< "						mods[i].style.display = 'none';"<<endl
-				<< "					} else {"<<endl
-				<< "						mods[i].style.display = 'block';"<<endl
-				<< "					}"<<endl
+				<< "					ghosted = true;"<<endl
 				<< "				}"<<endl
+				<< "			}"<<endl
+				<< "			if (hideNoMessageMods && mods[i].getElementsByTagName('ul').length == 0) {"<<endl
+				<< "					mods[i].style.display = 'none';"<<endl
+				<< "			} else if (hideGhostMods && ghosted) {"<<endl
+				<< "					mods[i].style.display = 'none';"<<endl
+				<< "			} else {"<<endl
+				<< "				mods[i].style.display = 'block';"<<endl
 				<< "			}"<<endl
 				<< "		}"<<endl
 				<< "	}"<<endl
