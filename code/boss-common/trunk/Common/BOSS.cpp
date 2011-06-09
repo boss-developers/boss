@@ -230,7 +230,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	
-	if (format == "html") OutputHeader(bosslog);  //Output HTML start and <head>
+	if (format == "html")
+		OutputHeader(bosslog);  //Output HTML start and <head>
 	//Output start of <body>
 	Output(bosslog,format, "<div>Better Oblivion Sorting Software Log</div>\n");
 	Output(bosslog,format, "<div>&copy; Random007 &amp; the BOSS development team, 2009-2011. Some rights reserved.<br />\n");
@@ -274,17 +275,17 @@ int main(int argc, char *argv[]) {
 	
 	if (format == "html") {
 		Output(bosslog, format, "<ul class='filters'>\n");
-		Output(bosslog, format, "<li><input type='checkbox' onclick='swapColorScheme(this)' />Use Dark Colour Scheme</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='noMessageModFilter' onclick='toggleMods()' />Hide message-less mods</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' />Hide ghosted mods</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' />Hide version numbers</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' />Hide 'Ghosted' label</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' />Hide checksums</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' />Hide mod messages</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\".note\",\"table\")' />Hide note messages</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' />Hide Bash Tag suggestions</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\".req\",\"table\")' />Hide requirement messages</li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' />Hide incompatibility messages</li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label></li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label></li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label></li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label></li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label></li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label></li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label></li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label></li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label></li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label></li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label></li>\n");
 		Output(bosslog, format, "</ul>\n");
 	}
 
@@ -317,7 +318,6 @@ int main(int argc, char *argv[]) {
 
 	if (updateonly == true) {
 		Output(bosslog, format, "<div><span>BOSS Execution Complete</span></div>\n</body>\n");
-		if (format == "html") OutputJavascript(bosslog);
 		Output(bosslog, format, "</html>");
 		bosslog.close();
 		if ( !silent ) 
@@ -337,7 +337,6 @@ int main(int argc, char *argv[]) {
 		Output(bosslog,format, "<p class='error'>Critical Error: Master .ESM file cannot be read!<br />\n");
 		Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
 		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n");
-		if (format == "html") OutputJavascript(bosslog);
 		Output(bosslog, format, "</html>");
 		bosslog.close();
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.what());
@@ -360,7 +359,6 @@ int main(int argc, char *argv[]) {
 			Output(bosslog,format, "<p class='error'>Critical Error: " + *detail + ".<br />\n");
 			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
 			Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n");
-			if (format == "html") OutputJavascript(bosslog);
 			Output(bosslog, format, "</html>");
 			bosslog.close();
 			if ( !silent ) 
@@ -383,7 +381,6 @@ int main(int argc, char *argv[]) {
 		Output(bosslog,format, "<p class='error'>Critical Error: \"" +sortfile.string() +"\" cannot be read!<br />\n");
 		Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
 		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n");
-		if (format == "html") OutputJavascript(bosslog);
 		Output(bosslog, format, "</html>");
         bosslog.close();
         LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
@@ -395,7 +392,6 @@ int main(int argc, char *argv[]) {
 	if (!ValidateUTF8File(sortfile)) {
 		Output(bosslog,format, "<p class='error'>Critical Error: \""+sortfile.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.<br />\n");
 		Output(bosslog, format, "Utility will end now.</p>\n\n</body>\n");
-		if (format == "html") OutputJavascript(bosslog);
 		Output(bosslog, format, "</html>");
 		bosslog.close();
 		LOG_ERROR("File '%s' was not encoded in valid UTF-8.", sortfile.filename().string().c_str());
@@ -820,6 +816,11 @@ int main(int argc, char *argv[]) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
 			string text = "<li><span class='mod'>" + TrimDotGhost(Modlist[i].name.string()) + "</span>";
+			if (!skip_version_parse) {
+				string version = GetModHeader(Modlist[i].name);
+				if (!version.empty())
+					text += "<span class='version'>Version "+version+"</span>";
+			}
 			if (IsGhosted(data_path / Modlist[i].name)) {
 				text += "<span class='ghosted'>Ghosted</span>";
 				ghostedNo++;
@@ -855,7 +856,6 @@ int main(int argc, char *argv[]) {
 	
 	//Let people know the program has stopped.
 	Output(bosslog, format, "<div><span>Execution Complete</span></div>\n</body>\n");
-	if (format == "html") OutputJavascript(bosslog);
 	Output(bosslog, format, "</html>");
 	bosslog.close();
 	LOG_INFO("Launching boss log in browser.");

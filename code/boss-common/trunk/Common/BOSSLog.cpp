@@ -68,6 +68,8 @@ namespace boss {
 		log << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
 			<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
 			<< "body {font-family:Calibri,Arial,sans-serifs;}"<<endl
+			<< ".filters {border:1px grey dashed; background:#F5F5F5; padding:0.3em; display:table;}"<<endl
+			<< ".filters > li {display:inline-block; padding:0.2em 1em; white-space:nowrap; margin:0;}"<<endl
 			<< "body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:0.2em;}"<<endl
 			<< "body > div:first-child + div {text-align:center;}"<<endl
 			<< "body > div {margin-bottom:4em;}"<<endl
@@ -86,27 +88,24 @@ namespace boss {
 			<< ".error {background:red; color:white; display:table; padding:0 4px;}"<<endl
 			<< ".warn {background:orange; color:white; display:table; padding:0 4px;}"<<endl
 			<< ".success {color:green;}"<<endl
-			<< ".version {color:#6699FF; margin-left:1.3em; padding:0 4px;}"<<endl
-			<< ".ghosted {color:#AAAAAA; margin-left:1.3em; padding:0 4px;}"<<endl
-			<< ".crc {color:#CC9933; margin-left:1.3em; padding:0 4px;}"<<endl
-			<< ".tagPrefix {color:#CC6666;}"<<endl
+			<< ".version {color:#6394F8; margin-left:1.3em; padding:0 4px;}"<<endl
+			<< ".ghosted {color:#888888; margin-left:1.3em; padding:0 4px;}"<<endl
+			<< ".crc {color:#BC8923; margin-left:1.3em; padding:0 4px;}"<<endl
+			<< ".tagPrefix {color:#CD5555;}"<<endl
 			<< ".dirty {color:#996600;}"<<endl
-			<< ".filters {border:1px grey dashed; background:#F5F5F5; padding:0.3em; display:table;}"<<endl
-			<< ".filters > li {display:inline-block; padding:0.2em 1em; white-space:nowrap; margin:0;}"<<endl
 			<< ".message {color:grey;}"<<endl
 			<< ".mod{} .tag{} .note{} .req{} .inc{}"<<endl
-			<< "</style></head><body>"<<endl;
-	}
-
-	void OutputJavascript(ofstream &log) {
-		log << "<script type='text/javascript'>"<<endl
+			<< "</style>"<<endl
+			<< "<script type='text/javascript'>"<<endl
 			<< "function toggleSectionDisplay(heading){"<<endl
 			<< "	if(heading.nextSibling.style.display=='block'||heading.nextSibling.style.display==''){"<<endl
 			<< "		heading.nextSibling.style.display='none';"<<endl
 			<< "		heading.firstChild.innerHTML='+';"<<endl
+			<< "		heading.parentNode.style.marginBottom = '1em';"<<endl
 			<< "	}else{"<<endl
 			<< "		heading.nextSibling.style.display='block';"<<endl
 			<< "		heading.firstChild.innerHTML='&#x2212;';"<<endl
+			<< "		heading.parentNode.style.marginBottom = '4em';"<<endl
 			<< "	}"<<endl
 			<< "	return;"<<endl
 			<< "}"<<endl
@@ -117,13 +116,39 @@ namespace boss {
 			<< "	for(i=0;i<mods.length;i++){"<<endl
 			<< "		if(mods[i].nodeType==1){"<<endl
 			<< "			var ghosted=false;"<<endl
+			<< "			var noMods=false;"<<endl
 			<< "			var childs=mods[i].getElementsByTagName('span');"<<endl
 			<< "			for(j=0;j<childs.length;j++){"<<endl
 			<< "				if(childs[j].className=='ghosted'){"<<endl
 			<< "					ghosted=true;"<<endl
+			<< "					break;"<<endl
 			<< "				}"<<endl
 			<< "			}"<<endl
-			<< "			if(hideNoMessageMods&&mods[i].getElementsByTagName('ul').length==0){"<<endl
+			<< "			if (!mods[i].getElementsByTagName('li')[0]){"<<endl
+			<< "				noMods=true;"<<endl
+			<< "			}else{"<<endl
+	/**/		<< "				noMods=true;"<<endl
+			<< "				childs=mods[i].getElementsByTagName('li');"<<endl
+			<< "				for(j=0;j<childs.length;j++){"<<endl
+			<< "					var childDisplay, parentDisplay;"<<endl
+			<< "					if(window.getComputedStyle){"<<endl
+			<< "						parentDisplay=window.getComputedStyle(childs[j].parentNode, null).getPropertyValue('display');"<<endl
+			<< "						childDisplay=window.getComputedStyle(childs[j], null).getPropertyValue('display');"<<endl
+			<< "					}else if(childs[j].currentStyle){"<<endl
+			<< "						parentDisplay=childs[j].parentNode.currentStyle.display;"<<endl
+			<< "						childDisplay=childs[j].currentStyle.display;"<<endl
+			<< "					}"<<endl
+			<< "					if(parentDisplay=='none') {"<<endl
+			<< "							break;"<<endl
+			<< "					}else{"<<endl
+			<< "						if(childDisplay!='none') {"<<endl
+			<< "							noMods=false;"<<endl
+			<< "							break;"<<endl
+			<< "						}"<<endl
+			<< "					}"<<endl
+			<< "				}"<<endl
+	/**/		<< "			}"<<endl
+			<< "			if(hideNoMessageMods&&noMods){"<<endl
 			<< "				mods[i].style.display='none';"<<endl
 			<< "			}else if(hideGhostMods&&ghosted){"<<endl
 			<< "				mods[i].style.display='none';"<<endl
@@ -169,16 +194,17 @@ namespace boss {
 			<< "			}"<<endl
 			<< "		}"<<endl
 			<< "		if(theRules[i].selectorText.toLowerCase() == '.filters'){"<<endl
-			<< "				if(box.checked){"<<endl
-			<< "					theRules[i].style.background='#333333';"<<endl
-			<< "				}else{"<<endl
-			<< "					theRules[i].style.background='#F5F5F5';"<<endl
-			<< "				}return;"<<endl
-			<< "			}"<<endl
+			<< "			if(box.checked){"<<endl
+			<< "				theRules[i].style.background='#333333';"<<endl
+			<< "			}else{"<<endl
+			<< "				theRules[i].style.background='#F5F5F5';"<<endl
+			<< "			}return;"<<endl
+			<< "		}"<<endl
 			<< "	}"<<endl
 			<< "	return;"<<endl
 			<< "}"<<endl
-			<< "</script>"<<endl;
+			<< "</script>"<<endl
+			<< "</head><body>"<<endl;
 	}
 
 	//Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...

@@ -89,38 +89,41 @@
 		<li>Check for updates to BOSS and your masterlist.</li>
 	</ul>
 	<p>The GUI is also aware of what version of BOSS you are running, and will disable (grey out) any options that are not supported by the version of BOSS you have installed in order to minimise confusion. All the GUI's options should be self-explanatory, 
-	but if you have issues understanding what they do, each setting has a corresponding command line parameter, which all have detailed descriptions in the <a href="#details">Further Details</a> section below.</p><br />
+	but if you have issues understanding what they do, each setting has a corresponding command line parameter, which all have detailed descriptions in the <a href="#details">Further Details</a> section below.</p>
+	<p>Note that the BOSSlog format selection applies to both the format of the BOSSlog that will be generated when BOSS is run and the format that the GUI will try to open when you select "View BOSSlog".</p><br />
 	
 	<span class="subtitle">The BOSS Log</span>
-	<p>Note: The BOSSlog is best viewed in Mozilla Firefox, Google Chrome, Opera or any derivatives of those browsers. Internet Explorer's lack of standards compliance means that some parts of the BOSSlog may not work or display correctly.</p>
-	<p>The BOSSlog is where you will find all of BOSS's outputted information. It comprises of a number of sections, them being:</p>
+	<p>The BOSSlog is where you will find all of BOSS's outputted information. It can be generated in either HTML format (the default) or as a plain text file with minimal formatting. The HTML format has significant advantages over the plain text format, being considerably easier to read, containing colour-coded messages and a variety of filters to customise what is displayed. Both formats, however, contain the same information.</p>
+	<p>The HTML BOSSlog has been tested in Mozilla Firefox 4, Google Chrome 11, Opera 11 and Internet Explorer 9. Using earlier browsers may result in parts of the BOSSlog not working or displaying correctly.</p>
+	<p>The BOSSlog comprises of a number of sections, them being:</p>
 	<ol>
 		<li><i>Masterlist Update</i>: This section is only displayed if you have run BOSS with the "Update Masterlist" or "Update Masterlist Only" options enabled, and details the success or failure of the update.</li>
 		<li><i>General Messages</i>: This section is only displayed if there are any applicable messages to be displayed. Its primary purpose is to allow BOSS to display messages specific to your Oblivion install that are not specific to any one mod, for example if an update to BOSS or OBSE is available.</li>
-		<li><i>Userlist Messages</i>: This section is only displayed if BOSS finds a userlist.txt in your BOSS folder. In this section the successes or failures of any rules in your userlist will be detailed.</li>
+		<li><i>Userlist Messages</i>: This section is only displayed if BOSS finds a userlist.txt in your BOSS folder. In this section the successes or failures of the application of your userlist rules will be detailed.</li>
 		<li><i>Script Extender And Script Extender Plugins Checksums</i>: This section is displayed when BOSS is run with the "Enable File CRC Display" option enabled and you have your game's Script Extender installed. It will list the Script Extender and any plugins you have installed, displaying their versions if given and their CRCs.</li>
-		<li><i>Recognised And Re-ordered Plugins</i> or <i>Restored Load Order</i>: This section comprises the bulk of BOSS's output, listing all your recognised installed plugins and any messages BOSS has attached to them.</li>
+		<li><i>Recognised And Re-ordered Plugins</i> or <i>Restored Load Order</i>: This section comprises the bulk of BOSS's output, listing all your recognised installed plugins and any messages BOSS has attached to them, as well as version information (if given) and the plugin CRCs (if run with "Enable File CRC Display" enabled). When BOSS is run to undo its changes, this section will list your restored load order.</li>
 		<li><i>Unrecognised Plugins</i>: This section lists any plugins you have installed that have not been recognised by BOSS. These plugins should be reported in an official BOSS thread with download links to their mods so they can be added to the masterlist.</li>
 		<li><i>Plugin Numbers</i>: This small section gives a few numbers relating to the mods you have installed.</li>
 	</ol>
+	<p>BOSS will display the version numbers of any plugins that provide version information in their description fields. If a plugin does not supply any version information, no version number will be displayed for it. The version number of plugins may occasionally not match the version of the mod installed, this is due to the mod author forgetting to update the plugin's version information. When in doubt, check the version number given in a mod's readme.</p>
 	<p>It should be noted that the vast majority of BOSS's mod messages are non-conditional, in that they are not displayed in response to your specific install. For example, a message that gives some of the mod's incompatibilities does not know if you have them installed or not, and a message telling you to do something will not know if it has been done.</p>
 	<p>BOSS's mod messages are the second most important function BOSS provides, acting as a means of providing users with information that they might otherwise not obtain. It is important for a stable, healthy game that you act on any messages that require action. If you think a message suggests an action that is not necessary, report it to an official BOSS thread.</p>
-	<p>The BOSSlog also includes a few features and a number of filters to customise what is displayed. The majority of these are found in the shaded box near the top of the BOSSlog, and are enabled and disabled via their checkboxes:</p>
+	<p>The HTML BOSSlog includes a few features and a number of filters to customise what is displayed. The majority of these are found in the shaded box near the top of the BOSSlog, and are enabled and disabled via their checkboxes:</p>
 	<ul>
 		<li><i>Collapsible Sections</i>: This does not have a checkbox. Instead, clicking on a section's header will collapse that section, hiding its contents. Clicking the header again will expand the section, making its contents visible again.</li>
-		<li><i>Use Dark Colour Scheme</i>: This will change the BOSSlog's colour scheme to a darker variety, more suitable for reading in low light levels and putting less strain on the eyes.</li>
-		<li><i>Hide message-less mods</i>: This will hide any recognised mods that do not have messages attached to them.</li>
-		<li><i>Hide ghosted mods</i>: This will hide any mods that have been ghosted by Wrye Bash.</li>
-		<li><i>Hide version numbers</i>: This will hide the version numbers printed in blue next to those recognised mods that provide them.</li>
-		<li><i>Hide 'Ghosted' label</i>: This will hide the 'Ghosted' printed in grey next to any mods ghosted by Wrye Bash.</li>
-		<li><i>Hide checksums</i>: This will hide the checksums of mods and Script Extender plugins printed in brown next to their names.</li>
-		<li><i>Hide mod messages</i>: This hides all the messages attached to all recognised mods.</li>
-		<li><i>Hide note messages</i>: This hides any messages attached to mods that have the "Note: " prefix.</li>
-		<li><i>Hide Bash Tag suggestions</i>: This hides any Bash Tag suggestions attached to mods.</li>
-		<li><i>Hide requirement messages</i>: This hides any messages attached to mods that have the "Requires: " prefix.</li>
-		<li><i>Hide incompatibility messages</i>: This hides any messages attached to mods that have the "Incompatible with: " prefix.</li>
+		<li><i>Use Dark Colour Scheme</i>: This will change the BOSSlog's colour scheme to a darker variety, more suitable for reading in low light levels and putting less strain on the eyes. Users with vision impairments may find the darker colour scheme easier to read.</li>
+		<li><i>Hide Version Numbers</i>: This will hide the version numbers printed in blue next to those mods that provide them.</li>
+		<li><i>Hide 'Ghosted' Label</i>: This will hide the 'Ghosted' printed in grey next to any mods ghosted by Wrye Bash.</li>
+		<li><i>Hide Checksums</i>: This will hide the checksums of mods and Script Extender plugins printed in brown next to their names.</li>
+		<li><i>Hide Messageless Mods</i>: This will hide any recognised mods that do not have messages attached to them.</li>
+		<li><i>Hide Ghosted Mods</i>: This will hide any mods that have been ghosted by Wrye Bash.</li>
+		<li><i>Hide All Mod Nessages</i>: This hides all the messages attached to all recognised mods.</li>
+		<li><i>Hide Notes</i>: This hides any messages attached to mods that have the "Note: " prefix.</li>
+		<li><i>Hide Bash Tag Suggestions</i>: This hides any Bash Tag suggestions attached to mods.</li>
+		<li><i>Hide Requirements</i>: This hides any messages attached to mods that have the "Requires: " prefix.</li>
+		<li><i>Hide Incompatibilities</i>: This hides any messages attached to mods that have the "Incompatible with: " prefix.</li>
 	</ul>
-	<p>It is not possible to hide warning or error messages, as these are of a severity where they should almost certainly be acted upon, and not ignored.</p>
+	<p>It is not possible to hide warning or error messages, as these are of a severity where they should almost certainly be acted upon, and not ignored. If you hide all a mod's messages using the filters and then enable the "Hide message-less mods" filter, that mod will not be hidden, as it still has messages even if they are not currently visible.</p>
 	</p><br />
 	
 	
