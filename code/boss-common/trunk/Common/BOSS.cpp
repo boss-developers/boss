@@ -33,7 +33,7 @@ using boost::algorithm::trim_copy;
 
 
 const string g_version     = "1.7";
-const string g_releaseDate = "May 30, 2011";
+const string g_releaseDate = "June 10, 2011";
 
 
 void ShowVersion() {
@@ -317,8 +317,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (updateonly == true) {
-		Output(bosslog, format, "<div><span>BOSS Execution Complete</span></div>\n</body>\n");
-		Output(bosslog, format, "</html>");
+		Output(bosslog, format, "<div><span>BOSS Execution Complete</span></div>\n</body>\n</html>");
 		bosslog.close();
 		if ( !silent ) 
 			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -336,8 +335,7 @@ int main(int argc, char *argv[]) {
 	} catch(fs::filesystem_error e) {
 		Output(bosslog,format, "<p class='error'>Critical Error: Master .ESM file cannot be read!<br />\n");
 		Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
-		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n");
-		Output(bosslog, format, "</html>");
+		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
 		bosslog.close();
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.what());
 		if ( !silent ) 
@@ -358,8 +356,7 @@ int main(int argc, char *argv[]) {
 			string const * detail = boost::get_error_info<err_detail>(e);
 			Output(bosslog,format, "<p class='error'>Critical Error: " + *detail + ".<br />\n");
 			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
-			Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n");
-			Output(bosslog, format, "</html>");
+			Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
 			bosslog.close();
 			if ( !silent ) 
 				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -380,8 +377,7 @@ int main(int argc, char *argv[]) {
 	if (!fs::exists(sortfile)) {                                                     
 		Output(bosslog,format, "<p class='error'>Critical Error: \"" +sortfile.string() +"\" cannot be read!<br />\n");
 		Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
-		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n");
-		Output(bosslog, format, "</html>");
+		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
         bosslog.close();
         LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
         if ( !silent ) 
@@ -391,8 +387,7 @@ int main(int argc, char *argv[]) {
 	//Now validate file.
 	if (!ValidateUTF8File(sortfile)) {
 		Output(bosslog,format, "<p class='error'>Critical Error: \""+sortfile.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.<br />\n");
-		Output(bosslog, format, "Utility will end now.</p>\n\n</body>\n");
-		Output(bosslog, format, "</html>");
+		Output(bosslog, format, "Utility will end now.</p>\n\n</body>\n</html>");
 		bosslog.close();
 		LOG_ERROR("File '%s' was not encoded in valid UTF-8.", sortfile.filename().string().c_str());
 		if ( !silent ) 
@@ -855,8 +850,7 @@ int main(int argc, char *argv[]) {
 	Output(bosslog, format, "</p>\n</div>\n</div>\n");
 	
 	//Let people know the program has stopped.
-	Output(bosslog, format, "<div><span>Execution Complete</span></div>\n</body>\n");
-	Output(bosslog, format, "</html>");
+	Output(bosslog, format, "<div><span>Execution Complete</span></div>\n</body>\n</html>");
 	bosslog.close();
 	LOG_INFO("Launching boss log in browser.");
 	if ( !silent ) 

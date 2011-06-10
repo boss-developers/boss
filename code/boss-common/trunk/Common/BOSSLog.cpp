@@ -127,7 +127,7 @@ namespace boss {
 			<< "			if (!mods[i].getElementsByTagName('li')[0]){"<<endl
 			<< "				noMods=true;"<<endl
 			<< "			}else{"<<endl
-	/**/		<< "				noMods=true;"<<endl
+			<< "				noMods=true;"<<endl
 			<< "				childs=mods[i].getElementsByTagName('li');"<<endl
 			<< "				for(j=0;j<childs.length;j++){"<<endl
 			<< "					var childDisplay, parentDisplay;"<<endl
@@ -147,7 +147,7 @@ namespace boss {
 			<< "						}"<<endl
 			<< "					}"<<endl
 			<< "				}"<<endl
-	/**/		<< "			}"<<endl
+			<< "			}"<<endl
 			<< "			if(hideNoMessageMods&&noMods){"<<endl
 			<< "				mods[i].style.display='none';"<<endl
 			<< "			}else if(hideGhostMods&&ghosted){"<<endl
@@ -230,7 +230,7 @@ namespace boss {
 			replace_first(text, "</body>\n</html>", "");
 			replace_first(text, "&copy;", "c");
 			replace_first(text, "&amp;", "&");
-			replace_first(text, "&#x2212;", "−");
+			replace_first(text, "&#x2212;", "");
 			
 			
 			replace_first(text, "</ul>", "");
@@ -244,15 +244,18 @@ namespace boss {
 			replace_first(text, " class='warn'>", ">");
 			replace_all(text, " class='error'>", ">");
 			replace_first(text, " class='success'>", ">");
-			replace_first(text, " class='tags'>", ">");
-			replace_first(text, " class='ghosted'>", ">");
-			replace_first(text, " class='version'>", ">");
+			replace_first(text, " class='tag'>", ">");
+			replace_first(text, " class='ghosted'>", ">  ");
+			replace_first(text, " class='version'>", ">  ");
 			replace_first(text, " class='dirty'>", ">");
-			replace_first(text, " class='crc'>", ">");
-			replace_first(text, " class='mod'>", ">");
-			replace_first(text, " class='filters'>", ">");
+			replace_first(text, " class='crc'>", ">  ");
+			replace_first(text, " class='note'>", ">");
+			replace_first(text, " class='req'>", ">");
+			replace_first(text, " class='inc'>", ">");
+			replace_first(text, " class='tagPrefix'>", ">");
+			replace_first(text, "<li><span class='mod'>","");
 
-			replace_first(text, " onclick='toggleDisplay(event.target)'>", ">");
+			replace_first(text, " onclick='toggleSectionDisplay(this)'>", ">");
 			replace_first(text, " id='seplugins'>", ">");
 			replace_first(text, " id='recognised'>", ">");
 			replace_first(text, " id='unrecognised'>", ">");
@@ -260,10 +263,11 @@ namespace boss {
 			replace_first(text, "<blockquote>", "\n\n");
 			replace_first(text, "</blockquote>", "\n\n");
 			replace_first(text, "<ul>", "");
+			
 			replace_first(text, "<li>", "*  ");
 			replace_first(text, "</li>", "");
 			
-			replace_first(text, "</div>", "");
+			replace_all(text, "</div>", "");
 			replace_first(text, "</p>", "");	
 
 			replace_all(text, "<br />", "");

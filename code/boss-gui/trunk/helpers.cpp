@@ -32,7 +32,7 @@ namespace boss {
 
 	//Version info.
 	const string gui_version     = "1.7";
-	const string gui_releaseDate = "April 15, 2011";
+	const string gui_releaseDate = "June 10, 2011";
 
 	//The run type decides on which variables are applied, not all are appropriate for all run types.
 	int run					= 1;     // 1 = sort mods, 2 = only update, 3 = undo changes.
