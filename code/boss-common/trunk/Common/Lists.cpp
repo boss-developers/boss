@@ -65,18 +65,16 @@ namespace boss {
 	//Adds mods in directory to modlist in date order (AKA load order).
 	void BuildModlist(vector<item> &list) {
 		LOG_DEBUG("Reading user mods...");
-		if (fs::is_directory(data_path)) {
-			for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
-                const fs::path filename = itr->path().filename();
-				const string ext = to_lower_copy(itr->path().extension().string());
-				if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
-					LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());			
-					//Add file to modlist.
-					item mod;
-					mod.name = filename;
-					mod.type = MOD;
-					list.push_back(mod);
-				}
+		for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
+            const fs::path filename = itr->path().filename();
+			const string ext = to_lower_copy(itr->path().extension().string());
+			if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
+				LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());			
+				//Add file to modlist.
+				item mod;
+				mod.name = filename;
+				mod.type = MOD;
+				list.push_back(mod);
 			}
 		}
 		sort(list.begin(),list.end(),SortModsByDate);

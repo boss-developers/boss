@@ -711,7 +711,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (!fs::exists(SELoc)) {
-			LOG_DEBUG("OBSE DLL not detected");
+			LOG_DEBUG("Script extender DLL not detected");
 		} else {
 			Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>" + SE + " And " + SE + " Plugin Checksums</span><ul id='seplugins'>\n");
 
@@ -724,7 +724,7 @@ int main(int argc, char *argv[]) {
 			Output(bosslog, format, text);
 
 			if (!fs::is_directory(data_path / SEPluginLoc)) {
-				LOG_DEBUG("OBSE plugins dir not detected");
+				LOG_DEBUG("Script extender plugins directory not detected");
 			} else {
 				for (fs::directory_iterator itr(data_path / SEPluginLoc); itr!=fs::directory_iterator(); ++itr) {
 					const fs::path filename = itr->path().filename();
