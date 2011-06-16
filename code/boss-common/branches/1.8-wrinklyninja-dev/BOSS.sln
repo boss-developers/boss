@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BOSS-Common", "Common\BOSS-Common.vcxproj", "{5414EFAE-A1AB-477F-8897-3C99131B634D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RegexTesting", "Testing\RegexTesting\RegexTesting.vcxproj", "{654AAEBD-AC7A-4C9A-AD2C-A5B1706AF004}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5414EFAE-A1AB-477F-8897-3C99131B634D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5414EFAE-A1AB-477F-8897-3C99131B634D}.Debug|Win32.Build.0 = Debug|Win32
+		{5414EFAE-A1AB-477F-8897-3C99131B634D}.Release|Win32.ActiveCfg = Release|Win32
+		{5414EFAE-A1AB-477F-8897-3C99131B634D}.Release|Win32.Build.0 = Release|Win32
+		{654AAEBD-AC7A-4C9A-AD2C-A5B1706AF004}.Debug|Win32.ActiveCfg = Debug|Win32
+		{654AAEBD-AC7A-4C9A-AD2C-A5B1706AF004}.Debug|Win32.Build.0 = Debug|Win32
+		{654AAEBD-AC7A-4C9A-AD2C-A5B1706AF004}.Release|Win32.ActiveCfg = Release|Win32
+		{654AAEBD-AC7A-4C9A-AD2C-A5B1706AF004}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
