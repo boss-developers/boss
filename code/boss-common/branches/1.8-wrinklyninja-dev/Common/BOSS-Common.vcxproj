@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Parsing\Data.h" />
+    <ClInclude Include="..\Parsing\Ini\Grammar.h" />
     <ClInclude Include="..\Parsing\Modlist\Grammar.h" />
     <ClInclude Include="..\Parsing\Parser.h" />
     <ClInclude Include="..\Parsing\Skipper.h" />

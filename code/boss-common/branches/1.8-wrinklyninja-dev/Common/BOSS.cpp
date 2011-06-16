@@ -85,15 +85,16 @@ int main(int argc, char *argv[]) {
 
 	// set option defaults
 	bool update             = false; // update masterlist?
-	bool updateonly         = false; // only update the masterlist and don't sort currently.
+	bool update_only         = false; // only update the masterlist and don't sort currently.
 	bool silent             = false; // silent mode?
 	bool skip_version_parse = false; // enable parsing of mod's headers to look for version strings
 	int revert              = 0;     // what level to revert to
 	int verbosity           = 0;     // log levels above INFO to output
 	string gameStr;                  // allow for autodetection override
 	bool debug              = false; // whether to include origin information in logging statements
-	bool showCRCs			= false; // whether or not to show mod CRCs.
+	bool show_CRCs			= false; // whether or not to show mod CRCs.
 	string format			= "html";  // what format the output should be in.
+	bool trial_run			= false; //If true, don't redate files.
 
 	//Set the locale to get encoding conversions working correctly.
 	setlocale(LC_CTYPE, "");
@@ -110,7 +111,7 @@ int main(int argc, char *argv[]) {
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
 								" available on the web before sorting")
-		("only-update,o", po::value(&updateonly)->zero_tokens(),
+		("only-update,o", po::value(&update_only)->zero_tokens(),
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
 								" available on the web but don't sort right"
@@ -139,12 +140,14 @@ int main(int argc, char *argv[]) {
 								" 'FalloutNV'")
 		("debug,d", po::value(&debug)->zero_tokens(),
 								"add source file references to logging statements")
-		("crc-display,c", po::value(&showCRCs)->zero_tokens(),
+		("crc-display,c", po::value(&show_CRCs)->zero_tokens(),
 								"show mod file CRCs, so that a file's CRC can be"
 								" added to the masterlist in a conditional")
 		("format,f", po::value(&format),
 								"select output format. valid values"
-								" are: 'html', 'text'");
+								" are: 'html', 'text'")
+		("trial-run,t", po::value(&trial_run)->zero_tokens(),
+								"run BOSS without actually making any changes");
 	
 
 	// parse command line arguments
@@ -214,6 +217,8 @@ int main(int argc, char *argv[]) {
 		LOG_DEBUG("BOSSlog format set to: '%s'", format.c_str());
 	}
 
+	
+
 	//BOSSLog bosslog;
 	fs::path bosslog_path;				//Path to BOSSlog being used.
 	if (format == "html")
@@ -237,6 +242,24 @@ int main(int argc, char *argv[]) {
 	Output(bosslog,format, "<div>&copy; Random007 &amp; the BOSS development team, 2009-2011. Some rights reserved.<br />\n");
 	Output(bosslog,format, "<a href=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\">CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />\n");
 	Output(bosslog,format, "v"+g_version+" ("+g_releaseDate+")</div>\n");
+
+	//Parse ini file if found.
+	/*if (fs::exists("BOSS.ini")) {
+		bool parsed = parseIni("BOSS.ini");
+		if (parsed)
+			cout << "Ini parsed successfully." << endl;
+		else {
+			cout << "Ini parsing failed." << endl;  //Weirdly, the parsing always seems to fail, but no errors are given.
+			if (errorMessageBuffer.size() != 0) {
+				for (size_t i=0; i<errorMessageBuffer.size(); i++)  //Print parser error messages.
+					Output(bosslog,format,errorMessageBuffer[i]);
+				bosslog.close();
+				if ( !silent ) 
+						Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
+				exit (1); //fail in screaming heap.
+			}
+		}
+	}*/
 
 	if (0 == game) {
 		LOG_DEBUG("Detecting game...");
@@ -276,6 +299,7 @@ int main(int argc, char *argv[]) {
 	if (format == "html") {
 		Output(bosslog, format, "<ul class='filters'>\n");
 		Output(bosslog, format, "<li><input type='checkbox' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label></li>\n");
+		Output(bosslog, format, "<li><input type='checkbox' id='b12' onclick='toggleUserlistWarnings(this)' /><label for='b12'>Hide Rule Warnings</label></li>\n");
 		Output(bosslog, format, "<li><input type='checkbox' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label></li>\n");
 		Output(bosslog, format, "<li><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label></li>\n");
 		Output(bosslog, format, "<li><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label></li>\n");
@@ -293,7 +317,7 @@ int main(int argc, char *argv[]) {
 	// Update Masterlist
 	/////////////////////////////
 
-	if (revert<1 && (update || updateonly)) {
+	if (revert<1 && (update || update_only)) {
 		Output(bosslog,format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Masterlist Update</span><ul>\n");
 		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 		LOG_DEBUG("Updating masterlist...");
@@ -316,7 +340,7 @@ int main(int argc, char *argv[]) {
 		Output(bosslog,format, "</ul>\n</div>\n");
 	}
 
-	if (updateonly == true) {
+	if (update_only == true) {
 		Output(bosslog, format, "<div><span>BOSS Execution Complete</span></div>\n</body>\n</html>");
 		bosslog.close();
 		if ( !silent ) 
@@ -520,7 +544,7 @@ int main(int argc, char *argv[]) {
 
 	//Apply userlist rules to modlist.
 	if (revert<1 && fs::exists(userlist_path)) {
-		Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Userlist Messages</span><ul>\n");
+		Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Userlist Messages</span><ul id='userlistMessages'>\n");
 
 		for (size_t i=0; i<errorMessageBuffer.size(); i++)  //First print parser/syntax error messages.
 			Output(bosslog,format,errorMessageBuffer[i]);
@@ -694,7 +718,7 @@ int main(int argc, char *argv[]) {
 	// Print version & checksum info for OBSE & plugins
 	//////////////////////////////////////////////////////
 
-	if (showCRCs) {
+	if (show_CRCs) {
 		string SE, SELoc, SEPluginLoc;
 		if (game == 1 || game == 3) {  //Oblivion/Nehrim
 			SE = "OBSE";
@@ -772,12 +796,12 @@ int main(int argc, char *argv[]) {
 				text += "<span class='ghosted'>Ghosted</span>";
 				ghostedNo++;
 			}
-			if (showCRCs)
+			if (show_CRCs)
 				text += "<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
 			Output(bosslog, format, text); 
 				
 			//Now change the file's date, if it is not the game's master file.
-			if (!IsMasterFile(Modlist[i].name.string())) {
+			if (!IsMasterFile(Modlist[i].name.string()) && !trial_run) {
 				//Calculate the new file time.
 				modfiletime = esmtime + recModNo*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 				//Re-date file. Provide exception handling in case their permissions are wrong.
@@ -820,17 +844,19 @@ int main(int argc, char *argv[]) {
 				text += "<span class='ghosted'>Ghosted</span>";
 				ghostedNo++;
 			}
-			if (showCRCs)
+			if (show_CRCs)
 				text += "<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
 			Output(bosslog, format, text); 
-
-			modfiletime = esmtime + 86400 + (recModNo + unrecModNo)*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute and adding 86,400 on increases it by a day. Using unrecModNo instead of i to avoid increases for group entries.
-			//Re-date file. Provide exception handling in case their permissions are wrong.
-			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist[i].name.string().c_str());
-			try { 
-				fs::last_write_time(data_path / Modlist[i].name,modfiletime);
-			} catch(fs::filesystem_error e) {
-				Output(bosslog, format, " - <span class='error'>Error: Could not change the date of \"" + Modlist[i].name.string() + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>");
+			
+			if (!trial_run) {
+				modfiletime = esmtime + 86400 + (recModNo + unrecModNo)*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute and adding 86,400 on increases it by a day. Using unrecModNo instead of i to avoid increases for group entries.
+				//Re-date file. Provide exception handling in case their permissions are wrong.
+				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist[i].name.string().c_str());
+				try { 
+					fs::last_write_time(data_path / Modlist[i].name,modfiletime);
+				} catch(fs::filesystem_error e) {
+					Output(bosslog, format, " - <span class='error'>Error: Could not change the date of \"" + Modlist[i].name.string() + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>");
+				}
 			}
 			Output(bosslog, format, "</li>\n");
 			unrecModNo++;

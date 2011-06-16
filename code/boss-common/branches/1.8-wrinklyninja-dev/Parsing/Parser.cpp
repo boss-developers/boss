@@ -15,12 +15,14 @@
 #include "Parser.h"
 #include "Modlist/Grammar.h"
 #include "Userlist/Grammar.h"
+#include "Ini/Grammar.h"
 #include "Support/Helpers.h"
 #include "utf8/source/utf8.h"
 
 namespace boss {
 	using namespace std;
 	namespace qi = boost::spirit::qi;
+	namespace unicode = boost::spirit::unicode;
 
 	//Parses userlist into the given data structure.
 	bool parseUserlist(fs::path file, vector<rule>& ruleList) {
@@ -60,6 +62,27 @@ namespace boss {
 		 else
 			 return false;  //For some reason this isn't returning false when the parser fails.
 		 //More acturately, when the parser fails, it executes the failure function, then just keeps going.
+	}
+
+	bool parseIni(fs::path file) {
+		Skipper<string::const_iterator> skipper;
+		//ini_grammar<string::const_iterator> grammar;
+		string::const_iterator begin, end;
+		string contents;
+
+		fileToBuffer(file,contents);
+
+		begin = contents.begin();
+		end = contents.end();
+
+		bool p;
+
+		//bool r = qi::phrase_parse(begin, end, grammar, skipper, p);
+
+		//if (r && begin == end)
+		//	return true;
+		//else
+			return false;
 	}
 
 	//UTF-8 Validator

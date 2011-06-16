@@ -203,6 +203,28 @@ namespace boss {
 			<< "	}"<<endl
 			<< "	return;"<<endl
 			<< "}"<<endl
+			<< "function toggleUserlistWarnings(box) {"<<endl
+			<< "	var userlistMessages=document.getElementById('userlistMessages').childNodes;"<<endl
+			<< "	if (userlistMessages){"<<endl
+			<< "		for(i=0;i<userlistMessages.length;i++){"<<endl
+			<< "			if(userlistMessages[i].nodeType==1){"<<endl
+			<< "				var backgroundColor;"<<endl
+			<< "				if(window.getComputedStyle){"<<endl
+			<< "					backgroundColor=window.getComputedStyle(userlistMessages[i], null).getPropertyValue('background-color');"<<endl
+			<< "				}else if(userlistMessages[i].currentStyle){"<<endl
+			<< "					backgroundColor=userlistMessages[i].currentStyle.backgroundColor;"<<endl
+			<< "				}"<<endl
+			<< "				if(backgroundColor=='rgb(255, 165, 0)'||backgroundColor=='#ffa500'){"<<endl
+			<< "					if(box.checked){"<<endl
+			<< "						userlistMessages[i].style.display = 'none';"<<endl
+			<< "					}else{"<<endl
+			<< "						userlistMessages[i].style.display = 'table';"<<endl
+			<< "					}"<<endl
+			<< "				}"<<endl
+			<< "			}"<<endl
+			<< "		}"<<endl
+			<< "	}"<<endl
+			<< "}"<<endl
 			<< "</script>"<<endl
 			<< "</head><body>"<<endl;
 	}
@@ -259,6 +281,7 @@ namespace boss {
 			replace_first(text, " id='seplugins'>", ">");
 			replace_first(text, " id='recognised'>", ">");
 			replace_first(text, " id='unrecognised'>", ">");
+			replace_first(text, " id='userlistMessages'>", ">");
 
 			replace_first(text, "<blockquote>", "\n\n");
 			replace_first(text, "</blockquote>", "\n\n");

@@ -60,12 +60,7 @@ namespace boss {
 			eof = *(spc | comment | oldMasterlistComment | eol) >> eoi;
 		}
 
-		qi::rule<Iterator> start;
-		qi::rule<Iterator> spc;
-		qi::rule<Iterator> comment;
-		qi::rule<Iterator> eof;
-		qi::rule<Iterator> oldMasterlistComment;
-		qi::rule<Iterator> UTF8;
+		qi::rule<Iterator> start, spc, eof, comment, oldMasterlistComment, UTF8;
 	};
 }
 #endif
