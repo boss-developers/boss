@@ -46,14 +46,14 @@
 		<li>Provides detection and warning of installation mistakes for some popular mods, such as FCOM.</li>
 		<li>Displays the version number of mods when it is available.</li>
 		<li>Provides Bash Tag suggestions that are automatically applied by Wrye Bash (for Oblivion), Wrye Flash (for Fallout 3) or Wrye Flash NV (for Fallout: New Vegas).</li>
-		<li>Sorts mod files ghosted by Wrye Bash/Flash.</li>
+		<li>Sorts mod files ghosted by Wrye Bash/Flash/Flash NV.</li>
 		<li>Allows easy user customisation of mod positions and the messages provided.</li>
 		<li>Includes a <acronym title="Graphical User Interface">GUI</acronym> for easily accessing all of Better Oblivion Sorting Software's functions, including launching it with different settings.</li>
 		<li>Is under constant development and improvement by a team of modders and experts on all supported games.</li>	
 	</ul>
 	<p>Better Oblivion Sorting Software (BOSS) will re-order your mods to their correct positions, putting any mods it doesn't recognise after them, in the same order as they were before BOSS was run.</p>
-	<p>BOSS is designed to assist in the installation and usage of mods, especially more complex mods such as FCOM, MMM and FOOK, and help mod users avoid serious conflicts. It is not a complete solution to load ordering issues, as there are far more mods out there 
-	(estimated at about 30,000 for Oblivion, and about 11,000 for Fallout 3) than BOSS knows about. To properly place mods BOSS doesn't know about, a good working knowledge of mod load ordering for the relevant game is still necessary, for which some research and documentation reading will go a long way.</p>
+	<p>BOSS is designed to assist in the installation and usage of mods, especially more complex mods such as FCOM, MMM, FOOK and nVamp, and help mod users avoid serious conflicts. It is not a complete solution to load ordering issues, as there are far more mods out there 
+	(estimated at about 25,000 for Oblivion, 12,000 for Fallout 3 and 6,000 for Fallout: New Vegas) than BOSS knows about. To properly place mods BOSS doesn't know about, a good working knowledge of mod load ordering for the relevant game is still necessary, for which some research and documentation reading will go a long way.</p>
 	</div>
 	<br /><br />
 	
@@ -67,9 +67,9 @@
 		<li>When running BOSS, you may run BOSS directly from the BOSS.exe to simply sort your mods, or you can use the GUI to choose how BOSS runs. Remember to update the masterlist via the GUI options regularly.</li>
 	</ol>
 	<p>If you are installing BOSS manually and have more than one of the supported games installed, you should install BOSS separately for each one.</p>
-	<p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. Wrye Bash/Flash will automatically import and apply Bash Tag 
-	suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions makes thoroughly and adjust tags by hand in Wrye Bash/Flash if necessary.</p>
-	<p>You will need to reorder "unknown" mods by hand using <acronym title="Oblivion Mod Manager">OBMM</acronym>/<acronym title="Fallout Mod Manager">FOMM</acronym> or Wrye Bash/Flash.</p>
+	<p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. Wrye Bash/Flash/Flash NV will automatically import and apply Bash Tag 
+	suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions makes thoroughly and adjust tags by hand in Wrye Bash/Flash/Flash NV if necessary.</p>
+	<p>You will need to reorder unrecognised mods by hand using <acronym title="Oblivion Mod Manager">OBMM</acronym>/<acronym title="Fallout Mod Manager">FOMM</acronym> or Wrye Bash/Flash/Flash NV.</p>
 	<p>You can update your masterlist to the latest version by running the GUI and either selecting the <q>Update Masterlist Only</q> run option or checking the <q>Update Masterlist</q> box under the <q>Sort Mods</q> run option. This will replace your copy with the latest available online, and then run BOSS as normal using the updated masterlist. <b>If you 
 	have an edited masterlist, using this updater will cause you to lose all your edits.</b></p>
 	</div><br /><br />
@@ -90,18 +90,18 @@
 	</ul>
 	<p>The GUI is also aware of what version of BOSS you are running, and will disable (grey out) any options that are not supported by the version of BOSS you have installed in order to minimise confusion. All the GUI's options should be self-explanatory, 
 	but if you have issues understanding what they do, each setting has a corresponding command line parameter, which all have detailed descriptions in the <a href="#details">Further Details</a> section below.</p>
-	<p>Note that the BOSSlog format selection applies to both the format of the BOSSlog that will be generated when BOSS is run and the format that the GUI will try to open when you select "View BOSSlog".</p><br />
+	<p>Note that the BOSSlog format selection applies to both the format of the BOSSlog that will be generated when BOSS is run and the format that the GUI will try to open when you select <q>View BOSSlog</q>.</p><br />
 	
 	<span class="subtitle">The BOSS Log</span>
 	<p>The BOSSlog is where you will find all of BOSS's outputted information. It can be generated in either HTML format (the default) or as a plain text file with minimal formatting. The HTML format has significant advantages over the plain text format, being considerably easier to read, containing colour-coded messages and a variety of filters to customise what is displayed. Both formats, however, contain the same information.</p>
 	<p>The HTML BOSSlog has been tested in Mozilla Firefox 4, Google Chrome 11, Opera 11 and Internet Explorer 9. Using earlier browsers may result in parts of the BOSSlog not working or displaying correctly.</p>
 	<p>The BOSSlog comprises of a number of sections, them being:</p>
 	<ol>
-		<li><i>Masterlist Update</i>: This section is only displayed if you have run BOSS with the "Update Masterlist" or "Update Masterlist Only" options enabled, and details the success or failure of the update.</li>
+		<li><i>Masterlist Update</i>: This section is only displayed if you have run BOSS with the <q>Update Masterlist</q> or <q>Update Masterlist Only</q> options enabled, and details the success or failure of the update.</li>
 		<li><i>General Messages</i>: This section is only displayed if there are any applicable messages to be displayed. Its primary purpose is to allow BOSS to display messages specific to your Oblivion install that are not specific to any one mod, for example if an update to BOSS or OBSE is available.</li>
 		<li><i>Userlist Messages</i>: This section is only displayed if BOSS finds a userlist.txt in your BOSS folder. In this section the successes or failures of the application of your userlist rules will be detailed.</li>
-		<li><i>Script Extender And Script Extender Plugins Checksums</i>: This section is displayed when BOSS is run with the "Enable File CRC Display" option enabled and you have your game's Script Extender installed. It will list the Script Extender and any plugins you have installed, displaying their versions if given and their CRCs.</li>
-		<li><i>Recognised And Re-ordered Plugins</i> or <i>Restored Load Order</i>: This section comprises the bulk of BOSS's output, listing all your recognised installed plugins and any messages BOSS has attached to them, as well as version information (if given) and the plugin CRCs (if run with "Enable File CRC Display" enabled). When BOSS is run to undo its changes, this section will list your restored load order.</li>
+		<li><i>Script Extender And Script Extender Plugins Checksums</i>: This section is displayed when BOSS is run with the <q>Enable File CRC Display</q> option enabled and you have your game's Script Extender installed. It will list the Script Extender and any plugins you have installed, displaying their versions if given and their CRCs.</li>
+		<li><i>Recognised And Re-ordered Plugins</i> or <i>Restored Load Order</i>: This section comprises the bulk of BOSS's output, listing all your recognised installed plugins and any messages BOSS has attached to them, as well as version information (if given) and the plugin CRCs (if run with <q>Enable File CRC Display</q> enabled). When BOSS is run to undo its changes, this section will list your restored load order.</li>
 		<li><i>Unrecognised Plugins</i>: This section lists any plugins you have installed that have not been recognised by BOSS. These plugins should be reported in an official BOSS thread with download links to their mods so they can be added to the masterlist.</li>
 		<li><i>Plugin Numbers</i>: This small section gives a few numbers relating to the mods you have installed.</li>
 	</ol>
@@ -118,10 +118,10 @@
 		<li><i>Hide Messageless Mods</i>: This will hide any recognised mods that do not have messages attached to them.</li>
 		<li><i>Hide Ghosted Mods</i>: This will hide any mods that have been ghosted by Wrye Bash.</li>
 		<li><i>Hide All Mod Nessages</i>: This hides all the messages attached to all recognised mods.</li>
-		<li><i>Hide Notes</i>: This hides any messages attached to mods that have the "Note: " prefix.</li>
+		<li><i>Hide Notes</i>: This hides any messages attached to mods that have the <q>Note: </q> prefix.</li>
 		<li><i>Hide Bash Tag Suggestions</i>: This hides any Bash Tag suggestions attached to mods.</li>
-		<li><i>Hide Requirements</i>: This hides any messages attached to mods that have the "Requires: " prefix.</li>
-		<li><i>Hide Incompatibilities</i>: This hides any messages attached to mods that have the "Incompatible with: " prefix.</li>
+		<li><i>Hide Requirements</i>: This hides any messages attached to mods that have the <q>Requires: </q> prefix.</li>
+		<li><i>Hide Incompatibilities</i>: This hides any messages attached to mods that have the <q>Incompatible with: </q> prefix.</li>
 	</ul>
 	<p>It is not possible to hide warning or error messages, as these are of a severity where they should almost certainly be acted upon, and not ignored. Be aware that if you hide all a mod's messages and then hide all messageless mods, that mod will be amongst those hidden.</p>
 	</p><br />
@@ -135,10 +135,10 @@
 	<ul>
 		<li><i>ITM Count</i>: ITM (Identical To Master) records are a type of dirty edit where a mod has overwritten something in the game without actually changing anything. If another mod lower in the load order makes an intentional change to that thing, it will have its effect cancelled out by the ITM record, which can cause problems. The ITM count is the number of ITM records found and corrected in the mod plugin.</li>
 		<li><i>UDR Count</i>: Deleting records is a significant cause of crashes and game bugs. UDR (Undeleted and Disabled Reference) records are records that the mod deleted from the game or from another mod that have been corrected safely by undeleting them and disabling them instead, which has the same intended effect without causing issues. The UDR count is the number of deleted reference records found and corrected in the mod plugin.</li>
-		<li><i>CRC</i> or <i>Checksum</i>: A file's CRC is a highly accurate way of identifying it, and is a number calculated from the file's contents. If the contents of a file changes, so will its CRC. BOSS uses CRCs to check if a user's mods are dirty by checking their CRCs against pre-determined CRCs of known dirty mods. This lets BOSS give precise notification messages for any dirty mods it detects. BOSS can calculate the CRCs of all your installed plugins if run from the GUI with the "Enable CRC Display" option enabled.</li>
+		<li><i>CRC</i> or <i>Checksum</i>: A file's CRC is a highly accurate way of identifying it, and is a number calculated from the file's contents. If the contents of a file changes, so will its CRC. BOSS uses CRCs to check if a user's mods are dirty by checking their CRCs against pre-determined CRCs of known dirty mods. This lets BOSS give precise notification messages for any dirty mods it detects. BOSS can calculate the CRCs of all your installed plugins if run from the GUI with the <q>Enable CRC Display</q> option enabled.</li>
 	</ul>
 	<p>However, not all unclean mods have all or any of these pieces of information. For unclean mods whose ITM and UDR counts have not been reported, BOSS cannot give them. For unclean mods whose CRCs have not been reported, BOSS cannot give precise notification and so prints a message whether or not the user has cleaned their mod.</p>
-	<p>BOSS and the modding communities rely on user contribution of this information to progress. For information on how to contribute, see the <i>Contributions &amp; Help</i> section below. If you find that a mod is dirty, you should also report this to the mod's author so that they can fix it.</p>
+	<p>BOSS and the modding communities rely on user contribution of this information to progress. For information on how to contribute, see the <a href="#help">Contributions &amp; Help</a> section below. If you find that a mod is dirty, you should also report this to the mod's author so that they can fix it.</p>
 	<p>There is also another type of unnecessary edit, known as a wild edit, that can also cause problems. These edits are neither Itentical To Master edits nor deleted records, so cannot be automatically cleaned. Cleaning must be manually done in TES4Edit/FO3Edit/FNVEdit. BOSS can still check for mods with these edits if the CRCs of the plugins with wild edits are known, and it can provide notification of these edits and some information on fixing them if they are reported in an official BOSS thread.</p>
 	</p><br />
 	
@@ -206,7 +206,7 @@
 	
 	<div id="help"><span>Contributions &amp; Help</span>
 	<p>General discussion, and the submission of questions, suggestions and unrecognised or unclean mods, takes place in BOSS's official threads for 
-	<a href="http://forums.bethsoft.com/?showtopic=1175363">Oblivion</a>, 
+	<a href="http://forums.bethsoft.com/?showtopic=1195328">Oblivion</a>, 
 	<a href="http://forums.bethsoft.com/?showtopic=1132338">Nehrim</a>, 
 	<a href="http://forums.bethsoft.com/?showtopic=1175276">Fallout 3</a> and 
 	<a href="http://forums.bethsoft.com/?showtopic=1173252">Fallout: New Vegas</a>.</p>
@@ -222,7 +222,7 @@
 		<li>The ESP/ESM file name(s).</li>
 		<li>The number of records removed (the ITM count) as shown by TES4Edit/FO3Edit/FNVEdit (not the number of records processed).</li>
 		<li>The number of records undeleted (the UDR count) as shown by TES4Edit/FO3Edit/FNVEdit (not the number of records processed).</li>
-		<li>The CRC(s) of the unlcean ESP/ESM file name(s), as calculated by BOSS, Wrye Bash or 7-zip (other sources unverified to be correct). Make sure that the CRCs are of the uncleaned files, not the files after cleaning.</li>
+		<li>The CRC(s) of the unlcean ESP/ESM file name(s), as calculated by BOSS, Wrye Bash/Flash/Flash NV or 7-zip (other sources unverified to be correct). Make sure that the CRCs are of the uncleaned files, not the files after cleaning.</li>
 	</ul>
 	</div><br /><br />
 	
