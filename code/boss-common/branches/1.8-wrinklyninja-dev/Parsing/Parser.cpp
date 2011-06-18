@@ -66,7 +66,7 @@ namespace boss {
 
 	bool parseIni(fs::path file) {
 		Skipper<string::const_iterator> skipper;
-		//ini_grammar<string::const_iterator> grammar;
+		ini_grammar<string::const_iterator> grammar;
 		string::const_iterator begin, end;
 		string contents;
 
@@ -75,13 +75,11 @@ namespace boss {
 		begin = contents.begin();
 		end = contents.end();
 
-		bool p;
+		bool r = qi::phrase_parse(begin, end, grammar, skipper);
 
-		//bool r = qi::phrase_parse(begin, end, grammar, skipper, p);
-
-		//if (r && begin == end)
-		//	return true;
-		//else
+		if (r && begin == end)
+			return true;
+		else
 			return false;
 	}
 

@@ -82,7 +82,9 @@ int main(int argc, char *argv[]) {
 	int game = 0;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
 	vector<item> Modlist, Masterlist;	//Modlist and masterlist data structures.
 	vector<rule> Userlist;				//Userlist data structure.
-
+	//Summary counters
+	int recModNo = 0, unrecModNo = 0, ghostModNo = 0, messageNo = 0, warningNo = 0, errorNo = 0;
+	bool hasChanged = true;
 	// set option defaults
 	bool update             = false; // update masterlist?
 	bool update_only         = false; // only update the masterlist and don't sort currently.
@@ -147,7 +149,7 @@ int main(int argc, char *argv[]) {
 								"select output format. valid values"
 								" are: 'html', 'text'")
 		("trial-run,t", po::value(&trial_run)->zero_tokens(),
-								"run BOSS without actually making any changes");
+								"run BOSS without actually making any changes to load order");
 	
 
 	// parse command line arguments
@@ -244,12 +246,12 @@ int main(int argc, char *argv[]) {
 	Output(bosslog,format, "v"+g_version+" ("+g_releaseDate+")</div>\n");
 
 	//Parse ini file if found.
-	/*if (fs::exists("BOSS.ini")) {
+	if (fs::exists("BOSS.ini")) {
 		bool parsed = parseIni("BOSS.ini");
 		if (parsed)
 			cout << "Ini parsed successfully." << endl;
 		else {
-			cout << "Ini parsing failed." << endl;  //Weirdly, the parsing always seems to fail, but no errors are given.
+			cout << "Ini parsing failed." << endl;
 			if (errorMessageBuffer.size() != 0) {
 				for (size_t i=0; i<errorMessageBuffer.size(); i++)  //Print parser error messages.
 					Output(bosslog,format,errorMessageBuffer[i]);
@@ -259,7 +261,7 @@ int main(int argc, char *argv[]) {
 				exit (1); //fail in screaming heap.
 			}
 		}
-	}*/
+	}
 
 	if (0 == game) {
 		LOG_DEBUG("Detecting game...");
@@ -538,6 +540,61 @@ int main(int argc, char *argv[]) {
 		Output(bosslog, format, "</ul>\n</div>\n");
 	}
 
+	/////////////////////////////
+	// Print Summary
+	/////////////////////////////
+	// Get this to display at the top of the BOSSlog. Will have to use CSS to position.
+
+	/*Give:
+	Whether or not the recognised plugins section has changed.
+	*/
+
+	//Iterate through masterlist structure to count items. Hopefully shouldn't impact performance too noticeably.
+	for (size_t i=0; i<Modlist.size(); i++) {
+		if (Modlist[i].type == MOD) {
+			if (i > x)
+				unrecModNo++;
+			else
+				recModNo++;
+			if (IsGhosted(data_path / Modlist[i].name))
+				ghostModNo++;
+			for (size_t j=0; j<Modlist[i].messages.size(); j++) {
+				messageNo++;
+				if (Modlist[i].messages[j].key == WARN)
+					warningNo++;
+				else if (Modlist[i].messages[j].key == ERR)
+					errorNo++;
+			}
+		}
+	}
+
+	//Now output numbers.
+	Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Summary</span><div>\n<p>\n");
+	Output(bosslog, format, "Numbers do not take account of any changes made by your userlist.\n");
+	Output(bosslog, format, "<div style='display:table-row;'>\n");
+	Output(bosslog, format, "<div style='display:table-cell; padding: 0 10px;'>Number of recognised plugins:</div>\n");
+	Output(bosslog, format, "<div style='display:table-cell; padding: 0 10px;'>" + IntToString(recModNo) + "</div>\n");
+	Output(bosslog, format, "<div style='display:table-cell; padding: 0 10px;'>Number of warning messages:</div>\n");
+	Output(bosslog, format, "<div style='display:table-cell; padding: 0 10px;'>" + IntToString(warningNo) + "</div>\n");
+	Output(bosslog, format, "</div>\n");
+	Output(bosslog, format, "<div style='display:table-row;'>\n");
+	Output(bosslog, format, "<div style='display:table-cell; padding: 0 10px;'>Number of unrecognised plugins:</div>\n");
+	Output(bosslog, format, "<div style='display:table-cell; padding: 0 10px;'>" + IntToString(unrecModNo) + "</div>\n");
+	Output(bosslog, format, "<div style='display:table-cell; padding: 0 10px;'>Number of error messages:</div>\n");
+	Output(bosslog, format, "<div style='display:table-cell; padding: 0 10px;'>" + IntToString(errorNo) + "</div>\n");
+	Output(bosslog, format, "</div>\n");
+	Output(bosslog, format, "<div style='display:table-row;'>\n");
+	Output(bosslog, format, "<div style='display:table-cell; padding: 0 10px;'>Number of ghosted plugins:</div>\n");
+	Output(bosslog, format, "<div style='display:table-cell; padding: 0 10px;'>" + IntToString(ghostModNo) + "</div>\n");
+	Output(bosslog, format, "<div style='display:table-cell; padding: 0 10px;'>Total number of messages:</div>\n");
+	Output(bosslog, format, "<div style='display:table-cell; padding: 0 10px;'>" + IntToString(messageNo) + "</div>\n");
+	Output(bosslog, format, "</div>\n");
+	Output(bosslog, format, "<div style='display:table-row;'>\n");
+	Output(bosslog, format, "<div style='display:table-cell; padding: 0 10px;'>Total number of plugins:</div>\n");
+	Output(bosslog, format, "<div style='display:table-cell; padding: 0 10px;'>" + IntToString(recModNo+unrecModNo) + "</div>\n");
+	Output(bosslog, format, "</div>\n");
+	Output(bosslog, format, "</p>\n</div>\n</div>\n");
+
 	//////////////////////////
 	// Apply Userlist Rules
 	//////////////////////////
@@ -778,9 +835,7 @@ int main(int argc, char *argv[]) {
 	else if (revert==1) Output(bosslog, format, "<div><span><span onclick='toggleSectionDisplay(this)'>&#x2212;</span>Restored Load Order (Using modlist.txt)</span><ul id='recognised'>\n");
 	else if (revert==2) Output(bosslog, format, "<div><span><span onclick='toggleSectionDisplay(this)'>&#x2212;</span>Restored Load Order (Using modlist.old)</span><ul id='recognised'>\n");
 
-	int ghostedNo = 0;
-	int recModNo = 0;
-	int unrecModNo = 0;
+	int n;
 
 	LOG_INFO("Applying calculated ordering to user files...");
 	for (size_t i=0; i<=x; i++) {
@@ -794,7 +849,6 @@ int main(int argc, char *argv[]) {
 			}
 			if (IsGhosted(data_path / Modlist[i].name)) {
 				text += "<span class='ghosted'>Ghosted</span>";
-				ghostedNo++;
 			}
 			if (show_CRCs)
 				text += "<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
@@ -803,7 +857,7 @@ int main(int argc, char *argv[]) {
 			//Now change the file's date, if it is not the game's master file.
 			if (!IsMasterFile(Modlist[i].name.string()) && !trial_run) {
 				//Calculate the new file time.
-				modfiletime = esmtime + recModNo*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
+				modfiletime = esmtime + n*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 				//Re-date file. Provide exception handling in case their permissions are wrong.
 				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist[i].name.string().c_str());
 				try { 
@@ -820,7 +874,7 @@ int main(int argc, char *argv[]) {
 				Output(bosslog, format, "</ul>\n</li>\n\n");
 			} else
 				Output(bosslog, format, "</li>\n\n");
-			recModNo++;
+			n++;
 		}
 	}
 	Output(bosslog, format, "</ul>\n</div>\n");
@@ -842,7 +896,6 @@ int main(int argc, char *argv[]) {
 			}
 			if (IsGhosted(data_path / Modlist[i].name)) {
 				text += "<span class='ghosted'>Ghosted</span>";
-				ghostedNo++;
 			}
 			if (show_CRCs)
 				text += "<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
@@ -852,30 +905,44 @@ int main(int argc, char *argv[]) {
 				modfiletime = esmtime + 86400 + (recModNo + unrecModNo)*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute and adding 86,400 on increases it by a day. Using unrecModNo instead of i to avoid increases for group entries.
 				//Re-date file. Provide exception handling in case their permissions are wrong.
 				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist[i].name.string().c_str());
-				try { 
+				try {
 					fs::last_write_time(data_path / Modlist[i].name,modfiletime);
 				} catch(fs::filesystem_error e) {
 					Output(bosslog, format, " - <span class='error'>Error: Could not change the date of \"" + Modlist[i].name.string() + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>");
 				}
 			}
 			Output(bosslog, format, "</li>\n");
-			unrecModNo++;
 		}
 	}
-	if (unrecModNo == 0)
+	if (x+1 == Modlist.size())
 		Output(bosslog, format, "<i>No unrecognised plugins.</i>");
 	Output(bosslog, format, "</ul></div>\n</div>\n");
 	LOG_INFO("Unrecognized mods reported.");
 
-	//Print out some numbers.
-	Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Plugin Numbers</span><div>\n<p>\n");
-	Output(bosslog, format, "Number of recognised plugins: " + IntToString(recModNo) + "<br />\n");
-	Output(bosslog, format, "Number of unrecognised plugins: " + IntToString(unrecModNo) + "<br />\n");
-	Output(bosslog, format, "Number of ghosted plugins: " + IntToString(ghostedNo) + "<br />\n");
-	Output(bosslog, format, "Total number of plugins: " + IntToString(recModNo+unrecModNo) + "<br />\n");
-	Output(bosslog, format, "</p>\n</div>\n</div>\n");
+	/////////////////////////////
+	// Print Output to BOSSlog
+	/////////////////////////////
+
+	/* Output section order:
+
+	1. Title
+	2. Program info/copyright
+	3. Filters
+	4. General messages
+	5. Summary
+	6. Userlist messages
+	7. Script extender plugins
+	8. Recognised mods
+	9. Unrecognised mods
+	10. End
+
+	*/
 	
-	//Let people know the program has stopped.
+
+	//---------------
+	// Finish
+	//---------------
+
 	Output(bosslog, format, "<div><span>Execution Complete</span></div>\n</body>\n</html>");
 	bosslog.close();
 	LOG_INFO("Launching boss log in browser.");

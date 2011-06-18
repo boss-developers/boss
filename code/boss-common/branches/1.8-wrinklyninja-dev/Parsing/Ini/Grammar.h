@@ -50,6 +50,7 @@ namespace boss {
 
 	using unicode::char_;
 	using unicode::no_case;
+	using unicode::space;
 
 	using boost::spirit::info;
 	using boost::format;
@@ -63,39 +64,40 @@ namespace boss {
 	}
 
 	template <typename Iterator>
-	struct ini_grammar : qi::grammar<Iterator, bool(), Skipper<Iterator> > {
+	struct ini_grammar : qi::grammar<Iterator, Skipper<Iterator>> {
 		ini_grammar() : ini_grammar::base_type(ini, "ini grammar") {
 
+			comment =
+				lit("#") > *(char_ - eol);
+
 			ini =
-				*eol[_val = true]
+				*(eol | comment)
 				> section % eol
+				> *(eol | comment)
 				> eoi;
 
 			section =
 				*eol
 				>> (title
 				> eol
-				> setting % +eol);
+				> (setting | comment) % +eol);
 
 			title =
-				'[' > +(char_ - ']') > ']';
+				lit("[") > +(char_ - eol);
 
 			setting =
-				*eol
-				>> (lexeme[var] 
+				(var
 				> '='
 				> value)[phoenix::bind(&SetVar, _1, _2)];
 
 			var %=
-				("\"" > +(char_ - "\"") > "\"")
-				| +(char_ - '=');
+				lexeme[+(char_ - '=')];
 
 			value %=
-				("'" > +(char_ - "'") > "'")
-				| ("{" > +(char_ - "}") > "}")
-				| +(unicode::digit - eol);
+				lexeme[+(char_ - eol)];
 
 			//Give each rule names.
+			comment.name("comment");
 			ini.name("ini");
 			section.name("section");
 			title.name("title");
@@ -103,6 +105,7 @@ namespace boss {
 			var.name("variable");
 			value.name("value");
 		
+			on_error<fail>(comment,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(ini,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(section,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(title,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
@@ -113,9 +116,8 @@ namespace boss {
 
 		typedef Skipper<Iterator> skipper;
 
-		qi::rule<Iterator, skipper> section, title, setting;
+		qi::rule<Iterator, skipper> comment, ini, section, title, setting;
 		qi::rule<Iterator, string(), skipper> var, value;
-		qi::rule<Iterator, bool(), skipper> ini;
 	
 		void SyntaxError(Iterator const& /*first*/, Iterator const& last, Iterator const& errorpos, info const& what) {
 			ostringstream out;
