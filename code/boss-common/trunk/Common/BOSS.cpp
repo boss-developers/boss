@@ -252,9 +252,9 @@ int main(int argc, char *argv[]) {
 					Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 				exit (1); //fail in screaming heap.
 			}
-		} else if (fs::exists(data_path / "Fallout3.esm")) game = 2;
-		else if (fs::exists(data_path / "Nehrim.esm")) game = 3;
+		} else if (fs::exists(data_path / "Nehrim.esm")) game = 3;
 		else if (fs::exists(data_path / "FalloutNV.esm")) game = 4;
+		else if (fs::exists(data_path / "Fallout3.esm")) game = 2;  //Swapped the game detections around to add compatibility for FNV mods that require Fallout3.esm.
 		else {
 			LOG_ERROR("None of the supported games were detected...");
 			Output(bosslog,format, "<p class='error'>Critical Error: Master .ESM file not found!<br />\n");
