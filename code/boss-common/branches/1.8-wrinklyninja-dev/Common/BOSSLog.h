@@ -25,13 +25,16 @@ namespace boss {
 	using namespace std;
 
 	//Prints a given message to the bosslog, using format-safe Output function below.
-	void ShowMessage(ofstream &log, string format, message currentMessage);
+	void ShowMessage(message currentMessage);
 
 	//Prints ouptut with formatting according to format.
-	void Output(ofstream &log, string format, string text);
+	void Output(string text);
 
 	//Prints HTML header.
-	void OutputHeader(ofstream &log);
+	void OutputHeader();
+
+	//Prints HTML footer (ie. </body> and </html> tags).
+	void OutputFooter();
 
 	//Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 	string IntToString(unsigned int n);

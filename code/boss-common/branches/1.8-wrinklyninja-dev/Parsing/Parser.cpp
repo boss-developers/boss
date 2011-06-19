@@ -65,7 +65,7 @@ namespace boss {
 	}
 
 	bool parseIni(fs::path file) {
-		Skipper<string::const_iterator> skipper;
+		Ini_Skipper<string::const_iterator> skipper;
 		ini_grammar<string::const_iterator> grammar;
 		string::const_iterator begin, end;
 		string contents;

@@ -64,23 +64,15 @@ namespace boss {
 	}
 
 	template <typename Iterator>
-	struct ini_grammar : qi::grammar<Iterator, Skipper<Iterator>> {
-		ini_grammar() : ini_grammar::base_type(ini, "ini grammar") {
-
-			comment =
-				lit("#") > *(char_ - eol);
+	struct ini_grammar : qi::grammar<Iterator, Ini_Skipper<Iterator>> {
+		ini_grammar() : ini_grammar::base_type(section, "ini grammar") {
 
 			ini =
-				*(eol | comment)
-				> section % eol
-				> *(eol | comment)
+				section % eol
 				> eoi;
 
 			section =
-				*eol
-				>> (title
-				> eol
-				> (setting | comment) % +eol);
+				setting % +eol;
 
 			title =
 				lit("[") > +(char_ - eol);
@@ -91,6 +83,8 @@ namespace boss {
 				> value)[phoenix::bind(&SetVar, _1, _2)];
 
 			var %=
+				(lit("\"") >> lexeme[+(char_ - lit("\""))] >> lit("\""))
+				|
 				lexeme[+(char_ - '=')];
 
 			value %=
@@ -114,7 +108,7 @@ namespace boss {
 			on_error<fail>(value,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 		}
 
-		typedef Skipper<Iterator> skipper;
+		typedef Ini_Skipper<Iterator> skipper;
 
 		qi::rule<Iterator, skipper> comment, ini, section, title, setting;
 		qi::rule<Iterator, string(), skipper> var, value;

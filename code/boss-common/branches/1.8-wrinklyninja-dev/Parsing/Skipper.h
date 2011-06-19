@@ -62,5 +62,35 @@ namespace boss {
 
 		qi::rule<Iterator> start, spc, eof, comment, oldMasterlistComment, UTF8;
 	};
+
+	template <typename Iterator>
+	struct Ini_Skipper : qi::grammar<Iterator> {
+
+		Ini_Skipper() : Ini_Skipper::base_type(start, "Ini Skipper") {
+
+			start = 
+				spc
+				| UTF8
+				| comment
+				| heading
+				| eof;
+			
+			spc = space - eol;
+
+			UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf"); //UTF8 BOM
+
+			comment	= 
+				lit("#") 
+				>> *(char_ - eol);
+
+			heading = 
+				lit("[")
+				>> *(char_ - eol);
+
+			eof = *(spc | comment | eol) >> eoi;
+		}
+
+		qi::rule<Iterator> start, spc, eof, comment, heading, UTF8;
+	};
 }
 #endif
