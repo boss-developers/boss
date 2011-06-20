@@ -79,10 +79,8 @@ int main(int argc, char *argv[]) {
 	vector<rule> Userlist;				//Userlist data structure.
 	//Summary counters
 	int recModNo = 0, unrecModNo = 0, ghostModNo = 0, messageNo = 0, warningNo = 0, errorNo = 0;
-	bool hasChanged = true;
 	string gameStr;                  // allow for autodetection override
-	string oldBOSSLogRecognised = "";
-	bool BOSSLogDiff = false;
+	string oldBOSSlogRecognised = "";
 	string masterlistUpdateContent = "";
 	string userlistMessagesContent = "";
 	string seInfoContent = "";
@@ -247,39 +245,47 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
 
 
+	////////////////////////////////////////////////
+	// Record last BOSSlog's recognised mod list
+	////////////////////////////////////////////////
+
+	//Back up old recognised mod list for diff later.
+	if (fs::exists(bosslog_text_path) || fs::exists(bosslog_html_path)) {
+		size_t pos1 = string::npos, pos2 = string::npos;
+		if (fs::exists(bosslog_text_path) && fs::exists(bosslog_html_path)) {
+			//Need to work out which was last written.
+			time_t htmllogtime = fs::last_write_time(bosslog_html_path);
+			time_t textlogtime = fs::last_write_time(bosslog_text_path);
+			if (textlogtime > htmllogtime) {
+				fileToBuffer(bosslog_text_path,oldBOSSlogRecognised);
+				pos1 = oldBOSSlogRecognised.find("Recognised And Re-ordered Plugins\n")+34;
+				if (pos1 != string::npos)
+					pos2 = oldBOSSlogRecognised.find("\n\n\n======================================", pos1);
+			} else {
+				fileToBuffer(bosslog_html_path,oldBOSSlogRecognised);
+				pos1 = oldBOSSlogRecognised.find("<ul id='recognised'>\n")+21;
+				if (pos1 != string::npos)
+					pos2 = oldBOSSlogRecognised.find("</ul>\n</div>\n", pos1);
+			}
+		} else if (fs::exists(bosslog_html_path)) {
+			fileToBuffer(bosslog_html_path,oldBOSSlogRecognised);
+			pos1 = oldBOSSlogRecognised.find("<ul id='recognised'>\n")+21;
+			if (pos1 != string::npos)
+				pos2 = oldBOSSlogRecognised.find("</ul>\n</div>\n", pos1);
+		} else {
+			fileToBuffer(bosslog_text_path,oldBOSSlogRecognised);
+			pos1 = oldBOSSlogRecognised.find("Recognised And Re-ordered Plugins\n")+34;
+			if (pos1 != string::npos)
+				pos2 = oldBOSSlogRecognised.find("\n\n\n======================================", pos1);
+		}
+		if (pos2 != string::npos)
+			oldBOSSlogRecognised = oldBOSSlogRecognised.substr(pos1, pos2-pos1);
+	}
+
+
 	/////////////////////////////////////////
 	// Check for critical error conditions
 	/////////////////////////////////////////
-	/* These are:
-	1. BOSSlog cannot be written. This is the only one which gives a command-line message only.
-		If the BOSSlog already exists, it needs to have the recognised mods list part stored in memory before being overwritten.
-	2. Game cannot be detected.
-	3. Nehrim installed incorrectly.
-
-	At this stage the masterlist can be updated, and should be to prevent unnecessary work if that's all BOSS is doing.
-	It requires BOSSlog output though, so put that in a buffer.
-
-	4. Game master file cannot be read.
-	5. Building the modlist fails.
-	6. Masterlist does not exist.
-	7. Masterlist is not valid UTF-8.
-	*/
-
-	//Back up old recognised mod list for diff later.
-/*	if (fs::exists(bosslog_text_path)) {
-		size_t pos1, pos2;
-		fileToBuffer(bosslog_text_path,oldBOSSLogRecognised);
-
-	} else if (fs::exists(bosslog_html_path)) {
-		size_t pos1, pos2;
-		fileToBuffer(bosslog_html_path,oldBOSSLogRecognised); 
-		pos1 = oldBOSSLogRecognised.find("<ul id='recognised'>\n");
-		pos2 = oldBOSSLogRecognised.find("</ul>\n</div>\n", pos1);
-		oldBOSSLogRecognised = oldBOSSLogRecognised.substr(pos1, pos2-pos1);
-	} else
-		BOSSLogDiff = true;
-*/
-	//Now proceed with checks.
 
 	//BOSSlog check.
 	LOG_DEBUG("opening '%s'", bosslog_path.string().c_str());
@@ -308,9 +314,9 @@ int main(int argc, char *argv[]) {
 					Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 				exit (1); //fail in screaming heap.
 			}
-		} else if (fs::exists(data_path / "Fallout3.esm")) game = 2;
-		else if (fs::exists(data_path / "Nehrim.esm")) game = 3;
+		} else if (fs::exists(data_path / "Nehrim.esm")) game = 3;
 		else if (fs::exists(data_path / "FalloutNV.esm")) game = 4;
+		else if (fs::exists(data_path / "Fallout3.esm")) game = 2;
 		else {
 			LOG_ERROR("None of the supported games were detected...");
 			OutputHeader();
@@ -558,7 +564,6 @@ int main(int argc, char *argv[]) {
 	Modlist = Masterlist;
 	LOG_INFO("Modlist now filled with ordered mods and unknowns.");
 
-	
 
 	//////////////////////////
 	// Apply Userlist Rules
@@ -878,22 +883,6 @@ int main(int argc, char *argv[]) {
 	// Print Output to BOSSlog
 	/////////////////////////////
 
-	/* Output section order:
-
-	1. Title
-	2. Program info/copyright
-	3. Filters
-	4. General messages
-	5. Summary
-	6. Userlist messages
-	7. Script extender plugins
-	8. Recognised mods
-	9. Unrecognised mods
-	10. End
-
-	*/
-	
-
 	OutputHeader();  //Output BOSSlog header.
 
 	/////////////////////////////
@@ -946,36 +935,35 @@ int main(int argc, char *argv[]) {
 	// Print Summary
 	/////////////////////////////
 
-	/*Give:
-	Whether or not the recognised plugins section has changed.
-	*/
+	Output("<div id='summary'><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Summary</span><p>\n");
 
-	//Now output numbers.
-	Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Summary</span><div>\n<p>\n");
-	Output("Numbers do not take account of any changes made by your userlist.\n");
-	Output("<div style='display:table-row;'>\n");
-	Output("<div style='display:table-cell; padding: 0 10px;'>Number of recognised plugins:</div>\n");
-	Output("<div style='display:table-cell; padding: 0 10px;'>" + IntToString(recModNo) + "</div>\n");
-	Output("<div style='display:table-cell; padding: 0 10px;'>Number of warning messages:</div>\n");
-	Output("<div style='display:table-cell; padding: 0 10px;'>" + IntToString(warningNo) + "</div>\n");
+	if (oldBOSSlogRecognised == recogModContent)
+		Output("<b>No change in recognised mod list since last run.</b><br />\n<br />\n");
+	
+	Output("Mods sorted by your userlist are counted as recognised, not unrecognised, plugins.\n");
+	Output("<div>\n");
+	Output("<div>Number of recognised plugins:</div>\n");
+	Output("<div>" + IntToString(recModNo) + "</div>\n");
+	Output("<div>Number of warning messages:</div>\n");
+	Output("<div>" + IntToString(warningNo) + "</div>\n");
 	Output("</div>\n");
-	Output("<div style='display:table-row;'>\n");
-	Output("<div style='display:table-cell; padding: 0 10px;'>Number of unrecognised plugins:</div>\n");
-	Output("<div style='display:table-cell; padding: 0 10px;'>" + IntToString(unrecModNo) + "</div>\n");
-	Output("<div style='display:table-cell; padding: 0 10px;'>Number of error messages:</div>\n");
-	Output("<div style='display:table-cell; padding: 0 10px;'>" + IntToString(errorNo) + "</div>\n");
+	Output("<div>\n");
+	Output("<div>Number of unrecognised plugins:</div>\n");
+	Output("<div>" + IntToString(unrecModNo) + "</div>\n");
+	Output("<div>Number of error messages:</div>\n");
+	Output("<div>" + IntToString(errorNo) + "</div>\n");
 	Output("</div>\n");
-	Output("<div style='display:table-row;'>\n");
-	Output("<div style='display:table-cell; padding: 0 10px;'>Number of ghosted plugins:</div>\n");
-	Output("<div style='display:table-cell; padding: 0 10px;'>" + IntToString(ghostModNo) + "</div>\n");
-	Output("<div style='display:table-cell; padding: 0 10px;'>Total number of messages:</div>\n");
-	Output("<div style='display:table-cell; padding: 0 10px;'>" + IntToString(messageNo) + "</div>\n");
+	Output("<div>\n");
+	Output("<div>Number of ghosted plugins:</div>\n");
+	Output("<div>" + IntToString(ghostModNo) + "</div>\n");
+	Output("<div>Total number of messages:</div>\n");
+	Output("<div>" + IntToString(messageNo) + "</div>\n");
 	Output("</div>\n");
-	Output("<div style='display:table-row;'>\n");
-	Output("<div style='display:table-cell; padding: 0 10px;'>Total number of plugins:</div>\n");
-	Output("<div style='display:table-cell; padding: 0 10px;'>" + IntToString(recModNo+unrecModNo) + "</div>\n");
+	Output("<div>\n");
+	Output("<div>Total number of plugins:</div>\n");
+	Output("<div>" + IntToString(recModNo+unrecModNo) + "</div>\n");
 	Output("</div>\n");
-	Output("</p>\n</div>\n</div>\n");
+	Output("</p>\n</div>\n");
 
 		
 	/////////////////////////////

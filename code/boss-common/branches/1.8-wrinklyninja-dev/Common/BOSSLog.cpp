@@ -87,6 +87,8 @@ namespace boss {
 				<< "input[type='checkbox'] {position:relative; top:0.15em; margin-right:0.5em;}"<<endl
 				<< "blockquote {font-style:italic;}"<<endl
 				<< "#unrecognised > li {margin-bottom:1em;}"<<endl
+				<< "#summary > div {display:table-row;}"<<endl
+				<< "#summary > div > div {display:table-cell; padding: 0 10px;}"<<endl
 				<< ".error {background:red; color:white; display:table; padding:0 4px;}"<<endl
 				<< ".warn {background:orange; color:white; display:table; padding:0 4px;}"<<endl
 				<< ".success {color:green;}"<<endl
@@ -262,43 +264,44 @@ namespace boss {
 			replace_first(text, "&#x2212;", "");
 			
 			
-			replace_first(text, "</ul>", "");
-			replace_first(text, "<b>", "");
-			replace_first(text, "</b>", "");
-			replace_first(text, "<i>", "");
-			replace_first(text, "</i>", "");
+			replace_all(text, "</ul>", "");
+			replace_all(text, "<b>", "");
+			replace_all(text, "</b>", "");
+			replace_all(text, "<i>", "");
+			replace_all(text, "</i>", "");
 
 			replace_first(text, "<span>", "======================================\n");
 
-			replace_first(text, " class='warn'>", ">");
+			replace_all(text, " class='warn'>", ">");
 			replace_all(text, " class='error'>", ">");
-			replace_first(text, " class='success'>", ">");
-			replace_first(text, " class='tag'>", ">");
-			replace_first(text, " class='ghosted'>", ">  ");
-			replace_first(text, " class='version'>", ">  ");
-			replace_first(text, " class='dirty'>", ">");
-			replace_first(text, " class='crc'>", ">  ");
-			replace_first(text, " class='note'>", ">");
-			replace_first(text, " class='req'>", ">");
-			replace_first(text, " class='inc'>", ">");
-			replace_first(text, " class='tagPrefix'>", ">");
-			replace_first(text, "<li><span class='mod'>","");
+			replace_all(text, " class='success'>", ">");
+			replace_all(text, " class='tag'>", ">");
+			replace_all(text, " class='ghosted'>", ">  ");
+			replace_all(text, " class='version'>", ">  ");
+			replace_all(text, " class='dirty'>", ">");
+			replace_all(text, " class='crc'>", ">  ");
+			replace_all(text, " class='note'>", ">");
+			replace_all(text, " class='req'>", ">");
+			replace_all(text, " class='inc'>", ">");
+			replace_all(text, " class='tagPrefix'>", ">");
+			replace_all(text, "<li><span class='mod'>","");
 
 			replace_first(text, " onclick='toggleSectionDisplay(this)'>", ">");
 			replace_first(text, " id='seplugins'>", ">");
 			replace_first(text, " id='recognised'>", ">");
 			replace_first(text, " id='unrecognised'>", ">");
 			replace_first(text, " id='userlistMessages'>", ">");
+			replace_first(text, " id='summary'>", ">");
 
-			replace_first(text, "<blockquote>", "\n\n");
-			replace_first(text, "</blockquote>", "\n\n");
-			replace_first(text, "<ul>", "");
+			replace_all(text, "<blockquote>", "\n\n");
+			replace_all(text, "</blockquote>", "\n\n");
+			replace_all(text, "<ul>", "");
 			
-			replace_first(text, "<li>", "*  ");
-			replace_first(text, "</li>", "");
+			replace_all(text, "<li>", "*  ");
+			replace_all(text, "</li>", "");
 			
 			replace_all(text, "</div>", "");
-			replace_first(text, "</p>", "");	
+			replace_all(text, "</p>", "");	
 
 			replace_all(text, "<br />", "");
 			replace_all(text, "<span>", "");
@@ -307,8 +310,8 @@ namespace boss {
 
 			replace_all(text, "<p>", "\n");
 
-			replace_first(text, "&gt;", ">");
-			replace_first(text, "&lt;", "<");
+			replace_all(text, "&gt;", ">");
+			replace_all(text, "&lt;", "<");
 
 			//Convert from generic format into HTML hyperlinks.
 			size_t pos1,pos2;
