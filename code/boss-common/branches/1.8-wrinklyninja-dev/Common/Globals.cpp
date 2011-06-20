@@ -37,6 +37,6 @@ namespace boss {
 	int verbosity           = 0;     // log levels above INFO to output
 	bool debug              = false; // whether to include origin information in logging statements
 	bool show_CRCs			= false; // whether or not to show mod CRCs.
-	string format			= "html";  // what format the output should be in.
+	string log_format			= "html";  // what format the output should be in.
 	bool trial_run			= false; //If true, don't redate files.
 }

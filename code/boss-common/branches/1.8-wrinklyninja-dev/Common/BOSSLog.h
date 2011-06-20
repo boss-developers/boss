@@ -25,7 +25,7 @@ namespace boss {
 	using namespace std;
 
 	//Prints a given message to the bosslog, using format-safe Output function below.
-	void ShowMessage(message currentMessage);
+	void ShowMessage(string& buffer, message currentMessage);
 
 	//Prints ouptut with formatting according to format.
 	void Output(string text);

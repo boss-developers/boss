@@ -90,7 +90,7 @@ namespace boss {
 	void AddSyntaxError(keyType const& rule, string const& object, string const& message) {
 		string keystring = KeyToString(rule);
 		string const msg = (SyntaxErrorFormat % keystring % object % message).str();
-		errorMessageBuffer.push_back(msg);
+		userlistErrorBuffer.push_back(msg);
 		return;
 	}
 
@@ -226,7 +226,7 @@ namespace boss {
 			expect = "&lt;" + expect + "&gt;";
 			boost::replace_all(context, "\n", "<br />\n");
 			string msg = (ParsingErrorFormat % expect % context).str();
-			errorMessageBuffer.push_back(msg);
+			userlistErrorBuffer.push_back(msg);
 			return;
 		}
 	};

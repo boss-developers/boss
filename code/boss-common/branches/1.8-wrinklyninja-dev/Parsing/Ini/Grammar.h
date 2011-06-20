@@ -128,7 +128,7 @@ namespace boss {
 			expect = "&lt;" + expect + "&gt;";
 			boost::replace_all(context, "\n", "<br />\n");
 			string msg = (ParsingErrorFormat % expect % context).str();
-			errorMessageBuffer.push_back(msg);
+			iniErrorBuffer.push_back(msg);
 			return;
 		}
 	};

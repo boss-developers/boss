@@ -431,7 +431,7 @@ namespace boss {
 			expect = "&lt;" + expect + "&gt;";
 			boost::replace_all(context, "\n", "<br />\n");
 			string msg = (MasterlistParsingErrorFormat % expect % context).str();
-			errorMessageBuffer.push_back(msg);
+			masterlistErrorBuffer.push_back(msg);
 			return;
 		}
 	};

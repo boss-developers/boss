@@ -21,7 +21,7 @@ namespace boss {
 	using boost::algorithm::replace_first;
 
 
-	void ShowMessage(message currentMessage) {
+	void ShowMessage(string& buffer, message currentMessage) {
 		size_t pos1,pos2;
 		string link;
 		//Wrap web addresses in HTML link format. Skip those already in HTML format.
@@ -38,35 +38,35 @@ namespace boss {
 		//Select message formatting.
 		switch(currentMessage.key) {
 		case TAG:
-			Output("<li class='tag'><span class='tagPrefix'>Bash Tag suggestion(s):</span> " + currentMessage.data + "</li>\n");
+			buffer += "<li class='tag'><span class='tagPrefix'>Bash Tag suggestion(s):</span> " + currentMessage.data + "</li>\n";
 			break;
 		case SAY:
-			Output("<li class='note'>Note: " + currentMessage.data + "</li>\n");
+			buffer += "<li class='note'>Note: " + currentMessage.data + "</li>\n";
 			break;
 		case REQ:
-			Output("<li class='req'>Requires: " + currentMessage.data + "</li>\n");
+			buffer += "<li class='req'>Requires: " + currentMessage.data + "</li>\n";
 			break;
 		case INC:
-			Output("<li class='inc'>Incompatible with: " + currentMessage.data + "</li>\n");
+			buffer += "<li class='inc'>Incompatible with: " + currentMessage.data + "</li>\n";
 			break;
 		case WARN:
-			Output("<li class='warn'>Warning: " + currentMessage.data + "</li>\n");
+			buffer += "<li class='warn'>Warning: " + currentMessage.data + "</li>\n";
 			break;
 		case ERR:
-			Output("<li class='error'>ERROR: " + currentMessage.data + "</li>\n");
+			buffer += "<li class='error'>ERROR: " + currentMessage.data + "</li>\n";
 			break;
 		case DIRTY:
-			Output("<li class='dirty'>Contains dirty edits: " + currentMessage.data + "</li>\n");
+			buffer += "<li class='dirty'>Contains dirty edits: " + currentMessage.data + "</li>\n";
 			break;
 		default:
-			Output("<li class='note'>Note: " + currentMessage.data + "</li>\n");
+			buffer += "<li class='note'>Note: " + currentMessage.data + "</li>\n";
 			break;
 		}
 	}
 
 	//Prints header if format is HTML, else nothing.
-	void OutputHeader(ofstream &log) {
-		if (format == "html") {
+	void OutputHeader() {
+		if (log_format == "html") {
 			bosslog << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
 				<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
 				<< "body {font-family:Calibri,Arial,sans-serifs;}"<<endl
@@ -254,7 +254,7 @@ namespace boss {
 
 	//Prints ouptut with formatting according to output format.
 	void Output(string text) {
-		if (format == "text") {
+		if (log_format == "text") {
 			//Yes. This really is as horrific as it looks. It should be only temporary though.
 			replace_first(text, "</body>\n</html>", "");
 			replace_first(text, "&copy;", "c");
@@ -326,7 +326,7 @@ namespace boss {
 	}
 
 	void OutputFooter() {
-		if (format == "html") {
+		if (log_format == "html") {
 			bosslog << "</body>\n</html>";
 		}
 	}
