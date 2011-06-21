@@ -20,6 +20,56 @@ namespace boss {
 	using boost::algorithm::replace_all;
 	using boost::algorithm::replace_first;
 
+	//Default filter options.
+	bool UseDarkColourScheme    = 0;
+	bool HideVersionNumbers     = 0;
+	bool HideGhostedLabel       = 0;
+	bool HideChecksums          = 0;
+	bool HideMessagelessMods    = 0;
+	bool HideGhostedMods        = 0;
+	bool HideRuleWarnings       = 0;
+	bool HideAllModMessages     = 0;
+	bool HideNotes              = 0;
+	bool HideBashTagSuggestions = 0;
+	bool HideRequirements       = 0;
+	bool HideIncompatibilities  = 0;
+
+	//Default CSS.
+	string CSSBody				= "font-family:Calibri,Arial,sans-serifs;";
+	string CSSFilters			= "border:1px grey dashed; background:#F5F5F5; padding:0.3em; display:table;";
+	string CSSFiltersList		= "display:inline-block; padding:0.2em 1em; white-space:nowrap; margin:0;";
+	string CSSTitle				= "font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:0.2em;";
+	string CSSCopyright			= "text-align:center;";
+	string CSSSections			= "margin-bottom:4em;";
+	string CSSSectionTitle		= "font-weight:bold; font-size:1.3em; cursor:pointer;";
+	string CSSSectionPlusMinus	= "display:inline-block; position:relative; top:0.05em; font-size:1.30em; width:0.6em; margin-right:0.1em;";
+	string CSSTopLevelList		= "padding-left:0; margin-top:1em;";
+	string CSSLastSection		= "margin:0;";
+	string CSSLastSectionTitle	= "cursor:default;";
+	string CSSTopLevelListItem	= "margin-left:0; margin-bottom:2em;";
+	string CSSList				= "list-style:none;";
+	string CSSListItem			= "margin-bottom:0.4em;";
+	string CSSItemList			= "CSSListItem";
+	string CSSCheckbox			= "position:relative; top:0.15em; margin-right:0.5em;";
+	string CSSBlockquote		= "font-style:italic;";
+	string CSSUnrecognisedList	= "margin-bottom:1em;";
+	string CSSSummaryRow		= "display:table-row;";
+	string CSSSummaryCell		= "display:table-cell; padding: 0 10px;";
+	string CSSError				= "background:red; color:white; display:table; padding:0 4px;";
+	string CSSWarning			= "background:orange; color:white; display:table; padding:0 4px;";
+	string CSSSuccess			= "color:green;";
+	string CSSVersion			= "color:#6394F8; margin-left:1.3em; padding:0 4px;";
+	string CSSGhost				= "color:#888888; margin-left:1.3em; padding:0 4px;";
+	string CSSCRC				= "color:#BC8923; margin-left:1.3em; padding:0 4px;";
+	string CSSTagPrefix			= "color:#CD5555;";
+	string CSSDirty				= "color:#996600;";
+	string CSSQuotedMessage		= "color:grey;";
+	string CSSMod				= "";
+	string CSSTag				= "";
+	string CSSNote				= "";
+	string CSSRequirement		= "";
+	string CSSIncompatibility	= "";
+	
 
 	void ShowMessage(string& buffer, message currentMessage) {
 		size_t pos1,pos2;
@@ -69,36 +119,36 @@ namespace boss {
 		if (log_format == "html") {
 			bosslog << "<!DOCTYPE html>"<<endl<<"<html>"<<endl<<"<head>"<<endl<<"<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>"<<endl
 				<< "<title>BOSS Log</title>"<<endl<<"<style type='text/css'>"<<endl
-				<< "body {font-family:Calibri,Arial,sans-serifs;}"<<endl
-				<< ".filters {border:1px grey dashed; background:#F5F5F5; padding:0.3em; display:table;}"<<endl
-				<< ".filters > li {display:inline-block; padding:0.2em 1em; white-space:nowrap; margin:0;}"<<endl
-				<< "body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:0.2em;}"<<endl
-				<< "body > div:first-child + div {text-align:center;}"<<endl
-				<< "body > div {margin-bottom:4em;}"<<endl
-				<< "body > div > span:first-child {font-weight:bold; font-size:1.3em; cursor:pointer;}"<<endl
-				<< "body > div > span:first-child > span {display:inline-block; position:relative; top:0.05em; font-size:1.30em; width:0.6em; margin-right:0.1em;}"<<endl			
-				<< "div > ul {padding-left:0; margin-top:1em;}"<<endl
-				<< "body > div:last-child {margin:0;}"<<endl
-				<< "body > div:last-child > span:first-child {cursor:default;}"<<endl
-				<< "div > ul > li {margin-left:0; margin-bottom:2em;}"<<endl
-				<< "ul {list-style:none;}"<<endl
-				<< "ul li {margin-bottom:0.4em;}"<<endl
-				<< "li ul {margin-top:0.4em;}"<<endl
-				<< "input[type='checkbox'] {position:relative; top:0.15em; margin-right:0.5em;}"<<endl
-				<< "blockquote {font-style:italic;}"<<endl
-				<< "#unrecognised > li {margin-bottom:1em;}"<<endl
-				<< "#summary > div {display:table-row;}"<<endl
-				<< "#summary > div > div {display:table-cell; padding: 0 10px;}"<<endl
-				<< ".error {background:red; color:white; display:table; padding:0 4px;}"<<endl
-				<< ".warn {background:orange; color:white; display:table; padding:0 4px;}"<<endl
-				<< ".success {color:green;}"<<endl
-				<< ".version {color:#6394F8; margin-left:1.3em; padding:0 4px;}"<<endl
-				<< ".ghosted {color:#888888; margin-left:1.3em; padding:0 4px;}"<<endl
-				<< ".crc {color:#BC8923; margin-left:1.3em; padding:0 4px;}"<<endl
-				<< ".tagPrefix {color:#CD5555;}"<<endl
-				<< ".dirty {color:#996600;}"<<endl
-				<< ".message {color:grey;}"<<endl
-				<< ".mod{} .tag{} .note{} .req{} .inc{}"<<endl
+				<< "body {" << CSSBody << "}"<<endl
+				<< ".filters {" << CSSFilters << "}"<<endl
+				<< ".filters > li {" << CSSFiltersList << "}"<<endl
+				<< "body > div:first-child {" << CSSTitle << "}"<<endl
+				<< "body > div:first-child + div {" << CSSCopyright << "}"<<endl
+				<< "body > div {" << CSSSections << "}"<<endl
+				<< "body > div > span:first-child {" << CSSSectionTitle << "}"<<endl
+				<< "body > div > span:first-child > span {" << CSSSectionPlusMinus << "}"<<endl			
+				<< "div > ul {" << CSSTopLevelList << "}"<<endl
+				<< "body > div:last-child {" << CSSLastSection << "}"<<endl
+				<< "body > div:last-child > span:first-child {" << CSSLastSectionTitle << "}"<<endl
+				<< "div > ul > li {" << CSSTopLevelListItem << "}"<<endl
+				<< "ul {" << CSSList << "}"<<endl
+				<< "ul li {" << CSSListItem << "}"<<endl
+				<< "li ul {" << CSSItemList << "}"<<endl
+				<< "input[type='checkbox'] {" << CSSCheckbox << "}"<<endl
+				<< "blockquote {" << CSSBlockquote << "}"<<endl
+				<< "#unrecognised > li {" << CSSUnrecognisedList << "}"<<endl
+				<< "#summary > div {" << CSSSummaryRow << "}"<<endl
+				<< "#summary > div > div {" << CSSSummaryCell << "}"<<endl
+				<< ".error {" << CSSError << "}"<<endl
+				<< ".warn {" << CSSWarning << "}"<<endl
+				<< ".success {" << CSSSuccess << "}"<<endl
+				<< ".version {" << CSSVersion << "}"<<endl
+				<< ".ghosted {" << CSSGhost << "}"<<endl
+				<< ".crc {" << CSSCRC << "}"<<endl
+				<< ".tagPrefix {" << CSSTagPrefix << "}"<<endl
+				<< ".dirty {" << CSSDirty << "}"<<endl
+				<< ".message {" << CSSQuotedMessage << "}"<<endl
+				<< ".mod{" << CSSMod << "} .tag{" << CSSTag << "} .note{" << CSSNote << "} .req{" << CSSRequirement << "} .inc{" << CSSIncompatibility << "}"<<endl
 				<< "</style>"<<endl
 				<< "<script type='text/javascript'>"<<endl
 				<< "function toggleSectionDisplay(heading){"<<endl
@@ -229,6 +279,33 @@ namespace boss {
 				<< "		}"<<endl
 				<< "	}"<<endl
 				<< "}"<<endl
+				<< "function initialSetup() {"<<endl
+				<< "	swapColorScheme(document.getElementById('b1'));"<<endl
+				<< "	toggleUserlistWarnings(document.getElementById('b12'));"<<endl
+				<< "	toggleMods();"<<endl
+				<< "	toggleDisplayCSS(document.getElementById('b2'),'.version','inline');"<<endl
+				<< "	toggleDisplayCSS(document.getElementById('b3'),'.ghosted','inline');"<<endl
+				<< "	toggleDisplayCSS(document.getElementById('b4'),'.crc','inline');"<<endl
+				<< "	toggleDisplayCSS(document.getElementById('b7'),'li ul','block');"<<endl
+				<< "	toggleDisplayCSS(document.getElementById('b8'),'.note','table');"<<endl
+				<< "	toggleDisplayCSS(document.getElementById('b9'),'.tag','table');"<<endl
+				<< "	toggleDisplayCSS(document.getElementById('b10'),'.req','table');"<<endl
+				<< "	toggleDisplayCSS(document.getElementById('b11'),'.inc','table');"<<endl
+				<< "}"<<endl
+				<< "function DomReady(fn){"<<endl
+				<< "	if(document.addEventListener){"<<endl
+				<< "		document.addEventListener('DOMContentLoaded', fn, false);"<<endl
+				<< "	}else{"<<endl
+				<< "		document.onreadystatechange = function(){readyState(fn)}"<<endl
+				<< "	}"<<endl
+				<< "}"<<endl
+				<< "function readyState(fn){"<<endl
+				<< "	if(document.readyState == 'interactive'){"<<endl
+				<< "		fn();"<<endl
+				<< "	}"<<endl
+				<< "}"<<endl
+				<< "window.onDomReady = DomReady;"<<endl
+				<< "window.onDomReady(initialSetup);"<<endl
 				<< "</script>"<<endl
 				<< "</head><body>"<<endl;
 		}

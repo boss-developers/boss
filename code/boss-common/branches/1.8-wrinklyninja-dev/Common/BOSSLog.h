@@ -24,6 +24,57 @@
 namespace boss {
 	using namespace std;
 
+	//Default filter options.
+	extern bool UseDarkColourScheme;
+	extern bool HideVersionNumbers;
+	extern bool HideGhostedLabel;
+	extern bool HideChecksums;
+	extern bool HideMessagelessMods;
+	extern bool HideGhostedMods;
+	extern bool HideRuleWarnings;
+	extern bool HideAllModMessages;
+	extern bool HideNotes;
+	extern bool HideBashTagSuggestions;
+	extern bool HideRequirements;
+	extern bool HideIncompatibilities;
+
+	//Default CSS.
+	extern string CSSBody;
+	extern string CSSFilters;
+	extern string CSSFiltersList;
+	extern string CSSTitle;
+	extern string CSSCopyright;
+	extern string CSSSections;
+	extern string CSSSectionTitle;
+	extern string CSSSectionPlusMinus;
+	extern string CSSTopLevelList;
+	extern string CSSLastSection;
+	extern string CSSLastSectionTitle;
+	extern string CSSTopLevelListItem;
+	extern string CSSList;
+	extern string CSSListItem;
+	extern string CSSItemList;
+	extern string CSSCheckbox;
+	extern string CSSBlockquote;
+	extern string CSSUnrecognisedList;
+	extern string CSSSummaryRow;
+	extern string CSSSummaryCell;
+	extern string CSSError;
+	extern string CSSWarning;
+	extern string CSSSuccess;
+	extern string CSSVersion;
+	extern string CSSGhost;
+	extern string CSSCRC;
+	extern string CSSTagPrefix;
+	extern string CSSDirty;
+	extern string CSSQuotedMessage;
+	extern string CSSMod;
+	extern string CSSTag;
+	extern string CSSNote;
+	extern string CSSRequirement;
+	extern string CSSIncompatibility;
+	
+
 	//Prints a given message to the bosslog, using format-safe Output function below.
 	void ShowMessage(string& buffer, message currentMessage);
 

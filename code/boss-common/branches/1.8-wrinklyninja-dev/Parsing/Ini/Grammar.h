@@ -23,6 +23,7 @@
 #include "Common/Globals.h"
 #include "Support/Helpers.h"
 #include "Support/Logger.h"
+#include "Common/BOSSLog.h"
 
 #include <sstream>
 
@@ -59,23 +60,178 @@ namespace boss {
 	//Ini Grammar.
 	////////////////////////////
 
+	string heading;
+
+	void StoreHeading(string hdng) {
+		heading = hdng;
+	}
+
 	void SetVar(string var, string value) {
-		cout << var << " = " << value << endl;
+		int intVal;
+		bool bval;
+		if (heading == "BOSS.RunOptions") {
+			if (var == "Game") {
+				if (value == "Oblivion")
+					game = 1;
+				else if (value == "Nehrim")
+					game = 3;
+				else if (value == "Fallout3")
+					game = 2;
+				else if (value == "FalloutNV")
+					game = 4;
+				return;
+			} else if (var == "BOSSlogFormat") {
+				if (value == "html" || value == "text")
+					log_format = value;
+				return;
+			}	
+			intVal = atoi(value.c_str());
+			if (intVal == 0)
+				bval = false;
+			else
+				bval = true;
+			if (var == "OnlyUpdateMasterlist") {
+				update_only = bval;
+			} else if (var == "SilentRun") {
+				silent = bval;
+			} else if (var == "NoVersionParse") {
+				skip_version_parse = bval;
+			} else if (var == "Debug") {
+				debug = bval;
+			} else if (var == "DisplayCRCs") {
+				show_CRCs = bval;
+			} else if (var == "DoTrialRun") {
+				trial_run = bval;
+			} else if (var == "RevertLevel") {
+				if (intVal >= 0 && intVal < 3)
+					revert = intVal;
+			} else if (var == "CommandLineVerbosity") {
+				if (intVal >= 0 && intVal < 4)
+					verbosity = intVal;
+			}
+			return;
+		} else if (heading == "BOSSlog.Filters") {
+			intVal = atoi(value.c_str());
+			if (intVal == 0)
+				bval = false;
+			else
+				bval = true;
+			if (var == "UseDarkColourScheme") {
+				UseDarkColourScheme = bval;
+			} else if (var == "HideVersionNumbers") {
+				HideVersionNumbers = bval;
+			} else if (var == "HideGhostedLabel") {
+				HideGhostedLabel = bval;
+			} else if (var == "HideChecksums") {
+				HideChecksums = bval;
+			} else if (var == "HideMessagelessMods") {
+				HideMessagelessMods = bval;
+			} else if (var == "HideGhostedMods") {
+				HideGhostedMods = bval;
+			} else if (var == "HideRuleWarnings") {
+				HideRuleWarnings = bval;
+			} else if (var == "HideAllModMessages") {
+				HideAllModMessages = bval;
+			} else if (var == "HideNotes") {
+				HideNotes = bval;
+			} else if (var == "HideBashTagSuggestions") {
+				HideBashTagSuggestions = bval;
+			} else if (var == "HideRequirements") {
+				HideRequirements = bval;
+			} else if (var == "HideIncompatibilities") {
+				HideIncompatibilities = bval;
+			}
+			return;
+		} else if (heading == "BOSSlog.Styles") {
+			if (value == "")
+				return;
+			else if (var == "body")
+				CSSBody = value;
+			else if (var == ".filters")
+				CSSFilters = value;
+			else if (var == ".filters > li")
+				CSSFiltersList = value;
+			else if (var == "body > div:first-child")
+				CSSTitle = value;
+			else if (var == "body > div:first-child + div")
+				CSSCopyright = value;
+			else if (var == "body > div")
+				CSSSections = value;
+			else if (var == "body > div > span:first-child")
+				CSSSectionTitle = value;
+			else if (var == "body > div > span:first-child > span")
+				CSSSectionPlusMinus = value;
+			else if (var == "div > ul")
+				CSSTopLevelList = value;
+			else if (var == "body > div:last-child")
+				CSSLastSection = value;
+			else if (var == "body > div:last-child > span:first-child")
+				CSSLastSectionTitle = value;
+			else if (var == "div > ul > li")
+				CSSTopLevelListItem = value;
+			else if (var == "ul")
+				CSSList = value;
+			else if (var == "ul li")
+				CSSListItem = value;
+			else if (var == "li ul")
+				CSSItemList = value;
+			else if (var == "input[type='checkbox']")
+				CSSCheckbox = value;
+			else if (var == "blockquote")
+				CSSBlockquote = value;
+			else if (var == "#unrecognised > li")
+				CSSUnrecognisedList = value;
+			else if (var == "#summary > div")
+				CSSSummaryRow = value;
+			else if (var == "#summary > div > div")
+				CSSSummaryCell = value;
+			else if (var == ".error")
+				CSSError = value;
+			else if (var == ".warn")
+				CSSWarning = value;
+			else if (var == ".success")
+				CSSSuccess = value;
+			else if (var == ".version")
+				CSSVersion = value;
+			else if (var == ".ghosted")
+				CSSGhost = value;
+			else if (var == ".crc")
+				CSSCRC = value;
+			else if (var == ".tagPrefix")
+				CSSTagPrefix = value;
+			else if (var == ".dirty")
+				CSSDirty = value;
+			else if (var == ".message")
+				CSSQuotedMessage = value;
+			else if (var == ".mod")
+				CSSMod = value;
+			else if (var == ".tag")
+				CSSTag = value;
+			else if (var == ".note")
+				CSSNote = value;
+			else if (var == ".req")
+				CSSRequirement = value;
+			else if (var == ".inc")
+				CSSIncompatibility = value;
+		}
 	}
 
 	template <typename Iterator>
 	struct ini_grammar : qi::grammar<Iterator, Ini_Skipper<Iterator>> {
-		ini_grammar() : ini_grammar::base_type(section, "ini grammar") {
+		ini_grammar() : ini_grammar::base_type(ini, "ini grammar") {
 
 			ini =
-				section % eol
-				> eoi;
+				section % +eol;
 
 			section =
-				setting % +eol;
+				heading[phoenix::bind(&StoreHeading, _1)]
+				> +eol
+				> setting % +eol;
 
-			title =
-				lit("[") > +(char_ - eol);
+			heading %= 
+				lit("[")
+				>> (+(char_ - "]"))
+				>> lit("]");
 
 			setting =
 				(var
@@ -83,26 +239,22 @@ namespace boss {
 				> value)[phoenix::bind(&SetVar, _1, _2)];
 
 			var %=
-				(lit("\"") >> lexeme[+(char_ - lit("\""))] >> lit("\""))
+				lexeme[(lit("\"") >> +(char_ - lit("\"")) >> lit("\""))]
 				|
-				lexeme[+(char_ - '=')];
+				(!lit("[") >> +(char_ - '='));
 
 			value %=
-				lexeme[+(char_ - eol)];
+				(lit("{") >> lexeme[*(char_ - lit("}"))] >> lit("}"))
+				|
+				+(char_ - eol);
 
 			//Give each rule names.
-			comment.name("comment");
-			ini.name("ini");
 			section.name("section");
-			title.name("title");
 			setting.name("setting");
 			var.name("variable");
 			value.name("value");
 		
-			on_error<fail>(comment,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(ini,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(section,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(title,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(setting,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(var,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(value,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
@@ -110,8 +262,8 @@ namespace boss {
 
 		typedef Ini_Skipper<Iterator> skipper;
 
-		qi::rule<Iterator, skipper> comment, ini, section, title, setting;
-		qi::rule<Iterator, string(), skipper> var, value;
+		qi::rule<Iterator, skipper> ini, section, setting;
+		qi::rule<Iterator, string(), skipper> var, value, heading;
 	
 		void SyntaxError(Iterator const& /*first*/, Iterator const& last, Iterator const& errorpos, info const& what) {
 			ostringstream out;

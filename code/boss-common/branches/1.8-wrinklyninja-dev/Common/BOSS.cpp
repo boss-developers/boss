@@ -148,19 +148,16 @@ int main(int argc, char *argv[]) {
 	// This involves 1. Parsing and applying the ini if found, and 2. Applying any command-line options set.
 
 	//Parse ini file if found.
-	//If there are errors, they should be given in the BOSSlog (in a new Ini Messages section), but they aren't critical.
-	/*if (fs::exists("BOSS.ini")) {
+	if (fs::exists("BOSS.ini")) {
 		bool parsed = parseIni("BOSS.ini");
-		if (parsed)
-			cout << "Ini parsed successfully." << endl;
-		else {
+		if (!parsed) {
 			cout << "Ini parsing failed." << endl;
 			if (iniErrorBuffer.size() != 0) {
 				for (size_t i=0; i<iniErrorBuffer.size(); i++)  //Print parser error messages to console for now (debug)
 					cout << iniErrorBuffer[i] << endl;
 			}
 		}
-	}*/
+	}
 
 	// parse command line arguments
 	po::variables_map vm;
@@ -338,26 +335,30 @@ int main(int argc, char *argv[]) {
 	/////////////////////////////////////////////////////////
 	// Error Condition Check Interlude - Update Masterlist
 	/////////////////////////////////////////////////////////
-
+	
 	if (revert<1 && (update || update_only)) {
-		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
-		LOG_DEBUG("Updating masterlist...");
-		try {
-			unsigned int revision = UpdateMasterlist(game);  //Need to sort out the output of this - ATM it's very messy.
-			if (revision == 0) {
-				masterlistUpdateContent += "<li>masterlist.txt is already at the latest version. Update skipped.</li>";
-				cout << "masterlist.txt is already at the latest version. Update skipped." << endl;
-			} else {
-				masterlistUpdateContent += "<li>masterlist.txt updated to revision " + IntToString(revision) + ".</li>";
-				cout << "masterlist.txt updated to revision " << revision << endl;
+		//First check for internet connection, then update masterlist if connection present.
+		if (CheckConnection()) {
+			cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
+			LOG_DEBUG("Updating masterlist...");
+			try {
+				unsigned int revision = UpdateMasterlist(game);  //Need to sort out the output of this - ATM it's very messy.
+				if (revision == 0) {
+					masterlistUpdateContent += "<li>masterlist.txt is already at the latest version. Update aborted.</li>";
+					cout << "masterlist.txt is already at the latest version. Update aborted." << endl;
+				} else {
+					masterlistUpdateContent += "<li>masterlist.txt updated to revision " + IntToString(revision) + ".</li>";
+					cout << "masterlist.txt updated to revision " << revision << endl;
+				}
+			} catch (boss_error & e) {
+				string const * detail = boost::get_error_info<err_detail>(e);
+				masterlistUpdateContent += "<li class='warn'>Error: Masterlist update failed.<br />\n";
+				masterlistUpdateContent += "Details: " + *detail + "<br />\n";
+				masterlistUpdateContent += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.</li>\n";
 			}
-		} catch (boss_error & e) {
-			string const * detail = boost::get_error_info<err_detail>(e);
-			masterlistUpdateContent += "<li class='warn'>Error: Masterlist update failed.<br />\n";
-			masterlistUpdateContent += "Details: " + *detail + "<br />\n";
-			masterlistUpdateContent += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.</li>\n";
-		}
-		LOG_DEBUG("Masterlist updated successfully.");
+			LOG_DEBUG("Masterlist updated successfully.");
+		} else
+			masterlistUpdateContent += "<li>No internet connection detected. Masterlist auto-updater aborted.</li>";
 	}
 
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
@@ -891,18 +892,66 @@ int main(int argc, char *argv[]) {
 	
 	if (log_format == "html") {
 		Output("<ul class='filters'>\n");
-		Output("<li><input type='checkbox' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label></li>\n");
-		Output("<li><input type='checkbox' id='b12' onclick='toggleUserlistWarnings(this)' /><label for='b12'>Hide Rule Warnings</label></li>\n");
-		Output("<li><input type='checkbox' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label></li>\n");
-		Output("<li><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label></li>\n");
-		Output("<li><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label></li>\n");
-		Output("<li><input type='checkbox' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label></li>\n");
-		Output("<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label></li>\n");
-		Output("<li><input type='checkbox' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label></li>\n");
-		Output("<li><input type='checkbox' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label></li>\n");
-		Output("<li><input type='checkbox' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label></li>\n");
-		Output("<li><input type='checkbox' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label></li>\n");
-		Output("<li><input type='checkbox' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label></li>\n");
+		if (UseDarkColourScheme)
+			Output("<li><input type='checkbox' checked='checked' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label></li>\n");
+
+		if (HideRuleWarnings)
+			Output("<li><input type='checkbox' checked='checked' id='b12' onclick='toggleUserlistWarnings(this)' /><label for='b12'>Hide Rule Warnings</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b12' onclick='toggleUserlistWarnings(this)' /><label for='b12'>Hide Rule Warnings</label></li>\n");
+		
+		if (HideVersionNumbers)
+			Output("<li><input type='checkbox' checked='checked' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label></li>\n");
+
+		if (HideGhostedLabel)
+			Output("<li><input type='checkbox' checked='checked' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label></li>\n");
+
+		if (HideChecksums)
+			Output("<li><input type='checkbox' checked='checked' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label></li>\n");
+
+		if (HideMessagelessMods)
+			Output("<li><input type='checkbox' checked='checked' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label></li>\n");
+
+		if (HideGhostedMods)
+			Output("<li><input type='checkbox' checked='checked' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label></li>\n");
+
+		if (HideAllModMessages)
+			Output("<li><input type='checkbox' checked='checked' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label></li>\n");
+
+		if (HideNotes)
+			Output("<li><input type='checkbox' checked='checked' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label></li>\n");
+
+		if (HideBashTagSuggestions)
+			Output("<li><input type='checkbox' checked='checked' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label></li>\n");
+
+		if (HideRequirements)
+			Output("<li><input type='checkbox' checked='checked' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label></li>\n");
+
+		if (HideIncompatibilities)
+			Output("<li><input type='checkbox' checked='checked' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label></li>\n");
+
 		Output("</ul>\n");
 	}
 
@@ -935,7 +984,7 @@ int main(int argc, char *argv[]) {
 	// Print Summary
 	/////////////////////////////
 
-	Output("<div id='summary'><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Summary</span><p>\n");
+	Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Summary</span><div id='summary'><p>\n");
 
 	if (oldBOSSlogRecognised == recogModContent)
 		Output("<b>No change in recognised mod list since last run.</b><br />\n<br />\n");
@@ -963,7 +1012,7 @@ int main(int argc, char *argv[]) {
 	Output("<div>Total number of plugins:</div>\n");
 	Output("<div>" + IntToString(recModNo+unrecModNo) + "</div>\n");
 	Output("</div>\n");
-	Output("</p>\n</div>\n");
+	Output("</p>\n</div>\n</div>\n");
 
 		
 	/////////////////////////////

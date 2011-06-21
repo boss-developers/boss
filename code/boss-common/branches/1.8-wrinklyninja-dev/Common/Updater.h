@@ -17,6 +17,8 @@
 
 namespace boss {
 	unsigned int UpdateMasterlist(int game);
+
+	bool CheckConnection();
 }
 
 #endif

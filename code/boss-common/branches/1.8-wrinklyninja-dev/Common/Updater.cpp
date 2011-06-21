@@ -62,7 +62,7 @@ namespace boss {
 		if (!curl) 
 			throw boss_error() << err_detail("Curl could not be initialised.");
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
-		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 10s.
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
 		
 		//Get revision number from http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn page text.
 		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn");
@@ -186,5 +186,30 @@ namespace boss {
 
 		//Return revision number.
 		return atoi(revision.c_str());
+	}
+
+	bool CheckConnection() {
+		CURL *curl;									//cURL handle
+		char errbuff[CURL_ERROR_SIZE];
+		CURLcode ret;
+
+		//curl will be used to get stuff from the internet, so initialise it.
+		curl = curl_easy_init();
+		if (!curl) 
+			return false;
+		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+
+		//Check that there is an internet connection. Easiest way to do this is to check that the BOSS google code page exists.
+		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/");
+		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY);	
+		ret = curl_easy_perform(curl);
+		//Clean up and close curl handle now that it's finished with.
+		curl_easy_cleanup(curl);
+
+		if (ret!=CURLE_OK)
+			return false;
+		else
+			return true;
 	}
 }

@@ -72,7 +72,6 @@ namespace boss {
 				spc
 				| UTF8
 				| comment
-				| heading
 				| eof;
 			
 			spc = space - eol;
@@ -83,14 +82,10 @@ namespace boss {
 				lit("#") 
 				>> *(char_ - eol);
 
-			heading = 
-				lit("[")
-				>> *(char_ - eol);
-
 			eof = *(spc | comment | eol) >> eoi;
 		}
 
-		qi::rule<Iterator> start, spc, eof, comment, heading, UTF8;
+		qi::rule<Iterator> start, spc, eof, comment, UTF8;
 	};
 }
 #endif
