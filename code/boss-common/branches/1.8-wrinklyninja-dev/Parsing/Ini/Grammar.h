@@ -90,8 +90,13 @@ namespace boss {
 				bval = false;
 			else
 				bval = true;
-			if (var == "OnlyUpdateMasterlist") {
+			if (var == "UpdateMasterlist") {
+				update = bval;
+			} if (var == "OnlyUpdateMasterlist") {
 				update_only = bval;
+			} if (var == "DisableMasterlistUpdate") {
+				if (bval)
+					update = false;
 			} else if (var == "SilentRun") {
 				silent = bval;
 			} else if (var == "NoVersionParse") {

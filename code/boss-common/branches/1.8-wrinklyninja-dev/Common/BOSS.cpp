@@ -70,6 +70,11 @@ void Fail() {
 	exit(1);
 }
 
+void InhibitUpdate(bool val) {
+	if (val)
+		update = false;
+}
+
 int main(int argc, char *argv[]) {
 
 	size_t x=0;							//position of last recognised mod.
@@ -104,6 +109,8 @@ int main(int argc, char *argv[]) {
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
 								" available on the web before sorting")
+		("no-update,U", po::value<bool>()->zero_tokens()->notifier(&InhibitUpdate),
+								"inhibit the automatic masterlist updater")
 		("only-update,o", po::value(&update_only)->zero_tokens(),
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
@@ -145,9 +152,8 @@ int main(int argc, char *argv[]) {
 	///////////////////////////////
 	// Set up initial conditions
 	///////////////////////////////
-	// This involves 1. Parsing and applying the ini if found, and 2. Applying any command-line options set.
 
-	//Parse ini file if found.
+	//Parse ini file if found. Can't just use BOOST's program options ini parser because of the CSS syntax.
 	if (fs::exists("BOSS.ini")) {
 		bool parsed = parseIni("BOSS.ini");
 		if (!parsed) {
@@ -201,7 +207,6 @@ int main(int argc, char *argv[]) {
 			Fail();
 		}
 	}
-
 	if (vm.count("game")) {
 		// sanity check and parse argument
 		if      (boost::iequals("Oblivion",   gameStr)) { game = 1; }
