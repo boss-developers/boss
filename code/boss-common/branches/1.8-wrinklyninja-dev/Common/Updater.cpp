@@ -202,7 +202,7 @@ namespace boss {
 
 		//Check that there is an internet connection. Easiest way to do this is to check that the BOSS google code page exists.
 		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/");
-		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY);	
+		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1);	
 		ret = curl_easy_perform(curl);
 		//Clean up and close curl handle now that it's finished with.
 		curl_easy_cleanup(curl);

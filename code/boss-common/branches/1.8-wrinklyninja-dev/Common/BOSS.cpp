@@ -192,6 +192,10 @@ int main(int argc, char *argv[]) {
 		// it's ok if this number is too high.  setVerbosity will handle it
 		g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + verbosity));
 	}
+	if ((vm.count("update")) && (vm.count("no-update"))) {
+		LOG_ERROR("invalid options: --update,-u and --no-update,-U cannot both be given.");
+		Fail();
+	}
 	if (vm.count("help")) {
 		ShowUsage(opts);
 		exit(0);
