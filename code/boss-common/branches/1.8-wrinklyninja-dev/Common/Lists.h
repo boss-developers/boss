@@ -68,7 +68,8 @@ namespace boss {
 	enum itemType {
 		MOD,
 		BEGINGROUP,
-		ENDGROUP
+		ENDGROUP,
+		REGEX
 	};
 
 	struct message {

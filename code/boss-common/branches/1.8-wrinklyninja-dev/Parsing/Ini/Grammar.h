@@ -69,7 +69,6 @@ namespace boss {
 	void SetVar(string var, string value) {
 		int intVal;
 		bool bval;
-		cout << var << " = " << value << endl;
 		if (heading == "GUI.LastOptions" || heading == "Updater.Options")
 			return;
 		if (heading == "BOSS.RunOptions") {

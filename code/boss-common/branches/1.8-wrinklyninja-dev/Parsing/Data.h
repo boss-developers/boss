@@ -77,6 +77,7 @@ namespace boss {
 				("\\BeginGroup\\:",BEGINGROUP)
 				("\\EndGroup\\\\",ENDGROUP)
 				("MOD:", MOD)  //Needs the colon there unfortunately.
+				("REGEX:", REGEX)
 			;
 		}
 	} typeKey;

@@ -286,10 +286,20 @@ namespace boss {
                 retVal = string(buf);
 	   	        LOG_DEBUG("extracted version from '%s': %s", filename.c_str(), retVal.c_str());
             }
-
             pclose(fp);
         }
 #endif
 		return retVal;
+	}
+
+	//Searches a hashset for the first matching string of a regex and returns its iterator position.
+	boost::unordered_set<string>::iterator FindRegexMatch(boost::unordered_set<string> set, boost::regex reg, boost::unordered_set<string>::iterator startPos) {
+		while(startPos != set.end()) {
+			string mod = *startPos;
+			if (boost::regex_match(mod,reg))
+				return startPos;
+			++startPos;
+		}
+		return set.end();
 	}
 }

@@ -25,6 +25,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include <boost/regex.hpp>
+
 
 using namespace boss;
 using namespace std;
@@ -562,6 +564,36 @@ int main(int argc, char *argv[]) {
 					}
 				}
 			}
+		} else if (Item.type == REGEX) {
+			//First turn the Item into a mod.
+			Item.type = MOD;
+			//Now form a regex.
+			boost::regex reg(Tidy(Item.name.string())+"(.ghost)?",boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
+			//Now start looking.
+			setPos = hashset.begin();
+			do {
+				setPos = FindRegexMatch(hashset, reg, setPos);
+				if (setPos == hashset.end())  //Exit if the mod hasn't been found.
+					break;
+				cout << "Found: " << *setPos << endl;
+				//Mod name. Unfortunately this is lowercase. Could be compared against the modlist/userlist data structures to get the true case name.
+				string mod = *setPos;
+				//Check that the mod hasn't already been added to the holding vector.
+				addedPos = addedMods.find(Tidy(mod));
+				//Now do the adding/removing.
+				if (addedPos == addedMods.end()) {							//The mod is not already in the holding vector.
+					//Create new temporary item to hold current found mod.
+					item tempItem = Item;
+					tempItem.name = fs::path(mod);
+					holdingVec.push_back(tempItem);							//Record it in the holding vector.
+					pos = GetModPos(Modlist,mod);							//Also remove it from the Modlist.
+					if (pos != (size_t)-1)
+						Modlist.erase(Modlist.begin()+pos);
+					addedMods.insert(Tidy(mod));
+					cout << "Added: " << mod << endl;
+				}
+				++setPos;
+			} while (setPos != hashset.end());
 		} else //Group lines must stay recorded.
 			holdingVec.push_back(Item);
 		++iter;
