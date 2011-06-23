@@ -576,8 +576,19 @@ int main(int argc, char *argv[]) {
 				if (setPos == hashset.end())  //Exit if the mod hasn't been found.
 					break;
 				cout << "Found: " << *setPos << endl;
-				//Mod name. Unfortunately this is lowercase. Could be compared against the modlist/userlist data structures to get the true case name.
 				string mod = *setPos;
+				//Look for mod in modlist, and userlist. Replace with case-preserved mod name.
+				pos = GetModPos(Modlist,mod);
+				if (pos != (size_t)-1)
+					mod = Modlist[pos].name.string();
+				else {
+					for (size_t i=0; i<Userlist.size(); i++) {
+						for (size_t j=0; j<Userlist[i].lines.size(); j++) {
+							if (Tidy(Userlist[i].lines[j].object) == mod)
+								mod = Userlist[i].lines[j].object;
+						}
+					}
+				}
 				//Check that the mod hasn't already been added to the holding vector.
 				addedPos = addedMods.find(Tidy(mod));
 				//Now do the adding/removing.
