@@ -99,6 +99,9 @@ namespace boss {
 		case INC:
 			buffer += "<li class='inc'>Incompatible with: " + currentMessage.data + "</li>\n";
 			break;
+		case SPECIFIC_INC:
+			buffer += "<li class='inc'>Incompatible with: " + currentMessage.data + "</li>\n";
+			break;
 		case WARN:
 			buffer += "<li class='warn'>Warning: " + currentMessage.data + "</li>\n";
 			break;

@@ -195,8 +195,37 @@ namespace boss {
 
 	//Stores a message, should it be appropriate.
 	void StoreMessage(vector<message>& messages, message currentMessage) {
-		if (storeMessage)
-			messages.push_back(currentMessage);
+		if (storeMessage) {
+			if (currentMessage.key == REQ) {
+				//Modify message output based on what mods are installed.
+
+			} else if (currentMessage.key == SPECIFIC_INC) {
+				//Modify message output based on what mods are installed.
+				stringstream ss(currentMessage.data);
+				currentMessage.data = "";
+				string mod,plugin,item;
+				while (getline(ss, item, '|')) {
+					size_t pos1,pos2;
+					pos1 = item.find('"');
+					pos2 = item.find('"',pos1+1);
+					plugin = item.substr(pos1+1, pos2-pos1-1);
+					cout << plugin << endl;
+					if (fs::exists(data_path / plugin)) {
+						pos1 = item.find('"', pos2+1);
+						if (pos1 != string::npos) {
+							pos2 = item.find('"',pos1+1);
+							mod = item.substr(pos1+1, pos2-pos1-1);
+						} else
+							mod = plugin;
+						if (currentMessage.data != "")
+							currentMessage.data += ", ";
+						currentMessage.data += "\""+mod+"\"";
+					}
+				}
+			}
+			if (currentMessage.data != "")
+				messages.push_back(currentMessage);
+		}
 		return;
 	}
 

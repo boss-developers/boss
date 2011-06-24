@@ -49,7 +49,7 @@ namespace boss {
 		//Special masterlist keywords.
 		OOOSAY,
 		BCSAY,
-		
+		SPECIFIC_INC
 	};
 
 	extern vector<string> userlistErrorBuffer;  //Holds any error messages generated during parsing for printing later.

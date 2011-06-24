@@ -51,7 +51,7 @@ namespace boss {
 				("SAY",SAY)
 				("TAG",TAG)
 				("REQ",REQ)
-				("INC", INC)
+				("INC", SPECIFIC_INC)
 				("DIRTY",DIRTY)
 				("WARN",WARN)
 				("ERROR",ERR)
