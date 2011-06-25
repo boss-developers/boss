@@ -209,7 +209,6 @@ namespace boss {
 					pos1 = item.find('"');
 					pos2 = item.find('"',pos1+1);
 					plugin = item.substr(pos1+1, pos2-pos1-1);
-					cout << plugin << endl;
 					if (fs::exists(data_path / plugin)) {
 						pos1 = item.find('"', pos2+1);
 						if (pos1 != string::npos) {
