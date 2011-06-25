@@ -201,47 +201,58 @@ namespace boss {
 				//Modify message output based on what mods are installed.
 				stringstream ss(currentMessage.data);
 				currentMessage.data = "";
-				string mod,file,version,item;
-				bool versionCheck;
+				string mod,file,item;
 				while (getline(ss, item, '|')) {
-					//Syntax for an item is: "<version comparison>":"<plugin>"="<mod>"
+					//Syntax for an item is: "<version comparison>":"<file>"="<mod>"
 					//The "<version comparison>": and ="<mod>" are optional.
-					size_t pos1,pos2;
-					//Look for first quoted string.
+					string version;
+					bool versionCheck = true;
+					size_t pos1,pos2,pos3,pos4;
 					pos1 = item.find('"');
+					if (pos1 == string::npos)
+						continue;
 					pos2 = item.find('"',pos1+1);
-					if (item[pos2+1] == ':') { //First quoted string is a version comparison.
-						version = item.substr(pos1+1, pos2-pos1-1);
-						pos1 = pos2+2;
-						pos2 = item.find('"',pos1+1);
-						file = item.substr(pos1+1,pos2-pos1-1);
-						//Check version conditional.
-						CheckVersion(versionCheck, version + "|" + file);
-						if (versionCheck)
-							continue;	//Mod exists and is of the correct version. No message should be printed for this item.
-						pos1 = item.find('"',pos2+1);
-						if (pos1 != string::npos) { //There is also a mod given.
-							pos2 = item.find('"',pos1+1);
-							mod = item.substr(pos1+1, pos2-pos1-1);
-						} else 
-							mod = file;
-					} else if (item[pos2+1] == '=') { //First quoted string is a plugin, and a mod is given.
-						file = item.substr(pos1+1, pos2-pos1-1);
-						pos1 = pos2+2;
-						pos2 = item.find('"',pos1+1);
-						mod = item.substr(pos1+1,pos2-pos1-1);
-						version = "";
-						versionCheck = true;
-					} else { //Only a plugin is given.
+					if (pos2 == string::npos)
+						continue;
+					pos3 = item.find('"',pos2+1);
+					if (pos3 == string::npos) {  //Only a plugin is given.
 						file = item.substr(pos1+1, pos2-pos1-1);
 						mod = file;
-						version = "";
-						versionCheck = true;
+					} else {
+						pos4 = item.find(':',pos2+1);
+						if (pos4 != string::npos && pos4 < pos3) {  //A version and a file are given. Possibly also a mod.
+							version = item.substr(pos1+1, pos2-pos1-1);
+							pos4 = item.find('"',pos3+1);
+							if (pos4 == string::npos)
+								continue;
+							file = item.substr(pos3+1, pos4-pos3-1);
+							//Check version conditional.
+							CheckVersion(versionCheck, version + "|" + file);
+							if (versionCheck)
+								continue;	//Mod exists and is of the correct version. No message should be printed for this item.
+							pos1 = item.find('"',pos4+1);
+							if (pos1 != string::npos) {
+								pos2 = item.find('"',pos1+1);
+								if (pos2 == string::npos)
+									continue;
+								mod = item.substr(pos1+1, pos2-pos1-1);
+							} else
+								mod = file;
+						} else {
+							pos4 = item.find('=',pos2+1);
+							if (pos4 != string::npos && pos4 < pos3) {  //A file and a mod are given.
+								file = item.substr(pos1+1, pos2-pos1-1);
+								pos4 = item.find('"',pos3+1);
+								if (pos4 == string::npos)
+									continue;
+								mod = item.substr(pos3+1, pos4-pos3-1);
+							} else
+								continue;
+						}
 					}
 					//Get file path.
 					fs::path file_path;
 					GetPath(file_path,file);
-
 					if (!fs::exists(file_path / file) || !versionCheck) {
 						if (currentMessage.data != "")
 							currentMessage.data += ", ";
@@ -256,20 +267,26 @@ namespace boss {
 				while (getline(ss, item, '|')) {
 					size_t pos1,pos2;
 					pos1 = item.find('"');
+					if (pos1 == string::npos)
+						continue;
 					pos2 = item.find('"',pos1+1);
+					if (pos2 == string::npos)
+						continue;
 					file = item.substr(pos1+1, pos2-pos1-1);
-
 					//Get file path.
 					fs::path file_path;
 					GetPath(file_path,file);
-
 					if (fs::exists(file_path / file)) {
-						pos1 = item.find('=', pos2);
-						if (pos1 != string::npos) {
-							pos2 = item.find('"',pos1+2);
-							mod = item.substr(pos1+2, pos2-pos1-2);
-						} else
-							mod = file;
+						mod = file;
+						if (item.length() > pos2+1) {
+							pos1 = item.find('"', pos2+1);
+							if (pos1 != string::npos) {
+								pos2 = item.find('"',pos1+1);
+								if (pos2 == string::npos)
+									continue;
+								mod = item.substr(pos1+1, pos2-pos1-1);
+							}
+						}
 						if (currentMessage.data != "")
 							currentMessage.data += ", ";
 						currentMessage.data += "\""+mod+"\"";
