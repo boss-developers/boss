@@ -194,28 +194,82 @@ namespace boss {
 	}
 
 	//Stores a message, should it be appropriate.
+	//The SPECIFIC_REQ and SPECIFIC_INC 'parsers' are not space-safe within items.
 	void StoreMessage(vector<message>& messages, message currentMessage) {
 		if (storeMessage) {
-			if (currentMessage.key == REQ) {
+			if (currentMessage.key == SPECIFIC_REQ) {
 				//Modify message output based on what mods are installed.
+				stringstream ss(currentMessage.data);
+				currentMessage.data = "";
+				string mod,file,version,item;
+				bool versionCheck;
+				while (getline(ss, item, '|')) {
+					//Syntax for an item is: "<version comparison>":"<plugin>"="<mod>"
+					//The "<version comparison>": and ="<mod>" are optional.
+					size_t pos1,pos2;
+					//Look for first quoted string.
+					pos1 = item.find('"');
+					pos2 = item.find('"',pos1+1);
+					if (item[pos2+1] == ':') { //First quoted string is a version comparison.
+						version = item.substr(pos1+1, pos2-pos1-1);
+						pos1 = pos2+2;
+						pos2 = item.find('"',pos1+1);
+						file = item.substr(pos1+1,pos2-pos1-1);
+						//Check version conditional.
+						CheckVersion(versionCheck, version + "|" + file);
+						if (versionCheck)
+							continue;	//Mod exists and is of the correct version. No message should be printed for this item.
+						pos1 = item.find('"',pos2+1);
+						if (pos1 != string::npos) { //There is also a mod given.
+							pos2 = item.find('"',pos1+1);
+							mod = item.substr(pos1+1, pos2-pos1-1);
+						} else 
+							mod = file;
+					} else if (item[pos2+1] == '=') { //First quoted string is a plugin, and a mod is given.
+						file = item.substr(pos1+1, pos2-pos1-1);
+						pos1 = pos2+2;
+						pos2 = item.find('"',pos1+1);
+						mod = item.substr(pos1+1,pos2-pos1-1);
+						version = "";
+						versionCheck = true;
+					} else { //Only a plugin is given.
+						file = item.substr(pos1+1, pos2-pos1-1);
+						mod = file;
+						version = "";
+						versionCheck = true;
+					}
+					//Get file path.
+					fs::path file_path;
+					GetPath(file_path,file);
 
+					if (!fs::exists(file_path / file) || !versionCheck) {
+						if (currentMessage.data != "")
+							currentMessage.data += ", ";
+						currentMessage.data += "\""+mod+"\"";
+					}
+				}
 			} else if (currentMessage.key == SPECIFIC_INC) {
 				//Modify message output based on what mods are installed.
 				stringstream ss(currentMessage.data);
 				currentMessage.data = "";
-				string mod,plugin,item;
+				string mod,file,item;
 				while (getline(ss, item, '|')) {
 					size_t pos1,pos2;
 					pos1 = item.find('"');
 					pos2 = item.find('"',pos1+1);
-					plugin = item.substr(pos1+1, pos2-pos1-1);
-					if (fs::exists(data_path / plugin)) {
-						pos1 = item.find('"', pos2+1);
+					file = item.substr(pos1+1, pos2-pos1-1);
+
+					//Get file path.
+					fs::path file_path;
+					GetPath(file_path,file);
+
+					if (fs::exists(file_path / file)) {
+						pos1 = item.find('=', pos2);
 						if (pos1 != string::npos) {
-							pos2 = item.find('"',pos1+1);
-							mod = item.substr(pos1+1, pos2-pos1-1);
+							pos2 = item.find('"',pos1+2);
+							mod = item.substr(pos1+2, pos2-pos1-2);
 						} else
-							mod = plugin;
+							mod = file;
 						if (currentMessage.data != "")
 							currentMessage.data += ", ";
 						currentMessage.data += "\""+mod+"\"";

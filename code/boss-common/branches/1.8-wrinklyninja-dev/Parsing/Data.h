@@ -50,7 +50,7 @@ namespace boss {
 				//New Message keywords.
 				("SAY",SAY)
 				("TAG",TAG)
-				("REQ",REQ)
+				("REQ",SPECIFIC_REQ)
 				("INC", SPECIFIC_INC)
 				("DIRTY",DIRTY)
 				("WARN",WARN)
