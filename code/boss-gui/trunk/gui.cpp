@@ -31,11 +31,12 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_MENU ( OPTION_Run, MainFrame::OnRunBOSS )
 	EVT_MENU ( MENU_OpenMReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_OpenURReadMe, MainFrame::OnOpenFile )
-	EVT_MENU ( MENU_CheckForUpdates, MainFrame::OnUpdateCheck )
+	EVT_MENU ( OPTION_CheckForUpdates, MainFrame::OnUpdateCheck )
 	EVT_MENU ( MENU_ShowAbout, MainFrame::OnAbout )
 	EVT_BUTTON ( OPTION_Run, MainFrame::OnRunBOSS )
 	EVT_BUTTON ( OPTION_OpenUserlist, MainFrame::OnOpenFile )
 	EVT_BUTTON ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
+	EVT_BUTTON ( OPTION_CheckForUpdates, MainFrame::OnUpdateCheck )
 	EVT_COMBOBOX ( DROPDOWN_LogFormat, MainFrame::OnFormatChange )
 	EVT_COMBOBOX ( DROPDOWN_Verbosity, MainFrame::OnVerbosityChange )
 	EVT_COMBOBOX ( DROPDOWN_Game, MainFrame::OnGameChange )
@@ -43,9 +44,12 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_CHECKBOX ( CHECKBOX_ShowBOSSlog, MainFrame::OnLogDisplayChange )
 	EVT_CHECKBOX ( CHECKBOX_EnableDebug, MainFrame::OnDebugChange )
 	EVT_CHECKBOX ( CHECKBOX_Update, MainFrame::OnUpdateChange )
-	EVT_CHECKBOX ( CHECKBOX_EnableVersions, MainFrame::OnVersionDisplayChange )
-	EVT_CHECKBOX ( CHECKBOX_EnableCRCs, MainFrame::OnCRCDisplayChange )
+	EVT_CHECKBOX ( CHECKBOX_SortEnableVersions, MainFrame::OnVersionDisplayChange )
+	EVT_CHECKBOX ( CHECKBOX_SortEnableCRCs, MainFrame::OnCRCDisplayChange )
+	EVT_CHECKBOX ( CHECKBOX_RevertEnableVersions, MainFrame::OnVersionDisplayChange )
+	EVT_CHECKBOX ( CHECKBOX_RevertEnableCRCs, MainFrame::OnCRCDisplayChange )
 	EVT_CHECKBOX ( CHECKBOX_EnableLogging, MainFrame::OnLoggingChange )
+	EVT_CHECKBOX ( CHECKBOX_TrialRun, MainFrame::OnTrialRunChange )
 	EVT_RADIOBUTTON ( RADIOBUTTON_SortOption, MainFrame::OnRunTypeChange )
 	EVT_RADIOBUTTON ( RADIOBUTTON_UpdateOption, MainFrame::OnRunTypeChange )
 	EVT_RADIOBUTTON ( RADIOBUTTON_UndoOption, MainFrame::OnRunTypeChange )
@@ -58,6 +62,7 @@ bool BossGUI::OnInit() {
 	MainFrame *frame = new MainFrame(
 		wxT("Better Oblivion Sorting Software GUI - " + boss::GetGame()), 100, 100, 510, 370);
 
+	frame->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	frame->Show(TRUE);
 	SetTopWindow(frame);
 	return true;
@@ -104,7 +109,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	HelpMenu->Append(MENU_OpenMReadMe, _T("Open &Main ReadMe"), _T("Opens the main BOSS ReadMe in your default web browser."));
 	HelpMenu->Append(MENU_OpenURReadMe, _T("Open &User Rules ReadMe"), _T("Opens the User Rules ReadMe in your default web browser."));
 	HelpMenu->AppendSeparator();
-	HelpMenu->Append(MENU_CheckForUpdates, _T("&Check For Updates..."), _T("Checks for updates to BOSS and your masterlist."));
+	HelpMenu->Append(OPTION_CheckForUpdates, _T("&Check For Updates..."), _T("Checks for updates to BOSS and your masterlist."));
 	HelpMenu->Append(MENU_ShowAbout, _T("&About BOSS GUI..."), _T("Shows information about BOSS GUI."));
     MenuBar->Append(HelpMenu, _T("&Help"));
     SetMenuBar(MenuBar);
@@ -138,6 +143,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	buttonBox->Add(OpenUserlistButton = new wxButton(this,OPTION_OpenUserlist, "Edit Userlist", wxDefaultPosition, wxSize(120,30)), 0, wxBOTTOM, 5);
 	buttonBox->Add(RunBOSSButton = new wxButton(this,OPTION_Run, "Run BOSS", wxDefaultPosition, wxSize(120,30)));
 	buttonBox->Add(OpenBOSSlogButton = new wxButton(this,OPTION_OpenBOSSlog, "View BOSSlog", wxDefaultPosition, wxSize(120,30)), 0, wxTOP, 5);
+	buttonBox->Add(CheckForUpdatesButton = new wxButton(this,OPTION_CheckForUpdates, "Check For Updates", wxDefaultPosition, wxSize(120,30)), 0, wxTOP, 5);
 	columnBox->Add(buttonBox, 0, wxALIGN_CENTER, 20);
 
 	//Add the first column to the big box.
@@ -156,8 +162,9 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	
 	//Sort option stuff.
 	sortBox->Add(UpdateBox = new wxCheckBox(this,CHECKBOX_Update, "Update Masterlist"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	sortBox->Add(SortVersionBox = new wxCheckBox(this,CHECKBOX_EnableVersions, "Enable Mod Version Display"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	sortBox->Add(SortCRCBox = new wxCheckBox(this,CHECKBOX_EnableCRCs, "Enable File CRC Display"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	sortBox->Add(SortVersionBox = new wxCheckBox(this,CHECKBOX_SortEnableVersions, "Enable Mod Version Display"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	sortBox->Add(SortCRCBox = new wxCheckBox(this,CHECKBOX_SortEnableCRCs, "Enable File CRC Display"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	sortBox->Add(TrialRunBox = new wxCheckBox(this,CHECKBOX_TrialRun, "Perform Trial Run"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	runOptionsBox->Add(sortBox, 0, wxLEFT | wxBOTTOM, 20);
 	
 	//Update only stuff.
@@ -172,8 +179,8 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	revertBox->Add(RevertText = new wxStaticText(this, wxID_ANY, "Undo Level: "), 1, wxLEFT | wxBOTTOM, 5);
 	revertBox->Add(RevertBox = new wxComboBox(this, DROPDOWN_Revert, "No Undo", wxDefaultPosition, wxDefaultSize, 3, choices4, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	undoBox->Add(revertBox, 0, wxEXPAND, 0);
-	undoBox->Add(UndoVersionBox = new wxCheckBox(this,CHECKBOX_EnableVersions, "Enable Mod Version Display"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	undoBox->Add(UndoCRCBox = new wxCheckBox(this,CHECKBOX_EnableCRCs, "Enable File CRC Display"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	undoBox->Add(UndoVersionBox = new wxCheckBox(this,CHECKBOX_RevertEnableVersions, "Enable Mod Version Display"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	undoBox->Add(UndoCRCBox = new wxCheckBox(this,CHECKBOX_RevertEnableCRCs, "Enable File CRC Display"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	runOptionsBox->Add(undoBox, 0, wxEXPAND | wxLEFT | wxBOTTOM, 20);
 
 	bigBox->Add(runOptionsBox, 0, wxTOP | wxRIGHT | wxBOTTOM, 20);
@@ -185,6 +192,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	OpenBOSSlogButton->SetToolTip("The format of BOSSlog this opens is decided by the setting of the \"BOSSlog Format\" Output Option above.");
 	DebugBox->SetToolTip("Adds source code references to command line output.");
 	VerbosityBox->SetToolTip("The higher the verbosity level, the more information is outputted to the command line.");
+	TrialRunBox->SetToolTip("Runs BOSS, but doesn't actually change your load order.");
 
 	//Set option values.
 	ShowLogBox->SetValue(true);
@@ -200,15 +208,6 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	RevertBox->Enable(false);
 	UndoVersionBox->Enable(false);
 	UndoCRCBox->Enable(false);
-
-	//Now disable stuff if not running the correct version of BOSS.
-	if (boss::GetBOSSVersion() < 1700) {
-		FormatBox->Enable(false);
-		SortCRCBox->Enable(false);
-		GameText->Enable(false);
-		GameBox->Enable(false);
-		UndoCRCBox->Enable(false);
-	}
 
 	//Now set up the status bar.
 	CreateStatusBar(1);
@@ -258,45 +257,12 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 		//UserlistEditor->Show(TRUE);
 		boss::OpenInSysDefault(fs::path("userlist.txt"));
 	} else if (file == "bosslog") {
-		/*//There might possibly be two BOSSlogs - need to open the more recent.
-		if (fs::exists("BOSSlog.html") && fs::exists("BOSSlog.txt")) {
-			time_t t1 = 0,t2 = 0;
-			try {
-				t1 = fs::last_write_time("BOSSlog.html");
-				t2 = fs::last_write_time("BOSSlog.txt");
-			} catch (fs::filesystem_error e) {
-				//Show a pop-up error message.
-				wxMessageBox(wxString::Format(
-					wxT("Error: Both BOSSlog.txt and BOSSlog.html have been found, but their modification times cannot be calculated to decide which one should open. One or both of the files might be corrupt - delete them and run BOSS again to stop this error appearing.")
-				),
-				wxT("Error"),
-				wxOK | wxICON_INFORMATION,
-				this);
-			}
-			double diff = difftime(t1,t2);
-			if (diff > 0)
-				boss::OpenInSysDefault(fs::path("BOSSlog.txt"));
-			else
-				boss::OpenInSysDefault(fs::path("BOSSlog.html"));
-		} else if (fs::exists("BOSSlog.html")) {
-			boss::OpenInSysDefault(fs::path("BOSSlog.html"));
-		} else if (fs::exists("BOSSlog.txt")) {
-			boss::OpenInSysDefault(fs::path("BOSSlog.txt"));
-		} else {  
-			//No BOSSlog exists, show a pop-up message saying so.
-			wxMessageBox(wxString::Format(
-				wxT("Error: No BOSSlog found. Make sure you have run BOSS at least once before attempting to open the BOSSlog.")
-			),
-			wxT("Error"),
-			wxOK | wxICON_INFORMATION,
-			this);
-		}*/
-		if (boss::format == 0) {  //Open HTML BOSSlog.
+		if (boss::log_format == "html") {  //Open HTML BOSSlog.
 			if (fs::exists("BOSSlog.html"))
 				boss::OpenInSysDefault(fs::path("BOSSlog.html"));
 			else {
 				wxMessageBox(wxString::Format(
-					wxT("Error: No BOSSlog.html found. Make sure you have run BOSS with the HTML output format selected, or run BOSS from BOSS.exe, at least once before attempting to open the BOSSlog in the HTML format.")
+					wxT("Error: No BOSSlog.html found. Make sure you have run_type BOSS with the HTML output format selected, or run_type BOSS from BOSS.exe, at least once before attempting to open the BOSSlog in the HTML format.")
 				),
 				wxT("Error"),
 				wxOK | wxICON_INFORMATION,
@@ -307,7 +273,7 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 				boss::OpenInSysDefault(fs::path("BOSSlog.txt"));
 			else {
 				wxMessageBox(wxString::Format(
-					wxT("Error: No BOSSlog.txt found. Make sure you have run BOSS at least once with the text output format selected before attempting to open the BOSSlog in the plain text format.")
+					wxT("Error: No BOSSlog.txt found. Make sure you have run_type BOSS at least once with the text output format selected before attempting to open the BOSSlog in the plain text format.")
 				),
 				wxT("Error"),
 				wxOK | wxICON_INFORMATION,
@@ -361,7 +327,10 @@ void MainFrame::OnAbout(wxCommandEvent& event) {
 }
 
 void MainFrame::OnFormatChange(wxCommandEvent& event) {
-	boss::format = event.GetInt();
+	if (event.GetInt() == 0)
+		boss::log_format = "html";
+	else
+		boss::log_format = "text";
 }
 
 void MainFrame::OnVerbosityChange(wxCommandEvent& event) {
@@ -376,7 +345,7 @@ void MainFrame::OnRevertChange(wxCommandEvent& event) {
 }
 
 void MainFrame::OnLogDisplayChange(wxCommandEvent& event) {
-	boss::showLog = event.IsChecked();
+	boss::silent = (!event.IsChecked());
 }
 
 void MainFrame::OnDebugChange(wxCommandEvent& event) {
@@ -388,23 +357,34 @@ void MainFrame::OnUpdateChange(wxCommandEvent& event) {
 }
 
 void MainFrame::OnVersionDisplayChange(wxCommandEvent& event) {
-	boss::showVersions = event.IsChecked();
+	if (event.GetId() == CHECKBOX_SortEnableVersions)
+		boss::sort_skip_version_parse = (!event.IsChecked());
+	else
+		boss::revert_skip_version_parse = (!event.IsChecked());
 }
 
 void MainFrame::OnCRCDisplayChange(wxCommandEvent& event) {
-	boss::showCRCs = event.IsChecked();
+	if (event.GetId() == CHECKBOX_SortEnableCRCs)
+		boss::sort_show_CRCs = event.IsChecked();
+	else
+		boss::revert_show_CRCs = event.IsChecked();
 }
 
 void MainFrame::OnLoggingChange(wxCommandEvent& event) {
 	boss::logCL = event.IsChecked();
 }
 
+void MainFrame::OnTrialRunChange(wxCommandEvent& event) {
+	boss::trial_run = event.IsChecked();
+}
+
 void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 	if (event.GetId() == RADIOBUTTON_SortOption) {
-		boss::run = 1;
+		boss::run_type = 1;
 		UpdateBox->Enable(true);
 		SortVersionBox->Enable(true);
 		SortCRCBox->Enable(true);
+		TrialRunBox->Enable(true);
 		GameText->Enable(false);
 		GameBox->Enable(false);
 		RevertText->Enable(false);
@@ -412,10 +392,11 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 		UndoVersionBox->Enable(false);
 		UndoCRCBox->Enable(false);
 	}else if (event.GetId() == RADIOBUTTON_UpdateOption) {
-		boss::run = 2;
+		boss::run_type = 2;
 		UpdateBox->Enable(false);
 		SortVersionBox->Enable(false);
 		SortCRCBox->Enable(false);
+		TrialRunBox->Enable(false);
 		GameText->Enable(true);
 		GameBox->Enable(true);
 		RevertText->Enable(false);
@@ -423,24 +404,17 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 		UndoVersionBox->Enable(false);
 		UndoCRCBox->Enable(false);
 	}else {
-		boss::run = 3;
+		boss::run_type = 3;
 		UpdateBox->Enable(false);
 		SortVersionBox->Enable(false);
 		SortCRCBox->Enable(false);
+		TrialRunBox->Enable(false);
 		GameText->Enable(false);
 		GameBox->Enable(false);
 		RevertText->Enable(true);
 		RevertBox->Enable(true);
 		UndoVersionBox->Enable(true);
 		UndoCRCBox->Enable(true);
-	}
-	//Now re-apply the disabling of stuff if not running the correct version of BOSS.
-	if (boss::GetBOSSVersion() < 1700) {
-		FormatBox->Enable(false);
-		SortCRCBox->Enable(false);
-		GameText->Enable(false);
-		GameBox->Enable(false);
-		UndoCRCBox->Enable(false);
 	}
 }
 
@@ -490,9 +464,6 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 	link->SetBackgroundColour(wxColour(255,255,255));
 	linkBox->Add(link);
 	link = new wxHyperlinkCtrl(frame,-1,"New Vegas Nexus","http://www.newvegasnexus.com/downloads/file.php?id=35999");
-	link->SetBackgroundColour(wxColour(255,255,255));
-	linkBox->Add(link);
-	link = new wxHyperlinkCtrl(frame,-1,"Google Code","http://code.google.com/p/better-oblivion-sorting-software/");
 	link->SetBackgroundColour(wxColour(255,255,255));
 	linkBox->Add(link);
 

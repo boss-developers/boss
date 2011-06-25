@@ -46,24 +46,29 @@ namespace boss {
 	extern const string gui_releaseDate;
 
 	//Run type
-	//The run type decides on which variables are applied, not all are appropriate for all run types.
-	extern int run;				// 1 = sort mods, 2 = only update, 3 = undo changes.
-	extern int format;			// what format the output should be in. 0 = HTML, 1 = plaintext.
-	extern int verbosity;		// Command-line output verbosity.
+	//The run_type decides on which variables are applied, not all are appropriate for all run_types.
+	extern int run_type;		// 1 = sort mods, 2 = only update, 3 = undo changes.
+	
+	//Command line variables
+	extern string log_format;		// what format the output should be in.
 	extern int game;			// Force what game? 0 = allow autodetection, 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
 	extern int revert;			// what level to revert to
-	extern bool showLog;		// Suppress BOSSlog opening?
-	extern bool debug;			// Display debug info?
-	extern bool update;			// update the masterlist
-	extern bool showVersions;	// enable parsing of mod's headers to look for version strings
-	extern bool showCRCs;		// whether or not to show mod CRCs.
+	extern int verbosity;		// Command-line output verbosity.
+	extern bool update;			// update the masterlist? THIS DOESN'T BEHAVE LIKE THE CLI PARAMETER - IF FALSE, IT SETS -U.
+	extern bool silent;				// silent mode?
+	extern bool debug;				// whether to include origin information in logging statements
+	extern bool trial_run;			// If true, don't redate files.
+	extern bool sort_skip_version_parse; // enable parsing of mod's headers to look for version strings
+	extern bool sort_show_CRCs;			// whether or not to show mod CRCs.
+	extern bool revert_skip_version_parse; // enable parsing of mod's headers to look for version strings
+	extern bool revert_show_CRCs;			// whether or not to show mod CRCs.
+
 	extern bool logCL;			// whether or not to log the command line output to BOSSDebugLog.txt.
-	
 
 	//Returns the name of the game that BOSS is currently running for.
 	string GetGame();
 
-	//Runs BOSS with arguments according to the settings of the run variables.
+	//Runs BOSS with arguments according to the settings of the run_type variables.
 	void RunBOSS();
 
 	//Opens the given file in the default system program.

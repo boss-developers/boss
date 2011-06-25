@@ -39,6 +39,7 @@ public:
 	void OnVersionDisplayChange(wxCommandEvent& event);
 	void OnCRCDisplayChange(wxCommandEvent& event);
 	void OnLoggingChange(wxCommandEvent& event);
+	void OnTrialRunChange(wxCommandEvent& event);
 	void OnUpdateCheck(wxCommandEvent& event);
 	DECLARE_EVENT_TABLE()
 private:
@@ -48,6 +49,7 @@ private:
 	wxButton *RunBOSSButton;
 	wxButton *OpenBOSSlogButton;
 	wxButton *OpenUserlistButton;
+	wxButton *CheckForUpdatesButton;
 	wxCheckBox *ShowLogBox;
 	wxCheckBox *DebugBox;
 	wxCheckBox *LoggingBox;
@@ -57,6 +59,7 @@ private:
 	wxCheckBox *UpdateBox;
 	wxCheckBox *SortVersionBox;
 	wxCheckBox *SortCRCBox;
+	wxCheckBox *TrialRunBox;
 	wxRadioButton *UpdateOption;
 	wxComboBox *GameBox;
 	wxRadioButton *UndoOption;
@@ -71,10 +74,10 @@ enum {
     OPTION_OpenUserlist = wxID_HIGHEST + 1, // declares an id which will be used to call our button
 	OPTION_OpenBOSSlog,
 	OPTION_Run,
+	OPTION_CheckForUpdates,
     MENU_Quit,
 	MENU_OpenMReadMe,
 	MENU_OpenURReadMe,
-	MENU_CheckForUpdates,
 	MENU_ShowAbout,
 	DROPDOWN_LogFormat,
 	DROPDOWN_Verbosity,
@@ -83,9 +86,12 @@ enum {
 	CHECKBOX_ShowBOSSlog,
 	CHECKBOX_EnableDebug,
 	CHECKBOX_Update,
-	CHECKBOX_EnableVersions,
-	CHECKBOX_EnableCRCs,
+	CHECKBOX_SortEnableVersions,
+	CHECKBOX_SortEnableCRCs,
+	CHECKBOX_RevertEnableVersions,
+	CHECKBOX_RevertEnableCRCs,
 	CHECKBOX_EnableLogging,
+	CHECKBOX_TrialRun,
 	RADIOBUTTON_SortOption,
 	RADIOBUTTON_UpdateOption,
 	RADIOBUTTON_UndoOption,

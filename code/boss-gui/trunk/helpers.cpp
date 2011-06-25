@@ -34,17 +34,23 @@ namespace boss {
 	const string gui_version     = "1.7";
 	const string gui_releaseDate = "June 10, 2011";
 
-	//The run type decides on which variables are applied, not all are appropriate for all run types.
-	int run					= 1;     // 1 = sort mods, 2 = only update, 3 = undo changes.
-	int format				= 0;	 // what format the output should be in. 0 = HTML, 1 = plaintext.
-	int verbosity           = 0;     // Command-line output verbosity.
-	int game				= 0;	 // Force what game? 0 = allow autodetection, 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
-	int revert              = 0;     // what level to revert to.
-	bool showLog            = true;  // Auto-open BOSSlog?
-	bool debug              = false; // Display debug info?
-	bool update				= false; // update the masterlist
-	bool showVersions		= true;  // enable parsing of mod's headers to look for version strings
-	bool showCRCs			= false; // whether or not to show mod CRCs.
+	//The run_type type decides on which variables are applied, not all are appropriate for all run_type types.
+	int run_type			= 1;     // 1 = sort mods, 2 = only update, 3 = undo changes.
+	
+	//Command line variables
+	string log_format		= "html";	// what format the output should be in.
+	int game				= 0;		// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
+	int revert              = 0;		// what level to revert to
+	int verbosity           = 0;		// log levels above INFO to output
+	bool update				= true;		// update the masterlist? THIS DOESN'T BEHAVE LIKE THE CLI PARAMETER - IF FALSE, IT SETS -U.
+	bool silent             = false;	// silent mode?
+	bool debug              = false;	// whether to include origin information in logging statements
+	bool trial_run			= false;	// If true, don't redate files.
+	bool sort_skip_version_parse   = false;	// enable parsing of mod's headers to look for version strings
+	bool sort_show_CRCs			   = false;	// whether or not to show mod CRCs.
+	bool revert_skip_version_parse = false;	// enable parsing of mod's headers to look for version strings
+	bool revert_show_CRCs		   = false;	// whether or not to show mod CRCs.
+
 	bool logCL				= false; // whether or not to log the command line output to BOSSDebugLog.txt.
 	
 
@@ -63,27 +69,31 @@ namespace boss {
 			return "Game Not Detected";
 	}
 
-	//Runs BOSS with arguments according to the settings of the run variables.
+	//Runs BOSS with arguments according to the settings of the run_type variables.
 	void RunBOSS() {
 		string params = "BOSS.exe";
 		//Set format output params.
-		if (!showLog)
+		if (silent)
 			params += " -s";
 		if (debug)
 			params += " -d";
 		if (verbosity > 0)
 			params += " -v" + IntToString(verbosity);
-		if (format == 1)
+		if (log_format == "text")
 			params += " -f text";
-		//Set run-dependent params.
-		if (run == 1) {  //Sort mods.
+		//Set run_type-dependent params.
+		if (run_type == 1) {  //Sort mods.
 			if (update)
 				params += " -u";
-			if (!showVersions)
+			else
+				params += " -U";
+			if (sort_skip_version_parse)
 				params += " -n";
-			if (showCRCs)
+			if (sort_show_CRCs)
 				params += " -c";
-		} else if (run == 2) {  //Update masterlist only.
+			if (trial_run)
+				params += " -t";
+		} else if (run_type == 2) {  //Update masterlist only.
 			params += " -o";
 			if (game == 1)
 				params += " -g Oblivion";
@@ -93,18 +103,17 @@ namespace boss {
 				params += " -g Nehrim";
 			else if (game == 4)
 				params += " -g FalloutNV";
-		} else if (run == 3) {  //Undo changes.
+		} else if (run_type == 3) {  //Undo changes.
 			if (revert > 0)
 				params += " -r" + IntToString(revert);
-			if (!showVersions)
+			if (revert_skip_version_parse)
 				params += " -n";
-			if (showCRCs)
+			if (revert_show_CRCs)
 				params += " -c";
-
 		}
 		if (logCL)
 			params += " > BOSSCommandLineLog.txt";
-		//Now actually run BOSS.
+		//Now actually run_type BOSS.
 		system(params.c_str());
 		return;
 	}
