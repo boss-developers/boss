@@ -99,6 +99,7 @@
 	<ol>
 		<li><i>Masterlist Update</i>: This section is only displayed if you have run BOSS with the <q>Update Masterlist</q> or <q>Update Masterlist Only</q> options enabled, and details the success or failure of the update.</li>
 		<li><i>General Messages</i>: This section is only displayed if there are any applicable messages to be displayed. Its primary purpose is to allow BOSS to display messages specific to your Oblivion install that are not specific to any one mod, for example if an update to BOSS or OBSE is available.</li>
+		<li style="display:none;"><i>Summary</i>: This section gives breakdowns of the numbers of plugins you have installed and the number of messages BOSS has attached to them. It also displays a notice if there has been no change to your recognised mod list since you last ran BOSS.</li>
 		<li><i>Userlist Messages</i>: This section is only displayed if BOSS finds a userlist.txt in your BOSS folder. In this section the successes or failures of the application of your userlist rules will be detailed.</li>
 		<li><i>Script Extender And Script Extender Plugins Checksums</i>: This section is displayed when BOSS is run with the <q>Enable File CRC Display</q> option enabled and you have your game's Script Extender installed. It will list the Script Extender and any plugins you have installed, displaying their versions if given and their CRCs.</li>
 		<li><i>Recognised And Re-ordered Plugins</i> or <i>Restored Load Order</i>: This section comprises the bulk of BOSS's output, listing all your recognised installed plugins and any messages BOSS has attached to them, as well as version information (if given) and the plugin CRCs (if run with <q>Enable File CRC Display</q> enabled). When BOSS is run to undo its changes, this section will list your restored load order.</li>
@@ -112,6 +113,7 @@
 	<ul>
 		<li><i>Collapsible Sections</i>: This does not have a checkbox. Instead, clicking on a section's header will collapse that section, hiding its contents. Clicking the header again will expand the section, making its contents visible again.</li>
 		<li><i>Use Dark Colour Scheme</i>: This will change the BOSSlog's colour scheme to a darker variety, more suitable for reading in low light levels and putting less strain on the eyes. Users with vision impairments may find the darker colour scheme easier to read.</li>
+		<li style="display:none;"><i>Hide Rule Warnings</i>: This hides any warning messages printed in the <q>Userlist Messages</q> section of the BOSSlog.</li>
 		<li><i>Hide Version Numbers</i>: This will hide the version numbers printed in blue next to those mods that provide them.</li>
 		<li><i>Hide 'Ghosted' Label</i>: This will hide the 'Ghosted' printed in grey next to any mods ghosted by Wrye Bash.</li>
 		<li><i>Hide Checksums</i>: This will hide the checksums of mods and Script Extender plugins printed in brown next to their names.</li>
@@ -123,7 +125,7 @@
 		<li><i>Hide Requirements</i>: This hides any messages attached to mods that have the <q>Requires: </q> prefix.</li>
 		<li><i>Hide Incompatibilities</i>: This hides any messages attached to mods that have the <q>Incompatible with: </q> prefix.</li>
 	</ul>
-	<p>It is not possible to hide warning or error messages, as these are of a severity where they should almost certainly be acted upon, and not ignored. Be aware that if you hide all a mod's messages and then hide all messageless mods, that mod will be amongst those hidden.</p>
+	<p>It is not possible to hide mod warning or error messages, as these are of a severity where they should almost certainly be acted upon, and not ignored. Be aware that if you hide all a mod's messages and then hide all messageless mods, that mod will be amongst those hidden.</p>
 	</p><br />
 	
 	<span class="subtitle">Dirty Edits, Mod Cleaning &amp; CRCs</span>
@@ -142,11 +144,6 @@
 	<p>There is also another type of unnecessary edit, known as a wild edit, that can also cause problems. These edits are neither Itentical To Master edits nor deleted records, so cannot be automatically cleaned. Cleaning must be manually done in TES4Edit/FO3Edit/FNVEdit. BOSS can still check for mods with these edits if the CRCs of the plugins with wild edits are known, and it can provide notification of these edits and some information on fixing them if they are reported in an official BOSS thread.</p>
 	</p><br />
 	
-	<span class="subtitle">Customising How BOSS Works</span>
-	<p>Users can customise how BOSS works through the included User Rules feature. This feature allows you to define the positions of mods not in the masterlist, and to override the masterlist positions of mods,
-	as well as edit the output messages of mods, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes are not lost. All the information on the User Rules feature can be found in the "BOSS User Rules ReadMe.html" file.
-	</p><br />
-	
 	<span class="subtitle">Updating The Masterlist Under Special Circumstances</span>
 	<p>The vast majority of users will be able to use the built-in masterlist updater with no problems. However, some users' circumstances are such that the usual method will not work. The most common of such circumstances is when the computer you have Oblivion installed on has no Internet connection and you use another computer to download mods, etc. In this case, the following instructions should be used to obtain masterlist updates:</p>
 	<ol>
@@ -155,7 +152,20 @@
 		<li>Select <q>Run BOSS</q>. Your masterlist will be downloaded into the same folder as your BOSS.exe and BOSS GUI.exe. A BOSSlog will also be created, you can delete this.</li>
 	</ol>
 	<p>There may also be other special cases that cause problems for BOSS's masterlist updater, including some Internet proxies, that the BOSS team is unaware of. If you are having issues obtaining a masterlist via the updater, contact the BOSS team for support.</p>
-	</p><br />
+	<br />
+	
+	<span class="subtitle">Customising How BOSS Works</span>
+	<p>Users can customise how BOSS handles their mods through the included User Rules feature. This feature allows you to define the positions of mods not in the masterlist, and to override the masterlist positions of mods,
+	as well as edit the output messages of mods, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes are not lost. All the information on the User Rules feature can be found in the "BOSS User Rules ReadMe.html" file.</p>
+	<p style="display:none;">Users can also edit a number of BOSS's default settings in the BOSS.ini. As this is where BOSS gets its settings from, care must be taken to edit it correctly to prevent breaking BOSS's operation. The ini is split into five sections:</p>
+	<ol style="display:none;">
+		<li><i>Updater.Options</i>: These settings do not do anything for the moment. In the future they may control a semi-automated masterlist and program updater.</li>
+		<li><i>BOSS.RunOptions</i>: These settings specify BOSS.exe's default run options. They allow you to run BOSS with special settings without having to use the command line or the GUI.</li>
+		<li><i>GUI.LastOptions</i>: These settings record the last options selected by the user through the GUI. Since these settings are automatically loaded when the GUI starts and saved when it exits, it is not recommended that you alter them manually.</li>
+		<li><i>BOSSlog.Filters</i>: These settings control the default states of the BOSSlog Javascript-based filters. If a filter's default is set to be checked, then it will be checked in the BOSSlog and pre-applied when the BOSSlog is opened.</li>
+		<li><i>BOSSlog.Styles</i>: These settings control the BOSSlog's CSS styles, used to provide the formatting for the BOSSlog. The defaults are not given, being hard-coded into BOSS, but they can be overriden here. A knowledge of CSS is expected if you wish to alter these settings. If you do not possess such knowledge, altering these settings is not recommended.</li>
+	</ol>
+	<br />
 	
 	<span class="subtitle">Running BOSS Under Linux</span>
 	<p>It is possible to run BOSS on Linux through the Wine compatibility layer, though no official support for doing so is given. Installation and usage is as on Windows. 
@@ -197,6 +207,10 @@
 	<p>Calculates the <acronym title="Cyclic Redundancy Checks">CRCs</acronym> of all the plugins in your Data folder and displays them in your BOSSlog alongside the plugin names. The version numbers and CRCs of <acronym title="Oblivion Script Extender">OBSE</acronym>/<acronym title="Fallout Script Extender">FOSE</acronym>/<acronym title="New Vegas Script Extender">NVSE</acronym> and its installed plugins will also be displayed in your BOSSlog.</p>
 	<p><code>-f [ --format ] [ type ]</code></p>
 	<p>Allows the selection of the BOSSlog format. Valid argument values are: 'html' and 'text'. 'html' is the default output format. The 'text' value will print the BOSSlog as plain text into a 'BOSSlog.txt' file, similar to the BOSSlog in BOSS v1.5 and below.</p>
+	<p style="display:none;"><code>-t [ --trial-run ]</code></p>
+	<p style="display:none;">BOSS runs, but no mods are redated, so your load order is not changed. The BOSSlog still displays the order BOSS would have placed them in, so it is useful for checking what would happen if you ran BOSS on your load order without having to then undo BOSS's changes.</p>
+	<p style="display:none;"><code>-U [ --no-update ]</code></p>
+	<p style="display:none;">Inhibits the default automatic masterlist updater, preventing it from running. Must not be used alongside --update,-u.</p>
 	</div><br />
 	
 	<span class="subtitle">BOSS Changes and Files</span>
@@ -210,6 +224,7 @@
 		<li><i>modlist.txt</i> - This file contains the list of your mods in the order they were before you last ran BOSS, which can be used to undo changes to your load order.</li>
 		<li><i>modlist.old</i> - This file contains the contents of your modlist.txt before you last ran BOSS, providing a second level of undo for load order changes.</li>
 		<li><i>userlist.txt</i> - This file contains your custom rules to be implemented by the User Rules feature.</li>
+		<li style="display:none;"><i>BOSS.ini</i> - This file stores BOSS's settings, including the default run options, the default BOSSlog filters and more.</li>
 	</ul>
 	</div>
 	</div><br /><br />
