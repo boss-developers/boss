@@ -11,19 +11,9 @@
 //Header file for some functions that are helpful or required for the GUI to work,
 //but not actually GUI-based.
 
-#ifndef CURL_STATICLIB
-#define CURL_STATICLIB			//Tells the compiler to use curl as a static library.
-#endif
-#include <curl/curl.h>
-#include <curl/types.h>
-#include <curl/easy.h>
-
 #include "helpers.h"
 #include <boost/spirit/include/karma.hpp>
-#include <boost/exception/exception.hpp>
-#include <boost/exception/info.hpp>
 #include <boost/algorithm/string.hpp>
-#include "Windows.h"
 
 namespace boss {
 	using namespace std;
@@ -31,8 +21,8 @@ namespace boss {
 	namespace karma = boost::spirit::karma;
 
 	//Version info.
-	const string gui_version     = "1.7";
-	const string gui_releaseDate = "June 10, 2011";
+	const string boss_version     = "1.6";				//TEMPORARY CHANGE TO TEST UPDATER
+	const string boss_releaseDate = "June 10, 2011";
 
 	//The run_type type decides on which variables are applied, not all are appropriate for all run_type types.
 	int run_type			= 1;     // 1 = sort mods, 2 = only update, 3 = undo changes.
@@ -52,7 +42,6 @@ namespace boss {
 	bool revert_show_CRCs		   = false;	// whether or not to show mod CRCs.
 
 	bool logCL				= false; // whether or not to log the command line output to BOSSDebugLog.txt.
-	
 
 	//Returns the name of the game that BOSS is currently running for.
 	string GetGame() {
@@ -149,137 +138,8 @@ namespace boss {
 			return "0";
 	}
 
-	//Gets BOSS's version number.
-	int GetBOSSVersion() {
-		int retVal = 0;
-		string ver;
-		string filename = "BOSS.exe";
-#if _WIN32 || _WIN64
-		// WARNING - NOT VERY SAFE, SEE http://www.boost.org/doc/libs/1_46_1/libs/filesystem/v3/doc/reference.html#current_path
-		fs::path pStr = fs::current_path() / filename;
-		DWORD dummy = 0;
-		DWORD size = GetFileVersionInfoSize(pStr.wstring().c_str(), &dummy);
-
-		if (size > 0) {
-			LPBYTE point = new BYTE[size];
-			UINT uLen;
-			VS_FIXEDFILEINFO *info;
-
-			GetFileVersionInfo(pStr.wstring().c_str(),0,size,point);
-
-			VerQueryValue(point,L"\\",(LPVOID *)&info,&uLen);
-
-			DWORD dwLeftMost     = HIWORD(info->dwFileVersionMS);
-			DWORD dwSecondLeft   = LOWORD(info->dwFileVersionMS);
-			DWORD dwSecondRight  = HIWORD(info->dwFileVersionLS);
-			DWORD dwRightMost    = LOWORD(info->dwFileVersionLS);
-			
-			delete [] point;
-
-			ver = IntToString(dwLeftMost) + IntToString(dwSecondLeft) + IntToString(dwSecondRight) + IntToString(dwRightMost);
-			retVal = atoi(ver.c_str());
-		}
-#else
-		// ensure filename has no quote characters in it to avoid command injection attacks
-        if (string::npos != filename.find('"')) {
-    	    LOG_WARN("filename has embedded quotes; skipping to avoid command injection: '%s'", filename.c_str());
-        } else {
-            // command mostly borrowed from the gnome-exe-thumbnailer.sh script
-            // wrestool is part of the icoutils package
-            string cmd = "wrestool --extract --raw --type=version \"" + filename + "\" | tr '\\0, ' '\\t.\\0' | sed 's/\\t\\t/_/g' | tr -c -d '[:print:]' | sed -r 's/.*Version[^0-9]*([0-9]+(\\.[0-9]+)+).*/\\1/'";
-
-            FILE *fp = popen(cmd.c_str(), "r");
-
-            // read out the version string
-            static const int BUFSIZE = 32;
-            char buf[BUFSIZE];
-            if (NULL == fgets(buf, BUFSIZE, fp)) {
-    	        LOG_DEBUG("failed to extract version from '%s'", filename.c_str());
-            }
-            else {
-                ver = string(buf);
-				retVal = atoi(ver);
-	   	        LOG_DEBUG("extracted version from '%s': %s", filename.c_str(), ver.c_str());
-            }
-
-            pclose(fp);
-        }
-#endif
-		return retVal;
-	}
-
 	int versionStringToInt(string version) {
 		boost::replace_all(version,".","");
 		return atoi(version.c_str());
-	}
-
-	//Buffer writer for update checker.
-	int writer(char *data, size_t size, size_t nmemb, string *buffer) {
-		int result = 0;
-		if(buffer != NULL) {
-			buffer -> append(data, size * nmemb);
-			result = size * nmemb;
-		}
-		return result;
-	}
-
-	bool CheckConnection() {
-		CURL *curl;									//cURL handle
-		char errbuff[CURL_ERROR_SIZE];
-		CURLcode ret;
-
-		//curl will be used to get stuff from the internet, so initialise it.
-		curl = curl_easy_init();
-		if (!curl) 
-			return false;
-		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
-		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
-
-		//Check that there is an internet connection. Easiest way to do this is to check that the BOSS google code page exists.
-		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/");
-		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1);	
-		ret = curl_easy_perform(curl);
-		//Clean up and close curl handle now that it's finished with.
-		curl_easy_cleanup(curl);
-
-		if (ret!=CURLE_OK)
-			return false;
-		else
-			return true;
-	}
-
-	//Checks if a new release of BOSS is available or not.
-	string IsUpdateAvailable() {
-		int localVersion, remoteVersion;
-		string remoteVersionStr;
-		char errbuff[CURL_ERROR_SIZE];
-		CURL *curl;									//cURL handle
-		CURLcode ret;
-
-		//curl will be used to get stuff from the internet, so initialise it.
-		curl = curl_easy_init();
-		if (!curl)
-			throw update_error() << err_detail("Curl could not be initialised.");
-		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
-		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 10s.
-
-		//Get page containing version number.
-		curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-common/latestversion.txt");
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &remoteVersionStr);
-		ret = curl_easy_perform(curl);
-		if (ret!=CURLE_OK) {
-			curl_easy_cleanup(curl);
-			throw update_error() << err_detail(errbuff);
-		}
-
-		localVersion = GetBOSSVersion();
-		remoteVersion = versionStringToInt(remoteVersionStr);
-
-		//Now compare versions.
-		if (remoteVersion > localVersion)
-			return remoteVersionStr;
-		else
-			return "";
 	}
 }

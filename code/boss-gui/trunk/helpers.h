@@ -42,8 +42,8 @@ namespace boss {
 	namespace fs = boost::filesystem;
 
 	//Version info.
-	extern const string gui_version;
-	extern const string gui_releaseDate;
+	extern const string boss_version;
+	extern const string boss_releaseDate;
 
 	//Run type
 	//The run_type decides on which variables are applied, not all are appropriate for all run_types.
@@ -80,17 +80,7 @@ namespace boss {
 	//Converts a boolean to a string representation (0/1)
 	string BoolToString(bool b);
 
-	//Get BOSS's version.
-	int GetBOSSVersion();
-
-	//Exception class for update checker.
-	struct update_error: virtual exception, virtual boost::exception {};
-	typedef boost::error_info<struct tag_errno,string> err_detail;
-
-	//Checks if there is an Internet connection present.
-	bool CheckConnection();
-
-	//Checks if a new release of BOSS is available or not.
-	string IsUpdateAvailable();
+	//Strips the decimal points from a version number to obtain it as an integer. Trailing zeros will cause comparisons to return incorrect values.
+	int versionStringToInt(string version);
 }
 #endif

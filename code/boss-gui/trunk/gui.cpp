@@ -19,12 +19,9 @@
 #include "boost/exception/get_error_info.hpp"
 #include <boost/algorithm/string.hpp>
 
-#include <wx/richtext/richtextctrl.h>
-#include <wx/aboutdlg.h>
-
 #include "gui.h"
 #include "parser.h"
-#include <iostream>
+#include "updater.h"
 
 namespace fs = boost::filesystem;
 
@@ -74,6 +71,7 @@ bool BossGUI::OnInit() {
 	frame->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	frame->Show(TRUE);
 	SetTopWindow(frame);
+
 	return true;
 }
 
@@ -413,15 +411,13 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 		file = "BOSS ReadMe";
 	else
 		file = "BOSS User Rules ReadMe";
-	//Need to somehow choose file based on what fired the event.
+	//Need to choose file based on what fired the event.
 	if (file == "userlist.txt") {
 		if (!fs::exists(file)) {  //Create the userlist.
 			std::ofstream ofile(file.c_str());
 			ofile.close();
 		}
 		//Now open it.
-		//EditFrame *UserlistEditor = new EditFrame(NULL, wxT("Edit Userlist"), 100, 100, 450, 340);
-		//UserlistEditor->Show(TRUE);
 		boss::OpenInSysDefault(fs::path("userlist.txt"));
 	} else if (file == "bosslog") {
 		if (boss::log_format == "html") {  //Open HTML BOSSlog.
@@ -476,42 +472,8 @@ void MainFrame::OnAbout(wxCommandEvent& event) {
 
 	wxBoxSizer *box = new wxBoxSizer(wxVERTICAL);
 
-	/*wxRichTextCtrl *text = new wxRichTextCtrl(frame, -1, wxEmptyString, wxDefaultPosition, wxSize(350, 250));
-
-	wxRichTextAttr urlStyle;
-    urlStyle.SetTextColour(*wxBLUE);
-    urlStyle.SetFontUnderlined(true);
-
-	text->BeginBold();
-	text->WriteText("Better Oblivion Sorting Software GUI");
-	text->EndBold();
-	text->LineBreak();
-	text->WriteText(boss::gui_version+" ("+boss::gui_releaseDate+")");
-	text->Newline();
-
-	text->WriteText("Provides a graphical front end for running ");
-	text->BeginStyle(urlStyle);
-	text->BeginURL("http://code.google.com/p/better-oblivion-sorting-software/");
-	text->WriteText("Better Oblivion Sorting Software");
-	text->EndURL();
-	text->EndStyle();
-	text->Newline();
-
-	text->WriteText("© WrinklyNinja and the BOSS development team, 2011.");
-	text->LineBreak();
-	text->WriteText("Some rights reserved. Copyright license: ");
-	text->BeginStyle(urlStyle);
-	text->BeginURL("http://creativecommons.org/licenses/by-nc-nd/3.0/");
-	text->WriteText("CC Attribution-Noncommercial-No Derivative Works 3.0");
-	text->EndURL();
-	text->EndStyle();
-
-	text->Layout();
-
-	box->Add(text);*/
-
 	box->Add(new wxStaticText(frame,-1,
-		"Better Oblivion Sorting Software GUI\nv"+boss::gui_version+" ("+boss::gui_releaseDate+")\n\n"
+		"Better Oblivion Sorting Software GUI\nv"+boss::boss_version+" ("+boss::boss_releaseDate+")\n\n"
 		"Provides a graphical frontend for running "), 0, wxTOP | wxLEFT | wxRIGHT, 20);
 
 	wxHyperlinkCtrl *link = new wxHyperlinkCtrl(frame, -1, "Better Oblivion Sorting Software","http://code.google.com/p/better-oblivion-sorting-software/");
@@ -628,8 +590,16 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 			if (updateText.length() == 0) {
 				wxMessageBox(wxT("You are already using the latest version of BOSS."), wxT("Check For Updates"), wxOK | wxICON_INFORMATION, this);
 				return;
-			} else
+			} else {
 				updateText = "Update available! New version: " + updateText;
+				//Test out new auto-updater.
+				try {
+					boss::DownloadUpdateFiles();
+				} catch (boss::update_error & e) {
+					std::string const * detail = boost::get_error_info<boss::err_detail>(e);
+					updateText += "Error: " + *detail;
+				}
+			}
 		} catch (boss::update_error & e) {
 			std::string const * detail = boost::get_error_info<boss::err_detail>(e);
 			updateText = "Update check failed. Details: " + *detail;
@@ -677,9 +647,9 @@ void MainFrame::CheckForUpdate() {
 	if (boss::CheckConnection()) {
 		try {
 			updateText = boss::IsUpdateAvailable();
-			if (updateText.length() != 0)
+			if (updateText.length() != 0) {
 				updateText = "Update available! New version: " + updateText;
-			else
+			} else
 				return;
 		} catch (boss::update_error&) {
 			return;
