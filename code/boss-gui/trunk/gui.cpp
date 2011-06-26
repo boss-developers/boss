@@ -26,6 +26,7 @@
 namespace fs = boost::filesystem;
 
 BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
+	EVT_CLOSE (MainFrame::OnClose)
 	EVT_MENU ( MENU_Quit, MainFrame::OnQuit )
 	EVT_MENU ( OPTION_OpenUserlist, MainFrame::OnOpenFile )
 	EVT_MENU ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
@@ -61,7 +62,8 @@ IMPLEMENT_APP(BossGUI)
 //Draws the main window when program starts.
 bool BossGUI::OnInit() {
 	//Set up variable defaults.
-	boss::parseIni("BOSS.ini");
+	if (fs::exists("BOSS.ini"))
+		boss::parseIni("BOSS.ini");
 
 	MainFrame *frame = new MainFrame(
 		wxT("Better Oblivion Sorting Software GUI - " + boss::GetGame()), 100, 100, 510, 370);
@@ -314,6 +316,72 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 //Called when program exits.
 void MainFrame::OnQuit( wxCommandEvent& event ) {
 	Close(TRUE); // Tells the OS to quit running this process
+}
+
+void MainFrame::OnClose(wxCloseEvent& event) {
+       //Save settings to BOSS.ini before quitting.
+	//Read ini file into string buffer, then search for setting strings and replace their values.
+	std::string buffer;
+	if (fs::exists("BOSS.ini")) {
+		boss::fileToBuffer("BOSS.ini",buffer);
+		size_t pos1,pos2;
+		pos1 = buffer.find("[GUI.LastOptions]");
+		for (int i=0;i<14;i++) {
+			pos1 = buffer.find("=",pos1+1);
+			if (i==0)
+				buffer.replace(pos1+2,1,boss::IntToString(boss::run_type));  //Replace RunType setting.
+			else if (i==1)
+				buffer.replace(pos1+2,1,boss::BoolToString(boss::silent));  //Replace SilentRun setting.
+			else if (i==2)
+				buffer.replace(pos1+2,1,boss::BoolToString(boss::debug));  //Replace Debug setting.
+			else if (i==3)
+				buffer.replace(pos1+2,1,boss::BoolToString(boss::logCL));  //Replace LogCLOutput setting.
+			else if (i==4)
+				buffer.replace(pos1+2,4,boss::log_format);  //Replace BOSSlogFormat setting.
+			else if (i==5)
+				buffer.replace(pos1+2,1,boss::IntToString(boss::verbosity));  //Replace CLVerbosity setting.
+			else if (i==6)
+				buffer.replace(pos1+2,1,boss::BoolToString(boss::update));  //Replace UpdateMasterlist setting.
+			else if (i==7)
+				buffer.replace(pos1+2,1,boss::BoolToString(boss::sort_skip_version_parse));  //Replace SortNoVersionParse setting.
+			else if (i==8)
+				buffer.replace(pos1+2,1,boss::BoolToString(boss::sort_show_CRCs));  //Replace SortDisplayCRCs setting.
+			else if (i==9)
+				buffer.replace(pos1+2,1,boss::BoolToString(boss::trial_run));  //Replace DoTrialRun setting.
+			else if (i==10) {
+				//Need to find out how long the current setting string is.
+				//Look for the end of the line.
+				pos2 = buffer.find("\r\n",pos1);  //Windows EOL.
+				if (pos2 == std::string::npos)
+					pos2 = buffer.find("\n",pos1);  //Unix EOL.
+				//Length of setting string is pos2-pos1-2.
+				if (boss::game == 0)
+					buffer.replace(pos1+2,pos2-pos1-2,"auto");  //Replace Game setting.
+				else if (boss::game == 1)
+					buffer.replace(pos1+2,pos2-pos1-2,"Oblivion");  //Replace Game setting.
+				else if (boss::game == 2)
+					buffer.replace(pos1+2,pos2-pos1-2,"Fallout3");  //Replace Game setting.
+				else if (boss::game == 3)
+					buffer.replace(pos1+2,pos2-pos1-2,"Nehrim");  //Replace Game setting.
+				else
+					buffer.replace(pos1+2,pos2-pos1-2,"FalloutNV");  //Replace Game setting.
+			} else if (i==11)
+				buffer.replace(pos1+2,1,boss::IntToString(boss::revert));  //Replace RevertLevel setting.
+			else if (i==12)
+				buffer.replace(pos1+2,1,boss::BoolToString(boss::revert_skip_version_parse));  //Replace RevertNoVersionParse setting.
+			else if (i==13)
+				buffer.replace(pos1+2,1,boss::BoolToString(boss::revert_show_CRCs));  //Replace RevertDisplayCRCs setting.
+		}
+		std::ofstream out("BOSS.ini");
+		if (!out.fail()) {
+			out.unsetf(std::ios::skipws);
+			out << buffer;
+			out.close();
+		}
+	}
+
+    Destroy();  // you may also do:  event.Skip();
+                // since the default event handler does call Destroy(), too
 }
 
 //Called when program exits.

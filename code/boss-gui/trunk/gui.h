@@ -41,6 +41,7 @@ public:
 	void OnLoggingChange(wxCommandEvent& event);
 	void OnTrialRunChange(wxCommandEvent& event);
 	void OnUpdateCheck(wxCommandEvent& event);
+	void OnClose(wxCloseEvent& event);
 	DECLARE_EVENT_TABLE()
 private:
 	wxMenuBar *MenuBar;

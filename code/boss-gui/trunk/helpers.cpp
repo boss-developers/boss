@@ -141,6 +141,14 @@ namespace boss {
 		return out;
 	}
 
+	//Converts a boolean to a string representation (0/1)
+	string BoolToString(bool b) {
+		if (b)
+			return "1";
+		else
+			return "0";
+	}
+
 	//Gets BOSS's version number.
 	int GetBOSSVersion() {
 		int retVal = 0;
