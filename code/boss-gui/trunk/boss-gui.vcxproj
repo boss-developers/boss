@@ -91,10 +91,13 @@
   <ItemGroup>
     <ClCompile Include="gui.cpp" />
     <ClCompile Include="helpers.cpp" />
+    <ClCompile Include="parser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="grammars.h" />
     <ClInclude Include="gui.h" />
     <ClInclude Include="helpers.h" />
+    <ClInclude Include="parser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

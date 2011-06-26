@@ -20,6 +20,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "gui.h"
+#include "parser.h"
 #include <iostream>
 
 namespace fs = boost::filesystem;
@@ -59,6 +60,9 @@ IMPLEMENT_APP(BossGUI)
 
 //Draws the main window when program starts.
 bool BossGUI::OnInit() {
+	//Set up variable defaults.
+	boss::parseIni("BOSS.ini");
+
 	MainFrame *frame = new MainFrame(
 		wxT("Better Oblivion Sorting Software GUI - " + boss::GetGame()), 100, 100, 510, 370);
 
@@ -130,9 +134,9 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	outputOptionsBox->Add(DebugBox = new wxCheckBox(this,CHECKBOX_EnableDebug, "Enable Debug Output"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	outputOptionsBox->Add(LoggingBox = new wxCheckBox(this,CHECKBOX_EnableLogging, "Enable Logging Of Command Line Output"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	formatBox->Add(new wxStaticText(this, wxID_ANY, "BOSSlog Format: "), 1, wxLEFT | wxBOTTOM, 5);
-	formatBox->Add(FormatBox = new wxComboBox(this, DROPDOWN_LogFormat, "HTML", wxPoint(110,60), wxDefaultSize, 2, choices, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
+	formatBox->Add(FormatBox = new wxComboBox(this, DROPDOWN_LogFormat, choices[0], wxPoint(110,60), wxDefaultSize, 2, choices, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	verbosityBox->Add(new wxStaticText(this, wxID_ANY, "Command Line Verbosity: "), 1, wxLEFT | wxBOTTOM, 5);
-	verbosityBox->Add(VerbosityBox = new wxComboBox(this, DROPDOWN_Verbosity, "Standard (0)", wxDefaultPosition, wxDefaultSize, 4, choices2, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
+	verbosityBox->Add(VerbosityBox = new wxComboBox(this, DROPDOWN_Verbosity, choices2[0], wxDefaultPosition, wxDefaultSize, 4, choices2, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	//Add the verbosityBox to its parent now to preserve layout.
 	outputOptionsBox->Add(formatBox, 0, wxEXPAND, 0);
 	outputOptionsBox->Add(verbosityBox, 0, wxEXPAND, 0);
@@ -170,14 +174,14 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	//Update only stuff.
 	runOptionsBox->Add(UpdateOption = new wxRadioButton(this, RADIOBUTTON_UpdateOption, "Update Masterlist Only"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	gameBox->Add(GameText = new wxStaticText(this, wxID_ANY, "Game: "), 1, wxLEFT | wxBOTTOM, 15);
-	gameBox->Add(GameBox = new wxComboBox(this, DROPDOWN_Game, "Autodetect", wxDefaultPosition, wxDefaultSize, 5, choices3, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
+	gameBox->Add(GameBox = new wxComboBox(this, DROPDOWN_Game, choices3[0], wxDefaultPosition, wxDefaultSize, 5, choices3, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	updateBox->Add(gameBox, 0, wxEXPAND, 0);
 	runOptionsBox->Add(updateBox, 0, wxEXPAND | wxLEFT | wxBOTTOM, 20);
 	
 	//Undo option stuff.
 	runOptionsBox->Add(UndoOption = new wxRadioButton(this, RADIOBUTTON_UndoOption, "Undo Changes"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	revertBox->Add(RevertText = new wxStaticText(this, wxID_ANY, "Undo Level: "), 1, wxLEFT | wxBOTTOM, 5);
-	revertBox->Add(RevertBox = new wxComboBox(this, DROPDOWN_Revert, "No Undo", wxDefaultPosition, wxDefaultSize, 3, choices4, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
+	revertBox->Add(RevertBox = new wxComboBox(this, DROPDOWN_Revert, choices4[0], wxDefaultPosition, wxDefaultSize, 3, choices4, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	undoBox->Add(revertBox, 0, wxEXPAND, 0);
 	undoBox->Add(UndoVersionBox = new wxCheckBox(this,CHECKBOX_RevertEnableVersions, "Enable Mod Version Display"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	undoBox->Add(UndoCRCBox = new wxCheckBox(this,CHECKBOX_RevertEnableCRCs, "Enable File CRC Display"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
@@ -194,20 +198,110 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	VerbosityBox->SetToolTip("The higher the verbosity level, the more information is outputted to the command line.");
 	TrialRunBox->SetToolTip("Runs BOSS, but doesn't actually change your load order.");
 
-	//Set option values.
-	ShowLogBox->SetValue(true);
+	//Set option values based on initialised variable values.
 	RunBOSSButton->SetDefault();
-	SortOption->SetValue(true);
-	SortVersionBox->SetValue(true);
-	UndoVersionBox->SetValue(true);
+	if (boss::update)
+		UpdateBox->SetValue(true);
+	else
+		UpdateBox->SetValue(false);
+	if (boss::silent)
+		ShowLogBox->SetValue(false);
+	else
+		ShowLogBox->SetValue(true);
+	if (boss::debug)
+		DebugBox->SetValue(true);
+	else
+		DebugBox->SetValue(false);
+	if (boss::trial_run)
+		TrialRunBox->SetValue(true);
+	else
+		TrialRunBox->SetValue(false);
+	if (boss::logCL)
+		LoggingBox->SetValue(true);
+	else
+		LoggingBox->SetValue(false);
+	if (boss::sort_show_CRCs)
+		SortCRCBox->SetValue(true);
+	else
+		SortCRCBox->SetValue(false);
+	if (boss::sort_skip_version_parse)
+		SortVersionBox->SetValue(false);
+	else
+		SortVersionBox->SetValue(true);
+	if (boss::revert_show_CRCs)
+		UndoCRCBox->SetValue(true);
+	else
+		UndoCRCBox->SetValue(false);
+	if (boss::revert_skip_version_parse)
+		UndoVersionBox->SetValue(false);
+	else
+		UndoVersionBox->SetValue(true);
+	if (boss::game == 0)
+		GameBox->SetValue(choices3[0]);
+	else if (boss::game == 1)
+		GameBox->SetValue(choices3[1]);
+	else if (boss::game == 2)
+		GameBox->SetValue(choices3[2]);
+	else if (boss::game == 3)
+		GameBox->SetValue(choices3[3]);
+	else if (boss::game == 4)
+		GameBox->SetValue(choices3[4]);
+	if (boss::revert == 0)
+		RevertBox->SetValue(choices4[0]);
+	else if (boss::revert == 1)
+		RevertBox->SetValue(choices4[1]);
+	else if (boss::revert == 2)
+		RevertBox->SetValue(choices4[2]);
+	if (boss::verbosity == 0)
+		VerbosityBox->SetValue(choices2[0]);
+	else if (boss::verbosity == 1)
+		VerbosityBox->SetValue(choices2[1]);
+	else if (boss::verbosity == 2)
+		VerbosityBox->SetValue(choices2[2]);
+	else if (boss::verbosity == 3)
+		VerbosityBox->SetValue(choices2[3]);
+	if (boss::log_format == "html")
+		FormatBox->SetValue(choices[0]);
+	else if (boss::log_format == "text")
+		FormatBox->SetValue(choices[1]);
 
-	//Disable stuff for Update and Undo modes, as they aren't enabled by default.
-	GameText->Enable(false);
-	GameBox->Enable(false);
-	RevertText->Enable(false);
-	RevertBox->Enable(false);
-	UndoVersionBox->Enable(false);
-	UndoCRCBox->Enable(false);
+	if (boss::run_type == 1) {
+		SortOption->SetValue(true);
+		UpdateBox->Enable(true);
+		SortVersionBox->Enable(true);
+		SortCRCBox->Enable(true);
+		TrialRunBox->Enable(true);
+		GameText->Enable(false);
+		GameBox->Enable(false);
+		RevertText->Enable(false);
+		RevertBox->Enable(false);
+		UndoVersionBox->Enable(false);
+		UndoCRCBox->Enable(false);
+	} else if (boss::run_type == 2) {
+		UpdateOption->SetValue(true);
+		UpdateBox->Enable(false);
+		SortVersionBox->Enable(false);
+		SortCRCBox->Enable(false);
+		TrialRunBox->Enable(false);
+		GameText->Enable(true);
+		GameBox->Enable(true);
+		RevertText->Enable(false);
+		RevertBox->Enable(false);
+		UndoVersionBox->Enable(false);
+		UndoCRCBox->Enable(false);
+	} else {
+		UndoOption->SetValue(true);
+		UpdateBox->Enable(false);
+		SortVersionBox->Enable(false);
+		SortCRCBox->Enable(false);
+		TrialRunBox->Enable(false);
+		GameText->Enable(false);
+		GameBox->Enable(false);
+		RevertText->Enable(true);
+		RevertBox->Enable(true);
+		UndoVersionBox->Enable(true);
+		UndoCRCBox->Enable(true);
+	}
 
 	//Now set up the status bar.
 	CreateStatusBar(1);
