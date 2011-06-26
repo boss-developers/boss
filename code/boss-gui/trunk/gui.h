@@ -43,6 +43,7 @@ public:
 	void OnUpdateCheck(wxCommandEvent& event);
 	void OnClose(wxCloseEvent& event);
 	DECLARE_EVENT_TABLE()
+	void CheckForUpdate();
 private:
 	wxMenuBar *MenuBar;
 	wxMenu *FileMenu;

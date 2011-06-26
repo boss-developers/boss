@@ -223,90 +223,63 @@ namespace boss {
 		return result;
 	}
 
-	//Checks if an update is available or not for the given item.
-	//Valid items are 'BOSS' and 'masterlist'.
-	string IsUpdateAvailable(string subject) {
-		int localVersion, remoteVersion;
-		string remoteVersionStr;
-		char cbuffer[4096];
-		char errbuff[CURL_ERROR_SIZE];
+	bool CheckConnection() {
 		CURL *curl;									//cURL handle
+		char errbuff[CURL_ERROR_SIZE];
 		CURLcode ret;
-		size_t start=-1,end;								//Position holders for trimming strings.
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
 		if (!curl) 
+			return false;
+		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+
+		//Check that there is an internet connection. Easiest way to do this is to check that the BOSS google code page exists.
+		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/");
+		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1);	
+		ret = curl_easy_perform(curl);
+		//Clean up and close curl handle now that it's finished with.
+		curl_easy_cleanup(curl);
+
+		if (ret!=CURLE_OK)
+			return false;
+		else
+			return true;
+	}
+
+	//Checks if a new release of BOSS is available or not.
+	string IsUpdateAvailable() {
+		int localVersion, remoteVersion;
+		string remoteVersionStr;
+		char errbuff[CURL_ERROR_SIZE];
+		CURL *curl;									//cURL handle
+		CURLcode ret;
+
+		//curl will be used to get stuff from the internet, so initialise it.
+		curl = curl_easy_init();
+		if (!curl)
 			throw update_error() << err_detail("Curl could not be initialised.");
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 10s.
 
-		if (subject == "masterlist") {
-			fs::path masterlist_path = "masterlist.txt";
-			string line;
-			ifstream mlist;					//Input stream.
-		
-			//Get revision number from http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn page text.
-			curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn");
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
-			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &remoteVersionStr );
-			ret = curl_easy_perform(curl);
-			if (ret!=CURLE_OK)
-				throw update_error() << err_detail(errbuff);
-		
-			//Extract revision number from page text.
-			if (GetGame() == "Oblivion") start = remoteVersionStr.find("boss-oblivion");
-			else if (GetGame() == "Fallout 3") start = remoteVersionStr.find("boss-fallout");
-			else if (GetGame() == "Nehrim") start = remoteVersionStr.find("boss-nehrim");
-			else if (GetGame() == "Fallout: New Vegas") start = remoteVersionStr.find("boss-fallout-nv");
-			else throw update_error() << err_detail("No local masterlist found. Cannot determine which masterlist needs checking.");
-			if (start == string::npos)
-				throw update_error() << err_detail("Cannot find online masterlist revision number.");
-			start = remoteVersionStr.find("\"masterlist.txt\"", start);
-			start = remoteVersionStr.find("B\",\"", start) + 4; 
-			if (start == string::npos)
-				throw update_error() << err_detail("Cannot find online masterlist revision number.");
-			end = remoteVersionStr.find("\"",start) - start;
-			if (end == string::npos)
-				throw update_error() << err_detail("Cannot find online masterlist revision number.");
-			remoteVersionStr = remoteVersionStr.substr(start,end);
-
-			//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
-			if (fs::exists(masterlist_path)) {
-				mlist.open(masterlist_path.c_str());
-				if (mlist.fail())
-					throw update_error() << err_detail("Masterlist cannot be opened.");
-				while (!mlist.eof()) {
-					mlist.getline(cbuffer,4096);
-					line=cbuffer;
-					if (line.find("? Masterlist Revision") != string::npos) {
-						if (line.find(remoteVersionStr) != string::npos) {
-							return "";  //Masterlist already at latest revision.
-						} else 
-							break;
-					}
-				}
-				mlist.close();
-			}
-			return remoteVersionStr;
-		} else {
-			//Get page containing version number.
-			curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-common/latestversion.txt");
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
-			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &remoteVersionStr );
-			ret = curl_easy_perform(curl);
-			if (ret!=CURLE_OK)
-				throw update_error() << err_detail(errbuff);
-
-			localVersion = GetBOSSVersion();
-			remoteVersion = versionStringToInt(remoteVersionStr);
-
-			//Now compare versions.
-			if (remoteVersion > localVersion)
-				return remoteVersionStr;
-			else
-				return "";
+		//Get page containing version number.
+		curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-common/latestversion.txt");
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &remoteVersionStr);
+		ret = curl_easy_perform(curl);
+		if (ret!=CURLE_OK) {
+			curl_easy_cleanup(curl);
+			throw update_error() << err_detail(errbuff);
 		}
-		return "";
+
+		localVersion = GetBOSSVersion();
+		remoteVersion = versionStringToInt(remoteVersionStr);
+
+		//Now compare versions.
+		if (remoteVersion > localVersion)
+			return remoteVersionStr;
+		else
+			return "";
 	}
 }

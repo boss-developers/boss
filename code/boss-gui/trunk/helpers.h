@@ -87,8 +87,10 @@ namespace boss {
 	struct update_error: virtual exception, virtual boost::exception {};
 	typedef boost::error_info<struct tag_errno,string> err_detail;
 
-	//Checks if an update is available or not for the given item.
-	//Valid items are 'BOSS' and 'masterlist'.
-	string IsUpdateAvailable(string subject);
+	//Checks if there is an Internet connection present.
+	bool CheckConnection();
+
+	//Checks if a new release of BOSS is available or not.
+	string IsUpdateAvailable();
 }
 #endif

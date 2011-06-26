@@ -19,6 +19,9 @@
 #include "boost/exception/get_error_info.hpp"
 #include <boost/algorithm/string.hpp>
 
+#include <wx/richtext/richtextctrl.h>
+#include <wx/aboutdlg.h>
+
 #include "gui.h"
 #include "parser.h"
 #include <iostream>
@@ -142,14 +145,13 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	//Add the verbosityBox to its parent now to preserve layout.
 	outputOptionsBox->Add(formatBox, 0, wxEXPAND, 0);
 	outputOptionsBox->Add(verbosityBox, 0, wxEXPAND, 0);
-	columnBox->Add(outputOptionsBox, 0, wxBOTTOM, 20);
+	columnBox->Add(outputOptionsBox, 0, wxBOTTOM, 30);
 
 	//Now add the main buttons to the first column.
 	wxBoxSizer *buttonBox = new wxBoxSizer(wxVERTICAL);
 	buttonBox->Add(OpenUserlistButton = new wxButton(this,OPTION_OpenUserlist, "Edit Userlist", wxDefaultPosition, wxSize(120,30)), 0, wxBOTTOM, 5);
 	buttonBox->Add(RunBOSSButton = new wxButton(this,OPTION_Run, "Run BOSS", wxDefaultPosition, wxSize(120,30)));
 	buttonBox->Add(OpenBOSSlogButton = new wxButton(this,OPTION_OpenBOSSlog, "View BOSSlog", wxDefaultPosition, wxSize(120,30)), 0, wxTOP, 5);
-	buttonBox->Add(CheckForUpdatesButton = new wxButton(this,OPTION_CheckForUpdates, "Check For Updates", wxDefaultPosition, wxSize(120,30)), 0, wxTOP, 5);
 	columnBox->Add(buttonBox, 0, wxALIGN_CENTER, 20);
 
 	//Add the first column to the big box.
@@ -311,6 +313,9 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
+
+	//Now check for program updates.
+	CheckForUpdate();
 }
 
 //Called when program exits.
@@ -465,10 +470,45 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 }
 
 void MainFrame::OnAbout(wxCommandEvent& event) {
+
 	wxFrame *frame = new wxFrame(this, -1, "About Better Oblivion Sorting Software GUI", wxPoint(100, 100), wxSize(350, 250),wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT);
 	frame->SetBackgroundColour(wxColour(255,255,255));
 
 	wxBoxSizer *box = new wxBoxSizer(wxVERTICAL);
+
+	/*wxRichTextCtrl *text = new wxRichTextCtrl(frame, -1, wxEmptyString, wxDefaultPosition, wxSize(350, 250));
+
+	wxRichTextAttr urlStyle;
+    urlStyle.SetTextColour(*wxBLUE);
+    urlStyle.SetFontUnderlined(true);
+
+	text->BeginBold();
+	text->WriteText("Better Oblivion Sorting Software GUI");
+	text->EndBold();
+	text->LineBreak();
+	text->WriteText(boss::gui_version+" ("+boss::gui_releaseDate+")");
+	text->Newline();
+
+	text->WriteText("Provides a graphical front end for running ");
+	text->BeginStyle(urlStyle);
+	text->BeginURL("http://code.google.com/p/better-oblivion-sorting-software/");
+	text->WriteText("Better Oblivion Sorting Software");
+	text->EndURL();
+	text->EndStyle();
+	text->Newline();
+
+	text->WriteText("© WrinklyNinja and the BOSS development team, 2011.");
+	text->LineBreak();
+	text->WriteText("Some rights reserved. Copyright license: ");
+	text->BeginStyle(urlStyle);
+	text->BeginURL("http://creativecommons.org/licenses/by-nc-nd/3.0/");
+	text->WriteText("CC Attribution-Noncommercial-No Derivative Works 3.0");
+	text->EndURL();
+	text->EndStyle();
+
+	text->Layout();
+
+	box->Add(text);*/
 
 	box->Add(new wxStaticText(frame,-1,
 		"Better Oblivion Sorting Software GUI\nv"+boss::gui_version+" ("+boss::gui_releaseDate+")\n\n"
@@ -581,26 +621,22 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 }
 
 void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
-	std::string mlistText,bossText;
-	try {
-		mlistText = boss::IsUpdateAvailable("masterlist");
-		if (mlistText.length() == 0)
-			mlistText = "Masterlist: Update not available.";
-		else
-			mlistText = "Masterlist: Update available! New version: " + mlistText;
-	} catch (boss::update_error & e) {
-		std::string const * detail = boost::get_error_info<boss::err_detail>(e);
-		mlistText = "Masterlist: Update check failed. Details: " + *detail;
-	}
-	try {
-		bossText = boss::IsUpdateAvailable("BOSS");
-		if (bossText.length() == 0)
-			bossText = "BOSS: Update not available.";
-		else
-			bossText = "BOSS: Update available! New version: " + bossText;
-	} catch (boss::update_error & e) {
-		std::string const * detail = boost::get_error_info<boss::err_detail>(e);
-		bossText = "BOSS: Update check failed. Details: " + *detail;
+	std::string updateText;
+	if (boss::CheckConnection()) {
+		try {
+			updateText = boss::IsUpdateAvailable();
+			if (updateText.length() == 0) {
+				wxMessageBox(wxT("You are already using the latest version of BOSS."), wxT("Check For Updates"), wxOK | wxICON_INFORMATION, this);
+				return;
+			} else
+				updateText = "Update available! New version: " + updateText;
+		} catch (boss::update_error & e) {
+			std::string const * detail = boost::get_error_info<boss::err_detail>(e);
+			updateText = "Update check failed. Details: " + *detail;
+		}
+	} else {
+		wxMessageBox(wxT("Update check failed. No Internet connection detected."), wxT("Check For Updates"), wxOK | wxICON_ERROR, this);
+		return;
 	}
 
 	wxFrame *frame = new wxFrame(this, -1, "Check For Updates", wxPoint(100, 100), wxSize(450, 340),wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT);
@@ -610,13 +646,58 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
 
 	wxBoxSizer *updateBox = new wxBoxSizer(wxVERTICAL);
-	wxStaticText *text = new wxStaticText(frame,-1,"BOSS Update Checks\n");
-	updateBox->Add(text);
-	updateBox->Add(new wxStaticText(frame,-1,mlistText, wxDefaultPosition, wxDefaultSize, wxTE_BESTWRAP));
-	updateBox->Add(new wxStaticText(frame,-1,bossText));
+	updateBox->Add(new wxStaticText(frame,-1,updateText, wxDefaultPosition, wxDefaultSize, wxTE_BESTWRAP));
 	
 	wxBoxSizer *textBox = new wxBoxSizer(wxVERTICAL);
-	textBox->Add(new wxStaticText(frame,-1,"Masterlist updates can be downloaded through the built-in updater.\nBOSS updates can be downloaded from the following sites:"));
+	textBox->Add(new wxStaticText(frame,-1,"BOSS updates can be downloaded from the following sites:"));
+	
+	wxBoxSizer *linkBox = new wxBoxSizer(wxVERTICAL);
+	wxHyperlinkCtrl *link = new wxHyperlinkCtrl(frame,-1,"TES Nexus","http://www.tesnexus.com/downloads/file.php?id=20516");
+	link->SetBackgroundColour(wxColour(255,255,255));
+	linkBox->Add(link);
+	link = new wxHyperlinkCtrl(frame,-1,"Fallout 3 Nexus","http://www.fallout3nexus.com/downloads/file.php?id=10193");
+	link->SetBackgroundColour(wxColour(255,255,255));
+	linkBox->Add(link);
+	link = new wxHyperlinkCtrl(frame,-1,"New Vegas Nexus","http://www.newvegasnexus.com/downloads/file.php?id=35999");
+	link->SetBackgroundColour(wxColour(255,255,255));
+	linkBox->Add(link);
+
+	bigBox->Add(updateBox, 0, wxALL, 20);
+	bigBox->Add(textBox, 0,  wxLEFT | wxRIGHT, 20);
+	bigBox->Add(linkBox, 0, wxALL, 20);
+
+	//Now set the layout and sizes.
+	frame->SetSizerAndFit(bigBox);
+
+	frame->Show(TRUE);
+}
+
+void MainFrame::CheckForUpdate() {
+	std::string updateText;
+	if (boss::CheckConnection()) {
+		try {
+			updateText = boss::IsUpdateAvailable();
+			if (updateText.length() != 0)
+				updateText = "Update available! New version: " + updateText;
+			else
+				return;
+		} catch (boss::update_error&) {
+			return;
+		}
+	} else
+		return;
+
+	wxFrame *frame = new wxFrame(this, -1, "Check For Updates", wxPoint(100, 100), wxSize(450, 340),wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT);
+	
+	frame->SetBackgroundColour(wxColour(255,255,255));
+
+	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
+
+	wxBoxSizer *updateBox = new wxBoxSizer(wxVERTICAL);
+	updateBox->Add(new wxStaticText(frame,-1,updateText, wxDefaultPosition, wxDefaultSize, wxTE_BESTWRAP));
+	
+	wxBoxSizer *textBox = new wxBoxSizer(wxVERTICAL);
+	textBox->Add(new wxStaticText(frame,-1,"BOSS updates can be downloaded from the following sites:"));
 	
 	wxBoxSizer *linkBox = new wxBoxSizer(wxVERTICAL);
 	wxHyperlinkCtrl *link = new wxHyperlinkCtrl(frame,-1,"TES Nexus","http://www.tesnexus.com/downloads/file.php?id=20516");
