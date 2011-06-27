@@ -590,16 +590,8 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 			if (updateText.length() == 0) {
 				wxMessageBox(wxT("You are already using the latest version of BOSS."), wxT("Check For Updates"), wxOK | wxICON_INFORMATION, this);
 				return;
-			} else {
-				updateText = "Update available! New version: " + updateText;
-				//Test out new auto-updater.
-				try {
-					boss::DownloadUpdateFiles();
-				} catch (boss::update_error & e) {
-					std::string const * detail = boost::get_error_info<boss::err_detail>(e);
-					updateText += "Error: " + *detail;
-				}
-			}
+			} else
+				updateText = "Update available! New version: " + updateText + "\nDo you want to download and install the update?";
 		} catch (boss::update_error & e) {
 			std::string const * detail = boost::get_error_info<boss::err_detail>(e);
 			updateText = "Update check failed. Details: " + *detail;
@@ -609,37 +601,15 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 		return;
 	}
 
-	wxFrame *frame = new wxFrame(this, -1, "Check For Updates", wxPoint(100, 100), wxSize(450, 340),wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT);
-	
-	frame->SetBackgroundColour(wxColour(255,255,255));
+	//Display dialog BOSS telling user about update available.
+	wxMessageDialog *dlg = new wxMessageDialog(this,updateText, "Check For Updates", wxYES_NO);
 
-	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
-
-	wxBoxSizer *updateBox = new wxBoxSizer(wxVERTICAL);
-	updateBox->Add(new wxStaticText(frame,-1,updateText, wxDefaultPosition, wxDefaultSize, wxTE_BESTWRAP));
-	
-	wxBoxSizer *textBox = new wxBoxSizer(wxVERTICAL);
-	textBox->Add(new wxStaticText(frame,-1,"BOSS updates can be downloaded from the following sites:"));
-	
-	wxBoxSizer *linkBox = new wxBoxSizer(wxVERTICAL);
-	wxHyperlinkCtrl *link = new wxHyperlinkCtrl(frame,-1,"TES Nexus","http://www.tesnexus.com/downloads/file.php?id=20516");
-	link->SetBackgroundColour(wxColour(255,255,255));
-	linkBox->Add(link);
-	link = new wxHyperlinkCtrl(frame,-1,"Fallout 3 Nexus","http://www.fallout3nexus.com/downloads/file.php?id=10193");
-	link->SetBackgroundColour(wxColour(255,255,255));
-	linkBox->Add(link);
-	link = new wxHyperlinkCtrl(frame,-1,"New Vegas Nexus","http://www.newvegasnexus.com/downloads/file.php?id=35999");
-	link->SetBackgroundColour(wxColour(255,255,255));
-	linkBox->Add(link);
-
-	bigBox->Add(updateBox, 0, wxALL, 20);
-	bigBox->Add(textBox, 0,  wxLEFT | wxRIGHT, 20);
-	bigBox->Add(linkBox, 0, wxALL, 20);
-
-	//Now set the layout and sizes.
-	frame->SetSizerAndFit(bigBox);
-
-	frame->Show(TRUE);
+	if (dlg->ShowModal() != wxID_YES) {  //User has chosen not to update. Quit now.
+		//Display a message saying no update was installed.
+		wxMessageBox(wxT("No update has been downloaded or installed."), wxT("Check For Updates"), wxOK | wxICON_INFORMATION, this);
+		return;
+	} else  //User has chosen to update. On with the show!
+		Update();
 }
 
 void MainFrame::CheckForUpdate() {
@@ -647,9 +617,9 @@ void MainFrame::CheckForUpdate() {
 	if (boss::CheckConnection()) {
 		try {
 			updateText = boss::IsUpdateAvailable();
-			if (updateText.length() != 0) {
-				updateText = "Update available! New version: " + updateText;
-			} else
+			if (updateText.length() != 0)
+				updateText = "Update available! New version: " + updateText + "\nDo you want to download and install the update?";
+			else
 				return;
 		} catch (boss::update_error&) {
 			return;
@@ -657,35 +627,68 @@ void MainFrame::CheckForUpdate() {
 	} else
 		return;
 
-	wxFrame *frame = new wxFrame(this, -1, "Check For Updates", wxPoint(100, 100), wxSize(450, 340),wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT);
-	
-	frame->SetBackgroundColour(wxColour(255,255,255));
+	//Display dialog BOSS telling user about update available.
+	wxMessageDialog *dlg = new wxMessageDialog(this,updateText, "Check For Updates", wxYES_NO);
 
-	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
+	if (dlg->ShowModal() != wxID_YES) {  //User has chosen not to update. Quit now.
+		//Display a message saying no update was installed.
+		wxMessageBox(wxT("No update has been downloaded or installed."), wxT("Check For Updates"), wxOK | wxICON_INFORMATION, this);
+		return;
+	} else  //User has chosen to update. On with the show!
+		Update();
+}
 
-	wxBoxSizer *updateBox = new wxBoxSizer(wxVERTICAL);
-	updateBox->Add(new wxStaticText(frame,-1,updateText, wxDefaultPosition, wxDefaultSize, wxTE_BESTWRAP));
-	
-	wxBoxSizer *textBox = new wxBoxSizer(wxVERTICAL);
-	textBox->Add(new wxStaticText(frame,-1,"BOSS updates can be downloaded from the following sites:"));
-	
-	wxBoxSizer *linkBox = new wxBoxSizer(wxVERTICAL);
-	wxHyperlinkCtrl *link = new wxHyperlinkCtrl(frame,-1,"TES Nexus","http://www.tesnexus.com/downloads/file.php?id=20516");
-	link->SetBackgroundColour(wxColour(255,255,255));
-	linkBox->Add(link);
-	link = new wxHyperlinkCtrl(frame,-1,"Fallout 3 Nexus","http://www.fallout3nexus.com/downloads/file.php?id=10193");
-	link->SetBackgroundColour(wxColour(255,255,255));
-	linkBox->Add(link);
-	link = new wxHyperlinkCtrl(frame,-1,"New Vegas Nexus","http://www.newvegasnexus.com/downloads/file.php?id=35999");
-	link->SetBackgroundColour(wxColour(255,255,255));
-	linkBox->Add(link);
+void MainFrame::Update() {
+	//First detect type of current install: manual or installer.
+	if (fs::exists("BOSS ReadMe.lnk")) {  //Installer
+		std::string message = "Your current install has been determined as having been installed via the BOSS installer.\n\n";
+		message += "The automatic updater will download the installer for the new version to this BOSS folder, then exit BOSS GUI.\n\n";
+		message += "You must then uninstall your current version of BOSS using the uninstaller it provided, and install the new version using the newly downloaded installer.";
+		
+		wxMessageDialog *dlg = new wxMessageDialog(this,message, wxT("Automatic Updater"), wxOK | wxCANCEL);
+		if (dlg->ShowModal() != wxID_OK) {  //User has chosen to cancel. Quit now.
+			wxMessageBox(wxT("Automatic updater cancelled."), wxT("Automatic Updater"), wxOK | wxICON_EXCLAMATION, this);
+			return;
+		}
+		try {
+			boss::DownloadUpdateInstaller();
+		} catch (boss::update_error & e) {
+			std::string const * detail = boost::get_error_info<boss::err_detail>(e);
+			wxMessageBox(wxT("The automatic updater encountered the following error while downloading the update:\n\n" + *detail + "\n\nUpdate cancelled."), wxT("Automatic Updater"), wxOK | wxICON_ERROR, this);
+			return;
+		}
+		//Try to run the uninstaller automatically in a separate process before we exit.
 
-	bigBox->Add(updateBox, 0, wxALL, 20);
-	bigBox->Add(textBox, 0,  wxLEFT | wxRIGHT, 20);
-	bigBox->Add(linkBox, 0, wxALL, 20);
-
-	//Now set the layout and sizes.
-	frame->SetSizerAndFit(bigBox);
-
-	frame->Show(TRUE);
+		//Remind the user to run the uninstaller and installer.
+		wxMessageBox(wxT("New installer successfully downloaded!\n\nWhen you click 'OK', the GUI will exit. Then uninstall your current version of BOSS and install the new version using the downloaded installer."), wxT("Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+		this->Close();
+	} else {  //Manual.
+		std::string message = "Your current install has been determined as having been installed manually.\n\n";
+		message += "The automatic updater will download the updated files and replace your existing files with them.";
+		if (fs::exists("BOSS.ini"))
+			message += " Your current BOSS.ini will be renamed to BOSS.ini.old. It may still be opened in your chosen text editor, allowing you to migrate your settings.";
+		if (fs::exists("userlist.txt"))
+			message += " Your current userlist.txt will not be replaced.";
+		
+		wxMessageDialog *dlg = new wxMessageDialog(this,message, wxT("Automatic Updater"), wxOK | wxCANCEL);
+		if (dlg->ShowModal() != wxID_OK) {  //User has chosen to cancel. Quit now.
+			wxMessageBox(wxT("Automatic updater cancelled."), wxT("Automatic Updater"), wxOK | wxICON_EXCLAMATION, this);
+			return;
+		}
+		try {
+			boss::DownloadUpdateFiles();
+			boss::InstallUpdateFiles();
+		} catch (boss::update_error & e) {
+			std::string const * detail = boost::get_error_info<boss::err_detail>(e);
+			wxMessageBox(wxT("The automatic updater encountered the following error while downloading the update:\n\n" + *detail + "\n\nUpdate cancelled."), wxT("Automatic Updater"), wxOK | wxICON_ERROR, this);
+			return;
+		} catch (fs::filesystem_error e) {
+			std::string detail = e.what();
+			wxMessageBox(wxT("The automatic updater encountered the following error while installing the update:\n\n" + detail + "\n\nUpdate cancelled."), wxT("Automatic Updater"), wxOK | wxICON_ERROR, this);
+			return;
+		}
+		//Remind the user to update BOSS GUI.exe
+		wxMessageBox(wxT("Files successfully updated!\n\nWhen you click 'OK' the GUI will exit. You must manually delete your current \"BOSS GUI.exe\" and rename the downloaded \"BOSS GUI.exe.new\" to \"BOSS GUI.exe\" to complete the update."), wxT("Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+		this->Close();
+	}
 }

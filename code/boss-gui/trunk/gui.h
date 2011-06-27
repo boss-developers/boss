@@ -44,6 +44,7 @@ public:
 	void OnClose(wxCloseEvent& event);
 	DECLARE_EVENT_TABLE()
 	void CheckForUpdate();
+	void Update();
 private:
 	wxMenuBar *MenuBar;
 	wxMenu *FileMenu;

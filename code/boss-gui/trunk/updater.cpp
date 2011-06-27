@@ -99,7 +99,47 @@ namespace boss {
 			return "";
 	}
 
-	//Download the files in the update. currentFile is the file being currently downloaded, and percent is the percentage of the file downloaded.
+	//Downloads the installer for the update, for when the current version was installed via installer.
+	void DownloadUpdateInstaller() {
+		string url, fileBuffer;
+		char errbuff[CURL_ERROR_SIZE];
+		CURL *curl;									//cURL handle
+		CURLcode ret;
+
+		//curl will be used to get stuff from the internet, so initialise it.
+		curl = curl_easy_init();
+		if (!curl)
+			throw update_error() << err_detail("Curl could not be initialised.");
+		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+
+		//Download the installer.
+		url = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/installer.exe";
+		//Get page containing version number.
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
+		ret = curl_easy_perform(curl);
+		if (ret!=CURLE_OK) {
+			curl_easy_cleanup(curl);
+			throw update_error() << err_detail(errbuff);
+		}
+
+		//Clean up curl resources.
+		curl_easy_cleanup(curl);
+
+		//Open output file stream and save file. File name: "BOSS "+updateVersion" installer.exe"
+		string path = "BOSS "+updateVersion+" installer.exe";
+		ofstream ofile(path.c_str(),ios_base::binary|ios_base::out|ios_base::trunc);
+		if (ofile.fail()) {
+			curl_easy_cleanup(curl);
+			throw update_error() << err_detail("Could not save "+path);
+		}
+		ofile << fileBuffer;
+		ofile.close();
+	}
+
+	//Download the files in the update.
 	bool DownloadUpdateFiles() {
 		string url, fileBuffer, buffer;
 		char errbuff[CURL_ERROR_SIZE];
@@ -112,7 +152,7 @@ namespace boss {
 		if (!curl)
 			throw update_error() << err_detail("Curl could not be initialised.");
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
-		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 10s.
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
 
 		//First connect to the folder containing the update files. The server returns a page listing the files in the folder.
 		//Use this list to build the updatedFiles vector.
@@ -170,12 +210,8 @@ namespace boss {
 	//Installs the downloaded update files.
 	bool InstallUpdateFiles() {
 		//First back up current BOSS.ini if it exists.
-		if (fs::exists("BOSS.ini")) {
-			try {
+		if (fs::exists("BOSS.ini"))
 				fs::rename("BOSS.ini","BOSS.ini.old");
-			}catch (fs::filesystem_error e){
-				throw update_error() << err_detail(e.what());
-			}
 
 		//Now iterate through the vector of updated files.
 		//Delete the current file if it exists, and rename the downloaded updated file, removing the .new extension. Don't try updating BOSS GUI.exe.
@@ -184,17 +220,12 @@ namespace boss {
 			fs::path old = updatedFiles[i];
 
 			if (old.string() != "BOSS GUI.exe") {
-				try {
-					if (fs::exists(old))
-						fs::remove(old);
+				if (fs::exists(old))
+					fs::remove(old);
 
-					fs::rename(updated,old);
-				}catch (fs::filesystem_error e){
-					throw update_error() << err_detail(e.what());
-				}
+				fs::rename(updated,old);
 			}
 		}
 		return true;
 	}
-}
 }

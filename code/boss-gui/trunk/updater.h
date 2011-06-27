@@ -30,6 +30,9 @@ namespace boss {
 	//Checks if a new release of BOSS is available or not.
 	string IsUpdateAvailable();
 
+	//Downloads the installer for the update, for when the current version was installed via installer.
+	void DownloadUpdateInstaller();
+
 	//Download the files in the update.
 	bool DownloadUpdateFiles();
 
