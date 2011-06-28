@@ -11,13 +11,22 @@
 #ifndef __MAIN__HPP__
 #define __MAIN__HPP__
 
-#include "helpers.h"
-#include <string>
+#include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#	include "wx/wx.h"
+#endif
+
+#include <wx/hyperlink.h>
+#include <wx/progdlg.h>
+
+class MainFrame;
 
 //Program class.
 class BossGUI : public wxApp {
 public:
 	virtual bool OnInit();
+	
 };
 
 //Main frame class.
@@ -42,8 +51,8 @@ public:
 	void OnTrialRunChange(wxCommandEvent& event);
 	void OnUpdateCheck(wxCommandEvent& event);
 	void OnClose(wxCloseEvent& event);
+	void CheckForUpdate(wxWindowCreateEvent& event);
 	DECLARE_EVENT_TABLE()
-	void CheckForUpdate();
 	void Update();
 private:
 	wxMenuBar *MenuBar;
@@ -78,6 +87,7 @@ enum {
 	OPTION_OpenBOSSlog,
 	OPTION_Run,
 	OPTION_CheckForUpdates,
+	OPTION_ExitAbout,
     MENU_Quit,
 	MENU_OpenMReadMe,
 	MENU_OpenURReadMe,

@@ -14,6 +14,7 @@
 #endif
 
 #include <iostream>
+#include <cmath>
 #include <curl/curl.h>
 #include <curl/types.h>
 #include <curl/easy.h>
@@ -24,7 +25,13 @@
 #include "helpers.h"
 #include "updater.h"
 
+//#include <wx/msgdlg.h> 
+
+
 namespace boss {
+	using namespace std;
+	namespace fs = boost::filesystem;
+
 	string updateVersion = "";
 	vector<fs::path> updatedFiles;
 
@@ -36,6 +43,36 @@ namespace boss {
 			result = size * nmemb;
 		}
 		return result;
+	}
+
+	int stream_writer(char *data, size_t size, size_t nmemb, void *buffer) {
+		ofstream *out = (ofstream*)buffer;
+		*out << data;
+		return size*nmemb;
+	}
+
+	//Download progress for current file function.
+	int progress_func(void *data, double dlTotal, double dlNow, double ulTotal, double ulNow) {
+		double percentdownloaded = (dlNow / dlTotal) * 1000;
+		int currentProgress = floor(percentdownloaded);
+		if (currentProgress == 1000)
+			--currentProgress;
+		
+		wxProgressDialog* progDia = (wxProgressDialog*)data;
+		bool cont = progDia->Update(currentProgress);
+		//Disabled the below for now. At some point an option to cancel that would feed 
+		//into a 'clean up' function that would delete the downloaded files would be good.
+		//Too complicated for the moment.
+	/*	if (!cont) {
+            if ( wxMessageBox(wxT("Do you really want to cancel?"),
+                              wxT("Automatic Updater: Exit Confirmation"),  // caption
+                              wxYES_NO | wxICON_QUESTION) == wxYES ) {
+				cont = true;
+				progDia->Resume();
+			} else {
+				progDia->Update(1000);
+        }*/
+		return 0;
 	}
 
 	bool CheckConnection() {
@@ -100,47 +137,58 @@ namespace boss {
 	}
 
 	//Downloads the installer for the update, for when the current version was installed via installer.
-	void DownloadUpdateInstaller() {
-		string url, fileBuffer;
+	void DownloadUpdateInstaller(wxProgressDialog *progDia) {
+		string fileBuffer;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		CURLcode ret;
+		string path = "BOSS "+updateVersion+" installer.exe";
+		string url = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/installer.exe";
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
-		if (!curl)
+		if (!curl) {
+			progDia->Update(1000);
 			throw update_error() << err_detail("Curl could not be initialised.");
+		}
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
 
-		//Download the installer.
-		url = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/installer.exe";
-		//Get page containing version number.
-		curl_easy_setopt(curl, CURLOPT_URL, url);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
-		ret = curl_easy_perform(curl);
-		if (ret!=CURLE_OK) {
-			curl_easy_cleanup(curl);
-			throw update_error() << err_detail(errbuff);
-		}
-
-		//Clean up curl resources.
-		curl_easy_cleanup(curl);
-
 		//Open output file stream and save file. File name: "BOSS "+updateVersion" installer.exe"
-		string path = "BOSS "+updateVersion+" installer.exe";
 		ofstream ofile(path.c_str(),ios_base::binary|ios_base::out|ios_base::trunc);
 		if (ofile.fail()) {
+			progDia->Update(1000);
 			curl_easy_cleanup(curl);
 			throw update_error() << err_detail("Could not save "+path);
 		}
-		ofile << fileBuffer;
+		
+		//Set up progress info.
+		updatedFiles.push_back(fs::path(path));  //Record just in case abort cleanup is required.
+		string message = "Downloading: " + path + " (1 of 1)";
+		progDia->Update(0,message);
+		
+		//Download the installer.
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, stream_writer);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ofile);
+		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
+		curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, &progress_func);
+		curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, progDia);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+		ret = curl_easy_perform(curl);
+		if (ret!=CURLE_OK) {
+			curl_easy_cleanup(curl);
+			progDia->Update(1000);
+			throw update_error() << err_detail(errbuff);
+		}
 		ofile.close();
+		//Clean up curl resources.
+		curl_easy_cleanup(curl);
+		progDia->Update(1000);
 	}
 
 	//Download the files in the update.
-	bool DownloadUpdateFiles() {
+	void DownloadUpdateFiles(wxProgressDialog *progDia) {
 		string url, fileBuffer, buffer;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
@@ -149,8 +197,10 @@ namespace boss {
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
-		if (!curl)
+		if (!curl) {
+			progDia->Update(1000);
 			throw update_error() << err_detail("Curl could not be initialised.");
+		}
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
 
@@ -161,8 +211,10 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
+			progDia->Update(1000);
 			curl_easy_cleanup(curl);
 			throw update_error() << err_detail(errbuff);
 		}
@@ -177,38 +229,45 @@ namespace boss {
 			//Now record in updateFiles.
 			updatedFiles.push_back(fs::path(buffer));
 		}
-		fileBuffer.clear();
 
 		//Now that we've got a vector of the files, we can download them.
 		//Loop through the vector and download and save each file. Use binary streams.
 		for (size_t i=0;i<updatedFiles.size();i++) {
+			//Set up progress info. Since we're not doing a total download progress bar, zero progress for each file.
+			string message = "Downloading: " + updatedFiles[i].string() + " (" + IntToString(i+1) + " of " + IntToString(updatedFiles.size()) + ")";
+			progDia->Update(0,message);
+
 			string path = updatedFiles[i].string() + ".new";
 			ofstream ofile(path.c_str(),ios_base::binary|ios_base::out|ios_base::trunc);
 			if (ofile.fail()) {
+				progDia->Update(1000);
 				curl_easy_cleanup(curl);
 				throw update_error() << err_detail("Could not save "+path);
 			}
 
 			string remote_file = url+updatedFiles[i].string();
 			boost::replace_all(remote_file," ","%20");  //Need to put the %20s back in for the file's web address.
+
 			curl_easy_setopt(curl, CURLOPT_URL, remote_file);
-			curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+			curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
+			curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, &progress_func);
+			curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, progDia);
+			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, stream_writer);
+			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ofile);
 			ret = curl_easy_perform(curl);
 			if (ret!=CURLE_OK) {
+				progDia->Update(1000);
 				curl_easy_cleanup(curl);
 				throw update_error() << err_detail(errbuff);
 			}
-			ofile << fileBuffer;
 			ofile.close();
-			fileBuffer.clear();
 		}
-
 		curl_easy_cleanup(curl);
-		return true;
+		progDia->Update(1000);
 	}
 
 	//Installs the downloaded update files.
-	bool InstallUpdateFiles() {
+	void InstallUpdateFiles() {
 		//First back up current BOSS.ini if it exists.
 		if (fs::exists("BOSS.ini"))
 				fs::rename("BOSS.ini","BOSS.ini.old");
@@ -226,6 +285,5 @@ namespace boss {
 				fs::rename(updated,old);
 			}
 		}
-		return true;
 	}
 }

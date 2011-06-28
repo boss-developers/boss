@@ -9,24 +9,21 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-#include "wx/wxprec.h"
 
-#ifndef WX_PRECOMP
-#	include "wx/wx.h"
-#endif
-
-#include <wx/hyperlink.h>
 #include "boost/exception/get_error_info.hpp"
 #include <boost/algorithm/string.hpp>
 
 #include "gui.h"
 #include "parser.h"
 #include "updater.h"
+#include "helpers.h"
+#include <string>
 
 namespace fs = boost::filesystem;
 
 BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_CLOSE (MainFrame::OnClose)
+	EVT_WINDOW_CREATE ( MainFrame::CheckForUpdate)
 	EVT_MENU ( MENU_Quit, MainFrame::OnQuit )
 	EVT_MENU ( OPTION_OpenUserlist, MainFrame::OnOpenFile )
 	EVT_MENU ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
@@ -71,6 +68,8 @@ bool BossGUI::OnInit() {
 	frame->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	frame->Show(TRUE);
 	SetTopWindow(frame);
+
+	
 
 	return true;
 }
@@ -311,9 +310,6 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
-
-	//Now check for program updates.
-	CheckForUpdate();
 }
 
 //Called when program exits.
@@ -467,7 +463,9 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 
 void MainFrame::OnAbout(wxCommandEvent& event) {
 
-	wxFrame *frame = new wxFrame(this, -1, "About Better Oblivion Sorting Software GUI", wxPoint(100, 100), wxSize(350, 250),wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT);
+	//wxFrame *frame = new wxFrame(this, -1, "About Better Oblivion Sorting Software GUI", wxPoint(100, 100), wxSize(350, 250),wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT);
+	wxDialog *frame = new wxDialog(this,-1,"About Better Oblivion Sorting Software GUI");
+
 	frame->SetBackgroundColour(wxColour(255,255,255));
 
 	wxBoxSizer *box = new wxBoxSizer(wxVERTICAL);
@@ -483,11 +481,19 @@ void MainFrame::OnAbout(wxCommandEvent& event) {
 	link = new wxHyperlinkCtrl(frame, -1, "CC Attribution-Noncommercial-No Derivative Works 3.0","http://creativecommons.org/licenses/by-nc-nd/3.0/");
 	link->SetBackgroundColour(wxColour(255,255,255));
 	box->Add(link, 0, wxBOTTOM | wxLEFT | wxRIGHT, 20);
+	
+	//Need to add an 'OK' button.
+	wxButton *okButton = new wxButton(frame, OPTION_ExitAbout, wxT("OK"), wxDefaultPosition, wxSize(70, 30));
+	wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
+	hbox->Add(okButton, 1);
+	
+	box->Add(hbox, 0, wxALIGN_CENTER | wxBOTTOM, 10);
+	frame->SetAffirmativeId(OPTION_ExitAbout);
 
 	//Now set the layout and sizes.
 	frame->SetSizerAndFit(box);
-
-	frame->Show(TRUE);
+	
+	frame->ShowModal();
 }
 
 void MainFrame::OnFormatChange(wxCommandEvent& event) {
@@ -588,31 +594,32 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 		try {
 			updateText = boss::IsUpdateAvailable();
 			if (updateText.length() == 0) {
-				wxMessageBox(wxT("You are already using the latest version of BOSS."), wxT("Check For Updates"), wxOK | wxICON_INFORMATION, this);
+				wxMessageBox(wxT("You are already using the latest version of BOSS."), wxT("BOSS GUI: Check For Updates"), wxOK | wxICON_INFORMATION, this);
 				return;
 			} else
 				updateText = "Update available! New version: " + updateText + "\nDo you want to download and install the update?";
 		} catch (boss::update_error & e) {
 			std::string const * detail = boost::get_error_info<boss::err_detail>(e);
 			updateText = "Update check failed. Details: " + *detail;
+			return;
 		}
 	} else {
-		wxMessageBox(wxT("Update check failed. No Internet connection detected."), wxT("Check For Updates"), wxOK | wxICON_ERROR, this);
+		wxMessageBox(wxT("Update check failed. No Internet connection detected."), wxT("BOSS GUI: Check For Updates"), wxOK | wxICON_ERROR, this);
 		return;
 	}
 
 	//Display dialog BOSS telling user about update available.
-	wxMessageDialog *dlg = new wxMessageDialog(this,updateText, "Check For Updates", wxYES_NO);
+	wxMessageDialog *dlg = new wxMessageDialog(this,updateText, "BOSS GUI: Check For Updates", wxYES_NO);
 
 	if (dlg->ShowModal() != wxID_YES) {  //User has chosen not to update. Quit now.
 		//Display a message saying no update was installed.
-		wxMessageBox(wxT("No update has been downloaded or installed."), wxT("Check For Updates"), wxOK | wxICON_INFORMATION, this);
+		wxMessageBox(wxT("No update has been downloaded or installed."), wxT("BOSS GUI: Check For Updates"), wxOK | wxICON_INFORMATION, this);
 		return;
 	} else  //User has chosen to update. On with the show!
 		Update();
 }
 
-void MainFrame::CheckForUpdate() {
+void MainFrame::CheckForUpdate(wxWindowCreateEvent& event) {
 	std::string updateText;
 	if (boss::CheckConnection()) {
 		try {
@@ -628,11 +635,11 @@ void MainFrame::CheckForUpdate() {
 		return;
 
 	//Display dialog BOSS telling user about update available.
-	wxMessageDialog *dlg = new wxMessageDialog(this,updateText, "Check For Updates", wxYES_NO);
+	wxMessageDialog *dlg = new wxMessageDialog(this,updateText, "BOSS GUI: Check For Updates", wxYES_NO);
 
 	if (dlg->ShowModal() != wxID_YES) {  //User has chosen not to update. Quit now.
 		//Display a message saying no update was installed.
-		wxMessageBox(wxT("No update has been downloaded or installed."), wxT("Check For Updates"), wxOK | wxICON_INFORMATION, this);
+		wxMessageBox(wxT("No update has been downloaded or installed."), wxT("BOSS GUI: Check For Updates"), wxOK | wxICON_INFORMATION, this);
 		return;
 	} else  //User has chosen to update. On with the show!
 		Update();
@@ -645,23 +652,22 @@ void MainFrame::Update() {
 		message += "The automatic updater will download the installer for the new version to this BOSS folder, then exit BOSS GUI.\n\n";
 		message += "You must then uninstall your current version of BOSS using the uninstaller it provided, and install the new version using the newly downloaded installer.";
 		
-		wxMessageDialog *dlg = new wxMessageDialog(this,message, wxT("Automatic Updater"), wxOK | wxCANCEL);
+		wxMessageDialog *dlg = new wxMessageDialog(this,message, wxT("BOSS GUI: Automatic Updater"), wxOK | wxCANCEL);
 		if (dlg->ShowModal() != wxID_OK) {  //User has chosen to cancel. Quit now.
-			wxMessageBox(wxT("Automatic updater cancelled."), wxT("Automatic Updater"), wxOK | wxICON_EXCLAMATION, this);
+			wxMessageBox(wxT("Automatic updater cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_EXCLAMATION, this);
 			return;
 		}
+
+		wxProgressDialog *progDia = new wxProgressDialog("Automatic Updater: Downloading Update","Initialising download...", 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME);
 		try {
-			boss::DownloadUpdateInstaller();
+			boss::DownloadUpdateInstaller(progDia);
 		} catch (boss::update_error & e) {
 			std::string const * detail = boost::get_error_info<boss::err_detail>(e);
-			wxMessageBox(wxT("The automatic updater encountered the following error while downloading the update:\n\n" + *detail + "\n\nUpdate cancelled."), wxT("Automatic Updater"), wxOK | wxICON_ERROR, this);
+			wxMessageBox(wxT("The automatic updater encountered the following error while downloading the update:\n\n" + *detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		}
-		//Try to run the uninstaller automatically in a separate process before we exit.
-
 		//Remind the user to run the uninstaller and installer.
-		wxMessageBox(wxT("New installer successfully downloaded!\n\nWhen you click 'OK', the GUI will exit. Then uninstall your current version of BOSS and install the new version using the downloaded installer."), wxT("Automatic Updater"), wxOK | wxICON_INFORMATION, this);
-		this->Close();
+		wxMessageBox(wxT("New installer successfully downloaded!\n\nWhen you click 'OK', the GUI will exit. Then uninstall your current version of BOSS and install the new version using the downloaded installer."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 	} else {  //Manual.
 		std::string message = "Your current install has been determined as having been installed manually.\n\n";
 		message += "The automatic updater will download the updated files and replace your existing files with them.";
@@ -670,25 +676,26 @@ void MainFrame::Update() {
 		if (fs::exists("userlist.txt"))
 			message += " Your current userlist.txt will not be replaced.";
 		
-		wxMessageDialog *dlg = new wxMessageDialog(this,message, wxT("Automatic Updater"), wxOK | wxCANCEL);
+		wxMessageDialog *dlg = new wxMessageDialog(this,message, wxT("BOSS GUI: Automatic Updater"), wxOK | wxCANCEL);
 		if (dlg->ShowModal() != wxID_OK) {  //User has chosen to cancel. Quit now.
-			wxMessageBox(wxT("Automatic updater cancelled."), wxT("Automatic Updater"), wxOK | wxICON_EXCLAMATION, this);
+			wxMessageBox(wxT("Automatic updater cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_EXCLAMATION, this);
 			return;
 		}
+		wxProgressDialog *progDia = new wxProgressDialog("Automatic Updater: Downloading Update","Initialising download...", 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME);
 		try {
-			boss::DownloadUpdateFiles();
+			boss::DownloadUpdateFiles(progDia);
 			boss::InstallUpdateFiles();
 		} catch (boss::update_error & e) {
 			std::string const * detail = boost::get_error_info<boss::err_detail>(e);
-			wxMessageBox(wxT("The automatic updater encountered the following error while downloading the update:\n\n" + *detail + "\n\nUpdate cancelled."), wxT("Automatic Updater"), wxOK | wxICON_ERROR, this);
+			wxMessageBox(wxT("The automatic updater encountered the following error while downloading the update:\n\n" + *detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		} catch (fs::filesystem_error e) {
 			std::string detail = e.what();
-			wxMessageBox(wxT("The automatic updater encountered the following error while installing the update:\n\n" + detail + "\n\nUpdate cancelled."), wxT("Automatic Updater"), wxOK | wxICON_ERROR, this);
+			wxMessageBox(wxT("The automatic updater encountered the following error while installing the update:\n\n" + detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		}
 		//Remind the user to update BOSS GUI.exe
-		wxMessageBox(wxT("Files successfully updated!\n\nWhen you click 'OK' the GUI will exit. You must manually delete your current \"BOSS GUI.exe\" and rename the downloaded \"BOSS GUI.exe.new\" to \"BOSS GUI.exe\" to complete the update."), wxT("Automatic Updater"), wxOK | wxICON_INFORMATION, this);
-		this->Close();
+		wxMessageBox(wxT("Files successfully updated!\n\nWhen you click 'OK' the GUI will exit. You must manually delete your current \"BOSS GUI.exe\" and rename the downloaded \"BOSS GUI.exe.new\" to \"BOSS GUI.exe\" to complete the update."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 	}
+	this->Close();
 }

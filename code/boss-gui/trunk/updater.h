@@ -15,8 +15,12 @@
 #include <string>
 #include <vector>
 #include "boost/filesystem.hpp"
+#include <wx/progdlg.h>
 
 namespace boss {
+	using namespace std;
+	namespace fs = boost::filesystem;
+
 	extern string updateVersion;
 	extern vector<fs::path> updatedFiles;  //The updated files. These don't have the .new extension.
 
@@ -31,12 +35,12 @@ namespace boss {
 	string IsUpdateAvailable();
 
 	//Downloads the installer for the update, for when the current version was installed via installer.
-	void DownloadUpdateInstaller();
+	void DownloadUpdateInstaller(wxProgressDialog *progDia);
 
 	//Download the files in the update.
-	bool DownloadUpdateFiles();
+	void DownloadUpdateFiles(wxProgressDialog *progDia);
 
 	//Installs the downloaded update files.
-	bool InstallUpdateFiles();
+	void InstallUpdateFiles();
 }
 #endif

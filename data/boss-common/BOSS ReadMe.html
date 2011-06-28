@@ -88,9 +88,10 @@
 		<li>View BOSS's main and User Rules ReadMes through handy Help menu shortcuts.</li>
 		<li>Check for updates to BOSS and your masterlist.</li>
 	</ul>
-	<p>The GUI is also aware of what version of BOSS you are running, and will disable (grey out) any options that are not supported by the version of BOSS you have installed in order to minimise confusion. All the GUI's options should be self-explanatory, 
+	<p>All the GUI's options should be self-explanatory, 
 	but if you have issues understanding what they do, each setting has a corresponding command line parameter, which all have detailed descriptions in the <a href="#details">Further Details</a> section below.</p>
-	<p>Note that the BOSSlog format selection applies to both the format of the BOSSlog that will be generated when BOSS is run and the format that the GUI will try to open when you select <q>View BOSSlog</q>.</p><br />
+	<p>Note that the BOSSlog format selection applies to both the format of the BOSSlog that will be generated when BOSS is run and the format that the GUI will try to open when you select <q>View BOSSlog</q>.</p>
+	<br />
 	
 	<span class="subtitle">The BOSS Log</span>
 	<p>The BOSSlog is where you will find all of BOSS's outputted information. It can be generated in either HTML format (the default) or as a plain text file with minimal formatting. The HTML format has significant advantages over the plain text format, being considerably easier to read, containing colour-coded messages and a variety of filters to customise what is displayed. Both formats, however, contain the same information.</p>
@@ -517,13 +518,19 @@
 		<li>Added BOSSlog filter option to hide userlist warning messages.</li>
 		<li>Added message counts to the <q>Summary</q> section of the BOSSlog.</li>
 		<li>Added a notice to the <q>Summary</q> section of the BOSSlog that is displayed when there has been no change in the recognised mod list since BOSS was last run.</li>
-		<li>Added <q>Perform Trial Run</q> option to the GUI.</li>
-		<li>The GUI's <q>Masterlist Update</q> checkbox now sets the --no-update command line parameter if unchecked to override BOSS's default behaviour.</li>
-		<li>Fixed the <q>Enable File CRC Display</q> and <q>Enable Mod Version Display</q> options getting confused between their values under the <q>Sort Mods</q> and <q>Undo Changes</q> run options.</li>
-		<li>Fixed the GUI's icon not appearing in the title bar.</li>
-		<li>The GUI's settings are now remembered after the program exits using the BOSS.ini.</li>
-		<li>Removed the masterlist update checker from the GUI, as it has been made redundant by BOSS's automatic masterlist updating.</li>
-		<li>The GUI's update checker now runs when the GUI starts and notifies the user if there is an update available. No message is given if an update could not be found. The <q>Check For Updates</q> menu option still provides feedback on all outcomes of the update check.</li>
+		<li>GUI: Added <q>Perform Trial Run</q> option.</li>
+		<li>GUI: The <q>Masterlist Update</q> checkbox now sets the --no-update command line parameter if unchecked to override BOSS's default behaviour.</li>
+		<li>GUI: Fixed the <q>Enable File CRC Display</q> and <q>Enable Mod Version Display</q> options getting confused between their values under the <q>Sort Mods</q> and <q>Undo Changes</q> run options.</li>
+		<li>GUI: Fixed the icon not appearing in the title bar.</li>
+		<li>GUI: The settings are now remembered after the program exits.</li>
+		<li>GUI: Overhauled the <q>Check For Updates</q> functionality:
+		<ul><div style="height:0.65em;"></div>
+			<li>Removed the masterlist update checker, as it has been made redundant by BOSS's automatic masterlist updating.</li>
+			<li>Added automatic updater functionality. Replaced <q>Check For Updates</q> output window with a notification dialog asking if the update should be downloaded and installed. If no update was found, or there was an error, relevant dialog messages are displayed.</li>
+			<li><q>Check For Updates</q> now also automatically runs when the GUI starts. This only displays a message if an update was found.</li>
+		</ul>
+		</li>
+		<li>GUI: Improved the looks of the <q>About</q> window.</li>
 	</ul>
 	<p><b>Version 1.71</b> - <i> 2011</i></p>
 	<ul>

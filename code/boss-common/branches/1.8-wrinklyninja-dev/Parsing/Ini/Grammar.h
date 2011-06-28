@@ -69,7 +69,7 @@ namespace boss {
 	void SetVar(string var, string value) {
 		int intVal;
 		bool bval;
-		if (heading == "GUI.LastOptions" || heading == "Updater.Options")
+		if (heading == "GUI.LastOptions")
 			return;
 		if (heading == "BOSS.RunOptions") {
 			if (var == "Game") {
