@@ -22,8 +22,8 @@
 namespace fs = boost::filesystem;
 
 BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
+	EVT_IDLE( MainFrame::CheckForUpdate )
 	EVT_CLOSE (MainFrame::OnClose)
-	EVT_WINDOW_CREATE ( MainFrame::CheckForUpdate)
 	EVT_MENU ( MENU_Quit, MainFrame::OnQuit )
 	EVT_MENU ( OPTION_OpenUserlist, MainFrame::OnOpenFile )
 	EVT_MENU ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
@@ -56,6 +56,8 @@ END_EVENT_TABLE()
 
 IMPLEMENT_APP(BossGUI)
 
+bool CheckedForUpdate = false;		//To prevent the update checker looping thanks to the OnIdle event handler.
+
 //Draws the main window when program starts.
 bool BossGUI::OnInit() {
 	//Set up variable defaults.
@@ -68,9 +70,6 @@ bool BossGUI::OnInit() {
 	frame->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	frame->Show(TRUE);
 	SetTopWindow(frame);
-
-	
-
 	return true;
 }
 
@@ -463,7 +462,6 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 
 void MainFrame::OnAbout(wxCommandEvent& event) {
 
-	//wxFrame *frame = new wxFrame(this, -1, "About Better Oblivion Sorting Software GUI", wxPoint(100, 100), wxSize(350, 250),wxDEFAULT_FRAME_STYLE | wxFRAME_FLOAT_ON_PARENT);
 	wxDialog *frame = new wxDialog(this,-1,"About Better Oblivion Sorting Software GUI");
 
 	frame->SetBackgroundColour(wxColour(255,255,255));
@@ -619,7 +617,10 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 		Update();
 }
 
-void MainFrame::CheckForUpdate(wxWindowCreateEvent& event) {
+void MainFrame::CheckForUpdate(wxIdleEvent& event) {
+	if (CheckedForUpdate)
+		return;
+	CheckedForUpdate = true;
 	std::string updateText;
 	if (boss::CheckConnection()) {
 		try {

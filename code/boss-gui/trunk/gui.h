@@ -20,19 +20,18 @@
 #include <wx/hyperlink.h>
 #include <wx/progdlg.h>
 
-class MainFrame;
-
 //Program class.
 class BossGUI : public wxApp {
 public:
 	virtual bool OnInit();
-	
 };
 
 //Main frame class.
 class MainFrame : public wxFrame {
 public:
 	MainFrame(const wxChar *title, int x, int y, int width, int height);
+	void CheckForUpdate(wxIdleEvent& event);
+	void Update();
 	void OnQuit(wxCommandEvent& event);
 	void OnRunBOSS(wxCommandEvent& event);
 	void OnOpenFile(wxCommandEvent& event);
@@ -51,9 +50,7 @@ public:
 	void OnTrialRunChange(wxCommandEvent& event);
 	void OnUpdateCheck(wxCommandEvent& event);
 	void OnClose(wxCloseEvent& event);
-	void CheckForUpdate(wxWindowCreateEvent& event);
 	DECLARE_EVENT_TABLE()
-	void Update();
 private:
 	wxMenuBar *MenuBar;
 	wxMenu *FileMenu;
