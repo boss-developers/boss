@@ -154,7 +154,7 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
 
-		//Open output file stream and save file. File name: "BOSS "+updateVersion" installer.exe"
+		//Open output file stream.
 		ofstream ofile(path.c_str(),ios_base::binary|ios_base::out|ios_base::trunc);
 		if (ofile.fail()) {
 			progDia->Update(1000);
@@ -169,8 +169,8 @@ namespace boss {
 		
 		//Download the installer.
 		curl_easy_setopt(curl, CURLOPT_URL, url);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, stream_writer);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ofile);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
 		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
 		curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, &progress_func);
 		curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, progDia);
@@ -181,6 +181,7 @@ namespace boss {
 			progDia->Update(1000);
 			throw update_error() << err_detail(errbuff);
 		}
+		ofile << fileBuffer;
 		ofile.close();
 		//Clean up curl resources.
 		curl_easy_cleanup(curl);
@@ -233,6 +234,7 @@ namespace boss {
 		//Now that we've got a vector of the files, we can download them.
 		//Loop through the vector and download and save each file. Use binary streams.
 		for (size_t i=0;i<updatedFiles.size();i++) {
+			fileBuffer.clear();  //Empty buffer ready for next download.
 			//Set up progress info. Since we're not doing a total download progress bar, zero progress for each file.
 			string message = "Downloading: " + updatedFiles[i].string() + " (" + IntToString(i+1) + " of " + IntToString(updatedFiles.size()) + ")";
 			progDia->Update(0,message);
@@ -252,14 +254,13 @@ namespace boss {
 			curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
 			curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, &progress_func);
 			curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, progDia);
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, stream_writer);
-			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ofile);
 			ret = curl_easy_perform(curl);
 			if (ret!=CURLE_OK) {
 				progDia->Update(1000);
 				curl_easy_cleanup(curl);
 				throw update_error() << err_detail(errbuff);
 			}
+			ofile << fileBuffer;
 			ofile.close();
 		}
 		curl_easy_cleanup(curl);

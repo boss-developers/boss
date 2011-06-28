@@ -22,7 +22,6 @@
 #include <curl/types.h>
 #include <curl/easy.h>
 #include "Error.h"
-#include "proxy.h"
 
 namespace boss {
 	namespace fs = boost::filesystem;
@@ -65,50 +64,36 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 10s.
 
-		//Now set up proxy stuff.
-		pxProxyFactory *pf = px_proxy_factory_new();
-		if (!pf) {
-			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail("Proxy support could not be initialised.");
-		}
-		//Find out which proxies must be used to get a connection.
-		char **proxies = px_proxy_factory_get_proxies(pf, "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn");
-
-		//Now we iterate through the proxies when actually getting the data. We should do this every time we need to download,
-		//but we can just do it for the first bit. If we come across a proxy that works, we then stop the loop.
-
 		//Get revision number from http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn page text.
 		//First set the constant settings.
-		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn");
+		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer );
-		for (int i=0;proxies[i];i++) {
-			//Set up proxy.
-			curl_easy_setopt(curl, CURLOPT_PROXY, proxies[i]);
-			/*
-			//Check if it's an HTML proxy.
-			if (!strncmp("http", proxies[i], 4))
-				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
-			//Check if it's a SOCKS proxy.
-			else if (!strncmp("socks4", proxies[i], 6))
-				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
-			else if (!strncmp("socks5", proxies[i], 6))
-				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
-			else if (!strncmp("socks", proxies[i], 5))
-				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
-				*/
-			//Try getting the page.
-			ret = curl_easy_perform(curl);
 
-			//Exit loop if it works to ensure the correct setting is retained.
-			if (ret == CURLE_OK)
-				break;
-		}
-		//If after trying all proxies, things still didn't work, quit.
+		//Set up proxy. Given proxy IP is 192.168.19.3:1080. Config file gives 192.168.19.16:80.
+		//Try the config file proxy. It might be a proxy to another proxy though.
+		curl_easy_setopt(curl, CURLOPT_PROXY, "http://192.168.19.16:80");
+		curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+
+		//Try getting the page.
+		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
-			curl_easy_cleanup(curl);
-			px_proxy_factory_free(pf);
-			throw boss_error() << err_detail(errbuff);
+
+			//That didn't work. Let's try getting the wpad.dat file.
+			curl_easy_setopt(curl, CURLOPT_PROXY,"");
+			ofstream log("log.txt");
+			curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.19.16/wpad.dat");
+			curl_easy_setopt(curl, CURLOPT_CRLF, 1);
+			ret = curl_easy_perform(curl);
+			if (ret!=CURLE_OK) {
+				log << buffer;
+				log.close();
+				curl_easy_cleanup(curl);
+				throw boss_error() << err_detail("DNS/DCHP-given proxy didn't work. Configuration file could not be found. Check log.txt.");
+			}
+			log << buffer;
+			log.close();
+			throw boss_error() << err_detail("DNS/DCHP-given proxy didn't work. Attempted to get config file from the proxy given. Check log.txt.");
 		}
 		
 		//Extract revision number from page text.
@@ -118,20 +103,17 @@ namespace boss {
 		else if (game == 4) start = buffer.find("boss-fallout-nv");
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
-			px_proxy_factory_free(pf);
 			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
 		}
 		start = buffer.find("\"masterlist.txt\"", start);
 		start = buffer.find("B\",\"", start) + 4; 
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
-			px_proxy_factory_free(pf);
 			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
 		}
 		end = buffer.find("\"",start) - start;
 		if (end == string::npos) {
 			curl_easy_cleanup(curl);
-			px_proxy_factory_free(pf);
 			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
 		}
 		revision = buffer.substr(start,end);
@@ -145,13 +127,11 @@ namespace boss {
 		else if (game == 4) start = buffer.find("boss-fallout-nv");
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
-			px_proxy_factory_free(pf);
 			throw boss_error() << err_detail("Cannot find online masterlist revision date.");
 		}
 		start = buffer.find("\"masterlist.txt\"", start) + 1;
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
-			px_proxy_factory_free(pf);
 			throw boss_error() << err_detail("Cannot find online masterlist revision date.");
 		}
 		//There are 5 quote marks between the m in masterlist.txt and quote mark at the start of the date. 
@@ -160,7 +140,6 @@ namespace boss {
 			start = buffer.find("\"", start+1); 
 			if (start == string::npos) {
 				curl_easy_cleanup(curl);
-				px_proxy_factory_free(pf);
 				throw boss_error() << err_detail("Cannot find online masterlist revision date.");
 			}
 		}  
@@ -168,7 +147,6 @@ namespace boss {
 		end = buffer.find("\"",start+1);  //end is the position of the first character after the date string.
 		if (end == string::npos) {
 			curl_easy_cleanup(curl);
-			px_proxy_factory_free(pf);
 			throw boss_error() << err_detail("Cannot find online masterlist revision date.");
 		}
 		date = buffer.substr(start+1,end - (start+1));  //Date string recorded.
@@ -210,7 +188,6 @@ namespace boss {
 			mlist.open(masterlist_path.c_str());
 			if (mlist.fail()) {
 				curl_easy_cleanup(curl);
-				px_proxy_factory_free(pf);
 				throw boss_error() << err_detail("Masterlist cannot be opened.");
 			}
 			while (!mlist.eof()) {
@@ -219,7 +196,6 @@ namespace boss {
 				if (line.find("? Masterlist") != string::npos) {
 					if (line.find(newline) != string::npos) {
 						curl_easy_cleanup(curl);
-						px_proxy_factory_free(pf);
 						return 0;  //Masterlist already at latest revision.
 					} else break;
 				}
@@ -235,13 +211,11 @@ namespace boss {
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
 			curl_easy_cleanup(curl);
-			px_proxy_factory_free(pf);
 			throw boss_error() << err_detail(errbuff);
 		}
 
 		//Clean up and close curl handle now that it's finished with. Also free proxy resources.
 		curl_easy_cleanup(curl);
-		px_proxy_factory_free(pf);
 
 		//Replace SVN keywords with revision number and replace current masterlist, or write a new one if it doesn't already exist.
 		size_t pos = buffer.find(oldline);
