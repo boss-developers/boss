@@ -36,7 +36,7 @@ namespace boss {
 		return result;
 	} 
 
-	unsigned int UpdateMasterlist(int game) {
+	unsigned int UpdateMasterlist() {
 		const char *url;							//Masterlist file url
 		char cbuffer[4096];
 		char errbuff[CURL_ERROR_SIZE];
@@ -64,30 +64,64 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
 		
+		//Set up proxy stuff.
+		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
+			//All of the settings have potentially valid proxy-ing values.
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_host + ":" + proxy_port);
+			if (ret!=CURLE_OK) {
+				curl_easy_cleanup(curl);
+				throw boss_error() << err_detail("Invalid proxy hostname or port specified.");
+			}
+
+			if (proxy_type == "http")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+			else if (proxy_type == "http1_0")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP_1_0);
+			else if (proxy_type == "socks4")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+			else if (proxy_type == "socks4a")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4A);
+			else if (proxy_type == "socks5")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+			else if (proxy_type == "socks5h")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+			else {
+				curl_easy_cleanup(curl);
+				throw boss_error() << err_detail("Invalid proxy type specified.");
+			}
+		}
+
 		//Get revision number from http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn page text.
 		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer );
 		ret = curl_easy_perform(curl);
-		if (ret!=CURLE_OK)
+		if (ret!=CURLE_OK) {
+			curl_easy_cleanup(curl);
 			throw boss_error() << err_detail(errbuff);
+		}
 		
 		//Extract revision number from page text.
 		if (game == 1) start = buffer.find("boss-oblivion");
 		else if (game == 2) start = buffer.find("boss-fallout");
 		else if (game == 3) start = buffer.find("boss-nehrim");
 		else if (game == 4) start = buffer.find("boss-fallout-nv");
-		if (start == string::npos)
+		if (start == string::npos) {
+			curl_easy_cleanup(curl);
 			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
+		}
 		start = buffer.find("\"masterlist.txt\"", start);
 		start = buffer.find("B\",\"", start) + 4; 
-		if (start == string::npos)
+		if (start == string::npos) {
+			curl_easy_cleanup(curl);
 			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
+		}
 		end = buffer.find("\"",start) - start;
-		if (end == string::npos)
+		if (end == string::npos) {
+			curl_easy_cleanup(curl);
 			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
+		}
 		revision = buffer.substr(start,end);
-		//buffer.clear();
 
 		//Extract revision date from page text.
 		string date;
@@ -95,22 +129,30 @@ namespace boss {
 		else if (game == 2) start = buffer.find("boss-fallout");
 		else if (game == 3) start = buffer.find("boss-nehrim");
 		else if (game == 4) start = buffer.find("boss-fallout-nv");
-		if (start == string::npos)
+		if (start == string::npos) {
+			curl_easy_cleanup(curl);
 			throw boss_error() << err_detail("Cannot find online masterlist revision date.");
+		}
 		start = buffer.find("\"masterlist.txt\"", start) + 1;
-		if (start == string::npos)
+		if (start == string::npos) {
+			curl_easy_cleanup(curl);
 			throw boss_error() << err_detail("Cannot find online masterlist revision date.");
+		}
 		//There are 5 quote marks between the m in masterlist.txt and quote mark at the start of the date. 
 		//Run through them and record the sixth.
 		for (size_t i=0; i<6; i++)  {
 			start = buffer.find("\"", start+1); 
-			if (start == string::npos)
+			if (start == string::npos) {
+				curl_easy_cleanup(curl);
 				throw boss_error() << err_detail("Cannot find online masterlist revision date.");
+			}
 		}  
 		//Now start is the first character of the date string.
 		end = buffer.find("\"",start+1);  //end is the position of the first character after the date string.
-		if (end == string::npos)
+		if (end == string::npos) {
+			curl_easy_cleanup(curl);
 			throw boss_error() << err_detail("Cannot find online masterlist revision date.");
+		}
 		date = buffer.substr(start+1,end - (start+1));  //Date string recorded.
 		buffer.clear();
 
@@ -148,13 +190,16 @@ namespace boss {
 		//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
 		if (fs::exists(masterlist_path)) {
 			mlist.open(masterlist_path.c_str());
-			if (mlist.fail())
+			if (mlist.fail()) {
+				curl_easy_cleanup(curl);
 				throw boss_error() << err_detail("Masterlist cannot be opened.");
+			}
 			while (!mlist.eof()) {
 				mlist.getline(cbuffer,4096);
 				line=cbuffer;
 				if (line.find("? Masterlist") != string::npos) {
 					if (line.find(newline) != string::npos) {
+						curl_easy_cleanup(curl);
 						return 0;  //Masterlist already at latest revision.
 					} else break;
 				}
@@ -168,8 +213,10 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
 		curl_easy_setopt(curl, CURLOPT_CRLF, 1);
 		ret = curl_easy_perform(curl);
-		if (ret!=CURLE_OK)
+		if (ret!=CURLE_OK) {
+			curl_easy_cleanup(curl);
 			throw boss_error() << err_detail(errbuff);
+		}
 
 		//Clean up and close curl handle now that it's finished with.
 		curl_easy_cleanup(curl);
@@ -199,6 +246,33 @@ namespace boss {
 			return false;
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+
+		//Set up proxy stuff.
+		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
+			//All of the settings have potentially valid proxy-ing values.
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_host + ":" + proxy_port);
+			if (ret!=CURLE_OK) {
+				curl_easy_cleanup(curl);
+				throw boss_error() << err_detail("Invalid proxy hostname or port specified.");
+			}
+
+			if (proxy_type == "http")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+			else if (proxy_type == "http1_0")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP_1_0);
+			else if (proxy_type == "socks4")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+			else if (proxy_type == "socks4a")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4A);
+			else if (proxy_type == "socks5")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+			else if (proxy_type == "socks5h")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+			else {
+				curl_easy_cleanup(curl);
+				throw boss_error() << err_detail("Invalid proxy type specified.");
+			}
+		}
 
 		//Check that there is an internet connection. Easiest way to do this is to check that the BOSS google code page exists.
 		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/");

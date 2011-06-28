@@ -29,6 +29,9 @@ namespace boss {
 
 	//Command line variables
 	string log_format		= "html";	// what format the output should be in.
+	string proxy_type		= "direct";
+	string proxy_host		= "none";
+	string proxy_port		= "0";
 	int game				= 0;		// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
 	int revert              = 0;		// what level to revert to
 	int verbosity           = 0;		// log levels above INFO to output

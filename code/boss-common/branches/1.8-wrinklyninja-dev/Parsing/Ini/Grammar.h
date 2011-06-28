@@ -69,9 +69,17 @@ namespace boss {
 	void SetVar(string var, string value) {
 		int intVal;
 		bool bval;
-		if (heading == "GUI.LastOptions")
+		if (heading == "GUI.LastOptions" || heading == "GUI.RunOptions")
 			return;
-		if (heading == "BOSS.RunOptions") {
+		if (heading == "BOSS.InternetOptions") {
+			if (var == "ProxyType")
+				proxy_type = value;
+			else if (var == "ProxyHostname")
+				proxy_host = value;
+			else if (var == "ProxyPort")
+				proxy_port = value;
+			return;
+		} else if (heading == "BOSS.RunOptions") {
 			if (var == "Game") {
 				if (value == "Oblivion")
 					game = 1;
@@ -86,30 +94,37 @@ namespace boss {
 				if (value == "html" || value == "text")
 					log_format = value;
 				return;
-			}	
+			} else if (var == "ProxyType")
+				proxy_type = value;
+			else if (var == "ProxyHostname")
+				proxy_host = value;
+			else if (var == "ProxyPort")
+				proxy_port = value;
+
 			intVal = atoi(value.c_str());
 			if (intVal == 0)
 				bval = false;
 			else
 				bval = true;
-			if (var == "UpdateMasterlist") {
+
+			if (var == "UpdateMasterlist")
 				update = bval;
-			} if (var == "OnlyUpdateMasterlist") {
+			else if (var == "OnlyUpdateMasterlist")
 				update_only = bval;
-			} if (var == "DisableMasterlistUpdate") {
+			else if (var == "DisableMasterlistUpdate") {
 				if (bval)
 					update = false;
-			} else if (var == "SilentRun") {
+			} else if (var == "SilentRun")
 				silent = bval;
-			} else if (var == "NoVersionParse") {
+			else if (var == "NoVersionParse")
 				skip_version_parse = bval;
-			} else if (var == "Debug") {
+			else if (var == "Debug")
 				debug = bval;
-			} else if (var == "DisplayCRCs") {
+			else if (var == "DisplayCRCs")
 				show_CRCs = bval;
-			} else if (var == "DoTrialRun") {
+			else if (var == "DoTrialRun")
 				trial_run = bval;
-			} else if (var == "RevertLevel") {
+			else if (var == "RevertLevel") {
 				if (intVal >= 0 && intVal < 3)
 					revert = intVal;
 			} else if (var == "CommandLineVerbosity") {

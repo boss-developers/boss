@@ -87,6 +87,33 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
 
+		//Set up proxy stuff.
+		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
+			//All of the settings have potentially valid proxy-ing values.
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_host + ":" + proxy_port);
+			if (ret!=CURLE_OK) {
+				curl_easy_cleanup(curl);
+				throw update_error() << err_detail("Invalid proxy hostname or port specified.");
+			}
+
+			if (proxy_type == "http")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+			else if (proxy_type == "http1_0")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP_1_0);
+			else if (proxy_type == "socks4")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+			else if (proxy_type == "socks4a")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4A);
+			else if (proxy_type == "socks5")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+			else if (proxy_type == "socks5h")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+			else {
+				curl_easy_cleanup(curl);
+				throw update_error() << err_detail("Invalid proxy type specified.");
+			}
+		}
+
 		//Check that there is an internet connection. Easiest way to do this is to check that the BOSS google code page exists.
 		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/");
 		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1);	
@@ -114,6 +141,33 @@ namespace boss {
 			throw update_error() << err_detail("Curl could not be initialised.");
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+
+		//Set up proxy stuff.
+		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
+			//All of the settings have potentially valid proxy-ing values.
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_host + ":" + proxy_port);
+			if (ret!=CURLE_OK) {
+				curl_easy_cleanup(curl);
+				throw update_error() << err_detail("Invalid proxy hostname or port specified.");
+			}
+
+			if (proxy_type == "http")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+			else if (proxy_type == "http1_0")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP_1_0);
+			else if (proxy_type == "socks4")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+			else if (proxy_type == "socks4a")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4A);
+			else if (proxy_type == "socks5")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+			else if (proxy_type == "socks5h")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+			else {
+				curl_easy_cleanup(curl);
+				throw update_error() << err_detail("Invalid proxy type specified.");
+			}
+		}
 
 		//Get page containing version number.
 		curl_easy_setopt(curl, CURLOPT_URL, "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-common/latestversion.txt");
@@ -153,6 +207,33 @@ namespace boss {
 		}
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+
+		//Set up proxy stuff.
+		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
+			//All of the settings have potentially valid proxy-ing values.
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_host + ":" + proxy_port);
+			if (ret!=CURLE_OK) {
+				curl_easy_cleanup(curl);
+				throw update_error() << err_detail("Invalid proxy hostname or port specified.");
+			}
+
+			if (proxy_type == "http")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+			else if (proxy_type == "http1_0")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP_1_0);
+			else if (proxy_type == "socks4")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+			else if (proxy_type == "socks4a")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4A);
+			else if (proxy_type == "socks5")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+			else if (proxy_type == "socks5h")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+			else {
+				curl_easy_cleanup(curl);
+				throw update_error() << err_detail("Invalid proxy type specified.");
+			}
+		}
 
 		//Open output file stream.
 		ofstream ofile(path.c_str(),ios_base::binary|ios_base::out|ios_base::trunc);
@@ -204,6 +285,33 @@ namespace boss {
 		}
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+
+		//Set up proxy stuff.
+		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
+			//All of the settings have potentially valid proxy-ing values.
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_host + ":" + proxy_port);
+			if (ret!=CURLE_OK) {
+				curl_easy_cleanup(curl);
+				throw update_error() << err_detail("Invalid proxy hostname or port specified.");
+			}
+
+			if (proxy_type == "http")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+			else if (proxy_type == "http1_0")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP_1_0);
+			else if (proxy_type == "socks4")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+			else if (proxy_type == "socks4a")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4A);
+			else if (proxy_type == "socks5")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+			else if (proxy_type == "socks5h")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+			else {
+				curl_easy_cleanup(curl);
+				throw update_error() << err_detail("Invalid proxy type specified.");
+			}
+		}
 
 		//First connect to the folder containing the update files. The server returns a page listing the files in the folder.
 		//Use this list to build the updatedFiles vector.

@@ -149,7 +149,13 @@ int main(int argc, char *argv[]) {
 								"select output format. valid values"
 								" are: 'html', 'text'")
 		("trial-run,t", po::value(&trial_run)->zero_tokens(),
-								"run BOSS without actually making any changes to load order");
+								"run BOSS without actually making any changes to load order")
+		("proxy-type,T", po::value(&proxy_type),
+								"sets the proxy type for the masterlist updater")
+		("proxy-host,H", po::value(&proxy_host),
+								"sets the proxy hostname for the masterlist updater")
+		("proxy-port,P", po::value(&proxy_port),
+								"sets the proxy port number for the masterlist updater");
 	
 	///////////////////////////////
 	// Set up initial conditions
@@ -349,11 +355,20 @@ int main(int argc, char *argv[]) {
 	
 	if (revert<1 && (update || update_only)) {
 		//First check for internet connection, then update masterlist if connection present.
-		if (CheckConnection()) {
+		bool connection = false;
+		try {
+			connection = CheckConnection();
+		} catch (boss_error & e) {
+			string const * detail = boost::get_error_info<err_detail>(e);
+			masterlistUpdateContent += "<li class='warn'>Error: Masterlist update failed.<br />\n";
+			masterlistUpdateContent += "Details: " + *detail + "<br />\n";
+			masterlistUpdateContent += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.</li>\n";
+		}
+		if (connection) {
 			cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 			LOG_DEBUG("Updating masterlist...");
 			try {
-				unsigned int revision = UpdateMasterlist(game);  //Need to sort out the output of this - ATM it's very messy.
+				unsigned int revision = UpdateMasterlist();  //Need to sort out the output of this - ATM it's very messy.
 				if (revision == 0) {
 					masterlistUpdateContent += "<li>masterlist.txt is already at the latest version. Update aborted.</li>";
 					cout << "masterlist.txt is already at the latest version. Update aborted." << endl;

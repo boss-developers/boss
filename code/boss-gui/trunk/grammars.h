@@ -94,7 +94,23 @@ namespace boss {
 		bool bval;
 		if (heading == "BOSS.RunOptions" || heading == "BOSSlog.Filters" || heading == "BOSSlog.Styles")
 			return;
-		if (heading == "GUI.LastOptions") {
+		if (heading == "BOSS.InternetOptions") {
+			if (var == "ProxyType")
+				proxy_type = value;
+			else if (var == "ProxyHostname")
+				proxy_host = value;
+			else if (var == "ProxyPort")
+				proxy_port = value;
+			return;
+		} else if (heading == "GUI.RunOptions") {
+			if (value == "0")
+				bval = false;
+			else
+				bval = true;
+			if (var == "DoStartupUpdateCheck")
+				do_startup_update_check = bval;
+			return;
+		} else if (heading == "GUI.LastOptions") {
 			if (var == "Game") {
 				if (value == "Oblivion")
 					game = 1;

@@ -64,6 +64,10 @@ namespace boss {
 	extern bool revert_show_CRCs;			// whether or not to show mod CRCs.
 
 	extern bool logCL;			// whether or not to log the command line output to BOSSDebugLog.txt.
+	extern bool do_startup_update_check;
+	extern string proxy_type;
+	extern string proxy_host;
+	extern string proxy_port;
 
 	//Returns the name of the game that BOSS is currently running for.
 	string GetGame();

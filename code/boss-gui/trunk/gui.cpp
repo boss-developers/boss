@@ -588,7 +588,16 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 
 void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 	std::string updateText;
-	if (boss::CheckConnection()) {
+	bool connection = false;
+	try {
+		connection = boss::CheckConnection();
+	} catch (boss::update_error & e) {
+		std::string const * detail = boost::get_error_info<boss::err_detail>(e);
+		updateText = "Update check failed. Details: " + *detail;
+		wxMessageBox(updateText, wxT("BOSS GUI: Check For Updates"), wxOK | wxICON_ERROR, this);
+		return;
+	}
+	if (connection) {
 		try {
 			updateText = boss::IsUpdateAvailable();
 			if (updateText.length() == 0) {
@@ -599,6 +608,7 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 		} catch (boss::update_error & e) {
 			std::string const * detail = boost::get_error_info<boss::err_detail>(e);
 			updateText = "Update check failed. Details: " + *detail;
+			wxMessageBox(updateText, wxT("BOSS GUI: Check For Updates"), wxOK | wxICON_ERROR, this);
 			return;
 		}
 	} else {
@@ -618,18 +628,30 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 }
 
 void MainFrame::CheckForUpdate(wxIdleEvent& event) {
-	if (CheckedForUpdate)
+	if (CheckedForUpdate || boss::do_startup_update_check == false)
 		return;
 	CheckedForUpdate = true;
 	std::string updateText;
-	if (boss::CheckConnection()) {
+	bool connection = false;
+	try {
+		connection = boss::CheckConnection();
+	} catch (boss::update_error & e) {
+		std::string const * detail = boost::get_error_info<boss::err_detail>(e);
+		updateText = "Update check failed. Details: " + *detail;
+		wxMessageBox(updateText, wxT("BOSS GUI: Check For Updates"), wxOK | wxICON_ERROR, this);
+		return;
+	}
+	if (connection) {
 		try {
 			updateText = boss::IsUpdateAvailable();
 			if (updateText.length() != 0)
 				updateText = "Update available! New version: " + updateText + "\nDo you want to download and install the update?";
 			else
 				return;
-		} catch (boss::update_error&) {
+		} catch (boss::update_error& e) {
+			std::string const * detail = boost::get_error_info<boss::err_detail>(e);
+			updateText = "Update check failed. Details: " + *detail;
+			wxMessageBox(updateText, wxT("BOSS GUI: Check For Updates"), wxOK | wxICON_ERROR, this);
 			return;
 		}
 	} else
