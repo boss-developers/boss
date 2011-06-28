@@ -133,7 +133,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	//Add stuff to output options sizer.
 	outputOptionsBox->Add(ShowLogBox = new wxCheckBox(this,CHECKBOX_ShowBOSSlog, "Show BOSSlog On Completion"), 0, wxALL, 5);
 	outputOptionsBox->Add(DebugBox = new wxCheckBox(this,CHECKBOX_EnableDebug, "Enable Debug Output"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	outputOptionsBox->Add(LoggingBox = new wxCheckBox(this,CHECKBOX_EnableLogging, "Enable Logging Of Command Line Output"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	outputOptionsBox->Add(LoggingBox = new wxCheckBox(this,CHECKBOX_EnableLogging, "Log Command Line Output"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	formatBox->Add(new wxStaticText(this, wxID_ANY, "BOSSlog Format: "), 1, wxLEFT | wxBOTTOM, 5);
 	formatBox->Add(FormatBox = new wxComboBox(this, DROPDOWN_LogFormat, choices[0], wxPoint(110,60), wxDefaultSize, 2, choices, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	verbosityBox->Add(new wxStaticText(this, wxID_ANY, "Command Line Verbosity: "), 1, wxLEFT | wxBOTTOM, 5);
@@ -166,8 +166,8 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	
 	//Sort option stuff.
 	sortBox->Add(UpdateBox = new wxCheckBox(this,CHECKBOX_Update, "Update Masterlist"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	sortBox->Add(SortVersionBox = new wxCheckBox(this,CHECKBOX_SortEnableVersions, "Enable Mod Version Display"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	sortBox->Add(SortCRCBox = new wxCheckBox(this,CHECKBOX_SortEnableCRCs, "Enable File CRC Display"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	sortBox->Add(SortVersionBox = new wxCheckBox(this,CHECKBOX_SortEnableVersions, "Display Mod Versions"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	sortBox->Add(SortCRCBox = new wxCheckBox(this,CHECKBOX_SortEnableCRCs, "Display File CRCs"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	sortBox->Add(TrialRunBox = new wxCheckBox(this,CHECKBOX_TrialRun, "Perform Trial Run"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	runOptionsBox->Add(sortBox, 0, wxLEFT | wxBOTTOM, 20);
 	
@@ -183,8 +183,8 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	revertBox->Add(RevertText = new wxStaticText(this, wxID_ANY, "Undo Level: "), 1, wxLEFT | wxBOTTOM, 5);
 	revertBox->Add(RevertBox = new wxComboBox(this, DROPDOWN_Revert, choices4[0], wxDefaultPosition, wxDefaultSize, 3, choices4, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	undoBox->Add(revertBox, 0, wxEXPAND, 0);
-	undoBox->Add(UndoVersionBox = new wxCheckBox(this,CHECKBOX_RevertEnableVersions, "Enable Mod Version Display"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	undoBox->Add(UndoCRCBox = new wxCheckBox(this,CHECKBOX_RevertEnableCRCs, "Enable File CRC Display"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	undoBox->Add(UndoVersionBox = new wxCheckBox(this,CHECKBOX_RevertEnableVersions, "Display Mod Versions"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	undoBox->Add(UndoCRCBox = new wxCheckBox(this,CHECKBOX_RevertEnableCRCs, "Display File CRCs"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	runOptionsBox->Add(undoBox, 0, wxEXPAND | wxLEFT | wxBOTTOM, 20);
 
 	bigBox->Add(runOptionsBox, 0, wxTOP | wxRIGHT | wxBOTTOM, 20);
@@ -196,7 +196,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	OpenBOSSlogButton->SetToolTip("The format of BOSSlog this opens is decided by the setting of the \"BOSSlog Format\" Output Option above.");
 	DebugBox->SetToolTip("Adds source code references to command line output.");
 	VerbosityBox->SetToolTip("The higher the verbosity level, the more information is outputted to the command line.");
-	TrialRunBox->SetToolTip("Runs BOSS, but doesn't actually change your load order.");
+	TrialRunBox->SetToolTip("Runs BOSS, simulating its changes to your load order, but doesn't actually reorder your mods.");
 
 	//Set option values based on initialised variable values.
 	RunBOSSButton->SetDefault();
@@ -470,7 +470,7 @@ void MainFrame::OnAbout(wxCommandEvent& event) {
 
 	box->Add(new wxStaticText(frame,-1,
 		"Better Oblivion Sorting Software GUI\nv"+boss::boss_version+" ("+boss::boss_releaseDate+")\n\n"
-		"Provides a graphical frontend for running "), 0, wxTOP | wxLEFT | wxRIGHT, 20);
+		"Provides a graphical front end for running "), 0, wxTOP | wxLEFT | wxRIGHT, 20);
 
 	wxHyperlinkCtrl *link = new wxHyperlinkCtrl(frame, -1, "Better Oblivion Sorting Software","http://code.google.com/p/better-oblivion-sorting-software/");
 	link->SetBackgroundColour(wxColour(255,255,255));

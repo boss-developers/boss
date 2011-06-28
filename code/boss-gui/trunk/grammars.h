@@ -94,7 +94,7 @@ namespace boss {
 		bool bval;
 		if (heading == "BOSS.RunOptions" || heading == "BOSSlog.Filters" || heading == "BOSSlog.Styles")
 			return;
-		if (heading == "BOSS.InternetOptions") {
+		if (heading == "BOSS.InternetSettings") {
 			if (var == "ProxyType")
 				proxy_type = value;
 			else if (var == "ProxyHostname")
@@ -102,7 +102,7 @@ namespace boss {
 			else if (var == "ProxyPort")
 				proxy_port = value;
 			return;
-		} else if (heading == "GUI.RunOptions") {
+		} else if (heading == "GUI.Settings") {
 			if (value == "0")
 				bval = false;
 			else

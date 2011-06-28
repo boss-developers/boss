@@ -36,7 +36,7 @@ namespace boss {
 
 	//Default CSS.
 	string CSSBody				= "font-family:Calibri,Arial,sans-serifs;";
-	string CSSFilters			= "border:1px grey dashed; background:#F5F5F5; padding:0.3em; display:table;";
+	string CSSFilters			= "border:1px gray dashed; background:#F5F5F5; padding:0.3em; display:table;";
 	string CSSFiltersList		= "display:inline-block; padding:0.2em 1em; white-space:nowrap; margin:0;";
 	string CSSTitle				= "font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:0.2em;";
 	string CSSCopyright			= "text-align:center;";
@@ -49,7 +49,7 @@ namespace boss {
 	string CSSTopLevelListItem	= "margin-left:0; margin-bottom:2em;";
 	string CSSList				= "list-style:none;";
 	string CSSListItem			= "margin-bottom:0.4em;";
-	string CSSItemList			= "CSSListItem";
+	string CSSItemList			= "margin-top:0.4em;";
 	string CSSCheckbox			= "position:relative; top:0.15em; margin-right:0.5em;";
 	string CSSBlockquote		= "font-style:italic;";
 	string CSSUnrecognisedList	= "margin-bottom:1em;";
@@ -63,7 +63,7 @@ namespace boss {
 	string CSSCRC				= "color:#BC8923; margin-left:1.3em; padding:0 4px;";
 	string CSSTagPrefix			= "color:#CD5555;";
 	string CSSDirty				= "color:#996600;";
-	string CSSQuotedMessage		= "color:grey;";
+	string CSSQuotedMessage		= "color:gray;";
 	string CSSMod				= "";
 	string CSSTag				= "";
 	string CSSNote				= "";

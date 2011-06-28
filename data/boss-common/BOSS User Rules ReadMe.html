@@ -5,17 +5,18 @@
 	<title>BOSS User Rules ReadMe</title>
 	<style type="text/css">
 	body {font-family:Calibri,Arial,Verdana,sans-serifs;}
-	#title {font-size:2.4em; font-weight:bold; text-align: center;}
+	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center;}
 	div > span {font-weight:bold; font-size:1.3em;}
 	.subtitle {font-weight: normal;font-size:1.3em;}
 	.definition {text-indent:-1.4em; margin-left: 2.5em;}
-	ol li {margin-bottom:10px;}
-	ul li {margin-bottom:10px;}
+	ol li, ul li {margin-bottom:10px;}
+	li ul, li ol {margin-top:0.4em;}
+	.blockquote {margin-left:40px;}
 	</style>
   </head>
 	<body>
-	<div id="title">Better Oblivion Sorting Software</div>
-	<div id="title">User Rules Documentation</div><br /><br />
+	<div>Better Oblivion Sorting Software<br />
+	User Rules Documentation</div><br /><br />
 	
 	<div><span>Contents</span>
 	<ol>
@@ -47,9 +48,9 @@
 	does not exist, simply create a new text file there with the same name.</p>
 
 	<p>Make sure that the full filename is "userlist.txt" and not "userlist.txt.txt", as can sometimes occur if file extensions are hidden. Also make sure that when you save it, it is saved in the "UTF-8" encoding to ensure that BOSS can read it correctly. This is not Notepad's default encoding! See the Troubleshooting section of the main BOSS readme for details.</p>
-	<p>Within this file, which you can edit in Notepad or any other text editor, you list your rule definitions. Rules can make two types of changes:
+	<p>Within this file, which you can edit in Notepad or any other text editor, you list your rule definitions. Rules can make two types of changes:</p>
 	<ol class="list">
-		<li><em>Sort mods and groups.</em> You can:<div style="height:0.65em;"></div>
+		<li><em>Sort mods and groups.</em> You can:
 			<ul>
 				<li>Sort plugins relative to other plugins. You can both override the positions of plugins BOSS recognises and sort plugins unrecognised by BOSS.</li>
 				<li>Sort groups of plugins relative to other groups of plugins. You can override the positions of the groups in the BOSS sorts mods into.</li>
@@ -60,7 +61,7 @@
 		<li><em>Edit BOSS messages.</em> You can add to or replace the mod-specific messages that are displayed in the BOSSlog.
 		See <em>The BOSS Message Format</em> below for more details on the message types and syntax.</li>
 	</ol>
-	The rule definition syntax is simple and concise, and is explained below.</p>
+	<p>The rule definition syntax is simple and concise, and is explained below.</p>
 	</div><br /><br />
 	
 	<div id="basics"><span>Rule Basics</span>
@@ -138,19 +139,19 @@
 	APPEND: % {{BASH:Names,Delev,Relev}}
 	</code></blockquote>
 	<p>This will print in the BOSSlog:</p>
-	<blockquote>
-	<li style='list-style-type:none;'>...<ul></ul></li>
-	<li style='list-style-type:none;'>
-	Unofficial Oblivion Patch.esp<ul>
+	<ul style='list-style-type:none;'>
+	<li>...<ul style='list-style-type:disc;'></ul></li>
+	<li>
+	Unofficial Oblivion Patch.esp<ul style='list-style-type:disc;'>
 	<li>Note:  Replaced!</li>
 	</ul></li>
-	<li style='list-style-type:none;'>...<ul></ul></li>
-	<li style='list-style-type:none;'>
-	bgMagicEV.esp.esp<ul>
+	<li>...<ul style='list-style-type:disc;'></ul></li>
+	<li>
+	bgMagicEV.esp.esp<ul style='list-style-type:disc;'>
 	<li>Bashed Patch tag suggestion: {{BASH:Names,Delev,Relev}}</li>
 	</ul></li>
-	<li style='list-style-type:none;'>...<ul></ul></li>
-	</blockquote>
+	<li>...<ul style='list-style-type:disc;'></ul></li>
+	</ul>
 	</div><br /><br />
 	
 	<div id="syntax"><span>Rule Definition Syntax</span><br />
@@ -232,7 +233,7 @@
 	</blockquote>
 	<p>The rule sorting the two groups L.A.M.E. and Supreme Magicka simply moves the L.A.M.E. group from its current position to before the Supreme Magicka group.</p>
 	</div>
-	</div><br /><br />
+	<br /><br />
 	
 	<div id="apply"><span>Enforcing Your Rules</span>
 	<p>When BOSS is run, it will look for your userlist at <code>Data\BOSS\userlist.txt</code>. If it is found, and the userlist contains at least one rule, BOSS will first check the syntax of the rules, and apply those with the correct syntax. 
@@ -255,7 +256,7 @@
 	not be evident:</p>
 	<ol>
 		<li>Blank lines or lines beginning with "//" (without quotes) in your userlist will be ignored by BOSS. You can use blank lines to improve the formatting of your userlist, and use the "//" line start to provide comments or disable specific rules as you desire.</li>
-		<li>User rules are case-insensitive. The only exception is the message object, which will retain its case when displayed in the BOSSlog.</p>
+		<li>User rules are case-insensitive. The only exception is the message object, which will retain its case when displayed in the BOSSlog.</li>
 		<li>If a rule's rule mod is not installed in your Data folder, the rule will be skipped.</li>
 		<li>Mods ghosted by Wrye Bash are treated no differently from non-ghosted mods, but they must be referenced without their ".ghost" extension.</li>
 		<li>The group "ESMs" must always load first. You cannot sort this group or sort another group before it.</li>

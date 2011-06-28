@@ -69,9 +69,9 @@ namespace boss {
 	void SetVar(string var, string value) {
 		int intVal;
 		bool bval;
-		if (heading == "GUI.LastOptions" || heading == "GUI.RunOptions")
+		if (heading == "GUI.LastOptions" || heading == "GUI.Settings")
 			return;
-		if (heading == "BOSS.InternetOptions") {
+		if (heading == "BOSS.InternetSettings") {
 			if (var == "ProxyType")
 				proxy_type = value;
 			else if (var == "ProxyHostname")
