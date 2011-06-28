@@ -659,7 +659,7 @@ void MainFrame::Update() {
 			return;
 		}
 
-		wxProgressDialog *progDia = new wxProgressDialog("Automatic Updater: Downloading Update","Initialising download...", 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME);
+		wxProgressDialog *progDia = new wxProgressDialog("BOSS GUI: Automatic Updater","Initialising download...", 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME);
 		try {
 			boss::DownloadUpdateInstaller(progDia);
 		} catch (boss::update_error & e) {
@@ -682,7 +682,7 @@ void MainFrame::Update() {
 			wxMessageBox(wxT("Automatic updater cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_EXCLAMATION, this);
 			return;
 		}
-		wxProgressDialog *progDia = new wxProgressDialog("Automatic Updater: Downloading Update","Initialising download...", 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME);
+		wxProgressDialog *progDia = new wxProgressDialog("BOSS GUI: Automatic Updater","Initialising download...", 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME);
 		try {
 			boss::DownloadUpdateFiles(progDia);
 			boss::InstallUpdateFiles();
