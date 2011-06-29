@@ -270,7 +270,7 @@
 		</li>
 		<li><i>BOSSlog.Styles</i>: These settings control the BOSSlog's CSS styles, used to provide the formatting for the BOSSlog. The defaults are not given, being hard-coded into BOSS, but they can be overriden here. A knowledge of CSS is expected if you wish to alter these settings. If you do not possess such knowledge, altering these settings is not recommended.</li>
 	</ol>
-	<p>If BOSS is run with both a BOSS.ini present and command line parameters set, the command line parameters override the settings in BOSS.ini.</p>
+	<p>If BOSS is run and it cannot find a BOSS.ini, it will generate a new one. If BOSS is run with both a BOSS.ini present and command line parameters set, the command line parameters override the settings in BOSS.ini.</p>
 	<br />
 	
 	<span class="subtitle" id="linux">Running BOSS Under Linux</span>
@@ -678,6 +678,7 @@
 			<li><q>Check For Updates</q> now also automatically runs when the GUI starts. This only displays a message if an update was found.</li>
 		</ul>
 		</li>
+		<li>(GUI) Changed: Renamed a number of options, simplifying their names slightly.</li>
 		<li>(GUI) Added: <q>Perform Trial Run</q> option.</li>
 		<li>(GUI) Added: Settings are now saved in the BOSS.ini on exit and loaded on start.</li>
 	</ul>

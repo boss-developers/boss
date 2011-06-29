@@ -171,7 +171,8 @@ int main(int argc, char *argv[]) {
 					cout << iniErrorBuffer[i] << endl;
 			}
 		}
-	}
+	} else
+		GenerateBOSSini();
 
 	// parse command line arguments
 	po::variables_map vm;

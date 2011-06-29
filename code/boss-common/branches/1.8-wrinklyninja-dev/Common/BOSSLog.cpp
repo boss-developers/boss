@@ -416,4 +416,117 @@ namespace boss {
 			bosslog << "</body>\n</html>";
 		}
 	}
+
+	void GenerateBOSSini() {
+		ofstream ini("BOSS.ini");
+		if (ini.fail())
+			return;
+		ini <<	"[BOSS.InternetSettings]" << endl
+			<<	"# These settings control BOSS's (BOSS.exe and BOSS GUI.exe) proxy support." << endl
+			<<	"# They are used when BOSS.exe runs directly, and when the GUI is run." << endl
+			<<	"# There are no GUI equivalents for these settings." << endl
+			<<	"# Valid values for UpdaterProxyType are 'direct', 'http', 'http1_0', 'socks4', 'socks4a', 'socks5', 'socks5h'." << endl
+			<<	"# Valid values for UpdaterProxyHostname are 'none' and any valid hostname or IP address." << endl
+			<<	"# Valid values for UpdaterProxyPort are 0 and any positive whole number." << endl
+			<<	"ProxyType               = direct" << endl
+			<<	"ProxyHostname           = none" << endl
+			<<	"ProxyPort               = 0" << endl
+
+			<<	"[BOSS.RunOptions]" << endl
+			<<	"# This section sets the options used when BOSS.exe is run directly." << endl
+			<<	"# For toggles, 0 = not set, 1 = set." << endl
+			<<	"# For RevertLevel and CommandLineVerbosity, values specify levels." << endl
+			<<	"# Valid values for Game are 'auto', 'Oblivion', 'Nehrim', 'Fallout3', and 'FalloutNV'." << endl
+			<<	"# Valid values for BOSSlogFormat are 'html' and 'text'." << endl
+			<<	"UpdateMasterlist        = 1" << endl
+			<<	"OnlyUpdateMasterlist    = 0" << endl
+			<<	"DisableMasterlistUpdate = 0" << endl
+			<<	"Game                    = auto" << endl
+			<<	"SilentRun               = 0" << endl
+			<<	"NoVersionParse          = 0" << endl
+			<<	"RevertLevel             = 0" << endl
+			<<	"CommandLineVerbosity    = 0" << endl
+			<<	"Debug                   = 0" << endl
+			<<	"DisplayCRCs             = 0" << endl
+			<<	"BOSSlogFormat           = html" << endl
+			<<	"DoTrialRun              = 0" << endl
+
+			<<	"[GUI.Settings]" << endl
+			<<	"# These settings have no counterparts in the GUI itself and must be set here." << endl
+			<<	"# DoStartupUpdateCheck is a toggle, 0 = not set, 1 = set." << endl
+			<<	"DoStartupUpdateCheck    = 1" << endl
+
+			<<	"[GUI.LastOptions]" << endl
+			<<	"# This section records the last configuration of options selected through the GUI." << endl
+			<<	"# These settings are updated automatically when the GUI quits." << endl
+			<<	"RunType                 = 1" << endl
+			<<	"SilentRun               = 0" << endl
+			<<	"Debug                   = 0" << endl
+			<<	"LogCLOutput             = 0" << endl
+			<<	"BOSSlogFormat           = html" << endl
+			<<	"CLVerbosity             = 0" << endl
+			<<	"UpdateMasterlist        = 1" << endl
+			<<	"SortNoVersionParse      = 0" << endl
+			<<	"SortDisplayCRCs         = 0" << endl
+			<<	"DoTrialRun              = 0" << endl
+			<<	"Game                    = auto" << endl
+			<<	"RevertLevel             = 0" << endl
+			<<	"RevertNoVersionParse    = 0" << endl
+			<<	"RevertDisplayCRCs       = 0" << endl
+
+			<<	"[BOSSlog.Filters]" << endl
+			<<	"# Settings below specify the default state of BOSSlog filters." << endl
+			<<	"# 0 = unchecked by default, 1 = checked by default." << endl
+			<<	"UseDarkColourScheme    = 0" << endl
+			<<	"HideVersionNumbers     = 0" << endl
+			<<	"HideGhostedLabel       = 0" << endl
+			<<	"HideChecksums          = 0" << endl
+			<<	"HideMessagelessMods    = 0" << endl
+			<<	"HideGhostedMods        = 0" << endl
+			<<	"HideRuleWarnings       = 0" << endl
+			<<	"HideAllModMessages     = 0" << endl
+			<<	"HideNotes              = 0" << endl
+			<<	"HideBashTagSuggestions = 0" << endl
+			<<	"HideRequirements       = 0" << endl
+			<<	"HideIncompatibilities  = 0" << endl
+
+			<<	"[BOSSlog.Styles]" << endl
+			<<	"# Below are the CSS styles responsible for how the BOSSlog looks." << endl
+			<<	"# A style with nothing specified between the {} brackets uses the coded default." << endl
+			<<	"# See the BOSSlog.html source code for the defaults, providing you haven't overwritten them here." << endl
+			<<	"\"body\"                                     = {}" << endl
+			<<	"\".filters\"                                 = {}" << endl
+			<<	"\".filters > li\"                            = {}" << endl
+			<<	"\"body > div:first-child\"                   = {}" << endl
+			<<	"\"body > div:first-child + div\"             = {}" << endl
+			<<	"\"body > div\"                               = {}" << endl
+			<<	"\"body > div > span:first-child\"            = {}" << endl
+			<<	"\"body > div > span:first-child > span\"     = {}" << endl
+			<<	"\"div > ul\"                                 = {}" << endl
+			<<	"\"body > div:last-child\"                    = {}" << endl
+			<<	"\"body > div:last-child > span:first-child\" = {}" << endl
+			<<	"\"div > ul > li\"                            = {}" << endl
+			<<	"\"ul\"                                       = {}" << endl
+			<<	"\"ul li\"                                    = {}" << endl
+			<<	"\"li ul\"                                    = {}" << endl
+			<<	"\"input[type='checkbox']\"                   = {}" << endl
+			<<	"\"blockquote\"                               = {}" << endl
+			<<	"\"#unrecognised > li\"                       = {}" << endl
+			<<	"\"#summary > div\"                           = {}" << endl
+			<<	"\"#summary > div > div\"                     = {}" << endl
+			<<	"\".error\"                                   = {}" << endl
+			<<	"\".warn\"                                    = {}" << endl
+			<<	"\".success\"                                 = {}" << endl
+			<<	"\".version\"                                 = {}" << endl
+			<<	"\".ghosted\"                                 = {}" << endl
+			<<	"\".crc\"                                     = {}" << endl
+			<<	"\".tagPrefix\"                               = {}" << endl
+			<<	"\".dirty\"                                   = {}" << endl
+			<<	"\".message\"                                 = {}" << endl
+			<<	"\".mod\"                                     = {}" << endl
+			<<	"\".tag\"                                     = {}" << endl
+			<<	"\".note\"                                    = {}" << endl
+			<<	"\".req\"                                     = {}" << endl
+			<<	"\".inc\"                                     = {}";
+	}
 }
