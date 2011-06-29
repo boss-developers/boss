@@ -42,7 +42,7 @@ namespace boss {
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		string buffer,revision,newline,line;		//A bunch of strings.
-		size_t start=-1,end;								//Position holders for trimming strings.
+		size_t start,end;								//Position holders for trimming strings.
 		CURLcode ret;
 		ifstream mlist;								//Input stream.
 		ofstream out;								//Output stream.
@@ -63,6 +63,8 @@ namespace boss {
 			throw boss_error() << err_detail("Curl could not be initialised.");
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+		curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 		
 		//Set up proxy stuff.
 		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
@@ -106,11 +108,19 @@ namespace boss {
 		else if (game == 2) start = buffer.find("boss-fallout");
 		else if (game == 3) start = buffer.find("boss-nehrim");
 		else if (game == 4) start = buffer.find("boss-fallout-nv");
-		if (start == string::npos) {
+		else {
 			curl_easy_cleanup(curl);
 			throw boss_error() << err_detail("None of the supported games were detected.");
 		}
+		if (start == string::npos) {
+			curl_easy_cleanup(curl);
+			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
+		}
 		start = buffer.find("\"masterlist.txt\"", start);
+		if (start == string::npos) {
+			curl_easy_cleanup(curl);
+			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
+		}
 		start = buffer.find("B\",\"", start) + 4; 
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
@@ -246,6 +256,8 @@ namespace boss {
 			return false;
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+		curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 
 		//Set up proxy stuff.
 		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {

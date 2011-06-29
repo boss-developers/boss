@@ -64,12 +64,6 @@ namespace boss {
 		return result;
 	}
 
-	int stream_writer(char *data, size_t size, size_t nmemb, void *buffer) {
-		ofstream *out = (ofstream*)buffer;
-		*out << data;
-		return size*nmemb;
-	}
-
 	//Download progress for current file function.
 	int progress_func(void *data, double dlTotal, double dlNow, double ulTotal, double ulNow) {
 		double percentdownloaded = (dlNow / dlTotal) * 1000;
@@ -105,6 +99,8 @@ namespace boss {
 			return false;
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+		curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 
 		//Set up proxy stuff.
 		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
@@ -160,6 +156,8 @@ namespace boss {
 			throw update_error() << err_detail("Curl could not be initialised.");
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+		curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 
 		//Set up proxy stuff.
 		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
@@ -227,6 +225,8 @@ namespace boss {
 		}
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+		curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 
 		//Set up proxy stuff.
 		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
@@ -298,7 +298,6 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
 		curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, &progress_func);
 		curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, progDia);
-		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
 			curl_easy_cleanup(curl);
@@ -336,6 +335,8 @@ namespace boss {
 		}
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+		curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 
 		//Set up proxy stuff.
 		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
@@ -368,7 +369,6 @@ namespace boss {
 		progDia->Update(0,message);
 
 		//First get file list and crcs to build updatedFiles vector.
-		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 		curl_easy_setopt(curl, CURLOPT_URL, url+"checksums.txt");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
