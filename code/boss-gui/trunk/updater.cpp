@@ -44,8 +44,10 @@ namespace boss {
 	namespace unicode = boost::spirit::unicode;
 
 	using qi::eol;
+	using qi::eps;
 	using qi::lit;
-	using qi::int_;
+	using qi::hex;
+	using qi::lexeme;
 	using unicode::char_;
 	using unicode::space;
 
@@ -268,13 +270,14 @@ namespace boss {
 		}
 		//Now parse list to extract file info.
 		bool p = qi::phrase_parse(fileBuffer.begin(),fileBuffer.end(),
-			(lit("\"") >> +(char_ - lit("\"")) >> lit("\"") >> lit(":") >> int_) % eol,
+			((lit("\"") >> lexeme[+(char_ - lit("\""))] >> lit("\"") >> lit(":") >> hex) | eps) % eol,
 			space, updatedFiles);
 		if (!p || updatedFiles.size()==0) {
 			curl_easy_cleanup(curl);
 			progDia->Update(1000);
 			throw update_error() << err_detail("Could not read remote file information.");
 		}
+		fileBuffer.clear();
 
 		//Open output file stream.
 		ofstream ofile(path.c_str(),ios_base::binary|ios_base::out|ios_base::trunc);
@@ -377,7 +380,7 @@ namespace boss {
 		}
 		//Now parse list to extract file info.
 		bool p = qi::phrase_parse(fileBuffer.begin(),fileBuffer.end(),
-			(lit("\"") >> +(char_ - lit("\"")) >> lit("\"") >> lit(":") >> int_) % eol,
+			((lit("\"") >> lexeme[+(char_ - lit("\""))] >> lit("\"") >> lit(":") >> hex) | eps) % eol,
 			space, updatedFiles);
 		if (!p || updatedFiles.size()==0) {
 			curl_easy_cleanup(curl);
