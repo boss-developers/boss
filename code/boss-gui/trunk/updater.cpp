@@ -13,6 +13,10 @@
 #define CURL_STATICLIB			//Tells the compiler to use curl as a static library.
 #endif
 
+#ifndef BOOST_SPIRIT_UNICODE
+#define BOOST_SPIRIT_UNICODE 
+#endif
+
 #include <iostream>
 #include <cmath>
 #include <curl/curl.h>
@@ -21,19 +25,32 @@
 #include <boost/exception/exception.hpp>
 #include <boost/exception/info.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/spirit/include/qi.hpp>
+#include <boost/fusion/include/adapt_struct.hpp>
 
 #include "helpers.h"
 #include "updater.h"
 
-//#include <wx/msgdlg.h> 
-
+BOOST_FUSION_ADAPT_STRUCT(
+    boss::fileInfo,
+	(std::string, name)
+    (unsigned int, crc)
+)
 
 namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
+	namespace qi = boost::spirit::qi;
+	namespace unicode = boost::spirit::unicode;
+
+	using qi::eol;
+	using qi::lit;
+	using qi::int_;
+	using unicode::char_;
+	using unicode::space;
 
 	string updateVersion = "";
-	vector<fs::path> updatedFiles;
+	vector<fileInfo> updatedFiles;
 
 	//Buffer writer for update checker.
 	int writer(char *data, size_t size, size_t nmemb, string *buffer) {
@@ -192,12 +209,13 @@ namespace boss {
 
 	//Downloads the installer for the update, for when the current version was installed via installer.
 	void DownloadUpdateInstaller(wxProgressDialog *progDia) {
-		string fileBuffer;
+		string fileBuffer, message;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		CURLcode ret;
 		string path = "BOSS "+updateVersion+" installer.exe";
-		string url = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/installer.exe";
+		string url = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/";
+		unsigned int calcedCRC;
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
@@ -235,6 +253,29 @@ namespace boss {
 			}
 		}
 
+		message = "Fetching file information...";
+		progDia->Update(0,message);
+
+		//First we need to get what file(s) we need to download and their checksum information.
+		curl_easy_setopt(curl, CURLOPT_URL, url+"checksums.txt");
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
+		ret = curl_easy_perform(curl);
+		if (ret!=CURLE_OK) {
+			curl_easy_cleanup(curl);
+			progDia->Update(1000);
+			throw update_error() << err_detail(errbuff);
+		}
+		//Now parse list to extract file info.
+		bool p = qi::phrase_parse(fileBuffer.begin(),fileBuffer.end(),
+			(lit("\"") >> +(char_ - lit("\"")) >> lit("\"") >> lit(":") >> int_) % eol,
+			space, updatedFiles);
+		if (!p || updatedFiles.size()==0) {
+			curl_easy_cleanup(curl);
+			progDia->Update(1000);
+			throw update_error() << err_detail("Could not read remote file information.");
+		}
+
 		//Open output file stream.
 		ofstream ofile(path.c_str(),ios_base::binary|ios_base::out|ios_base::trunc);
 		if (ofile.fail()) {
@@ -244,12 +285,11 @@ namespace boss {
 		}
 		
 		//Set up progress info.
-		updatedFiles.push_back(fs::path(path));  //Record just in case abort cleanup is required.
-		string message = "Downloading: " + path + " (1 of 1)";
+		message = "Downloading: " + path + " (1 of 1)";
 		progDia->Update(0,message);
 		
 		//Download the installer.
-		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_URL, url+"installer.exe");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
 		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
@@ -266,16 +306,24 @@ namespace boss {
 		ofile.close();
 		//Clean up curl resources.
 		curl_easy_cleanup(curl);
+
+		//Now verify file integrity.
+		calcedCRC = GetCrc32(fs::path(path));
+		if (calcedCRC != updatedFiles[0].crc) {
+			progDia->Update(1000);
+			throw update_error() << err_detail("Downloaded file \""+path+"\" failed verification test, and is corrupt. Please try updating again.");
+		}
 		progDia->Update(1000);
 	}
 
 	//Download the files in the update.
 	void DownloadUpdateFiles(wxProgressDialog *progDia) {
-		string url, fileBuffer, buffer;
+		string fileBuffer, buffer, message;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		CURLcode ret;
-		size_t pos1,pos2;
+		string url = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/manual/";
+		unsigned int calcedCRC;
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
@@ -313,30 +361,28 @@ namespace boss {
 			}
 		}
 
-		//First connect to the folder containing the update files. The server returns a page listing the files in the folder.
-		//Use this list to build the updatedFiles vector.
-		url = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/manual/";
-		//Get page containing version number.
-		curl_easy_setopt(curl, CURLOPT_URL, url);
+		message = "Fetching file information...";
+		progDia->Update(0,message);
+
+		//First get file list and crcs to build updatedFiles vector.
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+		curl_easy_setopt(curl, CURLOPT_URL, url+"checksums.txt");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
-		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
 			progDia->Update(1000);
 			curl_easy_cleanup(curl);
 			throw update_error() << err_detail(errbuff);
 		}
-		pos1 = fileBuffer.find("<li><a href=\"");  //Folder item. The first is the 'go up one directory' item, so skip.
-		while (pos1 != string::npos) { //Loop through the rest of the items.
-			pos1 = fileBuffer.find("<li><a href=\"", pos1+1);
-			if (pos1 == string::npos)
-				break;
-			pos2 = fileBuffer.find("\">",pos1);
-			buffer = fileBuffer.substr(pos1+13,pos2-pos1-13); //Now we need to replace any %20 strings with spaces.
-			boost::replace_all(buffer,"%20"," ");  //If future files contain more special characters then this will break.
-			//Now record in updateFiles.
-			updatedFiles.push_back(fs::path(buffer));
+		//Now parse list to extract file info.
+		bool p = qi::phrase_parse(fileBuffer.begin(),fileBuffer.end(),
+			(lit("\"") >> +(char_ - lit("\"")) >> lit("\"") >> lit(":") >> int_) % eol,
+			space, updatedFiles);
+		if (!p || updatedFiles.size()==0) {
+			curl_easy_cleanup(curl);
+			progDia->Update(1000);
+			throw update_error() << err_detail("Could not read remote file information.");
 		}
 
 		//Now that we've got a vector of the files, we can download them.
@@ -344,10 +390,10 @@ namespace boss {
 		for (size_t i=0;i<updatedFiles.size();i++) {
 			fileBuffer.clear();  //Empty buffer ready for next download.
 			//Set up progress info. Since we're not doing a total download progress bar, zero progress for each file.
-			string message = "Downloading: " + updatedFiles[i].string() + " (" + IntToString(i+1) + " of " + IntToString(updatedFiles.size()) + ")";
+			message = "Downloading: " + updatedFiles[i].name + " (" + IntToString(i+1) + " of " + IntToString(updatedFiles.size()) + ")";
 			progDia->Update(0,message);
 
-			string path = updatedFiles[i].string() + ".new";
+			string path = updatedFiles[i].name + ".new";
 			ofstream ofile(path.c_str(),ios_base::binary|ios_base::out|ios_base::trunc);
 			if (ofile.fail()) {
 				progDia->Update(1000);
@@ -355,7 +401,7 @@ namespace boss {
 				throw update_error() << err_detail("Could not save "+path);
 			}
 
-			string remote_file = url+updatedFiles[i].string();
+			string remote_file = url+updatedFiles[i].name;
 			boost::replace_all(remote_file," ","%20");  //Need to put the %20s back in for the file's web address.
 
 			curl_easy_setopt(curl, CURLOPT_URL, remote_file);
@@ -370,6 +416,13 @@ namespace boss {
 			}
 			ofile << fileBuffer;
 			ofile.close();
+
+			//Now verify file integrity.
+			calcedCRC = GetCrc32(fs::path(path));
+			if (calcedCRC != updatedFiles[i].crc) {
+				progDia->Update(1000);
+				throw update_error() << err_detail("Downloaded file \""+updatedFiles[i].name+"\" failed verification test, and is corrupt. Please try updating again.");
+			}
 		}
 		curl_easy_cleanup(curl);
 		progDia->Update(1000);
@@ -384,8 +437,8 @@ namespace boss {
 		//Now iterate through the vector of updated files.
 		//Delete the current file if it exists, and rename the downloaded updated file, removing the .new extension. Don't try updating BOSS GUI.exe.
 		for (size_t i=0;i<updatedFiles.size();i++) {
-			fs::path updated = fs::path(updatedFiles[i].string() + ".new");
-			fs::path old = updatedFiles[i];
+			fs::path updated = fs::path(updatedFiles[i].name + ".new");
+			fs::path old = fs::path(updatedFiles[i].name);
 
 			if (old.string() != "BOSS GUI.exe") {
 				if (fs::exists(old))

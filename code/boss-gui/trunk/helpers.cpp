@@ -14,6 +14,7 @@
 #include "helpers.h"
 #include <boost/spirit/include/karma.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/crc.hpp>
 
 namespace boss {
 	using namespace std;
@@ -145,6 +146,23 @@ namespace boss {
 	int versionStringToInt(string version) {
 		boost::replace_all(version,".","");
 		return atoi(version.c_str());
+	}
+
+	//Calculate the CRC of the given file for comparison purposes.
+	unsigned int GetCrc32(const fs::path& filename) {
+		int chksum = 0;
+		static const size_t buffer_size = 8192;
+		char buffer[buffer_size];
+		ifstream ifile(filename.c_str(), ios::binary);
+		boost::crc_32_type result;
+		if (!ifile.fail()) {
+			do {
+				ifile.read(buffer, buffer_size);
+				result.process_bytes(buffer, ifile.gcount());
+			} while (ifile);
+			chksum = result.checksum();
+		}
+        return chksum;
 	}
 
 	void GenerateIni() {

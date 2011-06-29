@@ -21,8 +21,13 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
+	struct fileInfo {
+		string name;
+		unsigned int crc;
+	};
+
 	extern string updateVersion;
-	extern vector<fs::path> updatedFiles;  //The updated files. These don't have the .new extension.
+	extern vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
 
 	//Exception class for updater functions.
 	struct update_error: virtual exception, virtual boost::exception {};

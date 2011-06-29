@@ -180,7 +180,6 @@ namespace boss {
 	}
 
 	//Calculate the CRC of the given file for comparison purposes.
-	//This is the correct CRC calculation code.
 	unsigned int GetCrc32(const fs::path& filename) {
 		int chksum = 0;
 		static const size_t buffer_size = 8192;
