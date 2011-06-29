@@ -24,8 +24,8 @@ namespace boss {
 	const fs::path curr_modlist_path	= "modlist.txt";
 	const fs::path prev_modlist_path	= "modlist.old";
 
-	const string g_version     = "1.7";
-	const string g_releaseDate = "June 10, 2011";
+	const string g_version     = "1.8";
+	const string g_releaseDate = "June 29, 2011";
 
 	//Command line variables
 	string log_format		= "html";	// what format the output should be in.

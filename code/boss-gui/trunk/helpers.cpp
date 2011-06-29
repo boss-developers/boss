@@ -23,7 +23,7 @@ namespace boss {
 
 	//Version info.
 	const string boss_version     = "1.6";				//TEMPORARY CHANGE TO TEST UPDATER
-	const string boss_releaseDate = "June 10, 2011";
+	const string boss_releaseDate = "June 29, 2011";
 
 	//The run_type type decides on which variables are applied, not all are appropriate for all run_type types.
 	int run_type			= 1;     // 1 = sort mods, 2 = only update, 3 = undo changes.

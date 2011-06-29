@@ -1054,7 +1054,7 @@ int main(int argc, char *argv[]) {
 	if (oldBOSSlogRecognised == recogModContent)
 		Output("<b>No change in recognised mod list since last run.</b><br />\n<br />\n");
 	
-	Output("Mods sorted by your userlist are counted as recognised, not unrecognised, plugins.\n");
+	Output("Mods sorted by your userlist are counted as recognised, not unrecognised, plugins.</p>\n");
 	Output("<div>\n");
 	Output("<div>Number of recognised plugins:</div>\n");
 	Output("<div>" + IntToString(recModNo) + "</div>\n");
@@ -1077,7 +1077,7 @@ int main(int argc, char *argv[]) {
 	Output("<div>Total number of plugins:</div>\n");
 	Output("<div>" + IntToString(recModNo+unrecModNo) + "</div>\n");
 	Output("</div>\n");
-	Output("</p>\n</div>\n</div>\n");
+	Output("</div>\n</div>\n");
 
 		
 	/////////////////////////////
