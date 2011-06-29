@@ -140,7 +140,7 @@
 		<li>Open BOSS's ReadMes.</li>
 		<li>Launch the <q>Check For Updates</q> functionality, which includes an automatic updater that can get new releases of BOSS for you. The <q>Check For Updates</q> functionality also runs when the GUI launches, but only displays a message if an update was found or there was an error encountered while checking.</li>
 	</ul>
-	<p>Each setting in the GUI corresponds to a command line parameter (apart from <q>Log Command Line Output</q>), the details of which can be found in the <a href="#details">Further Details</a> section below. The settings for the <q>Check For Updates</q> functionality, including proxy settings, are only found in the <q>BOSS.ini</q> settings file, there are no GUI options for them.</p>
+	<p>Each setting in the GUI corresponds to a command line parameter (apart from <q>Log Command Line Output</q>), the details of which can be found in the <q><a href="#details">Further Details</a></q> section below. The settings for the <q>Check For Updates</q> functionality, including proxy settings, are only found in the <q>BOSS.ini</q> settings file, there are no GUI options for them.</p>
 	<p>Note that the BOSSlog format selection applies to both the format of the BOSSlog that will be generated when BOSS is run and the format that the GUI will try to open when you select <q>View BOSSlog</q>.</p>
 	<br />
 	
@@ -183,7 +183,7 @@
 	<p>
 	<p>Dirty edits are often a side-effect of mod creation, and are often due to bugs in the utilities Bethesda has provided to create mods, rather than bad practice by mod authors. Dirty edits can cause a wide range of issues, including incorrect game settings, missing content, broken quests and crashing to desktop. The more dirty edits there are, and the more mods with dirty edits you use, the more likely you are to experience issues.</p>
 	<p>Thankfully there is a way to remove dirty edits from mods relatively easily, a process known as <i>mod cleaning</i>, using TES4Edit (for Oblivion), FO3Edit (for Fallout 3) or FNVEdit (for Fallout: New Vegas). A detailed set of instructions and information on mod cleaning can be found on the CS Wiki's <a href="http://cs.elderscrolls.com/constwiki/index.php/TES4Edit_Cleaning_Guide">TES4Edit Cleaning Guide</a> (the page also applies to Fallout 3 and Fallout: New Vegas).</p>
-	<p>The problem of dirty edits is largely a problem of ignorance on the part of mod authors and users alike of the problems unclean mods (more widely known as <i>dirty mods</i>) can cause. As such, there are community efforts to raise awareness of dirty edits and cleaning. BOSS plays a key role in these efforts, as holds the complete list of all known dirty mods, and it uses this information to provide notification messages to users for any dirty mods they have installed.
+	<p>The problem of dirty edits is largely a problem of ignorance on the part of mod authors and users alike of the problems unclean mods (more widely known as <i>dirty mods</i>) can cause. As such, there are community efforts to raise awareness of dirty edits and cleaning. BOSS plays a key role in these efforts, as it holds the complete list of all known dirty mods, and it uses this information to provide notification messages to users for any dirty mods they have installed.
 	There are three key pieces of information that are used to accurately describe and identify an unclean mod. They are:</p>
 	<ul>
 		<li><i>ITM Count</i>: ITM (Identical To Master) records are a type of dirty edit where a mod has overwritten something in the game without actually changing anything. If another mod lower in the load order makes an intentional change to that thing, it will have its effect cancelled out by the ITM record, which can cause problems. The ITM count is the number of ITM records found and corrected in the mod plugin.</li>
@@ -191,7 +191,7 @@
 		<li><i>CRC</i> or <i>Checksum</i>: A file's CRC is a highly accurate way of identifying it, and is a number calculated from the file's contents. If the contents of a file changes, so will its CRC. BOSS uses CRCs to check if a user's mods are dirty by checking their CRCs against pre-determined CRCs of known dirty mods. This lets BOSS give precise notification messages for any dirty mods it detects. BOSS can calculate the CRCs of all your installed plugins if run from the GUI with the <q>Display File CRCs</q> option enabled.</li>
 	</ul>
 	<p>However, not all unclean mods have all or any of these pieces of information. For unclean mods whose ITM and UDR counts have not been reported, BOSS cannot give them. For unclean mods whose CRCs have not been reported, BOSS cannot give precise notification and so prints a message whether or not the user has cleaned their mod.</p>
-	<p>BOSS and the modding communities rely on user contribution of this information to progress. For information on how to contribute, see the <a href="#help">Contributions &amp; Help</a> section below. If you find that a mod is dirty, you should also report this to the mod's author so that they can fix it.</p>
+	<p>BOSS and the modding communities rely on user contribution of this information to progress. For information on how to contribute, see the <q><a href="#help">Contributions &amp; Help</a></q> section below. If you find that a mod is dirty, you should also report this to the mod's author so that they can fix it.</p>
 	<p>There is also another type of unnecessary edit, known as a wild edit, that can also cause problems. These edits are neither Itentical To Master edits nor deleted records, so cannot be automatically cleaned. Cleaning must be manually done in TES4Edit/FO3Edit/FNVEdit. BOSS can still check for mods with these edits if the CRCs of the plugins with wild edits are known, and it can provide notification of these edits and some information on fixing them if they are reported in an official BOSS thread.</p>
 	<br />
 	
@@ -204,7 +204,7 @@
 		<li>Run the BOSS GUI.exe and select the <q>Update Masterlist Only</q> option. For the <q>Game</q> option below, select your game from the drop-down list. This will tell BOSS which game's masterlist to download.</li>
 		<li>Select <q>Run BOSS</q>. Your masterlist will be downloaded into the same folder as your BOSS.exe and BOSS GUI.exe. A BOSSlog will also be created, you can delete this.</li>
 	</ol>
-	<p>A rarer circumstance is when the user connects to the Internet using a proxy. This is most common in enterprise environments, and such users will generally know if they use a proxy. If you use a proxy to connect to the Internet, you must manually enter your proxy settings into your <q>BOSS.ini</q> settings file. See the section on the BOSS.ini in the <a href="#customising">Customising How BOSS Works</a> section below for details.</p>
+	<p>A rarer circumstance is when the user connects to the Internet using a proxy. This is most common in enterprise environments, and such users will generally know if they use a proxy. If you use a proxy to connect to the Internet, you must manually enter your proxy settings into your <q>BOSS.ini</q> settings file. See the section on the BOSS.ini in the <q><a href="#customising">Customising How BOSS Works</a></q> section below for details.</p>
 	<p>If your circumstances are such that the computer you have BOSS installed on is not connected to the Internet, or if you use a proxy to connect to the Internet, it is recommended that you avoid using the GUI's auto-updater, simply because it is easier in these circumstances to download new releases through your web browser.</p>
 	<p>There may also be other special cases that cause problems for BOSS's updaters, including some Internet proxies, that the BOSS team are unaware of. If you are having issues using the updaters, contact the BOSS team for support.</p>
 	<br />
@@ -250,7 +250,7 @@
 		</ul>
 		</li>
 		<li><i>GUI.LastOptions</i>: These settings record the options last selected by the user in the GUI. As these settings are automatically loaded when the GUI starts and saved when it exits, it is not recommended that you alter them manually.</li>
-		<li><i>BOSSlog.Filters</i>: These settings control the default states of the BOSSlog filters. If a filter's default is set to be enabled, then it will be enabled and applied when the BOSSlog is opened. These settings are all binary toggles, so '<code>1</code>' enables them and '<code>0</code>' disables them. By default all filters are disabled. See the earlier <a href="#bosslog">The BOSS Log</a> section for what each filter does.
+		<li><i>BOSSlog.Filters</i>: These settings control the default states of the BOSSlog filters. If a filter's default is set to be enabled, then it will be enabled and applied when the BOSSlog is opened. These settings are all binary toggles, so '<code>1</code>' enables them and '<code>0</code>' disables them. By default all filters are disabled. See the earlier <q><a href="#bosslog">The BOSS Log</a></q> section for what each filter does.
 		<ul>
 			<li><i>UseDarkColourScheme</i>: Controls the state of the <q>Use Dark Colour Scheme</q> filter.</li>
 			<li><i>HideVersionNumbers</i>: Controls the state of the <q>Hide Version Numbers</q> filter.</li>
@@ -266,14 +266,14 @@
 			<li><i>HideIncompatibilities</i>: Controls the state of the <q>Hide Incompatibilities</q> filter.</li>
 		</ul>
 		</li>
-		<li><i>BOSSlog.Styles</i>: These settings control the BOSSlog's CSS styles, used to provide the formatting for the BOSSlog. The defaults are not given, being hard-coded into BOSS, but they can be overriden here. A knowledge of CSS is expected if you wish to alter these settings. If you do not possess such knowledge, altering these settings is not recommended.</li>
+		<li><i>BOSSlog.Styles</i>: These settings control the BOSSlog's CSS styles, used to provide the formatting for the BOSSlog. The defaults are not given, being hard-coded into BOSS, but they can be overridden here. A knowledge of CSS is expected if you wish to alter these settings. If you do not possess such knowledge, altering these settings is not recommended.</li>
 	</ol>
 	<p>If BOSS is run and it cannot find a BOSS.ini, it will generate a new one. If BOSS is run with both a BOSS.ini present and command line parameters set, the command line parameters override the settings in BOSS.ini.</p>
 	<br />
 	
 	<span class="subtitle" id="linux">Running BOSS Under Linux</span>
 	<p>It is possible to run BOSS on Linux through the Wine compatibility layer, though no official support for doing so is given. Installation and usage is as on Windows. 
-	It is also possible to compile BOSS natively for Linux, and makefiles are provided, although there is again no official support for doing so. Native Linux builds are case-sensitive in their recognising of mods in the masterlist, and while mods are generally added with the correct case, occasionally a mod might have the incorrect case which would cause problems for a user with a native Linux build.</p>
+	It is also possible to compile BOSS natively for Linux, and makefiles are provided, although there is again no official support for doing so. Native Linux builds are case-sensitive in their recognition of mods in the masterlist, and while mods are generally added with the correct case, occasionally a mod might have the incorrect case which would cause problems for a user with a native Linux build.</p>
 	</div><br /><br />
 
 	
@@ -288,11 +288,9 @@
 	<p><code>-V [ --version ]</code></p>
 	<p>Prints the a banner displaying the program name and version number to the command line, then exits.</p>
 	<p><code>-u [ --update ]</code></p>
-	<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then sorts your mods. Since this replaces your current 
-	masterlist, don't run this if you have an edited copy and wish to keep the changes.</p>
+	<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then sorts your mods. This behaviour is enabled by default, so the command line parameter will have no effect except when the automatic masterlist updating has been disabled in the ini.</p>
 	<p><code>-o [ --only-update ]</code></p>
-	<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then does <b>not</b> sort your mods. Since this replaces your current 
-	masterlist, don't run this if you have an edited copy and wish to keep the changes.</p>
+	<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then does <b>not</b> sort your mods.</p>
 	<p><code>-g [ --game ] [ game ]</code></p>
 	<p>Overrides game autodetection. The valid values of the argument are: 'Oblivion', 'Nehrim', 'Fallout3', and 'FalloutNV'. If the game specified is not detected, BOSS will fail before any mods are sorted, so this should be used in conjunction with -o.</p>
 	<p><code>-s [ --silent ]</code></p>
@@ -325,7 +323,7 @@
 	
 	<span class="subtitle" id="files">BOSS Changes and Files</span>
 	<p>The only changes BOSS makes to your game install are to re-date the .esp and .esm files in your Data folder, and create a few files in your BOSS folder. Your game's master file (Oblivion.esm, Fallout3.esm, Nehrim.esm or FalloutNV.esm) 
-	is never touched, and all dates are derived from it.</p>
+	is never altered, and all dates are derived from it.</p>
 	<div>BOSS's files are all found in the BOSS folder, and they are:
 	<ul>
 		<li><i>BOSSlog.html</i> - This log is where the output that BOSS generates and displays once the program ends is stored. It is replaced every time you run BOSS. You can view it in any web browser.</li>
@@ -372,7 +370,7 @@
 	
 	<div id="troubleshooting"><span>Troubleshooting</span><br /><br />
 	<p>In some circumstances BOSS may not be able to run properly, due to a variety of possible reasons. In such cases, an error message detailing the problem should be provided. If the program unexpectedly crashes, or you experience 
-	a problem for which no error message is given, please report the crash or problem to an official BOSS thread (linked to in the <a href="#links">Quick Links</a> section below), so that we may fix it.</p>
+	a problem for which no error message is given, please report the crash or problem to an official BOSS thread (linked to in the <q><a href="#links">Quick Links</a></q> section below), so that we may fix it.</p>
 	<p>If the information below does not help you to solve any problems you are experiencing, please seek further support in one of the official BOSS threads.</p>
 	<span class="subtitle" id="general">General Problems</span>
 	<p>There are a few general reasons why BOSS may fail to function correctly. Check if any of the symptoms listed below fit your issue.</p>
@@ -548,12 +546,12 @@
 	</ul>
 	<p>Some people have gone out of their way and provided continuing, expert and detailed help - thank you very much! In addition to the above, the following are credited with additional non-load-order-related support:</p>
 	<ul>
-		<li>Wrye and the rest of the Wrye Bash Team: For implementing the importing of BOSS's Bashed Patch tag suggestions and general support for BOSS into <a href="http://wrye.ufrealms.net/Wrye%20Bash.html">Wrye Bash</a>.</li>
+		<li>Wrye and the rest of the Wrye Bash Team: For implementing the importing of BOSS's Bashed Patch tag suggestions and general support for BOSS into <a href="http://tesnexus.com/downloads/file.php?id=22368">Wrye Bash</a>.</li>
 		<li>The Beta Testing &amp; Analysis Guild at <a href="http://tesalliance.org/forums/">TESAlliance</a>: For extensive testing and giving feedback on v1.6 prior to release.</li>
 		<li>Surazal: For extensive testing and feedback during development of v1.6, and for providing the inspiration for many features through his BOSS Masterlist Manager macro for Microsoft Word.</li>
 		<li>myk002: For extensive code contributions and testing during development of v1.6+.</li>
-		<li>Hickory: For testing and feedback on v1.7 prior to release, and providing the icon used by the BOSS and GUI executables.</li>
-		<li>andalaybay: For testing and feedback on v1.7 prior to release.</li>
+		<li>Hickory: For testing and feedback on v1.7+ prior to release, and providing the icon used by the BOSS and GUI executables.</li>
+		<li>andalaybay: For testing and feedback on v1.7+ prior to release.</li>
 	</ul>
 	</div><br /><br />
 	

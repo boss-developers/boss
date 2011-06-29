@@ -5,24 +5,35 @@
 	<title>BOSS User Rules ReadMe</title>
 	<style type="text/css">
 	body {font-family:Calibri,Arial,Verdana,sans-serifs;}
-	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center;}
+	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:1em;}
 	div > span {font-weight:bold; font-size:1.3em;}
 	.subtitle {font-weight: normal;font-size:1.3em;}
-	.definition {text-indent:-1.4em; margin-left: 2.5em;}
 	ol li, ul li {margin-bottom:10px;}
 	li ul, li ol {margin-top:0.4em;}
-	.blockquote {margin-left:40px;}
+	.codebox, .quotebox, .logbox {margin-left:40px; border: gray 1px dashed; display:table; min-width:300px;  padding: 5px 30px 5px 10px;}
+	.codebox { font-family: monospace; background:#F5F5F5; line-height:20px;}
+	.quotebox {background:#E6E6FA;}
+	.logbox {background:#E0FFFF; line-height:30px;}
+	.logbox > ul > li {line-height:20px;}
+	q {font-style:italic;}
+	code {display:inline-box; padding: 2px 5px; background:#EEEEEE; }
 	</style>
   </head>
 	<body>
 	<div>Better Oblivion Sorting Software<br />
-	User Rules Documentation</div><br /><br />
+	User Rules Documentation</div>
 	
 	<div><span>Contents</span>
 	<ol>
 		<li><a href="#intro">Introduction</a></li>
 		<li><a href="#start">Getting Started With The Userlist</a></li>
-		<li><a href="#basics">Rule Basics</a></li>
+		<li><a href="#basics">Rule Basics</a>
+		<ol style="list-style:lower-alpha;">
+			<li><a href="#unknown">Sorting An Unknown Mod</a></li>
+			<li><a href="#recognised">Changing A Recognised Mod's Position</a></li>
+			<li><a href="#message">Editing A Mod's BOSSlog Messages &amp; Bash Tag Suggestions</a></li>
+		</ol>
+		</li>
 		<li><a href="#syntax">Rule Definition Syntax</a></li>
 		<li><a href="#apply">Enforcing Your Rules</a></li>
 		<li><a href="#notes">Further Notes On Rules</a></li>
@@ -59,106 +70,105 @@
 			Plugins may be .esp or .esm files. Groups are all pre-defined in the BOSS masterlist, marked out by the 
 		<code>\BeginGroup\:  <em>Group Name</em></code> and <code>\EndGroup\\</code> lines.</li>
 		<li><em>Edit BOSS messages.</em> You can add to or replace the mod-specific messages that are displayed in the BOSSlog.
-		See <em>The BOSS Message Format</em> below for more details on the message types and syntax.</li>
+		See <q><a href="#messages">The BOSS Message Format</a></q> below for more details on the message types and syntax.</li>
 	</ol>
 	<p>The rule definition syntax is simple and concise, and is explained below.</p>
 	</div><br /><br />
 	
 	<div id="basics"><span>Rule Basics</span>
-	<p>While it is strongly suggested that you read the <em>Rule Definition Syntax</em> section below to gain a proper understanding of user rules, here is a quick start guide for some simple rules.</p>
-	<span class="subtitle">Sorting An Unknown Mod</span>
+	<p>While it is strongly suggested that you read the <q><a href="#syntax">Rule Definition Syntax</a></q> section below to gain a proper understanding of user rules, here is a quick start guide for some simple rules.</p>
+	<span class="subtitle" id="unknown">Sorting An Unknown Mod</span>
 	<p>To sort a mod that is not in the masterlist after another mod:</p>
-	<blockquote><code>
-	ADD: &lt;RULE MOD&gt;<br />
-	AFTER: &lt;SORT MOD&gt;
-	</code></blockquote>
+	<div class="codebox">
+	ADD: [RULE MOD]<br />
+	AFTER: [SORT MOD]
+	</div>
 	<p>To sort it before another mod:</p>
-	<blockquote><code>
-	ADD: &lt;RULE MOD&gt;<br />
-	BEFORE: &lt;SORT MOD&gt;
-	</code></blockquote>
+	<div class="codebox">
+	ADD: [RULE MOD]<br />
+	BEFORE: [SORT MOD]
+	</div>
 	<p>The <em>rule mod</em> is the mod you want to add, and the <em>sort mod</em> is the mod you want to sort it relative to.</p>
-	<p>Some examples:</p>
-	<blockquote><code>
+	<p>Examples:</p>
+	<div class="codebox">
 	ADD: Mod1.esp<br />
 	AFTER: AFK_Weye.esp<br /><br />
 	ADD: Mod2.esp<br />
 	BEFORE: AFK_Weye.esp
-	</code></blockquote>
+	</div>
 	<p>This gives a load order of:</p>
-	<blockquote>
+	<div class="quotebox">
 	...<br />
 	Mod2.esp<br />
 	AFK_Weye.esp<br />
 	Mod1.esp<br />
 	...
-	</blockquote>
+	</div><br />
 	
-	<br /><span class="subtitle">Changing A Recognised Mod's Position</span>
+	<br /><span class="subtitle" id="recognised">Changing A Recognised Mod's Position</span>
 	<p>To sort a mod that is already in the masterlist after another mod:</p>
-	<blockquote><code>
-	OVERRIDE: &lt;RULE MOD&gt;<br />
-	AFTER: &lt;SORT MOD&gt;
-	</code></blockquote>
+	<div class="codebox">
+	OVERRIDE: [RULE MOD]<br />
+	AFTER: [SORT MOD]
+	</div>
 	<p>To sort it before another mod:</p>
-	<blockquote><code>
-	OVERRIDE: &lt;RULE MOD&gt;<br />
-	BEFORE: &lt;SORT MOD&gt;
-	</code></blockquote>
+	<div class="codebox">
+	OVERRIDE: [RULE MOD]<br />
+	BEFORE: [SORT MOD]
+	</div>
 	<p>The <em>rule mod</em> is the mod you want to sort, and the <em>sort mod</em> is the mod you want to sort it relative to.</p>
-	<p>An example:</p>
-	<blockquote><code>
+	<p>Example:</p>
+	<div class="codebox">
 	OVERRIDE: bgBalancingEVCore.esp<br />
 	AFTER: Unofficial Oblivion Patch.esp
-	</code></blockquote>
+	</div>
 	<p>This gives a load order of:</p>
-	<blockquote>
+	<div class="quotebox">
 	...<br />
 	Unofficial Oblivion Patch.esp<br />
 	bgBalancingEVCore.esp<br />
 	...
-	</blockquote>
+	</div><br />
 	
-	<br /><span class="subtitle">Editing A Mod's BOSSlog Messages And Bash Tag Suggestions</span>
+	<br /><span class="subtitle" id="message">Editing A Mod's BOSSlog Messages &amp; Bash Tag Suggestions</span>
 	<p>To add a message to a mod for display in the BOSSlog:</p>
-	<blockquote><code>
-	FOR: &lt;RULE MOD&gt;<br />
-	APPEND: &lt;MESSAGE OBJECT&gt;
-	</code></blockquote>
+	<div class="codebox">
+	FOR: [RULE MOD]<br />
+	APPEND: [MESSAGE OBJECT]
+	</div>
 	<p>To replace the messages attached to a mod for display in the BOSSlog:</p>
-	<blockquote><code>
-	FOR: &lt;RULE MOD&gt;<br />
-	REPLACE: &lt;MESSAGE OBJECT&gt;
-	</code></blockquote>
-	<p>The <em>rule mod</em> is the mod you want to add the message to. The <em>message object</em> is the formatted BOSS message that you want to attach. See the <em>The BOSS Message Format</em> section later on in this readme if you are unfamiliar with BOSS message formatting.</p>
+	<div class="codebox">
+	FOR: [RULE MOD]<br />
+	REPLACE: [MESSAGE OBJECT]
+	</div>
+	<p>The <em>rule mod</em> is the mod you want to add the message to. The <em>message object</em> is the formatted BOSS message that you want to attach. See the <q><a href="#messages">The BOSS Message Format</a></q> section later on in this readme if you are unfamiliar with BOSS message formatting.</p>
 	<p>An example:</p>
-	<blockquote><code>
+	<div class="codebox">
 	FOR: Unofficial Oblivion Patch.esp<br />
 	REPLACE: ? Replaced!<br /><br />
 	FOR: bgMagicEV.esp.esp<br />
 	APPEND: % {{BASH:Names,Delev,Relev}}
-	</code></blockquote>
+	</div>
 	<p>This will print in the BOSSlog:</p>
-	<ul style='list-style-type:none;'>
-	<li>...<ul style='list-style-type:disc;'></ul></li>
-	<li>
-	Unofficial Oblivion Patch.esp<ul style='list-style-type:disc;'>
-	<li>Note:  Replaced!</li>
-	</ul></li>
-	<li>...<ul style='list-style-type:disc;'></ul></li>
-	<li>
-	bgMagicEV.esp.esp<ul style='list-style-type:disc;'>
-	<li>Bashed Patch tag suggestion: {{BASH:Names,Delev,Relev}}</li>
-	</ul></li>
-	<li>...<ul style='list-style-type:disc;'></ul></li>
+	<div class="quotebox">
+	...<br /><br />
+	Unofficial Oblivion Patch.esp
+	<ul>
+		<li>Note:  Replaced!</li>
 	</ul>
+	...<br /><br />
+	bgMagicEV.esp.esp
+	<ul>
+		<li>Bashed Patch tag suggestion: {{BASH:Names,Delev,Relev}}</li>
+	</ul>
+	...
 	</div><br /><br />
 	
 	<div id="syntax"><span>Rule Definition Syntax</span><br />
 	<p>User rules have a specific structure and syntax which your rules must follow to be applied. The information below provides the details on this structure and syntax.</p>
 	<br /><span class="subtitle">The Rule Line</span>
 	<p>Every rule begins with a <em>rule line</em>, which defines what basic type of rule it is and what plugin it is applied to. It has the structure:</p>
-	<blockquote><code>&lt;RULE KEYWORD&gt;: &lt;RULE OBJECT&gt;</code></blockquote>
+	<div class="codebox">[RULE KEYWORD]: [RULE OBJECT]</div>
 	<p>This is the <em>rule line</em>. The <em>rule keyword</em> can be one of:</p>
 	<ul>
 		<li><em>ADD</em>: This tells BOSS that the rule sorts a mod that is not in the 
@@ -174,7 +184,7 @@
 	
 	<br /><span class="subtitle">The Sort Line</span>
 	<p>If a rule's rule keyword is ADD or OVERRIDE, it can sort mods and should include a <em>sort line</em>. If the rule keyword is FOR, the rule <b>must not</b> include a sort line. The sort line has the structure:</p>
-	<blockquote><code>&lt;SORT KEYWORD&gt;: &lt;SORT OBJECT&gt;</code></blockquote>
+	<div class="codebox">[SORT KEYWORD]: [SORT OBJECT]</div>
 	<p>The <em>sort keyword</em> can be one of:</p>
 	<ul>
 		<li><em>BEFORE</em>: This states that the rule object is to load immediately before the sort object.</li>
@@ -188,7 +198,7 @@
 	
 	<br /><span class="subtitle">The Message Line</span>
 	<p>If a rule's rule keyword is FOR, it should include at least one <em>message line</em>. A rule with a rule keyword of ADD or OVERRIDE can also include message lines, if they sort a mod. Message lines have the structure:</p>
-	<blockquote><code>&lt;MESSAGE KEYWORD&gt;: &lt;MESSAGE OBJECT&gt;</code></blockquote>
+	<div class="codebox">[MESSAGE KEYWORD]: [MESSAGE OBJECT]</div>
 	<p>The <em>message keyword</em> can be one of:</p>
 	<ul>
 		<li><em>APPEND</em>: This states that the message is to be appended to the list of messages attached to the rule mod.</li>
@@ -199,7 +209,7 @@
 	
 	<br /><span class="subtitle">Examples</span>
 	<p>Here is the contents of an example userlist:</p>
-	<blockquote><code>
+	<div class="codebox">
 	ADD: MyModToAdd.esp<br />
 	AFTER: LoadAfterThis.esm<br />
 	APPEND: ? Adding a general comment.<br />
@@ -214,9 +224,9 @@
 	FOR: bgBalancingEVOptionalNPCDiversity, Vanilla.esp<br />
 	REPLACE: ? This is a replacement message.<br />
 	APPEND: % {{BASH:NpcFaces,NoMerge}}
-	</code></blockquote>
+	</div>
 	<p>This is the equivalent of the masterlist having:</p>
-	<blockquote>
+	<div class="quotebox">
 	...<br />
 	LoadAfterThis.esm<br />
 	MyModToAdd.esp<br />
@@ -229,8 +239,28 @@
 	bgBalancingEVOptionalNPCDiversity, Vanilla.esp<br />
 	? This is a replacement message.<br />
 	% {{BASH:NpcFaces,NoMerge}}<br />
+	...
+	</div>
+	<p>Which would give in the BOSSlog:</p>
+	<div class="logbox" style="">
 	...<br />
-	</blockquote>
+	LoadAfterThis.esm<br />
+	MyModToAdd.esp
+	<ul>
+		<li>Note: Adding a general comment.</li>
+		<li>Note: Incompatible with OOO!</li>
+	</ul>
+	...<br />
+	MyModToOverride.esp<br />
+	LoadBeforeThis.esp<br />
+	...<br />
+	bgBalancingEVOptionalNPCDiversity, Vanilla.esp
+	<ul>
+	<li> Note: This is a replacement message.</li>
+	<li> Bash Tag Suggestion(s): {{BASH:NpcFaces,NoMerge}}</li>
+	</ul>
+	...
+	</div>
 	<p>The rule sorting the two groups L.A.M.E. and Supreme Magicka simply moves the L.A.M.E. group from its current position to before the Supreme Magicka group.</p>
 	</div>
 	<br /><br />
@@ -252,7 +282,7 @@
 	</div><br /><br />
 	
 	<div id="notes"><span>Further Notes On Rules</span>
-	<p>While the <em>Rule Definition Syntax</em> section gave you most of the rules of defining rules, here are some further general notes on defining rules that may 
+	<p>While the <q><a href="#syntax">Rule Definition Syntax</a></q> section gave you most of the rules of defining rules, here are some further general notes on defining rules that may 
 	not be evident:</p>
 	<ol>
 		<li>Blank lines or lines beginning with "//" (without quotes) in your userlist will be ignored by BOSS. You can use blank lines to improve the formatting of your userlist, and use the "//" line start to provide comments or disable specific rules as you desire.</li>
@@ -263,9 +293,9 @@
 		<li>The game's master .ESM file must always load first. You cannot sort it, sort another mod before it, or insert another mod into the top of the "ESMs" group.</li>
 		<li>You cannot sort a mod relative to another mod that is not in the masterlist and has not been sorted by a previous rule.</li>
 		<li>
-			<b>Rules are applied in the order they are listed</b>. This means you can have several rules sorting different rule objects relative to the same sort object, or have rules sorting rule objects relative to sort objects that were sorted in previous rules.
-			For example:<br />
-			<blockquote><code>
+			<p><b>Rules are applied in the order they are listed</b>. This means you can have several rules sorting different rule objects relative to the same sort object, or have rules sorting rule objects relative to sort objects that were sorted in previous rules.
+			For example:</p>
+			<div class="codebox">
 			ADD: LoadBeforeThis.esp<br />
 			AFTER: RTT.esp<br /><br />
 			ADD: Mod1.esp<br />
@@ -274,15 +304,15 @@
 			AFTER: Mod1.esp<br /><br />
 			ADD: Mod2.esp<br />
 			BEFORE: RTT.esp
-			</code></blockquote>
-			which will order the mods as:
-			<blockquote>Mod2.esp<br />
+			</div>
+			<p>which will order the mods as:</p>
+			<div class="quotebox">Mod2.esp<br />
 			RTT.esp<br />
 			Mod1.esp<br />
 			xulAspenWood.esp<br />
-			LoadBeforeThis.esp</blockquote>
-			Take care when writing such rules though, 
-			as a small difference in the order of the rules in your userlist can have a very large difference on the resulting load order.
+			LoadBeforeThis.esp</div>
+			<p>Take care when writing such rules though, 
+			as a small difference in the order of the rules in your userlist can have a very large difference on the resulting load order.</p>
 		</li>
 	</ol>
 	</div><br /><br />
@@ -319,7 +349,7 @@
 	or:<br />
 	TAG: {{BASH:list suggested tags separated by ", " here}} you may also have some text here.</p>
 	<p>For example:</p>
-	<blockquote><code>% {{BASH:Names, Graphics}} to prevent changes being lost when using overhauls.</code></blockquote>
+	<div class="codebox">% {{BASH:Names, Graphics}} to prevent changes being lost when using overhauls.</div>
 	<p>You can also mix the two formats, giving one message in one format and another message in the other. You are not restricted to using only one format.</p>
 	</div><br /><br />
 	</body>
