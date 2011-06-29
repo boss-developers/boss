@@ -20,7 +20,6 @@
 #include <iostream>
 #include <cmath>
 #include <curl/curl.h>
-#include <curl/types.h>
 #include <curl/easy.h>
 #include <boost/exception/exception.hpp>
 #include <boost/exception/info.hpp>
