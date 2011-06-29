@@ -86,5 +86,8 @@ namespace boss {
 
 	//Strips the decimal points from a version number to obtain it as an integer. Trailing zeros will cause comparisons to return incorrect values.
 	int versionStringToInt(string version);
+
+	//Generate a default BOSS.ini
+	void GenerateIni();
 }
 #endif

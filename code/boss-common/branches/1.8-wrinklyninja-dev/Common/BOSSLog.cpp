@@ -430,7 +430,7 @@ namespace boss {
 			<<	"# Valid values for UpdaterProxyPort are 0 and any positive whole number." << endl
 			<<	"ProxyType               = direct" << endl
 			<<	"ProxyHostname           = none" << endl
-			<<	"ProxyPort               = 0" << endl
+			<<	"ProxyPort               = 0" << endl << endl
 
 			<<	"[BOSS.RunOptions]" << endl
 			<<	"# This section sets the options used when BOSS.exe is run directly." << endl
@@ -449,12 +449,12 @@ namespace boss {
 			<<	"Debug                   = 0" << endl
 			<<	"DisplayCRCs             = 0" << endl
 			<<	"BOSSlogFormat           = html" << endl
-			<<	"DoTrialRun              = 0" << endl
+			<<	"DoTrialRun              = 0" << endl << endl
 
 			<<	"[GUI.Settings]" << endl
 			<<	"# These settings have no counterparts in the GUI itself and must be set here." << endl
 			<<	"# DoStartupUpdateCheck is a toggle, 0 = not set, 1 = set." << endl
-			<<	"DoStartupUpdateCheck    = 1" << endl
+			<<	"DoStartupUpdateCheck    = 1" << endl << endl
 
 			<<	"[GUI.LastOptions]" << endl
 			<<	"# This section records the last configuration of options selected through the GUI." << endl
@@ -472,7 +472,7 @@ namespace boss {
 			<<	"Game                    = auto" << endl
 			<<	"RevertLevel             = 0" << endl
 			<<	"RevertNoVersionParse    = 0" << endl
-			<<	"RevertDisplayCRCs       = 0" << endl
+			<<	"RevertDisplayCRCs       = 0" << endl << endl
 
 			<<	"[BOSSlog.Filters]" << endl
 			<<	"# Settings below specify the default state of BOSSlog filters." << endl
@@ -488,7 +488,7 @@ namespace boss {
 			<<	"HideNotes              = 0" << endl
 			<<	"HideBashTagSuggestions = 0" << endl
 			<<	"HideRequirements       = 0" << endl
-			<<	"HideIncompatibilities  = 0" << endl
+			<<	"HideIncompatibilities  = 0" << endl << endl
 
 			<<	"[BOSSlog.Styles]" << endl
 			<<	"# Below are the CSS styles responsible for how the BOSSlog looks." << endl

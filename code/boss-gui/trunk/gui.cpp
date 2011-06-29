@@ -63,6 +63,8 @@ bool BossGUI::OnInit() {
 	//Set up variable defaults.
 	if (fs::exists("BOSS.ini"))
 		boss::parseIni("BOSS.ini");
+	else
+		boss::GenerateIni();
 
 	MainFrame *frame = new MainFrame(
 		wxT("Better Oblivion Sorting Software GUI - " + boss::GetGame()), 100, 100, 510, 370);

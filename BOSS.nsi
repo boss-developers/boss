@@ -4,16 +4,16 @@
   !include LogicLib.nsh
   !include nsDialogs.nsh
 ;-------------------------------- Basic Installer Info:
-    Name "BOSS v1.7.0"
+    Name "BOSS v1.8.0"
     OutFile "BOSS Installer.exe"
     ; Request application privileges for Windows Vista
     RequestExecutionLevel admin
-    VIProductVersion 0.1.7.0
+    VIProductVersion 1.8.0.0
     VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "BOSS"
     VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "BOSS development team"
     VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© BOSS development team"
-    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 1.7.0"
-    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "0.1.7.0"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 1.8.0"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "1.8.0.0"
 ;-------------------------------- Variables:
     Var Dialog
     Var Label
@@ -622,7 +622,7 @@
       WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "URLInfoAbout" 'http://better-oblivion-sorting-software.googlecode.com/'
       WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "HelpLink" 'http://better-oblivion-sorting-software.googlecode.com/'
       WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "Publisher" 'BOSS Development Team'
-      WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '1.7.0'      
+      WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '1.8.0'      
       WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoModify" 1
       WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoRepair" 1
       CreateDirectory "$COMMONFILES\BOSS"
@@ -820,7 +820,7 @@
                 nsDialogs::OnClick $Browse_Other $Function_Browse
             IntOp $0 $0 + 13
         ${EndIf}
-        ${NSD_CreateCheckBox} 0 $0u 100% 13u "Uninstall userlist if it exists."
+        ${NSD_CreateCheckBox} 0 $0u 100% 13u "Uninstall userlist and ini file if they exist."
             Pop $Check_RemoveUserFiles
          #   ${NSD_SetState} $Check_RemoveUserFiles ${BST_CHECKED}
         nsDialogs::Show
@@ -874,6 +874,7 @@
 			Delete "$Path_OB\BOSS\BOSSCommandLineLog.txt"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_OB\BOSS\userlist.txt"
+				Delete "$Path_OB\BOSS\BOSS.ini"
             ${EndIf}
             RMDir "$Path_OB\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Oblivion.lnk"
@@ -900,6 +901,7 @@
 			Delete "$Path_FO\BOSS\BOSSCommandLineLog.txt"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_FO\BOSS\userlist.txt"
+				Delete "$Path_FO\BOSS\BOSS.ini"
             ${EndIf}
             RMDir "$Path_FO\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Fallout3.lnk"
@@ -926,6 +928,7 @@
 			Delete "$Path_NV\BOSS\BOSSCommandLineLog.txt"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_NV\BOSS\userlist.txt"
+				Delete "$Path_NV\BOSS\BOSS.ini"
             ${EndIf}
             RMDir "$Path_NV\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Fallout New Vegas.lnk"
@@ -952,6 +955,7 @@
 			Delete "$Path_Nehrim\BOSS\BOSSCommandLineLog.txt"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_Nehrim\BOSS\userlist.txt"
+				Delete "$Path_Nehrim\BOSS\BOSS.ini"
             ${EndIf}
             RMDir "$Path_Nehrim\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Nehrim.lnk"
@@ -978,6 +982,7 @@
 			Delete "$Path_Other\BOSS\BOSSCommandLineLog.txt"
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_Other\BOSS\userlist.txt"
+				Delete "$Path_Other\BOSS\BOSS.ini"
             ${EndIf}
             RMDir "$Path_Other\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Other.lnk"
@@ -1031,7 +1036,7 @@
   LangString PAGE_SELECT_GAMES_TITLE ${LANG_ENGLISH} "Choose Games"
   LangString PAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select which game(s) you want to install BOSS for, and confirm the desired install path."
   LangString unPAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select which game(s) you want to uninstall BOSS from."
-  LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished installing BOSS - Better Oblivion Sorting Software v1.7.0"
+  LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished installing BOSS - Better Oblivion Sorting Software v1.8.0"
   LangString PAGE_FINISH_SUBTITLE ${LANG_ENGLISH} "Please select post-install tasks."
   
   ;Assign language strings to sections
