@@ -169,7 +169,8 @@ namespace boss {
 		ofstream ini("BOSS.ini");
 		if (ini.fail())
 			return;
-		ini <<	"[BOSS.InternetSettings]" << endl
+		ini <<  '\xEF' << '\xBB' << '\xBF'  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
+			<<	"[BOSS.InternetSettings]" << endl
 			<<	"# These settings control BOSS's (BOSS.exe and BOSS GUI.exe) proxy support." << endl
 			<<	"# They are used when BOSS.exe runs directly, and when the GUI is run." << endl
 			<<	"# There are no GUI equivalents for these settings." << endl

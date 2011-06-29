@@ -508,6 +508,12 @@ int main(int argc, char *argv[]) {
 			if (!parsed)
 				Userlist.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		}
+	} else if (!fs::exists(userlist_path)) {
+		ofstream userlist_file("userlist.txt",ios_base::binary);
+		if (!userlist_file.fail()) {
+			userlist_file << '\xEF' << '\xBB' << '\xBF';  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
+		}
+		userlist_file.close();
 	}
 
 
