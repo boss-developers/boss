@@ -108,7 +108,7 @@ namespace boss {
 		else if (game == 4) start = buffer.find("boss-fallout-nv");
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
+			throw boss_error() << err_detail("None of the supported games were detected.");
 		}
 		start = buffer.find("\"masterlist.txt\"", start);
 		start = buffer.find("B\",\"", start) + 4; 
