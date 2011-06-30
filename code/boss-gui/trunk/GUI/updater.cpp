@@ -27,6 +27,8 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 
+#include <wx/msgdlg.h>
+
 #include "Helpers/helpers.h"
 #include "GUI/updater.h"
 
@@ -43,6 +45,7 @@ namespace boss {
 	namespace unicode = boost::spirit::unicode;
 
 	using qi::eol;
+	using qi::eoi;
 	using qi::eps;
 	using qi::lit;
 	using qi::hex;
@@ -75,7 +78,7 @@ namespace boss {
 		//Disabled the below for now. At some point an option to cancel that would feed 
 		//into a 'clean up' function that would delete the downloaded files would be good.
 		//Too complicated for the moment.
-	/*	if (!cont) {
+		if (!cont) {
             if ( wxMessageBox(wxT("Do you really want to cancel?"),
                               wxT("Automatic Updater: Exit Confirmation"),  // caption
                               wxYES_NO | wxICON_QUESTION) == wxYES ) {
@@ -83,7 +86,9 @@ namespace boss {
 				progDia->Resume();
 			} else {
 				progDia->Update(1000);
-        }*/
+				return 1;
+			}
+		}
 		return 0;
 	}
 
@@ -272,10 +277,11 @@ namespace boss {
 			throw update_error() << err_detail(errbuff);
 		}
 		//Now parse list to extract file info.
-		bool p = qi::phrase_parse(fileBuffer.begin(),fileBuffer.end(),
-			((lit("\"") >> lexeme[+(char_ - lit("\""))] >> lit("\"") >> lit(":") >> hex) | eps) % eol,
-			space, updatedFiles);
-		if (!p || updatedFiles.size()==0) {
+		string::const_iterator start = fileBuffer.begin(), end = fileBuffer.end();
+		bool p = qi::phrase_parse(start,end,
+			(("\"" >> lexeme[+(char_ - lit("\""))] >> "\"" >> lit(":") >> hex - eol) | eoi) % eol,
+			space - eol, updatedFiles);
+		if (!p || start != end) {
 			curl_easy_cleanup(curl);
 			progDia->Update(1000);
 			throw update_error() << err_detail("Could not read remote file information.");
@@ -382,11 +388,13 @@ namespace boss {
 			curl_easy_cleanup(curl);
 			throw update_error() << err_detail(errbuff);
 		}
+
 		//Now parse list to extract file info.
-		bool p = qi::phrase_parse(fileBuffer.begin(),fileBuffer.end(),
-			((lit("\"") >> lexeme[+(char_ - lit("\""))] >> lit("\"") >> lit(":") >> hex) | eps) % eol,
-			space, updatedFiles);
-		if (!p || updatedFiles.size()==0) {
+		string::const_iterator start = fileBuffer.begin(), end = fileBuffer.end();
+		bool p = qi::phrase_parse(start,end,
+			(("\"" >> lexeme[+(char_ - lit("\""))] >> "\"" >> lit(":") >> hex - eol) | eoi) % eol,
+			space - eol, updatedFiles);
+		if (!p || start != end) {
 			curl_easy_cleanup(curl);
 			progDia->Update(1000);
 			throw update_error() << err_detail("Could not read remote file information.");
