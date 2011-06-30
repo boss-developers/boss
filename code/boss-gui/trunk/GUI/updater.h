@@ -26,6 +26,11 @@ namespace boss {
 		unsigned int crc;
 	};
 
+	enum installType {
+		MANUAL,
+		INSTALLER
+	};
+
 	extern string updateVersion;
 	extern vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
 
@@ -39,13 +44,13 @@ namespace boss {
 	//Checks if a new release of BOSS is available or not.
 	string IsUpdateAvailable();
 
-	//Downloads the installer for the update, for when the current version was installed via installer.
-	void DownloadUpdateInstaller(wxProgressDialog *progDia);
-
-	//Download the files in the update.
-	void DownloadUpdateFiles(wxProgressDialog *progDia);
+	//Download the files in the update. updateType = 0 for installer, 1 for manual.
+	void DownloadUpdateFiles(int installType, wxProgressDialog *progDia);
 
 	//Installs the downloaded update files.
 	void InstallUpdateFiles();
+
+	//Cleans up after the user cancels a download.
+	void CleanUp();
 }
 #endif

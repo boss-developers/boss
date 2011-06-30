@@ -49,6 +49,7 @@ namespace boss {
 		const string SVN_DATE_KW = "$" "Date" "$";                           // Left as separated parts to avoid keyword expansion
 		const string SVN_CHANGEDBY_KW= "$" "LastChangedBy" "$";              // Left as separated parts to avoid keyword expansion
 		string oldline = "? Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
+		const char *revision_url = "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn";
 
 		//Which masterlist to get?
 		if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
@@ -94,7 +95,7 @@ namespace boss {
 		}
 
 		//Get revision number from http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn page text.
-		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn");
+		curl_easy_setopt(curl, CURLOPT_URL, revision_url);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer );
 		ret = curl_easy_perform(curl);
@@ -250,6 +251,7 @@ namespace boss {
 		char errbuff[CURL_ERROR_SIZE];
 		CURLcode ret;
 		string proxy_str;
+		const char *url = "http://code.google.com/p/better-oblivion-sorting-software/";
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
@@ -289,7 +291,7 @@ namespace boss {
 		}
 
 		//Check that there is an internet connection. Easiest way to do this is to check that the BOSS google code page exists.
-		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/");
+		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1);	
 		ret = curl_easy_perform(curl);
 		//Clean up and close curl handle now that it's finished with.
