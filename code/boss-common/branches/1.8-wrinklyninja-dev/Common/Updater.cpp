@@ -40,7 +40,7 @@ namespace boss {
 		char cbuffer[4096];
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
-		string buffer,revision,newline,line;		//A bunch of strings.
+		string buffer,revision,newline,line,proxy_str;		//A bunch of strings.
 		size_t start,end;								//Position holders for trimming strings.
 		CURLcode ret;
 		ifstream mlist;								//Input stream.
@@ -68,7 +68,8 @@ namespace boss {
 		//Set up proxy stuff.
 		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
 			//All of the settings have potentially valid proxy-ing values.
-			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_host + ":" + proxy_port);
+			proxy_str = proxy_host + ":" + proxy_port;
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
 			if (ret!=CURLE_OK) {
 				curl_easy_cleanup(curl);
 				throw boss_error() << err_detail("Invalid proxy hostname or port specified.");
@@ -248,6 +249,7 @@ namespace boss {
 		CURL *curl;									//cURL handle
 		char errbuff[CURL_ERROR_SIZE];
 		CURLcode ret;
+		string proxy_atr;
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
@@ -261,7 +263,8 @@ namespace boss {
 		//Set up proxy stuff.
 		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
 			//All of the settings have potentially valid proxy-ing values.
-			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_host + ":" + proxy_port);
+			proxy_str = proxy_host + ":" + proxy_port;
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
 			if (ret!=CURLE_OK) {
 				curl_easy_cleanup(curl);
 				throw boss_error() << err_detail("Invalid proxy hostname or port specified.");

@@ -91,6 +91,7 @@ namespace boss {
 		CURL *curl;									//cURL handle
 		char errbuff[CURL_ERROR_SIZE];
 		CURLcode ret;
+		string proxy_str;
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
@@ -104,7 +105,8 @@ namespace boss {
 		//Set up proxy stuff.
 		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
 			//All of the settings have potentially valid proxy-ing values.
-			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_host + ":" + proxy_port);
+			proxy_str = proxy_host + ":" + proxy_port;
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
 			if (ret!=CURLE_OK) {
 				curl_easy_cleanup(curl);
 				throw update_error() << err_detail("Invalid proxy hostname or port specified.");
@@ -144,7 +146,7 @@ namespace boss {
 	//Checks if a new release of BOSS is available or not.
 	string IsUpdateAvailable() {
 		int localVersion, remoteVersion;
-		string remoteVersionStr;
+		string remoteVersionStr, proxy_str;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		CURLcode ret;
@@ -161,7 +163,8 @@ namespace boss {
 		//Set up proxy stuff.
 		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
 			//All of the settings have potentially valid proxy-ing values.
-			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_host + ":" + proxy_port);
+			proxy_str = proxy_host + ":" + proxy_port;
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
 			if (ret!=CURLE_OK) {
 				curl_easy_cleanup(curl);
 				throw update_error() << err_detail("Invalid proxy hostname or port specified.");
@@ -208,7 +211,7 @@ namespace boss {
 
 	//Downloads the installer for the update, for when the current version was installed via installer.
 	void DownloadUpdateInstaller(wxProgressDialog *progDia) {
-		string fileBuffer, message;
+		string fileBuffer, message, proxy_str;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		CURLcode ret;
@@ -230,7 +233,8 @@ namespace boss {
 		//Set up proxy stuff.
 		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
 			//All of the settings have potentially valid proxy-ing values.
-			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_host + ":" + proxy_port);
+			proxy_str = proxy_host + ":" + proxy_port;
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
 			if (ret!=CURLE_OK) {
 				curl_easy_cleanup(curl);
 				throw update_error() << err_detail("Invalid proxy hostname or port specified.");
@@ -319,7 +323,7 @@ namespace boss {
 
 	//Download the files in the update.
 	void DownloadUpdateFiles(wxProgressDialog *progDia) {
-		string fileBuffer, buffer, message;
+		string fileBuffer, buffer, message, proxy_str;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		CURLcode ret;
@@ -340,7 +344,8 @@ namespace boss {
 		//Set up proxy stuff.
 		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
 			//All of the settings have potentially valid proxy-ing values.
-			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_host + ":" + proxy_port);
+			proxy_str = proxy_host + ":" + proxy_port;
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
 			if (ret!=CURLE_OK) {
 				curl_easy_cleanup(curl);
 				throw update_error() << err_detail("Invalid proxy hostname or port specified.");
