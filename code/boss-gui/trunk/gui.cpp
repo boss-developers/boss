@@ -61,10 +61,23 @@ bool CheckedForUpdate = false;		//To prevent the update checker looping thanks t
 //Draws the main window when program starts.
 bool BossGUI::OnInit() {
 	//Set up variable defaults.
-	if (fs::exists("BOSS.ini"))
-		boss::parseIni("BOSS.ini");
-	else
-		boss::GenerateIni();
+	if (fs::exists("BOSS.ini")) {
+		if (!boss::parseIni("BOSS.ini"))
+			wxMessageBox(wxString::Format(
+				wxT("Error: BOSS.ini parsing failed. Some or all of the GUI's options may not have been set correctly. Run BOSS to see the details of the failure.")
+			),
+			wxT("Error"),
+			wxOK | wxICON_ERROR,
+			NULL);
+	} else {
+		if (!boss::GenerateIni());
+			wxMessageBox(wxString::Format(
+				wxT("Error: BOSS.ini generation failed. Ensure your BOSS folder is not read-only. None of the GUI's options will be saved.")
+			),
+			wxT("Error"),
+			wxOK | wxICON_ERROR,
+			NULL);
+	}
 
 	MainFrame *frame = new MainFrame(
 		wxT("Better Oblivion Sorting Software GUI - " + boss::GetGame()), 100, 100, 510, 370);
@@ -116,7 +129,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	HelpMenu->Append(MENU_OpenMReadMe, _T("Open &Main ReadMe"), _T("Opens the main BOSS ReadMe in your default web browser."));
 	HelpMenu->Append(MENU_OpenURReadMe, _T("Open &User Rules ReadMe"), _T("Opens the User Rules ReadMe in your default web browser."));
 	HelpMenu->AppendSeparator();
-	HelpMenu->Append(OPTION_CheckForUpdates, _T("&Check For Updates..."), _T("Checks for updates to BOSS and your masterlist."));
+	HelpMenu->Append(OPTION_CheckForUpdates, _T("&Check For Updates..."), _T("Checks for updates to BOSS."));
 	HelpMenu->Append(MENU_ShowAbout, _T("&About BOSS GUI..."), _T("Shows information about BOSS GUI."));
     MenuBar->Append(HelpMenu, _T("&Help"));
     SetMenuBar(MenuBar);
@@ -377,7 +390,13 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 			out.unsetf(std::ios::skipws);
 			out << buffer;
 			out.close();
-		}
+		} else
+			wxMessageBox(wxString::Format(
+				wxT("Error: BOSS.ini could not be saved. Ensure your BOSS folder is not read-only.")
+			),
+			wxT("Error"),
+			wxOK | wxICON_ERROR,
+			this);
 	}
 
     Destroy();  // you may also do:  event.Skip();
@@ -390,10 +409,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		boss::RunBOSS();
 	else
 		wxMessageBox(wxString::Format(
-				wxT("Error: BOSS.exe not found. Reinstall BOSS correctly, so that both BOSS.exe and BOSS GUI.exe are in the BOSS folder in your game's Data folder.")
+				wxT("Error: BOSS.exe not found. Reinstall BOSS correctly, so that both BOSS.exe and BOSS GUI.exe are in the BOSS folder in your game's installation directory.")
 			),
 			wxT("Error"),
-			wxOK | wxICON_INFORMATION,
+			wxOK | wxICON_ERROR,
 			this);
 }
 
@@ -422,10 +441,10 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 				boss::OpenInSysDefault(fs::path("BOSSlog.html"));
 			else {
 				wxMessageBox(wxString::Format(
-					wxT("Error: No BOSSlog.html found. Make sure you have run_type BOSS with the HTML output format selected, or run_type BOSS from BOSS.exe, at least once before attempting to open the BOSSlog in the HTML format.")
+					wxT("Error: No BOSSlog.html found. Make sure you have run BOSS from BOSS.exe, or run it with the HTML output format selected, at least once before attempting to open the BOSSlog in the HTML format.")
 				),
 				wxT("Error"),
-				wxOK | wxICON_INFORMATION,
+				wxOK | wxICON_ERROR,
 				this);
 			}
 		} else {  //Open text BOSSlog.
@@ -433,10 +452,10 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 				boss::OpenInSysDefault(fs::path("BOSSlog.txt"));
 			else {
 				wxMessageBox(wxString::Format(
-					wxT("Error: No BOSSlog.txt found. Make sure you have run_type BOSS at least once with the text output format selected before attempting to open the BOSSlog in the plain text format.")
+					wxT("Error: No BOSSlog.txt found. Make sure you have run BOSS at least once with the text output format selected before attempting to open the BOSSlog in the plain text format.")
 				),
 				wxT("Error"),
-				wxOK | wxICON_INFORMATION,
+				wxOK | wxICON_ERROR,
 				this);
 			}
 		}
@@ -456,7 +475,7 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 				file
 			),
 			wxT("Error"),
-			wxOK | wxICON_INFORMATION,
+			wxOK | wxICON_ERROR,
 			this);
 		}
 	}
@@ -688,7 +707,7 @@ void MainFrame::Update() {
 			boss::DownloadUpdateInstaller(progDia);
 		} catch (boss::update_error & e) {
 			std::string const * detail = boost::get_error_info<boss::err_detail>(e);
-			wxMessageBox(wxT("The automatic updater encountered the following error while downloading the update:\n\n" + *detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
+			wxMessageBox(wxT("Update failed. Details: " + *detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		}
 		//Remind the user to run the uninstaller and installer.
@@ -712,11 +731,11 @@ void MainFrame::Update() {
 			boss::InstallUpdateFiles();
 		} catch (boss::update_error & e) {
 			std::string const * detail = boost::get_error_info<boss::err_detail>(e);
-			wxMessageBox(wxT("The automatic updater encountered the following error while downloading the update:\n\n" + *detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
+			wxMessageBox(wxT("Update failed. Details:" + *detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		} catch (fs::filesystem_error e) {
 			std::string detail = e.what();
-			wxMessageBox(wxT("The automatic updater encountered the following error while installing the update:\n\n" + detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
+			wxMessageBox(wxT("Update failed. Details:" + detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		}
 		//Remind the user to update BOSS GUI.exe

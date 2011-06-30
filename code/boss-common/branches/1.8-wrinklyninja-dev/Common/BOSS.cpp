@@ -161,18 +161,11 @@ int main(int argc, char *argv[]) {
 	// Set up initial conditions
 	///////////////////////////////
 
-	//Parse ini file if found. Can't just use BOOST's program options ini parser because of the CSS syntax.
-	if (fs::exists("BOSS.ini")) {
-		bool parsed = parseIni("BOSS.ini");
-		if (!parsed) {
-			cout << "Ini parsing failed." << endl;
-			if (iniErrorBuffer.size() != 0) {
-				for (size_t i=0; i<iniErrorBuffer.size(); i++)  //Print parser error messages to console for now (debug)
-					cout << iniErrorBuffer[i] << endl;
-			}
-		}
-	} else
-		GenerateBOSSini();
+	//Parse ini file if found. Can't just use BOOST's program options ini parser because of the CSS syntax and spaces.
+	if (fs::exists("BOSS.ini"))
+		parseIni("BOSS.ini");
+	else
+		GenerateIni();
 
 	// parse command line arguments
 	po::variables_map vm;
@@ -802,7 +795,7 @@ int main(int argc, char *argv[]) {
 				}
 			}
 		}
-		if (Userlist.size() == 0) 
+		if (Userlist.empty()) 
 			userlistMessagesContent = "No valid rules were found in your userlist.txt.";
 		LOG_INFO("Userlist sorting process finished.");
 	}
@@ -1027,10 +1020,19 @@ int main(int argc, char *argv[]) {
 	}
 
 	/////////////////////////////
+	// Display Ini Parser Errors
+	/////////////////////////////
+
+	if (!iniErrorBuffer.empty()) {
+		for (size_t i=0; i<iniErrorBuffer.size(); i++)  //First print parser/syntax error messages.
+			Output(iniErrorBuffer[i]);
+	}
+
+	/////////////////////////////
 	// Display Masterlist Update
 	/////////////////////////////
 
-	if (masterlistUpdateContent != "") {
+	if (!masterlistUpdateContent.empty()) {
 		Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Masterlist Update</span><ul>\n");
 		Output(masterlistUpdateContent);
 		Output("</ul>\n</div>\n");
@@ -1041,7 +1043,7 @@ int main(int argc, char *argv[]) {
 	// Display Global Messages
 	/////////////////////////////
 
-	if (globalMessageBuffer.size() > 0) {
+	if (!globalMessageBuffer.empty()) {
 		Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>General Messages</span><ul>\n");
 		for (size_t i=0; i<globalMessageBuffer.size(); i++) {
 			ShowMessage(textbuf, globalMessageBuffer[i]);  //Print messages.
@@ -1090,7 +1092,7 @@ int main(int argc, char *argv[]) {
 	// Display Userlist Messages
 	/////////////////////////////
 
-	if (userlistMessagesContent != "") {
+	if (!userlistMessagesContent.empty()) {
 		Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Userlist Messages</span><ul id='userlistMessages'>\n");
 		for (size_t i=0; i<userlistErrorBuffer.size(); i++)  //First print parser/syntax error messages.
 			Output(userlistErrorBuffer[i]);
@@ -1103,7 +1105,7 @@ int main(int argc, char *argv[]) {
 	// Display Script Extender Info
 	/////////////////////////////////
 
-	if (SE != "") {
+	if (!SE.empty()) {
 		Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>" + SE + " And " + SE + " Plugin Checksums</span><ul id='seplugins'>\n");
 		Output(seInfoContent);
 		Output("</ul>\n</div>\n");

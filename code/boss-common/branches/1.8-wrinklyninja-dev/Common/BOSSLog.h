@@ -87,7 +87,8 @@ namespace boss {
 	//Prints HTML footer (ie. </body> and </html> tags).
 	void OutputFooter();
 
-	void GenerateBOSSini();
+	//Generate a default BOSS.ini
+	bool GenerateIni();
 
 	//Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 	string IntToString(unsigned int n);

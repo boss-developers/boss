@@ -251,8 +251,8 @@ namespace boss {
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
-		if (!curl) 
-			return false;
+		if (!curl)
+			throw boss_error() << err_detail("Curl could not be initialised.");
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
 		curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);

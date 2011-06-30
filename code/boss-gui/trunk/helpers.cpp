@@ -165,10 +165,11 @@ namespace boss {
         return chksum;
 	}
 
-	void GenerateIni() {
+	//Generate a default BOSS.ini
+	bool GenerateIni() {
 		ofstream ini("BOSS.ini");
 		if (ini.fail())
-			return;
+			return false;
 		ini <<  '\xEF' << '\xBB' << '\xBF'  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
 			<<	"[BOSS.InternetSettings]" << endl
 			<<	"# These settings control BOSS's (BOSS.exe and BOSS GUI.exe) proxy support." << endl
@@ -277,5 +278,7 @@ namespace boss {
 			<<	"\".note\"                                    = {}" << endl
 			<<	"\".req\"                                     = {}" << endl
 			<<	"\".inc\"                                     = {}";
+		ini.close();
+		return true;
 	}
 }

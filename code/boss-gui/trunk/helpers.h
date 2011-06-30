@@ -63,6 +63,7 @@ namespace boss {
 	extern bool revert_skip_version_parse; // enable parsing of mod's headers to look for version strings
 	extern bool revert_show_CRCs;			// whether or not to show mod CRCs.
 
+	//Other settings.
 	extern bool logCL;			// whether or not to log the command line output to BOSSDebugLog.txt.
 	extern bool do_startup_update_check;
 	extern string proxy_type;
@@ -91,6 +92,6 @@ namespace boss {
 	unsigned int GetCrc32(const fs::path& filename);
 
 	//Generate a default BOSS.ini
-	void GenerateIni();
+	bool GenerateIni();
 }
 #endif

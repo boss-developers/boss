@@ -94,8 +94,8 @@ namespace boss {
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
-		if (!curl) 
-			return false;
+		if (!curl)
+			throw update_error() << err_detail("Curl could not be initialised.");
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
 		curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
@@ -283,7 +283,7 @@ namespace boss {
 		if (ofile.fail()) {
 			progDia->Update(1000);
 			curl_easy_cleanup(curl);
-			throw update_error() << err_detail("Could not save "+path);
+			throw update_error() << err_detail("Could not save \""+path+"\".");
 		}
 		
 		//Set up progress info.
@@ -312,7 +312,7 @@ namespace boss {
 		calcedCRC = GetCrc32(fs::path(path));
 		if (calcedCRC != updatedFiles[0].crc) {
 			progDia->Update(1000);
-			throw update_error() << err_detail("Downloaded file \""+path+"\" failed verification test, and is corrupt. Please try updating again.");
+			throw update_error() << err_detail("Downloaded file \""+path+"\" failed verification test. Please try updating again.");
 		}
 		progDia->Update(1000);
 	}
@@ -400,7 +400,7 @@ namespace boss {
 			if (ofile.fail()) {
 				progDia->Update(1000);
 				curl_easy_cleanup(curl);
-				throw update_error() << err_detail("Could not save "+path);
+				throw update_error() << err_detail("Could not save \""+path+"\"");
 			}
 
 			string remote_file = url+updatedFiles[i].name;
@@ -423,7 +423,7 @@ namespace boss {
 			calcedCRC = GetCrc32(fs::path(path));
 			if (calcedCRC != updatedFiles[i].crc) {
 				progDia->Update(1000);
-				throw update_error() << err_detail("Downloaded file \""+updatedFiles[i].name+"\" failed verification test, and is corrupt. Please try updating again.");
+				throw update_error() << err_detail("Downloaded file \""+updatedFiles[i].name+"\" failed verification test. Please try updating again.");
 			}
 		}
 		curl_easy_cleanup(curl);
