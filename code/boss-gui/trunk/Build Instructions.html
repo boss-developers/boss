@@ -19,7 +19,7 @@
 		<li><a href="http://www.microsoft.com/express/">Microsoft Visual C++ 2010 Express Edition</a></li>
 		<li><a href="http://curl.haxx.se/download.html">Curl Source Code</a> - Download the latest zipped source code from the top of the page.</li>
 		<li><a href="https://sourceforge.net/projects/boost/files/boost/1.46.1/">BOOST C++ libraries</a> - BOSS requires version 1.46.1, it will not work with earlier versions, later versions can be tried, but might also break something.</li>
-		<li><a href="http://www.wxwidgets.org/downloads/">wxWidgets Source Code</a> - Download the 2.9.1 Windows EXE Installer.</li>
+		<li><a href="http://www.wxwidgets.org/downloads/">wxWidgets Source Code</a> - Download the 2.9.1 source code with Windows line endings.</li>
 		<li>An SVN client of your choice.</li>
 	</ul><br />
 	
@@ -34,9 +34,34 @@
 
 	<h4>Preparing wxWidgets</h4>
 	<ol>
-		<li>Install wxWidgets to <code>C:\wxWidgets-2.9.1\</code>. This is the default install path. If your C drive is not an option, install elsewhere, but to a path without spaces, and change the include paths in the BOSS GUI project.</li>
-		<li>In the new wxWidgets folder, open the VC6 workspace <code>build\msw\wx.dsw</code>, answering "Yes" to any conversion prompts.</li>
-		<li><i>Section incomplete.</i>
+		<li>Extract the contents of the <code>wxWidgets-x.x.x</code> (x is a number) archive you downloaded to <code><em>$BOSS</em>\lib\wxWidgets\</code> (you should have build, include, lib, etc. in this folder).</li>
+		<li>Open the VC6 workspace <code>em>$BOSS</em>\lib\wxWidgets\build\msw\wx.dsw</code>, answering "Yes" to any conversion prompts.</li>
+		<li>Set the build type to Release. Build the following projects in listed order. For each project, in Project->Properties->Configuration Properties->C/C++->Code Generation, set the Runtime Library to "Multi-threaded (/MT)":
+		<ul>
+			<li>wxjpeg</li>
+			<li>wxpng</li>
+			<li>wxtiff</li>
+			<li>wxzlib</li>
+			<li>wxregex</li>
+			<li>wxexpat</li>
+			<li>base</li>
+			<li>net</li>
+			<li>core</li>
+			<li>gl</li>
+			<li>html</li>
+			<li>xml</li>
+			<li>media</li>
+			<li>qa</li>
+			<li>adv</li>
+			<li>xrc</li>
+			<li>aui</li>
+			<li>richtext</li>
+			<li>propgrid</li>
+			<li>ribbon</li>
+			<li>stc</li>
+		</ul>	
+		</li>
+		<li>Close the wx solution.</li>
 	</ol>
 	
 	<h4>Preparing Curl</h4>
@@ -46,7 +71,7 @@
 		<li>Extract the contents of the <code>curl-x.xx.x</code> (x is a number) folder in the curl archive to <code><em>$BOSS</em>\lib\curl\</code> (you should have lib, include, README, etc. in this folder).</li>
 		<li>Open <code><em>$BOSS</em>\lib\curl\lib\libcurl.vcproj</code> in Visual C++ 2010. When the Conversion Wizard window appears, just click 'Finish' then 'Close'.</li>
 		<li>Set the build type to Release. In Project->Properties->Configuration Properties->C/C++->Code Generation, set the Runtime Library to "Multi-threaded (/MT)".</li>
-		<li>Build the libcurl project. This will create a libcurl.lib file in the lib/Release directory. Close the libcurl project.</li>
+		<li>Build the libcurl project. This will create a libcurl.lib file in the <code><em>$BOSS</em>\lib\curl\lib\Release</code> directory. Close the libcurl project.</li>
 	</ol><br />
 	
 	<h3>Building BOSS</h3>
