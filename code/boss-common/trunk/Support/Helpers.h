@@ -17,6 +17,8 @@
 #include <cstring>
 #include <iostream>
 #include "boost/filesystem.hpp"
+#include <boost/unordered_set.hpp>
+#include <boost/regex.hpp>
 
 namespace boss {
 	using namespace std;
@@ -111,8 +113,10 @@ namespace boss {
 
 	//Gets the given OBSE dll or OBSE plugin dll's version number.
 	//Also works for FOSE and NVSE.
-	//NOT CROSS-PLATFORM. Requires Windows.h.
 	string GetExeDllVersion(const fs::path& filename);
+
+	//Searches a hashset for the first matching string of a regex and returns its iterator position.
+	boost::unordered_set<string>::iterator FindRegexMatch(boost::unordered_set<string> set, boost::regex reg, boost::unordered_set<string>::iterator startPos);
 }
 
 #endif

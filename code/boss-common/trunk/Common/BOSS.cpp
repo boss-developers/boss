@@ -25,15 +25,13 @@
 #include <iostream>
 #include <algorithm>
 
+#include <boost/regex.hpp>
+
 
 using namespace boss;
 using namespace std;
 namespace po = boost::program_options;
 using boost::algorithm::trim_copy;
-
-
-const string g_version     = "1.7";
-const string g_releaseDate = "June 10, 2011";
 
 
 void ShowVersion() {
@@ -74,26 +72,29 @@ void Fail() {
 	exit(1);
 }
 
+void InhibitUpdate(bool val) {
+	if (val)
+		update = false;
+}
+
 int main(int argc, char *argv[]) {
 
 	size_t x=0;							//position of last recognised mod.
 	string textbuf;						//a text string.
 	time_t esmtime = 0, modfiletime;	//File modification times.
-	int game = 0;						//What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
 	vector<item> Modlist, Masterlist;	//Modlist and masterlist data structures.
 	vector<rule> Userlist;				//Userlist data structure.
-
-	// set option defaults
-	bool update             = false; // update masterlist?
-	bool updateonly         = false; // only update the masterlist and don't sort currently.
-	bool silent             = false; // silent mode?
-	bool skip_version_parse = false; // enable parsing of mod's headers to look for version strings
-	int revert              = 0;     // what level to revert to
-	int verbosity           = 0;     // log levels above INFO to output
+	//Summary counters
+	int recModNo = 0, unrecModNo = 0, ghostModNo = 0, messageNo = 0, warningNo = 0, errorNo = 0;
 	string gameStr;                  // allow for autodetection override
-	bool debug              = false; // whether to include origin information in logging statements
-	bool showCRCs			= false; // whether or not to show mod CRCs.
-	string format			= "html";  // what format the output should be in.
+	string oldBOSSlogRecognised = "";
+	string masterlistUpdateContent = "";
+	string userlistMessagesContent = "";
+	string seInfoContent = "";
+	string recogModContent = "";
+	string unrecogModContent = "";
+	fs::path bosslog_path;				//Path to BOSSlog being used.
+	fs::path sortfile;					//Modlist/masterlist to sort plugins using.
 
 	//Set the locale to get encoding conversions working correctly.
 	setlocale(LC_CTYPE, "");
@@ -110,7 +111,9 @@ int main(int argc, char *argv[]) {
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
 								" available on the web before sorting")
-		("only-update,o", po::value(&updateonly)->zero_tokens(),
+		("no-update,U", po::value<bool>()->zero_tokens()->notifier(&InhibitUpdate),
+								"inhibit the automatic masterlist updater")
+		("only-update,o", po::value(&update_only)->zero_tokens(),
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
 								" available on the web but don't sort right"
@@ -139,13 +142,32 @@ int main(int argc, char *argv[]) {
 								" 'FalloutNV'")
 		("debug,d", po::value(&debug)->zero_tokens(),
 								"add source file references to logging statements")
-		("crc-display,c", po::value(&showCRCs)->zero_tokens(),
+		("crc-display,c", po::value(&show_CRCs)->zero_tokens(),
 								"show mod file CRCs, so that a file's CRC can be"
 								" added to the masterlist in a conditional")
-		("format,f", po::value(&format),
+		("format,f", po::value(&log_format),
 								"select output format. valid values"
-								" are: 'html', 'text'");
+								" are: 'html', 'text'")
+		("trial-run,t", po::value(&trial_run)->zero_tokens(),
+								"run BOSS without actually making any changes to load order")
+		("proxy-type,T", po::value(&proxy_type),
+								"sets the proxy type for the masterlist updater")
+		("proxy-host,H", po::value(&proxy_host),
+								"sets the proxy hostname for the masterlist updater")
+		("proxy-port,P", po::value(&proxy_port),
+								"sets the proxy port number for the masterlist updater");
 	
+	///////////////////////////////
+	// Set up initial conditions
+	///////////////////////////////
+
+	//Parse ini file if found. Can't just use BOOST's program options ini parser because of the CSS syntax and spaces.
+	if (fs::exists("BOSS.ini"))
+		parseIni("BOSS.ini");
+	else {
+		if (!GenerateIni())
+			iniErrorBuffer.push_back("<p class='error'>Error: BOSS.ini generation failed. Ensure your BOSS folder is not read-only.</p>\n\n");
+	}
 
 	// parse command line arguments
 	po::variables_map vm;
@@ -174,6 +196,10 @@ int main(int argc, char *argv[]) {
 		// it's ok if this number is too high.  setVerbosity will handle it
 		g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + verbosity));
 	}
+	if ((vm.count("update")) && (vm.count("no-update"))) {
+		LOG_ERROR("invalid options: --update,-u and --no-update,-U cannot both be given.");
+		Fail();
+	}
 	if (vm.count("help")) {
 		ShowUsage(opts);
 		exit(0);
@@ -189,7 +215,6 @@ int main(int argc, char *argv[]) {
 			Fail();
 		}
 	}
-
 	if (vm.count("game")) {
 		// sanity check and parse argument
 		if      (boost::iequals("Oblivion",   gameStr)) { game = 1; }
@@ -206,22 +231,80 @@ int main(int argc, char *argv[]) {
 
 	if (vm.count("format")) {
 		// sanity check and parse argument
-		if (format != "html" && format != "text") {
-			LOG_ERROR("invalid option for 'format' parameter: '%s'", format.c_str());
+		if (log_format != "html" && log_format != "text") {
+			LOG_ERROR("invalid option for 'format' parameter: '%s'", log_format.c_str());
 			Fail();
 		}
 	
-		LOG_DEBUG("BOSSlog format set to: '%s'", format.c_str());
+		LOG_DEBUG("BOSSlog format set to: '%s'", log_format.c_str());
 	}
 
-	//BOSSLog bosslog;
-	fs::path bosslog_path;				//Path to BOSSlog being used.
-	if (format == "html")
+	//Set BOSSlog path to be used.
+	if (log_format == "html")
 		bosslog_path = bosslog_html_path;
 	else
 		bosslog_path = bosslog_text_path;
+
+	//Set masterlist path to be used.
+	if (revert==1)
+		sortfile = curr_modlist_path;	
+	else if (revert==2) 
+		sortfile = prev_modlist_path;
+	else 
+		sortfile = masterlist_path;
+	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
+
+
+	////////////////////////////////////////////////
+	// Record last BOSSlog's recognised mod list
+	////////////////////////////////////////////////
+
+	//Back up old recognised mod list for diff later.
+	if (fs::exists(bosslog_text_path) || fs::exists(bosslog_html_path)) {
+		size_t pos1 = string::npos, pos2 = string::npos;
+		if (fs::exists(bosslog_text_path) && fs::exists(bosslog_html_path)) {
+			//Need to work out which was last written.
+			time_t htmllogtime,textlogtime;
+			try {
+				htmllogtime = fs::last_write_time(bosslog_html_path);
+				textlogtime = fs::last_write_time(bosslog_text_path);
+			}catch (fs::filesystem_error e){
+				LOG_WARN("%s; This may result in the BOSSlog diff being incorrect.", e.what());
+			}
+			if (textlogtime > htmllogtime) {
+				fileToBuffer(bosslog_text_path,oldBOSSlogRecognised);
+				pos1 = oldBOSSlogRecognised.find("Recognised And Re-ordered Plugins\n")+34;
+				if (pos1 != string::npos)
+					pos2 = oldBOSSlogRecognised.find("\n\n\n======================================", pos1);
+			} else {
+				fileToBuffer(bosslog_html_path,oldBOSSlogRecognised);
+				pos1 = oldBOSSlogRecognised.find("<ul id='recognised'>\n")+21;
+				if (pos1 != string::npos)
+					pos2 = oldBOSSlogRecognised.find("</ul>\n</div>\n", pos1);
+			}
+		} else if (fs::exists(bosslog_html_path)) {
+			fileToBuffer(bosslog_html_path,oldBOSSlogRecognised);
+			pos1 = oldBOSSlogRecognised.find("<ul id='recognised'>\n")+21;
+			if (pos1 != string::npos)
+				pos2 = oldBOSSlogRecognised.find("</ul>\n</div>\n", pos1);
+		} else {
+			fileToBuffer(bosslog_text_path,oldBOSSlogRecognised);
+			pos1 = oldBOSSlogRecognised.find("Recognised And Re-ordered Plugins\n")+34;
+			if (pos1 != string::npos)
+				pos2 = oldBOSSlogRecognised.find("\n\n\n======================================", pos1);
+		}
+		if (pos2 != string::npos)
+			oldBOSSlogRecognised = oldBOSSlogRecognised.substr(pos1, pos2-pos1);
+	}
+
+
+	/////////////////////////////////////////
+	// Check for critical error conditions
+	/////////////////////////////////////////
+
+	//BOSSlog check.
 	LOG_DEBUG("opening '%s'", bosslog_path.string().c_str());
-	bosslog.open(bosslog_path.c_str());
+	bosslog.open(bosslog_path.c_str());  //Might as well keep it open, just don't write anything unless an error till the end.
 	if (bosslog.fail()) {
 		LOG_ERROR("file '%s' could not be accessed for writing. Check the"
 				  " Troubleshooting section of the ReadMe for more"
@@ -229,23 +312,17 @@ int main(int argc, char *argv[]) {
 		Fail();
 	}
 
-	
-	if (format == "html")
-		OutputHeader(bosslog);  //Output HTML start and <head>
-	//Output start of <body>
-	Output(bosslog,format, "<div>Better Oblivion Sorting Software Log</div>\n");
-	Output(bosslog,format, "<div>&copy; Random007 &amp; the BOSS development team, 2009-2011. Some rights reserved.<br />\n");
-	Output(bosslog,format, "<a href=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\">CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />\n");
-	Output(bosslog,format, "v"+g_version+" ("+g_releaseDate+")</div>\n");
-
+	//Game checks.
 	if (0 == game) {
 		LOG_DEBUG("Detecting game...");
 		if (fs::exists(data_path / "Oblivion.esm")) {
 			game = 1;
 			if (fs::exists(data_path / "Nehrim.esm")) {
-				Output(bosslog,format, "<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />\n");
-				Output(bosslog,format, "Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.<br />\n");
-				Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
+				OutputHeader();
+				Output("<p class='error'>Critical Error: Oblivion.esm and Nehrim.esm have both been found!<br />\n");
+				Output("Please ensure that you have installed Nehrim correctly. In a correct install of Nehrim, there is no Oblivion.esm.<br />\n");
+				Output("Utility will end now.</p>\n\n");
+				OutputFooter();
 				bosslog.close();
 				LOG_ERROR("Installation error found: check BOSSLOG.");
 				if ( !silent ) 
@@ -254,12 +331,14 @@ int main(int argc, char *argv[]) {
 			}
 		} else if (fs::exists(data_path / "Nehrim.esm")) game = 3;
 		else if (fs::exists(data_path / "FalloutNV.esm")) game = 4;
-		else if (fs::exists(data_path / "Fallout3.esm")) game = 2;  //Swapped the game detections around to add compatibility for FNV mods that require Fallout3.esm.
+		else if (fs::exists(data_path / "Fallout3.esm")) game = 2;
 		else {
 			LOG_ERROR("None of the supported games were detected...");
-			Output(bosslog,format, "<p class='error'>Critical Error: Master .ESM file not found!<br />\n");
-			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
-			Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
+			OutputHeader();
+			Output("<p class='error'>Critical Error: Master .ESM file not found!<br />\n");
+			Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
+			Output("Utility will end now.</p>\n\n");
+			OutputFooter();
 			bosslog.close();
 			if ( !silent ) 
 				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -269,60 +348,64 @@ int main(int argc, char *argv[]) {
 
 	LOG_INFO("Game detected: %d", game);
 
-	/////////////////////////////
-	// Print BOSSLog Filters
-	/////////////////////////////
 	
-	if (format == "html") {
-		Output(bosslog, format, "<ul class='filters'>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label></li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label></li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label></li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label></li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label></li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label></li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label></li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label></li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label></li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label></li>\n");
-		Output(bosslog, format, "<li><input type='checkbox' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label></li>\n");
-		Output(bosslog, format, "</ul>\n");
-	}
 
-	/////////////////////////////
-	// Update Masterlist
-	/////////////////////////////
-
-	if (revert<1 && (update || updateonly)) {
-		Output(bosslog,format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Masterlist Update</span><ul>\n");
-		cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
-		LOG_DEBUG("Updating masterlist...");
+	/////////////////////////////////////////////////////////
+	// Error Condition Check Interlude - Update Masterlist
+	/////////////////////////////////////////////////////////
+	
+	if (revert<1 && (update || update_only)) {
+		//First check for internet connection, then update masterlist if connection present.
+		bool connection = false;
 		try {
-			unsigned int revision = UpdateMasterlist(game);  //Need to sort out the output of this - ATM it's very messy.
-			if (revision == 0) {
-				Output(bosslog,format, "<li>masterlist.txt is already at the latest version. Update skipped.</li>");
-				cout << "masterlist.txt is already at the latest version. Update skipped." << endl;
-			} else {
-				Output(bosslog,format, "<li>masterlist.txt updated to revision " + IntToString(revision) + ".</li>");
-				cout << "masterlist.txt updated to revision " << revision << endl;
-			}
+			connection = CheckConnection();
 		} catch (boss_error & e) {
 			string const * detail = boost::get_error_info<err_detail>(e);
-			Output(bosslog,format, "<li class='warn'>Error: Masterlist update failed.<br />\n");
-			Output(bosslog,format, "Details: " + *detail + "<br />\n");
-			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.</li>\n");
+			masterlistUpdateContent += "<li class='warn'>Error: Masterlist update failed.<br />\n";
+			masterlistUpdateContent += "Details: " + *detail + "<br />\n";
+			masterlistUpdateContent += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.</li>\n";
 		}
-		LOG_DEBUG("Masterlist updated successfully.");
-		Output(bosslog,format, "</ul>\n</div>\n");
+		if (connection) {
+			cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
+			LOG_DEBUG("Updating masterlist...");
+			try {
+				unsigned int revision = UpdateMasterlist();  //Need to sort out the output of this - ATM it's very messy.
+				if (revision == 0) {
+					masterlistUpdateContent += "<li>masterlist.txt is already at the latest version. Update aborted.</li>";
+					cout << "masterlist.txt is already at the latest version. Update aborted." << endl;
+				} else {
+					masterlistUpdateContent += "<li>masterlist.txt updated to revision " + IntToString(revision) + ".</li>";
+					cout << "masterlist.txt updated to revision " << revision << endl;
+				}
+			} catch (boss_error & e) {
+				string const * detail = boost::get_error_info<err_detail>(e);
+				masterlistUpdateContent += "<li class='warn'>Error: Masterlist update failed.<br />\n";
+				masterlistUpdateContent += "Details: " + *detail + "<br />\n";
+				masterlistUpdateContent += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.</li>\n";
+			}
+			LOG_DEBUG("Masterlist updated successfully.");
+		} else
+			masterlistUpdateContent += "<li>No internet connection detected. Masterlist auto-updater aborted.</li>";
 	}
 
-	if (updateonly == true) {
-		Output(bosslog, format, "<div><span>BOSS Execution Complete</span></div>\n</body>\n</html>");
+	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
+	if (update_only == true) {
+		OutputHeader();
+		Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Masterlist Update</span><ul>\n");
+		Output(masterlistUpdateContent);
+		Output("</ul>\n</div>\n");
+		Output("<div><span>BOSS Execution Complete</span></div>\n");
+		OutputFooter();
 		bosslog.close();
 		if ( !silent ) 
 			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 		return (0);
 	}
+
+
+	///////////////////////////////////
+	// Resume Error Condition Checks
+	///////////////////////////////////
 
 	cout << endl << "Better Oblivion Sorting Software working..." << endl;
 
@@ -333,19 +416,17 @@ int main(int argc, char *argv[]) {
 		else if (game == 3) esmtime = fs::last_write_time(data_path / "Nehrim.esm");
 		else if (game == 4) esmtime = fs::last_write_time(data_path / "FalloutNV.esm");
 	} catch(fs::filesystem_error e) {
-		Output(bosslog,format, "<p class='error'>Critical Error: Master .ESM file cannot be read!<br />\n");
-		Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
-		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
+		OutputHeader();
+		Output("<p class='error'>Critical Error: Master .ESM file cannot be read!<br />\n");
+		Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
+		Output("Utility will end now.</p>\n\n");
+		OutputFooter();
 		bosslog.close();
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.what());
 		if ( !silent ) 
 			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
-
-	//////////////////////////////////////////////
-	// Parse & Build Mod-,Master- and Userlists
-	//////////////////////////////////////////////
 
 	//Build and save modlist.
 	BuildModlist(Modlist);
@@ -354,9 +435,12 @@ int main(int argc, char *argv[]) {
 			SaveModlist(Modlist, curr_modlist_path);
 		} catch (boss_error &e) {
 			string const * detail = boost::get_error_info<err_detail>(e);
-			Output(bosslog,format, "<p class='error'>Critical Error: " + *detail + ".<br />\n");
-			Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
-			Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
+			OutputHeader();
+			Output("<p class='error'>Critical Error: Modlist backup failed!<br />\n");
+			Output("Details: " + *detail + ".<br />\n");
+			Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
+			Output("Utility will end now.</p>\n\n");
+			OutputFooter();
 			bosslog.close();
 			if ( !silent ) 
 				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -364,43 +448,49 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	//Parse masterlist/modlist backup
-	fs::path sortfile;					//Modlist/masterlist to sort plugins using.
-	if (revert==1)
-		sortfile = curr_modlist_path;	
-	else if (revert==2) 
-		sortfile = prev_modlist_path;
-	else 
-		sortfile = masterlist_path;
-	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
-	//Check if it actually exists, because the parser doesn't fail if there is no file...
-	if (!fs::exists(sortfile)) {                                                     
-		Output(bosslog,format, "<p class='error'>Critical Error: \"" +sortfile.string() +"\" cannot be read!<br />\n");
-		Output(bosslog,format, "Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
-		Output(bosslog,format, "Utility will end now.</p>\n\n</body>\n</html>");
+	//Check if masterlist exists.
+	if (!fs::exists(sortfile)) {         
+		OutputHeader();
+		Output("<p class='error'>Critical Error: \"" +sortfile.string() +"\" cannot be read!<br />\n");
+		Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
+		Output("Utility will end now.</p>\n\n");
+		OutputFooter();
         bosslog.close();
         LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
         if ( !silent ) 
                 Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
         exit (1); //fail in screaming heap.
     }
-	//Now validate file.
+
+	//Check if masterlist is valid UTF-8.
 	if (!ValidateUTF8File(sortfile)) {
-		Output(bosslog,format, "<p class='error'>Critical Error: \""+sortfile.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.<br />\n");
-		Output(bosslog, format, "Utility will end now.</p>\n\n</body>\n</html>");
+		OutputHeader();
+		Output("<p class='error'>Critical Error: \""+sortfile.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.<br />\n");
+		Output("Utility will end now.</p>\n\n");
+		OutputFooter();
 		bosslog.close();
 		LOG_ERROR("File '%s' was not encoded in valid UTF-8.", sortfile.filename().string().c_str());
 		if ( !silent ) 
                 Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
         exit (1); //fail in screaming heap.
 	}
+
+
+	/////////////////////////////////
+	// Parse Master- and Userlists
+	/////////////////////////////////
+	//Masterlist parse errors are critical, ini and userlist parse errors are not.
+	
 	//Parse masterlist/modlist backup into data structure.
 	LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
-	/*bool parsed =*/ parseMasterlist(sortfile,Masterlist);
-	//Check if parsing failed - the parsed bool always returns true for some reason, so check size of errorMessageBuffer.
-	if (errorMessageBuffer.size() != 0) {
-		for (size_t i=0; i<errorMessageBuffer.size(); i++)  //Print parser error messages.
-			Output(bosslog,format,errorMessageBuffer[i]);
+	parseMasterlist(sortfile,Masterlist);
+
+	//Check if parsing failed. If so, exit with errors.
+	if (masterlistErrorBuffer.size() != 0) {
+		OutputHeader();
+		for (size_t i=0; i<masterlistErrorBuffer.size(); i++)  //Print parser error messages.
+			Output(masterlistErrorBuffer[i]);
+		OutputFooter();
 		bosslog.close();
 		if ( !silent ) 
                 Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
@@ -411,15 +501,23 @@ int main(int argc, char *argv[]) {
 	if (revert<1 && fs::exists(userlist_path)) {
 		//Validate file first.
 		if (!ValidateUTF8File(userlist_path)) {
-			errorMessageBuffer.push_back("<p class='error'>Critical Error: \""+userlist_path.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding. Userlist parsing aborted. No rules will be applied.</p>\n\n");
+			userlistErrorBuffer.push_back("<p class='error'>Error: \""+userlist_path.filename().string()+"\" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding. Userlist parsing aborted. No rules will be applied.</p>\n\n");
 			LOG_ERROR("File '%s' was not encoded in valid UTF-8.", userlist_path.filename().string().c_str());
 		} else {
 			LOG_INFO("Starting to parse userlist.");
 			bool parsed = parseUserlist(userlist_path,Userlist);
 			if (!parsed)
-				Userlist.clear();
+				Userlist.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		}
+	} else if (!fs::exists(userlist_path)) {
+		ofstream userlist_file(userlist_path.c_str(),ios_base::binary);
+		if (!userlist_file.fail()) {
+			userlist_file << '\xEF' << '\xBB' << '\xBF';  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
+		} else
+			userlistErrorBuffer.push_back("<p class='error'>Error: userlist.txt generation failed. Ensure your BOSS folder is not read-only.</p>\n\n");
+		userlist_file.close();
 	}
+
 
 	/////////////////////////////////////////////////
 	// Compare Masterlist against Modlist, Userlist
@@ -490,6 +588,44 @@ int main(int argc, char *argv[]) {
 					}
 				}
 			}
+		} else if (Item.type == REGEX) {
+			//Form a regex.
+			boost::regex reg(Tidy(Item.name.string())+"(.ghost)?",boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
+			//Now start looking.
+			setPos = hashset.begin();
+			do {
+				setPos = FindRegexMatch(hashset, reg, setPos);
+				if (setPos == hashset.end())  //Exit if the mod hasn't been found.
+					break;
+				string mod = *setPos;
+				//Look for mod in modlist, and userlist. Replace with case-preserved mod name.
+				pos = GetModPos(Modlist,mod);
+				if (pos != (size_t)-1)
+					mod = Modlist[pos].name.string();
+				else {
+					for (size_t i=0; i<Userlist.size(); i++) {
+						for (size_t j=0; j<Userlist[i].lines.size(); j++) {
+							if (Tidy(Userlist[i].lines[j].object) == mod)
+								mod = Userlist[i].lines[j].object;
+						}
+					}
+				}
+				//Check that the mod hasn't already been added to the holding vector.
+				addedPos = addedMods.find(Tidy(mod));
+				if (addedPos == addedMods.end()) {							//The mod is not already in the holding vector.
+					//Now do the adding/removing.
+					//Create new temporary item to hold current found mod.
+					item tempItem = Item;
+					tempItem.type = MOD;
+					tempItem.name = fs::path(mod);
+					holdingVec.push_back(tempItem);							//Record it in the holding vector.
+					pos = GetModPos(Modlist,mod);							//Also remove it from the Modlist.
+					if (pos != (size_t)-1)
+						Modlist.erase(Modlist.begin()+pos);
+					addedMods.insert(Tidy(mod));
+				}
+				++setPos;
+			} while (setPos != hashset.end());
 		} else //Group lines must stay recorded.
 			holdingVec.push_back(Item);
 		++iter;
@@ -502,17 +638,6 @@ int main(int argc, char *argv[]) {
 	Modlist = Masterlist;
 	LOG_INFO("Modlist now filled with ordered mods and unknowns.");
 
-	/////////////////////////////
-	// Display Global Messages
-	/////////////////////////////
-
-	if (globalMessageBuffer.size() > 0) {
-		Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>General Messages</span><ul>\n");
-		for (size_t i=0; i<globalMessageBuffer.size(); i++) {
-			ShowMessage(bosslog, format, globalMessageBuffer[i]);  //Print messages.
-		}
-		Output(bosslog, format, "</ul>\n</div>\n");
-	}
 
 	//////////////////////////
 	// Apply Userlist Rules
@@ -520,12 +645,7 @@ int main(int argc, char *argv[]) {
 
 	//Apply userlist rules to modlist.
 	if (revert<1 && fs::exists(userlist_path)) {
-		Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Userlist Messages</span><ul>\n");
-
-		for (size_t i=0; i<errorMessageBuffer.size(); i++)  //First print parser/syntax error messages.
-			Output(bosslog,format,errorMessageBuffer[i]);
-
-		//Now apply rules, one rule at a time, one line at a time.
+		//Apply rules, one rule at a time, one line at a time.
 		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", Userlist.size());
 		for (size_t i=0; i<Userlist.size(); i++) {
 			LOG_DEBUG(" -- Processing rule #%" PRIuS ".", i+1);
@@ -541,11 +661,11 @@ int main(int argc, char *argv[]) {
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (Userlist[i].ruleKey == ADD  && index1 <= x) {
-						Output(bosslog, format, "<li class='warn'>\""+Userlist[i].ruleObject+"\" is already in the masterlist. Rule skipped.</li>\n");
+						userlistMessagesContent += "<li class='warn'>\""+Userlist[i].ruleObject+"\" is already in the masterlist. Rule skipped.</li>\n";
 						LOG_WARN(" * \"%s\" is already in the masterlist.", Userlist[i].ruleObject.c_str());
 						break;
 					} else if (Userlist[i].ruleKey == OVERRIDE && index1 > x) {
-						Output(bosslog, format, "<li class='error'>\""+Userlist[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</li>\n");
+						userlistMessagesContent += "<li class='error'>\""+Userlist[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</li>\n";
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", Userlist[i].ruleObject.c_str());
 						break;
 					}
@@ -558,7 +678,7 @@ int main(int argc, char *argv[]) {
 						if (Userlist[i].ruleKey == ADD)
 							x--;
 						Modlist.insert(Modlist.begin()+index1,mod);
-						Output(bosslog, format, "<li class='warn'>\""+Userlist[i].lines[j].object+"\" is not installed, and is not in the masterlist. Rule skipped.</li>\n");
+						userlistMessagesContent += "<li class='warn'>\""+Userlist[i].lines[j].object+"\" is not installed, and is not in the masterlist. Rule skipped.</li>\n";
 						LOG_WARN(" * \"%s\" is not installed or in the masterlist.", Userlist[i].lines[j].object.c_str());
 						break;
 					}
@@ -567,7 +687,7 @@ int main(int argc, char *argv[]) {
 						if (Userlist[i].ruleKey == ADD)
 							x--;
 						Modlist.insert(Modlist.begin()+index1,mod);
-						Output(bosslog, format, "<li class='error'>\""+Userlist[i].lines[j].object+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</li>\n");
+						userlistMessagesContent += "<li class='error'>\""+Userlist[i].lines[j].object+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.</li>\n";
 						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", Userlist[i].lines[j].object.c_str());
 						break;
 					}
@@ -575,7 +695,7 @@ int main(int argc, char *argv[]) {
 					if (Userlist[i].lines[j].key == AFTER) 
 						index2 += 1;
 					Modlist.insert(Modlist.begin()+index2,mod);
-					Output(bosslog, format, "<li class='success'>\""+Userlist[i].ruleObject+"\" has been sorted "+ KeyToString(Userlist[i].lines[j].key) + " \"" + Userlist[i].lines[j].object + "\".</li>\n");
+					userlistMessagesContent += "<li class='success'>\""+Userlist[i].ruleObject+"\" has been sorted "+ KeyToString(Userlist[i].lines[j].key) + " \"" + Userlist[i].lines[j].object + "\".</li>\n";
 				//A group sorting line.
 				} else if ((Userlist[i].lines[j].key == BEFORE || Userlist[i].lines[j].key == AFTER) && !IsPlugin(Userlist[i].lines[j].object)) {
 					vector<item> group;
@@ -585,7 +705,7 @@ int main(int argc, char *argv[]) {
 					index2 = GetGroupEndPos(Modlist, Userlist[i].ruleObject);
 					//Check to see group actually exists.
 					if (index1 == (size_t)-1 || index2 == (size_t)-1) {
-						Output(bosslog, format, "<li class='error'>The group \""+Userlist[i].ruleObject+"\" is not in the masterlist or is malformatted. Rule skipped.</p>\n");
+						userlistMessagesContent += "<li class='error'>The group \""+Userlist[i].ruleObject+"\" is not in the masterlist or is malformatted. Rule skipped.</p>\n";
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist[i].ruleObject.c_str());
 						break;
 					}
@@ -601,7 +721,7 @@ int main(int argc, char *argv[]) {
 					//Check that the sort group actually exists.
 					if (index2 == (size_t)-1) {
 						Modlist.insert(Modlist.begin()+index1,group.begin(),group.end());  //Insert the group back in its old position.
-						Output(bosslog, format, "<li class='error'>The group \""+Userlist[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</li>\n");
+						userlistMessagesContent += "<li class='error'>The group \""+Userlist[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</li>\n";
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist[i].lines[j].object.c_str());
 						break;
 					}
@@ -610,7 +730,7 @@ int main(int argc, char *argv[]) {
 					//Now insert the group.
 					Modlist.insert(Modlist.begin()+index2,group.begin(),group.end());
 					//Print success message.
-					Output(bosslog, format, "<li class='success'>The group \""+Userlist[i].ruleObject+"\" has been sorted "+ KeyToString(Userlist[i].lines[j].key) + " the group \""+Userlist[i].lines[j].object+"\".</li>\n");
+					userlistMessagesContent += "<li class='success'>The group \""+Userlist[i].ruleObject+"\" has been sorted "+ KeyToString(Userlist[i].lines[j].key) + " the group \""+Userlist[i].lines[j].object+"\".</li>\n";
 				//An insertion line.
 				} else if (Userlist[i].lines[j].key == TOP || Userlist[i].lines[j].key == BOTTOM) {
 					size_t index1,index2;
@@ -622,11 +742,11 @@ int main(int argc, char *argv[]) {
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (Userlist[i].ruleKey == ADD  && index1 <= x) {
-						Output(bosslog, format, "<li class='warn'>\""+Userlist[i].ruleObject+"\" is already in the masterlist. Rule skipped.</li>\n");
+						userlistMessagesContent += "<li class='warn'>\""+Userlist[i].ruleObject+"\" is already in the masterlist. Rule skipped.</li>\n";
 						LOG_WARN(" * \"%s\" is already in the masterlist.", Userlist[i].ruleObject.c_str());
 						break;
 					} else if (Userlist[i].ruleKey == OVERRIDE && index1 > x) {
-						Output(bosslog, format, "<li class='error'>\""+Userlist[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</li>\n");
+						userlistMessagesContent += "<li class='error'>\""+Userlist[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</li>\n";
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", Userlist[i].ruleObject.c_str());
 						break;
 					}
@@ -641,14 +761,14 @@ int main(int argc, char *argv[]) {
 					//Check that the sort group actually exists.
 					if (index2 == (size_t)-1) {
 						Modlist.insert(Modlist.begin()+index1,mod);  //Insert the mod back in its old position.
-						Output(bosslog, format, "<li class='error'>The group \""+Userlist[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</li>\n");
+						userlistMessagesContent += "<li class='error'>The group \""+Userlist[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</li>\n";
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist[i].lines[j].object.c_str());
 						break;
 					}
 					//Now insert the mod into the group.
 					Modlist.insert(Modlist.begin()+index2,mod);
 					//Print success message.
-					Output(bosslog, format, "<li class='success'>\""+Userlist[i].ruleObject+"\" inserted at the "+ KeyToString(Userlist[i].lines[j].key) + " of group \"" + Userlist[i].lines[j].object + "\".</li>\n");
+					userlistMessagesContent += "<li class='success'>\""+Userlist[i].ruleObject+"\" inserted at the "+ KeyToString(Userlist[i].lines[j].key) + " of group \"" + Userlist[i].lines[j].object + "\".</li>\n";
 				//A message line.
 				} else if (Userlist[i].lines[j].key == APPEND || Userlist[i].lines[j].key == REPLACE) {
 					size_t index, pos;
@@ -675,18 +795,17 @@ int main(int argc, char *argv[]) {
 					Modlist[index].messages.push_back(newMessage);
 
 					//Output confirmation.
-					Output(bosslog, format, "<li class='success'>\"<span class='message'>" + Userlist[i].lines[j].object + "</span>\"");
+					userlistMessagesContent += "<li class='success'>\"<span class='message'>" + Userlist[i].lines[j].object + "</span>\"";
 					if (Userlist[i].lines[j].key == APPEND)
-						Output(bosslog, format, " appended to ");
+						userlistMessagesContent += " appended to ";
 					else
-						Output(bosslog, format, " replaced ");
-					Output(bosslog, format, "messages attached to \"" + Userlist[i].ruleObject + "\".</li>\n");
+						userlistMessagesContent += " replaced ";
+					userlistMessagesContent += "messages attached to \"" + Userlist[i].ruleObject + "\".</li>\n";
 				}
 			}
 		}
-		if (Userlist.size() == 0) 
-			Output(bosslog, format, "No valid rules were found in your userlist.txt.");
-		Output(bosslog, format, "</ul>\n</div>\n");
+		if (Userlist.empty()) 
+			userlistMessagesContent = "No valid rules were found in your userlist.txt.";
 		LOG_INFO("Userlist sorting process finished.");
 	}
 
@@ -694,8 +813,9 @@ int main(int argc, char *argv[]) {
 	// Print version & checksum info for OBSE & plugins
 	//////////////////////////////////////////////////////
 
-	if (showCRCs) {
-		string SE, SELoc, SEPluginLoc;
+	string SE = "";
+	if (show_CRCs) {
+		string SELoc, SEPluginLoc;
 		if (game == 1 || game == 3) {  //Oblivion/Nehrim
 			SE = "OBSE";
 			SELoc = "../obse_1_2_416.dll";
@@ -713,15 +833,13 @@ int main(int argc, char *argv[]) {
 		if (!fs::exists(SELoc)) {
 			LOG_DEBUG("Script extender DLL not detected");
 		} else {
-			Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>" + SE + " And " + SE + " Plugin Checksums</span><ul id='seplugins'>\n");
-
 			string CRC = IntToHexString(GetCrc32(SELoc));
 			string ver = GetExeDllVersion(SELoc);
-			string text = "<li><span class='mod'>" + SE + "</span>";
+
+			seInfoContent += "<li><span class='mod'>" + SE + "</span>";
 			if (ver.length() != 0)
-				text += "<span class='version'>Version: " + ver + "</span>";
-			text += "<span class='crc'>Checksum: " + CRC + "</span></li>\n";
-			Output(bosslog, format, text);
+				seInfoContent += "<span class='version'>Version: " + ver + "</span>";
+			seInfoContent += "<span class='crc'>Checksum: " + CRC + "</span></li>\n";
 
 			if (!fs::is_directory(data_path / SEPluginLoc)) {
 				LOG_DEBUG("Script extender plugins directory not detected");
@@ -732,16 +850,14 @@ int main(int argc, char *argv[]) {
 					if (fs::is_regular_file(itr->status()) && ext==".dll") {
 						string CRC = IntToHexString(GetCrc32(itr->path()));
 						string ver = GetExeDllVersion(itr->path());
-						string text = "<li><span class='mod'>" + filename.string() + "</span>";
+
+						seInfoContent += "<li><span class='mod'>" + filename.string() + "</span>";
 						if (ver.length() != 0)
-							text += "<span class='version'>Version: " + ver + "</span>";
-						text += "<span class='crc'>Checksum: " + CRC + "</span></li>\n";
-						Output(bosslog, format, text);
+							seInfoContent += "<span class='version'>Version: " + ver + "</span>";
+						seInfoContent += "<span class='crc'>Checksum: " + CRC + "</span></li>\n";
 					}
 				}
 			}
-
-			Output(bosslog, format, "</ul>\n</div>\n");
 		}
 	}
 
@@ -750,34 +866,25 @@ int main(int argc, char *argv[]) {
 	////////////////////////////////
 
 	//Re-date .esp/.esm files according to order in modlist and output messages
-	if (revert<1) Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Recognised And Re-ordered Plugins</span><ul id='recognised'>\n");
-	else if (revert==1) Output(bosslog, format, "<div><span><span onclick='toggleSectionDisplay(this)'>&#x2212;</span>Restored Load Order (Using modlist.txt)</span><ul id='recognised'>\n");
-	else if (revert==2) Output(bosslog, format, "<div><span><span onclick='toggleSectionDisplay(this)'>&#x2212;</span>Restored Load Order (Using modlist.old)</span><ul id='recognised'>\n");
-
-	int ghostedNo = 0;
-	int recModNo = 0;
-	int unrecModNo = 0;
-
 	LOG_INFO("Applying calculated ordering to user files...");
 	for (size_t i=0; i<=x; i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			string text = "<li><span class='mod'>" + TrimDotGhost(Modlist[i].name.string()) + "</span>";
+			recogModContent += "<li><span class='mod'>" + TrimDotGhost(Modlist[i].name.string()) + "</span>";
 			if (!skip_version_parse) {
 				string version = GetModHeader(Modlist[i].name);
 				if (!version.empty())
-					text += "<span class='version'>Version "+version+"</span>";
+					recogModContent += "<span class='version'>Version "+version+"</span>";
 			}
 			if (IsGhosted(data_path / Modlist[i].name)) {
-				text += "<span class='ghosted'>Ghosted</span>";
-				ghostedNo++;
+				recogModContent += "<span class='ghosted'>Ghosted</span>";
+				ghostModNo++;
 			}
-			if (showCRCs)
-				text += "<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
-			Output(bosslog, format, text); 
+			if (show_CRCs)
+				recogModContent += "<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
 				
 			//Now change the file's date, if it is not the game's master file.
-			if (!IsMasterFile(Modlist[i].name.string())) {
+			if (!IsMasterFile(Modlist[i].name.string()) && !trial_run) {
 				//Calculate the new file time.
 				modfiletime = esmtime + recModNo*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 				//Re-date file. Provide exception handling in case their permissions are wrong.
@@ -785,72 +892,261 @@ int main(int argc, char *argv[]) {
 				try { 
 					fs::last_write_time(data_path / Modlist[i].name,modfiletime);
 				} catch(fs::filesystem_error e) {
-					Output(bosslog, format, " - <span class='error'>Error: Could not change the date of \"" + Modlist[i].name.string() + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>");
+					recogModContent += " - <span class='error'>Error: Could not change the date of \"" + Modlist[i].name.string() + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
 				}
 			}
 			//Finally, print the mod's messages.
 			if (Modlist[i].messages.size()>0) {
-				Output(bosslog, format, "\n<ul>\n");
-				for (size_t j=0; j<Modlist[i].messages.size(); j++)
-					ShowMessage(bosslog, format,Modlist[i].messages[j]);  //Print messages.
-				Output(bosslog, format, "</ul>\n</li>\n\n");
+				recogModContent += "\n<ul>\n";
+				for (size_t j=0; j<Modlist[i].messages.size(); j++) {
+					ShowMessage(recogModContent, Modlist[i].messages[j]);  //Print messages to buffer.
+					messageNo++;
+					if (Modlist[i].messages[j].key == WARN)
+						warningNo++;
+					else if (Modlist[i].messages[j].key == ERR)
+						errorNo++;
+				}
+				recogModContent += "</ul>\n</li>\n\n";
 			} else
-				Output(bosslog, format, "</li>\n\n");
+				recogModContent += "</li>\n\n";
 			recModNo++;
 		}
 	}
-	Output(bosslog, format, "</ul>\n</div>\n");
 	LOG_INFO("User file ordering applied successfully.");
 	
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 	//Order their dates to be i days after the master esm to ensure they load last.
-	Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Unrecognised Plugins</span><div>\n<p>Reorder these by hand using your favourite mod ordering utility.</p>\n<ul id='unrecognised'>\n");
 	LOG_INFO("Reporting unrecognized mods...");
 	for (size_t i=x+1; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			string text = "<li><span class='mod'>" + TrimDotGhost(Modlist[i].name.string()) + "</span>";
+			unrecogModContent += "<li><span class='mod'>" + TrimDotGhost(Modlist[i].name.string()) + "</span>";
 			if (!skip_version_parse) {
 				string version = GetModHeader(Modlist[i].name);
 				if (!version.empty())
-					text += "<span class='version'>Version "+version+"</span>";
+					unrecogModContent += "<span class='version'>Version "+version+"</span>";
 			}
 			if (IsGhosted(data_path / Modlist[i].name)) {
-				text += "<span class='ghosted'>Ghosted</span>";
-				ghostedNo++;
+				unrecogModContent += "<span class='ghosted'>Ghosted</span>";
+				ghostModNo++;
 			}
-			if (showCRCs)
-				text += "<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
-			Output(bosslog, format, text); 
-
-			modfiletime = esmtime + 86400 + (recModNo + unrecModNo)*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute and adding 86,400 on increases it by a day. Using unrecModNo instead of i to avoid increases for group entries.
-			//Re-date file. Provide exception handling in case their permissions are wrong.
-			LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist[i].name.string().c_str());
-			try { 
-				fs::last_write_time(data_path / Modlist[i].name,modfiletime);
-			} catch(fs::filesystem_error e) {
-				Output(bosslog, format, " - <span class='error'>Error: Could not change the date of \"" + Modlist[i].name.string() + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>");
+			if (show_CRCs)
+				unrecogModContent += "<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
+			
+			if (!trial_run) {
+				modfiletime = esmtime + 86400 + (recModNo + unrecModNo)*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute and adding 86,400 on increases it by a day. Using unrecModNo instead of i to avoid increases for group entries.
+				//Re-date file. Provide exception handling in case their permissions are wrong.
+				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", Modlist[i].name.string().c_str());
+				try {
+					fs::last_write_time(data_path / Modlist[i].name,modfiletime);
+				} catch(fs::filesystem_error e) {
+					unrecogModContent += " - <span class='error'>Error: Could not change the date of \"" + Modlist[i].name.string() + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
+				}
 			}
-			Output(bosslog, format, "</li>\n");
+			unrecogModContent += "</li>\n";
 			unrecModNo++;
 		}
 	}
-	if (unrecModNo == 0)
-		Output(bosslog, format, "<i>No unrecognised plugins.</i>");
-	Output(bosslog, format, "</ul></div>\n</div>\n");
+	if (x+1 == Modlist.size())
+		unrecogModContent += "<i>No unrecognised plugins.</i>";
+	
 	LOG_INFO("Unrecognized mods reported.");
 
-	//Print out some numbers.
-	Output(bosslog, format, "<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Plugin Numbers</span><div>\n<p>\n");
-	Output(bosslog, format, "Number of recognised plugins: " + IntToString(recModNo) + "<br />\n");
-	Output(bosslog, format, "Number of unrecognised plugins: " + IntToString(unrecModNo) + "<br />\n");
-	Output(bosslog, format, "Number of ghosted plugins: " + IntToString(ghostedNo) + "<br />\n");
-	Output(bosslog, format, "Total number of plugins: " + IntToString(recModNo+unrecModNo) + "<br />\n");
-	Output(bosslog, format, "</p>\n</div>\n</div>\n");
+	/////////////////////////////
+	// Print Output to BOSSlog
+	/////////////////////////////
+
+	OutputHeader();  //Output BOSSlog header.
+
+	/////////////////////////////
+	// Print BOSSLog Filters
+	/////////////////////////////
 	
-	//Let people know the program has stopped.
-	Output(bosslog, format, "<div><span>Execution Complete</span></div>\n</body>\n</html>");
+	if (log_format == "html") {
+		Output("<ul class='filters'>\n");
+		if (UseDarkColourScheme)
+			Output("<li><input type='checkbox' checked='checked' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label></li>\n");
+
+		if (HideRuleWarnings)
+			Output("<li><input type='checkbox' checked='checked' id='b12' onclick='toggleUserlistWarnings(this)' /><label for='b12'>Hide Rule Warnings</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b12' onclick='toggleUserlistWarnings(this)' /><label for='b12'>Hide Rule Warnings</label></li>\n");
+		
+		if (HideVersionNumbers)
+			Output("<li><input type='checkbox' checked='checked' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label></li>\n");
+
+		if (HideGhostedLabel)
+			Output("<li><input type='checkbox' checked='checked' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label></li>\n");
+
+		if (HideChecksums)
+			Output("<li><input type='checkbox' checked='checked' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label></li>\n");
+
+		if (HideMessagelessMods)
+			Output("<li><input type='checkbox' checked='checked' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label></li>\n");
+
+		if (HideGhostedMods)
+			Output("<li><input type='checkbox' checked='checked' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label></li>\n");
+
+		if (HideAllModMessages)
+			Output("<li><input type='checkbox' checked='checked' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label></li>\n");
+
+		if (HideNotes)
+			Output("<li><input type='checkbox' checked='checked' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label></li>\n");
+
+		if (HideBashTagSuggestions)
+			Output("<li><input type='checkbox' checked='checked' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label></li>\n");
+
+		if (HideRequirements)
+			Output("<li><input type='checkbox' checked='checked' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label></li>\n");
+
+		if (HideIncompatibilities)
+			Output("<li><input type='checkbox' checked='checked' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label></li>\n");
+
+		Output("</ul>\n");
+	}
+
+	/////////////////////////////
+	// Display Ini Parser Errors
+	/////////////////////////////
+
+	if (!iniErrorBuffer.empty()) {
+		for (size_t i=0; i<iniErrorBuffer.size(); i++)  //First print parser/syntax error messages.
+			Output(iniErrorBuffer[i]);
+	}
+
+	/////////////////////////////
+	// Display Masterlist Update
+	/////////////////////////////
+
+	if (!masterlistUpdateContent.empty()) {
+		Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Masterlist Update</span><ul>\n");
+		Output(masterlistUpdateContent);
+		Output("</ul>\n</div>\n");
+	}
+
+
+	/////////////////////////////
+	// Display Global Messages
+	/////////////////////////////
+
+	if (!globalMessageBuffer.empty()) {
+		Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>General Messages</span><ul>\n");
+		for (size_t i=0; i<globalMessageBuffer.size(); i++) {
+			ShowMessage(textbuf, globalMessageBuffer[i]);  //Print messages.
+		}
+		Output(textbuf);
+		Output("</ul>\n</div>\n");
+	}
+
+
+	/////////////////////////////
+	// Print Summary
+	/////////////////////////////
+
+	Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Summary</span><div id='summary'><p>\n");
+
+	if (oldBOSSlogRecognised == recogModContent)
+		Output("<b>No change in recognised mod list since last run.</b><br />\n<br />\n");
+	
+	Output("Mods sorted by your userlist are counted as recognised, not unrecognised, plugins.</p>\n");
+	Output("<div>\n");
+	Output("<div>Number of recognised plugins:</div>\n");
+	Output("<div>" + IntToString(recModNo) + "</div>\n");
+	Output("<div>Number of warning messages:</div>\n");
+	Output("<div>" + IntToString(warningNo) + "</div>\n");
+	Output("</div>\n");
+	Output("<div>\n");
+	Output("<div>Number of unrecognised plugins:</div>\n");
+	Output("<div>" + IntToString(unrecModNo) + "</div>\n");
+	Output("<div>Number of error messages:</div>\n");
+	Output("<div>" + IntToString(errorNo) + "</div>\n");
+	Output("</div>\n");
+	Output("<div>\n");
+	Output("<div>Number of ghosted plugins:</div>\n");
+	Output("<div>" + IntToString(ghostModNo) + "</div>\n");
+	Output("<div>Total number of messages:</div>\n");
+	Output("<div>" + IntToString(messageNo) + "</div>\n");
+	Output("</div>\n");
+	Output("<div>\n");
+	Output("<div>Total number of plugins:</div>\n");
+	Output("<div>" + IntToString(recModNo+unrecModNo) + "</div>\n");
+	Output("</div>\n");
+	Output("</div>\n</div>\n");
+
+		
+	/////////////////////////////
+	// Display Userlist Messages
+	/////////////////////////////
+
+	if (!userlistMessagesContent.empty() || !userlistErrorBuffer.empty()) {
+		Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Userlist Messages</span><ul id='userlistMessages'>\n");
+		for (size_t i=0; i<userlistErrorBuffer.size(); i++)  //First print parser/syntax error messages.
+			Output(userlistErrorBuffer[i]);
+		Output(userlistMessagesContent);  //Now print the rest of the userlist messages.
+		Output("</ul>\n</div>\n");
+	}
+
+
+	/////////////////////////////////
+	// Display Script Extender Info
+	/////////////////////////////////
+
+	if (!SE.empty()) {
+		Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>" + SE + " And " + SE + " Plugin Checksums</span><ul id='seplugins'>\n");
+		Output(seInfoContent);
+		Output("</ul>\n</div>\n");
+	}
+
+
+	/////////////////////////////////
+	// Display Recognised Mods
+	/////////////////////////////////
+
+	if (revert<1) Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Recognised And Re-ordered Plugins</span><ul id='recognised'>\n");
+	else if (revert==1) Output("<div><span><span onclick='toggleSectionDisplay(this)'>&#x2212;</span>Restored Load Order (Using modlist.txt)</span><ul id='recognised'>\n");
+	else if (revert==2) Output("<div><span><span onclick='toggleSectionDisplay(this)'>&#x2212;</span>Restored Load Order (Using modlist.old)</span><ul id='recognised'>\n");
+	Output(recogModContent);
+	Output("</ul>\n</div>\n");
+
+
+	/////////////////////////////////
+	// Display Unrecognised Mods
+	/////////////////////////////////
+
+	Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Unrecognised Plugins</span><div>\n<p>Reorder these by hand using your favourite mod ordering utility.</p>\n<ul id='unrecognised'>\n");
+	Output(unrecogModContent);
+	Output("</ul></div>\n</div>\n");
+
+
+	////////////////
+	// Finish
+	////////////////
+
+	Output("<div><span>Execution Complete</span></div>\n");
+	OutputFooter();
 	bosslog.close();
 	LOG_INFO("Launching boss log in browser.");
 	if ( !silent ) 

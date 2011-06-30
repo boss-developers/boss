@@ -22,7 +22,9 @@ namespace boss {
 	using namespace std;
 	using boost::algorithm::to_lower_copy;
 
-	vector<string> errorMessageBuffer;  //Holds any error messages generated during parsing for printing later.
+	vector<string> userlistErrorBuffer;  //Holds any error messages generated during parsing for printing later.
+	vector<string> masterlistErrorBuffer;  //Holds any error messages generated during parsing for printing later.
+	vector<string> iniErrorBuffer;  //Holds any error messages generated during parsing for printing later.
 
 	vector<message> globalMessageBuffer;  //Holds any global messages from the masterlist to be printed in BOSS.
 
@@ -99,7 +101,7 @@ namespace boss {
 		ofile.open(file.c_str());
 		if (ofile.fail()) {  //Provide error message if it can't be written.
 			LOG_ERROR("Backup cannot be saved.");
-			throw boss_error() << err_detail("Backup cannot be saved.");
+			throw boss_error() << err_detail("Modlist backup cannot be saved.");
 		}
 
 		//Iterate through items, printing out all group markers, mods and messsages.

@@ -71,26 +71,20 @@ namespace boss {
 	static format EInsertingToTopOfEsms("tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.");
 	static format EInsertingGroupOrIntoMod("tries to insert a group or insert something into a mod.");
 	static format EAttachingMessageToGroup("tries to attach a message to a group.");
-	/*Grammar errors - not implemented.
-	static format ERuleHasUndefinedObject("The line with keyword '%1%' has an undefined object.");
-	static format EUnrecognisedKeyword("The line \"%1%: %2%\" does not contain a recognised keyword. If this line is the start of a rule, that rule will also be skipped.");
-	static format EAppearsBeforeFirstRule("The line \"%1%: %2%\" appears before the first recognised rule line. Line skipped.");
-	static format EUnrecognizedKeywordBeforeFirstRule("The line \"%1%: %2%\" does not contain a recognised keyword, and appears before the first recognised rule line. Line skipped.");
-	*/
 
 	//Syntax error formatting.
 	static format SyntaxErrorFormat("<li class='error'>"
-		"Syntax Error: The rule beginning \"%1%: %2%\" %3%"
+		"Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
 		"</li>\n");
 
-	static format ParsingErrorFormat("<li><span class='error'>Parsing Error: Expected a %1% at:</span>"
+	static format UserlistParsingErrorFormat("<li><span class='error'>Userlist Parsing Error: Expected a %1% at:</span>"
 		"<blockquote>%2%</blockquote>"
 		"<span class='error'>Userlist parsing aborted. No rules will be applied.</span></li>\n");
 
 	void AddSyntaxError(keyType const& rule, string const& object, string const& message) {
 		string keystring = KeyToString(rule);
 		string const msg = (SyntaxErrorFormat % keystring % object % message).str();
-		errorMessageBuffer.push_back(msg);
+		userlistErrorBuffer.push_back(msg);
 		return;
 	}
 
@@ -225,8 +219,8 @@ namespace boss {
 			
 			expect = "&lt;" + expect + "&gt;";
 			boost::replace_all(context, "\n", "<br />\n");
-			string msg = (ParsingErrorFormat % expect % context).str();
-			errorMessageBuffer.push_back(msg);
+			string msg = (UserlistParsingErrorFormat % expect % context).str();
+			userlistErrorBuffer.push_back(msg);
 			return;
 		}
 	};

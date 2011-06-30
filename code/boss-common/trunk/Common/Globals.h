@@ -34,6 +34,25 @@ namespace boss {
 	extern const fs::path userlist_path;		// Hold both location and file name for userlist.txt 
 	extern const fs::path curr_modlist_path;	// Hold both location and file name for modlist.txt
 	extern const fs::path prev_modlist_path;	// Hold both location and file name for modlist.old
+
+	extern const string g_version;
+	extern const string g_releaseDate;
+
+	//Command line variables.
+	extern string log_format;		// what format the output should be in.
+	extern string proxy_type;
+	extern string proxy_host;
+	extern string proxy_port;
+	extern int game;				// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
+	extern int revert;				// what level to revert to
+	extern int verbosity;			// log levels above INFO to output
+	extern bool update;				// update the masterlist?
+	extern bool update_only;		// only update the masterlist and don't sort currently.
+	extern bool silent;				// silent mode?
+	extern bool skip_version_parse; // enable parsing of mod's headers to look for version strings
+	extern bool debug;				// whether to include origin information in logging statements
+	extern bool show_CRCs;			// whether or not to show mod CRCs.
+	extern bool trial_run;			// If true, don't redate files.
 }
 
 #endif

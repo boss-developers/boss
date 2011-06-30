@@ -60,12 +60,32 @@ namespace boss {
 			eof = *(spc | comment | oldMasterlistComment | eol) >> eoi;
 		}
 
-		qi::rule<Iterator> start;
-		qi::rule<Iterator> spc;
-		qi::rule<Iterator> comment;
-		qi::rule<Iterator> eof;
-		qi::rule<Iterator> oldMasterlistComment;
-		qi::rule<Iterator> UTF8;
+		qi::rule<Iterator> start, spc, eof, comment, oldMasterlistComment, UTF8;
+	};
+
+	template <typename Iterator>
+	struct Ini_Skipper : qi::grammar<Iterator> {
+
+		Ini_Skipper() : Ini_Skipper::base_type(start, "Ini Skipper") {
+
+			start = 
+				spc
+				| UTF8
+				| comment
+				| eof;
+			
+			spc = space - eol;
+
+			UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf"); //UTF8 BOM
+
+			comment	= 
+				lit("#") 
+				>> *(char_ - eol);
+
+			eof = *(spc | comment | eol) >> eoi;
+		}
+
+		qi::rule<Iterator> start, spc, eof, comment, UTF8;
 	};
 }
 #endif

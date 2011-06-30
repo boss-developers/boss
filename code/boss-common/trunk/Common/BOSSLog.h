@@ -24,14 +24,71 @@
 namespace boss {
 	using namespace std;
 
+	//Default filter options.
+	extern bool UseDarkColourScheme;
+	extern bool HideVersionNumbers;
+	extern bool HideGhostedLabel;
+	extern bool HideChecksums;
+	extern bool HideMessagelessMods;
+	extern bool HideGhostedMods;
+	extern bool HideRuleWarnings;
+	extern bool HideAllModMessages;
+	extern bool HideNotes;
+	extern bool HideBashTagSuggestions;
+	extern bool HideRequirements;
+	extern bool HideIncompatibilities;
+
+	//Default CSS.
+	extern string CSSBody;
+	extern string CSSFilters;
+	extern string CSSFiltersList;
+	extern string CSSTitle;
+	extern string CSSCopyright;
+	extern string CSSSections;
+	extern string CSSSectionTitle;
+	extern string CSSSectionPlusMinus;
+	extern string CSSTopLevelList;
+	extern string CSSLastSection;
+	extern string CSSLastSectionTitle;
+	extern string CSSTopLevelListItem;
+	extern string CSSList;
+	extern string CSSListItem;
+	extern string CSSItemList;
+	extern string CSSCheckbox;
+	extern string CSSBlockquote;
+	extern string CSSUnrecognisedList;
+	extern string CSSSummaryRow;
+	extern string CSSSummaryCell;
+	extern string CSSError;
+	extern string CSSWarning;
+	extern string CSSSuccess;
+	extern string CSSVersion;
+	extern string CSSGhost;
+	extern string CSSCRC;
+	extern string CSSTagPrefix;
+	extern string CSSDirty;
+	extern string CSSQuotedMessage;
+	extern string CSSMod;
+	extern string CSSTag;
+	extern string CSSNote;
+	extern string CSSRequirement;
+	extern string CSSIncompatibility;
+	
+
 	//Prints a given message to the bosslog, using format-safe Output function below.
-	void ShowMessage(ofstream &log, string format, message currentMessage);
+	void ShowMessage(string& buffer, message currentMessage);
 
 	//Prints ouptut with formatting according to format.
-	void Output(ofstream &log, string format, string text);
+	void Output(string text);
 
 	//Prints HTML header.
-	void OutputHeader(ofstream &log);
+	void OutputHeader();
+
+	//Prints HTML footer (ie. </body> and </html> tags).
+	void OutputFooter();
+
+	//Generate a default BOSS.ini
+	bool GenerateIni();
 
 	//Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 	string IntToString(unsigned int n);

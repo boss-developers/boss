@@ -55,6 +55,9 @@
     <Filter Include="Parsing\Modlist">
       <UniqueIdentifier>{0b023587-0bc5-410f-bdf0-4d64998eb670}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Parsing\Ini">
+      <UniqueIdentifier>{90c34832-b122-49f9-890b-8d75146c4034}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Support\Helpers.h">
@@ -105,6 +108,9 @@
     </ClInclude>
     <ClInclude Include="..\Parsing\Modlist\Grammar.h">
       <Filter>Parsing\Modlist</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parsing\Ini\Grammar.h">
+      <Filter>Parsing\Ini</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

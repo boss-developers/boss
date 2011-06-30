@@ -50,8 +50,8 @@ namespace boss {
 				//New Message keywords.
 				("SAY",SAY)
 				("TAG",TAG)
-				("REQ",REQ)
-				("INC", INC)
+				("REQ",SPECIFIC_REQ)
+				("INC", SPECIFIC_INC)
 				("DIRTY",DIRTY)
 				("WARN",WARN)
 				("ERROR",ERR)
@@ -77,6 +77,7 @@ namespace boss {
 				("\\BeginGroup\\:",BEGINGROUP)
 				("\\EndGroup\\\\",ENDGROUP)
 				("MOD:", MOD)  //Needs the colon there unfortunately.
+				("REGEX:", REGEX)
 			;
 		}
 	} typeKey;

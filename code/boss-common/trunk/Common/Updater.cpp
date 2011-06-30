@@ -19,7 +19,6 @@
 #define CURL_STATICLIB			//Tells the compiler to use curl as a static library.
 #endif
 #include <curl/curl.h>
-#include <curl/types.h>
 #include <curl/easy.h>
 #include "Error.h"
 
@@ -36,13 +35,13 @@ namespace boss {
 		return result;
 	} 
 
-	unsigned int UpdateMasterlist(int game) {
+	unsigned int UpdateMasterlist() {
 		const char *url;							//Masterlist file url
 		char cbuffer[4096];
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
-		string buffer,revision,newline,line;		//A bunch of strings.
-		size_t start=-1,end;								//Position holders for trimming strings.
+		string buffer,revision,newline,line,proxy_str;		//A bunch of strings.
+		size_t start,end;								//Position holders for trimming strings.
 		CURLcode ret;
 		ifstream mlist;								//Input stream.
 		ofstream out;								//Output stream.
@@ -62,7 +61,37 @@ namespace boss {
 		if (!curl) 
 			throw boss_error() << err_detail("Curl could not be initialised.");
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
-		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 10s.
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+		curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+
+		//Set up proxy stuff.
+		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
+			//All of the settings have potentially valid proxy-ing values.
+			proxy_str = proxy_host + ":" + proxy_port;
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
+			if (ret!=CURLE_OK) {
+				curl_easy_cleanup(curl);
+				throw boss_error() << err_detail("Invalid proxy hostname or port specified.");
+			}
+
+			if (proxy_type == "http")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+			else if (proxy_type == "http1_0")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP_1_0);
+			else if (proxy_type == "socks4")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+			else if (proxy_type == "socks4a")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4A);
+			else if (proxy_type == "socks5")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+			else if (proxy_type == "socks5h")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+			else {
+				curl_easy_cleanup(curl);
+				throw boss_error() << err_detail("Invalid proxy type specified.");
+			}
+		}
 
 		//Get revision number from http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn page text.
 		//First set the constant settings.
@@ -78,22 +107,8 @@ namespace boss {
 		//Try getting the page.
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
-
-			//That didn't work. Let's try getting the wpad.dat file.
-			curl_easy_setopt(curl, CURLOPT_PROXY,"");
-			ofstream log("log.txt");
-			curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.19.16/wpad.dat");
-			curl_easy_setopt(curl, CURLOPT_CRLF, 1);
-			ret = curl_easy_perform(curl);
-			if (ret!=CURLE_OK) {
-				log << buffer;
-				log.close();
-				curl_easy_cleanup(curl);
-				throw boss_error() << err_detail("DNS/DCHP-given proxy didn't work. Configuration file could not be found. Check log.txt.");
-			}
-			log << buffer;
-			log.close();
-			throw boss_error() << err_detail("DNS/DCHP-given proxy didn't work. Attempted to get config file from the proxy given. Check log.txt.");
+			curl_easy_cleanup(curl);
+			throw boss_error() << err_detail(errbuff);
 		}
 		
 		//Extract revision number from page text.
@@ -101,11 +116,19 @@ namespace boss {
 		else if (game == 2) start = buffer.find("boss-fallout");
 		else if (game == 3) start = buffer.find("boss-nehrim");
 		else if (game == 4) start = buffer.find("boss-fallout-nv");
+		else {
+			curl_easy_cleanup(curl);
+			throw boss_error() << err_detail("None of the supported games were detected.");
+		}
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
 			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
 		}
 		start = buffer.find("\"masterlist.txt\"", start);
+		if (start == string::npos) {
+			curl_easy_cleanup(curl);
+			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
+		}
 		start = buffer.find("B\",\"", start) + 4; 
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
@@ -117,7 +140,6 @@ namespace boss {
 			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
 		}
 		revision = buffer.substr(start,end);
-		//buffer.clear();
 
 		//Extract revision date from page text.
 		string date;
@@ -229,5 +251,61 @@ namespace boss {
 
 		//Return revision number.
 		return atoi(revision.c_str());
+	}
+
+	bool CheckConnection() {
+		CURL *curl;									//cURL handle
+		char errbuff[CURL_ERROR_SIZE];
+		CURLcode ret;
+		string proxy_atr;
+
+		//curl will be used to get stuff from the internet, so initialise it.
+		curl = curl_easy_init();
+		if (!curl)
+			throw boss_error() << err_detail("Curl could not be initialised.");
+		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+		curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+
+		//Set up proxy stuff.
+		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
+			//All of the settings have potentially valid proxy-ing values.
+			proxy_str = proxy_host + ":" + proxy_port;
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
+			if (ret!=CURLE_OK) {
+				curl_easy_cleanup(curl);
+				throw boss_error() << err_detail("Invalid proxy hostname or port specified.");
+			}
+
+			if (proxy_type == "http")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+			else if (proxy_type == "http1_0")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP_1_0);
+			else if (proxy_type == "socks4")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+			else if (proxy_type == "socks4a")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4A);
+			else if (proxy_type == "socks5")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+			else if (proxy_type == "socks5h")
+				curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+			else {
+				curl_easy_cleanup(curl);
+				throw boss_error() << err_detail("Invalid proxy type specified.");
+			}
+		}
+
+		//Check that there is an internet connection. Easiest way to do this is to check that the BOSS google code page exists.
+		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/");
+		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1);	
+		ret = curl_easy_perform(curl);
+		//Clean up and close curl handle now that it's finished with.
+		curl_easy_cleanup(curl);
+
+		if (ret!=CURLE_OK)
+			return false;
+		else
+			return true;
 	}
 }

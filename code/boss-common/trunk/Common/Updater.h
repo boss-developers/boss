@@ -16,7 +16,9 @@
 #include <boost/filesystem.hpp>
 
 namespace boss {
-	unsigned int UpdateMasterlist(int game);
+	unsigned int UpdateMasterlist();
+
+	bool CheckConnection();
 }
 
 #endif

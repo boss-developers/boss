@@ -1,46 +1,47 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
-	<title>BOSS Build Instructions</title>
-  </head>
-  <body>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+		<title>BOSS Build Instructions</title>
+	</head>
+	<body>
 	<h1>BOSS - Better Oblivion Sorting Software: Build Instructions</h1>
 	
 	<p>This guide presumes that you are building on Windows. If not, presumably you are experienced enough to know what you're doing. 
 	If after following this guide, you are still having trouble compiling BOSS, feel free to PM WrinklyNinja for help.<br /><br />
-	This guide also assumes that you are building the 'trunk' of the boss-common code. If you are building a tag or a branch, change all references to 
+	This guide also assumes that you are building the 'trunk' of the boss-common code. If you are building a branch, change all references to 
 	<code>trunk\</code> to the directory that contains the BOSS.sln file of the code you are building.</p><br />
 	
 	<h3>Preparing Your Environment/Getting Prerequisites</h3>
-	<p><h4>Download and install:</h4><ul>
+	<h4>Download and install:</h4>
+	<ul>
 		<li><a href="http://www.microsoft.com/express/">Microsoft Visual C++ 2010 Express Edition</a></li>
-		<li><a href="http://www.cmake.org/">CMake</a></li>
 		<li><a href="http://curl.haxx.se/download.html">Curl Source Code</a> - Download the latest zipped source code from the top of the page.</li>
 		<li><a href="https://sourceforge.net/projects/boost/files/boost/1.46.1/">BOOST C++ libraries</a> - BOSS requires version 1.46.1, it will not work with earlier versions, later versions can be tried, but might also break something.</li>
 		<li><a href="http://sourceforge.net/projects/utfcpp/">UTF8-CPP</a> - Download the latest version.</li>
-		<li><a href="http://code.google.com/p/libproxy/">libproxy</a> - Download the latest source code from the Downloads section.</li>
 		<li>An SVN client of your choice.</li>
-	</ul>
-	<h4>Preparing BOSS, BOOST and UTF-CPP</h4><ol>
+	</ul><br />
+	
+	<h4>Preparing BOSS and BOOST</h4>
+	<ol>
 		<li>Perform a SVN Checkout from <a href="https://better-oblivion-sorting-software.googlecode.com/svn">https://better-oblivion-sorting-software.googlecode.com/svn</a>
 		to a local directory of your own choice to create your working copy. (This directory shall be referred to as <em>$BOSS</em> from here on in.)</li>
 		<li>Extract the contents of the <code>boost-x.xx.x</code> (x is a number) folder in the BOOST libaries archive you downloaded to <code><em>$BOSS</em>\code\boss-common\trunk\boost\</code> (you should have lib, include, boostrap.bat, etc. in this folder).</li>
 		<li>Start a Command Prompt and cd to <code><em>$BOSS</em>\code\boss-common\trunk\boost</code> and run <code>bootstrap.bat</code></li>
 		<li>In the Command Prompt, run <code>bjam --toolset=msvc-10.0 --build-type=complete</code> . This will take a while. Once that is done, you may close the Command Prompt window.</li>
 		<li>Extract the contents of the <code>utf8_vx_x_x</code> (x is a number) archive to <code><em>$BOSS</em>\code\boss-common\trunk\utf8\</code>, so that your utf8 folder contains a 'doc' and 'source' folder.</li>
-	</ol></p>
-
+	</ol><br />
 	
 	<h4>Preparing Curl dependency</h4>
 	<p>We are going to be building the curl requirements from source, since the Windows curl packages are often not up-to-date. We don't need to compile all of curl though, just the static library. 
-	To do so, follow these steps:<ol>
+	To do so, follow these steps:</p>
+	<ol>
 		<li>Extract the contents of the <code>curl-x.xx.x</code> (x is a number) folder in the curl archive to <code><em>$BOSS</em>\code\boss-common\trunk\curl\</code> (you should have lib, include, README, etc. in this folder).</li>
 		<li>Open <code><em>$BOSS</em>\code\boss-common\trunk\curl\lib\libcurl.vcproj</code> in Visual C++ 2010. When the Conversion Wizard window appears, just click 'Finish' then 'Close'.</li>
 		<li>Set the build type to Release. In Project->Properties->Configuration Properties->C/C++->Code Generation, set the Runtime Library to "Multi-threaded (/MT)".</li>
 		<li>Build the libcurl project. This will create a libcurl.lib file in the lib/Release directory. An 'Unable to start' error message will pop up, ignore this and click 'OK'. Close the libcurl project.</li>
-	</ol></p>
+	</ol><br />
 	
 	<h4>Preparing libproxy dependency</h4>
 	<p>Like curl, this needs to be compiled from source. It's slightly tricker in that the library is dynamic by default and doesn't supply static build settings, but the steps to get things working are:
@@ -58,12 +59,10 @@
 	
 	
 	<h3>Building BOSS</h3>
-	<p>
 	<ol>
 		<li>Open <code><em>$BOSS</em>\code\boss-common\trunk\BOSS.sln</code> in Visual C++ 2010.</li>
 		<li>Set the build type to "Release" and run Build on the BOSS-Common project, which will give you BOSS.exe and supports Oblivion, Fallout 3 and Morrowind. Alternatively, run Debug->Build Solution to build all the projects in the solution.</li>
 		<li>The generated exe(s) will be located in <code><em>$BOSS</em>\code\boss-common\trunk\bin\Release\</code>.</li>
-	</ol>
-	Alternatively, you can compile for "Debug" if you wish to do more in-depth testing of BOSS, in which case the generated exe(s) will be located in <code><em>$BOSS</em>\code\boss-common\trunk\bin\Debug\</code></p><br />
+	</ol><br />
   </body>
 </html>

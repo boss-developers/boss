@@ -49,10 +49,13 @@ namespace boss {
 		//Special masterlist keywords.
 		OOOSAY,
 		BCSAY,
-		
+		SPECIFIC_INC,
+		SPECIFIC_REQ
 	};
 
-	extern vector<string> errorMessageBuffer;  //Holds any error messages generated during parsing for printing later.
+	extern vector<string> userlistErrorBuffer;  //Holds any error messages generated during parsing for printing later.
+	extern vector<string> masterlistErrorBuffer;  //Holds any error messages generated during parsing for printing later.
+	extern vector<string> iniErrorBuffer;  //Holds any error messages generated during parsing for printing later.
 
 	////////////////////////////////////////
 	// Modlist/Masterlist data structures
@@ -66,7 +69,8 @@ namespace boss {
 	enum itemType {
 		MOD,
 		BEGINGROUP,
-		ENDGROUP
+		ENDGROUP,
+		REGEX
 	};
 
 	struct message {

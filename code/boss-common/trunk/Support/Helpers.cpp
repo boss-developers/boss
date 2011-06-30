@@ -180,7 +180,6 @@ namespace boss {
 	}
 
 	//Calculate the CRC of the given file for comparison purposes.
-	//This is the correct CRC calculation code.
 	unsigned int GetCrc32(const fs::path& filename) {
 		int chksum = 0;
 		static const size_t buffer_size = 8192;
@@ -286,10 +285,20 @@ namespace boss {
                 retVal = string(buf);
 	   	        LOG_DEBUG("extracted version from '%s': %s", filename.c_str(), retVal.c_str());
             }
-
             pclose(fp);
         }
 #endif
 		return retVal;
+	}
+
+	//Searches a hashset for the first matching string of a regex and returns its iterator position.
+	boost::unordered_set<string>::iterator FindRegexMatch(boost::unordered_set<string> set, boost::regex reg, boost::unordered_set<string>::iterator startPos) {
+		while(startPos != set.end()) {
+			string mod = *startPos;
+			if (boost::regex_match(mod,reg))
+				return startPos;
+			++startPos;
+		}
+		return set.end();
 	}
 }

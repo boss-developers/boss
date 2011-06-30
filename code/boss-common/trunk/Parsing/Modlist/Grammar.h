@@ -194,9 +194,108 @@ namespace boss {
 	}
 
 	//Stores a message, should it be appropriate.
+	//The SPECIFIC_REQ and SPECIFIC_INC 'parsers' are not space-safe within items.
 	void StoreMessage(vector<message>& messages, message currentMessage) {
-		if (storeMessage)
-			messages.push_back(currentMessage);
+		if (storeMessage) {
+			if (currentMessage.key == SPECIFIC_REQ) {
+				//Modify message output based on what mods are installed.
+				stringstream ss(currentMessage.data);
+				currentMessage.data = "";
+				string mod,file,item;
+				while (getline(ss, item, '|')) {
+					//Syntax for an item is: "<version comparison>":"<file>"="<mod>"
+					//The "<version comparison>": and ="<mod>" are optional.
+					string version;
+					bool versionCheck = true;
+					size_t pos1,pos2,pos3,pos4;
+					pos1 = item.find('"');
+					if (pos1 == string::npos)
+						continue;
+					pos2 = item.find('"',pos1+1);
+					if (pos2 == string::npos)
+						continue;
+					pos3 = item.find('"',pos2+1);
+					if (pos3 == string::npos) {  //Only a plugin is given.
+						file = item.substr(pos1+1, pos2-pos1-1);
+						mod = file;
+					} else {
+						pos4 = item.find(':',pos2+1);
+						if (pos4 != string::npos && pos4 < pos3) {  //A version and a file are given. Possibly also a mod.
+							version = item.substr(pos1+1, pos2-pos1-1);
+							pos4 = item.find('"',pos3+1);
+							if (pos4 == string::npos)
+								continue;
+							file = item.substr(pos3+1, pos4-pos3-1);
+							//Check version conditional.
+							CheckVersion(versionCheck, version + "|" + file);
+							if (versionCheck)
+								continue;	//Mod exists and is of the correct version. No message should be printed for this item.
+							pos1 = item.find('"',pos4+1);
+							if (pos1 != string::npos) {
+								pos2 = item.find('"',pos1+1);
+								if (pos2 == string::npos)
+									continue;
+								mod = item.substr(pos1+1, pos2-pos1-1);
+							} else
+								mod = file;
+						} else {
+							pos4 = item.find('=',pos2+1);
+							if (pos4 != string::npos && pos4 < pos3) {  //A file and a mod are given.
+								file = item.substr(pos1+1, pos2-pos1-1);
+								pos4 = item.find('"',pos3+1);
+								if (pos4 == string::npos)
+									continue;
+								mod = item.substr(pos3+1, pos4-pos3-1);
+							} else
+								continue;
+						}
+					}
+					//Get file path.
+					fs::path file_path;
+					GetPath(file_path,file);
+					if (!fs::exists(file_path / file) || !versionCheck) {
+						if (currentMessage.data != "")
+							currentMessage.data += ", ";
+						currentMessage.data += "\""+mod+"\"";
+					}
+				}
+			} else if (currentMessage.key == SPECIFIC_INC) {
+				//Modify message output based on what mods are installed.
+				stringstream ss(currentMessage.data);
+				currentMessage.data = "";
+				string mod,file,item;
+				while (getline(ss, item, '|')) {
+					size_t pos1,pos2;
+					pos1 = item.find('"');
+					if (pos1 == string::npos)
+						continue;
+					pos2 = item.find('"',pos1+1);
+					if (pos2 == string::npos)
+						continue;
+					file = item.substr(pos1+1, pos2-pos1-1);
+					//Get file path.
+					fs::path file_path;
+					GetPath(file_path,file);
+					if (fs::exists(file_path / file)) {
+						mod = file;
+						if (item.length() > pos2+1) {
+							pos1 = item.find('"', pos2+1);
+							if (pos1 != string::npos) {
+								pos2 = item.find('"',pos1+1);
+								if (pos2 == string::npos)
+									continue;
+								mod = item.substr(pos1+1, pos2-pos1-1);
+							}
+						}
+						if (currentMessage.data != "")
+							currentMessage.data += ", ";
+						currentMessage.data += "\""+mod+"\"";
+					}
+				}
+			}
+			if (currentMessage.data != "")
+				messages.push_back(currentMessage);
+		}
 		return;
 	}
 
@@ -431,7 +530,7 @@ namespace boss {
 			expect = "&lt;" + expect + "&gt;";
 			boost::replace_all(context, "\n", "<br />\n");
 			string msg = (MasterlistParsingErrorFormat % expect % context).str();
-			errorMessageBuffer.push_back(msg);
+			masterlistErrorBuffer.push_back(msg);
 			return;
 		}
 	};
