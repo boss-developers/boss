@@ -64,7 +64,7 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
 		curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
-
+		
 		//Set up proxy stuff.
 		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
 			//All of the settings have potentially valid proxy-ing values.
@@ -94,17 +94,9 @@ namespace boss {
 		}
 
 		//Get revision number from http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn page text.
-		//First set the constant settings.
-		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/");
+		curl_easy_setopt(curl, CURLOPT_URL, "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn");
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer );
-
-		//Set up proxy. Given proxy IP is 192.168.19.3:1080. Config file gives 192.168.19.16:80.
-		//Try the config file proxy. It might be a proxy to another proxy though.
-		curl_easy_setopt(curl, CURLOPT_PROXY, "http://192.168.19.16:80");
-		curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
-
-		//Try getting the page.
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
 			curl_easy_cleanup(curl);
@@ -236,7 +228,7 @@ namespace boss {
 			throw boss_error() << err_detail(errbuff);
 		}
 
-		//Clean up and close curl handle now that it's finished with. Also free proxy resources.
+		//Clean up and close curl handle now that it's finished with.
 		curl_easy_cleanup(curl);
 
 		//Replace SVN keywords with revision number and replace current masterlist, or write a new one if it doesn't already exist.

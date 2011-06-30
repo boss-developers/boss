@@ -62,6 +62,10 @@ namespace boss {
 
 	string heading;
 
+	static format IniParsingErrorFormat("<li><span class='error'>Ini Parsing Error: Expected a %1% at:</span>"
+		"<blockquote>%2%</blockquote>"
+		"<span class='error'>Ini parsing aborted. Some or all of the options may not have been set correctly.</span></li>\n");
+
 	void StoreHeading(string hdng) {
 		heading = hdng;
 	}
@@ -301,7 +305,7 @@ namespace boss {
 			
 			expect = "&lt;" + expect + "&gt;";
 			boost::replace_all(context, "\n", "<br />\n");
-			string msg = (ParsingErrorFormat % expect % context).str();
+			string msg = (IniParsingErrorFormat % expect % context).str();
 			iniErrorBuffer.push_back(msg);
 			return;
 		}

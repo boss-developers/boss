@@ -104,15 +104,15 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)curl\include;$(SolutionDir)boost;$(SolutionDir)libproxy\libproxy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)curl\include;$(SolutionDir)boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_UNICODE;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)curl\lib\Release;$(SolutionDir)boost\stage\lib;$(SolutionDir)libproxy\build\libproxy\Release;$(SolutionDir)libproxy/build/libmodman/Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Version.lib;libcurl.lib;libproxy.lib;modman.lib;winmm.lib;wldap32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)curl\lib\Release;$(SolutionDir)boost\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Version.lib;libcurl.lib;winmm.lib;wldap32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>1.8</Version>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>

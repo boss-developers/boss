@@ -43,21 +43,6 @@
 		<li>Build the libcurl project. This will create a libcurl.lib file in the lib/Release directory. An 'Unable to start' error message will pop up, ignore this and click 'OK'. Close the libcurl project.</li>
 	</ol><br />
 	
-	<h4>Preparing libproxy dependency</h4>
-	<p>Like curl, this needs to be compiled from source. It's slightly tricker in that the library is dynamic by default and doesn't supply static build settings, but the steps to get things working are:
-	<ol>
-		<li>Extract the contents of the <code>libproxy-x.x.x</code> (x is a number) folder in the libproxy archive to <code><em>$BOSS</em>\code\boss-common-trunk\libproxy\</code> (you should have INSTALL, README, etc. in this folder).</li>
-		<li>Create a new <code>build</code> folder in your libproxy folder.</li>
-		<li>If you've installed CMake, then the binary should be registered, otherwise you'll have to also specify the location of CMake.exe on your hard drive. In any case, open a Command Prompt, cd to <code><em>$BOSS</em>\code\boss-common\trunk\libproxy\build\</code> and run <code>CMake "<em>$BOSS</em>\code\boss-common\trunk\libproxy\"</code>.</li>
-		<li>In your <code><em>$BOSS</em>\code\boss-common\trunk\libproxy\build</code> folder, open the Project.sln in Visual C++ 2010. Set the build type to Release.</li>
-		<li>In the Solution Explorer, right-click the "libproxy" project and select Properties. In Configuration Properties->General, set the Target Extension to ".lib" and the Configuration Type to "Static library (.lib)". In Configuration Properties->C/C++->Code Generation, set the Runtime Library to "Multi-threaded (/MT)".</li>
-		<li>In the Solution Explorer, right-click the "libproxy" project and select Build. This will build libproxy as a static library.</li>
-		<li>In the Solution Explorer, right-click the "modman" project and select Properties. In Configuration Properties->C/C++->Code Generation, set the Runtime Library to "Multi-threaded (/MT)".</li>
-		<li>In the Solution Explorer, right-click the "modman" project and select Build. This will build modman as a static library with the correct threading options, allowing BOSS to include it correctly.</li>
-		<li>Close the Project.sln.</li>
-	</ol></p><br />
-	
-	
 	<h3>Building BOSS</h3>
 	<ol>
 		<li>Open <code><em>$BOSS</em>\code\boss-common\trunk\BOSS.sln</code> in Visual C++ 2010.</li>
