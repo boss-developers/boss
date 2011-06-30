@@ -451,14 +451,19 @@
 	<span class="subtitle" id="errors">Error Messages</span>
 	<p>If BOSS can detect a specific reason for being unable to function correctly, it will print an error message detailing the problem. BOSS's error messages are listed below, along with details of the issues and possible solutions. The list does not include any messages related to user rule application.</p>
 	<ul>
-		<li style="background:red;">A large number of error messages are missing. Update this section.</li>
-		<li style="margin-bottom:1.4em;"><b>Message:</b> Error: file '<em>filename</em>' could not be accessed for writing.
+		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: file '<code>filename</code>' could not be accessed for writing.</i>
 		<ul>
 			<li><b>Issue:</b> BOSS does not have permission to write to the given file if it exists.</li>
-			<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
+			<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.</li>
 		</ul>
 		</li>
-		<li style="margin-bottom:1.4em;"><b>Message:</b> Critical Error: Master .ESM file not found!
+		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Critical Error: Oblivion.esm and Nehrim.esm have both been found!</i>
+		<ul>
+			<li><b>Issue:</b> You have installed Nehrim incorrectly.</li>
+			<li><b>Solution:</b> Uninstall Nehrim, read its Readme, then re-install it correctly.</li>
+		</ul>
+		</li>
+		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Critical Error: Master .ESM file not found!</i>
 		<ul>
 			<li><b>Issue:</b> BOSS is not being run in the correct folder.</li>
 			<li><b>Solution:</b> Move the BOSS folder containing all of BOSS's files into your game's installation folder, which is the one that contains the Data folder.</li>
@@ -466,17 +471,22 @@
 			<li><b>Solution:</b> Re-activate your master .ESM file.</li>
 		</ul>
 		</li>
-		<li style="margin-bottom:1.4em; background:red;"><b>Message:</b> Error: Masterlist update failed.
+		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: Masterlist update failed.</i>
 		<ul>
-			<li><b>Issue:</b> Masterlist cannot be opened.</li>
-			<li><b>Solution:</b> Make sure that your BOSS folder (and masterlist.txt if it exists) is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
-			<li><b>Issue:</b> Curl error.</li>
-			<li><b>Solution:</b> There was a problem in getting information from the Internet. Depending on the error given, make sure your Internet connection is working correctly, or try again later. If you use a proxy make sure that the proxy service is running.</li>
-			<li><b>Issue:</b> Cannot find online masterlist revision number.</li>
-			<li><b>Solution:</b> The layout of the Google Code page has changed, and a program update will be required to take account of this. Please report this issue in the official forum thread.</li>
-			<li><b>Issue:</b> Invalid proxy hostname or port specified.</li>
-			<li><b>Issue:</b> Invalid proxy type specified.</li>
-			<li><b>Solution:</b> Double check that you have entered your proxy settings into the BOSS.ini correctly.</li>
+			<li><b>Detail:</b> Invalid proxy hostname or port specified.</li>
+			<li><b>Detail:</b> Invalid proxy type specified.</li>
+			<li><b>Solution:</b> Your proxy settings in your <q>BOSS.ini</q> are invalid. Correct them before attempting to check for updates again.</li>
+			<li><b>Detail:</b> Curl could not be initialised.</li>
+			<li><b>Solution:</b> No specific solution. Try again later.</li>
+			<li><b>Detail:</b> None of the supported games were detected.</li>
+			<li><b>Solution:</b> This error message should never be displayed. Contact the BOSS development team for support.</li>
+			<li><b>Detail:</b> Cannot find online masterlist revision number.</li>
+			<li><b>Detail:</b> Cannot find online masterlist revision date.</li>
+			<li><b>Solution:</b> Contact the BOSS development team for support. This message means that either the layout of the download page has changed or you are using a proxy that is blocking or malformatting the page.</li>
+			<li><b>Detail:</b> Masterlist cannot be opened.</li>
+			<li><b>Solution:</b> Make sure that your BOSS folder (and masterlist.txt if it exists) is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.</li>
+			<li><b>Issue:</b> Other network error.</li>
+			<li><b>Solution:</b> There was a problem in getting information from the Internet. Depending on the error given, make sure your Internet connection is working correctly, or try again later. If you use a proxy make sure that the proxy service is running and that you have the proxy settings recorded in your <q>BOSS.ini</q>.</li>
 		</ul>
 		</li>
 		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>No Internet connection detected. Masterlist auto-updater aborted.</i>
@@ -485,22 +495,29 @@
 			If you are unsure whether you are using a proxy and are trying to use BOSS in an enterprise environment, contact your network administrator for your proxy details. If you continue to have difficulty or are not using a proxy, contact the BOSS development team for further support.</li>
 		</ul>
 		</li>
-		<li style="margin-bottom:1.4em;"><b>Message:</b> Critical Error: <em>filename</em> cannot be read!
+		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Critical Error: Master .ESM file cannot be read!</i>
 		<ul>
-			<li><b>Issue:</b> <em>filename</em> does not exist, is in the wrong place, or is corrupt in some way.</li>
-			<li><b>Solution:</b> If <em>filename</em> is your game's master .ESM file and this error is displayed, it means that your master .ESM file exists, but its date cannot be read. This can only take place under very specialised circumstances, such as corruption of your master .ESM file, and probably means you will have to seek expert help.</li>
-			<li><b>Solution:</b> If <em>filename</em> is 'masterlist.txt' and this error is displayed, make sure that your masterlist.txt is in your BOSS folder. If you have disabled the automatic masterlist updating, enable it and run BOSS to download a new masterlist in the correct place.</li>
+			<li><b>Solution:</b> If this error is displayed, it means that your master .ESM file exists, but its date cannot be read. This can only take place under very specialised circumstances, such as corruption of your master .ESM file, and probably means you will have to seek expert help.</li>
 		</ul>
 		</li>
-		<li style="margin-bottom:1.4em;"><b>Message:</b> Error: Could not change the date of "<em>filename</em>", make sure you have write access to it.
+		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Critical Error: Modlist backup failed!</i>
 		<ul>
-			<li><b>Issue:</b> BOSS does not have permission to write to the plugin given.</li>
-			<li><b>Solution:</b> Check that the plugin is not read-only, and that you have write permissions. See later on in this section for details on how to obtain write permissions on Windows Vista or 7.</li>
+			<li><b>Detail:</b> Modlist backup cannot be saved.</li>
+			<li><b>Issue:</b> Other filesystem error.</li>
+			<li><b>Solution:</b> Check that the file is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.</li>
 		</ul>
 		</li>
-		<li><b>Message:</b> Critical Error: "<em>filename</em>" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.
+		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Critical Error: "<code>filename</code>" cannot be read!</i>
 		<ul>
-			<li><b>Issue:</b> If <em>filename</em> is 'userlist.txt', BOSS has detected that your userlist.txt is saved using the wrong encoding, and is unable to read it.</li>
+			<li><b>Issue:</b> BOSS cannot find your masterlist.</li>
+			<li><b>Solution:</b> If you have disabled the automatic masterlist updater, enable it and run BOSS again to download the masterlist to the correct location.</li>
+			<li><b>Issue:</b> BOSS cannot find the specified modlist backup.</li>
+			<li><b>Solution:</b> Make sure the modlist for the undo level you have specified exists. A level 1 undo requires <q>modlist.txt</q> and a level 2 undo requires <q>modlist.old</q> to be present.</li>
+		</ul>
+		</li>
+		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Critical Error: "<code>filename</code>" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.</i>
+		<ul>
+			<li><b>Issue:</b> If <code>filename</code> is "userlist.txt", BOSS has detected that your userlist.txt is saved using the wrong encoding, and is unable to read it.</li>
 			<li><b>Solution:</b> Re-save the file given in the correct "UTF-8" encoding. If you are unsure on how to do so, follow these instructions:
 			<ol>
 				<li>Open the file in Notepad.</li>
@@ -510,9 +527,26 @@
 			</ol>
 			<p>A file only needs to be converted to the correct encoding once, thereafter it will continue to save in the correct encoding whenever you edit it.</p>
 			</li>
-			<li><b>Issue:</b> If <em>filename</em> is not 'userlist.txt', BOSS is not functioning correctly. </li>
-			<li><b>Solution:</b> Re-save the file given in the correct "UTF-8" encoding. Report this to the BOSS development team.
-			</li>
+			<li><b>Issue:</b> If <code>filename</code> is not "userlist.txt", BOSS is not functioning correctly.</li>
+			<li><b>Solution:</b> Re-save the file given in the correct "UTF-8" encoding. Report this to the BOSS development team.</li>
+		</ul>
+		</li>
+		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: <code>filename</code> generation failed. Ensure your BOSS folder is not read-only.</i>
+		<ul>
+			<li><b>Solution:</b> Check that the file is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.</li>
+		</ul>
+		</li>
+		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: Could not change the date of "<code>filename</code>", make sure you have write access to it.</i>
+		<ul>
+			<li><b>Issue:</b> BOSS does not have permission to write to the file given.</li>
+			<li><b>Solution:</b> Check that the file is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.</li>
+		</ul>
+		</li>
+		<li style="margin-bottom:1.4em;"><b>Message:</b> <i><code>File</code> Parsing Error: Expected a...</i>
+		<ul>
+			<li><b>Issue:</b> BOSS failed to parse one of your files, either the <q>BOSS.ini</q>, the <q>masterlist.txt</q> or the <q>userlist.txt</q>.</li>
+			<li><b>Solution:</b> If the <code>File</code> is "Masterlist" and you have not edited your masterlist, report the error to the BOSS development team.</li>
+			<li><b>Solution:</b> If the <code>File</code> is not "Masterlist", double check your changes to the file and correct the error. The message may or may not give useful details, and will probably display multiple messages for each fault.</li>
 		</ul>
 		</li>
 	</ul>
@@ -525,12 +559,12 @@
 		</li>
 		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: BOSS.ini generation failed. Ensure your BOSS folder is not read-only. None of the GUI's options will be saved.</i>
 		<ul>
-			<li>Self-explanatory.</li>
+			<li><b>Solution:</b> Check that the file is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.</li>
 		</ul>
 		</li>
 		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: BOSS.ini could not be saved. Ensure your BOSS folder is not read-only.</i>
 		<ul>
-			<li>Self-explanatory.</li>
+			<li><b>Solution:</b> Check that the file is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.</li>
 		</ul>
 		</li>
 		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: BOSS.exe not found. Reinstall BOSS correctly, so that both BOSS.exe and BOSS GUI.exe are in the BOSS folder in your game's installation directory.</i>
@@ -567,12 +601,12 @@
 			<li><b>Detail:</b> Invalid proxy type specified.</li>
 			<li><b>Solution:</b> Your proxy settings in your <q>BOSS.ini</q> are invalid. Correct them before attempting to check for updates again.</li>
 			<li><b>Detail:</b> Curl could not be initialised.</li>
-			<li><b>Solution:</b> No specific solution. Try again later.</b>
+			<li><b>Solution:</b> No specific solution. Try again later.</li>
 			<li><b>Issue:</b> Other network error.</li>
 			<li><b>Solution:</b> There was a problem in getting information from the Internet. Depending on the error given, make sure your Internet connection is working correctly, or try again later. If you use a proxy make sure that the proxy service is running and that you have the proxy settings recorded in your <q>BOSS.ini</q>.</li>
 		</ul>
 		</li>
-		<li style="margin-bottom:1.4em;"><b>Message:</b> Update check failed: No Internet connection detected.
+		<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Update check failed: No Internet connection detected.</i>
 		<ul>
 			<li><b>Solution:</b> If you are certain that you do have an Internet connection, it could be because you use a proxy to connect to the Internet. Enter your proxy connection details into the relevant parts of the <q>BOSS.ini</q> and try again. 
 			If you are unsure whether you are using a proxy and are trying to use BOSS in an enterprise environment, contact your network administrator for your proxy details. If you continue to have difficulty or are not using a proxy, contact the BOSS development team for further support.</li>
@@ -584,7 +618,7 @@
 			<li><b>Detail:</b> Invalid proxy type specified.</li>
 			<li><b>Solution:</b> Your proxy settings in your <q>BOSS.ini</q> are invalid. Correct them before attempting to check for updates again.</li>
 			<li><b>Detail:</b> Curl could not be initialised.</li>
-			<li><b>Solution:</b> No specific solution. Try updating again later.</b>
+			<li><b>Solution:</b> No specific solution. Try updating again later.</li>
 			<li><b>Detail:</b> Could not read remote file information.</li>
 			<li><b>Solution:</b> No solution. Inform the BOSS development team in case it is an issue with the remote files, and try again later.</li>
 			<li><b>Detail:</b> Could not save "<code>filename</code>".</li>

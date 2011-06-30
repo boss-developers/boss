@@ -164,8 +164,10 @@ int main(int argc, char *argv[]) {
 	//Parse ini file if found. Can't just use BOOST's program options ini parser because of the CSS syntax and spaces.
 	if (fs::exists("BOSS.ini"))
 		parseIni("BOSS.ini");
-	else
-		GenerateIni();
+	else {
+		if (!GenerateIni())
+			iniErrorBuffer.push_back("<p class='error'>Error: BOSS.ini generation failed. Ensure your BOSS folder is not read-only.</p>\n\n");
+	}
 
 	// parse command line arguments
 	po::variables_map vm;
@@ -262,8 +264,13 @@ int main(int argc, char *argv[]) {
 		size_t pos1 = string::npos, pos2 = string::npos;
 		if (fs::exists(bosslog_text_path) && fs::exists(bosslog_html_path)) {
 			//Need to work out which was last written.
-			time_t htmllogtime = fs::last_write_time(bosslog_html_path);
-			time_t textlogtime = fs::last_write_time(bosslog_text_path);
+			time_t htmllogtime,textlogtime;
+			try {
+				htmllogtime = fs::last_write_time(bosslog_html_path);
+				textlogtime = fs::last_write_time(bosslog_text_path);
+			}catch (fs::filesystem_error e){
+				LOG_WARN("%s; This may result in the BOSSlog diff being incorrect.", e.what());
+			}
 			if (textlogtime > htmllogtime) {
 				fileToBuffer(bosslog_text_path,oldBOSSlogRecognised);
 				pos1 = oldBOSSlogRecognised.find("Recognised And Re-ordered Plugins\n")+34;
@@ -429,7 +436,8 @@ int main(int argc, char *argv[]) {
 		} catch (boss_error &e) {
 			string const * detail = boost::get_error_info<err_detail>(e);
 			OutputHeader();
-			Output("<p class='error'>Critical Error: " + *detail + ".<br />\n");
+			Output("<p class='error'>Critical Error: Modlist backup failed!<br />\n");
+			Output("Details: " + *detail + ".<br />\n");
 			Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />\n");
 			Output("Utility will end now.</p>\n\n");
 			OutputFooter();
@@ -502,10 +510,11 @@ int main(int argc, char *argv[]) {
 				Userlist.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		}
 	} else if (!fs::exists(userlist_path)) {
-		ofstream userlist_file("userlist.txt",ios_base::binary);
+		ofstream userlist_file(userlist_path.c_str(),ios_base::binary);
 		if (!userlist_file.fail()) {
 			userlist_file << '\xEF' << '\xBB' << '\xBF';  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
-		}
+		} else
+			userlistErrorBuffer.push_back("<p class='error'>Error: userlist.txt generation failed. Ensure your BOSS folder is not read-only.</p>\n\n");
 		userlist_file.close();
 	}
 
@@ -1092,7 +1101,7 @@ int main(int argc, char *argv[]) {
 	// Display Userlist Messages
 	/////////////////////////////
 
-	if (!userlistMessagesContent.empty()) {
+	if (!userlistMessagesContent.empty() || !userlistErrorBuffer.empty()) {
 		Output("<div><span onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Userlist Messages</span><ul id='userlistMessages'>\n");
 		for (size_t i=0; i<userlistErrorBuffer.size(); i++)  //First print parser/syntax error messages.
 			Output(userlistErrorBuffer[i]);
