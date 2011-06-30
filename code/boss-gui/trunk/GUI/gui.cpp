@@ -13,10 +13,10 @@
 #include "boost/exception/get_error_info.hpp"
 #include <boost/algorithm/string.hpp>
 
-#include "gui.h"
-#include "parser.h"
-#include "updater.h"
-#include "helpers.h"
+#include "GUI/gui.h"
+#include "Parsing/parser.h"
+#include "GUI/updater.h"
+#include "Helpers/helpers.h"
 #include <string>
 
 namespace fs = boost::filesystem;

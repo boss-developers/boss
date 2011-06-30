@@ -17,7 +17,7 @@
 #include "Userlist/Grammar.h"
 #include "Ini/Grammar.h"
 #include "Support/Helpers.h"
-#include "utf8/source/utf8.h"
+#include "source/utf8.h"
 
 namespace boss {
 	using namespace std;

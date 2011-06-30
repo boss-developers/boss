@@ -11,7 +11,7 @@
 //Header file for some functions that are helpful or required for the GUI to work,
 //but not actually GUI-based.
 
-#include "helpers.h"
+#include "Helpers/helpers.h"
 #include <boost/spirit/include/karma.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/crc.hpp>

@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\Parsing\parser.cpp">
+      <Filter>Parsing</Filter>
+    </ClCompile>
+    <ClCompile Include="gui.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="updater.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Helpers\helpers.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Parsing\grammars.h">
+      <Filter>Parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parsing\parser.h">
+      <Filter>Parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="gui.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="updater.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Helpers\helpers.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Parsing">
+      <UniqueIdentifier>{d5fe0998-0d45-4b8e-8892-ed6a9f7b8a32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{20623cc4-e26a-4c99-8346-48689c583790}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers">
+      <UniqueIdentifier>{dbbfc67f-deef-4715-8c95-0d736bcbebba}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BOSS GUI_version.rc" />
+  </ItemGroup>
+</Project>

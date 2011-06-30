@@ -27,8 +27,8 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 
-#include "helpers.h"
-#include "updater.h"
+#include "Helpers/helpers.h"
+#include "GUI/updater.h"
 
 BOOST_FUSION_ADAPT_STRUCT(
     boss::fileInfo,

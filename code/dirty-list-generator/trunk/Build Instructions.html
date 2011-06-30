@@ -21,12 +21,12 @@
 		<li>An SVN client of your choice.</li>
 	</ul><br />
 	
-	<h4>Preparing BOSS, BOOST and UTF-CPP</h4>
+	<h4>Preparing BOSS and BOOST</h4>
 	<ol>
 		<li>Perform a SVN Checkout from <a href="https://better-oblivion-sorting-software.googlecode.com/svn">https://better-oblivion-sorting-software.googlecode.com/svn</a>
 		to a local directory of your own choice to create your working copy. (This directory shall be referred to as <em>$BOSS</em> from here on in.)</li>
-		<li>Extract the contents of the <code>boost-x.xx.x</code> (x is a number) folder in the BOOST libaries archive you downloaded to <code><em>$BOSS</em>\code\dirty-list-generator\trunk\boost\</code> (you should have lib, include, boostrap.bat, etc. in this folder).</li>
-		<li>Start a Command Prompt and cd to <code><em>$BOSS</em>\code\dirty-list-generator\trunk\boost</code> and run <code>bootstrap.bat</code></li>
+		<li>Extract the contents of the <code>boost-x.xx.x</code> (x is a number) folder in the BOOST libaries archive you downloaded to <code><em>$BOSS</em>\lib\boost\</code> (you should have lib, include, boostrap.bat, etc. in this folder).</li>
+		<li>Start a Command Prompt and cd to <code><em>$BOSS</em>\lib\boost</code> and run <code>bootstrap.bat</code></li>
 		<li>In the Command Prompt, run <code>bjam --toolset=msvc-10.0 --build-type=complete</code> . This will take a while. Once that is done, you may close the Command Prompt window.</li>
 	</ol><br />
 	
