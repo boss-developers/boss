@@ -50,7 +50,7 @@ endif
 ifeq (y,$(strip ${coverage}))
   CXXFLAGS := --coverage $(CXXFLAGS)
 endif
-INCLUDES := .
+INCLUDES := . utf8
 
 PROG_BOSS   := boss
 BUILD_DIR   := build
