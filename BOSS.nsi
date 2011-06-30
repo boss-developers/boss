@@ -67,8 +67,6 @@
     Var UpdateState_Other
     Var Check_Readme
     Var Check_DeleteOldFiles
-	Var Create_Userlist
-	Var CheckState_Userlist
     Var Function_Browse
     Var Function_DirPrompt
     Var Function_RadioButton
@@ -334,12 +332,6 @@
                 ${NSD_AddStyle} $Check_Readme ${WS_GROUP}
                 ${NSD_SetState} $Check_Readme ${BST_CHECKED}
                 IntOp $1 $1 + 25
-		${NSD_CreateCheckBox} $1% $0u 35% 8u "Create blank userlist(s)"
-			Pop $Create_Userlist
-			${NSD_AddStyle} $Create_Userlist ${WS_GROUP}
-			IntOp $1 $1 + 35
-		IntOp $0 $0 + 15
-		IntOp $1 0 + 0
 		${NSD_CreateCheckBox} $1% $0u 75% 8u "Delete files from old BOSS versions"
             Pop $Check_DeleteOldFiles
             ${NSD_AddStyle} $Check_DeleteOldFiles ${WS_GROUP}
@@ -358,7 +350,6 @@
         ${NSD_GetState} $Check_NV $CheckState_NV
         ${NSD_GetState} $Check_Nehrim $CheckState_Nehrim
         ${NSD_GetState} $Check_Other $CheckState_Other
-		${NSD_GetState} $Create_Userlist $CheckState_Userlist
         
         ${If} $CheckState_OB == ${BST_CHECKED}
 			SetOutPath "$Path_OB\BOSS"
@@ -494,28 +485,6 @@
 				RMDir  "$Path_Other\Data\BOSS"
             ${EndIf}
         ${EndIf}
-		${If} $CheckState_Userlist == ${BST_CHECKED}
-			${If} $Path_OB != $Empty
-				IfFileExists "$Path_OB\Boss\userlist.txt" +2 0
-			    File /oname=$Path_OB\Boss\userlist.txt data\boss-common\userlist.txt
-			${EndIf}
-			${If} $Path_FO != $Empty
-				IfFileExists "$Path_FO\Boss\userlist.txt" +2 0
-			    File /oname=$Path_FO\Boss\userlist.txt data\boss-common\userlist.txt
-			${EndIf}
-			${If} $Path_NV != $Empty
-				IfFileExists "$Path_NV\Boss\userlist.txt" +2 0
-			    File /oname=$Path_NV\Boss\userlist.txt data\boss-common\userlist.txt
-			${EndIf}
-			${If} $Path_Nehrim != $Empty
-				IfFileExists "$Path_Nehrim\Boss\userlist.txt" +2 0
-			    File /oname=$Path_Nehrim\Boss\userlist.txt data\boss-common\userlist.txt
-			${EndIf}
-			${If} $Path_Other != $Empty
-				IfFileExists "$Path_Other\Boss\userlist.txt" +2 0
-			    File /oname=$Path_Other\Boss\userlist.txt data\boss-common\userlist.txt
-			${EndIf}
-		${EndIf}
 		
         FunctionEnd
     Function OnClick_Browse
