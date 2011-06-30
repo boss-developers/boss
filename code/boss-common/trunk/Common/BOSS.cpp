@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
 
 	size_t x=0;							//position of last recognised mod.
 	string textbuf;						//a text string.
-	time_t esmtime = 0, modfiletime;	//File modification times.
+	time_t esmtime = 0, modfiletime = 0;	//File modification times.
 	vector<item> Modlist, Masterlist;	//Modlist and masterlist data structures.
 	vector<rule> Userlist;				//Userlist data structure.
 	//Summary counters
@@ -264,7 +264,7 @@ int main(int argc, char *argv[]) {
 		size_t pos1 = string::npos, pos2 = string::npos;
 		if (fs::exists(bosslog_text_path) && fs::exists(bosslog_html_path)) {
 			//Need to work out which was last written.
-			time_t htmllogtime,textlogtime;
+			time_t htmllogtime = 0, textlogtime = 0;
 			try {
 				htmllogtime = fs::last_write_time(bosslog_html_path);
 				textlogtime = fs::last_write_time(bosslog_text_path);

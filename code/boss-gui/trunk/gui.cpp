@@ -70,7 +70,7 @@ bool BossGUI::OnInit() {
 			wxOK | wxICON_ERROR,
 			NULL);
 	} else {
-		if (!boss::GenerateIni());
+		if (!boss::GenerateIni())
 			wxMessageBox(wxString::Format(
 				wxT("Error: BOSS.ini generation failed. Ensure your BOSS folder is not read-only. None of the GUI's options will be saved.")
 			),

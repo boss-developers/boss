@@ -249,7 +249,7 @@ namespace boss {
 		CURL *curl;									//cURL handle
 		char errbuff[CURL_ERROR_SIZE];
 		CURLcode ret;
-		string proxy_atr;
+		string proxy_str;
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
