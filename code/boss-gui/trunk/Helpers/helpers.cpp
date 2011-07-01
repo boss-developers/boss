@@ -22,31 +22,31 @@ namespace boss {
 	namespace karma = boost::spirit::karma;
 
 	//Version info.
-	const string boss_version     = "1.6";				//TEMPORARY CHANGE TO TEST UPDATER
-	const string boss_releaseDate = "June 29, 2011";
+	const string boss_version		= "1.6";				//TEMPORARY CHANGE TO TEST UPDATER
+	const string boss_releaseDate	= "June 29, 2011";
 
 	//The run_type type decides on which variables are applied, not all are appropriate for all run_type types.
-	int run_type			= 1;     // 1 = sort mods, 2 = only update, 3 = undo changes.
+	int run_type					= 1;		// 1 = sort mods, 2 = only update, 3 = undo changes.
 	
 	//Command line variables
-	string log_format		= "html";	// what format the output should be in.
-	int game				= 0;		// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
-	int revert              = 0;		// what level to revert to
-	int verbosity           = 0;		// log levels above INFO to output
-	bool update				= true;		// update the masterlist? THIS DOESN'T BEHAVE LIKE THE CLI PARAMETER - IF FALSE, IT SETS -U.
-	bool silent             = false;	// silent mode?
-	bool debug              = false;	// whether to include origin information in logging statements
-	bool trial_run			= false;	// If true, don't redate files.
-	bool sort_skip_version_parse   = false;	// enable parsing of mod's headers to look for version strings
-	bool sort_show_CRCs			   = false;	// whether or not to show mod CRCs.
-	bool revert_skip_version_parse = false;	// enable parsing of mod's headers to look for version strings
-	bool revert_show_CRCs		   = false;	// whether or not to show mod CRCs.
+	string log_format				= "html";	// what format the output should be in.
+	int game						= 0;		// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
+	int revert						= 0;		// what level to revert to
+	int verbosity					= 0;		// log levels above INFO to output
+	bool update						= true;		// update the masterlist? THIS DOESN'T BEHAVE LIKE THE CLI PARAMETER - IF FALSE, IT SETS -U.
+	bool silent						= false;	// silent mode?
+	bool debug						= false;	// whether to include origin information in logging statements
+	bool trial_run					= false;	// If true, don't redate files.
+	bool sort_skip_version_parse	= false;	// enable parsing of mod's headers to look for version strings
+	bool sort_show_CRCs				= false;	// whether or not to show mod CRCs.
+	bool revert_skip_version_parse	= false;	// enable parsing of mod's headers to look for version strings
+	bool revert_show_CRCs			= false;	// whether or not to show mod CRCs.
 
-	bool logCL				= false; // whether or not to log the command line output to BOSSDebugLog.txt.
-	bool do_startup_update_check   = true;
-	string proxy_type = "direct";
-	string proxy_host = "none";
-	string proxy_port = "0";
+	bool logCL						= false;	// whether or not to log the command line output to BOSSDebugLog.txt.
+	bool do_startup_update_check	= true;		// Whether or not to check for updates on startup.
+	string proxy_type				= "direct";	// The type of proxy in use.
+	string proxy_host				= "none";	// The hostname of the proxy in use.
+	string proxy_port				= "0";		// The port used to access the proxy in use.
 
 	//Returns the name of the game that BOSS is currently running for.
 	string GetGame() {
@@ -63,7 +63,7 @@ namespace boss {
 			return "Game Not Detected";
 	}
 
-	//Runs BOSS with arguments according to the settings of the run_type variables.
+	//Runs BOSS with arguments according to the run_type and command line variable values.
 	void RunBOSS() {
 		string params = "BOSS.exe";
 		//Set format output params.
@@ -127,7 +127,7 @@ namespace boss {
 		return;
 	}
 
-	//Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
+	//Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion.
 	string IntToString(unsigned int n) {
 		string out;
 		back_insert_iterator<string> sink(out);
@@ -143,6 +143,8 @@ namespace boss {
 			return "0";
 	}
 
+	//Strips the decimal points from a version number to obtain it as an integer. 
+	//Trailing zeros will cause comparisons to return incorrect values.
 	int versionStringToInt(string version) {
 		boost::replace_all(version,".","");
 		return atoi(version.c_str());

@@ -46,34 +46,34 @@ namespace boss {
 	extern const string boss_releaseDate;
 
 	//Run type
-	//The run_type decides on which variables are applied, not all are appropriate for all run_types.
-	extern int run_type;		// 1 = sort mods, 2 = only update, 3 = undo changes.
+	//The run_type decides on which variables are set when launching BOSS, not all are appropriate for all run_types.
+	extern int run_type;					// 1 = sort mods, 2 = only update, 3 = undo changes.
 	
 	//Command line variables
-	extern string log_format;		// what format the output should be in.
-	extern int game;			// Force what game? 0 = allow autodetection, 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
-	extern int revert;			// what level to revert to
-	extern int verbosity;		// Command-line output verbosity.
-	extern bool update;			// update the masterlist? THIS DOESN'T BEHAVE LIKE THE CLI PARAMETER - IF FALSE, IT SETS -U.
-	extern bool silent;				// silent mode?
-	extern bool debug;				// whether to include origin information in logging statements
-	extern bool trial_run;			// If true, don't redate files.
-	extern bool sort_skip_version_parse; // enable parsing of mod's headers to look for version strings
-	extern bool sort_show_CRCs;			// whether or not to show mod CRCs.
-	extern bool revert_skip_version_parse; // enable parsing of mod's headers to look for version strings
+	extern string log_format;				// what format the output should be in.
+	extern int game;						// Force what game? 0 = allow autodetection, 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
+	extern int revert;						// what level to revert to
+	extern int verbosity;					// Command-line output verbosity.
+	extern bool update;						// update the masterlist? THIS DOESN'T BEHAVE LIKE THE CLI PARAMETER - IF FALSE, IT SETS -U.
+	extern bool silent;						// silent mode?
+	extern bool debug;						// whether to include origin information in logging statements
+	extern bool trial_run;					// If true, don't redate files.
+	extern bool sort_skip_version_parse;	// enable parsing of mod's headers to look for version strings
+	extern bool sort_show_CRCs;				// whether or not to show mod CRCs.
+	extern bool revert_skip_version_parse;	// enable parsing of mod's headers to look for version strings
 	extern bool revert_show_CRCs;			// whether or not to show mod CRCs.
 
 	//Other settings.
-	extern bool logCL;			// whether or not to log the command line output to BOSSDebugLog.txt.
-	extern bool do_startup_update_check;
-	extern string proxy_type;
-	extern string proxy_host;
-	extern string proxy_port;
+	extern bool logCL;						// whether or not to log the command line output to BOSSDebugLog.txt.
+	extern bool do_startup_update_check;	// Whether or not to check for updates on startup.
+	extern string proxy_type;				// The type of proxy in use.
+	extern string proxy_host;				// The hostname of the proxy in use.
+	extern string proxy_port;				// The port used to access the proxy in use.
 
 	//Returns the name of the game that BOSS is currently running for.
 	string GetGame();
 
-	//Runs BOSS with arguments according to the settings of the run_type variables.
+	//Runs BOSS with arguments according to the run_type and command line variable values.
 	void RunBOSS();
 
 	//Opens the given file in the default system program.
@@ -85,10 +85,11 @@ namespace boss {
 	//Converts a boolean to a string representation (0/1)
 	string BoolToString(bool b);
 
-	//Strips the decimal points from a version number to obtain it as an integer. Trailing zeros will cause comparisons to return incorrect values.
+	//Strips the decimal points from a version number to obtain it as an integer. 
+	//Trailing zeros will cause comparisons to return incorrect values.
 	int versionStringToInt(string version);
 
-	//Calculate a file's CRC.
+	//Calculate the CRC of the given file for comparison purposes.
 	unsigned int GetCrc32(const fs::path& filename);
 
 	//Generate a default BOSS.ini

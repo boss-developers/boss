@@ -26,7 +26,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
-
 #include <wx/msgdlg.h>
 
 #include "Helpers/helpers.h"
@@ -53,9 +52,10 @@ namespace boss {
 	using unicode::char_;
 	using unicode::space;
 
-	string updateVersion = "";
-	vector<fileInfo> updatedFiles;
-	int ans;
+	string updateVersion = "";		//If a new version is available, this holds the version string.
+	vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
+	int ans;						//The answer to the cancel download confirmation message. 
+									//Needs to be stored externally because the function the message is in repeats often.
 
 	//Buffer writer for update checker.
 	size_t writer(char *data, size_t size, size_t nmemb, void *buffer) {

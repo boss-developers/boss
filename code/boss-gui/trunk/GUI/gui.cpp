@@ -609,6 +609,7 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 	}
 }
 
+//This is called when the menu "Check For Updates" option is selected.
 void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 	string updateText;
 	bool connection = false;
@@ -650,6 +651,7 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 		Update();
 }
 
+//This is called after the GUI has finished launching (actually called every time nothing is happening, but only does something the first time).
 void MainFrame::CheckForUpdate(wxIdleEvent& event) {
 	if (CheckedForUpdate || do_startup_update_check == false)
 		return;

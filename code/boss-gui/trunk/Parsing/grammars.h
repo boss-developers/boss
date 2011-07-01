@@ -15,8 +15,6 @@
 #ifndef BOOST_SPIRIT_UNICODE
 #define BOOST_SPIRIT_UNICODE 
 #endif
-
-#include <sstream>
 #include "Helpers/helpers.h"
 
 #include <boost/spirit/include/qi.hpp>
@@ -24,7 +22,6 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/home/phoenix/object/construct.hpp>
 #include <boost/spirit/include/phoenix_bind.hpp>
-#include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
 
 namespace boss {
@@ -35,7 +32,6 @@ namespace boss {
 	using namespace std;
 	using namespace qi::labels;
 
-	using qi::skip;
 	using qi::eol;
 	using qi::lexeme;
 	using qi::on_error;
@@ -44,11 +40,9 @@ namespace boss {
 	using qi::eoi;
 
 	using unicode::char_;
-	using unicode::no_case;
 	using unicode::space;
 
 	using boost::spirit::info;
-	using boost::format;
 
 	////////////////////////
 	//Skipper Grammar
@@ -83,7 +77,7 @@ namespace boss {
 	//Ini Grammar.
 	////////////////////////////
 
-	string heading;
+	string heading;  //The current ini section heading.
 
 	void StoreHeading(string hdng) {
 		heading = hdng;
@@ -189,14 +183,11 @@ namespace boss {
 				(lit("{") >> lexeme[*(char_ - lit("}"))] >> lit("}"))
 				|
 				+(char_ - eol);
-
-			//Give each rule names.
-			section.name("section");
-			setting.name("setting");
-			var.name("variable");
-			value.name("value");
 		
+			//Error handling.
+			on_error<fail>(ini,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(section,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(heading,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(setting,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(var,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(value,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
@@ -207,19 +198,9 @@ namespace boss {
 		qi::rule<Iterator, skipper> ini, section, setting;
 		qi::rule<Iterator, string(), skipper> var, value, heading;
 	
+		//Function called when parsing fails.
+		//This is a gutted version of the BOSS.exe's function, as the GUI doesn't give failure specifics.
 		void SyntaxError(Iterator const& /*first*/, Iterator const& last, Iterator const& errorpos, info const& what) {
-			ostringstream out;
-			out << what;
-			string expect = out.str().substr(1,out.str().length()-2);
-			if (expect == "eol")
-				expect = "end of line";
-
-			string context(errorpos, min(errorpos +50, last));
-			boost::trim_left(context);
-
-			expect = "&lt;" + expect + "&gt;";
-			boost::replace_all(context, "\n", "<br />\n");
-			string msg = "Ini parsing error occured, expected: " + expect + ", at: " + context;
 			return;
 		}
 	};

@@ -19,8 +19,10 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
+	//Parses the given ini file.
 	bool parseIni(fs::path file);
 
+	//Reads the given file into the given string buffer.
 	void fileToBuffer(const fs::path file, string& buffer);
 }
 #endif

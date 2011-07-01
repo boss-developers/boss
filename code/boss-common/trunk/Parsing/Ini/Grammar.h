@@ -43,14 +43,12 @@ namespace boss {
 	using namespace std;
 	using namespace qi::labels;
 
-	using qi::skip;
 	using qi::eol;
 	using qi::lexeme;
 	using qi::on_error;
 	using qi::fail;
 
 	using unicode::char_;
-	using unicode::no_case;
 	using unicode::space;
 
 	using boost::spirit::info;
@@ -60,7 +58,7 @@ namespace boss {
 	//Ini Grammar.
 	////////////////////////////
 
-	string heading;
+	string heading;  //The current ini section heading.
 
 	static format IniParsingErrorFormat("<li><span class='error'>Ini Parsing Error: Expected a %1% at:</span>"
 		"<blockquote>%2%</blockquote>"
@@ -275,12 +273,17 @@ namespace boss {
 				+(char_ - eol);
 
 			//Give each rule names.
+			ini.name("ini");
 			section.name("section");
+			heading.name("heading");
 			setting.name("setting");
 			var.name("variable");
 			value.name("value");
 		
+			//Error handling.
+			on_error<fail>(ini,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(section,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(heading,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(setting,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(var,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(value,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));

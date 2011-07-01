@@ -21,18 +21,15 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-	struct fileInfo {
+	struct fileInfo {  //Holds the information for files to be downloaded.
 		string name;
 		unsigned int crc;
 	};
 
-	enum installType {
+	enum installType {  //Possible types of install the user has.
 		MANUAL,
 		INSTALLER
 	};
-
-	extern string updateVersion;
-	extern vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
 
 	//Exception class for updater functions.
 	struct update_error: virtual exception, virtual boost::exception {};
@@ -44,7 +41,7 @@ namespace boss {
 	//Checks if a new release of BOSS is available or not.
 	string IsUpdateAvailable();
 
-	//Download the files in the update. updateType = 0 for installer, 1 for manual.
+	//Download the files in the update.
 	void DownloadUpdateFiles(int installType, wxProgressDialog *progDia);
 
 	//Installs the downloaded update files.

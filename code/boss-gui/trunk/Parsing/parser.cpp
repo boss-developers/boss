@@ -16,6 +16,7 @@ namespace boss {
 	using namespace std;
 	namespace qi = boost::spirit::qi;
 
+	//Parses the given ini file.
 	bool parseIni(fs::path file) {
 		Ini_Skipper<string::const_iterator> skipper;
 		ini_grammar<string::const_iterator> grammar;
@@ -35,7 +36,7 @@ namespace boss {
 			return false;
 	}
 
-	//Reads an entire file into a string buffer.
+	//Reads the given file into the given string buffer.
 	void fileToBuffer(const fs::path file, string& buffer) {
 		ifstream ifile(file.c_str());
 		if (ifile.fail())
