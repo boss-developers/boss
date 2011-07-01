@@ -26,13 +26,13 @@ namespace boss {
 	namespace fs = boost::filesystem;
 	using namespace std;
 
-	int writer(char *data, size_t size, size_t nmemb, string *buffer){
-		int result = 0;
-		if(buffer != NULL) {
-			buffer -> append(data, size * nmemb);
-			result = size * nmemb;
+	int writer(char *data, size_t size, size_t nmemb, void *buffer){
+		string *str = (string*)buffer;
+		if(str != NULL) {
+			str -> append(data, size * nmemb);
+			return size * nmemb;
 		}
-		return result;
+		return 0;
 	} 
 
 	unsigned int UpdateMasterlist() {
@@ -96,7 +96,7 @@ namespace boss {
 
 		//Get revision number from http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn page text.
 		curl_easy_setopt(curl, CURLOPT_URL, revision_url);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);	
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer );
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {

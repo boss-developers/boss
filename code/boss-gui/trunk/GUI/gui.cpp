@@ -718,7 +718,7 @@ void MainFrame::Update() {
 			progDia->Destroy();
 			CleanUp();
 			string detail = e.what();
-			wxMessageBox(wxT("Update failed. Details:" + detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
+			wxMessageBox(wxT("Update failed. Details: " + detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		}
 		//Remind the user to run the uninstaller and installer.
@@ -744,13 +744,13 @@ void MainFrame::Update() {
 			progDia->Destroy();
 			CleanUp();
 			string const * detail = boost::get_error_info<err_detail>(e);
-			wxMessageBox(wxT("Update failed. Details:" + *detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
+			wxMessageBox(wxT("Update failed. Details: " + *detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		} catch (fs::filesystem_error e) {
 			progDia->Destroy();
 			CleanUp();
 			string detail = e.what();
-			wxMessageBox(wxT("Update failed. Details:" + detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
+			wxMessageBox(wxT("Update failed. Details: " + detail + "\n\nUpdate cancelled."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		}
 		//Remind the user to update BOSS GUI.exe

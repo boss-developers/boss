@@ -57,13 +57,13 @@ namespace boss {
 	vector<fileInfo> updatedFiles;
 
 	//Buffer writer for update checker.
-	int writer(char *data, size_t size, size_t nmemb, string *buffer) {
-		int result = 0;
-		if(buffer != NULL) {
-			buffer -> append(data, size * nmemb);
-			result = size * nmemb;
+	size_t writer(char *data, size_t size, size_t nmemb, void *buffer) {
+		string *str = (string*)buffer;
+		if(str != NULL) {
+			str -> append(data, size * nmemb);
+			return size * nmemb;
 		}
-		return result;
+		return 0;
 	}
 
 	//Download progress for current file function.
@@ -71,14 +71,11 @@ namespace boss {
 		double percentdownloaded = (dlNow / dlTotal) * 1000;
 		int currentProgress = floor(percentdownloaded);
 		if (currentProgress == 1000)
-			--currentProgress;
+			--currentProgress; //Stop the progress bar from closing before all files are downloaded.
 		
 		wxProgressDialog* progDia = (wxProgressDialog*)data;
-		bool cont = progDia->Update(currentProgress);
-		//Disabled the below for now. At some point an option to cancel that would feed 
-		//into a 'clean up' function that would delete the downloaded files would be good.
-		//Too complicated for the moment.
-		if (!cont)
+		progDia->Update(currentProgress);
+		if (progDia->WasCancelled())  //the user decided to cancel. This is really temperamental - most of the time the clicks don't seem to register.
 			return 1;
 		return 0;
 	}
@@ -188,7 +185,7 @@ namespace boss {
 
 		//Get page containing version number.
 		curl_easy_setopt(curl, CURLOPT_URL, url);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);	
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &remoteVersionStr);
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
@@ -219,6 +216,9 @@ namespace boss {
 		//First decide what type of install we're updating.
 		if (updateType == MANUAL)
 			url += "manual/";
+
+		//Need to reset updatedFiles because it might have been set already if the updater was run then cancelled.
+		updatedFiles.clear();
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
@@ -264,7 +264,7 @@ namespace boss {
 		//First get file list and crcs to build updatedFiles vector.
 		remote_file = url+"checksums.txt";
 		curl_easy_setopt(curl, CURLOPT_URL, remote_file.c_str());
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);	
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);	
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
