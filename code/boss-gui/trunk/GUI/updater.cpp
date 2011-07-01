@@ -55,6 +55,7 @@ namespace boss {
 
 	string updateVersion = "";
 	vector<fileInfo> updatedFiles;
+	int ans;
 
 	//Buffer writer for update checker.
 	size_t writer(char *data, size_t size, size_t nmemb, void *buffer) {
@@ -74,9 +75,15 @@ namespace boss {
 			--currentProgress; //Stop the progress bar from closing before all files are downloaded.
 		
 		wxProgressDialog* progDia = (wxProgressDialog*)data;
-		progDia->Update(currentProgress);
-		if (progDia->WasCancelled())  //the user decided to cancel. This is really temperamental - most of the time the clicks don't seem to register.
-			return 1;
+		bool cont = progDia->Update(currentProgress);
+		if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
+			if (!ans)
+				ans = wxMessageBox(wxT("Are you sure you want to cancel?"), wxT("BOSS GUI: Automatic Updater"), wxYES_NO | wxICON_EXCLAMATION, progDia);
+			if (ans == wxYES)
+				return 1;
+			progDia->Resume();
+			ans = NULL;
+		}
 		return 0;
 	}
 
@@ -219,6 +226,7 @@ namespace boss {
 
 		//Need to reset updatedFiles because it might have been set already if the updater was run then cancelled.
 		updatedFiles.clear();
+		ans = NULL;
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
