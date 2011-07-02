@@ -76,11 +76,14 @@
         ReadRegStr $Path_Other HKLM "Software\BOSS" "Other Path"
         ReadRegStr $Path_Nehrim HKLM "Software\BOSS" "Nehrim Path"
 		
-		# Need to check if it is already uninstalled, then launch that uninstaller if so.
-		# Check registry entry.
-		
-		
-		#continue
+		# Need to check if it is already installed, then launch that uninstaller if so.
+		# Check if the uninstaller exists.
+		IfFileExists "$COMMONFILES\BOSS\uninstall.exe" 0 +6
+			MessageBox MB_OKCANCEL|MB_ICONQUESTION "BOSS is already installed, and must be uninstalled before continuing. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade." IDOK cont IDCANCEL cancel
+			cancel:
+				Quit
+			cont:
+			ExecWait '$COMMONFILES\BOSS\uninstall.exe _?=$COMMONFILES\BOSS' ;Run the uninstaller in its folder and wait until it's done.
 
         ${If} $Path_OB == $Empty
             ReadRegStr $Path_OB HKLM "Software\Bethesda Softworks\Oblivion" "Installed Path"
