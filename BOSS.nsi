@@ -45,35 +45,11 @@
     Var Browse_NV
     Var Browse_Nehrim
     Var Browse_Other
-    Var Run_OB
-    Var Run_FO
-    Var Run_NV
-    Var Run_Nehrim
-    Var Run_Other
-    Var RunState_OB
-    Var RunState_FO
-    Var RunState_NV
-    Var RunState_Nehrim
-    Var RunState_Other
-    Var Update_OB
-    Var Update_FO
-    Var Update_NV
-    Var Update_Nehrim
-    Var Update_Other
-    Var UpdateState_OB
-    Var UpdateState_FO
-    Var UpdateState_NV
-    Var UpdateState_Nehrim
-    Var UpdateState_Other
     Var Check_Readme
     Var Check_DeleteOldFiles
     Var Function_Browse
     Var Function_DirPrompt
-    Var Function_RadioButton
     Var unFunction_Browse
-;-------------------------------- Install Types:
-    InstType "Full"
-    InstType "Minimal"
 ;-------------------------------- Page List:
   !insertmacro MUI_PAGE_WELCOME
   Page custom PAGE_SELECT_GAMES PAGE_SELECT_GAMES_Leave
@@ -99,11 +75,12 @@
         ReadRegStr $Path_NV HKLM "Software\BOSS" "NewVegas Path"
         ReadRegStr $Path_Other HKLM "Software\BOSS" "Other Path"
         ReadRegStr $Path_Nehrim HKLM "Software\BOSS" "Nehrim Path"
-        StrCpy $UpdateState_OB ${BST_CHECKED}
-        StrCpy $UpdateState_FO ${BST_CHECKED}
-        StrCpy $UpdateState_NV ${BST_CHECKED}
-        StrCpy $UpdateState_Nehrim ${BST_CHECKED}
-        StrCpy $UpdateState_Other ${BST_CHECKED}
+		
+		# Need to check if it is already uninstalled, then launch that uninstaller if so.
+		# Check registry entry.
+		
+		
+		#continue
 
         ${If} $Path_OB == $Empty
             ReadRegStr $Path_OB HKLM "Software\Bethesda Softworks\Oblivion" "Installed Path"
@@ -228,7 +205,6 @@
         FunctionEnd
     Function PAGE_FINISH
         !insertmacro MUI_HEADER_TEXT $(PAGE_FINISH_TITLE) $(PAGE_FINISH_SUBTITLE)
-        GetFunctionAddress $Function_RadioButton OnClick_RadioButton
         
         ReadRegStr $Path_OB HKLM "Software\BOSS" "Oblivion Path"
         ReadRegStr $Path_FO HKLM "Software\BOSS" "Fallout3 Path"
@@ -245,84 +221,38 @@
         
         IntOp $0 0 + 0
         ${If} $Path_OB != $Empty
-            ${NSD_CreateCheckBox} 0 $0u 100% 8u "Oblivion:"
+            ${NSD_CreateCheckBox} 0 $0u 100% 8u "Run BOSS for Oblivion"
                 Pop $Check_OB
                 ${NSD_AddStyle} $Check_OB ${WS_GROUP}
                 ${NSD_SetState} $Check_OB $CheckState_OB
-            IntOp $0 $0 + 10
-            ${NSD_CreateRadioButton} 0 $0u 60% 13u "Update Masterlist and Run BOSS"
-                Pop $Run_OB
-                ${NSD_AddStyle} $Run_OB ${WS_GROUP}
-                ${NSD_SetState} $Run_OB $RunState_OB
-                nsDialogs::OnClick $Run_OB $Function_RadioButton
-            ${NSD_CreateRadioButton} 60% $0u 40% 13u "Update Masterlist"
-                Pop $Update_OB
-                ${NSD_SetState} $Update_OB $UpdateState_OB
-                nsDialogs::OnClick $Update_OB $Function_RadioButton
             IntOp $0 $0 + 15
         ${EndIf}
         ${If} $Path_FO != $Empty
-            ${NSD_CreateCheckBox} 0 $0u 100% 8u "Fallout 3:"
+            ${NSD_CreateCheckBox} 0 $0u 100% 8u "Run BOSS for Fallout 3"
                 Pop $Check_FO
                 ${NSD_AddStyle} $Check_FO ${WS_GROUP}
                 ${NSD_SetState} $Check_FO $CheckState_FO
-            IntOp $0 $0 + 10
-            ${NSD_CreateRadioButton} 0 $0u 60% 13u "Update Masterlist and Run BOSS"
-                Pop $Run_FO
-                ${NSD_SetState} $Run_FO $RunState_FO
-                nsDialogs::OnClick $Run_FO $Function_RadioButton
-            ${NSD_CreateRadioButton} 60% $0u 40% 13u "Update Masterlist"
-                Pop $Update_FO
-                ${NSD_SetState} $Update_FO $UpdateState_FO
-                nsDialogs::OnClick $Update_FO $Function_RadioButton
             IntOp $0 $0 + 15
         ${EndIf}
         ${If} $Path_NV != $Empty
-            ${NSD_CreateCheckBox} 0 $0u 100% 8u "Fallout New Vegas:"
+            ${NSD_CreateCheckBox} 0 $0u 100% 8u "Run BOSS for Fallout New Vegas"
                 Pop $Check_NV
                 ${NSD_SetState} $Check_NV $CheckState_NV
                 ${NSD_AddStyle} $Check_NV ${WS_GROUP}
-            IntOp $0 $0 + 10
-            ${NSD_CreateRadioButton} 0 $0u 60% 13u "Update Masterlist and Run BOSS"
-                Pop $Run_NV
-                ${NSD_SetState} $Run_NV $RunState_NV
-                nsDialogs::OnClick $Run_NV $Function_RadioButton
-            ${NSD_CreateRadioButton} 60% $0u 40% 13u "Update Masterlist"
-                Pop $Update_NV
-                ${NSD_SetState} $Update_NV $UpdateState_NV
-                nsDialogs::OnClick $Update_NV $Function_RadioButton
             IntOp $0 $0 + 15
         ${EndIf}
         ${If} $Path_Nehrim != $Empty
-            ${NSD_CreateCheckBox} 0 $0u 100% 8u "Nehrim:"
+            ${NSD_CreateCheckBox} 0 $0u 100% 8u "Run BOSS for Nehrim"
                 Pop $Check_Nehrim
                 ${NSD_AddStyle} $Check_Nehrim ${WS_GROUP}
                 ${NSD_SetState} $Check_Nehrim $CheckState_Nehrim
-            IntOp $0 $0 + 10
-            ${NSD_CreateRadioButton} 0 $0u 60% 13u "Update Masterlist and Run BOSS"
-                Pop $Run_Nehrim
-                ${NSD_SetState} $Run_Nehrim $RunState_Nehrim
-                nsDialogs::OnClick $Run_Nehrim $Function_RadioButton
-            ${NSD_CreateRadioButton} 60% $0u 40% 13u "Update Masterlist"
-                Pop $Update_Nehrim
-                ${NSD_SetState} $Update_Nehrim $UpdateState_Nehrim
-                nsDialogs::OnClick $Update_Nehrim $Function_RadioButton
             IntOp $0 $0 + 15
         ${EndIf}
         ${If} $Path_Other != $Empty
-            ${NSD_CreateCheckBox} 0 $0u 100% 8u "Other:"
+            ${NSD_CreateCheckBox} 0 $0u 100% 8u "Run BOSS for Other"
                 Pop $Check_Other
                 ${NSD_AddStyle} $Check_Other ${WS_GROUP}
                 ${NSD_SetState} $Check_Other $CheckState_Other
-            IntOp $0 $0 + 10
-            ${NSD_CreateRadioButton} 0 $0u 60% 13u "Update Masterlist and Run BOSS"
-                Pop $Run_Other
-                ${NSD_SetState} $Run_Other $RunState_Other
-                nsDialogs::OnClick $Run_Other $Function_RadioButton
-            ${NSD_CreateRadioButton} 60% $0u 40% 13u "Update Masterlist"
-                Pop $Update_Other
-                ${NSD_SetState} $Update_Other $UpdateState_Other
-                nsDialogs::OnClick $Update_Other $Function_RadioButton
             IntOp $0 $0 + 15
         ${EndIf}
         IntOp $1 0 + 0
@@ -353,43 +283,23 @@
         
         ${If} $CheckState_OB == ${BST_CHECKED}
 			SetOutPath "$Path_OB\BOSS"
-            ${If} $UpdateState_OB == ${BST_CHECKED}
-                Exec '"$Path_OB\BOSS\Boss.exe" -o -s'
-            ${Else}
-                Exec '"$Path_OB\BOSS\Boss.exe" -u'
-            ${EndIf}
+            Exec '"$Path_OB\BOSS\Boss.exe"'
         ${EndIf}
         ${If} $CheckState_FO == ${BST_CHECKED}
             SetOutPath "$Path_FO\BOSS"
-            ${If} $UpdateState_FO == ${BST_CHECKED}
-                Exec '"$Path_FO\BOSS\Boss.exe" -o -s'
-            ${Else}
-                Exec '"$Path_FO\BOSS\Boss.exe" -u'
-            ${EndIf}
+            Exec '"$Path_FO\BOSS\Boss.exe"'
         ${EndIf}
         ${If} $CheckState_NV == ${BST_CHECKED}
 			SetOutPath "$Path_NV\BOSS"
-            ${If} $UpdateState_NV == ${BST_CHECKED}
-                Exec '"$Path_NV\BOSS\Boss.exe" -o -s'
-            ${Else}
-                Exec '"$Path_NV\BOSS\Boss.exe" -u'
-            ${EndIf}
+            Exec '"$Path_NV\BOSS\Boss.exe"'
         ${EndIf}
         ${If} $CheckState_Nehrim == ${BST_CHECKED}
             SetOutPath "$Path_Nehrim\BOSS"
-            ${If} $UpdateState_Nehrim == ${BST_CHECKED}
-                Exec '"$Path_Nehrim\BOSS\Boss.exe" -o -s'
-            ${Else}
-                Exec '"$Path_Nehrim\BOSS\Boss.exe" -u'
-            ${EndIf}
+            Exec '"$Path_Nehrim\BOSS\Boss.exe"'
         ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
             SetOutPath "$Path_Other\BOSS"
-            ${If} $UpdateState_Other == ${BST_CHECKED}
-                Exec '"$Path_Other\BOSS\Boss.exe" -o -s'
-            ${Else}
-                Exec '"$Path_Other\BOSS\Boss.exe" -u'
-            ${EndIf}
+            Exec '"$Path_Other\BOSS\Boss.exe"'
         ${EndIf}
         ${NSD_GetState} $Check_Readme $0
         ${If} $0 == ${BST_CHECKED}
@@ -400,14 +310,9 @@
 		${NSD_GetState} $Check_RemoveUserFiles $1
         ${If} $0 == ${BST_CHECKED}
             ${If} $Path_OB != $Empty
-                Delete "$Path_OB\Data\BOSS.*"
+                Delete "$Path_OB\Data\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
                 Delete "$Path_OB\Data\modlist.*"
                 Delete "$Path_OB\Data\masterlist.txt"
-                Delete "$Path_OB\Data\BOSSlog.txt"
-                Delete "$Path_OB\Data\BOSS_ReadMe.rtf"
-				Delete "$Path_OB\Data\BOSS - Print Debug Info.bat"
-				Delete "$Path_OB\Data\BOSS - Undo Last Run.bat"
-				Delete "$Path_OB\Data\BOSS - Update Masterlist.bat"
 				Delete "$Path_OB\Data\BOSS\modlist.*"
 				Delete "$Path_OB\Data\BOSS\masterlist.txt"
 				Delete "$Path_OB\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
@@ -417,14 +322,9 @@
 				RMDir  "$Path_OB\Data\BOSS"
             ${EndIf}
             ${If} $Path_FO != $Empty
-                Delete "$Path_FO\Data\BOSS.*"
+                Delete "$Path_FO\Data\BOSS*"
                 Delete "$Path_FO\Data\modlist.*"
                 Delete "$Path_FO\Data\masterlist.txt"
-                Delete "$Path_FO\Data\BOSSlog.txt"
-                Delete "$Path_FO\Data\BOSS_ReadMe.rtf"
-				Delete "$Path_FO\Data\BOSS - Print Debug Info.bat"
-				Delete "$Path_FO\Data\BOSS - Undo Last Run.bat"
-				Delete "$Path_FO\Data\BOSS - Update Masterlist.bat"
 				Delete "$Path_FO\Data\BOSS\modlist.*"
 				Delete "$Path_FO\Data\BOSS\masterlist.txt"
 				Delete "$Path_FO\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
@@ -434,14 +334,9 @@
 				RMDir  "$Path_FO\Data\BOSS"
             ${EndIf}
             ${If} $Path_NV != $Empty
-                Delete "$Path_NV\Data\BOSS.*"
+                Delete "$Path_NV\Data\BOSS*"
                 Delete "$Path_NV\Data\modlist.*"
                 Delete "$Path_NV\Data\masterlist.txt"
-                Delete "$Path_NV\Data\BOSSlog.txt"
-                Delete "$Path_NV\Data\BOSS_ReadMe.rtf"
-				Delete "$Path_NV\Data\BOSS - Print Debug Info.bat"
-				Delete "$Path_NV\Data\BOSS - Undo Last Run.bat"
-				Delete "$Path_NV\Data\BOSS - Update Masterlist.bat"
 				Delete "$Path_NV\Data\BOSS\modlist.*"
 				Delete "$Path_NV\Data\BOSS\masterlist.txt"
 				Delete "$Path_NV\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
@@ -451,14 +346,9 @@
 				RMDir  "$Path_NV\Data\BOSS"
             ${EndIf}
             ${If} $Path_Nehrim != $Empty
-                Delete "$Path_Nehrim\Data\BOSS.*"
+                Delete "$Path_Nehrim\Data\BOSS*"
                 Delete "$Path_Nehrim\Data\modlist.*"
                 Delete "$Path_Nehrim\Data\masterlist.txt"
-                Delete "$Path_Nehrim\Data\BOSSlog.txt"
-                Delete "$Path_Nehrim\Data\BOSS_ReadMe.rtf"
-				Delete "$Path_Nehrim\Data\BOSS - Print Debug Info.bat"
-				Delete "$Path_Nehrim\Data\BOSS - Undo Last Run.bat"
-				Delete "$Path_Nehrim\Data\BOSS - Update Masterlist.bat"
 				Delete "$Path_Nehrim\Data\BOSS\modlist.*"
 				Delete "$Path_Nehrim\Data\BOSS\masterlist.txt"
 				Delete "$Path_Nehrim\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
@@ -468,14 +358,9 @@
 				RMDir  "$Path_Nehrim\Data\BOSS"
             ${EndIf}
             ${If} $Path_Other != $Empty
-                Delete "$Path_Other\Data\BOSS.*"
+                Delete "$Path_Other\Data\BOSS*"
                 Delete "$Path_Other\Data\modlist.*"
                 Delete "$Path_Other\Data\masterlist.txt"
-                Delete "$Path_Other\Data\BOSSlog.txt"
-                Delete "$Path_Other\Data\BOSS_ReadMe.rtf"
-				Delete "$Path_Other\Data\BOSS - Print Debug Info.bat"
-				Delete "$Path_Other\Data\BOSS - Undo Last Run.bat"
-				Delete "$Path_Other\Data\BOSS - Update Masterlist.bat"
 				Delete "$Path_Other\Data\BOSS\modlist.*"
 				Delete "$Path_Other\Data\BOSS\masterlist.txt"
 				Delete "$Path_Other\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
@@ -509,50 +394,6 @@
         ${EndIf}
 
         ${NSD_SetText} $1 $0
-        FunctionEnd
-    Function OnClick_RadioButton
-        Pop $0
-        ${If} $0 == $Update_OB
-            ${NSD_GetState} $Update_OB $UpdateState_OB
-            ${NSD_SetState} $Run_OB ${BST_UNCHECKED}
-            ${NSD_GetState} $Run_OB $RunState_OB
-        ${ElseIf} $0 == $Run_OB
-            ${NSD_GetState} $Run_OB $RunState_OB
-            ${NSD_SetState} $Update_OB ${BST_UNCHECKED}
-            ${NSD_GetState} $Update_OB $UpdateState_OB
-        ${ElseIf} $0 == $Update_FO
-            ${NSD_GetState} $Update_FO $UpdateState_FO
-            ${NSD_SetState} $Run_FO ${BST_UNCHECKED}
-            ${NSD_GetState} $Run_FO $RunState_FO
-        ${ElseIf} $0 == $Run_FO
-            ${NSD_GetState} $Run_FO $RunState_FO
-            ${NSD_SetState} $Update_FO ${BST_UNCHECKED}
-            ${NSD_GetState} $Update_FO $UpdateState_FO
-        ${ElseIf} $0 == $Update_NV
-            ${NSD_GetState} $Update_NV $UpdateState_NV
-            ${NSD_SetState} $Run_NV ${BST_UNCHECKED}
-            ${NSD_GetState} $Run_NV $RunState_NV
-        ${ElseIf} $0 == $Run_NV
-            ${NSD_GetState} $Run_NV $RunState_NV
-            ${NSD_SetState} $Update_NV ${BST_UNCHECKED}
-            ${NSD_GetState} $Update_NV $UpdateState_NV
-        ${ElseIf} $0 == $Update_Nehrim
-            ${NSD_GetState} $Update_Nehrim $UpdateState_Nehrim
-            ${NSD_SetState} $Run_Nehrim ${BST_UNCHECKED}
-            ${NSD_GetState} $Run_Nehrim $RunState_Nehrim
-        ${ElseIf} $0 == $Run_Nehrim
-            ${NSD_GetState} $Run_Nehrim $RunState_Nehrim
-            ${NSD_SetState} $Update_Nehrim ${BST_UNCHECKED}
-            ${NSD_GetState} $Update_Nehrim $UpdateState_Nehrim
-        ${ElseIf} $0 == $Update_Other
-            ${NSD_GetState} $Update_Other $UpdateState_Other
-            ${NSD_SetState} $Run_Other ${BST_UNCHECKED}
-            ${NSD_GetState} $Run_Other $RunState_Other
-        ${ElseIf} $0 == $Run_Other
-            ${NSD_GetState} $Run_Other $RunState_Other
-            ${NSD_SetState} $Update_Other ${BST_UNCHECKED}
-            ${NSD_GetState} $Update_Other $UpdateState_Other
-        ${EndIf}
         FunctionEnd
 ;-------------------------------- The Installation Sections:
     Section "BOSS (required)" Main
@@ -649,31 +490,6 @@
                 SetOutPath "$Path_Other\BOSS"
                 CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Other.lnk" "$Path_Other\BOSS\BOSS.exe" "" "$Path_Other\BOSS\BOSS.exe" 0
 				CreateShortCut "$SMPROGRAMS\BOSS\BOSS GUI - Other.lnk" "$Path_Other\BOSS\BOSS GUI.exe" "" "$Path_Other\BOSS\BOSS GUI.exe" 0
-            ${EndIf}
-            SectionEnd
-        Section "Update Masterlist Start Menu Shortcuts" StartMenuUpdate
-            SectionIn 1
-            CreateDirectory "$SMPROGRAMS\BOSS"
-            CreateShortCut "$SMPROGRAMS\BOSS\Uninstall.lnk" "$COMMONFILES\BOSS\uninstall.exe" "-u" "$COMMONFILES\BOSS\uninstall.exe" 0
-            ${If} $CheckState_OB == ${BST_CHECKED}
-                SetOutPath "$Path_OB\BOSS"
-                CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Oblivion - Update Masterlist.lnk" "$Path_OB\BOSS\BOSS.exe" "-u" "$Path_OB\BOSS\BOSS.exe" 0
-            ${EndIf}
-            ${If} $CheckState_FO == ${BST_CHECKED}
-                SetOutPath "$Path_FO\BOSS"
-                CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Fallout3 - Update Masterlist.lnk" "$Path_FO\BOSS\BOSS.exe" "-u" "$Path_FO\BOSS\BOSS.exe" 0
-            ${EndIf}
-            ${If} $CheckState_NV == ${BST_CHECKED}
-                SetOutPath "$Path_NV\BOSS"
-                CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Fallout New Vegas - Update Masterlist.lnk" "$Path_NV\BOSS\BOSS.exe" "-u" "$Path_NV\BOSS\BOSS.exe" 0
-            ${EndIf}
-            ${If} $CheckState_Nehrim == ${BST_CHECKED}
-                SetOutPath "$Path_Nehrim\BOSS"
-                CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Nehrim - Update Masterlist.lnk" "$Path_Nehrim\BOSS\BOSS.exe" "-u" "$Path_Nehrim\BOSS\BOSS.exe" 0
-            ${EndIf}
-            ${If} $CheckState_Other == ${BST_CHECKED}
-                SetOutPath "$Path_Other\BOSS"
-                CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Other - Update Masterlist.lnk" "$Path_Other\BOSS\BOSS.exe" "-u" "$Path_Other\BOSS\BOSS.exe" 0
             ${EndIf}
             SectionEnd
         Section "Documentation Shortcuts" Shortcuts_SM_Docs
@@ -791,7 +607,6 @@
         ${EndIf}
         ${NSD_CreateCheckBox} 0 $0u 100% 13u "Uninstall userlist and ini file if they exist."
             Pop $Check_RemoveUserFiles
-         #   ${NSD_SetState} $Check_RemoveUserFiles ${BST_CHECKED}
         nsDialogs::Show
         FunctionEnd
     Function un.PAGE_SELECT_GAMES_Leave
@@ -848,9 +663,8 @@
             RMDir "$Path_OB\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Oblivion.lnk"
 			Delete "$SMPROGRAMS\BOSS\BOSS GUI - Oblivion.lnk"
-            Delete "$SMPROGRAMS\BOSS\BOSS - Oblivion - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "Oblivion Path"
-            ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
+            ;Delete the stupid MUICache Windows created registry references to the BOSS executables...
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\BOSS\BOSS.exe"
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_OB\BOSS\BOSS.exe"
@@ -875,9 +689,8 @@
             RMDir "$Path_FO\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Fallout3.lnk"
 			Delete "$SMPROGRAMS\BOSS\BOSS GUI - Fallout3.lnk"
-            Delete "$SMPROGRAMS\BOSS\BOSS - Fallout3 - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "Fallout3 Path"
-            ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
+            ;Delete the stupid MUICache Windows created registry references to the BOSS executables...
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\BOSS\BOSS.exe"
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_FO\BOSS\BOSS.exe"
@@ -902,9 +715,8 @@
             RMDir "$Path_NV\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Fallout New Vegas.lnk"
 			Delete "$SMPROGRAMS\BOSS\BOSS GUI - Fallout New Vegas.lnk"
-            Delete "$SMPROGRAMS\BOSS\BOSS - Fallout New Vegas - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "NewVegas Path"
-            ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
+            ;Delete the stupid MUICache Windows created registry references to the BOSS executables...
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\BOSS\BOSS.exe"
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_NV\BOSS\BOSS.exe"
@@ -929,9 +741,8 @@
             RMDir "$Path_Nehrim\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Nehrim.lnk"
 			Delete "$SMPROGRAMS\BOSS\BOSS GUI - Nehrim.lnk"
-            Delete "$SMPROGRAMS\BOSS\BOSS - Nehrim - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "Nehrim Path"
-            ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
+            ;Delete the stupid MUICache Windows created registry references to the BOSS executables...
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\BOSS\BOSS.exe"
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Nehrim\BOSS\BOSS.exe"
@@ -956,9 +767,8 @@
             RMDir "$Path_Other\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Other.lnk"
 			Delete "$SMPROGRAMS\BOSS\BOSS GUI - Other.lnk"
-            Delete "$SMPROGRAMS\BOSS\BOSS - Other - Update Masterlist.lnk"
             DeleteRegValue HKLM "SOFTWARE\BOSS" "Other Path"
-            ;Delete the stupid MUICache Windows created registry references to the BOSS executable and batch files...
+            ;Delete the stupid MUICache Windows created registry references to the BOSS executables...
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\BOSS\BOSS.exe"
                 DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\BOSS\BOSS GUI.exe"
                 DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_Other\BOSS\BOSS.exe"
@@ -999,7 +809,7 @@
   !insertmacro MUI_LANGUAGE "English"
   LangString DESC_Main ${LANG_ENGLISH} "The main executable."
   LangString DESC_GUI ${LANG_ENGLISH} "The Graphical User Interface for BOSS."
-  LangString DESC_Shortcuts_SM ${LANG_ENGLISH} "Start Menu shortcuts for the uninstaller & BOSS.exe for each game."
+  LangString DESC_Shortcuts_SM ${LANG_ENGLISH} "Start Menu shortcuts for the uninstaller, BOSS.exe and BOSS GUI.exe for each game."
   LangString DESC_Shortcuts_SM_Docs ${LANG_ENGLISH} "Start Menu shortcuts for the BOSS Documentation."
   LangString DESC_Documentation ${LANG_ENGLISH} "The documentation."
   LangString PAGE_SELECT_GAMES_TITLE ${LANG_ENGLISH} "Choose Games"
