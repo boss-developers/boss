@@ -293,7 +293,7 @@ namespace boss {
 		//Now that we've got a vector of the files, we can download them.
 		//Loop through the vector and download and save each file. Use binary streams.
 		for (size_t i=0;i<updatedFiles.size();i++) {
-			if (updatedFiles[i].name.empty())
+			if (updatedFiles[i].name.empty())  //Just in case.
 				continue;
 			fileBuffer.clear();  //Empty buffer ready for next download.
 			//Set up progress info. Since we're not doing a total download progress bar, zero progress for each file.

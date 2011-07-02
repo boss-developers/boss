@@ -77,7 +77,7 @@ namespace boss {
 	void RunBOSS();
 
 	//Opens the given file in the default system program.
-	void OpenInSysDefault(fs::path& file);
+	void OpenInSysDefault(fs::path file);
 
 	//Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 	string IntToString(unsigned int n);

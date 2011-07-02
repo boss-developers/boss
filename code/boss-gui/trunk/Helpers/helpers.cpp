@@ -65,7 +65,7 @@ namespace boss {
 
 	//Runs BOSS with arguments according to the run_type and command line variable values.
 	void RunBOSS() {
-		string params = "BOSS.exe";
+		string params = "start \"\" /B BOSS.exe";
 		//Set format output params.
 		if (silent)
 			params += " -s";
@@ -113,16 +113,14 @@ namespace boss {
 	}
 
 	//Opens the given file in the default system program.
-	void OpenInSysDefault(fs::path& file) {
+	void OpenInSysDefault(fs::path file) {
 		string command =
 #if _WIN32 || _WIN64
-			"start ";
+			"start \"\" /B "; //Window title must be supplied ("" given). /B means a CLI window isn't opened.
 #else
 			"xdg-open ";
 #endif
-		if (file.extension() == ".lnk\"" || file.extension() == ".html\"")
-			command = "";
-		command += file.string();
+		command += "\"" + file.string() + "\"";
 		system(command.c_str());
 		return;
 	}

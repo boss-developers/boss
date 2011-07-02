@@ -31,6 +31,8 @@ namespace boss {
 		INSTALLER
 	};
 
+	extern vector<fileInfo> updatedFiles;
+
 	//Exception class for updater functions.
 	struct update_error: virtual exception, virtual boost::exception {};
 	typedef boost::error_info<struct tag_errno,string> err_detail;

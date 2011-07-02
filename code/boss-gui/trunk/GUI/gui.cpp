@@ -465,10 +465,10 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 		//Simplify by looking for either the files themselves or shortcuts to them in the BOSS folder.
 		//If neither, show a pop-up message saying they can't be found.
 		if (fs::exists(file + ".html")) {
-			file = "\"" + file + ".html\"";
+			file += ".html";
 			OpenInSysDefault(fs::path(file));
 		} else if (fs::exists(file + ".lnk")) {
-			file = "\"" + file + ".lnk\"";
+			file += ".lnk";
 			OpenInSysDefault(fs::path(file));
 		} else {
 			//No ReadMe exists, show a pop-up message saying so.
@@ -697,8 +697,8 @@ void MainFrame::Update() {
 	//First detect type of current install: manual or installer.
 	if (fs::exists("BOSS ReadMe.lnk")) {  //Installer
 		string message = "Your current install has been determined as having been installed via the BOSS installer.\n\n";
-		message += "The automatic updater will download the installer for the new version to this BOSS folder, then exit BOSS GUI.\n\n";
-		message += "You must then uninstall your current version of BOSS using the uninstaller it provided, and install the new version using the newly downloaded installer.";
+		message += "The automatic updater will download the installer for the new version to this BOSS folder.\n\n";
+		message += "It will then launch the installer before exiting the GUI. Complete the installer to complete the update.";
 		
 		wxMessageDialog *dlg = new wxMessageDialog(this,message, wxT("BOSS GUI: Automatic Updater"), wxOK | wxCANCEL);
 		if (dlg->ShowModal() != wxID_OK) {  //User has chosen to cancel. Quit now.
@@ -727,7 +727,15 @@ void MainFrame::Update() {
 			return;
 		}
 		//Remind the user to run the uninstaller and installer.
-		wxMessageBox(wxT("New installer successfully downloaded!\n\nWhen you click 'OK', the GUI will exit. Then uninstall your current version of BOSS and install the new version using the downloaded installer."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+		wxMessageBox(wxT("New installer successfully downloaded!\n\nWhen you click 'OK', the GUI will launch the downloaded installer and exit. Complete the installer to complete the update."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+
+		//Now run downloaded installer then exit.
+		//Although there should only be one installer file, to be safe iterate through the files vector.
+		for (size_t i=0;i<updatedFiles.size();i++) {
+			if (updatedFiles[i].name.empty())  //Just in case.
+				continue;
+			OpenInSysDefault(fs::path(updatedFiles[i].name));
+		}
 	} else {  //Manual.
 		string message = "Your current install has been determined as having been installed manually.\n\n";
 		message += "The automatic updater will download the updated files and replace your existing files with them.";
@@ -762,7 +770,7 @@ void MainFrame::Update() {
 			return;
 		}
 		//Remind the user to update BOSS GUI.exe
-		wxMessageBox(wxT("Files successfully updated!\n\nWhen you click 'OK' the GUI will exit. You must manually delete your current \"BOSS GUI.exe\" and rename the downloaded \"BOSS GUI.exe.new\" to \"BOSS GUI.exe\" to complete the update."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+		wxMessageBox(wxT("Files successfully updated!\n\nWhen you click 'OK' the GUI will exit. Once it has closed, you must manually delete your current \"BOSS GUI.exe\" and rename the downloaded \"BOSS GUI.exe.new\" to \"BOSS GUI.exe\" to complete the update."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 	}
 	this->Close();
 }
