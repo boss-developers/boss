@@ -174,7 +174,7 @@ namespace boss {
 			<<	"[BOSS.InternetSettings]" << endl
 			<<	"# These settings control BOSS's (BOSS.exe and BOSS GUI.exe) proxy support." << endl
 			<<	"# They are used when BOSS.exe runs directly, and when the GUI is run." << endl
-			<<	"# There are no GUI equivalents for these settings." << endl
+			<<	"# These settings can also be set through the GUI and are updated automatically when the GUI quits." << endl
 			<<	"# Valid values for UpdaterProxyType are 'direct', 'http', 'http1_0', 'socks4', 'socks4a', 'socks5', 'socks5h'." << endl
 			<<	"# Valid values for UpdaterProxyHostname are 'none' and any valid hostname or IP address." << endl
 			<<	"# Valid values for UpdaterProxyPort are 0 and any positive whole number." << endl
@@ -202,8 +202,8 @@ namespace boss {
 			<<	"DoTrialRun              = 0" << endl << endl
 
 			<<	"[GUI.Settings]" << endl
-			<<	"# These settings have no counterparts in the GUI itself and must be set here." << endl
-			<<	"# DoStartupUpdateCheck is a toggle, 0 = not set, 1 = set." << endl
+			<<	"# This section records the last configuration of options selected through the GUI." << endl
+			<<	"# These settings are updated automatically when the GUI quits." << endl
 			<<	"DoStartupUpdateCheck    = 1" << endl << endl
 
 			<<	"[GUI.LastOptions]" << endl

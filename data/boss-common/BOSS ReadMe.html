@@ -69,7 +69,7 @@
 		<li>Provides Bash Tag suggestions that are automatically applied by Wrye Bash (for Oblivion), Wrye Flash (for Fallout 3) or Wrye Flash NV (for Fallout: New Vegas).</li>
 		<li>Sorts mod files ghosted by Wrye Bash/Flash/Flash NV.</li>
 		<li>Allows easy user customisation of mod positions and the messages provided.</li>
-		<li>Includes a <abbr title="Graphical User Interface">GUI</abbr> for easily accessing almost all of Better Oblivion Sorting Software's functions, including launching it with different settings.</li>
+		<li>Includes a <abbr title="Graphical User Interface">GUI</abbr> for easily accessing all of Better Oblivion Sorting Software's functions, including launching it with different settings, and a semi-automatic updater to ensure you always have the latest version installed.</li>
 		<li>Is under constant development and improvement by a team of modders and experts on all supported games.</li>	
 	</ul>
 	<p>Better Oblivion Sorting Software (BOSS) will re-order your mods to their correct positions, putting any mods it doesn't recognise after them, in the same order as they were before BOSS was run.</p>
@@ -99,7 +99,7 @@
 	
 	<div id="advanced"><span>General &amp; Advanced Usage</span><br /><br />
 	<span class="subtitle" id="gui">The Graphical User Interface</span>
-	<p>BOSS comes with a <abbr title="Graphical User Interface">GUI</abbr> that provides easy access to almost all of BOSS's functions and features. It allows you to:</p>
+	<p>BOSS comes with a <abbr title="Graphical User Interface">GUI</abbr> that provides easy access to all of BOSS's functions and features. It allows you to:</p>
 	<ul>
 		<li>Change BOSS's output options:
 		<ul>
@@ -132,6 +132,14 @@
 				<li><i>Display File CRCs</i>: Calculate and display in the BOSSlog the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr> and its installed plugins.</li>
 			</ul>
 			</li>
+		</ul>
+		</li>
+		<li>Change BOSS and GUI settings:
+		<ul>
+			<li><i>Check for BOSS updates on GUI startup</i>: Controls whether or not the GUI checks for updates automatically when it starts up.</li>
+			<li><i>Proxy Type</i>: Specify the type of proxy you use to connect to the Internet, if you use one.</li>
+			<li><i>Proxy Hostname</i>: Specify the hostname of your proxy, if you use one.</li>
+			<li><i>Proxy Port Number</i>: Specify the port number through which your proxy is accessed, if you use one.</li>
 		</ul>
 		</li>
 		<li>Launch BOSS.</li>
@@ -212,9 +220,10 @@
 	<span class="subtitle" id="customising">Customising How BOSS Works</span>
 	<p>Users can customise how BOSS handles their mods through the included User Rules feature. This feature allows you to define the positions of mods not in the masterlist, and to override the masterlist positions of mods,
 	as well as edit the output messages of mods, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes are not lost. All the information on the User Rules feature can be found in the "BOSS User Rules ReadMe.html" file.</p>
+	<p>For users who wish to be provided with a GUI feature for managing their userlist and own a copy of Microsoft Word 2003, 2007 or 2010, Surazal's <a href="">BOSS Userlist Manager</a> is a comprehensive utility that provides a range of features that may prove useful.</p>
 	<p>Users can also edit a number of BOSS's default settings in the BOSS.ini. As this is where BOSS gets its settings from, care must be taken to edit it correctly to prevent breaking BOSS's operation. The ini is split into the following sections:</p>
 	<ol>
-		<li><i>BOSS.InternetSettings</i>: These settings control how the masterlist updater and GUI auto-updater connect to the Internet. They are shared by BOSS.exe and BOSS GUI.exe, and can be overriden for the masterlist updater using BOSS's command line parameters. There is no GUI method for altering these settings. You will probably know if you need to alter them.
+		<li><i>BOSS.InternetSettings</i>: These settings control how the masterlist updater and GUI auto-updater connect to the Internet. They are shared by BOSS.exe and BOSS GUI.exe, and can be overriden for the masterlist updater using BOSS's command line parameters. They may also be edited through the GUI. You will probably know if you need to alter them.
 		<ul>
 			<li><i>ProxyType</i>: The type of proxy used, if one is required to connect to the Internet. Valid values are: 
 			'<code>direct</code>', 
@@ -244,12 +253,8 @@
 			<li><i>DoTrialRun</i>: Run BOSS and simulate its changes to your load order without actually reordering your mods. Default is '<code>0</code>'.</li>
 		</ul>
 		</li>
-		<li><i>GUI.Settings</i>: These settings control aspects of the GUI's behaviour. There is no GUI method for altering them. Unless otherwise stated, they are binary toggles, so '<code>1</code>' switches them on and '<code>0</code>' switches them off.
-		<ul>
-			<li><i>DoStartupUpdateCheck</i>: Check for updates to BOSS when the GUI is launched. Default is '<code>1</code>'.</li>
-		</ul>
-		</li>
-		<li><i>GUI.LastOptions</i>: These settings record the options last selected by the user in the GUI. As these settings are automatically loaded when the GUI starts and saved when it exits, it is not recommended that you alter them manually.</li>
+		<li><i>GUI.Settings</i>: These settings control aspects of the GUI's behaviour. As these settings are automatically loaded when the GUI starts and saved when it exits, there is no benefit to editing them by hand, so it is not recommended that you alter them manually.</li>
+		<li><i>GUI.LastOptions</i>: These settings record the options last selected by the user in the GUI. As these settings are automatically loaded when the GUI starts and saved when it exits, there is no benefit to editing them by hand, so it is not recommended that you alter them manually.</li>
 		<li><i>BOSSlog.Filters</i>: These settings control the default states of the BOSSlog filters. If a filter's default is set to be enabled, then it will be enabled and applied when the BOSSlog is opened. These settings are all binary toggles, so '<code>1</code>' enables them and '<code>0</code>' disables them. By default all filters are disabled. See the earlier <q><a href="#bosslog">The BOSS Log</a></q> section for what each filter does.
 		<ul>
 			<li><i>UseDarkColourScheme</i>: Controls the state of the <q>Use Dark Colour Scheme</q> filter.</li>
@@ -369,12 +374,11 @@
 	</div><br /><br />
 	
 	<div id="troubleshooting"><span>Troubleshooting</span><br /><br />
-	<p>In some circumstances BOSS may not be able to run properly, due to a variety of possible reasons. In such cases, an error message detailing the problem should be provided. If the program unexpectedly crashes, or you experience 
+	<p>Although BOSS is simple to use, it has grown to become a relatively complex application. As such, there are some circumstances under which BOSS may not be able to run correctly, due to a variety of possible reasons. In such cases, an error message detailing the problem should be provided. If the program unexpectedly crashes, or you experience 
 	a problem for which no error message is given, please report the crash or problem to an official BOSS thread (linked to in the <q><a href="#links">Quick Links</a></q> section below), so that we may fix it.</p>
 	<p>If the information below does not help you to solve any problems you are experiencing, please seek further support in one of the official BOSS threads.</p>
 	<span class="subtitle" id="general">General Problems</span>
 	<p>There are a few general reasons why BOSS may fail to function correctly. Check if any of the symptoms listed below fit your issue.</p>
-	
 	<ul>
 		<li style="margin-bottom:1.4em;"><b>Symptom:</b> No change in load order.
 		<ul>
@@ -424,10 +428,9 @@
 	<br />
 	
 	<span class="subtitle" id="international">International Character Support</span>
-	<p>BOSS provides support for sorting mods containing characters from any language via the Unicode character encoding, specifically UTF-8. All BOSS's files are encoded in UTF-8 by default. 
+	<p>BOSS provides support for sorting mods containing characters from any language via the Unicode character encoding, specifically UTF-8. All BOSS's files are encoded in UTF-8 by default.</p>
 	
-	However, if you created your own userlist.txt file before BOSS automatically created one, it <b>must</b>
-	be encoded in UTF-8 for BOSS to read it correctly. <b>This is not Notepad's default encoding!</b> If you need to convert a file's encoding, here are some instructions:</p>
+	<p>However, if you created your userlist.txt before BOSS automatically created one, you will probably need to convert it to the UTF-8 encoding, as it is not Notepad's default encoding. Below are some instructions for converting a file's encoding to UTF-8:</p>
     <ul>
 		<li>Using Notepad:
 			<ol>
@@ -646,7 +649,7 @@
 	</ul>
 	<p>Some people have gone out of their way and provided continuing, expert and detailed help - <b>thank you very much</b>! In addition to the above, the following are credited with additional application-related support:</p>
 	<ul>
-		<li>Wrye and the rest of the Wrye Bash Team: For implementing the importing of BOSS's Bashed Patch tag suggestions and general support for BOSS into <a href="http://tesnexus.com/downloads/file.php?id=22368">Wrye Bash</a>.</li>
+		<li>The Wrye Bash development team: For implementing the importing of BOSS's Bashed Patch tag suggestions and general support for BOSS into <a href="http://tesnexus.com/downloads/file.php?id=22368">Wrye Bash</a>.</li>
 		<li>The Beta Testing &amp; Analysis Guild at <a href="http://tesalliance.org/forums/">TES Alliance</a>: For extensive testing and giving feedback on v1.6 prior to release.</li>
 		<li>Surazal: For extensive testing and feedback during development of v1.6, and for providing the inspiration for many features through his BOSS Masterlist Manager macro for Microsoft Word.</li>
 		<li>myk002: For extensive code contributions and testing during development of v1.6+.</li>
@@ -755,7 +758,6 @@
 			<li>Added --proxy-host,-H [ hostname ] command line parameter to specify a proxy's host server for the masterlist updater.</li>
 			<li>Added --proxy-port,-P [ port ] command line parameter to specify a proxy's port for the masterlist updater.</li>
 			<li>Added --proxy-type,-T [ type ] command line parameter to specify a proxy type for the masterlist updater.</li>
-			<li>The settings for the GUI's <q>Check For Updates</q> functionality are only set via the new ini, there are no GUI command line parameters or GUI options for them.</li>
 		</ul>
 		</li>
 		<li>Added: Support for Fallout: New Vegas mods that use the Fallout 3 master file, such as <q>A Requiem for the Capital Wasteland</q>.</li>
@@ -780,6 +782,7 @@
 		<li>(GUI) Changed: Renamed a number of options, simplifying their names slightly.</li>
 		<li>(GUI) Added: <q>Perform Trial Run</q> option.</li>
 		<li>(GUI) Added: Settings are now saved in the BOSS.ini on exit and loaded on start.</li>
+		<li>(GUI) Added: Settings page for toggling the startup update check and altering proxy settings.</li>
 		<li>(Installer) Changed: Updated to reflect various changes to programs.</li>
 		<li>(Installer) Changed: Installer now runs uninstaller before installing if a previous installation of BOSS is found.</li>
 		<li>(Docs) Changed: Significant content and formatting changes to main ReadMe, slight formatting changes to User Rules readme.</li>

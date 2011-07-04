@@ -32,6 +32,7 @@ public:
 	MainFrame(const wxChar *title, int x, int y, int width, int height);
 	void CheckForUpdate(wxIdleEvent& event);
 	void Update();
+	void OnOpenSettings(wxCommandEvent& event);
 	void OnQuit(wxCommandEvent& event);
 	void OnRunBOSS(wxCommandEvent& event);
 	void OnOpenFile(wxCommandEvent& event);
@@ -54,6 +55,7 @@ public:
 private:
 	wxMenuBar *MenuBar;
 	wxMenu *FileMenu;
+	wxMenu *EditMenu;
 	wxMenu *HelpMenu;
 	wxButton *RunBOSSButton;
 	wxButton *OpenBOSSlogButton;
@@ -79,6 +81,24 @@ private:
 	wxStaticText *RevertText;
 };
 
+class SettingsFrame : public wxFrame {
+public:
+	SettingsFrame(const wxChar *title, wxFrame *parent, int x, int y, int width, int height);
+	void OnStartupUpdateChange(wxCommandEvent& event);
+	void OnProxyTypeChange(wxCommandEvent& event);
+	void OnProxyHostChange(wxCommandEvent& event);
+	void OnProxyPortChange(wxCommandEvent& event);
+	DECLARE_EVENT_TABLE()
+private:
+	wxCheckBox *StartupUpdateCheckBox;
+	wxComboBox *ProxyTypeBox;
+	wxTextCtrl *ProxyHostBox;
+	wxTextCtrl *ProxyPortBox;
+	wxStaticText *ProxyTypeText;
+	wxStaticText *ProxyHostText;
+	wxStaticText *ProxyPortText;
+};
+
 enum {
     OPTION_OpenUserlist = wxID_HIGHEST + 1, // declares an id which will be used to call our button
 	OPTION_OpenBOSSlog,
@@ -89,10 +109,12 @@ enum {
 	MENU_OpenMReadMe,
 	MENU_OpenURReadMe,
 	MENU_ShowAbout,
+	MENU_ShowSettings,
 	DROPDOWN_LogFormat,
 	DROPDOWN_Verbosity,
 	DROPDOWN_Game,
 	DROPDOWN_Revert,
+	DROPDOWN_ProxyType,
 	CHECKBOX_ShowBOSSlog,
 	CHECKBOX_EnableDebug,
 	CHECKBOX_Update,
@@ -102,8 +124,12 @@ enum {
 	CHECKBOX_RevertEnableCRCs,
 	CHECKBOX_EnableLogging,
 	CHECKBOX_TrialRun,
+	CHECKBOX_StartupUpdateCheck,
+	CHECKBOX_UseProxy,
 	RADIOBUTTON_SortOption,
 	RADIOBUTTON_UpdateOption,
 	RADIOBUTTON_UndoOption,
+	TEXT_ProxyHost,
+	TEXT_ProxyPort
 };
 #endif

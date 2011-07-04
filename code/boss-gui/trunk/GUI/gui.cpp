@@ -21,7 +21,7 @@
 
 BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_IDLE( MainFrame::CheckForUpdate )
-	EVT_CLOSE (MainFrame::OnClose)
+	EVT_CLOSE (MainFrame::OnClose )
 	EVT_MENU ( MENU_Quit, MainFrame::OnQuit )
 	EVT_MENU ( OPTION_OpenUserlist, MainFrame::OnOpenFile )
 	EVT_MENU ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
@@ -30,6 +30,7 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_MENU ( MENU_OpenURReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( OPTION_CheckForUpdates, MainFrame::OnUpdateCheck )
 	EVT_MENU ( MENU_ShowAbout, MainFrame::OnAbout )
+	EVT_MENU ( MENU_ShowSettings, MainFrame::OnOpenSettings )
 	EVT_BUTTON ( OPTION_Run, MainFrame::OnRunBOSS )
 	EVT_BUTTON ( OPTION_OpenUserlist, MainFrame::OnOpenFile )
 	EVT_BUTTON ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
@@ -50,6 +51,13 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_RADIOBUTTON ( RADIOBUTTON_SortOption, MainFrame::OnRunTypeChange )
 	EVT_RADIOBUTTON ( RADIOBUTTON_UpdateOption, MainFrame::OnRunTypeChange )
 	EVT_RADIOBUTTON ( RADIOBUTTON_UndoOption, MainFrame::OnRunTypeChange )
+END_EVENT_TABLE()
+
+BEGIN_EVENT_TABLE( SettingsFrame, wxFrame )
+	EVT_TEXT ( TEXT_ProxyHost, SettingsFrame::OnProxyHostChange )
+	EVT_TEXT ( TEXT_ProxyPort, SettingsFrame::OnProxyPortChange )
+	EVT_COMBOBOX ( DROPDOWN_ProxyType, SettingsFrame::OnProxyTypeChange )
+	EVT_CHECKBOX ( CHECKBOX_StartupUpdateCheck, SettingsFrame::OnStartupUpdateChange )
 END_EVENT_TABLE()
 
 IMPLEMENT_APP(BossGUI)
@@ -126,6 +134,10 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
     FileMenu->AppendSeparator();
     FileMenu->Append(MENU_Quit, _T("&Quit"), _T("Quit BOSS GUI."));
     MenuBar->Append(FileMenu, _T("&File"));
+	//Edit Menu
+	EditMenu = new wxMenu();
+	EditMenu->Append(MENU_ShowSettings, _T("&Settings..."), _T("Opens the GUI settings window."));
+	MenuBar->Append(EditMenu, _T("&Edit"));
     // About menu
     HelpMenu = new wxMenu();
 	HelpMenu->Append(MENU_OpenMReadMe, _T("Open &Main ReadMe"), _T("Opens the main BOSS ReadMe in your default web browser."));
@@ -340,7 +352,34 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 	if (fs::exists("BOSS.ini")) {
 		fileToBuffer("BOSS.ini",buffer);
 		size_t pos1,pos2;
-		pos1 = buffer.find("[GUI.LastOptions]");
+		pos1 = buffer.find("[BOSS.InternetSettings]");
+		for (int i=0;i<3;i++) {
+			pos1 = buffer.find("=",pos1+1);
+			if (i==0) {  //Replace ProxyType setting
+				//Need to find out how long the current setting string is.
+				//Look for the end of the line.
+				pos2 = buffer.find("\r\n",pos1);  //Windows EOL.
+				if (pos2 == string::npos)
+					pos2 = buffer.find("\n",pos1);  //Unix EOL.
+				//Length of setting string is pos2-pos1-2.
+				buffer.replace(pos1+2,pos2-pos1-2,proxy_type);
+			} else if (i==1) {  //Replace ProxyHost setting
+				pos2 = buffer.find("\r\n",pos1);  //Windows EOL.
+				if (pos2 == string::npos)
+					pos2 = buffer.find("\n",pos1);  //Unix EOL.
+				buffer.replace(pos1+2,pos2-pos1-2,proxy_host);
+			} else if (i==2) {  //Replace ProxyPort setting
+				pos2 = buffer.find("\r\n",pos1);  //Windows EOL.
+				if (pos2 == string::npos)
+					pos2 = buffer.find("\n",pos1);  //Unix EOL.
+				buffer.replace(pos1+2,pos2-pos1-2,proxy_port);
+			}
+
+		}
+		pos1 = buffer.find("[GUI.Settings]", pos1+1);
+			pos1 = buffer.find("=",pos1+1);
+				buffer.replace(pos1+2,1,BoolToString(do_startup_update_check));  //Replace DoStartupUpdateCheck setting.
+		pos1 = buffer.find("[GUI.LastOptions]", pos1+1);
 		for (int i=0;i<14;i++) {
 			pos1 = buffer.find("=",pos1+1);
 			if (i==0)
@@ -773,4 +812,114 @@ void MainFrame::Update() {
 		wxMessageBox(wxT("Files successfully updated!\n\nWhen you click 'OK' the GUI will exit. Once it has closed, you must manually delete your current \"BOSS GUI.exe\" and rename the downloaded \"BOSS GUI.exe.new\" to \"BOSS GUI.exe\" to complete the update."), wxT("BOSS GUI: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 	}
 	this->Close();
+}
+
+void MainFrame::OnOpenSettings(wxCommandEvent& event) {
+	SettingsFrame *settings = new SettingsFrame(wxT("BOSS GUI: Settings"),this,wxDefaultPosition.x,wxDefaultPosition.y,wxDefaultSize.x,wxDefaultSize.y);
+	settings->Show();
+}
+
+SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent, int x, int y, int width, int height) : wxFrame(parent, -1, title, wxPoint(x, y), wxSize(width, height)) {
+
+	wxString ProxyTypes[] = {
+        wxT("Direct (No Proxy)"),
+        wxT("HTTP"),
+		wxT("HTTP 1.0"),
+		wxT("SOCKS 4"),
+		wxT("SOCKS 4a"),
+		wxT("SOCKS 5"),
+		wxT("SOCKS 5h (proxy resolves hostname)")
+    };
+
+	//Set up stuff in the frame.
+	SetBackgroundColour(wxColour(255,255,255));
+
+	//Contents in one big resizing box.
+	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
+
+	wxStaticBoxSizer *generalOptionsBox = new wxStaticBoxSizer(wxVERTICAL, this, "GUI Settings");
+	generalOptionsBox->Add(StartupUpdateCheckBox = new wxCheckBox(this,CHECKBOX_StartupUpdateCheck,"Check for BOSS updates on GUI startup"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	bigBox->Add(generalOptionsBox, 0, wxALL, 20);
+
+	wxStaticBoxSizer *proxyOptionsBox = new wxStaticBoxSizer(wxVERTICAL,this,"Internet Settings");
+	proxyOptionsBox->Add(new wxStaticText(this, wxID_ANY, "These settings control BOSS's proxy support and are applied for both the GUI and BOSS.exe.\n"), 0, wxALL, 5);
+	
+	wxBoxSizer *proxyTypeSizer = new wxBoxSizer(wxHORIZONTAL);
+	proxyTypeSizer->Add(ProxyTypeText = new wxStaticText(this, wxID_ANY, "Proxy Type: "), 1,  wxTOP | wxLEFT | wxBOTTOM, 5);
+	proxyTypeSizer->Add(ProxyTypeBox = new wxComboBox(this,DROPDOWN_ProxyType,ProxyTypes[0],wxDefaultPosition,wxDefaultSize,7,ProxyTypes,wxCB_READONLY), 2, wxTOP | wxRIGHT | wxBOTTOM, 5);
+	proxyOptionsBox->Add(proxyTypeSizer);
+	
+	wxBoxSizer *proxyHostSizer = new wxBoxSizer(wxHORIZONTAL);
+	proxyHostSizer->Add(ProxyTypeText = new wxStaticText(this, wxID_ANY, "Proxy Hostname:   "), 1,  wxTOP | wxLEFT | wxBOTTOM, 5);
+	proxyHostSizer->Add(ProxyHostBox = new wxTextCtrl(this,TEXT_ProxyHost), 2, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	proxyOptionsBox->Add(proxyHostSizer);
+
+	wxBoxSizer *proxyPortSizer = new wxBoxSizer(wxHORIZONTAL);
+	proxyPortSizer->Add(ProxyTypeText = new wxStaticText(this, wxID_ANY, "Proxy Port Number: "), 1,  wxTOP | wxLEFT | wxBOTTOM, 5);
+	proxyPortSizer->Add(ProxyPortBox = new wxTextCtrl(this,TEXT_ProxyPort), 2, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	proxyOptionsBox->Add(proxyPortSizer);
+
+	bigBox->Add(proxyOptionsBox, 0, wxLEFT | wxRIGHT | wxBOTTOM, 20);
+
+	//Initialise options with values.
+	if (do_startup_update_check)
+		StartupUpdateCheckBox->SetValue(true);
+	else
+		StartupUpdateCheckBox->SetValue(false);
+	ProxyHostBox->SetValue(proxy_host);
+	ProxyPortBox->SetValue(proxy_port);
+	if (proxy_type == "direct")
+		ProxyTypeBox->SetValue(ProxyTypes[0]);
+	else if (proxy_type == "http")
+		ProxyTypeBox->SetValue(ProxyTypes[1]);
+	else if (proxy_type == "http1_0")
+		ProxyTypeBox->SetValue(ProxyTypes[2]);
+	else if (proxy_type == "socks4")
+		ProxyTypeBox->SetValue(ProxyTypes[3]);
+	else if (proxy_type == "socks4a")
+		ProxyTypeBox->SetValue(ProxyTypes[4]);
+	else if (proxy_type == "socks5")
+		ProxyTypeBox->SetValue(ProxyTypes[5]);
+	else if (proxy_type == "socks5h")
+		ProxyTypeBox->SetValue(ProxyTypes[6]);
+	
+	//Now set the layout and sizes.
+	SetSizerAndFit(bigBox);
+}
+
+void SettingsFrame::OnStartupUpdateChange(wxCommandEvent& event) {
+	do_startup_update_check = event.IsChecked();
+}
+
+void SettingsFrame::OnProxyTypeChange(wxCommandEvent& event) {
+	int i = event.GetInt();
+	if (i == 0)
+		proxy_type = "direct";
+	else if (i == 1)
+		proxy_type = "http";
+	else if (i == 2)
+		proxy_type = "http1_0";
+	else if (i == 3)
+		proxy_type = "socks4";
+	else if (i == 4)
+		proxy_type = "socks4a";
+	else if (i == 5)
+		proxy_type = "socks5";
+	else if (i == 6)
+		proxy_type = "socks5h";
+	if (i == 0) {
+		ProxyHostBox->Enable(false);
+		ProxyPortBox->Enable(false);
+	} else {
+		ProxyHostBox->Enable(true);
+		ProxyPortBox->Enable(true);
+	}
+}
+
+void SettingsFrame::OnProxyHostChange(wxCommandEvent& event) {
+	proxy_host = ProxyHostBox->GetValue();
+}
+
+void SettingsFrame::OnProxyPortChange(wxCommandEvent& event) {
+	proxy_port = ProxyPortBox->GetValue();
 }
