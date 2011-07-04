@@ -56,6 +56,7 @@ END_EVENT_TABLE()
 BEGIN_EVENT_TABLE( SettingsFrame, wxFrame )
 	EVT_TEXT ( TEXT_ProxyHost, SettingsFrame::OnProxyHostChange )
 	EVT_TEXT ( TEXT_ProxyPort, SettingsFrame::OnProxyPortChange )
+	EVT_BUTTON ( OPTION_ExitSettings, OnQuit)
 	EVT_COMBOBOX ( DROPDOWN_ProxyType, SettingsFrame::OnProxyTypeChange )
 	EVT_CHECKBOX ( CHECKBOX_StartupUpdateCheck, SettingsFrame::OnStartupUpdateChange )
 END_EVENT_TABLE()
@@ -842,24 +843,31 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent, int x, int y,
 	bigBox->Add(generalOptionsBox, 0, wxALL, 20);
 
 	wxStaticBoxSizer *proxyOptionsBox = new wxStaticBoxSizer(wxVERTICAL,this,"Internet Settings");
-	proxyOptionsBox->Add(new wxStaticText(this, wxID_ANY, "These settings control BOSS's proxy support and are applied for both the GUI and BOSS.exe.\n"), 0, wxALL, 5);
+	proxyOptionsBox->Add(new wxStaticText(this, wxID_ANY, "These settings control BOSS's proxy support and are \napplied for both the GUI and BOSS.exe.\n"), 0, wxALL, 5);
 	
 	wxBoxSizer *proxyTypeSizer = new wxBoxSizer(wxHORIZONTAL);
-	proxyTypeSizer->Add(ProxyTypeText = new wxStaticText(this, wxID_ANY, "Proxy Type: "), 1,  wxTOP | wxLEFT | wxBOTTOM, 5);
-	proxyTypeSizer->Add(ProxyTypeBox = new wxComboBox(this,DROPDOWN_ProxyType,ProxyTypes[0],wxDefaultPosition,wxDefaultSize,7,ProxyTypes,wxCB_READONLY), 2, wxTOP | wxRIGHT | wxBOTTOM, 5);
-	proxyOptionsBox->Add(proxyTypeSizer);
+	proxyTypeSizer->Add(ProxyTypeText = new wxStaticText(this, wxID_ANY, "Proxy Type: "), 1, wxLEFT | wxTOP | wxBOTTOM, 5);
+	proxyTypeSizer->Add(ProxyTypeBox = new wxComboBox(this,DROPDOWN_ProxyType,ProxyTypes[0],wxDefaultPosition,wxDefaultSize,7,ProxyTypes,wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxTOP | wxBOTTOM, 5);
+	proxyOptionsBox->Add(proxyTypeSizer, 0, wxEXPAND, 0);
 	
 	wxBoxSizer *proxyHostSizer = new wxBoxSizer(wxHORIZONTAL);
-	proxyHostSizer->Add(ProxyTypeText = new wxStaticText(this, wxID_ANY, "Proxy Hostname:   "), 1,  wxTOP | wxLEFT | wxBOTTOM, 5);
-	proxyHostSizer->Add(ProxyHostBox = new wxTextCtrl(this,TEXT_ProxyHost), 2, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	proxyOptionsBox->Add(proxyHostSizer);
+	proxyHostSizer->Add(ProxyTypeText = new wxStaticText(this, wxID_ANY, "Proxy Hostname:   "), 1, wxLEFT | wxBOTTOM, 5);
+	proxyHostSizer->Add(ProxyHostBox = new wxTextCtrl(this,TEXT_ProxyHost), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
+	proxyOptionsBox->Add(proxyHostSizer, 0, wxEXPAND, 0);
 
 	wxBoxSizer *proxyPortSizer = new wxBoxSizer(wxHORIZONTAL);
-	proxyPortSizer->Add(ProxyTypeText = new wxStaticText(this, wxID_ANY, "Proxy Port Number: "), 1,  wxTOP | wxLEFT | wxBOTTOM, 5);
-	proxyPortSizer->Add(ProxyPortBox = new wxTextCtrl(this,TEXT_ProxyPort), 2, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	proxyOptionsBox->Add(proxyPortSizer);
+	proxyPortSizer->Add(ProxyTypeText = new wxStaticText(this, wxID_ANY, "Proxy Port Number: "), 1, wxLEFT | wxBOTTOM, 5);
+	proxyPortSizer->Add(ProxyPortBox = new wxTextCtrl(this,TEXT_ProxyPort), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
+	proxyOptionsBox->Add(proxyPortSizer, 0, wxEXPAND, 0);
 
 	bigBox->Add(proxyOptionsBox, 0, wxLEFT | wxRIGHT | wxBOTTOM, 20);
+
+	//Need to add an 'OK' button.
+	wxButton *okButton = new wxButton(this, OPTION_ExitSettings, wxT("OK"), wxDefaultPosition, wxSize(70, 30));
+	wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
+	hbox->Add(okButton, 1);
+	
+	bigBox->Add(hbox, 0, wxALIGN_CENTER | wxBOTTOM, 10);
 
 	//Initialise options with values.
 	if (do_startup_update_check)
@@ -885,6 +893,10 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent, int x, int y,
 	
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
+}
+
+void SettingsFrame::OnQuit(wxCommandEvent& event) {
+	this->Close();
 }
 
 void SettingsFrame::OnStartupUpdateChange(wxCommandEvent& event) {

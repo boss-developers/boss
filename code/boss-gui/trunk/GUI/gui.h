@@ -88,6 +88,7 @@ public:
 	void OnProxyTypeChange(wxCommandEvent& event);
 	void OnProxyHostChange(wxCommandEvent& event);
 	void OnProxyPortChange(wxCommandEvent& event);
+	void OnQuit(wxCommandEvent& event);
 	DECLARE_EVENT_TABLE()
 private:
 	wxCheckBox *StartupUpdateCheckBox;
@@ -105,6 +106,7 @@ enum {
 	OPTION_Run,
 	OPTION_CheckForUpdates,
 	OPTION_ExitAbout,
+	OPTION_ExitSettings,
     MENU_Quit,
 	MENU_OpenMReadMe,
 	MENU_OpenURReadMe,
