@@ -77,7 +77,7 @@ bool BossGUI::OnInit() {
 			wxMessageBox(wxString::Format(
 				wxT("Error: BOSS.ini parsing failed. Some or all of the GUI's options may not have been set correctly. Run BOSS to see the details of the failure.")
 			),
-			wxT("Error"),
+			wxT("BOSS GUI: Error"),
 			wxOK | wxICON_ERROR,
 			NULL);
 	} else {
@@ -85,7 +85,7 @@ bool BossGUI::OnInit() {
 			wxMessageBox(wxString::Format(
 				wxT("Error: BOSS.ini generation failed. Ensure your BOSS folder is not read-only. None of the GUI's options will be saved.")
 			),
-			wxT("Error"),
+			wxT("BOSS GUI: Error"),
 			wxOK | wxICON_ERROR,
 			NULL);
 	}
@@ -436,7 +436,7 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 			wxMessageBox(wxString::Format(
 				wxT("Error: BOSS.ini could not be saved. Ensure your BOSS folder is not read-only.")
 			),
-			wxT("Error"),
+			wxT("BOSS GUI: Error"),
 			wxOK | wxICON_ERROR,
 			this);
 	}
@@ -453,7 +453,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		wxMessageBox(wxString::Format(
 				wxT("Error: BOSS.exe not found. Reinstall BOSS correctly, so that both BOSS.exe and BOSS GUI.exe are in the BOSS folder in your game's installation directory.")
 			),
-			wxT("Error"),
+			wxT("BOSS GUI: Error"),
 			wxOK | wxICON_ERROR,
 			this);
 }
@@ -485,7 +485,7 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 				wxMessageBox(wxString::Format(
 					wxT("Error: No BOSSlog.html found. Make sure you have run BOSS from BOSS.exe, or run it with the HTML output format selected, at least once before attempting to open the BOSSlog in the HTML format.")
 				),
-				wxT("Error"),
+				wxT("BOSS GUI: Error"),
 				wxOK | wxICON_ERROR,
 				this);
 			}
@@ -496,7 +496,7 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 				wxMessageBox(wxString::Format(
 					wxT("Error: No BOSSlog.txt found. Make sure you have run BOSS at least once with the text output format selected before attempting to open the BOSSlog in the plain text format.")
 				),
-				wxT("Error"),
+				wxT("BOSS GUI: Error"),
 				wxOK | wxICON_ERROR,
 				this);
 			}
@@ -516,7 +516,7 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 				wxT("Error: No %s found. Make sure you have the ReadMe or a shortcut to the ReadMe in your BOSS folder."),
 				file
 			),
-			wxT("Error"),
+			wxT("BOSS GUI: Error"),
 			wxOK | wxICON_ERROR,
 			this);
 		}
