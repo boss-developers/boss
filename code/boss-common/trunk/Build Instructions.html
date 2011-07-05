@@ -16,7 +16,8 @@
 	
 	<h4>Download and install:</h4>
 	<ul>
-		<li><a href="http://www.microsoft.com/express/">Microsoft Visual C++ 2010 Express Edition</a></li>
+		<li><a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express">Microsoft Visual C++ 2010 Express Edition</a></li>
+		<li><a href="http://www.microsoft.com/visualstudio/en-us/products/2008-editions/express">Microsoft Visual C++ 2008 Express Edition</a> (required for compatibility with Windows 2000)</li>
 		<li><a href="http://curl.haxx.se/download.html">Curl Source Code</a> - Download the latest zipped source code from the top of the page.</li>
 		<li><a href="https://sourceforge.net/projects/boost/files/boost/1.46.1/">BOOST C++ libraries</a> - BOSS requires version 1.46.1, it will not work with earlier versions, later versions can be tried, but might also break something.</li>
 		<li><a href="http://sourceforge.net/projects/utfcpp/">UTF8-CPP</a> - Download the latest version.</li>
@@ -30,7 +31,7 @@
 		<li>Extract the contents of the <code>utf8_vx_x_x</code> (x is a number) archive to <code><em>$BOSS</em>\lib\utf8\</code>, so that your utf8 folder contains a 'doc' and 'source' folder.</li>
 		<li>Extract the contents of the <code>boost-x.xx.x</code> (x is a number) folder in the BOOST libaries archive you downloaded to <code><em>$BOSS</em>\lib\boost\</code> (you should have lib, include, boostrap.bat, etc. in this folder).</li>
 		<li>Start a Command Prompt and cd to <code><em>$BOSS</em>\lib\boost</code> and run <code>bootstrap.bat</code></li>
-		<li>In the Command Prompt, run <code>bjam --toolset=msvc-10.0 --build-type=complete</code> . This will take a while. Once that is done, you may close the Command Prompt window.</li>
+		<li>In the Command Prompt, run <code>bjam --toolset=msvc-9.0 --build-type=complete</code> . This will take a while. Once that is done, you may close the Command Prompt window.</li>
 	</ol><br />
 	
 	<h4>Preparing Curl</h4>
@@ -46,7 +47,7 @@
 	<h3>Building BOSS</h3>
 	<ol>
 		<li>Open <code><em>$BOSS</em>\code\boss-common\trunk\BOSS.sln</code> in Visual C++ 2010.</li>
-		<li>Set the build type to "Release" and run Build on the BOSS-Common project, which will give you BOSS.exe and supports Oblivion, Fallout 3 and Morrowind. Alternatively, run Debug->Build Solution to build all the projects in the solution.</li>
+		<li>Set the build type to "Release" and run Build on the BOSS-Common project, which will give you BOSS.exe. Alternatively, run Debug->Build Solution to build all the projects in the solution.</li>
 		<li>The generated exe(s) will be located in <code><em>$BOSS</em>\code\boss-common\trunk\bin\Release\</code>.</li>
 	</ol><br />
   </body>
