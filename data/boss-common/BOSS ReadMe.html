@@ -338,6 +338,7 @@
 		<li><i>modlist.old</i> - This file contains the contents of your modlist.txt before you last ran BOSS, providing a second level of undo for load order changes.</li>
 		<li><i>userlist.txt</i> - This file contains your custom rules to be implemented by the User Rules feature.</li>
 		<li><i>BOSS.ini</i> - This file stores BOSS's settings, including the default run options, the default BOSSlog filters and more.</li>
+		<li><i>BOSS.ini.old</i> - This file is a backup of your previous BOSS.ini, created when you update BOSS via the installer or the GUI's auto-updater.</li>
 	</ul>
 	</div>
 	</div><br /><br />
@@ -743,6 +744,7 @@
 	<p><b>Version 1.8</b> - <i>July 2011</i></p>
 	<ul>
 		<li>Fixed: Junction-linked data folders not being scanned for mods.</li>
+		<li>Fixed: BOSS.exe and BOSS GUI.exe not being recognised as valid applications on Windows 2000.</li>
 		<li>Changed: Masterlist updater now runs by default.</li>
 		<li>Changed: Updated version of libcurl used when building BOSS.exe and BOSS GUI.exe to 7.21.7 from 7.21.4.</li>
 		<li>Changed: Overhauled the <q>Plugin Numbers</q> section of the BOSSlog:
@@ -753,17 +755,18 @@
 			<li>Added a notice that is displayed when there has been no change in the recognised mod list since BOSS was last run.</li>
 		</ul>
 		</li>
-		<li>Added: Support for unauthenticated proxies to the masterlist updater and the GUI's <q>Check For Updates</q> functionality:
+		<li>Added: A settings file (<q>BOSS.ini</q>) to allow users to set default behaviours, options and BOSSlog formatting styles. All command line parameters have equivalent ini settings.</li>
+		<li>Added: Support for unauthenticated proxies to the masterlist updater and the GUI's <q>Check For Updates</q> functionality.</li>
+		<li>Added: Five new command line parameters:
 		<ul>
-			<li>Added --proxy-host,-H [ hostname ] command line parameter to specify a proxy's host server for the masterlist updater.</li>
-			<li>Added --proxy-port,-P [ port ] command line parameter to specify a proxy's port for the masterlist updater.</li>
-			<li>Added --proxy-type,-T [ type ] command line parameter to specify a proxy type for the masterlist updater.</li>
+			<li><code>--proxy-host,-H [ hostname ]</code> to specify a proxy's host server for the masterlist updater.</li>
+			<li><code>--proxy-port,-P [ port ]</code> to specify a proxy's port for the masterlist updater.</li>
+			<li><code>--proxy-type,-T [ type ]</code> to specify a proxy type for the masterlist updater.</li>
+			<li><code>--trial-run,-t</code> to run BOSS without actually changing the load order.</li>
+			<li><code>--no-update,-U</code> to inhibit automatic masterlist updating.</li>
 		</ul>
 		</li>
 		<li>Added: Support for Fallout: New Vegas mods that use the Fallout 3 master file, such as <q>A Requiem for the Capital Wasteland</q>.</li>
-		<li>Added: A settings file (<q>BOSS.ini</q>) to allow users to set default behaviours, options and BOSSlog formatting styles. All command line parameters have equivalent ini settings.</li>
-		<li>Added: --trial-run,-t command line parameter to run BOSS without actually changing the load order.</li>
-		<li>Added: --no-update,-U command line parameter to inhibit automatic masterlist updating.</li>
 		<li>Added: Support for regular expressions in the masterlist.</li>
 		<li>Added: Support for conditional incompatibility and conditional requirement messages in the masterlist.</li>
 		<li>Added: BOSSlog filter option to hide userlist warning messages.</li>
@@ -780,26 +783,19 @@
 		</ul>
 		</li>
 		<li>(GUI) Changed: Renamed a number of options, simplifying their names slightly.</li>
+		<li>(GUI) Changed: Options selected are now saved on exit and loaded on start.</li>
 		<li>(GUI) Added: <q>Perform Trial Run</q> option.</li>
-		<li>(GUI) Added: Settings are now saved in the BOSS.ini on exit and loaded on start.</li>
-		<li>(GUI) Added: Settings page for toggling the startup update check and altering proxy settings.</li>
+		<li>(GUI) Added: Settings page for specifying how the GUI behaves.</li>
 		<li>(Installer) Changed: Updated to reflect various changes to programs.</li>
 		<li>(Installer) Changed: Installer now runs uninstaller before installing if a previous installation of BOSS is found.</li>
 		<li>(Docs) Changed: Significant content and formatting changes to main ReadMe, slight formatting changes to User Rules readme.</li>
 	</ul>
 	<p><b>Version 1.7</b> - <i>10 June 2011</i></p>
 	<ul>
-		<li>Ghosted mods must now be referenced in user rules without their ".ghost" extension.</li>
-		<li>Fixed a bug in the masterlist updater causing the wrong masterlist version to be displayed.</li>
-		<li>Moved all BOSS's files into a new BOSS folder, located in the game's installation directory, one level above the Data folder.</li>
-		<li>Added three new command line parameters:
-		<ul>
-			<li>-g, --game [ game ]: Overrides game autodetection. To be used in conjunction with -o to allow updating of the masterlist on computers where the specified game is not installed.</li>
-			<li>-c, --crc-display: Calculates and displays in the BOSSlog the CRCs of all your plugins. CRCs can be used as accurate version checks in masterlist conditionals.</li>
-			<li>-f, --format [ type ]: Allows the user to select their preferred output format, choosing from either HTML or plaintext. HTML formatting is the default.</li>
-		</ul>
-		</li>
-		<li>Switched to using the Unicode character encoding, allowing the sorting of mods with international characters in their names.
+		<li>Fixed: A bug in the masterlist updater causing the wrong masterlist version to be displayed.</li>
+		<li>Changed: Ghosted mods must now be referenced in user rules without their ".ghost" extension.</li>
+		<li>Changed: Moved all BOSS's files into a new BOSS folder, located in the game's installation directory, one level above the Data folder.</li>
+		<li>Changed: Switched to using the Unicode character encoding, allowing the sorting of mods with international characters in their names.
 		<ul>
 			<li>BOSS now uses the UTF-8 encoding for all its operations.</li>
 			<li>All BOSS files must now be encoded in UTF-8: this includes the modlists, masterlist and userlist.</li>
@@ -807,104 +803,124 @@
 			<li>Added a UTF-8 validator to ensure that the correct encoding for the required files is being used.</li>
 		</ul>
 		</li>
-		<li>Replaced the batch files with a new GUI.</li>
-		<li>Added a unique icon to the executables, made by Hickory.</li>
-		<li>Significant rewrite of source code, resulting in performance gains.</li>
-		<li>Implemented new	file parsers for the masterlist, modlists and userlist.</li>
-		<li>Added support for Masterlist Format 2, which offers an alternative syntax and a wide range of new features and capabilities.</li>
-		<li>Improved the formatting of the BOSSlog, making it more readable.</li>
-		<li>Links in the BOSSlog are now hyperlinks that can be clicked on to take you to the given URL.</li>
-		<li>Added display of the numbers of recognised, unrecognised, ghosted and total plugins to the end of the BOSSlog.</li>
-		<li>Added Javascript-based filter options and collapsible sections to the BOSSlog.</li>
-		<li>The release date of updated masterlists is now displayed beside the revision number in the BOSSlog.</li>
-		<li>Updated installer to reflect the various changes to BOSS's files and folders.</li>
+		<li>Changed: Removed batch files as they are no longer necessary.</li>
+		<li>Changed: The release date of updated masterlists is now displayed beside the revision number in the BOSSlog.</li>
+		<li>Changed: Significant rewrite of source code, resulting in performance gains.</li>
+		<li>Changed: Implemented new file parsers for the masterlist, modlists and userlist.</li>
+		<li>Changed: Improved the formatting of the BOSSlog, making it more readable.</li>
+		<li>Changed: Links in the BOSSlog are now hyperlinks that can be clicked on to take you to the given URL.</li>
+		<li>Added: A unique icon to the executables, made by Hickory.</li>
+		<li>Added: Support for Masterlist Format 2, which offers an alternative syntax and a wide range of new features and capabilities.</li>
+		<li>Added: Display of the numbers of recognised, unrecognised, ghosted and total plugins to the end of the BOSSlog.</li>
+		<li>Added: Javascript-based filter options and collapsible sections to the BOSSlog.</li>
+		<li>Added: A Graphical User Interface (GUI) that can be used to launch BOSS with whatever options are desired without having to use the command line.</li>
+		<li>Added: Three new command line parameters:
+		<ul>
+			<li><code>--game,-g [ game ]</code> to override game autodetection. To be used in conjunction with -o to allow updating of the masterlist on computers where the specified game is not installed.</li>
+			<li><code>--crc-display,-c</code> to calculate and display in the BOSSlog the CRCs of all your plugins. CRCs can be used as accurate version checks in masterlist conditionals.</li>
+			<li><code>--format,-f [ type ]</code> to select the BOSSlog format, choosing from either HTML or plaintext. HTML formatting is the default.</li>
+		</ul>
+		</li>
+		<li>(Installer) Changed: Updated installer to reflect the various changes to BOSS's files and folders.</li>
+		<li>(Docs) Changed: Significant content and formatting changes to main ReadMe, slight formatting changes to User Rules readme.</li>
 	</ul>
 	<p><b>Version 1.65</b> - <i>1 December 2010</i></p>
 	<ul>
-		<li>Fixed userlist parser giving incorrect error messages for rules inserting mods into groups.</li>
-		<li>Fixed BOSS reporting some plugins as unknown when they are ghosted.</li>
+		<li>Fixed: Userlist parser giving incorrect error messages for rules inserting mods into groups.</li>
+		<li>Fixed: BOSS reporting some plugins as unknown when they are ghosted.</li>
 	</ul>
 	<p><b>Version 1.64</b> - <i>28 November 2010</i></p>
 	<ul>
-		<li>Added --only-update, -o parameter to only update the masterlist without then sorting any mods.</li>
-		<li>Added "BOSS - Print Debug Info.bat" file to make debugging of BOSS errors simpler.</li>
-		<li>Added Nullsoft Scriptable Install installer for simpler BOSS installation.</li>
-		<li>User rule keywords and objects now have preceding and trailing spaces trimmed to prevent keywords, mods and groups being unrecognised if they are padded by spaces.</li>
-		<li>Slight improvements to user rule error reporting when sorting groups that do not exist.</li>
-		<li>Fixed non-ASCII characters in mod filenames causing crashes.</li>
+		<li>Fixed: Keywords, mods and groups in user rules being unrecognised if they are padded by spaces.</li>
+		<li>Fixed: Non-ASCII characters in mod filenames causing crashes.</li>
+		<li>Changed: Slight improvements to user rule error reporting when sorting groups that do not exist.</li>
+		<li>Added: <code>--only-update,-o</code> command line parameter to only update the masterlist without then sorting any mods.</li>
+		<li>Added: <q>BOSS - Print Debug Info.bat</q> file to make debugging of BOSS errors simpler.</li>
+		<li>Added: Nullsoft Scriptable Install installer for simpler BOSS installation.</li>
 	</ul>
 	<p><b>Version 1.63</b> - <i>15 November 2010</i></p>
 	<ul>
-		<li>Fixed a crash when updating the masterlist if downloading an incorrectly formatted masterlist.</li>
-		<li>Fixed mods with duplicate masterlist entries causing load order errors.</li>
-		<li>Fixed another crash when parsing an incorrectly formatted userlist.</li>
-		<li>Added check to userlist application of override rules to prevent incorrect usage resulting in load order errors.</li>
-		<li>User rule keywords are now case-insensitive.</li>
-		<li>User rules can no longer sort a mod relative to a mod that is not in the masterlist and has not been sorted by another rule.</li>
+		<li>Fixed: Crashing when updating the masterlist if downloading an incorrectly formatted masterlist.</li>
+		<li>Fixed: Mods with duplicate masterlist entries causing load order errors.</li>
+		<li>Fixed: Another crash when parsing an incorrectly formatted userlist.</li>
+		<li>Changed: User rule keywords are now case-insensitive.</li>
+		<li>Changed: User rules can no longer sort a mod relative to a mod that is not in the masterlist and has not been sorted by another rule.</li>
+		<li>Added: Check to userlist application of override rules to prevent incorrect usage resulting in load order errors.</li>
 	</ul>
 	<p><b>Version 1.62</b> - <i>1 November 2010</i></p>
 	<ul>
-		<li>Added support for Fallout: New Vegas.</li>
-		<li>Added ability to insert mods into groups to user rules functionality.</li>
-		<li>Added ability to sort mods relative to mods that are not installed, but are in the masterlist to user rules functionality.</li>
-		<li>Fixed crashing when userlist contains badly formatted lines.</li>
-		<li>Changed command line processing to use more standardised parameters:
+		<li>Fixed: Crashing when userlist contains badly formatted lines.</li>
+		<li>Changed: Many code portability enhancements.</li>
+		<li>Changed: Command line parameters to be more standardised:
 		<ul>
-			<li>Changed --disable-version-parse,-V- parameter to --no-version-parse,-n.</li>
-			<li>Changed --silent-mode,-s parameter to --silent,-s.</li>
-			<li>Changed --revert-level,-r parameter to --revert,-r.</li>
-		
+			<li><code>--disable-version-parse,-V</code> is now <code>--no-version-parse,-n</code>.</li>
+			<li><code>--silent-mode,-s</code>  is now <code>--silent,-s</code>.</li>
+			<li><code>--revert-level,-r [ level ]</code> is now <code>--revert,-r [ level ]</code>.</li>
 		</ul>
 		</li>
-		<li>Added logging statements to cover all BOSS processing, enabled by --verbose,-v &lt;N&gt; where N goes from 1 to 3 with increasing verbosity.</li>
-		<li>Added --version,-V parameter to show BOSS version.</li>
-		<li>Added --debug,-d parameter which adds filename and line numbers to each log message.</li>
-		<li>Many code portability enhancements.</li>
+		<li>Added: Support for <q>Fallout: New Vegas</q>.</li>
+		<li>Added: Ability to insert mods into groups to user rules functionality.</li>
+		<li>Added: Ability to sort mods relative to mods that are not installed, but are in the masterlist, to user rules functionality.</li>
+		<li>Added: Three new command line parameters:
+		<ul>
+			<li><code>--verbose,-v [ level ]</code> to enable logging statements, where <code>level</code> goes from 1 to 3 with increasing verbosity.</li>
+			<li><code>--version,-V</code> to show BOSS version.</li>
+			<li><code>--debug,-d</code> to add filename and line numbers to log messages.</li>
+		</ul>
+		</li>
 	</ul>
 	<p><b>Version 1.61</b> - <i>19 October 2010</i></p>
 	<ul>
-		<li>Added silent -s command line switch to suppress the automatic opening of the BOSSlog when BOSS is run.</li>
-		<li>Added version info to BOSS.exe to make Wrye Bash integration/debugging easier.</li>
-		<li>Fixed non-lowercase plugin extensions not being recognised and causing crashes and load order mistakes.</li>
-		<li>Fixed a potential bug with the masterlist updater causing memory issues.</li>
-		<li>Fixed several compiler warnings when compiling on Linux.</li>
-		<li>Increased timout delay for the masterlist updater to prevent the updater failing when Google Code is slow.</li>
-		<li>Reworked masterlist updater error reporting to be more verbose, and to take messages directly from curl when curl fails.</li>
+		<li>Fixed: Non-lowercase plugin extensions not being recognised and causing crashes and load order mistakes.</li>
+		<li>Fixed: A potential bug with the masterlist updater causing memory issues.</li>
+		<li>Fixed: Several compiler warnings when compiling on Linux.</li>
+		<li>Changed: Increased timout delay for the masterlist updater to prevent the updater failing when Google Code is slow.</li>
+		<li>Changed: Improved masterlist updater error handling.</li>
+		<li>Added: <code>--silent,-s</code> command line parameter to suppress the automatic opening of the BOSSlog when BOSS is run.</li>
+		<li>Added: Version info to <q>BOSS.exe</q> to make Wrye Bash integration/debugging easier.</li>
 	</ul>
 	<p><b>Version 1.6</b> - <i>8 October 2010</i></p>
 	<ul>
-		<li>Added Fallout Wanderers Edition (FWE) specific message type for the Fallout 3 masterlist.</li>
-		<li>Added masterlist updater functionality to BOSS, accessible via a command-line switch and a .bat file.</li>
-		<li>Added mod version display to BOSSlog output, with command-line off switch.</li>
-		<li>Added sorting of ghosted plugins.</li>
-		<li>Added hardcoded undo functionality to make it easier to undo BOSS's changes.</li>
-		<li>Added custom user rules functionality to allow users to customise how BOSS sorts their files, and more.</li>
-		<li>Added support for use with the Nehrim - At Fate's Edge total conversion.</li>
-		<li>Removed need for BOSS.bat.</li>
-		<li>Moved BOSS's input and output files to Data\BOSS\.</li>
-		<li>Converted Readme from RTF to HTML format.</li>
-		<li>Converted BOSSlog from plain text to HTML format.</li>
-		<li>Fixed Fallout3.esm being reported as an 'unknown mod file'.</li>
-		<li>Improved error support to catch more errors and provide more useful error messages when BOSS doesn't work properly.</li>
-		<li>Improved portability of source code.</li>
-		<li>Merged BOSS and BOSS-F source code, allowing one EXE to support both Oblivion and Fallout 3.</li>
-		<li>Major refactoring and rewrite of BOSS source code, resulting in a significant performance improvement.</li>
+		<li>Fixed: Fallout3.esm being reported as an 'unknown mod file'.</li>
+		<li>Changed: Removed need for <q>BOSS.bat</q>.</li>
+		<li>Changed: Moved BOSS's input and output files to <q>Data\BOSS\</q>.</li>
+		<li>Changed: Converted BOSSlog from plain text to HTML format.</li>
+		<li>Changed: Improved error handling to catch more errors and provide more useful error messages when BOSS doesn't work properly.</li>
+		<li>Changed: Improved portability of source code.</li>
+		<li>Changed: Merged BOSS and BOSS-F source code, allowing one <q>BOSS.exe</q> to work with all the games BOSS supports.</li>
+		<li>Changed: Major refactoring and rewrite of BOSS source code, resulting in a significant performance improvement.</li>
+		<li>Added: Fallout Wanderers Edition (FWE) specific message type for the Fallout 3 masterlist.</li>
+		<li>Added: Mod version display to BOSSlog output.</li>
+		<li>Added: Three new command line parameters:
+		<ul>
+			<li><code>--update,-u</code> to update the masterlist before sorting mods.</li>
+			<li><code>--disable-version-parse,-V</code> to disable version display in the BOSSlog.</li>
+			<li><code>--revert-level,-r [ level ]</code> to allow undoing of BOSS's changes. <code>level</code> can be either 1 or 2, to go back to the load order before the last run of BOSS, or the load order before the run before that respectively.</li>
+		</ul>
+		</li>
+		<li>Added: <q>BOSS - Update Masterlist.bat</q> file to allow updating of the masterlist without having to use the command line.</li>
+		<li>Added: Sorting of ghosted plugins.</li>
+		<li>Added: Custom user rules functionality to allow users to customise how BOSS sorts their files, and more.</li>
+		<li>Added: Support for the <q>Nehrim - At Fate's Edge</q> total conversion for Oblivion.</li>
+		<li>(Docs) Changed: Converted Readme from RTF to HTML format.</li>
 	</ul>
 	<p><b>Version 1.5</b> - <i>24 March 2010</i></p>
 	<ul>
-		<li>Added OOO-specific message type.</li>
-		<li>Added requirement message type.</li>
-		<li>Added incompatibility message type.</li>
-		<li>Added Better Cities-specific message type.</li>
-		<li>Switched source code project and solution files to Visual Studio 2010.</li>
-		<li>Added a masterlist for Fallout 3.</li>
-		<li>Added masterlist version numbering when exporting via SVN.</li>
-		<li>Added Fallout 3 specific BOSS source code (BOSS-F).</li>
+		<li>Changed: Switched source code project and solution files to Visual Studio 2010.</li>
+		<li>Added: Four new message types:
+		<ul>
+			<li>OOO-specific messages.</li>
+			<li>Requirement messages.</li>
+			<li>Incompatibility messages.</li>
+			<li>Better Cities-specific messages.</li>
+		</ul>
+		<li>Added: A separate masterlist for Fallout 3.</li>
+		<li>Added: A version of BOSS specifically for Fallout 3 (BOSS-F).</li>
 	</ul>
 	<p><b>Version 1.41</b> - <i>31 August 2009</i></p>
 	<ul>
-		<li>Fixed incorrect master file defined for Fallout 3.</li>
-		<li>Fixed error messages not being displayed on some machines.</li>
+		<li>Fixed: Incorrect master file defined for Fallout 3.</li>
+		<li>Fixed: Error messages not being displayed on some machines.</li>
 	</ul>
 	<p><b>Versions 1.0 - 1.35</b> - <i>22 October 2008 to 24 June 2009</i></p>
 	<ul>

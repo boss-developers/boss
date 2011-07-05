@@ -406,26 +406,41 @@
             SetOutPath $Path_OB\BOSS
             File code\boss-common\trunk\bin\Release\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "Oblivion Path" "$Path_OB"
+			IfFileExists BOSS.ini 0 +3
+				Delete BOSS.ini.old
+				Rename BOSS.ini BOSS.ini.old
         ${EndIf}
         ${If} $CheckState_FO == ${BST_CHECKED}
             SetOutPath $Path_FO\BOSS
             File code\boss-common\trunk\bin\Release\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "Fallout3 Path" "$Path_FO"
+			IfFileExists BOSS.ini 0 +3
+				Delete BOSS.ini.old
+				Rename BOSS.ini BOSS.ini.old
         ${EndIf}
         ${If} $CheckState_NV == ${BST_CHECKED}
             SetOutPath $Path_NV\BOSS
             File code\boss-common\trunk\bin\Release\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "NewVegas Path" "$Path_NV"
+			IfFileExists BOSS.ini 0 +3
+				Delete BOSS.ini.old
+				Rename BOSS.ini BOSS.ini.old
         ${EndIf}
         ${If} $CheckState_Nehrim == ${BST_CHECKED}
             SetOutPath $Path_Nehrim\BOSS
             File code\boss-common\trunk\bin\Release\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "Nehrim Path" "$Path_Nehrim"
+			IfFileExists BOSS.ini 0 +3
+				Delete BOSS.ini.old
+				Rename BOSS.ini BOSS.ini.old
         ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
             SetOutPath $Path_Other\BOSS
             File code\boss-common\trunk\bin\Release\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "Other Path" "$Path_Other"
+			IfFileExists BOSS.ini 0 +3
+				Delete BOSS.ini.old
+				Rename BOSS.ini BOSS.ini.old
         ${EndIf}
       
       ; Write the uninstall keys for Windows
@@ -662,6 +677,7 @@
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_OB\BOSS\userlist.txt"
 				Delete "$Path_OB\BOSS\BOSS.ini"
+				Delete "$Path_OB\BOSS\BOSS.ini.old"
             ${EndIf}
             RMDir "$Path_OB\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Oblivion.lnk"
@@ -688,6 +704,7 @@
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_FO\BOSS\userlist.txt"
 				Delete "$Path_FO\BOSS\BOSS.ini"
+				Delete "$Path_FO\BOSS\BOSS.ini.old"
             ${EndIf}
             RMDir "$Path_FO\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Fallout3.lnk"
@@ -714,6 +731,7 @@
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_NV\BOSS\userlist.txt"
 				Delete "$Path_NV\BOSS\BOSS.ini"
+				Delete "$Path_NV\BOSS\BOSS.ini.old"
             ${EndIf}
             RMDir "$Path_NV\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Fallout New Vegas.lnk"
@@ -740,6 +758,7 @@
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_Nehrim\BOSS\userlist.txt"
 				Delete "$Path_Nehrim\BOSS\BOSS.ini"
+				Delete "$Path_Nehrim\BOSS\BOSS.ini.old"
             ${EndIf}
             RMDir "$Path_Nehrim\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Nehrim.lnk"
@@ -766,6 +785,7 @@
             ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
                 Delete "$Path_Other\BOSS\userlist.txt"
 				Delete "$Path_Other\BOSS\BOSS.ini"
+				Delete "$Path_Other\BOSS\BOSS.ini.old"
             ${EndIf}
             RMDir "$Path_Other\BOSS"
             Delete "$SMPROGRAMS\BOSS\BOSS - Other.lnk"
