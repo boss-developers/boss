@@ -17,7 +17,6 @@
 	<h4>Download and install:</h4>
 	<ul>
 		<li><a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express">Microsoft Visual C++ 2010 Express Edition</a></li>
-		<li><a href="http://www.microsoft.com/visualstudio/en-us/products/2008-editions/express">Microsoft Visual C++ 2008 Express Edition</a> (required for compatibility with Windows 2000)</li>
 		<li><a href="https://sourceforge.net/projects/boost/files/boost/1.46.1/">BOOST C++ libraries</a> - BOSS requires version 1.46.1, it will not work with earlier versions, later versions can be tried, but might also break something.</li>
 		<li>An SVN client of your choice.</li>
 	</ul><br />
@@ -28,13 +27,13 @@
 		to a local directory of your own choice to create your working copy. (This directory shall be referred to as <em>$BOSS</em> from here on in.)</li>
 		<li>Extract the contents of the <code>boost-x.xx.x</code> (x is a number) folder in the BOOST libaries archive you downloaded to <code><em>$BOSS</em>\lib\boost\</code> (you should have lib, include, boostrap.bat, etc. in this folder).</li>
 		<li>Start a Command Prompt and cd to <code><em>$BOSS</em>\lib\boost</code> and run <code>bootstrap.bat</code></li>
-		<li>In the Command Prompt, run <code>bjam --toolset=msvc-9.0 --build-type=complete</code> . This will take a while. Once that is done, you may close the Command Prompt window.</li>
+		<li>In the Command Prompt, run <code>bjam --toolset=msvc-10.0 --build-type=complete</code> . This will take a while. Once that is done, you may close the Command Prompt window.</li>
 	</ol><br />
 	
 	<h3>Building the Dirty List Generator</h3>
 	<ol>
 		<li>Open <code><em>$BOSS</em>\code\dirty-list-generator\trunk\DirtyListGenerator.sln</code> in Visual C++ 2010.</li>
-		<li>Set the build type to "Release" and run Build on the DirtyListGenerator project, which will give you dirtylistgenerator.exe. Alternatively, run Debug->Build Solution to do the same.</li>
+		<li>Set the build type to "Release" and run Build on the DirtyListGenerator project, which will give you DirtyListGenerator.exe. Alternatively, run Debug->Build Solution to do the same.</li>
 		<li>The generated exe(s) will be located in <code><em>$BOSS</em>\code\dirty-list-generator\trunk\bin\Release\</code>.</li>
 	</ol><br />
   </body>
