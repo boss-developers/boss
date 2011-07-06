@@ -83,7 +83,7 @@ namespace boss {
 				link = "<a href=" + link + ">" + link.substr(1,link.length()-2) + "</a>";
 				currentMessage.data.replace(pos1,pos2-pos1,link);
 			}
-			pos1 = currentMessage.data.find("http",pos1 + link.length());
+			pos1 = currentMessage.data.find("\"http",pos1 + link.length());
 		}
 		//Select message formatting.
 		switch(currentMessage.key) {

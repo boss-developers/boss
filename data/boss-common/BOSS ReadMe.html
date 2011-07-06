@@ -59,9 +59,9 @@
 	
 	<div id="features"><span>Features &amp; Introduction</span>
 	<ul>
-		<li>Correctly positions over 12,000 Oblivion mods and counting, including such popular mods as FCOM, <abbr title="Oscuro's Oblivion Overhaul">OOO</abbr>, <abbr title="Martigen's Monster Mod">MMM</abbr>, Better Cities, Open Cities, Race Balancing Project and many others.</li>
+		<li>Correctly positions over 12,100 Oblivion mods and counting, including such popular mods as FCOM, <abbr title="Oscuro's Oblivion Overhaul">OOO</abbr>, <abbr title="Martigen's Monster Mod">MMM</abbr>, Better Cities, Open Cities, Race Balancing Project and many others.</li>
 		<li>Correctly positions over 2,600 Fallout 3 mods and counting.
-		<li>Correctly positions over 2,200 Fallout: New Vegas mods and counting.
+		<li>Correctly positions over 2,500 Fallout: New Vegas mods and counting.
 		<li>Provides support for sorting mods used in Nehrim - At Fate's Edge installs.</li>
 		<li>Provides a large number of usage notes for many mods, including requirements, incompatibilities, updates and bug warnings.</li>
 		<li>Provides detection and warning of installation mistakes for some popular mods, such as FCOM.</li>
@@ -107,7 +107,7 @@
 			<li><i>Show BOSSlog On Completion</i>: Open the BOSSlog automatically after BOSS is finished.</li>
 			<li><i>Enable Debug Output</i>: Add source code references to the command line output.</li>
 			<li><i>Log Command Line Output</i>: Save the command line output to a <q>BOSSCommandLineLog.txt</q> text file.</li>
-			<li><i>BOSSlog Format</i>: Specify the format of the BOSSlog generated.</li>
+			<li><i>BOSSlog Format</i>: Specify the format of the BOSSlog generated, and the format that the GUI attempts to open when you click the <q>View BOSSlog</q> button.</li>
 			<li><i>Command Line Verbosity</i>: The verbosity of the command line logging output. As values increase, so does verbosity, 'Standard (0)' displays only warning and error messages.</li>
 		</ul>
 		</li>
@@ -149,8 +149,7 @@
 		<li>Open BOSS's ReadMes.</li>
 		<li>Launch the <q>Check For Updates</q> functionality, which includes an automatic updater that can get new releases of BOSS for you. The <q>Check For Updates</q> functionality also runs when the GUI launches, but only displays a message if an update was found or there was an error encountered while checking.</li>
 	</ul>
-	<p>Each setting in the GUI corresponds to a command line parameter (apart from <q>Log Command Line Output</q>), the details of which can be found in the <q><a href="#details">Further Details</a></q> section below. The settings for the <q>Check For Updates</q> functionality, including proxy settings, are only found in the <q>BOSS.ini</q> settings file, there are no GUI options for them.</p>
-	<p>Note that the BOSSlog format selection applies to both the format of the BOSSlog that will be generated when BOSS is run and the format that the GUI will try to open when you select <q>View BOSSlog</q>.</p>
+	<p>Each setting in the GUI corresponds to a command line parameter and/or an ini setting, the details of which can be found in the <q><a href="#details">Further Details</a></q> and <q><a href="#customising">Customising How BOSS Works</a></q> sections of this ReadMe respectively.</p>
 	<br />
 	
 	<span class="subtitle" id="bosslog">The BOSS Log</span>
@@ -158,8 +157,8 @@
 	<p>The HTML BOSSlog has been tested in Mozilla Firefox 4, Google Chrome 11, Opera 11 and Internet Explorer 9. Using earlier browsers may result in parts of the BOSSlog not working or displaying correctly.</p>
 	<p>The BOSSlog comprises of a number of sections, them being:</p>
 	<ol>
-		<li><i>Masterlist Update</i>: This section is only displayed if you have run BOSS with the <q>Update Masterlist</q> or <q>Update Masterlist Only</q> options enabled, and details the success or failure of the update.</li>
-		<li><i>General Messages</i>: This section is only displayed if there are any applicable messages to be displayed. Its primary purpose is to allow BOSS to display messages specific to your Oblivion install that are not specific to any one mod, for example if an update to BOSS or OBSE is available.</li>
+		<li><i>Masterlist Update</i>: This section is displayed unless you have inhibited the masterlist updater via a GUI or BOSS.ini setting or the command line parameter, and details the success or failure of the update.</li>
+		<li><i>General Messages</i>: This section is only displayed if there are any applicable messages to be displayed. Its primary purpose is to allow BOSS to display messages specific to your Oblivion install that are not specific to any one mod.</li>
 		<li><i>Summary</i>: This section gives breakdowns of the numbers of plugins you have installed and the number of messages BOSS has attached to them. It also displays a notice if there has been no change to your recognised mod list since you last ran BOSS.</li>
 		<li><i>Userlist Messages</i>: This section is only displayed if BOSS finds a userlist.txt in your BOSS folder. In this section the successes or failures of the application of your userlist rules will be detailed.</li>
 		<li><i>Script Extender And Script Extender Plugins Checksums</i>: This section is displayed when BOSS is run with the <q>Display File CRCs</q> option enabled and you have your game's Script Extender installed. It will list the Script Extender and any plugins you have installed, displaying their versions if given and their CRCs.</li>
@@ -213,9 +212,9 @@
 		<li>Run the BOSS GUI.exe and select the <q>Update Masterlist Only</q> option. For the <q>Game</q> option below, select your game from the drop-down list. This will tell BOSS which game's masterlist to download.</li>
 		<li>Select <q>Run BOSS</q>. Your masterlist will be downloaded into the same folder as your BOSS.exe and BOSS GUI.exe. A BOSSlog will also be created, you can delete this.</li>
 	</ol>
-	<p>A rarer circumstance is when the user connects to the Internet using a proxy. This is most common in enterprise environments, and such users will generally know if they use a proxy. If you use a proxy to connect to the Internet, you must manually enter your proxy settings into your <q>BOSS.ini</q> settings file. See the section on the BOSS.ini in the <q><a href="#customising">Customising How BOSS Works</a></q> section below for details.</p>
+	<p>A rarer circumstance is when the user connects to the Internet using a proxy. This is most common in enterprise environments, and such users will generally know if they use a proxy. If you use a proxy to connect to the Internet, you must manually enter your proxy settings into your <q>BOSS.ini</q> settings file. See the section on the BOSS.ini in the <q><a href="#customising">Customising How BOSS Works</a></q> section below for details. BOSS does not support the use of authenticated proxies at this time.</p>
 	<p>If your circumstances are such that the computer you have BOSS installed on is not connected to the Internet, or if you use a proxy to connect to the Internet, it is recommended that you avoid using the GUI's auto-updater, simply because it is easier in these circumstances to download new releases through your web browser.</p>
-	<p>There may also be other special cases that cause problems for BOSS's updaters, including some Internet proxies, that the BOSS team are unaware of. If you are having issues using the updaters, contact the BOSS team for support.</p>
+	<p>There may also be other special cases which cause problems for BOSS's updaters that the BOSS team is unaware of. If you are having issues using the updaters, contact the BOSS team for support.</p>
 	<br />
 	
 	<span class="subtitle" id="customising">Customising How BOSS Works</span>
@@ -367,11 +366,11 @@
 	</div><br /><br />
 	
 	<div id="updates"><span>Updates</span>
-	<p>You can check for updates to BOSS and download them using the GUI's <q>Check For Updates</q> functionality. Masterlist updates are by default automatically downloaded by BOSS when it runs. BOSS program updates are also published at the
+	<p>You can check for updates to BOSS then download and install any available using the GUI's <q>Check For Updates</q> functionality. Masterlist updates are by default automatically downloaded by BOSS when it runs.</p>
+	<p>BOSS program updates are also published at the
 	<a href="http://www.tesnexus.com/downloads/file.php?id=20516">TES Nexus</a>, 
 	<a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">Fallout 3 Nexus</a> and 
-	<a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">New Vegas Nexus</a> BOSS pages.</p>
-	<p>For those not using the masterlist updater, the latest masterlist is always on the <a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a>.</p>
+	<a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">New Vegas Nexus</a> BOSS pages. For those not using the masterlist updater, the latest masterlist is always on the <a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a>.</p>
 	<p>Always make sure to use the latest version of BOSS and the latest masterlist.</p>
 	</div><br /><br />
 	
@@ -430,9 +429,7 @@
 	<br />
 	
 	<span class="subtitle" id="international">International Character Support</span>
-	<p>BOSS provides support for sorting mods containing characters from any language via the Unicode character encoding, specifically UTF-8. All BOSS's files are encoded in UTF-8 by default.</p>
-	
-	<p>However, if you created your userlist.txt before BOSS automatically created one, you will probably need to convert it to the UTF-8 encoding, as it is not Notepad's default encoding. Below are some instructions for converting a file's encoding to UTF-8:</p>
+	<p>BOSS provides support for sorting mods containing characters from any language via the Unicode character encoding, specifically UTF-8. All BOSS's files are encoded in UTF-8 by default. However, if you created your userlist.txt before BOSS automatically created one, you will probably need to convert it to the UTF-8 encoding, as it is not Notepad's default encoding. Below are some instructions for converting a file's encoding to UTF-8:</p>
     <ul>
 		<li>Using Notepad:
 			<ol>
@@ -657,8 +654,9 @@
 		<li>myk002: For extensive code contributions and testing during development of v1.6+.</li>
 		<li>Hickory: For testing and feedback on v1.7+ prior to release, and providing the icon used by the BOSS and GUI executables.</li>
 		<li>andalaybay: For testing and feedback on v1.7+ prior to release.</li>
+		<li>Telyn: For testing and feedback on v1.8 prior to release.</li>
 	</ul>
-	<p>The BOSS programs are written in C/C++ and make use of the <a href="http://www.boost.org/">BOOST</a>, <a href="http://curl.haxx.se/libcurl/">libcurl</a>, <a href="http://www.wxwidgets.org/">wxWidgets</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries. Without them the majority of BOSS's features would be considerably harder to implement, to the point where they probably would never have been added.</p>
+	<p>The BOSS programs are written in C/C++ and make use of the <a href="http://www.boost.org/">BOOST</a>, <a href="http://curl.haxx.se/libcurl/">libcurl</a>, <a href="http://www.wxwidgets.org/">wxWidgets</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries. Without them, the majority of BOSS's features would probably never have been implemented.</p>
 	</div><br /><br />
 	
 	<div id="team"><span>Project Members</span>
@@ -730,22 +728,22 @@
 	<p><a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">BOSS on Fallout 3 Nexus</a></p>
 	<a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">BOSS on New Vegas Nexus</a>
 	<p><a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code SVN repository</a></p>
-	<p><a href="http://forums.bethsoft.com/?showtopic=1175363">Official BOSS Oblivion thread</a></p>
+	<p><a href="http://forums.bethsoft.com/?showtopic=1205712">Official BOSS Oblivion thread</a></p>
 	<p><a href="http://forums.bethsoft.com/?showtopic=1132338">Official BOSS Nehrim thread</a></p>
 	<p><a href="http://forums.bethsoft.com/?showtopic=1175276">Official BOSS Fallout 3 thread</a></p>
 	<p><a href="http://forums.bethsoft.com/?showtopic=1203068">Official BOSS Fallout: New Vegas thread</a></p>
 	<p><a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative Commons Attribution Noncommercial No Derivative Works 3.0 Unported Copyright License</a></p>
-	<p>Due to a 200 maximum post limit, new official threads are created periodically (with the end of one thread providing a link to the next), so the links provided may refer to old 
+	<p>Due to a 200 maximum post limit, new official threads are created periodically (with the end of one thread usually providing a link to the next), so the links provided may refer to old 
 	threads when you read this. Just navigate through to the latest thread to post a message.</p>
 	<p>You must register for free to post messages.</p>
 	</div><br /><br />
 	
 	<div id="history"><span>Version History</span>
 	<p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.</p>
-	<p><b>Version 1.8</b> - <i>July 2011</i></p>
+	<p><b>Version 1.8</b> - <i>6 July 2011</i></p>
 	<ul>
 		<li>Fixed: Junction-linked data folders not being scanned for mods.</li>
-		<li>Fixed: BOSS.exe and BOSS GUI.exe not being recognised as valid applications on Windows 2000.</li>
+		<li>Fixed: Links being displayed incorrectly in the BOSSlog if more than one was given in a message.</li>
 		<li>Changed: Masterlist updater now runs by default.</li>
 		<li>Changed: Updated version of libcurl used when building BOSS.exe and BOSS GUI.exe to 7.21.7 from 7.21.4.</li>
 		<li>Changed: Overhauled the <q>Plugin Numbers</q> section of the BOSSlog:
@@ -756,7 +754,7 @@
 			<li>Added a notice that is displayed when there has been no change in the recognised mod list since BOSS was last run.</li>
 		</ul>
 		</li>
-		<li>Added: A settings file (<q>BOSS.ini</q>) to allow users to set default behaviours, options and BOSSlog formatting styles. All command line parameters have equivalent ini settings.</li>
+		<li>Added: A settings file (<q>BOSS.ini</q>) to allow users to set default behaviours, options and BOSSlog formatting styles.</li>
 		<li>Added: Support for unauthenticated proxies to the masterlist updater and the GUI's <q>Check For Updates</q> functionality.</li>
 		<li>Added: Five new command line parameters:
 		<ul>
