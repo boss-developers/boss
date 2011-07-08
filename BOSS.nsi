@@ -84,6 +84,11 @@
 				Quit
 			cont:
 			ExecWait '$COMMONFILES\BOSS\uninstall.exe _?=$COMMONFILES\BOSS' ;Run the uninstaller in its folder and wait until it's done.
+			
+		#Now delete the uninstaller.
+		IfFileExists "$COMMONFILES\BOSS\uninstall.exe" 0 +3
+			Delete "$COMMONFILES\BOSS\uninstall.exe"
+			RMDir "$COMMONFILES\BOSS"
 
         ${If} $Path_OB == $Empty
             ReadRegStr $Path_OB HKLM "Software\Bethesda Softworks\Oblivion" "Installed Path"
