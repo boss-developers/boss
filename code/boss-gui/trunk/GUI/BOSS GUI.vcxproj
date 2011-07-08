@@ -87,6 +87,7 @@
     <ClCompile Include="..\Helpers\helpers.cpp" />
     <ClCompile Include="..\Parsing\parser.cpp" />
     <ClCompile Include="updater.cpp" />
+    <ClCompile Include="UserRuleManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Parsing\grammars.h" />
@@ -94,6 +95,7 @@
     <ClInclude Include="..\Helpers\helpers.h" />
     <ClInclude Include="..\Parsing\parser.h" />
     <ClInclude Include="updater.h" />
+    <ClInclude Include="UserRuleManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BOSS GUI_version.rc" />

@@ -13,6 +13,9 @@
     <ClCompile Include="..\Helpers\helpers.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="UserRuleManager.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Parsing\grammars.h">
@@ -29,6 +32,9 @@
     </ClInclude>
     <ClInclude Include="..\Helpers\helpers.h">
       <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="UserRuleManager.h">
+      <Filter>GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

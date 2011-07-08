@@ -35,6 +35,32 @@ namespace boss {
 		return 0;
 	} 
 
+	unsigned int GetLocalMasterlistRevision() {
+		string line, newline = "? Masterlist Revision: ";
+		ifstream mlist;
+		char cbuffer[4096];
+		size_t pos1;
+
+		//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
+		if (fs::exists(masterlist_path)) {
+			mlist.open(masterlist_path.c_str());
+			if (mlist.fail())
+				throw boss_error() << err_detail("Masterlist cannot be opened.");
+			while (!mlist.eof()) {
+				mlist.getline(cbuffer,4096);
+				line=cbuffer;
+				if (line.find(newline) != string::npos) {
+					//Hooray, we've found the line.
+					pos1 = line.find(" (",23);
+					line = line.substr(23,pos1-23);
+					return atoi(line.c_str());  //Masterlist already at latest revision.
+				}
+			}
+		}
+		mlist.close();
+		return 0;  //No version found.
+	}
+
 	unsigned int UpdateMasterlist() {
 		const char *url;							//Masterlist file url
 		char cbuffer[4096];
@@ -50,6 +76,7 @@ namespace boss {
 		const string SVN_CHANGEDBY_KW= "$" "LastChangedBy" "$";              // Left as separated parts to avoid keyword expansion
 		string oldline = "? Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
 		const char *revision_url = "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn";
+		unsigned int localVersion;
 
 		//Which masterlist to get?
 		if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
@@ -199,6 +226,10 @@ namespace boss {
 		newline = "? Masterlist Revision: "+revision+" ("+date+")";
 
 		//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
+		localVersion = GetLocalMasterlistRevision();
+		if (localVersion == atoi(revision.c_str()))
+			return 0;
+		
 		if (fs::exists(masterlist_path)) {
 			mlist.open(masterlist_path.c_str());
 			if (mlist.fail()) {

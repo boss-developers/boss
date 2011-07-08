@@ -369,10 +369,11 @@ int main(int argc, char *argv[]) {
 			cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 			LOG_DEBUG("Updating masterlist...");
 			try {
-				unsigned int revision = UpdateMasterlist();  //Need to sort out the output of this - ATM it's very messy.
+				unsigned int revision = UpdateMasterlist();
 				if (revision == 0) {
-					masterlistUpdateContent += "<li>masterlist.txt is already at the latest version. Update aborted.</li>";
-					cout << "masterlist.txt is already at the latest version. Update aborted." << endl;
+					unsigned int localRevision = GetLocalMasterlistRevision();
+					masterlistUpdateContent += "<li>masterlist.txt is already at the latest version (" + IntToString(localRevision) + "). No update necessary.</li>";
+					cout << "masterlist.txt is already at the latest version (" + IntToString(localRevision) + "). No update necessary." << endl;
 				} else {
 					masterlistUpdateContent += "<li>masterlist.txt updated to revision " + IntToString(revision) + ".</li>";
 					cout << "masterlist.txt updated to revision " << revision << endl;
