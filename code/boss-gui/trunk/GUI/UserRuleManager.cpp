@@ -9,13 +9,8 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-
-#include "boost/exception/get_error_info.hpp"
-#include <boost/algorithm/string.hpp>
-
-#include "GUI/gui.h"
+#include "GUI/UserRuleManager.h"
 #include "Parsing/parser.h"
-#include "GUI/updater.h"
 #include "Helpers/helpers.h"
 #include <string>
 

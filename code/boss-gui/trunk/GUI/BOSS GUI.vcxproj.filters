@@ -36,6 +36,9 @@
     <ClInclude Include="UserRuleManager.h">
       <Filter>GUI</Filter>
     </ClInclude>
+    <ClInclude Include="Data.h">
+      <Filter>Parsing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Parsing">

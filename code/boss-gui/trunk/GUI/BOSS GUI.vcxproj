@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Parsing\grammars.h" />
+    <ClInclude Include="Data.h" />
     <ClInclude Include="gui.h" />
     <ClInclude Include="..\Helpers\helpers.h" />
     <ClInclude Include="..\Parsing\parser.h" />
