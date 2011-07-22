@@ -16,9 +16,9 @@
 #include <boost/filesystem.hpp>
 
 namespace boss {
-	unsigned int GetLocalMasterlistRevision();
+	int GetLocalMasterlistRevision();
 
-	unsigned int UpdateMasterlist();
+	int UpdateMasterlist();
 
 	bool CheckConnection();
 }
