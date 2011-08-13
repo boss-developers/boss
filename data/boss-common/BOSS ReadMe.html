@@ -178,6 +178,7 @@
 		<li><i>Hide Checksums</i>: This will hide the checksums of mods and Script Extender plugins printed in brown next to their names.</li>
 		<li><i>Hide Messageless Mods</i>: This will hide any recognised mods that do not have messages attached to them.</li>
 		<li><i>Hide Ghosted Mods</i>: This will hide any mods that have been ghosted by Wrye Bash.</li>
+		<li><i>Hide Clean Mods</i>: This will hide any mods in your load order that don't have messages beginning <q>Contains dirty edits: </q> attached. Note that this doesn't mean the mods hidden are definitely clean, only that BOSS doesn't know they're dirty.</li>
 		<li><i>Hide All Mod Nessages</i>: This hides all the messages attached to all recognised mods.</li>
 		<li><i>Hide Notes</i>: This hides any messages attached to mods that have the <q>Note: </q> prefix.</li>
 		<li><i>Hide Bash Tag Suggestions</i>: This hides any Bash Tag suggestions attached to mods.</li>
@@ -263,6 +264,7 @@
 			<li><i>HideChecksums</i>: Controls the state of the <q>Hide Checksums</q> filter.</li>
 			<li><i>HideMessagelessMods</i>: Controls the state of the <q>Hide Messageless Mods</q> filter.</li>
 			<li><i>HideGhostedMods</i>: Controls the state of the <q>Hide Ghosted Mods</q> filter.</li>
+			<li><i>HideCleanMods</i>: Controls the state of the <q>Hide Clean Mods</q> filter.</li>
 			<li><i>HideRuleWarnings</i>: Controls the state of the <q>Hide Rule Warnings</q> filter.</li>
 			<li><i>HideAllModMessages</i>: Controls the state of the <q>Hide All Mod Messages</q> filter.</li>
 			<li><i>HideNotes</i>: Controls the state of the <q>Hide Notes</q> filter.</li>
@@ -740,6 +742,11 @@
 	
 	<div id="history"><span>Version History</span>
 	<p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.</p>
+	<p><b>Version 1.8.1</b> - <i>2011</i></p>
+	<ul>
+		<li>Changed: Added whitespace characters between plugin filenames, versions, ghosted labels and CRCs to make plaintext more readable.</li>
+		<li>Added: <q>Hide Clean Mods</q> BOSSlog filter.</li>
+	</ul>
 	<p><b>Version 1.8</b> - <i>6 July 2011</i></p>
 	<ul>
 		<li>Fixed: Junction-linked data folders not being scanned for mods.</li>

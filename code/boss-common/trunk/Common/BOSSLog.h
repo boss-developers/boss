@@ -31,6 +31,7 @@ namespace boss {
 	extern bool HideChecksums;
 	extern bool HideMessagelessMods;
 	extern bool HideGhostedMods;
+	extern bool HideCleanMods;
 	extern bool HideRuleWarnings;
 	extern bool HideAllModMessages;
 	extern bool HideNotes;

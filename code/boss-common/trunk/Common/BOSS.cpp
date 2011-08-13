@@ -871,18 +871,18 @@ int main(int argc, char *argv[]) {
 	for (size_t i=0; i<=x; i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			recogModContent += "<li><span class='mod'>" + TrimDotGhost(Modlist[i].name.string()) + "</span>";
+			recogModContent += "<li><span class='mod'>" + TrimDotGhost(Modlist[i].name.string()) + "</span>&nbsp;";
 			if (!skip_version_parse) {
 				string version = GetModHeader(Modlist[i].name);
 				if (!version.empty())
-					recogModContent += "<span class='version'>Version "+version+"</span>";
+					recogModContent += "&nbsp;<span class='version'>Version "+version+"</span>&nbsp;";
 			}
 			if (IsGhosted(data_path / Modlist[i].name)) {
-				recogModContent += "<span class='ghosted'>Ghosted</span>";
+				recogModContent += "&nbsp;<span class='ghosted'>Ghosted</span>&nbsp;";
 				ghostModNo++;
 			}
 			if (show_CRCs)
-				recogModContent += "<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
+				recogModContent += "&nbsp;<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
 				
 			//Now change the file's date, if it is not the game's master file.
 			if (!IsMasterFile(Modlist[i].name.string()) && !trial_run) {
@@ -922,18 +922,18 @@ int main(int argc, char *argv[]) {
 	for (size_t i=x+1; i<Modlist.size(); i++) {
 		//Only act on mods that exist.
 		if (Modlist[i].type == MOD && (Exists(data_path / Modlist[i].name))) {
-			unrecogModContent += "<li><span class='mod'>" + TrimDotGhost(Modlist[i].name.string()) + "</span>";
+			unrecogModContent += "<li><span class='mod'>" + TrimDotGhost(Modlist[i].name.string()) + "</span>&nbsp;";
 			if (!skip_version_parse) {
 				string version = GetModHeader(Modlist[i].name);
 				if (!version.empty())
-					unrecogModContent += "<span class='version'>Version "+version+"</span>";
+					unrecogModContent += "&nbsp;<span class='version'>Version "+version+"</span>&nbsp;";
 			}
 			if (IsGhosted(data_path / Modlist[i].name)) {
-				unrecogModContent += "<span class='ghosted'>Ghosted</span>";
+				unrecogModContent += "&nbsp;<span class='ghosted'>Ghosted</span>&nbsp;";
 				ghostModNo++;
 			}
 			if (show_CRCs)
-				unrecogModContent += "<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
+				unrecogModContent += "&nbsp;<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
 			
 			if (!trial_run) {
 				modfiletime = esmtime + 86400 + (recModNo + unrecModNo)*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute and adding 86,400 on increases it by a day. Using unrecModNo instead of i to avoid increases for group entries.
@@ -1000,6 +1000,11 @@ int main(int argc, char *argv[]) {
 			Output("<li><input type='checkbox' checked='checked' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label></li>\n");
 		else
 			Output("<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label></li>\n");
+
+		if (HideCleanMods)
+			Output("<li><input type='checkbox' checked='checked' id='cleanModFilter' onclick='toggleMods()' /><label for='cleanModFilter'>Hide Clean Mods</label></li>\n");
+		else
+			Output("<li><input type='checkbox' id='cleanModFilter' onclick='toggleMods()' /><label for='cleanModFilter'>Hide Clean Mods</label></li>\n");
 
 		if (HideAllModMessages)
 			Output("<li><input type='checkbox' checked='checked' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label></li>\n");

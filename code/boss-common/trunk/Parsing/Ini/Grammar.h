@@ -152,6 +152,8 @@ namespace boss {
 				HideMessagelessMods = bval;
 			} else if (var == "HideGhostedMods") {
 				HideGhostedMods = bval;
+			} else if (var == "HideCleanMods") {
+				HideCleanMods = bval;
 			} else if (var == "HideRuleWarnings") {
 				HideRuleWarnings = bval;
 			} else if (var == "HideAllModMessages") {

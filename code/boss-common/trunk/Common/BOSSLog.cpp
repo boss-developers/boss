@@ -27,6 +27,7 @@ namespace boss {
 	bool HideChecksums          = 0;
 	bool HideMessagelessMods    = 0;
 	bool HideGhostedMods        = 0;
+	bool HideCleanMods			= 0;
 	bool HideRuleWarnings       = 0;
 	bool HideAllModMessages     = 0;
 	bool HideNotes              = 0;
@@ -58,9 +59,9 @@ namespace boss {
 	string CSSError				= "background:red; color:white; display:table; padding:0 4px;";
 	string CSSWarning			= "background:orange; color:white; display:table; padding:0 4px;";
 	string CSSSuccess			= "color:green;";
-	string CSSVersion			= "color:#6394F8; margin-left:1.3em; padding:0 4px;";
-	string CSSGhost				= "color:#888888; margin-left:1.3em; padding:0 4px;";
-	string CSSCRC				= "color:#BC8923; margin-left:1.3em; padding:0 4px;";
+	string CSSVersion			= "color:#6394F8; margin-left:1em; padding:0 4px;";
+	string CSSGhost				= "color:#888888; margin-left:1em; padding:0 4px;";
+	string CSSCRC				= "color:#BC8923; margin-left:1em; padding:0 4px;";
 	string CSSTagPrefix			= "color:#CD5555;";
 	string CSSDirty				= "color:#996600;";
 	string CSSQuotedMessage		= "color:gray;";
@@ -172,11 +173,13 @@ namespace boss {
 				<< "function toggleMods(){"<<endl
 				<< "	var hideNoMessageMods=document.getElementById('noMessageModFilter').checked;"<<endl
 				<< "	var hideGhostMods=document.getElementById('ghostModFilter').checked;"<<endl
+				<< "	var hideCleanMods=document.getElementById('cleanModFilter').checked;"<<endl
 				<< "	var mods=document.getElementById('recognised').childNodes;"<<endl
 				<< "	for(i=0;i<mods.length;i++){"<<endl
 				<< "		if(mods[i].nodeType==1){"<<endl
 				<< "			var ghosted=false;"<<endl
-				<< "			var noMods=false;"<<endl
+				<< "			var noMods=true;"<<endl
+				<< "			var clean=true;"<<endl
 				<< "			var childs=mods[i].getElementsByTagName('span');"<<endl
 				<< "			for(j=0;j<childs.length;j++){"<<endl
 				<< "				if(childs[j].className=='ghosted'){"<<endl
@@ -184,10 +187,7 @@ namespace boss {
 				<< "					break;"<<endl
 				<< "				}"<<endl
 				<< "			}"<<endl
-				<< "			if (!mods[i].getElementsByTagName('li')[0]){"<<endl
-				<< "				noMods=true;"<<endl
-				<< "			}else{"<<endl
-				<< "				noMods=true;"<<endl
+				<< "			if (mods[i].getElementsByTagName('li')[0]){"<<endl
 				<< "				childs=mods[i].getElementsByTagName('li');"<<endl
 				<< "				for(j=0;j<childs.length;j++){"<<endl
 				<< "					var childDisplay, parentDisplay;"<<endl
@@ -198,19 +198,19 @@ namespace boss {
 				<< "						parentDisplay=childs[j].parentNode.currentStyle.display;"<<endl
 				<< "						childDisplay=childs[j].currentStyle.display;"<<endl
 				<< "					}"<<endl
-				<< "					if(parentDisplay=='none') {"<<endl
-				<< "							break;"<<endl
-				<< "					}else{"<<endl
-				<< "						if(childDisplay!='none') {"<<endl
-				<< "							noMods=false;"<<endl
-				<< "							break;"<<endl
-				<< "						}"<<endl
+				<< "					if(parentDisplay!='none'&&childDisplay!='none'){"<<endl
+				<< "						noMods=false;"<<endl
+				<< "					}"<<endl
+				<< "					if(childs[j].className=='dirty'){"<<endl
+				<< "						clean=false;"<<endl
 				<< "					}"<<endl
 				<< "				}"<<endl
 				<< "			}"<<endl
 				<< "			if(hideNoMessageMods&&noMods){"<<endl
 				<< "				mods[i].style.display='none';"<<endl
 				<< "			}else if(hideGhostMods&&ghosted){"<<endl
+				<< "				mods[i].style.display='none';"<<endl
+				<< "			}else if(hideCleanMods&&clean){"<<endl
 				<< "				mods[i].style.display='none';"<<endl
 				<< "			}else{"<<endl
 				<< "				mods[i].style.display='block';"<<endl
@@ -352,6 +352,7 @@ namespace boss {
 			replace_all(text, "</b>", "");
 			replace_all(text, "<i>", "");
 			replace_all(text, "</i>", "");
+			replace_all(text, "&nbsp;", " ");
 
 			replace_first(text, "<span>", "======================================\n");
 
@@ -485,6 +486,7 @@ namespace boss {
 			<<	"HideChecksums          = 0" << endl
 			<<	"HideMessagelessMods    = 0" << endl
 			<<	"HideGhostedMods        = 0" << endl
+			<<	"HideCleanMods          = 0" << endl
 			<<	"HideRuleWarnings       = 0" << endl
 			<<	"HideAllModMessages     = 0" << endl
 			<<	"HideNotes              = 0" << endl
