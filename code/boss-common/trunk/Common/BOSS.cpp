@@ -538,6 +538,16 @@ int main(int argc, char *argv[]) {
 	}
 	LOG_INFO("Populating hashset with userlist.");
 	for (size_t i=0; i<Userlist.size(); i++) {
+		if (IsPlugin(Userlist[i].ruleObject)) {
+			setPos = hashset.find(Tidy(Userlist[i].ruleObject));
+			if (setPos == hashset.end()) {  //Mod not already in hashset.
+				setPos = hashset.find(Tidy(Userlist[i].ruleObject + ".ghost"));
+				if (setPos == hashset.end()) {  //Ghosted mod not already in hashset. 
+					//Unique plugin, so add to hashset.
+					hashset.insert(Tidy(Userlist[i].ruleObject));
+				}
+			}
+		}
 		for (size_t j=0; j<Userlist[i].lines.size(); j++) {
 			if (IsPlugin(Userlist[i].lines[j].object)) {
 				setPos = hashset.find(Tidy(Userlist[i].lines[j].object));
@@ -657,18 +667,18 @@ int main(int argc, char *argv[]) {
 					item mod;
 					index1 = GetModPos(Modlist,Userlist[i].ruleObject);  //Find the rule mod in the modlist.
 					//Do checks/increments.
-					if (index1 == (size_t)-1) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
-						userlistMessagesContent += "<li class='warn'>\""+Userlist[i].ruleObject+"\" is not installed. Rule skipped.";
+					if (Userlist[i].ruleKey == ADD && index1 > x) 
+						x++;
+					else if (Userlist[i].ruleKey == ADD && index1 == (size_t)-1) {
+						userlistMessagesContent += "<li class='warn'>\""+Userlist[i].ruleObject+"\" is not installed or in the masterlist. Rule skipped.";
 						LOG_WARN(" * \"%s\" is not installed.", Userlist[i].ruleObject.c_str());
 						break;
-					} else if (Userlist[i].ruleKey == ADD && index1 > x) 
-						x++;
 					//If it adds a mod already sorted, skip the rule.
-					else if (Userlist[i].ruleKey == ADD  && index1 <= x) {
+					} else if (Userlist[i].ruleKey == ADD && index1 <= x) {
 						userlistMessagesContent += "<li class='warn'>\""+Userlist[i].ruleObject+"\" is already in the masterlist. Rule skipped.</li>\n";
 						LOG_WARN(" * \"%s\" is already in the masterlist.", Userlist[i].ruleObject.c_str());
 						break;
-					} else if (Userlist[i].ruleKey == OVERRIDE && index1 > x) {
+					} else if (Userlist[i].ruleKey == OVERRIDE && (index1 > x || index1 == (size_t)-1)) {
 						userlistMessagesContent += "<li class='error'>\""+Userlist[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</li>\n";
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", Userlist[i].ruleObject.c_str());
 						break;
@@ -742,18 +752,18 @@ int main(int argc, char *argv[]) {
 					item mod;
 					index1 = GetModPos(Modlist,Userlist[i].ruleObject);  //Find the rule mod in the modlist.
 					//Do checks/increments.
-					if (index1 == (size_t)-1) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
-						userlistMessagesContent += "<li class='warn'>\""+Userlist[i].ruleObject+"\" is not installed. Rule skipped.";
+					if (Userlist[i].ruleKey == ADD && index1 > x) 
+						x++;
+					else if (Userlist[i].ruleKey == ADD && index1 == (size_t)-1) {
+						userlistMessagesContent += "<li class='warn'>\""+Userlist[i].ruleObject+"\" is not installed or in the masterlist. Rule skipped.";
 						LOG_WARN(" * \"%s\" is not installed.", Userlist[i].ruleObject.c_str());
 						break;
-					} else if (Userlist[i].ruleKey == ADD && index1 > x) 
-						x++;
 					//If it adds a mod already sorted, skip the rule.
-					else if (Userlist[i].ruleKey == ADD  && index1 <= x) {
+					} else if (Userlist[i].ruleKey == ADD  && index1 <= x) {
 						userlistMessagesContent += "<li class='warn'>\""+Userlist[i].ruleObject+"\" is already in the masterlist. Rule skipped.</li>\n";
 						LOG_WARN(" * \"%s\" is already in the masterlist.", Userlist[i].ruleObject.c_str());
 						break;
-					} else if (Userlist[i].ruleKey == OVERRIDE && index1 > x) {
+					} else if (Userlist[i].ruleKey == OVERRIDE && (index1 > x || index1 == (size_t)-1)) {
 						userlistMessagesContent += "<li class='error'>\""+Userlist[i].ruleObject+"\" is not in the masterlist, cannot override. Rule skipped.</li>\n";
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", Userlist[i].ruleObject.c_str());
 						break;
@@ -787,7 +797,7 @@ int main(int argc, char *argv[]) {
 					index = GetModPos(Modlist,Userlist[i].ruleObject);
 					//Do checks/increments.
 					if (index == (size_t)-1) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
-						userlistMessagesContent += "<li class='warn'>\""+Userlist[i].ruleObject+"\" is not installed. Rule skipped.";
+						userlistMessagesContent += "<li class='warn'>\""+Userlist[i].ruleObject+"\" is not installed or in the masterlist. Rule skipped.";
 						LOG_WARN(" * \"%s\" is not installed.", Userlist[i].ruleObject.c_str());
 						break;
 					}
