@@ -61,7 +61,6 @@ namespace boss {
 	// Error messages for rule validation
 	//Syntax errors
 	static format ESortLineInForRule("includes a sort line in a rule with a FOR rule keyword.");
-	static format EPluginNotInstalled("references \"%1%\", which is not installed.");
 	static format EAddingModGroup("tries to add a group.");
 	static format ESortingGroupEsms("tries to sort the group \"ESMs\".");
 	static format ESortingMasterEsm("tries to sort the master .ESM file.");
@@ -105,8 +104,6 @@ namespace boss {
 			keyType ruleKey = currentRule.ruleKey;
 			string ruleObject = currentRule.ruleObject;
 			if (IsPlugin(ruleObject)) {
-				if (!Exists(data_path / ruleObject))
-					throw failure(ruleKey, ruleObject, (EPluginNotInstalled % ruleObject).str());
 				if (ruleKey != FOR && IsMasterFile(ruleObject))
 					throw failure(ruleKey, ruleObject, ESortingMasterEsm.str());
 			} else {

@@ -16,10 +16,18 @@
 
 #include <iostream>
 #include <boost/spirit/include/karma.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace boss {
 	using namespace std;
 	namespace karma = boost::spirit::karma;
+
+	//Changes uppercase to lowercase and removes preceding and trailing spaces.	
+	string Tidy(string filename) {
+		boost::algorithm::trim(filename);
+		boost::algorithm::to_lower(filename);
+		return filename;
+	}
 
 	//Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
 	string IntToString(unsigned int n) {

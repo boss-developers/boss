@@ -25,10 +25,11 @@ using namespace boss;
 using namespace std;
 
 int main() {
-	ofstream dirtylist;
 	vector<item> Masterlist;
+	vector<item> Cleanlist;
 	const fs::path masterlist_path		= "masterlist.txt";
 	const fs::path dirtylist_path		= "dirtylist.txt";
+	const fs::path cleanlist_path		= "cleanlist.txt";
 
 	//Set the locale to get encoding conversions working correctly.
 	//Not sure if this is still needed, but better safe than sorry.
@@ -46,20 +47,46 @@ int main() {
 	//Check if it actually exists, because the parser doesn't fail if there is no file...
 	if (!fs::exists(masterlist_path)) {
 		//Print error message to console and exit.
-		cout << "Critical Error: \"" +masterlist_path.string() +"\" cannot be read! Exiting." << endl;
+		dirtylist << "Critical Error: \"" +masterlist_path.string() +"\" cannot be read! Exiting." << endl;
         exit (1); //fail in screaming heap.
-    }
+    } else if (!fs::exists(cleanlist_path)) {
+		//Print error message to console and exit.
+		dirtylist << "Critical Error: \"" +cleanlist_path.string() +"\" cannot be read! Exiting." << endl;
+        exit (1); //fail in screaming heap.
+	}
 	//Parse masterlist into data structure.
 	parseMasterlist(masterlist_path,Masterlist);
 	//Check if parsing failed - the parsed bool always returns true for some reason, so check size of errorMessageBuffer.
 	if (errorMessageBuffer.size() != 0) {
-		cout << "There were errors encountered when parsing the masterlist. Try running BOSS using the same masterlist to see what the errors were. Exiting." << endl;
+		dirtylist << "There were errors encountered when parsing the masterlist. Try running BOSS using the same masterlist to see what the errors were. Exiting." << endl;
+        exit (1); //fail in screaming heap.
+	}
+	currentList = "clean";
+	//Parse cleanlist into data structure.
+	parseMasterlist(cleanlist_path,Cleanlist);
+	//Check if parsing failed - the parsed bool always returns true for some reason, so check size of errorMessageBuffer.
+	if (errorMessageBuffer.size() != 0) {
+		dirtylist << "There were errors encountered when parsing the cleanlist. Exiting." << endl;
         exit (1); //fail in screaming heap.
 	}
 
+	vector<item> Dirtylist;
+	
+	for (size_t i=0;i<Masterlist.size();i++) {
+		
+		if (ModInList(Cleanlist,Masterlist[i].name)) {
+		Masterlist.erase(Masterlist.begin()+i);
+		i--;
+	//		Dirtylist.push_back(Masterlist[i]);
+		}
+
+	}
+	
 	//Sort mods alphabetically.
 	sort(Masterlist.begin(),Masterlist.end(), SortModsByName);
+
 	//Output formatted dirtylist.txt.
-	SaveModlist(Masterlist, dirtylist_path);
+	SaveModlist(Masterlist);
+	dirtylist.close();
 	return (0);
 }

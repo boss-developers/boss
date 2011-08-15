@@ -23,6 +23,10 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
+	extern ofstream dirtylist;
+
+	extern string currentList;
+
 	////////////////////////////////////////
 	// General data structures
 	////////////////////////////////////////
@@ -72,9 +76,11 @@ namespace boss {
 	};
 
 	//Save the formatted output list of dirty mods.
-	void SaveModlist(vector<item> list, fs::path file);
+	void SaveModlist(vector<item> list);
 
 	bool SortModsByName(item mod1,item mod2);
+
+	bool ModInList(vector<item> list, fs::path filename);
 }
 
 #endif

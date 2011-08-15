@@ -75,7 +75,7 @@ namespace boss {
 		if (currentMessage.data.find("Needs TES4Edit") == string::npos)
 			return;
 
-		size_t pos1 = currentMessage.data.find(" records. Needs TES4Edit");
+		size_t pos1 = currentMessage.data.find(" records");
 		if (pos1 != string::npos)
 			currentMessage.data = currentMessage.data.substr(0,pos1);
 		else 
@@ -93,7 +93,7 @@ namespace boss {
 	//Stores the given item, should it be appropriate, and records any changes to open groups.
 	void StoreItem(vector<item>& list, item currentItem) {
 		if (currentItem.type == MOD) {
-			if (currentItem.messages.size()>0) {
+			if ((currentList == "master" && currentItem.messages.size()>0) || currentList == "clean") {
 				list.push_back(currentItem);
 			}
 		}
@@ -153,7 +153,7 @@ namespace boss {
 				> -lit(":")
 				> charString);
 
-			charString %= lexeme[+(char_ - eol)]; //String, but skip comment if present.
+			charString %= lexeme[+(char_ - (eol | '<'))] >> omit[-(lit("<") >> +(char_ - eol))]; //String, but skip comment if present.
 
 			messageKeyword %= masterlistMsgKey;
 

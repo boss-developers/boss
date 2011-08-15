@@ -656,9 +656,12 @@ int main(int argc, char *argv[]) {
 					size_t index1,index2;
 					item mod;
 					index1 = GetModPos(Modlist,Userlist[i].ruleObject);  //Find the rule mod in the modlist.
-					mod = Modlist[index1];  //Record the rule mod in a new variable.
 					//Do checks/increments.
-					if (Userlist[i].ruleKey == ADD && index1 > x) 
+					if (index1 == (size_t)-1) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
+						userlistMessagesContent += "<li class='warn'>\""+Userlist[i].ruleObject+"\" is not installed. Rule skipped.";
+						LOG_WARN(" * \"%s\" is not installed.", Userlist[i].ruleObject.c_str());
+						break;
+					} else if (Userlist[i].ruleKey == ADD && index1 > x) 
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (Userlist[i].ruleKey == ADD  && index1 <= x) {
@@ -670,6 +673,7 @@ int main(int argc, char *argv[]) {
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", Userlist[i].ruleObject.c_str());
 						break;
 					}
+					mod = Modlist[index1];  //Record the rule mod in a new variable.
 					//Remove the rule mod from its current position.
 					Modlist.erase(Modlist.begin()+index1);
 					//Find the sort mod in the modlist.
@@ -737,9 +741,12 @@ int main(int argc, char *argv[]) {
 					size_t index1,index2;
 					item mod;
 					index1 = GetModPos(Modlist,Userlist[i].ruleObject);  //Find the rule mod in the modlist.
-					mod = Modlist[index1];  //Record the rule mod in a new variable.
 					//Do checks/increments.
-					if (Userlist[i].ruleKey == ADD && index1 > x) 
+					if (index1 == (size_t)-1) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
+						userlistMessagesContent += "<li class='warn'>\""+Userlist[i].ruleObject+"\" is not installed. Rule skipped.";
+						LOG_WARN(" * \"%s\" is not installed.", Userlist[i].ruleObject.c_str());
+						break;
+					} else if (Userlist[i].ruleKey == ADD && index1 > x) 
 						x++;
 					//If it adds a mod already sorted, skip the rule.
 					else if (Userlist[i].ruleKey == ADD  && index1 <= x) {
@@ -751,6 +758,7 @@ int main(int argc, char *argv[]) {
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", Userlist[i].ruleObject.c_str());
 						break;
 					}
+					mod = Modlist[index1];  //Record the rule mod in a new variable.
 					//Remove the rule mod from its current position.
 					Modlist.erase(Modlist.begin()+index1);
 					//Find the position of the group to sort it to.
@@ -777,6 +785,12 @@ int main(int argc, char *argv[]) {
 					message newMessage;
 					//Find the mod which will have its messages edited.
 					index = GetModPos(Modlist,Userlist[i].ruleObject);
+					//Do checks/increments.
+					if (index == (size_t)-1) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
+						userlistMessagesContent += "<li class='warn'>\""+Userlist[i].ruleObject+"\" is not installed. Rule skipped.";
+						LOG_WARN(" * \"%s\" is not installed.", Userlist[i].ruleObject.c_str());
+						break;
+					}
 					//The provided message string could be using either the old format or the new format. Need to support both.
 					//The easiest way is to check the first character. If it's a symbol character, it's the old format, otherwise the new.
 					char sym = Userlist[i].lines[j].object[0];
