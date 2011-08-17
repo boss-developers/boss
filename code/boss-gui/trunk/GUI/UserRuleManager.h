@@ -73,12 +73,9 @@ private:
 	wxListBox *InstalledModsList;
 	wxListBox *MasterlistModsList;
 	wxStaticText *ModMessagesBox;
-	wxSearchCtrl *SearchInstalledModsBox;
-	wxSearchCtrl *SearchMasterlistModsBox;
 	wxComboBox *BeforeAfterChoiceBox;
 	wxComboBox *TopBottomChoiceBox;
 	wxTextCtrl *NewModMessagesBox;
-	wxRearrangeCtrl *RuleList;
 };
 
 #endif

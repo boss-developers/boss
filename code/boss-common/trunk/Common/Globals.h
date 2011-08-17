@@ -43,7 +43,7 @@ namespace boss {
 	extern string proxy_type;
 	extern string proxy_host;
 	extern string proxy_port;
-	extern int game;				// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
+	extern int game;				// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim.
 	extern int revert;				// what level to revert to
 	extern int verbosity;			// log levels above INFO to output
 	extern bool update;				// update the masterlist?

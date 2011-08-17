@@ -91,6 +91,8 @@ namespace boss {
 					game = 2;
 				else if (value == "FalloutNV")
 					game = 4;
+				else if (value == "Skyrim")
+					game = 5;
 				return;
 			} else if (var == "BOSSlogFormat") {
 				if (value == "html" || value == "text")

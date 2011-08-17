@@ -160,7 +160,7 @@ namespace boss {
 
 	//Determines if a given mod is a game's main master file or not.
 	bool IsMasterFile(const string plugin) {
-		return ((Tidy(plugin) == "oblivion.esm") || (Tidy(plugin) == "fallout3.esm") || (Tidy(plugin) == "nehrim.esm") || (Tidy(plugin) == "falloutnv.esm"));
+		return ((Tidy(plugin) == "oblivion.esm") || (Tidy(plugin) == "fallout3.esm") || (Tidy(plugin) == "nehrim.esm") || (Tidy(plugin) == "falloutnv.esm") || (Tidy(plugin) == "skyrim.esm"));
 	}
 
 	//Reads the header from mod file and prints a string representation which includes the version text, if found.

@@ -439,7 +439,7 @@ namespace boss {
 			<<	"# This section sets the options used when BOSS.exe is run directly." << endl
 			<<	"# For toggles, 0 = not set, 1 = set." << endl
 			<<	"# For RevertLevel and CommandLineVerbosity, values specify levels." << endl
-			<<	"# Valid values for Game are 'auto', 'Oblivion', 'Nehrim', 'Fallout3', and 'FalloutNV'." << endl
+			<<	"# Valid values for Game are 'auto', 'Oblivion', 'Nehrim', 'Fallout3', 'FalloutNV', and 'Skyrim'." << endl
 			<<	"# Valid values for BOSSlogFormat are 'html' and 'text'." << endl
 			<<	"UpdateMasterlist        = 1" << endl
 			<<	"OnlyUpdateMasterlist    = 0" << endl

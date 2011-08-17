@@ -81,7 +81,8 @@ namespace boss {
 		if (game == 1) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
 		else if (game == 2) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
 		else if (game == 3) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/masterlist.txt";
-		else url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/masterlist.txt";
+		else if (game == 4) url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/masterlist.txt";
+		else url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-skyrim/masterlist.txt";
 		
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = curl_easy_init();
@@ -135,6 +136,7 @@ namespace boss {
 		else if (game == 2) start = buffer.find("boss-fallout");
 		else if (game == 3) start = buffer.find("boss-nehrim");
 		else if (game == 4) start = buffer.find("boss-fallout-nv");
+		else if (game == 5) start = buffer.find("boss-skyrim");
 		else {
 			curl_easy_cleanup(curl);
 			throw boss_error() << err_detail("None of the supported games were detected.");
@@ -166,6 +168,7 @@ namespace boss {
 		else if (game == 2) start = buffer.find("boss-fallout");
 		else if (game == 3) start = buffer.find("boss-nehrim");
 		else if (game == 4) start = buffer.find("boss-fallout-nv");
+		else if (game == 4) start = buffer.find("boss-skyrim");
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
 			throw boss_error() << err_detail("Cannot find online masterlist revision date.");

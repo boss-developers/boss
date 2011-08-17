@@ -51,7 +51,7 @@ void ShowUsage(po::options_description opts) {
 	ShowVersion();
 	cout << endl << "Description:" << endl;
 	cout << "  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, Nehrim," << endl;
-	cout << "  Fallout 3, and Fallout: New Vegas according to a frequently updated" << endl;
+	cout << "  Fallout 3, Fallout: New Vegas and TESV: Skyrim according to a frequently updated" << endl;
 	cout << "  masterlist to minimise incompatibilities between mods." << endl << endl;
 	cout << opts << endl;
 	cout << "Examples:" << endl;
@@ -138,8 +138,8 @@ int main(int argc, char *argv[]) {
 								" values increase the verbosity further")
 		("game,g", po::value(&gameStr),
 								"override game autodetection.  valid values"
-								" are: 'Oblivion', 'Nehrim', 'Fallout3', and"
-								" 'FalloutNV'")
+								" are: 'Oblivion', 'Nehrim', 'Fallout3',"
+								" 'FalloutNV', and 'Skyrim'")
 		("debug,d", po::value(&debug)->zero_tokens(),
 								"add source file references to logging statements")
 		("crc-display,c", po::value(&show_CRCs)->zero_tokens(),
@@ -221,6 +221,7 @@ int main(int argc, char *argv[]) {
 		else if (boost::iequals("Fallout3",   gameStr)) { game = 2; }
 		else if (boost::iequals("Nehrim",     gameStr)) { game = 3; }
 		else if (boost::iequals("FalloutNV", gameStr)) { game = 4; }
+		else if (boost::iequals("Skyrim", gameStr)) { game = 5; }
 		else {
 			LOG_ERROR("invalid option for 'game' parameter: '%s'", gameStr.c_str());
 			Fail();
@@ -332,6 +333,7 @@ int main(int argc, char *argv[]) {
 		} else if (fs::exists(data_path / "Nehrim.esm")) game = 3;
 		else if (fs::exists(data_path / "FalloutNV.esm")) game = 4;
 		else if (fs::exists(data_path / "Fallout3.esm")) game = 2;
+		else if (fs::exists(data_path / "Skyrim.esm")) game = 5;
 		else {
 			LOG_ERROR("None of the supported games were detected...");
 			OutputHeader();
@@ -416,6 +418,7 @@ int main(int argc, char *argv[]) {
 		else if (game == 2) esmtime = fs::last_write_time(data_path / "Fallout3.esm");
 		else if (game == 3) esmtime = fs::last_write_time(data_path / "Nehrim.esm");
 		else if (game == 4) esmtime = fs::last_write_time(data_path / "FalloutNV.esm");
+		else if (game == 5) esmtime = fs::last_write_time(data_path / "Skyrim.esm");
 	} catch(fs::filesystem_error e) {
 		OutputHeader();
 		Output("<p class='error'>Critical Error: Master .ESM file cannot be read!<br />\n");
@@ -849,10 +852,14 @@ int main(int argc, char *argv[]) {
 			SE = "FOSE";
 			SELoc = "../fose_loader.exe";
 			SEPluginLoc = "FOSE/Plugins";
-		} else {  //Fallout: New Vegas
+		} else if (game == 4) {  //Fallout: New Vegas
 			SE = "NVSE";
 			SELoc = "../nvse_loader.exe";
 			SEPluginLoc = "NVSE/Plugins";
+		} else {  //Skyrim
+			SE = "SKSE";
+			SELoc = "../skse_loader.exe";
+			SEPluginLoc = "SKSE/Plugins";
 		}
 
 		if (!fs::exists(SELoc)) {

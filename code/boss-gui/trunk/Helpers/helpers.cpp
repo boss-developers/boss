@@ -30,7 +30,7 @@ namespace boss {
 	
 	//Command line variables
 	string log_format				= "html";	// what format the output should be in.
-	int game						= 0;		// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
+	int game						= 0;		// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim.
 	int revert						= 0;		// what level to revert to
 	int verbosity					= 0;		// log levels above INFO to output
 	bool update						= true;		// update the masterlist? THIS DOESN'T BEHAVE LIKE THE CLI PARAMETER - IF FALSE, IT SETS -U.
@@ -59,6 +59,8 @@ namespace boss {
 			return "Fallout 3";
 		else if (fs::exists("../FalloutNV.exe"))
 			return "Fallout: New Vegas";
+		else if (fs::exists("../Skyrim.exe"))
+			return "Skyrim";
 		else 
 			return "Game Not Detected";
 	}
@@ -97,6 +99,8 @@ namespace boss {
 				params += " -g Nehrim";
 			else if (game == 4)
 				params += " -g FalloutNV";
+			else if (game == 5)
+				params += " -g Skyrim";
 		} else if (run_type == 3) {  //Undo changes.
 			if (revert > 0)
 				params += " -r" + IntToString(revert);
@@ -186,7 +190,7 @@ namespace boss {
 			<<	"# This section sets the options used when BOSS.exe is run directly." << endl
 			<<	"# For toggles, 0 = not set, 1 = set." << endl
 			<<	"# For RevertLevel and CommandLineVerbosity, values specify levels." << endl
-			<<	"# Valid values for Game are 'auto', 'Oblivion', 'Nehrim', 'Fallout3', and 'FalloutNV'." << endl
+			<<	"# Valid values for Game are 'auto', 'Oblivion', 'Nehrim', 'Fallout3', 'FalloutNV' and 'Skyrim'." << endl
 			<<	"# Valid values for BOSSlogFormat are 'html' and 'text'." << endl
 			<<	"UpdateMasterlist        = 1" << endl
 			<<	"OnlyUpdateMasterlist    = 0" << endl

@@ -51,7 +51,7 @@ namespace boss {
 	
 	//Command line variables
 	extern string log_format;				// what format the output should be in.
-	extern int game;						// Force what game? 0 = allow autodetection, 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas.
+	extern int game;						// Force what game? 0 = allow autodetection, 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim.
 	extern int revert;						// what level to revert to
 	extern int verbosity;					// Command-line output verbosity.
 	extern bool update;						// update the masterlist? THIS DOESN'T BEHAVE LIKE THE CLI PARAMETER - IF FALSE, IT SETS -U.

@@ -118,6 +118,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 		wxT("Fallout 3"),
 		wxT("Nehrim"),
 		wxT("Fallout: New Vegas")
+		wxT("Skyrim")
 	};
 	wxString choices4[] = {
 		wxT("No Undo"),
@@ -204,7 +205,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	//Update only stuff.
 	runOptionsBox->Add(UpdateOption = new wxRadioButton(this, RADIOBUTTON_UpdateOption, "Update Masterlist Only"), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	gameBox->Add(GameText = new wxStaticText(this, wxID_ANY, "Game: "), 1, wxLEFT | wxBOTTOM, 15);
-	gameBox->Add(GameBox = new wxComboBox(this, DROPDOWN_Game, choices3[0], wxDefaultPosition, wxDefaultSize, 5, choices3, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
+	gameBox->Add(GameBox = new wxComboBox(this, DROPDOWN_Game, choices3[0], wxDefaultPosition, wxDefaultSize, 6, choices3, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	updateBox->Add(gameBox, 0, wxEXPAND, 0);
 	runOptionsBox->Add(updateBox, 0, wxEXPAND | wxLEFT | wxBOTTOM, 20);
 	
@@ -276,6 +277,8 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 		GameBox->SetValue(choices3[3]);
 	else if (game == 4)
 		GameBox->SetValue(choices3[4]);
+	else if (game == 5)
+		GameBox->SetValue(choices3[5]);
 	if (revert == 0)
 		RevertBox->SetValue(choices4[0]);
 	else if (revert == 1)
@@ -418,8 +421,10 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 					buffer.replace(pos1+2,pos2-pos1-2,"Fallout3");  //Replace Game setting.
 				else if (game == 3)
 					buffer.replace(pos1+2,pos2-pos1-2,"Nehrim");  //Replace Game setting.
-				else
+				else if (game == 4)
 					buffer.replace(pos1+2,pos2-pos1-2,"FalloutNV");  //Replace Game setting.
+				else if (game == 5)
+					buffer.replace(pos1+2,pos2-pos1-2,"Skyrim");  //Replace Game setting.
 			} else if (i==11)
 				buffer.replace(pos1+2,1,IntToString(revert));  //Replace RevertLevel setting.
 			else if (i==12)

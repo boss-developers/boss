@@ -99,6 +99,9 @@ namespace boss {
 		} else if (file == "TES4") {
 			file_path = "..";
 			file = "Oblivion.exe";
+		} else if (file == "TES5") {
+			file_path = "..";
+			file = "Skyrim.exe";
 		} else if (file == "FO3") {
 			file_path = "..";
 			file = "Fallout3.exe";
@@ -112,8 +115,10 @@ namespace boss {
 					file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
 				else if (fs::exists(data_path / "FOSE"))
 					file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
-				else
+				else if (fs::exists(data_path / "NVSE"))
 					file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+				else if (fs::exists(data_path / "SKSE"))
+					file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
 			} else
 				file_path = data_path;
 		}
