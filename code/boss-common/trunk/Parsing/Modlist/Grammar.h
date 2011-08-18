@@ -93,6 +93,9 @@ namespace boss {
 		} else if (file == "NVSE") {
 			file_path = "..";
 			file = "nvse_loader.exe";
+		} else if (file == "SKSE") {
+			file_path = "..";
+			file = "skse_loader.exe";
 		} else if (file == "BOSS") {
 			file_path = ".";
 			file = "BOSS.exe";
