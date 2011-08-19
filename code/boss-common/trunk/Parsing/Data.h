@@ -48,13 +48,13 @@ namespace boss {
 		masterlistMsgKey_() {
 			add
 				//New Message keywords.
-				("SAY",SAY)
-				("TAG",TAG)
-				("REQ",SPECIFIC_REQ)
-				("INC", SPECIFIC_INC)
-				("DIRTY",DIRTY)
-				("WARN",WARN)
-				("ERROR",ERR)
+				("say",SAY)
+				("tag",TAG)
+				("req",SPECIFIC_REQ)
+				("inc", SPECIFIC_INC)
+				("dirty",DIRTY)
+				("warn",WARN)
+				("error",ERR)
 				//Old message symbols.
 				("?",SAY)
 				("$",OOOSAY)  //OOO comment
@@ -71,13 +71,13 @@ namespace boss {
 		typeKey_() {
 			add
 				//Group keywords.
-				("BEGINGROUP:",BEGINGROUP)  //Needs the colon there unfortunately.
-				("ENDGROUP:",ENDGROUP)  //Needs the colon there unfortunately.
-				("ENDGROUP",ENDGROUP)
+				("begingroup:",BEGINGROUP)  //Needs the colon there unfortunately.
+				("endgroup:",ENDGROUP)  //Needs the colon there unfortunately.
+				("endgroup",ENDGROUP)
 				("\\BeginGroup\\:",BEGINGROUP)
 				("\\EndGroup\\\\",ENDGROUP)
-				("MOD:", MOD)  //Needs the colon there unfortunately.
-				("REGEX:", REGEX)
+				("mod:", MOD)  //Needs the colon there unfortunately.
+				("regex:", REGEX)
 			;
 		}
 	} typeKey;
@@ -86,8 +86,8 @@ namespace boss {
 		metaKey_() {
 			add
 				//Condition keywords.
-				("IF", IF)
-				("IFNOT", IFNOT)
+				("if", IF)
+				("ifnot", IFNOT)
 			;
 		}
 	} metaKey;

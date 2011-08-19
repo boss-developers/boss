@@ -320,20 +320,16 @@ namespace boss {
 	}
 
 	//Defines the given masterlist variable, if appropriate.
-	void StoreVar(bool result, string var) {
-		if (result)
+	void StoreVar(string var) {
+		if (storeItem)
 			setVars.insert(var);
 		return;
 	}
 
 	//Defines the given masterlist variable, if appropriate.
-	void StoreGlobalMessage(bool result, keyType messageKey, string messageData) {
-		if (result) {
-			message m;
-			m.key = messageKey;
-			m.data = messageData;
-			globalMessageBuffer.push_back(m);
-		}
+	void StoreGlobalMessage(message currentMessage) {
+		if (storeMessage)
+			globalMessageBuffer.push_back(currentMessage);
 		return;
 	}
 
@@ -396,20 +392,20 @@ namespace boss {
 
 			vector<message> noMessages;  //An empty set of messages.
 
-			modList = (metaLine | globalMessage | listItem[phoenix::bind(&StoreItem, _val, _1)]) % +eol;
+			modList = (metaLine[phoenix::bind(&StoreVar, _1)] | globalMessage[phoenix::bind(&StoreGlobalMessage, _1)] | listItem[phoenix::bind(&StoreItem, _val, _1)]) % +eol;
 
 			metaLine =
-				(conditionals
-				>> (lit("SET")
-				> ':'
-				> charString))[phoenix::bind(&StoreVar, _1, _2)];
+				omit[conditionals[phoenix::ref(storeItem) = _1]]
+				>> no_case[lit("set")]
+				>> (lit(":")
+				> charString);
 
 			globalMessage =
-				(conditionals
-				>> lit("GLOBAL")
-				> messageKeyword
-				> ':'
-				> messageString)[phoenix::bind(&StoreGlobalMessage, _1, _2, _3)];
+				omit[conditionals[phoenix::ref(storeMessage) = _1]]
+				>> no_case[lit("global")]
+				>> (messageKeyword
+				> lit(":")
+				> messageString);
 
 			listItem %= 
 				omit[(oldConditional | conditionals)[phoenix::ref(storeItem) = _1]]
@@ -417,7 +413,7 @@ namespace boss {
 				> itemName
 				> itemMessages;
 
-			ItemType %= typeKey | eps[_val = MOD];
+			ItemType %= no_case[typeKey] | eps[_val = MOD];
 
 			itemName = 
 				charString[phoenix::bind(&path, _val, _1)]
@@ -434,11 +430,11 @@ namespace boss {
 				> -lit(":")
 				> messageString);
 
-			charString %= lexeme[skip(lit("//") >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present.
+			charString %= lexeme[+(char_ - eol)]; //String, with no skipper.
 
 			messageString %= lexeme[+(char_ - eol)]; //String, with no skipper. Used for messages, which can contain web links which the skipper would cut out.
 
-			messageKeyword %= masterlistMsgKey;
+			messageKeyword %= no_case[masterlistMsgKey];
 
 			oldConditional = (char_(">") |  char_("<"))		[phoenix::bind(&EvalOldFCOMConditional, _val, _1)];
 
@@ -449,7 +445,7 @@ namespace boss {
 
 			andOr %= unicode::string("&&") | unicode::string("||");
 
-			conditional = (metaKey > '(' > condition > ')')	[phoenix::bind(&EvaluateConditional, _val, _1, _2)];
+			conditional = (no_case[metaKey] > '(' > condition > ')')	[phoenix::bind(&EvaluateConditional, _val, _1, _2)];
 
 			condition = 
 				variable									[phoenix::bind(&CheckVar, _val, _1)]
@@ -517,11 +513,10 @@ namespace boss {
 		qi::rule<Iterator, itemType(), skipper> ItemType;
 		qi::rule<Iterator, fs::path(), skipper> itemName;
 		qi::rule<Iterator, vector<message>(), skipper> itemMessages;
-		qi::rule<Iterator, message(), skipper> itemMessage;
-		qi::rule<Iterator, string(), skipper> charString, messageString, variable, file, version, andOr, keyword;
+		qi::rule<Iterator, message(), skipper> itemMessage, globalMessage;
+		qi::rule<Iterator, string(), skipper> charString, messageString, variable, file, version, andOr, keyword, metaLine;
 		qi::rule<Iterator, keyType(), skipper> messageKeyword;
 		qi::rule<Iterator, bool(), skipper> conditional, conditionals, condition, oldConditional;
-		qi::rule<Iterator, skipper> metaLine, globalMessage;
 		
 		void SyntaxErr(Iterator const& /*first*/, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
 			ostringstream out;

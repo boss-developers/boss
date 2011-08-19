@@ -39,28 +39,29 @@ namespace boss {
 			start = 
 				spc
 				| UTF8
-				| comment
-				| oldMasterlistComment
+				| CComment
+				| CPlusPlusComment
+				| lineComment
 				| eof;
 			
 			spc = space - eol;
 
 			UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf"); //UTF8 BOM
 
-			comment	= 
-				lit("//") 
-				>> *(char_ - eol);
+			CComment = "/*" >> *(char_ - "*/") >> "*/";
+
+			CPlusPlusComment = !(lit("http:") | lit("https:")) >> "//" >> *(char_ - eol);
 
 			//Need to skip lines that start with '\', but only if they don't follow with EndGroup or BeginGroup.
-			oldMasterlistComment = 
+			lineComment = 
 				lit("\\")
 				>> !(lit("EndGroup") | lit("BeginGroup"))
 				>> *(char_ - eol);
 
-			eof = *(spc | comment | oldMasterlistComment | eol) >> eoi;
+			eof = *(spc | CComment | CPlusPlusComment | lineComment | eol) >> eoi;
 		}
 
-		qi::rule<Iterator> start, spc, eof, comment, oldMasterlistComment, UTF8;
+		qi::rule<Iterator> start, spc, eof, CComment, CPlusPlusComment, lineComment, UTF8;
 	};
 
 	template <typename Iterator>

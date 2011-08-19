@@ -749,6 +749,10 @@
 		<li>Added: <q>Hide Clean Mods</q> BOSSlog filter.</li>
 		<li>Added: Support for Skyrim. This assumes Skyrim's master file will be <q>Skyrim.esm</q>, the executable will be <q>Skyrim.exe</q>. If different, BOSS will be updated upon Skyrim's release with the real filenames.
 		<li>Added: Support for a Skyrim Script Extender. While the team responsible for OBSE, FOSE and NVSE have not made any comments officially or unofficially regarding Skyrim, BOSS has added support for one with the assumptions that it uses the <code>Data\SKSE\Plugins\</code> directory for its plugins and has a loader named <q>skse_loader.exe</q>.
+		<li>Changed: Masterlist keywords can now be case-insensitive.
+		<li>Fixed: A bug where if a plugin filename started with "SET" or "GLOBAL" (or case variations) then BOSS would incorrectly classify it as a variable or global message line and so result in syntax errors.
+		<li>Added: Support for MF2.2 C-style comments.
+		<li>Added: Support for MF2.2 case-insensitive keywords.
 	</ul>
 	<p><b>Version 1.8</b> - <i>6 July 2011</i></p>
 	<ul>
@@ -776,8 +780,8 @@
 		</ul>
 		</li>
 		<li>Added: Support for Fallout: New Vegas mods that use the Fallout 3 master file, such as <q>A Requiem for the Capital Wasteland</q>.</li>
-		<li>Added: Support for regular expressions in the masterlist.</li>
-		<li>Added: Support for conditional incompatibility and conditional requirement messages in the masterlist.</li>
+		<li>Added: Support for MF2.1 regular expressions in the masterlist.</li>
+		<li>Added: Support for MF2.1 conditional incompatibility and conditional requirement messages in the masterlist.</li>
 		<li>Added: BOSSlog filter option to hide userlist warning messages.</li>
 		<li>(GUI) Fixed: The <q>Enable File CRC Display</q> and <q>Enable Mod Version Display</q> options getting confused between their values under the <q>Sort Mods</q> and <q>Undo Changes</q> run options.</li>
 		<li>(GUI) Fixed: The icon not appearing in the title bar.</li>
