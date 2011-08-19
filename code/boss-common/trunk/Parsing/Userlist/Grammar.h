@@ -172,7 +172,7 @@ namespace boss {
 				> ':'
 				> object;
 
-			object %= lexeme[skip("//" >> *(char_ - eol))[+(char_ - eol)]]; //String, but skip comment if present.
+			object %= lexeme[+(char_ - eol)]; //String, with no skipper.
 
 			ruleKey %= no_case[ruleKeys];
 
