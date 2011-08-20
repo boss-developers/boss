@@ -244,8 +244,7 @@ namespace boss {
 		}
 	}
 
-	template <typename Iterator>
-	struct ini_grammar : qi::grammar<Iterator, Ini_Skipper<Iterator>> {
+	struct ini_grammar : qi::grammar<string::const_iterator, Ini_Skipper> {
 		ini_grammar() : ini_grammar::base_type(ini, "ini grammar") {
 
 			ini =
@@ -285,20 +284,18 @@ namespace boss {
 			value.name("value");
 		
 			//Error handling.
-			on_error<fail>(ini,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(section,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(heading,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(setting,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(var,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(value,phoenix::bind(&ini_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(ini,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(section,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(heading,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(setting,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(var,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(value,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
 		}
 
-		typedef Ini_Skipper<Iterator> skipper;
-
-		qi::rule<Iterator, skipper> ini, section, setting;
-		qi::rule<Iterator, string(), skipper> var, value, heading;
+		qi::rule<string::const_iterator, Ini_Skipper> ini, section, setting;
+		qi::rule<string::const_iterator, string(), Ini_Skipper> var, value, heading;
 	
-		void SyntaxError(Iterator const& /*first*/, Iterator const& last, Iterator const& errorpos, info const& what) {
+		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {
 			ostringstream out;
 			out << what;
 			string expect = out.str().substr(1,out.str().length()-2);

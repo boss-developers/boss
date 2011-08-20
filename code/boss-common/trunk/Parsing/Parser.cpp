@@ -12,10 +12,8 @@
 //Contains functions for userlist and modlist/masterlist parsing.
 
 #include <fstream>
-#include "Parser.h"
-#include "Modlist/Grammar.h"
-#include "Userlist/Grammar.h"
-#include "Ini/Grammar.h"
+#include "Parsing/Parser.h"
+#include "Parsing/Grammar.h"
 #include "Support/Helpers.h"
 #include "source/utf8.h"
 
@@ -26,8 +24,8 @@ namespace boss {
 
 	//Parses userlist into the given data structure.
 	bool parseUserlist(fs::path file, vector<rule>& ruleList) {
-		Skipper<string::const_iterator> skipper;
-		userlist_grammar<string::const_iterator> grammar;
+		Skipper skipper;
+		userlist_grammar grammar;
 		string::const_iterator begin, end;
 		string contents;
 
@@ -46,8 +44,8 @@ namespace boss {
 
 	//Parses the given masterlist into the given data structure. Also works for the modlist.
 	bool parseMasterlist(fs::path file, vector<item>& modList) {
-		Skipper<string::const_iterator> skipper;
-		modlist_grammar<string::const_iterator> grammar;
+		Skipper skipper;
+		modlist_grammar grammar;
 		string::const_iterator begin, end;
 		string contents;
 
@@ -65,8 +63,8 @@ namespace boss {
 	}
 
 	bool parseIni(fs::path file) {
-		Ini_Skipper<string::const_iterator> skipper;
-		ini_grammar<string::const_iterator> grammar;
+		Ini_Skipper skipper;
+		ini_grammar grammar;
 		string::const_iterator begin, end;
 		string contents;
 

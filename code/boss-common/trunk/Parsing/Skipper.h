@@ -31,8 +31,7 @@ namespace boss {
 	using unicode::char_;
 	using unicode::space;
 	
-	template <typename Iterator>
-	struct Skipper : qi::grammar<Iterator> {
+	struct Skipper : qi::grammar<string::const_iterator> {
 
 		Skipper() : Skipper::base_type(start, "Skipper") {
 
@@ -61,11 +60,10 @@ namespace boss {
 			eof = *(spc | CComment | CPlusPlusComment | lineComment | eol) >> eoi;
 		}
 
-		qi::rule<Iterator> start, spc, eof, CComment, CPlusPlusComment, lineComment, UTF8;
+		qi::rule<string::const_iterator> start, spc, eof, CComment, CPlusPlusComment, lineComment, UTF8;
 	};
 
-	template <typename Iterator>
-	struct Ini_Skipper : qi::grammar<Iterator> {
+	struct Ini_Skipper : qi::grammar<string::const_iterator> {
 
 		Ini_Skipper() : Ini_Skipper::base_type(start, "Ini Skipper") {
 
@@ -86,7 +84,7 @@ namespace boss {
 			eof = *(spc | comment | eol) >> eoi;
 		}
 
-		qi::rule<Iterator> start, spc, eof, comment, UTF8;
+		qi::rule<string::const_iterator> start, spc, eof, comment, UTF8;
 	};
 }
 #endif

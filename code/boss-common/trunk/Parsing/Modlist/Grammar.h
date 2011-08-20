@@ -29,8 +29,7 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/home/phoenix/object/construct.hpp>
 #include <boost/spirit/include/phoenix_bind.hpp>
-#include <boost/unordered_set.hpp>
-#include <boost/unordered_map.hpp>
+
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -53,6 +52,7 @@ namespace boss {
 	using qi::hex;
 
 	using unicode::char_;
+	using unicode::no_case;
 
 	using boost::format;
 	using boost::spirit::info;
@@ -61,12 +61,8 @@ namespace boss {
 	//Modlist/Masterlist Grammar
 	///////////////////////////////
 
-	boost::unordered_set<string> setVars;  //Vars set by masterlist.
-	boost::unordered_set<string>::iterator pos;
 	bool storeItem = true, storeMessage = true;
 	vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in MF1.
-	boost::unordered_map<string,unsigned int> fileCRCs;
-	boost::unordered_map<string,unsigned int>::iterator iter;
 
 	//Parsing error message format.
 	static format MasterlistParsingErrorFormat("<p><span class='error'>Masterlist Parsing Error: Expected a %1% at:</span>"
@@ -174,7 +170,7 @@ namespace boss {
 		unsigned int CRC;
 
 		GetPath(file_path,file);
-		iter = fileCRCs.find(file);
+		boost::unordered_map<string,unsigned int>::iterator iter = fileCRCs.find(file);
 
 		if (iter != fileCRCs.end()) {
 			CRC = fileCRCs.at(file);
@@ -354,7 +350,7 @@ namespace boss {
 	//MF1 compatibility function. Evaluates the MF1 FCOM conditional. Like it says on the tin.
 	void EvalOldFCOMConditional(bool& result, char var) {
 		result = false;
-		pos = setVars.find("FCOM");
+		boost::unordered_set<string>::iterator pos = setVars.find("FCOM");
 		if (var == '>' && pos != setVars.end())
 				result = true;
 		else if (var == '<' && pos == setVars.end())
@@ -365,11 +361,11 @@ namespace boss {
 	//MF1 compatibility function. Evaluates the MF1 OOO/BC conditional message symbols.
 	void EvalMessKey(keyType key) {
 		if (key == OOOSAY) {
-			pos = setVars.find("OOO");
+			boost::unordered_set<string>::iterator pos = setVars.find("OOO");
 			if (pos == setVars.end())
 				storeMessage = false;
 		} else if (key == BCSAY) {
-			pos = setVars.find("BC");
+			boost::unordered_set<string>::iterator pos = setVars.find("BC");
 			if (pos == setVars.end())
 				storeMessage = false;
 		}
@@ -386,8 +382,7 @@ namespace boss {
 	}
 
 	//Old and new formats grammar.
-	template <typename Iterator>
-	struct modlist_grammar : qi::grammar<Iterator, vector<item>(), Skipper<Iterator> > {
+	struct modlist_grammar : qi::grammar<string::const_iterator, vector<item>(), Skipper> {
 		modlist_grammar() : modlist_grammar::base_type(modList, "modlist_grammar") {
 
 			vector<message> noMessages;  //An empty set of messages.
@@ -485,40 +480,38 @@ namespace boss {
 			file.name("file");
 			version.name("version");
 			
-			on_error<fail>(modList,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(metaLine,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(listItem,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(ItemType,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(itemName,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(itemMessages,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(itemMessage,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(charString,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(messageString,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(oldConditional,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(conditionals,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(andOr,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(conditional,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(condition,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(variable,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(file,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(version,phoenix::bind(&modlist_grammar<Iterator>::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(modList,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(metaLine,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(listItem,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(ItemType,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(itemName,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(itemMessages,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(itemMessage,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(charString,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(messageString,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(oldConditional,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(conditionals,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(andOr,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(conditional,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(condition,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(variable,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(file,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+			on_error<fail>(version,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
 
 		}
 
-		typedef Skipper<Iterator> skipper;
-
-		qi::rule<Iterator, vector<item>(), skipper> modList;
-		qi::rule<Iterator, item(), skipper> listItem;
-		qi::rule<Iterator, itemType(), skipper> ItemType;
-		qi::rule<Iterator, fs::path(), skipper> itemName;
-		qi::rule<Iterator, vector<message>(), skipper> itemMessages;
-		qi::rule<Iterator, message(), skipper> itemMessage, globalMessage;
-		qi::rule<Iterator, string(), skipper> charString, messageString, variable, file, version, andOr, keyword, metaLine;
-		qi::rule<Iterator, keyType(), skipper> messageKeyword;
-		qi::rule<Iterator, bool(), skipper> conditional, conditionals, condition, oldConditional;
+		qi::rule<string::const_iterator, vector<item>(), Skipper> modList;
+		qi::rule<string::const_iterator, item(), Skipper> listItem;
+		qi::rule<string::const_iterator, itemType(), Skipper> ItemType;
+		qi::rule<string::const_iterator, fs::path(), Skipper> itemName;
+		qi::rule<string::const_iterator, vector<message>(), Skipper> itemMessages;
+		qi::rule<string::const_iterator, message(), Skipper> itemMessage, globalMessage;
+		qi::rule<string::const_iterator, string(), Skipper> charString, messageString, variable, file, version, andOr, keyword, metaLine;
+		qi::rule<string::const_iterator, keyType(), Skipper> messageKeyword;
+		qi::rule<string::const_iterator, bool(), Skipper> conditional, conditionals, condition, oldConditional;
 		
-		void SyntaxErr(Iterator const& /*first*/, Iterator const& last, Iterator const& errorpos, boost::spirit::info const& what) {
+		void SyntaxErr(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what) {
 			ostringstream out;
 			out << what;
 			string expect = out.str().substr(1,out.str().length()-2);

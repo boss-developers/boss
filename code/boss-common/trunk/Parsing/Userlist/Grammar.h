@@ -254,7 +254,7 @@ namespace boss {
 		unsigned int CRC;
 
 		GetPath(file_path,file);
-		iter = fileCRCs.find(file);
+		boost::unordered_map<string,unsigned int>::iterator iter = fileCRCs.find(file);
 
 		if (iter != fileCRCs.end()) {
 			CRC = fileCRCs.at(file);
@@ -306,8 +306,7 @@ namespace boss {
 		return;
 	}
 
-	template <typename Iterator>
-	struct userlist_grammar : qi::grammar<Iterator, vector<rule>(), Skipper<Iterator> > {
+	struct userlist_grammar : qi::grammar<string::const_iterator, vector<rule>(), Skipper> {
 		userlist_grammar() : userlist_grammar::base_type(ruleList, "userlist grammar") {
 
 			//A list is a vector of rules. Rules are separated by line endings.
@@ -371,32 +370,30 @@ namespace boss {
 			ruleKey.name("rule keyword");
 			sortOrMessageKey.name("sort or message keyword");
 		
-			on_error<fail>(ruleList,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(userlistRule,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(sortOrMessageLine,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(object,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(ruleKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(sortOrMessageKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(conditionals,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError, this, _1, _2, _3, _4));
-			on_error<fail>(andOr,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError, this, _1, _2, _3, _4));
-			on_error<fail>(conditional,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError, this, _1, _2, _3, _4));
-			on_error<fail>(condition,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError, this, _1, _2, _3, _4));
-			on_error<fail>(variable,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError, this, _1, _2, _3, _4));
-			on_error<fail>(file,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError, this, _1, _2, _3, _4));
-			on_error<fail>(version,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError, this, _1, _2, _3, _4));
+			on_error<fail>(ruleList,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(userlistRule,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(sortOrMessageLine,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(object,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(ruleKey,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(sortOrMessageKey,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(conditionals,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+			on_error<fail>(andOr,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+			on_error<fail>(conditional,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+			on_error<fail>(condition,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+			on_error<fail>(variable,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+			on_error<fail>(file,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+			on_error<fail>(version,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		}
 
-		typedef Skipper<Iterator> skipper;
-
-		qi::rule<Iterator, vector<rule>(), skipper> ruleList;
-		qi::rule<Iterator, rule(), skipper> userlistRule;
-		qi::rule<Iterator, vector<line>(), skipper> sortOrMessageLines;
-		qi::rule<Iterator, line(), skipper> sortOrMessageLine;
-		qi::rule<Iterator, keyType(), skipper> ruleKey, sortOrMessageKey;
-		qi::rule<Iterator, string(), skipper> object, variable, file, version, andOr, keyword, metaLine;
-		qi::rule<Iterator, bool(), skipper> conditional, conditionals, condition;
+		qi::rule<string::const_iterator, vector<rule>(), Skipper> ruleList;
+		qi::rule<string::const_iterator, rule(), Skipper> userlistRule;
+		qi::rule<string::const_iterator, vector<line>(), Skipper> sortOrMessageLines;
+		qi::rule<string::const_iterator, line(), Skipper> sortOrMessageLine;
+		qi::rule<string::const_iterator, keyType(), Skipper> ruleKey, sortOrMessageKey;
+		qi::rule<string::const_iterator, string(), Skipper> object, variable, file, version, andOr, keyword, metaLine;
+		qi::rule<string::const_iterator, bool(), Skipper> conditional, conditionals, condition;
 	
-		void SyntaxError(Iterator const& /*first*/, Iterator const& last, Iterator const& errorpos, info const& what) {
+		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {
 			ostringstream out;
 			out << what;
 			string expect = out.str().substr(1,out.str().length()-2);

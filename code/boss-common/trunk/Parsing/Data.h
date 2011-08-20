@@ -14,13 +14,15 @@
 #ifndef __BOSS_DATA_H__
 #define __BOSS_DATA_H__
 
+#include "Common/Lists.h"
 #include <string>
 #include <vector>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
 #include <boost/spirit/include/qi.hpp>
-#include "Common/Lists.h"
-#include "boost/filesystem.hpp"
+#include <boost/filesystem.hpp>
+#include <boost/unordered_set.hpp>
+#include <boost/unordered_map.hpp>
 
 namespace fs = boost::filesystem;
 
@@ -44,53 +46,20 @@ BOOST_FUSION_ADAPT_STRUCT(
 namespace boss {
 	namespace qi = boost::spirit::qi;
 
+	extern boost::unordered_set<string> setVars;  //Vars set by masterlist. Also referenced by userlist parser.
+	extern boost::unordered_map<string,unsigned int> fileCRCs;  //CRCs calculated. Referenced by modlist and userlist parsers.
+
 	struct masterlistMsgKey_ : qi::symbols<char, keyType> {
-		masterlistMsgKey_() {
-			add
-				//New Message keywords.
-				("say",SAY)
-				("tag",TAG)
-				("req",SPECIFIC_REQ)
-				("inc", SPECIFIC_INC)
-				("dirty",DIRTY)
-				("warn",WARN)
-				("error",ERR)
-				//Old message symbols.
-				("?",SAY)
-				("$",OOOSAY)  //OOO comment
-				("^",BCSAY)  //BC comment
-				("%",TAG)
-				(":",REQ)
-				("\"",INC) //Incompatibility
-				("*",ERR) //FCOM install error.
-			;
-		}
-	} masterlistMsgKey;
+		masterlistMsgKey_();
+	} extern masterlistMsgKey;
 
 	struct typeKey_ : qi::symbols<char, itemType> {
-		typeKey_() {
-			add
-				//Group keywords.
-				("begingroup:",BEGINGROUP)  //Needs the colon there unfortunately.
-				("endgroup:",ENDGROUP)  //Needs the colon there unfortunately.
-				("endgroup",ENDGROUP)
-				("\\BeginGroup\\:",BEGINGROUP)
-				("\\EndGroup\\\\",ENDGROUP)
-				("mod:", MOD)  //Needs the colon there unfortunately.
-				("regex:", REGEX)
-			;
-		}
-	} typeKey;
+		typeKey_();
+	} extern typeKey;
 
 	struct metaKey_ : qi::symbols<char, metaType> {
-		metaKey_() {
-			add
-				//Condition keywords.
-				("if", IF)
-				("ifnot", IFNOT)
-			;
-		}
-	} metaKey;
+		metaKey_();
+	} extern metaKey;
 }
 
 //////////////////////////////
@@ -114,26 +83,11 @@ namespace boss {
 	namespace qi = boost::spirit::qi;
 
 	struct ruleKeys_ : qi::symbols<char, keyType> {
-		ruleKeys_() {
-			add
-				("add",ADD)
-				("override",OVERRIDE)
-				("for",FOR)
-			;
-		}
-	} ruleKeys;
+		ruleKeys_();
+	} extern ruleKeys;
 
 	struct messageKeys_ : qi::symbols<char, keyType> {
-		messageKeys_() {
-			add
-				("append",APPEND)
-				("replace",REPLACE)
-				("before",BEFORE)
-				("after",AFTER)
-				("top",TOP)
-				("bottom",BOTTOM)
-			;
-		}
-	} sortOrMessageKeys;
+		messageKeys_();
+	} extern sortOrMessageKeys;
 }
 #endif

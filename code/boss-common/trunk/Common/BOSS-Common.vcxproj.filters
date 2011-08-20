@@ -29,6 +29,9 @@
     <ClCompile Include="..\Parsing\Parser.cpp">
       <Filter>Parsing</Filter>
     </ClCompile>
+    <ClCompile Include="..\Parsing\Data.cpp">
+      <Filter>Parsing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support">
@@ -111,6 +114,9 @@
     </ClInclude>
     <ClInclude Include="..\Parsing\Ini\Grammar.h">
       <Filter>Parsing\Ini</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Parsing\Grammar.h">
+      <Filter>Parsing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
