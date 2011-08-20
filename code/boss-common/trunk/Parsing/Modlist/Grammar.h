@@ -326,7 +326,7 @@ namespace boss {
 		return;
 	}
 
-	//Defines the given masterlist variable, if appropriate.
+	//Stores the global message.
 	void StoreGlobalMessage(message currentMessage) {
 		if (storeMessage)
 			globalMessageBuffer.push_back(currentMessage);

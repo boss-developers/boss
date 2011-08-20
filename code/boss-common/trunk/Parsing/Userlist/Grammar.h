@@ -58,6 +58,8 @@ namespace boss {
 	//Userlist Grammar.
 	////////////////////////////
 
+	bool storeLine = true;
+
 	// Error messages for rule validation
 	//Syntax errors
 	static format ESortLineInForRule("includes a sort line in a rule with a FOR rule keyword.");
@@ -151,6 +153,159 @@ namespace boss {
 		return;
 	}
 
+	//Checks if a masterlist variable is defined.
+	void ULCheckVar(bool& result, string var) {
+		if (setVars.find(var) == setVars.end())
+			result = false;
+		else
+			result = true;
+		return;
+	}
+
+	//Returns the true path based on what type of file or keyword it is.
+	void ULGetPath(fs::path& file_path, string& file) {
+		if (file == "OBSE") {
+			file_path = "..";
+			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
+		} else if (file == "FOSE") {
+			file_path = "..";
+			file = "fose_loader.exe";
+		} else if (file == "NVSE") {
+			file_path = "..";
+			file = "nvse_loader.exe";
+		} else if (file == "SKSE") {
+			file_path = "..";
+			file = "skse_loader.exe";
+		} else if (file == "BOSS") {
+			file_path = ".";
+			file = "BOSS.exe";
+		} else if (file == "TES4") {
+			file_path = "..";
+			file = "Oblivion.exe";
+		} else if (file == "TES5") {
+			file_path = "..";
+			file = "Skyrim.exe";
+		} else if (file == "FO3") {
+			file_path = "..";
+			file = "Fallout3.exe";
+		} else if (file == "FONV") {
+			file_path = "..";
+			file = "FalloutNV.exe";
+		} else {
+			fs::path p(file);
+			if (Tidy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos) {
+				if (fs::exists(data_path / "OBSE"))
+					file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
+				else if (fs::exists(data_path / "FOSE"))
+					file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
+				else if (fs::exists(data_path / "NVSE"))
+					file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+				else if (fs::exists(data_path / "SKSE"))
+					file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+			} else
+				file_path = data_path;
+		}
+
+	}
+
+	//Checks if the given mod has a version for which the comparison holds true.
+	void ULCheckVersion(bool& result, string var) {
+		char comp = var[0];
+		size_t pos = var.find("|") + 1;
+		string version = var.substr(1,pos-2);
+		string file = var.substr(pos);
+		result = false;
+		fs::path file_path;
+
+		GetPath(file_path,file);
+
+		if (Exists(file_path / file)) {
+			string trueVersion;
+			if (file_path == data_path) {
+				if (IsGhosted(file_path / file)) 
+					trueVersion = GetModHeader(file_path / fs::path(file + ".ghost"));
+				else 
+					trueVersion = GetModHeader(file_path / file);
+			} else
+				trueVersion = GetExeDllVersion(file_path / file);
+
+			switch (comp) {
+			case '>':
+				if (trueVersion.compare(version) > 0)
+					result = true;
+				break;
+			case '<':
+				if (trueVersion.compare(version) < 0)
+					result = true;
+				break;
+			case '=':
+				if (version == trueVersion)
+					result = true;
+				break;
+			}
+		}
+		return;
+	}
+
+	//Checks if the given mod has the given checksum.
+	void ULCheckSum(bool& result, unsigned int sum, string file) {
+		result = false;
+		fs::path file_path;
+		unsigned int CRC;
+
+		GetPath(file_path,file);
+		iter = fileCRCs.find(file);
+
+		if (iter != fileCRCs.end()) {
+			CRC = fileCRCs.at(file);
+		} else if (Exists(file_path / file)) {
+			if (file_path == data_path) {
+				if (IsGhosted(file_path / file)) 
+					CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
+				else
+					CRC = GetCrc32(file_path / file);
+			} else
+				CRC = GetCrc32(file_path / file);
+			fileCRCs.emplace(file,CRC);
+		}
+
+		if (sum == CRC)
+			result = true;
+		return;
+	}
+
+	void ULCheckFile(bool& result, string file) {
+		result = false;
+		fs::path file_path;
+		GetPath(file_path,file);
+		result = fs::exists(file_path / file);
+	}
+
+	//Evaluate a single conditional.
+	void ULEvaluateConditional(bool& result, metaType type, bool condition) {
+		result = false;
+		if (type == IF && condition == true)
+			result = true;
+		else if (type == IFNOT && condition == false)
+			result = true;
+		return;
+	}
+
+	//Evaluate the second half of a complex conditional.
+	void ULEvaluateCompoundConditional(bool& result, string andOr, bool condition) {
+		if (andOr == "||" && condition == true)
+			result = true;
+		else if (andOr == "&&" && result == true && condition == false)
+			result = false;
+	}
+
+	//Stores the global message.
+	void StoreCurrentLine(vector<line>& lines, line currentLine) {
+		if (storeLine)
+			lines.push_back(currentLine);
+		return;
+	}
+
 	template <typename Iterator>
 	struct userlist_grammar : qi::grammar<Iterator, vector<rule>(), Skipper<Iterator> > {
 		userlist_grammar() : userlist_grammar::base_type(ruleList, "userlist grammar") {
@@ -165,11 +320,15 @@ namespace boss {
 				*eol
 				> ruleKey > ':' > object
 				> +eol
-				> sortOrMessageLine % +eol;
+				> sortOrMessageLines;
+
+			sortOrMessageLines =
+				sortOrMessageLine[phoenix::bind(&StoreCurrentLine, _val, _1)] % +eol;
 
 			sortOrMessageLine %=
 				sortOrMessageKey
 				> ':'
+				> omit[conditionals[phoenix::ref(storeLine) = _1]]
 				> object;
 
 			object %= lexeme[+(char_ - eol)]; //String, with no skipper.
@@ -177,6 +336,32 @@ namespace boss {
 			ruleKey %= no_case[ruleKeys];
 
 			sortOrMessageKey %= no_case[sortOrMessageKeys];
+
+			conditionals = 
+				(conditional[_val = _1] 
+				> *((andOr > conditional)			[phoenix::bind(&ULEvaluateCompoundConditional, _val, _1, _2)]))
+				| eps[_val = true];
+
+			andOr %= unicode::string("&&") | unicode::string("||");
+
+			conditional = (no_case[metaKey] > '(' > condition > ')')	[phoenix::bind(&ULEvaluateConditional, _val, _1, _2)];
+
+			condition = 
+				variable									[phoenix::bind(&ULCheckVar, _val, _1)]
+				| version									[phoenix::bind(&ULCheckVersion, _val, _1)]
+				| (hex > '|' > file)						[phoenix::bind(&ULCheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
+				| file										[phoenix::bind(&ULCheckFile, _val, _1)]
+				;
+
+			variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
+
+			file %= lexeme['\"' > +(char_ - '\"') > '\"'];  //An OBSE plugin or a mod plugin.
+
+			version %=   //A version, followed by the mod it applies to.
+				(char_('=') | char_('>') | char_('<'))
+				> lexeme[+(char_ - '|')]
+				> char_('|')
+				> (file | keyword);
 
 			//Give each rule names.
 			ruleList.name("rules");
@@ -192,15 +377,24 @@ namespace boss {
 			on_error<fail>(object,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(ruleKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
 			on_error<fail>(sortOrMessageKey,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError,this,_1,_2,_3,_4));
+			on_error<fail>(conditionals,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError, this, _1, _2, _3, _4));
+			on_error<fail>(andOr,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError, this, _1, _2, _3, _4));
+			on_error<fail>(conditional,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError, this, _1, _2, _3, _4));
+			on_error<fail>(condition,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError, this, _1, _2, _3, _4));
+			on_error<fail>(variable,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError, this, _1, _2, _3, _4));
+			on_error<fail>(file,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError, this, _1, _2, _3, _4));
+			on_error<fail>(version,phoenix::bind(&userlist_grammar<Iterator>::SyntaxError, this, _1, _2, _3, _4));
 		}
 
 		typedef Skipper<Iterator> skipper;
 
 		qi::rule<Iterator, vector<rule>(), skipper> ruleList;
 		qi::rule<Iterator, rule(), skipper> userlistRule;
+		qi::rule<Iterator, vector<line>(), skipper> sortOrMessageLines;
 		qi::rule<Iterator, line(), skipper> sortOrMessageLine;
 		qi::rule<Iterator, keyType(), skipper> ruleKey, sortOrMessageKey;
-		qi::rule<Iterator, string(), skipper> object;
+		qi::rule<Iterator, string(), skipper> object, variable, file, version, andOr, keyword, metaLine;
+		qi::rule<Iterator, bool(), skipper> conditional, conditionals, condition;
 	
 		void SyntaxError(Iterator const& /*first*/, Iterator const& last, Iterator const& errorpos, info const& what) {
 			ostringstream out;
