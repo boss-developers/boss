@@ -32,6 +32,9 @@
     <ClCompile Include="..\Parsing\Data.cpp">
       <Filter>Parsing</Filter>
     </ClCompile>
+    <ClCompile Include="..\Parsing\Grammar.cpp">
+      <Filter>Parsing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Support">
@@ -51,15 +54,6 @@
     </Filter>
     <Filter Include="Parsing">
       <UniqueIdentifier>{d0792f72-0ae4-420b-a834-ed8e0ae75054}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Parsing\Userlist">
-      <UniqueIdentifier>{602a28f9-0ef6-4da1-9a1c-acdce1435c1c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Parsing\Modlist">
-      <UniqueIdentifier>{0b023587-0bc5-410f-bdf0-4d64998eb670}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Parsing\Ini">
-      <UniqueIdentifier>{90c34832-b122-49f9-890b-8d75146c4034}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -100,20 +94,8 @@
     <ClInclude Include="..\Parsing\Data.h">
       <Filter>Parsing</Filter>
     </ClInclude>
-    <ClInclude Include="..\Parsing\Userlist\Grammar.h">
-      <Filter>Parsing\Userlist</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parsing\Skipper.h">
-      <Filter>Parsing</Filter>
-    </ClInclude>
     <ClInclude Include="..\Parsing\Parser.h">
       <Filter>Parsing</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parsing\Modlist\Grammar.h">
-      <Filter>Parsing\Modlist</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Parsing\Ini\Grammar.h">
-      <Filter>Parsing\Ini</Filter>
     </ClInclude>
     <ClInclude Include="..\Parsing\Grammar.h">
       <Filter>Parsing</Filter>

@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Parsing\Data.cpp" />
+    <ClCompile Include="..\Parsing\Grammar.cpp" />
     <ClCompile Include="..\Parsing\Parser.cpp" />
     <ClCompile Include="..\Support\Helpers.cpp" />
     <ClCompile Include="..\Support\Logger.cpp" />
@@ -26,11 +27,7 @@
   <ItemGroup>
     <ClInclude Include="..\Parsing\Data.h" />
     <ClInclude Include="..\Parsing\Grammar.h" />
-    <ClInclude Include="..\Parsing\Ini\Grammar.h" />
-    <ClInclude Include="..\Parsing\Modlist\Grammar.h" />
     <ClInclude Include="..\Parsing\Parser.h" />
-    <ClInclude Include="..\Parsing\Skipper.h" />
-    <ClInclude Include="..\Parsing\Userlist\Grammar.h" />
     <ClInclude Include="..\Support\Helpers.h" />
     <ClInclude Include="..\Support\Logger.h" />
     <ClInclude Include="..\Support\ModFormat.h" />
