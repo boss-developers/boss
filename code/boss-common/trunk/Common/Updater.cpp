@@ -35,6 +35,14 @@ namespace boss {
 		return 0;
 	} 
 
+	//Download progress for current file function.
+	int progress_func(void *data, double dlTotal, double dlNow, double ulTotal, double ulNow) {
+		double fractiondownloaded = dlNow / dlTotal;
+		printf("%3.0f%% of %3.0f% KB\r",fractiondownloaded*100,dlTotal/1024);
+		fflush(stdout);
+		return 0;
+	}
+
 	int GetLocalMasterlistRevision() {
 		string line, newline = "? Masterlist Revision: ";
 		ifstream mlist;
@@ -255,11 +263,14 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
 		curl_easy_setopt(curl, CURLOPT_CRLF, 1);
+		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
+		curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, &progress_func);
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
 			curl_easy_cleanup(curl);
 			throw boss_error() << err_detail(errbuff);
 		}
+		cout << endl;
 
 		//Clean up and close curl handle now that it's finished with.
 		curl_easy_cleanup(curl);
@@ -330,7 +341,7 @@ namespace boss {
 		curl_easy_cleanup(curl);
 
 		if (ret!=CURLE_OK)
-			return false;
+			throw boss_error() << err_detail(errbuff);
 		else
 			return true;
 	}
