@@ -5,14 +5,13 @@
 	body {font-family:Calibri,Arial,Verdana,sans-serifs;}
 	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:1em;}
 	body > div {margin-bottom:5em;}
-	div > span {font-weight:bold; font-size:1.3em;}
+	div > span {font-weight:bold; font-size:1.7em;}
 	.subtitle {font-weight: normal;font-size:1.3em;}
 	ol li, ul li {margin-bottom:10px;}
 	li ul, li ol {margin-top:0.4em;}
-	.codebox, .quotebox, .logbox {margin-left:40px; border: gray 1px dashed; display:table; min-width:300px;  padding: 5px 30px 5px 10px;}
+	.codebox, .logbox {margin-left:40px; border: gray 1px dashed; display:table; min-width:300px;  padding: 5px 30px 5px 10px;}
 	.codebox { font-family: monospace; background:#F5F5F5; line-height:20px; white-space:pre;}
-	.quotebox {background:#E6E6FA;}
-	.logbox {background:#E0FFFF; line-height:30px;}
+	.logbox {background:#E6E6FA; line-height:30px;}
 	.logbox > ul > li {line-height:20px;}
 	q {font-style:italic;}
 	code {display:inline-box; padding: 2px 5px; background:#EEEEEE; }
@@ -96,7 +95,9 @@ Masterlist Syntax Documentation</div>
 		<tr><td>1.8				<td>1, 2.1
 		<tr><td>1.8.1			<td>1, 2.2
 </table>
-<p>If a version of BOSS does not recognise the syntax in which a line is written, it will assume that it is a mod line, and so the line will effectively be ignored. This means that a masterlist may contain a mix of format syntaxes without issue.</p><br />
+<p>If a version of BOSS does not recognise the syntax in which a line is written, it will assume that it is a mod line, and so the line will effectively be ignored. This means that a masterlist may contain a mix of format syntaxes without issue.</p>
+
+<p>Owing to changes in processing necessary to deal with new functionality, there are not only differences between the <br />
 
 <div class="subtitle" id="compare">Format Comparison</div>
 <p>The table below gives a quick overview of the differences between the masterlist formats.
@@ -105,7 +106,7 @@ Masterlist Syntax Documentation</div>
 	<tbody>
 		<tr><td>Type Identifiers				<td>Symbols<td>Keywords<td>Keywords<td>Keywords
 		<tr><td>Type Identifier Case			<td><i>N/A</i><td>Upper<td>Upper<td>Insensitive
-		<tr><td>Whitespace Important&#x2020;	<td>&#x2713;<td>&#x2717;<td>&#x2717;<td>&#x2717;
+		<tr><td>Whitespace Important &#x00B9;	<td>&#x2713;<td>&#x2717;<td>&#x2717;<td>&#x2717;
 		<tr><td>C++-Style Comments				<td>&#x2713;<td>&#x2713;<td>&#x2713;<td>&#x2713;
 		<tr><td>Masterlist Variables			<td>&#x2717;<td>&#x2713;<td>&#x2713;<td>&#x2713;
 		<tr><td>Global Messages					<td>&#x2717;<td>&#x2713;<td>&#x2713;<td>&#x2713;
@@ -117,7 +118,7 @@ Masterlist Syntax Documentation</div>
 		<tr><td>Conditional Requirements		<td>&#x2717;<td>&#x2717;<td>&#x2713;<td>&#x2713;
 		<tr><td>C-Style Comments				<td>&#x2717;<td>&#x2717;<td>&#x2717;<td>&#x2713;
 </table>
-<div style="font-size:0.8em;">&#x2020; Inside mod names and messages, whitespace is always preserved for all formats.</div>
+<div style="font-size:0.8em;">&#x00B9; Inside mod names and messages, whitespace is always preserved for all formats.</div>
 </div>
 
 <div id="rules"><span>Rules &amp; Guidelines</span>
@@ -157,18 +158,19 @@ Masterlist Syntax Documentation</div>
 	<thead><tr><td>Type<td>MF1 Syntax<td>MF2 Syntax<td>BOSSlog Prefix<td>Description
 	<tbody>
 		<tr><td>General<td><code>?&nbsp;[message]</code><td><code>SAY:&nbsp;[message]</code><td>Note:<td>A general comment for the mod above.
-		<tr><td>Bash Tag suggestion<td><code>%&nbsp;[message]</code><td><code>TAG:&nbsp;[message]</code><td>Bash Tag suggestion(s):<td>A Bash Tag suggestion for the mod above.
-		<tr><td>Requirement&#x2020;<td><code>:&nbsp;[message]</code><td><code>REQ:&nbsp;[message]</code><td>Requires:<td>An installation requirement for the mod above.
-		<tr><td>Incompatibility&#x2020;<td><code>"&nbsp;[message]</code><td><code>INC:&nbsp;[message]</code><td>Incompatible with:<td>An incompatibility (or incompatibilities) for the mod above.
+		<tr><td>Bash Tag suggestion &#x00B2;<td><code>%&nbsp;[message]</code><td><code>TAG:&nbsp;[message]</code><td>Bash Tag suggestion(s):<td>A Bash Tag suggestion for the mod above.
+		<tr><td>Requirement &#x00B3;<td><code>:&nbsp;[message]</code><td><code>REQ:&nbsp;[message]</code><td>Requires:<td>An installation requirement for the mod above.
+		<tr><td>Incompatibility &#x00B3;<td><code>"&nbsp;[message]</code><td><code>INC:&nbsp;[message]</code><td>Incompatible with:<td>An incompatibility (or incompatibilities) for the mod above.
 		<tr><td>Dirty mod<td><i>N/A</i><td><code>DIRTY:&nbsp;[message]</code><td>Contains dirty edits:<td>Prints a message about dirty edits in the mod above.
 		<tr><td>Warning<td><i>N/A</i><td><code>WARN:&nbsp;[message]</code><td>Warning:<td>Prints a warning message for the mod above.
-		<tr><td>Error<td><i>N/A</i>&#x2021;<td><code>ERROR:&nbsp;[message]</code><td>ERROR:<td>Prints an error message for the mod above.
+		<tr><td>Error<td><i>N/A</i> &#x2020;<td><code>ERROR:&nbsp;[message]</code><td>ERROR:<td>Prints an error message for the mod above.
 		<tr><td>OOO-specific message<td><code>$&nbsp;[message]</code><td><code>IF&nbsp;($OOO)&nbsp;SAY:&nbsp;[message]</code><td>Note:<td>A comment that is only displayed if OOO is installed.
 		<tr><td>Better Cities-specific message<td><code>^&nbsp;[message]</code><td><code>IF&nbsp;($BC)&nbsp;SAY:&nbsp;[message]</code><td>Note:<td>A comment that is only displayed if Better Cities is installed.
 		<tr><td>Critical FCOM install error<td><code>&gt;*&nbsp;[message]</code><td><code>IF&nbsp;($FCOM)&nbsp;ERROR:&nbsp;[message]</code><td>ERROR:<td>Prints an error message if FCOM is installed.
 </table>
-<p>&#x2020; In MF2.1 and later, the <code>[message]</code> for requirement and incompatibility messages has a special syntax. See the <q><a href="#mf2-inc">Conditional Incompatibility Messages</a></q> and <q><a href="#mf2-req">Conditional Requirement Messages</a></q> sections below for details.
-<p>&#x2021; In BOSS v1.7+, the symbol <code>*</code> technically denotes a general error message. However, in previous versions of BOSS it specifically denoted an FCOM install error, and would not require the preceding <code>&gt;</code> to behave conditionally. To avoid confusing users, the <code>*</code> symbol should never be used without being preceded by the FCOM-installed conditional <code>&gt;</code>, making it an FCOM install error message.
+<p>&#x00B2; Bash Tags suggested by BOSS are given in a specific format in order for Wrye Bash to recognise and automatically apply them. The format for adding Bash Tags is <code>{{BASH: Tag1, Tag2}}</code>. The format for removing Bash Tags is <code>[Tag1, Tag2]</code>, including the <code>[</code> and <code>]</code> brackets. Any number of Bash Tags may be listed for addition or removal.
+<p>&#x00B3; In MF2.1 and later, the <code>[message]</code> for requirement and incompatibility messages has a special syntax. See the <q><a href="#mf2-inc">Conditional Incompatibility Messages</a></q> and <q><a href="#mf2-req">Conditional Requirement Messages</a></q> sections below for details. In MF1 and MF2.0, the <code>[message]</code> can be a generic string like any other message.
+<p>&#x2020; In BOSS v1.7 and later, the symbol <code>*</code> technically denotes a general error message. However, in previous versions of BOSS it specifically denoted an FCOM install error, and would not require the preceding <code>&gt;</code> to behave conditionally. To avoid confusing users, the <code>*</code> symbol should never be used without being preceded by the FCOM-installed conditional <code>&gt;</code>, making it an FCOM install error message.
 
 <p>The above table references some Oblivion mods. The table below gives the Fallout 3 and Fallout: New Vegas equivalents. Replace all references in the above table with the relevant equivalents below for your game. The masterlist variables listed are conditionally defined at the top of the relevant games' masterlists if the user has the corresponding mods installed and are used by the MF2 mod-specific messages. In MF1, the checks are hardcoded into BOSS.
 
@@ -247,16 +249,16 @@ Masterlist Syntax Documentation</div>
 <div class="subtitle" id="mf2-inc">Conditional Incompatibility Messages</div>
 <p style="font-weight:bold;">This is MF2.1 functionality.
 <p>As the next section will show, you can print conditional incompatibility messages to the user's BOSSlog by putting each incompatibility in a separate message and checking if each mod exists. However, this is unwieldy and results in a potentially long list of very short messages for mods. There is an alternative shorthand:</p>
-<code>INC: "[file 1]"="[mod 1]" | "[file 2]"="[mod 2]" | "[file 3]" | ...</code>
-<p>The <code>|</code> characters separate out individual incompatibilities. The <code>[file]</code> may be any type of file. For mods and Script Extender plugins, only the filename should be given, as BOSS assumes they are installed in their respective correct locations. For all other files, the starting folder is <code>Data</code>, eg. the correct syntax for a texture would be <code>Textures\testtexture.dds</code>.
+<code>INC: "[file 1]"="[mod 1]" | "[file 2]"="[mod 2]" | "[file 3]"</code>
+<p>The <code>|</code> characters separate out individual incompatibilities. There is no limit to the number of incompatibilities that can be listed. The <code>[file]</code> may be any type of file. For mods and Script Extender plugins, only the filename should be given, as BOSS assumes they are installed in their respective correct locations. For all other files, the starting folder is <code>Data</code>, eg. the correct syntax for a texture would be <code>Textures\testtexture.dds</code>.
 <p>The <code>=[mod]</code> is an optional string that is printed to the BOSSlog if the <code>[file]</code> is installed. If the <code>=[mod]</code> is not given, the <code>[file]</code> is printed to the BOSSlog instead. So if the first and third incompatibilities were installed, but the second wasn't, the above message would print:
 <div class="logbox"><ul><li>Incompatible with: "<code>[mod 1]</code>", "<code>[file 3]</code>"</ul></div><br /><br />
 
 <div class="subtitle" id="mf2-req">Conditional Requirement Messages</div>
 <p style="font-weight:bold;">This is MF2.1 functionality.
 <p>As the next section will show, you can print conditional requirement messages to the user's BOSSlog by putting each requirement in a separate message and checking if each mod does not exist. However, this is unweildy and results in a potentially long list of very short messages for mods. There is an alternative shorthand:</p>
-<code>REQ: "[comparator][version 1]":"[file 1]"="[mod 1]" | "[comparator][version 2]":"[file 2]"="[mod 2]" | "[comparator][version 3]":"[file 3]" | "[file 4]" | "[file 5]"="[mod 5]" | ...</code>
-<p>The <code>|</code> characters separate out individual requirements. The <code>[file]</code> may be any type of file, however version checks will only work for files with the extensions <code>.esp</code>, <code>.esm</code>, <code>.dll</code> or <code>.exe</code>. For mods and Script Extender plugins, only the filename should be given, as BOSS assumes they are installed in their respective correct locations. For all other files, the starting folder is <code>Data</code>, eg. the correct syntax for a texture would be <code>Textures\testtexture.dds</code>.
+<code>REQ: "[comparator][version 1]":"[file 1]"="[mod 1]" | "[comparator][version 2]":"[file 2]"="[mod 2]" | "[comparator][version 3]":"[file 3]" | "[file 4]" | "[file 5]"="[mod 5]"</code>
+<p>The <code>|</code> characters separate out individual requirements. There is no limit to the number of requirements that can be listed. The <code>[file]</code> may be any type of file, however version checks will only work for files with the extensions <code>.esp</code>, <code>.esm</code>, <code>.dll</code> or <code>.exe</code>. For mods and Script Extender plugins, only the filename should be given, as BOSS assumes they are installed in their respective correct locations. For all other files, the starting folder is <code>Data</code>, eg. the correct syntax for a texture would be <code>Textures\testtexture.dds</code>.
 <p>The <code>[comparator][version]:</code> is an optional string that acts as a version check (see the conditionals section below for more information on them). The <code>=[mod]</code> is an optional string that is printed to the BOSSlog if the <code>[file]</code> does not exist or (in the case of mods and Script Extender plugins) does not pass the version check. If the <code>=[mod]</code> is not given, then the <code>[plugin]</code> will be printed to the BOSSlog instead. So if the first and third requirement were not installed, but the second, fourth and fifth were (with the second having the correct version), the above message would print:
 <div class="logbox"><ul><li>Requires: "<code>[mod 1]</code>", "<code>[file 3]</code>"</ul></div><br /><br />
 
@@ -323,11 +325,12 @@ Masterlist Syntax Documentation</div>
 </div>
 
 <div id="examples"><span>Examples</span>
-<p>Below are some examples of the syntaxes covered in this documentation.
+<p>Below are some examples of the syntaxes covered in this documentation. The examples use some real mods, but the content is purely exemplary and does not necessarily contain any valid information.
 
 <div class="codebox"> IF (&lt;1.8|"BOSS") GLOBAL ERROR: An update to BOSS is available. Please download BOSS v1.8.
 
-   //OOO installed. This is a standard variable, but it's OK to re-define it. We can indent this comment because in MF2 whitespace doesn't matter, so it looks like it's at the start of the line.
+   //OOO installed. This is a standard variable, but it's OK to re-define it. 
+   //We can indent this comment because in MF2 whitespace doesn't matter, so it looks like it's at the start of the line.
  IF ("Oscuro's Oblivion Overhaul.esm") && IF("Oscuro's Oblivion Overhaul.esp") SET: OOO
 
 Mart's Monster Mod for OOO.esm
@@ -336,10 +339,11 @@ Mart's Monster Mod for OOO.esm
 
 Unofficial Oblivion Patch.esp
  IF (&lt;3.3|"Unofficial Oblivion Patch.esp") SAY: Upgrade to the latest version of the Unofficial Oblivion Patch Supplementals, found here: "http://www.tesnexus.com/downloads/file.php?id=27710"
+ TAG: {{BASH: Relev}} and [NoMerge]. Wrye Bash will automatically add the Relev tag and remove the NoMerge tag for you.
  IF (CACF51FC|"FastExit2.dll") ? You have a legitimate copy of Fast Exit 2 installed. Good on you!
 
 All Natural.esp
- IF (&gt;0.0.20.0|"OBSE") ERROR: You have the correct version of OBSE installed.
+ IF (&gt;0.0.20.0|"OBSE") WARN: You have the correct version of OBSE installed.
 
 Unofficial Shivering Isles Patch.esp
  IF (E0DDDD00|"Unofficial Oblivion Patch.esp") SAY: You are using version 3.3.5 of the UOP.
@@ -349,11 +353,41 @@ Unofficial Shivering Isles Patch.esp
 \Comment out the below section.
 /*
 ModNotParsed.esp
-? You'll never see this in your BOSSlog.
+& {{BASH: Graphics}} You'll never see this in your BOSSlog.
 */
 
-IF ($FCOM): Mart's Monster Mod - Fran's Leveled Quests.esp  //'FCOM' is a standard variable.
+//'FCOM' is a standard variable.
+IF ($FCOM): Mart's Monster Mod - Fran's Leveled Quests.esp 
 >* Delete. Already integrated into FCOM.
 //We can mix 'n' match MF1 and MF2 syntaxes. Also, all the silent comments for messages are not on the message line, as otherwise they'd be counted as part of the message.
+</div>
+<p>Assuming that all version and plugin conditionals evaluate to true apart from the first, the above would have the following output. 
+<div class="logbox">
+	<ul style="list-style:none;margin-bottom:0.4em;">
+		<li style="margin-left:0; margin-bottom:2em;">Mart's Monster Mod for OOO.esm</li>
+		<li style="margin-left:0; margin-bottom:2em;">Unofficial Oblivion Patch.esp
+			<ul style="list-style:none;">
+				<li>Note: Upgrade to the latest version of the Unofficial Oblivion Patch Supplementals, found here: <a href="http://www.tesnexus.com/downloads/file.php?id=27710">http://www.tesnexus.com/downloads/file.php?id=27710</a></li>
+				<li><span style="color:#CD5555;">Bash Tag suggestion(s)</span>: {{BASH: Relev}} and [NoMerge]. Wrye Bash will automatically add the Relev tag and remove the NoMerge tag for you.</li>
+				<li>Note: You have a legitimate copy of Fast Exit 2 installed. Good on you!</li>
+			</ul>
+		</li>
+		<li style="margin-left:0; margin-bottom:2em;">All Natural.esp
+			<ul style="list-style:none;">
+				<li style="background:orange; color:white; display:table; padding:0 4px;">Warning: You have the correct version of OBSE installed.</li>
+			</ul>
+		</li>
+		<li style="margin-left:0; margin-bottom:2em;">Unofficial Shivering Isles Patch.esp
+			<ul style="list-style:none;">
+				<li>Note: You are using version 3.3.5 of the UOP.</li>
+				<li>Note: You have Oblivion Stutter Remover v4.1 installed.</li>
+			</ul>
+		</li>
+		<li style="margin-left:0; margin-bottom:2em;">Mart's Monster Mod - Fran's Leveled Quests.esp
+			<ul style="list-style:none;">
+				<li style="background:red; color:white; display:table; padding:0 4px;">ERROR: Delete. Already integrated into FCOM.</li>
+			</ul>
+		</li>
+	</ul>
 </div>
 </div>
