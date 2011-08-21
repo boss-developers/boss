@@ -17,24 +17,11 @@
 #endif
 
 #include "Parsing/Data.h"
-#include "Common/Globals.h"
-#include "Support/Helpers.h"
-#include "Support/Logger.h"
-#include "Common/BOSSLog.h"
-
-#include <sstream>
 
 #include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/spirit/home/phoenix/object/construct.hpp>
-#include <boost/spirit/include/phoenix_bind.hpp>
 #include <boost/format.hpp>
-#include <boost/algorithm/string.hpp>
 
 namespace boss {
-	namespace unicode = boost::spirit::unicode;
-	namespace phoenix = boost::phoenix;
 	namespace qi = boost::spirit::qi;
 
 	using namespace std;
@@ -108,7 +95,6 @@ namespace boss {
 		"<span class='error'>Masterlist parsing aborted. Utility will end now.</span></p>\n\n");
 
 	//Stores a message, should it be appropriate.
-	//The SPECIFIC_REQ and SPECIFIC_INC 'parsers' are not space-safe within items.
 	void StoreMessage(vector<message>& messages, message currentMessage);
 
 	//Stores the given item, should it be appropriate, and records any changes to open groups.
@@ -140,7 +126,7 @@ namespace boss {
 		qi::rule<string::const_iterator, fs::path(), Skipper> itemName;
 		qi::rule<string::const_iterator, vector<message>(), Skipper> itemMessages;
 		qi::rule<string::const_iterator, message(), Skipper> itemMessage, globalMessage;
-		qi::rule<string::const_iterator, string(), Skipper> charString, messageString, variable, file, version, andOr, keyword, metaLine, messageVersionCRC, messageModString, messageVersionCRCBlock;
+		qi::rule<string::const_iterator, string(), Skipper> charString, messageString, variable, file, version, andOr, keyword, metaLine, messageVersionCRC, messageModString;
 		qi::rule<string::const_iterator, keyType(), Skipper> messageKeyword;
 		qi::rule<string::const_iterator, bool(), Skipper> conditional, conditionals, condition, oldConditional;
 		

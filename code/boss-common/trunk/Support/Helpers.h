@@ -101,8 +101,7 @@ namespace boss {
 	//Calculate the CRC of the given file for comparison purposes.
 	unsigned int GetCrc32(const fs::path& filename);
 
-	//Reads an entire file into a string buffer.
-	void fileToBuffer(const fs::path file, string& buffer);
+	
 
 	//Removes the ".ghost" extension from ghosted filenames. 
 	string TrimDotGhost(string plugin);

@@ -97,13 +97,7 @@ namespace boss {
 		case REQ:
 			buffer += "<li class='req'>Requires: " + currentMessage.data + "</li>\n";
 			break;
-		case SPECIFIC_REQ:
-			buffer += "<li class='req'>Requires: " + currentMessage.data + "</li>\n";
-			break;
 		case INC:
-			buffer += "<li class='inc'>Incompatible with: " + currentMessage.data + "</li>\n";
-			break;
-		case SPECIFIC_INC:
 			buffer += "<li class='inc'>Incompatible with: " + currentMessage.data + "</li>\n";
 			break;
 		case WARN:

@@ -33,8 +33,8 @@ namespace boss {
 			//New Message keywords.
 			("say",SAY)
 			("tag",TAG)
-			("req",SPECIFIC_REQ)
-			("inc", SPECIFIC_INC)
+			("req",REQ)
+			("inc", INC)
 			("dirty",DIRTY)
 			("warn",WARN)
 			("error",ERR)

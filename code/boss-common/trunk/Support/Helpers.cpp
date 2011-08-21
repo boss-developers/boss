@@ -200,19 +200,6 @@ namespace boss {
         return chksum;
 	}
 
-	//Reads an entire file into a string buffer.
-	void fileToBuffer(const fs::path file, string& buffer) {
-		ifstream ifile(file.c_str());
-		if (ifile.fail())
-			return;
-		ifile.unsetf(ios::skipws); // No white space skipping!
-		copy(
-			istream_iterator<char>(ifile),
-			istream_iterator<char>(),
-			back_inserter(buffer)
-		);
-	}
-
 	//Removes the ".ghost" extension from ghosted filenames.
 	string TrimDotGhost(string plugin) {
 		fs::path pluginPath(plugin);

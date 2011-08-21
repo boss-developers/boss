@@ -29,7 +29,11 @@ namespace boss {
 	//Parses the given masterlist into the given data structure. Also works for the modlist.
 	bool parseMasterlist(fs::path file, vector<item>& modList);
 
+	//Parses the ini, applying its settings.
 	bool parseIni(fs::path file);
+
+	//Reads an entire file into a string buffer.
+	void fileToBuffer(const fs::path file, string& buffer);
 
 	//UTF-8 Validator
 	bool ValidateUTF8File(fs::path file);

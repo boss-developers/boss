@@ -10,8 +10,22 @@
 */
 
 #include "Parsing/Grammar.h"
+#include "Common/Globals.h"
+#include "Support/Helpers.h"
+#include "Support/Logger.h"
+#include "Common/BOSSLog.h"
+
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
+#include <boost/spirit/home/phoenix/object/construct.hpp>
+#include <boost/spirit/include/phoenix_bind.hpp>
+#include <boost/algorithm/string.hpp>
+
+#include <sstream>
 
 namespace boss {
+	namespace unicode = boost::spirit::unicode;
+	namespace phoenix = boost::phoenix;
 
 	using namespace qi::labels;
 
@@ -280,7 +294,6 @@ namespace boss {
 	vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in MF1.
 
 	//Stores a message, should it be appropriate.
-	//The SPECIFIC_REQ and SPECIFIC_INC 'parsers' are not space-safe within items.
 	void StoreMessage(vector<message>& messages, message currentMessage) {
 		if (storeMessage && !currentMessage.data.empty())
 				messages.push_back(currentMessage);
@@ -393,26 +406,21 @@ namespace boss {
 		charString %= lexeme[+(char_ - eol)]; //String, with no skipper.
 
 		messageString = 
-			(
-				(
-					messageVersionCRCBlock
-					>> file 
-					>> messageModString
-				)[phoenix::bind(&EvaluateConditionalMessage, _val, _1, _2, _3)] % (lit("|") | lit(","))
-			)	//Conditional message.
+			((messageVersionCRC
+			>> file 
+			>> messageModString
+			)[phoenix::bind(&EvaluateConditionalMessage, _val, _1, _2, _3)] % (lit("|") | lit(",")))	//Conditional message.
 			| charString[_val = _1];				//Any other message
-
-		messageVersionCRC %= 
-			(char_('=') | char_('>') | char_('<')
-			> lexeme[+(char_ - '"')])
-			| xdigit;
 
 		messageModString %=
 			(lit("=") >> file) 
 			| eps;
 
-		messageVersionCRCBlock %=
-			(lit("\"") >> messageVersionCRC >> lit("\"") >> lit(":")) 
+		messageVersionCRC %=
+			('\"' >> (
+					((char_('=') | char_('>') | char_('<')) >> lexeme[+(char_ - '\"')]) 
+					| xdigit)  
+			>> '\"' >> lit(":")) 
 			| eps;
 
 		messageKeyword %= no_case[masterlistMsgKey];
@@ -463,6 +471,8 @@ namespace boss {
 		variable.name("variable");
 		file.name("file");
 		version.name("version");
+		messageVersionCRC.name("conditional shorthand version/CRC");
+		messageModString.name("conditional shorthand mod");
 			
 		on_error<fail>(modList,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
 		on_error<fail>(metaLine,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
@@ -475,7 +485,6 @@ namespace boss {
 		on_error<fail>(messageString,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
 		on_error<fail>(messageVersionCRC,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
 		on_error<fail>(messageModString,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(messageVersionCRCBlock,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
 		on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
 		on_error<fail>(oldConditional,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
 		on_error<fail>(conditionals,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
