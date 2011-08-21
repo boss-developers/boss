@@ -65,12 +65,12 @@ Masterlist Syntax Documentation</div>
 </div>
 
 <div id="structure"><span>Structure</span>
-<p>The masterlist is a plain text file which lists mod plugins in the order in which they co-exist best in. Each plugin may optionally have one or more messages attached to it for display in the BOSSlog. To make managing the masterlist easier, mods are often placed in groups that are often themed. These groups are defined and named in the masterlist, and also provide some sorting functionality for BOSS's User Rules feature.
+<p>The masterlist is a plain text file encoded in UTF-8 which lists mod plugins, which are files with <code>.esp</code> or <code>.esm</code> extensions, in the order in which they co-exist best in. Each plugin may optionally have one or more messages attached to it for display in the BOSSlog. To make managing the masterlist easier, mods are often placed in groups that are often themed. These groups are defined and named in the masterlist, and also provide some sorting functionality for BOSS's User Rules feature.
 <p>The masterlist is parsed (read) by BOSS line-by-line, so it is most useful to analyse the structure by the different types of line present:
 <ul>
 	<li>A line that defines a plugin's position is a <q>plugin line</q>. In their most basic form, these lines only contain the plugin's filename.
-	<li>A line that contains a message to be attached to a plugin is a <q>message lines</q>. In their most basic form message lines contain a <q>type identifier</q>, which tells BOSS what type of message the line contains, and a string of characters which is the message itself. Message lines are positioned below the plugin line of the plugin they attach messages to. 
-	<li>Lines that define the start and end points of groups are <q>group lines</q>.
+	<li>A line that contains a message to be attached to a plugin is a <q>message line</q>. In their most basic form message lines contain a <q>type identifier</q>, which tells BOSS what type of message the line contains, and a string of characters which is the message itself. Message lines are positioned below the plugin line of the plugin they attach messages to. 
+	<li>A line that defines the start and end point of a group is a <q>group line</q>.
 </ul>
 <p>A simple example of this structure is:
 <div class="codebox">[GROUP LINE (START)]
@@ -108,6 +108,8 @@ Masterlist Syntax Documentation</div>
 	<tbody>
 		<tr><td>Type Identifiers						<td>Symbols<td>Keywords<td>Keywords<td>Keywords
 		<tr><td>Type Identifier Case					<td><i>N/A</i><td>Upper<td>Upper<td>Insensitive
+		<tr><td>Basic Plugin Ordering					<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
+		<tr><td>Plugin Grouping							<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
 		<tr><td>C++-Style Comments						<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
 		<tr><td>General Messages						<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
 		<tr><td>Bash Tag Suggestions					<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
@@ -129,7 +131,7 @@ Masterlist Syntax Documentation</div>
 		<tr><td>General Conditional Messages Shorthand	<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;
 		<tr><td>C-Style Comments						<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;
 </table>
-<div id="1" style="font-size:0.8em;">&#x00B9; In all formats, whitespace is always preserved inside plugin and group names and messages.</div>
+<div id="1" style="font-size:0.9em;">&#x00B9; In all formats, whitespace is always preserved inside plugin and group names and messages.</div>
 </div>
 
 <div id="rules"><span>Rules &amp; Guidelines</span>
@@ -154,8 +156,8 @@ Masterlist Syntax Documentation</div>
 
 <div class="subtitle" id="common-comments">Plugin Lines</div>
 <p>Plugin lines have the simplest of syntaxes. The line should contain only the plugin filename:</p>
-<code>PluginToOrder.esp</code>
-<p><b>In MF2:</b> Plugin lines also have a keyword associated with them, <code>MOD</code>, which can be given before the plugin filename and the two separated by a colon. However, since BOSS assumes that lines with no recognised keywords are plugin lines, the inclusion of the keyword is unnecessary and for backwards-compatibility should not be used <b>unless</b> you are using a conditional in the plugin line. If the plugin line has a conditional, you should include the <code>MOD</code> keyword between the conditional and the colon. You can also choose to omit both the keyword and the colon, but as the colon is an absolute requirement for all other parts of MF2 syntax, this is not good practice. The choice available is an unintended side-effect of backward compatibility with MF1.
+<code>[plugin]</code>
+<p><b>In MF2:</b> Plugin lines also have a keyword associated with them, <code>MOD</code>, which can be given before the plugin filename and the two separated by a colon. However, since BOSS assumes that lines with no recognised keywords are plugin lines, the inclusion of the keyword is unnecessary and for backwards-compatibility should not be used <b>unless</b> you are using a conditional in the plugin line. If the plugin line has a conditional, you should include the <code>MOD</code> keyword between the conditional and the colon. You can also choose to omit both the keyword and the colon, but as the colon is an absolute requirement for all other parts of MF2 syntax, this is not good practice. The choice available is a side-effect of backward compatibility with MF1.</p><br />
 
 <div class="subtitle" id="common-comments">Silent Comments</div>
 <p>Silent comments are character strings that are skipped by the BOSS parser and so have no effect on BOSS's output. C++ style comments must start at the beginning of a line. C style comments must start and end at the beginning of lines. Comments may not be used inline. In the table below, <code>[comment]</code> is the comment being made.
@@ -174,19 +176,19 @@ Masterlist Syntax Documentation</div>
 	<thead><tr><td>Type<td>MF1 Syntax<td>MF2 Syntax<td>BOSSlog Prefix<td>Description
 	<tbody>
 		<tr><td>General							<td><code>?&nbsp;[message]</code>		<td><code>SAY:&nbsp;[message]</code>	<td>Note:<td>A general message.
-		<tr><td>Bash Tag Suggestion <a href="#2">&#x00B2;</a>	<td><code>%&nbsp;[message]</code>		<td><code>TAG:&nbsp;[message]</code>	<td><span style="color:#CD5555;">Bash Tag suggestion(s):</span><td>A Bash Tag suggestion.
-		<tr><td>Requirement <a href="#3">&#x00B3;</a>			<td><code>:&nbsp;[message]</code>		<td><code>REQ:&nbsp;[message]</code>	<td>Requires:<td>An installation requirement (or requirements).
-		<tr><td>Incompatibility <a href="#3">&#x00B3;</a>		<td><code>"&nbsp;[message]</code>		<td><code>INC:&nbsp;[message]</code>	<td>Incompatible with:<td>An incompatibility (or incompatibilities).
-		<tr><td>Dirty Plugin						<td><i>N/A</i>							<td><code>DIRTY:&nbsp;[message]</code>	<td><span style="color:#996600;">Contains dirty edits:</span><td>Prints a message about dirty edits.
-		<tr><td>Warning							<td><i>N/A</i>							<td><code>WARN:&nbsp;[message]</code>	<td><span style="background:orange; color:white;">Warning:</span><td>Prints a warning message.
-		<tr><td>Error							<td><i>N/A</i> <a href="#4">&#x2020;</a>					<td><code>ERROR:&nbsp;[message]</code>	<td><span style="background:red; color:white;">ERROR:</span><td>Prints an error message.
-		<tr><td>OOO-Specific Message			<td><code>$&nbsp;[message]</code>		<td><code>IF&nbsp;($OOO)&nbsp;SAY:&nbsp;[message]</code><td>Note:<td>A message that is only displayed if OOO is installed.
-		<tr><td>Better Cities-Specific Message	<td><code>^&nbsp;[message]</code>		<td><code>IF&nbsp;($BC)&nbsp;SAY:&nbsp;[message]</code><td>Note:<td>A message that is only displayed if Better Cities is installed.
-		<tr><td>Critical FCOM Install Error		<td><code>&gt;*&nbsp;[message]</code>	<td><code>IF&nbsp;($FCOM)&nbsp;ERROR:&nbsp;[message]</code><td><span style="background:red; color:white;">ERROR:</span><td>Prints an error message if FCOM is installed.
+		<tr><td>Bash Tag Suggestion <a href="#2">&#x00B2;</a>	<td><code>%&nbsp;[message]</code>		<td><code>TAG:&nbsp;[message]</code>	<td><span style="color:#CD5555;">Bash Tag suggestion(s):</span><td>A Bash Tag suggestion or suggestions.
+		<tr><td>Requirement <a href="#3">&#x00B3;</a>			<td><code>:&nbsp;[message]</code>		<td><code>REQ:&nbsp;[message]</code>	<td>Requires:<td>An installation requirement or requirements.
+		<tr><td>Incompatibility <a href="#3">&#x00B3;</a>		<td><code>"&nbsp;[message]</code>		<td><code>INC:&nbsp;[message]</code>	<td>Incompatible with:<td>An incompatibility or incompatibilities.
+		<tr><td>Dirty Plugin						<td><i>N/A</i>							<td><code>DIRTY:&nbsp;[message]</code>	<td><span style="color:#996600;">Contains dirty edits:</span><td>A message about dirty edits.
+		<tr><td>Warning							<td><i>N/A</i>							<td><code>WARN:&nbsp;[message]</code>	<td><span style="background:orange; color:white;">Warning:</span><td>A warning message.
+		<tr><td>Error							<td><i>N/A</i> <a href="#4">&#x2020;</a>					<td><code>ERROR:&nbsp;[message]</code>	<td><span style="background:red; color:white;">ERROR:</span><td>An error message.
+		<tr><td>OOO-Specific Message			<td><code>$&nbsp;[message]</code>		<td><code>IF&nbsp;($OOO)&nbsp;SAY:&nbsp;[message]</code><td>Note:<td>A general message that is only displayed if OOO is installed.
+		<tr><td>Better Cities-Specific Message	<td><code>^&nbsp;[message]</code>		<td><code>IF&nbsp;($BC)&nbsp;SAY:&nbsp;[message]</code><td>Note:<td>A general message that is only displayed if Better Cities is installed.
+		<tr><td>Critical FCOM Install Error		<td><code>&gt;*&nbsp;[message]</code>	<td><code>IF&nbsp;($FCOM)&nbsp;ERROR:&nbsp;[message]</code><td><span style="background:red; color:white;">ERROR:</span><td>An error message that is only displayed if FCOM is installed.
 </table>
-<p id="2">&#x00B2; Bash Tags suggested by BOSS are given in a specific syntax in order for Wrye Bash to recognise and automatically apply them. The syntax for adding Bash Tags is <code>{{BASH: Tag1, Tag2}}</code>. The syntax for removing Bash Tags is <code>[Tag1, Tag2]</code>, including the <code>[</code> and <code>]</code> brackets. Any number of Bash Tags may be listed for addition or removal.
-<p id="3">&#x00B3; In MF1 and MF2.0, <code>[message]</code> is a generic string like for any other message type. In MF2.1, the <code>[message]</code> for requirement and incompatibility messages has a specific conditional syntax. In MF2.2, <code>[message]</code> can either be a generic string or use a general conditional syntax. See the <q><a href="#mf2-message">Conditional Message Shorthand</a></q>, <q><a href="#mf2-message-inc">Conditional Incompatibility Shorthand</a></q> and <q><a href="#mf2-message-req">Conditional Requirement Shorthand</a></q> sections below for details on the conditional syntaxes.
-<p id="4">&#x2020; In BOSS v1.7 and later, the symbol <code>*</code> technically denotes a general error message. However, in previous versions of BOSS it specifically denoted an FCOM install error, and would not require the preceding <code>&gt;</code> to behave conditionally. To avoid confusing users, the <code>*</code> symbol should never be used as a type identifier without being preceded by the FCOM-installed conditional <code>&gt;</code>, making it an FCOM install error message.
+<p id="2" style="font-size:0.9em;">&#x00B2; Bash Tags suggested by BOSS are given in a specific syntax in order for Wrye Bash/Flash/Flash NV to recognise and automatically apply them. The syntax for adding Bash Tags is <code>{{BASH: Tag1, Tag2}}</code>. The syntax for removing Bash Tags is <code>[Tag1, Tag2]</code>, including the <code>[</code> and <code>]</code> brackets. Any number of Bash Tags may be listed for addition or removal. Information on Bash Tags themselves is found in the <a href="http://oblivionworks.svn.sourceforge.net/viewvc/oblivionworks/Programs/Wrye%20Bash/Mopy/Wrye%20Bash.html">Wrye Bash</a>, Wrye Flash and Wrye Flash NV Readmes.
+<p id="3" style="font-size:0.9em;">&#x00B3; In MF1 and MF2.0, <code>[message]</code> is a generic string like for any other message type. In MF2.1, the <code>[message]</code> for requirement and incompatibility messages has a specific conditional syntax. In MF2.2, <code>[message]</code> can either be a generic string or use a general conditional syntax. See the <q><a href="#mf2-message">Conditional Message Shorthand</a></q>, <q><a href="#mf2-message-inc">Conditional Incompatibility Shorthand</a></q> and <q><a href="#mf2-message-req">Conditional Requirement Shorthand</a></q> sections below for details on the conditional syntaxes.
+<p id="4" style="font-size:0.9em;">&#x2020; In BOSS v1.7 and later, the symbol <code>*</code> technically denotes a general error message. However, in previous versions of BOSS it specifically denoted an FCOM install error, and would not require the preceding <code>&gt;</code> to behave conditionally. To avoid confusing users, the <code>*</code> symbol should never be used as a type identifier without being preceded by the FCOM-installed conditional <code>&gt;</code>, making it an FCOM install error message.
 
 <p>The above table references some Oblivion mods. The table below gives the Fallout 3 and Fallout: New Vegas equivalents. Replace all references in the above table with the relevant equivalents below for your game. The masterlist variables listed are conditionally defined at the top of the relevant games' masterlists if the user has the corresponding mods installed and are used by the MF2 mod-specific messages. In MF1, the checks are hardcoded into BOSS.
 
@@ -330,7 +332,7 @@ Masterlist Syntax Documentation</div>
 <p>An example of the shorthand displaying all the possible permutations of components is below.</p>
 <code>"[comparator][version 1]":"[file 1]"="[mod 1]" | "[checksum]":"[file 2]"="[mod 2]" | "[comparator][version 3]":"[file 3]" | "[checksum]":"[file 4]" |  "[file 5]" | "[file 6]"="[mod 6]"</code>
 
-<p>This goes in place of the message string, and is prepended by a keyword and colon, just like non-conditional message strings. Each item is separated by the <code>|</code> character, and there is no limit to the number of items that may appear in the shorthand. As with all message lines, you can also prepend a conditional before the keyword, if the whole message is conditional on something. Note that colons are used within this shorthand to separate out elements rather than as keyword boundary markers - they do not possess their usual meaning.
+<p>This goes in place of the message string, and is prepended by a keyword and colon, just like non-conditional message strings. Each item is separated by a <code>|</code> or <code>,</code> character (only the first is shown in the shorthand example), and there is no limit to the number of items that may appear in the shorthand. As with all message lines, you can also prepend a conditional before the keyword, if the whole message is conditional on something. Note that colons are used within this shorthand to separate out elements rather than as keyword boundary markers - they do not possess their usual meaning.
 <p><code>[file]</code>, <code>[comparator]</code>, <code>[version]</code> and <code>[checksum]</code> are all defined as in the <q><a href="#mf2-cond">General Conditionals</a></q> section above. <code>[mod]</code> can be any string of characters not containing double quote characters <code>"</code>, though as the name suggests it is intended to be the name of the mod that the plugin tested for belongs to.
 
 <p>As suggested by the shorthand example above, <code>"[comparator][version]":</code>, <code>"[checksum]":</code> and <code>="[mod]"</code> are all optional components of an item's conditional, and behave such that:
@@ -351,14 +353,14 @@ Masterlist Syntax Documentation</div>
 
 <code>INC: "[file 1]"="[mod 1]" | "[file 2]"</code>
 
-<p>This shorthand behaves in the same manner as the general form. As in the general form, you can also prepend a conditional before the keyword, and there is no limit to the number of items listed.</p>
+<p>This shorthand behaves in the same manner as the general form. Commas cannot be used to separate items in MF2.1. As in the general form, you can also prepend a conditional before the keyword, and there is no limit to the number of items listed.</p>
 <br />
 
 <div class="subtitle" id="mf2-message-req">Conditional Requirement Shorthand</div>
 <p style="font-weight:bold;">This is MF2.1 functionality.
 <p>While the above conditional message shorthand is MF2.2 functionality, MF2.1 introduced a shorthand for conditional requirement messages which lacks a few features of the more general form. The syntax for the whole message (including keyword) is</p>
 <code>REQ: "[comparator][version 1]":"[file 1]"="[mod 1]" | "[comparator][version 2]":"[file 2]" | "[file 3]" | "[file 4]"="[mod 4]"</code>
-<p>This shorthand behaves in the same manner as the general form. As in the general form, you can also prepend a conditional before the keyword, and there is no limit to the number of items listed.</p>
+<p>This shorthand behaves in the same manner as the general form. Commas cannot be used to separate items in MF2.1. As in the general form, you can also prepend a conditional before the keyword, and there is no limit to the number of items listed.</p>
 </div>
 
 <div id="examples"><span>Examples</span>

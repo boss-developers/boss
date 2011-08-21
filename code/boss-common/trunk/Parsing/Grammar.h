@@ -38,24 +38,8 @@ namespace boss {
 	namespace qi = boost::spirit::qi;
 
 	using namespace std;
-	using namespace qi::labels;
 
-	using qi::skip;
-	using qi::eol;
-	using qi::eoi;
-	using qi::lexeme;
-	using qi::on_error;
-	using qi::fail;
-	using qi::lit;
-	using qi::omit;
-	using qi::eps;
-	using qi::hex;
-
-	using unicode::char_;
-	using unicode::no_case;
-	using unicode::space;
-	using unicode::xdigit;
-
+	using qi::grammar;
 	using boost::format;
 	using boost::spirit::info;
 
@@ -95,7 +79,7 @@ namespace boss {
 	///////////////////////////////
 	
 	//Skipper for userlist and modlist parsers.
-	struct Skipper : qi::grammar<string::const_iterator> {
+	struct Skipper : grammar<string::const_iterator> {
 
 		Skipper();
 
@@ -103,7 +87,7 @@ namespace boss {
 	};
 
 	//Skipper for ini parser.
-	struct Ini_Skipper : qi::grammar<string::const_iterator> {
+	struct Ini_Skipper : grammar<string::const_iterator> {
 
 		Ini_Skipper();
 
@@ -146,7 +130,7 @@ namespace boss {
 	void path(fs::path& p, string const itemName);
 
 	//Modlist/Masterlist grammar.
-	struct modlist_grammar : qi::grammar<string::const_iterator, vector<item>(), Skipper> {
+	struct modlist_grammar : grammar<string::const_iterator, vector<item>(), Skipper> {
 
 		modlist_grammar();
 
@@ -156,7 +140,7 @@ namespace boss {
 		qi::rule<string::const_iterator, fs::path(), Skipper> itemName;
 		qi::rule<string::const_iterator, vector<message>(), Skipper> itemMessages;
 		qi::rule<string::const_iterator, message(), Skipper> itemMessage, globalMessage;
-		qi::rule<string::const_iterator, string(), Skipper> charString, messageString, variable, file, version, andOr, keyword, metaLine, messageVersionCRC;
+		qi::rule<string::const_iterator, string(), Skipper> charString, messageString, variable, file, version, andOr, keyword, metaLine, messageVersionCRC, messageModString, messageVersionCRCBlock;
 		qi::rule<string::const_iterator, keyType(), Skipper> messageKeyword;
 		qi::rule<string::const_iterator, bool(), Skipper> conditional, conditionals, condition, oldConditional;
 		
@@ -178,7 +162,7 @@ namespace boss {
 	void SetVar(string var, string value);
 
 	//Ini grammar.
-	struct ini_grammar : qi::grammar<string::const_iterator, Ini_Skipper> {
+	struct ini_grammar : grammar<string::const_iterator, Ini_Skipper> {
 
 		ini_grammar();
 

@@ -13,6 +13,24 @@
 
 namespace boss {
 
+	using namespace qi::labels;
+
+	using qi::skip;
+	using qi::eol;
+	using qi::eoi;
+	using qi::lexeme;
+	using qi::on_error;
+	using qi::fail;
+	using qi::lit;
+	using qi::omit;
+	using qi::eps;
+	using qi::hex;
+	
+	using unicode::char_;
+	using unicode::no_case;
+	using unicode::space;
+	using unicode::xdigit;
+
 	///////////////////////////////
 	//Common Functions
 	///////////////////////////////
@@ -377,10 +395,10 @@ namespace boss {
 		messageString = 
 			(
 				(
-					((lit("\"") >> messageVersionCRC >> lit("\"") >> lit(":")) | eps[_1 = emptyStr])
+					messageVersionCRCBlock
 					>> file 
-					>> ((lit("=") >> file) | eps[_1 = emptyStr])
-				)[phoenix::bind(&EvaluateConditionalMessage, _val, _1, _2, _3)]// % lit("|")
+					>> messageModString
+				)[phoenix::bind(&EvaluateConditionalMessage, _val, _1, _2, _3)] % (lit("|") | lit(","))
 			)	//Conditional message.
 			| charString[_val = _1];				//Any other message
 
@@ -388,6 +406,14 @@ namespace boss {
 			(char_('=') | char_('>') | char_('<')
 			> lexeme[+(char_ - '"')])
 			| xdigit;
+
+		messageModString %=
+			(lit("=") >> file) 
+			| eps;
+
+		messageVersionCRCBlock %=
+			(lit("\"") >> messageVersionCRC >> lit("\"") >> lit(":")) 
+			| eps;
 
 		messageKeyword %= no_case[masterlistMsgKey];
 
@@ -447,6 +473,9 @@ namespace boss {
 		on_error<fail>(itemMessage,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
 		on_error<fail>(charString,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
 		on_error<fail>(messageString,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(messageVersionCRC,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(messageModString,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(messageVersionCRCBlock,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
 		on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
 		on_error<fail>(oldConditional,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
 		on_error<fail>(conditionals,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
