@@ -54,6 +54,7 @@ namespace boss {
 	using unicode::char_;
 	using unicode::no_case;
 	using unicode::space;
+	using unicode::xdigit;
 
 	using boost::format;
 	using boost::spirit::info;
@@ -82,42 +83,21 @@ namespace boss {
 	//Evaluate the second half of a complex conditional.
 	void EvaluateCompoundConditional(bool& result, string andOr, bool condition);
 
+	//Evaluate part of a shorthand conditional message.
+	void EvaluateConditionalMessage(string& message, string version, string file, string mod);
+
+	//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.
+	unsigned int HexStringToInt(string hex);
+
 
 	///////////////////////////////
 	//Skipper Grammars
 	///////////////////////////////
-
-
 	
 	//Skipper for userlist and modlist parsers.
 	struct Skipper : qi::grammar<string::const_iterator> {
 
-		Skipper() : Skipper::base_type(start, "Skipper") {
-
-			start = 
-				spc
-				| UTF8
-				| CComment
-				| CPlusPlusComment
-				| lineComment
-				| eof;
-			
-			spc = space - eol;
-
-			UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf"); //UTF8 BOM
-
-			CComment = "/*" >> *(char_ - "*/") >> "*/";
-
-			CPlusPlusComment = !(lit("http:") | lit("https:")) >> "//" >> *(char_ - eol);
-
-			//Need to skip lines that start with '\', but only if they don't follow with EndGroup or BeginGroup.
-			lineComment = 
-				lit("\\")
-				>> !(lit("EndGroup") | lit("BeginGroup"))
-				>> *(char_ - eol);
-
-			eof = *(spc | CComment | CPlusPlusComment | lineComment | eol) >> eoi;
-		}
+		Skipper();
 
 		qi::rule<string::const_iterator> start, spc, eof, CComment, CPlusPlusComment, lineComment, UTF8;
 	};
@@ -125,24 +105,7 @@ namespace boss {
 	//Skipper for ini parser.
 	struct Ini_Skipper : qi::grammar<string::const_iterator> {
 
-		Ini_Skipper() : Ini_Skipper::base_type(start, "Ini Skipper") {
-
-			start = 
-				spc
-				| UTF8
-				| comment
-				| eof;
-			
-			spc = space - eol;
-
-			UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf"); //UTF8 BOM
-
-			comment	= 
-				lit("#") 
-				>> *(char_ - eol);
-
-			eof = *(spc | comment | eol) >> eoi;
-		}
+		Ini_Skipper();
 
 		qi::rule<string::const_iterator> start, spc, eof, comment, UTF8;
 	};
@@ -184,121 +147,8 @@ namespace boss {
 
 	//Modlist/Masterlist grammar.
 	struct modlist_grammar : qi::grammar<string::const_iterator, vector<item>(), Skipper> {
-		modlist_grammar() : modlist_grammar::base_type(modList, "modlist_grammar") {
 
-			vector<message> noMessages;  //An empty set of messages.
-
-			modList = (metaLine[phoenix::bind(&StoreVar, _1)] | globalMessage[phoenix::bind(&StoreGlobalMessage, _1)] | listItem[phoenix::bind(&StoreItem, _val, _1)]) % +eol;
-
-			metaLine =
-				omit[conditionals[phoenix::ref(storeItem) = _1]]
-				>> no_case[lit("set")]
-				>> (lit(":")
-				> charString);
-
-			globalMessage =
-				omit[conditionals[phoenix::ref(storeMessage) = _1]]
-				>> no_case[lit("global")]
-				>> (messageKeyword
-				> lit(":")
-				> messageString);
-
-			listItem %= 
-				omit[(oldConditional | conditionals)[phoenix::ref(storeItem) = _1]]
-				> ItemType
-				> itemName
-				> itemMessages;
-
-			ItemType %= no_case[typeKey] | eps[_val = MOD];
-
-			itemName = 
-				charString[phoenix::bind(&path, _val, _1)]
-				| eps[phoenix::bind(&path, _val, "")];
-
-			itemMessages = 
-				(+eol
-				>> itemMessage[phoenix::bind(&StoreMessage, _val, _1)] % +eol)
-				| eps[_1 = noMessages];
-
-			itemMessage %= 
-				omit[(oldConditional | conditionals)[phoenix::ref(storeMessage) = _1]]
-				>>(messageKeyword[&EvalMessKey]
-				> -lit(":")
-				> messageString);
-
-			charString %= lexeme[+(char_ - eol)]; //String, with no skipper.
-
-			messageString %= lexeme[+(char_ - eol)]; //String, with no skipper. Used for messages, which can contain web links which the skipper would cut out.
-
-			messageKeyword %= no_case[masterlistMsgKey];
-
-			oldConditional = (char_(">") |  char_("<"))		[phoenix::bind(&EvalOldFCOMConditional, _val, _1)];
-
-			conditionals = 
-				(conditional[_val = _1] 
-				> *((andOr > conditional)			[phoenix::bind(&EvaluateCompoundConditional, _val, _1, _2)]))
-				| eps[_val = true];
-
-			andOr %= unicode::string("&&") | unicode::string("||");
-
-			conditional = (no_case[metaKey] > '(' > condition > ')')	[phoenix::bind(&EvaluateConditional, _val, _1, _2)];
-
-			condition = 
-				variable									[phoenix::bind(&CheckVar, _val, _1)]
-				| version									[phoenix::bind(&CheckVersion, _val, _1)]
-				| (hex > '|' > file)						[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
-				| file										[phoenix::bind(&CheckFile, _val, _1)]
-				;
-
-			variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
-
-			file %= lexeme['\"' > +(char_ - '\"') > '\"'];  //An OBSE plugin or a mod plugin.
-
-			version %=   //A version, followed by the mod it applies to.
-				(char_('=') | char_('>') | char_('<'))
-				> lexeme[+(char_ - '|')]
-				> char_('|')
-				> (file | keyword);
-
-			modList.name("modList");
-			metaLine.name("metaLine");
-			listItem.name("listItem");
-			ItemType.name("ItemType");
-			itemName.name("itemName");
-			itemMessages.name("itemMessages");
-			itemMessage.name("itemMessage");
-			charString.name("charString");
-			messageString.name("messageString");
-			messageKeyword.name("messageKeyword");
-			oldConditional.name("oldConditional");
-			conditionals.name("conditional");
-			andOr.name("andOr");
-			conditional.name("conditional");
-			condition.name("condition");
-			variable.name("variable");
-			file.name("file");
-			version.name("version");
-			
-			on_error<fail>(modList,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(metaLine,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(listItem,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(ItemType,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(itemName,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(itemMessages,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(itemMessage,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(charString,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(messageString,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(oldConditional,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(conditionals,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(andOr,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(conditional,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(condition,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(variable,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(file,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-			on_error<fail>(version,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-
-		}
+		modlist_grammar();
 
 		qi::rule<string::const_iterator, vector<item>(), Skipper> modList;
 		qi::rule<string::const_iterator, item(), Skipper> listItem;
@@ -306,28 +156,11 @@ namespace boss {
 		qi::rule<string::const_iterator, fs::path(), Skipper> itemName;
 		qi::rule<string::const_iterator, vector<message>(), Skipper> itemMessages;
 		qi::rule<string::const_iterator, message(), Skipper> itemMessage, globalMessage;
-		qi::rule<string::const_iterator, string(), Skipper> charString, messageString, variable, file, version, andOr, keyword, metaLine;
+		qi::rule<string::const_iterator, string(), Skipper> charString, messageString, variable, file, version, andOr, keyword, metaLine, messageVersionCRC;
 		qi::rule<string::const_iterator, keyType(), Skipper> messageKeyword;
 		qi::rule<string::const_iterator, bool(), Skipper> conditional, conditionals, condition, oldConditional;
 		
-		void SyntaxErr(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what) {
-			ostringstream out;
-			out << what;
-			string expect = out.str().substr(1,out.str().length()-2);
-			if (expect == "eol")
-				expect = "end of line";
-
-			string context(errorpos, min(errorpos +50, last));
-			boost::trim_left(context);
-
-			LOG_ERROR("Masterlist Parsing Error: Expected a %s at \"%s\". Masterlist parsing aborted. Utility will end now.", expect.c_str(), context.c_str());
-			
-			expect = "&lt;" + expect + "&gt;";
-			boost::replace_all(context, "\n", "<br />\n");
-			string msg = (MasterlistParsingErrorFormat % expect % context).str();
-			masterlistErrorBuffer.push_back(msg);
-			return;
-		}
+		void SyntaxErr(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what);
 	};
 
 	////////////////////////////
@@ -347,74 +180,12 @@ namespace boss {
 	//Ini grammar.
 	struct ini_grammar : qi::grammar<string::const_iterator, Ini_Skipper> {
 
-		ini_grammar() : ini_grammar::base_type(ini, "ini grammar") {
-
-			ini =
-				section % +eol;
-
-			section =
-				heading[phoenix::ref(currentHeading) = _1]
-				> +eol
-				> setting % +eol;
-
-			heading %= 
-				lit("[")
-				>> (+(char_ - "]"))
-				>> lit("]");
-
-			setting =
-				(var
-				> '='
-				> value)[phoenix::bind(&SetVar, _1, _2)];
-
-			var %=
-				lexeme[(lit("\"") >> +(char_ - lit("\"")) >> lit("\""))]
-				|
-				(!lit("[") >> +(char_ - '='));
-
-			value %=
-				(lit("{") >> lexeme[*(char_ - lit("}"))] >> lit("}"))
-				|
-				+(char_ - eol);
-
-			//Give each rule names.
-			ini.name("ini");
-			section.name("section");
-			heading.name("heading");
-			setting.name("setting");
-			var.name("variable");
-			value.name("value");
-		
-			//Error handling.
-			on_error<fail>(ini,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(section,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(heading,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(setting,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(var,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(value,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
-		}
+		ini_grammar();
 
 		qi::rule<string::const_iterator, Ini_Skipper> ini, section, setting;
 		qi::rule<string::const_iterator, string(), Ini_Skipper> var, value, heading;
 	
-		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {
-			ostringstream out;
-			out << what;
-			string expect = out.str().substr(1,out.str().length()-2);
-			if (expect == "eol")
-				expect = "end of line";
-
-			string context(errorpos, min(errorpos +50, last));
-			boost::trim_left(context);
-
-			LOG_ERROR("Ini Parsing Error: Expected a %s at \"%s\". Ini parsing aborted. No further settings will be applied.", expect.c_str(), context.c_str());
-			
-			expect = "&lt;" + expect + "&gt;";
-			boost::replace_all(context, "\n", "<br />\n");
-			string msg = (IniParsingErrorFormat % expect % context).str();
-			iniErrorBuffer.push_back(msg);
-			return;
-		}	
+		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what);
 	};
 
 	////////////////////////////
@@ -447,8 +218,7 @@ namespace boss {
 
 	// Used to throw as exception when signaling a userlist syntax error, in order to make the code a bit more compact.
 	struct failure {
-		failure(keyType const& ruleKey, string const& ruleObject, string const& message) 
-			: ruleKey(ruleKey), ruleObject(ruleObject), message(message) {}
+		failure(keyType const& ruleKey, string const& ruleObject, string const& message);
 
 		keyType ruleKey;
 		string ruleObject;
@@ -466,83 +236,7 @@ namespace boss {
 
 	//Userlist grammar.
 	struct userlist_grammar : qi::grammar<string::const_iterator, vector<rule>(), Skipper> {
-		userlist_grammar() : userlist_grammar::base_type(ruleList, "userlist grammar") {
-
-			//A list is a vector of rules. Rules are separated by line endings.
-			ruleList = 
-				*eol 
-				> (eoi | (userlistRule[phoenix::bind(&RuleSyntaxCheck, _val, _1)] % eol)); 
-
-			//A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
-			userlistRule %=
-				*eol
-				> ruleKey > ':' > object
-				> +eol
-				> sortOrMessageLines;
-
-			sortOrMessageLines =
-				sortOrMessageLine[phoenix::bind(&StoreCurrentLine, _val, _1)] % +eol;
-
-			sortOrMessageLine %=
-				sortOrMessageKey
-				> ':'
-				> omit[conditionals[phoenix::ref(storeLine) = _1]]
-				> object;
-
-			object %= lexeme[+(char_ - eol)]; //String, with no skipper.
-
-			ruleKey %= no_case[ruleKeys];
-
-			sortOrMessageKey %= no_case[sortOrMessageKeys];
-
-			conditionals = 
-				(conditional[_val = _1] 
-				> *((andOr > conditional)			[phoenix::bind(&EvaluateCompoundConditional, _val, _1, _2)]))
-				| eps[_val = true];
-
-			andOr %= unicode::string("&&") | unicode::string("||");
-
-			conditional = (no_case[metaKey] > '(' > condition > ')')	[phoenix::bind(&EvaluateConditional, _val, _1, _2)];
-
-			condition = 
-				variable									[phoenix::bind(&CheckVar, _val, _1)]
-				| version									[phoenix::bind(&CheckVersion, _val, _1)]
-				| (hex > '|' > file)						[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
-				| file										[phoenix::bind(&CheckFile, _val, _1)]
-				;
-
-			variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
-
-			file %= lexeme['\"' > +(char_ - '\"') > '\"'];  //An OBSE plugin or a mod plugin.
-
-			version %=   //A version, followed by the mod it applies to.
-				(char_('=') | char_('>') | char_('<'))
-				> lexeme[+(char_ - '|')]
-				> char_('|')
-				> (file | keyword);
-
-			//Give each rule names.
-			ruleList.name("rules");
-			userlistRule.name("rule");
-			sortOrMessageLine.name("sort or message line");
-			object.name("line object");
-			ruleKey.name("rule keyword");
-			sortOrMessageKey.name("sort or message keyword");
-		
-			on_error<fail>(ruleList,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(userlistRule,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(sortOrMessageLine,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(object,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(ruleKey,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(sortOrMessageKey,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
-			on_error<fail>(conditionals,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-			on_error<fail>(andOr,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-			on_error<fail>(conditional,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-			on_error<fail>(condition,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-			on_error<fail>(variable,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-			on_error<fail>(file,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-			on_error<fail>(version,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		}
+		userlist_grammar();
 
 		qi::rule<string::const_iterator, vector<rule>(), Skipper> ruleList;
 		qi::rule<string::const_iterator, rule(), Skipper> userlistRule;
@@ -552,24 +246,7 @@ namespace boss {
 		qi::rule<string::const_iterator, string(), Skipper> object, variable, file, version, andOr, keyword, metaLine;
 		qi::rule<string::const_iterator, bool(), Skipper> conditional, conditionals, condition;
 	
-		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {
-			ostringstream out;
-			out << what;
-			string expect = out.str().substr(1,out.str().length()-2);
-			if (expect == "eol")
-				expect = "end of line";
-
-			string context(errorpos, min(errorpos +50, last));
-			boost::trim_left(context);
-
-			LOG_ERROR("Userlist Parsing Error: Expected a %s at \"%s\". Userlist parsing aborted. No rules will be applied.", expect.c_str(), context.c_str());
-			
-			expect = "&lt;" + expect + "&gt;";
-			boost::replace_all(context, "\n", "<br />\n");
-			string msg = (UserlistParsingErrorFormat % expect % context).str();
-			userlistErrorBuffer.push_back(msg);
-			return;
-		}
+		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what);
 	};
 
 }

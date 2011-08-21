@@ -163,12 +163,95 @@ namespace boss {
 			result = false;
 	}
 
+	//Evaluate part of a shorthand conditional message.
+	void EvaluateConditionalMessage(string& message, string version, string file, string mod) {
+		fs::path file_path;
+		GetPath(file_path,file);
+		if (fs::exists(file_path / file)) {  //File exists. Was a version or checksum given? 
+			if (!version.empty()) {
+				if (version[0] == '>' || version[0] == '=' || version[0] == '<') {  //Version
+					bool versionCheck;
+					CheckVersion(versionCheck, version + "|" + file);
+					if (versionCheck)
+						return;	//Mod is of the correct version. No message should be printed for this item.
+				} else {
+					bool sumCheck;
+					CheckSum(sumCheck, HexStringToInt(version), file);
+					if (sumCheck)
+						return;	//Mod is of the correct checksum. No message should be printed for this item.
+				}
+			}
+			if (!message.empty())
+				message += ", ";
+			if (!mod.empty())  //Was a valid mod name given?
+				message += "\"" + mod + "\"";
+			else
+				message += "\"" + file + "\"";
+		}
+	}
+
+	//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.
+	unsigned int HexStringToInt(string str) {
+		string::const_iterator begin, end;
+		begin = str.begin();
+		end = str.end();
+		unsigned int out;
+		qi::parse(begin, end, hex[phoenix::ref(out) = _1]);
+		return out;
+	}
+
 
 	///////////////////////////////
 	//Skipper Grammars
 	///////////////////////////////
 	
-	
+	//Constructor for modlist and userlist skipper.
+	Skipper::Skipper() : Skipper::base_type(start, "Skipper") {
+
+		start = 
+			spc
+			| UTF8
+			| CComment
+			| CPlusPlusComment
+			| lineComment
+			| eof;
+			
+		spc = space - eol;
+
+		UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf"); //UTF8 BOM
+
+		CComment = "/*" >> *(char_ - "*/") >> "*/";
+
+		CPlusPlusComment = !(lit("http:") | lit("https:")) >> "//" >> *(char_ - eol);
+
+		//Need to skip lines that start with '\', but only if they don't follow with EndGroup or BeginGroup.
+		lineComment = 
+			lit("\\")
+			>> !(lit("EndGroup") | lit("BeginGroup"))
+			>> *(char_ - eol);
+
+		eof = *(spc | CComment | CPlusPlusComment | lineComment | eol) >> eoi;
+	}
+
+	//Constructor for ini skipper.
+	Ini_Skipper::Ini_Skipper() : Ini_Skipper::base_type(start, "Ini Skipper") {
+
+		start = 
+			spc
+			| UTF8
+			| comment
+			| eof;
+			
+		spc = space - eol;
+
+		UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf"); //UTF8 BOM
+
+		comment	= 
+			lit("#") 
+			>> *(char_ - eol);
+
+		eof = *(spc | comment | eol) >> eoi;
+	}
 
 	///////////////////////////////
 	//Modlist/Masterlist Grammar
@@ -181,106 +264,8 @@ namespace boss {
 	//Stores a message, should it be appropriate.
 	//The SPECIFIC_REQ and SPECIFIC_INC 'parsers' are not space-safe within items.
 	void StoreMessage(vector<message>& messages, message currentMessage) {
-		if (storeMessage) {
-			if (currentMessage.key == SPECIFIC_REQ) {
-				//Modify message output based on what mods are installed.
-				stringstream ss(currentMessage.data);
-				currentMessage.data = "";
-				string mod,file,item;
-				while (getline(ss, item, '|')) {
-					//Syntax for an item is: "<version comparison>":"<file>"="<mod>"
-					//The "<version comparison>": and ="<mod>" are optional.
-					string version;
-					bool versionCheck = true;
-					size_t pos1,pos2,pos3,pos4;
-					pos1 = item.find('"');
-					if (pos1 == string::npos)
-						continue;
-					pos2 = item.find('"',pos1+1);
-					if (pos2 == string::npos)
-						continue;
-					pos3 = item.find('"',pos2+1);
-					if (pos3 == string::npos) {  //Only a plugin is given.
-						file = item.substr(pos1+1, pos2-pos1-1);
-						mod = file;
-					} else {
-						pos4 = item.find(':',pos2+1);
-						if (pos4 != string::npos && pos4 < pos3) {  //A version and a file are given. Possibly also a mod.
-							version = item.substr(pos1+1, pos2-pos1-1);
-							pos4 = item.find('"',pos3+1);
-							if (pos4 == string::npos)
-								continue;
-							file = item.substr(pos3+1, pos4-pos3-1);
-							//Check version conditional.
-							CheckVersion(versionCheck, version + "|" + file);
-							if (versionCheck)
-								continue;	//Mod exists and is of the correct version. No message should be printed for this item.
-							pos1 = item.find('"',pos4+1);
-							if (pos1 != string::npos) {
-								pos2 = item.find('"',pos1+1);
-								if (pos2 == string::npos)
-									continue;
-								mod = item.substr(pos1+1, pos2-pos1-1);
-							} else
-								mod = file;
-						} else {
-							pos4 = item.find('=',pos2+1);
-							if (pos4 != string::npos && pos4 < pos3) {  //A file and a mod are given.
-								file = item.substr(pos1+1, pos2-pos1-1);
-								pos4 = item.find('"',pos3+1);
-								if (pos4 == string::npos)
-									continue;
-								mod = item.substr(pos3+1, pos4-pos3-1);
-							} else
-								continue;
-						}
-					}
-					//Get file path.
-					fs::path file_path;
-					GetPath(file_path,file);
-					if (!fs::exists(file_path / file) || !versionCheck) {
-						if (currentMessage.data != "")
-							currentMessage.data += ", ";
-						currentMessage.data += "\""+mod+"\"";
-					}
-				}
-			} else if (currentMessage.key == SPECIFIC_INC) {
-				//Modify message output based on what mods are installed.
-				stringstream ss(currentMessage.data);
-				currentMessage.data = "";
-				string mod,file,item;
-				while (getline(ss, item, '|')) {
-					size_t pos1,pos2;
-					pos1 = item.find('"');
-					if (pos1 == string::npos)
-						continue;
-					pos2 = item.find('"',pos1+1);
-					if (pos2 == string::npos)
-						continue;
-					file = item.substr(pos1+1, pos2-pos1-1);
-					//Get file path.
-					fs::path file_path;
-					GetPath(file_path,file);
-					if (fs::exists(file_path / file)) {
-						mod = file;
-						if (item.length() > pos2+1) {
-							pos1 = item.find('"', pos2+1);
-							if (pos1 != string::npos) {
-								pos2 = item.find('"',pos1+1);
-								if (pos2 == string::npos)
-									continue;
-								mod = item.substr(pos1+1, pos2-pos1-1);
-							}
-						}
-						if (currentMessage.data != "")
-							currentMessage.data += ", ";
-						currentMessage.data += "\""+mod+"\"";
-					}
-				}
-			}
-			if (currentMessage.data != "")
+		if (storeMessage && !currentMessage.data.empty())
 				messages.push_back(currentMessage);
-		}
 		return;
 	}
 
@@ -344,7 +329,155 @@ namespace boss {
 		return;
 	}
 
-	
+	modlist_grammar::modlist_grammar() : modlist_grammar::base_type(modList, "modlist_grammar") {
+
+		vector<message> noMessages;  //An empty set of messages.
+		string emptyStr;
+
+		modList = (metaLine[phoenix::bind(&StoreVar, _1)] | globalMessage[phoenix::bind(&StoreGlobalMessage, _1)] | listItem[phoenix::bind(&StoreItem, _val, _1)]) % +eol;
+
+		metaLine =
+			omit[conditionals[phoenix::ref(storeItem) = _1]]
+			>> no_case[lit("set")]
+			>> (lit(":")
+			> charString);
+
+		globalMessage =
+			omit[conditionals[phoenix::ref(storeMessage) = _1]]
+			>> no_case[lit("global")]
+			>> (messageKeyword
+			> lit(":")
+			> messageString);
+
+		listItem %= 
+			omit[(oldConditional | conditionals)[phoenix::ref(storeItem) = _1]]
+			> ItemType
+			> itemName
+			> itemMessages;
+
+		ItemType %= no_case[typeKey] | eps[_val = MOD];
+
+		itemName = 
+			charString[phoenix::bind(&path, _val, _1)]
+			| eps[phoenix::bind(&path, _val, "")];
+
+		itemMessages = 
+			(+eol
+			>> itemMessage[phoenix::bind(&StoreMessage, _val, _1)] % +eol)
+			| eps[_1 = noMessages];
+
+		itemMessage %= 
+			omit[(oldConditional | conditionals)[phoenix::ref(storeMessage) = _1]]
+			>>(messageKeyword[&EvalMessKey]
+			> -lit(":")
+			> messageString);
+
+		charString %= lexeme[+(char_ - eol)]; //String, with no skipper.
+
+		messageString = 
+			(
+				(
+					((lit("\"") >> messageVersionCRC >> lit("\"") >> lit(":")) | eps[_1 = emptyStr])
+					>> file 
+					>> ((lit("=") >> file) | eps[_1 = emptyStr])
+				)[phoenix::bind(&EvaluateConditionalMessage, _val, _1, _2, _3)]// % lit("|")
+			)	//Conditional message.
+			| charString[_val = _1];				//Any other message
+
+		messageVersionCRC %= 
+			(char_('=') | char_('>') | char_('<')
+			> lexeme[+(char_ - '"')])
+			| xdigit;
+
+		messageKeyword %= no_case[masterlistMsgKey];
+
+		oldConditional = (char_(">") |  char_("<"))		[phoenix::bind(&EvalOldFCOMConditional, _val, _1)];
+
+		conditionals = 
+			(conditional[_val = _1] 
+			> *((andOr > conditional)			[phoenix::bind(&EvaluateCompoundConditional, _val, _1, _2)]))
+			| eps[_val = true];
+
+		andOr %= unicode::string("&&") | unicode::string("||");
+
+		conditional = (no_case[metaKey] > '(' > condition > ')')	[phoenix::bind(&EvaluateConditional, _val, _1, _2)];
+
+		condition = 
+			variable									[phoenix::bind(&CheckVar, _val, _1)]
+			| version									[phoenix::bind(&CheckVersion, _val, _1)]
+			| (hex > '|' > file)						[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
+			| file										[phoenix::bind(&CheckFile, _val, _1)]
+			;
+
+		variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
+
+		file %= lexeme['\"' > +(char_ - '\"') > '\"'];  //An OBSE plugin or a mod plugin.
+
+		version %=   //A version, followed by the mod it applies to.
+			(char_('=') | char_('>') | char_('<'))
+			> lexeme[+(char_ - '|')]
+			> char_('|')
+			> (file | keyword);
+
+		modList.name("modList");
+		metaLine.name("metaLine");
+		listItem.name("listItem");
+		ItemType.name("ItemType");
+		itemName.name("itemName");
+		itemMessages.name("itemMessages");
+		itemMessage.name("itemMessage");
+		charString.name("charString");
+		messageString.name("messageString");
+		messageKeyword.name("messageKeyword");
+		oldConditional.name("oldConditional");
+		conditionals.name("conditional");
+		andOr.name("andOr");
+		conditional.name("conditional");
+		condition.name("condition");
+		variable.name("variable");
+		file.name("file");
+		version.name("version");
+			
+		on_error<fail>(modList,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(metaLine,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(listItem,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(ItemType,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(itemName,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(itemMessages,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(itemMessage,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(charString,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(messageString,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(oldConditional,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(conditionals,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(andOr,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(conditional,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(condition,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(variable,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(file,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(version,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+
+	}
+
+	void modlist_grammar::SyntaxErr(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what) {
+		ostringstream out;
+		out << what;
+		string expect = out.str().substr(1,out.str().length()-2);
+		if (expect == "eol")
+			expect = "end of line";
+
+		string context(errorpos, min(errorpos +50, last));
+		boost::trim_left(context);
+
+		LOG_ERROR("Masterlist Parsing Error: Expected a %s at \"%s\". Masterlist parsing aborted. Utility will end now.", expect.c_str(), context.c_str());
+			
+		expect = "&lt;" + expect + "&gt;";
+		boost::replace_all(context, "\n", "<br />\n");
+		string msg = (MasterlistParsingErrorFormat % expect % context).str();
+		masterlistErrorBuffer.push_back(msg);
+		return;
+	}
+
 
 	////////////////////////////
 	//Ini Grammar.
@@ -529,13 +662,80 @@ namespace boss {
 			}
 		}
 
-	
+	ini_grammar::ini_grammar() : ini_grammar::base_type(ini, "ini grammar") {
+
+		ini =
+			section % +eol;
+
+		section =
+			heading[phoenix::ref(currentHeading) = _1]
+			> +eol
+			> setting % +eol;
+
+		heading %= 
+			lit("[")
+			>> (+(char_ - "]"))
+			>> lit("]");
+
+		setting =
+			(var
+			> '='
+			> value)[phoenix::bind(&SetVar, _1, _2)];
+
+		var %=
+			lexeme[(lit("\"") >> +(char_ - lit("\"")) >> lit("\""))]
+			|
+			(!lit("[") >> +(char_ - '='));
+
+		value %=
+			(lit("{") >> lexeme[*(char_ - lit("}"))] >> lit("}"))
+			|
+			+(char_ - eol);
+
+		//Give each rule names.
+		ini.name("ini");
+		section.name("section");
+		heading.name("heading");
+		setting.name("setting");
+		var.name("variable");
+		value.name("value");
+		
+		//Error handling.
+		on_error<fail>(ini,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
+		on_error<fail>(section,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
+		on_error<fail>(heading,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
+		on_error<fail>(setting,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
+		on_error<fail>(var,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
+		on_error<fail>(value,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
+	}
+
+	void ini_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {
+		ostringstream out;
+		out << what;
+		string expect = out.str().substr(1,out.str().length()-2);
+		if (expect == "eol")
+			expect = "end of line";
+
+		string context(errorpos, min(errorpos +50, last));
+		boost::trim_left(context);
+
+		LOG_ERROR("Ini Parsing Error: Expected a %s at \"%s\". Ini parsing aborted. No further settings will be applied.", expect.c_str(), context.c_str());
+			
+		expect = "&lt;" + expect + "&gt;";
+		boost::replace_all(context, "\n", "<br />\n");
+		string msg = (IniParsingErrorFormat % expect % context).str();
+		iniErrorBuffer.push_back(msg);
+		return;
+	}
 
 	////////////////////////////
 	//Userlist Grammar.
 	////////////////////////////
 
 	bool storeLine = true;  //Should the current message/sort line be stored.
+
+	failure::failure(keyType const& ruleKey, string const& ruleObject, string const& message) 
+			: ruleKey(ruleKey), ruleObject(ruleObject), message(message) {}
 
 	void AddSyntaxError(keyType const& rule, string const& object, string const& message) {
 		string keystring = KeyToString(rule);
@@ -605,6 +805,100 @@ namespace boss {
 		return;
 	}
 
-	
+	userlist_grammar::userlist_grammar() : userlist_grammar::base_type(ruleList, "userlist grammar") {
 
+		//A list is a vector of rules. Rules are separated by line endings.
+		ruleList = 
+			*eol 
+			> (eoi | (userlistRule[phoenix::bind(&RuleSyntaxCheck, _val, _1)] % eol)); 
+
+		//A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
+		userlistRule %=
+			*eol
+			> ruleKey > ':' > object
+			> +eol
+			> sortOrMessageLines;
+
+		sortOrMessageLines =
+			sortOrMessageLine[phoenix::bind(&StoreCurrentLine, _val, _1)] % +eol;
+
+		sortOrMessageLine %=
+			sortOrMessageKey
+			> ':'
+			> omit[conditionals[phoenix::ref(storeLine) = _1]]
+			> object;
+
+		object %= lexeme[+(char_ - eol)]; //String, with no skipper.
+
+		ruleKey %= no_case[ruleKeys];
+
+		sortOrMessageKey %= no_case[sortOrMessageKeys];
+
+		conditionals = 
+			(conditional[_val = _1] 
+			> *((andOr > conditional)			[phoenix::bind(&EvaluateCompoundConditional, _val, _1, _2)]))
+			| eps[_val = true];
+
+		andOr %= unicode::string("&&") | unicode::string("||");
+
+		conditional = (no_case[metaKey] > '(' > condition > ')')	[phoenix::bind(&EvaluateConditional, _val, _1, _2)];
+
+		condition = 
+			variable									[phoenix::bind(&CheckVar, _val, _1)]
+			| version									[phoenix::bind(&CheckVersion, _val, _1)]
+			| (hex > '|' > file)						[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
+			| file										[phoenix::bind(&CheckFile, _val, _1)]
+			;
+
+		variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
+
+		file %= lexeme['\"' > +(char_ - '\"') > '\"'];  //An OBSE plugin or a mod plugin.
+
+		version %=   //A version, followed by the mod it applies to.
+			(char_('=') | char_('>') | char_('<'))
+			> lexeme[+(char_ - '|')]
+			> char_('|')
+			> (file | keyword);
+
+		//Give each rule names.
+		ruleList.name("rules");
+		userlistRule.name("rule");
+		sortOrMessageLine.name("sort or message line");
+		object.name("line object");
+		ruleKey.name("rule keyword");
+		sortOrMessageKey.name("sort or message keyword");
+		
+		on_error<fail>(ruleList,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
+		on_error<fail>(userlistRule,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
+		on_error<fail>(sortOrMessageLine,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
+		on_error<fail>(object,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
+		on_error<fail>(ruleKey,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
+		on_error<fail>(sortOrMessageKey,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
+		on_error<fail>(conditionals,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(andOr,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(conditional,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(condition,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(variable,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(file,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(version,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	}
+
+	void userlist_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {
+		ostringstream out;
+		out << what;
+		string expect = out.str().substr(1,out.str().length()-2);
+		if (expect == "eol")
+			expect = "end of line";
+
+		string context(errorpos, min(errorpos +50, last));
+		boost::trim_left(context);
+
+		LOG_ERROR("Userlist Parsing Error: Expected a %s at \"%s\". Userlist parsing aborted. No rules will be applied.", expect.c_str(), context.c_str());
+			
+		expect = "&lt;" + expect + "&gt;";
+		boost::replace_all(context, "\n", "<br />\n");
+		string msg = (UserlistParsingErrorFormat % expect % context).str();
+		userlistErrorBuffer.push_back(msg);
+		return;
+	}
 }

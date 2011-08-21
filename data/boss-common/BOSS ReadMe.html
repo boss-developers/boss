@@ -13,7 +13,7 @@
 </style>
 
 <div>Better Oblivion Sorting Software</div><br />
-<div style="text-align:center;">A "one-click" program for users that quickly optimises and avoids detrimental conflicts in their Oblivion, Nehrim - At Fate's Edge, Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.</div>
+<div style="text-align:center;">A "one-click" program for users that quickly optimises and avoids detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.</div>
 <br /><br />
 
 <div><span>Contents</span>
@@ -57,11 +57,11 @@
 
 <div id="features"><span>Features &amp; Introduction</span>
 <ul>
-	<li>Correctly positions over 12,100 Oblivion mods and counting, including such popular mods as FCOM, <abbr title="Oscuro's Oblivion Overhaul">OOO</abbr>, <abbr title="Martigen's Monster Mod">MMM</abbr>, Better Cities, Open Cities, Race Balancing Project and many others.
+	<li>Correctly positions over 12,100 TES IV: Oblivion mods and counting, including such popular mods as FCOM, <abbr title="Oscuro's Oblivion Overhaul">OOO</abbr>, <abbr title="Martigen's Monster Mod">MMM</abbr>, Better Cities, Open Cities, Race Balancing Project and many others.
 	<li>Correctly positions over 2,600 Fallout 3 mods and counting.
 	<li>Correctly positions over 2,500 Fallout: New Vegas mods and counting.
 	<li>Provides support for sorting mods used in Nehrim - At Fate's Edge installs.
-	<li>Provides preliminary support for TESV: Skyrim.
+	<li>Provides preliminary support for TES V: Skyrim.
 	<li>Provides a large number of usage notes for many mods, including requirements, incompatibilities, updates and bug warnings.
 	<li>Provides detection and warning of installation mistakes for some popular mods, such as FCOM.
 	<li>Displays the version number of mods when it is available.
@@ -79,7 +79,7 @@
 
 <div id="install"><span>Installation &amp; Basic Usage</span>
 <p><b>Note that BOSS does not support Windows 2000 or earlier.</b>
-<p>BOSS can be installed for use with Oblivion, Fallout 3, Fallout: New Vegas or Nehrim - At Fate's Edge (a Total Conversion mod for Oblivion). Installation may either be automated, using the BOSS Installer package, or manually, using the archive package. Either method is simple, and instructions for manual installation are given below.
+<p>BOSS can be installed for use with TES IV: Oblivion, TES V: Skyrim, Fallout 3, Fallout: New Vegas or Nehrim - At Fate's Edge (a Total Conversion mod for Oblivion). Installation may either be automated, using the BOSS Installer package, or manually, using the archive package. Either method is simple, and instructions for manual installation are given below.
 <ol>
 	<li>If you have Wrye Bash, Wrye Flash or Wrye Flash NV, make sure the <q>Lock Times</q> function is deactivated.
 	<li>If upgrading from an earlier version of BOSS, delete all BOSS files and folders in your game's Data folder (including the BOSS folder, BOSS.exe, masterlist.txt, modlist.txt, modlist.old, BOSSlog.txt and any of BOSS's .bat files).  If you have an edited masterlist, make sure to keep a backup so that your edits are not lost. It is recommended that you instead use the userlist functionality to apply changes to the masterlist.
@@ -747,18 +747,19 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Changed: Added whitespace characters between plugin filenames, versions, ghosted labels and CRCs to make plaintext more readable.
 	<li>Changed: Userlist rules which reference mods that are not installed now have warning messages reported instead of error messages.
 	<li>Changed: Masterlist keywords can now be case-insensitive.
+	<li>Changed: Conditional message shorthand for item lists is now generalised to all messages, not just requirement and incompatibility messages, and includes optional checksum as well as version comparison.
 	<li>Added: <q>Hide Clean Mods</q> BOSSlog filter.
 	<li>Added: Support for Skyrim. This assumes Skyrim's master file will be <q>Skyrim.esm</q>, the executable will be <q>Skyrim.exe</q>. If different, BOSS will be updated upon Skyrim's release with the real filenames.
 	<li>Added: Support for a Skyrim Script Extender. While the team responsible for OBSE, FOSE and NVSE have not made any comments officially or unofficially regarding Skyrim, BOSS has added support for one with the assumptions that it uses the <code>Data\SKSE\Plugins\</code> directory for its plugins and has a loader named <q>skse_loader.exe</q>.
-	<li>Added: Support for MF2.2 C-style comments and case-insensitive keywords.
+	<li>Added: Support for MF2.2 C-style comments, case-insensitive keywords and general conditional message shorthand.
 	<li>Added: Masterlist updater download progress indication in command line window.
-	<li>Added: Support for conditionals in messages attached to mods via User Rules.
+	<li>Added: Support for conditionals in messages attached to plugins via User Rules.
 	<li>(Docs) Changed: Main readme updated to reflect changes.
 	<li>(Docs) Added: Masterlist Syntax HTML documentation for BOSS team members and interested third parties.
 </ul>
 <p><b>Version 1.8</b> - <i>6 July 2011</i>
 <ul>
-	<li>Fixed: Junction-linked data folders not being scanned for mods.
+	<li>Fixed: Junction-linked data folders not being scanned for plugins.
 	<li>Fixed: Links being displayed incorrectly in the BOSSlog if more than one was given in a message.
 	<li>Changed: Masterlist updater now runs by default.
 	<li>Changed: Updated version of libcurl used when building BOSS.exe and BOSS GUI.exe to 7.21.7 from 7.21.4.
@@ -781,7 +782,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 		<li><code>--no-update,-U</code> to inhibit automatic masterlist updating.
 	</ul>
 	
-	<li>Added: Support for Fallout: New Vegas mods that use the Fallout 3 master file, such as <q>A Requiem for the Capital Wasteland</q>.
+	<li>Added: Support for Fallout: New Vegas plugins that use the Fallout 3 master file, such as <q>A Requiem for the Capital Wasteland</q>.
 	<li>Added: Support for MF2.1 regular expressions in the masterlist.
 	<li>Added: Support for MF2.1 conditional incompatibility and conditional requirement messages in the masterlist.
 	<li>Added: BOSSlog filter option to hide userlist warning messages.
@@ -916,7 +917,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Added: <q>BOSS - Update Masterlist.bat</q> file to allow updating of the masterlist without having to use the command line.
 	<li>Added: Sorting of ghosted plugins.
 	<li>Added: Custom user rules functionality to allow users to customise how BOSS sorts their files, and more.
-	<li>Added: Support for the <q>Nehrim - At Fate's Edge</q> total conversion for Oblivion.
+	<li>Added: Support for the <q>Nehrim - At Fate's Edge</q> total conversion for TES IV: Oblivion.
 	<li>(Docs) Changed: Converted Readme from RTF to HTML format.
 </ul>
 <p><b>Version 1.5</b> - <i>24 March 2010</i>
