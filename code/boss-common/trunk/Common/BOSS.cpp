@@ -782,6 +782,8 @@ int main(int argc, char *argv[]) {
 						index2 = GetGroupEndPos(Modlist, Userlist[i].lines[j].object);  //Find the end.
 					//Check that the sort group actually exists.
 					if (index2 == (size_t)-1) {
+						if (Userlist[i].ruleKey == ADD)
+							x--;
 						Modlist.insert(Modlist.begin()+index1,mod);  //Insert the mod back in its old position.
 						userlistMessagesContent += "<li class='error'>The group \""+Userlist[i].lines[j].object+"\" is not in the masterlist or is malformatted. Rule skipped.</li>\n";
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", Userlist[i].lines[j].object.c_str());

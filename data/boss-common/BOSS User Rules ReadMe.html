@@ -4,8 +4,7 @@
 <style>
 	body {font-family:Calibri,Arial,Verdana,sans-serifs;}
 	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:1em;}
-	div > span {font-weight:bold; font-size:1.3em;}
-	.subtitle {font-weight: normal;font-size:1.3em;}
+	body > div {margin-bottom:5em;}
 	ol li, ul li {margin-bottom:10px;}
 	li ul, li ol {margin-top:0.4em;}
 	.codebox, .quotebox, .logbox {margin-left:40px; border: gray 1px dashed; display:table; min-width:300px;  padding: 5px 30px 5px 10px;}
@@ -17,12 +16,14 @@
 	code {display:inline-box; padding: 2px 5px; background:#EEEEEE; }
 	td {border: 1px solid #ccc; padding: 5px;}
 	table {border: 1px solid #CCCCCC;border-spacing: 0;border-collapse: separate; margin:1em; margin-left:40px;}
+	b {font-weight:bold;}
+	i {font-style:italic;}
 </style>
 
 <div>Better Oblivion Sorting Software<br />
 User Rules Documentation</div>
 
-<div><span>Contents</span>
+<div><h1>Contents</h1>
 <ol>
 	<li><a href="#intro">Introduction</a>
 	<li><a href="#start">Getting Started With The Userlist</a>
@@ -38,9 +39,9 @@ User Rules Documentation</div>
 	<li><a href="#notes">Further Notes On Rules</a>
 	<li><a href="#messages">The BOSS Message Format</a>
 </ol>
-</div><br /><br />
+</div>
 
-<div id="intro"><span>Introduction</span>
+<div id="intro"><h1>Introduction</h1>
 <p>While BOSS is able to sort the large number of plugins listed in its masterlist without any user input, you may find that you wish to customise 
 the sorting of your plugins. This may be to include plugins not listed in the masterlist (either plugins not yet added or temporary plugins or private files not suitable for masterlist inclusion), or it could be to rearrange plugins present in the masterlist that can be loaded in a different configuration 
 for different results (eg. LAME and Supreme Magicka files). You may also wish to add extra messages to plugins, or edit existing messages.
@@ -48,14 +49,14 @@ for different results (eg. LAME and Supreme Magicka files). You may also wish to
 these edits, this is not very suitable as a long term solution.
 <p>This is where user rules come in. Using a separate userlist file, you can define rules for sorting specific plugins or groups of plugins as you like, 
 as well as for adding or editing messages attached to plugins, and these rules will not be lost when you update your masterlist.
-</div><br /><br />
+</div>
 
-<div id="start"><span>Getting Started With The Userlist</span>
-<p style="color:purple">NOTE: This ReadMe refers to .esp and .esm files as 'plugins'. Unless explicitely stated, the 'name' of a 'plugin' refers to its filename, including the extension.<br /><br />
-Also, while the examples in this ReadMe reference Oblivion and some of its plugins, the functionality will work for all the games BOSS supports. When your game's master .ESM file is mentioned, this refers to Oblivion.esm, Nehrim.esm, Fallout3.esm or FalloutNV.esm for Oblivion, Nehrim, Fallout 3 or Fallout: New Vegas respectively.
+<div id="start"><h1>Getting Started With The Userlist</h1>
+<p style="color:purple">NOTE: This ReadMe refers to .esp and .esm files as 'plugins'. Unless explicitely stated, the 'name' of a 'plugin' refers to its filename, including the extension.
+<p>Also, while the examples in this ReadMe reference Oblivion and some of its plugins, the functionality will work for all the games BOSS supports. When your game's master .ESM file is mentioned, this refers to Oblivion.esm, Nehrim.esm, Fallout3.esm or FalloutNV.esm for Oblivion, Nehrim, Fallout 3 or Fallout: New Vegas respectively.
 <p>The userlist is the file which contains your custom rules for sorting plugins and editing plugins' messages. It is found at <code>BOSS\userlist.txt</code>. A blank userlist is automatically created when BOSS is first run.
 <p>Within this file, which you can edit in Notepad or any other text editor, you list your rule definitions. Rules can make two types of changes:
-<ol class="list">
+<ol>
 	<li><em>Sort plugins and groups.</em> You can:
 		<ul>
 			<li>Sort plugins relative to other plugins. You can both override the positions of plugins BOSS recognises and sort plugins unrecognised by BOSS.
@@ -68,11 +69,11 @@ Also, while the examples in this ReadMe reference Oblivion and some of its plugi
 	See <q><a href="#messages">The BOSS Message Format</a></q> below for more details on the message types and syntax.
 </ol>
 <p>The rule definition syntax is simple and concise, and is explained below.
-</div><br /><br />
+</div>
 
-<div id="basics"><span>Rule Basics</span>
+<div id="basics"><h1>Rule Basics</h1>
 <p>While it is strongly suggested that you read the <q><a href="#syntax">Rule Definition Syntax</a></q> section below to gain a proper understanding of user rules, here is a quick start guide for some simple rules.</p>
-<span class="subtitle" id="unknown">Sorting An Unknown Plugin</span>
+<h2 id="unknown">Sorting An Unknown Plugin</h2>
 <p>To sort a plugin that is not in the masterlist after another plugin:
 <div class="codebox">ADD: [RULE PLUGIN]
 AFTER: [SORT PLUGIN]</div>
@@ -93,9 +94,9 @@ Plugin2.esp<br />
 AFK_Weye.esp<br />
 Plugin1.esp<br />
 ...
-</div><br />
+</div><br /><br />
 
-<br /><span class="subtitle" id="recognised">Changing A Recognised Plugin's Position</span>
+<h2 id="recognised">Changing A Recognised Plugin's Position</h2>
 <p>To sort a plugin that is already in the masterlist after another plugin:
 <div class="codebox">OVERRIDE: [RULE PLUGIN]
 AFTER: [SORT PLUGIN]</div>
@@ -112,9 +113,9 @@ AFTER: Unofficial Oblivion Patch.esp</div>
 Unofficial Oblivion Patch.esp<br />
 bgBalancingEVCore.esp<br />
 ...
-</div><br />
+</div><br /><br />
 
-<br /><span class="subtitle" id="message">Editing A Plugin's BOSSlog Messages &amp; Bash Tag Suggestions</span>
+<h2 id="message">Editing A Plugin's BOSSlog Messages &amp; Bash Tag Suggestions</h2>
 <p>To add a message to a plugin for display in the BOSSlog:
 <div class="codebox">FOR: [RULE PLUGIN]
 APPEND: [MESSAGE OBJECT]</div>
@@ -142,11 +143,11 @@ bgMagicEV.esp.esp
 </ul>
 ...
 </div>
-</div><br /><br />
+</div>
 
-<div id="syntax"><span>Rule Definition Syntax</span><br />
-<p>User rules have a specific structure and syntax which your rules must follow to be applied. The information below provides the details on this structure and syntax.</p>
-<br /><span class="subtitle">The Rule Line</span>
+<div id="syntax"><h1>Rule Definition Syntax</h1>
+<p>User rules have a specific structure and syntax which your rules must follow to be applied. The information below provides the details on this structure and syntax.</p><br />
+<h2>The Rule Line</h2>
 <p>Every rule begins with a <em>rule line</em>, which defines what basic type of rule it is and what plugin it is applied to. It has the structure:
 <div class="codebox">[RULE KEYWORD]: [RULE OBJECT]</div>
 <p>This is the <em>rule line</em>. The <em>rule keyword</em> can be one of:
@@ -160,9 +161,9 @@ bgMagicEV.esp.esp
 <p>The <em>rule object</em> is the plugin or group that the rule is applied to. If the rule keyword is ADD or FOR, the rule object must be a plugin.
 <p>When you define groups, the names of those groups are used as they appear in the masterlist. For example, 
 if you wanted to reference the group of plugins that begins with <code>\BeginGroup\: Supreme Magicka</code>, you would put it in the rule as 
-<code>Supreme Magicka</code>.</p>
+<code>Supreme Magicka</code>.</p><br />
 
-<br /><span class="subtitle">The Sort Line</span>
+<h2>The Sort Line</h2>
 <p>If a rule's rule keyword is ADD or OVERRIDE, it can sort plugins and should include a <em>sort line</em>. If the rule keyword is FOR, the rule <b>must not</b> include a sort line. The sort line has the structure:
 <div class="codebox">[SORT KEYWORD]: [SORT OBJECT]</div>
 <p>The <em>sort keyword</em> can be one of:
@@ -174,9 +175,9 @@ if you wanted to reference the group of plugins that begins with <code>\BeginGro
 </ul>
 <p>When using the BEFORE or AFTER sort keywords, the <em>sort object</em> is the plugin or group that you wish the rule object 
 to be positioned relative to. Plugins must be sorted relative to other plugins, and groups must be sorted relative to groups. You cannot sort plugins relative to groups, or vice versa. You also cannot sort your game's master .ESM, sort other plugins before it, or sort groups before the "ESMs" group.
-<p>When using the TOP or BOTTOM sort keywords, the <em>sort object</em> is the <b>group</b> that you wish to insert the rule plugin into. You cannot insert groups into anything, plugins into plugins, or insert anything into the top of the "ESMs" group.</p>
+<p>When using the TOP or BOTTOM sort keywords, the <em>sort object</em> is the <b>group</b> that you wish to insert the rule plugin into. You cannot insert groups into anything, plugins into plugins, or insert anything into the top of the "ESMs" group.</p><br />
 
-<br /><span class="subtitle">The Message Line</span>
+<h2>The Message Line</h2>
 <p>If a rule's rule keyword is FOR, it should include at least one <em>message line</em>. A rule with a rule keyword of ADD or OVERRIDE can also include message lines, if they sort a plugin. Message lines have the structure:
 <div class="codebox">[MESSAGE KEYWORD]: [MESSAGE OBJECT]</div>
 <p>The <em>message keyword</em> can be one of:
@@ -185,9 +186,9 @@ to be positioned relative to. Plugins must be sorted relative to other plugins, 
 	<li><em>REPLACE</em>: This states that the message is to replace any existing message or messages attached to the rule plugin.
 </ul>
 <p>The <em>message object</em> is the message, complete with symbol code, that you wish to attach to the plugin defined by the rule object. You cannot attach messages to groups.
-<p>You may have multiple message lines in a rule, to add multiple messages to a plugin, or to override an existing set of messages with a new set.</p>
+<p>You may have multiple message lines in a rule, to add multiple messages to a plugin, or to override an existing set of messages with a new set.</p><br />
 
-<br /><span class="subtitle">Examples</span>
+<h2>Examples</h2>
 <p>Here is the contents of an example userlist:
 <div class="codebox">ADD: MyPluginToAdd.esp
 AFTER: LoadAfterThis.esm
@@ -241,9 +242,8 @@ bgBalancingEVOptionalNPCDiversity, Vanilla.esp
 </div>
 <p>The rule sorting the two groups L.A.M.E. and Supreme Magicka simply moves the L.A.M.E. group from its current position to before the Supreme Magicka group.
 </div>
-<br /><br />
 
-<div id="apply"><span>Enforcing Your Rules</span>
+<div id="apply"><h1>Enforcing Your Rules</h1>
 <p>When BOSS is run, it will look for your userlist at <code>Data\BOSS\userlist.txt</code>. If it is found, and the userlist contains at least one rule, BOSS will first check the syntax of the rules, and apply those with the correct syntax. 
 It will print error messages detailing the problems with any rules it skips, and success messages for the plugins that are applied, into your BOSSlog.txt, in a section headed "Userlist Messages" near the top.
 <p>If a rule is successfully applied, it will print one or more messages depending on what the rule does:
@@ -257,9 +257,9 @@ It will print error messages detailing the problems with any rules it skips, and
 <p>If an error is encountered while trying to apply a rule, it will be skipped and an error message detailing the fault will be printed to your BOSSlog.
 <p><b>Rule application does not alter your masterlist.txt or userlist.txt.</b> This means that if you want to undo the application of
 a rule, all you need to do is remove it from your userlist.txt and re-run BOSS.
-</div><br /><br />
+</div>
 
-<div id="notes"><span>Further Notes On Rules</span>
+<div id="notes"><h1>Further Notes On Rules</h1>
 <p>While the <q><a href="#syntax">Rule Definition Syntax</a></q> section gave you most of the rules of defining rules, here are some further general notes on defining rules that may 
 not be evident:
 <ol>
@@ -297,9 +297,9 @@ BEFORE: RTT.esp</div>
 		as a small difference in the order of the rules in your userlist can have a very large difference on the resulting load order.
 	
 </ol>
-</div><br /><br />
+</div>
 
-<div id="messages"><span>The BOSS Message Format</span>
+<div id="messages"><h1>The BOSS Message Format</h1>
 <p>Understanding the BOSS message format is important if you wish to edit plugins' messages. There are actually two formats, either of which may be used. 
 Each of the four message types that can be added via the userlist begins with a 
 <em>message symbol</em> or <em>message keyword</em> depending on the format used. The symbol/keyword is then followed by the message itself. The message is just a standard 

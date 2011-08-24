@@ -5,8 +5,6 @@
 	body {font-family:Calibri,Arial,Verdana,sans-serifs;}
 	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:1em;}
 	body > div {margin-bottom:5em;}
-	div > span {font-weight:bold; font-size:1.7em;}
-	.subtitle {font-weight: normal;font-size:1.3em;}
 	ol li, ul li {margin-bottom:10px;}
 	li ul, li ol {margin-top:0.4em;}
 	.codebox, .logbox {margin-left:40px; border: gray 1px dashed; display:table; min-width:300px;  padding: 5px 30px 5px 10px;}
@@ -18,12 +16,13 @@
 	td {border: 1px solid #CCC; padding: 5px;}
 	table {border: 1px solid #CCC;border-spacing: 0;border-collapse: separate; margin:1em; margin-left:40px;}
 	thead > tr td {font-weight:bold}
+	b {font-weight:bold;}
+	i {font-style:italic;}
 </style>
 
 <div>Better Oblivion Sorting Software<br />
 Masterlist Syntax Documentation</div>
-
-<div><span>Contents</span>
+<div><h1>Contents</h1>
 <ol>
 	<li><a href="#intro">Introduction</a>
 	<li><a href="#structure">Structure</a>
@@ -35,6 +34,7 @@ Masterlist Syntax Documentation</div>
 	<li><a href="#rules">Rules &amp; Guidelines</a>
 	<li><a href="#common">Common Functionality</a>
 	<ol style="list-style:lower-alpha;">
+		<li><a href="#common-plugins">Plugin Lines</a>
 		<li><a href="#common-comments">Silent Comments</a>
 		<li><a href="#common-messages">Message Lines</a>
 		<li><a href="#common-groups">Group Lines</a>
@@ -48,23 +48,19 @@ Masterlist Syntax Documentation</div>
 		<li><a href="#mf2-cond">General Conditionals</a>
 		<ol style="list-style:lower-roman;">
 			<li><a href="#mf2-comp-cond">Compound Conditionals</a>
-		</ol>
-		<li><a href="#mf2-message">Conditional Message Shorthand</a>
-		<ol style="list-style:lower-roman;">
-			<li><a href="#mf2-message-inc">Conditional Incompatibility Shorthand</a>
-			<li><a href="#mf2-message-req">Conditional Requirement Shorthand</a>
+			<li><a href="#mf2-cond-shorthands">Conditional Requirement &amp; Incompatibility Shorthands</a>
 		</ol>
 	</ol>
 	<li><a href="#examples">Examples</a>
 </ol>
 </div>
 
-<div id="intro"><span>Introduction</span>
+<div id="intro"><h1>Introduction</h1>
 <p>This documentation is a complete record of all information on the masterlist syntax, including rules and guidelines on usage, detailed explanations of features and syntaxes, and examples of usage. It is intended for use by BOSS developers and interested third party developers rather than as a document that should be read by users. 
 <p>Third party developers should be aware than an API for accessing BOSS's masterlist information is in the planning stages, and that any functionality they might find beneficial should requested either by commenting in <a href="http://code.google.com/p/better-oblivion-sorting-software/issues/detail?id=111">Issue 111</a> on BOSS's Google Code repository or in the <a href="http://forums.bethsoft.com/index.php?/topic/1221990-wip-bapi-boss-api/">official BOSS API thread</a> on the Bethesda Softworks forum.
 </div>
 
-<div id="structure"><span>Structure</span>
+<div id="structure"><h1>Structure</h1>
 <p>The masterlist is a plain text file encoded in UTF-8 which lists mod plugins, which are files with <code>.esp</code> or <code>.esm</code> extensions, in the order in which they co-exist best in. Each plugin may optionally have one or more messages attached to it for display in the BOSSlog. To make managing the masterlist easier, mods are often placed in groups that are often themed. These groups are defined and named in the masterlist, and also provide some sorting functionality for BOSS's User Rules feature.
 <p>The masterlist is parsed (read) by BOSS line-by-line, so it is most useful to analyse the structure by the different types of line present:
 <ul>
@@ -73,21 +69,21 @@ Masterlist Syntax Documentation</div>
 	<li>A line that defines the start and end point of a group is a <q>group line</q>.
 </ul>
 <p>A simple example of this structure is:
-<div class="codebox">[GROUP LINE (START)]
-[PLUGIN LINE]
-[PLUGIN LINE]
-[MESSAGE LINE]
-[MESSAGE LINE]
-[PLUGIN LINE]
-[GROUP LINE (END)]
+<div class="codebox">[group line (start)]
+[plugin line]
+[plugin line]
+[message line]
+[message line]
+[plugin line]
+[group line (end)]
 </div>
 </div>
 
-<div id="formats"><span>Formats</span>
+<div id="formats"><h1>Formats</h1>
 <p>As BOSS has developed, so too has the masterlist format. There are currently two major revisions of the masterlist format, MF1 and MF2 (MF = Masterlist Format), and minor revisions of the second.
 <p>MF1 provides all of BOSS's basic functionality, while MF2 provides an alternative syntax for that same functionality while also extending and generalising it to give BOSS new capabilities.</p><br />
 
-<div class="subtitle" id="support">Format Support</div>
+<h2 id="support">Format Support</h2>
 
 <p>The table below displays which versions of BOSS are compatible with which masterlist formats.
 
@@ -101,7 +97,7 @@ Masterlist Syntax Documentation</div>
 </table>
 <p>If a version of BOSS does not recognise the syntax in which a line is written, it will assume that it is a plugin line, and so the line will effectively be ignored. This means that a masterlist may contain a mix of format syntaxes without issue.</p>
 
-<div class="subtitle" id="compare">Format Comparison</div>
+<h2 id="compare">Format Comparison</h2>
 <p>The table below gives a quick overview of the differences between the masterlist formats.
 <table>
 	<thead><tr><td>Item<td>MF1<td>MF2.0<td>MF2.1<td>MF2.2
@@ -128,13 +124,12 @@ Masterlist Syntax Documentation</div>
 		<tr><td>Regular Expressions						<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
 		<tr><td>Conditional Incompatibilities Shorthand	<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
 		<tr><td>Conditional Requirements Shorthand		<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
-		<tr><td>General Conditional Messages Shorthand	<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;
 		<tr><td>C-Style Comments						<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;
 </table>
 <div id="1" style="font-size:0.9em;">&#x00B9; In all formats, whitespace is always preserved inside plugin and group names and messages.</div>
 </div>
 
-<div id="rules"><span>Rules &amp; Guidelines</span>
+<div id="rules"><h1>Rules &amp; Guidelines</h1>
 <p>The following are some rules and guidelines that should be followed when editing the masterlist.
 <ol>
 	<li>When you include a web link in a message, enclose it in double quotes "", for example: www.example.org should be written "www.example.org". BOSS will automatically turn web links into hyperlinks in the HTML BOSSlog.
@@ -151,15 +146,15 @@ Masterlist Syntax Documentation</div>
 </ol>
 </div>
 
-<div id="commmon"><span>Common Functionality</span>
+<div id="commmon"><h1>Common Functionality</h1>
 <p>This section details the syntaxes for functionality found at least partially in all masterlist formats.</p><br />
 
-<div class="subtitle" id="common-comments">Plugin Lines</div>
+<h2 id="common-plugins">Plugin Lines</h2>
 <p>Plugin lines have the simplest of syntaxes. The line should contain only the plugin filename:</p>
 <code>[plugin]</code>
 <p><b>In MF2:</b> Plugin lines also have a keyword associated with them, <code>MOD</code>, which can be given before the plugin filename and the two separated by a colon. However, since BOSS assumes that lines with no recognised keywords are plugin lines, the inclusion of the keyword is unnecessary and for backwards-compatibility should not be used <b>unless</b> you are using a conditional in the plugin line. If the plugin line has a conditional, you should include the <code>MOD</code> keyword between the conditional and the colon. You can also choose to omit both the keyword and the colon, but as the colon is an absolute requirement for all other parts of MF2 syntax, this is not good practice. The choice available is a side-effect of backward compatibility with MF1.</p><br />
 
-<div class="subtitle" id="common-comments">Silent Comments</div>
+<h2 id="common-comments">Silent Comments</h2>
 <p>Silent comments are character strings that are skipped by the BOSS parser and so have no effect on BOSS's output. C++ style comments must start at the beginning of a line. C style comments must start and end at the beginning of lines. Comments may not be used inline. In the table below, <code>[comment]</code> is the comment being made.
 <table>
 	<thead><tr><td>Type<td>MF1 Syntax<td>MF2 Syntax<td>Description
@@ -169,7 +164,7 @@ Masterlist Syntax Documentation</div>
 </table>
 <p style="font-weight:bold;">Note that C style comments are MF2.2 functionality.</p><br />
 
-<div class="subtitle" id="common-messages">Message Lines</div>
+<h2 id="common-messages">Message Lines</h2>
 <p>Message lines are listed under the plugin line of the plugin that they are to be attached to. There are several different types of message line, with not all being available in all syntaxes. In the table below, <code>[message]</code> is the message to be attached. Messages have no special syntax unless otherwise noted.
 
 <table>
@@ -187,7 +182,7 @@ Masterlist Syntax Documentation</div>
 		<tr><td>Critical FCOM Install Error		<td><code>&gt;*&nbsp;[message]</code>	<td><code>IF&nbsp;($FCOM)&nbsp;ERROR:&nbsp;[message]</code><td><span style="background:red; color:white;">ERROR:</span><td>An error message that is only displayed if FCOM is installed.
 </table>
 <p id="2" style="font-size:0.9em;">&#x00B2; Bash Tags suggested by BOSS are given in a specific syntax in order for Wrye Bash/Flash/Flash NV to recognise and automatically apply them. The syntax for adding Bash Tags is <code>{{BASH: Tag1, Tag2}}</code>. The syntax for removing Bash Tags is <code>[Tag1, Tag2]</code>, including the <code>[</code> and <code>]</code> brackets. Any number of Bash Tags may be listed for addition or removal. Information on Bash Tags themselves is found in the <a href="http://oblivionworks.svn.sourceforge.net/viewvc/oblivionworks/Programs/Wrye%20Bash/Mopy/Wrye%20Bash.html">Wrye Bash</a>, Wrye Flash and Wrye Flash NV Readmes.
-<p id="3" style="font-size:0.9em;">&#x00B3; In MF1 and MF2.0, <code>[message]</code> is a generic string like for any other message type. In MF2.1, the <code>[message]</code> for requirement and incompatibility messages has a specific conditional syntax. In MF2.2, <code>[message]</code> can either be a generic string or use a general conditional syntax. See the <q><a href="#mf2-message">Conditional Message Shorthand</a></q>, <q><a href="#mf2-message-inc">Conditional Incompatibility Shorthand</a></q> and <q><a href="#mf2-message-req">Conditional Requirement Shorthand</a></q> sections below for details on the conditional syntaxes.
+<p id="3" style="font-size:0.9em;">&#x00B3; In MF1 and MF2.0, <code>[message]</code> is a generic string like for any other message type. In MF2.1, it has a specific conditional syntax. In MF2.2, it can either be a generic string or use the conditional syntax. See the <q><a href="#mf2-cond-shorthands">Conditional Requirement &amp; Incompatibility Shorthands</a></q> section below for details on the conditional syntax.
 <p id="4" style="font-size:0.9em;">&#x2020; In BOSS v1.7 and later, the symbol <code>*</code> technically denotes a general error message. However, in previous versions of BOSS it specifically denoted an FCOM install error, and would not require the preceding <code>&gt;</code> to behave conditionally. To avoid confusing users, the <code>*</code> symbol should never be used as a type identifier without being preceded by the FCOM-installed conditional <code>&gt;</code>, making it an FCOM install error message.
 
 <p>The above table references some Oblivion mods. The table below gives the Fallout 3 and Fallout: New Vegas equivalents. Replace all references in the above table with the relevant equivalents below for your game. The masterlist variables listed are conditionally defined at the top of the relevant games' masterlists if the user has the corresponding mods installed and are used by the MF2 mod-specific messages. In MF1, the checks are hardcoded into BOSS.
@@ -203,7 +198,7 @@ Masterlist Syntax Documentation</div>
 </table>
 <br />
 
-<div class="subtitle" id="common-groups">Group Lines</div>
+<h2 id="common-groups">Group Lines</h2>
 <p>As mentioned before, groups are used to provide some order in the masterlist and to allow bulk plugin sorting via User Rules. A group is defined by start and end lines which enclose the plugins to be contained in the group.
 <table>
 	<thead><tr><td>Type<td>MF1 Syntax<td>MF2 Syntax
@@ -216,7 +211,7 @@ Masterlist Syntax Documentation</div>
 <p><b>In MF1:</b> The name is only given at the start of a group, not the end.<br />
 <b>In MF2:</b> The name should be given at both the start and the end, although inclusion at the end is not an absolute requirement. If an ending line does not contain a group name, it does not require a colon.</p><br />
 
-<div class="subtitle" id="common-condtionals">Legacy Conditionals</div>
+<h2 id="common-condtionals">Legacy Conditionals</h2>
 <p>MF1 supports only two specific conditionals other than the plugin-specific messages given earlier, while MF2 supports a generalised conditional expression. The specific conditionals written in both syntaxes are given in the table below, where <code>[line]</code> is the rest of the line's contents.
 
 <table>
@@ -230,24 +225,24 @@ Masterlist Syntax Documentation</div>
 
 <p>In BOSS v1.7+, if a conditional attached to a plugin is false, all the messages for that plugin will also be skipped. However, to ensure compatibility with older versions, if a conditional is added to a plugin line, it should also be added to all message lines following it.
 
-<p>Also, MF2 conditionals are subject to the requirement of a colon marker <code>:</code>, but it goes after the line's keyword.
+<p><b>In MF2:</b> Conditionals are subject to the requirement of a colon marker <code>:</code>, but it goes after the line's keyword.
 <div class="codebox">IF ($FCOM) MOD: Mart's Monster Mod.esm
  IF ($OOO) SAY: Make sure you're using "Mart's Monster Mod for OOO.esm" too.
 </div>
 </div>
 
-<div id="mf2"><span>MF2-Specific Functionality</span>
+<div id="mf2"><h1>MF2-Specific Functionality</h1>
 
 <p>This section details the syntax for functionality only available using MF2. Unless otherwise noted, all functionality is present in MF2.0.
 <p>A colon <code>:</code> must be put after the last keyword on a line, before the plugin or group name or message that follows it, to mark the boundary. The message and group line keywords given in the previous section had colons included, however they are really separate things as will become clear through the course of this section.</p><br />
 
-<div class="subtitle" id="mf2-regex">Regular Expression Plugin Matching</div>
+<h2 id="mf2-regex">Regular Expression Plugin Matching</h2>
 <p style="font-weight:bold;">This is MF2.1 functionality.
 <p>You can use regular expressions in the masterlist for plugin names using the following syntax, where <code>[regular expression]</code> is the plugin filename written in regex syntax:</p>
 <code>REGEX: [regular expression]</code>
 <p>The regex syntax used is POSIX Extended. BOSS will search the user's plugins and sort all the plugins that match the regular expression given in its location in the masterlist. If more than one plugin matches, the order in which the plugins will be placed at that position is random, so it should not be used to sort a set of similarly named plugins which require specific ordering within the set. </p><br />
 
-<div class="subtitle" id="mf2-vars">Masterlist Variables & Variable Lines</div>
+<h2 id="mf2-vars">Masterlist Variables & Variable Lines</h2>
 <p>You can define variables in the masterlist using the following syntax, where <code>[name]</code> is the variable name:</p>
 <code>SET: [name]</code>
 <p>The name of a variable is an alphanumerical string that should not contain spaces. You can then check if these variables are defined in conditionals. You can only define variables, it is not possible to 'undefine' a variable.
@@ -259,42 +254,39 @@ Masterlist Syntax Documentation</div>
 [message line 3]</div>
 <p>In the above structure, only message lines 1 and 2 will be parsed, and message line 3 will be ignored.</p><br />
 
-<div class="subtitle" id="mf2-globals">Global Messages</div>
+<h2 id="mf2-globals">Global Messages</h2>
 <p>You can print a global message to the BOSSlog using the following syntax:</p>
 <code>GLOBAL [message keyword]: [message]</code>
 <p>Where the <code>[message keyword]</code> and <code>[message]</code> are as described in the above Message Lines section. The message will be printed to the BOSSlog in a separate <q>General Messages</q> section above the list of recognised plugins.</p><br />
 
-<div class="subtitle" id="mf2-cond">General Conditionals</div>
-<p>Conditionals in MF2 are general structures that can be added to the start of any plugin or group line, but not group lines.
-<p>Conditionals evaluate to true or false:
+<h2 id="mf2-cond">General Conditionals</h2>
+<p>Conditionals in MF2 are expressions that can be added to the start of any plugin or message line, but not group lines. Conditionals evaluate to true or false with the following effects:
 <ul>
     <li>True: The line will be parsed as if the conditional were not there.
     <li>False: If the line is a message or variable line, the line will be skipped as if it did not exist. If the line is a plugin line, the plugin and all the message lines immediately following it will be skipped. 
 </ul>
-<p>Conditional types:
+<p>There are two types of conditional: one that tests if the condition it contains is true, and one that tests if the condition it contains is false. The table below gives their syntaxes, where <code>[line]</code> is the rest of the line.
 <table>
-	<thead><tr><td>Syntax<td>Description
+	<thead><tr><td>Conditional Type<td>Syntax<td>Description
 	<tbody>
-		<tr><td><code>IF ([condition]) [line]</code><td>If the <code>[condition]</code> evaluates to true, the conditional will be true. Otherwise, the conditional will be false.
-		<tr><td><code>IFNOT ([condition]) [line]</code><td>If the <code>[condition]</code> evaluates to false, the conditional will be true. Otherwise, the conditional will be false.
+		<tr><td>If True<td><code>IF ([condition]) [line]</code><td>If the <code>[condition]</code> evaluates to true, the conditional will be true. Otherwise, the conditional will be false.
+		<tr><td>If False<td><code>IFNOT ([condition]) [line]</code><td>If the <code>[condition]</code> evaluates to false, the conditional will be true. Otherwise, the conditional will be false.
 </table>
-<p><code>[line]</code> is the rest of the line. If the conditional is true, the line will be parsed, otherwise it will be skipped. If <code>[line]</code> is a plugin line, it and all the message lines immediately following it will be skipped.
-
 <p><b>Note:</b> If <code>[line]</code> is a plugin line, then the conditional must be followed by the <code>MOD</code> keyword, eg. <code>IF ($OOO) MOD: MyPlugin.esp</code> will place <code>MyPlugin.esp</code> in that position if OOO is installed.
 
-<p>Condition types:
+<p>There are four types of condition that can be tested for within a conditional. These types and their syntaxes are described in the table below.
 
 <table>
 	<thead><tr><td>Type<td>Syntax<td>Description
 	<tbody>
-		<tr><td>Variable<td><code>$[variable]</code><td>Returns true if the variable given is defined, otherwise false.
+		<tr><td>Variable<td><code>$[variable]</code><td>Returns true if the masterlist variable given is defined, otherwise false.
 		<tr><td>File<td><code>"[file]"</code><td>Returns true if the user has the file given installed, otherwise false.
-		<tr><td>Checksum<td><code>[checksum]|"[file]"</code><td>Returns true if the calculated checksum of the given file matches the given checksum. The checksum is a (positive/unsigned) hexadecimal integer, and the checksums of plugins are printed to the BOSSlog when BOSS is run with the -c argument.
-		<tr><td>Version<td><code>[comparator][version]|"[file]"</code><td>The comparator can be one of <code>=</code>, <code>&gt;</code> or <code>&lt;</code>, meaning "is equal to", "is greater than" and "is less than" respectively. The version is the version to check for, as given by BOSS. The file is the file that shall have its version checked. If the expression of the form <code>[version] [comparator] [plugin version]</code> (eg. <code>1.5 &gt; 1.2.5</code>, which is true) holds true, the condition evaluates to true, else false.
+		<tr><td>Checksum<td><code>[checksum]|"[file]"</code><td>Returns true if the calculated checksum of the given file matches the given checksum. The checksum is a (positive/unsigned) hexadecimal integer, and the checksums of plugins are printed to the BOSSlog when BOSS is run with the <code>-c</code> argument.
+		<tr><td>Version<td><code>[comparator][version]|"[file]"</code><td>The comparator can be one of <code>=</code>, <code>&gt;</code> or <code>&lt;</code>, meaning "is equal to", "is greater than" and "is less than" respectively. The version is the version to check for, as given by BOSS. The file is the file that shall have its version checked. If the expression of the form <code>[version] [comparator] [version from plugin]</code> (eg. <code>1.5 &gt; 1.2.5</code>) evaluates to true, the condition evaluates to true, else false.
 </table>
-<p>Filenames in conditions are case-insensitive, but version strings are case-sensitive.
+<p>Filenames and checksums are case-insensitive. Version strings and masterlist variables are case-sensitive.
 
-<p>A <code>[file]</code> may be any type of file, however version checks will only work for files with the extensions <code>.esp</code>, <code>.esm</code>, <code>.dll</code> or <code>.exe</code>. For plugins and Script Extender plugins, only the filename should be given, as BOSS assumes they are installed in their respective correct locations. For all other files, the starting folder is <code>Data</code>, eg. the correct syntax for a texture would be <code>Textures\testtexture.dds</code>.
+<p>A <code>[file]</code> may be any type of file. For mod and Script Extender plugins, only the filename should be given, as BOSS assumes they are installed in the correct locations. For all other files, the starting folder is <code>Data</code>, eg. the correct syntax for a texture would be <code>Textures\testtexture.dds</code>. Version checks will only work for files with the extensions <code>.esp</code>, <code>.esm</code>, <code>.dll</code> or <code>.exe</code>.
 
 <p>In addition to explicitly referencing files, there are a few placeholders that can be used to reference certain files, given in the table below:
 
@@ -311,13 +303,32 @@ Masterlist Syntax Documentation</div>
 		<tr><td>FO3<td>..\Fallout3.exe
 		<tr><td>FONV<td>..\FalloutNV.exe
 </table>
-<p>Paths are given from the Data folder.</p><br />
+<p>Paths are given from the Data folder.
 
-<div class="subtitle" id="mf2-comp-cond">Compound Conditionals</div>
+<p>Note that conditional evaluation can have a noticeable impact on BOSS's execution time. In order of decreasing speed:
+<ol>
+	<li><i>Variable conditions</i>: These are very fast as BOSS stores defined masterlist variables in a hash set while running.
+	<li><i>File conditions</i>: These are still fast, and should not impact performance. However, repeated usage may cause slowdown as file existence is not stored in memory and is re-checked for every condition.
+	<li><i>Version conditions</i>: These are of a medium speed. They need to read part of a file's contents to extract its version and so are slower than file conditions. Like file existence, version information is not stored in memory.
+	<li><i>Checksum conditions</i>: These are very slow. They require a complete read of a file and calculate the CRC from its contents. Usage will result in noticeable slowdown. Calculated CRCs are stored in hash maps while running so that a plugin's CRC is only calculated a maximum of once. Subsequent checks will be faster than file checks but still slower than variable checks.
+</ol>
+<p>In order to reduce the effect of conditional evaluation on BOSS's execution time, efficient use of conditionals is required. For example, the following:
+<div class="codebox">IF (=1.2|Mod1.esp) MOD: Mod2.esp
+IF (=1.2|Mod1.esp) MOD: Mod3.esp
+IF (=1.2|Mod1.esp) MOD: Mod4.esp
+IF (=1.2|Mod1.esp) MOD: Mod5.esp</div>
+<p>is better written as:
+<div class="codebox">IF (=1.2|Mod1.esp) SET: Mod1Correct
+IF ($Mod1Correct) MOD: Mod2.esp
+IF ($Mod1Correct) MOD: Mod3.esp
+IF ($Mod1Correct) MOD: Mod4.esp
+IF ($Mod1Correct) MOD: Mod5.esp</div>
+<p>as this reduces the level of computation required. The difference will probably not be noticeable for a small number of conditionals like above, but the masterlists contain tens of thousands of lines which are all potentially conditional. BOSS evaluates all conditionals as it cannot know which will have an effect on load order at parsing time.</p><br />
+
+<h3 id="mf2-comp-cond">Compound Conditionals</h3>
 <p>Compound conditionals can be formed by combining two or more conditionals using logical AND or OR operators. The conditionals are evaluated incrementally in the order they are read. This means that the operators operate on everything to the left of them as a whole, and the first conditional on their right. For example,</p>
 <code>A && B || C && D</code>
 <p>where <code>A</code>, <code>B</code>, <code>C</code> and <code>D</code> are all individual conditionals, is evaluated as <code>((A && B) || C) && D</code>, <b>not</b> <code>(A && B) || (C && D)</code>
-
 <table>
 	<thead><tr><td>Logical Operator<td>Syntax<td>Description
 	<tbody>
@@ -325,45 +336,51 @@ Masterlist Syntax Documentation</div>
 		<tr><td>OR<td><code>||</code><td>One side (or both sides) must evaluate to true for the compound conditional to evaluate to true. If neither side is true, then the compound conditional evaluates to false.
 </table><br />
 
-<div class="subtitle" id="mf2-message">Conditional Message Shorthand</div>
-<p style="font-weight:bold;">This is MF2.2 functionality.
-<p>As seen above, conditional messages can be created by placing a conditional statement before a message. However, this is unsuitable for messages which list many items which are all independently conditional, such as requirements or incompatbilities, as you'd need to have a different conditional message for each item.
-<p>To alleviate this issue, a shorthand is provided for lists of items where their appearances in the final message are independently conditional. The condition for an item may be that a plugin exists, it fulfills a version condition or that it has a specific CRC. Shorthand conditionals cannot check if masterlist variables are defined, and they are <code>IF</code> conditionals, ie. they evaluate to true if the condition they contain evaluates to true. There is no <code>IFNOT</code> conditional available in the shorthand.
-<p>An example of the shorthand displaying all the possible permutations of components is below.</p>
-<code>"[comparator][version 1]":"[file 1]"="[mod 1]" | "[checksum]":"[file 2]"="[mod 2]" | "[comparator][version 3]":"[file 3]" | "[checksum]":"[file 4]" |  "[file 5]" | "[file 6]"="[mod 6]"</code>
+<h3 id="mf2-cond-shorthands">Conditional Requirement &amp; Incompatibility Shorthands</h3>
+<p style="background:red;color:white;">Note: This functionality is still under development and is subject to change. Not all features may work as described.
+<p style="font-weight:bold;">This is MF2.1 functionality with MF2.2 extensions.
+<p><b>In MF2.1:</b> <code>,</code> cannot be used to separate items, checksum and variable conditions are not supported in either message type, and incompatibility messages also cannot use version checks.
+<p>While conditionals can be used to make messages appear in a user's BOSSlog only under certain circumstances, the implementation described above is unsuitable for lists of independent mods such as those found in incompatibility and requirement messages as to cover all combinations would require several message lines.
+<p>To resolve this issue, a shorthand is provided for generating incompatibility and requirement messages where each item's display is independently conditional. The shorthand goes in place of the <code>[message]</code> used in the syntax explained by the <q><a href="#common-messages">Message Lines</a></q> section above and is as follows:</p>
 
-<p>This goes in place of the message string, and is prepended by a keyword and colon, just like non-conditional message strings. Each item is separated by a <code>|</code> or <code>,</code> character (only the first is shown in the shorthand example), and there is no limit to the number of items that may appear in the shorthand. As with all message lines, you can also prepend a conditional before the keyword, if the whole message is conditional on something. Note that colons are used within this shorthand to separate out elements rather than as keyword boundary markers - they do not possess their usual meaning.
-<p><code>[file]</code>, <code>[comparator]</code>, <code>[version]</code> and <code>[checksum]</code> are all defined as in the <q><a href="#mf2-cond">General Conditionals</a></q> section above. <code>[mod]</code> can be any string of characters not containing double quote characters <code>"</code>, though as the name suggests it is intended to be the name of the mod that the plugin tested for belongs to.
+<code>"[comparator][version 1]":"[file 1]"="[mod 1]" | "[checksum]":"[file 2]"="[mod 2]" | "[comparator][version 3]":"[file 3]" | "[checksum]":"[file 4]" |  "[file 5]" | "[file 6]"="[mod 6]" | $[variable]="[mod 7]"</code>
 
-<p>As suggested by the shorthand example above, <code>"[comparator][version]":</code>, <code>"[checksum]":</code> and <code>="[mod]"</code> are all optional components of an item's conditional, and behave such that:
+<p>Each item in the list is separated by a <code>|</code> or <code>,</code> character (the latter not shown above). There is no limit to the number of items that may be listed. <code>[file]</code>, <code>[comparator]</code>, <code>[version]</code>, <code>[variable]</code> and <code>[checksum]</code> are all defined as in the <q><a href="#mf2-cond">General Conditionals</a></q> section above. <code>[mod]</code> can be any string of characters not containing double quote characters <code>"</code>, though as the name suggests it is intended to be the name of the mod that the plugin tested for belongs to.
+
+<p>As with all message lines, you can also prepend a conditional before the keyword, if the whole message is conditional on something.
+
+<p>Each item in the shorthand is evaluated as follows:
 <ul>
-	<li>If <code>"[comparator][version]":</code> is given then the version comparison will be carried out against <code>[file]</code>, as if the conditional were <code>IF ([comparator][version]|"[file]")</code>.
-	<li>If <code>"[checksum]":</code> is given then the CRC of the given <code>[file]</code> will be compared against <code>[checksum]</code>, as if the conditional were <code>IF ([checksum]|"[file]")</code>.
-	<li>If neither <code>"[comparator][version]":</code> nor <code>"[checksum]":</code> are given then the existance of <code>[file]</code> will be checked for, as if the conditional were <code>IF ("[file]")</code>
-	<li>If the item's condition evaluates to true and
+	<li>If <code>"[file]"</code> is given and
 	<ul>
-		<li><code>="[mod]"</code> is given: <code>[mod]</code> will be printed in the message.
-		<li><code>="[mod]"</code> is not given: <code>[file]</code> will be printed in the message.
+		<li><code>"[comparator][version]":</code> is given then the item's condition is <code>[comparator][version]|"[file]"</code>.
+		<li><code>"[checksum]":</code> is given then the item's condition is <code>[checksum]|"[file]"</code>
+		<li>neither <code>"[comparator][version]":</code> nor <code>"[checksum]":</code> are given then the item's condition is <code>"[file]"</code>
 	</ul>
-</ul><br />
-
-<div class="subtitle" id="mf2-message-inc">Conditional Incompatibility Shorthand</div>
-<p style="font-weight:bold;">This is MF2.1 functionality.
-<p>While the above conditional message shorthand is MF2.2 functionality, MF2.1 introduced a shorthand for conditional incompatibility messages which lacks a few features of the more general form. The syntax for the whole message (including keyword) is</p>
-
-<code>INC: "[file 1]"="[mod 1]" | "[file 2]"</code>
-
-<p>This shorthand behaves in the same manner as the general form. Commas cannot be used to separate items in MF2.1. As in the general form, you can also prepend a conditional before the keyword, and there is no limit to the number of items listed.</p>
-<br />
-
-<div class="subtitle" id="mf2-message-req">Conditional Requirement Shorthand</div>
-<p style="font-weight:bold;">This is MF2.1 functionality.
-<p>While the above conditional message shorthand is MF2.2 functionality, MF2.1 introduced a shorthand for conditional requirement messages which lacks a few features of the more general form. The syntax for the whole message (including keyword) is</p>
-<code>REQ: "[comparator][version 1]":"[file 1]"="[mod 1]" | "[comparator][version 2]":"[file 2]" | "[file 3]" | "[file 4]"="[mod 4]"</code>
-<p>This shorthand behaves in the same manner as the general form. Commas cannot be used to separate items in MF2.1. As in the general form, you can also prepend a conditional before the keyword, and there is no limit to the number of items listed.</p>
+	<li>If <code>$[variable]</code> is given then that is the item's condition.
+</ul>
+<p>For incompatibility messages:
+<ul>
+	<li>If the item's condition evaluates to true, the item will be displayed in the BOSSlog message.
+	<li>If the item's condition evaluates to false, the item will not be displayed in the BOSSlog message.
+</ul>
+<p>For requirement messages:
+<ul>
+	<li>If the item's condition evaluates to false, the item will be displayed in the BOSSlog message.
+	<li>If the item's condition evaluates to true, the item will not be displayed in the BOSSlog message.
+</ul>
+<p>How the item is displayed in the BOSSlog depends on whether <code>"[mod]"</code> is given in the item or not. If:
+<ul>
+	<li><code>="[mod]"</code> is given: <code>[mod]</code> will be printed in the message.
+	<li><code>="[mod]"</code> is not given: <code>[file]</code> will be printed in the message.
+</ul>
+<p>Note that if the item contains <code>$[variable]</code>, it <b>must</b> also contain <code>="[mod]"</code>. If no items are printed in the message, then the message itself will not be displayed. The format of the output is
+<div class="logbox"><ul style="list-style:none;"><li>Incompatible with: "[mod 1]", "[file 2]"</ul></div>
+<p>or
+<div class="logbox"><ul style="list-style:none;"><li>Requires: "[mod 1]", "[file 2]"</ul></div>
 </div>
 
-<div id="examples"><span>Examples</span>
+<div id="examples"><h1>Examples</h1>
 <p>Below are some examples of the syntaxes covered in this documentation. The examples use some real plugins, but the content is purely exemplary and does not necessarily contain any valid information.
 
 <div class="codebox"> IF (&lt;1.8|"BOSS") GLOBAL ERROR: An update to BOSS is available. Please download BOSS v1.8.

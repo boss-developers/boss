@@ -130,7 +130,7 @@ namespace boss {
 		qi::rule<string::const_iterator, keyType(), Skipper> messageKeyword;
 		qi::rule<string::const_iterator, bool(), Skipper> conditional, conditionals, condition, oldConditional;
 		
-		void SyntaxErr(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what);
+		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what);
 	};
 
 	////////////////////////////
@@ -213,7 +213,7 @@ namespace boss {
 		qi::rule<string::const_iterator, vector<line>(), Skipper> sortOrMessageLines;
 		qi::rule<string::const_iterator, line(), Skipper> sortOrMessageLine;
 		qi::rule<string::const_iterator, keyType(), Skipper> ruleKey, sortOrMessageKey;
-		qi::rule<string::const_iterator, string(), Skipper> object, variable, file, version, andOr, keyword, metaLine;
+		qi::rule<string::const_iterator, string(), Skipper> object, variable, file, version, andOr, keyword, metaLine, messageModString, sortOrMessageObject, messageVersionCRC;
 		qi::rule<string::const_iterator, bool(), Skipper> conditional, conditionals, condition;
 	
 		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what);

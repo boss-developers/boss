@@ -55,8 +55,8 @@ namespace boss {
 			("begingroup:",BEGINGROUP)  //Needs the colon there unfortunately.
 			("endgroup:",ENDGROUP)  //Needs the colon there unfortunately.
 			("endgroup",ENDGROUP)
-			("\\BeginGroup\\:",BEGINGROUP)
-			("\\EndGroup\\\\",ENDGROUP)
+			("\\begingroup\\:",BEGINGROUP)
+			("\\endgroup\\\\",ENDGROUP)
 			("mod:", MOD)  //Needs the colon there unfortunately.
 			("regex:", REGEX)
 		;

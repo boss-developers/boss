@@ -474,30 +474,30 @@ namespace boss {
 		messageVersionCRC.name("conditional shorthand version/CRC");
 		messageModString.name("conditional shorthand mod");
 			
-		on_error<fail>(modList,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(metaLine,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(listItem,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(ItemType,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(itemName,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(itemMessages,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(itemMessage,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(charString,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(messageString,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(messageVersionCRC,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(messageModString,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(oldConditional,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(conditionals,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(andOr,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(conditional,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(condition,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(variable,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(file,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
-		on_error<fail>(version,phoenix::bind(&modlist_grammar::SyntaxErr, this, _1, _2, _3, _4));
+		on_error<fail>(modList,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(metaLine,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(listItem,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(ItemType,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(itemName,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(itemMessages,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(itemMessage,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(charString,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageString,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageVersionCRC,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageModString,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(oldConditional,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(conditionals,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(andOr,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(conditional,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(condition,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(variable,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(file,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(version,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 
 	}
 
-	void modlist_grammar::SyntaxErr(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what) {
+	void modlist_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what) {
 		ostringstream out;
 		out << what;
 		string expect = out.str().substr(1,out.str().length()-2);
@@ -864,7 +864,25 @@ namespace boss {
 			sortOrMessageKey
 			> ':'
 			> omit[conditionals[phoenix::ref(storeLine) = _1]]
-			> object;
+			> sortOrMessageObject;
+
+		sortOrMessageObject = 
+			((messageVersionCRC
+			>> file 
+			>> messageModString
+			)[phoenix::bind(&EvaluateConditionalMessage, _val, _1, _2, _3)] % (lit("|") | lit(",")))	//Conditional message.
+			| object[_val = _1];				//Any other message or object
+
+		messageModString %=
+			(lit("=") >> file) 
+			| eps;
+
+		messageVersionCRC %=
+			('\"' >> (
+					((char_('=') | char_('>') | char_('<')) >> lexeme[+(char_ - '\"')]) 
+					| xdigit)  
+			>> '\"' >> lit(":")) 
+			| eps;
 
 		object %= lexeme[+(char_ - eol)]; //String, with no skipper.
 
@@ -905,6 +923,16 @@ namespace boss {
 		object.name("line object");
 		ruleKey.name("rule keyword");
 		sortOrMessageKey.name("sort or message keyword");
+		sortOrMessageObject.name("sort or message object");
+		messageVersionCRC.name("conditional shorthand version/CRC");
+		messageModString.name("conditional shorthand mod");
+		conditionals.name("conditional");
+		andOr.name("andOr");
+		conditional.name("conditional");
+		condition.name("condition");
+		variable.name("variable");
+		file.name("file");
+		version.name("version");
 		
 		on_error<fail>(ruleList,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
 		on_error<fail>(userlistRule,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
@@ -919,6 +947,9 @@ namespace boss {
 		on_error<fail>(variable,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(file,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(version,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageVersionCRC,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageModString,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(sortOrMessageObject,phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
 	void userlist_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {
