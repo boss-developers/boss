@@ -4,7 +4,7 @@
 <style>
 	body {font-family:Calibri,Arial,Verdana,sans-serifs;}
 	body > div {margin-bottom:5em;}
-	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:0.5em;}
+	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:0.2em;}
 	ol li, ul li {margin-bottom:10px;}
 	li ul, li ol {margin-top:0.4em;}
 	q {font-style:italic;}
@@ -151,9 +151,8 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 <table>
 	<thead><tr><td>BOSSlog Section<td>Description
 	<tbody>
-		<tr><td>Masterlist Update<td>This section is displayed unless you have inhibited the masterlist updater via a GUI or BOSS.ini setting or the command line parameter, and details the success or failure of the update.
-		<tr><td>General Messages<td>This section is only displayed if there are any applicable messages to be displayed. Its primary purpose is to allow BOSS to display messages specific to your Oblivion install that are not specific to any one mod.
-		<tr><td>Summary<td>This section gives breakdowns of the numbers of plugins you have installed and the number of messages BOSS has attached to them. It also displays a notice if there has been no change to your recognised mod list since you last ran BOSS.
+		<tr><td>General Messages<td>This section is only displayed if there are any applicable messages to be displayed. Its primary purpose is to allow BOSS to display messages specific to your Oblivion install that are not specific to any one mod. Parser and updater error messages are also displayed in this section.
+		<tr><td>Summary<td>This section gives breakdowns of the numbers of plugins you have installed and the number of messages BOSS has attached to them. It also displays a notice if there has been no change to your recognised mod list since you last ran BOSS and information on whether your masterlist was updated or not and what version it is at.
 		<tr><td>Userlist Messages<td>This section is only displayed if BOSS finds any user rules in your userlist. It details the successes or failures of the application of your userlist rules.
 		<tr><td>Script Extender And Script Extender Plugin Checksums<td>This section is displayed when BOSS is run with the <q>Display File CRCs</q> option enabled and you have your game's Script Extender installed. It will list the Script Extender and any plugins for it that you have installed, displaying their versions (if given) and their CRCs.
 		<tr><td>Recognised And Re-ordered Plugins<td>This section comprises the bulk of BOSS's output, listing all your recognised installed plugins and any messages BOSS has attached to them, as well as version information (if given) and the plugin CRCs (if run with <q>Display File CRCs</q> enabled). 
@@ -273,7 +272,40 @@ as well as edit the output messages of mods, and more. In addition, this is all 
 		<tr><td>HideIncompatibilities<td>Controls the state of the <q>Hide Incompatibilities</q> filter.
 </table>
 <h4>BOSSlog.Styles</h4>
-<p>These settings control the BOSSlog's CSS styles, used to provide the formatting for the BOSSlog. The defaults are not given, being hard-coded into BOSS, but they can be overridden here. A knowledge of CSS is expected if you wish to alter these settings. If you do not possess such knowledge, altering these settings is not recommended.</p>
+<p>These settings control the BOSSlog's CSS styles, used to provide the formatting for the BOSSlog. The defaults are hard-coded into BOSS, and aren't given in the ini. They are, however, given in the table below. A knowledge of CSS is expected if you wish to alter these settings. If you do not possess such knowledge, altering these settings is not recommended.</p>
+<table>
+	<thead><tr><td>CSS Selector<td>Default Styling
+	<tbody>
+		<tr><td>body<td>font-family: Calibri,Arial,sans-serifs;
+		<tr><td>#filters<td>border: 1px gray dashed; background: #F5F5F5; padding: 0.3em; display: table;
+		<tr><td>#filters > li<td>display: inline-block; padding: 0.2em 1em; white-space: nowrap; margin: 0;
+		<tr><td>body > div:first-child<td>font-size: 2.4em; font-weight: 700; text-align: center; margin-bottom: 0.2em;
+		<tr><td>body > div:first-child + div<td>text-align: center;
+		<tr><td>h3 + *<td>margin-bottom: 3em;
+		<tr><td>h3<td>cursor: pointer;
+		<tr><td>h3 > span<td>display: inline-block; position: relative; top: 0.05em;  font-size: 1.3em; width: 0.6em; margin-right: 0.1em;
+		<tr><td>#end<td>text-align: center; cursor: default;
+		<tr><td>td<td>padding: 0 0.5em;
+		<tr><td>ul<td>list-style: none; padding-left: 0;
+		<tr><td>ul li<td>margin-left: 0; margin-bottom: 1em;
+		<tr><td>li ul<td>margin-top: 0.4em; padding-left: 2.5em; margin-bottom: 2em;
+		<tr><td>input[type='checkbox']<td>position: relative; top: 0.15em; margin-right: 0.5em;
+		<tr><td>blockquote<td>font-style: italic;
+		<tr><td>.error<td>background: red; color: #FFFFFF; display: table; padding: 0 4px;
+		<tr><td>.warn<td>background: orange;color: #FFFFFF; display: table; padding: 0 4px;
+		<tr><td>.success<td>color: green;
+		<tr><td>.version<td>color: #6394F8; margin-left: 1em; padding: 0 4px;
+		<tr><td>.ghosted<td>color: #888888; margin-left: 1em; padding: 0 4px;
+		<tr><td>.crc<td>color: #BC8923; margin-left: 1em; padding: 0 4px;
+		<tr><td>.tagPrefix<td>color: #CD5555;
+		<tr><td>.dirty<td>color: #996600;
+		<tr><td>.message<td>color: gray;
+		<tr><td>.mod<td><i>None</i>
+		<tr><td>.tag<td><i>None</i>
+		<tr><td>.note<td><i>None</i>
+		<tr><td>.req<td><i>None</i>
+		<tr><td>.inc<td><i>None</i>
+</table>
 <br />
 
 <h2 id="linux">Running BOSS Under Linux</h2>
@@ -744,16 +776,22 @@ threads when you read this. Just navigate through to the latest thread to post a
 <p><b>Version 1.8.1</b> - <i>2011</i>
 <ul>
 	<li>Fixed: A bug where if a plugin filename started with "SET" or "GLOBAL" (or case variations) then BOSS would incorrectly classify it as a variable or global message line and so result in syntax errors.
+	<li>Fixed: User Rules which failed to add a mod into the beginning or end of a group still incremented the number of recognised mods as if the rule application had succeeded.
 	<li>Changed: Added whitespace characters between plugin filenames, versions, ghosted labels and CRCs to make plaintext more readable.
 	<li>Changed: Userlist rules which reference mods that are not installed now have warning messages reported instead of error messages.
 	<li>Changed: Masterlist keywords can now be case-insensitive.
-	<li>Changed: Conditional message shorthand for item lists is now generalised to all messages, not just requirement and incompatibility messages, and includes optional checksum as well as version comparison.
+	<li style="background:red;">Changed: Content and slight formatting changes to BOSSlog:
+	<ul>
+		<li><q>Masterlist Update</q> section removed. Update information is now displayed in the <q>Summary</q> section. Updater errors are displayed in the <q>General Messages</q> section.
+		<li>Javascript optimisations for filters. Probably no noticeable performance impact unless the user has a very large load order.
+		<li><q>Execution Complete</q> text is now centred.
+		<li>Other behind-the-scenes tweaks.
+	</ul>
 	<li>Added: <q>Hide Clean Mods</q> BOSSlog filter.
 	<li>Added: Support for Skyrim. This assumes Skyrim's master file will be <q>Skyrim.esm</q>, the executable will be <q>Skyrim.exe</q>. If different, BOSS will be updated upon Skyrim's release with the real filenames.
 	<li>Added: Support for a Skyrim Script Extender. While the team responsible for OBSE, FOSE and NVSE have not made any comments officially or unofficially regarding Skyrim, BOSS has added support for one with the assumptions that it uses the <code>Data\SKSE\Plugins\</code> directory for its plugins and has a loader named <q>skse_loader.exe</q>.
-	<li style="background:red;color:white;">Added: Support for MF2.2 C-style comments, case-insensitive keywords and expanded conditional shorthands.
+	<li>Added: Support for MF2.2 C-style comments, case-insensitive keywords and expanded conditional shorthands.
 	<li>Added: Masterlist updater download progress indication in command line window.
-	<li>Added: Evaluation of conditionals in messages attached to plugins via User Rules.
 	<li>(Docs) Changed: Main readme updated to reflect changes.
 	<li>(Docs) Added: Masterlist Syntax HTML documentation for BOSS team members and interested third parties.
 </ul>

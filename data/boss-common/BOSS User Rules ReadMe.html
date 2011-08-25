@@ -192,7 +192,7 @@ to be positioned relative to. Plugins must be sorted relative to other plugins, 
 <p>Here is the contents of an example userlist:
 <div class="codebox">ADD: MyPluginToAdd.esp
 AFTER: LoadAfterThis.esm
-APPEND: ? Adding a general comment.
+APPEND: ? Adding a general message.
 APPEND: $ Incompatible with OOO!
 
 OVERRIDE: MyPluginToOverride.esp
@@ -209,7 +209,7 @@ APPEND: % {{BASH:NpcFaces,NoMerge}}</div>
 ...<br />
 LoadAfterThis.esm<br />
 MyPluginToAdd.esp<br />
-? Adding a general comment.<br />
+? Adding a general message.<br />
 $ Incompatible with OOO!<br />
 ...<br />
 MyPluginToOverride.esp<br />
@@ -226,7 +226,7 @@ bgBalancingEVOptionalNPCDiversity, Vanilla.esp<br />
 LoadAfterThis.esm<br />
 MyPluginToAdd.esp
 <ul>
-	<li>Note: Adding a general comment.
+	<li>Note: Adding a general message.
 	<li>Note: Incompatible with OOO!
 </ul>
 ...<br />
@@ -273,6 +273,7 @@ not be evident:
 	<li>The group "ESMs" must always load first. You cannot sort this group or sort another group before it.
 	<li>The game's master .ESM file must always load first. You cannot sort it, sort another plugin before it, or insert another plugin into the top of the "ESMs" group.
 	<li>You cannot sort a plugin relative to another plugin that is not in the masterlist and has not been sorted by a previous rule.
+	<li>You cannot include conditionals in any messages added through user rules. While BOSS will not display any errors, the message will be added as if it were a general message with no conditional.
 	<li>
 		<p><b>Rules are applied in the order they are listed</b>. This means you can have several rules sorting different rule objects relative to the same sort object, or have rules sorting rule objects relative to sort objects that were sorted in previous rules.
 		For example:
@@ -303,13 +304,13 @@ BEFORE: RTT.esp</div>
 <p>Understanding the BOSS message format is important if you wish to edit plugins' messages. There are actually two formats, either of which may be used. 
 Each of the four message types that can be added via the userlist begins with a 
 <em>message symbol</em> or <em>message keyword</em> depending on the format used. The symbol/keyword is then followed by the message itself. The message is just a standard 
-line of text. In addition, Bash Tag suggestion comments also have a special syntax for the suggestions they include.
+line of text. In addition, Bash Tag suggestion messages also have a special syntax for the suggestions they include.
 <p>The message message types, symbols and keywords are listen in the table below:
 <table>
 	<thead><tr><td><b>Message Type</b><td><b>Format 1 Symbol</b><td><b>Format 2 Keyword</b>
 	<tbody>
 		<tr><td>Bash Tag Suggestion<td>%<td>TAG:
-		<tr><td>General Comment<td>?<td>SAY:
+		<tr><td>General Message<td>?<td>SAY:
 		<tr><td>Installation Requirement<td>:<td>REQ:
 		<tr><td>Specific Incompatibility<td>"<td>INC:
 </table>

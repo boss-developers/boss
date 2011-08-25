@@ -48,7 +48,7 @@ Masterlist Syntax Documentation</div>
 		<li><a href="#mf2-cond">General Conditionals</a>
 		<ol style="list-style:lower-roman;">
 			<li><a href="#mf2-comp-cond">Compound Conditionals</a>
-			<li><a href="#mf2-cond-shorthands">Conditional Requirement &amp; Incompatibility Shorthands</a>
+			<li><a href="#mf2-cond-shorthands">Conditional Message Shorthand</a>
 		</ol>
 	</ol>
 	<li><a href="#examples">Examples</a>
@@ -124,6 +124,7 @@ Masterlist Syntax Documentation</div>
 		<tr><td>Regular Expressions						<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
 		<tr><td>Conditional Incompatibilities Shorthand	<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
 		<tr><td>Conditional Requirements Shorthand		<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
+		<tr><td>Conditional Message Shorthand				<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;
 		<tr><td>C-Style Comments						<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;
 </table>
 <div id="1" style="font-size:0.9em;">&#x00B9; In all formats, whitespace is always preserved inside plugin and group names and messages.</div>
@@ -336,14 +337,13 @@ IF ($Mod1Correct) MOD: Mod5.esp</div>
 		<tr><td>OR<td><code>||</code><td>One side (or both sides) must evaluate to true for the compound conditional to evaluate to true. If neither side is true, then the compound conditional evaluates to false.
 </table><br />
 
-<h3 id="mf2-cond-shorthands">Conditional Requirement &amp; Incompatibility Shorthands</h3>
-<p style="background:red;color:white;">Note: This functionality is still under development and is subject to change. Not all features may work as described.
+<h3 id="mf2-cond-shorthands">Conditional Message Shorthand</h3>
 <p style="font-weight:bold;">This is MF2.1 functionality with MF2.2 extensions.
-<p><b>In MF2.1:</b> <code>,</code> cannot be used to separate items, checksum and variable conditions are not supported in either message type, and incompatibility messages also cannot use version checks.
+<p><b>In MF2.1:</b> The shorthand can only be used by MF2 incompatibility and requirement messages; <code>,</code> cannot be used to separate items; checksum and variable conditions cannot be used at all; incompatibility messages cannot use version checks.
 <p>While conditionals can be used to make messages appear in a user's BOSSlog only under certain circumstances, the implementation described above is unsuitable for lists of independent mods such as those found in incompatibility and requirement messages as to cover all combinations would require several message lines.
-<p>To resolve this issue, a shorthand is provided for generating incompatibility and requirement messages where each item's display is independently conditional. The shorthand goes in place of the <code>[message]</code> used in the syntax explained by the <q><a href="#common-messages">Message Lines</a></q> section above and is as follows:</p>
+<p>To resolve this issue, a shorthand is provided for generating messages where each item's display is independently conditional. The shorthand goes in place of the <code>[message]</code> used in the syntax explained by the <q><a href="#common-messages">Message Lines</a></q> section above and is as follows:</p>
 
-<code>"[comparator][version 1]":"[file 1]"="[mod 1]" | "[checksum]":"[file 2]"="[mod 2]" | "[comparator][version 3]":"[file 3]" | "[checksum]":"[file 4]" |  "[file 5]" | "[file 6]"="[mod 6]" | $[variable]="[mod 7]"</code>
+<code>"[comparator][version 1]":"[file 1]"="[mod 1]" | "[checksum]":"[file 2]"="[mod 2]" | "[comparator][version 3]":"[file 3]" | "[checksum]":"[file 4]" |  "[file 5]" | "[file 6]"="[mod 6]" | $[variable 7]="[mod 7]"</code>
 
 <p>Each item in the list is separated by a <code>|</code> or <code>,</code> character (the latter not shown above). There is no limit to the number of items that may be listed. <code>[file]</code>, <code>[comparator]</code>, <code>[version]</code>, <code>[variable]</code> and <code>[checksum]</code> are all defined as in the <q><a href="#mf2-cond">General Conditionals</a></q> section above. <code>[mod]</code> can be any string of characters not containing double quote characters <code>"</code>, though as the name suggests it is intended to be the name of the mod that the plugin tested for belongs to.
 
@@ -359,15 +359,15 @@ IF ($Mod1Correct) MOD: Mod5.esp</div>
 	</ul>
 	<li>If <code>$[variable]</code> is given then that is the item's condition.
 </ul>
-<p>For incompatibility messages:
-<ul>
-	<li>If the item's condition evaluates to true, the item will be displayed in the BOSSlog message.
-	<li>If the item's condition evaluates to false, the item will not be displayed in the BOSSlog message.
-</ul>
 <p>For requirement messages:
 <ul>
 	<li>If the item's condition evaluates to false, the item will be displayed in the BOSSlog message.
 	<li>If the item's condition evaluates to true, the item will not be displayed in the BOSSlog message.
+</ul>
+<p>For incompatibility messages (and other message types):
+<ul>
+	<li>If the item's condition evaluates to true, the item will be displayed in the BOSSlog message.
+	<li>If the item's condition evaluates to false, the item will not be displayed in the BOSSlog message.
 </ul>
 <p>How the item is displayed in the BOSSlog depends on whether <code>"[mod]"</code> is given in the item or not. If:
 <ul>
