@@ -19,7 +19,7 @@
 #include "Parsing/Data.h"
 
 #include <boost/spirit/include/qi.hpp>
-#include <boost/format.hpp>
+
 
 namespace boss {
 	namespace qi = boost::spirit::qi;
@@ -27,39 +27,7 @@ namespace boss {
 	using namespace std;
 
 	using qi::grammar;
-	using boost::format;
 	using boost::spirit::info;
-
-	///////////////////////////////
-	//Common Functions
-	///////////////////////////////
-
-	//Checks if a masterlist variable is defined.
-	void CheckVar(bool& result, string var);
-
-	//Returns the true path based on what type of file or keyword it is.
-	void GetPath(fs::path& file_path, string& file);
-
-	//Checks if the given mod has a version for which the comparison holds true.
-	void CheckVersion(bool& result, string var);
-
-	//Checks if the given mod has the given checksum.
-	void CheckSum(bool& result, unsigned int sum, string file);
-
-	void CheckFile(bool& result, string file);
-
-	//Evaluate a single conditional.
-	void EvaluateConditional(bool& result, metaType type, bool condition);
-
-	//Evaluate the second half of a complex conditional.
-	void EvaluateCompoundConditional(bool& result, string andOr, bool condition);
-
-	//Evaluate part of a shorthand conditional message.
-	void EvaluateConditionalMessage(string& message, string version, string file, string mod);
-
-	//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.
-	unsigned int HexStringToInt(string hex);
-
 
 	///////////////////////////////
 	//Skipper Grammars
@@ -89,11 +57,6 @@ namespace boss {
 	extern bool storeMessage;  //Should the current item/message be stored.
 	extern vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in MF1.
 
-	//Parsing error message format.
-	static format MasterlistParsingErrorFormat("<p><span class='error'>Masterlist Parsing Error: Expected a %1% at:</span>"
-		"<blockquote>%2%</blockquote>"
-		"<span class='error'>Masterlist parsing aborted. Utility will end now.</span></p>\n\n");
-
 	//Stores a message, should it be appropriate.
 	void StoreMessage(vector<message>& messages, message currentMessage);
 
@@ -111,6 +74,32 @@ namespace boss {
 
 	//MF1 compatibility function. Evaluates the MF1 OOO/BC conditional message symbols.
 	void EvalMessKey(keyType key);
+
+	//Checks if a masterlist variable is defined.
+	void CheckVar(bool& result, string var);
+
+	//Returns the true path based on what type of file or keyword it is.
+	void GetPath(fs::path& file_path, string& file);
+
+	//Checks if the given mod has a version for which the comparison holds true.
+	void CheckVersion(bool& result, string var);
+
+	//Checks if the given mod has the given checksum.
+	void CheckSum(bool& result, unsigned int sum, string file);
+
+	void CheckFile(bool& result, string file);
+
+	//Evaluate a single conditional.
+	void EvaluateConditional(bool& result, metaType type, bool condition);
+
+	//Evaluate the second half of a complex conditional.
+	void EvaluateCompoundConditional(bool& result, string andOr, bool condition);
+
+	//Evaluate part of a shorthand conditional message.
+	void EvaluateConditionalMessage(string& message, string version, string file, string mod);
+
+	//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.
+	unsigned int HexStringToInt(string hex);
 	
 	//Turns a given string into a path. Can't be done directly because of the openGroups checks.
 	void path(fs::path& p, string const itemName);
@@ -126,7 +115,7 @@ namespace boss {
 		qi::rule<string::const_iterator, fs::path(), Skipper> itemName;
 		qi::rule<string::const_iterator, vector<message>(), Skipper> itemMessages;
 		qi::rule<string::const_iterator, message(), Skipper> itemMessage, globalMessage;
-		qi::rule<string::const_iterator, string(), Skipper> charString, messageString, variable, file, version, andOr, keyword, metaLine, messageVersionCRC, messageModString;
+		qi::rule<string::const_iterator, string(), Skipper> charString, messageString, variable, file, version, andOr, metaLine, messageVersionCRC, messageModString, messageModVariable;
 		qi::rule<string::const_iterator, keyType(), Skipper> messageKeyword;
 		qi::rule<string::const_iterator, bool(), Skipper> conditional, conditionals, condition, oldConditional;
 		
@@ -138,11 +127,6 @@ namespace boss {
 	////////////////////////////
 
 	extern string currentHeading;  //The current ini section heading.
-
-	//Parsing error formatting.
-	static format IniParsingErrorFormat("<li><span class='error'>Ini Parsing Error: Expected a %1% at:</span>"
-		"<blockquote>%2%</blockquote>"
-		"<span class='error'>Ini parsing aborted. Some or all of the options may not have been set correctly.</span></li>\n");
 
 	//Set the BOSS variable values while parsing.
 	void SetVar(string var, string value);
@@ -165,26 +149,16 @@ namespace boss {
 	extern bool storeLine;  //Should the current message/sort line be stored.
 
 	// Error messages for rule validation
-	static format ESortLineInForRule("includes a sort line in a rule with a FOR rule keyword.");
-	static format EAddingModGroup("tries to add a group.");
-	static format ESortingGroupEsms("tries to sort the group \"ESMs\".");
-	static format ESortingMasterEsm("tries to sort the master .ESM file.");
-	static format EReferencingModAndGroup("references a mod and a group.");
-	static format ESortingGroupBeforeEsms("tries to sort a group before the group \"ESMs\".");
-	static format ESortingModBeforeGameMaster("tries to sort a mod before the master .ESM file.");
-	static format EInsertingToTopOfEsms("tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.");
-	static format EInsertingGroupOrIntoMod("tries to insert a group or insert something into a mod.");
-	static format EAttachingMessageToGroup("tries to attach a message to a group.");
-
-	//Syntax error formatting.
-	static format SyntaxErrorFormat("<li class='error'>"
-		"Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
-		"</li>\n");
-
-	//Parsing error formatting.
-	static format UserlistParsingErrorFormat("<li><span class='error'>Userlist Parsing Error: Expected a %1% at:</span>"
-		"<blockquote>%2%</blockquote>"
-		"<span class='error'>Userlist parsing aborted. No rules will be applied.</span></li>\n");
+	static string ESortLineInForRule("includes a sort line in a rule with a FOR rule keyword.");
+	static string EAddingModGroup("tries to add a group.");
+	static string ESortingGroupEsms("tries to sort the group \"ESMs\".");
+	static string ESortingMasterEsm("tries to sort the master .ESM file.");
+	static string EReferencingModAndGroup("references a mod and a group.");
+	static string ESortingGroupBeforeEsms("tries to sort a group before the group \"ESMs\".");
+	static string ESortingModBeforeGameMaster("tries to sort a mod before the master .ESM file.");
+	static string EInsertingToTopOfEsms("tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.");
+	static string EInsertingGroupOrIntoMod("tries to insert a group or insert something into a mod.");
+	static string EAttachingMessageToGroup("tries to attach a message to a group.");
 
 	// Used to throw as exception when signaling a userlist syntax error, in order to make the code a bit more compact.
 	struct failure {
@@ -210,11 +184,9 @@ namespace boss {
 
 		qi::rule<string::const_iterator, vector<rule>(), Skipper> ruleList;
 		qi::rule<string::const_iterator, rule(), Skipper> userlistRule;
-		qi::rule<string::const_iterator, vector<line>(), Skipper> sortOrMessageLines;
 		qi::rule<string::const_iterator, line(), Skipper> sortOrMessageLine;
 		qi::rule<string::const_iterator, keyType(), Skipper> ruleKey, sortOrMessageKey;
-		qi::rule<string::const_iterator, string(), Skipper> object, variable, file, version, andOr, keyword, metaLine, messageModString, sortOrMessageObject, messageVersionCRC;
-		qi::rule<string::const_iterator, bool(), Skipper> conditional, conditionals, condition;
+		qi::rule<string::const_iterator, string(), Skipper> object;
 	
 		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what);
 	};

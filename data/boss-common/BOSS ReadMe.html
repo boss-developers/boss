@@ -145,14 +145,14 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 <br />
 
 <h2 id="bosslog">The BOSS Log</h2>
-<p>The BOSSlog is where you will find all of BOSS's outputted information. It can be generated in either HTML format (the default) or as a plain text file with minimal formatting. The HTML format has significant advantages over the plain text format, being considerably easier to read, containing colour-coded messages and a variety of filters to customise what is displayed. Both formats, however, contain the same information.
+<p>The BOSSlog is where you will find all of BOSS's outputted information. It can be generated in either HTML format (the default) or as a plain text file with minimal formatting. The HTML format has significant advantages over the plain text format, being considerably easier to read, containing colour-coded messages and a variety of filters to customise what is displayed. However, other than the HTML BOSSlog providing a notification if there has been no change in the recognised mod list since last run, there is no difference in information between the two formats.
 <p>The HTML BOSSlog has been tested in Mozilla Firefox 4, Google Chrome 11, Opera 11 and Internet Explorer 9. Using earlier browsers may result in parts of the BOSSlog not working or displaying correctly.
 <p>The BOSSlog comprises of a number of sections, which are detailed in the table below.
 <table>
 	<thead><tr><td>BOSSlog Section<td>Description
 	<tbody>
 		<tr><td>General Messages<td>This section is only displayed if there are any applicable messages to be displayed. Its primary purpose is to allow BOSS to display messages specific to your Oblivion install that are not specific to any one mod. Parser and updater error messages are also displayed in this section.
-		<tr><td>Summary<td>This section gives breakdowns of the numbers of plugins you have installed and the number of messages BOSS has attached to them. It also displays a notice if there has been no change to your recognised mod list since you last ran BOSS and information on whether your masterlist was updated or not and what version it is at.
+		<tr><td>Summary<td>This section gives a short summary of BOSS's actions. It breaks down the numbers of plugins installed and messages attached to them and gives the local masterlist version and whether or not it was updated. If the BOSSlog is in the HTML format it will also display a message if your recognised plugin list has not changed since you last ran BOSS.
 		<tr><td>Userlist Messages<td>This section is only displayed if BOSS finds any user rules in your userlist. It details the successes or failures of the application of your userlist rules.
 		<tr><td>Script Extender And Script Extender Plugin Checksums<td>This section is displayed when BOSS is run with the <q>Display File CRCs</q> option enabled and you have your game's Script Extender installed. It will list the Script Extender and any plugins for it that you have installed, displaying their versions (if given) and their CRCs.
 		<tr><td>Recognised And Re-ordered Plugins<td>This section comprises the bulk of BOSS's output, listing all your recognised installed plugins and any messages BOSS has attached to them, as well as version information (if given) and the plugin CRCs (if run with <q>Display File CRCs</q> enabled). 
@@ -288,19 +288,19 @@ as well as edit the output messages of mods, and more. In addition, this is all 
 		<tr><td>td<td>padding: 0 0.5em;
 		<tr><td>ul<td>list-style: none; padding-left: 0;
 		<tr><td>ul li<td>margin-left: 0; margin-bottom: 1em;
-		<tr><td>li ul<td>margin-top: 0.4em; padding-left: 2.5em; margin-bottom: 2em;
+		<tr><td>li ul<td>margin-top: 0.5em; padding-left: 2.5em; margin-bottom: 2em;
 		<tr><td>input[type='checkbox']<td>position: relative; top: 0.15em; margin-right: 0.5em;
 		<tr><td>blockquote<td>font-style: italic;
 		<tr><td>.error<td>background: red; color: #FFFFFF; display: table; padding: 0 4px;
 		<tr><td>.warn<td>background: orange;color: #FFFFFF; display: table; padding: 0 4px;
 		<tr><td>.success<td>color: green;
-		<tr><td>.version<td>color: #6394F8; margin-left: 1em; padding: 0 4px;
-		<tr><td>.ghosted<td>color: #888888; margin-left: 1em; padding: 0 4px;
-		<tr><td>.crc<td>color: #BC8923; margin-left: 1em; padding: 0 4px;
+		<tr><td>.version<td>color: #6394F8; margin-right: 1em; padding: 0 4px;
+		<tr><td>.ghosted<td>color: #888888; margin-right: 1em; padding: 0 4px;
+		<tr><td>.crc<td>color: #BC8923; margin-right: 1em; padding: 0 4px;
 		<tr><td>.tagPrefix<td>color: #CD5555;
 		<tr><td>.dirty<td>color: #996600;
 		<tr><td>.message<td>color: gray;
-		<tr><td>.mod<td><i>None</i>
+		<tr><td>.mod<td>margin-right: 1em;
 		<tr><td>.tag<td><i>None</i>
 		<tr><td>.note<td><i>None</i>
 		<tr><td>.req<td><i>None</i>
@@ -780,7 +780,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Changed: Added whitespace characters between plugin filenames, versions, ghosted labels and CRCs to make plaintext more readable.
 	<li>Changed: Userlist rules which reference mods that are not installed now have warning messages reported instead of error messages.
 	<li>Changed: Masterlist keywords can now be case-insensitive.
-	<li style="background:red;">Changed: Content and slight formatting changes to BOSSlog:
+	<li>Changed: Content and slight formatting changes to BOSSlog:
 	<ul>
 		<li><q>Masterlist Update</q> section removed. Update information is now displayed in the <q>Summary</q> section. Updater errors are displayed in the <q>General Messages</q> section.
 		<li>Javascript optimisations for filters. Probably no noticeable performance impact unless the user has a very large load order.

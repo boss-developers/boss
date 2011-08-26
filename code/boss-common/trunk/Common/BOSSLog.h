@@ -20,9 +20,12 @@
 #include <fstream>
 #include <string>
 #include "Lists.h"
+#include <boost/format.hpp>
 
 namespace boss {
 	using namespace std;
+
+	using boost::format;
 
 	//Default filter options.
 	extern bool UseDarkColourScheme;
@@ -48,18 +51,13 @@ namespace boss {
 	extern string CSSSections;
 	extern string CSSSectionTitle;
 	extern string CSSSectionPlusMinus;
-	extern string CSSTopLevelList;
 	extern string CSSLastSection;
-	extern string CSSLastSectionTitle;
-	extern string CSSTopLevelListItem;
+	extern string CSSTable;
 	extern string CSSList;
 	extern string CSSListItem;
-	extern string CSSItemList;
+	extern string CSSSubList;
 	extern string CSSCheckbox;
 	extern string CSSBlockquote;
-	extern string CSSUnrecognisedList;
-	extern string CSSSummaryRow;
-	extern string CSSSummaryCell;
 	extern string CSSError;
 	extern string CSSWarning;
 	extern string CSSSuccess;
@@ -75,12 +73,35 @@ namespace boss {
 	extern string CSSRequirement;
 	extern string CSSIncompatibility;
 	
+	//Parsing error message format.
+	static format MasterlistParsingErrorFormat("<p><span class='error'>Masterlist Parsing Error: Expected a %1% at:</span>"
+		"<blockquote>%2%</blockquote>"
+		"<span class='error'>Masterlist parsing aborted. Utility will end now.</span>");
+	
+	//Parsing error formatting.
+	static format IniParsingErrorFormat("<li><span class='error'>Ini Parsing Error: Expected a %1% at:</span>"
+		"<blockquote>%2%</blockquote>"
+		"<span class='error'>Ini parsing aborted. Some or all of the options may not have been set correctly.</span>");
+
+	//Syntax error formatting.
+	static format SyntaxErrorFormat("<li class='error'>"
+		"Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
+		"");
+
+	//Parsing error formatting.
+	static format UserlistParsingErrorFormat("<li><span class='error'>Userlist Parsing Error: Expected a %1% at:</span>"
+		"<blockquote>%2%</blockquote>"
+		"<span class='error'>Userlist parsing aborted. No rules will be applied.</span>");
+
 
 	//Prints a given message to the bosslog, using format-safe Output function below.
 	void ShowMessage(string& buffer, message currentMessage);
 
 	//Prints ouptut with formatting according to format.
 	void Output(string text);
+	
+	//Escapes HTML special characters.
+	string EscapeHTMLSpecial(string text);
 
 	//Prints HTML header.
 	void OutputHeader();

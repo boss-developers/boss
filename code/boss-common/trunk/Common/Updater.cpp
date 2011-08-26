@@ -38,16 +38,16 @@ namespace boss {
 	//Download progress for current file function.
 	int progress_func(void *data, double dlTotal, double dlNow, double ulTotal, double ulNow) {
 		double fractiondownloaded = dlNow / dlTotal;
-		printf("%3.0f%% of %3.0f% KB\r",fractiondownloaded*100,dlTotal/1024);
+		printf("%3.0f%% of %3.0f% KB\r",fractiondownloaded*100,(dlTotal/1024)+20);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
 		fflush(stdout);
 		return 0;
 	}
 
 	int GetLocalMasterlistRevision() {
-		string line, newline = "? Masterlist Revision: ";
+		string line, newline = "Masterlist Revision: ";
 		ifstream mlist;
 		char cbuffer[4096];
-		size_t pos1;
+		size_t pos1,pos2;
 
 		//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
 		if (fs::exists(masterlist_path)) {
@@ -59,9 +59,35 @@ namespace boss {
 				line=cbuffer;
 				if (line.find(newline) != string::npos) {
 					//Hooray, we've found the line.
-					pos1 = line.find(" (",23);
-					line = line.substr(23,pos1-23);
-					return atoi(line.c_str());  //Masterlist already at latest revision.
+					pos1 = line.find(": ");
+					pos2 = line.find(" (");
+					return atoi(line.substr(pos1+2,pos2-pos1-2).c_str());
+				}
+			}
+		}
+		mlist.close();
+		return 0;  //No version found.
+	}
+
+	string GetLocalMasterlistDate() {
+		string line, newline = "Masterlist Revision: ";
+		ifstream mlist;
+		char cbuffer[4096];
+		size_t pos1,pos2;
+
+		//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
+		if (fs::exists(masterlist_path)) {
+			mlist.open(masterlist_path.c_str());
+			if (mlist.fail())
+				throw boss_error() << err_detail("Masterlist cannot be opened.");
+			while (!mlist.eof()) {
+				mlist.getline(cbuffer,4096);
+				line=cbuffer;
+				if (line.find(newline) != string::npos) {
+					//Hooray, we've found the line.
+					pos1 = line.find("(");
+					pos2 = line.find(")");
+					return line.substr(pos1+1,pos2-pos1-1);
 				}
 			}
 		}
@@ -82,7 +108,7 @@ namespace boss {
 		const string SVN_REVISION_KW = "$" "Revision" "$";                   // Left as separated parts to avoid keyword expansion
 		const string SVN_DATE_KW = "$" "Date" "$";                           // Left as separated parts to avoid keyword expansion
 		const string SVN_CHANGEDBY_KW= "$" "LastChangedBy" "$";              // Left as separated parts to avoid keyword expansion
-		string oldline = "? Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
+		string oldline = "Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
 		const char *revision_url = "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn";
 
 		//Which masterlist to get?
@@ -204,6 +230,7 @@ namespace boss {
 		date = buffer.substr(start+1,end - (start+1));  //Date string recorded.
 		buffer.clear();
 
+		//Month Day, Year
 		//Now we need to get the date string extracted turned into a sensible absolute date.
 		if (date.find("Today") != string::npos) {
 			const time_t currTime = time(NULL);
@@ -233,7 +260,7 @@ namespace boss {
 			date += ", " + year.substr(year.length()-5,4);
 		} //Otherwise it's already in a sensible format.
 		
-		newline = "? Masterlist Revision: "+revision+" ("+date+")";
+		newline = "Masterlist Revision: "+revision+" ("+date+")";
 
 		//Compare remote revision to current masterlist revision - if identical don't waste time/bandwidth updating it.
 		if (GetLocalMasterlistRevision() == atoi(revision.c_str()))

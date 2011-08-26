@@ -18,6 +18,8 @@
 namespace boss {
 	int GetLocalMasterlistRevision();
 
+	string GetLocalMasterlistDate();
+
 	int UpdateMasterlist();
 
 	bool CheckConnection();

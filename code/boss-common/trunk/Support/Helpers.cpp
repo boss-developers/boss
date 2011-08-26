@@ -149,8 +149,10 @@ namespace boss {
 
 	//Checks if a given object is an esp or an esm.
 	bool IsPlugin(string object) {
+		object = fs::path(object).extension().string();
+		boost::algorithm::trim(object);
 		to_lower(object);
-		return (object.find(".esp") != string::npos || object.find(".esm") != string::npos);
+		return (object == ".esp" || object == ".esm");
 	}
 
 	//Checks if the plugin exists at the given location, even if ghosted.
