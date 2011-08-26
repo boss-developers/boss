@@ -430,7 +430,7 @@ namespace boss {
 		messageVersionCRC %=
 			('\"' >> (
 					((char_('=') | char_('>') | char_('<')) >> lexeme[+(char_ - '\"')]) 
-					| xdigit)  
+					| +(xdigit - '\"'))  
 			>> '\"' >> lit(":")) 
 			| eps;
 
