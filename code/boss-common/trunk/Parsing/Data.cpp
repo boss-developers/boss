@@ -11,7 +11,7 @@
 
 //Contains conversions for list data structures and data types so that the parser can access them.
 
-#include "Parsing\Data.h"
+#include "Parsing/Data.h"
 
 /////////////////////////////////////////
 // Modlist/masterlist data conversions

@@ -38,13 +38,15 @@ namespace boss {
 	//Download progress for current file function.
 	int progress_func(void *data, double dlTotal, double dlNow, double ulTotal, double ulNow) {
 		double fractiondownloaded = dlNow / dlTotal;
+		if (dlTotal <= 0 || dlNow <= 0)
+			fractiondownloaded = 0;
 		printf("%3.0f%% of %3.0f% KB\r",fractiondownloaded*100,(dlTotal/1024)+20);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
 		fflush(stdout);
 		return 0;
 	}
 
 	int GetLocalMasterlistRevision() {
-		string line, newline = "Masterlist Revision: ";
+		string line, newline = "Masterlist Revision:";
 		ifstream mlist;
 		char cbuffer[4096];
 		size_t pos1,pos2;
@@ -70,7 +72,7 @@ namespace boss {
 	}
 
 	string GetLocalMasterlistDate() {
-		string line, newline = "Masterlist Revision: ";
+		string line, newline = "Masterlist Revision:";
 		ifstream mlist;
 		char cbuffer[4096];
 		size_t pos1,pos2;
