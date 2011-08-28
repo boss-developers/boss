@@ -172,11 +172,26 @@ namespace boss {
 			replace_first(text, "&copy;", "(c)");
 			replace_first(text, "&amp;", "&");
 			replace_first(text, "&#x2212;", "");
-			
+			replace_first(text, "<tr>","");
+			replace_first(text, "<table><tbody>","");
+			replace_first(text, "</table>","");
+			replace_first(text, "<div>", "\n");
+
+			replace_first(text, " onclick='toggleSectionDisplay(this)'>", ">");
+			replace_first(text, " id='recognised'>", ">");
+			replace_first(text, " id='userlistMessages'>", ">");
+			replace_first(text, " id='end'>", ">");
+
 			replace_all(text, "</ul>", "\n");
+			replace_all(text, "<li><span class='mod'>","\n\n");
+			replace_all(text, "<td>","\n");
 			replace_all(text, "&nbsp;", " ");
 			replace_all(text, "<br />", "\n");
-
+			replace_all(text, "<blockquote>", "\n\n");
+			replace_all(text, "</blockquote>", "\n\n");
+			replace_all(text, "</div>", "");
+			replace_all(text, "</span>", "");
+			
 			replace_all(text, " class='warn'>", ">");
 			replace_all(text, " class='error'>", ">");
 			replace_all(text, " class='success'>", ">");
@@ -190,35 +205,14 @@ namespace boss {
 			replace_all(text, " class='inc'>", ">");
 			replace_all(text, " class='tagPrefix'>", ">");
 			replace_all(text, " class='message'>", ">");
-			replace_all(text, "<li><span class='mod'>","\n\n");
-			replace_all(text, "<td>","\n");
 
-			replace_first(text, "<tr>","");
-			replace_first(text, "<table><tbody>","");
-			replace_first(text, "</table>","");
-			replace_first(text, " onclick='toggleSectionDisplay(this)'>", ">");
-			replace_first(text, " id='recognised'>", ">");
-			replace_first(text, " id='userlistMessages'>", ">");
-			replace_first(text, " style='font-weight:bold'>", ">");
-			replace_first(text, " id='end'>", ">");
+			replace_all(text, "<ul>", "");
+			replace_all(text, "<li>", "\n*  ");
+			replace_all(text, "<span>", "");
+			replace_all(text, "<p>", "\n");
 			
 			replace_first(text, "<h3>", "\n\n======================================\n");
 			replace_first(text, "</h3>", "\n======================================\n\n");
-
-			replace_all(text, "<blockquote>", "\n\n");
-			replace_all(text, "</blockquote>", "\n\n");
-			replace_all(text, "<ul>", "");
-			
-			replace_all(text, "<li>", "\n*  ");
-			
-			replace_all(text, "</div>", "");
-
-			replace_all(text, "<br />", "");
-			replace_all(text, "<span>", "");
-			replace_all(text, "</span>", "");
-			replace_all(text, "<div>", "\n");
-
-			replace_all(text, "<p>", "\n");
 
 			//Convert from HTML hyperlinks into text string.
 			size_t pos1,pos2;

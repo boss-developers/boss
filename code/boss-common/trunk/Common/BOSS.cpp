@@ -1060,7 +1060,7 @@ int main(int argc, char *argv[]) {
 	Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Summary</h3><div>");
 
 	if (oldBOSSlogRecognised == recogModContent)
-		Output("<p style='font-weight:bold'>No change in recognised plugin list since last run.");
+		Output("<p>No change in recognised plugin list since last run.");
 
 	if (!masterlistUpdateContent.empty()) {
 		Output(masterlistUpdateContent);

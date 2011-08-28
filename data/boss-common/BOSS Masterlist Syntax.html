@@ -121,11 +121,12 @@ Masterlist Syntax Documentation</div>
 		<tr><td>Whitespace Skipped <a href="#1">&#x00B9;</a><td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
 		<tr><td>Masterlist Variables					<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
 		<tr><td>General Conditionals					<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
-		<tr><td>Regular Expressions						<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
+		<tr><td>Regular Expression Plugins						<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
 		<tr><td>Conditional Incompatibilities Shorthand	<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
 		<tr><td>Conditional Requirements Shorthand		<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;<td style="background:#32CD32">&#x2713;
 		<tr><td>Conditional Message Shorthand				<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;
 		<tr><td>C-Style Comments						<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;
+  <tr><td>Regular Expression Conditions						<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#FF4500">&#x2717;<td style="background:#32CD32">&#x2713;
 </table>
 <div id="1" style="font-size:0.9em;">&#x00B9; In all formats, whitespace is always preserved inside plugin and group names and messages.</div>
 </div>
@@ -276,7 +277,6 @@ Masterlist Syntax Documentation</div>
 <p><b>Note:</b> If <code>[line]</code> is a plugin line, then the conditional must be followed by the <code>MOD</code> keyword, eg. <code>IF ($OOO) MOD: MyPlugin.esp</code> will place <code>MyPlugin.esp</code> in that position if OOO is installed.
 
 <p>There are four types of condition that can be tested for within a conditional. These types and their syntaxes are described in the table below.
-
 <table>
 	<thead><tr><td>Type<td>Syntax<td>Description
 	<tbody>
@@ -284,10 +284,14 @@ Masterlist Syntax Documentation</div>
 		<tr><td>File<td><code>"[file]"</code><td>Returns true if the user has the file given installed, otherwise false.
 		<tr><td>Checksum<td><code>[checksum]|"[file]"</code><td>Returns true if the calculated checksum of the given file matches the given checksum. The checksum is a (positive/unsigned) hexadecimal integer, and the checksums of plugins are printed to the BOSSlog when BOSS is run with the <code>-c</code> argument.
 		<tr><td>Version<td><code>[comparator][version]|"[file]"</code><td>The comparator can be one of <code>=</code>, <code>&gt;</code> or <code>&lt;</code>, meaning "is equal to", "is greater than" and "is less than" respectively. The version is the version to check for, as given by BOSS. The file is the file that shall have its version checked. If the expression of the form <code>[version] [comparator] [version from plugin]</code> (eg. <code>1.5 &gt; 1.2.5</code>) evaluates to true, the condition evaluates to true, else false.
+  <tr><td>Regular Expression<td><code>r"[regular expression]"</code><td>Returns true if a file matching the regular expression exists, otherwise false. The <code>r</code> preceding the expression itself can be upper or lower case.
 </table>
-<p>Filenames and checksums are case-insensitive. Version strings and masterlist variables are case-sensitive.
+<p><b>Note:</b> Regular expression conditions are not supported in MF2.1 and below.
+<p>Filenames and checksums are case-insensitive. Version strings, masterlist variables are case-sensitive. Regular expressions are case-sensitive, unless the expression itself specifies case-insensitivity (eg. <code>[A-Za-z]</code>).
 
-<p>A <code>[file]</code> may be any type of file. For mod and Script Extender plugins, only the filename should be given, as BOSS assumes they are installed in the correct locations. For all other files, the starting folder is <code>Data</code>, eg. the correct syntax for a texture would be <code>Textures\testtexture.dds</code>. Version checks will only work for files with the extensions <code>.esp</code>, <code>.esm</code>, <code>.dll</code> or <code>.exe</code>.
+<p>A <code>[file]</code> may be any type of file. For mod and Script Extender plugins, only the filename should be given, as BOSS assumes they are installed in the correct locations. For all other files, the starting folder is <code>Data</code>, eg. the correct syntax for a texture would be <code>Textures\testtexture.dds</code>. Version checks will only work for files with the extensions <code>.esp</code>, <code>.esm</code>, <code>.dll</code> or <code>.exe</code>. Paths may use either forwardslashes or backslashes.
+
+<p>A <code>[regular expression]</code> is a <code>[file]</code> written as a regular expression, using the POSIX Extended syntax. Any parent paths given must not contain any regular expression syntax other than the escaping of any backslashes, i.e. <code>Textures\\testtexture(_n)?\.dds</code> is valid but <code>Te[xX]tures\\testtexture(_n)?\.dds</code> is not. Like <code>[file]</code>, mod and Script Extender plugins should only have their filenames given, and the starting folder for all other files is <code>Data</code>. The file placeholders given below must not be used in regular expressions.
 
 <p>In addition to explicitly referencing files, there are a few placeholders that can be used to reference certain files, given in the table below:
 
@@ -310,8 +314,9 @@ Masterlist Syntax Documentation</div>
 <ol>
 	<li><i>Variable conditions</i>: These are very fast as BOSS stores defined masterlist variables in a hash set while running.
 	<li><i>File conditions</i>: These are still fast, and should not impact performance. However, repeated usage may cause slowdown as file existence is not stored in memory and is re-checked for every condition.
+ <li><i>Regular expression conditions</i>: These are of variable speed, but will always be slower than file checks. They need to scan a directory's contents for any files that match the given regex, so the processing time will vary with the number of files to be scanned.
 	<li><i>Version conditions</i>: These are of a medium speed. They need to read part of a file's contents to extract its version and so are slower than file conditions. Like file existence, version information is not stored in memory.
-	<li><i>Checksum conditions</i>: These are very slow. They require a complete read of a file and calculate the CRC from its contents. Usage will result in noticeable slowdown. Calculated CRCs are stored in hash maps while running so that a plugin's CRC is only calculated a maximum of once. Subsequent checks will be faster than file checks but still slower than variable checks.
+	<li><i>Checksum conditions</i>: These are very slow, though processing time varies with file size. They require a complete read of a file and calculate the CRC from its contents. Usage will result in noticeable slowdown. Calculated CRCs are stored in hash maps while running so that a plugin's CRC is only calculated a maximum of once. Subsequent checks will be faster than file checks but still slower than variable checks.
 </ol>
 <p>In order to reduce the effect of conditional evaluation on BOSS's execution time, efficient use of conditionals is required. For example, the following:
 <div class="codebox">IF (=1.2|Mod1.esp) MOD: Mod2.esp
@@ -339,13 +344,13 @@ IF ($Mod1Correct) MOD: Mod5.esp</div>
 
 <h3 id="mf2-cond-shorthands">Conditional Message Shorthand</h3>
 <p style="font-weight:bold;">This is MF2.1 functionality with MF2.2 extensions.
-<p><b>In MF2.1:</b> The shorthand can only be used by MF2 incompatibility and requirement messages; <code>,</code> cannot be used to separate items; checksum and variable conditions cannot be used at all; incompatibility messages cannot use version checks.
+<p><b>In MF2.1:</b> The shorthand can only be used by MF2 incompatibility and requirement messages; <code>,</code> cannot be used to separate items; checksum, variable and regular expression conditions cannot be used at all; incompatibility messages cannot use version checks.
 <p>While conditionals can be used to make messages appear in a user's BOSSlog only under certain circumstances, the implementation described above is unsuitable for lists of independent mods such as those found in incompatibility and requirement messages as to cover all combinations would require several message lines.
 <p>To resolve this issue, a shorthand is provided for generating messages where each item's display is independently conditional. The shorthand goes in place of the <code>[message]</code> used in the syntax explained by the <q><a href="#common-messages">Message Lines</a></q> section above and is as follows:</p>
 
-<code>"[comparator][version 1]":"[file 1]"="[mod 1]" | "[checksum]":"[file 2]"="[mod 2]" | "[comparator][version 3]":"[file 3]" | "[checksum]":"[file 4]" |  "[file 5]" | "[file 6]"="[mod 6]" | $[variable 7]="[mod 7]"</code>
+<code>"[comparator][version 1]":"[file 1]"="[mod 1]" | "[checksum]":"[file 2]"="[mod 2]" | "[comparator][version 3]":"[file 3]" | "[checksum]":"[file 4]" |  "[file 5]" | "[file 6]"="[mod 6]" | $[variable 7]="[mod 7]" | r"[regular expression 8]"="[mod 8]"</code>
 
-<p>Each item in the list is separated by a <code>|</code> or <code>,</code> character (the latter not shown above). There is no limit to the number of items that may be listed. <code>[file]</code>, <code>[comparator]</code>, <code>[version]</code>, <code>[variable]</code> and <code>[checksum]</code> are all defined as in the <q><a href="#mf2-cond">General Conditionals</a></q> section above. <code>[mod]</code> can be any string of characters not containing double quote characters <code>"</code>, though as the name suggests it is intended to be the name of the mod that the plugin tested for belongs to.
+<p>Each item in the list is separated by a <code>|</code> or <code>,</code> character (the latter not shown above). There is no limit to the number of items that may be listed. <code>[file]</code>, <code>[comparator]</code>, <code>[version]</code>, <code>[variable]</code>, <code>[checksum]</code> and <code>[regular expression]</code> are all defined as in the <q><a href="#mf2-cond">General Conditionals</a></q> section above. <code>[mod]</code> can be any string of characters not containing double quote characters <code>"</code>, though as the name suggests it is intended to be the name of the mod that the plugin tested for belongs to.
 
 <p>As with all message lines, you can also prepend a conditional before the keyword, if the whole message is conditional on something.
 
@@ -358,6 +363,7 @@ IF ($Mod1Correct) MOD: Mod5.esp</div>
 		<li>neither <code>"[comparator][version]":</code> nor <code>"[checksum]":</code> are given then the item's condition is <code>"[file]"</code>
 	</ul>
 	<li>If <code>$[variable]</code> is given then that is the item's condition.
+ <li>If <code>r"[regular expression]"</code> is given then that is the item's condition.
 </ul>
 <p>For requirement messages:
 <ul>
@@ -374,7 +380,7 @@ IF ($Mod1Correct) MOD: Mod5.esp</div>
 	<li><code>="[mod]"</code> is given: <code>[mod]</code> will be printed in the message.
 	<li><code>="[mod]"</code> is not given: <code>[file]</code> will be printed in the message.
 </ul>
-<p>Note that if the item contains <code>$[variable]</code>, it <b>must</b> also contain <code>="[mod]"</code>. If no items are printed in the message, then the message itself will not be displayed. The format of the output is
+<p>Note that if the item contains <code>$[variable]</code> or <code>r"[regular expression]"</code>, it <b>must</b> also contain <code>="[mod]"</code>. If no items are printed in the message, then the message itself will not be displayed. The format of the output is
 <div class="logbox"><ul style="list-style:none;"><li>Incompatible with: "[mod 1]", "[file 2]"</ul></div>
 <p>or
 <div class="logbox"><ul style="list-style:none;"><li>Requires: "[mod 1]", "[file 2]"</ul></div>

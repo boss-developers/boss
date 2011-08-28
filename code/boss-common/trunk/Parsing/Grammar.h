@@ -87,7 +87,11 @@ namespace boss {
 	//Checks if the given mod has the given checksum.
 	void CheckSum(bool& result, unsigned int sum, string file);
 
+	//Checks if the given file exists.
 	void CheckFile(bool& result, string file);
+
+	//Checks if a file which matches the given regex exists.
+	void CheckRegex(bool& result, string reg);
 
 	//Evaluate a single conditional.
 	void EvaluateConditional(bool& result, metaType type, bool condition);
@@ -115,7 +119,7 @@ namespace boss {
 		qi::rule<string::const_iterator, fs::path(), Skipper> itemName;
 		qi::rule<string::const_iterator, vector<message>(), Skipper> itemMessages;
 		qi::rule<string::const_iterator, message(), Skipper> itemMessage, globalMessage;
-		qi::rule<string::const_iterator, string(), Skipper> charString, messageString, variable, file, version, andOr, metaLine, messageVersionCRC, messageModString, messageModVariable;
+		qi::rule<string::const_iterator, string(), Skipper> charString, messageString, variable, file, version, andOr, metaLine, messageVersionCRC, messageModString, messageModVariable, regexFile;
 		qi::rule<string::const_iterator, keyType(), Skipper> messageKeyword;
 		qi::rule<string::const_iterator, bool(), Skipper> conditional, conditionals, condition, oldConditional;
 		

@@ -21,6 +21,7 @@
 #include <boost/spirit/include/phoenix_bind.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
+#include <boost/regex.hpp>
 #include <sstream>
 
 namespace boss {
@@ -217,7 +218,6 @@ namespace boss {
 			} else
 				file_path = data_path;
 		}
-
 	}
 
 	//Checks if the given mod has a version for which the comparison holds true.
@@ -286,11 +286,57 @@ namespace boss {
 		return;
 	}
 
+	//Checks if the given file exists.
 	void CheckFile(bool& result, string file) {
 		result = false;
 		fs::path file_path;
 		GetPath(file_path,file);
 		result = fs::exists(file_path / file);
+	}
+
+	//Checks if a file which matches the given regex exists.
+	//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
+	//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
+	//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
+	//be removed when getting the path and filename.
+	void CheckRegex(bool& result, string reg) {
+		result = false;
+		fs::path file_path;
+		//If the regex includes '/' or '\\' then it includes folders. Need to split the regex into the parent path and the filename.
+		//No reason for the regex to include both.
+		if (reg.find("/") != string::npos) {
+			size_t pos1 = reg.rfind("/");
+			string p = reg.substr(0,pos1);
+			reg = reg.substr(pos1+1);
+			file_path = fs::path(p);
+		} else if (reg.find("\\\\") != string::npos) {
+			size_t pos1 = reg.rfind("\\\\");
+			string p = reg.substr(0,pos1);
+			reg = reg.substr(pos1+2);
+			boost::algorithm::replace_all(p,"\\\\","\\");
+			file_path = fs::path(p);
+		} else if (Tidy(p.extension().string()) == ".dll") {
+			if (fs::exists(data_path / "OBSE"))
+				file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
+			else if (fs::exists(data_path / "FOSE"))
+				file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
+			else if (fs::exists(data_path / "NVSE"))
+				file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+			else if (fs::exists(data_path / "SKSE"))
+				file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+		} else
+			file_path = data_path;
+		const boost::regex regex(reg);
+
+		fs::directory_iterator iter_end;
+		for (fs::directory_iterator itr(file_path); itr!=iter_end; ++itr) {
+			if (fs::is_regular_file(itr->status())) {
+				if (boost::regex_match(itr->path().filename().string(),regex)) {
+					result = true;
+					break;
+				}
+			}
+		}
 	}
 
 	//Evaluate a single conditional.
@@ -318,7 +364,7 @@ namespace boss {
 		fs::path file_path;
 		GetPath(file_path,file);
 		bool addItem = false;
-		if (IsPlugin(file)) {
+		if (IsPlugin(file)) {  //Might not actually be a plugin. Need to re-think.
 			if (fs::exists(file_path / file)) {  //File exists. Was a version or checksum given? 
 				if (!version.empty()) {
 					bool versionCheck;
@@ -434,9 +480,10 @@ namespace boss {
 			>> '\"' >> lit(":")) 
 			| eps;
 
-		messageModVariable %=
+		messageModVariable %=  //This ain't good enough. The three resulting strings are indistinguishable.
 			file
-			| ('$' >> +(char_ - '='));
+			| ('$' >> +(char_ - '='))
+			| (no_case['r'] >> lit('\"') > +(char_ - '\"') > '\"');
 
 		messageKeyword %= no_case[masterlistMsgKey];
 
@@ -456,6 +503,7 @@ namespace boss {
 			| version									[phoenix::bind(&CheckVersion, _val, _1)]
 			| (hex > '|' > file)						[phoenix::bind(&CheckSum, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
 			| file										[phoenix::bind(&CheckFile, _val, _1)]
+			| regexFile									[phoenix::bind(&CheckRegex, _val, _1)]
 			;
 
 		variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
@@ -467,6 +515,8 @@ namespace boss {
 			> lexeme[+(char_ - '|')]
 			> char_('|')
 			> file;
+
+		regexFile %= no_case['r'] > file;
 
 		modList.name("modList");
 		metaLine.name("metaLine");
