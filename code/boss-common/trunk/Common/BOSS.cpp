@@ -880,14 +880,14 @@ int main(int argc, char *argv[]) {
 			if (!skip_version_parse) {
 				string version = GetModHeader(Modlist[i].name);
 				if (!version.empty())
-					recogModContent += "&nbsp;<span class='version'>Version "+EscapeHTMLSpecial(version)+"</span>";
+					recogModContent += "<span class='version'>&nbsp;Version "+EscapeHTMLSpecial(version)+"</span>";
 			}
 			if (IsGhosted(data_path / Modlist[i].name)) {
-				recogModContent += "&nbsp;<span class='ghosted'>Ghosted</span>";
+				recogModContent += "<span class='ghosted'>&nbsp;Ghosted</span>";
 				ghostModNo++;
 			}
 			if (show_CRCs)
-				recogModContent += "&nbsp;<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
+				recogModContent += "<span class='crc'>&nbsp;Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
 			//Now change the file's date, if it is not the game's master file.
 			if (!IsMasterFile(Modlist[i].name.string()) && !trial_run) {
 				//Calculate the new file time.
@@ -930,14 +930,14 @@ int main(int argc, char *argv[]) {
 			if (!skip_version_parse) {
 				string version = GetModHeader(Modlist[i].name);
 				if (!version.empty())
-					unrecogModContent += "&nbsp;<span class='version'>Version "+EscapeHTMLSpecial(version)+"</span>";
+					unrecogModContent += "<span class='version'>&nbsp;Version "+EscapeHTMLSpecial(version)+"</span>";
 			}
 			if (IsGhosted(data_path / Modlist[i].name)) {
-				unrecogModContent += "&nbsp;<span class='ghosted'>Ghosted</span>";
+				unrecogModContent += "<span class='ghosted'>&nbsp;Ghosted</span>";
 				ghostModNo++;
 			}
 			if (show_CRCs)
-				unrecogModContent += "&nbsp;<span class='crc'>Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
+				unrecogModContent += "<span class='crc'>&nbsp;Checksum: " + IntToHexString(GetCrc32(data_path / Modlist[i].name)) + "</span>";
 			
 			if (!trial_run) {
 				modfiletime = esmtime + 86400 + (recModNo + unrecModNo)*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute and adding 86,400 on increases it by a day. Using unrecModNo instead of i to avoid increases for group entries.

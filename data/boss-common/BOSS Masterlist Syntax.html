@@ -348,7 +348,7 @@ IF ($Mod1Correct) MOD: Mod5.esp</div>
 <p>While conditionals can be used to make messages appear in a user's BOSSlog only under certain circumstances, the implementation described above is unsuitable for lists of independent mods such as those found in incompatibility and requirement messages as to cover all combinations would require several message lines.
 <p>To resolve this issue, a shorthand is provided for generating messages where each item's display is independently conditional. The shorthand goes in place of the <code>[message]</code> used in the syntax explained by the <q><a href="#common-messages">Message Lines</a></q> section above and is as follows:</p>
 
-<code>"[comparator][version 1]":"[file 1]"="[mod 1]" | "[checksum]":"[file 2]"="[mod 2]" | "[comparator][version 3]":"[file 3]" | "[checksum]":"[file 4]" |  "[file 5]" | "[file 6]"="[mod 6]" | $[variable 7]="[mod 7]" | r"[regular expression 8]"="[mod 8]"</code>
+<code>"[comparator][version 1]":"[file 1]"="[mod 1]" | [checksum 2]:"[file 2]"="[mod 2]" | "[comparator][version 3]":"[file 3]" | [checksum 4]:"[file 4]" |  "[file 5]" | "[file 6]"="[mod 6]" | $[variable 7]="[mod 7]" | r"[regular expression 8]"="[mod 8]"</code>
 
 <p>Each item in the list is separated by a <code>|</code> or <code>,</code> character (the latter not shown above). There is no limit to the number of items that may be listed. <code>[file]</code>, <code>[comparator]</code>, <code>[version]</code>, <code>[variable]</code>, <code>[checksum]</code> and <code>[regular expression]</code> are all defined as in the <q><a href="#mf2-cond">General Conditionals</a></q> section above. <code>[mod]</code> can be any string of characters not containing double quote characters <code>"</code>, though as the name suggests it is intended to be the name of the mod that the plugin tested for belongs to.
 
@@ -359,8 +359,8 @@ IF ($Mod1Correct) MOD: Mod5.esp</div>
 	<li>If <code>"[file]"</code> is given and
 	<ul>
 		<li><code>"[comparator][version]":</code> is given then the item's condition is <code>[comparator][version]|"[file]"</code>.
-		<li><code>"[checksum]":</code> is given then the item's condition is <code>[checksum]|"[file]"</code>
-		<li>neither <code>"[comparator][version]":</code> nor <code>"[checksum]":</code> are given then the item's condition is <code>"[file]"</code>
+		<li><code>[checksum]:</code> is given then the item's condition is <code>[checksum]|"[file]"</code>
+		<li>neither <code>"[comparator][version]":</code> nor <code>[checksum]:</code> are given then the item's condition is <code>"[file]"</code>
 	</ul>
 	<li>If <code>$[variable]</code> is given then that is the item's condition.
  <li>If <code>r"[regular expression]"</code> is given then that is the item's condition.

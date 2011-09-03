@@ -315,7 +315,7 @@ namespace boss {
 			reg = reg.substr(pos1+2);
 			boost::algorithm::replace_all(p,"\\\\","\\");
 			file_path = fs::path(p);
-		} else if (Tidy(p.extension().string()) == ".dll") {
+		} else if (Tidy(fs::path(reg).extension().string()) == ".dll") {
 			if (fs::exists(data_path / "OBSE"))
 				file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
 			else if (fs::exists(data_path / "FOSE"))
@@ -361,11 +361,15 @@ namespace boss {
 	//Most message types would make sense for the message to display if the condition evaluates to true. (eg. incompatibilities)
 	//Requirement messages need the condition to eval to false.
 	void EvaluateConditionalMessage(string& message, string version, string file, string mod) {
-		fs::path file_path;
-		GetPath(file_path,file);
 		bool addItem = false;
-		if (IsPlugin(file)) {  //Might not actually be a plugin. Need to re-think.
+
+		if (file[0] == '\"') {  //It's a file.
+			file = file.substr(1,file.length()-2);  //Cut off the quotes.
+					
+			fs::path file_path;
+			GetPath(file_path,file);
 			if (fs::exists(file_path / file)) {  //File exists. Was a version or checksum given? 
+				
 				if (!version.empty()) {
 					bool versionCheck;
 					if (version[0] == '>' || version[0] == '=' || version[0] == '<')  //Version
@@ -380,12 +384,21 @@ namespace boss {
 					addItem = true;
 			} else if (currentMessageType == REQ)  //File isn't installed.
 					addItem = true;
-		} else {  //File is actually a masterlist variable.
+		} else if (file[0] == '$') {  //File is actually a masterlist variable.
+			file = file.substr(1);  //Cut off the '$'.
 			bool varExists;
 			CheckVar(varExists, file);
 			if (varExists && currentMessageType != REQ)
 				addItem = true;
 			else if (!varExists && currentMessageType == REQ)
+				addItem = true;
+		} else {  //File is actually a regex.
+			file = file.substr(2,file.length()-3); //Cut off starting r" and ending ".
+			bool regexMatch;
+			CheckRegex(regexMatch, file);
+			if (regexMatch && currentMessageType != REQ)
+				addItem = true;
+			else if (!regexMatch && currentMessageType == REQ)
 				addItem = true;
 		}
 		if (addItem) {
@@ -471,19 +484,20 @@ namespace boss {
 
 		messageModString %=
 			(lit("=") >> file) 
-			| eps;
+			| "";
 
 		messageVersionCRC %=
-			('\"' >> (
-					((char_('=') | char_('>') | char_('<')) >> lexeme[+(char_ - '\"')]) 
-					| +(xdigit - '\"'))  
-			>> '\"' >> lit(":")) 
-			| eps;
+			(
+				(lexeme[('"' >> (char_('=') | char_('>') | char_('<')) > +(char_ - '"') > lit('"'))] 
+				| +(xdigit - ':')) 
+				>> ':'
+			) 
+			| "";
 
-		messageModVariable %=  //This ain't good enough. The three resulting strings are indistinguishable.
-			file
-			| ('$' >> +(char_ - '='))
-			| (no_case['r'] >> lit('\"') > +(char_ - '\"') > '\"');
+		messageModVariable %= 
+			lexeme[(char_('"') > +(char_ - '"') > char_('"'))]
+			| (char_('$') > +(char_ - '='))
+			| (no_case[char_('r')] >> lexeme[char_('"') > +(char_ - '"') > char_('"')]);
 
 		messageKeyword %= no_case[masterlistMsgKey];
 
@@ -508,7 +522,7 @@ namespace boss {
 
 		variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
 
-		file %= lexeme['\"' > +(char_ - '\"') > '\"'];  //An OBSE plugin or a mod plugin.
+		file %= lexeme['"' > +(char_ - '"') > '"'];  //An OBSE plugin or a mod plugin.
 
 		version %=   //A version, followed by the mod it applies to.
 			(char_('=') | char_('>') | char_('<'))
@@ -550,6 +564,7 @@ namespace boss {
 		on_error<fail>(messageString,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(messageVersionCRC,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(messageModString,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageModVariable,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(messageKeyword,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(oldConditional,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(conditionals,phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));

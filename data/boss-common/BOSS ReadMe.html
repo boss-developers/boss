@@ -24,25 +24,25 @@
 	<li><a href="#features">Features &amp; Introduction</a>
 	<li><a href="#install">Installation &amp; Basic Usage</a>
 	<li><a href="#remove">Uninstallation</a>
-	<li><a href="#advanced">General &amp; Advanced Usage</a>
+	<li><a href="#general">General Usage</a>
 	<ol style="list-style:lower-alpha;">
 		<li><a href="#gui">The Graphical User Interface</a>
+  <li><a href="#updates">Keeping BOSS Up-To-Date</a>
 		<li><a href="#bosslog">The BOSS Log</a>
 		<li><a href="#dirtymods">Dirty Edits, Mod Cleaning &amp; CRCs</a>
-		<li><a href="#special">Updating Under Special Circumstances</a>
-		<li><a href="#customising">Customising How BOSS Works</a>
-		<li><a href="#linux">Running BOSS Under Linux</a>
-	</ol>
-	<li><a href="#details">Further Details</a>
-	<ol style="list-style:lower-alpha;">
-		<li><a href="#cli">Command Line Arguments</a>
-		<li><a href="#files">BOSS Changes and Files</a>
 	</ol>
 	<li><a href="#help">Contributions &amp; Help</a>
-	<li><a href="#updates">Updates</a>
+	<li><a href="#advanced">Further Details</a>
+	<ol style="list-style:lower-alpha;">
+		<li><a href="#customising">Customising How BOSS Works</a>
+  <li><a href="#cli">Command Line Arguments</a>
+  <li><a href="#special">Updating Under Special Circumstances</a>
+		<li><a href="#linux">Running BOSS Under Linux</a>
+		<li><a href="#files">BOSS Changes and Files</a>
+	</ol>
 	<li><a href="#troubleshooting">Troubleshooting</a>
 	<ol style="list-style:lower-alpha;">
-		<li><a href="#general">General Problems</a>
+		<li><a href="#general-issues">General Problems</a>
 		<li><a href="#permissions">File Permissions</a>
 		<li><a href="#international">International Character Support</a>
 		<li><a href="#errors">Error Messages</a>
@@ -57,21 +57,21 @@
 
 <div id="features"><h1>Features &amp; Introduction</h1>
 <ul>
-	<li>Correctly positions over 12,100 TES IV: Oblivion mods and counting, including such popular mods as FCOM, <abbr title="Oscuro's Oblivion Overhaul">OOO</abbr>, <abbr title="Martigen's Monster Mod">MMM</abbr>, Better Cities, Open Cities, Race Balancing Project and many others.
-	<li>Correctly positions over 2,600 Fallout 3 mods and counting.
-	<li>Correctly positions over 2,500 Fallout: New Vegas mods and counting.
+	<li>Correctly positions over 12,100 TES IV: Oblivion mod plugins and counting, including such popular mods as FCOM, <abbr title="Oscuro's Oblivion Overhaul">OOO</abbr>, <abbr title="Martigen's Monster Mod">MMM</abbr>, Better Cities, Open Cities, Race Balancing Project and many others.
+	<li>Correctly positions over 2,600 Fallout 3 mod plugins and counting.
+	<li>Correctly positions over 2,500 Fallout: New Vegas mod plugins and counting.
 	<li>Provides support for sorting mods used in Nehrim - At Fate's Edge installs.
 	<li>Provides preliminary support for TES V: Skyrim.
-	<li>Provides a large number of usage notes for many mods, including requirements, incompatibilities, updates and bug warnings.
+	<li>Provides a large number of usage notes for many plugins, including requirements, incompatibilities, updates and bug warnings.
 	<li>Provides detection and warning of installation mistakes for some popular mods, such as FCOM.
-	<li>Displays the version number of mods when it is available.
+	<li>Displays the version number of plugins when it is available.
 	<li>Provides Bash Tag suggestions that are automatically applied by Wrye Bash (for Oblivion), Wrye Flash (for Fallout 3) or Wrye Flash NV (for Fallout: New Vegas).
-	<li>Sorts mod files ghosted by Wrye Bash/Flash/Flash NV.
+	<li>Sorts plugins ghosted by Wrye Bash/Flash/Flash NV.
 	<li>Allows easy user customisation of mod positions and the messages provided.
 	<li>Includes a <abbr title="Graphical User Interface">GUI</abbr> for easily accessing all of Better Oblivion Sorting Software's functions, including launching it with different settings, and a semi-automatic updater to ensure you always have the latest version installed.
 	<li>Is under constant development and improvement by a team of modders and experts on all supported games.
 </ul>
-<p>Better Oblivion Sorting Software (BOSS) will re-order your mods to their correct positions, putting any mods it doesn't recognise after them, in the same order as they were before BOSS was run.
+<p>Better Oblivion Sorting Software (BOSS) will re-order your mod plugins to their correct positions, putting any mods it doesn't recognise after them, in the same order as they were before BOSS was run.
 <p>BOSS is designed to assist in the installation and usage of mods, especially more complex mods such as FCOM, MMM, FOOK and nVamp, and help mod users avoid serious conflicts. It is not a complete solution to load ordering issues, as there are far more mods out there 
 (estimated at about 25,000 for Oblivion, 12,000 for Fallout 3 and 6,000 for Fallout: New Vegas) than BOSS knows about. To properly place mods BOSS doesn't know about, a good working knowledge of mod load ordering for the relevant game is still necessary, for which some research and documentation reading will go a long way.
 </div>
@@ -84,7 +84,6 @@
 	<li>If upgrading from an earlier version of BOSS, delete all BOSS files and folders in your game's Data folder (including the BOSS folder, BOSS.exe, masterlist.txt, modlist.txt, modlist.old, BOSSlog.txt and any of BOSS's .bat files).  If you have an edited masterlist, make sure to keep a backup so that your edits are not lost. It is recommended that you instead use the userlist functionality to apply changes to the masterlist.
 	<li>Extract the BOSS archive you downloaded to your game's installation directory (ie. the one containing the Data folder and the game's executable, so one of <q>Oblivion</q>, <q>Fallout 3</q>, <q>Nehrim</q>, <q>fallout new vegas</q> or <q>skyrim</q> depending on your game), so that there is now a BOSS folder alongside the Data folder and the game's executable.
 	<li>In the BOSS folder, run the <q>BOSS.exe</q>. This will download the latest masterlist from the Internet and then sort your mods.
-	<li>Thereafter when running BOSS, you may run it directly from the BOSS.exe to simply update your masterlist then sort your mods, or you can use the GUI to choose how BOSS runs.
 </ol>
 <p>If you are installing BOSS manually and have more than one of the supported games installed, you should install BOSS separately for each one.
 <p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. Wrye Bash/Flash/Flash NV will automatically import and apply Bash Tag 
@@ -96,7 +95,8 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 <p>Delete the BOSS folder in your game's installation folder (ie. the one containing the Data folder and the game's executable, so one of <q>Oblivion</q>, <q>Fallout 3</q>, <q>Nehrim</q>, <q>fallout new vegas</q> or <q>skyrim</q> depending on your game).
 </div>
 
-<div id="advanced"><h1>General &amp; Advanced Usage</h1>
+<div id="general"><h1>General Usage</h1>
+<p>This section gives more information on the parts of BOSS's functionality that users are likely to come into contact with during the course of general usage of BOSS. It gives details on the capabilities of the GUI, information on how to keep BOSS up to date, information on the BOSSlog and its constituent parts, and provides some background information and BOSS-specific notes on the subject of dirty edits and mod cleaning.
 <h2 id="gui">The Graphical User Interface</h2>
 <p>BOSS comes with a <abbr title="Graphical User Interface">GUI</abbr> that provides easy access to all of BOSS's functions and features. It allows you to:
 <ul>
@@ -142,6 +142,34 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 	<li>Launch the <q>Check For Updates</q> functionality, which includes an automatic updater that can get new releases of BOSS for you. The <q>Check For Updates</q> functionality also runs when the GUI launches, but only displays a message if an update was found or there was an error encountered while checking.
 </ul>
 <p>Each setting in the GUI corresponds to a command line parameter and/or an ini setting, the details of which can be found in the <q><a href="#details">Further Details</a></q> and <q><a href="#customising">Customising How BOSS Works</a></q> sections of this ReadMe respectively.</p>
+<br />
+
+<h2 id="updates">Keeping BOSS Up-To-Date</h2>
+<p>It is important that you keep your BOSS installation updated, not only to benefit from the many frequent updates made to the masterlists, but also to benefit from bug fixes, improvements and new features introduced to newer versions of the BOSS and BOSS GUI programs themselves.
+<p>In order to ease the task of keeping BOSS updated, BOSS will by default automatically apply any updates available for the masterlists when it is run, providing that there is an Internet connection available. 
+<p>In addition, the GUI includes a <q>Check For Updates</q> funfor the BOSS and BOSS GUI programs that operates depending on the nature of your BOSS install. The GUI's <q>Check For Updates</q> functionality behaves as outlined below:
+<ol>
+ <li>On launching the GUI, it automatically checks for updates to the BOSS and BOSS GUI programs. If an update is found, it proceeds to the next step. If no update is available, or no Internet connection is present, it will display no message.
+ <ul>
+  <li>If you run the <q>Check For Updates</q> functionality from the GUI's menu option, then it will display messages detailing if no update was found or if there were any errors.
+ </ul>
+ <li>No matter how the update check was started, if an update is available it will prompt the user whether or not to download and install the update. If the user decides not to update, the updater will quit.
+ <li>If the user decides to update, then it will begin downloading the file(s) to the BOSS folder, displaying a progress bar. The download can be cancelled at any time, in which case any downloaded files will be deleted and the updater will quit.
+ <ul>
+  <li>If you previously installed BOSS using the installer, then the updater shall download the installer for the update, otherwise it will download the files as they appear in the manual archive.
+ </ul>
+ <li>Once the download is complete, the updater will install the downloaded file(s).
+ <ul>
+  <li>If the installer was downloaded, it will be launched, and the updater and GUI shall exit. Complete the installation wizard to finish updating.
+  <li>If the manual archive files were downloaded, the old BOSS files (BOSS.exe, the ReadMes) will be deleted and replaced with the new ones. The updater will then tell you to rename the downloaded BOSS GUI file to the correct filename, then exit. You must manually rename the file, deleting the old GUI executable, to complete the update.
+</ol>
+<p>Under certain circumstances the masterlist and program updaters may be unable to function fully. If you have issues using them, see the <q><a href="#special">Updating Under Special Circumstances</a></q> section for alternative methods.
+
+<p>BOSS program updates are also published at the
+<a href="http://www.tesnexus.com/downloads/file.php?id=20516">TES Nexus</a>, 
+<a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">Fallout 3 Nexus</a> and 
+<a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">New Vegas Nexus</a> BOSS pages. For those not using the masterlist updater, the latest masterlist is always on the <a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a>.
+<p>Always make sure to use the latest version of BOSS and the latest masterlist.</p>
 <br />
 
 <h2 id="bosslog">The BOSS Log</h2>
@@ -197,26 +225,37 @@ There are three key pieces of information that are used to accurately describe a
 </ul>
 <p>However, not all unclean mods have all or any of these pieces of information. For unclean mods whose ITM and UDR counts have not been reported, BOSS cannot give them. For unclean mods whose CRCs have not been reported, BOSS cannot give precise notification and so prints a message whether or not the user has cleaned their mod.
 <p>BOSS and the modding communities rely on user contribution of this information to progress. For information on how to contribute, see the <q><a href="#help">Contributions &amp; Help</a></q> section below. If you find that a mod is dirty, you should also report this to the mod's author so that they can fix it.
-<p>There is also another type of unnecessary edit, known as a wild edit, that can also cause problems. These edits are neither Itentical To Master edits nor deleted records, so cannot be automatically cleaned. Cleaning must be manually done in TES4Edit/FO3Edit/FNVEdit. BOSS can still check for mods with these edits if the CRCs of the plugins with wild edits are known, and it can provide notification of these edits and some information on fixing them if they are reported in an official BOSS thread.</p>
-<br />
+<p>There is also another type of unnecessary edit, known as a wild edit, that can also cause problems. These edits are neither Itentical To Master edits nor deleted records, so cannot be automatically cleaned. Cleaning must be manually done in TES4Edit/FO3Edit/FNVEdit. BOSS can still check for plugins with these edits if the CRCs of the plugins with wild edits are known, and it can provide notification of these edits and some information on fixing them if they are reported in an official BOSS thread.
+</div>
 
-<h2 id="special">Updating Under Special Circumstances</h2>
-<p>The vast majority of users will be able to use BOSS's masterlist updater and the GUI's auto-updater with no problems. However, some users' circumstances may be such that the standard method will not work. This section provides instructions for those users.
-<p>The most common special circumstance is when the computer the user has BOSS installed on is not connected to the Internet. Merely transferring BOSS.exe to another computer and running it is not sufficient, as by default BOSS tries to autodetect the game it is installed for, and if there is no game present it will exit with an error. In this circumstance, the following instructions should be used to obtain masterlist updates:
-<ol>
-	<li>Copy <q>BOSS.exe</q> and <q>BOSS GUI.exe</q> from your BOSS folder to the computer with an Internet connection, ensuring they are in the same folder.
-	<li>If your Internet connection is through a proxy, you will also need to copy across your <q>BOSS.ini</q> to ensure the proxy settings you have recorded in it are applied. Make sure you have recorded your proxy settings in your BOSS.ini!
-	<li>Run the BOSS GUI.exe and select the <q>Update Masterlist Only</q> option. For the <q>Game</q> option below, select your game from the drop-down list. This will tell BOSS which game's masterlist to download.
-	<li>Select <q>Run BOSS</q>. Your masterlist will be downloaded into the same folder as your BOSS.exe and BOSS GUI.exe. A BOSSlog will also be created, you can delete this.
-</ol>
-<p>A rarer circumstance is when the user connects to the Internet using a proxy. This is most common in enterprise environments, and such users will generally know if they use a proxy. If you use a proxy to connect to the Internet, you must manually enter your proxy settings into your <q>BOSS.ini</q> settings file. See the section on the BOSS.ini in the <q><a href="#customising">Customising How BOSS Works</a></q> section below for details. BOSS does not support the use of authenticated proxies at this time.
-<p>If your circumstances are such that the computer you have BOSS installed on is not connected to the Internet, or if you use a proxy to connect to the Internet, it is recommended that you avoid using the GUI's auto-updater, simply because it is easier in these circumstances to download new releases through your web browser.
-<p>There may also be other special cases which cause problems for BOSS's updaters that the BOSS team is unaware of. If you are having issues using the updaters, contact the BOSS team for support.</p>
-<br />
+<div id="help"><h1>Contributions &amp; Help</h1>
+<p>General discussion, and the submission of questions, suggestions and unrecognised or unclean plugins, takes place in BOSS's official threads for 
+<a href="http://forums.bethsoft.com/?showtopic=1195328">Oblivion</a>, 
+<a href="http://forums.bethsoft.com/?showtopic=1132338">Nehrim</a>, 
+<a href="http://forums.bethsoft.com/?showtopic=1175276">Fallout 3</a> and 
+<a href="http://forums.bethsoft.com/?showtopic=1203068">Fallout: New Vegas</a>.
+<p>User contribution of additions and corrections to the masterlist are vital to the upkeep of BOSS. Let us know what you know.
+<p>Lists of unrecognised plugins are welcome but the only way we can include them in the database in a timely way is if we get:
+<ul>
+	<li>The ESP/ESM file name(s).
+	<li>A link to where the description, mod or readme can be found to read or download.
+	<li>A brief description of each mod will also help. Feel free to make load order suggestions.
+</ul>
+<p>Lists of unclean plugins are also very welcome, but for the report to be most useful we require:
+<ul>
+	<li>The ESP/ESM file name(s).
+	<li>The number of records removed (the ITM count) as shown by TES4Edit/FO3Edit/FNVEdit (not the number of records processed).
+	<li>The number of records undeleted (the UDR count) as shown by TES4Edit/FO3Edit/FNVEdit (not the number of records processed).
+	<li>The CRC(s) of the unlcean ESP/ESM file name(s). Make sure that the CRCs are of the uncleaned files, not the files after cleaning. The CRC(s) may be calculated using BOSS, Wrye Bash/Flash/Flash NV or 7-zip, with other sources being unverified as correct. In the case of 7-zip, the <q>CRC checksum for data</q> is the one required.
+</ul>
+</div>
+
+<div id="advanced"><h1>Advanced Usage</h1>
+<p>This section gives information on how to operate BOSS under certain conditions, how to customise its behaviour more fully than previously covered, and provides details for all the BOSS files.
 
 <h2 id="customising">Customising How BOSS Works</h2>
-<p>Users can customise how BOSS handles their mods through the included User Rules feature. This feature allows you to define the positions of mods not in the masterlist, and to override the masterlist positions of mods,
-as well as edit the output messages of mods, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes are not lost. All the information on the User Rules feature can be found in the "BOSS User Rules ReadMe.html" file.
+<p>Users can customise how BOSS handles their plugins through the included User Rules feature. This feature allows you to define the positions of plugins not in the masterlist, and to override the masterlist positions of plugins,
+as well as edit the output messages of plugins, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes are not lost. All the information on the User Rules feature can be found in the "BOSS User Rules ReadMe.html" file.
 <p>For users who wish to be provided with a GUI feature for managing their userlist and own a copy of Microsoft Word 2003, 2007 or 2010, Surazal's <a href="">BOSS Userlist Manager</a> is a comprehensive utility that provides a range of features that may prove useful.
 <p>Users can also edit a number of BOSS's default settings in the BOSS.ini. As this is where BOSS gets its settings from, care must be taken to edit it correctly to prevent breaking BOSS's operation. If BOSS is run and it cannot find a BOSS.ini, it will generate a new one. If BOSS is run with both a BOSS.ini present and command line parameters set, the command line parameters override the settings in BOSS.ini. The ini is split into the following sections:
 <h4>BOSS.InternetSettings</h4>
@@ -244,7 +283,7 @@ as well as edit the output messages of mods, and more. In addition, this is all 
 		<tr><td>Debug<td><code>0</code><td><code>0</code>, <code>1</code><td>Add source code references to debug output.
 		<tr><td>DisplayCRCs<td><code>0</code><td><code>0</code>, <code>1</code><td>Calculate and display the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr> and its installed plugins.
 		<tr><td>BOSSlogFormat<td><code>html</code><td><code>html</code>, <code>text</code><td>Specify the format of the BOSSlog generated.
-		<tr><td>DoTrialRun<td><code>0</code><td><code>0</code>, <code>1</code><td>Run BOSS and simulate its changes to your load order without actually reordering your mods.
+		<tr><td>DoTrialRun<td><code>0</code><td><code>0</code>, <code>1</code><td>Run BOSS and simulate its changes to your load order without actually reordering your plugins.
 </table>
 
 <h4>GUI.Settings</h4>
@@ -308,12 +347,6 @@ as well as edit the output messages of mods, and more. In addition, this is all 
 </table>
 <br />
 
-<h2 id="linux">Running BOSS Under Linux</h2>
-<p>It is possible to run BOSS on Linux through the Wine compatibility layer, though no official support for doing so is given. Installation and usage is as on Windows. 
-It is also possible to compile BOSS natively for Linux, and makefiles are provided, although there is again no official support for doing so. Native Linux builds are case-sensitive in their recognition of mods in the masterlist, and while mods are generally added with the correct case, occasionally a mod might have the incorrect case which would cause problems for a user with a native Linux build.
-</div>
-
-<div id="details"><h1>Further Details</h1>
 <h2 id="cli">Command Line Arguments</h2>
 <p>The BOSS GUI acts as a frontend to BOSS, and its output and run options correspond to BOSS's command line arguments. The syntax for these arguments is:
 <p><code>boss [-hVuosndctU] [-g [game]] [-r [level]] [-v [level]] [-f [type]] [-T [type]] [-H [hostname]] [-P [port]]</code>
@@ -322,16 +355,16 @@ It is also possible to compile BOSS natively for Linux, and makefiles are provid
 <p><code>-V [ --version ]</code>
 <p>Prints the a banner displaying the program name and version number to the command line, then exits.
 <p><code>-u [ --update ]</code>
-<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then sorts your mods. This behaviour is enabled by default, so the command line parameter will have no effect except when the automatic masterlist updating has been disabled in the ini.
+<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then sorts your plugins. This behaviour is enabled by default, so the command line parameter will have no effect except when the automatic masterlist updating has been disabled in the ini.
 <p><code>-o [ --only-update ]</code>
-<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then does <b>not</b> sort your mods.
+<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then does <b>not</b> sort your plugins.
 <p><code>-g [ --game ] [ game ]</code>
-<p>Overrides game autodetection. The valid values of the argument are: <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code> and <code>Skyrim</code>. If the game specified is not detected, BOSS will fail before any mods are sorted, so this should be used in conjunction with -o.
+<p>Overrides game autodetection. The valid values of the argument are: <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code> and <code>Skyrim</code>. If the game specified is not detected, BOSS will fail before any plugins are sorted, so this should be used in conjunction with -o.
 <p><code>-s [ --silent ]</code>
 <p>Stops BOSS from automatically opening up the BOSSlog in your web browser (or text editor, depending on format chosen) after it has finished running.
 <p><code>-n [ --no-version-parse ]</code>
-<p>Disables the parsing of each mod's description to extract the author's version information, so it is not printed alongside the other data in the BOSSlog. This can be used if the version 
-parsing is not working properly for some of your mods and you wish to remove the version notes.
+<p>Disables the parsing of each plugin's description to extract the author's version information, so it is not printed alongside the other data in the BOSSlog. This can be used if the version 
+parsing is not working properly for some of your plugins and you wish to remove the version notes.
 <p><code>-r [ --revert ] [ level ]</code>
 <p>Revert to a previous load order. This parameter optionally accepts values of <code>1</code> or <code>2</code>, indicating how many undo steps to apply. If no option is specified, it defaults to <code>1</code>. A value of <code>1</code> will restore the load order to that stored in modlist.txt. 
 A value of <code>2</code> will restore the load order to that stored in modlist.old. If the modlist that you are reverting to does not exist, BOSS will cancel the undo and display an error message. The modlist files are not updated when BOSS is run with this parameter.
@@ -344,7 +377,7 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 <p><code>-f [ --format ] [ type ]</code>
 <p>Allows the selection of the BOSSlog format. Valid argument values are: <code>html</code> and <code>text</code>. <code>html</code> is the default output format. The <code>text</code> value will print the BOSSlog as plain text into a 'BOSSlog.txt' file, similar to the BOSSlog in BOSS v1.5 and below.
 <p><code>-t [ --trial-run ]</code>
-<p>BOSS runs, but no mods are redated, so your load order is not changed. The BOSSlog still displays the order BOSS would have placed them in, so it is useful for checking what would happen if you ran BOSS on your load order without having to then undo BOSS's changes.
+<p>BOSS runs, but no plugins are redated, so your load order is not changed. The BOSSlog still displays the order BOSS would have placed them in, so it is useful for checking what would happen if you ran BOSS on your load order without having to then undo BOSS's changes.
 <p><code>-U [ --no-update ]</code>
 <p>Inhibits the default automatic masterlist updater, preventing it from running. Must not be used alongside --update,-u.
 <p><code>-T [ --proxy-type ] [ type ]</code>
@@ -352,7 +385,27 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 <p><code>-H [ --proxy-host ] [ hostname ]</code>
 <p>Sets the proxy hostname for the masterlist updater. The hostname may be an actual hostname (eg. <code>proxy.company.com</code>), an IP address (eg. <code>192.168.32.4</code>) or <code>none</code>. <code>none</code> is the default, and is equivalent to there being no proxy.
 <p><code>-P [ --proxy-port ] [ port ]</code>
-<p>Sets the proxy port number for the masterlist updater. The port number may be any valid port number. <code>0</code> is the default, and is equivalent to there being no proxy.</p><br />
+<p>Sets the proxy port number for the masterlist updater. The port number may be any valid port number. <code>0</code> is the default, and is equivalent to there being no proxy.</p>
+<br />
+
+<h2 id="special">Updating Under Special Circumstances</h2>
+<p>The vast majority of users will be able to use BOSS's masterlist updater and the GUI's auto-updater with no problems. However, some users' circumstances may be such that the standard method will not work. This section provides instructions for those users.
+<p>The most common special circumstance is when the computer the user has BOSS installed on is not connected to the Internet. Merely transferring BOSS.exe to another computer and running it is not sufficient, as by default BOSS tries to autodetect the game it is installed for, and if there is no game present it will exit with an error. In this circumstance, the following instructions should be used to obtain masterlist updates:
+<ol>
+	<li>Copy <q>BOSS.exe</q> and <q>BOSS GUI.exe</q> from your BOSS folder to the computer with an Internet connection, ensuring they are in the same folder.
+	<li>If your Internet connection is through a proxy, you will also need to copy across your <q>BOSS.ini</q> to ensure the proxy settings you have recorded in it are applied. Make sure you have recorded your proxy settings in your BOSS.ini!
+	<li>Run the BOSS GUI.exe and select the <q>Update Masterlist Only</q> option. For the <q>Game</q> option below, select your game from the drop-down list. This will tell BOSS which game's masterlist to download.
+	<li>Select <q>Run BOSS</q>. Your masterlist will be downloaded into the same folder as your BOSS.exe and BOSS GUI.exe. A BOSSlog will also be created, you can delete this.
+</ol>
+<p>A rarer circumstance is when the user connects to the Internet using a proxy. This is most common in enterprise environments, and such users will generally know if they use a proxy. If you use a proxy to connect to the Internet, you must manually enter your proxy settings into your <q>BOSS.ini</q> settings file. See the section on the BOSS.ini in the <q><a href="#customising">Customising How BOSS Works</a></q> section below for details. BOSS does not support the use of authenticated proxies at this time.
+<p>If your circumstances are such that the computer you have BOSS installed on is not connected to the Internet, or if you use a proxy to connect to the Internet, it is recommended that you avoid using the GUI's auto-updater, simply because it is easier in these circumstances to download new releases through your web browser.
+<p>There may also be other special cases which cause problems for BOSS's updaters that the BOSS team is unaware of. If you are having issues using the updaters, contact the BOSS team for support.</p>
+<br />
+
+<h2 id="linux">Running BOSS Under Linux</h2>
+<p>It is possible to run BOSS on Linux through the Wine compatibility layer, though no official support for doing so is given. Installation and usage is as on Windows. 
+It is also possible to compile BOSS natively for Linux, and makefiles are provided, although there is again no official support for doing so. Native Linux builds are case-sensitive in their recognition of plugins in the masterlist, and while plugins are generally added with the correct case, occasionally a plugin might have the incorrect case which would cause problems for a user with a native Linux build.</p>
+<br />
 
 <h2 id="files">BOSS Changes and Files</h2>
 <p>The only changes BOSS makes to your game install are to re-date the .esp and .esm files in your Data folder, and create a few files in your BOSS folder. Your game's master file (Oblivion.esm, Nehrim.esm, Fallout3.esm, FalloutNV.esm or Skyrim.esm) is never altered, and all dates are derived from it.
@@ -362,8 +415,8 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 	<tbody>
 		<tr><td>BOSSlog.html<td>The log generated by BOSS that is displayed when BOSS runs. It is replaced every time you run BOSS. You can view it in any web browser.
 		<tr><td>BOSSlog.txt<td>The plain text version of the log, without HTML formatting. It is only created if you specify the 'text' format when running BOSS. You can view it in any text editor.
-		<tr><td>masterlist.txt<td>The list of mods that BOSS recognises, listing them in order and including the notes that are displayed in the BOSSlog. It is the most frequently updated component of BOSS, receiving updates almost every day.
-		<tr><td>modlist.txt<td>Contains the list of your mods in the order they were before you last ran BOSS, which can be used to undo changes to your load order.
+		<tr><td>masterlist.txt<td>The list of plugins that BOSS recognises, listing them in order and including the notes that are displayed in the BOSSlog. It is the most frequently updated component of BOSS, receiving updates almost every day.
+		<tr><td>modlist.txt<td>Contains the list of your plugins in the order they were before you last ran BOSS, which can be used to undo changes to your load order.
 		<tr><td>modlist.old<td>Contains the contents of your modlist.txt before you last ran BOSS, providing a second level of undo for load order changes.
 		<tr><td>userlist.txt<td>Contains your custom rules to be implemented by the User Rules feature.
 		<tr><td>BOSS.ini<td>Stores BOSS's settings, including the default run options, the default BOSSlog filters and more.
@@ -376,42 +429,11 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 </table>
 </div>
 
-<div id="help"><h1>Contributions &amp; Help</h1>
-<p>General discussion, and the submission of questions, suggestions and unrecognised or unclean mods, takes place in BOSS's official threads for 
-<a href="http://forums.bethsoft.com/?showtopic=1195328">Oblivion</a>, 
-<a href="http://forums.bethsoft.com/?showtopic=1132338">Nehrim</a>, 
-<a href="http://forums.bethsoft.com/?showtopic=1175276">Fallout 3</a> and 
-<a href="http://forums.bethsoft.com/?showtopic=1203068">Fallout: New Vegas</a>.
-<p>User contribution of additions and corrections to the masterlist are vital to the upkeep of BOSS. Let us know what you know.
-<p>Lists of unrecognised mods are welcome but the only way we can include them in the database in a timely way is if we get:
-<ul>
-	<li>The ESP/ESM file name(s).
-	<li>A link to where the description, mod or readme can be found to read or download.
-	<li>A brief description of each mod will also help. Feel free to make load order suggestions.
-</ul>
-<p>Lists of unclean mods are also very welcome, but for the report to be most useful we require:
-<ul>
-	<li>The ESP/ESM file name(s).
-	<li>The number of records removed (the ITM count) as shown by TES4Edit/FO3Edit/FNVEdit (not the number of records processed).
-	<li>The number of records undeleted (the UDR count) as shown by TES4Edit/FO3Edit/FNVEdit (not the number of records processed).
-	<li>The CRC(s) of the unlcean ESP/ESM file name(s). Make sure that the CRCs are of the uncleaned files, not the files after cleaning. The CRC(s) may be calculated using BOSS, Wrye Bash/Flash/Flash NV or 7-zip, with other sources being unverified as correct. In the case of 7-zip, the <q>CRC checksum for data</q> is the one required.
-</ul>
-</div>
-
-<div id="updates"><h1>Updates</h1>
-<p>You can check for updates to BOSS then download and install any available using the GUI's <q>Check For Updates</q> functionality. Masterlist updates are by default automatically downloaded by BOSS when it runs.
-<p>BOSS program updates are also published at the
-<a href="http://www.tesnexus.com/downloads/file.php?id=20516">TES Nexus</a>, 
-<a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">Fallout 3 Nexus</a> and 
-<a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">New Vegas Nexus</a> BOSS pages. For those not using the masterlist updater, the latest masterlist is always on the <a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a>.
-<p>Always make sure to use the latest version of BOSS and the latest masterlist.
-</div>
-
 <div id="troubleshooting"><h1>Troubleshooting</h1>
 <p>Although BOSS is simple to use, it has grown to become a relatively complex application. As such, there are some circumstances under which BOSS may not be able to run correctly, due to a variety of possible reasons. In such cases, an error message detailing the problem should be provided. If the program unexpectedly crashes, or you experience 
 a problem for which no error message is given, please report the crash or problem to an official BOSS thread (linked to in the <q><a href="#links">Quick Links</a></q> section below), so that we may fix it.
 <p>If the information below does not help you to solve any problems you are experiencing, please seek further support in one of the official BOSS threads.</p>
-<h2 id="general">General Problems</h2>
+<h2 id="general-issues">General Problems</h2>
 <p>There are a few general reasons why BOSS may fail to function correctly. Check if any of the symptoms listed below fit your issue.
 <ul>
 	<li style="margin-bottom:1.4em;"><b>Symptom:</b> No change in load order.
@@ -426,18 +448,18 @@ a problem for which no error message is given, please report the crash or proble
 		<li><b>Solution:</b> Ensure that the BOSS folder and any files in it are not read-only.
 	</ul>
 	
-	<li style="margin-bottom:1.4em;"><b>Symptom:</b> BOSS does not recognise the mods in my userlist correctly, and/or replaces some of the letters in their names with question marks.
+	<li style="margin-bottom:1.4em;"><b>Symptom:</b> BOSS does not recognise the plugins in my userlist correctly, and/or replaces some of the letters in their names with question marks.
 	<ul>
 		<li><b>Issue:</b> Your userlist is not encoded in UTF-8.
 		<li><b>Solution:</b> Save your userlist in the UTF-8 encoding.
-		<li><b>Issue:</b> You had mods in your userlist with non-Latin letters in their names, and saved your userlist in a non-UTF8 encoding before saving it in UTF-8.
+		<li><b>Issue:</b> You had plugins in your userlist with non-Latin letters in their names, and saved your userlist in a non-UTF8 encoding before saving it in UTF-8.
 		<li><b>Solution:</b> Rewrite the filenames in your userlist, copy/pasting them from the files themselves to ensure they are correct.
 	</ul>
 	
-	<li><b>Symptom:</b> Some mods have the wrong or no version number given in the BOSSlog.
+	<li><b>Symptom:</b> Some plugins have the wrong or no version number given in the BOSSlog.
 	<ul>
-		<li><b>Issue:</b> This occurs because BOSS looks for the version number in the plugin's description field. If the mod author has forgotten to update the version number there or not provided one, an incorrect or no version number will be displayed.
-		<li><b>Solution:</b> No solution, other than the mod author including a correct version number in the plugin's description field for a later release.
+		<li><b>Issue:</b> This occurs because BOSS looks for the version number in the plugin's description field. If the plugin author has forgotten to update the version number there or not provided one, an incorrect or no version number will be displayed.
+		<li><b>Solution:</b> No solution, other than the plugin author including a correct version number in the plugin's description field for a later release.
 	</ul>
 	
 </ul>
@@ -462,7 +484,7 @@ a problem for which no error message is given, please report the crash or proble
 <br />
 
 <h2 id="international">International Character Support</h2>
-<p>BOSS provides support for sorting mods containing characters from any language via the Unicode character encoding, specifically UTF-8. All BOSS's files are encoded in UTF-8 by default. However, if you created your userlist.txt before BOSS automatically created one, you will probably need to convert it to the UTF-8 encoding, as it is not Notepad's default encoding. Below are some instructions for converting a file's encoding to UTF-8:
+<p>BOSS provides support for sorting plugins containing characters from any language via the Unicode character encoding, specifically UTF-8. All BOSS's files are encoded in UTF-8 by default. However, if you created your userlist.txt before BOSS automatically created one, you will probably need to convert it to the UTF-8 encoding, as it is not Notepad's default encoding. Below are some instructions for converting a file's encoding to UTF-8:
 <ul>
 	<li>Using Notepad:
 		<ol>
@@ -776,9 +798,9 @@ threads when you read this. Just navigate through to the latest thread to post a
 <p><b>Version 1.8.1</b> - <i>2011</i>
 <ul>
 	<li>Fixed: A bug where if a plugin filename started with "SET" or "GLOBAL" (or case variations) then BOSS would incorrectly classify it as a variable or global message line and so result in syntax errors.
-	<li>Fixed: User Rules which failed to add a mod into the beginning or end of a group still incremented the number of recognised mods as if the rule application had succeeded.
+	<li>Fixed: User Rules which failed to add a plugin into the beginning or end of a group still incremented the number of recognised plugins as if the rule application had succeeded.
 	<li>Changed: Added whitespace characters between plugin filenames, versions, ghosted labels and CRCs to make plaintext more readable.
-	<li>Changed: Userlist rules which reference mods that are not installed now have warning messages reported instead of error messages.
+	<li>Changed: Userlist rules which reference plugins that are not installed now have warning messages reported instead of error messages.
 	<li>Changed: Masterlist keywords can now be case-insensitive.
 	<li>Changed: Content and slight formatting changes to BOSSlog:
 	<ul>
@@ -806,7 +828,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 		<li>Moved the section to the top of the BOSSlog.
 		<li>Renamed the section from <q>Plugin Numbers</q> to <q>Summary</q>.
 		<li>Added message counts, with numbers of total messages, warning messages and error messages.
-		<li>Added a notice that is displayed when there has been no change in the recognised mod list since BOSS was last run.
+		<li>Added a notice that is displayed when there has been no change in the recognised plugin list since BOSS was last run.
 	</ul>
 	
 	<li>Added: A settings file (<q>BOSS.ini</q>) to allow users to set default behaviours, options and BOSSlog formatting styles.
@@ -847,9 +869,9 @@ threads when you read this. Just navigate through to the latest thread to post a
 <p><b>Version 1.7</b> - <i>10 June 2011</i>
 <ul>
 	<li>Fixed: A bug in the masterlist updater causing the wrong masterlist version to be displayed.
-	<li>Changed: Ghosted mods must now be referenced in user rules without their ".ghost" extension.
+	<li>Changed: Ghosted plugins must now be referenced in user rules without their ".ghost" extension.
 	<li>Changed: Moved all BOSS's files into a new BOSS folder, located in the game's installation directory, one level above the Data folder.
-	<li>Changed: Switched to using the Unicode character encoding, allowing the sorting of mods with international characters in their names.
+	<li>Changed: Switched to using the Unicode character encoding, allowing the sorting of plugins with international characters in their names.
 	<ul>
 		<li>BOSS now uses the UTF-8 encoding for all its operations.
 		<li>All BOSS files must now be encoded in UTF-8: this includes the modlists, masterlist and userlist.
@@ -880,25 +902,25 @@ threads when you read this. Just navigate through to the latest thread to post a
 </ul>
 <p><b>Version 1.65</b> - <i>1 December 2010</i>
 <ul>
-	<li>Fixed: Userlist parser giving incorrect error messages for rules inserting mods into groups.
+	<li>Fixed: Userlist parser giving incorrect error messages for rules inserting plugins into groups.
 	<li>Fixed: BOSS reporting some plugins as unknown when they are ghosted.
 </ul>
 <p><b>Version 1.64</b> - <i>28 November 2010</i>
 <ul>
-	<li>Fixed: Keywords, mods and groups in user rules being unrecognised if they are padded by spaces.
-	<li>Fixed: Non-ASCII characters in mod filenames causing crashes.
+	<li>Fixed: Keywords, plugins and groups in user rules being unrecognised if they are padded by spaces.
+	<li>Fixed: Non-ASCII characters in plugin filenames causing crashes.
 	<li>Changed: Slight improvements to user rule error reporting when sorting groups that do not exist.
-	<li>Added: <code>--only-update,-o</code> command line parameter to only update the masterlist without then sorting any mods.
+	<li>Added: <code>--only-update,-o</code> command line parameter to only update the masterlist without then sorting any plugins.
 	<li>Added: <q>BOSS - Print Debug Info.bat</q> file to make debugging of BOSS errors simpler.
 	<li>Added: Nullsoft Scriptable Install installer for simpler BOSS installation.
 </ul>
 <p><b>Version 1.63</b> - <i>15 November 2010</i>
 <ul>
 	<li>Fixed: Crashing when updating the masterlist if downloading an incorrectly formatted masterlist.
-	<li>Fixed: Mods with duplicate masterlist entries causing load order errors.
+	<li>Fixed: Plugins with duplicate masterlist entries causing load order errors.
 	<li>Fixed: Another crash when parsing an incorrectly formatted userlist.
 	<li>Changed: User rule keywords are now case-insensitive.
-	<li>Changed: User rules can no longer sort a mod relative to a mod that is not in the masterlist and has not been sorted by another rule.
+	<li>Changed: User rules can no longer sort a plugin relative to a plugin that is not in the masterlist and has not been sorted by another rule.
 	<li>Added: Check to userlist application of override rules to prevent incorrect usage resulting in load order errors.
 </ul>
 <p><b>Version 1.62</b> - <i>1 November 2010</i>
@@ -913,8 +935,8 @@ threads when you read this. Just navigate through to the latest thread to post a
 	</ul>
 	
 	<li>Added: Support for <q>Fallout: New Vegas</q>.
-	<li>Added: Ability to insert mods into groups to user rules functionality.
-	<li>Added: Ability to sort mods relative to mods that are not installed, but are in the masterlist, to user rules functionality.
+	<li>Added: Ability to insert plugins into groups to user rules functionality.
+	<li>Added: Ability to sort plugins relative to plugins that are not installed, but are in the masterlist, to user rules functionality.
 	<li>Added: Three new command line parameters:
 	<ul>
 		<li><code>--verbose,-v [ level ]</code> to enable logging statements, where <code>level</code> goes from 1 to 3 with increasing verbosity.
@@ -944,10 +966,10 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Changed: Merged BOSS and BOSS-F source code, allowing one <q>BOSS.exe</q> to work with all the games BOSS supports.
 	<li>Changed: Major refactoring and rewrite of BOSS source code, resulting in a significant performance improvement.
 	<li>Added: Fallout Wanderers Edition (FWE) specific message type for the Fallout 3 masterlist.
-	<li>Added: Mod version display to BOSSlog output.
+	<li>Added: Plugin version display to BOSSlog output.
 	<li>Added: Three new command line parameters:
 	<ul>
-		<li><code>--update,-u</code> to update the masterlist before sorting mods.
+		<li><code>--update,-u</code> to update the masterlist before sorting plugins.
 		<li><code>--disable-version-parse,-V</code> to disable version display in the BOSSlog.
 		<li><code>--revert-level,-r [ level ]</code> to allow undoing of BOSS's changes. <code>level</code> can be either 1 or 2, to go back to the load order before the last run of BOSS, or the load order before the run before that respectively.
 	</ul>
