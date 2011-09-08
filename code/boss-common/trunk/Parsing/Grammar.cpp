@@ -781,9 +781,9 @@ namespace boss {
 			>> lit("]");
 
 		setting =
-			(var > '=' > uint_)[phoenix::bind(&SetIntVar, _1, _2)]
-			| (var > '=' > bool_)[phoenix::bind(&SetBoolVar, _1, _2)]
-			| (var > '=' > stringVal)[phoenix::bind(&SetStringVar, _1, _2)];
+			(var > '=' >> uint_)[phoenix::bind(&SetIntVar, _1, _2)]
+			| (var > '=' >> bool_)[phoenix::bind(&SetBoolVar, _1, _2)]
+			| (var > '=' >> stringVal)[phoenix::bind(&SetStringVar, _1, _2)];
 
 		var %=
 			lexeme[(lit("\"") >> +(char_ - lit("\"")) >> lit("\""))]
@@ -802,8 +802,6 @@ namespace boss {
 		setting.name("setting");
 		var.name("variable");
 		stringVal.name("string value");
-		intVal.name("integer value");
-		boolVal.name("boolean value");
 		
 		//Error handling.
 		on_error<fail>(ini,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
@@ -812,8 +810,6 @@ namespace boss {
 		on_error<fail>(setting,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
 		on_error<fail>(var,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
 		on_error<fail>(stringVal,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
-		on_error<fail>(intVal,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
-		on_error<fail>(boolVal,phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
 	}
 
 	void ini_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {

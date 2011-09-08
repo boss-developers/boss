@@ -30,7 +30,8 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 
-#include <wx/msgdlg.h>
+//#include <wx/msgdlg.h>
+//#include <wx/progdlg.h>
 
 BOOST_FUSION_ADAPT_STRUCT(
     boss::fileInfo,
@@ -72,7 +73,7 @@ namespace boss {
 	}
 
 	//Download progress for BOSS update downloader function.
-	int prog_progress_func(void *data, double dlTotal, double dlNow, double ulTotal, double ulNow) {
+/*	int prog_progress_func(void *data, double dlTotal, double dlNow, double ulTotal, double ulNow) {
 		double percentdownloaded = (dlNow / dlTotal) * 1000;
 		int currentProgress = floor(percentdownloaded);
 		if (currentProgress == 1000)
@@ -90,7 +91,7 @@ namespace boss {
 		}
 		return 0;
 	}
-
+*/
 	//Checks if an Internet connection is present.
 	bool CheckConnection() {
 		CURL *curl;									//cURL handle
@@ -489,7 +490,7 @@ namespace boss {
 	}
 
 	//Download the files in the update.
-	void DownloadBOSSUpdateFiles(int updateType, wxProgressDialog *progDia) {
+/*	void DownloadBOSSUpdateFiles(int updateType, wxProgressDialog *progDia) {
 		string fileBuffer, message, proxy_str, remote_file;
 		string url = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/";
 		char errbuff[CURL_ERROR_SIZE];
@@ -612,7 +613,7 @@ namespace boss {
 		curl_easy_cleanup(curl);
 		progDia->Update(1000);
 	}
-
+*/
 	//Installs the downloaded update files.
 	void InstallBOSSUpdateFiles() {
 		//First back up current BOSS.ini if it exists.

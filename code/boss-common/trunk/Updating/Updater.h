@@ -18,7 +18,7 @@
 
 #include <string>
 #include <vector>
-#include <wx/progdlg.h>
+//#include <wx/progdlg.h>
 
 namespace boss {
 	using namespace std;
@@ -51,7 +51,7 @@ namespace boss {
 	string IsBOSSUpdateAvailable();
 
 	//Download the files in the update.
-	void DownloadBOSSUpdateFiles(int installType, wxProgressDialog *progDia);
+//	void DownloadBOSSUpdateFiles(int installType, wxProgressDialog *progDia);
 
 	//Installs the downloaded update files.
 	void InstallBOSSUpdateFiles();

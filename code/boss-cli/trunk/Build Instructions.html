@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+<title>BOSS CLI Build Instructions</title>
+
+<h1>BOSS CLI: Build Instructions</h1>
+
+<p>This guide presumes that you are building on Windows. If not, presumably you are experienced enough to know what you're doing. 
+If after following this guide, you are still having trouble compiling BOSS, feel free to PM WrinklyNinja for help.<br /><br />
+This guide also assumes that you are building the 'trunk' of the boss-common code. If you are building a branch, change all references to 
+<code>trunk\</code> to the directory that contains the BOSS.sln file of the code you are building.</p>
+
+<p style="font-weight:bold;">These instructions assume that you have already built the boss-common trunk to produce a BOSS.lib, which is required.
+
+<h3>Preparing Your Environment/Getting Prerequisites</h3>
+
+<h4>Download and install:</h4>
+<ul>
+ <li><a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express">Microsoft Visual C++ 2010 Express Edition</a>
+ <li>An SVN client of your choice.
+</ul>
+
+<h4>Preparing BOSS</h4>
+<ol>
+ <li>Perform a SVN Checkout from <a href="https://better-oblivion-sorting-software.googlecode.com/svn">https://better-oblivion-sorting-software.googlecode.com/svn</a>
+ to a local directory of your own choice to create your working copy. (This directory shall be referred to as <em>$BOSS</em> from here on in.)
+</ol>
+
+<h3>Building BOSS</h3>
+<ol>
+ <li>Open <code><em>$BOSS</em>\code\boss-common\trunk\BOSS-CLI.sln</code> in Visual C++ 2010.
+ <li>Set the build type to "Release" and run Build on the BOSS-CLI project, which will give you a BOSS.exe in <code>bin\Release</code>.
+</ol>

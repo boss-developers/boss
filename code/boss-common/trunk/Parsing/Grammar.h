@@ -148,8 +148,6 @@ namespace boss {
 
 		qi::rule<string::const_iterator, Ini_Skipper> ini, section, setting;
 		qi::rule<string::const_iterator, string(), Ini_Skipper> var, stringVal, heading;
-		qi::rule<string::const_iterator, bool(), Ini_Skipper> boolVal;
-		qi::rule<string::const_iterator, int(), Ini_Skipper> intVal;
 	
 		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what);
 	};
