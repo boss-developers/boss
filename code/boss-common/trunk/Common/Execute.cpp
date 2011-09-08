@@ -42,15 +42,19 @@ namespace boss {
 
 	//Detect the game BOSS is installed for.
 	//1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim. Throws exception if error.
-	int GetGame() {
+	void GetGame() {
 		if (fs::exists(data_path / "Oblivion.esm")) {
 			if (fs::exists(data_path / "Nehrim.esm"))
 				throw boss_error() << err_detail("Oblivion.esm and Nehrim.esm both detected!");
-			return 1;
-		} else if (fs::exists(data_path / "Nehrim.esm")) return 3;
-		else if (fs::exists(data_path / "FalloutNV.esm")) return 4;
-		else if (fs::exists(data_path / "Fallout3.esm")) return 2;
-		else if (fs::exists(data_path / "Skyrim.esm")) return 5;
+			game = 1;
+		} else if (fs::exists(data_path / "Nehrim.esm")) 
+   game = 3;
+		else if (fs::exists(data_path / "FalloutNV.esm")) 
+   game = 4;
+		else if (fs::exists(data_path / "Fallout3.esm")) 
+   game = 2;
+		else if (fs::exists(data_path / "Skyrim.esm")) 
+   game = 5;
 		else {
 			throw boss_error() << err_detail("No game master .esm file found!");
 		}
@@ -85,6 +89,8 @@ namespace boss {
 				return fs::last_write_time(data_path / "FalloutNV.esm");
 			else if (game == 5) 
 				return fs::last_write_time(data_path / "Skyrim.esm");
+			else
+				throw boss_error() << err_detail("No game master .esm file found!");
 		} catch(fs::filesystem_error e) {
 			throw boss_error() << err_detail("Game master .esm file cannot be read!");
 		}
@@ -92,7 +98,7 @@ namespace boss {
 
 	//Create a modlist containing all the mods that are installed or referenced in the userlist with their masterlist messages.
 	//Returns the vector position of the last recognised mod in modlist.
-	size_t BuildWorkingmodlist(vector<item>& modlist, vector<item> masterlist, vector<rule> userlist) {
+	size_t BuildWorkingModlist(vector<item>& modlist, vector<item> masterlist, const vector<rule>& userlist) {
 		//Add all modlist and userlist mods to a hashset to optimise comparison against masterlist.
 		boost::unordered_set<string> hashset;  //Holds mods for checking against masterlist
 		boost::unordered_set<string>::iterator setPos;
@@ -507,7 +513,7 @@ namespace boss {
 	}
 
 	//List unrecognised mods.
-	void ListUnrecognisedMods(vector<item>& modlist, size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters) {
+	void ListUnrecognisedMods(const vector<item>& modlist, const size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters) {
 		time_t modfiletime = 0;
 		//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 		//Order their dates to be i days after the master esm to ensure they load last.

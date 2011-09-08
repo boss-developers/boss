@@ -46,7 +46,7 @@ namespace boss {
 
 	//Detect the game BOSS is installed for.
 	//1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim. Throws exception if error.
-	int GetGame();
+	void GetGame();
 
 	//Gets the string representation of the detected game.
 	string GetGameString();
@@ -59,7 +59,7 @@ namespace boss {
 	size_t BuildWorkingModlist(vector<item>& modlist, vector<item> masterlist, const vector<rule>& userlist);
 
 	//Applies the userlist rules to the working modlist.
-	void ApplyUserRules(vector<item>& modlist, const vector<item>& userlist, string& ouputBuffer, size_t& lastRecognisedPos);
+	void ApplyUserRules(vector<item>& modlist, const vector<rule>& userlist, string& ouputBuffer, size_t& lastRecognisedPos);
 
 	//Lists Script Extender plugin info in the output buffer. Returns the Script Extender detected.
 	string GetSEPluginInfo(string& outputBuffer);

@@ -46,7 +46,7 @@ namespace boss {
 		DIRTY,
 		WARN,
 		ERR,
-		//Special masterlist keywords.
+		//Legacy masterlist keywords.
 		OOOSAY,
 		BCSAY
 	};
