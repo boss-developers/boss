@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+<title>BOSS Common Library Build Instructions</title>
+
+<h1>BOSS Common Library: Build Instructions</h1>
+
+<p>This guide presumes that you are building on Windows. If not, presumably you are experienced enough to know what you're doing. 
+If after following this guide, you are still having trouble compiling BOSS, feel free to PM WrinklyNinja for help.<br /><br />
+This guide also assumes that you are building the 'trunk' of the boss-common code. If you are building a branch, change all references to 
+<code>trunk\</code> to the directory that contains the BOSS.sln file of the code you are building.</p>
+
+<h3>Preparing Your Environment/Getting Prerequisites</h3>
+
+<h4>Download and install:</h4>
+<ul>
+ <li><a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express">Microsoft Visual C++ 2010 Express Edition</a>
+ <li><a href="http://curl.haxx.se/download.html">Curl Source Code</a> - Download the latest zipped source code from the top of the page.
+ <li><a href="https://sourceforge.net/projects/boost/files/boost/1.46.1/">BOOST C++ libraries</a> - BOSS requires version 1.47, it will not work with earlier versions, later versions can be tried, but might also break something.
+ <li><a href="http://sourceforge.net/projects/utfcpp/">UTF8-CPP</a> - Download the latest version.
+ <li><a href="http://www.wxwidgets.org/downloads/">wxWidgets Source Code</a> - Download the 2.9.2 source code. The line ending type shouldn't matter.
+ <li>An SVN client of your choice.
+</ul>
+
+<h4>Preparing BOSS, UTF8-CPP and BOOST</h4>
+<ol>
+ <li>Perform a SVN Checkout from <a href="https://better-oblivion-sorting-software.googlecode.com/svn">https://better-oblivion-sorting-software.googlecode.com/svn</a>
+ to a local directory of your own choice to create your working copy. (This directory shall be referred to as <em>$BOSS</em> from here on in.)
+ <li>Extract the contents of the <code>utf8_vx_x_x</code> (x is a number) archive to <code><em>$BOSS</em>\lib\utf8\</code>, so that your utf8 folder contains a 'doc' and 'source' folder.
+ <li>Extract the contents of the <code>boost-x.xx.x</code> (x is a number) folder in the BOOST libaries archive you downloaded to <code><em>$BOSS</em>\lib\boost\</code> (you should have lib, include, boostrap.bat, etc. in this folder).
+ <li>Start a Command Prompt and cd to <code><em>$BOSS</em>\lib\boost</code> and run <code>bootstrap.bat</code>
+ <li>In the Command Prompt, run <code>bjam --toolset=msvc-10.0 --build-type=complete</code> . This will take a while. Once that is done, you may close the Command Prompt window.
+</ol>
+
+<h4>Preparing wxWidgets</h4>
+	<ol>
+		<li>Extract the contents of the <code>wxWidgets-x.x.x</code> (x is a number) archive you downloaded to <code><em>$BOSS</em>\lib\wxWidgets\</code> (you should have build, include, lib, etc. in this folder).
+		<li>Open the VC6 workspace <code>em>$BOSS</em>\lib\wxWidgets\build\msw\wx.dsw</code>, answering "Yes" to any conversion prompts.
+		<li>Set the build type to Release. Build the following projects in listed order. For each project, in Project->Properties->Configuration Properties->C/C++->Code Generation, set the Runtime Library to "Multi-threaded (/MT)":
+		<ul>
+			<li>wxjpeg
+			<li>wxpng
+			<li>wxtiff
+			<li>wxzlib
+			<li>wxregex
+			<li>wxexpat
+			<li>base
+			<li>net
+			<li>core
+			<li>gl
+			<li>html
+			<li>xml
+			<li>media
+			<li>qa
+			<li>adv
+			<li>xrc
+			<li>aui
+			<li>richtext
+			<li>propgrid
+			<li>ribbon
+			<li>stc
+		</ul>	
+		
+		<li>Close the wx solution.
+	</ol>
+
+<h4>Preparing Curl</h4>
+<p>We are going to be building the curl requirements from source, since the Windows curl packages are often not up-to-date. We don't need to compile all of curl though, just the static library. 
+To do so, follow these steps:</p>
+<ol>
+ <li>Extract the contents of the <code>curl-x.xx.x</code> (x is a number) folder in the curl archive to <code><em>$BOSS</em>\lib\curl\</code> (you should have lib, include, README, etc. in this folder).
+ <li>Open <code><em>$BOSS</em>\lib\curl\lib\libcurl.vcproj</code> in Visual C++ 2010. When the Conversion Wizard window appears, just click 'Finish' then 'Close'.
+ <li>Set the build type to Release. In Project->Properties->Configuration Properties->C/C++->Code Generation, set the Runtime Library to "Multi-threaded (/MT)".
+ <li>Build the libcurl project. This will create a libcurl.lib file in the <code><em>$BOSS</em>\lib\curl\lib\Release</code> directory. An 'Unable to start' error message will pop up, ignore this and click 'OK'. Close the libcurl project.
+</ol>
+
+<h3>Building BOSS</h3>
+<ol>
+ <li>Open <code><em>$BOSS</em>\code\boss-common\trunk\BOSS-Common.sln</code> in Visual C++ 2010.
+ <li>Set the build type to "Release" and run Build on the BOSS-Common project, which will give you a BOSS.lib.
+ <li>An error may pop up saying "Unable to start program...". Ignore this.
+</ol>
