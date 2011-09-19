@@ -115,9 +115,7 @@
       <Version>1.8.1</Version>
     </Link>
     <Lib>
-      <AdditionalDependencies>libcurl.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;Version.lib;wldap32.lib;ws2_32.lib</AdditionalDependencies>
-    </Lib>
-    <Lib>
+      <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;libcurl.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;Version.lib;wldap32.lib;ws2_32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib;$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\mswu;$(SolutionDir)..\..\..\lib\boost\stage\lib;$(SolutionDir)..\..\..\lib\curl\lib\Release</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

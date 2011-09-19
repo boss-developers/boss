@@ -23,41 +23,60 @@
 namespace boss {
 	using namespace std;
 
+	enum installType {  //Possible types of install the user has.
+		MANUAL,
+		INSTALLER,
+		MASTERLIST
+	};
+
 	struct fileInfo {  //Holds the information for files to be downloaded.
 		string name;
 		unsigned int crc;
+
+		fileInfo();
+		fileInfo(string str);
 	};
 
-	enum installType {  //Possible types of install the user has.
-		MANUAL,
-		INSTALLER
+	struct uiStruct {
+		void *p;
+		bool isGUI;
+		size_t fileIndex;
+
+		uiStruct();
+		uiStruct(void *GUIpoint);
 	};
 
-	extern vector<fileInfo> updatedFiles;
+	extern vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
+
+	////////////////////////
+	// General Functions
+	////////////////////////
+
+	int progress_func(void *data, double dlTotal, double dlNow, double ulTotal, double ulNow);
 
 	//Checks if an Internet connection is present.
 	bool CheckConnection();
 
-	//Gets the revision number of the local masterlist.
-	int GetLocalMasterlistRevision();
+	//Cleans up after the user cancels a download.
+	void CleanUp();
 
-	//Gets the revision date of the local masterlist.
-	string GetLocalMasterlistDate();
+
+	////////////////////////
+	// Masterlist Updating
+	////////////////////////
 
 	//Updates the local masterlist to the latest available online.
-	int UpdateMasterlist();
+	void UpdateMasterlist(uiStruct ui, unsigned int& localRevision, string& localDate, unsigned int& remoteRevision, string& remoteDate);
+
+
+	////////////////////////
+	// BOSS Updating
+	////////////////////////
 
 	//Checks if a new release of BOSS is available or not.
 	string IsBOSSUpdateAvailable();
 
-	//Download the files in the update.
-//	void DownloadBOSSUpdateFiles(int installType, wxProgressDialog *progDia);
-
-	//Installs the downloaded update files.
-	void InstallBOSSUpdateFiles();
-
-	//Cleans up after the user cancels a download.
-	void CleanUp();
+	//Downloads and installs a BOSS update.
+	vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const int updateType, const string updateVersion);
 }
-
 #endif

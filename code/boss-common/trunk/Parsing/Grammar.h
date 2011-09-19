@@ -136,7 +136,7 @@ namespace boss {
 	void SetBoolVar(string var, bool value);
 
 	//Set the integer BOSS variable values while parsing.
-	void SetIntVar(string var, int value);
+	void SetIntVar(string var, unsigned int value);
 
 	//Set the string BOSS variable values while parsing.
 	void SetStringVar(string var, string value);

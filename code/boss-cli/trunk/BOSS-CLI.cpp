@@ -79,16 +79,16 @@ void InhibitUpdate(bool val) {
 
 int main(int argc, char *argv[]) {
 
-	size_t lastRecognisedPos = 0;				//position of last recognised mod.
+	size_t lastRecognisedPos = 0;			//position of last recognised mod.
 	string scriptExtender;					//What script extender is present.
-	time_t esmtime = 0, modfiletime = 0;	//File modification times.
+	time_t esmtime = 0;						//File modification times.
 	vector<item> Modlist, Masterlist;		//Modlist and masterlist data structures.
 	vector<rule> Userlist;					//Userlist data structure.
 	summaryCounters counters;				//Summary counters.
 	bosslogContents contents;				//BOSSlog contents.
-	string gameStr;                  // allow for autodetection override
-	fs::path bosslog_path;				//Path to BOSSlog being used.
-	fs::path sortfile;					//Modlist/masterlist to sort plugins using.
+	string gameStr;							// allow for autodetection override
+	fs::path bosslog_path;					//Path to BOSSlog being used.
+	fs::path sortfile;						//Modlist/masterlist to sort plugins using.
 
 	//Set the locale to get encoding conversions working correctly.
 	setlocale(LC_CTYPE, "");
@@ -149,12 +149,17 @@ int main(int argc, char *argv[]) {
 		("proxy-host,H", po::value(&proxy_host),
 								"sets the proxy hostname for the masterlist updater")
 		("proxy-port,P", po::value(&proxy_port),
-								"sets the proxy port number for the masterlist updater");
+								"sets the proxy port number for the masterlist updater")
+		("logger-record,l", po::value(&record_debug_output)->zero_tokens(),
+								"record logger output in BOSSDebugLog.txt.");
 	
 	///////////////////////////////
 	// Set up initial conditions
 	///////////////////////////////
 
+	LOG_INFO("BOSS starting...");
+
+	LOG_INFO("Parsing Ini...");
 	//Parse ini file if found. Can't just use BOOST's program options ini parser because of the CSS syntax and spaces.
 	if (fs::exists(ini_path))
 		parseIni(ini_path);
@@ -175,11 +180,11 @@ int main(int argc, char *argv[]) {
 		LOG_ERROR("%s; please use the '--help' option to see usage instructions", e.what());
 		Fail();
 	}
-	
-	// set whether to track log statement origins
-	g_logger.setOriginTracking(debug);
 
-	LOG_INFO("BOSS starting...");
+	// set alternative output stream for logger and whether to track log statement origins
+	if (record_debug_output)
+		g_logger.setStream(debug_log_path.string().c_str());
+	g_logger.setOriginTracking(debug);
 
 	if (vm.count("verbose")) {
 		if (0 > verbosity) {
@@ -279,7 +284,7 @@ int main(int argc, char *argv[]) {
 		try {
 			GetGame();
 		} catch (boss_error e) {
-			string const detail = *boost::get_error_info<err_detail>(e);
+			const string detail = *boost::get_error_info<err_detail>(e);
 			LOG_ERROR("Critical Error: %s", detail);
 			OutputHeader();
 			Output("<p class='error'>Critical Error: " + detail + "<br />");
@@ -305,7 +310,7 @@ int main(int argc, char *argv[]) {
 		try {
 			connection = CheckConnection();
 		} catch (boss_error e) {
-			string const detail = *boost::get_error_info<err_detail>(e);
+			const string detail = *boost::get_error_info<err_detail>(e);
 			contents.updaterErrors += "<li class='warn'>Error: Masterlist update failed.<br />";
 			contents.updaterErrors += "Details: " + EscapeHTMLSpecial(detail) + "<br />";
 			contents.updaterErrors += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
@@ -315,18 +320,19 @@ int main(int argc, char *argv[]) {
 			cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
 			LOG_DEBUG("Updating masterlist...");
 			try {
-				unsigned int revision = UpdateMasterlist();
-				string localDate = EscapeHTMLSpecial(GetLocalMasterlistDate());
-				if (revision == 0) {
-					unsigned int localRevision = GetLocalMasterlistRevision();
-					contents.summary += "<p>Your masterlist is already at the latest revision (r" + IntToString(localRevision) + "; " + localDate + "). No update necessary.";
-					cout << endl << "Your masterlist is already at the latest revision (" + IntToString(localRevision) + "; " + localDate + "). No update necessary." << endl;
+				string localDate, remoteDate;
+				unsigned int localRevision, remoteRevision;
+				uiStruct ui;
+				UpdateMasterlist(ui, localRevision, localDate, remoteRevision, remoteDate);
+				if (localRevision == remoteRevision) {
+					contents.summary += "<p>Your masterlist is already at the latest revision (r" + IntToString(localRevision) + "; " + EscapeHTMLSpecial(localDate) + "). No update necessary.";
+					cout << endl << "Your masterlist is already at the latest revision (" + IntToString(localRevision) + "; " + EscapeHTMLSpecial(localDate) + "). No update necessary." << endl;
 				} else {
-					contents.summary += "<p>Your masterlist has been updated to revision " + IntToString(revision) + " (" + localDate + ").";
-					cout << endl << "Your masterlist has been updated to revision " << revision << endl;
+					contents.summary += "<p>Your masterlist has been updated to revision " + IntToString(remoteRevision) + " (" + EscapeHTMLSpecial(remoteDate) + ").";
+					cout << endl << "Your masterlist has been updated to revision " << remoteRevision << endl;
 				}
 			} catch (boss_error e) {
-				string const detail = *boost::get_error_info<err_detail>(e);
+				const string detail = *boost::get_error_info<err_detail>(e);
 				contents.updaterErrors += "<li class='warn'>Error: Masterlist update failed.<br />";
 				contents.updaterErrors += "Details: " + EscapeHTMLSpecial(detail) + "<br />";
 				contents.updaterErrors += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
@@ -368,7 +374,7 @@ int main(int argc, char *argv[]) {
 	try {
 		esmtime = GetMasterTime();
 	} catch(boss_error e) {
-		string const detail = *boost::get_error_info<err_detail>(e);
+		const string detail = *boost::get_error_info<err_detail>(e);
 		OutputHeader();
 		Output("<p class='error'>Critical Error: " + detail + "<br />");
 		Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
@@ -387,7 +393,7 @@ int main(int argc, char *argv[]) {
 		try {
 			SaveModlist(Modlist, curr_modlist_path);
 		} catch (boss_error e) {
-			string const detail = *boost::get_error_info<err_detail>(e);
+			const string detail = *boost::get_error_info<err_detail>(e);
 			OutputHeader();
 			Output("<p class='error'>Critical Error: Modlist backup failed!<br />");
 			Output("Details: " + EscapeHTMLSpecial(detail) + ".<br />");
@@ -412,7 +418,7 @@ int main(int argc, char *argv[]) {
 	try {
 		parseMasterlist(sortfile,Masterlist);
 	} catch (boss_error e) {
-		string const detail = *boost::get_error_info<err_detail>(e);
+		const string detail = *boost::get_error_info<err_detail>(e);
 		OutputHeader();
 		Output("<p class='error'>Critical Error: " +EscapeHTMLSpecial(detail) +"<br />");
 		Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
@@ -426,9 +432,10 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Check if parsing failed. If so, exit with errors.
-	if (masterlistErrorBuffer.size() != 0) {
+	if (!masterlistErrorBuffer.empty()) {
 		OutputHeader();
-		for (size_t i=0; i<masterlistErrorBuffer.size(); i++)  //Print parser error messages.
+		size_t size = masterlistErrorBuffer.size();
+		for (size_t i=0; i<size; i++)  //Print parser error messages.
 			Output(masterlistErrorBuffer[i]);
 		OutputFooter();
 		bosslog.close();
@@ -443,7 +450,7 @@ int main(int argc, char *argv[]) {
 		if (!parsed)
 			Userlist.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 	} catch (boss_error e) {
-		string const detail = *boost::get_error_info<err_detail>(e);
+		const string detail = *boost::get_error_info<err_detail>(e);
 		userlistErrorBuffer.push_back("<p class='error'>Error: "+detail+" Userlist parsing aborted. No rules will be applied.");
 		LOG_ERROR("Error: %s", detail);
 	}

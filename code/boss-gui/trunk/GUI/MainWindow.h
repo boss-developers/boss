@@ -14,7 +14,7 @@
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
-#	include "wx/wx.h"
+#       include "wx/wx.h"
 #endif
 
 #include <wx/hyperlink.h>
@@ -31,7 +31,7 @@ class MainFrame : public wxFrame {
 public:
 	MainFrame(const wxChar *title, int x, int y, int width, int height);
 	void CheckForUpdate(wxIdleEvent& event);
-	void Update();
+	void Update(std::string updateVersion);
 	void OnOpenSettings(wxCommandEvent& event);
 	void OnQuit(wxCommandEvent& event);
 	void OnRunBOSS(wxCommandEvent& event);
@@ -39,17 +39,15 @@ public:
 	void OnAbout(wxCommandEvent& event);
 	void OnRunTypeChange(wxCommandEvent& event);
 	void OnFormatChange(wxCommandEvent& event);
-	void OnVerbosityChange(wxCommandEvent& event);
 	void OnGameChange(wxCommandEvent& event);
 	void OnRevertChange(wxCommandEvent& event);
 	void OnLogDisplayChange(wxCommandEvent& event);
-	void OnDebugChange(wxCommandEvent& event);
 	void OnUpdateChange(wxCommandEvent& event);
 	void OnVersionDisplayChange(wxCommandEvent& event);
 	void OnCRCDisplayChange(wxCommandEvent& event);
-	void OnLoggingChange(wxCommandEvent& event);
 	void OnTrialRunChange(wxCommandEvent& event);
 	void OnUpdateCheck(wxCommandEvent& event);
+	void OnEditUserRules(wxCommandEvent& event);
 	void OnClose(wxCloseEvent& event);
 	DECLARE_EVENT_TABLE()
 private:
@@ -59,49 +57,24 @@ private:
 	wxMenu *HelpMenu;
 	wxButton *RunBOSSButton;
 	wxButton *OpenBOSSlogButton;
-	wxButton *OpenUserlistButton;
-	wxButton *CheckForUpdatesButton;
+	wxButton *EditUserRulesButton;
 	wxCheckBox *ShowLogBox;
-	wxCheckBox *DebugBox;
-	wxCheckBox *LoggingBox;
-	wxComboBox *FormatBox;
-	wxComboBox *VerbosityBox;
-	wxRadioButton *SortOption;
+	wxCheckBox *VersionBox;
+	wxCheckBox *CRCBox;
 	wxCheckBox *UpdateBox;
-	wxCheckBox *SortVersionBox;
-	wxCheckBox *SortCRCBox;
 	wxCheckBox *TrialRunBox;
-	wxRadioButton *UpdateOption;
+	wxComboBox *FormatBox;
 	wxComboBox *GameBox;
-	wxRadioButton *UndoOption;
 	wxComboBox *RevertBox;
-	wxCheckBox *UndoVersionBox;
-	wxCheckBox *UndoCRCBox;
+	wxRadioButton *SortOption;
+	wxRadioButton *UpdateOption;
+	wxRadioButton *UndoOption;
 	wxStaticText *GameText;
 	wxStaticText *RevertText;
 };
 
-class SettingsFrame : public wxFrame {
-public:
-	SettingsFrame(const wxChar *title, wxFrame *parent, int x, int y, int width, int height);
-	void OnStartupUpdateChange(wxCommandEvent& event);
-	void OnProxyTypeChange(wxCommandEvent& event);
-	void OnProxyHostChange(wxCommandEvent& event);
-	void OnProxyPortChange(wxCommandEvent& event);
-	void OnQuit(wxCommandEvent& event);
-	DECLARE_EVENT_TABLE()
-private:
-	wxCheckBox *StartupUpdateCheckBox;
-	wxComboBox *ProxyTypeBox;
-	wxTextCtrl *ProxyHostBox;
-	wxTextCtrl *ProxyPortBox;
-	wxStaticText *ProxyTypeText;
-	wxStaticText *ProxyHostText;
-	wxStaticText *ProxyPortText;
-};
-
 enum {
-    OPTION_OpenUserlist = wxID_HIGHEST + 1, // declares an id which will be used to call our button
+    OPTION_EditUserRules = wxID_HIGHEST + 1, // declares an id which will be used to call our button
 	OPTION_OpenBOSSlog,
 	OPTION_Run,
 	OPTION_CheckForUpdates,
@@ -120,10 +93,8 @@ enum {
 	CHECKBOX_ShowBOSSlog,
 	CHECKBOX_EnableDebug,
 	CHECKBOX_Update,
-	CHECKBOX_SortEnableVersions,
-	CHECKBOX_SortEnableCRCs,
-	CHECKBOX_RevertEnableVersions,
-	CHECKBOX_RevertEnableCRCs,
+	CHECKBOX_EnableVersions,
+	CHECKBOX_EnableCRCs,
 	CHECKBOX_EnableLogging,
 	CHECKBOX_TrialRun,
 	CHECKBOX_StartupUpdateCheck,

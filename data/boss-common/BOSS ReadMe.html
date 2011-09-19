@@ -57,9 +57,9 @@
 
 <div id="features"><h1>Features &amp; Introduction</h1>
 <ul>
-	<li>Correctly positions over 12,100 TES IV: Oblivion mod plugins and counting, including such popular mods as FCOM, <abbr title="Oscuro's Oblivion Overhaul">OOO</abbr>, <abbr title="Martigen's Monster Mod">MMM</abbr>, Better Cities, Open Cities, Race Balancing Project and many others.
-	<li>Correctly positions over 2,600 Fallout 3 mod plugins and counting.
-	<li>Correctly positions over 2,500 Fallout: New Vegas mod plugins and counting.
+	<li>Correctly positions over 12,700 TES IV: Oblivion mod plugins and counting, including such popular mods as FCOM, <abbr title="Oscuro's Oblivion Overhaul">OOO</abbr>, <abbr title="Martigen's Monster Mod">MMM</abbr>, Better Cities, Open Cities, Race Balancing Project and many others.
+	<li>Correctly positions over 2,700 Fallout 3 mod plugins and counting.
+	<li>Correctly positions over 3,000 Fallout: New Vegas mod plugins and counting.
 	<li>Provides support for sorting mods used in Nehrim - At Fate's Edge installs.
 	<li>Provides preliminary support for TES V: Skyrim.
 	<li>Provides a large number of usage notes for many plugins, including requirements, incompatibilities, updates and bug warnings.
@@ -81,7 +81,7 @@
 <p>BOSS can be installed for use with TES IV: Oblivion, TES V: Skyrim, Fallout 3, Fallout: New Vegas or Nehrim - At Fate's Edge (a Total Conversion mod for Oblivion). Installation may either be automated, using the BOSS Installer package, or manually, using the archive package. Either method is simple, and instructions for manual installation are given below.
 <ol>
 	<li>If you have Wrye Bash, Wrye Flash or Wrye Flash NV, make sure the <q>Lock Times</q> function is deactivated.
-	<li>If upgrading from an earlier version of BOSS, delete all BOSS files and folders in your game's Data folder (including the BOSS folder, BOSS.exe, masterlist.txt, modlist.txt, modlist.old, BOSSlog.txt and any of BOSS's .bat files).  If you have an edited masterlist, make sure to keep a backup so that your edits are not lost. It is recommended that you instead use the userlist functionality to apply changes to the masterlist.
+	<li>If upgrading from an earlier version of BOSS, delete all BOSS files and folders in your game's Data folder (including the BOSS folder, BOSS.exe, masterlist.txt, modlist.txt, modlist.old, BOSSlog.txt and any of BOSS's .bat files).  If you have an edited masterlist, make sure to keep a backup so that your edits are not lost. It is recommended that you instead use the user rules functionality to apply changes to the masterlist.
 	<li>Extract the BOSS archive you downloaded to your game's installation directory (ie. the one containing the Data folder and the game's executable, so one of <q>Oblivion</q>, <q>Fallout 3</q>, <q>Nehrim</q>, <q>fallout new vegas</q> or <q>skyrim</q> depending on your game), so that there is now a BOSS folder alongside the Data folder and the game's executable.
 	<li>In the BOSS folder, run the <q>BOSS.exe</q>. This will download the latest masterlist from the Internet and then sort your mods.
 </ol>
@@ -92,20 +92,21 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 </div>
 
 <div id="remove"><h1>Uninstallation</h1>
-<p>Delete the BOSS folder in your game's installation folder (ie. the one containing the Data folder and the game's executable, so one of <q>Oblivion</q>, <q>Fallout 3</q>, <q>Nehrim</q>, <q>fallout new vegas</q> or <q>skyrim</q> depending on your game).
+<p>If you installed BOSS using the installer, then use the uninstaller it provides a link to in your Start Menu to uninstall BOSS. If you installed BOSS manually, do the following:
+<ol><li>Delete the BOSS folder in your game's installation folder (ie. the one containing the Data folder and the game's executable, so one of <q>Oblivion</q>, <q>Fallout 3</q>, <q>Nehrim</q>, <q>fallout new vegas</q> or <q>skyrim</q> depending on your game).</ol>
 </div>
 
 <div id="general"><h1>General Usage</h1>
-<p>This section gives more information on the parts of BOSS's functionality that users are likely to come into contact with during the course of general usage of BOSS. It gives details on the capabilities of the GUI, information on how to keep BOSS up to date, information on the BOSSlog and its constituent parts, and provides some background information and BOSS-specific notes on the subject of dirty edits and mod cleaning.
+<p>This section gives more information on the parts of BOSS's functionality that users are likely to come into contact with during the course of general usage of BOSS. It gives details on the capabilities of the GUI, information on how to keep BOSS up to date, information on the BOSS Log and its constituent parts, and provides some background information and BOSS-specific notes on the subject of dirty edits and mod cleaning.
 <h2 id="gui">The Graphical User Interface</h2>
 <p>BOSS comes with a <abbr title="Graphical User Interface">GUI</abbr> that provides easy access to all of BOSS's functions and features. It allows you to:
 <ul>
 	<li>Change BOSS's output options:
 	<ul>
-		<li><i>Show BOSSlog On Completion</i>: Open the BOSSlog automatically after BOSS is finished.
+		<li><i>Show BOSS Log On Completion</i>: Open the BOSS Log automatically after BOSS is finished.
 		<li><i>Enable Debug Output</i>: Add source code references to the command line output.
 		<li><i>Log Command Line Output</i>: Save the command line output to a <q>BOSSCommandLineLog.txt</q> text file.
-		<li><i>BOSSlog Format</i>: Specify the format of the BOSSlog generated, and the format that the GUI attempts to open when you click the <q>View BOSSlog</q> button.
+		<li><i>BOSS Log Format</i>: Specify the format of the BOSS Log generated, and the format that the GUI attempts to open when you click the <q>View BOSS Log</q> button.
 		<li><i>Command Line Verbosity</i>: The verbosity of the command line logging output. As values increase, so does verbosity, 'Standard (0)' displays only warning and error messages.
 	</ul>
 	<li>Easily select from the three main modes of operation BOSS can run in, and specify their run options:
@@ -113,8 +114,8 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 		<li><i>Sort Mods</i>: The standard mode of operation, sorting your mods. Its options are:
 		<ul>
 			<li><i>Update Masterlist</i>: Run the masterlist updater during BOSS's operation.
-			<li><i>Display Mod Versions</i>: Display in the BOSSlog the version information extracted from plugin descriptions.
-			<li><i>Display File CRCs</i>: Calculate and display in the BOSSlog the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr> and its installed plugins.
+			<li><i>Display Mod Versions</i>: Display in the BOSS Log the version information extracted from plugin descriptions.
+			<li><i>Display File CRCs</i>: Calculate and display in the BOSS Log the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr> and its installed plugins.
 			<li><i>Perform Trial Run</i>: When BOSS is run, simulate its changes to your load order without actually reordering your mods.
 		</ul>
 		<li><i>Update Masterlist Only</i>: Updates your masterlist then immediately quits. Its option is:
@@ -124,8 +125,8 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 		<li><i>Undo Changes</i>: Sorts your mods into the order they were in before you last ran BOSS, or the order they were in before the second-last time you ran BOSS, depending on the revert level chosen. Its options are:
 		<ul>
 			<li><i>Undo Level</i>: Specify how many runs of BOSS to undo.
-			<li><i>Display Mod Versions</i>: Display in the BOSSlog the version information extracted from plugin descriptions.
-			<li><i>Display File CRCs</i>: Calculate and display in the BOSSlog the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr> and its installed plugins.
+			<li><i>Display Mod Versions</i>: Display in the BOSS Log the version information extracted from plugin descriptions.
+			<li><i>Display File CRCs</i>: Calculate and display in the BOSS Log the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr> and its installed plugins.
 		</ul>
 	</ul>
 	<li>Change BOSS and GUI settings:
@@ -137,7 +138,7 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 	</ul>
 	<li>Launch BOSS.
 	<li>Open your userlist for editing.
-	<li>Open your BOSSlog for viewing.
+	<li>Open your BOSS Log for viewing.
 	<li>Open BOSS's ReadMes.
 	<li>Launch the <q>Check For Updates</q> functionality, which includes an automatic updater that can get new releases of BOSS for you. The <q>Check For Updates</q> functionality also runs when the GUI launches, but only displays a message if an update was found or there was an error encountered while checking.
 </ul>
@@ -145,13 +146,12 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 <br />
 
 <h2 id="updates">Keeping BOSS Up-To-Date</h2>
-<p>It is important that you keep your BOSS installation updated, not only to benefit from the many frequent updates made to the masterlists, but also to benefit from bug fixes, improvements and new features introduced to newer versions of the BOSS and BOSS GUI programs themselves.
-<p>In order to ease the task of keeping BOSS updated, BOSS will by default automatically apply any updates available for the masterlists when it is run, providing that there is an Internet connection available. 
-<p>In addition, the GUI includes a <q>Check For Updates</q> funfor the BOSS and BOSS GUI programs that operates depending on the nature of your BOSS install. The GUI's <q>Check For Updates</q> functionality behaves as outlined below:
+<p>It is important that you keep your BOSS installation updated, not only to benefit from the many frequent updates made to the masterlists, but also to benefit from bug fixes, improvements and new features introduced to new releases of BOSS itself.
+<p>Providing there is an Internet connection available when BOSS runs, it will automatically download and apply any updates available for the masterlists. BOSS will also check for new releases and if an update is available, it will ask the user if they want to download and install it. The check for new releases functionality behaves as outlined below:
 <ol>
- <li>On launching the GUI, it automatically checks for updates to the BOSS and BOSS GUI programs. If an update is found, it proceeds to the next step. If no update is available, or no Internet connection is present, it will display no message.
+ <li>On launching, it automatically checks for updates to BOSS. If an update is found, it proceeds to the next step. If no update is available, or no Internet connection is present, it will display no message.
  <ul>
-  <li>If you run the <q>Check For Updates</q> functionality from the GUI's menu option, then it will display messages detailing if no update was found or if there were any errors.
+  <li>If you run the <q>Check For Updates</q> option from the GUI's Help option, then it will display messages detailing if no update was found or if there were any errors.
  </ul>
  <li>No matter how the update check was started, if an update is available it will prompt the user whether or not to download and install the update. If the user decides not to update, the updater will quit.
  <li>If the user decides to update, then it will begin downloading the file(s) to the BOSS folder, displaying a progress bar. The download can be cancelled at any time, in which case any downloaded files will be deleted and the updater will quit.
@@ -173,14 +173,14 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 <br />
 
 <h2 id="bosslog">The BOSS Log</h2>
-<p>The BOSSlog is where you will find all of BOSS's outputted information. It can be generated in either HTML format (the default) or as a plain text file with minimal formatting. The HTML format has significant advantages over the plain text format, being considerably easier to read, containing colour-coded messages and a variety of filters to customise what is displayed. However, other than the HTML BOSSlog providing a notification if there has been no change in the recognised mod list since last run, there is no difference in information between the two formats.
-<p>The HTML BOSSlog has been tested in Mozilla Firefox 4, Google Chrome 11, Opera 11 and Internet Explorer 9. Using earlier browsers may result in parts of the BOSSlog not working or displaying correctly.
-<p>The BOSSlog comprises of a number of sections, which are detailed in the table below.
+<p>The BOSS Log is where you will find all of BOSS's outputted information. It can be generated in either HTML format (the default) or as a plain text file with minimal formatting. The HTML format has significant advantages over the plain text format, being considerably easier to read, containing colour-coded messages and a variety of filters to customise what is displayed. However, other than the HTML BOSS Log providing a notification if there has been no change in the recognised mod list since last run, there is no difference in information between the two formats.
+<p>The HTML BOSS Log has been tested in Mozilla Firefox 4, Google Chrome 11, Opera 11 and Internet Explorer 9. Using earlier browsers may result in parts of the BOSS Log not working or displaying correctly.
+<p>The BOSS Log comprises of a number of sections, which are detailed in the table below.
 <table>
-	<thead><tr><td>BOSSlog Section<td>Description
+	<thead><tr><td>BOSS Log Section<td>Description
 	<tbody>
 		<tr><td>General Messages<td>This section is only displayed if there are any applicable messages to be displayed. Its primary purpose is to allow BOSS to display messages specific to your Oblivion install that are not specific to any one mod. Parser and updater error messages are also displayed in this section.
-		<tr><td>Summary<td>This section gives a short summary of BOSS's actions. It breaks down the numbers of plugins installed and messages attached to them and gives the local masterlist version and whether or not it was updated. If the BOSSlog is in the HTML format it will also display a message if your recognised plugin list has not changed since you last ran BOSS.
+		<tr><td>Summary<td>This section gives a short summary of BOSS's actions. It breaks down the numbers of plugins installed and messages attached to them and gives the local masterlist version and whether or not it was updated. If the BOSS Log is in the HTML format it will also display a message if your recognised plugin list has not changed since you last ran BOSS.
 		<tr><td>Userlist Messages<td>This section is only displayed if BOSS finds any user rules in your userlist. It details the successes or failures of the application of your userlist rules.
 		<tr><td>Script Extender And Script Extender Plugin Checksums<td>This section is displayed when BOSS is run with the <q>Display File CRCs</q> option enabled and you have your game's Script Extender installed. It will list the Script Extender and any plugins for it that you have installed, displaying their versions (if given) and their CRCs.
 		<tr><td>Recognised And Re-ordered Plugins<td>This section comprises the bulk of BOSS's output, listing all your recognised installed plugins and any messages BOSS has attached to them, as well as version information (if given) and the plugin CRCs (if run with <q>Display File CRCs</q> enabled). 
@@ -190,12 +190,12 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 <p>BOSS will display the version numbers of any plugins that provide version information in their description fields. If a plugin does not supply any version information, no version number will be displayed for it. The version number of plugins may occasionally not match the version of the mod installed - this is due to the mod author forgetting to update the plugin's version information. When in doubt, check the version number given in a mod's readme.
 <p>It should be noted that the vast majority of BOSS's mod messages are non-conditional, in that they are not displayed in response to your specific install. For example, a message that gives some of the mod's incompatibilities does not know if you have them installed or not, and a message telling you to do something will not know if it has been done.
 <p>BOSS's mod messages are one of the most important features BOSS provides, acting as a means of providing users with information that they might otherwise not obtain. It is important for a stable, healthy game that you act on any messages that require action. If you think a message suggests an action that is not necessary, report it to an official BOSS thread.
-<p>The HTML BOSSlog includes a few features and a number of filters to customise what is displayed. The majority of these are found in the shaded box near the top of the BOSSlog, and are enabled and disabled via their checkboxes:
+<p>The HTML BOSS Log includes a few features and a number of filters to customise what is displayed. The majority of these are found in the shaded box near the top of the BOSS Log, and are enabled and disabled via their checkboxes:
 <table>
-	<thead><tr><td>BOSSlog Filter<td>Description
+	<thead><tr><td>BOSS Log Filter<td>Description
 	<tbody>
-		<tr><td>Use Dark Colour Scheme<td>Changes the BOSSlog's colour scheme to a darker variety, more suitable for reading in low light levels and putting less strain on the eyes. Users with vision impairments may find the darker colour scheme easier to read.
-		<tr><td>Hide Rule Warnings<td>Hides any warning messages printed in the <q>Userlist Messages</q> section of the BOSSlog.
+		<tr><td>Use Dark Colour Scheme<td>Changes the BOSS Log's colour scheme to a darker variety, more suitable for reading in low light levels and putting less strain on the eyes. Users with vision impairments may find the darker colour scheme easier to read.
+		<tr><td>Hide Rule Warnings<td>Hides any warning messages printed in the <q>Userlist Messages</q> section of the BOSS Log.
 		<tr><td>Hide Version Numbers<td>Hides the version numbers printed in blue next to those mods that provide them.
 		<tr><td>Hide 'Ghosted' Label<td>Hides the 'Ghosted' label printed in grey next to any mods ghosted by Wrye Bash.
 		<tr><td>Hide Checksums<td>Hides the checksums of mods and Script Extender plugins printed in brown next to their names.
@@ -215,7 +215,7 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 <h2 id="dirtymods">Dirty Edits, Mod Cleaning &amp; CRCs</h2>
 <p>
 <p>Dirty edits are often a side-effect of mod creation, and are often due to bugs in the utilities Bethesda has provided to create mods, rather than bad practice by mod authors. Dirty edits can cause a wide range of issues, including incorrect game settings, missing content, broken quests and crashing to desktop. The more dirty edits there are, and the more mods with dirty edits you use, the more likely you are to experience issues.
-<p>Thankfully there is a way to remove dirty edits from mods relatively easily, a process known as <i>mod cleaning</i>, using TES4Edit (for Oblivion), FO3Edit (for Fallout 3) or FNVEdit (for Fallout: New Vegas). A detailed set of instructions and information on mod cleaning can be found on the CS Wiki's <a href="http://cs.elderscrolls.com/constwiki/index.php/TES4Edit_Cleaning_Guide">TES4Edit Cleaning Guide</a> (the page also applies to Fallout 3 and Fallout: New Vegas).
+<p>Thankfully there is a way to remove dirty edits from mods relatively easily, a process known as <i>mod cleaning</i>, using TES4Edit (for Oblivion), FO3Edit (for Fallout 3) or FNVEdit (for Fallout: New Vegas). A detailed set of instructions and information on mod cleaning can be found on the CS Wiki's <a href="http://cs.elderscrolls.com/constwiki/index.php/TES4Edit_Cleaning_Guide">TES4Edit Cleaning Guide</a> (the page also applies to Fallout 3 and Fallout: New Vegas). Wrye Bash/Flash/Flash NV can also scan plugins for dirty edits and return their ITM and UDR counts, though at the time of writing it cannot clean plugins itself.
 <p>The problem of dirty edits is largely a problem of ignorance on the part of mod authors and users alike of the problems unclean mods (more widely known as <i>dirty mods</i>) can cause. As such, there are community efforts to raise awareness of dirty edits and cleaning. BOSS plays a key role in these efforts, as it holds the complete list of all known dirty mods, and it uses this information to provide notification messages to users for any dirty mods they have installed.
 There are three key pieces of information that are used to accurately describe and identify an unclean mod. They are:
 <ul>
@@ -225,6 +225,7 @@ There are three key pieces of information that are used to accurately describe a
 </ul>
 <p>However, not all unclean mods have all or any of these pieces of information. For unclean mods whose ITM and UDR counts have not been reported, BOSS cannot give them. For unclean mods whose CRCs have not been reported, BOSS cannot give precise notification and so prints a message whether or not the user has cleaned their mod.
 <p>BOSS and the modding communities rely on user contribution of this information to progress. For information on how to contribute, see the <q><a href="#help">Contributions &amp; Help</a></q> section below. If you find that a mod is dirty, you should also report this to the mod's author so that they can fix it.
+<p>It should be noted that TES4Edit will include a variety of <em>junk records</em> in the ITM count for a plugin, such as new empty cells that are automatically generated by the Construction Set and are almost impossible to remove. These junk records are non-harmful, and BOSS will inform users when a mod contains these to avoid confusion.
 <p>There is also another type of unnecessary edit, known as a wild edit, that can also cause problems. These edits are neither Itentical To Master edits nor deleted records, so cannot be automatically cleaned. Cleaning must be manually done in TES4Edit/FO3Edit/FNVEdit. BOSS can still check for plugins with these edits if the CRCs of the plugins with wild edits are known, and it can provide notification of these edits and some information on fixing them if they are reported in an official BOSS thread.
 </div>
 
@@ -244,8 +245,8 @@ There are three key pieces of information that are used to accurately describe a
 <p>Lists of unclean plugins are also very welcome, but for the report to be most useful we require:
 <ul>
 	<li>The ESP/ESM file name(s).
-	<li>The number of records removed (the ITM count) as shown by TES4Edit/FO3Edit/FNVEdit (not the number of records processed).
-	<li>The number of records undeleted (the UDR count) as shown by TES4Edit/FO3Edit/FNVEdit (not the number of records processed).
+	<li>The number of records removed (the ITM count) as shown by TES4Edit/FO3Edit/FNVEdit or Wrye Bash/Flash/Flash NV (not the number of records processed).
+	<li>The number of records undeleted (the UDR count) as shown by TES4Edit/FO3Edit/FNVEdit or Wrye Bash/Flash/Flash NV (not the number of records processed).
 	<li>The CRC(s) of the unlcean ESP/ESM file name(s). Make sure that the CRCs are of the uncleaned files, not the files after cleaning. The CRC(s) may be calculated using BOSS, Wrye Bash/Flash/Flash NV or 7-zip, with other sources being unverified as correct. In the case of 7-zip, the <q>CRC checksum for data</q> is the one required.
 </ul>
 </div>
@@ -258,66 +259,69 @@ There are three key pieces of information that are used to accurately describe a
 as well as edit the output messages of plugins, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes are not lost. All the information on the User Rules feature can be found in the "BOSS User Rules ReadMe.html" file.
 <p>For users who wish to be provided with a GUI feature for managing their userlist and own a copy of Microsoft Word 2003, 2007 or 2010, Surazal's <a href="">BOSS Userlist Manager</a> is a comprehensive utility that provides a range of features that may prove useful.
 <p>Users can also edit a number of BOSS's default settings in the BOSS.ini. As this is where BOSS gets its settings from, care must be taken to edit it correctly to prevent breaking BOSS's operation. If BOSS is run and it cannot find a BOSS.ini, it will generate a new one. If BOSS is run with both a BOSS.ini present and command line parameters set, the command line parameters override the settings in BOSS.ini. The ini is split into the following sections:
+<h4>BOSS.GeneralSettings</h4>
+<p>These settings control miscellaneous areas of BOSS's operation outside of the main sorting functionality.
+<table>
+	<thead><tr><td>Ini Setting<td>Default<td>Valid Values<td>Description
+	<tbody>
+		<tr><td>bDoStartupUpdateCheck<td><code>true</code><td><code>true</code>, <code>false</code><td>Controls whether or not BOSS's Automatic Updater checks for new releases when BOSS is run.
+</table>
 <h4>BOSS.InternetSettings</h4>
 <p>These settings control how the masterlist updater and GUI auto-updater connect to the Internet. They are shared by BOSS.exe and BOSS GUI.exe, and can be overriden for the masterlist updater using BOSS's command line parameters. They may also be edited through the GUI. You will probably know if you need to alter them.
 <table>
 	<thead><tr><td>Ini Setting<td>Default<td>Valid Values<td>Description
 	<tbody>
-		<tr><td>ProxyType<td><code>direct</code><td><code>direct</code>, <code>http</code>, <code>http1_0</code>, <code>socks4</code>, <code>socks4a</code>, <code>socks5</code>, <code>socks5h</code> (SOCKS 5 with proxy-based hostname resolution)<td>The type of proxy used, if one is required to connect to the Internet. <code>direct</code> tells BOSS to use no proxy.
-		<tr><td>ProxyHostname<td><code>none</code><td><code>none</code>, hostname (eg. <code>proxy.company.com</code>), IP address (eg. <code>192.168.32.4</code>)<td>The hostname for the proxy host used, if a proxy is required to connect to the Internet. <code>none</code> tells BOSS to use no proxy.
-		<tr><td>ProxyPort<td><code>0</code><td>Any valid port number.<td>The port used to connect to the proxy host, if a proxy is required to connect to the Internet. <code>0</code> tells BOSS to use no proxy.
+		<tr><td>sProxyType<td><code>direct</code><td><code>direct</code>, <code>http</code>, <code>http1_0</code>, <code>socks4</code>, <code>socks4a</code>, <code>socks5</code>, <code>socks5h</code> (SOCKS 5 with proxy-based hostname resolution)<td>The type of proxy used, if one is required to connect to the Internet. <code>direct</code> tells BOSS to use no proxy.
+		<tr><td>sProxyHostname<td><code>none</code><td><code>none</code>, hostname (eg. <code>proxy.company.com</code>), IP address (eg. <code>192.168.32.4</code>)<td>The hostname for the proxy host used, if a proxy is required to connect to the Internet. <code>none</code> tells BOSS to use no proxy.
+		<tr><td>iProxyPort<td><code>0</code><td>Any valid port number.<td>The port used to connect to the proxy host, if a proxy is required to connect to the Internet. <code>0</code> tells BOSS to use no proxy.
 </table>
 <h4>BOSS.RunOptions</h4>
-<p>These settings specify BOSS.exe's run options. They allow you to run BOSS with non-default settings without having to use the command line or the GUI. Settings with valid values of only <code>0</code> and <code>1</code> are binary switches, so <code>1</code> switches them on and <code>0</code> switches them off.
+<p>These settings specify BOSS's run options. They allow you to run BOSS with non-default settings without having to use the command line or the GUI.
 <table>
 	<thead><tr><td>Ini Setting<td>Default<td>Valid Values<td>Description
 	<tbody>
-		<tr><td>UpdateMasterlist<td><code>1</code><td><code>0</code>, <code>1</code><td>Run the masterlist updater.
-		<tr><td>OnlyUpdateMasterlist<td><code>0</code><td><code>0</code>, <code>1</code><td>Exit BOSS immediately after running the masterlist updater.
-		<tr><td>DisableMasterlistUpdate<td><code>0</code><td><code>0</code>, <code>1</code><td>Inhibit the masterlist updater. Overrides UpdateMasterlist.
-		<tr><td>Game<td><code>auto</code><td><code>auto</code>, <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code>, <code>Skyrim</code><td>The game is BOSS installed for. This affects which masterlist BOSS downloads and which master file to look for. <code>auto</code> tells BOSS to auto-detect the game.
-		<tr><td>SilentRun<td><code>0</code><td><code>0</code>, <code>1</code><td>Do not open the BOSSlog automatically after BOSS is finished.
-		<tr><td>NoVersionParse<td><code>0</code><td><code>0</code>, <code>1</code><td>Do not parse plugin header description fields for their version numbers.
-		<tr><td>RevertLevel<td><code>0</code><td><code>0</code>, <code>1</code>, <code>2</code><td>Specify how many runs of BOSS to undo. <code>0</code> tells BOSS to run as normal.
-		<tr><td>CommandLineVerbosity<td><code>0</code><td><code>0</code>, <code>1</code>, <code>2</code>, <code>3</code><td>The verbosity of the command line logging output. As values increase, so does verbosity. <code>0</code> displays only warning and error messages.
-		<tr><td>Debug<td><code>0</code><td><code>0</code>, <code>1</code><td>Add source code references to debug output.
-		<tr><td>DisplayCRCs<td><code>0</code><td><code>0</code>, <code>1</code><td>Calculate and display the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr> and its installed plugins.
-		<tr><td>BOSSlogFormat<td><code>html</code><td><code>html</code>, <code>text</code><td>Specify the format of the BOSSlog generated.
-		<tr><td>DoTrialRun<td><code>0</code><td><code>0</code>, <code>1</code><td>Run BOSS and simulate its changes to your load order without actually reordering your plugins.
+		<tr><td>sGame<td><code>auto</code><td><code>auto</code>, <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code>, <code>Skyrim</code><td>The game is BOSS installed for. This affects which masterlist BOSS downloads and which master file to look for. <code>auto</code> tells BOSS to auto-detect the game.
+		<tr><td>sBOSSLogFormat<td><code>html</code><td><code>html</code>, <code>text</code><td>Specify the format of the BOSS Log generated.
+		<tr><td>iRunType<td><code>0</code><td><code>0</code>, <code>1</code>, <code>2</code><td>Specifies what run type is selected in the GUI when it starts. <code>0</code> is <q>Sort Mods</q>, <code>1</code> is <q>Update Masterlist Only</q> and <code>2</code> is <q>Undo Changes</q>.
+		<tr><td>iDebugVerbosity<td><code>0</code><td><code>0</code>, <code>1</code>, <code>2</code>, <code>3</code><td>The verbosity of the debug logging output. As values increase, so does verbosity. <code>0</code> displays only warning and error messages.
+		<tr><td>iRevertLevel<td><code>0</code><td><code>0</code>, <code>1</code>, <code>2</code><td>Specify how many runs of BOSS to undo. <code>0</code> tells BOSS to run as normal.
+		<tr><td>bUpdateMasterlist<td><code>true</code><td><code>false</code>, <code>true</code><td>Run the masterlist updater.
+		<tr><td>bOnlyUpdateMasterlist<td><code>false</code><td><code>false</code>, <code>true</code><td>Exit BOSS immediately after running the masterlist updater.
+		<tr><td>bSilentRun<td><code>false</code><td><code>false</code>, <code>true</code><td>Do not open the BOSS Log automatically after BOSS is finished.
+		<tr><td>bNoVersionParse<td><code>false</code><td><code>false</code>, <code>true</code><td>Do not parse plugin header description fields for their version numbers.
+		<tr><td>bDebugWithSourceRefs<td><code>false</code><td><code>false</code>, <code>true</code><td>Add source code references to debug output.
+		<tr><td>bDisplayCRCs<td><code>false</code><td><code>false</code>, <code>true</code><td>Calculate and display the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr> and its installed plugins.
+		<tr><td>bDoTrialRun<td><code>false</code><td><code>false</code>, <code>true</code><td>Run BOSS and simulate its changes to your load order without actually reordering your plugins.
+		<tr><td>bRecordDebugOutput<td><code>false</code><td><code>false</code>, <code>true</code><td>If <code>true</code>, debug output is recorded in the BOSSDebugLog.txt file, otherwise it is printed to the command line.
 </table>
 
-<h4>GUI.Settings</h4>
-<p>These settings control aspects of the GUI's behaviour. As these settings are automatically loaded when the GUI starts and saved when it exits, there is no benefit to editing them by hand, so it is not recommended that you alter them manually.
-<h4>GUI.LastOptions</h4>
-<p>These settings record the options last selected by the user in the GUI. As these settings are automatically loaded when the GUI starts and saved when it exits, there is no benefit to editing them by hand, so it is not recommended that you alter them manually.
-
-<h4>BOSSlog.Filters</h4>
-<p>These settings control the default states of the BOSSlog filters. If a filter's default is set to be enabled, then it will be enabled and applied when the BOSSlog is opened. These settings are all binary switches, so <code>1</code> enables them and <code>0</code> disables them. By default all filters are disabled. See the earlier <q><a href="#bosslog">The BOSS Log</a></q> section for what each filter does.
+<h4>BOSSLog.Filters</h4>
+<p>These settings control the default states of the BOSS Log filters. If a filter's default is set to be enabled, then it will be enabled and applied when the BOSS Log is opened. These settings are all binary switches, so <code>true</code> enables them and <code>false</code> disables them. By default all filters are disabled. See the earlier <q><a href="#bosslog">The BOSS Log</a></q> section for what each filter does.
 <table>
 	<thead><tr><td>Ini Setting<td>Description
 	<tbody>
-		<tr><td>UseDarkColourScheme<td>Controls the state of the <q>Use Dark Colour Scheme</q> filter.
-		<tr><td>HideVersionNumbers<td>Controls the state of the <q>Hide Version Numbers</q> filter.
-		<tr><td>HideGhostedLabel<td>Controls the state of the <q>Hide 'Ghosted' Label</q> filter.
-		<tr><td>HideChecksums<td>Controls the state of the <q>Hide Checksums</q> filter.
-		<tr><td>HideMessagelessMods<td>Controls the state of the <q>Hide Messageless Mods</q> filter.
-		<tr><td>HideGhostedMods<td>Controls the state of the <q>Hide Ghosted Mods</q> filter.
-		<tr><td>HideCleanMods<td>Controls the state of the <q>Hide Clean Mods</q> filter.
-		<tr><td>HideRuleWarnings<td>Controls the state of the <q>Hide Rule Warnings</q> filter.
-		<tr><td>HideAllModMessages<td>Controls the state of the <q>Hide All Mod Messages</q> filter.
-		<tr><td>HideNotes<td>Controls the state of the <q>Hide Notes</q> filter.
-		<tr><td>HideBashTagSuggestions<td>Controls the state of the <q>Hide Bash Tag Suggestions</q> filter.
-		<tr><td>HideRequirements<td>Controls the state of the <q>Hide Requirements</q> filter.
-		<tr><td>HideIncompatibilities<td>Controls the state of the <q>Hide Incompatibilities</q> filter.
+		<tr><td>bUseDarkColourScheme<td>Controls the state of the <q>Use Dark Colour Scheme</q> filter.
+		<tr><td>bHideVersionNumbers<td>Controls the state of the <q>Hide Version Numbers</q> filter.
+		<tr><td>bHideGhostedLabel<td>Controls the state of the <q>Hide 'Ghosted' Label</q> filter.
+		<tr><td>bHideChecksums<td>Controls the state of the <q>Hide Checksums</q> filter.
+		<tr><td>bHideMessagelessMods<td>Controls the state of the <q>Hide Messageless Mods</q> filter.
+		<tr><td>bHideGhostedMods<td>Controls the state of the <q>Hide Ghosted Mods</q> filter.
+		<tr><td>bHideCleanMods<td>Controls the state of the <q>Hide Clean Mods</q> filter.
+		<tr><td>bHideRuleWarnings<td>Controls the state of the <q>Hide Rule Warnings</q> filter.
+		<tr><td>bHideAllModMessages<td>Controls the state of the <q>Hide All Mod Messages</q> filter.
+		<tr><td>bHideNotes<td>Controls the state of the <q>Hide Notes</q> filter.
+		<tr><td>bHideBashTagSuggestions<td>Controls the state of the <q>Hide Bash Tag Suggestions</q> filter.
+		<tr><td>bHideRequirements<td>Controls the state of the <q>Hide Requirements</q> filter.
+		<tr><td>bHideIncompatibilities<td>Controls the state of the <q>Hide Incompatibilities</q> filter.
 </table>
-<h4>BOSSlog.Styles</h4>
-<p>These settings control the BOSSlog's CSS styles, used to provide the formatting for the BOSSlog. The defaults are hard-coded into BOSS, and aren't given in the ini. They are, however, given in the table below. A knowledge of CSS is expected if you wish to alter these settings. If you do not possess such knowledge, altering these settings is not recommended.</p>
+<h4>BOSSLog.Styles</h4>
+<p>These settings control the BOSS Log's CSS styles, used to provide the formatting for the BOSS Log. The defaults are hard-coded into BOSS, and aren't given in the ini. They are, however, given in the table below. A knowledge of CSS is expected if you wish to alter these settings. If you do not possess such knowledge, altering these settings is not recommended.</p>
 <table>
 	<thead><tr><td>CSS Selector<td>Default Styling
 	<tbody>
 		<tr><td>body<td>font-family: Calibri,Arial,sans-serifs;
 		<tr><td>#filters<td>border: 1px gray dashed; background: #F5F5F5; padding: 0.3em; display: table;
-		<tr><td>#filters > li<td>display: inline-block; padding: 0.2em 1em; white-space: nowrap; margin: 0;
+		<tr><td>#filters > li<td>display: inline-block; padding: 0.2em 0.5em; white-space: nowrap; margin: 0; width: 200px;
 		<tr><td>body > div:first-child<td>font-size: 2.4em; font-weight: 700; text-align: center; margin-bottom: 0.2em;
 		<tr><td>body > div:first-child + div<td>text-align: center;
 		<tr><td>h3 + *<td>margin-bottom: 3em;
@@ -361,9 +365,9 @@ as well as edit the output messages of plugins, and more. In addition, this is a
 <p><code>-g [ --game ] [ game ]</code>
 <p>Overrides game autodetection. The valid values of the argument are: <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code> and <code>Skyrim</code>. If the game specified is not detected, BOSS will fail before any plugins are sorted, so this should be used in conjunction with -o.
 <p><code>-s [ --silent ]</code>
-<p>Stops BOSS from automatically opening up the BOSSlog in your web browser (or text editor, depending on format chosen) after it has finished running.
+<p>Stops BOSS from automatically opening up the BOSS Log in your web browser (or text editor, depending on format chosen) after it has finished running.
 <p><code>-n [ --no-version-parse ]</code>
-<p>Disables the parsing of each plugin's description to extract the author's version information, so it is not printed alongside the other data in the BOSSlog. This can be used if the version 
+<p>Disables the parsing of each plugin's description to extract the author's version information, so it is not printed alongside the other data in the BOSS Log. This can be used if the version 
 parsing is not working properly for some of your plugins and you wish to remove the version notes.
 <p><code>-r [ --revert ] [ level ]</code>
 <p>Revert to a previous load order. This parameter optionally accepts values of <code>1</code> or <code>2</code>, indicating how many undo steps to apply. If no option is specified, it defaults to <code>1</code>. A value of <code>1</code> will restore the load order to that stored in modlist.txt. 
@@ -373,11 +377,11 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 <p><code>-d [ --debug ]</code>
 <p>Adds source file references (filenames and line numbers) to logging statements.
 <p><code>-c [ --crc-display ]</code>
-<p>Calculates the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder and displays them in your BOSSlog alongside the plugin names. The version numbers and CRCs of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr> and its installed plugins will also be displayed in your BOSSlog.
+<p>Calculates the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder and displays them in your BOSS Log alongside the plugin names. The version numbers and CRCs of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr> and its installed plugins will also be displayed in your BOSS Log.
 <p><code>-f [ --format ] [ type ]</code>
-<p>Allows the selection of the BOSSlog format. Valid argument values are: <code>html</code> and <code>text</code>. <code>html</code> is the default output format. The <code>text</code> value will print the BOSSlog as plain text into a 'BOSSlog.txt' file, similar to the BOSSlog in BOSS v1.5 and below.
+<p>Allows the selection of the BOSS Log format. Valid argument values are: <code>html</code> and <code>text</code>. <code>html</code> is the default output format. The <code>text</code> value will print the BOSS Log as plain text into a 'BOSSlog.txt' file, similar to the BOSS Log in BOSS v1.5 and below.
 <p><code>-t [ --trial-run ]</code>
-<p>BOSS runs, but no plugins are redated, so your load order is not changed. The BOSSlog still displays the order BOSS would have placed them in, so it is useful for checking what would happen if you ran BOSS on your load order without having to then undo BOSS's changes.
+<p>BOSS runs, but no plugins are redated, so your load order is not changed. The BOSS Log still displays the order BOSS would have placed them in, so it is useful for checking what would happen if you ran BOSS on your load order without having to then undo BOSS's changes.
 <p><code>-U [ --no-update ]</code>
 <p>Inhibits the default automatic masterlist updater, preventing it from running. Must not be used alongside --update,-u.
 <p><code>-T [ --proxy-type ] [ type ]</code>
@@ -395,7 +399,7 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 	<li>Copy <q>BOSS.exe</q> and <q>BOSS GUI.exe</q> from your BOSS folder to the computer with an Internet connection, ensuring they are in the same folder.
 	<li>If your Internet connection is through a proxy, you will also need to copy across your <q>BOSS.ini</q> to ensure the proxy settings you have recorded in it are applied. Make sure you have recorded your proxy settings in your BOSS.ini!
 	<li>Run the BOSS GUI.exe and select the <q>Update Masterlist Only</q> option. For the <q>Game</q> option below, select your game from the drop-down list. This will tell BOSS which game's masterlist to download.
-	<li>Select <q>Run BOSS</q>. Your masterlist will be downloaded into the same folder as your BOSS.exe and BOSS GUI.exe. A BOSSlog will also be created, you can delete this.
+	<li>Select <q>Run BOSS</q>. Your masterlist will be downloaded into the same folder as your BOSS.exe and BOSS GUI.exe. A BOSS Log will also be created, you can delete this.
 </ol>
 <p>A rarer circumstance is when the user connects to the Internet using a proxy. This is most common in enterprise environments, and such users will generally know if they use a proxy. If you use a proxy to connect to the Internet, you must manually enter your proxy settings into your <q>BOSS.ini</q> settings file. See the section on the BOSS.ini in the <q><a href="#customising">Customising How BOSS Works</a></q> section below for details. BOSS does not support the use of authenticated proxies at this time.
 <p>If your circumstances are such that the computer you have BOSS installed on is not connected to the Internet, or if you use a proxy to connect to the Internet, it is recommended that you avoid using the GUI's auto-updater, simply because it is easier in these circumstances to download new releases through your web browser.
@@ -415,11 +419,11 @@ It is also possible to compile BOSS natively for Linux, and makefiles are provid
 	<tbody>
 		<tr><td>BOSSlog.html<td>The log generated by BOSS that is displayed when BOSS runs. It is replaced every time you run BOSS. You can view it in any web browser.
 		<tr><td>BOSSlog.txt<td>The plain text version of the log, without HTML formatting. It is only created if you specify the 'text' format when running BOSS. You can view it in any text editor.
-		<tr><td>masterlist.txt<td>The list of plugins that BOSS recognises, listing them in order and including the notes that are displayed in the BOSSlog. It is the most frequently updated component of BOSS, receiving updates almost every day.
+		<tr><td>masterlist.txt<td>The list of plugins that BOSS recognises, listing them in order and including the notes that are displayed in the BOSS Log. It is the most frequently updated component of BOSS, receiving updates almost every day.
 		<tr><td>modlist.txt<td>Contains the list of your plugins in the order they were before you last ran BOSS, which can be used to undo changes to your load order.
 		<tr><td>modlist.old<td>Contains the contents of your modlist.txt before you last ran BOSS, providing a second level of undo for load order changes.
 		<tr><td>userlist.txt<td>Contains your custom rules to be implemented by the User Rules feature.
-		<tr><td>BOSS.ini<td>Stores BOSS's settings, including the default run options, the default BOSSlog filters and more.
+		<tr><td>BOSS.ini<td>Stores BOSS's settings, including the default run options, the default BOSS Log filters and more.
 		<tr><td>BOSS.ini.old<td>A backup of your previous BOSS.ini, created when you update BOSS via the installer or the GUI's auto-updater.
 		<tr><td>BOSS ReadMe.html<td>This ReadMe file.
 		<tr><td>BOSS User Rules ReadMe.html<td>The ReadMe file for BOSS's User Rules functionality.
@@ -442,9 +446,9 @@ a problem for which no error message is given, please report the crash or proble
 		<li><b>Solution:</b> Disable <q>Lock Times</q> before running BOSS. If you are using Wrye Bash v277 or later and running BOSS from Wrye Bash, this is done for you, and <q>Lock Times</q> is then re-activated after BOSS has run.
 	</ul>
 	
-	<li style="margin-bottom:1.4em;"><b>Symptom:</b> BOSS does not change/update the BOSSlog and/or modlists correctly.
+	<li style="margin-bottom:1.4em;"><b>Symptom:</b> BOSS does not change/update the BOSS Log and/or modlists correctly.
 	<ul>
-		<li><b>Issue:</b> The BOSSlog and/or modlists are read-only, or the BOSS folder is read-only.
+		<li><b>Issue:</b> The BOSS Log and/or modlists are read-only, or the BOSS folder is read-only.
 		<li><b>Solution:</b> Ensure that the BOSS folder and any files in it are not read-only.
 	</ul>
 	
@@ -456,7 +460,7 @@ a problem for which no error message is given, please report the crash or proble
 		<li><b>Solution:</b> Rewrite the filenames in your userlist, copy/pasting them from the files themselves to ensure they are correct.
 	</ul>
 	
-	<li><b>Symptom:</b> Some plugins have the wrong or no version number given in the BOSSlog.
+	<li><b>Symptom:</b> Some plugins have the wrong or no version number given in the BOSS Log.
 	<ul>
 		<li><b>Issue:</b> This occurs because BOSS looks for the version number in the plugin's description field. If the plugin author has forgotten to update the version number there or not provided one, an incorrect or no version number will be displayed.
 		<li><b>Solution:</b> No solution, other than the plugin author including a correct version number in the plugin's description field for a later release.
@@ -629,22 +633,22 @@ a problem for which no error message is given, please report the crash or proble
 		<li>Self-explanatory.
 	</ul>
 	
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>No BOSSlog.html found. Make sure you have run BOSS from BOSS.exe, or run it with the HTML output format selected, at least once before attempting to open the BOSSlog in the HTML format.</i>
+	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>No BOSSlog.html found. Make sure you have run BOSS from BOSS.exe, or run it with the HTML output format selected, at least once before attempting to open the BOSS Log in the HTML format.</i>
 	<ul>
-		<li><b>Issue:</b> You're trying to open the text BOSSlog you have generated, but the <q>BOSSlog Format</q> option is set to 'HTML'.
-		<li><b>Solution:</b> Set the <q>BOSSlog Format</q> option to 'Plain Text' to open the text BOSSlog.
+		<li><b>Issue:</b> You're trying to open the text BOSS Log you have generated, but the <q>BOSS Log Format</q> option is set to 'HTML'.
+		<li><b>Solution:</b> Set the <q>BOSS Log Format</q> option to 'Plain Text' to open the text BOSS Log.
 		<li><b>Issue:</b> BOSS has not yet been run.
-		<li><b>Solution:</b> Run BOSS at least once before attempting to view a BOSSlog.
-		<li><b>Issue:</b> BOSS has only been run configured to generate text BOSSlogs.
-		<li><b>Solution:</b> Set BOSS to generate a HTML BOSSlog, then run BOSS. A HTML BOSSlog needs to be generated before you can view it.
+		<li><b>Solution:</b> Run BOSS at least once before attempting to view a BOSS Log.
+		<li><b>Issue:</b> BOSS has only been run configured to generate text BOSS Logs.
+		<li><b>Solution:</b> Set BOSS to generate a HTML BOSS Log, then run BOSS. A HTML BOSS Log needs to be generated before you can view it.
 	</ul>
 	
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>No BOSSlog.txt found. Make sure you have run BOSS at least once with the text output format selected before attempting to open the BOSSlog in the plain text format.</i>
+	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>No BOSSlog.txt found. Make sure you have run BOSS at least once with the text output format selected before attempting to open the BOSS Log in the plain text format.</i>
 	<ul>
-		<li><b>Issue:</b> You're trying to open the HTML BOSSlog you have generated, but the <q>BOSSlog Format</q> option is set to 'Plain Text'.
-		<li><b>Solution:</b> Set the <q>BOSSlog Format</q> option to 'HTML' to open the text BOSSlog.
-		<li><b>Issue:</b> BOSS has never been run configured to generate text BOSSlogs.
-		<li><b>Solution:</b> Set BOSS to generate a text BOSSlog, then run BOSS. A text BOSSlog needs to be generated before you can view it.
+		<li><b>Issue:</b> You're trying to open the HTML BOSS Log you have generated, but the <q>BOSS Log Format</q> option is set to 'Plain Text'.
+		<li><b>Solution:</b> Set the <q>BOSS Log Format</q> option to 'HTML' to open the text BOSS Log.
+		<li><b>Issue:</b> BOSS has never been run configured to generate text BOSS Logs.
+		<li><b>Solution:</b> Set BOSS to generate a text BOSS Log, then run BOSS. A text BOSS Log needs to be generated before you can view it.
 	</ul>
 	
 	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: No '<code>filename</code>' found. Make sure you have the ReadMe or a shortcut to the ReadMe in your BOSS folder.</i>
@@ -802,14 +806,14 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Changed: Added whitespace characters between plugin filenames, versions, ghosted labels and CRCs to make plaintext more readable.
 	<li>Changed: Userlist rules which reference plugins that are not installed now have warning messages reported instead of error messages.
 	<li>Changed: Masterlist keywords can now be case-insensitive.
-	<li>Changed: Content and slight formatting changes to BOSSlog:
+	<li>Changed: Content and slight formatting changes to BOSS Log:
 	<ul>
 		<li><q>Masterlist Update</q> section removed. Update information is now displayed in the <q>Summary</q> section. Updater errors are displayed in the <q>General Messages</q> section.
 		<li>Javascript optimisations for filters. Probably no noticeable performance impact unless the user has a very large load order.
 		<li><q>Execution Complete</q> text is now centred.
 		<li>Other behind-the-scenes tweaks.
 	</ul>
-	<li>Added: <q>Hide Clean Mods</q> BOSSlog filter.
+	<li>Added: <q>Hide Clean Mods</q> BOSS Log filter.
 	<li>Added: Support for Skyrim. This assumes Skyrim's master file will be <q>Skyrim.esm</q>, the executable will be <q>Skyrim.exe</q>. If different, BOSS will be updated upon Skyrim's release with the real filenames.
 	<li>Added: Support for a Skyrim Script Extender. While the team responsible for OBSE, FOSE and NVSE have not made any comments officially or unofficially regarding Skyrim, BOSS has added support for one with the assumptions that it uses the <code>Data\SKSE\Plugins\</code> directory for its plugins and has a loader named <q>skse_loader.exe</q>.
 	<li>Added: Support for MF2.2 C-style comments, case-insensitive keywords and expanded conditional shorthands.

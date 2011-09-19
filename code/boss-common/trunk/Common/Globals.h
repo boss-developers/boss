@@ -35,6 +35,7 @@ namespace boss {
 	extern const fs::path curr_modlist_path;	// Hold both location and file name for modlist.txt
 	extern const fs::path prev_modlist_path;	// Hold both location and file name for modlist.old
 	extern const fs::path ini_path;				// Holds the path to the BOSS.ini.
+	extern const fs::path debug_log_path;		// Holds the path to BOSSDebugLog.txt.
 
 	extern const string g_version;
 	extern const string g_releaseDate;
@@ -54,12 +55,12 @@ namespace boss {
 	extern bool debug;				// whether to include origin information in logging statements
 	extern bool show_CRCs;			// whether or not to show mod CRCs.
 	extern bool trial_run;			// If true, don't redate files.
+	extern bool record_debug_output;		//If true, logs command line output in BOSSDebugLog.txt.
+	extern bool do_startup_update_check;	// Whether or not to check for updates on startup.
 	
 	//GUI variables
 	extern int run_type;					// 1 = sort mods, 2 = only update, 3 = undo changes.
-	extern bool logCL;						//If true, logs command line output in BOSSCommandLineLog.txt.
-	extern bool do_startup_update_check;	// Whether or not to check for updates on startup.
-	extern bool skip_gui;					//If true, skips display of the GUI window and goes straight to main execution.
+	extern bool use_user_rules_editor;		//Use the User Rules Editor or edit userlist.txt directly?
 }
 
 #endif

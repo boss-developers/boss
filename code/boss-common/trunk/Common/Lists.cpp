@@ -30,7 +30,8 @@ namespace boss {
 
 	//Find a mod by name. Will also find the starting position of a group.
 	size_t GetModPos(vector<item> list, string filename) {
-		for (size_t i=0; i<list.size(); i++) {
+		size_t size = list.size();
+		for (size_t i=0; i<size; i++) {
 			if (Tidy(list[i].name.string()) == Tidy(filename))  //Look for exact match.
 				return i;
 			else if (Tidy(list[i].name.string()) == Tidy(filename + ".ghost"))  //Look for match with ghosted mod.
@@ -41,7 +42,8 @@ namespace boss {
 
 	//Find the end of a group by name.
 	size_t GetGroupEndPos(vector<item> list, string groupname) {
-		for (size_t i=0; i<list.size(); i++) {
+		size_t size = list.size();
+		for (size_t i=0; i<size; i++) {
 			if (list[i].type == ENDGROUP && Tidy(list[i].name.string()) == Tidy(groupname)) {
 				return i;
 			}
@@ -105,7 +107,8 @@ namespace boss {
 		}
 
 		//Iterate through items, printing out all group markers, mods and messsages.
-		for (size_t i=0; i<list.size(); i++) {
+		size_t size = list.size();
+		for (size_t i=0; i<size; i++) {
 			if (list[i].type == BEGINGROUP)
 				ofile << "BEGINGROUP: " << list[i].name.string() << endl;  //Print the group begin marker
 			else if (list[i].type == ENDGROUP)
@@ -113,7 +116,8 @@ namespace boss {
 			else {
 				ofile << list[i].name.string() << endl;  //Print the mod name.
 				//Print the messages with the appropriate syntax.
-				for (size_t j=0; j<list[i].messages.size(); j++) {
+				size_t messagesSize = list[i].messages.size();
+				for (size_t j=0; j<messagesSize; j++) {
 					ofile << " " << list[i].messages[j].key << ": " << list[i].messages[j].data << endl;  
 				}
 			}

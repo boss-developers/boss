@@ -21,12 +21,13 @@ namespace boss {
 	using namespace std;
 
 	struct summaryCounters {
-		int recognised; 
-		int unrecognised;
-		int ghosted;
-		int messages;
-		int warnings;
-		int errors;
+		unsigned int recognised; 
+		unsigned int unrecognised;
+		unsigned int ghosted;
+		unsigned int messages;
+		unsigned int warnings;
+		unsigned int errors;
+		summaryCounters();
 	};
 
 	struct bosslogContents {
@@ -39,6 +40,7 @@ namespace boss {
 
 		string oldRecognisedPlugins;
 		string updaterErrors;
+		bosslogContents();
 	};
 
 	//Record recognised mod list from last HTML BOSSlog generated.

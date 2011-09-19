@@ -24,6 +24,7 @@ namespace boss {
 	const fs::path curr_modlist_path	= "modlist.txt";
 	const fs::path prev_modlist_path	= "modlist.old";
 	const fs::path ini_path				= "BOSS.ini";
+	const fs::path debug_log_path		= "BOSSDebugLog.txt";
 
 	const string g_version     = "1.8.1";
 	const string g_releaseDate = "X Y, 2011";
@@ -43,10 +44,10 @@ namespace boss {
 	bool debug              = false;	// whether to include origin information in logging statements
 	bool show_CRCs			= false;	// whether or not to show mod CRCs.
 	bool trial_run			= false;	// If true, don't redate files.
+	bool record_debug_output		= false;  //If true, logs the Logger output in BOSSDebugLog.txt.
+	bool do_startup_update_check	= true;	// Whether or not to check for updates on startup.
 
 	//GUI variables
 	int run_type					= 1;  // 1 = sort mods, 2 = only update, 3 = undo changes.
-	bool logCL						= false;  //If true, logs command line output in BOSSCommandLineLog.txt.
-	bool do_startup_update_check	= true;	// Whether or not to check for updates on startup.
-	bool skip_gui					= false;  //If true, skips display of the GUI window and goes straight to main execution.
+	bool use_user_rules_editor		= false;		//Use the User Rules Editor or edit userlist.txt directly?
 }

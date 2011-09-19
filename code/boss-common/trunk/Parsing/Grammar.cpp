@@ -425,7 +425,7 @@ namespace boss {
 	
 	//Turns a given string into a path. Can't be done directly because of the openGroups checks.
 	void path(fs::path& p, string const itemName) {
-		if (itemName.length() == 0 && openGroups.size() > 0) 
+		if (itemName.length() == 0 && !openGroups.empty()) 
 			p = fs::path(openGroups.back());
 		else
 			p = fs::path(itemName);
@@ -605,32 +605,28 @@ namespace boss {
 
 	//Set the boolean BOSS variable values while parsing.
 	void SetBoolVar(string var, bool value) {
+		cout << var << " = " << value << " @ " << currentHeading << endl;
 		if (currentHeading == "BOSS.GeneralSettings") {
 			if (var == "bDoStartupUpdateCheck")
 				do_startup_update_check = value;
-			if (var == "bSkipGUI")
-				skip_gui = value;
 		} else if (currentHeading == "BOSS.RunOptions") {
 			if (var == "bUpdateMasterlist")
 				update = value;
 			else if (var == "bOnlyUpdateMasterlist")
 				update_only = value;
-			else if (var == "bDisableMasterlistUpdate") {
-				if (value)
-					update = false;
-			} else if (var == "bSilentRun")
+			else if (var == "bSilentRun")
 				silent = value;
 			else if (var == "bNoVersionParse")
 				skip_version_parse = value;
-			else if (var == "bDebug")
+			else if (var == "bDebugWithSourceRefs")
 				debug = value;
 			else if (var == "bDisplayCRCs")
 				show_CRCs = value;
 			else if (var == "bDoTrialRun")
 				trial_run = value;
-			else if (var == "bLogCLOutput")
-				logCL = value;
-		} else if (currentHeading == "BOSSlog.Filters") {
+			else if (var == "bRecordDebugOutput")
+				record_debug_output = value;
+		} else if (currentHeading == "BOSSLog.Filters") {
 			if (var == "bUseDarkColourScheme")
 				UseDarkColourScheme = value;
 			else if (var == "bHideVersionNumbers")
@@ -661,12 +657,13 @@ namespace boss {
 	}
 
 	//Set the integer BOSS variable values while parsing.
-	void SetIntVar(string var, int value) {
+	void SetIntVar(string var, unsigned int value) {
+		cout << var << " = " << value << " @ " << currentHeading << endl;
 		if (currentHeading == "BOSS.RunOptions") {
 			if (var == "iRevertLevel") {
 				if (value >= 0 && value < 3)
 					revert = value;
-			} else if (var == "iCommandLineVerbosity") {
+			} else if (var == "iDebugVerbosity") {
 				if (value >= 0 && value < 4)
 					verbosity = value;
 			} else if (var == "iRunType") {
@@ -678,6 +675,7 @@ namespace boss {
 
 	//Set the BOSS variable values while parsing.
 	void SetStringVar(string var, string value) {
+		cout << var << " = " << value << " @ " << currentHeading << endl;
 			if (currentHeading == "BOSS.InternetSettings") {
 				if (var == "sProxyType")
 					proxy_type = value;
@@ -686,7 +684,7 @@ namespace boss {
 				else if (var == "iProxyPort")
 					proxy_port = value;
 			} else if (currentHeading == "BOSS.RunOptions") {
-				if (var == "sBOSSlogFormat") {
+				if (var == "sBOSSLogFormat") {
 					if (value == "html" || value == "text")
 						log_format = value;
 				} else if (var == "sGame") {
@@ -701,8 +699,8 @@ namespace boss {
 					else if (value == "Skyrim")
 						game = 5;
 				}
-			} else if (currentHeading == "BOSSlog.Styles") {
-				if (value == "")
+			} else if (currentHeading == "BOSSLog.Styles") {	
+				if (value.empty())
 					return;
 				else if (var == "body")
 					CSSBody = value;
@@ -767,33 +765,26 @@ namespace boss {
 
 	ini_grammar::ini_grammar() : ini_grammar::base_type(ini, "ini grammar") {
 
-		ini =
-			section % +eol;
+		ini = *eol 
+			> section % +eol;
 
 		section =
-			heading[phoenix::ref(currentHeading) = _1]
-			> +eol
+			heading[phoenix::ref(currentHeading) = _1] > +eol
 			> setting % +eol;
 
-		heading %= 
-			lit("[")
-			>> (+(char_ - "]"))
-			>> lit("]");
+		heading %= '[' > +(char_ - ']') > ']';
 
 		setting =
-			(var > '=' >> uint_)[phoenix::bind(&SetIntVar, _1, _2)]
-			| (var > '=' >> bool_)[phoenix::bind(&SetBoolVar, _1, _2)]
-			| (var > '=' >> stringVal)[phoenix::bind(&SetStringVar, _1, _2)];
+			!lit("[")
+			>>
+				(var >> '=' >> uint_)[phoenix::bind(&SetIntVar, _1, _2)]
+				| (var >> '=' >> bool_)[phoenix::bind(&SetBoolVar, _1, _2)]
+				| (var >> '=' >> stringVal)[phoenix::bind(&SetStringVar, _1, _2)];
 
 		var %=
-			lexeme[(lit("\"") >> +(char_ - lit("\"")) >> lit("\""))]
-			|
-			(!lit("[") >> +(char_ - '='));
+			-lit('"') > lexeme[+(char_ - (lit('"') | lit('=')))] > -lit('"');
 
-		stringVal %=
-			(lit("{") >> lexeme[*(char_ - lit("}"))] >> lit("}"))
-			|
-			+(char_ - eol);
+		stringVal %= lexeme[*(char_ - eol)];
 
 		//Give each rule names.
 		ini.name("ini");
@@ -861,7 +852,8 @@ namespace boss {
 				else if (ruleKey == FOR)
 					throw failure(ruleKey, ruleObject, EAttachingMessageToGroup);
 			}
-			for (size_t i=0; i<currentRule.lines.size(); i++) {
+			size_t size = currentRule.lines.size();
+			for (size_t i=0; i<size; i++) {
 				keyType key = currentRule.lines[i].key;
 				string subject = currentRule.lines[i].object;
 				if (key == BEFORE || key == AFTER) {

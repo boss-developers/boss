@@ -25,6 +25,24 @@ namespace boss {
 
 	using boost::algorithm::trim_copy;
 
+	summaryCounters::summaryCounters() {
+		recognised = 0;
+		unrecognised = 0;
+		ghosted = 0;
+		messages = 0;
+		warnings = 0;
+		errors = 0;
+	}
+
+	bosslogContents::bosslogContents() {
+		generalMessages = "";
+		summary = "";
+		userlistMessages = "";
+		seInfo = "";
+		recognisedPlugins = "";
+		unrecognisedPlugins = "";
+	}
+
 	//Record recognised mod list from last HTML BOSSlog generated.
 	string GetOldRecognisedList(fs::path log) {
 		size_t pos1, pos2;
@@ -103,17 +121,22 @@ namespace boss {
 		boost::unordered_set<string> hashset;  //Holds mods for checking against masterlist
 		boost::unordered_set<string>::iterator setPos;
 		size_t lastRecognisedPos;
+
+		size_t size;
+		size_t userlistSize = userlist.size();
+		size_t linesSize;
 		/* Hashset must be a set of unique mods.
 		Ghosted mods take priority over non-ghosted mods, as they are specifically what is installed. 
 		*/
 
 		LOG_INFO("Populating hashset with modlist.");
-		for (size_t i=0; i<modlist.size(); i++) {
+		size = modlist.size();
+		for (size_t i=0; i<size; i++) {
 			if (modlist[i].type == MOD)
 				hashset.insert(Tidy(modlist[i].name.string()));
 		}
 		LOG_INFO("Populating hashset with userlist.");
-		for (size_t i=0; i<userlist.size(); i++) {
+		for (size_t i=0; i<userlistSize; i++) {
 			if (IsPlugin(userlist[i].ruleObject)) {
 				setPos = hashset.find(Tidy(userlist[i].ruleObject));
 				if (setPos == hashset.end()) {  //Mod not already in hashset.
@@ -124,7 +147,8 @@ namespace boss {
 					}
 				}
 			}
-			for (size_t j=0; j<userlist[i].lines.size(); j++) {
+			linesSize = userlist[i].lines.size();
+			for (size_t j=0; j<linesSize; j++) {
 				if (IsPlugin(userlist[i].lines[j].object)) {
 					setPos = hashset.find(Tidy(userlist[i].lines[j].object));
 					if (setPos == hashset.end()) {  //Mod not already in hashset.
@@ -190,8 +214,9 @@ namespace boss {
 					if (pos != (size_t)-1)
 						mod = modlist[pos].name.string();
 					else {
-						for (size_t i=0; i<userlist.size(); i++) {
-							for (size_t j=0; j<userlist[i].lines.size(); j++) {
+						for (size_t i=0; i<userlistSize; i++) {
+							linesSize = userlist[i].lines.size();
+							for (size_t j=0; j<linesSize; j++) {
 								if (Tidy(userlist[i].lines[j].object) == mod)
 									mod = userlist[i].lines[j].object;
 							}
@@ -228,11 +253,13 @@ namespace boss {
 
 	//Applies the userlist rules to the working modlist.
 	void ApplyUserRules(vector<item>& modlist, const vector<rule>& userlist, string& ouputBuffer, size_t& lastRecognisedPos) {
+		size_t userlistSize = userlist.size();
 		//Apply rules, one rule at a time, one line at a time.
-		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlist.size());
-		for (size_t i=0; i<userlist.size(); i++) {
+		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlistSize);
+		for (size_t i=0; i<userlistSize; i++) {
 			LOG_DEBUG(" -- Processing rule #%" PRIuS ".", i+1);
-			for (size_t j=0; j<userlist[i].lines.size(); j++) {
+			size_t linesSize = userlist[i].lines.size();
+			for (size_t j=0; j<linesSize; j++) {
 				//A mod sorting rule.
 				if ((userlist[i].lines[j].key == BEFORE || userlist[i].lines[j].key == AFTER) && IsPlugin(userlist[i].lines[j].object)) {
 					size_t index1,index2;
@@ -493,9 +520,10 @@ namespace boss {
 					}
 				}
 				//Finally, print the mod's messages.
-				if (modlist[i].messages.size()>0) {
+				if (!modlist[i].messages.empty()) {
 					ouputBuffer += "<ul>";
-					for (size_t j=0; j<modlist[i].messages.size(); j++) {
+					size_t size = modlist[i].messages.size();
+					for (size_t j=0; j<size; j++) {
 						ShowMessage(ouputBuffer, modlist[i].messages[j]);  //Print messages to buffer.
 						counters.messages++;
 						if (modlist[i].messages[j].key == WARN)
@@ -515,10 +543,11 @@ namespace boss {
 	//List unrecognised mods.
 	void ListUnrecognisedMods(const vector<item>& modlist, const size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters) {
 		time_t modfiletime = 0;
+		size_t modlistSize = modlist.size();
 		//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 		//Order their dates to be i days after the master esm to ensure they load last.
 		LOG_INFO("Reporting unrecognized mods...");
-		for (size_t i=lastRecognisedPos+1; i<modlist.size(); i++) {
+		for (size_t i=lastRecognisedPos+1; i<modlistSize; i++) {
 			//Only act on mods that exist.
 			if (modlist[i].type == MOD && (Exists(data_path / modlist[i].name))) {
 				ouputBuffer += "<li><span class='mod'>" + EscapeHTMLSpecial(TrimDotGhost(modlist[i].name.string())) + "</span>";
@@ -547,7 +576,7 @@ namespace boss {
 				counters.unrecognised++;
 			}
 		}
-		if (lastRecognisedPos+1 == modlist.size())
+		if (lastRecognisedPos+1 == modlistSize)
 			ouputBuffer += "<i>No unrecognised plugins.</i>";
 	
 		LOG_INFO("Unrecognized mods reported.");
@@ -642,10 +671,12 @@ namespace boss {
 
 		if (!globalMessageBuffer.empty() || !iniErrorBuffer.empty() || !contents.updaterErrors.empty()) {
 			string buffer;
+			size_t size = iniErrorBuffer.size();
 			Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>General Messages</h3><ul>");
-			for (size_t i=0; i<iniErrorBuffer.size(); i++)  //First print parser/syntax error messages.
+			for (size_t i=0; i<size; i++)  //First print parser/syntax error messages.
 				Output(iniErrorBuffer[i]);
-			for (size_t i=0; i<globalMessageBuffer.size(); i++)
+			size = globalMessageBuffer.size();
+			for (size_t i=0; i<size; i++)
 				ShowMessage(buffer, globalMessageBuffer[i]);  //Print messages.
 			Output(contents.updaterErrors);
 			Output(buffer);
@@ -681,8 +712,9 @@ namespace boss {
 		/////////////////////////////
 
 		if (!contents.userlistMessages.empty() || !userlistErrorBuffer.empty()) {
+			size_t size = userlistErrorBuffer.size();
 			Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Userlist Messages</h3><ul id='userlistMessages'>");
-			for (size_t i=0; i<userlistErrorBuffer.size(); i++)  //First print parser/syntax error messages.
+			for (size_t i=0; i<size; i++)  //First print parser/syntax error messages.
 				Output(userlistErrorBuffer[i]);
 			Output(contents.userlistMessages);  //Now print the rest of the userlist messages.
 			Output("</ul>");

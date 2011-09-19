@@ -10,8 +10,7 @@
 */
 
 #include "GUI/UserRuleManager.h"
-#include "Parsing/parser.h"
-#include "Helpers/helpers.h"
+#include "BOSS-Common.h"
 #include <string>
 
 using namespace boss;

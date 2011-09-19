@@ -17,6 +17,7 @@
 
 #include "Platform.h"
 #include <stdarg.h>
+#include <stdio.h>
 
 
 #define _LOG_IMPL(verbosity, formatStr, ...) \
@@ -54,6 +55,11 @@ namespace boss
 		// sets whether filename and line number will be output with each message
 		void setOriginTracking (bool enabled);
 
+		// sets the output stream
+		inline void setStream(const char * file) {
+			m_out = fopen(file,"w");
+		}
+
 		// for use when calculating the arguments to a LOG macro would be expensive
 		inline bool isDebugEnabled () { return _isVerbosityEnabled(LV_DEBUG); }
 		inline bool isTraceEnabled () { return _isVerbosityEnabled(LV_TRACE); }
@@ -74,6 +80,7 @@ namespace boss
 	private:
 		LogVerbosity m_verbosity;
 		bool         m_originTracking;
+		FILE * m_out;
 
 	private:
 		inline bool _isVerbosityEnabled (LogVerbosity verbosity)

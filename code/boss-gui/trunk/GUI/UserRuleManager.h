@@ -21,39 +21,6 @@
 
 using namespace std;
 
-enum keyType {
-	NONE,
-	//Userlist keywords.
-	ADD,
-	OVERRIDE,
-	FOR,
-	BEFORE,
-	AFTER,
-	TOP,
-	BOTTOM,
-	APPEND,
-	REPLACE
-};
-
-extern vector<string> userlistErrorBuffer;  //Holds any error messages generated during parsing for printing later.
-
-	////////////////////////////////////////
-	// Userlist data structures
-	////////////////////////////////////////
-
-	//Userlist data structure.
-	struct line {
-		keyType key;
-		string object;
-	};
-
-	struct rule {
-		keyType ruleKey;
-		string ruleObject;
-		vector<line> lines;
-	};
-
-	vector<rule> userlist;
 
 	////////////////////////////////////////
 	// GUI Stuff
