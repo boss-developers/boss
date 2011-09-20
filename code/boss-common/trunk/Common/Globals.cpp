@@ -26,7 +26,7 @@ namespace boss {
 	const fs::path ini_path				= "BOSS.ini";
 	const fs::path debug_log_path		= "BOSSDebugLog.txt";
 
-	const string g_version     = "1.8.1";
+	const string g_version     = "1.9";
 	const string g_releaseDate = "X Y, 2011";
 
 	//Command line variables
@@ -36,15 +36,15 @@ namespace boss {
 	string proxy_port		= "0";
 	int game				= 0;		// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim.
 	int revert              = 0;		// what level to revert to
-	int verbosity           = 0;		// log levels above INFO to output
+	int debug_verbosity           = 0;		// log levels above INFO to output
 	bool update				= true;		// update the masterlist?
 	bool update_only        = false;	// only update the masterlist and don't sort currently.
 	bool silent             = false;	// silent mode?
 	bool skip_version_parse = false;	// enable parsing of mod's headers to look for version strings
-	bool debug              = false;	// whether to include origin information in logging statements
+	bool debug_with_source  = false;	// whether to include origin information in logging statements
 	bool show_CRCs			= false;	// whether or not to show mod CRCs.
 	bool trial_run			= false;	// If true, don't redate files.
-	bool record_debug_output		= false;  //If true, logs the Logger output in BOSSDebugLog.txt.
+	bool log_debug_output		= false;  //If true, logs the Logger output in BOSSDebugLog.txt.
 	bool do_startup_update_check	= true;	// Whether or not to check for updates on startup.
 
 	//GUI variables

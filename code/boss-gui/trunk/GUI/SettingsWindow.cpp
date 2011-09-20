@@ -17,10 +17,11 @@ BEGIN_EVENT_TABLE( SettingsFrame, wxFrame )
 	EVT_TEXT ( TEXT_ProxyPort, SettingsFrame::OnProxyPortChange )
 	EVT_BUTTON ( OPTION_ExitSettings, OnQuit)
 	EVT_COMBOBOX ( DROPDOWN_ProxyType, SettingsFrame::OnProxyTypeChange )
-	EVT_COMBOBOX ( DROPDOWN_Verbosity, SettingsFrame::OnVerbosityChange )
+	EVT_COMBOBOX ( DROPDOWN_DebugVerbosity, SettingsFrame::OnDebugVerbosityChange )
 	EVT_CHECKBOX ( CHECKBOX_StartupUpdateCheck, SettingsFrame::OnStartupUpdateChange )
-	EVT_CHECKBOX ( CHECKBOX_EnableDebug, SettingsFrame::OnDebugChange )
-	EVT_CHECKBOX ( CHECKBOX_EnableLogging, SettingsFrame::OnLoggingChange )
+	EVT_CHECKBOX ( CHECKBOX_DebugSourceRefs, SettingsFrame::OnDebugSourceRefsChange )
+	EVT_CHECKBOX ( CHECKBOX_EnableDebugLogging, SettingsFrame::OnDebugLoggingChange )
+	EVT_CHECKBOX ( CHECKBOX_UserRulesEditor, SettingsFrame::OnEditorChange )
 END_EVENT_TABLE()
 
 using namespace boss;
@@ -52,16 +53,17 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent, int x, int y,
 	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
 
 	wxStaticBoxSizer *generalOptionsBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("General"));
-	generalOptionsBox->Add(StartupUpdateCheckBox = new wxCheckBox(this,CHECKBOX_StartupUpdateCheck,wxT("Check for BOSS updates on GUI startup")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	generalOptionsBox->Add(StartupUpdateCheckBox = new wxCheckBox(this,CHECKBOX_StartupUpdateCheck,wxT("Check for BOSS updates on startup")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	generalOptionsBox->Add(UseUserRuleEditorBox = new wxCheckBox(this,CHECKBOX_UserRulesEditor,wxT("Use User Rules Editor")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	bigBox->Add(generalOptionsBox, 0, wxALL, 20);
 
 	wxStaticBoxSizer *debugOptionsBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Debugging"));
 	wxBoxSizer *verbosityBox = new wxBoxSizer(wxHORIZONTAL);
 	verbosityBox->Add(new wxStaticText(this, wxID_ANY, wxT("Debug Output Verbosity: ")), 1, wxLEFT | wxBOTTOM, 5);
-	verbosityBox->Add(DebugVerbosityBox = new wxComboBox(this, DROPDOWN_Verbosity, DebugVerbosity[0], wxDefaultPosition, wxDefaultSize, 4, DebugVerbosity, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
+	verbosityBox->Add(DebugVerbosityBox = new wxComboBox(this, DROPDOWN_DebugVerbosity, DebugVerbosity[0], wxDefaultPosition, wxDefaultSize, 4, DebugVerbosity, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	debugOptionsBox->Add(verbosityBox, 0, wxEXPAND, 0);
-	debugOptionsBox->Add(DebugSourceReferencesBox = new wxCheckBox(this,CHECKBOX_EnableDebug, wxT("Include Source Code References")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	debugOptionsBox->Add(RecordDebugOutput = new wxCheckBox(this,CHECKBOX_EnableLogging, wxT("Record Debug Output")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	debugOptionsBox->Add(DebugSourceReferencesBox = new wxCheckBox(this,CHECKBOX_DebugSourceRefs, wxT("Include Source Code References")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+	debugOptionsBox->Add(LogDebugOutputBox = new wxCheckBox(this,CHECKBOX_EnableDebugLogging, wxT("Log Debug Output")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	bigBox->Add(debugOptionsBox, 0, wxLEFT | wxRIGHT | wxBOTTOM, 20);
 
 	wxStaticBoxSizer *proxyOptionsBox = new wxStaticBoxSizer(wxVERTICAL,this,wxT("Internet"));
@@ -91,7 +93,7 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent, int x, int y,
 	
 	bigBox->Add(hbox, 0, wxALIGN_CENTER | wxBOTTOM, 10);
 
-	RecordDebugOutput->SetToolTip(wxT("The output is logged to the BOSSDebugLog.txt file"));
+	LogDebugOutputBox->SetToolTip(wxT("The output is logged to the BOSSDebugLog.txt file"));
 	DebugSourceReferencesBox->SetToolTip(wxT("Adds source code references to command line output."));
 	DebugVerbosityBox->SetToolTip(wxT("The higher the verbosity level, the more information is outputted to the command line."));
 
@@ -120,23 +122,23 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent, int x, int y,
 	else if (proxy_type == "socks5h")
 		ProxyTypeBox->SetValue(ProxyTypes[6]);
 
-	if (debug)
+	if (debug_with_source)
 		DebugSourceReferencesBox->SetValue(true);
 	else
 		DebugSourceReferencesBox->SetValue(false);
 
-	if (record_debug_output)
-		RecordDebugOutput->SetValue(true);
+	if (log_debug_output)
+		LogDebugOutputBox->SetValue(true);
 	else
-		RecordDebugOutput->SetValue(false);
+		LogDebugOutputBox->SetValue(false);
 
-	if (verbosity == 0)
+	if (debug_verbosity == 0)
 		DebugVerbosityBox->SetValue(DebugVerbosity[0]);
-	else if (verbosity == 1)
+	else if (debug_verbosity == 1)
 		DebugVerbosityBox->SetValue(DebugVerbosity[1]);
-	else if (verbosity == 2)
+	else if (debug_verbosity == 2)
 		DebugVerbosityBox->SetValue(DebugVerbosity[2]);
-	else if (verbosity == 3)
+	else if (debug_verbosity == 3)
 		DebugVerbosityBox->SetValue(DebugVerbosity[3]);
 	
 	//Now set the layout and sizes.
@@ -185,14 +187,18 @@ void SettingsFrame::OnProxyPortChange(wxCommandEvent& event) {
 }
 
 
-void SettingsFrame::OnVerbosityChange(wxCommandEvent& event) {
-	verbosity = event.GetInt();
+void SettingsFrame::OnDebugVerbosityChange(wxCommandEvent& event) {
+	debug_verbosity = event.GetInt();
 }
 
-void SettingsFrame::OnDebugChange(wxCommandEvent& event) {
-	debug = event.IsChecked();
+void SettingsFrame::OnDebugSourceRefsChange(wxCommandEvent& event) {
+	debug_with_source = event.IsChecked();
 }
 
-void SettingsFrame::OnLoggingChange(wxCommandEvent& event) {
-	record_debug_output = event.IsChecked();
+void SettingsFrame::OnDebugLoggingChange(wxCommandEvent& event) {
+	log_debug_output = event.IsChecked();
+}
+
+void SettingsFrame::OnEditorChange(wxCommandEvent& event) {
+	use_user_rules_editor = event.IsChecked();
 }

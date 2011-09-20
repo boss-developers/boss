@@ -609,6 +609,8 @@ namespace boss {
 		if (currentHeading == "BOSS.GeneralSettings") {
 			if (var == "bDoStartupUpdateCheck")
 				do_startup_update_check = value;
+			else if (var == "bUseUserRulesEditor")
+				use_user_rules_editor = value;
 		} else if (currentHeading == "BOSS.RunOptions") {
 			if (var == "bUpdateMasterlist")
 				update = value;
@@ -619,13 +621,13 @@ namespace boss {
 			else if (var == "bNoVersionParse")
 				skip_version_parse = value;
 			else if (var == "bDebugWithSourceRefs")
-				debug = value;
+				debug_with_source = value;
 			else if (var == "bDisplayCRCs")
 				show_CRCs = value;
 			else if (var == "bDoTrialRun")
 				trial_run = value;
-			else if (var == "bRecordDebugOutput")
-				record_debug_output = value;
+			else if (var == "bLogDebugOutput")
+				log_debug_output = value;
 		} else if (currentHeading == "BOSSLog.Filters") {
 			if (var == "bUseDarkColourScheme")
 				UseDarkColourScheme = value;
@@ -665,7 +667,7 @@ namespace boss {
 					revert = value;
 			} else if (var == "iDebugVerbosity") {
 				if (value >= 0 && value < 4)
-					verbosity = value;
+					debug_verbosity = value;
 			} else if (var == "iRunType") {
 				if (value >= 0 && value < 3)
 					run_type = value;

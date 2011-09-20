@@ -124,8 +124,8 @@ int main(int argc, char *argv[]) {
 								" 2, indicating how many undo steps to apply."
 								"  if no option value is specified, it"
 								" defaults to 1")
-		("verbose,v", po::value(&verbosity)->implicit_value(1, ""),
-								"specify verbosity level (0-3).  0 is the"
+		("verbose,v", po::value(&debug_verbosity)->implicit_value(1, ""),
+								"specify verbosity level (0-3) of the debugging output.  0 is the"
 								" default, showing only WARN and ERROR messges."
 								" 1 (INFO and above) is implied if this option"
 								" is specified without an argument.  higher"
@@ -134,8 +134,8 @@ int main(int argc, char *argv[]) {
 								"override game autodetection.  valid values"
 								" are: 'Oblivion', 'Nehrim', 'Fallout3',"
 								" 'FalloutNV', and 'Skyrim'")
-		("debug,d", po::value(&debug)->zero_tokens(),
-								"add source file references to logging statements")
+		("debug-with-source,d", po::value(&debug_with_source)->zero_tokens(),
+								"add source file references to debug statements")
 		("crc-display,c", po::value(&show_CRCs)->zero_tokens(),
 								"show mod file CRCs, so that a file's CRC can be"
 								" added to the masterlist in a conditional")
@@ -150,8 +150,9 @@ int main(int argc, char *argv[]) {
 								"sets the proxy hostname for the masterlist updater")
 		("proxy-port,P", po::value(&proxy_port),
 								"sets the proxy port number for the masterlist updater")
-		("logger-record,l", po::value(&record_debug_output)->zero_tokens(),
-								"record logger output in BOSSDebugLog.txt.");
+		("log-debug,l", po::value(&log_debug_output)->zero_tokens(),
+								"logs the debug output to the BOSSDebugLog.txt file instead"
+								" of the command line.");
 	
 	///////////////////////////////
 	// Set up initial conditions
@@ -182,18 +183,18 @@ int main(int argc, char *argv[]) {
 	}
 
 	// set alternative output stream for logger and whether to track log statement origins
-	if (record_debug_output)
+	if (log_debug_output)
 		g_logger.setStream(debug_log_path.string().c_str());
-	g_logger.setOriginTracking(debug);
+	g_logger.setOriginTracking(debug_with_source);
 
 	if (vm.count("verbose")) {
-		if (0 > verbosity) {
-			LOG_ERROR("invalid option for 'verbose' parameter: %d", verbosity);
+		if (0 > debug_verbosity) {
+			LOG_ERROR("invalid option for 'verbose' parameter: %d", debug_verbosity);
 			Fail();
 		}
 
 		// it's ok if this number is too high.  setVerbosity will handle it
-		g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + verbosity));
+		g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + debug_verbosity));
 	}
 	if ((vm.count("update")) && (vm.count("no-update"))) {
 		LOG_ERROR("invalid options: --update,-u and --no-update,-U cannot both be given.");
@@ -238,6 +239,149 @@ int main(int argc, char *argv[]) {
 	
 		LOG_DEBUG("BOSSlog format set to: '%s'", log_format.c_str());
 	}
+
+	/////////////////////////
+	// BOSS Updater Stuff
+	/////////////////////////
+
+	string updateText, updateVersion;
+	bool connection = false;
+	try {
+		connection = CheckConnection();
+	} catch (boss_error e) {
+		const string detail = *boost::get_error_info<err_detail>(e);
+		LOG_ERROR("Update check failed. Details: '%s'", detail.c_str());
+		Fail();
+	}
+	if (connection) {
+		cout << "Checking for BOSS updates..." << endl;
+		LOG_DEBUG("Checking for BOSS updates...");
+		try {
+			updateVersion = IsBOSSUpdateAvailable();
+			if (updateVersion.empty()) {
+				cout << "You are already using the latest version of BOSS." << endl;
+				LOG_DEBUG("You are already using the latest version of BOSS.");
+			} else {
+				cout << "Update available! New version: " << updateVersion << endl << "Do you want to download and install the update? (y/N)"<< endl;
+				//Does the user want to update?
+				string answer;
+				cin >> answer;
+				if (answer == "n" || answer == "N") {
+					cout << "No update has been downloaded or installed." << endl;
+					LOG_DEBUG("No update has been downloaded or installed.");
+				} else if (answer == "y" || answer == "Y") {
+					//First detect type of current install: manual or installer.
+					if (fs::exists("BOSS ReadMe.lnk")) {  //Installer
+						cout << endl << "Your current install has been determined as having been installed via the BOSS installer." << endl
+							<< "The BOSS Updater will download the installer for the new version to this BOSS folder." << endl
+							<< "It will then launch the installer before exiting. Complete the installer to complete the update." << endl
+							<< "Do you wish to continue? (y/N)" << endl;
+
+						cin >> answer;
+						if (answer == "n" || answer == "N") {
+						cout << "BOSS Updater cancelled." << endl;
+						LOG_DEBUG("BOSS Updater cancelled.");
+						} else if (answer == "y" || answer == "Y") {
+							try {
+								uiStruct ui;
+								DownloadInstallBOSSUpdate(ui, INSTALLER, updateVersion);
+								cout << endl << "New installer successfully downloaded!" << endl
+									<< "When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update." << endl << endl;
+
+								//Now run downloaded installer then exit.
+								//Although there should only be one installer file, to be safe iterate through the files vector.
+								for (size_t i=0;i<updatedFiles.size();i++) {
+									if (updatedFiles[i].name.empty())  //Just in case.
+										continue;
+									Launch(updatedFiles[i].name);
+								}
+								exit (0);
+							} catch (boss_error e) {
+								CleanUp();
+								const string detail = *boost::get_error_info<err_detail>(e);
+								if (detail == "Cancelled by user.") {
+									cout << "Update cancelled." << endl;
+									LOG_DEBUG("Update cancelled.");
+								} else {
+									LOG_ERROR("Update failed. Details: '%s'", detail.c_str());
+									Fail();
+								}
+							} catch (fs::filesystem_error e) {
+								CleanUp();
+								string detail = e.what();
+								LOG_ERROR("Update failed. Details: '%s'", detail.c_str());
+								Fail();
+							}
+						} else {
+							LOG_ERROR("invalid option given: '%s'", answer.c_str());
+							Fail();
+						}
+					} else {  //Manual.
+						cout << endl << "Your current install has been determined as having been installed manually." << endl
+							<< "The BOSS Updater will download the updated files and replace your existing files with them." << endl
+							<< "Your current BOSS.ini will be renamed to BOSS.ini.old. It may still be opened in your chosen text editor, allowing you to migrate your settings." << endl
+							<< " Your current userlist.txt will not be replaced." << endl
+							<< "Do you wish to continue? (y/N)" << endl;
+
+						cin >> answer;
+						if (answer == "n" || answer == "N") {
+						cout << "BOSS Updater cancelled." << endl;
+						LOG_DEBUG("BOSS Updater cancelled.");
+						} else if (answer == "y" || answer == "Y") {
+							try {
+								uiStruct ui;
+								DownloadInstallBOSSUpdate(ui, MANUAL, updateVersion);
+								cout << endl << "Files successfully updated!" << endl
+									<< "When you click 'OK' BOSS will exit. Once it has closed, you must manually delete your current \"BOSS GUI.exe\" and rename the downloaded \"BOSS GUI.exe.new\" to \"BOSS GUI.exe\" to complete the update." << endl << endl;
+
+								//Now run downloaded installer then exit.
+								//Although there should only be one installer file, to be safe iterate through the files vector.
+								for (size_t i=0;i<updatedFiles.size();i++) {
+									if (updatedFiles[i].name.empty())  //Just in case.
+										continue;
+									Launch(updatedFiles[i].name);
+								}
+								exit (0);
+							} catch (boss_error e) {
+								CleanUp();
+								const string detail = *boost::get_error_info<err_detail>(e);
+								if (detail == "Cancelled by user.") {
+									cout << "Update cancelled." << endl;
+									LOG_DEBUG("Update cancelled.");
+								} else {
+									LOG_ERROR("Update failed. Details: '%s'", detail.c_str());
+									Fail();
+								}
+							} catch (fs::filesystem_error e) {
+								CleanUp();
+								string detail = e.what();
+								LOG_ERROR("Update failed. Details: '%s'", detail.c_str());
+								Fail();
+							}
+						} else {
+							LOG_ERROR("invalid option given: '%s'", answer.c_str());
+							Fail();
+						}		
+					}
+				} else {
+					LOG_ERROR("invalid option given: '%s'", answer.c_str());
+					Fail();
+				}
+			}
+		} catch (boss_error e) {
+			const string detail = *boost::get_error_info<err_detail>(e);
+			LOG_ERROR("BOSS Update check failed. Details: '%s'", detail.c_str());
+		}
+	} else {
+		LOG_DEBUG("BOSS Update check failed. No Internet connection detected.");
+	}
+
+	
+
+
+	/////////////////////////
+	// File IO Setup
+	/////////////////////////
 
 	//Set BOSSlog path to be used.
 	if (log_format == "html")
@@ -327,9 +471,11 @@ int main(int argc, char *argv[]) {
 				if (localRevision == remoteRevision) {
 					contents.summary += "<p>Your masterlist is already at the latest revision (r" + IntToString(localRevision) + "; " + EscapeHTMLSpecial(localDate) + "). No update necessary.";
 					cout << endl << "Your masterlist is already at the latest revision (" + IntToString(localRevision) + "; " + EscapeHTMLSpecial(localDate) + "). No update necessary." << endl;
+					LOG_DEBUG("Masterlist update unnecessary.");
 				} else {
 					contents.summary += "<p>Your masterlist has been updated to revision " + IntToString(remoteRevision) + " (" + EscapeHTMLSpecial(remoteDate) + ").";
 					cout << endl << "Your masterlist has been updated to revision " << remoteRevision << endl;
+					LOG_DEBUG("Masterlist updated successfully.");
 				}
 			} catch (boss_error e) {
 				const string detail = *boost::get_error_info<err_detail>(e);
@@ -338,7 +484,6 @@ int main(int argc, char *argv[]) {
 				contents.updaterErrors += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
 				LOG_ERROR("Error: Masterlist update failed. Details: %s", detail);
 			}
-			LOG_DEBUG("Masterlist updated successfully.");
 		} else
 			contents.summary += "<p>No internet connection detected. Masterlist auto-updater aborted.";
 	}

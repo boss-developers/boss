@@ -26,16 +26,17 @@ public:
 	void OnProxyTypeChange(wxCommandEvent& event);
 	void OnProxyHostChange(wxCommandEvent& event);
 	void OnProxyPortChange(wxCommandEvent& event);
-	void OnLoggingChange(wxCommandEvent& event);
-	void OnVerbosityChange(wxCommandEvent& event);
-	void OnDebugChange(wxCommandEvent& event);
+	void OnDebugLoggingChange(wxCommandEvent& event);
+	void OnDebugVerbosityChange(wxCommandEvent& event);
+	void OnDebugSourceRefsChange(wxCommandEvent& event);
+	void OnEditorChange(wxCommandEvent& event);
 	void OnQuit(wxCommandEvent& event);
 	DECLARE_EVENT_TABLE()
 private:
 	wxCheckBox *StartupUpdateCheckBox;
+	wxCheckBox *UseUserRuleEditorBox;
 	wxCheckBox *DebugSourceReferencesBox;
-	wxCheckBox *RecordDebugOutput;
-	wxCheckBox *UserRulesEditorCheckBox;
+	wxCheckBox *LogDebugOutputBox;
 	wxComboBox *ProxyTypeBox;
 	wxComboBox *DebugVerbosityBox;
 	wxTextCtrl *ProxyHostBox;

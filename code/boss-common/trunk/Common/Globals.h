@@ -47,15 +47,15 @@ namespace boss {
 	extern string proxy_port;
 	extern int game;				// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim.
 	extern int revert;				// what level to revert to
-	extern int verbosity;			// log levels above INFO to output
+	extern int debug_verbosity;			// log levels above INFO to output
 	extern bool update;				// update the masterlist?
 	extern bool update_only;		// only update the masterlist and don't sort currently.
 	extern bool silent;				// silent mode?
 	extern bool skip_version_parse; // enable parsing of mod's headers to look for version strings
-	extern bool debug;				// whether to include origin information in logging statements
+	extern bool debug_with_source;				// whether to include origin information in logging statements
 	extern bool show_CRCs;			// whether or not to show mod CRCs.
 	extern bool trial_run;			// If true, don't redate files.
-	extern bool record_debug_output;		//If true, logs command line output in BOSSDebugLog.txt.
+	extern bool log_debug_output;		//If true, logs command line output in BOSSDebugLog.txt.
 	extern bool do_startup_update_check;	// Whether or not to check for updates on startup.
 	
 	//GUI variables

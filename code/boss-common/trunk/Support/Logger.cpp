@@ -93,5 +93,18 @@ namespace boss
 		vfprintf(m_out, formatStr, ap);
         fprintf(m_out, "\n");
 		fflush(m_out);
+
+		//Print to command line as well if logger is outputting elsewhere.
+		if (m_out != stdout) {
+			printf("%s", LOG_VERBOSITY_NAMES[verbosity]);
+
+			// if enabled, print the log origin
+			if (m_originTracking) { printf(" %s:%d", fileName, lineNo); }
+
+			printf(": ");
+			vprintf(formatStr, ap);
+			printf("\n");
+			fflush(stdout);
+		}
     }
 }

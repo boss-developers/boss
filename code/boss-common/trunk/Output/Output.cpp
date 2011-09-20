@@ -340,7 +340,8 @@ namespace boss {
 			<<	"# See the BOSS ReadMe for details on what each setting does and the accepted values for integer and string settings." << endl << endl
 
 			<<	"[BOSS.GeneralSettings]" << endl
-			<<	"bDoStartupUpdateCheck    = " << BoolToString(do_startup_update_check) << endl << endl
+			<<	"bDoStartupUpdateCheck    = " << BoolToString(do_startup_update_check) << endl
+			<<	"bUseUserRulesEditor      = " << BoolToString(use_user_rules_editor) << endl << endl
 
 			<<	"[BOSS.InternetSettings]" << endl
 			<<	"sProxyType               = " << proxy_type << endl
@@ -351,17 +352,17 @@ namespace boss {
 			<<	"sGame                    = " << GetGameIniString() << endl
 			<<	"sBOSSLogFormat           = " << log_format << endl
 			<<	"iRunType                 = " << IntToString(run_type) << endl
-			<<	"iDebugVerbosity          = " << IntToString(verbosity) << endl
+			<<	"iDebugVerbosity          = " << IntToString(debug_verbosity) << endl
 			<<	"iRevertLevel             = " << IntToString(revert) << endl
 			<<	"bUpdateMasterlist        = " << BoolToString(update) << endl
 			<<	"bOnlyUpdateMasterlist    = " << BoolToString(update_only) << endl
 			<<	"bSilentRun               = " << BoolToString(silent) << endl
 			<<	"bNoVersionParse          = " << BoolToString(skip_version_parse) << endl
-			<<	"bDebugWithSourceRefs     = " << BoolToString(debug) << endl
+			<<	"bDebugWithSourceRefs     = " << BoolToString(debug_with_source) << endl
 			<<	"bDisplayCRCs             = " << BoolToString(show_CRCs) << endl
 			<<	"bDoTrialRun              = " << BoolToString(trial_run) << endl
-			<<	"bRecordDebugOutput       = " << BoolToString(record_debug_output) << endl << endl
-
+			<<	"bLogDebugOutput          = " << BoolToString(log_debug_output) << endl << endl
+			
 			<<	"[BOSSLog.Filters]" << endl
 			<<	"bUseDarkColourScheme     = " << BoolToString(UseDarkColourScheme) << endl
 			<<	"bHideVersionNumbers      = " << BoolToString(HideVersionNumbers) << endl

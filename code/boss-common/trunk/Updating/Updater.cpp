@@ -59,7 +59,7 @@ namespace boss {
 	}
 
 	uiStruct::uiStruct() {
-		p = NULL;
+		p = 0;
 		isGUI = false;
 		fileIndex = 0;
 	}
@@ -85,24 +85,24 @@ namespace boss {
 		if (dlTotal <= 0 || dlNow <= 0)
 			fractiondownloaded = 0.0f;
 
-		uiStruct ui = (uiStruct&)data;
-		if (ui.isGUI) {
+		uiStruct * ui = (uiStruct*)data;
+		if (ui->isGUI) {
 			int currentProgress = (int)floor(fractiondownloaded * 1000);
 			if (currentProgress == 1000)
 				--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
 
-			wxProgressDialog* progDia = (wxProgressDialog*)ui.p;
-			bool cont = progDia->Update(currentProgress,"Downloading: " + updatedFiles[ui.fileIndex].name + " (" + IntToString(ui.fileIndex+1) + " of " + IntToString(updatedFiles.size()) + ")");
+			wxProgressDialog* progress = (wxProgressDialog*)ui->p;
+			bool cont = progress->Update(currentProgress,"Downloading: " + updatedFiles[ui->fileIndex].name + " (" + IntToString(ui->fileIndex+1) + " of " + IntToString(updatedFiles.size()) + ")");
 			if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
 				if (!ans)
-					ans = wxMessageBox(wxT("Are you sure you want to cancel?"), wxT("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progDia);
+					ans = wxMessageBox(wxT("Are you sure you want to cancel?"), wxT("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
 				if (ans == wxYES)
 					return 1;
-				progDia->Resume();
+				progress->Resume();
 				ans = NULL;
 			}
 		} else {
-			printf("%3.0f%% of %3.0f% KB\r",fractiondownloaded*100,(dlTotal/1024)+20);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
+			printf("Downloading: %s (%u of %u); %3.0f%% of %3.0f KB\r", updatedFiles[ui->fileIndex].name.c_str(), ui->fileIndex+1, updatedFiles.size(), fractiondownloaded*100,(dlTotal/1024)+20);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
 			fflush(stdout);
 		}
 		return 0;

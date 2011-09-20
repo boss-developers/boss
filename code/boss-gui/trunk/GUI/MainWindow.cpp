@@ -91,9 +91,9 @@ bool BossGUI::OnInit() {
 	}
 
 	// set alternative output stream for logger and whether to track log statement origins
-	if (record_debug_output)
+	if (log_debug_output)
 		g_logger.setStream(debug_log_path.string().c_str());
-	g_logger.setOriginTracking(debug);
+	g_logger.setOriginTracking(debug_with_source);
 
 	try {
 		GetGame();
@@ -141,7 +141,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
     MenuBar = new wxMenuBar();
     // File Menu
     FileMenu = new wxMenu();
-	FileMenu->Append(OPTION_OpenBOSSlog, wxT("&View BOSSlog"), wxT("Opens your BOSSlog."));
+	FileMenu->Append(OPTION_OpenBOSSlog, wxT("&View BOSS Log"), wxT("Opens your BOSSlog."));
     FileMenu->Append(OPTION_Run, wxT("&Run BOSS"), wxT("Runs BOSS with the options you have chosen."));
     FileMenu->AppendSeparator();
     FileMenu->Append(MENU_Quit, wxT("&Quit"), wxT("Quit BOSS."));
@@ -176,7 +176,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	outputOptionsBox->Add(ShowLogBox = new wxCheckBox(this,CHECKBOX_ShowBOSSlog, wxT("Show BOSS Log On Completion")), 0, wxALL, 5);
 	outputOptionsBox->Add(VersionBox = new wxCheckBox(this,CHECKBOX_EnableVersions, wxT("Display Plugin Versions")), 0, wxLEFT | wxBOTTOM, 5);
 	outputOptionsBox->Add(CRCBox = new wxCheckBox(this,CHECKBOX_EnableCRCs, wxT("Display File CRCs")), 0, wxLEFT | wxBOTTOM, 5);
-	formatBox->Add(new wxStaticText(this, wxID_ANY, wxT("BOSSlog Format: ")), 1, wxLEFT | wxBOTTOM, 5);
+	formatBox->Add(new wxStaticText(this, wxID_ANY, wxT("BOSS Log Format: ")), 1, wxLEFT | wxBOTTOM, 5);
 	formatBox->Add(FormatBox = new wxComboBox(this, DROPDOWN_LogFormat, BOSSlogFormat[0], wxPoint(110,60), wxDefaultSize, 2, BOSSlogFormat, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	//Add the verbosityBox to its parent now to preserve layout.
 	outputOptionsBox->Add(formatBox, 0, wxEXPAND, 0);
@@ -186,7 +186,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	wxBoxSizer *buttonBox = new wxBoxSizer(wxVERTICAL);
 	buttonBox->Add(EditUserRulesButton = new wxButton(this,OPTION_EditUserRules, wxT("Edit User Rules"), wxDefaultPosition, wxSize(120,30)), 0, wxBOTTOM, 5);
 	buttonBox->Add(RunBOSSButton = new wxButton(this,OPTION_Run, wxT("Run BOSS"), wxDefaultPosition, wxSize(120,30)));
-	buttonBox->Add(OpenBOSSlogButton = new wxButton(this,OPTION_OpenBOSSlog, wxT("View BOSSlog"), wxDefaultPosition, wxSize(120,30)), 0, wxTOP, 5);
+	buttonBox->Add(OpenBOSSlogButton = new wxButton(this,OPTION_OpenBOSSlog, wxT("View BOSS Log"), wxDefaultPosition, wxSize(120,30)), 0, wxTOP, 5);
 	columnBox->Add(buttonBox, 0, wxALIGN_CENTER, 20);
 
 	//Add the first column to the big box.
@@ -201,7 +201,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	wxBoxSizer *revertBox = new wxBoxSizer(wxHORIZONTAL);
 
 	//Run Options
-	runOptionsBox->Add(SortOption = new wxRadioButton(this, RADIOBUTTON_SortOption, wxT("Sort Mods")), 0, wxALL, 5);
+	runOptionsBox->Add(SortOption = new wxRadioButton(this, RADIOBUTTON_SortOption, wxT("Sort Plugins")), 0, wxALL, 5);
 	
 	//Sort option stuff.
 	sortBox->Add(UpdateBox = new wxCheckBox(this,CHECKBOX_Update, wxT("Update Masterlist")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
@@ -356,12 +356,12 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	fs::path bosslog_path;					//Path to BOSSlog being used.
 	fs::path sortfile;						//Modlist/masterlist to sort plugins using.
 
-	if (record_debug_output)
+	if (log_debug_output)
 		g_logger.setStream(debug_log_path.string().c_str());
-	g_logger.setOriginTracking(debug);
+	g_logger.setOriginTracking(debug_with_source);
 
 	//Tell the user that stuff is happenining.
-	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Better Oblivion Sorting Software working..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME);
+	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Better Oblivion Sorting Software working..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
 
 	//Set the locale to get encoding conversions working correctly.
 	setlocale(LC_CTYPE, "");
@@ -387,7 +387,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
 
 	progDia->Pulse();
-
+	if (progDia->WasCancelled()) {
+		progDia->Destroy();
+		return;
+	}
 
 	////////////////////////////////////////////////
 	// Record last BOSSlog's recognised mod list
@@ -398,6 +401,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		contents.oldRecognisedPlugins = GetOldRecognisedList(bosslog_html_path);
 
 	progDia->Pulse();
+	if (progDia->WasCancelled()) {
+		progDia->Destroy();
+		return;
+	}
 
 	/////////////////////////////////////////
 	// Check for critical error conditions
@@ -410,6 +417,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		LOG_ERROR("file '%s' could not be accessed for writing. Check the"
 				  " Troubleshooting section of the ReadMe for more"
 				  " information and possible solutions.", bosslog_path.string().c_str());
+		progDia->Destroy();
 		return;
 	}
 
@@ -430,18 +438,23 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 			LOG_ERROR("Installation error found: check BOSSLOG.");
 			if ( !silent ) 
 				wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
+			progDia->Destroy();
 			return; //fail in screaming heap.
 		}
 	}
 	LOG_INFO("Game detected: %d", game);
 
 	progDia->Pulse();
+	if (progDia->WasCancelled()) {
+		progDia->Destroy();
+		return;
+	}
 
 	/////////////////////////////////////////////////////////
 	// Error Condition Check Interlude - Update Masterlist
 	/////////////////////////////////////////////////////////
 	
-	/*if (revert<1 && (update || update_only)) {
+	if (revert<1 && (update || update_only)) {
 		//First check for internet connection, then update masterlist if connection present.
 		bool connection = false;
 		try {
@@ -454,19 +467,21 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 			LOG_ERROR("Error: Masterlist update failed. Details: %s", detail);
 		}
 		if (connection) {
-			cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
+			progDia->Update(0,wxT("Updating to the latest masterlist from the Google Code repository..."));
 			LOG_DEBUG("Updating masterlist...");
 			try {
-				wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Masterlist Updater"),wxT("Initialising download..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
-				unsigned int revision = UpdateMasterlist(progDia);
-				string localDate = EscapeHTMLSpecial(GetLocalMasterlistDate());
-				if (revision == 0) {
-					unsigned int localRevision = GetLocalMasterlistRevision();
-					contents.summary += "<p>Your masterlist is already at the latest revision (r" + IntToString(localRevision) + "; " + localDate + "). No update necessary.";
-					cout << endl << "Your masterlist is already at the latest revision (" + IntToString(localRevision) + "; " + localDate + "). No update necessary." << endl;
+				string localDate, remoteDate;
+				unsigned int localRevision, remoteRevision;
+				uiStruct ui(progDia);
+				UpdateMasterlist(ui, localRevision, localDate, remoteRevision, remoteDate);
+				if (localRevision == remoteRevision) {
+					contents.summary += "<p>Your masterlist is already at the latest revision (r" + IntToString(localRevision) + "; " + EscapeHTMLSpecial(localDate) + "). No update necessary.";
+					progDia->Pulse(wxT("Masterlist update unnecessary."));
+					LOG_DEBUG("Masterlist update unnecessary.");
 				} else {
-					contents.summary += "<p>Your masterlist has been updated to revision " + IntToString(revision) + " (" + localDate + ").";
-					cout << endl << "Your masterlist has been updated to revision " << revision << endl;
+					contents.summary += "<p>Your masterlist has been updated to revision " + IntToString(remoteRevision) + " (" + EscapeHTMLSpecial(remoteDate) + ").";
+					progDia->Pulse(wxT("Masterlist updated successfully."));
+					LOG_DEBUG("Masterlist updated successfully.");
 				}
 			} catch (boss_error e) {
 				const string detail = *boost::get_error_info<err_detail>(e);
@@ -475,7 +490,6 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 				contents.updaterErrors += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
 				LOG_ERROR("Error: Masterlist update failed. Details: %s", detail);
 			}
-			LOG_DEBUG("Masterlist updated successfully.");
 		} else
 			contents.summary += "<p>No internet connection detected. Masterlist auto-updater aborted.";
 	}
@@ -497,11 +511,15 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		bosslog.close();
 		if ( !silent ) 
 			wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.
+		progDia->Destroy();
 		return;
 	}
-	*/
 
-	progDia->Pulse();
+	progDia->Pulse(wxT("Better Oblivion Sorting Software working..."));
+	if (progDia->WasCancelled()) {
+		progDia->Destroy();
+		return;
+	}
 
 	///////////////////////////////////
 	// Resume Error Condition Checks
@@ -521,6 +539,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", detail);
 		if ( !silent ) 
 			wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
+		progDia->Destroy();
 		return; //fail in screaming heap.
 	}
 
@@ -540,11 +559,16 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 			bosslog.close();
 			if ( !silent ) 
 				wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
+			progDia->Destroy();
 			return; //fail in screaming heap.
 		}
 	}
 
 	progDia->Pulse();
+	if (progDia->WasCancelled()) {
+		progDia->Destroy();
+		return;
+	}
 
 	/////////////////////////////////
 	// Parse Master- and Userlists
@@ -565,7 +589,8 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
         bosslog.close();
         LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
         if ( !silent ) 
-                wxLaunchDefaultApplication(bosslog_path.string());  //Displays the BOSSlog.txt.
+			wxLaunchDefaultApplication(bosslog_path.string());  //Displays the BOSSlog.txt.
+		progDia->Destroy();
         return; //fail in screaming heap.
 	}
 
@@ -578,7 +603,8 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		OutputFooter();
 		bosslog.close();
 		if ( !silent ) 
-                wxLaunchDefaultApplication(bosslog_path.string());  //Displays the BOSSlog.txt.
+			wxLaunchDefaultApplication(bosslog_path.string());  //Displays the BOSSlog.txt.
+		progDia->Destroy();
         return; //fail in screaming heap.
 	}
 
@@ -594,6 +620,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	}
 
 	progDia->Pulse();
+	if (progDia->WasCancelled()) {
+		progDia->Destroy();
+		return;
+	}
 
 	/////////////////////////////////////////////////
 	// Compare Masterlist against Modlist, Userlist
@@ -603,6 +633,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	LOG_INFO("Modlist now filled with ordered mods and unknowns.");
 
 	progDia->Pulse();
+	if (progDia->WasCancelled()) {
+		progDia->Destroy();
+		return;
+	}
 
 	//////////////////////////
 	// Apply Userlist Rules
@@ -615,6 +649,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	}
 
 	progDia->Pulse();
+	if (progDia->WasCancelled()) {
+		progDia->Destroy();
+		return;
+	}
 
 	//////////////////////////////////////////////////////
 	// Print version & checksum info for OBSE & plugins
@@ -624,6 +662,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		scriptExtender = GetSEPluginInfo(contents.seInfo);
 
 	progDia->Pulse();
+	if (progDia->WasCancelled()) {
+		progDia->Destroy();
+		return;
+	}
 
 	////////////////////////////////
 	// Re-date Files & Output Info
@@ -638,6 +680,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	ListUnrecognisedMods(Modlist, lastRecognisedPos, contents.unrecognisedPlugins, esmtime, counters);
 
 	progDia->Pulse();
+	if (progDia->WasCancelled()) {
+		progDia->Destroy();
+		return;
+	}
 
 	/////////////////////////////
 	// Print Output to BOSSlog
@@ -674,6 +720,7 @@ void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
 				wxOK | wxICON_ERROR,
 				this);
 			userlist_file.close();
+			wxLaunchDefaultApplication(userlist_path.string());
 		}
 	}
 }
@@ -749,7 +796,7 @@ void MainFrame::OnAbout(wxCommandEvent& event) {
 	wxHyperlinkCtrl *link = new wxHyperlinkCtrl(frame, wxID_ANY, wxT("Better Oblivion Sorting Software"),"http://code.google.com/p/better-oblivion-sorting-software/");
 	link->SetBackgroundColour(wxColour(255,255,255));
 	box->Add(link, 0, wxBOTTOM | wxLEFT | wxRIGHT, 20);
-	box->Add(new wxStaticText(frame, -1, wxT("© WrinklyNinja and the BOSS development team, 2011.\nSome rights reserved. Copyright license:")), 0, wxLEFT | wxRIGHT, 20);
+	box->Add(new wxStaticText(frame, -1, wxT("© Random007, WrinklyNinja and the BOSS development team, 2011.\nSome rights reserved. Copyright license:")), 0, wxLEFT | wxRIGHT, 20);
 	link = new wxHyperlinkCtrl(frame, -1, wxT("CC Attribution-Noncommercial-No Derivative Works 3.0"),"http://creativecommons.org/licenses/by-nc-nd/3.0/");
 	link->SetBackgroundColour(wxColour(255,255,255));
 	box->Add(link, 0, wxBOTTOM | wxLEFT | wxRIGHT, 20);
@@ -839,7 +886,7 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 
 //This is called when the menu "Check For Updates" option is selected.
 void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
-	string updateText;
+	string updateText, updateVersion;
 	bool connection = false;
 	try {
 		connection = CheckConnection();
@@ -851,12 +898,12 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 	}
 	if (connection) {
 		try {
-			updateText = IsBOSSUpdateAvailable();
-			if (updateText.length() == 0) {
+			updateVersion = IsBOSSUpdateAvailable();
+			if (updateVersion.empty()) {
 				wxMessageBox(wxT("You are already using the latest version of BOSS."), wxT("BOSS: Check For Updates"), wxOK | wxICON_INFORMATION, this);
 				return;
 			} else
-				updateText = "Update available! New version: " + updateText + "\nDo you want to download and install the update?";
+				updateText = "Update available! New version: " + updateVersion + "\nDo you want to download and install the update?";
 		} catch (boss_error e) {
 			const string detail = *boost::get_error_info<err_detail>(e);
 			updateText = "Update check failed. Details: " + detail;
@@ -876,7 +923,7 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 		wxMessageBox(wxT("No update has been downloaded or installed."), wxT("BOSS: Check For Updates"), wxOK | wxICON_INFORMATION, this);
 		return;
 	} else  //User has chosen to update. On with the show!
-		Update();
+		Update(updateVersion);
 }
 
 //This is called after the GUI has finished launching (actually called every time nothing is happening, but only does something the first time).
@@ -884,7 +931,7 @@ void MainFrame::CheckForUpdate(wxIdleEvent& event) {
 	if (CheckedForUpdate || do_startup_update_check == false)
 		return;
 	CheckedForUpdate = true;
-	string updateText;
+	string updateText, updateVersion;
 	bool connection = false;
 	try {
 		connection = CheckConnection();
@@ -966,10 +1013,8 @@ void MainFrame::Update(string updateVersion) {
 	} else {  //Manual.
 		wxString message = wxT("Your current install has been determined as having been installed manually.\n\n");
 		message += wxT("The automatic updater will download the updated files and replace your existing files with them.");
-		if (fs::exists("BOSS.ini"))
-			message += wxT(" Your current BOSS.ini will be renamed to BOSS.ini.old. It may still be opened in your chosen text editor, allowing you to migrate your settings.");
-		if (fs::exists("userlist.txt"))
-			message += wxT(" Your current userlist.txt will not be replaced.");
+		message += wxT(" Your current BOSS.ini will be renamed to BOSS.ini.old. It may still be opened in your chosen text editor, allowing you to migrate your settings.");
+		message += wxT(" Your current userlist.txt will not be replaced.");
 		
 		wxMessageDialog *dlg = new wxMessageDialog(this,message, wxT("BOSS: Automatic Updater"), wxOK | wxCANCEL);
 		if (dlg->ShowModal() != wxID_OK) {  //User has chosen to cancel. Quit now.
