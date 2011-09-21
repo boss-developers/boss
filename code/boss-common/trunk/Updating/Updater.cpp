@@ -31,8 +31,10 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 
+#ifdef BOSSGUI
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
+#endif
 
 BOOST_FUSION_ADAPT_STRUCT(
     boss::fileInfo,
@@ -91,6 +93,7 @@ namespace boss {
 			if (currentProgress == 1000)
 				--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
 
+#ifdef BOSSGUI
 			wxProgressDialog* progress = (wxProgressDialog*)ui->p;
 			bool cont = progress->Update(currentProgress,"Downloading: " + updatedFiles[ui->fileIndex].name + " (" + IntToString(ui->fileIndex+1) + " of " + IntToString(updatedFiles.size()) + ")");
 			if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
@@ -101,6 +104,7 @@ namespace boss {
 				progress->Resume();
 				ans = NULL;
 			}
+#endif
 		} else {
 			printf("Downloading: %s (%u of %u); %3.0f%% of %3.0f KB\r", updatedFiles[ui->fileIndex].name.c_str(), ui->fileIndex+1, updatedFiles.size(), fractiondownloaded*100,(dlTotal/1024)+20);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
 			fflush(stdout);
@@ -151,9 +155,9 @@ namespace boss {
 			throw boss_error() << err_detail(err);
 		}
 
-		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != "0") {
+		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != 0) {
 			//All of the settings have potentially valid proxy-ing values.
-			proxy_str = proxy_host + ":" + proxy_port;
+			proxy_str = proxy_host + ":" + IntToString(proxy_port);
 			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
 			if (ret!=CURLE_OK) {
 				curl_easy_cleanup(curl);

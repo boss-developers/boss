@@ -105,7 +105,7 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent, int x, int y,
 
 	ProxyHostBox->SetValue(proxy_host);
 
-	ProxyPortBox->SetValue(proxy_port);
+	ProxyPortBox->SetValue(wxString::Format(wxT("%i"),proxy_port));
 
 	if (proxy_type == "direct")
 		ProxyTypeBox->SetValue(ProxyTypes[0]);
@@ -183,7 +183,7 @@ void SettingsFrame::OnProxyHostChange(wxCommandEvent& event) {
 }
 
 void SettingsFrame::OnProxyPortChange(wxCommandEvent& event) {
-	proxy_port = ProxyPortBox->GetValue();
+	proxy_port = wxAtoi(ProxyPortBox->GetValue());
 }
 
 

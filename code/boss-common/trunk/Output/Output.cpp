@@ -21,19 +21,19 @@ namespace boss {
 	using boost::algorithm::replace_first;
 
 	//Default filter options.
-	bool UseDarkColourScheme    = 0;
-	bool HideVersionNumbers     = 0;
-	bool HideGhostedLabel       = 0;
-	bool HideChecksums          = 0;
-	bool HideMessagelessMods    = 0;
-	bool HideGhostedMods        = 0;
-	bool HideCleanMods			= 0;
-	bool HideRuleWarnings       = 0;
-	bool HideAllModMessages     = 0;
-	bool HideNotes              = 0;
-	bool HideBashTagSuggestions = 0;
-	bool HideRequirements       = 0;
-	bool HideIncompatibilities  = 0;
+	bool UseDarkColourScheme    = false;
+	bool HideVersionNumbers     = false;
+	bool HideGhostedLabel       = false;
+	bool HideChecksums          = false;
+	bool HideMessagelessMods    = false;
+	bool HideGhostedMods        = false;
+	bool HideCleanMods			= false;
+	bool HideRuleWarnings       = false;
+	bool HideAllModMessages     = false;
+	bool HideNotes              = false;
+	bool HideBashTagSuggestions = false;
+	bool HideRequirements       = false;
+	bool HideIncompatibilities  = false;
 
 	//Default CSS.
 	string CSSBody				= "font-family:Calibri,Arial,sans-serifs;";
@@ -266,10 +266,10 @@ namespace boss {
 				<< "u=document.getElementById('userlistMessages').childNodes;if(u){for(var i=0,z=u.length;"
 				<< "i<z;i++){if(u[i].className=='warn'){if(b.checked){u[i].style.display='none'}else{"
 				<< "u[i].style.display='table'}}}}}function toggleMods(){var "
-				<< "m=document.getElementById('recognised').childNodes;for(var i=0,z=m.length;i<l;i++){"
+				<< "m=document.getElementById('recognised').childNodes;for(var i=0,z=m.length;i<z;i++){"
 				<< "if(m[i].nodeType==1){var g=false,n=true,c=true,a=m[i].getElementsByTagName('span');"
 				<< "for(var j=0,y=a.length;j<y;j++){if(a[j].className=='ghosted'){g=true;break}}"
-				<< "a=m[i].getElementsByTagName('li');if(a){var p;if(window.getComputedStyle){"
+				<< "a=m[i].getElementsByTagName('li');if(a.length>0){var p;if(window.getComputedStyle){"
 				<< "p=window.getComputedStyle(a[0].parentNode,null).getPropertyValue('display')}else if(a[0].currentStyle){"
 				<< "p=a[0].parentNode.currentStyle.display}for(var j=0,y=a.length;j<y;j++){if(a[j].className=='dirty'){"
 				<< "c=false}var b;if(window.getComputedStyle){b=window.getComputedStyle(a[j],null).getPropertyValue('display')"
@@ -346,7 +346,7 @@ namespace boss {
 			<<	"[BOSS.InternetSettings]" << endl
 			<<	"sProxyType               = " << proxy_type << endl
 			<<	"sProxyHostname           = " << proxy_host << endl
-			<<	"iProxyPort               = " << proxy_port << endl << endl
+			<<	"iProxyPort               = " << IntToString(proxy_port) << endl << endl
 
 			<<	"[BOSS.RunOptions]" << endl
 			<<	"sGame                    = " << GetGameIniString() << endl

@@ -605,7 +605,7 @@ namespace boss {
 
 	//Set the boolean BOSS variable values while parsing.
 	void SetBoolVar(string var, bool value) {
-		cout << var << " = " << value << " @ " << currentHeading << endl;
+		boost::algorithm::trim(var);  //Make sure there are no preceding or trailing spaces.
 		if (currentHeading == "BOSS.GeneralSettings") {
 			if (var == "bDoStartupUpdateCheck")
 				do_startup_update_check = value;
@@ -660,8 +660,11 @@ namespace boss {
 
 	//Set the integer BOSS variable values while parsing.
 	void SetIntVar(string var, unsigned int value) {
-		cout << var << " = " << value << " @ " << currentHeading << endl;
-		if (currentHeading == "BOSS.RunOptions") {
+		boost::algorithm::trim(var);  //Make sure there are no preceding or trailing spaces.
+		if (currentHeading == "BOSS.InternetSettings") {
+			if (var == "iProxyPort")
+				proxy_port = value;
+		} else if (currentHeading == "BOSS.RunOptions") {
 			if (var == "iRevertLevel") {
 				if (value >= 0 && value < 3)
 					revert = value;
@@ -677,117 +680,117 @@ namespace boss {
 
 	//Set the BOSS variable values while parsing.
 	void SetStringVar(string var, string value) {
-		cout << var << " = " << value << " @ " << currentHeading << endl;
-			if (currentHeading == "BOSS.InternetSettings") {
-				if (var == "sProxyType")
-					proxy_type = value;
-				else if (var == "sProxyHostname")
-					proxy_host = value;
-				else if (var == "iProxyPort")
-					proxy_port = value;
-			} else if (currentHeading == "BOSS.RunOptions") {
-				if (var == "sBOSSLogFormat") {
-					if (value == "html" || value == "text")
-						log_format = value;
-				} else if (var == "sGame") {
-					if (value == "Oblivion")
-						game = 1;
-					else if (value == "Nehrim")
-						game = 3;
-					else if (value == "Fallout3")
-						game = 2;
-					else if (value == "FalloutNV")
-						game = 4;
-					else if (value == "Skyrim")
-						game = 5;
-				}
-			} else if (currentHeading == "BOSSLog.Styles") {	
-				if (value.empty())
-					return;
-				else if (var == "body")
-					CSSBody = value;
-				else if (var == "#filters")
-					CSSFilters = value;
-				else if (var == "#filters > li")
-					CSSFiltersList = value;
-				else if (var == "body > div:first-child")
-					CSSTitle = value;
-				else if (var == "body > div:first-child + div")
-					CSSCopyright = value;
-				else if (var == "h3 + *")
-					CSSSections = value;
-				else if (var == "h3")
-					CSSSectionTitle = value;
-				else if (var == "h3 > span")
-					CSSSectionPlusMinus = value;
-				else if (var == "#end")
-					CSSLastSection = value;
-				else if (var == "td")
-					CSSTable = value;
-				else if (var == "ul")
-					CSSList = value;
-				else if (var == "ul li")
-					CSSListItem = value;
-				else if (var == "li ul")
-					CSSSubList = value;
-				else if (var == "input[type='checkbox']")
-					CSSCheckbox = value;
-				else if (var == "blockquote")
-					CSSBlockquote = value;
-				else if (var == ".error")
-					CSSError = value;
-				else if (var == ".warn")
-					CSSWarning = value;
-				else if (var == ".success")
-					CSSSuccess = value;
-				else if (var == ".version")
-					CSSVersion = value;
-				else if (var == ".ghosted")
-					CSSGhost = value;
-				else if (var == ".crc")
-					CSSCRC = value;
-				else if (var == ".tagPrefix")
-					CSSTagPrefix = value;
-				else if (var == ".dirty")
-					CSSDirty = value;
-				else if (var == ".message")
-					CSSQuotedMessage = value;
-				else if (var == ".mod")
-					CSSMod = value;
-				else if (var == ".tag")
-					CSSTag = value;
-				else if (var == ".note")
-					CSSNote = value;
-				else if (var == ".req")
-					CSSRequirement = value;
-				else if (var == ".inc")
-					CSSIncompatibility = value;
+		boost::algorithm::trim(var);  //Make sure there are no preceding or trailing spaces.
+		boost::algorithm::trim(value);  //Make sure there are no preceding or trailing spaces.
+		if (currentHeading == "BOSS.InternetSettings") {
+			if (var == "sProxyType")
+				proxy_type = value;
+			else if (var == "sProxyHostname")
+				proxy_host = value;
+		} else if (currentHeading == "BOSS.RunOptions") {
+			if (var == "sBOSSLogFormat") {
+				if (value == "html" || value == "text")
+					log_format = value;
+			} else if (var == "sGame") {
+				if (value == "auto")
+					game = 0;
+				else if (value == "Oblivion")
+					game = 1;
+				else if (value == "Nehrim")
+					game = 3;
+				else if (value == "Fallout3")
+					game = 2;
+				else if (value == "FalloutNV")
+					game = 4;
+				else if (value == "Skyrim")
+					game = 5;
 			}
+		} else if (currentHeading == "BOSSLog.Styles") {	
+			if (value.empty())
+				return;
+			else if (var == "body")
+				CSSBody = value;
+			else if (var == "#filters")
+				CSSFilters = value;
+			else if (var == "#filters > li")
+				CSSFiltersList = value;
+			else if (var == "body > div:first-child")
+				CSSTitle = value;
+			else if (var == "body > div:first-child + div")
+				CSSCopyright = value;
+			else if (var == "h3 + *")
+				CSSSections = value;
+			else if (var == "h3")
+				CSSSectionTitle = value;
+			else if (var == "h3 > span")
+				CSSSectionPlusMinus = value;
+			else if (var == "#end")
+				CSSLastSection = value;
+			else if (var == "td")
+				CSSTable = value;
+			else if (var == "ul")
+				CSSList = value;
+			else if (var == "ul li")
+				CSSListItem = value;
+			else if (var == "li ul")
+				CSSSubList = value;
+			else if (var == "input[type='checkbox']")
+				CSSCheckbox = value;
+			else if (var == "blockquote")
+				CSSBlockquote = value;
+			else if (var == ".error")
+				CSSError = value;
+			else if (var == ".warn")
+				CSSWarning = value;
+			else if (var == ".success")
+				CSSSuccess = value;
+			else if (var == ".version")
+				CSSVersion = value;
+			else if (var == ".ghosted")
+				CSSGhost = value;
+			else if (var == ".crc")
+				CSSCRC = value;
+			else if (var == ".tagPrefix")
+				CSSTagPrefix = value;
+			else if (var == ".dirty")
+				CSSDirty = value;
+			else if (var == ".message")
+				CSSQuotedMessage = value;
+			else if (var == ".mod")
+				CSSMod = value;
+			else if (var == ".tag")
+				CSSTag = value;
+			else if (var == ".note")
+				CSSNote = value;
+			else if (var == ".req")
+				CSSRequirement = value;
+			else if (var == ".inc")
+				CSSIncompatibility = value;
 		}
+	}
 
 	ini_grammar::ini_grammar() : ini_grammar::base_type(ini, "ini grammar") {
 
-		ini = *eol 
-			> section % +eol;
-
-		section =
-			heading[phoenix::ref(currentHeading) = _1] > +eol
-			> setting % +eol;
+		ini = *eol
+				> (heading[phoenix::ref(currentHeading) = _1] | (!lit('[') >> setting)) % +eol
+				> *eol;
 
 		heading %= '[' > +(char_ - ']') > ']';
 
 		setting =
-			!lit("[")
-			>>
-				(var >> '=' >> uint_)[phoenix::bind(&SetIntVar, _1, _2)]
-				| (var >> '=' >> bool_)[phoenix::bind(&SetBoolVar, _1, _2)]
-				| (var >> '=' >> stringVal)[phoenix::bind(&SetStringVar, _1, _2)];
+				((var > '=') >> uint_)[phoenix::bind(&SetIntVar, _1, _2)]
+				| ((var > '=') >> bool_)[phoenix::bind(&SetBoolVar, _1, _2)]
+				| ((var > '=') > stringVal)[phoenix::bind(&SetStringVar, _1, _2)];
 
 		var %=
-			-lit('"') > lexeme[+(char_ - (lit('"') | lit('=')))] > -lit('"');
+			lexeme[
+				('"' > +(char_ - '"') > '"')
+				|
+				+(char_ - '=')
+			];
 
 		stringVal %= lexeme[*(char_ - eol)];
-
+		
 		//Give each rule names.
 		ini.name("ini");
 		section.name("section");
@@ -840,6 +843,7 @@ namespace boss {
 	//Rule checker function, checks for syntax (not parsing) errors.
 	void RuleSyntaxCheck(vector<rule>& userlist, rule currentRule) {
 		bool skip = false;
+		boost::algorithm::trim(currentRule.ruleObject);  //Make sure there are no preceding or trailing spaces.
 		try {
 			keyType ruleKey = currentRule.ruleKey;
 			string ruleObject = currentRule.ruleObject;
@@ -856,6 +860,7 @@ namespace boss {
 			}
 			size_t size = currentRule.lines.size();
 			for (size_t i=0; i<size; i++) {
+				boost::algorithm::trim(currentRule.lines[i].object);  //Make sure there are no preceding or trailing spaces.
 				keyType key = currentRule.lines[i].key;
 				string subject = currentRule.lines[i].object;
 				if (key == BEFORE || key == AFTER) {

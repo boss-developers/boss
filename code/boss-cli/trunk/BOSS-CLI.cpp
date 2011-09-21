@@ -9,6 +9,11 @@
 
 #define NOMINMAX // we don't want the dummy min/max macros since they overlap with the std:: algorithms
 
+//We want to ensure that the GUI-specific code in BOSS-Common isn't included.
+#ifdef BOSSGUI
+#undef BOSSGUI
+#endif
+
 
 #include "BOSS-Common.h"
 
@@ -240,6 +245,7 @@ int main(int argc, char *argv[]) {
 		LOG_DEBUG("BOSSlog format set to: '%s'", log_format.c_str());
 	}
 
+
 	/////////////////////////
 	// BOSS Updater Stuff
 	/////////////////////////
@@ -375,8 +381,6 @@ int main(int argc, char *argv[]) {
 	} else {
 		LOG_DEBUG("BOSS Update check failed. No Internet connection detected.");
 	}
-
-	
 
 
 	/////////////////////////

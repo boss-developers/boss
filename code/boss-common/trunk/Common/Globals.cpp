@@ -33,10 +33,10 @@ namespace boss {
 	string log_format		= "html";	// what format the output should be in.
 	string proxy_type		= "direct";
 	string proxy_host		= "none";
-	string proxy_port		= "0";
+	int proxy_port			= 0;
 	int game				= 0;		// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim.
 	int revert              = 0;		// what level to revert to
-	int debug_verbosity           = 0;		// log levels above INFO to output
+	int debug_verbosity     = 0;		// log levels above INFO to output
 	bool update				= true;		// update the masterlist?
 	bool update_only        = false;	// only update the masterlist and don't sort currently.
 	bool silent             = false;	// silent mode?
