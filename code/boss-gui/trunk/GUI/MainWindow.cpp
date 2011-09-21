@@ -39,8 +39,8 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_MENU ( OPTION_EditUserRules, MainFrame::OnEditUserRules )
 	EVT_MENU ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
 	EVT_MENU ( OPTION_Run, MainFrame::OnRunBOSS )
-	EVT_MENU ( MENU_OpenMReadMe, MainFrame::OnOpenFile )
-	EVT_MENU ( MENU_OpenURReadMe, MainFrame::OnOpenFile )
+	EVT_MENU ( MENU_OpenMainReadMe, MainFrame::OnOpenFile )
+	EVT_MENU ( MENU_OpenUserRulesReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( OPTION_CheckForUpdates, MainFrame::OnUpdateCheck )
 	EVT_MENU ( MENU_ShowAbout, MainFrame::OnAbout )
 	EVT_MENU ( MENU_ShowSettings, MainFrame::OnOpenSettings )
@@ -115,7 +115,7 @@ bool BossGUI::OnInit() {
 	return true;
 }
 
-MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) : wxFrame(NULL, -1, title, wxPoint(x, y), wxSize(width, height)) {
+MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) : wxFrame(NULL, wxID_ANY, title, wxPoint(x, y), wxSize(width, height)) {
 
 	//Some variable setup.
 	wxString BOSSlogFormat[] = {
@@ -153,8 +153,8 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	MenuBar->Append(EditMenu, wxT("&Edit"));
     // About menu
     HelpMenu = new wxMenu();
-	HelpMenu->Append(MENU_OpenMReadMe, wxT("Open &Main ReadMe"), wxT("Opens the main BOSS ReadMe in your default web browser."));
-	HelpMenu->Append(MENU_OpenURReadMe, wxT("Open &User Rules ReadMe"), wxT("Opens the User Rules ReadMe in your default web browser."));
+	HelpMenu->Append(MENU_OpenMainReadMe, wxT("Open &Main ReadMe"), wxT("Opens the main BOSS ReadMe in your default web browser."));
+	HelpMenu->Append(MENU_OpenUserRulesReadMe, wxT("Open &User Rules ReadMe"), wxT("Opens the User Rules ReadMe in your default web browser."));
 	HelpMenu->AppendSeparator();
 	HelpMenu->Append(OPTION_CheckForUpdates, wxT("&Check For Updates..."), wxT("Checks for updates to BOSS."));
 	HelpMenu->Append(MENU_ShowAbout, wxT("&About BOSS..."), wxT("Shows information about BOSS."));
@@ -233,9 +233,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	//Set option values based on initialised variable values.
 	RunBOSSButton->SetDefault();
 
-	if (silent)
-		ShowLogBox->SetValue(false);
-	else
+	if (!silent)
 		ShowLogBox->SetValue(true);
 
 	if (log_format == "html")
@@ -245,23 +243,15 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 
 	if (show_CRCs)
 		CRCBox->SetValue(true);
-	else
-		CRCBox->SetValue(false);
 
-	if (skip_version_parse)
-		VersionBox->SetValue(false);
-	else
+	if (!skip_version_parse)
 		VersionBox->SetValue(true);
 
 	if (update)
 		UpdateBox->SetValue(true);
-	else
-		UpdateBox->SetValue(false);
 
 	if (trial_run)
 		TrialRunBox->SetValue(true);
-	else
-		TrialRunBox->SetValue(false);
 
 	if (game == 0)
 		GameBox->SetValue(Game[0]);
@@ -730,7 +720,7 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 	string file;
 	if (event.GetId() == OPTION_OpenBOSSlog)
 		file = "bosslog";
-	else if (event.GetId() == MENU_OpenMReadMe)
+	else if (event.GetId() == MENU_OpenMainReadMe)
 		file = "BOSS ReadMe";
 	else
 		file = "BOSS User Rules ReadMe";
@@ -783,21 +773,22 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 
 void MainFrame::OnAbout(wxCommandEvent& event) {
 
-	wxDialog *frame = new wxDialog(this,-1,wxT("About Better Oblivion Sorting Software"));
+	wxDialog *frame = new wxDialog(this, wxID_ANY,wxT("About Better Oblivion Sorting Software"));
 
 	frame->SetBackgroundColour(wxColour(255,255,255));
 
 	wxBoxSizer *box = new wxBoxSizer(wxVERTICAL);
 
-	box->Add(new wxStaticText(frame,-1,
-		wxT("Better Oblivion Sorting Software\nv"+g_version+" ("+g_releaseDate+")\n\n"
-		"Provides a graphical front end for running ")), 0, wxTOP | wxLEFT | wxRIGHT, 20);
+	wxStaticText *text = new wxStaticText(frame, wxID_ANY,
+		wxT("A \"one-click\" program for users that quickly optimises and avoids detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.")
+		);
+	text->Wrap(390);
 
-	wxHyperlinkCtrl *link = new wxHyperlinkCtrl(frame, wxID_ANY, wxT("Better Oblivion Sorting Software"),"http://code.google.com/p/better-oblivion-sorting-software/");
-	link->SetBackgroundColour(wxColour(255,255,255));
-	box->Add(link, 0, wxBOTTOM | wxLEFT | wxRIGHT, 20);
-	box->Add(new wxStaticText(frame, -1, wxT("© Random007, WrinklyNinja and the BOSS development team, 2011.\nSome rights reserved. Copyright license:")), 0, wxLEFT | wxRIGHT, 20);
-	link = new wxHyperlinkCtrl(frame, -1, wxT("CC Attribution-Noncommercial-No Derivative Works 3.0"),"http://creativecommons.org/licenses/by-nc-nd/3.0/");
+	box->Add(new wxStaticText(frame, wxID_ANY, wxT("Better Oblivion Sorting Software\nv"+g_version+" ("+g_releaseDate+")")), 0, wxTOP | wxLEFT | wxRIGHT, 20);
+	box->Add(text, 0, wxTOP | wxLEFT | wxRIGHT, 20);
+
+	box->Add(new wxStaticText(frame, wxID_ANY, wxT("© 2011 Random007, WrinklyNinja and the BOSS development team.\nSome rights reserved. Copyright license:")), 0, wxTOP | wxLEFT | wxRIGHT, 20);
+	wxHyperlinkCtrl *link = new wxHyperlinkCtrl(frame, wxID_ANY, wxT("CC Attribution-Noncommercial-No Derivative Works 3.0"),"http://creativecommons.org/licenses/by-nc-nd/3.0/");
 	link->SetBackgroundColour(wxColour(255,255,255));
 	box->Add(link, 0, wxBOTTOM | wxLEFT | wxRIGHT, 20);
 	
@@ -1047,7 +1038,7 @@ void MainFrame::Update(string updateVersion) {
 }
 
 void MainFrame::OnOpenSettings(wxCommandEvent& event) {
-	SettingsFrame *settings = new SettingsFrame(wxT("Better Oblivion Sorting Software: Settings"),this,wxDefaultPosition.x,wxDefaultPosition.y,wxDefaultSize.x,wxDefaultSize.y);
+	SettingsFrame *settings = new SettingsFrame(wxT("Better Oblivion Sorting Software: Settings"),this);
 	settings->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	settings->Show();
 }

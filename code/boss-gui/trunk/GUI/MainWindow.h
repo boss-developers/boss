@@ -79,36 +79,32 @@ private:
 };
 
 enum {
+	//Main window.
     OPTION_EditUserRules = wxID_HIGHEST + 1, // declares an id which will be used to call our button
 	OPTION_OpenBOSSlog,
 	OPTION_Run,
 	OPTION_CheckForUpdates,
-	OPTION_ExitAbout,
-	OPTION_ExitSettings,
     MENU_Quit,
-	MENU_OpenMReadMe,
-	MENU_OpenURReadMe,
+	MENU_OpenMainReadMe,
+	MENU_OpenUserRulesReadMe,
 	MENU_ShowAbout,
 	MENU_ShowSettings,
 	DROPDOWN_LogFormat,
-	DROPDOWN_DebugVerbosity,
 	DROPDOWN_Game,
 	DROPDOWN_Revert,
-	DROPDOWN_ProxyType,
 	CHECKBOX_ShowBOSSlog,
-	CHECKBOX_DebugSourceRefs,
 	CHECKBOX_Update,
 	CHECKBOX_EnableVersions,
 	CHECKBOX_EnableCRCs,
-	CHECKBOX_EnableDebugLogging,
 	CHECKBOX_TrialRun,
-	CHECKBOX_StartupUpdateCheck,
-	CHECKBOX_UseProxy,
-	CHECKBOX_UserRulesEditor,
 	RADIOBUTTON_SortOption,
 	RADIOBUTTON_UpdateOption,
 	RADIOBUTTON_UndoOption,
-	TEXT_ProxyHost,
-	TEXT_ProxyPort
+	//About window
+	OPTION_ExitAbout,
+	//Settings window.
+	OPTION_OKExitSettings,
+	OPTION_CancelExitSettings,
+	DROPDOWN_ProxyType
 };
 #endif

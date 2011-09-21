@@ -13,21 +13,15 @@
 #include "BOSS-Common.h"
 
 BEGIN_EVENT_TABLE( SettingsFrame, wxFrame )
-	EVT_TEXT ( TEXT_ProxyHost, SettingsFrame::OnProxyHostChange )
-	EVT_TEXT ( TEXT_ProxyPort, SettingsFrame::OnProxyPortChange )
-	EVT_BUTTON ( OPTION_ExitSettings, OnQuit)
+	EVT_BUTTON ( OPTION_OKExitSettings, OnOKQuit)
+	EVT_BUTTON ( OPTION_CancelExitSettings, OnCancelQuit)
 	EVT_COMBOBOX ( DROPDOWN_ProxyType, SettingsFrame::OnProxyTypeChange )
-	EVT_COMBOBOX ( DROPDOWN_DebugVerbosity, SettingsFrame::OnDebugVerbosityChange )
-	EVT_CHECKBOX ( CHECKBOX_StartupUpdateCheck, SettingsFrame::OnStartupUpdateChange )
-	EVT_CHECKBOX ( CHECKBOX_DebugSourceRefs, SettingsFrame::OnDebugSourceRefsChange )
-	EVT_CHECKBOX ( CHECKBOX_EnableDebugLogging, SettingsFrame::OnDebugLoggingChange )
-	EVT_CHECKBOX ( CHECKBOX_UserRulesEditor, SettingsFrame::OnEditorChange )
 END_EVENT_TABLE()
 
 using namespace boss;
 using namespace std;
 
-SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent, int x, int y, int width, int height) : wxFrame(parent, -1, title, wxPoint(x, y), wxSize(width, height)) {
+SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize) {
 
 	wxString ProxyTypes[] = {
         wxT("Direct (No Proxy)"),
@@ -49,60 +43,271 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent, int x, int y,
 	//Set up stuff in the frame.
 	SetBackgroundColour(wxColour(255,255,255));
 
-	//Contents in one big resizing box.
-	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
+	TabHolder = new wxNotebook(this,wxID_ANY);
 
-	wxStaticBoxSizer *generalOptionsBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("General"));
-	generalOptionsBox->Add(StartupUpdateCheckBox = new wxCheckBox(this,CHECKBOX_StartupUpdateCheck,wxT("Check for BOSS updates on startup")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	generalOptionsBox->Add(UseUserRuleEditorBox = new wxCheckBox(this,CHECKBOX_UserRulesEditor,wxT("Use User Rules Editor")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	bigBox->Add(generalOptionsBox, 0, wxALL, 20);
+	wxSizerFlags ContentSizerFlags(1);
+	ContentSizerFlags.Expand().Border(wxTOP|wxBOTTOM, 5);
 
-	wxStaticBoxSizer *debugOptionsBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Debugging"));
-	wxBoxSizer *verbosityBox = new wxBoxSizer(wxHORIZONTAL);
-	verbosityBox->Add(new wxStaticText(this, wxID_ANY, wxT("Debug Output Verbosity: ")), 1, wxLEFT | wxBOTTOM, 5);
-	verbosityBox->Add(DebugVerbosityBox = new wxComboBox(this, DROPDOWN_DebugVerbosity, DebugVerbosity[0], wxDefaultPosition, wxDefaultSize, 4, DebugVerbosity, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
-	debugOptionsBox->Add(verbosityBox, 0, wxEXPAND, 0);
-	debugOptionsBox->Add(DebugSourceReferencesBox = new wxCheckBox(this,CHECKBOX_DebugSourceRefs, wxT("Include Source Code References")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	debugOptionsBox->Add(LogDebugOutputBox = new wxCheckBox(this,CHECKBOX_EnableDebugLogging, wxT("Log Debug Output")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	bigBox->Add(debugOptionsBox, 0, wxLEFT | wxRIGHT | wxBOTTOM, 20);
+	wxSizerFlags ItemSizerFlags(1);
+	ItemSizerFlags.Border(wxLEFT|wxRIGHT, 10);
 
-	wxStaticBoxSizer *proxyOptionsBox = new wxStaticBoxSizer(wxVERTICAL,this,wxT("Internet"));
-	proxyOptionsBox->Add(new wxStaticText(this, wxID_ANY, wxT("These settings control BOSS's proxy support.\n")), 0, wxALL, 5);
-	
+	wxSizerFlags BorderSizerFlags(0);
+	BorderSizerFlags.Border(wxALL, 10);
+
+	//Create General Settings tab.
+	GeneralTab = new wxPanel(TabHolder);
+	wxBoxSizer *GeneralTabSizer = new wxBoxSizer(wxVERTICAL);
+
+	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Check for BOSS updates on startup")), BorderSizerFlags);
+	GeneralTabSizer->Add(UseUserRuleEditorBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Use User Rules Editor")), BorderSizerFlags);
+
+	GeneralTab->SetSizer(GeneralTabSizer);
+
+	//Create Internet Settings tab.
+	InternetTab = new wxPanel(TabHolder);
+	wxBoxSizer *InternetTabSizer = new wxBoxSizer(wxVERTICAL);
+
 	wxBoxSizer *proxyTypeSizer = new wxBoxSizer(wxHORIZONTAL);
-	proxyTypeSizer->Add(ProxyTypeText = new wxStaticText(this, wxID_ANY, wxT("Proxy Type: ")), 1, wxLEFT | wxTOP | wxBOTTOM, 5);
-	proxyTypeSizer->Add(ProxyTypeBox = new wxComboBox(this,DROPDOWN_ProxyType,ProxyTypes[0],wxDefaultPosition,wxDefaultSize,7,ProxyTypes,wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxTOP | wxBOTTOM, 5);
-	proxyOptionsBox->Add(proxyTypeSizer, 0, wxEXPAND, 0);
+	proxyTypeSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Type:")), ItemSizerFlags);
+	proxyTypeSizer->Add(ProxyTypeBox = new wxComboBox(InternetTab,DROPDOWN_ProxyType,ProxyTypes[0],wxDefaultPosition,wxDefaultSize,7,ProxyTypes,wxCB_READONLY), ItemSizerFlags);
+	InternetTabSizer->Add(proxyTypeSizer, ContentSizerFlags);
 	
 	wxBoxSizer *proxyHostSizer = new wxBoxSizer(wxHORIZONTAL);
-	proxyHostSizer->Add(ProxyTypeText = new wxStaticText(this, wxID_ANY, wxT("Proxy Hostname:   ")), 1, wxLEFT | wxBOTTOM, 5);
-	proxyHostSizer->Add(ProxyHostBox = new wxTextCtrl(this,TEXT_ProxyHost), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
-	proxyOptionsBox->Add(proxyHostSizer, 0, wxEXPAND, 0);
+	proxyHostSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Hostname:")), ItemSizerFlags);
+	proxyHostSizer->Add(ProxyHostBox = new wxTextCtrl(InternetTab,wxID_ANY), ItemSizerFlags);
+	InternetTabSizer->Add(proxyHostSizer, ContentSizerFlags);
 
 	wxBoxSizer *proxyPortSizer = new wxBoxSizer(wxHORIZONTAL);
-	proxyPortSizer->Add(ProxyTypeText = new wxStaticText(this, wxID_ANY, wxT("Proxy Port Number: ")), 1, wxLEFT | wxBOTTOM, 5);
-	proxyPortSizer->Add(ProxyPortBox = new wxTextCtrl(this,TEXT_ProxyPort), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
-	proxyOptionsBox->Add(proxyPortSizer, 0, wxEXPAND, 0);
+	proxyPortSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Port Number:")), ItemSizerFlags);
+	proxyPortSizer->Add(ProxyPortBox = new wxTextCtrl(InternetTab,wxID_ANY), ItemSizerFlags);
+	InternetTabSizer->Add(proxyPortSizer, ContentSizerFlags);
 
-	bigBox->Add(proxyOptionsBox, 0, wxLEFT | wxRIGHT | wxBOTTOM, 20);
+	InternetTab->SetSizer(InternetTabSizer);
 
-	//Need to add an 'OK' button.
-	wxButton *okButton = new wxButton(this, OPTION_ExitSettings, wxT("OK"), wxDefaultPosition, wxSize(70, 30));
-	wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
-	hbox->Add(okButton, 1);
+	//Create Debugging Settings tab.
+	DebugTab = new wxPanel(TabHolder);
+	wxBoxSizer *DebugTabSizer = new wxBoxSizer(wxVERTICAL);
+
+	wxBoxSizer *verbosityBox = new wxBoxSizer(wxHORIZONTAL);
+	verbosityBox->Add(new wxStaticText(DebugTab, wxID_ANY, wxT("Debug Output Verbosity:")), ItemSizerFlags);
+	verbosityBox->Add(DebugVerbosityBox = new wxComboBox(DebugTab, wxID_ANY, DebugVerbosity[0], wxDefaultPosition, wxDefaultSize, 4, DebugVerbosity, wxCB_READONLY), ItemSizerFlags);
+	DebugTabSizer->Add(verbosityBox, ContentSizerFlags);
+	DebugTabSizer->Add(DebugSourceReferencesBox = new wxCheckBox(DebugTab,wxID_ANY, wxT("Include Source Code References")), BorderSizerFlags);
+	DebugTabSizer->Add(LogDebugOutputBox = new wxCheckBox(DebugTab,wxID_ANY, wxT("Log Debug Output")), BorderSizerFlags);
+
+	DebugTab->SetSizer(DebugTabSizer);
+
+	//Create BOSS Log Filters tab.
+	FiltersTab = new wxScrolledWindow(TabHolder);
+	wxBoxSizer *FiltersTabSizer = new wxBoxSizer(wxVERTICAL);
+
+	FiltersTabSizer->Add(UseDarkColourSchemeBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Use Dark Colour Scheme")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideRuleWarningsBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Rule Warnings")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideVersionNumbersBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Version Numbers")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideGhostedLabelBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide 'Ghosted' Label")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideChecksumsBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Checksums")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideMessagelessModsBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Messageless Mods")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideGhostedModsBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Ghosted Mods")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideCleanModsBox = new wxCheckBox(FiltersTab ,wxID_ANY, wxT("Hide Clean Mods")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideAllModMessagesBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide All Mod Nessages")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideNotesBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Notes")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideBashTagSuggestionsBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Bash Tag Suggestions")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideRequirementsBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Requirements")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideIncompatibilitiesBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Incompatibilities")), BorderSizerFlags);
+
+	FiltersTab->SetSizer(FiltersTabSizer);
+
+	//Make tab scolling.
+	FiltersTab->FitInside();
+	FiltersTab->SetScrollRate(10, 10);
+
+	//Create BOSS Log CSS tab.
+	CSSTab = new wxScrolledWindow(TabHolder);
+	wxBoxSizer *CSSTabSizer = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer *horBox;
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("body")), ItemSizerFlags);
+	horBox->Add(CSSBodyBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("#filters")), ItemSizerFlags);
+	horBox->Add(CSSFiltersBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("#filters > li")), ItemSizerFlags);
+	horBox->Add(CSSFiltersListBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("body > div:first-child")), ItemSizerFlags);
+	horBox->Add(CSSTitleBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("body > div:first-child + div")), ItemSizerFlags);
+	horBox->Add(CSSCopyrightBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("body > div:first-child + div")), ItemSizerFlags);
+	horBox->Add(CSSSectionsBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("h3")), ItemSizerFlags);
+	horBox->Add(CSSSectionTitleBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("h3 > span")), ItemSizerFlags);
+	horBox->Add(CSSSectionPlusMinusBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("#end")), ItemSizerFlags);
+	horBox->Add(CSSLastSectionBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("td")), ItemSizerFlags);
+	horBox->Add(CSSTableBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("ul")), ItemSizerFlags);
+	horBox->Add(CSSListBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("ul li")), ItemSizerFlags);
+	horBox->Add(CSSListItemBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("li ul")), ItemSizerFlags);
+	horBox->Add(CSSSubListBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("input[type='checkbox']")), ItemSizerFlags);
+	horBox->Add(CSSCheckboxBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("blockquote")), ItemSizerFlags);
+	horBox->Add(CSSBlockquoteBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".error")), ItemSizerFlags);
+	horBox->Add(CSSErrorBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".warn")), ItemSizerFlags);
+	horBox->Add(CSSWarningBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".success")), ItemSizerFlags);
+	horBox->Add(CSSSuccessBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".version")), ItemSizerFlags);
+	horBox->Add(CSSVersionBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".ghosted")), ItemSizerFlags);
+	horBox->Add(CSSGhostBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".crc")), ItemSizerFlags);
+	horBox->Add(CSSCRCBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".tagPrefix")), ItemSizerFlags);
+	horBox->Add(CSSTagPrefixBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".dirty")), ItemSizerFlags);
+	horBox->Add(CSSDirtyBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".message")), ItemSizerFlags);
+	horBox->Add(CSSQuotedMessageBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".mod")), ItemSizerFlags);
+	horBox->Add(CSSModBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".tag")), ItemSizerFlags);
+	horBox->Add(CSSTagBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".note")), ItemSizerFlags);
+	horBox->Add(CSSNoteBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".req")), ItemSizerFlags);
+	horBox->Add(CSSRequirementBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".inc")), ItemSizerFlags);
+	horBox->Add(CSSIncompatibilityBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	CSSTab->SetSizer(CSSTabSizer);
+
+	//Make tab scolling.
+	CSSTab->FitInside();
+	CSSTab->SetScrollRate(10, 10);
+
+
+	//Attach all pages.
+	TabHolder->AddPage(GeneralTab,wxT("General"),true);
+	TabHolder->AddPage(InternetTab,wxT("Internet"));
+	TabHolder->AddPage(DebugTab,wxT("Debugging"));
+	TabHolder->AddPage(FiltersTab,wxT("BOSS Log Filters"));
+	TabHolder->AddPage(CSSTab,wxT("BOSS Log CSS"));
 	
-	bigBox->Add(hbox, 0, wxALIGN_CENTER | wxBOTTOM, 10);
+	//Need to add 'OK' and 'Cancel' buttons.
+	wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
+	hbox->Add(new wxButton(this, OPTION_OKExitSettings, wxT("OK"), wxDefaultPosition, wxSize(70, 30)));
+	hbox->Add(new wxButton(this, OPTION_CancelExitSettings, wxT("Cancel"), wxDefaultPosition, wxSize(70, 30)), 0, wxLEFT, 20);
 
-	LogDebugOutputBox->SetToolTip(wxT("The output is logged to the BOSSDebugLog.txt file"));
-	DebugSourceReferencesBox->SetToolTip(wxT("Adds source code references to command line output."));
-	DebugVerbosityBox->SetToolTip(wxT("The higher the verbosity level, the more information is outputted to the command line."));
+	//Now add TabHolder and OK button to window sizer.
+	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
+	bigBox->Add(TabHolder, 1, wxEXPAND);
+	bigBox->Add(hbox, 0, wxCENTER|wxALL, 10);
 
-	//Initialise options with values.
+	//Initialise options with values. For checkboxes, they are off by default.
+	SetDefaultValues(ProxyTypes, DebugVerbosity);
+	
+	//Now set the layout and sizes.
+	SetSizerAndFit(bigBox);
+}
+
+void SettingsFrame::SetDefaultValues(wxString * ProxyTypes, wxString * DebugVerbosity) {
+	//General Settings
 	if (do_startup_update_check)
 		StartupUpdateCheckBox->SetValue(true);
-	else
-		StartupUpdateCheckBox->SetValue(false);
 
+	//Internet Settings
 	ProxyHostBox->SetValue(proxy_host);
 
 	ProxyPortBox->SetValue(wxString::Format(wxT("%i"),proxy_port));
@@ -122,15 +327,12 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent, int x, int y,
 	else if (proxy_type == "socks5h")
 		ProxyTypeBox->SetValue(ProxyTypes[6]);
 
+	//Debugging Settings
 	if (debug_with_source)
 		DebugSourceReferencesBox->SetValue(true);
-	else
-		DebugSourceReferencesBox->SetValue(false);
 
 	if (log_debug_output)
 		LogDebugOutputBox->SetValue(true);
-	else
-		LogDebugOutputBox->SetValue(false);
 
 	if (debug_verbosity == 0)
 		DebugVerbosityBox->SetValue(DebugVerbosity[0]);
@@ -140,21 +342,81 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent, int x, int y,
 		DebugVerbosityBox->SetValue(DebugVerbosity[2]);
 	else if (debug_verbosity == 3)
 		DebugVerbosityBox->SetValue(DebugVerbosity[3]);
-	
-	//Now set the layout and sizes.
-	SetSizerAndFit(bigBox);
+
+	//BOSS Log Filters Settings
+	if (UseDarkColourScheme)
+		UseDarkColourSchemeBox->SetValue(true);
+	if (HideVersionNumbers)
+		HideVersionNumbersBox->SetValue(true);
+	if (HideGhostedLabel)
+		HideGhostedLabelBox->SetValue(true);
+	if (HideChecksums)
+		HideChecksumsBox->SetValue(true);
+	if (HideMessagelessMods)
+		HideMessagelessModsBox->SetValue(true);
+	if (HideGhostedMods)
+		HideGhostedModsBox->SetValue(true);
+	if (HideCleanMods)
+		HideCleanModsBox->SetValue(true);
+	if (HideRuleWarnings)
+		HideRuleWarningsBox->SetValue(true);
+	if (HideAllModMessages)
+		HideAllModMessagesBox->SetValue(true);
+	if (HideNotes)
+		HideNotesBox->SetValue(true);
+	if (HideBashTagSuggestions)
+		HideBashTagSuggestionsBox->SetValue(true);
+	if (HideRequirements)
+		HideRequirementsBox->SetValue(true);
+	if (HideIncompatibilities)
+		HideIncompatibilitiesBox->SetValue(true);
+
+	//BOSS Log CSS Settings
+	CSSBodyBox->SetValue(CSSBody);
+	CSSFiltersBox->SetValue(CSSFilters);
+	CSSFiltersListBox->SetValue(CSSFiltersList);
+	CSSTitleBox->SetValue(CSSTitle);
+	CSSCopyrightBox->SetValue(CSSCopyright);
+	CSSSectionsBox->SetValue(CSSSections);
+	CSSSectionTitleBox->SetValue(CSSSectionTitle);
+	CSSSectionPlusMinusBox->SetValue(CSSSectionPlusMinus);
+	CSSLastSectionBox->SetValue(CSSLastSection);
+	CSSTableBox->SetValue(CSSTable);
+	CSSListBox->SetValue(CSSList);
+	CSSListItemBox->SetValue(CSSListItem);
+	CSSSubListBox->SetValue(CSSSubList);
+	CSSCheckboxBox->SetValue(CSSCheckbox);
+	CSSBlockquoteBox->SetValue(CSSBlockquote);
+	CSSErrorBox->SetValue(CSSError);
+	CSSWarningBox->SetValue(CSSWarning);
+	CSSSuccessBox->SetValue(CSSSuccess);
+	CSSVersionBox->SetValue(CSSVersion);
+	CSSGhostBox->SetValue(CSSGhost);
+	CSSCRCBox->SetValue(CSSCRC);
+	CSSTagPrefixBox->SetValue(CSSTagPrefix);
+	CSSDirtyBox->SetValue(CSSDirty);
+	CSSQuotedMessageBox->SetValue(CSSQuotedMessage);
+	CSSModBox->SetValue(CSSMod);
+	CSSTagBox->SetValue(CSSTag);
+	CSSNoteBox->SetValue(CSSNote);
+	CSSRequirementBox->SetValue(CSSRequirement);
+	CSSIncompatibilityBox->SetValue(CSSIncompatibility);
+
+	//Tooltips.
+	LogDebugOutputBox->SetToolTip(wxT("The output is logged to the BOSSDebugLog.txt file"));
+	DebugSourceReferencesBox->SetToolTip(wxT("Adds source code references to command line output."));
+	DebugVerbosityBox->SetToolTip(wxT("The higher the verbosity level, the more information is outputted to the command line."));
 }
 
-void SettingsFrame::OnQuit(wxCommandEvent& event) {
-	this->Close();
-}
+void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
+	//Make sure the settings are saved.
 
-void SettingsFrame::OnStartupUpdateChange(wxCommandEvent& event) {
-	do_startup_update_check = event.IsChecked();
-}
+	//General
+	do_startup_update_check = StartupUpdateCheckBox->IsChecked();
+	use_user_rules_editor = UseUserRuleEditorBox->IsChecked();
 
-void SettingsFrame::OnProxyTypeChange(wxCommandEvent& event) {
-	int i = event.GetInt();
+	//Network
+	int i = ProxyTypeBox->GetSelection();
 	if (i == 0)
 		proxy_type = "direct";
 	else if (i == 1)
@@ -169,36 +431,73 @@ void SettingsFrame::OnProxyTypeChange(wxCommandEvent& event) {
 		proxy_type = "socks5";
 	else if (i == 6)
 		proxy_type = "socks5h";
-	if (i == 0) {
+	proxy_host = ProxyHostBox->GetValue();
+	proxy_port = wxAtoi(ProxyPortBox->GetValue());
+
+	//Debugging
+	debug_verbosity = DebugVerbosityBox->GetSelection();
+	debug_with_source = DebugSourceReferencesBox->IsChecked();
+	log_debug_output = LogDebugOutputBox->IsChecked();
+
+	//Filters
+	UseDarkColourScheme = UseDarkColourSchemeBox->IsChecked();
+	HideVersionNumbers = HideVersionNumbersBox->IsChecked();
+	HideGhostedLabel = HideGhostedLabelBox->IsChecked();
+	HideChecksums = HideChecksumsBox->IsChecked();
+	HideMessagelessMods = HideMessagelessModsBox->IsChecked();
+	HideGhostedMods = HideGhostedModsBox->IsChecked();
+	HideCleanMods = HideCleanModsBox->IsChecked();
+	HideRuleWarnings = HideRuleWarningsBox->IsChecked();
+	HideAllModMessages = HideAllModMessagesBox->IsChecked();
+	HideNotes = HideNotesBox->IsChecked();
+	HideBashTagSuggestions = HideBashTagSuggestionsBox->IsChecked();
+	HideRequirements = HideRequirementsBox->IsChecked();
+	HideIncompatibilities = HideIncompatibilitiesBox->IsChecked();
+
+	//CSS
+	CSSBody = CSSBodyBox->GetValue();
+	CSSFilters = CSSFiltersBox->GetValue();
+	CSSFiltersList = CSSFiltersListBox->GetValue();
+	CSSTitle = CSSTitleBox->GetValue();
+	CSSCopyright = CSSCopyrightBox->GetValue();
+	CSSSections = CSSSectionsBox->GetValue();
+	CSSSectionTitle = CSSSectionTitleBox->GetValue();
+	CSSSectionPlusMinus = CSSSectionPlusMinusBox->GetValue();
+	CSSLastSection = CSSLastSectionBox->GetValue();
+	CSSTable = CSSTableBox->GetValue();
+	CSSList = CSSListBox->GetValue();
+	CSSListItem = CSSListItemBox->GetValue();
+	CSSSubList = CSSSubListBox->GetValue();
+	CSSCheckbox = CSSCheckboxBox->GetValue();
+	CSSBlockquote = CSSBlockquoteBox->GetValue();
+	CSSError = CSSErrorBox->GetValue();
+	CSSWarning = CSSWarningBox->GetValue();
+	CSSSuccess = CSSSuccessBox->GetValue();
+	CSSVersion = CSSVersionBox->GetValue();
+	CSSGhost = CSSGhostBox->GetValue();
+	CSSCRC = CSSCRCBox->GetValue();
+	CSSTagPrefix = CSSTagPrefixBox->GetValue();
+	CSSDirty = CSSDirtyBox->GetValue();
+	CSSQuotedMessage = CSSQuotedMessageBox->GetValue();
+	CSSMod = CSSModBox->GetValue();
+	CSSTag = CSSTagBox->GetValue();
+	CSSNote = CSSNoteBox->GetValue();
+	CSSRequirement = CSSRequirementBox->GetValue();
+	CSSIncompatibility = CSSIncompatibilityBox->GetValue();
+
+	this->Close();
+}
+
+void SettingsFrame::OnCancelQuit(wxCommandEvent& event) {
+	this->Close();
+}
+
+void SettingsFrame::OnProxyTypeChange(wxCommandEvent& event) {
+	if (event.GetInt() == 0) {
 		ProxyHostBox->Enable(false);
 		ProxyPortBox->Enable(false);
 	} else {
 		ProxyHostBox->Enable(true);
 		ProxyPortBox->Enable(true);
 	}
-}
-
-void SettingsFrame::OnProxyHostChange(wxCommandEvent& event) {
-	proxy_host = ProxyHostBox->GetValue();
-}
-
-void SettingsFrame::OnProxyPortChange(wxCommandEvent& event) {
-	proxy_port = wxAtoi(ProxyPortBox->GetValue());
-}
-
-
-void SettingsFrame::OnDebugVerbosityChange(wxCommandEvent& event) {
-	debug_verbosity = event.GetInt();
-}
-
-void SettingsFrame::OnDebugSourceRefsChange(wxCommandEvent& event) {
-	debug_with_source = event.IsChecked();
-}
-
-void SettingsFrame::OnDebugLoggingChange(wxCommandEvent& event) {
-	log_debug_output = event.IsChecked();
-}
-
-void SettingsFrame::OnEditorChange(wxCommandEvent& event) {
-	use_user_rules_editor = event.IsChecked();
 }

@@ -17,33 +17,75 @@
 #       include "wx/wx.h"
 #endif
 
+#include <wx/notebook.h>
+
 using namespace std;
 
 class SettingsFrame : public wxFrame {
 public:
-	SettingsFrame(const wxChar *title, wxFrame *parent, int x, int y, int width, int height);
-	void OnStartupUpdateChange(wxCommandEvent& event);
+	SettingsFrame(const wxChar *title, wxFrame *parent);
 	void OnProxyTypeChange(wxCommandEvent& event);
-	void OnProxyHostChange(wxCommandEvent& event);
-	void OnProxyPortChange(wxCommandEvent& event);
-	void OnDebugLoggingChange(wxCommandEvent& event);
-	void OnDebugVerbosityChange(wxCommandEvent& event);
-	void OnDebugSourceRefsChange(wxCommandEvent& event);
-	void OnEditorChange(wxCommandEvent& event);
-	void OnQuit(wxCommandEvent& event);
+	void OnOKQuit(wxCommandEvent& event);
+	void OnCancelQuit(wxCommandEvent& event);
+	void SetDefaultValues(wxString * ProxyTypes, wxString * DebugVerbosity);
 	DECLARE_EVENT_TABLE()
 private:
 	wxCheckBox *StartupUpdateCheckBox;
 	wxCheckBox *UseUserRuleEditorBox;
 	wxCheckBox *DebugSourceReferencesBox;
 	wxCheckBox *LogDebugOutputBox;
+	wxCheckBox *UseDarkColourSchemeBox;
+	wxCheckBox *HideVersionNumbersBox;
+	wxCheckBox *HideGhostedLabelBox;
+	wxCheckBox *HideChecksumsBox;
+	wxCheckBox *HideMessagelessModsBox;
+	wxCheckBox *HideGhostedModsBox;
+	wxCheckBox *HideCleanModsBox;
+	wxCheckBox *HideRuleWarningsBox;
+	wxCheckBox *HideAllModMessagesBox;
+	wxCheckBox *HideNotesBox;
+	wxCheckBox *HideBashTagSuggestionsBox;
+	wxCheckBox *HideRequirementsBox;
+	wxCheckBox *HideIncompatibilitiesBox;
 	wxComboBox *ProxyTypeBox;
 	wxComboBox *DebugVerbosityBox;
 	wxTextCtrl *ProxyHostBox;
 	wxTextCtrl *ProxyPortBox;
-	wxStaticText *ProxyTypeText;
-	wxStaticText *ProxyHostText;
-	wxStaticText *ProxyPortText;
+	wxTextCtrl *CSSBodyBox;
+	wxTextCtrl *CSSFiltersBox;
+	wxTextCtrl *CSSFiltersListBox;
+	wxTextCtrl *CSSTitleBox;
+	wxTextCtrl *CSSCopyrightBox;
+	wxTextCtrl *CSSSectionsBox;
+	wxTextCtrl *CSSSectionTitleBox;
+	wxTextCtrl *CSSSectionPlusMinusBox;
+	wxTextCtrl *CSSLastSectionBox;
+	wxTextCtrl *CSSTableBox;
+	wxTextCtrl *CSSListBox;
+	wxTextCtrl *CSSListItemBox;
+	wxTextCtrl *CSSSubListBox;
+	wxTextCtrl *CSSCheckboxBox;
+	wxTextCtrl *CSSBlockquoteBox;
+	wxTextCtrl *CSSErrorBox;
+	wxTextCtrl *CSSWarningBox;
+	wxTextCtrl *CSSSuccessBox;
+	wxTextCtrl *CSSVersionBox;
+	wxTextCtrl *CSSGhostBox;
+	wxTextCtrl *CSSCRCBox;
+	wxTextCtrl *CSSTagPrefixBox;
+	wxTextCtrl *CSSDirtyBox;
+	wxTextCtrl *CSSQuotedMessageBox;
+	wxTextCtrl *CSSModBox;
+	wxTextCtrl *CSSTagBox;
+	wxTextCtrl *CSSNoteBox;
+	wxTextCtrl *CSSRequirementBox;
+	wxTextCtrl *CSSIncompatibilityBox;
+	wxNotebook *TabHolder;
+	wxPanel *GeneralTab;
+	wxPanel *InternetTab;
+	wxPanel *DebugTab;
+	wxScrolledWindow *FiltersTab;
+	wxScrolledWindow *CSSTab;
 };
 
 #endif
