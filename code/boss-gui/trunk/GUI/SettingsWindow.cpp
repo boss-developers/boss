@@ -114,6 +114,7 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	FiltersTabSizer->Add(HideBashTagSuggestionsBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Bash Tag Suggestions")), BorderSizerFlags);
 	FiltersTabSizer->Add(HideRequirementsBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Requirements")), BorderSizerFlags);
 	FiltersTabSizer->Add(HideIncompatibilitiesBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Incompatibilities")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideDoNotCleanMessagesBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide 'Do Not Clean' Messages")), BorderSizerFlags);
 
 	FiltersTab->SetSizer(FiltersTabSizer);
 
@@ -370,6 +371,8 @@ void SettingsFrame::SetDefaultValues(wxString * ProxyTypes, wxString * DebugVerb
 		HideRequirementsBox->SetValue(true);
 	if (HideIncompatibilities)
 		HideIncompatibilitiesBox->SetValue(true);
+	if (HideDoNotCleanMessages)
+		HideDoNotCleanMessagesBox->SetValue(true);
 
 	//BOSS Log CSS Settings
 	CSSBodyBox->SetValue(CSSBody);
@@ -453,6 +456,7 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	HideBashTagSuggestions = HideBashTagSuggestionsBox->IsChecked();
 	HideRequirements = HideRequirementsBox->IsChecked();
 	HideIncompatibilities = HideIncompatibilitiesBox->IsChecked();
+	HideDoNotCleanMessages = HideDoNotCleanMessagesBox->IsChecked();
 
 	//CSS
 	CSSBody = CSSBodyBox->GetValue();

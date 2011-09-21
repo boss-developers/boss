@@ -41,6 +41,7 @@ namespace boss {
 	extern bool HideBashTagSuggestions;
 	extern bool HideRequirements;
 	extern bool HideIncompatibilities;
+	extern bool HideDoNotCleanMessages;
 
 	//Default CSS.
 	extern string CSSBody;

@@ -973,8 +973,9 @@ void MainFrame::Update(string updateVersion) {
 		}
 
 		wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Automatic Updater"),wxT("Initialising download..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
+		vector<string> fails;
 		try {
-			DownloadInstallBOSSUpdate(progDia, INSTALLER, updateVersion);
+			fails = DownloadInstallBOSSUpdate(progDia, INSTALLER, updateVersion);
 		} catch (boss_error e) {
 			progDia->Destroy();
 			CleanUp();
@@ -991,15 +992,24 @@ void MainFrame::Update(string updateVersion) {
 			wxMessageBox("Update failed. Details: " + detail + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		}
-		//Remind the user to run the uninstaller and installer.
-		wxMessageBox(wxT("New installer successfully downloaded!\n\nWhen you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 
-		//Now run downloaded installer then exit.
-		//Although there should only be one installer file, to be safe iterate through the files vector.
-		for (size_t i=0;i<updatedFiles.size();i++) {
-			if (updatedFiles[i].name.empty())  //Just in case.
-				continue;
-			wxLaunchDefaultApplication(updatedFiles[i].name);
+		if (!fails.empty()) {
+			message = "There were errors renaming the downloaded files. When you click 'OK', BOSS will exit. Once BOSS has exit, remove the \".new\" extension from the following file(s), deleting any existing files with the same names, then run the downloaded installer to complete the update:\n\n";
+			size_t size=fails.size();
+			for (size_t i=0;i<size;i++)
+				message += fails[i] +".new\n";
+			wxMessageBox(wxT("New installer successfully downloaded!\n\n"+message), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+		} else {
+			//Remind the user to run the uninstaller and installer.
+			wxMessageBox(wxT("New installer successfully downloaded!\n\nWhen you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+
+			//Now run downloaded installer then exit.
+			//Although there should only be one installer file, to be safe iterate through the files vector.
+			for (size_t i=0;i<updatedFiles.size();i++) {
+				if (updatedFiles[i].name.empty())  //Just in case.
+					continue;
+				wxLaunchDefaultApplication(updatedFiles[i].name);
+			}
 		}
 	} else {  //Manual.
 		wxString message = wxT("Your current install has been determined as having been installed manually.\n\n");
@@ -1013,8 +1023,9 @@ void MainFrame::Update(string updateVersion) {
 			return;
 		}
 		wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Automatic Updater"),wxT("Initialising download..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
+		vector<string> fails;
 		try {
-			DownloadInstallBOSSUpdate(progDia, MANUAL, updateVersion);
+			fails = DownloadInstallBOSSUpdate(progDia, MANUAL, updateVersion);
 		} catch (boss_error e) {
 			progDia->Destroy();
 			CleanUp();
@@ -1031,8 +1042,16 @@ void MainFrame::Update(string updateVersion) {
 			wxMessageBox("Update failed. Details: " + detail + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		}
-		//Remind the user to update BOSS GUI.exe
-		wxMessageBox(wxT("Files successfully updated!\n\nWhen you click 'OK' BOSS will exit. Once it has closed, you must manually delete your current \"BOSS GUI.exe\" and rename the downloaded \"BOSS GUI.exe.new\" to \"BOSS GUI.exe\" to complete the update."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+
+		if (!fails.empty()) {
+			message = "However, the following files could not be automatically installed. When you click 'OK', BOSS will exit. After BOSS exits, remove the \".new\" extension from the following file(s), deleting any existing files with the same names to complete the update:\n\n";
+			size_t size=fails.size();
+			for (size_t i=0;i<size;i++) {
+				message += fails[i] + ".new\n";
+			}
+			wxMessageBox(wxT("Files successfully downloaded!\n\n"+message), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+		} else
+			wxMessageBox(wxT("Files successfully updated!\n\nWhen you click 'OK', BOSS will exit."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 	}
 	this->Close();
 }

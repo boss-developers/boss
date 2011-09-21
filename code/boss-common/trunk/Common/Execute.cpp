@@ -661,6 +661,11 @@ namespace boss {
 			else
 				Output("<li><input type='checkbox' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label>");
 
+			if (HideDoNotCleanMessages)
+				Output("<li><input type='checkbox' checked='checked' id='b12' onclick='toggleDoNotClean(this,\"table\")' /><label for='b11'>Hide 'Do Not Clean' Messages</label>");
+			else
+				Output("<li><input type='checkbox' id='b12' onclick='toggleDoNotClean(this,\"table\")' /><label for='b11'>Hide 'Do Not Clean' Messages</label>");
+
 			Output("</ul>");
 		}
 

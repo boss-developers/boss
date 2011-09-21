@@ -47,6 +47,7 @@ private:
 	wxCheckBox *HideBashTagSuggestionsBox;
 	wxCheckBox *HideRequirementsBox;
 	wxCheckBox *HideIncompatibilitiesBox;
+	wxCheckBox *HideDoNotCleanMessagesBox;
 	wxComboBox *ProxyTypeBox;
 	wxComboBox *DebugVerbosityBox;
 	wxTextCtrl *ProxyHostBox;

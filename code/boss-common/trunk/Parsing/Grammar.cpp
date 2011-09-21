@@ -655,6 +655,8 @@ namespace boss {
 				HideRequirements = value;
 			else if (var == "bHideIncompatibilities")
 				HideIncompatibilities = value;
+			else if (var == "bHideDoNotCleanMessages")
+				HideDoNotCleanMessages = value;
 		}
 	}
 

@@ -290,18 +290,26 @@ int main(int argc, char *argv[]) {
 						} else if (answer == "y" || answer == "Y") {
 							try {
 								uiStruct ui;
-								DownloadInstallBOSSUpdate(ui, INSTALLER, updateVersion);
-								cout << endl << "New installer successfully downloaded!" << endl
-									<< "When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update." << endl << endl;
+								vector<string> fails = DownloadInstallBOSSUpdate(ui, INSTALLER, updateVersion);
+								cout << endl << "New installer successfully downloaded!" << endl;
+								if (!fails.empty()) {
+									cout << "There were errors renaming the downloaded files. After BOSS quits, remove the \".new\" extension from the following file(s), deleting any existing files with the same names, then run the downloaded installer to complete the update:" << endl << endl;
+									size_t size=fails.size();
+									for (size_t i=0;i<size;i++)
+										cout << fails[i] << ".new" << endl;
+								} else {
+									cout << "BOSS will now launch the downloaded installer and exit. Complete the installer to complete the update." << endl << endl;
 
-								//Now run downloaded installer then exit.
-								//Although there should only be one installer file, to be safe iterate through the files vector.
-								for (size_t i=0;i<updatedFiles.size();i++) {
-									if (updatedFiles[i].name.empty())  //Just in case.
-										continue;
-									Launch(updatedFiles[i].name);
+									//Now run downloaded installer then exit.
+									//Although there should only be one installer file, to be safe iterate through the files vector.
+									for (size_t i=0;i<updatedFiles.size();i++) {
+										if (updatedFiles[i].name.empty())  //Just in case.
+											continue;
+										else if (fs::exists(updatedFiles[i].name))
+											Launch(updatedFiles[i].name);
+									}
 								}
-								exit (0);
+								Fail();
 							} catch (boss_error e) {
 								CleanUp();
 								const string detail = *boost::get_error_info<err_detail>(e);
@@ -336,18 +344,20 @@ int main(int argc, char *argv[]) {
 						} else if (answer == "y" || answer == "Y") {
 							try {
 								uiStruct ui;
-								DownloadInstallBOSSUpdate(ui, MANUAL, updateVersion);
-								cout << endl << "Files successfully updated!" << endl
-									<< "When you click 'OK' BOSS will exit. Once it has closed, you must manually delete your current \"BOSS GUI.exe\" and rename the downloaded \"BOSS GUI.exe.new\" to \"BOSS GUI.exe\" to complete the update." << endl << endl;
+								vector<string> fails = DownloadInstallBOSSUpdate(ui, MANUAL, updateVersion);
+								
+								if (!fails.empty()) {
+									cout << endl << "Files successfully downloaded!" << endl
+										<< "However, the following files could not be automatically installed. After BOSS quits, remove the \".new\" extension from the following file(s), deleting any existing files with the same names to complete the update:" << endl << endl;
+									size_t size=fails.size();
+									for (size_t i=0;i<size;i++) {
+										cout << fails[i] << ".new" << endl;
+									}
+								} else
+									cout << endl << "Files successfully updated!" << endl
+										<< "BOSS will now exit." << endl << endl;
 
-								//Now run downloaded installer then exit.
-								//Although there should only be one installer file, to be safe iterate through the files vector.
-								for (size_t i=0;i<updatedFiles.size();i++) {
-									if (updatedFiles[i].name.empty())  //Just in case.
-										continue;
-									Launch(updatedFiles[i].name);
-								}
-								exit (0);
+								Fail();
 							} catch (boss_error e) {
 								CleanUp();
 								const string detail = *boost::get_error_info<err_detail>(e);

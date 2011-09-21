@@ -235,6 +235,7 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 		<tr><td>Hide Bash Tag Suggestions<td>Hides any Bash Tag suggestions attached to mods.
 		<tr><td>Hide Requirements<td>Hides any messages attached to mods that have the <q>Requires: </q> prefix.
 		<tr><td>Hide Incompatibilities<td>Hides any messages attached to mods that have the <q>Incompatible with: </q> prefix.
+		<tr><td>Hide 'Do Not Clean' Messages<td>Hides any messages attached to mods that begin with <q>Contains dirty edits: Do not clean.</q>.
 </table>
 <p>In addition to the above filters, clicking on a section's title will collapse that section, hiding its contents. Clicking the title again will expand the section, making its contents visible again.
 <p>It is not possible to hide mod warning or error messages, as these are of a severity where they should almost certainly be acted upon, and not ignored. Be aware that if you hide all a mod's messages and then hide all messageless mods, that mod will be amongst those hidden.</p>
@@ -342,6 +343,7 @@ as well as edit the output messages of plugins, and more. In addition, this is a
 		<tr><td>bHideBashTagSuggestions<td>Controls the state of the <q>Hide Bash Tag Suggestions</q> filter.
 		<tr><td>bHideRequirements<td>Controls the state of the <q>Hide Requirements</q> filter.
 		<tr><td>bHideIncompatibilities<td>Controls the state of the <q>Hide Incompatibilities</q> filter.
+		<tr><td>bHideDoNotCleanMessages<td>Controls the state of the <q>Hide 'Do Not Clean' Messages</q> filter.
 </table>
 <h4>BOSSLog.Styles</h4>
 <p>These settings control the BOSS Log's CSS styles, used to provide the formatting for the BOSS Log. A knowledge of CSS is expected if you wish to alter these settings. If you do not possess such knowledge, altering these settings is not recommended.</p>
@@ -839,7 +841,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 		<li>Added <q>bUseUserRulesEditor</q> setting to <q>BOSS.GeneralSettings</q> to control how to the GUI chooses to edit user rules.
 		<li>Default values for the <q>BOSSLog.Styles</q> settings are now given, and values are no longer enclosed in {} brackets.
 	</ul>
-	<li>Added: <q>Hide Clean Mods</q> BOSS Log filter.
+	<li>Added: <q>Hide Clean Mods</q> and <q>Hide 'Do Not Clean' Messages</q> BOSS Log filters.
 	<li>Added: Support for Skyrim:
 	<ul>
 		<li>This assumes Skyrim's master file will be <q>Skyrim.esm</q> and that the executable will be <q>Skyrim.exe</q>. If different, BOSS will be updated upon Skyrim's release with the real filenames.

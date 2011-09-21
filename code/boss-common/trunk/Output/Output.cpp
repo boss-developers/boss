@@ -34,6 +34,7 @@ namespace boss {
 	bool HideBashTagSuggestions = false;
 	bool HideRequirements       = false;
 	bool HideIncompatibilities  = false;
+	bool HideDoNotCleanMessages	= false;
 
 	//Default CSS.
 	string CSSBody				= "font-family:Calibri,Arial,sans-serifs;";
@@ -235,6 +236,8 @@ namespace boss {
 			}
 		}
 		bosslog << text;
+		if (log_format == "html")
+			bosslog << endl;
 	}
 	
 	//Escapes HTML special characters.
@@ -276,7 +279,11 @@ namespace boss {
 				<< "}else if(a[j].currentStyle){b=a[j].currentStyle.display}if(p!='none'&&b!='none'){n=false}}}"
 				<< "if((document.getElementById('noMessageModFilter').checked&&n)||"
 				<< "(document.getElementById('ghostModFilter').checked&&g)||(document.getElementById('cleanModFilter').checked&&c))"
-				<< "{m[i].style.display='none'}else{m[i].style.display='block'}}}}"<<endl
+				<< "{m[i].style.display='none'}else{m[i].style.display='block'}}}}function toggleDoNotClean(b,s){"
+				<< "var m=document.getElementById('recognised').childNodes;for(var i=0,z=m.length;i<z;i++){if(m[i].nodeType==1){"
+				<< "var a=m[i].getElementsByTagName('li');for(var j=0,y=a.length;j<y;j++){if(a[j].className=='dirty'){"
+				<< "if(a[j].firstChild.nodeType==3){if(a[j].firstChild.nodeValue.toString().substr(0,35)=='Contains dirty edits: "
+				<< "Do not clean.'){if(b.checked){a[j].style.display='none'}else{a[j].style.display=s}}}}}}}}"<<endl
 				<< "function initialSetup() {"<<endl
 				<< "	swapColorScheme(document.getElementById('b1'));"<<endl
 				<< "	toggleUserlistWarnings(document.getElementById('b12'));"<<endl
@@ -376,7 +383,8 @@ namespace boss {
 			<<	"bHideNotes               = " << BoolToString(HideNotes) << endl
 			<<	"bHideBashTagSuggestions  = " << BoolToString(HideBashTagSuggestions) << endl
 			<<	"bHideRequirements        = " << BoolToString(HideRequirements) << endl
-			<<	"bHideIncompatibilities   = " << BoolToString(HideIncompatibilities) << endl << endl
+			<<	"bHideIncompatibilities   = " << BoolToString(HideIncompatibilities) << endl
+			<<	"bHideDoNotCleanMessages  = " << BoolToString(HideDoNotCleanMessages) << endl << endl
 
 			<<	"[BOSSLog.Styles]" << endl
 			<<	"# A style with nothing specified uses the coded defaults." << endl
