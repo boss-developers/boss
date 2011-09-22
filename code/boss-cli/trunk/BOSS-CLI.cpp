@@ -316,7 +316,7 @@ int main(int argc, char *argv[]) {
 									LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
 									Fail();
 								}
-								if (e.getString() == "Cancelled by user.") {
+								if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL) {
 									cout << "Update cancelled." << endl;
 									LOG_DEBUG("Update cancelled.");
 								} else {
@@ -373,7 +373,7 @@ int main(int argc, char *argv[]) {
 									LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
 									Fail();
 								}
-								if (e.getString() == "Cancelled by user.") {
+								if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL) {
 									cout << "Update cancelled." << endl;
 									LOG_DEBUG("Update cancelled.");
 								} else {

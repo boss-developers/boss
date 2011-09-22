@@ -22,7 +22,8 @@ namespace boss {
 		BOSS_ERROR_OK,
 		BOSS_ERROR_OBLIVION_AND_NEHRIM,
 		BOSS_ERROR_NO_MASTER_FILE,
-		BOSS_ERROR_FILE_OPEN_FAIL,
+		BOSS_ERROR_FILE_READ_FAIL,
+		BOSS_ERROR_FILE_WRITE_FAIL,
 		BOSS_ERROR_FILE_NOT_UTF8,
 		BOSS_ERROR_MASTERLIST_NOT_FOUND,
 		BOSS_ERROR_NO_GAME_DETECTED,
@@ -83,8 +84,10 @@ namespace boss {
 				return "Oblivion.esm and Nehrim.esm both detected!";
 			case BOSS_ERROR_NO_MASTER_FILE:
 				return "No game master .esm file found!"; 
-			case BOSS_ERROR_FILE_OPEN_FAIL:
-				return "\"" + errSubject + "\" cannot be opened!"; 
+			case BOSS_ERROR_FILE_READ_FAIL:
+				return "\"" + errSubject + "\" cannot be read!"; 
+			case BOSS_ERROR_FILE_WRITE_FAIL:
+				return "\"" + errSubject + "\" cannot be written to!"; 
 			case BOSS_ERROR_FILE_NOT_UTF8:
 				return "\"" + errSubject + "\" is not encoded in valid UTF-8!"; 
 			case BOSS_ERROR_MASTERLIST_NOT_FOUND:
@@ -124,6 +127,9 @@ namespace boss {
 			default:
 				return "No error.";
 			}
+		}
+		bossErrCode getCode() {
+			return errCode;
 		}
 	private:
 		bossErrCode errCode;

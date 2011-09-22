@@ -970,7 +970,7 @@ void MainFrame::Update(string updateVersion) {
 				wxMessageBox("Update failed. Details: " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 				return;
 			}
-			if (e.getString() == "Cancelled by user.")
+			if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL)
 				wxMessageBox(wxT("Update cancelled."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 			else
 				wxMessageBox("Update failed. Details: " + e.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
@@ -1031,7 +1031,7 @@ void MainFrame::Update(string updateVersion) {
 				wxMessageBox("Update failed. Details: " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 				return;
 			}
-			if (e.getString() == "Cancelled by user.")
+			if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL)
 				wxMessageBox(wxT("Update cancelled."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 			else
 				wxMessageBox("Update failed. Details: " + e.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);

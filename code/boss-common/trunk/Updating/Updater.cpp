@@ -249,7 +249,7 @@ namespace boss {
 				ofile.open(path.c_str(),ios_base::binary|ios_base::trunc);
 			if (ofile.fail()) {
 				curl_easy_cleanup(curl);
-				throw boss_error(BOSS_ERROR_FILE_OPEN_FAIL, path);
+				throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, path);
 			}
 
 			remote_file = filesURL + updatedFiles[i].name;
@@ -338,7 +338,7 @@ namespace boss {
 		if (fs::exists(masterlist_path)) {
 			mlist.open(masterlist_path.c_str());
 			if (mlist.fail())
-				throw boss_error(BOSS_ERROR_FILE_OPEN_FAIL, masterlist_path.string());
+				throw boss_error(BOSS_ERROR_FILE_READ_FAIL, masterlist_path.string());
 			while (!mlist.eof()) {
 				mlist.getline(cbuffer,4096);
 				line=cbuffer;
@@ -524,7 +524,7 @@ namespace boss {
 
 			out.open(masterlist_path.c_str());
 			if (out.fail())
-				throw boss_error(BOSS_ERROR_FILE_OPEN_FAIL, masterlist_path.string());
+				throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, masterlist_path.string());
 			out << buffer;
 			out.close();
 		}

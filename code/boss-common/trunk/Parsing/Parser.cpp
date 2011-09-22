@@ -33,7 +33,7 @@ namespace boss {
 			if (!userlist_file.fail())
 				userlist_file << '\xEF' << '\xBB' << '\xBF';  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
 			else
-				throw boss_error(BOSS_ERROR_FILE_OPEN_FAIL, file.string());
+				throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 			userlist_file.close();
 			return true;
 		}

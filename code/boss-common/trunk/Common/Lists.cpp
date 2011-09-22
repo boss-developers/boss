@@ -104,7 +104,7 @@ namespace boss {
 		ofile.open(file.c_str());
 		if (ofile.fail()) {  //Provide error message if it can't be written.
 			LOG_ERROR("Backup cannot be saved.");
-			throw boss_error(BOSS_ERROR_FILE_OPEN_FAIL, file.string());
+			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 		}
 
 		//Iterate through items, printing out all group markers, mods and messsages.
