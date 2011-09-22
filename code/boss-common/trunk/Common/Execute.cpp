@@ -63,7 +63,7 @@ namespace boss {
 	void GetGame() {
 		if (fs::exists(data_path / "Oblivion.esm")) {
 			if (fs::exists(data_path / "Nehrim.esm"))
-				throw boss_error() << err_detail("Oblivion.esm and Nehrim.esm both detected!");
+				throw boss_error(BOSS_ERROR_OBLIVION_AND_NEHRIM);
 			game = 1;
 		} else if (fs::exists(data_path / "Nehrim.esm")) 
    game = 3;
@@ -74,7 +74,7 @@ namespace boss {
 		else if (fs::exists(data_path / "Skyrim.esm")) 
    game = 5;
 		else {
-			throw boss_error() << err_detail("No game master .esm file found!");
+			throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
 		}
 	}
 
@@ -108,10 +108,26 @@ namespace boss {
 			else if (game == 5) 
 				return fs::last_write_time(data_path / "Skyrim.esm");
 			else
-				throw boss_error() << err_detail("No game master .esm file found!");
+				throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
 		} catch(fs::filesystem_error e) {
-			throw boss_error() << err_detail("Game master .esm file cannot be read!");
+			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, GameMasterFile(), e.what());
 		}
+	}
+
+	//Returns the expeccted master file.
+	string GameMasterFile() {
+		if (game == 1) 
+			return "Oblivion.esm";
+		else if (game == 2) 
+			return "Fallout3.esm";
+		else if (game == 3) 
+			return "Nehrim.esm";
+		else if (game == 4) 
+			return "FalloutNV.esm";
+		else if (game == 5) 
+			return "Skyrim.esm";
+		else
+			return "Game Not Detected";
 	}
 
 	//Create a modlist containing all the mods that are installed or referenced in the userlist with their masterlist messages.

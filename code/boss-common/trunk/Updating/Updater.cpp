@@ -129,30 +129,30 @@ namespace boss {
 
 		curl = curl_easy_init();
 		if (!curl)
-			throw boss_error() << err_detail("Curl could not be initialised.");
+			throw boss_error(BOSS_ERROR_CURL_INIT_FAIL);
 
 		ret = curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
 		if (ret != CURLE_OK) {
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail("Could not set error buffer.");
+			throw boss_error(BOSS_ERROR_CURL_SET_ERRBUFF_FAIL);
 		}
 		ret = curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
 		if (ret != CURLE_OK) {
 			string err = errbuff;
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail(err);
+			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
 		}
 		ret = curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
 		if (ret != CURLE_OK) {
 			string err = errbuff;
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail(err);
+			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
 		}
 		ret = curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 		if (ret != CURLE_OK) {
 			string err = errbuff;
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail(err);
+			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
 		}
 
 		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != 0) {
@@ -160,8 +160,9 @@ namespace boss {
 			proxy_str = proxy_host + ":" + IntToString(proxy_port);
 			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
 			if (ret!=CURLE_OK) {
+				string err = errbuff;
 				curl_easy_cleanup(curl);
-				throw boss_error() << err_detail("Invalid proxy hostname or port specified.");
+				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_FAIL);
 			}
 
 			if (proxy_type == "http")
@@ -178,12 +179,12 @@ namespace boss {
 				ret = curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
 			else {
 				curl_easy_cleanup(curl);
-				throw boss_error() << err_detail("Invalid proxy type specified.");
+				throw boss_error(BOSS_ERROR_INVALID_PROXY_TYPE, proxy_type);
 			}
 			if (ret != CURLE_OK) {
 				string err = errbuff;
 				curl_easy_cleanup(curl);
-				throw boss_error() << err_detail(err);
+				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL);
 			}
 		}
 
@@ -209,7 +210,7 @@ namespace boss {
 		if (ret!=CURLE_OK) {
 			string err = errbuff;
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail(err);
+			throw boss_error(err,BOSS_ERROR_CURL_PERFORM_FAIL);
 		} else {
 			//Clean up and close curl handle now that it's finished with.
 			curl_easy_cleanup(curl);
@@ -248,7 +249,7 @@ namespace boss {
 				ofile.open(path.c_str(),ios_base::binary|ios_base::trunc);
 			if (ofile.fail()) {
 				curl_easy_cleanup(curl);
-				throw boss_error() << err_detail("Could not save \""+path+"\"");
+				throw boss_error(BOSS_ERROR_FILE_OPEN_FAIL, path);
 			}
 
 			remote_file = filesURL + updatedFiles[i].name;
@@ -266,18 +267,18 @@ namespace boss {
 			if (ret == CURLE_ABORTED_BY_CALLBACK) {
 				//Cancelled by user.
 				curl_easy_cleanup(curl);
-				throw boss_error() << err_detail("Cancelled by user.");
+				throw boss_error(BOSS_ERROR_CURL_USER_CANCEL);
 			} else if (ret!=CURLE_OK) {
 				string err = errbuff;
 				curl_easy_cleanup(curl);
-				throw boss_error() << err_detail(err);
+				throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
 			}
 			ofile << fileBuffer;
 			ofile.close();
 
 			//Now verify file integrity, but only if a program update, masterlist updates don't get CRCs calculated.
 			if ((updateType == MANUAL || updateType == INSTALLER) && GetCrc32(fs::path(path)) != updatedFiles[i].crc)
-				throw boss_error() << err_detail("Downloaded file \""+updatedFiles[i].name+"\" failed verification test. Please try updating again.");
+				throw boss_error(BOSS_ERROR_FILE_CRC_MISMATCH, updatedFiles[i].name);
 		}
 		curl_easy_cleanup(curl);
 	}
@@ -317,7 +318,7 @@ namespace boss {
 				if (fs::exists(file))
 					fs::remove(file);
 			} catch (fs::filesystem_error e) {
-				throw boss_error() << err_detail("Cannot delete downloaded file \"" + file + "\" as part of clean-up.");
+				throw boss_error(BOSS_ERROR_FS_FILE_DELETE_FAIL, file);
 			}
 		}
 	}
@@ -337,7 +338,7 @@ namespace boss {
 		if (fs::exists(masterlist_path)) {
 			mlist.open(masterlist_path.c_str());
 			if (mlist.fail())
-				throw boss_error() << err_detail("Masterlist cannot be opened.");
+				throw boss_error(BOSS_ERROR_FILE_OPEN_FAIL, masterlist_path.string());
 			while (!mlist.eof()) {
 				mlist.getline(cbuffer,4096);
 				line=cbuffer;
@@ -380,8 +381,9 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer );
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
+			string err = errbuff;
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail(errbuff);
+			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
 		}
 		
 		//Extract revision number from page text.
@@ -392,26 +394,26 @@ namespace boss {
 		else if (game == 5) start = buffer.find("boss-skyrim");
 		else {
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail("None of the supported games were detected.");
+			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 		}
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
+			throw boss_error(BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL);
 		}
 		start = buffer.find("\"masterlist.txt\"", start);
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
+			throw boss_error(BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL);
 		}
 		start = buffer.find("B\",\"", start) + 4; 
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
+			throw boss_error(BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL);
 		}
 		end = buffer.find("\"",start) - start;
 		if (end == string::npos) {
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail("Cannot find online masterlist revision number.");
+			throw boss_error(BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL);
 		}
 		revision = atoi(buffer.substr(start,end).c_str());
 
@@ -423,12 +425,12 @@ namespace boss {
 		else if (game == 4) start = buffer.find("boss-skyrim");
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail("Cannot find online masterlist revision date.");
+			throw boss_error(BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL);
 		}
 		start = buffer.find("\"masterlist.txt\"", start) + 1;
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail("Cannot find online masterlist revision date.");
+			throw boss_error(BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL);
 		}
 		//There are 5 quote marks between the m in masterlist.txt and quote mark at the start of the date. 
 		//Run through them and record the sixth.
@@ -436,14 +438,14 @@ namespace boss {
 			start = buffer.find("\"", start+1); 
 			if (start == string::npos) {
 				curl_easy_cleanup(curl);
-				throw boss_error() << err_detail("Cannot find online masterlist revision date.");
+			throw boss_error(BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL);
 			}
 		}  
 		//Now start is the first character of the date string.
 		end = buffer.find("\"",start+1);  //end is the position of the first character after the date string.
 		if (end == string::npos) {
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail("Cannot find online masterlist revision date.");
+			throw boss_error(BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL);
 		}
 		date = buffer.substr(start+1,end - (start+1));  //Date string recorded.
 		buffer.clear();
@@ -522,7 +524,7 @@ namespace boss {
 
 			out.open(masterlist_path.c_str());
 			if (out.fail())
-				throw boss_error() << err_detail("Masterlist cannot be opened.");
+				throw boss_error(BOSS_ERROR_FILE_OPEN_FAIL, masterlist_path.string());
 			out << buffer;
 			out.close();
 		}
@@ -556,9 +558,11 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
+			string err = errbuff;
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail(errbuff);
+			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
 		}
+		curl_easy_cleanup(curl);
 
 		//Need to reset updatedFiles because it might have been set already if the updater was run then cancelled.
 		updatedFiles.clear();
@@ -569,8 +573,7 @@ namespace boss {
 			(('"' >> qi::lexeme[+(unicode::char_ - '"')] >> '"' >> qi::lit(":") >> qi::hex - qi::eol) | qi::eoi) % qi::eol,
 			unicode::space - qi::eol, updatedFiles);
 		if (!p || start != end) {
-			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail("Could not read remote file information.");
+			throw boss_error(BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL);
 		}
 	}
 
@@ -591,8 +594,9 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &remoteVersionStr);
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
+			string err = errbuff;
 			curl_easy_cleanup(curl);
-			throw boss_error() << err_detail(errbuff);
+			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
 		}
 
 		//Now compare versions.

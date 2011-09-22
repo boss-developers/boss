@@ -1,24 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="UserRuleManager.cpp">
-      <Filter>GUI</Filter>
-    </ClCompile>
     <ClCompile Include="MainWindow.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="SettingsWindow.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
+    <ClCompile Include="UserRuleEditor.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="UserRuleManager.h">
-      <Filter>GUI</Filter>
-    </ClInclude>
     <ClInclude Include="MainWindow.h">
       <Filter>GUI</Filter>
     </ClInclude>
     <ClInclude Include="SettingsWindow.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="UserRuleEditor.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ElementIDs.h">
       <Filter>GUI</Filter>
     </ClInclude>
   </ItemGroup>

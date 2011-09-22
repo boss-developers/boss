@@ -255,8 +255,7 @@ int main(int argc, char *argv[]) {
 	try {
 		connection = CheckConnection();
 	} catch (boss_error e) {
-		const string detail = *boost::get_error_info<err_detail>(e);
-		LOG_ERROR("Update check failed. Details: '%s'", detail.c_str());
+		LOG_ERROR("Update check failed. Details: '%s'", e.getString().c_str());
 		Fail();
 	}
 	if (connection) {
@@ -311,17 +310,26 @@ int main(int argc, char *argv[]) {
 								}
 								Fail();
 							} catch (boss_error e) {
-								CleanUp();
-								const string detail = *boost::get_error_info<err_detail>(e);
-								if (detail == "Cancelled by user.") {
+								try {
+									CleanUp();
+								} catch (boss_error ee) {
+									LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
+									Fail();
+								}
+								if (e.getString() == "Cancelled by user.") {
 									cout << "Update cancelled." << endl;
 									LOG_DEBUG("Update cancelled.");
 								} else {
-									LOG_ERROR("Update failed. Details: '%s'", detail.c_str());
+									LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
 									Fail();
 								}
 							} catch (fs::filesystem_error e) {
-								CleanUp();
+								try {
+									CleanUp();
+								} catch (boss_error ee) {
+									LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
+									Fail();
+								}
 								string detail = e.what();
 								LOG_ERROR("Update failed. Details: '%s'", detail.c_str());
 								Fail();
@@ -359,17 +367,26 @@ int main(int argc, char *argv[]) {
 
 								Fail();
 							} catch (boss_error e) {
-								CleanUp();
-								const string detail = *boost::get_error_info<err_detail>(e);
-								if (detail == "Cancelled by user.") {
+								try {
+									CleanUp();
+								} catch (boss_error ee) {
+									LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
+									Fail();
+								}
+								if (e.getString() == "Cancelled by user.") {
 									cout << "Update cancelled." << endl;
 									LOG_DEBUG("Update cancelled.");
 								} else {
-									LOG_ERROR("Update failed. Details: '%s'", detail.c_str());
+									LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
 									Fail();
 								}
 							} catch (fs::filesystem_error e) {
-								CleanUp();
+								try {
+									CleanUp();
+								} catch (boss_error ee) {
+									LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
+									Fail();
+								}
 								string detail = e.what();
 								LOG_ERROR("Update failed. Details: '%s'", detail.c_str());
 								Fail();
@@ -385,8 +402,7 @@ int main(int argc, char *argv[]) {
 				}
 			}
 		} catch (boss_error e) {
-			const string detail = *boost::get_error_info<err_detail>(e);
-			LOG_ERROR("BOSS Update check failed. Details: '%s'", detail.c_str());
+			LOG_ERROR("BOSS Update check failed. Details: '%s'", e.getString().c_str());
 		}
 	} else {
 		LOG_DEBUG("BOSS Update check failed. No Internet connection detected.");
@@ -442,10 +458,9 @@ int main(int argc, char *argv[]) {
 		try {
 			GetGame();
 		} catch (boss_error e) {
-			const string detail = *boost::get_error_info<err_detail>(e);
-			LOG_ERROR("Critical Error: %s", detail);
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 			OutputHeader();
-			Output("<p class='error'>Critical Error: " + detail + "<br />");
+			Output("<p class='error'>Critical Error: " + e.getString() + "<br />");
 			Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
 			Output("Utility will end now.");
 			OutputFooter();
@@ -468,11 +483,10 @@ int main(int argc, char *argv[]) {
 		try {
 			connection = CheckConnection();
 		} catch (boss_error e) {
-			const string detail = *boost::get_error_info<err_detail>(e);
 			contents.updaterErrors += "<li class='warn'>Error: Masterlist update failed.<br />";
-			contents.updaterErrors += "Details: " + EscapeHTMLSpecial(detail) + "<br />";
+			contents.updaterErrors += "Details: " + EscapeHTMLSpecial(e.getString()) + "<br />";
 			contents.updaterErrors += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
-			LOG_ERROR("Error: Masterlist update failed. Details: %s", detail);
+			LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
 		}
 		if (connection) {
 			cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
@@ -492,11 +506,10 @@ int main(int argc, char *argv[]) {
 					LOG_DEBUG("Masterlist updated successfully.");
 				}
 			} catch (boss_error e) {
-				const string detail = *boost::get_error_info<err_detail>(e);
 				contents.updaterErrors += "<li class='warn'>Error: Masterlist update failed.<br />";
-				contents.updaterErrors += "Details: " + EscapeHTMLSpecial(detail) + "<br />";
+				contents.updaterErrors += "Details: " + EscapeHTMLSpecial(e.getString()) + "<br />";
 				contents.updaterErrors += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
-				LOG_ERROR("Error: Masterlist update failed. Details: %s", detail);
+				LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
 			}
 		} else
 			contents.summary += "<p>No internet connection detected. Masterlist auto-updater aborted.";
@@ -533,14 +546,13 @@ int main(int argc, char *argv[]) {
 	try {
 		esmtime = GetMasterTime();
 	} catch(boss_error e) {
-		const string detail = *boost::get_error_info<err_detail>(e);
 		OutputHeader();
-		Output("<p class='error'>Critical Error: " + detail + "<br />");
+		Output("<p class='error'>Critical Error: " + e.getString() + "<br />");
 		Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
 		Output("Utility will end now.");
 		OutputFooter();
 		bosslog.close();
-		LOG_ERROR("Failed to set modification time of game master file, error was: %s", detail);
+		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
 		if ( !silent ) 
 			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
@@ -552,10 +564,9 @@ int main(int argc, char *argv[]) {
 		try {
 			SaveModlist(Modlist, curr_modlist_path);
 		} catch (boss_error e) {
-			const string detail = *boost::get_error_info<err_detail>(e);
 			OutputHeader();
 			Output("<p class='error'>Critical Error: Modlist backup failed!<br />");
-			Output("Details: " + EscapeHTMLSpecial(detail) + ".<br />");
+			Output("Details: " + EscapeHTMLSpecial(e.getString()) + ".<br />");
 			Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
 			Output("Utility will end now.");
 			OutputFooter();
@@ -577,9 +588,8 @@ int main(int argc, char *argv[]) {
 	try {
 		parseMasterlist(sortfile,Masterlist);
 	} catch (boss_error e) {
-		const string detail = *boost::get_error_info<err_detail>(e);
 		OutputHeader();
-		Output("<p class='error'>Critical Error: " +EscapeHTMLSpecial(detail) +"<br />");
+		Output("<p class='error'>Critical Error: " +EscapeHTMLSpecial(e.getString()) +"<br />");
 		Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
 		Output("Utility will end now.");
 		OutputFooter();
@@ -609,9 +619,8 @@ int main(int argc, char *argv[]) {
 		if (!parsed)
 			Userlist.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 	} catch (boss_error e) {
-		const string detail = *boost::get_error_info<err_detail>(e);
-		userlistErrorBuffer.push_back("<p class='error'>Error: "+detail+" Userlist parsing aborted. No rules will be applied.");
-		LOG_ERROR("Error: %s", detail);
+		userlistErrorBuffer.push_back("<p class='error'>Error: "+e.getString()+" Userlist parsing aborted. No rules will be applied.");
+		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
 
 

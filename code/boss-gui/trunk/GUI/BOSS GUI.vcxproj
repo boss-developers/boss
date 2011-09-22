@@ -85,12 +85,13 @@
   <ItemGroup>
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="SettingsWindow.cpp" />
-    <ClCompile Include="UserRuleManager.cpp" />
+    <ClCompile Include="UserRuleEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ElementIDs.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="SettingsWindow.h" />
-    <ClInclude Include="UserRuleManager.h" />
+    <ClInclude Include="UserRuleEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BOSS.ico" />

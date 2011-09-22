@@ -9,8 +9,6 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-
-#include <boost/exception/get_error_info.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 #include <boost/exception/get_error_info.hpp>
@@ -19,7 +17,6 @@
 #include <clocale>
 #include <cstdlib>
 #include <ctime>
-#include <string>
 #include <iostream>
 #include <algorithm>
 
@@ -27,10 +24,9 @@
 
 #include "GUI/MainWindow.h"
 #include "GUI/SettingsWindow.h"
+#include "GUI/UserRuleEditor.h"
+#include "ElementIDs.h"
 #include "BOSS-Common.h"
-#include <string>
-
-#include <wx/progdlg.h>
 
 BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_IDLE( MainFrame::CheckForUpdate )
@@ -97,9 +93,9 @@ bool BossGUI::OnInit() {
 
 	try {
 		GetGame();
-	} catch (boss_error) {
+	} catch (boss_error e) {
 		wxMessageBox(wxString::Format(
-				wxT("Error: Game autodetection failed! No master .esm file found. ")
+				wxT("Error: Game autodetection failed! " + e.getString())
 			),
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
@@ -417,10 +413,9 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		try {
 			GetGame();
 		} catch (boss_error e) {
-			const string detail = *boost::get_error_info<err_detail>(e);
-			LOG_ERROR("Critical Error: %s", detail);
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 			OutputHeader();
-			Output("<p class='error'>Critical Error: " + detail + "<br />");
+			Output("<p class='error'>Critical Error: " + e.getString() + "<br />");
 			Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
 			Output("Utility will end now.");
 			OutputFooter();
@@ -450,11 +445,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		try {
 			connection = CheckConnection();
 		} catch (boss_error e) {
-			const string detail = *boost::get_error_info<err_detail>(e);
 			contents.updaterErrors += "<li class='warn'>Error: Masterlist update failed.<br />";
-			contents.updaterErrors += "Details: " + EscapeHTMLSpecial(detail) + "<br />";
+			contents.updaterErrors += "Details: " + EscapeHTMLSpecial(e.getString()) + "<br />";
 			contents.updaterErrors += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
-			LOG_ERROR("Error: Masterlist update failed. Details: %s", detail);
+			LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
 		}
 		if (connection) {
 			progDia->Update(0,wxT("Updating to the latest masterlist from the Google Code repository..."));
@@ -474,11 +468,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 					LOG_DEBUG("Masterlist updated successfully.");
 				}
 			} catch (boss_error e) {
-				const string detail = *boost::get_error_info<err_detail>(e);
 				contents.updaterErrors += "<li class='warn'>Error: Masterlist update failed.<br />";
-				contents.updaterErrors += "Details: " + EscapeHTMLSpecial(detail) + "<br />";
+				contents.updaterErrors += "Details: " + EscapeHTMLSpecial(e.getString()) + "<br />";
 				contents.updaterErrors += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
-				LOG_ERROR("Error: Masterlist update failed. Details: %s", detail);
+				LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
 			}
 		} else
 			contents.summary += "<p>No internet connection detected. Masterlist auto-updater aborted.";
@@ -518,15 +511,14 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	//Get the master esm's modification date. 
 	try {
 		esmtime = GetMasterTime();
-	} catch(boss_error e) {
-		const string detail = *boost::get_error_info<err_detail>(e);
+	} catch (boss_error e) {
 		OutputHeader();
-		Output("<p class='error'>Critical Error: " + detail + "<br />");
+		Output("<p class='error'>Critical Error: " + e.getString() + "<br />");
 		Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
 		Output("Utility will end now.");
 		OutputFooter();
 		bosslog.close();
-		LOG_ERROR("Failed to set modification time of game master file, error was: %s", detail);
+		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
 		if ( !silent ) 
 			wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
 		progDia->Destroy();
@@ -539,10 +531,9 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		try {
 			SaveModlist(Modlist, curr_modlist_path);
 		} catch (boss_error e) {
-			const string detail = *boost::get_error_info<err_detail>(e);
 			OutputHeader();
 			Output("<p class='error'>Critical Error: Modlist backup failed!<br />");
-			Output("Details: " + EscapeHTMLSpecial(detail) + ".<br />");
+			Output("Details: " + EscapeHTMLSpecial(e.getString()) + ".<br />");
 			Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
 			Output("Utility will end now.");
 			OutputFooter();
@@ -570,9 +561,8 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	try {
 		parseMasterlist(sortfile,Masterlist);
 	} catch (boss_error e) {
-		const string detail = *boost::get_error_info<err_detail>(e);
 		OutputHeader();
-		Output("<p class='error'>Critical Error: " +EscapeHTMLSpecial(detail) +"<br />");
+		Output("<p class='error'>Critical Error: " +EscapeHTMLSpecial(e.getString()) +"<br />");
 		Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
 		Output("Utility will end now.");
 		OutputFooter();
@@ -604,9 +594,8 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		if (!parsed)
 			Userlist.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 	} catch (boss_error e) {
-		const string detail = *boost::get_error_info<err_detail>(e);
-		userlistErrorBuffer.push_back("<p class='error'>Error: "+detail+" Userlist parsing aborted. No rules will be applied.");
-		LOG_ERROR("Error: %s", detail);
+		userlistErrorBuffer.push_back("<p class='error'>Error: "+e.getString()+" Userlist parsing aborted. No rules will be applied.");
+		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
 
 	progDia->Pulse();
@@ -882,8 +871,7 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 	try {
 		connection = CheckConnection();
 	} catch (boss_error e) {
-		const string detail = *boost::get_error_info<err_detail>(e);
-		updateText = "Update check failed. Details: " + detail;
+		updateText = "Update check failed. Details: " + e.getString();
 		wxMessageBox(updateText, wxT("BOSS: Check For Updates"), wxOK | wxICON_ERROR, this);
 		return;
 	}
@@ -896,8 +884,7 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 			} else
 				updateText = "Update available! New version: " + updateVersion + "\nDo you want to download and install the update?";
 		} catch (boss_error e) {
-			const string detail = *boost::get_error_info<err_detail>(e);
-			updateText = "Update check failed. Details: " + detail;
+			updateText = "Update check failed. Details: " + e.getString();
 			wxMessageBox(updateText, wxT("BOSS: Check For Updates"), wxOK | wxICON_ERROR, this);
 			return;
 		}
@@ -927,8 +914,7 @@ void MainFrame::CheckForUpdate(wxIdleEvent& event) {
 	try {
 		connection = CheckConnection();
 	} catch (boss_error e) {
-		const string detail = *boost::get_error_info<err_detail>(e);
-		updateText = "Update check failed. Details: " + detail;
+		updateText = "Update check failed. Details: " + e.getString();
 		wxMessageBox(updateText, wxT("BOSS: Check For Updates"), wxOK | wxICON_ERROR, this);
 		return;
 	}
@@ -940,8 +926,7 @@ void MainFrame::CheckForUpdate(wxIdleEvent& event) {
 			else
 				return;
 		} catch (boss_error e) {
-			const string detail = *boost::get_error_info<err_detail>(e);
-			updateText = "Update check failed. Details: " + detail;
+			updateText = "Update check failed. Details: " + e.getString();
 			wxMessageBox(updateText, wxT("BOSS: Check For Updates"), wxOK | wxICON_ERROR, this);
 			return;
 		}
@@ -978,16 +963,27 @@ void MainFrame::Update(string updateVersion) {
 			fails = DownloadInstallBOSSUpdate(progDia, INSTALLER, updateVersion);
 		} catch (boss_error e) {
 			progDia->Destroy();
-			CleanUp();
-			const string detail = *boost::get_error_info<err_detail>(e);
-			if (detail == "Cancelled by user.")
+			try {
+				CleanUp();
+			} catch (boss_error ee) {
+				LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
+				wxMessageBox("Update failed. Details: " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+				return;
+			}
+			if (e.getString() == "Cancelled by user.")
 				wxMessageBox(wxT("Update cancelled."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 			else
-				wxMessageBox("Update failed. Details: " + detail + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+				wxMessageBox("Update failed. Details: " + e.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		} catch (fs::filesystem_error e) {
 			progDia->Destroy();
-			CleanUp();
+			try {
+				CleanUp();
+			} catch (boss_error ee) {
+				LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
+				wxMessageBox("Update failed. Details: " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+				return;
+			}
 			string detail = e.what();
 			wxMessageBox("Update failed. Details: " + detail + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
@@ -1028,16 +1024,27 @@ void MainFrame::Update(string updateVersion) {
 			fails = DownloadInstallBOSSUpdate(progDia, MANUAL, updateVersion);
 		} catch (boss_error e) {
 			progDia->Destroy();
-			CleanUp();
-			const string detail = *boost::get_error_info<err_detail>(e);
-			if (detail == "Cancelled by user.")
+			try {
+				CleanUp();
+			} catch (boss_error ee) {
+				LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
+				wxMessageBox("Update failed. Details: " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+				return;
+			}
+			if (e.getString() == "Cancelled by user.")
 				wxMessageBox(wxT("Update cancelled."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 			else
-				wxMessageBox("Update failed. Details: " + detail + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+				wxMessageBox("Update failed. Details: " + e.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		} catch (fs::filesystem_error e) {
 			progDia->Destroy();
-			CleanUp();
+			try {
+				CleanUp();
+			} catch (boss_error ee) {
+				LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
+				wxMessageBox("Update failed. Details: " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+				return;
+			}
 			string detail = e.what();
 			wxMessageBox("Update failed. Details: " + detail + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;

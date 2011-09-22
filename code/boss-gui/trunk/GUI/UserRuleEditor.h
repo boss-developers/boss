@@ -8,28 +8,28 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-#ifndef __RULEMANAGER__HPP__
-#define __RULEMANAGER__HPP__
+#ifndef __RULEEDITOR__HPP__
+#define __RULEEDITOR__HPP__
+
+#include "BOSS-Common.h"
 
 #include "wx/wxprec.h"
-#include <vector>
-#include <string>
 
 #ifndef WX_PRECOMP
 #	include "wx/wx.h"
 #endif
 
+using namespace boss;
 using namespace std;
 
-
-	////////////////////////////////////////
-	// GUI Stuff
-	////////////////////////////////////////
-
-class UserRulesManagerFrame : public wxFrame {
+class UserRulesEditorFrame : public wxFrame {
 public:
-	UserRulesManagerFrame(const wxChar *title, wxFrame *parent, int x, int y, int width, int height);
+	UserRulesEditorFrame(const wxChar *title, wxFrame *parent);
+	void OnOKQuit(wxCommandEvent& event);
+	void OnCancelQuit(wxCommandEvent& event);
 private:
+	vector<item> Modlist, Masterlist;
+	vector<rule> Userlist;
 	wxButton *NewRuleButton;
 	wxButton *EditRuleButton;
 	wxButton *DeleteRuleButton;

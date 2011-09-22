@@ -58,6 +58,7 @@ namespace boss {
 			t1 = fs::last_write_time(data_path / mod1.name);
 			t2 = fs::last_write_time(data_path / mod2.name);
 		}catch (fs::filesystem_error e){
+			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, mod1.name.string() + "\" or \"" + mod2.name.string(),e.what());
 			LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.", e.what());
 		}
 		double diff = difftime(t1,t2);
@@ -97,13 +98,13 @@ namespace boss {
 		} catch(boost::filesystem::filesystem_error e) {
 			//Couldn't rename the file, print an error message.
 			LOG_ERROR("Backup of modlist failed with error: %s", e.what());
-			throw boss_error() << err_detail(e.what());
+			throw boss_error(BOSS_ERROR_FS_FILE_RENAME_FAIL, file.string(), e.what());
 		}
 		//Open output file.
 		ofile.open(file.c_str());
 		if (ofile.fail()) {  //Provide error message if it can't be written.
 			LOG_ERROR("Backup cannot be saved.");
-			throw boss_error() << err_detail("Modlist backup cannot be saved.");
+			throw boss_error(BOSS_ERROR_FILE_OPEN_FAIL, file.string());
 		}
 
 		//Iterate through items, printing out all group markers, mods and messsages.

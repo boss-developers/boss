@@ -33,12 +33,12 @@ namespace boss {
 			if (!userlist_file.fail())
 				userlist_file << '\xEF' << '\xBB' << '\xBF';  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
 			else
-				throw boss_error() << err_detail(file.string()+" cannot be created!");
+				throw boss_error(BOSS_ERROR_FILE_OPEN_FAIL, file.string());
 			userlist_file.close();
 			return true;
 		}
-		if (!ValidateUTF8File(file))
-			throw boss_error() << err_detail(file.string()+" is not encoded in valid UTF-8!");
+		else if (!ValidateUTF8File(file))
+			throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, file.string());
 
 		fileToBuffer(file,contents);
 
@@ -61,9 +61,9 @@ namespace boss {
 		string contents;
 
 		if (!fs::exists(file))
-			throw boss_error() << err_detail(file.string()+" cannot be found!");
-		if (!ValidateUTF8File(file))
-			throw boss_error() << err_detail(file.string()+" is not encoded in valid UTF-8!");
+			throw boss_error(BOSS_ERROR_MASTERLIST_NOT_FOUND);
+		else if (!ValidateUTF8File(file))
+			throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, file.string());
 
 		fileToBuffer(file,contents);
 

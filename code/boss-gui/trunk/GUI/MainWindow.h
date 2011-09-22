@@ -11,11 +11,6 @@
 #ifndef __MAIN__HPP__
 #define __MAIN__HPP__
 
-//We want to ensure that the GUI-specific code in BOSS-Common is included.
-#ifndef BOSSGUI
-#define BOSSGUI
-#endif
-
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
@@ -76,35 +71,5 @@ private:
 	wxRadioButton *UndoOption;
 	wxStaticText *GameText;
 	wxStaticText *RevertText;
-};
-
-enum {
-	//Main window.
-    OPTION_EditUserRules = wxID_HIGHEST + 1, // declares an id which will be used to call our button
-	OPTION_OpenBOSSlog,
-	OPTION_Run,
-	OPTION_CheckForUpdates,
-    MENU_Quit,
-	MENU_OpenMainReadMe,
-	MENU_OpenUserRulesReadMe,
-	MENU_ShowAbout,
-	MENU_ShowSettings,
-	DROPDOWN_LogFormat,
-	DROPDOWN_Game,
-	DROPDOWN_Revert,
-	CHECKBOX_ShowBOSSlog,
-	CHECKBOX_Update,
-	CHECKBOX_EnableVersions,
-	CHECKBOX_EnableCRCs,
-	CHECKBOX_TrialRun,
-	RADIOBUTTON_SortOption,
-	RADIOBUTTON_UpdateOption,
-	RADIOBUTTON_UndoOption,
-	//About window
-	OPTION_ExitAbout,
-	//Settings window.
-	OPTION_OKExitSettings,
-	OPTION_CancelExitSettings,
-	DROPDOWN_ProxyType
 };
 #endif

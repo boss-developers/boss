@@ -9,12 +9,12 @@
 */
 
 #include "GUI/SettingsWindow.h"
-#include "GUI/MainWindow.h"
+#include "GUI/ElementIDs.h"
 #include "BOSS-Common.h"
 
 BEGIN_EVENT_TABLE( SettingsFrame, wxFrame )
-	EVT_BUTTON ( OPTION_OKExitSettings, OnOKQuit)
-	EVT_BUTTON ( OPTION_CancelExitSettings, OnCancelQuit)
+	EVT_BUTTON ( OPTION_OKExitSettings, SettingsFrame::OnOKQuit)
+	EVT_BUTTON ( OPTION_CancelExitSettings, SettingsFrame::OnCancelQuit)
 	EVT_COMBOBOX ( DROPDOWN_ProxyType, SettingsFrame::OnProxyTypeChange )
 END_EVENT_TABLE()
 

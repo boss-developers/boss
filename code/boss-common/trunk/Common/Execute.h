@@ -53,6 +53,9 @@ namespace boss {
 	//Gets the string representation of the detected game.
 	string GetGameString();
 
+	//Returns the expeccted master file.
+	string GameMasterFile();
+
 	//Gets the timestamp of the game's master file. Throws exception if error.
 	time_t GetMasterTime();
 
