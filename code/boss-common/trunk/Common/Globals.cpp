@@ -16,15 +16,16 @@ namespace boss {
 
 	ofstream bosslog;					//BOSSlog.txt - output file.
 
-	const fs::path data_path			= fs::path("..") / "Data";
-	const fs::path bosslog_html_path	= "BOSSlog.html";
-	const fs::path bosslog_text_path	= "BOSSlog.txt";
-	const fs::path masterlist_path		= "masterlist.txt";
-	const fs::path userlist_path		= "userlist.txt";
-	const fs::path curr_modlist_path	= "modlist.txt";
-	const fs::path prev_modlist_path	= "modlist.old";
-	const fs::path ini_path				= "BOSS.ini";
-	const fs::path debug_log_path		= "BOSSDebugLog.txt";
+	fs::path data_path			= fs::path("..") / "Data";
+	fs::path boss_path			= fs::path(".");
+	fs::path bosslog_html_path	= boss_path / "BOSSlog.html";
+	fs::path bosslog_text_path	= boss_path / "BOSSlog.txt";
+	fs::path masterlist_path	= boss_path / "masterlist.txt";
+	fs::path userlist_path		= boss_path / "userlist.txt";
+	fs::path curr_modlist_path	= boss_path / "modlist.txt";
+	fs::path prev_modlist_path	= boss_path / "modlist.old";
+	fs::path ini_path			= boss_path / "BOSS.ini";
+	fs::path debug_log_path		= boss_path / "BOSSDebugLog.txt";
 
 	const string g_version     = "1.9";
 	const string g_releaseDate = "X Y, 2011";

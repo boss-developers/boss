@@ -186,38 +186,37 @@ namespace boss {
 		size_t pos;
 		LOG_INFO("Comparing hashset against masterlist.");
 		while (iter != masterlist.end()) {
-			item Item = *iter;
-			if (Item.type == MOD) {
+			if (iter->type == MOD) {
 				//Check to see if the mod is in the hashset. If it is, or its ghosted version is, also check if 
 				//the mod is already in the holding vector. If not, add it.
-				setPos = hashset.find(Tidy(Item.name.string()));
-				addedPos = addedMods.find(Tidy(Item.name.string()));
+				setPos = hashset.find(Tidy(iter->name.string()));
 				if (setPos != hashset.end()) {										//Mod found in hashset. 
+					addedPos = addedMods.find(Tidy(iter->name.string()));
 					if (addedPos == addedMods.end()) {								//The mod is not already in the holding vector.
-						holdingVec.push_back(Item);									//Record it in the holding vector.
-						pos = GetModPos(modlist,Item.name.string());				//Also remove it from the modlist.
+						holdingVec.push_back(*iter);									//Record it in the holding vector.
+						pos = GetModPos(modlist,iter->name.string());				//Also remove it from the modlist.
 						if (pos != (size_t)-1)
 							modlist.erase(modlist.begin()+pos);
-						addedMods.insert(Tidy(Item.name.string()));
+						addedMods.insert(Tidy(iter->name.string()));
 					}
 				} else {
 					//Mod not found. Look for ghosted mod.
-					Item.name = fs::path(Item.name.string() + ".ghost");		//Add ghost extension to mod name.
-					setPos = hashset.find(Tidy(Item.name.string()));
-					addedPos = addedMods.find(Tidy(Item.name.string()));
+					iter->name = fs::path(iter->name.string() + ".ghost");		//Add ghost extension to mod name.
+					setPos = hashset.find(Tidy(iter->name.string()));
 					if (setPos != hashset.end()) {									//Mod found in hashset.
+						addedPos = addedMods.find(Tidy(iter->name.string()));
 						if (addedPos == addedMods.end()) {							//The mod is not already in the holding vector.
-							holdingVec.push_back(Item);								//Record it in the holding vector.
-							pos = GetModPos(modlist,Item.name.string());			//Also remove it from the modlist.
+							holdingVec.push_back(*iter);								//Record it in the holding vector.
+							pos = GetModPos(modlist,iter->name.string());			//Also remove it from the modlist.
 							if (pos != (size_t)-1)
 								modlist.erase(modlist.begin()+pos);
-							addedMods.insert(Tidy(Item.name.string()));
+							addedMods.insert(Tidy(iter->name.string()));
 						}
 					}
 				}
-			} else if (Item.type == REGEX) {
+			} else if (iter->type == REGEX) {
 				//Form a regex.
-				boost::regex reg(Tidy(Item.name.string())+"(.ghost)?",boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
+				boost::regex reg(Tidy(iter->name.string())+"(.ghost)?",boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
 				//Now start looking.
 				setPos = hashset.begin();
 				do {
@@ -243,7 +242,7 @@ namespace boss {
 					if (addedPos == addedMods.end()) {							//The mod is not already in the holding vector.
 						//Now do the adding/removing.
 						//Create new temporary item to hold current found mod.
-						item tempItem = Item;
+						item tempItem = *iter;
 						tempItem.type = MOD;
 						tempItem.name = fs::path(mod);
 						holdingVec.push_back(tempItem);							//Record it in the holding vector.
@@ -255,7 +254,7 @@ namespace boss {
 					++setPos;
 				} while (setPos != hashset.end());
 			} else //Group lines must stay recorded.
-				holdingVec.push_back(Item);
+				holdingVec.push_back(*iter);
 			++iter;
 		}
 		masterlist = holdingVec;  //Masterlist now only contains the items needed to sort the user's mods.

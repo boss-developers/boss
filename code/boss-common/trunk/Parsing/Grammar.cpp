@@ -293,7 +293,7 @@ namespace boss {
 		result = false;
 		fs::path file_path;
 		GetPath(file_path,file);
-		result = fs::exists(file_path / file);
+		result = (fs::exists(file_path / file) || fs::exists(file_path / fs::path(file + ".ghost")));
 	}
 
 	//Checks if a file which matches the given regex exists.

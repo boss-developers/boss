@@ -27,15 +27,17 @@ namespace boss {
 
 	extern ofstream bosslog;					//BOSSlog.html output file
 
-	extern const fs::path data_path;			// Holds the path to the data directory.
-	extern const fs::path bosslog_html_path;	// BOSSlog full HTML file name
-	extern const fs::path bosslog_text_path;	// BOSSlog full text file name
-	extern const fs::path masterlist_path;		// Hold both location and file name for masterlist.txt
-	extern const fs::path userlist_path;		// Hold both location and file name for userlist.txt 
-	extern const fs::path curr_modlist_path;	// Hold both location and file name for modlist.txt
-	extern const fs::path prev_modlist_path;	// Hold both location and file name for modlist.old
-	extern const fs::path ini_path;				// Holds the path to the BOSS.ini.
-	extern const fs::path debug_log_path;		// Holds the path to BOSSDebugLog.txt.
+	//These paths can't be constant because the API may require data_path and boss_path to be different.
+	extern fs::path data_path;			// Holds the path to the data directory.
+	extern fs::path boss_path;			// Holds the path to the BOSS directory.
+	extern fs::path bosslog_html_path;	// BOSSlog full HTML file name
+	extern fs::path bosslog_text_path;	// BOSSlog full text file name
+	extern fs::path masterlist_path;	// Hold both location and file name for masterlist.txt
+	extern fs::path userlist_path;		// Hold both location and file name for userlist.txt 
+	extern fs::path curr_modlist_path;	// Hold both location and file name for modlist.txt
+	extern fs::path prev_modlist_path;	// Hold both location and file name for modlist.old
+	extern fs::path ini_path;			// Holds the path to the BOSS.ini.
+	extern fs::path debug_log_path;		// Holds the path to BOSSDebugLog.txt.
 
 	extern const string g_version;
 	extern const string g_releaseDate;
