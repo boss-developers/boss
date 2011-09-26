@@ -1,0 +1,160 @@
+﻿<!DOCTYPE html>
+<meta charset="utf-8">
+<title>BOSS API ReadMe</title>
+<style>
+	body {font-family:Calibri,Arial,Verdana,sans-serifs;}
+	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:1em;}
+	body > div {margin-bottom:5em;}
+	ol li, ul li {margin-bottom:10px;}
+	li ul, li ol {margin-top:0.4em;}
+	.codebox, .logbox {margin-left:40px; border: gray 1px dashed; display:table; min-width:300px;  padding: 5px 30px 5px 10px;}
+	.codebox { font-family: monospace; background:#F5F5F5; line-height:20px; white-space:pre;}
+	.logbox {background:#E6E6FA; line-height:30px;}
+	.logbox > ul > li {line-height:20px;}
+	q {font-style:italic;}
+	code {display:inline-box; padding: 2px 5px; background:#EEEEEE; }
+	td {border: 1px solid #CCC; padding: 5px;}
+	table {border: 1px solid #CCC;border-spacing: 0;border-collapse: separate; margin:1em; margin-left:40px;}
+	thead > tr td {font-weight:bold}
+	b {font-weight:bold;}
+	i {font-style:italic;}
+</style>
+
+<div>Better Oblivion Sorting Software<br />
+API Documentation</div>
+<div><h1>Contents</h1>
+<ol>
+	<li><a href="#intro">Introduction</a>
+	<li><a href="#background">Background Information</a>
+	<ol style="list-style:lower-alpha;">
+		<li><a href="#background-masterlist">Masterlist Information</a>
+		<li><a href="#background-userlist">Userlist Information</a>
+	</ol>
+	<li><a href="#examples">Compatibility</a>
+	<li><a href="#structure">Variable Types</a>
+	<li><a href="#rules">Functions</a>
+	<ol style="list-style:lower-alpha;">
+		<li><a href="#background-masterlist">Error Codes</a>
+		<li><a href="#background-userlist">Sizes</a>
+	</ol>
+	<li><a href="#examples">Examples</a>
+	<li><a href="#examples">Contact</a>
+	<li><a href="#examples">Version History</a>
+</ol>
+</div>
+
+<div id="intro"><h1>Introduction</h1>
+<p>This documentation details the BOSS API and is intended for use by third party developers of modding utilities for TES IV: Oblivion, TES V: Skyrim, Nehrim - At Fate's Edge, Fallout 3 and Fallout: New Vegas.
+
+<p>The BOSS API has a C frontend and is available as a 32-bit DLL that can be loaded by other modding utilities so that they can easily take advantage of the information stored within BOSS's files without having to write their own interfaces and keep such interfaces up-to-date as BOSS evolves.
+
+<p>Developers can request additional functionality and report any bugs encountered in the offical BOSS API thread currently found <a href="http://forums.bethsoft.com/index.php?/topic/1221990-wip-bapi-boss-api/">here</a>.
+</div>
+
+<div id=""><h1>Overview</h1>
+<p>The BOSS API allows third parties to extract information from BOSS's masterlist and userlist using the same parsers that BOSS itself uses, thereby minimising the effort required and increasing compatibility. The API currently has the following capabilities:
+<ul>
+	<li>Extract Bash Tag addition and removal suggestions for mods from the masterlist and userlist.
+	<li>Extract dirty mod messages from the masterlist and determine cleanliness of mods.
+	<li>Write a minimal masterlist containing only mods with Bash Tag suggestions, and those suggestions.
+</ul>
+<p>The API can also handle determining compatibility with other versions of BOSS that may be present.
+<p>Below is a short overview of BOSS's masterlist, userlist and their capabilities for those unfamiliar with them:
+<p>The masterlist is the file which holds the load order of all BOSS's recognised plugins. There is a separate masterlist for each game that BOSS supports, but since it only ever works on one game at a time, only one masterlist is generally ever referred to at any one time. The masterlist also holds messages to attach to plugins that BOSS displays in its BOSS Log output file, and these messages include general notes, Bash Tag suggestions (for addition and/or removal), requirements, incompatibilities, information regarding dirty edits, warnings and errors.
+<p>The userlist is a file that BOSS users can use to override or add to BOSS's sorting and message display functionality using a specific rule syntax. The capabilities of these rules include overriding BOSS's ordering of individual plugins or groups of plugins, having BOSS sort plugins it would otherwise not recognise (ie. that are not in its masterlist) and adding or overriding plugin messages.
+</div>
+
+<div id="types"><h1>Variable Types</h1>
+<p>The API uses character strings and integers for information input/output. 
+<ul>
+	<li>All API strings are unsigned 8-bit character strings (uint8_t*) encoded in UTF-8.
+	<li>All API numbers and error codes are unsigned 32-bit integers (uint32_t).
+</ul>
+<p>The API also introduces two new structures:
+<p><code>typedef struct _boss_db_int * boss_db;</code>
+<p>Abstracts the definition of BOSS's internal state while still providing type safety across the API.
+
+<p><pre><code>typedef struct {
+    uint32_t id;
+    uint8_t * name;
+} BashTag;</code></pre>
+<p>The BashTag structure gives the Unique Identifier (UID) for each Bash Tag and the corresponding Bash Tag name.
+</div>
+
+<div id="types"><h1>Error Codes</h1>
+<p>The BOSS API functions uses the following return codes to signal error types:
+<ul>
+	<li>BOSS_API_ERROR_OK;
+	<li>BOSS_API_ERROR_NO_MASTER_FILE;
+	<li>BOSS_API_ERROR_FILE_READ_FAIL;
+	<li>BOSS_API_ERROR_FILE_WRITE_FAIL;
+	<li>BOSS_API_ERROR_FILE_NOT_UTF8;
+	<li>BOSS_API_ERROR_FILE_NOT_FOUND;
+	<li>BOSS_API_ERROR_NO_MEM;
+	<li>BOSS_API_ERROR_FS_FILE_RENAME_FAIL;
+	<li>BOSS_API_ERROR_FS_FILE_DELETE_FAIL;
+	<li>BOSS_API_ERROR_PARSE_FAIL;
+	<li>BOSS_API_ERROR_UNSPECIFIED;
+	<li>BOSS_API_ERROR_OVERWRITE_FAIL;
+	<li>BOSS_API_ERROR_INVALID_ARGS;
+	<li>BOSS_API_ERROR_TAGMAP_EXISTS;
+</ul>
+<p>The codes use the uint32_t variable type. BOSS_API_ERROR_OK is unlike the others as it signifies a function's successful operation.
+</div>
+
+
+
+<div id="functions"><h1>Functions</h1>
+<p>BOSS API provides the functions listed below to clients. Where a function returns a uint32_t value, this is the function's return code.
+
+<h2>Version Functions</h2>
+
+<p><code>bool IsCompatibleVersion (uint32_t bossVersionMajor, uint32_t bossVersionMinor);</code>
+<p>Returns whether this version of BOSS supports the API from the given BOSS version. Abstracts BOSS API stability policy away from clients.
+
+<p><code>uint32_t GetVersionString (const uint8_t ** bossVersionStr);</code>
+<p>Returns the version string for this version of BOSS. The string exists for the lifetime of the library.
+
+<h2>Lifecycle Management Functions</h2>
+<p><code>uint32_t CreateBossDb  (boss_db * db);</code>
+<p><code>void     DestroyBossDb (boss_db db);</code>
+<p>Explicitly manage database lifetime. Allows clients to free memory when they want/need to.
+
+<h2>Database Loading Functions</h2>
+
+<p><code>uint32_t Load (boss_db db, const uint8_t * masterlistPath, const uint8_t * userlistPath, const uint8_t * dataPath);</code>
+<p>Loads the masterlist and userlist from the paths specified. Can be called multiple times. If an error is encountered, the database remains unchanged. Paths are case-sensitive if the underlying filesystem is case-sensitive.
+
+<h2>Database Access Functions</h2>
+<p><code>uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, uint32_t * numTags);</code>
+<p>Returns an array of the Bash Tags encounterred when loading the masterlist and userlist, and the number of tags in the returned array. The array and its contents are static and valid until the db is destroyed or until the Load() function is called. It should not be freed by the client.
+
+<p><code>uint32_t GetModBashTags (boss_db db, const uint8_t * modName, uint32_t ** tagIds_added, uint32_t * numTags_added, uint32_t **tagIds_removed, uint32_t *numTags_removed, bool * userlistModified);</code>
+<p>Returns arrays of Bash Tag UIDs for Bash Tags suggested for addition and removal by BOSS's masterlist and userlist, and the number of tags in each array. The returned arrays are valid until the db is destroyed or until the Load() function is called.  The arrays should not be freed by the client. modName is case-insensitive. If no Tags are found for an array, the array pointer (*tagIds) will be NULL. The userlistModified bool is true if the userlist contains Bash Tag suggestion message additions.
+
+
+
+<p><code>uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName, uint8_t ** message, uint32_t * needsCleaning);</code>
+<p>Returns the message associated with a dirty mod and whether the mod needs cleaning. If a mod has no dirty mmessage, *message will be NULL. modName is case-insensitive. The return values for needsCleaning are:
+<ul>
+	<li>0 == no
+	<li>1 == yes
+	<li>2 == unknown
+</ul>
+<p>The message string is valid until the db is destroyed or until a Load() function is called. The string should not be freed by the client.
+
+<p><code>uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, bool overwrite);</code>
+<p>Writes a minimal masterlist that only contains mods that have Bash Tag suggestions, plus the Tag suggestions themselves, in order to create the Wrye Bash taglist. outputFile is the path to use for output. If outputFile already exists, it will only be overwritten if overwrite is true.
+</div>
+
+<div id="examples"><h1>Examples</h1>
+<p>Below is a code snippet showing an example of how the BOSS API may be used.
+<div class="codebox">
+</div>
+</div>
+
+<div id="history"><h1>Version History</h1>
+<p><b>Version 1.9</b> - <i>2011</i>
+<ul>
+	<li>Initial release.
+</ul>

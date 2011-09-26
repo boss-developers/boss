@@ -168,7 +168,7 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 </ul>
 
 <h4>The User Rules Editor</h4>
-<p style="background:red;">To Do
+<p style="background:red;">NEEDS UPDATING
 
 <p>Each setting in the GUI corresponds to a command line parameter and/or an ini setting, the details of which can be found in the <q><a href="#cli">Command Line Arguments</a></q> and <q><a href="#customising">Customising How BOSS Works</a></q> sections of this ReadMe respectively.</p>
 <br />
@@ -182,7 +182,7 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
   <li>If you run the <q>Check For Updates</q> option from the GUI's Help option, then it will display messages detailing if no update was found or if there were any errors.
  </ul>
  <li>No matter how the update check was started, if an update is available it will prompt the user whether or not to download and install the update. If the user decides not to update, the updater will quit.
- <li>If the user decides to update, then it will begin downloading the file(s) to the BOSS folder, displaying a progress bar. The download can be cancelled at any time, in which case any downloaded files will be deleted and the updater will quit.
+ <li>If the user decides to update, then it will begin downloading the file(s) to the BOSS folder, displaying the progress. If using the GUI, the download can be cancelled at any time, in which case any downloaded files will be deleted and the updater will quit. CLI users can cancel the download by quitting BOSS, but no cleanup will take place.
  <ul>
   <li>If you previously installed BOSS using the installer, then the updater shall download the installer for the update, otherwise it will download the files as they appear in the manual archive.
  </ul>
@@ -244,7 +244,7 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 <h2 id="dirtymods">Dirty Edits, Mod Cleaning &amp; CRCs</h2>
 <p>
 <p>Dirty edits are often a side-effect of mod creation, and are often due to bugs in the utilities Bethesda has provided to create mods, rather than bad practice by mod authors. Dirty edits can cause a wide range of issues, including incorrect game settings, missing content, broken quests and crashing to desktop. The more dirty edits there are, and the more mods with dirty edits you use, the more likely you are to experience issues.
-<p>Thankfully there is a way to remove dirty edits from mods relatively easily, a process known as <i>mod cleaning</i>, using TES4Edit (for Oblivion), FO3Edit (for Fallout 3) or FNVEdit (for Fallout: New Vegas). A detailed set of instructions and information on mod cleaning can be found on the CS Wiki's <a href="http://cs.elderscrolls.com/constwiki/index.php/TES4Edit_Cleaning_Guide">TES4Edit Cleaning Guide</a> (the page also applies to Fallout 3 and Fallout: New Vegas). Wrye Bash/Flash/Flash NV can also scan plugins for dirty edits and return their ITM and UDR counts, though at the time of writing it cannot clean plugins itself.
+<p>Thankfully there is a way to remove dirty edits from mods relatively easily, a process known as <i>mod cleaning</i>, using TES4Edit (for Oblivion), FO3Edit (for Fallout 3) or FNVEdit (for Fallout: New Vegas). A detailed set of instructions and information on mod cleaning can be found on the CS Wiki's <a href="http://cs.elderscrolls.com/constwiki/index.php/TES4Edit_Cleaning_Guide">TES4Edit Cleaning Guide</a> (the page also applies to Fallout 3 and Fallout: New Vegas). <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> can also scan plugins for dirty edits and return their ITM and UDR counts, though at the time of writing it cannot clean plugins itself.
 <p>The problem of dirty edits is largely a problem of ignorance on the part of mod authors and users alike of the problems unclean mods (more widely known as <i>dirty mods</i>) can cause. As such, there are community efforts to raise awareness of dirty edits and cleaning. BOSS plays a key role in these efforts, as it holds the complete list of all known dirty mods, and it uses this information to provide notification messages to users for any dirty mods they have installed.
 There are three key pieces of information that are used to accurately describe and identify an unclean mod. They are:
 <ul>
@@ -254,7 +254,7 @@ There are three key pieces of information that are used to accurately describe a
 </ul>
 <p>However, not all unclean mods have all or any of these pieces of information. For unclean mods whose ITM and UDR counts have not been reported, BOSS cannot give them. For unclean mods whose CRCs have not been reported, BOSS cannot give precise notification and so prints a message whether or not the user has cleaned their mod.
 <p>BOSS and the modding communities rely on user contribution of this information to progress. For information on how to contribute, see the <q><a href="#help">Contributions &amp; Help</a></q> section below. If you find that a mod is dirty, you should also report this to the mod's author so that they can fix it.
-<p>It should be noted that TES4Edit will include a variety of <em>junk records</em> in the ITM count for a plugin, such as new empty cells that are automatically generated by the Construction Set and are almost impossible to remove. These junk records are non-harmful, and BOSS will inform users when a mod contains these to avoid confusion.
+<p><b>Note:</b> TES4Edit will include a variety of <em>junk records</em> in the ITM count for a plugin, such as new empty cells that are automatically generated by the Construction Set and are almost impossible to remove. These junk records are non-harmful, and BOSS will inform users when a mod contains these to avoid confusion. This is also the source of any discrepancies between the counts produced by TES4Edit and those produced by <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>. The latter's counts are more technically accurate, but both are acceptable for use.
 <p>There is also another type of unnecessary edit, known as a wild edit, that can also cause problems. These edits are neither Itentical To Master edits nor deleted records, so cannot be automatically cleaned. Cleaning must be manually done in TES4Edit/FO3Edit/FNVEdit. BOSS can still check for plugins with these edits if the CRCs of the plugins with wild edits are known, and it can provide notification of these edits and some information on fixing them if they are reported in an official BOSS thread.
 </div>
 
@@ -464,6 +464,7 @@ It is also possible to compile BOSS natively for Linux, and makefiles are provid
 		<tr><td>BOSS ReadMe.html<td>This ReadMe file.
 		<tr><td>BOSS User Rules ReadMe.html<td>The ReadMe file for BOSS's User Rules functionality.
 		<tr><td>BOSS Masterlist Syntax.html<td>Developer documentation detailing the formats and syntaxes used by the masterlists.
+		<tr><td>BOSS API ReadMe.html<td>The ReadMe file for the BOSS API, for use by third-party developers.
 		
 </table>
 </div>
@@ -506,7 +507,7 @@ a problem for which no error message is given, please report the crash or proble
 	<li>Install the game outside the <q>Program Files</q> (or <q>Program Files (x86)</q> if on 64-bit Windows). UAC prevents unauthorised edits to these folders, so by installing the game outside of them, you remove it from UAC's reach, allowing you to use mods more easily.
 	<li>Deactivate UAC. This can be done from the Control Panel, and will turn UAC off across the whole of your computer. It is up to you whether you feel that you have adequate security measures in place to do this without risk.
 	<li>Give yourself <q>Full Control</q> permissions over your game install folder. This will allow you to make any edits you desire while keeping UAC active and on guard for any edits made by programs you do not run, and also means that you do not need to reinstall your game to a new location.
-	<li>Run BOSS as an Administrator. Right-click the BOSS.exe, and select <q>Run as administrator</q>.
+	<li>Run BOSS as an Administrator. Right-click the <q>BOSS.exe</q> and <q>BOSS GUI.exe</q>, and select <q>Run as administrator</q>.
 </ol>
 <p>For those that wish to take the third option and give themselves <q>Full Control</q> permissions, here is a guide:
 <ol>
@@ -539,6 +540,7 @@ a problem for which no error message is given, please report the crash or proble
 <br />
 
 <h2 id="errors">Error Messages</h2>
+<p style="background:red;color:white;">NEEDS UPDATING</p>
 <p>If BOSS can detect a specific reason for being unable to function correctly, it will print an error message detailing the problem. BOSS's error messages are listed below, along with details of the issues and possible solutions. The list does not include any messages related to user rule application.
 <ul>
 	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: file '<code>filename</code>' could not be accessed for writing.</i>
@@ -808,56 +810,70 @@ threads when you read this. Just navigate through to the latest thread to post a
 <p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.
 <p><b>Version 1.9</b> - <i>2011</i>
 <ul>
-	<li>Removed: Checking for changes to the recognised mod list since last run for the plain text BOSSlog, as this did not work correctly and is not feasible to fix.
-	<li>Fixed: A bug where if a plugin filename started with "SET" or "GLOBAL" (or case variations) then BOSS would incorrectly classify it as a variable or global message line and so result in syntax errors.
-	<li>Fixed: User Rules which failed to add a plugin into the beginning or end of a group still incremented the number of recognised plugins as if the rule application had succeeded.
-	<li>Fixed: More robust error handling.
-	<li>Fixed: Userlist rules which reference plugins that are not installed now have warning messages reported instead of error messages.
-	<li>Changed: Replaced references to <q>mod</q> with <q>plugin</q> where the latter is more appropriate.
-	<li>Changed: Major refactoring of source code into a common library and independent CLI/GUI front ends.
-	
-	<li>Changed: Content and slight formatting changes to BOSS Log:
+	<li>Changed: Major refactoring of BOSS code into a common library, a Command Line Interface and a Graphical User Interface.
+	<li>Common Library:
 	<ul>
-		<li><q>Masterlist Update</q> section removed. Update information is now displayed in the <q>Summary</q> section. Updater errors are displayed in the <q>General Messages</q> section.
-		<li>Javascript optimisations for filters. Probably no noticeable performance impact unless the user has a very large load order.
-		<li><q>Execution Complete</q> text is now centred.
-		<li>Other behind-the-scenes tweaks.
-		<li>All BOSS Log output now has special characters escaped so that it is valid HTML.
-		<li>The date of the user's masterlist is now displayed in the <q>Summary</q>.
-		<li>Ini parsing errors are now displayed in the <q>General Messages</q> section.
-		<li>The filters are now laid out in a more grid-like fashion.
-		<li>Added whitespace characters between plugin filenames, versions, ghosted labels and CRCs to make copy/pasted text more readable.
+		<li>Removed: Checking for changes to the recognised mod list since last run for the plain text BOSSlog, as this did not work correctly and is not feasible to fix.
+		<li>Fixed: A bug where if a plugin filename started with "SET" or "GLOBAL" (or case variations) then BOSS would incorrectly classify it as a variable or global message line and so result in syntax errors.
+		<li>Fixed: User Rules which failed to add a plugin into the beginning or end of a group still incremented the number of recognised plugins as if the rule application had succeeded.
+		<li>Fixed: Userlist rules which reference plugins that are not installed now have warning messages reported instead of error messages.
+		<li>Fixed: Masterlist conditions now detect ghosted mods correctly.
+		<li>Changed: More robust error handling.
+		<li>Changed: Content and slight formatting changes to BOSS Log:
+		<ul>
+			<li><q>Masterlist Update</q> section removed. Update information is now displayed in the <q>Summary</q> section. Updater errors are displayed in the <q>General Messages</q> section.
+			<li>Javascript optimisations for filters.
+			<li><q>Execution Complete</q> text is now centred.
+			<li>All BOSS Log output now has special characters escaped so that it is valid HTML.
+			<li>The date of the user's masterlist is now displayed in the <q>Summary</q>.
+			<li>Ini parsing errors are now displayed in the <q>General Messages</q> section.
+			<li>The filters are now laid out in a more grid-like fashion.
+			<li>Added whitespace characters between plugin filenames, versions, ghosted labels and CRCs to make copy/pasted text more readable.
+		</ul>
+		<li>Changes to BOSS.ini variables:
+		<ul>
+			<li>Removed <q>GUI.Settings</q> and <q>GUI.LastOptions</q> sections.
+			<li><q>DoStartupUpdateCheck</q> moved to a new <q>BOSS.GeneralSettings</q> section.
+			<li>Removed <q>DisableMasterlistUpdate</q> setting.
+			<li>Added variable type prefixes to variable names (s, i, b).
+			<li>Boolean variables now accept <code>true</code> or <code>false</code> instead of <code>1</code> or <code>0</code>.
+			<li><q>CommandLineVerbosity</q> renamed to <q>iDebugVerbosity</q>.
+			<li><q>Debug</q> renamed to <q>bDebugWithSourceRefs</q>.
+			<li>Added <q>bLogDebugOutput</q> setting to <q>BOSS.RunOptions</q> to control the logging of debugging output.
+			<li>Added <q>bUseUserRulesEditor</q> setting to <q>BOSS.GeneralSettings</q> to control how to the GUI chooses to edit user rules.
+			<li>Default values for the <q>BOSSLog.Styles</q> settings are now given, and values are no longer enclosed in {} brackets.
+		</ul>
+		<li>Added: <q>Hide Clean Mods</q> and <q>Hide 'Do Not Clean' Messages</q> BOSS Log filters.
+		<li>Added: Support for Skyrim:
+		<ul>
+			<li>This assumes Skyrim's master file will be <q>Skyrim.esm</q> and that the executable will be <q>Skyrim.exe</q>. If different, BOSS will be updated upon Skyrim's release with the real filenames.
+			<li style="display:none;">While the team responsible for OBSE, FOSE and NVSE have not made any comments officially or unofficially regarding Skyrim, BOSS has added support for a Skyrim Script Extender with the assumptions that it uses the <code>Data\SKSE\Plugins\</code> directory for its plugins and has a loader named <q>skse_loader.exe</q>.
+		</ul>
+		<li>Added: Support for MF2.2 syntax, including C-style comments, regular expression conditions, case-insensitive keywords and expanded conditional shorthands.
+		<li>Added: Built-in debug output logging support.
 	</ul>
-	<li>Changes to BOSS.ini variables:
+	<li>Command Line Interface:
 	<ul>
-		<li>Removed <q>GUI.Settings</q> and <q>GUI.LastOptions</q> sections.
-		<li><q>DoStartupUpdateCheck</q> moved to a new <q>BOSS.GeneralSettings</q> section.
-		<li>Removed <q>DisableMasterlistUpdate</q> setting.
-		<li>Added variable type prefixes to variable names (s, i, b).
-		<li>Boolean variables now accept <code>true</code> or <code>false</code> instead of <code>1</code> or <code>0</code>.
-		<li><q>CommandLineVerbosity</q> renamed to <q>iDebugVerbosity</q>.
-		<li><q>Debug</q> renamed to <q>bDebugWithSourceRefs</q>.
-		<li>Added <q>bLogDebugOutput</q> setting to <q>BOSS.RunOptions</q> to control the logging of debugging output.
-		<li>Added <q>bUseUserRulesEditor</q> setting to <q>BOSS.GeneralSettings</q> to control how to the GUI chooses to edit user rules.
-		<li>Default values for the <q>BOSSLog.Styles</q> settings are now given, and values are no longer enclosed in {} brackets.
+		<li>Changed: The command line parameter <code>--debug, -d</code> is now <code>--debug-with-source, -d</code>.
+		<li>Added: Progress indication for downloads.
+		<li>Added: A new command line parameter <code>log-debug, -l</code> to allow logging of the debug output to the <q>BOSSDebugLog.txt</q> file.
+		<li>Added: BOSS Updater functionality.
 	</ul>
-	<li>Added: <q>Hide Clean Mods</q> and <q>Hide 'Do Not Clean' Messages</q> BOSS Log filters.
-	<li>Added: Support for Skyrim:
+	<li>Graphical User Interface:
 	<ul>
-		<li>This assumes Skyrim's master file will be <q>Skyrim.esm</q> and that the executable will be <q>Skyrim.exe</q>. If different, BOSS will be updated upon Skyrim's release with the real filenames.
-		<li style="display:none;">While the team responsible for OBSE, FOSE and NVSE have not made any comments officially or unofficially regarding Skyrim, BOSS has added support for a Skyrim Script Extender with the assumptions that it uses the <code>Data\SKSE\Plugins\</code> directory for its plugins and has a loader named <q>skse_loader.exe</q>.
+		<li>Changed: The GUI is now completely independent of the CLI interface.
+		<li>Changed: <q>Settings</q> window overhauled:
+		<ul>
+			<li>Debugging-related settings moved to the from the main window.
+			<li>Settings catagorised into tabs.
+			<li>Added settings for controlling the default state of the BOSS Log filters and the BOSS Log CSS.
+			<li>Added a <q>Log Debug Output</q> setting to allow logging of the debug output to the <q>BOSSDebugLog.txt</q> file.
+		</ul>
+		<li>Changed: Simplified layout of main window options.
+		<li>Changed: Renamed some options to reflect their functions better.
+		<li>Changed: Opening files from the GUI no longer causes a command line window to display.
 	</ul>
-	<li>Added: Support for MF2.2 C-style comments, regular expression conditions, case-insensitive keywords and expanded conditional shorthands.
-	<li>(CLI) Changed: The command line parameter <code>--debug, -d</code> is now <code>--debug-with-source, -d</code>.
-	<li>(CLI) Added: Progress indication for masterlist and BOSS updates download.
-	<li>(CLI) Added: A new command line parameter <code>log-debug, -l</code> to allow logging of the debug output to the <q>BOSSDebugLog.txt</q> file.
-	<li>(GUI) Changed: <q>Check For Updates</q> is now known as the <q>BOSS Updater</q>.
-	<li>(GUI) Changed: Moved all the debugging-related settings to the <q>Settings</q> window.
-	<li>(GUI) Changed: Moved the <q>Display Plugin Versions</q> and <q>Display File CRCs</q> options to the <q>Output Options</q> section of the main window to avoid option duplication.
-	<li>(GUI) Changed: The GUI now performs BOSS's main functions (sorting, updating masterlist, undoing changes) independent of the CLI.
-	<li>(GUI) Changed: Renamed the debugging-related settings to reflect their functions better.
-	<li>(GUI) Changed: Tabulated settings in Settings window into groups.
-	<li>(GUI) Added: Settings for controlling the default state of the BOSS Log filters and the BOSS Log CSS.
+	<li>(API) Added: BOSS API released as a 32 bit DLL. See the BOSS API ReadMe for more information.
 	<li>(Docs) Changed: Major updates to main readme to reflect changes.
 	<li>(Docs) Added: Masterlist Syntax HTML documentation for BOSS team members and interested third parties.
 </ul>

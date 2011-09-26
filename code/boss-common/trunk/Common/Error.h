@@ -14,35 +14,36 @@
 #define __BOSS_ERROR_H__
 
 #include <string>
+#include <boost/cstdint.hpp>
 
 namespace boss {
 	using namespace std;
-
-	enum bossErrCode {
-		BOSS_ERROR_OK,
-		BOSS_ERROR_OBLIVION_AND_NEHRIM,
-		BOSS_ERROR_NO_MASTER_FILE,
-		BOSS_ERROR_FILE_READ_FAIL,
-		BOSS_ERROR_FILE_WRITE_FAIL,
-		BOSS_ERROR_FILE_NOT_UTF8,
-		BOSS_ERROR_MASTERLIST_NOT_FOUND,
-		BOSS_ERROR_NO_GAME_DETECTED,
-		BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL,
-		BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL,
-		BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL,
-		BOSS_ERROR_FILE_CRC_MISMATCH,
-		BOSS_ERROR_INVALID_PROXY_TYPE,
-		BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL,
-		BOSS_ERROR_FS_FILE_RENAME_FAIL,
-		BOSS_ERROR_FS_FILE_DELETE_FAIL,
-		BOSS_ERROR_CURL_INIT_FAIL,
-		BOSS_ERROR_CURL_SET_ERRBUFF_FAIL,
-		BOSS_ERROR_CURL_SET_OPTION_FAIL,
-		BOSS_ERROR_CURL_SET_PROXY_FAIL,
-		BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL,
-		BOSS_ERROR_CURL_PERFORM_FAIL,
-		BOSS_ERROR_CURL_USER_CANCEL
-	};
+	
+	//Error Codes
+	const uint32_t BOSS_ERROR_OK = 0;
+	const uint32_t BOSS_ERROR_OBLIVION_AND_NEHRIM = 1;
+	const uint32_t BOSS_ERROR_NO_MASTER_FILE = 2;
+	const uint32_t BOSS_ERROR_FILE_READ_FAIL = 3;
+	const uint32_t BOSS_ERROR_FILE_WRITE_FAIL = 4;
+	const uint32_t BOSS_ERROR_FILE_NOT_UTF8 = 5;
+	const uint32_t BOSS_ERROR_FILE_NOT_FOUND = 6;
+	const uint32_t BOSS_ERROR_NO_GAME_DETECTED = 7;
+	const uint32_t BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL = 8;
+	const uint32_t BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL = 9;
+	const uint32_t BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL = 10;
+	const uint32_t BOSS_ERROR_FILE_CRC_MISMATCH = 11;
+	const uint32_t BOSS_ERROR_INVALID_PROXY_TYPE = 12;
+	const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL = 13;
+	const uint32_t BOSS_ERROR_FS_FILE_RENAME_FAIL = 14;
+	const uint32_t BOSS_ERROR_FS_FILE_DELETE_FAIL = 15;
+	const uint32_t BOSS_ERROR_CURL_INIT_FAIL = 16;
+	const uint32_t BOSS_ERROR_CURL_SET_ERRBUFF_FAIL = 17;
+	const uint32_t BOSS_ERROR_CURL_SET_OPTION_FAIL = 18;
+	const uint32_t BOSS_ERROR_CURL_SET_PROXY_FAIL = 19;
+	const uint32_t BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL = 20;
+	const uint32_t BOSS_ERROR_CURL_PERFORM_FAIL = 21;
+	const uint32_t BOSS_ERROR_CURL_USER_CANCEL = 22;
+	const uint32_t BOSS_ERROR_MAX = 23;
 
 	class boss_error {
 	public:
@@ -53,25 +54,25 @@ namespace boss {
 			errSubject = "";
 		}
 		//For general errors not referencing specific files.
-		boss_error(bossErrCode internalErrCode) {
+		boss_error(uint32_t internalErrCode) {
 			errCode = internalErrCode;
 			externalErrString = "";
 			errSubject = "";
 		}
 		//For general errors referencing specific files.
-		boss_error(bossErrCode internalErrCode, string internalErrSubject) {
+		boss_error(uint32_t internalErrCode, string internalErrSubject) {
 			errCode = internalErrCode;
 			externalErrString = "";
 			errSubject = internalErrSubject;
 		}
 		//For errors from BOOST Filesystem functions.
-		boss_error(bossErrCode internalErrCode, string internalErrSubject, string errString) {
+		boss_error(uint32_t internalErrCode, string internalErrSubject, string errString) {
 			errCode = internalErrCode;
 			externalErrString = errString;
 			errSubject = internalErrSubject;
 		}
 		//For errors from cURL functions.
-		boss_error(string externalErrString, bossErrCode internalErrCode) {
+		boss_error(string externalErrString, uint32_t internalErrCode) {
 			errCode = internalErrCode;
 			externalErrString = externalErrString;
 			errSubject = "";
@@ -90,8 +91,8 @@ namespace boss {
 				return "\"" + errSubject + "\" cannot be written to!"; 
 			case BOSS_ERROR_FILE_NOT_UTF8:
 				return "\"" + errSubject + "\" is not encoded in valid UTF-8!"; 
-			case BOSS_ERROR_MASTERLIST_NOT_FOUND:
-				return "\"masterlist.txt\" cannot be found!"; 
+			case BOSS_ERROR_FILE_NOT_FOUND:
+				return "\"" + errSubject + "\" cannot be found!"; 
 			case BOSS_ERROR_NO_GAME_DETECTED:
 				return "No game detected!"; 
 			case BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL:
@@ -128,11 +129,11 @@ namespace boss {
 				return "No error.";
 			}
 		}
-		bossErrCode getCode() {
+		uint32_t getCode() {
 			return errCode;
 		}
 	private:
-		bossErrCode errCode;
+		uint32_t errCode;
 		string externalErrString;
 		string errSubject;
 	};

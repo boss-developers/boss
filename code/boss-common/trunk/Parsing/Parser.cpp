@@ -61,7 +61,7 @@ namespace boss {
 		string contents;
 
 		if (!fs::exists(file))
-			throw boss_error(BOSS_ERROR_MASTERLIST_NOT_FOUND);
+			throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, file.string());
 		else if (!ValidateUTF8File(file))
 			throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, file.string());
 
