@@ -21,5 +21,10 @@
 #include "Support/Helpers.h"
 #include "Support/Logger.h"
 #include "Updating/Updater.h"
-
+/*
+// DLL entry function (called on load, unload, ...)
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved) {
+    return TRUE;
+}
+*/
 #endif

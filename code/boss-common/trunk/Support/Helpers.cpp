@@ -134,14 +134,14 @@ namespace boss {
 		return string();
 	}
 
-	int Launch(const string& filename)
+	BOSS_COMMON int Launch(const string& filename)
 	{
 		const string cmd = launcher_cmd + " " + filename;
 		return ::system(cmd.c_str());
 	}
 
 	//Changes uppercase to lowercase and removes preceding and trailing spaces.	
-	string Tidy(string filename) {
+	BOSS_COMMON string Tidy(string filename) {
 		boost::algorithm::trim(filename);
 		boost::algorithm::to_lower(filename);
 		return filename;
@@ -281,7 +281,7 @@ namespace boss {
 	}
 
 	//Searches a hashset for the first matching string of a regex and returns its iterator position.
-	boost::unordered_set<string>::iterator FindRegexMatch(boost::unordered_set<string> set, boost::regex reg, boost::unordered_set<string>::iterator startPos) {
+	boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
 		while(startPos != set.end()) {
 			string mod = *startPos;
 			if (boost::regex_match(mod,reg))

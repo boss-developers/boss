@@ -58,34 +58,34 @@ namespace boss {
 	extern vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in MF1.
 
 	//Stores a message, should it be appropriate.
-	void StoreMessage(vector<message>& messages, message currentMessage);
+	void StoreMessage(vector<message>& messages, const message currentMessage);
 
 	//Stores the given item, should it be appropriate, and records any changes to open groups.
-	void StoreItem(vector<item>& list, item currentItem);
+	void StoreItem(vector<item>& list, const item currentItem);
 
 	//Defines the given masterlist variable, if appropriate.
-	void StoreVar(string var);
+	void StoreVar(const string var);
 
 	//Stores the global message.
-	void StoreGlobalMessage(message currentMessage);
+	void StoreGlobalMessage(const message currentMessage);
 
 	//MF1 compatibility function. Evaluates the MF1 FCOM conditional. Like it says on the tin.
-	void EvalOldFCOMConditional(bool& result, char var);
+	void EvalOldFCOMConditional(bool& result, const char var);
 
 	//MF1 compatibility function. Evaluates the MF1 OOO/BC conditional message symbols.
-	void EvalMessKey(keyType key);
+	void EvalMessKey(const keyType key);
 
 	//Checks if a masterlist variable is defined.
-	void CheckVar(bool& result, string var);
+	void CheckVar(bool& result, const string var);
 
 	//Returns the true path based on what type of file or keyword it is.
 	void GetPath(fs::path& file_path, string& file);
 
 	//Checks if the given mod has a version for which the comparison holds true.
-	void CheckVersion(bool& result, string var);
+	void CheckVersion(bool& result, const string var);
 
 	//Checks if the given mod has the given checksum.
-	void CheckSum(bool& result, unsigned int sum, string file);
+	void CheckSum(bool& result, const unsigned int sum, string file);
 
 	//Checks if the given file exists.
 	void CheckFile(bool& result, string file);
@@ -94,13 +94,13 @@ namespace boss {
 	void CheckRegex(bool& result, string reg);
 
 	//Evaluate a single conditional.
-	void EvaluateConditional(bool& result, metaType type, bool condition);
+	void EvaluateConditional(bool& result, const metaType type, const bool condition);
 
 	//Evaluate the second half of a complex conditional.
-	void EvaluateCompoundConditional(bool& result, string andOr, bool condition);
+	void EvaluateCompoundConditional(bool& result, const string andOr, const bool condition);
 
 	//Evaluate part of a shorthand conditional message.
-	void EvaluateConditionalMessage(string& message, string version, string file, string mod);
+	void EvaluateConditionalMessage(string& message, string version, string file, const string mod);
 
 	//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.
 	unsigned int HexStringToInt(string hex);
@@ -133,10 +133,10 @@ namespace boss {
 	extern string currentHeading;  //The current ini section heading.
 
 	//Set the boolean BOSS variable values while parsing.
-	void SetBoolVar(string var, bool value);
+	void SetBoolVar(string var, const bool value);
 
 	//Set the integer BOSS variable values while parsing.
-	void SetIntVar(string var, unsigned int value);
+	void SetIntVar(string var, const unsigned int value);
 
 	//Set the string BOSS variable values while parsing.
 	void SetStringVar(string var, string value);
@@ -159,16 +159,16 @@ namespace boss {
 	extern bool storeLine;  //Should the current message/sort line be stored.
 
 	// Error messages for rule validation
-	static string ESortLineInForRule("includes a sort line in a rule with a FOR rule keyword.");
-	static string EAddingModGroup("tries to add a group.");
-	static string ESortingGroupEsms("tries to sort the group \"ESMs\".");
-	static string ESortingMasterEsm("tries to sort the master .ESM file.");
-	static string EReferencingModAndGroup("references a mod and a group.");
-	static string ESortingGroupBeforeEsms("tries to sort a group before the group \"ESMs\".");
-	static string ESortingModBeforeGameMaster("tries to sort a mod before the master .ESM file.");
-	static string EInsertingToTopOfEsms("tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.");
-	static string EInsertingGroupOrIntoMod("tries to insert a group or insert something into a mod.");
-	static string EAttachingMessageToGroup("tries to attach a message to a group.");
+	static const string ESortLineInForRule("includes a sort line in a rule with a FOR rule keyword.");
+	static const string EAddingModGroup("tries to add a group.");
+	static const string ESortingGroupEsms("tries to sort the group \"ESMs\".");
+	static const string ESortingMasterEsm("tries to sort the master .ESM file.");
+	static const string EReferencingModAndGroup("references a mod and a group.");
+	static const string ESortingGroupBeforeEsms("tries to sort a group before the group \"ESMs\".");
+	static const string ESortingModBeforeGameMaster("tries to sort a mod before the master .ESM file.");
+	static const string EInsertingToTopOfEsms("tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.");
+	static const string EInsertingGroupOrIntoMod("tries to insert a group or insert something into a mod.");
+	static const string EAttachingMessageToGroup("tries to attach a message to a group.");
 
 	// Used to throw as exception when signaling a userlist syntax error, in order to make the code a bit more compact.
 	struct failure {
@@ -197,6 +197,7 @@ namespace boss {
 		qi::rule<string::const_iterator, line(), Skipper> sortOrMessageLine;
 		qi::rule<string::const_iterator, keyType(), Skipper> ruleKey, sortOrMessageKey;
 		qi::rule<string::const_iterator, string(), Skipper> object;
+		qi::rule<string::const_iterator, bool(), Skipper> stateKey;
 	
 		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what);
 	};

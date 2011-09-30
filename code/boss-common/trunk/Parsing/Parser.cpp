@@ -22,7 +22,7 @@ namespace boss {
 	using boost::spirit::qi::phrase_parse;
 
 	//Parses userlist into the given data structure.
-	bool parseUserlist(fs::path file, vector<rule>& ruleList) {
+	BOSS_COMMON bool parseUserlist(const fs::path file, vector<rule>& ruleList) {
 		Skipper skipper;
 		userlist_grammar grammar;
 		string::const_iterator begin, end;
@@ -54,7 +54,7 @@ namespace boss {
 	}
 
 	//Parses the given masterlist into the given data structure. Also works for the modlist.
-	bool parseMasterlist(fs::path file, vector<item>& modList) {
+	BOSS_COMMON bool parseMasterlist(const fs::path file, vector<item>& modList) {
 		Skipper skipper;
 		modlist_grammar grammar;
 		string::const_iterator begin, end;
@@ -79,7 +79,7 @@ namespace boss {
 	}
 
 	//Parses the ini, applying its settings.
-	bool parseIni(fs::path file) {
+	BOSS_COMMON bool parseIni(const fs::path file) {
 		Ini_Skipper skipper;
 		ini_grammar grammar;
 		string::const_iterator begin, end;
@@ -99,7 +99,7 @@ namespace boss {
 	}
 
 	//Reads an entire file into a string buffer.
-	void fileToBuffer(const fs::path file, string& buffer) {
+	BOSS_COMMON void fileToBuffer(const fs::path file, string& buffer) {
 		ifstream ifile(file.c_str());
 		if (ifile.fail())
 			return;
@@ -112,7 +112,7 @@ namespace boss {
 	}
 
 	//UTF-8 Validator
-	bool ValidateUTF8File(fs::path file) {
+	BOSS_COMMON bool ValidateUTF8File(const fs::path file) {
 		ifstream ifs(file.c_str());
 
 		istreambuf_iterator<char> it(ifs.rdbuf());

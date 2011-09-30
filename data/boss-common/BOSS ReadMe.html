@@ -789,6 +789,29 @@ some rights reserved, 2009-2011. Copyright is owned wholly by the Better Oblivio
 	<li>Commercial use of this software or masterlist.txt file is not permitted without permission.
 	<li>Publishing derivations and customisations of the BOSS or BOSS GUI programs or masterlist.txt file is not permitted without permission. Ask first.
 </ul>
+<p>A copy of libcurl's license is included below to comply with its terms.
+<blockquote><pre>COPYRIGHT AND PERMISSION NOTICE
+
+Copyright (c) 1996 - 2011, Daniel Stenberg, <daniel@haxx.se>.
+
+All rights reserved.
+
+Permission to use, copy, modify, and distribute this software for any purpose
+with or without fee is hereby granted, provided that the above copyright
+notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN
+NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+OR OTHER DEALINGS IN THE SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder shall not
+be used in advertising or otherwise to promote the sale, use or other dealings
+in this Software without prior written authorization of the copyright holder.
+</pre><blockquote>
 </div>
 
 <div id="links"><h1>Quick Links</h1>
@@ -851,6 +874,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 		</ul>
 		<li>Added: Support for MF2.2 syntax, including C-style comments, regular expression conditions, case-insensitive keywords and expanded conditional shorthands.
 		<li>Added: Built-in debug output logging support.
+		<li>Added: <code>DISABLE</code> keyword to user rules that can be placed before a rule's rule keyword to disable it, instead of commenting it out to do the same.
 	</ul>
 	<li>Command Line Interface:
 	<ul>
@@ -868,6 +892,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 			<li>Settings catagorised into tabs.
 			<li>Added settings for controlling the default state of the BOSS Log filters and the BOSS Log CSS.
 			<li>Added a <q>Log Debug Output</q> setting to allow logging of the debug output to the <q>BOSSDebugLog.txt</q> file.
+			<li>Added an option to select whether to use the GUI's User Rule Editor or to manually edit the userlist when editing user rules.
 		</ul>
 		<li>Changed: Simplified layout of main window options.
 		<li>Changed: Renamed some options to reflect their functions better.
@@ -960,12 +985,12 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>(Installer) Changed: Updated installer to reflect the various changes to BOSS's files and folders.
 	<li>(Docs) Changed: Significant content and formatting changes to main ReadMe, slight formatting changes to User Rules readme.
 </ul>
-<p><b>Version 1.65</b> - <i>1 December 2010</i>
+<p><b>Version 1.6.5</b> - <i>1 December 2010</i>
 <ul>
 	<li>Fixed: Userlist parser giving incorrect error messages for rules inserting plugins into groups.
 	<li>Fixed: BOSS reporting some plugins as unknown when they are ghosted.
 </ul>
-<p><b>Version 1.64</b> - <i>28 November 2010</i>
+<p><b>Version 1.6.4</b> - <i>28 November 2010</i>
 <ul>
 	<li>Fixed: Keywords, plugins and groups in user rules being unrecognised if they are padded by spaces.
 	<li>Fixed: Non-ASCII characters in plugin filenames causing crashes.
@@ -974,7 +999,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Added: <q>BOSS - Print Debug Info.bat</q> file to make debugging of BOSS errors simpler.
 	<li>Added: Nullsoft Scriptable Install installer for simpler BOSS installation.
 </ul>
-<p><b>Version 1.63</b> - <i>15 November 2010</i>
+<p><b>Version 1.6.3</b> - <i>15 November 2010</i>
 <ul>
 	<li>Fixed: Crashing when updating the masterlist if downloading an incorrectly formatted masterlist.
 	<li>Fixed: Plugins with duplicate masterlist entries causing load order errors.
@@ -983,7 +1008,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Changed: User rules can no longer sort a plugin relative to a plugin that is not in the masterlist and has not been sorted by another rule.
 	<li>Added: Check to userlist application of override rules to prevent incorrect usage resulting in load order errors.
 </ul>
-<p><b>Version 1.62</b> - <i>1 November 2010</i>
+<p><b>Version 1.6.2</b> - <i>1 November 2010</i>
 <ul>
 	<li>Fixed: Crashing when userlist contains badly formatted lines.
 	<li>Changed: Many code portability enhancements.
@@ -1005,7 +1030,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	</ul>
 	
 </ul>
-<p><b>Version 1.61</b> - <i>19 October 2010</i>
+<p><b>Version 1.6.1</b> - <i>19 October 2010</i>
 <ul>
 	<li>Fixed: Non-lowercase plugin extensions not being recognised and causing crashes and load order mistakes.
 	<li>Fixed: A potential bug with the masterlist updater causing memory issues.
@@ -1053,12 +1078,12 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Added: A separate masterlist for Fallout 3.
 	<li>Added: A version of BOSS specifically for Fallout 3 (BOSS-F).
 </ul>
-<p><b>Version 1.41</b> - <i>31 August 2009</i>
+<p><b>Version 1.4.1</b> - <i>31 August 2009</i>
 <ul>
 	<li>Fixed: Incorrect master file defined for Fallout 3.
 	<li>Fixed: Error messages not being displayed on some machines.
 </ul>
-<p><b>Versions 1.0 - 1.35</b> - <i>22 October 2008 to 24 June 2009</i>
+<p><b>Versions 1.0 - 1.3.5</b> - <i>22 October 2008 to 24 June 2009</i>
 <ul>
 	<li>Changes Not Recorded.
 </ul>

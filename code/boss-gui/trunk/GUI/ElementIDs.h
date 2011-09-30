@@ -31,6 +31,8 @@ enum {
     MENU_Quit,
 	MENU_OpenMainReadMe,
 	MENU_OpenUserRulesReadMe,
+	MENU_OpenMasterlistReadMe,
+	MENU_OpenAPIReadMe,
 	MENU_ShowAbout,
 	MENU_ShowSettings,
 	DROPDOWN_LogFormat,
@@ -49,7 +51,17 @@ enum {
 	//Settings window.
 	OPTION_OKExitSettings,
 	OPTION_CancelExitSettings,
-	DROPDOWN_ProxyType
+	DROPDOWN_ProxyType,
 	//User Rules Editor.
+	OPTION_RuleList,
+	OPTION_NewRule,
+	OPTION_EditRule,
+	OPTION_DeleteRule,
+	LIST_Modlist,
+	OPTION_OKExitEditor,
+	OPTION_CancelEditor,
+	TEXT_ModMessages,
+	SEARCH_Masterlist,
+	SEARCH_Modlist
 };
 #endif

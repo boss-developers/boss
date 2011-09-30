@@ -26,6 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BOSS-Common.h" />
+    <ClInclude Include="Common\DllDef.h" />
     <ClInclude Include="Common\Error.h" />
     <ClInclude Include="Common\Execute.h" />
     <ClInclude Include="Common\Globals.h" />
@@ -58,6 +59,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -112,7 +114,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib;$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\mswu;$(SolutionDir)..\..\..\lib\curl\lib\Release;$(SolutionDir)..\..\..\lib\boost\stage\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;comctl32.lib;rpcrt4.lib;advapi32.lib;wsock32.lib;Version.lib;libcurl.lib;winmm.lib;wldap32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <Version>1.8.1</Version>
+      <Version>1.9</Version>
     </Link>
     <Lib>
       <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;libcurl.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;Version.lib;wldap32.lib;ws2_32.lib</AdditionalDependencies>

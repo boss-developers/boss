@@ -72,7 +72,7 @@ namespace boss {
 		fileIndex = 0;
 	}
 
-	vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
+	BOSS_COMMON vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
 	string filesURL;				//The URL at which the updated files are found.
 	int ans;						//The answer to the cancel download confirmation message. 
 
@@ -192,7 +192,7 @@ namespace boss {
 	}
 
 	//Checks if an Internet connection is present.
-	bool CheckConnection() {
+	BOSS_COMMON bool CheckConnection() {
 		CURL *curl;									//cURL handle
 		char errbuff[CURL_ERROR_SIZE];
 		CURLcode ret;
@@ -308,7 +308,7 @@ namespace boss {
 	}
 
 	//Cleans up after the user cancels a download.
-	void CleanUp() {
+	BOSS_COMMON void CleanUp() {
 		//Iterate through vector of updated files. Delete any that exist locally.
 		size_t size = updatedFiles.size();
 		for (size_t i=0;i<size;i++) {
@@ -332,7 +332,7 @@ namespace boss {
 	void GetLocalMasterlistRevisionDate(unsigned int& revision, string& date) {
 		string line, newline = "Masterlist Revision:";
 		ifstream mlist;
-		char cbuffer[4096];
+		char cbuffer[MAXLENGTH];
 		size_t pos1,pos2,pos3;
 
 		if (fs::exists(masterlist_path)) {
@@ -340,7 +340,7 @@ namespace boss {
 			if (mlist.fail())
 				throw boss_error(BOSS_ERROR_FILE_READ_FAIL, masterlist_path.string());
 			while (!mlist.eof()) {
-				mlist.getline(cbuffer,4096);
+				mlist.getline(cbuffer,sizeof(cbuffer));
 				line=cbuffer;
 				if (line.find(newline) != string::npos) {
 					//Hooray, we've found the line.
@@ -482,7 +482,7 @@ namespace boss {
 	}
 
 	//Updates the local masterlist to the latest available online.
-	void UpdateMasterlist(uiStruct ui, unsigned int& localRevision, string& localDate, unsigned int& remoteRevision, string& remoteDate) {							//cURL handle
+	BOSS_COMMON void UpdateMasterlist(uiStruct ui, unsigned int& localRevision, string& localDate, unsigned int& remoteRevision, string& remoteDate) {							//cURL handle
 		string buffer,newline;		//A bunch of strings.
 		ifstream mlist;								//Input stream.
 		ofstream out;								//Output stream.
@@ -578,7 +578,7 @@ namespace boss {
 	}
 
 	//Checks if a new release of BOSS is available or not.
-	string IsBOSSUpdateAvailable() {
+	BOSS_COMMON string IsBOSSUpdateAvailable() {
 		string remoteVersionStr, proxy_str;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
@@ -600,14 +600,15 @@ namespace boss {
 		}
 
 		//Now compare versions.
-		if (remoteVersionStr.compare(g_version) > 0) {
+		string ver = IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH);
+		if (remoteVersionStr.compare(ver) > 0) {
 			return remoteVersionStr;
 		} else
 			return "";
 	}
 
 	//Downloads and installs a BOSS update.
-	vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const int updateType, const string updateVersion) {
+	BOSS_COMMON vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const int updateType, const string updateVersion) {
 		FetchUpdateFileList(updateType, updateVersion);
 		DownloadFiles(ui, updateType);
 		return InstallFiles(updateType);

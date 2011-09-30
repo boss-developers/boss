@@ -15,12 +15,13 @@
 #include <string>
 #include <boost/filesystem.hpp>
 #include "Common/Lists.h"
+#include "Common/DllDef.h"
 
 namespace boss {
 	namespace fs = boost::filesystem;
 	using namespace std;
 
-	struct summaryCounters {
+	BOSS_COMMON struct summaryCounters {
 		unsigned int recognised; 
 		unsigned int unrecognised;
 		unsigned int ghosted;
@@ -30,7 +31,7 @@ namespace boss {
 		summaryCounters();
 	};
 
-	struct bosslogContents {
+	BOSS_COMMON struct bosslogContents {
 		string generalMessages;
 		string summary;
 		string userlistMessages;
@@ -44,38 +45,38 @@ namespace boss {
 	};
 
 	//Record recognised mod list from last HTML BOSSlog generated.
-	string GetOldRecognisedList(fs::path log);
+	BOSS_COMMON string GetOldRecognisedList(const fs::path log);
 
 	//Detect the game BOSS is installed for.
 	//1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim. Throws exception if error.
-	void GetGame();
+	BOSS_COMMON void GetGame();
 
 	//Gets the string representation of the detected game.
-	string GetGameString();
+	BOSS_COMMON string GetGameString();
 
 	//Returns the expeccted master file.
-	string GameMasterFile();
+	BOSS_COMMON string GameMasterFile();
 
 	//Gets the timestamp of the game's master file. Throws exception if error.
-	time_t GetMasterTime();
+	BOSS_COMMON time_t GetMasterTime();
 
 	//Create a modlist containing all the mods that are installed or referenced in the userlist with their masterlist messages.
 	//Returns the vector position of the last recognised mod in modlist.
-	size_t BuildWorkingModlist(vector<item>& modlist, vector<item> masterlist, const vector<rule>& userlist);
+	BOSS_COMMON size_t BuildWorkingModlist(vector<item>& modlist, vector<item> masterlist, const vector<rule>& userlist);
 
 	//Applies the userlist rules to the working modlist.
-	void ApplyUserRules(vector<item>& modlist, const vector<rule>& userlist, string& ouputBuffer, size_t& lastRecognisedPos);
+	BOSS_COMMON void ApplyUserRules(vector<item>& modlist, const vector<rule>& userlist, string& ouputBuffer, size_t& lastRecognisedPos);
 
 	//Lists Script Extender plugin info in the output buffer. Returns the Script Extender detected.
-	string GetSEPluginInfo(string& outputBuffer);
+	BOSS_COMMON string GetSEPluginInfo(string& outputBuffer);
 
 	//Sort recognised mods.
-	void SortRecognisedMods(const vector<item>& modlist, const size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters);
+	BOSS_COMMON void SortRecognisedMods(const vector<item>& modlist, const size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters);
 
 	//List unrecognised mods.
-	void ListUnrecognisedMods(const vector<item>& modlist, const size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters);
+	BOSS_COMMON void ListUnrecognisedMods(const vector<item>& modlist, const size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters);
 
 	//Prints the full BOSSlog.
-	void PrintBOSSlog(const bosslogContents contents, const summaryCounters counters, const string scriptExtender);
+	BOSS_COMMON void PrintBOSSlog(const bosslogContents contents, const summaryCounters counters, const string scriptExtender);
 }
 #endif

@@ -74,6 +74,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 BOOST_FUSION_ADAPT_STRUCT(
 	boss::rule,
+	(bool, enabled)
 	(boss::keyType, ruleKey)
 	(std::string, ruleObject)
 	(std::vector<boss::line>, lines)

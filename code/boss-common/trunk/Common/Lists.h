@@ -16,7 +16,8 @@
 
 #include <string>
 #include <vector>
-#include "boost/filesystem.hpp"
+#include <boost/filesystem.hpp>
+#include "Common/DllDef.h"
 
 namespace boss {
 	using namespace std;
@@ -26,7 +27,7 @@ namespace boss {
 	// General data structures
 	////////////////////////////////////////
 
-	enum keyType {
+	BOSS_COMMON enum keyType {
 		NONE,
 		//Userlist keywords.
 		ADD,
@@ -51,50 +52,51 @@ namespace boss {
 		BCSAY
 	};
 
-	extern vector<string> userlistErrorBuffer;  //Holds any error messages generated during parsing for printing later.
-	extern vector<string> masterlistErrorBuffer;  //Holds any error messages generated during parsing for printing later.
-	extern vector<string> iniErrorBuffer;  //Holds any error messages generated during parsing for printing later.
+	BOSS_COMMON extern vector<string> userlistErrorBuffer;  //Holds any error messages generated during parsing for printing later.
+	BOSS_COMMON extern vector<string> masterlistErrorBuffer;  //Holds any error messages generated during parsing for printing later.
+	BOSS_COMMON extern vector<string> iniErrorBuffer;  //Holds any error messages generated during parsing for printing later.
 
 	////////////////////////////////////////
 	// Modlist/Masterlist data structures
 	////////////////////////////////////////
 
-	enum metaType {
+	BOSS_COMMON enum metaType {
 		IF,
 		IFNOT
 	};
 
-	enum itemType {
+	BOSS_COMMON enum itemType {
 		MOD,
 		BEGINGROUP,
 		ENDGROUP,
 		REGEX
 	};
 
-	struct message {
+	BOSS_COMMON struct message {
 		keyType key;
 		string data;
 	};
 
-	struct item {
+	BOSS_COMMON struct item {
 		itemType type;
 		fs::path name;
 		vector<message> messages;
 	};
 
-	extern vector<message> globalMessageBuffer;  //Holds any global messages from the masterlist to be printed in BOSS.
+	BOSS_COMMON extern vector<message> globalMessageBuffer;  //Holds any global messages from the masterlist to be printed in BOSS.
 
 	////////////////////////////////////////
 	// Userlist data structures
 	////////////////////////////////////////
 
 	//Userlist data structure.
-	struct line {
+	BOSS_COMMON struct line {
 		keyType key;
 		string object;
 	};
 
-	struct rule {
+	BOSS_COMMON struct rule {
+		bool enabled;
 		keyType ruleKey;
 		string ruleObject;
 		vector<line> lines;
@@ -105,23 +107,23 @@ namespace boss {
 	////////////////////////////////////////
 
 	//Find a mod by name. Will also find the starting position of a group.
-	size_t GetModPos(vector<item> modList, string filename);
+	BOSS_COMMON size_t GetModPos(const vector<item> modList, const string filename);
 
 	//Find the end of a group by name.
-	size_t GetGroupEndPos(vector<item> modList, string groupname);
+	BOSS_COMMON size_t GetGroupEndPos(const vector<item> modList, const string groupname);
 
 	//Date comparison, used for sorting mods in modlist.
-	bool SortModsByDate(item mod1, item mod2);
+	bool SortModsByDate(const item mod1, const item mod2);
 
 	//Adds mods in directory to modlist in date order (AKA load order).
-	void BuildModlist(vector<item> &modList);
+	BOSS_COMMON void BuildModlist(vector<item> &modList);
 
 	//Save the modlist (or masterlist) to a file, printing out all the information in the data structure.
-	void SaveModlist(vector<item> modList, fs::path file);
+	BOSS_COMMON void SaveModlist(const vector<item> modList, const fs::path file);
 
 	//Returns a string representation of the given keyType.
 	//Possibly a better way to do this.
-	string KeyToString(keyType key);
+	BOSS_COMMON string KeyToString(const keyType key);
 
 	//Returns a keyType representation of the given key string.
 	//Possibly a better way to do this.

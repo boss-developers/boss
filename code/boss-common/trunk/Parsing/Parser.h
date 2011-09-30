@@ -18,24 +18,25 @@
 #include <vector>
 #include "boost/filesystem.hpp"
 #include "Common/Lists.h"
+#include "Common/DllDef.h"
 
 namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
 	//Parses userlist into the given data structure.
-	bool parseUserlist(fs::path file, vector<rule>& ruleList);
+	BOSS_COMMON bool parseUserlist(const fs::path file, vector<rule>& ruleList);
 
 	//Parses the given masterlist into the given data structure. Also works for the modlist.
-	bool parseMasterlist(fs::path file, vector<item>& modList);
+	BOSS_COMMON bool parseMasterlist(const fs::path file, vector<item>& modList);
 
 	//Parses the ini, applying its settings.
-	bool parseIni(fs::path file);
+	BOSS_COMMON bool parseIni(const fs::path file);
 
 	//Reads an entire file into a string buffer.
-	void fileToBuffer(const fs::path file, string& buffer);
+	BOSS_COMMON void fileToBuffer(const fs::path file, string& buffer);
 
 	//UTF-8 Validator
-	bool ValidateUTF8File(fs::path file);
+	BOSS_COMMON bool ValidateUTF8File(const fs::path file);
 }
 #endif

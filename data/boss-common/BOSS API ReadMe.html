@@ -58,7 +58,12 @@ API Documentation</div>
 	<li>Extract dirty mod messages from the masterlist and determine cleanliness of mods.
 	<li>Write a minimal masterlist containing only mods with Bash Tag suggestions, and those suggestions.
 </ul>
-<p>The API can also handle determining compatibility with other versions of BOSS that may be present.
+<p>The API can also handle determining compatibility with other versions of BOSS that may be present. The API has a few potential shortcomings over a general file read, owing to the fact that it parses the lists in the same manner that BOSS itself does:
+<ul>
+	<li>Dirty mod information available is dependent on the user's installed mod list. This is because conditional messages are evaluated during parsing so the resulting data only contains items relevant to the user's install. There is no current solution to this besides reloading the database by calling Load().
+	<li>Regular expressions in the masterlist are used to match mods in the user's install. As such, they should be re-evaluated when the installed mod list changes. A function for doing so is provided.
+</ul>
+<p>These shortcomings will be addressed in updates to the API, either in pre-release or in future releases.
 <p>Below is a short overview of BOSS's masterlist, userlist and their capabilities for those unfamiliar with them:
 <p>The masterlist is the file which holds the load order of all BOSS's recognised plugins. There is a separate masterlist for each game that BOSS supports, but since it only ever works on one game at a time, only one masterlist is generally ever referred to at any one time. The masterlist also holds messages to attach to plugins that BOSS displays in its BOSS Log output file, and these messages include general notes, Bash Tag suggestions (for addition and/or removal), requirements, incompatibilities, information regarding dirty edits, warnings and errors.
 <p>The userlist is a file that BOSS users can use to override or add to BOSS's sorting and message display functionality using a specific rule syntax. The capabilities of these rules include overriding BOSS's ordering of individual plugins or groups of plugins, having BOSS sort plugins it would otherwise not recognise (ie. that are not in its masterlist) and adding or overriding plugin messages.
@@ -76,30 +81,27 @@ API Documentation</div>
 
 <p><pre><code>typedef struct {
     uint32_t id;
-    uint8_t * name;
+    const uint8_t * name;
 } BashTag;</code></pre>
 <p>The BashTag structure gives the Unique Identifier (UID) for each Bash Tag and the corresponding Bash Tag name.
 </div>
 
-<div id="types"><h1>Error Codes</h1>
-<p>The BOSS API functions uses the following return codes to signal error types:
+<div id="types"><h1>Return Codes</h1>
+<p>The BOSS API functions uses the following uint32_t return codes to signal how a function completes:
 <ul>
-	<li>BOSS_API_ERROR_OK;
-	<li>BOSS_API_ERROR_NO_MASTER_FILE;
-	<li>BOSS_API_ERROR_FILE_READ_FAIL;
-	<li>BOSS_API_ERROR_FILE_WRITE_FAIL;
-	<li>BOSS_API_ERROR_FILE_NOT_UTF8;
-	<li>BOSS_API_ERROR_FILE_NOT_FOUND;
-	<li>BOSS_API_ERROR_NO_MEM;
-	<li>BOSS_API_ERROR_FS_FILE_RENAME_FAIL;
-	<li>BOSS_API_ERROR_FS_FILE_DELETE_FAIL;
-	<li>BOSS_API_ERROR_PARSE_FAIL;
-	<li>BOSS_API_ERROR_UNSPECIFIED;
-	<li>BOSS_API_ERROR_OVERWRITE_FAIL;
-	<li>BOSS_API_ERROR_INVALID_ARGS;
-	<li>BOSS_API_ERROR_TAGMAP_EXISTS;
+	<li>BOSS_API_ERROR_OK
+		<ul><li>This signifies that a function completed successfully.</ul>
+	<li>BOSS_API_ERROR_FILE_WRITE_FAIL
+	<li>BOSS_API_ERROR_FILE_NOT_UTF8
+	<li>BOSS_API_ERROR_FILE_NOT_FOUND
+	<li>BOSS_API_ERROR_PARSE_FAIL
+	<li>BOSS_API_ERROR_NO_MEM
+	<li>BOSS_API_ERROR_OVERWRITE_FAIL
+	<li>BOSS_API_ERROR_INVALID_ARGS
+	<li>BOSS_API_ERROR_TAGMAP_EXISTS
+	<li>BOSS_API_ERROR_MAX
+		<ul><li>This matches the value of the highest-numbered return code (BOSS_API_TAGMAP_EXISTS). It isn't returned by any functions.</ul>
 </ul>
-<p>The codes use the uint32_t variable type. BOSS_API_ERROR_OK is unlike the others as it signifies a function's successful operation.
 </div>
 
 
@@ -123,7 +125,11 @@ API Documentation</div>
 <h2>Database Loading Functions</h2>
 
 <p><code>uint32_t Load (boss_db db, const uint8_t * masterlistPath, const uint8_t * userlistPath, const uint8_t * dataPath);</code>
-<p>Loads the masterlist and userlist from the paths specified. Can be called multiple times. If an error is encountered, the database remains unchanged. Paths are case-sensitive if the underlying filesystem is case-sensitive.
+<p>Loads the masterlist and userlist from the paths specified. Can be called multiple times. If an error is encountered, the database remains unchanged. Paths are case-sensitive if the underlying filesystem is case-sensitive. masterlistPath and userlistPath are files. dataPath is a directory.
+
+<p><code>uint32_t ReEvalRegex(boss_db db, const uint8_t * dataPath);</code>
+<p>Re-evaluates the masterlist's regex entries, so Load() doesn't need to be called whenever the mods installed are changed. This doesn't need to be used if Load() is called, as the evaluation is incorporated into Load() too. Paths are case-sensitive if the underlying filesystem is case-sensitive.
+
 
 <h2>Database Access Functions</h2>
 <p><code>uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, uint32_t * numTags);</code>
@@ -134,7 +140,7 @@ API Documentation</div>
 
 
 
-<p><code>uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName, uint8_t ** message, uint32_t * needsCleaning);</code>
+<p><code>uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName, const uint8_t ** message, uint32_t * needsCleaning);</code>
 <p>Returns the message associated with a dirty mod and whether the mod needs cleaning. If a mod has no dirty mmessage, *message will be NULL. modName is case-insensitive. The return values for needsCleaning are:
 <ul>
 	<li>0 == no

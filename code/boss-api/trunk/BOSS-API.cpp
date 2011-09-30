@@ -12,21 +12,21 @@
 #include "BOSS-Common.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/unordered_map.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 using namespace boss;
 
 using boost::algorithm::trim_copy;
 using boost::algorithm::to_lower_copy;
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+using boost::lexical_cast;
 
 ////////////////////////
 // Types (Internal)
 ////////////////////////
+
+// Version string.
+	static const string boss_version = IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH);
 
 // Structure for a single plugin's data.
 struct modEntry {
@@ -38,7 +38,7 @@ struct modEntry {
 
 // Database structure.
 struct _boss_db_int {
-	vector<modEntry> userlistData, masterlistData;	//Internal data structures for userlist Bash Tag suggestions and masterlist Bash Tag suggestions and cleaning messages.
+	vector<modEntry> userlistData, masterlistData, regexData, regexMatchData;	//Internal data structures for userlist Bash Tag suggestions and masterlist Bash Tag suggestions and cleaning messages.
 	map<uint32_t,string> bashTagMap;				//A hashmap containing all the Bash Tag strings found in the masterlist and userlist and their unique IDs.
 													//Ordered to make ensuring UIDs easy (check the UID of the last element then increment). Strings are case-preserved.
 	BashTag * extTagMap;				//Holds the pointer for the bashTagMap returned by GetBashTagMap().
@@ -55,10 +55,6 @@ struct _boss_db_int {
 	}
 };
 
-#ifdef __cplusplus
-}
-#endif
-
 //Get a Bash Tag's position in the bashTagMap from its string name.
 map<uint32_t, string>::iterator FindBashTag(map<uint32_t,string> bashTagMap, string value) {
 	map<uint32_t, string>::iterator mapPos = bashTagMap.begin();
@@ -67,40 +63,6 @@ map<uint32_t, string>::iterator FindBashTag(map<uint32_t,string> bashTagMap, str
 			break;
 	}
 	return mapPos;
-}
-
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-
-
-// String conversion from std::string to uint8_t*.
-// Assumes both have memory allocated.
-uint32_t StdStringToUint8_t(const string str, uint8_t ** ostr) {
-	uint32_t length = str.length();
-	if (length != (sizeof(ostr) / sizeof(uint8_t)))
-		return BOSS_API_ERROR_NO_MEM;
-	//Fill memory allocated.
-	for (uint32_t i=0;i<length;i++) {
-		*ostr[i] = str[i];
-	}
-	return BOSS_API_ERROR_OK;
-}
-
-//String conversion from uint8_t* to std::string.
-uint32_t Uint8_tToStdString(const uint8_t * str, string * ostr) {
-	//Check for valid args.
-	if (str == 0)
-		return BOSS_API_ERROR_INVALID_ARGS;
-
-	uint32_t length = sizeof(str) / sizeof(uint8_t);
-	for (uint32_t i=0;i<length;i++) {
-		ostr[i] = str[i];
-	}
-	return BOSS_API_ERROR_OK;
 }
 
 // The following are the possible error codes that the API can return.
@@ -114,6 +76,8 @@ BOSS_API const uint32_t BOSS_API_ERROR_NO_MEM				=	BOSS_ERROR_MAX + 2;
 BOSS_API const uint32_t BOSS_API_ERROR_OVERWRITE_FAIL		=	BOSS_ERROR_MAX + 3;
 BOSS_API const uint32_t BOSS_API_ERROR_INVALID_ARGS			=	BOSS_ERROR_MAX + 4;
 BOSS_API const uint32_t BOSS_API_ERROR_TAGMAP_EXISTS		=	BOSS_ERROR_MAX + 5;
+BOSS_API const uint32_t BOSS_API_ERROR_MAX					=	BOSS_API_ERROR_TAGMAP_EXISTS;
+
 
 //////////////////////////////
 // Version Functions
@@ -121,9 +85,9 @@ BOSS_API const uint32_t BOSS_API_ERROR_TAGMAP_EXISTS		=	BOSS_ERROR_MAX + 5;
 
 // Returns whether this version of BOSS supports the API from the given 
 // BOSS version. Abstracts BOSS API stability policy away from clients.
-BOSS_API bool IsCompatibleVersion (uint32_t bossVersionMajor, uint32_t bossVersionMinor) {
-	//The 1.9 API is backwards compatible with all 1.x versions of BOSS.
-	if (bossVersionMajor <= 1 && bossVersionMajor <= 9)
+BOSS_API bool IsCompatibleVersion (uint32_t bossVersionMajor, uint32_t bossVersionMinor, uint32_t bossVersionPatch) {
+	//The 1.9 API is backwards compatible with all 1.x (x<=9) versions of BOSS, and forward compatible with all 1.9.x versions.
+	if (bossVersionMajor <= 1 && bossVersionMajor <= 9 && bossVersionPatch)
 		return true;
 	else
 		return false;
@@ -135,17 +99,9 @@ BOSS_API uint32_t GetVersionString (const uint8_t ** bossVersionStr) {
 	//Check for valid args.
 	if (bossVersionStr == 0)
 		return BOSS_API_ERROR_INVALID_ARGS;
-	
-	uint8_t * ver;
-	//Allocate memory.
-	ver = (uint8_t*)malloc(sizeof(uint8_t) * g_version.length());  //Returns null if malloc failed.
-	if (ver == 0)
-		return BOSS_API_ERROR_NO_MEM;
-	
-	uint32_t ret = StdStringToUint8_t(g_version, &ver);
-	if (ret == BOSS_API_ERROR_OK)
-		*bossVersionStr = ver;
-	return ret;
+
+	*bossVersionStr = reinterpret_cast<const uint8_t *>(boss_version.c_str());
+	return BOSS_API_ERROR_OK;
 }
 
 
@@ -159,22 +115,29 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db) {
 	//Check for valid args.
 	if (db == 0)
 		return BOSS_API_ERROR_INVALID_ARGS;
-	*db = new _boss_db_int;
+
+	boss_db retVal = new _boss_db_int;
+	if (retVal == 0)
+		return BOSS_API_ERROR_NO_MEM;
+	*db = retVal;
 	return BOSS_API_ERROR_OK;
 }
 BOSS_API void     DestroyBossDb (boss_db db) {
 	//Check for valid args.
 	if (db != 0) {
 		//Free memory at pointers stored in structure.
-		free(db->extTagMap);
+		if (db->extTagMap != 0)
+			free(db->extTagMap);
 		vector<uint32_t*>::iterator bashTagIter = db->extTagIds.begin();
 		while (bashTagIter != db->extTagIds.end()) {
-			free(*bashTagIter);
+			if (*bashTagIter != 0)
+				free(*bashTagIter);
 			++bashTagIter;
 		}
 		vector<uint8_t*>::iterator messageIter = db->extMessages.begin();
 		while (messageIter != db->extMessages.end()) {
-			free(*messageIter);
+			if (*messageIter != 0)
+				free(*messageIter);
 			++messageIter;
 		}
 	
@@ -208,10 +171,9 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	//    If an error is encountered at any point, first set paths back to defaults,
 	//    then exit immediately. DB is only changed at the end so it is unchanged 
 	//    in case of error.
-	uint32_t ret;
 	map<uint32_t,string> bashTagMap;
 	vector<item> masterlist;
-	vector<modEntry> masterlistData, userlistData;
+	vector<modEntry> masterlistData, userlistData, regexData;
 	vector<rule> userlist;
 	
 	//Check for valid args.
@@ -219,20 +181,11 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 		return BOSS_API_ERROR_INVALID_ARGS;
 	
 	//PATH SETTING
-	string uPath, mPath, dPath;
-	ret = Uint8_tToStdString(masterlistPath, &mPath);
-	if (ret != BOSS_API_ERROR_OK)
-		return ret;
-	ret = Uint8_tToStdString(userlistPath, &uPath);
-	if (ret != BOSS_API_ERROR_OK)
-		return ret;
-	ret = Uint8_tToStdString(dataPath, &dPath);
-	if (ret != BOSS_API_ERROR_OK)
-		return ret;
-	data_path = fs::path(dPath);
-	masterlist_path = fs::path(mPath);
-	userlist_path = fs::path(uPath);
-	
+	data_path = fs::path(reinterpret_cast<const char *>(dataPath));
+	masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
+	userlist_path = fs::path(reinterpret_cast<const char *>(userlistPath));	
+
+
 	//PARSING - Masterlist
 	try {
 		parseMasterlist(masterlist_path, masterlist);
@@ -247,15 +200,7 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	if (!masterlistErrorBuffer.empty())
 		return BOSS_API_ERROR_PARSE_FAIL;
 	
-	//Build modlist. Not using boss::BuildModlist() as that builds to a vector<item> in load order, which isn't necessary.
-	boost::unordered_set<string> hashset;  //Holds installed mods for checking against masterlist
-	for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
-		const fs::path filename = itr->path().filename();
-		const string ext = to_lower_copy(itr->path().extension().string());
-		if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost"))	//Add file to hashset.
-			hashset.insert(Tidy(filename.string()));
-	}
-	
+
 	//PARSING - Userlist
 	try {
 		bool parsed = parseUserlist(userlist_path,userlist);
@@ -272,28 +217,14 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 			return BOSS_API_ERROR_PARSE_FAIL;
 	}
 	
+
 	//CONVERSION - Masterlist
-	boost::unordered_set<string>::iterator setPos;
 	map<uint32_t, string>::iterator mapPos;
 	vector<item>::iterator iter = masterlist.begin();
 	while (iter != masterlist.end()) {
 		modEntry mod;
 		if (iter->type == MOD && !iter->messages.empty()) {  //Might be worth remembering.
-			bool hasMessages = false, isInstalled = false;
-
-			//Check if the mod is installed.
-			setPos = hashset.find(Tidy(iter->name.string()));
-			if (setPos != hashset.end())									//Mod found in hashset. 
-				isInstalled  = true;
-			else {
-				//Mod not found. Look for ghosted mod.
-				iter->name = fs::path(iter->name.string() + ".ghost");		//Add ghost extension to mod name.
-				setPos = hashset.find(Tidy(iter->name.string()));
-				if (setPos != hashset.end())									//Mod found in hashset.
-						isInstalled  = true;
-			}
-			if (!isInstalled)
-				continue;
+			bool hasMessages = false /*, isInstalled = false */;
 
 			//Find out whether mod already has a dataEntry or not.
 			vector<modEntry>::iterator dataIter = masterlistData.begin();
@@ -466,32 +397,24 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 			if (mod.cleaningMessage.empty() && mod.bashTagsAdded.empty() || mod.bashTagsRemoved.empty())
 				continue;  //Nothing of interest.
 
-			//Now check to see if it matches any installed mods.
-			//Form a regex.
-			boost::regex reg(Tidy(iter->name.string())+"(.ghost)?",boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
-			//Now start looking.
-			setPos = hashset.begin();
-			do {
-				setPos = FindRegexMatch(hashset, reg, setPos);
-				if (setPos != hashset.end()) {  //Mod is installed.
-					//Check if there is already an existing modEntry in the db masterlistData structure with this plugin name.
-					//If there is, don't add this one's info, as BOSS itself only works with the first found and the API should behave the same way.
-					vector<modEntry>::iterator dataIter = masterlistData.begin();
-					string plugin = iter->name.string();
-					while (dataIter != masterlistData.end()) {
-						if (Tidy(plugin) == Tidy(dataIter->name))
-							break;
-						++dataIter;
-					}
-					//Now if dataIter == masterlistData.end(), the mod does not have an entry, otherwise it does.
+			//To save clients having to Load() every time their load order changes, 
+			//move the regex matching to a separate function (called by Load() and client).
+			//To tell regexes and normal mod entries apart, add regexes to a different vector.
 
-					if (dataIter == masterlistData.end()) {  //Interesting info, but no existing modEntry.
-						mod.name = plugin;
-						masterlistData.push_back(mod);
-					}
-				}
-				++setPos;
-			} while (setPos != hashset.end());
+			//To ensure ghosted mods are matched, add .ghost regex.
+			mod.name = iter->name.string()+"(.ghost)?";
+
+			//Now check that regex is not already in vector.
+			vector<modEntry>::iterator dataIter = regexData.begin();
+			while (dataIter != regexData.end()) {
+				if (Tidy(mod.name) == Tidy(dataIter->name))
+					break;
+				++dataIter;
+			}
+
+			if (dataIter == regexData.end()) {  //Interesting info, but no existing modEntry.
+				regexData.push_back(mod);
+			}
 		}
 		++iter;
 	}
@@ -625,22 +548,82 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 
 	//FREE CURRENT POINTERS
 	//Free memory at pointers stored in structure.
-	free(db->extTagMap);
+	if (db->extTagMap != 0)
+		free(db->extTagMap);
 	vector<uint32_t*>::iterator bashTagIter = db->extTagIds.begin();
 	while (bashTagIter != db->extTagIds.end()) {
-		free(*bashTagIter);
+		if (*bashTagIter != 0)
+			free(*bashTagIter);
 		++bashTagIter;
 	}
 	vector<uint8_t*>::iterator messageIter = db->extMessages.begin();
 	while (messageIter != db->extMessages.end()) {
-		free(*messageIter);
+		if (*messageIter != 0)
+			free(*messageIter);
 		++messageIter;
 	}
 	
 	//DB SET
 	db->masterlistData = masterlistData;
+	db->regexData = regexData;
 	db->userlistData = userlistData;
-	db->bashTagMap = bashTagMap;	
+	db->bashTagMap = bashTagMap;
+	ReEvalRegex(db, dataPath);
+	return BOSS_API_ERROR_OK;
+}
+
+BOSS_API uint32_t ReEvalRegex(boss_db db, const uint8_t * dataPath) {
+	//Check for valid args.
+	if (db == 0)
+		return BOSS_API_ERROR_INVALID_ARGS;
+		
+	//PATH SETTING
+	data_path = fs::path(reinterpret_cast<const char *>(dataPath));
+
+
+	vector<modEntry> matches;
+	//Build modlist. Not using boss::BuildModlist() as that builds to a vector<item> in load order, which isn't necessary.
+	boost::unordered_set<string> hashset;  //Holds installed mods for checking against masterlist
+	boost::unordered_set<string>::iterator setPos;
+	for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
+		const fs::path filename = itr->path().filename();
+		const string ext = to_lower_copy(itr->path().extension().string());
+		if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost"))	//Add file to hashset.
+			hashset.insert(Tidy(filename.string()));
+	}
+
+	//Now search through hashset for each regexData element and add matches o a regexMatchData vector.
+	vector<modEntry>::iterator iter = db->regexData.begin();
+	while (iter != db->regexData.end()) {
+		//Now check to see if it matches any installed mods.
+		//Form a regex.
+		boost::regex reg(Tidy(iter->name),boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
+		//Now start looking.
+		setPos = hashset.begin();
+		do {
+			setPos = FindRegexMatch(hashset, reg, setPos);
+			if (setPos != hashset.end()) {  //Mod is installed.
+				//Check if there is already an existing modEntry in the db masterlistData structure with this plugin name.
+				//If there is, don't add this one's info, as BOSS itself only works with the first found and the API should behave the same way.
+				vector<modEntry>::iterator dataIter = matches.begin();
+				while (dataIter != matches.end()) {
+					if (Tidy(iter->name) == Tidy(dataIter->name))
+						break;
+					++dataIter;
+				}
+				//Now if dataIter == matches.end(), the mod does not have an entry, otherwise it does.
+
+				if (dataIter == matches.end()) {  //Interesting info, but no existing modEntry.
+					matches.push_back(*iter);
+				}
+			}
+			++setPos;
+		} while (setPos != hashset.end());
+		++iter;
+	}
+
+	//Now set DB vector to function's vector.
+	db->regexMatchData = matches;
 	return BOSS_API_ERROR_OK;
 }
 
@@ -662,7 +645,8 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, uint32_t * numTa
 		return BOSS_API_ERROR_TAGMAP_EXISTS;
 
 	//Set size.
-	*numTags = db->bashTagMap.size();
+	*numTags = uint32_t(db->bashTagMap.size());
+
 	//Allocate memory.
 	*tagMap = (BashTag*)malloc(sizeof(BashTag) * (*numTags));
 	if (*tagMap == 0)
@@ -676,9 +660,7 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, uint32_t * numTa
 		if (tagMap[i]->name == 0)
 			return BOSS_API_ERROR_NO_MEM;
 		
-		uint32_t ret = StdStringToUint8_t(db->bashTagMap[i], &tagMap[i]->name);
-		if (ret != BOSS_API_ERROR_OK)
-			return ret;
+		tagMap[i]->name = reinterpret_cast<const uint8_t *>(db->bashTagMap[i].c_str());
 	}
 	return BOSS_API_ERROR_OK;
 }
@@ -701,8 +683,7 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 		return BOSS_API_ERROR_INVALID_ARGS;
 									
 	//Convert modName.
-	string mod;
-	Uint8_tToStdString(modName, &mod);
+	string mod(reinterpret_cast<const char *>(modName));
 
 	//Initialise pointers to null and zero tag counts.
 	*numTags_added = 0;
@@ -711,10 +692,10 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 	*tagIds_added = 0;
 	*userlistModified = false;
 
-	//Need to search masterlist then userlist separately, check each mod case-insensitively for a match.
-	size_t size;
+	//Need to search masterlist, regexMatch then userlist separately, check each mod case-insensitively for a match.
+	size_t size1, size2;
 	vector<modEntry>::iterator iter;
-	vector<uint32_t> masterlist_tagsAdded, masterlist_tagsRemoved, userlist_tagsAdded, userlist_tagsRemoved;
+	vector<uint32_t> masterlist_tagsAdded, masterlist_tagsRemoved, userlist_tagsAdded, userlist_tagsRemoved, regex_tagsAdded, regex_tagsRemoved;
 
 	//Masterlist
 	iter = db->masterlistData.begin();
@@ -723,6 +704,18 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 			//Add UIDs of tags added and removed to outputs.
 			masterlist_tagsAdded = iter->bashTagsAdded;
 			masterlist_tagsRemoved = iter->bashTagsRemoved;
+			break;
+		}
+		++iter;
+	}
+
+	//regexMatch
+	iter = db->regexMatchData.begin();
+	while (iter != db->regexMatchData.end()) {
+		if (Tidy(iter->name) == Tidy(mod)) {  //Mod found.
+			//Add UIDs of tags added and removed to outputs.
+			regex_tagsAdded = iter->bashTagsAdded;
+			regex_tagsRemoved = iter->bashTagsRemoved;
 			break;
 		}
 		++iter;
@@ -744,8 +737,8 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 		*userlistModified = true;
 
 	//Now combine the masterlist and userlist Tags.
-	*numTags_added = masterlist_tagsAdded.size() + userlist_tagsAdded.size();
-	*numTags_removed = masterlist_tagsRemoved.size() + userlist_tagsRemoved.size();
+	*numTags_added = masterlist_tagsAdded.size() + userlist_tagsAdded.size() + regex_tagsAdded.size();
+	*numTags_removed = masterlist_tagsRemoved.size() + userlist_tagsRemoved.size() + regex_tagsRemoved.size();
 
 	//Allocate memory.
 	*tagIds_added = (uint32_t*)malloc(sizeof(uint32_t) * (*numTags_added));
@@ -759,19 +752,24 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 	
 
 	//Loop through vectors and fill output elements.
-	size = masterlist_tagsAdded.size();
-	for (size_t i=0;i<size;i++)
+	size1 = masterlist_tagsAdded.size();
+	size2 = regex_tagsAdded.size();
+	for (size_t i=0;i<size1;i++)
 		*tagIds_added[i] = masterlist_tagsAdded[i];
-	for (size_t i=0;i<*numTags_added;i++)
-		*tagIds_added[i] = userlist_tagsAdded[i-size];
+	for (size_t i=size1;i<size1+size2;i++)
+		*tagIds_added[i] = regex_tagsAdded[i-size1];
+	for (size_t i=size2;i<*numTags_added;i++)
+		*tagIds_added[i] = userlist_tagsAdded[i-size2];
 
-	size = masterlist_tagsRemoved.size();
-	for (size_t i=0;i<size;i++)
+	size1 = masterlist_tagsRemoved.size();
+	size2 = regex_tagsRemoved.size();
+	for (size_t i=0;i<size1;i++)
 		*tagIds_removed[i] = masterlist_tagsRemoved[i];
-	for (size_t i=size;i<*numTags_removed;i++)
-		*tagIds_removed[i] = userlist_tagsRemoved[i-size];
+	for (size_t i=size1;i<size1+size2;i++)
+		*tagIds_removed[i] = regex_tagsRemoved[i-size1];
+	for (size_t i=size2;i<*numTags_removed;i++)
+		*tagIds_removed[i] = userlist_tagsRemoved[i-size2];
 
-	//To work to myk002's specs, the pointers to the output info need to be stored internally so that the memory can later be freed.
 	return BOSS_API_ERROR_OK;
 }
 
@@ -784,15 +782,13 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 // The message string is valid until the db is destroyed or until a Load
 // function is called. The string should not be freed by the client.
 BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName, 
-									uint8_t ** message, uint32_t * needsCleaning) {
+									const uint8_t ** message, uint32_t * needsCleaning) {
 	//Check for valid args.
 	if (db == 0 || modName == 0)
 		return BOSS_API_ERROR_INVALID_ARGS;
 									
 	//Convert modName.
-	string mod;
-	Uint8_tToStdString(modName, &mod);
-	mod = Tidy(mod);
+	string mod(reinterpret_cast<const char *>(modName));
 
 	//Initialise pointers.
 	*message = 0;
@@ -802,13 +798,13 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName,
 	vector<modEntry>::iterator iter = db->masterlistData.begin();
 	while (iter != db->masterlistData.end()) {
 		if (Tidy(iter->name) == Tidy(mod) && !iter->cleaningMessage.empty()) {  //Mod found and it has a message.
+
 			//Allocate memory.
 			*message = (uint8_t*)malloc(sizeof(uint8_t) * iter->cleaningMessage.length());  //Returns null if malloc failed.
 			if (*message == 0)
 				return BOSS_API_ERROR_NO_MEM;
-			uint32_t ret = StdStringToUint8_t(iter->cleaningMessage, message);
-			if (ret != BOSS_API_ERROR_OK)
-				return ret;
+			*message = reinterpret_cast<const uint8_t *>(iter->cleaningMessage.c_str());
+
 			if (iter->cleaningMessage.find("Do not clean.") != string::npos)  //Mod should not be cleaned.
 				*needsCleaning = 0;
 			else  //Mod should be cleaned.
@@ -818,7 +814,6 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName,
 		++iter;
 	}
 
-	//To work to myk002's specs, the pointers to the output info need to be stored internally so that the memory can later be freed.
 	return BOSS_API_ERROR_OK;
 }
 
@@ -831,19 +826,56 @@ BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, bool over
 	if (db == 0 || outputFile == 0)
 		return BOSS_API_ERROR_INVALID_ARGS;
 
-	string path;
-	Uint8_tToStdString(outputFile, &path);
+	string path(reinterpret_cast<const char *>(outputFile));
 	if (!fs::exists(path) || overwrite) {
 		//Convert masterlistData back to MF2 masterlist syntax and output.
 		ofstream mlist(path.c_str());
 		if (mlist.fail())
 			return BOSS_ERROR_FILE_WRITE_FAIL;
 		else {
-			vector<modEntry>::iterator iter = db->userlistData.begin();
+			//Iterate through masterlistData and then regexData.
+			//masterlistData
+			vector<modEntry>::iterator iter = db->masterlistData.begin();
 			while (iter != db->masterlistData.end()) {
 				
 				//Output mod line.
 				mlist << iter->name << endl;
+				
+				//Now output Bash Tag suggestions.
+				if (!iter->bashTagsAdded.empty() || !iter->bashTagsRemoved.empty()) {
+					mlist << "TAG:";
+					if (!iter->bashTagsAdded.empty()) {
+						mlist << " {{BASH: ";
+						vector<uint32_t>::iterator tagIter = iter->bashTagsAdded.begin();
+						vector<uint32_t>::iterator last = iter->bashTagsAdded.end();
+						last--;
+						while (tagIter != iter->bashTagsAdded.end()) {
+							mlist << db->GetTagString(*tagIter);
+							if (tagIter != last)
+								mlist << ", ";
+						}
+						mlist << "}}";
+					}
+					if (!iter->bashTagsRemoved.empty()) {
+						mlist << " [";
+						vector<uint32_t>::iterator tagIter = iter->bashTagsRemoved.begin();
+						vector<uint32_t>::iterator last = iter->bashTagsRemoved.end();
+						last--;
+						while (tagIter != iter->bashTagsRemoved.end()) {
+							mlist << db->GetTagString(*tagIter);
+							if (tagIter != last)
+								mlist << ", ";
+						}
+						mlist << "]";
+					}
+				}
+				++iter;
+			}
+			//regexData
+			iter = db->regexData.begin();
+			while (iter != db->regexData.end()) {
+				//Output mod line.
+				mlist << "REGEX: " << iter->name << endl;
 				
 				//Now output Bash Tag suggestions.
 				if (!iter->bashTagsAdded.empty() || !iter->bashTagsRemoved.empty()) {
@@ -881,8 +913,3 @@ BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, bool over
 	} else
 		return BOSS_API_ERROR_OVERWRITE_FAIL;
 }
-
-
-#ifdef __cplusplus
-}
-#endif

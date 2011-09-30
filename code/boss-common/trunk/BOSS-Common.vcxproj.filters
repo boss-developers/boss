@@ -102,5 +102,8 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="BOSS-Common.h" />
+    <ClInclude Include="Common\DllDef.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

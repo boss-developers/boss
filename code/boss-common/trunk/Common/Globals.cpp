@@ -14,41 +14,40 @@
 namespace boss {
 	using namespace std;
 
-	ofstream bosslog;					//BOSSlog.txt - output file.
+	BOSS_COMMON const string boss_release_date = "X Y, 2011";
 
-	fs::path data_path			= fs::path("..") / "Data";
-	fs::path boss_path			= fs::path(".");
-	fs::path bosslog_html_path	= boss_path / "BOSSlog.html";
-	fs::path bosslog_text_path	= boss_path / "BOSSlog.txt";
-	fs::path masterlist_path	= boss_path / "masterlist.txt";
-	fs::path userlist_path		= boss_path / "userlist.txt";
-	fs::path curr_modlist_path	= boss_path / "modlist.txt";
-	fs::path prev_modlist_path	= boss_path / "modlist.old";
-	fs::path ini_path			= boss_path / "BOSS.ini";
-	fs::path debug_log_path		= boss_path / "BOSSDebugLog.txt";
+	BOSS_COMMON ofstream bosslog;					//BOSSlog.txt - output file.
 
-	const string g_version     = "1.9";
-	const string g_releaseDate = "X Y, 2011";
+	BOSS_COMMON fs::path data_path			= fs::path("..") / "Data";
+	BOSS_COMMON fs::path boss_path			= fs::path(".");
+	BOSS_COMMON const fs::path bosslog_html_path	= boss_path / "BOSSlog.html";
+	BOSS_COMMON const fs::path bosslog_text_path	= boss_path / "BOSSlog.txt";
+	BOSS_COMMON fs::path masterlist_path	= boss_path / "masterlist.txt";
+	BOSS_COMMON fs::path userlist_path		= boss_path / "userlist.txt";
+	BOSS_COMMON const fs::path curr_modlist_path	= boss_path / "modlist.txt";
+	BOSS_COMMON const fs::path prev_modlist_path	= boss_path / "modlist.old";
+	BOSS_COMMON const fs::path ini_path			= boss_path / "BOSS.ini";
+	BOSS_COMMON const fs::path debug_log_path		= boss_path / "BOSSDebugLog.txt";
 
 	//Command line variables
-	string log_format		= "html";	// what format the output should be in.
-	string proxy_type		= "direct";
-	string proxy_host		= "none";
-	int proxy_port			= 0;
-	int game				= 0;		// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim.
-	int revert              = 0;		// what level to revert to
-	int debug_verbosity     = 0;		// log levels above INFO to output
-	bool update				= true;		// update the masterlist?
-	bool update_only        = false;	// only update the masterlist and don't sort currently.
-	bool silent             = false;	// silent mode?
-	bool skip_version_parse = false;	// enable parsing of mod's headers to look for version strings
-	bool debug_with_source  = false;	// whether to include origin information in logging statements
-	bool show_CRCs			= false;	// whether or not to show mod CRCs.
-	bool trial_run			= false;	// If true, don't redate files.
-	bool log_debug_output		= false;  //If true, logs the Logger output in BOSSDebugLog.txt.
-	bool do_startup_update_check	= true;	// Whether or not to check for updates on startup.
+	BOSS_COMMON string log_format		= "html";	// what format the output should be in.
+	BOSS_COMMON string proxy_type		= "direct";
+	BOSS_COMMON string proxy_host		= "none";
+	BOSS_COMMON int proxy_port			= 0;
+	BOSS_COMMON int game				= 0;		// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim.
+	BOSS_COMMON int revert              = 0;		// what level to revert to
+	BOSS_COMMON int debug_verbosity     = 0;		// log levels above INFO to output
+	BOSS_COMMON bool update				= true;		// update the masterlist?
+	BOSS_COMMON bool update_only        = false;	// only update the masterlist and don't sort currently.
+	BOSS_COMMON bool silent             = false;	// silent mode?
+	BOSS_COMMON bool skip_version_parse = false;	// enable parsing of mod's headers to look for version strings
+	BOSS_COMMON bool debug_with_source  = false;	// whether to include origin information in logging statements
+	BOSS_COMMON bool show_CRCs			= false;	// whether or not to show mod CRCs.
+	BOSS_COMMON bool trial_run			= false;	// If true, don't redate files.
+	BOSS_COMMON bool log_debug_output		= false;  //If true, logs the Logger output in BOSSDebugLog.txt.
+	BOSS_COMMON bool do_startup_update_check	= true;	// Whether or not to check for updates on startup.
 
 	//GUI variables
-	int run_type					= 1;  // 1 = sort mods, 2 = only update, 3 = undo changes.
-	bool use_user_rules_editor		= false;		//Use the User Rules Editor or edit userlist.txt directly?
+	BOSS_COMMON int run_type					= 1;  // 1 = sort mods, 2 = only update, 3 = undo changes.
+	BOSS_COMMON bool use_user_rules_editor		= false;		//Use the User Rules Editor or edit userlist.txt directly?
 }

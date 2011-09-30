@@ -22,6 +22,8 @@
 
 #include <boost/regex.hpp>
 
+#include <wx/aboutdlg.h>
+
 #include "GUI/MainWindow.h"
 #include "GUI/SettingsWindow.h"
 #include "GUI/UserRuleEditor.h"
@@ -29,7 +31,6 @@
 #include "BOSS-Common.h"
 
 BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
-	EVT_IDLE( MainFrame::CheckForUpdate )
 	EVT_CLOSE (MainFrame::OnClose )
 	EVT_MENU ( MENU_Quit, MainFrame::OnQuit )
 	EVT_MENU ( OPTION_EditUserRules, MainFrame::OnEditUserRules )
@@ -44,9 +45,9 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_BUTTON ( OPTION_EditUserRules, MainFrame::OnEditUserRules )
 	EVT_BUTTON ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
 	EVT_BUTTON ( OPTION_CheckForUpdates, MainFrame::OnUpdateCheck )
-	EVT_COMBOBOX ( DROPDOWN_LogFormat, MainFrame::OnFormatChange )
-	EVT_COMBOBOX ( DROPDOWN_Game, MainFrame::OnGameChange )
-	EVT_COMBOBOX ( DROPDOWN_Revert, MainFrame::OnRevertChange )
+	EVT_CHOICE ( DROPDOWN_LogFormat, MainFrame::OnFormatChange )
+	EVT_CHOICE ( DROPDOWN_Game, MainFrame::OnGameChange )
+	EVT_CHOICE ( DROPDOWN_Revert, MainFrame::OnRevertChange )
 	EVT_CHECKBOX ( CHECKBOX_ShowBOSSlog, MainFrame::OnLogDisplayChange )
 	EVT_CHECKBOX ( CHECKBOX_Update, MainFrame::OnUpdateChange )
 	EVT_CHECKBOX ( CHECKBOX_EnableVersions, MainFrame::OnVersionDisplayChange )
@@ -61,8 +62,6 @@ IMPLEMENT_APP(BossGUI)
 
 using namespace boss;
 using namespace std;
-
-bool CheckedForUpdate = false;		//To prevent the update checker looping thanks to the OnIdle event handler.
 
 //Draws the main window when program starts.
 bool BossGUI::OnInit() {
@@ -91,15 +90,17 @@ bool BossGUI::OnInit() {
 		g_logger.setStream(debug_log_path.string().c_str());
 	g_logger.setOriginTracking(debug_with_source);
 
-	try {
-		GetGame();
-	} catch (boss_error e) {
-		wxMessageBox(wxString::Format(
-				wxT("Error: Game autodetection failed! " + e.getString())
-			),
-			wxT("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
+	if (game == 0) {
+		try {
+			GetGame();
+		} catch (boss_error e) {
+			wxMessageBox(wxString::Format(
+					wxT("Error: Game autodetection failed! " + e.getString())
+				),
+				wxT("BOSS: Error"),
+				wxOK | wxICON_ERROR,
+				NULL);
+		}
 	}
 
 	MainFrame *frame = new MainFrame(
@@ -108,7 +109,49 @@ bool BossGUI::OnInit() {
 	frame->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	frame->Show(TRUE);
 	SetTopWindow(frame);
+
+	//Now check for updates.
+	CheckForUpdate(frame);
 	return true;
+}
+
+//This is called after the GUI has finished launching.
+void BossGUI::CheckForUpdate(MainFrame *frame) {
+	if (do_startup_update_check == false)
+		return;
+	string updateText, updateVersion;
+	bool connection = false;
+	try {
+		connection = CheckConnection();
+	} catch (boss_error e) {
+		updateText = "Update check failed. Details: " + e.getString();
+		wxMessageBox(updateText, wxT("BOSS: Check For Updates"), wxOK | wxICON_ERROR, frame);
+		return;
+	}
+	if (connection) {
+		try {
+			updateVersion = IsBOSSUpdateAvailable();
+			if (!updateVersion.empty())
+				updateText = "Update available! New version: " + updateVersion + "\nDo you want to download and install the update?";
+			else
+				return;
+		} catch (boss_error e) {
+			updateText = "Update check failed. Details: " + e.getString();
+			wxMessageBox(updateText, wxT("BOSS: Check For Updates"), wxOK | wxICON_ERROR, frame);
+			return;
+		}
+	} else
+		return;
+
+	//Display dialog BOSS telling user about update available.
+	wxMessageDialog *dlg = new wxMessageDialog(frame,updateText, "BOSS: Check For Updates", wxYES_NO);
+
+	if (dlg->ShowModal() != wxID_YES) {  //User has chosen not to update. Quit now.
+		//Display a message saying no update was installed.
+		wxMessageBox(wxT("No update has been downloaded or installed."), wxT("BOSS: Check For Updates"), wxOK | wxICON_INFORMATION, frame);
+		return;
+	} else  //User has chosen to update. On with the show!
+		frame->Update(updateVersion);
 }
 
 MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) : wxFrame(NULL, wxID_ANY, title, wxPoint(x, y), wxSize(width, height)) {
@@ -151,6 +194,8 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
     HelpMenu = new wxMenu();
 	HelpMenu->Append(MENU_OpenMainReadMe, wxT("Open &Main ReadMe"), wxT("Opens the main BOSS ReadMe in your default web browser."));
 	HelpMenu->Append(MENU_OpenUserRulesReadMe, wxT("Open &User Rules ReadMe"), wxT("Opens the User Rules ReadMe in your default web browser."));
+	HelpMenu->Append(MENU_OpenMasterlistReadMe, wxT("Open &Masterlist &ReadMe"), wxT("Opens the BOSS Masterlist Syntax ReadMe in your default web browser."));
+	HelpMenu->Append(MENU_OpenAPIReadMe, wxT("&Open API ReadMe"), wxT("Opens the BOSS API ReadMe in your default web browser."));
 	HelpMenu->AppendSeparator();
 	HelpMenu->Append(OPTION_CheckForUpdates, wxT("&Check For Updates..."), wxT("Checks for updates to BOSS."));
 	HelpMenu->Append(MENU_ShowAbout, wxT("&About BOSS..."), wxT("Shows information about BOSS."));
@@ -173,7 +218,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	outputOptionsBox->Add(VersionBox = new wxCheckBox(this,CHECKBOX_EnableVersions, wxT("Display Plugin Versions")), 0, wxLEFT | wxBOTTOM, 5);
 	outputOptionsBox->Add(CRCBox = new wxCheckBox(this,CHECKBOX_EnableCRCs, wxT("Display File CRCs")), 0, wxLEFT | wxBOTTOM, 5);
 	formatBox->Add(new wxStaticText(this, wxID_ANY, wxT("BOSS Log Format: ")), 1, wxLEFT | wxBOTTOM, 5);
-	formatBox->Add(FormatBox = new wxComboBox(this, DROPDOWN_LogFormat, BOSSlogFormat[0], wxPoint(110,60), wxDefaultSize, 2, BOSSlogFormat, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
+	formatBox->Add(FormatChoice = new wxChoice(this, DROPDOWN_LogFormat, wxPoint(110,60), wxDefaultSize, 2, BOSSlogFormat, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	//Add the verbosityBox to its parent now to preserve layout.
 	outputOptionsBox->Add(formatBox, 0, wxEXPAND, 0);
 	columnBox->Add(outputOptionsBox, 0, wxBOTTOM, 30);
@@ -207,14 +252,14 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	//Update only stuff.
 	runOptionsBox->Add(UpdateOption = new wxRadioButton(this, RADIOBUTTON_UpdateOption, wxT("Update Masterlist Only")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	gameBox->Add(GameText = new wxStaticText(this, wxID_ANY, wxT("Game: ")), 1, wxLEFT | wxBOTTOM, 15);
-	gameBox->Add(GameBox = new wxComboBox(this, DROPDOWN_Game, Game[0], wxDefaultPosition, wxDefaultSize, 6, Game, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
+	gameBox->Add(GameChoice = new wxChoice(this, DROPDOWN_Game, wxDefaultPosition, wxDefaultSize, 6, Game), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	updateBox->Add(gameBox, 0, wxEXPAND, 0);
 	runOptionsBox->Add(updateBox, 0, wxEXPAND | wxLEFT | wxBOTTOM, 20);
 	
 	//Undo option stuff.
 	runOptionsBox->Add(UndoOption = new wxRadioButton(this, RADIOBUTTON_UndoOption, wxT("Undo Changes")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	revertBox->Add(RevertText = new wxStaticText(this, wxID_ANY, wxT("Undo Level: ")), 1, wxLEFT | wxBOTTOM, 5);
-	revertBox->Add(RevertBox = new wxComboBox(this, DROPDOWN_Revert, UndoLevel[0], wxDefaultPosition, wxDefaultSize, 3, UndoLevel, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
+	revertBox->Add(RevertChoice = new wxChoice(this, DROPDOWN_Revert, wxDefaultPosition, wxDefaultSize, 3, UndoLevel), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	undoBox->Add(revertBox, 0, wxEXPAND, 0);
 	runOptionsBox->Add(undoBox, 0, wxEXPAND | wxLEFT | wxBOTTOM, 20);
 
@@ -222,7 +267,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 
 
 	//Tooltips
-	FormatBox->SetToolTip(wxT("This decides both the format of BOSSlog generated when you click the \"Run BOSS\" button and the BOSSlog format opened when you click the \"View BOSSlog\" button."));
+	FormatChoice->SetToolTip(wxT("This decides both the format of BOSSlog generated when you click the \"Run BOSS\" button and the BOSSlog format opened when you click the \"View BOSSlog\" button."));
 	OpenBOSSlogButton->SetToolTip(wxT("The format of BOSSlog this opens is decided by the setting of the \"BOSSlog Format\" Output Option above."));
 	TrialRunBox->SetToolTip(wxT("Runs BOSS, simulating its changes to your load order, but doesn't actually reorder your mods."));
 
@@ -233,9 +278,9 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 		ShowLogBox->SetValue(true);
 
 	if (log_format == "html")
-		FormatBox->SetValue(BOSSlogFormat[0]);
+		FormatChoice->SetSelection(0);
 	else if (log_format == "text")
-		FormatBox->SetValue(BOSSlogFormat[1]);
+		FormatChoice->SetSelection(1);
 
 	if (show_CRCs)
 		CRCBox->SetValue(true);
@@ -250,24 +295,24 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 		TrialRunBox->SetValue(true);
 
 	if (game == 0)
-		GameBox->SetValue(Game[0]);
+		GameChoice->SetSelection(0);
 	else if (game == 1)
-		GameBox->SetValue(Game[1]);
+		GameChoice->SetSelection(1);
 	else if (game == 2)
-		GameBox->SetValue(Game[2]);
+		GameChoice->SetSelection(2);
 	else if (game == 3)
-		GameBox->SetValue(Game[3]);
+		GameChoice->SetSelection(3);
 	else if (game == 4)
-		GameBox->SetValue(Game[4]);
+		GameChoice->SetSelection(4);
 	else if (game == 5)
-		GameBox->SetValue(Game[5]);
+		GameChoice->SetSelection(5);
 
 	if (revert == 0)
-		RevertBox->SetValue(UndoLevel[0]);
+		RevertChoice->SetSelection(0);
 	else if (revert == 1)
-		RevertBox->SetValue(UndoLevel[1]);
+		RevertChoice->SetSelection(1);
 	else if (revert == 2)
-		RevertBox->SetValue(UndoLevel[2]);
+		RevertChoice->SetSelection(2);
 
 	if (run_type == 1) {
 		SortOption->SetValue(true);
@@ -276,29 +321,29 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 		TrialRunBox->Enable(true);
 
 		GameText->Enable(false);
-		GameBox->Enable(false);
+		GameChoice->Enable(false);
 		RevertText->Enable(false);
-		RevertBox->Enable(false);
+		RevertChoice->Enable(false);
 	} else if (run_type == 2) {
 		UpdateOption->SetValue(true);
 
 		GameText->Enable(true);
-		GameBox->Enable(true);
+		GameChoice->Enable(true);
 
 		UpdateBox->Enable(false);
 		TrialRunBox->Enable(false);
 		RevertText->Enable(false);
-		RevertBox->Enable(false);
+		RevertChoice->Enable(false);
 	} else {
 		UndoOption->SetValue(true);
 
 		RevertText->Enable(true);
-		RevertBox->Enable(true);
+		RevertChoice->Enable(true);
 
 		UpdateBox->Enable(false);
 		TrialRunBox->Enable(false);
 		GameText->Enable(false);
-		GameBox->Enable(false);
+		GameChoice->Enable(false);
 	}
 
 	//Now set up the status bar.
@@ -682,7 +727,9 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 
 void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
 	if (use_user_rules_editor) {
-		//TO DO
+		UserRulesEditorFrame *editor = new UserRulesEditorFrame(wxT("Better Oblivion Sorting Software: User Rule Editor"),this);
+		editor->SetIcon(wxIconLocation("BOSS GUI.exe"));
+		editor->Show();
 		return;
 	} else {
 		if (fs::exists(userlist_path))
@@ -707,14 +754,7 @@ void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
 //Call when a file is opened. Either readmes, BOSSlogs or userlist.
 void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 	string file;
-	if (event.GetId() == OPTION_OpenBOSSlog)
-		file = "bosslog";
-	else if (event.GetId() == MENU_OpenMainReadMe)
-		file = "BOSS ReadMe";
-	else
-		file = "BOSS User Rules ReadMe";
-	//Need to choose file based on what fired the event.
-	if (file == "bosslog") {
+	if (event.GetId() == OPTION_OpenBOSSlog) {
 		if (log_format == "html") {  //Open HTML BOSSlog.
 			if (fs::exists(bosslog_html_path))
 				wxLaunchDefaultApplication(bosslog_html_path.string());
@@ -738,7 +778,16 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 				this);
 			}
 		}
-	} else {  //Readme files. They could be anywhere - this could be complicated.
+	} else {
+		//Readme files. They could be anywhere - this could be complicated.
+		if (event.GetId() == MENU_OpenMainReadMe)
+			file = "BOSS ReadMe";
+		else if (event.GetId() == MENU_OpenUserRulesReadMe)
+			file = "BOSS User Rules ReadMe";
+		else if (event.GetId() == MENU_OpenMasterlistReadMe)
+			file = "BOSS Masterlist Syntax";
+		else if (event.GetId() == MENU_OpenAPIReadMe)
+			file = "BOSS API ReadMe";
 		//Simplify by looking for either the files themselves or shortcuts to them in the BOSS folder.
 		//If neither, show a pop-up message saying they can't be found.
 		if (fs::exists(file + ".html")) {
@@ -761,38 +810,15 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 }
 
 void MainFrame::OnAbout(wxCommandEvent& event) {
-
-	wxDialog *frame = new wxDialog(this, wxID_ANY,wxT("About Better Oblivion Sorting Software"));
-
-	frame->SetBackgroundColour(wxColour(255,255,255));
-
-	wxBoxSizer *box = new wxBoxSizer(wxVERTICAL);
-
-	wxStaticText *text = new wxStaticText(frame, wxID_ANY,
-		wxT("A \"one-click\" program for users that quickly optimises and avoids detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.")
-		);
-	text->Wrap(390);
-
-	box->Add(new wxStaticText(frame, wxID_ANY, wxT("Better Oblivion Sorting Software\nv"+g_version+" ("+g_releaseDate+")")), 0, wxTOP | wxLEFT | wxRIGHT, 20);
-	box->Add(text, 0, wxTOP | wxLEFT | wxRIGHT, 20);
-
-	box->Add(new wxStaticText(frame, wxID_ANY, wxT("© 2011 Random007, WrinklyNinja and the BOSS development team.\nSome rights reserved. Copyright license:")), 0, wxTOP | wxLEFT | wxRIGHT, 20);
-	wxHyperlinkCtrl *link = new wxHyperlinkCtrl(frame, wxID_ANY, wxT("CC Attribution-Noncommercial-No Derivative Works 3.0"),"http://creativecommons.org/licenses/by-nc-nd/3.0/");
-	link->SetBackgroundColour(wxColour(255,255,255));
-	box->Add(link, 0, wxBOTTOM | wxLEFT | wxRIGHT, 20);
-	
-	//Need to add an 'OK' button.
-	wxButton *okButton = new wxButton(frame, OPTION_ExitAbout, wxT("OK"), wxDefaultPosition, wxSize(70, 30));
-	wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
-	hbox->Add(okButton, 1);
-	
-	box->Add(hbox, 0, wxALIGN_CENTER | wxBOTTOM, 10);
-	frame->SetAffirmativeId(OPTION_ExitAbout);
-
-	//Now set the layout and sizes.
-	frame->SetSizerAndFit(box);
-	
-	frame->ShowModal();
+	wxAboutDialogInfo aboutInfo;
+    aboutInfo.SetName("Better Oblivion Sorting Software");
+    aboutInfo.SetVersion(IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH));
+    aboutInfo.SetDescription(wxT("A \"one-click\" program for users that quickly optimises and avoids detrimental conflicts in their\nTES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders."));
+    aboutInfo.SetCopyright("(C) 2011 Random007, WrinklyNinja and the BOSS Development Team.");
+    aboutInfo.SetWebSite("http://code.google.com/p/better-oblivion-sorting-software/");
+	aboutInfo.SetLicence("CC Attribution-Noncommercial-No Derivative Works 3.0 (http://creativecommons.org/licenses/by-nc-nd/3.0/)");
+	aboutInfo.SetIcon(wxIconLocation("BOSS GUI.exe"));
+    wxAboutBox(aboutInfo);
 }
 
 void MainFrame::OnLogDisplayChange(wxCommandEvent& event) {
@@ -838,29 +864,29 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 		TrialRunBox->Enable(true);
 
 		GameText->Enable(false);
-		GameBox->Enable(false);
+		GameChoice->Enable(false);
 		RevertText->Enable(false);
-		RevertBox->Enable(false);
+		RevertChoice->Enable(false);
 	}else if (event.GetId() == RADIOBUTTON_UpdateOption) {
 		run_type = 2;
 
 		GameText->Enable(true);
-		GameBox->Enable(true);
+		GameChoice->Enable(true);
 
 		UpdateBox->Enable(false);
 		TrialRunBox->Enable(false);
 		RevertText->Enable(false);
-		RevertBox->Enable(false);
+		RevertChoice->Enable(false);
 	}else {
 		run_type = 3;
 
 		RevertText->Enable(true);
-		RevertBox->Enable(true);
+		RevertChoice->Enable(true);
 
 		UpdateBox->Enable(false);
 		TrialRunBox->Enable(false);
 		GameText->Enable(false);
-		GameBox->Enable(false);
+		GameChoice->Enable(false);
 	}
 }
 
@@ -895,46 +921,6 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 
 	//Display dialog BOSS telling user about update available.
 	wxMessageDialog *dlg = new wxMessageDialog(this,updateText, wxT("BOSS: Check For Updates"), wxYES_NO);
-
-	if (dlg->ShowModal() != wxID_YES) {  //User has chosen not to update. Quit now.
-		//Display a message saying no update was installed.
-		wxMessageBox(wxT("No update has been downloaded or installed."), wxT("BOSS: Check For Updates"), wxOK | wxICON_INFORMATION, this);
-		return;
-	} else  //User has chosen to update. On with the show!
-		Update(updateVersion);
-}
-
-//This is called after the GUI has finished launching (actually called every time nothing is happening, but only does something the first time).
-void MainFrame::CheckForUpdate(wxIdleEvent& event) {
-	if (CheckedForUpdate || do_startup_update_check == false)
-		return;
-	CheckedForUpdate = true;
-	string updateText, updateVersion;
-	bool connection = false;
-	try {
-		connection = CheckConnection();
-	} catch (boss_error e) {
-		updateText = "Update check failed. Details: " + e.getString();
-		wxMessageBox(updateText, wxT("BOSS: Check For Updates"), wxOK | wxICON_ERROR, this);
-		return;
-	}
-	if (connection) {
-		try {
-			updateVersion = IsBOSSUpdateAvailable();
-			if (!updateVersion.empty())
-				updateText = "Update available! New version: " + updateVersion + "\nDo you want to download and install the update?";
-			else
-				return;
-		} catch (boss_error e) {
-			updateText = "Update check failed. Details: " + e.getString();
-			wxMessageBox(updateText, wxT("BOSS: Check For Updates"), wxOK | wxICON_ERROR, this);
-			return;
-		}
-	} else
-		return;
-
-	//Display dialog BOSS telling user about update available.
-	wxMessageDialog *dlg = new wxMessageDialog(this,updateText, "BOSS: Check For Updates", wxYES_NO);
 
 	if (dlg->ShowModal() != wxID_YES) {  //User has chosen not to update. Quit now.
 		//Display a message saying no update was installed.

@@ -18,18 +18,18 @@
 
 #include <string>
 #include <vector>
-//#include <wx/progdlg.h>
+#include "Common/DllDef.h"
 
 namespace boss {
 	using namespace std;
 
-	enum installType {  //Possible types of install the user has.
+	BOSS_COMMON enum installType {  //Possible types of install the user has.
 		MANUAL,
 		INSTALLER,
 		MASTERLIST
 	};
 
-	struct fileInfo {  //Holds the information for files to be downloaded.
+	BOSS_COMMON struct fileInfo {  //Holds the information for files to be downloaded.
 		string name;
 		unsigned int crc;
 
@@ -37,7 +37,7 @@ namespace boss {
 		fileInfo(string str);
 	};
 
-	struct uiStruct {
+	BOSS_COMMON struct uiStruct {
 		void *p;
 		bool isGUI;
 		size_t fileIndex;
@@ -46,19 +46,17 @@ namespace boss {
 		uiStruct(void *GUIpoint);
 	};
 
-	extern vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
+	BOSS_COMMON extern vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
 
 	////////////////////////
 	// General Functions
 	////////////////////////
 
-	int progress_func(void *data, double dlTotal, double dlNow, double ulTotal, double ulNow);
-
 	//Checks if an Internet connection is present.
-	bool CheckConnection();
+	BOSS_COMMON bool CheckConnection();
 
 	//Cleans up after the user cancels a download.
-	void CleanUp();
+	BOSS_COMMON void CleanUp();
 
 
 	////////////////////////
@@ -66,7 +64,7 @@ namespace boss {
 	////////////////////////
 
 	//Updates the local masterlist to the latest available online.
-	void UpdateMasterlist(uiStruct ui, unsigned int& localRevision, string& localDate, unsigned int& remoteRevision, string& remoteDate);
+	BOSS_COMMON void UpdateMasterlist(uiStruct ui, unsigned int& localRevision, string& localDate, unsigned int& remoteRevision, string& remoteDate);
 
 
 	////////////////////////
@@ -74,9 +72,9 @@ namespace boss {
 	////////////////////////
 
 	//Checks if a new release of BOSS is available or not.
-	string IsBOSSUpdateAvailable();
+	BOSS_COMMON string IsBOSSUpdateAvailable();
 
 	//Downloads and installs a BOSS update.
-	vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const int updateType, const string updateVersion);
+	BOSS_COMMON vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const int updateType, const string updateVersion);
 }
 #endif

@@ -15,7 +15,7 @@
 BEGIN_EVENT_TABLE( SettingsFrame, wxFrame )
 	EVT_BUTTON ( OPTION_OKExitSettings, SettingsFrame::OnOKQuit)
 	EVT_BUTTON ( OPTION_CancelExitSettings, SettingsFrame::OnCancelQuit)
-	EVT_COMBOBOX ( DROPDOWN_ProxyType, SettingsFrame::OnProxyTypeChange )
+	EVT_CHOICE ( DROPDOWN_ProxyType, SettingsFrame::OnProxyTypeChange )
 END_EVENT_TABLE()
 
 using namespace boss;
@@ -69,7 +69,7 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 
 	wxBoxSizer *proxyTypeSizer = new wxBoxSizer(wxHORIZONTAL);
 	proxyTypeSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Type:")), ItemSizerFlags);
-	proxyTypeSizer->Add(ProxyTypeBox = new wxComboBox(InternetTab,DROPDOWN_ProxyType,ProxyTypes[0],wxDefaultPosition,wxDefaultSize,7,ProxyTypes,wxCB_READONLY), ItemSizerFlags);
+	proxyTypeSizer->Add(ProxyTypeChoice = new wxChoice(InternetTab,DROPDOWN_ProxyType,wxDefaultPosition,wxDefaultSize,7,ProxyTypes), ItemSizerFlags);
 	InternetTabSizer->Add(proxyTypeSizer, ContentSizerFlags);
 	
 	wxBoxSizer *proxyHostSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -90,7 +90,7 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 
 	wxBoxSizer *verbosityBox = new wxBoxSizer(wxHORIZONTAL);
 	verbosityBox->Add(new wxStaticText(DebugTab, wxID_ANY, wxT("Debug Output Verbosity:")), ItemSizerFlags);
-	verbosityBox->Add(DebugVerbosityBox = new wxComboBox(DebugTab, wxID_ANY, DebugVerbosity[0], wxDefaultPosition, wxDefaultSize, 4, DebugVerbosity, wxCB_READONLY), ItemSizerFlags);
+	verbosityBox->Add(DebugVerbosityChoice = new wxChoice(DebugTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, DebugVerbosity), ItemSizerFlags);
 	DebugTabSizer->Add(verbosityBox, ContentSizerFlags);
 	DebugTabSizer->Add(DebugSourceReferencesBox = new wxCheckBox(DebugTab,wxID_ANY, wxT("Include Source Code References")), BorderSizerFlags);
 	DebugTabSizer->Add(LogDebugOutputBox = new wxCheckBox(DebugTab,wxID_ANY, wxT("Log Debug Output")), BorderSizerFlags);
@@ -307,6 +307,8 @@ void SettingsFrame::SetDefaultValues(wxString * ProxyTypes, wxString * DebugVerb
 	//General Settings
 	if (do_startup_update_check)
 		StartupUpdateCheckBox->SetValue(true);
+	if (use_user_rules_editor)
+		UseUserRuleEditorBox->SetValue(true);
 
 	//Internet Settings
 	ProxyHostBox->SetValue(proxy_host);
@@ -314,19 +316,19 @@ void SettingsFrame::SetDefaultValues(wxString * ProxyTypes, wxString * DebugVerb
 	ProxyPortBox->SetValue(wxString::Format(wxT("%i"),proxy_port));
 
 	if (proxy_type == "direct")
-		ProxyTypeBox->SetValue(ProxyTypes[0]);
+		ProxyTypeChoice->SetSelection(0);
 	else if (proxy_type == "http")
-		ProxyTypeBox->SetValue(ProxyTypes[1]);
+		ProxyTypeChoice->SetSelection(1);
 	else if (proxy_type == "http1_0")
-		ProxyTypeBox->SetValue(ProxyTypes[2]);
+		ProxyTypeChoice->SetSelection(2);
 	else if (proxy_type == "socks4")
-		ProxyTypeBox->SetValue(ProxyTypes[3]);
+		ProxyTypeChoice->SetSelection(3);
 	else if (proxy_type == "socks4a")
-		ProxyTypeBox->SetValue(ProxyTypes[4]);
+		ProxyTypeChoice->SetSelection(4);
 	else if (proxy_type == "socks5")
-		ProxyTypeBox->SetValue(ProxyTypes[5]);
+		ProxyTypeChoice->SetSelection(5);
 	else if (proxy_type == "socks5h")
-		ProxyTypeBox->SetValue(ProxyTypes[6]);
+		ProxyTypeChoice->SetSelection(6);
 
 	//Debugging Settings
 	if (debug_with_source)
@@ -336,13 +338,13 @@ void SettingsFrame::SetDefaultValues(wxString * ProxyTypes, wxString * DebugVerb
 		LogDebugOutputBox->SetValue(true);
 
 	if (debug_verbosity == 0)
-		DebugVerbosityBox->SetValue(DebugVerbosity[0]);
+		DebugVerbosityChoice->SetSelection(0);
 	else if (debug_verbosity == 1)
-		DebugVerbosityBox->SetValue(DebugVerbosity[1]);
+		DebugVerbosityChoice->SetSelection(1);
 	else if (debug_verbosity == 2)
-		DebugVerbosityBox->SetValue(DebugVerbosity[2]);
+		DebugVerbosityChoice->SetSelection(2);
 	else if (debug_verbosity == 3)
-		DebugVerbosityBox->SetValue(DebugVerbosity[3]);
+		DebugVerbosityChoice->SetSelection(3);
 
 	//BOSS Log Filters Settings
 	if (UseDarkColourScheme)
@@ -408,7 +410,7 @@ void SettingsFrame::SetDefaultValues(wxString * ProxyTypes, wxString * DebugVerb
 	//Tooltips.
 	LogDebugOutputBox->SetToolTip(wxT("The output is logged to the BOSSDebugLog.txt file"));
 	DebugSourceReferencesBox->SetToolTip(wxT("Adds source code references to command line output."));
-	DebugVerbosityBox->SetToolTip(wxT("The higher the verbosity level, the more information is outputted to the command line."));
+	DebugVerbosityChoice->SetToolTip(wxT("The higher the verbosity level, the more information is outputted to the command line."));
 }
 
 void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
@@ -419,7 +421,7 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	use_user_rules_editor = UseUserRuleEditorBox->IsChecked();
 
 	//Network
-	int i = ProxyTypeBox->GetSelection();
+	int i = ProxyTypeChoice->GetSelection();
 	if (i == 0)
 		proxy_type = "direct";
 	else if (i == 1)
@@ -438,7 +440,7 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	proxy_port = wxAtoi(ProxyPortBox->GetValue());
 
 	//Debugging
-	debug_verbosity = DebugVerbosityBox->GetSelection();
+	debug_verbosity = DebugVerbosityChoice->GetSelection();
 	debug_with_source = DebugSourceReferencesBox->IsChecked();
 	log_debug_output = LogDebugOutputBox->IsChecked();
 

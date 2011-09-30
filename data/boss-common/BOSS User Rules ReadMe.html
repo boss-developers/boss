@@ -161,7 +161,12 @@ bgMagicEV.esp.esp
 <p>The <em>rule object</em> is the plugin or group that the rule is applied to. If the rule keyword is ADD or FOR, the rule object must be a plugin.
 <p>When you define groups, the names of those groups are used as they appear in the masterlist. For example, 
 if you wanted to reference the group of plugins that begins with <code>\BeginGroup\: Supreme Magicka</code>, you would put it in the rule as 
-<code>Supreme Magicka</code>.</p><br />
+<code>Supreme Magicka</code>.
+<p>There is one more keyword that can be used on the rule line. <code>DISABLE</code> can be put before the rule keyword to prevent the rule from being applied. For example:
+<div class="codebox">DISABLE ADD: MyMod.esp
+AFTER: Unofficial Oblivion Patch.esp
+</div>
+<p>Would result in MyMod.esp not being sorted after Unofficial Oblivon Patch.esp. The DISABLE keyword should be used instead of silent comments to stop a rule being applied because the latter makes the rule invisible to the GUI's User Rule Editor whereas the former does not.</p><br />
 
 <h2>The Sort Line</h2>
 <p>If a rule's rule keyword is ADD or OVERRIDE, it can sort plugins and should include a <em>sort line</em>. If the rule keyword is FOR, the rule <b>must not</b> include a sort line. The sort line has the structure:
@@ -245,7 +250,7 @@ bgBalancingEVOptionalNPCDiversity, Vanilla.esp
 
 <div id="apply"><h1>Enforcing Your Rules</h1>
 <p>When BOSS is run, it will look for your userlist at <code>Data\BOSS\userlist.txt</code>. If it is found, and the userlist contains at least one rule, BOSS will first check the syntax of the rules, and apply those with the correct syntax. 
-It will print error messages detailing the problems with any rules it skips, and success messages for the plugins that are applied, into your BOSSlog.txt, in a section headed "Userlist Messages" near the top.
+It will print error messages detailing the problems with any rules it skips, and success messages for the plugins that are applied, into your BOSSlog.txt, in a section headed "Userlist Messages" near the top. Disabled rules have their syntax checked, but are not applied.
 <p>If a rule is successfully applied, it will print one or more messages depending on what the rule does:
 <ol>
 	<li>If the rule includes a sort line and uses the sort keywords BEFORE or AFTER, it will print a message of the form: <code>"<em>Plugin/Group Name</em>" sorted <em>before/after</em> "<em>Plugin/Group Name</em>".</code>
@@ -266,6 +271,7 @@ not be evident:
 	<li>Blank lines or lines beginning with <code>//</code> in your userlist will be ignored by BOSS. You can use blank lines to improve the formatting of your userlist, and use the <code>//</code> line start to provide comments or disable specific rules as you desire.
 		<ul>
 			<li>You can also begin lines with <code>\</code> instead of <code>//</code> to have the same effect, and comment out multiple lines by enclosing them between <code>/*</code> and <code>*/</code>.
+			<li>It is better to use the <code>DISABLE</code> keyword to disable rules, as this means that they are still visible to the GUI's User Rule Editor without being applied. Rules with incorrect syntax should be commented out, as disabled rules are still parsed with error checking.
 		</ul>
 	<li>User rules are case-insensitive. The only exception is the message object, which will retain its case when displayed in the BOSSlog.
 	<li>If a rule's rule plugin is not installed in your Data folder, the rule will be skipped.

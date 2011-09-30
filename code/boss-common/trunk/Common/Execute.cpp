@@ -44,7 +44,7 @@ namespace boss {
 	}
 
 	//Record recognised mod list from last HTML BOSSlog generated.
-	string GetOldRecognisedList(fs::path log) {
+	BOSS_COMMON string GetOldRecognisedList(const fs::path log) {
 		size_t pos1, pos2;
 		string result;
 		fileToBuffer(log,result);
@@ -60,26 +60,25 @@ namespace boss {
 
 	//Detect the game BOSS is installed for.
 	//1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim. Throws exception if error.
-	void GetGame() {
+	BOSS_COMMON void GetGame() {
 		if (fs::exists(data_path / "Oblivion.esm")) {
 			if (fs::exists(data_path / "Nehrim.esm"))
 				throw boss_error(BOSS_ERROR_OBLIVION_AND_NEHRIM);
 			game = 1;
 		} else if (fs::exists(data_path / "Nehrim.esm")) 
-   game = 3;
+			game = 3;
 		else if (fs::exists(data_path / "FalloutNV.esm")) 
-   game = 4;
+			game = 4;
 		else if (fs::exists(data_path / "Fallout3.esm")) 
-   game = 2;
+			game = 2;
 		else if (fs::exists(data_path / "Skyrim.esm")) 
-   game = 5;
-		else {
+			game = 5;
+		else
 			throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
-		}
 	}
 
 	//Gets the string representation of the detected game.
-	string GetGameString() {
+	BOSS_COMMON string GetGameString() {
 		if (game == 1)
 			return "TES IV: Oblivion";
 		else if (game == 2)
@@ -95,7 +94,7 @@ namespace boss {
 	}
 
 	//Gets the timestamp of the game's master file. Throws exception if error.
-	time_t GetMasterTime() {
+	BOSS_COMMON time_t GetMasterTime() {
 		try {
 			if (game == 1) 
 				return fs::last_write_time(data_path / "Oblivion.esm");
@@ -115,7 +114,7 @@ namespace boss {
 	}
 
 	//Returns the expeccted master file.
-	string GameMasterFile() {
+	BOSS_COMMON string GameMasterFile() {
 		if (game == 1) 
 			return "Oblivion.esm";
 		else if (game == 2) 
@@ -132,7 +131,7 @@ namespace boss {
 
 	//Create a modlist containing all the mods that are installed or referenced in the userlist with their masterlist messages.
 	//Returns the vector position of the last recognised mod in modlist.
-	size_t BuildWorkingModlist(vector<item>& modlist, vector<item> masterlist, const vector<rule>& userlist) {
+	BOSS_COMMON size_t BuildWorkingModlist(vector<item>& modlist, vector<item> masterlist, const vector<rule>& userlist) {
 		//Add all modlist and userlist mods to a hashset to optimise comparison against masterlist.
 		boost::unordered_set<string> hashset;  //Holds mods for checking against masterlist
 		boost::unordered_set<string>::iterator setPos;
@@ -267,12 +266,14 @@ namespace boss {
 	}
 
 	//Applies the userlist rules to the working modlist.
-	void ApplyUserRules(vector<item>& modlist, const vector<rule>& userlist, string& ouputBuffer, size_t& lastRecognisedPos) {
+	BOSS_COMMON void ApplyUserRules(vector<item>& modlist, const vector<rule>& userlist, string& ouputBuffer, size_t& lastRecognisedPos) {
 		size_t userlistSize = userlist.size();
 		//Apply rules, one rule at a time, one line at a time.
 		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlistSize);
 		for (size_t i=0; i<userlistSize; i++) {
 			LOG_DEBUG(" -- Processing rule #%" PRIuS ".", i+1);
+			if (!userlist[i].enabled)
+				continue;
 			size_t linesSize = userlist[i].lines.size();
 			for (size_t j=0; j<linesSize; j++) {
 				//A mod sorting rule.
@@ -450,7 +451,7 @@ namespace boss {
 	}
 
 	//Lists Script Extender plugin info in the output buffer.
-	string GetSEPluginInfo(string& outputBuffer) {
+	BOSS_COMMON string GetSEPluginInfo(string& outputBuffer) {
 		string SE, SELoc, SEPluginLoc;
 		if (game == 1 || game == 3) {  //Oblivion/Nehrim
 			SE = "OBSE";
@@ -504,7 +505,7 @@ namespace boss {
 	}
 
 	//Sort recognised mods.
-	void SortRecognisedMods(const vector<item>& modlist, const size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters) {
+	BOSS_COMMON void SortRecognisedMods(const vector<item>& modlist, const size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters) {
 		time_t modfiletime = 0;
 		LOG_INFO("Applying calculated ordering to user files...");
 		for (size_t i=0; i<=lastRecognisedPos; i++) {
@@ -556,7 +557,7 @@ namespace boss {
 	}
 
 	//List unrecognised mods.
-	void ListUnrecognisedMods(const vector<item>& modlist, const size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters) {
+	BOSS_COMMON void ListUnrecognisedMods(const vector<item>& modlist, const size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters) {
 		time_t modfiletime = 0;
 		size_t modlistSize = modlist.size();
 		//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
@@ -598,7 +599,7 @@ namespace boss {
 	}
 
 	//Prints the full BOSSlog.
-	void PrintBOSSlog(bosslogContents contents, const summaryCounters counters, const string scriptExtender) {
+	BOSS_COMMON void PrintBOSSlog(bosslogContents contents, const summaryCounters counters, const string scriptExtender) {
 		/////////////////////////////
 		// Print Output to BOSSlog
 		/////////////////////////////

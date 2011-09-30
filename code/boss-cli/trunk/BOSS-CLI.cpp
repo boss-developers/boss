@@ -41,7 +41,8 @@ using boost::algorithm::trim_copy;
 
 void ShowVersion() {
 	cout << "BOSS: Better Oblivion Sorting Software" << endl;
-	cout << "Version " << g_version << " (" << g_releaseDate << ")" << endl;
+	cout << "Version " << BOSS_VERSION_MAJOR << "." << BOSS_VERSION_MINOR
+		 << "." << BOSS_VERSION_PATCH << " (" << boss_release_date << ")" << endl;
 }
 
 void ShowUsage(po::options_description opts) {

@@ -19,18 +19,12 @@
 
 #include <wx/hyperlink.h>
 #include <wx/progdlg.h>
-
-//Program class.
-class BossGUI : public wxApp {
-public:
-	virtual bool OnInit();
-};
+#include <wx/thread.h>
 
 //Main frame class.
 class MainFrame : public wxFrame {
 public:
 	MainFrame(const wxChar *title, int x, int y, int width, int height);
-	void CheckForUpdate(wxIdleEvent& event);
 	void Update(std::string updateVersion);
 	void OnOpenSettings(wxCommandEvent& event);
 	void OnQuit(wxCommandEvent& event);
@@ -63,13 +57,20 @@ private:
 	wxCheckBox *CRCBox;
 	wxCheckBox *UpdateBox;
 	wxCheckBox *TrialRunBox;
-	wxComboBox *FormatBox;
-	wxComboBox *GameBox;
-	wxComboBox *RevertBox;
+	wxChoice *FormatChoice;
+	wxChoice *GameChoice;
+	wxChoice *RevertChoice;
 	wxRadioButton *SortOption;
 	wxRadioButton *UpdateOption;
 	wxRadioButton *UndoOption;
 	wxStaticText *GameText;
 	wxStaticText *RevertText;
+};
+
+//Program class.
+class BossGUI : public wxApp {
+public:
+	virtual bool OnInit();
+	void CheckForUpdate(MainFrame *frame);
 };
 #endif

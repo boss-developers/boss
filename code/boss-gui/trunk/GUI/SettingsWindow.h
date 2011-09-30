@@ -48,8 +48,8 @@ private:
 	wxCheckBox *HideRequirementsBox;
 	wxCheckBox *HideIncompatibilitiesBox;
 	wxCheckBox *HideDoNotCleanMessagesBox;
-	wxComboBox *ProxyTypeBox;
-	wxComboBox *DebugVerbosityBox;
+	wxChoice *ProxyTypeChoice;
+	wxChoice *DebugVerbosityChoice;
 	wxTextCtrl *ProxyHostBox;
 	wxTextCtrl *ProxyPortBox;
 	wxTextCtrl *CSSBodyBox;

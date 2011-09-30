@@ -110,14 +110,14 @@ namespace boss {
 	vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in MF1.
 
 	//Stores a message, should it be appropriate.
-	void StoreMessage(vector<message>& messages, message currentMessage) {
+	void StoreMessage(vector<message>& messages, const message currentMessage) {
 		if (storeMessage && !currentMessage.data.empty())
 				messages.push_back(currentMessage);
 		return;
 	}
 
 	//Stores the given item, should it be appropriate, and records any changes to open groups.
-	void StoreItem(vector<item>& list, item currentItem) {
+	void StoreItem(vector<item>& list, const item currentItem) {
 		if (currentItem.type == BEGINGROUP) {
 			openGroups.push_back(currentItem.name.string());
 		} else if (currentItem.type == ENDGROUP) {
@@ -129,21 +129,21 @@ namespace boss {
 	}
 
 	//Defines the given masterlist variable, if appropriate.
-	void StoreVar(string var) {
+	void StoreVar(const string var) {
 		if (storeItem)
 			setVars.insert(var);
 		return;
 	}
 
 	//Stores the global message.
-	void StoreGlobalMessage(message currentMessage) {
+	void StoreGlobalMessage(const message currentMessage) {
 		if (storeMessage)
 			globalMessageBuffer.push_back(currentMessage);
 		return;
 	}
 
 	//MF1 compatibility function. Evaluates the MF1 FCOM conditional. Like it says on the tin.
-	void EvalOldFCOMConditional(bool& result, char var) {
+	void EvalOldFCOMConditional(bool& result, const char var) {
 		result = false;
 		boost::unordered_set<string>::iterator pos = setVars.find("FCOM");
 		if (var == '>' && pos != setVars.end())
@@ -154,7 +154,7 @@ namespace boss {
 	}
 
 	//MF1 compatibility function. Evaluates the MF1 OOO/BC conditional message symbols.
-	void EvalMessKey(keyType key) {
+	void EvalMessKey(const keyType key) {
 		if (key == OOOSAY) {
 			boost::unordered_set<string>::iterator pos = setVars.find("OOO");
 			if (pos == setVars.end())
@@ -169,7 +169,7 @@ namespace boss {
 	}
 
 	//Checks if a masterlist variable is defined.
-	void CheckVar(bool& result, string var) {
+	void CheckVar(bool& result, const string var) {
 		if (setVars.find(var) == setVars.end())
 			result = false;
 		else
@@ -223,7 +223,7 @@ namespace boss {
 	}
 
 	//Checks if the given mod has a version for which the comparison holds true.
-	void CheckVersion(bool& result, string var) {
+	void CheckVersion(bool& result, const string var) {
 		char comp = var[0];
 		size_t pos = var.find("|") + 1;
 		string version = var.substr(1,pos-2);
@@ -262,7 +262,7 @@ namespace boss {
 	}
 
 	//Checks if the given mod has the given checksum.
-	void CheckSum(bool& result, unsigned int sum, string file) {
+	void CheckSum(bool& result, const unsigned int sum, string file) {
 		result = false;
 		fs::path file_path;
 		unsigned int CRC;
@@ -342,7 +342,7 @@ namespace boss {
 	}
 
 	//Evaluate a single conditional.
-	void EvaluateConditional(bool& result, metaType type, bool condition) {
+	void EvaluateConditional(bool& result, const metaType type, const bool condition) {
 		result = false;
 		if (type == IF && condition == true)
 			result = true;
@@ -352,7 +352,7 @@ namespace boss {
 	}
 
 	//Evaluate the second half of a complex conditional.
-	void EvaluateCompoundConditional(bool& result, string andOr, bool condition) {
+	void EvaluateCompoundConditional(bool& result, const string andOr, const bool condition) {
 		if (andOr == "||" && condition == true)
 			result = true;
 		else if (andOr == "&&" && result == true && condition == false)
@@ -362,7 +362,7 @@ namespace boss {
 	//Evaluate part of a shorthand conditional message.
 	//Most message types would make sense for the message to display if the condition evaluates to true. (eg. incompatibilities)
 	//Requirement messages need the condition to eval to false.
-	void EvaluateConditionalMessage(string& message, string version, string file, string mod) {
+	void EvaluateConditionalMessage(string& message, string version, string file, const string mod) {
 		bool addItem = false;
 
 		if (file[0] == '\"') {  //It's a file.
@@ -604,7 +604,7 @@ namespace boss {
 	string currentHeading;
 
 	//Set the boolean BOSS variable values while parsing.
-	void SetBoolVar(string var, bool value) {
+	void SetBoolVar(string var, const bool value) {
 		boost::algorithm::trim(var);  //Make sure there are no preceding or trailing spaces.
 		if (currentHeading == "BOSS.GeneralSettings") {
 			if (var == "bDoStartupUpdateCheck")
@@ -661,7 +661,7 @@ namespace boss {
 	}
 
 	//Set the integer BOSS variable values while parsing.
-	void SetIntVar(string var, unsigned int value) {
+	void SetIntVar(string var, const unsigned int value) {
 		boost::algorithm::trim(var);  //Make sure there are no preceding or trailing spaces.
 		if (currentHeading == "BOSS.InternetSettings") {
 			if (var == "iProxyPort")
@@ -909,7 +909,7 @@ namespace boss {
 		//A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
 		userlistRule %=
 			*eol
-			> ruleKey > ':' > object
+			> stateKey > ruleKey > ':' > object
 			> +eol
 			> sortOrMessageLine % +eol;
 
@@ -924,6 +924,8 @@ namespace boss {
 
 		sortOrMessageKey %= no_case[sortOrMessageKeys];
 
+		stateKey = no_case[lit("disable")][_val = false] | eps[_val = true];
+
 		//Give each rule names.
 		ruleList.name("rules");
 		userlistRule.name("rule");
@@ -931,6 +933,7 @@ namespace boss {
 		object.name("line object");
 		ruleKey.name("rule keyword");
 		sortOrMessageKey.name("sort or message keyword");
+		stateKey.name("state keyword");
 		
 		on_error<fail>(ruleList,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
 		on_error<fail>(userlistRule,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
@@ -938,6 +941,7 @@ namespace boss {
 		on_error<fail>(object,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
 		on_error<fail>(ruleKey,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
 		on_error<fail>(sortOrMessageKey,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
+		on_error<fail>(stateKey,phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
 	}
 
 	void userlist_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {

@@ -13,6 +13,7 @@
 #define __SUPPORT_HELPERS__HPP__
 
 #include "Types.h"
+#include "Common/DllDef.h"
 
 #include <cstring>
 #include <iostream>
@@ -81,10 +82,10 @@ namespace boss {
 	}
 
 	// Launches the specified file using the most appropriate program for viewing it.
-	int Launch(const string& filename);
+	BOSS_COMMON int Launch(const string& filename);
 
 	//Changes uppercase to lowercase and removes preceding and trailing spaces.	
-	string Tidy(string text);
+	BOSS_COMMON string Tidy(string text);
 
 	//Checks if a given object is an esp or an esm.
 	bool IsPlugin(string object);
@@ -113,7 +114,7 @@ namespace boss {
 	string GetExeDllVersion(const fs::path& filename);
 
 	//Searches a hashset for the first matching string of a regex and returns its iterator position.
-	boost::unordered_set<string>::iterator FindRegexMatch(boost::unordered_set<string> set, boost::regex reg, boost::unordered_set<string>::iterator startPos);
+	boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos);
 }
 
 #endif

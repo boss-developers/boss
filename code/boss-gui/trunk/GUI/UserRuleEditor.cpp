@@ -15,6 +15,11 @@
 #include <boost/spirit/include/karma.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 
+BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
+	EVT_BUTTON ( OPTION_OKExitSettings, UserRulesEditorFrame::OnOKQuit )
+	EVT_BUTTON ( OPTION_CancelExitSettings, UserRulesEditorFrame::OnCancelQuit )
+END_EVENT_TABLE()
+
 using namespace boss;
 using namespace std;
 namespace karma = boost::spirit::karma;
@@ -69,70 +74,150 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 			wxOK | wxICON_ERROR,
 			NULL);
 	}
+
+	//Trim down masterlist.
+	size_t lastRec = BuildWorkingModlist(Modlist,Masterlist,Userlist);
+
+	//Now disable any ADD rules with rule mods that are in the masterlist.
+	size_t size = Userlist.size();
+	for (size_t i=0;i<size;i++) {
+		size_t pos = GetModPos(Masterlist,Userlist[i].ruleObject);
+		if (pos < lastRec && pos != (size_t)-1)  //Mod in masterlist.
+			Userlist[i].enabled = false;
+	}
+
+	///////////////////////
+	// UI Stuff
+	///////////////////////
+
+	//Some variable setup.
+	wxString BeforeAfter[] = {
+        wxT("BEFORE"),
+        wxT("AFTER")
+    };
+
+	wxString TopBottom[] = {
+        wxT("TOP"),
+        wxT("BOTTOM")
+    };
+
+	wxArrayString *Rules = new wxArrayString();
+	size = Userlist.size();
+	for (size_t i=0;i<size;i++) {
+		string text;
+		bool hasAddedMessages = false;
+		size_t linesSize = Userlist[i].lines.size();
+		for (size_t j=0;j<linesSize;j++) {
+			if (Userlist[i].lines[j].key == BEFORE)
+				text = "Sort \"" + Userlist[i].ruleObject + "\" before \"" + Userlist[i].lines[j].object + "\"\n";
+			else if (Userlist[i].lines[j].key == AFTER)
+				text = "Sort \"" + Userlist[i].ruleObject + "\" after \"" + Userlist[i].lines[j].object + "\"\n";
+			else if (Userlist[i].lines[j].key == TOP)
+				text = "Insert \"" + Userlist[i].ruleObject + "\" at the top of \"" + Userlist[i].lines[j].object + "\"\n";
+			else if (Userlist[i].lines[j].key == BOTTOM)
+				text = "Insert \"" + Userlist[i].ruleObject + "\" at the bottom of \"" + Userlist[i].lines[j].object + "\"\n";
+			else if (Userlist[i].lines[j].key == APPEND) {
+				if (!hasAddedMessages)
+					text += "Add the following messages to \"" + Userlist[i].ruleObject + "\":\n";
+				text += "  " + Userlist[i].lines[j].object + "\n";
+			} else if (Userlist[i].lines[j].key == REPLACE) {
+				text += "Replace the messages attached to \"" + Userlist[i].ruleObject + "\" with:\n";
+				text += "  " + Userlist[i].lines[j].object + "\n";
+			}
+
+		}
+		Rules->Add(text);
+	}
+
+	
+	size = Modlist.size();
+	wxString *ModlistMods;
+	//for (size_t i=0;i<size;i++) {
+	//	ModlistMods[i] = Modlist[i].name.string();
+	//}
+
+	//Set up stuff in the frame.
+	SetBackgroundColour(wxColour(255,255,255));
+
+	//Sizer flags.
+	wxSizerFlags ContentSizerFlags(1);
+	ContentSizerFlags.Expand().Border(wxTOP|wxBOTTOM, 5);
+
+	wxSizerFlags ItemSizerFlags(1);
+	ItemSizerFlags.Border(wxLEFT|wxRIGHT, 10);
+
+	wxSizerFlags BorderSizerFlags(0);
+	BorderSizerFlags.Border(wxALL, 10);
+
+	////////////////////////
+	// Layout
+	////////////////////////
+
+	//Window
+	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
+
+	////Main content
+	wxBoxSizer *mainBox = new wxBoxSizer(wxHORIZONTAL);
+
+	//////First column
+	wxBoxSizer *rulesBox = new wxBoxSizer(wxVERTICAL);
+	//wxRearrangeCtrl *RulesList = new wxRearrangeCtrl(this, OPTION_RuleList, wxDefaultPosition, wxDefaultSize);
+	////////Rule buttons
+	wxBoxSizer *buttons = new wxBoxSizer(wxHORIZONTAL);
+	buttons->Add(NewRuleButton = new wxButton(this, OPTION_NewRule, wxT("Create New Rule"), wxDefaultPosition, wxSize(70, 30)));
+	buttons->Add(NewRuleButton = new wxButton(this, OPTION_EditRule, wxT("Save Edited Rule"), wxDefaultPosition, wxSize(70, 30)), 0, wxLEFT, 20);
+	buttons->Add(NewRuleButton = new wxButton(this, OPTION_DeleteRule, wxT("Delete Rule"), wxDefaultPosition, wxSize(70, 30)), 0, wxLEFT, 20);
+	rulesBox->Add(buttons);
+	//Rule Creator/Editor
+	
+	wxStaticBoxSizer *ruleEditorBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Rule Creator/Editor"));  //Needs to go in an oulined box.
+	wxBoxSizer *forBox = new wxBoxSizer(wxHORIZONTAL);
+	forBox->Add(new wxStaticText(this, wxID_ANY, wxT("For")));
+	forBox->Add(
+	ruleEditorBox->Add(forBox);
+
+	mainBox->Add(rulesBox);
+	//////Second column.
+	wxBoxSizer *listmessBox = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer *listsBox = new wxBoxSizer(wxHORIZONTAL);
+	////////Modlist column.
+	wxBoxSizer *modlistBox = new wxBoxSizer(wxVERTICAL);
+	modlistBox->Add(ModlistSearch = new wxTextCtrl(this,SEARCH_Modlist,wxT("Search Modlist"));
+	modlistBox->Add(InstalledModsList = new wxListBox(this, LIST_Modlist, wxDefaultPosition, wxDefaultSize, ModlistMods->size(),ModlistMods));
+	listsBox->Add(modlistBox);
+	////////Masterlist column.
+	wxBoxSizer *masterlistBox = new wxBoxSizer(wxVERTICAL);
+	masterlistBox->Add(MasterlistSearch = new wxTextCtrl(this,SEARCH_Masterlist,wxT("Search Masterlist"));
+	masterlistBox->Add(MasterlistModsList = new wxListBox(this, LIST_Modlist, wxDefaultPosition, wxDefaultSize, ModlistMods->size(),ModlistMods));
+	listsBox->Add(masterlistBox);
+	listmessBox->Add(listsBox);
+	////////Mod Messages box
+	wxBoxSizer *messageBox = new wxBoxSizer(wxVERTICAL);
+	messageBox->Add(ModMessagesBox = new wxTextCtrl(this,TEXT_ModMessages,wxT(""),wxDefaultPosition,wxDefaultSize));
+	
+	listmessBox->Add(messageBox);
+	mainBox->Add(listmessBox);
+	bigBox->Add(mainBox);
+
+	////Window buttons
+	wxBoxSizer *mainButtonBox = new wxBoxSizer(wxHORIZONTAL);
+	mainButtonBox->Add(new wxButton(this, OPTION_OKExitEditor, wxT("Save"), wxDefaultPosition, wxSize(70, 30)));
+	mainButtonBox->Add(new wxButton(this, OPTION_CancelEditor, wxT("Cancel"), wxDefaultPosition, wxSize(70, 30)), 0, wxLEFT, 20);
+
+	//Now add TabHolder and OK button to window sizer.
+	bigBox->Add(mainButtonBox, 0, wxRIGHT|wxALL, 10);
+
+	//Now set the layout and sizes.
+	SetSizerAndFit(bigBox);
 }
-/*
-struct ruleKeys_ : karma::symbols<keyType, string> {
-	ruleKeys_::ruleKeys_() {
-		add
-			(ADD,"ADD")
-			(OVERRIDE,"OVERRIDE")
-			(FOR,"FOR")
-		;
-	}
-} ruleKeys;
-
-struct messageKeys_ : karma::symbols<keyType, string> {
-	messageKeys_::messageKeys_() {
-		add
-			(APPEND,"APPEND")
-			(REPLACE,"REPLACE")
-			(BEFORE,"BEFORE")
-			(AFTER,"AFTER")
-			(TOP,"TOP")
-			(BOTTOM,"BOTTOM")
-		;
-	}
-} sortOrMessageKeys;
-
-struct my_grammar : karma::grammar<back_insert_iterator<string>,  vector<rule>()>
-{
-	my_grammar() : my_grammar::base_type(list, "userlist generator")
-	{
-		// Rule definitions
-		list = rule % (karma::eol << karma::eol);
-
-		rule = 
-			ruleKeys << ": " << unicode::string << karma::eol
-			<< ruleline % karma::eol;
-
-		ruleline = sortOrMessageKeys << ": " << unicode::string;
-
-		ruleKey = ruleKeys;
-
-		sortOrMessageKey = sortOrMessageKeys;
-	}
-
-	karma::rule<back_insert_iterator<string>, vector<rule>() > list;
-	karma::rule<back_insert_iterator<string>, rule()> rule;
-	karma::rule<back_insert_iterator<string>, line()> ruleline;
-	karma::rule<back_insert_iterator<string>, keyType()> sortOrMessageKey, ruleKey;
-};
-*/
 
 void UserRulesEditorFrame::OnOKQuit(wxCommandEvent& event) {
-	//Use BOOST Spirit.Karma to form userlist output.
-
-	/*my_grammar gram;
-
-	string out;
-	back_insert_iterator<string> sink(out);
-	bool r = karma::generate(sink,gram,Userlist);
-	*/
 	ofstream outFile(userlist_path.c_str(),ios_base::trunc);
-	//outFile << out;
 
 	size_t size = Userlist.size();
 	for (size_t i=0;i<size;i++) {
+		if (!Userlist[i].enabled)
+			outFile << "DISABLE ";
 		outFile << to_upper_copy(KeyToString(Userlist[i].ruleKey)) << ": " << Userlist[i].ruleObject << endl;
 		size_t linesSize = Userlist[i].lines.size();
 		for (size_t j=0;j<linesSize;j++) {

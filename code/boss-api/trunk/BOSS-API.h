@@ -10,37 +10,31 @@
 #ifndef BOSSAPI_H
 #define BOSSAPI_H
 
-#include <boost/cstdint.hpp>
+#include <stdint.h>
 
+#if defined(_WIN32) || defined(_WIN64)
 //MSVC doesn't support C99, so do the stdbool.h definitions ourselves.
 //START OF stdbool.h DEFINITIONS. 
 #	ifndef __cplusplus
 #		define bool	_Bool
 #		define true	1
 #		define false   0
-#	else
-#		define _Bool   bool
-#		define bool	bool
-#		define false   false
-#		define true	true
 #	endif
 #	define __bool_true_false_are_defined   1
 //END OF stdbool.h DEFINITIONS.
-
-#ifndef _UNICODE
-#	define _UNICODE	// Tell compiler we're using Unicode, notice the _
+#else
+#	include <stdbool.h>
 #endif
 
-//Test definition of BOSS_EXPORT
 #if defined(_WIN32) || defined(_WIN64)
-#	define BOSS_EXPORT
-#endif
+#	ifndef _UNICODE
+#		define _UNICODE	// Tell compiler we're using Unicode, notice the _
+#	endif
 
 // set up dll import/export decorators
 // when compiling the dll on windows, ensure BOSS_EXPORT is defined.  clients
 // that use this header do not need to define anything to import the symbols
 // properly.
-#if defined(_WIN32) || defined(_WIN64)
 #   ifdef BOSS_EXPORT
 #       define BOSS_API __declspec(dllexport)
 #   else
@@ -70,7 +64,7 @@ typedef struct _boss_db_int * boss_db;
 // the corresponding Tag name string.
 typedef struct {
     uint32_t id;
-    uint8_t * name;  // don't use char for utf-8 since char can be signed
+    const uint8_t * name;  // don't use char for utf-8 since char can be signed
 } BashTag;
 
 // The following are the possible error codes that the API can return.
@@ -83,6 +77,7 @@ BOSS_API extern const uint32_t BOSS_API_ERROR_NO_MEM;
 BOSS_API extern const uint32_t BOSS_API_ERROR_OVERWRITE_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_INVALID_ARGS;
 BOSS_API extern const uint32_t BOSS_API_ERROR_TAGMAP_EXISTS;
+BOSS_API extern const uint32_t BOSS_API_ERROR_MAX;
 
 
 //////////////////////////////
@@ -91,7 +86,7 @@ BOSS_API extern const uint32_t BOSS_API_ERROR_TAGMAP_EXISTS;
 
 // Returns whether this version of BOSS supports the API from the given 
 // BOSS version. Abstracts BOSS API stability policy away from clients.
-BOSS_API bool IsCompatibleVersion (uint32_t bossVersionMajor, uint32_t bossVersionMinor);
+BOSS_API bool IsCompatibleVersion (uint32_t bossVersionMajor, uint32_t bossVersionMinor, uint32_t bossVersionPatch);
 
 // Returns the version string for this version of BOSS.
 // The string exists for the lifetime of the library.
@@ -115,9 +110,15 @@ BOSS_API void     DestroyBossDb (boss_db db);
 // Loads the masterlist and userlist from the paths specified.
 // Can be called multiple times. On error, the database is unchanged.
 // Paths are case-sensitive if the underlying filesystem is case-sensitive.
+// masterlistPath and userlistPath are files.  dataPath is a directory.
 BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 									const uint8_t * userlistPath,
 									const uint8_t * dataPath);
+
+// Re-evaluates the masterlist's regex entries, so Load() doesn't need to be called
+// whenever the mods installed are changed. This doesn't need to be used if Load() is
+// called, as the evaluation is incorporated into Load() too.
+BOSS_API uint32_t ReEvalRegex(boss_db db, const uint8_t * dataPath);
 
 
 //////////////////////////
@@ -152,7 +153,7 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 // The message string is valid until the db is destroyed or until a Load
 // function is called. The string should not be freed by the client.
 BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName, 
-									uint8_t ** message, uint32_t * needsCleaning);
+									const uint8_t ** message, uint32_t * needsCleaning);
 									
 // Writes a minimal masterlist that only contains mods that have Bash Tag suggestions, 
 // plus the Tag suggestions themselves, in order to create the Wrye Bash taglist.

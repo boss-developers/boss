@@ -16,6 +16,7 @@
 #define __SUPPORT_LOGGER__HPP__
 
 #include "Platform.h"
+#include "Common/DllDef.h"
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -33,7 +34,7 @@
 
 namespace boss
 {
-	enum LogVerbosity
+	BOSS_COMMON enum LogVerbosity
 	{
 		LV_OFF   = 0,
 		LV_ERROR = 1,
@@ -44,7 +45,7 @@ namespace boss
 	};
 
 	// A simple logging class.  Not implemented to be thread safe.
-	class Logger
+	BOSS_COMMON class Logger
 	{
 	public:
 		Logger();
@@ -93,7 +94,7 @@ namespace boss
 	};
 
 	// declare global logger
-	extern Logger g_logger;
+	BOSS_COMMON extern Logger g_logger;
 }
 
 #endif // __SUPPORT_LOGGER__HPP__

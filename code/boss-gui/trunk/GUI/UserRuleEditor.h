@@ -19,6 +19,8 @@
 #	include "wx/wx.h"
 #endif
 
+#include <wx/rearrangectrl.h>
+
 using namespace boss;
 using namespace std;
 
@@ -27,6 +29,7 @@ public:
 	UserRulesEditorFrame(const wxChar *title, wxFrame *parent);
 	void OnOKQuit(wxCommandEvent& event);
 	void OnCancelQuit(wxCommandEvent& event);
+	DECLARE_EVENT_TABLE()
 private:
 	vector<item> Modlist, Masterlist;
 	vector<rule> Userlist;
@@ -39,10 +42,16 @@ private:
 	wxCheckBox *ReplaceMessagesCheckBox;
 	wxListBox *InstalledModsList;
 	wxListBox *MasterlistModsList;
-	wxStaticText *ModMessagesBox;
-	wxComboBox *BeforeAfterChoiceBox;
-	wxComboBox *TopBottomChoiceBox;
+	wxTextCtrl *ModlistSearch;
+	wxTextCtrl *MasterlistSearch;
+	wxTextCtrl *ModMessagesBox;
+	wxChoice *BeforeAfterChoiceBox;
+	wxChoice *TopBottomChoiceBox;
 	wxTextCtrl *NewModMessagesBox;
+	wxRearrangeCtrl *RulesList;
+	wxTextCtrl *RuleModBox;
+
+
 };
 
 #endif
