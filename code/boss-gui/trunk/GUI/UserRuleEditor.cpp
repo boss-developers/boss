@@ -162,50 +162,64 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	//////First column
 	wxBoxSizer *rulesBox = new wxBoxSizer(wxVERTICAL);
 	//wxRearrangeCtrl *RulesList = new wxRearrangeCtrl(this, OPTION_RuleList, wxDefaultPosition, wxDefaultSize);
-	////////Rule buttons
-	wxBoxSizer *buttons = new wxBoxSizer(wxHORIZONTAL);
-	buttons->Add(NewRuleButton = new wxButton(this, OPTION_NewRule, wxT("Create New Rule"), wxDefaultPosition, wxSize(70, 30)));
-	buttons->Add(NewRuleButton = new wxButton(this, OPTION_EditRule, wxT("Save Edited Rule"), wxDefaultPosition, wxSize(70, 30)), 0, wxLEFT, 20);
-	buttons->Add(NewRuleButton = new wxButton(this, OPTION_DeleteRule, wxT("Delete Rule"), wxDefaultPosition, wxSize(70, 30)), 0, wxLEFT, 20);
-	rulesBox->Add(buttons);
-	//Rule Creator/Editor
 	
+	////////Rule Creator/Editor
 	wxStaticBoxSizer *ruleEditorBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Rule Creator/Editor"));  //Needs to go in an oulined box.
 	wxBoxSizer *forBox = new wxBoxSizer(wxHORIZONTAL);
 	forBox->Add(new wxStaticText(this, wxID_ANY, wxT("For")));
-	forBox->Add(
+	forBox->Add(RuleModBox = new wxTextCtrl(this,TEXT_RuleMod));
 	ruleEditorBox->Add(forBox);
-
+	ruleEditorBox->Add(SortModsCheckBox = new wxCheckBox(this, CHECKBOX_SortMods, wxT("Sort Item")));
+	wxBoxSizer *sortModOptionBox = new wxBoxSizer(wxHORIZONTAL);
+	sortModOptionBox->Add(SortModOption = new wxRadioButton(this, RADIO_SortMod, wxT("Sort"), wxDefaultPosition, wxDefaultSize));
+	sortModOptionBox->Add(BeforeAfterChoiceBox = new wxChoice(this, CHOICE_BeforeAfter, wxDefaultPosition, wxDefaultSize, 2, BeforeAfter));
+	sortModOptionBox->Add(SortModBox = new wxTextCtrl(this,TEXT_SortMod));
+	ruleEditorBox->Add(sortModOptionBox);
+	wxBoxSizer *InsertOptionBox = new wxBoxSizer(wxHORIZONTAL);
+	InsertOptionBox->Add(InsertModOption = new wxRadioButton(this, RADIO_InsertMod, wxT("Insert at the"), wxDefaultPosition, wxDefaultSize));
+	InsertOptionBox->Add(TopBottomChoiceBox = new wxChoice(this, CHOICE_TopBottom, wxDefaultPosition, wxDefaultSize, 2, TopBottom));
+	InsertOptionBox->Add(InsertModBox = new wxTextCtrl(this,TEXT_InsertMod));
+	ruleEditorBox->Add(InsertOptionBox);
+	ruleEditorBox->Add(ReplaceMessagesCheckBox = new wxCheckBox(this, CHECKBOX_RemoveMessages, wxT("Replace Existing Messages")));
+	ruleEditorBox->Add(AddMessagesCheckBox = new wxCheckBox(this, CHECKBOX_AddMessages, wxT("Add the following messages:")));
+	ruleEditorBox->Add(NewModMessagesBox = new wxTextCtrl(this,TEXT_NewMessages, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), 0, wxEXPAND);
+	rulesBox->Add(ruleEditorBox);
 	mainBox->Add(rulesBox);
+	////////Rule buttons
+	wxBoxSizer *buttons = new wxBoxSizer(wxHORIZONTAL);
+	buttons->Add(NewRuleButton = new wxButton(this, OPTION_NewRule, wxT("Create New Rule"), wxDefaultPosition, wxDefaultSize));
+	buttons->Add(NewRuleButton = new wxButton(this, OPTION_EditRule, wxT("Save Edited Rule"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 20);
+	buttons->Add(NewRuleButton = new wxButton(this, OPTION_DeleteRule, wxT("Delete Rule"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 20);
+	rulesBox->Add(buttons);
 	//////Second column.
 	wxBoxSizer *listmessBox = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *listsBox = new wxBoxSizer(wxHORIZONTAL);
 	////////Modlist column.
-	wxBoxSizer *modlistBox = new wxBoxSizer(wxVERTICAL);
-	modlistBox->Add(ModlistSearch = new wxTextCtrl(this,SEARCH_Modlist,wxT("Search Modlist"));
+	wxStaticBoxSizer *modlistBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Installed Mods"));
+	modlistBox->Add(ModlistSearch = new wxSearchCtrl(this, SEARCH_Modlist));
 	modlistBox->Add(InstalledModsList = new wxListBox(this, LIST_Modlist, wxDefaultPosition, wxDefaultSize, ModlistMods->size(),ModlistMods));
 	listsBox->Add(modlistBox);
 	////////Masterlist column.
-	wxBoxSizer *masterlistBox = new wxBoxSizer(wxVERTICAL);
-	masterlistBox->Add(MasterlistSearch = new wxTextCtrl(this,SEARCH_Masterlist,wxT("Search Masterlist"));
+	wxStaticBoxSizer *masterlistBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Masterlist"));
+	masterlistBox->Add(MasterlistSearch = new wxSearchCtrl(this, SEARCH_Masterlist));
 	masterlistBox->Add(MasterlistModsList = new wxListBox(this, LIST_Modlist, wxDefaultPosition, wxDefaultSize, ModlistMods->size(),ModlistMods));
 	listsBox->Add(masterlistBox);
 	listmessBox->Add(listsBox);
 	////////Mod Messages box
-	wxBoxSizer *messageBox = new wxBoxSizer(wxVERTICAL);
-	messageBox->Add(ModMessagesBox = new wxTextCtrl(this,TEXT_ModMessages,wxT(""),wxDefaultPosition,wxDefaultSize));
+	wxStaticBoxSizer *messageBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Mod Messages"));
+	messageBox->Add(ModMessagesBox = new wxTextCtrl(this,TEXT_ModMessages,wxT(""),wxDefaultPosition,wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY), 0, wxEXPAND);
 	
-	listmessBox->Add(messageBox);
+	listmessBox->Add(messageBox, 0, wxEXPAND);
 	mainBox->Add(listmessBox);
 	bigBox->Add(mainBox);
 
 	////Window buttons
 	wxBoxSizer *mainButtonBox = new wxBoxSizer(wxHORIZONTAL);
-	mainButtonBox->Add(new wxButton(this, OPTION_OKExitEditor, wxT("Save"), wxDefaultPosition, wxSize(70, 30)));
-	mainButtonBox->Add(new wxButton(this, OPTION_CancelEditor, wxT("Cancel"), wxDefaultPosition, wxSize(70, 30)), 0, wxLEFT, 20);
+	mainButtonBox->Add(new wxButton(this, OPTION_OKExitEditor, wxT("Save"), wxDefaultPosition, wxDefaultSize));
+	mainButtonBox->Add(new wxButton(this, OPTION_CancelEditor, wxT("Cancel"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 20);
 
 	//Now add TabHolder and OK button to window sizer.
-	bigBox->Add(mainButtonBox, 0, wxRIGHT|wxALL, 10);
+	bigBox->Add(mainButtonBox, 0, wxALIGN_RIGHT|wxALL, 10);
 
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);

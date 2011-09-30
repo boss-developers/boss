@@ -62,6 +62,17 @@ enum {
 	OPTION_CancelEditor,
 	TEXT_ModMessages,
 	SEARCH_Masterlist,
-	SEARCH_Modlist
+	SEARCH_Modlist,
+	TEXT_RuleMod,
+	CHECKBOX_SortMods,
+	RADIO_SortMod,
+	RADIO_InsertMod,
+	CHOICE_BeforeAfter,
+	CHOICE_TopBottom,
+	TEXT_SortMod,
+	TEXT_InsertMod,
+	CHECKBOX_RemoveMessages,
+	CHECKBOX_AddMessages,
+	TEXT_NewMessages
 };
 #endif

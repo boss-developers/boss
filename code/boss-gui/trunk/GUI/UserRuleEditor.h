@@ -20,6 +20,7 @@
 #endif
 
 #include <wx/rearrangectrl.h>
+#include <wx/srchctrl.h>
 
 using namespace boss;
 using namespace std;
@@ -38,20 +39,21 @@ private:
 	wxButton *DeleteRuleButton;
 	wxRadioButton *SortModOption;
 	wxRadioButton *InsertModOption;
-	wxCheckBox *AddMessageCheckBox;
+	wxCheckBox *AddMessagesCheckBox;
 	wxCheckBox *ReplaceMessagesCheckBox;
 	wxListBox *InstalledModsList;
 	wxListBox *MasterlistModsList;
-	wxTextCtrl *ModlistSearch;
-	wxTextCtrl *MasterlistSearch;
+	wxSearchCtrl *ModlistSearch;
+	wxSearchCtrl *MasterlistSearch;
 	wxTextCtrl *ModMessagesBox;
 	wxChoice *BeforeAfterChoiceBox;
 	wxChoice *TopBottomChoiceBox;
 	wxTextCtrl *NewModMessagesBox;
 	wxRearrangeCtrl *RulesList;
 	wxTextCtrl *RuleModBox;
-
-
+	wxTextCtrl *SortModBox;
+	wxCheckBox *SortModsCheckBox;
+	wxTextCtrl *InsertModBox;
 };
 
 #endif
