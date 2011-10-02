@@ -13,6 +13,7 @@
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 #include <boost/exception/get_error_info.hpp>
 #include <boost/unordered_set.hpp>
+#include <boost/regex.hpp>
 
 #include <clocale>
 #include <cstdlib>
@@ -20,14 +21,13 @@
 #include <iostream>
 #include <algorithm>
 
-#include <boost/regex.hpp>
-
 #include <wx/aboutdlg.h>
+#include <wx/busyinfo.h>
 
 #include "GUI/MainWindow.h"
 #include "GUI/SettingsWindow.h"
 #include "GUI/UserRuleEditor.h"
-#include "ElementIDs.h"
+#include "GUI/ElementIDs.h"
 #include "BOSS-Common.h"
 
 BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
@@ -111,6 +111,7 @@ bool BossGUI::OnInit() {
 	SetTopWindow(frame);
 
 	//Now check for updates.
+	wxBusyInfo wait("Please wait, BOSS is checking for updates...");
 	CheckForUpdate(frame);
 	return true;
 }

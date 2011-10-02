@@ -30,6 +30,16 @@ public:
 	UserRulesEditorFrame(const wxChar *title, wxFrame *parent);
 	void OnOKQuit(wxCommandEvent& event);
 	void OnCancelQuit(wxCommandEvent& event);
+	void OnSearchModlist(wxCommandEvent& event);
+	void OnSearchMasterlist(wxCommandEvent& event);
+	void OnSelectModInMasterlist(wxCommandEvent& event);
+	void OnSortingCheckToggle(wxCommandEvent& event);
+	void OnMessageAddToggle(wxCommandEvent& event);
+	void OnSortSelection(wxCommandEvent& event);
+	void OnInsertSelection(wxCommandEvent& event);
+	void OnRuleCreate(wxCommandEvent& event);
+	void OnRuleEdit(wxCommandEvent& event);
+	void OnRuleDelete(wxCommandEvent& event);
 	DECLARE_EVENT_TABLE()
 private:
 	vector<item> Modlist, Masterlist;

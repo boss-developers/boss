@@ -12,8 +12,6 @@
 	td {border: 1px solid #CCC; padding: 5px;}
 	table {border: 1px solid #CCC;border-spacing: 0;border-collapse: separate; margin:1em;}
 	thead > tr td {font-weight:bold}
-	b {font-weight:bold;}
-	i {font-style:italic;}
 </style>
 
 <div>Better Oblivion Sorting Software</div>
@@ -836,7 +834,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Changed: Major refactoring of BOSS code into a common library, a Command Line Interface and a Graphical User Interface.
 	<li>Common Library:
 	<ul>
-		<li>Removed: Checking for changes to the recognised mod list since last run for the plain text BOSSlog, as this did not work correctly and is not feasible to fix.
+		<li>Removed: Checking for changes to the recognised mod list since last run for the plain text BOSS Log, as this did not work correctly and is not feasible to fix.
 		<li>Fixed: A bug where if a plugin filename started with "SET" or "GLOBAL" (or case variations) then BOSS would incorrectly classify it as a variable or global message line and so result in syntax errors.
 		<li>Fixed: User Rules which failed to add a plugin into the beginning or end of a group still incremented the number of recognised plugins as if the rule application had succeeded.
 		<li>Fixed: Userlist rules which reference plugins that are not installed now have warning messages reported instead of error messages.
@@ -905,18 +903,18 @@ threads when you read this. Just navigate through to the latest thread to post a
 <p><b>Version 1.8</b> - <i>6 July 2011</i>
 <ul>
 	<li>Fixed: Junction-linked data folders not being scanned for plugins.
-	<li>Fixed: Links being displayed incorrectly in the BOSSlog if more than one was given in a message.
+	<li>Fixed: Links being displayed incorrectly in the BOSS Log if more than one was given in a message.
 	<li>Changed: Masterlist updater now runs by default.
 	<li>Changed: Updated version of libcurl used when building BOSS.exe and BOSS GUI.exe to 7.21.7 from 7.21.4.
-	<li>Changed: Overhauled the <q>Plugin Numbers</q> section of the BOSSlog:
+	<li>Changed: Overhauled the <q>Plugin Numbers</q> section of the BOSS Log:
 	<ul>
-		<li>Moved the section to the top of the BOSSlog.
+		<li>Moved the section to the top of the BOSS Log.
 		<li>Renamed the section from <q>Plugin Numbers</q> to <q>Summary</q>.
 		<li>Added message counts, with numbers of total messages, warning messages and error messages.
 		<li>Added a notice that is displayed when there has been no change in the recognised plugin list since BOSS was last run.
 	</ul>
 	
-	<li>Added: A settings file (<q>BOSS.ini</q>) to allow users to set default behaviours, options and BOSSlog formatting styles.
+	<li>Added: A settings file (<q>BOSS.ini</q>) to allow users to set default behaviours, options and BOSS Log formatting styles.
 	<li>Added: Support for unauthenticated proxies to the masterlist updater and the GUI's <q>Check For Updates</q> functionality.
 	<li>Added: Five new command line parameters:
 	<ul>
@@ -930,7 +928,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Added: Support for Fallout: New Vegas plugins that use the Fallout 3 master file, such as <q>A Requiem for the Capital Wasteland</q>.
 	<li>Added: Support for MF2.1 regular expressions in the masterlist.
 	<li>Added: Support for MF2.1 conditional incompatibility and conditional requirement messages in the masterlist.
-	<li>Added: BOSSlog filter option to hide userlist warning messages.
+	<li>Added: BOSS Log filter option to hide userlist warning messages.
 	<li>(GUI) Fixed: The <q>Enable File CRC Display</q> and <q>Enable Mod Version Display</q> options getting confused between their values under the <q>Sort Mods</q> and <q>Undo Changes</q> run options.
 	<li>(GUI) Fixed: The icon not appearing in the title bar.
 	<li>(GUI) Fixed: The GUI hanging when BOSS is launched.
@@ -965,21 +963,21 @@ threads when you read this. Just navigate through to the latest thread to post a
 	</ul>
 	
 	<li>Changed: Removed batch files as they are no longer necessary.
-	<li>Changed: The release date of updated masterlists is now displayed beside the revision number in the BOSSlog.
+	<li>Changed: The release date of updated masterlists is now displayed beside the revision number in the BOSS Log.
 	<li>Changed: Significant rewrite of source code, resulting in performance gains.
 	<li>Changed: Implemented new file parsers for the masterlist, modlists and userlist.
-	<li>Changed: Improved the formatting of the BOSSlog, making it more readable.
-	<li>Changed: Links in the BOSSlog are now hyperlinks that can be clicked on to take you to the given URL.
+	<li>Changed: Improved the formatting of the BOSS Log, making it more readable.
+	<li>Changed: Links in the BOSS Log are now hyperlinks that can be clicked on to take you to the given URL.
 	<li>Added: A unique icon to the executables, made by Hickory.
 	<li>Added: Support for Masterlist Format 2, which offers an alternative syntax and a wide range of new features and capabilities.
-	<li>Added: Display of the numbers of recognised, unrecognised, ghosted and total plugins to the end of the BOSSlog.
-	<li>Added: Javascript-based filter options and collapsible sections to the BOSSlog.
+	<li>Added: Display of the numbers of recognised, unrecognised, ghosted and total plugins to the end of the BOSS Log.
+	<li>Added: Javascript-based filter options and collapsible sections to the BOSS Log.
 	<li>Added: A Graphical User Interface (GUI) that can be used to launch BOSS with whatever options are desired without having to use the command line.
 	<li>Added: Three new command line parameters:
 	<ul>
 		<li><code>--game,-g [ game ]</code> to override game autodetection. To be used in conjunction with -o to allow updating of the masterlist on computers where the specified game is not installed.
-		<li><code>--crc-display,-c</code> to calculate and display in the BOSSlog the CRCs of all your plugins. CRCs can be used as accurate version checks in masterlist conditionals.
-		<li><code>--format,-f [ type ]</code> to select the BOSSlog format, choosing from either HTML or plaintext. HTML formatting is the default.
+		<li><code>--crc-display,-c</code> to calculate and display in the BOSS Log the CRCs of all your plugins. CRCs can be used as accurate version checks in masterlist conditionals.
+		<li><code>--format,-f [ type ]</code> to select the BOSS Log format, choosing from either HTML or plaintext. HTML formatting is the default.
 	</ul>
 	
 	<li>(Installer) Changed: Updated installer to reflect the various changes to BOSS's files and folders.
@@ -1037,7 +1035,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Fixed: Several compiler warnings when compiling on Linux.
 	<li>Changed: Increased timout delay for the masterlist updater to prevent the updater failing when Google Code is slow.
 	<li>Changed: Improved masterlist updater error handling.
-	<li>Added: <code>--silent,-s</code> command line parameter to suppress the automatic opening of the BOSSlog when BOSS is run.
+	<li>Added: <code>--silent,-s</code> command line parameter to suppress the automatic opening of the BOSS Log when BOSS is run.
 	<li>Added: Version info to <q>BOSS.exe</q> to make Wrye Bash integration/debugging easier.
 </ul>
 <p><b>Version 1.6</b> - <i>8 October 2010</i>
@@ -1045,17 +1043,17 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Fixed: Fallout3.esm being reported as an 'unknown mod file'.
 	<li>Changed: Removed need for <q>BOSS.bat</q>.
 	<li>Changed: Moved BOSS's input and output files to <q>Data\BOSS\</q>.
-	<li>Changed: Converted BOSSlog from plain text to HTML format.
+	<li>Changed: Converted BOSS Log from plain text to HTML format.
 	<li>Changed: Improved error handling to catch more errors and provide more useful error messages when BOSS doesn't work properly.
 	<li>Changed: Improved portability of source code.
 	<li>Changed: Merged BOSS and BOSS-F source code, allowing one <q>BOSS.exe</q> to work with all the games BOSS supports.
 	<li>Changed: Major refactoring and rewrite of BOSS source code, resulting in a significant performance improvement.
 	<li>Added: Fallout Wanderers Edition (FWE) specific message type for the Fallout 3 masterlist.
-	<li>Added: Plugin version display to BOSSlog output.
+	<li>Added: Plugin version display to BOSS Log output.
 	<li>Added: Three new command line parameters:
 	<ul>
 		<li><code>--update,-u</code> to update the masterlist before sorting plugins.
-		<li><code>--disable-version-parse,-V</code> to disable version display in the BOSSlog.
+		<li><code>--disable-version-parse,-V</code> to disable version display in the BOSS Log.
 		<li><code>--revert-level,-r [ level ]</code> to allow undoing of BOSS's changes. <code>level</code> can be either 1 or 2, to go back to the load order before the last run of BOSS, or the load order before the run before that respectively.
 	</ul>
 	

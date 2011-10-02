@@ -51,31 +51,31 @@ namespace boss {
 		//This will be unused.
 		boss_error() {
 			errCode = BOSS_ERROR_OK;
-			externalErrString = "";
+			errString = "";
 			errSubject = "";
 		}
 		//For general errors not referencing specific files.
 		boss_error(uint32_t internalErrCode) {
 			errCode = internalErrCode;
-			externalErrString = "";
+			errString = "";
 			errSubject = "";
 		}
 		//For general errors referencing specific files.
 		boss_error(uint32_t internalErrCode, string internalErrSubject) {
 			errCode = internalErrCode;
-			externalErrString = "";
+			errString = "";
 			errSubject = internalErrSubject;
 		}
 		//For errors from BOOST Filesystem functions.
-		boss_error(uint32_t internalErrCode, string internalErrSubject, string errString) {
+		boss_error(uint32_t internalErrCode, string internalErrSubject, string externalErrString) {
 			errCode = internalErrCode;
-			externalErrString = errString;
+			errString = externalErrString;
 			errSubject = internalErrSubject;
 		}
 		//For errors from cURL functions.
 		boss_error(string externalErrString, uint32_t internalErrCode) {
 			errCode = internalErrCode;
-			externalErrString = externalErrString;
+			errString = externalErrString;
 			errSubject = "";
 		}
 		string getString() {
@@ -107,23 +107,23 @@ namespace boss {
 			case BOSS_ERROR_INVALID_PROXY_TYPE:
 				return "\"" + errSubject + "\" is not a valid proxy type!";
 			case BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL:
-				return "The modification date of \"" + errSubject + "\" cannot be read! Filesystem response: " + externalErrString;
+				return "The modification date of \"" + errSubject + "\" cannot be read! Filesystem response: " + errString;
 			case BOSS_ERROR_FS_FILE_RENAME_FAIL:
-				return "\"" + errSubject + "\" cannot be renamed! Filesystem response: " + externalErrString;
+				return "\"" + errSubject + "\" cannot be renamed! Filesystem response: " + errString;
 			case BOSS_ERROR_FS_FILE_DELETE_FAIL:
-				return "\"" + errSubject + "\" cannot be deleted! Filesystem response: " + externalErrString;
+				return "\"" + errSubject + "\" cannot be deleted! Filesystem response: " + errString;
 			case BOSS_ERROR_CURL_INIT_FAIL:
 				return "cURL cannot be initialised!";
 			case BOSS_ERROR_CURL_SET_ERRBUFF_FAIL:
-				return "cURL's error buffer could not be set! cURL response: " + externalErrString;
+				return "cURL's error buffer could not be set! cURL response: " + errString;
 			case BOSS_ERROR_CURL_SET_OPTION_FAIL:
-				return "A cURL option could not be set! cURL response: " + externalErrString;
+				return "A cURL option could not be set! cURL response: " + errString;
 			case BOSS_ERROR_CURL_SET_PROXY_FAIL:
-				return "Proxy hostname or port invalid! cURL response: " + externalErrString;
+				return "Proxy hostname or port invalid! cURL response: " + errString;
 			case BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL:
-				return "Proxy type invalid! cURL response: " + externalErrString;
+				return "Proxy type invalid! cURL response: " + errString;
 			case BOSS_ERROR_CURL_PERFORM_FAIL:
-				return "cURL could not perform task! cURL response: " + externalErrString;
+				return "cURL could not perform task! cURL response: " + errString;
 			case BOSS_ERROR_CURL_USER_CANCEL:
 				return "Cancelled by user.";
 			default:
@@ -135,7 +135,7 @@ namespace boss {
 		}
 	private:
 		uint32_t errCode;
-		string externalErrString;
+		string errString;
 		string errSubject;
 	};
 	

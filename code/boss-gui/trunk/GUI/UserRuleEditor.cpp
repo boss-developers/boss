@@ -12,18 +12,18 @@
 #include "GUI/UserRuleEditor.h"
 #include "GUI/ElementIDs.h"
 
-#include <boost/spirit/include/karma.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 
 BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
-	EVT_BUTTON ( OPTION_OKExitSettings, UserRulesEditorFrame::OnOKQuit )
-	EVT_BUTTON ( OPTION_CancelExitSettings, UserRulesEditorFrame::OnCancelQuit )
+	EVT_BUTTON ( OPTION_OKExitEditor, UserRulesEditorFrame::OnOKQuit )
+	EVT_BUTTON ( OPTION_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit )
+	EVT_BUTTON ( OPTION_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit )
+	EVT_BUTTON ( OPTION_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit )
+	EVT_BUTTON ( OPTION_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit )
 END_EVENT_TABLE()
 
 using namespace boss;
 using namespace std;
-namespace karma = boost::spirit::karma;
-namespace unicode = boost::spirit::unicode;
 
 using boost::algorithm::to_upper_copy;
 
@@ -178,11 +178,12 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	wxBoxSizer *InsertOptionBox = new wxBoxSizer(wxHORIZONTAL);
 	InsertOptionBox->Add(InsertModOption = new wxRadioButton(this, RADIO_InsertMod, wxT("Insert at the"), wxDefaultPosition, wxDefaultSize));
 	InsertOptionBox->Add(TopBottomChoiceBox = new wxChoice(this, CHOICE_TopBottom, wxDefaultPosition, wxDefaultSize, 2, TopBottom));
+	InsertOptionBox->Add(new wxStaticText(this, wxID_ANY, wxT("of")));
 	InsertOptionBox->Add(InsertModBox = new wxTextCtrl(this,TEXT_InsertMod));
 	ruleEditorBox->Add(InsertOptionBox);
-	ruleEditorBox->Add(ReplaceMessagesCheckBox = new wxCheckBox(this, CHECKBOX_RemoveMessages, wxT("Replace Existing Messages")));
 	ruleEditorBox->Add(AddMessagesCheckBox = new wxCheckBox(this, CHECKBOX_AddMessages, wxT("Add the following messages:")));
 	ruleEditorBox->Add(NewModMessagesBox = new wxTextCtrl(this,TEXT_NewMessages, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), 0, wxEXPAND);
+	ruleEditorBox->Add(ReplaceMessagesCheckBox = new wxCheckBox(this, CHECKBOX_RemoveMessages, wxT("Replace Existing Messages")));
 	rulesBox->Add(ruleEditorBox);
 	mainBox->Add(rulesBox);
 	////////Rule buttons
@@ -216,7 +217,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	////Window buttons
 	wxBoxSizer *mainButtonBox = new wxBoxSizer(wxHORIZONTAL);
 	mainButtonBox->Add(new wxButton(this, OPTION_OKExitEditor, wxT("Save"), wxDefaultPosition, wxDefaultSize));
-	mainButtonBox->Add(new wxButton(this, OPTION_CancelEditor, wxT("Cancel"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 20);
+	mainButtonBox->Add(new wxButton(this, OPTION_CancelExitEditor, wxT("Cancel"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 20);
 
 	//Now add TabHolder and OK button to window sizer.
 	bigBox->Add(mainButtonBox, 0, wxALIGN_RIGHT|wxALL, 10);
@@ -248,4 +249,44 @@ void UserRulesEditorFrame::OnOKQuit(wxCommandEvent& event) {
 
 void UserRulesEditorFrame::OnCancelQuit(wxCommandEvent& event) {
 	this->Close();
+}
+
+void UserRulesEditorFrame::OnSearchModlist(wxCommandEvent& event) {
+
+}
+
+void UserRulesEditorFrame::OnSearchMasterlist(wxCommandEvent& event) {
+
+}
+
+void UserRulesEditorFrame::OnSelectModInMasterlist(wxCommandEvent& event) {
+
+}
+
+void UserRulesEditorFrame::OnSortingCheckToggle(wxCommandEvent& event) {
+
+}
+
+void UserRulesEditorFrame::OnMessageAddToggle(wxCommandEvent& event) {
+
+}
+
+void UserRulesEditorFrame::OnSortSelection(wxCommandEvent& event) {
+
+}
+
+void UserRulesEditorFrame::OnInsertSelection(wxCommandEvent& event) {
+
+}
+
+void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
+
+}
+
+void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
+
+}
+
+void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
+
 }

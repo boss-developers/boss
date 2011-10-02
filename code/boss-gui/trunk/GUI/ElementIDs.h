@@ -59,7 +59,7 @@ enum {
 	OPTION_DeleteRule,
 	LIST_Modlist,
 	OPTION_OKExitEditor,
-	OPTION_CancelEditor,
+	OPTION_CancelExitEditor,
 	TEXT_ModMessages,
 	SEARCH_Masterlist,
 	SEARCH_Modlist,

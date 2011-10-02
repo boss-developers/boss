@@ -3,7 +3,7 @@
 <title>BOSS User Rules ReadMe</title>
 <style>
 	body {font-family:Calibri,Arial,Verdana,sans-serifs;}
-	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:1em;}
+	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:0.2em;}
 	body > div {margin-bottom:5em;}
 	ol li, ul li {margin-bottom:10px;}
 	li ul, li ol {margin-top:0.4em;}
@@ -16,8 +16,6 @@
 	code {display:inline-box; padding: 2px 5px; background:#EEEEEE; }
 	td {border: 1px solid #ccc; padding: 5px;}
 	table {border: 1px solid #CCCCCC;border-spacing: 0;border-collapse: separate; margin:1em; margin-left:40px;}
-	b {font-weight:bold;}
-	i {font-style:italic;}
 </style>
 
 <div>Better Oblivion Sorting Software<br />
@@ -29,12 +27,17 @@ User Rules Documentation</div>
 	<li><a href="#start">Getting Started With The Userlist</a>
 	<li><a href="#basics">Rule Basics</a>
 	<ol style="list-style:lower-alpha;">
-		<li><a href="#unknown">Sorting An Unknown Plugin</a>
-		<li><a href="#recognised">Changing A Recognised Plugin's Position</a>
-		<li><a href="#message">Editing A Plugin's BOSSlog Messages &amp; Bash Tag Suggestions</a>
+		<li><a href="#basics-add">Sorting An Unknown Plugin</a>
+		<li><a href="#basics-override">Changing A Recognised Plugin's Position</a>
+		<li><a href="#basics-message">Editing A Plugin's BOSS Log Messages &amp; Bash Tag Suggestions</a>
 	</ol>
-	
 	<li><a href="#syntax">Rule Definition Syntax</a>
+	<ol style="list-style:lower-alpha;">
+		<li><a href="#syntax-rule">The Rule Line</a>
+		<li><a href="#syntax-sort">The Sort Line</a>
+		<li><a href="#syntax-message">The Message Line</a>
+		<li><a href="#syntax-examples">Examples</a>
+	</ol>
 	<li><a href="#apply">Enforcing Your Rules</a>
 	<li><a href="#notes">Further Notes On Rules</a>
 	<li><a href="#messages">The BOSS Message Format</a>
@@ -65,7 +68,7 @@ as well as for adding or editing messages attached to plugins, and these rules w
 		</ul>
 		Plugins may be .esp or .esm files. Groups are all pre-defined in the BOSS masterlist, marked out by the 
 	<code>\BeginGroup\:  <em>Group Name</em></code> and <code>\EndGroup\\</code> lines.
-	<li><em>Edit BOSS messages.</em> You can add to or replace the plugin-specific messages that are displayed in the BOSSlog.
+	<li><em>Edit BOSS messages.</em> You can add to or replace the plugin-specific messages that are displayed in the BOSS Log.
 	See <q><a href="#messages">The BOSS Message Format</a></q> below for more details on the message types and syntax.
 </ol>
 <p>The rule definition syntax is simple and concise, and is explained below.
@@ -73,7 +76,7 @@ as well as for adding or editing messages attached to plugins, and these rules w
 
 <div id="basics"><h1>Rule Basics</h1>
 <p>While it is strongly suggested that you read the <q><a href="#syntax">Rule Definition Syntax</a></q> section below to gain a proper understanding of user rules, here is a quick start guide for some simple rules.</p>
-<h2 id="unknown">Sorting An Unknown Plugin</h2>
+<h2 id="basics-add">Sorting An Unknown Plugin</h2>
 <p>To sort a plugin that is not in the masterlist after another plugin:
 <div class="codebox">ADD: [RULE PLUGIN]
 AFTER: [SORT PLUGIN]</div>
@@ -96,7 +99,7 @@ Plugin1.esp<br />
 ...
 </div><br /><br />
 
-<h2 id="recognised">Changing A Recognised Plugin's Position</h2>
+<h2 id="basics-override">Changing A Recognised Plugin's Position</h2>
 <p>To sort a plugin that is already in the masterlist after another plugin:
 <div class="codebox">OVERRIDE: [RULE PLUGIN]
 AFTER: [SORT PLUGIN]</div>
@@ -115,11 +118,11 @@ bgBalancingEVCore.esp<br />
 ...
 </div><br /><br />
 
-<h2 id="message">Editing A Plugin's BOSSlog Messages &amp; Bash Tag Suggestions</h2>
-<p>To add a message to a plugin for display in the BOSSlog:
+<h2 id="basics-message">Editing A Plugin's BOSS Log Messages &amp; Bash Tag Suggestions</h2>
+<p>To add a message to a plugin for display in the BOSS Log:
 <div class="codebox">FOR: [RULE PLUGIN]
 APPEND: [MESSAGE OBJECT]</div>
-<p>To replace the messages attached to a plugin for display in the BOSSlog:
+<p>To replace the messages attached to a plugin for display in the BOSS Log:
 <div class="codebox">FOR: [RULE PLUGIN]
 REPLACE: [MESSAGE OBJECT]</div>
 <p>The <em>rule plugin</em> is the plugin you want to add the message to. The <em>message object</em> is the formatted BOSS message that you want to attach. See the <q><a href="#messages">The BOSS Message Format</a></q> section later on in this readme if you are unfamiliar with BOSS message formatting.
@@ -129,7 +132,7 @@ REPLACE: ? Replaced!
 
 FOR: bgMagicEV.esp.esp
 APPEND: % {{BASH:Names,Delev,Relev}}</div>
-<p>This will print in the BOSSlog:
+<p>This will print in the BOSS Log:
 <div class="quotebox">
 ...<br /><br />
 Unofficial Oblivion Patch.esp
@@ -147,7 +150,7 @@ bgMagicEV.esp.esp
 
 <div id="syntax"><h1>Rule Definition Syntax</h1>
 <p>User rules have a specific structure and syntax which your rules must follow to be applied. The information below provides the details on this structure and syntax.</p><br />
-<h2>The Rule Line</h2>
+<h2 id="syntax-rule">The Rule Line</h2>
 <p>Every rule begins with a <em>rule line</em>, which defines what basic type of rule it is and what plugin it is applied to. It has the structure:
 <div class="codebox">[RULE KEYWORD]: [RULE OBJECT]</div>
 <p>This is the <em>rule line</em>. The <em>rule keyword</em> can be one of:
@@ -168,7 +171,7 @@ AFTER: Unofficial Oblivion Patch.esp
 </div>
 <p>Would result in MyMod.esp not being sorted after Unofficial Oblivon Patch.esp. The DISABLE keyword should be used instead of silent comments to stop a rule being applied because the latter makes the rule invisible to the GUI's User Rule Editor whereas the former does not.</p><br />
 
-<h2>The Sort Line</h2>
+<h2 id="syntax-sort">The Sort Line</h2>
 <p>If a rule's rule keyword is ADD or OVERRIDE, it can sort plugins and should include a <em>sort line</em>. If the rule keyword is FOR, the rule <b>must not</b> include a sort line. The sort line has the structure:
 <div class="codebox">[SORT KEYWORD]: [SORT OBJECT]</div>
 <p>The <em>sort keyword</em> can be one of:
@@ -182,7 +185,7 @@ AFTER: Unofficial Oblivion Patch.esp
 to be positioned relative to. Plugins must be sorted relative to other plugins, and groups must be sorted relative to groups. You cannot sort plugins relative to groups, or vice versa. You also cannot sort your game's master .ESM, sort other plugins before it, or sort groups before the "ESMs" group.
 <p>When using the TOP or BOTTOM sort keywords, the <em>sort object</em> is the <b>group</b> that you wish to insert the rule plugin into. You cannot insert groups into anything, plugins into plugins, or insert anything into the top of the "ESMs" group.</p><br />
 
-<h2>The Message Line</h2>
+<h2 id="syntax-message">The Message Line</h2>
 <p>If a rule's rule keyword is FOR, it should include at least one <em>message line</em>. A rule with a rule keyword of ADD or OVERRIDE can also include message lines, if they sort a plugin. Message lines have the structure:
 <div class="codebox">[MESSAGE KEYWORD]: [MESSAGE OBJECT]</div>
 <p>The <em>message keyword</em> can be one of:
@@ -193,7 +196,7 @@ to be positioned relative to. Plugins must be sorted relative to other plugins, 
 <p>The <em>message object</em> is the message, complete with symbol code, that you wish to attach to the plugin defined by the rule object. You cannot attach messages to groups.
 <p>You may have multiple message lines in a rule, to add multiple messages to a plugin, or to override an existing set of messages with a new set.</p><br />
 
-<h2>Examples</h2>
+<h2 id="syntax-examples">Examples</h2>
 <p>Here is the contents of an example userlist:
 <div class="codebox">ADD: MyPluginToAdd.esp
 AFTER: LoadAfterThis.esm
@@ -225,7 +228,7 @@ bgBalancingEVOptionalNPCDiversity, Vanilla.esp<br />
 % {{BASH:NpcFaces,NoMerge}}<br />
 ...
 </div>
-<p>Which would give in the BOSSlog:
+<p>Which would give in the BOSS Log:
 <div class="logbox" style="">
 ...<br />
 LoadAfterThis.esm<br />
@@ -250,7 +253,7 @@ bgBalancingEVOptionalNPCDiversity, Vanilla.esp
 
 <div id="apply"><h1>Enforcing Your Rules</h1>
 <p>When BOSS is run, it will look for your userlist at <code>Data\BOSS\userlist.txt</code>. If it is found, and the userlist contains at least one rule, BOSS will first check the syntax of the rules, and apply those with the correct syntax. 
-It will print error messages detailing the problems with any rules it skips, and success messages for the plugins that are applied, into your BOSSlog.txt, in a section headed "Userlist Messages" near the top. Disabled rules have their syntax checked, but are not applied.
+It will print error messages detailing the problems with any rules it skips, and success messages for the plugins that are applied, into your BOSS Log.txt, in a section headed "Userlist Messages" near the top. Disabled rules have their syntax checked, but are not applied.
 <p>If a rule is successfully applied, it will print one or more messages depending on what the rule does:
 <ol>
 	<li>If the rule includes a sort line and uses the sort keywords BEFORE or AFTER, it will print a message of the form: <code>"<em>Plugin/Group Name</em>" sorted <em>before/after</em> "<em>Plugin/Group Name</em>".</code>
@@ -258,8 +261,8 @@ It will print error messages detailing the problems with any rules it skips, and
 	<li>If the rule includes one or more message lines, each message line will give a message of the form: <code>"<em>Message</em>" <em>appended to/replaced</em> messages attached to "<em>Plugin Name</em>".</code>
 </ol>
 <p>If the parser finds a major grammatical error in your userlist, it will stop parsing and discard any rules it has found before printing an error message detailing what was expected and where. Depending on where the error was found, more than one message may be displayed. In some cases, the expected item may not provide much useful meaning - in these cases look at where the error was found and determine the exact cause of the problem yourself.
-<p>If a rule is found to have errors in its syntax, it will be skipped and an error message of the form: <code>Syntax Error: The rule beginning "<em>First Line Of Rule</em>" <em>details of error</em></code> will be printed to your BOSSlog.
-<p>If an error is encountered while trying to apply a rule, it will be skipped and an error message detailing the fault will be printed to your BOSSlog.
+<p>If a rule is found to have errors in its syntax, it will be skipped and an error message of the form: <code>Syntax Error: The rule beginning "<em>First Line Of Rule</em>" <em>details of error</em></code> will be printed to your BOSS Log.
+<p>If an error is encountered while trying to apply a rule, it will be skipped and an error message detailing the fault will be printed to your BOSS Log.
 <p><b>Rule application does not alter your masterlist.txt or userlist.txt.</b> This means that if you want to undo the application of
 a rule, all you need to do is remove it from your userlist.txt and re-run BOSS.
 </div>
@@ -273,7 +276,7 @@ not be evident:
 			<li>You can also begin lines with <code>\</code> instead of <code>//</code> to have the same effect, and comment out multiple lines by enclosing them between <code>/*</code> and <code>*/</code>.
 			<li>It is better to use the <code>DISABLE</code> keyword to disable rules, as this means that they are still visible to the GUI's User Rule Editor without being applied. Rules with incorrect syntax should be commented out, as disabled rules are still parsed with error checking.
 		</ul>
-	<li>User rules are case-insensitive. The only exception is the message object, which will retain its case when displayed in the BOSSlog.
+	<li>User rules are case-insensitive. The only exception is the message object, which will retain its case when displayed in the BOSS Log.
 	<li>If a rule's rule plugin is not installed in your Data folder, the rule will be skipped.
 	<li>Plugins ghosted by Wrye Bash are treated no differently from non-ghosted plugins, but they must be referenced without their ".ghost" extension.
 	<li>The group "ESMs" must always load first. You cannot sort this group or sort another group before it.
