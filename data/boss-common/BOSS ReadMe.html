@@ -213,7 +213,7 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 		<tr><td>Restored Load Order<td>This section is only displayed when BOSS is run to undo its changes, and lists your restored load order.
 		<tr><td>Unrecognised Plugins<td>This section lists any plugins you have installed that have not been recognised by BOSS. These plugins should be reported in an official BOSS thread with download links to their mods so they can be added to the relevant masterlist.
 </table>
-<p>BOSS will display the version numbers of any plugins that provide version information in their description fields. If a plugin does not supply any version information, no version number will be displayed for it. The version number of plugins may occasionally not match the version of the mod installed - this is due to the mod author forgetting to update the plugin's version information. When in doubt, check the version number given in a mod's readme.
+<p>BOSS will display the version numbers of any plugins that provide them in their description fields. If a plugin supplies no version number, it cannot be displayed. The version numbers may not reflect the actual version of the mod installed - this could either be due to the mod author forgetting to update the description, or due to a mistake in BOSS's detection. As version numbers are supplied by mod authors in a wide range of formats and BOSS has to detect as many as possible, it occasionally identifies parts of some descriptions as version numbers incorrectly. This is largely unavoidable, but any discrepancies should be reported to the BOSS team in case they can be fixed. When in doubt, check the version number given in a mod's readme. 
 <p>It should be noted that the vast majority of BOSS's mod messages are non-conditional, in that they are not displayed in response to your specific install. For example, a message that gives some of the mod's incompatibilities does not know if you have them installed or not, and a message telling you to do something will not know if it has been done.
 <p>BOSS's mod messages are one of the most important features BOSS provides, acting as a means of providing users with information that they might otherwise not obtain. It is important for a stable, healthy game that you act on any messages that require action. If you think a message suggests an action that is not necessary, report it to an official BOSS thread.
 <p>The HTML BOSS Log includes a few features and a number of filters to customise what is displayed. The majority of these are found in the shaded box near the top of the BOSS Log, and are enabled and disabled via their checkboxes:
@@ -895,6 +895,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 		<li>Changed: Simplified layout of main window options.
 		<li>Changed: Renamed some options to reflect their functions better.
 		<li>Changed: Opening files from the GUI no longer causes a command line window to display.
+		<li>Changed: The Check For Updates feature no longer causes the GUI to stop responding, either run on startup or through the menu option.
 	</ul>
 	<li>(API) Added: BOSS API released as a 32 bit DLL. See the BOSS API ReadMe for more information.
 	<li>(Docs) Changed: Major updates to main readme to reflect changes.

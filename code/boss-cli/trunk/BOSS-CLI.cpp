@@ -257,7 +257,6 @@ int main(int argc, char *argv[]) {
 		connection = CheckConnection();
 	} catch (boss_error e) {
 		LOG_ERROR("Update check failed. Details: '%s'", e.getString().c_str());
-		Fail();
 	}
 	if (connection) {
 		cout << "Checking for BOSS updates..." << endl;

@@ -21,10 +21,20 @@
 #include <wx/progdlg.h>
 #include <wx/thread.h>
 
+//Program class.
+class BossGUI : public wxApp {
+public:
+	virtual bool OnInit();
+
+};
+
+wxDECLARE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
+
 //Main frame class.
-class MainFrame : public wxFrame {
+class MainFrame : public wxFrame, public wxThreadHelper {
 public:
 	MainFrame(const wxChar *title, int x, int y, int width, int height);
+	void OnUpdateCheck(wxCommandEvent& event);
 	void Update(std::string updateVersion);
 	void OnOpenSettings(wxCommandEvent& event);
 	void OnQuit(wxCommandEvent& event);
@@ -40,10 +50,12 @@ public:
 	void OnVersionDisplayChange(wxCommandEvent& event);
 	void OnCRCDisplayChange(wxCommandEvent& event);
 	void OnTrialRunChange(wxCommandEvent& event);
-	void OnUpdateCheck(wxCommandEvent& event);
 	void OnEditUserRules(wxCommandEvent& event);
 	void OnClose(wxCloseEvent& event);
-	DECLARE_EVENT_TABLE()
+
+	//Multithreaded update stuff.
+	void CheckForUpdates();
+	void OnThreadUpdate(wxThreadEvent& evt);
 private:
 	wxMenuBar *MenuBar;
 	wxMenu *FileMenu;
@@ -65,12 +77,15 @@ private:
 	wxRadioButton *UndoOption;
 	wxStaticText *GameText;
 	wxStaticText *RevertText;
+	bool isStartup;
+protected:
+	virtual wxThread::ExitCode Entry();
+	//bool isStartupUpdateCheck;
+	unsigned int updateCheckCode;  //0 = update, 1 = no update, 2 = error.
+	std::string updateCheckString;  //Holds wxMessageBox text.
+	wxCriticalSection updateData; // protects fields above
+	DECLARE_EVENT_TABLE()
 };
 
-//Program class.
-class BossGUI : public wxApp {
-public:
-	virtual bool OnInit();
-	void CheckForUpdate(MainFrame *frame);
-};
+void CheckForUpdate(MainFrame *frame, bool isStartup);
 #endif

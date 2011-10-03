@@ -30,6 +30,9 @@
 #include "GUI/ElementIDs.h"
 #include "BOSS-Common.h"
 
+
+wxDEFINE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
+
 BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_CLOSE (MainFrame::OnClose )
 	EVT_MENU ( MENU_Quit, MainFrame::OnQuit )
@@ -56,6 +59,7 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_RADIOBUTTON ( RADIOBUTTON_SortOption, MainFrame::OnRunTypeChange )
 	EVT_RADIOBUTTON ( RADIOBUTTON_UpdateOption, MainFrame::OnRunTypeChange )
 	EVT_RADIOBUTTON ( RADIOBUTTON_UndoOption, MainFrame::OnRunTypeChange )
+	EVT_THREAD( wxEVT_COMMAND_MYTHREAD_UPDATE, MainFrame::OnThreadUpdate )
 END_EVENT_TABLE()
 
 IMPLEMENT_APP(BossGUI)
@@ -111,53 +115,16 @@ bool BossGUI::OnInit() {
 	SetTopWindow(frame);
 
 	//Now check for updates.
-	wxBusyInfo wait("Please wait, BOSS is checking for updates...");
-	CheckForUpdate(frame);
+	if (do_startup_update_check)
+		frame->CheckForUpdates();
 	return true;
-}
-
-//This is called after the GUI has finished launching.
-void BossGUI::CheckForUpdate(MainFrame *frame) {
-	if (do_startup_update_check == false)
-		return;
-	string updateText, updateVersion;
-	bool connection = false;
-	try {
-		connection = CheckConnection();
-	} catch (boss_error e) {
-		updateText = "Update check failed. Details: " + e.getString();
-		wxMessageBox(updateText, wxT("BOSS: Check For Updates"), wxOK | wxICON_ERROR, frame);
-		return;
-	}
-	if (connection) {
-		try {
-			updateVersion = IsBOSSUpdateAvailable();
-			if (!updateVersion.empty())
-				updateText = "Update available! New version: " + updateVersion + "\nDo you want to download and install the update?";
-			else
-				return;
-		} catch (boss_error e) {
-			updateText = "Update check failed. Details: " + e.getString();
-			wxMessageBox(updateText, wxT("BOSS: Check For Updates"), wxOK | wxICON_ERROR, frame);
-			return;
-		}
-	} else
-		return;
-
-	//Display dialog BOSS telling user about update available.
-	wxMessageDialog *dlg = new wxMessageDialog(frame,updateText, "BOSS: Check For Updates", wxYES_NO);
-
-	if (dlg->ShowModal() != wxID_YES) {  //User has chosen not to update. Quit now.
-		//Display a message saying no update was installed.
-		wxMessageBox(wxT("No update has been downloaded or installed."), wxT("BOSS: Check For Updates"), wxOK | wxICON_INFORMATION, frame);
-		return;
-	} else  //User has chosen to update. On with the show!
-		frame->Update(updateVersion);
 }
 
 MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) : wxFrame(NULL, wxID_ANY, title, wxPoint(x, y), wxSize(width, height)) {
 
 	//Some variable setup.
+	isStartup = true;
+
 	wxString BOSSlogFormat[] = {
         wxT("HTML"),
         wxT("Plain Text")
@@ -370,11 +337,17 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 			wxOK | wxICON_ERROR,
 			NULL);
 
+	// important: before terminating, we _must_ wait for our joinable
+    // thread to end, if it's running; in fact it uses variables of this
+    // instance and posts events to *this event handler
+
+    if (GetThread() && GetThread()->IsRunning())
+        GetThread()->Wait();
+
     Destroy();  // you may also do:  event.Skip();
                 // since the default event handler does call Destroy(), too
 }
 
-//Called when program exits.
 void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 
 	size_t lastRecognisedPos = 0;			//position of last recognised mod.
@@ -752,7 +725,7 @@ void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
 	}
 }
 
-//Call when a file is opened. Either readmes, BOSSlogs or userlist.
+//Call when a file is opened. Either readmes or BOSS Logs.
 void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 	string file;
 	if (event.GetId() == OPTION_OpenBOSSlog) {
@@ -893,42 +866,8 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 
 //This is called when the menu "Check For Updates" option is selected.
 void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
-	string updateText, updateVersion;
-	bool connection = false;
-	try {
-		connection = CheckConnection();
-	} catch (boss_error e) {
-		updateText = "Update check failed. Details: " + e.getString();
-		wxMessageBox(updateText, wxT("BOSS: Check For Updates"), wxOK | wxICON_ERROR, this);
-		return;
-	}
-	if (connection) {
-		try {
-			updateVersion = IsBOSSUpdateAvailable();
-			if (updateVersion.empty()) {
-				wxMessageBox(wxT("You are already using the latest version of BOSS."), wxT("BOSS: Check For Updates"), wxOK | wxICON_INFORMATION, this);
-				return;
-			} else
-				updateText = "Update available! New version: " + updateVersion + "\nDo you want to download and install the update?";
-		} catch (boss_error e) {
-			updateText = "Update check failed. Details: " + e.getString();
-			wxMessageBox(updateText, wxT("BOSS: Check For Updates"), wxOK | wxICON_ERROR, this);
-			return;
-		}
-	} else {
-		wxMessageBox(wxT("Update check failed. No Internet connection detected."), wxT("BOSS: Check For Updates"), wxOK | wxICON_ERROR, this);
-		return;
-	}
-
-	//Display dialog BOSS telling user about update available.
-	wxMessageDialog *dlg = new wxMessageDialog(this,updateText, wxT("BOSS: Check For Updates"), wxYES_NO);
-
-	if (dlg->ShowModal() != wxID_YES) {  //User has chosen not to update. Quit now.
-		//Display a message saying no update was installed.
-		wxMessageBox(wxT("No update has been downloaded or installed."), wxT("BOSS: Check For Updates"), wxOK | wxICON_INFORMATION, this);
-		return;
-	} else  //User has chosen to update. On with the show!
-		Update(updateVersion);
+	isStartup = false;
+	CheckForUpdates();
 }
 
 void MainFrame::Update(string updateVersion) {
@@ -1054,4 +993,84 @@ void MainFrame::OnOpenSettings(wxCommandEvent& event) {
 	SettingsFrame *settings = new SettingsFrame(wxT("Better Oblivion Sorting Software: Settings"),this);
 	settings->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	settings->Show();
+}
+
+void MainFrame::CheckForUpdates() {
+	// we want to start a long task, but we don't want our GUI to block
+    // while it's executed, so we use a thread to do it.
+    if (CreateThread(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR)
+    {
+        LOG_ERROR("Could not create the worker thread!");
+        return;
+    }
+
+    // go!
+    if (GetThread()->Run() != wxTHREAD_NO_ERROR)
+    {
+        LOG_ERROR("Could not run the worker thread!");
+        return;
+    }
+}
+
+wxThread::ExitCode MainFrame::Entry() {
+    // IMPORTANT:
+    // this function gets executed in the secondary thread context!
+
+	string updateText, updateVersion;
+	bool connection = false;
+	try {
+		connection = CheckConnection();
+	} catch (boss_error e) {
+		wxCriticalSectionLocker lock(updateData);
+		updateCheckCode = 2;
+		updateCheckString = "Update check failed. Details: " + e.getString();
+		wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
+	}
+	if (connection) {
+		try {
+			updateVersion = IsBOSSUpdateAvailable();
+			if (updateVersion.empty()) {
+				wxCriticalSectionLocker lock(updateData);
+				updateCheckCode = 1;
+				updateCheckString = "You are already using the latest version of BOSS.";
+				wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
+			} else {
+				wxCriticalSectionLocker lock(updateData);
+				updateCheckCode = 0;
+				updateCheckString = updateVersion;
+				wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
+			}
+		} catch (boss_error e) {
+			wxCriticalSectionLocker lock(updateData);
+			updateCheckCode = 2;
+			updateCheckString = "Update check failed. Details: " + e.getString();
+			wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
+		}
+	} else {
+		wxCriticalSectionLocker lock(updateData);
+		updateCheckCode = 1;
+		updateCheckString = "Update check failed. No Internet connection detected.";
+		wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
+	}
+	return (wxThread::ExitCode)0;
+}
+
+void MainFrame::OnThreadUpdate(wxThreadEvent& evt) {
+    wxCriticalSectionLocker lock(updateData);
+	if (updateCheckCode == 2 && !isStartup)
+		wxMessageBox(updateCheckString, wxT("BOSS: Check For Updates"), wxOK | wxICON_ERROR, this);
+	else if (updateCheckCode == 1 && !isStartup)
+		wxMessageBox(updateCheckString, wxT("BOSS: Check For Updates"), wxOK | wxICON_INFORMATION, this);
+	else if (updateCheckCode == 0) {
+		wxMessageDialog *dlg = new wxMessageDialog(this,
+			"Update available! New version: " + updateCheckString + "\nDo you want to download and install the update?"
+			, wxT("BOSS: Check For Updates"), wxYES_NO);
+
+		if (dlg->ShowModal() != wxID_YES) {  //User has chosen not to update. Quit now.
+			//Display a message saying no update was installed.
+			wxMessageBox(wxT("No update has been downloaded or installed."), wxT("BOSS: Check For Updates"), wxOK | wxICON_INFORMATION, this);
+			return;
+		} else  //User has chosen to update. On with the show!
+			this->Update(updateCheckString);
+	}
 }
