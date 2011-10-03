@@ -685,10 +685,12 @@ namespace boss {
 		boost::algorithm::trim(var);  //Make sure there are no preceding or trailing spaces.
 		boost::algorithm::trim(value);  //Make sure there are no preceding or trailing spaces.
 		if (currentHeading == "BOSS.InternetSettings") {
-			if (var == "sProxyType")
-				proxy_type = value;
-			else if (var == "sProxyHostname")
+			if (var == "sProxyHostname")
 				proxy_host = value;
+			else if (var == "sProxyUsername")
+				proxy_user = value;
+			else if (var == "sProxyPassword")
+				proxy_passwd = value;
 		} else if (currentHeading == "BOSS.RunOptions") {
 			if (var == "sBOSSLogFormat") {
 				if (value == "html" || value == "text")

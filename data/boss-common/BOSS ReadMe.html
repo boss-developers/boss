@@ -150,7 +150,6 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 	</ul>
 	<li>Internet settings:
 	<ul>
-		<li><i>Proxy Type</i>: Specify the type of proxy you use to connect to the Internet, if you use one.
 		<li><i>Proxy Hostname</i>: Specify the hostname of your proxy, if you use one.
 		<li><i>Proxy Port Number</i>: Specify the port number through which your proxy is accessed, if you use one.
 	</ul>
@@ -299,9 +298,10 @@ as well as edit the output messages of plugins, and more. In addition, this is a
 <table>
 	<thead><tr><td>Ini Setting<td>Default<td>Valid Values<td>Description
 	<tbody>
-		<tr><td>sProxyType<td><code>direct</code><td><code>direct</code>, <code>http</code>, <code>http1_0</code>, <code>socks4</code>, <code>socks4a</code>, <code>socks5</code>, <code>socks5h</code> (SOCKS 5 with proxy-based hostname resolution)<td>The type of proxy used, if one is required to connect to the Internet. <code>direct</code> tells BOSS to use no proxy.
 		<tr><td>sProxyHostname<td><code>none</code><td><code>none</code>, hostname (eg. <code>proxy.company.com</code>), IP address (eg. <code>192.168.32.4</code>)<td>The hostname for the proxy host used, if a proxy is required to connect to the Internet. <code>none</code> tells BOSS to use no proxy.
 		<tr><td>iProxyPort<td><code>0</code><td>Any valid port number.<td>The port used to connect to the proxy host, if a proxy is required to connect to the Internet. <code>0</code> tells BOSS to use no proxy.
+		<tr><td>sProxyUsername<td>Default is an empty string.<td>Any string of characters.<td>The username BOSS uses to connect to the Internet through an authenticated proxy. If no username is given, then BOSS assumes that any proxy used is unauthenticated.
+		<tr><td>sProxyPassword<td>Default is an empty string.<td>Any string of characters.<td>The password BOSS ues to connect to the Internet through an authenticated proxy. If no password is given, then BOSS assumes that any proxy used is unauthenticated.
 </table>
 <h4>BOSS.RunOptions</h4>
 <p>These settings specify BOSS's run options. They allow you to run BOSS with non-default settings without having to use the command line or the GUI.
@@ -382,7 +382,7 @@ as well as edit the output messages of plugins, and more. In addition, this is a
 
 <h2 id="cli">Command Line Arguments</h2>
 <p>While the BOSS GUI allows you to specify options using its graphical elements, the CLI uses a combination of the BOSS.ini file and command line arguments to do the same. The syntax for these arguments is:
-<p><code>boss [-hVuosndctUl] [-g [game]] [-r [level]] [-v [level]] [-f [type]] [-T [type]] [-H [hostname]] [-P [port]]</code>
+<p><code>boss [-hVuosndctUl] [-g [game]] [-r [level]] [-v [level]] [-f [type]] [-H [hostname]] [-P [port]]</code>
 <p><code>-h [ --help ]</code>
 <p>This prints a short description of BOSS and some information on the function of the command line arguments, then exits.
 <p><code>-V [ --version ]</code>
@@ -415,8 +415,6 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 <p>Adds source file references (filenames and line numbers) to debugging statements.
 <p><code>-l [ log-debug ]</code>
 <p>Logs the debug output to the <q>BOSSDebugLog.txt</q> file instead of the command line.
-<p><code>-T [ --proxy-type ] [ type ]</code>
-<p>Sets the proxy type for the masterlist updater. Valid values are: <code>direct</code>, <code>http</code>, <code>http1_0</code>, <code>socks4</code>, <code>socks4a</code>, <code>socks5</code> and <code>socks5h</code> (SOCKS 5 with proxy-based hostname resolution). <code>direct</code> is the default, and is equivalent to there being no proxy. Other types of proxy are not currently supported.
 <p><code>-H [ --proxy-host ] [ hostname ]</code>
 <p>Sets the proxy hostname for the masterlist updater. The hostname may be an actual hostname (eg. <code>proxy.company.com</code>), an IP address (eg. <code>192.168.32.4</code>) or <code>none</code>. <code>none</code> is the default, and is equivalent to there being no proxy.
 <p><code>-P [ --proxy-port ] [ port ]</code>
@@ -835,6 +833,8 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Common Library:
 	<ul>
 		<li>Removed: Checking for changes to the recognised mod list since last run for the plain text BOSS Log, as this did not work correctly and is not feasible to fix.
+		<li>Removed: Command line parameter <code>-T [ --proxy-type ] [ type ]</code> and BOSS.ini setting <code>sProxyType</code> Internet proxy type specification options. Proxy type is now automatically determined.
+		<li>Removed: Some unused functions.
 		<li>Fixed: A bug where if a plugin filename started with "SET" or "GLOBAL" (or case variations) then BOSS would incorrectly classify it as a variable or global message line and so result in syntax errors.
 		<li>Fixed: User Rules which failed to add a plugin into the beginning or end of a group still incremented the number of recognised plugins as if the rule application had succeeded.
 		<li>Fixed: Userlist rules which reference plugins that are not installed now have warning messages reported instead of error messages.
@@ -873,6 +873,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 		<li>Added: Support for MF2.2 syntax, including C-style comments, regular expression conditions, case-insensitive keywords and expanded conditional shorthands.
 		<li>Added: Built-in debug output logging support.
 		<li>Added: <code>DISABLE</code> keyword to user rules that can be placed before a rule's rule keyword to disable it, instead of commenting it out to do the same.
+		<li>Added: Support for authenticated proxies, using the <code>sProxyUsername</code> and <code>sProxyPassword</code> BOSS.ini settings.
 	</ul>
 	<li>Command Line Interface:
 	<ul>
@@ -891,6 +892,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 			<li>Added settings for controlling the default state of the BOSS Log filters and the BOSS Log CSS.
 			<li>Added a <q>Log Debug Output</q> setting to allow logging of the debug output to the <q>BOSSDebugLog.txt</q> file.
 			<li>Added an option to select whether to use the GUI's User Rule Editor or to manually edit the userlist when editing user rules.
+			<li>Updated proxy settings to reflect changes to proxy support.
 		</ul>
 		<li>Changed: Simplified layout of main window options.
 		<li>Changed: Renamed some options to reflect their functions better.

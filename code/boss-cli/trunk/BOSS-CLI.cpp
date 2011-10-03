@@ -38,6 +38,17 @@ using namespace std;
 namespace po = boost::program_options;
 using boost::algorithm::trim_copy;
 
+#if _WIN32 || _WIN64
+	const string launcher_cmd = "start";
+#else
+	const string launcher_cmd = "xdg-open";
+#endif
+
+int Launch(const string& filename) {
+	const string cmd = launcher_cmd + " " + filename;
+	return ::system(cmd.c_str());
+}
+
 
 void ShowVersion() {
 	cout << "BOSS: Better Oblivion Sorting Software" << endl;
@@ -150,8 +161,6 @@ int main(int argc, char *argv[]) {
 								" are: 'html', 'text'")
 		("trial-run,t", po::value(&trial_run)->zero_tokens(),
 								"run BOSS without actually making any changes to load order")
-		("proxy-type,T", po::value(&proxy_type),
-								"sets the proxy type for the masterlist updater")
 		("proxy-host,H", po::value(&proxy_host),
 								"sets the proxy hostname for the masterlist updater")
 		("proxy-port,P", po::value(&proxy_port),

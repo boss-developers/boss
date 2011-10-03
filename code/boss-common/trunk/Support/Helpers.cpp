@@ -11,13 +11,11 @@
 
 
 #include "Helpers.h"
-#include "VersionRegex.h"
 #include "ModFormat.h"
 #include "Logger.h"
 #include "Common/Globals.h"
 #include "Output/Output.h"
 
-#include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/crc.hpp>
 
@@ -34,111 +32,6 @@
 namespace boss {
 	using namespace std;
 	using namespace boost;
-
-
-#if _WIN32 || _WIN64
-	const string launcher_cmd = "start";
-#else
-	const string launcher_cmd = "xdg-open";
-#endif
-
-	// Reads a text line from the input stream
-	bool ReadLine(istream& is, string& s)
-	{
-		s.erase();
-		while(is)
-		{
-			// Get next char in input buffer
-			char c = static_cast<char>(is.get());
-
-			if (!is) 
-				break;
-
-			// Check for termination conditions
-			if (c == '\n') 
-				break;
-
-			// While termination condition not found -> append chars to result string
-			s.append(1, c);
-		}
-
-		return (is != 0);
-	}
-
-	// Reads a text line skipping all the empty lines along the way
-	bool GetLine(istream& is, string& s) 
-	{
-		while (ReadLine(is, s)) {
-			trim_right(s);
-
-			if (!s.empty()) {
-				break;
-			}
-		}
-
-		return is && !s.empty();
-	}
-
-	// Reads a text line skipping all the empty lines along the way
-	string GetLine(istream& is) 
-	{
-		string line;
-		if (GetLine(is, line)){
-			return line;
-		}
-
-		return string();
-	}
-
-
-	// Reads a string until the terminator char is found or the complete buffer is consumed.
-	string ReadString(char*& bufptr, ushort size){
-		string data;
-	
-		data.reserve(size + 1);
-		while (char c = *bufptr++) {
-			data.append(1, c);
-		}
-
-		return data;
-	}
-
-	// Tries to parse the textual string to find a suitable version indication.
-	string ParseVersion(const string& text){
-
-		string::const_iterator begin, end;
-
-		begin = text.begin();
-		end = text.end();
-
-		for(int i = 0; regex* re = version_checks[i]; i++) {
-
-			smatch what;
-			while (regex_search(begin, end, what, *re)) {
-
-				if (what.empty()){
-					continue;
-				}
-
-				ssub_match match = what[1];
-		
-				if (!match.matched) {
-					continue;
-				}
-
-				return trim_copy(string(match.first, match.second));
-
-			}
-		}
-
-		return string();
-	}
-
-	BOSS_COMMON int Launch(const string& filename)
-	{
-		const string cmd = launcher_cmd + " " + filename;
-		return ::system(cmd.c_str());
-	}
 
 	//Changes uppercase to lowercase and removes preceding and trailing spaces.	
 	BOSS_COMMON string Tidy(string filename) {
@@ -200,16 +93,6 @@ namespace boss {
 		}
 		LOG_DEBUG("CRC32('%s'): 0x%x", filename.string().c_str(), chksum);
         return chksum;
-	}
-
-	//Removes the ".ghost" extension from ghosted filenames.
-	string TrimDotGhost(string plugin) {
-		fs::path pluginPath(plugin);
-		const string ext = to_lower_copy(pluginPath.extension().string());
-		if (ext == ".ghost")
-			return plugin.substr(0,plugin.length()-6);
-		else
-			return plugin;
 	}
 
 	//Checks if the given plugin is ghosted in the user's install.
@@ -278,16 +161,5 @@ namespace boss {
         }
 #endif
 		return retVal;
-	}
-
-	//Searches a hashset for the first matching string of a regex and returns its iterator position.
-	boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
-		while(startPos != set.end()) {
-			string mod = *startPos;
-			if (boost::regex_match(mod,reg))
-				return startPos;
-			++startPos;
-		}
-		return set.end();
 	}
 }

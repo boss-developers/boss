@@ -15,23 +15,12 @@
 BEGIN_EVENT_TABLE( SettingsFrame, wxFrame )
 	EVT_BUTTON ( OPTION_OKExitSettings, SettingsFrame::OnOKQuit)
 	EVT_BUTTON ( OPTION_CancelExitSettings, SettingsFrame::OnCancelQuit)
-	EVT_CHOICE ( DROPDOWN_ProxyType, SettingsFrame::OnProxyTypeChange )
 END_EVENT_TABLE()
 
 using namespace boss;
 using namespace std;
 
 SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize) {
-
-	wxString ProxyTypes[] = {
-        wxT("Direct (No Proxy)"),
-        wxT("HTTP"),
-		wxT("HTTP 1.0"),
-		wxT("SOCKS 4"),
-		wxT("SOCKS 4a"),
-		wxT("SOCKS 5"),
-		wxT("SOCKS 5h (proxy resolves hostname)")
-    };
 
 	wxString DebugVerbosity[] = {
         wxT("Standard (0)"),
@@ -66,11 +55,6 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	//Create Internet Settings tab.
 	InternetTab = new wxPanel(TabHolder);
 	wxBoxSizer *InternetTabSizer = new wxBoxSizer(wxVERTICAL);
-
-	wxBoxSizer *proxyTypeSizer = new wxBoxSizer(wxHORIZONTAL);
-	proxyTypeSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Type:")), ItemSizerFlags);
-	proxyTypeSizer->Add(ProxyTypeChoice = new wxChoice(InternetTab,DROPDOWN_ProxyType,wxDefaultPosition,wxDefaultSize,7,ProxyTypes), ItemSizerFlags);
-	InternetTabSizer->Add(proxyTypeSizer, ContentSizerFlags);
 	
 	wxBoxSizer *proxyHostSizer = new wxBoxSizer(wxHORIZONTAL);
 	proxyHostSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Hostname:")), ItemSizerFlags);
@@ -81,6 +65,16 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	proxyPortSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Port Number:")), ItemSizerFlags);
 	proxyPortSizer->Add(ProxyPortBox = new wxTextCtrl(InternetTab,wxID_ANY), ItemSizerFlags);
 	InternetTabSizer->Add(proxyPortSizer, ContentSizerFlags);
+
+	wxBoxSizer *proxyUserSizer = new wxBoxSizer(wxHORIZONTAL);
+	proxyUserSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Username:")), ItemSizerFlags);
+	proxyUserSizer->Add(ProxyUserBox = new wxTextCtrl(InternetTab,wxID_ANY), ItemSizerFlags);
+	InternetTabSizer->Add(proxyUserSizer, ContentSizerFlags);
+
+	wxBoxSizer *proxyPasswdSizer = new wxBoxSizer(wxHORIZONTAL);
+	proxyPasswdSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Password:")), ItemSizerFlags);
+	proxyPasswdSizer->Add(ProxyPasswdBox = new wxTextCtrl(InternetTab,wxID_ANY), ItemSizerFlags);
+	InternetTabSizer->Add(proxyPasswdSizer, ContentSizerFlags);
 
 	InternetTab->SetSizer(InternetTabSizer);
 
@@ -297,13 +291,13 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	bigBox->Add(hbox, 0, wxCENTER|wxALL, 10);
 
 	//Initialise options with values. For checkboxes, they are off by default.
-	SetDefaultValues(ProxyTypes, DebugVerbosity);
+	SetDefaultValues(DebugVerbosity);
 	
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
 }
 
-void SettingsFrame::SetDefaultValues(wxString * ProxyTypes, wxString * DebugVerbosity) {
+void SettingsFrame::SetDefaultValues(wxString * DebugVerbosity) {
 	//General Settings
 	if (do_startup_update_check)
 		StartupUpdateCheckBox->SetValue(true);
@@ -315,20 +309,9 @@ void SettingsFrame::SetDefaultValues(wxString * ProxyTypes, wxString * DebugVerb
 
 	ProxyPortBox->SetValue(wxString::Format(wxT("%i"),proxy_port));
 
-	if (proxy_type == "direct")
-		ProxyTypeChoice->SetSelection(0);
-	else if (proxy_type == "http")
-		ProxyTypeChoice->SetSelection(1);
-	else if (proxy_type == "http1_0")
-		ProxyTypeChoice->SetSelection(2);
-	else if (proxy_type == "socks4")
-		ProxyTypeChoice->SetSelection(3);
-	else if (proxy_type == "socks4a")
-		ProxyTypeChoice->SetSelection(4);
-	else if (proxy_type == "socks5")
-		ProxyTypeChoice->SetSelection(5);
-	else if (proxy_type == "socks5h")
-		ProxyTypeChoice->SetSelection(6);
+	ProxyUserBox->SetValue(proxy_user);
+
+	ProxyPasswdBox->SetValue(proxy_passwd);
 
 	//Debugging Settings
 	if (debug_with_source)
@@ -421,23 +404,10 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	use_user_rules_editor = UseUserRuleEditorBox->IsChecked();
 
 	//Network
-	int i = ProxyTypeChoice->GetSelection();
-	if (i == 0)
-		proxy_type = "direct";
-	else if (i == 1)
-		proxy_type = "http";
-	else if (i == 2)
-		proxy_type = "http1_0";
-	else if (i == 3)
-		proxy_type = "socks4";
-	else if (i == 4)
-		proxy_type = "socks4a";
-	else if (i == 5)
-		proxy_type = "socks5";
-	else if (i == 6)
-		proxy_type = "socks5h";
 	proxy_host = ProxyHostBox->GetValue();
 	proxy_port = wxAtoi(ProxyPortBox->GetValue());
+	proxy_user = ProxyUserBox->GetValue();
+	proxy_passwd = ProxyPasswdBox->GetValue();
 
 	//Debugging
 	debug_verbosity = DebugVerbosityChoice->GetSelection();
@@ -496,14 +466,4 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 
 void SettingsFrame::OnCancelQuit(wxCommandEvent& event) {
 	this->Close();
-}
-
-void SettingsFrame::OnProxyTypeChange(wxCommandEvent& event) {
-	if (event.GetInt() == 0) {
-		ProxyHostBox->Enable(false);
-		ProxyPortBox->Enable(false);
-	} else {
-		ProxyHostBox->Enable(true);
-		ProxyPortBox->Enable(true);
-	}
 }

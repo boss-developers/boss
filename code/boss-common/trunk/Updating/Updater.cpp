@@ -155,8 +155,21 @@ namespace boss {
 			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
 		}
 
-		if (proxy_type != "direct" && proxy_host != "none" && proxy_port != 0) {
+		if (proxy_host != "none" && proxy_port != 0) {
 			//All of the settings have potentially valid proxy-ing values.
+			ret = curl_easy_setopt(curl, CURLOPT_PROXYTYPE, 
+										CURLPROXY_HTTP|
+										CURLPROXY_HTTP_1_0|
+										CURLPROXY_SOCKS4|
+										CURLPROXY_SOCKS4A|
+										CURLPROXY_SOCKS5|
+										CURLPROXY_SOCKS5_HOSTNAME);
+			if (ret != CURLE_OK) {
+				string err = errbuff;
+				curl_easy_cleanup(curl);
+				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL);
+			}
+
 			proxy_str = proxy_host + ":" + IntToString(proxy_port);
 			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
 			if (ret!=CURLE_OK) {
@@ -165,29 +178,25 @@ namespace boss {
 				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_FAIL);
 			}
 
-			if (proxy_type == "http")
-				ret = curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
-			else if (proxy_type == "http1_0")
-				ret = curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP_1_0);
-			else if (proxy_type == "socks4")
-				ret = curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
-			else if (proxy_type == "socks4a")
-				ret = curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4A);
-			else if (proxy_type == "socks5")
-				ret = curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
-			else if (proxy_type == "socks5h")
-				ret = curl_easy_setopt(curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
-			else {
-				curl_easy_cleanup(curl);
-				throw boss_error(BOSS_ERROR_INVALID_PROXY_TYPE, proxy_type);
-			}
-			if (ret != CURLE_OK) {
-				string err = errbuff;
-				curl_easy_cleanup(curl);
-				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL);
+			if (!proxy_user.empty() && !proxy_passwd.empty()) {
+				ret = curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_BASIC|
+																CURLAUTH_DIGEST|
+																CURLAUTH_NTLM);
+				if (ret != CURLE_OK) {
+					string err = errbuff;
+					curl_easy_cleanup(curl);
+					throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL);
+				}
+
+				string proxy_auth = proxy_user + ":" + proxy_passwd;
+				ret = curl_easy_setopt(curl, CURLOPT_PROXYUSERPWD, proxy_auth.c_str());
+				if (ret != CURLE_OK) {
+					string err = errbuff;
+					curl_easy_cleanup(curl);
+					throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL);
+				}
 			}
 		}
-
 		return curl;
 	}
 
@@ -208,9 +217,10 @@ namespace boss {
 		ret = curl_easy_perform(curl);
 
 		if (ret!=CURLE_OK) {
-			string err = errbuff;
+			//string err = errbuff;
 			curl_easy_cleanup(curl);
-			throw boss_error(err,BOSS_ERROR_CURL_PERFORM_FAIL);
+			//throw boss_error(err,BOSS_ERROR_CURL_PERFORM_FAIL);
+			return false;
 		} else {
 			//Clean up and close curl handle now that it's finished with.
 			curl_easy_cleanup(curl);

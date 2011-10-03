@@ -351,9 +351,10 @@ namespace boss {
 			<<	"bUseUserRulesEditor      = " << BoolToString(use_user_rules_editor) << endl << endl
 
 			<<	"[BOSS.InternetSettings]" << endl
-			<<	"sProxyType               = " << proxy_type << endl
 			<<	"sProxyHostname           = " << proxy_host << endl
-			<<	"iProxyPort               = " << IntToString(proxy_port) << endl << endl
+			<<	"iProxyPort               = " << IntToString(proxy_port) << endl
+			<<	"sProxyUsername           = " << proxy_user << endl
+			<<	"sProxyPassword           = " << proxy_passwd << endl << endl
 
 			<<	"[BOSS.RunOptions]" << endl
 			<<	"sGame                    = " << GetGameIniString() << endl

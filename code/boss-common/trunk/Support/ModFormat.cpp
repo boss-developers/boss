@@ -13,12 +13,92 @@
 #include "Types.h"
 #include "Helpers.h"
 #include "ModFormat.h"
+#include "VersionRegex.h"
 
 #include <cstring>
 #include <fstream>
+#include <boost/regex.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
 namespace boss {
 	using namespace std;
+
+	using boost::algorithm::trim_copy;
+	using boost::regex;
+
+	//
+	// string ParseVersion(string&):
+	//	- Tries to extract the version string value from the given text,
+	//	using the above defined regexes to do the dirty work.
+	//
+	string ParseVersion(const string& text){
+
+		string::const_iterator begin, end;
+
+		begin = text.begin();
+		end = text.end();
+
+		for(int i = 0; regex* re = version_checks[i]; i++) {
+
+			smatch what;
+			while (regex_search(begin, end, what, *re)) {
+
+				if (what.empty()){
+					continue;
+				}
+
+				ssub_match match = what[1];
+		
+				if (!match.matched) {
+					continue;
+				}
+
+				return trim_copy(string(match.first, match.second));
+
+			}
+		}
+
+		return string();
+	}
+
+	//
+	// string ReadString(pointer&, maxsize):
+	//	- Reads a consecutive array of charactes up to maxsize length and 
+	//	returns them as a new string.
+	//
+	string ReadString(char*& bufptr, ushort size){
+		string data;
+	
+		data.reserve(size + 1);
+		while (char c = *bufptr++) {
+			data.append(1, c);
+		}
+
+		return data;
+	}
+
+	//
+	// T Peek<T>(pointer&):
+	//	- Peeks into the received buffer and returns the value pointed 
+	//	converting it to the type T.
+	//
+	template <typename T> 
+	T Peek(char* buffer) {
+		return *reinterpret_cast<T*>(buffer);
+	}
+
+	//
+	// T Read<T>(pointer&):
+	//	- Tries to extract a value of the specified type T from the 
+	//	received buffer, incrementing the pointer to point past the readen 
+	//	value.
+	//
+	template <typename T> 
+	inline T Read(char*& buffer) {
+		T value = Peek<T>(buffer);
+		buffer += sizeof(T);
+		return value;
+	}
 
 	//-
 	// ModHeader ReadHeader(string):

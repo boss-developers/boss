@@ -31,8 +31,9 @@ namespace boss {
 
 	//Command line variables
 	BOSS_COMMON string log_format		= "html";	// what format the output should be in.
-	BOSS_COMMON string proxy_type		= "direct";
 	BOSS_COMMON string proxy_host		= "none";
+	BOSS_COMMON string proxy_user		= "";
+	BOSS_COMMON string proxy_passwd		= "";
 	BOSS_COMMON int proxy_port			= 0;
 	BOSS_COMMON int game				= 0;		// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim.
 	BOSS_COMMON int revert              = 0;		// what level to revert to

@@ -24,10 +24,9 @@ using namespace std;
 class SettingsFrame : public wxFrame {
 public:
 	SettingsFrame(const wxChar *title, wxFrame *parent);
-	void OnProxyTypeChange(wxCommandEvent& event);
 	void OnOKQuit(wxCommandEvent& event);
 	void OnCancelQuit(wxCommandEvent& event);
-	void SetDefaultValues(wxString * ProxyTypes, wxString * DebugVerbosity);
+	void SetDefaultValues(wxString * DebugVerbosity);
 	DECLARE_EVENT_TABLE()
 private:
 	wxCheckBox *StartupUpdateCheckBox;
@@ -48,10 +47,11 @@ private:
 	wxCheckBox *HideRequirementsBox;
 	wxCheckBox *HideIncompatibilitiesBox;
 	wxCheckBox *HideDoNotCleanMessagesBox;
-	wxChoice *ProxyTypeChoice;
 	wxChoice *DebugVerbosityChoice;
 	wxTextCtrl *ProxyHostBox;
 	wxTextCtrl *ProxyPortBox;
+	wxTextCtrl *ProxyUserBox;
+	wxTextCtrl *ProxyPasswdBox;
 	wxTextCtrl *CSSBodyBox;
 	wxTextCtrl *CSSFiltersBox;
 	wxTextCtrl *CSSFiltersListBox;

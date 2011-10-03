@@ -49,6 +49,9 @@ namespace boss {
 	BOSS_COMMON extern string log_format;		// what format the output should be in.
 	BOSS_COMMON extern string proxy_type;
 	BOSS_COMMON extern string proxy_host;
+	BOSS_COMMON extern string proxy_user;
+	BOSS_COMMON extern string proxy_passwd;
+	BOSS_COMMON extern string proxy_auth_type;
 	BOSS_COMMON extern int proxy_port;
 	BOSS_COMMON extern int game;				// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim.
 	BOSS_COMMON extern int revert;				// what level to revert to

@@ -19,11 +19,13 @@
 
 #include <boost/unordered_set.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/regex.hpp>
 
 namespace boss {
 	using namespace std;
 
 	using boost::algorithm::trim_copy;
+	using boost::algorithm::to_lower_copy;
 
 	summaryCounters::summaryCounters() {
 		recognised = 0;
@@ -41,6 +43,27 @@ namespace boss {
 		seInfo = "";
 		recognisedPlugins = "";
 		unrecognisedPlugins = "";
+	}
+
+	//Removes the ".ghost" extension from ghosted filenames.
+	string TrimDotGhost(string plugin) {
+		fs::path pluginPath(plugin);
+		const string ext = to_lower_copy(pluginPath.extension().string());
+		if (ext == ".ghost")
+			return plugin.substr(0,plugin.length()-6);
+		else
+			return plugin;
+	}
+
+	//Searches a hashset for the first matching string of a regex and returns its iterator position.
+	boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
+		while(startPos != set.end()) {
+			string mod = *startPos;
+			if (boost::regex_match(mod,reg))
+				return startPos;
+			++startPos;
+		}
+		return set.end();
 	}
 
 	//Record recognised mod list from last HTML BOSSlog generated.

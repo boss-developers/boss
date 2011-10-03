@@ -33,17 +33,18 @@ namespace boss {
 	BOSS_COMMON const uint32_t BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL = 9;
 	BOSS_COMMON const uint32_t BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL = 10;
 	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_CRC_MISMATCH = 11;
-	BOSS_COMMON const uint32_t BOSS_ERROR_INVALID_PROXY_TYPE = 12;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL = 13;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_RENAME_FAIL = 14;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_DELETE_FAIL = 15;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_INIT_FAIL = 16;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_ERRBUFF_FAIL = 17;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_OPTION_FAIL = 18;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_PROXY_FAIL = 19;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL = 20;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_PERFORM_FAIL = 21;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_USER_CANCEL = 22;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL = 12;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_RENAME_FAIL = 13;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_DELETE_FAIL = 14;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_INIT_FAIL = 15;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_ERRBUFF_FAIL = 16;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_OPTION_FAIL = 17;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_PROXY_FAIL = 18;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL = 19;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL = 20;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL = 21;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_PERFORM_FAIL = 22;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_USER_CANCEL = 23;
 	BOSS_COMMON const uint32_t BOSS_ERROR_MAX = 23;
 
 	BOSS_COMMON class boss_error {
@@ -104,8 +105,6 @@ namespace boss {
 				return "Cannot read list of files to be updated!"; 
 			case BOSS_ERROR_FILE_CRC_MISMATCH:
 				return "Downloaded file \"" + errSubject + "\" failed verification test!"; 
-			case BOSS_ERROR_INVALID_PROXY_TYPE:
-				return "\"" + errSubject + "\" is not a valid proxy type!";
 			case BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL:
 				return "The modification date of \"" + errSubject + "\" cannot be read! Filesystem response: " + errString;
 			case BOSS_ERROR_FS_FILE_RENAME_FAIL:
@@ -121,7 +120,11 @@ namespace boss {
 			case BOSS_ERROR_CURL_SET_PROXY_FAIL:
 				return "Proxy hostname or port invalid! cURL response: " + errString;
 			case BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL:
-				return "Proxy type invalid! cURL response: " + errString;
+				return "Failed to set proxy type! cURL response: " + errString;
+			case BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL:
+				return "Proxy authentication username or password invalid! cURL response: " + errString;
+			case BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL:
+				return "Failed to set proxy authentication type! cURL response: " + errString;
 			case BOSS_ERROR_CURL_PERFORM_FAIL:
 				return "cURL could not perform task! cURL response: " + errString;
 			case BOSS_ERROR_CURL_USER_CANCEL:
