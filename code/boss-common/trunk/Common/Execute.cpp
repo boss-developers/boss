@@ -17,9 +17,7 @@
 #include "Support/Logger.h"
 #include "Output/Output.h"
 
-#include <boost/unordered_set.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/regex.hpp>
 
 namespace boss {
 	using namespace std;

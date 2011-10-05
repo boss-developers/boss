@@ -11,8 +11,9 @@
 #include "BOSS-API.h"
 #include "BOSS-Common.h"
 #include <boost/algorithm/string.hpp>
-#include <boost/unordered_map.hpp>
+#include <boost/unordered_set.hpp>
 #include <boost/lexical_cast.hpp>
+#include <map>
 
 using namespace std;
 using namespace boss;
@@ -56,11 +57,12 @@ struct _boss_db_int {
 };
 
 //Get a Bash Tag's position in the bashTagMap from its string name.
-map<uint32_t, string>::iterator FindBashTag(map<uint32_t,string> bashTagMap, string value) {
+map<uint32_t, string>::iterator FindBashTag(map<uint32_t,string>& bashTagMap, string value) {
 	map<uint32_t, string>::iterator mapPos = bashTagMap.begin();
 	while (mapPos != bashTagMap.end()) {
 		if (mapPos->second == value)
 			break;
+		++mapPos;
 	}
 	return mapPos;
 }
@@ -87,7 +89,7 @@ BOSS_API const uint32_t BOSS_API_ERROR_MAX					=	BOSS_API_ERROR_TAGMAP_EXISTS;
 // BOSS version. Abstracts BOSS API stability policy away from clients.
 BOSS_API bool IsCompatibleVersion (uint32_t bossVersionMajor, uint32_t bossVersionMinor, uint32_t bossVersionPatch) {
 	//The 1.9 API is backwards compatible with all 1.x (x<=9) versions of BOSS, and forward compatible with all 1.9.x versions.
-	if (bossVersionMajor <= 1 && bossVersionMajor <= 9 && bossVersionPatch)
+	if (bossVersionMajor <= 1 && bossVersionMajor <= 9)
 		return true;
 	else
 		return false;
@@ -122,6 +124,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db) {
 	*db = retVal;
 	return BOSS_API_ERROR_OK;
 }
+
 BOSS_API void     DestroyBossDb (boss_db db) {
 	//Check for valid args.
 	if (db != 0) {
@@ -224,7 +227,7 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	while (iter != masterlist.end()) {
 		modEntry mod;
 		if (iter->type == MOD && !iter->messages.empty()) {  //Might be worth remembering.
-			bool hasMessages = false /*, isInstalled = false */;
+			bool hasMessages = false;
 
 			//Find out whether mod already has a dataEntry or not.
 			vector<modEntry>::iterator dataIter = masterlistData.begin();
@@ -252,28 +255,29 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 						addedList = messageIter->data.substr(pos1+7,pos2-pos1-7);
 
 					pos1 = messageIter->data.find("[");
+					pos2 = string::npos;
 					if (pos1 != string::npos)
 						pos2 = messageIter->data.find("]", pos1);
 					if (pos2 != string::npos)
 						removedList = messageIter->data.substr(pos1+1,pos2-pos1-1);
 
 					if (!addedList.empty()) {
+						string name;
+						uint32_t uid;
 						pos1 = 0;
 						pos2 = addedList.find(",", pos1);
 						while (pos2 != string::npos) {
-							string name = trim_copy(addedList.substr(pos1,pos2-pos1));
-							uint32_t uid;
+							name = trim_copy(addedList.substr(pos1,pos2-pos1));
 
 							//Search db's BashTagMap for the tag. If not found, add it. Either way, add the UID to the modEntry structure.
 							mapPos = FindBashTag(bashTagMap, name);
-							if (mapPos != bashTagMap.end()) {										//Tag found in bashTagMap. Get the UID.
+							if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 								uid = mapPos->first;
-							} else {															//Tag not found in bashTagMap. Add it. 
-								uint32_t uid = bashTagMap.rbegin()->first + 1;
+							else {															//Tag not found in bashTagMap. Add it. 
+								uid = bashTagMap.rbegin()->first + 1;
 								bashTagMap.insert(pair<uint32_t,string>(uid,name));
 							}
 
-							//Now if there is already an entry, add Tag to that. Otherwise, add Tag to "mod".
 							//If there is existing modEntry in the db masterlistData structure, don't add this one's info.
 							//BOSS itself only works with the first found and the API should behave the same way.
 							if (dataIter == masterlistData.end())  //Mod already exists in structure. Tags should be added to it.
@@ -282,21 +286,33 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 							pos1 = pos2+1;
 							pos2 = addedList.find(",", pos1);
 						}
+						name = trim_copy(addedList.substr(pos1));
+						mapPos = FindBashTag(bashTagMap, name);
+						if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
+							uid = mapPos->first;
+						else {															//Tag not found in bashTagMap. Add it. 
+							uid = bashTagMap.rbegin()->first + 1;
+							bashTagMap.insert(pair<uint32_t,string>(uid,name));
+						}
+
+						if (dataIter == masterlistData.end())  //Mod already exists in structure. Tags should be added to it.
+							mod.bashTagsAdded.push_back(uid);
 					}
 
 					if (!removedList.empty()) {
+						string name;
+						uint32_t uid;
 						pos1 = 0;
 						pos2 = removedList.find(",", pos1);
 						while (pos2 != string::npos) {
-							string name = trim_copy(removedList.substr(pos1,pos2-pos1));
-							uint32_t uid;
+							name = trim_copy(removedList.substr(pos1,pos2-pos1));
 
 							//Search db's bashTagMap for the tag. If not found, add it. Either way, add the UID to the modEntry structure.
 							mapPos = FindBashTag(bashTagMap, name);
-							if (mapPos != bashTagMap.end()) {										//Tag found in bashTagMap. Get the UID.
+							if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 								uid = mapPos->first;
-							} else {															//Tag not found in bashTagMap. Add it. 
-								uint32_t uid = bashTagMap.rbegin()->first + 1;
+							else {															//Tag not found in bashTagMap. Add it. 
+								uid = bashTagMap.rbegin()->first + 1;
 								bashTagMap.insert(pair<uint32_t,string>(uid,name));
 							}
 
@@ -309,6 +325,17 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 							pos1 = pos2+1;
 							pos2 = removedList.find(",", pos1);
 						}
+						name = trim_copy(removedList.substr(pos1));
+						mapPos = FindBashTag(bashTagMap, name);
+						if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
+							uid = mapPos->first;
+						else {															//Tag not found in bashTagMap. Add it. 
+							uid = bashTagMap.rbegin()->first + 1;
+							bashTagMap.insert(pair<uint32_t,string>(uid,name));
+						}
+
+						if (dataIter == masterlistData.end())  //Mod already exists in structure. Tags should be added to it.
+							mod.bashTagsRemoved.push_back(uid);
 					}	
 				} else if (messageIter->key == DIRTY) {
 					mod.cleaningMessage = messageIter->data;
@@ -336,24 +363,26 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 						addedList = messageIter->data.substr(pos1+7,pos2-pos1-7);
 
 					pos1 = messageIter->data.find("[");
+					pos2 = string::npos;
 					if (pos1 != string::npos)
 						pos2 = messageIter->data.find("]", pos1);
 					if (pos2 != string::npos)
 						removedList = messageIter->data.substr(pos1+1,pos2-pos1-1);
 
 					if (!addedList.empty()) {
+						string name;
+						uint32_t uid;
 						pos1 = 0;
 						pos2 = addedList.find(",", pos1);
 						while (pos2 != string::npos) {
-							string name = trim_copy(addedList.substr(pos1,pos2-pos1));
-							uint32_t uid;
+							name = trim_copy(addedList.substr(pos1,pos2-pos1));
 
 							//Search db's bashTagMap for the tag. If not found, add it. Either way, add the UID to the modEntry structure.
 							mapPos = FindBashTag(bashTagMap, name);
-							if (mapPos != bashTagMap.end()) {										//Tag found in bashTagMap. Get the UID.
+							if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 								uid = mapPos->first;
-							} else {															//Tag not found in bashTagMap. Add it. 
-								uint32_t uid = bashTagMap.rbegin()->first + 1;
+							else {															//Tag not found in bashTagMap. Add it. 
+								uid = bashTagMap.rbegin()->first + 1;
 								bashTagMap.insert(pair<uint32_t,string>(uid,name));
 							}
 
@@ -363,21 +392,32 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 							pos1 = pos2+1;
 							pos2 = addedList.find(",", pos1);
 						}
+						name = trim_copy(addedList.substr(pos1));
+						mapPos = FindBashTag(bashTagMap, name);
+						if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
+							uid = mapPos->first;
+						else {															//Tag not found in bashTagMap. Add it. 
+							uid = bashTagMap.rbegin()->first + 1;
+							bashTagMap.insert(pair<uint32_t,string>(uid,name));
+						}
+
+						mod.bashTagsAdded.push_back(uid);
 					}
 
 					if (!removedList.empty()) {
+						string name;
+						uint32_t uid;
 						pos1 = 0;
 						pos2 = removedList.find(",", pos1);
 						while (pos2 != string::npos) {
-							string name = trim_copy(removedList.substr(pos1,pos2-pos1));
-							uint32_t uid;
+							name = trim_copy(removedList.substr(pos1,pos2-pos1));
 
 							//Search db's bashTagMap for the tag. If not found, add it. Either way, add the UID to the modEntry structure.
 							mapPos = FindBashTag(bashTagMap, name);
-							if (mapPos != bashTagMap.end()) {										//Tag found in bashTagMap. Get the UID.
+							if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 								uid = mapPos->first;
-							} else {															//Tag not found in bashTagMap. Add it. 
-								uint32_t uid = bashTagMap.rbegin()->first + 1;
+							else {															//Tag not found in bashTagMap. Add it. 
+								uid = bashTagMap.rbegin()->first + 1;
 								bashTagMap.insert(pair<uint32_t,string>(uid,name));
 							}
 
@@ -387,6 +427,16 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 							pos1 = pos2+1;
 							pos2 = removedList.find(",", pos1);
 						}
+						name = trim_copy(removedList.substr(pos1));
+						mapPos = FindBashTag(bashTagMap, name);
+						if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
+							uid = mapPos->first;
+						else {															//Tag not found in bashTagMap. Add it. 
+							uid = bashTagMap.rbegin()->first + 1;
+							bashTagMap.insert(pair<uint32_t,string>(uid,name));
+						}
+
+						mod.bashTagsRemoved.push_back(uid);
 					}	
 				} else if (messageIter->key == DIRTY) {
 					mod.cleaningMessage = messageIter->data;
@@ -471,17 +521,19 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 						addedList = lineIter->object.substr(pos1+7,pos2-pos1-7);
 
 					pos1 = lineIter->object.find("[");
+					pos2 = string::npos;
 					if (pos1 != string::npos)
 						pos2 = lineIter->object.find("]", pos1);
 					if (pos2 != string::npos)
 						removedList = lineIter->object.substr(pos1+1,pos2-pos1-1);
 
 					if (!addedList.empty()) {
+						string name;
+						uint32_t uid;
 						pos1 = 0;
 						pos2 = addedList.find(",", pos1);
 						while (pos2 != string::npos) {
-							string name = trim_copy(addedList.substr(pos1,pos2-pos1));
-							uint32_t uid;
+							name = trim_copy(addedList.substr(pos1,pos2-pos1));
 
 							//Search db's bashTagMap for the tag. If not found, add it. Either way, add the UID to the modEntry structure.
 							mapPos = FindBashTag(bashTagMap, name);
@@ -501,14 +553,29 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 							pos1 = pos2+1;
 							pos2 = addedList.find(",", pos1);
 						}
+						name = trim_copy(addedList.substr(pos1));
+						mapPos = FindBashTag(bashTagMap, name);
+						if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
+							uid = mapPos->first;
+						else {															//Tag not found in bashTagMap. Add it. 
+							uid = bashTagMap.rbegin()->first + 1;
+							bashTagMap.insert(pair<uint32_t,string>(uid,name));
+						}
+
+						//Now if there is already an entry, add Tag to that. Otherwise, add Tag to "mod".
+						if (dataIter != userlistData.end())  //Mod already exists in structure. Tags should be added to it.
+							dataIter->bashTagsAdded.push_back(uid);
+						else
+							mod.bashTagsAdded.push_back(uid);
 					}
 
 					if (!removedList.empty()) {
+						string name;
+						uint32_t uid;
 						pos1 = 0;
 						pos2 = removedList.find(",", pos1);
 						while (pos2 != string::npos) {
-							string name = trim_copy(removedList.substr(pos1,pos2-pos1));
-							uint32_t uid;
+							name = trim_copy(removedList.substr(pos1,pos2-pos1));
 
 							//Search db's bashTagMap for the tag. If not found, add it. Either way, add the UID to the modEntry structure.
 							mapPos = FindBashTag(bashTagMap, name);
@@ -528,6 +595,20 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 							pos1 = pos2+1;
 							pos2 = removedList.find(",", pos1);
 						}
+						name = trim_copy(removedList.substr(pos1));
+						mapPos = FindBashTag(bashTagMap, name);
+						if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
+							uid = mapPos->first;
+						else {															//Tag not found in bashTagMap. Add it. 
+							uid = bashTagMap.rbegin()->first + 1;
+							bashTagMap.insert(pair<uint32_t,string>(uid,name));
+						}
+
+						//Now if there is already an entry, add Tag to that. Otherwise, add Tag to "mod".
+						if (dataIter != userlistData.end())  //Mod already exists in structure. Tags should be added to it.
+							dataIter->bashTagsRemoved.push_back(uid);
+						else
+							mod.bashTagsRemoved.push_back(uid);
 					}
 				}
 			}
@@ -637,7 +718,7 @@ BOSS_API uint32_t ReEvalRegex(boss_db db, const uint8_t * dataPath) {
 // its contents are static and should not be freed by the client.
 BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, uint32_t * numTags) {
 	//Check for valid args.
-	if (db == 0)
+	if (db == 0 || tagMap == 0 || numTags == 0)
 		return BOSS_API_ERROR_INVALID_ARGS;
 		
 	//Check to see if bashTagMap is already populated.
@@ -648,19 +729,24 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, uint32_t * numTa
 	*numTags = uint32_t(db->bashTagMap.size());
 
 	//Allocate memory.
-	*tagMap = (BashTag*)malloc(sizeof(BashTag) * (*numTags));
+	*tagMap = (BashTag*)calloc(size_t(*numTags),sizeof(BashTag));
 	if (*tagMap == 0)
 		return BOSS_API_ERROR_NO_MEM;
 	db->extTagMap = *tagMap;  //Record address.
+
+	//*tagMap is BashTag * p
+	// we want p[i]. Which is the same as *(p + i)
+	// So we want *(*tagMap + i)
+
 	//Loop through internal bashTagMap and fill output elements.
 	for (uint32_t i=0;i<*numTags;i++) {
-		tagMap[i]->id = i;
+		(*tagMap + i)->id = i;
 		//Allocate memory.
-		tagMap[i]->name = (uint8_t*)malloc(sizeof(uint8_t) * db->bashTagMap[i].length());  //Returns null if malloc failed.
-		if (tagMap[i]->name == 0)
+		(*tagMap + i)->name = (uint8_t*)calloc(db->bashTagMap[i].length(), sizeof(uint8_t));  //Returns null if malloc failed.
+		if ((*tagMap + i)->name == 0)
 			return BOSS_API_ERROR_NO_MEM;
 		
-		tagMap[i]->name = reinterpret_cast<const uint8_t *>(db->bashTagMap[i].c_str());
+		(*tagMap + i)->name = reinterpret_cast<const uint8_t *>(db->bashTagMap[i].c_str());
 	}
 	return BOSS_API_ERROR_OK;
 }
@@ -741,11 +827,11 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 	*numTags_removed = masterlist_tagsRemoved.size() + userlist_tagsRemoved.size() + regex_tagsRemoved.size();
 
 	//Allocate memory.
-	*tagIds_added = (uint32_t*)malloc(sizeof(uint32_t) * (*numTags_added));
+	*tagIds_added = (uint32_t*)calloc(*numTags_added, sizeof(uint32_t));
 	if (*tagIds_added == 0)
 		return BOSS_API_ERROR_NO_MEM;
 	db->extTagIds.push_back(*tagIds_added);  //Record address.
-	*tagIds_removed = (uint32_t*)malloc(sizeof(uint32_t) * (*numTags_removed));
+	*tagIds_removed = (uint32_t*)calloc(*numTags_removed, sizeof(uint32_t));
 	if (*tagIds_removed == 0)
 		return BOSS_API_ERROR_NO_MEM;
 	db->extTagIds.push_back(*tagIds_removed);  //Record address.
@@ -800,7 +886,7 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName,
 		if (Tidy(iter->name) == Tidy(mod) && !iter->cleaningMessage.empty()) {  //Mod found and it has a message.
 
 			//Allocate memory.
-			*message = (uint8_t*)malloc(sizeof(uint8_t) * iter->cleaningMessage.length());  //Returns null if malloc failed.
+			*message = (uint8_t*)calloc(iter->cleaningMessage.length(), sizeof(uint8_t));  //Returns null if malloc failed.
 			if (*message == 0)
 				return BOSS_API_ERROR_NO_MEM;
 			*message = reinterpret_cast<const uint8_t *>(iter->cleaningMessage.c_str());

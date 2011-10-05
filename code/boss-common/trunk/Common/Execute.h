@@ -14,6 +14,8 @@
 
 #include <string>
 #include <boost/filesystem.hpp>
+#include <boost/unordered_set.hpp>
+#include <boost/regex.hpp>
 #include "Common/Lists.h"
 #include "Common/DllDef.h"
 
@@ -43,6 +45,9 @@ namespace boss {
 		string updaterErrors;
 		bosslogContents();
 	};
+
+	//Searches a hashset for the first matching string of a regex and returns its iterator position.
+	boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos);
 
 	//Record recognised mod list from last HTML BOSSlog generated.
 	BOSS_COMMON string GetOldRecognisedList(const fs::path log);
