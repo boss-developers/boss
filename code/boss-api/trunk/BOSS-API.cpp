@@ -43,8 +43,9 @@ struct _boss_db_int {
 	map<uint32_t,string> bashTagMap;				//A hashmap containing all the Bash Tag strings found in the masterlist and userlist and their unique IDs.
 													//Ordered to make ensuring UIDs easy (check the UID of the last element then increment). Strings are case-preserved.
 	BashTag * extTagMap;				//Holds the pointer for the bashTagMap returned by GetBashTagMap().
-	vector<uint32_t*> extTagIds;		//Holds the pointers to the arrays of Bash Tag UIDs returned by GetModBashTags() for each mod.
-	vector<uint8_t*> extMessages;		//Holds the pointers to the dirty message string returned by GetDirtyMessage() for each mod.
+	uint32_t * extAddedTagIds;
+	uint32_t * extRemovedTagIds;
+	const uint8_t * extMessage;
 
 	//Get a Bash Tag's string name from its UID.
 	string GetTagString(uint32_t uid) {
@@ -77,8 +78,12 @@ BOSS_API const uint32_t BOSS_API_ERROR_PARSE_FAIL			= 	BOSS_ERROR_MAX + 1;
 BOSS_API const uint32_t BOSS_API_ERROR_NO_MEM				=	BOSS_ERROR_MAX + 2;
 BOSS_API const uint32_t BOSS_API_ERROR_OVERWRITE_FAIL		=	BOSS_ERROR_MAX + 3;
 BOSS_API const uint32_t BOSS_API_ERROR_INVALID_ARGS			=	BOSS_ERROR_MAX + 4;
-BOSS_API const uint32_t BOSS_API_ERROR_TAGMAP_EXISTS		=	BOSS_ERROR_MAX + 5;
-BOSS_API const uint32_t BOSS_API_ERROR_MAX					=	BOSS_API_ERROR_TAGMAP_EXISTS;
+BOSS_API const uint32_t BOSS_API_ERROR_MAX					=	BOSS_API_ERROR_INVALID_ARGS;
+
+// The following are the mod cleanliness states that the API can return.
+BOSS_API const uint32_t BOSS_API_CLEAN_NO = 0;
+BOSS_API const uint32_t BOSS_API_CLEAN_YES = 1;
+BOSS_API const uint32_t BOSS_API_CLEAN_UNKNOWN = 2;
 
 
 //////////////////////////////
@@ -131,18 +136,12 @@ BOSS_API void     DestroyBossDb (boss_db db) {
 		//Free memory at pointers stored in structure.
 		if (db->extTagMap != 0)
 			free(db->extTagMap);
-		vector<uint32_t*>::iterator bashTagIter = db->extTagIds.begin();
-		while (bashTagIter != db->extTagIds.end()) {
-			if (*bashTagIter != 0)
-				free(*bashTagIter);
-			++bashTagIter;
-		}
-		vector<uint8_t*>::iterator messageIter = db->extMessages.begin();
-		while (messageIter != db->extMessages.end()) {
-			if (*messageIter != 0)
-				free(*messageIter);
-			++messageIter;
-		}
+		if (db->extAddedTagIds != 0)
+			free(db->extAddedTagIds);
+		if (db->extRemovedTagIds != 0)
+			free(db->extRemovedTagIds);
+		if (db->extMessage != 0)
+			free(const_cast<uint8_t*>(db->extMessage));
 	
 		//Now delete DB.
 		delete db;
@@ -178,6 +177,7 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	vector<item> masterlist;
 	vector<modEntry> masterlistData, userlistData, regexData;
 	vector<rule> userlist;
+	uint32_t currentUID = 0;
 	
 	//Check for valid args.
 	if (db == 0 || masterlistPath == 0 || userlistPath == 0 || dataPath == 0)
@@ -274,7 +274,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 							if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 								uid = mapPos->first;
 							else {															//Tag not found in bashTagMap. Add it. 
-								uid = bashTagMap.rbegin()->first + 1;
+								uid = currentUID;
+								currentUID++;
 								bashTagMap.insert(pair<uint32_t,string>(uid,name));
 							}
 
@@ -291,7 +292,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 						if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 							uid = mapPos->first;
 						else {															//Tag not found in bashTagMap. Add it. 
-							uid = bashTagMap.rbegin()->first + 1;
+							uid = currentUID;
+							currentUID++;
 							bashTagMap.insert(pair<uint32_t,string>(uid,name));
 						}
 
@@ -312,7 +314,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 							if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 								uid = mapPos->first;
 							else {															//Tag not found in bashTagMap. Add it. 
-								uid = bashTagMap.rbegin()->first + 1;
+								uid = currentUID;
+								currentUID++;
 								bashTagMap.insert(pair<uint32_t,string>(uid,name));
 							}
 
@@ -330,7 +333,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 						if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 							uid = mapPos->first;
 						else {															//Tag not found in bashTagMap. Add it. 
-							uid = bashTagMap.rbegin()->first + 1;
+							uid = currentUID;
+							currentUID++;
 							bashTagMap.insert(pair<uint32_t,string>(uid,name));
 						}
 
@@ -382,7 +386,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 							if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 								uid = mapPos->first;
 							else {															//Tag not found in bashTagMap. Add it. 
-								uid = bashTagMap.rbegin()->first + 1;
+								uid = currentUID;
+								currentUID++;
 								bashTagMap.insert(pair<uint32_t,string>(uid,name));
 							}
 
@@ -397,7 +402,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 						if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 							uid = mapPos->first;
 						else {															//Tag not found in bashTagMap. Add it. 
-							uid = bashTagMap.rbegin()->first + 1;
+							uid = currentUID;
+							currentUID++;
 							bashTagMap.insert(pair<uint32_t,string>(uid,name));
 						}
 
@@ -417,7 +423,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 							if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 								uid = mapPos->first;
 							else {															//Tag not found in bashTagMap. Add it. 
-								uid = bashTagMap.rbegin()->first + 1;
+								uid = currentUID;
+								currentUID++;
 								bashTagMap.insert(pair<uint32_t,string>(uid,name));
 							}
 
@@ -432,7 +439,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 						if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 							uid = mapPos->first;
 						else {															//Tag not found in bashTagMap. Add it. 
-							uid = bashTagMap.rbegin()->first + 1;
+							uid = currentUID;
+							currentUID++;
 							bashTagMap.insert(pair<uint32_t,string>(uid,name));
 						}
 
@@ -540,7 +548,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 							if (mapPos != bashTagMap.end()) {										//Tag found in bashTagMap. Get the UID.
 								uid = mapPos->first;
 							} else {															//Tag not found in bashTagMap. Add it. 
-								uint32_t uid = bashTagMap.rbegin()->first + 1;
+								uid = currentUID;
+								currentUID++;
 								bashTagMap.insert(pair<uint32_t,string>(uid,name));
 							}
 
@@ -558,7 +567,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 						if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 							uid = mapPos->first;
 						else {															//Tag not found in bashTagMap. Add it. 
-							uid = bashTagMap.rbegin()->first + 1;
+							uid = currentUID;
+							currentUID++;
 							bashTagMap.insert(pair<uint32_t,string>(uid,name));
 						}
 
@@ -582,7 +592,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 							if (mapPos != bashTagMap.end()) {										//Tag found in bashTagMap. Get the UID.
 								uid = mapPos->first;
 							} else {															//Tag not found in bashTagMap. Add it. 
-								uint32_t uid = bashTagMap.rbegin()->first + 1;
+								uid = currentUID;
+								currentUID++;
 								bashTagMap.insert(pair<uint32_t,string>(uid,name));
 							}
 
@@ -600,7 +611,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 						if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 							uid = mapPos->first;
 						else {															//Tag not found in bashTagMap. Add it. 
-							uid = bashTagMap.rbegin()->first + 1;
+							uid = currentUID;
+							currentUID++;
 							bashTagMap.insert(pair<uint32_t,string>(uid,name));
 						}
 
@@ -631,18 +643,12 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	//Free memory at pointers stored in structure.
 	if (db->extTagMap != 0)
 		free(db->extTagMap);
-	vector<uint32_t*>::iterator bashTagIter = db->extTagIds.begin();
-	while (bashTagIter != db->extTagIds.end()) {
-		if (*bashTagIter != 0)
-			free(*bashTagIter);
-		++bashTagIter;
-	}
-	vector<uint8_t*>::iterator messageIter = db->extMessages.begin();
-	while (messageIter != db->extMessages.end()) {
-		if (*messageIter != 0)
-			free(*messageIter);
-		++messageIter;
-	}
+	if (db->extAddedTagIds != 0)
+		free(db->extAddedTagIds);
+	if (db->extRemovedTagIds != 0)
+		free(db->extRemovedTagIds);
+	if (db->extMessage != 0)
+		free(const_cast<uint8_t*>(db->extMessage));
 	
 	//DB SET
 	db->masterlistData = masterlistData;
@@ -655,7 +661,7 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 
 BOSS_API uint32_t ReEvalRegex(boss_db db, const uint8_t * dataPath) {
 	//Check for valid args.
-	if (db == 0)
+	if (db == 0 || dataPath == 0)
 		return BOSS_API_ERROR_INVALID_ARGS;
 		
 	//PATH SETTING
@@ -717,36 +723,26 @@ BOSS_API uint32_t ReEvalRegex(boss_db db, const uint8_t * dataPath) {
 // and userlist, and the number of tags in the returned array. The array and
 // its contents are static and should not be freed by the client.
 BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, uint32_t * numTags) {
-	//Check for valid args.
-	if (db == 0 || tagMap == 0 || numTags == 0)
+	if (db == 0 || tagMap == 0 || numTags == 0)  //Check for valid args.
 		return BOSS_API_ERROR_INVALID_ARGS;
-		
-	//Check to see if bashTagMap is already populated.
-	if (*tagMap != 0)
-		return BOSS_API_ERROR_TAGMAP_EXISTS;
 
-	//Set size.
-	*numTags = uint32_t(db->bashTagMap.size());
+	if (db->extTagMap != 0) {  //Check to see if bashTagMap is already populated.
+		*numTags = uint32_t(db->bashTagMap.size());  //Set size.
+		*tagMap = db->extTagMap;
+	} else {
+		*numTags = uint32_t(db->bashTagMap.size());  //Set size.
 
-	//Allocate memory.
-	*tagMap = (BashTag*)calloc(size_t(*numTags),sizeof(BashTag));
-	if (*tagMap == 0)
-		return BOSS_API_ERROR_NO_MEM;
-	db->extTagMap = *tagMap;  //Record address.
-
-	//*tagMap is BashTag * p
-	// we want p[i]. Which is the same as *(p + i)
-	// So we want *(*tagMap + i)
-
-	//Loop through internal bashTagMap and fill output elements.
-	for (uint32_t i=0;i<*numTags;i++) {
-		(*tagMap + i)->id = i;
 		//Allocate memory.
-		(*tagMap + i)->name = (uint8_t*)calloc(db->bashTagMap[i].length(), sizeof(uint8_t));  //Returns null if malloc failed.
-		if ((*tagMap + i)->name == 0)
+		db->extTagMap = (BashTag*)calloc(size_t(*numTags), sizeof(BashTag));
+		if (db->extTagMap == 0)
 			return BOSS_API_ERROR_NO_MEM;
-		
-		(*tagMap + i)->name = reinterpret_cast<const uint8_t *>(db->bashTagMap[i].c_str());
+
+		//Loop through internal bashTagMap and fill output elements.
+		for (uint32_t i=0;i<*numTags;i++) {
+			db->extTagMap[i].id = i;
+			db->extTagMap[i].name = reinterpret_cast<const uint8_t *>(db->bashTagMap[i].c_str());
+		}
+		*tagMap = db->extTagMap;
 	}
 	return BOSS_API_ERROR_OK;
 }
@@ -765,11 +761,15 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 									uint32_t *numTags_removed,
 									bool * userlistModified) {
 	//Check for valid args.
-	if (db == 0 || modName == 0)
+	if (db == 0 || modName == 0 || userlistModified == 0 || numTags_added == 0 || numTags_removed == 0 || tagIds_removed == 0 || tagIds_added == 0)
 		return BOSS_API_ERROR_INVALID_ARGS;
-									
+							
 	//Convert modName.
 	string mod(reinterpret_cast<const char *>(modName));
+
+	//Allocate memory for userlistModified.
+	//userlistModified = (bool*)malloc(sizeof(bool));
+	//db->extTagIds.push_back(userlistModified);  //Record address.
 
 	//Initialise pointers to null and zero tag counts.
 	*numTags_added = 0;
@@ -777,7 +777,7 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 	*tagIds_removed = 0;
 	*tagIds_added = 0;
 	*userlistModified = false;
-
+	
 	//Need to search masterlist, regexMatch then userlist separately, check each mod case-insensitively for a match.
 	size_t size1, size2;
 	vector<modEntry>::iterator iter;
@@ -825,36 +825,48 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 	//Now combine the masterlist and userlist Tags.
 	*numTags_added = masterlist_tagsAdded.size() + userlist_tagsAdded.size() + regex_tagsAdded.size();
 	*numTags_removed = masterlist_tagsRemoved.size() + userlist_tagsRemoved.size() + regex_tagsRemoved.size();
-
+	
 	//Allocate memory.
-	*tagIds_added = (uint32_t*)calloc(*numTags_added, sizeof(uint32_t));
-	if (*tagIds_added == 0)
-		return BOSS_API_ERROR_NO_MEM;
-	db->extTagIds.push_back(*tagIds_added);  //Record address.
-	*tagIds_removed = (uint32_t*)calloc(*numTags_removed, sizeof(uint32_t));
-	if (*tagIds_removed == 0)
-		return BOSS_API_ERROR_NO_MEM;
-	db->extTagIds.push_back(*tagIds_removed);  //Record address.
+	uint32_t * temp;
+	temp = (uint32_t*)realloc(db->extAddedTagIds,*numTags_added * sizeof(uint32_t));
+	if (temp == 0) {  //The realloc() fails sometimes for some reason. Try doing the same thing with free() and malloc().
+		free(db->extAddedTagIds);
+		db->extAddedTagIds = (uint32_t*)malloc(*numTags_added * sizeof(uint32_t));
+		if (db->extAddedTagIds == 0)
+			return BOSS_API_ERROR_NO_MEM;
+	} else 
+		db->extAddedTagIds = temp;
+	temp = (uint32_t*)realloc(db->extRemovedTagIds,*numTags_removed * sizeof(uint32_t));
+	if (temp == 0) {  //The realloc() fails sometimes for some reason. Try doing the same thing with free() and malloc().
+		free(db->extRemovedTagIds);
+		db->extRemovedTagIds = (uint32_t*)malloc(*numTags_removed * sizeof(uint32_t));
+		if (db->extRemovedTagIds == 0)
+			return BOSS_API_ERROR_NO_MEM;
+	} else 
+		db->extRemovedTagIds = temp;
 	
 
 	//Loop through vectors and fill output elements.
 	size1 = masterlist_tagsAdded.size();
 	size2 = regex_tagsAdded.size();
 	for (size_t i=0;i<size1;i++)
-		*tagIds_added[i] = masterlist_tagsAdded[i];
+		db->extAddedTagIds[i] = masterlist_tagsAdded[i];
 	for (size_t i=size1;i<size1+size2;i++)
-		*tagIds_added[i] = regex_tagsAdded[i-size1];
-	for (size_t i=size2;i<*numTags_added;i++)
-		*tagIds_added[i] = userlist_tagsAdded[i-size2];
+		db->extAddedTagIds[i] = regex_tagsAdded[i-size1];
+	for (size_t i=size1+size2;i<*numTags_added;i++)
+		db->extAddedTagIds[i] = userlist_tagsAdded[i-size1-size2];
 
 	size1 = masterlist_tagsRemoved.size();
 	size2 = regex_tagsRemoved.size();
 	for (size_t i=0;i<size1;i++)
-		*tagIds_removed[i] = masterlist_tagsRemoved[i];
+		db->extRemovedTagIds[i] = masterlist_tagsRemoved[i];
 	for (size_t i=size1;i<size1+size2;i++)
-		*tagIds_removed[i] = regex_tagsRemoved[i-size1];
-	for (size_t i=size2;i<*numTags_removed;i++)
-		*tagIds_removed[i] = userlist_tagsRemoved[i-size2];
+		db->extRemovedTagIds[i] = regex_tagsRemoved[i-size1];
+	for (size_t i=size1+size2;i<*numTags_removed;i++)
+		db->extRemovedTagIds[i] = userlist_tagsRemoved[i-size1-size2];
+
+	*tagIds_added = db->extAddedTagIds;
+	*tagIds_removed = db->extRemovedTagIds;
 
 	return BOSS_API_ERROR_OK;
 }
@@ -862,9 +874,9 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 // Returns the message associated with a dirty mod and whether the mod needs
 // cleaning. If a mod has no dirty mmessage, *message will be NULL. modName is
 // case-insensitive. The return values for needsCleaning are:
-//   0 == no
-//   1 == yes
-//   2 == unknown
+//   BOSS_API_CLEAN_NO
+//   BOSS_API_CLEAN_YES
+//   BOSS_API_CLEAN_UNKNOWN
 // The message string is valid until the db is destroyed or until a Load
 // function is called. The string should not be freed by the client.
 BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName, 
@@ -878,24 +890,22 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName,
 
 	//Initialise pointers.
 	*message = 0;
-	*needsCleaning = 2;
+	*needsCleaning = BOSS_API_CLEAN_UNKNOWN;
 
 	//Search masterlist.
 	vector<modEntry>::iterator iter = db->masterlistData.begin();
 	while (iter != db->masterlistData.end()) {
-		if (Tidy(iter->name) == Tidy(mod) && !iter->cleaningMessage.empty()) {  //Mod found and it has a message.
+		if (Tidy(iter->name) == Tidy(mod)) {
+			if (!iter->cleaningMessage.empty()) {  //Mod found and it has a message.
+				db->extMessage = reinterpret_cast<const uint8_t *>(iter->cleaningMessage.c_str());
+				*message = db->extMessage;
 
-			//Allocate memory.
-			*message = (uint8_t*)calloc(iter->cleaningMessage.length(), sizeof(uint8_t));  //Returns null if malloc failed.
-			if (*message == 0)
-				return BOSS_API_ERROR_NO_MEM;
-			*message = reinterpret_cast<const uint8_t *>(iter->cleaningMessage.c_str());
-
-			if (iter->cleaningMessage.find("Do not clean.") != string::npos)  //Mod should not be cleaned.
-				*needsCleaning = 0;
-			else  //Mod should be cleaned.
-				*needsCleaning = 1;
-			break;
+				if (iter->cleaningMessage.find("Do not clean.") != string::npos)  //Mod should not be cleaned.
+					*needsCleaning = BOSS_API_CLEAN_NO;
+				else  //Mod should be cleaned.
+					*needsCleaning = BOSS_API_CLEAN_YES;
+				break;
+			}
 		}
 		++iter;
 	}
@@ -939,6 +949,7 @@ BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, bool over
 							mlist << db->GetTagString(*tagIter);
 							if (tagIter != last)
 								mlist << ", ";
+							++tagIter;
 						}
 						mlist << "}}";
 					}
@@ -951,9 +962,11 @@ BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, bool over
 							mlist << db->GetTagString(*tagIter);
 							if (tagIter != last)
 								mlist << ", ";
+							++tagIter;
 						}
 						mlist << "]";
 					}
+					mlist << endl;
 				}
 				++iter;
 			}
@@ -975,6 +988,7 @@ BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, bool over
 							mlist << db->GetTagString(*tagIter);
 							if (tagIter != last)
 								mlist << ", ";
+							++tagIter;
 						}
 						mlist << "}}";
 					}
@@ -987,9 +1001,11 @@ BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, bool over
 							mlist << db->GetTagString(*tagIter);
 							if (tagIter != last)
 								mlist << ", ";
+							++tagIter;
 						}
 						mlist << "]";
 					}
+					mlist << endl;
 				}
 				++iter;
 			}

@@ -40,6 +40,9 @@ public:
 	void OnRuleCreate(wxCommandEvent& event);
 	void OnRuleEdit(wxCommandEvent& event);
 	void OnRuleDelete(wxCommandEvent& event);
+	void OnToggleRuleCheckbox(wxCommandEvent& event);
+	void OnRuleSelection(wxCommandEvent& event);
+	void OnRuleOrderChange(wxCommandEvent& event);
 	DECLARE_EVENT_TABLE()
 private:
 	vector<item> Modlist, Masterlist;
@@ -59,7 +62,7 @@ private:
 	wxChoice *BeforeAfterChoiceBox;
 	wxChoice *TopBottomChoiceBox;
 	wxTextCtrl *NewModMessagesBox;
-	wxRearrangeCtrl *RulesList;
+	wxRearrangeList *RulesList;
 	wxTextCtrl *RuleModBox;
 	wxTextCtrl *SortModBox;
 	wxCheckBox *SortModsCheckBox;

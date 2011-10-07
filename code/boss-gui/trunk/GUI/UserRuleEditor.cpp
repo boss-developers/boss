@@ -17,9 +17,12 @@
 BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
 	EVT_BUTTON ( OPTION_OKExitEditor, UserRulesEditorFrame::OnOKQuit )
 	EVT_BUTTON ( OPTION_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit )
-	EVT_BUTTON ( OPTION_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit )
-	EVT_BUTTON ( OPTION_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit )
-	EVT_BUTTON ( OPTION_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit )
+	EVT_BUTTON ( BUTTON_MoveRuleUp, UserRulesEditorFrame::OnRuleOrderChange )
+	EVT_BUTTON ( BUTTON_MoveRuleDown, UserRulesEditorFrame::OnRuleOrderChange )
+	EVT_CHECKLISTBOX ( LIST_RuleList, UserRulesEditorFrame::OnToggleRuleCheckbox )
+	EVT_LISTBOX ( LIST_Masterlist, UserRulesEditorFrame::OnSelectModInMasterlist )
+	EVT_LISTBOX ( LIST_RuleList, UserRulesEditorFrame::OnRuleSelection )
+
 END_EVENT_TABLE()
 
 using namespace boss;
@@ -101,7 +104,8 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
         wxT("BOTTOM")
     };
 
-	wxArrayString *Rules = new wxArrayString();
+	wxArrayString Rules;
+	wxArrayInt RuleOrder;
 	size = Userlist.size();
 	for (size_t i=0;i<size;i++) {
 		string text;
@@ -126,15 +130,24 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 			}
 
 		}
-		Rules->Add(text);
+		RuleOrder.push_back(i);
+		Rules.push_back(text);
 	}
 
 	
 	size = Modlist.size();
-	wxString *ModlistMods;
-	//for (size_t i=0;i<size;i++) {
-	//	ModlistMods[i] = Modlist[i].name.string();
-	//}
+	wxArrayString ModlistMods;
+	for (size_t i=0;i<size;i++) {
+		if (Modlist[i].type == MOD)
+			ModlistMods.push_back(Modlist[i].name.string());
+	}
+
+	size = Masterlist.size();
+	wxArrayString MasterlistMods;
+	for (size_t i=0;i<size;i++) {
+		if (Masterlist[i].type == MOD)
+			MasterlistMods.push_back(Masterlist[i].name.string());
+	}
 
 	//Set up stuff in the frame.
 	SetBackgroundColour(wxColour(255,255,255));
@@ -161,8 +174,13 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 
 	//////First column
 	wxBoxSizer *rulesBox = new wxBoxSizer(wxVERTICAL);
-	//wxRearrangeCtrl *RulesList = new wxRearrangeCtrl(this, OPTION_RuleList, wxDefaultPosition, wxDefaultSize);
-	
+	rulesBox->Add(RulesList = new wxRearrangeList(this, LIST_RuleList, wxDefaultPosition, wxDefaultSize, RuleOrder, Rules));
+	////Window buttons
+	wxBoxSizer *listButtonBox = new wxBoxSizer(wxHORIZONTAL);
+	listButtonBox->Add(new wxButton(this, BUTTON_MoveRuleUp, wxT("Move Up"), wxDefaultPosition, wxDefaultSize));
+	listButtonBox->Add(new wxButton(this, BUTTON_MoveRuleDown, wxT("Move Down"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 20);
+	rulesBox->Add(listButtonBox, 0, wxALIGN_RIGHT|wxALL, 10);
+
 	////////Rule Creator/Editor
 	wxStaticBoxSizer *ruleEditorBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Rule Creator/Editor"));  //Needs to go in an oulined box.
 	wxBoxSizer *forBox = new wxBoxSizer(wxHORIZONTAL);
@@ -191,19 +209,19 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	buttons->Add(NewRuleButton = new wxButton(this, OPTION_NewRule, wxT("Create New Rule"), wxDefaultPosition, wxDefaultSize));
 	buttons->Add(NewRuleButton = new wxButton(this, OPTION_EditRule, wxT("Save Edited Rule"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 20);
 	buttons->Add(NewRuleButton = new wxButton(this, OPTION_DeleteRule, wxT("Delete Rule"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 20);
-	rulesBox->Add(buttons);
+	rulesBox->Add(buttons, 0, wxALIGN_RIGHT|wxALL, 10);
 	//////Second column.
 	wxBoxSizer *listmessBox = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *listsBox = new wxBoxSizer(wxHORIZONTAL);
 	////////Modlist column.
 	wxStaticBoxSizer *modlistBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Installed Mods"));
 	modlistBox->Add(ModlistSearch = new wxSearchCtrl(this, SEARCH_Modlist));
-	modlistBox->Add(InstalledModsList = new wxListBox(this, LIST_Modlist, wxDefaultPosition, wxDefaultSize, ModlistMods->size(),ModlistMods));
+	modlistBox->Add(InstalledModsList = new wxListBox(this, LIST_Modlist, wxDefaultPosition, wxDefaultSize, ModlistMods));
 	listsBox->Add(modlistBox);
 	////////Masterlist column.
 	wxStaticBoxSizer *masterlistBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Masterlist"));
 	masterlistBox->Add(MasterlistSearch = new wxSearchCtrl(this, SEARCH_Masterlist));
-	masterlistBox->Add(MasterlistModsList = new wxListBox(this, LIST_Modlist, wxDefaultPosition, wxDefaultSize, ModlistMods->size(),ModlistMods));
+	masterlistBox->Add(MasterlistModsList = new wxListBox(this, LIST_Masterlist, wxDefaultPosition, wxDefaultSize, MasterlistMods));
 	listsBox->Add(masterlistBox);
 	listmessBox->Add(listsBox);
 	////////Mod Messages box
@@ -288,5 +306,17 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 }
 
 void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
+
+}
+
+void UserRulesEditorFrame::OnToggleRuleCheckbox(wxCommandEvent& event) {
+
+}
+
+void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
+
+}
+
+void UserRulesEditorFrame::OnRuleOrderChange(wxCommandEvent& event) {
 
 }

@@ -54,10 +54,10 @@ API Documentation</div>
 	<li>Extract dirty mod messages from the masterlist and determine cleanliness of mods.
 	<li>Write a minimal masterlist containing only mods with Bash Tag suggestions, and those suggestions.
 </ul>
-<p>The API can also handle determining compatibility with other versions of BOSS that may be present. The API has a few potential shortcomings over a general file read, owing to the fact that it parses the lists in the same manner that BOSS itself does:
+<p>The API can also handle determining compatibility with other versions of BOSS that may be present. The API currently has a few shortcomings over a general file read, owing to the fact that it parses the lists in the same manner that BOSS itself does:
 <ul>
-	<li>Dirty mod information available is dependent on the user's installed mod list. This is because conditional messages are evaluated during parsing so the resulting data only contains items relevant to the user's install. There is no current solution to this besides reloading the database by calling Load().
-	<li>Regular expressions in the masterlist are used to match mods in the user's install. As such, they should be re-evaluated when the installed mod list changes. A function for doing so is provided.
+	<li>Conditional information is only accessible if the condition	is fulfilled. This means that when the user's installed mod list changes, the database will have to be reloaded.
+	<li>Database loading is very slow.
 </ul>
 <p>These shortcomings will be addressed in updates to the API, either in pre-release or in future releases.
 <p>Below is a short overview of BOSS's masterlist, userlist and their capabilities for those unfamiliar with them:
@@ -69,7 +69,7 @@ API Documentation</div>
 <p>The API uses character strings and integers for information input/output. 
 <ul>
 	<li>All API strings are unsigned 8-bit character strings (uint8_t*) encoded in UTF-8.
-	<li>All API numbers and error codes are unsigned 32-bit integers (uint32_t).
+	<li>All API numbers and return codes are unsigned 32-bit integers (uint32_t).
 </ul>
 <p>The API also introduces two new structures:
 <p><code>typedef struct _boss_db_int * boss_db;</code>
@@ -94,9 +94,8 @@ API Documentation</div>
 	<li>BOSS_API_ERROR_NO_MEM
 	<li>BOSS_API_ERROR_OVERWRITE_FAIL
 	<li>BOSS_API_ERROR_INVALID_ARGS
-	<li>BOSS_API_ERROR_TAGMAP_EXISTS
 	<li>BOSS_API_ERROR_MAX
-		<ul><li>This matches the value of the highest-numbered return code (BOSS_API_TAGMAP_EXISTS). It isn't returned by any functions.</ul>
+		<ul><li>This matches the value of the highest-numbered return code (BOSS_API_ERROR_INVALID_ARGS). It isn't returned by any functions.</ul>
 </ul>
 </div>
 
@@ -132,18 +131,18 @@ API Documentation</div>
 <p>Returns an array of the Bash Tags encounterred when loading the masterlist and userlist, and the number of tags in the returned array. The array and its contents are static and valid until the db is destroyed or until the Load() function is called. It should not be freed by the client.
 
 <p><code>uint32_t GetModBashTags (boss_db db, const uint8_t * modName, uint32_t ** tagIds_added, uint32_t * numTags_added, uint32_t **tagIds_removed, uint32_t *numTags_removed, bool * userlistModified);</code>
-<p>Returns arrays of Bash Tag UIDs for Bash Tags suggested for addition and removal by BOSS's masterlist and userlist, and the number of tags in each array. The returned arrays are valid until the db is destroyed or until the Load() function is called.  The arrays should not be freed by the client. modName is case-insensitive. If no Tags are found for an array, the array pointer (*tagIds) will be NULL. The userlistModified bool is true if the userlist contains Bash Tag suggestion message additions.
+<p>Returns arrays of Bash Tag UIDs for Bash Tags suggested for addition and removal by BOSS's masterlist and userlist, and the number of tags in each array. The returned arrays are valid until GetModBashTags() is called again, the db is destroyed or the Load() function is called.  The arrays should not be freed by the client. modName is case-insensitive. If no Tags are found for an array, the array pointer (*tagIds) will be NULL. The userlistModified bool is true if the userlist contains Bash Tag suggestion message additions.
 
 
 
 <p><code>uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName, const uint8_t ** message, uint32_t * needsCleaning);</code>
 <p>Returns the message associated with a dirty mod and whether the mod needs cleaning. If a mod has no dirty mmessage, *message will be NULL. modName is case-insensitive. The return values for needsCleaning are:
 <ul>
-	<li>0 == no
-	<li>1 == yes
-	<li>2 == unknown
+	<li>BOSS_API_CLEAN_NO
+	<li>BOSS_API_CLEAN_YES
+	<li>BOSS_API_CLEAN_UNKNOWN
 </ul>
-<p>The message string is valid until the db is destroyed or until a Load() function is called. The string should not be freed by the client.
+<p>The message string is valid until GetDirtyMessage() is called again, the db is destroyed or the Load() function is called. The string should not be freed by the client.
 
 <p><code>uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, bool overwrite);</code>
 <p>Writes a minimal masterlist that only contains mods that have Bash Tag suggestions, plus the Tag suggestions themselves, in order to create the Wrye Bash taglist. outputFile is the path to use for output. If outputFile already exists, it will only be overwritten if overwrite is true.

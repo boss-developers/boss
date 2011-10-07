@@ -53,11 +53,12 @@ enum {
 	OPTION_CancelExitSettings,
 	DROPDOWN_ProxyType,
 	//User Rules Editor.
-	OPTION_RuleList,
+	LIST_RuleList,
 	OPTION_NewRule,
 	OPTION_EditRule,
 	OPTION_DeleteRule,
 	LIST_Modlist,
+	LIST_Masterlist,
 	OPTION_OKExitEditor,
 	OPTION_CancelExitEditor,
 	TEXT_ModMessages,
@@ -73,6 +74,8 @@ enum {
 	TEXT_InsertMod,
 	CHECKBOX_RemoveMessages,
 	CHECKBOX_AddMessages,
-	TEXT_NewMessages
+	TEXT_NewMessages,
+	BUTTON_MoveRuleUp,
+	BUTTON_MoveRuleDown
 };
 #endif

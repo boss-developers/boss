@@ -76,8 +76,12 @@ BOSS_API extern const uint32_t BOSS_API_ERROR_PARSE_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_MEM;
 BOSS_API extern const uint32_t BOSS_API_ERROR_OVERWRITE_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_INVALID_ARGS;
-BOSS_API extern const uint32_t BOSS_API_ERROR_TAGMAP_EXISTS;
 BOSS_API extern const uint32_t BOSS_API_ERROR_MAX;
+
+// The following are the mod cleanliness states that the API can return.
+BOSS_API extern const uint32_t BOSS_API_CLEAN_NO;
+BOSS_API extern const uint32_t BOSS_API_CLEAN_YES;
+BOSS_API extern const uint32_t BOSS_API_CLEAN_UNKNOWN;
 
 
 //////////////////////////////
@@ -147,9 +151,9 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 // Returns the message associated with a dirty mod and whether the mod needs
 // cleaning. If a mod has no dirty mmessage, *message will be NULL. modName is
 // case-insensitive. The return values for needsCleaning are:
-//   0 == no
-//   1 == yes
-//   2 == unknown
+//   BOSS_API_CLEAN_NO
+//   BOSS_API_CLEAN_YES
+//   BOSS_API_CLEAN_UNKNOWN
 // The message string is valid until the db is destroyed or until a Load
 // function is called. The string should not be freed by the client.
 BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName, 
