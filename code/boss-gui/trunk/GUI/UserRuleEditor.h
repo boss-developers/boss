@@ -35,8 +35,7 @@ public:
 	void OnSelectModInMasterlist(wxCommandEvent& event);
 	void OnSortingCheckToggle(wxCommandEvent& event);
 	void OnMessageAddToggle(wxCommandEvent& event);
-	void OnSortSelection(wxCommandEvent& event);
-	void OnInsertSelection(wxCommandEvent& event);
+	void OnSortInsertChange(wxCommandEvent& event);
 	void OnRuleCreate(wxCommandEvent& event);
 	void OnRuleEdit(wxCommandEvent& event);
 	void OnRuleDelete(wxCommandEvent& event);

@@ -19,10 +19,13 @@ BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
 	EVT_BUTTON ( OPTION_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit )
 	EVT_BUTTON ( BUTTON_MoveRuleUp, UserRulesEditorFrame::OnRuleOrderChange )
 	EVT_BUTTON ( BUTTON_MoveRuleDown, UserRulesEditorFrame::OnRuleOrderChange )
+	EVT_CHECKBOX ( CHECKBOX_SortMods, UserRulesEditorFrame::OnSortingCheckToggle )
+	EVT_CHECKBOX ( CHECKBOX_AddMessages, UserRulesEditorFrame::OnMessageAddToggle )
 	EVT_CHECKLISTBOX ( LIST_RuleList, UserRulesEditorFrame::OnToggleRuleCheckbox )
 	EVT_LISTBOX ( LIST_Masterlist, UserRulesEditorFrame::OnSelectModInMasterlist )
 	EVT_LISTBOX ( LIST_RuleList, UserRulesEditorFrame::OnRuleSelection )
-
+	EVT_RADIOBUTTON ( RADIO_SortMod, UserRulesEditorFrame::OnSortInsertChange )
+	EVT_RADIOBUTTON ( RADIO_InsertMod, UserRulesEditorFrame::OnSortInsertChange )
 END_EVENT_TABLE()
 
 using namespace boss;
@@ -124,13 +127,17 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 				if (!hasAddedMessages)
 					text += "Add the following messages to \"" + Userlist[i].ruleObject + "\":\n";
 				text += "  " + Userlist[i].lines[j].object + "\n";
+				hasAddedMessages = true;
 			} else if (Userlist[i].lines[j].key == REPLACE) {
 				text += "Replace the messages attached to \"" + Userlist[i].ruleObject + "\" with:\n";
 				text += "  " + Userlist[i].lines[j].object + "\n";
 			}
 
 		}
-		RuleOrder.push_back(i);
+		if (Userlist[i].enabled)
+			RuleOrder.push_back(i);
+		else
+			RuleOrder.push_back(~i);
 		Rules.push_back(text);
 	}
 
@@ -145,7 +152,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	size = Masterlist.size();
 	wxArrayString MasterlistMods;
 	for (size_t i=0;i<size;i++) {
-		if (Masterlist[i].type == MOD)
+		//if (Masterlist[i].type == MOD)
 			MasterlistMods.push_back(Masterlist[i].name.string());
 	}
 
@@ -278,23 +285,50 @@ void UserRulesEditorFrame::OnSearchMasterlist(wxCommandEvent& event) {
 }
 
 void UserRulesEditorFrame::OnSelectModInMasterlist(wxCommandEvent& event) {
-
+	int i = event.GetSelection();
+	size_t size = Masterlist[i].messages.size();
+	string messages = "";
+	for (size_t j=0;j<size;j++)
+		messages += KeyToString(Masterlist[i].messages[j].key) + ": " + Masterlist[i].messages[j].data + "\n";
+	ModMessagesBox->SetValue(messages);
 }
 
 void UserRulesEditorFrame::OnSortingCheckToggle(wxCommandEvent& event) {
-
+	if (event.IsChecked()) {
+		SortModOption->Enable(true);
+		InsertModOption->Enable(true);
+		BeforeAfterChoiceBox->Enable(true);
+		SortModBox->Enable(true);
+		TopBottomChoiceBox->Enable(true);
+		InsertModBox->Enable(true);
+		SortModOption->SetValue(true);
+	} else {
+		SortModOption->Enable(false);
+		InsertModOption->Enable(false);
+		BeforeAfterChoiceBox->Enable(false);
+		SortModBox->Enable(false);
+		TopBottomChoiceBox->Enable(false);
+		InsertModBox->Enable(false);
+	}
 }
 
 void UserRulesEditorFrame::OnMessageAddToggle(wxCommandEvent& event) {
-
+	NewModMessagesBox->Enable(event.IsChecked());
+	ReplaceMessagesCheckBox->Enable(event.IsChecked());
 }
 
-void UserRulesEditorFrame::OnSortSelection(wxCommandEvent& event) {
-
-}
-
-void UserRulesEditorFrame::OnInsertSelection(wxCommandEvent& event) {
-
+void UserRulesEditorFrame::OnSortInsertChange(wxCommandEvent& event) {
+	if (event.GetId() == RADIO_SortMod) {
+		BeforeAfterChoiceBox->Enable(true);
+		SortModBox->Enable(true);
+		TopBottomChoiceBox->Enable(false);
+		InsertModBox->Enable(false);
+	} else {
+		TopBottomChoiceBox->Enable(true);
+		InsertModBox->Enable(true);
+		BeforeAfterChoiceBox->Enable(false);
+		SortModBox->Enable(false);
+	}
 }
 
 void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
@@ -306,17 +340,80 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 }
 
 void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
-
+	//int i = RulesList->GetSelection();
+	//Userlist.erase(Userlist.begin()+i);
 }
 
 void UserRulesEditorFrame::OnToggleRuleCheckbox(wxCommandEvent& event) {
-
+	unsigned int i = event.GetInt();
+	Userlist[i].enabled = RulesList->IsChecked(i);
 }
 
 void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
-
+	int i = RulesList->GetSelection();
+	string str = RulesList->GetString(i);
+	string messages = "";
+	SortModOption->Enable(true);
+	InsertModOption->Enable(true);
+	SortModsCheckBox->SetValue(false);
+	TopBottomChoiceBox->Enable(false);
+	InsertModBox->Enable(false);
+	BeforeAfterChoiceBox->Enable(false);
+	SortModBox->Enable(false);
+	AddMessagesCheckBox->SetValue(false);
+	NewModMessagesBox->Enable(false);
+	ReplaceMessagesCheckBox->Enable(false);
+	ReplaceMessagesCheckBox->SetValue(false);
+	RuleModBox->SetValue(Userlist[i].ruleObject);
+	SortModBox->SetValue("");
+	InsertModBox->SetValue("");
+	size_t size = Userlist[i].lines.size();
+	for (size_t j=0;j<size;j++) {
+		if (Userlist[i].lines[j].key == BEFORE || Userlist[i].lines[j].key == AFTER) {
+			SortModsCheckBox->SetValue(true);
+			SortModOption->SetValue(true);
+			SortModBox->Enable(true);
+			BeforeAfterChoiceBox->Enable(true);
+			SortModBox->SetValue(Userlist[i].lines[j].object);
+			if (Userlist[i].lines[j].key == BEFORE)
+				BeforeAfterChoiceBox->SetSelection(0);
+			else
+				BeforeAfterChoiceBox->SetSelection(1);
+		} else if (Userlist[i].lines[j].key == TOP || Userlist[i].lines[j].key == BOTTOM) {
+			SortModsCheckBox->SetValue(true);
+			InsertModOption->SetValue(true);
+			TopBottomChoiceBox->Enable(true);
+			InsertModBox->Enable(true);
+			InsertModBox->SetValue(Userlist[i].lines[j].object);
+			if (Userlist[i].lines[j].key == TOP)
+				TopBottomChoiceBox->SetSelection(0);
+			else
+				TopBottomChoiceBox->SetSelection(1);
+		} else if (Userlist[i].lines[j].key == APPEND || Userlist[i].lines[j].key == REPLACE) {
+			AddMessagesCheckBox->SetValue(true);
+			NewModMessagesBox->Enable(true);
+			ReplaceMessagesCheckBox->Enable(true);
+			if (Userlist[i].lines[j].key == REPLACE)
+				ReplaceMessagesCheckBox->SetValue(true);
+			messages += Userlist[i].lines[j].object + "\n";
+		}
+	}
+	NewModMessagesBox->SetValue(messages);
 }
 
 void UserRulesEditorFrame::OnRuleOrderChange(wxCommandEvent& event) {
-
+	int i = RulesList->GetSelection();
+	if (event.GetId() == BUTTON_MoveRuleUp && i != 0) {
+		if (!RulesList->MoveCurrentUp())
+			LOG_ERROR("Could not move rule %i up.", i);
+		rule selectedRule = Userlist[i];
+		Userlist.erase(Userlist.begin()+i);
+		Userlist.insert(Userlist.begin()+i-1,selectedRule);
+	} else if (event.GetId() == BUTTON_MoveRuleDown && i != Userlist.size()-1) {
+		if (!RulesList->MoveCurrentDown())
+			LOG_ERROR("Could not move rule %i down.", i);
+		rule selectedRule = Userlist[i];
+		Userlist.erase(Userlist.begin()+i);
+		Userlist.insert(Userlist.begin()+i+1,selectedRule);
+	}
 }
