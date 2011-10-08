@@ -104,7 +104,7 @@ BOSS_API uint32_t GetVersionString (const uint8_t ** bossVersionStr);
 // Explicitly manage database lifetime. Allows clients to free memory when
 // they want/need to.
 BOSS_API uint32_t CreateBossDb  (boss_db * db);
-BOSS_API void     DestroyBossDb (boss_db db);
+BOSS_API void DestroyBossDb (boss_db db);
 
 
 ///////////////////////////////////
@@ -163,7 +163,7 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName,
 // plus the Tag suggestions themselves, in order to create the Wrye Bash taglist.
 // outputFile is the path to use for output. If outputFile already exists, it will
 // only be overwritten if overwrite is true.
-BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, bool overwrite);
+BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const bool overwrite);
 
 
 #ifdef __cplusplus

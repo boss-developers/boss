@@ -21,8 +21,21 @@ namespace boss {
 	using namespace std;
 	using boost::spirit::qi::phrase_parse;
 
+	//UTF-8 Validator
+	bool ValidateUTF8File(const fs::path file) {
+		ifstream ifs(file.c_str());
+
+		istreambuf_iterator<char> it(ifs.rdbuf());
+		istreambuf_iterator<char> eos;
+
+		if (!utf8::is_valid(it, eos))
+			return false;
+		else
+			return true;
+	}
+
 	//Parses userlist into the given data structure.
-	BOSS_COMMON bool parseUserlist(const fs::path file, vector<rule>& ruleList) {
+	BOSS_COMMON_EXP bool parseUserlist(const fs::path file, vector<rule>& ruleList) {
 		Skipper skipper;
 		userlist_grammar grammar;
 		string::const_iterator begin, end;
@@ -36,8 +49,7 @@ namespace boss {
 				throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 			userlist_file.close();
 			return true;
-		}
-		else if (!ValidateUTF8File(file))
+		} else if (!ValidateUTF8File(file))
 			throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, file.string());
 
 		fileToBuffer(file,contents);
@@ -54,7 +66,7 @@ namespace boss {
 	}
 
 	//Parses the given masterlist into the given data structure. Also works for the modlist.
-	BOSS_COMMON bool parseMasterlist(const fs::path file, vector<item>& modList) {
+	BOSS_COMMON_EXP bool parseMasterlist(const fs::path file, vector<item>& modList) {
 		Skipper skipper;
 		modlist_grammar grammar;
 		string::const_iterator begin, end;
@@ -79,7 +91,7 @@ namespace boss {
 	}
 
 	//Parses the ini, applying its settings.
-	BOSS_COMMON bool parseIni(const fs::path file) {
+	BOSS_COMMON_EXP bool parseIni(const fs::path file) {
 		Ini_Skipper skipper;
 		ini_grammar grammar;
 		string::const_iterator begin, end;
@@ -99,7 +111,7 @@ namespace boss {
 	}
 
 	//Reads an entire file into a string buffer.
-	BOSS_COMMON void fileToBuffer(const fs::path file, string& buffer) {
+	void fileToBuffer(const fs::path file, string& buffer) {
 		ifstream ifile(file.c_str());
 		if (ifile.fail())
 			return;
@@ -109,18 +121,5 @@ namespace boss {
 			istream_iterator<char>(),
 			back_inserter(buffer)
 		);
-	}
-
-	//UTF-8 Validator
-	BOSS_COMMON bool ValidateUTF8File(const fs::path file) {
-		ifstream ifs(file.c_str());
-
-		istreambuf_iterator<char> it(ifs.rdbuf());
-		istreambuf_iterator<char> eos;
-
-		if (!utf8::is_valid(it, eos))
-			return false;
-		else
-			return true;
 	}
 }

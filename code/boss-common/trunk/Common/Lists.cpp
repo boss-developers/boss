@@ -22,14 +22,14 @@ namespace boss {
 	using namespace std;
 	using boost::algorithm::to_lower_copy;
 
-	BOSS_COMMON vector<string> userlistErrorBuffer;  //Holds any error messages generated during parsing for printing later.
-	BOSS_COMMON vector<string> masterlistErrorBuffer;  //Holds any error messages generated during parsing for printing later.
-	BOSS_COMMON vector<string> iniErrorBuffer;  //Holds any error messages generated during parsing for printing later.
+	BOSS_COMMON_EXP vector<string> userlistErrorBuffer;  //Holds any error messages generated during parsing for printing later.
+	BOSS_COMMON_EXP vector<string> masterlistErrorBuffer;  //Holds any error messages generated during parsing for printing later.
+	BOSS_COMMON_EXP vector<string> iniErrorBuffer;  //Holds any error messages generated during parsing for printing later.
 
-	BOSS_COMMON vector<message> globalMessageBuffer;  //Holds any global messages from the masterlist to be printed in BOSS.
+	vector<message> globalMessageBuffer;  //Holds any global messages from the masterlist to be printed in BOSS.
 
 	//Find a mod by name. Will also find the starting position of a group.
-	BOSS_COMMON size_t GetModPos(const vector<item> list, const string filename) {
+	BOSS_COMMON_EXP size_t GetModPos(const vector<item> list, const string filename) {
 		size_t size = list.size();
 		for (size_t i=0; i<size; i++) {
 			if (Tidy(list[i].name.string()) == Tidy(filename))  //Look for exact match.
@@ -41,7 +41,7 @@ namespace boss {
 	}
 
 	//Find the end of a group by name.
-	BOSS_COMMON size_t GetGroupEndPos(const vector<item> list, const string groupname) {
+	size_t GetGroupEndPos(const vector<item> list, const string groupname) {
 		size_t size = list.size();
 		for (size_t i=0; i<size; i++) {
 			if (list[i].type == ENDGROUP && Tidy(list[i].name.string()) == Tidy(groupname)) {
@@ -68,7 +68,7 @@ namespace boss {
 
 	//Build modlist (the one that gets saved to file, not the masterlist).
 	//Adds mods in directory to modlist in date order (AKA load order).
-	BOSS_COMMON void BuildModlist(vector<item> &list) {
+	BOSS_COMMON_EXP void BuildModlist(vector<item> &list) {
 		if (fs::exists(data_path)) {
 			LOG_DEBUG("Reading user mods...");
 			for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
@@ -91,7 +91,7 @@ namespace boss {
 	//Save the modlist (not masterlist) to a file, printing out all the information in the data structure.
 	//This will likely just be a list of filenames, if it's the modlist.
 	//However, if used on the masterlist, could prove useful for debugging the parser.
-	BOSS_COMMON void SaveModlist(const vector<item> list, const fs::path file) {
+	BOSS_COMMON_EXP void SaveModlist(const vector<item> list, const fs::path file) {
 		ofstream ofile;
 		//Back up file if it already exists.
 		try {
@@ -133,7 +133,7 @@ namespace boss {
 
 	//Returns a string representation of the given key, for use in output messages.
 	//Only really required for userlist keywords.
-	BOSS_COMMON string KeyToString(const keyType key) {
+	BOSS_COMMON_EXP string KeyToString(const keyType key) {
 		if (key == ADD)
 			return "add";
 		else if (key == OVERRIDE)
@@ -172,7 +172,7 @@ namespace boss {
 
 	//Returns a keyType representation of the given key string.
 	//Only really required for masterlist message keys.
-	keyType StringToKey(string key) {
+	BOSS_COMMON_EXP keyType StringToKey(string key) {
 		boost::algorithm::to_lower(key);
 		if (key == "add")
 			return ADD;

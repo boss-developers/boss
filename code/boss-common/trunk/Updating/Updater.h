@@ -23,13 +23,13 @@
 namespace boss {
 	using namespace std;
 
-	BOSS_COMMON enum installType {  //Possible types of install the user has.
+	BOSS_COMMON_EXP enum installType {  //Possible types of install the user has.
 		MANUAL,
 		INSTALLER,
 		MASTERLIST
 	};
 
-	BOSS_COMMON struct fileInfo {  //Holds the information for files to be downloaded.
+	struct fileInfo {  //Holds the information for files to be downloaded.
 		string name;
 		unsigned int crc;
 
@@ -37,7 +37,7 @@ namespace boss {
 		fileInfo(string str);
 	};
 
-	BOSS_COMMON struct uiStruct {
+	struct uiStruct {
 		void *p;
 		bool isGUI;
 		size_t fileIndex;
@@ -46,17 +46,17 @@ namespace boss {
 		uiStruct(void *GUIpoint);
 	};
 
-	BOSS_COMMON extern vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
+	BOSS_COMMON_IMP extern vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
 
 	////////////////////////
 	// General Functions
 	////////////////////////
 
 	//Checks if an Internet connection is present.
-	BOSS_COMMON bool CheckConnection();
+	BOSS_COMMON_EXP bool CheckConnection();
 
 	//Cleans up after the user cancels a download.
-	BOSS_COMMON void CleanUp();
+	BOSS_COMMON_EXP void CleanUp();
 
 
 	////////////////////////
@@ -64,7 +64,7 @@ namespace boss {
 	////////////////////////
 
 	//Updates the local masterlist to the latest available online.
-	BOSS_COMMON void UpdateMasterlist(uiStruct ui, unsigned int& localRevision, string& localDate, unsigned int& remoteRevision, string& remoteDate);
+	BOSS_COMMON_EXP void UpdateMasterlist(uiStruct ui, unsigned int& localRevision, string& localDate, unsigned int& remoteRevision, string& remoteDate);
 
 
 	////////////////////////
@@ -72,9 +72,9 @@ namespace boss {
 	////////////////////////
 
 	//Checks if a new release of BOSS is available or not.
-	BOSS_COMMON string IsBOSSUpdateAvailable();
+	BOSS_COMMON_EXP string IsBOSSUpdateAvailable();
 
 	//Downloads and installs a BOSS update.
-	BOSS_COMMON vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const int updateType, const string updateVersion);
+	BOSS_COMMON_EXP vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const int updateType, const string updateVersion);
 }
 #endif

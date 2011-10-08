@@ -29,51 +29,51 @@ namespace boss {
 	using boost::format;
 
 	//Default filter options.
-	BOSS_COMMON extern bool UseDarkColourScheme;
-	BOSS_COMMON extern bool HideVersionNumbers;
-	BOSS_COMMON extern bool HideGhostedLabel;
-	BOSS_COMMON extern bool HideChecksums;
-	BOSS_COMMON extern bool HideMessagelessMods;
-	BOSS_COMMON extern bool HideGhostedMods;
-	BOSS_COMMON extern bool HideCleanMods;
-	BOSS_COMMON extern bool HideRuleWarnings;
-	BOSS_COMMON extern bool HideAllModMessages;
-	BOSS_COMMON extern bool HideNotes;
-	BOSS_COMMON extern bool HideBashTagSuggestions;
-	BOSS_COMMON extern bool HideRequirements;
-	BOSS_COMMON extern bool HideIncompatibilities;
-	BOSS_COMMON extern bool HideDoNotCleanMessages;
+	BOSS_COMMON_EXP extern bool UseDarkColourScheme;
+	BOSS_COMMON_EXP extern bool HideVersionNumbers;
+	BOSS_COMMON_EXP extern bool HideGhostedLabel;
+	BOSS_COMMON_EXP extern bool HideChecksums;
+	BOSS_COMMON_EXP extern bool HideMessagelessMods;
+	BOSS_COMMON_EXP extern bool HideGhostedMods;
+	BOSS_COMMON_EXP extern bool HideCleanMods;
+	BOSS_COMMON_EXP extern bool HideRuleWarnings;
+	BOSS_COMMON_EXP extern bool HideAllModMessages;
+	BOSS_COMMON_EXP extern bool HideNotes;
+	BOSS_COMMON_EXP extern bool HideBashTagSuggestions;
+	BOSS_COMMON_EXP extern bool HideRequirements;
+	BOSS_COMMON_EXP extern bool HideIncompatibilities;
+	BOSS_COMMON_EXP extern bool HideDoNotCleanMessages;
 
 	//Default CSS.
-	BOSS_COMMON extern string CSSBody;
-	BOSS_COMMON extern string CSSFilters;
-	BOSS_COMMON extern string CSSFiltersList;
-	BOSS_COMMON extern string CSSTitle;
-	BOSS_COMMON extern string CSSCopyright;
-	BOSS_COMMON extern string CSSSections;
-	BOSS_COMMON extern string CSSSectionTitle;
-	BOSS_COMMON extern string CSSSectionPlusMinus;
-	BOSS_COMMON extern string CSSLastSection;
-	BOSS_COMMON extern string CSSTable;
-	BOSS_COMMON extern string CSSList;
-	BOSS_COMMON extern string CSSListItem;
-	BOSS_COMMON extern string CSSSubList;
-	BOSS_COMMON extern string CSSCheckbox;
-	BOSS_COMMON extern string CSSBlockquote;
-	BOSS_COMMON extern string CSSError;
-	BOSS_COMMON extern string CSSWarning;
-	BOSS_COMMON extern string CSSSuccess;
-	BOSS_COMMON extern string CSSVersion;
-	BOSS_COMMON extern string CSSGhost;
-	BOSS_COMMON extern string CSSCRC;
-	BOSS_COMMON extern string CSSTagPrefix;
-	BOSS_COMMON extern string CSSDirty;
-	BOSS_COMMON extern string CSSQuotedMessage;
-	BOSS_COMMON extern string CSSMod;
-	BOSS_COMMON extern string CSSTag;
-	BOSS_COMMON extern string CSSNote;
-	BOSS_COMMON extern string CSSRequirement;
-	BOSS_COMMON extern string CSSIncompatibility;
+	BOSS_COMMON_EXP extern string CSSBody;
+	BOSS_COMMON_EXP extern string CSSFilters;
+	BOSS_COMMON_EXP extern string CSSFiltersList;
+	BOSS_COMMON_EXP extern string CSSTitle;
+	BOSS_COMMON_EXP extern string CSSCopyright;
+	BOSS_COMMON_EXP extern string CSSSections;
+	BOSS_COMMON_EXP extern string CSSSectionTitle;
+	BOSS_COMMON_EXP extern string CSSSectionPlusMinus;
+	BOSS_COMMON_EXP extern string CSSLastSection;
+	BOSS_COMMON_EXP extern string CSSTable;
+	BOSS_COMMON_EXP extern string CSSList;
+	BOSS_COMMON_EXP extern string CSSListItem;
+	BOSS_COMMON_EXP extern string CSSSubList;
+	BOSS_COMMON_EXP extern string CSSCheckbox;
+	BOSS_COMMON_EXP extern string CSSBlockquote;
+	BOSS_COMMON_EXP extern string CSSError;
+	BOSS_COMMON_EXP extern string CSSWarning;
+	BOSS_COMMON_EXP extern string CSSSuccess;
+	BOSS_COMMON_EXP extern string CSSVersion;
+	BOSS_COMMON_EXP extern string CSSGhost;
+	BOSS_COMMON_EXP extern string CSSCRC;
+	BOSS_COMMON_EXP extern string CSSTagPrefix;
+	BOSS_COMMON_EXP extern string CSSDirty;
+	BOSS_COMMON_EXP extern string CSSQuotedMessage;
+	BOSS_COMMON_EXP extern string CSSMod;
+	BOSS_COMMON_EXP extern string CSSTag;
+	BOSS_COMMON_EXP extern string CSSNote;
+	BOSS_COMMON_EXP extern string CSSRequirement;
+	BOSS_COMMON_EXP extern string CSSIncompatibility;
 	
 	//Parsing error message format.
 	static format MasterlistParsingErrorFormat("<p><span class='error'>Masterlist Parsing Error: Expected a %1% at:</span>"
@@ -100,22 +100,22 @@ namespace boss {
 	void ShowMessage(string& buffer, message currentMessage);
 
 	//Prints ouptut with formatting according to format.
-	BOSS_COMMON void Output(string text);
+	BOSS_COMMON_EXP void Output(string text);
 	
 	//Escapes HTML special characters.
-	BOSS_COMMON string EscapeHTMLSpecial(string text);
+	BOSS_COMMON_EXP string EscapeHTMLSpecial(string text);
 
 	//Prints HTML header.
-	BOSS_COMMON void OutputHeader();
+	BOSS_COMMON_EXP void OutputHeader();
 
 	//Prints HTML footer (ie. </body> and </html> tags).
-	BOSS_COMMON void OutputFooter();
+	BOSS_COMMON_EXP void OutputFooter();
 
 	//Generate a default BOSS.ini
-	BOSS_COMMON bool GenerateIni();
+	BOSS_COMMON_EXP bool GenerateIni();
 
 	//Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
-	BOSS_COMMON string IntToString(const unsigned int n);
+	BOSS_COMMON_EXP string IntToString(const unsigned int n);
 
 	//Converts an integer to a hex string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 	string IntToHexString(const unsigned int n);

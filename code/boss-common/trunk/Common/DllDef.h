@@ -14,11 +14,13 @@
 
 //#include <windows.h>
 
-/*
-#if defined(_WIN32) || defined(_WIN64)
-#   define BOSS_COMMON __declspec(dllexport)
-#else*/
-#   define BOSS_COMMON
+
+//#if defined(_WIN32) || defined(_WIN64)
+//#   define BOSS_COMMON_EXP __declspec(dllexport)
+//#	define BOSS_COMMON_IMP __declspec(dllimport)
+//#else
+#   define BOSS_COMMON_EXP
+#	define BOSS_COMMON_IMP
 //#endif
 
 #endif

@@ -25,18 +25,15 @@ namespace boss {
 	namespace fs = boost::filesystem;
 
 	//Parses userlist into the given data structure.
-	BOSS_COMMON bool parseUserlist(const fs::path file, vector<rule>& ruleList);
+	BOSS_COMMON_EXP bool parseUserlist(const fs::path file, vector<rule>& ruleList);
 
 	//Parses the given masterlist into the given data structure. Also works for the modlist.
-	BOSS_COMMON bool parseMasterlist(const fs::path file, vector<item>& modList);
+	BOSS_COMMON_EXP bool parseMasterlist(const fs::path file, vector<item>& modList);
 
 	//Parses the ini, applying its settings.
-	BOSS_COMMON bool parseIni(const fs::path file);
+	BOSS_COMMON_EXP bool parseIni(const fs::path file);
 
 	//Reads an entire file into a string buffer.
-	BOSS_COMMON void fileToBuffer(const fs::path file, string& buffer);
-
-	//UTF-8 Validator
-	BOSS_COMMON bool ValidateUTF8File(const fs::path file);
+	void fileToBuffer(const fs::path file, string& buffer);
 }
 #endif

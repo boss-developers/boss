@@ -21,51 +21,51 @@ namespace boss {
 	using boost::algorithm::replace_first;
 
 	//Default filter options.
-	BOSS_COMMON bool UseDarkColourScheme    = false;
-	BOSS_COMMON bool HideVersionNumbers     = false;
-	BOSS_COMMON bool HideGhostedLabel       = false;
-	BOSS_COMMON bool HideChecksums          = false;
-	BOSS_COMMON bool HideMessagelessMods    = false;
-	BOSS_COMMON bool HideGhostedMods        = false;
-	BOSS_COMMON bool HideCleanMods			= false;
-	BOSS_COMMON bool HideRuleWarnings       = false;
-	BOSS_COMMON bool HideAllModMessages     = false;
-	BOSS_COMMON bool HideNotes              = false;
-	BOSS_COMMON bool HideBashTagSuggestions = false;
-	BOSS_COMMON bool HideRequirements       = false;
-	BOSS_COMMON bool HideIncompatibilities  = false;
-	BOSS_COMMON bool HideDoNotCleanMessages	= false;
+	BOSS_COMMON_EXP bool UseDarkColourScheme    = false;
+	BOSS_COMMON_EXP bool HideVersionNumbers     = false;
+	BOSS_COMMON_EXP bool HideGhostedLabel       = false;
+	BOSS_COMMON_EXP bool HideChecksums          = false;
+	BOSS_COMMON_EXP bool HideMessagelessMods    = false;
+	BOSS_COMMON_EXP bool HideGhostedMods        = false;
+	BOSS_COMMON_EXP bool HideCleanMods			= false;
+	BOSS_COMMON_EXP bool HideRuleWarnings       = false;
+	BOSS_COMMON_EXP bool HideAllModMessages     = false;
+	BOSS_COMMON_EXP bool HideNotes              = false;
+	BOSS_COMMON_EXP bool HideBashTagSuggestions = false;
+	BOSS_COMMON_EXP bool HideRequirements       = false;
+	BOSS_COMMON_EXP bool HideIncompatibilities  = false;
+	BOSS_COMMON_EXP bool HideDoNotCleanMessages	= false;
 
 	//Default CSS.
-	BOSS_COMMON string CSSBody				= "font-family:Calibri,Arial,sans-serifs;";
-	BOSS_COMMON string CSSFilters			= "border:1px gray dashed;background:#F5F5F5;padding:.3em;display:table;";
-	BOSS_COMMON string CSSFiltersList		= "display:inline-block;padding:.2em .5em;white-space:nowrap;margin:0;width:200px;";
-	BOSS_COMMON string CSSTitle				= "font-size:2.4em;font-weight:700;text-align:center;margin-bottom:.2em;";
-	BOSS_COMMON string CSSCopyright			= "text-align:center;";
-	BOSS_COMMON string CSSSections			= "margin-bottom:3em;";
-	BOSS_COMMON string CSSSectionTitle		= "cursor:pointer;";
-	BOSS_COMMON string CSSSectionPlusMinus	= "display:inline-block;position:relative;top:.05em; font-size:1.3em;width:.6em;margin-right:.1em;";
-	BOSS_COMMON string CSSLastSection		= "text-align:center;cursor:default;";
-	BOSS_COMMON string CSSTable				= "padding:0 .5em;";
-	BOSS_COMMON string CSSList				= "list-style:none;padding-left:0;";
-	BOSS_COMMON string CSSListItem			= "margin-left:0;margin-bottom:1em;";
-	BOSS_COMMON string CSSSubList			= "margin-top:.5em;padding-left:2.5em;margin-bottom:2em;";
-	BOSS_COMMON string CSSCheckbox			= "position:relative;top:.15em;margin-right:.5em;";
-	BOSS_COMMON string CSSBlockquote		= "font-style:italic;";
-	BOSS_COMMON string CSSError				= "background:red;color:#FFF;display:table;padding:0 4px;";
-	BOSS_COMMON string CSSWarning			= "background:orange;color:#FFF;display:table;padding:0 4px;";
-	BOSS_COMMON string CSSSuccess			= "color:green;";
-	BOSS_COMMON string CSSVersion			= "color:#6394F8;margin-right:1em;padding:0 4px;";
-	BOSS_COMMON string CSSGhost				= "color:#888;margin-right:1em;padding:0 4px;";
-	BOSS_COMMON string CSSCRC				= "color:#BC8923;margin-right:1em;padding:0 4px;";
-	BOSS_COMMON string CSSTagPrefix			= "color:#CD5555;";
-	BOSS_COMMON string CSSDirty				= "color:#960;";
-	BOSS_COMMON string CSSQuotedMessage		= "color:gray;";
-	BOSS_COMMON string CSSMod				= "margin-right:1em;";
-	BOSS_COMMON string CSSTag				= "";
-	BOSS_COMMON string CSSNote				= "";
-	BOSS_COMMON string CSSRequirement		= "";
-	BOSS_COMMON string CSSIncompatibility	= "";
+	BOSS_COMMON_EXP string CSSBody				= "font-family:Calibri,Arial,sans-serifs;";
+	BOSS_COMMON_EXP string CSSFilters			= "border:1px gray dashed;background:#F5F5F5;padding:.3em;display:table;";
+	BOSS_COMMON_EXP string CSSFiltersList		= "display:inline-block;padding:.2em .5em;white-space:nowrap;margin:0;width:200px;";
+	BOSS_COMMON_EXP string CSSTitle				= "font-size:2.4em;font-weight:700;text-align:center;margin-bottom:.2em;";
+	BOSS_COMMON_EXP string CSSCopyright			= "text-align:center;";
+	BOSS_COMMON_EXP string CSSSections			= "margin-bottom:3em;";
+	BOSS_COMMON_EXP string CSSSectionTitle		= "cursor:pointer;";
+	BOSS_COMMON_EXP string CSSSectionPlusMinus	= "display:inline-block;position:relative;top:.05em; font-size:1.3em;width:.6em;margin-right:.1em;";
+	BOSS_COMMON_EXP string CSSLastSection		= "text-align:center;cursor:default;";
+	BOSS_COMMON_EXP string CSSTable				= "padding:0 .5em;";
+	BOSS_COMMON_EXP string CSSList				= "list-style:none;padding-left:0;";
+	BOSS_COMMON_EXP string CSSListItem			= "margin-left:0;margin-bottom:1em;";
+	BOSS_COMMON_EXP string CSSSubList			= "margin-top:.5em;padding-left:2.5em;margin-bottom:2em;";
+	BOSS_COMMON_EXP string CSSCheckbox			= "position:relative;top:.15em;margin-right:.5em;";
+	BOSS_COMMON_EXP string CSSBlockquote		= "font-style:italic;";
+	BOSS_COMMON_EXP string CSSError				= "background:red;color:#FFF;display:table;padding:0 4px;";
+	BOSS_COMMON_EXP string CSSWarning			= "background:orange;color:#FFF;display:table;padding:0 4px;";
+	BOSS_COMMON_EXP string CSSSuccess			= "color:green;";
+	BOSS_COMMON_EXP string CSSVersion			= "color:#6394F8;margin-right:1em;padding:0 4px;";
+	BOSS_COMMON_EXP string CSSGhost				= "color:#888;margin-right:1em;padding:0 4px;";
+	BOSS_COMMON_EXP string CSSCRC				= "color:#BC8923;margin-right:1em;padding:0 4px;";
+	BOSS_COMMON_EXP string CSSTagPrefix			= "color:#CD5555;";
+	BOSS_COMMON_EXP string CSSDirty				= "color:#960;";
+	BOSS_COMMON_EXP string CSSQuotedMessage		= "color:gray;";
+	BOSS_COMMON_EXP string CSSMod				= "margin-right:1em;";
+	BOSS_COMMON_EXP string CSSTag				= "";
+	BOSS_COMMON_EXP string CSSNote				= "";
+	BOSS_COMMON_EXP string CSSRequirement		= "";
+	BOSS_COMMON_EXP string CSSIncompatibility	= "";
 
 	void ShowMessage(string& buffer, message currentMessage) {
 		currentMessage.data = EscapeHTMLSpecial(currentMessage.data);
@@ -113,7 +113,7 @@ namespace boss {
 	}
 
 	//Prints header if format is HTML, else nothing.
-	BOSS_COMMON void OutputHeader() {
+	BOSS_COMMON_EXP void OutputHeader() {
 		if (log_format == "html") {
 			bosslog << "<!DOCTYPE html>"<<endl<<"<meta charset='utf-8'>"<<endl
 				<< "<title>BOSS Log</title>"<<endl<<"<style>"
@@ -151,7 +151,7 @@ namespace boss {
 	}
 
 	//Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
-	BOSS_COMMON string IntToString(const unsigned int n) {
+	BOSS_COMMON_EXP string IntToString(const unsigned int n) {
 		string out;
 		back_insert_iterator<string> sink(out);
 		karma::generate(sink,karma::upper[karma::uint_],n);
@@ -175,7 +175,7 @@ namespace boss {
 	}
 
 	//Prints ouptut with formatting according to output format.
-	BOSS_COMMON void Output(string text) {
+	BOSS_COMMON_EXP void Output(string text) {
 		if (log_format == "text") {
 			//Yes. This really is as horrific as it looks. It should be only temporary though.
 			replace_first(text, "&copy;", "(c)");
@@ -241,7 +241,7 @@ namespace boss {
 	}
 	
 	//Escapes HTML special characters.
-	BOSS_COMMON string EscapeHTMLSpecial(string text) {
+	BOSS_COMMON_EXP string EscapeHTMLSpecial(string text) {
 		if (log_format == "html") {
 			replace_all(text, "&", "&amp;");
 			replace_all(text, "\"", "&quot;");
@@ -252,7 +252,7 @@ namespace boss {
 		return text;
 	}
 
-	BOSS_COMMON void OutputFooter() {
+	BOSS_COMMON_EXP void OutputFooter() {
 		if (log_format == "html") {
 			bosslog << "<script>"
 				<< "function toggleSectionDisplay(h){if(h.nextSibling.style.display=='none')"
@@ -333,7 +333,7 @@ namespace boss {
 	}
 
 	//Generate a default BOSS.ini
-	BOSS_COMMON bool GenerateIni() {
+	BOSS_COMMON_EXP bool GenerateIni() {
 		ofstream ini(ini_path.c_str(), ios_base::trunc);
 		if (ini.fail())
 			return false;

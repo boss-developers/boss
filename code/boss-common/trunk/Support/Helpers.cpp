@@ -34,7 +34,7 @@ namespace boss {
 	using namespace boost;
 
 	//Changes uppercase to lowercase and removes preceding and trailing spaces.	
-	BOSS_COMMON string Tidy(string filename) {
+	BOSS_COMMON_EXP string Tidy(string filename) {
 		boost::algorithm::trim(filename);
 		boost::algorithm::to_lower(filename);
 		return filename;

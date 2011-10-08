@@ -72,7 +72,7 @@ namespace boss {
 		fileIndex = 0;
 	}
 
-	BOSS_COMMON vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
+	BOSS_COMMON_EXP vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
 	string filesURL;				//The URL at which the updated files are found.
 	int ans;						//The answer to the cancel download confirmation message. 
 
@@ -201,7 +201,7 @@ namespace boss {
 	}
 
 	//Checks if an Internet connection is present.
-	BOSS_COMMON bool CheckConnection() {
+	BOSS_COMMON_EXP bool CheckConnection() {
 		CURL *curl;									//cURL handle
 		char errbuff[CURL_ERROR_SIZE];
 		CURLcode ret;
@@ -318,7 +318,7 @@ namespace boss {
 	}
 
 	//Cleans up after the user cancels a download.
-	BOSS_COMMON void CleanUp() {
+	BOSS_COMMON_EXP void CleanUp() {
 		//Iterate through vector of updated files. Delete any that exist locally.
 		size_t size = updatedFiles.size();
 		for (size_t i=0;i<size;i++) {
@@ -492,7 +492,7 @@ namespace boss {
 	}
 
 	//Updates the local masterlist to the latest available online.
-	BOSS_COMMON void UpdateMasterlist(uiStruct ui, unsigned int& localRevision, string& localDate, unsigned int& remoteRevision, string& remoteDate) {							//cURL handle
+	BOSS_COMMON_EXP void UpdateMasterlist(uiStruct ui, unsigned int& localRevision, string& localDate, unsigned int& remoteRevision, string& remoteDate) {							//cURL handle
 		string buffer,newline;		//A bunch of strings.
 		ifstream mlist;								//Input stream.
 		ofstream out;								//Output stream.
@@ -588,7 +588,7 @@ namespace boss {
 	}
 
 	//Checks if a new release of BOSS is available or not.
-	BOSS_COMMON string IsBOSSUpdateAvailable() {
+	BOSS_COMMON_EXP string IsBOSSUpdateAvailable() {
 		string remoteVersionStr, proxy_str;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
@@ -618,7 +618,7 @@ namespace boss {
 	}
 
 	//Downloads and installs a BOSS update.
-	BOSS_COMMON vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const int updateType, const string updateVersion) {
+	BOSS_COMMON_EXP vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const int updateType, const string updateVersion) {
 		FetchUpdateFileList(updateType, updateVersion);
 		DownloadFiles(ui, updateType);
 		return InstallFiles(updateType);

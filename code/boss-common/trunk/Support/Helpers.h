@@ -28,7 +28,7 @@ namespace boss {
 	//////////////////////////////////////////////////////////////////////////
 
 	//Changes uppercase to lowercase and removes preceding and trailing spaces.	
-	BOSS_COMMON string Tidy(string text);
+	BOSS_COMMON_EXP string Tidy(string text);
 
 	//Checks if a given object is an esp or an esm.
 	bool IsPlugin(string object);

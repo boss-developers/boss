@@ -27,7 +27,7 @@ using boost::lexical_cast;
 ////////////////////////
 
 // Version string.
-	static const string boss_version = IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH);
+static const string boss_version = IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH);
 
 // Structure for a single plugin's data.
 struct modEntry {
@@ -104,7 +104,7 @@ BOSS_API bool IsCompatibleVersion (uint32_t bossVersionMajor, uint32_t bossVersi
 // The string exists for the lifetime of the library.
 BOSS_API uint32_t GetVersionString (const uint8_t ** bossVersionStr) {
 	//Check for valid args.
-	if (bossVersionStr == 0)
+	if (bossVersionStr == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 
 	*bossVersionStr = reinterpret_cast<const uint8_t *>(boss_version.c_str());
@@ -116,36 +116,47 @@ BOSS_API uint32_t GetVersionString (const uint8_t ** bossVersionStr) {
 // Lifecycle Management Functions
 ////////////////////////////////////
 
+void DestroyPointers(boss_db db) {
+	if (db->extTagMap != NULL)
+		free(db->extTagMap);
+	if (db->extAddedTagIds != NULL)
+		free(db->extAddedTagIds);
+	if (db->extRemovedTagIds != NULL)
+		free(db->extRemovedTagIds);
+	if (db->extMessage != NULL)
+		free(const_cast<uint8_t*>(db->extMessage));
+}
+
+void InitPointers(boss_db db) {
+	db->extTagMap = NULL;
+	db->extAddedTagIds = NULL;
+	db->extRemovedTagIds = NULL;
+	db->extMessage = NULL;
+}
+
 // Explicitly manage database lifetime. Allows clients to free memory when
 // they want/need to.
 BOSS_API uint32_t CreateBossDb  (boss_db * db) {
-	//Check for valid args.
-	if (db == 0)
+	if (db == NULL)  //Check for valid args.
 		return BOSS_API_ERROR_INVALID_ARGS;
 
 	boss_db retVal = new _boss_db_int;
-	if (retVal == 0)
+	if (retVal == NULL)
 		return BOSS_API_ERROR_NO_MEM;
+	InitPointers(retVal);
 	*db = retVal;
 	return BOSS_API_ERROR_OK;
 }
 
 BOSS_API void     DestroyBossDb (boss_db db) {
-	//Check for valid args.
-	if (db != 0) {
-		//Free memory at pointers stored in structure.
-		if (db->extTagMap != 0)
-			free(db->extTagMap);
-		if (db->extAddedTagIds != 0)
-			free(db->extAddedTagIds);
-		if (db->extRemovedTagIds != 0)
-			free(db->extRemovedTagIds);
-		if (db->extMessage != 0)
-			free(const_cast<uint8_t*>(db->extMessage));
+	if (db == NULL)
+		return;
+
+	//Free memory at pointers stored in structure.
+	DestroyPointers(db);
 	
-		//Now delete DB.
-		delete db;
-	}
+	//Now delete DB.
+	delete db;
 }
 
 
@@ -180,7 +191,7 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	uint32_t currentUID = 0;
 	
 	//Check for valid args.
-	if (db == 0 || masterlistPath == 0 || userlistPath == 0 || dataPath == 0)
+	if (db == NULL || masterlistPath == NULL || userlistPath == NULL || dataPath == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 	
 	//PATH SETTING
@@ -188,6 +199,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
 	userlist_path = fs::path(reinterpret_cast<const char *>(userlistPath));	
 
+	if (data_path.empty() || masterlist_path.empty())
+		return BOSS_API_ERROR_INVALID_ARGS;
 
 	//PARSING - Masterlist
 	try {
@@ -205,19 +218,21 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	
 
 	//PARSING - Userlist
-	try {
-		bool parsed = parseUserlist(userlist_path,userlist);
-		if (!parsed) {
-			userlist.clear();  //If userlist has parsing errors, empty it so no rules are applied.
-			return BOSS_API_ERROR_PARSE_FAIL;
+	if (!userlist_path.empty()) {
+		try {
+			bool parsed = parseUserlist(userlist_path,userlist);
+			if (!parsed) {
+				userlist.clear();  //If userlist has parsing errors, empty it so no rules are applied.
+				return BOSS_API_ERROR_PARSE_FAIL;
+			}
+		} catch (boss_error e) {
+			if (e.getCode() == BOSS_ERROR_FILE_NOT_FOUND)
+				return BOSS_API_ERROR_FILE_NOT_FOUND;
+			else if (e.getCode() == BOSS_ERROR_FILE_NOT_UTF8)
+				return BOSS_API_ERROR_FILE_NOT_UTF8;
+			else
+				return BOSS_API_ERROR_PARSE_FAIL;
 		}
-	} catch (boss_error e) {
-		if (e.getCode() == BOSS_ERROR_FILE_NOT_FOUND)
-			return BOSS_API_ERROR_FILE_NOT_FOUND;
-		else if (e.getCode() == BOSS_ERROR_FILE_NOT_UTF8)
-			return BOSS_API_ERROR_FILE_NOT_UTF8;
-		else
-			return BOSS_API_ERROR_PARSE_FAIL;
 	}
 	
 
@@ -482,72 +497,92 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	//The valid dirty mod message is also stored.
 	
 	//CONVERSION - Userlist
-	vector<rule>::iterator userlistIter = userlist.begin();
-	while (userlistIter != userlist.end()) {
-		vector<line>::iterator lineIter = userlistIter->lines.begin();
-		vector<modEntry>::iterator dataIter = userlistData.begin();
-		string plugin = userlistIter->ruleObject;
-		modEntry mod;
+	if (!userlist_path.empty()) {
+		vector<rule>::iterator userlistIter = userlist.begin();
+		while (userlistIter != userlist.end()) {
+			vector<line>::iterator lineIter = userlistIter->lines.begin();
+			vector<modEntry>::iterator dataIter = userlistData.begin();
+			string plugin = userlistIter->ruleObject;
+			modEntry mod;
 
-		//Check if there is already an existing modEntry in the db userlistData structure with this plugin name.
-		while (dataIter != userlistData.end()) {
-			if (Tidy(plugin) == Tidy(dataIter->name))
-				break;
-			++dataIter;
-		}
-		//Now if dataIter == userlistData.end(), the mod does not have an entry, otherwise it does.
+			//Check if there is already an existing modEntry in the db userlistData structure with this plugin name.
+			while (dataIter != userlistData.end()) {
+				if (Tidy(plugin) == Tidy(dataIter->name))
+					break;
+				++dataIter;
+			}
+			//Now if dataIter == userlistData.end(), the mod does not have an entry, otherwise it does.
 
-		while (lineIter != userlistIter->lines.end()) {
-			if (lineIter->key == APPEND || lineIter->key == REPLACE) {
-				//Need to check if the message added is a Bash Tag suggestion.
-				char sym = lineIter->object[0];  //Look for message symbol. (MF1)
-				size_t pos = lineIter->object.find(":"); //Look for separator colon. (MF2)
-				keyType key;
-				if (pos != string::npos)
-					key = StringToKey(Tidy(lineIter->object.substr(0,pos)));  //MF2 keyword.
+			while (lineIter != userlistIter->lines.end()) {
+				if (lineIter->key == APPEND || lineIter->key == REPLACE) {
+					//Need to check if the message added is a Bash Tag suggestion.
+					char sym = lineIter->object[0];  //Look for message symbol. (MF1)
+					size_t pos = lineIter->object.find(":"); //Look for separator colon. (MF2)
+					keyType key;
+					if (pos != string::npos)
+						key = StringToKey(Tidy(lineIter->object.substr(0,pos)));  //MF2 keyword.
 
-				if (sym == '%' || key == TAG) {  //It's a Bash Tag suggestion.
+					if (sym == '%' || key == TAG) {  //It's a Bash Tag suggestion.
 				
-					//If REPLACE, it needs to replace what's in the masterlist, so search masterlistData for the mod and clear its Bash Tag vectors if found.
-					vector<modEntry>::iterator mIter = masterlistData.begin();
-					while (mIter != masterlistData.end()) {
-						if (Tidy(plugin) == Tidy(mIter->name)) {
-							mIter->bashTagsAdded.clear();
-							mIter->bashTagsRemoved.clear();
-							break;
+						//If REPLACE, it needs to replace what's in the masterlist, so search masterlistData for the mod and clear its Bash Tag vectors if found.
+						vector<modEntry>::iterator mIter = masterlistData.begin();
+						while (mIter != masterlistData.end()) {
+							if (Tidy(plugin) == Tidy(mIter->name)) {
+								mIter->bashTagsAdded.clear();
+								mIter->bashTagsRemoved.clear();
+								break;
+							}
+							++dataIter;
 						}
-						++dataIter;
-					}
 				
-					//Search for the Bash Tag listing syntaxes.
-					size_t pos1,pos2 = string::npos;
-					string addedList, removedList;
-					pos1 = lineIter->object.find("{{BASH:");
-					if (pos1 != string::npos)
-						pos2 = lineIter->object.find("}}", pos1);
-					if (pos2 != string::npos)
-						addedList = lineIter->object.substr(pos1+7,pos2-pos1-7);
+						//Search for the Bash Tag listing syntaxes.
+						size_t pos1,pos2 = string::npos;
+						string addedList, removedList;
+						pos1 = lineIter->object.find("{{BASH:");
+						if (pos1 != string::npos)
+							pos2 = lineIter->object.find("}}", pos1);
+						if (pos2 != string::npos)
+							addedList = lineIter->object.substr(pos1+7,pos2-pos1-7);
 
-					pos1 = lineIter->object.find("[");
-					pos2 = string::npos;
-					if (pos1 != string::npos)
-						pos2 = lineIter->object.find("]", pos1);
-					if (pos2 != string::npos)
-						removedList = lineIter->object.substr(pos1+1,pos2-pos1-1);
+						pos1 = lineIter->object.find("[");
+						pos2 = string::npos;
+						if (pos1 != string::npos)
+							pos2 = lineIter->object.find("]", pos1);
+						if (pos2 != string::npos)
+							removedList = lineIter->object.substr(pos1+1,pos2-pos1-1);
 
-					if (!addedList.empty()) {
-						string name;
-						uint32_t uid;
-						pos1 = 0;
-						pos2 = addedList.find(",", pos1);
-						while (pos2 != string::npos) {
-							name = trim_copy(addedList.substr(pos1,pos2-pos1));
+						if (!addedList.empty()) {
+							string name;
+							uint32_t uid;
+							pos1 = 0;
+							pos2 = addedList.find(",", pos1);
+							while (pos2 != string::npos) {
+								name = trim_copy(addedList.substr(pos1,pos2-pos1));
 
-							//Search db's bashTagMap for the tag. If not found, add it. Either way, add the UID to the modEntry structure.
+								//Search db's bashTagMap for the tag. If not found, add it. Either way, add the UID to the modEntry structure.
+								mapPos = FindBashTag(bashTagMap, name);
+								if (mapPos != bashTagMap.end()) {										//Tag found in bashTagMap. Get the UID.
+									uid = mapPos->first;
+								} else {															//Tag not found in bashTagMap. Add it. 
+									uid = currentUID;
+									currentUID++;
+									bashTagMap.insert(pair<uint32_t,string>(uid,name));
+								}
+
+								//Now if there is already an entry, add Tag to that. Otherwise, add Tag to "mod".
+								if (dataIter != userlistData.end())  //Mod already exists in structure. Tags should be added to it.
+									dataIter->bashTagsAdded.push_back(uid);
+								else
+									mod.bashTagsAdded.push_back(uid);
+
+								pos1 = pos2+1;
+								pos2 = addedList.find(",", pos1);
+							}
+							name = trim_copy(addedList.substr(pos1));
 							mapPos = FindBashTag(bashTagMap, name);
-							if (mapPos != bashTagMap.end()) {										//Tag found in bashTagMap. Get the UID.
+							if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 								uid = mapPos->first;
-							} else {															//Tag not found in bashTagMap. Add it. 
+							else {															//Tag not found in bashTagMap. Add it. 
 								uid = currentUID;
 								currentUID++;
 								bashTagMap.insert(pair<uint32_t,string>(uid,name));
@@ -558,40 +593,40 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 								dataIter->bashTagsAdded.push_back(uid);
 							else
 								mod.bashTagsAdded.push_back(uid);
-
-							pos1 = pos2+1;
-							pos2 = addedList.find(",", pos1);
-						}
-						name = trim_copy(addedList.substr(pos1));
-						mapPos = FindBashTag(bashTagMap, name);
-						if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
-							uid = mapPos->first;
-						else {															//Tag not found in bashTagMap. Add it. 
-							uid = currentUID;
-							currentUID++;
-							bashTagMap.insert(pair<uint32_t,string>(uid,name));
 						}
 
-						//Now if there is already an entry, add Tag to that. Otherwise, add Tag to "mod".
-						if (dataIter != userlistData.end())  //Mod already exists in structure. Tags should be added to it.
-							dataIter->bashTagsAdded.push_back(uid);
-						else
-							mod.bashTagsAdded.push_back(uid);
-					}
+						if (!removedList.empty()) {
+							string name;
+							uint32_t uid;
+							pos1 = 0;
+							pos2 = removedList.find(",", pos1);
+							while (pos2 != string::npos) {
+								name = trim_copy(removedList.substr(pos1,pos2-pos1));
 
-					if (!removedList.empty()) {
-						string name;
-						uint32_t uid;
-						pos1 = 0;
-						pos2 = removedList.find(",", pos1);
-						while (pos2 != string::npos) {
-							name = trim_copy(removedList.substr(pos1,pos2-pos1));
+								//Search db's bashTagMap for the tag. If not found, add it. Either way, add the UID to the modEntry structure.
+								mapPos = FindBashTag(bashTagMap, name);
+								if (mapPos != bashTagMap.end()) {										//Tag found in bashTagMap. Get the UID.
+									uid = mapPos->first;
+								} else {															//Tag not found in bashTagMap. Add it. 
+									uid = currentUID;
+									currentUID++;
+									bashTagMap.insert(pair<uint32_t,string>(uid,name));
+								}
 
-							//Search db's bashTagMap for the tag. If not found, add it. Either way, add the UID to the modEntry structure.
+								//Now if there is already an entry, add Tag to that. Otherwise, add Tag to "mod".
+								if (dataIter != userlistData.end())  //Mod already exists in structure. Tags should be added to it.
+									dataIter->bashTagsRemoved.push_back(uid);
+								else
+									mod.bashTagsRemoved.push_back(uid);
+
+								pos1 = pos2+1;
+								pos2 = removedList.find(",", pos1);
+							}
+							name = trim_copy(removedList.substr(pos1));
 							mapPos = FindBashTag(bashTagMap, name);
-							if (mapPos != bashTagMap.end()) {										//Tag found in bashTagMap. Get the UID.
+							if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
 								uid = mapPos->first;
-							} else {															//Tag not found in bashTagMap. Add it. 
+							else {															//Tag not found in bashTagMap. Add it. 
 								uid = currentUID;
 								currentUID++;
 								bashTagMap.insert(pair<uint32_t,string>(uid,name));
@@ -602,37 +637,19 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 								dataIter->bashTagsRemoved.push_back(uid);
 							else
 								mod.bashTagsRemoved.push_back(uid);
-
-							pos1 = pos2+1;
-							pos2 = removedList.find(",", pos1);
 						}
-						name = trim_copy(removedList.substr(pos1));
-						mapPos = FindBashTag(bashTagMap, name);
-						if (mapPos != bashTagMap.end())										//Tag found in bashTagMap. Get the UID.
-							uid = mapPos->first;
-						else {															//Tag not found in bashTagMap. Add it. 
-							uid = currentUID;
-							currentUID++;
-							bashTagMap.insert(pair<uint32_t,string>(uid,name));
-						}
-
-						//Now if there is already an entry, add Tag to that. Otherwise, add Tag to "mod".
-						if (dataIter != userlistData.end())  //Mod already exists in structure. Tags should be added to it.
-							dataIter->bashTagsRemoved.push_back(uid);
-						else
-							mod.bashTagsRemoved.push_back(uid);
 					}
 				}
+				++lineIter;
 			}
-			++lineIter;
-		}
 
-		//If "mod"'s vectors are not empty, then that means there is not already an entry, so "mod" should be added.
-		if (!mod.bashTagsAdded.empty() || !mod.bashTagsRemoved.empty()) {  //Tags exist to be added, but there is no entry for this plugin currently. Add an entry.
-			mod.name = plugin;
-			userlistData.push_back(mod);
+			//If "mod"'s vectors are not empty, then that means there is not already an entry, so "mod" should be added.
+			if (!mod.bashTagsAdded.empty() || !mod.bashTagsRemoved.empty()) {  //Tags exist to be added, but there is no entry for this plugin currently. Add an entry.
+				mod.name = plugin;
+				userlistData.push_back(mod);
+			}
+			++userlistIter;
 		}
-		++userlistIter;
 	}
 	
 	//The userlist has now been adapted so that only the following information is stored:
@@ -641,14 +658,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 
 	//FREE CURRENT POINTERS
 	//Free memory at pointers stored in structure.
-	if (db->extTagMap != 0)
-		free(db->extTagMap);
-	if (db->extAddedTagIds != 0)
-		free(db->extAddedTagIds);
-	if (db->extRemovedTagIds != 0)
-		free(db->extRemovedTagIds);
-	if (db->extMessage != 0)
-		free(const_cast<uint8_t*>(db->extMessage));
+	DestroyPointers(db);
+	InitPointers(db);
 	
 	//DB SET
 	db->masterlistData = masterlistData;
@@ -661,12 +672,14 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 
 BOSS_API uint32_t ReEvalRegex(boss_db db, const uint8_t * dataPath) {
 	//Check for valid args.
-	if (db == 0 || dataPath == 0)
+	if (db == NULL || dataPath == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 		
 	//PATH SETTING
 	data_path = fs::path(reinterpret_cast<const char *>(dataPath));
 
+	if (data_path.empty())
+		return BOSS_API_ERROR_INVALID_ARGS;
 
 	vector<modEntry> matches;
 	//Build modlist. Not using boss::BuildModlist() as that builds to a vector<item> in load order, which isn't necessary.
@@ -723,10 +736,10 @@ BOSS_API uint32_t ReEvalRegex(boss_db db, const uint8_t * dataPath) {
 // and userlist, and the number of tags in the returned array. The array and
 // its contents are static and should not be freed by the client.
 BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, uint32_t * numTags) {
-	if (db == 0 || tagMap == 0 || numTags == 0)  //Check for valid args.
+	if (db == NULL || tagMap == NULL || numTags == NULL)  //Check for valid args.
 		return BOSS_API_ERROR_INVALID_ARGS;
 
-	if (db->extTagMap != 0) {  //Check to see if bashTagMap is already populated.
+	if (db->extTagMap != NULL) {  //Check to see if bashTagMap is already populated.
 		*numTags = uint32_t(db->bashTagMap.size());  //Set size.
 		*tagMap = db->extTagMap;
 	} else {
@@ -734,7 +747,7 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, uint32_t * numTa
 
 		//Allocate memory.
 		db->extTagMap = (BashTag*)calloc(size_t(*numTags), sizeof(BashTag));
-		if (db->extTagMap == 0)
+		if (db->extTagMap == NULL)
 			return BOSS_API_ERROR_NO_MEM;
 
 		//Loop through internal bashTagMap and fill output elements.
@@ -761,11 +774,14 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 									uint32_t *numTags_removed,
 									bool * userlistModified) {
 	//Check for valid args.
-	if (db == 0 || modName == 0 || userlistModified == 0 || numTags_added == 0 || numTags_removed == 0 || tagIds_removed == 0 || tagIds_added == 0)
+	if (db == NULL || modName == NULL || userlistModified == NULL || numTags_added == NULL || numTags_removed == NULL || tagIds_removed == NULL || tagIds_added == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 							
 	//Convert modName.
 	string mod(reinterpret_cast<const char *>(modName));
+
+	if (mod.empty())
+		return BOSS_API_ERROR_INVALID_ARGS;
 
 	//Allocate memory for userlistModified.
 	//userlistModified = (bool*)malloc(sizeof(bool));
@@ -774,8 +790,8 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 	//Initialise pointers to null and zero tag counts.
 	*numTags_added = 0;
 	*numTags_removed = 0;
-	*tagIds_removed = 0;
-	*tagIds_added = 0;
+	*tagIds_removed = NULL;
+	*tagIds_added = NULL;
 	*userlistModified = false;
 	
 	//Need to search masterlist, regexMatch then userlist separately, check each mod case-insensitively for a match.
@@ -829,18 +845,18 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 	//Allocate memory.
 	uint32_t * temp;
 	temp = (uint32_t*)realloc(db->extAddedTagIds,*numTags_added * sizeof(uint32_t));
-	if (temp == 0) {  //The realloc() fails sometimes for some reason. Try doing the same thing with free() and malloc().
+	if (temp == NULL) {  //The realloc() fails sometimes for some reason. Try doing the same thing with free() and malloc().
 		free(db->extAddedTagIds);
 		db->extAddedTagIds = (uint32_t*)malloc(*numTags_added * sizeof(uint32_t));
-		if (db->extAddedTagIds == 0)
+		if (db->extAddedTagIds == NULL)
 			return BOSS_API_ERROR_NO_MEM;
 	} else 
 		db->extAddedTagIds = temp;
 	temp = (uint32_t*)realloc(db->extRemovedTagIds,*numTags_removed * sizeof(uint32_t));
-	if (temp == 0) {  //The realloc() fails sometimes for some reason. Try doing the same thing with free() and malloc().
+	if (temp == NULL) {  //The realloc() fails sometimes for some reason. Try doing the same thing with free() and malloc().
 		free(db->extRemovedTagIds);
 		db->extRemovedTagIds = (uint32_t*)malloc(*numTags_removed * sizeof(uint32_t));
-		if (db->extRemovedTagIds == 0)
+		if (db->extRemovedTagIds == NULL)
 			return BOSS_API_ERROR_NO_MEM;
 	} else 
 		db->extRemovedTagIds = temp;
@@ -882,14 +898,17 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName, 
 									const uint8_t ** message, uint32_t * needsCleaning) {
 	//Check for valid args.
-	if (db == 0 || modName == 0)
+	if (db == NULL || modName == NULL || message == NULL || needsCleaning == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 									
 	//Convert modName.
 	string mod(reinterpret_cast<const char *>(modName));
 
+	if (mod.empty())
+		return BOSS_API_ERROR_INVALID_ARGS;
+
 	//Initialise pointers.
-	*message = 0;
+	*message = NULL;
 	*needsCleaning = BOSS_API_CLEAN_UNKNOWN;
 
 	//Search masterlist.
@@ -917,9 +936,9 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName,
 // plus the Tag suggestions themselves, in order to create the Wrye Bash taglist.
 // outputFile is the path to use for output. If outputFile already exists, it will
 // only be overwritten if overwrite is true.
-BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, bool overwrite) {
+BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const bool overwrite) {
 	//Check for valid args.
-	if (db == 0 || outputFile == 0)
+	if (db == NULL || outputFile == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 
 	string path(reinterpret_cast<const char *>(outputFile));

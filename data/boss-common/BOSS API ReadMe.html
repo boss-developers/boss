@@ -83,20 +83,20 @@ API Documentation</div>
 </div>
 
 <div id="codes"><h1>Return Codes</h1>
-<p>The BOSS API functions uses the following uint32_t return codes to signal how a function completes:
-<ul>
-	<li>BOSS_API_ERROR_OK
-		<ul><li>This signifies that a function completed successfully.</ul>
-	<li>BOSS_API_ERROR_FILE_WRITE_FAIL
-	<li>BOSS_API_ERROR_FILE_NOT_UTF8
-	<li>BOSS_API_ERROR_FILE_NOT_FOUND
-	<li>BOSS_API_ERROR_PARSE_FAIL
-	<li>BOSS_API_ERROR_NO_MEM
-	<li>BOSS_API_ERROR_OVERWRITE_FAIL
-	<li>BOSS_API_ERROR_INVALID_ARGS
-	<li>BOSS_API_ERROR_MAX
-		<ul><li>This matches the value of the highest-numbered return code (BOSS_API_ERROR_INVALID_ARGS). It isn't returned by any functions.</ul>
-</ul>
+<p>The BOSS API functions uses the following uint32_t return codes to signal how a function completes.
+<table>
+	<thead><tr><td>Return Code<td>Description
+	<tbody>
+		<tr><td>BOSS_API_ERROR_OK<td>The function completed successfully.
+		<tr><td>BOSS_API_ERROR_FILE_WRITE_FAIL<td>A file could not be written to.
+		<tr><td>BOSS_API_ERROR_FILE_NOT_UTF8<td>The specified BOSS file (masterlist or userlist) is not encoded in UTF-8.
+		<tr><td>BOSS_API_ERROR_FILE_NOT_FOUND<td>The specified file could not be found.
+		<tr><td>BOSS_API_ERROR_PARSE_FAIL<td>There was an error parsing the file.
+		<tr><td>BOSS_API_ERROR_NO_MEM<td>The API was unable to allocate the required memory.
+		<tr><td>BOSS_API_ERROR_OVERWRITE_FAIL<td>The API was unable to overwrite the minimal masterlist specified.
+		<tr><td>BOSS_API_ERROR_INVALID_ARGS<td>Invalid arguments were given for the function.
+		<tr><td>BOSS_API_ERROR_MAX<td>Matches the value of the highest-numbered return code (BOSS_API_ERROR_INVALID_ARGS). It isn't returned by any functions.
+</table>
 </div>
 
 
@@ -106,45 +106,47 @@ API Documentation</div>
 
 <h2 id="functions-version">Version Functions</h2>
 
-<p><code>bool IsCompatibleVersion (uint32_t bossVersionMajor, uint32_t bossVersionMinor);</code>
+<p><code>bool <span style="color:blue;">IsCompatibleVersion</span> (uint32_t bossVersionMajor, uint32_t bossVersionMinor, uint32_t bossVersionPatch);</code>
 <p>Returns whether this version of BOSS supports the API from the given BOSS version. Abstracts BOSS API stability policy away from clients.
 
-<p><code>uint32_t GetVersionString (const uint8_t ** bossVersionStr);</code>
+<p><code>uint32_t <span style="color:blue;">GetVersionString</span> (const uint8_t ** bossVersionStr);</code>
 <p>Returns the version string for this version of BOSS. The string exists for the lifetime of the library.
 
 <h2 id="functions-lifecycle">Lifecycle Management Functions</h2>
-<p><code>uint32_t CreateBossDb  (boss_db * db);</code>
-<p><code>void     DestroyBossDb (boss_db db);</code>
+<p><code>uint32_t <span style="color:blue;">CreateBossDb</span>  (boss_db * db);</code>
+<p><code>void <span style="color:blue;">DestroyBossDb</span> (boss_db db);</code>
 <p>Explicitly manage database lifetime. Allows clients to free memory when they want/need to.
 
 <h2 id="functions-loading">Database Loading Functions</h2>
 
-<p><code>uint32_t Load (boss_db db, const uint8_t * masterlistPath, const uint8_t * userlistPath, const uint8_t * dataPath);</code>
-<p>Loads the masterlist and userlist from the paths specified. Can be called multiple times. If an error is encountered, the database remains unchanged. Paths are case-sensitive if the underlying filesystem is case-sensitive. masterlistPath and userlistPath are files. dataPath is a directory.
+<p><code>uint32_t <span style="color:blue;">Load</span> (boss_db db, const uint8_t * masterlistPath, const uint8_t * userlistPath, const uint8_t * dataPath);</code>
+<p>Loads the masterlist and userlist from the paths specified. Can be called multiple times. If an error is encountered, the database remains unchanged. Paths are case-sensitive if the underlying filesystem is case-sensitive. masterlistPath and userlistPath are files. dataPath is a directory. If userlistPath is an empty string, then the userlist is not loaded.
 
-<p><code>uint32_t ReEvalRegex(boss_db db, const uint8_t * dataPath);</code>
+<p><code>uint32_t <span style="color:blue;">ReEvalRegex</span> (boss_db db, const uint8_t * dataPath);</code>
 <p>Re-evaluates the masterlist's regex entries, so Load() doesn't need to be called whenever the mods installed are changed. This doesn't need to be used if Load() is called, as the evaluation is incorporated into Load() too. Paths are case-sensitive if the underlying filesystem is case-sensitive.
 
 
 <h2 id="functions-access">Database Access Functions</h2>
-<p><code>uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, uint32_t * numTags);</code>
+<p><code>uint32_t <span style="color:blue;">GetBashTagMap</span> (boss_db db, BashTag ** tagMap, uint32_t * numTags);</code>
 <p>Returns an array of the Bash Tags encounterred when loading the masterlist and userlist, and the number of tags in the returned array. The array and its contents are static and valid until the db is destroyed or until the Load() function is called. It should not be freed by the client.
 
-<p><code>uint32_t GetModBashTags (boss_db db, const uint8_t * modName, uint32_t ** tagIds_added, uint32_t * numTags_added, uint32_t **tagIds_removed, uint32_t *numTags_removed, bool * userlistModified);</code>
+<p><code>uint32_t <span style="color:blue;">GetModBashTags</span> (boss_db db, const uint8_t * modName, uint32_t ** tagIds_added, uint32_t * numTags_added, uint32_t **tagIds_removed, uint32_t *numTags_removed, bool * userlistModified);</code>
 <p>Returns arrays of Bash Tag UIDs for Bash Tags suggested for addition and removal by BOSS's masterlist and userlist, and the number of tags in each array. The returned arrays are valid until GetModBashTags() is called again, the db is destroyed or the Load() function is called.  The arrays should not be freed by the client. modName is case-insensitive. If no Tags are found for an array, the array pointer (*tagIds) will be NULL. The userlistModified bool is true if the userlist contains Bash Tag suggestion message additions.
 
 
 
-<p><code>uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName, const uint8_t ** message, uint32_t * needsCleaning);</code>
-<p>Returns the message associated with a dirty mod and whether the mod needs cleaning. If a mod has no dirty mmessage, *message will be NULL. modName is case-insensitive. The return values for needsCleaning are:
-<ul>
-	<li>BOSS_API_CLEAN_NO
-	<li>BOSS_API_CLEAN_YES
-	<li>BOSS_API_CLEAN_UNKNOWN
-</ul>
+<p><code>uint32_t <span style="color:blue;">GetDirtyMessage</span> (boss_db db, const uint8_t * modName, const uint8_t ** message, uint32_t * needsCleaning);</code>
+<p>Returns the message associated with a dirty mod and whether the mod needs cleaning. If a mod has no dirty message, *message will be NULL. modName is case-insensitive. The return values for needsCleaning are:
+<table>
+	<thead><tr><td>needsCleaning Value<td>Description
+	<tbody>
+		<tr><td>BOSS_API_CLEAN_NO<td>The plugin does not need cleaning or should not be cleaned.
+		<tr><td>BOSS_API_CLEAN_YES<td>The plugin needs cleaning.
+		<tr><td>BOSS_API_CLEAN_UNKNOWN<td>BOSS does not know whether the plugin needs cleaning or not, or if it should not be cleaned.
+</table>
 <p>The message string is valid until GetDirtyMessage() is called again, the db is destroyed or the Load() function is called. The string should not be freed by the client.
 
-<p><code>uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, bool overwrite);</code>
+<p><code>uint32_t <span style="color:blue;">DumpMinimal</span> (boss_db db, const uint8_t * outputFile, const bool overwrite);</code>
 <p>Writes a minimal masterlist that only contains mods that have Bash Tag suggestions, plus the Tag suggestions themselves, in order to create the Wrye Bash taglist. outputFile is the path to use for output. If outputFile already exists, it will only be overwritten if overwrite is true.
 </div>
 
@@ -163,3 +165,4 @@ API Documentation</div>
 <ul>
 	<li>Initial release.
 </ul>
+</div>
