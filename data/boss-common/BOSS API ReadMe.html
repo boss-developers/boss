@@ -3,18 +3,19 @@
 <title>BOSS API ReadMe</title>
 <style>
 	body {font-family:Calibri,Arial,Verdana,sans-serifs;}
-	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:1em;}
+	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:0.2em;}
 	body > div {margin-bottom:5em;}
 	ol li, ul li {margin-bottom:10px;}
 	li ul, li ol {margin-top:0.4em;}
-	.codebox, .logbox {margin-left:40px; border: gray 1px dashed; display:table; min-width:300px;  padding: 5px 30px 5px 10px;}
-	.codebox { font-family: monospace; background:#F5F5F5; line-height:20px; white-space:pre;}
-	.logbox {background:#E6E6FA; line-height:30px;}
+	.codebox, .quotebox, .logbox {margin-left:40px; border:gray 1px dashed; display:table; min-width:300px; padding:5px 30px 5px 10px;}
+	.codebox { font-family:monospace; background:#F5F5F5; line-height:20px; white-space:pre;}
+	.quotebox {background:#E6E6FA;}
+	.logbox {background:#E0FFFF; line-height:30px;}
 	.logbox > ul > li {line-height:20px;}
 	q {font-style:italic;}
-	code {display:inline-box; padding: 2px 5px; background:#EEEEEE; }
-	td {border: 1px solid #CCC; padding: 5px;}
-	table {border: 1px solid #CCC;border-spacing: 0;border-collapse: separate; margin:1em; margin-left:40px;}
+	code {display:inline-box; padding:2px 5px; background:#EEEEEE;}
+	td {border:1px solid #ccc; padding: 5px;}
+	table {border:1px solid #CCCCCC; border-spacing:0; border-collapse:separate; margin:1em;}
 	thead > tr td {font-weight:bold}
 </style>
 
@@ -34,7 +35,12 @@ API Documentation</div>
 		<li><a href="#functions-access">Database Access Functions</a>
 	</ol>
 	<li><a href="#examples">Examples</a>
+	<ol style="list-style:lower-alpha;">
+		<li><a href="#examples-python">Python</a>
+	</ol>
 	<li><a href="#contact">Contact</a>
+	<li><a href="#contact">Credits</a>
+	<li><a href="#license">License</a>
 	<li><a href="#history">Version History</a>
 </ol>
 </div>
@@ -43,8 +49,6 @@ API Documentation</div>
 <p>This documentation details the BOSS API and is intended for use by third party developers of modding utilities for TES IV: Oblivion, TES V: Skyrim, Nehrim - At Fate's Edge, Fallout 3 and Fallout: New Vegas.
 
 <p>The BOSS API has a C frontend and is available as a 32-bit DLL that can be loaded by other modding utilities so that they can easily take advantage of the information stored within BOSS's files without having to write their own interfaces and keep such interfaces up-to-date as BOSS evolves.
-
-<p>Developers can request additional functionality and report any bugs encountered in the offical BOSS API thread currently found <a href="http://forums.bethsoft.com/index.php?/topic/1221990-wip-bapi-boss-api/">here</a>.
 </div>
 
 <div id="overview"><h1>Overview</h1>
@@ -152,12 +156,275 @@ API Documentation</div>
 
 <div id="examples"><h1>Examples</h1>
 <p>Below is a code snippet showing an example of how the BOSS API may be used.
-<div class="codebox">
+<h2 id="examples-python">Python</h2>
+<p style="font-style:italic;">This example was written by Lojack, with minor changes by WrinklyNinja.
+<p>bapi.py
+<div class="codebox"># -*- coding: utf-8 -*-
+
+from ctypes import *
+import os, platform
+
+if '64bit' in platform.architecture():
+    bapiPath = 'boss64.dll'
+else:
+    bapiPath = 'boss32.dll'
+
+BAPI = None
+if os.path.exists(bapiPath):
+    try:
+        BAPI = CDLL(bapiPath)
+    except (AttributeError, ImportError, OSError), error:
+        BAPI = None
+        print error
+    except:
+        BAPI = None
+        raise
+
+if BAPI is not None:
+    BOSS_API_ERROR_OK = c_uint.in_dll(BAPI, 'BOSS_API_ERROR_OK').value
+    BOSS_API_ERROR_FILE_WRITE_FAIL = c_int.in_dll(BAPI, 'BOSS_API_ERROR_FILE_WRITE_FAIL').value
+    BOSS_API_ERROR_FILE_NOT_UTF8 = c_int.in_dll(BAPI, 'BOSS_API_ERROR_FILE_NOT_UTF8').value
+    BOSS_API_ERROR_FILE_NOT_FOUND = c_int.in_dll(BAPI, 'BOSS_API_ERROR_FILE_NOT_FOUND').value
+    BOSS_API_ERROR_PARSE_FAIL = c_int.in_dll(BAPI, 'BOSS_API_ERROR_PARSE_FAIL').value
+    BOSS_API_ERROR_NO_MEM = c_int.in_dll(BAPI, 'BOSS_API_ERROR_NO_MEM').value
+    BOSS_API_ERROR_OVERWRITE_FAIL = c_int.in_dll(BAPI, 'BOSS_API_ERROR_OVERWRITE_FAIL').value
+    BOSS_API_ERROR_INVALID_ARGS = c_int.in_dll(BAPI, 'BOSS_API_ERROR_INVALID_ARGS').value
+
+    BOSS_API_CLEAN_NO  = 0
+    BOSS_API_CLEAN_YES =  1
+    BOSS_API_CLEAN_UNKNOWN = 2
+
+    class BossError(Exception):
+        err_str = {
+            BOSS_API_ERROR_OK:'No error',
+            BOSS_API_ERROR_FILE_WRITE_FAIL:'Exception while writing file',
+            BOSS_API_ERROR_FILE_NOT_UTF8:'The file is not UTF8 encoded',
+            BOSS_API_ERROR_FILE_NOT_FOUND:'The file does not exist',
+            BOSS_API_ERROR_PARSE_FAIL:'Error occured while parsing',
+            BOSS_API_ERROR_NO_MEM:'Out of memory',
+            BOSS_API_ERROR_OVERWRITE_FAIL:'Overwrite fail',
+            BOSS_API_ERROR_INVALID_ARGS:'Invalid arguments',
+            }
+        def __init__(self,value):
+            self.value = value
+
+        def __str__(self):
+            return BossError.err_str.get(self.value,"Unknown")
+
+        def __repr__(self): return 'BossError("'+self.__str__()+'")'
+
+    def BossErrorCheck(result):
+        if result != BOSS_API_ERROR_OK: raise BossError(result)
+        return result
+
+    # Some types
+    boss_db = c_void_p
+    boss_db_p = POINTER(boss_db)
+    c_uint32_p = POINTER(c_uint32)
+    c_uint32_p_p = POINTER(c_uint32_p)
+    c_bool_p = POINTER(c_bool)
+    c_char_p_p = POINTER(c_char_p)
+    class BashTag(Structure):
+        _fields_ = [('id',c_uint32),
+                    ('name',c_char_p), # uint8_t *
+                    ]
+    BashTag_p = POINTER(BashTag)
+    BashTag_p_p = POINTER(BashTag_p)
+
+    ## bool IsCompatibleVersion(bossVersionMajor, bossVersionMinor, bossVersionPatch)
+    _CIsCompatibleVersion = BAPI.IsCompatibleVersion
+    _CIsCompatibleVersion.restype = c_bool
+    _CIsCompatibleVersion.argtypes = [c_uint32, c_uint32, c_uint32]
+    ## uint32_t GetVersionString(bossVersionStr)
+    _CGetVersionString = BAPI.GetVersionString
+    _CGetVersionString.restype = BossErrorCheck # uint32 (error code)
+    _CGetVersionString.argtypes = [c_char_p_p] # uint8_t **
+    ## uint32_t CreateBossDb(db)
+    _CCreateBossDb = BAPI.CreateBossDb
+    _CCreateBossDb.restype = BossErrorCheck
+    _CCreateBossDb.argtypes = [boss_db_p]
+    ## void DestroyBossDb(db)
+    _CDestroyBossDb = BAPI.DestroyBossDb
+    #_CDestroyBossDb.restype = void
+    _CDestroyBossDb.argtypes = [boss_db]
+    ## uint32_t Load(db, masterlistPath, userlistPath, dataPath)
+    _CLoad = BAPI.Load
+    _CLoad.restype = BossErrorCheck
+    _CLoad.argtypes = [boss_db, c_char_p, c_char_p, c_char_p]
+    ## uint32_t ReEvalRegex(boss_db db, const uint8_t *dataPath)
+    _CReEvalRegex = BAPI.ReEvalRegex
+    _CReEvalRegex.restype = BossErrorCheck
+    _CReEvalRegex.argtypes = [boss_db, c_char_p]
+    ## uint32_t GetBashTagMap(db, tabMap, numTags)
+    _CGetBashTagMap = BAPI.GetBashTagMap
+    _CGetBashTagMap.restype = BossErrorCheck
+    _CGetBashTagMap.argtypes = [boss_db, BashTag_p_p, c_uint32_p]
+    ## uint32_t GetModBashTags(db, modName, tagIds_added, numTags_added, tagIds_removed, numTags_removed, userlistModified
+    _CGetModBashTags = BAPI.GetModBashTags
+    _CGetModBashTags.restype = BossErrorCheck
+    _CGetModBashTags.argtypes = [boss_db, c_char_p, c_uint32_p_p, c_uint32_p, c_uint32_p_p, c_uint32_p, c_bool_p]
+    ## uint32_t GetDirtyMessage(db, modName, message, needsCleaning)
+    _CGetDirtyMessage = BAPI.GetDirtyMessage
+    _CGetDirtyMessage.restype = BossErrorCheck
+    _CGetDirtyMessage.argtypes = [boss_db, c_char_p, c_char_p_p, c_uint32_p]
+    ## uint32_t DumpMinimal(db, outputFile, overwrite)
+    _CDumpMinimal = BAPI.DumpMinimal
+    _CDumpMinimal.restype = BossErrorCheck
+    _CDumpMinimal.argtypes = [boss_db, c_char_p, c_bool]
+
+    version = c_char_p()
+    try:
+        _CGetVersionString(byref(version))
+        version = unicode(version.value,'utf8')
+    except BossError, e:
+        print 'Error getting version:', e
+        version = u'Error'
+
+    def IsCompatibleVersion(majorVersion, minorVersion, patchVersion=0):
+        return _CIsCompatibleVersion(majorVersion,minorVersion,patchVersion)
+
+    class BossDB(object):
+        def __init__(self):
+            self.tags = {} # BashTag map
+            self._DB = boss_db()
+            _CCreateBossDb(byref(self._DB))
+
+        def __del__(self):
+            if self._DB is not None:
+                _CDestroyBossDb(self._DB)
+                self._DB = None
+
+        # 'with' statement
+        def __enter__(self): return self
+        def __exit__(self, exc_type, exc_value, traceback): self.__del__()
+
+        def Load(self, masterList, userList='', dataPath=''):
+            """Loads a masterlist and userlist from specified paths.  Can be called
+               multiple times.  On error, the database is unchanged.  Paths are case
+               sensitive if the underlying filesystem is case sensitive."""
+            # First load the files
+            if isinstance(masterList, unicode): masterList = masterList.encode('utf8')
+            if isinstance(userList, unicode):   userList = userList.encode('utf8')
+            if isinstance(dataPath, unicode):   dataPath = dataPath.encode('utf8')
+            _CLoad(self._DB, masterList, userList, dataPath)
+            # Then retrieve the BashTag map
+            num = c_uint32()
+            bashTags = BashTag_p()
+            _CGetBashTagMap(self._DB, byref(bashTags), byref(num))
+            self.tags = {bashTags[i].id:unicode(bashTags[i].name,'utf8') for i in range(num.value)}
+
+        def GetBashTags(self, modName):
+            """Returns:
+                 (added, removed, userlist)
+               Where:
+                 added = added tags
+                 removed = removed tags
+                 userlist = True if the userlist made modifications
+            """
+            if isinstance(modName, unicode): modName = modName.encode('utf8')
+            # TODO: ReEvalRegex
+            tagIds_added = c_uint32_p()
+            numAdded = c_uint32()
+            tagIds_removed = c_uint32_p()
+            numRemoved = c_uint32()
+            userlist = c_bool()
+            _CGetModBashTags(self._DB,              # boss_db
+                             modName,               # uint8_t *
+                             byref(tagIds_added),   # uint32_t **
+                             byref(numAdded),       # uint32_t *
+                             byref(tagIds_removed), # uint32_t **
+                             byref(numRemoved),     # uint32_t *
+                             byref(userlist)        # bool *
+                             )
+            added = [self.tags[tagIds_added[x]] for x in range(numAdded.value)]
+            removed = [self.tags[tagIds_removed[x]] for x in range(numRemoved.value)]
+            return (added, removed, userlist.value)
+
+        def GetDirtyMessage(self, modName):
+            """Returns:
+                 (cleaningMessage,shouldClean)
+               Where:
+                shouldClean = True if it should be cleaned
+                shouldClean = False if it should not be cleaned
+                shouldClean = None otherwise (unknown)
+            """
+            if isinstance(modName, unicode): modName = modName.encode('utf8')
+            message = c_char_p()
+            needsCleaning = c_uint32()
+            _CGetDirtyMessage(self._DB,             # boss_db
+                              modName,              # uint8_t *
+                              byref(message),       # uint8_t **
+                              byref(needsCleaning)  # bool *
+                              )
+            # NULL pointer returned if there is not cleaning message
+            if message.value is None: message = u''
+            #else: message = unicode(message,'utf8')
+            return message,needsCleaning.value
+
+        def DumpMinimal(self, fileName):
+            if isinstance(fileName, unicode): fileName.encode('utf8')
+            _CDumpMinimal(self._DB, fileName, True)
+</div>
+<p>bapi_test.py
+<div class="codebox">import bapi
+import os
+
+def main():
+    print 'BAPI version:', bapi.version
+    print 'compatible with 1.8.0:', bapi.IsCompatibleVersion(1,8)
+
+    with bapi.BossDB() as db:
+        print 'loading lists...'
+        root = os.getcwd()
+        masterlist = os.path.join(root,'masterlist.txt')
+        #userlist = os.path.join(root,'userlist.txt')
+        userlist = ''
+        db.Load(masterlist,userlist,root)
+        print 'done loading.'
+        print
+        print db.tags
+        print 'UOP:'
+        print db.GetBashTags('Unofficial Oblivion Patch.esp')
+        print db.GetDirtyMessage('Unofficial Oblivion Patch.esp')
+        print 'Vanilla Weapon Stat Override:'
+        print db.GetDirtyMessage('Vanilla Weapon Stat Override.esp')
+        print 'Mehrunes Razor:'
+        print db.GetDirtyMessage('DLCMehrunesRazor.esp')
+        print
+        print 'Non-existant:'
+        print db.GetBashTags('dummy.esp')
+        print db.GetDirtyMessage('dummy.esp')
+        
+        db.DumpMinimal('taglist.txt')
+    print 'done destroying database.'
+
+if __name__=='__main__':
+    main()
 </div>
 </div>
 
 <div id="contact"><h1>Contact</h1>
-<p>The BOSS development team can be contacted by Private Messaging any of the handles given in the <q>Project Members</q> section of the main BOSS readme at the noted forums. However, for API-specific support, it is best to contact WrinklyNinja (available on the Bethesda Softworks forums and The Nexus Forums), who is currently responsible for all BOSS code development, including the API. Other team members are unlikely to be of any great assistance with coding-related queries.
+<p>The BOSS development team can be contacted by Private Messaging any of the handles given in the <q>Project Members</q> section of the main BOSS readme at the noted forums. 
+<p>However, for API-specific support, it is best to contact WrinklyNinja (available on both the <a href="http://forums.bethsoft.com/index.php">Bethesda Softworks Forums</a> and <a href="http://www.thenexusforums.com/">The Nexus Forums</a>), who is currently responsible for all BOSS code development, including the API. Other team members are unlikely to be of any great assistance with coding-related queries.
+<p>Developers can also request additional functionality, report any bugs encountered and discuss anything API-related in the <a href="http://forums.bethsoft.com/index.php?showtopic=1221990">offical BOSS API thread</a>. 
+</div>
+
+<div id="credits"><h1>Credits</h1>
+<p>Credit goes to myk002 and Lojack for significant contributions to both coding and discussion from initial development through to beta testing. The BOSS API is written in C/C++ and makes use of the <a href="http://www.boost.org/">BOOST</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries.
+</div>
+
+<div id="license"><h1>License</h1>
+<p>Please see the main BOSS readme for the full statement of BOSS's licensing: what follows is only an explanation of how that license applies to the API. As part of BOSS, the API is still licensed by the <a href="http://creativecommons.org/licenses/by-nc-nd/3.0">Creative Commons Attribution Noncommercial No Derivative Works 3.0 Unported</a> copyright license. This means that usage of it is restricted by the terms of the license, with the major (but not only) points being:
+<ul>
+	<li>As the API is distributed as part of the single BOSS archive or installer, it cannot be distributed by third parties separated from the rest of the BOSS files. If you wish to do so, you will need to ask for permission.
+	<li>You cannot use the API in a commercial project (including advertising-supported) without permission.
+	<li>As usage of the API constitutes a derivative work, you may not publish anything that uses it without first obtaining permission.
+</ul>
+<p>While the license is quite restrictive, its restrictions may be waived on a case-by-case basis if third party developers can provide strong arguments for doing so, and usage permission is almost guaranteed (but must still be obtained!) for non-commercial projects.
+<p>The following third-party applications have been licensed to use the BOSS API at time of writing:
+<ul>
+	<li>Wrye Bash
+</ul>
 </div>
 
 <div id="history"><h1>Version History</h1>

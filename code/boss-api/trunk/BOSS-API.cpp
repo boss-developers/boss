@@ -12,7 +12,6 @@
 #include "BOSS-Common.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/unordered_set.hpp>
-#include <boost/lexical_cast.hpp>
 #include <map>
 
 using namespace std;
@@ -20,7 +19,6 @@ using namespace boss;
 
 using boost::algorithm::trim_copy;
 using boost::algorithm::to_lower_copy;
-using boost::lexical_cast;
 
 ////////////////////////
 // Types (Internal)

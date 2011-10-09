@@ -80,12 +80,9 @@ private:
 	bool isStartup;
 protected:
 	virtual wxThread::ExitCode Entry();
-	//bool isStartupUpdateCheck;
 	unsigned int updateCheckCode;  //0 = update, 1 = no update, 2 = error.
 	std::string updateCheckString;  //Holds wxMessageBox text.
 	wxCriticalSection updateData; // protects fields above
 	DECLARE_EVENT_TABLE()
 };
-
-void CheckForUpdate(MainFrame *frame, bool isStartup);
 #endif

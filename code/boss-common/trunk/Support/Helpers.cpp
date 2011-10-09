@@ -40,12 +40,12 @@ namespace boss {
 		return filename;
 	}
 
-	//Checks if a given object is an esp or an esm.
+	//Checks if a given object is an esp or an esm, even if ghosted.
 	bool IsPlugin(string object) {
 		object = fs::path(object).extension().string();
 		boost::algorithm::trim(object);
-		to_lower(object);
-		return (object == ".esp" || object == ".esm");
+		boost::algorithm::to_lower(object);
+		return (object == ".esp" || object == ".esm" || object == ".ghost");
 	}
 
 	//Checks if the plugin exists at the given location, even if ghosted.
@@ -60,8 +60,6 @@ namespace boss {
 
 	//Reads the header from mod file and prints a string representation which includes the version text, if found.
 	string GetModHeader(const fs::path& filename) {
-
-	//	ostringstream out;
 		ModHeader header;
 
 		// Read mod's header now...

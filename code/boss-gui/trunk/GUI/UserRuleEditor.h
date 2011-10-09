@@ -30,8 +30,8 @@ public:
 	UserRulesEditorFrame(const wxChar *title, wxFrame *parent);
 	void OnOKQuit(wxCommandEvent& event);
 	void OnCancelQuit(wxCommandEvent& event);
-	void OnSearchModlist(wxCommandEvent& event);
-	void OnSearchMasterlist(wxCommandEvent& event);
+	void OnSearchList(wxCommandEvent& event);
+	void OnCancelSearch(wxCommandEvent& event);
 	void OnSelectModInMasterlist(wxCommandEvent& event);
 	void OnSortingCheckToggle(wxCommandEvent& event);
 	void OnMessageAddToggle(wxCommandEvent& event);
@@ -42,13 +42,29 @@ public:
 	void OnToggleRuleCheckbox(wxCommandEvent& event);
 	void OnRuleSelection(wxCommandEvent& event);
 	void OnRuleOrderChange(wxCommandEvent& event);
+	void LoadLists();
+	string GetRuleText(int i);
+	rule GetRuleFromForm();
 	DECLARE_EVENT_TABLE()
 private:
-	vector<item> Modlist, Masterlist;
+	vector<item> Masterlist;
 	vector<rule> Userlist;
+	size_t lastRec;
+
+	wxArrayString Rules;
+	wxArrayString ModlistMods;
+	wxArrayString MasterlistMods;
+	wxArrayString ModlistSearchResultMods;
+	wxArrayString MasterlistSearchResultMods;
+	wxArrayInt RuleOrder;
+
 	wxButton *NewRuleButton;
 	wxButton *EditRuleButton;
 	wxButton *DeleteRuleButton;
+	wxButton *AddModlistModAsRuleMod;
+	wxButton *AddModlistModAsSortMod;
+	wxButton *AddMasterlistModAsRuleMod;
+	wxButton *AddMasterlistModAsSortMod;
 	wxRadioButton *SortModOption;
 	wxRadioButton *InsertModOption;
 	wxCheckBox *AddMessagesCheckBox;

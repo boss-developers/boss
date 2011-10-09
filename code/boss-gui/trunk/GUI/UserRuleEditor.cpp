@@ -13,88 +13,40 @@
 #include "GUI/ElementIDs.h"
 
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/algorithm/string/trim_all.hpp>
 
 BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
-	EVT_BUTTON ( OPTION_OKExitEditor, UserRulesEditorFrame::OnOKQuit )
-	EVT_BUTTON ( OPTION_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit )
+	EVT_BUTTON ( BUTTON_OKExitEditor, UserRulesEditorFrame::OnOKQuit )
+	EVT_BUTTON ( BUTTON_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit )
 	EVT_BUTTON ( BUTTON_MoveRuleUp, UserRulesEditorFrame::OnRuleOrderChange )
 	EVT_BUTTON ( BUTTON_MoveRuleDown, UserRulesEditorFrame::OnRuleOrderChange )
+	EVT_BUTTON ( BUTTON_NewRule, UserRulesEditorFrame::OnRuleCreate )
+	EVT_BUTTON ( BUTTON_EditRule, UserRulesEditorFrame::OnRuleEdit )
+	EVT_BUTTON ( BUTTON_DeleteRule, UserRulesEditorFrame::OnRuleDelete )
 	EVT_CHECKBOX ( CHECKBOX_SortMods, UserRulesEditorFrame::OnSortingCheckToggle )
 	EVT_CHECKBOX ( CHECKBOX_AddMessages, UserRulesEditorFrame::OnMessageAddToggle )
-	EVT_CHECKLISTBOX ( LIST_RuleList, UserRulesEditorFrame::OnToggleRuleCheckbox )
+	EVT_CHECKLISTBOX ( LIST_RuleList, UserRulesEditorFrame::OnToggleRuleCheckbox )  //This doesn't work for some reason.
 	EVT_LISTBOX ( LIST_Masterlist, UserRulesEditorFrame::OnSelectModInMasterlist )
 	EVT_LISTBOX ( LIST_RuleList, UserRulesEditorFrame::OnRuleSelection )
 	EVT_RADIOBUTTON ( RADIO_SortMod, UserRulesEditorFrame::OnSortInsertChange )
 	EVT_RADIOBUTTON ( RADIO_InsertMod, UserRulesEditorFrame::OnSortInsertChange )
+	EVT_SEARCHCTRL_SEARCH_BTN ( SEARCH_Masterlist, UserRulesEditorFrame::OnSearchList )
+	EVT_SEARCHCTRL_SEARCH_BTN ( SEARCH_Modlist, UserRulesEditorFrame::OnSearchList )
+	EVT_SEARCHCTRL_CANCEL_BTN ( SEARCH_Masterlist, UserRulesEditorFrame::OnCancelSearch )
+	EVT_SEARCHCTRL_CANCEL_BTN ( SEARCH_Modlist, UserRulesEditorFrame::OnCancelSearch )
+	EVT_TEXT_ENTER ( SEARCH_Masterlist, UserRulesEditorFrame::OnSearchList )
+	EVT_TEXT_ENTER ( SEARCH_Modlist, UserRulesEditorFrame::OnSearchList )
 END_EVENT_TABLE()
 
 using namespace boss;
 using namespace std;
 
 using boost::algorithm::to_upper_copy;
+using boost::algorithm::trim_copy;
 
 UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize) {
 
-	//Need to parse userlist, masterlist and build modlist.
-	BuildModlist(Modlist);
-
-	//Parse masterlist/modlist backup into data structure.
-	LOG_INFO("Starting to parse sorting file: %s", masterlist_path.string().c_str());
-	try {
-		parseMasterlist(masterlist_path,Masterlist);
-	} catch (boss_error e) {
-		wxMessageBox(wxString::Format(
-				wxT("Error: "+e.getString()+" Scanning for plugins aborted. User Rules Editor cannot load.")
-			),
-			wxT("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
-		return;
-	}
-
-	//Check if parsing failed. If so, exit with errors.
-	if (!masterlistErrorBuffer.empty()) {
-		size_t size = masterlistErrorBuffer.size();
-		for (size_t i=0; i<size; i++)  //Print parser error messages.
-			Output(masterlistErrorBuffer[i]);
-		wxMessageBox(wxString::Format(
-				wxT("Error: "+masterlistErrorBuffer[0]+" Masterlist parsing aborted. User Rules Editor cannot load.")
-			),
-			wxT("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
-		return;
-	}
-
-	LOG_INFO("Starting to parse userlist.");
-	try {
-		bool parsed = parseUserlist(userlist_path,Userlist);
-		if (!parsed)
-			Userlist.clear();  //If userlist has parsing errors, empty it so no rules are applied.
-	} catch (boss_error e) {
-		LOG_ERROR("Error: %s", e.getString().c_str());
-		wxMessageBox(wxString::Format(
-				wxT("Error: "+e.getString()+" Userlist parsing aborted. User Rules Editor cannot load existing rules.")
-			),
-			wxT("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
-	}
-
-	//Trim down masterlist.
-	size_t lastRec = BuildWorkingModlist(Modlist,Masterlist,Userlist);
-
-	//Now disable any ADD rules with rule mods that are in the masterlist.
-	size_t size = Userlist.size();
-	for (size_t i=0;i<size;i++) {
-		size_t pos = GetModPos(Masterlist,Userlist[i].ruleObject);
-		if (pos < lastRec && pos != (size_t)-1)  //Mod in masterlist.
-			Userlist[i].enabled = false;
-	}
-
-	///////////////////////
-	// UI Stuff
-	///////////////////////
+	LoadLists();
 
 	//Some variable setup.
 	wxString BeforeAfter[] = {
@@ -106,55 +58,6 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
         wxT("TOP"),
         wxT("BOTTOM")
     };
-
-	wxArrayString Rules;
-	wxArrayInt RuleOrder;
-	size = Userlist.size();
-	for (size_t i=0;i<size;i++) {
-		string text;
-		bool hasAddedMessages = false;
-		size_t linesSize = Userlist[i].lines.size();
-		for (size_t j=0;j<linesSize;j++) {
-			if (Userlist[i].lines[j].key == BEFORE)
-				text = "Sort \"" + Userlist[i].ruleObject + "\" before \"" + Userlist[i].lines[j].object + "\"\n";
-			else if (Userlist[i].lines[j].key == AFTER)
-				text = "Sort \"" + Userlist[i].ruleObject + "\" after \"" + Userlist[i].lines[j].object + "\"\n";
-			else if (Userlist[i].lines[j].key == TOP)
-				text = "Insert \"" + Userlist[i].ruleObject + "\" at the top of \"" + Userlist[i].lines[j].object + "\"\n";
-			else if (Userlist[i].lines[j].key == BOTTOM)
-				text = "Insert \"" + Userlist[i].ruleObject + "\" at the bottom of \"" + Userlist[i].lines[j].object + "\"\n";
-			else if (Userlist[i].lines[j].key == APPEND) {
-				if (!hasAddedMessages)
-					text += "Add the following messages to \"" + Userlist[i].ruleObject + "\":\n";
-				text += "  " + Userlist[i].lines[j].object + "\n";
-				hasAddedMessages = true;
-			} else if (Userlist[i].lines[j].key == REPLACE) {
-				text += "Replace the messages attached to \"" + Userlist[i].ruleObject + "\" with:\n";
-				text += "  " + Userlist[i].lines[j].object + "\n";
-			}
-
-		}
-		if (Userlist[i].enabled)
-			RuleOrder.push_back(i);
-		else
-			RuleOrder.push_back(~i);
-		Rules.push_back(text);
-	}
-
-	
-	size = Modlist.size();
-	wxArrayString ModlistMods;
-	for (size_t i=0;i<size;i++) {
-		if (Modlist[i].type == MOD)
-			ModlistMods.push_back(Modlist[i].name.string());
-	}
-
-	size = Masterlist.size();
-	wxArrayString MasterlistMods;
-	for (size_t i=0;i<size;i++) {
-		//if (Masterlist[i].type == MOD)
-			MasterlistMods.push_back(Masterlist[i].name.string());
-	}
 
 	//Set up stuff in the frame.
 	SetBackgroundColour(wxColour(255,255,255));
@@ -213,21 +116,21 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	mainBox->Add(rulesBox);
 	////////Rule buttons
 	wxBoxSizer *buttons = new wxBoxSizer(wxHORIZONTAL);
-	buttons->Add(NewRuleButton = new wxButton(this, OPTION_NewRule, wxT("Create New Rule"), wxDefaultPosition, wxDefaultSize));
-	buttons->Add(NewRuleButton = new wxButton(this, OPTION_EditRule, wxT("Save Edited Rule"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 20);
-	buttons->Add(NewRuleButton = new wxButton(this, OPTION_DeleteRule, wxT("Delete Rule"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 20);
+	buttons->Add(NewRuleButton = new wxButton(this, BUTTON_NewRule, wxT("Create New Rule"), wxDefaultPosition, wxDefaultSize));
+	buttons->Add(NewRuleButton = new wxButton(this, BUTTON_EditRule, wxT("Save Edited Rule"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 20);
+	buttons->Add(NewRuleButton = new wxButton(this, BUTTON_DeleteRule, wxT("Delete Rule"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 20);
 	rulesBox->Add(buttons, 0, wxALIGN_RIGHT|wxALL, 10);
 	//////Second column.
 	wxBoxSizer *listmessBox = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *listsBox = new wxBoxSizer(wxHORIZONTAL);
 	////////Modlist column.
 	wxStaticBoxSizer *modlistBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Installed Mods"));
-	modlistBox->Add(ModlistSearch = new wxSearchCtrl(this, SEARCH_Modlist));
+	modlistBox->Add(ModlistSearch = new wxSearchCtrl(this, SEARCH_Modlist, wxEmptyString, wxDefaultPosition, wxDefaultSize,wxTE_PROCESS_ENTER));
 	modlistBox->Add(InstalledModsList = new wxListBox(this, LIST_Modlist, wxDefaultPosition, wxDefaultSize, ModlistMods));
 	listsBox->Add(modlistBox);
 	////////Masterlist column.
 	wxStaticBoxSizer *masterlistBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Masterlist"));
-	masterlistBox->Add(MasterlistSearch = new wxSearchCtrl(this, SEARCH_Masterlist));
+	masterlistBox->Add(MasterlistSearch = new wxSearchCtrl(this, SEARCH_Masterlist, wxEmptyString, wxDefaultPosition, wxDefaultSize,wxTE_PROCESS_ENTER));
 	masterlistBox->Add(MasterlistModsList = new wxListBox(this, LIST_Masterlist, wxDefaultPosition, wxDefaultSize, MasterlistMods));
 	listsBox->Add(masterlistBox);
 	listmessBox->Add(listsBox);
@@ -241,11 +144,26 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 
 	////Window buttons
 	wxBoxSizer *mainButtonBox = new wxBoxSizer(wxHORIZONTAL);
-	mainButtonBox->Add(new wxButton(this, OPTION_OKExitEditor, wxT("Save"), wxDefaultPosition, wxDefaultSize));
-	mainButtonBox->Add(new wxButton(this, OPTION_CancelExitEditor, wxT("Cancel"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 20);
+	mainButtonBox->Add(new wxButton(this, BUTTON_OKExitEditor, wxT("Save"), wxDefaultPosition, wxDefaultSize));
+	mainButtonBox->Add(new wxButton(this, BUTTON_CancelExitEditor, wxT("Cancel"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 20);
 
 	//Now add TabHolder and OK button to window sizer.
 	bigBox->Add(mainButtonBox, 0, wxALIGN_RIGHT|wxALL, 10);
+
+	//Now set defaults.
+	SortModOption->SetValue(true);
+	SortModOption->Enable(false);
+	InsertModOption->Enable(false);
+	BeforeAfterChoiceBox->Enable(false);
+	SortModBox->Enable(false);
+	TopBottomChoiceBox->Enable(false);
+	InsertModBox->Enable(false);
+	BeforeAfterChoiceBox->SetSelection(0);
+	TopBottomChoiceBox->SetSelection(0);
+
+	NewModMessagesBox->Enable(false);
+	ReplaceMessagesCheckBox->Enable(false);
+	ModMessagesBox->Enable(false);
 
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
@@ -266,9 +184,7 @@ void UserRulesEditorFrame::OnOKQuit(wxCommandEvent& event) {
 		outFile << endl;
 	}
 
-
 	outFile.close();
-
 	this->Close();
 }
 
@@ -276,12 +192,51 @@ void UserRulesEditorFrame::OnCancelQuit(wxCommandEvent& event) {
 	this->Close();
 }
 
-void UserRulesEditorFrame::OnSearchModlist(wxCommandEvent& event) {
-
+void UserRulesEditorFrame::OnSearchList(wxCommandEvent& event) {
+	wxListBox *list;
+	wxSearchCtrl *search;
+	wxArrayString arr, resultsArray;
+	string searchStr;
+	if (event.GetId() == SEARCH_Modlist) {
+		list = InstalledModsList;
+		search = ModlistSearch;
+		arr = ModlistMods;
+		resultsArray = ModlistSearchResultMods;
+	} else {
+		list = MasterlistModsList;
+		search = MasterlistSearch;
+		arr = MasterlistMods;
+		resultsArray = MasterlistSearchResultMods;
+	}
+	search->ShowCancelButton(true);
+	searchStr = search->GetValue();
+	searchStr = Tidy(searchStr);
+	size_t length = searchStr.length();
+	if (length == 0) {
+		OnCancelSearch(event);
+		return;
+	}
+	int size = arr.GetCount();
+	resultsArray.Clear();
+	for (int i=0;i<size;i++) {
+		if (Tidy(string(arr[i].substr(0,length))) == searchStr)
+			resultsArray.push_back(arr[i]);
+	}
+	list->Set(resultsArray);
 }
 
-void UserRulesEditorFrame::OnSearchMasterlist(wxCommandEvent& event) {
-
+void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
+	if (event.GetId() == SEARCH_Modlist) {
+		ModlistSearchResultMods.Clear();
+		ModlistSearch->ShowCancelButton(false);
+		ModlistSearch->SetValue("");
+		InstalledModsList->Set(ModlistMods);
+	} else {
+		MasterlistSearchResultMods.Clear();
+		MasterlistSearch->ShowCancelButton(false);
+		MasterlistSearch->SetValue("");
+		MasterlistModsList->Set(MasterlistMods);
+	}
 }
 
 void UserRulesEditorFrame::OnSelectModInMasterlist(wxCommandEvent& event) {
@@ -332,21 +287,76 @@ void UserRulesEditorFrame::OnSortInsertChange(wxCommandEvent& event) {
 }
 
 void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
-
+	rule newRule = GetRuleFromForm();
+	if (newRule.enabled == false)
+		wxMessageBox(wxString::Format(
+				wxT("Rule Syntax Error: " + newRule.ruleObject + " Please correct the mistake before continuing.")
+			),
+			wxT("BOSS: Error"),
+			wxOK | wxICON_ERROR,
+			NULL);
+	//Update Userlist object.
+	Userlist.push_back(newRule);
+	//Now update RuleList text.
+	Rules.push_back(GetRuleText(Userlist.size()-1));
+	if (Userlist.back().enabled)
+		RuleOrder.push_back(Userlist.size()-1);
+	else
+		RuleOrder.push_back(~(Userlist.size()-1));
+	RulesList->Update();  //This doesn't work.
 }
 
 void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
+	wxMessageDialog *dlg = new wxMessageDialog(this,
+			wxT("Are you sure you want to save your changes to the selected rule?")
+			, wxT("BOSS: User Rules Editor"), wxYES_NO);
 
+	if (dlg->ShowModal() != wxID_YES)  //User has chosen not to save.
+		return;
+	else {  //User has chosen to save.
+		int i = RulesList->GetSelection();
+		rule newRule = GetRuleFromForm();
+		if (newRule.enabled == false)
+			wxMessageBox(wxString::Format(
+					wxT("Rule Syntax Error: " + newRule.ruleObject + " Please correct the mistake before continuing.")
+				),
+				wxT("BOSS: Error"),
+				wxOK | wxICON_ERROR,
+				NULL);
+		//Update Userlist object.
+		Userlist.push_back(newRule);
+		//Now update RuleList text.
+		string text = GetRuleText(i);
+		RulesList->SetString(i,text);
+	}
 }
 
 void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
-	//int i = RulesList->GetSelection();
-	//Userlist.erase(Userlist.begin()+i);
+	wxMessageDialog *dlg = new wxMessageDialog(this,
+			wxT("Are you sure you want to delete the selected rule?")
+			, wxT("BOSS: User Rules Editor"), wxYES_NO);
+
+	if (dlg->ShowModal() != wxID_YES)  //User has chosen not to delete.
+		return;
+	else {  //User has chosen to delete.
+		int i = RulesList->GetSelection();
+		Userlist.erase(Userlist.begin()+i);
+		Rules.erase(Rules.begin()+i);
+		RuleOrder.erase(RuleOrder.begin()+i);
+		RulesList->Update();  //This doesn't work.
+	}
 }
 
 void UserRulesEditorFrame::OnToggleRuleCheckbox(wxCommandEvent& event) {
 	unsigned int i = event.GetInt();
 	Userlist[i].enabled = RulesList->IsChecked(i);
+	Userlist[i].enabled = false;
+	wxMessageBox(wxString::Format(
+			wxT("Error: "+IntToString(i)+" Scanning for plugins aborted. User Rules Editor cannot load.")
+		),
+		wxT("BOSS: Error"),
+		wxOK | wxICON_ERROR,
+		NULL);
 }
 
 void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
@@ -416,4 +426,216 @@ void UserRulesEditorFrame::OnRuleOrderChange(wxCommandEvent& event) {
 		Userlist.erase(Userlist.begin()+i);
 		Userlist.insert(Userlist.begin()+i+1,selectedRule);
 	}
+}
+
+void UserRulesEditorFrame::LoadLists() {
+	vector<item> Modlist;
+	size_t size;
+
+	///////////////
+	// Modlist
+	///////////////
+
+	//Need to parse userlist, masterlist and build modlist.
+	BuildModlist(Modlist);
+
+	size = Modlist.size();
+	for (size_t i=0;i<size;i++)
+		ModlistMods.push_back(Modlist[i].name.string());
+
+	////////////////
+	// Masterlist
+	////////////////
+
+	//Parse masterlist/modlist backup into data structure.
+	LOG_INFO("Starting to parse sorting file: %s", masterlist_path.string().c_str());
+	try {
+		parseMasterlist(masterlist_path,Masterlist);
+	} catch (boss_error e) {
+		wxMessageBox(wxString::Format(
+				wxT("Error: "+e.getString()+" Scanning for plugins aborted. User Rules Editor cannot load.")
+			),
+			wxT("BOSS: Error"),
+			wxOK | wxICON_ERROR,
+			NULL);
+		return;
+	}
+
+	//Check if parsing failed. If so, exit with errors.
+	if (!masterlistErrorBuffer.empty()) {
+		size_t size = masterlistErrorBuffer.size();
+		for (size_t i=0; i<size; i++)  //Print parser error messages.
+			Output(masterlistErrorBuffer[i]);
+		wxMessageBox(wxString::Format(
+				wxT("Error: "+masterlistErrorBuffer[0]+" Masterlist parsing aborted. User Rules Editor cannot load.")
+			),
+			wxT("BOSS: Error"),
+			wxOK | wxICON_ERROR,
+			NULL);
+		return;
+	}
+
+	size = Masterlist.size();
+	for (size_t i=0;i<size;i++) {
+		//if (Masterlist[i].type == MOD)
+		if (!Masterlist[i].name.empty())
+			MasterlistMods.push_back(Masterlist[i].name.string());
+	}
+
+	////////////////
+	// Userlist
+	////////////////
+
+	LOG_INFO("Starting to parse userlist.");
+	try {
+		bool parsed = parseUserlist(userlist_path,Userlist);
+		if (!parsed)
+			Userlist.clear();  //If userlist has parsing errors, empty it so no rules are applied.
+	} catch (boss_error e) {
+		LOG_ERROR("Error: %s", e.getString().c_str());
+		wxMessageBox(wxString::Format(
+				wxT("Error: "+e.getString()+" Userlist parsing aborted. User Rules Editor cannot load existing rules.")
+			),
+			wxT("BOSS: Error"),
+			wxOK | wxICON_ERROR,
+			NULL);
+	}
+
+	//Trim down masterlist.
+	lastRec = BuildWorkingModlist(Modlist,Masterlist,Userlist);
+
+	//Now disable any ADD rules with rule mods that are in the masterlist.
+	size = Userlist.size();
+	for (size_t i=0;i<size;i++) {
+		size_t pos = GetModPos(Masterlist,Userlist[i].ruleObject);
+		if (pos < lastRec && pos != (size_t)-1)  //Mod in masterlist.
+			Userlist[i].enabled = false;
+	}
+
+	size = Userlist.size();
+	for (size_t i=0;i<size;i++) {
+		string text = GetRuleText(i);
+		if (Userlist[i].enabled)
+			RuleOrder.push_back(i);
+		else
+			RuleOrder.push_back(~i);
+		Rules.push_back(text);
+	}
+}
+
+string UserRulesEditorFrame::GetRuleText(int i) {
+	string text = "";
+	bool hasAddedMessages = false;
+	size_t linesSize = Userlist[i].lines.size();
+	for (size_t j=0;j<linesSize;j++) {
+		if (Userlist[i].lines[j].key == BEFORE)
+			text = "Sort \"" + Userlist[i].ruleObject + "\" before \"" + Userlist[i].lines[j].object + "\"\n";
+		else if (Userlist[i].lines[j].key == AFTER)
+			text = "Sort \"" + Userlist[i].ruleObject + "\" after \"" + Userlist[i].lines[j].object + "\"\n";
+		else if (Userlist[i].lines[j].key == TOP)
+			text = "Insert \"" + Userlist[i].ruleObject + "\" at the top of \"" + Userlist[i].lines[j].object + "\"\n";
+		else if (Userlist[i].lines[j].key == BOTTOM)
+			text = "Insert \"" + Userlist[i].ruleObject + "\" at the bottom of \"" + Userlist[i].lines[j].object + "\"\n";
+		else if (Userlist[i].lines[j].key == APPEND) {
+			if (!hasAddedMessages)
+				text += "Add the following messages to \"" + Userlist[i].ruleObject + "\":\n";
+			text += "  " + Userlist[i].lines[j].object + "\n";
+			hasAddedMessages = true;
+		} else if (Userlist[i].lines[j].key == REPLACE) {
+			text += "Replace the messages attached to \"" + Userlist[i].ruleObject + "\" with:\n";
+			text += "  " + Userlist[i].lines[j].object + "\n";
+		}
+	}
+	return text;
+}
+
+rule UserRulesEditorFrame::GetRuleFromForm() {
+	rule newRule;
+	//First validate.
+	//Calling functions need to check for an enabled = false; rule as a failure.
+	//Failure description is given in ruleObject.
+	if (IsPlugin(string(RuleModBox->GetValue()))) {
+		if (SortModOption->GetValue() && !IsPlugin(string(SortModBox->GetValue()))) {  //Sort object is a group. Error.
+				newRule.enabled = false;
+				newRule.ruleObject = "Cannot sort a plugin relative to a group.";
+				return newRule;
+		} else if (IsPlugin(string(InsertModBox->GetValue()))) {  //Inserting into a mod. Error.
+			newRule.enabled = false;
+			newRule.ruleObject = "Cannot insert into a plugin.";
+			return newRule;
+		}
+		if (AddMessagesCheckBox->IsChecked() && NewModMessagesBox->IsEmpty()) {  //Can't add no messages. Error.
+			newRule.enabled = false;
+			newRule.ruleObject = "Cannot add messages when none are given.";
+			return newRule;
+		}
+	} else {  //Rule object is a group.
+		if (SortModOption->GetValue() && IsPlugin(string(SortModBox->GetValue()))) {  //Sort object is a plugin. Error.
+				newRule.enabled = false;
+				newRule.ruleObject = "Cannot sort a group relative to a plugin.";
+				return newRule;
+		} else {  //Can't insert groups. Error.
+			newRule.enabled = false;
+			newRule.ruleObject = "Cannot insert groups.";
+			return newRule;
+		}
+		if (AddMessagesCheckBox->IsChecked()) {  //Can't add messages to a group. Error.
+			newRule.enabled = false;
+			newRule.ruleObject = "Cannot add messages to groups.";
+			return newRule;
+		}
+	}
+
+	newRule.enabled = true;
+	newRule.ruleObject = RuleModBox->GetValue();
+	if (!SortModsCheckBox->IsChecked())
+		newRule.ruleKey = FOR;
+	else {
+		size_t pos = GetModPos(Masterlist,newRule.ruleObject);
+		if (pos < lastRec && pos != (size_t)-1)  //Mod in masterlist.
+			newRule.ruleKey = OVERRIDE;
+		else
+			newRule.ruleKey = ADD;
+		
+		if (SortModOption->GetValue()) {
+			line newLine;
+			newLine.object = SortModBox->GetValue();
+			if (BeforeAfterChoiceBox->GetSelection() == 0)
+				newLine.key = BEFORE;
+			else
+				newLine.key = AFTER;
+			newRule.lines.push_back(newLine);
+		} else if (InsertModOption->GetValue()) {
+			line newLine;
+			newLine.object = InsertModBox->GetValue();
+			if (TopBottomChoiceBox->GetSelection() == 0)
+				newLine.key = TOP;
+			else
+				newLine.key = BOTTOM;
+			newRule.lines.push_back(newLine);
+		}
+	}
+
+	//Now add message lines.
+	if (AddMessagesCheckBox->IsChecked()) {
+		line newLine;
+		string messages = NewModMessagesBox->GetValue();
+		size_t pos1 = 0, pos2 = string::npos;
+		pos2 = messages.find("\n",pos1);
+		while (pos2 != string::npos) {
+			newLine.object = trim_copy(messages.substr(pos1,pos2-pos1));
+			if (pos1 == 0 && ReplaceMessagesCheckBox->IsChecked())
+				newLine.key = REPLACE;
+			else
+				newLine.key = APPEND;
+			newRule.lines.push_back(newLine);
+
+			if (pos2 == messages.length()-1)
+				break;
+			pos1 = pos2 + 1;
+			pos2 = messages.find("\n",pos1);
+		}
+	}
+
+	return newRule;
 }

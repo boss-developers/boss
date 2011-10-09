@@ -30,7 +30,6 @@
 #include "GUI/ElementIDs.h"
 #include "BOSS-Common.h"
 
-
 wxDEFINE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
 
 BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
@@ -990,8 +989,12 @@ void MainFrame::Update(string updateVersion) {
 }
 
 void MainFrame::OnOpenSettings(wxCommandEvent& event) {
+	//Tell the user that stuff is happenining.
+	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Loading..."),wxT("BOSS User Rules Editor loading..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
+	progDia->Pulse();
 	SettingsFrame *settings = new SettingsFrame(wxT("Better Oblivion Sorting Software: Settings"),this);
 	settings->SetIcon(wxIconLocation("BOSS GUI.exe"));
+	progDia->Destroy();
 	settings->Show();
 }
 
