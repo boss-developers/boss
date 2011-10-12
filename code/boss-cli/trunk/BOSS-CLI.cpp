@@ -299,6 +299,9 @@ int main(int argc, char *argv[]) {
 							try {
 								uiStruct ui;
 								vector<string> fails = DownloadInstallBOSSUpdate(ui, INSTALLER, updateVersion);
+
+								cout << endl << "Release notes for v" << updateVersion+":" << endl << endl << FetchReleaseNotes(updateVersion) << endl;
+
 								cout << endl << "New installer successfully downloaded!" << endl;
 								if (!fails.empty()) {
 									cout << "There were errors renaming the downloaded files. After BOSS quits, remove the \".new\" extension from the following file(s), deleting any existing files with the same names, then run the downloaded installer to complete the update:" << endl << endl;
@@ -362,6 +365,8 @@ int main(int argc, char *argv[]) {
 							try {
 								uiStruct ui;
 								vector<string> fails = DownloadInstallBOSSUpdate(ui, MANUAL, updateVersion);
+
+								cout << endl << "Release notes for v" << updateVersion+":" << endl << endl << FetchReleaseNotes(updateVersion) << endl;
 								
 								if (!fails.empty()) {
 									cout << endl << "Files successfully downloaded!" << endl

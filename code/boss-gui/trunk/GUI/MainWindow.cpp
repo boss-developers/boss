@@ -921,8 +921,11 @@ void MainFrame::Update(string updateVersion) {
 				message += fails[i] +".new\n";
 			wxMessageBox(wxT("New installer successfully downloaded!\n\n"+message), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 		} else {
-			//Remind the user to run the uninstaller and installer.
-			wxMessageBox(wxT("New installer successfully downloaded!\n\nWhen you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+			//Display release notes.
+			wxMessageBox(wxT("New installer successfully downloaded! Release notes for v"+updateVersion+":\n\n"+FetchReleaseNotes(updateVersion)), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+			//Remind the user to run the installer.
+			wxMessageBox(wxT("When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+
 
 			//Now run downloaded installer then exit.
 			//Although there should only be one installer file, to be safe iterate through the files vector.
@@ -975,12 +978,14 @@ void MainFrame::Update(string updateVersion) {
 			return;
 		}
 
+		//Display release notes.
+		wxMessageBox(wxT("Release notes for v"+updateVersion+":\n\n"+FetchReleaseNotes(updateVersion)), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+
 		if (!fails.empty()) {
 			message = "However, the following files could not be automatically installed. When you click 'OK', BOSS will exit. After BOSS exits, remove the \".new\" extension from the following file(s), deleting any existing files with the same names to complete the update:\n\n";
 			size_t size=fails.size();
-			for (size_t i=0;i<size;i++) {
+			for (size_t i=0;i<size;i++)
 				message += fails[i] + ".new\n";
-			}
 			wxMessageBox(wxT("Files successfully downloaded!\n\n"+message), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 		} else
 			wxMessageBox(wxT("Files successfully updated!\n\nWhen you click 'OK', BOSS will exit."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);

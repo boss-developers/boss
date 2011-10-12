@@ -83,5 +83,8 @@ namespace boss {
 
 	//Prints the full BOSSlog.
 	BOSS_COMMON_EXP void PrintBOSSlog(const bosslogContents contents, const summaryCounters counters, const string scriptExtender);
+
+	//Evaluates masterlist conditionals.
+	BOSS_COMMON_EXP void EvaluateMasterlistConditionals(vector<item>& masterlist);
 }
 #endif

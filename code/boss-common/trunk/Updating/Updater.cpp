@@ -20,6 +20,8 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
 
 #include <stdio.h>
 #include <iostream>
@@ -38,6 +40,7 @@
 
 BOOST_FUSION_ADAPT_STRUCT(
     boss::fileInfo,
+	(bool, toDelete)
 	(std::string, name)
     (unsigned int, crc)
 )
@@ -53,11 +56,13 @@ namespace boss {
 	fileInfo::fileInfo() {
 		name = "";
 		crc = 0;
+		toDelete = false;
 	}
 
 	fileInfo::fileInfo(string str) {
 		name = str;
 		crc = 0;
+		toDelete = false;
 	}
 
 	uiStruct::uiStruct() {
@@ -245,7 +250,7 @@ namespace boss {
 		//Loop through the vector and download and save each file. Use binary streams.
 		size_t size = updatedFiles.size();
 		for (size_t i=0;i<size;i++) {
-			if (updatedFiles[i].name.empty())  //Just in case.
+			if (updatedFiles[i].name.empty() || updatedFiles[i].crc == 0 || updatedFiles[i].toDelete || fs::path(updatedFiles[i].name).extension().empty())
 				continue;
 			fileBuffer.clear();  //Empty buffer ready for next download.
 
@@ -296,8 +301,8 @@ namespace boss {
 	//Installs the downloaded update files.
 	vector<string> InstallFiles(const int updateType) {
 		//First back up current BOSS.ini if it exists and the update is a BOSS program update.
-		if ((updateType == MANUAL || updateType == INSTALLER) && fs::exists("BOSS.ini"))
-			fs::rename("BOSS.ini","BOSS.ini.old");
+		if ((updateType == MANUAL || updateType == INSTALLER) && fs::exists(boss_path / "BOSS.ini"))
+			fs::rename(boss_path / "BOSS.ini",boss_path / "BOSS.ini.old");
 
 		//Now iterate through the vector of updated files.
 		//Delete the current file if it exists, and rename the downloaded updated file, removing the .new extension.
@@ -305,13 +310,28 @@ namespace boss {
 		size_t size = updatedFiles.size();
 		vector<string> err;
 		for (size_t i=0;i<size;i++) {
-			string old = updatedFiles[i].name;
-			string updated = updatedFiles[i].name + ".new";
 
-			try {
-				fs::rename(updated,old);
-			} catch (fs::filesystem_error e) {
-				err.push_back("\"" + updatedFiles[i].name + "\"");
+			if (updatedFiles[i].toDelete) {  //File/folder should be deleted.
+				if (fs::exists(boss_path / updatedFiles[i].name)) {
+					if (fs::is_directory(boss_path / updatedFiles[i].name))
+						fs::remove_all(boss_path / updatedFiles[i].name);
+					else
+						fs::remove(boss_path / updatedFiles[i].name);
+				}
+			} else {						//File/folder should be created/replaced.
+				if (fs::is_directory(boss_path / updatedFiles[i].name)) {
+					if (!fs::exists(boss_path / updatedFiles[i].name))
+						fs::create_directory(boss_path / updatedFiles[i].name)
+				} else {
+					string old = updatedFiles[i].name;
+					string updated = updatedFiles[i].name + ".new";
+
+					try {
+						fs::rename(boss_path / updated, boss_path / old);
+					} catch (fs::filesystem_error e) {
+						err.push_back("\"" + updatedFiles[i].name + "\"");
+					}
+				}
 			}
 		}
 		return err;
@@ -580,11 +600,51 @@ namespace boss {
 		//Now parse list to extract file info.
 		string::const_iterator start = fileBuffer.begin(), end = fileBuffer.end();
 		bool p = qi::phrase_parse(start,end,
-			(('"' >> qi::lexeme[+(unicode::char_ - '"')] >> '"' >> qi::lit(":") >> qi::hex - qi::eol) | qi::eoi) % qi::eol,
+			(
+				(
+					(qi::char_('+')[qi::_1 = false] | qi::char_('-')[qi::_1 = true])
+					>> '"' 
+					>> qi::lexeme[+(unicode::char_ - '"')] 
+					>> '"' 
+					>> (
+							(qi::lit(":") >> qi::hex - qi::eol) 
+							| qi::eps[qi::_1 = 0]
+						)
+				) 
+				| qi::eoi
+			) % qi::eol,
 			unicode::space - qi::eol, updatedFiles);
 		if (!p || start != end) {
 			throw boss_error(BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL);
 		}
+	}
+
+	//Gets the release notes for the update.
+	string FetchReleaseNotes(const string updateVersion) {
+		string fileBuffer, remote_file;
+		char errbuff[CURL_ERROR_SIZE];
+		CURL *curl;									//cURL handle
+		CURLcode ret;
+
+		filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/";
+
+		//curl will be used to get stuff from the internet, so initialise it.
+		curl = InitCurl(errbuff);
+
+		//First get file list and crcs to build updatedFiles vector.
+		remote_file = filesURL+"releasenotes.txt";
+		curl_easy_setopt(curl, CURLOPT_URL, remote_file.c_str());
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);	
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
+		ret = curl_easy_perform(curl);
+		if (ret!=CURLE_OK) {
+			string err = errbuff;
+			curl_easy_cleanup(curl);
+			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
+		}
+		curl_easy_cleanup(curl);
+
+		return fileBuffer;
 	}
 
 	//Checks if a new release of BOSS is available or not.
@@ -623,6 +683,4 @@ namespace boss {
 		DownloadFiles(ui, updateType);
 		return InstallFiles(updateType);
 	}
-
-	
 }

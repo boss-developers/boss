@@ -29,7 +29,8 @@ namespace boss {
 		MASTERLIST
 	};
 
-	struct fileInfo {  //Holds the information for files to be downloaded.
+	struct fileInfo {  //Holds the information for files to be downloaded, and also folders to be created/destroyed.
+		bool toDelete;
 		string name;
 		unsigned int crc;
 
@@ -73,6 +74,9 @@ namespace boss {
 
 	//Checks if a new release of BOSS is available or not.
 	BOSS_COMMON_EXP string IsBOSSUpdateAvailable();
+
+	//Gets the release notes for the update.
+	BOSS_COMMON_EXP string FetchReleaseNotes(const string updateVersion);
 
 	//Downloads and installs a BOSS update.
 	BOSS_COMMON_EXP vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const int updateType, const string updateVersion);

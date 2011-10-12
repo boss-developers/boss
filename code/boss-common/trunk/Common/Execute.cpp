@@ -96,6 +96,9 @@ namespace boss {
 			game = 5;
 		else
 			throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
+			/*In BOSSv2.0, this is where we will query the following registry entries:
+			Oblivion x86: "HKLM\Software\Bethesda Softworks\Oblivion\Install Path"
+			Oblivion x64: "HKLM\Software\Wow6432Node\Bethesda Softworks\Oblivion\Install Path"
 	}
 
 	//Gets the string representation of the detected game.
@@ -800,5 +803,10 @@ namespace boss {
 
 		Output("<h3 id='end'>Execution Complete</h3>");
 		OutputFooter();
+	}
+
+	//Evaluates masterlist conditionals.
+	BOSS_COMMON_EXP void EvaluateMasterlistConditionals(vector<item>& masterlist) {
+
 	}
 }
