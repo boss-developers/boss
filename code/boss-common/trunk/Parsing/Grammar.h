@@ -169,6 +169,11 @@ namespace boss {
 	static const string EInsertingToTopOfEsms("tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.");
 	static const string EInsertingGroupOrIntoMod("tries to insert a group or insert something into a mod.");
 	static const string EAttachingMessageToGroup("tries to attach a message to a group.");
+	static const string EMultipleSortLines("has more than one sort line.");
+	static const string EMultipleReplaceLines("has more than one REPLACE-using message line.");
+	static const string EReplaceNotFirst("has a REPLACE-using message line that is not the first message line.");
+	static const string ESortNotSecond("has a sort line that is not the second line of the rule.");
+	static const string ESortingToItself("tries to sort a mod or group relative to itself.");
 
 	// Used to throw as exception when signaling a userlist syntax error, in order to make the code a bit more compact.
 	struct failure {

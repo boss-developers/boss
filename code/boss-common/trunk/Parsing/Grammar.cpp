@@ -863,13 +863,20 @@ namespace boss {
 					throw failure(ruleKey, ruleObject, EAttachingMessageToGroup);
 			}
 			size_t size = currentRule.lines.size();
+			bool hasSortLine = false, hasReplaceLine = false;
 			for (size_t i=0; i<size; i++) {
 				boost::algorithm::trim(currentRule.lines[i].object);  //Make sure there are no preceding or trailing spaces.
 				keyType key = currentRule.lines[i].key;
 				string subject = currentRule.lines[i].object;
 				if (key == BEFORE || key == AFTER) {
+					if (hasSortLine)
+						throw failure(ruleKey, ruleObject, EMultipleSortLines);
+					if (i != 0)
+						throw failure(ruleKey, ruleObject, ESortNotSecond);
 					if (ruleKey == FOR)
 						throw failure(ruleKey, ruleObject, ESortLineInForRule);
+					if (ruleObject == subject)
+						throw failure(ruleKey, ruleObject, ESortingToItself);
 					if ((IsPlugin(ruleObject) && !IsPlugin(subject)) || (!IsPlugin(ruleObject) && IsPlugin(subject)))
 						throw failure(ruleKey, ruleObject, EReferencingModAndGroup);
 					if (key == BEFORE) {
@@ -878,16 +885,29 @@ namespace boss {
 						else if (IsMasterFile(subject))
 							throw failure(ruleKey, ruleObject, ESortingModBeforeGameMaster);
 					}
+					hasSortLine = true;
 				} else if (key == TOP || key == BOTTOM) {
+					if (hasSortLine)
+						throw failure(ruleKey, ruleObject, EMultipleSortLines);
+					if (i != 0)
+						throw failure(ruleKey, ruleObject, ESortNotSecond);
 					if (ruleKey == FOR)
 						throw failure(ruleKey, ruleObject, ESortLineInForRule);
 					if (key == TOP && Tidy(subject) == "esms")
 						throw failure(ruleKey, ruleObject, EInsertingToTopOfEsms);
 					if (!IsPlugin(ruleObject) || IsPlugin(subject))
 						throw failure(ruleKey, ruleObject, EInsertingGroupOrIntoMod);
+					hasSortLine = true;
 				} else if (key == APPEND || key == REPLACE) {
 					if (!IsPlugin(ruleObject))
 						throw failure(ruleKey, ruleObject, EAttachingMessageToGroup);
+					if (key == REPLACE) {
+						if (hasReplaceLine)
+							throw failure(ruleKey, ruleObject, EMultipleReplaceLines);
+						if ((ruleKey == FOR && i != 0) || (ruleKey != FOR && i != 1))
+							throw failure(ruleKey, ruleObject, EReplaceNotFirst);
+						hasReplaceLine = true;
+					}
 				}
 			}
 		} catch (failure & e) {

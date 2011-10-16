@@ -99,6 +99,7 @@ namespace boss {
 			/*In BOSSv2.0, this is where we will query the following registry entries:
 			Oblivion x86: "HKLM\Software\Bethesda Softworks\Oblivion\Install Path"
 			Oblivion x64: "HKLM\Software\Wow6432Node\Bethesda Softworks\Oblivion\Install Path"
+			*/
 	}
 
 	//Gets the string representation of the detected game.
@@ -175,6 +176,7 @@ namespace boss {
 				hashset.insert(Tidy(modlist[i].name.string()));
 		}
 		LOG_INFO("Populating hashset with userlist.");
+		//Need to get ruleObject and sort line object if plugins.
 		for (size_t i=0; i<userlistSize; i++) {
 			if (IsPlugin(userlist[i].ruleObject)) {
 				setPos = hashset.find(Tidy(userlist[i].ruleObject));
@@ -186,15 +188,14 @@ namespace boss {
 					}
 				}
 			}
-			linesSize = userlist[i].lines.size();
-			for (size_t j=0; j<linesSize; j++) {
-				if (IsPlugin(userlist[i].lines[j].object)) {
-					setPos = hashset.find(Tidy(userlist[i].lines[j].object));
+			if (userlist[i].ruleKey != FOR) {  //First line is a sort line.
+				if (IsPlugin(userlist[i].lines[0].object)) {
+					setPos = hashset.find(Tidy(userlist[i].lines[0].object));
 					if (setPos == hashset.end()) {  //Mod not already in hashset.
-						setPos = hashset.find(Tidy(userlist[i].lines[j].object + ".ghost"));
+						setPos = hashset.find(Tidy(userlist[i].lines[0].object + ".ghost"));
 						if (setPos == hashset.end()) {  //Ghosted mod not already in hashset. 
 							//Unique plugin, so add to hashset.
-							hashset.insert(Tidy(userlist[i].lines[j].object));
+							hashset.insert(Tidy(userlist[i].lines[0].object));
 						}
 					}
 				}
@@ -299,9 +300,9 @@ namespace boss {
 			if (!userlist[i].enabled)
 				continue;
 			size_t linesSize = userlist[i].lines.size();
-			for (size_t j=0; j<linesSize; j++) {
+			if (userlist[i].ruleKey != FOR) { //First line is a sort line.
 				//A mod sorting rule.
-				if ((userlist[i].lines[j].key == BEFORE || userlist[i].lines[j].key == AFTER) && IsPlugin(userlist[i].lines[j].object)) {
+				if ((userlist[i].lines[0].key == BEFORE || userlist[i].lines[0].key == AFTER) && IsPlugin(userlist[i].lines[0].object)) {
 					size_t index1,index2;
 					item mod;
 					index1 = GetModPos(modlist,userlist[i].ruleObject);  //Find the rule mod in the modlist.
@@ -326,14 +327,14 @@ namespace boss {
 					//Remove the rule mod from its current position.
 					modlist.erase(modlist.begin()+index1);
 					//Find the sort mod in the modlist.
-					index2 = GetModPos(modlist,userlist[i].lines[j].object);
+					index2 = GetModPos(modlist,userlist[i].lines[0].object);
 					//Handle case of mods that don't exist at all.
 					if (index2 == (size_t)-1) {
 						if (userlist[i].ruleKey == ADD)
 							lastRecognisedPos--;
 						modlist.insert(modlist.begin()+index1,mod);
-						ouputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(userlist[i].lines[j].object)+"\" is not installed, and is not in the masterlist. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not installed or in the masterlist.", userlist[i].lines[j].object.c_str());
+						ouputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(userlist[i].lines[0].object)+"\" is not installed, and is not in the masterlist. Rule skipped.";
+						LOG_WARN(" * \"%s\" is not installed or in the masterlist.", userlist[i].lines[0].object.c_str());
 						break;
 					}
 					//Handle the case of a rule sorting a mod into a position in unsorted mod territory.
@@ -341,17 +342,17 @@ namespace boss {
 						if (userlist[i].ruleKey == ADD)
 							lastRecognisedPos--;
 						modlist.insert(modlist.begin()+index1,mod);
-						ouputBuffer += "<li class='error'>\""+EscapeHTMLSpecial(userlist[i].lines[j].object)+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", userlist[i].lines[j].object.c_str());
+						ouputBuffer += "<li class='error'>\""+EscapeHTMLSpecial(userlist[i].lines[0].object)+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.";
+						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", userlist[i].lines[0].object.c_str());
 						break;
 					}
 					//Insert the mod into its new position.
-					if (userlist[i].lines[j].key == AFTER) 
+					if (userlist[i].lines[0].key == AFTER) 
 						index2 += 1;
 					modlist.insert(modlist.begin()+index2,mod);
-					ouputBuffer += "<li class='success'>\""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" has been sorted "+EscapeHTMLSpecial(KeyToString(userlist[i].lines[j].key))+" \""+EscapeHTMLSpecial(userlist[i].lines[j].object)+"\".";
+					ouputBuffer += "<li class='success'>\""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" has been sorted "+EscapeHTMLSpecial(KeyToString(userlist[i].lines[0].key))+" \""+EscapeHTMLSpecial(userlist[i].lines[0].object)+"\".";
 				//A group sorting line.
-				} else if ((userlist[i].lines[j].key == BEFORE || userlist[i].lines[j].key == AFTER) && !IsPlugin(userlist[i].lines[j].object)) {
+				} else if ((userlist[i].lines[0].key == BEFORE || userlist[i].lines[0].key == AFTER) && !IsPlugin(userlist[i].lines[0].object)) {
 					vector<item> group;
 					size_t index1, index2;
 					//Look for group to sort. Find start and end positions.
@@ -368,25 +369,25 @@ namespace boss {
 					//Now erase group from modlist.
 					modlist.erase(modlist.begin()+index1,modlist.begin()+index2+1);
 					//Find the group to sort relative to and insert it before or after it as appropriate.
-					if (userlist[i].lines[j].key == BEFORE)
-						index2 = GetModPos(modlist, userlist[i].lines[j].object);  //Find the start.
+					if (userlist[i].lines[0].key == BEFORE)
+						index2 = GetModPos(modlist, userlist[i].lines[0].object);  //Find the start.
 					else
-						index2 = GetGroupEndPos(modlist, userlist[i].lines[j].object);  //Find the end, and add one, as inserting works before the given element.
+						index2 = GetGroupEndPos(modlist, userlist[i].lines[0].object);  //Find the end, and add one, as inserting works before the given element.
 					//Check that the sort group actually exists.
 					if (index2 == (size_t)-1) {
 						modlist.insert(modlist.begin()+index1,group.begin(),group.end());  //Insert the group back in its old position.
-						ouputBuffer += "<li class='error'>The group \""+EscapeHTMLSpecial(userlist[i].lines[j].object)+"\" is not in the masterlist or is malformatted. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlist[i].lines[j].object.c_str());
+						ouputBuffer += "<li class='error'>The group \""+EscapeHTMLSpecial(userlist[i].lines[0].object)+"\" is not in the masterlist or is malformatted. Rule skipped.";
+						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlist[i].lines[0].object.c_str());
 						break;
 					}
-					if (userlist[i].lines[j].key == AFTER)
+					if (userlist[i].lines[0].key == AFTER)
 						index2++;
 					//Now insert the group.
 					modlist.insert(modlist.begin()+index2,group.begin(),group.end());
 					//Print success message.
-					ouputBuffer += "<li class='success'>The group \""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" has been sorted "+KeyToString(userlist[i].lines[j].key)+" the group \""+EscapeHTMLSpecial(userlist[i].lines[j].object)+"\".";
+					ouputBuffer += "<li class='success'>The group \""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" has been sorted "+KeyToString(userlist[i].lines[0].key)+" the group \""+EscapeHTMLSpecial(userlist[i].lines[0].object)+"\".";
 				//An insertion line.
-				} else if (userlist[i].lines[j].key == TOP || userlist[i].lines[j].key == BOTTOM) {
+				} else if (userlist[i].lines[0].key == TOP || userlist[i].lines[0].key == BOTTOM) {
 					size_t index1,index2;
 					item mod;
 					index1 = GetModPos(modlist,userlist[i].ruleObject);  //Find the rule mod in the modlist.
@@ -412,25 +413,29 @@ namespace boss {
 					modlist.erase(modlist.begin()+index1);
 					//Find the position of the group to sort it to.
 					//Find the group to sort relative to and insert it before or after it as appropriate.
-					if (userlist[i].lines[j].key == TOP)
-						index2 = GetModPos(modlist, userlist[i].lines[j].object);  //Find the start.
+					if (userlist[i].lines[0].key == TOP)
+						index2 = GetModPos(modlist, userlist[i].lines[0].object);  //Find the start.
 					else
-						index2 = GetGroupEndPos(modlist, userlist[i].lines[j].object);  //Find the end.
+						index2 = GetGroupEndPos(modlist, userlist[i].lines[0].object);  //Find the end.
 					//Check that the sort group actually exists.
 					if (index2 == (size_t)-1) {
 						if (userlist[i].ruleKey == ADD)
 							lastRecognisedPos--;
 						modlist.insert(modlist.begin()+index1,mod);  //Insert the mod back in its old position.
-						ouputBuffer += "<li class='error'>The group \""+EscapeHTMLSpecial(userlist[i].lines[j].object)+"\" is not in the masterlist or is malformatted. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlist[i].lines[j].object.c_str());
+						ouputBuffer += "<li class='error'>The group \""+EscapeHTMLSpecial(userlist[i].lines[0].object)+"\" is not in the masterlist or is malformatted. Rule skipped.";
+						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlist[i].lines[0].object.c_str());
 						break;
 					}
 					//Now insert the mod into the group.
 					modlist.insert(modlist.begin()+index2,mod);
 					//Print success message.
-					ouputBuffer += "<li class='success'>\""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" inserted at the "+ KeyToString(userlist[i].lines[j].key) + " of group \"" + EscapeHTMLSpecial(userlist[i].lines[j].object) + "\".";
+					ouputBuffer += "<li class='success'>\""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" inserted at the "+ KeyToString(userlist[i].lines[0].key) + " of group \"" + EscapeHTMLSpecial(userlist[i].lines[0].object) + "\".";
+
+				}
+			}
+			for (size_t j=0; j<linesSize; j++) {
 				//A message line.
-				} else if (userlist[i].lines[j].key == APPEND || userlist[i].lines[j].key == REPLACE) {
+				if (userlist[i].lines[j].key == APPEND || userlist[i].lines[j].key == REPLACE) {
 					size_t index, pos;
 					string key,data;
 					message newMessage;

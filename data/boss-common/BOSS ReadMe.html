@@ -846,6 +846,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 		<li>Fixed: Userlist rules which reference plugins that are not installed now have warning messages reported instead of error messages.
 		<li>Fixed: Masterlist conditions now detect ghosted mods correctly.
 		<li>Changed: More robust error handling.
+		<li>Changed: User rules can now only use up to one sort line and/or one REPLACE message line per rule, and cannot sort mods/groups relative to themselves.
 		<li>Changed: Content and slight formatting changes to BOSS Log:
 		<ul>
 			<li><q>Masterlist Update</q> section removed. Update information is now displayed in the <q>Summary</q> section. Updater errors are displayed in the <q>General Messages</q> section.
@@ -880,6 +881,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 		<li>Added: Built-in debug output logging support.
 		<li>Added: <code>DISABLE</code> keyword to user rules that can be placed before a rule's rule keyword to disable it, instead of commenting it out to do the same.
 		<li>Added: Support for authenticated proxies, using the <code>sProxyUsername</code> and <code>sProxyPassword</code> BOSS.ini settings.
+			<ul><li>Note that the support is untested. Feedback from users with authenticated proxies would be appreciated.</ul>
 	</ul>
 	<li>Command Line Interface:
 	<ul>

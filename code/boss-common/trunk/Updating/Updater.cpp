@@ -14,7 +14,7 @@
 #include "Support/Helpers.h"
 #include "Output/Output.h"
 #include "Common/Error.h"
-#include "Parsing\Parser.h"
+#include "Parsing/Parser.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/spirit/include/qi.hpp>
@@ -321,7 +321,7 @@ namespace boss {
 			} else {						//File/folder should be created/replaced.
 				if (fs::is_directory(boss_path / updatedFiles[i].name)) {
 					if (!fs::exists(boss_path / updatedFiles[i].name))
-						fs::create_directory(boss_path / updatedFiles[i].name)
+						fs::create_directory(boss_path / updatedFiles[i].name);
 				} else {
 					string old = updatedFiles[i].name;
 					string updated = updatedFiles[i].name + ".new";

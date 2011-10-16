@@ -173,7 +173,7 @@ AFTER: Unofficial Oblivion Patch.esp
 <p>Would result in MyMod.esp not being sorted after Unofficial Oblivon Patch.esp. The DISABLE keyword should be used instead of silent comments to stop a rule being applied because the latter makes the rule invisible to the GUI's User Rule Editor whereas the former does not.</p><br />
 
 <h2 id="syntax-sort">The Sort Line</h2>
-<p>If a rule's rule keyword is ADD or OVERRIDE, it can sort plugins and should include a <em>sort line</em>. If the rule keyword is FOR, the rule <b>must not</b> include a sort line. The sort line has the structure:
+<p>If a rule's rule keyword is ADD or OVERRIDE, it can sort plugins and should include a <em>sort line</em> directly below the rule line. If the rule keyword is FOR, the rule <b>must not</b> include a sort line. A rule may only contain one sort line. The sort line has the structure:
 <div class="codebox">[SORT KEYWORD]: [SORT OBJECT]</div>
 <p>The <em>sort keyword</em> can be one of:
 <ul>
@@ -192,10 +192,10 @@ to be positioned relative to. Plugins must be sorted relative to other plugins, 
 <p>The <em>message keyword</em> can be one of:
 <ul>
 	<li><em>APPEND</em>: This states that the message is to be appended to the list of messages attached to the rule plugin.
-	<li><em>REPLACE</em>: This states that the message is to replace any existing message or messages attached to the rule plugin.
+	<li><em>REPLACE</em>: This states that the message is to replace any existing message or messages attached to the rule plugin. You may only have up to one REPLACE message line per rule, and if used it must be the first message line.
 </ul>
 <p>The <em>message object</em> is the message, complete with symbol code, that you wish to attach to the plugin defined by the rule object. You cannot attach messages to groups.
-<p>You may have multiple message lines in a rule, to add multiple messages to a plugin, or to override an existing set of messages with a new set.</p><br />
+<p>You may have multiple message lines in a rule (but only the first may use the REPLACE message keyword), to add multiple messages to a plugin, or to override an existing set of messages with a new set.</p><br />
 
 <h2 id="syntax-examples">Examples</h2>
 <p>Here is the contents of an example userlist:
@@ -284,6 +284,7 @@ not be evident:
 	<li>The game's master .ESM file must always load first. You cannot sort it, sort another plugin before it, or insert another plugin into the top of the "ESMs" group.
 	<li>You cannot sort a plugin relative to another plugin that is not in the masterlist and has not been sorted by a previous rule.
 	<li>You cannot include conditionals in any messages added through user rules. While BOSS will not display any errors, the message will be added as if it were a general message with no conditional.
+	<li>You cannot sort mods or groups relative to themselves.
 	<li>
 		<p><b>Rules are applied in the order they are listed</b>. This means you can have several rules sorting different rule objects relative to the same sort object, or have rules sorting rule objects relative to sort objects that were sorted in previous rules.
 		For example:
