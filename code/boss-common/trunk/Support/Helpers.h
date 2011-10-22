@@ -14,6 +14,7 @@
 
 #include "Types.h"
 #include "Common/DllDef.h"
+#include "Common/Classes.h"
 
 #include <cstring>
 #include <iostream>
@@ -52,6 +53,12 @@ namespace boss {
 	//Gets the given OBSE dll or OBSE plugin dll's version number.
 	//Also works for FOSE and NVSE.
 	string GetExeDllVersion(const fs::path& filename);
+
+	//Reads an entire file into a string buffer.
+	void fileToBuffer(const fs::path file, string& buffer);
+
+	//UTF-8 Validator
+	bool ValidateUTF8File(const fs::path file);
 }
 
 #endif

@@ -43,11 +43,11 @@ namespace boss {
 		bool isGUI;
 		size_t fileIndex;
 
-		uiStruct();
-		uiStruct(void *GUIpoint);
+		BOSS_COMMON_EXP uiStruct();
+		BOSS_COMMON_EXP uiStruct(void *GUIpoint);
 	};
 
-	BOSS_COMMON_IMP extern vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
+	BOSS_COMMON_EXP extern vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
 
 	////////////////////////
 	// General Functions

@@ -14,7 +14,7 @@
 namespace boss {
 	using namespace std;
 
-	BOSS_COMMON_EXP const string boss_release_date = "X Y, 2011";
+	BOSS_COMMON_EXP const string boss_release_date = "X November, 2011";
 
 	BOSS_COMMON_EXP ofstream bosslog;					//BOSSlog.txt - output file.
 

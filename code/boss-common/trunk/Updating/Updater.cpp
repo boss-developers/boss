@@ -54,7 +54,7 @@ namespace boss {
 	using boost::algorithm::replace_all;
 		
 	fileInfo::fileInfo() {
-		name = "";
+		name.clear();
 		crc = 0;
 		toDelete = false;
 	}
@@ -65,13 +65,13 @@ namespace boss {
 		toDelete = false;
 	}
 
-	uiStruct::uiStruct() {
+	BOSS_COMMON_EXP uiStruct::uiStruct() {
 		p = 0;
 		isGUI = false;
 		fileIndex = 0;
 	}
 
-	uiStruct::uiStruct(void *GUIpoint) {
+	BOSS_COMMON_EXP uiStruct::uiStruct(void *GUIpoint) {
 		p = GUIpoint;
 		isGUI = true;
 		fileIndex = 0;
@@ -250,7 +250,7 @@ namespace boss {
 		//Loop through the vector and download and save each file. Use binary streams.
 		size_t size = updatedFiles.size();
 		for (size_t i=0;i<size;i++) {
-			if (updatedFiles[i].name.empty() || updatedFiles[i].crc == 0 || updatedFiles[i].toDelete || fs::path(updatedFiles[i].name).extension().empty())
+			if (updatedFiles[i].name.empty() || updatedFiles[i].toDelete || fs::path(updatedFiles[i].name).extension().empty())  //Skip if no item name, or if item to be deleted, or if item has no extension (assume is a folder).
 				continue;
 			fileBuffer.clear();  //Empty buffer ready for next download.
 
@@ -385,7 +385,7 @@ namespace boss {
 			mlist.close();
 		}
 		revision = 0;
-		date = "";
+		date.clear();
 		return;  //No version found.
 	}
 

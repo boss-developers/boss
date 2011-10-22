@@ -67,47 +67,47 @@ namespace boss {
 	BOSS_COMMON_EXP string CSSRequirement		= "";
 	BOSS_COMMON_EXP string CSSIncompatibility	= "";
 
-	void ShowMessage(string& buffer, message currentMessage) {
-		currentMessage.data = EscapeHTMLSpecial(currentMessage.data);
+	void ShowMessage(string& buffer, Message currentMessage) {
+		string data = EscapeHTMLSpecial(currentMessage.data);
 		//If bosslog format is HTML, wrap web addresses in HTML link format.
 		if (log_format == "html") {
 			size_t pos1,pos2;
 			string link;
-			pos1 = currentMessage.data.find("&quot;http");  //Start of a link, HTML escaped.
+			pos1 = data.find("&quot;http");  //Start of a link, HTML escaped.
 			while (pos1 != string::npos) {
 				pos1 += 6;  //Now points to start of actual link.
-				pos2 = currentMessage.data.find("&quot;",pos1);  //First character after the end of the link.
-				link = currentMessage.data.substr(pos1,pos2-pos1);
+				pos2 = data.find("&quot;",pos1);  //First character after the end of the link.
+				link = data.substr(pos1,pos2-pos1);
 				link = "<a href=\"" + link + "\">" + link + "</a>";
-				currentMessage.data.replace(pos1-6,pos2-pos1+12,link);
-				pos1 = currentMessage.data.find("&quot;http",pos1 + link.length());
+				data.replace(pos1-6,pos2-pos1+12,link);
+				pos1 = data.find("&quot;http",pos1 + link.length());
 			}
 		}
 		//Select message formatting.
 		switch(currentMessage.key) {
 		case TAG:
-			buffer += "<li class='tag'><span class='tagPrefix'>Bash Tag suggestion(s):</span> " + currentMessage.data + "";
+			buffer += "<li class='tag'><span class='tagPrefix'>Bash Tag suggestion(s):</span> " + data + "";
 			break;
 		case SAY:
-			buffer += "<li class='note'>Note: " + currentMessage.data + "";
+			buffer += "<li class='note'>Note: " + data + "";
 			break;
 		case REQ:
-			buffer += "<li class='req'>Requires: " + currentMessage.data + "";
+			buffer += "<li class='req'>Requires: " + data + "";
 			break;
 		case INC:
-			buffer += "<li class='inc'>Incompatible with: " + currentMessage.data + "";
+			buffer += "<li class='inc'>Incompatible with: " + data + "";
 			break;
 		case WARN:
-			buffer += "<li class='warn'>Warning: " + currentMessage.data + "";
+			buffer += "<li class='warn'>Warning: " + data + "";
 			break;
 		case ERR:
-			buffer += "<li class='error'>ERROR: " + currentMessage.data + "";
+			buffer += "<li class='error'>ERROR: " + data + "";
 			break;
 		case DIRTY:
-			buffer += "<li class='dirty'>Contains dirty edits: " + currentMessage.data + "";
+			buffer += "<li class='dirty'>Contains dirty edits: " + data + "";
 			break;
 		default:
-			buffer += "<li class='note'>Note: " + currentMessage.data + "";
+			buffer += "<li class='note'>Note: " + data + "";
 			break;
 		}
 	}
@@ -198,7 +198,7 @@ namespace boss {
 			replace_all(text, "<br />", "\n");
 			replace_all(text, "<blockquote>", "\n\n");
 			replace_all(text, "</blockquote>", "\n\n");
-			replace_all(text, "</div>", "");
+			replace_all(text, "</div>", ""); 
 			replace_all(text, "</span>", "");
 			
 			replace_all(text, " class='warn'>", ">");
@@ -265,7 +265,7 @@ namespace boss {
 				<< "}else{r[i].style.display=d}return}}}function swapColorScheme(b){var d=document.body.style;"
 				<< "var f=document.getElementById('filters').style;if(b.checked){d.color='white';"
 				<< "d.background='black';f.background='#333333'}else{d.color='black';d.background='white';"
-				<< "f.background='#F5F5F5'}}function toggleUserlistWarnings(b){var "
+				<< "f.background='#F5F5F5'}}function toggleRuleListWarnings(b){var "
 				<< "u=document.getElementById('userlistMessages').childNodes;if(u){for(var i=0,z=u.length;"
 				<< "i<z;i++){if(u[i].className=='warn'){if(b.checked){u[i].style.display='none'}else{"
 				<< "u[i].style.display='table'}}}}}function toggleMods(){var "
@@ -286,7 +286,7 @@ namespace boss {
 				<< "Do not clean.'){if(b.checked){a[j].style.display='none'}else{a[j].style.display=s}}}}}}}}"<<endl
 				<< "function initialSetup() {"<<endl
 				<< "	swapColorScheme(document.getElementById('b1'));"<<endl
-				<< "	toggleUserlistWarnings(document.getElementById('b12'));"<<endl
+				<< "	toggleRuleListWarnings(document.getElementById('b12'));"<<endl
 				<< "	toggleMods();"<<endl
 				<< "	toggleDisplayCSS(document.getElementById('b2'),'.version','inline');"<<endl
 				<< "	toggleDisplayCSS(document.getElementById('b3'),'.ghosted','inline');"<<endl
@@ -313,113 +313,5 @@ namespace boss {
 				<< "window.onDomReady(initialSetup);"<<endl
 				<< "</script>"<<endl;
 		}
-	}
-
-	string GetGameIniString() {
-		if (game == 0)
-			return "auto";
-		else if (game == 1)
-			return "Oblivion";
-		else if (game == 2)
-			return "Fallout3";
-		else if (game == 3)
-			return "Nehrim";
-		else if (game == 4)
-			return "FalloutNV";
-		else if (game == 5)
-			return "Skyrim";
-		else
-			return "";
-	}
-
-	//Generate a default BOSS.ini
-	BOSS_COMMON_EXP bool GenerateIni() {
-		ofstream ini(ini_path.c_str(), ios_base::trunc);
-		if (ini.fail())
-			return false;
-		ini <<  '\xEF' << '\xBB' << '\xBF'  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
-			<<	"#---------------" << endl
-			<<	"# BOSS Ini File" << endl
-			<<	"#---------------" << endl
-			<<	"# Settings with names starting with 'b' are boolean and accept values of 'true' or 'false'." << endl
-			<<	"# Settings with names starting with 'i' are unsigned integers and accept varying ranges of whole numbers." << endl
-			<<	"# Settings with names starting with 's' are strings and their accepted values vary." << endl
-			<<	"# See the BOSS ReadMe for details on what each setting does and the accepted values for integer and string settings." << endl << endl
-
-			<<	"[BOSS.GeneralSettings]" << endl
-			<<	"bDoStartupUpdateCheck    = " << BoolToString(do_startup_update_check) << endl
-			<<	"bUseUserRulesEditor      = " << BoolToString(use_user_rules_editor) << endl << endl
-
-			<<	"[BOSS.InternetSettings]" << endl
-			<<	"sProxyHostname           = " << proxy_host << endl
-			<<	"iProxyPort               = " << IntToString(proxy_port) << endl
-			<<	"sProxyUsername           = " << proxy_user << endl
-			<<	"sProxyPassword           = " << proxy_passwd << endl << endl
-
-			<<	"[BOSS.RunOptions]" << endl
-			<<	"sGame                    = " << GetGameIniString() << endl
-			<<	"sBOSSLogFormat           = " << log_format << endl
-			<<	"iRunType                 = " << IntToString(run_type) << endl
-			<<	"iDebugVerbosity          = " << IntToString(debug_verbosity) << endl
-			<<	"iRevertLevel             = " << IntToString(revert) << endl
-			<<	"bUpdateMasterlist        = " << BoolToString(update) << endl
-			<<	"bOnlyUpdateMasterlist    = " << BoolToString(update_only) << endl
-			<<	"bSilentRun               = " << BoolToString(silent) << endl
-			<<	"bNoVersionParse          = " << BoolToString(skip_version_parse) << endl
-			<<	"bDebugWithSourceRefs     = " << BoolToString(debug_with_source) << endl
-			<<	"bDisplayCRCs             = " << BoolToString(show_CRCs) << endl
-			<<	"bDoTrialRun              = " << BoolToString(trial_run) << endl
-			<<	"bLogDebugOutput          = " << BoolToString(log_debug_output) << endl << endl
-			
-			<<	"[BOSSLog.Filters]" << endl
-			<<	"bUseDarkColourScheme     = " << BoolToString(UseDarkColourScheme) << endl
-			<<	"bHideVersionNumbers      = " << BoolToString(HideVersionNumbers) << endl
-			<<	"bHideGhostedLabel        = " << BoolToString(HideGhostedLabel) << endl
-			<<	"bHideChecksums           = " << BoolToString(HideChecksums) << endl
-			<<	"bHideMessagelessMods     = " << BoolToString(HideMessagelessMods) << endl
-			<<	"bHideGhostedMods         = " << BoolToString(HideGhostedMods) << endl
-			<<	"bHideCleanMods           = " << BoolToString(HideCleanMods) << endl
-			<<	"bHideRuleWarnings        = " << BoolToString(HideRuleWarnings) << endl
-			<<	"bHideAllModMessages      = " << BoolToString(HideAllModMessages) << endl
-			<<	"bHideNotes               = " << BoolToString(HideNotes) << endl
-			<<	"bHideBashTagSuggestions  = " << BoolToString(HideBashTagSuggestions) << endl
-			<<	"bHideRequirements        = " << BoolToString(HideRequirements) << endl
-			<<	"bHideIncompatibilities   = " << BoolToString(HideIncompatibilities) << endl
-			<<	"bHideDoNotCleanMessages  = " << BoolToString(HideDoNotCleanMessages) << endl << endl
-
-			<<	"[BOSSLog.Styles]" << endl
-			<<	"# A style with nothing specified uses the coded defaults." << endl
-			<<	"# These defaults are given in the BOSS ReadMe as with the rest of the ini settings." << endl
-			<<	"\"body\"                                     = " << CSSBody << endl
-			<<	"\"#filters\"                                 = " << CSSFilters << endl
-			<<	"\"#filters > li\"                            = " << CSSFiltersList << endl
-			<<	"\"body > div:first-child\"                   = " << CSSTitle << endl
-			<<	"\"body > div:first-child + div\"             = " << CSSCopyright << endl
-			<<	"\"h3 + *\"                                   = " << CSSSections << endl
-			<<	"\"h3\"                                       = " << CSSSectionTitle << endl
-			<<	"\"h3 > span\"                                = " << CSSSectionPlusMinus << endl
-			<<	"\"#end\"                                     = " << CSSLastSection << endl
-			<<	"\"td\"                                       = " << CSSTable << endl
-			<<	"\"ul\"                                       = " << CSSList << endl
-			<<	"\"ul li\"                                    = " << CSSListItem << endl
-			<<	"\"li ul\"                                    = " << CSSSubList << endl
-			<<	"\"input[type='checkbox']\"                   = " << CSSCheckbox << endl
-			<<	"\"blockquote\"                               = " << CSSBlockquote << endl
-			<<	"\".error\"                                   = " << CSSError << endl
-			<<	"\".warn\"                                    = " << CSSWarning << endl
-			<<	"\".success\"                                 = " << CSSSuccess << endl
-			<<	"\".version\"                                 = " << CSSVersion << endl
-			<<	"\".ghosted\"                                 = " << CSSGhost << endl
-			<<	"\".crc\"                                     = " << CSSCRC << endl
-			<<	"\".tagPrefix\"                               = " << CSSTagPrefix << endl
-			<<	"\".dirty\"                                   = " << CSSDirty << endl
-			<<	"\".message\"                                 = " << CSSQuotedMessage << endl
-			<<	"\".mod\"                                     = " << CSSMod << endl
-			<<	"\".tag\"                                     = " << CSSTag << endl
-			<<	"\".note\"                                    = " << CSSNote << endl
-			<<	"\".req\"                                     = " << CSSRequirement << endl
-			<<	"\".inc\"                                     = " << CSSIncompatibility;
-		ini.close();
-		return true;
 	}
 }

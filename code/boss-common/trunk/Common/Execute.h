@@ -16,7 +16,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/regex.hpp>
-#include "Common/Lists.h"
+#include "Common/Classes.h"
 #include "Common/DllDef.h"
 
 namespace boss {
@@ -30,7 +30,7 @@ namespace boss {
 		unsigned int messages;
 		unsigned int warnings;
 		unsigned int errors;
-		summaryCounters();
+		BOSS_COMMON_EXP summaryCounters();
 	};
 
 	struct bosslogContents {
@@ -42,8 +42,15 @@ namespace boss {
 		string unrecognisedPlugins;
 
 		string oldRecognisedPlugins;
+
+		string criticalError;
 		string updaterErrors;
-		bosslogContents();
+		string iniParsingError;
+		string userlistParsingError;
+		vector<string> userlistSyntaxErrors;
+		vector<Message> globalMessages;
+
+		BOSS_COMMON_EXP bosslogContents();
 	};
 
 	//Searches a hashset for the first matching string of a regex and returns its iterator position.
@@ -67,24 +74,21 @@ namespace boss {
 
 	//Create a modlist containing all the mods that are installed or referenced in the userlist with their masterlist messages.
 	//Returns the vector position of the last recognised mod in modlist.
-	BOSS_COMMON_EXP size_t BuildWorkingModlist(vector<item>& modlist, vector<item> masterlist, const vector<rule>& userlist);
+	BOSS_COMMON_EXP void BuildWorkingModlist(ItemList& modlist, ItemList& masterlist, RuleList& userlist);
 
 	//Applies the userlist rules to the working modlist.
-	BOSS_COMMON_EXP void ApplyUserRules(vector<item>& modlist, const vector<rule>& userlist, string& ouputBuffer, size_t& lastRecognisedPos);
+	BOSS_COMMON_EXP void ApplyUserRules(ItemList& modlist, RuleList& userlist, string& outputBuffer);
 
 	//Lists Script Extender plugin info in the output buffer. Returns the Script Extender detected.
 	BOSS_COMMON_EXP string GetSEPluginInfo(string& outputBuffer);
 
 	//Sort recognised mods.
-	BOSS_COMMON_EXP void SortRecognisedMods(const vector<item>& modlist, const size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters);
+	BOSS_COMMON_EXP void SortRecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters);
 
 	//List unrecognised mods.
-	BOSS_COMMON_EXP void ListUnrecognisedMods(const vector<item>& modlist, const size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters);
+	BOSS_COMMON_EXP void ListUnrecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters);
 
 	//Prints the full BOSSlog.
 	BOSS_COMMON_EXP void PrintBOSSlog(const bosslogContents contents, const summaryCounters counters, const string scriptExtender);
-
-	//Evaluates masterlist conditionals.
-	BOSS_COMMON_EXP void EvaluateMasterlistConditionals(vector<item>& masterlist);
 }
 #endif

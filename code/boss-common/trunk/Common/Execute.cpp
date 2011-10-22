@@ -25,7 +25,7 @@ namespace boss {
 	using boost::algorithm::trim_copy;
 	using boost::algorithm::to_lower_copy;
 
-	summaryCounters::summaryCounters() {
+	BOSS_COMMON_EXP summaryCounters::summaryCounters() {
 		recognised = 0;
 		unrecognised = 0;
 		ghosted = 0;
@@ -34,30 +34,28 @@ namespace boss {
 		errors = 0;
 	}
 
-	bosslogContents::bosslogContents() {
-		generalMessages = "";
-		summary = "";
-		userlistMessages = "";
-		seInfo = "";
-		recognisedPlugins = "";
-		unrecognisedPlugins = "";
-	}
+	BOSS_COMMON_EXP bosslogContents::bosslogContents() {
+		generalMessages.clear();
+		summary.clear();
+		userlistMessages.clear();
+		seInfo.clear();
+		recognisedPlugins.clear();
+		unrecognisedPlugins.clear();
 
-	//Removes the ".ghost" extension from ghosted filenames.
-	string TrimDotGhost(string plugin) {
-		fs::path pluginPath(plugin);
-		const string ext = to_lower_copy(pluginPath.extension().string());
-		if (ext == ".ghost")
-			return plugin.substr(0,plugin.length()-6);
-		else
-			return plugin;
+		oldRecognisedPlugins.clear();
+
+		updaterErrors.clear();
+		iniParsingError.clear();
+		criticalError.clear();
+		userlistParsingError.clear();
+		userlistSyntaxErrors.clear();
+		globalMessages.clear();
 	}
 
 	//Searches a hashset for the first matching string of a regex and returns its iterator position.
 	BOSS_COMMON_EXP boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
 		while(startPos != set.end()) {
-			string mod = *startPos;
-			if (boost::regex_match(mod,reg))
+			if (boost::regex_match(*startPos,reg))
 				return startPos;
 			++startPos;
 		}
@@ -156,46 +154,45 @@ namespace boss {
 
 	//Create a modlist containing all the mods that are installed or referenced in the userlist with their masterlist messages.
 	//Returns the vector position of the last recognised mod in modlist.
-	BOSS_COMMON_EXP size_t BuildWorkingModlist(vector<item>& modlist, vector<item> masterlist, const vector<rule>& userlist) {
+	BOSS_COMMON_EXP void BuildWorkingModlist(ItemList& modlist, ItemList& masterlist, RuleList& userlist) {
 		//Add all modlist and userlist mods to a hashset to optimise comparison against masterlist.
 		boost::unordered_set<string> hashset;  //Holds mods for checking against masterlist
 		boost::unordered_set<string>::iterator setPos;
-		size_t lastRecognisedPos;
 
 		size_t size;
-		size_t userlistSize = userlist.size();
+		size_t userlistSize = userlist.rules.size();
 		size_t linesSize;
 		/* Hashset must be a set of unique mods.
 		Ghosted mods take priority over non-ghosted mods, as they are specifically what is installed. 
 		*/
 
 		LOG_INFO("Populating hashset with modlist.");
-		size = modlist.size();
+		size = modlist.items.size();
 		for (size_t i=0; i<size; i++) {
-			if (modlist[i].type == MOD)
-				hashset.insert(Tidy(modlist[i].name.string()));
+			if (modlist.items[i].type == MOD)
+				hashset.insert(Tidy(modlist.items[i].name.string()));
 		}
 		LOG_INFO("Populating hashset with userlist.");
 		//Need to get ruleObject and sort line object if plugins.
 		for (size_t i=0; i<userlistSize; i++) {
-			if (IsPlugin(userlist[i].ruleObject)) {
-				setPos = hashset.find(Tidy(userlist[i].ruleObject));
+			if (IsPlugin(userlist.rules[i].ruleObject)) {
+				setPos = hashset.find(Tidy(userlist.rules[i].ruleObject));
 				if (setPos == hashset.end()) {  //Mod not already in hashset.
-					setPos = hashset.find(Tidy(userlist[i].ruleObject + ".ghost"));
+					setPos = hashset.find(Tidy(userlist.rules[i].ruleObject + ".ghost"));
 					if (setPos == hashset.end()) {  //Ghosted mod not already in hashset. 
 						//Unique plugin, so add to hashset.
-						hashset.insert(Tidy(userlist[i].ruleObject));
+						hashset.insert(Tidy(userlist.rules[i].ruleObject));
 					}
 				}
 			}
-			if (userlist[i].ruleKey != FOR) {  //First line is a sort line.
-				if (IsPlugin(userlist[i].lines[0].object)) {
-					setPos = hashset.find(Tidy(userlist[i].lines[0].object));
+			if (userlist.rules[i].ruleKey != FOR) {  //First line is a sort line.
+				if (IsPlugin(userlist.rules[i].lines[0].object)) {
+					setPos = hashset.find(Tidy(userlist.rules[i].lines[0].object));
 					if (setPos == hashset.end()) {  //Mod not already in hashset.
-						setPos = hashset.find(Tidy(userlist[i].lines[0].object + ".ghost"));
+						setPos = hashset.find(Tidy(userlist.rules[i].lines[0].object + ".ghost"));
 						if (setPos == hashset.end()) {  //Ghosted mod not already in hashset. 
 							//Unique plugin, so add to hashset.
-							hashset.insert(Tidy(userlist[i].lines[0].object));
+							hashset.insert(Tidy(userlist.rules[i].lines[0].object));
 						}
 					}
 				}
@@ -203,39 +200,29 @@ namespace boss {
 		}
 
 		//Now compare masterlist against hashset.
-		vector<item>::iterator iter = masterlist.begin();
-		vector<item> holdingVec;
+		vector<Item>::iterator iter = masterlist.items.begin();
+		vector<Item>::iterator modlistPos;
+		vector<Item> holdingVec;
 		boost::unordered_set<string>::iterator addedPos;
 		boost::unordered_set<string> addedMods;
-		size_t pos;
 		LOG_INFO("Comparing hashset against masterlist.");
-		while (iter != masterlist.end()) {
+		for (iter; iter != masterlist.items.end(); ++iter) {
 			if (iter->type == MOD) {
 				//Check to see if the mod is in the hashset. If it is, or its ghosted version is, also check if 
 				//the mod is already in the holding vector. If not, add it.
 				setPos = hashset.find(Tidy(iter->name.string()));
+				if (setPos == hashset.end()) {
+					iter->name = fs::path(iter->name.string() + ".ghost");		//Add ghost extension to mod name.
+					setPos = hashset.find(Tidy(iter->name.string()));
+				}
 				if (setPos != hashset.end()) {										//Mod found in hashset. 
 					addedPos = addedMods.find(Tidy(iter->name.string()));
 					if (addedPos == addedMods.end()) {								//The mod is not already in the holding vector.
 						holdingVec.push_back(*iter);									//Record it in the holding vector.
-						pos = GetModPos(modlist,iter->name.string());				//Also remove it from the modlist.
-						if (pos != (size_t)-1)
-							modlist.erase(modlist.begin()+pos);
+						modlistPos = modlist.FindItem(iter->name);
+						if (modlistPos != modlist.items.end())
+							modlist.items.erase(modlistPos);
 						addedMods.insert(Tidy(iter->name.string()));
-					}
-				} else {
-					//Mod not found. Look for ghosted mod.
-					iter->name = fs::path(iter->name.string() + ".ghost");		//Add ghost extension to mod name.
-					setPos = hashset.find(Tidy(iter->name.string()));
-					if (setPos != hashset.end()) {									//Mod found in hashset.
-						addedPos = addedMods.find(Tidy(iter->name.string()));
-						if (addedPos == addedMods.end()) {							//The mod is not already in the holding vector.
-							holdingVec.push_back(*iter);								//Record it in the holding vector.
-							pos = GetModPos(modlist,iter->name.string());			//Also remove it from the modlist.
-							if (pos != (size_t)-1)
-								modlist.erase(modlist.begin()+pos);
-							addedMods.insert(Tidy(iter->name.string()));
-						}
 					}
 				}
 			} else if (iter->type == REGEX) {
@@ -249,15 +236,15 @@ namespace boss {
 						break;
 					string mod = *setPos;
 					//Look for mod in modlist, and userlist. Replace with case-preserved mod name.
-					pos = GetModPos(modlist,mod);
-					if (pos != (size_t)-1)
-						mod = modlist[pos].name.string();
+					modlistPos = modlist.FindItem(iter->name);
+					if (modlistPos != modlist.items.end())
+						mod = modlistPos->name.string();
 					else {
 						for (size_t i=0; i<userlistSize; i++) {
-							linesSize = userlist[i].lines.size();
+							linesSize = userlist.rules[i].lines.size();
 							for (size_t j=0; j<linesSize; j++) {
-								if (Tidy(userlist[i].lines[j].object) == mod)
-									mod = userlist[i].lines[j].object;
+								if (Tidy(userlist.rules[i].lines[j].object) == mod)
+									mod = userlist.rules[i].lines[j].object;
 							}
 						}
 					}
@@ -266,217 +253,203 @@ namespace boss {
 					if (addedPos == addedMods.end()) {							//The mod is not already in the holding vector.
 						//Now do the adding/removing.
 						//Create new temporary item to hold current found mod.
-						item tempItem = *iter;
-						tempItem.type = MOD;
-						tempItem.name = fs::path(mod);
+						fs::path modPath(mod);
+						Item tempItem = Item(modPath, MOD, iter->messages);
+
 						holdingVec.push_back(tempItem);							//Record it in the holding vector.
-						pos = GetModPos(modlist,mod);							//Also remove it from the modlist.
-						if (pos != (size_t)-1)
-							modlist.erase(modlist.begin()+pos);
+						modlistPos = modlist.FindItem(modPath);
+						if (modlistPos != modlist.items.end())
+							modlist.items.erase(modlistPos);
 						addedMods.insert(Tidy(mod));
 					}
 					++setPos;
 				} while (setPos != hashset.end());
 			} else //Group lines must stay recorded.
 				holdingVec.push_back(*iter);
-			++iter;
 		}
-		masterlist = holdingVec;  //Masterlist now only contains the items needed to sort the user's mods.
-		lastRecognisedPos = masterlist.size()-1;  //Record position of last sorted mod.
-
+		masterlist.items = holdingVec;  //Masterlist now only contains the items needed to sort the user's mods.
+		fs::path lastRec = masterlist.items.back().name;
+		
 		//Add modlist's mods to masterlist, then set the modlist to the masterlist as that's the output..
-		masterlist.insert(masterlist.end(),modlist.begin(),modlist.end());
+		masterlist.items.insert(masterlist.items.end(),modlist.items.begin(),modlist.items.end());
 		modlist = masterlist;
-		return lastRecognisedPos;
+		modlist.lastRecognisedPos = modlist.FindItem(lastRec);  //Record position of last sorted item.
 	}
 
 	//Applies the userlist rules to the working modlist.
-	BOSS_COMMON_EXP void ApplyUserRules(vector<item>& modlist, const vector<rule>& userlist, string& ouputBuffer, size_t& lastRecognisedPos) {
-		size_t userlistSize = userlist.size();
-		//Apply rules, one rule at a time, one line at a time.
-		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlistSize);
-		for (size_t i=0; i<userlistSize; i++) {
-			LOG_DEBUG(" -- Processing rule #%" PRIuS ".", i+1);
-			if (!userlist[i].enabled)
+	BOSS_COMMON_EXP void ApplyUserRules(ItemList& modlist, RuleList& userlist, string& outputBuffer) {
+		if (userlist.rules.empty())
+			return;
+		//Because erase operations invalidate iterators after the position(s) erased, the last recognised mod needs to be recorded, then
+		//set correctly again after all operations have completed.
+		//Note that if a mod is sorted after the last recognised mod by the userlist, it becomes the last recognised mod, and the item will
+		//need to be re-assigned to this item. This only occurs for BEFORE/AFTER plugin sorting rules.
+		fs::path lastRecognisedModName(modlist.lastRecognisedPos->name);
+
+		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlist.rules.size());
+		vector<Rule>::iterator ruleIter = userlist.rules.begin();
+		vector<RuleLine>::iterator lineIter;
+		vector<Item>::iterator modlistPos1, modlistPos2;
+		unsigned int i = 0;
+		for (ruleIter; ruleIter != userlist.rules.end(); ++ruleIter) {
+			i++;
+			LOG_DEBUG(" -- Processing rule #%" PRIuS ".", i);
+			if (!ruleIter->enabled) {
+				outputBuffer += "<li class='success'>The rule beginning \"" + ruleIter->KeyToString() + ": " + ruleIter->ruleObject + "\" is disabled. Rule skipped.";
+				LOG_WARN("Rule beginning \"%s: %s\" is disabled. Rule skipped.", ruleIter->KeyToString().c_str(), ruleIter->ruleObject.c_str());
 				continue;
-			size_t linesSize = userlist[i].lines.size();
-			if (userlist[i].ruleKey != FOR) { //First line is a sort line.
-				//A mod sorting rule.
-				if ((userlist[i].lines[0].key == BEFORE || userlist[i].lines[0].key == AFTER) && IsPlugin(userlist[i].lines[0].object)) {
-					size_t index1,index2;
-					item mod;
-					index1 = GetModPos(modlist,userlist[i].ruleObject);  //Find the rule mod in the modlist.
-					//Do checks/increments.
-					if (userlist[i].ruleKey == ADD && index1 > lastRecognisedPos) 
-						lastRecognisedPos++;
-					else if (userlist[i].ruleKey == ADD && index1 == (size_t)-1) {
-						ouputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" is not installed or in the masterlist. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not installed.", userlist[i].ruleObject.c_str());
-						break;
-					//If it adds a mod already sorted, skip the rule.
-					} else if (userlist[i].ruleKey == ADD && index1 <= lastRecognisedPos) {
-						ouputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" is already in the masterlist. Rule skipped.";
-						LOG_WARN(" * \"%s\" is already in the masterlist.", userlist[i].ruleObject.c_str());
-						break;
-					} else if (userlist[i].ruleKey == OVERRIDE && (index1 > lastRecognisedPos || index1 == (size_t)-1)) {
-						ouputBuffer += "<li class='error'>\""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" is not in the masterlist, cannot override. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlist[i].ruleObject.c_str());
-						break;
+			}	
+			lineIter = ruleIter->lines.begin();
+			Item ruleItem(fs::path(ruleIter->ruleObject));
+			if (ruleItem.IsPlugin()) {  //Plugin: Can sort or add messages.
+				if (ruleIter->ruleKey != FOR) { //First non-rule line is a sort line.
+					if (lineIter->key == BEFORE || lineIter->key == AFTER) {
+						Item mod;
+						modlistPos1 = modlist.FindItem(ruleItem.name);
+						//Do checks.
+						if (ruleIter->ruleKey == ADD && modlistPos1 == modlist.items.end()) {
+							outputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is not installed or in the masterlist. Rule skipped.";
+							LOG_WARN(" * \"%s\" is not installed.", ruleIter->ruleObject.c_str());
+							continue;
+						//If it adds a mod already sorted, skip the rule.
+						} else if (ruleIter->ruleKey == ADD  && modlistPos1 <= modlist.lastRecognisedPos) {
+							outputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is already in the masterlist. Rule skipped.";
+							LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->ruleObject.c_str());
+							continue;
+						} else if (ruleIter->ruleKey == OVERRIDE && (modlistPos1 > modlist.lastRecognisedPos || modlistPos1 == modlist.items.end())) {
+							outputBuffer += "<li class='error'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is not in the masterlist, cannot override. Rule skipped.";
+							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->ruleObject.c_str());
+							continue;
+						}
+						modlistPos2 = modlist.FindItem(fs::path(lineIter->object));  //Find sort mod.
+						//Do checks.
+						if (modlistPos2 == modlist.items.end()) {  //Handle case of mods that don't exist at all.
+							outputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(lineIter->object)+"\" is not installed, and is not in the masterlist. Rule skipped.";
+							LOG_WARN(" * \"%s\" is not installed or in the masterlist.", lineIter->object.c_str());
+							continue;
+						} else if (modlistPos2 > modlist.lastRecognisedPos) {  //Handle the case of a rule sorting a mod into a position in unsorted mod territory.
+							outputBuffer += "<li class='error'>\""+EscapeHTMLSpecial(lineIter->object)+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.";
+							LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", lineIter->object.c_str());
+							continue;
+						} else if (lineIter->key == AFTER && modlistPos2 == modlist.lastRecognisedPos)
+							lastRecognisedModName = fs::path(modlistPos1->name);
+						mod = *modlistPos1;  //Record the rule mod in a new variable.
+						modlist.items.erase(modlistPos1);  //Now remove the rule mod from its old position. This breaks all modlist iterators active.
+						//Need to find sort mod pos again, to fix iterator.
+						modlistPos2 = modlist.FindItem(fs::path(lineIter->object));  //Find sort mod.
+						//Insert the mod into its new position.
+						if (lineIter->key == AFTER)
+							++modlistPos2;
+						modlist.items.insert(modlistPos2, mod);
+						outputBuffer += "<li class='success'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" has been sorted "+lineIter->KeyToString()+" \""+EscapeHTMLSpecial(lineIter->object)+"\".";
+					} else if (lineIter->key == TOP || lineIter->key == BOTTOM) {
+						Item mod;
+						modlistPos1 = modlist.FindItem(ruleItem.name);
+						//Do checks.
+						if (ruleIter->ruleKey == ADD && modlistPos1 == modlist.items.end()) {
+							outputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is not installed or in the masterlist. Rule skipped.";
+							LOG_WARN(" * \"%s\" is not installed.", ruleIter->ruleObject.c_str());
+							continue;
+						//If it adds a mod already sorted, skip the rule.
+						} else if (ruleIter->ruleKey == ADD  && modlistPos1 <= modlist.lastRecognisedPos) {
+							outputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is already in the masterlist. Rule skipped.";
+							LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->ruleObject.c_str());
+							continue;
+						} else if (ruleIter->ruleKey == OVERRIDE && (modlistPos1 > modlist.lastRecognisedPos || modlistPos1 == modlist.items.end())) {
+							outputBuffer += "<li class='error'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is not in the masterlist, cannot override. Rule skipped.";
+							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->ruleObject.c_str());
+							continue;
+						}
+						//Find the group to sort relative to.
+						if (lineIter->key == TOP)
+							modlistPos2 = modlist.FindItem(fs::path(lineIter->object)) + 1;  //Find the start, and increment by 1 so that mod is inserted after start.
+						else
+							modlistPos2 = modlist.FindGroupEnd(fs::path(lineIter->object));  //Find the end.
+						//Check that the sort group actually exists.
+						if (modlistPos2 == modlist.items.end()) {
+							outputBuffer += "<li class='error'>The group \""+EscapeHTMLSpecial(lineIter->object)+"\" is not in the masterlist or is malformatted. Rule skipped.";
+							LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", lineIter->object.c_str());
+							continue;
+						}
+						mod = *modlistPos1;  //Record the rule mod in a new variable.
+						modlist.items.erase(modlistPos1);  //Now remove the rule mod from its old position. This breaks all modlist iterators active.
+						//Need to find group pos again, to fix iterators.
+						if (lineIter->key == TOP)
+							modlistPos2 = modlist.FindItem(fs::path(lineIter->object)) + 1;  //Find the start, and increment by 1 so that mod is inserted after start.
+						else
+							modlistPos2 = modlist.FindGroupEnd(fs::path(lineIter->object));  //Find the end.
+						modlist.items.insert(modlistPos2, mod);  //Now insert the mod into the group. This breaks all modlist iterators active.
+						//Print success message.
+						outputBuffer += "<li class='success'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" inserted at the "+ lineIter->KeyToString() + " of group \"" + EscapeHTMLSpecial(lineIter->object) + "\".";
 					}
-					mod = modlist[index1];  //Record the rule mod in a new variable.
-					//Remove the rule mod from its current position.
-					modlist.erase(modlist.begin()+index1);
-					//Find the sort mod in the modlist.
-					index2 = GetModPos(modlist,userlist[i].lines[0].object);
-					//Handle case of mods that don't exist at all.
-					if (index2 == (size_t)-1) {
-						if (userlist[i].ruleKey == ADD)
-							lastRecognisedPos--;
-						modlist.insert(modlist.begin()+index1,mod);
-						ouputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(userlist[i].lines[0].object)+"\" is not installed, and is not in the masterlist. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not installed or in the masterlist.", userlist[i].lines[0].object.c_str());
-						break;
-					}
-					//Handle the case of a rule sorting a mod into a position in unsorted mod territory.
-					if (index2 > lastRecognisedPos) {
-						if (userlist[i].ruleKey == ADD)
-							lastRecognisedPos--;
-						modlist.insert(modlist.begin()+index1,mod);
-						ouputBuffer += "<li class='error'>\""+EscapeHTMLSpecial(userlist[i].lines[0].object)+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", userlist[i].lines[0].object.c_str());
-						break;
-					}
-					//Insert the mod into its new position.
-					if (userlist[i].lines[0].key == AFTER) 
-						index2 += 1;
-					modlist.insert(modlist.begin()+index2,mod);
-					ouputBuffer += "<li class='success'>\""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" has been sorted "+EscapeHTMLSpecial(KeyToString(userlist[i].lines[0].key))+" \""+EscapeHTMLSpecial(userlist[i].lines[0].object)+"\".";
-				//A group sorting line.
-				} else if ((userlist[i].lines[0].key == BEFORE || userlist[i].lines[0].key == AFTER) && !IsPlugin(userlist[i].lines[0].object)) {
-					vector<item> group;
-					size_t index1, index2;
-					//Look for group to sort. Find start and end positions.
-					index1 = GetModPos(modlist, userlist[i].ruleObject);
-					index2 = GetGroupEndPos(modlist, userlist[i].ruleObject);
-					//Check to see group actually exists.
-					if (index1 == (size_t)-1 || index2 == (size_t)-1) {
-						ouputBuffer += "<li class='error'>The group \""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" is not in the masterlist or is malformatted. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlist[i].ruleObject.c_str());
-						break;
-					}
-					//Copy the start, end and everything in between to a new variable.
-					group.assign(modlist.begin()+index1,modlist.begin()+index2+1);
-					//Now erase group from modlist.
-					modlist.erase(modlist.begin()+index1,modlist.begin()+index2+1);
-					//Find the group to sort relative to and insert it before or after it as appropriate.
-					if (userlist[i].lines[0].key == BEFORE)
-						index2 = GetModPos(modlist, userlist[i].lines[0].object);  //Find the start.
-					else
-						index2 = GetGroupEndPos(modlist, userlist[i].lines[0].object);  //Find the end, and add one, as inserting works before the given element.
-					//Check that the sort group actually exists.
-					if (index2 == (size_t)-1) {
-						modlist.insert(modlist.begin()+index1,group.begin(),group.end());  //Insert the group back in its old position.
-						ouputBuffer += "<li class='error'>The group \""+EscapeHTMLSpecial(userlist[i].lines[0].object)+"\" is not in the masterlist or is malformatted. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlist[i].lines[0].object.c_str());
-						break;
-					}
-					if (userlist[i].lines[0].key == AFTER)
-						index2++;
-					//Now insert the group.
-					modlist.insert(modlist.begin()+index2,group.begin(),group.end());
-					//Print success message.
-					ouputBuffer += "<li class='success'>The group \""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" has been sorted "+KeyToString(userlist[i].lines[0].key)+" the group \""+EscapeHTMLSpecial(userlist[i].lines[0].object)+"\".";
-				//An insertion line.
-				} else if (userlist[i].lines[0].key == TOP || userlist[i].lines[0].key == BOTTOM) {
-					size_t index1,index2;
-					item mod;
-					index1 = GetModPos(modlist,userlist[i].ruleObject);  //Find the rule mod in the modlist.
-					//Do checks/increments.
-					if (userlist[i].ruleKey == ADD && index1 > lastRecognisedPos) 
-						lastRecognisedPos++;
-					else if (userlist[i].ruleKey == ADD && index1 == (size_t)-1) {
-						ouputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" is not installed or in the masterlist. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not installed.", userlist[i].ruleObject.c_str());
-						break;
-					//If it adds a mod already sorted, skip the rule.
-					} else if (userlist[i].ruleKey == ADD  && index1 <= lastRecognisedPos) {
-						ouputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" is already in the masterlist. Rule skipped.";
-						LOG_WARN(" * \"%s\" is already in the masterlist.", userlist[i].ruleObject.c_str());
-						break;
-					} else if (userlist[i].ruleKey == OVERRIDE && (index1 > lastRecognisedPos || index1 == (size_t)-1)) {
-						ouputBuffer += "<li class='error'>\""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" is not in the masterlist, cannot override. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", userlist[i].ruleObject.c_str());
-						break;
-					}
-					mod = modlist[index1];  //Record the rule mod in a new variable.
-					//Remove the rule mod from its current position.
-					modlist.erase(modlist.begin()+index1);
-					//Find the position of the group to sort it to.
-					//Find the group to sort relative to and insert it before or after it as appropriate.
-					if (userlist[i].lines[0].key == TOP)
-						index2 = GetModPos(modlist, userlist[i].lines[0].object);  //Find the start.
-					else
-						index2 = GetGroupEndPos(modlist, userlist[i].lines[0].object);  //Find the end.
-					//Check that the sort group actually exists.
-					if (index2 == (size_t)-1) {
-						if (userlist[i].ruleKey == ADD)
-							lastRecognisedPos--;
-						modlist.insert(modlist.begin()+index1,mod);  //Insert the mod back in its old position.
-						ouputBuffer += "<li class='error'>The group \""+EscapeHTMLSpecial(userlist[i].lines[0].object)+"\" is not in the masterlist or is malformatted. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", userlist[i].lines[0].object.c_str());
-						break;
-					}
-					//Now insert the mod into the group.
-					modlist.insert(modlist.begin()+index2,mod);
-					//Print success message.
-					ouputBuffer += "<li class='success'>\""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" inserted at the "+ KeyToString(userlist[i].lines[0].key) + " of group \"" + EscapeHTMLSpecial(userlist[i].lines[0].object) + "\".";
-
 				}
-			}
-			for (size_t j=0; j<linesSize; j++) {
-				//A message line.
-				if (userlist[i].lines[j].key == APPEND || userlist[i].lines[j].key == REPLACE) {
-					size_t index, pos;
-					string key,data;
-					message newMessage;
+				++lineIter;
+				for (lineIter; lineIter != ruleIter->lines.end(); ++lineIter) {  //Message lines.
+					if (!lineIter->IsObjectMessage()) {
+						outputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(lineIter->object)+"\" is not a valid message. Rule skipped.";
+						LOG_WARN(" * \"%s\" is not a valid message.", lineIter->object.c_str());
+						break;
+					}
 					//Find the mod which will have its messages edited.
-					index = GetModPos(modlist,userlist[i].ruleObject);
-					//Do checks/increments.
-					if (index == (size_t)-1) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
-						ouputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(userlist[i].ruleObject)+"\" is not installed or in the masterlist. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not installed.", userlist[i].ruleObject.c_str());
+					modlistPos1 = modlist.FindItem(ruleItem.name);
+					if (modlistPos1 == modlist.items.end()) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
+						outputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is not installed or in the masterlist. Rule skipped.";
+						LOG_WARN(" * \"%s\" is not installed.", ruleIter->ruleObject.c_str());
 						break;
 					}
-					//The provided message string could be using either the old format or the new format. Need to support both.
-					//The easiest way is to check the first character. If it's a symbol character, it's the old format, otherwise the new.
-					char sym = userlist[i].lines[j].object[0];
-					if (sym == '?' || sym == '%' || sym == ':' || sym == '"') {  //Old format.
-						//First character is the keyword, the rest is the data.
-						newMessage.key = StringToKey(userlist[i].lines[j].object.substr(0,1));
-						newMessage.data = trim_copy(userlist[i].lines[j].object.substr(1));
-					} else {  //New format.
-						pos = userlist[i].lines[j].object.find(":"); //Look for separator colon.
-						newMessage.key = StringToKey(Tidy(userlist[i].lines[j].object.substr(0,pos)));
-						newMessage.data = trim_copy(userlist[i].lines[j].object.substr(pos+1));
-					}
-					//If the rule is to replace messages, clear existing messages.
-					if (userlist[i].lines[j].key == REPLACE)
-						modlist[index].messages.clear();
-					//Append message to message list of mod.
-					modlist[index].messages.push_back(newMessage);
-
+					Message newMessage = Message(lineIter->ObjectMessageKey(), lineIter->ObjectMessageData());
+					if (lineIter->key == REPLACE)  //If the rule is to replace messages, clear existing messages.
+						modlistPos1->messages.clear();
+					modlistPos1->messages.push_back(newMessage);  //Append message to message list of mod.
 					//Output confirmation.
-					ouputBuffer += "<li class='success'>\"<span class='message'>" + EscapeHTMLSpecial(userlist[i].lines[j].object) + "</span>\"";
-					if (userlist[i].lines[j].key == APPEND)
-						ouputBuffer += " appended to ";
+					outputBuffer += "<li class='success'>\"<span class='message'>" + EscapeHTMLSpecial(lineIter->object) + "</span>\"";
+					if (lineIter->key == APPEND)
+						outputBuffer += " appended to ";
 					else
-						ouputBuffer += " replaced ";
-					ouputBuffer += "messages attached to \"" + EscapeHTMLSpecial(userlist[i].ruleObject) + "\".\n";
+						outputBuffer += " replaced ";
+					outputBuffer += "messages attached to \"" + EscapeHTMLSpecial(ruleIter->ruleObject) + "\".\n";
 				}
+			} else if (lineIter->key == BEFORE || lineIter->key == AFTER) {  //Group: Can only sort.
+				vector<Item> group;
+				//Look for group to sort. Find start and end positions.
+				modlistPos1 = modlist.FindItem(ruleItem.name);
+				modlistPos2 = modlist.FindGroupEnd(ruleItem.name);
+				//Check to see group actually exists.
+				if (modlistPos1 != modlist.items.end() || modlistPos2 != modlist.items.end()) {
+					outputBuffer += "<li class='error'>The group \""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is not in the masterlist or is malformatted. Rule skipped.";
+					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", ruleIter->ruleObject.c_str());
+					continue;
+				}
+				//Copy the start, end and everything in between to a new variable.
+				group.assign(modlistPos1,modlistPos2+1);
+				//Now erase group from modlist. This breaks the lastRecognisedPos iterator, so that will be reset after rule application.
+				modlist.items.erase(modlistPos1,modlistPos2+1);
+				//Find the group to sort relative to and insert it before or after it as appropriate.
+				if (lineIter->key == BEFORE)
+					modlistPos2 = modlist.FindItem(fs::path(lineIter->object));  //Find the start.
+				else
+					modlistPos2 = modlist.FindGroupEnd(fs::path(lineIter->object));  //Find the end, and add one, as inserting works before the given element.
+				//Check that the sort group actually exists.
+				if (modlistPos2 != modlist.items.end()) {
+					modlist.items.insert(modlistPos1,group.begin(),group.end());  //Insert the group back in its old position.
+					outputBuffer += "<li class='error'>The group \""+EscapeHTMLSpecial(lineIter->object)+"\" is not in the masterlist or is malformatted. Rule skipped.";
+					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", lineIter->object.c_str());
+					continue;
+				}
+				if (lineIter->key == AFTER)
+					modlistPos2++;
+				//Now insert the group.
+				modlist.items.insert(modlistPos2,group.begin(),group.end());
+				//Print success message.
+				outputBuffer += "<li class='success'>The group \""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" has been sorted "+lineIter->KeyToString()+" the group \""+EscapeHTMLSpecial(lineIter->object)+"\".";
 			}
+			//Now find that last recognised mod and set the iterator again.
+			modlist.lastRecognisedPos = modlist.FindItem(lastRecognisedModName);
 		}
-		if (userlist.empty()) 
-			ouputBuffer = "No valid rules were found in your userlist.txt.";
+
+
+		if (userlist.rules.empty()) 
+			outputBuffer = "No valid rules were found in your userlist.txt.";
 	}
 
 	//Lists Script Extender plugin info in the output buffer.
@@ -534,51 +507,50 @@ namespace boss {
 	}
 
 	//Sort recognised mods.
-	BOSS_COMMON_EXP void SortRecognisedMods(const vector<item>& modlist, const size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters) {
+	BOSS_COMMON_EXP void SortRecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
 		time_t modfiletime = 0;
 		LOG_INFO("Applying calculated ordering to user files...");
-		for (size_t i=0; i<=lastRecognisedPos; i++) {
-			//Only act on mods that exist.
-			if (modlist[i].type == MOD && (Exists(data_path / modlist[i].name))) {
-				ouputBuffer += "<li><span class='mod'>" + EscapeHTMLSpecial(TrimDotGhost(modlist[i].name.string())) + "</span>";
+		vector<Item>::iterator iter = modlist.items.begin();
+		vector<Message>::iterator messageIter;
+		for (iter; iter != modlist.lastRecognisedPos+1; ++iter) {
+			if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
+				outputBuffer += "<li><span class='mod'>" + EscapeHTMLSpecial(iter->name.string()) + "</span>";
 				if (!skip_version_parse) {
-					string version = GetModHeader(modlist[i].name);
+					string version = iter->GetHeader();
 					if (!version.empty())
-						ouputBuffer += "<span class='version'>&nbsp;Version "+EscapeHTMLSpecial(version)+"</span>";
+						outputBuffer += "<span class='version'>&nbsp;Version "+EscapeHTMLSpecial(version)+"</span>";
 				}
-				if (IsGhosted(data_path / modlist[i].name)) {
-					ouputBuffer += "<span class='ghosted'>&nbsp;Ghosted</span>";
+				if (iter->IsGhosted()) {
+					outputBuffer += "<span class='ghosted'>&nbsp;Ghosted</span>";
 					counters.ghosted++;
 				}
 				if (show_CRCs)
-					ouputBuffer += "<span class='crc'>&nbsp;Checksum: " + IntToHexString(GetCrc32(data_path / modlist[i].name)) + "</span>";
-				//Now change the file's date, if it is not the game's master file.
-				if (!IsMasterFile(modlist[i].name.string()) && !trial_run) {
-					//Calculate the new file time.
+					outputBuffer += "<span class='crc'>&nbsp;Checksum: " + IntToHexString(GetCrc32(data_path / iter->name)) + "</span>";
+			
+				if (!trial_run) {
 					modfiletime = esmtime + counters.recognised*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					//Re-date file. Provide exception handling in case their permissions are wrong.
-					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist[i].name.string().c_str());
-					try { 
-						fs::last_write_time(data_path / modlist[i].name,modfiletime);
+					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", iter->name.string().c_str());
+					try {
+						fs::last_write_time(data_path / iter->name,modfiletime);
 					} catch(fs::filesystem_error e) {
-						ouputBuffer += " - <span class='error'>Error: Could not change the date of \"" + EscapeHTMLSpecial(modlist[i].name.string()) + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
+						outputBuffer += " - <span class='error'>Error: Could not change the date of \"" + EscapeHTMLSpecial(iter->name.string()) + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
 					}
 				}
 				//Finally, print the mod's messages.
-				if (!modlist[i].messages.empty()) {
-					ouputBuffer += "<ul>";
-					size_t size = modlist[i].messages.size();
-					for (size_t j=0; j<size; j++) {
-						ShowMessage(ouputBuffer, modlist[i].messages[j]);  //Print messages to buffer.
+				if (!iter->messages.empty()) {
+					outputBuffer += "<ul>";
+					messageIter = iter->messages.begin();
+					for (messageIter; messageIter != iter->messages.end(); ++messageIter) {
+						ShowMessage(outputBuffer, *messageIter);  //Print messages to buffer.
 						counters.messages++;
-						if (modlist[i].messages[j].key == WARN)
+						if (messageIter->key == WARN)
 							counters.warnings++;
-						else if (modlist[i].messages[j].key == ERR)
+						else if (messageIter->key == ERR)
 							counters.errors++;
 					}
-					ouputBuffer += "</ul>";
-				} else
-					ouputBuffer += "";
+					outputBuffer += "</ul>";
+				}
 				counters.recognised++;
 			}
 		}
@@ -586,43 +558,42 @@ namespace boss {
 	}
 
 	//List unrecognised mods.
-	BOSS_COMMON_EXP void ListUnrecognisedMods(const vector<item>& modlist, const size_t lastRecognisedPos, string& ouputBuffer, const time_t esmtime, summaryCounters& counters) {
+	BOSS_COMMON_EXP void ListUnrecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
 		time_t modfiletime = 0;
-		size_t modlistSize = modlist.size();
 		//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 		//Order their dates to be i days after the master esm to ensure they load last.
 		LOG_INFO("Reporting unrecognized mods...");
-		for (size_t i=lastRecognisedPos+1; i<modlistSize; i++) {
-			//Only act on mods that exist.
-			if (modlist[i].type == MOD && (Exists(data_path / modlist[i].name))) {
-				ouputBuffer += "<li><span class='mod'>" + EscapeHTMLSpecial(TrimDotGhost(modlist[i].name.string())) + "</span>";
+		vector<Item>::iterator iter = modlist.lastRecognisedPos+1;
+		for (iter; iter != modlist.items.end(); ++iter) {
+			if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
+				outputBuffer += "<li><span class='mod'>" + EscapeHTMLSpecial(iter->name.string()) + "</span>";
 				if (!skip_version_parse) {
-					string version = GetModHeader(modlist[i].name);
+					string version = iter->GetHeader();
 					if (!version.empty())
-						ouputBuffer += "<span class='version'>&nbsp;Version "+EscapeHTMLSpecial(version)+"</span>";
+						outputBuffer += "<span class='version'>&nbsp;Version "+EscapeHTMLSpecial(version)+"</span>";
 				}
-				if (IsGhosted(data_path / modlist[i].name)) {
-					ouputBuffer += "<span class='ghosted'>&nbsp;Ghosted</span>";
+				if (iter->IsGhosted()) {
+					outputBuffer += "<span class='ghosted'>&nbsp;Ghosted</span>";
 					counters.ghosted++;
 				}
 				if (show_CRCs)
-					ouputBuffer += "<span class='crc'>&nbsp;Checksum: " + IntToHexString(GetCrc32(data_path / modlist[i].name)) + "</span>";
+					outputBuffer += "<span class='crc'>&nbsp;Checksum: " + IntToHexString(GetCrc32(data_path / iter->name)) + "</span>";
 			
 				if (!trial_run) {
 					modfiletime = esmtime + 86400 + (counters.recognised + counters.unrecognised)*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute and adding 86,400 on increases it by a day. Using unrecModNo instead of i to avoid increases for group entries.
 					//Re-date file. Provide exception handling in case their permissions are wrong.
-					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", modlist[i].name.string().c_str());
+					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", iter->name.string().c_str());
 					try {
-						fs::last_write_time(data_path / modlist[i].name,modfiletime);
+						fs::last_write_time(data_path / iter->name,modfiletime);
 					} catch(fs::filesystem_error e) {
-						ouputBuffer += " - <span class='error'>Error: Could not change the date of \"" + EscapeHTMLSpecial(modlist[i].name.string()) + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
+						outputBuffer += " - <span class='error'>Error: Could not change the date of \"" + EscapeHTMLSpecial(iter->name.string()) + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
 					}
 				}
 				counters.unrecognised++;
 			}
 		}
-		if (lastRecognisedPos+1 == modlistSize)
-			ouputBuffer += "<i>No unrecognised plugins.</i>";
+		if (modlist.lastRecognisedPos+1 == modlist.items.end())
+			outputBuffer += "<i>No unrecognised plugins.</i>";
 	
 		LOG_INFO("Unrecognized mods reported.");
 	}
@@ -647,9 +618,9 @@ namespace boss {
 				Output("<li><input type='checkbox' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label>");
 
 			if (HideRuleWarnings)
-				Output("<li><input type='checkbox' checked='checked' id='b12' onclick='toggleUserlistWarnings(this)' /><label for='b12'>Hide Rule Warnings</label>");
+				Output("<li><input type='checkbox' checked='checked' id='b12' onclick='toggleRuleListWarnings(this)' /><label for='b12'>Hide Rule Warnings</label>");
 			else
-				Output("<li><input type='checkbox' id='b12' onclick='toggleUserlistWarnings(this)' /><label for='b12'>Hide Rule Warnings</label>");
+				Output("<li><input type='checkbox' id='b12' onclick='toggleRuleListWarnings(this)' /><label for='b12'>Hide Rule Warnings</label>");
 		
 			if (HideVersionNumbers)
 				Output("<li><input type='checkbox' checked='checked' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label>");
@@ -719,18 +690,23 @@ namespace boss {
 		// Display Global Messages
 		/////////////////////////////
 
-		if (!globalMessageBuffer.empty() || !iniErrorBuffer.empty() || !contents.updaterErrors.empty()) {
+		if (!contents.globalMessages.empty() || !contents.iniParsingError.empty() || !contents.criticalError.empty() || !contents.updaterErrors.empty()) {
 			string buffer;
-			size_t size = iniErrorBuffer.size();
 			Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>General Messages</h3><ul>");
-			for (size_t i=0; i<size; i++)  //First print parser/syntax error messages.
-				Output(iniErrorBuffer[i]);
-			size = globalMessageBuffer.size();
+			if (!contents.criticalError.empty())
+				Output(contents.criticalError);
+			if (!contents.iniParsingError.empty())  //First print parser/syntax error messages.
+				Output(contents.iniParsingError);
+			size_t size = contents.globalMessages.size();
 			for (size_t i=0; i<size; i++)
-				ShowMessage(buffer, globalMessageBuffer[i]);  //Print messages.
+				ShowMessage(buffer, contents.globalMessages[i]);  //Print messages.
 			Output(contents.updaterErrors);
 			Output(buffer);
 			Output("</ul>");
+			if (!contents.criticalError.empty()) {  //Exit early.
+				OutputFooter();
+				return;
+			}
 		}
 
 		/////////////////////////////
@@ -758,14 +734,17 @@ namespace boss {
 
 		
 		/////////////////////////////
-		// Display Userlist Messages
+		// Display RuleList Messages
 		/////////////////////////////
 
-		if (!contents.userlistMessages.empty() || !userlistErrorBuffer.empty()) {
-			size_t size = userlistErrorBuffer.size();
-			Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Userlist Messages</h3><ul id='userlistMessages'>");
-			for (size_t i=0; i<size; i++)  //First print parser/syntax error messages.
-				Output(userlistErrorBuffer[i]);
+		if (!contents.userlistMessages.empty() || !contents.userlistParsingError.empty() || !contents.userlistSyntaxErrors.empty()) {
+
+			Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>RuleList Messages</h3><ul id='userlistMessages'>");
+			if (!contents.userlistParsingError.empty())  //First print parser/syntax error messages.
+				Output(contents.userlistParsingError);
+			size_t size = contents.userlistSyntaxErrors.size();
+			for (size_t i=0;i<size;i++)
+				Output(contents.userlistSyntaxErrors[i]);
 			Output(contents.userlistMessages);  //Now print the rest of the userlist messages.
 			Output("</ul>");
 		}
@@ -808,10 +787,5 @@ namespace boss {
 
 		Output("<h3 id='end'>Execution Complete</h3>");
 		OutputFooter();
-	}
-
-	//Evaluates masterlist conditionals.
-	BOSS_COMMON_EXP void EvaluateMasterlistConditionals(vector<item>& masterlist) {
-
 	}
 }

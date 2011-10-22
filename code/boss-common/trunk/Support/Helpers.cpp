@@ -19,6 +19,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/crc.hpp>
 
+#include "source/utf8.h"
+
 #include <ctype.h>
 #include <stdio.h>
 #include <time.h>
@@ -159,5 +161,31 @@ namespace boss {
         }
 #endif
 		return retVal;
+	}
+
+	//Reads an entire file into a string buffer.
+	void fileToBuffer(const fs::path file, string& buffer) {
+		ifstream ifile(file.c_str());
+		if (ifile.fail())
+			return;
+		ifile.unsetf(ios::skipws); // No white space skipping!
+		copy(
+			istream_iterator<char>(ifile),
+			istream_iterator<char>(),
+			back_inserter(buffer)
+		);
+	}
+
+	//UTF-8 Validator
+	bool ValidateUTF8File(const fs::path file) {
+		ifstream ifs(file.c_str());
+
+		istreambuf_iterator<char> it(ifs.rdbuf());
+		istreambuf_iterator<char> eos;
+
+		if (!utf8::is_valid(it, eos))
+			return false;
+		else
+			return true;
 	}
 }

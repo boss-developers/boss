@@ -16,9 +16,13 @@
 #include <string>
 #include <boost/cstdint.hpp>
 #include "Common/DllDef.h"
+#include <boost/format.hpp>
+#include "Output/Output.h"
 
 namespace boss {
 	using namespace std;
+
+	using boost::format;
 	
 	//Error Codes
 	BOSS_COMMON_EXP const uint32_t BOSS_ERROR_OK = 0;
@@ -45,41 +49,29 @@ namespace boss {
 	BOSS_COMMON_EXP const uint32_t BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL = 21;
 	BOSS_COMMON_EXP const uint32_t BOSS_ERROR_CURL_PERFORM_FAIL = 22;
 	BOSS_COMMON_EXP const uint32_t BOSS_ERROR_CURL_USER_CANCEL = 23;
-	BOSS_COMMON_EXP const uint32_t BOSS_ERROR_MAX = 23;
+	BOSS_COMMON_EXP const uint32_t BOSS_ERROR_FILE_PARSE_FAIL = 24;
+	BOSS_COMMON_EXP const uint32_t BOSS_ERROR_MAX = BOSS_ERROR_FILE_PARSE_FAIL;
 
 	class boss_error {
 	public:
-		//This will be unused.
-		boss_error() {
-			errCode = BOSS_ERROR_OK;
-			errString = "";
-			errSubject = "";
-		}
 		//For general errors not referencing specific files.
-		boss_error(uint32_t internalErrCode) {
-			errCode = internalErrCode;
-			errString = "";
-			errSubject = "";
-		}
+		inline boss_error(const uint32_t internalErrCode) 
+			: errCode(internalErrCode), errString(""), errSubject("") {}
+
 		//For general errors referencing specific files.
-		boss_error(uint32_t internalErrCode, string internalErrSubject) {
-			errCode = internalErrCode;
-			errString = "";
-			errSubject = internalErrSubject;
-		}
+		inline boss_error(const uint32_t internalErrCode, const string internalErrSubject) 
+			: errCode(internalErrCode), errString(""), errSubject(internalErrSubject) {}
+
 		//For errors from BOOST Filesystem functions.
-		boss_error(uint32_t internalErrCode, string internalErrSubject, string externalErrString) {
-			errCode = internalErrCode;
-			errString = externalErrString;
-			errSubject = internalErrSubject;
-		}
+		inline boss_error(const uint32_t internalErrCode, const string internalErrSubject, const string externalErrString) 
+			: errCode(internalErrCode), errString(externalErrString), errSubject(internalErrSubject) {}
+
 		//For errors from cURL functions.
-		boss_error(string externalErrString, uint32_t internalErrCode) {
-			errCode = internalErrCode;
-			errString = externalErrString;
-			errSubject = "";
-		}
-		string getString() {
+		inline boss_error(const string externalErrString, const uint32_t internalErrCode) 
+			: errCode(internalErrCode), errString(externalErrString), errSubject("") {}
+
+		//Returns the error string for the object.
+		inline string getString() {
 			switch(errCode) {
 			case BOSS_ERROR_OK:
 				return "No error.";
@@ -129,18 +121,77 @@ namespace boss {
 				return "cURL could not perform task! cURL response: " + errString;
 			case BOSS_ERROR_CURL_USER_CANCEL:
 				return "Cancelled by user.";
+			case BOSS_ERROR_FILE_PARSE_FAIL:
+				return "Parsing of \"" + errSubject + "\" failed!";
 			default:
 				return "No error.";
 			}
 		}
-		uint32_t getCode() {
-			return errCode;
-		}
+
+		//Returns the error code for the object.
+		inline uint32_t getCode() { return errCode; }
 	private:
 		uint32_t errCode;
 		string errString;
 		string errSubject;
 	};
+
+	//Parsing error formats.
+	static format MasterlistParsingErrorHeader("Masterlist Parsing Error: Expected a %1% at:");
+	static format IniParsingErrorHeader("Ini Parsing Error: Expected a %1% at:");
+	static format RuleListParsingErrorHeader("Userlist Parsing Error: Expected a %1% at:");
+	static format RuleListSyntaxErrorMessage("Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%");
+	static const string MasterlistParsingErrorFooter("Masterlist parsing aborted. Utility will end now.");
+	static const string IniParsingErrorFooter("Ini parsing aborted. Some or all of the options may not have been set correctly.");
+	static const string RuleListParsingErrorFooter("Userlist parsing aborted. No rules will be applied.");
+
+	//RuleList syntax error strings.
+	static const string ESortLineInForRule("includes a sort line in a rule with a FOR rule keyword.");
+	static const string EAddingModGroup("tries to add a group.");
+	static const string ESortingGroupEsms("tries to sort the group \"ESMs\".");
+	static const string ESortingMasterEsm("tries to sort the master .ESM file.");
+	static const string EReferencingModAndGroup("references a mod and a group.");
+	static const string ESortingGroupBeforeEsms("tries to sort a group before the group \"ESMs\".");
+	static const string ESortingModBeforeGameMaster("tries to sort a mod before the master .ESM file.");
+	static const string EInsertingToTopOfEsms("tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file.");
+	static const string EInsertingGroupOrIntoMod("tries to insert a group or insert something into a mod.");
+	static const string EAttachingMessageToGroup("tries to attach a message to a group.");
+	static const string EMultipleSortLines("has more than one sort line.");
+	static const string EMultipleReplaceLines("has more than one REPLACE-using message line.");
+	static const string EReplaceNotFirst("has a REPLACE-using message line that is not the first message line.");
+	static const string ESortNotSecond("has a sort line that is not the second line of the rule.");
+	static const string ESortingToItself("tries to sort a mod or group relative to itself.");
 	
+	//Parsing error class.
+	class ParsingError {
+	public:
+		//For parsing errors.
+		inline ParsingError(const string inHeader, const string inFooter, const string inDetail)
+			: header(inHeader), footer(inFooter), detail(inDetail) {}
+
+		//For userlist syntax errors.
+		inline ParsingError(const string inWholeMessage) 
+			: wholeMessage(inWholeMessage) {}
+
+		//Outputs correctly-formatted error message.
+		inline string FormatFor(const string format) {
+			if (!wholeMessage.empty()) {
+				if (format == "html")
+					return "<li class='error'>"+EscapeHTMLSpecial(wholeMessage);
+				else
+					return wholeMessage;
+			} else {
+				if (format == "html")
+					return "<li><span class='error'>"+EscapeHTMLSpecial(header)+"</span><blockquote>"+EscapeHTMLSpecial(detail)+"</blockquote><span class='error'>"+EscapeHTMLSpecial(footer)+"</span>";
+				else
+					return "\n*  "+header+"\n\n"+detail+"\n\n"+footer;
+			}
+		}
+	private:
+		string header;
+		string footer;
+		string detail;
+		string wholeMessage;
+	};
 }
 #endif

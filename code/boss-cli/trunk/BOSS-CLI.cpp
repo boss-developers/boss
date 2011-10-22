@@ -99,13 +99,14 @@ int main(int argc, char *argv[]) {
 	size_t lastRecognisedPos = 0;			//position of last recognised mod.
 	string scriptExtender;					//What script extender is present.
 	time_t esmtime = 0;						//File modification times.
-	vector<item> Modlist, Masterlist;		//Modlist and masterlist data structures.
-	vector<rule> Userlist;					//Userlist data structure.
+	ItemList modlist, masterlist;		//modlist and masterlist data structures.
+	RuleList userlist;					//userlist data structure.
+	Ini ini;
 	summaryCounters counters;				//Summary counters.
 	bosslogContents contents;				//BOSSlog contents.
 	string gameStr;							// allow for autodetection override
 	fs::path bosslog_path;					//Path to BOSSlog being used.
-	fs::path sortfile;						//Modlist/masterlist to sort plugins using.
+	fs::path sortfile;						//modlist/masterlist to sort plugins using.
 
 	//Set the locale to get encoding conversions working correctly.
 	setlocale(LC_CTYPE, "");
@@ -177,11 +178,17 @@ int main(int argc, char *argv[]) {
 
 	LOG_INFO("Parsing Ini...");
 	//Parse ini file if found. Can't just use BOOST's program options ini parser because of the CSS syntax and spaces.
-	if (fs::exists(ini_path))
-		parseIni(ini_path);
-	else {
-		if (!GenerateIni())
-			iniErrorBuffer.push_back("<p class='error'>Error: BOSS.ini generation failed. Ensure your BOSS folder is not read-only.");
+	if (fs::exists(ini_path)) {
+		try {
+			ini.Load(ini_path);
+			contents.iniParsingError = ini.errorBuffer;
+		} catch (boss_error e) {}
+	} else {
+		try {
+			ini.Save(ini_path);
+		} catch (boss_error e) {
+			contents.iniParsingError = "<p class='error'>Error: BOSS.ini generation failed. Ensure your BOSS folder is not read-only.";
+		}
 	}
 
 	// parse command line arguments
@@ -488,7 +495,7 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Game detected: %d", game);
 
 	/////////////////////////////////////////////////////////
-	// Error Condition Check Interlude - Update Masterlist
+	// Error Condition Check Interlude - Update masterlist
 	/////////////////////////////////////////////////////////
 	
 	if (revert<1 && (update || update_only)) {
@@ -497,10 +504,10 @@ int main(int argc, char *argv[]) {
 		try {
 			connection = CheckConnection();
 		} catch (boss_error e) {
-			contents.updaterErrors += "<li class='warn'>Error: Masterlist update failed.<br />";
+			contents.updaterErrors += "<li class='warn'>Error: masterlist update failed.<br />";
 			contents.updaterErrors += "Details: " + EscapeHTMLSpecial(e.getString()) + "<br />";
 			contents.updaterErrors += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
-			LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
+			LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
 		}
 		if (connection) {
 			cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
@@ -513,20 +520,20 @@ int main(int argc, char *argv[]) {
 				if (localRevision == remoteRevision) {
 					contents.summary += "<p>Your masterlist is already at the latest revision (r" + IntToString(localRevision) + "; " + EscapeHTMLSpecial(localDate) + "). No update necessary.";
 					cout << endl << "Your masterlist is already at the latest revision (" + IntToString(localRevision) + "; " + EscapeHTMLSpecial(localDate) + "). No update necessary." << endl;
-					LOG_DEBUG("Masterlist update unnecessary.");
+					LOG_DEBUG("masterlist update unnecessary.");
 				} else {
 					contents.summary += "<p>Your masterlist has been updated to revision " + IntToString(remoteRevision) + " (" + EscapeHTMLSpecial(remoteDate) + ").";
 					cout << endl << "Your masterlist has been updated to revision " << remoteRevision << endl;
-					LOG_DEBUG("Masterlist updated successfully.");
+					LOG_DEBUG("masterlist updated successfully.");
 				}
 			} catch (boss_error e) {
-				contents.updaterErrors += "<li class='warn'>Error: Masterlist update failed.<br />";
+				contents.updaterErrors += "<li class='warn'>Error: masterlist update failed.<br />";
 				contents.updaterErrors += "Details: " + EscapeHTMLSpecial(e.getString()) + "<br />";
 				contents.updaterErrors += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
-				LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
+				LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
 			}
 		} else
-			contents.summary += "<p>No internet connection detected. Masterlist auto-updater aborted.";
+			contents.summary += "<p>No internet connection detected. masterlist auto-updater aborted.";
 	}
 
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
@@ -573,13 +580,13 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Build and save modlist.
-	BuildModlist(Modlist);
+	modlist.Load(data_path);
 	if (revert<1) {
 		try {
-			SaveModlist(Modlist, curr_modlist_path);
+			modlist.Save(curr_modlist_path);
 		} catch (boss_error e) {
 			OutputHeader();
-			Output("<p class='error'>Critical Error: Modlist backup failed!<br />");
+			Output("<p class='error'>Critical Error: modlist backup failed!<br />");
 			Output("Details: " + EscapeHTMLSpecial(e.getString()) + ".<br />");
 			Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
 			Output("Utility will end now.");
@@ -595,65 +602,61 @@ int main(int argc, char *argv[]) {
 	/////////////////////////////////
 	// Parse Master- and Userlists
 	/////////////////////////////////
-	//Masterlist parse errors are critical, ini and userlist parse errors are not.
+	//masterlist parse errors are critical, ini and userlist parse errors are not.
 	
 	//Parse masterlist/modlist backup into data structure.
 	LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
 	try {
-		parseMasterlist(sortfile,Masterlist);
+		masterlist.Load(sortfile);
+		contents.criticalError = masterlist.errorBuffer;
+		contents.globalMessages = masterlist.globalMessageBuffer;
 	} catch (boss_error e) {
-		OutputHeader();
-		Output("<p class='error'>Critical Error: " +EscapeHTMLSpecial(e.getString()) +"<br />");
-		Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
-		Output("Utility will end now.");
-		OutputFooter();
-        bosslog.close();
-        LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
+		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
+			PrintBOSSlog(contents, counters, "");
+			bosslog.close();
+		} else {
+			OutputHeader();
+			Output("<p class='error'>Critical Error: " +EscapeHTMLSpecial(e.getString()) +"<br />");
+			Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
+			Output("Utility will end now.");
+			OutputFooter();
+			bosslog.close();
+			LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
+		}
         if ( !silent ) 
-                Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
-        exit (1); //fail in screaming heap.
-	}
-
-	//Check if parsing failed. If so, exit with errors.
-	if (!masterlistErrorBuffer.empty()) {
-		OutputHeader();
-		size_t size = masterlistErrorBuffer.size();
-		for (size_t i=0; i<size; i++)  //Print parser error messages.
-			Output(masterlistErrorBuffer[i]);
-		OutputFooter();
-		bosslog.close();
-		if ( !silent ) 
                 Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
         exit (1); //fail in screaming heap.
 	}
 
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		bool parsed = parseUserlist(userlist_path,Userlist);
-		if (!parsed)
-			Userlist.clear();  //If userlist has parsing errors, empty it so no rules are applied.
+		userlist.Load(userlist_path);
+		contents.userlistParsingError = userlist.parsingErrorBuffer;
+		contents.userlistSyntaxErrors = userlist.syntaxErrorBuffer;
 	} catch (boss_error e) {
-		userlistErrorBuffer.push_back("<p class='error'>Error: "+e.getString()+" Userlist parsing aborted. No rules will be applied.");
+		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
+		if (e.getCode() != BOSS_ERROR_FILE_PARSE_FAIL)
+			userlist.parsingErrorBuffer = "<p class='error'>Error: "+e.getString()+" userlist parsing aborted. No rules will be applied.";
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
-
+	
 
 	/////////////////////////////////////////////////
-	// Compare Masterlist against Modlist, Userlist
+	// Compare masterlist against modlist, userlist
 	/////////////////////////////////////////////////
 
-	lastRecognisedPos = BuildWorkingModlist(Modlist,Masterlist,Userlist);
-	LOG_INFO("Modlist now filled with ordered mods and unknowns.");
+	BuildWorkingModlist(modlist, masterlist, userlist);
+	LOG_INFO("modlist now filled with ordered mods and unknowns.");
 
-
+	
 	//////////////////////////
-	// Apply Userlist Rules
+	// Apply userlist Rules
 	//////////////////////////
 
 	//Apply userlist rules to modlist.
 	if (revert<1 && fs::exists(userlist_path)) {
-		ApplyUserRules(Modlist, Userlist, contents.userlistMessages, lastRecognisedPos);
-		LOG_INFO("Userlist sorting process finished.");
+		ApplyUserRules(modlist, userlist, contents.userlistMessages);
+		LOG_INFO("userlist sorting process finished.");
 	}
 
 	//////////////////////////////////////////////////////
@@ -668,12 +671,12 @@ int main(int argc, char *argv[]) {
 	////////////////////////////////
 
 	//Re-date .esp/.esm files according to order in modlist and output messages
-	SortRecognisedMods(Modlist, lastRecognisedPos, contents.recognisedPlugins, esmtime, counters);
+	SortRecognisedMods(modlist, contents.recognisedPlugins, esmtime, counters);
 
 
 	//Find and show found mods not recognised. These are the mods that are found at and after index lastRecognisedPos in the mods vector.
 	//Order their dates to be i days after the master esm to ensure they load last.
-	ListUnrecognisedMods(Modlist, lastRecognisedPos, contents.unrecognisedPlugins, esmtime, counters);
+	ListUnrecognisedMods(modlist, contents.unrecognisedPlugins, esmtime, counters);
 
 	/////////////////////////////
 	// Print Output to BOSSlog

@@ -19,14 +19,12 @@
 
 #include <fstream>
 #include <string>
-#include "Common/Lists.h"
+#include "Common/Classes.h"
 #include "Common/DllDef.h"
 #include <boost/format.hpp>
 
 namespace boss {
 	using namespace std;
-
-	using boost::format;
 
 	//Default filter options.
 	BOSS_COMMON_EXP extern bool UseDarkColourScheme;
@@ -74,30 +72,9 @@ namespace boss {
 	BOSS_COMMON_EXP extern string CSSNote;
 	BOSS_COMMON_EXP extern string CSSRequirement;
 	BOSS_COMMON_EXP extern string CSSIncompatibility;
-	
-	//Parsing error message format.
-	static format MasterlistParsingErrorFormat("<p><span class='error'>Masterlist Parsing Error: Expected a %1% at:</span>"
-		"<blockquote>%2%</blockquote>"
-		"<span class='error'>Masterlist parsing aborted. Utility will end now.</span>");
-	
-	//Parsing error formatting.
-	static format IniParsingErrorFormat("<li><span class='error'>Ini Parsing Error: Expected a %1% at:</span>"
-		"<blockquote>%2%</blockquote>"
-		"<span class='error'>Ini parsing aborted. Some or all of the options may not have been set correctly.</span>");
-
-	//Syntax error formatting.
-	static format SyntaxErrorFormat("<li class='error'>"
-		"Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
-		"");
-
-	//Parsing error formatting.
-	static format UserlistParsingErrorFormat("<li><span class='error'>Userlist Parsing Error: Expected a %1% at:</span>"
-		"<blockquote>%2%</blockquote>"
-		"<span class='error'>Userlist parsing aborted. No rules will be applied.</span>");
-
 
 	//Prints a given message to the bosslog, using format-safe Output function below.
-	void ShowMessage(string& buffer, message currentMessage);
+	void ShowMessage(string& buffer, Message currentMessage);
 
 	//Prints ouptut with formatting according to format.
 	BOSS_COMMON_EXP void Output(string text);
@@ -111,16 +88,13 @@ namespace boss {
 	//Prints HTML footer (ie. </body> and </html> tags).
 	BOSS_COMMON_EXP void OutputFooter();
 
-	//Generate a default BOSS.ini
-	BOSS_COMMON_EXP bool GenerateIni();
-
 	//Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 	BOSS_COMMON_EXP string IntToString(const unsigned int n);
 
 	//Converts an integer to a hex string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 	string IntToHexString(const unsigned int n);
 
-	//Converts a boolean to a string representation (0/1)
+	//Converts a boolean to a string representation (true/false)
 	string BoolToString(bool b);
 }
 #endif
