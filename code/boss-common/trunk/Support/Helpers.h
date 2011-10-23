@@ -28,27 +28,11 @@ namespace boss {
 	// Helper functions
 	//////////////////////////////////////////////////////////////////////////
 
-	//Changes uppercase to lowercase and removes preceding and trailing spaces.	
+	//Changes uppercase to lowercase.	
 	BOSS_COMMON_EXP string Tidy(string text);
-
-	//Checks if a given object is an esp or an esm.
-	bool IsPlugin(string object);
-	
-	//Checks if the plugin exists at the given location, even if ghosted.
-	bool Exists(const fs::path plugin);
-
-	//Determines if a given mod is a game's main master file or not.
-	bool IsMasterFile(const string plugin);
-
-	//Reads the header from mod file and prints a string representation which includes the version text, if found.
-	string GetModHeader(const fs::path& filename);
 
 	//Calculate the CRC of the given file for comparison purposes.
 	unsigned int GetCrc32(const fs::path& filename);
-
-	//Checks if the given plugin is ghosted in the user's install.
-	//NOT if the plugin given has a '.ghost' extension.
-	bool IsGhosted(fs::path plugin);
 
 	//Gets the given OBSE dll or OBSE plugin dll's version number.
 	//Also works for FOSE and NVSE.
@@ -57,7 +41,7 @@ namespace boss {
 	//Reads an entire file into a string buffer.
 	void fileToBuffer(const fs::path file, string& buffer);
 
-	//UTF-8 Validator
+	//UTF-8 file validator.
 	bool ValidateUTF8File(const fs::path file);
 }
 

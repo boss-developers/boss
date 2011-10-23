@@ -15,9 +15,9 @@
 
 #include <string>
 #include <boost/cstdint.hpp>
-#include "Common/DllDef.h"
 #include <boost/format.hpp>
-#include "Output/Output.h"
+#include <boost/algorithm/string.hpp>
+#include "Common/DllDef.h"
 
 namespace boss {
 	using namespace std;
@@ -165,6 +165,7 @@ namespace boss {
 	//Parsing error class.
 	class ParsingError {
 	public:
+		inline ParsingError() : header(""), footer(""), detail(""), wholeMessage("") {}
 		//For parsing errors.
 		inline ParsingError(const string inHeader, const string inFooter, const string inDetail)
 			: header(inHeader), footer(inFooter), detail(inDetail) {}
@@ -174,19 +175,9 @@ namespace boss {
 			: wholeMessage(inWholeMessage) {}
 
 		//Outputs correctly-formatted error message.
-		inline string FormatFor(const string format) {
-			if (!wholeMessage.empty()) {
-				if (format == "html")
-					return "<li class='error'>"+EscapeHTMLSpecial(wholeMessage);
-				else
-					return wholeMessage;
-			} else {
-				if (format == "html")
-					return "<li><span class='error'>"+EscapeHTMLSpecial(header)+"</span><blockquote>"+EscapeHTMLSpecial(detail)+"</blockquote><span class='error'>"+EscapeHTMLSpecial(footer)+"</span>";
-				else
-					return "\n*  "+header+"\n\n"+detail+"\n\n"+footer;
-			}
-		}
+		string FormatFor(const string format);
+
+		inline bool Empty() { return (header.empty() && footer.empty() && detail.empty() && wholeMessage.empty()); }
 	private:
 		string header;
 		string footer;

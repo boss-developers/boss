@@ -35,43 +35,10 @@ namespace boss {
 	using namespace std;
 	using namespace boost;
 
-	//Changes uppercase to lowercase and removes preceding and trailing spaces.	
+	//Changes uppercase to lowercase.	
 	BOSS_COMMON_EXP string Tidy(string filename) {
-		boost::algorithm::trim(filename);
 		boost::algorithm::to_lower(filename);
 		return filename;
-	}
-
-	//Checks if a given object is an esp or an esm, even if ghosted.
-	bool IsPlugin(string object) {
-		object = fs::path(object).extension().string();
-		boost::algorithm::trim(object);
-		boost::algorithm::to_lower(object);
-		return (object == ".esp" || object == ".esm" || object == ".ghost");
-	}
-
-	//Checks if the plugin exists at the given location, even if ghosted.
-	bool Exists(const fs::path plugin) {
-		return (fs::exists(plugin) || fs::exists(plugin.string() + ".ghost"));
-	}
-
-	//Determines if a given mod is a game's main master file or not.
-	bool IsMasterFile(const string plugin) {
-		return ((Tidy(plugin) == "oblivion.esm") || (Tidy(plugin) == "fallout3.esm") || (Tidy(plugin) == "nehrim.esm") || (Tidy(plugin) == "falloutnv.esm") || (Tidy(plugin) == "skyrim.esm"));
-	}
-
-	//Reads the header from mod file and prints a string representation which includes the version text, if found.
-	string GetModHeader(const fs::path& filename) {
-		ModHeader header;
-
-		// Read mod's header now...
-		header = ReadHeader(data_path / filename);
-
-		// The current mod's version if found, or empty otherwise.
-		string version = header.Version;
-
-		//Return the version if found, otherwise an empty string.
-		return version;
 	}
 
 	//Calculate the CRC of the given file for comparison purposes.
@@ -93,17 +60,6 @@ namespace boss {
 		}
 		LOG_DEBUG("CRC32('%s'): 0x%x", filename.string().c_str(), chksum);
         return chksum;
-	}
-
-	//Checks if the given plugin is ghosted in the user's install.
-	bool IsGhosted(fs::path plugin) {
-		const string ext = to_lower_copy(plugin.extension().string());
-		if (ext != ".ghost")  //Doesn't have .ghost extension. Add it.
-			plugin = fs::path(plugin.string() + ".ghost");
-		if (fs::exists(plugin))
-			return true;
-		else
-			return false;
 	}
 
 	//Gets the given .exe or .dll file's version number.
@@ -176,7 +132,7 @@ namespace boss {
 		);
 	}
 
-	//UTF-8 Validator
+	//UTF-8 file validator.
 	bool ValidateUTF8File(const fs::path file) {
 		ifstream ifs(file.c_str());
 

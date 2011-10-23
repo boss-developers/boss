@@ -10,7 +10,6 @@
 */
 
 #include "Common/Execute.h"
-#include "Parsing/Parser.h"
 #include "Common/Error.h"
 #include "Common/Globals.h"
 #include "Support/Helpers.h"
@@ -175,7 +174,7 @@ namespace boss {
 		LOG_INFO("Populating hashset with userlist.");
 		//Need to get ruleObject and sort line object if plugins.
 		for (size_t i=0; i<userlistSize; i++) {
-			if (IsPlugin(userlist.rules[i].ruleObject)) {
+			if (Item(userlist.rules[i].ruleObject).IsPlugin()) {
 				setPos = hashset.find(Tidy(userlist.rules[i].ruleObject));
 				if (setPos == hashset.end()) {  //Mod not already in hashset.
 					setPos = hashset.find(Tidy(userlist.rules[i].ruleObject + ".ghost"));
@@ -186,7 +185,7 @@ namespace boss {
 				}
 			}
 			if (userlist.rules[i].ruleKey != FOR) {  //First line is a sort line.
-				if (IsPlugin(userlist.rules[i].lines[0].object)) {
+				if (Item(userlist.rules[i].lines[0].object).IsPlugin()) {
 					setPos = hashset.find(Tidy(userlist.rules[i].lines[0].object));
 					if (setPos == hashset.end()) {  //Mod not already in hashset.
 						setPos = hashset.find(Tidy(userlist.rules[i].lines[0].object + ".ghost"));
@@ -236,7 +235,7 @@ namespace boss {
 						break;
 					string mod = *setPos;
 					//Look for mod in modlist, and userlist. Replace with case-preserved mod name.
-					modlistPos = modlist.FindItem(iter->name);
+					modlistPos = modlist.FindItem(fs::path(mod));
 					if (modlistPos != modlist.items.end())
 						mod = modlistPos->name.string();
 					else {

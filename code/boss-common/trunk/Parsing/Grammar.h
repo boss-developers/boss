@@ -121,7 +121,7 @@ namespace boss {
 	class modlist_grammar : public grammar<string::const_iterator, vector<Item>(), Skipper> {
 	public:
 		modlist_grammar();
-		inline void SetErrorBuffer(string * inErrorBuffer) { errorBuffer = inErrorBuffer; }
+		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
 		inline void SetGlobalMessageBuffer(vector<Message> * inGlobalMessageBuffer) { globalMessageBuffer = inGlobalMessageBuffer; }
 	private:
 		qi::rule<string::const_iterator, vector<Item>(), Skipper> modList;
@@ -136,7 +136,7 @@ namespace boss {
 		
 		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what);
 		
-		string * errorBuffer;
+		ParsingError * errorBuffer;
 		vector<Message> * globalMessageBuffer;
 		const vector<Message> noMessages;  //An empty set of messages.
 		bool storeItem;
@@ -201,7 +201,7 @@ namespace boss {
 		void EvaluateConditionalMessage(string& message, string version, string file, const string mod);
 
 		//Turns a given string into a path. Can't be done directly because of the openGroups checks.
-		void path(fs::path& p, string const itemName);
+		void path(fs::path& p, string itemName);
 	};
 
 	////////////////////////////
@@ -212,7 +212,7 @@ namespace boss {
 	class ini_grammar : public grammar<string::const_iterator, Skipper> {
 	public:
 		ini_grammar();
-		inline void SetErrorBuffer(string * inErrorBuffer) { errorBuffer = inErrorBuffer; }
+		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
 	private:
 		qi::rule<string::const_iterator, Skipper> ini, section, setting;
 		qi::rule<string::const_iterator, string(), Skipper> var, stringVal, heading;
@@ -228,7 +228,7 @@ namespace boss {
 		//Set the BOSS variable values while parsing.
 		void SetStringVar(string& var, string& value);
 
-		string * errorBuffer;
+		ParsingError * errorBuffer;
 	};
 
 	////////////////////////////
@@ -239,8 +239,8 @@ namespace boss {
 	class userlist_grammar : public qi::grammar<string::const_iterator, vector<Rule>(), Skipper> {
 	public:
 		userlist_grammar();
-		inline void SetParsingErrorBuffer(string * inErrorBuffer) { parsingErrorBuffer = inErrorBuffer; }
-		inline void SetSyntaxErrorBuffer(vector<string> * inErrorBuffer) { syntaxErrorBuffer = inErrorBuffer; }
+		inline void SetParsingErrorBuffer(ParsingError * inErrorBuffer) { parsingErrorBuffer = inErrorBuffer; }
+		inline void SetSyntaxErrorBuffer(vector<ParsingError> * inErrorBuffer) { syntaxErrorBuffer = inErrorBuffer; }
 	private:
 		qi::rule<string::const_iterator, vector<Rule>(), Skipper> ruleList;
 		qi::rule<string::const_iterator, Rule(), Skipper> userlistRule;
@@ -253,8 +253,8 @@ namespace boss {
 
 		void RuleSyntaxCheck(vector<Rule>& userlist, Rule currentRule);
 
-		string * parsingErrorBuffer;
-		vector<string> * syntaxErrorBuffer;
+		ParsingError * parsingErrorBuffer;
+		vector<ParsingError> * syntaxErrorBuffer;
 	};
 
 }

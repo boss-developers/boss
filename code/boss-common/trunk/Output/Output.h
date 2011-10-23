@@ -96,5 +96,50 @@ namespace boss {
 
 	//Converts a boolean to a string representation (true/false)
 	string BoolToString(bool b);
+
+	enum logFormatting {
+		DIV_OPEN,
+		DIV_CLOSE,
+		LINE_BREAK,
+		LINK_OPEN_ADDRESS,
+		LINK_CLOSE_ADDRESS,
+		LINK_CLOSE,
+		SYMBOL_COPYRIGHT,
+		SYMBOL_AMPERSAND,
+		SYMBOL_PLUS,
+		SYMBOL_MINUS,
+		TABLE_ROW,
+		TABLE_OPEN,
+		TABLE_CLOSE,
+		JAVASCRIPT_TOGGLE_SECTION_DISPLAY,
+		ID_END,
+		ID_RECOGNISED,
+		ID_USERLIST_MESSAGES,
+		LIST_CLOSE,
+	};
+	/*
+	class Output {
+	public:
+		void Open(fs::path file, string format, bool shouldEscapeHTMLSpecial);		//Opens the output stream using the given file, and prints the bosslog header to it.
+		void Close();					//Prints the bosslog footer to the output stream then closes it.
+		void SetFormat(string format);	//Sets the formatting type of the output.
+		void SetHTMLSpecialEscape(bool shouldEscape);	//Sets whether or not to escape the HTML special characters from non-formatting input.
+	
+		Output& operator << (const string s);
+		Output& operator << (const char * s);
+		Output& operator << (const char c);
+		Output& operator << (logFormatting l);
+		Output& operator << (unsigned int i);
+		Output& operator << (bool b);
+		Output& operator << (fs::path p);
+		Output& operator << (Message m);
+	private:
+		ofstream outStream;
+		string outFormat;			//The formatting type of the output.
+		bool escapeHTMLSpecialChars;	//Should special characters be escaped from non-formatting input?
+	
+		string EscapeHTMLSpecial(string text);	//Performs the HTML escaping.
+		string EscapeHTMLSpecial(char c);
+	};*/
 }
 #endif

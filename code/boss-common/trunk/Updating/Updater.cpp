@@ -14,7 +14,6 @@
 #include "Support/Helpers.h"
 #include "Output/Output.h"
 #include "Common/Error.h"
-#include "Parsing/Parser.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/spirit/include/qi.hpp>

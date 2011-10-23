@@ -265,7 +265,7 @@ namespace boss {
 		}
 	}
 
-	//Checks if the given mod has a version for which the comparison holds true.
+	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
 	void modlist_grammar::CheckVersion(bool& result, const string var) {
 		char comp = var[0];
 		size_t pos = var.find("|") + 1;
@@ -276,30 +276,28 @@ namespace boss {
 
 		GetPath(file_path,file);
 
-		if (Exists(file_path / file)) {
-			string trueVersion;
-			if (file_path == data_path) {
-				if (IsGhosted(file_path / file)) 
-					trueVersion = GetModHeader(file_path / fs::path(file + ".ghost"));
-				else 
-					trueVersion = GetModHeader(file_path / file);
-			} else
-				trueVersion = GetExeDllVersion(file_path / file);
+		Item tempItem = Item(file);
+		string trueVersion;
+		if (tempItem.Exists()) {
+			trueVersion = tempItem.GetHeader();
+		} else if (fs::exists(file_path / file))
+			trueVersion = GetExeDllVersion(file_path / file);
+		else
+			return;
 
-			switch (comp) {
-			case '>':
-				if (trueVersion.compare(version) > 0)
-					result = true;
-				break;
-			case '<':
-				if (trueVersion.compare(version) < 0)
-					result = true;
-				break;
-			case '=':
-				if (version == trueVersion)
-					result = true;
-				break;
-			}
+		switch (comp) {
+		case '>':
+			if (trueVersion.compare(version) > 0)
+				result = true;
+			break;
+		case '<':
+			if (trueVersion.compare(version) < 0)
+				result = true;
+			break;
+		case '=':
+			if (version == trueVersion)
+				result = true;
+			break;
 		}
 		return;
 	}
@@ -315,14 +313,14 @@ namespace boss {
 
 		if (iter != fileCRCs.end()) {
 			CRC = fileCRCs.at(file);
-		} else if (Exists(file_path / file)) {
-			if (file_path == data_path) {
-				if (IsGhosted(file_path / file)) 
-					CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
-				else
-					CRC = GetCrc32(file_path / file);
-			} else
+		} else {
+			if (fs::exists(file_path / file))
 				CRC = GetCrc32(file_path / file);
+			else if (Item(file).IsGhosted())
+				CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
+			else 
+				return;
+
 			fileCRCs.emplace(file,CRC);
 		}
 
@@ -336,7 +334,7 @@ namespace boss {
 		result = false;
 		fs::path file_path;
 		GetPath(file_path,file);
-		result = Exists(file_path / file);
+		result = (fs::exists(file_path / file) || Item(file).IsGhosted());
 	}
 
 	//Checks if a file which matches the given regex exists.
@@ -467,7 +465,8 @@ namespace boss {
 	}
 
 	//Turns a given string into a path. Can't be done directly because of the openGroups checks.
-	void modlist_grammar::path(fs::path& p, string const itemName) {
+	void modlist_grammar::path(fs::path& p, string itemName) {
+		boost::algorithm::trim(itemName);
 		if (itemName.length() == 0 && !openGroups.empty()) 
 			p = fs::path(openGroups.back());
 		else
@@ -632,7 +631,7 @@ namespace boss {
 	}
 
 	void modlist_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what) {
-		if (errorBuffer == NULL || !errorBuffer->empty())
+		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
 		
 		ostringstream out;
@@ -641,11 +640,9 @@ namespace boss {
 
 		string context(errorpos, min(errorpos +50, last));
 		boost::trim_left(context);
-		if (log_format == "html")
-			boost::replace_all(context, "\n", "<br />");
 
 		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
-		*errorBuffer = e.FormatFor(log_format);
+		*errorBuffer = e;
 		LOG_ERROR(e.FormatFor("text").c_str());
 		return;
 	}
@@ -868,7 +865,7 @@ namespace boss {
 	}
 
 	void ini_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {
-		if (errorBuffer == NULL || !errorBuffer->empty())
+		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
 		
 		ostringstream out;
@@ -877,11 +874,9 @@ namespace boss {
 
 		string context(errorpos, min(errorpos +50, last));
 		boost::trim_left(context);
-		if (log_format == "html")
-			boost::replace_all(context, "\n", "<br />");
 
 		ParsingError e(str(IniParsingErrorHeader % expect), context, IniParsingErrorFooter);
-		*errorBuffer = e.FormatFor(log_format);
+		*errorBuffer = e;
 		LOG_ERROR(e.FormatFor("text").c_str());
 		return;
 	}
@@ -894,65 +889,63 @@ namespace boss {
 	void userlist_grammar::RuleSyntaxCheck(vector<Rule>& userlist, Rule currentRule) {
 		bool skip = false;
 		boost::algorithm::trim(currentRule.ruleObject);  //Make sure there are no preceding or trailing spaces.
+		string ruleKeyString = currentRule.KeyToString();
+		Item ruleObject = Item(currentRule.ruleObject);
 		try {
-			keyType ruleKey = currentRule.ruleKey;
-			string ruleKeyString = currentRule.KeyToString();
-			string ruleObject = currentRule.ruleObject;
-			if (IsPlugin(ruleObject)) {
-				if (ruleKey != FOR && IsMasterFile(ruleObject))
-					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % ESortingMasterEsm).str());
+			if (ruleObject.IsPlugin()) {
+				if (ruleKeyString != "FOR" && ruleObject.IsMasterFile())
+					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % ESortingMasterEsm).str());
 			} else {
-				if (Tidy(ruleObject) == "esms")
-					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % ESortingGroupEsms).str());
-				if (ruleKey == ADD && !IsPlugin(ruleObject))
-					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % EAddingModGroup).str());
-				else if (ruleKey == FOR)
-					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % EAttachingMessageToGroup).str());
+				if (Tidy(ruleObject.name.string()) == "esms")
+					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % ESortingGroupEsms).str());
+				if (ruleKeyString == "ADD" && !ruleObject.IsPlugin())
+					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % EAddingModGroup).str());
+				else if (ruleKeyString == "FOR")
+					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % EAttachingMessageToGroup).str());
 			}
 			size_t size = currentRule.lines.size();
 			bool hasSortLine = false, hasReplaceLine = false;
 			for (size_t i=0; i<size; i++) {
 				boost::algorithm::trim(currentRule.lines[i].object);  //Make sure there are no preceding or trailing spaces.
-				string subject = currentRule.lines[i].object;
-				keyType key = currentRule.lines[i].key;
-				if (key == BEFORE || key == AFTER) {
+				Item subject = Item(currentRule.lines[i].object);
+				if (currentRule.lines[i].key == BEFORE || currentRule.lines[i].key == AFTER) {
 					if (hasSortLine)
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % EMultipleSortLines).str());
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % EMultipleSortLines).str());
 					if (i != 0)
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % ESortNotSecond).str());
-					if (ruleKey == FOR)
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % ESortLineInForRule).str());
-					if (ruleObject == subject)
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % ESortingToItself).str());
-					if ((IsPlugin(ruleObject) && !IsPlugin(subject)) || (!IsPlugin(ruleObject) && IsPlugin(subject)))
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % EReferencingModAndGroup).str());
-					if (key == BEFORE) {
-						if (Tidy(subject) == "esms")
-							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % ESortingGroupBeforeEsms).str());
-						else if (IsMasterFile(subject))
-							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % ESortingModBeforeGameMaster).str());
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % ESortNotSecond).str());
+					if (ruleKeyString == "FOR")
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % ESortLineInForRule).str());
+					if (ruleObject.name == subject.name)
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % ESortingToItself).str());
+					if ((ruleObject.IsPlugin() && !subject.IsPlugin()) || (!ruleObject.IsPlugin() && subject.IsPlugin()))
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % EReferencingModAndGroup).str());
+					if (currentRule.lines[i].key == BEFORE) {
+						if (Tidy(subject.name.string()) == "esms")
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % ESortingGroupBeforeEsms).str());
+						else if (subject.IsMasterFile())
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % ESortingModBeforeGameMaster).str());
 					}
 					hasSortLine = true;
-				} else if (key == TOP || key == BOTTOM) {
+				} else if (currentRule.lines[i].key == TOP || currentRule.lines[i].key == BOTTOM) {
 					if (hasSortLine)
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % EMultipleSortLines).str());
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % EMultipleSortLines).str());
 					if (i != 0)
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % ESortNotSecond).str());
-					if (ruleKey == FOR)
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % ESortLineInForRule).str());
-					if (key == TOP && Tidy(subject) == "esms")
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % EInsertingToTopOfEsms).str());
-					if (!IsPlugin(ruleObject) || IsPlugin(subject))
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % EInsertingGroupOrIntoMod).str());
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % ESortNotSecond).str());
+					if (ruleKeyString == "FOR")
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % ESortLineInForRule).str());
+					if (currentRule.lines[i].key == TOP && Tidy(subject.name.string()) == "esms")
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % EInsertingToTopOfEsms).str());
+					if (!ruleObject.IsPlugin() || subject.IsPlugin())
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % EInsertingGroupOrIntoMod).str());
 					hasSortLine = true;
-				} else if (key == APPEND || key == REPLACE) {
-					if (!IsPlugin(ruleObject))
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % EAttachingMessageToGroup).str());
-					if (key == REPLACE) {
+				} else if (currentRule.lines[i].key == APPEND || currentRule.lines[i].key == REPLACE) {
+					if (!ruleObject.IsPlugin())
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % EAttachingMessageToGroup).str());
+					if (currentRule.lines[i].key == REPLACE) {
 						if (hasReplaceLine)
-							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % EMultipleReplaceLines).str());
-						if ((ruleKey == FOR && i != 0) || (ruleKey != FOR && i != 1))
-							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject % EReplaceNotFirst).str());
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % EMultipleReplaceLines).str());
+						if ((ruleKeyString == "FOR" && i != 0) || (ruleKeyString != "FOR" && i != 1))
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.name.string() % EReplaceNotFirst).str());
 						hasReplaceLine = true;
 					}
 				}
@@ -960,7 +953,7 @@ namespace boss {
 		} catch (ParsingError & e) {
 			skip = true;
 			if (syntaxErrorBuffer != NULL)
-				syntaxErrorBuffer->push_back(e.FormatFor(log_format));
+				syntaxErrorBuffer->push_back(e);
 			LOG_ERROR(e.FormatFor("text").c_str());
 		}
 		if (!skip)
@@ -1019,7 +1012,7 @@ namespace boss {
 	}
 
 	void userlist_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {
-		if (parsingErrorBuffer == NULL || !parsingErrorBuffer->empty())
+		if (parsingErrorBuffer == NULL || !parsingErrorBuffer->Empty())
 			return;
 		
 		ostringstream out;
@@ -1028,11 +1021,9 @@ namespace boss {
 
 		string context(errorpos, min(errorpos +50, last));
 		boost::trim_left(context);
-		if (log_format == "html")
-			boost::replace_all(context, "\n", "<br />");
 
 		ParsingError e(str(RuleListParsingErrorHeader % expect), context, RuleListParsingErrorFooter);
-		*parsingErrorBuffer = e.FormatFor(log_format);
+		*parsingErrorBuffer = e;
 		LOG_ERROR(e.FormatFor("text").c_str());
 		return;
 	}

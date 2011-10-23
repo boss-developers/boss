@@ -181,7 +181,7 @@ int main(int argc, char *argv[]) {
 	if (fs::exists(ini_path)) {
 		try {
 			ini.Load(ini_path);
-			contents.iniParsingError = ini.errorBuffer;
+			contents.iniParsingError = ini.errorBuffer.FormatFor(log_format);
 		} catch (boss_error e) {}
 	} else {
 		try {
@@ -608,9 +608,9 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
 	try {
 		masterlist.Load(sortfile);
-		contents.criticalError = masterlist.errorBuffer;
 		contents.globalMessages = masterlist.globalMessageBuffer;
 	} catch (boss_error e) {
+		contents.criticalError = masterlist.errorBuffer.FormatFor(log_format);
 		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
 			PrintBOSSlog(contents, counters, "");
 			bosslog.close();
@@ -631,8 +631,9 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Starting to parse userlist.");
 	try {
 		userlist.Load(userlist_path);
-		contents.userlistParsingError = userlist.parsingErrorBuffer;
-		contents.userlistSyntaxErrors = userlist.syntaxErrorBuffer;
+		contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(log_format);
+		for (vector<ParsingError>::iterator iter; iter != userlist.syntaxErrorBuffer.end(); ++iter)
+			contents.userlistSyntaxErrors.push_back(iter->FormatFor(log_format));
 	} catch (boss_error e) {
 		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		if (e.getCode() != BOSS_ERROR_FILE_PARSE_FAIL)
