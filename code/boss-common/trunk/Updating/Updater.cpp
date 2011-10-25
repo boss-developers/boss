@@ -12,7 +12,6 @@
 #include "Updating/Updater.h"
 #include "Common/Globals.h"
 #include "Support/Helpers.h"
-#include "Output/Output.h"
 #include "Common/Error.h"
 
 #include <boost/filesystem.hpp>
@@ -416,11 +415,11 @@ namespace boss {
 		}
 		
 		//Extract revision number from page text.
-		if (game == 1) start = buffer.find("boss-oblivion");
-		else if (game == 2) start = buffer.find("boss-fallout");
-		else if (game == 3) start = buffer.find("boss-nehrim");
-		else if (game == 4) start = buffer.find("boss-fallout-nv");
-		else if (game == 5) start = buffer.find("boss-skyrim");
+		if (game == OBLIVION) start = buffer.find("boss-oblivion");
+		else if (game == FALLOUT3) start = buffer.find("boss-fallout");
+		else if (game == NEHRIM) start = buffer.find("boss-nehrim");
+		else if (game == FALLOUTNV) start = buffer.find("boss-fallout-nv");
+		else if (game == SKYRIM) start = buffer.find("boss-skyrim");
 		else {
 			curl_easy_cleanup(curl);
 			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
@@ -447,11 +446,15 @@ namespace boss {
 		revision = atoi(buffer.substr(start,end).c_str());
 
 		//Extract revision date from page text.
-		if (game == 1) start = buffer.find("boss-oblivion");
-		else if (game == 2) start = buffer.find("boss-fallout");
-		else if (game == 3) start = buffer.find("boss-nehrim");
-		else if (game == 4) start = buffer.find("boss-fallout-nv");
-		else if (game == 4) start = buffer.find("boss-skyrim");
+		if (game == OBLIVION) start = buffer.find("boss-oblivion");
+		else if (game == FALLOUT3) start = buffer.find("boss-fallout");
+		else if (game == NEHRIM) start = buffer.find("boss-nehrim");
+		else if (game == FALLOUTNV) start = buffer.find("boss-fallout-nv");
+		else if (game == SKYRIM) start = buffer.find("boss-skyrim");
+		else {
+			curl_easy_cleanup(curl);
+			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
+		}
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
 			throw boss_error(BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL);
@@ -527,11 +530,13 @@ namespace boss {
 		//Is an update available?
 		if (localRevision == 0 || localRevision < remoteRevision) {
 			//Set filesURL.
-			if (game == 1) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/";
-			else if (game == 2) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/";
-			else if (game == 3) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/";
-			else if (game == 4) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/";
-			else filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-skyrim/";
+			if (game == OBLIVION) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/";
+			else if (game == FALLOUT3) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/";
+			else if (game == NEHRIM) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/";
+			else if (game == FALLOUTNV) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/";
+			else if (game == SKYRIM) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-skyrim/";
+			else
+				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 
 			//Put masterlist.txt in updatedFiles.
 			updatedFiles.clear();

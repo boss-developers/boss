@@ -444,6 +444,13 @@ namespace boss {
 			throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, file.string());
 	}
 
+	string Ini::GetLogFormat() {
+		if (log_format == HTML)
+			return "html";
+		else
+			return "text";
+	}
+
 	void	Ini::Save			(fs::path file) {
 		ofstream ini(file.c_str(), ios_base::trunc);
 		if (ini.fail())
@@ -469,7 +476,7 @@ namespace boss {
 
 			<<	"[BOSS.RunOptions]" << endl
 			<<	"sGame                    = " << GetGameString() << endl
-			<<	"sBOSSLogFormat           = " << log_format << endl
+			<<	"sBOSSLogFormat           = " << GetLogFormat() << endl
 			<<	"iRunType                 = " << IntToString(run_type) << endl
 			<<	"iDebugVerbosity          = " << IntToString(debug_verbosity) << endl
 			<<	"iRevertLevel             = " << IntToString(revert) << endl
@@ -534,17 +541,17 @@ namespace boss {
 	}
 
 	string	Ini::GetGameString	() {
-		if (game == 0)
+		if (game == AUTODETECT)
 			return "auto";
-		else if (game == 1)
+		else if (game == OBLIVION)
 			return "Oblivion";
-		else if (game == 2)
+		else if (game == FALLOUT3)
 			return "Fallout3";
-		else if (game == 3)
+		else if (game == NEHRIM)
 			return "Nehrim";
-		else if (game == 4)
+		else if (game == FALLOUTNV)
 			return "FalloutNV";
-		else if (game == 5)
+		else if (game == SKYRIM)
 			return "Skyrim";
 		else
 			return "";

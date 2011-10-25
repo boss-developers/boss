@@ -175,7 +175,7 @@ namespace boss {
 			: wholeMessage(inWholeMessage) {}
 
 		//Outputs correctly-formatted error message.
-		string FormatFor(const string format);
+		string FormatFor(const unsigned int format);
 
 		inline bool Empty() { return (header.empty() && footer.empty() && detail.empty() && wholeMessage.empty()); }
 	private:

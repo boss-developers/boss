@@ -24,34 +24,10 @@ namespace boss {
 	using boost::algorithm::trim_copy;
 	using boost::algorithm::to_lower_copy;
 
-	BOSS_COMMON_EXP summaryCounters::summaryCounters() {
-		recognised = 0;
-		unrecognised = 0;
-		ghosted = 0;
-		messages = 0;
-		warnings = 0;
-		errors = 0;
-	}
+	summaryCounters::summaryCounters()
+		: recognised(0), unrecognised(0), ghosted(0), messages(0), warnings(0), errors(0) {}
 
-	BOSS_COMMON_EXP bosslogContents::bosslogContents() {
-		generalMessages.clear();
-		summary.clear();
-		userlistMessages.clear();
-		seInfo.clear();
-		recognisedPlugins.clear();
-		unrecognisedPlugins.clear();
-
-		oldRecognisedPlugins.clear();
-
-		updaterErrors.clear();
-		iniParsingError.clear();
-		criticalError.clear();
-		userlistParsingError.clear();
-		userlistSyntaxErrors.clear();
-		globalMessages.clear();
-	}
-
-	//Searches a hashset for the first matching string of a regex and returns its iterator position.
+	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
 	BOSS_COMMON_EXP boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
 		while(startPos != set.end()) {
 			if (boost::regex_match(*startPos,reg))
@@ -76,21 +52,20 @@ namespace boss {
 		return result;
 	}
 
-	//Detect the game BOSS is installed for.
-	//1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim. Throws exception if error.
+	//Detect the game BOSS is installed for. Returns an enum as defined in Globals.h. Throws exception if error.
 	BOSS_COMMON_EXP void GetGame() {
 		if (fs::exists(data_path / "Oblivion.esm")) {
 			if (fs::exists(data_path / "Nehrim.esm"))
 				throw boss_error(BOSS_ERROR_OBLIVION_AND_NEHRIM);
-			game = 1;
+			game = OBLIVION;
 		} else if (fs::exists(data_path / "Nehrim.esm")) 
-			game = 3;
+			game = NEHRIM;
 		else if (fs::exists(data_path / "FalloutNV.esm")) 
-			game = 4;
+			game = FALLOUTNV;
 		else if (fs::exists(data_path / "Fallout3.esm")) 
-			game = 2;
+			game = FALLOUT3;
 		else if (fs::exists(data_path / "Skyrim.esm")) 
-			game = 5;
+			game = SKYRIM;
 		else
 			throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
 			/*In BOSSv2.0, this is where we will query the following registry entries:
@@ -101,16 +76,32 @@ namespace boss {
 
 	//Gets the string representation of the detected game.
 	BOSS_COMMON_EXP string GetGameString() {
-		if (game == 1)
+		if (game == OBLIVION)
 			return "TES IV: Oblivion";
-		else if (game == 2)
+		else if (game == FALLOUT3)
 			return "Fallout 3";
-		else if (game == 3)
+		else if (game == NEHRIM)
 			return "Nehrim - At Fate's Edge";
-		else if (game == 4)
+		else if (game == FALLOUTNV)
 			return "Fallout: New Vegas";
-		else if (game == 5)
+		else if (game == SKYRIM)
 			return "TES V: Skyrim";
+		else
+			return "Game Not Detected";
+	}
+
+	//Returns the expeccted master file. Usage internal to BOSS-Common.
+	string GameMasterFile() {
+		if (game == OBLIVION) 
+			return "Oblivion.esm";
+		else if (game == FALLOUT3) 
+			return "Fallout3.esm";
+		else if (game == NEHRIM) 
+			return "Nehrim.esm";
+		else if (game == FALLOUTNV) 
+			return "FalloutNV.esm";
+		else if (game == SKYRIM) 
+			return "Skyrim.esm";
 		else
 			return "Game Not Detected";
 	}
@@ -118,15 +109,15 @@ namespace boss {
 	//Gets the timestamp of the game's master file. Throws exception if error.
 	BOSS_COMMON_EXP time_t GetMasterTime() {
 		try {
-			if (game == 1) 
+			if (game == OBLIVION) 
 				return fs::last_write_time(data_path / "Oblivion.esm");
-			else if (game == 2) 
+			else if (game == FALLOUT3) 
 				return fs::last_write_time(data_path / "Fallout3.esm");
-			else if (game == 3) 
+			else if (game == NEHRIM) 
 				return fs::last_write_time(data_path / "Nehrim.esm");
-			else if (game == 4) 
+			else if (game == FALLOUTNV) 
 				return fs::last_write_time(data_path / "FalloutNV.esm");
-			else if (game == 5) 
+			else if (game == SKYRIM) 
 				return fs::last_write_time(data_path / "Skyrim.esm");
 			else
 				throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
@@ -135,20 +126,29 @@ namespace boss {
 		}
 	}
 
-	//Returns the expeccted master file.
-	BOSS_COMMON_EXP string GameMasterFile() {
-		if (game == 1) 
-			return "Oblivion.esm";
-		else if (game == 2) 
-			return "Fallout3.esm";
-		else if (game == 3) 
-			return "Nehrim.esm";
-		else if (game == 4) 
-			return "FalloutNV.esm";
-		else if (game == 5) 
-			return "Skyrim.esm";
-		else
-			return "Game Not Detected";
+	BOSS_COMMON_EXP void PerformSortingFunctionality(fs::path file,
+												ItemList& modlist,
+												ItemList& masterlist,
+												RuleList& userlist,
+												const time_t esmtime,
+												bosslogContents contents) {
+		string SE;
+		summaryCounters counters;
+
+		BuildWorkingModlist(modlist, masterlist, userlist);
+		LOG_INFO("modlist now filled with ordered mods and unknowns.");
+
+		ApplyUserRules(modlist, userlist, contents.userlistMessages);
+		LOG_INFO("userlist sorting process finished.");
+
+		if (show_CRCs)
+			SE = GetSEPluginInfo(contents.seInfo);
+
+		SortRecognisedMods(modlist, contents.recognisedPlugins, esmtime, counters);
+
+		ListUnrecognisedMods(modlist, contents.unrecognisedPlugins, esmtime, counters);
+
+		PrintBOSSlog(file, contents, counters, SE);
 	}
 
 	//Create a modlist containing all the mods that are installed or referenced in the userlist with their masterlist messages.
@@ -285,6 +285,8 @@ namespace boss {
 		//need to be re-assigned to this item. This only occurs for BEFORE/AFTER plugin sorting rules.
 		fs::path lastRecognisedModName(modlist.lastRecognisedPos->name);
 
+		Outputter buffer(log_format);
+
 		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlist.rules.size());
 		vector<Rule>::iterator ruleIter = userlist.rules.begin();
 		vector<RuleLine>::iterator lineIter;
@@ -294,7 +296,7 @@ namespace boss {
 			i++;
 			LOG_DEBUG(" -- Processing rule #%" PRIuS ".", i);
 			if (!ruleIter->enabled) {
-				outputBuffer += "<li class='success'>The rule beginning \"" + ruleIter->KeyToString() + ": " + ruleIter->ruleObject + "\" is disabled. Rule skipped.";
+				buffer << LIST_ITEM_CLASS_SUCCESS << "The rule beginning \"" << ruleIter->KeyToString() << ": " << ruleIter->ruleObject << "\" is disabled. Rule skipped.";
 				LOG_WARN("Rule beginning \"%s: %s\" is disabled. Rule skipped.", ruleIter->KeyToString().c_str(), ruleIter->ruleObject.c_str());
 				continue;
 			}	
@@ -307,27 +309,27 @@ namespace boss {
 						modlistPos1 = modlist.FindItem(ruleItem.name);
 						//Do checks.
 						if (ruleIter->ruleKey == ADD && modlistPos1 == modlist.items.end()) {
-							outputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is not installed or in the masterlist. Rule skipped.";
+							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->ruleObject << "\" is not installed or in the masterlist. Rule skipped.";
 							LOG_WARN(" * \"%s\" is not installed.", ruleIter->ruleObject.c_str());
 							continue;
 						//If it adds a mod already sorted, skip the rule.
 						} else if (ruleIter->ruleKey == ADD  && modlistPos1 <= modlist.lastRecognisedPos) {
-							outputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is already in the masterlist. Rule skipped.";
+							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->ruleObject << "\" is already in the masterlist. Rule skipped.";
 							LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->ruleObject.c_str());
 							continue;
 						} else if (ruleIter->ruleKey == OVERRIDE && (modlistPos1 > modlist.lastRecognisedPos || modlistPos1 == modlist.items.end())) {
-							outputBuffer += "<li class='error'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is not in the masterlist, cannot override. Rule skipped.";
+							buffer << LIST_ITEM_CLASS_ERROR << "\"" << ruleIter->ruleObject << "\" is not in the masterlist, cannot override. Rule skipped.";
 							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->ruleObject.c_str());
 							continue;
 						}
 						modlistPos2 = modlist.FindItem(fs::path(lineIter->object));  //Find sort mod.
 						//Do checks.
 						if (modlistPos2 == modlist.items.end()) {  //Handle case of mods that don't exist at all.
-							outputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(lineIter->object)+"\" is not installed, and is not in the masterlist. Rule skipped.";
+							buffer << LIST_ITEM_CLASS_WARN << "\"" << lineIter->object << "\" is not installed, and is not in the masterlist. Rule skipped.";
 							LOG_WARN(" * \"%s\" is not installed or in the masterlist.", lineIter->object.c_str());
 							continue;
 						} else if (modlistPos2 > modlist.lastRecognisedPos) {  //Handle the case of a rule sorting a mod into a position in unsorted mod territory.
-							outputBuffer += "<li class='error'>\""+EscapeHTMLSpecial(lineIter->object)+"\" is not in the masterlist and has not been sorted by a rule. Rule skipped.";
+							buffer << LIST_ITEM_CLASS_ERROR << "\"" << lineIter->object << "\" is not in the masterlist and has not been sorted by a rule. Rule skipped.";
 							LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", lineIter->object.c_str());
 							continue;
 						} else if (lineIter->key == AFTER && modlistPos2 == modlist.lastRecognisedPos)
@@ -340,22 +342,22 @@ namespace boss {
 						if (lineIter->key == AFTER)
 							++modlistPos2;
 						modlist.items.insert(modlistPos2, mod);
-						outputBuffer += "<li class='success'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" has been sorted "+lineIter->KeyToString()+" \""+EscapeHTMLSpecial(lineIter->object)+"\".";
+						buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << ruleIter->ruleObject << "\" has been sorted " << lineIter->KeyToString() << " \"" << lineIter->object << "\".";
 					} else if (lineIter->key == TOP || lineIter->key == BOTTOM) {
 						Item mod;
 						modlistPos1 = modlist.FindItem(ruleItem.name);
 						//Do checks.
 						if (ruleIter->ruleKey == ADD && modlistPos1 == modlist.items.end()) {
-							outputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is not installed or in the masterlist. Rule skipped.";
+							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->ruleObject << "\" is not installed or in the masterlist. Rule skipped.";
 							LOG_WARN(" * \"%s\" is not installed.", ruleIter->ruleObject.c_str());
 							continue;
 						//If it adds a mod already sorted, skip the rule.
 						} else if (ruleIter->ruleKey == ADD  && modlistPos1 <= modlist.lastRecognisedPos) {
-							outputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is already in the masterlist. Rule skipped.";
+							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->ruleObject << "\" is already in the masterlist. Rule skipped.";
 							LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->ruleObject.c_str());
 							continue;
 						} else if (ruleIter->ruleKey == OVERRIDE && (modlistPos1 > modlist.lastRecognisedPos || modlistPos1 == modlist.items.end())) {
-							outputBuffer += "<li class='error'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is not in the masterlist, cannot override. Rule skipped.";
+							buffer << LIST_ITEM_CLASS_ERROR << "\"" << ruleIter->ruleObject << "\" is not in the masterlist, cannot override. Rule skipped.";
 							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->ruleObject.c_str());
 							continue;
 						}
@@ -366,7 +368,7 @@ namespace boss {
 							modlistPos2 = modlist.FindGroupEnd(fs::path(lineIter->object));  //Find the end.
 						//Check that the sort group actually exists.
 						if (modlistPos2 == modlist.items.end()) {
-							outputBuffer += "<li class='error'>The group \""+EscapeHTMLSpecial(lineIter->object)+"\" is not in the masterlist or is malformatted. Rule skipped.";
+							buffer << LIST_ITEM_CLASS_ERROR << "The group \"" << lineIter->object << "\" is not in the masterlist or is malformatted. Rule skipped.";
 							LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", lineIter->object.c_str());
 							continue;
 						}
@@ -379,20 +381,20 @@ namespace boss {
 							modlistPos2 = modlist.FindGroupEnd(fs::path(lineIter->object));  //Find the end.
 						modlist.items.insert(modlistPos2, mod);  //Now insert the mod into the group. This breaks all modlist iterators active.
 						//Print success message.
-						outputBuffer += "<li class='success'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" inserted at the "+ lineIter->KeyToString() + " of group \"" + EscapeHTMLSpecial(lineIter->object) + "\".";
+						buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << ruleIter->ruleObject << "\" inserted at the " << lineIter->KeyToString() << " of group \"" << lineIter->object << "\".";
 					}
 				}
 				++lineIter;
 				for (lineIter; lineIter != ruleIter->lines.end(); ++lineIter) {  //Message lines.
 					if (!lineIter->IsObjectMessage()) {
-						outputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(lineIter->object)+"\" is not a valid message. Rule skipped.";
+						buffer << LIST_ITEM_CLASS_WARN << "\"" << lineIter->object << "\" is not a valid message. Rule skipped.";
 						LOG_WARN(" * \"%s\" is not a valid message.", lineIter->object.c_str());
 						break;
 					}
 					//Find the mod which will have its messages edited.
 					modlistPos1 = modlist.FindItem(ruleItem.name);
 					if (modlistPos1 == modlist.items.end()) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
-						outputBuffer += "<li class='warn'>\""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is not installed or in the masterlist. Rule skipped.";
+						buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->ruleObject << "\" is not installed or in the masterlist. Rule skipped.";
 						LOG_WARN(" * \"%s\" is not installed.", ruleIter->ruleObject.c_str());
 						break;
 					}
@@ -401,12 +403,12 @@ namespace boss {
 						modlistPos1->messages.clear();
 					modlistPos1->messages.push_back(newMessage);  //Append message to message list of mod.
 					//Output confirmation.
-					outputBuffer += "<li class='success'>\"<span class='message'>" + EscapeHTMLSpecial(lineIter->object) + "</span>\"";
+					buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << SPAN_CLASS_MESSAGE_OPEN << lineIter->object << SPAN_CLOSE <<"\"";
 					if (lineIter->key == APPEND)
-						outputBuffer += " appended to ";
+						buffer << " appended to ";
 					else
-						outputBuffer += " replaced ";
-					outputBuffer += "messages attached to \"" + EscapeHTMLSpecial(ruleIter->ruleObject) + "\".\n";
+						buffer << " replaced ";
+					buffer << "messages attached to \"" << ruleIter->ruleObject << "\".";
 				}
 			} else if (lineIter->key == BEFORE || lineIter->key == AFTER) {  //Group: Can only sort.
 				vector<Item> group;
@@ -415,7 +417,7 @@ namespace boss {
 				modlistPos2 = modlist.FindGroupEnd(ruleItem.name);
 				//Check to see group actually exists.
 				if (modlistPos1 != modlist.items.end() || modlistPos2 != modlist.items.end()) {
-					outputBuffer += "<li class='error'>The group \""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" is not in the masterlist or is malformatted. Rule skipped.";
+					buffer << LIST_ITEM_CLASS_ERROR << "The group \"" << ruleIter->ruleObject << "\" is not in the masterlist or is malformatted. Rule skipped.";
 					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", ruleIter->ruleObject.c_str());
 					continue;
 				}
@@ -431,7 +433,7 @@ namespace boss {
 				//Check that the sort group actually exists.
 				if (modlistPos2 != modlist.items.end()) {
 					modlist.items.insert(modlistPos1,group.begin(),group.end());  //Insert the group back in its old position.
-					outputBuffer += "<li class='error'>The group \""+EscapeHTMLSpecial(lineIter->object)+"\" is not in the masterlist or is malformatted. Rule skipped.";
+					buffer << LIST_ITEM_CLASS_ERROR << "The group \"" << lineIter->object << "\" is not in the masterlist or is malformatted. Rule skipped.";
 					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", lineIter->object.c_str());
 					continue;
 				}
@@ -440,7 +442,7 @@ namespace boss {
 				//Now insert the group.
 				modlist.items.insert(modlistPos2,group.begin(),group.end());
 				//Print success message.
-				outputBuffer += "<li class='success'>The group \""+EscapeHTMLSpecial(ruleIter->ruleObject)+"\" has been sorted "+lineIter->KeyToString()+" the group \""+EscapeHTMLSpecial(lineIter->object)+"\".";
+				buffer << LIST_ITEM_CLASS_SUCCESS << "The group \"" << ruleIter->ruleObject << "\" has been sorted " << lineIter->KeyToString() << " the group \"" << lineIter->object << "\".";
 			}
 			//Now find that last recognised mod and set the iterator again.
 			modlist.lastRecognisedPos = modlist.FindItem(lastRecognisedModName);
@@ -448,25 +450,27 @@ namespace boss {
 
 
 		if (userlist.rules.empty()) 
-			outputBuffer = "No valid rules were found in your userlist.txt.";
+			buffer << ITALIC_OPEN << "No valid rules were found in your userlist.txt." << ITALIC_CLOSE;
+		outputBuffer = buffer.AsString();
 	}
 
-	//Lists Script Extender plugin info in the output buffer.
-	BOSS_COMMON_EXP string GetSEPluginInfo(string& outputBuffer) {
+	//Lists Script Extender plugin info in the output buffer. Usage internal to BOSS-Common.
+	string GetSEPluginInfo(string& outputBuffer) {
+		Outputter buffer(log_format);
 		string SE, SELoc, SEPluginLoc;
-		if (game == 1 || game == 3) {  //Oblivion/Nehrim
+		if (game == OBLIVION || game == NEHRIM) {
 			SE = "OBSE";
 			SELoc = "../obse_1_2_416.dll";
 			SEPluginLoc = "OBSE/Plugins";
-		} else if (game == 2) {  //Fallout 3
+		} else if (game == FALLOUT3) {  //Fallout 3
 			SE = "FOSE";
 			SELoc = "../fose_loader.exe";
 			SEPluginLoc = "FOSE/Plugins";
-		} else if (game == 4) {  //Fallout: New Vegas
+		} else if (game == FALLOUTNV) {  //Fallout: New Vegas
 			SE = "NVSE";
 			SELoc = "../nvse_loader.exe";
 			SEPluginLoc = "NVSE/Plugins";
-		} else if (game == 5) {  //Skyrim
+		} else if (game == SKYRIM) {  //Skyrim
 			SE = "SKSE";
 			SELoc = "../skse_loader.exe";
 			SEPluginLoc = "SKSE/Plugins";
@@ -479,10 +483,10 @@ namespace boss {
 			string CRC = IntToHexString(GetCrc32(SELoc));
 			string ver = GetExeDllVersion(SELoc);
 
-			outputBuffer += "<li><span class='mod'>" + SE + "</span>";
+			buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << SE << SPAN_CLOSE;
 			if (ver.length() != 0)
-				outputBuffer += "<span class='version'>&nbsp;Version: " + ver + "</span>";
-			outputBuffer += "<span class='crc'>&nbsp;Checksum: " + CRC + "</span>";
+				buffer << SPAN_CLASS_VERSION_OPEN << "Version: " << ver << SPAN_CLOSE;
+			buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << CRC << SPAN_CLOSE;
 
 			if (!fs::is_directory(data_path / SEPluginLoc)) {
 				LOG_DEBUG("Script extender plugins directory not detected");
@@ -494,37 +498,39 @@ namespace boss {
 						string CRC = IntToHexString(GetCrc32(itr->path()));
 						string ver = GetExeDllVersion(itr->path());
 
-						outputBuffer += "<li><span class='mod'>" + EscapeHTMLSpecial(filename.string()) + "</span>";
+						buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << filename.string() << SPAN_CLOSE;
 						if (ver.length() != 0)
-							outputBuffer += "<span class='version'>&nbsp;Version: " + ver + "</span>";
-						outputBuffer += "<span class='crc'>&nbsp;Checksum: " + CRC + "</span>";
+							buffer << SPAN_CLASS_VERSION_OPEN << "Version: " + ver << SPAN_CLOSE;
+						buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " + CRC << SPAN_CLOSE;
 					}
 				}
 			}
+			outputBuffer = buffer.AsString();
 			return SE;
 		}
 	}
 
-	//Sort recognised mods.
-	BOSS_COMMON_EXP void SortRecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
+	//Sort recognised mods. Usage internal to BOSS-Common.
+	void SortRecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
+		Outputter buffer(log_format);
 		time_t modfiletime = 0;
 		LOG_INFO("Applying calculated ordering to user files...");
 		vector<Item>::iterator iter = modlist.items.begin();
 		vector<Message>::iterator messageIter;
 		for (iter; iter != modlist.lastRecognisedPos+1; ++iter) {
 			if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
-				outputBuffer += "<li><span class='mod'>" + EscapeHTMLSpecial(iter->name.string()) + "</span>";
+				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << iter->name.string() << SPAN_CLOSE;
 				if (!skip_version_parse) {
 					string version = iter->GetHeader();
 					if (!version.empty())
-						outputBuffer += "<span class='version'>&nbsp;Version "+EscapeHTMLSpecial(version)+"</span>";
+						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
 				}
 				if (iter->IsGhosted()) {
-					outputBuffer += "<span class='ghosted'>&nbsp;Ghosted</span>";
+					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
 					counters.ghosted++;
 				}
 				if (show_CRCs)
-					outputBuffer += "<span class='crc'>&nbsp;Checksum: " + IntToHexString(GetCrc32(data_path / iter->name)) + "</span>";
+					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / iter->name)) << SPAN_CLOSE;
 			
 				if (!trial_run) {
 					modfiletime = esmtime + counters.recognised*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
@@ -533,31 +539,32 @@ namespace boss {
 					try {
 						fs::last_write_time(data_path / iter->name,modfiletime);
 					} catch(fs::filesystem_error e) {
-						outputBuffer += " - <span class='error'>Error: Could not change the date of \"" + EscapeHTMLSpecial(iter->name.string()) + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
+						buffer << SPAN_CLASS_ERROR_OPEN << "Error: Could not change the date of \"" << iter->name.string() << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions." << SPAN_CLOSE;
 					}
 				}
 				//Finally, print the mod's messages.
 				if (!iter->messages.empty()) {
-					outputBuffer += "<ul>";
-					messageIter = iter->messages.begin();
-					for (messageIter; messageIter != iter->messages.end(); ++messageIter) {
-						ShowMessage(outputBuffer, *messageIter);  //Print messages to buffer.
+					buffer << LIST_OPEN;
+					for (messageIter = iter->messages.begin(); messageIter != iter->messages.end(); ++messageIter) {
+						buffer << *messageIter;
 						counters.messages++;
 						if (messageIter->key == WARN)
 							counters.warnings++;
 						else if (messageIter->key == ERR)
 							counters.errors++;
 					}
-					outputBuffer += "</ul>";
+					buffer << LIST_CLOSE;
 				}
 				counters.recognised++;
 			}
 		}
-		LOG_INFO("User file ordering applied successfully.");
+		outputBuffer = buffer.AsString();
+		LOG_INFO("User file ordering applied successfully.");		
 	}
 
-	//List unrecognised mods.
-	BOSS_COMMON_EXP void ListUnrecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
+	//List unrecognised mods. Usage internal to BOSS-Common.
+	void ListUnrecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
+		Outputter buffer(log_format);
 		time_t modfiletime = 0;
 		//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 		//Order their dates to be i days after the master esm to ensure they load last.
@@ -565,19 +572,19 @@ namespace boss {
 		vector<Item>::iterator iter = modlist.lastRecognisedPos+1;
 		for (iter; iter != modlist.items.end(); ++iter) {
 			if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
-				outputBuffer += "<li><span class='mod'>" + EscapeHTMLSpecial(iter->name.string()) + "</span>";
+				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << iter->name.string() << SPAN_CLOSE;
 				if (!skip_version_parse) {
 					string version = iter->GetHeader();
 					if (!version.empty())
-						outputBuffer += "<span class='version'>&nbsp;Version "+EscapeHTMLSpecial(version)+"</span>";
+						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
 				}
 				if (iter->IsGhosted()) {
-					outputBuffer += "<span class='ghosted'>&nbsp;Ghosted</span>";
+					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
 					counters.ghosted++;
 				}
 				if (show_CRCs)
-					outputBuffer += "<span class='crc'>&nbsp;Checksum: " + IntToHexString(GetCrc32(data_path / iter->name)) + "</span>";
-			
+					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / iter->name)) << SPAN_CLOSE;
+
 				if (!trial_run) {
 					modfiletime = esmtime + 86400 + (counters.recognised + counters.unrecognised)*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute and adding 86,400 on increases it by a day. Using unrecModNo instead of i to avoid increases for group entries.
 					//Re-date file. Provide exception handling in case their permissions are wrong.
@@ -585,103 +592,104 @@ namespace boss {
 					try {
 						fs::last_write_time(data_path / iter->name,modfiletime);
 					} catch(fs::filesystem_error e) {
-						outputBuffer += " - <span class='error'>Error: Could not change the date of \"" + EscapeHTMLSpecial(iter->name.string()) + "\", check the Troubleshooting section of the ReadMe for more information and possible solutions.</span>";
+						buffer << SPAN_CLASS_ERROR_OPEN << "Error: Could not change the date of \"" << iter->name.string() << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions." << SPAN_CLOSE;
 					}
 				}
 				counters.unrecognised++;
 			}
 		}
 		if (modlist.lastRecognisedPos+1 == modlist.items.end())
-			outputBuffer += "<i>No unrecognised plugins.</i>";
-	
+			buffer << ITALIC_OPEN << "No unrecognised plugins." << ITALIC_CLOSE;
+
+		outputBuffer = buffer.AsString();
 		LOG_INFO("Unrecognized mods reported.");
 	}
 
 	//Prints the full BOSSlog.
-	BOSS_COMMON_EXP void PrintBOSSlog(bosslogContents contents, const summaryCounters counters, const string scriptExtender) {
-		/////////////////////////////
-		// Print Output to BOSSlog
-		/////////////////////////////
+	BOSS_COMMON_EXP void PrintBOSSlog(fs::path file, bosslogContents contents, const summaryCounters counters, const string scriptExtender) {
 
-		OutputHeader();  //Output BOSSlog header.
+		Outputter bosslog(log_format);
+		bosslog.PrintHeader();
+		bosslog.SetHTMLSpecialEscape(false);
 
 		/////////////////////////////
 		// Print BOSSLog Filters
 		/////////////////////////////
 	
-		if (log_format == "html") {
-			Output("<ul id='filters'>");
+		if (log_format == HTML) {  //Since this bit is HTML-only, don't bother using formatting placeholders.
+
+			bosslog << "<ul id='filters'>";
 			if (UseDarkColourScheme)
-				Output("<li><input type='checkbox' checked='checked' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label>");
+				bosslog << "<li><input type='checkbox' checked='checked' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label>";
 			else
-				Output("<li><input type='checkbox' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label>");
+				bosslog << "<li><input type='checkbox' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label>";
 
 			if (HideRuleWarnings)
-				Output("<li><input type='checkbox' checked='checked' id='b12' onclick='toggleRuleListWarnings(this)' /><label for='b12'>Hide Rule Warnings</label>");
+				bosslog << "<li><input type='checkbox' checked='checked' id='b12' onclick='toggleRuleListWarnings(this)' /><label for='b12'>Hide Rule Warnings</label>";
 			else
-				Output("<li><input type='checkbox' id='b12' onclick='toggleRuleListWarnings(this)' /><label for='b12'>Hide Rule Warnings</label>");
+				bosslog << "<li><input type='checkbox' id='b12' onclick='toggleRuleListWarnings(this)' /><label for='b12'>Hide Rule Warnings</label>";
 		
 			if (HideVersionNumbers)
-				Output("<li><input type='checkbox' checked='checked' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label>");
+				bosslog << "<li><input type='checkbox' checked='checked' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label>";
 			else
-				Output("<li><input type='checkbox' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label>");
+				bosslog << "<li><input type='checkbox' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label>";
 
 			if (HideGhostedLabel)
-				Output("<li><input type='checkbox' checked='checked' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label>");
+				bosslog << "<li><input type='checkbox' checked='checked' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label>";
 			else
-				Output("<li><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label>");
+				bosslog << "<li><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label>";
 
 			if (HideChecksums)
-				Output("<li><input type='checkbox' checked='checked' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label>");
+				bosslog << "<li><input type='checkbox' checked='checked' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label>";
 			else
-				Output("<li><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label>");
+				bosslog << "<li><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label>";
 
 			if (HideMessagelessMods)
-				Output("<li><input type='checkbox' checked='checked' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label>");
+				bosslog << "<li><input type='checkbox' checked='checked' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label>";
 			else
-				Output("<li><input type='checkbox' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label>");
+				bosslog << "<li><input type='checkbox' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label>";
 
 			if (HideGhostedMods)
-				Output("<li><input type='checkbox' checked='checked' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label>");
+				bosslog << "<li><input type='checkbox' checked='checked' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label>";
 			else
-				Output("<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label>");
+				bosslog << "<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label>";
 
 			if (HideCleanMods)
-				Output("<li><input type='checkbox' checked='checked' id='cleanModFilter' onclick='toggleMods()' /><label for='cleanModFilter'>Hide Clean Mods</label>");
+				bosslog << "<li><input type='checkbox' checked='checked' id='cleanModFilter' onclick='toggleMods()' /><label for='cleanModFilter'>Hide Clean Mods</label>";
 			else
-				Output("<li><input type='checkbox' id='cleanModFilter' onclick='toggleMods()' /><label for='cleanModFilter'>Hide Clean Mods</label>");
+				bosslog << "<li><input type='checkbox' id='cleanModFilter' onclick='toggleMods()' /><label for='cleanModFilter'>Hide Clean Mods</label>";
 
 			if (HideAllModMessages)
-				Output("<li><input type='checkbox' checked='checked' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label>");
+				bosslog << "<li><input type='checkbox' checked='checked' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label>";
 			else
-				Output("<li><input type='checkbox' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label>");
+				bosslog << "<li><input type='checkbox' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label>";
 
 			if (HideNotes)
-				Output("<li><input type='checkbox' checked='checked' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label>");
+				bosslog << "<li><input type='checkbox' checked='checked' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label>";
 			else
-				Output("<li><input type='checkbox' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label>");
+				bosslog << "<li><input type='checkbox' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label>";
 
 			if (HideBashTagSuggestions)
-				Output("<li><input type='checkbox' checked='checked' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label>");
+				bosslog << "<li><input type='checkbox' checked='checked' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label>";
 			else
-				Output("<li><input type='checkbox' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label>");
+				bosslog << "<li><input type='checkbox' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label>";
 
 			if (HideRequirements)
-				Output("<li><input type='checkbox' checked='checked' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label>");
+				bosslog << "<li><input type='checkbox' checked='checked' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label>";
 			else
-				Output("<li><input type='checkbox' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label>");
+				bosslog << "<li><input type='checkbox' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label>";
 
 			if (HideIncompatibilities)
-				Output("<li><input type='checkbox' checked='checked' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label>");
+				bosslog << "<li><input type='checkbox' checked='checked' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label>";
 			else
-				Output("<li><input type='checkbox' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label>");
+				bosslog << "<li><input type='checkbox' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label>";
 
 			if (HideDoNotCleanMessages)
-				Output("<li><input type='checkbox' checked='checked' id='b12' onclick='toggleDoNotClean(this,\"table\")' /><label for='b11'>Hide 'Do Not Clean' Messages</label>");
+				bosslog << "<li><input type='checkbox' checked='checked' id='b13' onclick='toggleDoNotClean(this,\"table\")' /><label for='b13'>Hide 'Do Not Clean' Messages</label>";
 			else
-				Output("<li><input type='checkbox' id='b12' onclick='toggleDoNotClean(this,\"table\")' /><label for='b11'>Hide 'Do Not Clean' Messages</label>");
+				bosslog << "<li><input type='checkbox' id='b13' onclick='toggleDoNotClean(this,\"table\")' /><label for='b13'>Hide 'Do Not Clean' Messages</label>";
 
-			Output("</ul>");
+			bosslog << "</ul>";
 		}
 
 
@@ -690,20 +698,22 @@ namespace boss {
 		/////////////////////////////
 
 		if (!contents.globalMessages.empty() || !contents.iniParsingError.empty() || !contents.criticalError.empty() || !contents.updaterErrors.empty()) {
-			string buffer;
-			Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>General Messages</h3><ul>");
-			if (!contents.criticalError.empty())
-				Output(contents.criticalError);
-			if (!contents.iniParsingError.empty())  //First print parser/syntax error messages.
-				Output(contents.iniParsingError);
+
+			bosslog << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN;
+			if (!contents.criticalError.empty())		//Print masterlist parsing error.
+				bosslog << contents.criticalError;
+			if (!contents.iniParsingError.empty())		//Print ini parsing error.
+				bosslog << contents.iniParsingError;
+			bosslog << contents.updaterErrors;
+
 			size_t size = contents.globalMessages.size();
 			for (size_t i=0; i<size; i++)
-				ShowMessage(buffer, contents.globalMessages[i]);  //Print messages.
-			Output(contents.updaterErrors);
-			Output(buffer);
-			Output("</ul>");
+				bosslog << contents.globalMessages[i];  //Print global messages.
+			
+			bosslog << LIST_CLOSE;
 			if (!contents.criticalError.empty()) {  //Exit early.
-				OutputFooter();
+				bosslog.PrintFooter();
+				bosslog.Save(file, true);
 				return;
 			}
 		}
@@ -712,40 +722,40 @@ namespace boss {
 		// Print Summary
 		/////////////////////////////
 
-		Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Summary</h3><div>");
+		bosslog << HEADING_OPEN << "Summary" << HEADING_CLOSE << DIV_OPEN;
 
 		if (contents.oldRecognisedPlugins == contents.recognisedPlugins)
-			Output("<p>No change in recognised plugin list since last run.");
+			bosslog << PARAGRAPH << "No change in recognised plugin list since last run.";
 
-		if (!contents.summary.empty()) {
-			Output(contents.summary);
-		}
+		if (!contents.summary.empty())
+			bosslog << contents.summary;
 	
-		Output("<table><tbody>");
-		Output("<tr><td>Recognised plugins:<td>" + IntToString(counters.recognised) + "<td>Warning messages:<td>" + IntToString(counters.warnings));
-		Output("<tr><td>Unrecognised plugins:<td>" + IntToString(counters.unrecognised) + "<td>Error messages:<td>" + IntToString(counters.errors));
-		Output("<tr><td>Ghosted plugins:<td>" + IntToString(counters.ghosted) + "<td>Total number of messages:<td>" + IntToString(counters.messages));
-		Output("<tr><td>Total number of plugins:<td>" + IntToString(counters.recognised+counters.unrecognised)+"<td><td>");
-		Output("</table>");
-
-		Output("<p>Mods sorted by your userlist are counted as recognised, not unrecognised, plugins.");
-		Output("</div>");
+		bosslog << TABLE_OPEN
+			<< TABLE_ROW << TABLE_DATA << "Recognised plugins:" << TABLE_DATA << counters.recognised << TABLE_DATA << "Warning messages:" << TABLE_DATA << counters.warnings
+			<< TABLE_ROW << TABLE_DATA << "Unrecognised plugins:" << TABLE_DATA << counters.unrecognised << TABLE_DATA << "Error messages:" << TABLE_DATA << counters.errors
+			<< TABLE_ROW << TABLE_DATA << "Ghosted plugins:" << TABLE_DATA << counters.ghosted << TABLE_DATA << "Total number of messages:" << TABLE_DATA << counters.messages
+			<< TABLE_ROW << TABLE_DATA << "Total number of plugins:" << TABLE_DATA << (counters.recognised+counters.unrecognised) << TABLE_DATA << TABLE_DATA
+			<< TABLE_CLOSE
+			<< PARAGRAPH << "Mods sorted by your userlist are counted as recognised, not unrecognised, plugins."
+			<< DIV_CLOSE;
 
 		
 		/////////////////////////////
 		// Display RuleList Messages
 		/////////////////////////////
-
+		bosslog.SetHTMLSpecialEscape(false);
 		if (!contents.userlistMessages.empty() || !contents.userlistParsingError.empty() || !contents.userlistSyntaxErrors.empty()) {
-
-			Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>RuleList Messages</h3><ul id='userlistMessages'>");
+			
+			bosslog << HEADING_OPEN << "Userlist Messages" << HEADING_CLOSE << LIST_ID_USERLIST_MESSAGES_OPEN;
 			if (!contents.userlistParsingError.empty())  //First print parser/syntax error messages.
-				Output(contents.userlistParsingError);
+				bosslog << contents.userlistParsingError;
+
 			size_t size = contents.userlistSyntaxErrors.size();
 			for (size_t i=0;i<size;i++)
-				Output(contents.userlistSyntaxErrors[i]);
-			Output(contents.userlistMessages);  //Now print the rest of the userlist messages.
-			Output("</ul>");
+				bosslog << contents.userlistSyntaxErrors[i];
+
+			bosslog << contents.userlistMessages  //Now print the rest of the userlist messages.
+				<< LIST_CLOSE;
 		}
 
 
@@ -753,38 +763,42 @@ namespace boss {
 		// Display Script Extender Info
 		/////////////////////////////////
 
-		if (!contents.seInfo.empty()) {
-			Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>" + scriptExtender + " And " + scriptExtender + " Plugin Checksums</h3><ul>");
-			Output(contents.seInfo);
-			Output("</ul>");
-		}
+		if (!contents.seInfo.empty())
+			bosslog << HEADING_OPEN << scriptExtender << " And " << scriptExtender << " Plugin Checksums" << HEADING_CLOSE << LIST_OPEN
+				<< contents.seInfo
+				<< LIST_CLOSE;
 
 
 		/////////////////////////////////
 		// Display Recognised Mods
 		/////////////////////////////////
 
-		if (revert<1) Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Recognised And Re-ordered Plugins</h3><ul id='recognised'>");
-		else if (revert==1) Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Restored Load Order (Using modlist.txt)</h3><ul id='recognised'>");
-		else if (revert==2) Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Restored Load Order (Using modlist.old)</h3><ul id='recognised'>");
-		Output(contents.recognisedPlugins);
-		Output("</ul>");
+		if (revert < 1) 
+			bosslog << HEADING_OPEN << "Recognised And Re-ordered Plugins" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
+		else if (revert == 1)
+			bosslog << HEADING_OPEN << "Restored Load Order (Using modlist.txt)" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
+		else if (revert == 2) 
+			bosslog << HEADING_OPEN << "Restored Load Order (Using modlist.old)" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
+		bosslog << contents.recognisedPlugins
+			<< LIST_CLOSE;
 
 
 		/////////////////////////////////
 		// Display Unrecognised Mods
 		/////////////////////////////////
 
-		Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Unrecognised Plugins</h3><div><p>Reorder these by hand using your favourite mod ordering utility.<ul>");
-		Output(contents.unrecognisedPlugins);
-		Output("</ul></div>");
+		bosslog << HEADING_OPEN << "Unrecognised Plugins" << HEADING_CLOSE << DIV_OPEN 
+			<< PARAGRAPH << "Reorder these by hand using your favourite mod ordering utility." << LIST_OPEN
+			<< contents.unrecognisedPlugins
+			<< LIST_CLOSE << DIV_CLOSE;
 
 
 		////////////////
 		// Finish
 		////////////////
 
-		Output("<h3 id='end'>Execution Complete</h3>");
-		OutputFooter();
+		bosslog << HEADING_ID_END_OPEN << "Execution Complete" << HEADING_CLOSE;
+		bosslog.PrintFooter();
+		bosslog.Save(file, true);
 	}
 }

@@ -17,11 +17,15 @@
 #ifndef __BOSS_BOSSLOG_H__
 #define __BOSS_BOSSLOG_H__
 
-#include <fstream>
 #include <string>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
+#include <boost/format.hpp>
+
 #include "Common/Classes.h"
 #include "Common/DllDef.h"
-#include <boost/format.hpp>
 
 namespace boss {
 	using namespace std;
@@ -73,73 +77,70 @@ namespace boss {
 	BOSS_COMMON_EXP extern string CSSRequirement;
 	BOSS_COMMON_EXP extern string CSSIncompatibility;
 
-	//Prints a given message to the bosslog, using format-safe Output function below.
-	void ShowMessage(string& buffer, Message currentMessage);
-
-	//Prints ouptut with formatting according to format.
-	BOSS_COMMON_EXP void Output(string text);
-	
-	//Escapes HTML special characters.
-	BOSS_COMMON_EXP string EscapeHTMLSpecial(string text);
-
-	//Prints HTML header.
-	BOSS_COMMON_EXP void OutputHeader();
-
-	//Prints HTML footer (ie. </body> and </html> tags).
-	BOSS_COMMON_EXP void OutputFooter();
-
-	//Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
-	BOSS_COMMON_EXP string IntToString(const unsigned int n);
-
-	//Converts an integer to a hex string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
-	string IntToHexString(const unsigned int n);
-
-	//Converts a boolean to a string representation (true/false)
-	string BoolToString(bool b);
-
 	enum logFormatting {
 		DIV_OPEN,
 		DIV_CLOSE,
 		LINE_BREAK,
-		LINK_OPEN_ADDRESS,
-		LINK_CLOSE_ADDRESS,
-		LINK_CLOSE,
-		SYMBOL_COPYRIGHT,
-		SYMBOL_AMPERSAND,
-		SYMBOL_PLUS,
-		SYMBOL_MINUS,
-		TABLE_ROW,
 		TABLE_OPEN,
 		TABLE_CLOSE,
-		JAVASCRIPT_TOGGLE_SECTION_DISPLAY,
-		ID_END,
-		ID_RECOGNISED,
-		ID_USERLIST_MESSAGES,
+		TABLE_ROW,
+		TABLE_DATA,
+		LIST_ID_RECOGNISED_OPEN,
+		LIST_ID_USERLIST_MESSAGES_OPEN,
+		LIST_OPEN,
 		LIST_CLOSE,
+		LIST_ITEM,
+		LIST_ITEM_CLASS_SUCCESS,
+		LIST_ITEM_CLASS_WARN,
+		LIST_ITEM_CLASS_ERROR,
+		LIST_ITEM_SPAN_CLASS_MOD_OPEN,
+		HEADING_ID_END_OPEN,
+		HEADING_OPEN,
+		HEADING_CLOSE,
+		PARAGRAPH,
+		SPAN_CLASS_VERSION_OPEN,
+		SPAN_CLASS_GHOSTED_OPEN,
+		SPAN_CLASS_CRC_OPEN,
+		SPAN_CLASS_ERROR_OPEN,
+		SPAN_CLASS_MESSAGE_OPEN,
+		SPAN_CLOSE,
+		ITALIC_OPEN,
+		ITALIC_CLOSE,
+		BLOCKQUOTE_OPEN,
+		BLOCKQUOTE_CLOSE
 	};
-	/*
-	class Output {
+
+	class Outputter {
 	public:
-		void Open(fs::path file, string format, bool shouldEscapeHTMLSpecial);		//Opens the output stream using the given file, and prints the bosslog header to it.
-		void Close();					//Prints the bosslog footer to the output stream then closes it.
-		void SetFormat(string format);	//Sets the formatting type of the output.
-		void SetHTMLSpecialEscape(bool shouldEscape);	//Sets whether or not to escape the HTML special characters from non-formatting input.
-	
-		Output& operator << (const string s);
-		Output& operator << (const char * s);
-		Output& operator << (const char c);
-		Output& operator << (logFormatting l);
-		Output& operator << (unsigned int i);
-		Output& operator << (bool b);
-		Output& operator << (fs::path p);
-		Output& operator << (Message m);
+		Outputter();
+		Outputter(unsigned int format);
+
+		void SetFormat(unsigned int format);	//Sets the formatting type of the output.
+		void SetHTMLSpecialEscape(bool shouldEscape);	//Set when formatting is set, generally, but this can be used to override.
+		void Clear();			//Erase all current content.
+
+		void PrintHeader();		//Prints BOSS Log header.
+		void PrintFooter();		//Prints BOSS Log footer.
+
+		void Save(fs::path file, bool overwrite);		//Saves contents to file.
+		string AsString();				//Outputs contents as a string.
+		
+		Outputter& operator<< (const string s);
+		Outputter& operator<< (const char * s);
+		Outputter& operator<< (const char c);
+		Outputter& operator<< (const logFormatting l);
+		Outputter& operator<< (const int i);
+		Outputter& operator<< (const unsigned int i);
+		Outputter& operator<< (const bool b);
+		Outputter& operator<< (const fs::path p);
+		Outputter& operator<< (const Message m);
 	private:
-		ofstream outStream;
-		string outFormat;			//The formatting type of the output.
+		stringstream outStream;
+		unsigned int outFormat;			//The formatting type of the output.
 		bool escapeHTMLSpecialChars;	//Should special characters be escaped from non-formatting input?
 	
 		string EscapeHTMLSpecial(string text);	//Performs the HTML escaping.
 		string EscapeHTMLSpecial(char c);
-	};*/
+	};
 }
 #endif

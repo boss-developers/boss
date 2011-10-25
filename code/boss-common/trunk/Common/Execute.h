@@ -30,7 +30,8 @@ namespace boss {
 		unsigned int messages;
 		unsigned int warnings;
 		unsigned int errors;
-		BOSS_COMMON_EXP summaryCounters();
+
+		summaryCounters();
 	};
 
 	struct bosslogContents {
@@ -49,28 +50,34 @@ namespace boss {
 		string userlistParsingError;
 		vector<string> userlistSyntaxErrors;
 		vector<Message> globalMessages;
-
-		BOSS_COMMON_EXP bosslogContents();
 	};
 
-	//Searches a hashset for the first matching string of a regex and returns its iterator position.
-	BOSS_COMMON_EXP boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos);
+	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
+	boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos);
 
 	//Record recognised mod list from last HTML BOSSlog generated.
 	BOSS_COMMON_EXP string GetOldRecognisedList(const fs::path log);
 
-	//Detect the game BOSS is installed for.
-	//1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim. Throws exception if error.
+	//Detect the game BOSS is installed for. Returns an enum as defined in Globals.h. Throws exception if error.
 	BOSS_COMMON_EXP void GetGame();
 
 	//Gets the string representation of the detected game.
 	BOSS_COMMON_EXP string GetGameString();
 
-	//Returns the expeccted master file.
-	BOSS_COMMON_EXP string GameMasterFile();
+	//Returns the expected master file. Usage internal to BOSS-Common.
+	string GameMasterFile();
 
 	//Gets the timestamp of the game's master file. Throws exception if error.
 	BOSS_COMMON_EXP time_t GetMasterTime();
+
+	//Performs BOSS's main sorting functionality. Each stage is implemented by a separate function for neatness and to make future adjustments easier. 
+	//
+	BOSS_COMMON_EXP void PerformSortingFunctionality(fs::path file,
+												ItemList& modlist,
+												ItemList& masterlist,
+												RuleList& userlist,
+												const time_t esmtime,
+												bosslogContents contents);
 
 	//Create a modlist containing all the mods that are installed or referenced in the userlist with their masterlist messages.
 	//Returns the vector position of the last recognised mod in modlist.
@@ -79,16 +86,16 @@ namespace boss {
 	//Applies the userlist rules to the working modlist.
 	BOSS_COMMON_EXP void ApplyUserRules(ItemList& modlist, RuleList& userlist, string& outputBuffer);
 
-	//Lists Script Extender plugin info in the output buffer. Returns the Script Extender detected.
-	BOSS_COMMON_EXP string GetSEPluginInfo(string& outputBuffer);
+	//Lists Script Extender plugin info in the output buffer. Returns the Script Extender detected. Usage internal to BOSS-Common.
+	string GetSEPluginInfo(string& outputBuffer);
 
-	//Sort recognised mods.
-	BOSS_COMMON_EXP void SortRecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters);
+	//Sort recognised mods. Usage internal to BOSS-Common.
+	void SortRecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters);
 
-	//List unrecognised mods.
-	BOSS_COMMON_EXP void ListUnrecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters);
+	//List unrecognised mods. Usage internal to BOSS-Common.
+	void ListUnrecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters);
 
 	//Prints the full BOSSlog.
-	BOSS_COMMON_EXP void PrintBOSSlog(const bosslogContents contents, const summaryCounters counters, const string scriptExtender);
+	BOSS_COMMON_EXP void PrintBOSSlog(const fs::path file, const bosslogContents contents, const summaryCounters counters, const string scriptExtender);
 }
 #endif

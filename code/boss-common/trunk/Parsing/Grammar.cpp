@@ -643,7 +643,7 @@ namespace boss {
 
 		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
 		*errorBuffer = e;
-		LOG_ERROR(e.FormatFor("text").c_str());
+		LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
 		return;
 	}
 
@@ -743,21 +743,23 @@ namespace boss {
 				proxy_passwd = value;
 		} else if (currentHeading == "BOSS.RunOptions") {
 			if (var == "sBOSSLogFormat") {
-				if (value == "html" || value == "text")
-					log_format = value;
+				if (value == "html")
+					log_format = HTML;
+				else
+					log_format = PLAINTEXT;
 			} else if (var == "sGame") {
 				if (value == "auto")
-					game = 0;
+					game = AUTODETECT;
 				else if (value == "Oblivion")
-					game = 1;
+					game = OBLIVION;
 				else if (value == "Nehrim")
-					game = 3;
+					game = NEHRIM;
 				else if (value == "Fallout3")
-					game = 2;
+					game = FALLOUT3;
 				else if (value == "FalloutNV")
-					game = 4;
+					game = FALLOUTNV;
 				else if (value == "Skyrim")
-					game = 5;
+					game = SKYRIM;
 			}
 		} else if (currentHeading == "BOSSLog.Styles") {	
 			if (value.empty())
@@ -877,7 +879,7 @@ namespace boss {
 
 		ParsingError e(str(IniParsingErrorHeader % expect), context, IniParsingErrorFooter);
 		*errorBuffer = e;
-		LOG_ERROR(e.FormatFor("text").c_str());
+		LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
 		return;
 	}
 
@@ -954,7 +956,7 @@ namespace boss {
 			skip = true;
 			if (syntaxErrorBuffer != NULL)
 				syntaxErrorBuffer->push_back(e);
-			LOG_ERROR(e.FormatFor("text").c_str());
+			LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
 		}
 		if (!skip)
 			userlist.push_back(currentRule);
@@ -1024,7 +1026,7 @@ namespace boss {
 
 		ParsingError e(str(RuleListParsingErrorHeader % expect), context, RuleListParsingErrorFooter);
 		*parsingErrorBuffer = e;
-		LOG_ERROR(e.FormatFor("text").c_str());
+		LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
 		return;
 	}
 }

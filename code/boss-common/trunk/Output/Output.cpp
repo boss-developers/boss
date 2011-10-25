@@ -10,16 +10,13 @@
 */
 
 #include "Output/Output.h"
-#include "Common/Globals.h"
 #include "Common/Error.h"
+#include "Support/Helpers.h"
 #include <boost/algorithm/string.hpp>
-#include <boost/spirit/include/karma.hpp>
 
 namespace boss {
 	using namespace std;
-	namespace karma = boost::spirit::karma;
 	using boost::algorithm::replace_all;
-	using boost::algorithm::replace_first;
 
 	//Default filter options.
 	BOSS_COMMON_EXP bool UseDarkColourScheme    = false;
@@ -68,263 +65,37 @@ namespace boss {
 	BOSS_COMMON_EXP string CSSRequirement		= "";
 	BOSS_COMMON_EXP string CSSIncompatibility	= "";
 
-	void ShowMessage(string& buffer, Message currentMessage) {
-		string data = EscapeHTMLSpecial(currentMessage.data);
-		//If bosslog format is HTML, wrap web addresses in HTML link format.
-		if (log_format == "html") {
-			size_t pos1,pos2;
-			string link;
-			pos1 = data.find("&quot;http");  //Start of a link, HTML escaped.
-			while (pos1 != string::npos) {
-				pos1 += 6;  //Now points to start of actual link.
-				pos2 = data.find("&quot;",pos1);  //First character after the end of the link.
-				link = data.substr(pos1,pos2-pos1);
-				link = "<a href=\"" + link + "\">" + link + "</a>";
-				data.replace(pos1-6,pos2-pos1+12,link);
-				pos1 = data.find("&quot;http",pos1 + link.length());
-			}
-		}
-		//Select message formatting.
-		switch(currentMessage.key) {
-		case TAG:
-			buffer += "<li class='tag'><span class='tagPrefix'>Bash Tag suggestion(s):</span> " + data + "";
-			break;
-		case SAY:
-			buffer += "<li class='note'>Note: " + data + "";
-			break;
-		case REQ:
-			buffer += "<li class='req'>Requires: " + data + "";
-			break;
-		case INC:
-			buffer += "<li class='inc'>Incompatible with: " + data + "";
-			break;
-		case WARN:
-			buffer += "<li class='warn'>Warning: " + data + "";
-			break;
-		case ERR:
-			buffer += "<li class='error'>ERROR: " + data + "";
-			break;
-		case DIRTY:
-			buffer += "<li class='dirty'>Contains dirty edits: " + data + "";
-			break;
-		default:
-			buffer += "<li class='note'>Note: " + data + "";
-			break;
-		}
+	Outputter::Outputter() {
+		outFormat = PLAINTEXT;
+		escapeHTMLSpecialChars = false;
 	}
 
-	//Prints header if format is HTML, else nothing.
-	BOSS_COMMON_EXP void OutputHeader() {
-		if (log_format == "html") {
-			bosslog << "<!DOCTYPE html>"<<endl<<"<meta charset='utf-8'>"<<endl
-				<< "<title>BOSS Log</title>"<<endl<<"<style>"
-				<< "body{" << CSSBody << "}"
-				<< "#filters{" << CSSFilters << "}"
-				<< "#filters > li{" << CSSFiltersList << "}"
-				<< "body > div:first-child{" << CSSTitle << "}"
-				<< "body > div:first-child + div{" << CSSCopyright << "}"
-				<< "h3 + *{" << CSSSections << "}"
-				<< "h3{" << CSSSectionTitle << "}"
-				<< "h3 > span{" << CSSSectionPlusMinus << "}"			
-				<< "#end{" << CSSLastSection << "}"
-				<< "td{" << CSSTable << "}"
-				<< "ul{" << CSSList << "}"
-				<< "ul li{" << CSSListItem << "}"
-				<< "li ul{" << CSSSubList << "}"
-				<< "input[type='checkbox']{" << CSSCheckbox << "}"
-				<< "blockquote{" << CSSBlockquote << "}"
-				<< ".error{" << CSSError << "}"
-				<< ".warn{" << CSSWarning << "}"
-				<< ".success{" << CSSSuccess << "}"
-				<< ".version{" << CSSVersion << "}"
-				<< ".ghosted{" << CSSGhost << "}"
-				<< ".crc{" << CSSCRC << "}"
-				<< ".tagPrefix{" << CSSTagPrefix << "}"
-				<< ".dirty{" << CSSDirty << "}"
-				<< ".message{" << CSSQuotedMessage << "}"
-				<< ".mod{" << CSSMod << "}.tag{" << CSSTag << "}.note{" << CSSNote << "}.req{" << CSSRequirement << "}.inc{" << CSSIncompatibility << "}"
-				<< "</style>"<<endl;
-		}
-		Output("<div>Better Oblivion Sorting Software Log</div>\n");
-		Output("<div>&copy; Random007 &amp; the BOSS development team, 2011. Some rights reserved.<br />");
-		Output("<a href=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\">CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />");
-		Output("v"+IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH)+" ("+boss_release_date+")</div>");
-	}
-
-	//Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
-	BOSS_COMMON_EXP string IntToString(const unsigned int n) {
-		string out;
-		back_insert_iterator<string> sink(out);
-		karma::generate(sink,karma::upper[karma::uint_],n);
-		return out;
-	}
-
-	//Converts an integer to a hex string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
-	string IntToHexString(const unsigned int n) {
-		string out;
-		back_insert_iterator<string> sink(out);
-		karma::generate(sink,karma::upper[karma::hex],n);
-		return out;
-	}
-
-	//Converts a boolean to a string representation (true/false)
-	string BoolToString(bool b) {
-		if (b)
-			return "true";
-		else
-			return "false";
-	}
-
-	//Prints ouptut with formatting according to output format.
-	BOSS_COMMON_EXP void Output(string text) {
-		if (log_format == "text") {
-			//Yes. This really is as horrific as it looks. It should be only temporary though.
-			replace_first(text, "&copy;", "(c)");
-			replace_first(text, "&amp;", "&");
-			replace_first(text, "&#x2212;", "");
-			replace_first(text, "<tr>","");
-			replace_first(text, "<table><tbody>","");
-			replace_first(text, "</table>","");
-			replace_first(text, "<div>", "\n");
-
-			replace_first(text, " onclick='toggleSectionDisplay(this)'>", ">");
-			replace_first(text, " id='recognised'>", ">");
-			replace_first(text, " id='userlistMessages'>", ">");
-			replace_first(text, " id='end'>", ">");
-
-			replace_all(text, "</ul>", "\n");
-			replace_all(text, "<li><span class='mod'>","\n\n");
-			replace_all(text, "<td>","\n");
-			replace_all(text, "&nbsp;", " ");
-			replace_all(text, "<br />", "\n");
-			replace_all(text, "<blockquote>", "\n\n");
-			replace_all(text, "</blockquote>", "\n\n");
-			replace_all(text, "</div>", ""); 
-			replace_all(text, "</span>", "");
-			
-			replace_all(text, " class='warn'>", ">");
-			replace_all(text, " class='error'>", ">");
-			replace_all(text, " class='success'>", ">");
-			replace_all(text, " class='tag'>", ">");
-			replace_all(text, " class='ghosted'>", ">  ");
-			replace_all(text, " class='version'>", ">  ");
-			replace_all(text, " class='dirty'>", ">");
-			replace_all(text, " class='crc'>", ">  ");
-			replace_all(text, " class='note'>", ">");
-			replace_all(text, " class='req'>", ">");
-			replace_all(text, " class='inc'>", ">");
-			replace_all(text, " class='tagPrefix'>", ">");
-			replace_all(text, " class='message'>", ">");
-
-			replace_all(text, "<ul>", "");
-			replace_all(text, "<li>", "\n*  ");
-			replace_all(text, "<span>", "");
-			replace_all(text, "<p>", "\n");
-			
-			replace_first(text, "<h3>", "\n\n======================================\n");
-			replace_first(text, "</h3>", "\n======================================\n\n");
-
-			//Convert from HTML hyperlinks into text string.
-			size_t pos1,pos2;
-			string link;
-			pos1 = text.find("<a href="); //Start of a link
-			while (pos1 != string::npos) {
-				text.replace(pos1,8,"");
-				pos1 = text.find(">",pos1);
-				pos2 = text.find("</a>", pos1);
-				text.replace(pos1, pos2-pos1+4,"");
-				pos1 = text.find("<a href=",pos1);
-			}
-		}
-		bosslog << text;
-		if (log_format == "html")
-			bosslog << endl;
-	}
-	
-	//Escapes HTML special characters.
-	BOSS_COMMON_EXP string EscapeHTMLSpecial(string text) {
-		if (log_format == "html") {
-			replace_all(text, "&", "&amp;");
-			replace_all(text, "\"", "&quot;");
-			replace_all(text, "'", "&#039;");
-			replace_all(text, "<", "&lt;");
-			replace_all(text, ">", "&gt;");
-		}
-		return text;
-	}
-
-	BOSS_COMMON_EXP void OutputFooter() {
-		if (log_format == "html") {
-			bosslog << "<script>"
-				<< "function toggleSectionDisplay(h){if(h.nextSibling.style.display=='none')"
-				<< "{h.nextSibling.style.display='block';h.firstChild.innerHTML='&#x2212;'}else{"
-				<< "h.nextSibling.style.display='none';h.firstChild.innerHTML='+'}}function "
-				<< "toggleDisplayCSS(b,s,d){var r=new Array();if(document.styleSheets[0].cssRules){"
-				<< "r=document.styleSheets[0].cssRules}else if(document.styleSheets[0].rules){"
-				<< "r=document.styleSheets[0].rules}for(var i=0,z=r.length;i<z;i++){"
-				<< "if(r[i].selectorText.toLowerCase()==s){if(b.checked){r[i].style.display='none'"
-				<< "}else{r[i].style.display=d}return}}}function swapColorScheme(b){var d=document.body.style;"
-				<< "var f=document.getElementById('filters').style;if(b.checked){d.color='white';"
-				<< "d.background='black';f.background='#333333'}else{d.color='black';d.background='white';"
-				<< "f.background='#F5F5F5'}}function toggleRuleListWarnings(b){var "
-				<< "u=document.getElementById('userlistMessages').childNodes;if(u){for(var i=0,z=u.length;"
-				<< "i<z;i++){if(u[i].className=='warn'){if(b.checked){u[i].style.display='none'}else{"
-				<< "u[i].style.display='table'}}}}}function toggleMods(){var "
-				<< "m=document.getElementById('recognised').childNodes;for(var i=0,z=m.length;i<z;i++){"
-				<< "if(m[i].nodeType==1){var g=false,n=true,c=true,a=m[i].getElementsByTagName('span');"
-				<< "for(var j=0,y=a.length;j<y;j++){if(a[j].className=='ghosted'){g=true;break}}"
-				<< "a=m[i].getElementsByTagName('li');if(a.length>0){var p;if(window.getComputedStyle){"
-				<< "p=window.getComputedStyle(a[0].parentNode,null).getPropertyValue('display')}else if(a[0].currentStyle){"
-				<< "p=a[0].parentNode.currentStyle.display}for(var j=0,y=a.length;j<y;j++){if(a[j].className=='dirty'){"
-				<< "c=false}var b;if(window.getComputedStyle){b=window.getComputedStyle(a[j],null).getPropertyValue('display')"
-				<< "}else if(a[j].currentStyle){b=a[j].currentStyle.display}if(p!='none'&&b!='none'){n=false}}}"
-				<< "if((document.getElementById('noMessageModFilter').checked&&n)||"
-				<< "(document.getElementById('ghostModFilter').checked&&g)||(document.getElementById('cleanModFilter').checked&&c))"
-				<< "{m[i].style.display='none'}else{m[i].style.display='block'}}}}function toggleDoNotClean(b,s){"
-				<< "var m=document.getElementById('recognised').childNodes;for(var i=0,z=m.length;i<z;i++){if(m[i].nodeType==1){"
-				<< "var a=m[i].getElementsByTagName('li');for(var j=0,y=a.length;j<y;j++){if(a[j].className=='dirty'){"
-				<< "if(a[j].firstChild.nodeType==3){if(a[j].firstChild.nodeValue.toString().substr(0,35)=='Contains dirty edits: "
-				<< "Do not clean.'){if(b.checked){a[j].style.display='none'}else{a[j].style.display=s}}}}}}}}"<<endl
-				<< "function initialSetup() {"<<endl
-				<< "	swapColorScheme(document.getElementById('b1'));"<<endl
-				<< "	toggleRuleListWarnings(document.getElementById('b12'));"<<endl
-				<< "	toggleMods();"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b2'),'.version','inline');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b3'),'.ghosted','inline');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b4'),'.crc','inline');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b7'),'li ul','block');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b8'),'.note','table');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b9'),'.tag','table');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b10'),'.req','table');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b11'),'.inc','table');"<<endl
-				<< "}"<<endl
-				<< "function DomReady(fn){"<<endl
-				<< "	if(document.addEventListener){"<<endl
-				<< "		document.addEventListener('DOMContentLoaded', fn, false);"<<endl
-				<< "	}else{"<<endl
-				<< "		document.onreadystatechange = function(){readyState(fn)}"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "function readyState(fn){"<<endl
-				<< "	if(document.readyState == 'interactive'){"<<endl
-				<< "		fn();"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "window.onDomReady = DomReady;"<<endl
-				<< "window.onDomReady(initialSetup);"<<endl
-				<< "</script>"<<endl;
-		}
-	}
-	/*
-	void Output::Open(fs::path file, string format, bool shouldEscapeHTMLSpecial) {
+	Outputter::Outputter(unsigned int format) {
 		outFormat = format;
-		escapeHTMLSpecialChars = shouldEscapeHTMLSpecial;
-	
-		outStream.open(file.c_str());
-		if (outStream.fail())
-			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
-	
-		if (outFormat == "html") {
+		if (outFormat == HTML)
+			escapeHTMLSpecialChars = true;
+		else
+			escapeHTMLSpecialChars = false;
+	}
+
+	void Outputter::SetFormat(unsigned int format) {
+		outFormat = format;
+		if (outFormat == HTML)
+			escapeHTMLSpecialChars = true;
+		else
+			escapeHTMLSpecialChars = false;
+	}
+
+	void Outputter::SetHTMLSpecialEscape(bool shouldEscape) {
+		escapeHTMLSpecialChars = shouldEscape;
+	}
+
+	void Outputter::Clear() {
+		outStream.str(std::string());
+	}
+
+	void Outputter::PrintHeader() {
+		if (outFormat == HTML) {
 			outStream << "<!DOCTYPE html>"<<endl<<"<meta charset='utf-8'>"<<endl
 				<< "<title>BOSS Log</title>"<<endl<<"<style>"
 				<< "body{" << CSSBody << "}"
@@ -353,15 +124,20 @@ namespace boss {
 				<< ".message{" << CSSQuotedMessage << "}"
 				<< ".mod{" << CSSMod << "}.tag{" << CSSTag << "}.note{" << CSSNote << "}.req{" << CSSRequirement << "}.inc{" << CSSIncompatibility << "}"
 				<< "</style>"<<endl;
-		}
-		*this << DIV_OPEN << "Better Oblivion Sorting Software Log" << DIV_CLOSE
-			<< DIV_OPEN << SYMBOL_COPYRIGHT << " Random007, WrinklyNinja " << SYMBOL_AMPERSAND << " the BOSS development team, 2011. Some rights reserved." << LINE_BREAK
-			<< LINK_OPEN_ADDRESS << "http://creativecommons.org/licenses/by-nc-nd/3.0/" << LINK_CLOSE_ADDRESS << "CC Attribution-Noncommercial-No Derivative Works 3.0" << LINK_CLOSE << LINE_BREAK
-			<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << boss_release_date << ")" << DIV_CLOSE;
+			outStream << "<div>Better Oblivion Sorting Software Log</div>" << endl
+				<< "<div>&copy; Random007, WrinklyNinja &amp; the BOSS development team, 2011. Some rights reserved.<br />" << endl
+				<< "<a href=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\">CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />" << endl
+				<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << boss_release_date << ")</div>";
+		} else
+			outStream << endl << "Better Oblivion Sorting Software Log" << endl
+				<< "Copyright Random007, WrinklyNinja & the BOSS development team, 2011. Some rights reserved." << endl
+				<< "License: CC Attribution-Noncommercial-No Derivative Works 3.0" << endl
+				<< "(http://creativecommons.org/licenses/by-nc-nd/3.0/)" << endl
+				<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << boss_release_date << ")" << endl;
 	}
 
-	void Output::Close() {
-		if (outFormat == "html") {
+	void Outputter::PrintFooter() {
+		if (outFormat == HTML) {
 			outStream << "<script>"
 				<< "function toggleSectionDisplay(h){if(h.nextSibling.style.display=='none')"
 				<< "{h.nextSibling.style.display='block';h.firstChild.innerHTML='&#x2212;'}else{"
@@ -421,19 +197,27 @@ namespace boss {
 				<< "window.onDomReady(initialSetup);"<<endl
 				<< "</script>"<<endl;
 		}
-		outStream.close();
 	}
 
-	void Output::SetFormat(string format) {
-		outFormat = format;
-	}
+	void Outputter::Save(fs::path file, bool overwrite) {
+		ofstream outFile;
+		if (overwrite)
+			outFile.open(file.c_str());
+		else
+			outFile.open(file.c_str(), ios_base::out|ios_base::app);
+		if (outFile.fail())
+			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 
-	void Output::SetHTMLSpecialEscape(bool shouldEscape) {
-		escapeHTMLSpecialChars = shouldEscape;
+		outFile << outStream.str();
+		outFile.close();
+	}
+	
+	string Outputter::AsString() {
+		return outStream.str();
 	}
 
 	//Escapes HTML special characters.
-	string Output::EscapeHTMLSpecial(string text) {
+	string Outputter::EscapeHTMLSpecial(string text) {
 		if (escapeHTMLSpecialChars) {
 			replace_all(text, "&", "&amp;");
 			replace_all(text, "\"", "&quot;");
@@ -445,7 +229,7 @@ namespace boss {
 		return text;
 	}
 
-	string Output::EscapeHTMLSpecial(char c) {
+	string Outputter::EscapeHTMLSpecial(char c) {
 		if (escapeHTMLSpecialChars) {
 			switch(c) {
 			case '&':
@@ -465,59 +249,213 @@ namespace boss {
 			}
 		}
 	}
-
-	Output& Output::operator << (Output& o, const string s) {
+	
+	Outputter& Outputter::operator<< (const string s) {
 		outStream << EscapeHTMLSpecial(s);
 		return *this;
 	}
 
-	Output& Output::operator << (Output& o, const char c) {
+	Outputter& Outputter::operator<< (const char c) {
 		outStream << EscapeHTMLSpecial(c);
-		return o;
+		return *this;
 	}
 
-	Output& Output::operator << (Output& o, const char * s) {
+	Outputter& Outputter::operator<< (const char * s) {
 		outStream << EscapeHTMLSpecial(s);
-		return o;
+		return *this;
 	}
 
-	Output& Output::operator << (Output& o, logFormatting l) {
-		if (outFormat == "html") {
-			switch(l) {
-			default:
-				break;
-			}
-		} else {
-			switch(l) {
-			default:
-				break;
-			}
+	Outputter& Outputter::operator<< (const logFormatting l) {
+		switch(l) {
+		case DIV_OPEN:
+			if (outFormat == HTML)
+				outStream << "<div>";
+			else
+				outStream << endl;
+			break;
+		case DIV_CLOSE:
+			if (outFormat == HTML)
+				outStream << "</div>";
+			break;
+		case LINE_BREAK:
+			if (outFormat == HTML)
+				outStream << "<br />";
+			else
+				outStream << endl;
+			break;
+		case TABLE_ROW:
+			if (outFormat == HTML)
+				outStream << "<tr>";
+			break;
+		case TABLE_DATA:
+			if (outFormat == HTML)
+				outStream << "<td>";
+			else
+				outStream << endl;
+			break;
+		case TABLE_OPEN:
+			if (outFormat == HTML)
+				outStream << "<table><tbody>";
+			break;
+		case TABLE_CLOSE:
+			if (outFormat == HTML)
+				outStream << "</table>";
+			break;
+		case HEADING_ID_END_OPEN:
+			if (outFormat == HTML)
+				outStream << "<h3 id='end'>";
+			else
+				outStream << endl << endl << "======================================" << endl;
+			break;
+		case LIST_ID_RECOGNISED_OPEN:
+			if (outFormat == HTML)
+				outStream << "<ul id='recognised'>";
+			break;
+		case LIST_ID_USERLIST_MESSAGES_OPEN:
+			if (outFormat == HTML)
+				outStream << "<ul id='userlistMessages'>";
+			break;
+		case LIST_OPEN:
+			if (outFormat == HTML)
+				outStream << "<ul>";
+			break;
+		case LIST_CLOSE:
+			if (outFormat == HTML)
+				outStream << "</ul>";
+			else
+				outStream << endl;
+			break;
+		case HEADING_OPEN:
+			if (outFormat == HTML)
+				outStream << "<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>";
+			else
+				outStream << endl << endl << "======================================" << endl;
+			break;
+		case HEADING_CLOSE:
+			if (outFormat == HTML)
+				outStream << "</h3>";
+			else
+				outStream << endl << "======================================" << endl << endl;
+			break;
+		case PARAGRAPH:
+			if (outFormat == HTML)
+				outStream << "<p>";
+			else
+				outStream << endl;
+			break;
+		case LIST_ITEM:
+			if (outFormat == HTML)
+				outStream << "<li>";
+			else
+				outStream << endl << "*  ";
+			break;
+		case LIST_ITEM_CLASS_SUCCESS:
+			if (outFormat == HTML)
+				outStream << "<li class='success'>";
+			else
+				outStream << endl << "*  ";
+			break;
+		case LIST_ITEM_CLASS_WARN:
+			if (outFormat == HTML)
+				outStream << "<li class='warn'>";
+			else
+				outStream << endl << "*  ";
+			break;
+		case LIST_ITEM_CLASS_ERROR:
+			if (outFormat == HTML)
+				outStream << "<li class='error'>";
+			else
+				outStream << endl << "*  ";
+			break;
+		case LIST_ITEM_SPAN_CLASS_MOD_OPEN:
+			if (outFormat == HTML)
+				outStream << "<li><span class='mod'>";
+			else
+				outStream << endl << endl;
+			break;
+		case SPAN_CLASS_VERSION_OPEN:
+			if (outFormat == HTML)
+				outStream << "<span class='version'>&nbsp;";
+			else
+				outStream << " ";
+			break;
+		case SPAN_CLASS_GHOSTED_OPEN:
+			if (outFormat == HTML)
+				outStream << "<span class='ghosted'>&nbsp;";
+			else
+				outStream << " ";
+			break;
+		case SPAN_CLASS_CRC_OPEN:
+			if (outFormat == HTML)
+				outStream << "<span class='crc'>&nbsp;";
+			else
+				outStream << " ";
+			break;
+		case SPAN_CLASS_ERROR_OPEN:
+			if (outFormat == HTML)
+				outStream << "<span class='error'>";
+			break;
+		case SPAN_CLASS_MESSAGE_OPEN:
+			if (outFormat == HTML)
+				outStream << "<span class='message'>";
+			break;
+		case SPAN_CLOSE:
+			if (outFormat == HTML)
+				outStream << "</span>";
+			break;
+		case ITALIC_OPEN:
+			if (outFormat == HTML)
+				outStream << "<i>";
+			break;
+		case ITALIC_CLOSE:
+			if (outFormat == HTML)
+				outStream << "</i>";
+			break;
+		case BLOCKQUOTE_OPEN:
+			if (outFormat == HTML)
+				outStream << "<blockquote>";
+			else
+				outStream << endl << endl;
+			break;
+		case BLOCKQUOTE_CLOSE:
+			if (outFormat == HTML)
+				outStream << "</blockquote>";
+			else
+				outStream << endl << endl;
+			break;
+		default:
+			break;
 		}
-		return o;
+		return *this;
 	}
-
-	Output& Output::operator << (Output& o, unsigned int i) {
+	
+	Outputter& Outputter::operator<< (const int i) {
 		outStream << i;
-		return o;
+		return *this;
+	}
+	
+	Outputter& Outputter::operator<< (const unsigned int i) {
+		outStream << i;
+		return *this;
 	}
 
-	Output& Output::operator << (Output& o, bool b) {
+	Outputter& Outputter::operator<< (const bool b) {
 		if (b)
 			outStream << "true";
 		else
 			outStream << "false";
-		return o;
+		return *this;
 	}
 
-	Output& Output::operator << (Output& o, fs::path p) {
-		this << p.string();
-		return o;
+	Outputter& Outputter::operator<< (const fs::path p) {
+		*this << p.string();
+		return *this;
 	}
 
-	Output& Output::operator << (Output& o, Message m) {
+	Outputter& Outputter::operator<< (const Message m) {
 		string data = EscapeHTMLSpecial(m.data);
 		//If bosslog format is HTML, wrap web addresses in HTML link format.
-		if (log_format == "html") {
+		if (log_format == HTML) {
 			size_t pos1,pos2;
 			string link;
 			pos1 = data.find("&quot;http");  //Start of a link, HTML escaped.
@@ -533,46 +471,71 @@ namespace boss {
 		//Select message formatting.
 		switch(m.key) {
 		case TAG:
-			*this << "<li class='tag'><span class='tagPrefix'>" << "Bash Tag suggestion(s):" << "</span> " << data;
+			if (outFormat == HTML)
+				outStream << "<li class='tag'><span class='tagPrefix'>Bash Tag suggestion(s):</span> " << data;
+			else
+				outStream << endl << "*  Bash Tag suggestion(s):" << data;
 			break;
 		case SAY:
-			*this << "<li class='note'>" << "Note: " << data;
+			if (outFormat == HTML)
+				outStream << "<li class='note'>Note: " << data;
+			else
+				outStream << endl << "*  Note: " << data;
 			break;
 		case REQ:
-			*this << "<li class='req'>" << "Requires: " << data;
+			if (outFormat == HTML)
+				outStream << "<li class='req'>Requires: " << data;
+			else
+				outStream << endl << "*  Requires: " << data;
 			break;
 		case INC:
-			*this << "<li class='inc'>" << "Incompatible with: " << data;
+			if (outFormat == HTML)
+				outStream << "<li class='inc'>Incompatible with: " << data;
+			else
+				outStream << endl << "*  Incompatible with: " << data;
 			break;
 		case WARN:
-			*this << "<li class='warn'>" << "Warning: " << data;
+			if (outFormat == HTML)
+				outStream << "<li class='warn'>Warning: " << data;
+			else
+				outStream << endl << "*  Warning: " << data;
 			break;
 		case ERR:
-			*this << "<li class='error'>" << "ERROR: " << data;
+			if (outFormat == HTML)
+				outStream << "<li class='error'>ERROR: " << data;
+			else
+				outStream << endl << "*  ERROR: " << data;
 			break;
 		case DIRTY:
-			*this << "<li class='dirty'>" << "Contains dirty edits: " << data;
+			if (outFormat == HTML)
+				outStream << "<li class='dirty'>Contains dirty edits: " << data;
+			else
+				outStream << endl << "*  Contains dirty edits: " << data;
 			break;
 		default:
-			*this << "<li class='note'>" << "Note: " << data;
+			if (outFormat == HTML)
+				outStream << "<li class='note'>Note: " << data;
+			else
+				outStream << endl << "*  Note: " << data;
 			break;
 		}
-		return o;
-	}*/
+		return *this;
+	}
 
-		//Outputs correctly-formatted error message.
-		string ParsingError::FormatFor(const string format) {
-			if (!wholeMessage.empty()) {
-				if (format == "html")
-					return "<li class='error'>"+EscapeHTMLSpecial(wholeMessage);
-				else
-					return wholeMessage;
-			} else {
-				if (format == "html") {
-					boost::replace_all(detail, "\n", "<br />");
-					return "<li><span class='error'>"+EscapeHTMLSpecial(header)+"</span><blockquote>"+EscapeHTMLSpecial(detail)+"</blockquote><span class='error'>"+EscapeHTMLSpecial(footer)+"</span>";
-				}else
-					return "\n*  "+header+"\n\n"+detail+"\n\n"+footer;
-			}
+	//Outputs correctly-formatted error message.
+	string ParsingError::FormatFor(const unsigned int format) {
+		Outputter output(format);
+		if (Empty())
+			output << "";
+		else if (!wholeMessage.empty())
+			output << LIST_ITEM_CLASS_ERROR << wholeMessage;
+		else {
+			if (format == HTML)
+				boost::replace_all(detail, "\n", "<br />");
+			output << LIST_ITEM << SPAN_CLASS_ERROR_OPEN << header << SPAN_CLOSE 
+				<< BLOCKQUOTE_OPEN << detail << BLOCKQUOTE_CLOSE
+				<< SPAN_CLASS_ERROR_OPEN << footer << SPAN_CLOSE;
 		}
+		return output.AsString();
+	}
 }

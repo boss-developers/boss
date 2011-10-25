@@ -43,6 +43,15 @@ namespace boss {
 
 	//UTF-8 file validator.
 	bool ValidateUTF8File(const fs::path file);
+
+	//Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
+	BOSS_COMMON_EXP string IntToString(const unsigned int n);
+
+	//Converts an integer to a hex string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
+	string IntToHexString(const unsigned int n);
+
+	//Converts a boolean to a string representation (true/false)
+	string BoolToString(bool b);
 }
 
 #endif

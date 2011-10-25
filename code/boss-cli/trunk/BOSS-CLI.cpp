@@ -102,11 +102,12 @@ int main(int argc, char *argv[]) {
 	ItemList modlist, masterlist;		//modlist and masterlist data structures.
 	RuleList userlist;					//userlist data structure.
 	Ini ini;
-	summaryCounters counters;				//Summary counters.
 	bosslogContents contents;				//BOSSlog contents.
 	string gameStr;							// allow for autodetection override
+	string bosslogFormat;
 	fs::path bosslog_path;					//Path to BOSSlog being used.
 	fs::path sortfile;						//modlist/masterlist to sort plugins using.
+	Outputter output;
 
 	//Set the locale to get encoding conversions working correctly.
 	setlocale(LC_CTYPE, "");
@@ -157,7 +158,7 @@ int main(int argc, char *argv[]) {
 		("crc-display,c", po::value(&show_CRCs)->zero_tokens(),
 								"show mod file CRCs, so that a file's CRC can be"
 								" added to the masterlist in a conditional")
-		("format,f", po::value(&log_format),
+		("format,f", po::value(&bosslogFormat),
 								"select output format. valid values"
 								" are: 'html', 'text'")
 		("trial-run,t", po::value(&trial_run)->zero_tokens(),
@@ -181,7 +182,6 @@ int main(int argc, char *argv[]) {
 	if (fs::exists(ini_path)) {
 		try {
 			ini.Load(ini_path);
-			contents.iniParsingError = ini.errorBuffer.FormatFor(log_format);
 		} catch (boss_error e) {}
 	} else {
 		try {
@@ -254,14 +254,19 @@ int main(int argc, char *argv[]) {
 
 	if (vm.count("format")) {
 		// sanity check and parse argument
-		if (log_format != "html" && log_format != "text") {
-			LOG_ERROR("invalid option for 'format' parameter: '%s'", log_format.c_str());
+		if (bosslogFormat == "html")
+			log_format = HTML;
+		else if (bosslogFormat == "text")
+			log_format = PLAINTEXT;
+		else {
+			LOG_ERROR("invalid option for 'format' parameter: '%s'", bosslogFormat.c_str());
 			Fail();
 		}
-	
-		LOG_DEBUG("BOSSlog format set to: '%s'", log_format.c_str());
+		LOG_DEBUG("BOSSlog format set to: '%s'", bosslogFormat.c_str());
 	}
-
+	output.SetFormat(log_format);
+	if (!ini.errorBuffer.Empty())
+		contents.iniParsingError = ini.errorBuffer.FormatFor(log_format);
 
 	/////////////////////////
 	// BOSS Updater Stuff
@@ -435,7 +440,7 @@ int main(int argc, char *argv[]) {
 	/////////////////////////
 
 	//Set BOSSlog path to be used.
-	if (log_format == "html")
+	if (log_format == HTML)
 		bosslog_path = bosslog_html_path;
 	else
 		bosslog_path = bosslog_text_path;
@@ -463,16 +468,6 @@ int main(int argc, char *argv[]) {
 	// Check for critical error conditions
 	/////////////////////////////////////////
 
-	//BOSSlog check.
-	LOG_DEBUG("opening '%s'", bosslog_path.string().c_str());
-	bosslog.open(bosslog_path.c_str());  //Might as well keep it open, just don't write anything unless an error till the end.
-	if (bosslog.fail()) {
-		LOG_ERROR("file '%s' could not be accessed for writing. Check the"
-				  " Troubleshooting section of the ReadMe for more"
-				  " information and possible solutions.", bosslog_path.string().c_str());
-		Fail();
-	}
-
 	//Game checks.
 	if (0 == game) {
 		LOG_DEBUG("Detecting game...");
@@ -480,12 +475,17 @@ int main(int argc, char *argv[]) {
 			GetGame();
 		} catch (boss_error e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
-			OutputHeader();
-			Output("<p class='error'>Critical Error: " + e.getString() + "<br />");
-			Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
-			Output("Utility will end now.");
-			OutputFooter();
-			bosslog.close();
+			output.Clear();
+			output.PrintHeader();
+			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+				<< "Utility will end now." << LIST_CLOSE;
+			output.PrintFooter();
+			try {
+				output.Save(bosslog_path, true);
+			} catch (boss_error e) {
+				LOG_ERROR("Critical Error: %s", e.getString().c_str());
+			}
 			LOG_ERROR("Installation error found: check BOSSLOG.");
 			if ( !silent ) 
 				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -504,9 +504,10 @@ int main(int argc, char *argv[]) {
 		try {
 			connection = CheckConnection();
 		} catch (boss_error e) {
-			contents.updaterErrors += "<li class='warn'>Error: masterlist update failed.<br />";
-			contents.updaterErrors += "Details: " + EscapeHTMLSpecial(e.getString()) + "<br />";
-			contents.updaterErrors += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
+			output << LIST_ITEM_CLASS_WARN << "Error: masterlist update failed." << LINE_BREAK
+				<< "Details: " << e.getString() << LINE_BREAK
+				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
+			contents.updaterErrors = output.AsString();
 			LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
 		}
 		if (connection) {
@@ -518,39 +519,40 @@ int main(int argc, char *argv[]) {
 				uiStruct ui;
 				UpdateMasterlist(ui, localRevision, localDate, remoteRevision, remoteDate);
 				if (localRevision == remoteRevision) {
-					contents.summary += "<p>Your masterlist is already at the latest revision (r" + IntToString(localRevision) + "; " + EscapeHTMLSpecial(localDate) + "). No update necessary.";
-					cout << endl << "Your masterlist is already at the latest revision (" + IntToString(localRevision) + "; " + EscapeHTMLSpecial(localDate) + "). No update necessary." << endl;
+					output << PARAGRAPH << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
+					cout << endl << "Your masterlist is already at the latest revision (" << localRevision << "; " << localDate << "). No update necessary." << endl;
 					LOG_DEBUG("masterlist update unnecessary.");
 				} else {
-					contents.summary += "<p>Your masterlist has been updated to revision " + IntToString(remoteRevision) + " (" + EscapeHTMLSpecial(remoteDate) + ").";
+					output << PARAGRAPH << "Your masterlist has been updated to revision " << remoteRevision << " (" << remoteDate << ").";
 					cout << endl << "Your masterlist has been updated to revision " << remoteRevision << endl;
 					LOG_DEBUG("masterlist updated successfully.");
 				}
+				contents.summary = output.AsString();
 			} catch (boss_error e) {
-				contents.updaterErrors += "<li class='warn'>Error: masterlist update failed.<br />";
-				contents.updaterErrors += "Details: " + EscapeHTMLSpecial(e.getString()) + "<br />";
-				contents.updaterErrors += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
+				output << LIST_ITEM_CLASS_WARN << "Error: masterlist update failed." << LINE_BREAK
+					<< "Details: " << e.getString() << LINE_BREAK
+					<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
+				contents.updaterErrors = output.AsString();
 				LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
 			}
-		} else
-			contents.summary += "<p>No internet connection detected. masterlist auto-updater aborted.";
+		} else {
+			output << PARAGRAPH << "No internet connection detected. masterlist auto-updater aborted.";
+			contents.summary = output.AsString();
+		}
 	}
 
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
 	if (update_only == true) {
-		OutputHeader();
-		if (contents.updaterErrors.empty()) {
-			Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Summary</h3><ul>");
-			Output(contents.summary);
-			Output("</ul>");
-		} else {
-			Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>General Messages</h3><ul>");
-			Output(contents.updaterErrors);
-			Output("</ul>");
-		}
-		Output("<h3 id='end'>BOSS Execution Complete</h3>");
-		OutputFooter();
-		bosslog.close();
+		output.Clear();
+		output.PrintHeader();
+		if (contents.updaterErrors.empty())
+			output << HEADING_OPEN << "Summary" << HEADING_CLOSE << contents.summary;
+		else
+			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
+				<< contents.updaterErrors << LIST_CLOSE;
+		output << HEADING_ID_END_OPEN << "Execution Complete" << HEADING_CLOSE;
+		output.PrintFooter();
+		output.Save(bosslog_path, true);
 		if ( !silent ) 
 			Launch(bosslog_path.string());	//Displays the BOSSlog.
 		return (0);
@@ -567,12 +569,13 @@ int main(int argc, char *argv[]) {
 	try {
 		esmtime = GetMasterTime();
 	} catch(boss_error e) {
-		OutputHeader();
-		Output("<p class='error'>Critical Error: " + e.getString() + "<br />");
-		Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
-		Output("Utility will end now.");
-		OutputFooter();
-		bosslog.close();
+		output.Clear();
+		output.PrintHeader();
+		output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+			<< "Utility will end now." << LIST_CLOSE;
+		output.PrintFooter();
+		output.Save(bosslog_path, true);
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
 		if ( !silent ) 
 			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -585,13 +588,14 @@ int main(int argc, char *argv[]) {
 		try {
 			modlist.Save(curr_modlist_path);
 		} catch (boss_error e) {
-			OutputHeader();
-			Output("<p class='error'>Critical Error: modlist backup failed!<br />");
-			Output("Details: " + EscapeHTMLSpecial(e.getString()) + ".<br />");
-			Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
-			Output("Utility will end now.");
-			OutputFooter();
-			bosslog.close();
+			output.Clear();
+			output.PrintHeader();
+			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: modlist backup failed!" << LINE_BREAK
+				<< "Details: " << e.getString() << "." << LINE_BREAK
+				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+				<< "Utility will end now." << LIST_CLOSE;
+			output.PrintFooter();
+			output.Save(bosslog_path, true);
 			if ( !silent ) 
 				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
 			exit (1); //fail in screaming heap.
@@ -612,15 +616,20 @@ int main(int argc, char *argv[]) {
 	} catch (boss_error e) {
 		contents.criticalError = masterlist.errorBuffer.FormatFor(log_format);
 		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
-			PrintBOSSlog(contents, counters, "");
-			bosslog.close();
+			output.Clear();
+			output.PrintHeader();
+			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
+				<< contents.criticalError << LIST_CLOSE;
+			output.PrintFooter();
+			output.Save(bosslog_path, true);
 		} else {
-			OutputHeader();
-			Output("<p class='error'>Critical Error: " +EscapeHTMLSpecial(e.getString()) +"<br />");
-			Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
-			Output("Utility will end now.");
-			OutputFooter();
-			bosslog.close();
+			output.Clear();
+			output.PrintHeader();
+			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+				<< "Utility will end now." << LIST_CLOSE;
+			output.PrintFooter();
+			output.Save(bosslog_path, true);
 			LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
 		}
         if ( !silent ) 
@@ -631,61 +640,26 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Starting to parse userlist.");
 	try {
 		userlist.Load(userlist_path);
-		contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(log_format);
+		if (!userlist.parsingErrorBuffer.Empty())
+			contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(log_format);
 		for (vector<ParsingError>::iterator iter; iter != userlist.syntaxErrorBuffer.end(); ++iter)
 			contents.userlistSyntaxErrors.push_back(iter->FormatFor(log_format));
 	} catch (boss_error e) {
 		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
-		if (e.getCode() != BOSS_ERROR_FILE_PARSE_FAIL)
-			userlist.parsingErrorBuffer = "<p class='error'>Error: "+e.getString()+" userlist parsing aborted. No rules will be applied.";
+		if (e.getCode() != BOSS_ERROR_FILE_PARSE_FAIL) {
+			output.Clear();
+			output << LIST_ITEM_CLASS_ERROR << "Error: " << e.getString() << " userlist parsing aborted. No rules will be applied.";
+			contents.userlistParsingError = output.AsString();
+		}
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
-	
 
-	/////////////////////////////////////////////////
-	// Compare masterlist against modlist, userlist
-	/////////////////////////////////////////////////
+	//////////////////////////////////
+	// Perform sorting functionality
+	//////////////////////////////////
 
-	BuildWorkingModlist(modlist, masterlist, userlist);
-	LOG_INFO("modlist now filled with ordered mods and unknowns.");
+	PerformSortingFunctionality(bosslog_path, modlist, masterlist, userlist, esmtime, contents);
 
-	
-	//////////////////////////
-	// Apply userlist Rules
-	//////////////////////////
-
-	//Apply userlist rules to modlist.
-	if (revert<1 && fs::exists(userlist_path)) {
-		ApplyUserRules(modlist, userlist, contents.userlistMessages);
-		LOG_INFO("userlist sorting process finished.");
-	}
-
-	//////////////////////////////////////////////////////
-	// Print version & checksum info for OBSE & plugins
-	//////////////////////////////////////////////////////
-
-	if (show_CRCs)
-		scriptExtender = GetSEPluginInfo(contents.seInfo);
-
-	////////////////////////////////
-	// Re-date Files & Output Info
-	////////////////////////////////
-
-	//Re-date .esp/.esm files according to order in modlist and output messages
-	SortRecognisedMods(modlist, contents.recognisedPlugins, esmtime, counters);
-
-
-	//Find and show found mods not recognised. These are the mods that are found at and after index lastRecognisedPos in the mods vector.
-	//Order their dates to be i days after the master esm to ensure they load last.
-	ListUnrecognisedMods(modlist, contents.unrecognisedPlugins, esmtime, counters);
-
-	/////////////////////////////
-	// Print Output to BOSSlog
-	/////////////////////////////
-
-	PrintBOSSlog(contents, counters, scriptExtender);
-
-	bosslog.close();
 	LOG_INFO("Launching boss log in browser.");
 	if ( !silent ) 
 		Launch(bosslog_path.string());	//Displays the BOSSlog.txt.

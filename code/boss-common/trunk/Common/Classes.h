@@ -73,7 +73,7 @@ namespace boss {
 				Item		(fs::path inName, itemType inType);
 				Item		(fs::path inName, itemType inType, vector<Message> inMessages);
 
-		bool	operator <	(Item);
+		bool	operator<	(Item);
 		
 		bool	IsPlugin	();
 		bool	IsGroup		();
@@ -145,6 +145,7 @@ namespace boss {
 		ParsingError errorBuffer;
 	private:
 		string	GetGameString	();
+		string	GetLogFormat	();
 	};
 }
 #endif

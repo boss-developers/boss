@@ -10,12 +10,12 @@
 */
 
 
-#include "Helpers.h"
-#include "ModFormat.h"
-#include "Logger.h"
+#include "Support/Helpers.h"
+#include "Support/ModFormat.h"
+#include "Support/Logger.h"
 #include "Common/Globals.h"
-#include "Output/Output.h"
 
+#include <boost/spirit/include/karma.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/crc.hpp>
 
@@ -34,6 +34,9 @@
 namespace boss {
 	using namespace std;
 	using namespace boost;
+	using boost::algorithm::replace_all;
+	using boost::algorithm::replace_first;
+	namespace karma = boost::spirit::karma;
 
 	//Changes uppercase to lowercase.	
 	BOSS_COMMON_EXP string Tidy(string filename) {
@@ -143,5 +146,29 @@ namespace boss {
 			return false;
 		else
 			return true;
+	}
+
+	//Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
+	BOSS_COMMON_EXP string IntToString(const unsigned int n) {
+		string out;
+		back_insert_iterator<string> sink(out);
+		karma::generate(sink,karma::upper[karma::uint_],n);
+		return out;
+	}
+
+	//Converts an integer to a hex string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
+	string IntToHexString(const unsigned int n) {
+		string out;
+		back_insert_iterator<string> sink(out);
+		karma::generate(sink,karma::upper[karma::hex],n);
+		return out;
+	}
+
+	//Converts a boolean to a string representation (true/false)
+	string BoolToString(bool b) {
+		if (b)
+			return "true";
+		else
+			return "false";
 	}
 }
