@@ -1,9 +1,11 @@
 /*	Better Oblivion Sorting Software
 	
-	Quick and Dirty Load Order Utility
-	(Making C++ look like the scripting language it isn't.)
+	A "one-click" program for users that quickly optimises and avoids 
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
+    Copyright (C) 2011  Random/Random007/jpearce, WrinklyNinja & the BOSS 
+	development team. Copyright license:
     http://creativecommons.org/licenses/by-nc-nd/3.0/
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
@@ -24,11 +26,12 @@ namespace boss {
 	using boost::algorithm::trim_copy;
 	using boost::algorithm::to_lower_copy;
 
-	summaryCounters::summaryCounters()
-		: recognised(0), unrecognised(0), ghosted(0), messages(0), warnings(0), errors(0) {}
+	////////////////////////
+	// Internal Functions
+	////////////////////////
 
 	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
-	BOSS_COMMON_EXP boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
+	boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
 		while(startPos != set.end()) {
 			if (boost::regex_match(*startPos,reg))
 				return startPos;
@@ -36,6 +39,377 @@ namespace boss {
 		}
 		return set.end();
 	}
+
+	//Returns the expeccted master file. Usage internal to BOSS-Common.
+	string GameMasterFile() {
+		if (game == OBLIVION) 
+			return "Oblivion.esm";
+		else if (game == FALLOUT3) 
+			return "Fallout3.esm";
+		else if (game == NEHRIM) 
+			return "Nehrim.esm";
+		else if (game == FALLOUTNV) 
+			return "FalloutNV.esm";
+		else if (game == SKYRIM) 
+			return "Skyrim.esm";
+		else
+			return "Game Not Detected";
+	}
+
+	//Lists Script Extender plugin info in the output buffer. Usage internal to BOSS-Common.
+	string GetSEPluginInfo(string& outputBuffer) {
+		Outputter buffer(log_format);
+		string SE, SELoc, SEPluginLoc;
+		if (game == OBLIVION || game == NEHRIM) {
+			SE = "OBSE";
+			SELoc = "../obse_1_2_416.dll";
+			SEPluginLoc = "OBSE/Plugins";
+		} else if (game == FALLOUT3) {  //Fallout 3
+			SE = "FOSE";
+			SELoc = "../fose_loader.exe";
+			SEPluginLoc = "FOSE/Plugins";
+		} else if (game == FALLOUTNV) {  //Fallout: New Vegas
+			SE = "NVSE";
+			SELoc = "../nvse_loader.exe";
+			SEPluginLoc = "NVSE/Plugins";
+		} else if (game == SKYRIM) {  //Skyrim
+			SE = "SKSE";
+			SELoc = "../skse_loader.exe";
+			SEPluginLoc = "SKSE/Plugins";
+		}
+
+		if (!fs::exists(SELoc) || SELoc.empty()) {
+			LOG_DEBUG("Script Extender not detected");
+			return "";
+		} else {
+			string CRC = IntToHexString(GetCrc32(SELoc));
+			string ver = GetExeDllVersion(SELoc);
+
+			buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << SE << SPAN_CLOSE;
+			if (ver.length() != 0)
+				buffer << SPAN_CLASS_VERSION_OPEN << "Version: " << ver << SPAN_CLOSE;
+			buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << CRC << SPAN_CLOSE;
+
+			if (!fs::is_directory(data_path / SEPluginLoc)) {
+				LOG_DEBUG("Script extender plugins directory not detected");
+			} else {
+				for (fs::directory_iterator itr(data_path / SEPluginLoc); itr!=fs::directory_iterator(); ++itr) {
+					const fs::path filename = itr->path().filename();
+					const string ext = Tidy(itr->path().extension().string());
+					if (fs::is_regular_file(itr->status()) && ext==".dll") {
+						string CRC = IntToHexString(GetCrc32(itr->path()));
+						string ver = GetExeDllVersion(itr->path());
+
+						buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << filename.string() << SPAN_CLOSE;
+						if (ver.length() != 0)
+							buffer << SPAN_CLASS_VERSION_OPEN << "Version: " + ver << SPAN_CLOSE;
+						buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " + CRC << SPAN_CLOSE;
+					}
+				}
+			}
+			outputBuffer = buffer.AsString();
+			return SE;
+		}
+	}
+
+	//Sort recognised mods. Usage internal to BOSS-Common.
+	void SortRecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
+		Outputter buffer(log_format);
+		time_t modfiletime = 0;
+		LOG_INFO("Applying calculated ordering to user files...");
+		vector<Item>::iterator iter = modlist.items.begin();
+		vector<Message>::iterator messageIter;
+		for (iter; iter != modlist.lastRecognisedPos+1; ++iter) {
+			if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
+				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << iter->name.string() << SPAN_CLOSE;
+				if (!skip_version_parse) {
+					string version = iter->GetHeader();
+					if (!version.empty())
+						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
+				}
+				if (iter->IsGhosted()) {
+					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
+					counters.ghosted++;
+				}
+				if (show_CRCs)
+					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / iter->name)) << SPAN_CLOSE;
+			
+				if (!trial_run) {
+					modfiletime = esmtime + counters.recognised*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
+					//Re-date file. Provide exception handling in case their permissions are wrong.
+					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", iter->name.string().c_str());
+					try {
+						fs::last_write_time(data_path / iter->name,modfiletime);
+					} catch(fs::filesystem_error e) {
+						buffer << SPAN_CLASS_ERROR_OPEN << "Error: Could not change the date of \"" << iter->name.string() << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions." << SPAN_CLOSE;
+					}
+				}
+				//Finally, print the mod's messages.
+				if (!iter->messages.empty()) {
+					buffer << LIST_OPEN;
+					for (messageIter = iter->messages.begin(); messageIter != iter->messages.end(); ++messageIter) {
+						buffer << *messageIter;
+						counters.messages++;
+						if (messageIter->key == WARN)
+							counters.warnings++;
+						else if (messageIter->key == ERR)
+							counters.errors++;
+					}
+					buffer << LIST_CLOSE;
+				}
+				counters.recognised++;
+			}
+		}
+		outputBuffer = buffer.AsString();
+		LOG_INFO("User file ordering applied successfully.");		
+	}
+
+	//List unrecognised mods. Usage internal to BOSS-Common.
+	void ListUnrecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
+		Outputter buffer(log_format);
+		time_t modfiletime = 0;
+		//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
+		//Order their dates to be i days after the master esm to ensure they load last.
+		LOG_INFO("Reporting unrecognized mods...");
+		vector<Item>::iterator iter = modlist.lastRecognisedPos+1;
+		for (iter; iter != modlist.items.end(); ++iter) {
+			if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
+				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << iter->name.string() << SPAN_CLOSE;
+				if (!skip_version_parse) {
+					string version = iter->GetHeader();
+					if (!version.empty())
+						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
+				}
+				if (iter->IsGhosted()) {
+					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
+					counters.ghosted++;
+				}
+				if (show_CRCs)
+					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / iter->name)) << SPAN_CLOSE;
+
+				if (!trial_run) {
+					modfiletime = esmtime + 86400 + (counters.recognised + counters.unrecognised)*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute and adding 86,400 on increases it by a day. Using unrecModNo instead of i to avoid increases for group entries.
+					//Re-date file. Provide exception handling in case their permissions are wrong.
+					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", iter->name.string().c_str());
+					try {
+						fs::last_write_time(data_path / iter->name,modfiletime);
+					} catch(fs::filesystem_error e) {
+						buffer << SPAN_CLASS_ERROR_OPEN << "Error: Could not change the date of \"" << iter->name.string() << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions." << SPAN_CLOSE;
+					}
+				}
+				counters.unrecognised++;
+			}
+		}
+		if (modlist.lastRecognisedPos+1 == modlist.items.end())
+			buffer << ITALIC_OPEN << "No unrecognised plugins." << ITALIC_CLOSE;
+
+		outputBuffer = buffer.AsString();
+		LOG_INFO("Unrecognized mods reported.");
+	}
+
+	//Prints the full BOSSlog.
+	void PrintBOSSlog(fs::path file, bosslogContents contents, const summaryCounters counters, const string scriptExtender) {
+
+		Outputter bosslog(log_format);
+		bosslog.PrintHeader();
+		bosslog.SetHTMLSpecialEscape(false);
+
+		/////////////////////////////
+		// Print BOSSLog Filters
+		/////////////////////////////
+	
+		if (log_format == HTML) {  //Since this bit is HTML-only, don't bother using formatting placeholders.
+
+			bosslog << "<ul id='filters'>";
+			if (UseDarkColourScheme)
+				bosslog << "<li><input type='checkbox' checked='checked' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label>";
+			else
+				bosslog << "<li><input type='checkbox' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label>";
+
+			if (HideRuleWarnings)
+				bosslog << "<li><input type='checkbox' checked='checked' id='b12' onclick='toggleRuleListWarnings(this)' /><label for='b12'>Hide Rule Warnings</label>";
+			else
+				bosslog << "<li><input type='checkbox' id='b12' onclick='toggleRuleListWarnings(this)' /><label for='b12'>Hide Rule Warnings</label>";
+		
+			if (HideVersionNumbers)
+				bosslog << "<li><input type='checkbox' checked='checked' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label>";
+			else
+				bosslog << "<li><input type='checkbox' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label>";
+
+			if (HideGhostedLabel)
+				bosslog << "<li><input type='checkbox' checked='checked' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label>";
+			else
+				bosslog << "<li><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label>";
+
+			if (HideChecksums)
+				bosslog << "<li><input type='checkbox' checked='checked' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label>";
+			else
+				bosslog << "<li><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label>";
+
+			if (HideMessagelessMods)
+				bosslog << "<li><input type='checkbox' checked='checked' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label>";
+			else
+				bosslog << "<li><input type='checkbox' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label>";
+
+			if (HideGhostedMods)
+				bosslog << "<li><input type='checkbox' checked='checked' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label>";
+			else
+				bosslog << "<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label>";
+
+			if (HideCleanMods)
+				bosslog << "<li><input type='checkbox' checked='checked' id='cleanModFilter' onclick='toggleMods()' /><label for='cleanModFilter'>Hide Clean Mods</label>";
+			else
+				bosslog << "<li><input type='checkbox' id='cleanModFilter' onclick='toggleMods()' /><label for='cleanModFilter'>Hide Clean Mods</label>";
+
+			if (HideAllModMessages)
+				bosslog << "<li><input type='checkbox' checked='checked' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label>";
+			else
+				bosslog << "<li><input type='checkbox' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label>";
+
+			if (HideNotes)
+				bosslog << "<li><input type='checkbox' checked='checked' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label>";
+			else
+				bosslog << "<li><input type='checkbox' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label>";
+
+			if (HideBashTagSuggestions)
+				bosslog << "<li><input type='checkbox' checked='checked' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label>";
+			else
+				bosslog << "<li><input type='checkbox' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label>";
+
+			if (HideRequirements)
+				bosslog << "<li><input type='checkbox' checked='checked' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label>";
+			else
+				bosslog << "<li><input type='checkbox' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label>";
+
+			if (HideIncompatibilities)
+				bosslog << "<li><input type='checkbox' checked='checked' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label>";
+			else
+				bosslog << "<li><input type='checkbox' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label>";
+
+			if (HideDoNotCleanMessages)
+				bosslog << "<li><input type='checkbox' checked='checked' id='b13' onclick='toggleDoNotClean(this,\"table\")' /><label for='b13'>Hide 'Do Not Clean' Messages</label>";
+			else
+				bosslog << "<li><input type='checkbox' id='b13' onclick='toggleDoNotClean(this,\"table\")' /><label for='b13'>Hide 'Do Not Clean' Messages</label>";
+
+			bosslog << "</ul>";
+		}
+
+
+		/////////////////////////////
+		// Display Global Messages
+		/////////////////////////////
+
+		if (!contents.globalMessages.empty() || !contents.iniParsingError.empty() || !contents.criticalError.empty() || !contents.updaterErrors.empty()) {
+
+			bosslog << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN;
+			if (!contents.criticalError.empty())		//Print masterlist parsing error.
+				bosslog << contents.criticalError;
+			if (!contents.iniParsingError.empty())		//Print ini parsing error.
+				bosslog << contents.iniParsingError;
+			bosslog << contents.updaterErrors;
+
+			size_t size = contents.globalMessages.size();
+			for (size_t i=0; i<size; i++)
+				bosslog << contents.globalMessages[i];  //Print global messages.
+			
+			bosslog << LIST_CLOSE;
+			if (!contents.criticalError.empty()) {  //Exit early.
+				bosslog.PrintFooter();
+				bosslog.Save(file, true);
+				return;
+			}
+		}
+
+		/////////////////////////////
+		// Print Summary
+		/////////////////////////////
+
+		bosslog << HEADING_OPEN << "Summary" << HEADING_CLOSE << DIV_OPEN;
+
+		if (contents.oldRecognisedPlugins == contents.recognisedPlugins)
+			bosslog << PARAGRAPH << "No change in recognised plugin list since last run.";
+
+		if (!contents.summary.empty())
+			bosslog << contents.summary;
+	
+		bosslog << TABLE_OPEN
+			<< TABLE_ROW << TABLE_DATA << "Recognised plugins:" << TABLE_DATA << counters.recognised << TABLE_DATA << "Warning messages:" << TABLE_DATA << counters.warnings
+			<< TABLE_ROW << TABLE_DATA << "Unrecognised plugins:" << TABLE_DATA << counters.unrecognised << TABLE_DATA << "Error messages:" << TABLE_DATA << counters.errors
+			<< TABLE_ROW << TABLE_DATA << "Ghosted plugins:" << TABLE_DATA << counters.ghosted << TABLE_DATA << "Total number of messages:" << TABLE_DATA << counters.messages
+			<< TABLE_ROW << TABLE_DATA << "Total number of plugins:" << TABLE_DATA << (counters.recognised+counters.unrecognised) << TABLE_DATA << TABLE_DATA
+			<< TABLE_CLOSE
+			<< PARAGRAPH << "Mods sorted by your userlist are counted as recognised, not unrecognised, plugins."
+			<< DIV_CLOSE;
+
+		
+		/////////////////////////////
+		// Display RuleList Messages
+		/////////////////////////////
+		bosslog.SetHTMLSpecialEscape(false);
+		if (!contents.userlistMessages.empty() || !contents.userlistParsingError.empty() || !contents.userlistSyntaxErrors.empty()) {
+			
+			bosslog << HEADING_OPEN << "Userlist Messages" << HEADING_CLOSE << LIST_ID_USERLIST_MESSAGES_OPEN;
+			if (!contents.userlistParsingError.empty())  //First print parser/syntax error messages.
+				bosslog << contents.userlistParsingError;
+
+			size_t size = contents.userlistSyntaxErrors.size();
+			for (size_t i=0;i<size;i++)
+				bosslog << contents.userlistSyntaxErrors[i];
+
+			bosslog << contents.userlistMessages  //Now print the rest of the userlist messages.
+				<< LIST_CLOSE;
+		}
+
+
+		/////////////////////////////////
+		// Display Script Extender Info
+		/////////////////////////////////
+
+		if (!contents.seInfo.empty())
+			bosslog << HEADING_OPEN << scriptExtender << " And " << scriptExtender << " Plugin Checksums" << HEADING_CLOSE << LIST_OPEN
+				<< contents.seInfo
+				<< LIST_CLOSE;
+
+
+		/////////////////////////////////
+		// Display Recognised Mods
+		/////////////////////////////////
+
+		if (revert < 1) 
+			bosslog << HEADING_OPEN << "Recognised And Re-ordered Plugins" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
+		else if (revert == 1)
+			bosslog << HEADING_OPEN << "Restored Load Order (Using modlist.txt)" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
+		else if (revert == 2) 
+			bosslog << HEADING_OPEN << "Restored Load Order (Using modlist.old)" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
+		bosslog << contents.recognisedPlugins
+			<< LIST_CLOSE;
+
+
+		/////////////////////////////////
+		// Display Unrecognised Mods
+		/////////////////////////////////
+
+		bosslog << HEADING_OPEN << "Unrecognised Plugins" << HEADING_CLOSE << DIV_OPEN 
+			<< PARAGRAPH << "Reorder these by hand using your favourite mod ordering utility." << LIST_OPEN
+			<< contents.unrecognisedPlugins
+			<< LIST_CLOSE << DIV_CLOSE;
+
+
+		////////////////
+		// Finish
+		////////////////
+
+		bosslog << HEADING_ID_END_OPEN << "Execution Complete" << HEADING_CLOSE;
+		bosslog.PrintFooter();
+		bosslog.Save(file, true);
+	}
+
+	//////////////////////////////////
+	// Externally-Visible Functions
+	//////////////////////////////////
+
+	summaryCounters::summaryCounters()
+		: recognised(0), unrecognised(0), ghosted(0), messages(0), warnings(0), errors(0) {}
 
 	//Record recognised mod list from last HTML BOSSlog generated.
 	BOSS_COMMON_EXP string GetOldRecognisedList(const fs::path log) {
@@ -86,22 +460,6 @@ namespace boss {
 			return "Fallout: New Vegas";
 		else if (game == SKYRIM)
 			return "TES V: Skyrim";
-		else
-			return "Game Not Detected";
-	}
-
-	//Returns the expeccted master file. Usage internal to BOSS-Common.
-	string GameMasterFile() {
-		if (game == OBLIVION) 
-			return "Oblivion.esm";
-		else if (game == FALLOUT3) 
-			return "Fallout3.esm";
-		else if (game == NEHRIM) 
-			return "Nehrim.esm";
-		else if (game == FALLOUTNV) 
-			return "FalloutNV.esm";
-		else if (game == SKYRIM) 
-			return "Skyrim.esm";
 		else
 			return "Game Not Detected";
 	}
@@ -452,353 +810,5 @@ namespace boss {
 		if (userlist.rules.empty()) 
 			buffer << ITALIC_OPEN << "No valid rules were found in your userlist.txt." << ITALIC_CLOSE;
 		outputBuffer = buffer.AsString();
-	}
-
-	//Lists Script Extender plugin info in the output buffer. Usage internal to BOSS-Common.
-	string GetSEPluginInfo(string& outputBuffer) {
-		Outputter buffer(log_format);
-		string SE, SELoc, SEPluginLoc;
-		if (game == OBLIVION || game == NEHRIM) {
-			SE = "OBSE";
-			SELoc = "../obse_1_2_416.dll";
-			SEPluginLoc = "OBSE/Plugins";
-		} else if (game == FALLOUT3) {  //Fallout 3
-			SE = "FOSE";
-			SELoc = "../fose_loader.exe";
-			SEPluginLoc = "FOSE/Plugins";
-		} else if (game == FALLOUTNV) {  //Fallout: New Vegas
-			SE = "NVSE";
-			SELoc = "../nvse_loader.exe";
-			SEPluginLoc = "NVSE/Plugins";
-		} else if (game == SKYRIM) {  //Skyrim
-			SE = "SKSE";
-			SELoc = "../skse_loader.exe";
-			SEPluginLoc = "SKSE/Plugins";
-		}
-
-		if (!fs::exists(SELoc) || SELoc.empty()) {
-			LOG_DEBUG("Script Extender not detected");
-			return "";
-		} else {
-			string CRC = IntToHexString(GetCrc32(SELoc));
-			string ver = GetExeDllVersion(SELoc);
-
-			buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << SE << SPAN_CLOSE;
-			if (ver.length() != 0)
-				buffer << SPAN_CLASS_VERSION_OPEN << "Version: " << ver << SPAN_CLOSE;
-			buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << CRC << SPAN_CLOSE;
-
-			if (!fs::is_directory(data_path / SEPluginLoc)) {
-				LOG_DEBUG("Script extender plugins directory not detected");
-			} else {
-				for (fs::directory_iterator itr(data_path / SEPluginLoc); itr!=fs::directory_iterator(); ++itr) {
-					const fs::path filename = itr->path().filename();
-					const string ext = Tidy(itr->path().extension().string());
-					if (fs::is_regular_file(itr->status()) && ext==".dll") {
-						string CRC = IntToHexString(GetCrc32(itr->path()));
-						string ver = GetExeDllVersion(itr->path());
-
-						buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << filename.string() << SPAN_CLOSE;
-						if (ver.length() != 0)
-							buffer << SPAN_CLASS_VERSION_OPEN << "Version: " + ver << SPAN_CLOSE;
-						buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " + CRC << SPAN_CLOSE;
-					}
-				}
-			}
-			outputBuffer = buffer.AsString();
-			return SE;
-		}
-	}
-
-	//Sort recognised mods. Usage internal to BOSS-Common.
-	void SortRecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
-		Outputter buffer(log_format);
-		time_t modfiletime = 0;
-		LOG_INFO("Applying calculated ordering to user files...");
-		vector<Item>::iterator iter = modlist.items.begin();
-		vector<Message>::iterator messageIter;
-		for (iter; iter != modlist.lastRecognisedPos+1; ++iter) {
-			if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
-				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << iter->name.string() << SPAN_CLOSE;
-				if (!skip_version_parse) {
-					string version = iter->GetHeader();
-					if (!version.empty())
-						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
-				}
-				if (iter->IsGhosted()) {
-					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
-					counters.ghosted++;
-				}
-				if (show_CRCs)
-					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / iter->name)) << SPAN_CLOSE;
-			
-				if (!trial_run) {
-					modfiletime = esmtime + counters.recognised*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
-					//Re-date file. Provide exception handling in case their permissions are wrong.
-					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", iter->name.string().c_str());
-					try {
-						fs::last_write_time(data_path / iter->name,modfiletime);
-					} catch(fs::filesystem_error e) {
-						buffer << SPAN_CLASS_ERROR_OPEN << "Error: Could not change the date of \"" << iter->name.string() << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions." << SPAN_CLOSE;
-					}
-				}
-				//Finally, print the mod's messages.
-				if (!iter->messages.empty()) {
-					buffer << LIST_OPEN;
-					for (messageIter = iter->messages.begin(); messageIter != iter->messages.end(); ++messageIter) {
-						buffer << *messageIter;
-						counters.messages++;
-						if (messageIter->key == WARN)
-							counters.warnings++;
-						else if (messageIter->key == ERR)
-							counters.errors++;
-					}
-					buffer << LIST_CLOSE;
-				}
-				counters.recognised++;
-			}
-		}
-		outputBuffer = buffer.AsString();
-		LOG_INFO("User file ordering applied successfully.");		
-	}
-
-	//List unrecognised mods. Usage internal to BOSS-Common.
-	void ListUnrecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
-		Outputter buffer(log_format);
-		time_t modfiletime = 0;
-		//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
-		//Order their dates to be i days after the master esm to ensure they load last.
-		LOG_INFO("Reporting unrecognized mods...");
-		vector<Item>::iterator iter = modlist.lastRecognisedPos+1;
-		for (iter; iter != modlist.items.end(); ++iter) {
-			if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
-				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << iter->name.string() << SPAN_CLOSE;
-				if (!skip_version_parse) {
-					string version = iter->GetHeader();
-					if (!version.empty())
-						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
-				}
-				if (iter->IsGhosted()) {
-					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
-					counters.ghosted++;
-				}
-				if (show_CRCs)
-					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / iter->name)) << SPAN_CLOSE;
-
-				if (!trial_run) {
-					modfiletime = esmtime + 86400 + (counters.recognised + counters.unrecognised)*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute and adding 86,400 on increases it by a day. Using unrecModNo instead of i to avoid increases for group entries.
-					//Re-date file. Provide exception handling in case their permissions are wrong.
-					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", iter->name.string().c_str());
-					try {
-						fs::last_write_time(data_path / iter->name,modfiletime);
-					} catch(fs::filesystem_error e) {
-						buffer << SPAN_CLASS_ERROR_OPEN << "Error: Could not change the date of \"" << iter->name.string() << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions." << SPAN_CLOSE;
-					}
-				}
-				counters.unrecognised++;
-			}
-		}
-		if (modlist.lastRecognisedPos+1 == modlist.items.end())
-			buffer << ITALIC_OPEN << "No unrecognised plugins." << ITALIC_CLOSE;
-
-		outputBuffer = buffer.AsString();
-		LOG_INFO("Unrecognized mods reported.");
-	}
-
-	//Prints the full BOSSlog.
-	BOSS_COMMON_EXP void PrintBOSSlog(fs::path file, bosslogContents contents, const summaryCounters counters, const string scriptExtender) {
-
-		Outputter bosslog(log_format);
-		bosslog.PrintHeader();
-		bosslog.SetHTMLSpecialEscape(false);
-
-		/////////////////////////////
-		// Print BOSSLog Filters
-		/////////////////////////////
-	
-		if (log_format == HTML) {  //Since this bit is HTML-only, don't bother using formatting placeholders.
-
-			bosslog << "<ul id='filters'>";
-			if (UseDarkColourScheme)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label>";
-
-			if (HideRuleWarnings)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b12' onclick='toggleRuleListWarnings(this)' /><label for='b12'>Hide Rule Warnings</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b12' onclick='toggleRuleListWarnings(this)' /><label for='b12'>Hide Rule Warnings</label>";
-		
-			if (HideVersionNumbers)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label>";
-
-			if (HideGhostedLabel)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label>";
-
-			if (HideChecksums)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label>";
-
-			if (HideMessagelessMods)
-				bosslog << "<li><input type='checkbox' checked='checked' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label>";
-
-			if (HideGhostedMods)
-				bosslog << "<li><input type='checkbox' checked='checked' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label>";
-
-			if (HideCleanMods)
-				bosslog << "<li><input type='checkbox' checked='checked' id='cleanModFilter' onclick='toggleMods()' /><label for='cleanModFilter'>Hide Clean Mods</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='cleanModFilter' onclick='toggleMods()' /><label for='cleanModFilter'>Hide Clean Mods</label>";
-
-			if (HideAllModMessages)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label>";
-
-			if (HideNotes)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label>";
-
-			if (HideBashTagSuggestions)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label>";
-
-			if (HideRequirements)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label>";
-
-			if (HideIncompatibilities)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label>";
-
-			if (HideDoNotCleanMessages)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b13' onclick='toggleDoNotClean(this,\"table\")' /><label for='b13'>Hide 'Do Not Clean' Messages</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b13' onclick='toggleDoNotClean(this,\"table\")' /><label for='b13'>Hide 'Do Not Clean' Messages</label>";
-
-			bosslog << "</ul>";
-		}
-
-
-		/////////////////////////////
-		// Display Global Messages
-		/////////////////////////////
-
-		if (!contents.globalMessages.empty() || !contents.iniParsingError.empty() || !contents.criticalError.empty() || !contents.updaterErrors.empty()) {
-
-			bosslog << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN;
-			if (!contents.criticalError.empty())		//Print masterlist parsing error.
-				bosslog << contents.criticalError;
-			if (!contents.iniParsingError.empty())		//Print ini parsing error.
-				bosslog << contents.iniParsingError;
-			bosslog << contents.updaterErrors;
-
-			size_t size = contents.globalMessages.size();
-			for (size_t i=0; i<size; i++)
-				bosslog << contents.globalMessages[i];  //Print global messages.
-			
-			bosslog << LIST_CLOSE;
-			if (!contents.criticalError.empty()) {  //Exit early.
-				bosslog.PrintFooter();
-				bosslog.Save(file, true);
-				return;
-			}
-		}
-
-		/////////////////////////////
-		// Print Summary
-		/////////////////////////////
-
-		bosslog << HEADING_OPEN << "Summary" << HEADING_CLOSE << DIV_OPEN;
-
-		if (contents.oldRecognisedPlugins == contents.recognisedPlugins)
-			bosslog << PARAGRAPH << "No change in recognised plugin list since last run.";
-
-		if (!contents.summary.empty())
-			bosslog << contents.summary;
-	
-		bosslog << TABLE_OPEN
-			<< TABLE_ROW << TABLE_DATA << "Recognised plugins:" << TABLE_DATA << counters.recognised << TABLE_DATA << "Warning messages:" << TABLE_DATA << counters.warnings
-			<< TABLE_ROW << TABLE_DATA << "Unrecognised plugins:" << TABLE_DATA << counters.unrecognised << TABLE_DATA << "Error messages:" << TABLE_DATA << counters.errors
-			<< TABLE_ROW << TABLE_DATA << "Ghosted plugins:" << TABLE_DATA << counters.ghosted << TABLE_DATA << "Total number of messages:" << TABLE_DATA << counters.messages
-			<< TABLE_ROW << TABLE_DATA << "Total number of plugins:" << TABLE_DATA << (counters.recognised+counters.unrecognised) << TABLE_DATA << TABLE_DATA
-			<< TABLE_CLOSE
-			<< PARAGRAPH << "Mods sorted by your userlist are counted as recognised, not unrecognised, plugins."
-			<< DIV_CLOSE;
-
-		
-		/////////////////////////////
-		// Display RuleList Messages
-		/////////////////////////////
-		bosslog.SetHTMLSpecialEscape(false);
-		if (!contents.userlistMessages.empty() || !contents.userlistParsingError.empty() || !contents.userlistSyntaxErrors.empty()) {
-			
-			bosslog << HEADING_OPEN << "Userlist Messages" << HEADING_CLOSE << LIST_ID_USERLIST_MESSAGES_OPEN;
-			if (!contents.userlistParsingError.empty())  //First print parser/syntax error messages.
-				bosslog << contents.userlistParsingError;
-
-			size_t size = contents.userlistSyntaxErrors.size();
-			for (size_t i=0;i<size;i++)
-				bosslog << contents.userlistSyntaxErrors[i];
-
-			bosslog << contents.userlistMessages  //Now print the rest of the userlist messages.
-				<< LIST_CLOSE;
-		}
-
-
-		/////////////////////////////////
-		// Display Script Extender Info
-		/////////////////////////////////
-
-		if (!contents.seInfo.empty())
-			bosslog << HEADING_OPEN << scriptExtender << " And " << scriptExtender << " Plugin Checksums" << HEADING_CLOSE << LIST_OPEN
-				<< contents.seInfo
-				<< LIST_CLOSE;
-
-
-		/////////////////////////////////
-		// Display Recognised Mods
-		/////////////////////////////////
-
-		if (revert < 1) 
-			bosslog << HEADING_OPEN << "Recognised And Re-ordered Plugins" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
-		else if (revert == 1)
-			bosslog << HEADING_OPEN << "Restored Load Order (Using modlist.txt)" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
-		else if (revert == 2) 
-			bosslog << HEADING_OPEN << "Restored Load Order (Using modlist.old)" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
-		bosslog << contents.recognisedPlugins
-			<< LIST_CLOSE;
-
-
-		/////////////////////////////////
-		// Display Unrecognised Mods
-		/////////////////////////////////
-
-		bosslog << HEADING_OPEN << "Unrecognised Plugins" << HEADING_CLOSE << DIV_OPEN 
-			<< PARAGRAPH << "Reorder these by hand using your favourite mod ordering utility." << LIST_OPEN
-			<< contents.unrecognisedPlugins
-			<< LIST_CLOSE << DIV_CLOSE;
-
-
-		////////////////
-		// Finish
-		////////////////
-
-		bosslog << HEADING_ID_END_OPEN << "Execution Complete" << HEADING_CLOSE;
-		bosslog.PrintFooter();
-		bosslog.Save(file, true);
 	}
 }

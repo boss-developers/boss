@@ -1,10 +1,12 @@
 /*	Better Oblivion Sorting Software
 	
-	Quick and Dirty Load Order Utility
-	(Making C++ look like the scripting language it isn't.)
+	A "one-click" program for users that quickly optimises and avoids 
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-	Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
-	http://creativecommons.org/licenses/by-nc-nd/3.0/
+    Copyright (C) 2011  Random/Random007/jpearce, WrinklyNinja & the BOSS 
+	development team. Copyright license:
+    http://creativecommons.org/licenses/by-nc-nd/3.0/
 
 	$Revision: 3135 $, $Date: 2011-08-17 22:01:17 +0100 (Wed, 17 Aug 2011) $
 */
@@ -73,7 +75,7 @@ namespace boss {
 				Item		(fs::path inName, itemType inType);
 				Item		(fs::path inName, itemType inType, vector<Message> inMessages);
 
-		bool	operator<	(Item);
+		bool	operator<	(Item);		//Throws boss_error exception on fail.
 		
 		bool	IsPlugin	();
 		bool	IsGroup		();
@@ -89,11 +91,11 @@ namespace boss {
 
 	class ItemList {
 	public:
-		bool					operator()		(Item item1, Item item2);
-		
 		void					Load			(fs::path path);	//Load by scanning path. If path is a directory, it scans it for plugins. 
 																	//If path is a file, it parses it using the modlist grammar.
+																	//May throw exception on fail.
 		void					Save			(fs::path file);	//Output to file in MF2. Backs up any existing file with new ".old" extension.
+																	//Throws exception on fail.
 		vector<Item>::iterator	FindItem		(fs::path name);	//Find the position of the item with name 'name'. Case-insensitive.
 		vector<Item>::iterator	FindGroupEnd	(fs::path name);	//Find the end position of the group with the given name. Case-insensitive.
 
@@ -129,8 +131,8 @@ namespace boss {
 	
 	class RuleList {
 	public:
-		void Load	(fs::path file);
-		void Save	(fs::path file);
+		void Load	(fs::path file);		//Throws exception on fail.
+		void Save	(fs::path file);		//Throws exception on fail.
 
 		vector<Rule>			rules;
 		ParsingError			parsingErrorBuffer;
@@ -139,8 +141,8 @@ namespace boss {
 
 	class Ini {
 	public:
-		void	Load(fs::path file);
-		void	Save(fs::path file);
+		void	Load(fs::path file);		//Throws exception on fail.
+		void	Save(fs::path file);		//Throws exception on fail.
 	
 		ParsingError errorBuffer;
 	private:

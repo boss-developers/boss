@@ -1,10 +1,12 @@
 /*	Better Oblivion Sorting Software
 	
-	Quick and Dirty Load Order Utility
-	(Making C++ look like the scripting language it isn't.)
+	A "one-click" program for users that quickly optimises and avoids 
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-	Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
-	http://creativecommons.org/licenses/by-nc-nd/3.0/
+    Copyright (C) 2011  Random/Random007/jpearce, WrinklyNinja & the BOSS 
+	development team. Copyright license:
+    http://creativecommons.org/licenses/by-nc-nd/3.0/
 
 	$Revision: 3135 $, $Date: 2011-08-17 22:01:17 +0100 (Wed, 17 Aug 2011) $
 */
@@ -78,8 +80,7 @@ namespace boss {
 		: name(inName), type(inType), messages(inMessages) {}
 	
 	bool	Item::IsPlugin		() {
-		string ext = name.extension().string();
-		boost::algorithm::to_lower(ext);
+		const string ext = boost::algorithm::to_lower_copy(name.extension().string());
 		return (ext == ".esp" || ext == ".esm");
 	}
 
@@ -92,7 +93,7 @@ namespace boss {
 	}
 	
 	bool	Item::IsMasterFile	() {
-		const string lower = Tidy(name.string());
+		const string lower = boost::algorithm::to_lower_copy(name.string());
 		return (lower == "oblivion.esm" || lower == "fallout3.esm" || lower == "nehrim.esm" || lower == "falloutnv.esm" || lower == "skyrim.esm");
 	}
 

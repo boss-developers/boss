@@ -1,9 +1,11 @@
 /*	Better Oblivion Sorting Software
 	
-	Quick and Dirty Load Order Utility
-	(Making C++ look like the scripting language it isn't.)
+	A "one-click" program for users that quickly optimises and avoids 
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
+    Copyright (C) 2011  Random/Random007/jpearce, WrinklyNinja & the BOSS 
+	development team. Copyright license:
     http://creativecommons.org/licenses/by-nc-nd/3.0/
 
 	$Revision: 1681 $, $Date: 2010-10-17 21:01:25 +0100 (Sun, 17 Oct 2010) $

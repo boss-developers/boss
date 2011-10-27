@@ -1,9 +1,11 @@
 /*	Better Oblivion Sorting Software
 	
-	Quick and Dirty Load Order Utility
-	(Making C++ look like the scripting language it isn't.)
+	A "one-click" program for users that quickly optimises and avoids 
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
+    Copyright (C) 2011  Random/Random007/jpearce, WrinklyNinja & the BOSS 
+	development team. Copyright license:
     http://creativecommons.org/licenses/by-nc-nd/3.0/
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
@@ -52,26 +54,21 @@ namespace boss {
 		vector<Message> globalMessages;
 	};
 
-	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
-	boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos);
-
 	//Record recognised mod list from last HTML BOSSlog generated.
 	BOSS_COMMON_EXP string GetOldRecognisedList(const fs::path log);
 
-	//Detect the game BOSS is installed for. Returns an enum as defined in Globals.h. Throws exception if error.
+	//Detect the game BOSS is installed for. Returns an enum as defined in Globals.h.
+	//Throws exception on fail.
 	BOSS_COMMON_EXP void GetGame();
 
 	//Gets the string representation of the detected game.
 	BOSS_COMMON_EXP string GetGameString();
 
-	//Returns the expected master file. Usage internal to BOSS-Common.
-	string GameMasterFile();
-
 	//Gets the timestamp of the game's master file. Throws exception if error.
+	//Throws exception on fail.
 	BOSS_COMMON_EXP time_t GetMasterTime();
 
 	//Performs BOSS's main sorting functionality. Each stage is implemented by a separate function for neatness and to make future adjustments easier. 
-	//
 	BOSS_COMMON_EXP void PerformSortingFunctionality(fs::path file,
 												ItemList& modlist,
 												ItemList& masterlist,
@@ -85,17 +82,5 @@ namespace boss {
 
 	//Applies the userlist rules to the working modlist.
 	BOSS_COMMON_EXP void ApplyUserRules(ItemList& modlist, RuleList& userlist, string& outputBuffer);
-
-	//Lists Script Extender plugin info in the output buffer. Returns the Script Extender detected. Usage internal to BOSS-Common.
-	string GetSEPluginInfo(string& outputBuffer);
-
-	//Sort recognised mods. Usage internal to BOSS-Common.
-	void SortRecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters);
-
-	//List unrecognised mods. Usage internal to BOSS-Common.
-	void ListUnrecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters);
-
-	//Prints the full BOSSlog.
-	BOSS_COMMON_EXP void PrintBOSSlog(const fs::path file, const bosslogContents contents, const summaryCounters counters, const string scriptExtender);
 }
 #endif

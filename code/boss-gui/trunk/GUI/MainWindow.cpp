@@ -1,10 +1,12 @@
-/*	General User Interface for BOSS (Better Oblivion Sorting Software)
-	
-	Providing a graphical frontend to BOSS's functions.
+/*	Better Oblivion Sorting Software
 
-    Copyright (C) 2011 WrinklyNinja & the BOSS development team.
+	A "one-click" program for users that quickly optimises and avoids 
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
+
+    Copyright (C) 2011  WrinklyNinja & the BOSS development team. 
+	Copyright license:
     http://creativecommons.org/licenses/by-nc-nd/3.0/
-
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
@@ -73,14 +75,15 @@ bool BossGUI::OnInit() {
 	if (fs::exists(ini_path)) {
 		try {
 			ini.Load(ini_path);
-		} catch (boss_error e) {}
-		if (!ini.errorBuffer.Empty())
+		} catch (boss_error e) {
+			LOG_ERROR("Ini parsing failed. Details: %s", e.getString().c_str());
 			wxMessageBox(wxString::Format(
-				wxT("Error: BOSS.ini parsing failed. Some or all of BOSS's options may not have been set correctly. Run BOSS to see the details of the failure.")
+				wxT("Error: BOSS.ini parsing failed. Some or all of BOSS's options may not have been set correctly. Details: " + e.getString() + "; " + ini.errorBuffer.FormatFor(PLAINTEXT))
 			),
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
 			NULL);
+		}
 	} else {
 		try {
 			ini.Save(ini_path);
@@ -518,7 +521,11 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 				<< contents.updaterErrors << LIST_CLOSE;
 		output << HEADING_ID_END_OPEN << "Execution Complete" << HEADING_CLOSE;
 		output.PrintFooter();
-		output.Save(bosslog_path, true);
+		try {
+			output.Save(bosslog_path, true);
+		} catch (boss_error e) {
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
+		}
 		if ( !silent ) 
 			wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.
 		progDia->Destroy();
@@ -545,7 +552,11 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now." << LIST_CLOSE;
 		output.PrintFooter();
-		output.Save(bosslog_path, true);
+		try {
+			output.Save(bosslog_path, true);
+		} catch (boss_error e) {
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
+		}
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
 		if ( !silent ) 
 			wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -554,24 +565,27 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	}
 
 	//Build and save modlist.
-	modlist.Load(data_path);
-	if (revert<1) {
-		try {
+	try {
+		modlist.Load(data_path);
+		if (revert<1)
 			modlist.Save(curr_modlist_path);
-		} catch (boss_error e) {
-			output.Clear();
-			output.PrintHeader();
-			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: modlist backup failed!" << LINE_BREAK
-				<< "Details: " << e.getString() << "." << LINE_BREAK
-				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-				<< "Utility will end now." << LIST_CLOSE;
-			output.PrintFooter();
+	} catch (boss_error e) {
+		output.Clear();
+		output.PrintHeader();
+		output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+			<< "Utility will end now." << LIST_CLOSE;
+		output.PrintFooter();
+		try {
 			output.Save(bosslog_path, true);
-			if ( !silent ) 
-				wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
-			progDia->Destroy();
-			return; //fail in screaming heap.
+		} catch (boss_error e) {
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
+		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
+		if ( !silent ) 
+			wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
+		progDia->Destroy();
+		return; //fail in screaming heap.
 	}
 
 	progDia->Pulse();
@@ -592,23 +606,22 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		contents.globalMessages = masterlist.globalMessageBuffer;
 	} catch (boss_error e) {
 		contents.criticalError = masterlist.errorBuffer.FormatFor(log_format);
-		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
-			output.Clear();
-			output.PrintHeader();
+		output.Clear();
+		output.PrintHeader();
+		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
 			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
 				<< contents.criticalError << LIST_CLOSE;
-			output.PrintFooter();
-			output.Save(bosslog_path, true);
-		} else {
-			output.Clear();
-			output.PrintHeader();
+		else
 			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 				<< "Utility will end now." << LIST_CLOSE;
-			output.PrintFooter();
+		output.PrintFooter();
+		try {
 			output.Save(bosslog_path, true);
-			LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
+		} catch (boss_error e) {
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
+		LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
         if ( !silent ) 
 			wxLaunchDefaultApplication(bosslog_path.string());  //Displays the BOSSlog.txt.
 		progDia->Destroy();
@@ -624,11 +637,9 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 			contents.userlistSyntaxErrors.push_back(iter->FormatFor(log_format));
 	} catch (boss_error e) {
 		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
-		if (e.getCode() != BOSS_ERROR_FILE_PARSE_FAIL) {
 			output.Clear();
 			output << LIST_ITEM_CLASS_ERROR << "Error: " << e.getString() << " userlist parsing aborted. No rules will be applied.";
 			contents.userlistParsingError = output.AsString();
-		}
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
 
@@ -648,6 +659,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	if ( !silent ) 
 		wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
 	LOG_INFO("BOSS finished.");
+	progDia->Destroy();
 	return;
 }
 
@@ -875,7 +887,11 @@ void MainFrame::Update(string updateVersion) {
 			wxMessageBox(wxT("New installer successfully downloaded!\n\n"+message), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 		} else {
 			//Display release notes.
-			wxMessageBox(wxT("New installer successfully downloaded! Release notes for v"+updateVersion+":\n\n"+FetchReleaseNotes(updateVersion)), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+			try {
+				wxMessageBox(wxT("New installer successfully downloaded! Release notes for v"+updateVersion+":\n\n"+FetchReleaseNotes(updateVersion)), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+			} catch (boss_error e) {
+				wxMessageBox("Failed to get release notes. Details: " + e.getString(), wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+			}
 			//Remind the user to run the installer.
 			wxMessageBox(wxT("When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 
@@ -932,7 +948,11 @@ void MainFrame::Update(string updateVersion) {
 		}
 
 		//Display release notes.
-		wxMessageBox(wxT("Release notes for v"+updateVersion+":\n\n"+FetchReleaseNotes(updateVersion)), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+		try {
+			wxMessageBox(wxT("Release notes for v"+updateVersion+":\n\n"+FetchReleaseNotes(updateVersion)), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+		} catch (boss_error e) {
+			wxMessageBox("Failed to get release notes. Details: " + e.getString(), wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+		}
 
 		if (!fails.empty()) {
 			message = "However, the following files could not be automatically installed. When you click 'OK', BOSS will exit. After BOSS exits, remove the \".new\" extension from the following file(s), deleting any existing files with the same names to complete the update:\n\n";

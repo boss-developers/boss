@@ -1,10 +1,12 @@
-/*	General User Interface for BOSS (Better Oblivion Sorting Software)
-	
-	Providing a graphical frontend to BOSS's functions.
+/*	Better Oblivion Sorting Software
 
-    Copyright (C) 2011 WrinklyNinja & the BOSS development team.
+	A "one-click" program for users that quickly optimises and avoids 
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
+
+    Copyright (C) 2011  WrinklyNinja & the BOSS development team. 
+	Copyright license:
     http://creativecommons.org/licenses/by-nc-nd/3.0/
-
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
@@ -170,7 +172,17 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 }
 
 void UserRulesEditorFrame::OnOKQuit(wxCommandEvent& event) {
-	userlist.Save(userlist_path);
+	try {
+		userlist.Save(userlist_path);
+	} catch (boss_error e) {
+		wxMessageBox(wxString::Format(
+			wxT("Error: "+e.getString()+" Unable to save changes.")
+		),
+		wxT("BOSS: Error"),
+		wxOK | wxICON_ERROR,
+		NULL);
+	}
+
 	this->Close();
 }
 
@@ -423,7 +435,17 @@ void UserRulesEditorFrame::LoadLists() {
 	///////////////
 
 	//Need to parse userlist, masterlist and build modlist.
-	modlist.Load(data_path);
+	try {
+		modlist.Load(data_path);
+	} catch (boss_error e) {
+		wxMessageBox(wxString::Format(
+				wxT("Error: "+e.getString()+" Scanning for plugins aborted. User Rules Editor cannot load.")
+			),
+			wxT("BOSS: Error"),
+			wxOK | wxICON_ERROR,
+			NULL);
+		return;
+	}
 
 	size = modlist.items.size();
 	for (size_t i=0;i<size;i++)

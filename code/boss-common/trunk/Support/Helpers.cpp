@@ -1,9 +1,11 @@
 /*	Better Oblivion Sorting Software
 	
-	Quick and Dirty Load Order Utility
-	(Making C++ look like the scripting language it isn't.)
+	A "one-click" program for users that quickly optimises and avoids 
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
+    Copyright (C) 2011  Random/Random007/jpearce, WrinklyNinja & the BOSS 
+	development team. Copyright license:
     http://creativecommons.org/licenses/by-nc-nd/3.0/
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
@@ -46,7 +48,7 @@ namespace boss {
 
 	//Calculate the CRC of the given file for comparison purposes.
 	unsigned int GetCrc32(const fs::path& filename) {
-		int chksum = 0;
+		unsigned int chksum = 0;
 		static const size_t buffer_size = 8192;
 		char buffer[buffer_size];
 		ifstream ifile(filename.c_str(), ios::binary);

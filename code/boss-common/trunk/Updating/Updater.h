@@ -1,9 +1,11 @@
 /*	Better Oblivion Sorting Software
 	
-	Quick and Dirty Load Order Utility
-	(Making C++ look like the scripting language it isn't.)
+	A "one-click" program for users that quickly optimises and avoids 
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
+    Copyright (C) 2011  Random/Random007/jpearce, WrinklyNinja & the BOSS 
+	development team. Copyright license:
     http://creativecommons.org/licenses/by-nc-nd/3.0/
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
@@ -57,6 +59,7 @@ namespace boss {
 	BOSS_COMMON_EXP bool CheckConnection();
 
 	//Cleans up after the user cancels a download.
+	//Throws boss_error exception on fail.
 	BOSS_COMMON_EXP void CleanUp();
 
 
@@ -65,6 +68,7 @@ namespace boss {
 	////////////////////////
 
 	//Updates the local masterlist to the latest available online.
+	//Throws boss_error exception on fail.
 	BOSS_COMMON_EXP void UpdateMasterlist(uiStruct ui, unsigned int& localRevision, string& localDate, unsigned int& remoteRevision, string& remoteDate);
 
 
@@ -73,12 +77,15 @@ namespace boss {
 	////////////////////////
 
 	//Checks if a new release of BOSS is available or not.
+	//Throws boss_error exception on fail.
 	BOSS_COMMON_EXP string IsBOSSUpdateAvailable();
 
 	//Gets the release notes for the update.
+	//Throws boss_error exception on fail.
 	BOSS_COMMON_EXP string FetchReleaseNotes(const string updateVersion);
 
 	//Downloads and installs a BOSS update.
+	//Throws boss_error exception on fail.
 	BOSS_COMMON_EXP vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const int updateType, const string updateVersion);
 }
 #endif

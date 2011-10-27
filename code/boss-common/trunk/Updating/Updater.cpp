@@ -1,10 +1,12 @@
 /*	Better Oblivion Sorting Software
 	
-	Quick and Dirty Load Order Utility
-	(Making C++ look like the scripting language it isn't.)
+	A "one-click" program for users that quickly optimises and avoids 
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-	Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
-	http://creativecommons.org/licenses/by-nc-nd/3.0/
+    Copyright (C) 2011  Random/Random007/jpearce, WrinklyNinja & the BOSS 
+	development team. Copyright license:
+    http://creativecommons.org/licenses/by-nc-nd/3.0/
 
 	$Revision: 3188 $, $Date: 2011-08-27 08:16:41 +0100 (Sat, 27 Aug 2011) $
 */
@@ -50,6 +52,10 @@ namespace boss {
 	using namespace std;
 
 	using boost::algorithm::replace_all;
+
+	//////////////////////////////////////
+	// Struct Contstructors / Variables
+	//////////////////////////////////////
 		
 	fileInfo::fileInfo() {
 		name.clear();
@@ -81,7 +87,7 @@ namespace boss {
 
 
 	////////////////////////
-	// General Functions
+	// Internal Functions
 	////////////////////////
 
 	//Download progress for downloader functions.
@@ -203,34 +209,6 @@ namespace boss {
 		return curl;
 	}
 
-	//Checks if an Internet connection is present.
-	BOSS_COMMON_EXP bool CheckConnection() {
-		CURL *curl;									//cURL handle
-		char errbuff[CURL_ERROR_SIZE];
-		CURLcode ret;
-		string proxy_str;
-		const char *url = "http://code.google.com/p/better-oblivion-sorting-software/";
-
-		//curl will be used to get stuff from the internet, so initialise it.
-		curl = InitCurl(errbuff);
-
-		//Check that there is an internet connection. Easiest way to do this is to check that the BOSS google code page exists.
-		curl_easy_setopt(curl, CURLOPT_URL, url);
-		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1);	
-		ret = curl_easy_perform(curl);
-
-		if (ret!=CURLE_OK) {
-			//string err = errbuff;
-			curl_easy_cleanup(curl);
-			//throw boss_error(err,BOSS_ERROR_CURL_PERFORM_FAIL);
-			return false;
-		} else {
-			//Clean up and close curl handle now that it's finished with.
-			curl_easy_cleanup(curl);
-			return true;
-		}
-	}
-
 	//Downloads the files in the updatedFiles vector at filesURL.
 	void DownloadFiles(uiStruct ui, const int updateType) {
 		string fileBuffer, remote_file, path;
@@ -334,27 +312,6 @@ namespace boss {
 		}
 		return err;
 	}
-
-	//Cleans up after the user cancels a download.
-	BOSS_COMMON_EXP void CleanUp() {
-		//Iterate through vector of updated files. Delete any that exist locally.
-		size_t size = updatedFiles.size();
-		for (size_t i=0;i<size;i++) {
-			string file = updatedFiles[i].name + ".new";
-
-			try {
-				if (fs::exists(file))
-					fs::remove(file);
-			} catch (fs::filesystem_error e) {
-				throw boss_error(BOSS_ERROR_FS_FILE_DELETE_FAIL, file);
-			}
-		}
-	}
-
-
-	////////////////////////
-	// Masterlist Updating
-	////////////////////////
 
 	//Gets the revision number of the local masterlist.
 	void GetLocalMasterlistRevisionDate(unsigned int& revision, string& date) {
@@ -513,6 +470,112 @@ namespace boss {
 		} //Otherwise it's already in a sensible format.
 	}
 
+	//Populates the updatedFiles vector. Kept as a separate function for possible future expansion.
+	void FetchUpdateFileList(const int updateType, const string updateVersion) {
+		string fileBuffer, remote_file;
+		char errbuff[CURL_ERROR_SIZE];
+		CURL *curl;									//cURL handle
+		CURLcode ret;
+
+		filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/";
+		
+		//First decide what type of install we're updating.
+		if (updateType == MANUAL)
+			filesURL += "manual/";
+
+		//curl will be used to get stuff from the internet, so initialise it.
+		curl = InitCurl(errbuff);
+
+		//First get file list and crcs to build updatedFiles vector.
+		remote_file = filesURL+"checksums.txt";
+		curl_easy_setopt(curl, CURLOPT_URL, remote_file.c_str());
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);	
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
+		ret = curl_easy_perform(curl);
+		if (ret!=CURLE_OK) {
+			string err = errbuff;
+			curl_easy_cleanup(curl);
+			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
+		}
+		curl_easy_cleanup(curl);
+
+		//Need to reset updatedFiles because it might have been set already if the updater was run then cancelled.
+		updatedFiles.clear();
+
+		//Now parse list to extract file info.
+		string::const_iterator start = fileBuffer.begin(), end = fileBuffer.end();
+		bool p = qi::phrase_parse(start,end,
+			(
+				(
+					(qi::char_('+')[qi::_1 = false] | qi::char_('-')[qi::_1 = true])
+					>> '"' 
+					>> qi::lexeme[+(unicode::char_ - '"')] 
+					>> '"' 
+					>> (
+							(qi::lit(":") >> qi::hex - qi::eol) 
+							| qi::eps[qi::_1 = 0]
+						)
+				) 
+				| qi::eoi
+			) % qi::eol,
+			unicode::space - qi::eol, updatedFiles);
+		if (!p || start != end) {
+			throw boss_error(BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL);
+		}
+	}
+
+
+	////////////////////////
+	// General Functions
+	////////////////////////
+
+	//Checks if an Internet connection is present.
+	BOSS_COMMON_EXP bool CheckConnection() {
+		CURL *curl;									//cURL handle
+		char errbuff[CURL_ERROR_SIZE];
+		CURLcode ret;
+		string proxy_str;
+		const char *url = "http://code.google.com/p/better-oblivion-sorting-software/";
+
+		//curl will be used to get stuff from the internet, so initialise it.
+		curl = InitCurl(errbuff);
+
+		//Check that there is an internet connection. Easiest way to do this is to check that the BOSS google code page exists.
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1);	
+		ret = curl_easy_perform(curl);
+
+		if (ret!=CURLE_OK) {
+			curl_easy_cleanup(curl);
+			return false;
+		} else {
+			//Clean up and close curl handle now that it's finished with.
+			curl_easy_cleanup(curl);
+			return true;
+		}
+	}
+
+	//Cleans up after the user cancels a download.
+	BOSS_COMMON_EXP void CleanUp() {
+		//Iterate through vector of updated files. Delete any that exist locally.
+		size_t size = updatedFiles.size();
+		for (size_t i=0;i<size;i++) {
+			string file = updatedFiles[i].name + ".new";
+
+			try {
+				if (fs::exists(file))
+					fs::remove(file);
+			} catch (fs::filesystem_error e) {
+				throw boss_error(BOSS_ERROR_FS_FILE_DELETE_FAIL, file);
+			}
+		}
+	}
+
+
+	////////////////////////
+	// Masterlist Updating
+	////////////////////////
+
 	//Updates the local masterlist to the latest available online.
 	BOSS_COMMON_EXP void UpdateMasterlist(uiStruct ui, unsigned int& localRevision, string& localDate, unsigned int& remoteRevision, string& remoteDate) {							//cURL handle
 		string buffer,newline;		//A bunch of strings.
@@ -568,60 +631,6 @@ namespace boss {
 	////////////////////////
 	// BOSS Updating
 	////////////////////////
-
-	//Populates the updatedFiles vector.
-	void FetchUpdateFileList(const int updateType, const string updateVersion) {
-		string fileBuffer, remote_file;
-		char errbuff[CURL_ERROR_SIZE];
-		CURL *curl;									//cURL handle
-		CURLcode ret;
-
-		filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/";
-		
-		//First decide what type of install we're updating.
-		if (updateType == MANUAL)
-			filesURL += "manual/";
-
-		//curl will be used to get stuff from the internet, so initialise it.
-		curl = InitCurl(errbuff);
-
-		//First get file list and crcs to build updatedFiles vector.
-		remote_file = filesURL+"checksums.txt";
-		curl_easy_setopt(curl, CURLOPT_URL, remote_file.c_str());
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);	
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
-		ret = curl_easy_perform(curl);
-		if (ret!=CURLE_OK) {
-			string err = errbuff;
-			curl_easy_cleanup(curl);
-			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
-		}
-		curl_easy_cleanup(curl);
-
-		//Need to reset updatedFiles because it might have been set already if the updater was run then cancelled.
-		updatedFiles.clear();
-
-		//Now parse list to extract file info.
-		string::const_iterator start = fileBuffer.begin(), end = fileBuffer.end();
-		bool p = qi::phrase_parse(start,end,
-			(
-				(
-					(qi::char_('+')[qi::_1 = false] | qi::char_('-')[qi::_1 = true])
-					>> '"' 
-					>> qi::lexeme[+(unicode::char_ - '"')] 
-					>> '"' 
-					>> (
-							(qi::lit(":") >> qi::hex - qi::eol) 
-							| qi::eps[qi::_1 = 0]
-						)
-				) 
-				| qi::eoi
-			) % qi::eol,
-			unicode::space - qi::eol, updatedFiles);
-		if (!p || start != end) {
-			throw boss_error(BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL);
-		}
-	}
 
 	//Gets the release notes for the update.
 	string FetchReleaseNotes(const string updateVersion) {

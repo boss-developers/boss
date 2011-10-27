@@ -1,10 +1,14 @@
 /*	Better Oblivion Sorting Software
 
-	Quick and Dirty Load Order Utility for Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas
-	(Making C++ look like the scripting language it isn't.)
+	A "one-click" program for users that quickly optimises and avoids 
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-	Copyright (C) 2009-2010  Random/Random007/jpearce & the BOSS development team
-	http://creativecommons.org/licenses/by-nc-nd/3.0/
+    Copyright (C) 2011  Random/Random007/jpearce, WrinklyNinja & the BOSS 
+	development team. Copyright license:
+    http://creativecommons.org/licenses/by-nc-nd/3.0/
+
+	$Revision: 1783 $, $Date: 2010-10-31 23:05:28 +0000 (Sun, 31 Oct 2010) $
 */
 
 #define NOMINMAX // we don't want the dummy min/max macros since they overlap with the std:: algorithms
@@ -182,12 +186,15 @@ int main(int argc, char *argv[]) {
 	if (fs::exists(ini_path)) {
 		try {
 			ini.Load(ini_path);
-		} catch (boss_error e) {}
+		} catch (boss_error e) {
+			LOG_ERROR("Ini parsing failed. Details: %s", e.getString().c_str());
+			//Error will be added to log once format has been set.
+		}
 	} else {
 		try {
 			ini.Save(ini_path);
 		} catch (boss_error e) {
-			contents.iniParsingError = "<p class='error'>Error: BOSS.ini generation failed. Ensure your BOSS folder is not read-only.";
+			contents.iniParsingError = "<p class='error'>Error: BOSS.ini generation failed. Details: " + e.getString() + ". Ensure your BOSS folder is not read-only.";
 		}
 	}
 
@@ -552,7 +559,11 @@ int main(int argc, char *argv[]) {
 				<< contents.updaterErrors << LIST_CLOSE;
 		output << HEADING_ID_END_OPEN << "Execution Complete" << HEADING_CLOSE;
 		output.PrintFooter();
-		output.Save(bosslog_path, true);
+		try {
+			output.Save(bosslog_path, true);
+		} catch (boss_error e) {
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
+		}
 		if ( !silent ) 
 			Launch(bosslog_path.string());	//Displays the BOSSlog.
 		return (0);
@@ -575,7 +586,11 @@ int main(int argc, char *argv[]) {
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now." << LIST_CLOSE;
 		output.PrintFooter();
-		output.Save(bosslog_path, true);
+		try {
+			output.Save(bosslog_path, true);
+		} catch (boss_error e) {
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
+		}
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
 		if ( !silent ) 
 			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -583,23 +598,26 @@ int main(int argc, char *argv[]) {
 	}
 
 	//Build and save modlist.
-	modlist.Load(data_path);
-	if (revert<1) {
-		try {
+	try {
+		modlist.Load(data_path);
+		if (revert<1)
 			modlist.Save(curr_modlist_path);
-		} catch (boss_error e) {
-			output.Clear();
-			output.PrintHeader();
-			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: modlist backup failed!" << LINE_BREAK
-				<< "Details: " << e.getString() << "." << LINE_BREAK
-				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-				<< "Utility will end now." << LIST_CLOSE;
-			output.PrintFooter();
+	} catch (boss_error e) {
+		output.Clear();
+		output.PrintHeader();
+		output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+			<< "Utility will end now." << LIST_CLOSE;
+		output.PrintFooter();
+		try {
 			output.Save(bosslog_path, true);
-			if ( !silent ) 
-				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
-			exit (1); //fail in screaming heap.
+		} catch (boss_error e) {
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
+		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
+		if ( !silent ) 
+			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
+		exit (1); //fail in screaming heap.
 	}
 
 
@@ -615,23 +633,22 @@ int main(int argc, char *argv[]) {
 		contents.globalMessages = masterlist.globalMessageBuffer;
 	} catch (boss_error e) {
 		contents.criticalError = masterlist.errorBuffer.FormatFor(log_format);
-		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
-			output.Clear();
-			output.PrintHeader();
+		output.Clear();
+		output.PrintHeader();
+		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
 			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
 				<< contents.criticalError << LIST_CLOSE;
-			output.PrintFooter();
-			output.Save(bosslog_path, true);
-		} else {
-			output.Clear();
-			output.PrintHeader();
+		else
 			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 				<< "Utility will end now." << LIST_CLOSE;
-			output.PrintFooter();
+		output.PrintFooter();
+		try {
 			output.Save(bosslog_path, true);
-			LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
+		} catch (boss_error e) {
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
+		LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
         if ( !silent ) 
                 Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
         exit (1); //fail in screaming heap.
@@ -646,11 +663,9 @@ int main(int argc, char *argv[]) {
 			contents.userlistSyntaxErrors.push_back(iter->FormatFor(log_format));
 	} catch (boss_error e) {
 		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
-		if (e.getCode() != BOSS_ERROR_FILE_PARSE_FAIL) {
-			output.Clear();
-			output << LIST_ITEM_CLASS_ERROR << "Error: " << e.getString() << " userlist parsing aborted. No rules will be applied.";
-			contents.userlistParsingError = output.AsString();
-		}
+		output.Clear();
+		output << LIST_ITEM_CLASS_ERROR << "Error: " << e.getString() << " userlist parsing aborted. No rules will be applied.";
+		contents.userlistParsingError = output.AsString();
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
 
