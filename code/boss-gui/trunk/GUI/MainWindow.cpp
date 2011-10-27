@@ -68,10 +68,13 @@ using namespace std;
 
 //Draws the main window when program starts.
 bool BossGUI::OnInit() {
+	Ini ini;
 	//Set up variable defaults.
 	if (fs::exists(ini_path)) {
-		parseIni(ini_path);
-		if (!iniErrorBuffer.empty())
+		try {
+			ini.Load(ini_path);
+		} catch (boss_error e) {}
+		if (!ini.errorBuffer.Empty())
 			wxMessageBox(wxString::Format(
 				wxT("Error: BOSS.ini parsing failed. Some or all of BOSS's options may not have been set correctly. Run BOSS to see the details of the failure.")
 			),
@@ -79,13 +82,16 @@ bool BossGUI::OnInit() {
 			wxOK | wxICON_ERROR,
 			NULL);
 	} else {
-		if (!GenerateIni())
+		try {
+			ini.Save(ini_path);
+		} catch (boss_error e) {
 			wxMessageBox(wxString::Format(
 				wxT("Error: BOSS.ini generation failed. Ensure your BOSS folder is not read-only. None of BOSS's options will be saved.")
 			),
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
 			NULL);
+		}
 	}
 
 	// set alternative output stream for logger and whether to track log statement origins
@@ -244,9 +250,9 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	if (!silent)
 		ShowLogBox->SetValue(true);
 
-	if (log_format == "html")
+	if (log_format == HTML)
 		FormatChoice->SetSelection(0);
-	else if (log_format == "text")
+	else if (log_format == PLAINTEXT)
 		FormatChoice->SetSelection(1);
 
 	if (show_CRCs)
@@ -327,14 +333,18 @@ void MainFrame::OnQuit( wxCommandEvent& event ) {
 }
 
 void MainFrame::OnClose(wxCloseEvent& event) {
+	Ini ini;
 	//Save settings to BOSS.ini before quitting.
-	if (!GenerateIni())
+	try {
+		ini.Save(ini_path);
+	} catch (boss_error e) {
 			wxMessageBox(wxString::Format(
 				wxT("Error: BOSS.ini update failed. Ensure your BOSS folder is not read-only. None of the BOSS's options will be saved.")
 			),
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
 			NULL);
+	}
 
 	// important: before terminating, we _must_ wait for our joinable
     // thread to end, if it's running; in fact it uses variables of this
@@ -352,17 +362,20 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	size_t lastRecognisedPos = 0;			//position of last recognised mod.
 	string scriptExtender;					//What script extender is present.
 	time_t esmtime = 0;						//File modification times.
-	vector<item> Modlist, Masterlist;		//Modlist and masterlist data structures.
-	vector<rule> Userlist;					//Userlist data structure.
+	ItemList modlist, masterlist;		//Modlist and masterlist data structures.
+	RuleList userlist;					//Userlist data structure.
 	summaryCounters counters;				//Summary counters.
 	bosslogContents contents;				//BOSSlog contents.
 	string gameStr;							// allow for autodetection override
 	fs::path bosslog_path;					//Path to BOSSlog being used.
 	fs::path sortfile;						//Modlist/masterlist to sort plugins using.
+	Outputter output;
 
 	if (log_debug_output)
 		g_logger.setStream(debug_log_path.string().c_str());
 	g_logger.setOriginTracking(debug_with_source);
+
+	output.SetFormat(log_format);
 
 	//Tell the user that stuff is happenining.
 	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Better Oblivion Sorting Software working..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
@@ -376,7 +389,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	LOG_INFO("BOSS starting...");
 
 	//Set BOSSlog path to be used.
-	if (log_format == "html")
+	if (log_format == HTML)
 		bosslog_path = bosslog_html_path;
 	else
 		bosslog_path = bosslog_text_path;
@@ -414,17 +427,6 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	// Check for critical error conditions
 	/////////////////////////////////////////
 
-	//BOSSlog check.
-	LOG_DEBUG("opening '%s'", bosslog_path.string().c_str());
-	bosslog.open(bosslog_path.c_str());  //Might as well keep it open, just don't write anything unless an error till the end.
-	if (bosslog.fail()) {
-		LOG_ERROR("file '%s' could not be accessed for writing. Check the"
-				  " Troubleshooting section of the ReadMe for more"
-				  " information and possible solutions.", bosslog_path.string().c_str());
-		progDia->Destroy();
-		return;
-	}
-
 	//Game checks.
 	if (0 == game) {
 		LOG_DEBUG("Detecting game...");
@@ -432,12 +434,17 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 			GetGame();
 		} catch (boss_error e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
-			OutputHeader();
-			Output("<p class='error'>Critical Error: " + e.getString() + "<br />");
-			Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
-			Output("Utility will end now.");
-			OutputFooter();
-			bosslog.close();
+			output.Clear();
+			output.PrintHeader();
+			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+				<< "Utility will end now." << LIST_CLOSE;
+			output.PrintFooter();
+			try {
+				output.Save(bosslog_path, true);
+			} catch (boss_error e) {
+				LOG_ERROR("Critical Error: %s", e.getString().c_str());
+			}
 			LOG_ERROR("Installation error found: check BOSSLOG.");
 			if ( !silent ) 
 				wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -463,9 +470,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		try {
 			connection = CheckConnection();
 		} catch (boss_error e) {
-			contents.updaterErrors += "<li class='warn'>Error: Masterlist update failed.<br />";
-			contents.updaterErrors += "Details: " + EscapeHTMLSpecial(e.getString()) + "<br />";
-			contents.updaterErrors += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
+			output << LIST_ITEM_CLASS_WARN << "Error: masterlist update failed." << LINE_BREAK
+				<< "Details: " << e.getString() << LINE_BREAK
+				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
+			contents.updaterErrors = output.AsString();
 			LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
 		}
 		if (connection) {
@@ -477,39 +485,40 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 				uiStruct ui(progDia);
 				UpdateMasterlist(ui, localRevision, localDate, remoteRevision, remoteDate);
 				if (localRevision == remoteRevision) {
-					contents.summary += "<p>Your masterlist is already at the latest revision (r" + IntToString(localRevision) + "; " + EscapeHTMLSpecial(localDate) + "). No update necessary.";
-					progDia->Pulse(wxT("Masterlist update unnecessary."));
+					output << PARAGRAPH << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
+					progDia->Pulse(wxT("Masterlist already up-to-date."));
 					LOG_DEBUG("Masterlist update unnecessary.");
 				} else {
-					contents.summary += "<p>Your masterlist has been updated to revision " + IntToString(remoteRevision) + " (" + EscapeHTMLSpecial(remoteDate) + ").";
+					output << PARAGRAPH << "Your masterlist has been updated to revision " << remoteRevision << " (" << remoteDate << ").";
 					progDia->Pulse(wxT("Masterlist updated successfully."));
 					LOG_DEBUG("Masterlist updated successfully.");
 				}
+				contents.summary = output.AsString();
 			} catch (boss_error e) {
-				contents.updaterErrors += "<li class='warn'>Error: Masterlist update failed.<br />";
-				contents.updaterErrors += "Details: " + EscapeHTMLSpecial(e.getString()) + "<br />";
-				contents.updaterErrors += "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
+				output << LIST_ITEM_CLASS_WARN << "Error: masterlist update failed." << LINE_BREAK
+					<< "Details: " << e.getString() << LINE_BREAK
+					<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
+				contents.updaterErrors = output.AsString();
 				LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
 			}
-		} else
-			contents.summary += "<p>No internet connection detected. Masterlist auto-updater aborted.";
+		} else {
+			output << PARAGRAPH << "No internet connection detected. masterlist auto-updater aborted.";
+			contents.summary = output.AsString();
+		}
 	}
 
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
 	if (update_only == true) {
-		OutputHeader();
-		if (contents.updaterErrors.empty()) {
-			Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>Summary</h3><ul>");
-			Output(contents.summary);
-			Output("</ul>");
-		} else {
-			Output("<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>General Messages</h3><ul>");
-			Output(contents.updaterErrors);
-			Output("</ul>");
-		}
-		Output("<h3 id='end'>BOSS Execution Complete</h3>");
-		OutputFooter();
-		bosslog.close();
+		output.Clear();
+		output.PrintHeader();
+		if (contents.updaterErrors.empty())
+			output << HEADING_OPEN << "Summary" << HEADING_CLOSE << contents.summary;
+		else
+			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
+				<< contents.updaterErrors << LIST_CLOSE;
+		output << HEADING_ID_END_OPEN << "Execution Complete" << HEADING_CLOSE;
+		output.PrintFooter();
+		output.Save(bosslog_path, true);
 		if ( !silent ) 
 			wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.
 		progDia->Destroy();
@@ -530,12 +539,13 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	try {
 		esmtime = GetMasterTime();
 	} catch (boss_error e) {
-		OutputHeader();
-		Output("<p class='error'>Critical Error: " + e.getString() + "<br />");
-		Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
-		Output("Utility will end now.");
-		OutputFooter();
-		bosslog.close();
+		output.Clear();
+		output.PrintHeader();
+		output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+			<< "Utility will end now." << LIST_CLOSE;
+		output.PrintFooter();
+		output.Save(bosslog_path, true);
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
 		if ( !silent ) 
 			wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -544,18 +554,19 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	}
 
 	//Build and save modlist.
-	BuildModlist(Modlist);
+	modlist.Load(data_path);
 	if (revert<1) {
 		try {
-			SaveModlist(Modlist, curr_modlist_path);
+			modlist.Save(curr_modlist_path);
 		} catch (boss_error e) {
-			OutputHeader();
-			Output("<p class='error'>Critical Error: Modlist backup failed!<br />");
-			Output("Details: " + EscapeHTMLSpecial(e.getString()) + ".<br />");
-			Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
-			Output("Utility will end now.");
-			OutputFooter();
-			bosslog.close();
+			output.Clear();
+			output.PrintHeader();
+			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: modlist backup failed!" << LINE_BREAK
+				<< "Details: " << e.getString() << "." << LINE_BREAK
+				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+				<< "Utility will end now." << LIST_CLOSE;
+			output.PrintFooter();
+			output.Save(bosslog_path, true);
 			if ( !silent ) 
 				wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
 			progDia->Destroy();
@@ -577,30 +588,28 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	//Parse masterlist/modlist backup into data structure.
 	LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
 	try {
-		parseMasterlist(sortfile,Masterlist);
+		masterlist.Load(sortfile);
+		contents.globalMessages = masterlist.globalMessageBuffer;
 	} catch (boss_error e) {
-		OutputHeader();
-		Output("<p class='error'>Critical Error: " +EscapeHTMLSpecial(e.getString()) +"<br />");
-		Output("Check the Troubleshooting section of the ReadMe for more information and possible solutions.<br />");
-		Output("Utility will end now.");
-		OutputFooter();
-        bosslog.close();
-        LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
+		contents.criticalError = masterlist.errorBuffer.FormatFor(log_format);
+		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
+			output.Clear();
+			output.PrintHeader();
+			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
+				<< contents.criticalError << LIST_CLOSE;
+			output.PrintFooter();
+			output.Save(bosslog_path, true);
+		} else {
+			output.Clear();
+			output.PrintHeader();
+			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+				<< "Utility will end now." << LIST_CLOSE;
+			output.PrintFooter();
+			output.Save(bosslog_path, true);
+			LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
+		}
         if ( !silent ) 
-			wxLaunchDefaultApplication(bosslog_path.string());  //Displays the BOSSlog.txt.
-		progDia->Destroy();
-        return; //fail in screaming heap.
-	}
-
-	//Check if parsing failed. If so, exit with errors.
-	if (!masterlistErrorBuffer.empty()) {
-		OutputHeader();
-		size_t size = masterlistErrorBuffer.size();
-		for (size_t i=0; i<size; i++)  //Print parser error messages.
-			Output(masterlistErrorBuffer[i]);
-		OutputFooter();
-		bosslog.close();
-		if ( !silent ) 
 			wxLaunchDefaultApplication(bosslog_path.string());  //Displays the BOSSlog.txt.
 		progDia->Destroy();
         return; //fail in screaming heap.
@@ -608,11 +617,18 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		bool parsed = parseUserlist(userlist_path,Userlist);
-		if (!parsed)
-			Userlist.clear();  //If userlist has parsing errors, empty it so no rules are applied.
+		userlist.Load(userlist_path);
+		if (!userlist.parsingErrorBuffer.Empty())
+			contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(log_format);
+		for (vector<ParsingError>::iterator iter; iter != userlist.syntaxErrorBuffer.end(); ++iter)
+			contents.userlistSyntaxErrors.push_back(iter->FormatFor(log_format));
 	} catch (boss_error e) {
-		userlistErrorBuffer.push_back("<p class='error'>Error: "+e.getString()+" Userlist parsing aborted. No rules will be applied.");
+		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
+		if (e.getCode() != BOSS_ERROR_FILE_PARSE_FAIL) {
+			output.Clear();
+			output << LIST_ITEM_CLASS_ERROR << "Error: " << e.getString() << " userlist parsing aborted. No rules will be applied.";
+			contents.userlistParsingError = output.AsString();
+		}
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
 
@@ -623,74 +639,11 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	}
 
 	/////////////////////////////////////////////////
-	// Compare Masterlist against Modlist, Userlist
+	// Perform Sorting Functionality
 	/////////////////////////////////////////////////
 
-	lastRecognisedPos = BuildWorkingModlist(Modlist,Masterlist,Userlist);
-	LOG_INFO("Modlist now filled with ordered mods and unknowns.");
+	PerformSortingFunctionality(bosslog_path, modlist, masterlist, userlist, esmtime, contents);
 
-	progDia->Pulse();
-	if (progDia->WasCancelled()) {
-		progDia->Destroy();
-		return;
-	}
-
-	//////////////////////////
-	// Apply Userlist Rules
-	//////////////////////////
-
-	//Apply userlist rules to modlist.
-	if (revert<1 && fs::exists(userlist_path)) {
-		ApplyUserRules(Modlist, Userlist, contents.userlistMessages, lastRecognisedPos);
-		LOG_INFO("Userlist sorting process finished.");
-	}
-
-	progDia->Pulse();
-	if (progDia->WasCancelled()) {
-		progDia->Destroy();
-		return;
-	}
-
-	//////////////////////////////////////////////////////
-	// Print version & checksum info for OBSE & plugins
-	//////////////////////////////////////////////////////
-
-	if (show_CRCs)
-		scriptExtender = GetSEPluginInfo(contents.seInfo);
-
-	progDia->Pulse();
-	if (progDia->WasCancelled()) {
-		progDia->Destroy();
-		return;
-	}
-
-	////////////////////////////////
-	// Re-date Files & Output Info
-	////////////////////////////////
-
-	//Re-date .esp/.esm files according to order in modlist and output messages
-	SortRecognisedMods(Modlist, lastRecognisedPos, contents.recognisedPlugins, esmtime, counters);
-
-
-	//Find and show found mods not recognised. These are the mods that are found at and after index lastRecognisedPos in the mods vector.
-	//Order their dates to be i days after the master esm to ensure they load last.
-	ListUnrecognisedMods(Modlist, lastRecognisedPos, contents.unrecognisedPlugins, esmtime, counters);
-
-	progDia->Pulse();
-	if (progDia->WasCancelled()) {
-		progDia->Destroy();
-		return;
-	}
-
-	/////////////////////////////
-	// Print Output to BOSSlog
-	/////////////////////////////
-
-	PrintBOSSlog(contents, counters, scriptExtender);
-
-	progDia->Destroy();
-
-	bosslog.close();
 	LOG_INFO("Launching boss log in browser.");
 	if ( !silent ) 
 		wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
@@ -728,7 +681,7 @@ void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
 void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 	string file;
 	if (event.GetId() == OPTION_OpenBOSSlog) {
-		if (log_format == "html") {  //Open HTML BOSSlog.
+		if (log_format == HTML) {  //Open HTML BOSSlog.
 			if (fs::exists(bosslog_html_path))
 				wxLaunchDefaultApplication(bosslog_html_path.string());
 			else {
@@ -800,9 +753,9 @@ void MainFrame::OnLogDisplayChange(wxCommandEvent& event) {
 
 void MainFrame::OnFormatChange(wxCommandEvent& event) {
 	if (event.GetInt() == 0)
-		log_format = "html";
+		log_format = HTML;
 	else
-		log_format = "text";
+		log_format = PLAINTEXT;
 }
 
 void MainFrame::OnVersionDisplayChange(wxCommandEvent& event) {
@@ -995,11 +948,8 @@ void MainFrame::Update(string updateVersion) {
 
 void MainFrame::OnOpenSettings(wxCommandEvent& event) {
 	//Tell the user that stuff is happenining.
-	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Loading..."),wxT("BOSS User Rules Editor loading..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
-	progDia->Pulse();
 	SettingsFrame *settings = new SettingsFrame(wxT("Better Oblivion Sorting Software: Settings"),this);
 	settings->SetIcon(wxIconLocation("BOSS GUI.exe"));
-	progDia->Destroy();
 	settings->Show();
 }
 

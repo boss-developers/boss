@@ -170,21 +170,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 }
 
 void UserRulesEditorFrame::OnOKQuit(wxCommandEvent& event) {
-	ofstream outFile(userlist_path.c_str(),ios_base::trunc);
-
-	size_t size = Userlist.size();
-	for (size_t i=0;i<size;i++) {
-		if (!Userlist[i].enabled)
-			outFile << "DISABLE ";
-		outFile << to_upper_copy(KeyToString(Userlist[i].ruleKey)) << ": " << Userlist[i].ruleObject << endl;
-		size_t linesSize = Userlist[i].lines.size();
-		for (size_t j=0;j<linesSize;j++) {
-			outFile << to_upper_copy(KeyToString(Userlist[i].lines[j].key)) << ": " << Userlist[i].lines[j].object << endl;
-		}
-		outFile << endl;
-	}
-
-	outFile.close();
+	userlist.Save(userlist_path);
 	this->Close();
 }
 
@@ -241,10 +227,10 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 
 void UserRulesEditorFrame::OnSelectModInMasterlist(wxCommandEvent& event) {
 	int i = event.GetSelection();
-	size_t size = Masterlist[i].messages.size();
+	size_t size = masterlist.items[i].messages.size();
 	string messages = "";
 	for (size_t j=0;j<size;j++)
-		messages += KeyToString(Masterlist[i].messages[j].key) + ": " + Masterlist[i].messages[j].data + "\n";
+		messages += masterlist.items[i].messages[j].KeyToString() + ": " + masterlist.items[i].messages[j].data + "\n";
 	ModMessagesBox->SetValue(messages);
 }
 
@@ -287,7 +273,7 @@ void UserRulesEditorFrame::OnSortInsertChange(wxCommandEvent& event) {
 }
 
 void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
-	rule newRule = GetRuleFromForm();
+	Rule newRule = GetRuleFromForm();
 	if (newRule.enabled == false)
 		wxMessageBox(wxString::Format(
 				wxT("Rule Syntax Error: " + newRule.ruleObject + " Please correct the mistake before continuing.")
@@ -295,14 +281,14 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
 			NULL);
-	//Update Userlist object.
-	Userlist.push_back(newRule);
+	//Update userlist object.
+	userlist.rules.push_back(newRule);
 	//Now update RuleList text.
-	Rules.push_back(GetRuleText(Userlist.size()-1));
-	if (Userlist.back().enabled)
-		RuleOrder.push_back(Userlist.size()-1);
+	Rules.push_back(GetRuleText(userlist.rules.size()-1));
+	if (userlist.rules.back().enabled)
+		RuleOrder.push_back(userlist.rules.size()-1);
 	else
-		RuleOrder.push_back(~(Userlist.size()-1));
+		RuleOrder.push_back(~(userlist.rules.size()-1));
 	RulesList->Update();  //This doesn't work.
 }
 
@@ -315,7 +301,7 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 		return;
 	else {  //User has chosen to save.
 		int i = RulesList->GetSelection();
-		rule newRule = GetRuleFromForm();
+		Rule newRule = GetRuleFromForm();
 		if (newRule.enabled == false)
 			wxMessageBox(wxString::Format(
 					wxT("Rule Syntax Error: " + newRule.ruleObject + " Please correct the mistake before continuing.")
@@ -323,8 +309,8 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,
 				NULL);
-		//Update Userlist object.
-		Userlist.push_back(newRule);
+		//Update userlist object.
+		userlist.rules.push_back(newRule);
 		//Now update RuleList text.
 		string text = GetRuleText(i);
 		RulesList->SetString(i,text);
@@ -340,7 +326,7 @@ void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
 		return;
 	else {  //User has chosen to delete.
 		int i = RulesList->GetSelection();
-		Userlist.erase(Userlist.begin()+i);
+		userlist.rules.erase(userlist.rules.begin()+i);
 		Rules.erase(Rules.begin()+i);
 		RuleOrder.erase(RuleOrder.begin()+i);
 		RulesList->Update();  //This doesn't work.
@@ -349,8 +335,8 @@ void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
 
 void UserRulesEditorFrame::OnToggleRuleCheckbox(wxCommandEvent& event) {
 	unsigned int i = event.GetInt();
-	Userlist[i].enabled = RulesList->IsChecked(i);
-	Userlist[i].enabled = false;
+	userlist.rules[i].enabled = RulesList->IsChecked(i);
+	userlist.rules[i].enabled = false;
 	wxMessageBox(wxString::Format(
 			wxT("Error: "+IntToString(i)+" Scanning for plugins aborted. User Rules Editor cannot load.")
 		),
@@ -374,38 +360,38 @@ void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
 	NewModMessagesBox->Enable(false);
 	ReplaceMessagesCheckBox->Enable(false);
 	ReplaceMessagesCheckBox->SetValue(false);
-	RuleModBox->SetValue(Userlist[i].ruleObject);
+	RuleModBox->SetValue(userlist.rules[i].ruleObject);
 	SortModBox->SetValue("");
 	InsertModBox->SetValue("");
-	size_t size = Userlist[i].lines.size();
+	size_t size = userlist.rules[i].lines.size();
 	for (size_t j=0;j<size;j++) {
-		if (Userlist[i].lines[j].key == BEFORE || Userlist[i].lines[j].key == AFTER) {
+		if (userlist.rules[i].lines[j].key == BEFORE || userlist.rules[i].lines[j].key == AFTER) {
 			SortModsCheckBox->SetValue(true);
 			SortModOption->SetValue(true);
 			SortModBox->Enable(true);
 			BeforeAfterChoiceBox->Enable(true);
-			SortModBox->SetValue(Userlist[i].lines[j].object);
-			if (Userlist[i].lines[j].key == BEFORE)
+			SortModBox->SetValue(userlist.rules[i].lines[j].object);
+			if (userlist.rules[i].lines[j].key == BEFORE)
 				BeforeAfterChoiceBox->SetSelection(0);
 			else
 				BeforeAfterChoiceBox->SetSelection(1);
-		} else if (Userlist[i].lines[j].key == TOP || Userlist[i].lines[j].key == BOTTOM) {
+		} else if (userlist.rules[i].lines[j].key == TOP || userlist.rules[i].lines[j].key == BOTTOM) {
 			SortModsCheckBox->SetValue(true);
 			InsertModOption->SetValue(true);
 			TopBottomChoiceBox->Enable(true);
 			InsertModBox->Enable(true);
-			InsertModBox->SetValue(Userlist[i].lines[j].object);
-			if (Userlist[i].lines[j].key == TOP)
+			InsertModBox->SetValue(userlist.rules[i].lines[j].object);
+			if (userlist.rules[i].lines[j].key == TOP)
 				TopBottomChoiceBox->SetSelection(0);
 			else
 				TopBottomChoiceBox->SetSelection(1);
-		} else if (Userlist[i].lines[j].key == APPEND || Userlist[i].lines[j].key == REPLACE) {
+		} else if (userlist.rules[i].lines[j].key == APPEND || userlist.rules[i].lines[j].key == REPLACE) {
 			AddMessagesCheckBox->SetValue(true);
 			NewModMessagesBox->Enable(true);
 			ReplaceMessagesCheckBox->Enable(true);
-			if (Userlist[i].lines[j].key == REPLACE)
+			if (userlist.rules[i].lines[j].key == REPLACE)
 				ReplaceMessagesCheckBox->SetValue(true);
-			messages += Userlist[i].lines[j].object + "\n";
+			messages += userlist.rules[i].lines[j].object + "\n";
 		}
 	}
 	NewModMessagesBox->SetValue(messages);
@@ -416,20 +402,20 @@ void UserRulesEditorFrame::OnRuleOrderChange(wxCommandEvent& event) {
 	if (event.GetId() == BUTTON_MoveRuleUp && i != 0) {
 		if (!RulesList->MoveCurrentUp())
 			LOG_ERROR("Could not move rule %i up.", i);
-		rule selectedRule = Userlist[i];
-		Userlist.erase(Userlist.begin()+i);
-		Userlist.insert(Userlist.begin()+i-1,selectedRule);
-	} else if (event.GetId() == BUTTON_MoveRuleDown && i != Userlist.size()-1) {
+		Rule selectedRule = userlist.rules[i];
+		userlist.rules.erase(userlist.rules.begin()+i);
+		userlist.rules.insert(userlist.rules.begin()+i-1,selectedRule);
+	} else if (event.GetId() == BUTTON_MoveRuleDown && i != userlist.rules.size()-1) {
 		if (!RulesList->MoveCurrentDown())
 			LOG_ERROR("Could not move rule %i down.", i);
-		rule selectedRule = Userlist[i];
-		Userlist.erase(Userlist.begin()+i);
-		Userlist.insert(Userlist.begin()+i+1,selectedRule);
+		Rule selectedRule = userlist.rules[i];
+		userlist.rules.erase(userlist.rules.begin()+i);
+		userlist.rules.insert(userlist.rules.begin()+i+1,selectedRule);
 	}
 }
 
 void UserRulesEditorFrame::LoadLists() {
-	vector<item> Modlist;
+	ItemList modlist;
 	size_t size;
 
 	///////////////
@@ -437,11 +423,11 @@ void UserRulesEditorFrame::LoadLists() {
 	///////////////
 
 	//Need to parse userlist, masterlist and build modlist.
-	BuildModlist(Modlist);
+	modlist.Load(data_path);
 
-	size = Modlist.size();
+	size = modlist.items.size();
 	for (size_t i=0;i<size;i++)
-		ModlistMods.push_back(Modlist[i].name.string());
+		ModlistMods.push_back(modlist.items[i].name.string());
 
 	////////////////
 	// Masterlist
@@ -450,7 +436,7 @@ void UserRulesEditorFrame::LoadLists() {
 	//Parse masterlist/modlist backup into data structure.
 	LOG_INFO("Starting to parse sorting file: %s", masterlist_path.string().c_str());
 	try {
-		parseMasterlist(masterlist_path,Masterlist);
+		masterlist.Load(masterlist_path);
 	} catch (boss_error e) {
 		wxMessageBox(wxString::Format(
 				wxT("Error: "+e.getString()+" Scanning for plugins aborted. User Rules Editor cannot load.")
@@ -461,25 +447,11 @@ void UserRulesEditorFrame::LoadLists() {
 		return;
 	}
 
-	//Check if parsing failed. If so, exit with errors.
-	if (!masterlistErrorBuffer.empty()) {
-		size_t size = masterlistErrorBuffer.size();
-		for (size_t i=0; i<size; i++)  //Print parser error messages.
-			Output(masterlistErrorBuffer[i]);
-		wxMessageBox(wxString::Format(
-				wxT("Error: "+masterlistErrorBuffer[0]+" Masterlist parsing aborted. User Rules Editor cannot load.")
-			),
-			wxT("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
-		return;
-	}
-
-	size = Masterlist.size();
+	size = masterlist.items.size();
 	for (size_t i=0;i<size;i++) {
-		//if (Masterlist[i].type == MOD)
-		if (!Masterlist[i].name.empty())
-			MasterlistMods.push_back(Masterlist[i].name.string());
+		//if (masterlist.items[i].type == MOD)
+		if (!masterlist.items[i].name.empty())
+			MasterlistMods.push_back(masterlist.items[i].name.string());
 	}
 
 	////////////////
@@ -488,10 +460,9 @@ void UserRulesEditorFrame::LoadLists() {
 
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		bool parsed = parseUserlist(userlist_path,Userlist);
-		if (!parsed)
-			Userlist.clear();  //If userlist has parsing errors, empty it so no rules are applied.
+		userlist.Load(userlist_path);
 	} catch (boss_error e) {
+		userlist.rules.clear();
 		LOG_ERROR("Error: %s", e.getString().c_str());
 		wxMessageBox(wxString::Format(
 				wxT("Error: "+e.getString()+" Userlist parsing aborted. User Rules Editor cannot load existing rules.")
@@ -502,20 +473,20 @@ void UserRulesEditorFrame::LoadLists() {
 	}
 
 	//Trim down masterlist.
-	lastRec = BuildWorkingModlist(Modlist,Masterlist,Userlist);
+	BuildWorkingModlist(modlist,masterlist,userlist);
 
 	//Now disable any ADD rules with rule mods that are in the masterlist.
-	size = Userlist.size();
+	size = userlist.rules.size();
 	for (size_t i=0;i<size;i++) {
-		size_t pos = GetModPos(Masterlist,Userlist[i].ruleObject);
-		if (pos < lastRec && pos != (size_t)-1)  //Mod in masterlist.
-			Userlist[i].enabled = false;
+		vector<Item>::iterator pos = masterlist.FindItem(userlist.rules[i].ruleObject);
+		if (pos < masterlist.lastRecognisedPos && pos != masterlist.items.end())  //Mod in masterlist.
+			userlist.rules[i].enabled = false;
 	}
 
-	size = Userlist.size();
+	size = userlist.rules.size();
 	for (size_t i=0;i<size;i++) {
 		string text = GetRuleText(i);
-		if (Userlist[i].enabled)
+		if (userlist.rules[i].enabled)
 			RuleOrder.push_back(i);
 		else
 			RuleOrder.push_back(~i);
@@ -526,40 +497,40 @@ void UserRulesEditorFrame::LoadLists() {
 string UserRulesEditorFrame::GetRuleText(int i) {
 	string text = "";
 	bool hasAddedMessages = false;
-	size_t linesSize = Userlist[i].lines.size();
+	size_t linesSize = userlist.rules[i].lines.size();
 	for (size_t j=0;j<linesSize;j++) {
-		if (Userlist[i].lines[j].key == BEFORE)
-			text = "Sort \"" + Userlist[i].ruleObject + "\" before \"" + Userlist[i].lines[j].object + "\"\n";
-		else if (Userlist[i].lines[j].key == AFTER)
-			text = "Sort \"" + Userlist[i].ruleObject + "\" after \"" + Userlist[i].lines[j].object + "\"\n";
-		else if (Userlist[i].lines[j].key == TOP)
-			text = "Insert \"" + Userlist[i].ruleObject + "\" at the top of \"" + Userlist[i].lines[j].object + "\"\n";
-		else if (Userlist[i].lines[j].key == BOTTOM)
-			text = "Insert \"" + Userlist[i].ruleObject + "\" at the bottom of \"" + Userlist[i].lines[j].object + "\"\n";
-		else if (Userlist[i].lines[j].key == APPEND) {
+		if (userlist.rules[i].lines[j].key == BEFORE)
+			text = "Sort \"" + userlist.rules[i].ruleObject + "\" before \"" + userlist.rules[i].lines[j].object + "\"\n";
+		else if (userlist.rules[i].lines[j].key == AFTER)
+			text = "Sort \"" + userlist.rules[i].ruleObject + "\" after \"" + userlist.rules[i].lines[j].object + "\"\n";
+		else if (userlist.rules[i].lines[j].key == TOP)
+			text = "Insert \"" + userlist.rules[i].ruleObject + "\" at the top of \"" + userlist.rules[i].lines[j].object + "\"\n";
+		else if (userlist.rules[i].lines[j].key == BOTTOM)
+			text = "Insert \"" + userlist.rules[i].ruleObject + "\" at the bottom of \"" + userlist.rules[i].lines[j].object + "\"\n";
+		else if (userlist.rules[i].lines[j].key == APPEND) {
 			if (!hasAddedMessages)
-				text += "Add the following messages to \"" + Userlist[i].ruleObject + "\":\n";
-			text += "  " + Userlist[i].lines[j].object + "\n";
+				text += "Add the following messages to \"" + userlist.rules[i].ruleObject + "\":\n";
+			text += "  " + userlist.rules[i].lines[j].object + "\n";
 			hasAddedMessages = true;
-		} else if (Userlist[i].lines[j].key == REPLACE) {
-			text += "Replace the messages attached to \"" + Userlist[i].ruleObject + "\" with:\n";
-			text += "  " + Userlist[i].lines[j].object + "\n";
+		} else if (userlist.rules[i].lines[j].key == REPLACE) {
+			text += "Replace the messages attached to \"" + userlist.rules[i].ruleObject + "\" with:\n";
+			text += "  " + userlist.rules[i].lines[j].object + "\n";
 		}
 	}
 	return text;
 }
 
-rule UserRulesEditorFrame::GetRuleFromForm() {
-	rule newRule;
+Rule UserRulesEditorFrame::GetRuleFromForm() {
+	Rule newRule;
 	//First validate.
 	//Calling functions need to check for an enabled = false; rule as a failure.
 	//Failure description is given in ruleObject.
-	if (IsPlugin(string(RuleModBox->GetValue()))) {
-		if (SortModOption->GetValue() && !IsPlugin(string(SortModBox->GetValue()))) {  //Sort object is a group. Error.
+	if (Item(string(RuleModBox->GetValue())).IsPlugin()) {
+		if (SortModOption->GetValue() && !Item(string(SortModBox->GetValue())).IsPlugin()) {  //Sort object is a group. Error.
 				newRule.enabled = false;
 				newRule.ruleObject = "Cannot sort a plugin relative to a group.";
 				return newRule;
-		} else if (IsPlugin(string(InsertModBox->GetValue()))) {  //Inserting into a mod. Error.
+		} else if (Item(string(InsertModBox->GetValue())).IsPlugin()) {  //Inserting into a mod. Error.
 			newRule.enabled = false;
 			newRule.ruleObject = "Cannot insert into a plugin.";
 			return newRule;
@@ -570,7 +541,7 @@ rule UserRulesEditorFrame::GetRuleFromForm() {
 			return newRule;
 		}
 	} else {  //Rule object is a group.
-		if (SortModOption->GetValue() && IsPlugin(string(SortModBox->GetValue()))) {  //Sort object is a plugin. Error.
+		if (SortModOption->GetValue() && Item(string(SortModBox->GetValue())).IsPlugin()) {  //Sort object is a plugin. Error.
 				newRule.enabled = false;
 				newRule.ruleObject = "Cannot sort a group relative to a plugin.";
 				return newRule;
@@ -591,14 +562,14 @@ rule UserRulesEditorFrame::GetRuleFromForm() {
 	if (!SortModsCheckBox->IsChecked())
 		newRule.ruleKey = FOR;
 	else {
-		size_t pos = GetModPos(Masterlist,newRule.ruleObject);
-		if (pos < lastRec && pos != (size_t)-1)  //Mod in masterlist.
+		vector<Item>::iterator pos = masterlist.FindItem(newRule.ruleObject);
+		if (pos < masterlist.lastRecognisedPos && pos != masterlist.items.end())  //Mod in masterlist.
 			newRule.ruleKey = OVERRIDE;
 		else
 			newRule.ruleKey = ADD;
 		
 		if (SortModOption->GetValue()) {
-			line newLine;
+			RuleLine newLine;
 			newLine.object = SortModBox->GetValue();
 			if (BeforeAfterChoiceBox->GetSelection() == 0)
 				newLine.key = BEFORE;
@@ -606,7 +577,7 @@ rule UserRulesEditorFrame::GetRuleFromForm() {
 				newLine.key = AFTER;
 			newRule.lines.push_back(newLine);
 		} else if (InsertModOption->GetValue()) {
-			line newLine;
+			RuleLine newLine;
 			newLine.object = InsertModBox->GetValue();
 			if (TopBottomChoiceBox->GetSelection() == 0)
 				newLine.key = TOP;
@@ -618,7 +589,7 @@ rule UserRulesEditorFrame::GetRuleFromForm() {
 
 	//Now add message lines.
 	if (AddMessagesCheckBox->IsChecked()) {
-		line newLine;
+		RuleLine newLine;
 		string messages = NewModMessagesBox->GetValue();
 		size_t pos1 = 0, pos2 = string::npos;
 		pos2 = messages.find("\n",pos1);

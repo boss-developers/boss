@@ -25,7 +25,6 @@
 class BossGUI : public wxApp {
 public:
 	virtual bool OnInit();
-
 };
 
 wxDECLARE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);

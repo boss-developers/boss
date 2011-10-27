@@ -30,16 +30,17 @@
 	<li><a href="#general">General Usage</a>
 	<ol style="list-style:lower-alpha;">
 		<li><a href="#gui">The Graphical User Interface</a>
-  <li><a href="#updates">Keeping BOSS Up-To-Date</a>
+		<li><a href="#updates">Keeping BOSS Up-To-Date</a>
 		<li><a href="#bosslog">The BOSS Log</a>
 		<li><a href="#dirtymods">Dirty Edits, Mod Cleaning &amp; CRCs</a>
 	</ol>
 	<li><a href="#help">Contributions &amp; Help</a>
 	<li><a href="#advanced">Further Details</a>
 	<ol style="list-style:lower-alpha;">
-		<li><a href="#customising">Customising How BOSS Works</a>
-  <li><a href="#cli">Command Line Arguments</a>
-  <li><a href="#special">Updating Under Special Circumstances</a>
+		<li><a href="#userRules">User Rules</a>
+		<li><a href="#ini">The BOSS.ini</a>
+		<li><a href="#cli">Command Line Arguments</a>
+		<li><a href="#special">Updating Under Special Circumstances</a>
 		<li><a href="#linux">Running BOSS Under Linux</a>
 		<li><a href="#files">BOSS Changes and Files</a>
 	</ol>
@@ -60,8 +61,8 @@
 
 <div id="features"><h1>Features &amp; Introduction</h1>
 <ul>
-	<li>Correctly positions over 18,700 mod plugins and counting for TES IV: Oblivion, Fallout 3, Fallout: New Vegas and Nehrim - At Fate's Edge.
-	<ul><li>Over 12,800 / 2,800 / 3,000 / 170 mod plugins respectively.</ul>
+	<li>Correctly positions over 19,100 mod plugins and counting for TES IV: Oblivion, Fallout 3, Fallout: New Vegas and Nehrim - At Fate's Edge.
+	<ul><li>Over 13,000 / 2,900 / 3,100 / 180 mod plugins respectively.</ul>
 	<li>Provides preliminary support for TES V: Skyrim.
 	<li>Provides a large number of usage notes for many plugins, including requirements, incompatibilities, updates and bug warnings.
 	<li>Provides detection and warning of installation mistakes for some popular mods, such as FCOM.
@@ -286,11 +287,12 @@ There are three key pieces of information that are used to accurately describe a
 <div id="advanced"><h1>Advanced Usage</h1>
 <p>This section gives information on how to operate BOSS under certain conditions, how to customise its behaviour more fully than previously covered, and provides details for all the BOSS files.
 
-<h2 id="customising">Customising How BOSS Works</h2>
-<p>Users can customise how BOSS handles their plugins through the included User Rules feature. This feature allows you to define the positions of plugins not in the masterlist, and to override the masterlist positions of plugins,
-as well as edit the output messages of plugins, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes are not lost. All the information on the User Rules feature can be found in the "BOSS User Rules ReadMe.html" file.
-<p>For users who wish to be provided with a GUI feature for managing their userlist and own a copy of Microsoft Word 2003, 2007 or 2010, Surazal's <a href="">BOSS Userlist Manager</a> is a comprehensive utility that provides a range of features that may prove useful.
-<p>Users can also edit a number of BOSS's default settings in the BOSS.ini. As this is where BOSS gets its settings from, care must be taken to edit it correctly to prevent breaking BOSS's operation. If BOSS is run and it cannot find a BOSS.ini, it will generate a new one. If BOSS is run with both a BOSS.ini present and command line parameters set, the command line parameters override the settings in BOSS.ini. The ini is split into the following sections:
+<h2 id="userRules">User Rules</h2>
+<p>Users can customise how BOSS handles their plugins through the included User Rules feature. This feature allows you to define the positions of plugins not in the masterlist, and to override the masterlist positions of plugins, as well as edit the output messages of plugins, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes are not lost. All the information on the User Rules feature can be found in the "BOSS User Rules ReadMe.html" file that accompanies this ReadMe.</p>
+<br />
+
+<h2 id="ini">The BOSS.ini</h2>
+<p>Users can edit all of BOSS's settings in the BOSS.ini. As this is where BOSS gets its settings from when both running the CLI client and when loading the GUI client, care must be taken to edit it correctly to prevent breaking BOSS's operation. If BOSS is run and it cannot find a BOSS.ini, it will generate a new one with default settings. If BOSS is run with both a BOSS.ini present and command line parameters set, the command line parameters override the settings in BOSS.ini. The ini is split into the following sections:
 <h4>BOSS.GeneralSettings</h4>
 <p>These settings control miscellaneous areas of BOSS's operation outside of the main sorting functionality.
 <table>
@@ -819,7 +821,7 @@ in this Software without prior written authorization of the copyright holder.
 <div id="links"><h1>Quick Links</h1>
 <p><a href="http://www.tesnexus.com/downloads/file.php?id=20516">BOSS on TES Nexus</a>
 <p><a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">BOSS on Fallout 3 Nexus</a>
-<a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">BOSS on New Vegas Nexus</a>
+<p><a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">BOSS on New Vegas Nexus</a>
 <p><a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code SVN repository</a>
 <p><a href="http://forums.bethsoft.com/?showtopic=1205712">Official BOSS Oblivion thread</a>
 <p><a href="http://forums.bethsoft.com/?showtopic=1132338">Official BOSS Nehrim thread</a>
@@ -840,7 +842,6 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<ul>
 		<li>Removed: Checking for changes to the recognised mod list since last run for the plain text BOSS Log, as this did not work correctly and is not feasible to fix.
 		<li>Removed: Command line parameter <code>-T [ --proxy-type ] [ type ]</code> and BOSS.ini setting <code>sProxyType</code> Internet proxy type specification options. Proxy type is now automatically determined.
-		<li>Removed: Some unused functions.
 		<li>Fixed: A bug where if a plugin filename started with "SET" or "GLOBAL" (or case variations) then BOSS would incorrectly classify it as a variable or global message line and so result in syntax errors.
 		<li>Fixed: User Rules which failed to add a plugin into the beginning or end of a group still incremented the number of recognised plugins as if the rule application had succeeded.
 		<li>Fixed: Userlist rules which reference plugins that are not installed now have warning messages reported instead of error messages.
@@ -871,6 +872,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 			<li>Added <q>bUseUserRulesEditor</q> setting to <q>BOSS.GeneralSettings</q> to control how to the GUI chooses to edit user rules.
 			<li>Default values for the <q>BOSSLog.Styles</q> settings are now given, and values are no longer enclosed in {} brackets.
 		</ul>
+		<li>Changed: Major rewrite of most of the common code, including more object-orientation of code, removal of some unused functions, implementation of an class for formatted output using generic placeholders and much more.
 		<li>Added: <q>Hide Clean Mods</q> and <q>Hide 'Do Not Clean' Messages</q> BOSS Log filters.
 		<li>Added: Support for Skyrim:
 		<ul>

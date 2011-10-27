@@ -20,7 +20,7 @@ END_EVENT_TABLE()
 using namespace boss;
 using namespace std;
 
-SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize) {
+SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxSize(600,800)) {
 
 	wxString DebugVerbosity[] = {
         wxT("Standard (0)"),
@@ -59,22 +59,22 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	wxBoxSizer *proxyHostSizer = new wxBoxSizer(wxHORIZONTAL);
 	proxyHostSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Hostname:")), ItemSizerFlags);
 	proxyHostSizer->Add(ProxyHostBox = new wxTextCtrl(InternetTab,wxID_ANY), ItemSizerFlags);
-	InternetTabSizer->Add(proxyHostSizer, ContentSizerFlags);
+	InternetTabSizer->Add(proxyHostSizer, BorderSizerFlags);
 
 	wxBoxSizer *proxyPortSizer = new wxBoxSizer(wxHORIZONTAL);
 	proxyPortSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Port Number:")), ItemSizerFlags);
 	proxyPortSizer->Add(ProxyPortBox = new wxTextCtrl(InternetTab,wxID_ANY), ItemSizerFlags);
-	InternetTabSizer->Add(proxyPortSizer, ContentSizerFlags);
+	InternetTabSizer->Add(proxyPortSizer, BorderSizerFlags);
 
 	wxBoxSizer *proxyUserSizer = new wxBoxSizer(wxHORIZONTAL);
 	proxyUserSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Username:")), ItemSizerFlags);
 	proxyUserSizer->Add(ProxyUserBox = new wxTextCtrl(InternetTab,wxID_ANY), ItemSizerFlags);
-	InternetTabSizer->Add(proxyUserSizer, ContentSizerFlags);
+	InternetTabSizer->Add(proxyUserSizer, BorderSizerFlags);
 
 	wxBoxSizer *proxyPasswdSizer = new wxBoxSizer(wxHORIZONTAL);
 	proxyPasswdSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Password:")), ItemSizerFlags);
 	proxyPasswdSizer->Add(ProxyPasswdBox = new wxTextCtrl(InternetTab,wxID_ANY), ItemSizerFlags);
-	InternetTabSizer->Add(proxyPasswdSizer, ContentSizerFlags);
+	InternetTabSizer->Add(proxyPasswdSizer, BorderSizerFlags);
 
 	InternetTab->SetSizer(InternetTabSizer);
 
@@ -85,7 +85,7 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	wxBoxSizer *verbosityBox = new wxBoxSizer(wxHORIZONTAL);
 	verbosityBox->Add(new wxStaticText(DebugTab, wxID_ANY, wxT("Debug Output Verbosity:")), ItemSizerFlags);
 	verbosityBox->Add(DebugVerbosityChoice = new wxChoice(DebugTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, DebugVerbosity), ItemSizerFlags);
-	DebugTabSizer->Add(verbosityBox, ContentSizerFlags);
+	DebugTabSizer->Add(verbosityBox, BorderSizerFlags);
 	DebugTabSizer->Add(DebugSourceReferencesBox = new wxCheckBox(DebugTab,wxID_ANY, wxT("Include Source Code References")), BorderSizerFlags);
 	DebugTabSizer->Add(LogDebugOutputBox = new wxCheckBox(DebugTab,wxID_ANY, wxT("Log Debug Output")), BorderSizerFlags);
 
@@ -289,12 +289,14 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
 	bigBox->Add(TabHolder, 1, wxEXPAND);
 	bigBox->Add(hbox, 0, wxCENTER|wxALL, 10);
+	bigBox->SetMinSize(400,300);
 
 	//Initialise options with values. For checkboxes, they are off by default.
 	SetDefaultValues(DebugVerbosity);
 	
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
+	//That gives minimum size, which isn't that great, so:
 }
 
 void SettingsFrame::SetDefaultValues(wxString * DebugVerbosity) {

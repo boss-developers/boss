@@ -44,11 +44,11 @@ public:
 	void OnRuleOrderChange(wxCommandEvent& event);
 	void LoadLists();
 	string GetRuleText(int i);
-	rule GetRuleFromForm();
+	Rule GetRuleFromForm();
 	DECLARE_EVENT_TABLE()
 private:
-	vector<item> Masterlist;
-	vector<rule> Userlist;
+	ItemList masterlist;
+	RuleList userlist;
 	size_t lastRec;
 
 	wxArrayString Rules;
