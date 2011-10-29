@@ -4,16 +4,16 @@
   !include LogicLib.nsh
   !include nsDialogs.nsh
 ;-------------------------------- Basic Installer Info:
-    Name "BOSS v1.8.0"
+    Name "BOSS v1.9.0"
     OutFile "BOSS Installer.exe"
     ; Request application privileges for Windows Vista
     RequestExecutionLevel admin
-    VIProductVersion 1.8.0.0
+    VIProductVersion 1.9.0.0
     VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "BOSS"
     VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "BOSS development team"
     VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© BOSS development team"
-    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 1.8.0"
-    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "1.8.0.0"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 1.9.0"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "1.9.0.0"
 ;-------------------------------- Variables:
     Var Dialog
     Var Label
@@ -409,7 +409,7 @@
         SectionIn 1 2 RO
         ${If} $CheckState_OB == ${BST_CHECKED}
             SetOutPath $Path_OB\BOSS
-            File code\boss-common\trunk\bin\Release\BOSS.exe
+            File code\boss-cli\trunk\bin\Release\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "Oblivion Path" "$Path_OB"
 			IfFileExists BOSS.ini 0 +3
 				Delete BOSS.ini.old
@@ -417,7 +417,7 @@
         ${EndIf}
         ${If} $CheckState_FO == ${BST_CHECKED}
             SetOutPath $Path_FO\BOSS
-            File code\boss-common\trunk\bin\Release\BOSS.exe
+            File code\boss-cli\trunk\bin\Release\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "Fallout3 Path" "$Path_FO"
 			IfFileExists BOSS.ini 0 +3
 				Delete BOSS.ini.old
@@ -425,7 +425,7 @@
         ${EndIf}
         ${If} $CheckState_NV == ${BST_CHECKED}
             SetOutPath $Path_NV\BOSS
-            File code\boss-common\trunk\bin\Release\BOSS.exe
+            File code\boss-cli\trunk\bin\Release\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "NewVegas Path" "$Path_NV"
 			IfFileExists BOSS.ini 0 +3
 				Delete BOSS.ini.old
@@ -433,7 +433,7 @@
         ${EndIf}
         ${If} $CheckState_Nehrim == ${BST_CHECKED}
             SetOutPath $Path_Nehrim\BOSS
-            File code\boss-common\trunk\bin\Release\BOSS.exe
+            File code\boss-cli\trunk\bin\Release\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "Nehrim Path" "$Path_Nehrim"
 			IfFileExists BOSS.ini 0 +3
 				Delete BOSS.ini.old
@@ -441,7 +441,7 @@
         ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
             SetOutPath $Path_Other\BOSS
-            File code\boss-common\trunk\bin\Release\BOSS.exe
+            File code\boss-cli\trunk\bin\Release\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "Other Path" "$Path_Other"
 			IfFileExists BOSS.ini 0 +3
 				Delete BOSS.ini.old
@@ -455,7 +455,7 @@
       WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "URLInfoAbout" 'http://better-oblivion-sorting-software.googlecode.com/'
       WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "HelpLink" 'http://better-oblivion-sorting-software.googlecode.com/'
       WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "Publisher" 'BOSS Development Team'
-      WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '1.8.0'      
+      WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '1.9.0'      
       WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoModify" 1
       WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoRepair" 1
       CreateDirectory "$COMMONFILES\BOSS"
@@ -519,7 +519,7 @@
             SectionIn 1
             CreateShortCut "$SMPROGRAMS\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
             CreateShortCut "$SMPROGRAMS\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
-			CreateShortCut "$SMPROGRAMS\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
+#			CreateShortCut "$SMPROGRAMS\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
 			CreateShortCut "$SMPROGRAMS\BOSS\BOSS Masterlist Syntax.lnk" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" "" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" 0
             SectionEnd
         SectionGroupEnd
@@ -528,41 +528,41 @@
         SetOutPath $COMMONFILES\BOSS
         File "data\boss-common\BOSS ReadMe.html"
         File "data\boss-common\BOSS User Rules ReadMe.html"
-		File "data\boss-common\BOSS API ReadMe.html"
+#		File "data\boss-common\BOSS API ReadMe.html"
 		File "data\boss-common\BOSS Masterlist Syntax.html"
         ${If} $CheckState_OB == ${BST_CHECKED}
             CreateDirectory "$Path_OB\BOSS"
             CreateShortCut "$Path_OB\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
             CreateShortCut "$Path_OB\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
-			CreateShortCut "$Path_OB\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
+#			CreateShortCut "$Path_OB\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
 			CreateShortCut "$Path_OB\BOSS\BOSS Masterlist Syntax.lnk" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" "" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" 0
         ${EndIf}
         ${If} $CheckState_FO == ${BST_CHECKED}
                 CreateDirectory "$Path_FO\BOSS"
             CreateShortCut "$Path_FO\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
             CreateShortCut "$Path_FO\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
-			CreateShortCut "$Path_FO\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
+#			CreateShortCut "$Path_FO\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
 			CreateShortCut "$Path_FO\BOSS\BOSS Masterlist Syntax.lnk" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" "" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" 0
         ${EndIf}
         ${If} $CheckState_NV == ${BST_CHECKED}
             CreateDirectory "$Path_NV\BOSS"
             CreateShortCut "$Path_NV\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
             CreateShortCut "$Path_NV\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
-			CreateShortCut "$Path_NV\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
+#			CreateShortCut "$Path_NV\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
 			CreateShortCut "$Path_NV\BOSS\BOSS Masterlist Syntax.lnk" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" "" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" 0
         ${EndIf}
         ${If} $CheckState_Nehrim == ${BST_CHECKED}
             CreateDirectory "$Path_Nehrim\BOSS"
             CreateShortCut "$Path_Nehrim\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
             CreateShortCut "$Path_Nehrim\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
-			CreateShortCut "$Path_Nehrim\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
+#			CreateShortCut "$Path_Nehrim\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
 			CreateShortCut "$Path_Nehrim\BOSS\BOSS Masterlist Syntax.lnk" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" "" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" 0
         ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
             CreateDirectory "$Path_Other\BOSS"
             CreateShortCut "$Path_Other\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
             CreateShortCut "$Path_Other\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
-			CreateShortCut "$Path_Other\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
+#			CreateShortCut "$Path_Other\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
 			CreateShortCut "$Path_Other\BOSS\BOSS Masterlist Syntax.lnk" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" "" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" 0
         ${EndIf} 
         SectionEnd
@@ -857,7 +857,7 @@
   LangString PAGE_SELECT_GAMES_TITLE ${LANG_ENGLISH} "Choose Games"
   LangString PAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select which game(s) you want to install BOSS for, and confirm the desired install path."
   LangString unPAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select which game(s) you want to uninstall BOSS from."
-  LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished installing BOSS - Better Oblivion Sorting Software v1.8.0"
+  LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished installing BOSS - Better Oblivion Sorting Software v1.9.0"
   LangString PAGE_FINISH_SUBTITLE ${LANG_ENGLISH} "Please select post-install tasks."
   
   ;Assign language strings to sections
