@@ -183,9 +183,9 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	//    then exit immediately. DB is only changed at the end so it is unchanged 
 	//    in case of error.
 	map<uint32_t,string> bashTagMap;
-	vector<item> masterlist;
+	ItemList masterlist;
 	vector<modEntry> masterlistData, userlistData, regexData;
-	vector<rule> userlist;
+	RuleList userlist;
 	uint32_t currentUID = 0;
 	
 	//Check for valid args.
@@ -202,7 +202,7 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 
 	//PARSING - Masterlist
 	try {
-		parseMasterlist(masterlist_path, masterlist);
+		masterlist.Load(masterlist_path);
 	} catch (boss_error e) {
 		if (e.getCode() == BOSS_ERROR_FILE_NOT_FOUND)
 			return BOSS_API_ERROR_FILE_NOT_FOUND;
@@ -211,19 +211,13 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 		else
 			return BOSS_API_ERROR_PARSE_FAIL;
 	}
-	if (!masterlistErrorBuffer.empty())
-		return BOSS_API_ERROR_PARSE_FAIL;
-	
 
 	//PARSING - Userlist
 	if (!userlist_path.empty()) {
 		try {
-			bool parsed = parseUserlist(userlist_path,userlist);
-			if (!parsed) {
-				userlist.clear();  //If userlist has parsing errors, empty it so no rules are applied.
-				return BOSS_API_ERROR_PARSE_FAIL;
-			}
+			userlist.Load(userlist_path);
 		} catch (boss_error e) {
+			userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 			if (e.getCode() == BOSS_ERROR_FILE_NOT_FOUND)
 				return BOSS_API_ERROR_FILE_NOT_FOUND;
 			else if (e.getCode() == BOSS_ERROR_FILE_NOT_UTF8)
@@ -236,8 +230,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 
 	//CONVERSION - Masterlist
 	map<uint32_t, string>::iterator mapPos;
-	vector<item>::iterator iter = masterlist.begin();
-	while (iter != masterlist.end()) {
+	vector<Item>::iterator iter = masterlist.items.begin();
+	while (iter != masterlist.items.end()) {
 		modEntry mod;
 		if (iter->type == MOD && !iter->messages.empty()) {  //Might be worth remembering.
 			bool hasMessages = false;
@@ -255,7 +249,7 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 			//Now if dataIter == masterlistData.end(), the mod does not have an entry, otherwise it does.
 
 			//Check if the messages are of the right type.
-			vector<message>::iterator messageIter = iter->messages.begin();
+			vector<Message>::iterator messageIter = iter->messages.begin();
 			while (messageIter != iter->messages.end()) {
 				if (messageIter->key == TAG) {
 					//Search for the Bash Tag listing syntaxes.
@@ -367,7 +361,7 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 			}
 		} else if (iter->type == REGEX && !iter->messages.empty()) {  //Might be worth remembering.
 			//Check if the messages are of the right type.
-			vector<message>::iterator messageIter = iter->messages.begin();
+			vector<Message>::iterator messageIter = iter->messages.begin();
 			while (messageIter != iter->messages.end()) {
 				if (messageIter->key == TAG) {
 					//Search for the Bash Tag listing syntaxes.
@@ -496,9 +490,9 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	
 	//CONVERSION - Userlist
 	if (!userlist_path.empty()) {
-		vector<rule>::iterator userlistIter = userlist.begin();
-		while (userlistIter != userlist.end()) {
-			vector<line>::iterator lineIter = userlistIter->lines.begin();
+		vector<Rule>::iterator userlistIter = userlist.rules.begin();
+		while (userlistIter != userlist.rules.end()) {
+			vector<RuleLine>::iterator lineIter = userlistIter->lines.begin();
 			vector<modEntry>::iterator dataIter = userlistData.begin();
 			string plugin = userlistIter->ruleObject;
 			modEntry mod;
@@ -514,14 +508,7 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 			while (lineIter != userlistIter->lines.end()) {
 				if (lineIter->key == APPEND || lineIter->key == REPLACE) {
 					//Need to check if the message added is a Bash Tag suggestion.
-					char sym = lineIter->object[0];  //Look for message symbol. (MF1)
-					size_t pos = lineIter->object.find(":"); //Look for separator colon. (MF2)
-					keyType key;
-					if (pos != string::npos)
-						key = StringToKey(Tidy(lineIter->object.substr(0,pos)));  //MF2 keyword.
-
-					if (sym == '%' || key == TAG) {  //It's a Bash Tag suggestion.
-				
+					if (lineIter->ObjectMessageKey() == TAG) {
 						//If REPLACE, it needs to replace what's in the masterlist, so search masterlistData for the mod and clear its Bash Tag vectors if found.
 						vector<modEntry>::iterator mIter = masterlistData.begin();
 						while (mIter != masterlistData.end()) {

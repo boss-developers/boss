@@ -130,6 +130,21 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	CSSTabSizer->Add(horBox, ContentSizerFlags);
 
 	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("#darkBody")), ItemSizerFlags);
+	horBox->Add(CSSDarkBodyBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".darkLink:link")), ItemSizerFlags);
+	horBox->Add(CSSDarkLinkBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".darkLink:visited")), ItemSizerFlags);
+	horBox->Add(CSSDarkLinkVisitedBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
 	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("#filters")), ItemSizerFlags);
 	horBox->Add(CSSFiltersBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
 	CSSTabSizer->Add(horBox, ContentSizerFlags);
@@ -137,6 +152,11 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	horBox = new wxBoxSizer(wxHORIZONTAL);
 	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("#filters > li")), ItemSizerFlags);
 	horBox->Add(CSSFiltersListBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT("#darkFilters")), ItemSizerFlags);
+	horBox->Add(CSSDarkFiltersBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
 	CSSTabSizer->Add(horBox, ContentSizerFlags);
 
 	horBox = new wxBoxSizer(wxHORIZONTAL);
@@ -366,8 +386,12 @@ void SettingsFrame::SetDefaultValues(wxString * DebugVerbosity) {
 
 	//BOSS Log CSS Settings
 	CSSBodyBox->SetValue(CSSBody);
+	CSSDarkBodyBox->SetValue(CSSDarkBody);
+	CSSDarkLinkBox->SetValue(CSSDarkLink);
+	CSSDarkLinkVisitedBox->SetValue(CSSDarkLinkVisited);
 	CSSFiltersBox->SetValue(CSSFilters);
 	CSSFiltersListBox->SetValue(CSSFiltersList);
+	CSSDarkFiltersBox->SetValue(CSSDarkFilters);
 	CSSTitleBox->SetValue(CSSTitle);
 	CSSCopyrightBox->SetValue(CSSCopyright);
 	CSSSectionsBox->SetValue(CSSSections);
@@ -437,8 +461,12 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 
 	//CSS
 	CSSBody = CSSBodyBox->GetValue();
+	CSSDarkBody = CSSDarkBodyBox->GetValue();
+	CSSDarkLink = CSSDarkLinkBox->GetValue();
+	CSSDarkLinkVisited = CSSDarkLinkVisitedBox->GetValue();
 	CSSFilters = CSSFiltersBox->GetValue();
 	CSSFiltersList = CSSFiltersListBox->GetValue();
+	CSSDarkFilters = CSSDarkFiltersBox->GetValue();
 	CSSTitle = CSSTitleBox->GetValue();
 	CSSCopyright = CSSCopyrightBox->GetValue();
 	CSSSections = CSSSectionsBox->GetValue();
@@ -465,6 +493,12 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	CSSNote = CSSNoteBox->GetValue();
 	CSSRequirement = CSSRequirementBox->GetValue();
 	CSSIncompatibility = CSSIncompatibilityBox->GetValue();
+
+	//Also set the logger settings now.
+	g_logger.setOriginTracking(debug_with_source);
+	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + debug_verbosity));
+	if (log_debug_output)
+		g_logger.setStream(debug_log_path.string().c_str());
 
 	this->Close();
 }

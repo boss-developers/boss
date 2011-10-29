@@ -768,10 +768,18 @@ namespace boss {
 				return;
 			else if (var == "body")
 				CSSBody = value;
+			else if (var == "#darkBody")
+				CSSDarkBody = value;
+			else if (var == ".darkLink:link")
+				CSSDarkLink = value;
+			else if (var == ".darkLink:visited")
+				CSSDarkLinkVisited = value;
 			else if (var == "#filters")
 				CSSFilters = value;
 			else if (var == "#filters > li")
 				CSSFiltersList = value;
+			else if (var == "#darkFilters")
+				CSSDarkFilters = value;
 			else if (var == "body > div:first-child")
 				CSSTitle = value;
 			else if (var == "body > div:first-child + div")

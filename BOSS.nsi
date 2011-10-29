@@ -519,6 +519,8 @@
             SectionIn 1
             CreateShortCut "$SMPROGRAMS\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
             CreateShortCut "$SMPROGRAMS\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
+			CreateShortCut "$SMPROGRAMS\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
+			CreateShortCut "$SMPROGRAMS\BOSS\BOSS Masterlist Syntax.lnk" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" "" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" 0
             SectionEnd
         SectionGroupEnd
     Section "Documentation" Documentation
@@ -526,30 +528,42 @@
         SetOutPath $COMMONFILES\BOSS
         File "data\boss-common\BOSS ReadMe.html"
         File "data\boss-common\BOSS User Rules ReadMe.html"
+		File "data\boss-common\BOSS API ReadMe.html"
+		File "data\boss-common\BOSS Masterlist Syntax.html"
         ${If} $CheckState_OB == ${BST_CHECKED}
             CreateDirectory "$Path_OB\BOSS"
             CreateShortCut "$Path_OB\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
             CreateShortCut "$Path_OB\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
+			CreateShortCut "$Path_OB\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
+			CreateShortCut "$Path_OB\BOSS\BOSS Masterlist Syntax.lnk" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" "" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" 0
         ${EndIf}
         ${If} $CheckState_FO == ${BST_CHECKED}
                 CreateDirectory "$Path_FO\BOSS"
             CreateShortCut "$Path_FO\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
             CreateShortCut "$Path_FO\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
+			CreateShortCut "$Path_FO\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
+			CreateShortCut "$Path_FO\BOSS\BOSS Masterlist Syntax.lnk" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" "" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" 0
         ${EndIf}
         ${If} $CheckState_NV == ${BST_CHECKED}
             CreateDirectory "$Path_NV\BOSS"
             CreateShortCut "$Path_NV\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
             CreateShortCut "$Path_NV\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
+			CreateShortCut "$Path_NV\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
+			CreateShortCut "$Path_NV\BOSS\BOSS Masterlist Syntax.lnk" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" "" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" 0
         ${EndIf}
         ${If} $CheckState_Nehrim == ${BST_CHECKED}
             CreateDirectory "$Path_Nehrim\BOSS"
             CreateShortCut "$Path_Nehrim\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
             CreateShortCut "$Path_Nehrim\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
+			CreateShortCut "$Path_Nehrim\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
+			CreateShortCut "$Path_Nehrim\BOSS\BOSS Masterlist Syntax.lnk" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" "" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" 0
         ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
             CreateDirectory "$Path_Other\BOSS"
             CreateShortCut "$Path_Other\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
             CreateShortCut "$Path_Other\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
+			CreateShortCut "$Path_Other\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
+			CreateShortCut "$Path_Other\BOSS\BOSS Masterlist Syntax.lnk" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" "" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" 0
         ${EndIf} 
         SectionEnd
 ;-------------------------------- Custom Uninstallation Pages and their Functions:

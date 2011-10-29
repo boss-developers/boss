@@ -80,29 +80,26 @@ namespace boss
             return;
         }
 
-        // assumes single thread -- multithread could interleave the lines below
-        // a thread safe version would use vasprintf to print to a temporary string first
-        fprintf(m_out, "%s", LOG_VERBOSITY_NAMES[verbosity]);
+		// assumes single thread -- multithread could interleave the lines below
+		// a thread safe version would use vasprintf to print to a temporary string first
+		printf("%s", LOG_VERBOSITY_NAMES[verbosity]);
 
-        // if enabled, print the log origin
-        if (m_originTracking) { fprintf(m_out, " %s:%d", fileName, lineNo); }
+		// if enabled, print the log origin
+		if (m_originTracking) { printf(" %s:%d", fileName, lineNo); }
 
-        fprintf(m_out, ": ");
-		vfprintf(m_out, formatStr, ap);
-        fprintf(m_out, "\n");
-		fflush(m_out);
+		printf(": ");
+		vprintf(formatStr, ap);
+		printf("\n");
+		fflush(stdout);
 
-		//Print to command line as well if logger is outputting elsewhere.
 		if (m_out != stdout) {
-			printf("%s", LOG_VERBOSITY_NAMES[verbosity]);
-
-			// if enabled, print the log origin
-			if (m_originTracking) { printf(" %s:%d", fileName, lineNo); }
-
-			printf(": ");
-			vprintf(formatStr, ap);
-			printf("\n");
-			fflush(stdout);
+			fprintf(m_out, "%s", LOG_VERBOSITY_NAMES[verbosity]);
+			if (m_originTracking)
+				fprintf(m_out, " %s:%d", fileName, lineNo);
+			fprintf(m_out, ": ");
+			vfprintf(m_out, formatStr, ap);
+			fprintf(m_out, "\n");
+			fflush(m_out);
 		}
     }
 }

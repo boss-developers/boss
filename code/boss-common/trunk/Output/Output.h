@@ -47,8 +47,12 @@ namespace boss {
 
 	//Default CSS.
 	BOSS_COMMON_EXP extern string CSSBody;
+	BOSS_COMMON_EXP extern string CSSDarkBody;
+	BOSS_COMMON_EXP extern string CSSDarkLink;
+	BOSS_COMMON_EXP extern string CSSDarkLinkVisited;
 	BOSS_COMMON_EXP extern string CSSFilters;
 	BOSS_COMMON_EXP extern string CSSFiltersList;
+	BOSS_COMMON_EXP extern string CSSDarkFilters;
 	BOSS_COMMON_EXP extern string CSSTitle;
 	BOSS_COMMON_EXP extern string CSSCopyright;
 	BOSS_COMMON_EXP extern string CSSSections;

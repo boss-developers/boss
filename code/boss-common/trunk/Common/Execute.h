@@ -54,6 +54,9 @@ namespace boss {
 		vector<Message> globalMessages;
 	};
 
+	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
+	BOSS_COMMON_EXP boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos);
+
 	//Record recognised mod list from last HTML BOSSlog generated.
 	BOSS_COMMON_EXP string GetOldRecognisedList(const fs::path log);
 

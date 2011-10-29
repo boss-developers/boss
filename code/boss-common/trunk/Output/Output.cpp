@@ -38,8 +38,12 @@ namespace boss {
 
 	//Default CSS.
 	BOSS_COMMON_EXP string CSSBody				= "font-family:Calibri,Arial,sans-serifs;";
+	BOSS_COMMON_EXP string CSSDarkBody			= "color:white;background:black;";
+	BOSS_COMMON_EXP string CSSDarkLink			= "color:#0AF;";
+	BOSS_COMMON_EXP string CSSDarkLinkVisited	= "color:#E000E0;";
 	BOSS_COMMON_EXP string CSSFilters			= "border:1px gray dashed;background:#F5F5F5;padding:.3em;display:table;";
 	BOSS_COMMON_EXP string CSSFiltersList		= "display:inline-block;padding:.2em .5em;white-space:nowrap;margin:0;width:200px;";
+	BOSS_COMMON_EXP string CSSDarkFilters		= "border:1px gray dashed;padding:.3em;display:table;background:#333333;";
 	BOSS_COMMON_EXP string CSSTitle				= "font-size:2.4em;font-weight:700;text-align:center;margin-bottom:.2em;";
 	BOSS_COMMON_EXP string CSSCopyright			= "text-align:center;";
 	BOSS_COMMON_EXP string CSSSections			= "margin-bottom:3em;";
@@ -101,8 +105,12 @@ namespace boss {
 			outStream << "<!DOCTYPE html>"<<endl<<"<meta charset='utf-8'>"<<endl
 				<< "<title>BOSS Log</title>"<<endl<<"<style>"
 				<< "body{" << CSSBody << "}"
+				<< "#darkBody{" << CSSDarkBody << "}"
+				<< ".darkLink:link{" << CSSDarkLink << "}"
+				<< ".darkLink:visited{" << CSSDarkLinkVisited << "}"
 				<< "#filters{" << CSSFilters << "}"
-				<< "#filters > li{" << CSSFiltersList << "}"
+				<< "#filters > li,#darkFilters > li{" << CSSFiltersList << "}"
+				<< "#darkFilters{" << CSSDarkFilters << "}"
 				<< "body > div:first-child{" << CSSTitle << "}"
 				<< "body > div:first-child + div{" << CSSCopyright << "}"
 				<< "h3 + *{" << CSSSections << "}"
@@ -148,10 +156,11 @@ namespace boss {
 				<< "r=document.styleSheets[0].cssRules}else if(document.styleSheets[0].rules){"
 				<< "r=document.styleSheets[0].rules}for(var i=0,z=r.length;i<z;i++){"
 				<< "if(r[i].selectorText.toLowerCase()==s){if(b.checked){r[i].style.display='none'"
-				<< "}else{r[i].style.display=d}return}}}function swapColorScheme(b){var d=document.body.style;"
-				<< "var f=document.getElementById('filters').style;if(b.checked){d.color='white';"
-				<< "d.background='black';f.background='#333333'}else{d.color='black';d.background='white';"
-				<< "f.background='#F5F5F5'}}function toggleRuleListWarnings(b){var "
+				<< "}else{r[i].style.display=d}return}}}function swapColorScheme(b){var d=document.body;"
+				<< "var a=document.getElementsByTagName('a');if(b.checked){d.id='darkBody';"
+				<< "document.getElementById('filters').id='darkFilters';for(var i=0,z=a.length;i<z;i++){"
+				<< "a[i].className='darkLink'}}else{d.id='';document.getElementById('darkFilters').id='filters';"
+				<< "for(var i=0,z=a.length;i<z;i++){a[i].className=''}}}function toggleRuleListWarnings(b){var "
 				<< "u=document.getElementById('userlistMessages').childNodes;if(u){for(var i=0,z=u.length;"
 				<< "i<z;i++){if(u[i].className=='warn'){if(b.checked){u[i].style.display='none'}else{"
 				<< "u[i].style.display='table'}}}}}function toggleMods(){var "

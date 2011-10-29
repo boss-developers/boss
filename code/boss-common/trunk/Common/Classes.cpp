@@ -510,8 +510,12 @@ namespace boss {
 			<<	"# A style with nothing specified uses the coded defaults." << endl
 			<<	"# These defaults are given in the BOSS ReadMe as with the rest of the ini settings." << endl
 			<<	"\"body\"                                     = " << CSSBody << endl
+			<<	"\"#darkBody\"                                = " << CSSDarkBody << endl
+			<<	"\".darkLink:link\"                           = " << CSSDarkLink << endl
+			<<	"\".darkLink:visited\"                        = " << CSSDarkLinkVisited << endl
 			<<	"\"#filters\"                                 = " << CSSFilters << endl
 			<<	"\"#filters > li\"                            = " << CSSFiltersList << endl
+			<<	"\"#darkFilters\"                             = " << CSSDarkFilters << endl
 			<<	"\"body > div:first-child\"                   = " << CSSTitle << endl
 			<<	"\"body > div:first-child + div\"             = " << CSSCopyright << endl
 			<<	"\"h3 + *\"                                   = " << CSSSections << endl

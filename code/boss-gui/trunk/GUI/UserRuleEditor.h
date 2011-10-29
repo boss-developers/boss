@@ -87,4 +87,18 @@ private:
 	wxTextCtrl *InsertModBox;
 };
 
+class MasterlistFrame {
+public:
+
+private:
+
+};
+
+class RuleListFrame {
+public:
+
+private:
+
+};
+
 #endif

@@ -56,8 +56,12 @@ private:
 	wxTextCtrl *ProxyUserBox;
 	wxTextCtrl *ProxyPasswdBox;
 	wxTextCtrl *CSSBodyBox;
+	wxTextCtrl *CSSDarkBodyBox;
+	wxTextCtrl *CSSDarkLinkBox;
+	wxTextCtrl *CSSDarkLinkVisitedBox;
 	wxTextCtrl *CSSFiltersBox;
 	wxTextCtrl *CSSFiltersListBox;
+	wxTextCtrl *CSSDarkFiltersBox;
 	wxTextCtrl *CSSTitleBox;
 	wxTextCtrl *CSSCopyrightBox;
 	wxTextCtrl *CSSSectionsBox;

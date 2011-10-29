@@ -42,6 +42,8 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_MENU ( OPTION_Run, MainFrame::OnRunBOSS )
 	EVT_MENU ( MENU_OpenMainReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_OpenUserRulesReadMe, MainFrame::OnOpenFile )
+	EVT_MENU ( MENU_OpenMasterlistReadMe, MainFrame::OnOpenFile )
+	EVT_MENU ( MENU_OpenAPIReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( OPTION_CheckForUpdates, MainFrame::OnUpdateCheck )
 	EVT_MENU ( MENU_ShowAbout, MainFrame::OnAbout )
 	EVT_MENU ( MENU_ShowSettings, MainFrame::OnOpenSettings )
@@ -76,9 +78,9 @@ bool BossGUI::OnInit() {
 		try {
 			ini.Load(ini_path);
 		} catch (boss_error e) {
-			LOG_ERROR("Ini parsing failed. Details: %s", e.getString().c_str());
+			LOG_ERROR("Error: %s", e.getString().c_str());
 			wxMessageBox(wxString::Format(
-				wxT("Error: BOSS.ini parsing failed. Some or all of BOSS's options may not have been set correctly. Details: " + e.getString() + "; " + ini.errorBuffer.FormatFor(PLAINTEXT))
+				wxT("Error: " + e.getString() + " Details: " + ini.errorBuffer.FormatFor(PLAINTEXT))
 			),
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
@@ -89,7 +91,7 @@ bool BossGUI::OnInit() {
 			ini.Save(ini_path);
 		} catch (boss_error e) {
 			wxMessageBox(wxString::Format(
-				wxT("Error: BOSS.ini generation failed. Ensure your BOSS folder is not read-only. None of BOSS's options will be saved.")
+				wxT("Error: " + e.getString())
 			),
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
@@ -101,13 +103,15 @@ bool BossGUI::OnInit() {
 	if (log_debug_output)
 		g_logger.setStream(debug_log_path.string().c_str());
 	g_logger.setOriginTracking(debug_with_source);
+	// it's ok if this number is too high.  setVerbosity will handle it
+	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + debug_verbosity));
 
 	if (game == 0) {
 		try {
 			GetGame();
 		} catch (boss_error e) {
 			wxMessageBox(wxString::Format(
-					wxT("Error: Game autodetection failed! " + e.getString())
+					wxT("Error: " + e.getString())
 				),
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,
@@ -342,7 +346,7 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 		ini.Save(ini_path);
 	} catch (boss_error e) {
 			wxMessageBox(wxString::Format(
-				wxT("Error: BOSS.ini update failed. Ensure your BOSS folder is not read-only. None of the BOSS's options will be saved.")
+				wxT("Error: " + e.getString())
 			),
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
@@ -372,13 +376,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	string gameStr;							// allow for autodetection override
 	fs::path bosslog_path;					//Path to BOSSlog being used.
 	fs::path sortfile;						//Modlist/masterlist to sort plugins using.
-	Outputter output;
-
-	if (log_debug_output)
-		g_logger.setStream(debug_log_path.string().c_str());
-	g_logger.setOriginTracking(debug_with_source);
-
-	output.SetFormat(log_format);
+	Outputter output(log_format);
 
 	//Tell the user that stuff is happenining.
 	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Better Oblivion Sorting Software working..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
@@ -605,12 +603,11 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		masterlist.Load(sortfile);
 		contents.globalMessages = masterlist.globalMessageBuffer;
 	} catch (boss_error e) {
-		contents.criticalError = masterlist.errorBuffer.FormatFor(log_format);
 		output.Clear();
 		output.PrintHeader();
 		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
 			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
-				<< contents.criticalError << LIST_CLOSE;
+				<< masterlist.errorBuffer.FormatFor(log_format) << LIST_CLOSE;
 		else
 			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
@@ -631,15 +628,11 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	LOG_INFO("Starting to parse userlist.");
 	try {
 		userlist.Load(userlist_path);
-		if (!userlist.parsingErrorBuffer.Empty())
-			contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(log_format);
 		for (vector<ParsingError>::iterator iter; iter != userlist.syntaxErrorBuffer.end(); ++iter)
 			contents.userlistSyntaxErrors.push_back(iter->FormatFor(log_format));
 	} catch (boss_error e) {
+		contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(log_format);
 		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
-			output.Clear();
-			output << LIST_ITEM_CLASS_ERROR << "Error: " << e.getString() << " userlist parsing aborted. No rules will be applied.";
-			contents.userlistParsingError = output.AsString();
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
 
@@ -673,18 +666,18 @@ void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
 		if (fs::exists(userlist_path))
 			wxLaunchDefaultApplication(userlist_path.string());
 		else {
-			ofstream userlist_file(userlist_path.c_str(),ios_base::binary);
-			if (!userlist_file.fail())
-				userlist_file << '\xEF' << '\xBB' << '\xBF';  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
-			else
+			try {
+				RuleList userlist;
+				userlist.Save(userlist_path);
+				wxLaunchDefaultApplication(userlist_path.string());
+			} catch (boss_error e) {
 				wxMessageBox(wxString::Format(
-					wxT("Error: Userlist.txt could not be created. Ensure your BOSS folder is not read-only.")
+					wxT("Error: " + e.getString())
 				),
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,
 				this);
-			userlist_file.close();
-			wxLaunchDefaultApplication(userlist_path.string());
+			}
 		}
 	}
 }
@@ -696,25 +689,23 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 		if (log_format == HTML) {  //Open HTML BOSSlog.
 			if (fs::exists(bosslog_html_path))
 				wxLaunchDefaultApplication(bosslog_html_path.string());
-			else {
+			else
 				wxMessageBox(wxString::Format(
-					wxT("Error: No BOSSlog.html found. Make sure you have run BOSS with the HTML output format selected at least once before attempting to open the BOSSlog in the HTML format.")
+					wxT("Error: \"BOSSlog.html\" cannot be found!")
 				),
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,
 				this);
-			}
 		} else {  //Open text BOSSlog.
 			if (fs::exists("BOSSlog.txt"))
 				wxLaunchDefaultApplication("BOSSlog.txt");
-			else {
+			else
 				wxMessageBox(wxString::Format(
-					wxT("Error: No BOSSlog.txt found. Make sure you have run BOSS at least once with the plain text output format selected before attempting to open the BOSSlog in the plain text format.")
+					wxT("Error: \"BOSSlog.txt\" cannot be found!")
 				),
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,
 				this);
-			}
 		}
 	} else {
 		//Readme files. They could be anywhere - this could be complicated.
@@ -734,16 +725,15 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 		} else if (fs::exists(file + ".lnk")) {
 			file += ".lnk";
 			wxLaunchDefaultApplication(file);
-		} else {
-			//No ReadMe exists, show a pop-up message saying so.
+		} else  //No ReadMe exists, show a pop-up message saying so.
 			wxMessageBox(wxString::Format(
-				wxT("Error: No %s found. Make sure you have the ReadMe or a shortcut to the ReadMe in your BOSS folder."),
+				wxT("Error: \"" + file + ".html\" or \"" + file + ".lnk\" cannot be found!"),
 				file
 			),
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
 			this);
-		}
+
 	}
 }
 

@@ -17,6 +17,7 @@
 	td {border:1px solid #ccc; padding: 5px;}
 	table {border:1px solid #CCCCCC; border-spacing:0; border-collapse:separate; margin:1em;}
 	thead > tr td {font-weight:bold}
+	.errorMessages > li {margin-bottom:1.4em;}
 </style>
 
 <div>Better Oblivion Sorting Software</div>
@@ -357,8 +358,12 @@ There are three key pieces of information that are used to accurately describe a
 	<thead><tr><td>CSS Selector<td>Default Styling
 	<tbody>
 		<tr><td>body<td>font-family: Calibri,Arial,sans-serifs;
+		<tr><td>#darkBody<td>color: white; background: black;
+		<tr><td>.darkLink:link<td>color: #00AAFF;
+		<tr><td>.darkLink:visited<td>color: #E000E0;
 		<tr><td>#filters<td>border: 1px gray dashed; background: #F5F5F5; padding: 0.3em; display: table;
 		<tr><td>#filters > li<td>display: inline-block; padding: 0.2em 0.5em; white-space: nowrap; margin: 0; width: 200px;
+		<tr><td>#darkFilters<td>border: 1px gray dashed; background: #333333; padding:.3em; display:table;
 		<tr><td>body > div:first-child<td>font-size: 2.4em; font-weight: 700; text-align: center; margin-bottom: 0.2em;
 		<tr><td>body > div:first-child + div<td>text-align: center;
 		<tr><td>h3 + *<td>margin-bottom: 3em;
@@ -468,7 +473,7 @@ It is also possible to compile BOSS natively for Linux, and makefiles are provid
 		<tr><td>BOSS ReadMe.html<td>This ReadMe file.
 		<tr><td>BOSS User Rules ReadMe.html<td>The ReadMe file for BOSS's User Rules functionality.
 		<tr><td>BOSS Masterlist Syntax.html<td>Developer documentation detailing the formats and syntaxes used by the masterlists.
-		<tr><td>BOSS API ReadMe.html<td>The ReadMe file for the BOSS API, for use by third-party developers.
+		<tr style="display:none;"><td>BOSS API ReadMe.html<td>The ReadMe file for the BOSS API, for use by third-party developers.
 		
 </table>
 </div>
@@ -544,66 +549,32 @@ a problem for which no error message is given, please report the crash or proble
 <br />
 
 <h2 id="errors">Error Messages</h2>
-<p style="background:red;color:white;">NEEDS UPDATING</p>
-<p>If BOSS can detect a specific reason for being unable to function correctly, it will print an error message detailing the problem. BOSS's error messages are listed below, along with details of the issues and possible solutions. The list does not include any messages related to user rule application.
-<ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: file '<code>filename</code>' could not be accessed for writing.</i>
-	<ul>
-		<li><b>Issue:</b> BOSS does not have permission to write to the given file if it exists.
-		<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
-	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Critical Error: Oblivion.esm and Nehrim.esm have both been found!</i>
+<p style="background:red;color:white;">NEEDS UPDATING WITH USER RULES EDITOR ERROR MESSAGES.</p>
+<p>If BOSS can detect a specific reason for being unable to function correctly, it will print an error message detailing the problem. BOSS's error messages are listed below, along with details of the issues and possible solutions.
+<ul class="errorMessages">
+	<li><b>Message:</b> <i>Oblivion.esm and Nehrim.esm both detected!</i>
 	<ul>
 		<li><b>Issue:</b> You have installed Nehrim incorrectly.
 		<li><b>Solution:</b> Uninstall Nehrim, read its Readme, then re-install it correctly.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Critical Error: Master .ESM file not found!</i>
+	<li><b>Message:</b> <i>No game master .esm file found!</i>
 	<ul>
 		<li><b>Issue:</b> BOSS is not being run in the correct folder.
 		<li><b>Solution:</b> Move the BOSS folder containing all of BOSS's files into your game's installation folder, which is the one that contains the Data folder.
-		<li><b>Issue:</b> Your master .ESM file is deactivated and ghosted by Wrye Bash/Flash/Flash NV.
+		<li><b>Issue:</b> Your master .ESM file is deactivated and ghosted by <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>.
 		<li><b>Solution:</b> Re-activate your master .ESM file.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: Masterlist update failed.</i>
+	<li><b>Message:</b> <i>"<code>filename</code>" cannot be read!</i>
 	<ul>
-		<li><b>Detail:</b> Invalid proxy hostname or port specified.
-		<li><b>Detail:</b> Invalid proxy type specified.
-		<li><b>Solution:</b> Your proxy settings in your <q>BOSS.ini</q> are invalid. Correct them before attempting to check for updates again.
-		<li><b>Detail:</b> Curl could not be initialised.
-		<li><b>Solution:</b> No specific solution. Try again later.
-		<li><b>Detail:</b> None of the supported games were detected.
-		<li><b>Solution:</b> This error message should never be displayed. Contact the BOSS development team for support.
-		<li><b>Detail:</b> Cannot find online masterlist revision number.
-		<li><b>Detail:</b> Cannot find online masterlist revision date.
-		<li><b>Solution:</b> Contact the BOSS development team for support. This message means that either the layout of the download page has changed or you are using a proxy that is blocking or malformatting the page.
-		<li><b>Detail:</b> Masterlist cannot be opened.
-		<li><b>Solution:</b> Make sure that your BOSS folder (and masterlist.txt if it exists) is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
-		<li><b>Issue:</b> Other network error.
-		<li><b>Solution:</b> There was a problem in getting information from the Internet. Depending on the error given, make sure your Internet connection is working correctly, or try again later. If you use a proxy make sure that the proxy service is running and that you have the proxy settings recorded in your <q>BOSS.ini</q>.
+		<li><b>Solution:</b> If <code>filename</code> is the masterlist, ensure that the masterlist updater is enabled and run BOSS again to download the masterlist to the correct location.
+		<li><b>Solution:</b> Ensure <code>filename</code> exists, and that you have read permissions for the file and its parent folders.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>No Internet connection detected. Masterlist auto-updater aborted.</i>
+	<li><b>Message:</b> <i>"<code>filename</code>" cannot be written to!</i>
 	<ul>
-		<li><b>Solution:</b> If you are certain that you do have an Internet connection, it could be because you use a proxy to connect to the Internet. Enter your proxy connection details into the relevant parts of the <q>BOSS.ini</q> and try again. 
-		If you are unsure whether you are using a proxy and are trying to use BOSS in an enterprise environment, contact your network administrator for your proxy details. If you continue to have difficulty or are not using a proxy, contact the BOSS development team for further support.
+		<li><b>Issue:</b> BOSS does not have permission to write to <code>filename</code> if it exists.
+		<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Critical Error: Master .ESM file cannot be read!</i>
-	<ul>
-		<li><b>Solution:</b> If this error is displayed, it means that your master .ESM file exists, but its date cannot be read. This can only take place under very specialised circumstances, such as corruption of your master .ESM file, and probably means you will have to seek expert help.
-	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Critical Error: Modlist backup failed!</i>
-	<ul>
-		<li><b>Detail:</b> Modlist backup cannot be saved.
-		<li><b>Issue:</b> Other filesystem error.
-		<li><b>Solution:</b> Check that the file is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
-	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Critical Error: "<code>filename</code>" cannot be read!</i>
-	<ul>
-		<li><b>Issue:</b> BOSS cannot find your masterlist.
-		<li><b>Solution:</b> If you have disabled the automatic masterlist updater, enable it and run BOSS again to download the masterlist to the correct location.
-		<li><b>Issue:</b> BOSS cannot find the specified modlist backup.
-		<li><b>Solution:</b> Make sure the modlist for the undo level you have specified exists. A level 1 undo requires <q>modlist.txt</q> and a level 2 undo requires <q>modlist.old</q> to be present.
-	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Critical Error: "<code>filename</code>" is not encoded in valid UTF-8. Please save the file using the UTF-8 encoding.</i>
+	<li><b>Message:</b> <i>"<code>filename</code>" is not encoded in valid UTF-8!</i>
 	<ul>
 		<li><b>Issue:</b> If <code>filename</code> is "userlist.txt", BOSS has detected that your userlist.txt is saved using the wrong encoding, and is unable to read it.
 		<li><b>Solution:</b> Re-save the file given in the correct "UTF-8" encoding. If you are unsure on how to do so, follow these instructions:
@@ -616,95 +587,130 @@ a problem for which no error message is given, please report the crash or proble
 		<p>A file only needs to be converted to the correct encoding once, thereafter it will continue to save in the correct encoding whenever you edit it.
 		
 		<li><b>Issue:</b> If <code>filename</code> is not "userlist.txt", BOSS is not functioning correctly.
-		<li><b>Solution:</b> Re-save the file given in the correct "UTF-8" encoding. Report this to the BOSS development team.
+		<li><b>Solution:</b> Re-save <code>filename</code> in the correct "UTF-8" encoding. Report this issue to the BOSS development team.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: <code>filename</code> generation failed. Ensure your BOSS folder is not read-only.</i>
+	<li><b>Message:</b> <i>"<code>filename</code>" cannot be found!</i>
 	<ul>
-		<li><b>Solution:</b> Check that the file is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
+		<li><b>Solution:</b> Ensure <code>filename</code> exists. If <code>filename</code> is a BOSS Log and you are trying to open it from the GUI, make sure that you have run BOSS at least once	with it set to generate the format of BOSS Log you are trying to view.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: Could not change the date of "<code>filename</code>", make sure you have write access to it.</i>
+	<li><b>Message:</b> <i>No game detected!</i>
 	<ul>
-		<li><b>Issue:</b> BOSS does not have permission to write to the file given.
-		<li><b>Solution:</b> Check that the file is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
+		<li><b>Issue:</b> BOSS cannot tell what game it is running for.
+		<li><b>Solution:</b> Report this issue to the BOSS development team.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i><code>File</code> Parsing Error: Expected a...</i>
+	<li><b>Message:</b> <i>Cannot find online masterlist revision number!</i>
 	<ul>
-		<li><b>Issue:</b> BOSS failed to parse one of your files, either the <q>BOSS.ini</q>, the <q>masterlist.txt</q> or the <q>userlist.txt</q>.
-		<li><b>Solution:</b> If the <code>File</code> is "Masterlist" and you have not edited your masterlist, report the error to the BOSS development team.
-		<li><b>Solution:</b> If the <code>File</code> is not "Masterlist", double check your changes to the file and correct the error. The message may or may not give useful details, and will probably display multiple messages for each fault.
+		<li><b>Solution:</b> Report this issue to the BOSS development team.
 	</ul>
-</ul>
-<p>Below is a list of possible error messages for the GUI:
-<ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: BOSS.ini parsing failed. Some or all of the GUI's options may not have been set correctly. Run BOSS to see the details of the failure.</i>
+	<li><b>Message:</b> <i>Cannot find online masterlist revision date!</i>
 	<ul>
-		<li><b>Solution:</b> Double check your ini settings and correct any that are invalid. If you run BOSS it will display error messages detailing the issues.
+		<li><b>Solution:</b> Report this issue to the BOSS development team.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: BOSS.ini generation failed. Ensure your BOSS folder is not read-only. None of the GUI's options will be saved.</i>
+	<li><b>Message:</b> <i>Cannot read list of files to be updated!</i>
 	<ul>
-		<li><b>Solution:</b> Check that the file is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
+		<li><b>Solution:</b> Report this issue to the BOSS development team.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: BOSS.ini could not be saved. Ensure your BOSS folder is not read-only.</i>
+	<li><b>Message:</b> <i>Downloaded file "<code>filename</code>" failed verification test!</i>
 	<ul>
-		<li><b>Solution:</b> Check that the file is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
+		<li><b>Issue:</b> <code>filename</code> was corrupted during download or the download did otherwise not complete properly.
+		<li><b>Solution:</b> Try updating again.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: BOSS.exe not found. Reinstall BOSS correctly, so that both BOSS.exe and BOSS GUI.exe are in the BOSS folder in your game's installation directory.</i>
+	<li><b>Message:</b> <i>The modification date of "<code>filename</code>" cannot be read! Filesystem response: "<code>further details</code>".</i>
 	<ul>
-		<li>Self-explanatory.
+		<li><b>Solution:</b> Ensure <code>filename</code> exists, and that you have read permissions for the file and its parent folders.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>No BOSSlog.html found. Make sure you have run BOSS from BOSS.exe, or run it with the HTML output format selected, at least once before attempting to open the BOSS Log in the HTML format.</i>
+	<li><b>Message:</b> <i>"<code>filename</code>" cannot be renamed! Filesystem response: "<code>further details</code>".</i>
 	<ul>
-		<li><b>Issue:</b> You're trying to open the text BOSS Log you have generated, but the <q>BOSS Log Format</q> option is set to 'HTML'.
-		<li><b>Solution:</b> Set the <q>BOSS Log Format</q> option to 'Plain Text' to open the text BOSS Log.
-		<li><b>Issue:</b> BOSS has not yet been run.
-		<li><b>Solution:</b> Run BOSS at least once before attempting to view a BOSS Log.
-		<li><b>Issue:</b> BOSS has only been run configured to generate text BOSS Logs.
-		<li><b>Solution:</b> Set BOSS to generate a HTML BOSS Log, then run BOSS. A HTML BOSS Log needs to be generated before you can view it.
+		<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>No BOSSlog.txt found. Make sure you have run BOSS at least once with the text output format selected before attempting to open the BOSS Log in the plain text format.</i>
+	<li><b>Message:</b> <i>"<code>filename</code>" cannot be deleted! Filesystem response: "<code>further details</code>".</i>
 	<ul>
-		<li><b>Issue:</b> You're trying to open the HTML BOSS Log you have generated, but the <q>BOSS Log Format</q> option is set to 'Plain Text'.
-		<li><b>Solution:</b> Set the <q>BOSS Log Format</q> option to 'HTML' to open the text BOSS Log.
-		<li><b>Issue:</b> BOSS has never been run configured to generate text BOSS Logs.
-		<li><b>Solution:</b> Set BOSS to generate a text BOSS Log, then run BOSS. A text BOSS Log needs to be generated before you can view it.
+		<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Error: No '<code>filename</code>' found. Make sure you have the ReadMe or a shortcut to the ReadMe in your BOSS folder.</i>
+	<li><b>Message:</b> <i>cURL cannot be initialised!</i>
 	<ul>
-		<li><b>Solution:</b> Re-install the ReadMe from the downloaded manual archive, or re-install BOSS using the installer.
-	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Update check failed. Details: ...</i>
-	<ul>
-		<li><b>Detail:</b> Invalid proxy hostname or port specified.
-		<li><b>Detail:</b> Invalid proxy type specified.
-		<li><b>Solution:</b> Your proxy settings in your <q>BOSS.ini</q> are invalid. Correct them before attempting to check for updates again.
-		<li><b>Detail:</b> Curl could not be initialised.
+		<li><b>Issue:</b> The program that BOSS uses to connect to the Internet could not be initialised.
 		<li><b>Solution:</b> No specific solution. Try again later.
-		<li><b>Issue:</b> Other network error.
-		<li><b>Solution:</b> There was a problem in getting information from the Internet. Depending on the error given, make sure your Internet connection is working correctly, or try again later. If you use a proxy make sure that the proxy service is running and that you have the proxy settings recorded in your <q>BOSS.ini</q>.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Update check failed: No Internet connection detected.</i>
+	<li><b>Message:</b> <i>cURL's error buffer could not be set! cURL response: "<code>further details</code>".</i>
+	<ul>
+		<li><b>Issue:</b> The error buffer used by the program BOSS uses to connect to the Internet could not be set.
+		<li><b>Solution:</b> Report this issue to the BOSS development team.
+	</ul>
+	<li><b>Message:</b> <i>A cURL option could not be set! cURL response: "<code>further details</code>".</i>
+	<ul>
+		<li><b>Issue:</b> Some parameter that is required for BOSS to perform Internet-related tasks could not be set.
+		<li><b>Solution:</b> Report this issue to the BOSS development team.
+	</ul>
+	<li><b>Message:</b> <i>Proxy hostname or port invalid! cURL response: "<code>further details</code>".</i>
+	<ul>
+		<li><b>Issue:</b> BOSS was unable to set the given proxy hostname or port number.
+		<li><b>Solution:</b> Your proxy settings in your <q>BOSS.ini</q> are invalid. Correct them before running BOSS again.
+	</ul>
+	<li><b>Message:</b> <i>Failed to set proxy type! cURL response: "<code>further details</code>".</i>
+	<ul>
+		<li><b>Issue:</b> BOSS was unable to automatically determine your proxy type.
+		<li><b>Solution:</b> Report this issue to the BOSS development team.
+	</ul>
+	<li><b>Message:</b> <i>Proxy authentication username or password invalid! cURL response: "<code>further details</code>".</i>
+	<ul>
+		<li><b>Issue:</b> BOSS cannot connect to your proxy using the given username and password combination.
+		<li><b>Solution:</b> Ensure that you have written the correct username and password in your <q>BOSS.ini</q>.
+	</ul>
+	<li><b>Message:</b> <i>Failed to set proxy authentication type! cURL response: "<code>further details</code>".</i>
+	<ul>
+		<li><b>Issue:</b> BOSS was unable to automatically determine the type of authentication used by your proxy.
+		<li><b>Solution:</b> Report this issue to the BOSS development team.
+	</ul>
+	<li><b>Message:</b> <i>cURL could not perform task! cURL response: "<code>further details</code>".</i>
+	<ul>
+		<li><b>Issue:</b> BOSS could not download a file or perform some other Internet-related task.
+		<li><b>Solution:</b> Report this issue to the BOSS development team.
+	</ul>
+	<li><b>Message:</b> <i>Cancelled by user.</i>
+	<ul>
+		<li><b>Issue:</b> You cancelled the process. No issue.
+	</ul>
+	<li><b>Message:</b> <i>Parsing of <code>filename</code> failed!</i>
+	<ul>
+		<li><b>Issue:</b> The contents of <code>filename</code> was not in the format the BOSS expected.
+		<li><b>Solution:</b> BOSS should provide some further information on the nature of the issue. If you have edited the file, use this information to help correct whatever mistake you have made. If you have not edited the file, report this issue to the BOSS development team.
+	</ul>
+	<li><b>Message:</b> <i>The modification date of "<code>filename</code>" cannot be written!</i>
+	<ul>
+		<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
+	</ul>
+	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>No Internet connection detected.</i>
 	<ul>
 		<li><b>Solution:</b> If you are certain that you do have an Internet connection, it could be because you use a proxy to connect to the Internet. Enter your proxy connection details into the relevant parts of the <q>BOSS.ini</q> and try again. 
-		If you are unsure whether you are using a proxy and are trying to use BOSS in an enterprise environment, contact your network administrator for your proxy details. If you continue to have difficulty or are not using a proxy, contact the BOSS development team for further support.
+		If you are unsure whether you are using a proxy and are trying to use BOSS in an enterprise environment, contact your network administrator for your proxy details. If you continue to have difficulty or are not using a proxy, report this issue to the BOSS development team.
 	</ul>
-	<li style="margin-bottom:1.4em;"><b>Message:</b> <i>Update failed. Details: ... Update cancelled.</i>
+	<li><b>Message:</b> <code>file</code> Parsing Error: Expected a <code>string</code> at: <code>block of text</code>. <code>file</code> parsing aborted.
 	<ul>
-		<li><b>Detail:</b> Invalid proxy hostname or port specified.
-		<li><b>Detail:</b> Invalid proxy type specified.
-		<li><b>Solution:</b> Your proxy settings in your <q>BOSS.ini</q> are invalid. Correct them before attempting to check for updates again.
-		<li><b>Detail:</b> Curl could not be initialised.
-		<li><b>Solution:</b> No specific solution. Try updating again later.
-		<li><b>Detail:</b> Could not read remote file information.
-		<li><b>Solution:</b> No solution. Inform the BOSS development team in case it is an issue with the remote files, and try again later.
-		<li><b>Detail:</b> Could not save "<code>filename</code>".
-		<li><b>Solution:</b> Ensure your BOSS folder is not read-only.
-		<li><b>Detail:</b> Downloaded file "<code>filename</code>" failed verification test. Please try updating again.
-		<li><b>Solution:</b> No specific solution. The file was corrupted during download. Try updating again later.
-		<li><b>Issue:</b> Other network error.
-		<li><b>Solution:</b> There was a problem in getting information from the Internet. Depending on the error given, make sure your Internet connection is working correctly, or try again later. If you use a proxy make sure that the proxy service is running and that you have the proxy settings recorded in your <q>BOSS.ini</q>.
-		<li><b>Issue:</b> Other filesystem error.
-		<li><b>Solution:</b> The updater couldn't update one of your files. Make sure it is not currently in use and that it is not read-only and try again.
+		<li><b>Issue:</b> BOSS encountered unexpected formatting in the given file.
+		<li><b>Solution:</b> If you have edited the file, try using the information on what is expected where to solve the issue. Otherwise, report this issue to the BOSS development team.
 	</ul>
+</ul>
+<p>The following error messages may be produced when a user rule with invalid syntax is encountered. To solve, correct the issue the message highlights. All messages detail the specific fault found.
+<ul class="errorMessages">
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" includes a sort line in a rule with a FOR rule keyword.
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" tries to add a group.
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" tries to sort the group "ESMs".
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" tries to sort the master .ESM file.
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" references a mod and a group.
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" tries to sort a group before the group "ESMs".
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" tries to sort a mod before the master .ESM file.
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" tries to insert a mod into the top of the group "ESMs", before the master .ESM file.
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" tries to insert a group or insert something into a mod.
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" tries to attach a message to a group.
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" has more than one sort line.
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" has more than one REPLACE-using message line.
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" has a REPLACE-using message line that is not the first message line.
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" has a sort line that is not the second line of the rule.
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" tries to sort a mod or group relative to itself.
+</ul>
+	
+	
 </ul>
 </div>
 
@@ -721,12 +727,18 @@ a problem for which no error message is given, please report the crash or proble
 <p>Some people have gone out of their way and provided continuing, expert and detailed help - <b>thank you very much</b>! In addition to the above, the following are credited with additional application-related support:
 <ul>
 	<li>The Wrye Bash development team: For implementing the importing of BOSS's Bashed Patch tag suggestions and general support for BOSS into <a href="http://tesnexus.com/downloads/file.php?id=22368">Wrye Bash</a>.
-	<li>The Beta Testing &amp; Analysis Guild at <a href="http://tesalliance.org/forums/">TES Alliance</a>: For extensive testing and giving feedback on v1.6 prior to release.
-	<li>Surazal: For extensive testing and feedback during development of v1.6, and for providing the inspiration for many features through his BOSS Masterlist Manager macro for Microsoft Word.
-	<li>myk002: For extensive code contributions and testing during development of v1.6+.
-	<li>Hickory: For testing and feedback on v1.7+ prior to release, and providing the icon used by the BOSS and GUI executables.
-	<li>andalaybay: For testing and feedback on v1.7+ prior to release.
-	<li>Telyn: For testing and feedback on v1.8 prior to release.
+	<li>Surazal: For extensive testing of v1.6+ prior to release and for providing the inspiration for many features through his BOSS Masterlist Manager macro for Microsoft Word.
+	<li>myk002: For extensive testing and code contributions during development of v1.6+.
+	<li>Hickory: For extensive testing and for providing the icon used by the BOSS and GUI executables.
+	<li>The following, for testing and feedback on v1.6+ prior to release:
+	<ul>
+		<li>The Beta Testing &amp; Analysis Guild at <a href="http://tesalliance.org/forums/">TES Alliance</a>
+		<li>andalaybay
+		<li>Telyn
+		<li>saebel
+		<li>Dubiousness
+		<li>Ysne58
+	</ul>
 </ul>
 <p>The BOSS programs are written in C/C++ and make use of the <a href="http://www.boost.org/">BOOST</a>, <a href="http://curl.haxx.se/libcurl/">libcurl</a>, <a href="http://www.wxwidgets.org/">wxWidgets</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries. Without them, the majority of BOSS's features would probably never have been implemented.
 </div>
@@ -790,8 +802,8 @@ a problem for which no error message is given, please report the crash or proble
 some rights reserved, 2009-2011. Copyright is owned wholly by the Better Oblivion Sorting Software development team (see list of project members).
 <ul>
 	<li>BOSS may be copied and distributed freely as long as it is not changed and includes all the original files including this documentation.
-	<li>Commercial use of this software or masterlist.txt file is not permitted without permission.
-	<li>Publishing derivations and customisations of the BOSS or BOSS GUI programs or masterlist.txt file is not permitted without permission. Ask first.
+	<li>Commercial use of this software or masterlist.txt file is not permitted.
+	<li>Publishing derivations and customisations of the BOSS or BOSS GUI programs or masterlist.txt file is not permitted.
 </ul>
 <p>A copy of libcurl's license is included below to comply with its terms.
 <blockquote><pre>COPYRIGHT AND PERMISSION NOTICE
@@ -835,7 +847,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 
 <div id="history"><h1>Version History</h1>
 <p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.
-<p><b>Version 1.9</b> - <i>2011</i>
+<p><b>Version 1.9</b> - <i>November 2011</i>
 <ul>
 	<li>Changed: Major refactoring of BOSS code into a common library, a Command Line Interface and a Graphical User Interface.
 	<li>Common Library:
@@ -858,6 +870,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 			<li>Ini parsing errors are now displayed in the <q>General Messages</q> section.
 			<li>The filters are now laid out in a more grid-like fashion.
 			<li>Added whitespace characters between plugin filenames, versions, ghosted labels and CRCs to make copy/pasted text more readable.
+			<li>Coloured links in the dark colour scheme so that they are easier to read.
 		</ul>
 		<li>Changes to BOSS.ini variables:
 		<ul>
@@ -874,11 +887,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 		</ul>
 		<li>Changed: Major rewrite of most of the common code, including more object-orientation of code, removal of some unused functions, implementation of an class for formatted output using generic placeholders and much more.
 		<li>Added: <q>Hide Clean Mods</q> and <q>Hide 'Do Not Clean' Messages</q> BOSS Log filters.
-		<li>Added: Support for Skyrim:
-		<ul>
-			<li>This assumes Skyrim's master file will be <q>Skyrim.esm</q> and that the executable will be <q>Skyrim.exe</q>. If different, BOSS will be updated upon Skyrim's release with the real filenames.
-			<li style="display:none;">While the team responsible for OBSE, FOSE and NVSE have not made any comments officially or unofficially regarding Skyrim, BOSS has added support for a Skyrim Script Extender with the assumptions that it uses the <code>Data\SKSE\Plugins\</code> directory for its plugins and has a loader named <q>skse_loader.exe</q>.
-		</ul>
+		<li>Added: Support for TES V: Skyrim.
 		<li>Added: Support for MF2.2 syntax, including C-style comments, regular expression conditions, case-insensitive keywords and expanded conditional shorthands.
 		<li>Added: Built-in debug output logging support.
 		<li>Added: <code>DISABLE</code> keyword to user rules that can be placed before a rule's rule keyword to disable it, instead of commenting it out to do the same.
@@ -909,7 +918,6 @@ threads when you read this. Just navigate through to the latest thread to post a
 		<li>Changed: Opening files from the GUI no longer causes a command line window to display.
 		<li>Changed: The Check For Updates feature no longer causes the GUI to stop responding, either run on startup or through the menu option.
 	</ul>
-	<li>(API) Added: BOSS API released as a 32 bit DLL. See the BOSS API ReadMe for more information.
 	<li>(Docs) Changed: Major updates to main readme to reflect changes.
 	<li>(Docs) Added: Masterlist Syntax HTML documentation for BOSS team members and interested third parties.
 </ul>

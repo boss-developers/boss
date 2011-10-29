@@ -187,14 +187,14 @@ int main(int argc, char *argv[]) {
 		try {
 			ini.Load(ini_path);
 		} catch (boss_error e) {
-			LOG_ERROR("Ini parsing failed. Details: %s", e.getString().c_str());
+			LOG_ERROR("Error: %s", e.getString().c_str());
 			//Error will be added to log once format has been set.
 		}
 	} else {
 		try {
 			ini.Save(ini_path);
 		} catch (boss_error e) {
-			contents.iniParsingError = "<p class='error'>Error: BOSS.ini generation failed. Details: " + e.getString() + ". Ensure your BOSS folder is not read-only.";
+			contents.iniParsingError = "<p class='error'>Error: " + e.getString();
 		}
 	}
 
@@ -221,10 +221,9 @@ int main(int argc, char *argv[]) {
 			LOG_ERROR("invalid option for 'verbose' parameter: %d", debug_verbosity);
 			Fail();
 		}
-
-		// it's ok if this number is too high.  setVerbosity will handle it
-		g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + debug_verbosity));
 	}
+	// it's ok if this number is too high.  setVerbosity will handle it
+	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + debug_verbosity));
 	if ((vm.count("update")) && (vm.count("no-update"))) {
 		LOG_ERROR("invalid options: --update,-u and --no-update,-U cannot both be given.");
 		Fail();
@@ -246,11 +245,11 @@ int main(int argc, char *argv[]) {
 	}
 	if (vm.count("game")) {
 		// sanity check and parse argument
-		if      (boost::iequals("Oblivion",   gameStr)) { game = 1; }
-		else if (boost::iequals("Fallout3",   gameStr)) { game = 2; }
-		else if (boost::iequals("Nehrim",     gameStr)) { game = 3; }
-		else if (boost::iequals("FalloutNV", gameStr)) { game = 4; }
-		else if (boost::iequals("Skyrim", gameStr)) { game = 5; }
+		if      (boost::iequals("Oblivion",   gameStr)) { game = OBLIVION; }
+		else if (boost::iequals("Fallout3",   gameStr)) { game = FALLOUT3; }
+		else if (boost::iequals("Nehrim",     gameStr)) { game = NEHRIM; }
+		else if (boost::iequals("FalloutNV", gameStr)) { game = FALLOUTNV; }
+		else if (boost::iequals("Skyrim", gameStr)) { game = SKYRIM; }
 		else {
 			LOG_ERROR("invalid option for 'game' parameter: '%s'", gameStr.c_str());
 			Fail();
@@ -272,8 +271,7 @@ int main(int argc, char *argv[]) {
 		LOG_DEBUG("BOSSlog format set to: '%s'", bosslogFormat.c_str());
 	}
 	output.SetFormat(log_format);
-	if (!ini.errorBuffer.Empty())
-		contents.iniParsingError = ini.errorBuffer.FormatFor(log_format);
+	contents.iniParsingError = ini.errorBuffer.FormatFor(log_format);
 
 	/////////////////////////
 	// BOSS Updater Stuff
@@ -543,7 +541,7 @@ int main(int argc, char *argv[]) {
 				LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
 			}
 		} else {
-			output << PARAGRAPH << "No internet connection detected. masterlist auto-updater aborted.";
+			output << PARAGRAPH << "No internet connection detected. Masterlist auto-updater aborted.";
 			contents.summary = output.AsString();
 		}
 	}
@@ -632,12 +630,11 @@ int main(int argc, char *argv[]) {
 		masterlist.Load(sortfile);
 		contents.globalMessages = masterlist.globalMessageBuffer;
 	} catch (boss_error e) {
-		contents.criticalError = masterlist.errorBuffer.FormatFor(log_format);
 		output.Clear();
 		output.PrintHeader();
 		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
 			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
-				<< contents.criticalError << LIST_CLOSE;
+				<< masterlist.errorBuffer.FormatFor(log_format) << LIST_CLOSE;
 		else
 			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
@@ -657,15 +654,11 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Starting to parse userlist.");
 	try {
 		userlist.Load(userlist_path);
-		if (!userlist.parsingErrorBuffer.Empty())
-			contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(log_format);
 		for (vector<ParsingError>::iterator iter; iter != userlist.syntaxErrorBuffer.end(); ++iter)
 			contents.userlistSyntaxErrors.push_back(iter->FormatFor(log_format));
 	} catch (boss_error e) {
+		contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(log_format);
 		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
-		output.Clear();
-		output << LIST_ITEM_CLASS_ERROR << "Error: " << e.getString() << " userlist parsing aborted. No rules will be applied.";
-		contents.userlistParsingError = output.AsString();
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
 

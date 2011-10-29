@@ -100,27 +100,27 @@ namespace boss {
 			case BOSS_ERROR_FILE_CRC_MISMATCH:
 				return "Downloaded file \"" + errSubject + "\" failed verification test!"; 
 			case BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL:
-				return "The modification date of \"" + errSubject + "\" cannot be read! Filesystem response: " + errString;
+				return "The modification date of \"" + errSubject + "\" cannot be read! Filesystem response: \"" + errString + "\".";
 			case BOSS_ERROR_FS_FILE_RENAME_FAIL:
-				return "\"" + errSubject + "\" cannot be renamed! Filesystem response: " + errString;
+				return "\"" + errSubject + "\" cannot be renamed! Filesystem response: \"" + errString + "\".";
 			case BOSS_ERROR_FS_FILE_DELETE_FAIL:
-				return "\"" + errSubject + "\" cannot be deleted! Filesystem response: " + errString;
+				return "\"" + errSubject + "\" cannot be deleted! Filesystem response: \"" + errString + "\".";
 			case BOSS_ERROR_CURL_INIT_FAIL:
 				return "cURL cannot be initialised!";
 			case BOSS_ERROR_CURL_SET_ERRBUFF_FAIL:
-				return "cURL's error buffer could not be set! cURL response: " + errString;
+				return "cURL's error buffer could not be set! cURL response: \"" + errString + "\".";
 			case BOSS_ERROR_CURL_SET_OPTION_FAIL:
-				return "A cURL option could not be set! cURL response: " + errString;
+				return "A cURL option could not be set! cURL response: \"" + errString + "\".";
 			case BOSS_ERROR_CURL_SET_PROXY_FAIL:
-				return "Proxy hostname or port invalid! cURL response: " + errString;
+				return "Proxy hostname or port invalid! cURL response: \"" + errString + "\".";
 			case BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL:
-				return "Failed to set proxy type! cURL response: " + errString;
+				return "Failed to set proxy type! cURL response: \"" + errString + "\".";
 			case BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL:
-				return "Proxy authentication username or password invalid! cURL response: " + errString;
+				return "Proxy authentication username or password invalid! cURL response: \"" + errString + "\".";
 			case BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL:
-				return "Failed to set proxy authentication type! cURL response: " + errString;
+				return "Failed to set proxy authentication type! cURL response: \"" + errString + "\".";
 			case BOSS_ERROR_CURL_PERFORM_FAIL:
-				return "cURL could not perform task! cURL response: " + errString;
+				return "cURL could not perform task! cURL response: \"" + errString + "\".";
 			case BOSS_ERROR_CURL_USER_CANCEL:
 				return "Cancelled by user.";
 			case BOSS_ERROR_FILE_PARSE_FAIL:

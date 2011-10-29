@@ -30,16 +30,6 @@ namespace boss {
 	// Internal Functions
 	////////////////////////
 
-	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
-	boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
-		while(startPos != set.end()) {
-			if (boost::regex_match(*startPos,reg))
-				return startPos;
-			++startPos;
-		}
-		return set.end();
-	}
-
 	//Returns the expeccted master file. Usage internal to BOSS-Common.
 	string GameMasterFile() {
 		if (game == OBLIVION) 
@@ -141,7 +131,7 @@ namespace boss {
 					try {
 						fs::last_write_time(data_path / iter->name,modfiletime);
 					} catch(fs::filesystem_error e) {
-						buffer << SPAN_CLASS_ERROR_OPEN << "Error: Could not change the date of \"" << iter->name.string() << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions." << SPAN_CLOSE;
+						buffer << SPAN_CLASS_ERROR_OPEN << "Error: The modification date of \"" << iter->name.string() << "\" cannot be written!" << SPAN_CLOSE;
 					}
 				}
 				//Finally, print the mod's messages.
@@ -194,7 +184,7 @@ namespace boss {
 					try {
 						fs::last_write_time(data_path / iter->name,modfiletime);
 					} catch(fs::filesystem_error e) {
-						buffer << SPAN_CLASS_ERROR_OPEN << "Error: Could not change the date of \"" << iter->name.string() << "\", check the Troubleshooting section of the ReadMe for more information and possible solutions." << SPAN_CLOSE;
+						buffer << SPAN_CLASS_ERROR_OPEN << "Error: The modification date of \"" << iter->name.string() << "\" cannot be written!" << SPAN_CLOSE;
 					}
 				}
 				counters.unrecognised++;
@@ -410,6 +400,16 @@ namespace boss {
 
 	summaryCounters::summaryCounters()
 		: recognised(0), unrecognised(0), ghosted(0), messages(0), warnings(0), errors(0) {}
+
+	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
+	BOSS_COMMON_EXP boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
+		while(startPos != set.end()) {
+			if (boost::regex_match(*startPos,reg))
+				return startPos;
+			++startPos;
+		}
+		return set.end();
+	}
 
 	//Record recognised mod list from last HTML BOSSlog generated.
 	BOSS_COMMON_EXP string GetOldRecognisedList(const fs::path log) {

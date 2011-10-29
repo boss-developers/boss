@@ -261,11 +261,11 @@ It will print error messages detailing the problems with any rules it skips, and
 	<li>If the rule includes a sort line and uses the sort keywords TOP or BOTTOM, it will print a message of the form: <code>"<em>Plugin Name</em>" inserted into the <em>top/bottom</em> of group "<em>Group Name</em>".</code>
 	<li>If the rule includes one or more message lines, each message line will give a message of the form: <code>"<em>Message</em>" <em>appended to/replaced</em> messages attached to "<em>Plugin Name</em>".</code>
 </ol>
-<p>If the parser finds a major grammatical error in your userlist, it will stop parsing and discard any rules it has found before printing an error message detailing what was expected and where. Depending on where the error was found, more than one message may be displayed. In some cases, the expected item may not provide much useful meaning - in these cases look at where the error was found and determine the exact cause of the problem yourself.
-<p>If a rule is found to have errors in its syntax, it will be skipped and an error message of the form: <code>Syntax Error: The rule beginning "<em>First Line Of Rule</em>" <em>details of error</em></code> will be printed to your BOSS Log.
+<p>If the parser finds a major grammatical error in your userlist, it will stop parsing and discard any rules it has found before printing an error message detailing what was expected and where. In some cases, the expected item may not provide much useful meaning - in these cases look at where the error was found and determine the exact cause of the problem yourself.
+<p>If a rule is found to have errors in its syntax, it will be skipped and an error message of the form: <code>Syntax Error: The rule beginning "<em>First Line Of Rule</em>" <em>details of error</em></code> will be printed to your BOSS Log. See the main BOSS ReadMe for a full list of possible syntax errors.
 <p>If an error is encountered while trying to apply a rule, it will be skipped and an error message detailing the fault will be printed to your BOSS Log.
 <p><b>Rule application does not alter your masterlist.txt or userlist.txt.</b> This means that if you want to undo the application of
-a rule, all you need to do is remove it from your userlist.txt and re-run BOSS.
+a rule, all you need to do is remove it from your userlist.txt (or disable it) and re-run BOSS.
 </div>
 
 <div id="notes"><h1>Further Notes On Rules</h1>
