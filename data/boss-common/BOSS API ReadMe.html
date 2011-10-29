@@ -24,7 +24,7 @@ API Documentation</div>
 <div><h1>Contents</h1>
 <ol>
 	<li><a href="#intro">Introduction</a>
-	<li><a href="#overview">Background Information</a>
+	<li><a href="#overview">Overview</a>
 	<li><a href="#types">Variable Types</a>
 	<li><a href="#codes">Return Codes</a>
 	<li><a href="#functions">Functions</a>
@@ -58,12 +58,7 @@ API Documentation</div>
 	<li>Extract dirty mod messages from the masterlist and determine cleanliness of mods.
 	<li>Write a minimal masterlist containing only mods with Bash Tag suggestions, and those suggestions.
 </ul>
-<p>The API can also handle determining compatibility with other versions of BOSS that may be present. The API currently has a few shortcomings over a general file read, owing to the fact that it parses the lists in the same manner that BOSS itself does:
-<ul>
-	<li>Conditional information is only accessible if the condition	is fulfilled. This means that when the user's installed mod list changes, the database will have to be reloaded.
-	<li>Database loading is very slow.
-</ul>
-<p>These shortcomings will be addressed in updates to the API, either in pre-release or in future releases.
+<p>The API can also handle determining compatibility with other versions of BOSS that may be present.
 <p>Below is a short overview of BOSS's masterlist, userlist and their capabilities for those unfamiliar with them:
 <p>The masterlist is the file which holds the load order of all BOSS's recognised plugins. There is a separate masterlist for each game that BOSS supports, but since it only ever works on one game at a time, only one masterlist is generally ever referred to at any one time. The masterlist also holds messages to attach to plugins that BOSS displays in its BOSS Log output file, and these messages include general notes, Bash Tag suggestions (for addition and/or removal), requirements, incompatibilities, information regarding dirty edits, warnings and errors.
 <p>The userlist is a file that BOSS users can use to override or add to BOSS's sorting and message display functionality using a specific rule syntax. The capabilities of these rules include overriding BOSS's ordering of individual plugins or groups of plugins, having BOSS sort plugins it would otherwise not recognise (ie. that are not in its masterlist) and adding or overriding plugin messages.
@@ -428,7 +423,8 @@ if __name__=='__main__':
 </div>
 
 <div id="history"><h1>Version History</h1>
-<p><b>Version 1.9</b> - <i>2011</i>
+<p>The version numbers refer to releases of BOSS as a whole, which is why the initial release of the API is v2.0.
+<p><b>Version 2.0</b> - <i></i>
 <ul>
 	<li>Initial release.
 </ul>
