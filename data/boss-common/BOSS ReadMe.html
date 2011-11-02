@@ -77,7 +77,7 @@
 </ul>
 <p>Better Oblivion Sorting Software (BOSS) will re-order your mod plugins to their correct positions, putting any mods it doesn't recognise after them, in the same order as they were before BOSS was run.
 <p>BOSS is designed to assist in the installation and usage of mods, especially more complex mods such as FCOM, MMM, FOOK and nVamp, and help mod users avoid serious conflicts. It is not a complete solution to load ordering issues, as there are far more mods out there 
-(estimated at about 25,000 for Oblivion, 12,000 for Fallout 3 and 6,000 for Fallout: New Vegas) than BOSS knows about. To properly place mods BOSS doesn't know about, a good working knowledge of mod load ordering for the relevant game is still necessary, for which some research and documentation reading will go a long way.
+(estimated at about 27,000 for Oblivion, 12,000 for Fallout 3 and 6,000 for Fallout: New Vegas) than BOSS knows about. To properly place mods BOSS doesn't know about, a good working knowledge of mod load ordering for the relevant game is still necessary, for which some research and documentation reading will go a long way.
 </div>
 
 <div id="install"><h1>Installation &amp; Basic Usage</h1>
@@ -215,7 +215,7 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 		<tr><td>General Messages<td>This section is only displayed if there are any applicable messages to be displayed. Its primary purpose is to allow BOSS to display messages specific to your Oblivion install that are not specific to any one mod. Parser and updater error messages are also displayed in this section.
 		<tr><td>Summary<td>This section gives a short summary of BOSS's actions. It breaks down the numbers of plugins installed and messages attached to them and gives the local masterlist version and whether or not it was updated. If the BOSS Log is in the HTML format it will also display a message if your recognised plugin list has not changed since you last ran BOSS.
 		<tr><td>Userlist Messages<td>This section is only displayed if BOSS finds any user rules in your userlist. It details the successes or failures of the application of your userlist rules.
-		<tr><td>Script Extender And Script Extender Plugin Checksums<td>This section is displayed when BOSS is run with the <q>Display File CRCs</q> option enabled and you have your game's Script Extender installed. It will list the Script Extender and any plugins for it that you have installed, displaying their versions (if given) and their CRCs.
+		<tr><td>Script Extender And Script Extender Plugins<td>This section is displayed if you have your game's Script Extender installed. It will list the Script Extender and any plugins for it that you have installed, displaying their versions (if given) and their CRCs (if run with <q>Display File CRCs</q> enabled).
 		<tr><td>Recognised And Re-ordered Plugins<td>This section comprises the bulk of BOSS's output, listing all your recognised installed plugins and any messages BOSS has attached to them, as well as version information (if given) and the plugin CRCs (if run with <q>Display File CRCs</q> enabled). 
 		<tr><td>Restored Load Order<td>This section is only displayed when BOSS is run to undo its changes, and lists your restored load order.
 		<tr><td>Unrecognised Plugins<td>This section lists any plugins you have installed that have not been recognised by BOSS. These plugins should be reported in an official BOSS thread with download links to their mods so they can be added to the relevant masterlist.
@@ -242,7 +242,7 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 		<tr><td>Hide Incompatibilities<td>Hides any messages attached to mods that have the <q>Incompatible with: </q> prefix.
 		<tr><td>Hide 'Do Not Clean' Messages<td>Hides any messages attached to mods that begin with <q>Contains dirty edits: Do not clean.</q>.
 </table>
-<p>In addition to the above filters, clicking on a section's title will collapse that section, hiding its contents. Clicking the title again will expand the section, making its contents visible again.
+<p>The number of plugins and messages hidden at any one time are displayed below the filters box in italics. In addition to the above filters, clicking on a section's title will collapse that section, hiding its contents. Clicking the title again will expand the section, making its contents visible again.
 <p>It is not possible to hide mod warning or error messages, as these are of a severity where they should almost certainly be acted upon, and not ignored. Be aware that if you hide all a mod's messages and then hide all messageless mods, that mod will be amongst those hidden.</p>
 <br />
 
@@ -858,6 +858,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 		<li>Fixed: User Rules which failed to add a plugin into the beginning or end of a group still incremented the number of recognised plugins as if the rule application had succeeded.
 		<li>Fixed: Userlist rules which reference plugins that are not installed now have warning messages reported instead of error messages.
 		<li>Fixed: Masterlist conditions now detect ghosted mods correctly.
+		<li>Fixed: The online Fallout: New Vegas masterlist's revision being checked instead of the online Fallout 3 masterlist's revision when updating the Fallout 3 masterlist.
 		<li>Changed: More robust error handling.
 		<li>Changed: User rules can now only use up to one sort line and/or one REPLACE message line per rule, and cannot sort mods/groups relative to themselves.
 		<li>Changed: Content and slight formatting changes to BOSS Log:
@@ -871,6 +872,8 @@ threads when you read this. Just navigate through to the latest thread to post a
 			<li>The filters are now laid out in a more grid-like fashion.
 			<li>Added whitespace characters between plugin filenames, versions, ghosted labels and CRCs to make copy/pasted text more readable.
 			<li>Coloured links in the dark colour scheme so that they are easier to read.
+			<li>The number of plugins and messages hidden at any one time is displayed below the filters box in italics.
+			<li>The Script Extender And Script Extender Plugins section is now always displayed, with CRCs only being calculated if the <q>Display File CRCs</q> option is set.
 		</ul>
 		<li>Changes to BOSS.ini variables:
 		<ul>

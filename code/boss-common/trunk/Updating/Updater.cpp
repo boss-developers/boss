@@ -372,11 +372,11 @@ namespace boss {
 		}
 		
 		//Extract revision number from page text.
-		if (game == OBLIVION) start = buffer.find("boss-oblivion");
-		else if (game == FALLOUT3) start = buffer.find("boss-fallout");
-		else if (game == NEHRIM) start = buffer.find("boss-nehrim");
-		else if (game == FALLOUTNV) start = buffer.find("boss-fallout-nv");
-		else if (game == SKYRIM) start = buffer.find("boss-skyrim");
+		if (game == OBLIVION) start = buffer.find("\"boss-oblivion\":");
+		else if (game == FALLOUT3) start = buffer.find("\"boss-fallout\":");
+		else if (game == NEHRIM) start = buffer.find("\"boss-nehrim\":");
+		else if (game == FALLOUTNV) start = buffer.find("\"boss-fallout-nv\":");
+		else if (game == SKYRIM) start = buffer.find("\"boss-skyrim\":");
 		else {
 			curl_easy_cleanup(curl);
 			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
@@ -403,11 +403,11 @@ namespace boss {
 		revision = atoi(buffer.substr(start,end).c_str());
 
 		//Extract revision date from page text.
-		if (game == OBLIVION) start = buffer.find("boss-oblivion");
-		else if (game == FALLOUT3) start = buffer.find("boss-fallout");
-		else if (game == NEHRIM) start = buffer.find("boss-nehrim");
-		else if (game == FALLOUTNV) start = buffer.find("boss-fallout-nv");
-		else if (game == SKYRIM) start = buffer.find("boss-skyrim");
+		if (game == OBLIVION) start = buffer.find("\"boss-oblivion\":");
+		else if (game == FALLOUT3) start = buffer.find("\"boss-fallout\":");
+		else if (game == NEHRIM) start = buffer.find("\"boss-nehrim\":");
+		else if (game == FALLOUTNV) start = buffer.find("\"boss-fallout-nv\":");
+		else if (game == SKYRIM) start = buffer.find("\"boss-skyrim\":");
 		else {
 			curl_easy_cleanup(curl);
 			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);

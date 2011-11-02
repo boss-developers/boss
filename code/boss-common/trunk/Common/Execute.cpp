@@ -78,7 +78,8 @@ namespace boss {
 			buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << SE << SPAN_CLOSE;
 			if (ver.length() != 0)
 				buffer << SPAN_CLASS_VERSION_OPEN << "Version: " << ver << SPAN_CLOSE;
-			buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << CRC << SPAN_CLOSE;
+			if (show_CRCs)
+				buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << CRC << SPAN_CLOSE;
 
 			if (!fs::is_directory(data_path / SEPluginLoc)) {
 				LOG_DEBUG("Script extender plugins directory not detected");
@@ -93,7 +94,8 @@ namespace boss {
 						buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << filename.string() << SPAN_CLOSE;
 						if (ver.length() != 0)
 							buffer << SPAN_CLASS_VERSION_OPEN << "Version: " + ver << SPAN_CLOSE;
-						buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " + CRC << SPAN_CLOSE;
+						if (show_CRCs)
+							buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " + CRC << SPAN_CLOSE;
 					}
 				}
 			}
@@ -211,77 +213,78 @@ namespace boss {
 		if (log_format == HTML) {  //Since this bit is HTML-only, don't bother using formatting placeholders.
 
 			bosslog << "<ul id='filters'>";
+			
+			bosslog << "<li><input type='checkbox'";
 			if (UseDarkColourScheme)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label>";
+				bosslog << " checked='checked' ";
+			bosslog << "id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label>";
 
+			bosslog << "<li><input type='checkbox'";
 			if (HideRuleWarnings)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b12' onclick='toggleRuleListWarnings(this)' /><label for='b12'>Hide Rule Warnings</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b12' onclick='toggleRuleListWarnings(this)' /><label for='b12'>Hide Rule Warnings</label>";
+				bosslog << " checked='checked' ";
+			bosslog << "id='b2' onclick='toggleRuleListWarnings(this)' /><label for='b2'>Hide Rule Warnings</label>";
 		
+			bosslog << "<li><input type='checkbox'";
 			if (HideVersionNumbers)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b2' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b2'>Hide Version Numbers</label>";
+				bosslog << " checked='checked' ";
+			bosslog << "id='b3' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b3'>Hide Version Numbers</label>";
 
+			bosslog << "<li><input type='checkbox'";
 			if (HideGhostedLabel)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b3'>Hide 'Ghosted' Label</label>";
-
+				bosslog << " checked='checked' ";
+			bosslog << "id='b4' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b4'>Hide 'Ghosted' Label</label>";
+			
+			bosslog << "<li><input type='checkbox'";
 			if (HideChecksums)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".crc\",\"inline\")' /><label for='b4'>Hide Checksums</label>";
-
+				bosslog << " checked='checked' ";
+			bosslog << "id='b5' onclick='toggleDisplayCSS(this,\".crc\")' /><label for='b5'>Hide Checksums</label>";
+			
+			bosslog << "<li><input type='checkbox'";
 			if (HideMessagelessMods)
-				bosslog << "<li><input type='checkbox' checked='checked' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='noMessageModFilter' onclick='toggleMods()' /><label for='noMessageModFilter'>Hide Messageless Mods</label>";
-
+				bosslog << " checked='checked' ";
+			bosslog << "id='b6' onclick='toggleMods()' /><label for='b6'>Hide Messageless Mods</label>";
+			
+			bosslog << "<li><input type='checkbox'";
 			if (HideGhostedMods)
-				bosslog << "<li><input type='checkbox' checked='checked' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='ghostModFilter' onclick='toggleMods()' /><label for='ghostModFilter'>Hide Ghosted Mods</label>";
-
+				bosslog << " checked='checked' ";
+			bosslog << "id='b7' onclick='toggleMods()' /><label for='b7'>Hide Ghosted Mods</label>";
+			
+			bosslog << "<li><input type='checkbox'";
 			if (HideCleanMods)
-				bosslog << "<li><input type='checkbox' checked='checked' id='cleanModFilter' onclick='toggleMods()' /><label for='cleanModFilter'>Hide Clean Mods</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='cleanModFilter' onclick='toggleMods()' /><label for='cleanModFilter'>Hide Clean Mods</label>";
-
+				bosslog << " checked='checked' ";
+			bosslog << "id='b8' onclick='toggleMods()' /><label for='b8'>Hide Clean Mods</label>";
+			
+			bosslog << "<li><input type='checkbox'";
 			if (HideAllModMessages)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b7' onclick='toggleDisplayCSS(this,\"li ul\",\"block\")' /><label for='b7'>Hide All Mod Messages</label>";
-
+				bosslog << " checked='checked' ";
+			bosslog << "id='b9' onclick='' /><label for='b9'>Hide All Mod Messages</label>";
+			
+			bosslog << "<li><input type='checkbox'";
 			if (HideNotes)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b8' onclick='toggleDisplayCSS(this,\".note\",\"table\")' /><label for='b8'>Hide Notes</label>";
-
+				bosslog << " checked='checked' ";
+			bosslog << "id='b10' onclick='' /><label for='b10'>Hide Notes</label>";
+			
+			bosslog << "<li><input type='checkbox'";
 			if (HideBashTagSuggestions)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b9' onclick='toggleDisplayCSS(this,\".tag\",\"table\")' /><label for='b9'>Hide Bash Tag Suggestions</label>";
-
+				bosslog << " checked='checked' ";
+			bosslog << "id='b11' onclick='' /><label for='b11'>Hide Bash Tag Suggestions</label>";
+			
+			bosslog << "<li><input type='checkbox'";
 			if (HideRequirements)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b10' onclick='toggleDisplayCSS(this,\".req\",\"table\")' /><label for='b10'>Hide Requirements</label>";
-
+				bosslog << " checked='checked' ";
+			bosslog << "id='b12' onclick='' /><label for='b12'>Hide Requirements</label>";
+			
+			bosslog << "<li><input type='checkbox'";
 			if (HideIncompatibilities)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b11' onclick='toggleDisplayCSS(this,\".inc\",\"table\")' /><label for='b11'>Hide Incompatibilities</label>";
-
+				bosslog << " checked='checked' ";
+			bosslog << "id='b13' onclick='' /><label for='b13'>Hide Incompatibilities</label>";
+			
+			bosslog << "<li><input type='checkbox'";
 			if (HideDoNotCleanMessages)
-				bosslog << "<li><input type='checkbox' checked='checked' id='b13' onclick='toggleDoNotClean(this,\"table\")' /><label for='b13'>Hide 'Do Not Clean' Messages</label>";
-			else
-				bosslog << "<li><input type='checkbox' id='b13' onclick='toggleDoNotClean(this,\"table\")' /><label for='b13'>Hide 'Do Not Clean' Messages</label>";
+				bosslog << " checked='checked' ";
+			bosslog << "id='b14' onclick='' /><label for='b14'>Hide 'Do Not Clean' Messages</label>";
 
-			bosslog << "</ul>";
+			bosslog << "</ul>" << "<i><span id='hp'>0</span> of " << (counters.recognised+counters.unrecognised) << " plugins hidden. <span id='hm'>0</span> of " << counters.messages << " messages hidden.</i>";
 		}
 
 
@@ -356,7 +359,7 @@ namespace boss {
 		/////////////////////////////////
 
 		if (!contents.seInfo.empty())
-			bosslog << HEADING_OPEN << scriptExtender << " And " << scriptExtender << " Plugin Checksums" << HEADING_CLOSE << LIST_OPEN
+			bosslog << HEADING_OPEN << "Script Extender And Script Extender Plugins" << HEADING_CLOSE << LIST_OPEN
 				<< contents.seInfo
 				<< LIST_CLOSE;
 
@@ -499,8 +502,7 @@ namespace boss {
 		ApplyUserRules(modlist, userlist, contents.userlistMessages);
 		LOG_INFO("userlist sorting process finished.");
 
-		if (show_CRCs)
-			SE = GetSEPluginInfo(contents.seInfo);
+		SE = GetSEPluginInfo(contents.seInfo);
 
 		SortRecognisedMods(modlist, contents.recognisedPlugins, esmtime, counters);
 
@@ -655,7 +657,7 @@ namespace boss {
 			LOG_DEBUG(" -- Processing rule #%" PRIuS ".", i);
 			if (!ruleIter->enabled) {
 				buffer << LIST_ITEM_CLASS_SUCCESS << "The rule beginning \"" << ruleIter->KeyToString() << ": " << ruleIter->ruleObject << "\" is disabled. Rule skipped.";
-				LOG_WARN("Rule beginning \"%s: %s\" is disabled. Rule skipped.", ruleIter->KeyToString().c_str(), ruleIter->ruleObject.c_str());
+				LOG_INFO("Rule beginning \"%s: %s\" is disabled. Rule skipped.", ruleIter->KeyToString().c_str(), ruleIter->ruleObject.c_str());
 				continue;
 			}	
 			lineIter = ruleIter->lines.begin();
@@ -774,7 +776,7 @@ namespace boss {
 				modlistPos1 = modlist.FindItem(ruleItem.name);
 				modlistPos2 = modlist.FindGroupEnd(ruleItem.name);
 				//Check to see group actually exists.
-				if (modlistPos1 != modlist.items.end() || modlistPos2 != modlist.items.end()) {
+				if (modlistPos1 == modlist.items.end() || modlistPos2 == modlist.items.end()) {
 					buffer << LIST_ITEM_CLASS_ERROR << "The group \"" << ruleIter->ruleObject << "\" is not in the masterlist or is malformatted. Rule skipped.";
 					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", ruleIter->ruleObject.c_str());
 					continue;
@@ -789,7 +791,7 @@ namespace boss {
 				else
 					modlistPos2 = modlist.FindGroupEnd(fs::path(lineIter->object));  //Find the end, and add one, as inserting works before the given element.
 				//Check that the sort group actually exists.
-				if (modlistPos2 != modlist.items.end()) {
+				if (modlistPos2 == modlist.items.end()) {
 					modlist.items.insert(modlistPos1,group.begin(),group.end());  //Insert the group back in its old position.
 					buffer << LIST_ITEM_CLASS_ERROR << "The group \"" << lineIter->object << "\" is not in the masterlist or is malformatted. Rule skipped.";
 					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", lineIter->object.c_str());

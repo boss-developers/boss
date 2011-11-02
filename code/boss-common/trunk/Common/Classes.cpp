@@ -124,7 +124,7 @@ namespace boss {
 				t1 = fs::last_write_time(data_path / fs::path(this->name.string() + ".ghost"));
 			else
 				t1 = fs::last_write_time(data_path / this->name);
-			if (this->IsGhosted())
+			if (item2.IsGhosted())
 				t2 = fs::last_write_time(data_path / fs::path(item2.name.string() + ".ghost"));
 			else
 				t2 = fs::last_write_time(data_path / item2.name);
@@ -238,10 +238,11 @@ namespace boss {
 	
 	//This looks a bit weird, but I need a non-reverse iterator outputted, and searching backwards is probably more efficient for my purposes.
 	vector<Item>::iterator	ItemList::FindGroupEnd	(fs::path name) {
-		vector<Item>::iterator itemIter = items.end()-1;
+		vector<Item>::iterator itemIter = items.end();
+		--itemIter;
 		while (itemIter != items.begin()) {
 			if (itemIter->type == ENDGROUP && Tidy(itemIter->name.string()) == Tidy(name.string()))
-				break;
+				return itemIter;
 			--itemIter;
 		}
 		return items.end();
