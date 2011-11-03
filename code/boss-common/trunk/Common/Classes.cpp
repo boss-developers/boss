@@ -117,6 +117,17 @@ namespace boss {
 		return header.Version;
 	}
 
+	void	Item::SetModTime	(time_t modificationTime) {
+		try {			
+			if (IsGhosted())
+				fs::last_write_time(data_path / fs::path(name.string() + ".ghost"), modificationTime);
+			else
+				fs::last_write_time(data_path / name, modificationTime);
+		} catch(fs::filesystem_error e) {
+			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL, name.string(), e.what());
+		}
+	}
+
 	bool	Item::operator <	(Item item2) {
 		time_t t1 = 0,t2 = 0;
 		try {

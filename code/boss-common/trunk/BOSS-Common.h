@@ -27,6 +27,8 @@
 
 bool			Item::operator<				(Item);
 
+void			SetModTime					(time_t modificationTime);
+
 void			ItemList::Load				(fs::path path);
 
 void			ItemList::Save				(fs::path file);

@@ -83,6 +83,7 @@ namespace boss {
 		bool	IsGhosted	();			//Checks if the file exists in ghosted form.
 		bool	Exists		();			//Checks if the file exists in data_path, ghosted or not.
 		string	GetHeader	();			//Outputs the file's header.
+		void	SetModTime	(time_t modificationTime);
 
 		vector<Message> messages;
 		fs::path		name;			//Filename (or group name). Trimmed and case-preserved. ".ghost" extensions are removed.

@@ -122,18 +122,19 @@ namespace boss {
 				if (iter->IsGhosted()) {
 					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
 					counters.ghosted++;
-				}
-				if (show_CRCs)
+					if (show_CRCs)
+					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(iter->name.string() + ".ghost"))) << SPAN_CLOSE;
+				} else if (show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / iter->name)) << SPAN_CLOSE;
 			
-				if (!trial_run) {
-					modfiletime = esmtime + counters.recognised*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
-					//Re-date file. Provide exception handling in case their permissions are wrong.
+				if (!trial_run && !iter->IsMasterFile()) {
+					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", iter->name.string().c_str());
 					try {
-						fs::last_write_time(data_path / iter->name,modfiletime);
-					} catch(fs::filesystem_error e) {
-						buffer << SPAN_CLASS_ERROR_OPEN << "Error: The modification date of \"" << iter->name.string() << "\" cannot be written!" << SPAN_CLOSE;
+						iter->SetModTime(esmtime + counters.recognised*60);
+					} catch(boss_error e) {
+						buffer << SPAN_CLASS_ERROR_OPEN << "Error: " << e.getString() << SPAN_CLOSE;
+						LOG_ERROR(" * Error: %s", e.getString().c_str());
 					}
 				}
 				//Finally, print the mod's messages.
@@ -175,18 +176,19 @@ namespace boss {
 				if (iter->IsGhosted()) {
 					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
 					counters.ghosted++;
-				}
-				if (show_CRCs)
+					if (show_CRCs)
+					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(iter->name.string() + ".ghost"))) << SPAN_CLOSE;
+				} else if (show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / iter->name)) << SPAN_CLOSE;
 
-				if (!trial_run) {
-					modfiletime = esmtime + 86400 + (counters.recognised + counters.unrecognised)*60;  //time_t is an integer number of seconds, so adding 60 on increases it by a minute and adding 86,400 on increases it by a day. Using unrecModNo instead of i to avoid increases for group entries.
-					//Re-date file. Provide exception handling in case their permissions are wrong.
+				if (!trial_run && !iter->IsMasterFile()) {
+					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", iter->name.string().c_str());
 					try {
-						fs::last_write_time(data_path / iter->name,modfiletime);
-					} catch(fs::filesystem_error e) {
-						buffer << SPAN_CLASS_ERROR_OPEN << "Error: The modification date of \"" << iter->name.string() << "\" cannot be written!" << SPAN_CLOSE;
+						iter->SetModTime(esmtime + (counters.recognised + counters.unrecognised)*60);
+					} catch(boss_error e) {
+						buffer << SPAN_CLASS_ERROR_OPEN << "Error: " << e.getString() << SPAN_CLOSE;
+						LOG_ERROR(" * Error: %s", e.getString().c_str());
 					}
 				}
 				counters.unrecognised++;
