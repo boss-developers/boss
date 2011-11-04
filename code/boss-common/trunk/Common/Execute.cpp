@@ -259,32 +259,32 @@ namespace boss {
 			bosslog << "<li><input type='checkbox'";
 			if (HideAllModMessages)
 				bosslog << " checked='checked' ";
-			bosslog << "id='b9' onclick='' /><label for='b9'>Hide All Mod Messages</label>";
+			bosslog << "id='b9' onclick='toggleMessages()' /><label for='b9'>Hide All Mod Messages</label>";
 			
 			bosslog << "<li><input type='checkbox'";
 			if (HideNotes)
 				bosslog << " checked='checked' ";
-			bosslog << "id='b10' onclick='' /><label for='b10'>Hide Notes</label>";
+			bosslog << "id='b10' onclick='toggleMessages()' /><label for='b10'>Hide Notes</label>";
 			
 			bosslog << "<li><input type='checkbox'";
 			if (HideBashTagSuggestions)
 				bosslog << " checked='checked' ";
-			bosslog << "id='b11' onclick='' /><label for='b11'>Hide Bash Tag Suggestions</label>";
+			bosslog << "id='b11' onclick='toggleMessages()' /><label for='b11'>Hide Bash Tag Suggestions</label>";
 			
 			bosslog << "<li><input type='checkbox'";
 			if (HideRequirements)
 				bosslog << " checked='checked' ";
-			bosslog << "id='b12' onclick='' /><label for='b12'>Hide Requirements</label>";
+			bosslog << "id='b12' onclick='toggleMessages()' /><label for='b12'>Hide Requirements</label>";
 			
 			bosslog << "<li><input type='checkbox'";
 			if (HideIncompatibilities)
 				bosslog << " checked='checked' ";
-			bosslog << "id='b13' onclick='' /><label for='b13'>Hide Incompatibilities</label>";
+			bosslog << "id='b13' onclick='toggleMessages()' /><label for='b13'>Hide Incompatibilities</label>";
 			
 			bosslog << "<li><input type='checkbox'";
 			if (HideDoNotCleanMessages)
 				bosslog << " checked='checked' ";
-			bosslog << "id='b14' onclick='' /><label for='b14'>Hide 'Do Not Clean' Messages</label>";
+			bosslog << "id='b14' onclick='toggleMessages()' /><label for='b14'>Hide 'Do Not Clean' Messages</label>";
 
 			bosslog << "</ul>" << "<i><span id='hp'>0</span> of " << (counters.recognised+counters.unrecognised) << " plugins hidden. <span id='hm'>0</span> of " << counters.messages << " messages hidden.</i>";
 		}

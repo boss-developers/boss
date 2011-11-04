@@ -148,61 +148,34 @@ namespace boss {
 
 	void Outputter::PrintFooter() {
 		if (outFormat == HTML) {
-			outStream << "<script>"
-				<< "function toggleSectionDisplay(h){if(h.nextSibling.style.display=='none')"
-				<< "{h.nextSibling.style.display='block';h.firstChild.innerHTML='&#x2212;'}else{"
-				<< "h.nextSibling.style.display='none';h.firstChild.innerHTML='+'}}function "
-				<< "toggleDisplayCSS(b,s){var r=new Array();if(document.styleSheets[0].cssRules){"
-				<< "r=document.styleSheets[0].cssRules}else if(document.styleSheets[0].rules){"
-				<< "r=document.styleSheets[0].rules}for(var i=0,z=r.length;i<z;i++){"
-				<< "if(r[i].selectorText.toLowerCase()==s){if(b.checked){r[i].style.display='none'"
-				<< "}else{r[i].style.display='inline'}return}}}function swapColorScheme(b){var d=document.body,"
-				<< "a=document.getElementsByTagName('a'),f=document.getElementById('filters');if(f==null){"
-				<< "f=document.getElementById('darkFilters')}if(b.checked){d.id='darkBody';"
-				<< "f.id='darkFilters';for(var i=0,z=a.length;i<z;i++){"
-				<< "a[i].className='darkLink'}}else{d.id='';f.id='filters';"
-				<< "for(var i=0,z=a.length;i<z;i++){a[i].className=''}}}function toggleRuleListWarnings(b){var "
-				<< "u=document.getElementById('userlistMessages').childNodes;if(u){for(var i=0,z=u.length;"
-				<< "i<z;i++){if(u[i].className=='warn'){if(b.checked){u[i].style.display='none'}else{"
-				<< "u[i].style.display='table'}}}}}function toggleMods(){var "
-				<< "m=document.getElementById('recognised').childNodes;for(var i=0,z=m.length;i<z;i++){"
-				<< "if(m[i].nodeType==1){var g=false,n=true,c=true,a=m[i].getElementsByTagName('span');"
-				<< "for(var j=0,y=a.length;j<y;j++){if(a[j].className=='ghosted'){g=true;break}}"
-				<< "a=m[i].getElementsByTagName('li');if(a.length>0){var p;if(window.getComputedStyle){"
-				<< "p=window.getComputedStyle(a[0].parentNode,null).getPropertyValue('display')}else if(a[0].currentStyle){"
-				<< "p=a[0].parentNode.currentStyle.display}for(var j=0,y=a.length;j<y;j++){if(a[j].className=='dirty'){"
-				<< "c=false}var b;if(window.getComputedStyle){b=window.getComputedStyle(a[j],null).getPropertyValue('display')"
-				<< "}else if(a[j].currentStyle){b=a[j].currentStyle.display}if(p!='none'&&b!='none'){n=false}}}"
-				<< "if((document.getElementById('noMessageModFilter').checked&&n)||"
-				<< "(document.getElementById('ghostModFilter').checked&&g)||(document.getElementById('cleanModFilter').checked&&c))"
-				<< "{m[i].style.display='none'}else{m[i].style.display='block'}}}}function toggleDoNotClean(b,s){"
-				<< "var m=document.getElementById('recognised').childNodes;for(var i=0,z=m.length;i<z;i++){if(m[i].nodeType==1){"
-				<< "var a=m[i].getElementsByTagName('li');for(var j=0,y=a.length;j<y;j++){if(a[j].className=='dirty'){"
-				<< "if(a[j].firstChild.nodeType==3){if(a[j].firstChild.nodeValue.toString().substr(0,35)=='Contains dirty edits: "
-				<< "Do not clean.'){if(b.checked){a[j].style.display='none'}else{a[j].style.display=s}}}}}}}}"<<endl
+			outStream << endl << "<script>" << endl
+			
+				<< "var hm=0,hp=0,hpe=document.getElementById('hp'),hme=document.getElementById('hm');" << endl
+				<< "function toggleSectionDisplay(h){if(h.nextSibling.style.display=='none'){h.nextSibling.style.display='block';h.firstChild.innerHTML='&#x2212;'}else{h.nextSibling.style.display='none';h.firstChild.innerHTML='+'}}" << endl
+				<< "function swapColorScheme(b){var d=document.body,a=document.getElementsByTagName('a'),f=document.getElementById('filters');if(f==null){f=document.getElementById('darkFilters')}if(b.checked){d.id='darkBody';f.id='darkFilters';for(var i=0,z=a.length;i<z;i++){a[i].className='darkLink'}}else{d.id='';f.id='filters';for(var i=0,z=a.length;i<z;i++){a[i].className=''}}}" << endl
+				<< "function toggleDisplayCSS(b,s){var r=new Array();if(document.styleSheets[0].cssRules){r=document.styleSheets[0].cssRules}else if(document.styleSheets[0].rules){r=document.styleSheets[0].rules}for(var i=0,z=r.length;i<z;i++){if(r[i].selectorText.toLowerCase()==s){if(b.checked){r[i].style.display='none'}else{r[i].style.display='inline'}return}}}" << endl
+				<< "function toggleRuleListWarnings(b){var u=document.getElementById('userlistMessages');if(u!=null){u=u.childNodes;for(var i=0,z=u.length;i<z;i++){if(u[i].className=='warn'){if(b.checked){u[i].style.display='none';hm++}else if(u[i].style.display=='none'){u[i].style.display='table';hm--}}}}hme.innerHTML=hm}" << endl
+				<< "function toggleMessages(){var m=document.getElementById('recognised').childNodes,b9=document.getElementById('b9').checked,b10=document.getElementById('b10').checked,b11=document.getElementById('b11').checked,b12=document.getElementById('b12').checked,b13=document.getElementById('b13').checked,b14=document.getElementById('b14').checked;for(var i=0,z=m.length;i<z;i++){var a=m[i].getElementsByTagName('li');for(var j=0,y=a.length;j<y;j++){var b=null;if(!b9&&a[j].style.display=='none'){a[j].style.display='table';hm--}if(a[j].className=='note'){b=b10}else if(a[j].className=='tag'){b=b11}else if(a[j].className=='req'){b=b12}else if(a[j].className=='inc'){b=b13}else if(a[j].className=='dirty'&&a[j].innerHTML.substr(0,35)=='Contains dirty edits: Do not clean.'){b=b14}if(b!=null){if(b&&a[j].style.display!='none'){a[j].style.display='none';hm++}else if(!b&&a[j].style.display=='none'){a[j].style.display='table';hm--}}if(b9&&a[j].style.display!='none'){a[j].style.display='none';hm++}}}hme.innerHTML=hm}" << endl
+				<< "function toggleMods(){var m=document.getElementById('recognised').childNodes;for(var i=0,z=m.length;i<z;i++){if(m[i].nodeType==1){var g=false,n=true,c=true,a=m[i].getElementsByTagName('span');for(var j=0,y=a.length;j<y;j++){if(a[j].className=='ghosted'){g=true;break}}a=m[i].getElementsByTagName('li');for(var j=0,y=a.length;j<y;j++){if(a[j].className=='dirty'){c=false}if(a[j].style.display!='none'){n=false}}if(!((document.getElementById('b6').checked&&n)||(document.getElementById('b7').checked&&g)||(document.getElementById('b8').checked&&c))&&m[i].style.display=='none'){m[i].style.display='block';hp--}else if(((document.getElementById('b6').checked&&n)||(document.getElementById('b7').checked&&g)||(document.getElementById('b8').checked&&c))&&m[i].style.display!='none'){m[i].style.display='none';hp++}}}hpe.innerHTML=hp}" << endl
 				<< "function initialSetup() {"<<endl
 				<< "	swapColorScheme(document.getElementById('b1'));"<<endl
-				<< "	toggleRuleListWarnings(document.getElementById('b12'));"<<endl
+				<< "	toggleRuleListWarnings(document.getElementById('b2'));"<<endl
+				<< "	toggleDisplayCSS(document.getElementById('b3'),'.version','inline');"<<endl
+				<< "	toggleDisplayCSS(document.getElementById('b4'),'.ghosted','inline');"<<endl
+				<< "	toggleDisplayCSS(document.getElementById('b5'),'.crc','inline');"<<endl
+				<< "	toggleMessages();"<<endl
 				<< "	toggleMods();"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b2'),'.version','inline');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b3'),'.ghosted','inline');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b4'),'.crc','inline');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b7'),'li ul','block');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b8'),'.note','table');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b9'),'.tag','table');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b10'),'.req','table');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b11'),'.inc','table');"<<endl
 				<< "}"<<endl
 				<< "function DomReady(fn){"<<endl
 				<< "	if(document.addEventListener){"<<endl
-				<< "		document.addEventListener('DOMContentLoaded', fn, false);"<<endl
+				<< "		document.addEventListener('DOMContentLoaded', fn, false)"<<endl
 				<< "	}else{"<<endl
 				<< "		document.onreadystatechange = function(){readyState(fn)}"<<endl
 				<< "	}"<<endl
 				<< "}"<<endl
 				<< "function readyState(fn){"<<endl
 				<< "	if(document.readyState == 'interactive'){"<<endl
-				<< "		fn();"<<endl
+				<< "		fn()"<<endl
 				<< "	}"<<endl
 				<< "}"<<endl
 				<< "window.onDomReady = DomReady;"<<endl
