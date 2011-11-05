@@ -48,7 +48,18 @@ using boost::algorithm::trim_copy;
 
 UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize) {
 
-	LoadLists();
+	try{
+		LoadLists();
+	} catch(boss_error e) {
+		this->Close();
+		wxMessageBox(wxString::Format(
+				wxT("Error: "+e.getString())
+			),
+			wxT("BOSS: Error"),
+			wxOK | wxICON_ERROR,
+			NULL);
+		return;
+	}
 
 	//Some variable setup.
 	wxString BeforeAfter[] = {
@@ -128,12 +139,12 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	////////Modlist column.
 	wxStaticBoxSizer *modlistBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Installed Mods"));
 	modlistBox->Add(ModlistSearch = new wxSearchCtrl(this, SEARCH_Modlist, wxEmptyString, wxDefaultPosition, wxDefaultSize,wxTE_PROCESS_ENTER));
-	modlistBox->Add(InstalledModsList = new wxListBox(this, LIST_Modlist, wxDefaultPosition, wxDefaultSize, ModlistMods));
+	modlistBox->Add(InstalledModsList = new wxTreeCtrl(this, LIST_Modlist, wxDefaultPosition, wxDefaultSize, wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_FULL_ROW_HIGHLIGHT|wxTR_HIDE_ROOT));
 	listsBox->Add(modlistBox);
 	////////Masterlist column.
 	wxStaticBoxSizer *masterlistBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Masterlist"));
 	masterlistBox->Add(MasterlistSearch = new wxSearchCtrl(this, SEARCH_Masterlist, wxEmptyString, wxDefaultPosition, wxDefaultSize,wxTE_PROCESS_ENTER));
-	masterlistBox->Add(MasterlistModsList = new wxListBox(this, LIST_Masterlist, wxDefaultPosition, wxDefaultSize, MasterlistMods));
+	masterlistBox->Add(MasterlistModsList = new wxTreeCtrl(this, LIST_Masterlist, wxDefaultPosition, wxDefaultSize, wxTR_TWIST_BUTTONS|wxTR_HIDE_ROOT));
 	listsBox->Add(masterlistBox);
 	listmessBox->Add(listsBox);
 	////////Mod Messages box
@@ -167,6 +178,22 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	ReplaceMessagesCheckBox->Enable(false);
 	ModMessagesBox->Enable(false);
 
+	//Fill modlist and masterlist.
+	wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
+	for (size_t i=0;i<ModlistMods.size();i++) {
+		InstalledModsList->AppendItem(root, ModlistMods[i]);
+	}
+
+	vector<wxTreeItemId> opengroups;
+	opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
+	for (size_t i=0;i<masterlist.items.size();i++) {
+		wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), masterlist.items[i].name.string());
+		if (masterlist.items[i].type == BEGINGROUP)
+			opengroups.push_back(item);
+		else if (masterlist.items[i].type == ENDGROUP)
+			opengroups.pop_back();
+	}
+
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
 }
@@ -191,36 +218,43 @@ void UserRulesEditorFrame::OnCancelQuit(wxCommandEvent& event) {
 }
 
 void UserRulesEditorFrame::OnSearchList(wxCommandEvent& event) {
-	wxListBox *list;
-	wxSearchCtrl *search;
-	wxArrayString arr, resultsArray;
-	string searchStr;
 	if (event.GetId() == SEARCH_Modlist) {
-		list = InstalledModsList;
-		search = ModlistSearch;
-		arr = ModlistMods;
-		resultsArray = ModlistSearchResultMods;
+		ModlistSearch->ShowCancelButton(true);
+		string searchStr = ModlistSearch->GetValue();
+		searchStr = Tidy(searchStr);
+		size_t length = searchStr.length();
+		if (length == 0) {
+			OnCancelSearch(event);
+			return;
+		}
+		InstalledModsList->DeleteAllItems();
+		wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
+		for (size_t i=0;i<ModlistMods.size();i++) {
+			if (Tidy(string(ModlistMods[i].substr(0,length))) == searchStr)
+				InstalledModsList->AppendItem(root, ModlistMods[i]);
+		}
 	} else {
-		list = MasterlistModsList;
-		search = MasterlistSearch;
-		arr = MasterlistMods;
-		resultsArray = MasterlistSearchResultMods;
+		MasterlistSearch->ShowCancelButton(true);
+		string searchStr = MasterlistSearch->GetValue();
+		searchStr = Tidy(searchStr);
+		size_t length = searchStr.length();
+		if (length == 0) {
+			OnCancelSearch(event);
+			return;
+		}
+		MasterlistModsList->DeleteAllItems();
+		vector<wxTreeItemId> opengroups;
+		opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
+		for (size_t i=0;i<masterlist.items.size();i++) {
+			if (Tidy(string(masterlist.items[i].name.string().substr(0,length))) == searchStr) {
+					wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), masterlist.items[i].name.string());
+				if (masterlist.items[i].type == BEGINGROUP)
+					opengroups.push_back(item);
+				else if (masterlist.items[i].type == ENDGROUP)
+					opengroups.pop_back();
+			}
+		}
 	}
-	search->ShowCancelButton(true);
-	searchStr = search->GetValue();
-	searchStr = Tidy(searchStr);
-	size_t length = searchStr.length();
-	if (length == 0) {
-		OnCancelSearch(event);
-		return;
-	}
-	int size = arr.GetCount();
-	resultsArray.Clear();
-	for (int i=0;i<size;i++) {
-		if (Tidy(string(arr[i].substr(0,length))) == searchStr)
-			resultsArray.push_back(arr[i]);
-	}
-	list->Set(resultsArray);
 }
 
 void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
@@ -228,12 +262,25 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 		ModlistSearchResultMods.Clear();
 		ModlistSearch->ShowCancelButton(false);
 		ModlistSearch->SetValue("");
-		InstalledModsList->Set(ModlistMods);
+		InstalledModsList->DeleteAllItems();
+		wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
+		for (size_t i=0;i<ModlistMods.size();i++) {
+			InstalledModsList->AppendItem(root, ModlistMods[i]);
+		}
 	} else {
 		MasterlistSearchResultMods.Clear();
 		MasterlistSearch->ShowCancelButton(false);
 		MasterlistSearch->SetValue("");
-		MasterlistModsList->Set(MasterlistMods);
+		MasterlistModsList->DeleteAllItems();
+		vector<wxTreeItemId> opengroups;
+		opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
+		for (size_t i=0;i<masterlist.items.size();i++) {
+			wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), masterlist.items[i].name.string());
+			if (masterlist.items[i].type == BEGINGROUP)
+				opengroups.push_back(item);
+			else if (masterlist.items[i].type == ENDGROUP)
+				opengroups.pop_back();
+		}
 	}
 }
 
@@ -438,13 +485,7 @@ void UserRulesEditorFrame::LoadLists() {
 	try {
 		modlist.Load(data_path);
 	} catch (boss_error e) {
-		wxMessageBox(wxString::Format(
-				wxT("Error: "+e.getString()+" Scanning for plugins aborted. User Rules Editor cannot load.")
-			),
-			wxT("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
-		return;
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
 
 	size = modlist.items.size();
@@ -460,21 +501,10 @@ void UserRulesEditorFrame::LoadLists() {
 	try {
 		masterlist.Load(masterlist_path);
 	} catch (boss_error e) {
-		wxMessageBox(wxString::Format(
-				wxT("Error: "+e.getString()+" Scanning for plugins aborted. User Rules Editor cannot load.")
-			),
-			wxT("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
-		return;
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
 
-	size = masterlist.items.size();
-	for (size_t i=0;i<size;i++) {
-		//if (masterlist.items[i].type == MOD)
-		if (!masterlist.items[i].name.empty())
-			MasterlistMods.push_back(masterlist.items[i].name.string());
-	}
+
 
 	////////////////
 	// Userlist
@@ -486,16 +516,8 @@ void UserRulesEditorFrame::LoadLists() {
 	} catch (boss_error e) {
 		userlist.rules.clear();
 		LOG_ERROR("Error: %s", e.getString().c_str());
-		wxMessageBox(wxString::Format(
-				wxT("Error: "+e.getString()+" Userlist parsing aborted. User Rules Editor cannot load existing rules.")
-			),
-			wxT("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
-
-	//Trim down masterlist.
-	BuildWorkingModlist(modlist,masterlist,userlist);
 
 	//Now disable any ADD rules with rule mods that are in the masterlist.
 	size = userlist.rules.size();

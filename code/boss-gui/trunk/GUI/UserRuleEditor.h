@@ -24,6 +24,7 @@
 
 #include <wx/rearrangectrl.h>
 #include <wx/srchctrl.h>
+#include <wx/treectrl.h>
 
 using namespace boss;
 using namespace std;
@@ -56,7 +57,6 @@ private:
 
 	wxArrayString Rules;
 	wxArrayString ModlistMods;
-	wxArrayString MasterlistMods;
 	wxArrayString ModlistSearchResultMods;
 	wxArrayString MasterlistSearchResultMods;
 	wxArrayInt RuleOrder;
@@ -72,8 +72,8 @@ private:
 	wxRadioButton *InsertModOption;
 	wxCheckBox *AddMessagesCheckBox;
 	wxCheckBox *ReplaceMessagesCheckBox;
-	wxListBox *InstalledModsList;
-	wxListBox *MasterlistModsList;
+	wxTreeCtrl *InstalledModsList;
+	wxTreeCtrl *MasterlistModsList;
 	wxSearchCtrl *ModlistSearch;
 	wxSearchCtrl *MasterlistSearch;
 	wxTextCtrl *ModMessagesBox;
@@ -85,13 +85,6 @@ private:
 	wxTextCtrl *SortModBox;
 	wxCheckBox *SortModsCheckBox;
 	wxTextCtrl *InsertModBox;
-};
-
-class MasterlistFrame {
-public:
-
-private:
-
 };
 
 class RuleListFrame {

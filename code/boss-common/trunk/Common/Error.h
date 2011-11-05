@@ -53,7 +53,8 @@ namespace boss {
 	BOSS_COMMON_EXP const uint32_t BOSS_ERROR_CURL_USER_CANCEL = 23;
 	BOSS_COMMON_EXP const uint32_t BOSS_ERROR_FILE_PARSE_FAIL = 24;
 	BOSS_COMMON_EXP const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL = 25;
-	BOSS_COMMON_EXP const uint32_t BOSS_ERROR_MAX = BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL;
+	BOSS_COMMON_EXP const uint32_t BOSS_ERROR_GUI_WINDOW_INIT_FAIL = 26;
+	BOSS_COMMON_EXP const uint32_t BOSS_ERROR_MAX = BOSS_ERROR_GUI_WINDOW_INIT_FAIL;
 
 	class boss_error {
 	public:
@@ -128,6 +129,8 @@ namespace boss {
 				return "Parsing of \"" + errSubject + "\" failed!";
 			case BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL:
 				return "The modification date of \"" + errSubject + "\" cannot be written! Filesystem response: \"" + errString + "\".";
+			case BOSS_ERROR_GUI_WINDOW_INIT_FAIL:
+				return "The window \"" + errSubject + "\" failed to initialise. Details: \"" + errString + "\".";
 			default:
 				return "No error.";
 			}
