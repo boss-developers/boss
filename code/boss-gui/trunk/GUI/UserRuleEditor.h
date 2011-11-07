@@ -44,10 +44,10 @@ No original information is stored in GUI structures themselves.
 
 */
 
-class RuleBoxClass : public wxFrame {
+class RuleBoxClass : public wxPanel {
 public:
-	RuleBoxClass();
-	RuleBoxClass(Rule currentRule);
+	RuleBoxClass(wxScrolled<wxPanel> *parent);
+	RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule);
 	void ToggleEnabled(bool isEnabled);		//Doesn't handle RuleList modification, only greying out of UI element.
 private:
 	wxBoxSizer *checkboxSizer;
@@ -56,9 +56,9 @@ private:
 	wxCheckBox *ruleCheckbox;
 };
 
-class RuleListFrameClass : public wxFrame {
+class RuleListFrameClass : public wxPanel {
 public:
-	RuleListFrameClass(ItemList &masterlist);		//Initialise the RuleListFrameClass object.
+	RuleListFrameClass(wxFrame *parent, ItemList &masterlist);		//Initialise the RuleListFrameClass object.
 	void SaveUserlist(const fs::path path);					//Save the changes made to the userlist.
 	
 	Rule GetSelectedRule();								//Returns the currently selected rule.
@@ -72,7 +72,7 @@ public:
 
 	DECLARE_EVENT_TABLE()
 private:
-
+	unsigned int GetSelectedRuleIndex();				//Gets the index of the GUI element (ie. the Nth child of RuleListScroller), which matches to the corresponding rule's index in the RuleList object.
 	void ReDrawRuleList();								//Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
 
 	RuleList userlist;

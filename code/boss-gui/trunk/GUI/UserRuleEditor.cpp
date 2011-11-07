@@ -37,10 +37,10 @@ BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
 	EVT_TEXT_ENTER ( SEARCH_Modlist, UserRulesEditorFrame::OnSearchList )
 END_EVENT_TABLE()
 
-BEGIN_EVENT_TABLE( RuleListFrameClass, wxFrame )
+BEGIN_EVENT_TABLE( RuleListFrameClass, wxPanel )
 	EVT_BUTTON ( BUTTON_MoveRuleUp, RuleListFrameClass::OnRuleOrderChange )
 	EVT_BUTTON ( BUTTON_MoveRuleDown, RuleListFrameClass::OnRuleOrderChange )
-	EVT_CHECKLISTBOX ( LIST_RuleList, RuleListFrameClass::OnToggleRule )
+	EVT_CHECKLISTBOX ( wxID_ANY, RuleListFrameClass::OnToggleRule )
 END_EVENT_TABLE()
 
 
@@ -104,7 +104,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	//////First column
 	wxBoxSizer *rulesBox = new wxBoxSizer(wxVERTICAL);
 	try{
-		rulesBox->Add(RulesList = new RuleListFrameClass(masterlist));
+		rulesBox->Add(RulesList = new RuleListFrameClass(this, masterlist));
 	} catch(boss_error e) {
 		this->Close();
 		wxMessageBox(wxString::Format(
@@ -350,7 +350,8 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
 			NULL);
-	RulesList->AppendRule(newRule);
+	else
+		RulesList->AppendRule(newRule);
 }
 
 void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
@@ -369,7 +370,8 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,
 				NULL);
-		RulesList->SaveEditedRule(newRule);
+		else
+			RulesList->SaveEditedRule(newRule);
 	}
 }
 
@@ -473,14 +475,16 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 	//Calling functions need to check for an enabled = false; rule as a failure.
 	//Failure description is given in ruleObject.
 	if (Item(string(RuleModBox->GetValue())).IsPlugin()) {
-		if (SortModOption->GetValue() && !Item(string(SortModBox->GetValue())).IsPlugin()) {  //Sort object is a group. Error.
+		if (SortModsCheckBox->IsChecked()) {
+			if (SortModOption->GetValue() && !Item(string(SortModBox->GetValue())).IsPlugin()) {  //Sort object is a group. Error.
+					newRule.enabled = false;
+					newRule.ruleObject = "Cannot sort a plugin relative to a group.";
+					return newRule;
+			} else if (Item(string(InsertModBox->GetValue())).IsPlugin()) {  //Inserting into a mod. Error.
 				newRule.enabled = false;
-				newRule.ruleObject = "Cannot sort a plugin relative to a group.";
+				newRule.ruleObject = "Cannot insert into a plugin.";
 				return newRule;
-		} else if (Item(string(InsertModBox->GetValue())).IsPlugin()) {  //Inserting into a mod. Error.
-			newRule.enabled = false;
-			newRule.ruleObject = "Cannot insert into a plugin.";
-			return newRule;
+			}
 		}
 		if (AddMessagesCheckBox->IsChecked() && NewModMessagesBox->IsEmpty()) {  //Can't add no messages. Error.
 			newRule.enabled = false;
@@ -488,14 +492,16 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 			return newRule;
 		}
 	} else {  //Rule object is a group.
-		if (SortModOption->GetValue() && Item(string(SortModBox->GetValue())).IsPlugin()) {  //Sort object is a plugin. Error.
+		if (SortModsCheckBox->IsChecked()) {
+			if (SortModOption->GetValue() && Item(string(SortModBox->GetValue())).IsPlugin()) {  //Sort object is a plugin. Error.
+					newRule.enabled = false;
+					newRule.ruleObject = "Cannot sort a group relative to a plugin.";
+					return newRule;
+			} else {  //Can't insert groups. Error.
 				newRule.enabled = false;
-				newRule.ruleObject = "Cannot sort a group relative to a plugin.";
+				newRule.ruleObject = "Cannot insert groups.";
 				return newRule;
-		} else {  //Can't insert groups. Error.
-			newRule.enabled = false;
-			newRule.ruleObject = "Cannot insert groups.";
-			return newRule;
+			}
 		}
 		if (AddMessagesCheckBox->IsChecked()) {  //Can't add messages to a group. Error.
 			newRule.enabled = false;
@@ -538,20 +544,27 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 	if (AddMessagesCheckBox->IsChecked()) {
 		RuleLine newLine;
 		string messages = NewModMessagesBox->GetValue();
-		size_t pos1 = 0, pos2 = string::npos;
-		pos2 = messages.find("\n",pos1);
-		while (pos2 != string::npos) {
-			newLine.object = trim_copy(messages.substr(pos1,pos2-pos1));
-			if (pos1 == 0 && ReplaceMessagesCheckBox->IsChecked())
-				newLine.key = REPLACE;
-			else
-				newLine.key = APPEND;
-			newRule.lines.push_back(newLine);
+		if (!messages.empty()) {
+			//Split messages string by \n characters.
+			size_t pos1 = 0, pos2 = string::npos;
+			pos2 = messages.find("\n");
+			if (pos2 == string::npos)  //No \n characters.
+				pos2 = messages.length()-1;
+			while (pos2 != string::npos) {
+				newLine.object = trim_copy(messages.substr(pos1,pos2-pos1));
+				if (pos1 == 0 && ReplaceMessagesCheckBox->IsChecked())
+					newLine.key = REPLACE;
+				else
+					newLine.key = APPEND;
+				newRule.lines.push_back(newLine);
 
-			if (pos2 == messages.length()-1)
-				break;
-			pos1 = pos2 + 1;
-			pos2 = messages.find("\n",pos1);
+				if (pos2 >= messages.length()-1)
+					break;
+				pos1 = pos2 + 1;
+				pos2 = messages.find("\n", pos1);
+				if (pos2 == string::npos && pos1 < messages.length()-1)
+					pos2 = messages.length()-1;
+			}
 		}
 	}
 
@@ -562,7 +575,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 // RuleBoxClass functions
 ////////////////////////////
 
-RuleBoxClass::RuleBoxClass() {
+RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize) {
 	SetBackgroundColour(wxColour(255,255,255));
 
 	wxBoxSizer *mainSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -582,7 +595,7 @@ RuleBoxClass::RuleBoxClass() {
 	Show();
 }
 
-RuleBoxClass::RuleBoxClass(Rule currentRule) {
+RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize) {
 	//First get text representation of rule.
 	string text = "";
 	bool hasEditedMessages = false;
@@ -644,7 +657,7 @@ void RuleBoxClass::ToggleEnabled(bool isEnabled) {
 // RuleListFrameClass functions
 //////////////////////////////////
 
-RuleListFrameClass::RuleListFrameClass(ItemList &masterlist) {
+RuleListFrameClass::RuleListFrameClass(wxFrame *parent, ItemList &masterlist) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize) {
 	//Parse userlist.
 	LOG_INFO("Starting to parse userlist.");
 	try {
@@ -664,10 +677,17 @@ RuleListFrameClass::RuleListFrameClass(ItemList &masterlist) {
 	}
 
 	//Now set up GUI layout.
+	SetBackgroundColour(*wxWHITE);
+
 	wxBoxSizer *listBox = new wxBoxSizer(wxVERTICAL);
-	RuleListScroller = new wxScrolled<wxPanel>(this, wxID_ANY);
+	wxStaticBoxSizer *staticListBox = new wxStaticBoxSizer(wxVERTICAL, this, "User Rules");
+	staticListBox->Add(RuleListScroller = new wxScrolled<wxPanel>(this, wxID_ANY));
+	//RuleListScroller->SetBackgroundColour(*wxWHITE);
 	ReDrawRuleList();
-	listBox->Add(RuleListScroller);
+	RuleListScroller->SetScrollRate(10, 10);
+	RuleListScroller->SetAutoLayout(true);
+	RuleListScroller->Show();
+	listBox->Add(staticListBox);
 
 	wxBoxSizer *listButtonBox = new wxBoxSizer(wxHORIZONTAL);
 	listButtonBox->Add(new wxButton(this, BUTTON_MoveRuleUp, wxT("Move Up"), wxDefaultPosition, wxDefaultSize));
@@ -675,6 +695,8 @@ RuleListFrameClass::RuleListFrameClass(ItemList &masterlist) {
 	listBox->Add(listButtonBox, 0, wxALIGN_RIGHT|wxALL, 10);
 
 	SetSizerAndFit(listBox);
+	Show();
+	SetAutoLayout(true);
 }
 
 void RuleListFrameClass::SaveUserlist(const fs::path path) {
@@ -684,13 +706,16 @@ void RuleListFrameClass::SaveUserlist(const fs::path path) {
 void RuleListFrameClass::ReDrawRuleList() {
 	RuleListScroller->DestroyChildren();
 	size_t size = userlist.rules.size();
-	for (size_t i=0;i<size;i++)
-		RuleListScroller->AddChild(new RuleBoxClass(userlist.rules[i]));
-	RuleListScroller->Show();
+	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+	for (size_t i=0;i<size;i++) {
+		sizer->Add(new RuleBoxClass(RuleListScroller, userlist.rules[i]));
+	}
+	RuleListScroller->SetSizerAndFit(sizer);
 }
 
 void RuleListFrameClass::OnRuleOrderChange(wxCommandEvent& event) {
-	int i /*= GetSelection()*/;
+	size_t i = GetSelectedRuleIndex();
+	if (i != (size_t)-1) {
 	if (event.GetId() == BUTTON_MoveRuleUp && i != 0) {
 //		if (!MoveSelectedRuleUp())
 			LOG_ERROR("Could not move rule %i up.", i);
@@ -704,6 +729,10 @@ void RuleListFrameClass::OnRuleOrderChange(wxCommandEvent& event) {
 		userlist.rules.erase(userlist.rules.begin()+i);
 		userlist.rules.insert(userlist.rules.begin()+i+1,selectedRule);
 	}
+	wxMessageBox("This thing works. Kinda.");
+	} else
+		wxMessageBox("Feck.");
+	ReDrawRuleList();
 }
 
 void RuleListFrameClass::OnToggleRule(wxCommandEvent& event) {
@@ -711,11 +740,14 @@ void RuleListFrameClass::OnToggleRule(wxCommandEvent& event) {
 }
 
 Rule RuleListFrameClass::GetSelectedRule() {
-	return Rule();
+	return userlist.rules[GetSelectedRuleIndex()];
 }
 
 void RuleListFrameClass::AppendRule(Rule newRule) {
-
+	//Add the rule to the end of the userlist.
+	userlist.rules.push_back(newRule);
+	//Now refresh GUI.
+	ReDrawRuleList();
 }
 
 void RuleListFrameClass::SaveEditedRule(Rule editedRule) {
@@ -724,4 +756,13 @@ void RuleListFrameClass::SaveEditedRule(Rule editedRule) {
 
 void RuleListFrameClass::DeleteSelectedRule() {
 
+}
+
+size_t RuleListFrameClass::GetSelectedRuleIndex() {
+	wxWindowList children = RuleListScroller->GetChildren();
+	for (size_t i=0;i<children.size();i++) {
+		if (children[i]->HasFocus())
+			return i;
+	}
+	return (size_t)-1;
 }
