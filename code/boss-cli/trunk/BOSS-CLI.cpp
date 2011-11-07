@@ -317,7 +317,9 @@ int main(int argc, char *argv[]) {
 								uiStruct ui;
 								vector<string> fails = DownloadInstallBOSSUpdate(ui, INSTALLER, updateVersion);
 
-								cout << endl << "Release notes for v" << updateVersion+":" << endl << endl << FetchReleaseNotes(updateVersion) << endl;
+								string notes = FetchReleaseNotes(updateVersion);
+								if (!notes.empty())
+									cout << endl << "Release notes for v" << updateVersion+":" << endl << endl << notes << endl;
 
 								cout << endl << "New installer successfully downloaded!" << endl;
 								if (!fails.empty()) {
@@ -383,14 +385,16 @@ int main(int argc, char *argv[]) {
 								uiStruct ui;
 								vector<string> fails = DownloadInstallBOSSUpdate(ui, MANUAL, updateVersion);
 
-								cout << endl << "Release notes for v" << updateVersion+":" << endl << endl << FetchReleaseNotes(updateVersion) << endl;
+								string notes = FetchReleaseNotes(updateVersion);
+								if (!notes.empty())
+									cout << endl << "Release notes for v" << updateVersion+":" << endl << endl << notes << endl;
 								
 								if (!fails.empty()) {
 									cout << endl << "Files successfully downloaded!" << endl
 										<< "However, the following files could not be automatically installed. After BOSS quits, remove the \".new\" extension from the following file(s), deleting any existing files with the same names to complete the update:" << endl << endl;
 									size_t size=fails.size();
 									for (size_t i=0;i<size;i++) {
-										cout << fails[i] << ".new" << endl;
+										cout << "\"" << fails[i] << ".new\"" << endl;
 									}
 								} else
 									cout << endl << "Files successfully updated!" << endl

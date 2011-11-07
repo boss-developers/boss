@@ -270,6 +270,10 @@ namespace boss {
 			//Now verify file integrity, but only if a program update, masterlist updates don't get CRCs calculated.
 			if ((updateType == MANUAL || updateType == INSTALLER) && GetCrc32(fs::path(path)) != updatedFiles[i].crc)
 				throw boss_error(BOSS_ERROR_FILE_CRC_MISMATCH, updatedFiles[i].name);
+
+			//Now move progress indicator down a line if on CLI.
+			if (!ui.isGUI)
+				cout << endl;
 		}
 		curl_easy_cleanup(curl);
 	}
@@ -305,7 +309,7 @@ namespace boss {
 					try {
 						fs::rename(boss_path / updated, boss_path / old);
 					} catch (fs::filesystem_error e) {
-						err.push_back("\"" + updatedFiles[i].name + "\"");
+						err.push_back(updatedFiles[i].name);
 					}
 				}
 			}
@@ -507,7 +511,7 @@ namespace boss {
 		bool p = qi::phrase_parse(start,end,
 			(
 				(
-					(qi::char_('+')[qi::_1 = false] | qi::char_('-')[qi::_1 = true])
+					(qi::char_('+')[qi::_1 = false] | qi::char_('-')[qi::_1 = true] | qi::eps[qi::_1 = false])
 					>> '"' 
 					>> qi::lexeme[+(unicode::char_ - '"')] 
 					>> '"' 
@@ -655,6 +659,8 @@ namespace boss {
 			curl_easy_cleanup(curl);
 			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
 		}
+		if (fileBuffer.substr(0,9) == "<!DOCTYPE")  //No release notes.
+			fileBuffer.clear();
 		curl_easy_cleanup(curl);
 
 		return fileBuffer;

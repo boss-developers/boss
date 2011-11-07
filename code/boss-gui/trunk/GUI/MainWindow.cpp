@@ -878,7 +878,9 @@ void MainFrame::Update(string updateVersion) {
 		} else {
 			//Display release notes.
 			try {
-				wxMessageBox(wxT("New installer successfully downloaded! Release notes for v"+updateVersion+":\n\n"+FetchReleaseNotes(updateVersion)), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+				string notes = FetchReleaseNotes(updateVersion);
+				if (!notes.empty())
+					wxMessageBox(wxT("New installer successfully downloaded! Release notes for v"+updateVersion+":\n\n"+notes), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 			} catch (boss_error e) {
 				wxMessageBox("Failed to get release notes. Details: " + e.getString(), wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			}
@@ -939,7 +941,9 @@ void MainFrame::Update(string updateVersion) {
 
 		//Display release notes.
 		try {
-			wxMessageBox(wxT("Release notes for v"+updateVersion+":\n\n"+FetchReleaseNotes(updateVersion)), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+			string notes = FetchReleaseNotes(updateVersion);
+			if (!notes.empty())
+				wxMessageBox(wxT("Release notes for v"+updateVersion+":\n\n"+notes), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 		} catch (boss_error e) {
 			wxMessageBox("Failed to get release notes. Details: " + e.getString(), wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 		}
