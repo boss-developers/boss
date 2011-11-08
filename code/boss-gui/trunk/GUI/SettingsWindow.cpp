@@ -319,7 +319,6 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
-	//That gives minimum size, which isn't that great, so:
 }
 
 void SettingsFrame::SetDefaultValues(wxString * DebugVerbosity) {

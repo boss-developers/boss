@@ -89,7 +89,7 @@ public:
 	void OnCancelQuit(wxCommandEvent& event);
 	void OnSearchList(wxCommandEvent& event);
 	void OnCancelSearch(wxCommandEvent& event);
-	void OnSelectModInMasterlist(wxCommandEvent& event);
+	void OnSelectModInMasterlist(wxTreeEvent& event);
 	void OnSortingCheckToggle(wxCommandEvent& event);
 	void OnMessageAddToggle(wxCommandEvent& event);
 	void OnSortInsertChange(wxCommandEvent& event);
@@ -109,13 +109,6 @@ private:
 
 	wxArrayString ModlistMods;
 
-	wxButton *NewRuleButton;
-	wxButton *EditRuleButton;
-	wxButton *DeleteRuleButton;
-	wxButton *AddModlistModAsRuleMod;
-	wxButton *AddModlistModAsSortMod;
-	wxButton *AddMasterlistModAsRuleMod;
-	wxButton *AddMasterlistModAsSortMod;
 	wxRadioButton *SortModOption;
 	wxRadioButton *InsertModOption;
 	wxCheckBox *AddMessagesCheckBox;
