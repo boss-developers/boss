@@ -170,11 +170,49 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 		<li>The CSS selectors are given on the left, and their styling can be edited in the corresponding text boxes on the right.
 	</ul>
 </ul>
+<p>Each setting in the GUI corresponds to a command line parameter and/or an ini setting, the details of which can be found in the <q><a href="#cli">Command Line Arguments</a></q> and <q><a href="#customising">Customising How BOSS Works</a></q> sections of this ReadMe respectively.</p>
 
 <h4>The User Rules Editor</h4>
-<p style="background:red;">NEEDS UPDATING
-
-<p>Each setting in the GUI corresponds to a command line parameter and/or an ini setting, the details of which can be found in the <q><a href="#cli">Command Line Arguments</a></q> and <q><a href="#customising">Customising How BOSS Works</a></q> sections of this ReadMe respectively.</p>
+<p>The User Rules Editor can be used to manage your user rules using a graphical interface instead of editing your userlist.txt directly. The information contained within the <q>BOSS User Rules ReadMe.html</q> document is still required to understand user rules. The editor contains the following:
+<ul>
+	<li>User Rules:
+	<ul>
+		<li>This section lists your user rules in order. 
+		<li>Rules that are currently enabled have their checkboxes checked, whereas disabled rules are unchecked.
+		<li>Rules can be moved up or down using the <q>Move Rule Up</q> and <q>Move Rule Down</q> buttons at the bottom of the window.
+	</ul>
+	<li>Installed Mods:
+	<ul>
+		<li>This section lists the plugins found in your Data folder. Plugins are listed in the order that they are loaded.
+		<li>All plugins installed are displayed, not just those in your currently active load order.
+		<li>The installed mod list may be searched using the search box at the top. Searching looks for matches from the start of plugin filenames, so searching for "xul" would return all plugins with filenames that start with "xul". Searching starts when the "Enter" keyboard key is pressed, it is not performed as you type.
+		<li>A plugin may be selected in the list and drag 'n' dropped into a text box in the Rule Creator/Editor to add that plugin to the text box, rather than having to write out the plugin filename by hand.
+	</ul>
+	<li>Masterlist:
+	<ul>
+		<li>This section displays the masterlist as a tree list, showing plugins and groups.
+		<li>The tree list is by default fully collapsed. Double clicking on a collapsed group (any row without a ".esp" or ".esm" in its name) will expand that group, showing its children. Double clicking an expanded group will collapse it again, hiding its children.
+		<li>Selecting a plugin will cause the messages attached to it by the masterlist to be displayed in the Masterlist Mod Messages section.
+		<li>The masterlistlist may be searched using the search box at the top. Searching looks for matches from the start of plugin filenames and group names, so searching for "xul" would return all plugins with filenames that start with "xul" and groups with names that start with "xul". Searching starts when the <q>Enter</q> keyboard key is pressed, it is not performed as you type.
+	</ul>
+	<li>Masterlist Mod Messages:
+	<ul>
+		<li>This section displays the messages attached to the currently selected mod in the Masterlist section. The messages are displayed as they appear in the masterlist, not as they appear in the BOSS Log. See the <q>BOSS User Rules ReadMe.html</q> for a brief overview of the most common message syntax, and the <q>BOSS Masterlist Syntax.html</q> documentation for the full details.
+		<li>The messages cannot be edited here: they must be replaced or added to via a user rule in the Rule Creator.
+	</ul>
+	<li>Rule Creator/Editor:
+	<ul>
+		<li>This section is where the user edits or creates user rules. Selecting a rule in the User Rules list will load it into this section.
+		<li>The <em>rule object</em> is specified in the first text box. This is the plugin or group that the rule acts upon.
+		<li>If the rule object is to be sorted, the object it is sorted relative to must be specified in one of the two text boxes in the Sort Item subsection, depending whether the user is sorting the object relative to another, or inserting a mod into a group.
+		<li>Messages for addition or to replace existing messages should be written in the large text box. They must use valid syntax.
+		<li>To add the current contents of the Rule Creator/Editor as a new rule, use the <q>Create New Rule</q> button. To save edits to the selected rule in the User Rules list, use the <q>Save Edited Rule</q> button.
+		<li>To delete the rule selected in the User Rules list, use the <q>Delete Rule</q> button. The User Rules Editor will ask for confirmation before deleting the rule.
+		<li>The User Rules Editor will catch most, if not all, syntax errors in created and edited rules and warn the user of the errors encountered. No invalid rules will be saved.
+	</ul>
+</ul>
+<p>To save your changes to your userlist and exit, use the <q>Save</q> button. To exit without saving, use the <q>Cancel</q> button.
+<p>Plugins and groups may be added to the text boxes in the Rule Creator by dragging and dropping them from the Installed Mods and Masterlist lists on the right of the window. Dropping a plugin or group into a text box currently containing a plugin or group will cause the existing text to be replaced.</p>
 <br />
 
 <h2 id="updates">Keeping BOSS Up-To-Date</h2>
@@ -549,7 +587,6 @@ a problem for which no error message is given, please report the crash or proble
 <br />
 
 <h2 id="errors">Error Messages</h2>
-<p style="background:red;color:white;">NEEDS UPDATING WITH USER RULES EDITOR ERROR MESSAGES.</p>
 <p>If BOSS can detect a specific reason for being unable to function correctly, it will print an error message detailing the problem. BOSS's error messages are listed below, along with details of the issues and possible solutions.
 <ul class="errorMessages">
 	<li><b>Message:</b> <i>Oblivion.esm and Nehrim.esm both detected!</i>
@@ -689,6 +726,20 @@ a problem for which no error message is given, please report the crash or proble
 	<ul>
 		<li><b>Issue:</b> BOSS encountered unexpected formatting in the given file.
 		<li><b>Solution:</b> If you have edited the file, try using the information on what is expected where to solve the issue. Otherwise, report this issue to the BOSS development team.
+	</ul>
+	<li><b>Message:</b> Error: <code>details of error</code> Unable to save changes.
+	<ul>
+		<li><b>Issue:</b> BOSS cannot save the changes made to your userlist in the User Rules Editor.
+		<li><b>Solution:</b> See the details of the error and match them to one of the other above error messages, using its solution to solve the issue.
+	</ul>
+	<li><b>Message:</b> Rule Syntax Error: <code>details of error</code> Please correct the mistake before continuing.
+	<ul>
+		<li><b>Issue:</b> You have attempted to save a user rule (edited or created) which contains invalid syntax.
+		<li><b>Solution:</b> The message will specify the precise fault. Resolve the fault to solve the issue.
+	</ul>
+	<li><b>Message:</b> Error: Could not move rule.
+	<ul>
+		<li><b>Solution:</b> Report this issue to the BOSS development team.
 	</ul>
 </ul>
 <p>The following error messages may be produced when a user rule with invalid syntax is encountered. To solve, correct the issue the message highlights. All messages detail the specific fault found.
@@ -906,6 +957,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	</ul>
 	<li>Graphical User Interface:
 	<ul>
+		<li>Added: A User Rules Editor to allow creation and editing of user rules without manually editing the userlist.txt.
 		<li>Changed: The GUI is now completely independent of the CLI interface.
 		<li>Changed: <q>Settings</q> window overhauled:
 		<ul>

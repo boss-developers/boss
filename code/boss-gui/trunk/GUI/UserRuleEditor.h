@@ -29,31 +29,17 @@
 using namespace boss;
 using namespace std;
 
-/* Editor window handles all the modlist/masterlist stuff and rule creator/editor stuff itself.
-
-It treats the rule list it contains as a black box except from the following:
-1. When a rule is selected in the rule list, it triggers an event that can be detected in the editor window. 
-   The event can then be used to access the Rule object for the currently selected rule, which is passed to the Editor window and used to fill in the editor form.
-2. When the editor form's Save or Create or Delete buttons are pressed, related functions in the rule list are called, with the edited Rule, new Rule or nothing passed as parameters respectively.
-   The rule list functions then perform the necessary changes.
-
-The rule list is composed of the actual list (which is scrollable and made of items of variable height), and two "move item" buttons, which move the currently selected item up or down.
-All changes enacted by the GUI are performed on the RuleList object, from which the resulting changes to the GUI representation of the rules are then drawn.
-No original information is stored in GUI structures themselves.
-
-
-*/
-
 class RuleBoxClass : public wxPanel {
 public:
 	RuleBoxClass(wxScrolled<wxPanel> *parent);
-	RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule);
-	void ToggleEnabled(bool isEnabled);		//Doesn't handle RuleList modification, only greying out of UI element.
+	RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, unsigned int index);
+	void ToggleEnabled(wxCommandEvent& event);		//Doesn't handle RuleList modification, only greying out of UI element.
+	void OnSelect(wxActivateEvent& event);
+	DECLARE_EVENT_TABLE()
 private:
-	wxBoxSizer *checkboxSizer;
-	wxBoxSizer *contentSizer;
 	wxStaticText *ruleContent;
 	wxCheckBox *ruleCheckbox;
+	unsigned int ruleIndex;
 };
 
 class RuleListFrameClass : public wxPanel {
@@ -69,13 +55,14 @@ public:
 
 	void OnRuleOrderChange(wxCommandEvent& event);
 	void OnToggleRule(wxCommandEvent& event);
+	void OnRuleSelection(wxEvent& event);
 
 	DECLARE_EVENT_TABLE()
 private:
-	unsigned int GetSelectedRuleIndex();				//Gets the index of the GUI element (ie. the Nth child of RuleListScroller), which matches to the corresponding rule's index in the RuleList object.
 	void ReDrawRuleList();								//Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
 
 	RuleList userlist;
+	unsigned int selectedRuleIndex;
 
 	wxButton *MoveRuleUp;
 	wxButton *MoveRuleDown;

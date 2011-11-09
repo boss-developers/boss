@@ -658,7 +658,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 
 void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
 	if (use_user_rules_editor) {
-		UserRulesEditorFrame *editor = new UserRulesEditorFrame(wxT("Better Oblivion Sorting Software: User Rule Editor"),this);
+		UserRulesEditorFrame *editor = new UserRulesEditorFrame(wxT("Better Oblivion Sorting Software: User Rules Editor"),this);
 		editor->SetIcon(wxIconLocation("BOSS GUI.exe"));
 		editor->Show();
 		return;
