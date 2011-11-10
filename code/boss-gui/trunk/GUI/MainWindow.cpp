@@ -175,7 +175,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	HelpMenu->Append(MENU_OpenMainReadMe, wxT("Open &Main ReadMe"), wxT("Opens the main BOSS ReadMe in your default web browser."));
 	HelpMenu->Append(MENU_OpenUserRulesReadMe, wxT("Open &User Rules ReadMe"), wxT("Opens the User Rules ReadMe in your default web browser."));
 	HelpMenu->Append(MENU_OpenMasterlistReadMe, wxT("Open &Masterlist &ReadMe"), wxT("Opens the BOSS Masterlist Syntax ReadMe in your default web browser."));
-	HelpMenu->Append(MENU_OpenAPIReadMe, wxT("&Open API ReadMe"), wxT("Opens the BOSS API ReadMe in your default web browser."));
+	//HelpMenu->Append(MENU_OpenAPIReadMe, wxT("&Open API ReadMe"), wxT("Opens the BOSS API ReadMe in your default web browser."));
 	HelpMenu->AppendSeparator();
 	HelpMenu->Append(OPTION_CheckForUpdates, wxT("&Check For Updates..."), wxT("Checks for updates to BOSS."));
 	HelpMenu->Append(MENU_ShowAbout, wxT("&About BOSS..."), wxT("Shows information about BOSS."));

@@ -25,10 +25,12 @@ BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
 	EVT_BUTTON ( BUTTON_NewRule, UserRulesEditorFrame::OnRuleCreate )
 	EVT_BUTTON ( BUTTON_EditRule, UserRulesEditorFrame::OnRuleEdit )
 	EVT_BUTTON ( BUTTON_DeleteRule, UserRulesEditorFrame::OnRuleDelete )
+	EVT_BUTTON ( BUTTON_MoveRuleUp, UserRulesEditorFrame::OnRuleOrderChange )
+	EVT_BUTTON ( BUTTON_MoveRuleDown, UserRulesEditorFrame::OnRuleOrderChange )
 	EVT_CHECKBOX ( CHECKBOX_SortMods, UserRulesEditorFrame::OnSortingCheckToggle )
 	EVT_CHECKBOX ( CHECKBOX_AddMessages, UserRulesEditorFrame::OnMessageAddToggle )
 	EVT_TREE_SEL_CHANGED ( LIST_Masterlist, UserRulesEditorFrame::OnSelectModInMasterlist )
-	EVT_LISTBOX ( LIST_RuleList, UserRulesEditorFrame::OnRuleSelection )
+	EVT_LISTBOX ( wxID_ANY, UserRulesEditorFrame::OnRuleSelection )
 	EVT_RADIOBUTTON ( RADIO_SortMod, UserRulesEditorFrame::OnSortInsertChange )
 	EVT_RADIOBUTTON ( RADIO_InsertMod, UserRulesEditorFrame::OnSortInsertChange )
 	EVT_SEARCHCTRL_SEARCH_BTN ( SEARCH_Masterlist, UserRulesEditorFrame::OnSearchList )
@@ -40,14 +42,13 @@ BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
 END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE( RuleListFrameClass, wxPanel )
-	EVT_BUTTON ( BUTTON_MoveRuleUp, RuleListFrameClass::OnRuleOrderChange )
-	EVT_BUTTON ( BUTTON_MoveRuleDown, RuleListFrameClass::OnRuleOrderChange )
 	EVT_CHECKBOX ( wxID_ANY, RuleListFrameClass::OnToggleRule )
+	EVT_LISTBOX ( wxID_ANY, RuleListFrameClass::OnRuleSelection )
 END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE( RuleBoxClass, wxPanel )
 	EVT_CHECKBOX ( wxID_ANY, RuleBoxClass::ToggleEnabled )
-	EVT_ACTIVATE ( RuleBoxClass::OnSelect )
+	EVT_LEFT_DOWN ( RuleBoxClass::OnSelect )
 END_EVENT_TABLE()
 
 
@@ -116,7 +117,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	//////First column
 	wxBoxSizer *rulesBox = new wxBoxSizer(wxVERTICAL);
 	try{
-		rulesBox->Add(RulesList = new RuleListFrameClass(this, masterlist));
+		rulesBox->Add(RulesList = new RuleListFrameClass(this, LIST_RuleList, masterlist));
 	} catch(boss_error e) {
 		progDia->Destroy();
 		this->Close();
@@ -607,31 +608,15 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 	return newRule;
 }
 
+void UserRulesEditorFrame::OnRuleOrderChange(wxCommandEvent& event) {
+	RulesList->MoveRule(event.GetId());
+}
+
 ////////////////////////////
 // RuleBoxClass functions
 ////////////////////////////
 
-RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize) {
-	SetBackgroundColour(wxColour(255,255,255));
-
-	wxBoxSizer *mainSizer = new wxBoxSizer(wxHORIZONTAL);
-	wxBoxSizer *checkboxSizer = new wxBoxSizer(wxHORIZONTAL);
-	wxBoxSizer *contentSizer = new wxBoxSizer(wxVERTICAL);
-
-	checkboxSizer->Add(ruleCheckbox = new wxCheckBox(this, wxID_ANY,""),0,wxALIGN_CENTER|wxSHAPED|wxALL,10);
-
-	contentSizer->Add(ruleContent = new wxStaticText(this, wxID_ANY,""),0,wxSHAPED|wxALL,5);
-
-	mainSizer->Add(checkboxSizer);
-	mainSizer->Add(contentSizer);
-
-	ruleCheckbox->SetValue(true);
-
-	SetSizerAndFit(mainSizer);
-	Show();
-}
-
-RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, unsigned int index) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize) {
+RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, unsigned int index, bool isSelected) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize) {
 	//First get text representation of rule.
 	string text = "";
 	bool hasEditedMessages = false;
@@ -667,20 +652,19 @@ RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, unsign
 	//Now do GUI stuff.
 	SetBackgroundColour(wxColour(255,255,255));
 
-	wxBoxSizer *mainSizer = new wxBoxSizer(wxHORIZONTAL);
-	wxBoxSizer *checkboxSizer = new wxBoxSizer(wxHORIZONTAL);
-	wxBoxSizer *contentSizer = new wxBoxSizer(wxVERTICAL);
-
-	checkboxSizer->Add(ruleCheckbox = new wxCheckBox(this, wxID_ANY,""),0,wxALIGN_CENTER|wxSHAPED|wxALL,10);
-
-	contentSizer->Add(ruleContent = new wxStaticText(this, wxID_ANY,text),0,wxSHAPED|wxALL,5);
-
-	mainSizer->Add(checkboxSizer);
-	mainSizer->Add(contentSizer);
+	wxFlexGridSizer *mainSizer = new wxFlexGridSizer(2,0,0);
+	mainSizer->SetFlexibleDirection(wxHORIZONTAL);
+	mainSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_NONE);
+	mainSizer->AddGrowableCol(1,0);
+	mainSizer->Add(ruleCheckbox = new wxCheckBox(this, wxID_ANY,""),0,wxALIGN_CENTER|wxALL,10);
+	mainSizer->Add(ruleContent = new wxStaticText(this, wxID_ANY,text),0,wxEXPAND|wxRIGHT,5);
 
 	ruleCheckbox->SetValue(currentRule.enabled);
+	ruleContent->Bind(wxEVT_LEFT_DOWN, &RuleBoxClass::OnSelect, this, wxID_ANY);
 	if (!currentRule.enabled)
 		ruleContent->Enable(false);
+	if (isSelected)
+		ruleContent->SetBackgroundColour(wxColour(240,240,240));
 
 	SetSizerAndFit(mainSizer);
 	Show();
@@ -696,15 +680,25 @@ void RuleBoxClass::ToggleEnabled(wxCommandEvent& event) {
 	GetGrandParent()->ProcessWindowEvent(event);
 }
 
-void RuleBoxClass::OnSelect(wxActivateEvent& event) {
-	
+void RuleBoxClass::OnSelect(wxMouseEvent& event) {
+	event.SetId(ruleIndex);
+	event.SetEventType(wxEVT_COMMAND_LISTBOX_SELECTED);
+	GetGrandParent()->ProcessWindowEvent(event);
+}
+
+void RuleBoxClass::Highlight(bool highlight) {
+	if (highlight)
+		ruleContent->SetBackgroundColour(wxColour(240,240,240));
+	else
+		ruleContent->SetBackgroundColour(wxColour(255,255,255));
+	Refresh();
 }
 
 //////////////////////////////////
 // RuleListFrameClass functions
 //////////////////////////////////
 
-RuleListFrameClass::RuleListFrameClass(wxFrame *parent, ItemList &masterlist) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize) {
+RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, ItemList &masterlist) : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize) {
 	//Parse userlist.
 	LOG_INFO("Starting to parse userlist.");
 	try {
@@ -759,24 +753,30 @@ void RuleListFrameClass::ReDrawRuleList() {
 	size_t size = userlist.rules.size();
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 	for (size_t i=0;i<size;i++) {
-		sizer->Add(new RuleBoxClass(RuleListScroller, userlist.rules[i], i));
+		if (i == selectedRuleIndex)
+			sizer->Add(new RuleBoxClass(RuleListScroller, userlist.rules[i], i, true), 0, wxEXPAND);
+		else
+			sizer->Add(new RuleBoxClass(RuleListScroller, userlist.rules[i], i, false), 0, wxEXPAND);
 	}
 	RuleListScroller->SetSizerAndFit(sizer);
-	Fit();
+	RuleListScroller->Layout();
 }
 
-void RuleListFrameClass::OnRuleOrderChange(wxCommandEvent& event) {
+void RuleListFrameClass::MoveRule(wxWindowID id) {
 	if (selectedRuleIndex >= 0 && selectedRuleIndex < userlist.rules.size()) {
-		if (event.GetId() == BUTTON_MoveRuleUp && selectedRuleIndex != 0) {
+		if (id == BUTTON_MoveRuleUp && selectedRuleIndex != 0) {
 			Rule selectedRule = userlist.rules[selectedRuleIndex];
 			userlist.rules.erase(userlist.rules.begin()+selectedRuleIndex);
 			userlist.rules.insert(userlist.rules.begin()+selectedRuleIndex-1,selectedRule);
-		} else if (event.GetId() == BUTTON_MoveRuleDown && selectedRuleIndex != userlist.rules.size()-1) {
+			selectedRuleIndex--;
+			ReDrawRuleList();
+		} else if (id == BUTTON_MoveRuleDown && selectedRuleIndex != userlist.rules.size()-1) {
 			Rule selectedRule = userlist.rules[selectedRuleIndex];
 			userlist.rules.erase(userlist.rules.begin()+selectedRuleIndex);
 			userlist.rules.insert(userlist.rules.begin()+selectedRuleIndex+1,selectedRule);
+			selectedRuleIndex++;
+			ReDrawRuleList();
 		}
-		wxMessageBox("This thing works. Kinda.");
 	} else {
 		LOG_ERROR("Could not move rule %i.", selectedRuleIndex);
 		wxMessageBox(wxString::Format(
@@ -786,7 +786,6 @@ void RuleListFrameClass::OnRuleOrderChange(wxCommandEvent& event) {
 		wxOK | wxICON_ERROR,
 		NULL);
 	}
-	ReDrawRuleList();
 }
 
 void RuleListFrameClass::OnToggleRule(wxCommandEvent& event) {
@@ -806,22 +805,32 @@ void RuleListFrameClass::AppendRule(Rule newRule) {
 	userlist.rules.push_back(newRule);
 	//Now refresh GUI.
 	ReDrawRuleList();
-	selectedRuleIndex = 0;
 }
 
 void RuleListFrameClass::SaveEditedRule(Rule editedRule) {
 	if (selectedRuleIndex >= 0 && selectedRuleIndex < userlist.rules.size()) {
 		userlist.rules[selectedRuleIndex] = editedRule;
 		ReDrawRuleList();
-		selectedRuleIndex = 0;
 	}
 }
 
 void RuleListFrameClass::DeleteSelectedRule() {
 	userlist.rules.erase(userlist.rules.begin()+selectedRuleIndex);
-	selectedRuleIndex = 0;
+	ReDrawRuleList();
+	if (selectedRuleIndex == userlist.rules.size())  //Just shortened rules by one. Make sure index isn't invalid.
+		selectedRuleIndex--;
 }
 
-void RuleListFrameClass::OnRuleSelection(wxEvent& event) {
+void RuleListFrameClass::OnRuleSelection(wxCommandEvent& event) {
 	selectedRuleIndex = event.GetId();
+	size_t size = userlist.rules.size();
+	wxWindowList list = RuleListScroller->GetChildren();
+	for (size_t i=0; i<size; i++) {
+		RuleBoxClass *temp = (RuleBoxClass*)list[i];
+		if (i == selectedRuleIndex)
+			temp->Highlight(true);
+		else
+			temp->Highlight(false);
+	}
+	GetParent()->ProcessWindowEvent(event);
 }

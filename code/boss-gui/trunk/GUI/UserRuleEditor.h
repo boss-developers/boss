@@ -31,10 +31,10 @@ using namespace std;
 
 class RuleBoxClass : public wxPanel {
 public:
-	RuleBoxClass(wxScrolled<wxPanel> *parent);
-	RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, unsigned int index);
+	RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, unsigned int index, bool isSelected);
 	void ToggleEnabled(wxCommandEvent& event);		//Doesn't handle RuleList modification, only greying out of UI element.
-	void OnSelect(wxActivateEvent& event);
+	void OnSelect(wxMouseEvent& event);
+	void Highlight(bool highlight);
 	DECLARE_EVENT_TABLE()
 private:
 	wxStaticText *ruleContent;
@@ -44,7 +44,7 @@ private:
 
 class RuleListFrameClass : public wxPanel {
 public:
-	RuleListFrameClass(wxFrame *parent, ItemList &masterlist);		//Initialise the RuleListFrameClass object.
+	RuleListFrameClass(wxFrame *parent, wxWindowID id, ItemList &masterlist);		//Initialise the RuleListFrameClass object.
 	void SaveUserlist(const fs::path path);					//Save the changes made to the userlist.
 	
 	Rule GetSelectedRule();								//Returns the currently selected rule.
@@ -53,9 +53,9 @@ public:
 	void SaveEditedRule(Rule editedRule);   //Get the index from current selection internally. Also update RuleList object.
 	void DeleteSelectedRule();				//Remove from GUI and RuleList object, getting index from current selection internally.
 
-	void OnRuleOrderChange(wxCommandEvent& event);
+	void MoveRule(wxWindowID id);
 	void OnToggleRule(wxCommandEvent& event);
-	void OnRuleSelection(wxEvent& event);
+	void OnRuleSelection(wxCommandEvent& event);
 
 	DECLARE_EVENT_TABLE()
 private:
@@ -64,8 +64,6 @@ private:
 	RuleList userlist;
 	unsigned int selectedRuleIndex;
 
-	wxButton *MoveRuleUp;
-	wxButton *MoveRuleDown;
 	wxScrolled<wxPanel> *RuleListScroller;
 };
 
@@ -80,13 +78,11 @@ public:
 	void OnSortingCheckToggle(wxCommandEvent& event);
 	void OnMessageAddToggle(wxCommandEvent& event);
 	void OnSortInsertChange(wxCommandEvent& event);
-
 	void OnRuleCreate(wxCommandEvent& event);
 	void OnRuleEdit(wxCommandEvent& event);
 	void OnRuleDelete(wxCommandEvent& event);
-
+	void OnRuleOrderChange(wxCommandEvent& event);
 	void OnRuleSelection(wxCommandEvent& event);
-	
 	DECLARE_EVENT_TABLE()
 private:
 	void LoadLists();

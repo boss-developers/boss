@@ -419,16 +419,13 @@ namespace boss {
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 		}
 
-		vector<Rule>::iterator ruleIter = rules.begin();
-		vector<RuleLine>::iterator lineIter;
-		for (ruleIter; ruleIter != rules.end(); ++ruleIter) {
+		for (vector<Rule>::iterator ruleIter = rules.begin(); ruleIter != rules.end(); ++ruleIter) {
 			if (!ruleIter->enabled)
 				outFile << "DISABLE ";
 			outFile << boost::algorithm::to_upper_copy(ruleIter->KeyToString()) << ": " << ruleIter->ruleObject << endl;
 
-			lineIter = ruleIter->lines.begin();
-			for (lineIter; lineIter != ruleIter->lines.end(); ++lineIter)
-				outFile << boost::algorithm::to_upper_copy(ruleIter->KeyToString()) << ": " << lineIter->object << endl;
+			for (vector<RuleLine>::iterator lineIter = ruleIter->lines.begin(); lineIter != ruleIter->lines.end(); ++lineIter)
+				outFile << boost::algorithm::to_upper_copy(lineIter->KeyToString()) << ": " << lineIter->object << endl;
 			outFile << endl;
 		}
 		outFile.close();
