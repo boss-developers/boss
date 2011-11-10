@@ -25,9 +25,19 @@
 #include <wx/rearrangectrl.h>
 #include <wx/srchctrl.h>
 #include <wx/treectrl.h>
+#include <wx/dataobj.h>
+#include <wx/dnd.h>
 
 using namespace boss;
 using namespace std;
+
+class TextDropTarget : public wxTextDropTarget {  //Class to override virtual functions.
+public:
+	TextDropTarget(wxTextCtrl *owner);
+	virtual bool OnDropText(wxCoord x, wxCoord y, const wxString &data);
+private:
+	wxTextCtrl *targetOwner;
+};
 
 class RuleBoxClass : public wxPanel {
 public:
@@ -45,25 +55,19 @@ private:
 class RuleListFrameClass : public wxPanel {
 public:
 	RuleListFrameClass(wxFrame *parent, wxWindowID id, ItemList &masterlist);		//Initialise the RuleListFrameClass object.
-	void SaveUserlist(const fs::path path);					//Save the changes made to the userlist.
-	
-	Rule GetSelectedRule();								//Returns the currently selected rule.
-	
+	void SaveUserlist(const fs::path path);	//Save the changes made to the userlist.
+	Rule GetSelectedRule();					//Returns the currently selected rule.
 	void AppendRule(Rule newRule);			//Append to RuleList object and update GUI.
 	void SaveEditedRule(Rule editedRule);   //Get the index from current selection internally. Also update RuleList object.
 	void DeleteSelectedRule();				//Remove from GUI and RuleList object, getting index from current selection internally.
-
 	void MoveRule(wxWindowID id);
 	void OnToggleRule(wxCommandEvent& event);
 	void OnRuleSelection(wxCommandEvent& event);
-
 	DECLARE_EVENT_TABLE()
 private:
-	void ReDrawRuleList();								//Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
-
+	void ReDrawRuleList();					//Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
 	RuleList userlist;
 	unsigned int selectedRuleIndex;
-
 	wxScrolled<wxPanel> *RuleListScroller;
 };
 
@@ -83,6 +87,9 @@ public:
 	void OnRuleDelete(wxCommandEvent& event);
 	void OnRuleOrderChange(wxCommandEvent& event);
 	void OnRuleSelection(wxCommandEvent& event);
+
+	void OnDragStart(wxTreeEvent& event);
+
 	DECLARE_EVENT_TABLE()
 private:
 	void LoadLists();
@@ -91,6 +98,13 @@ private:
 	ItemList masterlist;
 
 	wxArrayString ModlistMods;
+
+	wxTextDataObject *dragData;
+	wxDropSource *dragSource;
+	wxDragResult dragResult;
+	TextDropTarget *ForDropTarget;
+	TextDropTarget *SortDropTarget;
+	TextDropTarget *InsertDropTarget;
 
 	wxRadioButton *SortModOption;
 	wxRadioButton *InsertModOption;

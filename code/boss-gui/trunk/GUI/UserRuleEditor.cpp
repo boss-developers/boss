@@ -30,6 +30,8 @@ BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
 	EVT_CHECKBOX ( CHECKBOX_SortMods, UserRulesEditorFrame::OnSortingCheckToggle )
 	EVT_CHECKBOX ( CHECKBOX_AddMessages, UserRulesEditorFrame::OnMessageAddToggle )
 	EVT_TREE_SEL_CHANGED ( LIST_Masterlist, UserRulesEditorFrame::OnSelectModInMasterlist )
+	EVT_TREE_BEGIN_DRAG ( LIST_Masterlist, UserRulesEditorFrame::OnDragStart )
+	EVT_TREE_BEGIN_DRAG ( LIST_Modlist, UserRulesEditorFrame::OnDragStart )
 	EVT_LISTBOX ( wxID_ANY, UserRulesEditorFrame::OnRuleSelection )
 	EVT_RADIOBUTTON ( RADIO_SortMod, UserRulesEditorFrame::OnSortInsertChange )
 	EVT_RADIOBUTTON ( RADIO_InsertMod, UserRulesEditorFrame::OnSortInsertChange )
@@ -61,7 +63,7 @@ using boost::algorithm::trim_copy;
 UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxSize(900,600)) {
 
 	//Let's give this a progress bar.
-	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Initialising User Rules Editor..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE);
+	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Initialising User Rules Editor..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
 	progDia->Pulse();
 
 	try{
@@ -78,7 +80,8 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 		return;
 	}
 
-	progDia->Pulse();
+	if (!progDia->Pulse())
+		progDia->Destroy();
 
 	//Some variable setup.
 	wxString BeforeAfter[] = {
@@ -130,7 +133,8 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 		return;
 	}
 
-	progDia->Pulse();
+	if (!progDia->Pulse())
+		progDia->Destroy();
 
 	////////Rule Creator/Editor
 	wxBoxSizer *editorMessagesBox = new wxBoxSizer(wxHORIZONTAL);
@@ -138,16 +142,16 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	wxBoxSizer *ruleEditorBox = new wxBoxSizer(wxVERTICAL);  //To get internal padding.
 	wxBoxSizer *forBox = new wxBoxSizer(wxHORIZONTAL);
 	forBox->Add(new wxStaticText(this, wxID_ANY, wxT("For")));
-	forBox->Add(RuleModBox = new wxTextCtrl(this,TEXT_RuleMod), 0, wxLEFT, 10);
-	ruleEditorBox->Add(forBox);
+	forBox->Add(RuleModBox = new wxTextCtrl(this, TEXT_RuleMod, "", wxDefaultPosition, wxSize(200,wxDefaultSize.y)), 1, wxEXPAND|wxLEFT, 10);
+	ruleEditorBox->Add(forBox, 1, wxEXPAND);
 	ruleEditorBox->AddSpacer(10);
 	ruleEditorBox->Add(SortModsCheckBox = new wxCheckBox(this, CHECKBOX_SortMods, wxT("Sort Item")));
 	ruleEditorBox->AddSpacer(10);
 	wxBoxSizer *sortModOptionBox = new wxBoxSizer(wxHORIZONTAL);
 	sortModOptionBox->Add(SortModOption = new wxRadioButton(this, RADIO_SortMod, wxT("Sort"), wxDefaultPosition, wxDefaultSize));
 	sortModOptionBox->Add(BeforeAfterChoiceBox = new wxChoice(this, CHOICE_BeforeAfter, wxDefaultPosition, wxDefaultSize, 2, BeforeAfter), 0, wxLEFT, 10);
-	sortModOptionBox->Add(SortModBox = new wxTextCtrl(this,TEXT_SortMod), 0, wxLEFT, 10);
-	ruleEditorBox->Add(sortModOptionBox, 0, wxLEFT, 20);
+	sortModOptionBox->Add(SortModBox = new wxTextCtrl(this, TEXT_SortMod, "", wxDefaultPosition, wxSize(150,wxDefaultSize.y)), 1, wxEXPAND|wxLEFT, 10);
+	ruleEditorBox->Add(sortModOptionBox, 1, wxEXPAND|wxLEFT, 20);
 	ruleEditorBox->AddSpacer(10);
 	wxBoxSizer *InsertOptionBox = new wxBoxSizer(wxHORIZONTAL);
 	InsertOptionBox->Add(InsertModOption = new wxRadioButton(this, RADIO_InsertMod, wxT("Insert at the"), wxDefaultPosition, wxDefaultSize));
@@ -214,6 +218,14 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 
 	NewModMessagesBox->Enable(false);
 	ReplaceMessagesCheckBox->Enable(false);
+
+	//Set up drag 'n' drop.
+	ForDropTarget = new TextDropTarget(RuleModBox);
+	SortDropTarget = new TextDropTarget(SortModBox);
+	InsertDropTarget = new TextDropTarget(InsertModBox);
+	RuleModBox->SetDropTarget(ForDropTarget);
+	SortModBox->SetDropTarget(SortDropTarget);
+	InsertModBox->SetDropTarget(InsertDropTarget);
 
 	//Fill modlist and masterlist.
 	wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
@@ -611,6 +623,52 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 void UserRulesEditorFrame::OnRuleOrderChange(wxCommandEvent& event) {
 	RulesList->MoveRule(event.GetId());
 }
+
+void UserRulesEditorFrame::OnDragStart(wxTreeEvent& event) {
+	if (event.GetId() == LIST_Modlist) {
+		dragData = new wxTextDataObject(InstalledModsList->GetItemText(event.GetItem()));
+		dragSource = new wxDropSource(InstalledModsList);
+	} else if (event.GetId() == LIST_Masterlist) {
+		dragData = new wxTextDataObject(MasterlistModsList->GetItemText(event.GetItem()));
+		dragSource = new wxDropSource(MasterlistModsList);
+	}
+	dragSource->SetData(*dragData);
+	dragResult = dragSource->DoDragDrop();
+
+/*	switch(dragResult) {  //Don't actually need to do anything with result.
+	case wxDragCancel:
+		wxMessageBox("Drag 'n' drop cancelled.");
+		break;
+	case wxDragNone:
+		wxMessageBox("Drag 'n' drop error.");
+		break;
+	case wxDragCopy:
+		wxMessageBox("Drag 'n' drop copied.");
+		break;
+	case wxDragMove:
+		wxMessageBox("Drag 'n' drop moved.");
+		break;
+	case wxDragLink:
+		wxMessageBox("Drag 'n' dropped link.");
+		break;
+	default:
+		break;
+	}*/
+}
+
+//////////////////////////////
+// TextDropTarget functions
+//////////////////////////////
+
+TextDropTarget::TextDropTarget(wxTextCtrl *owner) {
+	targetOwner = owner;
+}
+
+bool TextDropTarget::OnDropText(wxCoord x, wxCoord y, const wxString &data) {
+	targetOwner->SetValue(data);
+	return true;
+}
+
 
 ////////////////////////////
 // RuleBoxClass functions

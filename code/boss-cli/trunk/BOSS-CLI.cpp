@@ -85,11 +85,10 @@ void ShowUsage(po::options_description opts) {
 }
 
 void Fail() {
-#if _WIN32 || _WIN64
 	cout << "Press ENTER to quit...";
+	cin.clear();
 	cin.ignore(1, '\n');
-#endif
-
+	cin.get();
 	exit(1);
 }
 
@@ -277,170 +276,172 @@ int main(int argc, char *argv[]) {
 	// BOSS Updater Stuff
 	/////////////////////////
 
-	string updateText, updateVersion;
-	bool connection = false;
-	try {
-		connection = CheckConnection();
-	} catch (boss_error e) {
-		LOG_ERROR("Update check failed. Details: '%s'", e.getString().c_str());
-	}
-	if (connection) {
-		cout << "Checking for BOSS updates..." << endl;
-		LOG_DEBUG("Checking for BOSS updates...");
+	if (do_startup_update_check) {
+		string updateText, updateVersion;
+		bool connection = false;
 		try {
-			updateVersion = IsBOSSUpdateAvailable();
-			if (updateVersion.empty()) {
-				cout << "You are already using the latest version of BOSS." << endl;
-				LOG_DEBUG("You are already using the latest version of BOSS.");
-			} else {
-				cout << "Update available! New version: " << updateVersion << endl << "Do you want to download and install the update? (y/N)"<< endl;
-				//Does the user want to update?
-				string answer;
-				cin >> answer;
-				if (answer == "n" || answer == "N") {
-					cout << "No update has been downloaded or installed." << endl;
-					LOG_DEBUG("No update has been downloaded or installed.");
-				} else if (answer == "y" || answer == "Y") {
-					//First detect type of current install: manual or installer.
-					if (fs::exists("BOSS ReadMe.lnk")) {  //Installer
-						cout << endl << "Your current install has been determined as having been installed via the BOSS installer." << endl
-							<< "The BOSS Updater will download the installer for the new version to this BOSS folder." << endl
-							<< "It will then launch the installer before exiting. Complete the installer to complete the update." << endl
-							<< "Do you wish to continue? (y/N)" << endl;
-
-						cin >> answer;
-						if (answer == "n" || answer == "N") {
-						cout << "BOSS Updater cancelled." << endl;
-						LOG_DEBUG("BOSS Updater cancelled.");
-						} else if (answer == "y" || answer == "Y") {
-							try {
-								uiStruct ui;
-								vector<string> fails = DownloadInstallBOSSUpdate(ui, INSTALLER, updateVersion);
-
-								string notes = FetchReleaseNotes(updateVersion);
-								if (!notes.empty())
-									cout << endl << "Release notes for v" << updateVersion+":" << endl << endl << notes << endl;
-
-								cout << endl << "New installer successfully downloaded!" << endl;
-								if (!fails.empty()) {
-									cout << "There were errors renaming the downloaded files. After BOSS quits, remove the \".new\" extension from the following file(s), deleting any existing files with the same names, then run the downloaded installer to complete the update:" << endl << endl;
-									size_t size=fails.size();
-									for (size_t i=0;i<size;i++)
-										cout << fails[i] << ".new" << endl;
-								} else {
-									cout << "BOSS will now launch the downloaded installer and exit. Complete the installer to complete the update." << endl << endl;
-
-									//Now run downloaded installer then exit.
-									//Although there should only be one installer file, to be safe iterate through the files vector.
-									for (size_t i=0;i<updatedFiles.size();i++) {
-										if (updatedFiles[i].name.empty())  //Just in case.
-											continue;
-										else if (fs::exists(updatedFiles[i].name))
-											Launch(updatedFiles[i].name);
-									}
-								}
-								Fail();
-							} catch (boss_error e) {
-								try {
-									CleanUp();
-								} catch (boss_error ee) {
-									LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-									Fail();
-								}
-								if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL) {
-									cout << "Update cancelled." << endl;
-									LOG_DEBUG("Update cancelled.");
-								} else {
-									LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
-									Fail();
-								}
-							} catch (fs::filesystem_error e) {
-								try {
-									CleanUp();
-								} catch (boss_error ee) {
-									LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-									Fail();
-								}
-								string detail = e.what();
-								LOG_ERROR("Update failed. Details: '%s'", detail.c_str());
-								Fail();
-							}
-						} else {
-							LOG_ERROR("invalid option given: '%s'", answer.c_str());
-							Fail();
-						}
-					} else {  //Manual.
-						cout << endl << "Your current install has been determined as having been installed manually." << endl
-							<< "The BOSS Updater will download the updated files and replace your existing files with them." << endl
-							<< "Your current BOSS.ini will be renamed to BOSS.ini.old. It may still be opened in your chosen text editor, allowing you to migrate your settings." << endl
-							<< " Your current userlist.txt will not be replaced." << endl
-							<< "Do you wish to continue? (y/N)" << endl;
-
-						cin >> answer;
-						if (answer == "n" || answer == "N") {
-						cout << "BOSS Updater cancelled." << endl;
-						LOG_DEBUG("BOSS Updater cancelled.");
-						} else if (answer == "y" || answer == "Y") {
-							try {
-								uiStruct ui;
-								vector<string> fails = DownloadInstallBOSSUpdate(ui, MANUAL, updateVersion);
-
-								string notes = FetchReleaseNotes(updateVersion);
-								if (!notes.empty())
-									cout << endl << "Release notes for v" << updateVersion+":" << endl << endl << notes << endl;
-								
-								if (!fails.empty()) {
-									cout << endl << "Files successfully downloaded!" << endl
-										<< "However, the following files could not be automatically installed. After BOSS quits, remove the \".new\" extension from the following file(s), deleting any existing files with the same names to complete the update:" << endl << endl;
-									size_t size=fails.size();
-									for (size_t i=0;i<size;i++) {
-										cout << "\"" << fails[i] << ".new\"" << endl;
-									}
-								} else
-									cout << endl << "Files successfully updated!" << endl
-										<< "BOSS will now exit." << endl << endl;
-
-								Fail();
-							} catch (boss_error e) {
-								try {
-									CleanUp();
-								} catch (boss_error ee) {
-									LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-									Fail();
-								}
-								if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL) {
-									cout << "Update cancelled." << endl;
-									LOG_DEBUG("Update cancelled.");
-								} else {
-									LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
-									Fail();
-								}
-							} catch (fs::filesystem_error e) {
-								try {
-									CleanUp();
-								} catch (boss_error ee) {
-									LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-									Fail();
-								}
-								string detail = e.what();
-								LOG_ERROR("Update failed. Details: '%s'", detail.c_str());
-								Fail();
-							}
-						} else {
-							LOG_ERROR("invalid option given: '%s'", answer.c_str());
-							Fail();
-						}		
-					}
-				} else {
-					LOG_ERROR("invalid option given: '%s'", answer.c_str());
-					Fail();
-				}
-			}
+			connection = CheckConnection();
 		} catch (boss_error e) {
-			LOG_ERROR("BOSS Update check failed. Details: '%s'", e.getString().c_str());
+			LOG_ERROR("Update check failed. Details: '%s'", e.getString().c_str());
 		}
-	} else {
-		LOG_DEBUG("BOSS Update check failed. No Internet connection detected.");
+		if (connection) {
+			cout << "Checking for BOSS updates..." << endl;
+			LOG_DEBUG("Checking for BOSS updates...");
+			try {
+				updateVersion = IsBOSSUpdateAvailable();
+				if (updateVersion.empty()) {
+					cout << "You are already using the latest version of BOSS." << endl;
+					LOG_DEBUG("You are already using the latest version of BOSS.");
+				} else {
+					cout << "Update available! New version: " << updateVersion << endl << "Do you want to download and install the update? (y/N)"<< endl;
+					//Does the user want to update?
+					char answer;
+					cin.get(answer);
+					if (answer == 'n' || answer == 'N' || answer == '\n') {
+						cout << "No update has been downloaded or installed." << endl;
+						LOG_DEBUG("No update has been downloaded or installed.");
+					} else if (answer == 'y' || answer == 'Y') {
+						//First detect type of current install: manual or installer.
+						if (fs::exists("BOSS ReadMe.lnk")) {  //Installer
+							cout << endl << "Your current install has been determined as having been installed via the BOSS installer." << endl
+								<< "The BOSS Updater will download the installer for the new version to this BOSS folder." << endl
+								<< "It will then launch the installer before exiting. Complete the installer to complete the update." << endl
+								<< "Do you wish to continue? (y/N)" << endl;
+
+							cin.get(answer);
+							if (answer == 'n' || answer == 'N' || answer == '\n') {
+								cout << "BOSS Updater cancelled." << endl;
+								LOG_DEBUG("BOSS Updater cancelled.");
+							} else if (answer == 'y' || answer == 'Y') {
+								try {
+									uiStruct ui;
+									vector<string> fails = DownloadInstallBOSSUpdate(ui, INSTALLER, updateVersion);
+
+									string notes = FetchReleaseNotes(updateVersion);
+									if (!notes.empty())
+										cout << endl << "Release notes for v" << updateVersion << ":" << endl << endl << notes << endl;
+
+									cout << endl << "New installer successfully downloaded!" << endl;
+									if (!fails.empty()) {
+										cout << "There were errors renaming the downloaded files. After BOSS quits, remove the \".new\" extension from the following file(s), deleting any existing files with the same names, then run the downloaded installer to complete the update:" << endl << endl;
+										size_t size=fails.size();
+										for (size_t i=0;i<size;i++)
+											cout << fails[i] << ".new" << endl;
+									} else {
+										cout << "BOSS will now launch the downloaded installer and exit. Complete the installer to complete the update." << endl << endl;
+
+										//Now run downloaded installer then exit.
+										//Although there should only be one installer file, to be safe iterate through the files vector.
+										for (size_t i=0;i<updatedFiles.size();i++) {
+											if (updatedFiles[i].name.empty())  //Just in case.
+												continue;
+											else if (fs::exists(updatedFiles[i].name))
+												Launch(updatedFiles[i].name);
+										}
+									}
+									Fail();
+								} catch (boss_error e) {
+									try {
+										CleanUp();
+									} catch (boss_error ee) {
+										LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
+										Fail();
+									}
+									if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL) {
+										cout << "Update cancelled." << endl;
+										LOG_DEBUG("Update cancelled.");
+									} else {
+										LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
+										Fail();
+									}
+								} catch (fs::filesystem_error e) {
+									try {
+										CleanUp();
+									} catch (boss_error ee) {
+										LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
+										Fail();
+									}
+									string detail = e.what();
+									LOG_ERROR("Update failed. Details: '%s'", detail.c_str());
+									Fail();
+								}
+							} else {
+								LOG_ERROR("invalid option given: '%s'", answer);
+								Fail();
+							}
+						} else {  //Manual.
+							cout << endl << "Your current install has been determined as having been installed manually." << endl
+								<< "The BOSS Updater will download the updated files and replace your existing files with them." << endl
+								<< "Your current BOSS.ini will be renamed to BOSS.ini.old. It may still be opened in your chosen text editor, allowing you to migrate your settings." << endl
+								<< " Your current userlist.txt will not be replaced." << endl
+								<< "Do you wish to continue? (y/N)" << endl;
+
+							cin.get(answer);
+							if (answer == 'n' || answer == 'N' || answer == '\n') {
+								cout << "BOSS Updater cancelled." << endl;
+								LOG_DEBUG("BOSS Updater cancelled.");
+							} else if (answer == 'y' || answer == 'Y') {
+								try {
+									uiStruct ui;
+									vector<string> fails = DownloadInstallBOSSUpdate(ui, MANUAL, updateVersion);
+
+									string notes = FetchReleaseNotes(updateVersion);
+									if (!notes.empty())
+										cout << endl << "Release notes for v" << updateVersion+":" << endl << endl << notes << endl;
+								
+									if (!fails.empty()) {
+										cout << endl << "Files successfully downloaded!" << endl
+											<< "However, the following files could not be automatically installed. After BOSS quits, remove the \".new\" extension from the following file(s), deleting any existing files with the same names to complete the update:" << endl << endl;
+										size_t size=fails.size();
+										for (size_t i=0;i<size;i++) {
+											cout << "\"" << fails[i] << ".new\"" << endl;
+										}
+									} else
+										cout << endl << "Files successfully updated!" << endl
+											<< "BOSS will now exit." << endl << endl;
+
+									Fail();
+								} catch (boss_error e) {
+									try {
+										CleanUp();
+									} catch (boss_error ee) {
+										LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
+										Fail();
+									}
+									if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL) {
+										cout << "Update cancelled." << endl;
+										LOG_DEBUG("Update cancelled.");
+									} else {
+										LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
+										Fail();
+									}
+								} catch (fs::filesystem_error e) {
+									try {
+										CleanUp();
+									} catch (boss_error ee) {
+										LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
+										Fail();
+									}
+									string detail = e.what();
+									LOG_ERROR("Update failed. Details: '%s'", detail.c_str());
+									Fail();
+								}
+							} else {
+								LOG_ERROR("invalid option given: '%s'", answer);
+								Fail();
+							}		
+						}
+					} else {
+						LOG_ERROR("invalid option given: '%s'", answer);
+						Fail();
+					}
+				}
+			} catch (boss_error e) {
+				LOG_ERROR("BOSS Update check failed. Details: '%s'", e.getString().c_str());
+			}
+		} else {
+			LOG_DEBUG("BOSS Update check failed. No Internet connection detected.");
+		}
 	}
 
 

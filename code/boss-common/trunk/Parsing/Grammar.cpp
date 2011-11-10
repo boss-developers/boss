@@ -233,9 +233,9 @@ namespace boss {
 		} else if (file == "NVSE") {
 			file_path = "..";
 			file = "nvse_loader.exe";
-		} else if (file == "SKSE") {
-			file_path = "..";
-			file = "skse_loader.exe";
+//		} else if (file == "SKSE") {
+//			file_path = "..";
+//			file = "skse_loader.exe";  //Unconfirmed.
 		} else if (file == "BOSS") {
 			file_path = ".";
 			file = "BOSS.exe";
@@ -244,7 +244,7 @@ namespace boss {
 			file = "Oblivion.exe";
 		} else if (file == "TES5") {
 			file_path = "..";
-			file = "Skyrim.exe";
+			file = "TESV.exe";
 		} else if (file == "FO3") {
 			file_path = "..";
 			file = "Fallout3.exe";
@@ -260,8 +260,8 @@ namespace boss {
 					file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
 				else if (fs::exists(data_path / "NVSE"))
 					file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-				else if (fs::exists(data_path / "SKSE"))
-					file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+//				else if (fs::exists(data_path / "SKSE"))
+//					file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
 			} else
 				file_path = data_path;
 		}
@@ -367,8 +367,8 @@ namespace boss {
 				file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
 			else if (fs::exists(data_path / "NVSE"))
 				file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-			else if (fs::exists(data_path / "SKSE"))
-				file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+//			else if (fs::exists(data_path / "SKSE"))
+//				file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
 		} else
 			file_path = data_path;
 		const boost::regex regex(reg);
