@@ -62,10 +62,10 @@ namespace boss {
 			SE = "NVSE";
 			SELoc = "../nvse_loader.exe";
 			SEPluginLoc = "NVSE/Plugins";
-//		} else if (game == SKYRIM) {  //Skyrim
-//			SE = "SKSE";
-//			SELoc = "../skse_loader.exe";
-//			SEPluginLoc = "SKSE/Plugins";
+		} else if (game == SKYRIM) {  //Skyrim
+			SE = "SKSE";
+			SELoc = "../skse_loader.exe";
+			SEPluginLoc = "SKSE/Plugins";
 		}
 
 		if (!fs::exists(SELoc) || SELoc.empty()) {
