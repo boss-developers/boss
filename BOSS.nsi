@@ -22,28 +22,33 @@
     Var Path_NV
     Var Path_Other
     Var Path_Nehrim
+	Var Path_SK
     Var Empty
     Var Check_OB
     Var Check_FO
     Var Check_NV
     Var Check_Nehrim
+	Var Check_SK
     Var Check_Other
     Var Check_RemoveUserFiles
     Var CheckState_OB
     Var CheckState_FO
     Var CheckState_NV
     Var CheckState_Nehrim
+	Var CheckState_SK
     Var CheckState_Other
     Var CheckState_RemoveUserFiles
     Var PathDialogue_OB
     Var PathDialogue_FO
     Var PathDialogue_NV
     Var PathDialogue_Nehrim
+	Var PathDialogue_SK
     Var PathDialogue_Other
     Var Browse_OB
     Var Browse_FO
     Var Browse_NV
     Var Browse_Nehrim
+	Var Browse_SK
     Var Browse_Other
     Var Check_Readme
     Var Check_DeleteOldFiles
@@ -67,6 +72,7 @@
         ReadRegStr $Path_NV HKLM "Software\BOSS" "NewVegas Path"
         ReadRegStr $Path_Other HKLM "Software\BOSS" "Other Path"
         ReadRegStr $Path_Nehrim HKLM "Software\BOSS" "Nehrim Path"
+		ReadRegStr $Path_SK HKLM "Software\BOSS" "Skyrim Path"
         FunctionEnd
     Function .onInit
         StrCpy $Empty ""
@@ -75,6 +81,7 @@
         ReadRegStr $Path_NV HKLM "Software\BOSS" "NewVegas Path"
         ReadRegStr $Path_Other HKLM "Software\BOSS" "Other Path"
         ReadRegStr $Path_Nehrim HKLM "Software\BOSS" "Nehrim Path"
+		ReadRegStr $Path_SK HKLM "Software\BOSS" "Skyrim Path"
 		
 		# Need to check if it is already installed, then launch that uninstaller if so.
 		# Check if the uninstaller exists.
@@ -118,6 +125,14 @@
             ReadRegStr $Path_Nehrim HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Nehrim - At Fate's Edge_is1" "InstallLocation"
         ${Else}
             StrCpy $CheckState_Nehrim ${BST_CHECKED}
+        ${EndIf}
+		${If} $Path_NV == $Empty
+            ReadRegStr $Path_SK HKLM "Software\Bethesda Softworks\Skyrim" "Installed Path"
+            ${If} $Path_NV == $Empty
+                ReadRegStr $Path_SK HKLM "SOFTWARE\Wow6432Node\Bethesda Softworks\Skyrim" "Installed Path"
+            ${EndIf}
+        ${Else}
+            StrCpy $CheckState_NV ${BST_CHECKED}
         ${EndIf}
         ${If} $Path_Other != $Empty
             StrCpy $CheckState_Other ${BST_CHECKED}
@@ -187,6 +202,18 @@
                 nsDialogs::OnClick $Browse_Nehrim $Function_Browse
             IntOp $0 $0 + 13
         ${EndIf}
+		${If} $Path_SK != $Empty
+            ${NSD_CreateCheckBox} 0 $0u 100% 13u "&Skyrim"
+                Pop $Check_SK
+                ${NSD_SetState} $Check_SK $CheckState_SK
+            IntOp $0 $0 + 13
+            ${NSD_CreateDirRequest} 0 $0u 90% 13u "$Path_SK"
+                Pop $PathDialogue_SK
+            ${NSD_CreateBrowseButton} -10% $0u 5% 13u "..."
+                Pop $Browse_SK
+                nsDialogs::OnClick $Browse_SK $Function_Browse
+            IntOp $0 $0 + 13
+        ${EndIf}
         ;------Path_Other:
             ${NSD_CreateCheckBox} 0 $0u 100% 13u "Other Location (e.g. an undetected game)."
                 Pop $Check_Other
@@ -204,11 +231,13 @@
         ${NSD_GetText} $PathDialogue_FO $Path_FO
         ${NSD_GetText} $PathDialogue_NV $Path_NV
         ${NSD_GetText} $PathDialogue_Nehrim $Path_Nehrim
+		${NSD_GetText} $PathDialogue_SK $Path_SK
         ${NSD_GetText} $PathDialogue_Other $Path_Other
         ${NSD_GetState} $Check_OB $CheckState_OB
         ${NSD_GetState} $Check_FO $CheckState_FO
         ${NSD_GetState} $Check_NV $CheckState_NV
         ${NSD_GetState} $Check_Nehrim $CheckState_Nehrim
+		${NSD_GetState} $Check_SK $CheckState_SK
         ${NSD_GetState} $Check_Other $CheckState_Other
         FunctionEnd
     Function PAGE_FINISH
@@ -219,6 +248,7 @@
         ReadRegStr $Path_NV HKLM "Software\BOSS" "NewVegas Path"
         ReadRegStr $Path_Other HKLM "Software\BOSS" "Other Path"
         ReadRegStr $Path_Nehrim HKLM "Software\BOSS" "Nehrim Path"
+		ReadRegStr $Path_SK HKLM "Software\BOSS" "Skyrim Path"
         
         nsDialogs::Create 1018
             Pop $Dialog
@@ -256,6 +286,13 @@
                 ${NSD_SetState} $Check_Nehrim $CheckState_Nehrim
             IntOp $0 $0 + 15
         ${EndIf}
+		${If} $Path_SK != $Empty
+            ${NSD_CreateCheckBox} 0 $0u 100% 8u "Run BOSS for Skyrim"
+                Pop $Check_SK
+                ${NSD_AddStyle} $Check_SK ${WS_GROUP}
+                ${NSD_SetState} $Check_SK $CheckState_SK
+            IntOp $0 $0 + 15
+        ${EndIf}
         ${If} $Path_Other != $Empty
             ${NSD_CreateCheckBox} 0 $0u 100% 8u "Run BOSS for Other"
                 Pop $Check_Other
@@ -287,6 +324,7 @@
         ${NSD_GetState} $Check_FO $CheckState_FO
         ${NSD_GetState} $Check_NV $CheckState_NV
         ${NSD_GetState} $Check_Nehrim $CheckState_Nehrim
+		${NSD_GetState} $Check_SK $CheckState_SK
         ${NSD_GetState} $Check_Other $CheckState_Other
         
         ${If} $CheckState_OB == ${BST_CHECKED}
@@ -304,6 +342,10 @@
         ${If} $CheckState_Nehrim == ${BST_CHECKED}
             SetOutPath "$Path_Nehrim\BOSS"
             Exec '"$Path_Nehrim\BOSS\Boss.exe"'
+        ${EndIf}
+		${If} $CheckState_SK == ${BST_CHECKED}
+            SetOutPath "$Path_SK\BOSS"
+            Exec '"$Path_SK\BOSS\Boss.exe"'
         ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
             SetOutPath "$Path_Other\BOSS"
@@ -365,6 +407,18 @@
 				${EndIf}
 				RMDir  "$Path_Nehrim\Data\BOSS"
             ${EndIf}
+			 ${If} $Path_SK != $Empty
+                Delete "$Path_SK\Data\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
+                Delete "$Path_SK\Data\modlist.*"
+                Delete "$Path_SK\Data\masterlist.txt"
+				Delete "$Path_SK\Data\BOSS\modlist.*"
+				Delete "$Path_SK\Data\BOSS\masterlist.txt"
+				Delete "$Path_SK\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
+				${If} $1 == ${BST_CHECKED}
+					Delete "$Path_SK\Data\BOSS\userlist.txt"
+				${EndIf}
+				RMDir  "$Path_SK\Data\BOSS"
+            ${EndIf}
             ${If} $Path_Other != $Empty
                 Delete "$Path_Other\Data\BOSS*"
                 Delete "$Path_Other\Data\modlist.*"
@@ -390,6 +444,8 @@
             StrCpy $1 $PathDialogue_NV
         ${ElseIf} $0 == $Browse_Nehrim
             StrCpy $1 $PathDialogue_Nehrim
+		 ${ElseIf} $0 == $Browse_SK
+            StrCpy $1 $PathDialogue_SK
         ${ElseIf} $0 == $Browse_Other
             StrCpy $1 $PathDialogue_Other
         ${EndIf}
@@ -439,6 +495,14 @@
 				Delete BOSS.ini.old
 				Rename BOSS.ini BOSS.ini.old
         ${EndIf}
+		${If} $CheckState_SK == ${BST_CHECKED}
+            SetOutPath $Path_SK\BOSS
+            File code\boss-cli\trunk\bin\Release\BOSS.exe
+            WriteRegStr HKLM "SOFTWARE\BOSS" "Skyrim Path" "$Path_SK"
+			IfFileExists BOSS.ini 0 +3
+				Delete BOSS.ini.old
+				Rename BOSS.ini BOSS.ini.old
+        ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
             SetOutPath $Path_Other\BOSS
             File code\boss-cli\trunk\bin\Release\BOSS.exe
@@ -479,6 +543,10 @@
             SetOutPath $Path_Nehrim\BOSS
             File "code\boss-gui\trunk\bin\Release\BOSS GUI.exe"
         ${EndIf}
+		 ${If} $CheckState_SK == ${BST_CHECKED}
+            SetOutPath $Path_SK\BOSS
+            File "code\boss-gui\trunk\bin\Release\BOSS GUI.exe"
+        ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
             SetOutPath $Path_Other\BOSS
             File "code\boss-gui\trunk\bin\Release\BOSS GUI.exe"
@@ -508,6 +576,11 @@
                 SetOutPath "$Path_Nehrim\BOSS"
                 CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Nehrim.lnk" "$Path_Nehrim\BOSS\BOSS.exe" "" "$Path_Nehrim\BOSS\BOSS.exe" 0
 				CreateShortCut "$SMPROGRAMS\BOSS\BOSS GUI - Nehrim.lnk" "$Path_Nehrim\BOSS\BOSS GUI.exe" "" "$Path_Nehrim\BOSS\BOSS GUI.exe" 0
+            ${EndIf}
+			${If} $CheckState_SK == ${BST_CHECKED}
+                SetOutPath "$Path_SK\BOSS"
+                CreateShortCut "$SMPROGRAMS\BOSS\BOSS - Skyrim.lnk" "$Path_SK\BOSS\BOSS.exe" "" "$Path_SK\BOSS\BOSS.exe" 0
+				CreateShortCut "$SMPROGRAMS\BOSS\BOSS GUI - Skyrim.lnk" "$Path_SK\BOSS\BOSS GUI.exe" "" "$Path_SK\BOSS\BOSS GUI.exe" 0
             ${EndIf}
             ${If} $CheckState_Other == ${BST_CHECKED}
                 SetOutPath "$Path_Other\BOSS"
@@ -557,6 +630,13 @@
             CreateShortCut "$Path_Nehrim\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
 #			CreateShortCut "$Path_Nehrim\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
 			CreateShortCut "$Path_Nehrim\BOSS\BOSS Masterlist Syntax.lnk" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" "" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" 0
+        ${EndIf}
+		${If} $CheckState_SK == ${BST_CHECKED}
+            CreateDirectory "$Path_SK\BOSS"
+            CreateShortCut "$Path_SK\BOSS\BOSS ReadMe.lnk" "$COMMONFILES\BOSS\BOSS Readme.html" "" "$COMMONFILES\BOSS\BOSS Readme.html" 0
+            CreateShortCut "$Path_SK\BOSS\BOSS User Rules ReadMe.lnk" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" "" "$COMMONFILES\BOSS\BOSS User Rules ReadMe.html" 0
+#			CreateShortCut "$Path_SK\BOSS\BOSS API ReadMe.lnk" "$COMMONFILES\BOSS\BOSS API ReadMe.html" "" "$COMMONFILES\BOSS\BOSS API ReadMe.html" 0
+			CreateShortCut "$Path_SK\BOSS\BOSS Masterlist Syntax.lnk" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" "" "$COMMONFILES\BOSS\BOSS Masterlist Syntax.html" 0
         ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
             CreateDirectory "$Path_Other\BOSS"
@@ -630,6 +710,18 @@
                 nsDialogs::OnClick $Browse_Nehrim $Function_Browse
             IntOp $0 $0 + 13
         ${EndIf}
+		${If} $Path_SK != $Empty
+            ${NSD_CreateCheckBox} 0 $0u 100% 13u "Skyrim"
+                Pop $Check_SK
+                ${NSD_SetState} $Check_SK $CheckState_SK
+            IntOp $0 $0 + 13
+            ${NSD_CreateDirRequest} 0 $0u 90% 13u "$Path_SK"
+                Pop $PathDialogue_SK
+            ${NSD_CreateBrowseButton} -10% $0u 5% 13u "..."
+                Pop $Browse_SK
+                nsDialogs::OnClick $Browse_SK $Function_Browse
+            IntOp $0 $0 + 13
+        ${EndIf}
         ${If} $Path_Other != $Empty 
             ${NSD_CreateCheckBox} 0 $0u 100% 13u "Other Location (e.g. an undetected game)."
                 Pop $Check_Other
@@ -651,11 +743,13 @@
         ${NSD_GetText} $PathDialogue_FO $Path_FO
         ${NSD_GetText} $PathDialogue_NV $Path_NV
         ${NSD_GetText} $PathDialogue_Nehrim $Path_Nehrim
+		${NSD_GetText} $PathDialogue_SK $Path_SK
         ${NSD_GetText} $PathDialogue_Other $Path_Other
         ${NSD_GetState} $Check_OB $CheckState_OB
         ${NSD_GetState} $Check_FO $CheckState_FO
         ${NSD_GetState} $Check_NV $CheckState_NV
         ${NSD_GetState} $Check_Nehrim $CheckState_Nehrim
+		${NSD_GetState} $Check_SK $CheckState_SK
         ${NSD_GetState} $Check_Other $CheckState_Other
         ${NSD_GetState} $Check_RemoveUserFiles $CheckState_RemoveUserFiles
         FunctionEnd
@@ -669,6 +763,8 @@
             StrCpy $1 $PathDialogue_NV
         ${ElseIf} $0 == $Browse_Nehrim
             StrCpy $1 $PathDialogue_Nehrim
+		${ElseIf} $0 == $Browse_SK
+            StrCpy $1 $PathDialogue_SK
         ${ElseIf} $0 == $Browse_Other
             StrCpy $1 $PathDialogue_Other
         ${EndIf}
@@ -792,6 +888,33 @@
                 DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_Nehrim\BOSS\BOSS GUI.exe"
             StrCpy $Path_Nehrim $Empty
         ${EndIf}
+		${If} $CheckState_SK == ${BST_CHECKED}
+            Delete "$Path_SK\BOSS\*.lnk"
+            Delete "$Path_SK\BOSS\masterlist.txt"
+            Delete "$Path_SK\BOSS\modlist.*"
+            Delete "$Path_SK\BOSS\BOSSlog.html"
+			Delete "$Path_SK\BOSS\BOSSlog.txt"
+			Delete "$Path_SK\BOSS\BOSS.exe"
+			Delete "$Path_SK\BOSS\BOSS GUI.exe"
+			Delete "$Path_SK\BOSS\BOSSCommandLineLog.txt"
+            ${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
+                Delete "$Path_SK\BOSS\userlist.txt"
+				Delete "$Path_SK\BOSS\BOSS.ini"
+				Delete "$Path_SK\BOSS\BOSS.ini.old"
+            ${EndIf}
+            RMDir "$Path_SK\BOSS"
+            Delete "$SMPROGRAMS\BOSS\BOSS - Skyrim.lnk"
+			Delete "$SMPROGRAMS\BOSS\BOSS GUI - Skyrim.lnk"
+            DeleteRegValue HKLM "SOFTWARE\BOSS" "Skyrim Path"
+            ;Delete the stupid MUICache Windows created registry references to the BOSS executables...
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_SK\BOSS\BOSS.exe"
+                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_SK\BOSS\BOSS GUI.exe"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_SK\BOSS\BOSS.exe"
+                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$Path_SK\BOSS\BOSS GUI.exe"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_SK\BOSS\BOSS.exe"
+                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$Path_SK\BOSS\BOSS GUI.exe"
+            StrCpy $Path_SK $Empty
+        ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
             Delete "$Path_Other\BOSS\*.lnk"
             Delete "$Path_Other\BOSS\masterlist.txt"
@@ -825,21 +948,23 @@
             ${If} $Path_FO == $Empty
                 ${If} $Path_NV == $Empty
                     ${If} $Path_Nehrim == $Empty
-                        ${If} $Path_Other == $Empty
-                            DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS"
-                            ReadRegStr $0 HKLM "Software\BOSS" "Installer Path"
-                            DeleteRegKey HKLM "SOFTWARE\BOSS"
-                            ;Delete stupid Windows created registry keys:
-                                DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\App Management\ARPCache\BOSS"
-                                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$COMMONFILES\BOSS\Uninstall.exe"
-                                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$COMMONFILES\BOSS\Uninstall.exe"
-                                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$COMMONFILES\BOSS\Uninstall.exe"
-                                DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$0"
-                                DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$0"
-                                DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$0"
-                            RMDir /r "$SMPROGRAMS\BOSS"
-                            RMDir /r "$COMMONFILES\BOSS"
-                        ${EndIf}
+						${If} $Path_SK == $Empty
+							${If} $Path_Other == $Empty
+								DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS"
+								ReadRegStr $0 HKLM "Software\BOSS" "Installer Path"
+								DeleteRegKey HKLM "SOFTWARE\BOSS"
+								;Delete stupid Windows created registry keys:
+									DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\App Management\ARPCache\BOSS"
+									DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$COMMONFILES\BOSS\Uninstall.exe"
+									DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$COMMONFILES\BOSS\Uninstall.exe"
+									DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$COMMONFILES\BOSS\Uninstall.exe"
+									DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$0"
+									DeleteRegValue HKCU "Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$0"
+									DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$0"
+								RMDir /r "$SMPROGRAMS\BOSS"
+								RMDir /r "$COMMONFILES\BOSS"
+							${EndIf}
+						${EndIf}
                     ${EndIf}
                 ${EndIf}
             ${EndIf}

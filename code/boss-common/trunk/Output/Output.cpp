@@ -149,14 +149,69 @@ namespace boss {
 	void Outputter::PrintFooter() {
 		if (outFormat == HTML) {
 			outStream << endl << "<script>" << endl
-			
 				<< "var hm=0,hp=0,hpe=document.getElementById('hp'),hme=document.getElementById('hm');" << endl
 				<< "function toggleSectionDisplay(h){if(h.nextSibling.style.display=='none'){h.nextSibling.style.display='block';h.firstChild.innerHTML='&#x2212;'}else{h.nextSibling.style.display='none';h.firstChild.innerHTML='+'}}" << endl
 				<< "function swapColorScheme(b){var d=document.body,a=document.getElementsByTagName('a'),f=document.getElementById('filters');if(f==null){f=document.getElementById('darkFilters')}if(b.checked){d.id='darkBody';f.id='darkFilters';for(var i=0,z=a.length;i<z;i++){a[i].className='darkLink'}}else{d.id='';f.id='filters';for(var i=0,z=a.length;i<z;i++){a[i].className=''}}}" << endl
 				<< "function toggleDisplayCSS(b,s){var r=new Array();if(document.styleSheets[0].cssRules){r=document.styleSheets[0].cssRules}else if(document.styleSheets[0].rules){r=document.styleSheets[0].rules}for(var i=0,z=r.length;i<z;i++){if(r[i].selectorText.toLowerCase()==s){if(b.checked){r[i].style.display='none'}else{r[i].style.display='inline'}return}}}" << endl
 				<< "function toggleRuleListWarnings(b){var u=document.getElementById('userlistMessages');if(u!=null){u=u.childNodes;for(var i=0,z=u.length;i<z;i++){if(u[i].className=='warn'){if(b.checked){u[i].style.display='none';hm++}else if(u[i].style.display=='none'){u[i].style.display='table';hm--}}}}hme.innerHTML=hm}" << endl
-				<< "function toggleMessages(){var m=document.getElementById('recognised').childNodes,b9=document.getElementById('b9').checked,b10=document.getElementById('b10').checked,b11=document.getElementById('b11').checked,b12=document.getElementById('b12').checked,b13=document.getElementById('b13').checked,b14=document.getElementById('b14').checked;for(var i=0,z=m.length;i<z;i++){var a=m[i].getElementsByTagName('li');for(var j=0,y=a.length;j<y;j++){var b=null;if(!b9&&a[j].style.display=='none'){a[j].style.display='table';hm--}if(a[j].className=='note'){b=b10}else if(a[j].className=='tag'){b=b11}else if(a[j].className=='req'){b=b12}else if(a[j].className=='inc'){b=b13}else if(a[j].className=='dirty'&&a[j].innerHTML.substr(0,35)=='Contains dirty edits: Do not clean.'){b=b14}if(b!=null){if(b&&a[j].style.display!='none'){a[j].style.display='none';hm++}else if(!b&&a[j].style.display=='none'){a[j].style.display='table';hm--}}if(b9&&a[j].style.display!='none'){a[j].style.display='none';hm++}}}hme.innerHTML=hm}" << endl
-				<< "function toggleMods(){var m=document.getElementById('recognised').childNodes;for(var i=0,z=m.length;i<z;i++){if(m[i].nodeType==1){var g=false,n=true,c=true,a=m[i].getElementsByTagName('span');for(var j=0,y=a.length;j<y;j++){if(a[j].className=='ghosted'){g=true;break}}a=m[i].getElementsByTagName('li');for(var j=0,y=a.length;j<y;j++){if(a[j].className=='dirty'){c=false}if(a[j].style.display!='none'){n=false}}if(!((document.getElementById('b6').checked&&n)||(document.getElementById('b7').checked&&g)||(document.getElementById('b8').checked&&c))&&m[i].style.display=='none'){m[i].style.display='block';hp--}else if(((document.getElementById('b6').checked&&n)||(document.getElementById('b7').checked&&g)||(document.getElementById('b8').checked&&c))&&m[i].style.display!='none'){m[i].style.display='none';hp++}}}hpe.innerHTML=hp}" << endl
+				<< "function toggleMessages(){"<<endl
+				<< "	var m=document.getElementById('recognised').childNodes,b9=document.getElementById('b9').checked,b10=document.getElementById('b10').checked,b11=document.getElementById('b11').checked,b12=document.getElementById('b12').checked,b13=document.getElementById('b13').checked,b14=document.getElementById('b14').checked;"<<endl
+				<< "	for(var i=0,z=m.length;i<z;i++){"<<endl
+				<< "		var g=false,n=true,c=true,a=m[i].getElementsByTagName('span');"<<endl
+				<< "		for(var j=0,y=a.length;j<y;j++){"<<endl
+				<< "			if(a[j].className=='ghosted'){"<<endl
+				<< "				g=true;"<<endl
+				<< "				break"<<endl
+				<< "			}"<<endl
+				<< "		}"<<endl
+				<< "		a=m[i].getElementsByTagName('li');"<<endl
+				<< "		for(var j=0,y=a.length;j<y;j++){"<<endl
+				<< "			if(!b9&&a[j].style.display=='none'){"<<endl
+				<< "				a[j].style.display='table';"<<endl
+				<< "				hm--"<<endl
+				<< "			}"<<endl
+				<< "			if(a[j].className=='note'){"<<endl
+				<< "				b=b10"<<endl
+				<< "			}else if(a[j].className=='tag'){"<<endl
+				<< "				b=b11"<<endl
+				<< "			}else if(a[j].className=='req'){"<<endl
+				<< "				b=b12"<<endl
+				<< "			}else if(a[j].className=='inc'){"<<endl
+				<< "				b=b13"<<endl
+				<< "			}else if(a[j].className=='dirty'){"<<endl
+				<< "				c=false;"<<endl
+				<< "				if(a[j].innerHTML.substr(0,35)=='Contains dirty edits: Do not clean.'){"<<endl
+				<< "					b=b14"<<endl
+				<< "				}"<<endl
+				<< "			}"<<endl
+				<< "			if(b!=null){"<<endl
+				<< "				if(b&&a[j].style.display!='none'){"<<endl
+				<< "					a[j].style.display='none';"<<endl
+				<< "					hm++"<<endl
+				<< "				}else if(!b&&a[j].style.display=='none'){"<<endl
+				<< "					a[j].style.display='table';"<<endl
+				<< "					hm--"<<endl
+				<< "				}"<<endl
+				<< "			}"<<endl
+				<< "			if(b9&&a[j].style.display!='none'){"<<endl
+				<< "				a[j].style.display='none';"<<endl
+				<< "				hm++"<<endl
+				<< "			}"<<endl
+				<< "			if(a[j].style.display!='none'){"<<endl
+				<< "				n=false"<<endl
+				<< "			}"<<endl
+				<< "		}"<<endl
+				<< "		if(!((document.getElementById('b6').checked&&n)||(document.getElementById('b7').checked&&g)||(document.getElementById('b8').checked&&c))&&m[i].style.display=='none'){"<<endl
+				<< "			m[i].style.display='block';"<<endl
+				<< "			hp--"<<endl
+				<< "		}else if(((document.getElementById('b6').checked&&n)||(document.getElementById('b7').checked&&g)||(document.getElementById('b8').checked&&c))&&m[i].style.display!='none'){"<<endl
+				<< "			m[i].style.display='none';"<<endl
+				<< "			hp++"<<endl
+				<< "		}"<<endl
+				<< "	}"<<endl
+				<< "	hme.innerHTML=hm;"<<endl
+				<< "	hpe.innerHTML=hp"<<endl
+				<< "}"<<endl
 				<< "function initialSetup() {"<<endl
 				<< "	swapColorScheme(document.getElementById('b1'));"<<endl
 				<< "	toggleRuleListWarnings(document.getElementById('b2'));"<<endl

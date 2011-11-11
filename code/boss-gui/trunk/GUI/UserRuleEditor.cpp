@@ -194,13 +194,13 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	////Window buttons
 	wxBoxSizer *mainButtonBox = new wxBoxSizer(wxHORIZONTAL);
 	mainButtonBox->Add(new wxButton(this, BUTTON_NewRule, wxT("Create New Rule"), wxDefaultPosition, wxDefaultSize));
-	mainButtonBox->Add(new wxButton(this, BUTTON_EditRule, wxT("Save Edited Rule"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 10);
+	mainButtonBox->Add(new wxButton(this, BUTTON_EditRule, wxT("Apply Rule Edits"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 10);
 	mainButtonBox->Add(new wxButton(this, BUTTON_DeleteRule, wxT("Delete Rule"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 10);
 	mainButtonBox->AddStretchSpacer(2);
 	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleUp, wxT("Move Up"), wxDefaultPosition, wxDefaultSize));
 	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleDown, wxT("Move Down"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 10);
 	mainButtonBox->AddStretchSpacer(2);
-	mainButtonBox->Add(new wxButton(this, BUTTON_OKExitEditor, wxT("Save"), wxDefaultPosition, wxDefaultSize));
+	mainButtonBox->Add(new wxButton(this, BUTTON_OKExitEditor, wxT("Save and Close"), wxDefaultPosition, wxDefaultSize));
 	mainButtonBox->Add(new wxButton(this, BUTTON_CancelExitEditor, wxT("Cancel"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 10);
 	//Now add buttons to window sizer.
 	bigBox->Add(mainButtonBox, 0, wxALL|wxEXPAND, 10);
@@ -529,7 +529,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 					newRule.enabled = false;
 					newRule.ruleObject = "Cannot sort a plugin relative to a group.";
 					return newRule;
-			} else if (Item(string(InsertModBox->GetValue())).IsPlugin()) {  //Inserting into a mod. Error.
+			} else if (InsertModOption->GetValue() && Item(string(InsertModBox->GetValue())).IsPlugin()) {  //Inserting into a mod. Error.
 				newRule.enabled = false;
 				newRule.ruleObject = "Cannot insert into a plugin.";
 				return newRule;
@@ -546,7 +546,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 					newRule.enabled = false;
 					newRule.ruleObject = "Cannot sort a group relative to a plugin.";
 					return newRule;
-			} else {  //Can't insert groups. Error.
+			} else if (InsertModOption->GetValue()) {  //Can't insert groups. Error.
 				newRule.enabled = false;
 				newRule.ruleObject = "Cannot insert groups.";
 				return newRule;
@@ -665,7 +665,59 @@ TextDropTarget::TextDropTarget(wxTextCtrl *owner) {
 }
 
 bool TextDropTarget::OnDropText(wxCoord x, wxCoord y, const wxString &data) {
+	wxString originalValue = targetOwner->GetValue();
 	targetOwner->SetValue(data);
+
+	UserRulesEditorFrame *ureFrame = (UserRulesEditorFrame*)targetOwner->GetParent();
+	Item sortItem(string(ureFrame->SortModBox->GetValue()));
+	Item forItem(string(ureFrame->RuleModBox->GetValue()));
+	Item insertItem(string(ureFrame->InsertModBox->GetValue()));
+	bool isSorting = ureFrame->SortModsCheckBox->IsChecked();
+	bool isInserting = ureFrame->InsertModOption->GetValue();
+
+	if (isSorting && !forItem.name.empty()) {
+		if (forItem.IsPlugin()) {
+			if (!isInserting && sortItem.IsGroup()) {  //Sort object is a group. Error.
+				wxMessageBox(wxString::Format(
+						wxT("Rule Syntax Error: Cannot sort a plugin relative to a group.")
+					),
+					wxT("BOSS: Error"),
+					wxOK | wxICON_ERROR,
+					NULL);
+				targetOwner->SetValue(originalValue);
+				return false;
+			} else if (isInserting && insertItem.IsPlugin()) {  //Inserting into a mod. Error.
+				wxMessageBox(wxString::Format(
+						wxT("Rule Syntax Error: Cannot insert into a plugin.")
+					),
+					wxT("BOSS: Error"),
+					wxOK | wxICON_ERROR,
+					NULL);
+				targetOwner->SetValue(originalValue);
+				return false;
+			}
+		} else {  //Rule object is a group.
+			if (!isInserting && sortItem.IsPlugin()) {  //Sort object is a plugin. Error.
+				wxMessageBox(wxString::Format(
+						wxT("Rule Syntax Error: Cannot sort a group relative to a plugin.")
+					),
+					wxT("BOSS: Error"),
+					wxOK | wxICON_ERROR,
+					NULL);
+				targetOwner->SetValue(originalValue);
+				return false;
+			} else if (isInserting) {  //Can't insert groups. Error.
+				wxMessageBox(wxString::Format(
+						wxT("Rule Syntax Error: Cannot insert groups.")
+					),
+					wxT("BOSS: Error"),
+					wxOK | wxICON_ERROR,
+					NULL);
+				targetOwner->SetValue(originalValue);
+				return false;
+			}
+		}
+	}
 	return true;
 }
 
@@ -714,7 +766,7 @@ RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, unsign
 	mainSizer->SetFlexibleDirection(wxHORIZONTAL);
 	mainSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_NONE);
 	mainSizer->AddGrowableCol(1,0);
-	mainSizer->Add(ruleCheckbox = new wxCheckBox(this, wxID_ANY,""),0,wxALIGN_CENTER|wxALL,10);
+	mainSizer->Add(ruleCheckbox = new wxCheckBox(this, wxID_ANY,""),0,wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxBOTTOM,10);
 	mainSizer->Add(ruleContent = new wxStaticText(this, wxID_ANY,text),0,wxEXPAND|wxRIGHT,5);
 
 	ruleCheckbox->SetValue(currentRule.enabled);
@@ -816,7 +868,9 @@ void RuleListFrameClass::ReDrawRuleList() {
 		else
 			sizer->Add(new RuleBoxClass(RuleListScroller, userlist.rules[i], i, false), 0, wxEXPAND);
 	}
-	RuleListScroller->SetSizerAndFit(sizer);
+	RuleListScroller->SetSizer(sizer);
+	RuleListScroller->FitInside();
+	RuleListScroller->SetMinSize(wxSize(600,315));
 	RuleListScroller->Layout();
 }
 

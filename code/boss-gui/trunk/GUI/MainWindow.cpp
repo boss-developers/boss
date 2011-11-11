@@ -11,6 +11,11 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
+//We want to ensure that the GUI-specific code in BOSS-Common is included.
+#ifndef BOSSGUI
+#define BOSSGUI
+#endif
+
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 #include <boost/exception/get_error_info.hpp>
@@ -24,7 +29,7 @@
 #include <algorithm>
 
 #include <wx/aboutdlg.h>
-#include <wx/busyinfo.h>
+#include <wx/snglinst.h>
 
 #include "GUI/MainWindow.h"
 #include "GUI/SettingsWindow.h"
@@ -72,6 +77,23 @@ using namespace std;
 
 //Draws the main window when program starts.
 bool BossGUI::OnInit() {
+	//Check if GUI is already running.
+	checker = new wxSingleInstanceChecker;
+
+	if (checker->IsAnotherRunning()) {
+		wxMessageBox(wxString::Format(
+				wxT("Error: The BOSS GUI is already running. This instance will now quit.")
+			),
+			wxT("BOSS: Error"),
+			wxOK | wxICON_ERROR,
+			NULL);
+
+		delete checker; // OnExit() won't be called if we return false
+		checker = NULL;
+
+		return false;
+	}
+
 	Ini ini;
 	//Set up variable defaults.
 	if (fs::exists(ini_path)) {
@@ -80,22 +102,22 @@ bool BossGUI::OnInit() {
 		} catch (boss_error e) {
 			LOG_ERROR("Error: %s", e.getString().c_str());
 			wxMessageBox(wxString::Format(
-				wxT("Error: " + e.getString() + " Details: " + ini.errorBuffer.FormatFor(PLAINTEXT))
-			),
-			wxT("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
+					wxT("Error: " + e.getString() + " Details: " + ini.errorBuffer.FormatFor(PLAINTEXT))
+				),
+				wxT("BOSS: Error"),
+				wxOK | wxICON_ERROR,
+				NULL);
 		}
 	} else {
 		try {
 			ini.Save(ini_path);
 		} catch (boss_error e) {
 			wxMessageBox(wxString::Format(
-				wxT("Error: " + e.getString())
-			),
-			wxT("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
+					wxT("Error: " + e.getString())
+				),
+				wxT("BOSS: Error"),
+				wxOK | wxICON_ERROR,
+				NULL);
 		}
 	}
 
@@ -838,9 +860,10 @@ void MainFrame::Update(string updateVersion) {
 		}
 
 		wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Automatic Updater"),wxT("Initialising download..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
+		uiStruct ui(progDia);
 		vector<string> fails;
 		try {
-			fails = DownloadInstallBOSSUpdate(progDia, INSTALLER, updateVersion);
+			fails = DownloadInstallBOSSUpdate(ui, INSTALLER, updateVersion);
 		} catch (boss_error e) {
 			progDia->Destroy();
 			try {
@@ -908,9 +931,10 @@ void MainFrame::Update(string updateVersion) {
 			return;
 		}
 		wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Automatic Updater"),wxT("Initialising download..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
+		uiStruct ui(progDia);
 		vector<string> fails;
 		try {
-			fails = DownloadInstallBOSSUpdate(progDia, MANUAL, updateVersion);
+			fails = DownloadInstallBOSSUpdate(ui, MANUAL, updateVersion);
 		} catch (boss_error e) {
 			progDia->Destroy();
 			try {

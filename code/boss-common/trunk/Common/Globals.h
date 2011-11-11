@@ -27,7 +27,7 @@ namespace boss {
 	namespace fs = boost::filesystem;
 
 #	define BOSS_VERSION_MAJOR 1
-#	define BOSS_VERSION_MINOR 7
+#	define BOSS_VERSION_MINOR 9
 #	define BOSS_VERSION_PATCH 0
 
 	BOSS_COMMON_EXP extern const string boss_release_date;

@@ -91,6 +91,8 @@ public:
 	void OnDragStart(wxTreeEvent& event);
 
 	DECLARE_EVENT_TABLE()
+
+	friend class TextDropTarget;
 private:
 	void LoadLists();
 	Rule GetRuleFromForm();

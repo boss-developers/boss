@@ -85,7 +85,7 @@ namespace boss {
 	}
 
 	bool	Item::IsGroup		() { 
-		return (!name.has_extension()); 
+		return (!name.has_extension() && !name.empty()); 
 	}
 
 	bool	Item::Exists		() { 

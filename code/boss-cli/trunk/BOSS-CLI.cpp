@@ -293,26 +293,26 @@ int main(int argc, char *argv[]) {
 					cout << "You are already using the latest version of BOSS." << endl;
 					LOG_DEBUG("You are already using the latest version of BOSS.");
 				} else {
-					cout << "Update available! New version: " << updateVersion << endl << "Do you want to download and install the update? (y/N)"<< endl;
+					cout << "Update available! New version: " << updateVersion << endl << "Do you want to download and install the update? (y/n)"<< endl;
 					//Does the user want to update?
 					char answer;
-					cin.get(answer);
-					if (answer == 'n' || answer == 'N' || answer == '\n') {
+					cin >> answer;
+					if (answer == 'n') {
 						cout << "No update has been downloaded or installed." << endl;
 						LOG_DEBUG("No update has been downloaded or installed.");
-					} else if (answer == 'y' || answer == 'Y') {
+					} else if (answer == 'y') {
 						//First detect type of current install: manual or installer.
 						if (fs::exists("BOSS ReadMe.lnk")) {  //Installer
 							cout << endl << "Your current install has been determined as having been installed via the BOSS installer." << endl
 								<< "The BOSS Updater will download the installer for the new version to this BOSS folder." << endl
 								<< "It will then launch the installer before exiting. Complete the installer to complete the update." << endl
-								<< "Do you wish to continue? (y/N)" << endl;
+								<< "Do you wish to continue? (y/n)" << endl;
 
-							cin.get(answer);
-							if (answer == 'n' || answer == 'N' || answer == '\n') {
+							cin >> answer;
+							if (answer == 'n') {
 								cout << "BOSS Updater cancelled." << endl;
 								LOG_DEBUG("BOSS Updater cancelled.");
-							} else if (answer == 'y' || answer == 'Y') {
+							} else if (answer == 'y') {
 								try {
 									uiStruct ui;
 									vector<string> fails = DownloadInstallBOSSUpdate(ui, INSTALLER, updateVersion);
@@ -374,13 +374,13 @@ int main(int argc, char *argv[]) {
 								<< "The BOSS Updater will download the updated files and replace your existing files with them." << endl
 								<< "Your current BOSS.ini will be renamed to BOSS.ini.old. It may still be opened in your chosen text editor, allowing you to migrate your settings." << endl
 								<< " Your current userlist.txt will not be replaced." << endl
-								<< "Do you wish to continue? (y/N)" << endl;
+								<< "Do you wish to continue? (y/n)" << endl;
 
-							cin.get(answer);
-							if (answer == 'n' || answer == 'N' || answer == '\n') {
+							cin >> answer;
+							if (answer == 'n') {
 								cout << "BOSS Updater cancelled." << endl;
 								LOG_DEBUG("BOSS Updater cancelled.");
-							} else if (answer == 'y' || answer == 'Y') {
+							} else if (answer == 'y') {
 								try {
 									uiStruct ui;
 									vector<string> fails = DownloadInstallBOSSUpdate(ui, MANUAL, updateVersion);

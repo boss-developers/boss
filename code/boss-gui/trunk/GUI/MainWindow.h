@@ -28,6 +28,8 @@
 class BossGUI : public wxApp {
 public:
 	virtual bool OnInit();
+private:
+	wxSingleInstanceChecker *checker;
 };
 
 wxDECLARE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);

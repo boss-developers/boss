@@ -14,11 +14,6 @@
 #ifndef __ELEMENTIDS__HPP__
 #define __ELEMENTIDS__HPP__
 
-//We want to ensure that the GUI-specific code in BOSS-Common is included.
-#ifndef BOSSGUI
-#define BOSSGUI
-#endif
-
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP

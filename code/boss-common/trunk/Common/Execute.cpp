@@ -244,17 +244,17 @@ namespace boss {
 			bosslog << "<li><input type='checkbox'";
 			if (HideMessagelessMods)
 				bosslog << " checked='checked' ";
-			bosslog << "id='b6' onclick='toggleMods()' /><label for='b6'>Hide Messageless Mods</label>";
+			bosslog << "id='b6' onclick='toggleMessages()' /><label for='b6'>Hide Messageless Mods</label>";
 			
 			bosslog << "<li><input type='checkbox'";
 			if (HideGhostedMods)
 				bosslog << " checked='checked' ";
-			bosslog << "id='b7' onclick='toggleMods()' /><label for='b7'>Hide Ghosted Mods</label>";
+			bosslog << "id='b7' onclick='toggleMessages()' /><label for='b7'>Hide Ghosted Mods</label>";
 			
 			bosslog << "<li><input type='checkbox'";
 			if (HideCleanMods)
 				bosslog << " checked='checked' ";
-			bosslog << "id='b8' onclick='toggleMods()' /><label for='b8'>Hide Clean Mods</label>";
+			bosslog << "id='b8' onclick='toggleMessages()' /><label for='b8'>Hide Clean Mods</label>";
 			
 			bosslog << "<li><input type='checkbox'";
 			if (HideAllModMessages)
