@@ -246,6 +246,17 @@ namespace boss {
 		}
 		return itemIter;
 	}
+
+	vector<Item>::iterator	ItemList::FindLastItem	(fs::path name) {
+		vector<Item>::iterator itemIter = items.end();
+		--itemIter;
+		while (itemIter != items.begin()) {
+			if (Tidy(itemIter->name.string()) == Tidy(name.string()))
+				return itemIter;
+			--itemIter;
+		}
+		return items.end();
+	}
 	
 	//This looks a bit weird, but I need a non-reverse iterator outputted, and searching backwards is probably more efficient for my purposes.
 	vector<Item>::iterator	ItemList::FindGroupEnd	(fs::path name) {

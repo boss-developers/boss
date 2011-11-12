@@ -245,7 +245,6 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
-	SetAutoLayout(true);
 
 	progDia->Destroy();
 }
@@ -343,7 +342,6 @@ void UserRulesEditorFrame::OnSelectModInMasterlist(wxTreeEvent& event) {
 			messages += messageIter->KeyToString() + ": " + messageIter->data + "\n\n";
 		ModMessagesBox->SetValue(messages.substr(0,messages.length()-2));
 	}
-	Layout();
 }
 
 void UserRulesEditorFrame::OnSortingCheckToggle(wxCommandEvent& event) {
@@ -525,13 +523,22 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 	//Failure description is given in ruleObject.
 	if (Item(string(RuleModBox->GetValue())).IsPlugin()) {
 		if (SortModsCheckBox->IsChecked()) {
-			if (SortModOption->GetValue() && !Item(string(SortModBox->GetValue())).IsPlugin()) {  //Sort object is a group. Error.
+			if (SortModOption->GetValue()) {
+				if (SortModOption->GetValue() && SortModBox->IsEmpty()) {
+					newRule.enabled = false;
+					newRule.ruleObject = "No mod is specified to sort relative to.";
+					return newRule;
+				} else if (!Item(string(SortModBox->GetValue())).IsPlugin()) {  //Sort object is a group. Error.
 					newRule.enabled = false;
 					newRule.ruleObject = "Cannot sort a plugin relative to a group.";
 					return newRule;
-			} else if (InsertModOption->GetValue() && Item(string(InsertModBox->GetValue())).IsPlugin()) {  //Inserting into a mod. Error.
+				}
+			} else if (InsertModOption->GetValue() && !Item(string(InsertModBox->GetValue())).IsGroup()) {  //Inserting into a mod. Error.
 				newRule.enabled = false;
-				newRule.ruleObject = "Cannot insert into a plugin.";
+				if (InsertModBox->IsEmpty())
+					newRule.ruleObject = "No group is specified to insert into.";
+				else
+					newRule.ruleObject = "Cannot insert into a plugin.";
 				return newRule;
 			}
 		}
@@ -540,12 +547,23 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 			newRule.ruleObject = "Cannot add messages when none are given.";
 			return newRule;
 		}
-	} else {  //Rule object is a group.
+	} else {  //Rule object is a group, or empty.
+		if (RuleModBox->IsEmpty()) {
+			newRule.enabled = false;
+			newRule.ruleObject = "No rule mod is specified.";
+			return newRule;
+		}
 		if (SortModsCheckBox->IsChecked()) {
-			if (SortModOption->GetValue() && Item(string(SortModBox->GetValue())).IsPlugin()) {  //Sort object is a plugin. Error.
+			if (SortModOption->GetValue()) {
+				if (SortModBox->IsEmpty()) {  //Sort object is a plugin. Error.
+					newRule.enabled = false;
+					newRule.ruleObject = "No mod is specified to sort relative to.";
+					return newRule;
+				} else if (Item(string(SortModBox->GetValue())).IsPlugin()) {
 					newRule.enabled = false;
 					newRule.ruleObject = "Cannot sort a group relative to a plugin.";
 					return newRule;
+				}
 			} else if (InsertModOption->GetValue()) {  //Can't insert groups. Error.
 				newRule.enabled = false;
 				newRule.ruleObject = "Cannot insert groups.";
@@ -915,6 +933,7 @@ Rule RuleListFrameClass::GetSelectedRule() {
 void RuleListFrameClass::AppendRule(Rule newRule) {
 	//Add the rule to the end of the userlist.
 	userlist.rules.push_back(newRule);
+	selectedRuleIndex = userlist.rules.size()-1;
 	//Now refresh GUI.
 	ReDrawRuleList();
 }

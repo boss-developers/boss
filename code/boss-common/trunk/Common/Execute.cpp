@@ -634,7 +634,7 @@ namespace boss {
 		//Add modlist's mods to masterlist, then set the modlist to the masterlist as that's the output..
 		masterlist.items.insert(masterlist.items.end(),modlist.items.begin(),modlist.items.end());
 		modlist = masterlist;
-		modlist.lastRecognisedPos = modlist.FindItem(lastRec);  //Record position of last sorted item.
+		modlist.lastRecognisedPos = modlist.FindLastItem(lastRec);  //Record position of last sorted item. Not using FindItem because last recognised item is probably a group, and FindItem would get the beginning of it.
 	}
 
 	//Applies the userlist rules to the working modlist.

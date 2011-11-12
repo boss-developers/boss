@@ -219,7 +219,6 @@ namespace boss {
 				<< "	toggleDisplayCSS(document.getElementById('b4'),'.ghosted','inline');"<<endl
 				<< "	toggleDisplayCSS(document.getElementById('b5'),'.crc','inline');"<<endl
 				<< "	toggleMessages();"<<endl
-				<< "	toggleMods();"<<endl
 				<< "}"<<endl
 				<< "function DomReady(fn){"<<endl
 				<< "	if(document.addEventListener){"<<endl

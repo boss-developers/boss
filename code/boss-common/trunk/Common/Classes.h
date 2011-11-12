@@ -98,6 +98,7 @@ namespace boss {
 		void					Save			(fs::path file);	//Output to file in MF2. Backs up any existing file with new ".old" extension.
 																	//Throws exception on fail.
 		vector<Item>::iterator	FindItem		(fs::path name);	//Find the position of the item with name 'name'. Case-insensitive.
+		vector<Item>::iterator	FindLastItem	(fs::path name);	//Find the last item with the name 'name'. Case-insensitive.
 		vector<Item>::iterator	FindGroupEnd	(fs::path name);	//Find the end position of the group with the given name. Case-insensitive.
 
 		vector<Item>			items;
