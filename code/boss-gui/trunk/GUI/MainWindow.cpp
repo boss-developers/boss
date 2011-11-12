@@ -80,7 +80,7 @@ bool BossGUI::OnInit() {
 	//Check if GUI is already running.
 	checker = new wxSingleInstanceChecker;
 
-	if (checker->IsAnotherRunning()) {
+	/*if (checker->IsAnotherRunning()) {  //It makes sense for BOSS v1.9 to have multiple instances, one for each game. Code will be useful in v2.0 when only one exe will be needed.
 		wxMessageBox(wxString::Format(
 				wxT("Error: The BOSS GUI is already running. This instance will now quit.")
 			),
@@ -92,7 +92,7 @@ bool BossGUI::OnInit() {
 		checker = NULL;
 
 		return false;
-	}
+	}*/
 
 	Ini ini;
 	//Set up variable defaults.
@@ -154,7 +154,7 @@ bool BossGUI::OnInit() {
 	return true;
 }
 
-MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) : wxFrame(NULL, wxID_ANY, title, wxPoint(x, y), wxSize(width, height)) {
+MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) : wxFrame(NULL, wxID_ANY, title, wxPoint(x, y), wxSize(width, height), wxMINIMIZE_BOX|wxMAXIMIZE_BOX|wxSYSTEM_MENU|wxCAPTION|wxCLOSE_BOX|wxCLIP_CHILDREN) {
 
 	//Some variable setup.
 	isStartup = true;

@@ -60,7 +60,7 @@ using namespace std;
 using boost::algorithm::to_upper_copy;
 using boost::algorithm::trim_copy;
 
-UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxSize(900,600)) {
+UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxSize(900,600), wxMINIMIZE_BOX|wxMAXIMIZE_BOX|wxSYSTEM_MENU|wxCAPTION|wxCLOSE_BOX|wxCLIP_CHILDREN) {
 
 	//Let's give this a progress bar.
 	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Initialising User Rules Editor..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);

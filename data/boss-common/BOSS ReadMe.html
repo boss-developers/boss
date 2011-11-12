@@ -64,12 +64,12 @@
 <ul>
 	<li>Correctly positions over 19,100 mod plugins and counting for TES IV: Oblivion, Fallout 3, Fallout: New Vegas and Nehrim - At Fate's Edge.
 	<ul><li>Over 13,000 / 2,900 / 3,100 / 180 mod plugins respectively.</ul>
-	<li>Provides preliminary support for TES V: Skyrim.
+	<li>Supports mod plugins for TES V: Skyrim.
 	<li>Provides a large number of usage notes for many plugins, including requirements, incompatibilities, updates and bug warnings.
 	<li>Provides detection and warning of installation mistakes for some popular mods, such as FCOM.
 	<li>Displays the version number of plugins when it is available.
-	<li>Provides Bash Tag suggestions that are automatically applied by Wrye Bash (for Oblivion), Wrye Flash (for Fallout 3) or Wrye Flash NV (for Fallout: New Vegas).
-	<li>Sorts plugins ghosted by the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities.
+	<li>Provides Bash Tag suggestions that are automatically applied by Wrye Bash (for Oblivion), Wrye Flash (for Fallout 3), Wrye Flash NV (for Fallout: New Vegas) or Wrye Smash (for Skyrim).
+	<li>Sorts plugins ghosted by the <abbr title="Wrye Bash, Wrye Flash, Wrye Flash NV or Wrye Smash">Wrye *ash</abbr> utilities.
 	<li>Allows easy user customisation of mod positions and the messages provided.
 	<li>Includes both <abbr title="Command Line Interface">CLI</abbr> and <abbr title="Graphical User Interface">GUI</abbr> clients, offering full functionality and ease-of-use for all users.
 	<li>Includes a semi-automatic updater to ensure that you always have the latest version installed.
@@ -84,15 +84,15 @@
 <p><b>Note that BOSS does not support Windows 2000 or earlier.</b>
 <p>BOSS can be installed for use with TES IV: Oblivion, TES V: Skyrim, Fallout 3, Fallout: New Vegas or Nehrim - At Fate's Edge (a Total Conversion mod for Oblivion). Installation may either be automated, using the BOSS Installer package, or manually, using the archive package. Either method is simple, and instructions for manual installation are given below.
 <ol>
-	<li>If you have any of the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities, make sure the <q>Lock Times</q> function is deactivated.
+	<li>If you have any of the <abbr title="Wrye Bash, Wrye Flash, Wrye Flash NV or Wrye Smash">Wrye *ash</abbr> utilities, make sure the <q>Lock Times</q> function is deactivated.
 	<li>If upgrading from an earlier version of BOSS, delete all BOSS files and folders in your game's Data folder (including the BOSS folder, BOSS.exe, masterlist.txt, modlist.txt, modlist.old, BOSSlog.txt and any of BOSS's .bat files).  If you have an edited masterlist, make sure to keep a backup so that your edits are not lost. It is recommended that you instead use the user rules functionality to apply changes to the masterlist.
 	<li>Extract the BOSS archive you downloaded to your game's installation directory (ie. the one containing the Data folder and the game's executable, so one of <q>Oblivion</q>, <q>Fallout 3</q>, <q>Nehrim</q>, <q>fallout new vegas</q> or <q>skyrim</q> depending on your game), so that there is now a BOSS folder alongside the Data folder and the game's executable.
 	<li>In the BOSS folder, run the <q>BOSS.exe</q>. This will download the latest masterlist from the Internet and then sort your mods.
 </ol>
 <p>If you are installing BOSS manually and have more than one of the supported games installed, you should install BOSS separately for each one.
-<p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. The <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities will automatically import and apply Bash Tag 
-suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions makes thoroughly and adjust tags by hand in <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> if necessary.
-<p>You will need to reorder unrecognised mods by hand using <abbr title="Oblivion Mod Manager">OBMM</abbr>/<abbr title="Fallout Mod Manager">FOMM</abbr> or <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>.
+<p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. The <abbr title="Wrye Bash, Wrye Flash, Wrye Flash NV or Wrye Smash">Wrye *ash</abbr> utilities will automatically import and apply Bash Tag 
+suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions makes thoroughly and adjust tags by hand in <abbr title="Wrye Bash, Wrye Flash, Wrye Flash NV or Wrye Smash">Wrye *ash</abbr> if necessary.
+<p>You will need to reorder unrecognised mods by hand using <abbr title="Oblivion Mod Manager">OBMM</abbr>/<abbr title="Fallout Mod Manager">FOMM</abbr> or <abbr title="Wrye Bash, Wrye Flash, Wrye Flash NV or Wrye Smash">Wrye *ash</abbr>.
 </div>
 
 <div id="remove"><h1>Uninstallation</h1>
@@ -289,7 +289,7 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 <h2 id="dirtymods">Dirty Edits, Mod Cleaning &amp; CRCs</h2>
 <p>
 <p>Dirty edits are often a side-effect of mod creation, and are often due to bugs in the utilities Bethesda has provided to create mods, rather than bad practice by mod authors. Dirty edits can cause a wide range of issues, including incorrect game settings, missing content, broken quests and crashing to desktop. The more dirty edits there are, and the more mods with dirty edits you use, the more likely you are to experience issues.
-<p>Thankfully there is a way to remove dirty edits from mods relatively easily, a process known as <i>mod cleaning</i>, using TES4Edit (for Oblivion), FO3Edit (for Fallout 3) or FNVEdit (for Fallout: New Vegas). A detailed set of instructions and information on mod cleaning can be found on the CS Wiki's <a href="http://cs.elderscrolls.com/constwiki/index.php/TES4Edit_Cleaning_Guide">TES4Edit Cleaning Guide</a> (the page also applies to Fallout 3 and Fallout: New Vegas). <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> can also scan plugins for dirty edits and return their ITM and UDR counts, though at the time of writing it cannot clean plugins itself.
+<p>Thankfully there is a way to remove dirty edits from mods relatively easily, a process known as <i>mod cleaning</i>, using TES4Edit (for Oblivion), FO3Edit (for Fallout 3) or FNVEdit (for Fallout: New Vegas). A detailed set of instructions and information on mod cleaning can be found on the CS Wiki's <a href="http://cs.elderscrolls.com/constwiki/index.php/TES4Edit_Cleaning_Guide">TES4Edit Cleaning Guide</a> (the page also applies to Fallout 3 and Fallout: New Vegas). <abbr title="Wrye Bash, Wrye Flash, Wrye Flash NV or Wrye Smash">Wrye *ash</abbr> can also scan plugins for dirty edits and return their ITM and UDR counts, though at the time of writing it cannot clean plugins itself.
 <p>The problem of dirty edits is largely a problem of ignorance on the part of mod authors and users alike of the problems unclean mods (more widely known as <i>dirty mods</i>) can cause. As such, there are community efforts to raise awareness of dirty edits and cleaning. BOSS plays a key role in these efforts, as it holds the complete list of all known dirty mods, and it uses this information to provide notification messages to users for any dirty mods they have installed.
 There are three key pieces of information that are used to accurately describe and identify an unclean mod. They are:
 <ul>
@@ -299,7 +299,7 @@ There are three key pieces of information that are used to accurately describe a
 </ul>
 <p>However, not all unclean mods have all or any of these pieces of information. For unclean mods whose ITM and UDR counts have not been reported, BOSS cannot give them. For unclean mods whose CRCs have not been reported, BOSS cannot give precise notification and so prints a message whether or not the user has cleaned their mod.
 <p>BOSS and the modding communities rely on user contribution of this information to progress. For information on how to contribute, see the <q><a href="#help">Contributions &amp; Help</a></q> section below. If you find that a mod is dirty, you should also report this to the mod's author so that they can fix it.
-<p><b>Note:</b> TES4Edit will include a variety of <em>junk records</em> in the ITM count for a plugin, such as new empty cells that are automatically generated by the Construction Set and are almost impossible to remove. These junk records are non-harmful, and BOSS will inform users when a mod contains these to avoid confusion. This is also the source of any discrepancies between the counts produced by TES4Edit and those produced by <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>. The latter's counts are more technically accurate, but both are acceptable for use.
+<p><b>Note:</b> TES4Edit will include a variety of <em>junk records</em> in the ITM count for a plugin, such as new empty cells that are automatically generated by the Construction Set and are almost impossible to remove. These junk records are non-harmful, and BOSS will inform users when a mod contains these to avoid confusion. This is also the source of any discrepancies between the counts produced by TES4Edit and those produced by <abbr title="Wrye Bash, Wrye Flash, Wrye Flash NV or Wrye Smash">Wrye *ash</abbr>. The latter's counts are more technically accurate, but both are acceptable for use.
 <p>There is also another type of unnecessary edit, known as a wild edit, that can also cause problems. These edits are neither Itentical To Master edits nor deleted records, so cannot be automatically cleaned. Cleaning must be manually done in TES4Edit/FO3Edit/FNVEdit. BOSS can still check for plugins with these edits if the CRCs of the plugins with wild edits are known, and it can provide notification of these edits and some information on fixing them if they are reported in an official BOSS thread.
 </div>
 
@@ -320,9 +320,9 @@ There are three key pieces of information that are used to accurately describe a
 <p>Lists of unclean plugins are also very welcome, but for the report to be most useful we require:
 <ul>
 	<li>The ESP/ESM file name(s).
-	<li>The number of records removed (the ITM count) as shown by TES4Edit/FO3Edit/FNVEdit or <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> (not the number of records processed).
-	<li>The number of records undeleted (the UDR count) as shown by TES4Edit/FO3Edit/FNVEdit or <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> (not the number of records processed).
-	<li>The CRC(s) of the unlcean ESP/ESM file name(s). Make sure that the CRCs are of the uncleaned files, not the files after cleaning. The CRC(s) may be calculated using BOSS, <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> or 7-zip, with other sources being unverified as correct. In the case of 7-zip, the <q>CRC checksum for data</q> is the one required.
+	<li>The number of records removed (the ITM count) as shown by TES4Edit/FO3Edit/FNVEdit or <abbr title="Wrye Bash, Wrye Flash, Wrye Flash NV or Wrye Smash">Wrye *ash</abbr> (not the number of records processed).
+	<li>The number of records undeleted (the UDR count) as shown by TES4Edit/FO3Edit/FNVEdit or <abbr title="Wrye Bash, Wrye Flash, Wrye Flash NV or Wrye Smash">Wrye *ash</abbr> (not the number of records processed).
+	<li>The CRC(s) of the unlcean ESP/ESM file name(s). Make sure that the CRCs are of the uncleaned files, not the files after cleaning. The CRC(s) may be calculated using BOSS, <abbr title="Wrye Bash, Wrye Flash, Wrye Flash NV or Wrye Smash">Wrye *ash</abbr> or 7-zip, with other sources being unverified as correct. In the case of 7-zip, the <q>CRC checksum for data</q> is the one required.
 </ul>
 </div>
 
@@ -528,7 +528,7 @@ a problem for which no error message is given, please report the crash or proble
 <ul>
 	<li style="margin-bottom:1.4em;"><b>Symptom:</b> No change in load order.
 	<ul>
-		<li><b>Issue:</b> <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>Lock Times</q> load order locking feature is enabled.
+		<li><b>Issue:</b> <abbr title="Wrye Bash, Wrye Flash, Wrye Flash NV or Wrye Smash">Wrye *ash</abbr>'s <q>Lock Times</q> load order locking feature is enabled.
 		<li><b>Solution:</b> Disable <q>Lock Times</q> before running BOSS. Wrye Bash v277 or later and corresponding versions of Wrye Flash and Wrye Flash NV do this for you, and <q>Lock Times</q> is then re-activated after BOSS has run.
 	</ul>
 	<li style="margin-bottom:1.4em;"><b>Symptom:</b> BOSS does not change/update the BOSS Log and/or modlists correctly.
@@ -601,7 +601,7 @@ a problem for which no error message is given, please report the crash or proble
 	<ul>
 		<li><b>Issue:</b> BOSS is not being run in the correct folder.
 		<li><b>Solution:</b> Move the BOSS folder containing all of BOSS's files into your game's installation folder, which is the one that contains the Data folder.
-		<li><b>Issue:</b> Your master .ESM file is deactivated and ghosted by <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>.
+		<li><b>Issue:</b> Your master .ESM file is deactivated and ghosted by <abbr title="Wrye Bash, Wrye Flash, Wrye Flash NV or Wrye Smash">Wrye *ash</abbr>.
 		<li><b>Solution:</b> Re-activate your master .ESM file.
 	</ul>
 	<li><b>Message:</b> <i>"<code>filename</code>" cannot be read!</i>
@@ -806,7 +806,7 @@ a problem for which no error message is given, please report the crash or proble
 	<li>Random007
 	<li>WrinklyNinja
 </ul>
-<h4>Oblivion Masterlist Developers</h4>
+<h4>TES IV: Oblivion Masterlist Developers</h4>
 <ul>
 	<li>AliTheLord
 	<li>Arthmoor
@@ -839,6 +839,14 @@ a problem for which no error message is given, please report the crash or proble
 <h4>Nehrim - At Fate's Edge Masterlist Developers</h4>
 <ul>
 	<li>Psymon <i>(Bethesda Softworks only)</i>
+</ul>
+<h4>TES V: Skyrim Masterlist Developers</h4>
+<ul>
+	<li>AliTheLord
+	<li>Arthmoor
+	<li>Torrello
+	<li>Vaisellias <i>(Vasellias on Nexus)</i>
+	<li>ZiggyX200
 </ul>
 <h4>Source Code Developers</h4>
 <ul>
@@ -915,6 +923,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 		<li>Fixed: Userlist rules which reference plugins that are not installed now have warning messages reported instead of error messages.
 		<li>Fixed: Masterlist conditions now detect ghosted mods correctly.
 		<li>Fixed: The online Fallout: New Vegas masterlist's revision being checked instead of the online Fallout 3 masterlist's revision when updating the Fallout 3 masterlist.
+		<li>Fixed: The <q>Hide Messageless Mods</q> BOSS Log filter not acting when another filter resulted in all a mod's messages being hidden.
 		<li>Changed: More robust error handling.
 		<li>Changed: User rules can now only use up to one sort line and/or one REPLACE message line per rule, and cannot sort mods/groups relative to themselves.
 		<li>Changed: Content and slight formatting changes to BOSS Log:

@@ -126,13 +126,13 @@
         ${Else}
             StrCpy $CheckState_Nehrim ${BST_CHECKED}
         ${EndIf}
-		${If} $Path_NV == $Empty
+		${If} $Path_SK == $Empty
             ReadRegStr $Path_SK HKLM "Software\Bethesda Softworks\Skyrim" "Installed Path"
-            ${If} $Path_NV == $Empty
+            ${If} $Path_SK == $Empty
                 ReadRegStr $Path_SK HKLM "SOFTWARE\Wow6432Node\Bethesda Softworks\Skyrim" "Installed Path"
             ${EndIf}
         ${Else}
-            StrCpy $CheckState_NV ${BST_CHECKED}
+            StrCpy $CheckState_SK ${BST_CHECKED}
         ${EndIf}
         ${If} $Path_Other != $Empty
             StrCpy $CheckState_Other ${BST_CHECKED}
