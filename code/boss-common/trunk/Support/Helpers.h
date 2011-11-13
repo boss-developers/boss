@@ -4,8 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011  Random/Random007/jpearce, WrinklyNinja & the BOSS 
-	development team. Copyright license:
+    Copyright (C) 2011 BOSS Development Team. Copyright license:
     http://creativecommons.org/licenses/by-nc-nd/3.0/
 
 	$Revision: 3163 $, $Date: 2011-08-21 22:03:18 +0100 (Sun, 21 Aug 2011) $

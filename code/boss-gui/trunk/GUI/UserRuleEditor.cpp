@@ -4,8 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011  WrinklyNinja & the BOSS development team. 
-	Copyright license:
+    Copyright (C) 2011 BOSS Development Team. Copyright license:
     http://creativecommons.org/licenses/by-nc-nd/3.0/
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -391,10 +390,8 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
 			NULL);
-	else {
+	else
 		RulesList->AppendRule(newRule);
-		Layout();
-	}
 }
 
 void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
@@ -413,10 +410,8 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,
 				NULL);
-		else {
+		else
 			RulesList->SaveEditedRule(newRule);
-			Layout();
-		}
 	}
 }
 
@@ -427,10 +422,8 @@ void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
 
 	if (dlg->ShowModal() != wxID_YES)  //User has chosen not to delete.
 		return;
-	else {  //User has chosen to delete.
+	else  //User has chosen to delete.
 		RulesList->DeleteSelectedRule();  //This doesn't work.
-		Layout();
-	}
 }
 
 void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {

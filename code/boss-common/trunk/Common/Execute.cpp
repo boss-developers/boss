@@ -4,8 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011  Random/Random007/jpearce, WrinklyNinja & the BOSS 
-	development team. Copyright license:
+    Copyright (C) 2011 BOSS Development Team. Copyright license:
     http://creativecommons.org/licenses/by-nc-nd/3.0/
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
@@ -216,74 +215,74 @@ namespace boss {
 
 			bosslog << "<ul id='filters'>";
 			
-			bosslog << "<li><input type='checkbox'";
+			bosslog << "<li><input type='checkbox' ";
 			if (UseDarkColourScheme)
-				bosslog << " checked='checked' ";
+				bosslog << "checked='checked' ";
 			bosslog << "id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label>";
 
-			bosslog << "<li><input type='checkbox'";
+			bosslog << "<li><input type='checkbox' ";
 			if (HideRuleWarnings)
-				bosslog << " checked='checked' ";
+				bosslog << "checked='checked' ";
 			bosslog << "id='b2' onclick='toggleRuleListWarnings(this)' /><label for='b2'>Hide Rule Warnings</label>";
 		
-			bosslog << "<li><input type='checkbox'";
+			bosslog << "<li><input type='checkbox' ";
 			if (HideVersionNumbers)
-				bosslog << " checked='checked' ";
+				bosslog << "checked='checked' ";
 			bosslog << "id='b3' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b3'>Hide Version Numbers</label>";
 
-			bosslog << "<li><input type='checkbox'";
+			bosslog << "<li><input type='checkbox' ";
 			if (HideGhostedLabel)
-				bosslog << " checked='checked' ";
+				bosslog << "checked='checked' ";
 			bosslog << "id='b4' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b4'>Hide 'Ghosted' Label</label>";
 			
-			bosslog << "<li><input type='checkbox'";
+			bosslog << "<li><input type='checkbox' ";
 			if (HideChecksums)
-				bosslog << " checked='checked' ";
+				bosslog << "checked='checked' ";
 			bosslog << "id='b5' onclick='toggleDisplayCSS(this,\".crc\")' /><label for='b5'>Hide Checksums</label>";
 			
-			bosslog << "<li><input type='checkbox'";
+			bosslog << "<li><input type='checkbox' ";
 			if (HideMessagelessMods)
-				bosslog << " checked='checked' ";
+				bosslog << "checked='checked' ";
 			bosslog << "id='b6' onclick='toggleMessages()' /><label for='b6'>Hide Messageless Mods</label>";
 			
-			bosslog << "<li><input type='checkbox'";
+			bosslog << "<li><input type='checkbox' ";
 			if (HideGhostedMods)
-				bosslog << " checked='checked' ";
+				bosslog << "checked='checked' ";
 			bosslog << "id='b7' onclick='toggleMessages()' /><label for='b7'>Hide Ghosted Mods</label>";
 			
-			bosslog << "<li><input type='checkbox'";
+			bosslog << "<li><input type='checkbox' ";
 			if (HideCleanMods)
-				bosslog << " checked='checked' ";
+				bosslog << "checked='checked' ";
 			bosslog << "id='b8' onclick='toggleMessages()' /><label for='b8'>Hide Clean Mods</label>";
 			
-			bosslog << "<li><input type='checkbox'";
+			bosslog << "<li><input type='checkbox' ";
 			if (HideAllModMessages)
-				bosslog << " checked='checked' ";
+				bosslog << "checked='checked' ";
 			bosslog << "id='b9' onclick='toggleMessages()' /><label for='b9'>Hide All Mod Messages</label>";
 			
-			bosslog << "<li><input type='checkbox'";
+			bosslog << "<li><input type='checkbox' ";
 			if (HideNotes)
-				bosslog << " checked='checked' ";
+				bosslog << "checked='checked' ";
 			bosslog << "id='b10' onclick='toggleMessages()' /><label for='b10'>Hide Notes</label>";
 			
-			bosslog << "<li><input type='checkbox'";
+			bosslog << "<li><input type='checkbox' ";
 			if (HideBashTagSuggestions)
-				bosslog << " checked='checked' ";
+				bosslog << "checked='checked' ";
 			bosslog << "id='b11' onclick='toggleMessages()' /><label for='b11'>Hide Bash Tag Suggestions</label>";
 			
-			bosslog << "<li><input type='checkbox'";
+			bosslog << "<li><input type='checkbox' ";
 			if (HideRequirements)
-				bosslog << " checked='checked' ";
+				bosslog << "checked='checked' ";
 			bosslog << "id='b12' onclick='toggleMessages()' /><label for='b12'>Hide Requirements</label>";
 			
-			bosslog << "<li><input type='checkbox'";
+			bosslog << "<li><input type='checkbox' ";
 			if (HideIncompatibilities)
-				bosslog << " checked='checked' ";
+				bosslog << "checked='checked' ";
 			bosslog << "id='b13' onclick='toggleMessages()' /><label for='b13'>Hide Incompatibilities</label>";
 			
-			bosslog << "<li><input type='checkbox'";
+			bosslog << "<li><input type='checkbox' ";
 			if (HideDoNotCleanMessages)
-				bosslog << " checked='checked' ";
+				bosslog << "checked='checked' ";
 			bosslog << "id='b14' onclick='toggleMessages()' /><label for='b14'>Hide 'Do Not Clean' Messages</label>";
 
 			bosslog << "</ul>" << "<i><span id='hp'>0</span> of " << (counters.recognised+counters.unrecognised) << " plugins hidden. <span id='hm'>0</span> of " << counters.messages << " messages hidden.</i>";
@@ -745,8 +744,8 @@ namespace boss {
 						//Print success message.
 						buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << ruleIter->ruleObject << "\" inserted at the " << lineIter->KeyToString() << " of group \"" << lineIter->object << "\".";
 					}
+					++lineIter;
 				}
-				++lineIter;
 				for (lineIter; lineIter != ruleIter->lines.end(); ++lineIter) {  //Message lines.
 					if (!lineIter->IsObjectMessage()) {
 						buffer << LIST_ITEM_CLASS_WARN << "\"" << lineIter->object << "\" is not a valid message. Rule skipped.";

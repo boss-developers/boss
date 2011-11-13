@@ -10,8 +10,8 @@
     RequestExecutionLevel admin
     VIProductVersion 1.9.0.0
     VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "BOSS"
-    VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "BOSS development team"
-    VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© BOSS development team"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "BOSS Development Team"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© BOSS Development Team"
     VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 1.9.0"
     VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "1.9.0.0"
 ;-------------------------------- Variables:

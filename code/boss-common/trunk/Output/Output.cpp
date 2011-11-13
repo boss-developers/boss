@@ -4,8 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011  Random/Random007/jpearce, WrinklyNinja & the BOSS 
-	development team. Copyright license:
+    Copyright (C) 2011 BOSS Development Team. Copyright license:
     http://creativecommons.org/licenses/by-nc-nd/3.0/
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -135,12 +134,12 @@ namespace boss {
 				<< ".mod{" << CSSMod << "}.tag{" << CSSTag << "}.note{" << CSSNote << "}.req{" << CSSRequirement << "}.inc{" << CSSIncompatibility << "}"
 				<< "</style>"<<endl;
 			outStream << "<div>Better Oblivion Sorting Software Log</div>" << endl
-				<< "<div>&copy; Random007, WrinklyNinja &amp; the BOSS development team, 2011. Some rights reserved.<br />" << endl
+				<< "<div>&copy; 2011 BOSS Development Team.<br />" << endl
 				<< "<a href=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\">CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />" << endl
 				<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << boss_release_date << ")</div>";
 		} else
 			outStream << endl << "Better Oblivion Sorting Software Log" << endl
-				<< "Copyright Random007, WrinklyNinja & the BOSS development team, 2011. Some rights reserved." << endl
+				<< "Copyright 2011 BOSS Development Team." << endl
 				<< "License: CC Attribution-Noncommercial-No Derivative Works 3.0" << endl
 				<< "(http://creativecommons.org/licenses/by-nc-nd/3.0/)" << endl
 				<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << boss_release_date << ")" << endl;
