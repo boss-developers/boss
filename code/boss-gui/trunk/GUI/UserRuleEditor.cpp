@@ -235,11 +235,13 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	vector<wxTreeItemId> opengroups;
 	opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
 	for (size_t i=1;i<masterlist.items.size();i++) {  //For some reason items[0] is an empty item - check out why parser adds this.
-		wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), masterlist.items[i].name.string());
-		if (masterlist.items[i].type == BEGINGROUP)
-			opengroups.push_back(item);
-		else if (masterlist.items[i].type == ENDGROUP)
+		if (masterlist.items[i].type == ENDGROUP)
 			opengroups.pop_back();
+		else {
+			wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), masterlist.items[i].name.string());
+			if (masterlist.items[i].type == BEGINGROUP)
+				opengroups.push_back(item);
+		}
 	}
 
 	//Now set the layout and sizes.
