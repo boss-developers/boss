@@ -110,7 +110,7 @@ namespace boss {
 		LOG_INFO("Applying calculated ordering to user files...");
 		vector<Item>::iterator iter = modlist.items.begin();
 		vector<Message>::iterator messageIter;
-		for (iter; iter != modlist.lastRecognisedPos+1; ++iter) {
+		for (iter; iter <= modlist.lastRecognisedPos; ++iter) {
 			if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
 				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << iter->name.string() << SPAN_CLOSE;
 				if (!skip_version_parse) {
@@ -629,6 +629,7 @@ namespace boss {
 		}
 		masterlist.items = holdingVec;  //Masterlist now only contains the items needed to sort the user's mods.
 		fs::path lastRec = masterlist.items.back().name;
+		LOG_ERROR("%s",lastRec.string());
 		
 		//Add modlist's mods to masterlist, then set the modlist to the masterlist as that's the output..
 		masterlist.items.insert(masterlist.items.end(),modlist.items.begin(),modlist.items.end());
@@ -678,7 +679,7 @@ namespace boss {
 							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->ruleObject << "\" is already in the masterlist. Rule skipped.";
 							LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->ruleObject.c_str());
 							continue;
-						} else if (ruleIter->ruleKey == OVERRIDE && (modlistPos1 > modlist.lastRecognisedPos || modlistPos1 == modlist.items.end())) {
+						} else if (ruleIter->ruleKey == OVERRIDE && (modlistPos1 > modlist.lastRecognisedPos)) {
 							buffer << LIST_ITEM_CLASS_ERROR << "\"" << ruleIter->ruleObject << "\" is not in the masterlist, cannot override. Rule skipped.";
 							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->ruleObject.c_str());
 							continue;
@@ -806,7 +807,7 @@ namespace boss {
 				buffer << LIST_ITEM_CLASS_SUCCESS << "The group \"" << ruleIter->ruleObject << "\" has been sorted " << lineIter->KeyToString() << " the group \"" << lineIter->object << "\".";
 			}
 			//Now find that last recognised mod and set the iterator again.
-			modlist.lastRecognisedPos = modlist.FindItem(lastRecognisedModName);
+			modlist.lastRecognisedPos = modlist.FindLastItem(lastRecognisedModName);
 		}
 
 
