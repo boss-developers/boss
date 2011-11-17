@@ -629,7 +629,6 @@ namespace boss {
 		}
 		masterlist.items = holdingVec;  //Masterlist now only contains the items needed to sort the user's mods.
 		fs::path lastRec = masterlist.items.back().name;
-		LOG_ERROR("%s",lastRec.string());
 		
 		//Add modlist's mods to masterlist, then set the modlist to the masterlist as that's the output..
 		masterlist.items.insert(masterlist.items.end(),modlist.items.begin(),modlist.items.end());
