@@ -94,7 +94,7 @@ namespace boss {
 	BOSS_COMMON_EXP extern string CSSRequirement;
 	BOSS_COMMON_EXP extern string CSSIncompatibility;
 
-	enum logFormatting {
+	enum logFormatting : uint32_t {
 		DIV_OPEN,
 		DIV_CLOSE,
 		LINE_BREAK,
@@ -130,9 +130,9 @@ namespace boss {
 	class Outputter {
 	public:
 		Outputter();
-		Outputter(unsigned int format);
+		Outputter(uint32_t format);
 
-		void SetFormat(unsigned int format);	//Sets the formatting type of the output.
+		void SetFormat(uint32_t format);	//Sets the formatting type of the output.
 		void SetHTMLSpecialEscape(bool shouldEscape);	//Set when formatting is set, generally, but this can be used to override.
 		void Clear();			//Erase all current content.
 
@@ -147,14 +147,14 @@ namespace boss {
 		Outputter& operator<< (const char * s);
 		Outputter& operator<< (const char c);
 		Outputter& operator<< (const logFormatting l);
-		Outputter& operator<< (const int i);
-		Outputter& operator<< (const unsigned int i);
+		Outputter& operator<< (const int32_t i);
+		Outputter& operator<< (const uint32_t i);
 		Outputter& operator<< (const bool b);
 		Outputter& operator<< (const fs::path p);
 		Outputter& operator<< (const Message m);
 	private:
 		stringstream outStream;
-		unsigned int outFormat;			//The formatting type of the output.
+		uint32_t outFormat;			//The formatting type of the output.
 		bool escapeHTMLSpecialChars;	//Should special characters be escaped from non-formatting input?
 	
 		string EscapeHTMLSpecial(string text);	//Performs the HTML escaping.

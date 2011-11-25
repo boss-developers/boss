@@ -34,12 +34,13 @@
 
 #include <string>
 #include <vector>
+#include <boost/cstdint.hpp>
 #include "Common/DllDef.h"
 
 namespace boss {
 	using namespace std;
 
-	BOSS_COMMON_EXP enum installType {  //Possible types of install the user has.
+	BOSS_COMMON_EXP enum installType : uint32_t {  //Possible types of install the user has.
 		MANUAL,
 		INSTALLER,
 		MASTERLIST
@@ -48,7 +49,7 @@ namespace boss {
 	struct fileInfo {  //Holds the information for files to be downloaded, and also folders to be created/destroyed.
 		bool toDelete;
 		string name;
-		unsigned int crc;
+		uint32_t crc;
 
 		fileInfo();
 		fileInfo(string str);
@@ -83,7 +84,7 @@ namespace boss {
 
 	//Updates the local masterlist to the latest available online.
 	//Throws boss_error exception on fail.
-	BOSS_COMMON_EXP void UpdateMasterlist(uiStruct ui, unsigned int& localRevision, string& localDate, unsigned int& remoteRevision, string& remoteDate);
+	BOSS_COMMON_EXP void UpdateMasterlist(uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate);
 
 
 	////////////////////////
@@ -100,6 +101,6 @@ namespace boss {
 
 	//Downloads and installs a BOSS update.
 	//Throws boss_error exception on fail.
-	BOSS_COMMON_EXP vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const int updateType, const string updateVersion);
+	BOSS_COMMON_EXP vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const uint32_t updateType, const string updateVersion);
 }
 #endif

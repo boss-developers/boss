@@ -48,13 +48,13 @@ void			Outputter::Save				(fs::path file, bool overwrite);
 
 void			CleanUp						();
 
-void			UpdateMasterlist			(uiStruct ui, unsigned int& localRevision, string& localDate, unsigned int& remoteRevision, string& remoteDate);
+void			UpdateMasterlist			(uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate);
 
 string			IsBOSSUpdateAvailable		();
 
 string			FetchReleaseNotes			(const string updateVersion);
 
-vector<string>	DownloadInstallBOSSUpdate	(uiStruct ui, const int updateType, const string updateVersion);
+vector<string>	DownloadInstallBOSSUpdate	(uiStruct ui, const uint32_t updateType, const string updateVersion);
 */
 
 #endif

@@ -47,11 +47,11 @@ namespace boss {
 	BOSS_COMMON_EXP string proxy_host		= "none";
 	BOSS_COMMON_EXP string proxy_user		= "";
 	BOSS_COMMON_EXP string proxy_passwd		= "";
-	BOSS_COMMON_EXP unsigned int proxy_port			= 0;
-	BOSS_COMMON_EXP unsigned int log_format		= HTML;	// what format the output should be in.
-	BOSS_COMMON_EXP unsigned int game				= AUTODETECT;		// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim.
-	BOSS_COMMON_EXP unsigned int revert              = 0;		// what level to revert to
-	BOSS_COMMON_EXP unsigned int debug_verbosity     = 0;		// log levels above INFO to output
+	BOSS_COMMON_EXP uint32_t proxy_port			= 0;
+	BOSS_COMMON_EXP uint32_t log_format		= HTML;	// what format the output should be in.
+	BOSS_COMMON_EXP uint32_t game				= AUTODETECT;		// What game's mods are we sorting? 1 = Oblivion, 2 = Fallout 3, 3 = Nehrim, 4 = Fallout: New Vegas, 5 = Skyrim.
+	BOSS_COMMON_EXP uint32_t revert              = 0;		// what level to revert to
+	BOSS_COMMON_EXP uint32_t debug_verbosity     = 0;		// log levels above INFO to output
 	BOSS_COMMON_EXP bool update				= true;		// update the masterlist?
 	BOSS_COMMON_EXP bool update_only        = false;	// only update the masterlist and don't sort currently.
 	BOSS_COMMON_EXP bool silent             = false;	// silent mode?
@@ -63,6 +63,6 @@ namespace boss {
 	BOSS_COMMON_EXP bool do_startup_update_check	= true;	// Whether or not to check for updates on startup.
 
 	//GUI variables
-	BOSS_COMMON_EXP unsigned int run_type					= 1;  // 1 = sort mods, 2 = only update, 3 = undo changes.
+	BOSS_COMMON_EXP uint32_t run_type					= 1;  // 1 = sort mods, 2 = only update, 3 = undo changes.
 	BOSS_COMMON_EXP bool use_user_rules_editor		= false;		//Use the User Rules Editor or edit userlist.txt directly?
 }

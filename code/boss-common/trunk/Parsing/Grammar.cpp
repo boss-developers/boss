@@ -319,13 +319,13 @@ namespace boss {
 	}
 
 	//Checks if the given mod has the given checksum.
-	void modlist_grammar::CheckSum(bool& result, const unsigned int sum, string file) {
+	void modlist_grammar::CheckSum(bool& result, const uint32_t sum, string file) {
 		result = false;
 		fs::path file_path;
-		unsigned int CRC;
+		uint32_t CRC;
 
 		GetPath(file_path,file);
-		boost::unordered_map<string,unsigned int>::iterator iter = fileCRCs.find(file);
+		boost::unordered_map<string,uint32_t>::iterator iter = fileCRCs.find(file);
 
 		if (iter != fileCRCs.end()) {
 			CRC = fileCRCs.at(file);
@@ -417,11 +417,11 @@ namespace boss {
 	}
 
 	//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.
-	unsigned int modlist_grammar::HexStringToInt(string str) {
+	uint32_t modlist_grammar::HexStringToInt(string str) {
 		string::const_iterator begin, end;
 		begin = str.begin();
 		end = str.end();
-		unsigned int out;
+		uint32_t out;
 		qi::parse(begin, end, hex[phoenix::ref(out) = _1]);
 		return out;
 	}
@@ -727,7 +727,7 @@ namespace boss {
 	}
 
 	//Set the integer BOSS variable values while parsing.
-	void ini_grammar::SetIntVar(string& var, const unsigned int& value) {
+	void ini_grammar::SetIntVar(string& var, const uint32_t& value) {
 		boost::algorithm::trim(var);  //Make sure there are no preceding or trailing spaces.
 		if (currentHeading == "BOSS.InternetSettings") {
 			if (var == "iProxyPort")

@@ -55,7 +55,7 @@ private:
 
 class RuleBoxClass : public wxPanel {
 public:
-	RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, unsigned int index, bool isSelected);
+	RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, uint32_t index, bool isSelected);
 	void ToggleEnabled(wxCommandEvent& event);		//Doesn't handle RuleList modification, only greying out of UI element.
 	void OnSelect(wxMouseEvent& event);
 	void Highlight(bool highlight);
@@ -63,7 +63,7 @@ public:
 private:
 	wxStaticText *ruleContent;
 	wxCheckBox *ruleCheckbox;
-	unsigned int ruleIndex;
+	uint32_t ruleIndex;
 };
 
 class RuleListFrameClass : public wxPanel {
@@ -81,7 +81,7 @@ public:
 private:
 	void ReDrawRuleList();					//Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
 	RuleList userlist;
-	unsigned int selectedRuleIndex;
+	uint32_t selectedRuleIndex;
 	wxScrolled<wxPanel> *RuleListScroller;
 };
 

@@ -39,7 +39,7 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-	enum keyType {
+	enum keyType : uint32_t {
 		NONE,
 		//RuleList keywords.
 		ADD,
@@ -64,7 +64,7 @@ namespace boss {
 		BCSAY
 	};
 
-	enum itemType {
+	enum itemType : uint32_t {
 		MOD,
 		BEGINGROUP,
 		ENDGROUP,

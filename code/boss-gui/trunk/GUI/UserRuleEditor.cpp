@@ -754,7 +754,7 @@ bool TextDropTarget::OnDropText(wxCoord x, wxCoord y, const wxString &data) {
 // RuleBoxClass functions
 ////////////////////////////
 
-RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, unsigned int index, bool isSelected) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize) {
+RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, uint32_t index, bool isSelected) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize) {
 	//First get text representation of rule.
 	string text = "";
 	bool hasEditedMessages = false;

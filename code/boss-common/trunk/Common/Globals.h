@@ -34,6 +34,7 @@
 
 #include <string>
 #include <boost/filesystem.hpp>
+#include <boost/cstdint.hpp>
 #include "Common/DllDef.h"
 
 namespace boss {
@@ -58,7 +59,7 @@ namespace boss {
 	BOSS_COMMON_EXP extern const fs::path ini_path;			// Holds the path to the BOSS.ini.
 	BOSS_COMMON_EXP extern const fs::path debug_log_path;		// Holds the path to BOSSDebugLog.txt.
 
-	enum {
+	enum : uint32_t {
 		//Games (for 'game' global)
 		AUTODETECT,
 		OBLIVION,
@@ -76,11 +77,11 @@ namespace boss {
 	BOSS_COMMON_EXP extern string proxy_host;
 	BOSS_COMMON_EXP extern string proxy_user;
 	BOSS_COMMON_EXP extern string proxy_passwd;
-	BOSS_COMMON_EXP extern unsigned int proxy_port;
-	BOSS_COMMON_EXP extern unsigned int log_format;		// what format the output should be in.  Uses the enums defined above.
-	BOSS_COMMON_EXP extern unsigned int game;				// What game's mods are we sorting? Uses the enums defined above.
-	BOSS_COMMON_EXP extern unsigned int revert;				// what level to revert to
-	BOSS_COMMON_EXP extern unsigned int debug_verbosity;			// log levels above INFO to output
+	BOSS_COMMON_EXP extern uint32_t proxy_port;
+	BOSS_COMMON_EXP extern uint32_t log_format;		// what format the output should be in.  Uses the enums defined above.
+	BOSS_COMMON_EXP extern uint32_t game;				// What game's mods are we sorting? Uses the enums defined above.
+	BOSS_COMMON_EXP extern uint32_t revert;				// what level to revert to
+	BOSS_COMMON_EXP extern uint32_t debug_verbosity;			// log levels above INFO to output
 	BOSS_COMMON_EXP extern bool update;				// update the masterlist?
 	BOSS_COMMON_EXP extern bool update_only;		// only update the masterlist and don't sort currently.
 	BOSS_COMMON_EXP extern bool silent;				// silent mode?
@@ -92,7 +93,7 @@ namespace boss {
 	BOSS_COMMON_EXP extern bool do_startup_update_check;	// Whether or not to check for updates on startup.
 	
 	//GUI variables
-	BOSS_COMMON_EXP extern unsigned int run_type;					// 1 = sort mods, 2 = only update, 3 = undo changes.
+	BOSS_COMMON_EXP extern uint32_t run_type;					// 1 = sort mods, 2 = only update, 3 = undo changes.
 	BOSS_COMMON_EXP extern bool use_user_rules_editor;		//Use the User Rules Editor or edit userlist.txt directly?
 }
 

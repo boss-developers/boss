@@ -63,6 +63,8 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_MENU ( MENU_OpenUserRulesReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_OpenMasterlistReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_OpenAPIReadMe, MainFrame::OnOpenFile )
+	EVT_MENU ( MENU_OpenGPL, MainFrame::OnOpenFile )
+	EVT_MENU ( MENU_OpenFDL, MainFrame::OnOpenFile )
 	EVT_MENU ( OPTION_CheckForUpdates, MainFrame::OnUpdateCheck )
 	EVT_MENU ( MENU_ShowAbout, MainFrame::OnAbout )
 	EVT_MENU ( MENU_ShowSettings, MainFrame::OnOpenSettings )
@@ -212,6 +214,8 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	HelpMenu->Append(MENU_OpenUserRulesReadMe, wxT("Open &User Rules ReadMe"), wxT("Opens the User Rules ReadMe in your default web browser."));
 	HelpMenu->Append(MENU_OpenMasterlistReadMe, wxT("Open &Masterlist &ReadMe"), wxT("Opens the BOSS Masterlist Syntax ReadMe in your default web browser."));
 	//HelpMenu->Append(MENU_OpenAPIReadMe, wxT("&Open API ReadMe"), wxT("Opens the BOSS API ReadMe in your default web browser."));
+	HelpMenu->Append(MENU_OpenGPL, wxT("View &General Public License"), wxT("View the GNU General Public License v3.0."));
+	HelpMenu->Append(MENU_OpenFDL, wxT("View &Free Documentation License"), wxT("View the GNU Free Documentation License v1.3."));
 	HelpMenu->AppendSeparator();
 	HelpMenu->Append(OPTION_CheckForUpdates, wxT("&Check For Updates..."), wxT("Checks for updates to BOSS."));
 	HelpMenu->Append(MENU_ShowAbout, wxT("&About BOSS..."), wxT("Shows information about BOSS."));
@@ -518,7 +522,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 			LOG_DEBUG("Updating masterlist...");
 			try {
 				string localDate, remoteDate;
-				unsigned int localRevision, remoteRevision;
+				uint32_t localRevision, remoteRevision;
 				uiStruct ui(progDia);
 				UpdateMasterlist(ui, localRevision, localDate, remoteRevision, remoteDate);
 				if (localRevision == remoteRevision) {
@@ -753,6 +757,10 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 			file = "BOSS Masterlist Syntax";
 		else if (event.GetId() == MENU_OpenAPIReadMe)
 			file = "BOSS API ReadMe";
+		else if (event.GetId() == MENU_OpenGPL)
+			file = "GNU GPL v3.0";
+		else if (event.GetId() == MENU_OpenFDL)
+			file = "GNU GPL v3.0";
 		//Simplify by looking for either the files themselves or shortcuts to them in the BOSS folder.
 		//If neither, show a pop-up message saying they can't be found.
 		if (fs::exists(file + ".html")) {
@@ -760,6 +768,9 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 			wxLaunchDefaultApplication(file);
 		} else if (fs::exists(file + ".lnk")) {
 			file += ".lnk";
+			wxLaunchDefaultApplication(file);
+		} else if (fs::exists(file + ".txt")) {
+			file += ".txt";
 			wxLaunchDefaultApplication(file);
 		} else  //No ReadMe exists, show a pop-up message saying so.
 			wxMessageBox(wxString::Format(

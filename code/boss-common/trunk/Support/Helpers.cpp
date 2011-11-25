@@ -61,8 +61,8 @@ namespace boss {
 	}
 
 	//Calculate the CRC of the given file for comparison purposes.
-	unsigned int GetCrc32(const fs::path& filename) {
-		unsigned int chksum = 0;
+	uint32_t GetCrc32(const fs::path& filename) {
+		uint32_t chksum = 0;
 		static const size_t buffer_size = 8192;
 		char buffer[buffer_size];
 		ifstream ifile(filename.c_str(), ios::binary);
@@ -123,7 +123,7 @@ namespace boss {
             FILE *fp = popen(cmd.c_str(), "r");
 
             // read out the version string
-            static const int BUFSIZE = 32;
+            static const uint32_t BUFSIZE = 32;
             char buf[BUFSIZE];
             if (NULL == fgets(buf, BUFSIZE, fp)) {
     	        LOG_DEBUG("failed to extract version from '%s'", filename.c_str());
@@ -165,7 +165,7 @@ namespace boss {
 	}
 
 	//Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
-	BOSS_COMMON_EXP string IntToString(const unsigned int n) {
+	BOSS_COMMON_EXP string IntToString(const uint32_t n) {
 		string out;
 		back_insert_iterator<string> sink(out);
 		karma::generate(sink,karma::upper[karma::uint_],n);
@@ -173,7 +173,7 @@ namespace boss {
 	}
 
 	//Converts an integer to a hex string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
-	string IntToHexString(const unsigned int n) {
+	string IntToHexString(const uint32_t n) {
 		string out;
 		back_insert_iterator<string> sink(out);
 		karma::generate(sink,karma::upper[karma::hex],n);

@@ -90,7 +90,7 @@ namespace boss {
 		escapeHTMLSpecialChars = false;
 	}
 
-	Outputter::Outputter(unsigned int format) {
+	Outputter::Outputter(uint32_t format) {
 		outFormat = format;
 		if (outFormat == HTML)
 			escapeHTMLSpecialChars = true;
@@ -98,7 +98,7 @@ namespace boss {
 			escapeHTMLSpecialChars = false;
 	}
 
-	void Outputter::SetFormat(unsigned int format) {
+	void Outputter::SetFormat(uint32_t format) {
 		outFormat = format;
 		if (outFormat == HTML)
 			escapeHTMLSpecialChars = true;
@@ -150,13 +150,13 @@ namespace boss {
 				<< "</style>"<<endl;
 			outStream << "<div>Better Oblivion Sorting Software Log</div>" << endl
 				<< "<div>&copy; 2011 BOSS Development Team.<br />" << endl
-				<< "<a href=\"http://creativecommons.org/licenses/by-nc-nd/3.0/\">CC Attribution-Noncommercial-No Derivative Works 3.0</a><br />" << endl
+				<< "<a href=\"http://www.gnu.org/licenses/gpl.html\">GNU General Public License v3.0</a> &amp; <a href=\"http://www.gnu.org/licenses/fdl.html\">GNU Free Documentation License v1.3</a><br />" << endl
 				<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << boss_release_date << ")</div>";
 		} else
 			outStream << endl << "Better Oblivion Sorting Software Log" << endl
 				<< "Copyright 2011 BOSS Development Team." << endl
-				<< "License: CC Attribution-Noncommercial-No Derivative Works 3.0" << endl
-				<< "(http://creativecommons.org/licenses/by-nc-nd/3.0/)" << endl
+				<< "License: GNU General Public License v3.0 & GNU Free Documentation License v1.3" << endl
+				<< "(http://www.gnu.org/licenses/gpl.html & http://www.gnu.org/licenses/fdl.html)" << endl
 				<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << boss_release_date << ")" << endl;
 	}
 
@@ -482,12 +482,12 @@ namespace boss {
 		return *this;
 	}
 	
-	Outputter& Outputter::operator<< (const int i) {
+	Outputter& Outputter::operator<< (const int32_t i) {
 		outStream << i;
 		return *this;
 	}
 	
-	Outputter& Outputter::operator<< (const unsigned int i) {
+	Outputter& Outputter::operator<< (const uint32_t i) {
 		outStream << i;
 		return *this;
 	}
@@ -576,7 +576,7 @@ namespace boss {
 	}
 
 	//Outputs correctly-formatted error message.
-	string ParsingError::FormatFor(const unsigned int format) {
+	string ParsingError::FormatFor(const uint32_t format) {
 		Outputter output(format);
 		if (Empty())
 			output << "";

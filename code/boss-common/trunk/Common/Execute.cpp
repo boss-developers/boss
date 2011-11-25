@@ -667,7 +667,7 @@ namespace boss {
 		vector<Rule>::iterator ruleIter = userlist.rules.begin();
 		vector<RuleLine>::iterator lineIter;
 		vector<Item>::iterator modlistPos1, modlistPos2;
-		unsigned int i = 0;
+		uint32_t i = 0;
 		for (ruleIter; ruleIter != userlist.rules.end(); ++ruleIter) {
 			i++;
 			LOG_DEBUG(" -- Processing rule #%" PRIuS ".", i);

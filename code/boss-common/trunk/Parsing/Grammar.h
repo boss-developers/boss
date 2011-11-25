@@ -92,7 +92,7 @@ namespace boss {
 	// Keyword structures
 	///////////////////////////////
 
-	enum metaType {
+	enum metaType : uint32_t {
 		IF,
 		IFNOT
 	};
@@ -160,7 +160,7 @@ namespace boss {
 		keyType currentMessageType;
 		vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in MF1.
 		boost::unordered_set<string> setVars;  //Vars set by masterlist. Also referenced by userlist parser.
-		boost::unordered_map<string,unsigned int> fileCRCs;  //CRCs calculated. Referenced by modlist and userlist parsers.
+		boost::unordered_map<string,uint32_t> fileCRCs;  //CRCs calculated. Referenced by modlist and userlist parsers.
 
 		//Stores a message, should it be appropriate.
 		void StoreMessage(vector<Message>& messages, Message currentMessage);
@@ -190,7 +190,7 @@ namespace boss {
 		void CheckVersion(bool& result, const string var);
 
 		//Checks if the given mod has the given checksum.
-		void CheckSum(bool& result, const unsigned int sum, string file);
+		void CheckSum(bool& result, const uint32_t sum, string file);
 
 		//Checks if the given file exists.
 		void CheckFile(bool& result, string file);
@@ -209,7 +209,7 @@ namespace boss {
 		void EvaluateCompoundConditional(bool& result, const string andOr, const bool condition);
 
 		//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.
-		unsigned int HexStringToInt(string str);
+		uint32_t HexStringToInt(string str);
 
 		//Evaluate part of a shorthand conditional message.
 		//Most message types would make sense for the message to display if the condition evaluates to true. (eg. incompatibilities)
@@ -239,7 +239,7 @@ namespace boss {
 		void SetBoolVar(string& var, const bool& value);
 
 		//Set the integer BOSS variable values while parsing.
-		void SetIntVar(string& var, const unsigned int& value);
+		void SetIntVar(string& var, const uint32_t& value);
 
 		//Set the BOSS variable values while parsing.
 		void SetStringVar(string& var, string& value);

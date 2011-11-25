@@ -539,7 +539,7 @@ int main(int argc, char *argv[]) {
 			LOG_DEBUG("Updating masterlist...");
 			try {
 				string localDate, remoteDate;
-				unsigned int localRevision, remoteRevision;
+				uint32_t localRevision, remoteRevision;
 				uiStruct ui;
 				UpdateMasterlist(ui, localRevision, localDate, remoteRevision, remoteDate);
 				if (localRevision == remoteRevision) {

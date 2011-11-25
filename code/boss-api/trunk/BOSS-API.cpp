@@ -86,20 +86,28 @@ map<uint32_t, string>::iterator FindBashTag(map<uint32_t,string>& bashTagMap, st
 
 // The following are the possible error codes that the API can return.
 // Taken from BOSS-Common's Error.h and extended.
-BOSS_API const uint32_t BOSS_API_ERROR_OK					=	BOSS_ERROR_OK;
-BOSS_API const uint32_t BOSS_API_ERROR_FILE_WRITE_FAIL		=	BOSS_ERROR_FILE_WRITE_FAIL;
-BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_UTF8		=	BOSS_ERROR_FILE_NOT_UTF8;
-BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_FOUND		=	BOSS_ERROR_FILE_NOT_FOUND;
-BOSS_API const uint32_t BOSS_API_ERROR_PARSE_FAIL			= 	BOSS_ERROR_MAX + 1;
-BOSS_API const uint32_t BOSS_API_ERROR_NO_MEM				=	BOSS_ERROR_MAX + 2;
-BOSS_API const uint32_t BOSS_API_ERROR_OVERWRITE_FAIL		=	BOSS_ERROR_MAX + 3;
-BOSS_API const uint32_t BOSS_API_ERROR_INVALID_ARGS			=	BOSS_ERROR_MAX + 4;
-BOSS_API const uint32_t BOSS_API_ERROR_MAX					=	BOSS_API_ERROR_INVALID_ARGS;
+BOSS_API const uint32_t BOSS_API_ERROR_OK						=	BOSS_ERROR_OK;
+BOSS_API const uint32_t BOSS_API_ERROR_FILE_WRITE_FAIL			=	BOSS_ERROR_FILE_WRITE_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_UTF8			=	BOSS_ERROR_FILE_NOT_UTF8;
+BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_FOUND			=	BOSS_ERROR_FILE_NOT_FOUND;
+BOSS_API const uint32_t BOSS_API_ERROR_MASTER_TIME_READ_FAIL	=	BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_PARSE_FAIL				= 	BOSS_ERROR_MAX + 1;
+BOSS_API const uint32_t BOSS_API_ERROR_NO_MEM					=	BOSS_ERROR_MAX + 2;
+BOSS_API const uint32_t BOSS_API_ERROR_OVERWRITE_FAIL			=	BOSS_ERROR_MAX + 3;
+BOSS_API const uint32_t BOSS_API_ERROR_INVALID_ARGS				=	BOSS_ERROR_MAX + 4;
+BOSS_API const uint32_t BOSS_API_ERROR_MAX						=	BOSS_API_ERROR_INVALID_ARGS;
 
 // The following are the mod cleanliness states that the API can return.
-BOSS_API const uint32_t BOSS_API_CLEAN_NO = 0;
-BOSS_API const uint32_t BOSS_API_CLEAN_YES = 1;
-BOSS_API const uint32_t BOSS_API_CLEAN_UNKNOWN = 2;
+BOSS_API const uint32_t BOSS_API_CLEAN_NO		= 0;
+BOSS_API const uint32_t BOSS_API_CLEAN_YES		= 1;
+BOSS_API const uint32_t BOSS_API_CLEAN_UNKNOWN	= 2;
+
+// The following are the games identifiers used by the API.
+BOSS_API const uint32_t BOSS_API_GAME_OBLIVION	= OBLIVION;
+BOSS_API const uint32_t BOSS_API_GAME_FALLOUT3	= FALLOUT3;
+BOSS_API const uint32_t BOSS_API_GAME_FALLOUTNV	= FALLOUTNV;
+BOSS_API const uint32_t BOSS_API_GAME_NEHRIM	= NEHRIM;
+BOSS_API const uint32_t BOSS_API_GAME_SKYRIM	= SKYRIM;
 
 
 //////////////////////////////
@@ -727,6 +735,115 @@ BOSS_API uint32_t ReEvalRegex(boss_db db, const uint8_t * dataPath) {
 
 	//Now set DB vector to function's vector.
 	db->regexMatchData = matches;
+	return BOSS_API_ERROR_OK;
+}
+
+
+//////////////////////////////////
+// Masterlist Updating
+//////////////////////////////////
+
+// Checks if there is a masterlist at masterlistPath. If not,
+// it downloads the latest masterlist for the given game to masterlistPath.
+// If there is, it first compares online and local versions to see if an
+// update is necessary.
+BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * masterlistPath) {
+	if ((game && OBLIVION || game && FALLOUT3 || game && FALLOUTNV || game && NEHRIM && game != SKYRIM) || masterlistPath == NULL)
+		return BOSS_API_ERROR_INVALID_ARGS;
+
+	game = clientGame;
+
+	//PATH SETTING
+	masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
+
+	if (masterlist_path.empty())
+		return BOSS_API_ERROR_INVALID_ARGS;
+}
+
+
+////////////////////////////////
+// Plugin Sorting Functions
+////////////////////////////////
+
+// Sorts the mods in dataPath according to their order in the masterlist at 
+// masterlistPath for the given game.
+BOSS_API uint32_t SortMods(const uint32_t clientGame, const uint8_t * dataPath, const uint8_t * masterlistPath) {
+	if ((game && OBLIVION || game && FALLOUT3 || game && FALLOUTNV || game && NEHRIM && game != SKYRIM) || masterlistPath == NULL || dataPath == NULL)
+		return BOSS_API_ERROR_INVALID_ARGS;
+
+	game = clientGame;
+
+	//PATH SETTING
+	data_path = fs::path(reinterpret_cast<const char *>(dataPath));
+	masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
+
+	if (data_path.empty() || masterlist_path.empty())
+		return BOSS_API_ERROR_INVALID_ARGS;
+
+	try {
+		time_t masterTime = GetMasterTime();
+	} catch (boss_error e) {
+		return BOSS_API_ERROR_MASTER_TIME_READ_FAIL;
+	}
+
+	ItemList modlist,masterlist;
+	RuleList userlist;
+	summaryCounters counters;
+	bosslogContents contents;
+
+	BuildWorkingModlist(modlist, masterlist, userlist);
+
+	//This could be adapted so that no output parts are needed, and an exception is thrown if redating fails.
+	//SortRecognisedMods(modlist, contents.recognisedPlugins, masterTime, counters);
+
+	return BOSS_API_ERROR_OK;
+}
+
+// Behaves as the above function does, but does not actually redate the plugins.
+// It instead lists them in the order they would be sorted in using SortMods() in
+// the sortedPlugins array outputted. The contents of the array are static and should
+// not be freed by the client.
+BOSS_API uint32_t TrialSortMods(uint8_t ** sortedPlugins, const uint32_t clientGame, 
+														const uint8_t * dataPath, 
+														const uint8_t * masterlistPath) {
+	if ((game && OBLIVION || game && FALLOUT3 || game && FALLOUTNV || game && NEHRIM && game != SKYRIM) || masterlistPath == NULL || dataPath == NULL || sortedPlugins == NULL)
+		return BOSS_API_ERROR_INVALID_ARGS;
+
+	game = clientGame;
+	trial_run = true;
+	
+	//PATH SETTING
+	data_path = fs::path(reinterpret_cast<const char *>(dataPath));
+	masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
+
+	if (data_path.empty() || masterlist_path.empty())
+		return BOSS_API_ERROR_INVALID_ARGS;
+
+	try {
+		time_t masterTime = GetMasterTime();
+	} catch (boss_error e) {
+		return BOSS_API_ERROR_MASTER_TIME_READ_FAIL;
+	}
+
+	ItemList modlist,masterlist;
+	RuleList userlist;
+	summaryCounters counters;
+	bosslogContents contents;
+
+	BuildWorkingModlist(modlist, masterlist, userlist);
+
+	//This could be adapted so that no output parts are needed, and an exception is thrown if redating fails.
+	//SortRecognisedMods(modlist, contents.recognisedPlugins, masterTime, counters);
+
+	//Now need to populate sortedPlugins array.
+/*	vector<Item>::iterator iter = modlist.items.begin();
+	for (iter; iter <= modlist.lastRecognisedPos; ++iter) {
+		if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
+			sortedPlugins[i] = reinterpret_cast<const uint8_t *>(iter->name.string().c_str());
+			iter->name.string()
+		}
+	}
+	*/
 	return BOSS_API_ERROR_OK;
 }
 

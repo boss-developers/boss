@@ -56,7 +56,7 @@ BOOST_FUSION_ADAPT_STRUCT(
     boss::fileInfo,
 	(bool, toDelete)
 	(std::string, name)
-    (unsigned int, crc)
+    (uint32_t, crc)
 )
 
 namespace boss {
@@ -224,7 +224,7 @@ namespace boss {
 	}
 
 	//Downloads the files in the updatedFiles vector at filesURL.
-	void DownloadFiles(uiStruct ui, const int updateType) {
+	void DownloadFiles(uiStruct ui, const uint32_t updateType) {
 		string fileBuffer, remote_file, path;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
@@ -293,7 +293,7 @@ namespace boss {
 	}
 
 	//Installs the downloaded update files.
-	vector<string> InstallFiles(const int updateType) {
+	vector<string> InstallFiles(const uint32_t updateType) {
 		//First back up current BOSS.ini if it exists and the update is a BOSS program update.
 		if ((updateType == MANUAL || updateType == INSTALLER) && fs::exists(boss_path / "BOSS.ini"))
 			fs::rename(boss_path / "BOSS.ini",boss_path / "BOSS.ini.old");
@@ -332,7 +332,7 @@ namespace boss {
 	}
 
 	//Gets the revision number of the local masterlist.
-	void GetLocalMasterlistRevisionDate(unsigned int& revision, string& date) {
+	void GetLocalMasterlistRevisionDate(uint32_t& revision, string& date) {
 		string line, newline = "Masterlist Revision:";
 		ifstream mlist;
 		char cbuffer[MAXLENGTH];
@@ -363,7 +363,7 @@ namespace boss {
 	}
 
 	//Gets the revision number of the online masterlist.
-	void GetRemoteMasterlistRevisionDate(unsigned int& revision, string& date) {
+	void GetRemoteMasterlistRevisionDate(uint32_t& revision, string& date) {
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		string buffer;		//A bunch of strings.
@@ -489,7 +489,7 @@ namespace boss {
 	}
 
 	//Populates the updatedFiles vector. Kept as a separate function for possible future expansion.
-	void FetchUpdateFileList(const int updateType, const string updateVersion) {
+	void FetchUpdateFileList(const uint32_t updateType, const string updateVersion) {
 		string fileBuffer, remote_file;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
@@ -595,7 +595,7 @@ namespace boss {
 	////////////////////////
 
 	//Updates the local masterlist to the latest available online.
-	BOSS_COMMON_EXP void UpdateMasterlist(uiStruct ui, unsigned int& localRevision, string& localDate, unsigned int& remoteRevision, string& remoteDate) {							//cURL handle
+	BOSS_COMMON_EXP void UpdateMasterlist(uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate) {							//cURL handle
 		string buffer,newline;		//A bunch of strings.
 		ifstream mlist;								//Input stream.
 		ofstream out;								//Output stream.
@@ -711,7 +711,7 @@ namespace boss {
 	}
 
 	//Downloads and installs a BOSS update.
-	BOSS_COMMON_EXP vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const int updateType, const string updateVersion) {
+	BOSS_COMMON_EXP vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const uint32_t updateType, const string updateVersion) {
 		FetchUpdateFileList(updateType, updateVersion);
 		DownloadFiles(ui, updateType);
 		return InstallFiles(updateType);

@@ -40,12 +40,12 @@ namespace boss {
 	using namespace std;
 
 	struct summaryCounters {
-		unsigned int recognised; 
-		unsigned int unrecognised;
-		unsigned int ghosted;
-		unsigned int messages;
-		unsigned int warnings;
-		unsigned int errors;
+		uint32_t recognised; 
+		uint32_t unrecognised;
+		uint32_t ghosted;
+		uint32_t messages;
+		uint32_t warnings;
+		uint32_t errors;
 
 		summaryCounters();
 	};
