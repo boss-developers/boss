@@ -62,6 +62,7 @@ struct _boss_db_int {
 	uint32_t * extAddedTagIds;
 	uint32_t * extRemovedTagIds;
 	const uint8_t * extMessage;
+	const uint8_t ** extPluginList;
 
 	//Get a Bash Tag's string name from its UID.
 	string GetTagString(uint32_t uid) {
@@ -91,11 +92,15 @@ BOSS_API const uint32_t BOSS_API_ERROR_FILE_WRITE_FAIL			=	BOSS_ERROR_FILE_WRITE
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_UTF8			=	BOSS_ERROR_FILE_NOT_UTF8;
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_FOUND			=	BOSS_ERROR_FILE_NOT_FOUND;
 BOSS_API const uint32_t BOSS_API_ERROR_MASTER_TIME_READ_FAIL	=	BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_FILE_MOD_TIME_WRITE_FAIL	=	BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_PARSE_FAIL				= 	BOSS_ERROR_MAX + 1;
 BOSS_API const uint32_t BOSS_API_ERROR_NO_MEM					=	BOSS_ERROR_MAX + 2;
 BOSS_API const uint32_t BOSS_API_ERROR_OVERWRITE_FAIL			=	BOSS_ERROR_MAX + 3;
 BOSS_API const uint32_t BOSS_API_ERROR_INVALID_ARGS				=	BOSS_ERROR_MAX + 4;
-BOSS_API const uint32_t BOSS_API_ERROR_MAX						=	BOSS_API_ERROR_INVALID_ARGS;
+BOSS_API const uint32_t BOSS_API_ERROR_NETWORK_FAIL				=	BOSS_ERROR_MAX + 5;
+BOSS_API const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION	=	BOSS_ERROR_MAX + 6;
+BOSS_API const uint32_t BOSS_API_ERROR_NO_UPDATE_NECESSARY		=	BOSS_ERROR_MAX + 7;
+BOSS_API const uint32_t BOSS_API_ERROR_MAX						=	BOSS_API_ERROR_NO_UPDATE_NECESSARY;
 
 // The following are the mod cleanliness states that the API can return.
 BOSS_API const uint32_t BOSS_API_CLEAN_NO		= 0;
@@ -758,6 +763,29 @@ BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * ma
 
 	if (masterlist_path.empty())
 		return BOSS_API_ERROR_INVALID_ARGS;
+
+	bool connection = false;
+	try {
+		connection = CheckConnection();
+	} catch (boss_error e) {
+		return BOSS_API_ERROR_NETWORK_FAIL;
+	}
+	if (!connection)
+		return BOSS_API_ERROR_NO_INTERNET_CONNECTION;
+	else {
+		try {
+			string localDate, remoteDate;
+			uint32_t localRevision, remoteRevision;
+			uiStruct ui;
+			UpdateMasterlist(ui, localRevision, localDate, remoteRevision, remoteDate);
+			if (localRevision == remoteRevision)
+				return BOSS_API_ERROR_NO_UPDATE_NECESSARY;
+			else
+				return BOSS_API_ERROR_OK;
+		} catch (boss_error e) {
+			return BOSS_API_ERROR_NETWORK_FAIL;
+		}
+	}
 }
 
 
@@ -767,9 +795,13 @@ BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * ma
 
 // Sorts the mods in dataPath according to their order in the masterlist at 
 // masterlistPath for the given game.
-BOSS_API uint32_t SortMods(const uint32_t clientGame, const uint8_t * dataPath, const uint8_t * masterlistPath) {
+BOSS_API uint32_t SortMods(boss_db db, const uint32_t clientGame, const uint8_t * dataPath, const uint8_t * masterlistPath) {
 	if ((game && OBLIVION || game && FALLOUT3 || game && FALLOUTNV || game && NEHRIM && game != SKYRIM) || masterlistPath == NULL || dataPath == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
+
+	ItemList modlist,masterlist;
+	RuleList userlist;
+	time_t masterTime, modfiletime = 0;
 
 	game = clientGame;
 
@@ -781,20 +813,40 @@ BOSS_API uint32_t SortMods(const uint32_t clientGame, const uint8_t * dataPath, 
 		return BOSS_API_ERROR_INVALID_ARGS;
 
 	try {
-		time_t masterTime = GetMasterTime();
+		masterTime = GetMasterTime();
 	} catch (boss_error e) {
 		return BOSS_API_ERROR_MASTER_TIME_READ_FAIL;
 	}
 
-	ItemList modlist,masterlist;
-	RuleList userlist;
-	summaryCounters counters;
-	bosslogContents contents;
+	//Build modlist and masterlist.
+	try {
+		modlist.Load(data_path);
+		masterlist.Load(masterlist_path);
+	} catch (boss_error e) {
+		if (e.getCode() == BOSS_ERROR_FILE_NOT_FOUND)
+			return BOSS_API_ERROR_FILE_NOT_FOUND;
+		else if (e.getCode() == BOSS_ERROR_FILE_NOT_UTF8)
+			return BOSS_API_ERROR_FILE_NOT_UTF8;
+		else
+			return BOSS_API_ERROR_PARSE_FAIL;
+	}
 
+	//Set up working modlist.
 	BuildWorkingModlist(modlist, masterlist, userlist);
 
 	//This could be adapted so that no output parts are needed, and an exception is thrown if redating fails.
-	//SortRecognisedMods(modlist, contents.recognisedPlugins, masterTime, counters);
+	uint32_t i=0;
+	for (vector<Item>::iterator iter = modlist.items.begin(); iter <= modlist.lastRecognisedPos; ++iter) {
+		if (iter->type == MOD && iter->Exists() && !iter->IsMasterFile()) {  //Only act on mods that exist.
+			//time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+			try {
+				iter->SetModTime(masterTime + i*60);
+			} catch(boss_error e) {
+				return BOSS_API_ERROR_FILE_MOD_TIME_WRITE_FAIL;
+			}
+			i++;
+		}
+	}
 
 	return BOSS_API_ERROR_OK;
 }
@@ -803,11 +855,15 @@ BOSS_API uint32_t SortMods(const uint32_t clientGame, const uint8_t * dataPath, 
 // It instead lists them in the order they would be sorted in using SortMods() in
 // the sortedPlugins array outputted. The contents of the array are static and should
 // not be freed by the client.
-BOSS_API uint32_t TrialSortMods(uint8_t ** sortedPlugins, const uint32_t clientGame, 
+BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, const uint32_t clientGame, 
 														const uint8_t * dataPath, 
 														const uint8_t * masterlistPath) {
 	if ((game && OBLIVION || game && FALLOUT3 || game && FALLOUTNV || game && NEHRIM && game != SKYRIM) || masterlistPath == NULL || dataPath == NULL || sortedPlugins == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
+
+	ItemList modlist,masterlist;
+	RuleList userlist;
+	time_t masterTime, modfiletime = 0;
 
 	game = clientGame;
 	trial_run = true;
@@ -820,30 +876,40 @@ BOSS_API uint32_t TrialSortMods(uint8_t ** sortedPlugins, const uint32_t clientG
 		return BOSS_API_ERROR_INVALID_ARGS;
 
 	try {
-		time_t masterTime = GetMasterTime();
+		masterTime = GetMasterTime();
 	} catch (boss_error e) {
 		return BOSS_API_ERROR_MASTER_TIME_READ_FAIL;
 	}
 
-	ItemList modlist,masterlist;
-	RuleList userlist;
-	summaryCounters counters;
-	bosslogContents contents;
+	//Build modlist and masterlist.
+	try {
+		modlist.Load(data_path);
+		masterlist.Load(masterlist_path);
+	} catch (boss_error e) {
+		if (e.getCode() == BOSS_ERROR_FILE_NOT_FOUND)
+			return BOSS_API_ERROR_FILE_NOT_FOUND;
+		else if (e.getCode() == BOSS_ERROR_FILE_NOT_UTF8)
+			return BOSS_API_ERROR_FILE_NOT_UTF8;
+		else
+			return BOSS_API_ERROR_PARSE_FAIL;
+	}
 
+	//Set up working modlist.
 	BuildWorkingModlist(modlist, masterlist, userlist);
 
 	//This could be adapted so that no output parts are needed, and an exception is thrown if redating fails.
-	//SortRecognisedMods(modlist, contents.recognisedPlugins, masterTime, counters);
-
-	//Now need to populate sortedPlugins array.
-/*	vector<Item>::iterator iter = modlist.items.begin();
-	for (iter; iter <= modlist.lastRecognisedPos; ++iter) {
+	size_t i=1;
+	for (vector<Item>::iterator iter = modlist.items.begin(); iter <= modlist.lastRecognisedPos; ++iter) {
 		if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
-			sortedPlugins[i] = reinterpret_cast<const uint8_t *>(iter->name.string().c_str());
-			iter->name.string()
+			//Add to array.
+			db->extPluginList = (const uint8_t**)realloc(db->extPluginList, i * sizeof(uint8_t*));
+			db->extPluginList[i] = reinterpret_cast<const uint8_t *>(iter->name.string().c_str());
+			i++;
 		}
 	}
-	*/
+
+	sortedPlugins = db->extPluginList;
+
 	return BOSS_API_ERROR_OK;
 }
 
@@ -860,10 +926,10 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, uint32_t * numTa
 		return BOSS_API_ERROR_INVALID_ARGS;
 
 	if (db->extTagMap != NULL) {  //Check to see if bashTagMap is already populated.
-		*numTags = uint32_t(db->bashTagMap.size());  //Set size.
+		*numTags = db->bashTagMap.size();  //Set size.
 		*tagMap = db->extTagMap;
 	} else {
-		*numTags = uint32_t(db->bashTagMap.size());  //Set size.
+		*numTags = db->bashTagMap.size();  //Set size.
 
 		//Allocate memory.
 		db->extTagMap = (BashTag*)calloc(size_t(*numTags), sizeof(BashTag));

@@ -91,10 +91,14 @@ BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_WRITE_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_NOT_UTF8;
 BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_NOT_FOUND;
 BOSS_API extern const uint32_t BOSS_API_ERROR_MASTER_TIME_READ_FAIL;
+BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_MOD_TIME_WRITE_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_PARSE_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_MEM;
 BOSS_API extern const uint32_t BOSS_API_ERROR_OVERWRITE_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_INVALID_ARGS;
+BOSS_API extern const uint32_t BOSS_API_ERROR_NETWORK_FAIL;
+BOSS_API extern const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION;
+BOSS_API extern const uint32_t BOSS_API_ERROR_NO_UPDATE_NECESSARY;
 BOSS_API extern const uint32_t BOSS_API_ERROR_MAX;
 
 // The following are the mod cleanliness states that the API can return.
@@ -168,15 +172,15 @@ BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * ma
 
 // Sorts the mods in dataPath according to their order in the masterlist at 
 // masterlistPath for the given game.
-BOSS_API uint32_t SortMods(const uint32_t clientGame, const uint8_t * dataPath, const uint8_t * masterlistPath);
+BOSS_API uint32_t SortMods(boss_db db, const uint32_t clientGame, const uint8_t * dataPath, const uint8_t * masterlistPath);
 
 // Behaves as the above function does, but does not actually redate the plugins.
 // It instead lists them in the order they would be sorted in using SortMods() in
 // the sortedPlugins array outputted. The contents of the array are static and should
 // not be freed by the client.
-BOSS_API uint32_t TrialSortMods(uint8_t ** sortedPlugins, const uint32_t clientGame, 
-														const uint8_t * dataPath, 
-														const uint8_t * masterlistPath);
+BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t ** sortedPlugins, const uint32_t clientGame, 
+																		const uint8_t * dataPath, 
+																		const uint8_t * masterlistPath);
 
 
 //////////////////////////

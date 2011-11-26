@@ -47,7 +47,7 @@ API Documentation</div>
 <div id="intro"><h1>Introduction</h1>
 <p>This documentation details the BOSS API and is intended for use by third party developers of modding utilities for TES IV: Oblivion, TES V: Skyrim, Nehrim - At Fate's Edge, Fallout 3 and Fallout: New Vegas.
 
-<p>The BOSS API has a C frontend and is available as a 32-bit DLL that can be loaded by other modding utilities so that they can easily take advantage of the information stored within BOSS's files without having to write their own interfaces and keep such interfaces up-to-date as BOSS evolves.
+<p>The BOSS API has a C frontend and is available as 32-bit and 64-bit DLLs that can be loaded by other modding utilities so that they can easily take advantage of the information stored within BOSS's files without having to write their own interfaces and keep such interfaces up-to-date as BOSS evolves.
 </div>
 
 <div id="overview"><h1>Overview</h1>
@@ -85,15 +85,33 @@ API Documentation</div>
 <table>
 	<thead><tr><td>Return Code<td>Description
 	<tbody>
-		<tr><td>BOSS_API_ERROR_OK<td>The function completed successfully.
-		<tr><td>BOSS_API_ERROR_FILE_WRITE_FAIL<td>A file could not be written to.
-		<tr><td>BOSS_API_ERROR_FILE_NOT_UTF8<td>The specified BOSS file (masterlist or userlist) is not encoded in UTF-8.
-		<tr><td>BOSS_API_ERROR_FILE_NOT_FOUND<td>The specified file could not be found.
-		<tr><td>BOSS_API_ERROR_PARSE_FAIL<td>There was an error parsing the file.
-		<tr><td>BOSS_API_ERROR_NO_MEM<td>The API was unable to allocate the required memory.
-		<tr><td>BOSS_API_ERROR_OVERWRITE_FAIL<td>The API was unable to overwrite the minimal masterlist specified.
-		<tr><td>BOSS_API_ERROR_INVALID_ARGS<td>Invalid arguments were given for the function.
-		<tr><td>BOSS_API_ERROR_MAX<td>Matches the value of the highest-numbered return code (BOSS_API_ERROR_INVALID_ARGS). It isn't returned by any functions.
+		<tr><td>BOSS_API_ERROR_OK						<td>The function completed successfully.
+		<tr><td>BOSS_API_ERROR_FILE_WRITE_FAIL			<td>A file could not be written to.
+		<tr><td>BOSS_API_ERROR_FILE_NOT_UTF8			<td>The specified BOSS file (masterlist or userlist) is not encoded in UTF-8.
+		<tr><td>BOSS_API_ERROR_FILE_NOT_FOUND			<td>The specified file could not be found.
+		<tr><td>BOSS_API_ERROR_MASTER_TIME_READ_FAIL	<td>The modification date of the game's master file could not be read.
+		<tr><td>BOSS_API_ERROR_FILE_MOD_TIME_WRITE_FAIL	<td>The modification date of a plugin could not be set.
+		<tr><td>BOSS_API_ERROR_PARSE_FAIL				<td>There was an error parsing the file.
+		<tr><td>BOSS_API_ERROR_NO_MEM					<td>The API was unable to allocate the required memory.
+		<tr><td>BOSS_API_ERROR_OVERWRITE_FAIL			<td>The API was unable to overwrite the minimal masterlist specified.
+		<tr><td>BOSS_API_ERROR_INVALID_ARGS				<td>Invalid arguments were given for the function.
+		<tr><td>BOSS_API_ERROR_NETWORK_FAIL				<td>There was an error in an Internet-related operation.
+		<tr><td>BOSS_API_ERROR_NO_INTERNET_CONNECTION	<td>No Internet connection detected.
+		<tr><td>BOSS_API_ERROR_NO_UPDATE_NECESSARY		<td>Not an error. No update was found for the masterlist.
+		<tr><td>BOSS_API_ERROR_MAX						<td>Matches the value of the highest-numbered return code (BOSS_API_ERROR_NO_UPDATE_NECESSARY). It isn't returned by any functions.
+</table>
+</div>
+
+<div id="games"><h1>Game Codes</h1>
+<p>The BOSS API functions uses the following uint32_t codes to specify which game the API is acting for, where distinctions between games are necessary.
+<table>
+	<thead><tr><td>Game Code<td>Game
+	<tbody>
+		<tr><td>BOSS_API_GAME_OBLIVION	<td>The Elder Scrolls IV: Oblivion
+		<tr><td>BOSS_API_GAME_FALLOUT3	<td>Fallout 3
+		<tr><td>BOSS_API_GAME_FALLOUTNV	<td>Fallout: New Vegas
+		<tr><td>BOSS_API_GAME_NEHRIM	<td>Nehrim - At Fate's Edge
+		<tr><td>BOSS_API_GAME_SKYRIM	<td>The Elder Scrolls V: Skyrim
 </table>
 </div>
 
@@ -109,6 +127,11 @@ API Documentation</div>
 
 <p><code>uint32_t <span style="color:blue;">GetVersionString</span> (const uint8_t ** bossVersionStr);</code>
 <p>Returns the version string for this version of BOSS. The string exists for the lifetime of the library.
+
+<h2 id="functions-updating">Updater Functions</h2>
+
+<p><code>uint32_t <span style="color:blue;">UpdateMasterlist</span> (const uint32_t clientGame, const uint8_t * masterlistPath);</code>
+<p>Updates the masterlist at masterlistPath to the latest version of the masterlist for clientGame. If there is no masterlist present, then the latest masterlist will be downloaded to masterlistPath. If the local masterlist is already at the latest version, no masterlist is downloaded. clientGame accepts a game code as given in the previous section.
 
 <h2 id="functions-lifecycle">Lifecycle Management Functions</h2>
 <p><code>uint32_t <span style="color:blue;">CreateBossDb</span>  (boss_db * db);</code>
@@ -399,12 +422,12 @@ if __name__=='__main__':
 
 <div id="contact"><h1>Contact</h1>
 <p>The BOSS Development Team can be contacted by Private Messaging any of the handles given in the <q>Project Members</q> section of the main BOSS readme at the noted forums. 
-<p>However, for API-specific support, it is best to contact WrinklyNinja (available on both the <a href="http://forums.bethsoft.com/index.php">Bethesda Softworks Forums</a> and <a href="http://www.thenexusforums.com/">The Nexus Forums</a>), who is currently responsible for all BOSS code development, including the API. Other team members are unlikely to be of any great assistance with coding-related queries.
+<p>However, for API-specific support, it is best to contact WrinklyNinja (available on both the <a href="http://forums.bethsoft.com/index.php">Bethesda Softworks Forums</a> and <a href="http://www.thenexusforums.com/">The Nexus Forums</a>), who is currently responsible for all BOSS code development, including the API. Other team members are may not be of great assistance with coding-related queries.
 <p>Developers can also request additional functionality, report any bugs encountered and discuss anything API-related in the <a href="http://forums.bethsoft.com/index.php?showtopic=1221990">offical BOSS API thread</a>. 
 </div>
 
 <div id="credits"><h1>Credits</h1>
-<p>Credit goes to myk002 and Lojack for significant contributions to both coding and discussion from initial development through to beta testing. The BOSS API is written in C/C++ and makes use of the <a href="http://www.boost.org/">BOOST</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries.
+<p>Credit goes to myk002 and Lojack for significant contributions to both coding and discussion from initial development through to beta testing. The BOSS API is written in C/C++ and makes use of the <a href="http://www.boost.org/">Boost</a>, <a href="http://curl.haxx.se/libcurl/">libcurl</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries.
 </div>
 
 <div id="license"><h1>License</h1>
