@@ -40,40 +40,39 @@ This guide also assumes that you are building the 'trunk' of the  code. If you a
  <li>Start a Command Prompt and cd to <code><em>$BOSS</em>\lib\boost</code> and run <code>bootstrap.bat</code> .
  <li>In the Command Prompt, run <code>b2 --toolset=msvc-10.0 --build-type=complete stage</code> . This will take a long time.
  <li>Rename <code><em>$BOSS</em>\lib\boost\stage\lib</code> to <code><em>$BOSS</em>\lib\boost\stage\lib-32</code> .
- <li>If you then want to build for x64, run <code>b2 --toolset=msvc-10.0 --build-type=complete address-model=64 stage</code> . This will take a long time.
- <li>Rename <code><em>$BOSS</em>\lib\boost\stage\lib</code> to <code><em>$BOSS</em>\lib\boost\stage\lib-64</code> .
+ <li>To build 64 bit Boost libraries:
+ <ol>
+  <li>If you then want to build for x64, run <code>b2 --toolset=msvc-10.0 --build-type=complete address-model=64 stage</code> . This will take a long time.
+  <li>Rename <code><em>$BOSS</em>\lib\boost\stage\lib</code> to <code><em>$BOSS</em>\lib\boost\stage\lib-64</code> .
+ </ol>
 </ol>
 
 <h3>wxWidgets</h3>
 	<ol>
 		<li>Extract the contents of the <code>wxWidgets-x.x.x</code> (x is a number) archive you downloaded to <code><em>$BOSS</em>\lib\wxWidgets\</code> (you should have build, include, lib, etc. in this folder).
-		<li>Open the VC6 workspace <code>em>$BOSS</em>\lib\wxWidgets\build\msw\wx.dsw</code>, answering "Yes" to any conversion prompts.
-		<li>Set the build type to Release. Build the following projects in listed order. For each project, in Project->Properties->Configuration Properties->C/C++->Code Generation, set the Runtime Library to "Multi-threaded (/MT)":
+		<li>Open the VC6 workspace <code><em>$BOSS</em>\lib\wxWidgets\build\msw\wx.dsw</code>, answering "Yes" to any conversion prompts.
+		<li>Using the "Find In Files" option (Edit->Find and Replace->Replace in Files), make the following replacements to the files in <code><em>$BOSS</em>\lib\wxWidgets\build</code>:
 		<ul>
-			<li>wxjpeg
-			<li>wxpng
-			<li>wxtiff
-			<li>wxzlib
-			<li>wxregex
-			<li>wxexpat
-			<li>base
-			<li>net
-			<li>core
-			<li>gl
-			<li>html
-			<li>xml
-			<li>media
-			<li>qa
-			<li>adv
-			<li>xrc
-			<li>aui
-			<li>richtext
-			<li>propgrid
-			<li>ribbon
-			<li>stc
-		</ul>	
-		
-		<li>Close the wx solution.
+		 <li><code>OutputDirectory="..\..\lib\vc_lib"</code> with <code>OutputDirectory="$(PlatformName)\$(ConfigurationName)"</code>
+		 <li><code>lib\vc_lib\</code> with <code>lib\vc_lib\$(PlatformName)\</code>
+		 <li><code>vc_msw</code> with <code>$(PlatformName)\vc_msw</code>
+		 <li><code>&lt;RuntimeLibrary&gt;MultiThreadedDLL&lt;/RuntimeLibrary&gt;</code> with <code>&lt;RuntimeLibrary&gt;MultiThreaded&lt;/RuntimeLibrary&gt;</code>
+		</ul>
+		<li>In <code><em>$BOSS</em>\lib\wxWidgets\include\msvc\wx\setup.h</code>, replace the line 
+		<pre><code>   #define wxLIB_SUBDIR wxCONCAT3(wxCOMPILER_PREFIX, wxARCH_SUFFIX, _lib)</code></pre> 
+		with 
+		<pre><code>   #ifdef _M_X64
+       #define wxLIB_SUBDIR wxCONCAT3(wxCOMPILER_PREFIX, _lib, /x64)
+   #else
+       #define wxLIB_SUBDIR wxCONCAT3(wxCOMPILER_PREFIX, _lib, /Win32)
+   #endif</code></pre>
+		<li>Set the build type to Release and the active platform to Win32, then build the solution.
+ <li>To build 64 bit wxWidgets:
+ <ol>
+	<li>In Build->Configuration Manager, select &lt;New...&gt;. Make sure the new platform is "x64" and you are copying settings from "Win32", then select OK.
+	<li>Ensure that the active platform is "x64".
+	<li>Build the solution.
+ </ol>
 	</ol>
 
 <h3>libcurl</h3>
@@ -90,10 +89,11 @@ This guide also assumes that you are building the 'trunk' of the  code. If you a
 	<li>Build the libcurl project.
 	<li>Rename the <code><em>$BOSS</em>\lib\curl\lib\Release</code> directory to <code><em>$BOSS</em>\lib\curl\lib\Release-64</code> .
  </ol>
+ <li>Close the libcurl solution.
 </ol>
 
 <h2>Building BOSS</h2>
-<p>Each of the BOSS components has (or will shortly have) a Win32 32-bit build option and a x64 64-bit build option. Providing you have built the dependencies for the right platform, you can build the BOSS components for either platform using the corresponding build option.
+<p>Each of the BOSS components can be built for 32 or 64 bit platforms. Providing you have built the dependencies, you can build the BOSS components for either platform using the corresponding build option.
 <h3>Common (Required for CLI, GUI and API)</h3>
 <ol>
  <li>Open <code><em>$BOSS</em>\code\boss-common\trunk\BOSS-Common.sln</code> in Visual C++ 2010.
