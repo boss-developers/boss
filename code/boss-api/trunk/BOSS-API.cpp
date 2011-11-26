@@ -55,6 +55,9 @@ struct modEntry {
 
 // Database structure.
 struct _boss_db_int {
+	ItemList masterlist;
+	RuleList userlist;
+
 	vector<modEntry> userlistData, masterlistData, regexData, regexMatchData;	//Internal data structures for userlist Bash Tag suggestions and masterlist Bash Tag suggestions and cleaning messages.
 	map<uint32_t,string> bashTagMap;				//A hashmap containing all the Bash Tag strings found in the masterlist and userlist and their unique IDs.
 													//Ordered to make ensuring UIDs easy (check the UID of the last element then increment). Strings are case-preserved.
@@ -214,9 +217,7 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	//    then exit immediately. DB is only changed at the end so it is unchanged 
 	//    in case of error.
 	map<uint32_t,string> bashTagMap;
-	ItemList masterlist;
 	vector<modEntry> masterlistData, userlistData, regexData;
-	RuleList userlist;
 	uint32_t currentUID = 0;
 	
 	//Check for valid args.
@@ -233,7 +234,7 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 
 	//PARSING - Masterlist
 	try {
-		masterlist.Load(masterlist_path);
+		db->masterlist.Load(masterlist_path);
 	} catch (boss_error e) {
 		if (e.getCode() == BOSS_ERROR_FILE_NOT_FOUND)
 			return BOSS_API_ERROR_FILE_NOT_FOUND;
@@ -246,9 +247,9 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	//PARSING - Userlist
 	if (!userlist_path.empty()) {
 		try {
-			userlist.Load(userlist_path);
+			db->userlist.Load(userlist_path);
 		} catch (boss_error e) {
-			userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
+			db->userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 			if (e.getCode() == BOSS_ERROR_FILE_NOT_FOUND)
 				return BOSS_API_ERROR_FILE_NOT_FOUND;
 			else if (e.getCode() == BOSS_ERROR_FILE_NOT_UTF8)
@@ -261,8 +262,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 
 	//CONVERSION - Masterlist
 	map<uint32_t, string>::iterator mapPos;
-	vector<Item>::iterator iter = masterlist.items.begin();
-	while (iter != masterlist.items.end()) {
+	vector<Item>::iterator iter = db->masterlist.items.begin();
+	while (iter != db->masterlist.items.end()) {
 		modEntry mod;
 		if (iter->type == MOD && !iter->messages.empty()) {  //Might be worth remembering.
 			bool hasMessages = false;
@@ -521,8 +522,8 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	
 	//CONVERSION - Userlist
 	if (!userlist_path.empty()) {
-		vector<Rule>::iterator userlistIter = userlist.rules.begin();
-		while (userlistIter != userlist.rules.end()) {
+		vector<Rule>::iterator userlistIter = db->userlist.rules.begin();
+		while (userlistIter != db->userlist.rules.end()) {
 			vector<RuleLine>::iterator lineIter = userlistIter->lines.begin();
 			vector<modEntry>::iterator dataIter = userlistData.begin();
 			string plugin = userlistIter->ruleObject;
@@ -698,7 +699,7 @@ BOSS_API uint32_t ReEvalRegex(boss_db db, const uint8_t * dataPath) {
 		return BOSS_API_ERROR_INVALID_ARGS;
 
 	vector<modEntry> matches;
-	//Build modlist. Not using boss::BuildModlist() as that builds to a vector<item> in load order, which isn't necessary.
+	//Build modlist. Not using boss::ItemList::Load() as that builds to a vector<item> in load order, which isn't necessary.
 	boost::unordered_set<string> hashset;  //Holds installed mods for checking against masterlist
 	boost::unordered_set<string>::iterator setPos;
 	for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
@@ -753,7 +754,7 @@ BOSS_API uint32_t ReEvalRegex(boss_db db, const uint8_t * dataPath) {
 // If there is, it first compares online and local versions to see if an
 // update is necessary.
 BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * masterlistPath) {
-	if ((game && OBLIVION || game && FALLOUT3 || game && FALLOUTNV || game && NEHRIM && game != SKYRIM) || masterlistPath == NULL)
+	if ((game != OBLIVION && game != FALLOUT3 && game != FALLOUTNV && game != NEHRIM && game != SKYRIM) || masterlistPath == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 
 	game = clientGame;
@@ -795,22 +796,14 @@ BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * ma
 
 // Sorts the mods in dataPath according to their order in the masterlist at 
 // masterlistPath for the given game.
-BOSS_API uint32_t SortMods(boss_db db, const uint32_t clientGame, const uint8_t * dataPath, const uint8_t * masterlistPath) {
-	if ((game && OBLIVION || game && FALLOUT3 || game && FALLOUTNV || game && NEHRIM && game != SKYRIM) || masterlistPath == NULL || dataPath == NULL)
+BOSS_API uint32_t SortMods(boss_db db, const uint32_t clientGame) {
+	if ((game != OBLIVION && game != FALLOUT3 && game != FALLOUTNV && game != NEHRIM && game != SKYRIM) || db == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 
-	ItemList modlist,masterlist;
-	RuleList userlist;
+	ItemList modlist;
 	time_t masterTime, modfiletime = 0;
 
 	game = clientGame;
-
-	//PATH SETTING
-	data_path = fs::path(reinterpret_cast<const char *>(dataPath));
-	masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
-
-	if (data_path.empty() || masterlist_path.empty())
-		return BOSS_API_ERROR_INVALID_ARGS;
 
 	try {
 		masterTime = GetMasterTime();
@@ -821,7 +814,6 @@ BOSS_API uint32_t SortMods(boss_db db, const uint32_t clientGame, const uint8_t 
 	//Build modlist and masterlist.
 	try {
 		modlist.Load(data_path);
-		masterlist.Load(masterlist_path);
 	} catch (boss_error e) {
 		if (e.getCode() == BOSS_ERROR_FILE_NOT_FOUND)
 			return BOSS_API_ERROR_FILE_NOT_FOUND;
@@ -832,7 +824,7 @@ BOSS_API uint32_t SortMods(boss_db db, const uint32_t clientGame, const uint8_t 
 	}
 
 	//Set up working modlist.
-	BuildWorkingModlist(modlist, masterlist, userlist);
+	BuildWorkingModlist(modlist, db->masterlist, db->userlist);
 
 	//This could be adapted so that no output parts are needed, and an exception is thrown if redating fails.
 	uint32_t i=0;
@@ -855,25 +847,15 @@ BOSS_API uint32_t SortMods(boss_db db, const uint32_t clientGame, const uint8_t 
 // It instead lists them in the order they would be sorted in using SortMods() in
 // the sortedPlugins array outputted. The contents of the array are static and should
 // not be freed by the client.
-BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, const uint32_t clientGame, 
-														const uint8_t * dataPath, 
-														const uint8_t * masterlistPath) {
-	if ((game && OBLIVION || game && FALLOUT3 || game && FALLOUTNV || game && NEHRIM && game != SKYRIM) || masterlistPath == NULL || dataPath == NULL || sortedPlugins == NULL)
+BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, const uint32_t clientGame) {
+	if ((game != OBLIVION && game != FALLOUT3 && game != FALLOUTNV && game != NEHRIM && game != SKYRIM) || sortedPlugins == NULL || db == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 
-	ItemList modlist,masterlist;
-	RuleList userlist;
+	ItemList modlist;
 	time_t masterTime, modfiletime = 0;
 
 	game = clientGame;
 	trial_run = true;
-	
-	//PATH SETTING
-	data_path = fs::path(reinterpret_cast<const char *>(dataPath));
-	masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
-
-	if (data_path.empty() || masterlist_path.empty())
-		return BOSS_API_ERROR_INVALID_ARGS;
 
 	try {
 		masterTime = GetMasterTime();
@@ -884,7 +866,6 @@ BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, cons
 	//Build modlist and masterlist.
 	try {
 		modlist.Load(data_path);
-		masterlist.Load(masterlist_path);
 	} catch (boss_error e) {
 		if (e.getCode() == BOSS_ERROR_FILE_NOT_FOUND)
 			return BOSS_API_ERROR_FILE_NOT_FOUND;
@@ -895,7 +876,7 @@ BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, cons
 	}
 
 	//Set up working modlist.
-	BuildWorkingModlist(modlist, masterlist, userlist);
+	BuildWorkingModlist(modlist, db->masterlist, db->userlist);
 
 	//This could be adapted so that no output parts are needed, and an exception is thrown if redating fails.
 	size_t i=1;

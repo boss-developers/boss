@@ -27,10 +27,13 @@ API Documentation</div>
 	<li><a href="#overview">Overview</a>
 	<li><a href="#types">Variable Types</a>
 	<li><a href="#codes">Return Codes</a>
+	<li><a href="#games">Game Codes</a>
 	<li><a href="#functions">Functions</a>
 	<ol style="list-style:lower-alpha;">
 		<li><a href="#functions-version">Version Functions</a>
+		<li><a href="#functions-updating">Updater Functions</a>
 		<li><a href="#functions-lifecycle">Lifecycle Management Functions</a>
+		<li><a href="#functions-sorting">Plugin Sorting Functions</a>
 		<li><a href="#functions-loading">Database Loading Functions</a>
 		<li><a href="#functions-access">Database Access Functions</a>
 	</ol>
@@ -53,6 +56,9 @@ API Documentation</div>
 <div id="overview"><h1>Overview</h1>
 <p>The BOSS API allows third parties to extract information from BOSS's masterlist and userlist using the same parsers that BOSS itself uses, thereby minimising the effort required and increasing compatibility. The API currently has the following capabilities:
 <ul>
+	<li>Sort a directory of plugins as if BOSS itself were being run, minus creation of a BOSS Log.
+	<li>Determine the resultant load order of a directory of plugins, as if they were to be sorted by the API, without actually changing their current load order.
+	<li>Download the latest masterlist for any supported game.
 	<li>Extract Bash Tag addition and removal suggestions for mods from the masterlist and userlist.
 	<li>Extract dirty mod messages from the masterlist and determine cleanliness of mods.
 	<li>Write a minimal masterlist containing only mods with Bash Tag suggestions, and those suggestions.
@@ -146,6 +152,14 @@ API Documentation</div>
 <p><code>uint32_t <span style="color:blue;">ReEvalRegex</span> (boss_db db, const uint8_t * dataPath);</code>
 <p>Re-evaluates the masterlist's regex entries, so Load() doesn't need to be called whenever the mods installed are changed. This doesn't need to be used if Load() is called, as the evaluation is incorporated into Load() too. Paths are case-sensitive if the underlying filesystem is case-sensitive.
 
+
+<h2 id="functions-sorting">Plugin Sorting Functions</h2>
+
+<p><code>uint32_t <span style="color:blue;">SortMods</span> (boss_db db, const uint32_t clientGame);</code>
+<p>Sorts the plugins for the game specified by clientGame in the directory specified by dataPath when Load() was called.
+
+<p><code>uint32_t <span style="color:blue;">TrialSortMods</span> (boss_db db, uint8_t ** sortedPlugins, const uint32_t clientGame);</code>
+<p>Outputs an array listing the plugins in the directory specified by dataPath when Load() was called, with plugins in the order that they would be placed into if SortMods() were to be called.
 
 <h2 id="functions-access">Database Access Functions</h2>
 <p><code>uint32_t <span style="color:blue;">GetBashTagMap</span> (boss_db db, BashTag ** tagMap, uint32_t * numTags);</code>
