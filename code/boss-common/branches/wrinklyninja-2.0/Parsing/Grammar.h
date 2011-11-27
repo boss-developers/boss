@@ -220,6 +220,19 @@ namespace boss {
 		void path(fs::path& p, string itemName);
 	};
 
+
+	////////////////////////////
+	// Conditional Grammar
+	////////////////////////////
+
+	class conditional_grammar : public grammar<string::const_iterator, Skipper> {
+	public:
+		conditional_grammar();
+	private:
+
+	};
+
+
 	////////////////////////////
 	//Ini Grammar.
 	////////////////////////////

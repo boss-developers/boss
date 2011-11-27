@@ -136,7 +136,7 @@ namespace boss {
 	}
 
 	//Buffer writer for downloaders.
-	int writer(char *data, size_t size, size_t nmemb, void *buffer){
+	size_t writer(char * data, size_t size, size_t nmemb, void * buffer) {
 		string *str = (string*)buffer;
 		if(str != NULL) {
 			str -> append(data, size * nmemb);

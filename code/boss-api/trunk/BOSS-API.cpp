@@ -902,7 +902,7 @@ BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, cons
 // Returns an array of the Bash Tags encounterred when loading the masterlist
 // and userlist, and the number of tags in the returned array. The array and
 // its contents are static and should not be freed by the client.
-BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, uint32_t * numTags) {
+BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags) {
 	if (db == NULL || tagMap == NULL || numTags == NULL)  //Check for valid args.
 		return BOSS_API_ERROR_INVALID_ARGS;
 
@@ -936,9 +936,9 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, uint32_t * numTa
 // suggestion message additions.
 BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName, 
 									uint32_t ** tagIds_added, 
-									uint32_t * numTags_added, 
+									size_t * numTags_added, 
 									uint32_t **tagIds_removed, 
-									uint32_t *numTags_removed,
+									size_t *numTags_removed,
 									bool * userlistModified) {
 	//Check for valid args.
 	if (db == NULL || modName == NULL || userlistModified == NULL || numTags_added == NULL || numTags_removed == NULL || tagIds_removed == NULL || tagIds_added == NULL)
