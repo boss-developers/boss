@@ -212,7 +212,7 @@ Masterlist Syntax Documentation</div>
 <p><b>In MF1:</b> The name is only given at the start of a group, not the end.<br />
 <b>In MF2:</b> The name should be given at both the start and the end, although inclusion at the end is not an absolute requirement. If an ending line does not contain a group name, it does not require a colon.</p><br />
 
-<h2 id="common-condtionals">Legacy Conditionals</h2>
+<h2 id="common-conditionals">Legacy Conditionals</h2>
 <p>MF1 supports only two specific conditionals other than the plugin-specific messages given earlier, while MF2 supports a generalised conditional expression. The specific conditionals written in both syntaxes are given in the table below, where <code>[line]</code> is the rest of the line's contents.
 
 <table>
@@ -221,6 +221,7 @@ Masterlist Syntax Documentation</div>
 		<tr><td>FCOM-installed<td><code>&gt; [line]</code><td><code>IF ($FCOM) [line]</code><td>Only parses the line if FCOM is installed.
 		<tr><td>FCOM-not-installed<td><code>&lt; [line]</code><td><code>IFNOT ($FCOM) [line]</code><td>Only parses the line if FCOM is not installed.
 </table>
+<p>While the above table references FCOM, the functionality is not Oblivion-specific. Use the mod/variable table in the <q><a href="#common-messages">Message Lines</a></q> section to find the equivalent mods for other games.
 
 <p>Conditionals can be put before any plugin or message line, and the line will only be processed if the conditional is true. Conditionals must not be added to group lines.
 

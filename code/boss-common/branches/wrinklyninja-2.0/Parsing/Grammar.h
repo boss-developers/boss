@@ -38,9 +38,6 @@
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
 #include <boost/spirit/include/qi.hpp>
-#include <boost/unordered_set.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
 
@@ -49,13 +46,21 @@ namespace fs = boost::filesystem;
 //////////////////////////////
 
 BOOST_FUSION_ADAPT_STRUCT(
+    boss::MasterlistVar,
+	(std::string, conditionals)
+    (std::string, var)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
     boss::Message,
+	(std::string, conditionals)
     (boss::keyType, key)
     (std::string, data)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
     boss::Item,
+	(std::string, conditionals)
 	(boss::itemType, type)
     (fs::path, name)
     (std::vector<boss::Message>, messages)
@@ -92,13 +97,8 @@ namespace boss {
 	// Keyword structures
 	///////////////////////////////
 
-	enum metaType : uint32_t {
-		IF,
-		IFNOT
-	};
-
 	struct ruleKeys_ : qi::symbols<char, keyType> {
-		inline ruleKeys_();
+		ruleKeys_();
 	};
 
 	struct messageKeys_ : qi::symbols<char, keyType> {
@@ -106,16 +106,13 @@ namespace boss {
 	};
 
 	struct masterlistMsgKey_ : qi::symbols<char, keyType> {
-		inline masterlistMsgKey_();
+		masterlistMsgKey_();
 	};
 
 	struct typeKey_ : qi::symbols<char, itemType> {
-		inline typeKey_();
+		typeKey_();
 	};
 
-	struct metaKey_ : qi::symbols<char, metaType> {
-		inline metaKey_();
-	};
 
 	///////////////////////////////
 	//Skipper Grammar
@@ -139,46 +136,61 @@ namespace boss {
 		modlist_grammar();
 		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
 		inline void SetGlobalMessageBuffer(vector<Message> * inGlobalMessageBuffer) { globalMessageBuffer = inGlobalMessageBuffer; }
+		inline void SetVarStore(vector<MasterlistVar> * varStore) { setVars = varStore; }
+		inline void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {fileCRCs = CRCStore; }
 	private:
 		qi::rule<string::const_iterator, vector<Item>(), Skipper> modList;
 		qi::rule<string::const_iterator, Item(), Skipper> listItem;
 		qi::rule<string::const_iterator, itemType(), Skipper> ItemType;
 		qi::rule<string::const_iterator, fs::path(), Skipper> itemName;
 		qi::rule<string::const_iterator, vector<Message>(), Skipper> itemMessages;
-		qi::rule<string::const_iterator, Message(), Skipper> itemMessage, globalMessage;
-		qi::rule<string::const_iterator, string(), Skipper> charString, messageString, variable, file, version, andOr, metaLine, messageVersionCRC, messageModString, messageModVariable, regexFile;
+		qi::rule<string::const_iterator, Message(), Skipper> itemMessage, globalMessage, oldCondItemMessage;
+		qi::rule<string::const_iterator, MasterlistVar(), Skipper> listVar;
+		qi::rule<string::const_iterator, string(), Skipper> charString, andOr, conditional, conditionals, oldConditional, condition, version, variable, file, regexFile;
 		qi::rule<string::const_iterator, keyType(), Skipper> messageKeyword;
-		qi::rule<string::const_iterator, bool(), Skipper> conditional, conditionals, condition, oldConditional;
-		
+
 		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what);
 		
 		ParsingError * errorBuffer;
 		vector<Message> * globalMessageBuffer;
-		const vector<Message> noMessages;  //An empty set of messages.
-		bool storeItem;
-		bool storeMessage;  //Should the current item/message be stored.
-		keyType currentMessageType;
-		vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in MF1.
-		boost::unordered_set<string> setVars;  //Vars set by masterlist. Also referenced by userlist parser.
-		boost::unordered_map<string,uint32_t> fileCRCs;  //CRCs calculated. Referenced by modlist and userlist parsers.
+		vector<MasterlistVar> * setVars;  //Vars set by masterlist.
+		boost::unordered_map<string,uint32_t> * fileCRCs;  //CRCs calculated.
 
-		//Stores a message, should it be appropriate.
-		void StoreMessage(vector<Message>& messages, Message currentMessage);
+		vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in MF1.
+		
 
 		//Stores the given item, should it be appropriate, and records any changes to open groups.
 		void StoreItem(vector<Item>& list, Item currentItem);
 
-		//Defines the given masterlist variable, if appropriate.
-		void StoreVar(const string var);
-
-		//Stores the global message.
-		void StoreGlobalMessage(const Message currentMessage);
-
 		//MF1 compatibility function. Evaluates the MF1 FCOM conditional. Like it says on the tin.
-		void EvalOldFCOMConditional(bool& result, const char var);
+		void ConvertOldConditional(string& result, const char var);
 
-		//MF1 compatibility function. Evaluates the MF1 OOO/BC conditional message symbols.
-		void EvalMessKey(const keyType key);
+		//Turns a given string into a path. Can't be done directly because of the openGroups checks.
+		void ToPath(fs::path& p, string itemName);
+
+		void StoreVar(const MasterlistVar var);
+
+		void StoreGlobalMessage(const Message message);
+	};
+
+
+	////////////////////////////
+	// Conditional Grammar
+	////////////////////////////
+
+	class conditional_grammar : public grammar<string::const_iterator, bool(), Skipper> {
+	public:
+		conditional_grammar();
+		inline void SetVarStore(boost::unordered_set<string> * varStore) { setVars = varStore; }
+		inline void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {fileCRCs = CRCStore; }
+	private:
+		qi::rule<string::const_iterator, string(), Skipper> ifIfNot, variable, file, version, andOr, regexFile;
+		qi::rule<string::const_iterator, bool(), Skipper> conditional, conditionals, condition;
+		
+		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what);
+		
+		boost::unordered_set<string> * setVars;  //Vars set by masterlist. Also referenced by userlist parser.
+		boost::unordered_map<string,uint32_t> * fileCRCs;  //CRCs calculated. Referenced by modlist and userlist parsers.
 
 		//Checks if a masterlist variable is defined.
 		void CheckVar(bool& result, const string var);
@@ -203,10 +215,53 @@ namespace boss {
 		void CheckRegex(bool& result, string reg);
 
 		//Evaluate a single conditional.
-		void EvaluateConditional(bool& result, const metaType type, const bool condition);
+		void EvaluateConditional(bool& result, const string type, const bool condition);
 
 		//Evaluate the second half of a complex conditional.
 		void EvaluateCompoundConditional(bool& result, const string andOr, const bool condition);
+	};
+
+
+	///////////////////////////////////
+	// Conditional Shorthand Grammar
+	///////////////////////////////////
+
+	class shorthand_grammar : public grammar<string::const_iterator, string(), Skipper> {
+	public:
+		shorthand_grammar();
+		inline void SetMessageType(keyType type) { messageType = type; }
+		inline void SetVarStore(boost::unordered_set<string> * varStore) { setVars = varStore; }
+		inline void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {fileCRCs = CRCStore; }
+	private:
+		qi::rule<string::const_iterator, string(), Skipper> charString, messageString, messageVersionCRC, messageModString, messageModVariable, file;
+
+		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what);
+		
+		boost::unordered_set<string> * setVars;  //Vars set by masterlist. Also referenced by userlist parser.
+		boost::unordered_map<string,uint32_t> * fileCRCs;  //CRCs calculated. Referenced by modlist and userlist parsers.
+		keyType messageType;
+
+		//Checks if a masterlist variable is defined.
+		void CheckVar(bool& result, const string var);
+
+		//Returns the true path based on what type of file or keyword it is.
+		void GetPath(fs::path& file_path, string& file);
+
+		//Checks if the given mod has a version for which the comparison holds true.
+		void CheckVersion(bool& result, const string var);
+
+		//Checks if the given mod has the given checksum.
+		void CheckSum(bool& result, const uint32_t sum, string file);
+
+		//Checks if the given file exists.
+		void CheckFile(bool& result, string file);
+
+		//Checks if a file which matches the given regex exists.
+		//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
+		//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
+		//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
+		//be removed when getting the path and filename.
+		void CheckRegex(bool& result, string reg);
 
 		//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.
 		uint32_t HexStringToInt(string str);
@@ -215,21 +270,6 @@ namespace boss {
 		//Most message types would make sense for the message to display if the condition evaluates to true. (eg. incompatibilities)
 		//Requirement messages need the condition to eval to false.
 		void EvaluateConditionalMessage(string& message, string version, string file, const string mod);
-
-		//Turns a given string into a path. Can't be done directly because of the openGroups checks.
-		void path(fs::path& p, string itemName);
-	};
-
-
-	////////////////////////////
-	// Conditional Grammar
-	////////////////////////////
-
-	class conditional_grammar : public grammar<string::const_iterator, Skipper> {
-	public:
-		conditional_grammar();
-	private:
-
 	};
 
 

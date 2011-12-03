@@ -651,10 +651,11 @@ int main(int argc, char *argv[]) {
 	} catch (boss_error e) {
 		output.Clear();
 		output.PrintHeader();
-		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
+		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
+			output.SetHTMLSpecialEscape(false);
 			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
 				<< masterlist.errorBuffer.FormatFor(log_format) << LIST_CLOSE;
-		else
+		}else
 			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 				<< "Utility will end now." << LIST_CLOSE;
@@ -669,6 +670,32 @@ int main(int argc, char *argv[]) {
                 Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
         exit (1); //fail in screaming heap.
 	}
+
+	masterlist.Save("testA.txt");
+
+	//Now evaluate conditionals in masterlist.
+	LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
+	try {
+		masterlist.EvalConditionals();
+	} catch (boss_error e) {
+		output.Clear();
+		output.PrintHeader();
+		output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+			<< "Utility will end now." << LIST_CLOSE;
+		output.PrintFooter();
+		try {
+			output.Save(bosslog_path, true);
+		} catch (boss_error e) {
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
+		}
+		LOG_ERROR("Critical Error: %s", e.getString().c_str());
+		if ( !silent ) 
+			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
+		exit (1); //fail in screaming heap.
+	}
+
+	masterlist.Save("testB.txt");
 
 	LOG_INFO("Starting to parse userlist.");
 	try {
