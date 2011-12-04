@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011    BOSS Development Team.
+    Copyright (C) 2009-2011    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -311,9 +311,11 @@ namespace boss {
 
 		boost::unordered_set<string> setVars;
 
+		cond_grammar.SetErrorBuffer(&errorBuffer);
 		cond_grammar.SetVarStore(&setVars);
 		cond_grammar.SetCRCStore(&fileCRCs);
 
+		short_grammar.SetErrorBuffer(&errorBuffer);
 		short_grammar.SetVarStore(&setVars);
 		short_grammar.SetCRCStore(&fileCRCs);
 

@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011    BOSS Development Team.
+    Copyright (C) 2009-2011    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -256,8 +256,8 @@ namespace boss {
 			>> no_case[lit("global")]
 			>>	(
 					messageKeyword
-					> lit(':')
-					> charString
+					>> lit(':')
+					>> charString
 				);
 
 		listItem %= 
@@ -270,7 +270,7 @@ namespace boss {
 			> itemMessages;
 
 		ItemType %= 
-			no_case		[typeKey] 
+			no_case[typeKey]
 			| eps		[_val = MOD];
 
 		itemName = 
@@ -289,8 +289,8 @@ namespace boss {
 				| conditionals
 			) 
 			>> (messageKeyword
-			> -lit(':')
-			> charString)
+			>> -lit(':')	//The double >> matters. A single > doesn't work.
+			>> charString)	//The double >> matters. A single > doesn't work.
 			;
 
 		oldCondItemMessage %=
@@ -299,8 +299,8 @@ namespace boss {
 				| unicode::string("^")		[phoenix::bind(&modlist_grammar::ConvertOldConditional, this, _1, '^')]
 			)
 			>> (qi::attr(SAY)
-			> -lit(':')
-			> charString)
+			>> -lit(':')	//The double >> matters. A single > doesn't work.
+			>> charString)	//The double >> matters. A single > doesn't work.
 			;
 
 		charString %= lexeme[+(char_ - eol)]; //String, with no skipper.
@@ -457,8 +457,8 @@ namespace boss {
 	}
 
 	void conditional_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what) {
-	//	if (errorBuffer == NULL || !errorBuffer->Empty())
-	//		return;
+		if (errorBuffer == NULL || !errorBuffer->Empty())
+			return;
 		
 		ostringstream out;
 		out << what;
@@ -468,7 +468,7 @@ namespace boss {
 		boost::trim_left(context);
 
 		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
-	//	*errorBuffer = e;
+		*errorBuffer = e;
 		LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
 		return;
 	}
@@ -715,7 +715,7 @@ namespace boss {
 	}
 
 	void shorthand_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what) {
-	//	if (errorBuffer == NULL || !errorBuffer->Empty())
+		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
 		
 		ostringstream out;
@@ -726,7 +726,7 @@ namespace boss {
 		boost::trim_left(context);
 
 		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
-	//	*errorBuffer = e;
+		*errorBuffer = e;
 		LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
 		return;
 	}

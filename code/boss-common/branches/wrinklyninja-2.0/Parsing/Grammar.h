@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011    BOSS Development Team.
+    Copyright (C) 2009-2011    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -181,6 +181,7 @@ namespace boss {
 	class conditional_grammar : public grammar<string::const_iterator, bool(), Skipper> {
 	public:
 		conditional_grammar();
+		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
 		inline void SetVarStore(boost::unordered_set<string> * varStore) { setVars = varStore; }
 		inline void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {fileCRCs = CRCStore; }
 	private:
@@ -189,6 +190,7 @@ namespace boss {
 		
 		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what);
 		
+		ParsingError * errorBuffer;
 		boost::unordered_set<string> * setVars;  //Vars set by masterlist. Also referenced by userlist parser.
 		boost::unordered_map<string,uint32_t> * fileCRCs;  //CRCs calculated. Referenced by modlist and userlist parsers.
 
@@ -229,6 +231,7 @@ namespace boss {
 	class shorthand_grammar : public grammar<string::const_iterator, string(), Skipper> {
 	public:
 		shorthand_grammar();
+		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
 		inline void SetMessageType(keyType type) { messageType = type; }
 		inline void SetVarStore(boost::unordered_set<string> * varStore) { setVars = varStore; }
 		inline void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {fileCRCs = CRCStore; }
@@ -237,6 +240,7 @@ namespace boss {
 
 		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what);
 		
+		ParsingError * errorBuffer;
 		boost::unordered_set<string> * setVars;  //Vars set by masterlist. Also referenced by userlist parser.
 		boost::unordered_map<string,uint32_t> * fileCRCs;  //CRCs calculated. Referenced by modlist and userlist parsers.
 		keyType messageType;

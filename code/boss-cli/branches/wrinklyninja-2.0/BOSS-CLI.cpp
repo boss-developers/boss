@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011    BOSS Development Team.
+    Copyright (C) 2009-2011    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -644,18 +644,20 @@ int main(int argc, char *argv[]) {
 	//masterlist parse errors are critical, ini and userlist parse errors are not.
 	
 	//Parse masterlist/modlist backup into data structure.
-	LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
 	try {
+		LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
 		masterlist.Load(sortfile);
+		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
+		masterlist.EvalConditionals();
 		contents.globalMessages = masterlist.globalMessageBuffer;
 	} catch (boss_error e) {
 		output.Clear();
 		output.PrintHeader();
-		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
+		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL || e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
 			output.SetHTMLSpecialEscape(false);
 			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
 				<< masterlist.errorBuffer.FormatFor(log_format) << LIST_CLOSE;
-		}else
+		} else
 			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 				<< "Utility will end now." << LIST_CLOSE;
@@ -665,38 +667,12 @@ int main(int argc, char *argv[]) {
 		} catch (boss_error e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
+		LOG_ERROR("Critical Error: %s", e.getString().c_str());
         if ( !silent ) 
                 Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
         exit (1); //fail in screaming heap.
 	}
-
-	masterlist.Save("testA.txt");
-
-	//Now evaluate conditionals in masterlist.
-	LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
-	try {
-		masterlist.EvalConditionals();
-	} catch (boss_error e) {
-		output.Clear();
-		output.PrintHeader();
-		output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
-			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-			<< "Utility will end now." << LIST_CLOSE;
-		output.PrintFooter();
-		try {
-			output.Save(bosslog_path, true);
-		} catch (boss_error e) {
-			LOG_ERROR("Critical Error: %s", e.getString().c_str());
-		}
-		LOG_ERROR("Critical Error: %s", e.getString().c_str());
-		if ( !silent ) 
-			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
-		exit (1); //fail in screaming heap.
-	}
-
-	masterlist.Save("testB.txt");
-
+	
 	LOG_INFO("Starting to parse userlist.");
 	try {
 		userlist.Load(userlist_path);

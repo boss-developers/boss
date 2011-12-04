@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011    BOSS Development Team.
+    Copyright (C) 2009-2011    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -30,7 +30,7 @@
 namespace boss {
 	using namespace std;
 
-	BOSS_COMMON_EXP const string boss_release_date = "13 November, 2011";
+	BOSS_COMMON_EXP const string boss_release_date = "X Y 2011";
 
 	BOSS_COMMON_EXP fs::path data_path			= fs::path("..") / "Data";
 	BOSS_COMMON_EXP const fs::path boss_path			= fs::path(".");

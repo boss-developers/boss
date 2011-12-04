@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011    BOSS Development Team.
+    Copyright (C) 2009-2011    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -305,10 +305,12 @@ namespace boss {
 				bosslog << contents.iniParsingError;
 			bosslog << contents.updaterErrors;
 
+			bosslog.SetHTMLSpecialEscape(true);
 			size_t size = contents.globalMessages.size();
 			for (size_t i=0; i<size; i++)
 				bosslog << contents.globalMessages[i];  //Print global messages.
-			
+			bosslog.SetHTMLSpecialEscape(false);
+
 			bosslog << LIST_CLOSE;
 			if (!contents.criticalError.empty()) {  //Exit early.
 				bosslog.PrintFooter();
@@ -332,7 +334,7 @@ namespace boss {
 			<< TABLE_ROW << TABLE_DATA << "Ghosted plugins:" << TABLE_DATA << counters.ghosted << TABLE_DATA << "Total number of messages:" << TABLE_DATA << counters.messages
 			<< TABLE_ROW << TABLE_DATA << "Total number of plugins:" << TABLE_DATA << (counters.recognised+counters.unrecognised) << TABLE_DATA << TABLE_DATA
 			<< TABLE_CLOSE
-			<< PARAGRAPH << "Mods sorted by your userlist are counted as recognised, not unrecognised, plugins."
+			<< PARAGRAPH << "Plugins sorted by user rules are counted as recognised plugins."
 			<< DIV_CLOSE;
 
 		// Display RuleList Messages
