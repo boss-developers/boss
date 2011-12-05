@@ -610,6 +610,17 @@ namespace boss {
 		outFile.close();
 	}
 
+	vector<Rule>::iterator RuleList::FindRule(string ruleObject, bool onlyEnabled) {
+		vector<Rule>::iterator ruleIter = rules.begin();
+		for (ruleIter; ruleIter != rules.end(); ++ruleIter) {
+			if ((onlyEnabled && ruleIter->enabled) || !onlyEnabled) {
+				if (Tidy(ruleIter->ruleObject) == Tidy(ruleObject))
+					break;
+			}
+		}
+		return ruleIter;
+	}
+
 	//////////////////////////////
 	// Ini Class Functions
 	//////////////////////////////

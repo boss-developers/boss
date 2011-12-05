@@ -161,8 +161,9 @@ namespace boss {
 	
 	class RuleList {
 	public:
-		void Load	(fs::path file);		//Throws exception on fail.
-		void Save	(fs::path file);		//Throws exception on fail.
+		void 					Load	(fs::path file);		//Throws exception on fail.
+		void 					Save	(fs::path file);		//Throws exception on fail.
+		vector<Rule>::iterator 	FindRule(string ruleObject, bool onlyEnabled);
 
 		vector<Rule>			rules;
 		ParsingError			parsingErrorBuffer;

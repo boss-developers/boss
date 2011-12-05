@@ -149,10 +149,11 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 									const uint8_t * userlistPath,
 									const uint8_t * dataPath);
 
-// Re-evaluates the masterlist's regex entries, so Load() doesn't need to be called
-// whenever the mods installed are changed. This doesn't need to be used if Load() is
-// called, as the evaluation is incorporated into Load() too.
-BOSS_API uint32_t ReEvalRegex(boss_db db, const uint8_t * dataPath);
+// Evaluates all conditional lines and regex mods in rawMasterlist, 
+// putting the output into filteredMasterlist. This exists so that Load() doesn't
+// need to be called whenever the mods installed are changed. Evaluation does not
+// take place unless this function is called.
+BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath);
 
 
 //////////////////////////////////
