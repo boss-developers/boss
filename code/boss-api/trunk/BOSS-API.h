@@ -93,6 +93,7 @@ BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_NOT_FOUND;
 BOSS_API extern const uint32_t BOSS_API_ERROR_MASTER_TIME_READ_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_FILE_MOD_TIME_WRITE_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_PARSE_FAIL;
+BOSS_API extern const uint32_t BOSS_API_ERROR_CONDITION_EVAL_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_MEM;
 BOSS_API extern const uint32_t BOSS_API_ERROR_OVERWRITE_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_INVALID_ARGS;
@@ -149,10 +150,12 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 									const uint8_t * userlistPath,
 									const uint8_t * dataPath);
 
-// Evaluates all conditional lines and regex mods in rawMasterlist, 
-// putting the output into filteredMasterlist. This exists so that Load() doesn't
-// need to be called whenever the mods installed are changed. Evaluation does not
-// take place unless this function is called.
+// Evaluates all conditional lines and regex mods the loaded masterlist. 
+// This exists so that Load() doesn't need to be called whenever the mods 
+// installed are changed. Evaluation does not take place unless this function 
+// is called. Repeated calls re-evaluate the masterlist from scratch each time, 
+// ignoring the results of any previous evaluations. Paths are case-sensitive 
+// if the underlying filesystem is case-sensitive.
 BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath);
 
 
@@ -217,9 +220,9 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName,
 									const uint8_t ** message, uint32_t * needsCleaning);
 									
 // Writes a minimal masterlist that only contains mods that have Bash Tag suggestions, 
-// plus the Tag suggestions themselves, in order to create the Wrye Bash taglist.
-// outputFile is the path to use for output. If outputFile already exists, it will
-// only be overwritten if overwrite is true.
+// and/or dirty messages, plus the Tag suggestions and/or messages themselves. outputFile 
+// is the path to use for output. If  outputFile already exists, it will only be overwritten 
+// if overwrite is true.
 BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const bool overwrite);
 
 

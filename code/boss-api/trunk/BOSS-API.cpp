@@ -67,6 +67,15 @@ struct _boss_db_int {
 	const uint8_t * extMessage;
 	const uint8_t ** extPluginList;
 
+	//Constructor
+	_boss_db_int() {
+		extTagMap = NULL;
+		extAddedTagIds = NULL;
+		extRemovedTagIds = NULL;
+		extMessage = NULL;
+		extPluginList = NULL;
+	}
+
 	//Get a Bash Tag's string name from its UID.
 	string GetTagString(uint32_t uid) {
 		map<uint32_t, string>::iterator mapPos = bashTagMap.find(uid);
@@ -96,6 +105,7 @@ BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_UTF8			=	BOSS_ERROR_FILE_NOT_UTF
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_FOUND			=	BOSS_ERROR_FILE_NOT_FOUND;
 BOSS_API const uint32_t BOSS_API_ERROR_MASTER_TIME_READ_FAIL	=	BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_MOD_TIME_WRITE_FAIL	=	BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_CONDITION_EVAL_FAIL		=	BOSS_ERROR_CONDITION_EVAL_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_PARSE_FAIL				= 	BOSS_ERROR_MAX + 1;
 BOSS_API const uint32_t BOSS_API_ERROR_NO_MEM					=	BOSS_ERROR_MAX + 2;
 BOSS_API const uint32_t BOSS_API_ERROR_OVERWRITE_FAIL			=	BOSS_ERROR_MAX + 3;
@@ -261,17 +271,6 @@ BOSS_API void     DestroyBossDb (boss_db db) {
 BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 									const uint8_t * userlistPath,
 									const uint8_t * dataPath) {
-	//Workflow for masterlist and userlist:
-	// 1. Set paths.
-	// 2. Parse into temporary structures.
-	// 3. Iterate through temporary structures, scanning for Bash Tag suggestions.
-	//    In masterlist, also scan for dirty mod messages. Add all mods with such
-	//    info to temporary modEntry vector. Also add Bash Tags found to temporary
-	//    BashTag vector.
-	// 4. Set DB data structures equal to the data structures formed.
-	//    If an error is encountered at any point, first set paths back to defaults,
-	//    then exit immediately. DB is only changed at the end so it is unchanged 
-	//    in case of error.
 	ItemList masterlist;
 	RuleList userlist;
 	
@@ -316,14 +315,14 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 
 	//FREE CURRENT POINTERS
 	//Free memory at pointers stored in structure.
-	DestroyPointers(db);
+	DestroyPointers(db);  //Causes crashes. Need to init. pointers in constructor.
 	InitPointers(db);
 	
 	//DB SET
 	db->rawMasterlist = masterlist;
 	db->filteredMasterlist = masterlist;  //Not actually filtered, but retrival functions assume filtered masterlist is populated.
 	db->userlist = userlist;
-	db->bashTagMap.clear();
+	db->bashTagMap.clear();  //This seems to be causing a crash.
 	return BOSS_API_ERROR_OK;
 }
 
@@ -342,7 +341,11 @@ BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath) {
 
 	//First re-evaluate conditionals.
 	ItemList masterlist = db->rawMasterlist;
-	masterlist.EvalConditionals();
+	try {
+		masterlist.EvalConditionals();
+	} catch (boss_error e) {
+		return BOSS_API_ERROR_CONDITION_EVAL_FAIL;
+	}
 
 	vector<modEntry> matches;
 	//Build modlist. Not using boss::ItemList::Load() as that builds to a vector<item> in load order, which isn't necessary.
@@ -776,9 +779,9 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName,
 }
 
 // Writes a minimal masterlist that only contains mods that have Bash Tag suggestions, 
-// plus the Tag suggestions themselves, in order to create the Wrye Bash taglist.
-// outputFile is the path to use for output. If outputFile already exists, it will
-// only be overwritten if overwrite is true.
+// and/or dirty messages, plus the Tag suggestions and/or messages themselves, in order 
+// to create the Wrye Bash taglist. outputFile is the path to use for output. If 
+// outputFile already exists, it will only be overwritten if overwrite is true.
 BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const bool overwrite) {
 	//Check for valid args.
 	if (db == NULL || outputFile == NULL)
@@ -786,99 +789,28 @@ BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const boo
 
 	string path(reinterpret_cast<const char *>(outputFile));
 	if (!fs::exists(path) || overwrite) {
-		db->filteredMasterlist.Save(fs::path(path));  //This writes the full filtered masterlist, not a minimal version.
-		//Replace it with a cut down version of the same function - beware of exceptions!
-
-		/*
-		//Convert masterlistData back to MF2 masterlist syntax and output.
 		ofstream mlist(path.c_str());
 		if (mlist.fail())
 			return BOSS_ERROR_FILE_WRITE_FAIL;
 		else {
-			//Iterate through masterlistData and then regexData.
-			//masterlistData
-			vector<modEntry>::iterator iter = db->masterlistData.begin();
-			while (iter != db->masterlistData.end()) {
-				
-				//Output mod line.
-				mlist << iter->name << endl;
-				
-				//Now output Bash Tag suggestions.
-				if (!iter->bashTagsAdded.empty() || !iter->bashTagsRemoved.empty()) {
-					mlist << "TAG:";
-					if (!iter->bashTagsAdded.empty()) {
-						mlist << " {{BASH: ";
-						vector<uint32_t>::iterator tagIter = iter->bashTagsAdded.begin();
-						vector<uint32_t>::iterator last = iter->bashTagsAdded.end();
-						last--;
-						while (tagIter != iter->bashTagsAdded.end()) {
-							mlist << db->GetTagString(*tagIter);
-							if (tagIter != last)
-								mlist << ", ";
-							++tagIter;
+			//Iterate through items, printing out all relevant info.
+			vector<Item>::iterator itemIter = db->rawMasterlist.items.begin();
+			vector<Message>::iterator messageIter;
+			for (itemIter; itemIter != db->rawMasterlist.items.end(); ++itemIter) {
+				if (itemIter->type == MOD || itemIter->type == REGEX) {
+					bool namePrinted = false;
+					messageIter = itemIter->messages.begin();
+					for (messageIter; messageIter != itemIter->messages.end(); ++messageIter) {
+						if (messageIter->key == TAG || messageIter->key == DIRTY) {
+							if (!namePrinted)
+								mlist << itemIter->name.string() << endl;  //Print the mod name.
+							mlist << " " << messageIter->KeyToString() << ": " << messageIter->data << endl;
 						}
-						mlist << "}}";
 					}
-					if (!iter->bashTagsRemoved.empty()) {
-						mlist << " [";
-						vector<uint32_t>::iterator tagIter = iter->bashTagsRemoved.begin();
-						vector<uint32_t>::iterator last = iter->bashTagsRemoved.end();
-						last--;
-						while (tagIter != iter->bashTagsRemoved.end()) {
-							mlist << db->GetTagString(*tagIter);
-							if (tagIter != last)
-								mlist << ", ";
-							++tagIter;
-						}
-						mlist << "]";
-					}
-					mlist << endl;
 				}
-				++iter;
 			}
-			//regexData
-			iter = db->regexData.begin();
-			while (iter != db->regexData.end()) {
-				//Output mod line.
-				mlist << "REGEX: " << iter->name << endl;
-				
-				//Now output Bash Tag suggestions.
-				if (!iter->bashTagsAdded.empty() || !iter->bashTagsRemoved.empty()) {
-					mlist << "TAG:";
-					if (!iter->bashTagsAdded.empty()) {
-						mlist << " {{BASH: ";
-						vector<uint32_t>::iterator tagIter = iter->bashTagsAdded.begin();
-						vector<uint32_t>::iterator last = iter->bashTagsAdded.end();
-						last--;
-						while (tagIter != iter->bashTagsAdded.end()) {
-							mlist << db->GetTagString(*tagIter);
-							if (tagIter != last)
-								mlist << ", ";
-							++tagIter;
-						}
-						mlist << "}}";
-					}
-					if (!iter->bashTagsRemoved.empty()) {
-						mlist << " [";
-						vector<uint32_t>::iterator tagIter = iter->bashTagsRemoved.begin();
-						vector<uint32_t>::iterator last = iter->bashTagsRemoved.end();
-						last--;
-						while (tagIter != iter->bashTagsRemoved.end()) {
-							mlist << db->GetTagString(*tagIter);
-							if (tagIter != last)
-								mlist << ", ";
-							++tagIter;
-						}
-						mlist << "]";
-					}
-					mlist << endl;
-				}
-				++iter;
-			}
-			
 			mlist.close();
 		}
-		*/
 		return BOSS_API_ERROR_OK;
 	} else
 		return BOSS_API_ERROR_OVERWRITE_FAIL;

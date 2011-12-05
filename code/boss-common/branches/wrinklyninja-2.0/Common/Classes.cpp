@@ -289,11 +289,13 @@ namespace boss {
 			else if (itemIter->type == ENDGROUP)
 				ofile << "ENDGROUP: " << itemIter->name.string() << endl;  //Print the group end marker
 			else {
+				if (itemIter->type == REGEX)
+					ofile << "REGEX: ";
 				ofile << itemIter->name.string() << endl;  //Print the mod name.
 				//Print the messages with the appropriate syntax.
 				messageIter = itemIter->messages.begin();
 				for (messageIter; messageIter != itemIter->messages.end(); ++messageIter)
-					ofile << " " << messageIter->key << ": " << messageIter->data << endl; 
+					ofile << " " << messageIter->KeyToString() << ": " << messageIter->data << endl; 
 			}
 		}
 
