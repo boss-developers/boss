@@ -84,6 +84,14 @@ namespace boss {
 	BOSS_COMMON_EXP string CSSNote				= "";
 	BOSS_COMMON_EXP string CSSRequirement		= "";
 	BOSS_COMMON_EXP string CSSIncompatibility	= "";
+	BOSS_COMMON_EXP string CSSSubmit			= "margin-right:1em;";
+	BOSS_COMMON_EXP string CSSPopupBox			= "padding:10px;width:410px;background:white;display:none;z-index:2;position:fixed;top:25%;left:35%;";
+	BOSS_COMMON_EXP string CSSPopupBoxTitle		= "font-weight:bold;width:100%;display:table-cell;";
+	BOSS_COMMON_EXP string CSSPopupBoxLink		= "width:400px;";
+	BOSS_COMMON_EXP string CSSPopupBoxNotes		= "height:10em;width:400px;";
+	BOSS_COMMON_EXP string CSSPopupBoxClose		= "cursor:pointer;display:table-cell;";
+	BOSS_COMMON_EXP string CSSPopupBoxSubmit	= "display:block;margin:0 auto;margin-top:20px;";
+	BOSS_COMMON_EXP string CSSMask				= "position:fixed;left:0px;top:0px;width:100%;height:100%;background:black;opacity:0.9;display:block;z-index:1;";
 
 	Outputter::Outputter() {
 		outFormat = PLAINTEXT;
@@ -146,14 +154,26 @@ namespace boss {
 				<< ".tagPrefix{" << CSSTagPrefix << "}"
 				<< ".dirty{" << CSSDirty << "}"
 				<< ".message{" << CSSQuotedMessage << "}"
-				<< ".mod{" << CSSMod << "}.tag{" << CSSTag << "}.note{" << CSSNote << "}.req{" << CSSRequirement << "}.inc{" << CSSIncompatibility << "}"
+				<< ".mod{" << CSSMod << "}"
+				<< ".tag{" << CSSTag << "}"
+				<< ".note{" << CSSNote << "}"
+				<< ".req{" << CSSRequirement << "}"
+				<< ".inc{" << CSSIncompatibility << "}"
+				<< ".submit{" << CSSSubmit << "}"
+				<< "#popupBox{" << CSSPopupBox << "}"
+				<< "#mask{" << CSSMask << "}"
+				<< "#popupBox > div:first-child{" << CSSPopupBoxTitle << "}"
+				<< "#link{" << CSSPopupBoxLink << "}"
+				<< "#notes{" << CSSPopupBoxNotes << "}"
+				<< "#popupClose{" << CSSPopupBoxClose << "}"
+				<< "#popup_yes{" << CSSPopupBoxSubmit << "}"
 				<< "</style>"<<endl;
-			outStream << "<div>Better Oblivion Sorting Software Log</div>" << endl
+			outStream << "<div>BOSS Log</div>" << endl
 				<< "<div>&copy; 2009-2011 BOSS Development Team<br />" << endl
 				<< "<a href=\"http://www.gnu.org/licenses/gpl.html\">GNU General Public License v3.0</a><br />" << endl
 				<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << boss_release_date << ")</div>";
 		} else
-			outStream << endl << "Better Oblivion Sorting Software Log" << endl
+			outStream << endl << "BOSS Log" << endl
 				<< "Copyright 2009-2011 BOSS Development Team" << endl
 				<< "License: GNU General Public License v3.0" << endl
 				<< "(http://www.gnu.org/licenses/gpl.html)" << endl
@@ -162,7 +182,39 @@ namespace boss {
 
 	void Outputter::PrintFooter() {
 		if (outFormat == HTML) {
-			outStream << endl << "<script>" << endl
+			outStream << endl 
+				<< "<div id='popupBox'>" << endl
+				<< "<div>Plugin Submission</div>" << endl
+				<< "<div onclick='hidePopupBox()' id='popupClose'>&#x2715;</div>" << endl
+				<< "<p>Plugin: <span id='plugin'></span>" << endl
+				<< "<p>Download Location:<br /> <input type='text' id='link' placeholder='Please supply this to speed up the addition process.'/>" << endl
+				<< "<p>Additional Notes:<br />" << endl
+				<< "<textarea id='notes' placeholder='Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here.'></textarea>" << endl
+				<< "<button id='popup_yes' onclick='submitPlugin()'>Submit Plugin</button>" << endl
+				<< "</div>" << endl
+				<< "<script>" << endl
+				<< "function showPopupBox(plugin){" << endl
+				<< "	if(document.getElementById('mask')==null){" << endl
+				<< "		var mask=document.createElement('div');" << endl
+				<< "		mask.id='mask';" << endl
+				<< "		document.body.appendChild(mask);" << endl
+				<< "	}" << endl
+				<< "	document.getElementById('plugin').innerHTML=plugin;" << endl
+				<< "	document.getElementById('popupBox').style.display='block';" << endl
+				<< "}" << endl
+				<< "function hidePopupBox(){" << endl
+				<< "	var mask=document.getElementById('mask');" << endl
+				<< "	document.getElementById('popupBox').style.display='none';" << endl
+				<< "	document.getElementById('notes').value='';" << endl
+				<< "	document.getElementById('link').value='';" << endl
+				<< "	if(mask!=null){" << endl
+				<< "		var parent=mask.parentNode;" << endl
+				<< "		parent.removeChild(mask);" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function submitPlugin(){" << endl
+				<< "}" << endl
+
 				<< "var hm=0,hp=0,hpe=document.getElementById('hp'),hme=document.getElementById('hm');" << endl
 				<< "function toggleSectionDisplay(h){if(h.nextSibling.style.display=='none'){h.nextSibling.style.display='block';h.firstChild.innerHTML='&#x2212;'}else{h.nextSibling.style.display='none';h.firstChild.innerHTML='+'}}" << endl
 				<< "function swapColorScheme(b){var d=document.body,a=document.getElementsByTagName('a'),f=document.getElementById('filters');if(f==null){f=document.getElementById('darkFilters')}if(b.checked){d.id='darkBody';f.id='darkFilters';for(var i=0,z=a.length;i<z;i++){a[i].className='darkLink'}}else{d.id='';f.id='filters';for(var i=0,z=a.length;i<z;i++){a[i].className=''}}}" << endl
@@ -476,6 +528,9 @@ namespace boss {
 			else
 				outStream << endl << endl;
 			break;
+		case BUTTON_SUBMIT_PLUGIN:
+			if (outFormat == HTML)
+				outStream << "<button class='submit' onclick='showPopupBox(this.previousSibling.innerHTML)'>Submit Plugin</button>";
 		default:
 			break;
 		}

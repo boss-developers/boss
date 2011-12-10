@@ -93,6 +93,14 @@ namespace boss {
 	BOSS_COMMON_EXP extern string CSSNote;
 	BOSS_COMMON_EXP extern string CSSRequirement;
 	BOSS_COMMON_EXP extern string CSSIncompatibility;
+	BOSS_COMMON_EXP extern string CSSSubmit;
+	BOSS_COMMON_EXP extern string CSSPopupBox;
+	BOSS_COMMON_EXP extern string CSSPopupBoxTitle;
+	BOSS_COMMON_EXP extern string CSSPopupBoxLink;
+	BOSS_COMMON_EXP extern string CSSPopupBoxNotes;
+	BOSS_COMMON_EXP extern string CSSPopupBoxClose;
+	BOSS_COMMON_EXP extern string CSSPopupBoxSubmit;
+	BOSS_COMMON_EXP extern string CSSMask;
 
 	enum logFormatting : uint32_t {
 		DIV_OPEN,
@@ -124,7 +132,8 @@ namespace boss {
 		ITALIC_OPEN,
 		ITALIC_CLOSE,
 		BLOCKQUOTE_OPEN,
-		BLOCKQUOTE_CLOSE
+		BLOCKQUOTE_CLOSE,
+		BUTTON_SUBMIT_PLUGIN
 	};
 
 	class Outputter {

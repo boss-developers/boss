@@ -93,6 +93,8 @@ namespace boss {
 	using qi::grammar;
 	using boost::spirit::info;
 
+	typedef string::const_iterator grammarIter;
+
 	///////////////////////////////
 	// Keyword structures
 	///////////////////////////////
@@ -119,11 +121,11 @@ namespace boss {
 	///////////////////////////////
 	
 	//Skipper for userlist, modlist and ini parsers.
-	class Skipper : public grammar<string::const_iterator> {
+	class Skipper : public grammar<grammarIter> {
 	public:
 		Skipper(bool skipIniComments);
 	private:
-		qi::rule<string::const_iterator> start, spc, eof, CComment, CPlusPlusComment, lineComment, iniComment, UTF8;
+		qi::rule<grammarIter> start, spc, eof, CComment, CPlusPlusComment, lineComment, iniComment, UTF8;
 	};
 
 	///////////////////////////////
@@ -131,7 +133,7 @@ namespace boss {
 	///////////////////////////////
 
 	//Modlist/Masterlist grammar.
-	class modlist_grammar : public grammar<string::const_iterator, vector<Item>(), Skipper> {
+	class modlist_grammar : public grammar<grammarIter, vector<Item>(), Skipper> {
 	public:
 		modlist_grammar();
 		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
@@ -139,17 +141,17 @@ namespace boss {
 		inline void SetVarStore(vector<MasterlistVar> * varStore) { setVars = varStore; }
 		inline void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {fileCRCs = CRCStore; }
 	private:
-		qi::rule<string::const_iterator, vector<Item>(), Skipper> modList;
-		qi::rule<string::const_iterator, Item(), Skipper> listItem;
-		qi::rule<string::const_iterator, itemType(), Skipper> ItemType;
-		qi::rule<string::const_iterator, fs::path(), Skipper> itemName;
-		qi::rule<string::const_iterator, vector<Message>(), Skipper> itemMessages;
-		qi::rule<string::const_iterator, Message(), Skipper> itemMessage, globalMessage, oldCondItemMessage;
-		qi::rule<string::const_iterator, MasterlistVar(), Skipper> listVar;
-		qi::rule<string::const_iterator, string(), Skipper> charString, andOr, conditional, conditionals, oldConditional, condition, version, variable, file, regexFile;
-		qi::rule<string::const_iterator, keyType(), Skipper> messageKeyword;
+		qi::rule<grammarIter, vector<Item>(), Skipper> modList;
+		qi::rule<grammarIter, Item(), Skipper> listItem;
+		qi::rule<grammarIter, itemType(), Skipper> ItemType;
+		qi::rule<grammarIter, fs::path(), Skipper> itemName;
+		qi::rule<grammarIter, vector<Message>(), Skipper> itemMessages;
+		qi::rule<grammarIter, Message(), Skipper> itemMessage, globalMessage, oldCondItemMessage;
+		qi::rule<grammarIter, MasterlistVar(), Skipper> listVar;
+		qi::rule<grammarIter, string(), Skipper> charString, andOr, conditional, conditionals, oldConditional, condition, version, variable, file, regexFile;
+		qi::rule<grammarIter, keyType(), Skipper> messageKeyword;
 
-		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what);
+		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);
 		
 		ParsingError * errorBuffer;
 		vector<Message> * globalMessageBuffer;
@@ -178,17 +180,17 @@ namespace boss {
 	// Conditional Grammar
 	////////////////////////////
 
-	class conditional_grammar : public grammar<string::const_iterator, bool(), Skipper> {
+	class conditional_grammar : public grammar<grammarIter, bool(), Skipper> {
 	public:
 		conditional_grammar();
 		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
 		inline void SetVarStore(boost::unordered_set<string> * varStore) { setVars = varStore; }
 		inline void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {fileCRCs = CRCStore; }
 	private:
-		qi::rule<string::const_iterator, string(), Skipper> ifIfNot, variable, file, version, andOr, regexFile;
-		qi::rule<string::const_iterator, bool(), Skipper> conditional, conditionals, condition;
+		qi::rule<grammarIter, string(), Skipper> ifIfNot, variable, file, version, andOr, regexFile;
+		qi::rule<grammarIter, bool(), Skipper> conditional, conditionals, condition;
 		
-		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what);
+		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);
 		
 		ParsingError * errorBuffer;
 		boost::unordered_set<string> * setVars;  //Vars set by masterlist. Also referenced by userlist parser.
@@ -228,7 +230,7 @@ namespace boss {
 	// Conditional Shorthand Grammar
 	///////////////////////////////////
 
-	class shorthand_grammar : public grammar<string::const_iterator, string(), Skipper> {
+	class shorthand_grammar : public grammar<grammarIter, string(), Skipper> {
 	public:
 		shorthand_grammar();
 		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
@@ -236,9 +238,10 @@ namespace boss {
 		inline void SetVarStore(boost::unordered_set<string> * varStore) { setVars = varStore; }
 		inline void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {fileCRCs = CRCStore; }
 	private:
-		qi::rule<string::const_iterator, string(), Skipper> charString, messageString, messageVersionCRC, messageModString, messageModVariable, file;
+		qi::rule<grammarIter, string(), Skipper> charString, messageItem, messageString, messageVersionCRC, messageModString, messageModVariable, file;
+		qi::rule<grammarIter, Skipper> messageItemDelimiter;
 
-		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what);
+		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);
 		
 		ParsingError * errorBuffer;
 		boost::unordered_set<string> * setVars;  //Vars set by masterlist. Also referenced by userlist parser.
@@ -282,15 +285,15 @@ namespace boss {
 	////////////////////////////
 
 	//Ini grammar.
-	class ini_grammar : public grammar<string::const_iterator, Skipper> {
+	class ini_grammar : public grammar<grammarIter, Skipper> {
 	public:
 		ini_grammar();
 		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
 	private:
-		qi::rule<string::const_iterator, Skipper> ini, section, setting;
-		qi::rule<string::const_iterator, string(), Skipper> var, stringVal, heading;
+		qi::rule<grammarIter, Skipper> ini, section, setting;
+		qi::rule<grammarIter, string(), Skipper> var, stringVal, heading;
 	
-		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what);
+		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what);
 
 		//Set the boolean BOSS variable values while parsing.
 		void SetBoolVar(string& var, const bool& value);
@@ -309,20 +312,20 @@ namespace boss {
 	////////////////////////////
 
 	//RuleList grammar.
-	class userlist_grammar : public qi::grammar<string::const_iterator, vector<Rule>(), Skipper> {
+	class userlist_grammar : public qi::grammar<grammarIter, vector<Rule>(), Skipper> {
 	public:
 		userlist_grammar();
 		inline void SetParsingErrorBuffer(ParsingError * inErrorBuffer) { parsingErrorBuffer = inErrorBuffer; }
 		inline void SetSyntaxErrorBuffer(vector<ParsingError> * inErrorBuffer) { syntaxErrorBuffer = inErrorBuffer; }
 	private:
-		qi::rule<string::const_iterator, vector<Rule>(), Skipper> ruleList;
-		qi::rule<string::const_iterator, Rule(), Skipper> userlistRule;
-		qi::rule<string::const_iterator, RuleLine(), Skipper> sortOrMessageLine;
-		qi::rule<string::const_iterator, keyType(), Skipper> ruleKey, sortOrMessageKey;
-		qi::rule<string::const_iterator, string(), Skipper> object;
-		qi::rule<string::const_iterator, bool(), Skipper> stateKey;
+		qi::rule<grammarIter, vector<Rule>(), Skipper> ruleList;
+		qi::rule<grammarIter, Rule(), Skipper> userlistRule;
+		qi::rule<grammarIter, RuleLine(), Skipper> sortOrMessageLine;
+		qi::rule<grammarIter, keyType(), Skipper> ruleKey, sortOrMessageKey;
+		qi::rule<grammarIter, string(), Skipper> object;
+		qi::rule<grammarIter, bool(), Skipper> stateKey;
 	
-		void SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what);
+		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what);
 
 		void RuleSyntaxCheck(vector<Rule>& userlist, Rule currentRule);
 

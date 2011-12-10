@@ -382,7 +382,7 @@ namespace boss {
 		on_error<fail>(conditional,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
-	void modlist_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what) {
+	void modlist_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
 		
@@ -456,10 +456,10 @@ namespace boss {
 		on_error<fail>(regexFile,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
-	void conditional_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what) {
+	void conditional_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
-		
+
 		ostringstream out;
 		out << what;
 		string expect = out.str();
@@ -671,12 +671,17 @@ namespace boss {
 
 		messageType = NONE;
 
-		messageString = 
-			((messageVersionCRC
+		messageString %=
+			((messageItem | eoi) % messageItemDelimiter > eoi)
+			| charString;
+
+		messageItem =
+			(messageVersionCRC
 			>> messageModVariable
-			>> messageModString
-			)[phoenix::bind(&shorthand_grammar::EvaluateConditionalMessage, this, _val, _1, _2, _3)] % (lit("|") | lit(",")))	//Conditional message.
-			| charString[_val = _1];				//Any other message
+			>> messageModString)[phoenix::bind(&shorthand_grammar::EvaluateConditionalMessage, this, _val, _1, _2, _3)];
+
+		messageItemDelimiter = lit('|') | lit(',');
+
 
 		messageVersionCRC %=
 			(
@@ -706,15 +711,17 @@ namespace boss {
 		messageModVariable.name("messageKeyword");
 		messageVersionCRC.name("conditional shorthand version/CRC");
 		messageModString.name("conditional shorthand mod");
+		file.name("file");
 			
 		on_error<fail>(charString,			phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(messageString,		phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(messageVersionCRC,	phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(messageModString,	phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(messageModVariable,	phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(file,				phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
-	void shorthand_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what) {
+	void shorthand_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
 		
@@ -1193,7 +1200,7 @@ namespace boss {
 		on_error<fail>(stringVal,	phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
 	}
 
-	void ini_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {
+	void ini_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
 		
@@ -1340,7 +1347,7 @@ namespace boss {
 		on_error<fail>(stateKey,			phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
 	}
 
-	void userlist_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {
+	void userlist_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what) {
 		if (parsingErrorBuffer == NULL || !parsingErrorBuffer->Empty())
 			return;
 		

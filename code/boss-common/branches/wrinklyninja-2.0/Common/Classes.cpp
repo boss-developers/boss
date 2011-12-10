@@ -162,7 +162,7 @@ namespace boss {
 		return (diff < 0);
 	}
 
-	void	Item::EvalConditionals(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs) {
+	void	Item::EvalConditionals(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
 		Skipper skipper(false);
 		conditional_grammar cond_grammar;
 		shorthand_grammar short_grammar;
@@ -171,20 +171,23 @@ namespace boss {
 
 		cond_grammar.SetVarStore(&setVars);
 		cond_grammar.SetCRCStore(&fileCRCs);
+		cond_grammar.SetErrorBuffer(&errorBuffer);
 
 		short_grammar.SetVarStore(&setVars);
 		short_grammar.SetCRCStore(&fileCRCs);
+		short_grammar.SetErrorBuffer(&errorBuffer);
 
 		vector<Message>::iterator messageIter = messages.begin();
 		while (messageIter != messages.end()) {
 			bool eval;
 			if (!messageIter->conditionals.empty()) {
+				LOG_INFO("Evaluating conditional for message \"%s\" attached to item \"%s\"", messageIter->data.c_str(), name.string().c_str());
 				begin = messageIter->conditionals.begin();
 				end = messageIter->conditionals.end();
 
 				bool r = phrase_parse(begin, end, cond_grammar, skipper, eval);
 				if (!r || begin != end)
-					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL);
+					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, messageIter->conditionals);
 			} else
 				eval = true;
 			if (!eval)
@@ -199,7 +202,7 @@ namespace boss {
 
 				bool r = phrase_parse(begin, end, short_grammar, skipper, newMessage);
 				if (!r || begin != end)
-					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL);
+					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, messageIter->data);
 
 				messageIter->data = newMessage;
 				if (newMessage.empty())
@@ -351,6 +354,7 @@ namespace boss {
 		while (itemIter != items.end()) {
 			bool eval;
 			if (!itemIter->conditionals.empty()) {
+				LOG_INFO("Evaluating conditional for item \"%s\"", itemIter->name.string().c_str());
 				begin = itemIter->conditionals.begin();
 				end = itemIter->conditionals.end();
 
@@ -363,8 +367,7 @@ namespace boss {
 				itemIter = items.erase(itemIter);
 			else {
 				//Now eval messages in item.
-				LOG_INFO("Starting to evaluate item message conditionals.");
-				itemIter->EvalConditionals(setVars, fileCRCs);
+				itemIter->EvalConditionals(setVars, fileCRCs, errorBuffer);
 				++itemIter;
 			}
 		}

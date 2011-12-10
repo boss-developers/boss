@@ -180,7 +180,8 @@ namespace boss {
 		LOG_INFO("Reporting unrecognized mods...");
 		for (vector<Item>::iterator iter = modlist.lastRecognisedPos+1; iter != modlist.items.end(); ++iter) {
 			if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
-				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << iter->name.string() << SPAN_CLOSE;
+				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << iter->name.string() << SPAN_CLOSE
+					/*<< BUTTON_SUBMIT_PLUGIN*/;
 				if (!skip_version_parse) {
 					string version = iter->GetHeader();
 					if (!version.empty())

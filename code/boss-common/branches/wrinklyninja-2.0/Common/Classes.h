@@ -107,7 +107,7 @@ namespace boss {
 		bool	Exists		();			//Checks if the file exists in data_path, ghosted or not.
 		string	GetHeader	();			//Outputs the file's header.
 		void	SetModTime	(time_t modificationTime);
-		void	EvalConditionals(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs);
+		void	EvalConditionals(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 
 		vector<Message> messages;
 		fs::path		name;			//Filename (or group name). Trimmed and case-preserved. ".ghost" extensions are removed.
