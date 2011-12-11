@@ -182,7 +182,7 @@ BOSS_API uint32_t SortMods(boss_db db, const uint32_t clientGame);
 // It instead lists them in the order they would be sorted in using SortMods() in
 // the sortedPlugins array outputted. The contents of the array are static and should
 // not be freed by the client.
-BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t ** sortedPlugins, const uint32_t clientGame);
+BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, const uint32_t clientGame);
 
 
 //////////////////////////

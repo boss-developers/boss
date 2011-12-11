@@ -40,25 +40,33 @@ int main() {
 	uint8_t * uPath = reinterpret_cast<uint8_t *>("userlist.txt");
 	uint8_t * dPath = reinterpret_cast<uint8_t *>("../Data");
 
-	if (BOSS_API_ERROR_OK == Load(db, mPath, uPath, dPath)) {
-		cout << "This works, hallelujah." << endl;
+	if (BOSS_API_ERROR_OK != CreateBossDb(&db)) 
+		cout << "Creation failed." << endl;
+	else {
+		if (BOSS_API_ERROR_OK != Load(db, mPath, uPath, dPath))
+			cout << "Loading failed." << endl;
+		else {
+			if (BOSS_API_ERROR_OK != EvalConditionals(db, dPath))
+				cout << "Conditional evaluation failed." << endl;
+			else {
 
-		uint8_t ** sortedPlugins;
-	//	TrialSortMods(db, sortedPlugins, BOSS_API_GAME_OBLIVION);  //Symbol error.
+				const uint8_t ** sortedPlugins;
+				TrialSortMods(db, sortedPlugins, BOSS_API_GAME_OBLIVION);  //Symbol error.
 
-		cout << *sortedPlugins << endl;
+			//	cout << *sortedPlugins << endl;
 
-		const uint8_t ** message;
-		const uint8_t * mod = reinterpret_cast<uint8_t *>("Hammerfell.esm");
-		uint32_t * toClean;
-		GetDirtyMessage(db,mod,message,toClean);
+				const uint8_t ** message;
+				const uint8_t * mod = reinterpret_cast<uint8_t *>("Hammerfell.esm");
+				uint32_t * toClean;
+				GetDirtyMessage(db,mod,message,toClean);
 
-//		cout << *message << endl; //Causes a crash.
+			//	cout << message << endl; //Causes a crash.
 
-		const uint8_t * file = reinterpret_cast<uint8_t *>("testDump.txt");
-		DumpMinimal(db,file,false);
+				const uint8_t * file = reinterpret_cast<uint8_t *>("testDump.txt");
+				DumpMinimal(db,file,true);
 
-	} else
-		cout << "I'm afraid it's just not working, Dave." << endl;
+			}
+		}
+	}
 	return 0;
 }

@@ -65,6 +65,146 @@ namespace boss {
 	using unicode::xdigit;
 
 	///////////////////////////////
+	// Internal Common Functions
+	///////////////////////////////
+
+	//Returns the true path based on what type of file or keyword it is.
+	void GetPath(fs::path& file_path, string& file) {
+		if (file == "OBSE") {
+			file_path = "..";
+			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
+		} else if (file == "FOSE") {
+			file_path = "..";
+			file = "fose_loader.exe";
+		} else if (file == "NVSE") {
+			file_path = "..";
+			file = "nvse_loader.exe";
+		} else if (file == "SKSE") {
+			file_path = "..";
+			file = "skse_loader.exe";  //Unconfirmed.
+		} else if (file == "BOSS") {
+			file_path = ".";
+			file = "BOSS.exe";
+		} else if (file == "TES4") {
+			file_path = "..";
+			file = "Oblivion.exe";
+		} else if (file == "TES5") {
+			file_path = "..";
+			file = "TESV.exe";
+		} else if (file == "FO3") {
+			file_path = "..";
+			file = "Fallout3.exe";
+		} else if (file == "FONV") {
+			file_path = "..";
+			file = "FalloutNV.exe";
+		} else {
+			fs::path p(file);
+			if (Tidy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos) {
+				if (fs::exists(data_path / "OBSE"))
+					file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
+				else if (fs::exists(data_path / "FOSE"))
+					file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
+				else if (fs::exists(data_path / "NVSE"))
+					file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+				else if (fs::exists(data_path / "SKSE"))
+					file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+			} else
+				file_path = data_path;
+		}
+	}
+
+	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
+	void CheckVersion(bool& result, const string var) {
+		char comp = var[0];
+		size_t pos = var.find("|") + 1;
+		string version = var.substr(1,pos-2);
+		string file = var.substr(pos);
+		result = false;
+		fs::path file_path;
+
+		GetPath(file_path,file);
+
+		Item tempItem = Item(file);
+		string trueVersion;
+		if (tempItem.Exists()) {
+			trueVersion = tempItem.GetHeader();
+		} else if (fs::exists(file_path / file))
+			trueVersion = GetExeDllVersion(file_path / file);
+		else
+			return;
+
+		switch (comp) {
+		case '>':
+			if (trueVersion.compare(version) > 0)
+				result = true;
+			break;
+		case '<':
+			if (trueVersion.compare(version) < 0)
+				result = true;
+			break;
+		case '=':
+			if (version == trueVersion)
+				result = true;
+			break;
+		}
+		return;
+	}
+
+	//Checks if the given file exists.
+	void CheckFile(bool& result, string file) {
+		result = false;
+		fs::path file_path;
+		GetPath(file_path,file);
+		result = (fs::exists(file_path / file) || Item(file).IsGhosted());
+	}
+
+	//Checks if a file which matches the given regex exists.
+	//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
+	//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
+	//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
+	//be removed when getting the path and filename.
+	void CheckRegex(bool& result, string reg) {
+		result = false;
+		fs::path file_path;
+		//If the regex includes '/' or '\\' then it includes folders. Need to split the regex into the parent path and the filename.
+		//No reason for the regex to include both.
+		if (reg.find("/") != string::npos) {
+			size_t pos1 = reg.rfind("/");
+			string p = reg.substr(0,pos1);
+			reg = reg.substr(pos1+1);
+			file_path = fs::path(p);
+		} else if (reg.find("\\\\") != string::npos) {
+			size_t pos1 = reg.rfind("\\\\");
+			string p = reg.substr(0,pos1);
+			reg = reg.substr(pos1+2);
+			boost::algorithm::replace_all(p,"\\\\","\\");
+			file_path = fs::path(p);
+		} else if (Tidy(fs::path(reg).extension().string()) == ".dll") {
+			if (fs::exists(data_path / "OBSE"))
+				file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
+			else if (fs::exists(data_path / "FOSE"))
+				file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
+			else if (fs::exists(data_path / "NVSE"))
+				file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+			else if (fs::exists(data_path / "SKSE"))
+				file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+		} else
+			file_path = data_path;
+		const boost::regex regex(reg);
+
+		fs::directory_iterator iter_end;
+		for (fs::directory_iterator itr(file_path); itr!=iter_end; ++itr) {
+			if (fs::is_regular_file(itr->status())) {
+				if (boost::regex_match(itr->path().filename().string(),regex)) {
+					result = true;
+					break;
+				}
+			}
+		}
+	}
+
+
+	///////////////////////////////
 	// Keyword structures
 	///////////////////////////////
 
@@ -161,74 +301,7 @@ namespace boss {
 	//Modlist/Masterlist Grammar
 	///////////////////////////////
 
-	//Stores the given item, should it be appropriate, and records any changes to open groups.
-	void modlist_grammar::StoreItem(vector<Item>& list, Item currentItem) {
-		if (currentItem.type == BEGINGROUP)
-			openGroups.push_back(currentItem.name.string());
-		else if (currentItem.type == ENDGROUP)
-			openGroups.pop_back();
-		list.push_back(currentItem);
-	}
-
-	//MF1 compatibility function. Evaluates the MF1 FCOM conditional. Like it says on the tin.
-	void modlist_grammar::ConvertOldConditional(string& result, const char var) {
-		switch(var) {
-		case '>':
-			if (game == OBLIVION)
-				result = "IF ($FCOM)";
-			else if (game == FALLOUT3)
-				result = "IF ($FOOK2)";
-			else if (game == FALLOUTNV)
-				result = "IF ($NVAMP)";
-			else
-				result = "";
-			break;
-		case '<':
-			if (game == OBLIVION)
-				result = "IFNOT ($FCOM)";
-			else if (game == FALLOUT3)
-				result = "IFNOT ($FOOK2)";
-			else if (game == FALLOUTNV)
-				result = "IFNOT ($NVAMP)";
-			else
-				result = "";
-			break;
-		case '$':
-			if (game == OBLIVION)
-				result = "IF ($OOO)";
-			else if (game == FALLOUT3)
-				result = "IF ($FWE)";
-			else if (game == FALLOUTNV)
-				result = "IF ($FOOK)";
-			else
-				result = "";
-			break;
-		case '^':
-			if (game == OBLIVION)
-				result = "IF ($BC)";
-			else
-				result = "";
-			break;
-		}
-	}
-
-	//Turns a given string into a path. Can't be done directly because of the openGroups checks.
-	void modlist_grammar::ToPath(fs::path& p, string itemName) {
-		boost::algorithm::trim(itemName);
-		if (itemName.length() == 0 && !openGroups.empty()) 
-			p = fs::path(openGroups.back());
-		else
-			p = fs::path(itemName);
-	}
-
-	void modlist_grammar::StoreVar(const MasterlistVar var) {
-		setVars->push_back(var);
-	}
-
-	void modlist_grammar::StoreGlobalMessage(const Message message) {
-		globalMessageBuffer->push_back(message);
-	}
-
+	//Modlist grammar constructor.
 	modlist_grammar::modlist_grammar() : modlist_grammar::base_type(modList, "modlist grammar") {
 
 		errorBuffer = NULL;
@@ -382,6 +455,7 @@ namespace boss {
 		on_error<fail>(conditional,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
+	//Parser error reporter.
 	void modlist_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
@@ -399,10 +473,82 @@ namespace boss {
 		return;
 	}
 
+	//Stores the given item and records any changes to open groups.
+	void modlist_grammar::StoreItem(vector<Item>& list, Item currentItem) {
+		if (currentItem.type == BEGINGROUP)
+			openGroups.push_back(currentItem.name.string());
+		else if (currentItem.type == ENDGROUP)
+			openGroups.pop_back();
+		list.push_back(currentItem);
+	}
+
+	//Stores the masterlist variable.
+	void modlist_grammar::StoreVar(const MasterlistVar var) {
+		setVars->push_back(var);
+	}
+
+	//Stores the global message.
+	void modlist_grammar::StoreGlobalMessage(const Message message) {
+		globalMessageBuffer->push_back(message);
+	}
+
+	//MF1 compatibility function. Evaluates the MF1 FCOM conditional. Like it says on the tin.
+	void modlist_grammar::ConvertOldConditional(string& result, const char var) {
+		switch(var) {
+		case '>':
+			if (game == OBLIVION)
+				result = "IF ($FCOM)";
+			else if (game == FALLOUT3)
+				result = "IF ($FOOK2)";
+			else if (game == FALLOUTNV)
+				result = "IF ($NVAMP)";
+			else
+				result = "";
+			break;
+		case '<':
+			if (game == OBLIVION)
+				result = "IFNOT ($FCOM)";
+			else if (game == FALLOUT3)
+				result = "IFNOT ($FOOK2)";
+			else if (game == FALLOUTNV)
+				result = "IFNOT ($NVAMP)";
+			else
+				result = "";
+			break;
+		case '$':
+			if (game == OBLIVION)
+				result = "IF ($OOO)";
+			else if (game == FALLOUT3)
+				result = "IF ($FWE)";
+			else if (game == FALLOUTNV)
+				result = "IF ($FOOK)";
+			else
+				result = "";
+			break;
+		case '^':
+			if (game == OBLIVION)
+				result = "IF ($BC)";
+			else
+				result = "";
+			break;
+		}
+	}
+
+	//Turns a given string into a path. Can't be done directly because of the openGroups checks.
+	void modlist_grammar::ToPath(fs::path& p, string itemName) {
+		boost::algorithm::trim(itemName);
+		if (itemName.length() == 0 && !openGroups.empty()) 
+			p = fs::path(openGroups.back());
+		else
+			p = fs::path(itemName);
+	}
+	
+
 	////////////////////////////
 	// Conditional Grammar
 	////////////////////////////
 
+	//Conditional grammar constructor.
 	conditional_grammar::conditional_grammar() : conditional_grammar::base_type(conditionals, "modlist grammar") {
 
 		conditionals = 
@@ -418,10 +564,10 @@ namespace boss {
 
 		condition = 
 			variable									[phoenix::bind(&conditional_grammar::CheckVar, this, _val, _1)]
-			| version									[phoenix::bind(&conditional_grammar::CheckVersion, this, _val, _1)]
+			| version									[phoenix::bind(&CheckVersion, _val, _1)]
 			| (hex > '|' > file)						[phoenix::bind(&conditional_grammar::CheckSum, this, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
-			| file										[phoenix::bind(&conditional_grammar::CheckFile, this, _val, _1)]
-			| regexFile									[phoenix::bind(&conditional_grammar::CheckRegex, this, _val, _1)]
+			| file										[phoenix::bind(&CheckFile, _val, _1)]
+			| regexFile									[phoenix::bind(&CheckRegex, _val, _1)]
 			;
 
 		variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
@@ -456,6 +602,7 @@ namespace boss {
 		on_error<fail>(regexFile,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
+	//Parser error reporter.
 	void conditional_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
@@ -479,88 +626,6 @@ namespace boss {
 			result = false;
 		else
 			result = true;
-		return;
-	}
-
-	//Returns the true path based on what type of file or keyword it is.
-	void conditional_grammar::GetPath(fs::path& file_path, string& file) {
-		if (file == "OBSE") {
-			file_path = "..";
-			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
-		} else if (file == "FOSE") {
-			file_path = "..";
-			file = "fose_loader.exe";
-		} else if (file == "NVSE") {
-			file_path = "..";
-			file = "nvse_loader.exe";
-		} else if (file == "SKSE") {
-			file_path = "..";
-			file = "skse_loader.exe";  //Unconfirmed.
-		} else if (file == "BOSS") {
-			file_path = ".";
-			file = "BOSS.exe";
-		} else if (file == "TES4") {
-			file_path = "..";
-			file = "Oblivion.exe";
-		} else if (file == "TES5") {
-			file_path = "..";
-			file = "TESV.exe";
-		} else if (file == "FO3") {
-			file_path = "..";
-			file = "Fallout3.exe";
-		} else if (file == "FONV") {
-			file_path = "..";
-			file = "FalloutNV.exe";
-		} else {
-			fs::path p(file);
-			if (Tidy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos) {
-				if (fs::exists(data_path / "OBSE"))
-					file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
-				else if (fs::exists(data_path / "FOSE"))
-					file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
-				else if (fs::exists(data_path / "NVSE"))
-					file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-				else if (fs::exists(data_path / "SKSE"))
-					file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-			} else
-				file_path = data_path;
-		}
-	}
-
-	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
-	void conditional_grammar::CheckVersion(bool& result, const string var) {
-		char comp = var[0];
-		size_t pos = var.find("|") + 1;
-		string version = var.substr(1,pos-2);
-		string file = var.substr(pos);
-		result = false;
-		fs::path file_path;
-
-		GetPath(file_path,file);
-
-		Item tempItem = Item(file);
-		string trueVersion;
-		if (tempItem.Exists()) {
-			trueVersion = tempItem.GetHeader();
-		} else if (fs::exists(file_path / file))
-			trueVersion = GetExeDllVersion(file_path / file);
-		else
-			return;
-
-		switch (comp) {
-		case '>':
-			if (trueVersion.compare(version) > 0)
-				result = true;
-			break;
-		case '<':
-			if (trueVersion.compare(version) < 0)
-				result = true;
-			break;
-		case '=':
-			if (version == trueVersion)
-				result = true;
-			break;
-		}
 		return;
 	}
 
@@ -591,59 +656,6 @@ namespace boss {
 		return;
 	}
 
-	//Checks if the given file exists.
-	void conditional_grammar::CheckFile(bool& result, string file) {
-		result = false;
-		fs::path file_path;
-		GetPath(file_path,file);
-		result = (fs::exists(file_path / file) || Item(file).IsGhosted());
-	}
-
-	//Checks if a file which matches the given regex exists.
-	//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
-	//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
-	//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
-	//be removed when getting the path and filename.
-	void conditional_grammar::CheckRegex(bool& result, string reg) {
-		result = false;
-		fs::path file_path;
-		//If the regex includes '/' or '\\' then it includes folders. Need to split the regex into the parent path and the filename.
-		//No reason for the regex to include both.
-		if (reg.find("/") != string::npos) {
-			size_t pos1 = reg.rfind("/");
-			string p = reg.substr(0,pos1);
-			reg = reg.substr(pos1+1);
-			file_path = fs::path(p);
-		} else if (reg.find("\\\\") != string::npos) {
-			size_t pos1 = reg.rfind("\\\\");
-			string p = reg.substr(0,pos1);
-			reg = reg.substr(pos1+2);
-			boost::algorithm::replace_all(p,"\\\\","\\");
-			file_path = fs::path(p);
-		} else if (Tidy(fs::path(reg).extension().string()) == ".dll") {
-			if (fs::exists(data_path / "OBSE"))
-				file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
-			else if (fs::exists(data_path / "FOSE"))
-				file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
-			else if (fs::exists(data_path / "NVSE"))
-				file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-			else if (fs::exists(data_path / "SKSE"))
-				file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-		} else
-			file_path = data_path;
-		const boost::regex regex(reg);
-
-		fs::directory_iterator iter_end;
-		for (fs::directory_iterator itr(file_path); itr!=iter_end; ++itr) {
-			if (fs::is_regular_file(itr->status())) {
-				if (boost::regex_match(itr->path().filename().string(),regex)) {
-					result = true;
-					break;
-				}
-			}
-		}
-	}
-
 	//Evaluate a single conditional.
 	void conditional_grammar::EvaluateConditional(bool& result, const string type, const bool condition) {
 		result = false;
@@ -667,6 +679,7 @@ namespace boss {
 	// Conditional Shorthand Grammar
 	///////////////////////////////////
 
+	//Shorthand grammar constructor.
 	shorthand_grammar::shorthand_grammar() : shorthand_grammar::base_type(messageString, "conditional message shorthand grammar") {
 
 		messageType = NONE;
@@ -681,7 +694,6 @@ namespace boss {
 			>> messageModString)[phoenix::bind(&shorthand_grammar::EvaluateConditionalMessage, this, _val, _1, _2, _3)];
 
 		messageItemDelimiter = lit('|') | lit(',');
-
 
 		messageVersionCRC %=
 			(
@@ -721,6 +733,7 @@ namespace boss {
 		on_error<fail>(file,				phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
+	//Parser error reporter.
 	void shorthand_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
@@ -744,88 +757,6 @@ namespace boss {
 			result = false;
 		else
 			result = true;
-		return;
-	}
-
-	//Returns the true path based on what type of file or keyword it is.
-	void shorthand_grammar::GetPath(fs::path& file_path, string& file) {
-		if (file == "OBSE") {
-			file_path = "..";
-			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
-		} else if (file == "FOSE") {
-			file_path = "..";
-			file = "fose_loader.exe";
-		} else if (file == "NVSE") {
-			file_path = "..";
-			file = "nvse_loader.exe";
-		} else if (file == "SKSE") {
-			file_path = "..";
-			file = "skse_loader.exe";  //Unconfirmed.
-		} else if (file == "BOSS") {
-			file_path = ".";
-			file = "BOSS.exe";
-		} else if (file == "TES4") {
-			file_path = "..";
-			file = "Oblivion.exe";
-		} else if (file == "TES5") {
-			file_path = "..";
-			file = "TESV.exe";
-		} else if (file == "FO3") {
-			file_path = "..";
-			file = "Fallout3.exe";
-		} else if (file == "FONV") {
-			file_path = "..";
-			file = "FalloutNV.exe";
-		} else {
-			fs::path p(file);
-			if (Tidy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos) {
-				if (fs::exists(data_path / "OBSE"))
-					file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
-				else if (fs::exists(data_path / "FOSE"))
-					file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
-				else if (fs::exists(data_path / "NVSE"))
-					file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-				else if (fs::exists(data_path / "SKSE"))
-					file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-			} else
-				file_path = data_path;
-		}
-	}
-
-	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
-	void shorthand_grammar::CheckVersion(bool& result, const string var) {
-		char comp = var[0];
-		size_t pos = var.find("|") + 1;
-		string version = var.substr(1,pos-2);
-		string file = var.substr(pos);
-		result = false;
-		fs::path file_path;
-
-		GetPath(file_path,file);
-
-		Item tempItem = Item(file);
-		string trueVersion;
-		if (tempItem.Exists()) {
-			trueVersion = tempItem.GetHeader();
-		} else if (fs::exists(file_path / file))
-			trueVersion = GetExeDllVersion(file_path / file);
-		else
-			return;
-
-		switch (comp) {
-		case '>':
-			if (trueVersion.compare(version) > 0)
-				result = true;
-			break;
-		case '<':
-			if (trueVersion.compare(version) < 0)
-				result = true;
-			break;
-		case '=':
-			if (version == trueVersion)
-				result = true;
-			break;
-		}
 		return;
 	}
 
@@ -854,59 +785,6 @@ namespace boss {
 		if (sum == CRC)
 			result = true;
 		return;
-	}
-
-	//Checks if the given file exists.
-	void shorthand_grammar::CheckFile(bool& result, string file) {
-		result = false;
-		fs::path file_path;
-		GetPath(file_path,file);
-		result = (fs::exists(file_path / file) || Item(file).IsGhosted());
-	}
-
-	//Checks if a file which matches the given regex exists.
-	//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
-	//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
-	//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
-	//be removed when getting the path and filename.
-	void shorthand_grammar::CheckRegex(bool& result, string reg) {
-		result = false;
-		fs::path file_path;
-		//If the regex includes '/' or '\\' then it includes folders. Need to split the regex into the parent path and the filename.
-		//No reason for the regex to include both.
-		if (reg.find("/") != string::npos) {
-			size_t pos1 = reg.rfind("/");
-			string p = reg.substr(0,pos1);
-			reg = reg.substr(pos1+1);
-			file_path = fs::path(p);
-		} else if (reg.find("\\\\") != string::npos) {
-			size_t pos1 = reg.rfind("\\\\");
-			string p = reg.substr(0,pos1);
-			reg = reg.substr(pos1+2);
-			boost::algorithm::replace_all(p,"\\\\","\\");
-			file_path = fs::path(p);
-		} else if (Tidy(fs::path(reg).extension().string()) == ".dll") {
-			if (fs::exists(data_path / "OBSE"))
-				file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
-			else if (fs::exists(data_path / "FOSE"))
-				file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
-			else if (fs::exists(data_path / "NVSE"))
-				file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-			else if (fs::exists(data_path / "SKSE"))
-				file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-		} else
-			file_path = data_path;
-		const boost::regex regex(reg);
-
-		fs::directory_iterator iter_end;
-		for (fs::directory_iterator itr(file_path); itr!=iter_end; ++itr) {
-			if (fs::is_regular_file(itr->status())) {
-				if (boost::regex_match(itr->path().filename().string(),regex)) {
-					result = true;
-					break;
-				}
-			}
-		}
 	}
 
 	//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.

@@ -68,7 +68,7 @@ struct _boss_db_int {
 	const uint8_t ** extPluginList;
 
 	//Constructor
-	_boss_db_int() {
+	inline _boss_db_int() {
 		extTagMap = NULL;
 		extAddedTagIds = NULL;
 		extRemovedTagIds = NULL;
@@ -225,13 +225,6 @@ void DestroyPointers(boss_db db) {
 		free(const_cast<uint8_t*>(db->extMessage));
 }
 
-void InitPointers(boss_db db) {
-	db->extTagMap = NULL;
-	db->extAddedTagIds = NULL;
-	db->extRemovedTagIds = NULL;
-	db->extMessage = NULL;
-}
-
 // Explicitly manage database lifetime. Allows clients to free memory when
 // they want/need to.
 BOSS_API uint32_t CreateBossDb  (boss_db * db) {
@@ -241,7 +234,6 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db) {
 	boss_db retVal = new _boss_db_int;
 	if (retVal == NULL)
 		return BOSS_API_ERROR_NO_MEM;
-	InitPointers(retVal);
 	*db = retVal;
 	return BOSS_API_ERROR_OK;
 }
@@ -315,14 +307,13 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 
 	//FREE CURRENT POINTERS
 	//Free memory at pointers stored in structure.
-	DestroyPointers(db);  //Causes crashes. Need to init. pointers in constructor.
-	InitPointers(db);
+	DestroyPointers(db);
 	
 	//DB SET
 	db->rawMasterlist = masterlist;
 	db->filteredMasterlist = masterlist;  //Not actually filtered, but retrival functions assume filtered masterlist is populated.
 	db->userlist = userlist;
-	db->bashTagMap.clear();  //This seems to be causing a crash.
+	db->bashTagMap.clear();
 	return BOSS_API_ERROR_OK;
 }
 
@@ -794,9 +785,8 @@ BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const boo
 			return BOSS_ERROR_FILE_WRITE_FAIL;
 		else {
 			//Iterate through items, printing out all relevant info.
-			vector<Item>::iterator itemIter = db->rawMasterlist.items.begin();
 			vector<Message>::iterator messageIter;
-			for (itemIter; itemIter != db->rawMasterlist.items.end(); ++itemIter) {
+			for (vector<Item>::iterator itemIter = db->rawMasterlist.items.begin(); itemIter != db->rawMasterlist.items.end(); ++itemIter) {
 				if (itemIter->type == MOD || itemIter->type == REGEX) {
 					bool namePrinted = false;
 					messageIter = itemIter->messages.begin();

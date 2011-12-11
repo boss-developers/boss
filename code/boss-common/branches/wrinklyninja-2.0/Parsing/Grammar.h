@@ -150,19 +150,23 @@ namespace boss {
 		qi::rule<grammarIter, MasterlistVar(), Skipper> listVar;
 		qi::rule<grammarIter, string(), Skipper> charString, andOr, conditional, conditionals, oldConditional, condition, version, variable, file, regexFile;
 		qi::rule<grammarIter, keyType(), Skipper> messageKeyword;
-
-		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);
-		
 		ParsingError * errorBuffer;
 		vector<Message> * globalMessageBuffer;
-		vector<MasterlistVar> * setVars;  //Vars set by masterlist.
-		boost::unordered_map<string,uint32_t> * fileCRCs;  //CRCs calculated.
-
+		vector<MasterlistVar> * setVars;					//Vars set by masterlist.
+		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
 		vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in MF1.
-		
 
-		//Stores the given item, should it be appropriate, and records any changes to open groups.
+		//Parser error reporter.
+		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);
+
+		//Stores the given item and records any changes to open groups.
 		void StoreItem(vector<Item>& list, Item currentItem);
+
+		//Stores the masterlist variable.
+		void StoreVar(const MasterlistVar var);
+
+		//Stores the global message.
+		void StoreGlobalMessage(const Message message);
 
 		//MF1 compatibility function. Evaluates the MF1 FCOM conditional. Like it says on the tin.
 		void ConvertOldConditional(string& result, const char var);
@@ -170,9 +174,7 @@ namespace boss {
 		//Turns a given string into a path. Can't be done directly because of the openGroups checks.
 		void ToPath(fs::path& p, string itemName);
 
-		void StoreVar(const MasterlistVar var);
-
-		void StoreGlobalMessage(const Message message);
+		
 	};
 
 
@@ -189,34 +191,18 @@ namespace boss {
 	private:
 		qi::rule<grammarIter, string(), Skipper> ifIfNot, variable, file, version, andOr, regexFile;
 		qi::rule<grammarIter, bool(), Skipper> conditional, conditionals, condition;
-		
-		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);
-		
 		ParsingError * errorBuffer;
-		boost::unordered_set<string> * setVars;  //Vars set by masterlist. Also referenced by userlist parser.
-		boost::unordered_map<string,uint32_t> * fileCRCs;  //CRCs calculated. Referenced by modlist and userlist parsers.
+		boost::unordered_set<string> * setVars;				//Vars set by masterlist.
+		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
+		
+		//Parser error reporter.
+		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);
 
 		//Checks if a masterlist variable is defined.
 		void CheckVar(bool& result, const string var);
 
-		//Returns the true path based on what type of file or keyword it is.
-		void GetPath(fs::path& file_path, string& file);
-
-		//Checks if the given mod has a version for which the comparison holds true.
-		void CheckVersion(bool& result, const string var);
-
 		//Checks if the given mod has the given checksum.
 		void CheckSum(bool& result, const uint32_t sum, string file);
-
-		//Checks if the given file exists.
-		void CheckFile(bool& result, string file);
-
-		//Checks if a file which matches the given regex exists.
-		//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
-		//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
-		//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
-		//be removed when getting the path and filename.
-		void CheckRegex(bool& result, string reg);
 
 		//Evaluate a single conditional.
 		void EvaluateConditional(bool& result, const string type, const bool condition);
@@ -240,35 +226,19 @@ namespace boss {
 	private:
 		qi::rule<grammarIter, string(), Skipper> charString, messageItem, messageString, messageVersionCRC, messageModString, messageModVariable, file;
 		qi::rule<grammarIter, Skipper> messageItemDelimiter;
-
-		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);
-		
 		ParsingError * errorBuffer;
-		boost::unordered_set<string> * setVars;  //Vars set by masterlist. Also referenced by userlist parser.
-		boost::unordered_map<string,uint32_t> * fileCRCs;  //CRCs calculated. Referenced by modlist and userlist parsers.
+		boost::unordered_set<string> * setVars;				//Vars set by masterlist.
+		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
 		keyType messageType;
 
+		//Parser error reporter.
+		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);
+		
 		//Checks if a masterlist variable is defined.
 		void CheckVar(bool& result, const string var);
 
-		//Returns the true path based on what type of file or keyword it is.
-		void GetPath(fs::path& file_path, string& file);
-
-		//Checks if the given mod has a version for which the comparison holds true.
-		void CheckVersion(bool& result, const string var);
-
 		//Checks if the given mod has the given checksum.
 		void CheckSum(bool& result, const uint32_t sum, string file);
-
-		//Checks if the given file exists.
-		void CheckFile(bool& result, string file);
-
-		//Checks if a file which matches the given regex exists.
-		//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
-		//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
-		//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
-		//be removed when getting the path and filename.
-		void CheckRegex(bool& result, string reg);
 
 		//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.
 		uint32_t HexStringToInt(string str);
