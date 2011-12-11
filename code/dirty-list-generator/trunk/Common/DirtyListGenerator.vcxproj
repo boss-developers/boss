@@ -11,19 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Parsing\Parser.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Helpers.cpp" />
-    <ClCompile Include="Lists.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Parsing\Data.h" />
-    <ClInclude Include="..\Parsing\Modlist\Grammar.h" />
-    <ClInclude Include="..\Parsing\Parser.h" />
-    <ClInclude Include="..\Parsing\Skipper.h" />
-    <ClInclude Include="main.h" />
-    <ClInclude Include="Helpers.h" />
-    <ClInclude Include="Lists.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5414EFAE-A1AB-477F-8897-3C99131B634D}</ProjectGuid>
@@ -54,8 +42,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>DirtyListGenerator</TargetName>
-    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
-    <IntDir>out\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Configuration)-$(PlatformArchitecture)\</OutDir>
+    <IntDir>out\$(Configuration)-$(PlatformArchitecture)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>DirtyListGenerator</TargetName>
@@ -84,14 +72,14 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\..\..\lib\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\boss-common\trunk;$(SolutionDir)..\..\..\lib\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\lib\boost\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\boss-common\trunk\bin\Release-$(PlatformArchitecture);$(SolutionDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Version>1.7</Version>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>

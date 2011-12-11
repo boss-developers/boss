@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011    BOSS Development Team.
+    Copyright (C) 2009-2011    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -123,9 +123,9 @@ namespace boss {
 		Outputter buffer(log_format);
 		time_t modfiletime = 0;
 		LOG_INFO("Applying calculated ordering to user files...");
-		vector<Item>::iterator iter = modlist.items.begin();
+		
 		vector<Message>::iterator messageIter;
-		for (iter; iter <= modlist.lastRecognisedPos; ++iter) {
+		for (vector<Item>::iterator iter = modlist.items.begin(); iter <= modlist.lastRecognisedPos; ++iter) {
 			if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
 				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << iter->name.string() << SPAN_CLOSE;
 				if (!skip_version_parse) {
@@ -178,10 +178,10 @@ namespace boss {
 		//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 		//Order their dates to be i days after the master esm to ensure they load last.
 		LOG_INFO("Reporting unrecognized mods...");
-		vector<Item>::iterator iter = modlist.lastRecognisedPos+1;
-		for (iter; iter != modlist.items.end(); ++iter) {
+		for (vector<Item>::iterator iter = modlist.lastRecognisedPos+1; iter != modlist.items.end(); ++iter) {
 			if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
-				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << iter->name.string() << SPAN_CLOSE;
+				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << iter->name.string() << SPAN_CLOSE
+					/*<< BUTTON_SUBMIT_PLUGIN*/;
 				if (!skip_version_parse) {
 					string version = iter->GetHeader();
 					if (!version.empty())
@@ -208,9 +208,6 @@ namespace boss {
 				counters.unrecognised++;
 			}
 		}
-		if (modlist.lastRecognisedPos+1 == modlist.items.end())
-			buffer << ITALIC_OPEN << "No unrecognised plugins." << ITALIC_CLOSE;
-
 		outputBuffer = buffer.AsString();
 		LOG_INFO("Unrecognized mods reported.");
 	}
@@ -222,12 +219,8 @@ namespace boss {
 		bosslog.PrintHeader();
 		bosslog.SetHTMLSpecialEscape(false);
 
-		/////////////////////////////
 		// Print BOSSLog Filters
-		/////////////////////////////
-	
 		if (log_format == HTML) {  //Since this bit is HTML-only, don't bother using formatting placeholders.
-
 			bosslog << "<ul id='filters'>";
 			
 			bosslog << "<li><input type='checkbox' ";
@@ -303,11 +296,7 @@ namespace boss {
 			bosslog << "</ul>" << "<i><span id='hp'>0</span> of " << (counters.recognised+counters.unrecognised) << " plugins hidden. <span id='hm'>0</span> of " << counters.messages << " messages hidden.</i>";
 		}
 
-
-		/////////////////////////////
 		// Display Global Messages
-		/////////////////////////////
-
 		if (!contents.globalMessages.empty() || !contents.iniParsingError.empty() || !contents.criticalError.empty() || !contents.updaterErrors.empty()) {
 
 			bosslog << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN;
@@ -317,10 +306,12 @@ namespace boss {
 				bosslog << contents.iniParsingError;
 			bosslog << contents.updaterErrors;
 
+			bosslog.SetHTMLSpecialEscape(true);
 			size_t size = contents.globalMessages.size();
 			for (size_t i=0; i<size; i++)
 				bosslog << contents.globalMessages[i];  //Print global messages.
-			
+			bosslog.SetHTMLSpecialEscape(false);
+
 			bosslog << LIST_CLOSE;
 			if (!contents.criticalError.empty()) {  //Exit early.
 				bosslog.PrintFooter();
@@ -329,10 +320,7 @@ namespace boss {
 			}
 		}
 
-		/////////////////////////////
 		// Print Summary
-		/////////////////////////////
-
 		bosslog << HEADING_OPEN << "Summary" << HEADING_CLOSE << DIV_OPEN;
 
 		if (contents.oldRecognisedPlugins == contents.recognisedPlugins)
@@ -347,16 +335,11 @@ namespace boss {
 			<< TABLE_ROW << TABLE_DATA << "Ghosted plugins:" << TABLE_DATA << counters.ghosted << TABLE_DATA << "Total number of messages:" << TABLE_DATA << counters.messages
 			<< TABLE_ROW << TABLE_DATA << "Total number of plugins:" << TABLE_DATA << (counters.recognised+counters.unrecognised) << TABLE_DATA << TABLE_DATA
 			<< TABLE_CLOSE
-			<< PARAGRAPH << "Mods sorted by your userlist are counted as recognised, not unrecognised, plugins."
+			<< PARAGRAPH << "Plugins sorted by user rules are counted as recognised plugins."
 			<< DIV_CLOSE;
 
-		
-		/////////////////////////////
 		// Display RuleList Messages
-		/////////////////////////////
-		bosslog.SetHTMLSpecialEscape(false);
 		if (!contents.userlistMessages.empty() || !contents.userlistParsingError.empty() || !contents.userlistSyntaxErrors.empty()) {
-			
 			bosslog << HEADING_OPEN << "Userlist Messages" << HEADING_CLOSE << LIST_ID_USERLIST_MESSAGES_OPEN;
 			if (!contents.userlistParsingError.empty())  //First print parser/syntax error messages.
 				bosslog << contents.userlistParsingError;
@@ -369,21 +352,13 @@ namespace boss {
 				<< LIST_CLOSE;
 		}
 
-
-		/////////////////////////////////
 		// Display Script Extender Info
-		/////////////////////////////////
-
 		if (!contents.seInfo.empty())
 			bosslog << HEADING_OPEN << "Script Extender And Script Extender Plugins" << HEADING_CLOSE << LIST_OPEN
 				<< contents.seInfo
 				<< LIST_CLOSE;
 
-
-		/////////////////////////////////
 		// Display Recognised Mods
-		/////////////////////////////////
-
 		if (revert < 1) 
 			bosslog << HEADING_OPEN << "Recognised And Re-ordered Plugins" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
 		else if (revert == 1)
@@ -393,21 +368,14 @@ namespace boss {
 		bosslog << contents.recognisedPlugins
 			<< LIST_CLOSE;
 
-
-		/////////////////////////////////
 		// Display Unrecognised Mods
-		/////////////////////////////////
+		if (!contents.unrecognisedPlugins.empty())
+			bosslog << HEADING_OPEN << "Unrecognised Plugins" << HEADING_CLOSE << DIV_OPEN 
+				<< PARAGRAPH << "Reorder these by hand using your favourite mod ordering utility." << LIST_OPEN
+				<< contents.unrecognisedPlugins
+				<< LIST_CLOSE << DIV_CLOSE;
 
-		bosslog << HEADING_OPEN << "Unrecognised Plugins" << HEADING_CLOSE << DIV_OPEN 
-			<< PARAGRAPH << "Reorder these by hand using your favourite mod ordering utility." << LIST_OPEN
-			<< contents.unrecognisedPlugins
-			<< LIST_CLOSE << DIV_CLOSE;
-
-
-		////////////////
 		// Finish
-		////////////////
-
 		bosslog << HEADING_ID_END_OPEN << "Execution Complete" << HEADING_CLOSE;
 		bosslog.PrintFooter();
 		bosslog.Save(file, true);

@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011    BOSS Development Team.
+    Copyright (C) 2009-2011    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -49,12 +49,15 @@ namespace boss {
 		BOSS_ERROR_FILE_WRITE_FAIL,
 		BOSS_ERROR_FILE_NOT_UTF8,
 		BOSS_ERROR_FILE_NOT_FOUND,
+		BOSS_ERROR_FILE_PARSE_FAIL,
+		BOSS_ERROR_CONDITION_EVAL_FAIL,
 		BOSS_ERROR_NO_GAME_DETECTED,
 		BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL,
 		BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL,
 		BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL,
 		BOSS_ERROR_FILE_CRC_MISMATCH,
 		BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL,
+		BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL,
 		BOSS_ERROR_FS_FILE_RENAME_FAIL,
 		BOSS_ERROR_FS_FILE_DELETE_FAIL,
 		BOSS_ERROR_CURL_INIT_FAIL,
@@ -66,8 +69,6 @@ namespace boss {
 		BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL,
 		BOSS_ERROR_CURL_PERFORM_FAIL,
 		BOSS_ERROR_CURL_USER_CANCEL,
-		BOSS_ERROR_FILE_PARSE_FAIL,
-		BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL,
 		BOSS_ERROR_GUI_WINDOW_INIT_FAIL,
 		BOSS_ERROR_MAX = BOSS_ERROR_GUI_WINDOW_INIT_FAIL
 	};
@@ -106,7 +107,9 @@ namespace boss {
 			case BOSS_ERROR_FILE_NOT_UTF8:
 				return "\"" + errSubject + "\" is not encoded in valid UTF-8!"; 
 			case BOSS_ERROR_FILE_NOT_FOUND:
-				return "\"" + errSubject + "\" cannot be found!"; 
+				return "\"" + errSubject + "\" cannot be found!";
+			case BOSS_ERROR_CONDITION_EVAL_FAIL:
+				return "Evaluation of conditional \"" + errSubject + "\" failed!";
 			case BOSS_ERROR_NO_GAME_DETECTED:
 				return "No game detected!"; 
 			case BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL:
@@ -191,8 +194,8 @@ namespace boss {
 	public:
 		inline ParsingError() : header(""), footer(""), detail(""), wholeMessage("") {}
 		//For parsing errors.
-		inline ParsingError(const string inHeader, const string inFooter, const string inDetail)
-			: header(inHeader), footer(inFooter), detail(inDetail) {}
+		inline ParsingError(const string inHeader, const string inDetail, const string inFooter)
+			: header(inHeader), detail(inDetail), footer(inFooter) {}
 
 		//For userlist syntax errors.
 		inline ParsingError(const string inWholeMessage) 

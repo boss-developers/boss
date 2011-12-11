@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011    BOSS Development Team.
+    Copyright (C) 2009-2011    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -162,11 +162,63 @@ namespace boss {
 		return (diff < 0);
 	}
 
+	void	Item::EvalConditionals(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
+		Skipper skipper(false);
+		conditional_grammar cond_grammar;
+		shorthand_grammar short_grammar;
+		string::const_iterator begin, end;
+		string newMessage;
+
+		cond_grammar.SetVarStore(&setVars);
+		cond_grammar.SetCRCStore(&fileCRCs);
+		cond_grammar.SetErrorBuffer(&errorBuffer);
+
+		short_grammar.SetVarStore(&setVars);
+		short_grammar.SetCRCStore(&fileCRCs);
+		short_grammar.SetErrorBuffer(&errorBuffer);
+
+		vector<Message>::iterator messageIter = messages.begin();
+		while (messageIter != messages.end()) {
+			bool eval;
+			if (!messageIter->conditionals.empty()) {
+				LOG_INFO("Evaluating conditional for message \"%s\" attached to item \"%s\"", messageIter->data.c_str(), name.string().c_str());
+				begin = messageIter->conditionals.begin();
+				end = messageIter->conditionals.end();
+
+				bool r = phrase_parse(begin, end, cond_grammar, skipper, eval);
+				if (!r || begin != end)
+					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, messageIter->conditionals);
+			} else
+				eval = true;
+			if (!eval)
+				messageIter = messages.erase(messageIter);
+			else if (!messageIter->data.empty()) {
+				LOG_INFO("Starting to evaluate item message conditional shorthands, if they exist.");
+				//Now we must check if the message is using a conditional shorthand and evaluate that if so.
+				short_grammar.SetMessageType(messageIter->key);
+
+				begin = messageIter->data.begin();
+				end = messageIter->data.end();
+
+				bool r = phrase_parse(begin, end, short_grammar, skipper, newMessage);
+				if (!r || begin != end)
+					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, messageIter->data);
+
+				messageIter->data = newMessage;
+				if (newMessage.empty())
+					messageIter = messages.erase(messageIter);
+				else
+					++messageIter;
+			} else
+				++messageIter;
+		}
+	}
+
 	//////////////////////////////
 	// ItemList Class Functions
 	//////////////////////////////
 
-	void					ItemList::Load			(fs::path path) {
+	void					ItemList::Load				(fs::path path) {
 		if (fs::exists(path) && fs::is_directory(path)) {
 			LOG_DEBUG("Reading user mods...");
 			for (fs::directory_iterator itr(path); itr!=fs::directory_iterator(); ++itr) {
@@ -193,6 +245,8 @@ namespace boss {
 
 			grammar.SetErrorBuffer(&errorBuffer);
 			grammar.SetGlobalMessageBuffer(&globalMessageBuffer);
+			grammar.SetVarStore(&masterlistVariables);
+			grammar.SetCRCStore(&fileCRCs);
 
 			if (!fs::exists(path))
 				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, path.string());
@@ -205,12 +259,12 @@ namespace boss {
 			end = contents.end();
 			bool r = phrase_parse(begin, end, grammar, skipper, items);
 
-			if (!r || begin != end)  //This might not work correctly.
+			if (!r || begin != end)
 				throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
 		}
 	}
 	
-	void					ItemList::Save			(fs::path file) {
+	void					ItemList::Save				(fs::path file) {
 		ofstream ofile;
 		//Back up file if it already exists.
 		try {
@@ -238,11 +292,13 @@ namespace boss {
 			else if (itemIter->type == ENDGROUP)
 				ofile << "ENDGROUP: " << itemIter->name.string() << endl;  //Print the group end marker
 			else {
+				if (itemIter->type == REGEX)
+					ofile << "REGEX: ";
 				ofile << itemIter->name.string() << endl;  //Print the mod name.
 				//Print the messages with the appropriate syntax.
 				messageIter = itemIter->messages.begin();
 				for (messageIter; messageIter != itemIter->messages.end(); ++messageIter)
-					ofile << " " << messageIter->key << ": " << messageIter->data << endl; 
+					ofile << " " << messageIter->KeyToString() << ": " << messageIter->data << endl; 
 			}
 		}
 
@@ -250,8 +306,111 @@ namespace boss {
 		LOG_INFO("Backup saved successfully.");
 		return;
 	}
+
+	void					ItemList::EvalConditionals	() {
+		Skipper skipper(false);
+		conditional_grammar cond_grammar;
+		string::const_iterator begin, end;
+		shorthand_grammar short_grammar;
+		string newMessage;
+
+		boost::unordered_set<string> setVars;
+
+		cond_grammar.SetErrorBuffer(&errorBuffer);
+		cond_grammar.SetVarStore(&setVars);
+		cond_grammar.SetCRCStore(&fileCRCs);
+
+		short_grammar.SetErrorBuffer(&errorBuffer);
+		short_grammar.SetVarStore(&setVars);
+		short_grammar.SetCRCStore(&fileCRCs);
+
+		//First eval variables.
+		//Need to convert these from a vector to an unordered set.
+		LOG_INFO("Starting to evaluate variable conditionals.");
+		vector<MasterlistVar>::iterator varIter = masterlistVariables.begin();
+		while (varIter != masterlistVariables.end()) {
+			bool eval;
+			if (!varIter->conditionals.empty()) {
+				begin = varIter->conditionals.begin();
+				end = varIter->conditionals.end();
+
+				bool r = phrase_parse(begin, end, cond_grammar, skipper, eval);
+				if (!r || begin != end)
+					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, varIter->conditionals);
+			} else
+				eval = true;
+			if (!eval)
+				varIter = masterlistVariables.erase(varIter);
+			else {
+				//Empty the conditional so that the var can be found with a simpler search in future.
+				setVars.insert(varIter->var);
+				++varIter;
+			}
+		}
+
+		//Now eval items.
+		LOG_INFO("Starting to evaluate item conditionals.");
+		vector<Item>::iterator itemIter = items.begin();
+		while (itemIter != items.end()) {
+			bool eval;
+			if (!itemIter->conditionals.empty()) {
+				LOG_INFO("Evaluating conditional for item \"%s\"", itemIter->name.string().c_str());
+				begin = itemIter->conditionals.begin();
+				end = itemIter->conditionals.end();
+
+				bool r = phrase_parse(begin, end, cond_grammar, skipper, eval);
+				if (!r || begin != end)
+					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, itemIter->conditionals);
+			} else
+				eval = true;
+			if (!eval)
+				itemIter = items.erase(itemIter);
+			else {
+				//Now eval messages in item.
+				itemIter->EvalConditionals(setVars, fileCRCs, errorBuffer);
+				++itemIter;
+			}
+		}
+
+		//Now eval global messages.
+		LOG_INFO("Starting to evaluate global message conditionals.");
+		vector<Message>::iterator messageIter = globalMessageBuffer.begin();
+		while (messageIter != globalMessageBuffer.end()) {
+			bool eval;
+			if (!messageIter->conditionals.empty()) {
+				begin = messageIter->conditionals.begin();
+				end = messageIter->conditionals.end();
+
+				bool r = phrase_parse(begin, end, cond_grammar, skipper, eval);
+				if (!r || begin != end)
+					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, messageIter->conditionals);
+			} else
+				eval = true;
+			if (!eval)
+				messageIter = globalMessageBuffer.erase(messageIter);
+			else if (!messageIter->data.empty()) {
+				LOG_INFO("Starting to evaluate global message conditional shorthands, if they exist.");
+				//Now we must check if the message is using a conditional shorthand and evaluate that if so.
+				short_grammar.SetMessageType(messageIter->key);
+
+				begin = messageIter->data.begin();
+				end = messageIter->data.end();
+
+				bool r = phrase_parse(begin, end, short_grammar, skipper, newMessage);
+				if (!r || begin != end)
+					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, messageIter->data);
+
+				messageIter->data = newMessage;
+				if (newMessage.empty())
+					messageIter = globalMessageBuffer.erase(messageIter);
+				else
+					++messageIter;
+			} else
+				++messageIter;
+		}
+	}
 	
-	vector<Item>::iterator	ItemList::FindItem		(fs::path name) {
+	vector<Item>::iterator	ItemList::FindItem			(fs::path name) {
 		vector<Item>::iterator itemIter = items.begin();
 		while (itemIter != items.end()) {
 			if (Tidy(itemIter->name.string()) == Tidy(name.string()))
@@ -261,7 +420,7 @@ namespace boss {
 		return itemIter;
 	}
 
-	vector<Item>::iterator	ItemList::FindLastItem	(fs::path name) {
+	vector<Item>::iterator	ItemList::FindLastItem		(fs::path name) {
 		vector<Item>::iterator itemIter = items.end();
 		--itemIter;
 		while (itemIter != items.begin()) {
@@ -273,7 +432,7 @@ namespace boss {
 	}
 	
 	//This looks a bit weird, but I need a non-reverse iterator outputted, and searching backwards is probably more efficient for my purposes.
-	vector<Item>::iterator	ItemList::FindGroupEnd	(fs::path name) {
+	vector<Item>::iterator	ItemList::FindGroupEnd		(fs::path name) {
 		vector<Item>::iterator itemIter = items.end();
 		--itemIter;
 		while (itemIter != items.begin()) {
@@ -454,6 +613,17 @@ namespace boss {
 			outFile << endl;
 		}
 		outFile.close();
+	}
+
+	vector<Rule>::iterator RuleList::FindRule(string ruleObject, bool onlyEnabled) {
+		vector<Rule>::iterator ruleIter = rules.begin();
+		for (ruleIter; ruleIter != rules.end(); ++ruleIter) {
+			if ((onlyEnabled && ruleIter->enabled) || !onlyEnabled) {
+				if (Tidy(ruleIter->ruleObject) == Tidy(ruleObject))
+					break;
+			}
+		}
+		return ruleIter;
 	}
 
 	//////////////////////////////

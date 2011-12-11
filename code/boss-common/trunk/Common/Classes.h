@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011    BOSS Development Team.
+    Copyright (C) 2009-2011    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -31,6 +31,8 @@
 #include <string>
 #include <vector>
 #include <boost/filesystem.hpp>
+#include <boost/unordered_set.hpp>
+#include <boost/unordered_map.hpp>
 #include "Common/DllDef.h"
 #include "Common/Globals.h"
 #include "Common/Error.h"
@@ -71,6 +73,12 @@ namespace boss {
 		REGEX
 	};
 
+	class MasterlistVar {
+	public:
+		string var;
+		string conditionals;
+	};
+
 	class Message {
 	public:
 			Message			();
@@ -80,6 +88,7 @@ namespace boss {
 
 		keyType key;
 		string	data;
+		string conditionals;
 	};
 
 	class Item {
@@ -98,10 +107,12 @@ namespace boss {
 		bool	Exists		();			//Checks if the file exists in data_path, ghosted or not.
 		string	GetHeader	();			//Outputs the file's header.
 		void	SetModTime	(time_t modificationTime);
+		void	EvalConditionals(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 
 		vector<Message> messages;
 		fs::path		name;			//Filename (or group name). Trimmed and case-preserved. ".ghost" extensions are removed.
 		itemType		type;
+		string			conditionals;
 	};
 
 	class ItemList {
@@ -111,6 +122,7 @@ namespace boss {
 																	//May throw exception on fail.
 		void					Save			(fs::path file);	//Output to file in MF2. Backs up any existing file with new ".old" extension.
 																	//Throws exception on fail.
+		void					EvalConditionals();					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
 		vector<Item>::iterator	FindItem		(fs::path name);	//Find the position of the item with name 'name'. Case-insensitive.
 		vector<Item>::iterator	FindLastItem	(fs::path name);	//Find the last item with the name 'name'. Case-insensitive.
 		vector<Item>::iterator	FindGroupEnd	(fs::path name);	//Find the end position of the group with the given name. Case-insensitive.
@@ -119,6 +131,8 @@ namespace boss {
 		ParsingError			errorBuffer;
 		vector<Message>			globalMessageBuffer;
 		vector<Item>::iterator	lastRecognisedPos;
+		vector<MasterlistVar>	masterlistVariables;
+		boost::unordered_map<string,uint32_t> fileCRCs;
 	};
 	
 	class RuleLine {
@@ -147,8 +161,9 @@ namespace boss {
 	
 	class RuleList {
 	public:
-		void Load	(fs::path file);		//Throws exception on fail.
-		void Save	(fs::path file);		//Throws exception on fail.
+		void 					Load	(fs::path file);		//Throws exception on fail.
+		void 					Save	(fs::path file);		//Throws exception on fail.
+		vector<Rule>::iterator 	FindRule(string ruleObject, bool onlyEnabled);
 
 		vector<Rule>			rules;
 		ParsingError			parsingErrorBuffer;

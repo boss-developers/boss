@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011    BOSS Development Team.
+    Copyright (C) 2009-2011    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -65,6 +65,146 @@ namespace boss {
 	using unicode::xdigit;
 
 	///////////////////////////////
+	// Internal Common Functions
+	///////////////////////////////
+
+	//Returns the true path based on what type of file or keyword it is.
+	void GetPath(fs::path& file_path, string& file) {
+		if (file == "OBSE") {
+			file_path = "..";
+			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
+		} else if (file == "FOSE") {
+			file_path = "..";
+			file = "fose_loader.exe";
+		} else if (file == "NVSE") {
+			file_path = "..";
+			file = "nvse_loader.exe";
+		} else if (file == "SKSE") {
+			file_path = "..";
+			file = "skse_loader.exe";  //Unconfirmed.
+		} else if (file == "BOSS") {
+			file_path = ".";
+			file = "BOSS.exe";
+		} else if (file == "TES4") {
+			file_path = "..";
+			file = "Oblivion.exe";
+		} else if (file == "TES5") {
+			file_path = "..";
+			file = "TESV.exe";
+		} else if (file == "FO3") {
+			file_path = "..";
+			file = "Fallout3.exe";
+		} else if (file == "FONV") {
+			file_path = "..";
+			file = "FalloutNV.exe";
+		} else {
+			fs::path p(file);
+			if (Tidy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos) {
+				if (fs::exists(data_path / "OBSE"))
+					file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
+				else if (fs::exists(data_path / "FOSE"))
+					file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
+				else if (fs::exists(data_path / "NVSE"))
+					file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+				else if (fs::exists(data_path / "SKSE"))
+					file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+			} else
+				file_path = data_path;
+		}
+	}
+
+	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
+	void CheckVersion(bool& result, const string var) {
+		char comp = var[0];
+		size_t pos = var.find("|") + 1;
+		string version = var.substr(1,pos-2);
+		string file = var.substr(pos);
+		result = false;
+		fs::path file_path;
+
+		GetPath(file_path,file);
+
+		Item tempItem = Item(file);
+		string trueVersion;
+		if (tempItem.Exists()) {
+			trueVersion = tempItem.GetHeader();
+		} else if (fs::exists(file_path / file))
+			trueVersion = GetExeDllVersion(file_path / file);
+		else
+			return;
+
+		switch (comp) {
+		case '>':
+			if (trueVersion.compare(version) > 0)
+				result = true;
+			break;
+		case '<':
+			if (trueVersion.compare(version) < 0)
+				result = true;
+			break;
+		case '=':
+			if (version == trueVersion)
+				result = true;
+			break;
+		}
+		return;
+	}
+
+	//Checks if the given file exists.
+	void CheckFile(bool& result, string file) {
+		result = false;
+		fs::path file_path;
+		GetPath(file_path,file);
+		result = (fs::exists(file_path / file) || Item(file).IsGhosted());
+	}
+
+	//Checks if a file which matches the given regex exists.
+	//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
+	//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
+	//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
+	//be removed when getting the path and filename.
+	void CheckRegex(bool& result, string reg) {
+		result = false;
+		fs::path file_path;
+		//If the regex includes '/' or '\\' then it includes folders. Need to split the regex into the parent path and the filename.
+		//No reason for the regex to include both.
+		if (reg.find("/") != string::npos) {
+			size_t pos1 = reg.rfind("/");
+			string p = reg.substr(0,pos1);
+			reg = reg.substr(pos1+1);
+			file_path = fs::path(p);
+		} else if (reg.find("\\\\") != string::npos) {
+			size_t pos1 = reg.rfind("\\\\");
+			string p = reg.substr(0,pos1);
+			reg = reg.substr(pos1+2);
+			boost::algorithm::replace_all(p,"\\\\","\\");
+			file_path = fs::path(p);
+		} else if (Tidy(fs::path(reg).extension().string()) == ".dll") {
+			if (fs::exists(data_path / "OBSE"))
+				file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
+			else if (fs::exists(data_path / "FOSE"))
+				file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
+			else if (fs::exists(data_path / "NVSE"))
+				file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+			else if (fs::exists(data_path / "SKSE"))
+				file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+		} else
+			file_path = data_path;
+		const boost::regex regex(reg);
+
+		fs::directory_iterator iter_end;
+		for (fs::directory_iterator itr(file_path); itr!=iter_end; ++itr) {
+			if (fs::is_regular_file(itr->status())) {
+				if (boost::regex_match(itr->path().filename().string(),regex)) {
+					result = true;
+					break;
+				}
+			}
+		}
+	}
+
+
+	///////////////////////////////
 	// Keyword structures
 	///////////////////////////////
 
@@ -97,13 +237,6 @@ namespace boss {
 			("\\endgroup\\\\",ENDGROUP)
 			("mod:", MOD)  //Needs the colon there unfortunately.
 			("regex:", REGEX)
-		;
-	}
-
-	metaKey_::metaKey_() {
-		add //Condition keywords.
-			("if", IF)
-			("ifnot", IFNOT)
 		;
 	}
 
@@ -168,167 +301,345 @@ namespace boss {
 	//Modlist/Masterlist Grammar
 	///////////////////////////////
 
-	//Stores a message, should it be appropriate.
-	void modlist_grammar::StoreMessage(vector<Message>& messages, Message currentMessage) {
-		if (storeMessage && !currentMessage.data.empty())
-			messages.push_back(currentMessage);
+	//Modlist grammar constructor.
+	modlist_grammar::modlist_grammar() : modlist_grammar::base_type(modList, "modlist grammar") {
+
+		errorBuffer = NULL;
+		masterlistMsgKey_ masterlistMsgKey;
+		typeKey_ typeKey;
+		const vector<Message> noMessages;  //An empty set of messages.
+
+		modList = 
+			(
+				listVar			[phoenix::bind(&modlist_grammar::StoreVar, this, _1)] 
+				| globalMessage	[phoenix::bind(&modlist_grammar::StoreGlobalMessage, this, _1)] 
+				| listItem		[phoenix::bind(&modlist_grammar::StoreItem, this, _val, _1)]
+			) % +eol;
+
+		listVar %=
+			conditionals
+			>> no_case[lit("set")]
+			>>	(
+					lit(':')
+					> charString
+				);
+
+		globalMessage =
+			conditionals
+			>> no_case[lit("global")]
+			>>	(
+					messageKeyword
+					>> lit(':')
+					>> charString
+				);
+
+		listItem %= 
+			(
+				oldConditional 
+				| conditionals
+			)
+			> ItemType
+			> itemName
+			> itemMessages;
+
+		ItemType %= 
+			no_case[typeKey]
+			| eps		[_val = MOD];
+
+		itemName = 
+			charString	[phoenix::bind(&modlist_grammar::ToPath, this, _val, _1)]
+			| eps		[phoenix::bind(&modlist_grammar::ToPath, this, _val, "")];
+
+		itemMessages %= 
+			(
+				+eol
+				>> (itemMessage | oldCondItemMessage) % +eol
+			) | eps		[_1 = noMessages];
+
+		itemMessage %= 
+			(
+				oldConditional 
+				| conditionals
+			) 
+			>> (messageKeyword
+			>> -lit(':')	//The double >> matters. A single > doesn't work.
+			>> charString)	//The double >> matters. A single > doesn't work.
+			;
+
+		oldCondItemMessage %=
+			(
+				unicode::string("$")		[phoenix::bind(&modlist_grammar::ConvertOldConditional, this, _1, '$')]
+				| unicode::string("^")		[phoenix::bind(&modlist_grammar::ConvertOldConditional, this, _1, '^')]
+			)
+			>> (qi::attr(SAY)
+			>> -lit(':')	//The double >> matters. A single > doesn't work.
+			>> charString)	//The double >> matters. A single > doesn't work.
+			;
+
+		charString %= lexeme[+(char_ - eol)]; //String, with no skipper.
+
+		messageKeyword %= no_case[masterlistMsgKey];
+
+		oldConditional = 
+			(
+				char_('>') 
+				| char_('<')
+			)			[phoenix::bind(&modlist_grammar::ConvertOldConditional, this, _val, _1)];
+
+		conditionals = 
+			(
+				conditional								[_val = _1] 
+				> *((andOr > conditional)				[_val += _1 + _2])
+			)
+			| eps [_val = ""];
+
+		andOr %= 
+			unicode::string("&&") 
+			| unicode::string("||");
+
+		conditional %= 
+			(
+				no_case[unicode::string("ifnot")
+				| unicode::string("if")]
+			) 
+			> char_('(') 
+			> condition
+			> char_(')');
+
+		condition %= 
+			variable
+			| version
+			| (+(xdigit - '|') > char_('|') > file)
+			| file
+			| regexFile
+			;
+
+		variable %= char_('$') > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
+
+		file %= lexeme[char_('"') > +(char_ - '"') > char_('"')];  //An OBSE plugin or a mod plugin.
+
+		version %=   //A version, followed by the mod it applies to.
+			(char_('=') | char_('>') | char_('<'))
+			> lexeme[+(char_ - '|')]
+			> char_('|')
+			> file;
+
+		regexFile %= no_case[char_('r')] > file;
+
+		modList.name("modList");
+		listVar.name("listVar");
+		listItem.name("listItem");
+		ItemType.name("ItemType");
+		itemName.name("itemName");
+		itemMessages.name("itemMessages");
+		itemMessage.name("itemMessage");
+		charString.name("charString");
+		messageKeyword.name("messageKeyword");
+		oldConditional.name("oldConditional");
+		conditionals.name("conditional");
+		andOr.name("andOr");
+		conditional.name("conditional");
+			
+		on_error<fail>(modList,				phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(listVar,				phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(listItem,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(ItemType,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(itemName,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(itemMessages,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(itemMessage,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(charString,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageKeyword,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(oldConditional,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(conditionals,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(andOr,				phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(conditional,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	}
+
+	//Parser error reporter.
+	void modlist_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
+		if (errorBuffer == NULL || !errorBuffer->Empty())
+			return;
+		
+		ostringstream out;
+		out << what;
+		string expect = out.str();
+
+		string context(errorpos, min(errorpos +50, last));
+		boost::trim_left(context);
+
+		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
+		*errorBuffer = e;
+		LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
 		return;
 	}
 
-	//Stores the given item, should it be appropriate, and records any changes to open groups.
+	//Stores the given item and records any changes to open groups.
 	void modlist_grammar::StoreItem(vector<Item>& list, Item currentItem) {
-		if (currentItem.type == BEGINGROUP) {
+		if (currentItem.type == BEGINGROUP)
 			openGroups.push_back(currentItem.name.string());
-		} else if (currentItem.type == ENDGROUP) {
+		else if (currentItem.type == ENDGROUP)
 			openGroups.pop_back();
-		}
-		if (storeItem)
-			list.push_back(currentItem);
-		return;
+		list.push_back(currentItem);
 	}
 
-	//Defines the given masterlist variable, if appropriate.
-	void modlist_grammar::StoreVar(const string var) {
-		if (storeItem)
-			setVars.insert(var);
-		return;
+	//Stores the masterlist variable.
+	void modlist_grammar::StoreVar(const MasterlistVar var) {
+		setVars->push_back(var);
 	}
 
 	//Stores the global message.
-	void modlist_grammar::StoreGlobalMessage(const Message currentMessage) {
-		if (storeMessage)
-			globalMessageBuffer->push_back(currentMessage);
-		return;
+	void modlist_grammar::StoreGlobalMessage(const Message message) {
+		globalMessageBuffer->push_back(message);
 	}
 
 	//MF1 compatibility function. Evaluates the MF1 FCOM conditional. Like it says on the tin.
-	void modlist_grammar::EvalOldFCOMConditional(bool& result, const char var) {
-		result = false;
-		boost::unordered_set<string>::iterator pos = setVars.find("FCOM");
-		if (var == '>' && pos != setVars.end())
-				result = true;
-		else if (var == '<' && pos == setVars.end())
-				result = true;
-		return;
+	void modlist_grammar::ConvertOldConditional(string& result, const char var) {
+		switch(var) {
+		case '>':
+			if (game == OBLIVION)
+				result = "IF ($FCOM)";
+			else if (game == FALLOUT3)
+				result = "IF ($FOOK2)";
+			else if (game == FALLOUTNV)
+				result = "IF ($NVAMP)";
+			else
+				result = "";
+			break;
+		case '<':
+			if (game == OBLIVION)
+				result = "IFNOT ($FCOM)";
+			else if (game == FALLOUT3)
+				result = "IFNOT ($FOOK2)";
+			else if (game == FALLOUTNV)
+				result = "IFNOT ($NVAMP)";
+			else
+				result = "";
+			break;
+		case '$':
+			if (game == OBLIVION)
+				result = "IF ($OOO)";
+			else if (game == FALLOUT3)
+				result = "IF ($FWE)";
+			else if (game == FALLOUTNV)
+				result = "IF ($FOOK)";
+			else
+				result = "";
+			break;
+		case '^':
+			if (game == OBLIVION)
+				result = "IF ($BC)";
+			else
+				result = "";
+			break;
+		}
 	}
 
-	//MF1 compatibility function. Evaluates the MF1 OOO/BC conditional message symbols.
-	void modlist_grammar::EvalMessKey(const keyType key) {
-		if (key == OOOSAY) {
-			boost::unordered_set<string>::iterator pos = setVars.find("OOO");
-			if (pos == setVars.end())
-				storeMessage = false;
-		} else if (key == BCSAY) {
-			boost::unordered_set<string>::iterator pos = setVars.find("BC");
-			if (pos == setVars.end())
-				storeMessage = false;
-		}
-		currentMessageType = key;
+	//Turns a given string into a path. Can't be done directly because of the openGroups checks.
+	void modlist_grammar::ToPath(fs::path& p, string itemName) {
+		boost::algorithm::trim(itemName);
+		if (itemName.length() == 0 && !openGroups.empty()) 
+			p = fs::path(openGroups.back());
+		else
+			p = fs::path(itemName);
+	}
+	
+
+	////////////////////////////
+	// Conditional Grammar
+	////////////////////////////
+
+	//Conditional grammar constructor.
+	conditional_grammar::conditional_grammar() : conditional_grammar::base_type(conditionals, "modlist grammar") {
+
+		conditionals = 
+			(conditional[_val = _1] 
+			> *((andOr > conditional)			[phoenix::bind(&conditional_grammar::EvaluateCompoundConditional, this, _val, _1, _2)]))
+			| eps[_val = true];
+
+		andOr %= unicode::string("&&") | unicode::string("||");
+
+		ifIfNot %= no_case[unicode::string("ifnot") | unicode::string("if")];
+
+		conditional = (ifIfNot > '(' > condition > ')')	[phoenix::bind(&conditional_grammar::EvaluateConditional, this, _val, _1, _2)];
+
+		condition = 
+			variable									[phoenix::bind(&conditional_grammar::CheckVar, this, _val, _1)]
+			| version									[phoenix::bind(&CheckVersion, _val, _1)]
+			| (hex > '|' > file)						[phoenix::bind(&conditional_grammar::CheckSum, this, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
+			| file										[phoenix::bind(&CheckFile, _val, _1)]
+			| regexFile									[phoenix::bind(&CheckRegex, _val, _1)]
+			;
+
+		variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
+
+		file %= lexeme['"' > +(char_ - '"') > '"'];  //An OBSE plugin or a mod plugin.
+
+		version %=   //A version, followed by the mod it applies to.
+			(char_('=') | char_('>') | char_('<'))
+			> lexeme[+(char_ - '|')]
+			> char_('|')
+			> file;
+
+		regexFile %= no_case['r'] > file;
+		
+
+		conditionals.name("conditional");
+		andOr.name("andOr");
+		conditional.name("conditional");
+		condition.name("condition");
+		variable.name("variable");
+		file.name("file");
+		version.name("version");
+		regexFile.name("regex file");
+			
+		on_error<fail>(conditionals,	phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(andOr,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(conditional,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(condition,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(variable,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(file,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(version,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(regexFile,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+	}
+
+	//Parser error reporter.
+	void conditional_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
+		if (errorBuffer == NULL || !errorBuffer->Empty())
+			return;
+
+		ostringstream out;
+		out << what;
+		string expect = out.str();
+
+		string context(errorpos, min(errorpos +50, last));
+		boost::trim_left(context);
+
+		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
+		*errorBuffer = e;
+		LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
 		return;
 	}
 
 	//Checks if a masterlist variable is defined.
-	void modlist_grammar::CheckVar(bool& result, const string var) {
-		if (setVars.find(var) == setVars.end())
+	void conditional_grammar::CheckVar(bool& result, const string var) {
+		if (setVars->find(var) == setVars->end())
 			result = false;
 		else
 			result = true;
 		return;
 	}
 
-	//Returns the true path based on what type of file or keyword it is.
-	void modlist_grammar::GetPath(fs::path& file_path, string& file) {
-		if (file == "OBSE") {
-			file_path = "..";
-			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
-		} else if (file == "FOSE") {
-			file_path = "..";
-			file = "fose_loader.exe";
-		} else if (file == "NVSE") {
-			file_path = "..";
-			file = "nvse_loader.exe";
-		} else if (file == "SKSE") {
-			file_path = "..";
-			file = "skse_loader.exe";  //Unconfirmed.
-		} else if (file == "BOSS") {
-			file_path = ".";
-			file = "BOSS.exe";
-		} else if (file == "TES4") {
-			file_path = "..";
-			file = "Oblivion.exe";
-		} else if (file == "TES5") {
-			file_path = "..";
-			file = "TESV.exe";
-		} else if (file == "FO3") {
-			file_path = "..";
-			file = "Fallout3.exe";
-		} else if (file == "FONV") {
-			file_path = "..";
-			file = "FalloutNV.exe";
-		} else {
-			fs::path p(file);
-			if (Tidy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos) {
-				if (fs::exists(data_path / "OBSE"))
-					file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
-				else if (fs::exists(data_path / "FOSE"))
-					file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
-				else if (fs::exists(data_path / "NVSE"))
-					file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-				else if (fs::exists(data_path / "SKSE"))
-					file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-			} else
-				file_path = data_path;
-		}
-	}
-
-	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
-	void modlist_grammar::CheckVersion(bool& result, const string var) {
-		char comp = var[0];
-		size_t pos = var.find("|") + 1;
-		string version = var.substr(1,pos-2);
-		string file = var.substr(pos);
-		result = false;
-		fs::path file_path;
-
-		GetPath(file_path,file);
-
-		Item tempItem = Item(file);
-		string trueVersion;
-		if (tempItem.Exists()) {
-			trueVersion = tempItem.GetHeader();
-		} else if (fs::exists(file_path / file))
-			trueVersion = GetExeDllVersion(file_path / file);
-		else
-			return;
-
-		switch (comp) {
-		case '>':
-			if (trueVersion.compare(version) > 0)
-				result = true;
-			break;
-		case '<':
-			if (trueVersion.compare(version) < 0)
-				result = true;
-			break;
-		case '=':
-			if (version == trueVersion)
-				result = true;
-			break;
-		}
-		return;
-	}
-
 	//Checks if the given mod has the given checksum.
-	void modlist_grammar::CheckSum(bool& result, const uint32_t sum, string file) {
+	void conditional_grammar::CheckSum(bool& result, const uint32_t sum, string file) {
 		result = false;
 		fs::path file_path;
 		uint32_t CRC;
 
 		GetPath(file_path,file);
-		boost::unordered_map<string,uint32_t>::iterator iter = fileCRCs.find(file);
+		boost::unordered_map<string,uint32_t>::iterator iter = fileCRCs->find(file);
 
-		if (iter != fileCRCs.end()) {
-			CRC = fileCRCs.at(file);
+		if (iter != fileCRCs->end()) {
+			CRC = fileCRCs->at(file);
 		} else {
 			if (fs::exists(file_path / file))
 				CRC = GetCrc32(file_path / file);
@@ -337,7 +648,7 @@ namespace boss {
 			else 
 				return;
 
-			fileCRCs.emplace(file,CRC);
+			fileCRCs->emplace(file,CRC);
 		}
 
 		if (sum == CRC)
@@ -345,211 +656,44 @@ namespace boss {
 		return;
 	}
 
-	//Checks if the given file exists.
-	void modlist_grammar::CheckFile(bool& result, string file) {
-		result = false;
-		fs::path file_path;
-		GetPath(file_path,file);
-		result = (fs::exists(file_path / file) || Item(file).IsGhosted());
-	}
-
-	//Checks if a file which matches the given regex exists.
-	//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
-	//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
-	//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
-	//be removed when getting the path and filename.
-	void modlist_grammar::CheckRegex(bool& result, string reg) {
-		result = false;
-		fs::path file_path;
-		//If the regex includes '/' or '\\' then it includes folders. Need to split the regex into the parent path and the filename.
-		//No reason for the regex to include both.
-		if (reg.find("/") != string::npos) {
-			size_t pos1 = reg.rfind("/");
-			string p = reg.substr(0,pos1);
-			reg = reg.substr(pos1+1);
-			file_path = fs::path(p);
-		} else if (reg.find("\\\\") != string::npos) {
-			size_t pos1 = reg.rfind("\\\\");
-			string p = reg.substr(0,pos1);
-			reg = reg.substr(pos1+2);
-			boost::algorithm::replace_all(p,"\\\\","\\");
-			file_path = fs::path(p);
-		} else if (Tidy(fs::path(reg).extension().string()) == ".dll") {
-			if (fs::exists(data_path / "OBSE"))
-				file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
-			else if (fs::exists(data_path / "FOSE"))
-				file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
-			else if (fs::exists(data_path / "NVSE"))
-				file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-			else if (fs::exists(data_path / "SKSE"))
-				file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-		} else
-			file_path = data_path;
-		const boost::regex regex(reg);
-
-		fs::directory_iterator iter_end;
-		for (fs::directory_iterator itr(file_path); itr!=iter_end; ++itr) {
-			if (fs::is_regular_file(itr->status())) {
-				if (boost::regex_match(itr->path().filename().string(),regex)) {
-					result = true;
-					break;
-				}
-			}
-		}
-	}
-
 	//Evaluate a single conditional.
-	void modlist_grammar::EvaluateConditional(bool& result, const metaType type, const bool condition) {
+	void conditional_grammar::EvaluateConditional(bool& result, const string type, const bool condition) {
 		result = false;
-		if (type == IF && condition == true)
+		if (Tidy(type) == "if" && condition == true)
 			result = true;
-		else if (type == IFNOT && condition == false)
+		else if (Tidy(type) == "ifnot" && condition == false)
 			result = true;
 		return;
 	}
 
 	//Evaluate the second half of a complex conditional.
-	void modlist_grammar::EvaluateCompoundConditional(bool& result, const string andOr, const bool condition) {
+	void conditional_grammar::EvaluateCompoundConditional(bool& result, const string andOr, const bool condition) {
 		if (andOr == "||" && condition == true)
 			result = true;
 		else if (andOr == "&&" && result == true && condition == false)
 			result = false;
 	}
 
-	//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.
-	uint32_t modlist_grammar::HexStringToInt(string str) {
-		string::const_iterator begin, end;
-		begin = str.begin();
-		end = str.end();
-		uint32_t out;
-		qi::parse(begin, end, hex[phoenix::ref(out) = _1]);
-		return out;
-	}
 
-	//Evaluate part of a shorthand conditional message.
-	//Most message types would make sense for the message to display if the condition evaluates to true. (eg. incompatibilities)
-	//Requirement messages need the condition to eval to false.
-	void modlist_grammar::EvaluateConditionalMessage(string& message, string version, string file, const string mod) {
-		bool addItem = false;
+	///////////////////////////////////
+	// Conditional Shorthand Grammar
+	///////////////////////////////////
 
-		if (file[0] == '\"') {  //It's a file.
-			file = file.substr(1,file.length()-2);  //Cut off the quotes.
-					
-			fs::path file_path;
-			GetPath(file_path,file);
-			if (fs::exists(file_path / file)) {  //File exists. Was a version or checksum given? 
-				
-				if (!version.empty()) {
-					bool versionCheck;
-					if (version[0] == '>' || version[0] == '=' || version[0] == '<')  //Version
-						CheckVersion(versionCheck, version + "|" + file);
-					else
-						CheckSum(versionCheck, HexStringToInt(version), file);
-					if (versionCheck && currentMessageType != REQ)
-						addItem = true;
-					else if (!versionCheck && currentMessageType == REQ)
-						addItem = true;
-				} else if (currentMessageType != REQ)  //No version or checksum given. File exists, condition is true.
-					addItem = true;
-			} else if (currentMessageType == REQ)  //File isn't installed.
-					addItem = true;
-		} else if (file[0] == '$') {  //File is actually a masterlist variable.
-			file = file.substr(1);  //Cut off the '$'.
-			bool varExists;
-			CheckVar(varExists, file);
-			if (varExists && currentMessageType != REQ)
-				addItem = true;
-			else if (!varExists && currentMessageType == REQ)
-				addItem = true;
-		} else {  //File is actually a regex.
-			file = file.substr(2,file.length()-3); //Cut off starting r" and ending ".
-			bool regexMatch;
-			CheckRegex(regexMatch, file);
-			if (regexMatch && currentMessageType != REQ)
-				addItem = true;
-			else if (!regexMatch && currentMessageType == REQ)
-				addItem = true;
-		}
-		if (addItem) {
-			if (!message.empty())
-				message += ", ";
-			if (!mod.empty())  //Was a valid mod name given?
-				message += "\"" + mod + "\"";
-			else
-				message += "\"" + file + "\"";
-		}
-	}
+	//Shorthand grammar constructor.
+	shorthand_grammar::shorthand_grammar() : shorthand_grammar::base_type(messageString, "conditional message shorthand grammar") {
 
-	//Turns a given string into a path. Can't be done directly because of the openGroups checks.
-	void modlist_grammar::path(fs::path& p, string itemName) {
-		boost::algorithm::trim(itemName);
-		if (itemName.length() == 0 && !openGroups.empty()) 
-			p = fs::path(openGroups.back());
-		else
-			p = fs::path(itemName);
-		return;
-	}
+		messageType = NONE;
 
-	modlist_grammar::modlist_grammar() : modlist_grammar::base_type(modList, "modlist grammar") {
+		messageString %=
+			((messageItem | eoi) % messageItemDelimiter > eoi)
+			| charString;
 
-		storeItem = true;
-		storeMessage = true;
-		errorBuffer = NULL;
-		masterlistMsgKey_ masterlistMsgKey;
-		typeKey_ typeKey;
-		metaKey_ metaKey;
-
-		modList = 
-			(
-				metaLine		[phoenix::bind(&modlist_grammar::StoreVar, this, _1)] 
-				| globalMessage	[phoenix::bind(&modlist_grammar::StoreGlobalMessage, this, _1)] 
-				| listItem		[phoenix::bind(&modlist_grammar::StoreItem, this, _val, _1)]
-			) % +eol;
-
-		metaLine =
-			omit[conditionals[phoenix::ref(storeItem) = _1]]
-			>> no_case[lit("set")]
-			>> (lit(":")
-			> charString);
-
-		globalMessage =
-			omit[conditionals[phoenix::ref(storeMessage) = _1]]
-			>> no_case[lit("global")]
-			>> (messageKeyword
-			> lit(":")
-			> messageString);
-
-		listItem %= 
-			omit[(oldConditional | conditionals)[phoenix::ref(storeItem) = _1]]
-			> ItemType
-			> itemName
-			> itemMessages;
-
-		ItemType %= no_case[typeKey] | eps[_val = MOD];
-
-		itemName = 
-			charString[phoenix::bind(&modlist_grammar::path, this, _val, _1)]
-			| eps[phoenix::bind(&modlist_grammar::path, this, _val, "")];
-
-		itemMessages = 
-			(+eol
-			>> itemMessage[phoenix::bind(&modlist_grammar::StoreMessage, this, _val, _1)] % +eol)
-			| eps[_1 = noMessages];
-
-		itemMessage %= 
-			omit[(oldConditional | conditionals)[phoenix::ref(storeMessage) = _1]]
-			>>(messageKeyword[phoenix::bind(&modlist_grammar::EvalMessKey, this, _1)]
-			> -lit(":")
-			> messageString);
-
-		charString %= lexeme[+(char_ - eol)]; //String, with no skipper.
-
-		messageString = 
-			((messageVersionCRC
+		messageItem =
+			(messageVersionCRC
 			>> messageModVariable
-			>> messageModString
-			)[phoenix::bind(&modlist_grammar::EvaluateConditionalMessage, this, _val, _1, _2, _3)] % (lit("|") | lit(",")))	//Conditional message.
-			| charString[_val = _1];				//Any other message
+			>> messageModString)[phoenix::bind(&shorthand_grammar::EvaluateConditionalMessage, this, _val, _1, _2, _3)];
+
+		messageItemDelimiter = lit('|') | lit(',');
 
 		messageVersionCRC %=
 			(
@@ -568,85 +712,29 @@ namespace boss {
 			(lit("=") >> file) 
 			| "";
 
-		messageKeyword %= no_case[masterlistMsgKey];
-
-		oldConditional = (char_(">") |  char_("<"))		[phoenix::bind(&modlist_grammar::EvalOldFCOMConditional, this, _val, _1)];
-
-		conditionals = 
-			(conditional[_val = _1] 
-			> *((andOr > conditional)			[phoenix::bind(&modlist_grammar::EvaluateCompoundConditional, this, _val, _1, _2)]))
-			| eps[_val = true];
-
-		andOr %= unicode::string("&&") | unicode::string("||");
-
-		conditional = (no_case[metaKey] > '(' > condition > ')')	[phoenix::bind(&modlist_grammar::EvaluateConditional, this, _val, _1, _2)];
-
-		condition = 
-			variable									[phoenix::bind(&modlist_grammar::CheckVar, this, _val, _1)]
-			| version									[phoenix::bind(&modlist_grammar::CheckVersion, this, _val, _1)]
-			| (hex > '|' > file)						[phoenix::bind(&modlist_grammar::CheckSum, this, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
-			| file										[phoenix::bind(&modlist_grammar::CheckFile, this, _val, _1)]
-			| regexFile									[phoenix::bind(&modlist_grammar::CheckRegex, this, _val, _1)]
-			;
-
-		variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
+		charString %= lexeme[+(char_ - eol)]; //String, with no skipper.
 
 		file %= lexeme['"' > +(char_ - '"') > '"'];  //An OBSE plugin or a mod plugin.
 
-		version %=   //A version, followed by the mod it applies to.
-			(char_('=') | char_('>') | char_('<'))
-			> lexeme[+(char_ - '|')]
-			> char_('|')
-			> file;
 
-		regexFile %= no_case['r'] > file;
-
-		modList.name("modList");
-		metaLine.name("metaLine");
-		listItem.name("listItem");
-		ItemType.name("ItemType");
-		itemName.name("itemName");
-		itemMessages.name("itemMessages");
-		itemMessage.name("itemMessage");
+		
 		charString.name("charString");
 		messageString.name("messageString");
-		messageKeyword.name("messageKeyword");
-		oldConditional.name("oldConditional");
-		conditionals.name("conditional");
-		andOr.name("andOr");
-		conditional.name("conditional");
-		condition.name("condition");
-		variable.name("variable");
-		file.name("file");
-		version.name("version");
+		messageModVariable.name("messageKeyword");
 		messageVersionCRC.name("conditional shorthand version/CRC");
 		messageModString.name("conditional shorthand mod");
+		file.name("file");
 			
-		on_error<fail>(modList,				phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(metaLine,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(listItem,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(ItemType,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(itemName,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(itemMessages,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(itemMessage,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(charString,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(messageString,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(messageVersionCRC,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(messageModString,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(messageModVariable,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(messageKeyword,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(oldConditional,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(conditionals,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(andOr,				phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(conditional,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(condition,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(variable,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(file,				phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(version,				phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-
+		on_error<fail>(charString,			phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageString,		phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageVersionCRC,	phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageModString,	phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageModVariable,	phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(file,				phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
-	void modlist_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, boost::spirit::info const& what) {
+	//Parser error reporter.
+	void shorthand_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
 		
@@ -661,6 +749,106 @@ namespace boss {
 		*errorBuffer = e;
 		LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
 		return;
+	}
+
+	//Checks if a masterlist variable is defined.
+	void shorthand_grammar::CheckVar(bool& result, const string var) {
+		if (setVars->find(var) == setVars->end())
+			result = false;
+		else
+			result = true;
+		return;
+	}
+
+	//Checks if the given mod has the given checksum.
+	void shorthand_grammar::CheckSum(bool& result, const uint32_t sum, string file) {
+		result = false;
+		fs::path file_path;
+		uint32_t CRC;
+
+		GetPath(file_path,file);
+		boost::unordered_map<string,uint32_t>::iterator iter = fileCRCs->find(file);
+
+		if (iter != fileCRCs->end()) {
+			CRC = fileCRCs->at(file);
+		} else {
+			if (fs::exists(file_path / file))
+				CRC = GetCrc32(file_path / file);
+			else if (Item(file).IsGhosted())
+				CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
+			else 
+				return;
+
+			fileCRCs->emplace(file,CRC);
+		}
+
+		if (sum == CRC)
+			result = true;
+		return;
+	}
+
+	//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.
+	uint32_t shorthand_grammar::HexStringToInt(string str) {
+		string::const_iterator begin, end;
+		begin = str.begin();
+		end = str.end();
+		uint32_t out;
+		qi::parse(begin, end, hex[phoenix::ref(out) = _1]);
+		return out;
+	}
+
+	//Evaluate part of a shorthand conditional message.
+	//Most message types would make sense for the message to display if the condition evaluates to true. (eg. incompatibilities)
+	//Requirement messages need the condition to eval to false.
+	void shorthand_grammar::EvaluateConditionalMessage(string& message, string version, string file, const string mod) {
+		bool addItem = false;
+
+		if (file[0] == '\"') {  //It's a file.
+			file = file.substr(1,file.length()-2);  //Cut off the quotes.
+					
+			fs::path file_path;
+			GetPath(file_path,file);
+			if (fs::exists(file_path / file)) {  //File exists. Was a version or checksum given? 
+				
+				if (!version.empty()) {
+					bool versionCheck;
+					if (version[0] == '>' || version[0] == '=' || version[0] == '<')  //Version
+						CheckVersion(versionCheck, version + "|" + file);
+					else
+						CheckSum(versionCheck, HexStringToInt(version), file);
+					if (versionCheck && messageType != REQ)
+						addItem = true;
+					else if (!versionCheck && messageType == REQ)
+						addItem = true;
+				} else if (messageType != REQ)  //No version or checksum given. File exists, condition is true.
+					addItem = true;
+			} else if (messageType == REQ)  //File isn't installed.
+					addItem = true;
+		} else if (file[0] == '$') {  //File is actually a masterlist variable.
+			file = file.substr(1);  //Cut off the '$'.
+			bool varExists;
+			CheckVar(varExists, file);
+			if (varExists && messageType != REQ)
+				addItem = true;
+			else if (!varExists && messageType == REQ)
+				addItem = true;
+		} else {  //File is actually a regex.
+			file = file.substr(2,file.length()-3); //Cut off starting r" and ending ".
+			bool regexMatch;
+			CheckRegex(regexMatch, file);
+			if (regexMatch && messageType != REQ)
+				addItem = true;
+			else if (!regexMatch && messageType == REQ)
+				addItem = true;
+		}
+		if (addItem) {
+			if (!message.empty())
+				message += ", ";
+			if (!mod.empty())  //Was a valid mod name given?
+				message += "\"" + mod + "\"";
+			else
+				message += "\"" + file + "\"";
+		}
 	}
 
 	////////////////////////////
@@ -890,7 +1078,7 @@ namespace boss {
 		on_error<fail>(stringVal,	phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
 	}
 
-	void ini_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {
+	void ini_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
 		
@@ -1037,7 +1225,7 @@ namespace boss {
 		on_error<fail>(stateKey,			phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
 	}
 
-	void userlist_grammar::SyntaxError(string::const_iterator const& /*first*/, string::const_iterator const& last, string::const_iterator const& errorpos, info const& what) {
+	void userlist_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what) {
 		if (parsingErrorBuffer == NULL || !parsingErrorBuffer->Empty())
 			return;
 		
