@@ -18,7 +18,7 @@ BEGIN
             VALUE "FileDescription", "Better Oblivion Sorting Software GUI"
 			VALUE "FileVersion", "1.9.0"
             VALUE "InternalName", "BOSS GUI"
-            VALUE "LegalCopyright", "Copyright (C) 2011"
+            VALUE "LegalCopyright", "Copyright (C) 2009-2011"
             VALUE "ProductName", "BOSS GUI"
 			VALUE "ProductVersion", "1.9.0"
         END

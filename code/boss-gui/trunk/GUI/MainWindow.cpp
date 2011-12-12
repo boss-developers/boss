@@ -158,7 +158,7 @@ bool BossGUI::OnInit() {
 	}
 
 	MainFrame *frame = new MainFrame(
-		wxT("Better Oblivion Sorting Software - " + GetGameString()), 100, 100, 510, 370);
+		wxT("BOSS - " + GetGameString()), 100, 100, 510, 370);
 
 	frame->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	frame->Show(TRUE);
@@ -419,7 +419,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	Outputter output(log_format);
 
 	//Tell the user that stuff is happenining.
-	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Better Oblivion Sorting Software working..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
+	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("BOSS working..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
 
 	//Set the locale to get encoding conversions working correctly.
 	setlocale(LC_CTYPE, "");
@@ -570,7 +570,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		return;
 	}
 
-	progDia->Pulse(wxT("Better Oblivion Sorting Software working..."));
+	progDia->Pulse(wxT("BOSS working..."));
 	if (progDia->WasCancelled()) {
 		progDia->Destroy();
 		return;
@@ -638,17 +638,20 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	//Masterlist parse errors are critical, ini and userlist parse errors are not.
 	
 	//Parse masterlist/modlist backup into data structure.
-	LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
 	try {
+		LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
 		masterlist.Load(sortfile);
+		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
+		masterlist.EvalConditionals();
 		contents.globalMessages = masterlist.globalMessageBuffer;
 	} catch (boss_error e) {
 		output.Clear();
 		output.PrintHeader();
-		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
+		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL || e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
+			output.SetHTMLSpecialEscape(false);
 			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
 				<< masterlist.errorBuffer.FormatFor(log_format) << LIST_CLOSE;
-		else
+		} else
 			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 				<< "Utility will end now." << LIST_CLOSE;
@@ -698,7 +701,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 
 void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
 	if (use_user_rules_editor) {
-		UserRulesEditorFrame *editor = new UserRulesEditorFrame(wxT("Better Oblivion Sorting Software: User Rules Editor"),this);
+		UserRulesEditorFrame *editor = new UserRulesEditorFrame(wxT("BOSS: User Rules Editor"),this);
 		editor->SetIcon(wxIconLocation("BOSS GUI.exe"));
 		editor->Show();
 		return;
@@ -789,7 +792,7 @@ void MainFrame::OnAbout(wxCommandEvent& event) {
     aboutInfo.SetName("Better Oblivion Sorting Software");
     aboutInfo.SetVersion(IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH));
     aboutInfo.SetDescription(wxT("A \"one-click\" program for users that quickly optimises and avoids detrimental conflicts in their\nTES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders."));
-    aboutInfo.SetCopyright("Copyright (C) 2011 BOSS Development Team.");
+    aboutInfo.SetCopyright("Copyright (C) 2009-2011 BOSS Development Team.");
     aboutInfo.SetWebSite("http://code.google.com/p/better-oblivion-sorting-software/");
 	aboutInfo.SetLicence("This program is free software: you can redistribute it and/or modify\n"
     "it under the terms of the GNU General Public License as published by\n"
@@ -1022,7 +1025,7 @@ void MainFrame::Update(string updateVersion) {
 
 void MainFrame::OnOpenSettings(wxCommandEvent& event) {
 	//Tell the user that stuff is happenining.
-	SettingsFrame *settings = new SettingsFrame(wxT("Better Oblivion Sorting Software: Settings"),this);
+	SettingsFrame *settings = new SettingsFrame(wxT("BOSS: Settings"),this);
 	settings->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	settings->Show();
 }

@@ -591,7 +591,7 @@ int main(int argc, char *argv[]) {
 	// Resume Error Condition Checks
 	///////////////////////////////////
 
-	cout << endl << "Better Oblivion Sorting Software working..." << endl;
+	cout << endl << "BOSS working..." << endl;
 
 	//Get the master esm's modification date. 
 	try {
@@ -647,8 +647,10 @@ int main(int argc, char *argv[]) {
 	try {
 		LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
 		masterlist.Load(sortfile);
+		masterlist.Save("test1.txt");
 		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
 		masterlist.EvalConditionals();
+		masterlist.Save("test2.txt");
 		contents.globalMessages = masterlist.globalMessageBuffer;
 	} catch (boss_error e) {
 		output.Clear();

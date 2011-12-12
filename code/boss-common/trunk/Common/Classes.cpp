@@ -167,7 +167,6 @@ namespace boss {
 		conditional_grammar cond_grammar;
 		shorthand_grammar short_grammar;
 		string::const_iterator begin, end;
-		string newMessage;
 
 		cond_grammar.SetVarStore(&setVars);
 		cond_grammar.SetCRCStore(&fileCRCs);
@@ -193,6 +192,7 @@ namespace boss {
 			if (!eval)
 				messageIter = messages.erase(messageIter);
 			else if (!messageIter->data.empty()) {
+				string newMessage;
 				LOG_INFO("Starting to evaluate item message conditional shorthands, if they exist.");
 				//Now we must check if the message is using a conditional shorthand and evaluate that if so.
 				short_grammar.SetMessageType(messageIter->key);

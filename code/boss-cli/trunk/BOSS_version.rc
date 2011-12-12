@@ -17,9 +17,9 @@ BEGIN
         BEGIN
             VALUE "FileDescription", "Better Oblivion Sorting Software CLI"
 			VALUE "FileVersion", "1.9.0"
-            VALUE "InternalName", "BOSS"
-            VALUE "LegalCopyright", "Copyright (C) 2011"
-            VALUE "ProductName", "BOSS"
+            VALUE "InternalName", "BOSS CLI"
+            VALUE "LegalCopyright", "Copyright (C) 2009-2011"
+            VALUE "ProductName", "BOSS CLI"
 			VALUE "ProductVersion", "1.9.0"
         END
     END
