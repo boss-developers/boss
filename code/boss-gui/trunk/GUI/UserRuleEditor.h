@@ -81,7 +81,7 @@ public:
 private:
 	void ReDrawRuleList();					//Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
 	RuleList userlist;
-	uint32_t selectedRuleIndex;
+	size_t selectedRuleIndex;
 	wxScrolled<wxPanel> *RuleListScroller;
 };
 

@@ -193,13 +193,13 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	////////Modlist column.
 	wxStaticBoxSizer *modlistBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Installed Mods"));
 	modlistBox->Add(ModlistSearch = new wxSearchCtrl(this, SEARCH_Modlist, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER), 0, wxEXPAND);
-	modlistBox->Add(InstalledModsList = new wxTreeCtrl(this, LIST_Modlist, wxDefaultPosition, wxSize(100,550), wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_FULL_ROW_HIGHLIGHT|wxTR_HIDE_ROOT), 0, wxEXPAND);
+	modlistBox->Add(InstalledModsList = new wxTreeCtrl(this, LIST_Modlist, wxDefaultPosition, wxSize(100,550), wxTR_HAS_BUTTONS|wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_FULL_ROW_HIGHLIGHT|wxTR_HIDE_ROOT), 0, wxEXPAND);
 	listsBox->Add(modlistBox, 0, wxEXPAND);
 	listsBox->AddSpacer(10);
 	////////Masterlist column.
 	wxStaticBoxSizer *masterlistBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Masterlist"));
 	masterlistBox->Add(MasterlistSearch = new wxSearchCtrl(this, SEARCH_Masterlist, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER), 0, wxEXPAND);
-	masterlistBox->Add(MasterlistModsList = new wxTreeCtrl(this, LIST_Masterlist, wxDefaultPosition, wxSize(100,550), wxTR_TWIST_BUTTONS|wxTR_HIDE_ROOT), 0, wxEXPAND);
+	masterlistBox->Add(MasterlistModsList = new wxTreeCtrl(this, LIST_Masterlist, wxDefaultPosition, wxSize(100,550), wxTR_HAS_BUTTONS|wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT), 0, wxEXPAND);
 	listsBox->Add(masterlistBox, 0, wxEXPAND);
 	mainBox->AddSpacer(10);
 	mainBox->Add(listsBox, 0, wxEXPAND);
@@ -946,6 +946,7 @@ void RuleListFrameClass::AppendRule(Rule newRule) {
 	selectedRuleIndex = userlist.rules.size()-1;
 	//Now refresh GUI.
 	ReDrawRuleList();
+	RuleListScroller->Scroll(RuleListScroller->GetChildren().back()->GetPosition());
 }
 
 void RuleListFrameClass::SaveEditedRule(Rule editedRule) {
@@ -953,6 +954,7 @@ void RuleListFrameClass::SaveEditedRule(Rule editedRule) {
 		userlist.rules[selectedRuleIndex] = editedRule;
 		ReDrawRuleList();
 	}
+	RuleListScroller->Scroll(RuleListScroller->GetChildren()[selectedRuleIndex]->GetPosition());
 }
 
 void RuleListFrameClass::DeleteSelectedRule() {
@@ -960,6 +962,7 @@ void RuleListFrameClass::DeleteSelectedRule() {
 	ReDrawRuleList();
 	if (selectedRuleIndex == userlist.rules.size())  //Just shortened rules by one. Make sure index isn't invalid.
 		selectedRuleIndex--;
+	RuleListScroller->Scroll(RuleListScroller->GetChildren()[selectedRuleIndex]->GetPosition());
 }
 
 void RuleListFrameClass::OnRuleSelection(wxCommandEvent& event) {
