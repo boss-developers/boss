@@ -564,6 +564,7 @@ namespace boss {
 		ret = curl_easy_perform(curl);
 
 		if (ret!=CURLE_OK) {
+			LOG_INFO("Failed to find Internet connection: %s",errbuff);
 			curl_easy_cleanup(curl);
 			return false;
 		} else {

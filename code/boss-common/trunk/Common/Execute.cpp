@@ -57,7 +57,7 @@ namespace boss {
 		else if (game == SKYRIM) 
 			return "Skyrim.esm";
 		else
-			return "Game Not Detected";
+			return "No Game Detected";
 	}
 
 	//Lists Script Extender plugin info in the output buffer. Usage internal to BOSS-Common.
@@ -448,7 +448,7 @@ namespace boss {
 		else if (game == SKYRIM)
 			return "TES V: Skyrim";
 		else
-			return "Game Not Detected";
+			return "No Game Detected";
 	}
 
 	//Gets the timestamp of the game's master file. Throws exception if error.

@@ -15,7 +15,7 @@
 	q {font-style:italic;}
 	code {display:inline-box; padding:2px 5px; background:#EEEEEE;}
 	td {border:1px solid #ccc; padding: 5px;}
-	table {border:1px solid #CCCCCC; border-spacing:0; border-collapse:separate; margin:1em;}
+	table {border:1px solid #ccc; border-spacing:0; border-collapse:separate; margin:1em;}
 	thead > tr td {font-weight:bold}
 	.errorMessages > li {margin-bottom:1.4em;}
 	.c {text-align:center;}
@@ -76,8 +76,7 @@
 	<li>Is under constant development and improvement by a team of modders and experts on all supported games.
 </ul>
 <p><abbr title="Better Oblivion Sorting Software">BOSS</abbr> will re-order your mod plugins to their correct positions, putting any mods it doesn't recognise after them, in the same order as they were before BOSS was run.
-<p>BOSS is designed to assist in the installation and usage of mods, especially more complex mods such as FCOM: Convergence, <abbr title="Martigen's Monster Mod or Martigen's Mutant Mod">MMM</abbr>, <abbr title="Fallout Overhaul Kit">FOOK</abbr> and <abbr title="Fallout New Vegas Advanced Mod Project">nVamp</abbr>, and help mod users avoid serious conflicts. It is not a complete solution to load ordering issues, as there are far more mods out there 
-(estimated at about 27,000 for Oblivion, 12,000 for Fallout 3 and 6,000 for Fallout: New Vegas) than BOSS knows about. To properly place mods BOSS doesn't know about, a good working knowledge of mod load ordering for the relevant game is still necessary, for which some research and documentation reading will go a long way.
+<p>BOSS is designed to assist in the usage of mods, helping mod users avoid serious conflicts. It is not a complete solution to load ordering issues, as there are far more mods out there than BOSS knows about. To properly place mods BOSS doesn't know about, a good working knowledge of mod load ordering for the relevant game is still necessary, for which some research and documentation reading will go a long way.
 </div>
 
 <div id="install"><h1>Installation &amp; Basic Usage</h1>
@@ -214,7 +213,7 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 </ul>
 <p>To save your changes to your userlist and exit, use the <q>Save</q> button. To exit without saving, use the <q>Cancel</q> button.
 <p>Plugins and groups may be added to the text boxes in the Rule Creator by dragging and dropping them from the Installed Mods and Masterlist lists on the right of the window. Dropping a plugin or group into a text box currently containing a plugin or group will cause the existing text to be replaced.</p>
-<p>The User Rules Editor ignores all silent comments in your userlist.txt, and will strip them from the file if you choose to save your user rules via the editor.
+<p>The User Rules Editor ignores all silent comments in your userlist.txt, and will strip them from the file if you choose to save your user rules via the editor.</p>
 <br />
 
 <h2 id="updates">Keeping BOSS Up-To-Date</h2>
@@ -515,9 +514,8 @@ It is also possible to compile BOSS natively for Linux, and makefiles are provid
 		<tr><td>BOSS ReadMe.html<td>This ReadMe file.
 		<tr><td>BOSS User Rules ReadMe.html<td>The ReadMe file for BOSS's User Rules functionality.
 		<tr><td>BOSS Masterlist Syntax.html<td>Developer documentation detailing the formats and syntaxes used by the masterlists.
-		<tr><td>BOSS API ReadMe.html<td>The ReadMe file for the BOSS API, for use by third-party developers.
-		<tr><td>GNU GPL v3.0.txt<td>Contains the full text of the GNU General Public License v3.0.
-		<tr><td>GNU FDL v1.3.txt<td>Contains the full text of the GNU Free Documentation License v1.3.
+		<tr style="display:none;"><td>BOSS API ReadMe.html<td>The ReadMe file for the BOSS API, for use by third-party developers.
+		<tr><td>Licenses.txt<td>Contains the full text of the GNU General Public License v3.0 and GNU Free Documentation License v1.3 copyright licenses.
 </table>
 </div>
 
@@ -828,7 +826,7 @@ a problem for which no error message is given, please report the crash or proble
 <div id="license"><h1>License</h1>
 <p>Better Oblivion Sorting Software is distributed under the <a href="http://www.gnu.org/licenses/gpl.html">GNU General Public License v3.0</a>, aside from the documentation, which is distributed under the <a href="http://www.gnu.org/licenses/fdl.html">GNU Free Documentation License v1.3</a>. The documents covered by the latter license are <q>BOSS ReadMe.html</q>, <q>BOSS User Rules ReadMe.html</q>, <q>BOSS API ReadMe.html</q> and <q>BOSS Masterlist Syntax.html</q>.
 
-<p>For the full text of both licenses, see the included <q>GNU GPL v3.0.txt</q> and <q>GNU FDL v1.3.txt</q> files.
+<p>For the full text of both licenses, see the included <q>Licenses.txt</q> file.
 
 <p>While the GPL license allows anyone to make derivative works of BOSS, the BOSS Development Team encourages those thinking of doing so to first discuss their reasoning for such an endevour with the Team. It may be that what the derivative work would do differently from BOSS itself is already planned for a future version of BOSS or would be happily integrated into BOSS by the Team, thus avoiding any extra effort by others.
 <p>The BOSS Team also appeals to the community to avoid the distribution and development of alternative masterlists, as this would only hamper the community effort to create one universally-optimised load order for all plugins available for download. Any issues with a masterlist are best brought to the attention of the BOSS Team so that we may remedy them ourselves.
@@ -839,7 +837,7 @@ Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
 or any later version published by the Free Software Foundation;
 with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
-A copy of the license is included in the file named "GNU FDL v1.3.txt".</pre></blockquote>
+A copy of the license is included in the file named "Licenses.txt".</pre></blockquote>
 </div>
 
 <div id="links"><h1>Quick Links</h1>
@@ -883,7 +881,6 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Changed: Code type safety work. BOSS can now be built to 32 and 64 bit binaries, although 64 bit binaries will not be distributed.
 	<li>Changed: Copyright license is now GNU General Public License v3.0 for everything but the documentation, and GNU Free Documentation License v1.3 for the documentation.
 	<li>Changed: Updated version of libcurl used to 7.23.1 from 7.22.0, and updated version of Boost libraries used from 1.47.0 to 1.48.0.
-	<li>Added: BOSS API released. See the BOSS API ReadMe for more information.
 </ul>
 <p><b>Version 1.9</b> - <i>13 November 2011</i>
 <ul>
