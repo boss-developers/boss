@@ -29,6 +29,7 @@
 #include "Common/Globals.h"
 #include "Support/Helpers.h"
 #include "Common/Error.h"
+#include "Support/Logger.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/spirit/include/qi.hpp>
