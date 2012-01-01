@@ -684,7 +684,8 @@ namespace boss {
 
 	//Checks if a new release of BOSS is available or not.
 	BOSS_COMMON_EXP string IsBOSSUpdateAvailable() {
-		string remoteVersionStr, proxy_str;
+		string ver, proxy_str;
+		unsigned int majorV=0, minorV=0, patchV=0;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		CURLcode ret;
@@ -696,19 +697,32 @@ namespace boss {
 		//Get page containing version number.
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);	
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &remoteVersionStr);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ver);
 		ret = curl_easy_perform(curl);
 		if (ret!=CURLE_OK) {
 			string err = errbuff;
 			curl_easy_cleanup(curl);
 			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
 		}
+		
+		//Need to exract major, minor and patch versions from string.
+		size_t pos1, pos2;
+		pos1 = ver.find('.');
+		if (pos1 != string::npos)
+			majorV = atoi(ver.substr(0,pos1).c_str());
+		if (pos1 + 1 != ver.length()) {
+			pos2 = ver.find('.',pos1+1);
+			if (pos2 != string::npos) {
+				minorV = atoi(ver.substr(pos1+1,pos2).c_str());
+				if (pos2 + 1 != ver.length())
+					patchV = atoi(ver.substr(pos2+1).c_str());
+			}
+		}
 
 		//Now compare versions.
-		string ver = IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH);
-		if (remoteVersionStr.compare(ver) > 0) {
-			return remoteVersionStr;
-		} else
+		if (majorV > BOSS_VERSION_MAJOR || (majorV == BOSS_VERSION_MAJOR && minorV > BOSS_VERSION_MINOR) || (majorV == BOSS_VERSION_MAJOR && minorV == BOSS_VERSION_MINOR && patchV > BOSS_VERSION_PATCH))
+			return ver;
+		else
 			return "";
 	}
 
