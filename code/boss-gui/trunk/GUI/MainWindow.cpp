@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011    BOSS Development Team.
+    Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -788,7 +788,7 @@ void MainFrame::OnAbout(wxCommandEvent& event) {
     aboutInfo.SetName("Better Oblivion Sorting Software");
     aboutInfo.SetVersion(IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH));
     aboutInfo.SetDescription(wxT("A \"one-click\" program for users that quickly optimises and avoids detrimental conflicts in their\nTES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders."));
-    aboutInfo.SetCopyright("Copyright (C) 2009-2011 BOSS Development Team.");
+    aboutInfo.SetCopyright("Copyright (C) 2009-2012 BOSS Development Team.");
     aboutInfo.SetWebSite("http://code.google.com/p/better-oblivion-sorting-software/");
 	aboutInfo.SetLicence("This program is free software: you can redistribute it and/or modify\n"
     "it under the terms of the GNU General Public License as published by\n"

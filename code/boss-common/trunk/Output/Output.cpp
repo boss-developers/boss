@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2011    BOSS Development Team.
+    Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -169,12 +169,12 @@ namespace boss {
 				<< "#popup_yes{" << CSSPopupBoxSubmit << "}"
 				<< "</style>"<<endl;
 			outStream << "<div>BOSS Log</div>" << endl
-				<< "<div>&copy; 2009-2011 BOSS Development Team<br />" << endl
+				<< "<div>&copy; 2009-2012 BOSS Development Team<br />" << endl
 				<< "<a href=\"http://www.gnu.org/licenses/gpl.html\">GNU General Public License v3.0</a><br />" << endl
 				<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << boss_release_date << ")</div>";
 		} else
 			outStream << endl << "BOSS Log" << endl
-				<< "Copyright 2009-2011 BOSS Development Team" << endl
+				<< "Copyright 2009-2012 BOSS Development Team" << endl
 				<< "License: GNU General Public License v3.0" << endl
 				<< "(http://www.gnu.org/licenses/gpl.html)" << endl
 				<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << boss_release_date << ")" << endl;
