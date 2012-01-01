@@ -4,16 +4,16 @@
   !include LogicLib.nsh
   !include nsDialogs.nsh
 ;-------------------------------- Basic Installer Info:
-    Name "BOSS v1.9.0"
+    Name "BOSS v1.9.1"
     OutFile "BOSS Installer.exe"
     ; Request application privileges for Windows Vista
     RequestExecutionLevel admin
-    VIProductVersion 1.9.0.0
+    VIProductVersion 1.9.1.0
     VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "BOSS"
     VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "BOSS Development Team"
-    VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© BOSS Development Team"
-    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 1.9.0"
-    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "1.9.0.0"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© 2009-2012 BOSS Development Team"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 1.9.1"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "1.9.1.0"
 ;-------------------------------- Variables:
     Var Dialog
     Var Label
@@ -465,7 +465,7 @@
         SectionIn 1 2 RO
         ${If} $CheckState_OB == ${BST_CHECKED}
             SetOutPath $Path_OB\BOSS
-            File code\boss-cli\trunk\bin\Release\BOSS.exe
+            File code\boss-cli\trunk\bin\Release-32\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "Oblivion Path" "$Path_OB"
 			IfFileExists BOSS.ini 0 +3
 				Delete BOSS.ini.old
@@ -473,7 +473,7 @@
         ${EndIf}
         ${If} $CheckState_FO == ${BST_CHECKED}
             SetOutPath $Path_FO\BOSS
-            File code\boss-cli\trunk\bin\Release\BOSS.exe
+            File code\boss-cli\trunk\bin\Release-32\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "Fallout3 Path" "$Path_FO"
 			IfFileExists BOSS.ini 0 +3
 				Delete BOSS.ini.old
@@ -481,7 +481,7 @@
         ${EndIf}
         ${If} $CheckState_NV == ${BST_CHECKED}
             SetOutPath $Path_NV\BOSS
-            File code\boss-cli\trunk\bin\Release\BOSS.exe
+            File code\boss-cli\trunk\bin\Release-32\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "NewVegas Path" "$Path_NV"
 			IfFileExists BOSS.ini 0 +3
 				Delete BOSS.ini.old
@@ -489,7 +489,7 @@
         ${EndIf}
         ${If} $CheckState_Nehrim == ${BST_CHECKED}
             SetOutPath $Path_Nehrim\BOSS
-            File code\boss-cli\trunk\bin\Release\BOSS.exe
+            File code\boss-cli\trunk\bin\Release-32\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "Nehrim Path" "$Path_Nehrim"
 			IfFileExists BOSS.ini 0 +3
 				Delete BOSS.ini.old
@@ -497,7 +497,7 @@
         ${EndIf}
 		${If} $CheckState_SK == ${BST_CHECKED}
             SetOutPath $Path_SK\BOSS
-            File code\boss-cli\trunk\bin\Release\BOSS.exe
+            File code\boss-cli\trunk\bin\Release-32\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "Skyrim Path" "$Path_SK"
 			IfFileExists BOSS.ini 0 +3
 				Delete BOSS.ini.old
@@ -505,7 +505,7 @@
         ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
             SetOutPath $Path_Other\BOSS
-            File code\boss-cli\trunk\bin\Release\BOSS.exe
+            File code\boss-cli\trunk\bin\Release-32\BOSS.exe
             WriteRegStr HKLM "SOFTWARE\BOSS" "Other Path" "$Path_Other"
 			IfFileExists BOSS.ini 0 +3
 				Delete BOSS.ini.old
@@ -519,7 +519,7 @@
       WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "URLInfoAbout" 'http://better-oblivion-sorting-software.googlecode.com/'
       WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "HelpLink" 'http://better-oblivion-sorting-software.googlecode.com/'
       WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "Publisher" 'BOSS Development Team'
-      WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '1.9.0'      
+      WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '1.9.1'      
       WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoModify" 1
       WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoRepair" 1
       CreateDirectory "$COMMONFILES\BOSS"
@@ -529,27 +529,27 @@
 		SectionIn 1 2
         ${If} $CheckState_OB == ${BST_CHECKED}
             SetOutPath $Path_OB\BOSS
-            File "code\boss-gui\trunk\bin\Release\BOSS GUI.exe"
+            File "code\boss-gui\trunk\bin\Release-32\BOSS GUI.exe"
         ${EndIf}
         ${If} $CheckState_FO == ${BST_CHECKED}
             SetOutPath $Path_FO\BOSS
-            File "code\boss-gui\trunk\bin\Release\BOSS GUI.exe"
+            File "code\boss-gui\trunk\bin\Release-32\BOSS GUI.exe"
         ${EndIf}
         ${If} $CheckState_NV == ${BST_CHECKED}
             SetOutPath $Path_NV\BOSS
-            File "code\boss-gui\trunk\bin\Release\BOSS GUI.exe"
+            File "code\boss-gui\trunk\bin\Release-32\BOSS GUI.exe"
         ${EndIf}
         ${If} $CheckState_Nehrim == ${BST_CHECKED}
             SetOutPath $Path_Nehrim\BOSS
-            File "code\boss-gui\trunk\bin\Release\BOSS GUI.exe"
+            File "code\boss-gui\trunk\bin\Release-32\BOSS GUI.exe"
         ${EndIf}
 		 ${If} $CheckState_SK == ${BST_CHECKED}
             SetOutPath $Path_SK\BOSS
-            File "code\boss-gui\trunk\bin\Release\BOSS GUI.exe"
+            File "code\boss-gui\trunk\bin\Release-32\BOSS GUI.exe"
         ${EndIf}
         ${If} $CheckState_Other == ${BST_CHECKED}
             SetOutPath $Path_Other\BOSS
-            File "code\boss-gui\trunk\bin\Release\BOSS GUI.exe"
+            File "code\boss-gui\trunk\bin\Release-32\BOSS GUI.exe"
         ${EndIf}
     SectionEnd
     SectionGroup "Start Menu Shortcuts" Shortcuts_SM
@@ -990,7 +990,7 @@
   LangString PAGE_SELECT_GAMES_TITLE ${LANG_ENGLISH} "Choose Games"
   LangString PAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select which game(s) you want to install BOSS for, and confirm the desired install path."
   LangString unPAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select which game(s) you want to uninstall BOSS from."
-  LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished installing BOSS - Better Oblivion Sorting Software v1.9.0"
+  LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished installing BOSS - Better Oblivion Sorting Software v1.9.1"
   LangString PAGE_FINISH_SUBTITLE ${LANG_ENGLISH} "Please select post-install tasks."
   
   ;Assign language strings to sections
