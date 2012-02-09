@@ -100,6 +100,7 @@ BOSS_API extern const uint32_t BOSS_API_ERROR_INVALID_ARGS;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NETWORK_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_UPDATE_NECESSARY;
+BOSS_API extern const uint32_t BOSS_API_ERROR_NO_TAG_MAP;
 BOSS_API extern const uint32_t BOSS_API_ERROR_MAX;
 
 // The following are the mod cleanliness states that the API can return.
@@ -121,7 +122,7 @@ BOSS_API extern const uint32_t BOSS_API_GAME_SKYRIM;
 
 // Returns whether this version of BOSS supports the API from the given 
 // BOSS version. Abstracts BOSS API stability policy away from clients.
-BOSS_API bool IsCompatibleVersion (uint32_t bossVersionMajor, uint32_t bossVersionMinor, uint32_t bossVersionPatch);
+BOSS_API bool IsCompatibleVersion (const uint32_t bossVersionMajor, const uint32_t bossVersionMinor, const uint32_t bossVersionPatch);
 
 // Returns the version string for this version of BOSS.
 // The string exists for the lifetime of the library.
@@ -148,7 +149,8 @@ BOSS_API void DestroyBossDb (boss_db db);
 // masterlistPath and userlistPath are files.  dataPath is a directory.
 BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 									const uint8_t * userlistPath,
-									const uint8_t * dataPath);
+									const uint8_t * dataPath,
+									const uint32_t clientGame);
 
 // Evaluates all conditional lines and regex mods the loaded masterlist. 
 // This exists so that Load() doesn't need to be called whenever the mods 
@@ -175,14 +177,14 @@ BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * ma
 ////////////////////////////////
 
 // Sorts the mods in dataPath according to their order in the masterlist at 
-// masterlistPath for the given game.
-BOSS_API uint32_t SortMods(boss_db db, const uint32_t clientGame);
+// masterlistPath.
+BOSS_API uint32_t SortMods(boss_db db);
 
 // Behaves as the above function does, but does not actually redate the plugins.
 // It instead lists them in the order they would be sorted in using SortMods() in
 // the sortedPlugins array outputted. The contents of the array are static and should
 // not be freed by the client.
-BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, const uint32_t clientGame);
+BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, size_t * listLength);
 
 
 //////////////////////////

@@ -33,6 +33,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
+#include <boost/fusion/adapted/struct/detail/extension.hpp>
 #include "Common/DllDef.h"
 #include "Common/Globals.h"
 #include "Common/Error.h"
@@ -61,9 +62,6 @@ namespace boss {
 		DIRTY,
 		WARN,
 		ERR,
-		//Legacy masterlist keywords.
-		OOOSAY,
-		BCSAY
 	};
 
 	enum itemType : uint32_t {
@@ -73,30 +71,69 @@ namespace boss {
 		REGEX
 	};
 
-	class MasterlistVar {
+	//////////////////////////////
+	// Masterlist Classes
+	//////////////////////////////
+
+	//Base class for all conditional data types.
+	class conditionalData {	
+		friend struct boost::fusion::extension::access;
+	private:
+		string data;
+		string conditions;
 	public:
-		string var;
-		string conditionals;
+		conditionalData();
+		conditionalData(string inData, string inConditions);
+
+		string Data() const;
+		string Conditions() const;
+		void Data(string inData);
+		void Conditions(string inConditions);
+
+		bool evalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 	};
 
-	class Message {
+	class MasterlistVar : public conditionalData {
+		friend struct boost::fusion::extension::access;
 	public:
-			Message			();
-			Message			(keyType inKey, string inData);
-		
-		string	KeyToString	();		//Has HTML-safe output.
+		MasterlistVar();
+		MasterlistVar(string inData, string inConditions);
+	};
 
+	class Message : public conditionalData {
+		friend struct boost::fusion::extension::access;
+	private:
 		keyType key;
-		string	data;
-		string conditionals;
+	public:
+		Message();
+		Message(keyType inKey, string inData);
+
+		keyType Key() const;
+		void Key(keyType inKey);
+		string KeyToString() const;		//Has HTML-safe output.
+
+		bool evalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 	};
 
-	class Item {
+	class Item : public conditionalData {
+		friend struct boost::fusion::extension::access;
+	private:
+		vector<Message> messages;
+		//string data is now filename (or group name). Trimmed and case-preserved. ".ghost" extensions are removed.
+		itemType		type;
 	public:
-				Item		();
-				Item		(fs::path inName);
-				Item		(fs::path inName, itemType inType);
-				Item		(fs::path inName, itemType inType, vector<Message> inMessages);
+
+		Item		();
+		Item		(string inName);
+		Item		(string inName, itemType inType);
+		Item		(string inName, itemType inType, vector<Message> inMessages);
+
+		vector<Message> Messages() const;
+		itemType Type() const;
+		string Name() const;
+		void Messages(vector<Message> inMessages);
+		void Type(itemType inType);
+		void Name(string inName);
 
 		bool	operator<	(Item);		//Throws boss_error exception on fail.
 		
@@ -105,37 +142,61 @@ namespace boss {
 		bool	IsMasterFile();
 		bool	IsGhosted	();			//Checks if the file exists in ghosted form.
 		bool	Exists		();			//Checks if the file exists in data_path, ghosted or not.
-		string	GetHeader	();			//Outputs the file's header.
+		string	GetVersion	();			//Outputs the file's header.
 		void	SetModTime	(time_t modificationTime);
-		void	EvalConditionals(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 
-		vector<Message> messages;
-		fs::path		name;			//Filename (or group name). Trimmed and case-preserved. ".ghost" extensions are removed.
-		itemType		type;
-		string			conditionals;
+		bool evalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 	};
 
 	class ItemList {
+	private:
+		vector<Item>			items;
+		ParsingError			errorBuffer;
+		vector<Message>			globalMessageBuffer;
+		size_t					lastRecognisedPos;
+		vector<MasterlistVar>	masterlistVariables;
+		boost::unordered_map<string,uint32_t> fileCRCs;
 	public:
+
+								ItemList();
 		void					Load			(fs::path path);	//Load by scanning path. If path is a directory, it scans it for plugins. 
 																	//If path is a file, it parses it using the modlist grammar.
 																	//May throw exception on fail.
 		void					Save			(fs::path file);	//Output to file in MF2. Backs up any existing file with new ".old" extension.
 																	//Throws exception on fail.
-		void					EvalConditionals();					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
-		vector<Item>::iterator	FindItem		(fs::path name);	//Find the position of the item with name 'name'. Case-insensitive.
-		vector<Item>::iterator	FindLastItem	(fs::path name);	//Find the last item with the name 'name'. Case-insensitive.
-		vector<Item>::iterator	FindGroupEnd	(fs::path name);	//Find the end position of the group with the given name. Case-insensitive.
+		void					evalConditions();					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
+		size_t					FindItem		(string name);	//Find the position of the item with name 'name'. Case-insensitive.
+		size_t					FindLastItem	(string name);	//Find the last item with the name 'name'. Case-insensitive.
+		size_t					FindGroupEnd	(string name);	//Find the end position of the group with the given name. Case-insensitive.
 
-		vector<Item>			items;
-		ParsingError			errorBuffer;
-		vector<Message>			globalMessageBuffer;
-		vector<Item>::iterator	lastRecognisedPos;
-		vector<MasterlistVar>	masterlistVariables;
-		boost::unordered_map<string,uint32_t> fileCRCs;
+		vector<Item>							Items() const;
+		ParsingError							ErrorBuffer() const;
+		vector<Message>							GlobalMessageBuffer() const;
+		size_t									LastRecognisedPos() const;
+		vector<MasterlistVar>					Variables() const;
+		boost::unordered_map<string,uint32_t>	FileCRCs() const;
+		void	Items(vector<Item> items);
+		void	ErrorBuffer(ParsingError buffer);
+		void	GlobalMessageBuffer(vector<Message> buffer);
+		void	LastRecognisedPos(size_t pos);
+		void	Variables(vector<MasterlistVar> variables);
+		void	FileCRCs(boost::unordered_map<string,uint32_t> crcs);
+
+		void Erase(size_t pos);
+		void Erase(size_t startPos, size_t endPos);
+		void Insert(size_t pos, vector<Item> source, size_t sourceStart, size_t sourceEnd);
+		void Insert(size_t pos, Item item);
 	};
+
+	//////////////////////////////
+	// Userlist Classes
+	//////////////////////////////
 	
 	class RuleLine {
+		friend struct boost::fusion::extension::access;
+	private:
+		keyType key;
+		string	object;
 	public:
 				RuleLine			();
 				RuleLine			(keyType inKey, string inObject);
@@ -143,42 +204,64 @@ namespace boss {
 		bool	IsObjectMessage		();
 		keyType ObjectMessageKey	();
 		string	ObjectMessageData	();
-		string	KeyToString			();		//Has HTML-safe output.
+		string	KeyToString			() const;		//Has HTML-safe output.
 
-		keyType key;
-		string	object;
+		keyType Key() const;
+		string Object() const;
+		void Key(keyType inKey);
+		void Object(string inObject);
 	};
-	
-	class Rule {
-	public:
-		string KeyToString	();  //Has HTML-safe output.
 
+	class Rule : public RuleLine {
+		friend struct boost::fusion::extension::access;
+	private:
 		bool				enabled;
-		keyType				ruleKey;
-		string				ruleObject;
 		vector<RuleLine>	lines;
+	public:
+		Rule();
+		bool Enabled() const;
+		vector<RuleLine> Lines() const;
+
+		void Enabled(bool e);
+		void Lines(vector<RuleLine> inLines);
 	};
-	
+
 	class RuleList {
 	public:
-		void 					Load	(fs::path file);		//Throws exception on fail.
-		void 					Save	(fs::path file);		//Throws exception on fail.
-		vector<Rule>::iterator 	FindRule(string ruleObject, bool onlyEnabled);
-
 		vector<Rule>			rules;
 		ParsingError			parsingErrorBuffer;
 		vector<ParsingError>	syntaxErrorBuffer;
+
+		RuleList();
+		void 					Load	(fs::path file);		//Throws exception on fail.
+		void 					Save	(fs::path file);		//Throws exception on fail.
+		size_t				 	FindRule(string ruleObject, bool onlyEnabled);
+
+		vector<Rule> Rules();
+		ParsingError ParsingErrorBuffer();
+		vector<ParsingError> SyntaxErrorBuffer();
+		
+		void Rules(vector<Rule> inRules);
+		void ParsingErrorBuffer(ParsingError buffer);
+		void SyntaxErrorBuffer(vector<ParsingError> buffer);
 	};
 
+	//////////////////////////////
+	// Other Classes
+	//////////////////////////////
+
 	class Ini {
+	private:
+		ParsingError errorBuffer;
+
+		string	GetGameString	();
+		string	GetLogFormat	();
 	public:
 		void	Load(fs::path file);		//Throws exception on fail.
 		void	Save(fs::path file);		//Throws exception on fail.
 	
-		ParsingError errorBuffer;
-	private:
-		string	GetGameString	();
-		string	GetLogFormat	();
+		ParsingError ErrorBuffer();
+		void ErrorBuffer(ParsingError buffer);
 	};
 }
 #endif

@@ -68,7 +68,7 @@ struct _boss_db_int {
 	const uint8_t ** extPluginList;
 
 	//Constructor
-	inline _boss_db_int() {
+	_boss_db_int() {
 		extTagMap = NULL;
 		extAddedTagIds = NULL;
 		extRemovedTagIds = NULL;
@@ -84,18 +84,18 @@ struct _boss_db_int {
 		else
 			return "";
 	}
-};
 
-//Get a Bash Tag's position in the bashTagMap from its string name.
-map<uint32_t, string>::iterator FindBashTag(map<uint32_t,string>& bashTagMap, string value) {
-	map<uint32_t, string>::iterator mapPos = bashTagMap.begin();
-	while (mapPos != bashTagMap.end()) {
-		if (mapPos->second == value)
-			break;
-		++mapPos;
+	//Get a Bash Tag's position in the bashTagMap from its string name.
+	map<uint32_t, string>::iterator FindBashTag(string value) {
+		map<uint32_t, string>::iterator mapPos = bashTagMap.begin();
+		while (mapPos != bashTagMap.end()) {
+			if (mapPos->second == value)
+				break;
+			++mapPos;
+		}
+		return mapPos;
 	}
-	return mapPos;
-}
+};
 
 // The following are the possible error codes that the API can return.
 // Taken from BOSS-Common's Error.h and extended.
@@ -113,7 +113,8 @@ BOSS_API const uint32_t BOSS_API_ERROR_INVALID_ARGS				=	BOSS_ERROR_MAX + 4;
 BOSS_API const uint32_t BOSS_API_ERROR_NETWORK_FAIL				=	BOSS_ERROR_MAX + 5;
 BOSS_API const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION	=	BOSS_ERROR_MAX + 6;
 BOSS_API const uint32_t BOSS_API_ERROR_NO_UPDATE_NECESSARY		=	BOSS_ERROR_MAX + 7;
-BOSS_API const uint32_t BOSS_API_ERROR_MAX						=	BOSS_API_ERROR_NO_UPDATE_NECESSARY;
+BOSS_API const uint32_t BOSS_API_ERROR_NO_TAG_MAP				=	BOSS_ERROR_MAX + 8;
+BOSS_API const uint32_t BOSS_API_ERROR_MAX						=	BOSS_API_ERROR_NO_TAG_MAP;
 
 // The following are the mod cleanliness states that the API can return.
 BOSS_API const uint32_t BOSS_API_CLEAN_NO		= 0;
@@ -190,7 +191,7 @@ void GetBashTagsFromString(const string message, boost::unordered_set<string>& t
 
 // Returns whether this version of BOSS supports the API from the given 
 // BOSS version. Abstracts BOSS API stability policy away from clients.
-BOSS_API bool IsCompatibleVersion (uint32_t bossVersionMajor, uint32_t bossVersionMinor, uint32_t bossVersionPatch) {
+BOSS_API bool IsCompatibleVersion (const uint32_t bossVersionMajor, const uint32_t bossVersionMinor, const uint32_t bossVersionPatch) {
 	//The 1.9 API is backwards compatible with all 1.x (x<=9) versions of BOSS, and forward compatible with all 1.9.x versions.
 	if (bossVersionMajor <= 1 && bossVersionMajor <= 9)
 		return true;
@@ -262,14 +263,19 @@ BOSS_API void     DestroyBossDb (boss_db db) {
 // same function for ease-of-use by clients.
 BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 									const uint8_t * userlistPath,
-									const uint8_t * dataPath) {
+									const uint8_t * dataPath,
+									const uint32_t clientGame) {
 	ItemList masterlist;
 	RuleList userlist;
 	
 	//Check for valid args.
-	if (db == NULL || masterlistPath == NULL || userlistPath == NULL || dataPath == NULL)
+	if ((clientGame != OBLIVION && clientGame != FALLOUT3 && clientGame != FALLOUTNV && clientGame != NEHRIM && clientGame != SKYRIM) 
+		|| db == NULL || masterlistPath == NULL || userlistPath == NULL || dataPath == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 	
+	//Set game.
+	game = clientGame;
+
 	//PATH SETTING
 	data_path = fs::path(reinterpret_cast<const char *>(dataPath));
 	masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
@@ -333,8 +339,9 @@ BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath) {
 	//First re-evaluate conditionals.
 	ItemList masterlist = db->rawMasterlist;
 	try {
-		masterlist.EvalConditionals();
+		masterlist.evalConditions();
 	} catch (boss_error e) {
+		cout << e.getString() << endl;
 		return BOSS_API_ERROR_CONDITION_EVAL_FAIL;
 	}
 
@@ -353,14 +360,15 @@ BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath) {
 	}
 
 	//Now evaluate regular expressions.
-	vector<Item>::iterator modlistPos, itemIter = masterlist.items.begin();
-	for (itemIter; itemIter != masterlist.items.end(); ++itemIter) {
-		if (itemIter->type == REGEX) {
+	vector<Item> items = masterlist.Items();
+	size_t max = items.size();
+	for (size_t i=0; i<max; i++) {
+		if (items[i].Type() == REGEX) {
 			//First thing's first, make a copy of the entry, then remove it from the masterlist.
-			Item regexItem = *itemIter;
-			itemIter = masterlist.items.erase(itemIter);
+			Item regexItem = items[i];
+			items.erase(items.begin()+i);
 			//Now form a regex.
-			boost::regex reg(Tidy(regexItem.name.string())+"(.ghost)?",boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
+			boost::regex reg(Tidy(regexItem.Name())+"(.ghost)?", boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
 			//Now start looking.
 			setPos = hashset.begin();
 			do {
@@ -369,19 +377,19 @@ BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath) {
 					break;
 				string mod = *setPos;
 				//Look for mod in modlist. Replace with case-preserved mod name.
-				modlistPos = modlist.FindItem(fs::path(mod));
-				if (modlistPos != modlist.items.end())
-					mod = modlistPos->name.string();
+				size_t modlistPos = modlist.FindItem(mod);
+				if (modlistPos != modlist.Items().size())
+					mod = modlist.Items()[modlistPos].Name();
 				//Now do the adding/removing.
 				//Create new temporary item to hold current found mod.
-				fs::path modPath(mod);
-				Item tempItem = Item(modPath, MOD, regexItem.messages);
+				Item tempItem = Item(mod, MOD, regexItem.Messages());
 				//Now insert it in the position of the regex mod.
-				itemIter = masterlist.items.insert(itemIter,tempItem);
+				items.insert(items.begin()+i, tempItem);
 				++setPos;
 			} while (setPos != hashset.end());
 		}
 	}
+	masterlist.Items(items);
 
 	//Now set DB ItemList to function's ItemList.
 	db->filteredMasterlist = masterlist;
@@ -398,7 +406,7 @@ BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath) {
 // If there is, it first compares online and local versions to see if an
 // update is necessary.
 BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * masterlistPath) {
-	if ((game != OBLIVION && game != FALLOUT3 && game != FALLOUTNV && game != NEHRIM && game != SKYRIM) || masterlistPath == NULL)
+	if ((clientGame != OBLIVION && clientGame != FALLOUT3 && clientGame != FALLOUTNV && clientGame != NEHRIM && clientGame != SKYRIM) || masterlistPath == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 
 	game = clientGame;
@@ -440,14 +448,12 @@ BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * ma
 
 // Sorts the mods in dataPath according to their order in the masterlist at 
 // masterlistPath for the given game.
-BOSS_API uint32_t SortMods(boss_db db, const uint32_t clientGame) {
-	if ((game != OBLIVION && game != FALLOUT3 && game != FALLOUTNV && game != NEHRIM && game != SKYRIM) || db == NULL)
+BOSS_API uint32_t SortMods(boss_db db) {
+	if (db == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 
 	ItemList modlist;
 	time_t masterTime, modfiletime = 0;
-
-	game = clientGame;
 
 	try {
 		masterTime = GetMasterTime();
@@ -470,20 +476,24 @@ BOSS_API uint32_t SortMods(boss_db db, const uint32_t clientGame) {
 	//Set up working modlist.
 	//The function below changes the input, so make copies.
 	ItemList masterlist = db->rawMasterlist;
+	masterlist.evalConditions();
 	RuleList userlist = db->userlist;
 	BuildWorkingModlist(modlist, masterlist, userlist);
+	string dummy;
+	ApplyUserRules(modlist, userlist, dummy);  //This needs to be done to get sensible ordering as the userlist has been taken into account in the working modlist.
 
-	//This could be adapted so that no output parts are needed, and an exception is thrown if redating fails.
-	uint32_t i=0;
-	for (vector<Item>::iterator iter = modlist.items.begin(); iter <= modlist.lastRecognisedPos; ++iter) {
-		if (iter->type == MOD && iter->Exists() && !iter->IsMasterFile()) {  //Only act on mods that exist.
+	vector<Item> items = modlist.Items();
+	size_t max = items.size();
+	size_t mods = 1;
+	for (size_t i=0; i < max; i++) {
+		if (items[i].Type() == MOD && items[i].Exists() && !items[i].IsMasterFile()) {  //Only act on mods that exist.
 			//time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 			try {
-				iter->SetModTime(masterTime + i*60);
+				items[i].SetModTime(masterTime + mods*60);
 			} catch(boss_error e) {
 				return BOSS_API_ERROR_FILE_MOD_TIME_WRITE_FAIL;
 			}
-			i++;
+			mods++;
 		}
 	}
 
@@ -494,15 +504,12 @@ BOSS_API uint32_t SortMods(boss_db db, const uint32_t clientGame) {
 // It instead lists them in the order they would be sorted in using SortMods() in
 // the sortedPlugins array outputted. The contents of the array are static and should
 // not be freed by the client.
-BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, const uint32_t clientGame) {
-	if ((game != OBLIVION && game != FALLOUT3 && game != FALLOUTNV && game != NEHRIM && game != SKYRIM) || sortedPlugins == NULL || db == NULL)
+BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, size_t * listLength) {
+	if (sortedPlugins == NULL || db == NULL || listLength == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 
 	ItemList modlist;
 	time_t masterTime, modfiletime = 0;
-
-	game = clientGame;
-	trial_run = true;
 
 	try {
 		masterTime = GetMasterTime();
@@ -525,20 +532,40 @@ BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, cons
 	//Set up working modlist.
 	//The function below changes the input, so make copies.
 	ItemList masterlist = db->rawMasterlist;
+	masterlist.evalConditions();
 	RuleList userlist = db->userlist;
 	BuildWorkingModlist(modlist, masterlist, userlist);
+	string dummy;
+	ApplyUserRules(modlist, userlist, dummy);  //This needs to be done to get sensible ordering as the userlist has been taken into account in the working modlist.
 
 	//This could be adapted so that no output parts are needed, and an exception is thrown if redating fails.
-	size_t i=1;
-	for (vector<Item>::iterator iter = modlist.items.begin(); iter <= modlist.lastRecognisedPos; ++iter) {
-		if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
+	vector<Item> items = modlist.Items();
+	size_t max = items.size();
+	size_t mods = 1;
+	for (size_t i=0; i < max; i++) {
+		if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
 			//Add to array.
-			db->extPluginList = (const uint8_t**)realloc(db->extPluginList, i * sizeof(uint8_t*));
-			db->extPluginList[i] = reinterpret_cast<const uint8_t *>(iter->name.string().c_str());
-			i++;
+			db->extPluginList = (const uint8_t**)realloc(db->extPluginList, mods * sizeof(uint8_t*));
+			db->extPluginList[mods-1] = reinterpret_cast<const uint8_t *>(items[i].Name().c_str());
+			mods++;
 		}
 	}
 
+	*listLength = mods-1;
+
+	cout << "Mods: " << mods << endl;
+
+/*	//Allocate memory.
+	db->extTagMap = (BashTag*)calloc(size_t(*numTags), sizeof(BashTag));
+	if (db->extTagMap == NULL)
+		return BOSS_API_ERROR_NO_MEM;
+
+	//Loop through internal bashTagMap and fill output elements.
+	for (size_t i=0; i<*numTags; i++) {
+		db->extTagMap[i].id = i;
+		db->extTagMap[i].name = reinterpret_cast<const uint8_t *>(db->bashTagMap[i].c_str());
+	}
+*/
 	sortedPlugins = db->extPluginList;
 
 	return BOSS_API_ERROR_OK;
@@ -564,20 +591,27 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 		//This involves iterating through all mods to get the tags they add and remove, in the masterlist and userlist.
 		//Off we go!
 		boost::unordered_set<string> tagsAdded, tagsRemoved;  //These are just so that we can use the general function, and will be combined later.
-		for (vector<Item>::iterator itemIter = db->filteredMasterlist.items.begin(); itemIter != db->filteredMasterlist.items.end(); ++itemIter) {
-			if (itemIter->messages.empty())
+
+		vector<Item> items = db->filteredMasterlist.Items();
+		size_t imax = items.size();
+		for (size_t i=0; i < imax; i++) {
+			if (items[i].Messages().empty())
 				continue;
-			vector<Message>::iterator messageIter = itemIter->messages.begin();
-			for (messageIter; messageIter != itemIter->messages.end(); ++messageIter) {
-				if (messageIter->key == TAG)
-					GetBashTagsFromString(messageIter->data, tagsAdded, tagsRemoved);
+			vector<Message> messages = items[i].Messages();
+			size_t jmax = messages.size();
+			for (size_t j=0; j < jmax; j++) {
+				if (messages[j].Key() == TAG)
+					GetBashTagsFromString(messages[j].Data(), tagsAdded, tagsRemoved);
 			}
 		}
-		for (vector<Rule>::iterator ruleIter = db->userlist.rules.begin(); ruleIter != db->userlist.rules.end(); ++ruleIter) {
-			vector<RuleLine>::iterator lineIter = ruleIter->lines.begin();
-			for (lineIter; lineIter != ruleIter->lines.end(); ++lineIter) {
-				if (lineIter->ObjectMessageKey() == TAG) {
-					GetBashTagsFromString(lineIter->object, tagsAdded, tagsRemoved);
+		vector<Rule> rules = db->userlist.Rules();
+		imax = rules.size();
+		for (size_t i=0; i < imax; i++) {
+			vector<RuleLine> lines = rules[i].Lines();
+			size_t jmax = lines.size();
+			for (size_t j=0; j < jmax; j++) {
+				if (lines[j].ObjectMessageKey() == TAG) {
+					GetBashTagsFromString(lines[j].Object(), tagsAdded, tagsRemoved);
 				}
 			}
 		}
@@ -586,13 +620,13 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 		uint32_t UID = 0;
 		boost::unordered_set<string>::iterator tagStringIter;
 		for (tagStringIter = tagsAdded.begin(); tagStringIter != tagsAdded.end(); ++tagStringIter) {
-			if (FindBashTag(db->bashTagMap, *tagStringIter) == db->bashTagMap.end())	{						//Tag not found in bashTagMap. Add it!
+			if (db->FindBashTag(*tagStringIter) == db->bashTagMap.end())	{						//Tag not found in bashTagMap. Add it!
 				db->bashTagMap.insert(pair<uint32_t,string>(UID,*tagStringIter));
 				UID++;  //Now increment UID to keep it U.
 			}
 		}
 		for (tagStringIter = tagsRemoved.begin(); tagStringIter != tagsRemoved.end(); ++tagStringIter) {
-			if (FindBashTag(db->bashTagMap, *tagStringIter) == db->bashTagMap.end())	{						//Tag not found in bashTagMap. Add it!
+			if (db->FindBashTag(*tagStringIter) == db->bashTagMap.end())	{						//Tag not found in bashTagMap. Add it!
 				db->bashTagMap.insert(pair<uint32_t,string>(UID,*tagStringIter));
 				UID++;  //Now increment UID to keep it U.
 			}
@@ -607,7 +641,7 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 			return BOSS_API_ERROR_NO_MEM;
 
 		//Loop through internal bashTagMap and fill output elements.
-		for (uint32_t i=0;i<*numTags;i++) {
+		for (size_t i=0; i<*numTags; i++) {
 			db->extTagMap[i].id = i;
 			db->extTagMap[i].name = reinterpret_cast<const uint8_t *>(db->bashTagMap[i].c_str());
 		}
@@ -639,6 +673,9 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 	if (mod.empty())
 		return BOSS_API_ERROR_INVALID_ARGS;
 
+	if (db->extTagMap == NULL)
+		return BOSS_API_ERROR_NO_TAG_MAP;
+
 	//Bash Tag temporary internal holders.
 	boost::unordered_set<string> tagsAdded, tagsRemoved;
 
@@ -650,27 +687,27 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 	*userlistModified = false;
 
 	//Now search filtered masterlist for mod.
-	vector<Item>::iterator itemIter = db->filteredMasterlist.FindItem(fs::path(mod));
-	if (itemIter != db->filteredMasterlist.items.end()) {
-		vector<Message>::iterator messageIter = itemIter->messages.begin();
-		for (messageIter; messageIter != itemIter->messages.end(); ++messageIter) {
-			if (messageIter->key == TAG)
-				GetBashTagsFromString(messageIter->data, tagsAdded, tagsRemoved);
+	size_t pos = db->filteredMasterlist.FindItem(mod);
+	if (pos != db->filteredMasterlist.Items().size()) {
+		vector<Message> messages = db->filteredMasterlist.Items()[pos].Messages();
+		for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter) {
+			if (messageIter->Key() == TAG)
+				GetBashTagsFromString(messageIter->Data(), tagsAdded, tagsRemoved);
 		}
 	}
 
 	//Now search userlist for mod.
-	vector<Rule>::iterator ruleIter = db->userlist.FindRule(mod, false);
-	if (ruleIter != db->userlist.rules.end()) {
-		vector<RuleLine>::iterator lineIter = ruleIter->lines.begin();
-		for (lineIter; lineIter != ruleIter->lines.end(); ++lineIter) {
-			if (lineIter->key == REPLACE) {
+	pos = db->userlist.FindRule(mod, false);
+	if (pos != db->userlist.Rules().size()) {
+		vector<RuleLine> lines = db->userlist.Rules()[pos].Lines();
+		for (vector<RuleLine>::iterator lineIter = lines.begin(); lineIter != lines.end(); ++lineIter) {
+			if (lineIter->Key() == REPLACE) {
 				tagsAdded.clear();
 				tagsRemoved.clear();
 				*userlistModified = true;
 			}
 			if (lineIter->ObjectMessageKey() == TAG) {
-				GetBashTagsFromString(lineIter->object, tagsAdded, tagsRemoved);
+				GetBashTagsFromString(lineIter->Object(), tagsAdded, tagsRemoved);
 				*userlistModified = true;
 			}
 		}
@@ -680,12 +717,12 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 	vector<uint32_t> tagsAddedUIDs, tagsRemovedUIDs;
 	boost::unordered_set<string>::iterator tagStringIter;
 	for (tagStringIter = tagsAdded.begin(); tagStringIter != tagsAdded.end(); ++tagStringIter) {
-		map<uint32_t,string>::iterator mapPos = FindBashTag(db->bashTagMap, *tagStringIter);
+		map<uint32_t,string>::iterator mapPos = db->FindBashTag(*tagStringIter);
 		if (mapPos != db->bashTagMap.end())							//Tag found in bashTagMap. Get the UID.
 			tagsAddedUIDs.push_back(mapPos->first);
 	}
 	for (tagStringIter = tagsRemoved.begin(); tagStringIter != tagsRemoved.end(); ++tagStringIter) {
-		map<uint32_t,string>::iterator mapPos = FindBashTag(db->bashTagMap, *tagStringIter);
+		map<uint32_t,string>::iterator mapPos = db->FindBashTag(*tagStringIter);
 		if (mapPos != db->bashTagMap.end())							//Tag found in bashTagMap. Get the UID.
 			tagsRemovedUIDs.push_back(mapPos->first);
 	}
@@ -749,15 +786,15 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName,
 	*needsCleaning = BOSS_API_CLEAN_UNKNOWN;
 
 	//Now search filtered masterlist for mod.
-	vector<Item>::iterator itemIter = db->filteredMasterlist.FindItem(fs::path(mod));
-	if (itemIter != db->filteredMasterlist.items.end()) {
-		vector<Message>::iterator messageIter = itemIter->messages.begin();
-		for (messageIter; messageIter != itemIter->messages.end(); ++messageIter) {
-			if (messageIter->key == DIRTY) {
-				db->extMessage = reinterpret_cast<const uint8_t *>(messageIter->data.c_str());
-				*message = db->extMessage;
+	size_t pos = db->filteredMasterlist.FindItem(mod);
+	if (pos != db->filteredMasterlist.Items().size()) {
+		vector<Message> messages = db->filteredMasterlist.Items()[pos].Messages();
+		for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter) {
+			if (messageIter->Key() == DIRTY) {
+				*message = reinterpret_cast<const uint8_t *>(messageIter->Data().c_str());
+				db->extMessage = *message;
 
-				if (messageIter->data.find("Do not clean.") != string::npos)  //Mod should not be cleaned.
+				if (messageIter->Data().find("Do not clean.") != string::npos)  //Mod should not be cleaned.
 					*needsCleaning = BOSS_API_CLEAN_NO;
 				else  //Mod should be cleaned.
 					*needsCleaning = BOSS_API_CLEAN_YES;
@@ -785,16 +822,19 @@ BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const boo
 			return BOSS_ERROR_FILE_WRITE_FAIL;
 		else {
 			//Iterate through items, printing out all relevant info.
-			vector<Message>::iterator messageIter;
-			for (vector<Item>::iterator itemIter = db->rawMasterlist.items.begin(); itemIter != db->rawMasterlist.items.end(); ++itemIter) {
-				if (itemIter->type == MOD || itemIter->type == REGEX) {
+			vector<Item> items = db->rawMasterlist.Items();  //Filtered works, but not raw.
+			for (vector<Item>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter) {
+				if (itemIter->Type() == MOD || itemIter->Type() == REGEX) {
 					bool namePrinted = false;
-					messageIter = itemIter->messages.begin();
-					for (messageIter; messageIter != itemIter->messages.end(); ++messageIter) {
-						if (messageIter->key == TAG || messageIter->key == DIRTY) {
-							if (!namePrinted)
-								mlist << itemIter->name.string() << endl;  //Print the mod name.
-							mlist << " " << messageIter->KeyToString() << ": " << messageIter->data << endl;
+					vector<Message> messages = itemIter->Messages();
+					for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter) {
+						if (messageIter->Key() == TAG || messageIter->Key() == DIRTY) {
+							if (!namePrinted) {
+								if (itemIter->Type() == REGEX)
+									mlist << "REGEX: ";
+								mlist << itemIter->Name() << endl;  //Print the mod name.
+							}
+							mlist << " " << messageIter->KeyToString() << ": " << messageIter->Data() << endl;
 						}
 					}
 				}

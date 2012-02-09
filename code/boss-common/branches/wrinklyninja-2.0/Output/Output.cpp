@@ -169,12 +169,12 @@ namespace boss {
 				<< "#popup_yes{" << CSSPopupBoxSubmit << "}"
 				<< "</style>"<<endl;
 			outStream << "<div>BOSS Log</div>" << endl
-				<< "<div>&copy; 2009-2011 BOSS Development Team<br />" << endl
+				<< "<div>&copy; 2009-2012 BOSS Development Team<br />" << endl
 				<< "<a href=\"http://www.gnu.org/licenses/gpl.html\">GNU General Public License v3.0</a><br />" << endl
 				<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << boss_release_date << ")</div>";
 		} else
 			outStream << endl << "BOSS Log" << endl
-				<< "Copyright 2009-2011 BOSS Development Team" << endl
+				<< "Copyright 2009-2012 BOSS Development Team" << endl
 				<< "License: GNU General Public License v3.0" << endl
 				<< "(http://www.gnu.org/licenses/gpl.html)" << endl
 				<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << boss_release_date << ")" << endl;
@@ -561,7 +561,7 @@ namespace boss {
 	}
 
 	Outputter& Outputter::operator<< (const Message m) {
-		string data = EscapeHTMLSpecial(m.data);
+		string data = EscapeHTMLSpecial(m.Data());
 		//If bosslog format is HTML, wrap web addresses in HTML link format.
 		if (log_format == HTML) {
 			size_t pos1,pos2;
@@ -577,7 +577,7 @@ namespace boss {
 			}
 		}
 		//Select message formatting.
-		switch(m.key) {
+		switch(m.Key()) {
 		case TAG:
 			if (outFormat == HTML)
 				outStream << "<li class='tag'><span class='tagPrefix'>Bash Tag suggestion(s):</span> " << data;
