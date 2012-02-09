@@ -184,7 +184,7 @@ BOSS_API uint32_t SortMods(boss_db db);
 // It instead lists them in the order they would be sorted in using SortMods() in
 // the sortedPlugins array outputted. The contents of the array are static and should
 // not be freed by the client.
-BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, size_t * listLength);
+BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t *** sortedPlugins, size_t * listLength);
 
 
 //////////////////////////
@@ -219,7 +219,7 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 // The message string is valid until the db is destroyed or until a Load
 // function is called. The string should not be freed by the client.
 BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName, 
-									const uint8_t ** message, uint32_t * needsCleaning);
+									uint8_t ** message, uint32_t * needsCleaning);
 									
 // Writes a minimal masterlist that only contains mods that have Bash Tag suggestions, 
 // and/or dirty messages, plus the Tag suggestions and/or messages themselves. outputFile 

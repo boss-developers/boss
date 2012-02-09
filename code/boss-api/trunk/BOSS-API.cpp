@@ -64,8 +64,11 @@ struct _boss_db_int {
 	BashTag * extTagMap;				//Holds the pointer for the bashTagMap returned by GetBashTagMap().
 	uint32_t * extAddedTagIds;
 	uint32_t * extRemovedTagIds;
-	const uint8_t * extMessage;
-	const uint8_t ** extPluginList;
+	uint8_t * extMessage;
+	uint8_t ** extPluginList;
+
+	//Pointer array sizes.
+	size_t extPluginListSize;
 
 	//Constructor
 	_boss_db_int() {
@@ -185,6 +188,31 @@ void GetBashTagsFromString(const string message, boost::unordered_set<string>& t
 	}
 }
 
+//This allocates memory - don't forget to free it later.
+uint8_t * StringToUint8_tString(string str) {
+	uint8_t * p = (uint8_t*)malloc((str.length() + 1) * sizeof(uint8_t));
+	if (p == NULL)
+		return p;
+	for (size_t j=0; j < str.length(); j++) {
+		p[j] = str[j];
+	}
+	p[str.length()] = '\0';
+	return p;
+}
+
+void DestroyPointers(boss_db db) {
+	free(db->extTagMap);
+	free(db->extAddedTagIds);
+	free(db->extRemovedTagIds);
+	free(db->extMessage);
+
+	if (db->extPluginList != NULL) {
+		for (size_t i=0; i<db->extPluginListSize; i++)
+			free(db->extPluginList[i]);  //Clear all the uint8_t strings created.
+		free(db->extPluginList);  //Clear the string array.
+	}
+}
+
 //////////////////////////////
 // Version Functions
 //////////////////////////////
@@ -214,17 +242,6 @@ BOSS_API uint32_t GetVersionString (const uint8_t ** bossVersionStr) {
 ////////////////////////////////////
 // Lifecycle Management Functions
 ////////////////////////////////////
-
-void DestroyPointers(boss_db db) {
-	if (db->extTagMap != NULL)
-		free(db->extTagMap);
-	if (db->extAddedTagIds != NULL)
-		free(db->extAddedTagIds);
-	if (db->extRemovedTagIds != NULL)
-		free(db->extRemovedTagIds);
-	if (db->extMessage != NULL)
-		free(const_cast<uint8_t*>(db->extMessage));
-}
 
 // Explicitly manage database lifetime. Allows clients to free memory when
 // they want/need to.
@@ -504,7 +521,7 @@ BOSS_API uint32_t SortMods(boss_db db) {
 // It instead lists them in the order they would be sorted in using SortMods() in
 // the sortedPlugins array outputted. The contents of the array are static and should
 // not be freed by the client.
-BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, size_t * listLength) {
+BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t *** sortedPlugins, size_t * listLength) {
 	if (sortedPlugins == NULL || db == NULL || listLength == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 
@@ -538,35 +555,40 @@ BOSS_API uint32_t TrialSortMods(boss_db db, const uint8_t ** sortedPlugins, size
 	string dummy;
 	ApplyUserRules(modlist, userlist, dummy);  //This needs to be done to get sensible ordering as the userlist has been taken into account in the working modlist.
 
-	//This could be adapted so that no output parts are needed, and an exception is thrown if redating fails.
+	//Initialise vars.
+	*listLength = 0;
+	*sortedPlugins = NULL;
+
+	//Free memory if already used.
+	if (db->extPluginList != NULL) {
+		for (size_t i=0; i<db->extPluginListSize; i++)
+			free(db->extPluginList[i]);  //Clear all the uint8_t strings created.
+		free(db->extPluginList);  //Clear the string array.
+	}
+
+	//Build vector of relevant items (ie. only mods).
 	vector<Item> items = modlist.Items();
+	vector<uint8_t *> mods;
 	size_t max = items.size();
-	size_t mods = 1;
 	for (size_t i=0; i < max; i++) {
 		if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
-			//Add to array.
-			db->extPluginList = (const uint8_t**)realloc(db->extPluginList, mods * sizeof(uint8_t*));
-			db->extPluginList[mods-1] = reinterpret_cast<const uint8_t *>(items[i].Name().c_str());
-			mods++;
+			uint8_t * p = StringToUint8_tString(items[i].Name());
+			if (p == NULL)
+				return BOSS_API_ERROR_NO_MEM;
+			mods.push_back(p);
 		}
 	}
 
-	*listLength = mods-1;
-
-	cout << "Mods: " << mods << endl;
-
-/*	//Allocate memory.
-	db->extTagMap = (BashTag*)calloc(size_t(*numTags), sizeof(BashTag));
-	if (db->extTagMap == NULL)
+	//Now create external array.
+	db->extPluginListSize = mods.size();
+	db->extPluginList = (uint8_t**)malloc(db->extPluginListSize * sizeof(uint8_t*));
+	if (db->extPluginList == NULL)
 		return BOSS_API_ERROR_NO_MEM;
-
-	//Loop through internal bashTagMap and fill output elements.
-	for (size_t i=0; i<*numTags; i++) {
-		db->extTagMap[i].id = i;
-		db->extTagMap[i].name = reinterpret_cast<const uint8_t *>(db->bashTagMap[i].c_str());
-	}
-*/
-	sortedPlugins = db->extPluginList;
+	for (size_t i=0; i < db->extPluginListSize; i++)
+		db->extPluginList[i] = mods[i];
+	
+	*sortedPlugins = db->extPluginList;
+	*listLength = db->extPluginListSize;
 
 	return BOSS_API_ERROR_OK;
 }
@@ -633,19 +655,20 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 		}
 
 		//Now to convert for the outside world.
-		*numTags = db->bashTagMap.size();  //Set size.
+		size_t mapSize = db->bashTagMap.size();  //Set size.
 
 		//Allocate memory.
-		db->extTagMap = (BashTag*)calloc(size_t(*numTags), sizeof(BashTag));
+		db->extTagMap = (BashTag*)calloc(mapSize, sizeof(BashTag));
 		if (db->extTagMap == NULL)
 			return BOSS_API_ERROR_NO_MEM;
 
 		//Loop through internal bashTagMap and fill output elements.
-		for (size_t i=0; i<*numTags; i++) {
+		for (size_t i=0; i<mapSize; i++) {
 			db->extTagMap[i].id = i;
 			db->extTagMap[i].name = reinterpret_cast<const uint8_t *>(db->bashTagMap[i].c_str());
 		}
 		*tagMap = db->extTagMap;
+		*numTags = mapSize;
 	}
 	return BOSS_API_ERROR_OK;
 }
@@ -697,11 +720,12 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 	}
 
 	//Now search userlist for mod.
-	pos = db->userlist.FindRule(mod, false);
+	pos = db->userlist.FindRule(mod, true);
 	if (pos != db->userlist.Rules().size()) {
+		cout << "Yo ho ho!" << endl;
 		vector<RuleLine> lines = db->userlist.Rules()[pos].Lines();
 		for (vector<RuleLine>::iterator lineIter = lines.begin(); lineIter != lines.end(); ++lineIter) {
-			if (lineIter->Key() == REPLACE) {
+			if (lineIter->Key() == REPLACE && (!tagsAdded.empty() || !tagsRemoved.empty())) {
 				tagsAdded.clear();
 				tagsRemoved.clear();
 				*userlistModified = true;
@@ -709,6 +733,7 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 			if (lineIter->ObjectMessageKey() == TAG) {
 				GetBashTagsFromString(lineIter->Object(), tagsAdded, tagsRemoved);
 				*userlistModified = true;
+				cout << "Yo ho ho!" << endl;
 			}
 		}
 	}
@@ -727,36 +752,30 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 			tagsRemovedUIDs.push_back(mapPos->first);
 	}
 	//Now set the sizes (we kept the two separate just in case some tags didn't have UIDs, which would change the size of the outputted array.
-	*numTags_added = tagsAddedUIDs.size();
-	*numTags_removed = tagsRemovedUIDs.size();
+	size_t numAdded = tagsAddedUIDs.size();
+	size_t numRemoved = tagsRemovedUIDs.size();
+
+	//Free memory.
+	free(db->extAddedTagIds);
+	free(db->extRemovedTagIds);
 	
 	//Allocate memory.
-	uint32_t * temp;
-	temp = (uint32_t*)realloc(db->extAddedTagIds,*numTags_added * sizeof(uint32_t));
-	if (temp == NULL) {  //The realloc() fails sometimes for some reason. Try doing the same thing with free() and malloc().
-		free(db->extAddedTagIds);
-		db->extAddedTagIds = (uint32_t*)malloc(*numTags_added * sizeof(uint32_t));
-		if (db->extAddedTagIds == NULL)
-			return BOSS_API_ERROR_NO_MEM;
-	} else 
-		db->extAddedTagIds = temp;
-	temp = (uint32_t*)realloc(db->extRemovedTagIds,*numTags_removed * sizeof(uint32_t));
-	if (temp == NULL) {  //The realloc() fails sometimes for some reason. Try doing the same thing with free() and malloc().
-		free(db->extRemovedTagIds);
-		db->extRemovedTagIds = (uint32_t*)malloc(*numTags_removed * sizeof(uint32_t));
-		if (db->extRemovedTagIds == NULL)
-			return BOSS_API_ERROR_NO_MEM;
-	} else 
-		db->extRemovedTagIds = temp;
-	
-	//Loop through vectors and fill output elements.
-	for (size_t i=0; i < *numTags_added; i++)
+	db->extAddedTagIds = (uint32_t*) malloc(numAdded * sizeof(uint32_t));
+	if (db->extAddedTagIds == NULL)
+		return BOSS_API_ERROR_NO_MEM;
+	for (size_t i=0; i < numAdded; i++)
 		db->extAddedTagIds[i] = tagsAddedUIDs[i];
-	for (size_t i=0; i < *numTags_removed; i++)
+
+	db->extRemovedTagIds = (uint32_t*) malloc(numRemoved * sizeof(uint32_t));
+	if (db->extRemovedTagIds == NULL)
+		return BOSS_API_ERROR_NO_MEM;
+	for (size_t i=0; i < numRemoved; i++)
 		db->extRemovedTagIds[i] = tagsRemovedUIDs[i];
 
 	*tagIds_added = db->extAddedTagIds;
 	*tagIds_removed = db->extRemovedTagIds;
+	*numTags_added = numAdded;
+	*numTags_removed = numRemoved;
 
 	return BOSS_API_ERROR_OK;
 }
@@ -770,7 +789,7 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 // The message string is valid until the db is destroyed or until a Load
 // function is called. The string should not be freed by the client.
 BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName, 
-									const uint8_t ** message, uint32_t * needsCleaning) {
+									uint8_t ** message, uint32_t * needsCleaning) {
 	//Check for valid args.
 	if (db == NULL || modName == NULL || message == NULL || needsCleaning == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
@@ -791,8 +810,8 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName,
 		vector<Message> messages = db->filteredMasterlist.Items()[pos].Messages();
 		for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter) {
 			if (messageIter->Key() == DIRTY) {
-				*message = reinterpret_cast<const uint8_t *>(messageIter->Data().c_str());
-				db->extMessage = *message;
+				db->extMessage = StringToUint8_tString(messageIter->Data());
+				 *message = db->extMessage;
 
 				if (messageIter->Data().find("Do not clean.") != string::npos)  //Mod should not be cleaned.
 					*needsCleaning = BOSS_API_CLEAN_NO;

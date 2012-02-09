@@ -753,7 +753,9 @@ namespace boss {
 						messages.clear();
 					//Append message to message list of mod.
 					messages.push_back(newMessage);
-					modlist.Items()[modlistPos1].Messages(messages);
+					vector<Item> items = modlist.Items();
+					items[modlistPos1].Messages(messages);
+					modlist.Items(items);
 					//Output confirmation.
 					buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << SPAN_CLASS_MESSAGE_OPEN << lines[i].Object() << SPAN_CLOSE <<"\"";
 					if (lines[i].Key() == APPEND)

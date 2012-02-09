@@ -17,6 +17,8 @@
 	td {border:1px solid #ccc; padding: 5px;}
 	table {border:1px solid #CCCCCC; border-spacing:0; border-collapse:separate; margin:1em;}
 	thead > tr td {font-weight:bold}
+	td.t {background:#90ff90;text-align:center;}
+	td.c {background:#ff9090;text-align:center;}
 </style>
 
 <div>Better Oblivion Sorting Software<br />
@@ -89,10 +91,10 @@ Masterlist Syntax Documentation</div>
 <table>
 	<thead><tr><td>BOSS Version	<td>MF1<td>MF2.0<td>MF2.1<td>MF2.2
 	<tbody>
-		<tr><td>1.6.x and below	<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#ff9090;text-align:center;">&#x2717;
-		<tr><td>1.7.x			<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#ff9090;text-align:center;">&#x2717;
-		<tr><td>1.8				<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#ff9090;text-align:center;">&#x2717;
-		<tr><td>1.9				<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
+		<tr><td>1.6.x and below	<td class="t">&#x2713;<td class="c">&#x2717;<td class="c">&#x2717;<td class="c">&#x2717;
+		<tr><td>1.7.x			<td class="t">&#x2713;<td class="t">&#x2713;<td class="c">&#x2717;<td class="c">&#x2717;
+		<tr><td>1.8				<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="c">&#x2717;
+		<tr><td>1.9				<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
 </table>
 <p>If a version of BOSS does not recognise the syntax in which a line is written, it will assume that it is a plugin line, and so the line will effectively be ignored. This means that a masterlist may contain a mix of format syntaxes without issue.</p>
 
@@ -103,29 +105,29 @@ Masterlist Syntax Documentation</div>
 	<tbody>
 		<tr><td>Type Identifiers						<td>Symbols<td>Keywords<td>Keywords<td>Keywords
 		<tr><td>Type Identifier Case					<td><i>N/A</i><td>Upper<td>Upper<td>Insensitive
-		<tr><td>Basic Plugin Ordering					<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Plugin Grouping							<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>C++-Style Comments						<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>General Messages						<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Bash Tag Suggestions					<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Requirement Messages					<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Incompatibility Messages				<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Better Cities-Specific Messages			<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>OOO/FWE/FOOK-Specific Messages			<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>FCOM/FOOK2/nVamp Error Messages			<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Dirty Plugin Messages					<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Warning Messages						<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Error Messages							<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Global Messages							<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Whitespace Skipped <a href="#1">&#x00B9;</a><td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Masterlist Variables					<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>General Conditionals					<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Regular Expression Plugins						<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Conditional Incompatibilities Shorthand	<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Conditional Requirements Shorthand		<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#90ff90;text-align:center;">&#x2713;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>Conditional Message Shorthand				<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#90ff90;text-align:center;">&#x2713;
-		<tr><td>C-Style Comments						<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#90ff90;text-align:center;">&#x2713;
-  <tr><td>Regular Expression Conditions						<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#ff9090;text-align:center;">&#x2717;<td style="background:#90ff90;text-align:center;">&#x2713;
+		<tr><td>Basic Plugin Ordering					<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Plugin Grouping							<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>C++-Style Comments						<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>General Messages						<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Bash Tag Suggestions					<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Requirement Messages					<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Incompatibility Messages				<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Better Cities-Specific Messages			<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>OOO/FWE/FOOK-Specific Messages			<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>FCOM/FOOK2/nVamp Error Messages			<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Dirty Plugin Messages					<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Warning Messages						<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Error Messages							<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Global Messages							<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Whitespace Skipped <a href="#1">&#x00B9;</a><td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Masterlist Variables					<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>General Conditionals					<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Regular Expression Plugins						<td class="c">&#x2717;<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Conditional Incompatibilities Shorthand	<td class="c">&#x2717;<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Conditional Requirements Shorthand		<td class="c">&#x2717;<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>Conditional Message Shorthand				<td class="c">&#x2717;<td class="c">&#x2717;<td class="c">&#x2717;<td class="t">&#x2713;
+		<tr><td>C-Style Comments						<td class="c">&#x2717;<td class="c">&#x2717;<td class="c">&#x2717;<td class="t">&#x2713;
+  <tr><td>Regular Expression Conditions						<td class="c">&#x2717;<td class="c">&#x2717;<td class="c">&#x2717;<td class="t">&#x2713;
 </table>
 <div id="1" style="font-size:0.9em;">&#x00B9; In all formats, whitespace is always preserved inside plugin and group names and messages.</div>
 </div>
@@ -133,14 +135,14 @@ Masterlist Syntax Documentation</div>
 <div id="rules"><h1>Rules &amp; Guidelines</h1>
 <p>The following are some rules and guidelines that should be followed when editing the masterlist.
 <ol>
-	<li>When you include a web link in a message, enclose it in double quotes "", for example: www.example.org should be written "www.example.org". BOSS will automatically turn web links into hyperlinks in the HTML BOSS Log.
+	<li>When a web link is included in a message, enclose it in double quotes "", for example: www.example.org should be written "www.example.org". BOSS will automatically turn web links into hyperlinks in the HTML BOSS Log.
 	<li>Don't include any HTML (or BBCode) formatting in messages.
 	<li>Don't duplicate lines using different syntaxes. A line only needs to be written in one syntax.
 	<li>As the majority of BOSS users use versions that only support MF1, write in that where possible.
 	<li>If using MF2.x, write the keywords in uppercase and indent message lines by one space.
 	<li>Write plugin names in the correct case (ie. capital letters where the plugin has capital letters). Some people use BOSS on Linux, which is case-sensitive. 
 	<li>Use blank lines to separate plugins that are grouped together or where it helps readability.
-	<li>Use silent comments when you think something needs clarification to others reading the masterlist (such as when a plugin looks like it is misspelled, but is correct).
+	<li>Use silent comments when something may need clarification to others reading the masterlist (such as when a plugin looks like it is misspelled, but is correct).
 	<li>Only make edits/additions you're confident about - otherwise discuss the issue on the official forum threads.
 	<li>If you're unsure on how to write something in the correct syntax, check the masterlists for examples, and don't be afraid to ask other team members for help.
 	<li>When you list Bash Tags for a plugin, separate them using ", " and not just ",". Eg. {{BASH: Graphics,NoMerge}} should be written {{BASH: Graphics, NoMerge}}. This improves readability in the BOSS Log and the masterlist itself.
@@ -153,7 +155,7 @@ Masterlist Syntax Documentation</div>
 <h2 id="common-plugins">Plugin Lines</h2>
 <p>Plugin lines have the simplest of syntaxes. The line should contain only the plugin filename:</p>
 <code>[plugin]</code>
-<p><b>In MF2:</b> Plugin lines also have a keyword associated with them, <code>MOD</code>, which can be given before the plugin filename and the two separated by a colon. However, since BOSS assumes that lines with no recognised keywords are plugin lines, the inclusion of the keyword is unnecessary and for backwards-compatibility should not be used <b>unless</b> you are using a conditional in the plugin line. If the plugin line has a conditional, you should include the <code>MOD</code> keyword between the conditional and the colon. You can also choose to omit both the keyword and the colon, but as the colon is an absolute requirement for all other parts of MF2 syntax, this is not good practice. The choice available is a side-effect of backward compatibility with MF1.</p><br />
+<p><b>In MF2:</b> Plugin lines also have a keyword associated with them, <code>MOD</code>, which can be given before the plugin filename and the two separated by a colon. However, since BOSS assumes that lines with no recognised keywords are plugin lines, the inclusion of the keyword is unnecessary and for backwards-compatibility should not be used <b>unless</b> a conditional is used in the plugin line. If the plugin line has a conditional, the <code>MOD</code> keyword should be included between the conditional and the colon. Alternatively, both  the keyword and the colon may be omitted, but as the colon is an absolute requirement for all other parts of MF2 syntax, this is not good practice. The choice available is a side-effect of backward compatibility with MF1.</p><br />
 
 <h2 id="common-comments">Silent Comments</h2>
 <p>Silent comments are character strings that are skipped by the BOSS parser and so have no effect on BOSS's output. C++ style comments must start at the beginning of a line. C style comments must start and end at the beginning of lines. Comments may not be used inline. In the table below, <code>[comment]</code> is the comment being made.
@@ -186,7 +188,7 @@ Masterlist Syntax Documentation</div>
 <p id="3" style="font-size:0.9em;">&#x00B3; In MF1 and MF2.0, <code>[message]</code> is a generic string like for any other message type. In MF2.1, it has a specific conditional syntax. In MF2.2, it can either be a generic string or use the conditional syntax. See the <q><a href="#mf2-cond-shorthands">Conditional Requirement &amp; Incompatibility Shorthands</a></q> section below for details on the conditional syntax.
 <p id="4" style="font-size:0.9em;">&#x2020; In BOSS v1.7 and later, the symbol <code>*</code> technically denotes a general error message. However, in previous versions of BOSS it specifically denoted an FCOM install error, and would not require the preceding <code>&gt;</code> to behave conditionally. To avoid confusing users, the <code>*</code> symbol should never be used as a type identifier without being preceded by the FCOM-installed conditional <code>&gt;</code>, making it an FCOM install error message.
 
-<p>The above table references some Oblivion mods. The table below gives the Fallout 3 and Fallout: New Vegas equivalents. Replace all references in the above table with the relevant equivalents below for your game. The masterlist variables listed are conditionally defined at the top of the relevant games' masterlists if the user has the corresponding mods installed and are used by the MF2 mod-specific messages. In MF1, the checks are hardcoded into BOSS.
+<p>The above table references some Oblivion mods. The table below gives the Fallout 3 and Fallout: New Vegas equivalents. Replace all references in the above table with the relevant equivalents below for the game in question. The masterlist variables listed are conditionally defined at the top of the relevant games' masterlists if the user has the corresponding mods installed and are used by the MF2 mod-specific messages. In MF1, the checks are hardcoded into BOSS.
 
 <table>
 	<thead>
@@ -240,14 +242,14 @@ Masterlist Syntax Documentation</div>
 
 <h2 id="mf2-regex">Regular Expression Plugin Matching</h2>
 <p style="font-weight:bold;">This is MF2.1 functionality.
-<p>You can use regular expressions in the masterlist for plugin names using the following syntax, where <code>[regular expression]</code> is the plugin filename written in regex syntax:</p>
+<p>Regular expressions may be used in the masterlist for plugin names using the following syntax, where <code>[regular expression]</code> is the plugin filename written in regex syntax:</p>
 <code>REGEX: [regular expression]</code>
 <p>The regex syntax used is POSIX Extended. BOSS will search the user's plugins and sort all the plugins that match the regular expression given in its location in the masterlist. If more than one plugin matches, the order in which the plugins will be placed at that position is random, so it should not be used to sort a set of similarly named plugins which require specific ordering within the set. </p><br />
 
 <h2 id="mf2-vars">Masterlist Variables & Variable Lines</h2>
-<p>You can define variables in the masterlist using the following syntax, where <code>[name]</code> is the variable name:</p>
+<p>Variables may be defined in the masterlist using the following syntax, where <code>[name]</code> is the variable name:</p>
 <code>SET: [name]</code>
-<p>The name of a variable is an alphanumerical string that should not contain spaces. You can then check if these variables are defined in conditionals. You can only define variables, it is not possible to 'undefine' a variable.
+<p>The name of a variable is an alphanumerical string that should not contain spaces. The definition of variables may be queried in conditionals. Variables may only be defined, it is not possible to 'undefine' a variable. (In that respect they are constants with indeterminate unique values rather than variables, but they are referred to as variables here.)
 <p>Unlike message lines, variable lines exist independently of plugin lines. A variable line will therefore signal the termination of a set of attached message lines, much like a plugin line would, and any message lines after the variable line will be skipped, having no plugin to attach to. For example:
 <div class="codebox">[plugin line]
 [message line 1]
@@ -257,7 +259,7 @@ Masterlist Syntax Documentation</div>
 <p>In the above structure, only message lines 1 and 2 will be parsed, and message line 3 will be ignored.</p><br />
 
 <h2 id="mf2-globals">Global Messages</h2>
-<p>You can print a global message to the BOSS Log using the following syntax:</p>
+<p>A global message may be printed to the BOSS Log using the following syntax:</p>
 <code>GLOBAL [message keyword]: [message]</code>
 <p>Where the <code>[message keyword]</code> and <code>[message]</code> are as described in the above Message Lines section. The message will be printed to the BOSS Log in a separate <q>General Messages</q> section above the list of recognised plugins.</p><br />
 
@@ -352,7 +354,7 @@ IF ($Mod1Correct) MOD: Mod5.esp</div>
 
 <p>Each item in the list is separated by a <code>|</code> or <code>,</code> character (the latter not shown above). There is no limit to the number of items that may be listed. <code>[file]</code>, <code>[comparator]</code>, <code>[version]</code>, <code>[variable]</code>, <code>[checksum]</code> and <code>[regular expression]</code> are all defined as in the <q><a href="#mf2-cond">General Conditionals</a></q> section above. <code>[mod]</code> can be any string of characters not containing double quote characters <code>"</code>, though as the name suggests it is intended to be the name of the mod that the plugin tested for belongs to.
 
-<p>As with all message lines, you can also prepend a conditional before the keyword, if the whole message is conditional on something.
+<p>As with all message lines, a conditional may also be prepended before the keyword, if the whole message is conditional on something.
 
 <p>Each item in the shorthand is evaluated as follows:
 <ul>

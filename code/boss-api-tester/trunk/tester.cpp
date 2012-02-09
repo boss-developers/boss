@@ -29,6 +29,7 @@
 #include <iostream>
 #include <vector>
 #include <stdint.h>
+#include <fstream>
 
 #include "BOSS-API.h"
 
@@ -42,120 +43,135 @@ int main() {
 	uint8_t * dPath = reinterpret_cast<uint8_t *>("../Data");
 
 	uint32_t ret;
+	ofstream out("API test.txt");
 
+	out << "TESTING IsCompatibleVersion(...)" << endl;
 	bool b = IsCompatibleVersion(1,9,1);
 	if (b)
-		cout << "API is compatible." << endl;
+		out << '\t' << "API is compatible." << endl;
 	else
-		cout << "API is incompatible." << endl;
+		out << '\t' << "API is incompatible." << endl;
 
-	const uint8_t ** ver;
-	ret = GetVersionString(ver);
+	out << "TESTING GetVersionString(...)" << endl;
+	const uint8_t * ver;
+	ret = GetVersionString(&ver);
 	if (ret != BOSS_API_ERROR_OK)
-		cout << "Failed to get version string." << endl;
+		out << '\t' << "Failed to get version string. Error: " << ret << endl;
 	else
-		cout << "Version: " << *ver << endl;
-
+		out << '\t' << "Version: " << *ver << endl;
+	
+	out << "TESTING UpdateMasterlist(...)" << endl;
 	ret = UpdateMasterlist(BOSS_API_GAME_OBLIVION, mPath);
 	if (ret != BOSS_API_ERROR_OK)
-		cout << "Masterlist update failed. Error: " << ret << endl;
-
-	if (BOSS_API_ERROR_OK != CreateBossDb(&db)) 
-		cout << "Creation failed." << endl;
+		out << '\t' << "Masterlist update failed. Error: " << ret << endl;
+	
+	out << "TESTING CreateBossDb(...)" << endl;
+	ret = CreateBossDb(&db);
+	if (ret != BOSS_API_ERROR_OK) 
+		out << '\t' << "Creation failed. Error: " << ret << endl;
 	else {
+		out << "TESTING Load(...)" << endl;
 		ret = Load(db, mPath, uPath, dPath, BOSS_API_GAME_OBLIVION);
-		if (BOSS_API_ERROR_OK != ret)
-			cout << "Loading failed." << endl;
+		if (ret != BOSS_API_ERROR_OK)
+			out << '\t' << "Loading failed. Error: " << ret << endl;
 		else {
+			out << "TESTING EvalConditionals(...)" << endl;
 			ret = EvalConditionals(db, dPath);
 			if (BOSS_API_ERROR_OK != ret)
-				cout << "Conditional evaluation failed. Error: " << ret << endl;
+				out << '\t' << "Conditional evaluation failed. Error: " << ret << endl;
 			else {
-
+				
+				out << "TESTING SortMods(...)" << endl;
 				ret = SortMods(db);
 				if (BOSS_API_ERROR_OK != ret)
-				cout << "Sorting failed. Error: " << ret << endl;
-
-				const uint8_t ** sortedPlugins;
-				size_t * len;
-				ret = TrialSortMods(db, sortedPlugins, len);  //Symbol error.
+					out << '\t' << "Sorting failed. Error: " << ret << endl;
+				
+				out << "TESTING TrialSortMods(...)" << endl;
+				uint8_t ** sortedPlugins;
+				size_t len;
+				ret = TrialSortMods(db, &sortedPlugins, &len);
 				if (BOSS_API_ERROR_OK != ret)
-					cout << "Trial sorting failed. Error: " << ret << endl;
+					out << '\t' << "Trial sorting failed. Error: " << ret << endl;
 				else {
-					cout << "List size: " << *len << endl;
-					const uint8_t * sp = *sortedPlugins;
-					for (size_t i=0; i<*len; i++) {
-						cout << sp[i] << endl;
+					out << '\t' << "List size: " << len << endl;
+					for (size_t i=0; i<len; i++) {
+						out << '\t' << '\t' << sortedPlugins[i] << endl;
 					}
 				}
-
-/*				const uint8_t ** message;
+				
+				out << "TESTING GetDirtyMessage(...)" << endl;
+				uint8_t * message;
 				const uint8_t * mod = reinterpret_cast<uint8_t *>("Hammerfell.esm");
-				uint32_t * toClean;
-				ret = GetDirtyMessage(db, mod, message, toClean);  //Should be none for Hammerfell.
+				uint32_t toClean;
+				//This should give no dirty message.
+				ret = GetDirtyMessage(db, mod, &message, &toClean);
 				if (ret != BOSS_API_ERROR_OK)
-					cout << "Failed to get dirty info on \"Hammerfell.esm\". Error no " << ret << endl;
+					out << '\t' << "Failed to get dirty info on \"Hammerfell.esm\". Error no " << ret << endl;
 				else {
-					cout << "\"Hammerfell.esm\" clean status: " << *toClean << endl;
-					if (*message != NULL) {
-						cout << "Message: " << *message << endl;
+					out << '\t' << "\"Hammerfell.esm\" clean status: " << toClean << endl;
+					if (message != NULL) {
+						out << '\t' << "Message: " << message << endl;
 					}
 				}
-
+				
+				out << "TESTING GetDirtyMessage(...)" << endl;
 				//Now try getting dirty message from one that will have one.
 				const uint8_t * mod2 = reinterpret_cast<uint8_t *>("Oscuro's_Oblivion_Overhaul.esm");
-				ret = GetDirtyMessage(db, mod2, message, toClean);  //Should be none for Hammerfell.
+				ret = GetDirtyMessage(db, mod2, &message, &toClean);
 				if (ret != BOSS_API_ERROR_OK)
-					cout << "Failed to get dirty info on \"Oscuro's_Oblivion_Overhaul.esm\". Error no " << ret << endl;
+					out << '\t' << "Failed to get dirty info on \"Oscuro's_Oblivion_Overhaul.esm\". Error no " << ret << endl;
 				else {
-					cout << "\"Oscuro's_Oblivion_Overhaul.esm\" clean status: " << *toClean << endl;
-					if (*message != NULL) {
-						cout << "Message: " << *message << endl;
+					out << '\t' << "\"Oscuro's_Oblivion_Overhaul.esm\" clean status: " << toClean << endl;
+					if (message != NULL) {
+						out << '\t' << "Message: " << message << endl;
 					}
 				}
-*/
+				
+				out << "TESTING DumpMinimal(...)" << endl;
 				const uint8_t * file = reinterpret_cast<uint8_t *>("minimal.txt");
 				uint32_t ret = DumpMinimal(db, file, true);
 				if (ret != BOSS_API_ERROR_OK)
-					cout << "Dump failed. Error no " << ret << endl;
-/*
-				BashTag ** BTmap;
-				size_t * size;
-				ret = GetBashTagMap(db, BTmap, size);
+					out << '\t' << "Dump failed. Error no " << ret << endl;
+				
+				out << "TESTING GetBashTagMap(...)" << endl;
+				BashTag * BTmap;
+				size_t size;
+				ret = GetBashTagMap(db, &BTmap, &size);
 				if (ret != BOSS_API_ERROR_OK)
-					cout << "Failed to get Bash Tag map. Error no " << ret << endl;
+					out << '\t' << "Failed to get Bash Tag map. Error no " << ret << endl;
 				else {
-					cout << "Tag map size: " << *size << endl;
-					BashTag * tagArr = *BTmap;
-					cout << "Bash Tags:" << endl;
-					for (size_t i=0; i<*size; i++) {
-						cout << '\t' << tagArr[i].id << " : " << tagArr[i].name << endl;
-					}
+					out << '\t' << "Tag map size: " << size << endl;
+					out << '\t' << "Bash Tags:" << endl;
+					for (size_t i=0; i<size; i++)
+						out << '\t' << '\t' << BTmap[i].id << " : " << BTmap[i].name << endl;
 				}
-
+				
+				out << "TESTING GetModBashTags(...)" << endl;
 				const uint8_t * mod3 = reinterpret_cast<uint8_t *>("Oscuro's_Oblivion_Overhaul.esm");
-				size_t * numTagsAdded, * numTagsRemoved;
-				bool * modified;
-				uint32_t ** tagIDsAdded, ** tagIDsRemoved;
-				ret = GetModBashTags(db, mod3, tagIDsAdded, numTagsAdded, tagIDsRemoved, numTagsRemoved, modified);
+				size_t numTagsAdded, numTagsRemoved;
+				bool modified;
+				uint32_t * tagIDsAdded, * tagIDsRemoved;
+				ret = GetModBashTags(db, mod3, &tagIDsAdded, &numTagsAdded, &tagIDsRemoved, &numTagsRemoved, &modified);
 				if (ret != BOSS_API_ERROR_OK)
-					cout << "Failed to get Bash Tags for \"Oscuro's_Oblivion_Overhaul.esm\". Error no " << ret << endl;
+					out << '\t' << "Failed to get Bash Tags for \"Oscuro's_Oblivion_Overhaul.esm\". Error no " << ret << endl;
 				else {
-					cout << "Tags for \"Oscuro's_Oblivion_Overhaul.esm\":" << endl
-						<< '\t' << "Tags modified by userlist: " << *modified << endl
-						<< '\t' << "Number of tags added: " << *numTagsAdded << endl
-						<< '\t' << "Number of tags removed: " << *numTagsRemoved << endl
-						<< '\t' << "Tags added:" << endl;
-					for (size_t i=0; i<*numTagsAdded; i++) {
-						cout << '\t' << (*tagIDsAdded)[i] << endl;
-					}
-					cout << '\t' << "Tags removed:" << endl;
-					for (size_t i=0; i<*numTagsRemoved; i++) {
-						cout << '\t' << (*tagIDsRemoved)[i] << endl;
-					}
+					out << '\t' << "Tags for \"Oscuro's_Oblivion_Overhaul.esm\":" << endl
+						<< '\t' << '\t' << "Modified by userlist: " << modified << endl
+						<< '\t' << '\t' << "Number of tags added: " << numTagsAdded << endl
+						<< '\t' << '\t' << "Number of tags removed: " << numTagsRemoved << endl
+						<< '\t' << '\t' << "Tags added:" << endl;
+					for (size_t i=0; i<numTagsAdded; i++)
+						out << '\t' << '\t' << tagIDsAdded[i] << endl;
+					out << '\t' << '\t' << "Tags removed:" << endl;
+					for (size_t i=0; i<numTagsRemoved; i++)
+						out << '\t' << '\t' << tagIDsRemoved[i] << endl;
 				}
-*/			}
+			}
 		}
+
+		DestroyBossDb(db);
 	}
+
+	out.close();
 	return 0;
 }

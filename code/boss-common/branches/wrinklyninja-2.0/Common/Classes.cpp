@@ -766,7 +766,7 @@ namespace boss {
 		for (size_t i=0; i<max; i++) {
 			if ((onlyEnabled && rules[i].Enabled()) || !onlyEnabled) {
 				if (Tidy(rules[i].Object()) == Tidy(ruleObject))
-					break;
+					return i;
 			}
 		}
 		return max;
