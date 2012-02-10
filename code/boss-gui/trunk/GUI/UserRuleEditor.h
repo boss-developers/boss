@@ -41,6 +41,7 @@
 #include <wx/treectrl.h>
 #include <wx/dataobj.h>
 #include <wx/dnd.h>
+#include <wx/notebook.h>
 
 using namespace boss;
 using namespace std;
@@ -139,6 +140,10 @@ private:
 	wxTextCtrl *SortModBox;
 	wxCheckBox *SortModsCheckBox;
 	wxTextCtrl *InsertModBox;
+
+	wxNotebook *TabHolder;
+	wxPanel *ModlistTab;
+	wxPanel *MasterlistTab;
 };
 
 #endif

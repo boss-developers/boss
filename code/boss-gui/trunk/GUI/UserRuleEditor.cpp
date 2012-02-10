@@ -74,7 +74,7 @@ using namespace std;
 using boost::algorithm::to_upper_copy;
 using boost::algorithm::trim_copy;
 
-UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxSize(900,600), wxMINIMIZE_BOX|wxMAXIMIZE_BOX|wxSYSTEM_MENU|wxCAPTION|wxCLOSE_BOX|wxCLIP_CHILDREN) {
+UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition) {
 
 	//Let's give this a progress bar.
 	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Initialising User Rules Editor..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
@@ -134,7 +134,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	//////First column
 	wxBoxSizer *rulesBox = new wxBoxSizer(wxVERTICAL);
 	try{
-		rulesBox->Add(RulesList = new RuleListFrameClass(this, LIST_RuleList, masterlist));
+		rulesBox->Add(RulesList = new RuleListFrameClass(this, LIST_RuleList, masterlist), 0, wxEXPAND);
 	} catch(boss_error e) {
 		progDia->Destroy();
 		this->Close();
@@ -157,7 +157,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	wxBoxSizer *forBox = new wxBoxSizer(wxHORIZONTAL);
 	forBox->Add(new wxStaticText(this, wxID_ANY, wxT("For")));
 	forBox->Add(RuleModBox = new wxTextCtrl(this, TEXT_RuleMod, "", wxDefaultPosition, wxSize(200,wxDefaultSize.y)), 1, wxEXPAND|wxLEFT, 10);
-	ruleEditorBox->Add(forBox, 1, wxEXPAND);
+	ruleEditorBox->Add(forBox, 0, wxEXPAND);
 	ruleEditorBox->AddSpacer(10);
 	ruleEditorBox->Add(SortModsCheckBox = new wxCheckBox(this, CHECKBOX_SortMods, wxT("Sort Item")));
 	ruleEditorBox->AddSpacer(10);
@@ -176,34 +176,37 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	ruleEditorBox->AddSpacer(10);
 	ruleEditorBox->Add(AddMessagesCheckBox = new wxCheckBox(this, CHECKBOX_AddMessages, wxT("Add the following messages:")));
 	ruleEditorBox->AddSpacer(10);
-	ruleEditorBox->Add(NewModMessagesBox = new wxTextCtrl(this,TEXT_NewMessages, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), 0, wxEXPAND|wxLEFT, 20);
+	ruleEditorBox->Add(NewModMessagesBox = new wxTextCtrl(this,TEXT_NewMessages, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), 1, wxEXPAND|wxLEFT, 20);
 	ruleEditorBox->AddSpacer(10);
 	ruleEditorBox->Add(ReplaceMessagesCheckBox = new wxCheckBox(this, CHECKBOX_RemoveMessages, wxT("Replace Existing Messages")));
 	ruleEditorTopBox->Add(ruleEditorBox, 0, wxALL, 10);
-	editorMessagesBox->Add(ruleEditorTopBox);
+	editorMessagesBox->Add(ruleEditorTopBox, 0, wxEXPAND);
 	editorMessagesBox->AddSpacer(10);
 	wxStaticBoxSizer *messBox = new wxStaticBoxSizer(wxVERTICAL, this, "Masterlist Mod Messages");
 	messBox->Add(ModMessagesBox = new wxTextCtrl(this,TEXT_ModMessages,wxT(""),wxDefaultPosition,wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY), 1, wxEXPAND);
 	editorMessagesBox->Add(messBox, 1, wxEXPAND);
-	rulesBox->Add(editorMessagesBox, 0, wxEXPAND);
-	mainBox->Add(rulesBox);
+	rulesBox->Add(editorMessagesBox, 1, wxEXPAND);
+	mainBox->Add(rulesBox, 0, wxEXPAND);
 	//////Second column.
-	wxBoxSizer *listmessBox = new wxBoxSizer(wxVERTICAL);
-	wxBoxSizer *listsBox = new wxBoxSizer(wxHORIZONTAL);
-	////////Modlist column.
-	wxStaticBoxSizer *modlistBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Installed Mods"));
-	modlistBox->Add(ModlistSearch = new wxSearchCtrl(this, SEARCH_Modlist, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER), 0, wxEXPAND);
-	modlistBox->Add(InstalledModsList = new wxTreeCtrl(this, LIST_Modlist, wxDefaultPosition, wxSize(100,550), wxTR_HAS_BUTTONS|wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_FULL_ROW_HIGHLIGHT|wxTR_HIDE_ROOT), 0, wxEXPAND);
-	listsBox->Add(modlistBox, 0, wxEXPAND);
-	listsBox->AddSpacer(10);
-	////////Masterlist column.
-	wxStaticBoxSizer *masterlistBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Masterlist"));
-	masterlistBox->Add(MasterlistSearch = new wxSearchCtrl(this, SEARCH_Masterlist, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER), 0, wxEXPAND);
-	masterlistBox->Add(MasterlistModsList = new wxTreeCtrl(this, LIST_Masterlist, wxDefaultPosition, wxSize(100,550), wxTR_HAS_BUTTONS|wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT), 0, wxEXPAND);
-	listsBox->Add(masterlistBox, 0, wxEXPAND);
+	TabHolder = new wxNotebook(this, wxID_ANY);
+	////////Modlist tab.
+	ModlistTab = new wxPanel(TabHolder);
+	wxBoxSizer *ModlistTabSizer = new wxBoxSizer(wxVERTICAL);
+	ModlistTabSizer->Add(ModlistSearch = new wxSearchCtrl(ModlistTab, SEARCH_Modlist, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER), 0, wxEXPAND);
+	ModlistTabSizer->Add(InstalledModsList = new wxTreeCtrl(ModlistTab, LIST_Modlist, wxDefaultPosition, wxSize(100,550), wxTR_HAS_BUTTONS|wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_FULL_ROW_HIGHLIGHT|wxTR_HIDE_ROOT), 1, wxEXPAND);
+	ModlistTab->SetSizer(ModlistTabSizer);
+	////////Masterlist tab.
+	MasterlistTab = new wxPanel(TabHolder);
+	wxBoxSizer *MasterlistTabSizer = new wxBoxSizer(wxVERTICAL);
+	MasterlistTabSizer->Add(MasterlistSearch = new wxSearchCtrl(MasterlistTab, SEARCH_Masterlist, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER), 0, wxEXPAND);
+	MasterlistTabSizer->Add(MasterlistModsList = new wxTreeCtrl(MasterlistTab, LIST_Masterlist, wxDefaultPosition, wxSize(100,550), wxTR_HAS_BUTTONS|wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT), 1, wxEXPAND);
+	MasterlistTab->SetSizer(MasterlistTabSizer);
+	//Add tabs to window.
+	TabHolder->AddPage(ModlistTab,wxT("Installed Mods"),true);
+	TabHolder->AddPage(MasterlistTab,wxT("Masterlist"));
 	mainBox->AddSpacer(10);
-	mainBox->Add(listsBox, 0, wxEXPAND);
-	bigBox->Add(mainBox, 0, wxALL|wxEXPAND, 10);
+	mainBox->Add(TabHolder, 1, wxEXPAND);
+	bigBox->Add(mainBox, 1, wxALL|wxEXPAND, 10);
 
 	////Window buttons
 	wxBoxSizer *mainButtonBox = new wxBoxSizer(wxHORIZONTAL);
@@ -233,6 +236,9 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	NewModMessagesBox->Enable(false);
 	ReplaceMessagesCheckBox->Enable(false);
 
+	//Tooltips.
+	ModMessagesBox->SetToolTip("Messages must be entered in the correct format. See the User Rules Readme for more information.");
+
 	//Set up drag 'n' drop.
 	ForDropTarget = new TextDropTarget(RuleModBox);
 	SortDropTarget = new TextDropTarget(SortModBox);
@@ -249,12 +255,14 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 
 	vector<wxTreeItemId> opengroups;
 	opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
-	for (size_t i=1;i<masterlist.items.size();i++) {  //For some reason items[0] is an empty item - check out why parser adds this.
-		if (masterlist.items[i].type == ENDGROUP)
+	vector<Item> items = masterlist.Items();
+	size_t max = items.size();
+	for (size_t i=0;i<max;i++) {
+		if (items[i].Type() == ENDGROUP)
 			opengroups.pop_back();
 		else {
-			wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), masterlist.items[i].name.string());
-			if (masterlist.items[i].type == BEGINGROUP)
+			wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), items[i].Name());
+			if (items[i].Type() == BEGINGROUP)
 				opengroups.push_back(item);
 		}
 	}
@@ -297,7 +305,7 @@ void UserRulesEditorFrame::OnSearchList(wxCommandEvent& event) {
 		InstalledModsList->DeleteAllItems();
 		wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
 		for (size_t i=0;i<ModlistMods.size();i++) {
-			if (Tidy(string(ModlistMods[i].substr(0,length))) == searchStr)
+			if (Tidy(ModlistMods[i].substr(0,length).ToStdString()) == searchStr)
 				InstalledModsList->AppendItem(root, ModlistMods[i]);
 		}
 	} else {
@@ -312,12 +320,14 @@ void UserRulesEditorFrame::OnSearchList(wxCommandEvent& event) {
 		MasterlistModsList->DeleteAllItems();
 		vector<wxTreeItemId> opengroups;
 		opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
-		for (size_t i=0;i<masterlist.items.size();i++) {
-			if (Tidy(string(masterlist.items[i].name.string().substr(0,length))) == searchStr) {
-					wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), masterlist.items[i].name.string());
-				if (masterlist.items[i].type == BEGINGROUP)
+		vector<Item> items = masterlist.Items();
+		size_t max = items.size();
+		for (size_t i=0;i<max;i++) {
+			if (Tidy(items[i].Name().substr(0,length)) == searchStr) {
+					wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), items[i].Name());
+				if (items[i].Type() == BEGINGROUP)
 					opengroups.push_back(item);
-				else if (masterlist.items[i].type == ENDGROUP)
+				else if (items[i].Type() == ENDGROUP)
 					opengroups.pop_back();
 			}
 		}
@@ -338,12 +348,14 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 		MasterlistSearch->SetValue("");
 		MasterlistModsList->DeleteAllItems();
 		vector<wxTreeItemId> opengroups;
+		vector<Item> items = masterlist.Items();
+		size_t max = items.size();
 		opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
-		for (size_t i=0;i<masterlist.items.size();i++) {
-			wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), masterlist.items[i].name.string());
-			if (masterlist.items[i].type == BEGINGROUP)
+		for (size_t i=0;i<max;i++) {
+			wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), items[i].Name());
+			if (items[i].Type() == BEGINGROUP)
 				opengroups.push_back(item);
-			else if (masterlist.items[i].type == ENDGROUP)
+			else if (items[i].Type() == ENDGROUP)
 				opengroups.pop_back();
 		}
 	}
@@ -351,12 +363,13 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 
 void UserRulesEditorFrame::OnSelectModInMasterlist(wxTreeEvent& event) {
 	//Need to find item in masterlist. :( Why can't tree lists store index number?
-	vector<Item>::iterator iter = masterlist.FindItem(fs::path(MasterlistModsList->GetItemText(event.GetItem())));
-	if (iter != masterlist.items.end()) {
-		string messages = "";
-		for (vector<Message>::iterator messageIter = iter->messages.begin(); messageIter != iter->messages.end(); ++messageIter)
-			messages += messageIter->KeyToString() + ": " + messageIter->data + "\n\n";
-		ModMessagesBox->SetValue(messages.substr(0,messages.length()-2));
+	size_t pos = masterlist.FindItem(MasterlistModsList->GetItemText(event.GetItem()).ToStdString());
+	if (pos != masterlist.Items().size()) {
+		string messagesOut = "";
+		vector<Message> messages = masterlist.Items()[pos].Messages();
+		for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter)
+			messagesOut += messageIter->KeyToString() + ": " + messageIter->Data() + "\n\n";
+		ModMessagesBox->SetValue(messagesOut.substr(0,messagesOut.length()-2));
 	}
 }
 
@@ -400,9 +413,9 @@ void UserRulesEditorFrame::OnSortInsertChange(wxCommandEvent& event) {
 
 void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 	Rule newRule = GetRuleFromForm();
-	if (newRule.enabled == false)
+	if (!newRule.Enabled())
 		wxMessageBox(wxString::Format(
-				wxT("Rule Syntax Error: " + newRule.ruleObject + " Please correct the mistake before continuing.")
+				wxT("Rule Syntax Error: " + newRule.Object() + " Please correct the mistake before continuing.")
 			),
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
@@ -420,9 +433,9 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 		return;
 	else {  //User has chosen to save.
 		Rule newRule = GetRuleFromForm();
-		if (newRule.enabled == false)
+		if (!newRule.Enabled())
 			wxMessageBox(wxString::Format(
-					wxT("Rule Syntax Error: " + newRule.ruleObject + " Please correct the mistake before continuing.")
+					wxT("Rule Syntax Error: " + newRule.Object() + " Please correct the mistake before continuing.")
 				),
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,
@@ -457,38 +470,39 @@ void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
 	NewModMessagesBox->Enable(false);
 	ReplaceMessagesCheckBox->Enable(false);
 	ReplaceMessagesCheckBox->SetValue(false);
-	RuleModBox->SetValue(currentRule.ruleObject);
+	RuleModBox->SetValue(currentRule.Object());
 	SortModBox->SetValue("");
 	InsertModBox->SetValue("");
-	size_t size = currentRule.lines.size();
+	vector<RuleLine> lines = currentRule.Lines();
+	size_t size = lines.size();
 	for (size_t j=0;j<size;j++) {
-		if (currentRule.lines[j].key == BEFORE || currentRule.lines[j].key == AFTER) {
+		if (lines[j].Key() == BEFORE || lines[j].Key() == AFTER) {
 			SortModsCheckBox->SetValue(true);
 			SortModOption->SetValue(true);
 			SortModBox->Enable(true);
 			BeforeAfterChoiceBox->Enable(true);
-			SortModBox->SetValue(currentRule.lines[j].object);
-			if (currentRule.lines[j].key == BEFORE)
+			SortModBox->SetValue(lines[j].Object());
+			if (lines[j].Key() == BEFORE)
 				BeforeAfterChoiceBox->SetSelection(0);
 			else
 				BeforeAfterChoiceBox->SetSelection(1);
-		} else if (currentRule.lines[j].key == TOP || currentRule.lines[j].key == BOTTOM) {
+		} else if (lines[j].Key() == TOP || lines[j].Key() == BOTTOM) {
 			SortModsCheckBox->SetValue(true);
 			InsertModOption->SetValue(true);
 			TopBottomChoiceBox->Enable(true);
 			InsertModBox->Enable(true);
-			InsertModBox->SetValue(currentRule.lines[j].object);
-			if (currentRule.lines[j].key == TOP)
+			InsertModBox->SetValue(lines[j].Object());
+			if (lines[j].Key() == TOP)
 				TopBottomChoiceBox->SetSelection(0);
 			else
 				TopBottomChoiceBox->SetSelection(1);
-		} else if (currentRule.lines[j].key == APPEND || currentRule.lines[j].key == REPLACE) {
+		} else if (lines[j].Key() == APPEND || lines[j].Key() == REPLACE) {
 			AddMessagesCheckBox->SetValue(true);
 			NewModMessagesBox->Enable(true);
 			ReplaceMessagesCheckBox->Enable(true);
-			if (currentRule.lines[j].key == REPLACE)
+			if (lines[j].Key() == REPLACE)
 				ReplaceMessagesCheckBox->SetValue(true);
-			messages += currentRule.lines[j].object + "\n";
+			messages += lines[j].Object() + "\n";
 		}
 	}
 	NewModMessagesBox->SetValue(messages);
@@ -509,9 +523,10 @@ void UserRulesEditorFrame::LoadLists() {
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
 
-	size = modlist.items.size();
+	vector<Item> items = modlist.Items();
+	size = items.size();
 	for (size_t i=0;i<size;i++)
-		ModlistMods.push_back(modlist.items[i].name.string());
+		ModlistMods.push_back(items[i].Name());
 
 	////////////////
 	// Masterlist
@@ -531,89 +546,93 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 	//First validate.
 	//Calling functions need to check for an enabled = false; rule as a failure.
 	//Failure description is given in ruleObject.
-	if (Item(string(RuleModBox->GetValue())).IsPlugin()) {
+	if (Item(RuleModBox->GetValue().ToStdString()).IsPlugin()) {
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
 				if (SortModOption->GetValue() && SortModBox->IsEmpty()) {
-					newRule.enabled = false;
-					newRule.ruleObject = "No mod is specified to sort relative to.";
+					newRule.Enabled(false);
+					newRule.Object("No mod is specified to sort relative to.");
 					return newRule;
-				} else if (!Item(string(SortModBox->GetValue())).IsPlugin()) {  //Sort object is a group. Error.
-					newRule.enabled = false;
-					newRule.ruleObject = "Cannot sort a plugin relative to a group.";
+				} else if (!Item(SortModBox->GetValue().ToStdString()).IsPlugin()) {  //Sort object is a group. Error.
+					newRule.Enabled(false);
+					newRule.Object("Cannot sort a plugin relative to a group.");
 					return newRule;
 				}
-			} else if (InsertModOption->GetValue() && !Item(string(InsertModBox->GetValue())).IsGroup()) {  //Inserting into a mod. Error.
-				newRule.enabled = false;
+			} else if (InsertModOption->GetValue() && !Item(InsertModBox->GetValue().ToStdString()).IsGroup()) {  //Inserting into a mod. Error.
+				newRule.Enabled(false);
 				if (InsertModBox->IsEmpty())
-					newRule.ruleObject = "No group is specified to insert into.";
+					newRule.Object("No group is specified to insert into.");
 				else
-					newRule.ruleObject = "Cannot insert into a plugin.";
+					newRule.Object("Cannot insert into a plugin.");
 				return newRule;
 			}
 		}
 		if (AddMessagesCheckBox->IsChecked() && NewModMessagesBox->IsEmpty()) {  //Can't add no messages. Error.
-			newRule.enabled = false;
-			newRule.ruleObject = "Cannot add messages when none are given.";
+			newRule.Enabled(false);
+			newRule.Object("Cannot add messages when none are given.");
 			return newRule;
 		}
 	} else {  //Rule object is a group, or empty.
 		if (RuleModBox->IsEmpty()) {
-			newRule.enabled = false;
-			newRule.ruleObject = "No rule mod is specified.";
+			newRule.Enabled(false);
+			newRule.Object("No rule mod is specified.");
 			return newRule;
 		}
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
 				if (SortModBox->IsEmpty()) {  //Sort object is a plugin. Error.
-					newRule.enabled = false;
-					newRule.ruleObject = "No mod is specified to sort relative to.";
+					newRule.Enabled(false);
+					newRule.Object("No mod is specified to sort relative to.");
 					return newRule;
-				} else if (Item(string(SortModBox->GetValue())).IsPlugin()) {
-					newRule.enabled = false;
-					newRule.ruleObject = "Cannot sort a group relative to a plugin.";
+				} else if (Item(SortModBox->GetValue().ToStdString()).IsPlugin()) {
+					newRule.Enabled(false);
+					newRule.Object("Cannot sort a group relative to a plugin.");
 					return newRule;
 				}
 			} else if (InsertModOption->GetValue()) {  //Can't insert groups. Error.
-				newRule.enabled = false;
-				newRule.ruleObject = "Cannot insert groups.";
+				newRule.Enabled(false);
+				newRule.Object("Cannot insert groups.");
 				return newRule;
 			}
 		}
 		if (AddMessagesCheckBox->IsChecked()) {  //Can't add messages to a group. Error.
-			newRule.enabled = false;
-			newRule.ruleObject = "Cannot add messages to groups.";
+			newRule.Enabled(false);
+			newRule.Object("Cannot add messages to groups.");
 			return newRule;
 		}
 	}
 
-	newRule.enabled = true;
-	newRule.ruleObject = RuleModBox->GetValue();
+	newRule.Enabled(true);
+	newRule.Object(RuleModBox->GetValue().ToStdString());
 	if (!SortModsCheckBox->IsChecked())
-		newRule.ruleKey = FOR;
+		newRule.Key(FOR);
 	else {
-		vector<Item>::iterator pos = masterlist.FindItem(newRule.ruleObject);
-		if (pos < masterlist.lastRecognisedPos && pos != masterlist.items.end())  //Mod in masterlist.
-			newRule.ruleKey = OVERRIDE;
+		size_t pos = masterlist.FindItem(newRule.Object());
+		if (pos < masterlist.LastRecognisedPos() && pos != masterlist.Items().size())  //Mod in masterlist.
+			newRule.Key(OVERRIDE);
 		else
-			newRule.ruleKey = ADD;
+			newRule.Key(ADD);
 		
 		if (SortModOption->GetValue()) {
 			RuleLine newLine;
-			newLine.object = SortModBox->GetValue();
+			newLine.Object(SortModBox->GetValue().ToStdString());
 			if (BeforeAfterChoiceBox->GetSelection() == 0)
-				newLine.key = BEFORE;
+				newLine.Key(BEFORE);
 			else
-				newLine.key = AFTER;
-			newRule.lines.push_back(newLine);
+				newLine.Key(AFTER);
+			vector<RuleLine> lines = newRule.Lines();
+			lines.push_back(newLine);
+			newRule.Lines(lines);
 		} else if (InsertModOption->GetValue()) {
 			RuleLine newLine;
-			newLine.object = InsertModBox->GetValue();
+			newLine.Object(InsertModBox->GetValue().ToStdString());
 			if (TopBottomChoiceBox->GetSelection() == 0)
-				newLine.key = TOP;
+				newLine.Key(TOP);
 			else
-				newLine.key = BOTTOM;
-			newRule.lines.push_back(newLine);
+				newLine.Key(BOTTOM);
+			vector<RuleLine> lines = newRule.Lines();
+			lines.push_back(newLine);
+			newRule.Lines(lines);
 		}
 	}
 
@@ -628,12 +647,14 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 			if (pos2 == string::npos)  //No \n characters.
 				pos2 = messages.length()-1;
 			while (pos2 != string::npos) {
-				newLine.object = trim_copy(messages.substr(pos1,pos2-pos1));
+				newLine.Object(trim_copy(messages.substr(pos1,pos2-pos1)));
 				if (pos1 == 0 && ReplaceMessagesCheckBox->IsChecked())
-					newLine.key = REPLACE;
+					newLine.Key(REPLACE);
 				else
-					newLine.key = APPEND;
-				newRule.lines.push_back(newLine);
+					newLine.Key(APPEND);
+					vector<RuleLine> lines = newRule.Lines();
+					lines.push_back(newLine);
+					newRule.Lines(lines);
 
 				if (pos2 >= messages.length()-1)
 					break;
@@ -697,13 +718,13 @@ bool TextDropTarget::OnDropText(wxCoord x, wxCoord y, const wxString &data) {
 	targetOwner->SetValue(data);
 
 	UserRulesEditorFrame *ureFrame = (UserRulesEditorFrame*)targetOwner->GetParent();
-	Item sortItem(string(ureFrame->SortModBox->GetValue()));
-	Item forItem(string(ureFrame->RuleModBox->GetValue()));
-	Item insertItem(string(ureFrame->InsertModBox->GetValue()));
+	Item sortItem(ureFrame->SortModBox->GetValue().ToStdString());
+	Item forItem(ureFrame->RuleModBox->GetValue().ToStdString());
+	Item insertItem(ureFrame->InsertModBox->GetValue().ToStdString());
 	bool isSorting = ureFrame->SortModsCheckBox->IsChecked();
 	bool isInserting = ureFrame->InsertModOption->GetValue();
 
-	if (isSorting && !forItem.name.empty()) {
+	if (isSorting && !forItem.Name().empty()) {
 		if (forItem.IsPlugin()) {
 			if (!isInserting && sortItem.IsGroup()) {  //Sort object is a group. Error.
 				wxMessageBox(wxString::Format(
@@ -758,30 +779,38 @@ RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, uint32
 	//First get text representation of rule.
 	string text = "";
 	bool hasEditedMessages = false;
-	size_t linesSize = currentRule.lines.size();
+	vector<RuleLine> lines = currentRule.Lines();
+	size_t linesSize = lines.size();
 	for (size_t j=0;j<linesSize;j++) {
-		if (currentRule.lines[j].key == BEFORE)
-			text = "Sort \"" + currentRule.ruleObject + "\" before \"" + currentRule.lines[j].object + "\"\n";
-		else if (currentRule.lines[j].key == AFTER)
-			text = "Sort \"" + currentRule.ruleObject + "\" after \"" + currentRule.lines[j].object + "\"\n";
-		else if (currentRule.lines[j].key == TOP)
-			text = "Insert \"" + currentRule.ruleObject + "\" at the top of \"" + currentRule.lines[j].object + "\"\n";
-		else if (currentRule.lines[j].key == BOTTOM)
-			text = "Insert \"" + currentRule.ruleObject + "\" at the bottom of \"" + currentRule.lines[j].object + "\"\n";
-		else if (currentRule.lines[j].key == APPEND) {
-			if (currentRule.ruleKey == FOR && text.empty())
-				text += "Add the following messages to \"" + currentRule.ruleObject + "\":\n";
-			else if (currentRule.ruleKey != FOR && !hasEditedMessages)
+		switch (lines[j].Key()) {
+		case BEFORE:
+			text = "Sort \"" + currentRule.Object() + "\" before \"" + lines[j].Object() + "\"\n";
+			break;
+		case AFTER:
+			text = "Sort \"" + currentRule.Object() + "\" after \"" + lines[j].Object() + "\"\n";
+			break;
+		case TOP:
+			text = "Insert \"" + currentRule.Object() + "\" at the top of \"" + lines[j].Object() + "\"\n";
+			break;
+		case BOTTOM:
+			text = "Insert \"" + currentRule.Object() + "\" at the bottom of \"" + lines[j].Object() + "\"\n";
+			break;
+		case APPEND:
+			if (currentRule.Key() == FOR && text.empty())
+				text += "Add the following messages to \"" + currentRule.Object() + "\":\n";
+			else if (currentRule.Key() != FOR && !hasEditedMessages)
 				text += "Add the following messages:\n";
-			text += "  " + currentRule.lines[j].object + "\n";
+			text += "  " + lines[j].Object() + "\n";
 			hasEditedMessages = true;
-		} else if (currentRule.lines[j].key == REPLACE) {
-			if (currentRule.ruleKey == FOR && text.empty())
-				text += "Replace the messages attached to \"" + currentRule.ruleObject + "\" with:\n";
-			else if (currentRule.ruleKey != FOR && !hasEditedMessages)
+			break;
+		case REPLACE:
+			if (currentRule.Key() == FOR && text.empty())
+				text += "Replace the messages attached to \"" + currentRule.Object() + "\" with:\n";
+			else if (currentRule.Key() != FOR && !hasEditedMessages)
 				text += "Replace the attached messages with:\n";
-			text += "  " + currentRule.lines[j].object + "\n";
+			text += "  " + lines[j].Object() + "\n";
 			hasEditedMessages = true;
+			break;
 		}
 	}
 
@@ -797,9 +826,9 @@ RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, uint32
 	mainSizer->Add(ruleCheckbox = new wxCheckBox(this, wxID_ANY,""),0,wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxBOTTOM,10);
 	mainSizer->Add(ruleContent = new wxStaticText(this, wxID_ANY,text),0,wxEXPAND|wxRIGHT,5);
 
-	ruleCheckbox->SetValue(currentRule.enabled);
+	ruleCheckbox->SetValue(currentRule.Enabled());
 	ruleContent->Bind(wxEVT_LEFT_DOWN, &RuleBoxClass::OnSelect, this, wxID_ANY);
-	if (!currentRule.enabled)
+	if (!currentRule.Enabled())
 		ruleContent->Enable(false);
 	if (isSelected)
 		ruleContent->SetBackgroundColour(wxColour(240,240,240));
@@ -848,27 +877,27 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, ItemList 
 	}
 
 	//Now disable any ADD rules with rule mods that are in the masterlist.
-	size_t size = userlist.rules.size();
+	vector<Rule> rules = userlist.Rules();
+	size_t size = rules.size();
 	for (size_t i=0;i<size;i++) {
-		vector<Item>::iterator pos = masterlist.FindItem(userlist.rules[i].ruleObject);
-		if (pos < masterlist.lastRecognisedPos && pos != masterlist.items.end())  //Mod in masterlist.
-			userlist.rules[i].enabled = false;
+		size_t pos = masterlist.FindItem(rules[i].Object());
+		if (pos < masterlist.LastRecognisedPos() && pos != masterlist.Items().size())  //Mod in masterlist.
+			rules[i].Enabled(false);
 	}
 
 	//Now set up GUI layout.
 	SetBackgroundColour(*wxWHITE);
 
-	wxBoxSizer *listBox = new wxBoxSizer(wxVERTICAL);
 	wxStaticBoxSizer *staticListBox = new wxStaticBoxSizer(wxVERTICAL, this, "User Rules");
-	staticListBox->Add(RuleListScroller = new wxScrolled<wxPanel>(this, wxID_ANY));
+	staticListBox->Add(RuleListScroller = new wxScrolled<wxPanel>(this, wxID_ANY), 1, wxEXPAND);
+
 	RuleListScroller->SetBackgroundColour(*wxWHITE);
 	ReDrawRuleList();
 	RuleListScroller->SetScrollRate(10, 10);
 	RuleListScroller->SetAutoLayout(true);
 	RuleListScroller->Show();
-	listBox->Add(staticListBox);
 
-	SetSizerAndFit(listBox);
+	SetSizerAndFit(staticListBox);
 	Show();
 	SetAutoLayout(true);
 }
@@ -930,7 +959,7 @@ void RuleListFrameClass::MoveRule(wxWindowID id) {
 
 void RuleListFrameClass::OnToggleRule(wxCommandEvent& event) {
 	if (event.GetId() >= 0 && event.GetId() < userlist.rules.size())
-		userlist.rules[event.GetId()].enabled = event.IsChecked();
+		userlist.rules[event.GetId()].Enabled(event.IsChecked());
 }
 
 Rule RuleListFrameClass::GetSelectedRule() {

@@ -92,6 +92,12 @@ using namespace std;
 
 //Draws the main window when program starts.
 bool BossGUI::OnInit() {
+	//Set locale.
+	setlocale(LC_CTYPE, "");
+	locale global_loc = locale();
+	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
+	boost::filesystem::path::imbue(loc);
+
 	//Check if GUI is already running.
 	checker = new wxSingleInstanceChecker;
 
@@ -117,7 +123,7 @@ bool BossGUI::OnInit() {
 		} catch (boss_error e) {
 			LOG_ERROR("Error: %s", e.getString().c_str());
 			wxMessageBox(wxString::Format(
-					wxT("Error: " + e.getString() + " Details: " + ini.errorBuffer.FormatFor(PLAINTEXT))
+					wxT("Error: " + e.getString() + " Details: " + ini.ErrorBuffer().FormatFor(PLAINTEXT))
 				),
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,
@@ -419,12 +425,6 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	//Tell the user that stuff is happenining.
 	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("BOSS working..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
 
-	//Set the locale to get encoding conversions working correctly.
-	setlocale(LC_CTYPE, "");
-	locale global_loc = locale();
-	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
-	boost::filesystem::path::imbue(loc);
-
 	LOG_INFO("BOSS starting...");
 
 	//Set BOSSlog path to be used.
@@ -640,8 +640,8 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
 		masterlist.Load(sortfile);
 		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
-		masterlist.EvalConditionals();
-		contents.globalMessages = masterlist.globalMessageBuffer;
+		masterlist.EvalConditions();
+		contents.globalMessages = masterlist.GlobalMessageBuffer();
 	} catch (boss_error e) {
 		output.Clear();
 		output.PrintHeader();

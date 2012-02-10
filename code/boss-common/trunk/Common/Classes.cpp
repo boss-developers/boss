@@ -152,12 +152,13 @@ namespace boss {
 		short_grammar.SetCRCStore(&fileCRCs);
 		short_grammar.SetErrorBuffer(&errorBuffer);
 
+		LOG_DEBUG("Evaluating conditional for message \"%s\"", Data().c_str());
+
 		eval = conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer);
 
 		if (!eval)
 			return false;
 		else if (!Data().empty()) {
-			LOG_INFO("Starting to evaluate item message conditional shorthands, if they exist.");
 			//Now we must check if the message is using a conditional shorthand and evaluate that if so.
 			short_grammar.SetMessageType(key);
 
@@ -302,21 +303,9 @@ namespace boss {
 		cond_grammar.SetVarStore(&setVars);
 		cond_grammar.SetCRCStore(&fileCRCs);
 		
-		bool eval;
-		if (!Conditions().empty()) {
-			LOG_INFO("Evaluating conditional for item \"%s\"", Data().c_str());
+		LOG_INFO("Evaluating conditions for item \"%s\"", Data().c_str());
 
-			string cond = Conditions();
-			begin = cond.begin();
-			end = cond.end();
-
-			bool r = phrase_parse(begin, end, cond_grammar, skipper, eval);
-			if (!r || begin != end)
-				throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, Conditions());
-
-			if (!eval)
-				return false;
-		}
+		bool eval= conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer);
 
 		vector<Message>::iterator messageIter = messages.begin();
 		while (messageIter != messages.end()) {
