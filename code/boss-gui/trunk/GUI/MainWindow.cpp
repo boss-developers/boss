@@ -143,7 +143,7 @@ bool BossGUI::OnInit() {
 	// it's ok if this number is too high.  setVerbosity will handle it
 	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + debug_verbosity));
 
-	if (game == 0) {
+	if (game == AUTODETECT) {
 		try {
 			GetGame();
 		} catch (boss_error e) {
@@ -183,8 +183,8 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 		wxT("Autodetect"),
 		wxT("Oblivion"),
 		wxT("Fallout 3"),
-		wxT("Nehrim"),
 		wxT("Fallout: New Vegas"),
+		wxT("Nehrim"),
 		wxT("Skyrim")
 	};
 	wxString UndoLevel[] = {
@@ -312,17 +312,17 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	if (trial_run)
 		TrialRunBox->SetValue(true);
 
-	if (game == 0)
+	if (game == AUTODETECT)
 		GameChoice->SetSelection(0);
-	else if (game == 1)
+	else if (game == OBLIVION)
 		GameChoice->SetSelection(1);
-	else if (game == 2)
+	else if (game == FALLOUT3)
 		GameChoice->SetSelection(2);
-	else if (game == 3)
+	else if (game == FALLOUTNV)
 		GameChoice->SetSelection(3);
-	else if (game == 4)
+	else if (game == NEHRIM)
 		GameChoice->SetSelection(4);
-	else if (game == 5)
+	else if (game == SKYRIM)
 		GameChoice->SetSelection(5);
 
 	if (revert == 0)
@@ -467,7 +467,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	/////////////////////////////////////////
 
 	//Game checks.
-	if (0 == game) {
+	if (AUTODETECT == game) {
 		LOG_DEBUG("Detecting game...");
 		try {
 			GetGame();
