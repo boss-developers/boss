@@ -127,13 +127,11 @@ int main() {
 	//Now we need to iterate through the masterlist and retain only those mods with dirty mod messages that aren't "Do not clean".
 	//This should include SAY dirty mod messages too. If a message is conditional on certain CRCs, these should be listed in a
 	//message that gets attached to the mod, with each CRC listed as "CRC hex". Otherwise, all messages should be removed.
+	vector<Item> holdingVec;
 	for (vector<Item>::iterator itemIter = masterlist.begin(); itemIter != masterlist.end(); ++itemIter) {
-		if ((itemIter->Type() != MOD) || itemIter->Messages().empty())
-			itemIter = masterlist.erase(itemIter);
-		else {
+		if ((itemIter->Type() == MOD) && !itemIter->Messages().empty()) {
 			bool keep = false;
 			Message message;
-			message.Key(NONE);
 			
 			vector<Message> messages = itemIter->Messages();
 			for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter) {
@@ -163,19 +161,16 @@ int main() {
 					}
 				}
 			}
-			if (!keep)
-				itemIter = masterlist.erase(itemIter);
-			else {
-				itemIter->Messages(messages);
-			}
+			if (keep && message.Key() == SAY)
+				holdingVec.push_back(Item(itemIter->Name(), MOD, messages));
 		}
 	}
 	
 	//Now the masterlist contents should be sorted alphabetically.
-	sort(masterlist.begin(),masterlist.end(), SortModsByName);
+	sort(holdingVec.begin(), holdingVec.end(), SortModsByName);
 
 	//Finally, we output it as our dirtylist.
-	SaveDirtyList(masterlist, dirtylist);
+	SaveDirtyList(holdingVec, dirtylist);
 	dirtylist.close();
 	return (0);
 }
