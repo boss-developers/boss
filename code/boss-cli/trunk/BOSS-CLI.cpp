@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2012    BOSS Development Team.
+    Copyright (C) 2009-2011    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -112,9 +112,6 @@ void InhibitUpdate(bool val) {
 }
 
 int main(int argc, char *argv[]) {
-
-	size_t lastRecognisedPos = 0;			//position of last recognised mod.
-	string scriptExtender;					//What script extender is present.
 	time_t esmtime = 0;						//File modification times.
 	ItemList modlist, masterlist;		//modlist and masterlist data structures.
 	RuleList userlist;					//userlist data structure.
@@ -284,7 +281,7 @@ int main(int argc, char *argv[]) {
 		LOG_DEBUG("BOSSlog format set to: '%s'", bosslogFormat.c_str());
 	}
 	output.SetFormat(log_format);
-	contents.iniParsingError = ini.errorBuffer.FormatFor(log_format);
+	contents.iniParsingError = ini.ErrorBuffer().FormatFor(log_format);
 
 	/////////////////////////
 	// BOSS Updater Stuff
@@ -591,7 +588,7 @@ int main(int argc, char *argv[]) {
 	// Resume Error Condition Checks
 	///////////////////////////////////
 
-	cout << endl << "BOSS working..." << endl;
+	cout << endl << "Better Oblivion Sorting Software working..." << endl;
 
 	//Get the master esm's modification date. 
 	try {
@@ -648,15 +645,18 @@ int main(int argc, char *argv[]) {
 		LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
 		masterlist.Load(sortfile);
 		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
-		masterlist.EvalConditionals();
-		contents.globalMessages = masterlist.globalMessageBuffer;
+		masterlist.evalConditions();
+		contents.globalMessages = masterlist.GlobalMessageBuffer();
 	} catch (boss_error e) {
 		output.Clear();
 		output.PrintHeader();
-		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL || e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
+		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
 			output.SetHTMLSpecialEscape(false);
 			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
-				<< masterlist.errorBuffer.FormatFor(log_format) << LIST_CLOSE;
+				<< masterlist.ErrorBuffer().FormatFor(log_format) << LIST_CLOSE;
+		} else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
+			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
+				<< LIST_ITEM << SPAN_CLASS_ERROR_OPEN << e.getString() << SPAN_CLOSE << LIST_CLOSE;
 		} else
 			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK

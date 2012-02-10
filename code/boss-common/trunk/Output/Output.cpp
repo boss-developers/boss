@@ -561,7 +561,7 @@ namespace boss {
 	}
 
 	Outputter& Outputter::operator<< (const Message m) {
-		string data = EscapeHTMLSpecial(m.data);
+		string data = EscapeHTMLSpecial(m.Data());
 		//If bosslog format is HTML, wrap web addresses in HTML link format.
 		if (log_format == HTML) {
 			size_t pos1,pos2;
@@ -577,7 +577,7 @@ namespace boss {
 			}
 		}
 		//Select message formatting.
-		switch(m.key) {
+		switch(m.Key()) {
 		case TAG:
 			if (outFormat == HTML)
 				outStream << "<li class='tag'><span class='tagPrefix'>Bash Tag suggestion(s):</span> " << data;

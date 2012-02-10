@@ -38,84 +38,215 @@
 namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
+
+	/////////////////////////////////////
+	// conditionalData Class Methods
+	/////////////////////////////////////
+
+	conditionalData::conditionalData() {
+		data = "";
+		conditions = "";
+	}
+
+	conditionalData::conditionalData(string inData, string inConditions) {
+		data = inData;
+		conditions = inConditions;
+	}
+
+	string conditionalData::Data() const {
+		return data;
+	}
+
+	string conditionalData::Conditions() const {
+		return conditions;
+	}
+
+	void conditionalData::Data(string inData) {
+		data = inData;
+	}
+
+	void conditionalData::Conditions(string inConditions) {
+		conditions = inConditions;
+	}
+
+	bool conditionalData::evalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
+		Skipper skipper(false);
+		conditional_grammar cond_grammar;
+		string::const_iterator begin, end;
+		bool eval;
+
+		cond_grammar.SetVarStore(&setVars);
+		cond_grammar.SetCRCStore(&fileCRCs);
+		cond_grammar.SetErrorBuffer(&errorBuffer);
+		
+		if (!conditions.empty()) {
+			begin = conditions.begin();
+			end = conditions.end();
+
+			bool r = phrase_parse(begin, end, cond_grammar, skipper, eval);
+			if (!r || begin != end)
+				throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, conditions);
+
+			return eval;
+		} else
+			return true;
+	}
+
+	/////////////////////////////////////
+	// MasterlistVar Class Methods
+	/////////////////////////////////////
+
+	MasterlistVar::MasterlistVar() : conditionalData() {};
+
+	MasterlistVar::MasterlistVar(string inData, string inConditions) : conditionalData(inData, inConditions) {};
 	
 	//////////////////////////////
 	// Message Class Functions
 	//////////////////////////////
 
-			Message::Message	() {
+	Message::Message	() : conditionalData() {
 		key = SAY;
-		data.clear();
 	}
 	
-			Message::Message	(keyType inKey, string inData) {
+	Message::Message	(keyType inKey, string inData) : conditionalData(inData, "") {
 		key = inKey;
-		data = inData;
 	}
 
-	string	Message::KeyToString() {
-		if (key == SAY || key == OOOSAY || key == BCSAY)
+	keyType Message::Key() const {
+		return key;
+	}
+
+	void Message::Key(keyType inKey) {
+		key = inKey;
+	}
+
+	string	Message::KeyToString() const {
+		switch(key) {
+		case SAY:
 			return "SAY";
-		else if (key == TAG)
+		case TAG:
 			return "TAG";
-		else if (key == REQ)
+		case REQ:
 			return "REQ";
-		else if (key == WARN)
+		case WARN:
 			return "WARN";
-		else if (key == ERR)
+		case ERR:
 			return "ERROR";
-		else if (key == INC)
+		case INC:
 			return "INC";
-		else if (key == DIRTY)
+		case DIRTY:
 			return "DIRTY";
-		else
+		default:
 			return "NONE";
+		}
+	}
+
+	bool	Message::evalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
+		Skipper skipper(false);
+		shorthand_grammar short_grammar;
+		string::const_iterator begin, end;
+		string newMessage;
+		bool eval;
+
+		short_grammar.SetVarStore(&setVars);
+		short_grammar.SetCRCStore(&fileCRCs);
+		short_grammar.SetErrorBuffer(&errorBuffer);
+
+		eval = conditionalData::evalConditions(setVars, fileCRCs, errorBuffer);
+
+		if (!eval)
+			return false;
+		else if (!Data().empty()) {
+			LOG_INFO("Starting to evaluate item message conditional shorthands, if they exist.");
+			//Now we must check if the message is using a conditional shorthand and evaluate that if so.
+			short_grammar.SetMessageType(key);
+
+			string da = Data();
+			begin = da.begin();
+			end = da.end();
+
+			bool r = phrase_parse(begin, end, short_grammar, skipper, newMessage);
+			if (!r || begin != end)
+				throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, Data());
+
+			if (newMessage.empty())
+				return false;
+			Data(newMessage);
+		}
+		return true;
 	}
 
 	//////////////////////////////
 	// Item Class Functions
 	//////////////////////////////
 	
-			Item::Item			() {
-		name = fs::path("");
+	Item::Item			() : conditionalData() {
 		type = MOD;
 		messages.clear();
 	}
 	
-			Item::Item			(fs::path inName) : name(inName), type(MOD) {
+	Item::Item			(string inName) : conditionalData(inName, "") {
+		type = MOD;
 		messages.clear();
 	}
 	
-			Item::Item			(fs::path inName, itemType inType) : name(inName), type(inType) {
+	Item::Item			(string inName, itemType inType) : conditionalData(inName, "") {
+		type = inType;
 		messages.clear();
 	}
 	
-			Item::Item			(fs::path inName, itemType inType, vector<Message> inMessages)
-		: name(inName), type(inType), messages(inMessages) {}
+	Item::Item			(string inName, itemType inType, vector<Message> inMessages) : conditionalData(inName, "") {
+		type = inType;
+		messages = inMessages;
+	}
+
+	vector<Message> Item::Messages() const {
+		return messages;
+	}
+
+	itemType Item::Type() const {
+		return type;
+	}
+
+	string Item::Name() const {
+		return Data();
+	}
+
+	void Item::Messages(vector<Message> inMessages) {
+		messages = inMessages;
+	}
+
+	void Item::Type(itemType inType) {
+		type = inType;
+	}
+
+	void Item::Name(string inName) {
+		Data(inName);
+	}
 	
 	bool	Item::IsPlugin		() {
-		const string ext = boost::algorithm::to_lower_copy(name.extension().string());
+		const string ext = boost::algorithm::to_lower_copy(fs::path(Data()).extension().string());
 		return (ext == ".esp" || ext == ".esm");
 	}
 
 	bool	Item::IsGroup		() { 
-		return (!name.has_extension() && !name.empty()); 
+		return (!fs::path(Data()).has_extension() && !Data().empty()); 
 	}
 
 	bool	Item::Exists		() { 
-		return (fs::exists(data_path / name) || fs::exists(data_path / fs::path(name.string() + ".ghost"))); 
+		return (fs::exists(data_path / Data()) || fs::exists(data_path / fs::path(Data() + ".ghost"))); 
 	}
 	
 	bool	Item::IsMasterFile	() {
-		const string lower = boost::algorithm::to_lower_copy(name.string());
+		const string lower = boost::algorithm::to_lower_copy(Data());
 		return (lower == "oblivion.esm" || lower == "fallout3.esm" || lower == "nehrim.esm" || lower == "falloutnv.esm" || lower == "skyrim.esm");
 	}
 
 	bool	Item::IsGhosted		() {
-		return (fs::exists(data_path / fs::path(name.string() + ".ghost")));
+		return (fs::exists(data_path / fs::path(Data() + ".ghost")));
 	}
 	
-	string	Item::GetHeader		() {
+	string	Item::GetVersion		() {
 		if (!IsPlugin())
 			return "";
 		
@@ -123,9 +254,9 @@ namespace boss {
 
 		// Read mod's header now...
 		if (IsGhosted())
-			header = ReadHeader(data_path / fs::path(name.string() + ".ghost"));
+			header = ReadHeader(data_path / fs::path(Data() + ".ghost"));
 		else
-			header = ReadHeader(data_path / name);
+			header = ReadHeader(data_path / Data());
 
 		// The current mod's version if found, or empty otherwise.
 		return header.Version;
@@ -134,11 +265,11 @@ namespace boss {
 	void	Item::SetModTime	(time_t modificationTime) {
 		try {			
 			if (IsGhosted())
-				fs::last_write_time(data_path / fs::path(name.string() + ".ghost"), modificationTime);
+				fs::last_write_time(data_path / fs::path(Data() + ".ghost"), modificationTime);
 			else
-				fs::last_write_time(data_path / name, modificationTime);
+				fs::last_write_time(data_path / Data(), modificationTime);
 		} catch(fs::filesystem_error e) {
-			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL, name.string(), e.what());
+			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL, Data(), e.what());
 		}
 	}
 
@@ -146,15 +277,15 @@ namespace boss {
 		time_t t1 = 0,t2 = 0;
 		try {
 			if (this->IsGhosted())
-				t1 = fs::last_write_time(data_path / fs::path(this->name.string() + ".ghost"));
+				t1 = fs::last_write_time(data_path / fs::path(this->Data() + ".ghost"));
 			else
-				t1 = fs::last_write_time(data_path / this->name);
+				t1 = fs::last_write_time(data_path / this->Data());
 			if (item2.IsGhosted())
-				t2 = fs::last_write_time(data_path / fs::path(item2.name.string() + ".ghost"));
+				t2 = fs::last_write_time(data_path / fs::path(item2.Data() + ".ghost"));
 			else
-				t2 = fs::last_write_time(data_path / item2.name);
+				t2 = fs::last_write_time(data_path / item2.Data());
 		}catch (fs::filesystem_error e){
-			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, this->name.string() + "\" or \"" + item2.name.string(),e.what());
+			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, this->Data() + "\" or \"" + item2.Data(),e.what());
 			LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.", e.what());
 		}
 		double diff = difftime(t1,t2);
@@ -162,61 +293,54 @@ namespace boss {
 		return (diff < 0);
 	}
 
-	void	Item::EvalConditionals(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
+	bool	Item::evalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
 		Skipper skipper(false);
 		conditional_grammar cond_grammar;
-		shorthand_grammar short_grammar;
 		string::const_iterator begin, end;
 
+		cond_grammar.SetErrorBuffer(&errorBuffer);
 		cond_grammar.SetVarStore(&setVars);
 		cond_grammar.SetCRCStore(&fileCRCs);
-		cond_grammar.SetErrorBuffer(&errorBuffer);
+		
+		bool eval;
+		if (!Conditions().empty()) {
+			LOG_INFO("Evaluating conditional for item \"%s\"", Data().c_str());
 
-		short_grammar.SetVarStore(&setVars);
-		short_grammar.SetCRCStore(&fileCRCs);
-		short_grammar.SetErrorBuffer(&errorBuffer);
+			string cond = Conditions();
+			begin = cond.begin();
+			end = cond.end();
+
+			bool r = phrase_parse(begin, end, cond_grammar, skipper, eval);
+			if (!r || begin != end)
+				throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, Conditions());
+
+			if (!eval)
+				return false;
+		}
 
 		vector<Message>::iterator messageIter = messages.begin();
 		while (messageIter != messages.end()) {
-			bool eval;
-			if (!messageIter->conditionals.empty()) {
-				LOG_INFO("Evaluating conditional for message \"%s\" attached to item \"%s\"", messageIter->data.c_str(), name.string().c_str());
-				begin = messageIter->conditionals.begin();
-				end = messageIter->conditionals.end();
-
-				bool r = phrase_parse(begin, end, cond_grammar, skipper, eval);
-				if (!r || begin != end)
-					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, messageIter->conditionals);
-			} else
-				eval = true;
-			if (!eval)
-				messageIter = messages.erase(messageIter);
-			else if (!messageIter->data.empty()) {
-				string newMessage;
-				LOG_INFO("Starting to evaluate item message conditional shorthands, if they exist.");
-				//Now we must check if the message is using a conditional shorthand and evaluate that if so.
-				short_grammar.SetMessageType(messageIter->key);
-
-				begin = messageIter->data.begin();
-				end = messageIter->data.end();
-
-				bool r = phrase_parse(begin, end, short_grammar, skipper, newMessage);
-				if (!r || begin != end)
-					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, messageIter->data);
-
-				messageIter->data = newMessage;
-				if (newMessage.empty())
-					messageIter = messages.erase(messageIter);
-				else
-					++messageIter;
-			} else
+			if (messageIter->evalConditions(setVars, fileCRCs, errorBuffer))
 				++messageIter;
+			else
+				messageIter = messages.erase(messageIter);
 		}
+
+		return true;
 	}
 
 	//////////////////////////////
 	// ItemList Class Functions
 	//////////////////////////////
+
+							ItemList::ItemList					() {
+		items.clear();
+		errorBuffer = ParsingError();
+		globalMessageBuffer.clear();
+		lastRecognisedPos = 0;
+		masterlistVariables.clear();
+		fileCRCs.clear();
+	}
 
 	void					ItemList::Load				(fs::path path) {
 		if (fs::exists(path) && fs::is_directory(path)) {
@@ -229,9 +353,9 @@ namespace boss {
 					//Add file to modlist. If the filename has a '.ghost' extension, remove it.
 					Item tempItem;
 					if (ext == ".ghost")
-						tempItem = Item(filename.stem());
+						tempItem = Item(filename.stem().string());
 					else
-						tempItem = Item(filename);
+						tempItem = Item(filename.string());
 					items.push_back(tempItem);
 				}
 			}
@@ -287,18 +411,26 @@ namespace boss {
 		vector<Item>::iterator itemIter = items.begin();
 		vector<Message>::iterator messageIter;
 		for (itemIter; itemIter != items.end(); ++itemIter) {
-			if (itemIter->type == BEGINGROUP)
-				ofile << "BEGINGROUP: " << itemIter->name.string() << endl;  //Print the group begin marker
-			else if (itemIter->type == ENDGROUP)
-				ofile << "ENDGROUP: " << itemIter->name.string() << endl;  //Print the group end marker
+			if (itemIter->Type() == BEGINGROUP)
+				ofile << "BEGINGROUP: " << itemIter->Name() << endl;  //Print the group begin marker
+			else if (itemIter->Type() == ENDGROUP)
+				ofile << "ENDGROUP: " << itemIter->Name() << endl;  //Print the group end marker
 			else {
-				if (itemIter->type == REGEX)
+				if (!itemIter->Conditions().empty()) {
+					ofile << itemIter->Conditions() << ' ';
+					if (itemIter->Type() == MOD)
+						ofile << "MOD: ";
+				}
+				if (itemIter->Type() == REGEX)
 					ofile << "REGEX: ";
-				ofile << itemIter->name.string() << endl;  //Print the mod name.
+				ofile << itemIter->Name() << endl;  //Print the mod name.
 				//Print the messages with the appropriate syntax.
-				messageIter = itemIter->messages.begin();
-				for (messageIter; messageIter != itemIter->messages.end(); ++messageIter)
-					ofile << " " << messageIter->KeyToString() << ": " << messageIter->data << endl; 
+				vector<Message> messages = itemIter->Messages();
+				for (messageIter = messages.begin(); messageIter != messages.end(); ++messageIter) {
+					if (!messageIter->Conditions().empty())
+						ofile << ' ' << messageIter->Conditions();
+					ofile << ' ' << messageIter->KeyToString() << ": " << messageIter->Data() << endl; 
+				}
 			}
 		}
 
@@ -307,151 +439,123 @@ namespace boss {
 		return;
 	}
 
-	void					ItemList::EvalConditionals	() {
-		Skipper skipper(false);
-		conditional_grammar cond_grammar;
-		string::const_iterator begin, end;
-		shorthand_grammar short_grammar;
-		string newMessage;
-
+	void					ItemList::evalConditions	() {
 		boost::unordered_set<string> setVars;
-
-		cond_grammar.SetErrorBuffer(&errorBuffer);
-		cond_grammar.SetVarStore(&setVars);
-		cond_grammar.SetCRCStore(&fileCRCs);
-
-		short_grammar.SetErrorBuffer(&errorBuffer);
-		short_grammar.SetVarStore(&setVars);
-		short_grammar.SetCRCStore(&fileCRCs);
 
 		//First eval variables.
 		//Need to convert these from a vector to an unordered set.
 		LOG_INFO("Starting to evaluate variable conditionals.");
 		vector<MasterlistVar>::iterator varIter = masterlistVariables.begin();
 		while (varIter != masterlistVariables.end()) {
-			bool eval;
-			if (!varIter->conditionals.empty()) {
-				begin = varIter->conditionals.begin();
-				end = varIter->conditionals.end();
-
-				bool r = phrase_parse(begin, end, cond_grammar, skipper, eval);
-				if (!r || begin != end)
-					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, varIter->conditionals);
-			} else
-				eval = true;
-			if (!eval)
-				varIter = masterlistVariables.erase(varIter);
-			else {
-				//Empty the conditional so that the var can be found with a simpler search in future.
-				setVars.insert(varIter->var);
+			if (varIter->evalConditions(setVars, fileCRCs, errorBuffer)) {
+				setVars.insert(varIter->Data());
 				++varIter;
-			}
+			} else
+				varIter = masterlistVariables.erase(varIter);
 		}
 
 		//Now eval items.
 		LOG_INFO("Starting to evaluate item conditionals.");
 		vector<Item>::iterator itemIter = items.begin();
 		while (itemIter != items.end()) {
-			bool eval;
-			if (!itemIter->conditionals.empty()) {
-				LOG_INFO("Evaluating conditional for item \"%s\"", itemIter->name.string().c_str());
-				begin = itemIter->conditionals.begin();
-				end = itemIter->conditionals.end();
-
-				bool r = phrase_parse(begin, end, cond_grammar, skipper, eval);
-				if (!r || begin != end)
-					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, itemIter->conditionals);
-			} else
-				eval = true;
-			if (!eval)
-				itemIter = items.erase(itemIter);
-			else {
-				//Now eval messages in item.
-				itemIter->EvalConditionals(setVars, fileCRCs, errorBuffer);
+			if (itemIter->evalConditions(setVars, fileCRCs, errorBuffer))
 				++itemIter;
-			}
+			else
+				itemIter = items.erase(itemIter);
 		}
 
 		//Now eval global messages.
 		LOG_INFO("Starting to evaluate global message conditionals.");
 		vector<Message>::iterator messageIter = globalMessageBuffer.begin();
 		while (messageIter != globalMessageBuffer.end()) {
-			bool eval;
-			if (!messageIter->conditionals.empty()) {
-				begin = messageIter->conditionals.begin();
-				end = messageIter->conditionals.end();
-
-				bool r = phrase_parse(begin, end, cond_grammar, skipper, eval);
-				if (!r || begin != end)
-					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, messageIter->conditionals);
-			} else
-				eval = true;
-			if (!eval)
-				messageIter = globalMessageBuffer.erase(messageIter);
-			else if (!messageIter->data.empty()) {
-				LOG_INFO("Starting to evaluate global message conditional shorthands, if they exist.");
-				//Now we must check if the message is using a conditional shorthand and evaluate that if so.
-				short_grammar.SetMessageType(messageIter->key);
-
-				begin = messageIter->data.begin();
-				end = messageIter->data.end();
-
-				bool r = phrase_parse(begin, end, short_grammar, skipper, newMessage);
-				if (!r || begin != end)
-					throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, messageIter->data);
-
-				messageIter->data = newMessage;
-				if (newMessage.empty())
-					messageIter = globalMessageBuffer.erase(messageIter);
-				else
-					++messageIter;
-			} else
+			if (messageIter->evalConditions(setVars, fileCRCs, errorBuffer))
 				++messageIter;
+			else
+				messageIter = globalMessageBuffer.erase(messageIter);
 		}
 	}
 	
-	vector<Item>::iterator	ItemList::FindItem			(fs::path name) {
-		vector<Item>::iterator itemIter = items.begin();
-		while (itemIter != items.end()) {
-			if (Tidy(itemIter->name.string()) == Tidy(name.string()))
-				break;
-			++itemIter;
+	size_t					ItemList::FindItem			(string name) {
+		size_t max = items.size();
+		for (size_t i=0; i < max; i++) {
+			if (Tidy(items[i].Name()) == Tidy(name))
+				return i;
 		}
-		return itemIter;
+		return max;
 	}
 
-	vector<Item>::iterator	ItemList::FindLastItem		(fs::path name) {
-		vector<Item>::iterator itemIter = items.end();
-		--itemIter;
-		while (itemIter != items.begin()) {
-			if (Tidy(itemIter->name.string()) == Tidy(name.string()))
-				return itemIter;
-			--itemIter;
+	size_t					ItemList::FindLastItem		(string name) {
+		size_t max = items.size();
+		for (size_t i=max-1; i >= 0; i--) {
+			if (Tidy(items[i].Name()) == Tidy(name))
+				return i;
 		}
-		return items.end();
+		return max;
 	}
 	
 	//This looks a bit weird, but I need a non-reverse iterator outputted, and searching backwards is probably more efficient for my purposes.
-	vector<Item>::iterator	ItemList::FindGroupEnd		(fs::path name) {
-		vector<Item>::iterator itemIter = items.end();
-		--itemIter;
-		while (itemIter != items.begin()) {
-			if (itemIter->type == ENDGROUP && Tidy(itemIter->name.string()) == Tidy(name.string()))
-				return itemIter;
-			--itemIter;
+	size_t					ItemList::FindGroupEnd		(string name) {
+		size_t max = items.size();
+		for (size_t i=max-1; i >= 0; i--) {
+			if (items[i].Type() == ENDGROUP && Tidy(items[i].Name()) == Tidy(name))
+				return i;
 		}
-		return items.end();
+		return max;
+	}
+
+	size_t ItemList::LastRecognisedPos() const {
+		return lastRecognisedPos;
+	}
+
+	vector<Item> ItemList::Items() const {
+		return items;
+	}
+
+	vector<Message> ItemList::GlobalMessageBuffer() const {
+		return globalMessageBuffer;
+	}
+
+	ParsingError ItemList::ErrorBuffer() const {
+		return errorBuffer;
+	}
+
+	void ItemList::Items(vector<Item> inItems) {
+		items = inItems;
+	}
+
+	void ItemList::LastRecognisedPos(size_t pos) {
+		lastRecognisedPos = pos;
+	}
+
+	void ItemList::Erase(size_t pos) {
+		items.erase(items.begin() + pos);
+	}
+	
+	void ItemList::Erase(size_t startPos, size_t endPos) {
+		items.erase(items.begin() + startPos, items.begin() + endPos);
+	}
+	
+	void ItemList::Insert(size_t pos, vector<Item> source, size_t sourceStart, size_t sourceEnd) {
+		items.insert(items.begin()+pos, source.begin()+sourceStart, source.begin()+sourceEnd);
+	}
+
+	void ItemList::Insert(size_t pos, Item item) {
+		items.insert(items.begin()+pos, item);
 	}
 
 	//////////////////////////////
 	// RuleLine Class Functions
 	//////////////////////////////
 
-			RuleLine::RuleLine			() 
-		: key(NONE), object("") {}
+			RuleLine::RuleLine			() {
+				key = NONE;
+				object = "";
+			}
 
-			RuleLine::RuleLine			(keyType inKey, string inObject) 
-		: key(inKey), object(inObject) {}
+			RuleLine::RuleLine			(keyType inKey, string inObject) {
+				key = inKey;
+				object = inObject;
+			}
 
 	bool	RuleLine::IsObjectMessage	() {
 		if (key != APPEND && key != REPLACE)
@@ -530,41 +634,82 @@ namespace boss {
 		}
 	}
 
-	string	RuleLine::KeyToString		() {
-		if (key == BEFORE)
+	string	RuleLine::KeyToString		() const {
+		switch(key) {
+		case ADD:
+			return "ADD";
+		case OVERRIDE:
+			return "OVERRIDE";
+		case FOR:
+			return "FOR";
+		case BEFORE:
 			return "BEFORE";
-		else if (key == AFTER)
+		case AFTER:
 			return "AFTER";
-		else if (key == TOP)
+		case TOP:
 			return "TOP";
-		else if (key == BOTTOM)
+		case BOTTOM:
 			return "BOTTOM";
-		else if (key == APPEND)
+		case APPEND:
 			return "APPEND";
-		else if (key == REPLACE)
+		case REPLACE:
 			return "REPLACE";
-		else
+		default:
 			return "NONE";
+		}
+	}
+
+	keyType RuleLine::Key() const {
+		return key;
+	}
+
+	string RuleLine::Object() const {
+		return object;
+	}
+
+	void RuleLine::Key(keyType inKey) {
+		key = inKey;
+	}
+
+	void RuleLine::Object(string inObject) {
+		object = inObject;
 	}
 
 	//////////////////////////////
 	// Rule Class Functions
 	//////////////////////////////
 
-	string Rule::KeyToString() {
-		if (ruleKey == ADD)
-			return "ADD";
-		else if (ruleKey == OVERRIDE)
-			return "OVERRIDE";
-		else if (ruleKey == FOR)
-			return "FOR";
-		else
-			return "NONE";
+	Rule::Rule() : RuleLine() {
+		enabled = true;
+		lines.clear();
 	}
+
+	bool Rule::Enabled() const {
+		return enabled;
+	}
+
+	vector<RuleLine> Rule::Lines() const {
+		return lines;
+	}
+
+	void Rule::Enabled(bool e) {
+		enabled = e;
+	}
+
+	void Rule::Lines(vector<RuleLine> inLines) {
+		lines = inLines;
+	}
+
 
 	//////////////////////////////
 	// RuleList Class Functions
 	//////////////////////////////
+
+	RuleList::RuleList() {
+		rules.clear();
+		parsingErrorBuffer = ParsingError();
+		syntaxErrorBuffer.clear();
+	}
 
 	void RuleList::Load(fs::path file) {
 		Skipper skipper(false);
@@ -604,26 +749,51 @@ namespace boss {
 		}
 
 		for (vector<Rule>::iterator ruleIter = rules.begin(); ruleIter != rules.end(); ++ruleIter) {
-			if (!ruleIter->enabled)
+			if (!ruleIter->Enabled())
 				outFile << "DISABLE ";
-			outFile << boost::algorithm::to_upper_copy(ruleIter->KeyToString()) << ": " << ruleIter->ruleObject << endl;
+			outFile << boost::algorithm::to_upper_copy(ruleIter->KeyToString()) << ": " << ruleIter->Object() << endl;
 
-			for (vector<RuleLine>::iterator lineIter = ruleIter->lines.begin(); lineIter != ruleIter->lines.end(); ++lineIter)
-				outFile << boost::algorithm::to_upper_copy(lineIter->KeyToString()) << ": " << lineIter->object << endl;
+			vector<RuleLine> lines = ruleIter->Lines();
+			for (vector<RuleLine>::iterator lineIter = lines.begin(); lineIter != lines.end(); ++lineIter)
+				outFile << boost::algorithm::to_upper_copy(lineIter->KeyToString()) << ": " << lineIter->Object() << endl;
 			outFile << endl;
 		}
 		outFile.close();
 	}
 
-	vector<Rule>::iterator RuleList::FindRule(string ruleObject, bool onlyEnabled) {
-		vector<Rule>::iterator ruleIter = rules.begin();
-		for (ruleIter; ruleIter != rules.end(); ++ruleIter) {
-			if ((onlyEnabled && ruleIter->enabled) || !onlyEnabled) {
-				if (Tidy(ruleIter->ruleObject) == Tidy(ruleObject))
-					break;
+	size_t RuleList::FindRule(string ruleObject, bool onlyEnabled) {
+		size_t max = rules.size();
+		for (size_t i=0; i<max; i++) {
+			if ((onlyEnabled && rules[i].Enabled()) || !onlyEnabled) {
+				if (Tidy(rules[i].Object()) == Tidy(ruleObject))
+					return i;
 			}
 		}
-		return ruleIter;
+		return max;
+	}
+
+	vector<Rule> RuleList::Rules() {
+		return rules;
+	}
+
+	ParsingError RuleList::ParsingErrorBuffer() {
+		return parsingErrorBuffer;
+	}
+
+	vector<ParsingError> RuleList::SyntaxErrorBuffer() {
+		return syntaxErrorBuffer;
+	}
+		
+	void RuleList::Rules(vector<Rule> inRules) {
+		rules = inRules;
+	}
+
+	void RuleList::ParsingErrorBuffer(ParsingError buffer) {
+		parsingErrorBuffer = buffer;
+	}
+
+	void RuleList::SyntaxErrorBuffer(vector<ParsingError> buffer) {
+		syntaxErrorBuffer = buffer;
 	}
 
 	//////////////////////////////
@@ -764,5 +934,13 @@ namespace boss {
 			return "Skyrim";
 		else
 			return "";
+	}
+
+	ParsingError Ini::ErrorBuffer() {
+		return errorBuffer;
+	}
+
+	void Ini::ErrorBuffer(ParsingError buffer) {
+		errorBuffer = buffer;
 	}
 }

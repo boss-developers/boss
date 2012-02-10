@@ -47,22 +47,22 @@ namespace fs = boost::filesystem;
 
 BOOST_FUSION_ADAPT_STRUCT(
     boss::MasterlistVar,
-	(std::string, conditionals)
-    (std::string, var)
+	(std::string, conditions)
+    (std::string, data)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
     boss::Message,
-	(std::string, conditionals)
+	(std::string, conditions)
     (boss::keyType, key)
     (std::string, data)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
     boss::Item,
-	(std::string, conditionals)
+	(std::string, conditions)
 	(boss::itemType, type)
-    (fs::path, name)
+    (std::string, data)
     (std::vector<boss::Message>, messages)
 )
 
@@ -79,8 +79,8 @@ BOOST_FUSION_ADAPT_STRUCT(
 BOOST_FUSION_ADAPT_STRUCT(
 	boss::Rule,
 	(bool, enabled)
-	(boss::keyType, ruleKey)
-	(std::string, ruleObject)
+	(boss::keyType, key)
+	(std::string, object)
 	(std::vector<boss::RuleLine>, lines)
 )
 
@@ -144,7 +144,7 @@ namespace boss {
 		qi::rule<grammarIter, vector<Item>(), Skipper> modList;
 		qi::rule<grammarIter, Item(), Skipper> listItem;
 		qi::rule<grammarIter, itemType(), Skipper> ItemType;
-		qi::rule<grammarIter, fs::path(), Skipper> itemName;
+		qi::rule<grammarIter, string(), Skipper> itemName;
 		qi::rule<grammarIter, vector<Message>(), Skipper> itemMessages;
 		qi::rule<grammarIter, Message(), Skipper> itemMessage, globalMessage, oldCondItemMessage;
 		qi::rule<grammarIter, MasterlistVar(), Skipper> listVar;
@@ -172,7 +172,7 @@ namespace boss {
 		void ConvertOldConditional(string& result, const char var);
 
 		//Turns a given string into a path. Can't be done directly because of the openGroups checks.
-		void ToPath(fs::path& p, string itemName);
+		void ToName(string& p, string itemName);
 
 		
 	};

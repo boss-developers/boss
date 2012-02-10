@@ -122,44 +122,46 @@ namespace boss {
 	void SortRecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
 		Outputter buffer(log_format);
 		time_t modfiletime = 0;
+		vector<Item> items = modlist.Items();
+
 		LOG_INFO("Applying calculated ordering to user files...");
-		
-		vector<Message>::iterator messageIter;
-		for (vector<Item>::iterator iter = modlist.items.begin(); iter <= modlist.lastRecognisedPos; ++iter) {
-			if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
-				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << iter->name.string() << SPAN_CLOSE;
+		for (size_t i=0; i <= modlist.LastRecognisedPos(); i++) {
+			if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
+				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << items[i].Name() << SPAN_CLOSE;
 				if (!skip_version_parse) {
-					string version = iter->GetHeader();
+					string version = items[i].GetVersion();
 					if (!version.empty())
 						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
 				}
-				if (iter->IsGhosted()) {
+				if (items[i].IsGhosted()) {
 					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
 					counters.ghosted++;
 					if (show_CRCs)
-					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(iter->name.string() + ".ghost"))) << SPAN_CLOSE;
+					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(items[i].Name() + ".ghost"))) << SPAN_CLOSE;
 				} else if (show_CRCs)
-					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / iter->name)) << SPAN_CLOSE;
+					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / items[i].Name())) << SPAN_CLOSE;
 			
-				if (!trial_run && !iter->IsMasterFile()) {
+				if (!trial_run && !items[i].IsMasterFile()) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
-					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", iter->name.string().c_str());
+					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
 					try {
-						iter->SetModTime(esmtime + counters.recognised*60);
+						items[i].SetModTime(esmtime + counters.recognised*60);
 					} catch(boss_error e) {
 						buffer << SPAN_CLASS_ERROR_OPEN << "Error: " << e.getString() << SPAN_CLOSE;
 						LOG_ERROR(" * Error: %s", e.getString().c_str());
 					}
 				}
 				//Finally, print the mod's messages.
-				if (!iter->messages.empty()) {
+				if (!items[i].Messages().empty()) {
+					vector<Message> messages = items[i].Messages();
+					size_t jmax = messages.size();
 					buffer << LIST_OPEN;
-					for (messageIter = iter->messages.begin(); messageIter != iter->messages.end(); ++messageIter) {
-						buffer << *messageIter;
+					for (size_t j=0; j < jmax; j++) {
+						buffer << messages[j];
 						counters.messages++;
-						if (messageIter->key == WARN)
+						if (messages[j].Key() == WARN)
 							counters.warnings++;
-						else if (messageIter->key == ERR)
+						else if (messages[j].Key() == ERR)
 							counters.errors++;
 					}
 					buffer << LIST_CLOSE;
@@ -175,31 +177,34 @@ namespace boss {
 	void ListUnrecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
 		Outputter buffer(log_format);
 		time_t modfiletime = 0;
+		size_t max = modlist.Items().size();
+		vector<Item> items = modlist.Items();
+
 		//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 		//Order their dates to be i days after the master esm to ensure they load last.
 		LOG_INFO("Reporting unrecognized mods...");
-		for (vector<Item>::iterator iter = modlist.lastRecognisedPos+1; iter != modlist.items.end(); ++iter) {
-			if (iter->type == MOD && iter->Exists()) {  //Only act on mods that exist.
-				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << iter->name.string() << SPAN_CLOSE
+		for (size_t i = modlist.LastRecognisedPos()+1; i < max; i++) {
+			if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
+				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << items[i].Name() << SPAN_CLOSE
 					/*<< BUTTON_SUBMIT_PLUGIN*/;
 				if (!skip_version_parse) {
-					string version = iter->GetHeader();
+					string version = items[i].GetVersion();
 					if (!version.empty())
 						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
 				}
-				if (iter->IsGhosted()) {
+				if (items[i].IsGhosted()) {
 					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
 					counters.ghosted++;
 					if (show_CRCs)
-					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(iter->name.string() + ".ghost"))) << SPAN_CLOSE;
+					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(items[i].Name() + ".ghost"))) << SPAN_CLOSE;
 				} else if (show_CRCs)
-					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / iter->name)) << SPAN_CLOSE;
+					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / items[i].Name())) << SPAN_CLOSE;
 
-				if (!trial_run && !iter->IsMasterFile()) {
+				if (!trial_run && !items[i].IsMasterFile()) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
-					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", iter->name.string().c_str());
+					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
 					try {
-						iter->SetModTime(esmtime + (counters.recognised + counters.unrecognised)*60);
+						items[i].SetModTime(esmtime + (counters.recognised + counters.unrecognised)*60);
 					} catch(boss_error e) {
 						buffer << SPAN_CLASS_ERROR_OPEN << "Error: " << e.getString() << SPAN_CLOSE;
 						LOG_ERROR(" * Error: %s", e.getString().c_str());
@@ -502,7 +507,8 @@ namespace boss {
 		boost::unordered_set<string> hashset;  //Holds mods for checking against masterlist
 		boost::unordered_set<string>::iterator setPos;
 
-		size_t size;
+		vector<Item> items = modlist.Items();
+		size_t modlistSize = items.size();
 		size_t userlistSize = userlist.rules.size();
 		size_t linesSize;
 		/* Hashset must be a set of unique mods.
@@ -510,32 +516,31 @@ namespace boss {
 		*/
 
 		LOG_INFO("Populating hashset with modlist.");
-		size = modlist.items.size();
-		for (size_t i=0; i<size; i++) {
-			if (modlist.items[i].type == MOD)
-				hashset.insert(Tidy(modlist.items[i].name.string()));
+		for (size_t i=0; i<modlistSize; i++) {
+			if (items[i].Type() == MOD)
+				hashset.insert(Tidy(items[i].Name()));
 		}
 		LOG_INFO("Populating hashset with userlist.");
 		//Need to get ruleObject and sort line object if plugins.
 		for (size_t i=0; i<userlistSize; i++) {
-			if (Item(userlist.rules[i].ruleObject).IsPlugin()) {
-				setPos = hashset.find(Tidy(userlist.rules[i].ruleObject));
+			if (Item(userlist.rules[i].Object()).IsPlugin()) {
+				setPos = hashset.find(Tidy(userlist.rules[i].Object()));
 				if (setPos == hashset.end()) {  //Mod not already in hashset.
-					setPos = hashset.find(Tidy(userlist.rules[i].ruleObject + ".ghost"));
+					setPos = hashset.find(Tidy(userlist.rules[i].Object() + ".ghost"));
 					if (setPos == hashset.end()) {  //Ghosted mod not already in hashset. 
 						//Unique plugin, so add to hashset.
-						hashset.insert(Tidy(userlist.rules[i].ruleObject));
+						hashset.insert(Tidy(userlist.rules[i].Object()));
 					}
 				}
 			}
-			if (userlist.rules[i].ruleKey != FOR) {  //First line is a sort line.
-				if (Item(userlist.rules[i].lines[0].object).IsPlugin()) {
-					setPos = hashset.find(Tidy(userlist.rules[i].lines[0].object));
+			if (userlist.rules[i].Key() != FOR) {  //First line is a sort line.
+				if (Item(userlist.rules[i].Lines()[0].Object()).IsPlugin()) {
+					setPos = hashset.find(Tidy(userlist.rules[i].Lines()[0].Object()));
 					if (setPos == hashset.end()) {  //Mod not already in hashset.
-						setPos = hashset.find(Tidy(userlist.rules[i].lines[0].object + ".ghost"));
+						setPos = hashset.find(Tidy(userlist.rules[i].Lines()[0].Object() + ".ghost"));
 						if (setPos == hashset.end()) {  //Ghosted mod not already in hashset. 
 							//Unique plugin, so add to hashset.
-							hashset.insert(Tidy(userlist.rules[i].lines[0].object));
+							hashset.insert(Tidy(userlist.rules[i].Lines()[0].Object()));
 						}
 					}
 				}
@@ -543,34 +548,35 @@ namespace boss {
 		}
 
 		//Now compare masterlist against hashset.
-		vector<Item>::iterator iter = masterlist.items.begin();
-		vector<Item>::iterator modlistPos;
+		size_t modlistPos;
+		items = masterlist.Items();
+		size_t max = masterlist.Items().size();
 		vector<Item> holdingVec;
 		boost::unordered_set<string>::iterator addedPos;
 		boost::unordered_set<string> addedMods;
 		LOG_INFO("Comparing hashset against masterlist.");
-		for (iter; iter != masterlist.items.end(); ++iter) {
-			if (iter->type == MOD) {
+		for (size_t i=0; i < max; i++) {
+			if (items[i].Type() == MOD) {
 				//Check to see if the mod is in the hashset. If it is, or its ghosted version is, also check if 
 				//the mod is already in the holding vector. If not, add it.
-				setPos = hashset.find(Tidy(iter->name.string()));
+				setPos = hashset.find(Tidy(items[i].Name()));
 				if (setPos == hashset.end()) {
-					iter->name = fs::path(iter->name.string() + ".ghost");		//Add ghost extension to mod name.
-					setPos = hashset.find(Tidy(iter->name.string()));
+					items[i].Name(items[i].Name() + ".ghost");		//Add ghost extension to mod name.
+					setPos = hashset.find(Tidy(items[i].Name()));
 				}
 				if (setPos != hashset.end()) {										//Mod found in hashset. 
-					addedPos = addedMods.find(Tidy(iter->name.string()));
+					addedPos = addedMods.find(Tidy(items[i].Name()));
 					if (addedPos == addedMods.end()) {								//The mod is not already in the holding vector.
-						holdingVec.push_back(*iter);									//Record it in the holding vector.
-						modlistPos = modlist.FindItem(iter->name);
-						if (modlistPos != modlist.items.end())
-							modlist.items.erase(modlistPos);
-						addedMods.insert(Tidy(iter->name.string()));
+						holdingVec.push_back(items[i]);									//Record it in the holding vector.
+						modlistPos = modlist.FindItem(items[i].Name());
+						if (modlistPos != modlist.Items().size())
+							modlist.Erase(modlistPos);
+						addedMods.insert(Tidy(items[i].Name()));
 					}
 				}
-			} else if (iter->type == REGEX) {
+			} else if (items[i].Type() == REGEX) {
 				//Form a regex.
-				boost::regex reg(Tidy(iter->name.string())+"(.ghost)?",boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
+				boost::regex reg(Tidy(items[i].Name())+"(.ghost)?",boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
 				//Now start looking.
 				setPos = hashset.begin();
 				do {
@@ -579,15 +585,15 @@ namespace boss {
 						break;
 					string mod = *setPos;
 					//Look for mod in modlist, and userlist. Replace with case-preserved mod name.
-					modlistPos = modlist.FindItem(fs::path(mod));
-					if (modlistPos != modlist.items.end())
-						mod = modlistPos->name.string();
+					modlistPos = modlist.FindItem(mod);
+					if (modlistPos != modlist.Items().size())
+						mod = modlist.Items()[modlistPos].Name();
 					else {
 						for (size_t i=0; i<userlistSize; i++) {
-							linesSize = userlist.rules[i].lines.size();
+							linesSize = userlist.rules[i].Lines().size();
 							for (size_t j=0; j<linesSize; j++) {
-								if (Tidy(userlist.rules[i].lines[j].object) == mod)
-									mod = userlist.rules[i].lines[j].object;
+								if (Tidy(userlist.rules[i].Lines()[j].Object()) == mod)
+									mod = userlist.rules[i].Lines()[j].Object();
 							}
 						}
 					}
@@ -596,27 +602,25 @@ namespace boss {
 					if (addedPos == addedMods.end()) {							//The mod is not already in the holding vector.
 						//Now do the adding/removing.
 						//Create new temporary item to hold current found mod.
-						fs::path modPath(mod);
-						Item tempItem = Item(modPath, MOD, iter->messages);
+						Item tempItem = Item(mod, MOD, items[i].Messages());
 
 						holdingVec.push_back(tempItem);							//Record it in the holding vector.
-						modlistPos = modlist.FindItem(modPath);
-						if (modlistPos != modlist.items.end())
-							modlist.items.erase(modlistPos);
+						modlistPos = modlist.FindItem(mod);
+						if (modlistPos != modlist.Items().size())
+							modlist.Erase(modlistPos);
 						addedMods.insert(Tidy(mod));
 					}
 					++setPos;
 				} while (setPos != hashset.end());
 			} else //Group lines must stay recorded.
-				holdingVec.push_back(*iter);
+				holdingVec.push_back(items[i]);
 		}
-		masterlist.items = holdingVec;  //Masterlist now only contains the items needed to sort the user's mods.
-		fs::path lastRec = masterlist.items.back().name;
+		masterlist.Items(holdingVec);  //Masterlist now only contains the items needed to sort the user's mods.
+		masterlist.LastRecognisedPos(masterlist.Items().size()-1);
 		
 		//Add modlist's mods to masterlist, then set the modlist to the masterlist as that's the output..
-		masterlist.items.insert(masterlist.items.end(),modlist.items.begin(),modlist.items.end());
+		masterlist.Insert(masterlist.Items().size(), modlist.Items(), 0, modlist.Items().size());
 		modlist = masterlist;
-		modlist.lastRecognisedPos = modlist.FindLastItem(lastRec);  //Record position of last sorted item. Not using FindItem because last recognised item is probably a group, and FindItem would get the beginning of it.
 	}
 
 	//Applies the userlist rules to the working modlist.
@@ -627,169 +631,175 @@ namespace boss {
 		//set correctly again after all operations have completed.
 		//Note that if a mod is sorted after the last recognised mod by the userlist, it becomes the last recognised mod, and the item will
 		//need to be re-assigned to this item. This only occurs for BEFORE/AFTER plugin sorting rules.
-		fs::path lastRecognisedModName(modlist.lastRecognisedPos->name);
+		string lastRecognisedItem = modlist.Items()[modlist.LastRecognisedPos()].Name();
 
 		Outputter buffer(log_format);
 
 		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlist.rules.size());
 		vector<Rule>::iterator ruleIter = userlist.rules.begin();
-		vector<RuleLine>::iterator lineIter;
-		vector<Item>::iterator modlistPos1, modlistPos2;
-		uint32_t i = 0;
+		size_t modlistPos1, modlistPos2;
+		uint32_t ruleNo = 0;
 		for (ruleIter; ruleIter != userlist.rules.end(); ++ruleIter) {
-			i++;
-			LOG_DEBUG(" -- Processing rule #%" PRIuS ".", i);
-			if (!ruleIter->enabled) {
-				buffer << LIST_ITEM_CLASS_SUCCESS << "The rule beginning \"" << ruleIter->KeyToString() << ": " << ruleIter->ruleObject << "\" is disabled. Rule skipped.";
-				LOG_INFO("Rule beginning \"%s: %s\" is disabled. Rule skipped.", ruleIter->KeyToString().c_str(), ruleIter->ruleObject.c_str());
+			ruleNo++;
+			LOG_DEBUG(" -- Processing rule #%" PRIuS ".", ruleNo);
+			if (!ruleIter->Enabled()) {
+				buffer << LIST_ITEM_CLASS_SUCCESS << "The rule beginning \"" << ruleIter->KeyToString() << ": " << ruleIter->Object() << "\" is disabled. Rule skipped.";
+				LOG_INFO("Rule beginning \"%s: %s\" is disabled. Rule skipped.", ruleIter->KeyToString().c_str(), ruleIter->Object().c_str());
 				continue;
 			}	
-			lineIter = ruleIter->lines.begin();
-			Item ruleItem(fs::path(ruleIter->ruleObject));
+			size_t i = 0;
+			vector<RuleLine> lines = ruleIter->Lines();
+			size_t max = lines.size();
+			Item ruleItem(ruleIter->Object());
 			if (ruleItem.IsPlugin()) {  //Plugin: Can sort or add messages.
-				if (ruleIter->ruleKey != FOR) { //First non-rule line is a sort line.
-					if (lineIter->key == BEFORE || lineIter->key == AFTER) {
+				if (ruleIter->Key() != FOR) { //First non-rule line is a sort line.
+					if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {
 						Item mod;
-						modlistPos1 = modlist.FindItem(ruleItem.name);
+						modlistPos1 = modlist.FindItem(ruleItem.Name());
 						//Do checks.
-						if (ruleIter->ruleKey == ADD && modlistPos1 == modlist.items.end()) {
-							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->ruleObject << "\" is not installed or in the masterlist. Rule skipped.";
-							LOG_WARN(" * \"%s\" is not installed.", ruleIter->ruleObject.c_str());
+						if (ruleIter->Key() == ADD && modlistPos1 == modlist.Items().size()) {
+							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->Object() << "\" is not installed or in the masterlist. Rule skipped.";
+							LOG_WARN(" * \"%s\" is not installed.", ruleIter->Object().c_str());
 							continue;
 						//If it adds a mod already sorted, skip the rule.
-						} else if (ruleIter->ruleKey == ADD  && modlistPos1 <= modlist.lastRecognisedPos) {
-							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->ruleObject << "\" is already in the masterlist. Rule skipped.";
-							LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->ruleObject.c_str());
+						} else if (ruleIter->Key() == ADD  && modlistPos1 <= modlist.LastRecognisedPos()) {
+							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->Object() << "\" is already in the masterlist. Rule skipped.";
+							LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->Object().c_str());
 							continue;
-						} else if (ruleIter->ruleKey == OVERRIDE && (modlistPos1 > modlist.lastRecognisedPos)) {
-							buffer << LIST_ITEM_CLASS_ERROR << "\"" << ruleIter->ruleObject << "\" is not in the masterlist, cannot override. Rule skipped.";
-							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->ruleObject.c_str());
+						} else if (ruleIter->Key() == OVERRIDE && (modlistPos1 > modlist.LastRecognisedPos())) {
+							buffer << LIST_ITEM_CLASS_ERROR << "\"" << ruleIter->Object() << "\" is not in the masterlist, cannot override. Rule skipped.";
+							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->Object().c_str());
 							continue;
 						}
-						modlistPos2 = modlist.FindItem(fs::path(lineIter->object));  //Find sort mod.
+						modlistPos2 = modlist.FindItem(lines[i].Object());  //Find sort mod.
 						//Do checks.
-						if (modlistPos2 == modlist.items.end()) {  //Handle case of mods that don't exist at all.
-							buffer << LIST_ITEM_CLASS_WARN << "\"" << lineIter->object << "\" is not installed, and is not in the masterlist. Rule skipped.";
-							LOG_WARN(" * \"%s\" is not installed or in the masterlist.", lineIter->object.c_str());
+						if (modlistPos2 == modlist.Items().size()) {  //Handle case of mods that don't exist at all.
+							buffer << LIST_ITEM_CLASS_WARN << "\"" << lines[i].Object() << "\" is not installed, and is not in the masterlist. Rule skipped.";
+							LOG_WARN(" * \"%s\" is not installed or in the masterlist.", lines[i].Object().c_str());
 							continue;
-						} else if (modlistPos2 > modlist.lastRecognisedPos) {  //Handle the case of a rule sorting a mod into a position in unsorted mod territory.
-							buffer << LIST_ITEM_CLASS_ERROR << "\"" << lineIter->object << "\" is not in the masterlist and has not been sorted by a rule. Rule skipped.";
-							LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", lineIter->object.c_str());
+						} else if (modlistPos2 > modlist.LastRecognisedPos()) {  //Handle the case of a rule sorting a mod into a position in unsorted mod territory.
+							buffer << LIST_ITEM_CLASS_ERROR << "\"" << lines[i].Object() << "\" is not in the masterlist and has not been sorted by a rule. Rule skipped.";
+							LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", lines[i].Object().c_str());
 							continue;
-						} else if (lineIter->key == AFTER && modlistPos2 == modlist.lastRecognisedPos)
-							lastRecognisedModName = fs::path(modlistPos1->name);
-						mod = *modlistPos1;  //Record the rule mod in a new variable.
-						modlist.items.erase(modlistPos1);  //Now remove the rule mod from its old position. This breaks all modlist iterators active.
+						} else if (lines[i].Key() == AFTER && modlistPos2 == modlist.LastRecognisedPos())
+							lastRecognisedItem = modlist.Items()[modlistPos1].Name();
+						mod = modlist.Items()[modlistPos1];  //Record the rule mod in a new variable.
+						modlist.Erase(modlistPos1);  //Now remove the rule mod from its old position. This breaks all modlist iterators active.
 						//Need to find sort mod pos again, to fix iterator.
-						modlistPos2 = modlist.FindItem(fs::path(lineIter->object));  //Find sort mod.
+						modlistPos2 = modlist.FindItem(lines[i].Object());  //Find sort mod.
 						//Insert the mod into its new position.
-						if (lineIter->key == AFTER)
+						if (lines[i].Key() == AFTER)
 							++modlistPos2;
-						modlist.items.insert(modlistPos2, mod);
-						buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << ruleIter->ruleObject << "\" has been sorted " << lineIter->KeyToString() << " \"" << lineIter->object << "\".";
-					} else if (lineIter->key == TOP || lineIter->key == BOTTOM) {
+						modlist.Insert(modlistPos2, mod);
+						buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << ruleIter->Object() << "\" has been sorted " << lines[i].KeyToString() << " \"" << lines[i].Object() << "\".";
+					} else if (lines[i].Key() == TOP || lines[i].Key() == BOTTOM) {
 						Item mod;
-						modlistPos1 = modlist.FindItem(ruleItem.name);
+						modlistPos1 = modlist.FindItem(ruleItem.Name());
 						//Do checks.
-						if (ruleIter->ruleKey == ADD && modlistPos1 == modlist.items.end()) {
-							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->ruleObject << "\" is not installed or in the masterlist. Rule skipped.";
-							LOG_WARN(" * \"%s\" is not installed.", ruleIter->ruleObject.c_str());
+						if (ruleIter->Key() == ADD && modlistPos1 == modlist.Items().size()) {
+							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->Object() << "\" is not installed or in the masterlist. Rule skipped.";
+							LOG_WARN(" * \"%s\" is not installed.", ruleIter->Object().c_str());
 							continue;
 						//If it adds a mod already sorted, skip the rule.
-						} else if (ruleIter->ruleKey == ADD  && modlistPos1 <= modlist.lastRecognisedPos) {
-							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->ruleObject << "\" is already in the masterlist. Rule skipped.";
-							LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->ruleObject.c_str());
+						} else if (ruleIter->Key() == ADD  && modlistPos1 <= modlist.LastRecognisedPos()) {
+							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->Object() << "\" is already in the masterlist. Rule skipped.";
+							LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->Object().c_str());
 							continue;
-						} else if (ruleIter->ruleKey == OVERRIDE && (modlistPos1 > modlist.lastRecognisedPos || modlistPos1 == modlist.items.end())) {
-							buffer << LIST_ITEM_CLASS_ERROR << "\"" << ruleIter->ruleObject << "\" is not in the masterlist, cannot override. Rule skipped.";
-							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->ruleObject.c_str());
+						} else if (ruleIter->Key() == OVERRIDE && (modlistPos1 > modlist.LastRecognisedPos() || modlistPos1 == modlist.Items().size())) {
+							buffer << LIST_ITEM_CLASS_ERROR << "\"" << ruleIter->Object() << "\" is not in the masterlist, cannot override. Rule skipped.";
+							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->Object().c_str());
 							continue;
 						}
 						//Find the group to sort relative to.
-						if (lineIter->key == TOP)
-							modlistPos2 = modlist.FindItem(fs::path(lineIter->object)) + 1;  //Find the start, and increment by 1 so that mod is inserted after start.
+						if (lines[i].Key() == TOP)
+							modlistPos2 = modlist.FindItem(lines[i].Object()) + 1;  //Find the start, and increment by 1 so that mod is inserted after start.
 						else
-							modlistPos2 = modlist.FindGroupEnd(fs::path(lineIter->object));  //Find the end.
+							modlistPos2 = modlist.FindGroupEnd(lines[i].Object());  //Find the end.
 						//Check that the sort group actually exists.
-						if (modlistPos2 == modlist.items.end()) {
-							buffer << LIST_ITEM_CLASS_ERROR << "The group \"" << lineIter->object << "\" is not in the masterlist or is malformatted. Rule skipped.";
-							LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", lineIter->object.c_str());
+						if (modlistPos2 == modlist.Items().size()) {
+							buffer << LIST_ITEM_CLASS_ERROR << "The group \"" << lines[i].Object() << "\" is not in the masterlist or is malformatted. Rule skipped.";
+							LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", lines[i].Object().c_str());
 							continue;
 						}
-						mod = *modlistPos1;  //Record the rule mod in a new variable.
-						modlist.items.erase(modlistPos1);  //Now remove the rule mod from its old position. This breaks all modlist iterators active.
+						mod = modlist.Items()[modlistPos1];  //Record the rule mod in a new variable.
+						modlist.Erase(modlistPos1);  //Now remove the rule mod from its old position. This breaks all modlist iterators active.
 						//Need to find group pos again, to fix iterators.
-						if (lineIter->key == TOP)
-							modlistPos2 = modlist.FindItem(fs::path(lineIter->object)) + 1;  //Find the start, and increment by 1 so that mod is inserted after start.
+						if (lines[i].Key() == TOP)
+							modlistPos2 = modlist.FindItem(lines[i].Object()) + 1;  //Find the start, and increment by 1 so that mod is inserted after start.
 						else
-							modlistPos2 = modlist.FindGroupEnd(fs::path(lineIter->object));  //Find the end.
-						modlist.items.insert(modlistPos2, mod);  //Now insert the mod into the group. This breaks all modlist iterators active.
+							modlistPos2 = modlist.FindGroupEnd(lines[i].Object());  //Find the end.
+						modlist.Insert(modlistPos2, mod);  //Now insert the mod into the group. This breaks all modlist iterators active.
 						//Print success message.
-						buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << ruleIter->ruleObject << "\" inserted at the " << lineIter->KeyToString() << " of group \"" << lineIter->object << "\".";
+						buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << ruleIter->Object() << "\" inserted at the " << lines[i].KeyToString() << " of group \"" << lines[i].Object() << "\".";
 					}
-					++lineIter;
+					i++;
 				}
-				for (lineIter; lineIter != ruleIter->lines.end(); ++lineIter) {  //Message lines.
-					if (!lineIter->IsObjectMessage()) {
-						buffer << LIST_ITEM_CLASS_WARN << "\"" << lineIter->object << "\" is not a valid message. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not a valid message.", lineIter->object.c_str());
+				for (i; i < max; i++) {  //Message lines.
+					if (!lines[i].IsObjectMessage()) {
+						buffer << LIST_ITEM_CLASS_WARN << "\"" << lines[i].Object() << "\" is not a valid message. Rule skipped.";
+						LOG_WARN(" * \"%s\" is not a valid message.", lines[i].Object().c_str());
 						break;
 					}
 					//Find the mod which will have its messages edited.
-					modlistPos1 = modlist.FindItem(ruleItem.name);
-					if (modlistPos1 == modlist.items.end()) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
-						buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->ruleObject << "\" is not installed or in the masterlist. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not installed.", ruleIter->ruleObject.c_str());
+					modlistPos1 = modlist.FindItem(ruleItem.Name());
+					if (modlistPos1 == modlist.Items().size()) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
+						buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->Object() << "\" is not installed or in the masterlist. Rule skipped.";
+						LOG_WARN(" * \"%s\" is not installed.", ruleIter->Object().c_str());
 						break;
 					}
-					Message newMessage = Message(lineIter->ObjectMessageKey(), lineIter->ObjectMessageData());
-					if (lineIter->key == REPLACE)  //If the rule is to replace messages, clear existing messages.
-						modlistPos1->messages.clear();
-					modlistPos1->messages.push_back(newMessage);  //Append message to message list of mod.
+					Message newMessage = Message(lines[i].ObjectMessageKey(), lines[i].ObjectMessageData());
+					vector<Message> messages = modlist.Items()[modlistPos1].Messages();
+					if (lines[i].Key() == REPLACE)  //If the rule is to replace messages, clear existing messages.
+						messages.clear();
+					//Append message to message list of mod.
+					messages.push_back(newMessage);
+					vector<Item> items = modlist.Items();
+					items[modlistPos1].Messages(messages);
+					modlist.Items(items);
 					//Output confirmation.
-					buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << SPAN_CLASS_MESSAGE_OPEN << lineIter->object << SPAN_CLOSE <<"\"";
-					if (lineIter->key == APPEND)
+					buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << SPAN_CLASS_MESSAGE_OPEN << lines[i].Object() << SPAN_CLOSE <<"\"";
+					if (lines[i].Key() == APPEND)
 						buffer << " appended to ";
 					else
 						buffer << " replaced ";
-					buffer << "messages attached to \"" << ruleIter->ruleObject << "\".";
+					buffer << "messages attached to \"" << ruleIter->Object() << "\".";
 				}
-			} else if (lineIter->key == BEFORE || lineIter->key == AFTER) {  //Group: Can only sort.
+			} else if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {  //Group: Can only sort.
 				vector<Item> group;
 				//Look for group to sort. Find start and end positions.
-				modlistPos1 = modlist.FindItem(ruleItem.name);
-				modlistPos2 = modlist.FindGroupEnd(ruleItem.name);
+				modlistPos1 = modlist.FindItem(ruleItem.Name());
+				modlistPos2 = modlist.FindGroupEnd(ruleItem.Name());
 				//Check to see group actually exists.
-				if (modlistPos1 == modlist.items.end() || modlistPos2 == modlist.items.end()) {
-					buffer << LIST_ITEM_CLASS_ERROR << "The group \"" << ruleIter->ruleObject << "\" is not in the masterlist or is malformatted. Rule skipped.";
-					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", ruleIter->ruleObject.c_str());
+				if (modlistPos1 == modlist.Items().size() || modlistPos2 == modlist.Items().size()) {
+					buffer << LIST_ITEM_CLASS_ERROR << "The group \"" << ruleIter->Object() << "\" is not in the masterlist or is malformatted. Rule skipped.";
+					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", ruleIter->Object().c_str());
 					continue;
 				}
 				//Copy the start, end and everything in between to a new variable.
-				group.assign(modlistPos1,modlistPos2+1);
+				group.assign(modlist.Items().begin() + modlistPos1, modlist.Items().begin() + modlistPos2+1);
 				//Now erase group from modlist. This breaks the lastRecognisedPos iterator, so that will be reset after rule application.
-				modlist.items.erase(modlistPos1,modlistPos2+1);
+				modlist.Erase(modlistPos1,modlistPos2+1);
 				//Find the group to sort relative to and insert it before or after it as appropriate.
-				if (lineIter->key == BEFORE)
-					modlistPos2 = modlist.FindItem(fs::path(lineIter->object));  //Find the start.
+				if (lines[i].Key() == BEFORE)
+					modlistPos2 = modlist.FindItem(lines[i].Object());  //Find the start.
 				else
-					modlistPos2 = modlist.FindGroupEnd(fs::path(lineIter->object));  //Find the end, and add one, as inserting works before the given element.
+					modlistPos2 = modlist.FindGroupEnd(lines[i].Object());  //Find the end, and add one, as inserting works before the given element.
 				//Check that the sort group actually exists.
-				if (modlistPos2 == modlist.items.end()) {
-					modlist.items.insert(modlistPos1,group.begin(),group.end());  //Insert the group back in its old position.
-					buffer << LIST_ITEM_CLASS_ERROR << "The group \"" << lineIter->object << "\" is not in the masterlist or is malformatted. Rule skipped.";
-					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", lineIter->object.c_str());
+				if (modlistPos2 == modlist.Items().size()) {
+					modlist.Insert(modlistPos1, group, 0, group.size());  //Insert the group back in its old position.
+					buffer << LIST_ITEM_CLASS_ERROR << "The group \"" << lines[i].Object() << "\" is not in the masterlist or is malformatted. Rule skipped.";
+					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", lines[i].Object().c_str());
 					continue;
 				}
-				if (lineIter->key == AFTER)
+				if (lines[i].Key() == AFTER)
 					modlistPos2++;
 				//Now insert the group.
-				modlist.items.insert(modlistPos2,group.begin(),group.end());
+				modlist.Insert(modlistPos2, group, 0, group.size());
 				//Print success message.
-				buffer << LIST_ITEM_CLASS_SUCCESS << "The group \"" << ruleIter->ruleObject << "\" has been sorted " << lineIter->KeyToString() << " the group \"" << lineIter->object << "\".";
+				buffer << LIST_ITEM_CLASS_SUCCESS << "The group \"" << ruleIter->Object() << "\" has been sorted " << lines[i].KeyToString() << " the group \"" << lines[i].Object() << "\".";
 			}
 			//Now find that last recognised mod and set the iterator again.
-			modlist.lastRecognisedPos = modlist.FindLastItem(lastRecognisedModName);
+			modlist.LastRecognisedPos(modlist.FindLastItem(lastRecognisedItem));
 		}
 
 

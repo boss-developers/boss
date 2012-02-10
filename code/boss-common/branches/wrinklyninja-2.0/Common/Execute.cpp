@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2011    BOSS Development Team.
+    Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of Better Oblivion Sorting Software.
 
@@ -57,7 +57,7 @@ namespace boss {
 		else if (game == SKYRIM) 
 			return "Skyrim.esm";
 		else
-			return "Game Not Detected";
+			return "No Game Detected";
 	}
 
 	//Lists Script Extender plugin info in the output buffer. Usage internal to BOSS-Common.
@@ -453,7 +453,7 @@ namespace boss {
 		else if (game == SKYRIM)
 			return "TES V: Skyrim";
 		else
-			return "Game Not Detected";
+			return "No Game Detected";
 	}
 
 	//Gets the timestamp of the game's master file. Throws exception if error.
