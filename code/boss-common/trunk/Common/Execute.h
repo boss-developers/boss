@@ -51,7 +51,6 @@ namespace boss {
 	};
 
 	struct bosslogContents {
-		string generalMessages;
 		string summary;
 		string userlistMessages;
 		string seInfo;
@@ -61,11 +60,13 @@ namespace boss {
 		string oldRecognisedPlugins;
 
 		string criticalError;
+		string regexError;
 		string updaterErrors;
 		string iniParsingError;
+		vector<Message> globalMessages;
+		
 		string userlistParsingError;
 		vector<string> userlistSyntaxErrors;
-		vector<Message> globalMessages;
 	};
 
 	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.

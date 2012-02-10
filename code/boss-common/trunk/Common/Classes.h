@@ -90,7 +90,7 @@ namespace boss {
 		void Data(string inData);
 		void Conditions(string inConditions);
 
-		bool evalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
+		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 	};
 
 	class MasterlistVar : public conditionalData {
@@ -112,7 +112,7 @@ namespace boss {
 		void Key(keyType inKey);
 		string KeyToString() const;		//Has HTML-safe output.
 
-		bool evalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
+		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 	};
 
 	class Item : public conditionalData {
@@ -145,7 +145,7 @@ namespace boss {
 		string	GetVersion	();			//Outputs the file's header.
 		void	SetModTime	(time_t modificationTime);
 
-		bool evalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
+		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 	};
 
 	class ItemList {
@@ -164,7 +164,7 @@ namespace boss {
 																	//May throw exception on fail.
 		void					Save			(fs::path file);	//Output to file in MF2. Backs up any existing file with new ".old" extension.
 																	//Throws exception on fail.
-		void					evalConditions();					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
+		void					EvalConditions();					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
 		size_t					FindItem		(string name);	//Find the position of the item with name 'name'. Case-insensitive.
 		size_t					FindLastItem	(string name);	//Find the last item with the name 'name'. Case-insensitive.
 		size_t					FindGroupEnd	(string name);	//Find the end position of the group with the given name. Case-insensitive.

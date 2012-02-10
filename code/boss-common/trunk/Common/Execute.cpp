@@ -302,14 +302,17 @@ namespace boss {
 		}
 
 		// Display Global Messages
-		if (!contents.globalMessages.empty() || !contents.iniParsingError.empty() || !contents.criticalError.empty() || !contents.updaterErrors.empty()) {
+		if (!contents.globalMessages.empty() || !contents.iniParsingError.empty() || !contents.criticalError.empty() || !contents.updaterErrors.empty() || !contents.regexError.empty()) {
 
 			bosslog << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN;
 			if (!contents.criticalError.empty())		//Print masterlist parsing error.
 				bosslog << contents.criticalError;
 			if (!contents.iniParsingError.empty())		//Print ini parsing error.
 				bosslog << contents.iniParsingError;
-			bosslog << contents.updaterErrors;
+			if (!contents.updaterErrors.empty())
+				bosslog << contents.updaterErrors;
+			if (!contents.regexError.empty())
+				bosslog << contents.regexError;
 
 			bosslog.SetHTMLSpecialEscape(true);
 			size_t size = contents.globalMessages.size();
@@ -488,6 +491,9 @@ namespace boss {
 		BuildWorkingModlist(modlist, masterlist, userlist);
 		LOG_INFO("modlist now filled with ordered mods and unknowns.");
 
+		//Modlist error buffer may have had some regex errors added to it. It will be empty otherwise.
+		contents.regexError = modlist.ErrorBuffer().FormatFor(log_format);
+
 		ApplyUserRules(modlist, userlist, contents.userlistMessages);
 		LOG_INFO("userlist sorting process finished.");
 
@@ -576,7 +582,14 @@ namespace boss {
 				}
 			} else if (items[i].Type() == REGEX) {
 				//Form a regex.
-				boost::regex reg(Tidy(items[i].Name())+"(.ghost)?",boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
+				boost::regex reg;
+				try {
+					reg = boost::regex(Tidy(items[i].Name())+"(.ghost)?",boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
+				} catch (boost::regex_error e) {
+					LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", items[i].Name().c_str());
+					masterlist.ErrorBuffer(ParsingError(items[i].Name() + " is not a valid regular expression. Item skipped."));
+					continue;
+				}
 				//Now start looking.
 				setPos = hashset.begin();
 				do {

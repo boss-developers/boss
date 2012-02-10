@@ -45,15 +45,16 @@ void SaveDirtyList(vector<Item> list, ofstream& out) {
 	char x = ' ';
 
 	for (size_t i=0; i<list.size(); i++) {
-		if (list[i].name == list[i-1].name)
+		if (list[i].Name() == list[i-1].Name())
 			continue;
-		if (to_lower_copy(list[i].name.string())[0] != x) {
+		if (to_lower_copy(list[i].Name())[0] != x) {
 			out << endl;
-			x = to_lower_copy(list[i].name.string())[0];
+			x = to_lower_copy(list[i].Name())[0];
 		}
-		out << list[i].name.string() << "   ";
-		for (vector<Message>::iterator messageIter = list[i].messages.begin(); messageIter != list[i].messages.end(); ++messageIter)
-			out << messageIter->data;  //Print the mod name and message.
+		out << list[i].Name() << "   ";
+		vector<Message> messages = list[i].Messages();
+		for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter)
+			out << messageIter->Data();  //Print the mod name and message.
 
 		out << endl;
 	}
@@ -62,14 +63,14 @@ void SaveDirtyList(vector<Item> list, ofstream& out) {
 
 bool SortModsByName(Item mod1,Item mod2) {
         string n1, n2;
-        n1 = to_lower_copy(mod1.name.string());
-        n2 = to_lower_copy(mod2.name.string());
+        n1 = to_lower_copy(mod1.Name());
+        n2 = to_lower_copy(mod2.Name());
         return (n1 < n2);
 }
 
 
 int main() {
-	ItemList masterlist, cleanlist, Dirtylist;
+	vector<Item> masterlist, cleanlist;
 	ofstream dirtylist;
 	const fs::path dirtylist_path		= "dirtylist.txt";
 	const fs::path cleanlist_path		= "cleanlist.txt";
@@ -100,8 +101,12 @@ int main() {
 
 	//Parse masterlist into data structure.
 	try {
-		masterlist.Load(masterlist_path);
-		cleanlist.Load(cleanlist_path);
+		ItemList Masterlist, Cleanlist;
+		Masterlist.Load(masterlist_path);
+		Cleanlist.Load(cleanlist_path);
+
+		masterlist = Masterlist.Items();
+		cleanlist = Cleanlist.Items();
 	} catch (boss_error e) {
 		LOG_ERROR("Critical Error: %s", e.getString());
 		 exit (1); //fail in screaming heap.
@@ -109,66 +114,68 @@ int main() {
 
 	//Now we need to remove all the mods that are in cleanlist from masterlist. This would be faster using a hashset for cleanlist instead of an ItemList,
 	//but speed is not of the essence.
-	vector<Item>::iterator foundItem;
-	for (vector<Item>::iterator itemIter = cleanlist.items.begin(); itemIter != cleanlist.items.end(); ++itemIter) {
-		foundItem = masterlist.FindItem(itemIter->name);
-		if (foundItem != masterlist.items.end())
-			masterlist.items.erase(foundItem);
+	size_t pos;
+	ItemList tempItemList;
+	tempItemList.Items(masterlist);
+	for (vector<Item>::iterator itemIter = cleanlist.begin(); itemIter != cleanlist.end(); ++itemIter) {
+		pos = tempItemList.FindItem(itemIter->Name());
+		if (pos != tempItemList.Items().size())
+			tempItemList.Erase(pos);
 	}
+	masterlist = tempItemList.Items();
 
 	//Now we need to iterate through the masterlist and retain only those mods with dirty mod messages that aren't "Do not clean".
 	//This should include SAY dirty mod messages too. If a message is conditional on certain CRCs, these should be listed in a
 	//message that gets attached to the mod, with each CRC listed as "CRC hex". Otherwise, all messages should be removed.
-	for (vector<Item>::iterator itemIter = masterlist.items.begin(); itemIter != masterlist.items.end(); ++itemIter) {
-		if ((itemIter->type != MOD) || itemIter->messages.empty())
-			itemIter = masterlist.items.erase(itemIter);
+	for (vector<Item>::iterator itemIter = masterlist.begin(); itemIter != masterlist.end(); ++itemIter) {
+		if ((itemIter->Type() != MOD) || itemIter->Messages().empty())
+			itemIter = masterlist.erase(itemIter);
 		else {
 			bool keep = false;
 			Message message;
-			message.key = NONE;
+			message.Key(NONE);
 			
-			for (vector<Message>::iterator messageIter = itemIter->messages.begin(); messageIter != itemIter->messages.end(); ++messageIter) {
-				if ((messageIter->key == DIRTY) || (messageIter->key == SAY && messageIter->data.find("Needs TES4Edit") != string::npos)) {
+			vector<Message> messages = itemIter->Messages();
+			for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter) {
+				if ((messageIter->Key() == DIRTY) || (messageIter->Key() == SAY && messageIter->Data().find("Needs TES4Edit") != string::npos)) {
 					keep = true;
 					string data;
 
-					size_t pos1 = messageIter->data.find(" records");  //Extract ITM/UDR counts from message.
+					size_t pos1 = messageIter->Data().find(" records");  //Extract ITM/UDR counts from message.
 					if (pos1 != string::npos)
-						data += messageIter->data.substr(0,pos1);
+						data += messageIter->Data().substr(0,pos1);
 
-					if (!messageIter->conditionals.empty()) {  //Extract CRCs from conditional.
+					if (!messageIter->Conditions().empty()) {  //Extract CRCs from conditional.
 						size_t pos2;
-						pos1 = messageIter->data.find('(');
+						pos1 = messageIter->Data().find('(');
 						while (pos1 != string::npos) {
-							pos2 = messageIter->data.find('|');
+							pos2 = messageIter->Data().find('|');
 							if (!data.empty())
 								data += ", ";
-							data += "CRC " + messageIter->data.substr(pos1+1, pos2-pos1-1);
-							pos1 = messageIter->data.find('(', pos2);
+							data += "CRC " + messageIter->Data().substr(pos1+1, pos2-pos1-1);
+							pos1 = messageIter->Data().find('(', pos2);
 						}
 					}
 
 					if (!data.empty()) {
-						message.data += "[" + data + "] ";
-						message.key = SAY;
+						message.Data(message.Data() + "[" + data + "] ");
+						message.Key(SAY);
 					}
 				}
 			}
 			if (!keep)
-				itemIter = masterlist.items.erase(itemIter);
+				itemIter = masterlist.erase(itemIter);
 			else {
-				itemIter->messages.clear();
-				if (message.key == SAY)
-					itemIter->messages.push_back(message);
+				itemIter->Messages(messages);
 			}
 		}
 	}
 	
 	//Now the masterlist contents should be sorted alphabetically.
-	sort(masterlist.items.begin(),masterlist.items.end(), SortModsByName);
+	sort(masterlist.begin(),masterlist.end(), SortModsByName);
 
 	//Finally, we output it as our dirtylist.
-	SaveDirtyList(masterlist.items, dirtylist);
+	SaveDirtyList(masterlist, dirtylist);
 	dirtylist.close();
 	return (0);
 }

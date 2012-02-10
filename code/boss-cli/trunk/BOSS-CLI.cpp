@@ -645,7 +645,7 @@ int main(int argc, char *argv[]) {
 		LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
 		masterlist.Load(sortfile);
 		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
-		masterlist.evalConditions();
+		masterlist.EvalConditions();
 		contents.globalMessages = masterlist.GlobalMessageBuffer();
 	} catch (boss_error e) {
 		output.Clear();

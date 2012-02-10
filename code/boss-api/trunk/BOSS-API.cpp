@@ -117,7 +117,8 @@ BOSS_API const uint32_t BOSS_API_ERROR_NETWORK_FAIL				=	BOSS_ERROR_MAX + 5;
 BOSS_API const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION	=	BOSS_ERROR_MAX + 6;
 BOSS_API const uint32_t BOSS_API_ERROR_NO_UPDATE_NECESSARY		=	BOSS_ERROR_MAX + 7;
 BOSS_API const uint32_t BOSS_API_ERROR_NO_TAG_MAP				=	BOSS_ERROR_MAX + 8;
-BOSS_API const uint32_t BOSS_API_ERROR_MAX						=	BOSS_API_ERROR_NO_TAG_MAP;
+BOSS_API const uint32_t BOSS_API_ERROR_REGEX_EVAL_FAIL			=	BOSS_ERROR_MAX + 9;
+BOSS_API const uint32_t BOSS_API_ERROR_MAX						=	BOSS_API_ERROR_REGEX_EVAL_FAIL;
 
 // The following are the mod cleanliness states that the API can return.
 BOSS_API const uint32_t BOSS_API_CLEAN_NO		= 0;
@@ -356,7 +357,7 @@ BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath) {
 	//First re-evaluate conditionals.
 	ItemList masterlist = db->rawMasterlist;
 	try {
-		masterlist.evalConditions();
+		masterlist.EvalConditions();
 	} catch (boss_error e) {
 		cout << e.getString() << endl;
 		return BOSS_API_ERROR_CONDITION_EVAL_FAIL;
@@ -385,7 +386,12 @@ BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath) {
 			Item regexItem = items[i];
 			items.erase(items.begin()+i);
 			//Now form a regex.
-			boost::regex reg(Tidy(regexItem.Name())+"(.ghost)?", boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
+			boost::regex reg;
+			try {
+				reg = boost::regex(Tidy(regexItem.Name())+"(.ghost)?", boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
+			} catch (boost::regex_error e) {
+				return BOSS_API_ERROR_REGEX_EVAL_FAIL;
+			}
 			//Now start looking.
 			setPos = hashset.begin();
 			do {
@@ -493,7 +499,7 @@ BOSS_API uint32_t SortMods(boss_db db) {
 	//Set up working modlist.
 	//The function below changes the input, so make copies.
 	ItemList masterlist = db->rawMasterlist;
-	masterlist.evalConditions();
+	masterlist.EvalConditions();
 	RuleList userlist = db->userlist;
 	BuildWorkingModlist(modlist, masterlist, userlist);
 	string dummy;
@@ -549,7 +555,7 @@ BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t *** sortedPlugins, size_t * 
 	//Set up working modlist.
 	//The function below changes the input, so make copies.
 	ItemList masterlist = db->rawMasterlist;
-	masterlist.evalConditions();
+	masterlist.EvalConditions();
 	RuleList userlist = db->userlist;
 	BuildWorkingModlist(modlist, masterlist, userlist);
 	string dummy;

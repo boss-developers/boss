@@ -69,7 +69,7 @@ namespace boss {
 		conditions = inConditions;
 	}
 
-	bool conditionalData::evalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
+	bool conditionalData::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
 		Skipper skipper(false);
 		conditional_grammar cond_grammar;
 		string::const_iterator begin, end;
@@ -141,7 +141,7 @@ namespace boss {
 		}
 	}
 
-	bool	Message::evalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
+	bool	Message::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
 		Skipper skipper(false);
 		shorthand_grammar short_grammar;
 		string::const_iterator begin, end;
@@ -152,7 +152,7 @@ namespace boss {
 		short_grammar.SetCRCStore(&fileCRCs);
 		short_grammar.SetErrorBuffer(&errorBuffer);
 
-		eval = conditionalData::evalConditions(setVars, fileCRCs, errorBuffer);
+		eval = conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer);
 
 		if (!eval)
 			return false;
@@ -293,7 +293,7 @@ namespace boss {
 		return (diff < 0);
 	}
 
-	bool	Item::evalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
+	bool	Item::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
 		Skipper skipper(false);
 		conditional_grammar cond_grammar;
 		string::const_iterator begin, end;
@@ -320,7 +320,7 @@ namespace boss {
 
 		vector<Message>::iterator messageIter = messages.begin();
 		while (messageIter != messages.end()) {
-			if (messageIter->evalConditions(setVars, fileCRCs, errorBuffer))
+			if (messageIter->EvalConditions(setVars, fileCRCs, errorBuffer))
 				++messageIter;
 			else
 				messageIter = messages.erase(messageIter);
@@ -439,7 +439,7 @@ namespace boss {
 		return;
 	}
 
-	void					ItemList::evalConditions	() {
+	void					ItemList::EvalConditions	() {
 		boost::unordered_set<string> setVars;
 
 		//First eval variables.
@@ -447,7 +447,7 @@ namespace boss {
 		LOG_INFO("Starting to evaluate variable conditionals.");
 		vector<MasterlistVar>::iterator varIter = masterlistVariables.begin();
 		while (varIter != masterlistVariables.end()) {
-			if (varIter->evalConditions(setVars, fileCRCs, errorBuffer)) {
+			if (varIter->EvalConditions(setVars, fileCRCs, errorBuffer)) {
 				setVars.insert(varIter->Data());
 				++varIter;
 			} else
@@ -458,7 +458,7 @@ namespace boss {
 		LOG_INFO("Starting to evaluate item conditionals.");
 		vector<Item>::iterator itemIter = items.begin();
 		while (itemIter != items.end()) {
-			if (itemIter->evalConditions(setVars, fileCRCs, errorBuffer))
+			if (itemIter->EvalConditions(setVars, fileCRCs, errorBuffer))
 				++itemIter;
 			else
 				itemIter = items.erase(itemIter);
@@ -468,7 +468,7 @@ namespace boss {
 		LOG_INFO("Starting to evaluate global message conditionals.");
 		vector<Message>::iterator messageIter = globalMessageBuffer.begin();
 		while (messageIter != globalMessageBuffer.end()) {
-			if (messageIter->evalConditions(setVars, fileCRCs, errorBuffer))
+			if (messageIter->EvalConditions(setVars, fileCRCs, errorBuffer))
 				++messageIter;
 			else
 				messageIter = globalMessageBuffer.erase(messageIter);
@@ -502,29 +502,53 @@ namespace boss {
 		}
 		return max;
 	}
-
-	size_t ItemList::LastRecognisedPos() const {
-		return lastRecognisedPos;
-	}
-
+	
 	vector<Item> ItemList::Items() const {
 		return items;
-	}
-
-	vector<Message> ItemList::GlobalMessageBuffer() const {
-		return globalMessageBuffer;
 	}
 
 	ParsingError ItemList::ErrorBuffer() const {
 		return errorBuffer;
 	}
 
+	vector<Message> ItemList::GlobalMessageBuffer() const {
+		return globalMessageBuffer;
+	}
+
+	size_t ItemList::LastRecognisedPos() const {
+		return lastRecognisedPos;
+	}
+
+	vector<MasterlistVar> ItemList::Variables() const {
+		return masterlistVariables;
+	}
+
+	boost::unordered_map<string,uint32_t> ItemList::FileCRCs() const {
+		return fileCRCs;
+	}
+
 	void ItemList::Items(vector<Item> inItems) {
 		items = inItems;
 	}
 
+	void ItemList::ErrorBuffer(ParsingError buffer) {
+		errorBuffer = buffer;
+	}
+
+	void ItemList::GlobalMessageBuffer(vector<Message> buffer) {
+		globalMessageBuffer = buffer;
+	}
+
 	void ItemList::LastRecognisedPos(size_t pos) {
 		lastRecognisedPos = pos;
+	}
+
+	void ItemList::Variables(vector<MasterlistVar> variables) {
+		masterlistVariables = variables;
+	}
+
+	void ItemList::FileCRCs(boost::unordered_map<string,uint32_t> crcs) {
+		fileCRCs = crcs;
 	}
 
 	void ItemList::Erase(size_t pos) {

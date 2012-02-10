@@ -101,6 +101,7 @@ BOSS_API extern const uint32_t BOSS_API_ERROR_NETWORK_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_UPDATE_NECESSARY;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_TAG_MAP;
+BOSS_API extern const uint32_t BOSS_API_ERROR_REGEX_EVAL_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_MAX;
 
 // The following are the mod cleanliness states that the API can return.

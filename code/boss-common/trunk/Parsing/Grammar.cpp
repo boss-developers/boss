@@ -190,7 +190,14 @@ namespace boss {
 				file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
 		} else
 			file_path = data_path;
-		const boost::regex regex(reg);
+			boost::regex regex;
+		try {
+			regex = boost::regex(reg, boost::regex::extended);
+		} catch (boost::regex_error e) {
+			LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", reg.c_str());
+			result = false;  //Fail the check.
+			return;
+		}
 
 		fs::directory_iterator iter_end;
 		for (fs::directory_iterator itr(file_path); itr!=iter_end; ++itr) {
