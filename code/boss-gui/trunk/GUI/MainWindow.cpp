@@ -645,10 +645,13 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	} catch (boss_error e) {
 		output.Clear();
 		output.PrintHeader();
-		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL || e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
+		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
 			output.SetHTMLSpecialEscape(false);
 			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
-				<< masterlist.errorBuffer.FormatFor(log_format) << LIST_CLOSE;
+				<< masterlist.ErrorBuffer().FormatFor(log_format) << LIST_CLOSE;
+		} else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
+			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
+				<< LIST_ITEM << SPAN_CLASS_ERROR_OPEN << e.getString() << SPAN_CLOSE << LIST_CLOSE;
 		} else
 			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
