@@ -134,7 +134,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	//////First column
 	wxBoxSizer *rulesBox = new wxBoxSizer(wxVERTICAL);
 	try{
-		rulesBox->Add(RulesList = new RuleListFrameClass(this, LIST_RuleList, masterlist), 0, wxEXPAND);
+		rulesBox->Add(RulesList = new RuleListFrameClass(this, LIST_RuleList, masterlist), 1, wxEXPAND);
 	} catch(boss_error e) {
 		progDia->Destroy();
 		this->Close();
@@ -165,28 +165,28 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	sortModOptionBox->Add(SortModOption = new wxRadioButton(this, RADIO_SortMod, wxT("Sort"), wxDefaultPosition, wxDefaultSize));
 	sortModOptionBox->Add(BeforeAfterChoiceBox = new wxChoice(this, CHOICE_BeforeAfter, wxDefaultPosition, wxDefaultSize, 2, BeforeAfter), 0, wxLEFT, 10);
 	sortModOptionBox->Add(SortModBox = new wxTextCtrl(this, TEXT_SortMod, "", wxDefaultPosition, wxSize(150,wxDefaultSize.y)), 1, wxEXPAND|wxLEFT, 10);
-	ruleEditorBox->Add(sortModOptionBox, 1, wxEXPAND|wxLEFT, 20);
+	ruleEditorBox->Add(sortModOptionBox, 0, wxEXPAND|wxLEFT, 20);
 	ruleEditorBox->AddSpacer(10);
 	wxBoxSizer *InsertOptionBox = new wxBoxSizer(wxHORIZONTAL);
 	InsertOptionBox->Add(InsertModOption = new wxRadioButton(this, RADIO_InsertMod, wxT("Insert at the"), wxDefaultPosition, wxDefaultSize));
 	InsertOptionBox->Add(TopBottomChoiceBox = new wxChoice(this, CHOICE_TopBottom, wxDefaultPosition, wxDefaultSize, 2, TopBottom), 0, wxLEFT, 10);
 	InsertOptionBox->Add(new wxStaticText(this, wxID_ANY, wxT("of")), 0, wxLEFT, 10);
-	InsertOptionBox->Add(InsertModBox = new wxTextCtrl(this,TEXT_InsertMod), 0, wxLEFT, 10);
-	ruleEditorBox->Add(InsertOptionBox, 0, wxLEFT, 20);
+	InsertOptionBox->Add(InsertModBox = new wxTextCtrl(this,TEXT_InsertMod), 1, wxEXPAND|wxLEFT, 10);
+	ruleEditorBox->Add(InsertOptionBox, 0, wxEXPAND|wxLEFT, 20);
 	ruleEditorBox->AddSpacer(10);
 	ruleEditorBox->Add(AddMessagesCheckBox = new wxCheckBox(this, CHECKBOX_AddMessages, wxT("Add the following messages:")));
 	ruleEditorBox->AddSpacer(10);
 	ruleEditorBox->Add(NewModMessagesBox = new wxTextCtrl(this,TEXT_NewMessages, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), 1, wxEXPAND|wxLEFT, 20);
 	ruleEditorBox->AddSpacer(10);
 	ruleEditorBox->Add(ReplaceMessagesCheckBox = new wxCheckBox(this, CHECKBOX_RemoveMessages, wxT("Replace Existing Messages")));
-	ruleEditorTopBox->Add(ruleEditorBox, 0, wxALL, 10);
+	ruleEditorTopBox->Add(ruleEditorBox, 1, wxEXPAND|wxALL, 10);
 	editorMessagesBox->Add(ruleEditorTopBox, 0, wxEXPAND);
 	editorMessagesBox->AddSpacer(10);
 	wxStaticBoxSizer *messBox = new wxStaticBoxSizer(wxVERTICAL, this, "Masterlist Mod Messages");
 	messBox->Add(ModMessagesBox = new wxTextCtrl(this,TEXT_ModMessages,wxT(""),wxDefaultPosition,wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY), 1, wxEXPAND);
 	editorMessagesBox->Add(messBox, 1, wxEXPAND);
 	rulesBox->Add(editorMessagesBox, 1, wxEXPAND);
-	mainBox->Add(rulesBox, 0, wxEXPAND);
+	mainBox->Add(rulesBox, 3, wxEXPAND);
 	//////Second column.
 	TabHolder = new wxNotebook(this, wxID_ANY);
 	////////Modlist tab.
@@ -205,7 +205,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	TabHolder->AddPage(ModlistTab,wxT("Installed Mods"),true);
 	TabHolder->AddPage(MasterlistTab,wxT("Masterlist"));
 	mainBox->AddSpacer(10);
-	mainBox->Add(TabHolder, 1, wxEXPAND);
+	mainBox->Add(TabHolder, 2, wxEXPAND);
 	bigBox->Add(mainBox, 1, wxALL|wxEXPAND, 10);
 
 	////Window buttons
@@ -927,7 +927,6 @@ void RuleListFrameClass::ReDrawRuleList() {
 	}
 	RuleListScroller->SetSizer(sizer);
 	RuleListScroller->FitInside();
-	RuleListScroller->SetMinSize(wxSize(600,315));
 	RuleListScroller->Layout();
 }
 
