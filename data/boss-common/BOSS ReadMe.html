@@ -868,11 +868,13 @@ threads when you read this. Just navigate through to the latest thread to post a
 <p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.
 <p><b>Version 1.9.2</b> - <i>2012</i>
 <ul>
+	<li>Removed: BOSS Updater for manual installs. When an update is checked for and found on a manual install, BOSS will notify the user of the update and its download locations, but not download or install the update itself. Behaviour on installer installs is unchanged.
 	<li>Fixed: GUI mixing up Nehrim and Fallout: New Vegas in the Game drop-down box.
 	<li>Fixed: Saving a masterlist-format file no longer omits its conditionals. This bug was never exposed.
 	<li>Fixed: Conditional parsing errors not being reported correctly in the BOSS Log. This bug was never exposed.
 	<li>Fixed: Invalid regular expressions in masterlist-format files causing crashes.
 	<li>Fixed: Plugins with filenames containing international characters causing the GUI's User Rules Editor to fail to load.
+	<li>Fixed: Masterlist-format files beginning with blank lines will no longer create an initial empty item in their data structures.
 	<li>Changed: Tidied up code, making better use of class inheritance and swapping Boost filesystem paths for strings in plugin names.
 	<li>Changed: Updated version of libcurl used from 7.23.1 to 7.24.0, and updated version of wxWidgets used from 2.9.2 to 2.9.3.
 	<li>Changed: GUI's User Rules Editor is now resizeable and the Installed Mods and Masterlist lists are now tabbed to give more space for them.

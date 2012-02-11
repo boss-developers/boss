@@ -82,6 +82,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 
 	try{
 		LoadLists();
+		masterlist.Save("t.txt");
 	} catch(boss_error e) {
 		progDia->Destroy();
 		this->Close();

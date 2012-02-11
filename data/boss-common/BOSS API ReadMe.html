@@ -108,7 +108,7 @@ API Documentation</div>
 		<tr><td>BOSS_API_ERROR_NETWORK_FAIL				<td>There was an error in an Internet-related operation.
 		<tr><td>BOSS_API_ERROR_NO_INTERNET_CONNECTION	<td>No Internet connection detected.
 		<tr><td>BOSS_API_ERROR_NO_UPDATE_NECESSARY		<td>Not an error. No update was found for the masterlist.
-		<tr><td>BOSS_API_ERROR_NO_TAG_MAP				<td>No Bash Tag map has been generated yet. <span style="color:blue;">GetBashTagMap</span>(...) must be run before <span style="color:blue;">GetModBashTags</span>(...) to build the Bash Tag map.
+		<tr><td>BOSS_API_ERROR_NO_TAG_MAP				<td>No Bash Tag map has been generated yet. <span style="color:blue;">GetBashTagMap</span> must be run before <span style="color:blue;">GetModBashTags</span> to build the Bash Tag map.
 		<tr><td>BOSS_API_ERROR_REGEX_EVAL_FAIL			<tr>A regular expression item in the masterlist is invalid.
 		<tr><td>BOSS_API_ERROR_MAX						<td>Matches the value of the highest-numbered return code (BOSS_API_ERROR_NO_TAG_MAP). It isn't returned by any functions.
 </table>
@@ -156,16 +156,16 @@ API Documentation</div>
 <p>Loads the masterlist and userlist from the paths specified, for the specified game. Can be called multiple times. If an error is encountered, the database remains unchanged. Paths are case-sensitive if the underlying filesystem is case-sensitive. masterlistPath and userlistPath are files. dataPath is a directory. If userlistPath is an empty string, then the userlist is not loaded. clientGame accepts a game code as given in earlier.
 
 <p><div class="codebox">uint32_t <span style="color:blue;">EvalConditionals</span> (boss_db db, const uint8_t * dataPath);</div>
-<p>Evaluates all conditional lines and regex mods the loaded masterlist. This exists so that Load() doesn't need to be called whenever the mods installed are changed. Evaluation does not take place unless this function is called. Repeated calls re-evaluate the masterlist from scratch each time, ignoring the results of any previous evaluations. Paths are case-sensitive if the underlying filesystem is case-sensitive.
+<p>Evaluates all conditional lines and regex mods the loaded masterlist. This exists so that Load() doesn't need to be called whenever the mods installed are changed. Evaluation does not take place unless this function is called. Repeated calls re-evaluate the masterlist from scratch each time, ignoring the results of any previous evaluations. Paths are case-sensitive if the underlying filesystem is case-sensitive. Only the output of <span style="color:blue;">DumpMinimal</span> is unaffected by conditional evaluation.
 
 
 <h2 id="functions-sorting">Plugin Sorting Functions</h2>
 
-<p><div class="codebox">uint32_t <span style="color:blue;">SortMods</span> (boss_db db);</div>
-<p>Sorts the plugins in the directory specified by dataPath for the game clientGame when Load() was called.
+<p><div class="codebox">uint32_t <span style="color:blue;">SortMods</span> (boss_db db, size_t * lastRecPos);</div>
+<p>Sorts the plugins in the directory specified by dataPath for the game clientGame when Load() was called. lastRecPos holds the load order position of the last plugin recognised by BOSS.
 
-<p><div class="codebox">uint32_t <span style="color:blue;">TrialSortMods</span> (boss_db db, uint8_t *** sortedPlugins, size_t * listLength);</div>
-<p>Outputs an array listing the plugins in the directory specified by dataPath when Load() was called, with plugins in the order that they would be placed into if SortMods() were to be called. listLength is the length of the array pointed to by sortedPlugins.
+<p><div class="codebox">uint32_t <span style="color:blue;">TrialSortMods</span> (boss_db db, uint8_t *** sortedPlugins, size_t * listLength, size_t * lastRecPos);</div>
+<p>Outputs an array listing the plugins in the directory specified by dataPath when Load() was called, with plugins in the order that they would be placed into if SortMods() were to be called. listLength is the length of the array pointed to by sortedPlugins. lastRecPos holds the load order position of the last plugin recognised by BOSS.
 
 <h2 id="functions-access">Database Access Functions</h2>
 <p><div class="codebox">uint32_t <span style="color:blue;">GetBashTagMap</span> (boss_db db, BashTag ** tagMap, size_t * numTags);</div>
@@ -438,17 +438,24 @@ if __name__=='__main__':
 </div>
 <h2 id="examples-c">C++</h2>
 <div class="codebox">
-#include &lt;string&gt;
 #include &lt;iostream&gt;
-#include &lt;vector&gt;
 #include &lt;stdint.h&gt;
 #include &lt;fstream&gt;
+#include &lt;clocale&gt;
+#include &lt;boost/filesystem/detail/utf8_codecvt_facet.hpp&gt;
+#include &lt;boost/filesystem.hpp&gt;
 
 #include "BOSS-API.h"
 
 using namespace std;
 
 int main() {
+
+	//Set the locale to get encoding conversions working correctly.
+	setlocale(LC_CTYPE, "");
+	locale global_loc = locale();
+	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
+	boost::filesystem::path::imbue(loc);
 
 	boss_db db;
 	uint8_t * mPath = reinterpret_cast&lt;uint8_t *&gt;("masterlist.txt");
@@ -495,20 +502,24 @@ int main() {
 			else {
 				
 				out &lt;&lt; "TESTING SortMods(...)" &lt;&lt; endl;
-				ret = SortMods(db);
+				size_t lastPos;
+				ret = SortMods(db, &lastPos);
 				if (BOSS_API_ERROR_OK != ret)
 					out &lt;&lt; '\t' &lt;&lt; "Sorting failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+				else
+					out &lt;&lt; '\t' &lt;&lt; "Last recognised pos: " &lt;&lt; lastPos &lt;&lt; endl;
 				
 				out &lt;&lt; "TESTING TrialSortMods(...)" &lt;&lt; endl;
 				uint8_t ** sortedPlugins;
 				size_t len;
-				ret = TrialSortMods(db, &sortedPlugins, &len);
+				ret = TrialSortMods(db, &sortedPlugins, &len, &lastPos);
 				if (BOSS_API_ERROR_OK != ret)
 					out &lt;&lt; '\t' &lt;&lt; "Trial sorting failed. Error: " &lt;&lt; ret &lt;&lt; endl;
 				else {
 					out &lt;&lt; '\t' &lt;&lt; "List size: " &lt;&lt; len &lt;&lt; endl;
+					out &lt;&lt; '\t' &lt;&lt; "Last recognised pos: " &lt;&lt; lastPos &lt;&lt; endl;
 					for (size_t i=0; i&lt;len; i++) {
-						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; sortedPlugins[i] &lt;&lt; endl;
+						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; i &lt;&lt; " : " &lt;&lt; sortedPlugins[i] &lt;&lt; endl;
 					}
 				}
 				

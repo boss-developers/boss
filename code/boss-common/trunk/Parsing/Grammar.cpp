@@ -315,6 +315,8 @@ namespace boss {
 		const vector<Message> noMessages;  //An empty set of messages.
 
 		modList = 
+			+eol 
+			>
 			(
 				listVar			[phoenix::bind(&modlist_grammar::StoreVar, this, _1)] 
 				| globalMessage	[phoenix::bind(&modlist_grammar::StoreGlobalMessage, this, _1)] 

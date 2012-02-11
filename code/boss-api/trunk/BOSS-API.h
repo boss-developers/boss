@@ -178,14 +178,17 @@ BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * ma
 ////////////////////////////////
 
 // Sorts the mods in dataPath according to their order in the masterlist at 
-// masterlistPath.
-BOSS_API uint32_t SortMods(boss_db db);
+// masterlistPath. lastRecPos holds the load order position of the last plugin 
+// recognised by BOSS. 
+BOSS_API uint32_t SortMods(boss_db db, size_t * lastRecPos);
 
 // Behaves as the above function does, but does not actually redate the plugins.
 // It instead lists them in the order they would be sorted in using SortMods() in
 // the sortedPlugins array outputted. The contents of the array are static and should
-// not be freed by the client.
-BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t *** sortedPlugins, size_t * listLength);
+// not be freed by the client.  lastRecPos holds the load order position of the last 
+// plugin recognised by BOSS. 
+BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t *** sortedPlugins, size_t * listLength, 
+								size_t * lastRecPos);
 
 
 //////////////////////////

@@ -25,17 +25,24 @@
 	$Revision: 1783 $, $Date: 2010-10-31 23:05:28 +0000 (Sun, 31 Oct 2010) $
 */
 
-#include <string>
 #include <iostream>
-#include <vector>
 #include <stdint.h>
 #include <fstream>
+#include <clocale>
+#include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
+#include <boost/filesystem.hpp>
 
 #include "BOSS-API.h"
 
 using namespace std;
 
 int main() {
+
+	//Set the locale to get encoding conversions working correctly.
+	setlocale(LC_CTYPE, "");
+	locale global_loc = locale();
+	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
+	boost::filesystem::path::imbue(loc);
 
 	boss_db db;
 	uint8_t * mPath = reinterpret_cast<uint8_t *>("masterlist.txt");
@@ -82,20 +89,24 @@ int main() {
 			else {
 				
 				out << "TESTING SortMods(...)" << endl;
-				ret = SortMods(db);
+				size_t lastPos;
+				ret = SortMods(db, &lastPos);
 				if (BOSS_API_ERROR_OK != ret)
 					out << '\t' << "Sorting failed. Error: " << ret << endl;
+				else
+					out << '\t' << "Last recognised pos: " << lastPos << endl;
 				
 				out << "TESTING TrialSortMods(...)" << endl;
 				uint8_t ** sortedPlugins;
 				size_t len;
-				ret = TrialSortMods(db, &sortedPlugins, &len);
+				ret = TrialSortMods(db, &sortedPlugins, &len, &lastPos);
 				if (BOSS_API_ERROR_OK != ret)
 					out << '\t' << "Trial sorting failed. Error: " << ret << endl;
 				else {
 					out << '\t' << "List size: " << len << endl;
+					out << '\t' << "Last recognised pos: " << lastPos << endl;
 					for (size_t i=0; i<len; i++) {
-						out << '\t' << '\t' << sortedPlugins[i] << endl;
+						out << '\t' << '\t' << i << " : " << sortedPlugins[i] << endl;
 					}
 				}
 				

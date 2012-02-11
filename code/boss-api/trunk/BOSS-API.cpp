@@ -31,6 +31,9 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/unordered_set.hpp>
 #include <map>
+#include <clocale>
+#include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
+#include <boost/filesystem.hpp>
 
 using namespace std;
 using namespace boss;
@@ -290,6 +293,12 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	if ((clientGame != OBLIVION && clientGame != FALLOUT3 && clientGame != FALLOUTNV && clientGame != NEHRIM && clientGame != SKYRIM) 
 		|| db == NULL || masterlistPath == NULL || userlistPath == NULL || dataPath == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
+
+	//Set the locale to get encoding conversions working correctly.
+	setlocale(LC_CTYPE, "");
+	locale global_loc = locale();
+	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
+	boost::filesystem::path::imbue(loc);
 	
 	//Set game.
 	game = clientGame;
@@ -470,8 +479,9 @@ BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * ma
 ////////////////////////////////
 
 // Sorts the mods in dataPath according to their order in the masterlist at 
-// masterlistPath for the given game.
-BOSS_API uint32_t SortMods(boss_db db) {
+// masterlistPath for the given game. lastRecPos holds the load order position 
+// of the last plugin recognised by BOSS. 
+BOSS_API uint32_t SortMods(boss_db db, size_t * lastRecPos) {
 	if (db == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 
@@ -498,7 +508,7 @@ BOSS_API uint32_t SortMods(boss_db db) {
 
 	//Set up working modlist.
 	//The function below changes the input, so make copies.
-	ItemList masterlist = db->rawMasterlist;
+	ItemList masterlist = db->filteredMasterlist;
 	masterlist.EvalConditions();
 	RuleList userlist = db->userlist;
 	BuildWorkingModlist(modlist, masterlist, userlist);
@@ -507,17 +517,21 @@ BOSS_API uint32_t SortMods(boss_db db) {
 
 	vector<Item> items = modlist.Items();
 	size_t max = items.size();
-	size_t mods = 1;
+	size_t mods = 0;
 	for (size_t i=0; i < max; i++) {
-		if (items[i].Type() == MOD && items[i].Exists() && !items[i].IsMasterFile()) {  //Only act on mods that exist.
-			//time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-			try {
-				items[i].SetModTime(masterTime + mods*60);
-			} catch(boss_error e) {
-				return BOSS_API_ERROR_FILE_MOD_TIME_WRITE_FAIL;
+		if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
+			if (!items[i].IsMasterFile()) {
+				//time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+				try {
+					items[i].SetModTime(masterTime + mods*60);
+				} catch(boss_error e) {
+					return BOSS_API_ERROR_FILE_MOD_TIME_WRITE_FAIL;
+				}
 			}
 			mods++;
 		}
+		if (i == modlist.LastRecognisedPos())
+			*lastRecPos = mods-1;
 	}
 
 	return BOSS_API_ERROR_OK;
@@ -526,8 +540,9 @@ BOSS_API uint32_t SortMods(boss_db db) {
 // Behaves as the above function does, but does not actually redate the plugins.
 // It instead lists them in the order they would be sorted in using SortMods() in
 // the sortedPlugins array outputted. The contents of the array are static and should
-// not be freed by the client.
-BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t *** sortedPlugins, size_t * listLength) {
+// not be freed by the client. lastRecPos holds the load order position of the last 
+// plugin recognised by BOSS. 
+BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t *** sortedPlugins, size_t * listLength, size_t * lastRecPos) {
 	if (sortedPlugins == NULL || db == NULL || listLength == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 
@@ -554,7 +569,7 @@ BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t *** sortedPlugins, size_t * 
 
 	//Set up working modlist.
 	//The function below changes the input, so make copies.
-	ItemList masterlist = db->rawMasterlist;
+	ItemList masterlist = db->filteredMasterlist;
 	masterlist.EvalConditions();
 	RuleList userlist = db->userlist;
 	BuildWorkingModlist(modlist, masterlist, userlist);
@@ -583,6 +598,8 @@ BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t *** sortedPlugins, size_t * 
 				return BOSS_API_ERROR_NO_MEM;
 			mods.push_back(p);
 		}
+		if (i == modlist.LastRecognisedPos())
+			*lastRecPos = mods.size()-1;
 	}
 
 	//Now create external array.
