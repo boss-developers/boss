@@ -225,7 +225,7 @@ namespace boss {
 	}
 
 	//Downloads the files in the updatedFiles vector at filesURL.
-	void DownloadFiles(uiStruct ui, const uint32_t updateType) {
+	void DownloadFiles(uiStruct ui, const installType updateType) {
 		string fileBuffer, remote_file, path;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
@@ -283,7 +283,7 @@ namespace boss {
 			ofile.close();
 
 			//Now verify file integrity, but only if a program update, masterlist updates don't get CRCs calculated.
-			if ((updateType == MANUAL || updateType == INSTALLER) && GetCrc32(fs::path(path)) != updatedFiles[i].crc)
+			if (updateType == APPLICATION && GetCrc32(fs::path(path)) != updatedFiles[i].crc)
 				throw boss_error(BOSS_ERROR_FILE_CRC_MISMATCH, updatedFiles[i].name);
 
 			//Now move progress indicator down a line if on CLI.
@@ -294,9 +294,9 @@ namespace boss {
 	}
 
 	//Installs the downloaded update files.
-	vector<string> InstallFiles(const uint32_t updateType) {
+	vector<string> InstallFiles(const installType updateType) {
 		//First back up current BOSS.ini if it exists and the update is a BOSS program update.
-		if ((updateType == MANUAL || updateType == INSTALLER) && fs::exists(boss_path / "BOSS.ini"))
+		if (updateType == APPLICATION && fs::exists(boss_path / "BOSS.ini"))
 			fs::rename(boss_path / "BOSS.ini",boss_path / "BOSS.ini.old");
 
 		//Now iterate through the vector of updated files.
@@ -490,17 +490,13 @@ namespace boss {
 	}
 
 	//Populates the updatedFiles vector. Kept as a separate function for possible future expansion.
-	void FetchUpdateFileList(const uint32_t updateType, const string updateVersion) {
+	void FetchUpdateFileList(const installType updateType, const string updateVersion) {
 		string fileBuffer, remote_file;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		CURLcode ret;
 
 		filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/";
-		
-		//First decide what type of install we're updating.
-		if (updateType == MANUAL)
-			filesURL += "manual/";
 
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = InitCurl(errbuff);
@@ -727,9 +723,10 @@ namespace boss {
 	}
 
 	//Downloads and installs a BOSS update.
-	BOSS_COMMON_EXP vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const uint32_t updateType, const string updateVersion) {
-		FetchUpdateFileList(updateType, updateVersion);
-		DownloadFiles(ui, updateType);
-		return InstallFiles(updateType);
+	BOSS_COMMON_EXP vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const string updateVersion) {
+		installType type = APPLICATION;
+		FetchUpdateFileList(type, updateVersion);
+		DownloadFiles(ui, type);
+		return InstallFiles(type);
 	}
 }

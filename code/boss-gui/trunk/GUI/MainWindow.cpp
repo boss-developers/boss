@@ -885,139 +885,73 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 }
 
 void MainFrame::Update(string updateVersion) {
-	//First detect type of current install: manual or installer.
-	if (fs::exists("BOSS ReadMe.lnk")) {  //Installer
-		wxString message = wxT("Your current install has been determined as having been installed via the BOSS installer.\n\n");
-		message += wxT("The automatic updater will download the installer for the new version to this BOSS folder.\n\n");
-		message += wxT("It will then launch the installer before exiting. Complete the installer to complete the update.");
+	wxString message = wxT("The automatic updater will download the installer for the new version to this BOSS folder.\n\n");
+	message += wxT("It will then launch the installer before exiting. Complete the installer to complete the update.");
 		
-		wxMessageDialog *dlg = new wxMessageDialog(this,message, wxT("BOSS: Automatic Updater"), wxOK | wxCANCEL);
-		if (dlg->ShowModal() != wxID_OK) {  //User has chosen to cancel. Quit now.
-			wxMessageBox(wxT("Automatic updater cancelled."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_EXCLAMATION, this);
-			return;
-		}
+	wxMessageDialog *dlg = new wxMessageDialog(this,message, wxT("BOSS: Automatic Updater"), wxOK | wxCANCEL);
+	if (dlg->ShowModal() != wxID_OK) {  //User has chosen to cancel. Quit now.
+		wxMessageBox(wxT("Automatic updater cancelled."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_EXCLAMATION, this);
+		return;
+	}
 
-		wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Automatic Updater"),wxT("Initialising download..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
-		uiStruct ui(progDia);
-		vector<string> fails;
+	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Automatic Updater"),wxT("Initialising download..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
+	uiStruct ui(progDia);
+	vector<string> fails;
+	try {
+		fails = DownloadInstallBOSSUpdate(ui, updateVersion);
+	} catch (boss_error e) {
+		progDia->Destroy();
 		try {
-			fails = DownloadInstallBOSSUpdate(ui, INSTALLER, updateVersion);
-		} catch (boss_error e) {
-			progDia->Destroy();
-			try {
-				CleanUp();
-			} catch (boss_error ee) {
-				LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-				wxMessageBox("Update failed. Details: " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
-				return;
-			}
-			if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL)
-				wxMessageBox(wxT("Update cancelled."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
-			else
-				wxMessageBox("Update failed. Details: " + e.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
-			return;
-		} catch (fs::filesystem_error e) {
-			progDia->Destroy();
-			try {
-				CleanUp();
-			} catch (boss_error ee) {
-				LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-				wxMessageBox("Update failed. Details: " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
-				return;
-			}
-			string detail = e.what();
-			wxMessageBox("Update failed. Details: " + detail + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+			CleanUp();
+		} catch (boss_error ee) {
+			LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
+			wxMessageBox("Update failed. Details: " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		}
-
-		if (!fails.empty()) {
-			message = "There were errors renaming the downloaded files. When you click 'OK', BOSS will exit. Once BOSS has exit, remove the \".new\" extension from the following file(s), deleting any existing files with the same names, then run the downloaded installer to complete the update:\n\n";
-			size_t size=fails.size();
-			for (size_t i=0;i<size;i++)
-				message += fails[i] +".new\n";
-			wxMessageBox(wxT("New installer successfully downloaded!\n\n"+message), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
-		} else {
-			//Display release notes.
-			try {
-				string notes = FetchReleaseNotes(updateVersion);
-				if (!notes.empty())
-					wxMessageBox(wxT("New installer successfully downloaded! Release notes for v"+updateVersion+":\n\n"+notes), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
-			} catch (boss_error e) {
-				wxMessageBox("Failed to get release notes. Details: " + e.getString(), wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
-			}
-			//Remind the user to run the installer.
-			wxMessageBox(wxT("When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
-
-
-			//Now run downloaded installer then exit.
-			//Although there should only be one installer file, to be safe iterate through the files vector.
-			for (size_t i=0;i<updatedFiles.size();i++) {
-				if (updatedFiles[i].name.empty())  //Just in case.
-					continue;
-				wxLaunchDefaultApplication(updatedFiles[i].name);
-			}
-		}
-	} else {  //Manual.
-		wxString message = wxT("Your current install has been determined as having been installed manually.\n\n");
-		message += wxT("The automatic updater will download the updated files and replace your existing files with them.");
-		message += wxT(" Your current BOSS.ini will be renamed to BOSS.ini.old. It may still be opened in your chosen text editor, allowing you to migrate your settings.");
-		message += wxT(" Your current userlist.txt will not be replaced.");
-		
-		wxMessageDialog *dlg = new wxMessageDialog(this,message, wxT("BOSS: Automatic Updater"), wxOK | wxCANCEL);
-		if (dlg->ShowModal() != wxID_OK) {  //User has chosen to cancel. Quit now.
-			wxMessageBox(wxT("Automatic updater cancelled."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_EXCLAMATION, this);
-			return;
-		}
-		wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Automatic Updater"),wxT("Initialising download..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
-		uiStruct ui(progDia);
-		vector<string> fails;
+		if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL)
+			wxMessageBox(wxT("Update cancelled."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+		else
+			wxMessageBox("Update failed. Details: " + e.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+		return;
+	} catch (fs::filesystem_error e) {
+		progDia->Destroy();
 		try {
-			fails = DownloadInstallBOSSUpdate(ui, MANUAL, updateVersion);
-		} catch (boss_error e) {
-			progDia->Destroy();
-			try {
-				CleanUp();
-			} catch (boss_error ee) {
-				LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-				wxMessageBox("Update failed. Details: " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
-				return;
-			}
-			if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL)
-				wxMessageBox(wxT("Update cancelled."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
-			else
-				wxMessageBox("Update failed. Details: " + e.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
-			return;
-		} catch (fs::filesystem_error e) {
-			progDia->Destroy();
-			try {
-				CleanUp();
-			} catch (boss_error ee) {
-				LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-				wxMessageBox("Update failed. Details: " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
-				return;
-			}
-			string detail = e.what();
-			wxMessageBox("Update failed. Details: " + detail + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+			CleanUp();
+		} catch (boss_error ee) {
+			LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
+			wxMessageBox("Update failed. Details: " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			return;
 		}
+		string detail = e.what();
+		wxMessageBox("Update failed. Details: " + detail + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+		return;
+	}
 
+	if (!fails.empty()) {
+		message = "There were errors renaming the downloaded files. When you click 'OK', BOSS will exit. Once BOSS has exit, remove the \".new\" extension from the following file(s), deleting any existing files with the same names, then run the downloaded installer to complete the update:\n\n";
+		size_t size=fails.size();
+		for (size_t i=0;i<size;i++)
+			message += fails[i] +".new\n";
+		wxMessageBox(wxT("New installer successfully downloaded!\n\n"+message), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+	} else {
 		//Display release notes.
 		try {
 			string notes = FetchReleaseNotes(updateVersion);
 			if (!notes.empty())
-				wxMessageBox(wxT("Release notes for v"+updateVersion+":\n\n"+notes), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+				wxMessageBox(wxT("New installer successfully downloaded! Release notes for v"+updateVersion+":\n\n"+notes), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 		} catch (boss_error e) {
 			wxMessageBox("Failed to get release notes. Details: " + e.getString(), wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 		}
+		//Remind the user to run the installer.
+		wxMessageBox(wxT("When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 
-		if (!fails.empty()) {
-			message = "However, the following files could not be automatically installed. When you click 'OK', BOSS will exit. After BOSS exits, remove the \".new\" extension from the following file(s), deleting any existing files with the same names to complete the update:\n\n";
-			size_t size=fails.size();
-			for (size_t i=0;i<size;i++)
-				message += fails[i] + ".new\n";
-			wxMessageBox(wxT("Files successfully downloaded!\n\n"+message), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
-		} else
-			wxMessageBox(wxT("Files successfully updated!\n\nWhen you click 'OK', BOSS will exit."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+		//Now run downloaded installer then exit.
+		//Although there should only be one installer file, to be safe iterate through the files vector.
+		for (size_t i=0;i<updatedFiles.size();i++) {
+			if (updatedFiles[i].name.empty())  //Just in case.
+				continue;
+			wxLaunchDefaultApplication(updatedFiles[i].name);
+		}
 	}
 	this->Close();
 }
@@ -1096,15 +1030,17 @@ void MainFrame::OnThreadUpdate(wxThreadEvent& evt) {
 	else if (updateCheckCode == 1 && !isStartup)
 		wxMessageBox(updateCheckString, wxT("BOSS: Check For Updates"), wxOK | wxICON_INFORMATION, this);
 	else if (updateCheckCode == 0) {
-		wxMessageDialog *dlg = new wxMessageDialog(this,
-			"Update available! New version: " + updateCheckString + "\nDo you want to download and install the update?"
-			, wxT("BOSS: Check For Updates"), wxYES_NO);
+		wxMessageDialog *dlg;
+		if (fs::exists("BOSS ReadMe.lnk"))  //Installer
+			dlg = new wxMessageDialog(this,
+				"Update available! New version: " + updateCheckString + "\nDo you want to download and install the update?"
+				, wxT("BOSS: Check For Updates"), wxYES_NO);
+		else
+			dlg = new wxMessageDialog(this,
+				"Update available! New version: " + updateCheckString + "\nThe update may be downloaded from any of the locations listed in the BOSS Log."
+				, wxT("BOSS: Check For Updates"), wxOK);
 
-		if (dlg->ShowModal() != wxID_YES) {  //User has chosen not to update. Quit now.
-			//Display a message saying no update was installed.
-			wxMessageBox(wxT("No update has been downloaded or installed."), wxT("BOSS: Check For Updates"), wxOK | wxICON_INFORMATION, this);
-			return;
-		} else  //User has chosen to update. On with the show!
+		if (dlg->ShowModal() == wxID_YES)
 			this->Update(updateCheckString);
 	}
 }

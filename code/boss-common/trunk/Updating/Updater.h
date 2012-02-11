@@ -41,8 +41,7 @@ namespace boss {
 	using namespace std;
 
 	BOSS_COMMON_EXP enum installType : uint32_t {  //Possible types of install the user has.
-		MANUAL,
-		INSTALLER,
+		APPLICATION,
 		MASTERLIST
 	};
 
@@ -101,6 +100,6 @@ namespace boss {
 
 	//Downloads and installs a BOSS update.
 	//Throws boss_error exception on fail.
-	BOSS_COMMON_EXP vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const uint32_t updateType, const string updateVersion);
+	BOSS_COMMON_EXP vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const string updateVersion);
 }
 #endif
