@@ -301,12 +301,12 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	boost::filesystem::path::imbue(loc);
 	
 	//Set game.
-	game = clientGame;
+	gl_current_game = clientGame;
 
 	//PATH SETTING
 	data_path = fs::path(reinterpret_cast<const char *>(dataPath));
-	masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
-	userlist_path = fs::path(reinterpret_cast<const char *>(userlistPath));	
+	fs::path masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
+	fs::path userlist_path = fs::path(reinterpret_cast<const char *>(userlistPath));	
 
 	if (data_path.empty() || masterlist_path.empty())
 		return BOSS_API_ERROR_INVALID_ARGS;
@@ -441,10 +441,10 @@ BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * ma
 	if ((clientGame != OBLIVION && clientGame != FALLOUT3 && clientGame != FALLOUTNV && clientGame != NEHRIM && clientGame != SKYRIM) || masterlistPath == NULL)
 		return BOSS_API_ERROR_INVALID_ARGS;
 
-	game = clientGame;
+	gl_current_game = clientGame;
 
 	//PATH SETTING
-	masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
+	fs::path masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
 
 	if (masterlist_path.empty())
 		return BOSS_API_ERROR_INVALID_ARGS;

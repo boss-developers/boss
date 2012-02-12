@@ -71,7 +71,7 @@ int Launch(const string& filename) {
 void ShowVersion() {
 	cout << "BOSS: Better Oblivion Sorting Software" << endl;
 	cout << "Version " << BOSS_VERSION_MAJOR << "." << BOSS_VERSION_MINOR
-		 << "." << BOSS_VERSION_PATCH << " (" << boss_release_date << ")" << endl;
+		 << "." << BOSS_VERSION_PATCH << " (" << gl_boss_release_date << ")" << endl;
 }
 
 void ShowUsage(po::options_description opts) {
@@ -106,20 +106,14 @@ void Fail() {
 	exit(1);
 }
 
-void InhibitUpdate(bool val) {
-	if (val)
-		update = false;
-}
-
 int main(int argc, char *argv[]) {
 	time_t esmtime = 0;						//File modification times.
 	ItemList modlist, masterlist;		//modlist and masterlist data structures.
 	RuleList userlist;					//userlist data structure.
-	Ini ini;
+	Settings ini;
 	bosslogContents contents;				//BOSSlog contents.
 	string gameStr;							// allow for autodetection override
 	string bosslogFormat;
-	fs::path bosslog_path;					//Path to BOSSlog being used.
 	fs::path sortfile;						//modlist/masterlist to sort plugins using.
 	Outputter output;
 
@@ -134,30 +128,29 @@ int main(int argc, char *argv[]) {
 	opts.add_options()
 		("help,h",				"produces this help message")
 		("version,V",			"prints the version banner")
-		("update,u", po::value(&update)->zero_tokens(),
+		("update,u", po::value(&gl_update)->zero_tokens(),
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
 								" available on the web before sorting")
-		("no-update,U", po::value<bool>()->zero_tokens()->notifier(&InhibitUpdate),
-								"inhibit the automatic masterlist updater")
-		("only-update,o", po::value(&update_only)->zero_tokens(),
+		("no-update,U",			"inhibit the automatic masterlist updater")
+		("only-update,o", po::value(&gl_update_only)->zero_tokens(),
 								"automatically update the local copy of the"
 								" masterlist to the latest version"
 								" available on the web but don't sort right"
 								" now")
-		("silent,s", po::value(&silent)->zero_tokens(),
+		("silent,s", po::value(&gl_silent)->zero_tokens(),
 								"don't launch a browser to show the HTML log"
 								" at program completion")
-		("no-version-parse,n", po::value(&skip_version_parse)->zero_tokens(),
+		("no-version-parse,n", po::value(&gl_skip_version_parse)->zero_tokens(),
 								"don't extract mod version numbers for"
 								" printing in the HTML log")
-		("revert,r", po::value(&revert)->implicit_value(1, ""),
+		("revert,r", po::value(&gl_revert)->implicit_value(1, ""),
 								"revert to a previous load order.  this"
 								" parameter optionally accepts values of 1 or"
 								" 2, indicating how many undo steps to apply."
 								"  if no option value is specified, it"
 								" defaults to 1")
-		("verbose,v", po::value(&debug_verbosity)->implicit_value(1, ""),
+		("verbose,v", po::value(&gl_debug_verbosity)->implicit_value(1, ""),
 								"specify verbosity level (0-3) of the debugging output.  0 is the"
 								" default, showing only WARN and ERROR messges."
 								" 1 (INFO and above) is implied if this option"
@@ -167,21 +160,21 @@ int main(int argc, char *argv[]) {
 								"override game autodetection.  valid values"
 								" are: 'Oblivion', 'Nehrim', 'Fallout3',"
 								" 'FalloutNV', and 'Skyrim'")
-		("debug-with-source,d", po::value(&debug_with_source)->zero_tokens(),
+		("debug-with-source,d", po::value(&gl_debug_with_source)->zero_tokens(),
 								"add source file references to debug statements")
-		("crc-display,c", po::value(&show_CRCs)->zero_tokens(),
+		("crc-display,c", po::value(&gl_show_CRCs)->zero_tokens(),
 								"show mod file CRCs, so that a file's CRC can be"
 								" added to the masterlist in a conditional")
 		("format,f", po::value(&bosslogFormat),
 								"select output format. valid values"
 								" are: 'html', 'text'")
-		("trial-run,t", po::value(&trial_run)->zero_tokens(),
+		("trial-run,t", po::value(&gl_trial_run)->zero_tokens(),
 								"run BOSS without actually making any changes to load order")
-		("proxy-host,H", po::value(&proxy_host),
+		("proxy-host,H", po::value(&gl_proxy_host),
 								"sets the proxy hostname for the masterlist updater")
-		("proxy-port,P", po::value(&proxy_port),
+		("proxy-port,P", po::value(&gl_proxy_port),
 								"sets the proxy port number for the masterlist updater")
-		("log-debug,l", po::value(&log_debug_output)->zero_tokens(),
+		("log-debug,l", po::value(&gl_log_debug_output)->zero_tokens(),
 								"logs the debug output to the BOSSDebugLog.txt file instead"
 								" of the command line.");
 	
@@ -222,22 +215,15 @@ int main(int argc, char *argv[]) {
 	}
 
 	// set alternative output stream for logger and whether to track log statement origins
-	if (log_debug_output)
+	if (gl_log_debug_output)
 		g_logger.setStream(debug_log_path.string().c_str());
-	g_logger.setOriginTracking(debug_with_source);
-
-	if (vm.count("verbose")) {
-		if (0 > debug_verbosity) {
-			LOG_ERROR("invalid option for 'verbose' parameter: %d", debug_verbosity);
-			Fail();
-		}
-	}
-	// it's ok if this number is too high.  setVerbosity will handle it
-	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + debug_verbosity));
-	if ((vm.count("update")) && (vm.count("no-update"))) {
-		LOG_ERROR("invalid options: --update,-u and --no-update,-U cannot both be given.");
+	g_logger.setOriginTracking(gl_debug_with_source);
+	if (gl_debug_verbosity < 0) {
+		LOG_ERROR("invalid option for 'verbose' parameter: %d", gl_debug_verbosity);
 		Fail();
 	}
+	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));  // it's ok if this number is too high.  setVerbosity will handle it
+
 	if (vm.count("help")) {
 		ShowUsage(opts);
 		exit(0);
@@ -246,48 +232,57 @@ int main(int argc, char *argv[]) {
 		ShowVersion();
 		exit(0);
 	}
-	if (vm.count("revert")) {
-		// sanity check argument
-		if (revert < 1 || revert > 2) {
-			LOG_ERROR("invalid option for 'revert' parameter: %d", revert);
-			Fail();
-		}
+	if (vm.count("no-update")) {
+		gl_update = false;
+	}
+	if ((vm.count("update")) && (vm.count("no-update"))) {
+		LOG_ERROR("invalid options: --update,-u and --no-update,-U cannot both be given.");
+		Fail();
+	}
+	if (vm.count("revert") && (gl_revert < 1 || gl_revert > 2)) {
+		LOG_ERROR("invalid option for 'revert' parameter: %d", gl_revert);
+		Fail();
 	}
 	if (vm.count("game")) {
 		// sanity check and parse argument
-		if      (boost::iequals("Oblivion",   gameStr)) { game = OBLIVION; }
-		else if (boost::iequals("Fallout3",   gameStr)) { game = FALLOUT3; }
-		else if (boost::iequals("Nehrim",     gameStr)) { game = NEHRIM; }
-		else if (boost::iequals("FalloutNV", gameStr)) { game = FALLOUTNV; }
-		else if (boost::iequals("Skyrim", gameStr)) { game = SKYRIM; }
+		if      (boost::iequals("Oblivion",   gameStr))
+			gl_game = OBLIVION;
+		else if (boost::iequals("Fallout3",   gameStr))
+			gl_game = FALLOUT3;
+		else if (boost::iequals("Nehrim",     gameStr))
+			gl_game = NEHRIM;
+		else if (boost::iequals("FalloutNV", gameStr))
+			gl_game = FALLOUTNV;
+		else if (boost::iequals("Skyrim", gameStr))
+			gl_game = SKYRIM;
 		else {
 			LOG_ERROR("invalid option for 'game' parameter: '%s'", gameStr.c_str());
 			Fail();
 		}
-	
-		LOG_DEBUG("game autodectection overridden with: '%s' (%d)", gameStr.c_str(), game);
+		LOG_DEBUG("game ini setting overridden with: '%s' (%d)", gameStr.c_str(), gl_game);
 	}
-
 	if (vm.count("format")) {
 		// sanity check and parse argument
+		string bosslogFormat = vm["format"].as<string>();
 		if (bosslogFormat == "html")
-			log_format = HTML;
+			gl_log_format = HTML;
 		else if (bosslogFormat == "text")
-			log_format = PLAINTEXT;
+			gl_log_format = PLAINTEXT;
 		else {
 			LOG_ERROR("invalid option for 'format' parameter: '%s'", bosslogFormat.c_str());
 			Fail();
 		}
 		LOG_DEBUG("BOSSlog format set to: '%s'", bosslogFormat.c_str());
 	}
-	output.SetFormat(log_format);
-	contents.iniParsingError = ini.ErrorBuffer().FormatFor(log_format);
+	output.SetFormat(gl_log_format);
+	contents.iniParsingError = ini.ErrorBuffer().FormatFor(gl_log_format);
+
 
 	/////////////////////////
 	// BOSS Updater Stuff
 	/////////////////////////
 
-	if (do_startup_update_check) {
+	if (gl_do_startup_update_check) {
 		string updateText, updateVersion;
 		bool connection = false;
 		try {
@@ -305,7 +300,7 @@ int main(int argc, char *argv[]) {
 					LOG_DEBUG("You are already using the latest version of BOSS.");
 				} else {
 					//First detect type of current install: manual or installer.
-					 if (!fs::exists("BOSS ReadMe.lnk")) {  //Manual.
+					 if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS")) {  //Manual.
 						//Point user to download locations.
 						cout << "Update available! New version: " << updateVersion << endl;
 						cout << "The update may be downloaded from any of the locations listed in the BOSS Log." << endl;		
@@ -385,34 +380,13 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-
-	/////////////////////////
-	// File IO Setup
-	/////////////////////////
-
-	//Set BOSSlog path to be used.
-	if (log_format == HTML)
-		bosslog_path = bosslog_html_path;
-	else
-		bosslog_path = bosslog_text_path;
-
-	//Set masterlist path to be used.
-	if (revert==1)
-		sortfile = curr_modlist_path;	
-	else if (revert==2) 
-		sortfile = prev_modlist_path;
-	else 
-		sortfile = masterlist_path;
-	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
-
-
 	////////////////////////////////////////////////
 	// Record last BOSSlog's recognised mod list
 	////////////////////////////////////////////////
 
 	//Back up old recognised mod list for diff later. Only works for HTML bosslog due to formatting conversion.
-	if (fs::exists(bosslog_html_path))
-		contents.oldRecognisedPlugins = GetOldRecognisedList(bosslog_html_path);
+	if (fs::exists(bosslog_path()))
+		contents.oldRecognisedPlugins = GetOldRecognisedList(bosslog_path());
 
 
 	/////////////////////////////////////////
@@ -420,10 +394,10 @@ int main(int argc, char *argv[]) {
 	/////////////////////////////////////////
 
 	//Game checks.
-	if (0 == game) {
+	if (gl_game == AUTODETECT) {
 		LOG_DEBUG("Detecting game...");
 		try {
-			GetGame();
+			DetectGame();
 		} catch (boss_error e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 			output.Clear();
@@ -433,23 +407,23 @@ int main(int argc, char *argv[]) {
 				<< "Utility will end now." << LIST_CLOSE;
 			output.PrintFooter();
 			try {
-				output.Save(bosslog_path, true);
+				output.Save(bosslog_path(), true);
 			} catch (boss_error e) {
 				LOG_ERROR("Critical Error: %s", e.getString().c_str());
 			}
 			LOG_ERROR("Installation error found: check BOSSLOG.");
-			if ( !silent ) 
-				Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
+			if ( !gl_silent ) 
+				Launch(bosslog_path().string());	//Displays the BOSSlog.txt.
 			exit (1); //fail in screaming heap.
 		}
 	}
-	LOG_INFO("Game detected: %d", game);
+	LOG_INFO("Game detected: %d", gl_game);
 
 	/////////////////////////////////////////////////////////
 	// Error Condition Check Interlude - Update masterlist
 	/////////////////////////////////////////////////////////
 	
-	if (revert<1 && (update || update_only)) {
+	if (gl_revert < 1 && (gl_update || gl_update_only)) {
 		//First check for internet connection, then update masterlist if connection present.
 		bool connection = false;
 		try {
@@ -493,7 +467,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
-	if (update_only == true) {
+	if (gl_update_only) {
 		output.Clear();
 		output.PrintHeader();
 		if (contents.updaterErrors.empty())
@@ -504,12 +478,12 @@ int main(int argc, char *argv[]) {
 		output << HEADING_ID_END_OPEN << "Execution Complete" << HEADING_CLOSE;
 		output.PrintFooter();
 		try {
-			output.Save(bosslog_path, true);
+			output.Save(bosslog_path(), true);
 		} catch (boss_error e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !silent ) 
-			Launch(bosslog_path.string());	//Displays the BOSSlog.
+		if ( !gl_silent ) 
+			Launch(bosslog_path().string());	//Displays the BOSSlog.
 		return (0);
 	}
 
@@ -531,21 +505,21 @@ int main(int argc, char *argv[]) {
 			<< "Utility will end now." << LIST_CLOSE;
 		output.PrintFooter();
 		try {
-			output.Save(bosslog_path, true);
+			output.Save(bosslog_path(), true);
 		} catch (boss_error e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
-		if ( !silent ) 
-			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
+		if ( !gl_silent ) 
+			Launch(bosslog_path().string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
 	//Build and save modlist.
 	try {
 		modlist.Load(data_path);
-		if (revert<1)
-			modlist.Save(curr_modlist_path);
+		if (gl_revert < 1)
+			modlist.Save(modlist_path(), old_modlist_path());
 	} catch (boss_error e) {
 		output.Clear();
 		output.PrintHeader();
@@ -554,13 +528,13 @@ int main(int argc, char *argv[]) {
 			<< "Utility will end now." << LIST_CLOSE;
 		output.PrintFooter();
 		try {
-			output.Save(bosslog_path, true);
+			output.Save(bosslog_path(), true);
 		} catch (boss_error e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
-		if ( !silent ) 
-			Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
+		if ( !gl_silent ) 
+			Launch(bosslog_path().string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
@@ -569,6 +543,15 @@ int main(int argc, char *argv[]) {
 	// Parse Master- and Userlists
 	/////////////////////////////////
 	//masterlist parse errors are critical, ini and userlist parse errors are not.
+
+	//Set masterlist path to be used.
+	if (gl_revert == 1)
+		sortfile = modlist_path();	
+	else if (gl_revert == 2) 
+		sortfile = old_modlist_path();
+	else 
+		sortfile = masterlist_path();
+	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
 	
 	//Parse masterlist/modlist backup into data structure.
 	try {
@@ -583,7 +566,7 @@ int main(int argc, char *argv[]) {
 		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
 			output.SetHTMLSpecialEscape(false);
 			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
-				<< masterlist.ErrorBuffer().FormatFor(log_format) << LIST_CLOSE;
+				<< masterlist.ErrorBuffer().FormatFor(gl_log_format) << LIST_CLOSE;
 		} else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
 			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
 				<< LIST_ITEM << SPAN_CLASS_ERROR_OPEN << e.getString() << SPAN_CLOSE << LIST_CLOSE;
@@ -593,23 +576,23 @@ int main(int argc, char *argv[]) {
 				<< "Utility will end now." << LIST_CLOSE;
 		output.PrintFooter();
 		try {
-			output.Save(bosslog_path, true);
+			output.Save(bosslog_path(), true);
 		} catch (boss_error e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
-        if ( !silent ) 
-                Launch(bosslog_path.string());  //Displays the BOSSlog.txt.
+        if ( !gl_silent ) 
+                Launch(bosslog_path().string());  //Displays the BOSSlog.txt.
         exit (1); //fail in screaming heap.
 	}
 	
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		userlist.Load(userlist_path);
+		userlist.Load(userlist_path());
 		for (vector<ParsingError>::iterator iter; iter != userlist.syntaxErrorBuffer.end(); ++iter)
-			contents.userlistSyntaxErrors.push_back(iter->FormatFor(log_format));
+			contents.userlistSyntaxErrors.push_back(iter->FormatFor(gl_log_format));
 	} catch (boss_error e) {
-		contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(log_format);
+		contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(gl_log_format);
 		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
@@ -618,11 +601,11 @@ int main(int argc, char *argv[]) {
 	// Perform sorting functionality
 	//////////////////////////////////
 
-	PerformSortingFunctionality(bosslog_path, modlist, masterlist, userlist, esmtime, contents);
+	PerformSortingFunctionality(bosslog_path(), modlist, masterlist, userlist, esmtime, contents);
 
 	LOG_INFO("Launching boss log in browser.");
-	if ( !silent ) 
-		Launch(bosslog_path.string());	//Displays the BOSSlog.txt.
+	if ( !gl_silent ) 
+		Launch(bosslog_path().string());	//Displays the BOSSlog.txt.
 	LOG_INFO("BOSS finished.");
 	return (0);
 }

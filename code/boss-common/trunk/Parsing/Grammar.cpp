@@ -71,43 +71,43 @@ namespace boss {
 	//Returns the true path based on what type of file or keyword it is.
 	void GetPath(fs::path& file_path, string& file) {
 		if (file == "OBSE") {
-			file_path = "..";
+			file_path = data_path.parent_path();
 			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
 		} else if (file == "FOSE") {
-			file_path = "..";
+			file_path = data_path.parent_path();
 			file = "fose_loader.exe";
 		} else if (file == "NVSE") {
-			file_path = "..";
+			file_path = data_path.parent_path();
 			file = "nvse_loader.exe";
 		} else if (file == "SKSE") {
-			file_path = "..";
-			file = "skse_loader.exe";  //Unconfirmed.
+			file_path = data_path.parent_path();
+			file = "skse_loader.exe";
 		} else if (file == "BOSS") {
-			file_path = ".";
+			file_path = boss_path;
 			file = "BOSS.exe";
 		} else if (file == "TES4") {
-			file_path = "..";
+			file_path = data_path.parent_path();
 			file = "Oblivion.exe";
 		} else if (file == "TES5") {
-			file_path = "..";
+			file_path = data_path.parent_path();
 			file = "TESV.exe";
 		} else if (file == "FO3") {
-			file_path = "..";
+			file_path = data_path.parent_path();
 			file = "Fallout3.exe";
 		} else if (file == "FONV") {
-			file_path = "..";
+			file_path = data_path.parent_path();
 			file = "FalloutNV.exe";
 		} else {
 			fs::path p(file);
 			if (Tidy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos) {
-				if (fs::exists(data_path / "OBSE"))
-					file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
-				else if (fs::exists(data_path / "FOSE"))
-					file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
-				else if (fs::exists(data_path / "NVSE"))
-					file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
-				else if (fs::exists(data_path / "SKSE"))
-					file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+				if (fs::exists(data_path / "OBSE" / "Plugins"))
+					file_path = data_path / "OBSE" / "Plugins";  //Oblivion - OBSE plugins.
+				else if (fs::exists(data_path / "FOSE" / "Plugins"))
+					file_path = data_path / "FOSE" / "Plugins";  //Fallout 3 - FOSE plugins.
+				else if (fs::exists(data_path / "NVSE" / "Plugins"))
+					file_path = data_path / "NVSE" / "Plugins";  //Fallout: New Vegas - NVSE plugins.
+				else if (fs::exists(data_path / "SKSE" / "Plugins"))
+					file_path = data_path / "SKSE" / "Plugins";  //Fallout: New Vegas - NVSE plugins.
 			} else
 				file_path = data_path;
 		}
@@ -181,13 +181,13 @@ namespace boss {
 			file_path = fs::path(p);
 		} else if (Tidy(fs::path(reg).extension().string()) == ".dll") {
 			if (fs::exists(data_path / "OBSE"))
-				file_path = data_path / fs::path("OBSE/Plugins");  //Oblivion - OBSE plugins.
+				file_path = data_path / "OBSE" / "Plugins";  //Oblivion - OBSE plugins.
 			else if (fs::exists(data_path / "FOSE"))
-				file_path = data_path / fs::path("FOSE/Plugins");  //Fallout 3 - FOSE plugins.
+				file_path = data_path / "FOSE" / "Plugins";  //Fallout 3 - FOSE plugins.
 			else if (fs::exists(data_path / "NVSE"))
-				file_path = data_path / fs::path("NVSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+				file_path = data_path / "NVSE" / "Plugins";  //Fallout: New Vegas - NVSE plugins.
 			else if (fs::exists(data_path / "SKSE"))
-				file_path = data_path / fs::path("SKSE/Plugins");  //Fallout: New Vegas - NVSE plugins.
+				file_path = data_path / "SKSE" / "Plugins";  //Fallout: New Vegas - NVSE plugins.
 		} else
 			file_path = data_path;
 			boost::regex regex;
@@ -503,37 +503,37 @@ namespace boss {
 	void modlist_grammar::ConvertOldConditional(string& result, const char var) {
 		switch(var) {
 		case '>':
-			if (game == OBLIVION)
+			if (gl_current_game == OBLIVION)
 				result = "IF ($FCOM)";
-			else if (game == FALLOUT3)
+			else if (gl_current_game == FALLOUT3)
 				result = "IF ($FOOK2)";
-			else if (game == FALLOUTNV)
+			else if (gl_current_game == FALLOUTNV)
 				result = "IF ($NVAMP)";
 			else
 				result = "";
 			break;
 		case '<':
-			if (game == OBLIVION)
+			if (gl_current_game == OBLIVION)
 				result = "IFNOT ($FCOM)";
-			else if (game == FALLOUT3)
+			else if (gl_current_game == FALLOUT3)
 				result = "IFNOT ($FOOK2)";
-			else if (game == FALLOUTNV)
+			else if (gl_current_game == FALLOUTNV)
 				result = "IFNOT ($NVAMP)";
 			else
 				result = "";
 			break;
 		case '$':
-			if (game == OBLIVION)
+			if (gl_current_game == OBLIVION)
 				result = "IF ($OOO)";
-			else if (game == FALLOUT3)
+			else if (gl_current_game == FALLOUT3)
 				result = "IF ($FWE)";
-			else if (game == FALLOUTNV)
+			else if (gl_current_game == FALLOUTNV)
 				result = "IF ($FOOK)";
 			else
 				result = "";
 			break;
 		case '^':
-			if (game == OBLIVION)
+			if (gl_current_game == OBLIVION)
 				result = "IF ($BC)";
 			else
 				result = "";
@@ -862,33 +862,31 @@ namespace boss {
 	//Ini Grammar.
 	////////////////////////////
 
-	string currentHeading;  //The current ini section heading.
-
 	//Set the boolean BOSS variable values while parsing.
 	void ini_grammar::SetBoolVar(string& var, const bool& value) {
 		boost::algorithm::trim(var);  //Make sure there are no preceding or trailing spaces.
 		if (currentHeading == "BOSS.GeneralSettings") {
 			if (var == "bDoStartupUpdateCheck")
-				do_startup_update_check = value;
+				gl_do_startup_update_check = value;
 			else if (var == "bUseUserRulesEditor")
-				use_user_rules_editor = value;
+				gl_use_user_rules_editor = value;
 		} else if (currentHeading == "BOSS.RunOptions") {
 			if (var == "bUpdateMasterlist")
-				update = value;
+				gl_update = value;
 			else if (var == "bOnlyUpdateMasterlist")
-				update_only = value;
+				gl_update_only = value;
 			else if (var == "bSilentRun")
-				silent = value;
+				gl_silent = value;
 			else if (var == "bNoVersionParse")
-				skip_version_parse = value;
+				gl_skip_version_parse = value;
 			else if (var == "bDebugWithSourceRefs")
-				debug_with_source = value;
+				gl_debug_with_source = value;
 			else if (var == "bDisplayCRCs")
-				show_CRCs = value;
+				gl_show_CRCs = value;
 			else if (var == "bDoTrialRun")
-				trial_run = value;
+				gl_trial_run = value;
 			else if (var == "bLogDebugOutput")
-				log_debug_output = value;
+				gl_log_debug_output = value;
 		} else if (currentHeading == "BOSSLog.Filters") {
 			if (var == "bUseDarkColourScheme")
 				UseDarkColourScheme = value;
@@ -926,17 +924,17 @@ namespace boss {
 		boost::algorithm::trim(var);  //Make sure there are no preceding or trailing spaces.
 		if (currentHeading == "BOSS.InternetSettings") {
 			if (var == "iProxyPort")
-				proxy_port = value;
+				gl_proxy_port = value;
 		} else if (currentHeading == "BOSS.RunOptions") {
 			if (var == "iRevertLevel") {
 				if (value >= 0 && value < 3)
-					revert = value;
+					gl_revert = value;
 			} else if (var == "iDebugVerbosity") {
 				if (value >= 0 && value < 4)
-					debug_verbosity = value;
+					gl_debug_verbosity = value;
 			} else if (var == "iRunType") {
 				if (value >= 0 && value < 3)
-					run_type = value;
+					gl_run_type = value;
 			}
 		}
 	}
@@ -947,30 +945,30 @@ namespace boss {
 		boost::algorithm::trim(value);  //Make sure there are no preceding or trailing spaces.
 		if (currentHeading == "BOSS.InternetSettings") {
 			if (var == "sProxyHostname")
-				proxy_host = value;
+				gl_proxy_host = value;
 			else if (var == "sProxyUsername")
-				proxy_user = value;
+				gl_proxy_user = value;
 			else if (var == "sProxyPassword")
-				proxy_passwd = value;
+				gl_proxy_passwd = value;
 		} else if (currentHeading == "BOSS.RunOptions") {
 			if (var == "sBOSSLogFormat") {
 				if (value == "html")
-					log_format = HTML;
+					gl_log_format = HTML;
 				else
-					log_format = PLAINTEXT;
+					gl_log_format = PLAINTEXT;
 			} else if (var == "sGame") {
 				if (value == "auto")
-					game = AUTODETECT;
+					gl_game = AUTODETECT;
 				else if (value == "Oblivion")
-					game = OBLIVION;
+					gl_game = OBLIVION;
 				else if (value == "Nehrim")
-					game = NEHRIM;
+					gl_game = NEHRIM;
 				else if (value == "Fallout3")
-					game = FALLOUT3;
+					gl_game = FALLOUT3;
 				else if (value == "FalloutNV")
-					game = FALLOUTNV;
+					gl_game = FALLOUTNV;
 				else if (value == "Skyrim")
-					game = SKYRIM;
+					gl_game = SKYRIM;
 			}
 		} else if (currentHeading == "BOSSLog.Styles") {	
 			if (value.empty())

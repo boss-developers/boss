@@ -60,6 +60,7 @@ namespace boss {
 		BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL,
 		BOSS_ERROR_FS_FILE_RENAME_FAIL,
 		BOSS_ERROR_FS_FILE_DELETE_FAIL,
+		BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL,
 		BOSS_ERROR_CURL_INIT_FAIL,
 		BOSS_ERROR_CURL_SET_ERRBUFF_FAIL,
 		BOSS_ERROR_CURL_SET_OPTION_FAIL,
@@ -126,6 +127,8 @@ namespace boss {
 				return "\"" + errSubject + "\" cannot be renamed! Filesystem response: \"" + errString + "\".";
 			case BOSS_ERROR_FS_FILE_DELETE_FAIL:
 				return "\"" + errSubject + "\" cannot be deleted! Filesystem response: \"" + errString + "\".";
+			case BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL:
+				return "\"" + errSubject + "\" cannot be created! Filesystem response: \"" + errString + "\".";
 			case BOSS_ERROR_CURL_INIT_FAIL:
 				return "cURL cannot be initialised!";
 			case BOSS_ERROR_CURL_SET_ERRBUFF_FAIL:

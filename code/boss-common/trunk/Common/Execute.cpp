@@ -44,42 +44,27 @@ namespace boss {
 	// Internal Functions
 	////////////////////////
 
-	//Returns the expeccted master file. Usage internal to BOSS-Common.
-	string GameMasterFile() {
-		if (game == OBLIVION) 
-			return "Oblivion.esm";
-		else if (game == FALLOUT3) 
-			return "Fallout3.esm";
-		else if (game == NEHRIM) 
-			return "Nehrim.esm";
-		else if (game == FALLOUTNV) 
-			return "FalloutNV.esm";
-		else if (game == SKYRIM) 
-			return "Skyrim.esm";
-		else
-			return "No Game Detected";
-	}
-
 	//Lists Script Extender plugin info in the output buffer. Usage internal to BOSS-Common.
 	string GetSEPluginInfo(string& outputBuffer) {
-		Outputter buffer(log_format);
-		string SE, SELoc, SEPluginLoc;
-		if (game == OBLIVION || game == NEHRIM) {
+		Outputter buffer(gl_log_format);
+		string SE;
+		fs::path SELoc, SEPluginLoc;
+		if (gl_current_game == OBLIVION || gl_current_game == NEHRIM) {
 			SE = "OBSE";
-			SELoc = "../obse_1_2_416.dll";
-			SEPluginLoc = "OBSE/Plugins";
-		} else if (game == FALLOUT3) {  //Fallout 3
+			SELoc = data_path.parent_path() / "obse_1_2_416.dll";
+			SEPluginLoc = data_path / "OBSE" / "Plugins";
+		} else if (gl_current_game == FALLOUT3) {  //Fallout 3
 			SE = "FOSE";
-			SELoc = "../fose_loader.exe";
-			SEPluginLoc = "FOSE/Plugins";
-		} else if (game == FALLOUTNV) {  //Fallout: New Vegas
+			SELoc = data_path.parent_path() / "fose_loader.exe";
+			SEPluginLoc = data_path / "FOSE" / "Plugins";
+		} else if (gl_current_game == FALLOUTNV) {  //Fallout: New Vegas
 			SE = "NVSE";
-			SELoc = "../nvse_loader.exe";
-			SEPluginLoc = "NVSE/Plugins";
-		} else if (game == SKYRIM) {  //Skyrim
+			SELoc = data_path.parent_path() / "nvse_loader.exe";
+			SEPluginLoc = data_path / "NVSE" / "Plugins";
+		} else if (gl_current_game == SKYRIM) {  //Skyrim
 			SE = "SKSE";
-			SELoc = "../skse_loader.exe";
-			SEPluginLoc = "SKSE/Plugins";
+			SELoc = data_path.parent_path() / "skse_loader.exe";
+			SEPluginLoc = data_path / "SKSE" / "Plugins";
 		}
 
 		if (!fs::exists(SELoc) || SELoc.empty()) {
@@ -92,13 +77,13 @@ namespace boss {
 			buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << SE << SPAN_CLOSE;
 			if (ver.length() != 0)
 				buffer << SPAN_CLASS_VERSION_OPEN << "Version: " << ver << SPAN_CLOSE;
-			if (show_CRCs)
+			if (gl_show_CRCs)
 				buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << CRC << SPAN_CLOSE;
 
-			if (!fs::is_directory(data_path / SEPluginLoc)) {
+			if (!fs::is_directory(SEPluginLoc)) {
 				LOG_DEBUG("Script extender plugins directory not detected");
 			} else {
-				for (fs::directory_iterator itr(data_path / SEPluginLoc); itr!=fs::directory_iterator(); ++itr) {
+				for (fs::directory_iterator itr(SEPluginLoc); itr!=fs::directory_iterator(); ++itr) {
 					const fs::path filename = itr->path().filename();
 					const string ext = Tidy(itr->path().extension().string());
 					if (fs::is_regular_file(itr->status()) && ext==".dll") {
@@ -108,7 +93,7 @@ namespace boss {
 						buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << filename.string() << SPAN_CLOSE;
 						if (ver.length() != 0)
 							buffer << SPAN_CLASS_VERSION_OPEN << "Version: " + ver << SPAN_CLOSE;
-						if (show_CRCs)
+						if (gl_show_CRCs)
 							buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " + CRC << SPAN_CLOSE;
 					}
 				}
@@ -120,7 +105,7 @@ namespace boss {
 
 	//Sort recognised mods. Usage internal to BOSS-Common.
 	void SortRecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
-		Outputter buffer(log_format);
+		Outputter buffer(gl_log_format);
 		time_t modfiletime = 0;
 		vector<Item> items = modlist.Items();
 
@@ -128,7 +113,7 @@ namespace boss {
 		for (size_t i=0; i <= modlist.LastRecognisedPos(); i++) {
 			if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
 				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << items[i].Name() << SPAN_CLOSE;
-				if (!skip_version_parse) {
+				if (!gl_skip_version_parse) {
 					string version = items[i].GetVersion();
 					if (!version.empty())
 						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
@@ -136,12 +121,12 @@ namespace boss {
 				if (items[i].IsGhosted()) {
 					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
 					counters.ghosted++;
-					if (show_CRCs)
-					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(items[i].Name() + ".ghost"))) << SPAN_CLOSE;
-				} else if (show_CRCs)
+					if (gl_show_CRCs)
+						buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(items[i].Name() + ".ghost"))) << SPAN_CLOSE;
+				} else if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / items[i].Name())) << SPAN_CLOSE;
 			
-				if (!trial_run && !items[i].IsMasterFile()) {
+				if (!gl_trial_run && !items[i].IsMasterFile()) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
 					try {
@@ -175,7 +160,7 @@ namespace boss {
 
 	//List unrecognised mods. Usage internal to BOSS-Common.
 	void ListUnrecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
-		Outputter buffer(log_format);
+		Outputter buffer(gl_log_format);
 		time_t modfiletime = 0;
 		size_t max = modlist.Items().size();
 		vector<Item> items = modlist.Items();
@@ -187,7 +172,7 @@ namespace boss {
 			if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
 				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << items[i].Name() << SPAN_CLOSE
 					/*<< BUTTON_SUBMIT_PLUGIN*/;
-				if (!skip_version_parse) {
+				if (!gl_skip_version_parse) {
 					string version = items[i].GetVersion();
 					if (!version.empty())
 						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
@@ -195,12 +180,12 @@ namespace boss {
 				if (items[i].IsGhosted()) {
 					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
 					counters.ghosted++;
-					if (show_CRCs)
+					if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(items[i].Name() + ".ghost"))) << SPAN_CLOSE;
-				} else if (show_CRCs)
+				} else if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / items[i].Name())) << SPAN_CLOSE;
 
-				if (!trial_run && !items[i].IsMasterFile()) {
+				if (!gl_trial_run && !items[i].IsMasterFile()) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
 					try {
@@ -220,12 +205,12 @@ namespace boss {
 	//Prints the full BOSSlog.
 	void PrintBOSSlog(fs::path file, bosslogContents contents, const summaryCounters counters, const string scriptExtender) {
 
-		Outputter bosslog(log_format);
+		Outputter bosslog(gl_log_format);
 		bosslog.PrintHeader();
 		bosslog.SetHTMLSpecialEscape(false);
 
 		// Print BOSSLog Filters
-		if (log_format == HTML) {  //Since this bit is HTML-only, don't bother using formatting placeholders.
+		if (gl_log_format == HTML) {  //Since this bit is HTML-only, don't bother using formatting placeholders.
 			bosslog << "<ul id='filters'>";
 			
 			bosslog << "<li><input type='checkbox' ";
@@ -367,11 +352,11 @@ namespace boss {
 				<< LIST_CLOSE;
 
 		// Display Recognised Mods
-		if (revert < 1) 
+		if (gl_revert < 1) 
 			bosslog << HEADING_OPEN << "Recognised And Re-ordered Plugins" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
-		else if (revert == 1)
+		else if (gl_revert == 1)
 			bosslog << HEADING_OPEN << "Restored Load Order (Using modlist.txt)" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
-		else if (revert == 2) 
+		else if (gl_revert == 2) 
 			bosslog << HEADING_OPEN << "Restored Load Order (Using modlist.old)" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
 		bosslog << contents.recognisedPlugins
 			<< LIST_CLOSE;
@@ -421,64 +406,6 @@ namespace boss {
 		return result;
 	}
 
-	//Detect the game BOSS is installed for. Returns an enum as defined in Globals.h. Throws exception if error.
-	BOSS_COMMON_EXP void GetGame() {
-		if (fs::exists(data_path / "Oblivion.esm")) {
-			if (fs::exists(data_path / "Nehrim.esm"))
-				throw boss_error(BOSS_ERROR_OBLIVION_AND_NEHRIM);
-			game = OBLIVION;
-		} else if (fs::exists(data_path / "Nehrim.esm")) 
-			game = NEHRIM;
-		else if (fs::exists(data_path / "FalloutNV.esm")) 
-			game = FALLOUTNV;
-		else if (fs::exists(data_path / "Fallout3.esm")) 
-			game = FALLOUT3;
-		else if (fs::exists(data_path / "Skyrim.esm")) 
-			game = SKYRIM;
-		else
-			throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
-			/*In BOSSv2.0, this is where we will query the following registry entries:
-			Oblivion x86: "HKLM\Software\Bethesda Softworks\Oblivion\Install Path"
-			Oblivion x64: "HKLM\Software\Wow6432Node\Bethesda Softworks\Oblivion\Install Path"
-			*/
-	}
-
-	//Gets the string representation of the detected game.
-	BOSS_COMMON_EXP string GetGameString() {
-		if (game == OBLIVION)
-			return "TES IV: Oblivion";
-		else if (game == FALLOUT3)
-			return "Fallout 3";
-		else if (game == NEHRIM)
-			return "Nehrim - At Fate's Edge";
-		else if (game == FALLOUTNV)
-			return "Fallout: New Vegas";
-		else if (game == SKYRIM)
-			return "TES V: Skyrim";
-		else
-			return "No Game Detected";
-	}
-
-	//Gets the timestamp of the game's master file. Throws exception if error.
-	BOSS_COMMON_EXP time_t GetMasterTime() {
-		try {
-			if (game == OBLIVION) 
-				return fs::last_write_time(data_path / "Oblivion.esm");
-			else if (game == FALLOUT3) 
-				return fs::last_write_time(data_path / "Fallout3.esm");
-			else if (game == NEHRIM) 
-				return fs::last_write_time(data_path / "Nehrim.esm");
-			else if (game == FALLOUTNV) 
-				return fs::last_write_time(data_path / "FalloutNV.esm");
-			else if (game == SKYRIM) 
-				return fs::last_write_time(data_path / "Skyrim.esm");
-			else
-				throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
-		} catch(fs::filesystem_error e) {
-			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, GameMasterFile(), e.what());
-		}
-	}
-
 	BOSS_COMMON_EXP void PerformSortingFunctionality(fs::path file,
 												ItemList& modlist,
 												ItemList& masterlist,
@@ -492,7 +419,7 @@ namespace boss {
 		LOG_INFO("modlist now filled with ordered mods and unknowns.");
 
 		//Modlist error buffer may have had some regex errors added to it. It will be empty otherwise.
-		contents.regexError = modlist.ErrorBuffer().FormatFor(log_format);
+		contents.regexError = modlist.ErrorBuffer().FormatFor(gl_log_format);
 
 		ApplyUserRules(modlist, userlist, contents.userlistMessages);
 		LOG_INFO("userlist sorting process finished.");
@@ -646,7 +573,7 @@ namespace boss {
 		//need to be re-assigned to this item. This only occurs for BEFORE/AFTER plugin sorting rules.
 		string lastRecognisedItem = modlist.Items()[modlist.LastRecognisedPos()].Name();
 
-		Outputter buffer(log_format);
+		Outputter buffer(gl_log_format);
 
 		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlist.rules.size());
 		vector<Rule>::iterator ruleIter = userlist.rules.begin();

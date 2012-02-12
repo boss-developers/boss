@@ -275,6 +275,7 @@ namespace boss {
 		void SetStringVar(string& var, string& value);
 
 		ParsingError * errorBuffer;
+		string currentHeading;  //The current ini section heading.
 	};
 
 	////////////////////////////

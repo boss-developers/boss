@@ -75,17 +75,6 @@ namespace boss {
 	//Record recognised mod list from last HTML BOSSlog generated.
 	BOSS_COMMON_EXP string GetOldRecognisedList(const fs::path log);
 
-	//Detect the game BOSS is installed for. Returns an enum as defined in Globals.h.
-	//Throws exception on fail.
-	BOSS_COMMON_EXP void GetGame();
-
-	//Gets the string representation of the detected game.
-	BOSS_COMMON_EXP string GetGameString();
-
-	//Gets the timestamp of the game's master file. Throws exception if error.
-	//Throws exception on fail.
-	BOSS_COMMON_EXP time_t GetMasterTime();
-
 	//Performs BOSS's main sorting functionality. Each stage is implemented by a separate function for neatness and to make future adjustments easier. 
 	BOSS_COMMON_EXP void PerformSortingFunctionality(fs::path file,
 												ItemList& modlist,

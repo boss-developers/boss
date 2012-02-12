@@ -225,29 +225,29 @@ namespace boss {
 		Data(inName);
 	}
 	
-	bool	Item::IsPlugin		() {
+	bool	Item::IsPlugin		() const {
 		const string ext = boost::algorithm::to_lower_copy(fs::path(Data()).extension().string());
 		return (ext == ".esp" || ext == ".esm");
 	}
 
-	bool	Item::IsGroup		() { 
+	bool	Item::IsGroup		() const { 
 		return (!fs::path(Data()).has_extension() && !Data().empty()); 
 	}
 
-	bool	Item::Exists		() { 
+	bool	Item::Exists		() const { 
 		return (fs::exists(data_path / Data()) || fs::exists(data_path / fs::path(Data() + ".ghost"))); 
 	}
 	
-	bool	Item::IsMasterFile	() {
+	bool	Item::IsMasterFile	() const {
 		const string lower = boost::algorithm::to_lower_copy(Data());
 		return (lower == "oblivion.esm" || lower == "fallout3.esm" || lower == "nehrim.esm" || lower == "falloutnv.esm" || lower == "skyrim.esm");
 	}
 
-	bool	Item::IsGhosted		() {
+	bool	Item::IsGhosted		() const {
 		return (fs::exists(data_path / fs::path(Data() + ".ghost")));
 	}
 	
-	string	Item::GetVersion		() {
+	string	Item::GetVersion		() const {
 		if (!IsPlugin())
 			return "";
 		
@@ -263,7 +263,7 @@ namespace boss {
 		return header.Version;
 	}
 
-	void	Item::SetModTime	(time_t modificationTime) {
+	void	Item::SetModTime	(time_t modificationTime) const {
 		try {			
 			if (IsGhosted())
 				fs::last_write_time(data_path / fs::path(Data() + ".ghost"), modificationTime);
@@ -377,13 +377,13 @@ namespace boss {
 		}
 	}
 	
-	void					ItemList::Save				(fs::path file) {
+	void					ItemList::Save				(fs::path file, fs::path oldFile) {
 		ofstream ofile;
 		//Back up file if it already exists.
 		try {
 			LOG_DEBUG("Saving backup of current modlist...");
 			if (fs::exists(file)) 
-				fs::rename(file, prev_modlist_path);
+				fs::rename(file, oldFile);
 		} catch(boost::filesystem::filesystem_error e) {
 			//Couldn't rename the file, print an error message.
 			LOG_ERROR("Backup of modlist failed with error: %s", e.what());
@@ -464,7 +464,7 @@ namespace boss {
 		}
 	}
 	
-	size_t					ItemList::FindItem			(string name) {
+	size_t					ItemList::FindItem			(string name) const {
 		size_t max = items.size();
 		for (size_t i=0; i < max; i++) {
 			if (Tidy(items[i].Name()) == Tidy(name))
@@ -473,7 +473,7 @@ namespace boss {
 		return max;
 	}
 
-	size_t					ItemList::FindLastItem		(string name) {
+	size_t					ItemList::FindLastItem		(string name) const {
 		size_t max = items.size();
 		for (size_t i=max-1; i >= 0; i--) {
 			if (Tidy(items[i].Name()) == Tidy(name))
@@ -483,7 +483,7 @@ namespace boss {
 	}
 	
 	//This looks a bit weird, but I need a non-reverse iterator outputted, and searching backwards is probably more efficient for my purposes.
-	size_t					ItemList::FindGroupEnd		(string name) {
+	size_t					ItemList::FindGroupEnd		(string name) const {
 		size_t max = items.size();
 		for (size_t i=max-1; i >= 0; i--) {
 			if (items[i].Type() == ENDGROUP && Tidy(items[i].Name()) == Tidy(name))
@@ -570,7 +570,7 @@ namespace boss {
 				object = inObject;
 			}
 
-	bool	RuleLine::IsObjectMessage	() {
+	bool	RuleLine::IsObjectMessage	() const {
 		if (key != APPEND && key != REPLACE)
 			return false;
 
@@ -589,7 +589,7 @@ namespace boss {
 		}
 	}
 	
-	keyType	RuleLine::ObjectMessageKey	() {
+	keyType	RuleLine::ObjectMessageKey	() const {
 		if (key != APPEND && key != REPLACE)
 			return NONE;
 
@@ -632,7 +632,7 @@ namespace boss {
 		}
 	}
 
-	string	RuleLine::ObjectMessageData	() {
+	string	RuleLine::ObjectMessageData	() const {
 		if (key != APPEND && key != REPLACE)
 			return "";
 
@@ -774,7 +774,7 @@ namespace boss {
 		outFile.close();
 	}
 
-	size_t RuleList::FindRule(string ruleObject, bool onlyEnabled) {
+	size_t RuleList::FindRule(string ruleObject, bool onlyEnabled) const {
 		size_t max = rules.size();
 		for (size_t i=0; i<max; i++) {
 			if ((onlyEnabled && rules[i].Enabled()) || !onlyEnabled) {
@@ -785,15 +785,15 @@ namespace boss {
 		return max;
 	}
 
-	vector<Rule> RuleList::Rules() {
+	vector<Rule> RuleList::Rules() const {
 		return rules;
 	}
 
-	ParsingError RuleList::ParsingErrorBuffer() {
+	ParsingError RuleList::ParsingErrorBuffer() const {
 		return parsingErrorBuffer;
 	}
 
-	vector<ParsingError> RuleList::SyntaxErrorBuffer() {
+	vector<ParsingError> RuleList::SyntaxErrorBuffer() const {
 		return syntaxErrorBuffer;
 	}
 		
@@ -813,147 +813,5 @@ namespace boss {
 	// Ini Class Functions
 	//////////////////////////////
 
-	void	Ini::Load			(fs::path file) {
-		Skipper skipper(true);
-		ini_grammar grammar;
-		string::const_iterator begin, end;
-		string contents;
-
-		grammar.SetErrorBuffer(&errorBuffer);
-
-		fileToBuffer(file,contents);
-
-		begin = contents.begin();
-		end = contents.end();
-
-		bool r = phrase_parse(begin, end, grammar, skipper);
-
-		if (!r || begin != end)  //This might not work correctly.
-			throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, file.string());
-	}
-
-	string Ini::GetLogFormat() {
-		if (log_format == HTML)
-			return "html";
-		else
-			return "text";
-	}
-
-	void	Ini::Save			(fs::path file) {
-		ofstream ini(file.c_str(), ios_base::trunc);
-		if (ini.fail())
-			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
-		ini <<  '\xEF' << '\xBB' << '\xBF'  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
-			<<	"#---------------" << endl
-			<<	"# BOSS Ini File" << endl
-			<<	"#---------------" << endl
-			<<	"# Settings with names starting with 'b' are boolean and accept values of 'true' or 'false'." << endl
-			<<	"# Settings with names starting with 'i' are unsigned integers and accept varying ranges of whole numbers." << endl
-			<<	"# Settings with names starting with 's' are strings and their accepted values vary." << endl
-			<<	"# See the BOSS ReadMe for details on what each setting does and the accepted values for integer and string settings." << endl << endl
-
-			<<	"[BOSS.GeneralSettings]" << endl
-			<<	"bDoStartupUpdateCheck    = " << BoolToString(do_startup_update_check) << endl
-			<<	"bUseUserRulesEditor      = " << BoolToString(use_user_rules_editor) << endl << endl
-
-			<<	"[BOSS.InternetSettings]" << endl
-			<<	"sProxyHostname           = " << proxy_host << endl
-			<<	"iProxyPort               = " << IntToString(proxy_port) << endl
-			<<	"sProxyUsername           = " << proxy_user << endl
-			<<	"sProxyPassword           = " << proxy_passwd << endl << endl
-
-			<<	"[BOSS.RunOptions]" << endl
-			<<	"sGame                    = " << GetGameString() << endl
-			<<	"sBOSSLogFormat           = " << GetLogFormat() << endl
-			<<	"iRunType                 = " << IntToString(run_type) << endl
-			<<	"iDebugVerbosity          = " << IntToString(debug_verbosity) << endl
-			<<	"iRevertLevel             = " << IntToString(revert) << endl
-			<<	"bUpdateMasterlist        = " << BoolToString(update) << endl
-			<<	"bOnlyUpdateMasterlist    = " << BoolToString(update_only) << endl
-			<<	"bSilentRun               = " << BoolToString(silent) << endl
-			<<	"bNoVersionParse          = " << BoolToString(skip_version_parse) << endl
-			<<	"bDebugWithSourceRefs     = " << BoolToString(debug_with_source) << endl
-			<<	"bDisplayCRCs             = " << BoolToString(show_CRCs) << endl
-			<<	"bDoTrialRun              = " << BoolToString(trial_run) << endl
-			<<	"bLogDebugOutput          = " << BoolToString(log_debug_output) << endl << endl
-			
-			<<	"[BOSSLog.Filters]" << endl
-			<<	"bUseDarkColourScheme     = " << BoolToString(UseDarkColourScheme) << endl
-			<<	"bHideVersionNumbers      = " << BoolToString(HideVersionNumbers) << endl
-			<<	"bHideGhostedLabel        = " << BoolToString(HideGhostedLabel) << endl
-			<<	"bHideChecksums           = " << BoolToString(HideChecksums) << endl
-			<<	"bHideMessagelessMods     = " << BoolToString(HideMessagelessMods) << endl
-			<<	"bHideGhostedMods         = " << BoolToString(HideGhostedMods) << endl
-			<<	"bHideCleanMods           = " << BoolToString(HideCleanMods) << endl
-			<<	"bHideRuleWarnings        = " << BoolToString(HideRuleWarnings) << endl
-			<<	"bHideAllModMessages      = " << BoolToString(HideAllModMessages) << endl
-			<<	"bHideNotes               = " << BoolToString(HideNotes) << endl
-			<<	"bHideBashTagSuggestions  = " << BoolToString(HideBashTagSuggestions) << endl
-			<<	"bHideRequirements        = " << BoolToString(HideRequirements) << endl
-			<<	"bHideIncompatibilities   = " << BoolToString(HideIncompatibilities) << endl
-			<<	"bHideDoNotCleanMessages  = " << BoolToString(HideDoNotCleanMessages) << endl << endl
-
-			<<	"[BOSSLog.Styles]" << endl
-			<<	"# A style with nothing specified uses the coded defaults." << endl
-			<<	"# These defaults are given in the BOSS ReadMe as with the rest of the ini settings." << endl
-			<<	"\"body\"                                     = " << CSSBody << endl
-			<<	"\"#darkBody\"                                = " << CSSDarkBody << endl
-			<<	"\".darkLink:link\"                           = " << CSSDarkLink << endl
-			<<	"\".darkLink:visited\"                        = " << CSSDarkLinkVisited << endl
-			<<	"\"#filters\"                                 = " << CSSFilters << endl
-			<<	"\"#filters > li\"                            = " << CSSFiltersList << endl
-			<<	"\"#darkFilters\"                             = " << CSSDarkFilters << endl
-			<<	"\"body > div:first-child\"                   = " << CSSTitle << endl
-			<<	"\"body > div:first-child + div\"             = " << CSSCopyright << endl
-			<<	"\"h3 + *\"                                   = " << CSSSections << endl
-			<<	"\"h3\"                                       = " << CSSSectionTitle << endl
-			<<	"\"h3 > span\"                                = " << CSSSectionPlusMinus << endl
-			<<	"\"#end\"                                     = " << CSSLastSection << endl
-			<<	"\"td\"                                       = " << CSSTable << endl
-			<<	"\"ul\"                                       = " << CSSList << endl
-			<<	"\"ul li\"                                    = " << CSSListItem << endl
-			<<	"\"li ul\"                                    = " << CSSSubList << endl
-			<<	"\"input[type='checkbox']\"                   = " << CSSCheckbox << endl
-			<<	"\"blockquote\"                               = " << CSSBlockquote << endl
-			<<	"\".error\"                                   = " << CSSError << endl
-			<<	"\".warn\"                                    = " << CSSWarning << endl
-			<<	"\".success\"                                 = " << CSSSuccess << endl
-			<<	"\".version\"                                 = " << CSSVersion << endl
-			<<	"\".ghosted\"                                 = " << CSSGhost << endl
-			<<	"\".crc\"                                     = " << CSSCRC << endl
-			<<	"\".tagPrefix\"                               = " << CSSTagPrefix << endl
-			<<	"\".dirty\"                                   = " << CSSDirty << endl
-			<<	"\".message\"                                 = " << CSSQuotedMessage << endl
-			<<	"\".mod\"                                     = " << CSSMod << endl
-			<<	"\".tag\"                                     = " << CSSTag << endl
-			<<	"\".note\"                                    = " << CSSNote << endl
-			<<	"\".req\"                                     = " << CSSRequirement << endl
-			<<	"\".inc\"                                     = " << CSSIncompatibility;
-		ini.close();
-	}
-
-	string	Ini::GetGameString	() {
-		if (game == AUTODETECT)
-			return "auto";
-		else if (game == OBLIVION)
-			return "Oblivion";
-		else if (game == FALLOUT3)
-			return "Fallout3";
-		else if (game == NEHRIM)
-			return "Nehrim";
-		else if (game == FALLOUTNV)
-			return "FalloutNV";
-		else if (game == SKYRIM)
-			return "Skyrim";
-		else
-			return "";
-	}
-
-	ParsingError Ini::ErrorBuffer() {
-		return errorBuffer;
-	}
-
-	void Ini::ErrorBuffer(ParsingError buffer) {
-		errorBuffer = buffer;
-	}
+	
 }

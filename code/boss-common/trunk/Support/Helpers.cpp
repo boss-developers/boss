@@ -88,9 +88,8 @@ namespace boss {
 		string retVal = "";
 #if _WIN32 || _WIN64
 		// WARNING - NOT VERY SAFE, SEE http://www.boost.org/doc/libs/1_46_1/libs/filesystem/v3/doc/reference.html#current_path
-		fs::path pStr = fs::current_path() / filepath;
 		DWORD dummy = 0;
-		DWORD size = GetFileVersionInfoSize(pStr.wstring().c_str(), &dummy);
+		DWORD size = GetFileVersionInfoSize(filepath.wstring().c_str(), &dummy);
 
 		if (size > 0) {
 			LPBYTE point = new BYTE[size];
@@ -98,7 +97,7 @@ namespace boss {
 			VS_FIXEDFILEINFO *info;
 			string ver;
 
-			GetFileVersionInfo(pStr.wstring().c_str(),0,size,point);
+			GetFileVersionInfo(filepath.wstring().c_str(),0,size,point);
 
 			VerQueryValue(point,L"\\",(LPVOID *)&info,&uLen);
 
@@ -186,5 +185,62 @@ namespace boss {
 			return "true";
 		else
 			return "false";
+	}
+
+	//Check if registry subkey exists.
+	bool RegKeyExists(string keyStr, string subkey) {
+#if _WIN32 || _WIN64
+		HKEY hKey, key;
+
+		if (keyStr == "HKEY_CLASSES_ROOT")
+			key = HKEY_CLASSES_ROOT;
+		else if (keyStr == "HKEY_CURRENT_CONFIG")
+			key = HKEY_CURRENT_CONFIG;
+		else if (keyStr == "HKEY_CURRENT_USER")
+			key = HKEY_CURRENT_USER;
+		else if (keyStr == "HKEY_LOCAL_MACHINE")
+			key = HKEY_LOCAL_MACHINE;
+		else if (keyStr == "HKEY_USERS")
+			key = HKEY_USERS;
+
+		LONG lRes = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(), 0, KEY_READ, &hKey);
+		RegCloseKey(hKey);
+
+		if (lRes == ERROR_SUCCESS)
+			return true;
+		else
+			return false;
+#else
+		return false;
+#endif
+	}
+
+	//Get registry subkey value string.
+	string RegKeyStringValue(string keyStr, string subkey, string value) {
+#if _WIN32 || _WIN64
+		HKEY key;
+		DWORD BufferSize = 4096;
+		wchar_t val[4096];
+
+		if (keyStr == "HKEY_CLASSES_ROOT")
+			key = HKEY_CLASSES_ROOT;
+		else if (keyStr == "HKEY_CURRENT_CONFIG")
+			key = HKEY_CURRENT_CONFIG;
+		else if (keyStr == "HKEY_CURRENT_USER")
+			key = HKEY_CURRENT_USER;
+		else if (keyStr == "HKEY_LOCAL_MACHINE")
+			key = HKEY_LOCAL_MACHINE;
+		else if (keyStr == "HKEY_USERS")
+			key = HKEY_USERS;
+
+		LONG lRes = RegGetValue(key, fs::path(subkey).wstring().c_str(), fs::path(value).wstring().c_str(), RRF_RT_REG_SZ, NULL, (PVOID)&val, &BufferSize);
+
+		if (lRes == ERROR_SUCCESS) {
+			return fs::path(val).string();  //Easiest way to convert from wide to narrow character strings.
+		} else
+			return "";
+#else
+		return "";
+#endif
 	}
 }

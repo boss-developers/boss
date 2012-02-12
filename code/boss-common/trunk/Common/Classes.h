@@ -137,13 +137,13 @@ namespace boss {
 
 		bool	operator<	(Item);		//Throws boss_error exception on fail.
 		
-		bool	IsPlugin	();
-		bool	IsGroup		();
-		bool	IsMasterFile();
-		bool	IsGhosted	();			//Checks if the file exists in ghosted form.
-		bool	Exists		();			//Checks if the file exists in data_path, ghosted or not.
-		string	GetVersion	();			//Outputs the file's header.
-		void	SetModTime	(time_t modificationTime);
+		bool	IsPlugin	() const;
+		bool	IsGroup		() const;
+		bool	IsMasterFile() const;
+		bool	IsGhosted	() const;			//Checks if the file exists in ghosted form.
+		bool	Exists		() const;			//Checks if the file exists in data_path, ghosted or not.
+		string	GetVersion	() const;			//Outputs the file's header.
+		void	SetModTime	(time_t modificationTime) const;
 
 		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 	};
@@ -162,12 +162,12 @@ namespace boss {
 		void					Load			(fs::path path);	//Load by scanning path. If path is a directory, it scans it for plugins. 
 																	//If path is a file, it parses it using the modlist grammar.
 																	//May throw exception on fail.
-		void					Save			(fs::path file);	//Output to file in MF2. Backs up any existing file with new ".old" extension.
+		void					Save			(fs::path file, fs::path oldFile);	//Output to file in MF2. Backs up any existing file with new ".old" extension.
 																	//Throws exception on fail.
 		void					EvalConditions();					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
-		size_t					FindItem		(string name);	//Find the position of the item with name 'name'. Case-insensitive.
-		size_t					FindLastItem	(string name);	//Find the last item with the name 'name'. Case-insensitive.
-		size_t					FindGroupEnd	(string name);	//Find the end position of the group with the given name. Case-insensitive.
+		size_t					FindItem		(string name) const;	//Find the position of the item with name 'name'. Case-insensitive.
+		size_t					FindLastItem	(string name) const;	//Find the last item with the name 'name'. Case-insensitive.
+		size_t					FindGroupEnd	(string name) const;	//Find the end position of the group with the given name. Case-insensitive.
 
 		vector<Item>							Items() const;
 		ParsingError							ErrorBuffer() const;
@@ -201,9 +201,9 @@ namespace boss {
 				RuleLine			();
 				RuleLine			(keyType inKey, string inObject);
 
-		bool	IsObjectMessage		();
-		keyType ObjectMessageKey	();
-		string	ObjectMessageData	();
+		bool	IsObjectMessage		() const;
+		keyType ObjectMessageKey	() const;
+		string	ObjectMessageData	() const;
 		string	KeyToString			() const;		//Has HTML-safe output.
 
 		keyType Key() const;
@@ -235,33 +235,15 @@ namespace boss {
 		RuleList();
 		void 					Load	(fs::path file);		//Throws exception on fail.
 		void 					Save	(fs::path file);		//Throws exception on fail.
-		size_t				 	FindRule(string ruleObject, bool onlyEnabled);
+		size_t				 	FindRule(string ruleObject, bool onlyEnabled) const;
 
-		vector<Rule> Rules();
-		ParsingError ParsingErrorBuffer();
-		vector<ParsingError> SyntaxErrorBuffer();
+		vector<Rule> Rules() const;
+		ParsingError ParsingErrorBuffer() const;
+		vector<ParsingError> SyntaxErrorBuffer() const;
 		
 		void Rules(vector<Rule> inRules);
 		void ParsingErrorBuffer(ParsingError buffer);
 		void SyntaxErrorBuffer(vector<ParsingError> buffer);
-	};
-
-	//////////////////////////////
-	// Other Classes
-	//////////////////////////////
-
-	class Ini {
-	private:
-		ParsingError errorBuffer;
-
-		string	GetGameString	();
-		string	GetLogFormat	();
-	public:
-		void	Load(fs::path file);		//Throws exception on fail.
-		void	Save(fs::path file);		//Throws exception on fail.
-	
-		ParsingError ErrorBuffer();
-		void ErrorBuffer(ParsingError buffer);
 	};
 }
 #endif

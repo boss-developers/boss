@@ -179,7 +179,7 @@ namespace boss {
 			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
 		}
 
-		if (proxy_host != "none" && proxy_port != 0) {
+		if (gl_proxy_host != "none" && gl_proxy_port != 0) {
 			//All of the settings have potentially valid proxy-ing values.
 			ret = curl_easy_setopt(curl, CURLOPT_PROXYTYPE, 
 										CURLPROXY_HTTP|
@@ -194,7 +194,7 @@ namespace boss {
 				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL);
 			}
 
-			proxy_str = proxy_host + ":" + IntToString(proxy_port);
+			proxy_str = gl_proxy_host + ":" + IntToString(gl_proxy_port);
 			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
 			if (ret!=CURLE_OK) {
 				string err = errbuff;
@@ -202,7 +202,7 @@ namespace boss {
 				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_FAIL);
 			}
 
-			if (!proxy_user.empty() && !proxy_passwd.empty()) {
+			if (!gl_proxy_user.empty() && !gl_proxy_passwd.empty()) {
 				ret = curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_BASIC|
 																CURLAUTH_DIGEST|
 																CURLAUTH_NTLM);
@@ -212,7 +212,7 @@ namespace boss {
 					throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL);
 				}
 
-				string proxy_auth = proxy_user + ":" + proxy_passwd;
+				string proxy_auth = gl_proxy_user + ":" + gl_proxy_passwd;
 				ret = curl_easy_setopt(curl, CURLOPT_PROXYUSERPWD, proxy_auth.c_str());
 				if (ret != CURLE_OK) {
 					string err = errbuff;
@@ -258,7 +258,7 @@ namespace boss {
 				throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, path);
 			}
 
-			remote_file = filesURL + updatedFiles[i].name;
+			remote_file = filesURL + fs::path(updatedFiles[i].name).filename().string();
 			boost::replace_all(remote_file," ","%20");  //Need to put the %20s back in for the file's web address.
 
 			if (updateType == MASTERLIST)
@@ -296,8 +296,8 @@ namespace boss {
 	//Installs the downloaded update files.
 	vector<string> InstallFiles(const installType updateType) {
 		//First back up current BOSS.ini if it exists and the update is a BOSS program update.
-		if (updateType == APPLICATION && fs::exists(boss_path / "BOSS.ini"))
-			fs::rename(boss_path / "BOSS.ini",boss_path / "BOSS.ini.old");
+		if (updateType == APPLICATION && fs::exists(ini_path))
+			fs::rename(ini_path, old_ini_path);
 
 		//Now iterate through the vector of updated files.
 		//Delete the current file if it exists, and rename the downloaded updated file, removing the .new extension.
@@ -339,10 +339,10 @@ namespace boss {
 		char cbuffer[MAXLENGTH];
 		size_t pos1,pos2,pos3;
 
-		if (fs::exists(masterlist_path)) {
-			mlist.open(masterlist_path.c_str());
+		if (fs::exists(masterlist_path())) {
+			mlist.open(masterlist_path().c_str());
 			if (mlist.fail())
-				throw boss_error(BOSS_ERROR_FILE_READ_FAIL, masterlist_path.string());
+				throw boss_error(BOSS_ERROR_FILE_READ_FAIL, masterlist_path().string());
 			while (!mlist.eof()) {
 				mlist.getline(cbuffer,sizeof(cbuffer));
 				line=cbuffer;
@@ -391,11 +391,11 @@ namespace boss {
 		}
 		
 		//Extract revision number from page text.
-		if (game == OBLIVION) start = buffer.find("\"boss-oblivion\":");
-		else if (game == FALLOUT3) start = buffer.find("\"boss-fallout\":");
-		else if (game == NEHRIM) start = buffer.find("\"boss-nehrim\":");
-		else if (game == FALLOUTNV) start = buffer.find("\"boss-fallout-nv\":");
-		else if (game == SKYRIM) start = buffer.find("\"boss-skyrim\":");
+		if (gl_current_game == OBLIVION) start = buffer.find("\"boss-oblivion\":");
+		else if (gl_current_game == FALLOUT3) start = buffer.find("\"boss-fallout\":");
+		else if (gl_current_game == NEHRIM) start = buffer.find("\"boss-nehrim\":");
+		else if (gl_current_game == FALLOUTNV) start = buffer.find("\"boss-fallout-nv\":");
+		else if (gl_current_game == SKYRIM) start = buffer.find("\"boss-skyrim\":");
 		else {
 			curl_easy_cleanup(curl);
 			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
@@ -422,11 +422,11 @@ namespace boss {
 		revision = atoi(buffer.substr(start,end).c_str());
 
 		//Extract revision date from page text.
-		if (game == OBLIVION) start = buffer.find("\"boss-oblivion\":");
-		else if (game == FALLOUT3) start = buffer.find("\"boss-fallout\":");
-		else if (game == NEHRIM) start = buffer.find("\"boss-nehrim\":");
-		else if (game == FALLOUTNV) start = buffer.find("\"boss-fallout-nv\":");
-		else if (game == SKYRIM) start = buffer.find("\"boss-skyrim\":");
+		if (gl_current_game == OBLIVION) start = buffer.find("\"boss-oblivion\":");
+		else if (gl_current_game == FALLOUT3) start = buffer.find("\"boss-fallout\":");
+		else if (gl_current_game == NEHRIM) start = buffer.find("\"boss-nehrim\":");
+		else if (gl_current_game == FALLOUTNV) start = buffer.find("\"boss-fallout-nv\":");
+		else if (gl_current_game == SKYRIM) start = buffer.find("\"boss-skyrim\":");
 		else {
 			curl_easy_cleanup(curl);
 			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
@@ -609,17 +609,17 @@ namespace boss {
 		//Is an update available?
 		if (localRevision == 0 || localRevision < remoteRevision) {
 			//Set filesURL.
-			if (game == OBLIVION) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/";
-			else if (game == FALLOUT3) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/";
-			else if (game == NEHRIM) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/";
-			else if (game == FALLOUTNV) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/";
-			else if (game == SKYRIM) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-skyrim/";
+			if (gl_current_game == OBLIVION) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/";
+			else if (gl_current_game == FALLOUT3) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/";
+			else if (gl_current_game == NEHRIM) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/";
+			else if (gl_current_game == FALLOUTNV) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/";
+			else if (gl_current_game == SKYRIM) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-skyrim/";
 			else
 				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 
 			//Put masterlist.txt in updatedFiles.
 			updatedFiles.clear();
-			fileInfo file("masterlist.txt");
+			fileInfo file(masterlist_path().string());
 			updatedFiles.push_back(file);
 
 			//Now download and install.
@@ -629,15 +629,15 @@ namespace boss {
 			//Now replace the SVN info in the downloaded file with the revision and date.
 			newline = "Masterlist Revision: "+IntToString(remoteRevision)+" ("+remoteDate+")";
 
-			fileToBuffer(masterlist_path, buffer);
+			fileToBuffer(masterlist_path(), buffer);
 
 			size_t pos = buffer.find(oldline);
 			if (pos != string::npos)
 				buffer.replace(pos,oldline.length(),newline);
 
-			out.open(masterlist_path.c_str());
+			out.open(masterlist_path().c_str());
 			if (out.fail())
-				throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, masterlist_path.string());
+				throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, masterlist_path().string());
 			out << buffer;
 			out.close();
 		}

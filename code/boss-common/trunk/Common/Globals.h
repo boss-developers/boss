@@ -36,6 +36,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/cstdint.hpp>
 #include "Common/DllDef.h"
+#include "Common/Error.h"
 
 namespace boss {
 	using namespace std;
@@ -45,56 +46,110 @@ namespace boss {
 #	define BOSS_VERSION_MINOR 9
 #	define BOSS_VERSION_PATCH 1
 
-	BOSS_COMMON_EXP extern const string boss_release_date;
-
-	//These paths can't be constant because the API may require data_path and boss_path to be different.
-	BOSS_COMMON_EXP extern fs::path data_path;			// Holds the path to the data directory.
-	BOSS_COMMON_EXP extern const fs::path boss_path;			// Holds the path to the BOSS directory.
-	BOSS_COMMON_EXP extern const fs::path bosslog_html_path;	// BOSSlog full HTML file name
-	BOSS_COMMON_EXP extern const fs::path bosslog_text_path;	// BOSSlog full text file name
-	BOSS_COMMON_EXP extern fs::path masterlist_path;	// Hold both location and file name for masterlist.txt
-	BOSS_COMMON_EXP extern fs::path userlist_path;		// Hold both location and file name for userlist.txt 
-	BOSS_COMMON_EXP extern const fs::path curr_modlist_path;	// Hold both location and file name for modlist.txt
-	BOSS_COMMON_EXP extern const fs::path prev_modlist_path;	// Hold both location and file name for modlist.old
-	BOSS_COMMON_EXP extern const fs::path ini_path;			// Holds the path to the BOSS.ini.
-	BOSS_COMMON_EXP extern const fs::path debug_log_path;		// Holds the path to BOSSDebugLog.txt.
+	BOSS_COMMON_EXP extern const string gl_boss_release_date;
 
 	enum : uint32_t {
-		//Games (for 'game' global)
+		//Games (for 'game' setting)
 		AUTODETECT,
 		OBLIVION,
 		FALLOUT3,
 		FALLOUTNV,
 		NEHRIM,
 		SKYRIM,
-		//BOSS Log Formats (for 'log_format' global)
+		//BOSS Log Formats (for 'log_format' setting)
 		HTML,
-		PLAINTEXT
+		PLAINTEXT,
+		//Run types (for 'run_type' setting)
+		SORT,
+		UPDATE,
+		UNDO
 	};
 
-	//Command line variables.
+	BOSS_COMMON_EXP extern uint32_t gl_current_game;  //The game that BOSS is currently running for. Matches gl_game if gl_game != AUTODETECT.
+
+
+	///////////////////////////////
+	//File/Folder Paths
+	///////////////////////////////
+
+	//These globals exist for ease-of-use, so that a Settings object doesn't need to be passed in infinity+1 functions.
+	BOSS_COMMON_EXP extern const fs::path boss_path;		//Path to the BOSS folder, relative to executable (ie. '.').
+	BOSS_COMMON_EXP extern		 fs::path data_path;		//Path to the data folder of the game that BOSS is currently running for, relative to executable (ie. boss_path).
+	BOSS_COMMON_EXP extern const fs::path ini_path;
+	BOSS_COMMON_EXP extern const fs::path old_ini_path;
+	BOSS_COMMON_EXP extern const fs::path debug_log_path;
+	BOSS_COMMON_EXP extern const fs::path readme_path;
+	BOSS_COMMON_EXP extern const fs::path rule_readme_path;
+	BOSS_COMMON_EXP extern const fs::path masterlist_doc_path;
+	BOSS_COMMON_EXP extern const fs::path api_doc_path;
+
+
+	///////////////////////////////
+	//File/Folder Path Functions
+	///////////////////////////////
+
+	fs::path bosslog_path();		//Output decided by log format.
+	fs::path masterlist_path();		//Output decided by game.
+	fs::path userlist_path();		//Output decided by game.
+	fs::path modlist_path();		//Output decided by game.
+	fs::path old_modlist_path();	//Output decided by game.
 	
-	BOSS_COMMON_EXP extern string proxy_host;
-	BOSS_COMMON_EXP extern string proxy_user;
-	BOSS_COMMON_EXP extern string proxy_passwd;
-	BOSS_COMMON_EXP extern uint32_t proxy_port;
-	BOSS_COMMON_EXP extern uint32_t log_format;		// what format the output should be in.  Uses the enums defined above.
-	BOSS_COMMON_EXP extern uint32_t game;				// What game's mods are we sorting? Uses the enums defined above.
-	BOSS_COMMON_EXP extern uint32_t revert;				// what level to revert to
-	BOSS_COMMON_EXP extern uint32_t debug_verbosity;			// log levels above INFO to output
-	BOSS_COMMON_EXP extern bool update;				// update the masterlist?
-	BOSS_COMMON_EXP extern bool update_only;		// only update the masterlist and don't sort currently.
-	BOSS_COMMON_EXP extern bool silent;				// silent mode?
-	BOSS_COMMON_EXP extern bool skip_version_parse; // enable parsing of mod's headers to look for version strings
-	BOSS_COMMON_EXP extern bool debug_with_source;				// whether to include origin information in logging statements
-	BOSS_COMMON_EXP extern bool show_CRCs;			// whether or not to show mod CRCs.
-	BOSS_COMMON_EXP extern bool trial_run;			// If true, don't redate files.
-	BOSS_COMMON_EXP extern bool log_debug_output;		//If true, logs command line output in BOSSDebugLog.txt.
-	BOSS_COMMON_EXP extern bool do_startup_update_check;	// Whether or not to check for updates on startup.
-	
+
+	///////////////////////////////
+	//Ini Settings
+	///////////////////////////////
+
 	//GUI variables
-	BOSS_COMMON_EXP extern uint32_t run_type;					// 1 = sort mods, 2 = only update, 3 = undo changes.
-	BOSS_COMMON_EXP extern bool use_user_rules_editor;		//Use the User Rules Editor or edit userlist.txt directly?
+	BOSS_COMMON_EXP extern uint32_t gl_run_type;				// 1 = sort mods, 2 = only update, 3 = undo changes.
+	BOSS_COMMON_EXP extern bool		gl_use_user_rules_editor;	// Use the User Rules Editor or edit userlist.txt directly?
+
+	//Command line variables.
+	BOSS_COMMON_EXP extern string	gl_proxy_host;
+	BOSS_COMMON_EXP extern string	gl_proxy_user;
+	BOSS_COMMON_EXP extern string	gl_proxy_passwd;
+	BOSS_COMMON_EXP extern uint32_t gl_proxy_port;
+	BOSS_COMMON_EXP extern uint32_t gl_log_format;				// what format the output should be in.  Uses the enums defined above.
+	BOSS_COMMON_EXP extern uint32_t gl_game;					// What game's mods are we sorting? Uses the enums defined above.
+	BOSS_COMMON_EXP extern uint32_t gl_revert;					// what level to revert to
+	BOSS_COMMON_EXP extern uint32_t gl_debug_verbosity;			// log levels above INFO to output
+	BOSS_COMMON_EXP extern bool		gl_update;					// update the masterlist?
+	BOSS_COMMON_EXP extern bool		gl_update_only;				// only update the masterlist and don't sort currently.
+	BOSS_COMMON_EXP extern bool		gl_silent;					// silent mode?
+	BOSS_COMMON_EXP extern bool		gl_skip_version_parse;		// enable parsing of mod's headers to look for version strings
+	BOSS_COMMON_EXP extern bool		gl_debug_with_source;		// whether to include origin information in logging statements
+	BOSS_COMMON_EXP extern bool		gl_show_CRCs;				// whether or not to show mod CRCs.
+	BOSS_COMMON_EXP extern bool		gl_trial_run;				// If true, don't redate files.
+	BOSS_COMMON_EXP extern bool		gl_log_debug_output;		// If true, logs command line output in BOSSDebugLog.txt.
+	BOSS_COMMON_EXP extern bool		gl_do_startup_update_check;	// Whether or not to check for updates on startup.
+
+
+	///////////////////////////////
+	//Settings Functions
+	///////////////////////////////
+	
+	string	GetGameString		(uint32_t game);
+	string	GetGameMasterFile	(uint32_t game);
+	void	DetectGame			();  //Throws exception if error.
+	time_t	GetMasterTime		();  //Throws exception if error.
+
+
+	///////////////////////////////
+	//Settings Class
+	///////////////////////////////
+
+	class Settings {
+	private:
+		ParsingError errorBuffer;
+
+		string	GetIniGameString	() const;
+		string	GetLogFormatString	() const;
+	public:
+		void	Load(fs::path file);		//Throws exception on fail.
+		void	Save(fs::path file);		//Throws exception on fail.
+
+		ParsingError ErrorBuffer() const;
+		void ErrorBuffer(ParsingError buffer);
+	};
 }
 
 #endif

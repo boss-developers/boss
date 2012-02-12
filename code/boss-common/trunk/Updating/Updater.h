@@ -37,6 +37,24 @@
 #include <boost/cstdint.hpp>
 #include "Common/DllDef.h"
 
+
+/* Updater code.
+
+BOSS uses two types of updating:
+
+1. Masterlist updating. BOSS compares the local masterlist against the remote 
+masterlist and downloads the remote one if it is newer.
+
+2. BOSS updating. BOSS compares the latest version available online against 
+the local version and downloads the installer for the latest version if it 
+was previously installed using the installer, or prompts the user to upgrade 
+manually.
+
+Both files have set names and locations locally and online. Both files should
+be downloaded using Subversion.
+
+*/
+
 namespace boss {
 	using namespace std;
 
