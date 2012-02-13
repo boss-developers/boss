@@ -101,7 +101,7 @@ bool BossGUI::OnInit() {
 	//Check if GUI is already running.
 	checker = new wxSingleInstanceChecker;
 
-	/*if (checker->IsAnotherRunning()) {  //It makes sense for BOSS v1.9 to have multiple instances, one for each game. Code will be useful in v2.0 when only one exe will be needed.
+	if (checker->IsAnotherRunning()) {  //It makes sense for BOSS v1.9 to have multiple instances, one for each game. Code will be useful in v2.0 when only one exe will be needed.
 		wxMessageBox(wxString::Format(
 				wxT("Error: The BOSS GUI is already running. This instance will now quit.")
 			),
@@ -113,9 +113,9 @@ bool BossGUI::OnInit() {
 		checker = NULL;
 
 		return false;
-	}*/
+	}
 
-	Ini ini;
+	Settings ini;
 	//Set up variable defaults.
 	if (fs::exists(ini_path)) {
 		try {
@@ -143,34 +143,36 @@ bool BossGUI::OnInit() {
 	}
 
 	// set alternative output stream for logger and whether to track log statement origins
-	if (log_debug_output)
+	if (gl_log_debug_output)
 		g_logger.setStream(debug_log_path.string().c_str());
-	g_logger.setOriginTracking(debug_with_source);
+	g_logger.setOriginTracking(gl_debug_with_source);
 	// it's ok if this number is too high.  setVerbosity will handle it
-	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + debug_verbosity));
-
-	if (game == AUTODETECT) {
-		try {
-			GetGame();
-		} catch (boss_error e) {
-			wxMessageBox(wxString::Format(
-					wxT("Error: " + e.getString())
-				),
-				wxT("BOSS: Error"),
-				wxOK | wxICON_ERROR,
-				NULL);
-		}
-	}
+	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));
 
 	MainFrame *frame = new MainFrame(
-		wxT("BOSS - " + GetGameString()), 100, 100, 510, 370);
+		wxT("BOSS"), 100, 100, 510, 370);
+
+	LOG_DEBUG("Detecting game...");
+	try {
+		DetectGame(frame);
+		LOG_INFO("Game detected: %d", gl_current_game);
+	} catch (boss_error e) {
+		wxMessageBox(wxString::Format(
+				wxT("Error: " + e.getString())
+			),
+			wxT("BOSS: Error"),
+			wxOK | wxICON_ERROR,
+			NULL);
+	}
+	frame->SetTitle(wxT("BOSS - " + GetGameString(gl_current_game)));
+	
 
 	frame->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	frame->Show(TRUE);
 	SetTopWindow(frame);
 
 	//Now check for updates.
-	if (do_startup_update_check)
+	if (gl_do_startup_update_check)
 		frame->CheckForUpdates();
 	return true;
 }
@@ -188,10 +190,10 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	wxString Game[] = {
 		wxT("Autodetect"),
 		wxT("Oblivion"),
-		wxT("Fallout 3"),
-		wxT("Fallout: New Vegas"),
 		wxT("Nehrim"),
-		wxT("Skyrim")
+		wxT("Skyrim"),
+		wxT("Fallout 3"),
+		wxT("Fallout: New Vegas")
 	};
 	wxString UndoLevel[] = {
 		wxT("No Undo"),
@@ -298,47 +300,55 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	//Set option values based on initialised variable values.
 	RunBOSSButton->SetDefault();
 
-	if (!silent)
+	if (!gl_silent)
 		ShowLogBox->SetValue(true);
 
-	if (log_format == HTML)
+	if (gl_log_format == HTML)
 		FormatChoice->SetSelection(0);
-	else if (log_format == PLAINTEXT)
+	else
 		FormatChoice->SetSelection(1);
 
-	if (show_CRCs)
+	if (gl_show_CRCs)
 		CRCBox->SetValue(true);
 
-	if (!skip_version_parse)
+	if (!gl_skip_version_parse)
 		VersionBox->SetValue(true);
 
-	if (update)
+	if (gl_update)
 		UpdateBox->SetValue(true);
 
-	if (trial_run)
+	if (gl_trial_run)
 		TrialRunBox->SetValue(true);
 
-	if (game == AUTODETECT)
-		GameChoice->SetSelection(0);
-	else if (game == OBLIVION)
+	switch (gl_game) {
+	case OBLIVION:
 		GameChoice->SetSelection(1);
-	else if (game == FALLOUT3)
+		break;
+	case NEHRIM:
 		GameChoice->SetSelection(2);
-	else if (game == FALLOUTNV)
+		break;
+	case SKYRIM:
 		GameChoice->SetSelection(3);
-	else if (game == NEHRIM)
+		break;
+	case FALLOUT3:
 		GameChoice->SetSelection(4);
-	else if (game == SKYRIM)
+		break;
+	case FALLOUTNV:
 		GameChoice->SetSelection(5);
+		break;
+	default:
+		GameChoice->SetSelection(0);
+		break;
+	}
 
-	if (revert == 0)
+	if (gl_revert == 0)
 		RevertChoice->SetSelection(0);
-	else if (revert == 1)
+	else if (gl_revert == 1)
 		RevertChoice->SetSelection(1);
-	else if (revert == 2)
+	else if (gl_revert == 2)
 		RevertChoice->SetSelection(2);
 
-	if (run_type == 1) {
+	if (gl_run_type == 1) {
 		SortOption->SetValue(true);
 		
 		UpdateBox->Enable(true);
@@ -348,7 +358,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 		GameChoice->Enable(false);
 		RevertText->Enable(false);
 		RevertChoice->Enable(false);
-	} else if (run_type == 2) {
+	} else if (gl_run_type == 2) {
 		UpdateOption->SetValue(true);
 
 		GameText->Enable(true);
@@ -380,11 +390,11 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 
 //Called when program exits.
 void MainFrame::OnQuit( wxCommandEvent& event ) {
-	Close(TRUE); // Tells the OS to quit running this process
+	Close(true); // Tells the OS to quit running this process
 }
 
 void MainFrame::OnClose(wxCloseEvent& event) {
-	Ini ini;
+	Settings ini;
 	//Save settings to BOSS.ini before quitting.
 	try {
 		ini.Save(ini_path);
@@ -410,88 +420,25 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 
 void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 
-	size_t lastRecognisedPos = 0;			//position of last recognised mod.
-	string scriptExtender;					//What script extender is present.
 	time_t esmtime = 0;						//File modification times.
 	ItemList modlist, masterlist;		//Modlist and masterlist data structures.
 	RuleList userlist;					//Userlist data structure.
-	summaryCounters counters;				//Summary counters.
 	bosslogContents contents;				//BOSSlog contents.
-	string gameStr;							// allow for autodetection override
-	fs::path bosslog_path;					//Path to BOSSlog being used.
 	fs::path sortfile;						//Modlist/masterlist to sort plugins using.
-	Outputter output(log_format);
+	Outputter output(gl_log_format);
 
 	//Tell the user that stuff is happenining.
 	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("BOSS working..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
 
 	LOG_INFO("BOSS starting...");
 
-	//Set BOSSlog path to be used.
-	if (log_format == HTML)
-		bosslog_path = bosslog_html_path;
-	else
-		bosslog_path = bosslog_text_path;
-
-	//Set masterlist path to be used.
-	if (revert==1)
-		sortfile = curr_modlist_path;	
-	else if (revert==2) 
-		sortfile = prev_modlist_path;
-	else 
-		sortfile = masterlist_path;
-	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
-
-	progDia->Pulse();
-	if (progDia->WasCancelled()) {
-		progDia->Destroy();
-		return;
-	}
-
 	////////////////////////////////////////////////
 	// Record last BOSSlog's recognised mod list
 	////////////////////////////////////////////////
 
 	//Back up old recognised mod list for diff later. Only works for HTML bosslog due to formatting conversion.
-	if (fs::exists(bosslog_html_path))
-		contents.oldRecognisedPlugins = GetOldRecognisedList(bosslog_html_path);
-
-	progDia->Pulse();
-	if (progDia->WasCancelled()) {
-		progDia->Destroy();
-		return;
-	}
-
-	/////////////////////////////////////////
-	// Check for critical error conditions
-	/////////////////////////////////////////
-
-	//Game checks.
-	if (AUTODETECT == game) {
-		LOG_DEBUG("Detecting game...");
-		try {
-			GetGame();
-		} catch (boss_error e) {
-			LOG_ERROR("Critical Error: %s", e.getString().c_str());
-			output.Clear();
-			output.PrintHeader();
-			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
-				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-				<< "Utility will end now." << LIST_CLOSE;
-			output.PrintFooter();
-			try {
-				output.Save(bosslog_path, true);
-			} catch (boss_error e) {
-				LOG_ERROR("Critical Error: %s", e.getString().c_str());
-			}
-			LOG_ERROR("Installation error found: check BOSSLOG.");
-			if ( !silent ) 
-				wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
-			progDia->Destroy();
-			return; //fail in screaming heap.
-		}
-	}
-	LOG_INFO("Game detected: %d", game);
+	if (fs::exists(bosslog_path()))
+		contents.oldRecognisedPlugins = GetOldRecognisedList(bosslog_path());
 
 	progDia->Pulse();
 	if (progDia->WasCancelled()) {
@@ -503,7 +450,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	// Error Condition Check Interlude - Update Masterlist
 	/////////////////////////////////////////////////////////
 	
-	if (revert<1 && (update || update_only)) {
+	if (gl_revert<1 && (gl_update || gl_update_only)) {
 		//First check for internet connection, then update masterlist if connection present.
 		bool connection = false;
 		try {
@@ -547,7 +494,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	}
 
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
-	if (update_only == true) {
+	if (gl_update_only == true) {
 		output.Clear();
 		output.PrintHeader();
 		if (contents.updaterErrors.empty())
@@ -558,12 +505,12 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		output << HEADING_ID_END_OPEN << "Execution Complete" << HEADING_CLOSE;
 		output.PrintFooter();
 		try {
-			output.Save(bosslog_path, true);
+			output.Save(bosslog_path(), true);
 		} catch (boss_error e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !silent ) 
-			wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.
+		if ( !gl_silent ) 
+			wxLaunchDefaultApplication(bosslog_path().string());	//Displays the BOSSlog.
 		progDia->Destroy();
 		return;
 	}
@@ -589,13 +536,13 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 			<< "Utility will end now." << LIST_CLOSE;
 		output.PrintFooter();
 		try {
-			output.Save(bosslog_path, true);
+			output.Save(bosslog_path(), true);
 		} catch (boss_error e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
-		if ( !silent ) 
-			wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
+		if ( !gl_silent ) 
+			wxLaunchDefaultApplication(bosslog_path().string());	//Displays the BOSSlog.txt.
 		progDia->Destroy();
 		return; //fail in screaming heap.
 	}
@@ -603,8 +550,8 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	//Build and save modlist.
 	try {
 		modlist.Load(data_path);
-		if (revert<1)
-			modlist.Save(curr_modlist_path);
+		if (gl_revert<1)
+			modlist.Save(modlist_path(), old_modlist_path());
 	} catch (boss_error e) {
 		output.Clear();
 		output.PrintHeader();
@@ -613,13 +560,13 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 			<< "Utility will end now." << LIST_CLOSE;
 		output.PrintFooter();
 		try {
-			output.Save(bosslog_path, true);
+			output.Save(bosslog_path(), true);
 		} catch (boss_error e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
-		if ( !silent ) 
-			wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
+		if ( !gl_silent ) 
+			wxLaunchDefaultApplication(bosslog_path().string());	//Displays the BOSSlog.txt.
 		progDia->Destroy();
 		return; //fail in screaming heap.
 	}
@@ -634,7 +581,17 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	// Parse Master- and Userlists
 	/////////////////////////////////
 	//Masterlist parse errors are critical, ini and userlist parse errors are not.
+
 	
+	//Set masterlist path to be used.
+	if (gl_revert==1)
+		sortfile = modlist_path();	
+	else if (gl_revert==2) 
+		sortfile = old_modlist_path();
+	else 
+		sortfile = masterlist_path();
+	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
+
 	//Parse masterlist/modlist backup into data structure.
 	try {
 		LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
@@ -648,7 +605,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
 			output.SetHTMLSpecialEscape(false);
 			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
-				<< masterlist.ErrorBuffer().FormatFor(log_format) << LIST_CLOSE;
+				<< masterlist.ErrorBuffer().FormatFor(gl_log_format) << LIST_CLOSE;
 		} else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
 			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
 				<< LIST_ITEM << SPAN_CLASS_ERROR_OPEN << e.getString() << SPAN_CLOSE << LIST_CLOSE;
@@ -658,24 +615,24 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 				<< "Utility will end now." << LIST_CLOSE;
 		output.PrintFooter();
 		try {
-			output.Save(bosslog_path, true);
+			output.Save(bosslog_path(), true);
 		} catch (boss_error e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
-        if ( !silent ) 
-			wxLaunchDefaultApplication(bosslog_path.string());  //Displays the BOSSlog.txt.
+        if ( !gl_silent ) 
+			wxLaunchDefaultApplication(bosslog_path().string());  //Displays the BOSSlog.txt.
 		progDia->Destroy();
         return; //fail in screaming heap.
 	}
 
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		userlist.Load(userlist_path);
+		userlist.Load(userlist_path());
 		for (vector<ParsingError>::iterator iter; iter != userlist.syntaxErrorBuffer.end(); ++iter)
-			contents.userlistSyntaxErrors.push_back(iter->FormatFor(log_format));
+			contents.userlistSyntaxErrors.push_back(iter->FormatFor(gl_log_format));
 	} catch (boss_error e) {
-		contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(log_format);
+		contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(gl_log_format);
 		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
@@ -690,30 +647,30 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	// Perform Sorting Functionality
 	/////////////////////////////////////////////////
 
-	PerformSortingFunctionality(bosslog_path, modlist, masterlist, userlist, esmtime, contents);
+	PerformSortingFunctionality(bosslog_path(), modlist, masterlist, userlist, esmtime, contents);
 
 	LOG_INFO("Launching boss log in browser.");
-	if ( !silent ) 
-		wxLaunchDefaultApplication(bosslog_path.string());	//Displays the BOSSlog.txt.
+	if ( !gl_silent ) 
+		wxLaunchDefaultApplication(bosslog_path().string());	//Displays the BOSSlog.txt.
 	LOG_INFO("BOSS finished.");
 	progDia->Destroy();
 	return;
 }
 
 void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
-	if (use_user_rules_editor) {
+	if (gl_use_user_rules_editor) {
 		UserRulesEditorFrame *editor = new UserRulesEditorFrame(wxT("BOSS: User Rules Editor"),this);
 		editor->SetIcon(wxIconLocation("BOSS GUI.exe"));
 		editor->Show();
 		return;
 	} else {
-		if (fs::exists(userlist_path))
-			wxLaunchDefaultApplication(userlist_path.string());
+		if (fs::exists(userlist_path()))
+			wxLaunchDefaultApplication(userlist_path().string());
 		else {
 			try {
 				RuleList userlist;
-				userlist.Save(userlist_path);
-				wxLaunchDefaultApplication(userlist_path.string());
+				userlist.Save(userlist_path());
+				wxLaunchDefaultApplication(userlist_path().string());
 			} catch (boss_error e) {
 				wxMessageBox(wxString::Format(
 					wxT("Error: " + e.getString())
@@ -728,55 +685,35 @@ void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
 
 //Call when a file is opened. Either readmes or BOSS Logs.
 void MainFrame::OnOpenFile( wxCommandEvent& event ) {
-	string file;
 	if (event.GetId() == OPTION_OpenBOSSlog) {
-		if (log_format == HTML) {  //Open HTML BOSSlog.
-			if (fs::exists(bosslog_html_path))
-				wxLaunchDefaultApplication(bosslog_html_path.string());
-			else
-				wxMessageBox(wxString::Format(
-					wxT("Error: \"BOSSlog.html\" cannot be found!")
-				),
-				wxT("BOSS: Error"),
-				wxOK | wxICON_ERROR,
-				this);
-		} else {  //Open text BOSSlog.
-			if (fs::exists("BOSSlog.txt"))
-				wxLaunchDefaultApplication("BOSSlog.txt");
-			else
-				wxMessageBox(wxString::Format(
-					wxT("Error: \"BOSSlog.txt\" cannot be found!")
-				),
-				wxT("BOSS: Error"),
-				wxOK | wxICON_ERROR,
-				this);
-		}
+		if (fs::exists(bosslog_path()))
+			wxLaunchDefaultApplication(bosslog_path().string());
+		else
+			wxMessageBox(wxString::Format(
+				wxT("Error: \"" + bosslog_path().string() + "\" cannot be found!")
+			),
+			wxT("BOSS: Error"),
+			wxOK | wxICON_ERROR,
+			this);
 	} else {
-		//Readme files. They could be anywhere - this could be complicated.
+		//Readme files.
+		string file;
 		if (event.GetId() == MENU_OpenMainReadMe)
-			file = "BOSS ReadMe";
+			file = readme_path.string();
 		else if (event.GetId() == MENU_OpenUserRulesReadMe)
-			file = "BOSS User Rules ReadMe";
+			file = rules_readme_path.string();
 		else if (event.GetId() == MENU_OpenMasterlistReadMe)
-			file = "BOSS Masterlist Syntax";
+			file = masterlist_doc_path.string();
 		else if (event.GetId() == MENU_OpenAPIReadMe)
-			file = "BOSS API ReadMe";
+			file = api_doc_path.string();
 		else if (event.GetId() == MENU_OpenLicenses)
-			file = "Licenses";
-		//Simplify by looking for either the files themselves or shortcuts to them in the BOSS folder.
-		//If neither, show a pop-up message saying they can't be found.
-		if (fs::exists(file + ".html")) {
-			file += ".html";
-			wxLaunchDefaultApplication(file);
-		} else if (fs::exists(file + ".lnk")) {
-			file += ".lnk";
-			wxLaunchDefaultApplication(file);
-		} else if (fs::exists(file + ".txt")) {
-			file += ".txt";
+			file = licenses_path.string();
+		//Look for file.
+		if (fs::exists(file)) {
 			wxLaunchDefaultApplication(file);
 		} else  //No ReadMe exists, show a pop-up message saying so.
 			wxMessageBox(wxString::Format(
-				wxT("Error: \"" + file + ".html\" or \"" + file + ".lnk\" cannot be found!"),
+				wxT("Error: \"" + file + "\" cannot be found!"),
 				file
 			),
 			wxT("BOSS: Error"),
@@ -810,43 +747,62 @@ void MainFrame::OnAbout(wxCommandEvent& event) {
 }
 
 void MainFrame::OnLogDisplayChange(wxCommandEvent& event) {
-	silent = (!event.IsChecked());
+	gl_silent = (!event.IsChecked());
 }
 
 void MainFrame::OnFormatChange(wxCommandEvent& event) {
 	if (event.GetInt() == 0)
-		log_format = HTML;
+		gl_log_format = HTML;
 	else
-		log_format = PLAINTEXT;
+		gl_log_format = PLAINTEXT;
 }
 
 void MainFrame::OnVersionDisplayChange(wxCommandEvent& event) {
-	skip_version_parse = (!event.IsChecked());
+	gl_skip_version_parse = (!event.IsChecked());
 }
 
 void MainFrame::OnCRCDisplayChange(wxCommandEvent& event) {
-	show_CRCs = event.IsChecked();
+	gl_show_CRCs = event.IsChecked();
 }
 
 void MainFrame::OnUpdateChange(wxCommandEvent& event) {
-	update = event.IsChecked();
+	gl_update = event.IsChecked();
 }
 
 void MainFrame::OnTrialRunChange(wxCommandEvent& event) {
-	trial_run = event.IsChecked();
+	gl_trial_run = event.IsChecked();
 }
 
 void MainFrame::OnGameChange(wxCommandEvent& event) {
-	game = event.GetInt();
+	switch (event.GetInt()) {
+	case 1:
+		gl_game = OBLIVION;
+		break;
+	case 2:
+		gl_game = NEHRIM;
+		break;
+	case 3:
+		gl_game = SKYRIM;
+		break;
+	case 4:
+		gl_game = FALLOUT3;
+		break;
+	case 5:
+		gl_game = FALLOUTNV;
+		break;
+	default:
+		gl_game = AUTODETECT;
+		break;
+	}
 }
 
 void MainFrame::OnRevertChange(wxCommandEvent& event) {
-	revert = event.GetInt();
+	gl_revert = event.GetInt();
 }
 
 void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 	if (event.GetId() == RADIOBUTTON_SortOption) {
-		run_type = 1;
+		gl_run_type = 1;
 
 		UpdateBox->Enable(true);
 		TrialRunBox->Enable(true);
@@ -856,7 +812,7 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 		RevertText->Enable(false);
 		RevertChoice->Enable(false);
 	}else if (event.GetId() == RADIOBUTTON_UpdateOption) {
-		run_type = 2;
+		gl_run_type = 2;
 
 		GameText->Enable(true);
 		GameChoice->Enable(true);
@@ -866,7 +822,7 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 		RevertText->Enable(false);
 		RevertChoice->Enable(false);
 	}else {
-		run_type = 3;
+		gl_run_type = 3;
 
 		RevertText->Enable(true);
 		RevertChoice->Enable(true);
@@ -896,61 +852,27 @@ void MainFrame::Update(string updateVersion) {
 
 	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Automatic Updater"),wxT("Initialising download..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
 	uiStruct ui(progDia);
-	vector<string> fails;
+	string file;
 	try {
-		fails = DownloadInstallBOSSUpdate(ui, updateVersion);
+		file = DownloadInstallBOSSUpdate(ui, updateVersion);
+
+		//Remind the user to run the installer.
+		wxMessageBox(wxT("New installer successfully downloaded! When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+		if (fs::exists(file))
+			wxLaunchDefaultApplication(file);
 	} catch (boss_error e) {
 		progDia->Destroy();
 		try {
 			CleanUp();
+			if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL)
+				wxMessageBox(wxT("Update cancelled."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
+			else
+				wxMessageBox("Update failed. Details: " + e.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 		} catch (boss_error ee) {
+			if (e.getCode() != BOSS_ERROR_CURL_USER_CANCEL)
+				LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
 			LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-			wxMessageBox("Update failed. Details: " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
-			return;
-		}
-		if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL)
-			wxMessageBox(wxT("Update cancelled."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
-		else
-			wxMessageBox("Update failed. Details: " + e.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
-		return;
-	} catch (fs::filesystem_error e) {
-		progDia->Destroy();
-		try {
-			CleanUp();
-		} catch (boss_error ee) {
-			LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-			wxMessageBox("Update failed. Details: " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
-			return;
-		}
-		string detail = e.what();
-		wxMessageBox("Update failed. Details: " + detail + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
-		return;
-	}
-
-	if (!fails.empty()) {
-		message = "There were errors renaming the downloaded files. When you click 'OK', BOSS will exit. Once BOSS has exit, remove the \".new\" extension from the following file(s), deleting any existing files with the same names, then run the downloaded installer to complete the update:\n\n";
-		size_t size=fails.size();
-		for (size_t i=0;i<size;i++)
-			message += fails[i] +".new\n";
-		wxMessageBox(wxT("New installer successfully downloaded!\n\n"+message), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
-	} else {
-		//Display release notes.
-		try {
-			string notes = FetchReleaseNotes(updateVersion);
-			if (!notes.empty())
-				wxMessageBox(wxT("New installer successfully downloaded! Release notes for v"+updateVersion+":\n\n"+notes), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
-		} catch (boss_error e) {
-			wxMessageBox("Failed to get release notes. Details: " + e.getString(), wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
-		}
-		//Remind the user to run the installer.
-		wxMessageBox(wxT("When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
-
-		//Now run downloaded installer then exit.
-		//Although there should only be one installer file, to be safe iterate through the files vector.
-		for (size_t i=0;i<updatedFiles.size();i++) {
-			if (updatedFiles[i].name.empty())  //Just in case.
-				continue;
-			wxLaunchDefaultApplication(updatedFiles[i].name);
+			wxMessageBox("Update failed. Details: " + e.getString() + "; " + ee.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 		}
 	}
 	this->Close();
@@ -1031,16 +953,23 @@ void MainFrame::OnThreadUpdate(wxThreadEvent& evt) {
 		wxMessageBox(updateCheckString, wxT("BOSS: Check For Updates"), wxOK | wxICON_INFORMATION, this);
 	else if (updateCheckCode == 0) {
 		wxMessageDialog *dlg;
-		if (fs::exists("BOSS ReadMe.lnk"))  //Installer
-			dlg = new wxMessageDialog(this,
-				"Update available! New version: " + updateCheckString + "\nDo you want to download and install the update?"
-				, wxT("BOSS: Check For Updates"), wxYES_NO);
-		else
+		if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS"))  //Manual.
 			dlg = new wxMessageDialog(this,
 				"Update available! New version: " + updateCheckString + "\nThe update may be downloaded from any of the locations listed in the BOSS Log."
 				, wxT("BOSS: Check For Updates"), wxOK);
+		else {
+			string notes;
+			//Display release notes.
+			try {
+				notes = FetchReleaseNotes(updateCheckString);
+			} catch (boss_error e) {
+				wxMessageBox("Failed to get release notes. Details: " + e.getString(), wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+			}
+			notes = "Update available! New version: " + updateCheckString + "\nRelease notes:\n\n" + notes + "\n\nDo you want to download and install the update?";
+			dlg = new wxMessageDialog(this, notes, wxT("BOSS: Check For Updates"), wxYES_NO);
 
-		if (dlg->ShowModal() == wxID_YES)
-			this->Update(updateCheckString);
+			if (dlg->ShowModal() == wxID_YES)
+				this->Update(updateCheckString);
+		}
 	}
 }

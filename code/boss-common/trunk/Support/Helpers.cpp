@@ -55,7 +55,7 @@ namespace boss {
 	namespace karma = boost::spirit::karma;
 
 	//Changes uppercase to lowercase.	
-	BOSS_COMMON_EXP string Tidy(string filename) {
+	BOSS_COMMON string Tidy(string filename) {
 		boost::algorithm::to_lower(filename);
 		return filename;
 	}
@@ -164,7 +164,7 @@ namespace boss {
 	}
 
 	//Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
-	BOSS_COMMON_EXP string IntToString(const uint32_t n) {
+	BOSS_COMMON string IntToString(const uint32_t n) {
 		string out;
 		back_insert_iterator<string> sink(out);
 		karma::generate(sink,karma::upper[karma::uint_],n);
@@ -188,7 +188,7 @@ namespace boss {
 	}
 
 	//Check if registry subkey exists.
-	bool RegKeyExists(string keyStr, string subkey) {
+	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey) {
 #if _WIN32 || _WIN64
 		HKEY hKey, key;
 

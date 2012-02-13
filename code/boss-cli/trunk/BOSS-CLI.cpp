@@ -302,10 +302,19 @@ int main(int argc, char *argv[]) {
 					//First detect type of current install: manual or installer.
 					 if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS")) {  //Manual.
 						//Point user to download locations.
-						cout << "Update available! New version: " << updateVersion << endl;
-						cout << "The update may be downloaded from any of the locations listed in the BOSS Log." << endl;		
+						cout << "Update available! New version: " << updateVersion << endl
+							 << "The update may be downloaded from any of the locations listed in the BOSS Log." << endl;		
 					} else {  //Installer
-						cout << "Update available! New version: " << updateVersion << endl << "Do you want to download and install the update? (y/n)"<< endl;
+						cout << "Update available! New version: " << updateVersion << endl;
+						string notes;
+						try {
+							notes = FetchReleaseNotes(updateVersion);
+						} catch (boss_error e) {
+							LOG_ERROR("Failed to get release notes. Details: '%s'", e.getString().c_str());
+						}
+						if (!notes.empty())
+							cout << "Release notes:" << endl << endl << notes << endl << endl;
+						cout << "Do you want to download and install the update? (y/n)" << endl;
 						
 						//Does the user want to update?
 						char answer;
@@ -316,35 +325,19 @@ int main(int argc, char *argv[]) {
 						} else if (answer == 'y') {
 							try {
 								uiStruct ui;
-								vector<string> fails = DownloadInstallBOSSUpdate(ui, updateVersion);
+								string file = DownloadInstallBOSSUpdate(ui, updateVersion);
 
-								string notes = FetchReleaseNotes(updateVersion);
-								if (!notes.empty())
-									cout << endl << "Release notes for v" << updateVersion << ":" << endl << endl << notes << endl;
-
-								cout << endl << "New installer successfully downloaded!" << endl;
-								if (!fails.empty()) {
-									cout << "There were errors renaming the downloaded files. After BOSS quits, remove the \".new\" extension from the following file(s), deleting any existing files with the same names, then run the downloaded installer to complete the update:" << endl << endl;
-									size_t size=fails.size();
-									for (size_t i=0;i<size;i++)
-										cout << fails[i] << ".new" << endl;
-								} else {
-									cout << "BOSS will now launch the downloaded installer and exit. Complete the installer to complete the update." << endl << endl;
-
-									//Now run downloaded installer then exit.
-									//Although there should only be one installer file, to be safe iterate through the files vector.
-									for (size_t i=0;i<updatedFiles.size();i++) {
-										if (updatedFiles[i].name.empty())  //Just in case.
-											continue;
-										else if (fs::exists(updatedFiles[i].name))
-											Launch(updatedFiles[i].name);
-									}
-								}
+								cout << endl << "New installer successfully downloaded!" << endl
+									 << "BOSS will now launch the downloaded installer and exit. Complete the installer to complete the update." << endl << endl;
+								if (fs::exists(file))
+									Launch(file);
 								Fail();
 							} catch (boss_error e) {
 								try {
 									CleanUp();
 								} catch (boss_error ee) {
+									if (e.getCode() != BOSS_ERROR_CURL_USER_CANCEL)
+										LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
 									LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
 									Fail();
 								}
@@ -355,16 +348,6 @@ int main(int argc, char *argv[]) {
 									LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
 									Fail();
 								}
-							} catch (fs::filesystem_error e) {
-								try {
-									CleanUp();
-								} catch (boss_error ee) {
-									LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-									Fail();
-								}
-								string detail = e.what();
-								LOG_ERROR("Update failed. Details: '%s'", detail.c_str());
-								Fail();
 							}
 						} else {
 							LOG_ERROR("invalid option given: '%s'", answer);
@@ -380,6 +363,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+
 	////////////////////////////////////////////////
 	// Record last BOSSlog's recognised mod list
 	////////////////////////////////////////////////
@@ -394,30 +378,28 @@ int main(int argc, char *argv[]) {
 	/////////////////////////////////////////
 
 	//Game checks.
-	if (gl_game == AUTODETECT) {
-		LOG_DEBUG("Detecting game...");
+	LOG_DEBUG("Detecting game...");
+	try {
+		DetectGame(NULL);
+		LOG_INFO("Game detected: %d", gl_current_game);
+	} catch (boss_error e) {
+		LOG_ERROR("Critical Error: %s", e.getString().c_str());
+		output.Clear();
+		output.PrintHeader();
+		output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+			<< "Utility will end now." << LIST_CLOSE;
+		output.PrintFooter();
 		try {
-			DetectGame();
+			output.Save(bosslog_path(), true);
 		} catch (boss_error e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
-			output.Clear();
-			output.PrintHeader();
-			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
-				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-				<< "Utility will end now." << LIST_CLOSE;
-			output.PrintFooter();
-			try {
-				output.Save(bosslog_path(), true);
-			} catch (boss_error e) {
-				LOG_ERROR("Critical Error: %s", e.getString().c_str());
-			}
-			LOG_ERROR("Installation error found: check BOSSLOG.");
-			if ( !gl_silent ) 
-				Launch(bosslog_path().string());	//Displays the BOSSlog.txt.
-			exit (1); //fail in screaming heap.
 		}
+		LOG_ERROR("Installation error found: check BOSSLOG.");
+		if ( !gl_silent ) 
+			Launch(bosslog_path().string());	//Displays the BOSSlog.txt.
+		exit (1); //fail in screaming heap.
 	}
-	LOG_INFO("Game detected: %d", gl_game);
 
 	/////////////////////////////////////////////////////////
 	// Error Condition Check Interlude - Update masterlist

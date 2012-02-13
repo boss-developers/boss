@@ -28,12 +28,7 @@
 #ifndef __SETTINGS__HPP__
 #define __SETTINGS__HPP__
 
-#include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#       include "wx/wx.h"
-#endif
-
+#include "GUI/ElementIDs.h"
 #include <wx/notebook.h>
 
 using namespace std;

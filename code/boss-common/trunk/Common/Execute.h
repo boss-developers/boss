@@ -39,7 +39,7 @@ namespace boss {
 	namespace fs = boost::filesystem;
 	using namespace std;
 
-	struct summaryCounters {
+	struct BOSS_COMMON summaryCounters {
 		uint32_t recognised; 
 		uint32_t unrecognised;
 		uint32_t ghosted;
@@ -50,7 +50,7 @@ namespace boss {
 		summaryCounters();
 	};
 
-	struct bosslogContents {
+	struct BOSS_COMMON bosslogContents {
 		string summary;
 		string userlistMessages;
 		string seInfo;
@@ -70,13 +70,13 @@ namespace boss {
 	};
 
 	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
-	BOSS_COMMON_EXP boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos);
+	BOSS_COMMON boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos);
 
 	//Record recognised mod list from last HTML BOSSlog generated.
-	BOSS_COMMON_EXP string GetOldRecognisedList(const fs::path log);
+	BOSS_COMMON string GetOldRecognisedList(const fs::path log);
 
 	//Performs BOSS's main sorting functionality. Each stage is implemented by a separate function for neatness and to make future adjustments easier. 
-	BOSS_COMMON_EXP void PerformSortingFunctionality(fs::path file,
+	BOSS_COMMON void PerformSortingFunctionality(fs::path file,
 												ItemList& modlist,
 												ItemList& masterlist,
 												RuleList& userlist,
@@ -85,9 +85,9 @@ namespace boss {
 
 	//Create a modlist containing all the mods that are installed or referenced in the userlist with their masterlist messages.
 	//Returns the vector position of the last recognised mod in modlist.
-	BOSS_COMMON_EXP void BuildWorkingModlist(ItemList& modlist, ItemList& masterlist, RuleList& userlist);
+	BOSS_COMMON void BuildWorkingModlist(ItemList& modlist, ItemList& masterlist, RuleList& userlist);
 
 	//Applies the userlist rules to the working modlist.
-	BOSS_COMMON_EXP void ApplyUserRules(ItemList& modlist, RuleList& userlist, string& outputBuffer);
+	BOSS_COMMON void ApplyUserRules(ItemList& modlist, RuleList& userlist, string& outputBuffer);
 }
 #endif

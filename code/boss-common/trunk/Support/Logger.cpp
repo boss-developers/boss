@@ -37,7 +37,7 @@ static const char * LOG_VERBOSITY_NAMES[] =
 namespace boss
 {
     // the global logger instance
-    BOSS_COMMON_EXP Logger g_logger;
+    BOSS_COMMON Logger g_logger;
 
     // ensures the given verbosity is within the valid range
     // returns false if the verbosity is beyond LV_OFF

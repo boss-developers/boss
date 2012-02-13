@@ -26,7 +26,6 @@
 */
 
 #include "GUI/UserRuleEditor.h"
-#include "GUI/ElementIDs.h"
 
 #include <wx/progdlg.h>
 
@@ -82,7 +81,6 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 
 	try{
 		LoadLists();
-		masterlist.Save("t.txt");
 	} catch(boss_error e) {
 		progDia->Destroy();
 		this->Close();
@@ -276,7 +274,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 
 void UserRulesEditorFrame::OnOKQuit(wxCommandEvent& event) {
 	try {
-		RulesList->SaveUserlist(userlist_path);
+		RulesList->SaveUserlist(userlist_path());
 	} catch (boss_error e) {
 		wxMessageBox(wxString::Format(
 			wxT("Error: "+e.getString()+" Unable to save changes.")
@@ -534,9 +532,9 @@ void UserRulesEditorFrame::LoadLists() {
 	////////////////
 
 	//Parse masterlist/modlist backup into data structure.
-	LOG_INFO("Starting to parse sorting file: %s", masterlist_path.string().c_str());
+	LOG_INFO("Starting to parse sorting file: %s", masterlist_path().string().c_str());
 	try {
-		masterlist.Load(masterlist_path);
+		masterlist.Load(masterlist_path());
 	} catch (boss_error e) {
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
@@ -870,7 +868,7 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, ItemList 
 	//Parse userlist.
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		userlist.Load(userlist_path);
+		userlist.Load(userlist_path());
 	} catch (boss_error e) {
 		userlist.rules.clear();
 		LOG_ERROR("Error: %s", e.getString().c_str());

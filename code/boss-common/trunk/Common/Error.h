@@ -61,6 +61,7 @@ namespace boss {
 		BOSS_ERROR_FS_FILE_RENAME_FAIL,
 		BOSS_ERROR_FS_FILE_DELETE_FAIL,
 		BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL,
+		BOSS_ERROR_FS_ITER_DIRECTORY_FAIL,
 		BOSS_ERROR_CURL_INIT_FAIL,
 		BOSS_ERROR_CURL_SET_ERRBUFF_FAIL,
 		BOSS_ERROR_CURL_SET_OPTION_FAIL,
@@ -74,7 +75,7 @@ namespace boss {
 		BOSS_ERROR_MAX = BOSS_ERROR_GUI_WINDOW_INIT_FAIL
 	};
 
-	class boss_error {
+	class BOSS_COMMON boss_error {
 	public:
 		//For general errors not referencing specific files.
 		inline boss_error(const uint32_t internalErrCode) 
@@ -129,6 +130,8 @@ namespace boss {
 				return "\"" + errSubject + "\" cannot be deleted! Filesystem response: \"" + errString + "\".";
 			case BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL:
 				return "\"" + errSubject + "\" cannot be created! Filesystem response: \"" + errString + "\".";
+			case BOSS_ERROR_FS_ITER_DIRECTORY_FAIL:
+				return "\"" + errSubject + "\" cannot be scanned! Filesystem response: \"" + errString + "\".";
 			case BOSS_ERROR_CURL_INIT_FAIL:
 				return "cURL cannot be initialised!";
 			case BOSS_ERROR_CURL_SET_ERRBUFF_FAIL:
@@ -193,7 +196,7 @@ namespace boss {
 	static const string ESortingToItself("tries to sort a mod or group relative to itself.");
 	
 	//Parsing error class.
-	class ParsingError {
+	class BOSS_COMMON ParsingError {
 	public:
 		inline ParsingError() : header(""), footer(""), detail(""), wholeMessage("") {}
 		//For parsing errors.

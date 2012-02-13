@@ -28,14 +28,7 @@
 #ifndef __RULEEDITOR__HPP__
 #define __RULEEDITOR__HPP__
 
-#include "BOSS-Common.h"
-
-#include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#	include "wx/wx.h"
-#endif
-
+#include "GUI/ElementIDs.h"
 #include <wx/rearrangectrl.h>
 #include <wx/srchctrl.h>
 #include <wx/treectrl.h>

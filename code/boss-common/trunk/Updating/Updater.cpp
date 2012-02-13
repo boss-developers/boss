@@ -48,22 +48,16 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 
-#ifdef BOSSGUI
+//#ifdef BOSSGUI
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
-#endif
-
-BOOST_FUSION_ADAPT_STRUCT(
-    boss::fileInfo,
-	(bool, toDelete)
-	(std::string, name)
-    (uint32_t, crc)
-)
+//#endif
 
 namespace boss {
 	namespace fs = boost::filesystem;
 	namespace unicode = boost::spirit::unicode;
 	namespace qi = boost::spirit::qi;
+	namespace phoenix = boost::phoenix;
 	using namespace std;
 
 	using boost::algorithm::replace_all;
@@ -71,35 +65,16 @@ namespace boss {
 	//////////////////////////////////////
 	// Struct Contstructors / Variables
 	//////////////////////////////////////
-		
-	fileInfo::fileInfo() {
-		name.clear();
-		crc = 0;
-		toDelete = false;
+
+	BOSS_COMMON uiStruct::uiStruct() {
+		p = NULL;
+		file = "";
 	}
 
-	fileInfo::fileInfo(string str) {
-		name = str;
-		crc = 0;
-		toDelete = false;
-	}
-
-	BOSS_COMMON_EXP uiStruct::uiStruct() {
-		p = 0;
-		isGUI = false;
-		fileIndex = 0;
-	}
-
-	BOSS_COMMON_EXP uiStruct::uiStruct(void *GUIpoint) {
+	BOSS_COMMON uiStruct::uiStruct(void *GUIpoint) {
 		p = GUIpoint;
-		isGUI = true;
-		fileIndex = 0;
+		file = "";
 	}
-
-	BOSS_COMMON_EXP vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
-	string filesURL;				//The URL at which the updated files are found.
-	int ans;						//The answer to the cancel download confirmation message. 
-
 
 	////////////////////////
 	// Internal Functions
@@ -112,25 +87,21 @@ namespace boss {
 			fractiondownloaded = 0.0f;
 
 		uiStruct * ui = (uiStruct*)data;
-		if (ui->isGUI) {
+		if (ui->p != NULL) {
 			int currentProgress = (int)floor(fractiondownloaded * 1000);
 			if (currentProgress == 1000)
 				--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
-
-#ifdef BOSSGUI
 			wxProgressDialog* progress = (wxProgressDialog*)ui->p;
-			bool cont = progress->Update(currentProgress,"Downloading: " + updatedFiles[ui->fileIndex].name + " (" + IntToString(ui->fileIndex+1) + " of " + IntToString(updatedFiles.size()) + ")");
+			bool cont = progress->Update(currentProgress, "Downloading: " + ui->file);
 			if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
-				if (!ans)
-					ans = wxMessageBox(wxT("Are you sure you want to cancel?"), wxT("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
+				uint32_t ans = wxMessageBox(wxT("Are you sure you want to cancel?"), wxT("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
 				if (ans == wxYES)
 					return 1;
 				progress->Resume();
 				ans = NULL;
 			}
-#endif
 		} else {
-			printf("Downloading: %s (%u of %u); %3.0f%% of %3.0f KB\r", updatedFiles[ui->fileIndex].name.c_str(), ui->fileIndex+1, updatedFiles.size(), fractiondownloaded*100,(dlTotal/1024)+20);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
+			printf("Downloading: %s; %3.0f%% of %3.0f KB\r", ui->file.c_str(), fractiondownloaded*100, (dlTotal/1024)+20);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
 			fflush(stdout);
 		}
 		return 0;
@@ -146,6 +117,7 @@ namespace boss {
 		return 0;
 	}
 
+	//Initialise a curl handle. Throws exception on error.
 	CURL * InitCurl(char * errbuff) {
 		CURLcode ret;
 		string proxy_str;
@@ -224,9 +196,9 @@ namespace boss {
 		return curl;
 	}
 
-	//Downloads the files in the updatedFiles vector at filesURL.
-	void DownloadFiles(uiStruct ui, const installType updateType) {
-		string fileBuffer, remote_file, path;
+	//Download the remote file to local. Throws exception on error.
+	void DownloadFile(uiStruct ui, const string remote, const string local) {
+		string fileBuffer;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		CURLcode ret;
@@ -235,104 +207,89 @@ namespace boss {
 		//curl will be used to get stuff from the internet, so initialise it.
 		curl = InitCurl(errbuff);
 
-		//Clear cancel confirmation answer.
-		ans = 0;
-
-		//Loop through the vector and download and save each file. Use binary streams.
-		size_t size = updatedFiles.size();
-		for (size_t i=0;i<size;i++) {
-			if (updatedFiles[i].name.empty() || updatedFiles[i].toDelete || fs::path(updatedFiles[i].name).extension().empty())  //Skip if no item name, or if item to be deleted, or if item has no extension (assume is a folder).
-				continue;
-			fileBuffer.clear();  //Empty buffer ready for next download.
-
-			//Set up progress indicator structure.
-			ui.fileIndex = i;
-
-			path = updatedFiles[i].name + ".new";
-			if (updateType == MASTERLIST)
-				ofile.open(path.c_str(),ios_base::trunc);
-			else
-				ofile.open(path.c_str(),ios_base::binary|ios_base::trunc);
-			if (ofile.fail()) {
-				curl_easy_cleanup(curl);
-				throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, path);
-			}
-
-			remote_file = filesURL + fs::path(updatedFiles[i].name).filename().string();
-			boost::replace_all(remote_file," ","%20");  //Need to put the %20s back in for the file's web address.
-
-			if (updateType == MASTERLIST)
-				curl_easy_setopt(curl, CURLOPT_CRLF, 1);
-			curl_easy_setopt(curl, CURLOPT_URL, remote_file.c_str());
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);
-			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
-			curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
-			curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, &progress_func);
-			curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, &ui);
-			ret = curl_easy_perform(curl);
-			if (ret == CURLE_ABORTED_BY_CALLBACK) {
-				//Cancelled by user.
-				curl_easy_cleanup(curl);
-				throw boss_error(BOSS_ERROR_CURL_USER_CANCEL);
-			} else if (ret!=CURLE_OK) {
-				string err = errbuff;
-				curl_easy_cleanup(curl);
-				throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
-			}
-			ofile << fileBuffer;
-			ofile.close();
-
-			//Now verify file integrity, but only if a program update, masterlist updates don't get CRCs calculated.
-			if (updateType == APPLICATION && GetCrc32(fs::path(path)) != updatedFiles[i].crc)
-				throw boss_error(BOSS_ERROR_FILE_CRC_MISMATCH, updatedFiles[i].name);
-
-			//Now move progress indicator down a line if on CLI.
-			if (!ui.isGUI)
-				cout << endl;
+		//Open local file.
+		ofile.open(local.c_str(), ios_base::binary|ios_base::trunc);  //Masterlist doesn't have binary flag, does this break if included?
+		if (ofile.fail()) {
+			curl_easy_cleanup(curl);
+			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, local);
 		}
+		
+		//Download to buffer.
+		curl_easy_setopt(curl, CURLOPT_CRLF, 1);  //This was set for masterlist only.
+		curl_easy_setopt(curl, CURLOPT_URL, remote.c_str());
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
+		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
+		curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, &progress_func);
+		curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, &ui);
+		ret = curl_easy_perform(curl);
+		if (ret == CURLE_ABORTED_BY_CALLBACK) {  //Cancelled by user.
+			curl_easy_cleanup(curl);
+			throw boss_error(BOSS_ERROR_CURL_USER_CANCEL);
+		} else if (ret!=CURLE_OK) {
+			string err = errbuff;
+			curl_easy_cleanup(curl);
+			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
+		}
+
+		//Fill file with buffer.
+		ofile << fileBuffer;
+		ofile.close();
+
 		curl_easy_cleanup(curl);
 	}
 
-	//Installs the downloaded update files.
-	vector<string> InstallFiles(const installType updateType) {
-		//First back up current BOSS.ini if it exists and the update is a BOSS program update.
-		if (updateType == APPLICATION && fs::exists(ini_path))
-			fs::rename(ini_path, old_ini_path);
-
-		//Now iterate through the vector of updated files.
-		//Delete the current file if it exists, and rename the downloaded updated file, removing the .new extension.
-		//The executable for the program running cannot be replaced, so will cause an exception. This and any others should be returned in a list for feedback.
-		size_t size = updatedFiles.size();
-		vector<string> err;
-		for (size_t i=0;i<size;i++) {
-
-			if (updatedFiles[i].toDelete) {  //File/folder should be deleted.
-				if (fs::exists(boss_path / updatedFiles[i].name)) {
-					if (fs::is_directory(boss_path / updatedFiles[i].name))
-						fs::remove_all(boss_path / updatedFiles[i].name);
-					else
-						fs::remove(boss_path / updatedFiles[i].name);
-				}
-			} else {						//File/folder should be created/replaced.
-				if (fs::is_directory(boss_path / updatedFiles[i].name)) {
-					if (!fs::exists(boss_path / updatedFiles[i].name))
-						fs::create_directory(boss_path / updatedFiles[i].name);
-				} else {
-					string old = updatedFiles[i].name;
-					string updated = updatedFiles[i].name + ".new";
-
-					try {
-						fs::rename(boss_path / updated, boss_path / old);
-					} catch (fs::filesystem_error e) {
-						err.push_back(updatedFiles[i].name);
-					}
-				}
-			}
+	//Install file by renaming it. Throws exception on error.
+	void InstallFile(string downloadedName, string installedName) {
+		try {
+			fs::rename(boss_path / downloadedName, boss_path / installedName);
+		} catch (fs::filesystem_error e) {
+			throw boss_error(BOSS_ERROR_FS_FILE_RENAME_FAIL, downloadedName, e.what());
 		}
-		return err;
 	}
 
-	//Gets the revision number of the local masterlist.
+	//Gets a filename and a crc from a text file containing a single line of the form:
+	//"File" : "CRC"
+	//Throws exception on error.
+	void GetBOSSFileInfo(const string remoteInfoFile, string& file, uint32_t& crc) {
+		string fileBuffer;
+		char errbuff[CURL_ERROR_SIZE];
+		CURL *curl;									//cURL handle
+		CURLcode ret;
+
+		//curl will be used to get stuff from the internet, so initialise it.
+		curl = InitCurl(errbuff);
+
+		//First get file list and crcs to build updatedFiles vector.
+		curl_easy_setopt(curl, CURLOPT_URL, remoteInfoFile.c_str());
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);	
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
+		ret = curl_easy_perform(curl);
+		if (ret!=CURLE_OK) {
+			string err = errbuff;
+			curl_easy_cleanup(curl);
+			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
+		}
+		curl_easy_cleanup(curl);
+
+		//Now parse list to extract file info.
+		string::const_iterator start = fileBuffer.begin(), end = fileBuffer.end();
+		bool p = qi::phrase_parse(start,end,
+			'"' 
+			>> qi::lexeme[+(unicode::char_ - '"')[phoenix::ref(file) = qi::_1]]
+			>> '"' 
+			>> (
+				(qi::lit(":") >> qi::hex - qi::eol)[phoenix::ref(crc) = qi::_1]
+				| qi::eps[phoenix::ref(crc) = 0]
+			)
+			, unicode::space);
+
+		if (!p || start != end) {
+			throw boss_error(BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL);
+		}
+	}
+
+	//Gets the revision number of the local masterlist. Throws exception on error.
 	void GetLocalMasterlistRevisionDate(uint32_t& revision, string& date) {
 		string line, newline = "Masterlist Revision:";
 		ifstream mlist;
@@ -363,7 +320,7 @@ namespace boss {
 		return;  //No version found.
 	}
 
-	//Gets the revision number of the online masterlist.
+	//Gets the revision number of the online masterlist. Throws exception on error.
 	void GetRemoteMasterlistRevisionDate(uint32_t& revision, string& date) {
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
@@ -391,12 +348,23 @@ namespace boss {
 		}
 		
 		//Extract revision number from page text.
-		if (gl_current_game == OBLIVION) start = buffer.find("\"boss-oblivion\":");
-		else if (gl_current_game == FALLOUT3) start = buffer.find("\"boss-fallout\":");
-		else if (gl_current_game == NEHRIM) start = buffer.find("\"boss-nehrim\":");
-		else if (gl_current_game == FALLOUTNV) start = buffer.find("\"boss-fallout-nv\":");
-		else if (gl_current_game == SKYRIM) start = buffer.find("\"boss-skyrim\":");
-		else {
+		switch (gl_current_game) {
+		case OBLIVION:
+			start = buffer.find("\"boss-oblivion\":");
+			break;
+		case NEHRIM:
+			start = buffer.find("\"boss-nehrim\":");
+			break;
+		case SKYRIM:
+			start = buffer.find("\"boss-skyrim\":");
+			break;
+		case FALLOUT3:
+			start = buffer.find("\"boss-fallout\":");
+			break;
+		case FALLOUTNV:
+			start = buffer.find("\"boss-fallout-nv\":");
+			break;
+		default:
 			curl_easy_cleanup(curl);
 			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 		}
@@ -422,12 +390,23 @@ namespace boss {
 		revision = atoi(buffer.substr(start,end).c_str());
 
 		//Extract revision date from page text.
-		if (gl_current_game == OBLIVION) start = buffer.find("\"boss-oblivion\":");
-		else if (gl_current_game == FALLOUT3) start = buffer.find("\"boss-fallout\":");
-		else if (gl_current_game == NEHRIM) start = buffer.find("\"boss-nehrim\":");
-		else if (gl_current_game == FALLOUTNV) start = buffer.find("\"boss-fallout-nv\":");
-		else if (gl_current_game == SKYRIM) start = buffer.find("\"boss-skyrim\":");
-		else {
+		switch (gl_current_game) {
+		case OBLIVION:
+			start = buffer.find("\"boss-oblivion\":");
+			break;
+		case NEHRIM:
+			start = buffer.find("\"boss-nehrim\":");
+			break;
+		case SKYRIM:
+			start = buffer.find("\"boss-skyrim\":");
+			break;
+		case FALLOUT3:
+			start = buffer.find("\"boss-fallout\":");
+			break;
+		case FALLOUTNV:
+			start = buffer.find("\"boss-fallout-nv\":");
+			break;
+		default:
 			curl_easy_cleanup(curl);
 			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 		}
@@ -489,63 +468,13 @@ namespace boss {
 		} //Otherwise it's already in a sensible format.
 	}
 
-	//Populates the updatedFiles vector. Kept as a separate function for possible future expansion.
-	void FetchUpdateFileList(const installType updateType, const string updateVersion) {
-		string fileBuffer, remote_file;
-		char errbuff[CURL_ERROR_SIZE];
-		CURL *curl;									//cURL handle
-		CURLcode ret;
-
-		filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/";
-
-		//curl will be used to get stuff from the internet, so initialise it.
-		curl = InitCurl(errbuff);
-
-		//First get file list and crcs to build updatedFiles vector.
-		remote_file = filesURL+"checksums.txt";
-		curl_easy_setopt(curl, CURLOPT_URL, remote_file.c_str());
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);	
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
-		ret = curl_easy_perform(curl);
-		if (ret!=CURLE_OK) {
-			string err = errbuff;
-			curl_easy_cleanup(curl);
-			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
-		}
-		curl_easy_cleanup(curl);
-
-		//Need to reset updatedFiles because it might have been set already if the updater was run then cancelled.
-		updatedFiles.clear();
-
-		//Now parse list to extract file info.
-		string::const_iterator start = fileBuffer.begin(), end = fileBuffer.end();
-		bool p = qi::phrase_parse(start,end,
-			(
-				(
-					(qi::char_('+')[qi::_1 = false] | qi::char_('-')[qi::_1 = true] | qi::eps[qi::_1 = false])
-					>> '"' 
-					>> qi::lexeme[+(unicode::char_ - '"')] 
-					>> '"' 
-					>> (
-							(qi::lit(":") >> qi::hex - qi::eol) 
-							| qi::eps[qi::_1 = 0]
-						)
-				) 
-				| qi::eoi
-			) % qi::eol,
-			unicode::space - qi::eol, updatedFiles);
-		if (!p || start != end) {
-			throw boss_error(BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL);
-		}
-	}
-
 
 	////////////////////////
 	// General Functions
 	////////////////////////
 
 	//Checks if an Internet connection is present.
-	BOSS_COMMON_EXP bool CheckConnection() {
+	BOSS_COMMON bool CheckConnection() {
 		CURL *curl;									//cURL handle
 		char errbuff[CURL_ERROR_SIZE];
 		CURLcode ret;
@@ -571,19 +500,22 @@ namespace boss {
 		}
 	}
 
-	//Cleans up after the user cancels a download.
-	BOSS_COMMON_EXP void CleanUp() {
-		//Iterate through vector of updated files. Delete any that exist locally.
-		size_t size = updatedFiles.size();
-		for (size_t i=0;i<size;i++) {
-			string file = updatedFiles[i].name + ".new";
-
-			try {
-				if (fs::exists(file))
-					fs::remove(file);
-			} catch (fs::filesystem_error e) {
-				throw boss_error(BOSS_ERROR_FS_FILE_DELETE_FAIL, file);
+	//Cleans up after the user cancels a download. Throws exception on error.
+	BOSS_COMMON void CleanUp() {
+		try {
+			//Use a recursive directory iterator to find and delete and files with a ".new" extension.
+			for (fs::directory_iterator itr(boss_path); itr!=fs::directory_iterator(); ++itr) {
+				if (itr->path().extension().string() == ".new") {
+					LOG_DEBUG("-- Deleting mod: '%s'", itr->path().string().c_str());
+					try {
+						fs::remove(itr->path());
+					} catch (fs::filesystem_error e) {
+						throw boss_error(BOSS_ERROR_FS_FILE_DELETE_FAIL, itr->path().string());
+					}
+				}
 			}
+		} catch (fs::filesystem_error e) {
+			throw boss_error(BOSS_ERROR_FS_ITER_DIRECTORY_FAIL, boss_path.string());
 		}
 	}
 
@@ -592,9 +524,9 @@ namespace boss {
 	// Masterlist Updating
 	////////////////////////
 
-	//Updates the local masterlist to the latest available online.
-	BOSS_COMMON_EXP void UpdateMasterlist(uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate) {							//cURL handle
-		string buffer,newline;		//A bunch of strings.
+	//Updates the local masterlist to the latest available online. Throws exception on error.
+	BOSS_COMMON void UpdateMasterlist(uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate) {							//cURL handle
+		string url, buffer, newline;		//A bunch of strings.
 		ifstream mlist;								//Input stream.
 		ofstream out;								//Output stream.
 		const string SVN_REVISION_KW = "$" "Revision" "$";                   // Left as separated parts to avoid keyword expansion
@@ -608,23 +540,33 @@ namespace boss {
 
 		//Is an update available?
 		if (localRevision == 0 || localRevision < remoteRevision) {
-			//Set filesURL.
-			if (gl_current_game == OBLIVION) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/";
-			else if (gl_current_game == FALLOUT3) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/";
-			else if (gl_current_game == NEHRIM) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/";
-			else if (gl_current_game == FALLOUTNV) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/";
-			else if (gl_current_game == SKYRIM) filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-skyrim/";
-			else
+			//Set url.
+			switch (gl_current_game) {
+			case OBLIVION:
+				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
+				break;
+			case NEHRIM:
+				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/masterlist.txt";
+				break;
+			case SKYRIM:
+				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-skyrim/masterlist.txt";
+				break;
+			case FALLOUT3:
+				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
+				break;
+			case FALLOUTNV:
+				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/masterlist.txt";
+				break;
+			default:
 				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
+			}
 
-			//Put masterlist.txt in updatedFiles.
-			updatedFiles.clear();
-			fileInfo file(masterlist_path().string());
-			updatedFiles.push_back(file);
+			//Set file.
+			ui.file = masterlist_path().string();
 
 			//Now download and install.
-			DownloadFiles(ui, MASTERLIST);
-			InstallFiles(MASTERLIST);
+			DownloadFile(ui, url, masterlist_path().string() + ".new");
+			InstallFile(masterlist_path().string() + ".new", masterlist_path().string());
 
 			//Now replace the SVN info in the downloaded file with the revision and date.
 			newline = "Masterlist Revision: "+IntToString(remoteRevision)+" ("+remoteDate+")";
@@ -648,40 +590,10 @@ namespace boss {
 	// BOSS Updating
 	////////////////////////
 
-	//Gets the release notes for the update.
-	string FetchReleaseNotes(const string updateVersion) {
-		string fileBuffer, remote_file;
-		char errbuff[CURL_ERROR_SIZE];
-		CURL *curl;									//cURL handle
-		CURLcode ret;
-
-		filesURL = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/";
-
-		//curl will be used to get stuff from the internet, so initialise it.
-		curl = InitCurl(errbuff);
-
-		//First get file list and crcs to build updatedFiles vector.
-		remote_file = filesURL+"releasenotes.txt";
-		curl_easy_setopt(curl, CURLOPT_URL, remote_file.c_str());
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);	
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
-		ret = curl_easy_perform(curl);
-		if (ret!=CURLE_OK) {
-			string err = errbuff;
-			curl_easy_cleanup(curl);
-			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
-		}
-		if (fileBuffer.substr(0,9) == "<!DOCTYPE")  //No release notes.
-			fileBuffer.clear();
-		curl_easy_cleanup(curl);
-
-		return fileBuffer;
-	}
-
-	//Checks if a new release of BOSS is available or not.
-	BOSS_COMMON_EXP string IsBOSSUpdateAvailable() {
+	//Checks if a new release of BOSS is available or not. Throws exception on error.
+	BOSS_COMMON string IsBOSSUpdateAvailable() {
 		string ver, proxy_str;
-		unsigned int majorV=0, minorV=0, patchV=0;
+		uint32_t majorV=0, minorV=0, patchV=0;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		CURLcode ret;
@@ -722,11 +634,61 @@ namespace boss {
 			return "";
 	}
 
+	//Gets the release notes for the update. Throws exception on error.
+	string FetchReleaseNotes(const string updateVersion) {
+		string url, fileBuffer;
+		char errbuff[CURL_ERROR_SIZE];
+		CURL *curl;									//cURL handle
+		CURLcode ret;
+
+		//Set release notes url.
+		url = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/releasenotes.txt";
+
+		//curl will be used to get stuff from the internet, so initialise it.
+		curl = InitCurl(errbuff);
+
+		//Get release notes.
+		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);	
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
+		ret = curl_easy_perform(curl);
+		if (ret!=CURLE_OK) {
+			string err = errbuff;
+			curl_easy_cleanup(curl);
+			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
+		}
+		if (fileBuffer.substr(0,9) == "<!DOCTYPE")  //No release notes.
+			fileBuffer.clear();
+		curl_easy_cleanup(curl);
+
+		return fileBuffer;
+	}
+
 	//Downloads and installs a BOSS update.
-	BOSS_COMMON_EXP vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const string updateVersion) {
-		installType type = APPLICATION;
-		FetchUpdateFileList(type, updateVersion);
-		DownloadFiles(ui, type);
-		return InstallFiles(type);
+	BOSS_COMMON string DownloadInstallBOSSUpdate(uiStruct ui, const string updateVersion) {
+		string file, releaseURL;
+		uint32_t crc;
+		releaseURL = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/";
+
+		//Get file info.
+		GetBOSSFileInfo(releaseURL + "checksum.txt", file, crc);
+			
+		//Set file.
+		ui.file = boss_path.string() + '/' + file;
+
+		//Download file.
+		string remote_file = releaseURL + file;
+		string dest_file = boss_path.string() + '/' + file + ".new";
+		boost::replace_all(remote_file, " ", "%20");  //Need to put the %20s back in for the file's web address.
+		DownloadFile(ui, remote_file, dest_file);
+		
+		//Check if file is valid.
+		if (GetCrc32(fs::path(dest_file)) != crc)
+			throw boss_error(BOSS_ERROR_FILE_CRC_MISMATCH, dest_file);
+		
+		//Now install file.
+		InstallFile(dest_file, (boss_path / file).string());
+
+		return (boss_path / file).string();
 	}
 }

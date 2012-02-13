@@ -24,40 +24,45 @@
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
 */
+#define wxUSE_CHOICEDLG 1
 
 #include "Common/Globals.h"
 #include "Parsing/Grammar.h"
 #include "Support/Helpers.h"
 #include "Output/Output.h"
 
+#include <wx/choicdlg.h>
+#include <wx/arrstr.h>
+
 namespace boss {
 	using namespace std;
 
-	BOSS_COMMON_EXP const string gl_boss_release_date	= "1 January 2012";
+	BOSS_COMMON const string gl_boss_release_date	= "1 January 2012";
 
-	BOSS_COMMON_EXP uint32_t gl_current_game			= AUTODETECT;
+	BOSS_COMMON uint32_t gl_current_game			= AUTODETECT;
 
 	///////////////////////////////
 	//File/Folder Paths
 	///////////////////////////////
 
-	BOSS_COMMON_EXP const fs::path boss_path			= fs::path(".");
-	BOSS_COMMON_EXP fs::path data_path					= boss_path / ".." / "Data";
-	BOSS_COMMON_EXP const fs::path ini_path				= boss_path / "BOSS.ini";
-	BOSS_COMMON_EXP const fs::path old_ini_path			= boss_path / "BOSS.ini.old";
-	BOSS_COMMON_EXP const fs::path debug_log_path		= boss_path / "BOSSDebugLog.txt";
-	BOSS_COMMON_EXP const fs::path readme_path			= boss_path / "Docs" / "BOSS ReadMe.html";
-	BOSS_COMMON_EXP const fs::path rules_readme_path	= boss_path / "Docs" / "BOSS User Rules ReadMe.html";
-	BOSS_COMMON_EXP const fs::path masterlist_doc_path	= boss_path / "Docs" / "BOSS Masterlist Syntax.html";
-	BOSS_COMMON_EXP const fs::path api_doc_path			= boss_path / "Docs" / "BOSS API ReadMe.html";
+	BOSS_COMMON const fs::path boss_path			= fs::path(".");
+	BOSS_COMMON fs::path data_path					= boss_path / ".." / "Data";
+	BOSS_COMMON const fs::path ini_path				= boss_path / "BOSS.ini";
+	BOSS_COMMON const fs::path old_ini_path			= boss_path / "BOSS.ini.old";
+	BOSS_COMMON const fs::path debug_log_path		= boss_path / "BOSSDebugLog.txt";
+	BOSS_COMMON const fs::path readme_path			= boss_path / "Docs" / "BOSS ReadMe.html";
+	BOSS_COMMON const fs::path rules_readme_path	= boss_path / "Docs" / "BOSS User Rules ReadMe.html";
+	BOSS_COMMON const fs::path masterlist_doc_path	= boss_path / "Docs" / "BOSS Masterlist Syntax.html";
+	BOSS_COMMON const fs::path api_doc_path			= boss_path / "Docs" / "BOSS API ReadMe.html";
+	BOSS_COMMON const fs::path licenses_path		= boss_path / "Docs" / "Licenses.txt";
 
-
+	
 	///////////////////////////////
 	//File/Folder Path Functions
 	///////////////////////////////
 
 	//Path to the BOSS files for the game that BOSS is currently running for, relative to executable (ie. boss_path).
-	fs::path boss_game_path() {
+	BOSS_COMMON fs::path boss_game_path() {
 		switch (gl_current_game) {
 	/*	case OBLIVION:
 			return boss_path / "Oblivion";
@@ -74,7 +79,7 @@ namespace boss {
 		}
 	}
 
-	fs::path bosslog_path() {
+	BOSS_COMMON fs::path bosslog_path() {
 		switch (gl_log_format) {
 		case HTML:
 			return boss_game_path() / "BOSSlog.html";
@@ -85,19 +90,19 @@ namespace boss {
 		}
 	}
 
-	fs::path masterlist_path() {
+	BOSS_COMMON fs::path masterlist_path() {
 		return boss_game_path() / "masterlist.txt";
 	}
 
-	fs::path userlist_path() {
+	BOSS_COMMON fs::path userlist_path() {
 		return boss_game_path() / "userlist.txt";
 	}
 
-	fs::path modlist_path() {
+	BOSS_COMMON fs::path modlist_path() {
 		return boss_game_path() / "modlist.txt";
 	}
 
-	fs::path old_modlist_path() {
+	BOSS_COMMON fs::path old_modlist_path() {
 		return boss_game_path() / "modlist.old";
 	}
 
@@ -106,34 +111,34 @@ namespace boss {
 	///////////////////////////////
 
 	//GUI variables
-	BOSS_COMMON_EXP uint32_t	gl_run_type					= 0;
-	BOSS_COMMON_EXP	bool		gl_use_user_rules_editor	= false;
+	BOSS_COMMON uint32_t	gl_run_type					= 0;
+	BOSS_COMMON	bool		gl_use_user_rules_editor	= false;
 
 	//Command line variables
-	BOSS_COMMON_EXP string		gl_proxy_host				= "";
-	BOSS_COMMON_EXP string		gl_proxy_user				= "";
-	BOSS_COMMON_EXP string		gl_proxy_passwd				= "";
-	BOSS_COMMON_EXP uint32_t	gl_proxy_port				= 0;
-	BOSS_COMMON_EXP uint32_t	gl_log_format				= HTML;
-	BOSS_COMMON_EXP uint32_t	gl_game						= AUTODETECT;
-	BOSS_COMMON_EXP uint32_t	gl_revert					= 0;
-	BOSS_COMMON_EXP uint32_t	gl_debug_verbosity			= 0;
-	BOSS_COMMON_EXP bool		gl_update					= true;
-	BOSS_COMMON_EXP bool		gl_update_only				= false;
-	BOSS_COMMON_EXP bool		gl_silent					= false;
-	BOSS_COMMON_EXP bool		gl_skip_version_parse		= false;
-	BOSS_COMMON_EXP bool		gl_debug_with_source		= false;
-	BOSS_COMMON_EXP bool		gl_show_CRCs				= false;
-	BOSS_COMMON_EXP bool		gl_trial_run				= false;
-	BOSS_COMMON_EXP bool		gl_log_debug_output			= false;
-	BOSS_COMMON_EXP bool		gl_do_startup_update_check	= true;
+	BOSS_COMMON string		gl_proxy_host				= "";
+	BOSS_COMMON string		gl_proxy_user				= "";
+	BOSS_COMMON string		gl_proxy_passwd				= "";
+	BOSS_COMMON uint32_t	gl_proxy_port				= 0;
+	BOSS_COMMON uint32_t	gl_log_format				= HTML;
+	BOSS_COMMON uint32_t	gl_game						= AUTODETECT;
+	BOSS_COMMON uint32_t	gl_revert					= 0;
+	BOSS_COMMON uint32_t	gl_debug_verbosity			= 0;
+	BOSS_COMMON bool		gl_update					= true;
+	BOSS_COMMON bool		gl_update_only				= false;
+	BOSS_COMMON bool		gl_silent					= false;
+	BOSS_COMMON bool		gl_skip_version_parse		= false;
+	BOSS_COMMON bool		gl_debug_with_source		= false;
+	BOSS_COMMON bool		gl_show_CRCs				= false;
+	BOSS_COMMON bool		gl_trial_run				= false;
+	BOSS_COMMON bool		gl_log_debug_output			= false;
+	BOSS_COMMON bool		gl_do_startup_update_check	= true;
 
 
 	///////////////////////////////
 	//Settings Functions
 	///////////////////////////////
 
-	string GetGameString(uint32_t game) {
+	BOSS_COMMON string GetGameString(uint32_t game) {
 		switch (game) {
 		case OBLIVION:
 			return "TES IV: Oblivion";
@@ -150,7 +155,7 @@ namespace boss {
 		}
 	}
 
-	string	GetGameMasterFile(uint32_t game) {
+	BOSS_COMMON string	GetGameMasterFile(uint32_t game) {
 		switch (game) {
 		case OBLIVION:
 			return "Oblivion.esm";
@@ -167,18 +172,16 @@ namespace boss {
 		}
 	}
 
-	void DetectGame() {  //Throws exception if error.
+	BOSS_COMMON void DetectGame(void * parent) {  //Throws exception if error.
 		//Set gl_current_game.
 		if (gl_game != AUTODETECT)
 			gl_current_game = gl_game;
 		else {
-			if (fs::exists(data_path / "Oblivion.esm")) {
-				if (fs::exists(data_path / "Nehrim.esm"))
-					throw boss_error(BOSS_ERROR_OBLIVION_AND_NEHRIM);
-				gl_current_game = OBLIVION;
-			} else if (fs::exists(data_path / "Nehrim.esm")) 
+			if (fs::exists(data_path / "Nehrim.esm"))  //Before Oblivion because Nehrim installs can have Oblivion.esm for porting mods.
 				gl_current_game = NEHRIM;
-			else if (fs::exists(data_path / "FalloutNV.esm")) 
+			else if (fs::exists(data_path / "Oblivion.esm"))
+				gl_current_game = OBLIVION;
+			else if (fs::exists(data_path / "FalloutNV.esm"))   //Before Fallout 3 because some mods for New Vegas require Fallout3.esm.
 				gl_current_game = FALLOUTNV;
 			else if (fs::exists(data_path / "Fallout3.esm")) 
 				gl_current_game = FALLOUT3;
@@ -216,18 +219,30 @@ namespace boss {
 						throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
 				} else {
 					//Ask user to choose game.
-#ifdef BOSSGUI
-
-#else
-					cout << endl << "Please pick which game to run BOSS for:" << endl;
-					for (size_t i=0; i < gamesDetected.size(); i++) {
-						cout << i << " : " << gamesDetected[i] << endl;
-					}
 					size_t ans;
-					cin >> ans;
-					if (ans < 0 || ans >= gamesDetected.size()) {
-						cout << "Invalid selection." << endl;
-						throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
+					if (parent != NULL) {
+						wxArrayString choices;
+						for (size_t i=0; i < gamesDetected.size(); i++) {
+							choices.Add(gamesDetected[i]);
+						}
+						wxSingleChoiceDialog* choiceDia = new wxSingleChoiceDialog((wxWindow*)parent, wxT("Please pick which game to run BOSS for:"),
+							wxT("BOSS: Select Game"), choices);
+
+						if (choiceDia->ShowModal() == wxID_OK) {
+							ans = choiceDia->GetSelection();
+							choiceDia->Close(true);
+						} else
+							throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
+					} else {
+						cout << endl << "Please pick which game to run BOSS for:" << endl;
+						for (size_t i=0; i < gamesDetected.size(); i++) {
+							cout << i << " : " << gamesDetected[i] << endl;
+						}
+						cin >> ans;
+						if (ans < 0 || ans >= gamesDetected.size()) {
+							cout << "Invalid selection." << endl;
+							throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
+						}
 					}
 					if (gamesDetected[ans] == "TES IV: Oblivion")
 						gl_current_game = OBLIVION;
@@ -241,7 +256,6 @@ namespace boss {
 						gl_current_game = FALLOUTNV;
 					else
 						throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
-#endif
 				}
 				//Now set data_path as appropriate for current_game.
 				switch (gl_current_game) {
@@ -295,7 +309,7 @@ namespace boss {
 		}
 	}
 
-	time_t GetMasterTime() {  //Throws exception if error.
+	BOSS_COMMON time_t GetMasterTime() {  //Throws exception if error.
 		try {
 			switch (gl_current_game) {
 			case OBLIVION:

@@ -47,7 +47,7 @@
 
 namespace boss
 {
-	BOSS_COMMON_EXP enum LogVerbosity
+	enum LogVerbosity
 	{
 		LV_OFF   = 0,
 		LV_ERROR = 1,
@@ -58,7 +58,7 @@ namespace boss
 	};
 
 	// A simple logging class.  Not implemented to be thread safe.
-	class Logger
+	class BOSS_COMMON Logger
 	{
 	public:
 		Logger();
@@ -107,7 +107,7 @@ namespace boss
 	};
 
 	// declare global logger
-	BOSS_COMMON_EXP extern Logger g_logger;
+	BOSS_COMMON extern Logger g_logger;
 }
 
 #endif // __SUPPORT_LOGGER__HPP__

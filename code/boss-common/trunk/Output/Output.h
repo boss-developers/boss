@@ -44,63 +44,63 @@ namespace boss {
 	using namespace std;
 
 	//Default filter options.
-	BOSS_COMMON_EXP extern bool UseDarkColourScheme;
-	BOSS_COMMON_EXP extern bool HideVersionNumbers;
-	BOSS_COMMON_EXP extern bool HideGhostedLabel;
-	BOSS_COMMON_EXP extern bool HideChecksums;
-	BOSS_COMMON_EXP extern bool HideMessagelessMods;
-	BOSS_COMMON_EXP extern bool HideGhostedMods;
-	BOSS_COMMON_EXP extern bool HideCleanMods;
-	BOSS_COMMON_EXP extern bool HideRuleWarnings;
-	BOSS_COMMON_EXP extern bool HideAllModMessages;
-	BOSS_COMMON_EXP extern bool HideNotes;
-	BOSS_COMMON_EXP extern bool HideBashTagSuggestions;
-	BOSS_COMMON_EXP extern bool HideRequirements;
-	BOSS_COMMON_EXP extern bool HideIncompatibilities;
-	BOSS_COMMON_EXP extern bool HideDoNotCleanMessages;
+	BOSS_COMMON extern bool UseDarkColourScheme;
+	BOSS_COMMON extern bool HideVersionNumbers;
+	BOSS_COMMON extern bool HideGhostedLabel;
+	BOSS_COMMON extern bool HideChecksums;
+	BOSS_COMMON extern bool HideMessagelessMods;
+	BOSS_COMMON extern bool HideGhostedMods;
+	BOSS_COMMON extern bool HideCleanMods;
+	BOSS_COMMON extern bool HideRuleWarnings;
+	BOSS_COMMON extern bool HideAllModMessages;
+	BOSS_COMMON extern bool HideNotes;
+	BOSS_COMMON extern bool HideBashTagSuggestions;
+	BOSS_COMMON extern bool HideRequirements;
+	BOSS_COMMON extern bool HideIncompatibilities;
+	BOSS_COMMON extern bool HideDoNotCleanMessages;
 
 	//Default CSS.
-	BOSS_COMMON_EXP extern string CSSBody;
-	BOSS_COMMON_EXP extern string CSSDarkBody;
-	BOSS_COMMON_EXP extern string CSSDarkLink;
-	BOSS_COMMON_EXP extern string CSSDarkLinkVisited;
-	BOSS_COMMON_EXP extern string CSSFilters;
-	BOSS_COMMON_EXP extern string CSSFiltersList;
-	BOSS_COMMON_EXP extern string CSSDarkFilters;
-	BOSS_COMMON_EXP extern string CSSTitle;
-	BOSS_COMMON_EXP extern string CSSCopyright;
-	BOSS_COMMON_EXP extern string CSSSections;
-	BOSS_COMMON_EXP extern string CSSSectionTitle;
-	BOSS_COMMON_EXP extern string CSSSectionPlusMinus;
-	BOSS_COMMON_EXP extern string CSSLastSection;
-	BOSS_COMMON_EXP extern string CSSTable;
-	BOSS_COMMON_EXP extern string CSSList;
-	BOSS_COMMON_EXP extern string CSSListItem;
-	BOSS_COMMON_EXP extern string CSSSubList;
-	BOSS_COMMON_EXP extern string CSSCheckbox;
-	BOSS_COMMON_EXP extern string CSSBlockquote;
-	BOSS_COMMON_EXP extern string CSSError;
-	BOSS_COMMON_EXP extern string CSSWarning;
-	BOSS_COMMON_EXP extern string CSSSuccess;
-	BOSS_COMMON_EXP extern string CSSVersion;
-	BOSS_COMMON_EXP extern string CSSGhost;
-	BOSS_COMMON_EXP extern string CSSCRC;
-	BOSS_COMMON_EXP extern string CSSTagPrefix;
-	BOSS_COMMON_EXP extern string CSSDirty;
-	BOSS_COMMON_EXP extern string CSSQuotedMessage;
-	BOSS_COMMON_EXP extern string CSSMod;
-	BOSS_COMMON_EXP extern string CSSTag;
-	BOSS_COMMON_EXP extern string CSSNote;
-	BOSS_COMMON_EXP extern string CSSRequirement;
-	BOSS_COMMON_EXP extern string CSSIncompatibility;
-	BOSS_COMMON_EXP extern string CSSSubmit;
-	BOSS_COMMON_EXP extern string CSSPopupBox;
-	BOSS_COMMON_EXP extern string CSSPopupBoxTitle;
-	BOSS_COMMON_EXP extern string CSSPopupBoxLink;
-	BOSS_COMMON_EXP extern string CSSPopupBoxNotes;
-	BOSS_COMMON_EXP extern string CSSPopupBoxClose;
-	BOSS_COMMON_EXP extern string CSSPopupBoxSubmit;
-	BOSS_COMMON_EXP extern string CSSMask;
+	BOSS_COMMON extern string CSSBody;
+	BOSS_COMMON extern string CSSDarkBody;
+	BOSS_COMMON extern string CSSDarkLink;
+	BOSS_COMMON extern string CSSDarkLinkVisited;
+	BOSS_COMMON extern string CSSFilters;
+	BOSS_COMMON extern string CSSFiltersList;
+	BOSS_COMMON extern string CSSDarkFilters;
+	BOSS_COMMON extern string CSSTitle;
+	BOSS_COMMON extern string CSSCopyright;
+	BOSS_COMMON extern string CSSSections;
+	BOSS_COMMON extern string CSSSectionTitle;
+	BOSS_COMMON extern string CSSSectionPlusMinus;
+	BOSS_COMMON extern string CSSLastSection;
+	BOSS_COMMON extern string CSSTable;
+	BOSS_COMMON extern string CSSList;
+	BOSS_COMMON extern string CSSListItem;
+	BOSS_COMMON extern string CSSSubList;
+	BOSS_COMMON extern string CSSCheckbox;
+	BOSS_COMMON extern string CSSBlockquote;
+	BOSS_COMMON extern string CSSError;
+	BOSS_COMMON extern string CSSWarning;
+	BOSS_COMMON extern string CSSSuccess;
+	BOSS_COMMON extern string CSSVersion;
+	BOSS_COMMON extern string CSSGhost;
+	BOSS_COMMON extern string CSSCRC;
+	BOSS_COMMON extern string CSSTagPrefix;
+	BOSS_COMMON extern string CSSDirty;
+	BOSS_COMMON extern string CSSQuotedMessage;
+	BOSS_COMMON extern string CSSMod;
+	BOSS_COMMON extern string CSSTag;
+	BOSS_COMMON extern string CSSNote;
+	BOSS_COMMON extern string CSSRequirement;
+	BOSS_COMMON extern string CSSIncompatibility;
+	BOSS_COMMON extern string CSSSubmit;
+	BOSS_COMMON extern string CSSPopupBox;
+	BOSS_COMMON extern string CSSPopupBoxTitle;
+	BOSS_COMMON extern string CSSPopupBoxLink;
+	BOSS_COMMON extern string CSSPopupBoxNotes;
+	BOSS_COMMON extern string CSSPopupBoxClose;
+	BOSS_COMMON extern string CSSPopupBoxSubmit;
+	BOSS_COMMON extern string CSSMask;
 
 	enum logFormatting : uint32_t {
 		DIV_OPEN,
@@ -136,7 +136,7 @@ namespace boss {
 		BUTTON_SUBMIT_PLUGIN
 	};
 
-	class Outputter {
+	class BOSS_COMMON Outputter {
 	public:
 		Outputter();
 		Outputter(uint32_t format);

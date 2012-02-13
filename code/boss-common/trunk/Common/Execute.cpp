@@ -382,7 +382,7 @@ namespace boss {
 		: recognised(0), unrecognised(0), ghosted(0), messages(0), warnings(0), errors(0) {}
 
 	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
-	BOSS_COMMON_EXP boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
+	BOSS_COMMON boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
 		while(startPos != set.end()) {
 			if (boost::regex_match(*startPos,reg))
 				return startPos;
@@ -392,7 +392,7 @@ namespace boss {
 	}
 
 	//Record recognised mod list from last HTML BOSSlog generated.
-	BOSS_COMMON_EXP string GetOldRecognisedList(const fs::path log) {
+	BOSS_COMMON string GetOldRecognisedList(const fs::path log) {
 		size_t pos1, pos2;
 		string result;
 		fileToBuffer(log,result);
@@ -406,7 +406,7 @@ namespace boss {
 		return result;
 	}
 
-	BOSS_COMMON_EXP void PerformSortingFunctionality(fs::path file,
+	BOSS_COMMON void PerformSortingFunctionality(fs::path file,
 												ItemList& modlist,
 												ItemList& masterlist,
 												RuleList& userlist,
@@ -435,7 +435,7 @@ namespace boss {
 
 	//Create a modlist containing all the mods that are installed or referenced in the userlist with their masterlist messages.
 	//Returns the vector position of the last recognised mod in modlist.
-	BOSS_COMMON_EXP void BuildWorkingModlist(ItemList& modlist, ItemList& masterlist, RuleList& userlist) {
+	BOSS_COMMON void BuildWorkingModlist(ItemList& modlist, ItemList& masterlist, RuleList& userlist) {
 		//Add all modlist and userlist mods to a hashset to optimise comparison against masterlist.
 		boost::unordered_set<string> hashset;  //Holds mods for checking against masterlist
 		boost::unordered_set<string>::iterator setPos;
@@ -564,7 +564,7 @@ namespace boss {
 	}
 
 	//Applies the userlist rules to the working modlist.
-	BOSS_COMMON_EXP void ApplyUserRules(ItemList& modlist, RuleList& userlist, string& outputBuffer) {
+	BOSS_COMMON void ApplyUserRules(ItemList& modlist, RuleList& userlist, string& outputBuffer) {
 		if (userlist.rules.empty())
 			return;
 		//Because erase operations invalidate iterators after the position(s) erased, the last recognised mod needs to be recorded, then

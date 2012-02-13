@@ -76,7 +76,7 @@ namespace boss {
 	//////////////////////////////
 
 	//Base class for all conditional data types.
-	class conditionalData {	
+	class BOSS_COMMON conditionalData {	
 		friend struct boost::fusion::extension::access;
 	private:
 		string data;
@@ -93,14 +93,14 @@ namespace boss {
 		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 	};
 
-	class MasterlistVar : public conditionalData {
+	class BOSS_COMMON MasterlistVar : public conditionalData {
 		friend struct boost::fusion::extension::access;
 	public:
 		MasterlistVar();
 		MasterlistVar(string inData, string inConditions);
 	};
 
-	class Message : public conditionalData {
+	class BOSS_COMMON Message : public conditionalData {
 		friend struct boost::fusion::extension::access;
 	private:
 		keyType key;
@@ -115,7 +115,7 @@ namespace boss {
 		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 	};
 
-	class Item : public conditionalData {
+	class BOSS_COMMON Item : public conditionalData {
 		friend struct boost::fusion::extension::access;
 	private:
 		vector<Message> messages;
@@ -148,7 +148,7 @@ namespace boss {
 		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 	};
 
-	class ItemList {
+	class BOSS_COMMON ItemList {
 	private:
 		vector<Item>			items;
 		ParsingError			errorBuffer;
@@ -192,7 +192,7 @@ namespace boss {
 	// Userlist Classes
 	//////////////////////////////
 	
-	class RuleLine {
+	class BOSS_COMMON RuleLine {
 		friend struct boost::fusion::extension::access;
 	private:
 		keyType key;
@@ -212,7 +212,7 @@ namespace boss {
 		void Object(string inObject);
 	};
 
-	class Rule : public RuleLine {
+	class BOSS_COMMON Rule : public RuleLine {
 		friend struct boost::fusion::extension::access;
 	private:
 		bool				enabled;
@@ -226,7 +226,7 @@ namespace boss {
 		void Lines(vector<RuleLine> inLines);
 	};
 
-	class RuleList {
+	class BOSS_COMMON RuleList {
 	public:
 		vector<Rule>			rules;
 		ParsingError			parsingErrorBuffer;

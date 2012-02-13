@@ -28,12 +28,8 @@
 #ifndef __MAIN__HPP__
 #define __MAIN__HPP__
 
-#include "wx/wxprec.h"
 
-#ifndef WX_PRECOMP
-#       include "wx/wx.h"
-#endif
-
+#include "GUI/ElementIDs.h"
 #include <wx/hyperlink.h>
 #include <wx/progdlg.h>
 #include <wx/thread.h>

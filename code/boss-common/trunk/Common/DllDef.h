@@ -30,13 +30,18 @@
 
 //#include <windows.h>
 
-
-//#if defined(_WIN32) || defined(_WIN64)
-//#   define BOSS_COMMON_EXP __declspec(dllexport)
-//#	define BOSS_COMMON_IMP __declspec(dllimport)
-//#else
-#   define BOSS_COMMON_EXP
-#	define BOSS_COMMON_IMP
+// set up dll import/export decorators
+// when compiling the dll on windows, ensure BOSS_EXPORT is defined.  clients
+// that use BOSS-Common.h do not need to define anything to import the symbols
+// properly.
+/*#if defined(_WIN32) || defined(_WIN64)
+#	ifdef BOSS_EXPORT
+#		define BOSS_COMMON __declspec(dllexport)
+#	else
+#		define BOSS_COMMON __declspec(dllimport)
+#	endif
+#else*/
+#	define BOSS_COMMON
 //#endif
 
 #endif

@@ -26,8 +26,6 @@
 */
 
 #include "GUI/SettingsWindow.h"
-#include "GUI/ElementIDs.h"
-#include "BOSS-Common.h"
 
 BEGIN_EVENT_TABLE( SettingsFrame, wxFrame )
 	EVT_BUTTON ( OPTION_OKExitSettings, SettingsFrame::OnOKQuit)
@@ -337,34 +335,34 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 
 void SettingsFrame::SetDefaultValues(wxString * DebugVerbosity) {
 	//General Settings
-	if (do_startup_update_check)
+	if (gl_do_startup_update_check)
 		StartupUpdateCheckBox->SetValue(true);
-	if (use_user_rules_editor)
+	if (gl_use_user_rules_editor)
 		UseUserRuleEditorBox->SetValue(true);
 
 	//Internet Settings
-	ProxyHostBox->SetValue(proxy_host);
+	ProxyHostBox->SetValue(gl_proxy_host);
 
-	ProxyPortBox->SetValue(wxString::Format(wxT("%i"),proxy_port));
+	ProxyPortBox->SetValue(wxString::Format(wxT("%i"),gl_proxy_port));
 
-	ProxyUserBox->SetValue(proxy_user);
+	ProxyUserBox->SetValue(gl_proxy_user);
 
-	ProxyPasswdBox->SetValue(proxy_passwd);
+	ProxyPasswdBox->SetValue(gl_proxy_passwd);
 
 	//Debugging Settings
-	if (debug_with_source)
+	if (gl_debug_with_source)
 		DebugSourceReferencesBox->SetValue(true);
 
-	if (log_debug_output)
+	if (gl_log_debug_output)
 		LogDebugOutputBox->SetValue(true);
 
-	if (debug_verbosity == 0)
+	if (gl_debug_verbosity == 0)
 		DebugVerbosityChoice->SetSelection(0);
-	else if (debug_verbosity == 1)
+	else if (gl_debug_verbosity == 1)
 		DebugVerbosityChoice->SetSelection(1);
-	else if (debug_verbosity == 2)
+	else if (gl_debug_verbosity == 2)
 		DebugVerbosityChoice->SetSelection(2);
-	else if (debug_verbosity == 3)
+	else if (gl_debug_verbosity == 3)
 		DebugVerbosityChoice->SetSelection(3);
 
 	//BOSS Log Filters Settings
@@ -442,19 +440,19 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	//Make sure the settings are saved.
 
 	//General
-	do_startup_update_check = StartupUpdateCheckBox->IsChecked();
-	use_user_rules_editor = UseUserRuleEditorBox->IsChecked();
+	gl_do_startup_update_check = StartupUpdateCheckBox->IsChecked();
+	gl_use_user_rules_editor = UseUserRuleEditorBox->IsChecked();
 
 	//Network
-	proxy_host = ProxyHostBox->GetValue();
-	proxy_port = wxAtoi(ProxyPortBox->GetValue());
-	proxy_user = ProxyUserBox->GetValue();
-	proxy_passwd = ProxyPasswdBox->GetValue();
+	gl_proxy_host = ProxyHostBox->GetValue();
+	gl_proxy_port = wxAtoi(ProxyPortBox->GetValue());
+	gl_proxy_user = ProxyUserBox->GetValue();
+	gl_proxy_passwd = ProxyPasswdBox->GetValue();
 
 	//Debugging
-	debug_verbosity = DebugVerbosityChoice->GetSelection();
-	debug_with_source = DebugSourceReferencesBox->IsChecked();
-	log_debug_output = LogDebugOutputBox->IsChecked();
+	gl_debug_verbosity = DebugVerbosityChoice->GetSelection();
+	gl_debug_with_source = DebugSourceReferencesBox->IsChecked();
+	gl_log_debug_output = LogDebugOutputBox->IsChecked();
 
 	//Filters
 	UseDarkColourScheme = UseDarkColourSchemeBox->IsChecked();
@@ -508,9 +506,9 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	CSSIncompatibility = CSSIncompatibilityBox->GetValue();
 
 	//Also set the logger settings now.
-	g_logger.setOriginTracking(debug_with_source);
-	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + debug_verbosity));
-	if (log_debug_output)
+	g_logger.setOriginTracking(gl_debug_with_source);
+	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));
+	if (gl_log_debug_output)
 		g_logger.setStream(debug_log_path.string().c_str());
 
 	this->Close();

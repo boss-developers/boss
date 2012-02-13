@@ -37,62 +37,27 @@
 #include <boost/cstdint.hpp>
 #include "Common/DllDef.h"
 
-
-/* Updater code.
-
-BOSS uses two types of updating:
-
-1. Masterlist updating. BOSS compares the local masterlist against the remote 
-masterlist and downloads the remote one if it is newer.
-
-2. BOSS updating. BOSS compares the latest version available online against 
-the local version and downloads the installer for the latest version if it 
-was previously installed using the installer, or prompts the user to upgrade 
-manually.
-
-Both files have set names and locations locally and online. Both files should
-be downloaded using Subversion.
-
-*/
-
 namespace boss {
 	using namespace std;
 
-	BOSS_COMMON_EXP enum installType : uint32_t {  //Possible types of install the user has.
-		APPLICATION,
-		MASTERLIST
+	struct BOSS_COMMON uiStruct {
+		void * p;
+		string file;
+
+		uiStruct();
+		uiStruct(void *GUIpoint);
 	};
-
-	struct fileInfo {  //Holds the information for files to be downloaded, and also folders to be created/destroyed.
-		bool toDelete;
-		string name;
-		uint32_t crc;
-
-		fileInfo();
-		fileInfo(string str);
-	};
-
-	struct uiStruct {
-		void *p;
-		bool isGUI;
-		size_t fileIndex;
-
-		BOSS_COMMON_EXP uiStruct();
-		BOSS_COMMON_EXP uiStruct(void *GUIpoint);
-	};
-
-	BOSS_COMMON_EXP extern vector<fileInfo> updatedFiles;  //The updated files. These don't have the .new extension.
 
 	////////////////////////
 	// General Functions
 	////////////////////////
 
 	//Checks if an Internet connection is present.
-	BOSS_COMMON_EXP bool CheckConnection();
+	BOSS_COMMON bool CheckConnection();
 
 	//Cleans up after the user cancels a download.
 	//Throws boss_error exception on fail.
-	BOSS_COMMON_EXP void CleanUp();
+	BOSS_COMMON void CleanUp();
 
 
 	////////////////////////
@@ -101,7 +66,7 @@ namespace boss {
 
 	//Updates the local masterlist to the latest available online.
 	//Throws boss_error exception on fail.
-	BOSS_COMMON_EXP void UpdateMasterlist(uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate);
+	BOSS_COMMON void UpdateMasterlist(uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate);
 
 
 	////////////////////////
@@ -110,14 +75,14 @@ namespace boss {
 
 	//Checks if a new release of BOSS is available or not.
 	//Throws boss_error exception on fail.
-	BOSS_COMMON_EXP string IsBOSSUpdateAvailable();
+	BOSS_COMMON string IsBOSSUpdateAvailable();
 
 	//Gets the release notes for the update.
 	//Throws boss_error exception on fail.
-	BOSS_COMMON_EXP string FetchReleaseNotes(const string updateVersion);
+	BOSS_COMMON string FetchReleaseNotes(const string updateVersion);
 
 	//Downloads and installs a BOSS update.
 	//Throws boss_error exception on fail.
-	BOSS_COMMON_EXP vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const string updateVersion);
+	BOSS_COMMON string DownloadInstallBOSSUpdate(uiStruct ui, const string updateVersion);
 }
 #endif
