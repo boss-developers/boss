@@ -100,8 +100,8 @@ namespace boss {
 	//Ini Settings
 	///////////////////////////////
 
-	//GUI variables
-	BOSS_COMMON extern uint32_t gl_run_type;				// 1 = sort mods, 2 = only update, 3 = undo changes.
+	//General variables
+	BOSS_COMMON extern bool		gl_do_startup_update_check;	// Whether or not to check for updates on startup.
 	BOSS_COMMON extern bool		gl_use_user_rules_editor;	// Use the User Rules Editor or edit userlist.txt directly?
 
 	//Command line variables.
@@ -121,7 +121,6 @@ namespace boss {
 	BOSS_COMMON extern bool		gl_show_CRCs;				// whether or not to show mod CRCs.
 	BOSS_COMMON extern bool		gl_trial_run;				// If true, don't redate files.
 	BOSS_COMMON extern bool		gl_log_debug_output;		// If true, logs command line output in BOSSDebugLog.txt.
-	BOSS_COMMON extern bool		gl_do_startup_update_check;	// Whether or not to check for updates on startup.
 
 
 	///////////////////////////////
@@ -130,7 +129,7 @@ namespace boss {
 	
 	BOSS_COMMON string	GetGameString		(uint32_t game);
 	BOSS_COMMON string	GetGameMasterFile	(uint32_t game);
-	BOSS_COMMON void	DetectGame			(void * parent);  //Throws exception if error.
+	BOSS_COMMON vector<uint32_t>	DetectGame			(void * parent);  //Throws exception if error.
 	BOSS_COMMON time_t	GetMasterTime		();  //Throws exception if error.
 
 

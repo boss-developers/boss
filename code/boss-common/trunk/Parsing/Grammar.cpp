@@ -932,9 +932,6 @@ namespace boss {
 			} else if (var == "iDebugVerbosity") {
 				if (value >= 0 && value < 4)
 					gl_debug_verbosity = value;
-			} else if (var == "iRunType") {
-				if (value >= 0 && value < 3)
-					gl_run_type = value;
 			}
 		}
 	}

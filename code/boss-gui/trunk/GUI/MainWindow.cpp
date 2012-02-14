@@ -67,6 +67,11 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_MENU ( OPTION_CheckForUpdates, MainFrame::OnUpdateCheck )
 	EVT_MENU ( MENU_ShowAbout, MainFrame::OnAbout )
 	EVT_MENU ( MENU_ShowSettings, MainFrame::OnOpenSettings )
+	EVT_MENU ( MENU_Oblivion, MainFrame::OnGameChange )
+	EVT_MENU ( MENU_Nehrim, MainFrame::OnGameChange )
+	EVT_MENU ( MENU_Skyrim, MainFrame::OnGameChange )
+	EVT_MENU ( MENU_Fallout3, MainFrame::OnGameChange )
+	EVT_MENU ( MENU_FalloutNewVegas, MainFrame::OnGameChange )
 	EVT_BUTTON ( OPTION_Run, MainFrame::OnRunBOSS )
 	EVT_BUTTON ( OPTION_EditUserRules, MainFrame::OnEditUserRules )
 	EVT_BUTTON ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
@@ -154,7 +159,7 @@ bool BossGUI::OnInit() {
 
 	LOG_DEBUG("Detecting game...");
 	try {
-		DetectGame(frame);
+		games = DetectGame(frame);
 		LOG_INFO("Game detected: %d", gl_current_game);
 	} catch (boss_error e) {
 		wxMessageBox(wxString::Format(
@@ -165,6 +170,9 @@ bool BossGUI::OnInit() {
 			NULL);
 	}
 	frame->SetTitle(wxT("BOSS - " + GetGameString(gl_current_game)));
+	frame->SetGames(games);
+	//Also disable the options for undetected games.
+	frame->DisableUndetectedGames();
 	
 
 	frame->SetIcon(wxIconLocation("BOSS GUI.exe"));
@@ -186,17 +194,8 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
         wxT("HTML"),
         wxT("Plain Text")
     };
-	
-	wxString Game[] = {
-		wxT("Autodetect"),
-		wxT("Oblivion"),
-		wxT("Nehrim"),
-		wxT("Skyrim"),
-		wxT("Fallout 3"),
-		wxT("Fallout: New Vegas")
-	};
+
 	wxString UndoLevel[] = {
-		wxT("No Undo"),
 		wxT("Last Run"),
 		wxT("2nd Last Run")
 	};
@@ -215,6 +214,14 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	EditMenu->Append(OPTION_EditUserRules, wxT("&User Rules..."), wxT("Opens your userlist in your default text editor."));
 	EditMenu->Append(MENU_ShowSettings, wxT("&Settings..."), wxT("Opens the Settings window."));
 	MenuBar->Append(EditMenu, wxT("&Edit"));
+	//Game menu
+	GameMenu = new wxMenu();
+	GameMenu->AppendRadioItem(MENU_Oblivion, wxT("&Oblivion"), wxT("Switch to running BOSS for Oblivion."));
+	GameMenu->AppendRadioItem(MENU_Nehrim, wxT("&Nehrim"), wxT("Switch to running BOSS for Nehrim."));
+	GameMenu->AppendRadioItem(MENU_Skyrim, wxT("&Skyrim"), wxT("Switch to running BOSS for Skyrim."));
+	GameMenu->AppendRadioItem(MENU_Fallout3, wxT("&Fallout 3"), wxT("Switch to running BOSS for Fallout 3."));
+	GameMenu->AppendRadioItem(MENU_FalloutNewVegas, wxT("&Fallout: New Vegas"), wxT("Switch to running BOSS for Fallout: New Vegas."));
+	MenuBar->Append(GameMenu, wxT("&Active Game"));
     // About menu
     HelpMenu = new wxMenu();
 	HelpMenu->Append(MENU_OpenMainReadMe, wxT("Open &Main ReadMe"), wxT("Opens the main BOSS ReadMe in your default web browser."));
@@ -264,7 +271,6 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	wxBoxSizer *sortBox = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *updateBox = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *undoBox = new wxBoxSizer(wxVERTICAL);
-	wxBoxSizer *gameBox = new wxBoxSizer(wxHORIZONTAL);
 	wxBoxSizer *revertBox = new wxBoxSizer(wxHORIZONTAL);
 
 	//Run Options
@@ -277,15 +283,12 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	
 	//Update only stuff.
 	runOptionsBox->Add(UpdateOption = new wxRadioButton(this, RADIOBUTTON_UpdateOption, wxT("Update Masterlist Only")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	gameBox->Add(GameText = new wxStaticText(this, wxID_ANY, wxT("Game: ")), 1, wxLEFT | wxBOTTOM, 15);
-	gameBox->Add(GameChoice = new wxChoice(this, DROPDOWN_Game, wxDefaultPosition, wxDefaultSize, 6, Game), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
-	updateBox->Add(gameBox, 0, wxEXPAND, 0);
-	runOptionsBox->Add(updateBox, 0, wxEXPAND | wxLEFT | wxBOTTOM, 20);
+	runOptionsBox->AddSpacer(20);
 	
 	//Undo option stuff.
 	runOptionsBox->Add(UndoOption = new wxRadioButton(this, RADIOBUTTON_UndoOption, wxT("Undo Changes")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 	revertBox->Add(RevertText = new wxStaticText(this, wxID_ANY, wxT("Undo Level: ")), 1, wxLEFT | wxBOTTOM, 5);
-	revertBox->Add(RevertChoice = new wxChoice(this, DROPDOWN_Revert, wxDefaultPosition, wxDefaultSize, 3, UndoLevel), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
+	revertBox->Add(RevertChoice = new wxChoice(this, DROPDOWN_Revert, wxDefaultPosition, wxDefaultSize, 2, UndoLevel), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	undoBox->Add(revertBox, 0, wxEXPAND, 0);
 	runOptionsBox->Add(undoBox, 0, wxEXPAND | wxLEFT | wxBOTTOM, 20);
 
@@ -320,64 +323,50 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	if (gl_trial_run)
 		TrialRunBox->SetValue(true);
 
-	switch (gl_game) {
+	switch (gl_current_game) {
 	case OBLIVION:
-		GameChoice->SetSelection(1);
+		GameMenu->FindItem(MENU_Oblivion)->Check();
 		break;
 	case NEHRIM:
-		GameChoice->SetSelection(2);
+		GameMenu->FindItem(MENU_Nehrim)->Check();
 		break;
 	case SKYRIM:
-		GameChoice->SetSelection(3);
+		GameMenu->FindItem(MENU_Skyrim)->Check();
 		break;
 	case FALLOUT3:
-		GameChoice->SetSelection(4);
+		GameMenu->FindItem(MENU_Fallout3)->Check();
 		break;
 	case FALLOUTNV:
-		GameChoice->SetSelection(5);
-		break;
-	default:
-		GameChoice->SetSelection(0);
+		GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
 		break;
 	}
 
-	if (gl_revert == 0)
+	if (gl_revert < 2)
 		RevertChoice->SetSelection(0);
-	else if (gl_revert == 1)
+	else
 		RevertChoice->SetSelection(1);
-	else if (gl_revert == 2)
-		RevertChoice->SetSelection(2);
 
-	if (gl_run_type == 1) {
+	if (gl_revert == 0 && !gl_update_only) {
 		SortOption->SetValue(true);
-		
 		UpdateBox->Enable(true);
 		TrialRunBox->Enable(true);
 
-		GameText->Enable(false);
-		GameChoice->Enable(false);
 		RevertText->Enable(false);
 		RevertChoice->Enable(false);
-	} else if (gl_run_type == 2) {
+	} else if (gl_update_only) {
 		UpdateOption->SetValue(true);
-
-		GameText->Enable(true);
-		GameChoice->Enable(true);
 
 		UpdateBox->Enable(false);
 		TrialRunBox->Enable(false);
 		RevertText->Enable(false);
 		RevertChoice->Enable(false);
-	} else {
+	} else if (gl_revert > 0) {
 		UndoOption->SetValue(true);
-
 		RevertText->Enable(true);
 		RevertChoice->Enable(true);
 
 		UpdateBox->Enable(false);
 		TrialRunBox->Enable(false);
-		GameText->Enable(false);
-		GameChoice->Enable(false);
 	}
 
 	//Now set up the status bar.
@@ -774,63 +763,67 @@ void MainFrame::OnTrialRunChange(wxCommandEvent& event) {
 }
 
 void MainFrame::OnGameChange(wxCommandEvent& event) {
-	switch (event.GetInt()) {
-	case 1:
-		gl_game = OBLIVION;
+	switch (event.GetId()) {
+	case MENU_Oblivion:
+		gl_current_game = OBLIVION;
 		break;
-	case 2:
-		gl_game = NEHRIM;
+	case MENU_Nehrim:
+		gl_current_game = NEHRIM;
 		break;
-	case 3:
-		gl_game = SKYRIM;
+	case MENU_Skyrim:
+		gl_current_game = SKYRIM;
 		break;
-	case 4:
-		gl_game = FALLOUT3;
+	case MENU_Fallout3:
+		gl_current_game = FALLOUT3;
 		break;
-	case 5:
-		gl_game = FALLOUTNV;
-		break;
-	default:
-		gl_game = AUTODETECT;
+	case MENU_FalloutNewVegas:
+		gl_current_game = FALLOUTNV;
 		break;
 	}
+	SetTitle(wxT("BOSS - " + GetGameString(gl_current_game)));
 }
 
 void MainFrame::OnRevertChange(wxCommandEvent& event) {
-	gl_revert = event.GetInt();
+	gl_revert = event.GetInt() + 1;
 }
 
 void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 	if (event.GetId() == RADIOBUTTON_SortOption) {
-		gl_run_type = 1;
+		gl_revert = 0;
+		gl_update_only = false;
 
 		UpdateBox->Enable(true);
 		TrialRunBox->Enable(true);
 
-		GameText->Enable(false);
-		GameChoice->Enable(false);
 		RevertText->Enable(false);
 		RevertChoice->Enable(false);
-	}else if (event.GetId() == RADIOBUTTON_UpdateOption) {
-		gl_run_type = 2;
-
-		GameText->Enable(true);
-		GameChoice->Enable(true);
+		DisableUndetectedGames();
+	} else if (event.GetId() == RADIOBUTTON_UpdateOption) {
+		gl_revert = 0;
+		gl_update_only = true;
 
 		UpdateBox->Enable(false);
 		TrialRunBox->Enable(false);
 		RevertText->Enable(false);
 		RevertChoice->Enable(false);
-	}else {
-		gl_run_type = 3;
+
+		//Also enable all game options.
+		//Also disable the options for undetected games.
+		GameMenu->FindItem(MENU_Oblivion)->Enable();
+		GameMenu->FindItem(MENU_Nehrim)->Enable();
+		GameMenu->FindItem(MENU_Skyrim)->Enable();
+		GameMenu->FindItem(MENU_Fallout3)->Enable();
+		GameMenu->FindItem(MENU_FalloutNewVegas)->Enable();
+	} else {
+		gl_revert = RevertChoice->GetSelection() + 1;
+		gl_update_only = false;
 
 		RevertText->Enable(true);
 		RevertChoice->Enable(true);
 
 		UpdateBox->Enable(false);
 		TrialRunBox->Enable(false);
-		GameText->Enable(false);
-		GameChoice->Enable(false);
+		DisableUndetectedGames();
 	}
 }
 
@@ -838,6 +831,65 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 	isStartup = false;
 	CheckForUpdates();
+}
+
+void MainFrame::DisableUndetectedGames() {
+	//Also disable the options for undetected games.
+	GameMenu->FindItem(MENU_Oblivion)->Enable(false);
+	GameMenu->FindItem(MENU_Nehrim)->Enable(false);
+	GameMenu->FindItem(MENU_Skyrim)->Enable(false);
+	GameMenu->FindItem(MENU_Fallout3)->Enable(false);
+	GameMenu->FindItem(MENU_FalloutNewVegas)->Enable(false);
+	for (size_t i=0; i < games.size(); i++) {
+		switch (games[i]) {
+		case OBLIVION:
+			GameMenu->FindItem(MENU_Oblivion)->Enable();
+			break;
+		case NEHRIM:
+			GameMenu->FindItem(MENU_Nehrim)->Enable();
+			break;
+		case SKYRIM:
+			GameMenu->FindItem(MENU_Skyrim)->Enable();
+			break;
+		case FALLOUT3:
+			GameMenu->FindItem(MENU_Fallout3)->Enable();
+			break;
+		case FALLOUTNV:
+			GameMenu->FindItem(MENU_FalloutNewVegas)->Enable();
+			break;
+		}
+	}
+
+	if ((GameMenu->FindItem(MENU_Oblivion)->IsChecked() && !GameMenu->FindItem(MENU_Oblivion)->IsEnabled())
+		|| (GameMenu->FindItem(MENU_Nehrim)->IsChecked() && !GameMenu->FindItem(MENU_Nehrim)->IsEnabled())
+		|| (GameMenu->FindItem(MENU_Skyrim)->IsChecked() && !GameMenu->FindItem(MENU_Skyrim)->IsEnabled())
+		|| (GameMenu->FindItem(MENU_Fallout3)->IsChecked() && !GameMenu->FindItem(MENU_Fallout3)->IsEnabled())
+		|| (GameMenu->FindItem(MENU_FalloutNewVegas)->IsChecked() && !GameMenu->FindItem(MENU_FalloutNewVegas)->IsEnabled()))
+		switch (games.front()) {
+		case OBLIVION:
+			gl_current_game = OBLIVION;
+			GameMenu->FindItem(MENU_Oblivion)->Check();
+			break;
+		case NEHRIM:
+			gl_current_game = NEHRIM;
+			GameMenu->FindItem(MENU_Nehrim)->Check();
+			break;
+		case SKYRIM:
+			gl_current_game = SKYRIM;
+			GameMenu->FindItem(MENU_Skyrim)->Check();
+			break;
+		case FALLOUT3:
+			gl_current_game = FALLOUT3;
+			GameMenu->FindItem(MENU_Fallout3)->Check();
+			break;
+		case FALLOUTNV:
+			gl_current_game = FALLOUTNV;
+			GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
+			break;
+		}
+	SetTitle(wxT("BOSS - " + GetGameString(gl_current_game)));
+
+
 }
 
 void MainFrame::Update(string updateVersion) {

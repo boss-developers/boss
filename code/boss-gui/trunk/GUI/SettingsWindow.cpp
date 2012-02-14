@@ -44,6 +44,15 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 		wxT("Level 3")
     };
 
+	wxString Game[] = {
+		wxT("Autodetect"),
+		wxT("Oblivion"),
+		wxT("Nehrim"),
+		wxT("Skyrim"),
+		wxT("Fallout 3"),
+		wxT("Fallout: New Vegas")
+	};
+
 	//Set up stuff in the frame.
 	SetBackgroundColour(wxColour(255,255,255));
 

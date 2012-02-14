@@ -40,6 +40,7 @@ public:
 	virtual bool OnInit();
 private:
 	wxSingleInstanceChecker *checker;
+	std::vector<uint32_t> games;
 };
 
 wxDECLARE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
@@ -67,6 +68,9 @@ public:
 	void OnEditUserRules(wxCommandEvent& event);
 	void OnClose(wxCloseEvent& event);
 
+	inline void SetGames(std::vector<uint32_t> inGames) { games = inGames; }
+	void DisableUndetectedGames();
+
 	//Multithreaded update stuff.
 	void CheckForUpdates();
 	void OnThreadUpdate(wxThreadEvent& evt);
@@ -74,6 +78,7 @@ private:
 	wxMenuBar *MenuBar;
 	wxMenu *FileMenu;
 	wxMenu *EditMenu;
+	wxMenu *GameMenu;
 	wxMenu *HelpMenu;
 	wxButton *RunBOSSButton;
 	wxButton *OpenBOSSlogButton;
@@ -84,14 +89,13 @@ private:
 	wxCheckBox *UpdateBox;
 	wxCheckBox *TrialRunBox;
 	wxChoice *FormatChoice;
-	wxChoice *GameChoice;
 	wxChoice *RevertChoice;
 	wxRadioButton *SortOption;
 	wxRadioButton *UpdateOption;
 	wxRadioButton *UndoOption;
-	wxStaticText *GameText;
 	wxStaticText *RevertText;
 	bool isStartup;
+	std::vector<uint32_t> games;
 protected:
 	virtual wxThread::ExitCode Entry();
 	uint32_t updateCheckCode;  //0 = update, 1 = no update, 2 = error.
