@@ -48,7 +48,7 @@ wxDECLARE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
 //Main frame class.
 class MainFrame : public wxFrame, public wxThreadHelper {
 public:
-	MainFrame(const wxChar *title, int x, int y, int width, int height);
+	MainFrame(const wxChar *title);
 	void OnUpdateCheck(wxCommandEvent& event);
 	void Update(std::string updateVersion);
 	void OnOpenSettings(wxCommandEvent& event);
@@ -68,7 +68,7 @@ public:
 	void OnEditUserRules(wxCommandEvent& event);
 	void OnClose(wxCloseEvent& event);
 
-	inline void SetGames(std::vector<uint32_t> inGames) { games = inGames; }
+	inline void SetGames(std::vector<uint32_t> inGames);
 	void DisableUndetectedGames();
 
 	//Multithreaded update stuff.

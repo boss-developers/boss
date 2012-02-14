@@ -869,6 +869,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 <p><b>Version 1.9.2</b> - <i>2012</i>
 <ul>
 	<li>Removed: BOSS Updater for manual installs. When an update is checked for and found on a manual install, BOSS will notify the user of the update and its download locations, but not download or install the update itself. Behaviour on installer installs is unchanged.
+	<li>Removed: <code>iRunType</code> ini setting, as it was unnecessary.
 	<li>Fixed: GUI mixing up Nehrim and Fallout: New Vegas in the Game drop-down box.
 	<li>Fixed: Saving a masterlist-format file no longer omits its conditionals. This bug was never exposed.
 	<li>Fixed: Conditional parsing errors not being reported correctly in the BOSS Log. This bug was never exposed.
@@ -879,7 +880,17 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Changed: Tidied up code, making better use of class inheritance and swapping Boost filesystem paths for strings in plugin names.
 	<li>Changed: Updated version of libcurl used from 7.23.1 to 7.24.0, and updated version of wxWidgets used from 2.9.2 to 2.9.3.
 	<li>Changed: GUI's User Rules Editor is now resizeable and the Installed Mods and Masterlist lists are now tabbed to give more space for them.
-	<li>Added: Support for installs where the BOSS folder doesn't sit beside the Data folder. BOSS will scan for supported games and prompt the user to choose one if more than one is found. Note that if BOSS is run for two games in succession, the BOSS files for the earlier game (masterlist, BOSS Log, etc.) will be overwritten by the latter game's BOSS files.
+	<li>Changed: BOSS no longer quits with an error message without sorting plugins when both Nehrim.esm and Oblivion.esm are present in the same Data folder, as this arrangement may be valid for modders porting mods, so long as Oblivion.esm remains inactive when Nehrim is run.
+	<li>Changed: BOSS update release notes are now displayed before the update download confirmation.
+	<li>Added: Support for multiple games from a single BOSS install:
+	<ul>
+		<li>BOSS now has two different install types: local installs place the BOSS folder beside a game's Data folder. Non-local installs place the BOSS folder anywhere else. Local installs will always run for the local game by default. Non-local installs will look for supported games and prompt the user to choose one to run for each time BOSS is run. If only one game is found, BOSS will run for it without user prompt.
+		<li>BOSS game files (masterlist, BOSS Log, etc.) are now stored in separate sub-folders within the BOSS folder for each game to avoid conflict.
+		<li>The <code>--game,-g [ game ]</code> command line parameter and corresponding ini and GUI settings now behaves slightly differently: when BOSS is run with the game not set to autodetect, and it is not set to only update the masterlist, the game parameter specifies the default game to run for. If the default cannot be found, BOSS falls back to autodetection.
+		<li>The <q>Game</q> drop-down list in the GUI has been moved to the <q>Settings</q> window.
+		<li>An <q>Active Game</q> menu has been added to the GUI that allows you to change which game BOSS is currently active for without closing the GUI. Undetected games are greyed out, unless the <q>Update Masterlist Only</q> run option is selected. If you have an undetected game active and switch from <q>Update Masterlist Only</q> to another run option, the BOSS automatically switches to the first detected game in the list.
+		<li>If the GUI is launched and no game is detected, only the <q>Update Masterlist Only</q> run option is enabled.
+	</ul>
 </ul>
 <p><b>Version 1.9.1</b> - <i>1 January 2012</i>
 <ul>

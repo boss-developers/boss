@@ -64,7 +64,7 @@ namespace boss {
 	//Path to the BOSS files for the game that BOSS is currently running for, relative to executable (ie. boss_path).
 	BOSS_COMMON fs::path boss_game_path() {
 		switch (gl_current_game) {
-	/*	case OBLIVION:
+		case OBLIVION:
 			return boss_path / "Oblivion";
 		case NEHRIM:
 			return boss_path / "Nehrim";
@@ -74,7 +74,7 @@ namespace boss {
 			return boss_path / "Fallout 3";
 		case FALLOUTNV:
 			return boss_path / "Fallout New Vegas";
-	*/	default:
+		default:
 			return boss_path;
 		}
 	}
@@ -172,11 +172,12 @@ namespace boss {
 		}
 	}
 
-	//game cannot be AUTODETECT.
-	void SetDataPath() {
-		if (fs::exists(data_path / GetGameMasterFile(gl_current_game)) || gl_update_only)
+	BOSS_COMMON void SetDataPath(uint32_t game) {
+		if (gl_update_only || game == AUTODETECT || fs::exists(data_path / GetGameMasterFile(game))) {
+			data_path = boss_path / ".." / "Data";
 			return;
-		switch (gl_current_game) {
+		}
+		switch (game) {
 		case OBLIVION:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path") + "Data");
@@ -208,8 +209,7 @@ namespace boss {
 		}
 	}
 
-	vector<uint32_t> SetCurrentGame(void * parent) {  //Throws exception if error.
-		vector<uint32_t> gamesDetected;
+	void AutodetectGame(void * parent) {  //Throws exception if error.
 		if (fs::exists(data_path / "Nehrim.esm"))  //Before Oblivion because Nehrim installs can have Oblivion.esm for porting mods.
 			gl_current_game = NEHRIM;
 		else if (fs::exists(data_path / "Oblivion.esm"))
@@ -221,6 +221,7 @@ namespace boss {
 		else if (fs::exists(data_path / "Skyrim.esm")) 
 			gl_current_game = SKYRIM;
 		else {
+			vector<uint32_t> gamesDetected;
 			//Look for Windows Registry entries for the games.
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion")) //Look for Oblivion.
 				gamesDetected.push_back(OBLIVION);
@@ -268,17 +269,27 @@ namespace boss {
 				gl_current_game = gamesDetected[ans];
 			}
 		}
-		return gamesDetected;
 	}
 
 	BOSS_COMMON vector<uint32_t> DetectGame(void * parent) {
+		//Detect all installed games.
 		vector<uint32_t> games;
-		//First set gl_current_game.
+		if (fs::exists(data_path / "Oblivion.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion")) //Look for Oblivion.
+			games.push_back(OBLIVION);
+		if (fs::exists(data_path / "Nehrim.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1")) //Look for Nehrim.
+			games.push_back(NEHRIM);
+		if (fs::exists(data_path / "Skyrim.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim")) //Look for Skyrim.
+			games.push_back(SKYRIM);
+		if (fs::exists(data_path / "Fallout3.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3")) //Look for Fallout 3.
+			games.push_back(FALLOUT3);
+		if (fs::exists(data_path / "FalloutNV.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV")) //Look for Fallout New Vegas.
+			games.push_back(FALLOUTNV);
+		//Now set gl_current_game.
 		if (gl_game != AUTODETECT) {
 			if (gl_update_only)
 				gl_current_game = gl_game;  //Assumed to be local, no data_path change needed.
 			else {
-				//Check for game. Check locally and for both registry entries. Set data_path appropriately if any are found.
+				//Check for game. Check locally and for both registry entries.
 				if (fs::exists(data_path / GetGameMasterFile(gl_game)))
 					gl_current_game = gl_game;
 				else if (gl_game == OBLIVION && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion")))  //Look for Oblivion.
@@ -292,12 +303,12 @@ namespace boss {
 				else if (gl_game == FALLOUTNV && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV")))  //Look for Fallout New Vegas.
 					gl_current_game = gl_game;
 				else
-					games = SetCurrentGame(parent);
+					AutodetectGame(parent);  //Game not found. Autodetect.
 			}
 		} else
-			games = SetCurrentGame(parent);
+			AutodetectGame(parent);
 		//Now set data_path.
-		SetDataPath();
+		SetDataPath(gl_current_game);
 		//Make sure that boss_game_path() exists.
 		try {
 			if (!fs::exists(boss_game_path()))
@@ -305,8 +316,6 @@ namespace boss {
 		} catch (fs::filesystem_error e) {
 			throw boss_error(BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL, GetGameMasterFile(gl_current_game), e.what());
 		}
-		if (games.empty())
-			games.push_back(gl_current_game);
 		return games;
 	}
 

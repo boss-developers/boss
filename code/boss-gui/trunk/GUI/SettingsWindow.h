@@ -60,6 +60,7 @@ private:
 	wxCheckBox *HideIncompatibilitiesBox;
 	wxCheckBox *HideDoNotCleanMessagesBox;
 	wxChoice *DebugVerbosityChoice;
+	wxChoice *GameChoice;
 	wxTextCtrl *ProxyHostBox;
 	wxTextCtrl *ProxyPortBox;
 	wxTextCtrl *ProxyUserBox;

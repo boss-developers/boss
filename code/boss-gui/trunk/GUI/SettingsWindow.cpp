@@ -35,7 +35,7 @@ END_EVENT_TABLE()
 using namespace boss;
 using namespace std;
 
-SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxSize(600,800)) {
+SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize) {
 
 	wxString DebugVerbosity[] = {
         wxT("Standard (0)"),
@@ -73,7 +73,17 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 
 	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Check for BOSS updates on startup")), BorderSizerFlags);
 	GeneralTabSizer->Add(UseUserRuleEditorBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Use User Rules Editor")), BorderSizerFlags);
+	
+	wxBoxSizer *gameBox = new wxBoxSizer(wxHORIZONTAL);
+	gameBox->Add(new wxStaticText(GeneralTab, wxID_ANY, wxT("Default Game:")), 3, wxEXPAND);
+	gameBox->Add(GameChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 6, Game), 1);
+	GeneralTabSizer->Add(gameBox, BorderSizerFlags);
 
+	wxStaticText *gameText;
+	wxString text = wxT("If the default game is set to Autodetect, BOSS will try to autodetect a game to run for, and will ask you to choose a game if it finds more than one.\n\n");
+	text += wxT("If the default game is set to a specific game, and BOSS is not run to only update the masterlist, BOSS will attempt to run for that game, falling back to autodetection if it cannot be found.\n\n");
+	text += wxT("If the default game is set to a specific game, and BOSS is run to only update the masterlist, BOSS will run for that game whether or not it is detected.");
+	GeneralTabSizer->Add(gameText = new wxStaticText(GeneralTab, wxID_ANY, text), 1, wxEXPAND|wxALL, 10);
 	GeneralTab->SetSizer(GeneralTabSizer);
 
 	//Create Internet Settings tab.
@@ -333,7 +343,7 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
 	bigBox->Add(TabHolder, 1, wxEXPAND);
 	bigBox->Add(hbox, 0, wxCENTER|wxALL, 10);
-	bigBox->SetMinSize(400,300);
+	//bigBox->SetMinSize(400,340);
 
 	//Initialise options with values. For checkboxes, they are off by default.
 	SetDefaultValues(DebugVerbosity);
@@ -348,6 +358,26 @@ void SettingsFrame::SetDefaultValues(wxString * DebugVerbosity) {
 		StartupUpdateCheckBox->SetValue(true);
 	if (gl_use_user_rules_editor)
 		UseUserRuleEditorBox->SetValue(true);
+	switch (gl_game) {
+	case AUTODETECT:
+		GameChoice->SetSelection(0);
+		break;
+	case OBLIVION:
+		GameChoice->SetSelection(1);
+		break;
+	case NEHRIM:
+		GameChoice->SetSelection(2);
+		break;
+	case SKYRIM:
+		GameChoice->SetSelection(3);
+		break;
+	case FALLOUT3:
+		GameChoice->SetSelection(4);
+		break;
+	case FALLOUTNV:
+		GameChoice->SetSelection(5);
+		break;
+	}
 
 	//Internet Settings
 	ProxyHostBox->SetValue(gl_proxy_host);
@@ -451,6 +481,26 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	//General
 	gl_do_startup_update_check = StartupUpdateCheckBox->IsChecked();
 	gl_use_user_rules_editor = UseUserRuleEditorBox->IsChecked();
+	switch (GameChoice->GetSelection()) {
+	case 0:
+		gl_game = AUTODETECT;
+		break;
+	case 1:
+		gl_game = OBLIVION;
+		break;
+	case 2:
+		gl_game = NEHRIM;
+		break;
+	case 3:
+		gl_game = SKYRIM;
+		break;
+	case 4:
+		gl_game = FALLOUT3;
+		break;
+	case 5:
+		gl_game = FALLOUTNV;
+		break;
+	}
 
 	//Network
 	gl_proxy_host = ProxyHostBox->GetValue();

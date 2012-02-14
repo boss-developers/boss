@@ -154,8 +154,7 @@ bool BossGUI::OnInit() {
 	// it's ok if this number is too high.  setVerbosity will handle it
 	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));
 
-	MainFrame *frame = new MainFrame(
-		wxT("BOSS"), 100, 100, 510, 370);
+	MainFrame *frame = new MainFrame(wxT("BOSS"));
 
 	LOG_DEBUG("Detecting game...");
 	try {
@@ -169,11 +168,7 @@ bool BossGUI::OnInit() {
 			wxOK | wxICON_ERROR,
 			NULL);
 	}
-	frame->SetTitle(wxT("BOSS - " + GetGameString(gl_current_game)));
 	frame->SetGames(games);
-	//Also disable the options for undetected games.
-	frame->DisableUndetectedGames();
-	
 
 	frame->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	frame->Show(TRUE);
@@ -185,7 +180,7 @@ bool BossGUI::OnInit() {
 	return true;
 }
 
-MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) : wxFrame(NULL, wxID_ANY, title, wxPoint(x, y), wxSize(width, height), wxMINIMIZE_BOX|wxMAXIMIZE_BOX|wxSYSTEM_MENU|wxCAPTION|wxCLOSE_BOX|wxCLIP_CHILDREN) {
+MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCAPTION|wxCLOSE_BOX|wxCLIP_CHILDREN) {
 
 	//Some variable setup.
 	isStartup = true;
@@ -216,6 +211,7 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	MenuBar->Append(EditMenu, wxT("&Edit"));
 	//Game menu
 	GameMenu = new wxMenu();
+	GameMenu->AppendRadioItem(MENU_None, wxT("&None"), wxT("If selected, BOSS was unable to detect or run for a game."));
 	GameMenu->AppendRadioItem(MENU_Oblivion, wxT("&Oblivion"), wxT("Switch to running BOSS for Oblivion."));
 	GameMenu->AppendRadioItem(MENU_Nehrim, wxT("&Nehrim"), wxT("Switch to running BOSS for Nehrim."));
 	GameMenu->AppendRadioItem(MENU_Skyrim, wxT("&Skyrim"), wxT("Switch to running BOSS for Skyrim."));
@@ -303,6 +299,9 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 	//Set option values based on initialised variable values.
 	RunBOSSButton->SetDefault();
 
+	//Disable the None option from the Active Game menu. It should stay disabled.
+	GameMenu->FindItem(MENU_None)->Enable(false);
+
 	if (!gl_silent)
 		ShowLogBox->SetValue(true);
 
@@ -322,24 +321,6 @@ MainFrame::MainFrame(const wxChar *title, int x, int y, int width, int height) :
 
 	if (gl_trial_run)
 		TrialRunBox->SetValue(true);
-
-	switch (gl_current_game) {
-	case OBLIVION:
-		GameMenu->FindItem(MENU_Oblivion)->Check();
-		break;
-	case NEHRIM:
-		GameMenu->FindItem(MENU_Nehrim)->Check();
-		break;
-	case SKYRIM:
-		GameMenu->FindItem(MENU_Skyrim)->Check();
-		break;
-	case FALLOUT3:
-		GameMenu->FindItem(MENU_Fallout3)->Check();
-		break;
-	case FALLOUTNV:
-		GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
-		break;
-	}
 
 	if (gl_revert < 2)
 		RevertChoice->SetSelection(0);
@@ -452,6 +433,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 			LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
 		}
 		if (connection) {
+			output.SetHTMLSpecialEscape(false);
 			progDia->Update(0,wxT("Updating to the latest masterlist from the Google Code repository..."));
 			LOG_DEBUG("Updating masterlist...");
 			try {
@@ -780,6 +762,7 @@ void MainFrame::OnGameChange(wxCommandEvent& event) {
 		gl_current_game = FALLOUTNV;
 		break;
 	}
+	SetDataPath(gl_current_game);
 	SetTitle(wxT("BOSS - " + GetGameString(gl_current_game)));
 }
 
@@ -797,7 +780,6 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 
 		RevertText->Enable(false);
 		RevertChoice->Enable(false);
-		DisableUndetectedGames();
 	} else if (event.GetId() == RADIOBUTTON_UpdateOption) {
 		gl_revert = 0;
 		gl_update_only = true;
@@ -806,14 +788,6 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 		TrialRunBox->Enable(false);
 		RevertText->Enable(false);
 		RevertChoice->Enable(false);
-
-		//Also enable all game options.
-		//Also disable the options for undetected games.
-		GameMenu->FindItem(MENU_Oblivion)->Enable();
-		GameMenu->FindItem(MENU_Nehrim)->Enable();
-		GameMenu->FindItem(MENU_Skyrim)->Enable();
-		GameMenu->FindItem(MENU_Fallout3)->Enable();
-		GameMenu->FindItem(MENU_FalloutNewVegas)->Enable();
 	} else {
 		gl_revert = RevertChoice->GetSelection() + 1;
 		gl_update_only = false;
@@ -823,8 +797,8 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 
 		UpdateBox->Enable(false);
 		TrialRunBox->Enable(false);
-		DisableUndetectedGames();
 	}
+	DisableUndetectedGames();  //Doesn't actually disable games if (gl_update_only).
 }
 
 //This is called when the menu "Check For Updates" option is selected.
@@ -835,11 +809,16 @@ void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
 
 void MainFrame::DisableUndetectedGames() {
 	//Also disable the options for undetected games.
-	GameMenu->FindItem(MENU_Oblivion)->Enable(false);
-	GameMenu->FindItem(MENU_Nehrim)->Enable(false);
-	GameMenu->FindItem(MENU_Skyrim)->Enable(false);
-	GameMenu->FindItem(MENU_Fallout3)->Enable(false);
-	GameMenu->FindItem(MENU_FalloutNewVegas)->Enable(false);
+	bool enabled;
+	if (gl_update_only)
+		enabled = true;
+	else
+		enabled = false;
+	GameMenu->FindItem(MENU_Oblivion)->Enable(enabled);
+	GameMenu->FindItem(MENU_Nehrim)->Enable(enabled);
+	GameMenu->FindItem(MENU_Skyrim)->Enable(enabled);
+	GameMenu->FindItem(MENU_Fallout3)->Enable(enabled);
+	GameMenu->FindItem(MENU_FalloutNewVegas)->Enable(enabled);
 	for (size_t i=0; i < games.size(); i++) {
 		switch (games[i]) {
 		case OBLIVION:
@@ -860,36 +839,67 @@ void MainFrame::DisableUndetectedGames() {
 		}
 	}
 
+	//Swapping from gl_update_only to !gl_update_only with undetected game active: need to change game to a detected game.
 	if ((GameMenu->FindItem(MENU_Oblivion)->IsChecked() && !GameMenu->FindItem(MENU_Oblivion)->IsEnabled())
 		|| (GameMenu->FindItem(MENU_Nehrim)->IsChecked() && !GameMenu->FindItem(MENU_Nehrim)->IsEnabled())
 		|| (GameMenu->FindItem(MENU_Skyrim)->IsChecked() && !GameMenu->FindItem(MENU_Skyrim)->IsEnabled())
 		|| (GameMenu->FindItem(MENU_Fallout3)->IsChecked() && !GameMenu->FindItem(MENU_Fallout3)->IsEnabled())
-		|| (GameMenu->FindItem(MENU_FalloutNewVegas)->IsChecked() && !GameMenu->FindItem(MENU_FalloutNewVegas)->IsEnabled()))
-		switch (games.front()) {
-		case OBLIVION:
-			gl_current_game = OBLIVION;
-			GameMenu->FindItem(MENU_Oblivion)->Check();
-			break;
-		case NEHRIM:
-			gl_current_game = NEHRIM;
-			GameMenu->FindItem(MENU_Nehrim)->Check();
-			break;
-		case SKYRIM:
-			gl_current_game = SKYRIM;
-			GameMenu->FindItem(MENU_Skyrim)->Check();
-			break;
-		case FALLOUT3:
-			gl_current_game = FALLOUT3;
-			GameMenu->FindItem(MENU_Fallout3)->Check();
-			break;
-		case FALLOUTNV:
-			gl_current_game = FALLOUTNV;
-			GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
-			break;
-		}
+		|| (GameMenu->FindItem(MENU_FalloutNewVegas)->IsChecked() && !GameMenu->FindItem(MENU_FalloutNewVegas)->IsEnabled())) {
+			if (games.size() > 0) {
+				switch (games.front()) {
+				case OBLIVION:
+					gl_current_game = OBLIVION;
+					GameMenu->FindItem(MENU_Oblivion)->Check();
+					break;
+				case NEHRIM:
+					gl_current_game = NEHRIM;
+					GameMenu->FindItem(MENU_Nehrim)->Check();
+					break;
+				case SKYRIM:
+					gl_current_game = SKYRIM;
+					GameMenu->FindItem(MENU_Skyrim)->Check();
+					break;
+				case FALLOUT3:
+					gl_current_game = FALLOUT3;
+					GameMenu->FindItem(MENU_Fallout3)->Check();
+					break;
+				case FALLOUTNV:
+					gl_current_game = FALLOUTNV;
+					GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
+					break;
+				}
+				SetDataPath(gl_current_game);
+			}
+	}
 	SetTitle(wxT("BOSS - " + GetGameString(gl_current_game)));
+}
 
-
+void MainFrame::SetGames(vector<uint32_t> inGames) {
+	games = inGames;
+	switch (gl_current_game) {
+	case OBLIVION:
+		GameMenu->FindItem(MENU_Oblivion)->Check();
+		break;
+	case NEHRIM:
+		GameMenu->FindItem(MENU_Nehrim)->Check();
+		break;
+	case SKYRIM:
+		GameMenu->FindItem(MENU_Skyrim)->Check();
+		break;
+	case FALLOUT3:
+		GameMenu->FindItem(MENU_Fallout3)->Check();
+		break;
+	case FALLOUTNV:
+		GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
+		break;
+	case AUTODETECT:  //No game detected. Only valid option is to force a game and update masterlist only, so set options to that and disable selecting of other run types.
+		GameMenu->FindItem(MENU_None)->Check();
+		gl_update_only = true;
+		SortOption->Enable(false);
+		UpdateOption->SetValue(true);
+		UndoOption->Enable(false);
+	}
+	DisableUndetectedGames();
 }
 
 void MainFrame::Update(string updateVersion) {

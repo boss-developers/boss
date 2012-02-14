@@ -129,6 +129,7 @@ namespace boss {
 	
 	BOSS_COMMON string	GetGameString		(uint32_t game);
 	BOSS_COMMON string	GetGameMasterFile	(uint32_t game);
+	BOSS_COMMON void SetDataPath(uint32_t game);
 	BOSS_COMMON vector<uint32_t>	DetectGame			(void * parent);  //Throws exception if error.
 	BOSS_COMMON time_t	GetMasterTime		();  //Throws exception if error.
 

@@ -49,6 +49,7 @@ enum {
 	MENU_OpenLicenses,
 	MENU_ShowAbout,
 	MENU_ShowSettings,
+	MENU_None,
 	MENU_Oblivion,
 	MENU_Nehrim,
 	MENU_Skyrim,
