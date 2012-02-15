@@ -38,7 +38,7 @@ public:
 	SettingsFrame(const wxChar *title, wxFrame *parent);
 	void OnOKQuit(wxCommandEvent& event);
 	void OnCancelQuit(wxCommandEvent& event);
-	void SetDefaultValues(wxString * DebugVerbosity);
+	void SetDefaultValues();
 	DECLARE_EVENT_TABLE()
 private:
 	wxCheckBox *StartupUpdateCheckBox;

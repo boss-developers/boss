@@ -71,20 +71,20 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	GeneralTab = new wxPanel(TabHolder);
 	wxBoxSizer *GeneralTabSizer = new wxBoxSizer(wxVERTICAL);
 
-	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Check for BOSS updates on startup")), BorderSizerFlags);
-	GeneralTabSizer->Add(UseUserRuleEditorBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Use User Rules Editor")), BorderSizerFlags);
 	
 	wxBoxSizer *gameBox = new wxBoxSizer(wxHORIZONTAL);
-	gameBox->Add(new wxStaticText(GeneralTab, wxID_ANY, wxT("Default Game:")), 3, wxEXPAND);
+	gameBox->Add(new wxStaticText(GeneralTab, wxID_ANY, wxT("Default Game:")), 2, wxEXPAND);
 	gameBox->Add(GameChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 6, Game), 1);
 	GeneralTabSizer->Add(gameBox, BorderSizerFlags);
+	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Check for BOSS updates on startup")), BorderSizerFlags);
+	GeneralTabSizer->Add(UseUserRuleEditorBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Use User Rules Editor")), BorderSizerFlags);
 
-	wxStaticText *gameText;
+	/*wxStaticText *gameText;
 	wxString text = wxT("If the default game is set to Autodetect, BOSS will try to autodetect a game to run for, and will ask you to choose a game if it finds more than one.\n\n");
 	text += wxT("If the default game is set to a specific game, and BOSS is not run to only update the masterlist, BOSS will attempt to run for that game, falling back to autodetection if it cannot be found.\n\n");
 	text += wxT("If the default game is set to a specific game, and BOSS is run to only update the masterlist, BOSS will run for that game whether or not it is detected.");
 	GeneralTabSizer->Add(gameText = new wxStaticText(GeneralTab, wxID_ANY, text), 1, wxEXPAND|wxALL, 10);
-	GeneralTab->SetSizer(GeneralTabSizer);
+	*/GeneralTab->SetSizer(GeneralTabSizer);
 
 	//Create Internet Settings tab.
 	InternetTab = new wxPanel(TabHolder);
@@ -343,16 +343,15 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
 	bigBox->Add(TabHolder, 1, wxEXPAND);
 	bigBox->Add(hbox, 0, wxCENTER|wxALL, 10);
-	//bigBox->SetMinSize(400,340);
 
 	//Initialise options with values. For checkboxes, they are off by default.
-	SetDefaultValues(DebugVerbosity);
+	SetDefaultValues();
 	
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
 }
 
-void SettingsFrame::SetDefaultValues(wxString * DebugVerbosity) {
+void SettingsFrame::SetDefaultValues() {
 	//General Settings
 	if (gl_do_startup_update_check)
 		StartupUpdateCheckBox->SetValue(true);

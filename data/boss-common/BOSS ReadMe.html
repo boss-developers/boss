@@ -14,11 +14,21 @@
 	.logbox > ul > li {line-height:20px;}
 	q {font-style:italic;}
 	code {display:inline-box; padding:2px 5px; background:#EEEEEE;}
-	td {border:1px solid #ccc; padding: 5px;}
+	td {border:1px solid #ccc; padding: 5px; vertical-align:top;}
 	table {border:1px solid #ccc; border-spacing:0; border-collapse:separate; margin:1em;}
 	thead > tr td {font-weight:bold}
 	.errorMessages > li {margin-bottom:1.4em;}
 	.c {text-align:center;}
+	img {border:0;}
+	
+	#slideholder { height: 340px;}
+	#slideholder img {opacity:0; position:absolute;
+		transition: opacity 1.5s;
+		-moz-transition: opacity 1.5s;
+		-webkit-transition: opacity 1.5s;
+		-o-transition: opacity 1.5s;}
+	#slideholder img:first-child {opacity:1;}
+	img+p, div#slideholder+p {font-style:italic; margin-top:0; margin-bottom:2em;}
 </style>
 
 <div>Better Oblivion Sorting Software</div>
@@ -81,99 +91,76 @@
 
 <div id="install"><h1>Installation &amp; Basic Usage</h1>
 <p><b>Note that BOSS does not support Windows 2000 or earlier.</b>
-<p>BOSS can be installed for use with TES IV: Oblivion, TES V: Skyrim, Fallout 3, Fallout: New Vegas or Nehrim - At Fate's Edge (a Total Conversion mod for Oblivion). Installation may either be automated, using the BOSS Installer package, or manually, using the archive package. Either method is simple, and instructions for manual installation are given below.
+<p>BOSS can be installed for use with TES IV: Oblivion, TES V: Skyrim, Fallout 3, Fallout: New Vegas and Nehrim - At Fate's Edge (a Total Conversion mod for Oblivion). Installation may either be automated, using the BOSS Installer package, or manually, using the archive package. Either method is simple, and instructions for manual installation are given below.
+
 <ol>
+	<li>If upgrading from an earlier version of BOSS, delete all BOSS files and folders in all supported games' Data folders. Also delete any of the following from your BOSS folder(s) (but not from any folders within your BOSS folders): BOSSlog.txt; BOSSlog.html; masterlist.txt; modlist.txt; modlist.old. If you have existing userlists, you will need to move them into the subfolders BOSS creates for their games in the BOSS folder once it is run.
+	<li>Within the archive you downloaded there is a BOSS folder. Extract this folder to a location of your choice. Make sure that you have the appropriate file permissions for the directory you choose. See the <q><a href="#permissions">File Permissions</a></q> section for more information.
+	<ul>
+		<li>If you only have one BOSS-supported game installed, it is best to install BOSS to the game's installation directory (ie. one of <q>Oblivion</q>, <q>Fallout 3</q>, <q>Nehrim</q>, <q>fallout new vegas</q> or <q>skyrim</q> depending on the game), so that the BOSS folder sits alongside the Data folder and the game's executable. This is referred to as a local install. BOSS by default will always run for the local game.
+		<li>If you have more than one BOSS-supported game installed, it is best to install BOSS to a location outside of the supported games' installation directories. This is referred to as a non-local install. In a non-local install, BOSS by default lets the user choose which game to run for.
+	</ul>
 	<li>If any of the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities are installed, make sure the <q>Lock Times</q> function is deactivated.
-	<li>If upgrading from an earlier version of BOSS, delete all BOSS files and folders in the game's Data folder (including the BOSS folder, BOSS.exe, masterlist.txt, modlist.txt, modlist.old, BOSSlog.txt and any of BOSS's .bat files).  If an edited masterlist is present, make sure to keep a backup so that the edits are not lost. It is recommended that the user rules functionality is used instead to apply changes to the masterlist.
-	<li>Extract the BOSS archive downloaded to the game's installation directory (ie. the one containing the Data folder and the game's executable, so one of <q>Oblivion</q>, <q>Fallout 3</q>, <q>Nehrim</q>, <q>fallout new vegas</q> or <q>skyrim</q> depending on the game), so that there is now a BOSS folder alongside the Data folder and the game's executable.
-	<li>In the BOSS folder, run the <q>BOSS.exe</q>. This will download the latest masterlist from the Internet and then sort your mods.
+	<li>In the BOSS folder, run <q>BOSS.exe</q>. This will download the latest masterlist from the Internet and then sort your mods.
 </ol>
-<p>If BOSS is installed manually and more than one of the supported games is installed, BOSS should be installed separately for each one.
-<p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. The <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities will automatically import and apply Bash Tag 
-suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions makes thoroughly and adjust tags by hand in <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> if necessary.
+<p>When BOSS runs, it first looks for a local game install. If it cannot find one, it then looks in the Windows Registry for the non-local locations of any of the supported games. Therefore if you have multiple copies of a game installed, BOSS will only be able to detect the original installation and not any copies, as they do not have Registry entries. As such, you will also need to install BOSS separately to each of the copies' installation directories.
+<p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. The <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities will automatically import and apply Bash Tag suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions makes thoroughly and adjust tags by hand in <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> if necessary.
 <p>Unrecognised mods must be re-ordered by hand using <abbr title="Oblivion Mod Manager">OBMM</abbr>/<abbr title="Fallout Mod Manager">FOMM</abbr> or <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>.
 </div>
 
 <div id="remove"><h1>Uninstallation</h1>
 <p>If BOSS was installed using the installer, then use the uninstaller it provides a link to in the Start Menu to uninstall BOSS. If BOSS was installed manually, do the following:
-<ol><li>Delete the BOSS folder in the game's installation folder (ie. the one containing the Data folder and the game's executable, so one of <q>Oblivion</q>, <q>Fallout 3</q>, <q>Nehrim</q>, <q>fallout new vegas</q> or <q>skyrim</q> depending on the game).</ol>
+<ol><li>Delete the BOSS folder in the location you installed it to. If you installed BOSS to more than one location, delete each BOSS folder for each install of BOSS you wish to remove.
 </div>
 
 <div id="general"><h1>General Usage</h1>
 <p>This section gives more information on the parts of BOSS's functionality that users are likely to come into contact with during the course of general usage of BOSS. It gives details on the capabilities of the GUI, information on how to keep BOSS up to date, information on the BOSS Log and its constituent parts, and provides some background information and BOSS-specific notes on the subject of dirty edits and mod cleaning.
 <h2 id="gui">The Graphical User Interface</h2>
-<p>While the <abbr title="Command Line Interface">CLI</abbr> provided by <q>BOSS.exe</q> offers the simplest way to run BOSS using just one click, the <abbr title="Graphical User Interface">GUI</abbr> provided by <q>BOSS GUI.exe</q> provides a way of accessing BOSS's options, settings and more powerful features without having to edit any other files manually.
-<p>The CLI and GUI both possess the same core functionality, but differ in how they approach providing it, with the CLI being text-based and the GUI using graphical elements such as buttons, checkboxes and drop-down lists. The GUI is composed of three windows: the Main window, which is the one displayed when the GUI is run; the Settings window; and the User Rules Editor window. Their content shall be explained in turn.
+<p>While the <abbr title="Command Line Interface">CLI</abbr> provided by <q>BOSS.exe</q> offers the simplest way to run BOSS using just one click, the <abbr title="Graphical User Interface">GUI</abbr> provided by <q>BOSS GUI.exe</q> provides a way of accessing BOSS's options, settings and more powerful features without having to edit any other files manually. The CLI and GUI both possess the same core functionality, but differ in how they approach providing it, with the CLI being text-based and the GUI using graphical elements such as buttons, checkboxes and drop-down lists.
+<p>The GUI is composed of three windows: the Main window, which is the one displayed when the GUI is run; the Settings window; and the User Rules Editor window. Their content shall be explained in turn.
 
-<h4>The Main Window</h4>
-<p>The Main window is where BOSS's most commonly-used options are located, along with buttons for running BOSS, editing your User Rules and opening the BOSS Log. The window's menu bar also includes additional options for accessing the Settings window, opening BOSS's ReadMe files, checking for updates and more. The options in the Main window are:
+<h3>The Main Window</h3>
+<img src="images/BOSS GUI Main.png"/>
+<p>The BOSS GUI's main window, containing the most commonly used options.
+<p>The title bar of the main window displays which game BOSS is running for: this may also be checked by seeing which game is selected in the <q>Active Game</q> menu.
+<p>The menu bar holds four menus: <q>File</q>, <q>Edit</q>, <q>Active Game</q> and <q>Help</q>. The <q>File</q> menu just contains commands for opening the BOSS Log, running BOSS and quitting. The <q>Edit</q> menu contains a command for editing user rules, which works the same as the <q>Edit User Rules</q> button, and a command for opening the settings window. The <q>Help</q> menu contains links to BOSS's documentation and copyright licenses, and commands to view the <q>About</q> dialog and to check for updates to the BOSS program (see the <q><a href="#updates">Keeping BOSS Up-To-Date</a></q> section for details).
+<p>The <q>Active Game</q> menu allows you to change which game BOSS is running for without closing and re-opening the GUI. Games that BOSS does not detect as being installed are greyed out. The active game is marked with a dot next to it. To change the active game, simply select another game in the list. Setting the run type to <q>Update Masterlist Only</q> will un-grey all the games, allowing any of them to be selected, while changing from <q>Update Masterlist Only</q> to another run type will grey out undetected games again. If an undetected game is active when you change run type, BOSS will automatically switch to the first detected game in the list. If BOSS fails to detect any supported games, the active game will be set to <q>None</q> and the <q>Sort Plugins</q> and <q>Undo Changes</q> run types will be greyed out. You may then select a game from the <q>Active Game</q> menu to update its masterlist only. See <q><a href="#special">Updating Under Special Circumstances</a></q> for when this may be useful.
+<p>The output options on the left of the window tweak settings related to the BOSS Log. When the <q>Display File CRCs</q> option is enabled, the BOSS Log displays the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in the Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr>/<abbr title="Skyrim Script Extender">SKSE</abbr> and its installed plugins if present. The <q>BOSS Log Format</q> option decides both what format of BOSS Log is generated when BOSS is run and what format of BOSS Log the GUI opens when the <q>View BOSS Log</q> button or <q>File&#x2192;View BOSS Log</q> menu item is selected. <q>Display Plugin Versions</q> and <q>Show BOSS Log On Completion</q> do exactly as they say on the tin.
+<p>The run options on the right of the main window decide how BOSS runs. BOSS has three main modes of operation that are mutually exclusive to one another: it can either sort your plugins, only update your masterlist then quit or undo its changes to your load order. When <q>Update Masterlist</q> is enabled, BOSS will update your masterlist before sorting your plugins. When <q>Perform Trial Run</q> is enabled, BOSS simulates its changes to your load order without actually reordering your mods. The <q>Undo Level</q> option allows you to select how many runs of BOSS are to be undone.
+<p>The <q>Edit User Rules</q> button opens your userlist for editing. If the <q>Use User Rules Editor</q> setting in the Settings window is enabled, clicking the button will open the User Rules Editor window, otherwise it will open your userlist in your default text editor. The <q>Run BOSS</q> button runs BOSS's main sorting/updating/undoing functionality according to the options selected. The <q>View BOSS Log</q> button does exactly what it says on the tin, opening the BOSS Log in the format selected in the Output Options section.</p>
 
-<ul>
-	<li>Output Options:
-	<ul>
-		<li><i>Show BOSS Log On Completion</i>: Open the BOSS Log automatically after BOSS is finished.
-		<li><i>Display Plugin Versions</i>: Display in the BOSS Log the version information extracted from plugin descriptions where available.
-		<li><i>Display File CRCs</i>: Calculate and display in the BOSS Log the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in the Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr>/<abbr title="Skyrim Script Extender">SKSE</abbr> and its installed plugins if present.
-		<li><i>BOSS Log Format</i>: Specify the format of the BOSS Log generated, and the format that the GUI attempts to open when the <q>View BOSS Log</q> button is clicked.
-	</ul>
-	<li>Run Options:
-		<ul>
-			<li><i>Sort Plugins</i>: The standard mode of operation, sorting your plugins. Its options are:
-			<ul>
-				<li><i>Update Masterlist</i>: Run the masterlist updater during BOSS's operation.
-				<li><i>Perform Trial Run</i>: Simulate BOSS's changes to your load order without actually reordering your mods.
-			</ul>
-			<li><i>Update Masterlist Only</i>: Updates your masterlist then immediately quits. Its option is:
-			<ul>
-				<li><i>Game</i>: The game is BOSS installed for. This affects which masterlist BOSS downloads and which master file to look for. 'Autodetect' tells BOSS to decide for itself based on what master file is present.
-			</ul>
-			<li><i>Undo Changes</i>: Sorts your mods into the order they were in before you last ran BOSS, or the order they were in before the second-last time BOSS was run, depending on the revert level chosen. Its option is:
-			<ul>
-				<li><i>Undo Level</i>: Specify how many runs of BOSS are to be undone.
-			</ul>
-		</ul>
-	<li>Buttons:
-	<ul>
-		<li><i>Edit User Rules</i>: If the <q>Use User Rules Editor</q> setting in the Settings window is enabled, clicking this will open the User Rules Editor window. Otherwise, it will open your userlist.txt in your default text editor.
-		<li><i>Run BOSS</i>: Runs BOSS's primary functionality with the options selected.
-		<li><i>View BOSS Log</i>: Opens the BOSS Log in the format selected by the <q>BOSS Log Format</q> option.
-	</ul>
-</ul>
-
-<h4>The Settings Window</h4>
-<p>The Settings window is where the rest of BOSS's options are located. These options are grouped into tabs depending on what area of BOSS's behaviour they control. The settings are:
-<ul>
-	<li>General settings:
-	<ul>
-		<li><i>Check for BOSS updates on startup</i>: Controls whether or not BOSS checks for updates automatically when it starts up.
-		<li><i>Use User Rules Editor</i>: Controls whether the GUI uses the User Rules Editor window to edit user rules or whether it opens the userlist.txt for manual editing.
-	</ul>
-	<li>Debugging settings:
-	<ul>
-		<li><i>Debug Outout Verbosity</i>: The verbosity of the debug output. As values increase, so does verbosity, 'Standard (0)' displays only warning and error messages.
-		<li><i>Include Source Code References</i>: Add source code references to the debug output.
-		<li><i>Log Debug Output</i>: Save the debug output to a <q>BOSSDebugLog.txt</q> text file.
-	</ul>
-	<li>Internet settings:
-	<ul>
-		<li><i>Proxy Hostname</i>: Specify the hostname of your proxy, if you use one.
-		<li><i>Proxy Port Number</i>: Specify the port number through which your proxy is accessed, if you use one.
-	</ul>
-	<li>BOSS Log Filters settings:
-	<ul>
-		<li>These settings control the default states of the BOSS Log filters. If a setting's box is checked, then the filter of the same name in the BOSS Log will be enabled when the BOSS Log is opened. See the <q><a href="#bosslog">The BOSS Log</a></q> section below for what each filter does.
-	</ul>
-	<li>BOSS Log Styling settings:
-	<ul>
-		<li>These settings control the BOSS Log's CSS styles, used to provide the formatting for the BOSS Log. A knowledge of CSS is expected if you wish to alter these settings. If you do not possess such knowledge, altering these settings is not recommended.
-		<li>The CSS selectors are given on the left, and their styling can be edited in the corresponding text boxes on the right.
-	</ul>
-</ul>
+<h3>The Settings Window</h3>
+<div id="slideholder">
+<img src="images/BOSS GUI Settings 1.png"/>
+<img src="images/BOSS GUI Settings 2.png"/>
+<img src="images/BOSS GUI Settings 3.png"/>
+<img src="images/BOSS GUI Settings 4.png"/>
+<img src="images/BOSS GUI Settings 5.png"/>
+</div>
+<p>The 5 tabs of the GUI's settings window, containing the various settings not displayed in the main window (animated slideshow).
+<p>BOSS has a large number of settings, only a few of which can be displayed in the main window. As such, the less commonly used settings are found in the Settings window, which can be accessed by clicking <q>Edit&#x2192;Settings...</q> in the main window's menu bar. The settings are grouped into tabs depending on what area of BOSS's behaviour they control. The settings are detailed in the table below.
+<table>
+	<thead><tr><td>Tab<td>Setting<td>Description
+	<tbody>
+		<tr><td rowspan="3">General<td>Check for BOSS updates on startup<td>Controls whether or not BOSS checks for program (not masterlist) updates automatically when it starts up.
+		<tr><td>Use User Rules Editor<td>Controls whether the GUI uses the User Rules Editor window to edit user rules or whether it opens the userlist.txt for manual editing.
+		<tr><td>Default Game<td>If set to something other than <q>Autodetect</q>, this overrides game autodetection. If the game specified is not detected, BOSS falls back to autodetection, unless BOSS is run with the <q>Masterlist Update Only</q> option selected, in which case BOSS will run successfully whether or not the game is installed.
+		<tr><td rowspan="4">Internet<td>Proxy Hostname<td>If you use a proxy to connect to the Internet, specify its hostname here.
+		<tr><td>Proxy Port Number<td>If you use a proxy to connect to the Internet, specify its port number here.
+		<tr><td>Proxy Username<td>If you use a proxy that requires authentication to connect to the Internet, specify your username here.
+		<tr><td>Proxy Password<td>If you use a proxy that requires authentication to connect to the Internet, specify your password here.
+		<tr><td rowspan="3">Debugging<td>Debug Outout Verbosity<td>The verbosity of the debug output. As values increase, so does verbosity, 'Standard (0)' displays only warning and error messages.
+		<tr><td>Include Source Code References<td>Add source code references to the debug output.
+		<tr><td>Log Debug Output<td>Save the debug output to a <q>BOSSDebugLog.txt</q> text file.
+		<tr><td>BOSS Log Filters<td><i>Many</i><td>These settings control the default states of the BOSS Log filters. If a setting's box is checked, then the filter of the same name in the BOSS Log will be enabled when the BOSS Log is opened. See the <q><a href="#bosslog">The BOSS Log</a></q> section below for what each filter does.
+		<tr><td>BOSS Log CSS<td><i>Many</i><td>These settings control the BOSS Log's CSS styles, used to provide the formatting for the BOSS Log. A knowledge of CSS is expected if you wish to alter these settings. If you do not possess such knowledge, altering these settings is not recommended. The CSS selectors are given on the left, and their styling can be edited in the corresponding text boxes on the right. Curly brackets should be omitted.
+</table>
 <p>Each setting in the GUI corresponds to a command line parameter and/or an ini setting, the details of which can be found in the <q><a href="#cli">Command Line Arguments</a></q> and <q><a href="#customising">Customising How BOSS Works</a></q> sections of this ReadMe respectively.</p>
 
-<h4>The User Rules Editor</h4>
-<p>The User Rules Editor can be used to manage your user rules using a graphical interface instead of editing your userlist.txt directly. The information contained within the <q>BOSS User Rules ReadMe.html</q> document is still required to understand user rules. The editor contains the following:
-<ul>
+<h3>The User Rules Editor</h3>
+<img src="images/BOSS GUI User Rules Editor.png"/>
+<p>The User Rules Editor, a graphical interface for managing your user rules.
+<p>The User Rules Editor can be used instead of editing your userlist.txt directly. The information contained within the <q>BOSS User Rules ReadMe.html</q> document is still required to understand user rules. The editor comprises of the following elements:
 	<li>User Rules:
 	<ul>
 		<li>This section lists your user rules in order. 
@@ -181,24 +168,18 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 		<li>Rules can be moved up or down using the <q>Move Rule Up</q> and <q>Move Rule Down</q> buttons at the bottom of the window.
 		<li>When the User Rules Editor is loaded, it will automatically disable any rules adding mods that are already in the masterlist.
 	</ul>
-	<li>Installed Mods:
+	<li>Installed Mods/Masterlist tabs:
 	<ul>
-		<li>This section lists the plugins found in your Data folder. Plugins are listed in the order that they are loaded.
-		<li>All plugins installed are displayed, not just those in your currently active load order.
-		<li>The installed mod list may be searched using the search box at the top. Searching looks for matches from the start of plugin filenames, so searching for "xul" would return all plugins with filenames that start with "xul". Searching starts when the "Enter" keyboard key is pressed, it is not performed as you type.
-		<li>A plugin may be selected in the list and drag 'n' dropped into a text box in the Rule Creator/Editor to add that plugin to the text box, rather than having to write out the plugin filename by hand.
-	</ul>
-	<li>Masterlist:
-	<ul>
-		<li>This section displays the masterlist as a tree list, showing plugins and groups.
-		<li>The tree list is by default fully collapsed. Double clicking on a collapsed group (any row without a ".esp" or ".esm" in its name) will expand that group, showing its children. Double clicking an expanded group will collapse it again, hiding its children.
-		<li>Selecting a plugin will cause the messages attached to it by the masterlist to be displayed in the Masterlist Mod Messages section.
-		<li>The masterlistlist may be searched using the search box at the top. Searching looks for matches from the start of plugin filenames and group names, so searching for "xul" would return all plugins with filenames that start with "xul" and groups with names that start with "xul". Searching starts when the <q>Enter</q> keyboard key is pressed, it is not performed as you type.
+		<li>The Installed Mods tab lists the plugins found in your Data folder. Plugins are listed in the order that they are loaded. All plugins installed are displayed, not just those in your currently active load order.
+		<li>The Masterlist tab displays the masterlist as a tree list, showing plugins and groups. The tree list is by default fully collapsed. Double clicking on a collapsed group (any row without a <code>.esp</code> or <code>.esm</code> in its name) will expand that group, showing its children. Double clicking an expanded group will collapse it again, hiding its children.
+		<li>Selecting a plugin in the Masterlist tab's list will cause the messages attached to it by the masterlist to be displayed in the Masterlist Mod Messages section.
+		<li>Either list may be searched using the search box at the top of each tab. Searching looks for matches from the start of plugin and group names, searching for <code>xul</code> would return all plugins and groups with names that start with <code>xul</code>. Searches are performed when the <q>Enter</q> keyboard key is pressed, and may be cancelled by clicking the grey cross that appears in the search box.
+		<li>A plugin or group may be selected frm either list and drag 'n' dropped into a text box in the Rule Creator/Editor to add that plugin or group to the text box, rather than having to write out its name.
 	</ul>
 	<li>Masterlist Mod Messages:
 	<ul>
 		<li>This section displays the messages attached to the currently selected mod in the Masterlist section. The messages are displayed as they appear in the masterlist, not as they appear in the BOSS Log. See the <q>BOSS User Rules ReadMe.html</q> for a brief overview of the most common message syntax, and the <q>BOSS Masterlist Syntax.html</q> documentation for the full details.
-		<li>The messages cannot be edited here: they must be replaced or added to via a user rule in the Rule Creator.
+		<li>The messages cannot be edited here: they must be replaced or added to via a user rule in the Rule Creator/Editor.
 	</ul>
 	<li>Rule Creator/Editor:
 	<ul>
@@ -218,22 +199,14 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 
 <h2 id="updates">Keeping BOSS Up-To-Date</h2>
 <p>It is important that you keep your BOSS installation updated, not only to benefit from the many frequent updates made to the masterlists, but also to benefit from bug fixes, improvements and new features introduced to new releases of BOSS itself.
-<p>Providing there is an Internet connection available when BOSS runs, it will automatically download and apply any updates available for the masterlists. BOSS will also check for new releases and if an update is available, it will ask the user if they want to download and install it. The check for new releases functionality behaves as outlined below:
+<p>Providing there is an Internet connection available when BOSS runs, it will automatically download and apply any updates available for the masterlist of the game it is running for by default. BOSS will also check for new releases and if an update is available it will notify the user, displaying release notes if any are available. Additionally, if you installed BOSS using the automated installer, BOSS will ask the user if they wish to update, and automatically download and run the updated version's installer if so. The check for new releases functionality behaves as outlined below:
 <ol>
  <li>On launching, it automatically checks for updates to BOSS. If an update is found, it proceeds to the next step. If no update is available, or no Internet connection is present, it will display no message.
  <ul>
   <li>If you run the <q>Check For Updates</q> option from the GUI's Help option, then it will display messages detailing if no update was found or if there were any errors.
  </ul>
- <li>No matter how the update check was started, if an update is available it will prompt the user whether or not to download and install the update. If the user decides not to update, the updater will quit.
- <li>If the user decides to update, then it will begin downloading the file(s) to the BOSS folder, displaying the progress. If using the GUI, the download can be cancelled at any time, in which case any downloaded files will be deleted and the updater will quit. CLI users can cancel the download by quitting BOSS, but no cleanup will take place.
- <ul>
-  <li>If you previously installed BOSS using the installer, then the updater shall download the installer for the update, otherwise it will download the files as they appear in the manual archive.
- </ul>
- <li>Once the download is complete, the updater will install the downloaded file(s).
- <ul>
-  <li>If the installer was downloaded, it will be launched, and BOSS shall exit. Complete the installation wizard to finish updating.
-  <li>If the manual archive files were downloaded, the old BOSS files will be deleted and replaced with the new ones. The updater will be unable to replace the executable that you are running BOSS from, but will instead tell you to rename the downloaded executable, then exit. You must manually rename the file, deleting the old executable, to complete the update.
- </ul>
+ <li>No matter how the update check was started, if an update is available it will notify the user, asking whether or not to download and install the update if BOSS was installed using the automated installer. If the user decides not to update, the updater will quit.
+ <li>If the user decides to update, then it will begin downloading the new installer to the BOSS folder, displaying the progress. If using the GUI, the download can be cancelled at any time, in which case any downloaded file will be deleted and the updater will quit. CLI users can cancel the download by quitting BOSS, but no cleanup will take place.
 </ol>
 <p>Under certain circumstances the masterlist and program updaters may be unable to function fully. If you have issues using them, see the <q><a href="#special">Updating Under Special Circumstances</a></q> section for alternative methods.
 
@@ -247,7 +220,7 @@ suggestions from BOSS. Some Bash Tag suggestions can come with conditions and no
 
 <h2 id="bosslog">The BOSS Log</h2>
 <p>The BOSS Log is where you will find all of BOSS's outputted information. It can be generated in either HTML format (the default) or as a plain text file with minimal formatting. The HTML format has significant advantages over the plain text format, being considerably easier to read, containing colour-coded messages and a variety of filters to customise what is displayed. However, other than the HTML BOSS Log providing a notification if there has been no change in the recognised mod list since last run, there is no difference in information provided between the two formats.
-<p>The HTML BOSS Log has been tested in Mozilla Firefox 4, Google Chrome 11, Opera 11 and Internet Explorer 9. Using earlier browsers may result in parts of the BOSS Log not working or displaying correctly.
+<p>The HTML BOSS Log has been tested in Mozilla Firefox 10, Google Chrome 17, Opera 11 and Internet Explorer 9. Using earlier browsers may result in parts of the BOSS Log not working or displaying correctly.
 <p>The BOSS Log comprises of a number of sections, which are detailed in the table below.
 <table>
 	<thead><tr><td>BOSS Log Section<td>Description
@@ -348,7 +321,7 @@ There are three key pieces of information that are used to accurately describe a
 <table>
 	<thead><tr><td>Ini Setting<td>Default<td>Valid Values<td>Description
 	<tbody>
-		<tr><td>sProxyHostname<td><code>none</code><td><code>none</code>, hostname (eg. <code>proxy.company.com</code>), IP address (eg. <code>192.168.32.4</code>)<td>The hostname for the proxy host used, if a proxy is required to connect to the Internet. <code>none</code> tells BOSS to use no proxy.
+		<tr><td>sProxyHostname<td>Default is an empty string.<td>An empty string, hostname (eg. <code>proxy.company.com</code>), IP address (eg. <code>192.168.32.4</code>)<td>The hostname for the proxy host used, if a proxy is required to connect to the Internet. If no hostname is given, BOSS assumes that no proxy should be used.
 		<tr><td>iProxyPort<td><code>0</code><td>Any valid port number.<td>The port used to connect to the proxy host, if a proxy is required to connect to the Internet. <code>0</code> tells BOSS to use no proxy.
 		<tr><td>sProxyUsername<td>Default is an empty string.<td>Any string of characters.<td>The username BOSS uses to connect to the Internet through an authenticated proxy. If no username is given, then BOSS assumes that any proxy used is unauthenticated.
 		<tr><td>sProxyPassword<td>Default is an empty string.<td>Any string of characters.<td>The password BOSS ues to connect to the Internet through an authenticated proxy. If no password is given, then BOSS assumes that any proxy used is unauthenticated.
@@ -358,9 +331,8 @@ There are three key pieces of information that are used to accurately describe a
 <table>
 	<thead><tr><td>Ini Setting<td>Default<td>Valid Values<td>Description
 	<tbody>
-		<tr><td>sGame<td><code>auto</code><td><code>auto</code>, <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code>, <code>Skyrim</code><td>The game is BOSS installed for. This affects which masterlist BOSS downloads and which master file to look for. <code>auto</code> tells BOSS to auto-detect the game.
+		<tr><td>sGame<td><code>auto</code><td><code>auto</code>, <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code>, <code>Skyrim</code><td>If set to something other than <code>auto</code>, this overrides game autodetection. If the game specified is not detected, BOSS falls back to autodetection, unless <code>bOnlyUpdateMasterlist = true</code>, in which case BOSS will run successfully whether or not the game is installed.
 		<tr><td>sBOSSLogFormat<td><code>html</code><td><code>html</code>, <code>text</code><td>Specify the format of the BOSS Log generated.
-		<tr><td>iRunType<td><code>1</code><td><code>1</code>, <code>2</code>, <code>3</code><td>Specifies what run type is selected in the GUI when it starts. <code>1</code> is <q>Sort Mods</q>, <code>2</code> is <q>Update Masterlist Only</q> and <code>3</code> is <q>Undo Changes</q>.
 		<tr><td>iDebugVerbosity<td><code>0</code><td><code>0</code>, <code>1</code>, <code>2</code>, <code>3</code><td>The verbosity of the debug logging output. As values increase, so does verbosity. <code>0</code> displays only warning and error messages.
 		<tr><td>iRevertLevel<td><code>0</code><td><code>0</code>, <code>1</code>, <code>2</code><td>Specify how many runs of BOSS to undo. <code>0</code> tells BOSS to run as normal.
 		<tr><td>bUpdateMasterlist<td><code>true</code><td><code>false</code>, <code>true</code><td>Run the masterlist updater.
@@ -448,7 +420,7 @@ There are three key pieces of information that are used to accurately describe a
 <p><code>-o [ --only-update ]</code>
 <p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then does <b>not</b> sort your plugins.
 <p><code>-g [ --game ] [ game ]</code>
-<p>Overrides game autodetection. The valid values of the argument are: <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code> and <code>Skyrim</code>. If the game specified is not detected, BOSS will fail before any plugins are sorted, so this should be used in conjunction with -o.
+<p>Overrides game autodetection. The valid values of the argument are: <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code> and <code>Skyrim</code>. If the game specified is not detected, BOSS falls back to autodetection, unless <code>-o</code> is also passed, in which case BOSS will run successfully whether or not the game is installed.
 <p><code>-s [ --silent ]</code>
 <p>Stops BOSS from automatically opening up the BOSS Log in your web browser (or text editor, depending on format chosen) after it has finished running.
 <p><code>-c [ --crc-display ]</code>
@@ -477,26 +449,27 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 
 <h2 id="special">Updating Under Special Circumstances</h2>
 <p>The vast majority of users will be able to use BOSS's masterlist updater and the auto-updater with no problems. However, some users' circumstances may be such that the standard method will not work. This section provides instructions for those users.
-<p>The most common special circumstance is when the computer the user has BOSS installed on is not connected to the Internet. Merely transferring <q>BOSS.exe</q> to another computer and running it is not sufficient, as by default BOSS tries to autodetect the game it is installed for, and if there is no game present it will exit with an error. In this circumstance, the following instructions should be used to obtain masterlist updates:
+<p>The most common special circumstance is when the computer the user has BOSS installed on is not connected to the Internet. In this circumstance, the following instructions should be used to obtain masterlist updates:
 <ol>
 	<li>Copy <q>BOSS GUI.exe</q> from your BOSS folder to the computer with an Internet connection.
-	<li>Run the BOSS GUI.exe and select the <q>Update Masterlist Only</q> option. For the <q>Game</q> option below, select your game from the drop-down list. This will tell BOSS which game's masterlist to download.
+	<li>Run the BOSS GUI.exe and select the <q>Update Masterlist Only</q> option. 
+	<li>Select the game you wish to download the masterlist for from the <q>Active Game</q> menu.
 	<li>If you use a proxy to connect to the Internet, also record your proxy settings in the relevant part of the GUI's <q>Settings</q> window.
-	<li>Select <q>Run BOSS</q>. Your masterlist will be downloaded into the same folder as your <q>BOSS GUI.exe</q>. Some other BOSS files will also be created, you can safely delete these.
+	<li>Select <q>Run BOSS</q>. The masterlist will be downloaded into a subfolder, named after the game you selected, in the same location as your <q>BOSS GUI.exe</q>. Some other BOSS files will also be created, you can safely delete these.
 </ol>
-<p>A rarer circumstance is when the user connects to the Internet using a proxy. This is most common in enterprise environments, and such users will generally know if they use a proxy. If you use a proxy to connect to the Internet, you must either record your proxy settings in the relevant part of the GUI's <q>Settings</q> window or manually enter your proxy settings into your <q>BOSS.ini</q> settings file. See the <q><a href="#customising">Customising How BOSS Works</a></q> section above for details on the expected settings. BOSS does not support the use of authenticated proxies at this time.
+<p>A rarer circumstance is when the user connects to the Internet using a proxy. This is most common in enterprise environments, and such users will generally know if they use a proxy. If you use a proxy to connect to the Internet, you must either record your proxy settings in the relevant part of the GUI's <q>Settings</q> window or manually enter your proxy settings into your <q>BOSS.ini</q> settings file. See the <q><a href="#customising">Customising How BOSS Works</a></q> section above for details on the expected settings.
 <p>If your circumstances are such that the computer you have BOSS installed on is not connected to the Internet, or if you use a proxy to connect to the Internet, it is recommended that you avoid using the auto-updater, simply because it is easier in these circumstances to download new releases through your web browser.
 <p>There may also be other special cases which cause problems for BOSS's updaters that the BOSS team is unaware of. If you are having issues using the updaters, contact the BOSS team for support.</p>
 <br />
 
 <h2 id="linux">Running BOSS Under Linux</h2>
 <p>It is possible to run BOSS on Linux through the Wine compatibility layer, though no official support for doing so is given. Installation and usage is as on Windows. 
-It is also possible to compile BOSS natively for Linux, and makefiles are provided, although there is again no official support for doing so. Native Linux builds are case-sensitive in their recognition of plugins in the masterlist, and while plugins are generally added with the correct case, occasionally a plugin might have the incorrect case which would cause problems for a user with a native Linux build.</p>
+It is also possible to compile BOSS natively for Linux, although there is again no official support for doing so. Native Linux builds are case-sensitive in their recognition of plugins in the masterlist, and while plugins are generally added with the correct case, occasionally a plugin might have the incorrect case which would cause problems for a user with a native Linux build.</p>
 <br />
 
 <h2 id="files">BOSS Changes and Files</h2>
 <p>The only changes BOSS makes to your game install are to re-date the .esp and .esm files in your Data folder, and create a few files in your BOSS folder. Your game's master file (Oblivion.esm, Nehrim.esm, Fallout3.esm, FalloutNV.esm or Skyrim.esm) is never altered, and all dates are derived from it.
-<p>BOSS stores all its files in the BOSS folder. BOSS's files are detailed in the table below.
+<p>BOSS stores all its files in the BOSS folder. BOSS's files are detailed in the table below (images for this readme are omitted).
 <table>
 	<thead><tr><td>File<td>Description
 	<tbody>
@@ -592,17 +565,12 @@ a problem for which no error message is given, please report the crash or proble
 <h2 id="errors">Error Messages</h2>
 <p>If BOSS can detect a specific reason for being unable to function correctly, it will print an error message detailing the problem. BOSS's error messages are listed below, along with details of the issues and possible solutions.
 <ul class="errorMessages">
-	<li><b>Message:</b> <i>Oblivion.esm and Nehrim.esm both detected!</i>
-	<ul>
-		<li><b>Issue:</b> You have installed Nehrim incorrectly.
-		<li><b>Solution:</b> Uninstall Nehrim, read its Readme, then re-install it correctly.
-	</ul>
 	<li><b>Message:</b> <i>No game master .esm file found!</i>
 	<ul>
-		<li><b>Issue:</b> BOSS is not being run in the correct folder.
-		<li><b>Solution:</b> Move the BOSS folder containing all of BOSS's files into your game's installation folder, which is the one that contains the Data folder.
 		<li><b>Issue:</b> Your master .ESM file is deactivated and ghosted by <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>.
 		<li><b>Solution:</b> Re-activate your master .ESM file.
+		<li><b>Issue:</b> BOSS cannot detect any of the supported games.
+		<li><b>Solution:</b> Install BOSS locally for each of the supported games you have installed. I.e. have a BOSS folder sitting next to the Data folder of each game.
 	</ul>
 	<li><b>Message:</b> <i>"<code>filename</code>" cannot be read!</i>
 	<ul>
@@ -636,7 +604,7 @@ a problem for which no error message is given, please report the crash or proble
 	<li><b>Message:</b> <i>No game detected!</i>
 	<ul>
 		<li><b>Issue:</b> BOSS cannot tell what game it is running for.
-		<li><b>Solution:</b> Report this issue to the BOSS Development Team.
+		<li><b>Solution:</b> This may occur if BOSS has been unable to detect a supported game but it is made to run anyway, eg. by running the GUI with <q>Update Masterlist Only</q> selected but the <q>Active Game</q> set to <q>None</q>. Make sure that you have selected a game to run for or set the active game.
 	</ul>
 	<li><b>Message:</b> <i>Cannot find online masterlist revision number!</i>
 	<ul>
@@ -666,6 +634,14 @@ a problem for which no error message is given, please report the crash or proble
 	<li><b>Message:</b> <i>"<code>filename</code>" cannot be deleted! Filesystem response: "<code>further details</code>".</i>
 	<ul>
 		<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
+	</ul>
+	<li><b>Message:</b> <i>"<code>directory</code>" cannot be created! Filesystem response: "<code>further details</code>".</i>
+	<ul>
+		<li><b>Solution:</b> Make sure that you have write permissions for the location the directory is being create in. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
+	</ul>
+	<li><b>Message:</b> <i>"<code>directory</code>" cannot be scanned! Filesystem response: "<code>further details</code>".</i>
+	<ul>
+		<li><b>Solution:</b> Make sure that you have read permissions for the location that is being scanned. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
 	</ul>
 	<li><b>Message:</b> <i>cURL cannot be initialised!</i>
 	<ul>
@@ -882,6 +858,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Changed: GUI's User Rules Editor is now resizeable and the Installed Mods and Masterlist lists are now tabbed to give more space for them.
 	<li>Changed: BOSS no longer quits with an error message without sorting plugins when both Nehrim.esm and Oblivion.esm are present in the same Data folder, as this arrangement may be valid for modders porting mods, so long as Oblivion.esm remains inactive when Nehrim is run.
 	<li>Changed: BOSS update release notes are now displayed before the update download confirmation.
+	<li>Changed: Only a single instance of the GUI is now allowed to run at any one time.
 	<li>Added: Support for multiple games from a single BOSS install:
 	<ul>
 		<li>BOSS now has two different install types: local installs place the BOSS folder beside a game's Data folder. Non-local installs place the BOSS folder anywhere else. Local installs will always run for the local game by default. Non-local installs will look for supported games and prompt the user to choose one to run for each time BOSS is run. If only one game is found, BOSS will run for it without user prompt.
@@ -1176,3 +1153,25 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Changes Not Recorded.
 </ul>
 </div>
+<script>
+function nextImage(){
+	var imgs=document.getElementById('slideholder').getElementsByTagName('img');
+	for(var i=0;i<imgs.length;i++){
+		if(imgs[i].style.opacity=='1' || imgs[i].style.opacity==''){
+			imgs[i].style.opacity='0';
+			if(i+1<imgs.length){
+				imgs[i+1].style.opacity='1';
+			}else{
+				imgs[0].style.opacity='1';
+			}
+			
+			break;
+		}
+	}
+	t=setTimeout("nextImage()",5000);
+}
+
+if(document.getElementById('slideholder')!=null){
+	t=setTimeout("nextImage()",5000);
+}
+</script>

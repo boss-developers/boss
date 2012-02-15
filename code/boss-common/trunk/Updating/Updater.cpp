@@ -151,7 +151,7 @@ namespace boss {
 			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
 		}
 
-		if (gl_proxy_host != "none" && gl_proxy_port != 0) {
+		if (!gl_proxy_host.empty() && gl_proxy_port != 0) {
 			//All of the settings have potentially valid proxy-ing values.
 			ret = curl_easy_setopt(curl, CURLOPT_PROXYTYPE, 
 										CURLPROXY_HTTP|
