@@ -87,21 +87,13 @@ int main() {
 			if (BOSS_API_ERROR_OK != ret)
 				out << '\t' << "Conditional evaluation failed. Error: " << ret << endl;
 			else {
-				
 				out << "TESTING SortMods(...)" << endl;
-				size_t lastPos;
-				ret = SortMods(db, &lastPos);
-				if (BOSS_API_ERROR_OK != ret)
-					out << '\t' << "Sorting failed. Error: " << ret << endl;
-				else
-					out << '\t' << "Last recognised pos: " << lastPos << endl;
-				
-				out << "TESTING TrialSortMods(...)" << endl;
 				uint8_t ** sortedPlugins;
 				size_t len;
-				ret = TrialSortMods(db, &sortedPlugins, &len, &lastPos);
+				size_t lastPos;
+				ret = SortMods(db, false, &sortedPlugins, &len, &lastPos);
 				if (BOSS_API_ERROR_OK != ret)
-					out << '\t' << "Trial sorting failed. Error: " << ret << endl;
+					out << '\t' << "Sorting failed. Error: " << ret << endl;
 				else {
 					out << '\t' << "List size: " << len << endl;
 					out << '\t' << "Last recognised pos: " << lastPos << endl;

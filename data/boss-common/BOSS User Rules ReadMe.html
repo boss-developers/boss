@@ -59,7 +59,7 @@ as well as for adding or editing messages attached to plugins, and these rules w
 <div id="start"><h1>Getting Started With The Userlist</h1>
 <p style="color:purple">NOTE: This ReadMe refers to .esp and .esm files as 'plugins'. Unless explicitely stated, the 'name' of a 'plugin' refers to its filename, including the extension.
 <p>Also, while the examples in this ReadMe reference Oblivion and some of its plugins, the functionality will work for all the games BOSS supports. When your game's master .ESM file is mentioned, this refers to Oblivion.esm, Nehrim.esm, Fallout3.esm or FalloutNV.esm for Oblivion, Nehrim, Fallout 3 or Fallout: New Vegas respectively.
-<p>The userlist is the file which contains your custom rules for sorting plugins and editing plugins' messages. It is found at <code>BOSS\userlist.txt</code>. A blank userlist is automatically created when BOSS is first run.
+<p>The userlist is the file which contains your custom rules for sorting plugins and editing plugins' messages. It is found at <code>BOSS\[GAME]\userlist.txt</code>, where <code>[GAME]</code> is one of <code>Oblivion</code>, <code>Nehrim</code>, <code>Skyrim</code>, <code>Fallout 3</code> or <code>Fallout New Vegas</code>, depending on the game the userlist is for. A blank userlist is automatically created for a game when BOSS is first run for that game.
 <p>Within this file, which you can edit in Notepad or any other text editor, you list your rule definitions. Rules can make two types of changes:
 <ol>
 	<li><em>Sort plugins and groups.</em> You can:
@@ -69,7 +69,7 @@ as well as for adding or editing messages attached to plugins, and these rules w
 			<li>Insert plugins into groups. You can put plugins at the beginning or end of groups.
 		</ul>
 		Plugins may be .esp or .esm files. Groups are all pre-defined in the BOSS masterlist, marked out by the 
-	<code>\BeginGroup\:  <em>Group Name</em></code> and <code>\EndGroup\\</code> lines.
+	<code>\BeginGroup\: <em>Group Name</em></code> and <code>\EndGroup\\</code>, or <code>BEGINGROUP: <em>Group Name</em></code> and <code>ENDGROUP</code>, lines.
 	<li><em>Edit BOSS messages.</em> You can add to or replace the plugin-specific messages that are displayed in the BOSS Log.
 	See <q><a href="#messages">The BOSS Message Format</a></q> below for more details on the message types and syntax.
 </ol>
@@ -254,8 +254,8 @@ bgBalancingEVOptionalNPCDiversity, Vanilla.esp
 </div>
 
 <div id="apply"><h1>Enforcing Your Rules</h1>
-<p>When BOSS is run, it will look for your userlist at <code>Data\BOSS\userlist.txt</code>. If it is found, and the userlist contains at least one rule, BOSS will first check the syntax of the rules, and apply those with the correct syntax. 
-It will print error messages detailing the problems with any rules it skips, and success messages for the plugins that are applied, into your BOSS Log.txt, in a section headed "Userlist Messages" near the top. Disabled rules have their syntax checked, but are not applied.
+<p>When BOSS is run, it will look for your userlist at <code>BOSS\[GAME]\userlist.txt</code>, where <code>[GAME]</code> is one of <code>Oblivion</code>, <code>Nehrim</code>, <code>Skyrim</code>, <code>Fallout 3</code> or <code>Fallout New Vegas</code>, depending on the game BOSS is running for. If it is found, and the userlist contains at least one rule, BOSS will first check the syntax of the rules, and apply those with the correct syntax. 
+It will print error messages detailing the problems with any rules it skips, and success messages for the plugins that are applied, into your BOSS Log, in the <q>Userlist Messages</q> section near the top. Disabled rules have their syntax checked, but are not applied.
 <p>If a rule is successfully applied, it will print one or more messages depending on what the rule does:
 <ol>
 	<li>If the rule includes a sort line and uses the sort keywords BEFORE or AFTER, it will print a message of the form: <code>"<em>Plugin/Group Name</em>" sorted <em>before/after</em> "<em>Plugin/Group Name</em>".</code>

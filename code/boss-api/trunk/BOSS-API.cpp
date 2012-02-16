@@ -478,72 +478,18 @@ BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * ma
 // Plugin Sorting Functions
 ////////////////////////////////
 
-// Sorts the mods in dataPath according to their order in the masterlist at 
-// masterlistPath for the given game. lastRecPos holds the load order position 
-// of the last plugin recognised by BOSS. 
-BOSS_API uint32_t SortMods(boss_db db, size_t * lastRecPos) {
-	if (db == NULL)
-		return BOSS_API_ERROR_INVALID_ARGS;
-
-	ItemList modlist;
-	time_t masterTime, modfiletime = 0;
-
-	try {
-		masterTime = GetMasterTime();
-	} catch (boss_error e) {
-		return BOSS_API_ERROR_MASTER_TIME_READ_FAIL;
-	}
-
-	//Build modlist and masterlist.
-	try {
-		modlist.Load(data_path);
-	} catch (boss_error e) {
-		if (e.getCode() == BOSS_ERROR_FILE_NOT_FOUND)
-			return BOSS_API_ERROR_FILE_NOT_FOUND;
-		else if (e.getCode() == BOSS_ERROR_FILE_NOT_UTF8)
-			return BOSS_API_ERROR_FILE_NOT_UTF8;
-		else
-			return BOSS_API_ERROR_PARSE_FAIL;
-	}
-
-	//Set up working modlist.
-	//The function below changes the input, so make copies.
-	ItemList masterlist = db->filteredMasterlist;
-	masterlist.EvalConditions();
-	RuleList userlist = db->userlist;
-	BuildWorkingModlist(modlist, masterlist, userlist);
-	string dummy;
-	ApplyUserRules(modlist, userlist, dummy);  //This needs to be done to get sensible ordering as the userlist has been taken into account in the working modlist.
-
-	vector<Item> items = modlist.Items();
-	size_t max = items.size();
-	size_t mods = 0;
-	for (size_t i=0; i < max; i++) {
-		if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
-			if (!items[i].IsMasterFile()) {
-				//time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-				try {
-					items[i].SetModTime(masterTime + mods*60);
-				} catch(boss_error e) {
-					return BOSS_API_ERROR_FILE_MOD_TIME_WRITE_FAIL;
-				}
-			}
-			mods++;
-		}
-		if (i == modlist.LastRecognisedPos())
-			*lastRecPos = mods-1;
-	}
-
-	return BOSS_API_ERROR_OK;
-}
-
-// Behaves as the above function does, but does not actually redate the plugins.
-// It instead lists them in the order they would be sorted in using SortMods() in
-// the sortedPlugins array outputted. The contents of the array are static and should
-// not be freed by the client. lastRecPos holds the load order position of the last 
-// plugin recognised by BOSS. 
-BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t *** sortedPlugins, size_t * listLength, size_t * lastRecPos) {
-	if (sortedPlugins == NULL || db == NULL || listLength == NULL)
+// Sorts the mods in the data path, using the masterlist at the masterlist path,
+// specified when the db was loaded using Load. Outputs a list of plugins, pointed to
+// by sortedPlugins, of length pointed to by listLength. lastRecPos points to the 
+// position in the sortedPlugins list of the last plugin recognised by BOSS.
+// If the trialOnly parameter is true, no plugins are actually redated.
+// If trialOnly is false, then sortedPlugins, listLength and lastRecPos can be null
+// pointers, in case you do not require the information. If one of them is null, the
+// other two must also be null.
+BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedPlugins, 
+								size_t * listLength, 
+								size_t * lastRecPos) {
+	if (db == NULL || (trialOnly == true && (sortedPlugins == NULL || listLength == NULL || lastRecPos == NULL)))
 		return BOSS_API_ERROR_INVALID_ARGS;
 
 	ItemList modlist;
@@ -577,8 +523,12 @@ BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t *** sortedPlugins, size_t * 
 	ApplyUserRules(modlist, userlist, dummy);  //This needs to be done to get sensible ordering as the userlist has been taken into account in the working modlist.
 
 	//Initialise vars.
-	*listLength = 0;
-	*sortedPlugins = NULL;
+	if (listLength != NULL)
+		*listLength = 0;
+	if (sortedPlugins != NULL)
+		*sortedPlugins = NULL;
+	if (lastRecPos != NULL)
+		*lastRecPos = 0;
 
 	//Free memory if already used.
 	if (db->extPluginList != NULL) {
@@ -587,18 +537,24 @@ BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t *** sortedPlugins, size_t * 
 		free(db->extPluginList);  //Clear the string array.
 	}
 
-	//Build vector of relevant items (ie. only mods).
 	vector<Item> items = modlist.Items();
 	vector<uint8_t *> mods;
 	size_t max = items.size();
 	for (size_t i=0; i < max; i++) {
 		if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
+			if (!trialOnly && !items[i].IsMasterFile()) {
+				try {
+					items[i].SetModTime(masterTime + mods.size()*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+				} catch(boss_error e) {
+					return BOSS_API_ERROR_FILE_MOD_TIME_WRITE_FAIL;
+				}
+			}
 			uint8_t * p = StringToUint8_tString(items[i].Name());
 			if (p == NULL)
 				return BOSS_API_ERROR_NO_MEM;
 			mods.push_back(p);
 		}
-		if (i == modlist.LastRecognisedPos())
+		if (i == modlist.LastRecognisedPos() && lastRecPos != NULL)
 			*lastRecPos = mods.size()-1;
 	}
 
@@ -610,8 +566,10 @@ BOSS_API uint32_t TrialSortMods(boss_db db, uint8_t *** sortedPlugins, size_t * 
 	for (size_t i=0; i < db->extPluginListSize; i++)
 		db->extPluginList[i] = mods[i];
 	
-	*sortedPlugins = db->extPluginList;
-	*listLength = db->extPluginListSize;
+	if (sortedPlugins != NULL)
+		*sortedPlugins = db->extPluginList;
+	if (listLength != NULL)
+		*listLength = db->extPluginListSize;
 
 	return BOSS_API_ERROR_OK;
 }
@@ -687,7 +645,7 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 
 		//Loop through internal bashTagMap and fill output elements.
 		for (size_t i=0; i<mapSize; i++) {
-			db->extTagMap[i].id = i;
+			db->extTagMap[i].id = uint32_t(i);
 			db->extTagMap[i].name = reinterpret_cast<const uint8_t *>(db->bashTagMap[i].c_str());
 		}
 		*tagMap = db->extTagMap;

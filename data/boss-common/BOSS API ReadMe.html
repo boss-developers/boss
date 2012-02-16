@@ -161,11 +161,8 @@ API Documentation</div>
 
 <h2 id="functions-sorting">Plugin Sorting Functions</h2>
 
-<p><div class="codebox">uint32_t <span style="color:blue;">SortMods</span> (boss_db db, size_t * lastRecPos);</div>
-<p>Sorts the plugins in the directory specified by dataPath for the game clientGame when Load() was called. lastRecPos holds the load order position of the last plugin recognised by BOSS.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">TrialSortMods</span> (boss_db db, uint8_t *** sortedPlugins, size_t * listLength, size_t * lastRecPos);</div>
-<p>Outputs an array listing the plugins in the directory specified by dataPath when Load() was called, with plugins in the order that they would be placed into if SortMods() were to be called. listLength is the length of the array pointed to by sortedPlugins. lastRecPos holds the load order position of the last plugin recognised by BOSS.
+<p><div class="codebox">uint32_t <span style="color:blue;">SortMods</span> (boss_db db, const bool trialOnly, uint8_t *** sortedPlugins, size_t * listLength, size_t * lastRecPos);</div>
+<p>Sorts the mods in the data path, using the masterlist at the masterlist path, specified when the db was loaded using Load. Outputs a list of plugins, pointed to by sortedPlugins, of length pointed to by listLength. lastRecPos points to the position in the sortedPlugins list of the last plugin recognised by BOSS. If the trialOnly parameter is true, no plugins are actually redated. If trialOnly is false, then sortedPlugins, listLength and lastRecPos can be null pointers, in case you do not require the information. If one of them is null, the other two must also be null.
 
 <h2 id="functions-access">Database Access Functions</h2>
 <p><div class="codebox">uint32_t <span style="color:blue;">GetBashTagMap</span> (boss_db db, BashTag ** tagMap, size_t * numTags);</div>
@@ -500,21 +497,13 @@ int main() {
 			if (BOSS_API_ERROR_OK != ret)
 				out &lt;&lt; '\t' &lt;&lt; "Conditional evaluation failed. Error: " &lt;&lt; ret &lt;&lt; endl;
 			else {
-				
-				out &lt;&lt; "TESTING SortMods(...)" &lt;&lt; endl;
-				size_t lastPos;
-				ret = SortMods(db, &lastPos);
-				if (BOSS_API_ERROR_OK != ret)
-					out &lt;&lt; '\t' &lt;&lt; "Sorting failed. Error: " &lt;&lt; ret &lt;&lt; endl;
-				else
-					out &lt;&lt; '\t' &lt;&lt; "Last recognised pos: " &lt;&lt; lastPos &lt;&lt; endl;
-				
 				out &lt;&lt; "TESTING TrialSortMods(...)" &lt;&lt; endl;
 				uint8_t ** sortedPlugins;
 				size_t len;
+				size_t lastPos;
 				ret = TrialSortMods(db, &sortedPlugins, &len, &lastPos);
 				if (BOSS_API_ERROR_OK != ret)
-					out &lt;&lt; '\t' &lt;&lt; "Trial sorting failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+					out &lt;&lt; '\t' &lt;&lt; "Sorting failed. Error: " &lt;&lt; ret &lt;&lt; endl;
 				else {
 					out &lt;&lt; '\t' &lt;&lt; "List size: " &lt;&lt; len &lt;&lt; endl;
 					out &lt;&lt; '\t' &lt;&lt; "Last recognised pos: " &lt;&lt; lastPos &lt;&lt; endl;
