@@ -696,7 +696,7 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 
 void MainFrame::OnAbout(wxCommandEvent& event) {
 	wxAboutDialogInfo aboutInfo;
-    aboutInfo.SetName("Better Oblivion Sorting Software");
+    aboutInfo.SetName("BOSS");
     aboutInfo.SetVersion(IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH));
     aboutInfo.SetDescription(wxT("A \"one-click\" program for users that quickly optimises and avoids detrimental conflicts in their\nTES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders."));
     aboutInfo.SetCopyright("Copyright (C) 2009-2012 BOSS Development Team.");

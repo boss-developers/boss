@@ -43,6 +43,14 @@ Var NV_Path
 Var GameNum
 Var Empty ;An empty string.
 Var InstallPath ;Path to existing BOSS install.
+
+Var Dialog
+Var Check_Run
+Var CheckState_Run
+Var Check_Readme
+
+Var Check_RemoveUserFiles
+Var CheckState_RemoveUserFiles
   
 ;--------------------------------
 ;Initialise Install Path
@@ -116,7 +124,10 @@ FunctionEnd
   !insertmacro MUI_PAGE_LICENSE "data\boss-common\Licenses.txt"
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
+  Page custom PAGE_FINISH PAGE_FINISH_Leave
   
+  !insertmacro MUI_UNPAGE_WELCOME
+  UninstPage custom un.PAGE_SELECT_OPTIONS un.PAGE_SELECT_OPTIONS_Leave
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
   
@@ -124,6 +135,72 @@ FunctionEnd
 ;Languages
  
   !insertmacro MUI_LANGUAGE "English"
+  LangString unPAGE_SELECT_GAMES_TITLE ${LANG_ENGLISH} "Choose Options"
+  LangString unPAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select from the following uninstall options."
+  LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished installing BOSS v1.9.2."
+  LangString PAGE_FINISH_SUBTITLE ${LANG_ENGLISH} "Please select post-install tasks."
+  
+
+;-------------------------------- Custom Installation Pages and their Functions:
+    Function PAGE_FINISH
+        !insertmacro MUI_HEADER_TEXT $(PAGE_FINISH_TITLE) $(PAGE_FINISH_SUBTITLE)
+        
+        nsDialogs::Create 1018
+            Pop $Dialog
+
+        ${If} $Dialog == error
+            Abort
+        ${EndIf}
+        
+        IntOp $0 0 + 0
+		${NSD_CreateCheckBox} 0 $0u 100% 8u "Run BOSS"
+			Pop $Check_Run
+			${NSD_AddStyle} $Check_Run ${WS_GROUP}
+			${NSD_SetState} $Check_Run $CheckState_Run
+		IntOp $0 $0 + 15
+        IntOp $1 0 + 0
+        IfFileExists "$INSTDIR\Docs\BOSS ReadMe.html" 0 +6
+            ${NSD_CreateCheckBox} $1% $0u 25% 8u "View Readme"
+                Pop $Check_Readme
+                ${NSD_AddStyle} $Check_Readme ${WS_GROUP}
+                ${NSD_SetState} $Check_Readme ${BST_CHECKED}
+                IntOp $1 $1 + 25
+		nsDialogs::Show		
+    FunctionEnd
+    Function PAGE_FINISH_Leave
+		${NSD_GetState} $Check_Run $CheckState_Run
+        ${If} $CheckState_Run == ${BST_CHECKED}
+			SetOutPath "$INSTDIR"
+            Exec '"$INSTDIR\BOSS.exe"'
+        ${EndIf}
+        ${NSD_GetState} $Check_Readme $0
+        ${If} $0 == ${BST_CHECKED}
+            SetOutPath "$INSTDIR"
+            ExecShell "open" '"$INSTDIR\Docs\BOSS ReadMe.html"'
+        ${EndIf}
+		
+    FunctionEnd
+
+;-------------------------------- Custom Uninstallation Pages and their Functions:
+    Function un.PAGE_SELECT_OPTIONS
+        !insertmacro MUI_HEADER_TEXT $(unPAGE_SELECT_GAMES_TITLE) $(unPAGE_SELECT_GAMES_SUBTITLE)
+     ;   GetFunctionAddress $unFunction_Browse un.OnClick_Browse
+        
+        nsDialogs::Create 1018
+            Pop $Dialog
+
+        ${If} $Dialog == error
+            Abort
+        ${EndIf}
+        
+        
+        ${NSD_CreateCheckBox} 0 $0u 100% 13u "Uninstall userlist and ini file if they exist."
+            Pop $Check_RemoveUserFiles
+        nsDialogs::Show
+    FunctionEnd
+    Function un.PAGE_SELECT_OPTIONS_Leave
+        ${NSD_GetState} $Check_RemoveUserFiles $CheckState_RemoveUserFiles
+    FunctionEnd
 
 ;--------------------------------
 ;Installer Sections
@@ -261,8 +338,19 @@ Section "Installer Section"
 	CreateShortCut "$SMPROGRAMS\BOSS\Docs\Masterlist Syntax Doc.lnk" "$INSTDIR\Docs\BOSS Masterlist Syntax.html"
 	CreateShortCut "$SMPROGRAMS\BOSS\Docs\Copyright Licenses.lnk" "$INSTDIR\Docs\Licenses.txt"
   
-	;Store installation folder
+	;Store installation folder in registry key.
 	WriteRegStr HKLM "Software\BOSS" "Installed Path" $INSTDIR
+	
+	;Write registry keys for Windows' uninstaller.
+	WriteRegStr HKLM "Software\BOSS" "Installer Path" "$EXEPATH"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayName" "BOSS"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "UninstallString" '"$INSTDIR\Uninstall.exe"'
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "URLInfoAbout" 'http://better-oblivion-sorting-software.googlecode.com/'
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "HelpLink" 'http://better-oblivion-sorting-software.googlecode.com/'
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "Publisher" 'BOSS Development Team'
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '1.9.2'      
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoModify" 1
+	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoRepair" 1
 
 	;Create uninstaller
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -301,8 +389,6 @@ Section "Uninstall"
 	Delete "$INSTDIR\Docs\images\BOSS GUI User Rules Editor.png"
 	
 	;Now we have to remove the files BOSS generates when it runs.
-	Delete "$INSTDIR\BOSS.ini"
-	Delete "$INSTDIR\BOSS.ini.old"
 	Delete "$INSTDIR\BOSSDebugLog.txt"
 	;Trying to delete a file that doesn't exist doesn't cause an error, so delete all games' files.
 	Delete "$INSTDIR\Oblivion\BOSSlog.txt"
@@ -310,31 +396,36 @@ Section "Uninstall"
 	Delete "$INSTDIR\Oblivion\masterlist.txt"
 	Delete "$INSTDIR\Oblivion\modlist.txt"
 	Delete "$INSTDIR\Oblivion\modlist.old"
-	Delete "$INSTDIR\Oblivion\userlist.txt"
 	Delete "$INSTDIR\Nehrim\BOSSlog.txt"
 	Delete "$INSTDIR\Nehrim\BOSSlog.html"
 	Delete "$INSTDIR\Nehrim\masterlist.txt"
 	Delete "$INSTDIR\Nehrim\modlist.txt"
 	Delete "$INSTDIR\Nehrim\modlist.old"
-	Delete "$INSTDIR\Nehrim\userlist.txt"
 	Delete "$INSTDIR\Skyrim\BOSSlog.txt"
 	Delete "$INSTDIR\Skyrim\BOSSlog.html"
 	Delete "$INSTDIR\Skyrim\masterlist.txt"
 	Delete "$INSTDIR\Skyrim\modlist.txt"
 	Delete "$INSTDIR\Skyrim\modlist.old"
-	Delete "$INSTDIR\Skyrim\userlist.txt"
 	Delete "$INSTDIR\Fallout 3\BOSSlog.txt"
 	Delete "$INSTDIR\Fallout 3\BOSSlog.html"
 	Delete "$INSTDIR\Fallout 3\masterlist.txt"
 	Delete "$INSTDIR\Fallout 3\modlist.txt"
 	Delete "$INSTDIR\Fallout 3\modlist.old"
-	Delete "$INSTDIR\Fallout 3\userlist.txt"
 	Delete "$INSTDIR\Fallout New Vegas\BOSSlog.txt"
 	Delete "$INSTDIR\Fallout New Vegas\BOSSlog.html"
 	Delete "$INSTDIR\Fallout New Vegas\masterlist.txt"
 	Delete "$INSTDIR\Fallout New Vegas\modlist.txt"
 	Delete "$INSTDIR\Fallout New Vegas\modlist.old"
-	Delete "$INSTDIR\Fallout New Vegas\userlist.txt"
+	;The following user files are only removed if set to.
+	${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
+		Delete "$INSTDIR\BOSS.ini"
+		Delete "$INSTDIR\BOSS.ini.old"
+		Delete "$INSTDIR\Oblivion\userlist.txt"
+		Delete "$INSTDIR\Nehrim\userlist.txt"
+		Delete "$INSTDIR\Skyrim\userlist.txt"
+		Delete "$INSTDIR\Fallout 3\userlist.txt"
+		Delete "$INSTDIR\Fallout New Vegas\userlist.txt"
+	${EndIf}
 	
 	;Remove subfolders.
 	RMDir "$INSTDIR\API"
