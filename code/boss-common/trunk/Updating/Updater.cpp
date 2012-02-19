@@ -48,10 +48,8 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 
-//#ifdef BOSSGUI
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
-//#endif
 
 namespace boss {
 	namespace fs = boost::filesystem;

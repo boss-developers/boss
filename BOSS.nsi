@@ -40,7 +40,7 @@ Var NE_Path
 Var SK_Path
 Var FO_Path
 Var NV_Path
-Var GameNum
+;Var GameNum
 Var Empty ;An empty string.
 Var InstallPath ;Path to existing BOSS install.
 
@@ -76,44 +76,44 @@ ReadRegStr $OB_Path HKLM "Software\Bethesda Softworks\Oblivion" "Installed Path"
 ${If} $OB_Path == $Empty ;Try 64 bit path.
 	ReadRegStr $OB_Path HKLM "Software\Wow6432Node\Bethesda Softworks\Oblivion" "Installed Path"
 ${EndIf}
-${If} $OB_Path != $Empty
-	StrCpy $INSTDIR $OB_Path
-	IntOp $GameNum $GameNum + 1
-${EndIf}
+;${If} $OB_Path != $Empty
+;	StrCpy $INSTDIR $OB_Path
+;	IntOp $GameNum $GameNum + 1
+;${EndIf}
 ReadRegStr $NE_Path HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nehrim - At Fate's Edge_is1" "InstallLocation" ;No 64 bit path.
-${If} $NE_Path != $Empty
-	StrCpy $INSTDIR $NE_Path
-	IntOp $GameNum $GameNum + 1
-${EndIf}
+;${If} $NE_Path != $Empty
+;	StrCpy $INSTDIR $NE_Path
+;	IntOp $GameNum $GameNum + 1
+;${EndIf}
 ReadRegStr $SK_Path HKLM "Software\Bethesda Softworks\Skyrim" "Installed Path"
 ${If} $SK_Path == $Empty ;Try 64 bit path.
 	ReadRegStr $SK_Path HKLM "Software\Wow6432Node\Bethesda Softworks\Skyrim" "Installed Path"
 ${EndIf}
-${If} $SK_Path != $Empty
-	StrCpy $INSTDIR $SK_Path
-	IntOp $GameNum $GameNum + 1
-${EndIf}
+;${If} $SK_Path != $Empty
+;	StrCpy $INSTDIR $SK_Path
+;	IntOp $GameNum $GameNum + 1
+;${EndIf}
 ReadRegStr $FO_Path HKLM "Software\Bethesda Softworks\Fallout3" "Installed Path"
 ${If} $FO_Path == $Empty ;Try 64 bit path.
 	ReadRegStr $FO_Path HKLM "Software\Wow6432Node\Bethesda Softworks\Fallout3" "Installed Path"
 ${EndIf}
-${If} $FO_Path != $Empty
-	StrCpy $INSTDIR $FO_Path
-	IntOp $GameNum $GameNum + 1
-${EndIf}
+;${If} $FO_Path != $Empty
+;	StrCpy $INSTDIR $FO_Path
+;	IntOp $GameNum $GameNum + 1
+;${EndIf}
 ReadRegStr $NV_Path HKLM "Software\Bethesda Softworks\FalloutNV" "Installed Path"
 ${If} $NV_Path == $Empty ;Try 64 bit path.
 	ReadRegStr $NV_Path HKLM "Software\Wow6432Node\Bethesda Softworks\FalloutNV" "Installed Path"
 ${EndIf}
-${If} $NV_Path != $Empty
-	StrCpy $INSTDIR $NV_Path
-	IntOp $GameNum $GameNum + 1
-${EndIf}
+;${If} $NV_Path != $Empty
+;	StrCpy $INSTDIR $NV_Path
+;	IntOp $GameNum $GameNum + 1
+;${EndIf}
 ;All games looked for. If only one game exists, then INSTDIR will be set to its location. 
 ;If > 1 game exists, INSTDIR will be set to the last game detected's location. Set this instead to C:\.
-${If} $GameNum != 1
+;${If} $GameNum != 1
 	StrCpy $INSTDIR "C:\"
-${EndIf}
+;${EndIf}
 StrCpy $INSTDIR "$INSTDIR\BOSS"
 FunctionEnd
 
@@ -326,13 +326,14 @@ Section "Installer Section"
 	File "data\boss-common\images\BOSS GUI Settings 5.png"
 	File "data\boss-common\images\BOSS GUI User Rules Editor.png"
 	
-	;Add Start Menu shortcuts.
+	;Add Start Menu shortcuts. Set out path back to $INSTDIR otherwise the shortcuts start in the wrong place.
+	SetOutPath "$INSTDIR"
 	CreateDirectory "$SMPROGRAMS\BOSS"
 	CreateShortCut "$SMPROGRAMS\BOSS\BOSS.lnk" "$INSTDIR\BOSS.exe"
 	CreateShortCut "$SMPROGRAMS\BOSS\BOSS GUI.lnk" "$INSTDIR\BOSS GUI.exe"
 	CreateShortCut "$SMPROGRAMS\BOSS\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 	CreateDirectory "$SMPROGRAMS\BOSS\Docs"
-	 CreateShortCut "$SMPROGRAMS\BOSS\Docs\Main ReadMe.lnk" "$INSTDIR\Docs\BOSS Readme.html"
+	CreateShortCut "$SMPROGRAMS\BOSS\Docs\Main ReadMe.lnk" "$INSTDIR\Docs\BOSS Readme.html"
 	CreateShortCut "$SMPROGRAMS\BOSS\Docs\User Rules ReadMe.lnk" "$INSTDIR\Docs\BOSS User Rules ReadMe.html"
 	CreateShortCut "$SMPROGRAMS\BOSS\Docs\API ReadMe.lnk" "$INSTDIR\Docs\BOSS API ReadMe.html"
 	CreateShortCut "$SMPROGRAMS\BOSS\Docs\Masterlist Syntax Doc.lnk" "$INSTDIR\Docs\BOSS Masterlist Syntax.html"
