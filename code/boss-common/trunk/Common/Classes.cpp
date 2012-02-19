@@ -295,17 +295,9 @@ namespace boss {
 	}
 
 	bool	Item::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
-		Skipper skipper(false);
-		conditional_grammar cond_grammar;
-		string::const_iterator begin, end;
-
-		cond_grammar.SetErrorBuffer(&errorBuffer);
-		cond_grammar.SetVarStore(&setVars);
-		cond_grammar.SetCRCStore(&fileCRCs);
-		
 		LOG_INFO("Evaluating conditions for item \"%s\"", Data().c_str());
 
-		bool eval= conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer);
+		bool eval = conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer);
 
 		vector<Message>::iterator messageIter = messages.begin();
 		while (messageIter != messages.end()) {
@@ -315,7 +307,7 @@ namespace boss {
 				messageIter = messages.erase(messageIter);
 		}
 
-		return true;
+		return eval;
 	}
 
 	//////////////////////////////

@@ -665,20 +665,21 @@ namespace boss {
 
 	//Evaluate a single conditional.
 	void conditional_grammar::EvaluateConditional(bool& result, const string type, const bool condition) {
-		result = false;
-		if (Tidy(type) == "if" && condition == true)
-			result = true;
-		else if (Tidy(type) == "ifnot" && condition == false)
-			result = true;
+		if (Tidy(type) == "if")
+			result = condition;
+		else
+			result = !condition;
 		return;
 	}
 
 	//Evaluate the second half of a complex conditional.
-	void conditional_grammar::EvaluateCompoundConditional(bool& result, const string andOr, const bool condition) {
-		if (andOr == "||" && condition == true)
-			result = true;
-		else if (andOr == "&&" && result == true && condition == false)
-			result = false;
+	void conditional_grammar::EvaluateCompoundConditional(bool& lhsCondition, const string andOr, const bool rhsCondition) {
+		if (andOr == "||" && !lhsCondition && !rhsCondition)
+			lhsCondition = false;
+		else if (andOr == "||" && !lhsCondition && rhsCondition)
+			lhsCondition = true;
+		else if (andOr == "&&" && lhsCondition && !rhsCondition)
+			lhsCondition = false;
 	}
 
 

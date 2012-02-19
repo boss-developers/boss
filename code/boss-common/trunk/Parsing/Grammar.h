@@ -208,7 +208,7 @@ namespace boss {
 		void EvaluateConditional(bool& result, const string type, const bool condition);
 
 		//Evaluate the second half of a complex conditional.
-		void EvaluateCompoundConditional(bool& result, const string andOr, const bool condition);
+		void EvaluateCompoundConditional(bool& lhsCondition, const string andOr, const bool rhsCondition);
 	};
 
 
