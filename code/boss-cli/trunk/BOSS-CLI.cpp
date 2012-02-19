@@ -56,7 +56,14 @@ using boost::algorithm::trim_copy;
 	const string launcher_cmd = "xdg-open";
 #endif
 
-int Launch(const string& filename) {
+int Launch(string filename) {
+	if (filename.find(' ') != string::npos) {
+#if _WIN32 || _WIN64
+		filename = "\"\" \"" + filename + '"';  //Need "" "filename" because the first quoted string is the CLI window title and the second is the thing started...
+#else
+		boost::replace_all(filename, " ", "\\ ");
+#endif
+	}
 	const string cmd = launcher_cmd + " " + filename;
 	return ::system(cmd.c_str());
 }
