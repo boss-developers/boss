@@ -39,6 +39,8 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
+	using boost::algorithm::to_lower_copy;
+
 	/////////////////////////////////////
 	// conditionalData Class Methods
 	/////////////////////////////////////
@@ -420,6 +422,80 @@ namespace boss {
 		return;
 	}
 
+	/* Issues with the below function:
+	1. plugins.txt is not UTF-8 encoded. It has one of any number of unspecified encodings, which will need conversion to and from UTF-8 for reading/writing.
+	*/
+	void	ItemList::SavePluginsDotTxt() {
+		//Doesn't have any use in non-Skyrim games. Only applicable for versions of Skyrim >= 1.4.26. Note that this string comparison is unsafe (may give incorrect result).
+		if (gl_current_game != SKYRIM || GetExeDllVersion(data_path.parent_path() / "TESV.exe").compare("1.4.26.0") < 0)
+			return;
+
+		//First we need to build a hashset of all the plugins listed in plugins.txt. Plugins are listed in the correct case, but just in case masterlist has them
+		//in the wrong case we should do lowercase comparisons. Note that the plugins.txt is not encoded in Unicode. Default on British Skyrim (and probably American)
+		//is ANSI. Will be different for other languages that aren't included in ANSI. FFS.
+		boost::unordered_set<string> hashset;  //Holds mods in plugins for checking against modlist
+		boost::unordered_set<string>::iterator setPos;
+
+		//To save needing a new parser, load plugins.txt into an ItemList then fill a hashset from that.
+		LOG_INFO("Loading plugins.txt into ItemList.");
+		ItemList pluginsList;
+		pluginsList.Load(plugins_path());
+		vector<Item> pluginsEntries = pluginsList.Items();
+		size_t pluginsMax = pluginsEntries.size();
+		LOG_INFO("Populating hashset with ItemList contents.");
+		for (size_t i=0; i<pluginsMax; i++) {
+			if (pluginsEntries[i].Type() == MOD)
+				hashset.insert(to_lower_copy(pluginsEntries[i].Name()));
+		}
+
+		//Once the hashset is built, open up an ofstream to plugins.txt. Iterate through the items vector looking only at MOD items. 
+		//Search for each one in the hashset, and if found output it to the plugins.txt file. Once the items vector has been iterated through, close the stream and return.
+		//Remember to back-convert the encodings of plugins added from UTF-8 to whatever encoding the plugins.txt uses.
+		LOG_INFO("Writing new plugins.txt.");
+		ofstream plugins;
+		plugins.open(plugins_path().c_str(), ios_base::trunc);
+		if (plugins.fail())
+			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, plugins_path().string());
+		size_t max = items.size();
+		
+		for (size_t i=0; i < max; i++) {
+			if (items[i].Type() == MOD) {
+				if (items[i].Name() == "Skyrim.esm" || items[i].Name() == "Update.esm")
+					continue;
+				//Check to see if the mod is in the hashset. If it is, or its ghosted version is, also check if 
+				//the mod is already in the holding vector. If not, add it.
+				setPos = hashset.find(to_lower_copy(items[i].Name()));
+				if (setPos != hashset.end()) {										//Mod found in hashset. 
+					LOG_DEBUG("Writing \"%s\" to plugins.txt", items[i].Name().c_str());
+					plugins << items[i].Name() << endl;
+				}
+			}
+		}
+		plugins.close();
+	}
+
+	void	ItemList::SaveLoadOrder() {
+		//Doesn't have any use in non-Skyrim games. Only applicable for versions of Skyrim >= 1.4.26. Note that this string comparison is unsafe (may give incorrect result).
+		if (gl_current_game != SKYRIM || GetExeDllVersion(data_path.parent_path() / "TESV.exe").compare("1.4.26") < 0)
+			return;
+
+		//Now write out.
+		LOG_INFO("Writing new loadorder.txt.");
+		ofstream loadorder;
+		loadorder.open(loadorder_path().c_str(), ios_base::trunc);
+		if (loadorder.fail())
+			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, loadorder_path().string().c_str());
+
+		size_t max = items.size();
+		for (size_t i=0; i < max; i++) {
+			if (items[i].Type() == MOD) {
+				LOG_DEBUG("Writing \"%s\" to loadorder.txt", items[i].Name().c_str());
+				loadorder << items[i].Name() << endl;
+			}
+		}
+		loadorder.close();
+	}
+
 	void					ItemList::EvalConditions	() {
 		boost::unordered_set<string> setVars;
 
@@ -459,7 +535,7 @@ namespace boss {
 	size_t					ItemList::FindItem			(string name) const {
 		size_t max = items.size();
 		for (size_t i=0; i < max; i++) {
-			if (Tidy(items[i].Name()) == Tidy(name))
+			if (to_lower_copy(items[i].Name()) == to_lower_copy(name))
 				return i;
 		}
 		return max;
@@ -468,7 +544,7 @@ namespace boss {
 	size_t					ItemList::FindLastItem		(string name) const {
 		size_t max = items.size();
 		for (size_t i=max-1; i >= 0; i--) {
-			if (Tidy(items[i].Name()) == Tidy(name))
+			if (to_lower_copy(items[i].Name()) == to_lower_copy(name))
 				return i;
 		}
 		return max;
@@ -478,7 +554,7 @@ namespace boss {
 	size_t					ItemList::FindGroupEnd		(string name) const {
 		size_t max = items.size();
 		for (size_t i=max-1; i >= 0; i--) {
-			if (items[i].Type() == ENDGROUP && Tidy(items[i].Name()) == Tidy(name))
+			if (items[i].Type() == ENDGROUP && to_lower_copy(items[i].Name()) == to_lower_copy(name))
 				return i;
 		}
 		return max;
@@ -770,7 +846,7 @@ namespace boss {
 		size_t max = rules.size();
 		for (size_t i=0; i<max; i++) {
 			if ((onlyEnabled && rules[i].Enabled()) || !onlyEnabled) {
-				if (Tidy(rules[i].Object()) == Tidy(ruleObject))
+				if (to_lower_copy(rules[i].Object()) == to_lower_copy(ruleObject))
 					return i;
 			}
 		}

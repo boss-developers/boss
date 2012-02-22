@@ -44,9 +44,6 @@ namespace boss {
 	// Helper functions
 	//////////////////////////////////////////////////////////////////////////
 
-	//Changes uppercase to lowercase.	
-	BOSS_COMMON string Tidy(string text);
-
 	//Calculate the CRC of the given file for comparison purposes.
 	uint32_t GetCrc32(const fs::path& filename);
 
@@ -74,6 +71,9 @@ namespace boss {
 
 	//Get registry subkey value string.
 	string RegKeyStringValue(string keyStr, string subkey, string value);
+
+	//Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
+	fs::path GetLocalAppDataPath();
 }
 
 #endif

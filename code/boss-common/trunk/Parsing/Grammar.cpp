@@ -45,6 +45,7 @@ namespace boss {
 	namespace phoenix = boost::phoenix;
 
 	using namespace qi::labels;
+	using boost::algorithm::to_lower_copy;
 
 	using qi::skip;
 	using qi::eol;
@@ -99,7 +100,7 @@ namespace boss {
 			file = "FalloutNV.exe";
 		} else {
 			fs::path p(file);
-			if (Tidy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos) {
+			if (to_lower_copy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos) {
 				if (fs::exists(data_path / "OBSE" / "Plugins"))
 					file_path = data_path / "OBSE" / "Plugins";  //Oblivion - OBSE plugins.
 				else if (fs::exists(data_path / "FOSE" / "Plugins"))
@@ -133,6 +134,7 @@ namespace boss {
 		else
 			return;
 
+		//Note that this string comparison is unsafe (may give incorrect result).
 		switch (comp) {
 		case '>':
 			if (trueVersion.compare(version) > 0)
@@ -179,7 +181,7 @@ namespace boss {
 			reg = reg.substr(pos1+2);
 			boost::algorithm::replace_all(p,"\\\\","\\");
 			file_path = fs::path(p);
-		} else if (Tidy(fs::path(reg).extension().string()) == ".dll") {
+		} else if (to_lower_copy(fs::path(reg).extension().string()) == ".dll") {
 			if (fs::exists(data_path / "OBSE"))
 				file_path = data_path / "OBSE" / "Plugins";  //Oblivion - OBSE plugins.
 			else if (fs::exists(data_path / "FOSE"))
@@ -315,7 +317,7 @@ namespace boss {
 		const vector<Message> noMessages;  //An empty set of messages.
 
 		modList = 
-			+eol 
+			*eol 
 			>
 			(
 				listVar			[phoenix::bind(&modlist_grammar::StoreVar, this, _1)] 
@@ -665,7 +667,7 @@ namespace boss {
 
 	//Evaluate a single conditional.
 	void conditional_grammar::EvaluateConditional(bool& result, const string type, const bool condition) {
-		if (Tidy(type) == "if")
+		if (to_lower_copy(type) == "if")
 			result = condition;
 		else
 			result = !condition;
@@ -1113,7 +1115,7 @@ namespace boss {
 				if (ruleKeyString != "FOR" && ruleObject.IsMasterFile())
 					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingMasterEsm).str());
 			} else {
-				if (Tidy(ruleObject.Name()) == "esms")
+				if (to_lower_copy(ruleObject.Name()) == "esms")
 					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingGroupEsms).str());
 				if (ruleKeyString == "ADD" && !ruleObject.IsPlugin())
 					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EAddingModGroup).str());
@@ -1137,7 +1139,7 @@ namespace boss {
 					if ((ruleObject.IsPlugin() && !subject.IsPlugin()) || (!ruleObject.IsPlugin() && subject.IsPlugin()))
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EReferencingModAndGroup).str());
 					if (currentRule.Lines()[i].Key() == BEFORE) {
-						if (Tidy(subject.Name()) == "esms")
+						if (to_lower_copy(subject.Name()) == "esms")
 							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingGroupBeforeEsms).str());
 						else if (subject.IsMasterFile())
 							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingModBeforeGameMaster).str());
@@ -1150,7 +1152,7 @@ namespace boss {
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortNotSecond).str());
 					if (ruleKeyString == "FOR")
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortLineInForRule).str());
-					if (currentRule.Lines()[i].Key() == TOP && Tidy(subject.Name()) == "esms")
+					if (currentRule.Lines()[i].Key() == TOP && to_lower_copy(subject.Name()) == "esms")
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EInsertingToTopOfEsms).str());
 					if (!ruleObject.IsPlugin() || subject.IsPlugin())
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EInsertingGroupOrIntoMod).str());

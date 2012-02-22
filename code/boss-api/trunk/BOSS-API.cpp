@@ -383,7 +383,7 @@ BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath) {
 		const fs::path filename = itr->path().filename();
 		const string ext = to_lower_copy(itr->path().extension().string());
 		if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost"))	//Add file to hashset.
-			hashset.insert(Tidy(filename.string()));
+			hashset.insert(to_lower_copy(filename.string()));
 	}
 
 	//Now evaluate regular expressions.
@@ -397,7 +397,7 @@ BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath) {
 			//Now form a regex.
 			boost::regex reg;
 			try {
-				reg = boost::regex(Tidy(regexItem.Name())+"(.ghost)?", boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
+				reg = boost::regex(to_lower_copy(regexItem.Name())+"(.ghost)?", boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
 			} catch (boost::regex_error e) {
 				return BOSS_API_ERROR_REGEX_EVAL_FAIL;
 			}
@@ -542,7 +542,7 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	size_t max = items.size();
 	for (size_t i=0; i < max; i++) {
 		if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
-			if (!trialOnly && !items[i].IsMasterFile()) {
+			if (!trialOnly && !items[i].IsMasterFile() && !(gl_current_game == SKYRIM && GetExeDllVersion(data_path.parent_path() / "TESV.exe").compare("1.4.26.0") >= 0)) {
 				try {
 					items[i].SetModTime(masterTime + mods.size()*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 				} catch(boss_error e) {
@@ -557,6 +557,10 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 		if (i == modlist.LastRecognisedPos() && lastRecPos != NULL)
 			*lastRecPos = mods.size()-1;
 	}
+
+	//Skyrim >= 1.4.26 load order setting.
+	modlist.SavePluginsDotTxt();
+	modlist.SaveLoadOrder();
 
 	//Now create external array.
 	db->extPluginListSize = mods.size();
@@ -573,7 +577,6 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 
 	return BOSS_API_ERROR_OK;
 }
-
 
 //////////////////////////
 // DB Access Functions

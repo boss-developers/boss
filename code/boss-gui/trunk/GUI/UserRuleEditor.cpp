@@ -70,7 +70,7 @@ END_EVENT_TABLE()
 using namespace boss;
 using namespace std;
 
-using boost::algorithm::to_upper_copy;
+using boost::algorithm::to_lower_copy;
 using boost::algorithm::trim_copy;
 
 UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition) {
@@ -295,7 +295,7 @@ void UserRulesEditorFrame::OnSearchList(wxCommandEvent& event) {
 	if (event.GetId() == SEARCH_Modlist) {
 		ModlistSearch->ShowCancelButton(true);
 		string searchStr = ModlistSearch->GetValue();
-		searchStr = Tidy(searchStr);
+		searchStr = to_lower_copy(searchStr);
 		size_t length = searchStr.length();
 		if (length == 0) {
 			OnCancelSearch(event);
@@ -304,13 +304,13 @@ void UserRulesEditorFrame::OnSearchList(wxCommandEvent& event) {
 		InstalledModsList->DeleteAllItems();
 		wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
 		for (size_t i=0;i<ModlistMods.size();i++) {
-			if (Tidy(ModlistMods[i].substr(0,length).ToStdString()) == searchStr)
+			if (to_lower_copy(ModlistMods[i].substr(0,length).ToStdString()) == searchStr)
 				InstalledModsList->AppendItem(root, ModlistMods[i]);
 		}
 	} else {
 		MasterlistSearch->ShowCancelButton(true);
 		string searchStr = MasterlistSearch->GetValue();
-		searchStr = Tidy(searchStr);
+		searchStr = to_lower_copy(searchStr);
 		size_t length = searchStr.length();
 		if (length == 0) {
 			OnCancelSearch(event);
@@ -322,7 +322,7 @@ void UserRulesEditorFrame::OnSearchList(wxCommandEvent& event) {
 		vector<Item> items = masterlist.Items();
 		size_t max = items.size();
 		for (size_t i=0;i<max;i++) {
-			if (Tidy(items[i].Name().substr(0,length)) == searchStr) {
+			if (to_lower_copy(items[i].Name().substr(0,length)) == searchStr) {
 					wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), items[i].Name());
 				if (items[i].Type() == BEGINGROUP)
 					opengroups.push_back(item);

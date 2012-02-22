@@ -48,7 +48,6 @@
 using namespace boss;
 using namespace std;
 namespace po = boost::program_options;
-using boost::algorithm::trim_copy;
 
 #if _WIN32 || _WIN64
 	const string launcher_cmd = "start";

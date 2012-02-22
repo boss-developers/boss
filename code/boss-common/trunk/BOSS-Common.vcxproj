@@ -205,7 +205,7 @@
       <Version>1.9</Version>
     </Link>
     <Lib>
-      <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;libcurl.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;Version.lib;wldap32.lib;ws2_32.lib</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;libcurl.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;Version.lib;wldap32.lib;ws2_32.lib;shell32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName);$(SolutionDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);$(SolutionDir)..\..\..\lib\curl\lib\Release-$(PlatformArchitecture)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -253,7 +253,7 @@
       <Version>1.9</Version>
     </Link>
     <Lib>
-      <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;libcurl.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;Version.lib;wldap32.lib;ws2_32.lib</AdditionalDependencies>
+      <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;libcurl.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;Version.lib;wldap32.lib;ws2_32.lib;Shell32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName);$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName)\mswu;$(SolutionDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);$(SolutionDir)..\..\..\lib\curl\lib\Release-$(PlatformArchitecture)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

@@ -42,6 +42,8 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
+//#define BOSSGUI
+
 #	define BOSS_VERSION_MAJOR 1
 #	define BOSS_VERSION_MINOR 9
 #	define BOSS_VERSION_PATCH 1
@@ -94,6 +96,9 @@ namespace boss {
 	BOSS_COMMON fs::path userlist_path();		//Output decided by game.
 	BOSS_COMMON fs::path modlist_path();		//Output decided by game.
 	BOSS_COMMON fs::path old_modlist_path();	//Output decided by game.
+
+	BOSS_COMMON fs::path plugins_path();		//Path to plugins.txt. Only works for Skyrim.
+	BOSS_COMMON fs::path loadorder_path();		//Path to loadorder.txt.
 	
 
 	///////////////////////////////

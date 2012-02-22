@@ -44,7 +44,8 @@
 #include <sstream>
 
 #if _WIN32 || _WIN64
-#  include "Windows.h"
+#	include "Windows.h"
+#	include "Shlobj.h"
 #endif
 
 namespace boss {
@@ -53,12 +54,6 @@ namespace boss {
 	using boost::algorithm::replace_all;
 	using boost::algorithm::replace_first;
 	namespace karma = boost::spirit::karma;
-
-	//Changes uppercase to lowercase.	
-	BOSS_COMMON string Tidy(string filename) {
-		boost::algorithm::to_lower(filename);
-		return filename;
-	}
 
 	//Calculate the CRC of the given file for comparison purposes.
 	uint32_t GetCrc32(const fs::path& filename) {
@@ -241,6 +236,23 @@ namespace boss {
 			return "";
 #else
 		return "";
+#endif
+	}
+
+	//Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
+	fs::path GetLocalAppDataPath() {
+#if _WIN32 || _WIN64
+		HWND owner;
+		TCHAR path[MAX_PATH];
+
+		HRESULT res = SHGetFolderPath(owner, CSIDL_LOCAL_APPDATA, NULL, SHGFP_TYPE_CURRENT, path);
+
+		if (res == S_OK)
+			return fs::path(path);
+		else
+			return fs::path("");
+#else
+		return fs::path("");
 #endif
 	}
 }

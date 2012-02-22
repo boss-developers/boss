@@ -48,8 +48,10 @@
 #include <curl/curl.h>
 #include <curl/easy.h>
 
+#ifdef BOSSGUI
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
+#endif
 
 namespace boss {
 	namespace fs = boost::filesystem;
@@ -86,6 +88,7 @@ namespace boss {
 
 		uiStruct * ui = (uiStruct*)data;
 		if (ui->p != NULL) {
+#ifdef BOSSGUI
 			int currentProgress = (int)floor(fractiondownloaded * 1000);
 			if (currentProgress == 1000)
 				--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
@@ -98,6 +101,7 @@ namespace boss {
 				progress->Resume();
 				ans = NULL;
 			}
+#endif
 		} else {
 			printf("Downloading: %s; %3.0f%% of %3.0f KB\r", ui->file.c_str(), fractiondownloaded*100, (dlTotal/1024)+20);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
 			fflush(stdout);

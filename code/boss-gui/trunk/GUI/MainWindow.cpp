@@ -26,9 +26,6 @@
 */
 
 //We want to ensure that the GUI-specific code in BOSS-Common is included.
-#ifndef BOSSGUI
-#define BOSSGUI
-#endif
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
@@ -129,17 +126,6 @@ bool BossGUI::OnInit() {
 			LOG_ERROR("Error: %s", e.getString().c_str());
 			wxMessageBox(wxString::Format(
 					wxT("Error: " + e.getString() + " Details: " + ini.ErrorBuffer().FormatFor(PLAINTEXT))
-				),
-				wxT("BOSS: Error"),
-				wxOK | wxICON_ERROR,
-				NULL);
-		}
-	} else {
-		try {
-			ini.Save(ini_path);
-		} catch (boss_error e) {
-			wxMessageBox(wxString::Format(
-					wxT("Error: " + e.getString())
 				),
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,

@@ -152,7 +152,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName);$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName)\mswu;$(SolutionDir)..\..\boss-common\trunk\bin\Release-$(PlatformArchitecture);$(SolutionDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BOSS.lib</AdditionalDependencies>
+      <AdditionalDependencies>BOSS.lib;shell32.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
     </Link>
@@ -177,7 +177,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\boss-common\trunk\bin\Release-$(PlatformArchitecture);$(SolutionDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BOSS.lib</AdditionalDependencies>
+      <AdditionalDependencies>BOSS.lib;shell32.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
     </Link>

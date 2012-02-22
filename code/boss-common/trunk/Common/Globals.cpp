@@ -31,8 +31,10 @@
 #include "Support/Helpers.h"
 #include "Output/Output.h"
 
+#ifdef BOSSGUI
 #include <wx/choicdlg.h>
 #include <wx/arrstr.h>
+#endif
 
 namespace boss {
 	using namespace std;
@@ -104,6 +106,14 @@ namespace boss {
 
 	BOSS_COMMON fs::path old_modlist_path() {
 		return boss_game_path() / "modlist.old";
+	}
+
+	BOSS_COMMON fs::path plugins_path() {
+		return GetLocalAppDataPath() / "Skyrim" / "plugins.txt";
+	}
+
+	BOSS_COMMON fs::path loadorder_path() {
+		return GetLocalAppDataPath() / "Skyrim" / "loadorder.txt";
 	}
 
 	///////////////////////////////
@@ -243,6 +253,7 @@ namespace boss {
 				//Ask user to choose game.
 				size_t ans;
 				if (parent != NULL) {
+#ifdef BOSSGUI
 					wxArrayString choices;
 					for (size_t i=0; i < gamesDetected.size(); i++)
 						choices.Add(GetGameString(gamesDetected[i]));
@@ -255,6 +266,7 @@ namespace boss {
 						choiceDia->Close(true);
 					} else
 						throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
+#endif
 				} else {
 					cout << endl << "Please pick which game to run BOSS for:" << endl;
 					for (size_t i=0; i < gamesDetected.size(); i++)

@@ -85,7 +85,7 @@ namespace boss {
 			} else {
 				for (fs::directory_iterator itr(SEPluginLoc); itr!=fs::directory_iterator(); ++itr) {
 					const fs::path filename = itr->path().filename();
-					const string ext = Tidy(itr->path().extension().string());
+					const string ext = to_lower_copy(itr->path().extension().string());
 					if (fs::is_regular_file(itr->status()) && ext==".dll") {
 						string CRC = IntToHexString(GetCrc32(itr->path()));
 						string ver = GetExeDllVersion(itr->path());
@@ -126,7 +126,7 @@ namespace boss {
 				} else if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / items[i].Name())) << SPAN_CLOSE;
 			
-				if (!gl_trial_run && !items[i].IsMasterFile()) {
+				if (!gl_trial_run && !items[i].IsMasterFile() && !(gl_current_game == SKYRIM && GetExeDllVersion(data_path.parent_path() / "TESV.exe").compare("1.4.26.0") >= 0)) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
 					try {
@@ -185,7 +185,7 @@ namespace boss {
 				} else if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / items[i].Name())) << SPAN_CLOSE;
 
-				if (!gl_trial_run && !items[i].IsMasterFile()) {
+				if (!gl_trial_run && !items[i].IsMasterFile() && !(gl_current_game == SKYRIM && GetExeDllVersion(data_path.parent_path() / "TESV.exe").compare("1.4.26.0") >= 0)) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
 					try {
@@ -430,6 +430,9 @@ namespace boss {
 
 		ListUnrecognisedMods(modlist, contents.unrecognisedPlugins, esmtime, counters);
 
+		modlist.SavePluginsDotTxt();
+		modlist.SaveLoadOrder();
+
 		PrintBOSSlog(file, contents, counters, SE);
 	}
 
@@ -451,29 +454,29 @@ namespace boss {
 		LOG_INFO("Populating hashset with modlist.");
 		for (size_t i=0; i<modlistSize; i++) {
 			if (items[i].Type() == MOD)
-				hashset.insert(Tidy(items[i].Name()));
+				hashset.insert(to_lower_copy(items[i].Name()));
 		}
 		LOG_INFO("Populating hashset with userlist.");
 		//Need to get ruleObject and sort line object if plugins.
 		for (size_t i=0; i<userlistSize; i++) {
 			if (Item(userlist.rules[i].Object()).IsPlugin()) {
-				setPos = hashset.find(Tidy(userlist.rules[i].Object()));
+				setPos = hashset.find(to_lower_copy(userlist.rules[i].Object()));
 				if (setPos == hashset.end()) {  //Mod not already in hashset.
-					setPos = hashset.find(Tidy(userlist.rules[i].Object() + ".ghost"));
+					setPos = hashset.find(to_lower_copy(userlist.rules[i].Object() + ".ghost"));
 					if (setPos == hashset.end()) {  //Ghosted mod not already in hashset. 
 						//Unique plugin, so add to hashset.
-						hashset.insert(Tidy(userlist.rules[i].Object()));
+						hashset.insert(to_lower_copy(userlist.rules[i].Object()));
 					}
 				}
 			}
 			if (userlist.rules[i].Key() != FOR) {  //First line is a sort line.
 				if (Item(userlist.rules[i].Lines()[0].Object()).IsPlugin()) {
-					setPos = hashset.find(Tidy(userlist.rules[i].Lines()[0].Object()));
+					setPos = hashset.find(to_lower_copy(userlist.rules[i].Lines()[0].Object()));
 					if (setPos == hashset.end()) {  //Mod not already in hashset.
-						setPos = hashset.find(Tidy(userlist.rules[i].Lines()[0].Object() + ".ghost"));
+						setPos = hashset.find(to_lower_copy(userlist.rules[i].Lines()[0].Object() + ".ghost"));
 						if (setPos == hashset.end()) {  //Ghosted mod not already in hashset. 
 							//Unique plugin, so add to hashset.
-							hashset.insert(Tidy(userlist.rules[i].Lines()[0].Object()));
+							hashset.insert(to_lower_copy(userlist.rules[i].Lines()[0].Object()));
 						}
 					}
 				}
@@ -492,26 +495,26 @@ namespace boss {
 			if (items[i].Type() == MOD) {
 				//Check to see if the mod is in the hashset. If it is, or its ghosted version is, also check if 
 				//the mod is already in the holding vector. If not, add it.
-				setPos = hashset.find(Tidy(items[i].Name()));
+				setPos = hashset.find(to_lower_copy(items[i].Name()));
 				if (setPos == hashset.end()) {
 					items[i].Name(items[i].Name() + ".ghost");		//Add ghost extension to mod name.
-					setPos = hashset.find(Tidy(items[i].Name()));
+					setPos = hashset.find(to_lower_copy(items[i].Name()));
 				}
 				if (setPos != hashset.end()) {										//Mod found in hashset. 
-					addedPos = addedMods.find(Tidy(items[i].Name()));
+					addedPos = addedMods.find(to_lower_copy(items[i].Name()));
 					if (addedPos == addedMods.end()) {								//The mod is not already in the holding vector.
 						holdingVec.push_back(items[i]);									//Record it in the holding vector.
 						modlistPos = modlist.FindItem(items[i].Name());
 						if (modlistPos != modlist.Items().size())
 							modlist.Erase(modlistPos);
-						addedMods.insert(Tidy(items[i].Name()));
+						addedMods.insert(to_lower_copy(items[i].Name()));
 					}
 				}
 			} else if (items[i].Type() == REGEX) {
 				//Form a regex.
 				boost::regex reg;
 				try {
-					reg = boost::regex(Tidy(items[i].Name())+"(.ghost)?",boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
+					reg = boost::regex(to_lower_copy(items[i].Name())+"(.ghost)?",boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
 				} catch (boost::regex_error e) {
 					LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", items[i].Name().c_str());
 					masterlist.ErrorBuffer(ParsingError(items[i].Name() + " is not a valid regular expression. Item skipped."));
@@ -532,13 +535,13 @@ namespace boss {
 						for (size_t i=0; i<userlistSize; i++) {
 							linesSize = userlist.rules[i].Lines().size();
 							for (size_t j=0; j<linesSize; j++) {
-								if (Tidy(userlist.rules[i].Lines()[j].Object()) == mod)
+								if (to_lower_copy(userlist.rules[i].Lines()[j].Object()) == mod)
 									mod = userlist.rules[i].Lines()[j].Object();
 							}
 						}
 					}
 					//Check that the mod hasn't already been added to the holding vector.
-					addedPos = addedMods.find(Tidy(mod));
+					addedPos = addedMods.find(to_lower_copy(mod));
 					if (addedPos == addedMods.end()) {							//The mod is not already in the holding vector.
 						//Now do the adding/removing.
 						//Create new temporary item to hold current found mod.
@@ -548,7 +551,7 @@ namespace boss {
 						modlistPos = modlist.FindItem(mod);
 						if (modlistPos != modlist.Items().size())
 							modlist.Erase(modlistPos);
-						addedMods.insert(Tidy(mod));
+						addedMods.insert(to_lower_copy(mod));
 					}
 					++setPos;
 				} while (setPos != hashset.end());

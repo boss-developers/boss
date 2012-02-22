@@ -158,16 +158,20 @@ namespace boss {
 		boost::unordered_map<string,uint32_t> fileCRCs;
 	public:
 
-								ItemList();
-		void					Load			(fs::path path);	//Load by scanning path. If path is a directory, it scans it for plugins. 
+				ItemList();
+		void	Load			(fs::path path);	//Load by scanning path. If path is a directory, it scans it for plugins. 
 																	//If path is a file, it parses it using the modlist grammar.
 																	//May throw exception on fail.
-		void					Save			(fs::path file, fs::path oldFile);	//Output to file in MF2. Backs up any existing file with new ".old" extension.
+		void	Save			(fs::path file, fs::path oldFile);	//Output to file in MF2. Backs up any existing file with new ".old" extension.
 																	//Throws exception on fail.
-		void					EvalConditions();					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
-		size_t					FindItem		(string name) const;	//Find the position of the item with name 'name'. Case-insensitive.
-		size_t					FindLastItem	(string name) const;	//Find the last item with the name 'name'. Case-insensitive.
-		size_t					FindGroupEnd	(string name) const;	//Find the end position of the group with the given name. Case-insensitive.
+		void	SavePluginsDotTxt();					//Saves the order of the mods in the object to the plugins.txt file used by the game.
+														//For use with Skyrim. Throws exception on fail.
+		void	SaveLoadOrder();						//Saves the order of the mods in the object to the loadorder.txt file in the same location as plugins.txt.
+														//For use with Skyrim. Throws exception on fail.
+		void	EvalConditions();					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
+		size_t	FindItem		(string name) const;	//Find the position of the item with name 'name'. Case-insensitive.
+		size_t	FindLastItem	(string name) const;	//Find the last item with the name 'name'. Case-insensitive.
+		size_t	FindGroupEnd	(string name) const;	//Find the end position of the group with the given name. Case-insensitive.
 
 		vector<Item>							Items() const;
 		ParsingError							ErrorBuffer() const;
