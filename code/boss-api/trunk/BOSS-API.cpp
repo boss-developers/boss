@@ -559,8 +559,10 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	}
 
 	//Skyrim >= 1.4.26 load order setting.
-	modlist.SavePluginsDotTxt();
-	modlist.SaveLoadOrder();
+	if (!trialOnly) {
+		modlist.SavePluginsDotTxt();
+		modlist.SaveLoadOrder();
+	}
 
 	//Now create external array.
 	db->extPluginListSize = mods.size();
