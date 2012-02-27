@@ -1,4 +1,4 @@
-/*	Better Oblivion Sorting Software
+/*	BOSS
 	
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -6,20 +6,20 @@
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
-	This file is part of Better Oblivion Sorting Software.
+	This file is part of BOSS.
 
-    Better Oblivion Sorting Software is free software: you can redistribute 
+    BOSS is free software: you can redistribute 
 	it and/or modify it under the terms of the GNU General Public License 
 	as published by the Free Software Foundation, either version 3 of 
 	the License, or (at your option) any later version.
 
-    Better Oblivion Sorting Software is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will 
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Better Oblivion Sorting Software.  If not, see 
+    along with BOSS.  If not, see 
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -47,6 +47,7 @@ namespace boss {
 	BOSS_COMMON extern bool UseDarkColourScheme;
 	BOSS_COMMON extern bool HideVersionNumbers;
 	BOSS_COMMON extern bool HideGhostedLabel;
+	BOSS_COMMON extern bool HideActiveLabel;
 	BOSS_COMMON extern bool HideChecksums;
 	BOSS_COMMON extern bool HideMessagelessMods;
 	BOSS_COMMON extern bool HideGhostedMods;
@@ -58,6 +59,7 @@ namespace boss {
 	BOSS_COMMON extern bool HideRequirements;
 	BOSS_COMMON extern bool HideIncompatibilities;
 	BOSS_COMMON extern bool HideDoNotCleanMessages;
+	BOSS_COMMON extern bool HideInactivePlugins;
 
 	//Default CSS.
 	BOSS_COMMON extern string CSSBody;
@@ -101,6 +103,7 @@ namespace boss {
 	BOSS_COMMON extern string CSSPopupBoxClose;
 	BOSS_COMMON extern string CSSPopupBoxSubmit;
 	BOSS_COMMON extern string CSSMask;
+	BOSS_COMMON extern string CSSActive;
 
 	enum logFormatting : uint32_t {
 		DIV_OPEN,
@@ -126,6 +129,7 @@ namespace boss {
 		SPAN_CLASS_VERSION_OPEN,
 		SPAN_CLASS_GHOSTED_OPEN,
 		SPAN_CLASS_CRC_OPEN,
+		SPAN_CLASS_ACTIVE_OPEN,
 		SPAN_CLASS_ERROR_OPEN,
 		SPAN_CLASS_MESSAGE_OPEN,
 		SPAN_CLOSE,

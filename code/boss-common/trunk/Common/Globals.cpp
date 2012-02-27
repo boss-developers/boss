@@ -1,4 +1,4 @@
-/*	Better Oblivion Sorting Software
+/*	BOSS
 	
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -6,20 +6,20 @@
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
-	This file is part of Better Oblivion Sorting Software.
+	This file is part of BOSS.
 
-    Better Oblivion Sorting Software is free software: you can redistribute 
+    BOSS is free software: you can redistribute 
 	it and/or modify it under the terms of the GNU General Public License 
 	as published by the Free Software Foundation, either version 3 of 
 	the License, or (at your option) any later version.
 
-    Better Oblivion Sorting Software is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will 
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Better Oblivion Sorting Software.  If not, see 
+    along with BOSS.  If not, see 
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
@@ -109,11 +109,38 @@ namespace boss {
 	}
 
 	BOSS_COMMON fs::path plugins_path() {
-		return GetLocalAppDataPath() / "Skyrim" / "plugins.txt";
+		switch (gl_current_game) {
+		case OBLIVION:
+			return GetLocalAppDataPath() / "Oblivion" / "plugins.txt";
+		case NEHRIM:
+			return GetLocalAppDataPath() / "Oblivion" / "plugins.txt";  //Shared with Oblivion.
+		case SKYRIM:
+			return GetLocalAppDataPath() / "Skyrim" / "plugins.txt";
+		case FALLOUT3:
+			return GetLocalAppDataPath() / "Fallout3" / "plugins.txt";
+		case FALLOUTNV:
+			return GetLocalAppDataPath() / "FalloutNV" / "plugins.txt";
+		default:
+			return boss_path;
+		}
 	}
 
+	//This only makes sense for Skyrim.
 	BOSS_COMMON fs::path loadorder_path() {
-		return GetLocalAppDataPath() / "Skyrim" / "loadorder.txt";
+		switch (gl_current_game) {
+		case OBLIVION:
+			return GetLocalAppDataPath() / "Oblivion" / "loadorder.txt";
+		case NEHRIM:
+			return GetLocalAppDataPath() / "Oblivion" / "loadorder.txt";  //Shared with Oblivion.
+		case SKYRIM:
+			return GetLocalAppDataPath() / "Skyrim" / "loadorder.txt";
+		case FALLOUT3:
+			return GetLocalAppDataPath() / "Fallout3" / "loadorder.txt";
+		case FALLOUTNV:
+			return GetLocalAppDataPath() / "FalloutNV" / "loadorder.txt";
+		default:
+			return boss_path;
+		}
 	}
 
 	///////////////////////////////
@@ -358,11 +385,12 @@ namespace boss {
 	///////////////////////////////
 
 	void	Settings::Load			(fs::path file) {
-		Skipper skipper(true);
+		Skipper skipper;
 		ini_grammar grammar;
 		string::const_iterator begin, end;
 		string contents;
-
+		
+		skipper.SkipIniComments(true);
 		grammar.SetErrorBuffer(&errorBuffer);
 
 		fileToBuffer(file,contents);
@@ -417,6 +445,7 @@ namespace boss {
 			<<	"bUseDarkColourScheme     = " << BoolToString(UseDarkColourScheme) << endl
 			<<	"bHideVersionNumbers      = " << BoolToString(HideVersionNumbers) << endl
 			<<	"bHideGhostedLabel        = " << BoolToString(HideGhostedLabel) << endl
+			<<	"bHideActiveLabel         = " << BoolToString(HideActiveLabel) << endl
 			<<	"bHideChecksums           = " << BoolToString(HideChecksums) << endl
 			<<	"bHideMessagelessMods     = " << BoolToString(HideMessagelessMods) << endl
 			<<	"bHideGhostedMods         = " << BoolToString(HideGhostedMods) << endl
@@ -427,7 +456,8 @@ namespace boss {
 			<<	"bHideBashTagSuggestions  = " << BoolToString(HideBashTagSuggestions) << endl
 			<<	"bHideRequirements        = " << BoolToString(HideRequirements) << endl
 			<<	"bHideIncompatibilities   = " << BoolToString(HideIncompatibilities) << endl
-			<<	"bHideDoNotCleanMessages  = " << BoolToString(HideDoNotCleanMessages) << endl << endl
+			<<	"bHideDoNotCleanMessages  = " << BoolToString(HideDoNotCleanMessages) << endl
+			<<	"bHideInactiveMods        = " << BoolToString(HideInactivePlugins) << endl << endl
 
 			<<	"[BOSSLog.Styles]" << endl
 			<<	"# A style with nothing specified uses the coded defaults." << endl
@@ -457,6 +487,7 @@ namespace boss {
 			<<	"\".version\"                                 = " << CSSVersion << endl
 			<<	"\".ghosted\"                                 = " << CSSGhost << endl
 			<<	"\".crc\"                                     = " << CSSCRC << endl
+			<<	"\".active\"                                  = " << CSSActive << endl
 			<<	"\".tagPrefix\"                               = " << CSSTagPrefix << endl
 			<<	"\".dirty\"                                   = " << CSSDirty << endl
 			<<	"\".message\"                                 = " << CSSQuotedMessage << endl

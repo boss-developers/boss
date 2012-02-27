@@ -1,4 +1,4 @@
-/*	Better Oblivion Sorting Software
+/*	BOSS
 	
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -6,20 +6,20 @@
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
-	This file is part of Better Oblivion Sorting Software.
+	This file is part of BOSS.
 
-    Better Oblivion Sorting Software is free software: you can redistribute 
+    BOSS is free software: you can redistribute 
 	it and/or modify it under the terms of the GNU General Public License 
 	as published by the Free Software Foundation, either version 3 of 
 	the License, or (at your option) any later version.
 
-    Better Oblivion Sorting Software is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will 
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Better Oblivion Sorting Software.  If not, see 
+    along with BOSS.  If not, see 
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -194,7 +194,7 @@ namespace boss {
 			file_path = data_path;
 			boost::regex regex;
 		try {
-			regex = boost::regex(reg, boost::regex::extended);
+			regex = boost::regex(reg, boost::regex::extended|boost::regex::icase);
 		} catch (boost::regex_error e) {
 			LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", reg.c_str());
 			result = false;  //Fail the check.
@@ -269,9 +269,9 @@ namespace boss {
 	///////////////////////////////
 	//Skipper Grammars
 	///////////////////////////////
-	
+
 	//Constructor for modlist and userlist skipper.
-	Skipper::Skipper(bool skipIniComments) : Skipper::base_type(start, "skipper grammar") {
+	Skipper::Skipper() : Skipper::base_type(start, "skipper grammar") {
 
 		start = 
 			spc
@@ -288,10 +288,7 @@ namespace boss {
 
 		CComment = "/*" >> *(char_ - "*/") >> "*/";
 
-		if (skipIniComments)
-			iniComment = lit("#") >> *(char_ - eol);
-		else
-			iniComment = CComment;
+		iniComment = lit("#") >> *(char_ - eol);
 
 		CPlusPlusComment = !(lit("http:") | lit("https:")) >> "//" >> *(char_ - eol);
 
@@ -302,6 +299,13 @@ namespace boss {
 			>> *(char_ - eol);
 
 		eof = *(spc | CComment | CPlusPlusComment | lineComment | eol) >> eoi;
+	}
+
+	void Skipper::SkipIniComments(bool b) {
+		if (b)
+			iniComment = lit("#") >> *(char_ - eol);
+		else
+			iniComment = CComment;
 	}
 
 	///////////////////////////////
@@ -897,6 +901,8 @@ namespace boss {
 				HideVersionNumbers = value;
 			else if (var == "bHideGhostedLabel")
 				HideGhostedLabel = value;
+			else if (var == "bHideActiveLabel")
+				HideActiveLabel = value;
 			else if (var == "bHideChecksums")
 				HideChecksums = value;
 			else if (var == "bHideMessagelessMods")
@@ -919,6 +925,8 @@ namespace boss {
 				HideIncompatibilities = value;
 			else if (var == "bHideDoNotCleanMessages")
 				HideDoNotCleanMessages = value;
+			else if (var == "bHideInactivePlugins")
+				HideInactivePlugins = value;
 		}
 	}
 
@@ -1023,6 +1031,8 @@ namespace boss {
 				CSSGhost = value;
 			else if (var == ".crc")
 				CSSCRC = value;
+			else if (var == ".active")
+				CSSActive = value;
 			else if (var == ".tagPrefix")
 				CSSTagPrefix = value;
 			else if (var == ".dirty")

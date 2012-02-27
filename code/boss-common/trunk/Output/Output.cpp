@@ -1,4 +1,4 @@
-﻿/*	Better Oblivion Sorting Software
+﻿/*	BOSS
 	
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -6,20 +6,20 @@
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
-	This file is part of Better Oblivion Sorting Software.
+	This file is part of BOSS.
 
-    Better Oblivion Sorting Software is free software: you can redistribute 
+    BOSS is free software: you can redistribute 
 	it and/or modify it under the terms of the GNU General Public License 
 	as published by the Free Software Foundation, either version 3 of 
 	the License, or (at your option) any later version.
 
-    Better Oblivion Sorting Software is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will 
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Better Oblivion Sorting Software.  If not, see 
+    along with BOSS.  If not, see 
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -38,6 +38,7 @@ namespace boss {
 	BOSS_COMMON bool UseDarkColourScheme    = false;
 	BOSS_COMMON bool HideVersionNumbers     = false;
 	BOSS_COMMON bool HideGhostedLabel       = false;
+	BOSS_COMMON bool HideActiveLabel		= false;
 	BOSS_COMMON bool HideChecksums          = false;
 	BOSS_COMMON bool HideMessagelessMods    = false;
 	BOSS_COMMON bool HideGhostedMods        = false;
@@ -49,6 +50,7 @@ namespace boss {
 	BOSS_COMMON bool HideRequirements       = false;
 	BOSS_COMMON bool HideIncompatibilities  = false;
 	BOSS_COMMON bool HideDoNotCleanMessages	= false;
+	BOSS_COMMON bool HideInactivePlugins	= false;
 
 	//Default CSS.
 	BOSS_COMMON string CSSBody				= "font-family:Calibri,Arial,sans-serifs;";
@@ -57,7 +59,7 @@ namespace boss {
 	BOSS_COMMON string CSSDarkLinkVisited	= "color:#E000E0;";
 	BOSS_COMMON string CSSFilters			= "border:1px gray dashed;background:#F5F5F5;padding:.3em;display:table;";
 	BOSS_COMMON string CSSFiltersList		= "display:inline-block;padding:.2em .5em;white-space:nowrap;margin:0;width:200px;";
-	BOSS_COMMON string CSSDarkFilters		= "border:1px gray dashed;padding:.3em;display:table;background:#333333;";
+	BOSS_COMMON string CSSDarkFilters		= "border:1px gray dashed;padding:.3em;display:table;background:#333;";
 	BOSS_COMMON string CSSTitle				= "font-size:2.4em;font-weight:700;text-align:center;margin-bottom:.2em;";
 	BOSS_COMMON string CSSCopyright			= "text-align:center;";
 	BOSS_COMMON string CSSSections			= "margin-bottom:3em;";
@@ -92,6 +94,7 @@ namespace boss {
 	BOSS_COMMON string CSSPopupBoxClose		= "cursor:pointer;display:table-cell;";
 	BOSS_COMMON string CSSPopupBoxSubmit	= "display:block;margin:0 auto;margin-top:20px;";
 	BOSS_COMMON string CSSMask				= "position:fixed;left:0px;top:0px;width:100%;height:100%;background:black;opacity:0.9;display:block;z-index:1;";
+	BOSS_COMMON string CSSActive			= "color:#0A0;margin-right:1em;padding:0 4px;";
 
 	Outputter::Outputter() {
 		outFormat = PLAINTEXT;
@@ -151,6 +154,7 @@ namespace boss {
 				<< ".version{" << CSSVersion << "}"
 				<< ".ghosted{" << CSSGhost << "}"
 				<< ".crc{" << CSSCRC << "}"
+				<< ".active{" << CSSActive << "}"
 				<< ".tagPrefix{" << CSSTagPrefix << "}"
 				<< ".dirty{" << CSSDirty << "}"
 				<< ".message{" << CSSQuotedMessage << "}"
@@ -223,11 +227,12 @@ namespace boss {
 				<< "function toggleMessages(){"<<endl
 				<< "	var m=document.getElementById('recognised').childNodes,b9=document.getElementById('b9').checked,b10=document.getElementById('b10').checked,b11=document.getElementById('b11').checked,b12=document.getElementById('b12').checked,b13=document.getElementById('b13').checked,b14=document.getElementById('b14').checked;"<<endl
 				<< "	for(var i=0,z=m.length;i<z;i++){"<<endl
-				<< "		var g=false,n=true,c=true,a=m[i].getElementsByTagName('span');"<<endl
+				<< "		var ac=false,g=false,n=true,c=true,a=m[i].getElementsByTagName('span');"<<endl
 				<< "		for(var j=0,y=a.length;j<y;j++){"<<endl
 				<< "			if(a[j].className=='ghosted'){"<<endl
 				<< "				g=true;"<<endl
-				<< "				break"<<endl
+				<< "			}else if(a[j].className=='active'){"<<endl
+				<< "				ac=true;"<<endl
 				<< "			}"<<endl
 				<< "		}"<<endl
 				<< "		a=m[i].getElementsByTagName('li');"<<endl
@@ -267,10 +272,10 @@ namespace boss {
 				<< "				n=false"<<endl
 				<< "			}"<<endl
 				<< "		}"<<endl
-				<< "		if(!((document.getElementById('b6').checked&&n)||(document.getElementById('b7').checked&&g)||(document.getElementById('b8').checked&&c))&&m[i].style.display=='none'){"<<endl
+				<< "		if(!((document.getElementById('b6').checked&&n)||(document.getElementById('b7').checked&&g)||(document.getElementById('b8').checked&&c)||(document.getElementById('b15').checked&&!ac))&&m[i].style.display=='none'){"<<endl
 				<< "			m[i].style.display='block';"<<endl
 				<< "			hp--"<<endl
-				<< "		}else if(((document.getElementById('b6').checked&&n)||(document.getElementById('b7').checked&&g)||(document.getElementById('b8').checked&&c))&&m[i].style.display!='none'){"<<endl
+				<< "		}else if(((document.getElementById('b6').checked&&n)||(document.getElementById('b7').checked&&g)||(document.getElementById('b8').checked&&c)||(document.getElementById('b15').checked&&!ac))&&m[i].style.display!='none'){"<<endl
 				<< "			m[i].style.display='none';"<<endl
 				<< "			hp++"<<endl
 				<< "		}"<<endl
@@ -493,6 +498,12 @@ namespace boss {
 		case SPAN_CLASS_CRC_OPEN:
 			if (outFormat == HTML)
 				outStream << "<span class='crc'>&nbsp;";
+			else
+				outStream << " ";
+			break;
+		case SPAN_CLASS_ACTIVE_OPEN:
+			if (outFormat == HTML)
+				outStream << "<span class='active'>&nbsp;";
 			else
 				outStream << " ";
 			break;

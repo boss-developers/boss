@@ -1,4 +1,4 @@
-/*	Better Oblivion Sorting Software
+/*	BOSS
 	
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -6,20 +6,20 @@
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
-	This file is part of Better Oblivion Sorting Software.
+	This file is part of BOSS.
 
-    Better Oblivion Sorting Software is free software: you can redistribute 
+    BOSS is free software: you can redistribute 
 	it and/or modify it under the terms of the GNU General Public License 
 	as published by the Free Software Foundation, either version 3 of 
 	the License, or (at your option) any later version.
 
-    Better Oblivion Sorting Software is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will 
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Better Oblivion Sorting Software.  If not, see 
+    along with BOSS.  If not, see 
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3135 $, $Date: 2011-08-17 22:01:17 +0100 (Wed, 17 Aug 2011) $
@@ -42,11 +42,11 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-//#define BOSSGUI
+#define BOSSGUI
 
-#	define BOSS_VERSION_MAJOR 1
-#	define BOSS_VERSION_MINOR 9
-#	define BOSS_VERSION_PATCH 1
+#	define BOSS_VERSION_MAJOR 2
+#	define BOSS_VERSION_MINOR 0
+#	define BOSS_VERSION_PATCH 0
 
 	BOSS_COMMON extern const string gl_boss_release_date;
 

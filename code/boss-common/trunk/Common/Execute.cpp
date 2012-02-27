@@ -1,4 +1,4 @@
-/*	Better Oblivion Sorting Software
+/*	BOSS
 	
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -6,20 +6,20 @@
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
-	This file is part of Better Oblivion Sorting Software.
+	This file is part of BOSS.
 
-    Better Oblivion Sorting Software is free software: you can redistribute 
+    BOSS is free software: you can redistribute 
 	it and/or modify it under the terms of the GNU General Public License 
 	as published by the Free Software Foundation, either version 3 of 
 	the License, or (at your option) any later version.
 
-    Better Oblivion Sorting Software is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will 
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Better Oblivion Sorting Software.  If not, see 
+    along with BOSS.  If not, see 
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
@@ -37,7 +37,6 @@
 namespace boss {
 	using namespace std;
 
-	using boost::algorithm::trim_copy;
 	using boost::algorithm::to_lower_copy;
 
 	////////////////////////
@@ -104,10 +103,11 @@ namespace boss {
 	}
 
 	//Sort recognised mods. Usage internal to BOSS-Common.
-	void SortRecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
+	void SortRecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters, boost::unordered_set<string> hashset) {
 		Outputter buffer(gl_log_format);
 		time_t modfiletime = 0;
 		vector<Item> items = modlist.Items();
+		boost::unordered_set<string>::iterator setPos;
 
 		LOG_INFO("Applying calculated ordering to user files...");
 		for (size_t i=0; i <= modlist.LastRecognisedPos(); i++) {
@@ -118,6 +118,8 @@ namespace boss {
 					if (!version.empty())
 						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
 				}
+				if (hashset.find(to_lower_copy(items[i].Name())) != hashset.end())  //Plugin is active.
+					buffer << SPAN_CLASS_ACTIVE_OPEN << "Active" << SPAN_CLOSE;
 				if (items[i].IsGhosted()) {
 					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
 					counters.ghosted++;
@@ -126,7 +128,7 @@ namespace boss {
 				} else if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / items[i].Name())) << SPAN_CLOSE;
 			
-				if (!gl_trial_run && !items[i].IsMasterFile() && !(gl_current_game == SKYRIM && GetExeDllVersion(data_path.parent_path() / "TESV.exe").compare("1.4.26.0") >= 0)) {
+				if (!gl_trial_run && !items[i].IsMasterFile() && !(gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"))) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
 					try {
@@ -159,7 +161,7 @@ namespace boss {
 	}
 
 	//List unrecognised mods. Usage internal to BOSS-Common.
-	void ListUnrecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters) {
+	void ListUnrecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters, boost::unordered_set<string> hashset) {
 		Outputter buffer(gl_log_format);
 		time_t modfiletime = 0;
 		size_t max = modlist.Items().size();
@@ -177,15 +179,17 @@ namespace boss {
 					if (!version.empty())
 						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
 				}
+				if (hashset.find(to_lower_copy(items[i].Name())) != hashset.end())  //Plugin is active.
+					buffer << SPAN_CLASS_ACTIVE_OPEN << "Active" << SPAN_CLOSE;
 				if (items[i].IsGhosted()) {
 					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
 					counters.ghosted++;
 					if (gl_show_CRCs)
-					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(items[i].Name() + ".ghost"))) << SPAN_CLOSE;
+						buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(items[i].Name() + ".ghost"))) << SPAN_CLOSE;
 				} else if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / items[i].Name())) << SPAN_CLOSE;
 
-				if (!gl_trial_run && !items[i].IsMasterFile() && !(gl_current_game == SKYRIM && GetExeDllVersion(data_path.parent_path() / "TESV.exe").compare("1.4.26.0") >= 0)) {
+				if (!gl_trial_run && !items[i].IsMasterFile() && !(gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"))) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
 					try {
@@ -232,11 +236,21 @@ namespace boss {
 			if (HideGhostedLabel)
 				bosslog << "checked='checked' ";
 			bosslog << "id='b4' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b4'>Hide 'Ghosted' Label</label>";
+
+			bosslog << "<li><input type='checkbox' ";
+			if (HideInactivePlugins)
+				bosslog << "checked='checked' ";
+			bosslog << "id='b16' onclick='toggleDisplayCSS(this,\".active\")' /><label for='b16'>Hide 'Active' Label</label>";
 			
 			bosslog << "<li><input type='checkbox' ";
 			if (HideChecksums)
 				bosslog << "checked='checked' ";
 			bosslog << "id='b5' onclick='toggleDisplayCSS(this,\".crc\")' /><label for='b5'>Hide Checksums</label>";
+
+			bosslog << "<li><input type='checkbox' ";
+			if (HideInactivePlugins)
+				bosslog << "checked='checked' ";
+			bosslog << "id='b15' onclick='toggleMessages()' /><label for='b15'>Hide Inactive Mods</label>";
 			
 			bosslog << "<li><input type='checkbox' ";
 			if (HideMessagelessMods)
@@ -426,12 +440,27 @@ namespace boss {
 
 		SE = GetSEPluginInfo(contents.seInfo);
 
-		SortRecognisedMods(modlist, contents.recognisedPlugins, esmtime, counters);
+		LOG_INFO("Loading plugins.txt into ItemList.");
+		ItemList pluginsList;
+		pluginsList.Load(plugins_path());
+		vector<Item> pluginsEntries = pluginsList.Items();
+		size_t pluginsMax = pluginsEntries.size();
+		boost::unordered_set<string> hashset;
+		LOG_INFO("Populating hashset with ItemList contents.");
+		for (size_t i=0; i<pluginsMax; i++) {
+			if (pluginsEntries[i].Type() == MOD)
+				hashset.insert(to_lower_copy(pluginsEntries[i].Name()));
+		}
 
-		ListUnrecognisedMods(modlist, contents.unrecognisedPlugins, esmtime, counters);
+		SortRecognisedMods(modlist, contents.recognisedPlugins, esmtime, counters, hashset);
 
-		modlist.SavePluginsDotTxt();
-		modlist.SaveLoadOrder();
+		ListUnrecognisedMods(modlist, contents.unrecognisedPlugins, esmtime, counters, hashset);
+
+		//Now set the load order using Skyrim method.
+		if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
+			modlist.SavePluginNames(loadorder_path(), false);
+			modlist.SavePluginNames(plugins_path(), true);
+		}
 
 		PrintBOSSlog(file, contents, counters, SE);
 	}
@@ -514,10 +543,11 @@ namespace boss {
 				//Form a regex.
 				boost::regex reg;
 				try {
-					reg = boost::regex(to_lower_copy(items[i].Name())+"(.ghost)?",boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
+					reg = boost::regex(to_lower_copy(items[i].Name())+"(.ghost)?",boost::regex::extended|boost::regex::icase);  //Ghost extension is added so ghosted mods will also be found.
 				} catch (boost::regex_error e) {
-					LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", items[i].Name().c_str());
-					masterlist.ErrorBuffer(ParsingError(items[i].Name() + " is not a valid regular expression. Item skipped."));
+					boss_error be = boss_error(BOSS_ERROR_REGEX_EVAL_FAIL, items[i].Name());
+					LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", be.getString().c_str());
+					masterlist.ErrorBuffer(ParsingError(be.getString()));
 					continue;
 				}
 				//Now start looking.
@@ -561,7 +591,7 @@ namespace boss {
 		masterlist.Items(holdingVec);  //Masterlist now only contains the items needed to sort the user's mods.
 		masterlist.LastRecognisedPos(masterlist.Items().size()-1);
 		
-		//Add modlist's mods to masterlist, then set the modlist to the masterlist as that's the output..
+		//Add modlist's mods to masterlist, then set the modlist to the masterlist as that's the output.
 		masterlist.Insert(masterlist.Items().size(), modlist.Items(), 0, modlist.Items().size());
 		modlist = masterlist;
 	}

@@ -1,4 +1,4 @@
-/*	Better Oblivion Sorting Software
+/*	BOSS
 	
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -6,20 +6,20 @@
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
-	This file is part of Better Oblivion Sorting Software.
+	This file is part of BOSS.
 
-    Better Oblivion Sorting Software is free software: you can redistribute 
+    BOSS is free software: you can redistribute 
 	it and/or modify it under the terms of the GNU General Public License 
 	as published by the Free Software Foundation, either version 3 of 
 	the License, or (at your option) any later version.
 
-    Better Oblivion Sorting Software is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will 
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Better Oblivion Sorting Software.  If not, see 
+    along with BOSS.  If not, see 
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -43,7 +43,6 @@ namespace boss {
 	//Error Codes
 	enum : uint32_t {
 		BOSS_ERROR_OK,
-		BOSS_ERROR_OBLIVION_AND_NEHRIM,
 		BOSS_ERROR_NO_MASTER_FILE,
 		BOSS_ERROR_FILE_READ_FAIL,
 		BOSS_ERROR_FILE_WRITE_FAIL,
@@ -51,6 +50,7 @@ namespace boss {
 		BOSS_ERROR_FILE_NOT_FOUND,
 		BOSS_ERROR_FILE_PARSE_FAIL,
 		BOSS_ERROR_CONDITION_EVAL_FAIL,
+		BOSS_ERROR_REGEX_EVAL_FAIL,
 		BOSS_ERROR_NO_GAME_DETECTED,
 		BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL,
 		BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL,
@@ -98,8 +98,6 @@ namespace boss {
 			switch(errCode) {
 			case BOSS_ERROR_OK:
 				return "No error.";
-			case BOSS_ERROR_OBLIVION_AND_NEHRIM:
-				return "Oblivion.esm and Nehrim.esm both detected!";
 			case BOSS_ERROR_NO_MASTER_FILE:
 				return "No game master .esm file found!"; 
 			case BOSS_ERROR_FILE_READ_FAIL:
@@ -112,6 +110,8 @@ namespace boss {
 				return "\"" + errSubject + "\" cannot be found!";
 			case BOSS_ERROR_CONDITION_EVAL_FAIL:
 				return "Evaluation of conditional \"" + errSubject + "\" failed!";
+			case BOSS_ERROR_REGEX_EVAL_FAIL:
+				return "\"" + errSubject + "\" is not a valid regular expression. Item skipped.";
 			case BOSS_ERROR_NO_GAME_DETECTED:
 				return "No game detected!"; 
 			case BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL:

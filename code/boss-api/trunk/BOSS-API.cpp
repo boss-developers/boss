@@ -1,4 +1,4 @@
-/*	Better Oblivion Sorting Software
+/*	BOSS
 
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -6,20 +6,20 @@
 
     Copyright (C) 2011    BOSS Development Team.
 
-	This file is part of Better Oblivion Sorting Software.
+	This file is part of BOSS.
 
-    Better Oblivion Sorting Software is free software: you can redistribute 
+    BOSS is free software: you can redistribute 
 	it and/or modify it under the terms of the GNU General Public License 
 	as published by the Free Software Foundation, either version 3 of 
 	the License, or (at your option) any later version.
 
-    Better Oblivion Sorting Software is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will 
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Better Oblivion Sorting Software.  If not, see 
+    along with BOSS.  If not, see 
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -48,6 +48,9 @@ using boost::algorithm::to_lower_copy;
 // Version string.
 static const string boss_version = IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH);
 
+// Last error details buffer.
+string lastErrorDetails = "";
+
 // Structure for a single plugin's data.
 struct modEntry {
 	string name;						//Plugin filename, case NOT preserved.
@@ -59,6 +62,8 @@ struct modEntry {
 // Database structure.
 struct _boss_db_int {
 	//Internal data storage.
+	fs::path db_data_path;
+	uint32_t db_game;
 	ItemList rawMasterlist, filteredMasterlist;
 	RuleList userlist;
 	map<uint32_t,string> bashTagMap;				//A hashmap containing all the Bash Tag strings found in the masterlist and userlist and their unique IDs.
@@ -67,19 +72,19 @@ struct _boss_db_int {
 	BashTag * extTagMap;				//Holds the pointer for the bashTagMap returned by GetBashTagMap().
 	uint32_t * extAddedTagIds;
 	uint32_t * extRemovedTagIds;
-	uint8_t * extMessage;
-	uint8_t ** extPluginList;
+	uint8_t * extString;
+	uint8_t ** extStringArray;
 
 	//Pointer array sizes.
-	size_t extPluginListSize;
+	size_t extStringArraySize;
 
 	//Constructor
 	_boss_db_int() {
 		extTagMap = NULL;
 		extAddedTagIds = NULL;
 		extRemovedTagIds = NULL;
-		extMessage = NULL;
-		extPluginList = NULL;
+		extString = NULL;
+		extStringArray = NULL;
 	}
 
 	//Get a Bash Tag's string name from its UID.
@@ -103,25 +108,28 @@ struct _boss_db_int {
 	}
 };
 
-// The following are the possible error codes that the API can return.
+// The following are the possible codes that the API can return.
 // Taken from BOSS-Common's Error.h and extended.
-BOSS_API const uint32_t BOSS_API_ERROR_OK						=	BOSS_ERROR_OK;
-BOSS_API const uint32_t BOSS_API_ERROR_FILE_WRITE_FAIL			=	BOSS_ERROR_FILE_WRITE_FAIL;
-BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_UTF8			=	BOSS_ERROR_FILE_NOT_UTF8;
-BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_FOUND			=	BOSS_ERROR_FILE_NOT_FOUND;
-BOSS_API const uint32_t BOSS_API_ERROR_MASTER_TIME_READ_FAIL	=	BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL;
-BOSS_API const uint32_t BOSS_API_ERROR_FILE_MOD_TIME_WRITE_FAIL	=	BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL;
-BOSS_API const uint32_t BOSS_API_ERROR_CONDITION_EVAL_FAIL		=	BOSS_ERROR_CONDITION_EVAL_FAIL;
-BOSS_API const uint32_t BOSS_API_ERROR_PARSE_FAIL				= 	BOSS_ERROR_MAX + 1;
-BOSS_API const uint32_t BOSS_API_ERROR_NO_MEM					=	BOSS_ERROR_MAX + 2;
-BOSS_API const uint32_t BOSS_API_ERROR_OVERWRITE_FAIL			=	BOSS_ERROR_MAX + 3;
-BOSS_API const uint32_t BOSS_API_ERROR_INVALID_ARGS				=	BOSS_ERROR_MAX + 4;
-BOSS_API const uint32_t BOSS_API_ERROR_NETWORK_FAIL				=	BOSS_ERROR_MAX + 5;
-BOSS_API const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION	=	BOSS_ERROR_MAX + 6;
-BOSS_API const uint32_t BOSS_API_ERROR_NO_UPDATE_NECESSARY		=	BOSS_ERROR_MAX + 7;
-BOSS_API const uint32_t BOSS_API_ERROR_NO_TAG_MAP				=	BOSS_ERROR_MAX + 8;
-BOSS_API const uint32_t BOSS_API_ERROR_REGEX_EVAL_FAIL			=	BOSS_ERROR_MAX + 9;
-BOSS_API const uint32_t BOSS_API_ERROR_MAX						=	BOSS_API_ERROR_REGEX_EVAL_FAIL;
+BOSS_API const uint32_t BOSS_API_OK								= BOSS_ERROR_OK;
+BOSS_API const uint32_t BOSS_API_OK_NO_UPDATE_NECESSARY			= BOSS_ERROR_MAX + 1;
+BOSS_API const uint32_t BOSS_API_WARN_BAD_FILENAME				= BOSS_ERROR_MAX + 2;
+BOSS_API const uint32_t BOSS_API_WARN_LO_MISMATCH				= BOSS_ERROR_MAX + 3;
+BOSS_API const uint32_t BOSS_API_ERROR_FILE_WRITE_FAIL			= BOSS_ERROR_FILE_WRITE_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_FILE_DELETE_FAIL			= BOSS_ERROR_FS_FILE_DELETE_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_UTF8			= BOSS_ERROR_FILE_NOT_UTF8;
+BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_FOUND			= BOSS_ERROR_FILE_NOT_FOUND;
+BOSS_API const uint32_t BOSS_API_ERROR_MASTER_TIME_READ_FAIL	= BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_MOD_TIME_READ_FAIL		= BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_MOD_TIME_WRITE_FAIL		= BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_CONDITION_EVAL_FAIL		= BOSS_ERROR_CONDITION_EVAL_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_REGEX_EVAL_FAIL			= BOSS_ERROR_REGEX_EVAL_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_PARSE_FAIL				= BOSS_ERROR_FILE_PARSE_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_NO_MEM					= BOSS_ERROR_MAX + 4;
+BOSS_API const uint32_t BOSS_API_ERROR_INVALID_ARGS				= BOSS_ERROR_MAX + 5;
+BOSS_API const uint32_t BOSS_API_ERROR_NETWORK_FAIL				= BOSS_ERROR_MAX + 6;
+BOSS_API const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION	= BOSS_ERROR_MAX + 7;
+BOSS_API const uint32_t BOSS_API_ERROR_NO_TAG_MAP				= BOSS_ERROR_MAX + 8;
+BOSS_API const uint32_t BOSS_API_RETURN_MAX						= BOSS_API_ERROR_NO_TAG_MAP;
 
 // The following are the mod cleanliness states that the API can return.
 BOSS_API const uint32_t BOSS_API_CLEAN_NO		= 0;
@@ -208,14 +216,40 @@ void DestroyPointers(boss_db db) {
 	free(db->extTagMap);
 	free(db->extAddedTagIds);
 	free(db->extRemovedTagIds);
-	free(db->extMessage);
+	free(db->extString);
 
-	if (db->extPluginList != NULL) {
-		for (size_t i=0; i<db->extPluginListSize; i++)
-			free(db->extPluginList[i]);  //Clear all the uint8_t strings created.
-		free(db->extPluginList);  //Clear the string array.
+	if (db->extStringArray != NULL) {
+		for (size_t i=0; i<db->extStringArraySize; i++)
+			free(db->extStringArray[i]);  //Clear all the uint8_t strings created.
+		free(db->extStringArray);  //Clear the string array.
 	}
 }
+
+uint32_t ReturnCode(uint32_t returnCode, string details) {
+	lastErrorDetails = details;
+	return returnCode;
+}
+
+uint32_t ReturnCode(uint32_t returnCode) {
+	lastErrorDetails = "";
+	return returnCode;
+}
+
+
+//////////////////////////////
+// Error Handling Functions
+//////////////////////////////
+
+// Outputs a string giving the details of the last time an error or 
+// warning return code was returned by a function.
+BOSS_API uint32_t GetLastErrorDetails(const uint8_t ** details) {
+	if (details == NULL)  //Check for valid args.
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
+	*details = reinterpret_cast<const uint8_t *>(lastErrorDetails.c_str());
+	return ReturnCode(BOSS_API_OK);
+}
+
 
 //////////////////////////////
 // Version Functions
@@ -224,8 +258,7 @@ void DestroyPointers(boss_db db) {
 // Returns whether this version of BOSS supports the API from the given 
 // BOSS version. Abstracts BOSS API stability policy away from clients.
 BOSS_API bool IsCompatibleVersion (const uint32_t bossVersionMajor, const uint32_t bossVersionMinor, const uint32_t bossVersionPatch) {
-	//The 1.9 API is backwards compatible with all 1.x (x<=9) versions of BOSS, and forward compatible with all 1.9.x versions.
-	if (bossVersionMajor <= 1 && bossVersionMajor <= 9)
+	if (bossVersionMajor <= BOSS_VERSION_MAJOR && bossVersionMajor <= BOSS_VERSION_MINOR)
 		return true;
 	else
 		return false;
@@ -234,12 +267,11 @@ BOSS_API bool IsCompatibleVersion (const uint32_t bossVersionMajor, const uint32
 // Returns the version string for this version of BOSS.
 // The string exists for the lifetime of the library.
 BOSS_API uint32_t GetVersionString (const uint8_t ** bossVersionStr) {
-	//Check for valid args.
-	if (bossVersionStr == NULL)
-		return BOSS_API_ERROR_INVALID_ARGS;
+	if (bossVersionStr == NULL) //Check for valid args.
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
 	*bossVersionStr = reinterpret_cast<const uint8_t *>(boss_version.c_str());
-	return BOSS_API_ERROR_OK;
+	return ReturnCode(BOSS_API_OK);
 }
 
 
@@ -248,16 +280,65 @@ BOSS_API uint32_t GetVersionString (const uint8_t ** bossVersionStr) {
 ////////////////////////////////////
 
 // Explicitly manage database lifetime. Allows clients to free memory when
-// they want/need to.
-BOSS_API uint32_t CreateBossDb  (boss_db * db) {
-	if (db == NULL)  //Check for valid args.
-		return BOSS_API_ERROR_INVALID_ARGS;
+// they want/need to. clientGame sets the game the DB is for, and dataPath
+// is the path to that game's Data folder. This function also checks that
+// plugins.txt and loadorder.txt (if they both exist) are in sync.
+BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
+											   const uint8_t * dataPath) {
+	if (db == NULL || dataPath == NULL) //Check for valid args.
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+	else if (clientGame != OBLIVION && clientGame != FALLOUT3 && clientGame != FALLOUTNV && clientGame != NEHRIM && clientGame != SKYRIM)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Invalid game specified.");
 
 	boss_db retVal = new _boss_db_int;
 	if (retVal == NULL)
-		return BOSS_API_ERROR_NO_MEM;
+		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+
+	//Set the locale to get encoding conversions working correctly.
+	setlocale(LC_CTYPE, "");
+	locale global_loc = locale();
+	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
+	boost::filesystem::path::imbue(loc);
+
+	//Set game. Because this is a global and there may be multiple DBs for different games,
+	//each time a DB's function is called, it should be reset. Same with dataPath.
+	retVal->db_game = clientGame;
+	retVal->db_data_path = fs::path(reinterpret_cast<const char *>(dataPath));
+	if (data_path.empty()) 
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Data path is empty.");
+	gl_current_game = retVal->db_game;
+	data_path = retVal->db_data_path;
+
 	*db = retVal;
-	return BOSS_API_ERROR_OK;
+
+	//Now check if plugins.txt and loadorder.txt are in sync.
+	if (fs::exists(plugins_path()) && fs::exists(loadorder_path())) {
+		//Load loadorder.txt and save a temporary filtered version.
+		ItemList loadorder;
+		try {
+			loadorder.Load(data_path);
+			loadorder.SavePluginNames(loadorder_path().string() + ".new", true);
+		} catch (boss_error e) {
+			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		}
+
+		uint32_t crc1 = GetCrc32(plugins_path());
+		uint32_t crc2 = GetCrc32(loadorder_path().string() + ".new");
+
+		//Now delete temporary filtered loadorder.txt.
+		try {
+			fs::remove(loadorder_path().string() + ".new");
+		} catch (fs::filesystem_error e) {
+			return ReturnCode(BOSS_API_ERROR_FILE_DELETE_FAIL, loadorder_path().string() + ".new");
+		}
+
+		//Since plugins.txt is derived from loadorder.txt in the same manner as the temporary file created above,
+		//with the derivation occurring whenever loadorder.txt is changed, if plugins.txt has not been changed
+		//by something other than the API (eg. the launcher), then the CRCs will match. Otherwise they will differ.
+		if (crc1 != crc2)
+			return ReturnCode(BOSS_API_WARN_LO_MISMATCH);
+	}
+	return ReturnCode(BOSS_API_OK);
 }
 
 BOSS_API void     DestroyBossDb (boss_db db) {
@@ -283,58 +364,42 @@ BOSS_API void     DestroyBossDb (boss_db db) {
 // Masterlist and userlist loading are internally independent, but occur in
 // same function for ease-of-use by clients.
 BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
-									const uint8_t * userlistPath,
-									const uint8_t * dataPath,
-									const uint32_t clientGame) {
+									const uint8_t * userlistPath) {
 	ItemList masterlist;
 	RuleList userlist;
 	
 	//Check for valid args.
-	if ((clientGame != OBLIVION && clientGame != FALLOUT3 && clientGame != FALLOUTNV && clientGame != NEHRIM && clientGame != SKYRIM) 
-		|| db == NULL || masterlistPath == NULL || userlistPath == NULL || dataPath == NULL)
-		return BOSS_API_ERROR_INVALID_ARGS;
+	if (db == NULL || masterlistPath == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
-	//Set the locale to get encoding conversions working correctly.
-	setlocale(LC_CTYPE, "");
-	locale global_loc = locale();
-	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
-	boost::filesystem::path::imbue(loc);
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
 	
-	//Set game.
-	gl_current_game = clientGame;
-
 	//PATH SETTING
-	data_path = fs::path(reinterpret_cast<const char *>(dataPath));
 	fs::path masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
-	fs::path userlist_path = fs::path(reinterpret_cast<const char *>(userlistPath));	
-
-	if (data_path.empty() || masterlist_path.empty())
-		return BOSS_API_ERROR_INVALID_ARGS;
-
+	if (masterlist_path.empty())
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Masterlist path is empty.");
+	fs::path userlist_path;
+	if (userlistPath != NULL)
+		userlist_path = fs::path(reinterpret_cast<const char *>(userlistPath));	
+	if (userlist_path.empty())
+			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Userlist path is empty.");
+		
 	//PARSING - Masterlist
 	try {
 		masterlist.Load(masterlist_path);
 	} catch (boss_error e) {
-		if (e.getCode() == BOSS_ERROR_FILE_NOT_FOUND)
-			return BOSS_API_ERROR_FILE_NOT_FOUND;
-		else if (e.getCode() == BOSS_ERROR_FILE_NOT_UTF8)
-			return BOSS_API_ERROR_FILE_NOT_UTF8;
-		else
-			return BOSS_API_ERROR_PARSE_FAIL;
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//PARSING - Userlist
-	if (!userlist_path.empty()) {
+	if (userlistPath != NULL) {
 		try {
 			userlist.Load(userlist_path);
 		} catch (boss_error e) {
 			db->userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
-			if (e.getCode() == BOSS_ERROR_FILE_NOT_FOUND)
-				return BOSS_API_ERROR_FILE_NOT_FOUND;
-			else if (e.getCode() == BOSS_ERROR_FILE_NOT_UTF8)
-				return BOSS_API_ERROR_FILE_NOT_UTF8;
-			else
-				return BOSS_API_ERROR_PARSE_FAIL;
+			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
 	}
 
@@ -347,36 +412,37 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	db->filteredMasterlist = masterlist;  //Not actually filtered, but retrival functions assume filtered masterlist is populated.
 	db->userlist = userlist;
 	db->bashTagMap.clear();
-	return BOSS_API_ERROR_OK;
+	return ReturnCode(BOSS_API_OK);
 }
 
 // Re-evaluates all conditional lines and regex mods in rawMasterlist, 
 // putting the output into filteredMasterlist.
-BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath) {
+BOSS_API uint32_t EvalConditionals(boss_db db) {
 	//Check for valid args.
-	if (db == NULL || dataPath == NULL)
-		return BOSS_API_ERROR_INVALID_ARGS;
+	if (db == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 		
-	//PATH SETTING
-	data_path = fs::path(reinterpret_cast<const char *>(dataPath));
-
-	if (data_path.empty())
-		return BOSS_API_ERROR_INVALID_ARGS;
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
 
 	//First re-evaluate conditionals.
 	ItemList masterlist = db->rawMasterlist;
 	try {
 		masterlist.EvalConditions();
 	} catch (boss_error e) {
-		cout << e.getString() << endl;
-		return BOSS_API_ERROR_CONDITION_EVAL_FAIL;
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	vector<modEntry> matches;
 	//Build modlist. Not using boss::ItemList::Load() as that builds to a vector<item> in load order, which isn't necessary.
 	//Famous last words! Both are necessary in these dark times...
 	ItemList modlist;
-	modlist.Load(data_path);  //I seem to recall this might need exception handling. Oh well.
+	try {
+		modlist.Load(data_path);  //I seem to recall this might need exception handling. Oh well.
+	} catch (boss_error e) {
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+	}
 	boost::unordered_set<string> hashset;  //Holds installed mods for checking against masterlist
 	boost::unordered_set<string>::iterator setPos;
 	for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
@@ -397,9 +463,9 @@ BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath) {
 			//Now form a regex.
 			boost::regex reg;
 			try {
-				reg = boost::regex(to_lower_copy(regexItem.Name())+"(.ghost)?", boost::regex::extended);  //Ghost extension is added so ghosted mods will also be found.
+				reg = boost::regex(to_lower_copy(regexItem.Name())+"(.ghost)?", boost::regex::extended|boost::regex::icase);  //Ghost extension is added so ghosted mods will also be found.
 			} catch (boost::regex_error e) {
-				return BOSS_API_ERROR_REGEX_EVAL_FAIL;
+				return ReturnCode(BOSS_API_ERROR_REGEX_EVAL_FAIL, to_lower_copy(regexItem.Name())+"(.ghost)?");
 			}
 			//Now start looking.
 			setPos = hashset.begin();
@@ -425,7 +491,7 @@ BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath) {
 
 	//Now set DB ItemList to function's ItemList.
 	db->filteredMasterlist = masterlist;
-	return BOSS_API_ERROR_OK;
+	return ReturnCode(BOSS_API_OK);
 }
 
 
@@ -437,26 +503,28 @@ BOSS_API uint32_t EvalConditionals(boss_db db, const uint8_t * dataPath) {
 // it downloads the latest masterlist for the given game to masterlistPath.
 // If there is, it first compares online and local versions to see if an
 // update is necessary.
-BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * masterlistPath) {
-	if ((clientGame != OBLIVION && clientGame != FALLOUT3 && clientGame != FALLOUTNV && clientGame != NEHRIM && clientGame != SKYRIM) || masterlistPath == NULL)
-		return BOSS_API_ERROR_INVALID_ARGS;
+BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath) {
+	if (db == NULL || masterlistPath == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
-	gl_current_game = clientGame;
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
 
 	//PATH SETTING
 	fs::path masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
 
 	if (masterlist_path.empty())
-		return BOSS_API_ERROR_INVALID_ARGS;
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Masterlist path is empty.");
 
 	bool connection = false;
 	try {
 		connection = CheckConnection();
 	} catch (boss_error e) {
-		return BOSS_API_ERROR_NETWORK_FAIL;
+		return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, e.getString());
 	}
 	if (!connection)
-		return BOSS_API_ERROR_NO_INTERNET_CONNECTION;
+		return ReturnCode(BOSS_API_ERROR_NO_INTERNET_CONNECTION);
 	else {
 		try {
 			string localDate, remoteDate;
@@ -464,11 +532,11 @@ BOSS_API uint32_t UpdateMasterlist(const uint32_t clientGame, const uint8_t * ma
 			uiStruct ui;
 			UpdateMasterlist(ui, localRevision, localDate, remoteRevision, remoteDate);
 			if (localRevision == remoteRevision)
-				return BOSS_API_ERROR_NO_UPDATE_NECESSARY;
+				return ReturnCode(BOSS_API_OK_NO_UPDATE_NECESSARY);
 			else
-				return BOSS_API_ERROR_OK;
+				return ReturnCode(BOSS_API_OK);
 		} catch (boss_error e) {
-			return BOSS_API_ERROR_NETWORK_FAIL;
+			return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, e.getString());
 		}
 	}
 }
@@ -490,7 +558,11 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 								size_t * listLength, 
 								size_t * lastRecPos) {
 	if (db == NULL || (trialOnly == true && (sortedPlugins == NULL || listLength == NULL || lastRecPos == NULL)))
-		return BOSS_API_ERROR_INVALID_ARGS;
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
 
 	ItemList modlist;
 	time_t masterTime, modfiletime = 0;
@@ -498,25 +570,24 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	try {
 		masterTime = GetMasterTime();
 	} catch (boss_error e) {
-		return BOSS_API_ERROR_MASTER_TIME_READ_FAIL;
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Build modlist and masterlist.
 	try {
 		modlist.Load(data_path);
 	} catch (boss_error e) {
-		if (e.getCode() == BOSS_ERROR_FILE_NOT_FOUND)
-			return BOSS_API_ERROR_FILE_NOT_FOUND;
-		else if (e.getCode() == BOSS_ERROR_FILE_NOT_UTF8)
-			return BOSS_API_ERROR_FILE_NOT_UTF8;
-		else
-			return BOSS_API_ERROR_PARSE_FAIL;
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Set up working modlist.
 	//The function below changes the input, so make copies.
 	ItemList masterlist = db->filteredMasterlist;
-	masterlist.EvalConditions();
+	try {
+		masterlist.EvalConditions();
+	} catch (boss_error e) {
+		return ReturnCode(e.getCode(), e.getString());
+	}
 	RuleList userlist = db->userlist;
 	BuildWorkingModlist(modlist, masterlist, userlist);
 	string dummy;
@@ -531,10 +602,10 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 		*lastRecPos = 0;
 
 	//Free memory if already used.
-	if (db->extPluginList != NULL) {
-		for (size_t i=0; i<db->extPluginListSize; i++)
-			free(db->extPluginList[i]);  //Clear all the uint8_t strings created.
-		free(db->extPluginList);  //Clear the string array.
+	if (db->extStringArray != NULL) {
+		for (size_t i=0; i<db->extStringArraySize; i++)
+			free(db->extStringArray[i]);  //Clear all the uint8_t strings created.
+		free(db->extStringArray);  //Clear the string array.
 	}
 
 	vector<Item> items = modlist.Items();
@@ -546,12 +617,12 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 				try {
 					items[i].SetModTime(masterTime + mods.size()*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 				} catch(boss_error e) {
-					return BOSS_API_ERROR_FILE_MOD_TIME_WRITE_FAIL;
+					return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
 				}
 			}
 			uint8_t * p = StringToUint8_tString(items[i].Name());
 			if (p == NULL)
-				return BOSS_API_ERROR_NO_MEM;
+				return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 			mods.push_back(p);
 		}
 		if (i == modlist.LastRecognisedPos() && lastRecPos != NULL)
@@ -559,26 +630,440 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	}
 
 	//Skyrim >= 1.4.26 load order setting.
-	if (!trialOnly) {
-		modlist.SavePluginsDotTxt();
-		modlist.SaveLoadOrder();
+	if (!trialOnly && gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
+		modlist.SavePluginNames(loadorder_path(), false);
+		modlist.SavePluginNames(plugins_path(), true);
 	}
 
 	//Now create external array.
-	db->extPluginListSize = mods.size();
-	db->extPluginList = (uint8_t**)malloc(db->extPluginListSize * sizeof(uint8_t*));
-	if (db->extPluginList == NULL)
-		return BOSS_API_ERROR_NO_MEM;
-	for (size_t i=0; i < db->extPluginListSize; i++)
-		db->extPluginList[i] = mods[i];
+	db->extStringArraySize = mods.size();
+	db->extStringArray = (uint8_t**)malloc(db->extStringArraySize * sizeof(uint8_t*));
+	if (db->extStringArray == NULL)
+		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	for (size_t i=0; i < db->extStringArraySize; i++)
+		db->extStringArray[i] = mods[i];
 	
 	if (sortedPlugins != NULL)
-		*sortedPlugins = db->extPluginList;
+		*sortedPlugins = db->extStringArray;
 	if (listLength != NULL)
-		*listLength = db->extPluginListSize;
+		*listLength = db->extStringArraySize;
 
-	return BOSS_API_ERROR_OK;
+	return ReturnCode(BOSS_API_OK);
 }
+
+// Gets a list of plugins in load order, with the number of plugins given by numPlugins.
+BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t *** plugins, size_t * numPlugins) {
+	if (db == NULL || plugins == NULL || numPlugins == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
+
+	//Initialise vars.
+	*numPlugins = 0;
+	*plugins = NULL;
+
+	//Free memory if already used.
+	if (db->extStringArray != NULL) {
+		for (size_t i=0; i<db->extStringArraySize; i++)
+			free(db->extStringArray[i]);  //Clear all the uint8_t strings created.
+		free(db->extStringArray);  //Clear the string array.
+	}
+
+	ItemList loadorder;
+	try {
+		loadorder.Load(data_path);
+	} catch (boss_error e) {
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+	}
+	vector<Item> items = loadorder.Items();
+
+	//Allocate memory.
+	db->extStringArraySize = items.size();
+	db->extStringArray = (uint8_t**)malloc(db->extStringArraySize * sizeof(uint8_t*));
+	if (db->extStringArray == NULL)
+		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+
+	//Set indices.
+	for (size_t i=0; i < db->extStringArraySize; i++) {
+		db->extStringArray[i] = StringToUint8_tString(items[i].Name());
+		if (db->extStringArray[i] == NULL)
+			return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	}
+	
+	//Set outputs.
+	*plugins = db->extStringArray;
+	*numPlugins = db->extStringArraySize;
+
+	return ReturnCode(BOSS_API_OK);
+}
+
+// Sets the load order to the given plugins list of length numPlugins.
+BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numPlugins) {
+	if (db == NULL || plugins == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
+
+	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
+		//Create a vector to hold the new loadorder.
+		ItemList loadorder;
+		size_t loSize = loadorder.Items().size();
+
+		//We need to loop through the plugin array given and enter each plugin into the vector.
+		for (size_t i=0; i < numPlugins; i++) {
+			loadorder.Insert(loSize, Item(string(reinterpret_cast<const char *>(plugins[i]))));
+			loSize++;
+		}
+
+		//Now iterate through the Data directory, adding any plugins to loadorder that aren't already in it.
+		for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
+			const fs::path filename = itr->path().filename();
+			const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
+			if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
+				LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());
+				//Add file to modlist. If the filename has a '.ghost' extension, remove it.
+				Item tempItem;
+				if (ext == ".ghost")
+					tempItem = Item(filename.stem().string());
+				else
+					tempItem = Item(filename.string());
+				if (loadorder.FindItem(filename.string()) == loSize) {  //If the plugin is not present, add it.
+					loadorder.Insert(loSize, tempItem);
+					loSize++;
+				}
+			}
+		}
+
+		//Now save the new loadorder. Also update the plugins.txt.
+		try {
+			loadorder.SavePluginNames(loadorder_path(), false);
+		} catch (boss_error e) {
+			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		}
+	} else {  //Non-skyrim.
+		//Get the master time to derive dates from.
+		time_t masterTime;
+		try {
+			masterTime = GetMasterTime();
+		} catch (boss_error e) {
+			return ReturnCode(BOSS_API_ERROR_MASTER_TIME_READ_FAIL, e.getString());
+		}
+
+		//Loop through given array and set the modification time for each one.
+		for (size_t i=0; i < numPlugins; i++) {
+			try {
+				Item(string(reinterpret_cast<const char *>(plugins[i]))).SetModTime(masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+			} catch(boss_error e) {
+				return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, string(reinterpret_cast<const char *>(plugins[i])));
+			}
+		}
+	}
+
+	return ReturnCode(BOSS_API_OK);
+}
+
+// Returns the contents of plugins.txt.
+BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * numPlugins) {
+	if (db == NULL || plugins == NULL || numPlugins == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
+
+	//Initialise vars.
+	*numPlugins = 0;
+	*plugins = NULL;
+
+	//Free memory if already used.
+	if (db->extStringArray != NULL) {
+		for (size_t i=0; i<db->extStringArraySize; i++)
+			free(db->extStringArray[i]);  //Clear all the uint8_t strings created.
+		free(db->extStringArray);  //Clear the string array.
+	}
+
+	//Load plugins.txt.
+	ItemList pluginsTxt;
+	try {
+		pluginsTxt.Load(plugins_path());
+	} catch (boss_error e) {
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+	}
+	vector<Item> items = pluginsTxt.Items();
+	
+	//Allocate memory.
+	db->extStringArraySize = items.size();
+	db->extStringArray = (uint8_t**)malloc(db->extStringArraySize * sizeof(uint8_t*));
+	if (db->extStringArray == NULL)
+		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+
+	//Set indices.
+	for (size_t i=0; i < db->extStringArraySize; i++) {
+		db->extStringArray[i] = StringToUint8_tString(items[i].Name());
+		if (db->extStringArray[i] == NULL)
+			return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	}
+	
+	//Set outputs.
+	*plugins = db->extStringArray;
+	*numPlugins = db->extStringArraySize;
+
+	return ReturnCode(BOSS_API_OK);
+}
+
+// Edits plugins.txt so that it lists the given plugins in load order.
+BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t numPlugins) {
+	if (db == NULL || plugins == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
+
+	//Open up plugins.txt.
+	ofstream file(plugins_path().c_str(), ios_base::trunc);
+	if (file.fail())
+		return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, plugins_path().string());
+
+	//Fill it with the given plugins.
+	//Also check to see if the added plugins are in the loadorder.txt (for Skyrim).
+	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
+
+		//Now get the load order from loadorder.txt.
+		ItemList loadorder;
+		try {
+			loadorder.Load(loadorder_path());
+		} catch (boss_error e) {
+			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		}
+		size_t loSize = loadorder.Items().size();
+
+		for (size_t i=0; i < numPlugins; i++) {
+			file << reinterpret_cast<const char *>(plugins[i]) << endl;
+			if (loadorder.FindItem(string(reinterpret_cast<const char *>(plugins[i]))) == loSize) {  //File does not have a defined load order. Add it to the end of loadorder.
+				loadorder.Insert(loSize, Item(string(reinterpret_cast<const char *>(plugins[i]))));
+				loSize++;
+			}
+		}
+
+		//Save the load order and derive plugins.txt order from it.
+		try {
+			loadorder.SavePluginNames(loadorder_path(), false);
+		} catch (boss_error e) {
+			return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, loadorder_path().string());
+		}
+		try {
+			loadorder.SavePluginNames(plugins_path(), true);
+		} catch (boss_error e) {
+			return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, loadorder_path().string());
+		}
+	} else {
+		for (size_t i=0; i < numPlugins; i++) {
+			file << reinterpret_cast<const char *>(plugins[i]) << endl;
+		}
+	}
+
+	return ReturnCode(BOSS_API_OK);
+}
+
+// Gets the load order of the specified plugin, giving it as index. The first position 
+// in the load order is 0.
+BOSS_API uint32_t GetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t * index) {
+	if (db == NULL || plugin == NULL || index == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
+
+	//Initialise vars.
+	*index = 0;
+
+	//Now get the load order.
+	ItemList loadorder;
+	try {
+		loadorder.Load(data_path);
+	} catch (boss_error e) {
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+	}
+
+	//Now search for the given plugin.
+	size_t pos = loadorder.FindItem(string(reinterpret_cast<const char *>(plugin)));
+	if (pos == loadorder.Items().size())
+		return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND);
+
+	//Set output.
+	*index = pos;
+	
+	return ReturnCode(BOSS_API_OK);
+}
+
+// Sets the load order of the specified plugin, removing it from its current position 
+// if it has one. The first position in the load order is 0. If the index specified is
+//greater than the number of plugins in the load order, the plugin will be inserted at
+//the end of the load order.
+BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t index) {
+	if (db == NULL || plugin == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
+
+	//Now get the load order from loadorder.txt.
+	ItemList loadorder;
+	try {
+		loadorder.Load(data_path);
+	} catch (boss_error e) {
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+	}
+
+	//Now search for the given plugin.
+	size_t pos = loadorder.FindItem(string(reinterpret_cast<const char *>(plugin)));
+	if (pos != loadorder.Items().size())  //Plugin found. Erase it.
+		loadorder.Erase(pos);
+
+	//Now insert the plugin into its new position.
+	if (index >= loadorder.Items().size())
+		index = loadorder.Items().size()-1;
+	loadorder.Insert(index, Item(string(reinterpret_cast<const char *>(plugin))));
+
+
+	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
+		//Now write out the new loadorder.txt.
+		try {
+			loadorder.SavePluginNames(loadorder_path(), false);
+		} catch (boss_error e) {
+			return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, loadorder_path().string());
+		}
+		//Also update the plugins.txt.
+		try {
+			loadorder.SavePluginNames(plugins_path(), true);
+		} catch (boss_error e) {
+			return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, plugins_path().string());
+		}
+	} else {  //Non-skyrim. Scan data directory, and arrange plugins found in timestamp load order.
+		//Get the master time to derive dates from.
+		time_t masterTime;
+		try {
+			masterTime = GetMasterTime();
+		} catch (boss_error e) {
+			return ReturnCode(BOSS_API_ERROR_MASTER_TIME_READ_FAIL, e.getString());
+		}
+
+		//Now set the new timestamps.
+		vector<Item> items = loadorder.Items();
+		size_t max = items.size();
+		for (size_t i=0; i < max; i++) {
+			try {
+				items[i].SetModTime(masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+			} catch(boss_error e) {
+				return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
+			}
+		}
+	}
+
+	return ReturnCode(BOSS_API_OK);
+}
+
+// Gets what plugin is at the specified load order position.
+BOSS_API uint32_t GetIndexedPlugin(boss_db db, const size_t index, uint8_t ** plugin) {
+	if (db == NULL || plugin == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
+
+	//Initialise vars.
+	*plugin = NULL;
+
+	//Free memory if already used.
+	free(db->extString);
+
+	//Now get the load order.
+	ItemList loadorder;
+	try {
+		loadorder.Load(data_path);
+	} catch (boss_error e) {
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+	}
+
+	//Check that the index is within bounds.
+	if (index >= loadorder.Items().size())
+		return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND);
+
+	//Allocate memory.
+	db->extString = StringToUint8_tString(loadorder.Items()[index].Name());
+	if (db->extString == NULL)
+		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	
+	//Set outputs.
+	*plugin = db->extString;
+
+	return ReturnCode(BOSS_API_OK);
+}
+
+// If (active), adds the plugin to plugins.txt in its load order if it is not already present.
+// If (!active), removes the plugin from plugins.txt if it is present.
+BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool active) {
+	if (db == NULL || plugin == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
+
+	//Load plugins.txt. A hashset would be more efficient.
+	ItemList pluginsList;
+	try {
+		pluginsList.Load(plugins_path());
+	} catch (boss_error e) {
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+	}
+
+	//Check if the given plugin is in plugins.txt.
+	if (pluginsList.FindItem(string(reinterpret_cast<const char *>(plugin))) != pluginsList.Items().size() && !active) //Exists, but shouldn't.
+		pluginsList.Erase(pluginsList.FindItem(string(reinterpret_cast<const char *>(plugin))));
+	else if (pluginsList.FindItem(string(reinterpret_cast<const char *>(plugin))) == pluginsList.Items().size() && active)  //Doesn't exist, but should.
+		pluginsList.Insert(pluginsList.Items().size(), string(reinterpret_cast<const char *>(plugin)));
+	//Now save the change.
+	pluginsList.SavePluginNames(plugins_path(), false);  //true is unnecessary, since it's already an ItemList of active plugins.
+
+	return ReturnCode(BOSS_API_OK);
+}
+
+// Checks to see if the given plugin is listed in plugins.txt.
+BOSS_API uint32_t IsPluginActive(boss_db db, const uint8_t * plugin, bool * isActive) {
+	if (db == NULL || plugin == NULL || isActive == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
+
+	//Load plugins.txt. A hashset would be more efficient.
+	ItemList pluginsList;
+	try {
+		pluginsList.Load(plugins_path());
+	} catch (boss_error e) {
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+	}
+	
+	//Check if the given plugin is in plugins.txt.
+	if (pluginsList.FindItem(string(reinterpret_cast<const char *>(plugin))) != pluginsList.Items().size())
+		*isActive = true;
+	else
+		*isActive = false;
+
+	return ReturnCode(BOSS_API_OK);
+}
+
+
 
 //////////////////////////
 // DB Access Functions
@@ -589,7 +1074,11 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 // its contents are static and should not be freed by the client.
 BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags) {
 	if (db == NULL || tagMap == NULL || numTags == NULL)  //Check for valid args.
-		return BOSS_API_ERROR_INVALID_ARGS;
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
 
 	if (db->extTagMap != NULL && !db->bashTagMap.empty()) {  //Check to see if bashTagMap is already populated.
 		*numTags = db->bashTagMap.size();  //Set size.
@@ -646,7 +1135,7 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 		//Allocate memory.
 		db->extTagMap = (BashTag*)calloc(mapSize, sizeof(BashTag));
 		if (db->extTagMap == NULL)
-			return BOSS_API_ERROR_NO_MEM;
+			return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 
 		//Loop through internal bashTagMap and fill output elements.
 		for (size_t i=0; i<mapSize; i++) {
@@ -656,7 +1145,7 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 		*tagMap = db->extTagMap;
 		*numTags = mapSize;
 	}
-	return BOSS_API_ERROR_OK;
+	return ReturnCode(BOSS_API_OK);
 }
 
 // Returns arrays of Bash Tag UIDs for Bash Tags suggested for addition and removal 
@@ -666,24 +1155,28 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 // case-insensitive. If no Tags are found for an array, the array pointer (*tagIds)
 // will be NULL. The userlistModified bool is true if the userlist contains Bash Tag 
 // suggestion message additions.
-BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName, 
+BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * plugin, 
 									uint32_t ** tagIds_added, 
 									size_t * numTags_added, 
 									uint32_t **tagIds_removed, 
 									size_t *numTags_removed,
 									bool * userlistModified) {
 	//Check for valid args.
-	if (db == NULL || modName == NULL || userlistModified == NULL || numTags_added == NULL || numTags_removed == NULL || tagIds_removed == NULL || tagIds_added == NULL)
-		return BOSS_API_ERROR_INVALID_ARGS;
+	if (db == NULL || plugin == NULL || userlistModified == NULL || numTags_added == NULL || numTags_removed == NULL || tagIds_removed == NULL || tagIds_added == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 							
 	//Convert modName.
-	string mod(reinterpret_cast<const char *>(modName));
+	string mod(reinterpret_cast<const char *>(plugin));
 
 	if (mod.empty())
-		return BOSS_API_ERROR_INVALID_ARGS;
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugin name is empty.");
 
 	if (db->extTagMap == NULL)
-		return BOSS_API_ERROR_NO_TAG_MAP;
+		return ReturnCode(BOSS_API_ERROR_NO_TAG_MAP);
+
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
 
 	//Bash Tag temporary internal holders.
 	boost::unordered_set<string> tagsAdded, tagsRemoved;
@@ -708,7 +1201,6 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 	//Now search userlist for mod.
 	pos = db->userlist.FindRule(mod, true);
 	if (pos != db->userlist.Rules().size()) {
-		cout << "Yo ho ho!" << endl;
 		vector<RuleLine> lines = db->userlist.Rules()[pos].Lines();
 		for (vector<RuleLine>::iterator lineIter = lines.begin(); lineIter != lines.end(); ++lineIter) {
 			if (lineIter->Key() == REPLACE && (!tagsAdded.empty() || !tagsRemoved.empty())) {
@@ -719,7 +1211,6 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 			if (lineIter->ObjectMessageKey() == TAG) {
 				GetBashTagsFromString(lineIter->Object(), tagsAdded, tagsRemoved);
 				*userlistModified = true;
-				cout << "Yo ho ho!" << endl;
 			}
 		}
 	}
@@ -748,13 +1239,13 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 	//Allocate memory.
 	db->extAddedTagIds = (uint32_t*) malloc(numAdded * sizeof(uint32_t));
 	if (db->extAddedTagIds == NULL)
-		return BOSS_API_ERROR_NO_MEM;
+		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 	for (size_t i=0; i < numAdded; i++)
 		db->extAddedTagIds[i] = tagsAddedUIDs[i];
 
 	db->extRemovedTagIds = (uint32_t*) malloc(numRemoved * sizeof(uint32_t));
 	if (db->extRemovedTagIds == NULL)
-		return BOSS_API_ERROR_NO_MEM;
+		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 	for (size_t i=0; i < numRemoved; i++)
 		db->extRemovedTagIds[i] = tagsRemovedUIDs[i];
 
@@ -763,7 +1254,7 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 	*numTags_added = numAdded;
 	*numTags_removed = numRemoved;
 
-	return BOSS_API_ERROR_OK;
+	return ReturnCode(BOSS_API_OK);
 }
 
 // Returns the message associated with a dirty mod and whether the mod needs
@@ -774,17 +1265,21 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * modName,
 //   BOSS_API_CLEAN_UNKNOWN
 // The message string is valid until the db is destroyed or until a Load
 // function is called. The string should not be freed by the client.
-BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName, 
+BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * plugin, 
 									uint8_t ** message, uint32_t * needsCleaning) {
 	//Check for valid args.
-	if (db == NULL || modName == NULL || message == NULL || needsCleaning == NULL)
-		return BOSS_API_ERROR_INVALID_ARGS;
+	if (db == NULL || plugin == NULL || message == NULL || needsCleaning == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 									
 	//Convert modName.
-	string mod(reinterpret_cast<const char *>(modName));
+	string mod(reinterpret_cast<const char *>(plugin));
 
 	if (mod.empty())
-		return BOSS_API_ERROR_INVALID_ARGS;
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugin name is empty.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
 
 	//Initialise pointers.
 	*message = NULL;
@@ -796,8 +1291,10 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName,
 		vector<Message> messages = db->filteredMasterlist.Items()[pos].Messages();
 		for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter) {
 			if (messageIter->Key() == DIRTY) {
-				db->extMessage = StringToUint8_tString(messageIter->Data());
-				 *message = db->extMessage;
+				db->extString = StringToUint8_tString(messageIter->Data());
+				if (db->extString == NULL)
+					return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+				 *message = db->extString;
 
 				if (messageIter->Data().find("Do not clean.") != string::npos)  //Mod should not be cleaned.
 					*needsCleaning = BOSS_API_CLEAN_NO;
@@ -808,7 +1305,7 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName,
 		}
 	}
 
-	return BOSS_API_ERROR_OK;
+	return ReturnCode(BOSS_API_OK);
 }
 
 // Writes a minimal masterlist that only contains mods that have Bash Tag suggestions, 
@@ -818,13 +1315,17 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * modName,
 BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const bool overwrite) {
 	//Check for valid args.
 	if (db == NULL || outputFile == NULL)
-		return BOSS_API_ERROR_INVALID_ARGS;
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->db_data_path;
+	gl_current_game = db->db_game;
 
 	string path(reinterpret_cast<const char *>(outputFile));
 	if (!fs::exists(path) || overwrite) {
 		ofstream mlist(path.c_str());
 		if (mlist.fail())
-			return BOSS_ERROR_FILE_WRITE_FAIL;
+			return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, path);
 		else {
 			//Iterate through items, printing out all relevant info.
 			vector<Item> items = db->rawMasterlist.Items();  //Filtered works, but not raw.
@@ -846,7 +1347,7 @@ BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const boo
 			}
 			mlist.close();
 		}
-		return BOSS_API_ERROR_OK;
+		return ReturnCode(BOSS_API_OK);
 	} else
-		return BOSS_API_ERROR_OVERWRITE_FAIL;
+		return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, path);
 }

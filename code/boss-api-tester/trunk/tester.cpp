@@ -1,4 +1,4 @@
-/*	Better Oblivion Sorting Software
+/*	BOSS
 
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -6,20 +6,20 @@
 
     Copyright (C) 2011    BOSS Development Team.
 
-	This file is part of Better Oblivion Sorting Software.
+	This file is part of BOSS.
 
-    Better Oblivion Sorting Software is free software: you can redistribute 
+    BOSS is free software: you can redistribute 
 	it and/or modify it under the terms of the GNU General Public License 
 	as published by the Free Software Foundation, either version 3 of 
 	the License, or (at your option) any later version.
 
-    Better Oblivion Sorting Software is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will 
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Better Oblivion Sorting Software.  If not, see 
+    along with BOSS.  If not, see 
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 1783 $, $Date: 2010-10-31 23:05:28 +0000 (Sun, 31 Oct 2010) $
@@ -37,7 +37,6 @@
 using namespace std;
 
 int main() {
-
 	//Set the locale to get encoding conversions working correctly.
 	setlocale(LC_CTYPE, "");
 	locale global_loc = locale();
@@ -45,15 +44,33 @@ int main() {
 	boost::filesystem::path::imbue(loc);
 
 	boss_db db;
-	uint8_t * mPath = reinterpret_cast<uint8_t *>("masterlist.txt");
-	uint8_t * uPath = reinterpret_cast<uint8_t *>("userlist.txt");
+	uint8_t * mPath = reinterpret_cast<uint8_t *>("Skyrim/masterlist.txt");
+	uint8_t * uPath = reinterpret_cast<uint8_t *>("Skyrim/userlist.txt");
 	uint8_t * dPath = reinterpret_cast<uint8_t *>("../Data");
+	uint32_t game = BOSS_API_GAME_SKYRIM;
+
+	const uint8_t * file = reinterpret_cast<uint8_t *>("minimal.txt");
+	const uint8_t * cleanMod = reinterpret_cast<uint8_t *>("All Natural.esp");
+	const uint8_t * doNotCleanMod = reinterpret_cast<uint8_t *>("bgBalancingEVLAMEAddition.esp");
+	const uint8_t * inactiveMod = reinterpret_cast<uint8_t *>("Alternative Beginnings.esp");
+	const uint8_t * isActiveMod = reinterpret_cast<uint8_t *>("bgMagicEV.esp");
+	uint8_t ** sortedPlugins;
+	size_t len;
+	size_t lastPos;
+	uint8_t * message;
+	size_t numTagsAdded, numTagsRemoved;
+	bool modified;
+	uint32_t * tagIDsAdded, * tagIDsRemoved;
+	bool active;
+	BashTag * BTmap;
+	size_t size;
+	uint32_t toClean;
 
 	uint32_t ret;
 	ofstream out("API test.txt");
 
 	out << "TESTING IsCompatibleVersion(...)" << endl;
-	bool b = IsCompatibleVersion(1,9,1);
+	bool b = IsCompatibleVersion(2,0,0);
 	if (b)
 		out << '\t' << "API is compatible." << endl;
 	else
@@ -62,37 +79,34 @@ int main() {
 	out << "TESTING GetVersionString(...)" << endl;
 	const uint8_t * ver;
 	ret = GetVersionString(&ver);
-	if (ret != BOSS_API_ERROR_OK)
+	if (ret != BOSS_API_OK)
 		out << '\t' << "Failed to get version string. Error: " << ret << endl;
 	else
 		out << '\t' << "Version: " << *ver << endl;
 	
-	out << "TESTING UpdateMasterlist(...)" << endl;
-	ret = UpdateMasterlist(BOSS_API_GAME_OBLIVION, mPath);
-	if (ret != BOSS_API_ERROR_OK)
-		out << '\t' << "Masterlist update failed. Error: " << ret << endl;
-	
 	out << "TESTING CreateBossDb(...)" << endl;
-	ret = CreateBossDb(&db);
-	if (ret != BOSS_API_ERROR_OK) 
+	ret = CreateBossDb(&db, game, dPath);
+	if (ret != BOSS_API_OK) 
 		out << '\t' << "Creation failed. Error: " << ret << endl;
 	else {
+		out << "TESTING UpdateMasterlist(...)" << endl;
+		ret = UpdateMasterlist(db, mPath);
+		if (ret != BOSS_API_OK)
+			out << '\t' << "Masterlist update failed. Error: " << ret << endl;
+
 		out << "TESTING Load(...)" << endl;
-		ret = Load(db, mPath, uPath, dPath, BOSS_API_GAME_OBLIVION);
-		if (ret != BOSS_API_ERROR_OK)
+		ret = Load(db, mPath, uPath);
+		if (ret != BOSS_API_OK)
 			out << '\t' << "Loading failed. Error: " << ret << endl;
 		else {
 			out << "TESTING EvalConditionals(...)" << endl;
-			ret = EvalConditionals(db, dPath);
-			if (BOSS_API_ERROR_OK != ret)
+			ret = EvalConditionals(db);
+			if (BOSS_API_OK != ret)
 				out << '\t' << "Conditional evaluation failed. Error: " << ret << endl;
 			else {
 				out << "TESTING SortMods(...)" << endl;
-				uint8_t ** sortedPlugins;
-				size_t len;
-				size_t lastPos;
 				ret = SortMods(db, false, &sortedPlugins, &len, &lastPos);
-				if (BOSS_API_ERROR_OK != ret)
+				if (BOSS_API_OK != ret)
 					out << '\t' << "Sorting failed. Error: " << ret << endl;
 				else {
 					out << '\t' << "List size: " << len << endl;
@@ -103,15 +117,12 @@ int main() {
 				}
 				
 				out << "TESTING GetDirtyMessage(...)" << endl;
-				uint8_t * message;
-				const uint8_t * mod = reinterpret_cast<uint8_t *>("Hammerfell.esm");
-				uint32_t toClean;
 				//This should give no dirty message.
-				ret = GetDirtyMessage(db, mod, &message, &toClean);
-				if (ret != BOSS_API_ERROR_OK)
-					out << '\t' << "Failed to get dirty info on \"Hammerfell.esm\". Error no " << ret << endl;
+				ret = GetDirtyMessage(db, cleanMod, &message, &toClean);
+				if (ret != BOSS_API_OK)
+					out << '\t' << "Failed to get dirty info on \"" << cleanMod << "\". Error no " << ret << endl;
 				else {
-					out << '\t' << "\"Hammerfell.esm\" clean status: " << toClean << endl;
+					out << '\t' << "\"" << cleanMod << "\" clean status: " << toClean << endl;
 					if (message != NULL) {
 						out << '\t' << "Message: " << message << endl;
 					}
@@ -119,28 +130,24 @@ int main() {
 				
 				out << "TESTING GetDirtyMessage(...)" << endl;
 				//Now try getting dirty message from one that will have one.
-				const uint8_t * mod2 = reinterpret_cast<uint8_t *>("Oscuro's_Oblivion_Overhaul.esm");
-				ret = GetDirtyMessage(db, mod2, &message, &toClean);
-				if (ret != BOSS_API_ERROR_OK)
-					out << '\t' << "Failed to get dirty info on \"Oscuro's_Oblivion_Overhaul.esm\". Error no " << ret << endl;
+				ret = GetDirtyMessage(db, doNotCleanMod, &message, &toClean);
+				if (ret != BOSS_API_OK)
+					out << '\t' << "Failed to get dirty info on \"" << doNotCleanMod << "\". Error no " << ret << endl;
 				else {
-					out << '\t' << "\"Oscuro's_Oblivion_Overhaul.esm\" clean status: " << toClean << endl;
+					out << '\t' << "\"" << doNotCleanMod << "\" clean status: " << toClean << endl;
 					if (message != NULL) {
 						out << '\t' << "Message: " << message << endl;
 					}
 				}
 				
 				out << "TESTING DumpMinimal(...)" << endl;
-				const uint8_t * file = reinterpret_cast<uint8_t *>("minimal.txt");
-				uint32_t ret = DumpMinimal(db, file, true);
-				if (ret != BOSS_API_ERROR_OK)
+				ret = DumpMinimal(db, file, true);
+				if (ret != BOSS_API_OK)
 					out << '\t' << "Dump failed. Error no " << ret << endl;
 				
 				out << "TESTING GetBashTagMap(...)" << endl;
-				BashTag * BTmap;
-				size_t size;
 				ret = GetBashTagMap(db, &BTmap, &size);
-				if (ret != BOSS_API_ERROR_OK)
+				if (ret != BOSS_API_OK)
 					out << '\t' << "Failed to get Bash Tag map. Error no " << ret << endl;
 				else {
 					out << '\t' << "Tag map size: " << size << endl;
@@ -150,15 +157,11 @@ int main() {
 				}
 				
 				out << "TESTING GetModBashTags(...)" << endl;
-				const uint8_t * mod3 = reinterpret_cast<uint8_t *>("Oscuro's_Oblivion_Overhaul.esm");
-				size_t numTagsAdded, numTagsRemoved;
-				bool modified;
-				uint32_t * tagIDsAdded, * tagIDsRemoved;
-				ret = GetModBashTags(db, mod3, &tagIDsAdded, &numTagsAdded, &tagIDsRemoved, &numTagsRemoved, &modified);
-				if (ret != BOSS_API_ERROR_OK)
-					out << '\t' << "Failed to get Bash Tags for \"Oscuro's_Oblivion_Overhaul.esm\". Error no " << ret << endl;
+				ret = GetModBashTags(db, doNotCleanMod, &tagIDsAdded, &numTagsAdded, &tagIDsRemoved, &numTagsRemoved, &modified);
+				if (ret != BOSS_API_OK)
+					out << '\t' << "Failed to get Bash Tags for \"" << doNotCleanMod << "\". Error no " << ret << endl;
 				else {
-					out << '\t' << "Tags for \"Oscuro's_Oblivion_Overhaul.esm\":" << endl
+					out << '\t' << "Tags for \"" << doNotCleanMod << "\":" << endl
 						<< '\t' << '\t' << "Modified by userlist: " << modified << endl
 						<< '\t' << '\t' << "Number of tags added: " << numTagsAdded << endl
 						<< '\t' << '\t' << "Number of tags removed: " << numTagsRemoved << endl
@@ -168,6 +171,108 @@ int main() {
 					out << '\t' << '\t' << "Tags removed:" << endl;
 					for (size_t i=0; i<numTagsRemoved; i++)
 						out << '\t' << '\t' << tagIDsRemoved[i] << endl;
+				}
+
+				out << "TESTING GetLoadOrder(...)" << endl;
+				ret = GetLoadOrder(db, &sortedPlugins, &len);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "GetLoadOrder(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "List size: " << len << endl;
+					for (size_t i=0; i<len; i++) {
+						out << '\t' << '\t' << i << " : " << sortedPlugins[i] << endl;
+					}
+				}
+				
+				out << "TESTING SetLoadOrder(...)" << endl;
+				ret = SetLoadOrder(db, sortedPlugins, len);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "SetLoadOrder(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "List size: " << len << endl;
+					for (size_t i=0; i<len; i++) {
+						out << '\t' << '\t' << i << " : " << sortedPlugins[i] << endl;
+					}
+				}
+				
+				out << "TESTING GetActivePlugins(...)" << endl;
+				ret = GetActivePlugins(db, &sortedPlugins, &len);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "GetActivePlugins(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "List size: " << len << endl;
+					for (size_t i=0; i<len; i++) {
+						out << '\t' << '\t' << i << " : " << sortedPlugins[i] << endl;
+					}
+				}
+				
+				out << "TESTING SetActivePlugins(...)" << endl;
+				ret = SetActivePlugins(db, sortedPlugins, len);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "SetActivePlugins(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "List size: " << len << endl;
+					for (size_t i=0; i<len; i++) {
+						out << '\t' << '\t' << i << " : " << sortedPlugins[i] << endl;
+					}
+				}
+
+				out << "TESTING GetPluginLoadOrder(...)" << endl;
+				ret = GetPluginLoadOrder(db, doNotCleanMod, &len);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "GetPluginLoadOrder(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "\"" << doNotCleanMod << "\" position: " << len << endl;
+				}
+				
+				out << "TESTING SetPluginLoadOrder(...)" << endl;
+				len = 1;
+				ret = SetPluginLoadOrder(db, doNotCleanMod, len);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "SetPluginLoadOrder(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "\"" << doNotCleanMod << "\" set position: " << len << endl;
+				}
+
+				out << "TESTING GetIndexedPlugin(...)" << endl;
+				len = 10;
+				ret = GetIndexedPlugin(db, len, &message);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "GetIndexedPlugin(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "Plugin at position " << len << " : " << message << endl;
+				}
+				
+				out << "TESTING SetPluginActive(...)" << endl;
+				ret = SetPluginActive(db, inactiveMod, true);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "SetPluginActive(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "\"" << inactiveMod << "\" activated." << endl;
+				}
+
+				out << "TESTING IsPluginActive(...)" << endl;
+				ret = IsPluginActive(db, inactiveMod, &active);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "IsPluginActive(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "\"" << inactiveMod << "\" active status: " << active << endl;
+				}
+				
+				out << "TESTING SetPluginActive(...)" << endl;
+				ret = SetPluginActive(db, isActiveMod, false);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "SetPluginActive(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "\"" << isActiveMod << "\" deactivated." << endl;
+				}
+
+				out << "TESTING IsPluginActive(...)" << endl;
+				ret = IsPluginActive(db, isActiveMod, &active);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "IsPluginActive(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "\"" << isActiveMod << "\" active status: " << active << endl;
 				}
 			}
 		}

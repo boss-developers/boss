@@ -13,14 +13,14 @@
 ;General
 
   ;Name, file and version info for installer.
-  Name "BOSS v1.9.2"
+  Name "BOSS v2.0.0"
   OutFile "BOSS Installer.exe"
-  VIProductVersion 1.9.1.0
+  VIProductVersion 2.0.0.0
   VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "BOSS"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "BOSS Development Team"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© 2009-2012 BOSS Development Team"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 1.9.2"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "1.9.2"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 2.0.0"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "2.0.0"
 
   ;Request application privileges for Windows Vista
   RequestExecutionLevel admin
@@ -56,7 +56,13 @@ Var CheckState_RemoveUserFiles
 ;Initialise Install Path
 Function .onInit
 ; First check to see if BOSS is already installed via installer, and launch the existing uninstaller if so.
-
+IfFileExists "$COMMONFILES\BOSS\uninstall.exe" 0 +6
+	MessageBox MB_OKCANCEL|MB_ICONQUESTION "BOSS is already installed, and must be uninstalled before continuing. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade." IDOK oldCont IDCANCEL oldCancel
+	oldCancel:
+		Quit
+	oldCont:
+	ExecWait '$COMMONFILES\BOSS\uninstall.exe _?=$COMMONFILES\BOSS' ;Run the uninstaller in its folder and wait until it's done.
+;That was the old uninstaller location, now see if the current version is already installed.
 ReadRegStr $InstallPath HKLM "Software\BOSS" "Installed Path"
 ${If} $InstallPath != ""
 	IfFileExists "$InstallPath\Uninstall.exe" 0 +8
@@ -137,7 +143,7 @@ FunctionEnd
   !insertmacro MUI_LANGUAGE "English"
   LangString unPAGE_SELECT_GAMES_TITLE ${LANG_ENGLISH} "Choose Options"
   LangString unPAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select from the following uninstall options."
-  LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished installing BOSS v1.9.2."
+  LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished installing BOSS v2.0.0."
   LangString PAGE_FINISH_SUBTITLE ${LANG_ENGLISH} "Please select post-install tasks."
   
 
@@ -349,7 +355,7 @@ Section "Installer Section"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "URLInfoAbout" 'http://better-oblivion-sorting-software.googlecode.com/'
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "HelpLink" 'http://better-oblivion-sorting-software.googlecode.com/'
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "Publisher" 'BOSS Development Team'
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '1.9.2'      
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '2.0.0'      
 	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoModify" 1
 	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoRepair" 1
 

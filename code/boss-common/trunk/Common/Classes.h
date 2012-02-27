@@ -1,4 +1,4 @@
-/*	Better Oblivion Sorting Software
+/*	BOSS
 	
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -6,20 +6,20 @@
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
-	This file is part of Better Oblivion Sorting Software.
+	This file is part of BOSS.
 
-    Better Oblivion Sorting Software is free software: you can redistribute 
+    BOSS is free software: you can redistribute 
 	it and/or modify it under the terms of the GNU General Public License 
 	as published by the Free Software Foundation, either version 3 of 
 	the License, or (at your option) any later version.
 
-    Better Oblivion Sorting Software is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will 
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Better Oblivion Sorting Software.  If not, see 
+    along with BOSS.  If not, see 
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3135 $, $Date: 2011-08-17 22:01:17 +0100 (Wed, 17 Aug 2011) $
@@ -135,7 +135,7 @@ namespace boss {
 		void Type(itemType inType);
 		void Name(string inName);
 
-		bool	operator<	(Item);		//Throws boss_error exception on fail.
+		bool	operator <	(Item);		//Throws boss_error exception on fail. Timestamp comparison, not content.
 		
 		bool	IsPlugin	() const;
 		bool	IsGroup		() const;
@@ -162,12 +162,9 @@ namespace boss {
 		void	Load			(fs::path path);	//Load by scanning path. If path is a directory, it scans it for plugins. 
 																	//If path is a file, it parses it using the modlist grammar.
 																	//May throw exception on fail.
-		void	Save			(fs::path file, fs::path oldFile);	//Output to file in MF2. Backs up any existing file with new ".old" extension.
+		void	Save			(fs::path file, fs::path oldFile);	//Output to file in MF2. Backs up any existing file to oldFile.
 																	//Throws exception on fail.
-		void	SavePluginsDotTxt();					//Saves the order of the mods in the object to the plugins.txt file used by the game.
-														//For use with Skyrim. Throws exception on fail.
-		void	SaveLoadOrder();						//Saves the order of the mods in the object to the loadorder.txt file in the same location as plugins.txt.
-														//For use with Skyrim. Throws exception on fail.
+		void	SavePluginNames(fs::path file, bool activeOnly);	//Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
 		void	EvalConditions();					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
 		size_t	FindItem		(string name) const;	//Find the position of the item with name 'name'. Case-insensitive.
 		size_t	FindLastItem	(string name) const;	//Find the last item with the name 'name'. Case-insensitive.

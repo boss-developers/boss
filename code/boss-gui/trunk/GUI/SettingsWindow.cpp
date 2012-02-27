@@ -1,4 +1,4 @@
-/*	Better Oblivion Sorting Software
+/*	BOSS
 
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -6,20 +6,20 @@
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
-	This file is part of Better Oblivion Sorting Software.
+	This file is part of BOSS.
 
-    Better Oblivion Sorting Software is free software: you can redistribute 
+    BOSS is free software: you can redistribute 
 	it and/or modify it under the terms of the GNU General Public License 
 	as published by the Free Software Foundation, either version 3 of 
 	the License, or (at your option) any later version.
 
-    Better Oblivion Sorting Software is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will 
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Better Oblivion Sorting Software.  If not, see 
+    along with BOSS.  If not, see 
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -133,8 +133,10 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	FiltersTabSizer->Add(HideRuleWarningsBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Rule Warnings")), BorderSizerFlags);
 	FiltersTabSizer->Add(HideVersionNumbersBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Version Numbers")), BorderSizerFlags);
 	FiltersTabSizer->Add(HideGhostedLabelBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide 'Ghosted' Label")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideActiveLabelBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide 'Active' Label")), BorderSizerFlags);
 	FiltersTabSizer->Add(HideChecksumsBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Checksums")), BorderSizerFlags);
 	FiltersTabSizer->Add(HideMessagelessModsBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Messageless Mods")), BorderSizerFlags);
+	FiltersTabSizer->Add(HideInactivePluginsBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Inactive Mods")), BorderSizerFlags);
 	FiltersTabSizer->Add(HideGhostedModsBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide Ghosted Mods")), BorderSizerFlags);
 	FiltersTabSizer->Add(HideCleanModsBox = new wxCheckBox(FiltersTab ,wxID_ANY, wxT("Hide Clean Mods")), BorderSizerFlags);
 	FiltersTabSizer->Add(HideAllModMessagesBox = new wxCheckBox(FiltersTab, wxID_ANY, wxT("Hide All Mod Nessages")), BorderSizerFlags);
@@ -281,6 +283,11 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	CSSTabSizer->Add(horBox, ContentSizerFlags);
 
 	horBox = new wxBoxSizer(wxHORIZONTAL);
+	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".active")), ItemSizerFlags);
+	horBox->Add(CSSActiveBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
+	CSSTabSizer->Add(horBox, ContentSizerFlags);
+
+	horBox = new wxBoxSizer(wxHORIZONTAL);
 	horBox->Add(new wxStaticText(CSSTab, wxID_ANY, wxT(".tagPrefix")), ItemSizerFlags);
 	horBox->Add(CSSTagPrefixBox = new wxTextCtrl(CSSTab, wxID_ANY), ItemSizerFlags);
 	CSSTabSizer->Add(horBox, ContentSizerFlags);
@@ -410,8 +417,12 @@ void SettingsFrame::SetDefaultValues() {
 		HideVersionNumbersBox->SetValue(true);
 	if (HideGhostedLabel)
 		HideGhostedLabelBox->SetValue(true);
+	if (HideActiveLabel)
+		HideActiveLabelBox->SetValue(true);
 	if (HideChecksums)
 		HideChecksumsBox->SetValue(true);
+	if (HideInactivePlugins)
+		HideInactivePluginsBox->SetValue(true);
 	if (HideMessagelessMods)
 		HideMessagelessModsBox->SetValue(true);
 	if (HideGhostedMods)
@@ -459,6 +470,7 @@ void SettingsFrame::SetDefaultValues() {
 	CSSVersionBox->SetValue(CSSVersion);
 	CSSGhostBox->SetValue(CSSGhost);
 	CSSCRCBox->SetValue(CSSCRC);
+	CSSActiveBox->SetValue(CSSActive);
 	CSSTagPrefixBox->SetValue(CSSTagPrefix);
 	CSSDirtyBox->SetValue(CSSDirty);
 	CSSQuotedMessageBox->SetValue(CSSQuotedMessage);
@@ -516,7 +528,9 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	UseDarkColourScheme = UseDarkColourSchemeBox->IsChecked();
 	HideVersionNumbers = HideVersionNumbersBox->IsChecked();
 	HideGhostedLabel = HideGhostedLabelBox->IsChecked();
+	HideActiveLabel = HideActiveLabelBox->IsChecked();
 	HideChecksums = HideChecksumsBox->IsChecked();
+	HideInactivePlugins = HideInactivePluginsBox->IsChecked();
 	HideMessagelessMods = HideMessagelessModsBox->IsChecked();
 	HideGhostedMods = HideGhostedModsBox->IsChecked();
 	HideCleanMods = HideCleanModsBox->IsChecked();
@@ -554,6 +568,7 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	CSSVersion = CSSVersionBox->GetValue();
 	CSSGhost = CSSGhostBox->GetValue();
 	CSSCRC = CSSCRCBox->GetValue();
+	CSSActive = CSSActiveBox->GetValue();
 	CSSTagPrefix = CSSTagPrefixBox->GetValue();
 	CSSDirty = CSSDirtyBox->GetValue();
 	CSSQuotedMessage = CSSQuotedMessageBox->GetValue();

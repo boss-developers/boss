@@ -1,4 +1,4 @@
-/*	Better Oblivion Sorting Software
+/*	BOSS
 	
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -6,20 +6,20 @@
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
-	This file is part of Better Oblivion Sorting Software.
+	This file is part of BOSS.
 
-    Better Oblivion Sorting Software is free software: you can redistribute 
+    BOSS is free software: you can redistribute 
 	it and/or modify it under the terms of the GNU General Public License 
 	as published by the Free Software Foundation, either version 3 of 
 	the License, or (at your option) any later version.
 
-    Better Oblivion Sorting Software is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will 
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Better Oblivion Sorting Software.  If not, see 
+    along with BOSS.  If not, see 
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
@@ -34,6 +34,7 @@
 #include <boost/spirit/include/karma.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/crc.hpp>
+#include <boost/regex.hpp>
 
 #include "source/utf8.h"
 
@@ -254,5 +255,64 @@ namespace boss {
 #else
 		return fs::path("");
 #endif
+	}
+
+	Version::Version() {
+		verString = "";
+	}
+
+	Version::Version(const string ver) {
+		verString = ver;
+	}
+	
+	string Version::VerString() const {
+		return verString;
+	}
+
+	bool Version::operator < (Version ver) {
+		//Version string could have a wide variety of formats. Use regex to choose specific comparison types.
+		boost::regex reg1("[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+");  //a.b.c.d where a, b, c, d are all integers.
+		if (boost::regex_match(verString, reg1) && boost::regex_match(ver.VerString(), reg1)) {
+			uint32_t ver1Nums[4], ver2Nums[4];
+
+			//Explode ver1, ver2 into components.
+			istringstream parser1(verString);
+			parser1 >> ver1Nums[0];  //This adds everything up to the first period (as it is cast to an integer).
+			for (uint32_t i=1; i < 4; i++) {
+				parser1.get();  //This returns everything up to the next period (as it is cast to an integer), advancing the stream iterator to the character beyond.
+				parser1 >> ver1Nums[i];  //This puts everything after the next period mentioned above, but before the period after that, into the ith version number index.
+			}
+			//Do the same again for the other version string.
+			istringstream parser2(ver.VerString());
+			parser2 >> ver2Nums[0];
+			for (uint32_t i=1; i < 4; i++) {
+				parser2.get();  //Casts the string as an integer, so the stuff after the first period is ignored.
+				parser2 >> ver2Nums[i];
+			}
+
+			//Now compare components.
+			return lexicographical_compare(ver1Nums, ver1Nums + 4, ver2Nums, ver2Nums + 4);
+		} else {
+			//Split into integer and alphabetical parts, and evaluate each part in turn.
+			istringstream parser1(verString);
+			istringstream parser2(ver.VerString());
+			return false;
+		}
+	}
+
+	bool Version::operator > (Version ver) {
+		return (*this != ver && !(*this < ver));
+	}
+
+	bool Version::operator >= (Version ver) {
+		return (*this == ver || *this > ver);
+	}
+
+	bool Version::operator == (Version ver) {
+		return (verString == ver.VerString());
+	}
+
+	bool Version::operator != (Version ver) {
+		return (verString != ver.VerString());
 	}
 }
