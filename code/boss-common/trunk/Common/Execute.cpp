@@ -109,6 +109,8 @@ namespace boss {
 		vector<Item> items = modlist.Items();
 		boost::unordered_set<string>::iterator setPos;
 
+		bool isSkyrim1426plus = (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
+
 		LOG_INFO("Applying calculated ordering to user files...");
 		for (size_t i=0; i <= modlist.LastRecognisedPos(); i++) {
 			if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
@@ -128,7 +130,7 @@ namespace boss {
 				} else if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / items[i].Name())) << SPAN_CLOSE;
 			
-				if (!gl_trial_run && !items[i].IsMasterFile() && !(gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"))) {
+				if (!gl_trial_run && !items[i].IsMasterFile() && !isSkyrim1426plus) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
 					try {
@@ -166,6 +168,8 @@ namespace boss {
 		time_t modfiletime = 0;
 		size_t max = modlist.Items().size();
 		vector<Item> items = modlist.Items();
+		
+		bool isSkyrim1426plus = (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
 
 		//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
 		//Order their dates to be i days after the master esm to ensure they load last.
@@ -189,7 +193,7 @@ namespace boss {
 				} else if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / items[i].Name())) << SPAN_CLOSE;
 
-				if (!gl_trial_run && !items[i].IsMasterFile() && !(gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"))) {
+				if (!gl_trial_run && !items[i].IsMasterFile() && !isSkyrim1426plus) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
 					try {

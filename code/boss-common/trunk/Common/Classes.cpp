@@ -327,7 +327,13 @@ namespace boss {
 		fileCRCs.clear();
 	}
 
-	void					ItemList::Load				(fs::path path) {
+	/*I need to worry about the encoding of the file only if it's plugins_path() being loaded.
+	 Otherwise it's going to be UTF-8 and I can check validation.
+	 If it is plugins_path():
+	 1. Detect encoding.
+	 2. Convert string buffer from detected encoding to UTF-8. 
+	 There is no chance of encoding conversion failure. */
+	void	ItemList::Load				(fs::path path) {
 		if (fs::exists(path) && fs::is_directory(path)) {
 			LOG_DEBUG("Reading user mods...");
 			if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
@@ -457,7 +463,7 @@ namespace boss {
 		}
 	}
 	
-	void					ItemList::Save				(fs::path file, fs::path oldFile) {
+	void	ItemList::Save				(fs::path file, fs::path oldFile) {
 		ofstream ofile;
 		//Back up file if it already exists.
 		try {
@@ -507,9 +513,20 @@ namespace boss {
 		LOG_INFO("Backup saved successfully.");
 		return;
 	}
-
+	
+	/*I need to worry about the encoding of the file only if it's plugins_path() being saved.
+	 Otherwise it's going to be UTF-8 and BOSS uses that internally already.
+	 If it is plugins_path():
+	 1. Detect the encoding of plugins_path().
+	 2. Convert output from UTF-8 to the detected encoding before writing it. 
+	 3. If the output cannot be converted, throw an exception (BOSS_ERROR_ENCODING_CONVERSION_FAIL).
+	    The errSubject should be the plugin causing problems and errString should be the encoding detected. 
+		Don't throw an exception immediately though! Set a "there's been a problem" flag and record the plugin
+		name, then throw the exception when the file has been written. It's not a breaking bug, but using an
+		exception is the neatest way to go about showing it occurred.*/
 	void	ItemList::SavePluginNames(fs::path file, bool activeOnly) {
-
+		string badFilename = "";
+		string encoding;
 		ItemList activePlugins;
 		size_t numActivePlugins;
 		if (activeOnly) {
@@ -519,6 +536,8 @@ namespace boss {
 			numActivePlugins = activePlugins.Items().size();
 		}
 
+		bool isSkyrim1426plus = (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
+
 		LOG_INFO("Writing new \"%s\"", file.string().c_str());
 		ofstream outfile;
 		outfile.open(file.c_str(), ios_base::trunc);
@@ -527,15 +546,20 @@ namespace boss {
 
 		size_t max = items.size();
 		for (size_t i=0; i < max; i++) {
-			if (items[i].Type() == MOD && (!activeOnly || (activePlugins.FindItem(items[i].Name()) != numActivePlugins && items[i].Name() != "Skyrim.esm" && items[i].Name() != "Update.esm"))) {
+			if (items[i].Type() == MOD) {
+				if (activeOnly && (activePlugins.FindItem(items[i].Name()) == numActivePlugins || (isSkyrim1426plus && (items[i].Name() == "Skyrim.esm" || items[i].Name() == "Update.esm"))))
+					continue;
 				LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
 				outfile << items[i].Name() << endl;
 			}
 		}
 		outfile.close();
+
+		if (!badFilename.empty())
+			throw boss_error(BOSS_ERROR_ENCODING_CONVERSION_FAIL, badFilename, encoding);
 	}
 
-	void					ItemList::EvalConditions	() {
+	void		ItemList::EvalConditions	() {
 		boost::unordered_set<string> setVars;
 
 		//First eval variables.
@@ -571,7 +595,7 @@ namespace boss {
 		}
 	}
 	
-	size_t					ItemList::FindItem			(string name) const {
+	size_t		ItemList::FindItem			(string name) const {
 		size_t max = items.size();
 		for (size_t i=0; i < max; i++) {
 			if (boost::iequals(items[i].Name(), name))
@@ -580,7 +604,7 @@ namespace boss {
 		return max;
 	}
 
-	size_t					ItemList::FindLastItem		(string name) const {
+	size_t		ItemList::FindLastItem		(string name) const {
 		size_t max = items.size();
 		for (size_t i=max-1; i >= 0; i--) {
 			if (boost::iequals(items[i].Name(), name))
@@ -590,7 +614,7 @@ namespace boss {
 	}
 	
 	//This looks a bit weird, but I need a non-reverse iterator outputted, and searching backwards is probably more efficient for my purposes.
-	size_t					ItemList::FindGroupEnd		(string name) const {
+	size_t		ItemList::FindGroupEnd		(string name) const {
 		size_t max = items.size();
 		for (size_t i=max-1; i >= 0; i--) {
 			if (items[i].Type() == ENDGROUP && boost::iequals(items[i].Name(), name))

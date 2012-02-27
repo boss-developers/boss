@@ -112,7 +112,7 @@ struct _boss_db_int {
 // Taken from BOSS-Common's Error.h and extended.
 BOSS_API const uint32_t BOSS_API_OK								= BOSS_ERROR_OK;
 BOSS_API const uint32_t BOSS_API_OK_NO_UPDATE_NECESSARY			= BOSS_ERROR_MAX + 1;
-BOSS_API const uint32_t BOSS_API_WARN_BAD_FILENAME				= BOSS_ERROR_MAX + 2;
+BOSS_API const uint32_t BOSS_API_WARN_BAD_FILENAME				= BOSS_ERROR_ENCODING_CONVERSION_FAIL;
 BOSS_API const uint32_t BOSS_API_WARN_LO_MISMATCH				= BOSS_ERROR_MAX + 3;
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_WRITE_FAIL			= BOSS_ERROR_FILE_WRITE_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_DELETE_FAIL			= BOSS_ERROR_FS_FILE_DELETE_FAIL;
@@ -631,8 +631,12 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 
 	//Skyrim >= 1.4.26 load order setting.
 	if (!trialOnly && gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
-		modlist.SavePluginNames(loadorder_path(), false);
-		modlist.SavePluginNames(plugins_path(), true);
+		try {
+			modlist.SavePluginNames(loadorder_path(), false);
+			modlist.SavePluginNames(plugins_path(), true);
+		} catch (boss_error e) {
+			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		}
 	}
 
 	//Now create external array.
@@ -750,7 +754,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 		try {
 			masterTime = GetMasterTime();
 		} catch (boss_error e) {
-			return ReturnCode(BOSS_API_ERROR_MASTER_TIME_READ_FAIL, e.getString());
+			return ReturnCode(e.getCode(), e.getString());
 		}
 
 		//Loop through given array and set the modification time for each one.
@@ -758,7 +762,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 			try {
 				Item(string(reinterpret_cast<const char *>(plugins[i]))).SetModTime(masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 			} catch(boss_error e) {
-				return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, string(reinterpret_cast<const char *>(plugins[i])));
+				return ReturnCode(e.getCode(), string(reinterpret_cast<const char *>(plugins[i])));
 			}
 		}
 	}
@@ -816,6 +820,7 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 }
 
 // Edits plugins.txt so that it lists the given plugins in load order.
+// Encoding is handled by the saving code and doesn't need to be explicitly catered for here.
 BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t numPlugins) {
 	if (db == NULL || plugins == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
@@ -853,13 +858,9 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 		//Save the load order and derive plugins.txt order from it.
 		try {
 			loadorder.SavePluginNames(loadorder_path(), false);
-		} catch (boss_error e) {
-			return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, loadorder_path().string());
-		}
-		try {
 			loadorder.SavePluginNames(plugins_path(), true);
 		} catch (boss_error e) {
-			return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, loadorder_path().string());
+			return ReturnCode(e.getCode(), e.getString());
 		}
 	} else {
 		for (size_t i=0; i < numPlugins; i++) {
@@ -934,17 +935,12 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 
 
 	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
-		//Now write out the new loadorder.txt.
+		//Now write out the new loadorder.txt. Also update the plugins.txt.
 		try {
 			loadorder.SavePluginNames(loadorder_path(), false);
-		} catch (boss_error e) {
-			return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, loadorder_path().string());
-		}
-		//Also update the plugins.txt.
-		try {
 			loadorder.SavePluginNames(plugins_path(), true);
 		} catch (boss_error e) {
-			return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, plugins_path().string());
+			return ReturnCode(e.getCode(), e.getString());
 		}
 	} else {  //Non-skyrim. Scan data directory, and arrange plugins found in timestamp load order.
 		//Get the master time to derive dates from.
@@ -1008,8 +1004,9 @@ BOSS_API uint32_t GetIndexedPlugin(boss_db db, const size_t index, uint8_t ** pl
 	return ReturnCode(BOSS_API_OK);
 }
 
-// If (active), adds the plugin to plugins.txt in its load order if it is not already present.
-// If (!active), removes the plugin from plugins.txt if it is present.
+/* If (active), adds the plugin to plugins.txt in its load order if it is not already present.
+ If (!active), removes the plugin from plugins.txt if it is present. 
+ Encoding is handled by the saving code and doesn't need to be explicitly catered for here.*/
 BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool active) {
 	if (db == NULL || plugin == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
@@ -1032,7 +1029,11 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 	else if (pluginsList.FindItem(string(reinterpret_cast<const char *>(plugin))) == pluginsList.Items().size() && active)  //Doesn't exist, but should.
 		pluginsList.Insert(pluginsList.Items().size(), string(reinterpret_cast<const char *>(plugin)));
 	//Now save the change.
-	pluginsList.SavePluginNames(plugins_path(), false);  //true is unnecessary, since it's already an ItemList of active plugins.
+	try {
+		pluginsList.SavePluginNames(plugins_path(), true);
+	} catch (boss_error e) {
+		return ReturnCode(e.getCode(), e.getString());
+	}
 
 	return ReturnCode(BOSS_API_OK);
 }

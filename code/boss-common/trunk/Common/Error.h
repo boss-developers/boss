@@ -52,6 +52,7 @@ namespace boss {
 		BOSS_ERROR_CONDITION_EVAL_FAIL,
 		BOSS_ERROR_REGEX_EVAL_FAIL,
 		BOSS_ERROR_NO_GAME_DETECTED,
+		BOSS_ERROR_ENCODING_CONVERSION_FAIL,
 		BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL,
 		BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL,
 		BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL,
@@ -114,6 +115,8 @@ namespace boss {
 				return "\"" + errSubject + "\" is not a valid regular expression. Item skipped.";
 			case BOSS_ERROR_NO_GAME_DETECTED:
 				return "No game detected!"; 
+			case BOSS_ERROR_ENCODING_CONVERSION_FAIL:
+				return "\"" + errSubject + "\" cannot be converted from UTF-8 to \"" + errString + "\".";
 			case BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL:
 				return "Cannot find online masterlist revision number!"; 
 			case BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL:

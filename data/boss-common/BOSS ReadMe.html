@@ -864,6 +864,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Fixed: Plugins with filenames containing international characters causing the GUI's User Rules Editor to fail to load.
 	<li>Fixed: Masterlist-format files beginning with blank lines will no longer create an initial empty item in their data structures.
 	<li>Fixed: Messages being outputted in the format set globally instead of the outputters local format. This bug was never exposed.
+	<li>Fixed: Version number comparisons being sometimes evaluated wrongly for versions of the form a.b.c.d where a, b, c and d were integers. This bug was never exposed.
 	<li>Changed: This utility's name has been changed from <q>Better Oblivion Sorting Software</q> to <q>BOSS</q>.
 	<li>Changed: Tidied up code, making better use of class inheritance and swapping Boost filesystem paths for strings in plugin names.
 	<li>Changed: Updated version of libcurl used from 7.23.1 to 7.24.0, and updated version of wxWidgets used from 2.9.2 to 2.9.3.
