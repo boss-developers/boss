@@ -448,7 +448,7 @@ namespace boss {
 
 			if (!fs::exists(path))
 				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, path.string());
-			else if (!ValidateUTF8File(path))
+			else if (path != plugins_path() && !ValidateUTF8File(path))  //plugins.txt is not going to be UTF-8.
 				throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, path.string());
 
 			fileToBuffer(path,contents);
@@ -529,20 +529,21 @@ namespace boss {
 	    The errSubject should be the plugin causing problems and errString should be the encoding detected. 
 		Don't throw an exception immediately though! Set a "there's been a problem" flag and record the plugin
 		name, then throw the exception when the file has been written. It's not a breaking bug, but using an
-		exception is the neatest way to go about showing it occurred.*/
-	void	ItemList::SavePluginNames(fs::path file, bool activeOnly) {
+		exception is the neatest way to go about showing it occurred.
+	activeOnly is the measure of whether a conversion is necessary.*/
+	void	ItemList::SavePluginNames(fs::path file, bool activeOnly, bool doEncodingConversion) {
 		string badFilename = "";
 		ItemList activePlugins;
 		size_t numActivePlugins;
 		Transcoder trans;
 		if (activeOnly) {
 			//To save needing a new parser, load plugins.txt into an ItemList then fill a hashset from that.
+			//Also check if plugins_path() then detect encoding if it is and translate outputted text from UTF-8 to the detected encoding.
 			LOG_INFO("Loading plugins.txt into ItemList.");
 			activePlugins.Load(plugins_path());
 			numActivePlugins = activePlugins.Items().size();
 		}
-		//Now check if plugins_path() then detect encoding if it is and translate outputted text from UTF-8 to the detected encoding.
-		if (file == plugins_path()) {
+		if (doEncodingConversion) {
 			string contents;
 			fileToBuffer(file, contents);
 			trans.SetEncoding(trans.DetectEncoding(contents));

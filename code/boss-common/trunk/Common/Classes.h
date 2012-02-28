@@ -164,7 +164,7 @@ namespace boss {
 																	//May throw exception on fail.
 		void	Save			(fs::path file, fs::path oldFile);	//Output to file in MF2. Backs up any existing file to oldFile.
 																	//Throws exception on fail.
-		void	SavePluginNames(fs::path file, bool activeOnly);	//Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
+		void	SavePluginNames(fs::path file, bool activeOnly, bool doEncodingConversion);	//Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
 		void	EvalConditions();					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
 		size_t	FindItem		(string name) const;	//Find the position of the item with name 'name'. Case-insensitive.
 		size_t	FindLastItem	(string name) const;	//Find the last item with the name 'name'. Case-insensitive.

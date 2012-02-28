@@ -1,4 +1,4 @@
-/*	BOSS
+﻿/*	BOSS
 
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -317,7 +317,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 		ItemList loadorder;
 		try {
 			loadorder.Load(data_path);
-			loadorder.SavePluginNames(loadorder_path().string() + ".new", true);
+			loadorder.SavePluginNames(loadorder_path().string() + ".new", true, true);
 		} catch (boss_error e) {
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
@@ -633,8 +633,8 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	//Skyrim >= 1.4.26 load order setting.
 	if (!trialOnly && isSkyrim1426) {
 		try {
-			modlist.SavePluginNames(loadorder_path(), false);
-			modlist.SavePluginNames(plugins_path(), true);
+			modlist.SavePluginNames(loadorder_path(), false, false);
+			modlist.SavePluginNames(plugins_path(), true, true);
 		} catch (boss_error e) {
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
@@ -745,7 +745,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 
 		//Now save the new loadorder. Also update the plugins.txt.
 		try {
-			loadorder.SavePluginNames(loadorder_path(), false);
+			loadorder.SavePluginNames(loadorder_path(), false, false);
 		} catch (boss_error e) {
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
@@ -858,8 +858,8 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 
 		//Save the load order and derive plugins.txt order from it.
 		try {
-			loadorder.SavePluginNames(loadorder_path(), false);
-			loadorder.SavePluginNames(plugins_path(), true);
+			loadorder.SavePluginNames(loadorder_path(), false, false);
+			loadorder.SavePluginNames(plugins_path(), true, true);
 		} catch (boss_error e) {
 			return ReturnCode(e.getCode(), e.getString());
 		}
@@ -868,6 +868,7 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 			file << reinterpret_cast<const char *>(plugins[i]) << endl;
 		}
 	}
+	file.close();
 
 	return ReturnCode(BOSS_API_OK);
 }
@@ -938,8 +939,8 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
 		//Now write out the new loadorder.txt. Also update the plugins.txt.
 		try {
-			loadorder.SavePluginNames(loadorder_path(), false);
-			loadorder.SavePluginNames(plugins_path(), true);
+			loadorder.SavePluginNames(loadorder_path(), false, false);
+			loadorder.SavePluginNames(plugins_path(), true, true);
 		} catch (boss_error e) {
 			return ReturnCode(e.getCode(), e.getString());
 		}
@@ -1024,14 +1025,16 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
+	string pluginStr = string(reinterpret_cast<const char *>(plugin));
+
 	//Check if the given plugin is in plugins.txt.
-	if (pluginsList.FindItem(string(reinterpret_cast<const char *>(plugin))) != pluginsList.Items().size() && !active) //Exists, but shouldn't.
-		pluginsList.Erase(pluginsList.FindItem(string(reinterpret_cast<const char *>(plugin))));
-	else if (pluginsList.FindItem(string(reinterpret_cast<const char *>(plugin))) == pluginsList.Items().size() && active)  //Doesn't exist, but should.
-		pluginsList.Insert(pluginsList.Items().size(), string(reinterpret_cast<const char *>(plugin)));
+	if (pluginsList.FindItem(pluginStr) != pluginsList.Items().size() && !active) //Exists, but shouldn't.
+		pluginsList.Erase(pluginsList.FindItem(pluginStr));
+	else if (pluginsList.FindItem(pluginStr) == pluginsList.Items().size() && active)  //Doesn't exist, but should.
+		pluginsList.Insert(pluginsList.Items().size(), pluginStr);
 	//Now save the change.
 	try {
-		pluginsList.SavePluginNames(plugins_path(), true);
+		pluginsList.SavePluginNames(plugins_path(), false, true);  //Must be false because we're not adding a currently active file, if we're adding something.
 	} catch (boss_error e) {
 		return ReturnCode(e.getCode(), e.getString());
 	}

@@ -462,8 +462,8 @@ namespace boss {
 
 		//Now set the load order using Skyrim method.
 		if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
-			modlist.SavePluginNames(loadorder_path(), false);
-			modlist.SavePluginNames(plugins_path(), true);
+			modlist.SavePluginNames(loadorder_path(), false, false);
+			modlist.SavePluginNames(plugins_path(), true, true);
 		}
 
 		PrintBOSSlog(file, contents, counters, SE);
