@@ -36,6 +36,7 @@
 #include <sstream>
 
 #include <boost/format.hpp>
+#include <boost/unordered_set.hpp>
 
 #include "Common/Classes.h"
 #include "Common/DllDef.h"
@@ -172,6 +173,26 @@ namespace boss {
 	
 		string EscapeHTMLSpecial(string text);	//Performs the HTML escaping.
 		string EscapeHTMLSpecial(char c);
+	};
+
+	class BOSS_COMMON Transcoder {
+	private:
+		//0x81, 0x8D, 0x8F, 0x90, 0x9D in 1252 are undefined in UTF-8.
+		boost::unordered_map<char, char> commonMap;  //1251/1252, UTF-8. 0-127, plus some more.
+		boost::unordered_map<char, char> map1251toUtf8; //1251, UTF-8. 128-255, minus a few common characters.
+		boost::unordered_map<char, char> map1252toUtf8; //1252, UTF-8. 128-255, minus a few common characters.
+		boost::unordered_map<char, char> utf8toEnc;
+		boost::unordered_map<char, char> encToUtf8;
+		uint32_t currentEncoding;
+	public:
+		Transcoder();
+		void SetEncoding(uint32_t inEncoding);
+		uint32_t GetEncoding();
+
+		uint32_t DetectEncoding(string str);
+
+		string Utf8ToEnc(string inString);
+		string EncToUtf8(string inString);
 	};
 }
 #endif

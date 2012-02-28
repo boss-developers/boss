@@ -156,7 +156,7 @@ namespace boss {
 		short_grammar.SetCRCStore(&fileCRCs);
 		short_grammar.SetErrorBuffer(&errorBuffer);
 
-		LOG_DEBUG("Evaluating conditional for message \"%s\"", Data().c_str());
+		LOG_TRACE("Evaluating conditional for message \"%s\"", Data().c_str());
 
 		eval = conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer);
 
@@ -299,7 +299,7 @@ namespace boss {
 	}
 
 	bool	Item::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
-		LOG_INFO("Evaluating conditions for item \"%s\"", Data().c_str());
+		LOG_TRACE("Evaluating conditions for item \"%s\"", Data().c_str());
 
 		bool eval = conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer);
 
@@ -331,8 +331,7 @@ namespace boss {
 	 Otherwise it's going to be UTF-8 and I can check validation.
 	 If it is plugins_path():
 	 1. Detect encoding.
-	 2. Convert string buffer from detected encoding to UTF-8. 
-	 There is no chance of encoding conversion failure. */
+	 2. Convert string buffer from detected encoding to UTF-8.*/
 	void	ItemList::Load				(fs::path path) {
 		if (fs::exists(path) && fs::is_directory(path)) {
 			LOG_DEBUG("Reading user mods...");
@@ -454,6 +453,13 @@ namespace boss {
 
 			fileToBuffer(path,contents);
 
+			//Now check if plugins_path() then detect encoding if it is and translate to UTF-8.
+			if (path == plugins_path()) {
+				Transcoder trans;
+				trans.SetEncoding(trans.DetectEncoding(contents));
+				contents = trans.EncToUtf8(contents);
+			}
+
 			begin = contents.begin();
 			end = contents.end();
 			bool r = phrase_parse(begin, end, grammar, skipper, items);
@@ -526,14 +532,20 @@ namespace boss {
 		exception is the neatest way to go about showing it occurred.*/
 	void	ItemList::SavePluginNames(fs::path file, bool activeOnly) {
 		string badFilename = "";
-		string encoding;
 		ItemList activePlugins;
 		size_t numActivePlugins;
+		Transcoder trans;
 		if (activeOnly) {
 			//To save needing a new parser, load plugins.txt into an ItemList then fill a hashset from that.
 			LOG_INFO("Loading plugins.txt into ItemList.");
 			activePlugins.Load(plugins_path());
 			numActivePlugins = activePlugins.Items().size();
+		}
+		//Now check if plugins_path() then detect encoding if it is and translate outputted text from UTF-8 to the detected encoding.
+		if (file == plugins_path()) {
+			string contents;
+			fileToBuffer(file, contents);
+			trans.SetEncoding(trans.DetectEncoding(contents));
 		}
 
 		bool isSkyrim1426plus = (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
@@ -550,13 +562,20 @@ namespace boss {
 				if (activeOnly && (activePlugins.FindItem(items[i].Name()) == numActivePlugins || (isSkyrim1426plus && (items[i].Name() == "Skyrim.esm" || items[i].Name() == "Update.esm"))))
 					continue;
 				LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
-				outfile << items[i].Name() << endl;
+				if (trans.GetEncoding() != 0) {  //Not UTF-8.
+					try {
+						outfile << trans.Utf8ToEnc(items[i].Name()) << endl;
+					} catch (boss_error e) {
+						badFilename = items[i].Name();
+					}
+				} else
+					outfile << items[i].Name() << endl;
 			}
 		}
 		outfile.close();
 
 		if (!badFilename.empty())
-			throw boss_error(BOSS_ERROR_ENCODING_CONVERSION_FAIL, badFilename, encoding);
+			throw boss_error(BOSS_ERROR_ENCODING_CONVERSION_FAIL, badFilename, IntToString(trans.GetEncoding()));
 	}
 
 	void		ItemList::EvalConditions	() {

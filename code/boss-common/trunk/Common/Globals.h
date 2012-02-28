@@ -42,7 +42,7 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-#define BOSSGUI
+//#define BOSSGUI
 
 #	define BOSS_VERSION_MAJOR 2
 #	define BOSS_VERSION_MINOR 0

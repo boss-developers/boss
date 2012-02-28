@@ -1,4 +1,4 @@
-/*	BOSS
+﻿/*	BOSS
 
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -52,8 +52,8 @@ int main() {
 	const uint8_t * file = reinterpret_cast<uint8_t *>("minimal.txt");
 	const uint8_t * cleanMod = reinterpret_cast<uint8_t *>("All Natural.esp");
 	const uint8_t * doNotCleanMod = reinterpret_cast<uint8_t *>("bgBalancingEVLAMEAddition.esp");
-	const uint8_t * inactiveMod = reinterpret_cast<uint8_t *>("Alternative Beginnings.esp");
-	const uint8_t * isActiveMod = reinterpret_cast<uint8_t *>("bgMagicEV.esp");
+	const uint8_t * inactiveMod = reinterpret_cast<uint8_t *>("français.esp");
+	const uint8_t * isActiveMod = reinterpret_cast<uint8_t *>("汉语漢語.esp");
 	uint8_t ** sortedPlugins;
 	size_t len;
 	size_t lastPos;
@@ -260,7 +260,7 @@ int main() {
 				}
 				
 				out << "TESTING SetPluginActive(...)" << endl;
-				ret = SetPluginActive(db, isActiveMod, false);
+				ret = SetPluginActive(db, isActiveMod, true);
 				if (BOSS_API_OK != ret)
 					out << '\t' << "SetPluginActive(...) failed. Error: " << ret << endl;
 				else {

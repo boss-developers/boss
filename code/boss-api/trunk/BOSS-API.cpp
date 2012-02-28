@@ -611,9 +611,10 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	vector<Item> items = modlist.Items();
 	vector<uint8_t *> mods;
 	size_t max = items.size();
+	bool isSkyrim1426 = (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
 	for (size_t i=0; i < max; i++) {
 		if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
-			if (!trialOnly && !items[i].IsMasterFile() && !(gl_current_game == SKYRIM && GetExeDllVersion(data_path.parent_path() / "TESV.exe").compare("1.4.26.0") >= 0)) {
+			if (!trialOnly && !items[i].IsMasterFile() && !isSkyrim1426) {
 				try {
 					items[i].SetModTime(masterTime + mods.size()*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 				} catch(boss_error e) {
@@ -630,7 +631,7 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	}
 
 	//Skyrim >= 1.4.26 load order setting.
-	if (!trialOnly && gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
+	if (!trialOnly && isSkyrim1426) {
 		try {
 			modlist.SavePluginNames(loadorder_path(), false);
 			modlist.SavePluginNames(plugins_path(), true);
