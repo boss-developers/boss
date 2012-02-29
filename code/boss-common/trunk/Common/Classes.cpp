@@ -456,7 +456,7 @@ namespace boss {
 			//Now check if plugins_path() then detect encoding if it is and translate to UTF-8.
 			if (path == plugins_path()) {
 				Transcoder trans;
-				trans.SetEncoding(trans.DetectEncoding(contents));
+				trans.SetEncoding(1252);
 				contents = trans.EncToUtf8(contents);
 			}
 
@@ -546,7 +546,7 @@ namespace boss {
 		if (doEncodingConversion) {
 			string contents;
 			fileToBuffer(file, contents);
-			trans.SetEncoding(trans.DetectEncoding(contents));
+			trans.SetEncoding(1252);
 		}
 
 		bool isSkyrim1426plus = (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
@@ -562,6 +562,8 @@ namespace boss {
 			if (items[i].Type() == MOD) {
 				if (activeOnly && (activePlugins.FindItem(items[i].Name()) == numActivePlugins || (isSkyrim1426plus && (items[i].Name() == "Skyrim.esm" || items[i].Name() == "Update.esm"))))
 					continue;
+				if (file == loadorder_path())
+					outfile << "MOD: ";
 				LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
 				if (trans.GetEncoding() != 0) {  //Not UTF-8.
 					try {
@@ -576,7 +578,7 @@ namespace boss {
 		outfile.close();
 
 		if (!badFilename.empty())
-			throw boss_error(BOSS_ERROR_ENCODING_CONVERSION_FAIL, badFilename, IntToString(trans.GetEncoding()));
+			throw boss_error(BOSS_ERROR_ENCODING_CONVERSION_FAIL, badFilename, IntToString(1252));
 	}
 
 	void		ItemList::EvalConditions	() {

@@ -820,7 +820,7 @@ namespace boss {
 		commonMap.emplace('\xB6', 0x00B6);
 		commonMap.emplace('\xB7', 0x00B7);
 		commonMap.emplace('\xBB', 0x00BB);
-		
+		/*
 		//Now fill 1251 -> UTF-8 map.
 		map1251toUtf8 = commonMap;  //Fill with common mapped characters.
 		map1251toUtf8.emplace('\x80', 0x0402);
@@ -920,7 +920,7 @@ namespace boss {
 		map1251toUtf8.emplace('\xFD', 0x044D);
 		map1251toUtf8.emplace('\xFE', 0x044E);
 		map1251toUtf8.emplace('\xFF', 0x044F);
-		
+		*/
 		//Now fill 1252 -> UTF-8 map.
 		map1252toUtf8 = commonMap;  //Fill with common mapped characters.
 		map1252toUtf8.emplace('\x80', 0x20AC);
@@ -1020,15 +1020,13 @@ namespace boss {
 	}
 
 	void Transcoder::SetEncoding(uint32_t inEncoding) {
-		if (inEncoding != 1251 && inEncoding != 1252)
+		if (inEncoding != 1252)
 			return;
-		currentEncoding = inEncoding;
-		//Set the enc -> UTF-8 map.
-		if (inEncoding == 1251)
-			encToUtf8 = map1251toUtf8;
-		else if (inEncoding == 1252)
-			encToUtf8 = map1252toUtf8;
 
+		//Set the enc -> UTF-8 map.
+		encToUtf8 = map1252toUtf8;
+		currentEncoding = inEncoding;
+		
 		//Now create the UTF-8 -> enc map.
 		for (boost::unordered_map<char, uint32_t>::iterator iter = encToUtf8.begin(); iter != encToUtf8.end(); ++iter) {
 			utf8toEnc.emplace(iter->second, iter->first);  //Swap mapping. There *should* be unique values for each character either way.
@@ -1039,17 +1037,12 @@ namespace boss {
 		return currentEncoding;
 	}
 
-	uint32_t Transcoder::DetectEncoding(string str) {
-		return 1252;
-	}
-
 	string Transcoder::Utf8ToEnc(string inString) {
 		stringstream outString;
 		string::iterator strIter = inString.begin();
 		//I need to use a UTF-8 string iterator. See UTF-CPP for usage.
 		utf8::iterator<string::iterator> iter(strIter, strIter, inString.end());
 		for (iter; iter.base() != inString.end(); ++iter) {
-		//for (string::iterator iter = inString.begin(); iter != inString.end(); ++iter) {
 			boost::unordered_map<uint32_t, char>::iterator mapIter = utf8toEnc.find(*iter);
 			if (mapIter != utf8toEnc.end())
 				outString << mapIter->second;

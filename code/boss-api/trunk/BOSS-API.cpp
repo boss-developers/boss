@@ -110,10 +110,10 @@ struct _boss_db_int {
 
 // The following are the possible codes that the API can return.
 // Taken from BOSS-Common's Error.h and extended.
-BOSS_API const uint32_t BOSS_API_OK								= BOSS_ERROR_OK;
-BOSS_API const uint32_t BOSS_API_OK_NO_UPDATE_NECESSARY			= BOSS_ERROR_MAX + 1;
+BOSS_API const uint32_t BOSS_API_OK								= BOSS_OK;
+BOSS_API const uint32_t BOSS_API_OK_NO_UPDATE_NECESSARY			= BOSS_OK_NO_UPDATE_NECESSARY;
 BOSS_API const uint32_t BOSS_API_WARN_BAD_FILENAME				= BOSS_ERROR_ENCODING_CONVERSION_FAIL;
-BOSS_API const uint32_t BOSS_API_WARN_LO_MISMATCH				= BOSS_ERROR_MAX + 3;
+BOSS_API const uint32_t BOSS_API_WARN_LO_MISMATCH				= BOSS_ERROR_LO_MISMATCH;
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_WRITE_FAIL			= BOSS_ERROR_FILE_WRITE_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_DELETE_FAIL			= BOSS_ERROR_FS_FILE_DELETE_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_UTF8			= BOSS_ERROR_FILE_NOT_UTF8;
@@ -124,17 +124,22 @@ BOSS_API const uint32_t BOSS_API_ERROR_MOD_TIME_WRITE_FAIL		= BOSS_ERROR_FS_FILE
 BOSS_API const uint32_t BOSS_API_ERROR_CONDITION_EVAL_FAIL		= BOSS_ERROR_CONDITION_EVAL_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_REGEX_EVAL_FAIL			= BOSS_ERROR_REGEX_EVAL_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_PARSE_FAIL				= BOSS_ERROR_FILE_PARSE_FAIL;
-BOSS_API const uint32_t BOSS_API_ERROR_NO_MEM					= BOSS_ERROR_MAX + 4;
-BOSS_API const uint32_t BOSS_API_ERROR_INVALID_ARGS				= BOSS_ERROR_MAX + 5;
-BOSS_API const uint32_t BOSS_API_ERROR_NETWORK_FAIL				= BOSS_ERROR_MAX + 6;
-BOSS_API const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION	= BOSS_ERROR_MAX + 7;
-BOSS_API const uint32_t BOSS_API_ERROR_NO_TAG_MAP				= BOSS_ERROR_MAX + 8;
+BOSS_API const uint32_t BOSS_API_ERROR_NO_MEM					= BOSS_ERROR_NO_MEM;
+BOSS_API const uint32_t BOSS_API_ERROR_INVALID_ARGS				= BOSS_ERROR_INVALID_ARGS;
+BOSS_API const uint32_t BOSS_API_ERROR_NETWORK_FAIL				= BOSS_ERROR_NETWORK_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION	= BOSS_ERROR_NO_INTERNET_CONNECTION;
+BOSS_API const uint32_t BOSS_API_ERROR_NO_TAG_MAP				= BOSS_ERROR_NO_TAG_MAP;
+BOSS_API const uint32_t BOSS_API_ERROR_PLUGINS_FULL				= BOSS_ERROR_PLUGINS_FULL;
 BOSS_API const uint32_t BOSS_API_RETURN_MAX						= BOSS_API_ERROR_NO_TAG_MAP;
 
 // The following are the mod cleanliness states that the API can return.
 BOSS_API const uint32_t BOSS_API_CLEAN_NO		= 0;
 BOSS_API const uint32_t BOSS_API_CLEAN_YES		= 1;
 BOSS_API const uint32_t BOSS_API_CLEAN_UNKNOWN	= 2;
+
+// The following are for signifying what load order method is being used:
+BOSS_API const uint32_t BOSS_API_LOMETHOD_TIMESTAMP	= 0;
+BOSS_API const uint32_t BOSS_API_LOMETHOD_TEXTFILE	= 1;
 
 // The following are the games identifiers used by the API.
 BOSS_API const uint32_t BOSS_API_GAME_OBLIVION	= OBLIVION;
@@ -258,7 +263,9 @@ BOSS_API uint32_t GetLastErrorDetails(const uint8_t ** details) {
 // Returns whether this version of BOSS supports the API from the given 
 // BOSS version. Abstracts BOSS API stability policy away from clients.
 BOSS_API bool IsCompatibleVersion (const uint32_t bossVersionMajor, const uint32_t bossVersionMinor, const uint32_t bossVersionPatch) {
-	if (bossVersionMajor <= BOSS_VERSION_MAJOR && bossVersionMajor <= BOSS_VERSION_MINOR)
+	if (bossVersionMajor < 2)  //The 1.9 API was different.
+		return false;
+	if (bossVersionMajor <= BOSS_VERSION_MAJOR && bossVersionMinor <= BOSS_VERSION_MINOR)
 		return true;
 	else
 		return false;
@@ -546,6 +553,14 @@ BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath) {
 // Plugin Sorting Functions
 ////////////////////////////////
 
+//Returns which method BOSS is using for the load order.
+BOSS_API uint32_t GetLoadOrderMethod(boss_db db, uint32_t *method) {
+	if (db->db_game == BOSS_API_GAME_SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"))
+		return BOSS_API_LOMETHOD_TEXTFILE;
+	else
+		return BOSS_API_LOMETHOD_TIMESTAMP;
+}
+
 // Sorts the mods in the data path, using the masterlist at the masterlist path,
 // specified when the db was loaded using Load. Outputs a list of plugins, pointed to
 // by sortedPlugins, of length pointed to by listLength. lastRecPos points to the 
@@ -656,6 +671,12 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	return ReturnCode(BOSS_API_OK);
 }
 
+//Does the same thing as the above SortMods, but operates on the inputted plugin list
+//instead of what's in the Data folder.
+BOSS_API uint32_t SortGivenMods(boss_db db, uint8_t ** pluginsIn, uint8_t *** pluginsOut, size_t * lastRecPos) {
+	return ReturnCode(BOSS_API_OK);
+}
+
 // Gets a list of plugins in load order, with the number of plugins given by numPlugins.
 BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t *** plugins, size_t * numPlugins) {
 	if (db == NULL || plugins == NULL || numPlugins == NULL)
@@ -746,6 +767,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 		//Now save the new loadorder. Also update the plugins.txt.
 		try {
 			loadorder.SavePluginNames(loadorder_path(), false, false);
+			loadorder.SavePluginNames(plugins_path(), true, true);
 		} catch (boss_error e) {
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
@@ -802,6 +824,22 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 	
 	//Allocate memory.
 	db->extStringArraySize = items.size();
+	//If textlist-based, we want to also output Skyrim.esm, Update.esm.
+	//First make sure they are currently missing though.
+	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
+		if (pluginsTxt.FindItem("Skyrim.esm") == items.size() && pluginsTxt.FindItem("Update.esm") == items.size()) {
+			db->extStringArraySize += 2;
+			items.insert(items.begin(), Item("Update.esm"));  //Adding in reverse order.
+			items.insert(items.begin(), Item("Skyrim.esm"));
+		} else if (pluginsTxt.FindItem("Skyrim.esm") == items.size()) {
+			db->extStringArraySize++;
+			items.insert(items.begin(), Item("Skyrim.esm"));
+		} else if (pluginsTxt.FindItem("Update.esm") == items.size()) {
+			db->extStringArraySize++;
+			items.insert(items.begin()+1, Item("Update.esm"));
+		}
+	}
+	
 	db->extStringArray = (uint8_t**)malloc(db->extStringArraySize * sizeof(uint8_t*));
 	if (db->extStringArray == NULL)
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
@@ -826,6 +864,9 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 	if (db == NULL || plugins == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
+	if (numPlugins > 255)
+		return ReturnCode(BOSS_API_ERROR_PLUGINS_FULL);
+
 	//Set globals again in case they've been changed.
 	data_path = db->db_data_path;
 	gl_current_game = db->db_game;
@@ -835,8 +876,24 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 	if (file.fail())
 		return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, plugins_path().string());
 
-	//Fill it with the given plugins.
-	//Also check to see if the added plugins are in the loadorder.txt (for Skyrim).
+	//Write the plugins to it.
+	Transcoder trans;
+	trans.SetEncoding(1252);
+	string badFilename;
+	string plugin;
+	for (size_t i=0; i < numPlugins; i++) {
+		try {
+			plugin = trans.Utf8ToEnc(string(reinterpret_cast<const char *>(plugins[i])));
+		} catch (boss_error e) {
+			badFilename = string(reinterpret_cast<const char *>(plugins[i]));
+		}
+		if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0") && (plugin == "Skyrim.esm" || plugin == "Update.esm"))  //These don't go in plugins.txt.
+			continue;
+		file << plugin << endl;
+	}
+	file.close();
+
+	//Now if running for textfile-based load order system, reorder plugins.txt, deriving the order from loadorder.txt.
 	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
 
 		//Now get the load order from loadorder.txt.
@@ -863,14 +920,12 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 		} catch (boss_error e) {
 			return ReturnCode(e.getCode(), e.getString());
 		}
-	} else {
-		for (size_t i=0; i < numPlugins; i++) {
-			file << reinterpret_cast<const char *>(plugins[i]) << endl;
-		}
 	}
-	file.close();
 
-	return ReturnCode(BOSS_API_OK);
+	if (!badFilename.empty())
+		return ReturnCode(BOSS_API_WARN_BAD_FILENAME, badFilename);
+	else
+		return ReturnCode(BOSS_API_OK);
 }
 
 // Gets the load order of the specified plugin, giving it as index. The first position 
@@ -1017,7 +1072,7 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 	data_path = db->db_data_path;
 	gl_current_game = db->db_game;
 
-	//Load plugins.txt. A hashset would be more efficient.
+	//Load plugins.txt.
 	ItemList pluginsList;
 	try {
 		pluginsList.Load(plugins_path());
@@ -1032,6 +1087,13 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 		pluginsList.Erase(pluginsList.FindItem(pluginStr));
 	else if (pluginsList.FindItem(pluginStr) == pluginsList.Items().size() && active)  //Doesn't exist, but should.
 		pluginsList.Insert(pluginsList.Items().size(), pluginStr);
+
+	//Check that there aren't too many plugins in plugins.txt.
+	if (pluginsList.Items().size() > 255)
+		return ReturnCode(BOSS_API_ERROR_PLUGINS_FULL);
+	else if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0") && pluginsList.Items().size() > 253)  //textfile-based system doesn't list Skyrim.esm, Update.esm in plugins.txt.
+		return ReturnCode(BOSS_API_ERROR_PLUGINS_FULL);
+
 	//Now save the change.
 	try {
 		pluginsList.SavePluginNames(plugins_path(), false, true);  //Must be false because we're not adding a currently active file, if we're adding something.
@@ -1051,6 +1113,16 @@ BOSS_API uint32_t IsPluginActive(boss_db db, const uint8_t * plugin, bool * isAc
 	data_path = db->db_data_path;
 	gl_current_game = db->db_game;
 
+	string pluginStr = string(reinterpret_cast<const char *>(plugin));
+
+	//Check if it's textlist-based, and Skyrim.esm/Update.esm, which are special cases.
+	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
+		if (pluginStr == "Skyrim.esm" || pluginStr == "Update.esm") {
+			*isActive = true;
+			return ReturnCode(BOSS_API_OK);
+		}
+	}
+
 	//Load plugins.txt. A hashset would be more efficient.
 	ItemList pluginsList;
 	try {
@@ -1060,7 +1132,7 @@ BOSS_API uint32_t IsPluginActive(boss_db db, const uint8_t * plugin, bool * isAc
 	}
 	
 	//Check if the given plugin is in plugins.txt.
-	if (pluginsList.FindItem(string(reinterpret_cast<const char *>(plugin))) != pluginsList.Items().size())
+	if (pluginsList.FindItem(pluginStr) != pluginsList.Items().size())
 		*isActive = true;
 	else
 		*isActive = false;

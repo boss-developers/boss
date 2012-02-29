@@ -107,12 +107,17 @@ BOSS_API extern const uint32_t BOSS_API_ERROR_NETWORK_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_TAG_MAP;
 BOSS_API extern const uint32_t BOSS_API_ERROR_REGEX_EVAL_FAIL;
+BOSS_API extern const uint32_t BOSS_API_ERROR_PLUGINS_FULL;
 BOSS_API extern const uint32_t BOSS_API_RETURN_MAX;
 
 // The following are the mod cleanliness states that the API can return.
 BOSS_API extern const uint32_t BOSS_API_CLEAN_NO;
 BOSS_API extern const uint32_t BOSS_API_CLEAN_YES;
 BOSS_API extern const uint32_t BOSS_API_CLEAN_UNKNOWN;
+
+// The following are for signifying what load order method is being used:
+BOSS_API extern const uint32_t BOSS_API_LOMETHOD_TIMESTAMP;
+BOSS_API extern const uint32_t BOSS_API_LOMETHOD_TEXTFILE;
 
 // The following are the games identifiers used by the API.
 BOSS_API extern const uint32_t BOSS_API_GAME_OBLIVION;
@@ -193,6 +198,9 @@ BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath);
 // Plugin Sorting Functions
 ////////////////////////////////
 
+//Returns which method BOSS is using for the load order.
+BOSS_API uint32_t GetLoadOrderMethod(boss_db db, uint32_t *method);
+
 /* Sorts the mods in the data path, using the masterlist at the masterlist path,
  specified when the db was loaded using Load. Outputs a list of plugins, pointed to
  by sortedPlugins, of length pointed to by listLength. lastRecPos points to the 
@@ -203,6 +211,10 @@ BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath);
 BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedPlugins, 
 								size_t * listLength, 
 								size_t * lastRecPos);
+
+//Does the same thing as the above SortMods, but operates on the inputted plugin list
+//instead of what's in the Data folder. NOT YET IMPLEMENTED.
+BOSS_API uint32_t SortGivenMods(boss_db db, uint8_t ** pluginsIn, uint8_t *** pluginsOut, size_t * lastRecPos);
 
 // Gets a list of plugins in load order, with the number of plugins given by numPlugins.
 BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t *** plugins, size_t * numPlugins);

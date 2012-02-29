@@ -49,15 +49,18 @@ namespace boss {
 #	define BOSS_VERSION_PATCH 0
 
 	BOSS_COMMON extern const string gl_boss_release_date;
+	
+	//DO NOT CHANGE THE GAME VALUES. THEY MUST BE INVARIANT ACROSS RELEASES FOR API USERS.
+	BOSS_COMMON const uint32_t AUTODETECT	= 0;
+	BOSS_COMMON const uint32_t OBLIVION		= 1;
+	BOSS_COMMON const uint32_t NEHRIM		= 2;
+	BOSS_COMMON const uint32_t SKYRIM		= 3;
+	BOSS_COMMON const uint32_t FALLOUT3		= 4;
+	BOSS_COMMON const uint32_t FALLOUTNV	= 5;
 
+	//These other uint32_t values are not (as yet) accessed by the API, so don't need to be
+	//invariant across versions.
 	enum : uint32_t {
-		//Games (for 'game' setting)
-		AUTODETECT,
-		OBLIVION,
-		NEHRIM,
-		SKYRIM,
-		FALLOUT3,
-		FALLOUTNV,
 		//BOSS Log Formats (for 'log_format' setting)
 		HTML,
 		PLAINTEXT,
