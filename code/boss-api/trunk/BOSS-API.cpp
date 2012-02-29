@@ -130,6 +130,7 @@ BOSS_API const uint32_t BOSS_API_ERROR_NETWORK_FAIL				= BOSS_ERROR_NETWORK_FAIL
 BOSS_API const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION	= BOSS_ERROR_NO_INTERNET_CONNECTION;
 BOSS_API const uint32_t BOSS_API_ERROR_NO_TAG_MAP				= BOSS_ERROR_NO_TAG_MAP;
 BOSS_API const uint32_t BOSS_API_ERROR_PLUGINS_FULL				= BOSS_ERROR_PLUGINS_FULL;
+BOSS_API const uint32_t BOSS_API_ERROR_GAME_NOT_FOUND			= BOSS_ERROR_NO_GAME_DETECTED;
 BOSS_API const uint32_t BOSS_API_RETURN_MAX						= BOSS_API_ERROR_NO_TAG_MAP;
 
 // The following are the mod cleanliness states that the API can return.
@@ -292,7 +293,7 @@ BOSS_API uint32_t GetVersionString (const uint8_t ** bossVersionStr) {
 // plugins.txt and loadorder.txt (if they both exist) are in sync.
 BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 											   const uint8_t * dataPath) {
-	if (db == NULL || dataPath == NULL) //Check for valid args.
+	if (db == NULL) //Check for valid args.
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 	else if (clientGame != OBLIVION && clientGame != FALLOUT3 && clientGame != FALLOUTNV && clientGame != NEHRIM && clientGame != SKYRIM)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Invalid game specified.");
@@ -310,11 +311,34 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 	//Set game. Because this is a global and there may be multiple DBs for different games,
 	//each time a DB's function is called, it should be reset. Same with dataPath.
 	retVal->db_game = clientGame;
-	retVal->db_data_path = fs::path(reinterpret_cast<const char *>(dataPath));
-	if (data_path.empty()) 
-		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Data path is empty.");
+	if (dataPath != NULL) {
+		retVal->db_data_path = fs::path(reinterpret_cast<const char *>(dataPath));
+		if (data_path.empty()) {
+			DestroyBossDb(retVal);
+			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Data path is empty.");
+		}
+	} else {
+		//If dataPath is null, then we need to look for the specified game.
+		if (fs::exists(data_path / GetGameMasterFile(clientGame)))
+			gl_current_game = clientGame;
+		else if (clientGame == OBLIVION && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion")))  //Look for Oblivion.
+			gl_current_game = clientGame;
+		else if (clientGame == NEHRIM && RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1"))  //Look for Nehrim.
+			gl_current_game = clientGame;
+		else if (clientGame == SKYRIM && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim")))  //Look for Skyrim.
+			gl_current_game = clientGame;
+		else if (clientGame == FALLOUT3 && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3")))  //Look for Fallout 3.
+			gl_current_game = clientGame;
+		else if (clientGame == FALLOUTNV && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV")))  //Look for Fallout New Vegas.
+			gl_current_game = clientGame;
+		else  //The game has not been found.
+			return ReturnCode(BOSS_API_ERROR_GAME_NOT_FOUND);
+
+		//If we've gotten here, then the game has been found.
+		SetDataPath(clientGame);
+		retVal->db_data_path = data_path;
+	}
 	gl_current_game = retVal->db_game;
-	data_path = retVal->db_data_path;
 
 	*db = retVal;
 
@@ -326,6 +350,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 			loadorder.Load(data_path);
 			loadorder.SavePluginNames(loadorder_path().string() + ".new", true, true);
 		} catch (boss_error e) {
+			DestroyBossDb(retVal);
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
 
@@ -336,6 +361,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 		try {
 			fs::remove(loadorder_path().string() + ".new");
 		} catch (fs::filesystem_error e) {
+			DestroyBossDb(retVal);
 			return ReturnCode(BOSS_API_ERROR_FILE_DELETE_FAIL, loadorder_path().string() + ".new");
 		}
 

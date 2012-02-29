@@ -43,7 +43,7 @@ namespace boss {
 
 	BOSS_COMMON uint32_t gl_current_game			= AUTODETECT;
 
-	BOSS_COMMON extern fs::path gl_local_data_path	= boss_path / ".." / "Data";  //Set by sLocalMasterPath in the game's ini file if different from default.
+	BOSS_COMMON extern fs::path gl_local_data_path	=  fs::path("Data");  //Set by sLocalMasterPath in the game's ini file if different from default. This is the path to the data folder from the game's top directory (eg. Oblivion).
 	BOSS_COMMON extern bool gl_using_local_app_data_folder = true;  //Set by bUseMyGamesDirectory in the game's ini file if different from default.
 
 	///////////////////////////////
@@ -51,7 +51,7 @@ namespace boss {
 	///////////////////////////////
 
 	BOSS_COMMON const fs::path boss_path			= fs::path(".");
-	BOSS_COMMON fs::path data_path					= boss_path / ".." / "Data";
+	BOSS_COMMON fs::path data_path					= boss_path / ".." / gl_local_data_path;
 	BOSS_COMMON const fs::path ini_path				= boss_path / "BOSS.ini";
 	BOSS_COMMON const fs::path old_ini_path			= boss_path / "BOSS.ini.old";
 	BOSS_COMMON const fs::path debug_log_path		= boss_path / "BOSSDebugLog.txt";
@@ -220,37 +220,37 @@ namespace boss {
 
 	BOSS_COMMON void SetDataPath(uint32_t game) {
 		if (gl_update_only || game == AUTODETECT || fs::exists(data_path / GetGameMasterFile(game))) {
-			data_path = gl_local_data_path;
+			data_path = boss_path / ".." / gl_local_data_path;
 			return;
 		}
 		switch (game) {
 		case OBLIVION:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path") + "Data");
+				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path")) / gl_local_data_path;
 			else if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion", "Installed Path") + "Data");
+				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion", "Installed Path")) / gl_local_data_path;
 			break;
 		case NEHRIM:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation") + "Data");
+				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation")) / gl_local_data_path;
 			break;
 		case SKYRIM:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path") + "Data");
+				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path")) / gl_local_data_path;
 			else if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim", "Installed Path") + "Data");
+				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim", "Installed Path")) / gl_local_data_path;
 			break;
 		case FALLOUT3:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path") + "Data");
+				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path")) / gl_local_data_path;
 			else if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3", "Installed Path") + "Data");
+				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3", "Installed Path")) / gl_local_data_path;
 			break;
 		case FALLOUTNV:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path") + "Data");
+				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path")) / gl_local_data_path;
 			else if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV", "Installed Path") + "Data");
+				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV", "Installed Path")) / gl_local_data_path;
 			break;
 		}
 	}
@@ -645,7 +645,7 @@ namespace boss {
 				CSSIncompatibility = iter->value;
 			//Game ini setting:
 			else if (iter->key == "sLocalMasterPath")
-				gl_local_data_path = fs::path(iter->value);  //Incorrect.
+				gl_local_data_path = fs::path(iter->value);  //Possibly incorrect, if absolute paths can be specified.
 			//Back to BOSS.ini settings, now integers.
 			else if (iter->key == "iProxyPort")
 				gl_proxy_port = atoi(iter->value.c_str());
