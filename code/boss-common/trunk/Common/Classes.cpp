@@ -1,4 +1,4 @@
-/*	BOSS
+﻿/*	BOSS
 	
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -86,7 +86,10 @@ namespace boss {
 			begin = conditions.begin();
 			end = conditions.end();
 
-			bool r = phrase_parse(begin, end, cond_grammar, skipper, eval);
+			iterator_type first(conditions.begin());
+			iterator_type last(conditions.end());
+
+			bool r = phrase_parse(first, last, cond_grammar, skipper, eval);
 			if (!r || begin != end)
 				throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, conditions);
 
@@ -170,7 +173,10 @@ namespace boss {
 			begin = da.begin();
 			end = da.end();
 
-			bool r = phrase_parse(begin, end, short_grammar, skipper, newMessage);
+			iterator_type first(da.begin());
+			iterator_type last(da.end());
+
+			bool r = phrase_parse(first, last, short_grammar, skipper, newMessage);
 			if (!r || begin != end)
 				throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, Data());
 
@@ -460,9 +466,12 @@ namespace boss {
 				contents = trans.EncToUtf8(contents);
 			}
 
+			iterator_type first(contents.begin());
+			iterator_type last(contents.end());
+
 			begin = contents.begin();
 			end = contents.end();
-			bool r = phrase_parse(begin, end, grammar, skipper, items);
+			bool r = phrase_parse(first, last, grammar, skipper, items);
 
 			if (!r || begin != end)
 				throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
@@ -562,9 +571,9 @@ namespace boss {
 			if (items[i].Type() == MOD) {
 				if (activeOnly && (activePlugins.FindItem(items[i].Name()) == numActivePlugins || (isSkyrim1426plus && (items[i].Name() == "Skyrim.esm" || items[i].Name() == "Update.esm"))))
 					continue;
-				if (file == loadorder_path())
+		/*		if (file == loadorder_path())
 					outfile << "MOD: ";
-				LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
+		*/		LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
 				if (trans.GetEncoding() != 0) {  //Not UTF-8.
 					try {
 						outfile << trans.Utf8ToEnc(items[i].Name()) << endl;
@@ -901,7 +910,10 @@ namespace boss {
 
 		begin = contents.begin();
 		end = contents.end();
-		bool r = phrase_parse(begin, end, grammar, skipper, rules);
+
+		iterator_type first(contents.begin());
+			iterator_type last(contents.end());
+		bool r = phrase_parse(first, last, grammar, skipper, rules);
 
 		if (!r || begin != end)  //This might not work correctly.
 			throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, file.string());
