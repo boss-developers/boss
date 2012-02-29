@@ -72,6 +72,9 @@ namespace boss {
 
 	BOSS_COMMON extern uint32_t gl_current_game;  //The game that BOSS is currently running for. Matches gl_game if gl_game != AUTODETECT.
 
+	BOSS_COMMON extern fs::path gl_local_data_path;  //Set by sLocalMasterPath in the game's ini file if different from default.
+	BOSS_COMMON extern bool gl_using_local_app_data_folder;  //Set by bUseMyGamesDirectory in the game's ini file if different from default.
+
 
 	///////////////////////////////
 	//File/Folder Paths
@@ -146,12 +149,19 @@ namespace boss {
 	//Settings Class
 	///////////////////////////////
 
+	struct IniPair {
+		string key;
+		string value;
+	};
+
 	class BOSS_COMMON Settings {
 	private:
 		ParsingError errorBuffer;
+		vector<IniPair> iniSettings;
 
 		string	GetIniGameString	() const;
 		string	GetLogFormatString	() const;
+		void ApplyIniSettings();
 	public:
 		void	Load(fs::path file);		//Throws exception on fail.
 		void	Save(fs::path file);		//Throws exception on fail.

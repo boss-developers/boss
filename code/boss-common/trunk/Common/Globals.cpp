@@ -43,6 +43,9 @@ namespace boss {
 
 	BOSS_COMMON uint32_t gl_current_game			= AUTODETECT;
 
+	BOSS_COMMON extern fs::path gl_local_data_path	= boss_path / ".." / "Data";  //Set by sLocalMasterPath in the game's ini file if different from default.
+	BOSS_COMMON extern bool gl_using_local_app_data_folder = true;  //Set by bUseMyGamesDirectory in the game's ini file if different from default.
+
 	///////////////////////////////
 	//File/Folder Paths
 	///////////////////////////////
@@ -109,38 +112,44 @@ namespace boss {
 	}
 
 	BOSS_COMMON fs::path plugins_path() {
-		switch (gl_current_game) {
-		case OBLIVION:
-			return GetLocalAppDataPath() / "Oblivion" / "plugins.txt";
-		case NEHRIM:
-			return GetLocalAppDataPath() / "Oblivion" / "plugins.txt";  //Shared with Oblivion.
-		case SKYRIM:
-			return GetLocalAppDataPath() / "Skyrim" / "plugins.txt";
-		case FALLOUT3:
-			return GetLocalAppDataPath() / "Fallout3" / "plugins.txt";
-		case FALLOUTNV:
-			return GetLocalAppDataPath() / "FalloutNV" / "plugins.txt";
-		default:
-			return boss_path;
-		}
+		if (gl_using_local_app_data_folder) {
+			switch (gl_current_game) {
+			case OBLIVION:
+				return GetLocalAppDataPath() / "Oblivion" / "plugins.txt";
+			case NEHRIM:
+				return GetLocalAppDataPath() / "Oblivion" / "plugins.txt";  //Shared with Oblivion.
+			case SKYRIM:
+				return GetLocalAppDataPath() / "Skyrim" / "plugins.txt";
+			case FALLOUT3:
+				return GetLocalAppDataPath() / "Fallout3" / "plugins.txt";
+			case FALLOUTNV:
+				return GetLocalAppDataPath() / "FalloutNV" / "plugins.txt";
+			default:
+				return boss_path;
+			}
+		} else
+			return data_path.parent_path() / "plugins.txt";
 	}
 
 	//This only makes sense for Skyrim.
 	BOSS_COMMON fs::path loadorder_path() {
-		switch (gl_current_game) {
-		case OBLIVION:
-			return GetLocalAppDataPath() / "Oblivion" / "loadorder.txt";
-		case NEHRIM:
-			return GetLocalAppDataPath() / "Oblivion" / "loadorder.txt";  //Shared with Oblivion.
-		case SKYRIM:
-			return GetLocalAppDataPath() / "Skyrim" / "loadorder.txt";
-		case FALLOUT3:
-			return GetLocalAppDataPath() / "Fallout3" / "loadorder.txt";
-		case FALLOUTNV:
-			return GetLocalAppDataPath() / "FalloutNV" / "loadorder.txt";
-		default:
-			return boss_path;
-		}
+		if (gl_using_local_app_data_folder) {
+			switch (gl_current_game) {
+			case OBLIVION:
+				return GetLocalAppDataPath() / "Oblivion" / "loadorder.txt";
+			case NEHRIM:
+				return GetLocalAppDataPath() / "Oblivion" / "loadorder.txt";  //Shared with Oblivion.
+			case SKYRIM:
+				return GetLocalAppDataPath() / "Skyrim" / "loadorder.txt";
+			case FALLOUT3:
+				return GetLocalAppDataPath() / "Fallout3" / "loadorder.txt";
+			case FALLOUTNV:
+				return GetLocalAppDataPath() / "FalloutNV" / "loadorder.txt";
+			default:
+				return boss_path;
+			}
+		} else
+			return data_path.parent_path() / "loadorder.txt";
 	}
 
 	///////////////////////////////
@@ -211,7 +220,7 @@ namespace boss {
 
 	BOSS_COMMON void SetDataPath(uint32_t game) {
 		if (gl_update_only || game == AUTODETECT || fs::exists(data_path / GetGameMasterFile(game))) {
-			data_path = boss_path / ".." / "Data";
+			data_path = gl_local_data_path;
 			return;
 		}
 		switch (game) {
@@ -398,10 +407,12 @@ namespace boss {
 		begin = contents.begin();
 		end = contents.end();
 
-		bool r = phrase_parse(begin, end, grammar, skipper);
+		bool r = phrase_parse(begin, end, grammar, skipper, iniSettings);
 
 		if (!r || begin != end)  //This might not work correctly.
 			throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, file.string());
+
+		ApplyIniSettings();
 	}
 
 	void	Settings::Save			(fs::path file) {
@@ -529,5 +540,179 @@ namespace boss {
 
 	void Settings::ErrorBuffer(ParsingError buffer) {
 		errorBuffer = buffer;
+	}
+
+	void Settings::ApplyIniSettings() {
+		for (vector<IniPair>::iterator iter = iniSettings.begin(); iter != iniSettings.end(); ++iter) {
+			if (iter->value.empty())
+				continue;
+			boost::algorithm::trim(iter->key);  //Make sure there are no preceding or trailing spaces.
+			boost::algorithm::trim(iter->value);  //Make sure there are no preceding or trailing spaces.
+
+			//String settings.
+			if (iter->key == "sProxyHostname")
+				gl_proxy_host = iter->value;
+			else if (iter->key == "sProxyUsername")
+				gl_proxy_user = iter->value;
+			else if (iter->key == "sProxyPassword")
+				gl_proxy_passwd = iter->value;
+			else if (iter->key == "sBOSSLogFormat") {
+				if (iter->value == "html")
+					gl_log_format = HTML;
+				else
+					gl_log_format = PLAINTEXT;
+			} else if (iter->key == "sGame") {
+				if (iter->value == "auto")
+					gl_game = AUTODETECT;
+				else if (iter->value == "Oblivion")
+					gl_game = OBLIVION;
+				else if (iter->value == "Nehrim")
+					gl_game = NEHRIM;
+				else if (iter->value == "Fallout3")
+					gl_game = FALLOUT3;
+				else if (iter->value == "FalloutNV")
+					gl_game = FALLOUTNV;
+				else if (iter->value == "Skyrim")
+					gl_game = SKYRIM;
+			}
+			else if (iter->key == "body")
+				CSSBody = iter->value;
+			else if (iter->key == "#darkBody")
+				CSSDarkBody = iter->value;
+			else if (iter->key == ".darkLink:link")
+				CSSDarkLink = iter->value;
+			else if (iter->key == ".darkLink:visited")
+				CSSDarkLinkVisited = iter->value;
+			else if (iter->key == "#filters")
+				CSSFilters = iter->value;
+			else if (iter->key == "#filters > li")
+				CSSFiltersList = iter->value;
+			else if (iter->key == "#darkFilters")
+				CSSDarkFilters = iter->value;
+			else if (iter->key == "body > div:first-child")
+				CSSTitle = iter->value;
+			else if (iter->key == "body > div:first-child + div")
+				CSSCopyright = iter->value;
+			else if (iter->key == "h3 + *")
+				CSSSections = iter->value;
+			else if (iter->key == "h3")
+				CSSSectionTitle = iter->value;
+			else if (iter->key == "h3 > span")
+				CSSSectionPlusMinus = iter->value;
+			else if (iter->key == "#end")
+				CSSLastSection = iter->value;
+			else if (iter->key == "td")
+				CSSTable = iter->value;
+			else if (iter->key == "ul")
+				CSSList = iter->value;
+			else if (iter->key == "ul li")
+				CSSListItem = iter->value;
+			else if (iter->key == "li ul")
+				CSSSubList = iter->value;
+			else if (iter->key == "input[type='checkbox']")
+				CSSCheckbox = iter->value;
+			else if (iter->key == "blockquote")
+				CSSBlockquote = iter->value;
+			else if (iter->key == ".error")
+				CSSError = iter->value;
+			else if (iter->key == ".warn")
+				CSSWarning = iter->value;
+			else if (iter->key == ".success")
+				CSSSuccess = iter->value;
+			else if (iter->key == ".version")
+				CSSVersion = iter->value;
+			else if (iter->key == ".ghosted")
+				CSSGhost = iter->value;
+			else if (iter->key == ".crc")
+				CSSCRC = iter->value;
+			else if (iter->key == ".active")
+				CSSActive = iter->value;
+			else if (iter->key == ".tagPrefix")
+				CSSTagPrefix = iter->value;
+			else if (iter->key == ".dirty")
+				CSSDirty = iter->value;
+			else if (iter->key == ".message")
+				CSSQuotedMessage = iter->value;
+			else if (iter->key == ".mod")
+				CSSMod = iter->value;
+			else if (iter->key == ".tag")
+				CSSTag = iter->value;
+			else if (iter->key == ".note")
+				CSSNote = iter->value;
+			else if (iter->key == ".req")
+				CSSRequirement = iter->value;
+			else if (iter->key == ".inc")
+				CSSIncompatibility = iter->value;
+			//Game ini setting:
+			else if (iter->key == "sLocalMasterPath")
+				gl_local_data_path = fs::path(iter->value);  //Incorrect.
+			//Back to BOSS.ini settings, now integers.
+			else if (iter->key == "iProxyPort")
+				gl_proxy_port = atoi(iter->value.c_str());
+			else if (iter->key == "iRevertLevel") {
+				uint32_t value = atoi(iter->value.c_str());
+				if (value >= 0 && value < 3)
+					gl_revert = value;
+			} else if (iter->key == "iDebugVerbosity") {
+				uint32_t value = atoi(iter->value.c_str());
+				if (value >= 0 && value < 4)
+					gl_debug_verbosity = value;
+			//Now on to BOSS.ini boolean settings.
+			} else if (iter->key == "bDoStartupUpdateCheck")
+				gl_do_startup_update_check = StringToBool(iter->value);
+			else if (iter->key == "bUseUserRulesEditor")
+				gl_use_user_rules_editor = StringToBool(iter->value);
+			if (iter->key == "bUpdateMasterlist")
+				gl_update = StringToBool(iter->value);
+			else if (iter->key == "bOnlyUpdateMasterlist")
+				gl_update_only = StringToBool(iter->value);
+			else if (iter->key == "bSilentRun")
+				gl_silent = StringToBool(iter->value);
+			else if (iter->key == "bNoVersionParse")
+				gl_skip_version_parse = StringToBool(iter->value);
+			else if (iter->key == "bDebugWithSourceRefs")
+				gl_debug_with_source = StringToBool(iter->value);
+			else if (iter->key == "bDisplayCRCs")
+				gl_show_CRCs = StringToBool(iter->value);
+			else if (iter->key == "bDoTrialRun")
+				gl_trial_run = StringToBool(iter->value);
+			else if (iter->key == "bLogDebugOutput")
+				gl_log_debug_output = StringToBool(iter->value);
+			if (iter->key == "bUseDarkColourScheme")
+				UseDarkColourScheme = StringToBool(iter->value);
+			else if (iter->key == "bHideVersionNumbers")
+				HideVersionNumbers = StringToBool(iter->value);
+			else if (iter->key == "bHideGhostedLabel")
+				HideGhostedLabel = StringToBool(iter->value);
+			else if (iter->key == "bHideActiveLabel")
+				HideActiveLabel = StringToBool(iter->value);
+			else if (iter->key == "bHideChecksums")
+				HideChecksums = StringToBool(iter->value);
+			else if (iter->key == "bHideMessagelessMods")
+				HideMessagelessMods = StringToBool(iter->value);
+			else if (iter->key == "bHideGhostedMods")
+				HideGhostedMods = StringToBool(iter->value);
+			else if (iter->key == "bHideCleanMods")
+				HideCleanMods = StringToBool(iter->value);
+			else if (iter->key == "bHideRuleWarnings")
+				HideRuleWarnings = StringToBool(iter->value);
+			else if (iter->key == "bHideAllModMessages")
+				HideAllModMessages = StringToBool(iter->value);
+			else if (iter->key == "bHideNotes")
+				HideNotes = StringToBool(iter->value);
+			else if (iter->key == "bHideBashTagSuggestions")
+				HideBashTagSuggestions = StringToBool(iter->value);
+			else if (iter->key == "bHideRequirements")
+				HideRequirements = StringToBool(iter->value);
+			else if (iter->key == "bHideIncompatibilities")
+				HideIncompatibilities = StringToBool(iter->value);
+			else if (iter->key == "bHideDoNotCleanMessages")
+				HideDoNotCleanMessages = StringToBool(iter->value);
+			else if (iter->key == "bHideInactivePlugins")
+				HideInactivePlugins = StringToBool(iter->value);
+			//And now finally a game ini boolean setting.
+			else if (iter->key == "bUseMyGamesDirectory")
+				gl_using_local_app_data_folder = StringToBool(iter->value);
+		}
 	}
 }

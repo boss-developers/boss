@@ -84,6 +84,16 @@ BOOST_FUSION_ADAPT_STRUCT(
 	(std::vector<boss::RuleLine>, lines)
 )
 
+//////////////////////////////
+//Ini Data Conversions
+//////////////////////////////
+
+BOOST_FUSION_ADAPT_STRUCT(
+	boss::IniPair,
+	(std::string, key)
+	(std::string, value)
+)
+
 
 namespace boss {
 	namespace qi = boost::spirit::qi;
@@ -256,27 +266,20 @@ namespace boss {
 	////////////////////////////
 
 	//Ini grammar.
-	class ini_grammar : public grammar<grammarIter, Skipper> {
+	class ini_grammar : public grammar<grammarIter, vector<IniPair>(), Skipper> {
 	public:
 		ini_grammar();
 		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
 	private:
-		qi::rule<grammarIter, Skipper> ini, section, setting;
-		qi::rule<grammarIter, string(), Skipper> var, stringVal, heading;
+		
+		qi::rule<grammarIter, Skipper> heading;
+		qi::rule<grammarIter, vector<IniPair>(), Skipper> ini;
+		qi::rule<grammarIter, IniPair(), Skipper> setting;
+		qi::rule<grammarIter, string(), Skipper> var, stringVal;
 	
 		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what);
 
-		//Set the boolean BOSS variable values while parsing.
-		void SetBoolVar(string& var, const bool& value);
-
-		//Set the integer BOSS variable values while parsing.
-		void SetIntVar(string& var, const uint32_t& value);
-
-		//Set the BOSS variable values while parsing.
-		void SetStringVar(string& var, string& value);
-
 		ParsingError * errorBuffer;
-		string currentHeading;  //The current ini section heading.
 	};
 
 	////////////////////////////

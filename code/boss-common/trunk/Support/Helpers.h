@@ -66,6 +66,9 @@ namespace boss {
 	//Converts a boolean to a string representation (true/false)
 	string BoolToString(bool b);
 
+	//Turns "true", "false", "1", "0" into booleans.
+	bool StringToBool(string str);
+
 	//Check if registry subkey exists.
 	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey);
 

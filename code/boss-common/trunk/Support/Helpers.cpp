@@ -183,6 +183,11 @@ namespace boss {
 			return "false";
 	}
 
+	//Turns "true", "false", "1", "0" into booleans.
+	bool StringToBool(string str) {
+		return (str == "true" || str == "1");
+	}
+
 	//Check if registry subkey exists.
 	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey) {
 #if _WIN32 || _WIN64

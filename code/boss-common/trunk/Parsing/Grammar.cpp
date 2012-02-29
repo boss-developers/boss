@@ -869,203 +869,17 @@ namespace boss {
 	//Ini Grammar.
 	////////////////////////////
 
-	//Set the boolean BOSS variable values while parsing.
-	void ini_grammar::SetBoolVar(string& var, const bool& value) {
-		boost::algorithm::trim(var);  //Make sure there are no preceding or trailing spaces.
-		if (currentHeading == "BOSS.GeneralSettings") {
-			if (var == "bDoStartupUpdateCheck")
-				gl_do_startup_update_check = value;
-			else if (var == "bUseUserRulesEditor")
-				gl_use_user_rules_editor = value;
-		} else if (currentHeading == "BOSS.RunOptions") {
-			if (var == "bUpdateMasterlist")
-				gl_update = value;
-			else if (var == "bOnlyUpdateMasterlist")
-				gl_update_only = value;
-			else if (var == "bSilentRun")
-				gl_silent = value;
-			else if (var == "bNoVersionParse")
-				gl_skip_version_parse = value;
-			else if (var == "bDebugWithSourceRefs")
-				gl_debug_with_source = value;
-			else if (var == "bDisplayCRCs")
-				gl_show_CRCs = value;
-			else if (var == "bDoTrialRun")
-				gl_trial_run = value;
-			else if (var == "bLogDebugOutput")
-				gl_log_debug_output = value;
-		} else if (currentHeading == "BOSSLog.Filters") {
-			if (var == "bUseDarkColourScheme")
-				UseDarkColourScheme = value;
-			else if (var == "bHideVersionNumbers")
-				HideVersionNumbers = value;
-			else if (var == "bHideGhostedLabel")
-				HideGhostedLabel = value;
-			else if (var == "bHideActiveLabel")
-				HideActiveLabel = value;
-			else if (var == "bHideChecksums")
-				HideChecksums = value;
-			else if (var == "bHideMessagelessMods")
-				HideMessagelessMods = value;
-			else if (var == "bHideGhostedMods")
-				HideGhostedMods = value;
-			else if (var == "bHideCleanMods")
-				HideCleanMods = value;
-			else if (var == "bHideRuleWarnings")
-				HideRuleWarnings = value;
-			else if (var == "bHideAllModMessages")
-				HideAllModMessages = value;
-			else if (var == "bHideNotes")
-				HideNotes = value;
-			else if (var == "bHideBashTagSuggestions")
-				HideBashTagSuggestions = value;
-			else if (var == "bHideRequirements")
-				HideRequirements = value;
-			else if (var == "bHideIncompatibilities")
-				HideIncompatibilities = value;
-			else if (var == "bHideDoNotCleanMessages")
-				HideDoNotCleanMessages = value;
-			else if (var == "bHideInactivePlugins")
-				HideInactivePlugins = value;
-		}
-	}
-
-	//Set the integer BOSS variable values while parsing.
-	void ini_grammar::SetIntVar(string& var, const uint32_t& value) {
-		boost::algorithm::trim(var);  //Make sure there are no preceding or trailing spaces.
-		if (currentHeading == "BOSS.InternetSettings") {
-			if (var == "iProxyPort")
-				gl_proxy_port = value;
-		} else if (currentHeading == "BOSS.RunOptions") {
-			if (var == "iRevertLevel") {
-				if (value >= 0 && value < 3)
-					gl_revert = value;
-			} else if (var == "iDebugVerbosity") {
-				if (value >= 0 && value < 4)
-					gl_debug_verbosity = value;
-			}
-		}
-	}
-
-	//Set the BOSS variable values while parsing.
-	void ini_grammar::SetStringVar(string& var, string& value) {
-		boost::algorithm::trim(var);  //Make sure there are no preceding or trailing spaces.
-		boost::algorithm::trim(value);  //Make sure there are no preceding or trailing spaces.
-		if (currentHeading == "BOSS.InternetSettings") {
-			if (var == "sProxyHostname")
-				gl_proxy_host = value;
-			else if (var == "sProxyUsername")
-				gl_proxy_user = value;
-			else if (var == "sProxyPassword")
-				gl_proxy_passwd = value;
-		} else if (currentHeading == "BOSS.RunOptions") {
-			if (var == "sBOSSLogFormat") {
-				if (value == "html")
-					gl_log_format = HTML;
-				else
-					gl_log_format = PLAINTEXT;
-			} else if (var == "sGame") {
-				if (value == "auto")
-					gl_game = AUTODETECT;
-				else if (value == "Oblivion")
-					gl_game = OBLIVION;
-				else if (value == "Nehrim")
-					gl_game = NEHRIM;
-				else if (value == "Fallout3")
-					gl_game = FALLOUT3;
-				else if (value == "FalloutNV")
-					gl_game = FALLOUTNV;
-				else if (value == "Skyrim")
-					gl_game = SKYRIM;
-			}
-		} else if (currentHeading == "BOSSLog.Styles") {	
-			if (value.empty())
-				return;
-			else if (var == "body")
-				CSSBody = value;
-			else if (var == "#darkBody")
-				CSSDarkBody = value;
-			else if (var == ".darkLink:link")
-				CSSDarkLink = value;
-			else if (var == ".darkLink:visited")
-				CSSDarkLinkVisited = value;
-			else if (var == "#filters")
-				CSSFilters = value;
-			else if (var == "#filters > li")
-				CSSFiltersList = value;
-			else if (var == "#darkFilters")
-				CSSDarkFilters = value;
-			else if (var == "body > div:first-child")
-				CSSTitle = value;
-			else if (var == "body > div:first-child + div")
-				CSSCopyright = value;
-			else if (var == "h3 + *")
-				CSSSections = value;
-			else if (var == "h3")
-				CSSSectionTitle = value;
-			else if (var == "h3 > span")
-				CSSSectionPlusMinus = value;
-			else if (var == "#end")
-				CSSLastSection = value;
-			else if (var == "td")
-				CSSTable = value;
-			else if (var == "ul")
-				CSSList = value;
-			else if (var == "ul li")
-				CSSListItem = value;
-			else if (var == "li ul")
-				CSSSubList = value;
-			else if (var == "input[type='checkbox']")
-				CSSCheckbox = value;
-			else if (var == "blockquote")
-				CSSBlockquote = value;
-			else if (var == ".error")
-				CSSError = value;
-			else if (var == ".warn")
-				CSSWarning = value;
-			else if (var == ".success")
-				CSSSuccess = value;
-			else if (var == ".version")
-				CSSVersion = value;
-			else if (var == ".ghosted")
-				CSSGhost = value;
-			else if (var == ".crc")
-				CSSCRC = value;
-			else if (var == ".active")
-				CSSActive = value;
-			else if (var == ".tagPrefix")
-				CSSTagPrefix = value;
-			else if (var == ".dirty")
-				CSSDirty = value;
-			else if (var == ".message")
-				CSSQuotedMessage = value;
-			else if (var == ".mod")
-				CSSMod = value;
-			else if (var == ".tag")
-				CSSTag = value;
-			else if (var == ".note")
-				CSSNote = value;
-			else if (var == ".req")
-				CSSRequirement = value;
-			else if (var == ".inc")
-				CSSIncompatibility = value;
-		}
-	}
-
 	ini_grammar::ini_grammar() : ini_grammar::base_type(ini, "ini grammar") {
 
 		errorBuffer = NULL;
 
-		ini = *eol
-				> (heading[phoenix::ref(currentHeading) = _1] | (!lit('[') >> setting)) % +eol
+		ini %= *eol
+				> (omit[heading] | (!lit('[') >> setting)) % +eol
 				> *eol;
 
-		heading %= '[' > +(char_ - ']') > ']';
+		heading = '[' > +(char_ - ']') > ']';
 
-		setting =
-				((var > '=') >> uint_)[phoenix::bind(&ini_grammar::SetIntVar, this, _1, _2)]
-				| ((var > '=') >> bool_)[phoenix::bind(&ini_grammar::SetBoolVar, this, _1, _2)]
-				| ((var > '=') > stringVal)[phoenix::bind(&ini_grammar::SetStringVar, this, _1, _2)];
+		setting %= var > '=' > stringVal;
 
 		var %=
 			lexeme[
@@ -1078,7 +892,6 @@ namespace boss {
 		
 		//Give each rule names.
 		ini.name("ini");
-		section.name("section");
 		heading.name("heading");
 		setting.name("setting");
 		var.name("variable");
@@ -1086,7 +899,6 @@ namespace boss {
 		
 		//Error handling.
 		on_error<fail>(ini,			phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
-		on_error<fail>(section,		phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
 		on_error<fail>(heading,		phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
 		on_error<fail>(setting,		phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
 		on_error<fail>(var,			phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
