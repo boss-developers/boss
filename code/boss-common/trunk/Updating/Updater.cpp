@@ -275,15 +275,17 @@ namespace boss {
 		//Now parse list to extract file info.
 		string::const_iterator start = fileBuffer.begin(), end = fileBuffer.end();
 
-		bool p = qi::phrase_parse(start,end,
+		qi::rule<string::const_iterator, string()> text;
+		
+		text %= '"' > qi::lexeme[+(unicode::char_ - '"')] > '"';
 
-			'"' > qi::lexeme[+(unicode::char_ - '"')[phoenix::ref(file) = qi::_1]] > '"'
+		bool p = qi::phrase_parse(start,end,
+			text[phoenix::ref(file) = qi::_1]
 			> qi::lit(':')
 			> qi::hex[phoenix::ref(crc) = qi::_1]
-
 			, unicode::space);
 
-		if (!p/* || start != end*/) {
+		if (!p || start != end) {
 			throw boss_error(BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL);
 		}
 	}
