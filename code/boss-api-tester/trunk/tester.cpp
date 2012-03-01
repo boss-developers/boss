@@ -45,7 +45,7 @@ int main() {
 
 	boss_db db;
 	uint8_t * mPath = reinterpret_cast<uint8_t *>("Skyrim/masterlist.txt");
-	uint8_t * uPath = reinterpret_cast<uint8_t *>("Skyrim/userlist.txt");
+	uint8_t * uPath = reinterpret_cast<uint8_t *>("");
 	uint8_t * dPath = reinterpret_cast<uint8_t *>("../Data");
 	uint32_t game = BOSS_API_GAME_SKYRIM;
 
@@ -53,7 +53,7 @@ int main() {
 	const uint8_t * cleanMod = reinterpret_cast<uint8_t *>("All Natural.esp");
 	const uint8_t * doNotCleanMod = reinterpret_cast<uint8_t *>("bgBalancingEVLAMEAddition.esp");
 	const uint8_t * inactiveMod = reinterpret_cast<uint8_t *>("français.esp");
-	const uint8_t * isActiveMod = reinterpret_cast<uint8_t *>("汉语漢語.esp");
+//	const uint8_t * isActiveMod = reinterpret_cast<uint8_t *>("汉语漢語.esp");
 	uint8_t ** sortedPlugins;
 	size_t len;
 	size_t lastPos;
@@ -85,7 +85,7 @@ int main() {
 		out << '\t' << "Version: " << *ver << endl;
 	
 	out << "TESTING CreateBossDb(...)" << endl;
-	ret = CreateBossDb(&db, game, dPath);
+	ret = CreateBossDb(&db, game, NULL);
 	if (ret != BOSS_API_OK) 
 		out << '\t' << "Creation failed. Error: " << ret << endl;
 	else {
@@ -95,10 +95,12 @@ int main() {
 			out << '\t' << "Masterlist update failed. Error: " << ret << endl;
 
 		out << "TESTING Load(...)" << endl;
-		ret = Load(db, mPath, uPath);
-		if (ret != BOSS_API_OK)
-			out << '\t' << "Loading failed. Error: " << ret << endl;
-		else {
+		const uint8_t * err;
+		ret = Load(db, mPath, NULL);
+		if (ret != BOSS_API_OK) {
+			uint32_t ret2 = GetLastErrorDetails(&err);
+			out << '\t' << "Loading failed. Error: " << ret << ", " << ret2 << ", " << err << endl;
+		} else {
 			out << "TESTING EvalConditionals(...)" << endl;
 			ret = EvalConditionals(db);
 			if (BOSS_API_OK != ret)
@@ -195,14 +197,16 @@ int main() {
 					}
 				}
 				
+				uint8_t ** activePlugins = sortedPlugins;
+				/*
 				out << "TESTING GetActivePlugins(...)" << endl;
-				ret = GetActivePlugins(db, &sortedPlugins, &len);
+				ret = GetActivePlugins(db, &activePlugins, &len);
 				if (BOSS_API_OK != ret)
 					out << '\t' << "GetActivePlugins(...) failed. Error: " << ret << endl;
 				else {
 					out << '\t' << "List size: " << len << endl;
 					for (size_t i=0; i<len; i++) {
-						out << '\t' << '\t' << i << " : " << sortedPlugins[i] << endl;
+						out << '\t' << '\t' << i << " : " << activePlugins[i] << endl;
 					}
 				}
 				
@@ -216,7 +220,7 @@ int main() {
 						out << '\t' << '\t' << i << " : " << sortedPlugins[i] << endl;
 					}
 				}
-
+				*/
 				out << "TESTING GetPluginLoadOrder(...)" << endl;
 				ret = GetPluginLoadOrder(db, doNotCleanMod, &len);
 				if (BOSS_API_OK != ret)
@@ -242,38 +246,86 @@ int main() {
 				else {
 					out << '\t' << "Plugin at position " << len << " : " << message << endl;
 				}
-				
+				/*
 				out << "TESTING SetPluginActive(...)" << endl;
-				ret = SetPluginActive(db, inactiveMod, true);
+				ret = SetPluginActive(db, sortedPlugins[16], true);
 				if (BOSS_API_OK != ret)
 					out << '\t' << "SetPluginActive(...) failed. Error: " << ret << endl;
 				else {
-					out << '\t' << "\"" << inactiveMod << "\" activated." << endl;
+					out << '\t' << "\"" << sortedPlugins[16] << "\" activated." << endl;
 				}
-
+				
 				out << "TESTING IsPluginActive(...)" << endl;
-				ret = IsPluginActive(db, inactiveMod, &active);
+				ret = IsPluginActive(db, sortedPlugins[16], &active);  //sortedPlugins[16] is français.esp. Declaring explicitly in the code seems to encode it in ANSI...
 				if (BOSS_API_OK != ret)
 					out << '\t' << "IsPluginActive(...) failed. Error: " << ret << endl;
 				else {
-					out << '\t' << "\"" << inactiveMod << "\" active status: " << active << endl;
+					out << '\t' << "\"" << sortedPlugins[16] << "\" active status: " << active << endl;
 				}
 				
 				out << "TESTING SetPluginActive(...)" << endl;
-				ret = SetPluginActive(db, isActiveMod, true);
+				ret = SetPluginActive(db, sortedPlugins[17], true);
 				if (BOSS_API_OK != ret)
 					out << '\t' << "SetPluginActive(...) failed. Error: " << ret << endl;
 				else {
-					out << '\t' << "\"" << isActiveMod << "\" deactivated." << endl;
+					out << '\t' << "\"" << sortedPlugins[17] << "\" deactivated." << endl;
 				}
 
 				out << "TESTING IsPluginActive(...)" << endl;
-				ret = IsPluginActive(db, isActiveMod, &active);
+				ret = IsPluginActive(db, sortedPlugins[17], &active);
 				if (BOSS_API_OK != ret)
 					out << '\t' << "IsPluginActive(...) failed. Error: " << ret << endl;
 				else {
-					out << '\t' << "\"" << isActiveMod << "\" active status: " << active << endl;
+					out << '\t' << "\"" << sortedPlugins[17] << "\" active status: " << active << endl;
 				}
+				
+				out << "TESTING SetPluginActive(...)" << endl;
+				ret = SetPluginActive(db, sortedPlugins[18], true);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "SetPluginActive(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "\"" << sortedPlugins[18] << "\" deactivated." << endl;
+				}
+
+				out << "TESTING IsPluginActive(...)" << endl;
+				ret = IsPluginActive(db, sortedPlugins[18], &active);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "IsPluginActive(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "\"" << sortedPlugins[18] << "\" active status: " << active << endl;
+				}
+				
+				out << "TESTING SetPluginActive(...)" << endl;
+				ret = SetPluginActive(db, sortedPlugins[19], true);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "SetPluginActive(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "\"" << sortedPlugins[19] << "\" deactivated." << endl;
+				}
+
+				out << "TESTING IsPluginActive(...)" << endl;
+				ret = IsPluginActive(db, sortedPlugins[19], &active);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "IsPluginActive(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "\"" << sortedPlugins[19] << "\" active status: " << active << endl;
+				}
+				
+				out << "TESTING SetPluginActive(...)" << endl;
+				ret = SetPluginActive(db, sortedPlugins[20], true);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "SetPluginActive(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "\"" << sortedPlugins[20] << "\" deactivated." << endl;
+				}
+
+				out << "TESTING IsPluginActive(...)" << endl;
+				ret = IsPluginActive(db, sortedPlugins[20], &active);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "IsPluginActive(...) failed. Error: " << ret << endl;
+				else {
+					out << '\t' << "\"" << sortedPlugins[20] << "\" active status: " << active << endl;
+				}*/
 			}
 		}
 

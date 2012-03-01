@@ -38,7 +38,6 @@
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
 #include <boost/spirit/include/qi.hpp>
-#include <boost/regex/pending/unicode_iterator.hpp>
 
 namespace fs = boost::filesystem;
 
@@ -104,9 +103,7 @@ namespace boss {
 	using qi::grammar;
 	using boost::spirit::info;
 
-	typedef boost::u8_to_u32_iterator<std::string::const_iterator> iterator_type;
-	//typedef string::const_iterator grammarIter;
-	typedef iterator_type grammarIter;
+	typedef string::const_iterator grammarIter;
 
 	///////////////////////////////
 	// Keyword structures

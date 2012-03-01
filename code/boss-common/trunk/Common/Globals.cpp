@@ -407,10 +407,7 @@ namespace boss {
 		begin = contents.begin();
 		end = contents.end();
 
-		iterator_type first(contents.begin());
-			iterator_type last(contents.end());
-
-		bool r = phrase_parse(first, last, grammar, skipper, iniSettings);
+		bool r = phrase_parse(begin, end, grammar, skipper, iniSettings);
 
 		if (!r || begin != end)  //This might not work correctly.
 			throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, file.string());

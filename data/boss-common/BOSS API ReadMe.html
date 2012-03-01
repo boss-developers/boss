@@ -2,38 +2,49 @@
 <meta charset="utf-8">
 <title>BOSS API ReadMe</title>
 <style>
-	body {font-family:Calibri,Arial,Verdana,sans-serifs;}
-	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:0.2em;}
+	body {font-family:Calibri,Arial,Verdana,sans-serifs; padding:0 20px;}
+	h1 { text-align:center;}
 	body > div {margin-bottom:5em;}
 	ol li, ul li {margin-bottom:10px;}
 	li ul, li ol {margin-top:0.4em;}
-	.codebox, .quotebox, .logbox {margin-left:40px; border:gray 1px dashed; display:table; min-width:300px; padding:5px 30px 5px 10px;}
+	.codebox, .quotebox, .logbox {margin:0 40px; border:gray 1px dashed; display:table; min-width:300px; padding:5px 30px 5px 10px;}
 	.codebox {margin-top:3em; font-family:monospace; background:#F5F5F5; line-height:20px; white-space:pre;}
 	.quotebox {background:#E6E6FA;}
 	.logbox {background:#E0FFFF; line-height:30px;}
 	.logbox > ul > li {line-height:20px;}
 	q {font-style:italic;}
 	code {display:inline-box; padding:2px 5px; background:#EEEEEE;}
-	td {border:1px solid #ccc; padding: 5px;}
+	td {border:1px solid #ccc; padding: 5px; vertical-align:top;}
 	table {border:1px solid #CCCCCC; border-spacing:0; border-collapse:separate; margin:1em;}
 	thead > tr td {font-weight:bold}
-	h2 {margin-top:2em;}
+	
+	h1, h2, h3, h4 { padding:0.2em 20px;}
+	h2 {margin-top:3em;}
+	
+	a:link { text-decoration:none; }
+	a:hover { text-decoration:underline; }
+	pre { border:gray 1px dashed; word-wrap:break-word; background:#FDF5E6; margin-left:40px; display:table; min-width:300px; padding:5px 30px 5px 10px;}
+	code { background:#DDD; font-family: "Lucida Console", monospace; font-size:10pt; white-space:pre; padding:3px; }
+	ol li ol {list-style:lower-alpha;}
 </style>
 
-<div>BOSS<br />
-API Documentation</div>
-<div><h1>Contents</h1>
+<h1>BOSS API Documentation</h1>
+<h2>Contents</h2>
 <ol>
 	<li><a href="#intro">Introduction</a>
-	<ol style="list-style:lower-alpha;">
+	<ol>
 		<li><a href="#intro-lo">Introduction To Load Ordering</a>
 		<li><a href="#intro-boss">Overview Of BOSS</a>
 	</ol>
 	<li><a href="#types">Variable Types</a>
-	<li><a href="#codes">Return Codes</a>
-	<li><a href="#games">Game Codes</a>
+	<li><a href="#codes">API Codes</a>
+	<ol>
+		<li><a href="#codes-games">Game Codes</a>
+		<li><a href="#codes-load">Load Order Method Codes</a>
+		<li><a href="#codes-clean">Plugin Cleanliness Codes</a>
+	</ol>
 	<li><a href="#functions">Functions</a>
-	<ol style="list-style:lower-alpha;">
+	<ol>
 		<li><a href="#functions-version">Version Functions</a>
 		<li><a href="#functions-updating">Updater Functions</a>
 		<li><a href="#functions-lifecycle">Lifecycle Management Functions</a>
@@ -42,7 +53,7 @@ API Documentation</div>
 		<li><a href="#functions-access">Database Access Functions</a>
 	</ol>
 	<li><a href="#examples">Examples</a>
-	<ol style="list-style:lower-alpha;">
+	<ol>
 		<li><a href="#examples-python">Python</a>
 		<li><a href="#examples-c">C++</a>
 	</ol>
@@ -50,9 +61,8 @@ API Documentation</div>
 	<li><a href="#contact">Credits</a>
 	<li><a href="#license">License</a>
 </ol>
-</div>
 
-<div id="intro"><h1>Introduction</h1>
+<h2 id="intro">Introduction</h2>
 <p>This documentation details the BOSS API (a.k.a. BAPI) and is intended for use by third party developers of modding utilities for TES IV: Oblivion, TES V: Skyrim, Nehrim - At Fate's Edge, Fallout 3 and Fallout: New Vegas.
 
 <p>BAPI has a C frontend and is available as 32-bit and 64-bit DLLs that can be loaded by other modding utilities. BAPI currently has the following capabilities:
@@ -73,31 +83,64 @@ API Documentation</div>
 </ul>
 <p>BAPI is intended as a full solution to the management of load order and plugin activation status across all supported games, freeing client utilities from the requirement to maintain their own code for those functions. The source code is available at <a href="http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn%2Fcode%2Fboss-api%2Ftrunk">BOSS's Google Code repository</a>. BAPI is licensed as part of BOSS under the GNU General Public License v3, see the main BOSS readme for more information.
 
-<h2 id="intro-lo">Introduction To Load Ordering</h3>
+<h3 id="intro-lo">Introduction To Load Ordering</h3>
 <p>The following applies universally to Oblivion, Nehrim, Skyrim, Fallout 3 and Fallout: New Vegas unless otherwise noted.
-<p>Load ordering is the method used to determine how conflicts between mod plugins should be decided. If two plugins alter the same game data, then the changes made by the plugin loading later will override those made by the plugin loading earlier. This <q>rule of one</q> results in a list of plugins, with those earlier in the list having any conflicting changes overriden by those later in the list. This list is the load order of the plugins.
-<p>A game will only load the plugins that are active. Up to 255 plugins, including the game's .esm file, can be active at any one time. Active plugins are listed in the game's <q>plugins.txt</q> file, which is stored in the user's local application data folder. Nevertheless, it is useful when working with load orders to consider the load order of all plugins, even if only some of them will actually be loaded. This is both because it is easier to display a single list of plugins than a list and an unordered set, and because modders have engineered methods that allow the changes made by inactive plugins to be loaded by another plugin (eg. <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s Bashed Patch). When any such methods are being used, the load order of inactive plugins decides which plugins override others, similar to as if they were active.
+<p>Load ordering is the method used to determine how conflicts between mod plugins should be decided. If two plugins alter the same game data, then the changes made by the plugin loading later will override those made by the plugin loading earlier. This <em>rule of one</em> results in a list of plugins, with those earlier in the list having any conflicting changes overriden by those later in the list. This list is the load order of the plugins.
+<p>A game will only load the plugins that are active. Up to 255 plugins, including the game's .esm file, can be active at any one time. Active plugins are listed in the game's <code>plugins.txt</code> file, which is stored in the user's local application data folder. Nevertheless, it is useful when working with load orders to consider the load order of all plugins, even if only some of them will actually be loaded. This is both because it is easier to display a single list of plugins than a list and an unordered set, and because modders have engineered methods that allow the changes made by inactive plugins to be loaded by another plugin (eg. <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s Bashed Patch). When any such methods are being used, the load order of inactive plugins decides which plugins override others, similar to as if they were active.
 <p>In Oblivion, Nehrim, Fallout 3, Fallout: New Vegas and early versions (pre-1.4.26) of Skyrim, load order is decided by the relative timestamps of plugins in the game's Data directory. An installed plugin's load order is therefore an intrinsic property of that plugin.
-<p>In Skyrim v1.4.26+, a new load order system was introduced, in which load order is decide by the order in which plugins are listed in <q>plugins.txt</q>. This brought with it a fundamental change, in that load order is no longer an intrinsic property of a plugin. This has the result that inactive plugins do not have any load order.
-<p>Now follows a bit of history. The introduction of Skyrim's system posed a challenge for modding utilities that possessed functionality to modify load order, as not only would they no longer have any effect, but they would be unable to set any meaningful load order to inactive plugins. Lojack (Wrye Bash), Kaburke (Nexus Mod Manager), WrinklyNinja (BOSS) and Dark0ne (owner of the Nexus sites) then set about deciding on a solution that would work for the modding community in general.
-<p>The solution decided on was that total load order would be stored in a <q>loadorder.txt</q> file, itself stored in the same location as <q>plugins.txt</q>. <q>plugins.txt</q> would be kept in synchronisation with <q>loadorder.txt</q> so that the order of plugins that the game loaded was the same for both files, but the latter would allow the load ordering of inactive plugins.
-<p>Modding utilities would then perform their changes on <q>loadorder.txt</q>, updating <q>plugins.txt</q> to reflect any changes to active plugin load order as required. This would provide a common store for the total load order in lieu of the plugin timestamps used by the other games. In order to reduce duplication of effort and to ease code maintenance, the code implementing this system would be included into BAPI, as both Wrye Bash and the Nexus Mod Manager were already planning on using BAPI to access BOSS's information and auto-sorting functionality.
-<p>The product is the current functionality of BAPI, which also expanded to include modification of plugin active/inactive statuses, and presents a single frontend for both the timestamp-based and plugins.txt-based load order systems.
+<p>In Skyrim v1.4.26+, a new textfile-based load order system was introduced, in which load order is decide by the order in which plugins are listed in <code>plugins.txt</code>. This brought with it a fundamental change, in that load order is no longer an intrinsic property of a plugin. This has the result that inactive plugins do not have any load order.
 
-
-<h2 id="intro-boss">Overview Of BOSS</h3>
-<p>For those unfamiliar with BOSS and its files, this section gives a brief summary of its main features.
-<p>BOSS is a utility that automatically sorts a user's load order to minimise incompatibilities. It does so according to the load order of the <q>masterlist</q>, which contains the optimal load order for all plugins known to BOSS and is kept up to date via community submissions to the BOSS Development Team. Each game that BOSS supports has a separate masterlist, and BOSS will by default check for masterlist updates and download the latest one for the relevant game when it runs.
-<p>The masterlist also contains a large number of messages attached to plugins conveying information on compatibility, requirements, installation errors, dirty mod information, Bash Tag suggestions for use with the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities, and more. These messages are displayed in the BOSS Log after BOSS has run, so that the user may read them and take any action that the messages suggest.
-<p>BOSS allows users to override, or add to, the positions mods are put in and the messages attached to each mod by the masterlist using a <q>userlist</q> file.
+<h4 id="intro-lo-standard">The Textfile-based Load Order Standard</h4>
+<p>As the load order of all plugins, not just inactive plugins, is important, a standard solution that would allow ordering of inactive plugins was decided by Lojack (Wrye Bash), Kaburke (Nexus Mod Manager), WrinklyNinja (BOSS) and Dark0ne (owner of the Nexus sites) that could serve the community's needs. The BOSS API contains the canonical implementation of this standard.
+<p>The standard dictates that:
+<ul>
+	<li>Active load order is stored in <code>plugins.txt</code>.
+	<li><code>plugins.txt</code> is encoded in Windows-1252.
+	<li><code>plugins.txt</code> is by default stored in the user's local application data folder, eg. <code>C:\Users\WrinklyNinja\AppData\Local\Skyrim\plugins.txt</code> on Windows Vista/7. Its location can be changed to the Skyrim's installation folder by setting <code>bUseMyGamesDirectory=0</code> in the <code>Skyrim.ini</code> file.
+	<li>Total load order is stored in a <code>loadorder.txt</code> file.
+	<li><code>loadorder.txt</code> is encoded in UTF-8, optionally with or without a BOM.
+	<li><code>loadorder.txt</code> is stored alongside the <code>plugins.txt</code>, in whichever location that is.
+	<li>Both <code>plugins.txt</code> and <code>loadorder.txt</code> contain only a list of plugin filenames, one per line.
+	<li>Both <code>plugins.txt</code> and <code>loadorder.txt</code> are to be kept in synchronisation with one another: when one file is changed, the other must also be changed in the same manner (unless the change is not applicable, eg. deactivating a plugin doesn't change the contents of <code>loadorder.txt</code>).
+</ul>
+<p>There are some circumstances that produce scenarios in which the behaviour of utilities is not defined. These are detailed in the table below.
+<table>
+	<thead><tr><td>Circumstance<td>Recommended Behaviour<td>BOSS API Behaviour
+	<tbody>
+		<tr><td>An attempt is made to activate a plugin with a filename that cannot be represented in the Windows-1252 encoding.<td>Utilities check that filename strings are encoded correctly before outputting them. On a failure to convert to the correct encoding, the user should be alerted that the plugin in question cannot be activated.<td>BAPI attempts to convert the filename string, fails and returns a warning code with an associated string containing the filename in question to the client, after performing whatever other processing that was required by the function the client called. The client is then free to decide on the action taken.
+		<tr><td>The <q>plugins.txt</q> and <q>loadorder.txt</q> files become unsynchronised.<td>Utilities check for synchronisation on startup and maintain it throughout their operation, rather than re-synchronising the files on program close, for instance. This is to prevent issues for any other programs open at the same time. If desynchronisation is detected, the only standard-based recovery option is to derive <q>plugins.txt</q> from <q>loadorder.txt</q>, first getting a list of filenames to be written from <q>plugins.txt</q>. Alternatively, a utility could use some internal load order backup to restore from. See the coloured box below for a more detailed breakdown of the issue.<td>BAPI detects loss of synchronisation when a database is created and returns a warning code to the client after creating the database. The client is then free to decide on the action taken.
+</table>
+<div class="quotebox"><i>The Desynchronisation Problem</i>
+<p>If either <code>plugins.txt</code> or <code>loadorder.txt</code> are changed such that the load order of the plugins in <code>plugins.txt</code> is not the same in <code>plugins.txt</code> and <code>loadorder.txt</code>, then the difference cannot generally be precisely resolved without discarding one file's ordering. This is due to the load order of plugins in plugins.txt being weakly defined, ie. it is defined relative to other active plugins, but not in relation to inactive plugins. An example:
+<blockquote>
+If you use the API to set a load order of A,b,c,d,E,f,g where uppercase letters denote active plugins, then you use the Skyrim launcher to move A after E, then <code>plugins.txt</code> will read E,A while <code>loadorder.txt</code> remains unchanged. There is no way of knowing from the contents of plugins.txt whether you moved A after E or E before A. If these were the only two plugins, then it would not be an issue, but you also have inactive plugins interspersed amongst them, so you have the following possibilities, all of which are potentially valid, but also potentially damaging in terms of conflicts, etc.:
+<blockquote>
+b,c,d,E,A,f,g<br />
+b,c,d,E,f,A,g<br />
+b,c,d,E,f,g,A<br />
+E,A,b,c,d,f,g
+</blockquote>
+There is no way of knowing which is the correct order to choose for the full load order based on the active load order. You must therefore choose to use one of the two files' orderings. Since <code>plugins.txt</code> does not define the load order positions of inactive plugins, it is unsuitable, and <code>loadorder.txt</code> must be used. The alternative would be for a utility to restore load order from their own internal backup, hence why the standard does not define a specific behaviour, as it may be <code>loadorder.txt</code> that was altered and is now wrong.
+</blockquote>
 </div>
 
-<div id="types"><h1>Variable Types</h1>
+<h4 id="intro-lo-api">The BOSS API's Load Order Implementation</h4>
+<p>BAPI's implementation of load ordering support presents one set of functions that handle the differences between timestamp-based and textfile-based load ordering opaquely, so there is no difference in usage for clients. It is fully compatible with the community standard for textfile-based load ordering, handling all requirements internally.
+
+<h3 id="intro-boss">Overview Of BOSS</h3>
+<p>For those unfamiliar with BOSS and its files, this section gives a brief summary of its main features.
+<p>BOSS is a utility that automatically sorts a user's load order to minimise incompatibilities. It does so according to the load order of the <dfn>masterlist</dfn>, which contains the optimal load order for all plugins known to BOSS and is kept up to date via community submissions to the BOSS Development Team. Each game that BOSS supports has a separate masterlist, and BOSS will by default check for masterlist updates and download the latest one for the relevant game when it runs.
+<p>The masterlist also contains a large number of messages attached to plugins conveying information on compatibility, requirements, installation errors, dirty mod information, Bash Tag suggestions for use with the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities, and more. These messages are displayed in the BOSS Log after BOSS has run, so that the user may read them and take any action that the messages suggest.
+<p>BOSS allows users to override, or add to, the positions mods are put in and the messages attached to each mod by the masterlist using a <dfn>userlist</dfn> file.
+
+
+<h2 id="types">Variable Types</h2>
 <p>The API uses character strings and integers for information input/output. 
 <ul>
 	<li>All API strings are unsigned 8-bit character strings (uint8_t*) encoded in UTF-8.
 	<li>All API numbers and return codes are unsigned 32-bit integers (uint32_t).
 	<li>All API array sizes outputted use the unsigned data type size_t.
+	<li>File paths are case-sensitive if the underlying file system is case-sensitive.
 </ul>
 <p>The API also introduces two new structures:
 <div class="codebox">typedef struct _boss_db_int * boss_db;</div>
@@ -108,11 +151,15 @@ API Documentation</div>
     const uint8_t * name;
 } BashTag;</div>
 <p>The BashTag structure gives the Unique Identifier (UID) for each Bash Tag and the corresponding Bash Tag name.
-<p>Any arrays and strings that are set by BAPI functions should not be deallocated, as BOSS manages the memory it allocates. A string array set by BAPI lasts until another BAPI function is called that returns a string array or until either <span style="color:blue;">Load</span> or <span style="color:blue;">DestroyBossDb</span> is called. Integer arrays, BashTag arrays and strings set by BAPI have the same lifetime conditions. (Basically, BAPI only remembers the last string array, the last integer array, the last BashTag array and the last string it set for each database.)
-<p>File paths are case-sensitive if the underlying file system is case-sensitive.
+<h3 id="types-memory">Memory Management</h3>
+<p>BAPI manages the memory of strings and arrays it returns internally, so such strings and arrays should not be deallocated by the client.
+<p>A string/array returned by a function lasts until a BAPI function is called which returns data of the same type (eg. a string is stored until the client calls another function which returns a string, an integer array lasts until another integer array is returned, etc.).
+<p>Strings and arrays may also be deallocated by calling <a href="#Load">Load</a> or <a href="#DestroyBossDb">DestroyBossDb</a>. <a href="#DestroyBossDb">DestroyBossDb</a> also destroys the database passed as its argument.
+<p>The two exceptions to the above are the strings returned by <a href="#GetLastErrorDetails">GetLastErrorDetails</a> and <a href="#GetVersionString">GetVersionString</a>, which exist independently of each other and strings returned by other functions. A string returned by one of these two functions lasts until that function is called again, or until <a href="#CleanUpAPI">CleanUpAPI</a> is called.
 </div>
 
-<div id="codes"><h1>Return Codes</h1>
+<h2 id="codes">API Codes</h2>
+<h3 id="codes-return">Return Codes</h3>
 <p>The BOSS API functions uses the following uint32_t return codes to signal how a function completes. WARN return codes signify a problem that did not cause the function to exit prematurely, whereas ERROR return codes signify issues that did cause the function to exit prematurely.
 <table>
 	<thead><tr><td>Return Code<td>Description
@@ -126,22 +173,21 @@ API Documentation</div>
 		<tr><td>BOSS_API_ERROR_FILE_NOT_UTF8			<td>The specified BOSS file (masterlist or userlist) is not encoded in UTF-8.
 		<tr><td>BOSS_API_ERROR_FILE_NOT_FOUND			<td>The specified file could not be found.
 		<tr><td>BOSS_API_ERROR_MASTER_TIME_READ_FAIL	<td>The modification date of the game's master file could not be read.
-		<tr><td>BOSS_API_ERROR_MOD_TIME_WRITE_FAIL		<td>The modification date of a plugin could not be read.
+		<tr><td>BOSS_API_ERROR_MOD_TIME_READ_FAIL		<td>The modification date of a plugin could not be read.
 		<tr><td>BOSS_API_ERROR_MOD_TIME_WRITE_FAIL		<td>The modification date of a plugin could not be set.
 		<tr><td>BOSS_API_ERROR_PARSE_FAIL				<td>There was an error parsing the file.
 		<tr><td>BOSS_API_ERROR_CONDITION_EVAL_FAIL		<td>There was an error evaluating the conditionals in the masterlist.
 		<tr><td>BOSS_API_ERROR_REGEX_EVAL_FAIL			<td>There was an error evaluating the regular expressions in the masterlist.
 		<tr><td>BOSS_API_ERROR_NO_MEM					<td>The API was unable to allocate the required memory.
-		<tr><td>BOSS_API_ERROR_OVERWRITE_FAIL			<td>The API was unable to overwrite the minimal masterlist specified.
 		<tr><td>BOSS_API_ERROR_INVALID_ARGS				<td>Invalid arguments were given for the function.
 		<tr><td>BOSS_API_ERROR_NETWORK_FAIL				<td>There was an error in an Internet-related operation.
 		<tr><td>BOSS_API_ERROR_NO_INTERNET_CONNECTION	<td>No Internet connection detected.
-		<tr><td>BOSS_API_ERROR_NO_TAG_MAP				<td>No Bash Tag map has been generated yet. <span style="color:blue;">GetBashTagMap</span> must be run before <span style="color:blue;">GetModBashTags</span> to build the Bash Tag map.
-		<tr><td>BOSS_API_RETURN_MAX						<td>Matches the value of the highest-numbered return code (BOSS_API_ERROR_NO_TAG_MAP). It isn't returned by any functions.
+		<tr><td>BOSS_API_ERROR_NO_TAG_MAP				<td>No Bash Tag map has been generated yet. <a href="#GetBashTagMap">GetBashTagMap</a> must be run before <a href="#GetModBashTags">GetModBashTags</a> to build the Bash Tag map.
+		<tr><td>BOSS_API_ERROR_PLUGINS_FULL				<td>Writing the specified plugins to <q>plugins.txt</q> would bring the number of active plugins over 255, which is the maximum allowed.
+		<tr><td>BOSS_API_ERROR_GAME_NOT_FOUND			<td>The specified game could not be found.
+		<tr><td>BOSS_API_RETURN_MAX						<td>Matches the value of the highest-numbered return code. It isn't returned by any functions.
 </table>
-</div>
-
-<div id="games"><h1>Game Codes</h1>
+<h3 id="codes-game">Game Codes</h3>
 <p>The BOSS API functions uses the following uint32_t codes to specify which game the API is acting for, where distinctions between games are necessary.
 <table>
 	<thead><tr><td>Game Code<td>Game
@@ -152,104 +198,122 @@ API Documentation</div>
 		<tr><td>BOSS_API_GAME_NEHRIM	<td>Nehrim - At Fate's Edge
 		<tr><td>BOSS_API_GAME_SKYRIM	<td>The Elder Scrolls V: Skyrim
 </table>
-</div>
-
-
-
-<div id="functions"><h1>Functions</h1>
-<p>BOSS API provides the functions listed below to clients. Where a function returns a uint32_t value, this is the function's return code.
-
-<h2 id="functions-version">Version Functions</h2>
-
-<p><div class="codebox">bool <span style="color:blue;">IsCompatibleVersion</span> (const uint32_t bossVersionMajor, const uint32_t bossVersionMinor, const uint32_t bossVersionPatch);</div class="codebox">
-<p>Returns whether this version of BOSS supports the API from the given BOSS version. Abstracts BOSS API stability policy away from clients.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">GetVersionString</span> (const uint8_t ** bossVersionStr);</div>
-<p>Returns the version string for this version of BOSS. The string exists for the lifetime of the library.
-
-
-<h2 id="functions-lifecycle">Lifecycle Management Functions</h2>
-<p><div class="codebox">uint32_t <span style="color:blue;">CreateBossDb</span>  (boss_db * db, const uint32_t clientGame, const uint8_t * dataPath);</div>
-<p>Creates a database for the game specified using one of BAPI's game codes, and sets the path to the Data directory for that game. You can create multiple databases, eg. one for each game.
-<p><div class="codebox">void <span style="color:blue;">DestroyBossDb</span> (boss_db db);</div>
-<p>Explicitly manage a database's lifetime. Allows clients to free memory when they want/need to.
-
-<h2 id="functions-updating">Updater Functions</h2>
-<p>These functions require a database to be created, but Load() does not have to be called.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">UpdateMasterlist</span> (boss_db db, const uint8_t * masterlistPath);</div>
-<p>Updates the masterlist at masterlistPath to the latest version of the masterlist for the game specified when the given database was created. If there is no masterlist present, then the latest masterlist will be downloaded to masterlistPath. If the local masterlist is already at the latest version, no masterlist is downloaded.
-
-<h2 id="functions-sorting">Plugin Sorting Functions</h2>
-<p>These functions require a database to be created, but Load() does not have to be called, except for the SortMods function.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">SortMods</span> (boss_db db, const bool trialOnly, uint8_t *** sortedPlugins, size_t * listLength, size_t * lastRecPos);</div>
-<p>Sorts the mods in the data path, using the masterlist at the masterlist path, specified when the db was loaded using Load. Outputs a list of plugins, pointed to by sortedPlugins, of length pointed to by listLength. lastRecPos points to the position in the sortedPlugins list of the last plugin recognised by BOSS. If the trialOnly parameter is true, no plugins are actually redated. If trialOnly is false, then sortedPlugins, listLength and lastRecPos can be null pointers, in case you do not require the information. If one of them is null, the other two must also be null.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">GetLoadOrder</span> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</div>
-<p>Gets a list of plugins in load order, with the number of plugins given by numPlugins.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">SetLoadOrder</span> (boss_db db, uint8_t ** plugins, const size_t numPlugins);</div>
-<p>Sets the load order to the given plugins list of length numPlugins, then scans the Data directory and appends any other plugins not included in the array passed to the function.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">GetActivePlugins</span> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</div>
-<p>Returns the contents of plugins.txt.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">SetActivePlugins</span> (boss_db db, uint8_t ** plugins, const size_t numPlugins);</div>
-<p>Edits plugins.txt so that it lists the given plugins, in load order.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">GetPluginLoadOrder</span> (boss_db db, const uint8_t * plugin, size_t * index);</div>
-<p>Gets the load order of the specified plugin, giving it as index. The first position in the load order is 0.
-
-
-<p><div class="codebox">uint32_t <span style="color:blue;">SetPluginLoadOrder</span> (boss_db db, const uint8_t * plugin, const size_t index);</div>
-<p>Sets the load order of the specified plugin, removing it from its current position if it has one. The first position in the load order is 0. If the index specified is greater than the number of plugins in the load order, the plugin will be inserted at the end of the load order.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">GetIndexedPlugin</span> (boss_db db, const size_t index, uint8_t ** plugin);</div>
-<p>Gets what plugin is at the specified load order position. The first position in the load order is 0.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">IsPluginActive</span> (boss_db db, const uint8_t * plugin, bool * isActive);</div>
-<p>Checks to see if the given plugin is listed in plugins.txt.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">SetPluginActive</span> (boss_db db, const uint8_t * plugin, const bool active);</div>
-<p>If active is true, adds the plugin to plugins.txt in its load order if it is not already present. If active is false, removes the plugin from plugins.txt if it is present.
-
-
-<h2 id="functions-loading">Database Loading Functions</h2>
-
-<p><div class="codebox">uint32_t <span style="color:blue;">Load</span> (boss_db db, const uint8_t * masterlistPath, const uint8_t * userlistPath);</div>
-<p>Loads the masterlist and userlist (both files) from the paths specified, for the game specified when the given database was created. Can be called multiple times. If an error is encountered, the database remains unchanged. If userlistPath is null, then the userlist is not loaded.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">EvalConditionals</span> (boss_db db);</div>
-<p>Evaluates all conditional lines and regex mods in the loaded masterlist. This exists so that Load() doesn't need to be called whenever the mods installed are changed. Evaluation does not take place unless this function is called. Repeated calls re-evaluate the masterlist from scratch each time, ignoring the results of any previous evaluations. Only the output of <span style="color:blue;">DumpMinimal</span> and the sorting functions (minus <span style="color:blue;">SortMods</span>) is unaffected by conditional evaluation.
-
-
-<h2 id="functions-access">Database Access Functions</h2>
-<p><div class="codebox">uint32_t <span style="color:blue;">GetBashTagMap</span> (boss_db db, BashTag ** tagMap, size_t * numTags);</div>
-<p>Returns an array of the Bash Tags encountered when loading the masterlist and userlist, and the number of tags in the returned array. This function must be called prior to calling GetModBashTags(), to ensure that the Bash Tag map exists so that GetModBashTags() may return the Tags found using the correct UIDs.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">GetModBashTags</span> (boss_db db, const uint8_t * modName, uint32_t ** tagIds_added, size_t * numTags_added, uint32_t **tagIds_removed, size_t *numTags_removed, bool * userlistModified);</div>
-<p>Returns arrays of Bash Tag UIDs for Bash Tags suggested for addition and removal by BOSS's masterlist and userlist, and the number of tags in each array. modName is case-insensitive. If no Tags are found for an array, the array pointer (*tagIds) will be NULL. The userlistModified bool is true if the userlist contains Bash Tag suggestion message additions.
-
-<p><div class="codebox">uint32_t <span style="color:blue;">GetDirtyMessage</span> (boss_db db, const uint8_t * modName, uint8_t ** message, uint32_t * needsCleaning);</div>
-<p>Returns the message associated with a dirty mod and whether the mod needs cleaning. If a mod has no dirty message, *message will be NULL. modName is case-insensitive. The return values for needsCleaning are:
+<h3 id="codes-load">Load Order Method Codes</h3>
 <table>
-	<thead><tr><td>needsCleaning Value<td>Description
+	<thead><tr><td>Load Order Method Code<td>Description
+	<tbody>
+		<tr><td>BOSS_API_LOMETHOD_TIMESTAMP<td>The API is running for a game which uses the timestamp-based load order system. Oblivion, Fallout 3, Fallout: New Vegas all use this system, as does pre-v1.4.26 Skyrim.
+		<tr><td>BOSS_API_LOMETHOD_TEXTFILE<td>The API is running for a game which uses the textfile-based load order system. Skyrim v1.4.26+ uses this system.
+</table>
+<h3 id="codes-clean">Plugin Cleanliness Codes</h3>
+<table>
+	<thead><tr><td>Plugin Cleanliness Code<td>Description
 	<tbody>
 		<tr><td>BOSS_API_CLEAN_NO<td>The plugin does not need cleaning or should not be cleaned.
 		<tr><td>BOSS_API_CLEAN_YES<td>The plugin needs cleaning.
 		<tr><td>BOSS_API_CLEAN_UNKNOWN<td>BOSS does not know whether the plugin needs cleaning or not, or if it should not be cleaned.
 </table>
-<br />
-<p><div class="codebox">uint32_t <span style="color:blue;">DumpMinimal</span> (boss_db db, const uint8_t * outputFile, const bool overwrite);</div>
-<p>Writes a minimal masterlist that only contains mods that have Bash Tag suggestions and/or dirty messages, plus the Tag suggestions and/or dirty messages themselves. outputFile is the path to use for output. If outputFile already exists, it will only be overwritten if overwrite is true.
-</div>
 
-<div id="examples"><h1>Examples</h1>
+
+
+<h2 id="functions">Functions</h2>
+<p>BOSS API provides the functions listed below to clients. Where a function returns a uint32_t value, this is the function's return code.
+
+<h3 id="functions-error">Error Handling Functions</h3>
+
+<p><dfn id="GetLastErrorDetails">GetLastErrorDetails</dfn> - Outputs a string giving the details of the last time an error or warning return code was returned by a function. 
+<div class="codebox">uint32_t <a href="#GetLastErrorDetails">GetLastErrorDetails</a> (const uint8_t ** <var>details</var>);</div>
+
+<h3 id="functions-version">Version Functions</h3>
+
+<p><div class="codebox">bool <a id="IsCompatibleVersion" href="#IsCompatibleVersion">IsCompatibleVersion</a> (const uint32_t bossVersionMajor, const uint32_t bossVersionMinor, const uint32_t bossVersionPatch);</div class="codebox">
+<p>Returns whether this version of BOSS supports the API from the given BOSS version. Abstracts BOSS API stability policy away from clients.
+
+<p><div class="codebox">uint32_t <a id="GetVersionString" href="#GetVersionString">GetVersionString</a> (const uint8_t ** bossVersionStr);</div>
+<p>Returns the version string for this version of the BOSS API.
+
+
+<h3 id="functions-lifecycle">Lifecycle Management Functions</h3>
+<p><div class="codebox">uint32_t <a id="CreateBossDb" href="#CreateBossDb">CreateBossDb</a>  (boss_db * db, const uint32_t clientGame, const uint8_t * dataPath);</div>
+<p>Creates a database for the game specified using one of BAPI's game codes, and sets the path to the Data directory for that game. This function also checks that plugins.txt and loadorder.txt (if they both exist) are in sync. If dataPath == NULL then the API will attempt to detect the data path of the specified game. You can create multiple databases, eg. one for each game. 
+<p><div class="codebox">void <a id="DestroyBossDb" href="#DestroyBossDb">DestroyBossDb</a> (boss_db db);</div>
+<p>Explicitly manage a database's lifetime. Allows clients to free memory when they want/need to.
+
+<p><div class="codebox">void <a id="CleanUpAPI" href="#CleanUpAPI">CleanUpAPI</a> ();</div>
+<p>Frees memory allocated to the strings returned by GetVersionString and GetLastErrorDetails.
+
+<h3 id="functions-updating">Updater Functions</h3>
+<p>These functions require a database to be created, but Load() does not have to be called.
+
+<p><div class="codebox">uint32_t <a id="UpdateMasterlist" href="#UpdateMasterlist">UpdateMasterlist</a> (boss_db db, const uint8_t * masterlistPath);</div>
+<p>Updates the masterlist at masterlistPath to the latest version of the masterlist for the game specified when the given database was created. If there is no masterlist present, then the latest masterlist will be downloaded to masterlistPath. If the local masterlist is already at the latest version, no masterlist is downloaded.
+
+<h3 id="functions-sorting">Plugin Sorting Functions</h3>
+<p>These functions require a database to be created, but Load() does not have to be called, except for the SortMods function.
+
+<p><div class="codebox">uint32_t <a id="GetLoadOrderMethod" href="#GetLoadOrderMethod">GetLoadOrderMethod</a> (boss_db db, uint32_t *method);</div>
+<p>Returns which method BOSS is using for the load order.
+
+<p><div class="codebox">uint32_t <a id="SortMods" href="#SortMods">SortMods</a> (boss_db db, const bool trialOnly, uint8_t *** sortedPlugins, size_t * listLength, size_t * lastRecPos);</div>
+<p>Sorts the mods in the data path, using the masterlist at the masterlist path, specified when the db was loaded using Load. Outputs a list of plugins, pointed to by sortedPlugins, of length pointed to by listLength. lastRecPos points to the position in the sortedPlugins list of the last plugin recognised by BOSS. If the trialOnly parameter is true, no plugins are actually redated. If trialOnly is false, then sortedPlugins, listLength and lastRecPos can be null pointers, in case you do not require the information. If one of them is null, the other two must also be null.
+
+<p><div class="codebox">uint32_t <a id="GetLoadOrder" href="#GetLoadOrder">GetLoadOrder</a> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</div>
+<p>Gets a list of plugins in load order, with the number of plugins given by numPlugins.
+
+<p><div class="codebox">uint32_t <a id="SetLoadOrder" href="#SetLoadOrder">SetLoadOrder</a> (boss_db db, uint8_t ** plugins, const size_t numPlugins);</div>
+<p>Sets the load order to the given plugins list of length numPlugins, then scans the Data directory and appends any other plugins not included in the array passed to the function.
+
+<p><div class="codebox">uint32_t <a id="GetActivePlugins" href="#GetActivePlugins">GetActivePlugins</a> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</div>
+<p>Returns the contents of plugins.txt.
+
+<p><div class="codebox">uint32_t <a id="SetActivePlugins" href="#SetActivePlugins">SetActivePlugins</a> (boss_db db, uint8_t ** plugins, const size_t numPlugins);</div>
+<p>Edits plugins.txt so that it lists the given plugins, in load order.
+
+<p><div class="codebox">uint32_t <a id="GetPluginLoadOrder" href="#GetPluginLoadOrder">GetPluginLoadOrder</a> (boss_db db, const uint8_t * plugin, size_t * index);</div>
+<p>Gets the load order of the specified plugin, giving it as index. The first position in the load order is 0.
+
+
+<p><div class="codebox">uint32_t <a id="SetPluginLoadOrder" href="#SetPluginLoadOrder">SetPluginLoadOrder</a> (boss_db db, const uint8_t * plugin, const size_t index);</div>
+<p>Sets the load order of the specified plugin, removing it from its current position if it has one. The first position in the load order is 0. If the index specified is greater than the number of plugins in the load order, the plugin will be inserted at the end of the load order.
+
+<p><div class="codebox">uint32_t <a id="GetIndexedPlugin" href="#GetIndexedPlugin">GetIndexedPlugin</a> (boss_db db, const size_t index, uint8_t ** plugin);</div>
+<p>Gets what plugin is at the specified load order position. The first position in the load order is 0.
+
+<p><div class="codebox">uint32_t <a id="IsPluginActive" href="#IsPluginActive">IsPluginActive</a> (boss_db db, const uint8_t * plugin, bool * isActive);</div>
+<p>Checks to see if the given plugin is listed in plugins.txt.
+
+<p><div class="codebox">uint32_t <a id="SetPluginActive" href="#SetPluginActive">SetPluginActive</a> (boss_db db, const uint8_t * plugin, const bool active);</div>
+<p>If active is true, adds the plugin to plugins.txt in its load order if it is not already present. If active is false, removes the plugin from plugins.txt if it is present.
+
+
+<h3 id="functions-loading">Database Loading Functions</h3>
+
+<p><div class="codebox">uint32_t <a id="Load" href="#Load">Load</a> (boss_db db, const uint8_t * masterlistPath, const uint8_t * userlistPath);</div>
+<p>Loads the masterlist and userlist (both files) from the paths specified, for the game specified when the given database was created. Can be called multiple times. If an error is encountered, the database remains unchanged. If userlistPath is null, then the userlist is not loaded.
+
+<p><div class="codebox">uint32_t <a id="EvalConditionals" href="#EvalConditionals">EvalConditionals</a> (boss_db db);</div>
+<p>Evaluates all conditional lines and regex mods in the loaded masterlist. This exists so that Load() doesn't need to be called whenever the mods installed are changed. Evaluation does not take place unless this function is called. Repeated calls re-evaluate the masterlist from scratch each time, ignoring the results of any previous evaluations. Only the output of <a href="#DumpMinimal">DumpMinimal</a> and the sorting functions (minus <a href="#SortMods">SortMods</a>) is unaffected by conditional evaluation.
+
+
+<h3 id="functions-access">Database Access Functions</h3>
+<p><div class="codebox">uint32_t <a id="GetBashTagMap" href="#GetBashTagMap">GetBashTagMap</a> (boss_db db, BashTag ** tagMap, size_t * numTags);</div>
+<p>Returns an array of the Bash Tags encountered when loading the masterlist and userlist, and the number of tags in the returned array. This function must be called prior to calling GetModBashTags(), to ensure that the Bash Tag map exists so that GetModBashTags() may return the Tags found using the correct UIDs.
+
+<p><div class="codebox">uint32_t <a id="GetModBashTags" href="#GetModBashTags">GetModBashTags</a> (boss_db db, const uint8_t * modName, uint32_t ** tagIds_added, size_t * numTags_added, uint32_t **tagIds_removed, size_t *numTags_removed, bool * userlistModified);</div>
+<p>Returns arrays of Bash Tag UIDs for Bash Tags suggested for addition and removal by BOSS's masterlist and userlist, and the number of tags in each array. modName is case-insensitive. If no Tags are found for an array, the array pointer (*tagIds) will be NULL. The userlistModified bool is true if the userlist contains Bash Tag suggestion message additions.
+
+<p><div class="codebox">uint32_t <a id="GetDirtyMessage" href="#GetDirtyMessage">GetDirtyMessage</a> (boss_db db, const uint8_t * modName, uint8_t ** message, uint32_t * needsCleaning);</div>
+<p>Returns the message associated with a dirty mod and whether the mod needs cleaning. If a mod has no dirty message, *message will be NULL. modName is case-insensitive. The return values for needsCleaning are.
+<br />
+<p><div class="codebox">uint32_t <a id="DumpMinimal" href="#DumpMinimal">DumpMinimal</a> (boss_db db, const uint8_t * outputFile, const bool overwrite);</div>
+<p>Writes a minimal masterlist that only contains mods that have Bash Tag suggestions and/or dirty messages, plus the Tag suggestions and/or dirty messages themselves. outputFile is the path to use for output. If outputFile already exists, it will only be overwritten if overwrite is true.
+
+
+<h2 id="examples">Examples</h2>
 <p>Below is a code snippet showing an example of how the BOSS API may be used.
-<h2 id="examples-python">Python</h2>
+<h3 id="examples-python">Python</h3>
 <p style="font-style:italic;">This example was written by Lojack, with minor changes by WrinklyNinja. Reproduced here with permission. (Example removed pending update.)
-<h2 id="examples-c">C++</h2>
+<h3 id="examples-c">C++</h3>
 <div class="codebox">
 #include &lt;iostream&gt;
 #include &lt;stdint.h&gt;
@@ -510,20 +574,16 @@ int main() {
 	return 0;
 }
 </div>
-</div>
 
-<div id="contact"><h1>Contact</h1>
+<h2 id="contact">Contact</h2>
 <p>The BOSS Development Team can be contacted by Private Messaging any of the handles given in the <q>Project Members</q> section of the main BOSS readme at the noted forums. 
 <p>However, for API-specific support, it is best to contact WrinklyNinja (available on both the <a href="http://forums.bethsoft.com/index.php">Bethesda Softworks Forums</a> and <a href="http://www.thenexusforums.com/">The Nexus Forums</a>), who is currently responsible for all BOSS code development, including the API. Other team members are may not be of great assistance with coding-related queries.
-<p>Developers can also request additional functionality, report any bugs encountered and discuss anything API-related in the <a href="http://forums.bethsoft.com/index.php?showtopic=1221990">offical BOSS API thread</a>. 
-</div>
+<p>Developers can also request additional functionality, report any bugs encountered and discuss anything API-related in the <a href="http://forums.bethsoft.com/index.php?showtopic=1221990">offical BOSS API thread</a>.
 
-<div id="credits"><h1>Credits</h1>
+<h2 id="credits">Credits</h2>
 <p>Credit goes to myk002 and Lojack for significant contributions to both coding and discussion from initial development through to beta testing. The BOSS API is written in C/C++ and makes use of the <a href="http://www.boost.org/">Boost</a>, <a href="http://curl.haxx.se/libcurl/">libcurl</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries.
-</div>
 
-<div id="license"><h1>License</h1>
+<h2 id="license">License</h2>
 <p>This document is part of the BOSS documentation.
 <br />Copyright (C) 2011 BOSS Development Team. 
 <br />See the file <q>BOSS ReadMe.html</q> for copying conditions.
-</div>

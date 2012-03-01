@@ -101,12 +101,12 @@ BOSS_API extern const uint32_t BOSS_API_ERROR_MOD_TIME_READ_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_MOD_TIME_WRITE_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_PARSE_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_CONDITION_EVAL_FAIL;
+BOSS_API extern const uint32_t BOSS_API_ERROR_REGEX_EVAL_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_MEM;
 BOSS_API extern const uint32_t BOSS_API_ERROR_INVALID_ARGS;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NETWORK_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION;
 BOSS_API extern const uint32_t BOSS_API_ERROR_NO_TAG_MAP;
-BOSS_API extern const uint32_t BOSS_API_ERROR_REGEX_EVAL_FAIL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_PLUGINS_FULL;
 BOSS_API extern const uint32_t BOSS_API_ERROR_GAME_NOT_FOUND;
 BOSS_API extern const uint32_t BOSS_API_RETURN_MAX;
@@ -133,7 +133,8 @@ BOSS_API extern const uint32_t BOSS_API_GAME_SKYRIM;
 //////////////////////////////
 
 // Outputs a string giving the details of the last time an error or 
-// warning return code was returned by a function.
+// warning return code was returned by a function. The string exists 
+// until this function is called again or until CleanUpAPI is called.
 BOSS_API uint32_t GetLastErrorDetails(const uint8_t ** details);
 
 
@@ -146,7 +147,8 @@ BOSS_API uint32_t GetLastErrorDetails(const uint8_t ** details);
 BOSS_API bool IsCompatibleVersion (const uint32_t bossVersionMajor, const uint32_t bossVersionMinor, const uint32_t bossVersionPatch);
 
 // Returns the version string for this version of BOSS.
-// The string exists for the lifetime of the library.
+// The string exists until this function is called again or until 
+// CleanUpAPI is called.
 BOSS_API uint32_t GetVersionString (const uint8_t ** bossVersionStr);
 
 
@@ -158,10 +160,16 @@ BOSS_API uint32_t GetVersionString (const uint8_t ** bossVersionStr);
 // they want/need to. clientGame sets the game the DB is for, and dataPath
 // is the path to that game's Data folder, and is case-sensitive if the
 // underlying filesystem is case-sensitive. This function also checks that
-// plugins.txt and loadorder.txt (if they both exist) are in sync.
+// plugins.txt and loadorder.txt (if they both exist) are in sync. If 
+// dataPath == NULL then the API will attempt to detect the data path of
+// the specified game.
 BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame, const uint8_t * dataPath);
 
+// Destroys the given DB, freeing any memory allocated as part of its use.
 BOSS_API void DestroyBossDb (boss_db db);
+
+// Frees memory allocated to version and error strings.
+BOSS_API void	  CleanUpAPI();
 
 
 ///////////////////////////////////
@@ -199,13 +207,15 @@ BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath);
 // Plugin Sorting Functions
 ////////////////////////////////
 
-//Returns which method BOSS is using for the load order.
+//Returns which method the API is using for the load order. Return values are:
+//	BOSS_API_LOMETHOD_TIMESTAMP
+//	BOSS_API_LOMETHOD_TEXTFILE
 BOSS_API uint32_t GetLoadOrderMethod(boss_db db, uint32_t *method);
 
-/* Sorts the mods in the data path, using the masterlist at the masterlist path,
- specified when the db was loaded using Load. Outputs a list of plugins, pointed to
- by sortedPlugins, of length pointed to by listLength. lastRecPos points to the 
- position in the sortedPlugins list of the last plugin recognised by BOSS.
+/* Sorts the mods in the data path, using the masterlist loaded using Load. 
+ Outputs a list of plugins, pointed to by sortedPlugins, of length pointed to 
+ by listLength. lastRecPos points to the position in the sortedPlugins list of 
+ the last plugin recognised by BOSS.
  If the trialOnly parameter is true, no plugins are actually redated.
  If trialOnly is false, then sortedPlugins, listLength and lastRecPos can be null
  pointers, in case you do not require the information. */
@@ -213,11 +223,8 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 								size_t * listLength, 
 								size_t * lastRecPos);
 
-//Does the same thing as the above SortMods, but operates on the inputted plugin list
-//instead of what's in the Data folder. NOT YET IMPLEMENTED.
-BOSS_API uint32_t SortGivenMods(boss_db db, uint8_t ** pluginsIn, uint8_t *** pluginsOut, size_t * lastRecPos);
-
-// Gets a list of plugins in load order, with the number of plugins given by numPlugins.
+// Outputs a list of the plugins installed in the data path specified when the DB was 
+// created in load order, with the number of plugins given by numPlugins.
 BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t *** plugins, size_t * numPlugins);
 
 // Sets the load order to the given plugins list of length numPlugins.
@@ -228,7 +235,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 // Returns the contents of plugins.txt.
 BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * numPlugins);
 
-// Edits plugins.txt so that it lists the given plugins, in load order.
+// Replaces plugins.txt so that it lists the given plugins, in load order.
 BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t numPlugins);
 
 // Gets the load order of the specified plugin, giving it as index. The first position 
@@ -241,8 +248,8 @@ BOSS_API uint32_t GetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 //the end of the load order.
 BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t index);
 
-// Gets what plugin is at the specified load order position. The first position in the
-// load order is 0.
+// Gets the plugin filename is at the specified load order position. The first position 
+// in the load order is 0.
 BOSS_API uint32_t GetIndexedPlugin(boss_db db, const size_t index, uint8_t ** plugin);
 
 // If (active), adds the plugin to plugins.txt in its load order if it is not already present.

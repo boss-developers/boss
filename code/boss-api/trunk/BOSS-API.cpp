@@ -51,6 +51,10 @@ static const string boss_version = IntToString(BOSS_VERSION_MAJOR)+"."+IntToStri
 // Last error details buffer.
 string lastErrorDetails = "";
 
+//Error buffer and version string output pointers (for memory management).
+uint8_t * extErrorPointer = NULL;
+uint8_t * extVersionPointer = NULL;
+
 // Structure for a single plugin's data.
 struct modEntry {
 	string name;						//Plugin filename, case NOT preserved.
@@ -252,7 +256,12 @@ BOSS_API uint32_t GetLastErrorDetails(const uint8_t ** details) {
 	if (details == NULL)  //Check for valid args.
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
-	*details = reinterpret_cast<const uint8_t *>(lastErrorDetails.c_str());
+	free(extErrorPointer);
+
+	extErrorPointer = StringToUint8_tString(lastErrorDetails);
+	if (extErrorPointer == NULL)
+		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	*details = extErrorPointer;
 	return ReturnCode(BOSS_API_OK);
 }
 
@@ -277,8 +286,13 @@ BOSS_API bool IsCompatibleVersion (const uint32_t bossVersionMajor, const uint32
 BOSS_API uint32_t GetVersionString (const uint8_t ** bossVersionStr) {
 	if (bossVersionStr == NULL) //Check for valid args.
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+	
+	free(extVersionPointer);
 
-	*bossVersionStr = reinterpret_cast<const uint8_t *>(boss_version.c_str());
+	extVersionPointer = StringToUint8_tString(boss_version);
+	if (extVersionPointer == NULL)
+		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	*bossVersionStr = extVersionPointer;
 	return ReturnCode(BOSS_API_OK);
 }
 
@@ -385,6 +399,11 @@ BOSS_API void     DestroyBossDb (boss_db db) {
 	delete db;
 }
 
+BOSS_API void	  CleanUpAPI() {
+	free(extErrorPointer);
+	free(extVersionPointer);
+}
+
 
 ///////////////////////////////////
 // Database Loading Functions
@@ -414,10 +433,11 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	if (masterlist_path.empty())
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Masterlist path is empty.");
 	fs::path userlist_path;
-	if (userlistPath != NULL)
+	if (userlistPath != NULL) {
 		userlist_path = fs::path(reinterpret_cast<const char *>(userlistPath));	
-	if (userlist_path.empty())
+		if (userlist_path.empty())
 			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Userlist path is empty.");
+	}
 		
 	//PARSING - Masterlist
 	try {
@@ -694,12 +714,6 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	if (listLength != NULL)
 		*listLength = db->extStringArraySize;
 
-	return ReturnCode(BOSS_API_OK);
-}
-
-//Does the same thing as the above SortMods, but operates on the inputted plugin list
-//instead of what's in the Data folder.
-BOSS_API uint32_t SortGivenMods(boss_db db, uint8_t ** pluginsIn, uint8_t *** pluginsOut, size_t * lastRecPos) {
 	return ReturnCode(BOSS_API_OK);
 }
 
