@@ -426,7 +426,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 				string localDate, remoteDate;
 				uint32_t localRevision, remoteRevision;
 				uiStruct ui(progDia);
-				UpdateMasterlist(ui, localRevision, localDate, remoteRevision, remoteDate);
+				UpdateMasterlist(masterlist_path(), ui, localRevision, localDate, remoteRevision, remoteDate);
 				if (localRevision == remoteRevision) {
 					output << PARAGRAPH << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
 					progDia->Pulse(wxT("Masterlist already up-to-date."));

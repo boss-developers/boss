@@ -44,9 +44,9 @@ namespace boss {
 
 //#define BOSSGUI
 
-#	define BOSS_VERSION_MAJOR 2
-#	define BOSS_VERSION_MINOR 0
-#	define BOSS_VERSION_PATCH 0
+	BOSS_COMMON const uint32_t BOSS_VERSION_MAJOR = 1;
+	BOSS_COMMON const uint32_t BOSS_VERSION_MINOR = 0;
+	BOSS_COMMON const uint32_t BOSS_VERSION_PATCH = 0;
 
 	BOSS_COMMON extern const string gl_boss_release_date;
 	

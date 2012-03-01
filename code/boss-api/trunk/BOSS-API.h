@@ -210,7 +210,7 @@ BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath);
 //Returns which method the API is using for the load order. Return values are:
 //	BOSS_API_LOMETHOD_TIMESTAMP
 //	BOSS_API_LOMETHOD_TEXTFILE
-BOSS_API uint32_t GetLoadOrderMethod(boss_db db, uint32_t *method);
+BOSS_API uint32_t GetLoadOrderMethod(boss_db db, uint32_t * method);
 
 /* Sorts the mods in the data path, using the masterlist loaded using Load. 
  Outputs a list of plugins, pointed to by sortedPlugins, of length pointed to 

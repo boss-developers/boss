@@ -424,7 +424,7 @@ int main(int argc, char *argv[]) {
 				string localDate, remoteDate;
 				uint32_t localRevision, remoteRevision;
 				uiStruct ui;
-				UpdateMasterlist(ui, localRevision, localDate, remoteRevision, remoteDate);
+				UpdateMasterlist(masterlist_path(), ui, localRevision, localDate, remoteRevision, remoteDate);
 				if (localRevision == remoteRevision) {
 					output << PARAGRAPH << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
 					cout << endl << "Your masterlist is already at the latest revision (" << localRevision << "; " << localDate << "). No update necessary." << endl;

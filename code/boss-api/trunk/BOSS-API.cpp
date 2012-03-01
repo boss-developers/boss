@@ -583,7 +583,7 @@ BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath) {
 			string localDate, remoteDate;
 			uint32_t localRevision, remoteRevision;
 			uiStruct ui;
-			UpdateMasterlist(ui, localRevision, localDate, remoteRevision, remoteDate);
+			UpdateMasterlist(masterlist_path, ui, localRevision, localDate, remoteRevision, remoteDate);
 			if (localRevision == remoteRevision)
 				return ReturnCode(BOSS_API_OK_NO_UPDATE_NECESSARY);
 			else
@@ -600,11 +600,16 @@ BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath) {
 ////////////////////////////////
 
 //Returns which method BOSS is using for the load order.
-BOSS_API uint32_t GetLoadOrderMethod(boss_db db, uint32_t *method) {
+BOSS_API uint32_t GetLoadOrderMethod(boss_db db, uint32_t * method) {
+	if (db == NULL || method == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
 	if (db->db_game == BOSS_API_GAME_SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"))
-		return BOSS_API_LOMETHOD_TEXTFILE;
+		*method = BOSS_API_LOMETHOD_TEXTFILE;
 	else
-		return BOSS_API_LOMETHOD_TIMESTAMP;
+		*method = BOSS_API_LOMETHOD_TIMESTAMP;
+
+	return ReturnCode(BOSS_API_OK);
 }
 
 // Sorts the mods in the data path, using the masterlist at the masterlist path,
@@ -797,7 +802,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 					tempItem = Item(filename.stem().string());
 				else
 					tempItem = Item(filename.string());
-				if (loadorder.FindItem(filename.string()) == loSize) {  //If the plugin is not present, add it.
+				if (loadorder.FindItem(tempItem.Name()) == loSize) {  //If the plugin is not present, add it.
 					loadorder.Insert(loSize, tempItem);
 					loSize++;
 				}

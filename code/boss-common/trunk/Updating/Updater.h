@@ -35,10 +35,12 @@
 #include <string>
 #include <vector>
 #include <boost/cstdint.hpp>
+#include <boost/filesystem.hpp>
 #include "Common/DllDef.h"
 
 namespace boss {
 	using namespace std;
+	namespace fs = boost::filesystem;
 
 	struct BOSS_COMMON uiStruct {
 		void * p;
@@ -66,7 +68,7 @@ namespace boss {
 
 	//Updates the local masterlist to the latest available online.
 	//Throws boss_error exception on fail.
-	BOSS_COMMON void UpdateMasterlist(uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate);
+	BOSS_COMMON void UpdateMasterlist(fs::path file, uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate);
 
 
 	////////////////////////

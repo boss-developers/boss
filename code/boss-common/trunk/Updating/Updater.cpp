@@ -31,7 +31,6 @@
 #include "Common/Error.h"
 #include "Support/Logger.h"
 
-#include <boost/filesystem.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
@@ -54,7 +53,6 @@
 #endif
 
 namespace boss {
-	namespace fs = boost::filesystem;
 	namespace unicode = boost::spirit::unicode;
 	namespace qi = boost::spirit::qi;
 	namespace phoenix = boost::phoenix;
@@ -276,14 +274,14 @@ namespace boss {
 
 		//Now parse list to extract file info.
 		string::const_iterator start = fileBuffer.begin(), end = fileBuffer.end();
+
 		bool p = qi::phrase_parse(start,end,
-			'"' 
-			>> qi::lexeme[+(unicode::char_ - '"')[phoenix::ref(file) = qi::_1]]
-			>> '"' 
-			>> (
-				(qi::lit(":") >> qi::hex - qi::eol)[phoenix::ref(crc) = qi::_1]
-				| qi::eps[phoenix::ref(crc) = 0]
-			)
+
+			qi::lit('"') //> qi::lexeme[+(unicode::char_ - qi::lit('"'))] //> qi::lit('"')
+		//	> qi::lit(':')
+		//	> qi::hex
+			>> +unicode::char_
+
 			, unicode::space);
 
 		if (!p || start != end) {
@@ -292,16 +290,16 @@ namespace boss {
 	}
 
 	//Gets the revision number of the local masterlist. Throws exception on error.
-	void GetLocalMasterlistRevisionDate(uint32_t& revision, string& date) {
+	void GetLocalMasterlistRevisionDate(fs::path file, uint32_t& revision, string& date) {
 		string line, newline = "Masterlist Revision:";
 		ifstream mlist;
 		char cbuffer[MAXLENGTH];
 		size_t pos1,pos2,pos3;
 
-		if (fs::exists(masterlist_path())) {
-			mlist.open(masterlist_path().c_str());
+		if (fs::exists(file)) {
+			mlist.open(file.c_str());
 			if (mlist.fail())
-				throw boss_error(BOSS_ERROR_FILE_READ_FAIL, masterlist_path().string());
+				throw boss_error(BOSS_ERROR_FILE_READ_FAIL, file.string());
 			while (!mlist.eof()) {
 				mlist.getline(cbuffer,sizeof(cbuffer));
 				line=cbuffer;
@@ -527,7 +525,7 @@ namespace boss {
 	////////////////////////
 
 	//Updates the local masterlist to the latest available online. Throws exception on error.
-	BOSS_COMMON void UpdateMasterlist(uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate) {							//cURL handle
+	BOSS_COMMON void UpdateMasterlist(fs::path file, uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate) {							//cURL handle
 		string url, buffer, newline;		//A bunch of strings.
 		ifstream mlist;								//Input stream.
 		ofstream out;								//Output stream.
@@ -537,7 +535,7 @@ namespace boss {
 		string oldline = "Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
 
 		//Get local and remote masterlist info.
-		GetLocalMasterlistRevisionDate(localRevision, localDate);
+		GetLocalMasterlistRevisionDate(file, localRevision, localDate);
 		GetRemoteMasterlistRevisionDate(remoteRevision, remoteDate);
 
 		//Is an update available?
@@ -564,24 +562,24 @@ namespace boss {
 			}
 
 			//Set file.
-			ui.file = masterlist_path().string();
+			ui.file = file.string();
 
 			//Now download and install.
-			DownloadFile(ui, url, masterlist_path().string() + ".new");
-			InstallFile(masterlist_path().string() + ".new", masterlist_path().string());
+			DownloadFile(ui, url, file.string() + ".new");
+			InstallFile(file.string() + ".new", file.string());
 
 			//Now replace the SVN info in the downloaded file with the revision and date.
 			newline = "Masterlist Revision: "+IntToString(remoteRevision)+" ("+remoteDate+")";
 
-			fileToBuffer(masterlist_path(), buffer);
+			fileToBuffer(file, buffer);
 
 			size_t pos = buffer.find(oldline);
 			if (pos != string::npos)
-				buffer.replace(pos,oldline.length(),newline);
+				buffer.replace(pos, oldline.length(), newline);
 
-			out.open(masterlist_path().c_str());
+			out.open(file.c_str());
 			if (out.fail())
-				throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, masterlist_path().string());
+				throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 			out << buffer;
 			out.close();
 		}

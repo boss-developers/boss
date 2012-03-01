@@ -644,10 +644,13 @@ namespace boss {
 			else if (iter->key == ".inc")
 				CSSIncompatibility = iter->value;
 			//Game ini setting:
-			else if (iter->key == "sLocalMasterPath")
-				gl_local_data_path = fs::path(iter->value);  //Possibly incorrect, if absolute paths can be specified.
+		/*	else if (iter->key == "sLocalMasterPath") {
+				//This setting has different effects based on the game.
+				//In Oblivion, it can (apparently) take relative or absolute paths. However, I can't get it to do anything.
+				//In Skyrim, it has no effect.
+				gl_local_data_path = fs::path(iter->value);  //Incorrect if absolute paths can be specified.
 			//Back to BOSS.ini settings, now integers.
-			else if (iter->key == "iProxyPort")
+			}*/ else if (iter->key == "iProxyPort")
 				gl_proxy_port = atoi(iter->value.c_str());
 			else if (iter->key == "iRevertLevel") {
 				uint32_t value = atoi(iter->value.c_str());
@@ -711,8 +714,9 @@ namespace boss {
 			else if (iter->key == "bHideInactivePlugins")
 				HideInactivePlugins = StringToBool(iter->value);
 			//And now finally a game ini boolean setting.
-			else if (iter->key == "bUseMyGamesDirectory")
-				gl_using_local_app_data_folder = StringToBool(iter->value);
+			/*else if (iter->key == "bUseMyGamesDirectory")  //This setting only has effect if Windows' PERSONAL directory location has been altered.
+				//I can't think how to check against a default (what is the default?), so I'm disabling support for this.
+				gl_using_local_app_data_folder = StringToBool(iter->value);*/
 		}
 	}
 }
