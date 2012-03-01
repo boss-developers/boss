@@ -242,7 +242,7 @@ namespace boss {
 	//Install file by renaming it. Throws exception on error.
 	void InstallFile(string downloadedName, string installedName) {
 		try {
-			fs::rename(boss_path / downloadedName, boss_path / installedName);
+			fs::rename(fs::path(downloadedName), fs::path(installedName));
 		} catch (fs::filesystem_error e) {
 			throw boss_error(BOSS_ERROR_FS_FILE_RENAME_FAIL, downloadedName, e.what());
 		}
@@ -277,14 +277,13 @@ namespace boss {
 
 		bool p = qi::phrase_parse(start,end,
 
-			qi::lit('"') //> qi::lexeme[+(unicode::char_ - qi::lit('"'))] //> qi::lit('"')
-		//	> qi::lit(':')
-		//	> qi::hex
-			>> +unicode::char_
+			'"' > qi::lexeme[+(unicode::char_ - '"')[phoenix::ref(file) = qi::_1]] > '"'
+			> qi::lit(':')
+			> qi::hex[phoenix::ref(crc) = qi::_1]
 
 			, unicode::space);
 
-		if (!p || start != end) {
+		if (!p/* || start != end*/) {
 			throw boss_error(BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL);
 		}
 	}
@@ -671,7 +670,7 @@ namespace boss {
 		releaseURL = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/";
 
 		//Get file info.
-		GetBOSSFileInfo(releaseURL + "checksum.txt", file, crc);
+		GetBOSSFileInfo(releaseURL + "checksums.txt", file, crc);
 			
 		//Set file.
 		ui.file = boss_path.string() + '/' + file;
