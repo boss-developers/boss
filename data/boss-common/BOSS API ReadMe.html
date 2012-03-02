@@ -7,8 +7,8 @@
 	body > div {margin-bottom:5em;}
 	ol li, ul li {margin-bottom:10px;}
 	li ul, li ol {margin-top:0.4em;}
-	.codebox, .quotebox, .logbox {margin:0 40px; border:gray 1px dashed; display:table; min-width:300px; padding:5px 30px 5px 10px;}
-	.codebox {margin-top:3em; font-family:monospace; background:#F5F5F5; line-height:20px; white-space:pre;}
+	.codebox, .quotebox, .logbox {margin:0 40px; border:gray 1px dashed; display:table; padding:5px 10px 5px 10px;}
+	.codebox {font-family:monospace; background:#F5F5F5; line-height:20px; margin:0.5em 0 2em 2em;}
 	.quotebox {background:#E6E6FA;}
 	.logbox {background:#E0FFFF; line-height:30px;}
 	.logbox > ul > li {line-height:20px;}
@@ -18,8 +18,8 @@
 	table {border:1px solid #CCCCCC; border-spacing:0; border-collapse:separate; margin:1em;}
 	thead > tr td {font-weight:bold}
 	
-	h1, h2, h3, h4 { padding:0.2em 20px;}
 	h2 {margin-top:3em;}
+	h3 {margin-top:2em;}
 	
 	a:link { text-decoration:none; }
 	a:hover { text-decoration:underline; }
@@ -34,22 +34,26 @@
 	<li><a href="#intro">Introduction</a>
 	<ol>
 		<li><a href="#intro-lo">Introduction To Load Ordering</a>
+		<li><a href="#intro-textfile">The Textfile-based Load Order Standard</a>
 		<li><a href="#intro-boss">Overview Of BOSS</a>
 	</ol>
 	<li><a href="#types">Variable Types</a>
+	<li><a href="#memory">Memory Management</a>
 	<li><a href="#codes">API Codes</a>
 	<ol>
+		<li><a href="#codes-return">Return Codes</a>
 		<li><a href="#codes-games">Game Codes</a>
 		<li><a href="#codes-load">Load Order Method Codes</a>
 		<li><a href="#codes-clean">Plugin Cleanliness Codes</a>
 	</ol>
 	<li><a href="#functions">Functions</a>
 	<ol>
+		<li><a href="#functions-error">Error Handling Functions</a>
 		<li><a href="#functions-version">Version Functions</a>
-		<li><a href="#functions-updating">Updater Functions</a>
 		<li><a href="#functions-lifecycle">Lifecycle Management Functions</a>
-		<li><a href="#functions-sorting">Plugin Sorting Functions</a>
 		<li><a href="#functions-loading">Database Loading Functions</a>
+		<li><a href="#functions-updating">Updater Functions</a>
+		<li><a href="#functions-sorting">Plugin Sorting Functions</a>
 		<li><a href="#functions-access">Database Access Functions</a>
 	</ol>
 	<li><a href="#examples">Examples</a>
@@ -90,7 +94,7 @@
 <p>In Oblivion, Nehrim, Fallout 3, Fallout: New Vegas and early versions (pre-1.4.26) of Skyrim, load order is decided by the relative timestamps of plugins in the game's Data directory. An installed plugin's load order is therefore an intrinsic property of that plugin.
 <p>In Skyrim v1.4.26+, a new textfile-based load order system was introduced, in which load order is decide by the order in which plugins are listed in <code>plugins.txt</code>. This brought with it a fundamental change, in that load order is no longer an intrinsic property of a plugin. This has the result that inactive plugins do not have any load order.
 
-<h4 id="intro-lo-standard">The Textfile-based Load Order Standard</h4>
+<h3 id="intro-textfile">The Textfile-based Load Order Standard</h3>
 <p>As the load order of all plugins, not just inactive plugins, is important, a standard solution that would allow ordering of inactive plugins was decided by Lojack (Wrye Bash), Kaburke (Nexus Mod Manager), WrinklyNinja (BOSS) and Dark0ne (owner of the Nexus sites) that could serve the community's needs. The BOSS API contains the canonical implementation of this standard.
 <p>The standard dictates that:
 <ul>
@@ -123,8 +127,6 @@ E,A,b,c,d,f,g
 There is no way of knowing which is the correct order to choose for the full load order based on the active load order. You must therefore choose to use one of the two files' orderings. Since <code>plugins.txt</code> does not define the load order positions of inactive plugins, it is unsuitable, and <code>loadorder.txt</code> must be used. The alternative would be for a utility to restore load order from their own internal backup, hence why the standard does not define a specific behaviour, as it may be <code>loadorder.txt</code> that was altered and is now wrong.
 </blockquote>
 </div>
-
-<h4 id="intro-lo-api">The BOSS API's Load Order Implementation</h4>
 <p>BAPI's implementation of load ordering support presents one set of functions that handle the differences between timestamp-based and textfile-based load ordering opaquely, so there is no difference in usage for clients. It is fully compatible with the community standard for textfile-based load ordering, handling all requirements internally.
 
 <h3 id="intro-boss">Overview Of BOSS</h3>
@@ -137,21 +139,23 @@ There is no way of knowing which is the correct order to choose for the full loa
 <h2 id="types">Variable Types</h2>
 <p>The API uses character strings and integers for information input/output. 
 <ul>
-	<li>All API strings are unsigned 8-bit character strings (uint8_t*) encoded in UTF-8.
-	<li>All API numbers and return codes are unsigned 32-bit integers (uint32_t).
-	<li>All API array sizes outputted use the unsigned data type size_t.
+	<li>All strings are unsigned 8-bit character strings (uint8_t*) encoded in UTF-8 and are null-terminated.
+	<li>All codes are unsigned 32-bit integers (uint32_t).
+	<li>All array sizes and positions use the unsigned data type size_t.
 	<li>File paths are case-sensitive if the underlying file system is case-sensitive.
 </ul>
 <p>The API also introduces two new structures:
-<div class="codebox">typedef struct _boss_db_int * boss_db;</div>
+<div class="codebox" id="boss_db">typedef struct _boss_db_int * boss_db;</div>
 <p>The boss_db structure abstracts the definition of BOSS's internal state while still providing type safety across the API.
 
-<div class="codebox">typedef struct {
+<div class="codebox" style="white-space:pre;" id ="BashTag">typedef struct {
     uint32_t id;
     const uint8_t * name;
 } BashTag;</div>
 <p>The BashTag structure gives the Unique Identifier (UID) for each Bash Tag and the corresponding Bash Tag name.
-<h3 id="types-memory">Memory Management</h3>
+
+
+<h2 id="memory">Memory Management</h2>
 <p>BAPI manages the memory of strings and arrays it returns internally, so such strings and arrays should not be deallocated by the client.
 <p>A string/array returned by a function lasts until a BAPI function is called which returns data of the same type (eg. a string is stored until the client calls another function which returns a string, an integer array lasts until another integer array is returned, etc.).
 <p>Strings and arrays may also be deallocated by calling <a href="#Load">Load</a> or <a href="#DestroyBossDb">DestroyBossDb</a>. <a href="#DestroyBossDb">DestroyBossDb</a> also destroys the database passed as its argument.
@@ -188,7 +192,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 		<tr><td>BOSS_API_RETURN_MAX						<td>Matches the value of the highest-numbered return code. It isn't returned by any functions.
 </table>
 <h3 id="codes-game">Game Codes</h3>
-<p>The BOSS API functions uses the following uint32_t codes to specify which game the API is acting for, where distinctions between games are necessary.
+<p>The following uint32_t codes are used by <a href="#CreateBossDb">CreateBossDb</a> to specify which game the API is acting for, in cases where distinctions between games are necessary.
 <table>
 	<thead><tr><td>Game Code<td>Game
 	<tbody>
@@ -199,6 +203,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 		<tr><td>BOSS_API_GAME_SKYRIM	<td>The Elder Scrolls V: Skyrim
 </table>
 <h3 id="codes-load">Load Order Method Codes</h3>
+<p>The following codes are used by <a href="#GetLoadOrderMethod">GetLoadOrderMethod</a> to signify which load order system BAPI is running for.
 <table>
 	<thead><tr><td>Load Order Method Code<td>Description
 	<tbody>
@@ -206,6 +211,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 		<tr><td>BOSS_API_LOMETHOD_TEXTFILE<td>The API is running for a game which uses the textfile-based load order system. Skyrim v1.4.26+ uses this system.
 </table>
 <h3 id="codes-clean">Plugin Cleanliness Codes</h3>
+<p>The following codes are returned by <a href="#GetDirtyMessage">GetDirtyMessage</a> to signify the cleanliness status of the plugin passed to the function.
 <table>
 	<thead><tr><td>Plugin Cleanliness Code<td>Description
 	<tbody>
@@ -220,93 +226,205 @@ There is no way of knowing which is the correct order to choose for the full loa
 <p>BOSS API provides the functions listed below to clients. Where a function returns a uint32_t value, this is the function's return code.
 
 <h3 id="functions-error">Error Handling Functions</h3>
-
-<p><dfn id="GetLastErrorDetails">GetLastErrorDetails</dfn> - Outputs a string giving the details of the last time an error or warning return code was returned by a function. 
+<dfn id="GetLastErrorDetails">GetLastErrorDetails</dfn> - Outputs a string giving the details of the last time an error or warning return code was returned by a function.
+<ul>
+	<li><var>details</var> - A pointer to the error details string outputted by the function.
+</ul>
 <div class="codebox">uint32_t <a href="#GetLastErrorDetails">GetLastErrorDetails</a> (const uint8_t ** <var>details</var>);</div>
 
+
+
+
 <h3 id="functions-version">Version Functions</h3>
+<dfn id="IsCompatibleVersion">IsCompatibleVersion</dfn> - Returns whether this version of BOSS supports the API from the given BOSS version. Abstracts BOSS API stability policy away from clients.
+<ul>
+	<li><var>bossVersionMajor</var> - The major version number (<b>major</b>.minor.patch) of the API version the client's code was written for.
+	<li><var>bossVersionMinor</var> - The minor version number (major.<b>minor</b>.patch) of the API version the client's code was written for.
+	<li><var>bossVersionPatch</var> - The patch version number (major.minor.<b>patch</b>) of the API version the client's code was written for.
+</ul>
+<div class="codebox">bool <a href="#IsCompatibleVersion">IsCompatibleVersion</a> (const uint32_t bossVersionMajor, const uint32_t bossVersionMinor, const uint32_t bossVersionPatch);</div>
 
-<p><div class="codebox">bool <a id="IsCompatibleVersion" href="#IsCompatibleVersion">IsCompatibleVersion</a> (const uint32_t bossVersionMajor, const uint32_t bossVersionMinor, const uint32_t bossVersionPatch);</div class="codebox">
-<p>Returns whether this version of BOSS supports the API from the given BOSS version. Abstracts BOSS API stability policy away from clients.
-
-<p><div class="codebox">uint32_t <a id="GetVersionString" href="#GetVersionString">GetVersionString</a> (const uint8_t ** bossVersionStr);</div>
-<p>Returns the version string for this version of the BOSS API.
+<dfn id="GetVersionString">GetVersionString</dfn> - Returns the version string for the loaded version of the BOSS API.
+<ul>
+	<li><var>bossVersionStr</var> - A pointer to the version string outputted by the function.
+</ul>
+<div class="codebox">uint32_t <a href="#GetVersionString">GetVersionString</a> (const uint8_t ** bossVersionStr);</div>
 
 
 <h3 id="functions-lifecycle">Lifecycle Management Functions</h3>
-<p><div class="codebox">uint32_t <a id="CreateBossDb" href="#CreateBossDb">CreateBossDb</a>  (boss_db * db, const uint32_t clientGame, const uint8_t * dataPath);</div>
-<p>Creates a database for the game specified using one of BAPI's game codes, and sets the path to the Data directory for that game. This function also checks that plugins.txt and loadorder.txt (if they both exist) are in sync. If dataPath == NULL then the API will attempt to detect the data path of the specified game. You can create multiple databases, eg. one for each game. 
-<p><div class="codebox">void <a id="DestroyBossDb" href="#DestroyBossDb">DestroyBossDb</a> (boss_db db);</div>
-<p>Explicitly manage a database's lifetime. Allows clients to free memory when they want/need to.
+<dfn id="CreateBossDb">CreateBossDb</dfn> - Creates a database for one of the games supported by the API, and sets the path to the Data directory for that game. You can create multiple databases. If the <var>clientGame</var> uses the textfile-based load order system, this function also checks that plugins.txt and loadorder.txt are in sync, provided that they both exist. 
+<ul>
+	<li><var>db</var> - A pointer to the database created by the function.
+	<li><var>clientGame</var> - A game code specifying which game to create the database for.
+	<li><var>dataPath</var> - A string containing the relative or absolute path to the Data folder for the game specified by <var>clientGame</var>. If <code>NULL</code>, the API attempts to detect the path of the game by scanning sibling folders of the working directory and by scanning the Windows Registry for an install path key.
+</ul>
+<div class="codebox">uint32_t <a href="#CreateBossDb">CreateBossDb</a> (boss_db * db, const uint32_t clientGame, const uint8_t * dataPath);</div>
 
-<p><div class="codebox">void <a id="CleanUpAPI" href="#CleanUpAPI">CleanUpAPI</a> ();</div>
-<p>Frees memory allocated to the strings returned by GetVersionString and GetLastErrorDetails.
+<dfn id="DestroyBossDb">DestroyBossDb</dfn> - Explicitly manage a database's lifetime. Allows clients to free memory when they want/need to. Destroys the given DB, freeing any memory allocated as part of its use.
+<ul>
+	<li><var>db</var> - The database to be destroyed.
+</ul>
+<div class="codebox">void <a href="#DestroyBossDb">DestroyBossDb</a> (boss_db db);</div>
 
-<h3 id="functions-updating">Updater Functions</h3>
-<p>These functions require a database to be created, but Load() does not have to be called.
-
-<p><div class="codebox">uint32_t <a id="UpdateMasterlist" href="#UpdateMasterlist">UpdateMasterlist</a> (boss_db db, const uint8_t * masterlistPath);</div>
-<p>Updates the masterlist at masterlistPath to the latest version of the masterlist for the game specified when the given database was created. If there is no masterlist present, then the latest masterlist will be downloaded to masterlistPath. If the local masterlist is already at the latest version, no masterlist is downloaded.
-
-<h3 id="functions-sorting">Plugin Sorting Functions</h3>
-<p>These functions require a database to be created, but Load() does not have to be called, except for the SortMods function.
-
-<p><div class="codebox">uint32_t <a id="GetLoadOrderMethod" href="#GetLoadOrderMethod">GetLoadOrderMethod</a> (boss_db db, uint32_t *method);</div>
-<p>Returns which method BOSS is using for the load order.
-
-<p><div class="codebox">uint32_t <a id="SortMods" href="#SortMods">SortMods</a> (boss_db db, const bool trialOnly, uint8_t *** sortedPlugins, size_t * listLength, size_t * lastRecPos);</div>
-<p>Sorts the mods in the data path, using the masterlist at the masterlist path, specified when the db was loaded using Load. Outputs a list of plugins, pointed to by sortedPlugins, of length pointed to by listLength. lastRecPos points to the position in the sortedPlugins list of the last plugin recognised by BOSS. If the trialOnly parameter is true, no plugins are actually redated. If trialOnly is false, then sortedPlugins, listLength and lastRecPos can be null pointers, in case you do not require the information. If one of them is null, the other two must also be null.
-
-<p><div class="codebox">uint32_t <a id="GetLoadOrder" href="#GetLoadOrder">GetLoadOrder</a> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</div>
-<p>Gets a list of plugins in load order, with the number of plugins given by numPlugins.
-
-<p><div class="codebox">uint32_t <a id="SetLoadOrder" href="#SetLoadOrder">SetLoadOrder</a> (boss_db db, uint8_t ** plugins, const size_t numPlugins);</div>
-<p>Sets the load order to the given plugins list of length numPlugins, then scans the Data directory and appends any other plugins not included in the array passed to the function.
-
-<p><div class="codebox">uint32_t <a id="GetActivePlugins" href="#GetActivePlugins">GetActivePlugins</a> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</div>
-<p>Returns the contents of plugins.txt.
-
-<p><div class="codebox">uint32_t <a id="SetActivePlugins" href="#SetActivePlugins">SetActivePlugins</a> (boss_db db, uint8_t ** plugins, const size_t numPlugins);</div>
-<p>Edits plugins.txt so that it lists the given plugins, in load order.
-
-<p><div class="codebox">uint32_t <a id="GetPluginLoadOrder" href="#GetPluginLoadOrder">GetPluginLoadOrder</a> (boss_db db, const uint8_t * plugin, size_t * index);</div>
-<p>Gets the load order of the specified plugin, giving it as index. The first position in the load order is 0.
-
-
-<p><div class="codebox">uint32_t <a id="SetPluginLoadOrder" href="#SetPluginLoadOrder">SetPluginLoadOrder</a> (boss_db db, const uint8_t * plugin, const size_t index);</div>
-<p>Sets the load order of the specified plugin, removing it from its current position if it has one. The first position in the load order is 0. If the index specified is greater than the number of plugins in the load order, the plugin will be inserted at the end of the load order.
-
-<p><div class="codebox">uint32_t <a id="GetIndexedPlugin" href="#GetIndexedPlugin">GetIndexedPlugin</a> (boss_db db, const size_t index, uint8_t ** plugin);</div>
-<p>Gets what plugin is at the specified load order position. The first position in the load order is 0.
-
-<p><div class="codebox">uint32_t <a id="IsPluginActive" href="#IsPluginActive">IsPluginActive</a> (boss_db db, const uint8_t * plugin, bool * isActive);</div>
-<p>Checks to see if the given plugin is listed in plugins.txt.
-
-<p><div class="codebox">uint32_t <a id="SetPluginActive" href="#SetPluginActive">SetPluginActive</a> (boss_db db, const uint8_t * plugin, const bool active);</div>
-<p>If active is true, adds the plugin to plugins.txt in its load order if it is not already present. If active is false, removes the plugin from plugins.txt if it is present.
-
+<dfn id="CleanUpAPI">CleanUpAPI</dfn> - Frees memory allocated to the strings returned by <a href="#GetVersionString">GetVersionString</a> and <a href="#GetLastErrorDetails">GetLastErrorDetails</a>.
+<div class="codebox">void <a href="#CleanUpAPI">CleanUpAPI</a> ();</div>
 
 <h3 id="functions-loading">Database Loading Functions</h3>
 
-<p><div class="codebox">uint32_t <a id="Load" href="#Load">Load</a> (boss_db db, const uint8_t * masterlistPath, const uint8_t * userlistPath);</div>
-<p>Loads the masterlist and userlist (both files) from the paths specified, for the game specified when the given database was created. Can be called multiple times. If an error is encountered, the database remains unchanged. If userlistPath is null, then the userlist is not loaded.
+<dfn id="Load">Load</dfn> - Loads the masterlist and userlist from the paths specified, for the game specified when the given database was created. Can be called multiple times. If an error is encountered, the database remains unchanged. Calling this function for a database that has already been loaded will reload it, freeing any memory allocated by functions that take a <code>boss_db</code> argument, and scanning the data directory specified when the database was created for newly added plugins.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>masterlistPath</var> - A string containing the relative or absolute path to the masterlist file that should be loaded.
+	<li><var>userlistPath</var> - A string containing the relative or absolute path to the userlist file that should be loaded. If <code>NULL</code>, no userlist will be loaded.
+</ul>
+<div class="codebox">uint32_t <a href="#Load">Load</a> (boss_db db, const uint8_t * masterlistPath, const uint8_t * userlistPath);</div>
 
-<p><div class="codebox">uint32_t <a id="EvalConditionals" href="#EvalConditionals">EvalConditionals</a> (boss_db db);</div>
-<p>Evaluates all conditional lines and regex mods in the loaded masterlist. This exists so that Load() doesn't need to be called whenever the mods installed are changed. Evaluation does not take place unless this function is called. Repeated calls re-evaluate the masterlist from scratch each time, ignoring the results of any previous evaluations. Only the output of <a href="#DumpMinimal">DumpMinimal</a> and the sorting functions (minus <a href="#SortMods">SortMods</a>) is unaffected by conditional evaluation.
+<dfn id="EvalConditionals">EvalConditionals</dfn> - Evaluates all conditional lines and regex mods in the loaded masterlist. This exists so that <a href="#Load">Load</a> doesn't need to be called whenever the mods installed are changed. Evaluation does not take place unless this function is called. Repeated calls re-evaluate the masterlist from scratch each time, ignoring the results of any previous evaluations. This function affects the results of <a href="#GetBashTagMap">GetBashTagMap</a>, <a href="#GetModBashTags">GetModBashTags</a> and <a href="#GetDirtyMessage">GetDirtyMessage</a>.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+</ul>
+<div class="codebox">uint32_t <a href="#EvalConditionals">EvalConditionals</a> (boss_db db);</div>
+
+<h3 id="functions-updating">Updater Functions</h3>
+
+<dfn id="UpdateMasterlist">UpdateMasterlist</dfn> - Updates the masterlist at masterlistPath to the latest version of the masterlist for the game specified when the given database was created. If there is no masterlist present, then the latest masterlist will be downloaded to masterlistPath. If the local masterlist is already at the latest version, no masterlist is downloaded. Does not require <a href="#Load">Load</a> to have been called previously. 
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>masterlistPath</var> - A string containing the relative or absolute path to the masterlist file that should be created or updated.
+</ul>
+<div class="codebox">uint32_t <a href="#UpdateMasterlist">UpdateMasterlist</a> (boss_db db, const uint8_t * masterlistPath);</div>
+
+<h3 id="functions-sorting">Plugin Sorting Functions</h3>
+<p>These functions require a database to be created, but only <a href="#SortMods">SortMods</a> requires <a href="#SortMods">Load</a> to have been called.<br /><br />
+
+<dfn id="GetLoadOrderMethod">GetLoadOrderMethod</dfn> - Returns which method BOSS is using for the load order.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>method</var> - The load order method code returned for the load order system that is being used by the database <var>db</var>.
+</ul>
+<div class="codebox">uint32_t <a href="#GetLoadOrderMethod">GetLoadOrderMethod</a> (boss_db db, uint32_t * method);</div>
+
+<dfn id="SortMods">SortMods</dfn> - Sorts the mods for the database's game, using the masterlist loaded by <a href="#load">Load</a>. Outputs a list of plugins in their new load order. If <var>trialOnly</var> is <code>false</code>, then <var>sortedPlugins</var>, <var>listLength</var> and <var>lastRecPos</var> can either all be valid pointers, or can all be <code>NULL</code>.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>trialOnly</var> - If true, the function only outputs how BOSS would sort the order without actually making any load order changes.
+	<li><var>sortedPlugins</var> - A pointer to the outputted array of plugins in their new load order. If the API encounters duplicate plugin filenames (possible with the textfile-based load order system), it will discard all but the copy highest in the load order.
+	<li><var>listLength</var> - A pointer to the outputted size of the <var>sortedPlugins</var> array.
+	<li><var>lastRecPos</var> - A pointer to the outputted index number of the position in <var>sortedPlugins</var> which holds the last plugin listed that is recognised by BOSS.
+</ul>
+<div class="codebox">uint32_t <a href="#SortMods">SortMods</a> (boss_db db, const bool trialOnly, uint8_t *** sortedPlugins, size_t * listLength, size_t * lastRecPos);</div>
+
+<dfn id="GetLoadOrder">GetLoadOrder</dfn> - Outputs a list of installed plugins in load order.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>plugins</var> - A pointer to the outputted array of plugins in load order. If the API encounters duplicate plugin filenames (possible with the textfile-based load order system), it will discard all but the copy highest in the load order.
+	<li><var>numPlugins</var> - A pointer to the outputted size of the <var>plugins</var> array.
+</ul>
+<div class="codebox">uint32_t <a href="#GetLoadOrder">GetLoadOrder</a> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</div>
+
+<dfn id="SetLoadOrder">SetLoadOrder</dfn> - Sets the load order to the passed plugin array, then scans the Data directory and appends any plugins not included in the passed array to the end of the new load order.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>plugins</var> - The inputted array of plugins in their new load order.
+	<li><var>numPlugins</var> - The size of the <var>plugins</var> array.
+</ul>
+<div class="codebox">uint32_t <a href="#SetLoadOrder">SetLoadOrder</a> (boss_db db, uint8_t ** plugins, const size_t numPlugins);</div>
+
+<dfn id="GetActivePlugins">GetActivePlugins</dfn> - Returns the contents of plugins.txt.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>plugins</var> - The outputted array of active plugins. If the textfile-base load order system is being used, these plugins will be in load order, otherwise their order is undefined.
+	<li><var>numPlugins</var> - The size of the outputted <var>plugins</var> array.
+</ul>
+<div class="codebox">uint32_t <a href="#GetActivePlugins">GetActivePlugins</a> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</div>
+
+<dfn id="SetActivePlugins">SetActivePlugins</dfn> - Replace the current contents of plugins.txt with the given plugins.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>plugins</var> - The inputted array of plugins to be made active. If the textfile-base load order system is being used, these plugins will be written in load order, otherwise they are written as ordered in the array.
+	<li><var>numPlugins</var> - The size of the <var>plugins</var> array.
+</ul>
+<p><div class="codebox">uint32_t <a href="#SetActivePlugins">SetActivePlugins</a> (boss_db db, uint8_t ** plugins, const size_t numPlugins);</div>
+
+<dfn id="GetPluginLoadOrder">GetPluginLoadOrder</dfn> - Gets the load order position of the specified plugin.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>plugin</var> - A string containing the filename of the plugin to get the load order of.
+	<li><var>index</var> - A pointer to the outputted load order index of the inputted plugin. The index of the plugin at the top of the load order is 0.
+</ul>
+<div class="codebox">uint32_t <a href="#GetPluginLoadOrder">GetPluginLoadOrder</a> (boss_db db, const uint8_t * plugin, size_t * index);</div>
+
+<dfn id="SetPluginLoadOrder">SetPluginLoadOrder</dfn> - Sets the load order of the specified plugin, moving it from its current position.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>plugin</var> - A string containing the filename of the plugin to set the load order of.
+	<li><var>index</var> - The load order index to be set for the inputted plugin. The index of the plugin at the top of the load order is 0. If the index specified is greater than the number of plugins in the load order, the plugin will be inserted at the end of the load order.
+</ul>
+<div class="codebox">uint32_t <a href="#SetPluginLoadOrder">SetPluginLoadOrder</a> (boss_db db, const uint8_t * plugin, const size_t index);</div>
+
+<dfn id="GetIndexedPlugin">GetIndexedPlugin</dfn> - Get what plugin is at the specified load order position. The first position in the load order is 0.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>index</var> - The load order index to be looked at. The index of the plugin at the top of the load order is 0.
+	<li><var>plugin</var> - A pointer to the outputted filename of the plugin at <var>index</var> in the load order.
+</ul>
+<div class="codebox">uint32_t <a href="#GetIndexedPlugin">GetIndexedPlugin</a> (boss_db db, const size_t index, uint8_t ** plugin);</div>
+
+<dfn id="IsPluginActive">IsPluginActive</dfn> - Checks to see if the given plugin is listed in plugins.txt.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>plugin</var> - A string containing the filename of the plugin to check the active/inactive status of.
+	<li><var>isActive</var> - A pointer to the boolean output. The output is <code>true</code> if the plugin is active, and <code>false</code> otherwise.
+</ul>
+<div class="codebox">uint32_t <a href="#IsPluginActive">IsPluginActive</a> (boss_db db, const uint8_t * plugin, bool * isActive);</div>
+
+<dfn id="SetPluginActive">SetPluginActive</dfn> - If active is true, adds the plugin to plugins.txt in its load order if it is not already present. If active is false, removes the plugin from plugins.txt if it is present.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>plugin</var> - A string containing the filename of the plugin to change the active/inactive status of.
+	<li><var>active</var> - Whether to activate or deactivate the plugin. If <code>true</code>, then the plugin is activated if it is not already active. If <code>false</code>, the plugin is deactivated unless it is already inactive.
+</ul>
+<div class="codebox">uint32_t <a href="#SetPluginActive">SetPluginActive</a> (boss_db db, const uint8_t * plugin, const bool active);</div>
 
 
 <h3 id="functions-access">Database Access Functions</h3>
-<p><div class="codebox">uint32_t <a id="GetBashTagMap" href="#GetBashTagMap">GetBashTagMap</a> (boss_db db, BashTag ** tagMap, size_t * numTags);</div>
-<p>Returns an array of the Bash Tags encountered when loading the masterlist and userlist, and the number of tags in the returned array. This function must be called prior to calling GetModBashTags(), to ensure that the Bash Tag map exists so that GetModBashTags() may return the Tags found using the correct UIDs.
 
-<p><div class="codebox">uint32_t <a id="GetModBashTags" href="#GetModBashTags">GetModBashTags</a> (boss_db db, const uint8_t * modName, uint32_t ** tagIds_added, size_t * numTags_added, uint32_t **tagIds_removed, size_t *numTags_removed, bool * userlistModified);</div>
-<p>Returns arrays of Bash Tag UIDs for Bash Tags suggested for addition and removal by BOSS's masterlist and userlist, and the number of tags in each array. modName is case-insensitive. If no Tags are found for an array, the array pointer (*tagIds) will be NULL. The userlistModified bool is true if the userlist contains Bash Tag suggestion message additions.
+<dfn id="GetBashTagMap">GetBashTagMap</dfn> - Returns an array of the Bash Tags encountered when loading the masterlist and userlist. This function must be called prior to calling <a href="#GetModBashTags">GetModBashTags</a>, to ensure that the Bash Tag map exists so that <a href="#GetModBashTags">GetModBashTags</a> may return the Tags found using the correct UIDs.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>tagMap</var> - A pointer to the outputted array of <a href="#BashTag">BashTag</a> structures.
+	<li><var>numTags</var> - A pointer to the size of the <var>tagMap</var> array.
+</ul>
+<div class="codebox">uint32_t <a href="#GetBashTagMap">GetBashTagMap</a> (boss_db db, BashTag ** tagMap, size_t * numTags);</div>
 
-<p><div class="codebox">uint32_t <a id="GetDirtyMessage" href="#GetDirtyMessage">GetDirtyMessage</a> (boss_db db, const uint8_t * modName, uint8_t ** message, uint32_t * needsCleaning);</div>
-<p>Returns the message associated with a dirty mod and whether the mod needs cleaning. If a mod has no dirty message, *message will be NULL. modName is case-insensitive. The return values for needsCleaning are.
-<br />
-<p><div class="codebox">uint32_t <a id="DumpMinimal" href="#DumpMinimal">DumpMinimal</a> (boss_db db, const uint8_t * outputFile, const bool overwrite);</div>
-<p>Writes a minimal masterlist that only contains mods that have Bash Tag suggestions and/or dirty messages, plus the Tag suggestions and/or dirty messages themselves. outputFile is the path to use for output. If outputFile already exists, it will only be overwritten if overwrite is true.
+<dfn id="GetModBashTags">GetModBashTags</dfn> - Returns arrays of Bash Tag UIDs for Bash Tags suggested for addition and removal by BOSS's masterlist and userlist. <a href="#GetBashTagMap">GetBashTagMap</a> must be called before calling this function in order to assign UIDs to Bash Tags.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>modName</var> - A string containing the filename of the plugin to look up Bash Tag suggestions for.
+	<li><var>tagIds_added</var> - A pointer to the outputted array of UIDs of the Bash Tags suggested for addition to the specified plugin. <code>NULL</code> if no Bash Tag additions are suggested.
+	<li><var>numTags_added</var> - A pointer to the size of the <var>tagIds_added</var> array. 0 if <var>tagIds_added</var> is <code>NULL</code>.
+	<li><var>tagIds_removed</var> - A pointer to the outputted array of UIDs of the Bash Tags suggested for removal from the specified plugin. <code>NULL</code> if no Bash Tag removals are suggested.
+	<li><var>numTags_removed</var> - A pointer to the size of the <var>tagIds_removed</var> array. 0 if <var>tagIds_removed</var> is <code>NULL</code>.
+	<li><var>userlistModified</var> - A pointer to a boolean that is <code>true</code> if the userlist contains Bash Tag suggestion message alterations for the specified plugin, and <code>false</code> otherwise.
+</ul>
+<div class="codebox">uint32_t <a href="#GetModBashTags">GetModBashTags</a> (boss_db db, const uint8_t * modName, uint32_t ** tagIds_added, size_t * numTags_added, uint32_t **tagIds_removed, size_t *numTags_removed, bool * userlistModified);</div>
+
+<dfn id="GetDirtyMessage">GetDirtyMessage</dfn> - Returns the message associated with a dirty mod and whether the mod needs cleaning. If a mod has no dirty message, *message will be NULL. modName is case-insensitive.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>modName</var> - A string containing the filename of the plugin to look up dirty status information for.
+	<li><var>message</var> - A pointer to the outputted dirty message attached to the specified plugin. If the plugin has no dirty message, <var>message</var> will be <code>NULL</code>.
+	<li><var>needsCleaning</var> - A pointer to the outputted plugin cleanliness code for the specified plugin.
+</ul>
+<div class="codebox">uint32_t <a href="#GetDirtyMessage">GetDirtyMessage</a> (boss_db db, const uint8_t * modName, uint8_t ** message, uint32_t * needsCleaning);</div>
+
+<dfn id="DumpMinimal">DumpMinimal</dfn> - Writes a minimal masterlist that only contains mods that have Bash Tag suggestions and/or dirty messages, plus the Tag suggestions and/or dirty messages themselves.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>outputFile</var> - A string containing the relative or absolute path to the file to which the minimal masterlist shall be written.
+	<li><var>overwrite</var> - If <code>true</code> and <var>outputFile</var> already exists, the existing file will be overwritten. If <code>false</code> and <var>outputFile</var> already exists, no data will be written. Otherwise, data will be written to <var>outputFile</var>.
+</ul>
+<div class="codebox">uint32_t <a href="#DumpMinimal">DumpMinimal</a> (boss_db db, const uint8_t * outputFile, const bool overwrite);</div>
 
 
 <h2 id="examples">Examples</h2>
@@ -314,7 +432,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 <h3 id="examples-python">Python</h3>
 <p style="font-style:italic;">This example was written by Lojack, with minor changes by WrinklyNinja. Reproduced here with permission. (Example removed pending update.)
 <h3 id="examples-c">C++</h3>
-<div class="codebox">
+<div class="codebox" style="white-space: pre;">
 #include &lt;iostream&gt;
 #include &lt;stdint.h&gt;
 #include &lt;fstream&gt;
@@ -576,14 +694,14 @@ int main() {
 </div>
 
 <h2 id="contact">Contact</h2>
-<p>The BOSS Development Team can be contacted by Private Messaging any of the handles given in the <q>Project Members</q> section of the main BOSS readme at the noted forums. 
-<p>However, for API-specific support, it is best to contact WrinklyNinja (available on both the <a href="http://forums.bethsoft.com/index.php">Bethesda Softworks Forums</a> and <a href="http://www.thenexusforums.com/">The Nexus Forums</a>), who is currently responsible for all BOSS code development, including the API. Other team members are may not be of great assistance with coding-related queries.
+<p>Contact information for the BOSS Development Team may be found in the <q><a href="#BOSS ReadMe.html#members">Project Members</a></q> section of the main BOSS readme. For API-specific support it is best to contact WrinklyNinja, who played a large role in setting up the textfile-based load order standard, created the API, and is currently responsible for BOSS code development.
 <p>Developers can also request additional functionality, report any bugs encountered and discuss anything API-related in the <a href="http://forums.bethsoft.com/index.php?showtopic=1221990">offical BOSS API thread</a>.
 
 <h2 id="credits">Credits</h2>
-<p>Credit goes to myk002 and Lojack for significant contributions to both coding and discussion from initial development through to beta testing. The BOSS API is written in C/C++ and makes use of the <a href="http://www.boost.org/">Boost</a>, <a href="http://curl.haxx.se/libcurl/">libcurl</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries.
+<p>Credit goes to myk002 and Lojack for significant contributions to the API's development from initial template submission through to beta testing. Credit also goes to kaburke for his contribution to the beta testing of the API. 
+<p>The BOSS API is written in C/C++ and makes use of the <a href="http://www.boost.org/">Boost</a>, <a href="http://curl.haxx.se/libcurl/">libcurl</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries.
 
 <h2 id="license">License</h2>
 <p>This document is part of the BOSS documentation.
-<br />Copyright (C) 2011 BOSS Development Team. 
+<br />Copyright (C) 2012 BOSS Development Team. 
 <br />See the file <q>BOSS ReadMe.html</q> for copying conditions.
