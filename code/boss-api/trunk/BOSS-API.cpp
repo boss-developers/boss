@@ -213,26 +213,26 @@ void GetBashTagsFromString(const string message, boost::unordered_set<string>& t
 
 //This allocates memory - don't forget to free it later.
 uint8_t * StringToUint8_tString(string str) {
-	uint8_t * p = (uint8_t*)malloc((str.length() + 1) * sizeof(uint8_t));
-	if (p == NULL)
-		return p;
+	size_t length = str.length() + 1;
+	uint8_t * p = new uint8_t[length];
+
 	for (size_t j=0; j < str.length(); j++) {
 		p[j] = str[j];
 	}
-	p[str.length()] = '\0';
+	p[length - 1] = '\0';
 	return p;
 }
 
 void DestroyPointers(boss_db db) {
-	free(db->extTagMap);
-	free(db->extAddedTagIds);
-	free(db->extRemovedTagIds);
-	free(db->extString);
+	delete[] db->extTagMap;
+	delete[] db->extAddedTagIds;
+	delete[] db->extRemovedTagIds;
+	delete[] db->extString;
 
 	if (db->extStringArray != NULL) {
 		for (size_t i=0; i<db->extStringArraySize; i++)
-			free(db->extStringArray[i]);  //Clear all the uint8_t strings created.
-		free(db->extStringArray);  //Clear the string array.
+			delete[] db->extStringArray[i];  //Clear all the uint8_t strings created.
+		delete[] db->extStringArray;  //Clear the string array.
 	}
 }
 
@@ -257,11 +257,13 @@ BOSS_API uint32_t GetLastErrorDetails(const uint8_t ** details) {
 	if (details == NULL)  //Check for valid args.
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
-	free(extErrorPointer);
+	delete[] extErrorPointer;
 
-	extErrorPointer = StringToUint8_tString(lastErrorDetails);
-	if (extErrorPointer == NULL)
+	try {
+		extErrorPointer = StringToUint8_tString(lastErrorDetails);
+	} catch (bad_alloc &e) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	}
 	*details = extErrorPointer;
 	return ReturnCode(BOSS_API_OK);
 }
@@ -288,11 +290,13 @@ BOSS_API uint32_t GetVersionString (const uint8_t ** bossVersionStr) {
 	if (bossVersionStr == NULL) //Check for valid args.
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 	
-	free(extVersionPointer);
+	delete[] extVersionPointer;
 
-	extVersionPointer = StringToUint8_tString(boss_version);
-	if (extVersionPointer == NULL)
+	try {
+		extVersionPointer = StringToUint8_tString(boss_version);
+	} catch (bad_alloc &e) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	}
 	*bossVersionStr = extVersionPointer;
 	return ReturnCode(BOSS_API_OK);
 }
@@ -313,15 +317,22 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 	else if (clientGame != OBLIVION && clientGame != FALLOUT3 && clientGame != FALLOUTNV && clientGame != NEHRIM && clientGame != SKYRIM)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Invalid game specified.");
 
-	boss_db retVal = new _boss_db_int;
-	if (retVal == NULL)
+	boss_db retVal;
+	try {
+		retVal = new _boss_db_int;
+	} catch (bad_alloc &e) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	}
 
 	//Set the locale to get encoding conversions working correctly.
-	setlocale(LC_CTYPE, "");
-	locale global_loc = locale();
-	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
-	boost::filesystem::path::imbue(loc);
+	try {
+		setlocale(LC_CTYPE, "");
+		locale global_loc = locale();
+		locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
+		boost::filesystem::path::imbue(loc);
+	} catch (bad_alloc &e) {
+		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	}
 
 	//Set game. Because this is a global and there may be multiple DBs for different games,
 	//each time a DB's function is called, it should be reset. Same with dataPath.
@@ -401,8 +412,8 @@ BOSS_API void     DestroyBossDb (boss_db db) {
 }
 
 BOSS_API void	  CleanUpAPI() {
-	free(extErrorPointer);
-	free(extVersionPointer);
+	delete[] extErrorPointer;
+	delete[] extVersionPointer;
 }
 
 
@@ -671,14 +682,15 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	//Free memory if already used.
 	if (db->extStringArray != NULL) {
 		for (size_t i=0; i<db->extStringArraySize; i++)
-			free(db->extStringArray[i]);  //Clear all the uint8_t strings created.
-		free(db->extStringArray);  //Clear the string array.
+			delete[] db->extStringArray[i];  //Clear all the uint8_t strings created.
+		delete[] db->extStringArray;  //Clear the string array.
 	}
 
 	//Need to throw out any repeats. Keep only the first instance of a plugin.
 	boost::unordered_set<string> hashset;
 	vector<Item> items = modlist.Items();
 	vector<Item>::iterator itemIter = items.begin();
+	string lastRec = items[modlist.LastRecognisedPos()].Name();
 	while (itemIter != items.end()) {
 		//Check if plugin is in hashset. If not, add it.
 		//If it is, remove it from the items vector.
@@ -689,6 +701,9 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 			++itemIter;
 		}
 	}
+	//Now need to set the last rec pos again in case it changed.
+	modlist.Items(items);
+	modlist.LastRecognisedPos(modlist.FindItem(lastRec));
 
 	vector<uint8_t *> mods;
 	size_t max = items.size();
@@ -702,9 +717,12 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 					return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
 				}
 			}
-			uint8_t * p = StringToUint8_tString(items[i].Name());
-			if (p == NULL)
+			uint8_t * p;
+			try {
+				p = StringToUint8_tString(items[i].Name());
+			} catch (bad_alloc &e) {
 				return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+			}
 			mods.push_back(p);
 		}
 		if (i == modlist.LastRecognisedPos() && lastRecPos != NULL)
@@ -723,9 +741,11 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 
 	//Now create external array.
 	db->extStringArraySize = mods.size();
-	db->extStringArray = (uint8_t**)malloc(db->extStringArraySize * sizeof(uint8_t*));
-	if (db->extStringArray == NULL)
+	try {
+		db->extStringArray = new uint8_t*[db->extStringArraySize];
+	} catch (bad_alloc &e) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	}
 	for (size_t i=0; i < db->extStringArraySize; i++)
 		db->extStringArray[i] = mods[i];
 	
@@ -753,8 +773,8 @@ BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t *** plugins, size_t * numPlug
 	//Free memory if already used.
 	if (db->extStringArray != NULL) {
 		for (size_t i=0; i<db->extStringArraySize; i++)
-			free(db->extStringArray[i]);  //Clear all the uint8_t strings created.
-		free(db->extStringArray);  //Clear the string array.
+			delete[] db->extStringArray[i];  //Clear all the uint8_t strings created.
+		delete[] db->extStringArray;  //Clear the string array.
 	}
 
 	ItemList loadorder;
@@ -781,15 +801,19 @@ BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t *** plugins, size_t * numPlug
 
 	//Allocate memory.
 	db->extStringArraySize = items.size();
-	db->extStringArray = (uint8_t**)malloc(db->extStringArraySize * sizeof(uint8_t*));
-	if (db->extStringArray == NULL)
+	try {
+		db->extStringArray = new uint8_t*[db->extStringArraySize];
+	} catch (bad_alloc &e) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	}
 
 	//Set indices.
 	for (size_t i=0; i < db->extStringArraySize; i++) {
-		db->extStringArray[i] = StringToUint8_tString(items[i].Name());
-		if (db->extStringArray[i] == NULL)
+		try {
+			db->extStringArray[i] = StringToUint8_tString(items[i].Name());
+		} catch (bad_alloc &e) {
 			return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+		}
 	}
 	
 	//Set outputs.
@@ -883,8 +907,8 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 	//Free memory if already used.
 	if (db->extStringArray != NULL) {
 		for (size_t i=0; i<db->extStringArraySize; i++)
-			free(db->extStringArray[i]);  //Clear all the uint8_t strings created.
-		free(db->extStringArray);  //Clear the string array.
+			delete[] db->extStringArray[i];  //Clear all the uint8_t strings created.
+		delete[] db->extStringArray;  //Clear the string array.
 	}
 
 	//Load plugins.txt.
@@ -914,15 +938,19 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 		}
 	}
 	
-	db->extStringArray = (uint8_t**)malloc(db->extStringArraySize * sizeof(uint8_t*));
-	if (db->extStringArray == NULL)
+	try {
+		db->extStringArray = new uint8_t*[db->extStringArraySize];
+	} catch (bad_alloc &e) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	}
 
 	//Set indices.
 	for (size_t i=0; i < db->extStringArraySize; i++) {
-		db->extStringArray[i] = StringToUint8_tString(items[i].Name());
-		if (db->extStringArray[i] == NULL)
+		try {
+			db->extStringArray[i] = StringToUint8_tString(items[i].Name());
+		} catch (bad_alloc &e) {
 			return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+		}
 	}
 	
 	//Set outputs.
@@ -1110,7 +1138,7 @@ BOSS_API uint32_t GetIndexedPlugin(boss_db db, const size_t index, uint8_t ** pl
 	*plugin = NULL;
 
 	//Free memory if already used.
-	free(db->extString);
+	delete[] db->extString;
 
 	//Now get the load order.
 	ItemList loadorder;
@@ -1125,9 +1153,11 @@ BOSS_API uint32_t GetIndexedPlugin(boss_db db, const size_t index, uint8_t ** pl
 		return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND);
 
 	//Allocate memory.
-	db->extString = StringToUint8_tString(loadorder.Items()[index].Name());
-	if (db->extString == NULL)
+	try {
+		db->extString = StringToUint8_tString(loadorder.Items()[index].Name());
+	} catch (bad_alloc &e) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	}
 	
 	//Set outputs.
 	*plugin = db->extString;
@@ -1384,19 +1414,23 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * plugin,
 	size_t numRemoved = tagsRemovedUIDs.size();
 
 	//Free memory.
-	free(db->extAddedTagIds);
-	free(db->extRemovedTagIds);
+	delete[] db->extAddedTagIds;
+	delete[] db->extRemovedTagIds;
 	
 	//Allocate memory.
-	db->extAddedTagIds = (uint32_t*) malloc(numAdded * sizeof(uint32_t));
-	if (db->extAddedTagIds == NULL)
+	try {
+		db->extAddedTagIds = new uint32_t[numAdded];
+	} catch (bad_alloc &e) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	}
 	for (size_t i=0; i < numAdded; i++)
 		db->extAddedTagIds[i] = tagsAddedUIDs[i];
 
-	db->extRemovedTagIds = (uint32_t*) malloc(numRemoved * sizeof(uint32_t));
-	if (db->extRemovedTagIds == NULL)
+	try {
+		db->extRemovedTagIds = new uint32_t[numRemoved];
+	} catch (bad_alloc &e) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	}
 	for (size_t i=0; i < numRemoved; i++)
 		db->extRemovedTagIds[i] = tagsRemovedUIDs[i];
 
@@ -1442,9 +1476,11 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * plugin,
 		vector<Message> messages = db->filteredMasterlist.Items()[pos].Messages();
 		for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter) {
 			if (messageIter->Key() == DIRTY) {
-				db->extString = StringToUint8_tString(messageIter->Data());
-				if (db->extString == NULL)
+				try {
+					db->extString = StringToUint8_tString(messageIter->Data());
+				} catch (bad_alloc &e) {
 					return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+				}
 				 *message = db->extString;
 
 				if (messageIter->Data().find("Do not clean.") != string::npos)  //Mod should not be cleaned.
