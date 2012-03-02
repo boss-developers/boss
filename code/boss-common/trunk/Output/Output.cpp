@@ -1041,13 +1041,17 @@ namespace boss {
 		stringstream outString;
 		string::iterator strIter = inString.begin();
 		//I need to use a UTF-8 string iterator. See UTF-CPP for usage.
-		utf8::iterator<string::iterator> iter(strIter, strIter, inString.end());
-		for (iter; iter.base() != inString.end(); ++iter) {
-			boost::unordered_map<uint32_t, char>::iterator mapIter = utf8toEnc.find(*iter);
-			if (mapIter != utf8toEnc.end())
-				outString << mapIter->second;
-			else
-				throw boss_error(BOSS_ERROR_ENCODING_CONVERSION_FAIL, inString);
+		try {
+			utf8::iterator<string::iterator> iter(strIter, strIter, inString.end());
+			for (iter; iter.base() != inString.end(); ++iter) {
+				boost::unordered_map<uint32_t, char>::iterator mapIter = utf8toEnc.find(*iter);
+				if (mapIter != utf8toEnc.end())
+					outString << mapIter->second;
+				else
+					throw boss_error(BOSS_ERROR_ENCODING_CONVERSION_FAIL, inString);
+			}
+		} catch (...) {
+			throw boss_error(BOSS_ERROR_ENCODING_CONVERSION_FAIL, inString);
 		}
 		return outString.str();
 	}
@@ -1057,7 +1061,11 @@ namespace boss {
 		for (string::iterator iter = inString.begin(); iter != inString.end(); ++iter) {
 			boost::unordered_map<char, uint32_t>::iterator mapIter = encToUtf8.find(*iter);
 			if (mapIter != encToUtf8.end()) {
-				utf8::append(mapIter->second, back_inserter(outString));
+				try {
+					utf8::append(mapIter->second, back_inserter(outString));
+				} catch (...) {
+					throw boss_error(BOSS_ERROR_ENCODING_CONVERSION_FAIL, inString);
+				}
 			} else
 				throw boss_error(BOSS_ERROR_ENCODING_CONVERSION_FAIL, inString);
 		}

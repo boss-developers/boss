@@ -441,6 +441,32 @@ namespace boss {
 				sort(items.begin(),items.end());
 				LOG_DEBUG("Reading user mods done: %" PRIuS " total mods found.", items.size());
 			}
+		} else if (path == loadorder_path()) {
+
+			if (!fs::exists(path))
+				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, path.string());
+			else if (!ValidateUTF8File(path))  //plugins.txt is not going to be UTF-8.
+				throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, path.string());
+
+			//loadorder.txt is simple enough that we can avoid needing the full modlist parser which has the crashing issue.
+			//It's just a text file with a plugin filename on each line. Skip lines which are blank or start with '#'.
+			 std::ifstream in(path.c_str());
+			 if (in.fail())
+				 throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
+
+			 string line;
+			 
+			 while (in.good()) {
+				 getline(in, line);
+
+				 if (line.empty() || line[0] == '#')  //Character comparison is OK because it's ASCII.
+					 continue;
+
+				 items.push_back(Item(line));
+			 }
+			 in.close();
+
+			 Items(items);
 		} else {
 			Skipper skipper;
 			if (path == plugins_path()) //We should skip ini comments. (#)

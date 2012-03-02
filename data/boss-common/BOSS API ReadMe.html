@@ -100,9 +100,9 @@
 <ul>
 	<li>Active load order is stored in <code>plugins.txt</code>.
 	<li><code>plugins.txt</code> is encoded in Windows-1252.
-	<li><code>plugins.txt</code> is by default stored in the user's local application data folder, eg. <code>C:\Users\WrinklyNinja\AppData\Local\Skyrim\plugins.txt</code> on Windows Vista/7. Its location can be changed to the Skyrim's installation folder by setting <code>bUseMyGamesDirectory=0</code> in the <code>Skyrim.ini</code> file.
+	<li><code>plugins.txt</code> is by default stored in the user's local application data folder, eg. <code>C:\Users\WrinklyNinja\AppData\Local\Skyrim\plugins.txt</code> on Windows Vista/7.
 	<li>Total load order is stored in a <code>loadorder.txt</code> file.
-	<li><code>loadorder.txt</code> is encoded in UTF-8, optionally with or without a BOM.
+	<li><code>loadorder.txt</code> is encoded in UTF-8, <strong>without</strong> a Byte Order Mark.
 	<li><code>loadorder.txt</code> is stored alongside the <code>plugins.txt</code>, in whichever location that is.
 	<li>Both <code>plugins.txt</code> and <code>loadorder.txt</code> contain only a list of plugin filenames, one per line.
 	<li>Both <code>plugins.txt</code> and <code>loadorder.txt</code> are to be kept in synchronisation with one another: when one file is changed, the other must also be changed in the same manner (unless the change is not applicable, eg. deactivating a plugin doesn't change the contents of <code>loadorder.txt</code>).
@@ -113,6 +113,7 @@
 	<tbody>
 		<tr><td>An attempt is made to activate a plugin with a filename that cannot be represented in the Windows-1252 encoding.<td>Utilities check that filename strings are encoded correctly before outputting them. On a failure to convert to the correct encoding, the user should be alerted that the plugin in question cannot be activated.<td>BAPI attempts to convert the filename string, fails and returns a warning code with an associated string containing the filename in question to the client, after performing whatever other processing that was required by the function the client called. The client is then free to decide on the action taken.
 		<tr><td>The <q>plugins.txt</q> and <q>loadorder.txt</q> files become unsynchronised.<td>Utilities check for synchronisation on startup and maintain it throughout their operation, rather than re-synchronising the files on program close, for instance. This is to prevent issues for any other programs open at the same time. If desynchronisation is detected, the only standard-based recovery option is to derive <q>plugins.txt</q> from <q>loadorder.txt</q>, first getting a list of filenames to be written from <q>plugins.txt</q>. Alternatively, a utility could use some internal load order backup to restore from. See the coloured box below for a more detailed breakdown of the issue.<td>BAPI detects loss of synchronisation when a database is created and returns a warning code to the client after creating the database. The client is then free to decide on the action taken.
+		<tr><td>For one reason or another, a plugin becomes listed twice in <code>loadorder.txt</code>.<td>Utilities use the earliest-listed instance of that plugin, as this is most likely to be correct.<td>The API ignores all but the earliest-listed instance of a plugin, neither operating on or returning any other instance.
 </table>
 <div class="quotebox"><i>The Desynchronisation Problem</i>
 <p>If either <code>plugins.txt</code> or <code>loadorder.txt</code> are changed such that the load order of the plugins in <code>plugins.txt</code> is not the same in <code>plugins.txt</code> and <code>loadorder.txt</code>, then the difference cannot generally be precisely resolved without discarding one file's ordering. This is due to the load order of plugins in plugins.txt being weakly defined, ie. it is defined relative to other active plugins, but not in relation to inactive plugins. An example:

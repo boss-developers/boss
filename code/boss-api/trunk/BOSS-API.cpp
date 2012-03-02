@@ -1176,6 +1176,11 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 	data_path = db->db_data_path;
 	gl_current_game = db->db_game;
 
+	//Catch Skyrim.esm and Update.esm for Skyrim.
+	string pluginStr = string(reinterpret_cast<const char *>(plugin));
+	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0") && (pluginStr == "Skyrim.esm" || pluginStr == "Update.esm"))
+		return ReturnCode(BOSS_API_OK);
+
 	//Load plugins.txt.
 	ItemList pluginsList;
 	try {
@@ -1183,8 +1188,6 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 	} catch (boss_error e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
-
-	string pluginStr = string(reinterpret_cast<const char *>(plugin));
 
 	//Check if the given plugin is in plugins.txt.
 	if (pluginsList.FindItem(pluginStr) != pluginsList.Items().size() && !active) //Exists, but shouldn't.
