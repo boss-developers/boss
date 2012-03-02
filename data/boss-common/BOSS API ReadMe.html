@@ -323,7 +323,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 </ul>
 <div class="codebox">uint32_t <a href="#GetLoadOrder">GetLoadOrder</a> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</div>
 
-<dfn id="SetLoadOrder">SetLoadOrder</dfn> - Sets the load order to the passed plugin array, then scans the Data directory and appends any plugins not included in the passed array to the end of the new load order.
+<dfn id="SetLoadOrder">SetLoadOrder</dfn> - Sets the load order to the passed plugin array, then scans the Data directory and appends any plugins not included in the passed array to the end of the new load order. Only the game's master file may be positioned at the top of the load order. If the client game is Skyrim, then only <code>Update.esm</code> may be positioned in the second position from the top of the load order.
 <ul>
 	<li><var>db</var> - The database the function acts on.
 	<li><var>plugins</var> - The inputted array of plugins in their new load order.
@@ -355,7 +355,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 </ul>
 <div class="codebox">uint32_t <a href="#GetPluginLoadOrder">GetPluginLoadOrder</a> (boss_db db, const uint8_t * plugin, size_t * index);</div>
 
-<dfn id="SetPluginLoadOrder">SetPluginLoadOrder</dfn> - Sets the load order of the specified plugin, moving it from its current position.
+<dfn id="SetPluginLoadOrder">SetPluginLoadOrder</dfn> - Sets the load order of the specified plugin, moving it from its current position. Only the game's master file may be positioned at the top of the load order. If the client game is Skyrim, then only <code>Update.esm</code> may be positioned in the second position from the top of the load order.
 <ul>
 	<li><var>db</var> - The database the function acts on.
 	<li><var>plugin</var> - A string containing the filename of the plugin to set the load order of.
