@@ -406,7 +406,11 @@ namespace boss {
 
 		begin = contents.begin();
 		end = contents.end();
+		
+	//	iterator_type u32b(begin);
+	//	iterator_type u32e(end);
 
+	//	bool r = phrase_parse(u32b, u32e, grammar, skipper, iniSettings);
 		bool r = phrase_parse(begin, end, grammar, skipper, iniSettings);
 
 		if (!r || begin != end)  //This might not work correctly.

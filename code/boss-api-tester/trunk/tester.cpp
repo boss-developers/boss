@@ -198,7 +198,7 @@ int main() {
 				}
 				
 				uint8_t ** activePlugins = sortedPlugins;
-				/*
+				
 				out << "TESTING GetActivePlugins(...)" << endl;
 				ret = GetActivePlugins(db, &activePlugins, &len);
 				if (BOSS_API_OK != ret)
@@ -211,16 +211,16 @@ int main() {
 				}
 				
 				out << "TESTING SetActivePlugins(...)" << endl;
-				ret = SetActivePlugins(db, sortedPlugins, len);
+				ret = SetActivePlugins(db, activePlugins, len);
 				if (BOSS_API_OK != ret)
 					out << '\t' << "SetActivePlugins(...) failed. Error: " << ret << endl;
 				else {
 					out << '\t' << "List size: " << len << endl;
 					for (size_t i=0; i<len; i++) {
-						out << '\t' << '\t' << i << " : " << sortedPlugins[i] << endl;
+						out << '\t' << '\t' << i << " : " << activePlugins[i] << endl;
 					}
 				}
-				*/
+				
 				out << "TESTING GetPluginLoadOrder(...)" << endl;
 				ret = GetPluginLoadOrder(db, doNotCleanMod, &len);
 				if (BOSS_API_OK != ret)

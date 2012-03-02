@@ -89,6 +89,7 @@ struct _boss_db_int {
 		extRemovedTagIds = NULL;
 		extString = NULL;
 		extStringArray = NULL;
+		extStringArraySize = 0;
 	}
 
 	//Get a Bash Tag's string name from its UID.
@@ -674,7 +675,21 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 		free(db->extStringArray);  //Clear the string array.
 	}
 
+	//Need to throw out any repeats. Keep only the first instance of a plugin.
+	boost::unordered_set<string> hashset;
 	vector<Item> items = modlist.Items();
+	vector<Item>::iterator itemIter = items.begin();
+	while (itemIter != items.end()) {
+		//Check if plugin is in hashset. If not, add it.
+		//If it is, remove it from the items vector.
+		if (hashset.find(to_lower_copy(itemIter->Name())) != hashset.end())  //Exists, remove it.
+			itemIter = items.erase(itemIter);
+		else {
+			hashset.insert(to_lower_copy(itemIter->Name()));
+			++itemIter;
+		}
+	}
+
 	vector<uint8_t *> mods;
 	size_t max = items.size();
 	bool isSkyrim1426 = (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
@@ -748,7 +763,21 @@ BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t *** plugins, size_t * numPlug
 	} catch (boss_error e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
+
+	//Need to throw out any repeats. Keep only the first instance of a plugin.
+	boost::unordered_set<string> hashset;
 	vector<Item> items = loadorder.Items();
+	vector<Item>::iterator itemIter = items.begin();
+	while (itemIter != items.end()) {
+		//Check if plugin is in hashset. If not, add it.
+		//If it is, remove it from the items vector.
+		if (hashset.find(to_lower_copy(itemIter->Name())) != hashset.end())  //Exists, remove it.
+			itemIter = items.erase(itemIter);
+		else {
+			hashset.insert(to_lower_copy(itemIter->Name()));
+			++itemIter;
+		}
+	}
 
 	//Allocate memory.
 	db->extStringArraySize = items.size();

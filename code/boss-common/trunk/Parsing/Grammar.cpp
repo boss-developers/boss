@@ -492,7 +492,8 @@ namespace boss {
 			openGroups.push_back(currentItem.Name());
 		else if (currentItem.Type() == ENDGROUP)
 			openGroups.pop_back();
-		list.push_back(currentItem);
+		if (!currentItem.Name().empty())  //A blank line can be confused with a mod entry. 
+			list.push_back(currentItem);
 	}
 
 	//Stores the masterlist variable.

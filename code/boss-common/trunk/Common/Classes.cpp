@@ -72,21 +72,26 @@ namespace boss {
 	}
 
 	bool conditionalData::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
-		Skipper skipper;
-		conditional_grammar cond_grammar;
-		string::const_iterator begin, end;
-		bool eval;
-		
-		skipper.SkipIniComments(false);
-		cond_grammar.SetVarStore(&setVars);
-		cond_grammar.SetCRCStore(&fileCRCs);
-		cond_grammar.SetErrorBuffer(&errorBuffer);
-		
 		if (!conditions.empty()) {
+			Skipper skipper;
+			conditional_grammar grammar;
+			string::const_iterator begin, end;
+			bool eval;
+		
+			skipper.SkipIniComments(false);
+			grammar.SetVarStore(&setVars);
+			grammar.SetCRCStore(&fileCRCs);
+			grammar.SetErrorBuffer(&errorBuffer);
+
 			begin = conditions.begin();
 			end = conditions.end();
 
-			bool r = phrase_parse(begin, end, cond_grammar, skipper, eval);
+		//	iterator_type u32b(begin);
+		//	iterator_type u32e(end);
+
+		//	bool r = phrase_parse(u32b, u32e, grammar, skipper, eval);
+			bool r = phrase_parse(begin, end, grammar, skipper, eval);
+
 			if (!r || begin != end)
 				throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, conditions);
 
@@ -145,32 +150,35 @@ namespace boss {
 	}
 
 	bool	Message::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
-		Skipper skipper;
-		shorthand_grammar short_grammar;
-		string::const_iterator begin, end;
-		string newMessage;
-		bool eval;
-		
-		skipper.SkipIniComments(false);
-		short_grammar.SetVarStore(&setVars);
-		short_grammar.SetCRCStore(&fileCRCs);
-		short_grammar.SetErrorBuffer(&errorBuffer);
-
 		LOG_TRACE("Evaluating conditional for message \"%s\"", Data().c_str());
-
-		eval = conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer);
+		bool eval = conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer);
 
 		if (!eval)
 			return false;
 		else if (!Data().empty()) {
+			Skipper skipper;
+			shorthand_grammar grammar;
+			string::const_iterator begin, end;
+			string newMessage;
+		
+			skipper.SkipIniComments(false);
+			grammar.SetVarStore(&setVars);
+			grammar.SetCRCStore(&fileCRCs);
+			grammar.SetErrorBuffer(&errorBuffer);
+
 			//Now we must check if the message is using a conditional shorthand and evaluate that if so.
-			short_grammar.SetMessageType(key);
+			grammar.SetMessageType(key);
 
-			string da = Data();
-			begin = da.begin();
-			end = da.end();
+			string contents = Data();
+			begin = contents.begin();
+			end = contents.end();
+			
+		//	iterator_type u32b(begin);
+		//	iterator_type u32e(end);
 
-			bool r = phrase_parse(begin, end, short_grammar, skipper, newMessage);
+		//	bool r = phrase_parse(u32b, u32e, grammar, skipper, newMessage);
+			bool r = phrase_parse(begin, end, grammar, skipper, newMessage);
+
 			if (!r || begin != end)
 				throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, Data());
 
@@ -462,6 +470,11 @@ namespace boss {
 
 			begin = contents.begin();
 			end = contents.end();
+			
+		//	iterator_type u32b(begin);
+		//	iterator_type u32e(end);
+
+		//	bool r = phrase_parse(u32b, u32e, grammar, skipper, items);
 			bool r = phrase_parse(begin, end, grammar, skipper, items);
 
 			if (!r || begin != end)
@@ -901,6 +914,11 @@ namespace boss {
 
 		begin = contents.begin();
 		end = contents.end();
+		
+	//	iterator_type u32b(begin);
+	//	iterator_type u32e(end);
+
+	//	bool r = phrase_parse(u32b, u32e, grammar, skipper, rules);
 		bool r = phrase_parse(begin, end, grammar, skipper, rules);
 
 		if (!r || begin != end)  //This might not work correctly.

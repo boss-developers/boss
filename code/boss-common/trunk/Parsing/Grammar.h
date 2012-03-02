@@ -103,6 +103,8 @@ namespace boss {
 	using qi::grammar;
 	using boost::spirit::info;
 
+	//typedef boost::u8_to_u32_iterator<std::string::const_iterator> iterator_type;
+	//typedef iterator_type grammarIter;
 	typedef string::const_iterator grammarIter;
 
 	///////////////////////////////

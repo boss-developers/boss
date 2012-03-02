@@ -44,7 +44,7 @@ namespace boss {
 
 //#define BOSSGUI
 
-	BOSS_COMMON const uint32_t BOSS_VERSION_MAJOR = 1;
+	BOSS_COMMON const uint32_t BOSS_VERSION_MAJOR = 2;
 	BOSS_COMMON const uint32_t BOSS_VERSION_MINOR = 0;
 	BOSS_COMMON const uint32_t BOSS_VERSION_PATCH = 0;
 
@@ -103,7 +103,7 @@ namespace boss {
 	BOSS_COMMON fs::path modlist_path();		//Output decided by game.
 	BOSS_COMMON fs::path old_modlist_path();	//Output decided by game.
 
-	BOSS_COMMON fs::path plugins_path();		//Path to plugins.txt. Only works for Skyrim.
+	BOSS_COMMON fs::path plugins_path();		//Path to plugins.txt.
 	BOSS_COMMON fs::path loadorder_path();		//Path to loadorder.txt.
 	
 
