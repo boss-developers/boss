@@ -401,6 +401,17 @@ int main(int argc, char *argv[]) {
 		exit (1); //fail in screaming heap.
 	}
 
+	//Load game ini file (only matters for Oblivion).
+	if (gl_current_game == OBLIVION && fs::exists(data_path.parent_path() / "Oblivion.ini")) {  //Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
+		Settings oblivionIni;
+		try {
+			oblivionIni.Load(data_path.parent_path() / "Oblivion.ini");  //This also sets the variable up.
+		} catch (boss_error &e) {
+			LOG_ERROR("Error: %s", e.getString().c_str());
+			contents.iniParsingError = oblivionIni.ErrorBuffer().FormatFor(gl_log_format);
+		}
+	}
+
 	/////////////////////////////////////////////////////////
 	// Error Condition Check Interlude - Update masterlist
 	/////////////////////////////////////////////////////////

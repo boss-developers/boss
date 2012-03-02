@@ -92,6 +92,19 @@ struct _boss_db_int {
 		extStringArraySize = 0;
 	}
 
+	~_boss_db_int() {
+		delete[] extTagMap;
+		delete[] extAddedTagIds;
+		delete[] extRemovedTagIds;
+		delete[] extString;;
+
+		if (extStringArray != NULL) {
+			for (size_t i=0; i < extStringArraySize; i++)
+				delete[] extStringArray[i];  //Clear all the uint8_t strings created.
+			delete[] extStringArray;  //Clear the string array.
+		}
+	}
+
 	//Get a Bash Tag's string name from its UID.
 	string GetTagString(uint32_t uid) {
 		map<uint32_t, string>::iterator mapPos = bashTagMap.find(uid);
@@ -223,26 +236,6 @@ uint8_t * StringToUint8_tString(string str) {
 	return p;
 }
 
-void DestroyPointers(boss_db db) {
-	delete[] db->extTagMap;
-	delete[] db->extAddedTagIds;
-	delete[] db->extRemovedTagIds;
-	delete[] db->extString;
-
-	db->extTagMap = NULL;
-	db->extAddedTagIds = NULL;
-	db->extRemovedTagIds = NULL;
-	db->extString = NULL;
-
-	if (db->extStringArray != NULL) {
-		for (size_t i=0; i<db->extStringArraySize; i++)
-			delete[] db->extStringArray[i];  //Clear all the uint8_t strings created.
-		delete[] db->extStringArray;  //Clear the string array.
-		db->extStringArray = NULL;
-		db->extStringArraySize = 0;
-	}
-}
-
 uint32_t ReturnCode(uint32_t returnCode, string details) {
 	lastErrorDetails = details;
 	return returnCode;
@@ -260,7 +253,7 @@ uint32_t ReturnCode(uint32_t returnCode) {
 
 // Outputs a string giving the details of the last time an error or 
 // warning return code was returned by a function.
-BOSS_API uint32_t GetLastErrorDetails(const uint8_t ** details) {
+BOSS_API uint32_t GetLastErrorDetails(uint8_t ** details) {
 	if (details == NULL)  //Check for valid args.
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
@@ -294,7 +287,7 @@ BOSS_API bool IsCompatibleVersion (const uint32_t bossVersionMajor, const uint32
 
 // Returns the version string for this version of BOSS.
 // The string exists for the lifetime of the library.
-BOSS_API uint32_t GetVersionString (const uint8_t ** bossVersionStr) {
+BOSS_API uint32_t GetVersionString (uint8_t ** bossVersionStr) {
 	if (bossVersionStr == NULL) //Check for valid args.
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 	
@@ -377,6 +370,18 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 
 	*db = retVal;
 
+	//Load game ini file (only matters for Oblivion). Because it only matters for Oblivion, this global doesn't need to be set in every function.
+	if (gl_current_game == OBLIVION && fs::exists(data_path.parent_path() / "Oblivion.ini")) {  //Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
+		Settings oblivionIni;
+		try {
+			oblivionIni.Load(data_path.parent_path() / "Oblivion.ini");  //This also sets the variable up.
+		} catch (boss_error &e) {
+			DestroyBossDb(retVal);
+			*db = NULL;
+			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		}
+	}
+
 	//Now check if plugins.txt and loadorder.txt are in sync.
 	if (fs::exists(plugins_path()) && fs::exists(loadorder_path())) {
 		//Load loadorder.txt and save a temporary filtered version.
@@ -386,6 +391,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 			loadorder.SavePluginNames(loadorder_path().string() + ".new", true, true);
 		} catch (boss_error &e) {
 			DestroyBossDb(retVal);
+			*db = NULL;
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
 
@@ -410,14 +416,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 }
 
 BOSS_API void     DestroyBossDb (boss_db db) {
-	if (db == NULL)
-		return;
-
-	//Free memory at pointers stored in structure.
-	DestroyPointers(db);
-	
-	//Now delete DB.
-	delete db;
+	delete db;  //Delete DB. Destructor handles memory deallocation.
 }
 
 BOSS_API void	  CleanUpAPI() {
@@ -481,7 +480,23 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 
 	//FREE CURRENT POINTERS
 	//Free memory at pointers stored in structure.
-	DestroyPointers(db);
+	delete[] db->extTagMap;
+	delete[] db->extAddedTagIds;
+	delete[] db->extRemovedTagIds;
+	delete[] db->extString;
+
+	db->extTagMap = NULL;
+	db->extAddedTagIds = NULL;
+	db->extRemovedTagIds = NULL;
+	db->extString = NULL;
+
+	if (db->extStringArray != NULL) {
+		for (size_t i=0; i<db->extStringArraySize; i++)
+			delete[] db->extStringArray[i];  //Clear all the uint8_t strings created.
+		delete[] db->extStringArray;  //Clear the string array.
+		db->extStringArray = NULL;
+		db->extStringArraySize = 0;
+	}
 	
 	//DB SET
 	db->rawMasterlist = masterlist;

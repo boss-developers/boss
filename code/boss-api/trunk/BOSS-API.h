@@ -135,7 +135,7 @@ BOSS_API extern const uint32_t BOSS_API_GAME_SKYRIM;
 // Outputs a string giving the details of the last time an error or 
 // warning return code was returned by a function. The string exists 
 // until this function is called again or until CleanUpAPI is called.
-BOSS_API uint32_t GetLastErrorDetails(const uint8_t ** details);
+BOSS_API uint32_t GetLastErrorDetails(uint8_t ** details);
 
 
 //////////////////////////////
@@ -149,7 +149,7 @@ BOSS_API bool IsCompatibleVersion (const uint32_t bossVersionMajor, const uint32
 // Returns the version string for this version of BOSS.
 // The string exists until this function is called again or until 
 // CleanUpAPI is called.
-BOSS_API uint32_t GetVersionString (const uint8_t ** bossVersionStr);
+BOSS_API uint32_t GetVersionString (uint8_t ** bossVersionStr);
 
 
 ////////////////////////////////////

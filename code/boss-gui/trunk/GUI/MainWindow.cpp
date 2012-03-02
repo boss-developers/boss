@@ -156,6 +156,22 @@ bool BossGUI::OnInit() {
 	}
 	frame->SetGames(games);
 
+	//Load game ini file (only matters for Oblivion).
+	if (gl_current_game == OBLIVION && fs::exists(data_path.parent_path() / "Oblivion.ini")) {  //Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
+		Settings oblivionIni;
+		try {
+			oblivionIni.Load(data_path.parent_path() / "Oblivion.ini");  //This also sets the variable up.
+		} catch (boss_error &e) {
+			LOG_ERROR("Error: %s", e.getString().c_str());
+			wxMessageBox(wxString::Format(
+					wxT("Error: " + e.getString() + " Details: " + oblivionIni.ErrorBuffer().FormatFor(PLAINTEXT))
+				),
+				wxT("BOSS: Error"),
+				wxOK | wxICON_ERROR,
+				NULL);
+		}
+	}
+
 	frame->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	frame->Show(TRUE);
 	SetTopWindow(frame);
@@ -750,6 +766,21 @@ void MainFrame::OnGameChange(wxCommandEvent& event) {
 	}
 	SetDataPath(gl_current_game);
 	SetTitle(wxT("BOSS - " + GetGameString(gl_current_game)));
+	//Load game ini file (only matters for Oblivion).
+	if (gl_current_game == OBLIVION && fs::exists(data_path.parent_path() / "Oblivion.ini")) {  //Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
+		Settings oblivionIni;
+		try {
+			oblivionIni.Load(data_path.parent_path() / "Oblivion.ini");  //This also sets the variable up.
+		} catch (boss_error &e) {
+			LOG_ERROR("Error: %s", e.getString().c_str());
+			wxMessageBox(wxString::Format(
+					wxT("Error: " + e.getString() + " Details: " + oblivionIni.ErrorBuffer().FormatFor(PLAINTEXT))
+				),
+				wxT("BOSS: Error"),
+				wxOK | wxICON_ERROR,
+				NULL);
+		}
+	}
 }
 
 void MainFrame::OnRevertChange(wxCommandEvent& event) {
