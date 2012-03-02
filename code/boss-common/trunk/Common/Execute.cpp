@@ -135,7 +135,7 @@ namespace boss {
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
 					try {
 						items[i].SetModTime(esmtime + counters.recognised*60);
-					} catch(boss_error e) {
+					} catch(boss_error &e) {
 						buffer << SPAN_CLASS_ERROR_OPEN << "Error: " << e.getString() << SPAN_CLOSE;
 						LOG_ERROR(" * Error: %s", e.getString().c_str());
 					}
@@ -198,7 +198,7 @@ namespace boss {
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
 					try {
 						items[i].SetModTime(esmtime + (counters.recognised + counters.unrecognised)*60);
-					} catch(boss_error e) {
+					} catch(boss_error &e) {
 						buffer << SPAN_CLASS_ERROR_OPEN << "Error: " << e.getString() << SPAN_CLOSE;
 						LOG_ERROR(" * Error: %s", e.getString().c_str());
 					}

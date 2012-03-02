@@ -189,14 +189,14 @@ int main(int argc, char *argv[]) {
 	if (fs::exists(ini_path)) {
 		try {
 			ini.Load(ini_path);
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			LOG_ERROR("Error: %s", e.getString().c_str());
 			//Error will be added to log once format has been set.
 		}
 	} else {
 		try {
 			ini.Save(ini_path);
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			contents.iniParsingError = "<p class='error'>Error: " + e.getString();
 		}
 	}
@@ -287,7 +287,7 @@ int main(int argc, char *argv[]) {
 		bool connection = false;
 		try {
 			connection = CheckConnection();
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			LOG_ERROR("Update check failed. Details: '%s'", e.getString().c_str());
 		}
 		if (connection) {
@@ -309,7 +309,7 @@ int main(int argc, char *argv[]) {
 						string notes;
 						try {
 							notes = FetchReleaseNotes(updateVersion);
-						} catch (boss_error e) {
+						} catch (boss_error &e) {
 							LOG_ERROR("Failed to get release notes. Details: '%s'", e.getString().c_str());
 						}
 						if (!notes.empty())
@@ -332,10 +332,10 @@ int main(int argc, char *argv[]) {
 								if (fs::exists(file))
 									Launch(file);
 								Fail();
-							} catch (boss_error e) {
+							} catch (boss_error &e) {
 								try {
 									CleanUp();
-								} catch (boss_error ee) {
+								} catch (boss_error &ee) {
 									if (e.getCode() != BOSS_ERROR_CURL_USER_CANCEL)
 										LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
 									LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
@@ -355,7 +355,7 @@ int main(int argc, char *argv[]) {
 						}
 					}
 				}
-			} catch (boss_error e) {
+			} catch (boss_error &e) {
 				LOG_ERROR("BOSS Update check failed. Details: '%s'", e.getString().c_str());
 			}
 		} else {
@@ -382,7 +382,7 @@ int main(int argc, char *argv[]) {
 	try {
 		DetectGame(NULL);
 		LOG_INFO("Game detected: %d", gl_current_game);
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		output.Clear();
 		output.PrintHeader();
@@ -392,7 +392,7 @@ int main(int argc, char *argv[]) {
 		output.PrintFooter();
 		try {
 			output.Save(bosslog_path(), true);
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		LOG_ERROR("Installation error found: check BOSSLOG.");
@@ -410,7 +410,7 @@ int main(int argc, char *argv[]) {
 		bool connection = false;
 		try {
 			connection = CheckConnection();
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			output << LIST_ITEM_CLASS_WARN << "Error: masterlist update failed." << LINE_BREAK
 				<< "Details: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
@@ -435,7 +435,7 @@ int main(int argc, char *argv[]) {
 					LOG_DEBUG("masterlist updated successfully.");
 				}
 				contents.summary = output.AsString();
-			} catch (boss_error e) {
+			} catch (boss_error &e) {
 				output << LIST_ITEM_CLASS_WARN << "Error: masterlist update failed." << LINE_BREAK
 					<< "Details: " << e.getString() << LINE_BREAK
 					<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
@@ -461,7 +461,7 @@ int main(int argc, char *argv[]) {
 		output.PrintFooter();
 		try {
 			output.Save(bosslog_path(), true);
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if ( !gl_silent ) 
@@ -479,7 +479,7 @@ int main(int argc, char *argv[]) {
 	//Get the master esm's modification date. 
 	try {
 		esmtime = GetMasterTime();
-	} catch(boss_error e) {
+	} catch(boss_error &e) {
 		output.Clear();
 		output.PrintHeader();
 		output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
@@ -488,7 +488,7 @@ int main(int argc, char *argv[]) {
 		output.PrintFooter();
 		try {
 			output.Save(bosslog_path(), true);
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
@@ -502,7 +502,7 @@ int main(int argc, char *argv[]) {
 		modlist.Load(data_path);
 		if (gl_revert < 1)
 			modlist.Save(modlist_path(), old_modlist_path());
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		output.Clear();
 		output.PrintHeader();
 		output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
@@ -511,7 +511,7 @@ int main(int argc, char *argv[]) {
 		output.PrintFooter();
 		try {
 			output.Save(bosslog_path(), true);
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
@@ -542,7 +542,7 @@ int main(int argc, char *argv[]) {
 		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
 		masterlist.EvalConditions();
 		contents.globalMessages = masterlist.GlobalMessageBuffer();
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		output.Clear();
 		output.PrintHeader();
 		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
@@ -559,7 +559,7 @@ int main(int argc, char *argv[]) {
 		output.PrintFooter();
 		try {
 			output.Save(bosslog_path(), true);
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
@@ -573,7 +573,7 @@ int main(int argc, char *argv[]) {
 		userlist.Load(userlist_path());
 		for (vector<ParsingError>::iterator iter; iter != userlist.syntaxErrorBuffer.end(); ++iter)
 			contents.userlistSyntaxErrors.push_back(iter->FormatFor(gl_log_format));
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(gl_log_format);
 		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		LOG_ERROR("Error: %s", e.getString().c_str());

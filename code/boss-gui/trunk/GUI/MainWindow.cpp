@@ -122,7 +122,7 @@ bool BossGUI::OnInit() {
 	if (fs::exists(ini_path)) {
 		try {
 			ini.Load(ini_path);
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			LOG_ERROR("Error: %s", e.getString().c_str());
 			wxMessageBox(wxString::Format(
 					wxT("Error: " + e.getString() + " Details: " + ini.ErrorBuffer().FormatFor(PLAINTEXT))
@@ -146,7 +146,7 @@ bool BossGUI::OnInit() {
 	try {
 		games = DetectGame(frame);
 		LOG_INFO("Game detected: %d", gl_current_game);
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		wxMessageBox(wxString::Format(
 				wxT("Error: " + e.getString())
 			),
@@ -354,7 +354,7 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 	//Save settings to BOSS.ini before quitting.
 	try {
 		ini.Save(ini_path);
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 			wxMessageBox(wxString::Format(
 				wxT("Error: " + e.getString())
 			),
@@ -411,7 +411,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		bool connection = false;
 		try {
 			connection = CheckConnection();
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			output << LIST_ITEM_CLASS_WARN << "Error: masterlist update failed." << LINE_BREAK
 				<< "Details: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
@@ -437,7 +437,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 					LOG_DEBUG("Masterlist updated successfully.");
 				}
 				contents.summary = output.AsString();
-			} catch (boss_error e) {
+			} catch (boss_error &e) {
 				output << LIST_ITEM_CLASS_WARN << "Error: masterlist update failed." << LINE_BREAK
 					<< "Details: " << e.getString() << LINE_BREAK
 					<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
@@ -463,7 +463,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		output.PrintFooter();
 		try {
 			output.Save(bosslog_path(), true);
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if ( !gl_silent ) 
@@ -485,7 +485,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	//Get the master esm's modification date. 
 	try {
 		esmtime = GetMasterTime();
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		output.Clear();
 		output.PrintHeader();
 		output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
@@ -494,7 +494,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		output.PrintFooter();
 		try {
 			output.Save(bosslog_path(), true);
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
@@ -509,7 +509,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		modlist.Load(data_path);
 		if (gl_revert<1)
 			modlist.Save(modlist_path(), old_modlist_path());
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		output.Clear();
 		output.PrintHeader();
 		output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
@@ -518,7 +518,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		output.PrintFooter();
 		try {
 			output.Save(bosslog_path(), true);
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
@@ -556,7 +556,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
 		masterlist.EvalConditions();
 		contents.globalMessages = masterlist.GlobalMessageBuffer();
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		output.Clear();
 		output.PrintHeader();
 		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
@@ -573,7 +573,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		output.PrintFooter();
 		try {
 			output.Save(bosslog_path(), true);
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		LOG_ERROR("Couldn't open sorting file: %s", sortfile.filename().string().c_str());
@@ -588,7 +588,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		userlist.Load(userlist_path());
 		for (vector<ParsingError>::iterator iter; iter != userlist.syntaxErrorBuffer.end(); ++iter)
 			contents.userlistSyntaxErrors.push_back(iter->FormatFor(gl_log_format));
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(gl_log_format);
 		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		LOG_ERROR("Error: %s", e.getString().c_str());
@@ -628,7 +628,7 @@ void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
 				RuleList userlist;
 				userlist.Save(userlist_path());
 				wxLaunchDefaultApplication(userlist_path().string());
-			} catch (boss_error e) {
+			} catch (boss_error &e) {
 				wxMessageBox(wxString::Format(
 					wxT("Error: " + e.getString())
 				),
@@ -908,7 +908,7 @@ void MainFrame::Update(string updateVersion) {
 		wxMessageBox(wxT("New installer successfully downloaded! When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 		if (fs::exists(file))
 			wxLaunchDefaultApplication(file);
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		progDia->Destroy();
 		try {
 			CleanUp();
@@ -916,7 +916,7 @@ void MainFrame::Update(string updateVersion) {
 				wxMessageBox(wxT("Update cancelled."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 			else
 				wxMessageBox("Update failed. Details: " + e.getString() + "\n\nUpdate cancelled.", wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
-		} catch (boss_error ee) {
+		} catch (boss_error &ee) {
 			if (e.getCode() != BOSS_ERROR_CURL_USER_CANCEL)
 				LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
 			LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
@@ -958,7 +958,7 @@ wxThread::ExitCode MainFrame::Entry() {
 	bool connection = false;
 	try {
 		connection = CheckConnection();
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		wxCriticalSectionLocker lock(updateData);
 		updateCheckCode = 2;
 		updateCheckString = "Update check failed. Details: " + e.getString();
@@ -978,7 +978,7 @@ wxThread::ExitCode MainFrame::Entry() {
 				updateCheckString = updateVersion;
 				wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
 			}
-		} catch (boss_error e) {
+		} catch (boss_error &e) {
 			wxCriticalSectionLocker lock(updateData);
 			updateCheckCode = 2;
 			updateCheckString = "Update check failed. Details: " + e.getString();
@@ -1010,7 +1010,7 @@ void MainFrame::OnThreadUpdate(wxThreadEvent& evt) {
 			//Display release notes.
 			try {
 				notes = FetchReleaseNotes(updateCheckString);
-			} catch (boss_error e) {
+			} catch (boss_error &e) {
 				wxMessageBox("Failed to get release notes. Details: " + e.getString(), wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			}
 			notes = "Update available! New version: " + updateCheckString + "\nRelease notes:\n\n" + notes + "\n\nDo you want to download and install the update?";

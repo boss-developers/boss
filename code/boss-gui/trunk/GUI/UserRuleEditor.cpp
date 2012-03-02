@@ -81,7 +81,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 
 	try{
 		LoadLists();
-	} catch(boss_error e) {
+	} catch(boss_error &e) {
 		progDia->Destroy();
 		this->Close();
 		wxMessageBox(wxString::Format(
@@ -134,7 +134,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	wxBoxSizer *rulesBox = new wxBoxSizer(wxVERTICAL);
 	try{
 		rulesBox->Add(RulesList = new RuleListFrameClass(this, LIST_RuleList, masterlist), 1, wxEXPAND);
-	} catch(boss_error e) {
+	} catch(boss_error &e) {
 		progDia->Destroy();
 		this->Close();
 		wxMessageBox(wxString::Format(
@@ -275,7 +275,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 void UserRulesEditorFrame::OnOKQuit(wxCommandEvent& event) {
 	try {
 		RulesList->SaveUserlist(userlist_path());
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		wxMessageBox(wxString::Format(
 			wxT("Error: "+e.getString()+" Unable to save changes.")
 		),
@@ -518,7 +518,7 @@ void UserRulesEditorFrame::LoadLists() {
 	//Need to parse userlist, masterlist and build modlist.
 	try {
 		modlist.Load(data_path);
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
 
@@ -535,7 +535,7 @@ void UserRulesEditorFrame::LoadLists() {
 	LOG_INFO("Starting to parse sorting file: %s", masterlist_path().string().c_str());
 	try {
 		masterlist.Load(masterlist_path());
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
 }
@@ -869,7 +869,7 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, ItemList 
 	LOG_INFO("Starting to parse userlist.");
 	try {
 		userlist.Load(userlist_path());
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		userlist.rules.clear();
 		LOG_ERROR("Error: %s", e.getString().c_str());
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
@@ -904,7 +904,7 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, ItemList 
 void RuleListFrameClass::SaveUserlist(const fs::path path) {
 	try {
 		userlist.Save(path);
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		wxMessageBox(wxString::Format(
 			wxT("Error: " + e.getString())
 		),

@@ -607,7 +607,7 @@ namespace boss {
 				if (trans.GetEncoding() != 0) {  //Not UTF-8.
 					try {
 						outfile << trans.Utf8ToEnc(items[i].Name()) << endl;
-					} catch (boss_error e) {
+					} catch (boss_error &e) {
 						badFilename = items[i].Name();
 					}
 				} else

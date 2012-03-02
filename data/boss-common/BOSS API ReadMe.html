@@ -309,7 +309,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 <ul>
 	<li><var>db</var> - The database the function acts on.
 	<li><var>trialOnly</var> - If true, the function only outputs how BOSS would sort the order without actually making any load order changes.
-	<li><var>sortedPlugins</var> - A pointer to the outputted array of plugins in their new load order. If the API encounters duplicate plugin filenames (possible with the textfile-based load order system), it will discard all but the copy highest in the load order.
+	<li><var>sortedPlugins</var> - A pointer to the outputted array of plugins in their new load order. If the API encounters duplicate plugin filenames (possible with the textfile-based load order system), it will discard all but the copy highest in the load order. If <var>listLength</var> is 0, this will be <code>NULL</code>.
 	<li><var>listLength</var> - A pointer to the outputted size of the <var>sortedPlugins</var> array.
 	<li><var>lastRecPos</var> - A pointer to the outputted index number of the position in <var>sortedPlugins</var> which holds the last plugin listed that is recognised by BOSS.
 </ul>
@@ -318,7 +318,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 <dfn id="GetLoadOrder">GetLoadOrder</dfn> - Outputs a list of installed plugins in load order.
 <ul>
 	<li><var>db</var> - The database the function acts on.
-	<li><var>plugins</var> - A pointer to the outputted array of plugins in load order. If the API encounters duplicate plugin filenames (possible with the textfile-based load order system), it will discard all but the copy highest in the load order.
+	<li><var>plugins</var> - A pointer to the outputted array of plugins in load order. If the API encounters duplicate plugin filenames (possible with the textfile-based load order system), it will discard all but the copy highest in the load order. If <var>numPlugins</var> is 0, this will be <code>NULL</code>.
 	<li><var>numPlugins</var> - A pointer to the outputted size of the <var>plugins</var> array.
 </ul>
 <div class="codebox">uint32_t <a href="#GetLoadOrder">GetLoadOrder</a> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</div>
@@ -334,7 +334,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 <dfn id="GetActivePlugins">GetActivePlugins</dfn> - Returns the contents of plugins.txt.
 <ul>
 	<li><var>db</var> - The database the function acts on.
-	<li><var>plugins</var> - The outputted array of active plugins. If the textfile-base load order system is being used, these plugins will be in load order, otherwise their order is undefined.
+	<li><var>plugins</var> - The outputted array of active plugins. If the textfile-base load order system is being used, these plugins will be in load order, otherwise their order is undefined. If <var>numPlugins</var> is 0, this will be <code>NULL</code>.
 	<li><var>numPlugins</var> - The size of the outputted <var>plugins</var> array.
 </ul>
 <div class="codebox">uint32_t <a href="#GetActivePlugins">GetActivePlugins</a> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</div>

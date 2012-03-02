@@ -89,9 +89,9 @@ int main() {
 	}
 
 	//Check if it actually exists, because the parser doesn't fail if there is no file...
-	if (!fs::exists(masterlist_path)) {
+	if (!fs::exists(masterlist_path())) {
 		//Print error message to console and exit.
-		dirtylist << "Critical Error: \"" +masterlist_path.string() +"\" cannot be read! Exiting." << endl;
+		dirtylist << "Critical Error: \"" +masterlist_path().string() +"\" cannot be read! Exiting." << endl;
         exit (1); //fail in screaming heap.
     } else if (!fs::exists(cleanlist_path)) {
 		//Print error message to console and exit.
@@ -102,12 +102,12 @@ int main() {
 	//Parse masterlist into data structure.
 	try {
 		ItemList Masterlist, Cleanlist;
-		Masterlist.Load(masterlist_path);
+		Masterlist.Load(masterlist_path());
 		Cleanlist.Load(cleanlist_path);
 
 		masterlist = Masterlist.Items();
 		cleanlist = Cleanlist.Items();
-	} catch (boss_error e) {
+	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString());
 		 exit (1); //fail in screaming heap.
 	}
