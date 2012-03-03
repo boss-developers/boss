@@ -341,6 +341,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 	retVal->db_game = clientGame;
 	if (dataPath != NULL) {
 		retVal->db_data_path = fs::path(reinterpret_cast<const char *>(dataPath));
+		data_path = retVal->db_data_path;
 		if (data_path.empty()) {
 			DestroyBossDb(retVal);
 			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Data path is empty.");
