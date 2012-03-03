@@ -255,8 +255,7 @@ namespace boss {
 	}
 
 	bool	Item::IsMasterFile() const {
-		//This needs to check the bit flag. Extension checking is just a placeholder for now.
-		return boost::iequals(fs::path(Data()).extension().string(), ".esm");
+		return ReadHeader(data_path / Data()).IsMaster;
 	}
 
 	bool	Item::IsGhosted		() const {
@@ -336,6 +335,16 @@ namespace boss {
 	//////////////////////////////
 	// ItemList Class Functions
 	//////////////////////////////
+
+	bool	CompareItems(Item item1, Item item2) {
+		//Return true if item1 goes before item2, false otherwise.
+		//Master files should go before other files.
+		//Groups should not change position (but master files should be able to cross groups).
+		if (item1.IsMasterFile() && !item2.IsMasterFile())
+			return true;
+		else
+			return false;
+	}
 
 							ItemList::ItemList					() {
 		items.clear();
@@ -434,6 +443,7 @@ namespace boss {
 						}
 					}
 				}
+				sort(items.begin(),items.end(), CompareItems);  //Does this work?
 			} else {  //Non-Skyrim.
 				for (fs::directory_iterator itr(path); itr!=fs::directory_iterator(); ++itr) {
 					const fs::path filename = itr->path().filename();
@@ -511,6 +521,9 @@ namespace boss {
 
 			if (!r || begin != end)
 				throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
+
+			if (path == plugins_path())
+				sort(items.begin(),items.end(), CompareItems);  //Does this work?
 		}
 	}
 	
@@ -662,8 +675,14 @@ namespace boss {
 		}
 	}
 
+	
+
 	void		ItemList::ApplyMasterPartition() {
 		//Need to iterate through items vector, sorting it according to the rule that master items come before other items.
+		/* However, have to think about masterlist groups. They shouldn't change.
+		   Easiest to just use std::sort().
+		*/
+		sort(items.begin(), items.end(), CompareItems);  //Does this work?
 	}
 	
 	size_t		ItemList::FindItem			(string name) const {

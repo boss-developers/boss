@@ -77,12 +77,11 @@ int main() {
 		out << '\t' << "API is incompatible." << endl;
 
 	out << "TESTING GetVersionString(...)" << endl;
-	const uint8_t * ver;
-	ret = GetVersionString(&ver);
+	ret = GetVersionString(&message);
 	if (ret != BOSS_API_OK)
 		out << '\t' << "Failed to get version string. Error: " << ret << endl;
 	else
-		out << '\t' << "Version: " << *ver << endl;
+		out << '\t' << "Version: " << *message << endl;
 	
 	out << "TESTING CreateBossDb(...)" << endl;
 	ret = CreateBossDb(&db, game, NULL);
@@ -95,11 +94,10 @@ int main() {
 			out << '\t' << "Masterlist update failed. Error: " << ret << endl;
 
 		out << "TESTING Load(...)" << endl;
-		const uint8_t * err;
 		ret = Load(db, mPath, NULL);
 		if (ret != BOSS_API_OK) {
-			uint32_t ret2 = GetLastErrorDetails(&err);
-			out << '\t' << "Loading failed. Error: " << ret << ", " << ret2 << ", " << err << endl;
+			uint32_t ret2 = GetLastErrorDetails(&message);
+			out << '\t' << "Loading failed. Error: " << ret << ", " << ret2 << ", " << message << endl;
 		} else {
 			out << "TESTING EvalConditionals(...)" << endl;
 			ret = EvalConditionals(db);

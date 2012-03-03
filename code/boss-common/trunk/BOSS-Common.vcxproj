@@ -244,6 +244,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\include;$(SolutionDir)..\..\..\lib\wxWidgets\include\msvc;$(SolutionDir)..\..\..\lib\curl\include;$(SolutionDir)..\..\..\lib\boost;$(SolutionDir);$(SolutionDir)..\..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WINVER=0x0400;__WXMSW__;_UNICODE;CURL_STATICLIB;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
