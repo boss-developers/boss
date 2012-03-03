@@ -393,8 +393,8 @@ There is no way of knowing which is the correct order to choose for the full loa
 <dfn id="GetBashTagMap">GetBashTagMap</dfn> - Returns an array of the Bash Tags encountered when loading the masterlist and userlist. This function must be called prior to calling <a href="#GetModBashTags">GetModBashTags</a>, to ensure that the Bash Tag map exists so that <a href="#GetModBashTags">GetModBashTags</a> may return the Tags found using the correct UIDs.
 <ul>
 	<li><var>db</var> - The database the function acts on.
-	<li><var>tagMap</var> - A pointer to the outputted array of <a href="#BashTag">BashTag</a> structures.
-	<li><var>numTags</var> - A pointer to the size of the <var>tagMap</var> array.
+	<li><var>tagMap</var> - A pointer to the outputted array of <a href="#BashTag">BashTag</a> structures. <code>NULL</code> if no Bash Tags are encountered.
+	<li><var>numTags</var> - A pointer to the size of the <var>tagMap</var> array. 0 if <var>tagMap</var> is <code>NULL</code>.
 </ul>
 <div class="codebox">uint32_t <a href="#GetBashTagMap">GetBashTagMap</a> (boss_db db, BashTag ** tagMap, size_t * numTags);</div>
 
@@ -410,7 +410,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 </ul>
 <div class="codebox">uint32_t <a href="#GetModBashTags">GetModBashTags</a> (boss_db db, const uint8_t * modName, uint32_t ** tagIds_added, size_t * numTags_added, uint32_t **tagIds_removed, size_t *numTags_removed, bool * userlistModified);</div>
 
-<dfn id="GetDirtyMessage">GetDirtyMessage</dfn> - Returns the message associated with a dirty mod and whether the mod needs cleaning. If a mod has no dirty message, *message will be NULL. modName is case-insensitive.
+<dfn id="GetDirtyMessage">GetDirtyMessage</dfn> - Returns the message associated with a dirty mod and whether the mod needs cleaning.
 <ul>
 	<li><var>db</var> - The database the function acts on.
 	<li><var>modName</var> - A string containing the filename of the plugin to look up dirty status information for.

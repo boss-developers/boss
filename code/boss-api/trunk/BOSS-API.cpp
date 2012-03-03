@@ -1298,9 +1298,12 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 	data_path = db->db_data_path;
 	gl_current_game = db->db_game;
 
-	if (db->extTagMap != NULL && !db->bashTagMap.empty()) {  //Check to see if bashTagMap is already populated.
+	if (db->extTagMap != NULL) {  //Check to see if bashTagMap is already allocated. An empty bashTagMap is a valid option, if no tags exist.
 		*numTags = db->bashTagMap.size();  //Set size.
-		*tagMap = db->extTagMap;
+		if (*numTags != 0)
+			*tagMap = db->extTagMap;
+		else
+			*tagMap = NULL;  //Don't return pointers to zero-length arrays, return NULL instead.
 	} else {
 		//Need to build internal Bash Tag map then feed it to the outside world.
 		//This involves iterating through all mods to get the tags they add and remove, in the masterlist and userlist.
@@ -1351,9 +1354,17 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 			}
 		}
 
-		//Check array size. Exit if zero.
-		if (db->bashTagMap.empty())
+		//Check array size. Exit if zero. However, we need GetModBashTags to be able to tell if this function has been run or not.
+		//An empty bashTagMap and a null extTagMap are indistinguishable output from this function not being run at all.
+		//So allocate memory to a zero length array for extTagMap.
+		if (db->bashTagMap.empty()) {
+			try {
+				db->extTagMap = new BashTag[0];
+			} catch (bad_alloc &e) {
+				return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+			}
 			return ReturnCode(BOSS_API_OK);
+		}
 
 		//Now to convert for the outside world.
 		size_t mapSize = db->bashTagMap.size();  //Set size.
@@ -1398,6 +1409,13 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * plugin,
 	if (mod.empty())
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugin name is empty.");
 
+	//Initialise pointers to null and zero tag counts.
+	*numTags_added = 0;
+	*numTags_removed = 0;
+	*tagIds_removed = NULL;
+	*tagIds_added = NULL;
+	*userlistModified = false;
+
 	if (db->extTagMap == NULL)
 		return ReturnCode(BOSS_API_ERROR_NO_TAG_MAP);
 
@@ -1407,13 +1425,6 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * plugin,
 
 	//Bash Tag temporary internal holders.
 	boost::unordered_set<string> tagsAdded, tagsRemoved;
-
-	//Initialise pointers to null and zero tag counts.
-	*numTags_added = 0;
-	*numTags_removed = 0;
-	*tagIds_removed = NULL;
-	*tagIds_added = NULL;
-	*userlistModified = false;
 
 	//Now search filtered masterlist for mod.
 	size_t pos = db->filteredMasterlist.FindItem(mod);
