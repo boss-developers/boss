@@ -853,23 +853,20 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 	data_path = db->db_data_path;
 	gl_current_game = db->db_game;
 
+	//Check load order to see if it's valid.
+	if (!Item(string(reinterpret_cast<const char *>(plugins[0]))).IsGameMasterFile())
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before the game's master file.");
+	else if (gl_current_game == SKYRIM && !boost::iequals(string(reinterpret_cast<const char *>(plugins[1])), "Update.esm"))  //Invalid.
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before Update.esm.");
+
 	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
 		//Create a vector to hold the new loadorder.
 		ItemList loadorder;
 		size_t loSize = loadorder.Items().size();
 
 		//We need to loop through the plugin array given and enter each plugin into the vector.
-		
 		for (size_t i=0; i < numPlugins; i++) {
-			string plugin = string(reinterpret_cast<const char *>(plugins[i]));
-
-			//Check for invalid positioning, ie. not having the game's master file first.
-			if (i == 0 && !boost::iequals(plugin, GetGameMasterFile(gl_current_game)))  //Invalid.
-				return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before the game's master file.");
-			else if (i == 1 && !boost::iequals(plugin, "Update.esm"))  //Invalid.
-				return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before Update.esm.");
-
-			loadorder.Insert(loSize, Item(plugin));
+			loadorder.Insert(loSize, Item(string(reinterpret_cast<const char *>(plugins[i]))));
 			loSize++;
 		}
 
@@ -911,11 +908,6 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 		//Loop through given array and set the modification time for each one.
 		for (size_t i=0; i < numPlugins; i++) {
 			Item plugin = Item(string(reinterpret_cast<const char *>(plugins[i])));
-
-			//Check for invalid positioning, ie. not having the game's master file first.
-			if (i == 0 && !boost::iequals(plugin.Name(), GetGameMasterFile(gl_current_game)))  //Invalid.
-				return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before the game's master file.");
-
 			if (!plugin.IsGameMasterFile()) {
 				try {
 					plugin.SetModTime(masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
