@@ -250,9 +250,13 @@ namespace boss {
 		return (fs::exists(data_path / Data()) || fs::exists(data_path / fs::path(Data() + ".ghost"))); 
 	}
 	
-	bool	Item::IsMasterFile	() const {
-		const string lower = boost::algorithm::to_lower_copy(Data());
-		return (lower == "oblivion.esm" || lower == "fallout3.esm" || lower == "nehrim.esm" || lower == "falloutnv.esm" || lower == "skyrim.esm");
+	bool	Item::IsGameMasterFile	() const {
+		return boost::iequals(Data(), GetGameMasterFile(gl_current_game));
+	}
+
+	bool	Item::IsMasterFile() const {
+		//This needs to check the bit flag. Extension checking is just a placeholder for now.
+		return boost::iequals(fs::path(Data()).extension().string(), ".esm");
 	}
 
 	bool	Item::IsGhosted		() const {
@@ -287,6 +291,7 @@ namespace boss {
 	}
 
 	bool	Item::operator <	(Item item2) {
+		//Two things matter when ordering plugins in timestamp-based load order systems: timestamp and whether a plugin is a master or not.
 		time_t t1 = 0,t2 = 0;
 		try {
 			if (this->IsGhosted())
@@ -298,12 +303,18 @@ namespace boss {
 			else
 				t2 = fs::last_write_time(data_path / item2.Data());
 		}catch (fs::filesystem_error e){
-			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, Data() + "\" or \"" + item2.Data(),e.what());
+			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, Data() + "\" or \"" + item2.Data(), e.what());
 			LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.", e.what());
 		}
 		double diff = difftime(t1,t2);
 
-		return (diff < 0);
+		//Masters always load before non-masters.
+		if (IsMasterFile() && !item2.IsMasterFile()) 
+			return true;
+		else if (!IsMasterFile() && item2.IsMasterFile())
+			return false;
+		else
+			return (diff < 0);
 	}
 
 	bool	Item::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
@@ -441,11 +452,8 @@ namespace boss {
 				sort(items.begin(),items.end());
 				LOG_DEBUG("Reading user mods done: %" PRIuS " total mods found.", items.size());
 			}
-		} else if (path == loadorder_path()) {
-
-			if (!fs::exists(path))
-				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, path.string());
-			else if (!ValidateUTF8File(path))  //plugins.txt is not going to be UTF-8.
+		} else if (path == loadorder_path() && fs::exists(path)) {  //Only try loading loadorder.txt if it exists. Just in case somewhere calls it without checking first.
+			if (!ValidateUTF8File(path))
 				throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, path.string());
 
 			//loadorder.txt is simple enough that we can avoid needing the full modlist parser which has the crashing issue.
@@ -465,8 +473,6 @@ namespace boss {
 				 items.push_back(Item(line));
 			 }
 			 in.close();
-
-			 Items(items);
 		} else {
 			Skipper skipper;
 			if (path == plugins_path()) //We should skip ini comments. (#)
@@ -654,6 +660,10 @@ namespace boss {
 			else
 				messageIter = globalMessageBuffer.erase(messageIter);
 		}
+	}
+
+	void		ItemList::ApplyMasterPartition() {
+		//Need to iterate through items vector, sorting it according to the rule that master items come before other items.
 	}
 	
 	size_t		ItemList::FindItem			(string name) const {

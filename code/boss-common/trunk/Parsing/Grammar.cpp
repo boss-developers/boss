@@ -935,7 +935,7 @@ namespace boss {
 		Item ruleObject = Item(currentRule.Object());
 		try {
 			if (ruleObject.IsPlugin()) {
-				if (ruleKeyString != "FOR" && ruleObject.IsMasterFile())
+				if (ruleKeyString != "FOR" && ruleObject.IsGameMasterFile())
 					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingMasterEsm).str());
 			} else {
 				if (to_lower_copy(ruleObject.Name()) == "esms")
@@ -964,7 +964,7 @@ namespace boss {
 					if (currentRule.Lines()[i].Key() == BEFORE) {
 						if (to_lower_copy(subject.Name()) == "esms")
 							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingGroupBeforeEsms).str());
-						else if (subject.IsMasterFile())
+						else if (subject.IsGameMasterFile())
 							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingModBeforeGameMaster).str());
 					}
 					hasSortLine = true;

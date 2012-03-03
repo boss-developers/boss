@@ -130,7 +130,7 @@ namespace boss {
 				} else if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / items[i].Name())) << SPAN_CLOSE;
 			
-				if (!gl_trial_run && !items[i].IsMasterFile() && !isSkyrim1426plus) {
+				if (!gl_trial_run && !items[i].IsGameMasterFile() && !isSkyrim1426plus) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
 					try {
@@ -193,7 +193,7 @@ namespace boss {
 				} else if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / items[i].Name())) << SPAN_CLOSE;
 
-				if (!gl_trial_run && !items[i].IsMasterFile() && !isSkyrim1426plus) {
+				if (!gl_trial_run && !items[i].IsGameMasterFile() && !isSkyrim1426plus) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
 					try {

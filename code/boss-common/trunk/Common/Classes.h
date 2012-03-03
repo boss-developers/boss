@@ -139,6 +139,7 @@ namespace boss {
 		
 		bool	IsPlugin	() const;
 		bool	IsGroup		() const;
+		bool	IsGameMasterFile() const;
 		bool	IsMasterFile() const;
 		bool	IsGhosted	() const;			//Checks if the file exists in ghosted form.
 		bool	Exists		() const;			//Checks if the file exists in data_path, ghosted or not.
@@ -156,6 +157,7 @@ namespace boss {
 		size_t					lastRecognisedPos;
 		vector<MasterlistVar>	masterlistVariables;
 		boost::unordered_map<string,uint32_t> fileCRCs;
+		void	ApplyMasterPartition();				//Puts all master files before other plugins.
 	public:
 
 				ItemList();
@@ -166,6 +168,8 @@ namespace boss {
 																	//Throws exception on fail.
 		void	SavePluginNames(fs::path file, bool activeOnly, bool doEncodingConversion);	//Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
 		void	EvalConditions();					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
+		
+		
 		size_t	FindItem		(string name) const;	//Find the position of the item with name 'name'. Case-insensitive.
 		size_t	FindLastItem	(string name) const;	//Find the last item with the name 'name'. Case-insensitive.
 		size_t	FindGroupEnd	(string name) const;	//Find the end position of the group with the given name. Case-insensitive.

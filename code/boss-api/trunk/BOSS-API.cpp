@@ -729,7 +729,7 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	bool isSkyrim1426 = (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
 	for (size_t i=0; i < max; i++) {
 		if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
-			if (!trialOnly && !items[i].IsMasterFile() && !isSkyrim1426) {
+			if (!trialOnly && !items[i].IsGameMasterFile() && !isSkyrim1426) {
 				try {
 					items[i].SetModTime(masterTime + plugins.size()*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 				} catch(boss_error &e) {
@@ -910,10 +910,13 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 
 		//Loop through given array and set the modification time for each one.
 		for (size_t i=0; i < numPlugins; i++) {
-			try {
-				Item(string(reinterpret_cast<const char *>(plugins[i]))).SetModTime(masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-			} catch(boss_error &e) {
-				return ReturnCode(e.getCode(), string(reinterpret_cast<const char *>(plugins[i])));
+			Item plugin = Item(string(reinterpret_cast<const char *>(plugins[i])));
+			if (!plugin.IsGameMasterFile()) {
+				try {
+					plugin.SetModTime(masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+				} catch(boss_error &e) {
+					return ReturnCode(e.getCode(), plugin.Name());
+				}
 			}
 		}
 	}
@@ -1030,7 +1033,7 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 		//Now get the load order from loadorder.txt.
 		ItemList loadorder;
 		try {
-			loadorder.Load(loadorder_path());
+			loadorder.Load(data_path);
 			//Insert the plugin if not found.
 			size_t loSize = loadorder.Items().size();
 			for (size_t i=0; i < numPlugins; i++) {
@@ -1148,10 +1151,12 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 		vector<Item> items = loadorder.Items();
 		size_t max = items.size();
 		for (size_t i=0; i < max; i++) {
-			try {
-				items[i].SetModTime(masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-			} catch(boss_error &e) {
-				return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
+			if (!items[i].IsGameMasterFile()) {
+				try {
+					items[i].SetModTime(masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+				} catch(boss_error &e) {
+					return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
+				}
 			}
 		}
 	}
