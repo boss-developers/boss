@@ -712,11 +712,6 @@ namespace boss {
 					i++;
 				}
 				for (i; i < max; i++) {  //Message lines.
-					if (!lines[i].IsObjectMessage()) {
-						buffer << LIST_ITEM_CLASS_WARN << "\"" << lines[i].Object() << "\" is not a valid message. Rule skipped.";
-						LOG_WARN(" * \"%s\" is not a valid message.", lines[i].Object().c_str());
-						break;
-					}
 					//Find the mod which will have its messages edited.
 					modlistPos1 = modlist.FindItem(ruleItem.Name());
 					if (modlistPos1 == modlist.Items().size()) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.

@@ -945,12 +945,13 @@ namespace boss {
 				else if (ruleKeyString == "FOR")
 					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EAttachingMessageToGroup).str());
 			}
-			size_t size = currentRule.Lines().size();
+			vector<RuleLine> lines = currentRule.Lines();
+			size_t size = lines.size();
 			bool hasSortLine = false, hasReplaceLine = false;
 			for (size_t i=0; i<size; i++) {
-				currentRule.Lines()[i].Object(boost::algorithm::trim_copy(currentRule.Lines()[i].Object()));  //Make sure there are no preceding or trailing spaces.
-				Item subject = Item(currentRule.Lines()[i].Object());
-				if (currentRule.Lines()[i].Key() == BEFORE || currentRule.Lines()[i].Key() == AFTER) {
+				lines[i].Object(boost::algorithm::trim_copy(lines[i].Object()));  //Make sure there are no preceding or trailing spaces.
+				Item subject = Item(lines[i].Object());
+				if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {
 					if (hasSortLine)
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EMultipleSortLines).str());
 					if (i != 0)
@@ -961,35 +962,40 @@ namespace boss {
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingToItself).str());
 					if ((ruleObject.IsPlugin() && !subject.IsPlugin()) || (!ruleObject.IsPlugin() && subject.IsPlugin()))
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EReferencingModAndGroup).str());
-					if (currentRule.Lines()[i].Key() == BEFORE) {
+					if (lines[i].Key() == BEFORE) {
 						if (to_lower_copy(subject.Name()) == "esms")
 							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingGroupBeforeEsms).str());
 						else if (subject.IsGameMasterFile())
 							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingModBeforeGameMaster).str());
-					}
+						else if (!ruleObject.IsMasterFile() && subject.IsMasterFile())
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingPluginBeforeMaster).str());
+					} else if (ruleObject.IsMasterFile() && !subject.IsMasterFile())
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingMasterAfterPlugin).str());
 					hasSortLine = true;
-				} else if (currentRule.Lines()[i].Key() == TOP || currentRule.Lines()[i].Key() == BOTTOM) {
+				} else if (lines[i].Key() == TOP || lines[i].Key() == BOTTOM) {
 					if (hasSortLine)
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EMultipleSortLines).str());
 					if (i != 0)
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortNotSecond).str());
 					if (ruleKeyString == "FOR")
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortLineInForRule).str());
-					if (currentRule.Lines()[i].Key() == TOP && to_lower_copy(subject.Name()) == "esms")
+					if (lines[i].Key() == TOP && to_lower_copy(subject.Name()) == "esms")
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EInsertingToTopOfEsms).str());
 					if (!ruleObject.IsPlugin() || subject.IsPlugin())
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EInsertingGroupOrIntoMod).str());
 					hasSortLine = true;
-				} else if (currentRule.Lines()[i].Key() == APPEND || currentRule.Lines()[i].Key() == REPLACE) {
+				} else if (lines[i].Key() == APPEND || lines[i].Key() == REPLACE) {
 					if (!ruleObject.IsPlugin())
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EAttachingMessageToGroup).str());
-					if (currentRule.Lines()[i].Key() == REPLACE) {
+					if (lines[i].Key() == REPLACE) {
 						if (hasReplaceLine)
 							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EMultipleReplaceLines).str());
 						if ((ruleKeyString == "FOR" && i != 0) || (ruleKeyString != "FOR" && i != 1))
 							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EReplaceNotFirst).str());
 						hasReplaceLine = true;
 					}
+					if (!lines[i].IsObjectMessage())
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EAttachingNonMessage).str());
 				}
 			}
 		} catch (ParsingError & e) {

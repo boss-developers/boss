@@ -211,6 +211,9 @@ namespace boss {
 	static const string EReplaceNotFirst("has a REPLACE-using message line that is not the first message line.");
 	static const string ESortNotSecond("has a sort line that is not the second line of the rule.");
 	static const string ESortingToItself("tries to sort a mod or group relative to itself.");
+	static const string EAttachingNonMessage("tries to attach an malformatted message.");
+	static const string ESortingMasterAfterPlugin("tries to sort a plugin bfore a master file.");
+	static const string ESortingPluginBeforeMaster("tries to sort a master file before a plugin.");
 	
 	//Parsing error class.
 	class BOSS_COMMON ParsingError {
