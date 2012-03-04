@@ -863,10 +863,19 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 	}
 	size_t loSize = loadorder.Items().size();
 
-	//If Update.esm is installed, check if it is listed. If not, add it after the rest of the master files.
-	if (gl_current_game == SKYRIM && fs::exists(data_path / "Update.esm") && loadorder.FindItem("Update.esm") == loSize) {
-		loadorder.Insert(loadorder.GetLastMasterPos() + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
-		loSize++;
+	//Check to see if the masters before plugins rule is being obeyed.
+	try {
+		size_t pos = loadorder.GetLastMasterPos();
+		if (loadorder.GetNextMasterPos(pos+1) != loSize)  //Masters exist after the initial set of masters. Not allowed.
+			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Master files must load before other plugins.");
+
+		//If Update.esm is installed, check if it is listed. If not, add it after the rest of the master files.
+		if (gl_current_game == SKYRIM && fs::exists(data_path / "Update.esm") && loadorder.FindItem("Update.esm") == loSize) {
+			loadorder.Insert(loadorder.GetLastMasterPos() + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
+			loSize++;
+		}
+	} catch (boss_error &e) {
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Now iterate through the Data directory, adding any plugins to loadorder that aren't already in it.
@@ -886,6 +895,11 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 				loSize++;
 			}
 		}
+	}
+	try {
+		loadorder.ApplyMasterPartition();  //Apply partition to sort those just added.
+	} catch (boss_error &e) {
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
@@ -961,8 +975,12 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 		}
 		//If Update.esm is installed, check if it is listed. If not, add it after the rest of the master files.
 		if (fs::exists(data_path / "Update.esm") && pluginsTxt.FindItem("Update.esm") == size) {
-			pluginsTxt.Insert(pluginsTxt.GetLastMasterPos() + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
-			size++;
+			try {
+				pluginsTxt.Insert(pluginsTxt.GetLastMasterPos() + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
+				size++;
+			} catch (boss_error &e) {
+				return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+			}
 		}
 	}
 
@@ -1020,7 +1038,7 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 	//If Update.esm is installed, check if it is listed. If not, add it (order is decided later).
 	size_t size = pluginsTxt.Items().size();
 	if (gl_current_game == SKYRIM && fs::exists(data_path / "Update.esm") && pluginsTxt.FindItem("Update.esm") == size) {
-		pluginsTxt.Insert(size, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
+		pluginsTxt.Insert(size, Item("Update.esm")); 
 	}
 
 	//Now save plugins.txt.
@@ -1103,10 +1121,16 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 	if (index == 0 && !boost::iequals(pluginStr, GetGameMasterFile(gl_current_game)))  //Invalid.
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before the game's master file.");
 
+
 	//Now get the load order from loadorder.txt.
 	ItemList loadorder;
 	try {
 		loadorder.Load(data_path);
+		//Check to see if the masters before plugins rule is being obeyed.
+		if (Item(pluginStr).IsMasterFile() && index > loadorder.GetLastMasterPos() + 1)  //Sorting master after plugin, not allowed.
+			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Masters may not be sorted after non-master plugins.");
+		else if (!Item(pluginStr).IsMasterFile() && index <= loadorder.GetLastMasterPos())  //Sorting plugin before master, not allowed.
+			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Non-master plugins may not be sorted after master plugins.");
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -1122,7 +1146,6 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 	if (index >= loadorder.Items().size())
 		index = loadorder.Items().size()-1;
 	loadorder.Insert(index, Item(pluginStr));
-
 
 	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
 		//Now write out the new loadorder.txt. Also update the plugins.txt.
@@ -1166,27 +1189,31 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 				}
 			}
 		} else {
-			time_t currTime = items[pos].GetModTime();
-			time_t newTime = items[index].GetModTime();
-			time_t deltaTime = (currTime - newTime) / (pos - index);  //Will always be > 0.
-			size_t start;
-			time_t startTime;
-			if (pos < index) {
-				start = pos;
-				max = index;
-				startTime = currTime;
-			} else {
-				start = index;
-				max = pos;
-				startTime = newTime;
-			}
-			for (size_t i = start; i < max; i++) {
-				try {
-					if (!items[i].IsGameMasterFile())
-						items[i].SetModTime(startTime + (i-start)*deltaTime);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-				} catch(boss_error &e) {
-					return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
+			try {
+				time_t currTime = items[pos].GetModTime();
+				time_t newTime = items[index].GetModTime();
+				time_t deltaTime = (currTime - newTime) / (pos - index);  //Will always be > 0.
+				size_t start;
+				time_t startTime;
+				if (pos < index) {
+					start = pos;
+					max = index;
+					startTime = currTime;
+				} else {
+					start = index;
+					max = pos;
+					startTime = newTime;
 				}
+				for (size_t i = start; i < max; i++) {
+					try {
+						if (!items[i].IsGameMasterFile())
+							items[i].SetModTime(startTime + (i-start)*deltaTime);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+					} catch(boss_error &e) {
+						return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
+					}
+				}
+			} catch(boss_error &e) {
+				return ReturnCode(e.getCode(), e.getString());
 			}
 		}
 	}

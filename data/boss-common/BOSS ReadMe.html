@@ -94,16 +94,17 @@
 <p><b>Note that BOSS does not support Windows 2000 or earlier.</b>
 <p>BOSS can be installed for use with TES IV: Oblivion, TES V: Skyrim, Fallout 3, Fallout: New Vegas and Nehrim - At Fate's Edge (a Total Conversion mod for Oblivion). Installation may either be automated, using the BOSS Installer package, or manually, using the archive package. Either method is simple, and instructions for manual installation are given below.
 <ol>
-	<li>If upgrading from an earlier version of BOSS, delete all BOSS files and folders in all supported games' Data folders. Also delete any of the following from your BOSS folder(s) (but not from any folders within your BOSS folders): BOSSlog.txt; BOSSlog.html; masterlist.txt; modlist.txt; modlist.old. If you have existing userlists, you will need to move them into the subfolders BOSS creates for their games in the BOSS folder once it is run.
+	<li>If upgrading from an earlier version of BOSS, delete all BOSS files and folders in all supported games' Data folders. Also delete any of the following from your BOSS folder(s) (but not from any folders within your BOSS folders): BOSSlog.txt; BOSSlog.html; masterlist.txt; modlist.txt; modlist.old. 
+	<ul><li>If you have existing userlists, you will need to move them into the subfolders BOSS creates for their games in the BOSS folder when it is run. The installer does this automatically for you.</ul>
 	<li>Within the archive you downloaded there is a BOSS folder. Extract this folder to a location of your choice. Make sure that you have the appropriate file permissions for the directory you choose. See the <q><a href="#permissions">File Permissions</a></q> section for more information.
 	<ul>
 		<li>If you only have one BOSS-supported game installed, it is best to install BOSS to the game's installation directory (ie. one of <q>Oblivion</q>, <q>Fallout 3</q>, <q>Nehrim</q>, <q>fallout new vegas</q> or <q>skyrim</q> depending on the game), so that the BOSS folder sits alongside the Data folder and the game's executable. This is referred to as a local install. BOSS by default will always run for the local game.
-		<li>If you have more than one BOSS-supported game installed, it is best to install BOSS to a location outside of the supported games' installation directories. This is referred to as a non-local install. In a non-local install, BOSS by default lets the user choose which game to run for.
+		<li>If you have more than one BOSS-supported game installed, it is best to install BOSS to a location outside of the supported games' installation directories. This is referred to as a non-local install. In a non-local install, BOSS by default lets the user choose which game to run for. This is the default install type when installing BOSS using the installer.
+		<li>If you have multiple copies of the same game installed, then you must also copy the BOSS folder you installed to each instance of that game, apart from the original install, so that it is installed locally for each copy. These copies act as totally separate installs of BOSS, independent of each other and the 'main' BOSS install.
 	</ul>
-	<li>If any of the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities are installed, make sure their <q>BOSS Disable Lock Times</q> setting is enabled.
+	<li>If any of the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities are installed, make sure their <q>BOSS Disable Lock Load Order</q><u title="previously BOSS Disable Lock Times">*</u> setting is enabled.
 	<li>In the BOSS folder, run <q>BOSS.exe</q>. This will download the latest masterlist from the Internet and then sort your mods.
 </ol>
-<p>When BOSS runs, it first looks for a local game install. If it cannot find one, it then looks in the Windows Registry for the non-local locations of any of the supported games. Therefore if you have multiple copies of a game installed, BOSS will only be able to detect the original installation and not any copies, as they do not have Registry entries. As such, you will also need to install BOSS separately to each of the copies' installation directories.
 <p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. The <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities will automatically import and apply Bash Tag suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions makes thoroughly and adjust tags by hand in <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> if necessary.
 <p>Unrecognised mods must be re-ordered by hand using <abbr title="Oblivion Mod Manager">OBMM</abbr>/<abbr title="Fallout Mod Manager">FOMM</abbr> or <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>.
 </div>
@@ -508,8 +509,8 @@ a problem for which no error message is given, please report the crash or proble
 <ul class="errorMessages">
 	<li><b>Symptom:</b> No change in load order.
 	<ul>
-		<li><b>Issue:</b> <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>Lock Times</q> load order locking feature is enabled, but <q>BOSS Disable Lock Times</q> is not.
-		<li><b>Solution:</b> Enable <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>BOSS Disable Lock Times</q> setting.
+		<li><b>Issue:</b> <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>Lock Load Order</q><u title="previously Lock Times">*</u> load order locking feature is enabled, but <q>BOSS Disable Lock Load Order</q><u title="previously BOSS Disable Lock Times">*</u> is not.
+		<li><b>Solution:</b> Enable <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>BOSS Disable Lock Load Order</q><u title="previously BOSS Disable Lock Times">*</u> setting.
 	</ul>
 	<li><b>Symptom:</b> BOSS does not change/update the BOSS Log and/or modlists correctly.
 	<ul>
@@ -749,6 +750,8 @@ a problem for which no error message is given, please report the crash or proble
 	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" has a REPLACE-using message line that is not the first message line.
 	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" has a sort line that is not the second line of the rule.
 	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" tries to sort a mod or group relative to itself.
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" tries to sort a master file before a plugin.
+	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" tries to sort a plugin bfore a master file.
 </ul>
 </div>
 
@@ -874,6 +877,8 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Changed: Only a single instance of the GUI is now allowed to run at any one time.
 	<li>Changed: Pretty pictures now in the main readme! Also updated content to reflect various changes and additions.
  	<li>Changed: Rewrote NSIS installer to reflect various changes and additions, and simplified the installer code greatly.
+	<li>Changed: You can no longer sort non-master plugins before master plugins, or master plugins after non-master plugins, using user rules. Masters are commonly .ESM files, and non-master plugins are commonly .ESP files, but whether a plugin is a master or not is actually decided by a variable in the file, not the file extension. (An example of this in action would be <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>ESMify Self<q> function, which makes a plugin into a master without changing the file extension.)
+	<li>Changed: BOSS now enforces the game's <q>masters before plugins</q> rule for load ordering when reading the current load order. It is not enforced for BOSS's sorting output, as only unrecognised masters are positioned after plugins, and these should be moved by the user anyway.
 	<li>Added: Support for multiple games from a single BOSS install:
 	<ul>
 		<li>BOSS now has two different install types: local installs place the BOSS folder beside a game's Data folder. Non-local installs place the BOSS folder anywhere else. Local installs will always run for the local game by default. Non-local installs will look for supported games and prompt the user to choose one to run for each time BOSS is run. If only one game is found, BOSS will run for it without user prompt.

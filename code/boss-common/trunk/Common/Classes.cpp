@@ -742,7 +742,15 @@ namespace boss {
 		else 
 			return items.size();
 	}
-	
+
+	size_t	ItemList::GetNextMasterPos(size_t currPos) const {
+		size_t i=currPos;
+		while (i < items.size() && !items[i].IsMasterFile()) {  //SLLOOOOOWWWWW probably.
+			i++;
+		}
+		return i;  //i is position of first master after currPos.
+	}
+
 	vector<Item> ItemList::Items() const {
 		return items;
 	}

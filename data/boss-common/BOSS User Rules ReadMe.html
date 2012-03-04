@@ -285,6 +285,7 @@ not be evident:
 	<li>You cannot sort a plugin relative to another plugin that is not in the masterlist and has not been sorted by a previous rule.
 	<li>You cannot include conditionals in any messages added through user rules. While BOSS will not display any errors, the message will be added as if it were a general message with no conditional.
 	<li>You cannot sort mods or groups relative to themselves.
+	<li>You cannot sort a non-master plugin before a master, or a master after a non-master plugin. Masters are commonly .ESM files, and non-master plugins are commonly .ESP files, but whether a plugin is a master or not is actually decided by a variable in the file, not the file extension. (An example of this in action would be <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>ESMify Self</q> function, which makes a plugin into a master without changing the file extension.)
 	<li>
 		<p><b>Rules are applied in the order they are listed</b>. This means you can have several rules sorting different rule objects relative to the same sort object, or have rules sorting rule objects relative to sort objects that were sorted in previous rules.
 		For example:
