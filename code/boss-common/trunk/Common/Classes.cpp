@@ -289,7 +289,17 @@ namespace boss {
 		}
 	}
 
-	time_t	Item::GetModTime	() const {
+	void	Item::UnGhost		() const {			//Can throw exception.
+		if (IsGhosted()) {
+			try {
+				fs::rename(data_path / fs::path(Data() + ".ghost"), data_path / Data());
+			} catch (fs::filesystem_error e) {
+				throw boss_error(BOSS_ERROR_FS_FILE_RENAME_FAIL, Data() + ".ghost", e.what());
+			}
+		}
+	}
+
+	time_t	Item::GetModTime	() const {			//Can throw exception.
 		try {			
 			if (IsGhosted())
 				return fs::last_write_time(data_path / fs::path(Data() + ".ghost"));

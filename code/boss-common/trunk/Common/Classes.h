@@ -144,8 +144,10 @@ namespace boss {
 		bool	IsGhosted	() const;			//Checks if the file exists in ghosted form.
 		bool	Exists		() const;			//Checks if the file exists in data_path, ghosted or not.
 		string	GetVersion	() const;			//Outputs the file's header.
-		void	SetModTime	(time_t modificationTime) const;
-		time_t	GetModTime	() const;
+		time_t	GetModTime	() const;			//Can throw exception.
+
+		void	UnGhost		() const;			//Can throw exception.
+		void	SetModTime	(time_t modificationTime) const;			//Can throw exception.
 
 		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 	};

@@ -1008,7 +1008,13 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 	//Fill an ItemList with the input.
 	ItemList pluginsTxt;
 	for (size_t i=0; i < numPlugins; i++) {
-		pluginsTxt.Insert(i, Item(string(reinterpret_cast<const char *>(plugins[i]))));
+		Item plugin = Item(string(reinterpret_cast<const char *>(plugins[i])));
+		pluginsTxt.Insert(i, plugin);
+		try {
+			plugin.UnGhost();
+		} catch (boss_error &e) {
+			return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, plugin.Name());
+		}
 	}
 
 	//If Update.esm is installed, check if it is listed. If not, add it (order is decided later).
@@ -1254,6 +1260,13 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 			else
 				return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Update.esm cannot be deactivated.");
 		}
+	}
+
+	//Unghost if ghosted.
+	try {
+		Item(pluginStr).UnGhost();
+	} catch (boss_error &e) {
+		return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, pluginStr);
 	}
 
 	//Load plugins.txt.
