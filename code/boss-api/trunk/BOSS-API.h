@@ -207,7 +207,7 @@ BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath);
 // Plugin Sorting Functions
 ////////////////////////////////
 
-//Returns which method the API is using for the load order. Return values are:
+//Returns which method the API is using for the load order. Output values are:
 //	BOSS_API_LOMETHOD_TIMESTAMP
 //	BOSS_API_LOMETHOD_TEXTFILE
 BOSS_API uint32_t GetLoadOrderMethod(boss_db db, uint32_t * method);

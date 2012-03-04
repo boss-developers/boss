@@ -319,13 +319,6 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 	else if (clientGame != OBLIVION && clientGame != FALLOUT3 && clientGame != FALLOUTNV && clientGame != NEHRIM && clientGame != SKYRIM)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Invalid game specified.");
 
-	boss_db retVal;
-	try {
-		retVal = new _boss_db_int;
-	} catch (bad_alloc &e) {
-		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
-	}
-
 	//Set the locale to get encoding conversions working correctly.
 	try {
 		setlocale(LC_CTYPE, "");
@@ -338,14 +331,10 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 
 	//Set game. Because this is a global and there may be multiple DBs for different games,
 	//each time a DB's function is called, it should be reset. Same with dataPath.
-	retVal->db_game = clientGame;
 	if (dataPath != NULL) {
-		retVal->db_data_path = fs::path(reinterpret_cast<const char *>(dataPath));
-		data_path = retVal->db_data_path;
-		if (data_path.empty()) {
-			DestroyBossDb(retVal);
+		data_path = fs::path(reinterpret_cast<const char *>(dataPath));
+		if (data_path.empty())
 			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Data path is empty.");
-		}
 	} else {
 		//If dataPath is null, then we need to look for the specified game.
 		if (fs::exists(data_path / GetGameMasterFile(clientGame)))
@@ -365,11 +354,12 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 
 		//If we've gotten here, then the game has been found.
 		SetDataPath(clientGame);
-		retVal->db_data_path = data_path;
+		
 	}
-	gl_current_game = retVal->db_game;
 
-	*db = retVal;
+	//Check if game master file exists.
+	if (!fs::exists(data_path / GetGameMasterFile(gl_current_game)))
+		return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND, GetGameMasterFile(gl_current_game));
 
 	//Load game ini file (only matters for Oblivion). Because it only matters for Oblivion, this global doesn't need to be set in every function.
 	if (gl_current_game == OBLIVION && fs::exists(data_path.parent_path() / "Oblivion.ini")) {  //Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
@@ -377,13 +367,12 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 		try {
 			oblivionIni.Load(data_path.parent_path() / "Oblivion.ini");  //This also sets the variable up.
 		} catch (boss_error &e) {
-			DestroyBossDb(retVal);
-			*db = NULL;
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
 	}
 
 	//Now check if plugins.txt and loadorder.txt are in sync.
+	uint32_t crc1 = 0, crc2 = 0;
 	if (fs::exists(plugins_path()) && fs::exists(loadorder_path())) {
 		//Load loadorder.txt and save a temporary filtered version.
 		ItemList loadorder;
@@ -391,29 +380,38 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 			loadorder.Load(data_path);
 			loadorder.SavePluginNames(loadorder_path().string() + ".new", true, true);
 		} catch (boss_error &e) {
-			DestroyBossDb(retVal);
-			*db = NULL;
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
 
-		uint32_t crc1 = GetCrc32(plugins_path());
-		uint32_t crc2 = GetCrc32(loadorder_path().string() + ".new");
+		crc1 = GetCrc32(plugins_path());
+		crc2 = GetCrc32(loadorder_path().string() + ".new");
 
 		//Now delete temporary filtered loadorder.txt.
 		try {
 			fs::remove(loadorder_path().string() + ".new");
 		} catch (fs::filesystem_error e) {
-			DestroyBossDb(retVal);
 			return ReturnCode(BOSS_API_ERROR_FILE_DELETE_FAIL, loadorder_path().string() + ".new");
 		}
-
-		//Since plugins.txt is derived from loadorder.txt in the same manner as the temporary file created above,
-		//with the derivation occurring whenever loadorder.txt is changed, if plugins.txt has not been changed
-		//by something other than the API (eg. the launcher), then the CRCs will match. Otherwise they will differ.
-		if (crc1 != crc2)
-			return ReturnCode(BOSS_API_WARN_LO_MISMATCH);
 	}
-	return ReturnCode(BOSS_API_OK);
+	
+	boss_db retVal;
+	try {
+		retVal = new _boss_db_int;
+	} catch (bad_alloc &e) {
+		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	}
+	retVal->db_game = clientGame;
+	retVal->db_data_path = data_path;
+
+	*db = retVal;
+
+	//Since plugins.txt is derived from loadorder.txt in the same manner as the temporary file created above,
+	//with the derivation occurring whenever loadorder.txt is changed, if plugins.txt has not been changed
+	//by something other than the API (eg. the launcher), then the CRCs will match. Otherwise they will differ.
+	if (crc1 != crc2)
+		return ReturnCode(BOSS_API_WARN_LO_MISMATCH);
+	else
+		return ReturnCode(BOSS_API_OK);
 }
 
 BOSS_API void     DestroyBossDb (boss_db db) {
