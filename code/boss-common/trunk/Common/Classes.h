@@ -145,6 +145,7 @@ namespace boss {
 		bool	Exists		() const;			//Checks if the file exists in data_path, ghosted or not.
 		string	GetVersion	() const;			//Outputs the file's header.
 		void	SetModTime	(time_t modificationTime) const;
+		time_t	GetModTime	() const;
 
 		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 	};
@@ -173,6 +174,7 @@ namespace boss {
 		size_t	FindItem		(string name) const;	//Find the position of the item with name 'name'. Case-insensitive.
 		size_t	FindLastItem	(string name) const;	//Find the last item with the name 'name'. Case-insensitive.
 		size_t	FindGroupEnd	(string name) const;	//Find the end position of the group with the given name. Case-insensitive.
+		size_t	GetLastMasterPos() const;
 
 		vector<Item>							Items() const;
 		ParsingError							ErrorBuffer() const;

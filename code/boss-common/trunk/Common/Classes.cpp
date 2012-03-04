@@ -289,6 +289,17 @@ namespace boss {
 		}
 	}
 
+	time_t	Item::GetModTime	() const {
+		try {			
+			if (IsGhosted())
+				return fs::last_write_time(data_path / fs::path(Data() + ".ghost"));
+			else
+				return fs::last_write_time(data_path / Data());
+		} catch(fs::filesystem_error e) {
+			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL, Data(), e.what());
+		}
+	}
+
 	bool	Item::operator <	(Item item2) {
 		//Two things matter when ordering plugins in timestamp-based load order systems: timestamp and whether a plugin is a master or not.
 		time_t t1 = 0,t2 = 0;
@@ -618,12 +629,10 @@ namespace boss {
 		size_t max = items.size();
 		for (size_t i=0; i < max; i++) {
 			if (items[i].Type() == MOD) {
-				if (activeOnly && (activePlugins.FindItem(items[i].Name()) == numActivePlugins || (isSkyrim1426plus && (items[i].Name() == "Skyrim.esm" || items[i].Name() == "Update.esm"))))
+				if (activeOnly && (activePlugins.FindItem(items[i].Name()) == numActivePlugins || (isSkyrim1426plus && items[i].Name() == "Skyrim.esm")))
 					continue;
-	/*			if (file == loadorder_path())
-					outfile << "MOD: ";
-	*/			LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
-				if (trans.GetEncoding() != 0) {  //Not UTF-8.
+				LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
+				if (doEncodingConversion) {  //Not UTF-8.
 					try {
 						outfile << trans.Utf8ToEnc(items[i].Name()) << endl;
 					} catch (boss_error &e) {
@@ -711,6 +720,17 @@ namespace boss {
 				return i;
 		}
 		return max;
+	}
+
+	size_t		ItemList::GetLastMasterPos() const {
+		size_t i=0;
+		while (items[i].IsMasterFile()) {  //SLLOOOOOWWWWW probably.
+			i++;
+		}
+		if (i > 0)
+			return i-1;  //i is position of first plugin.
+		else 
+			return items.size();
 	}
 	
 	vector<Item> ItemList::Items() const {

@@ -854,41 +854,43 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 	gl_current_game = db->db_game;
 
 	//Check load order to see if it's valid.
-	if (!Item(string(reinterpret_cast<const char *>(plugins[0]))).IsGameMasterFile())
+	if (numPlugins > 0 && !Item(string(reinterpret_cast<const char *>(plugins[0]))).IsGameMasterFile())
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before the game's master file.");
-	else if (gl_current_game == SKYRIM && !boost::iequals(string(reinterpret_cast<const char *>(plugins[1])), "Update.esm"))  //Invalid.
-		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before Update.esm.");
 
-	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
-		//Create a vector to hold the new loadorder.
-		ItemList loadorder;
-		size_t loSize = loadorder.Items().size();
+	//Create a vector to hold the new loadorder.
+	ItemList loadorder;
+	//We need to loop through the plugin array given and enter each plugin into the vector.
+	for (size_t i=0; i < numPlugins; i++) {
+		loadorder.Insert(i, Item(string(reinterpret_cast<const char *>(plugins[i]))));
+	}
+	size_t loSize = loadorder.Items().size();
 
-		//We need to loop through the plugin array given and enter each plugin into the vector.
-		for (size_t i=0; i < numPlugins; i++) {
-			loadorder.Insert(loSize, Item(string(reinterpret_cast<const char *>(plugins[i]))));
-			loSize++;
-		}
+	//If Update.esm is installed, check if it is listed. If not, add it after the rest of the master files.
+	if (gl_current_game == SKYRIM && fs::exists(data_path / "Update.esm") && loadorder.FindItem("Update.esm") == loSize) {
+		loadorder.Insert(loadorder.GetLastMasterPos() + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
+		loSize++;
+	}
 
-		//Now iterate through the Data directory, adding any plugins to loadorder that aren't already in it.
-		for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
-			const fs::path filename = itr->path().filename();
-			const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
-			if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
-				LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());
-				//Add file to modlist. If the filename has a '.ghost' extension, remove it.
-				Item tempItem;
-				if (ext == ".ghost")
-					tempItem = Item(filename.stem().string());
-				else
-					tempItem = Item(filename.string());
-				if (loadorder.FindItem(tempItem.Name()) == loSize) {  //If the plugin is not present, add it.
-					loadorder.Insert(loSize, tempItem);
-					loSize++;
-				}
+	//Now iterate through the Data directory, adding any plugins to loadorder that aren't already in it.
+	for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
+		const fs::path filename = itr->path().filename();
+		const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
+		if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
+			LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());
+			//Add file to modlist. If the filename has a '.ghost' extension, remove it.
+			Item tempItem;
+			if (ext == ".ghost")
+				tempItem = Item(filename.stem().string());
+			else
+				tempItem = Item(filename.string());
+			if (loadorder.FindItem(tempItem.Name()) == loSize) {  //If the plugin is not present, add it.
+				loadorder.Insert(loSize, tempItem);
+				loSize++;
 			}
 		}
+	}
 
+	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
 		//Now save the new loadorder. Also update the plugins.txt.
 		try {
 			loadorder.SavePluginNames(loadorder_path(), false, false);
@@ -906,13 +908,13 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 		}
 
 		//Loop through given array and set the modification time for each one.
-		for (size_t i=0; i < numPlugins; i++) {
-			Item plugin = Item(string(reinterpret_cast<const char *>(plugins[i])));
-			if (!plugin.IsGameMasterFile()) {
+		vector<Item> items = loadorder.Items();
+		for (size_t i=0; i < loSize; i++) {
+			if (!items[i].IsGameMasterFile()) {
 				try {
-					plugin.SetModTime(masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+					items[i].SetModTime(masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 				} catch(boss_error &e) {
-					return ReturnCode(e.getCode(), plugin.Name());
+					return ReturnCode(e.getCode(), items[i].Name());
 				}
 			}
 		}
@@ -950,30 +952,29 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
-	vector<Item> items = pluginsTxt.Items();
 	
-	//If textlist-based, we want to also output Skyrim.esm, Update.esm.
-	//First make sure they are currently missing though.
-	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
-		if (pluginsTxt.FindItem("Skyrim.esm") == items.size() && pluginsTxt.FindItem("Update.esm") == items.size()) {
-			db->extStringArraySize += 2;
-			items.insert(items.begin(), Item("Update.esm"));  //Adding in reverse order.
-			items.insert(items.begin(), Item("Skyrim.esm"));
-		} else if (pluginsTxt.FindItem("Skyrim.esm") == items.size()) {
-			db->extStringArraySize++;
-			items.insert(items.begin(), Item("Skyrim.esm"));
-		} else if (pluginsTxt.FindItem("Update.esm") == items.size()) {
-			db->extStringArraySize++;
-			items.insert(items.begin()+1, Item("Update.esm"));
+	//If Skyrim, we want to also output Skyrim.esm, Update.esm, if they are missing.
+	size_t size = pluginsTxt.Items().size();
+	if (gl_current_game == SKYRIM) {
+		//Check if Skyrim.esm is missing.
+		if (pluginsTxt.FindItem("Skyrim.esm") == size) {
+			pluginsTxt.Insert(0, Item("Skyrim.esm"));
+			size++;
+		}
+		//If Update.esm is installed, check if it is listed. If not, add it after the rest of the master files.
+		if (fs::exists(data_path / "Update.esm") && pluginsTxt.FindItem("Update.esm") == size) {
+			pluginsTxt.Insert(pluginsTxt.GetLastMasterPos() + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
+			size++;
 		}
 	}
 
 	//Check array size. Exit if zero.
+	vector<Item> items = pluginsTxt.Items();
 	if (items.empty())
 		return ReturnCode(BOSS_API_OK);
 
 	//Allocate memory.
-	db->extStringArraySize = items.size();
+	db->extStringArraySize = size;
 	try {
 		db->extStringArray = new uint8_t*[db->extStringArraySize];
 		for (size_t i=0; i < db->extStringArraySize; i++)
@@ -1002,44 +1003,39 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 	data_path = db->db_data_path;
 	gl_current_game = db->db_game;
 
-	//Open up plugins.txt.
-	ofstream file(plugins_path().c_str(), ios_base::trunc);
-	if (file.fail())
-		return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, plugins_path().string());
+	//Check load order to see if it's valid.
+	if (numPlugins > 0 && !Item(string(reinterpret_cast<const char *>(plugins[0]))).IsGameMasterFile())
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before the game's master file.");
 
-	//Write the plugins to it.
-	Transcoder trans;
-	trans.SetEncoding(1252);
-	string badFilename;
-	string plugin;
+	//Fill an ItemList with the input.
+	ItemList pluginsTxt;
 	for (size_t i=0; i < numPlugins; i++) {
-		try {
-			plugin = trans.Utf8ToEnc(string(reinterpret_cast<const char *>(plugins[i])));
-			if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0") && (boost::iequals(plugin, "Skyrim.esm") || boost::iequals(plugin, "Update.esm")))  //These don't go in plugins.txt.
-				continue;
-			file << plugin << endl;
-		} catch (boss_error &e) {
-			badFilename = string(reinterpret_cast<const char *>(plugins[i]));
-		}
+		pluginsTxt.Insert(i, Item(string(reinterpret_cast<const char *>(plugins[i]))));
 	}
-	file.close();
+
+	//If Update.esm is installed, check if it is listed. If not, add it (order is decided later).
+	size_t size = pluginsTxt.Items().size();
+	if (gl_current_game == SKYRIM && fs::exists(data_path / "Update.esm") && pluginsTxt.FindItem("Update.esm") == size) {
+		pluginsTxt.Insert(size, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
+	}
+
+	//Now save plugins.txt.
+	string badFilename;
+	try {
+		pluginsTxt.SavePluginNames(plugins_path(), false, true);  //False to ensure newly-added plugins are actually added.
+	} catch (boss_error &e) {
+		if (e.getCode() == BOSS_ERROR_ENCODING_CONVERSION_FAIL)
+			badFilename = e.getString();
+		else
+			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+	}
 
 	//Now if running for textfile-based load order system, reorder plugins.txt, deriving the order from loadorder.txt.
-	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
-
+	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
 		//Now get the load order from loadorder.txt.
 		ItemList loadorder;
 		try {
 			loadorder.Load(data_path);
-			//Insert the plugin if not found.
-			size_t loSize = loadorder.Items().size();
-			for (size_t i=0; i < numPlugins; i++) {
-				file << reinterpret_cast<const char *>(plugins[i]) << endl;
-				if (loadorder.FindItem(string(reinterpret_cast<const char *>(plugins[i]))) == loSize) {  //File does not have a defined load order. Add it to the end of loadorder.
-					loadorder.Insert(loSize, Item(string(reinterpret_cast<const char *>(plugins[i]))));
-					loSize++;
-				}
-			}
 			//Save the load order and derive plugins.txt order from it.
 			loadorder.SavePluginNames(loadorder_path(), false, false);
 			loadorder.SavePluginNames(plugins_path(), true, true);
@@ -1047,11 +1043,10 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
 	}
-
-	if (!badFilename.empty())
-		return ReturnCode(BOSS_API_WARN_BAD_FILENAME, badFilename);
-	else
+	if (badFilename.empty())
 		return ReturnCode(BOSS_API_OK);
+	else
+		return ReturnCode(BOSS_API_WARN_BAD_FILENAME, badFilename);
 }
 
 // Gets the load order of the specified plugin, giving it as index. The first position 
@@ -1100,13 +1095,9 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 
 	string pluginStr = string(reinterpret_cast<const char *>(plugin));
 
-	//Check to see if the plugin is being set to the first position in the load order.
-	//Only the game master file should be set there.
-	//If Skyrim, also check the second position.
+	//Check to see if the plugin is being set to the first position in the load order. Only the game master file should be set there.
 	if (index == 0 && !boost::iequals(pluginStr, GetGameMasterFile(gl_current_game)))  //Invalid.
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before the game's master file.");
-	else if (gl_current_game == SKYRIM && index == 1 && !boost::iequals(pluginStr, "Update.esm"))
-		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before Update.esm.");
 
 	//Now get the load order from loadorder.txt.
 	ItemList loadorder;
@@ -1118,6 +1109,8 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 
 	//Now search for the given plugin.
 	size_t pos = loadorder.FindItem(pluginStr);
+	if (pos == index)
+		return ReturnCode(BOSS_API_OK);
 	if (pos != loadorder.Items().size())  //Plugin found. Erase it.
 		loadorder.Erase(pos);
 
@@ -1136,6 +1129,17 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 			return ReturnCode(e.getCode(), e.getString());
 		}
 	} else {  //Non-skyrim. Scan data directory, and arrange plugins found in timestamp load order.
+
+		/* Optimised algorithm.
+		1.  Get the plugin's current position.
+		2.	Compare the difference between the plugin's current position and the new position against the size of the load order.
+		3.	If >= N - 3 (estimate of efficiency) where N is the size of the load order, redate all plugins and exit. Otherwise continue.
+		4.	Read plugin timestamp at current position.
+		5.	Read plugin timestamp at new position.
+		6.	Set the time delta to the difference in timestamps divided by the number of plugins between the two positions.
+		7.	Redate the plugins between the two positions inclusively, using the time delta calculated.
+		*/
+
 		//Get the master time to derive dates from.
 		time_t masterTime;
 		try {
@@ -1147,10 +1151,35 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 		//Now set the new timestamps.
 		vector<Item> items = loadorder.Items();
 		size_t max = items.size();
-		for (size_t i=0; i < max; i++) {
-			if (!items[i].IsGameMasterFile()) {
+
+		if (index - pos >= max - 3 || pos - index >= max - 3) {  //Equivalent to abs(), which doesn't have size_t overloads.
+			for (size_t i=0; i < max; i++) {
 				try {
-					items[i].SetModTime(masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+					if (!items[i].IsGameMasterFile())
+						items[i].SetModTime(masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+				} catch(boss_error &e) {
+					return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
+				}
+			}
+		} else {
+			time_t currTime = items[pos].GetModTime();
+			time_t newTime = items[index].GetModTime();
+			time_t deltaTime = (currTime - newTime) / (pos - index);  //Will always be > 0.
+			size_t start;
+			time_t startTime;
+			if (pos < index) {
+				start = pos;
+				max = index;
+				startTime = currTime;
+			} else {
+				start = index;
+				max = pos;
+				startTime = newTime;
+			}
+			for (size_t i = start; i < max; i++) {
+				try {
+					if (!items[i].IsGameMasterFile())
+						items[i].SetModTime(startTime + (i-start)*deltaTime);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 				} catch(boss_error &e) {
 					return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
 				}
@@ -1215,8 +1244,19 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 
 	//Catch Skyrim.esm and Update.esm for Skyrim.
 	string pluginStr = string(reinterpret_cast<const char *>(plugin));
-	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0") && (boost::iequals(pluginStr, "Skyrim.esm") || boost::iequals(pluginStr, "Update.esm")))
-		return ReturnCode(BOSS_API_OK);
+	if (gl_current_game == SKYRIM) {
+		if (boost::iequals(pluginStr, "Skyrim.esm")) {
+			if (active)
+				return ReturnCode(BOSS_API_OK);
+			else
+				return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Skyrim.esm cannot be deactivated.");
+		} else if (fs::exists(data_path / "Update.esm") && boost::iequals(pluginStr, "Update.esm")) {
+			if (active)
+				return ReturnCode(BOSS_API_OK);
+			else
+				return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Update.esm cannot be deactivated.");
+		}
+	}
 
 	//Load plugins.txt.
 	ItemList pluginsList;
@@ -1233,14 +1273,23 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 		pluginsList.Insert(pluginsList.Items().size(), pluginStr);
 
 	//Check that there aren't too many plugins in plugins.txt.
+	bool isSkyrim1426plus = (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
 	if (pluginsList.Items().size() > 255)
 		return ReturnCode(BOSS_API_ERROR_PLUGINS_FULL);
-	else if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0") && pluginsList.Items().size() > 253)  //textfile-based system doesn't list Skyrim.esm, Update.esm in plugins.txt.
+	else if (isSkyrim1426plus && pluginsList.Items().size() > 254)  //textfile-based system doesn't list Skyrim.esm in plugins.txt.
 		return ReturnCode(BOSS_API_ERROR_PLUGINS_FULL);
 
 	//Now save the change.
 	try {
 		pluginsList.SavePluginNames(plugins_path(), false, true);  //Must be false because we're not adding a currently active file, if we're adding something.
+		if (isSkyrim1426plus) {
+			//Now get the load order from loadorder.txt.
+			ItemList loadorder;
+			loadorder.Load(data_path);
+			//Save the load order and derive plugins.txt order from it.
+			loadorder.SavePluginNames(loadorder_path(), false, false);
+			loadorder.SavePluginNames(plugins_path(), true, true);
+		}
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());
 	}
@@ -1259,9 +1308,9 @@ BOSS_API uint32_t IsPluginActive(boss_db db, const uint8_t * plugin, bool * isAc
 
 	string pluginStr = string(reinterpret_cast<const char *>(plugin));
 
-	//Check if it's textlist-based, and Skyrim.esm/Update.esm, which are special cases.
-	if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) { //Skyrim.
-		if (boost::iequals(pluginStr, "Skyrim.esm") || boost::iequals(pluginStr, "Update.esm")) {
+	//Check if it's Skyrim, and Skyrim.esm/Update.esm, which are special cases.
+	if (gl_current_game == SKYRIM) {
+		if (boost::iequals(pluginStr, "Skyrim.esm") || (fs::exists(data_path / "Update.esm") && boost::iequals(pluginStr, "Update.esm"))) {
 			*isActive = true;
 			return ReturnCode(BOSS_API_OK);
 		}
