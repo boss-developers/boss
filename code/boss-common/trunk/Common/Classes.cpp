@@ -724,7 +724,7 @@ namespace boss {
 
 	size_t		ItemList::GetLastMasterPos() const {
 		size_t i=0;
-		while (items[i].IsMasterFile()) {  //SLLOOOOOWWWWW probably.
+		while (i < items.size() && items[i].IsMasterFile()) {  //SLLOOOOOWWWWW probably.
 			i++;
 		}
 		if (i > 0)

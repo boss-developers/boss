@@ -197,7 +197,7 @@ namespace boss {
 	}
 
 	//Download the remote file to local. Throws exception on error.
-	void DownloadFile(uiStruct ui, const string remote, const string local) {
+	void DownloadFile(uiStruct ui, const string remote, const fs::path local) {
 		string fileBuffer;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
@@ -211,7 +211,7 @@ namespace boss {
 		ofile.open(local.c_str(), ios_base::binary|ios_base::trunc);  //Masterlist doesn't have binary flag, does this break if included?
 		if (ofile.fail()) {
 			curl_easy_cleanup(curl);
-			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, local);
+			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, local.string());
 		}
 		
 		//Download to buffer.
@@ -566,7 +566,7 @@ namespace boss {
 			ui.file = file.string();
 
 			//Now download and install.
-			DownloadFile(ui, url, file.string() + ".new");
+			DownloadFile(ui, url, fs::path(file.string() + ".new"));
 			InstallFile(file.string() + ".new", file.string());
 
 			//Now replace the SVN info in the downloaded file with the revision and date.
@@ -681,7 +681,7 @@ namespace boss {
 		string remote_file = releaseURL + file;
 		string dest_file = boss_path.string() + '/' + file + ".new";
 		boost::replace_all(remote_file, " ", "%20");  //Need to put the %20s back in for the file's web address.
-		DownloadFile(ui, remote_file, dest_file);
+		DownloadFile(ui, remote_file, fs::path(dest_file));
 		
 		//Check if file is valid.
 		if (GetCrc32(fs::path(dest_file)) != crc)
