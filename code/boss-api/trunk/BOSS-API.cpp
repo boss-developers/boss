@@ -356,6 +356,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 		SetDataPath(clientGame);
 		
 	}
+	gl_current_game = clientGame;
 
 	//Check if game master file exists.
 	if (!fs::exists(data_path / GetGameMasterFile(gl_current_game)))
