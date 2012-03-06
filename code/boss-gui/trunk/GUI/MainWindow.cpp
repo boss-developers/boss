@@ -765,6 +765,12 @@ void MainFrame::OnGameChange(wxCommandEvent& event) {
 		break;
 	}
 	SetDataPath(gl_current_game);
+	try {
+		if (!fs::exists(boss_game_path()))
+			fs::create_directory(boss_game_path());
+	} catch (fs::filesystem_error e) {
+		throw boss_error(BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL, GetGameMasterFile(gl_current_game), e.what());
+	}
 	SetTitle(wxT("BOSS - " + GetGameString(gl_current_game)));
 	//Load game ini file (only matters for Oblivion).
 	if (gl_current_game == OBLIVION && fs::exists(data_path.parent_path() / "Oblivion.ini")) {  //Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
@@ -815,6 +821,7 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 		UpdateBox->Enable(false);
 		TrialRunBox->Enable(false);
 	}
+	SetDataPath(gl_current_game);
 	DisableUndetectedGames();  //Doesn't actually disable games if (gl_update_only).
 }
 

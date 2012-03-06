@@ -1,41 +1,36 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <meta charset="utf-8">
 <title>BOSS API ReadMe</title>
 <style>
-	body {font-family:Calibri,Arial,Verdana,sans-serifs; padding:0 20px;}
-	h1 { text-align:center;}
-	body > div {margin-bottom:5em;}
-	ol li, ul li {margin-bottom:10px;}
+	body {font-family:Calibri,Arial,Verdana,sans-serifs;}
+	li {margin-bottom:10px;}
 	li ul, li ol {margin-top:0.4em;}
-	.codebox, .quotebox, .logbox {margin:0 40px; border:gray 1px dashed; display:table; padding:5px 10px 5px 10px;}
-	.codebox {font-family:monospace; background:#F5F5F5; line-height:20px; margin:0.5em 0 2em 2em;}
-	.quotebox {background:#E6E6FA;}
-	.logbox {background:#E0FFFF; line-height:30px;}
-	.logbox > ul > li {line-height:20px;}
 	q {font-style:italic;}
-	code {display:inline-box; padding:2px 5px; background:#EEEEEE;}
+	code {display:inline-block; padding:2px 5px; background:#EEEEEE;}
 	td {border:1px solid #ccc; padding: 5px; vertical-align:top;}
-	table {border:1px solid #CCCCCC; border-spacing:0; border-collapse:separate; margin:1em;}
+	table {border:1px solid #ccc; border-spacing:0; border-collapse:separate; margin:1em;}
 	thead > tr td {font-weight:bold}
-	
+	code.box {line-height:20px; white-space:pre; margin:1em 0 0 3em; display:table; padding:5px 10px;}
+	ol li ol {list-style:lower-alpha;}
+	blockquote {background:#E6E6FA; display:table; padding:5px 30px 5px 10px;}
+	h1 { text-align:center;}
 	h2 {margin-top:3em;}
 	h3 {margin-top:2em;}
+	a:link {text-decoration:none;}
+	a:hover {text-decoration:underline;}
 	
-	a:link { text-decoration:none; }
-	a:hover { text-decoration:underline; }
-	pre { border:gray 1px dashed; word-wrap:break-word; background:#FDF5E6; margin-left:40px; display:table; min-width:300px; padding:5px 30px 5px 10px;}
-	code { background:#DDD; font-family: "Lucida Console", monospace; font-size:10pt; white-space:pre; padding:3px; }
-	ol li ol {list-style:lower-alpha;}
+	code.box {margin-bottom: 3em;}
 </style>
 
 <h1>BOSS API Readme</h1>
 <h2>Contents</h2>
 <ol>
 	<li><a href="#intro">Introduction</a>
+	<li><a href="#lo">Load Orders</a>
 	<ol>
 		<li><a href="#intro-lo">Introduction To Load Ordering</a>
 		<li><a href="#intro-textfile">The Textfile-based Load Order Standard</a>
-		<li><a href="#intro-boss">Overview Of BOSS</a>
+		<li><a href="#lo-bapi">Load Ordering With BOSS API</a>
 	</ol>
 	<li><a href="#types">Variable Types</a>
 	<li><a href="#memory">Memory Management</a>
@@ -87,12 +82,24 @@
 </ul>
 <p>BAPI is intended as a full solution to the management of load order and plugin activation status across all supported games, freeing client utilities from the requirement to maintain their own code for those functions. The source code is available at <a href="http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn%2Fcode%2Fboss-api%2Ftrunk">BOSS's Google Code repository</a>. BAPI is licensed as part of BOSS under the GNU General Public License v3, see the main BOSS readme for more information.
 
-<h3 id="intro-lo">Introduction To Load Ordering</h3>
-<p>The following applies universally to Oblivion, Nehrim, Skyrim, Fallout 3 and Fallout: New Vegas unless otherwise noted.
+<p>For those unfamiliar with BOSS and its files, the following is a brief summary of its main features.
+<p>BOSS is a utility that automatically sorts a user's load order to minimise incompatibilities. It does so according to the load order of the <dfn>masterlist</dfn>, which contains the optimal load order for all plugins known to BOSS and is kept up to date via community submissions to the BOSS Development Team. Each game that BOSS supports has a separate masterlist, and BOSS will by default check for masterlist updates and download the latest one for the relevant game when it runs.
+<p>The masterlist also contains a large number of messages attached to plugins conveying information on compatibility, requirements, installation errors, dirty mod information, Bash Tag suggestions for use with the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities, and more. These messages are displayed in the BOSS Log after BOSS has run, so that the user may read them and take any action that the messages suggest.
+<p>BOSS allows users to override, or add to, the positions mods are put in and the messages attached to each mod by the masterlist using a <dfn>userlist</dfn> file.
+
+<h2 id="lo">Load Orders</h2>
+<h3 id="lo-intro">Introduction To Load Ordering</h3>
 <p>Load ordering is the method used to determine how conflicts between mod plugins should be decided. If two plugins alter the same game data, then the changes made by the plugin loading later will override those made by the plugin loading earlier. This <em>rule of one</em> results in a list of plugins, with those earlier in the list having any conflicting changes overriden by those later in the list. This list is the load order of the plugins.
 <p>A game will only load the plugins that are active. Up to 255 plugins, including the game's .esm file, can be active at any one time. Active plugins are listed in the game's <code>plugins.txt</code> file, which is stored in the user's local application data folder. Nevertheless, it is useful when working with load orders to consider the load order of all plugins, even if only some of them will actually be loaded. This is both because it is easier to display a single list of plugins than a list and an unordered set, and because modders have engineered methods that allow the changes made by inactive plugins to be loaded by another plugin (eg. <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s Bashed Patch). When any such methods are being used, the load order of inactive plugins decides which plugins override others, similar to as if they were active.
 <p>In Oblivion, Nehrim, Fallout 3, Fallout: New Vegas and early versions (pre-1.4.26) of Skyrim, load order is decided by the relative timestamps of plugins in the game's Data directory. An installed plugin's load order is therefore an intrinsic property of that plugin.
-<p>In Skyrim v1.4.26+, a new textfile-based load order system was introduced, in which load order is decide by the order in which plugins are listed in <code>plugins.txt</code>. This brought with it a fundamental change, in that load order is no longer an intrinsic property of a plugin. This has the result that inactive plugins do not have any load order.
+<p>In Skyrim v1.4.26+, a new textfile-based load order system was introduced, in which load order is decide by the order in which plugins are listed in <code>plugins.txt</code>. This brought with it a fundamental change, in that load order is no longer an intrinsic property of a plugin, and so inactive plugins do not have any load order.
+<p><b>Note:</b> The games enforce one rule that overrides the load order of plugins set by either system. This rule is that <em>master files always load before all plugin files</em>. Simple enough, except that master files are not necessarily <code>.esm</code> files, and plugin files aren't necessarily <code>.esp</code> files. Whether a file is a master or a plugin depends on the value of a bit flag in the file itself, rather than its file extension. This also confuses terminology, so the usage in this readme is clarified below:
+<ul>
+	<li><var>plugin</var>: Any file with a <code>.esp</code> or <code>.esm</code> extension.
+	<li><var>plugin file</var>: Any plugin with a bit flag value such that it always loads after plugins with the other bit flag value.
+	<li><var>master</var> or <var>master file</var>: Any plugin with a bit flag value such that it loads before plugins with the other bit flag value.
+	<li><var>ghosted plugin</var>: Any plugin that has had a <code>.ghost</code> extension appended to its filename.
+</ul>
 
 <h3 id="intro-textfile">The Textfile-based Load Order Standard</h3>
 <p>As the load order of all plugins, not just inactive plugins, is important, a standard solution that would allow ordering of inactive plugins was decided by Lojack (Wrye Bash), Kaburke (Nexus Mod Manager), WrinklyNinja (BOSS) and Dark0ne (owner of the Nexus sites) that could serve the community's needs. The BOSS API contains the canonical implementation of this standard.
@@ -104,7 +111,8 @@
 	<li>Total load order is stored in a <code>loadorder.txt</code> file.
 	<li><code>loadorder.txt</code> is encoded in UTF-8, <strong>without</strong> a Byte Order Mark.
 	<li><code>loadorder.txt</code> is stored alongside the <code>plugins.txt</code>, in whichever location that is.
-	<li>Both <code>plugins.txt</code> and <code>loadorder.txt</code> contain only a list of plugin filenames, one per line.
+	<li>Both <code>plugins.txt</code> and <code>loadorder.txt</code> contain only a list of plugin filenames (files with <code>.esp</code> or <code>.esm</code> extensions), one per line.
+	<li>In both <code>plugins.txt</code> and <code>loadorder.txt</code>, master files are listed before plugin files.
 	<li>Both <code>plugins.txt</code> and <code>loadorder.txt</code> are to be kept in synchronisation with one another: when one file is changed, the other must also be changed in the same manner (unless the change is not applicable, eg. deactivating a plugin doesn't change the contents of <code>loadorder.txt</code>).
 </ul>
 <p>There are some circumstances that produce scenarios in which the behaviour of utilities is not defined. These are detailed in the table below.
@@ -115,7 +123,7 @@
 		<tr><td>The <q>plugins.txt</q> and <q>loadorder.txt</q> files become unsynchronised.<td>Utilities check for synchronisation on startup and maintain it throughout their operation, rather than re-synchronising the files on program close, for instance. This is to prevent issues for any other programs open at the same time. If desynchronisation is detected, the only standard-based recovery option is to derive <q>plugins.txt</q> from <q>loadorder.txt</q>, first getting a list of filenames to be written from <q>plugins.txt</q>. Alternatively, a utility could use some internal load order backup to restore from. See the coloured box below for a more detailed breakdown of the issue.<td>BAPI detects loss of synchronisation when a database is created and returns a warning code to the client after creating the database. The client is then free to decide on the action taken.
 		<tr><td>For one reason or another, a plugin becomes listed twice in <code>loadorder.txt</code>.<td>Utilities use the earliest-listed instance of that plugin, as this is most likely to be correct.<td>The API ignores all but the earliest-listed instance of a plugin, neither operating on or returning any other instance.
 </table>
-<div class="quotebox"><i>The Desynchronisation Problem</i>
+<blockquote><i>The Desynchronisation Problem</i>
 <p>If either <code>plugins.txt</code> or <code>loadorder.txt</code> are changed such that the load order of the plugins in <code>plugins.txt</code> is not the same in <code>plugins.txt</code> and <code>loadorder.txt</code>, then the difference cannot generally be precisely resolved without discarding one file's ordering. This is due to the load order of plugins in plugins.txt being weakly defined, ie. it is defined relative to other active plugins, but not in relation to inactive plugins. An example:
 <blockquote>
 If you use the API to set a load order of A,b,c,d,E,f,g where uppercase letters denote active plugins, then you use the Skyrim launcher to move A after E, then <code>plugins.txt</code> will read E,A while <code>loadorder.txt</code> remains unchanged. There is no way of knowing from the contents of plugins.txt whether you moved A after E or E before A. If these were the only two plugins, then it would not be an issue, but you also have inactive plugins interspersed amongst them, so you have the following possibilities, all of which are potentially valid, but also potentially damaging in terms of conflicts, etc.:
@@ -127,14 +135,9 @@ E,A,b,c,d,f,g
 </blockquote>
 There is no way of knowing which is the correct order to choose for the full load order based on the active load order. You must therefore choose to use one of the two files' orderings. Since <code>plugins.txt</code> does not define the load order positions of inactive plugins, it is unsuitable, and <code>loadorder.txt</code> must be used. The alternative would be for a utility to restore load order from their own internal backup, hence why the standard does not define a specific behaviour, as it may be <code>loadorder.txt</code> that was altered and is now wrong.
 </blockquote>
-</div>
+</blockquote>
+<h3 id="lo-bapi">Load Ordering with BOSS API</h3>
 <p>BAPI's implementation of load ordering support presents one set of functions that handle the differences between timestamp-based and textfile-based load ordering opaquely, so there is no difference in usage for clients. It is fully compatible with the community standard for textfile-based load ordering, handling all requirements internally.
-
-<h3 id="intro-boss">Overview Of BOSS</h3>
-<p>For those unfamiliar with BOSS and its files, this section gives a brief summary of its main features.
-<p>BOSS is a utility that automatically sorts a user's load order to minimise incompatibilities. It does so according to the load order of the <dfn>masterlist</dfn>, which contains the optimal load order for all plugins known to BOSS and is kept up to date via community submissions to the BOSS Development Team. Each game that BOSS supports has a separate masterlist, and BOSS will by default check for masterlist updates and download the latest one for the relevant game when it runs.
-<p>The masterlist also contains a large number of messages attached to plugins conveying information on compatibility, requirements, installation errors, dirty mod information, Bash Tag suggestions for use with the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities, and more. These messages are displayed in the BOSS Log after BOSS has run, so that the user may read them and take any action that the messages suggest.
-<p>BOSS allows users to override, or add to, the positions mods are put in and the messages attached to each mod by the masterlist using a <dfn>userlist</dfn> file.
 
 
 <h2 id="types">Variable Types</h2>
@@ -146,13 +149,13 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li>File paths are case-sensitive if the underlying file system is case-sensitive.
 </ul>
 <p>The API also introduces two new structures:
-<div class="codebox" id="boss_db">typedef struct _boss_db_int * boss_db;</div>
+<code class="box" id="boss_db">typedef struct _boss_db_int * boss_db;</code>
 <p>The boss_db structure abstracts the definition of BOSS's internal state while still providing type safety across the API.
 
-<div class="codebox" style="white-space:pre;" id ="BashTag">typedef struct {
+<code class="box" id ="BashTag">typedef struct {
     uint32_t id;
     const uint8_t * name;
-} BashTag;</div>
+} BashTag;</code>
 <p>The BashTag structure gives the Unique Identifier (UID) for each Bash Tag and the corresponding Bash Tag name.
 
 
@@ -161,7 +164,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 <p>A string/array returned by a function lasts until a BAPI function is called which returns data of the same type (eg. a string is stored until the client calls another function which returns a string, an integer array lasts until another integer array is returned, etc.).
 <p>Strings and arrays may also be deallocated by calling <a href="#Load">Load</a> or <a href="#DestroyBossDb">DestroyBossDb</a>. <a href="#DestroyBossDb">DestroyBossDb</a> also destroys the database passed as its argument.
 <p>The two exceptions to the above are the strings returned by <a href="#GetLastErrorDetails">GetLastErrorDetails</a> and <a href="#GetVersionString">GetVersionString</a>, which exist independently of each other and strings returned by other functions. A string returned by one of these two functions lasts until that function is called again, or until <a href="#CleanUpAPI">CleanUpAPI</a> is called.
-</div>
+
 
 <h2 id="codes">API Codes</h2>
 <h3 id="codes-return">Return Codes</h3>
@@ -231,7 +234,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 <ul>
 	<li><var>details</var> - A pointer to the error details string outputted by the function.
 </ul>
-<div class="codebox">uint32_t <a href="#GetLastErrorDetails">GetLastErrorDetails</a> (uint8_t ** <var>details</var>);</div>
+<code class="box">uint32_t <a href="#GetLastErrorDetails">GetLastErrorDetails</a> (uint8_t ** <var>details</var>);</code>
 
 
 
@@ -243,32 +246,32 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>bossVersionMinor</var> - The minor version number (major.<b>minor</b>.patch) of the API version the client's code was written for.
 	<li><var>bossVersionPatch</var> - The patch version number (major.minor.<b>patch</b>) of the API version the client's code was written for.
 </ul>
-<div class="codebox">bool <a href="#IsCompatibleVersion">IsCompatibleVersion</a> (const uint32_t bossVersionMajor, const uint32_t bossVersionMinor, const uint32_t bossVersionPatch);</div>
+<code class="box">bool <a href="#IsCompatibleVersion">IsCompatibleVersion</a> (const uint32_t bossVersionMajor, const uint32_t bossVersionMinor, const uint32_t bossVersionPatch);</code>
 
 <dfn id="GetVersionString">GetVersionString</dfn> - Returns the version string for the loaded version of the BOSS API.
 <ul>
 	<li><var>bossVersionStr</var> - A pointer to the version string outputted by the function.
 </ul>
-<div class="codebox">uint32_t <a href="#GetVersionString">GetVersionString</a> (uint8_t ** bossVersionStr);</div>
+<code class="box">uint32_t <a href="#GetVersionString">GetVersionString</a> (uint8_t ** bossVersionStr);</code>
 
 
 <h3 id="functions-lifecycle">Lifecycle Management Functions</h3>
-<dfn id="CreateBossDb">CreateBossDb</dfn> - Creates a database for one of the games supported by the API, and sets the path to the Data directory for that game. You can create multiple databases. If the <var>clientGame</var> uses the textfile-based load order system, this function also checks that plugins.txt and loadorder.txt are in sync, provided that they both exist. 
+<dfn id="CreateBossDb">CreateBossDb</dfn> - Creates a database for one of the games supported by the API, and sets the path to the Data directory for that game. It then checks that the game's master file exists at that location. If the <var>clientGame</var> uses the textfile-based load order system, this function also checks that plugins.txt and loadorder.txt are in sync, provided that they both exist.  You can create multiple databases.
 <ul>
 	<li><var>db</var> - A pointer to the database created by the function.
 	<li><var>clientGame</var> - A game code specifying which game to create the database for.
 	<li><var>dataPath</var> - A string containing the relative or absolute path to the Data folder for the game specified by <var>clientGame</var>. If <code>NULL</code>, the API attempts to detect the path of the game by scanning sibling folders of the working directory and by scanning the Windows Registry for an install path key.
 </ul>
-<div class="codebox">uint32_t <a href="#CreateBossDb">CreateBossDb</a> (boss_db * db, const uint32_t clientGame, const uint8_t * dataPath);</div>
+<code class="box">uint32_t <a href="#CreateBossDb">CreateBossDb</a> (boss_db * db, const uint32_t clientGame, const uint8_t * dataPath);</code>
 
 <dfn id="DestroyBossDb">DestroyBossDb</dfn> - Explicitly manage a database's lifetime. Allows clients to free memory when they want/need to. Destroys the given DB, freeing any memory allocated as part of its use.
 <ul>
 	<li><var>db</var> - The database to be destroyed.
 </ul>
-<div class="codebox">void <a href="#DestroyBossDb">DestroyBossDb</a> (boss_db db);</div>
+<code class="box">void <a href="#DestroyBossDb">DestroyBossDb</a> (boss_db db);</code>
 
 <dfn id="CleanUpAPI">CleanUpAPI</dfn> - Frees memory allocated to the strings returned by <a href="#GetVersionString">GetVersionString</a> and <a href="#GetLastErrorDetails">GetLastErrorDetails</a>.
-<div class="codebox">void <a href="#CleanUpAPI">CleanUpAPI</a> ();</div>
+<code class="box">void <a href="#CleanUpAPI">CleanUpAPI</a> ();</code>
 
 <h3 id="functions-loading">Database Loading Functions</h3>
 
@@ -278,13 +281,13 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>masterlistPath</var> - A string containing the relative or absolute path to the masterlist file that should be loaded.
 	<li><var>userlistPath</var> - A string containing the relative or absolute path to the userlist file that should be loaded. If <code>NULL</code>, no userlist will be loaded.
 </ul>
-<div class="codebox">uint32_t <a href="#Load">Load</a> (boss_db db, const uint8_t * masterlistPath, const uint8_t * userlistPath);</div>
+<code class="box">uint32_t <a href="#Load">Load</a> (boss_db db, const uint8_t * masterlistPath, const uint8_t * userlistPath);</code>
 
 <dfn id="EvalConditionals">EvalConditionals</dfn> - Evaluates all conditional lines and regex mods in the loaded masterlist. This exists so that <a href="#Load">Load</a> doesn't need to be called whenever the mods installed are changed. Evaluation does not take place unless this function is called. Repeated calls re-evaluate the masterlist from scratch each time, ignoring the results of any previous evaluations. This function affects the results of <a href="#GetBashTagMap">GetBashTagMap</a>, <a href="#GetModBashTags">GetModBashTags</a> and <a href="#GetDirtyMessage">GetDirtyMessage</a>.
 <ul>
 	<li><var>db</var> - The database the function acts on.
 </ul>
-<div class="codebox">uint32_t <a href="#EvalConditionals">EvalConditionals</a> (boss_db db);</div>
+<code class="box">uint32_t <a href="#EvalConditionals">EvalConditionals</a> (boss_db db);</code>
 
 <h3 id="functions-updating">Updater Functions</h3>
 
@@ -293,17 +296,17 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>db</var> - The database the function acts on.
 	<li><var>masterlistPath</var> - A string containing the relative or absolute path to the masterlist file that should be created or updated.
 </ul>
-<div class="codebox">uint32_t <a href="#UpdateMasterlist">UpdateMasterlist</a> (boss_db db, const uint8_t * masterlistPath);</div>
+<code class="box">uint32_t <a href="#UpdateMasterlist">UpdateMasterlist</a> (boss_db db, const uint8_t * masterlistPath);</code>
 
 <h3 id="functions-sorting">Plugin Sorting Functions</h3>
-<p>These functions require a database to be created, but only <a href="#SortMods">SortMods</a> requires <a href="#SortMods">Load</a> to have been called.<br /><br />
+<p>These functions require a database to be created, but only <a href="#SortMods">SortMods</a> requires <a href="#SortMods">Load</a> to have been called. Plugins should be passed with their unghosted filenames, whether or not they are currently ghosted.</p>
 
 <dfn id="GetLoadOrderMethod">GetLoadOrderMethod</dfn> - Returns which method BOSS is using for the load order.
 <ul>
 	<li><var>db</var> - The database the function acts on.
 	<li><var>method</var> - The load order method code returned for the load order system that is being used by the database <var>db</var>.
 </ul>
-<div class="codebox">uint32_t <a href="#GetLoadOrderMethod">GetLoadOrderMethod</a> (boss_db db, uint32_t * method);</div>
+<code class="box">uint32_t <a href="#GetLoadOrderMethod">GetLoadOrderMethod</a> (boss_db db, uint32_t * method);</code>
 
 <dfn id="SortMods">SortMods</dfn> - Sorts the mods for the database's game, using the masterlist loaded by <a href="#load">Load</a>. Outputs a list of plugins in their new load order. If <var>trialOnly</var> is <code>false</code>, then <var>sortedPlugins</var>, <var>listLength</var> and <var>lastRecPos</var> can either all be valid pointers, or can all be <code>NULL</code>.
 <ul>
@@ -313,7 +316,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>listLength</var> - A pointer to the outputted size of the <var>sortedPlugins</var> array.
 	<li><var>lastRecPos</var> - A pointer to the outputted index number of the position in <var>sortedPlugins</var> which holds the last plugin listed that is recognised by BOSS.
 </ul>
-<div class="codebox">uint32_t <a href="#SortMods">SortMods</a> (boss_db db, const bool trialOnly, uint8_t *** sortedPlugins, size_t * listLength, size_t * lastRecPos);</div>
+<code class="box">uint32_t <a href="#SortMods">SortMods</a> (boss_db db, const bool trialOnly, uint8_t *** sortedPlugins, size_t * listLength, size_t * lastRecPos);</code>
 
 <dfn id="GetLoadOrder">GetLoadOrder</dfn> - Outputs a list of installed plugins in load order.
 <ul>
@@ -321,15 +324,15 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>plugins</var> - A pointer to the outputted array of plugins in load order. If the API encounters duplicate plugin filenames (possible with the textfile-based load order system), it will discard all but the copy highest in the load order. If <var>numPlugins</var> is 0, this will be <code>NULL</code>.
 	<li><var>numPlugins</var> - A pointer to the outputted size of the <var>plugins</var> array.
 </ul>
-<div class="codebox">uint32_t <a href="#GetLoadOrder">GetLoadOrder</a> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</div>
+<code class="box">uint32_t <a href="#GetLoadOrder">GetLoadOrder</a> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</code>
 
 <dfn id="SetLoadOrder">SetLoadOrder</dfn> - Sets the load order to the passed plugin array, then scans the Data directory and appends any plugins not included in the passed array to the end of the new load order. Only the game's master file may be positioned at the top of the load order. If the client game is Skyrim, then only <code>Update.esm</code> may be positioned in the second position from the top of the load order.
 <ul>
 	<li><var>db</var> - The database the function acts on.
-	<li><var>plugins</var> - The inputted array of plugins in their new load order.
+	<li><var>plugins</var> - The inputted array of plugins in their new load order. This order must obey the <q>masters before plugin files</q> rule, and no master may be positioned before the game's master file.
 	<li><var>numPlugins</var> - The size of the <var>plugins</var> array.
 </ul>
-<div class="codebox">uint32_t <a href="#SetLoadOrder">SetLoadOrder</a> (boss_db db, uint8_t ** plugins, const size_t numPlugins);</div>
+<code class="box">uint32_t <a href="#SetLoadOrder">SetLoadOrder</a> (boss_db db, uint8_t ** plugins, const size_t numPlugins);</code>
 
 <dfn id="GetActivePlugins">GetActivePlugins</dfn> - Returns the contents of plugins.txt.
 <ul>
@@ -337,15 +340,15 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>plugins</var> - The outputted array of active plugins. If the textfile-base load order system is being used, these plugins will be in load order, otherwise their order is undefined. If <var>numPlugins</var> is 0, this will be <code>NULL</code>.
 	<li><var>numPlugins</var> - The size of the outputted <var>plugins</var> array.
 </ul>
-<div class="codebox">uint32_t <a href="#GetActivePlugins">GetActivePlugins</a> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</div>
+<code class="box">uint32_t <a href="#GetActivePlugins">GetActivePlugins</a> (boss_db db, uint8_t *** plugins, size_t * numPlugins);</code>
 
 <dfn id="SetActivePlugins">SetActivePlugins</dfn> - Replace the current contents of plugins.txt with the given plugins.
 <ul>
 	<li><var>db</var> - The database the function acts on.
-	<li><var>plugins</var> - The inputted array of plugins to be made active. If the textfile-base load order system is being used, these plugins will be written in load order, otherwise they are written as ordered in the array.
+	<li><var>plugins</var> - The inputted array of plugins to be made active. If the textfile-base load order system is being used, these plugins will be written in load order, otherwise they are written as ordered in the array. If running for Skyrim and Update.esm is not in the array, it will be inserted after the last master file in the array.
 	<li><var>numPlugins</var> - The size of the <var>plugins</var> array.
 </ul>
-<p><div class="codebox">uint32_t <a href="#SetActivePlugins">SetActivePlugins</a> (boss_db db, uint8_t ** plugins, const size_t numPlugins);</div>
+<p><code class="box">uint32_t <a href="#SetActivePlugins">SetActivePlugins</a> (boss_db db, uint8_t ** plugins, const size_t numPlugins);</code>
 
 <dfn id="GetPluginLoadOrder">GetPluginLoadOrder</dfn> - Gets the load order position of the specified plugin.
 <ul>
@@ -353,15 +356,15 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>plugin</var> - A string containing the filename of the plugin to get the load order of.
 	<li><var>index</var> - A pointer to the outputted load order index of the inputted plugin. The index of the plugin at the top of the load order is 0.
 </ul>
-<div class="codebox">uint32_t <a href="#GetPluginLoadOrder">GetPluginLoadOrder</a> (boss_db db, const uint8_t * plugin, size_t * index);</div>
+<code class="box">uint32_t <a href="#GetPluginLoadOrder">GetPluginLoadOrder</a> (boss_db db, const uint8_t * plugin, size_t * index);</code>
 
 <dfn id="SetPluginLoadOrder">SetPluginLoadOrder</dfn> - Sets the load order of the specified plugin, moving it from its current position. Only the game's master file may be positioned at the top of the load order. If the client game is Skyrim, then only <code>Update.esm</code> may be positioned in the second position from the top of the load order.
 <ul>
 	<li><var>db</var> - The database the function acts on.
 	<li><var>plugin</var> - A string containing the filename of the plugin to set the load order of.
-	<li><var>index</var> - The load order index to be set for the inputted plugin. The index of the plugin at the top of the load order is 0. If the index specified is greater than the number of plugins in the load order, the plugin will be inserted at the end of the load order.
+	<li><var>index</var> - The load order index to be set for the inputted plugin. The index of the plugin at the top of the load order is 0. If the index specified is greater than the number of plugins in the load order, the plugin will be inserted at the end of the load order. The order set must obey the <q>masters before plugin files</q> rule, and no master may be positioned before the game's master file.
 </ul>
-<div class="codebox">uint32_t <a href="#SetPluginLoadOrder">SetPluginLoadOrder</a> (boss_db db, const uint8_t * plugin, const size_t index);</div>
+<code class="box">uint32_t <a href="#SetPluginLoadOrder">SetPluginLoadOrder</a> (boss_db db, const uint8_t * plugin, const size_t index);</code>
 
 <dfn id="GetIndexedPlugin">GetIndexedPlugin</dfn> - Get what plugin is at the specified load order position. The first position in the load order is 0.
 <ul>
@@ -369,7 +372,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>index</var> - The load order index to be looked at. The index of the plugin at the top of the load order is 0.
 	<li><var>plugin</var> - A pointer to the outputted filename of the plugin at <var>index</var> in the load order.
 </ul>
-<div class="codebox">uint32_t <a href="#GetIndexedPlugin">GetIndexedPlugin</a> (boss_db db, const size_t index, uint8_t ** plugin);</div>
+<code class="box">uint32_t <a href="#GetIndexedPlugin">GetIndexedPlugin</a> (boss_db db, const size_t index, uint8_t ** plugin);</code>
 
 <dfn id="IsPluginActive">IsPluginActive</dfn> - Checks to see if the given plugin is listed in plugins.txt.
 <ul>
@@ -377,15 +380,15 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>plugin</var> - A string containing the filename of the plugin to check the active/inactive status of.
 	<li><var>isActive</var> - A pointer to the boolean output. The output is <code>true</code> if the plugin is active, and <code>false</code> otherwise.
 </ul>
-<div class="codebox">uint32_t <a href="#IsPluginActive">IsPluginActive</a> (boss_db db, const uint8_t * plugin, bool * isActive);</div>
+<code class="box">uint32_t <a href="#IsPluginActive">IsPluginActive</a> (boss_db db, const uint8_t * plugin, bool * isActive);</code>
 
-<dfn id="SetPluginActive">SetPluginActive</dfn> - If active is true, adds the plugin to plugins.txt in its load order if it is not already present. If active is false, removes the plugin from plugins.txt if it is present.
+<dfn id="SetPluginActive">SetPluginActive</dfn> - If active is true, adds the plugin to plugins.txt in its load order if it is not already present. If active is false, removes the plugin from plugins.txt if it is present. If activating a plugin that is ghosted, the <code>.ghost</code> extension is removed.
 <ul>
 	<li><var>db</var> - The database the function acts on.
-	<li><var>plugin</var> - A string containing the filename of the plugin to change the active/inactive status of.
+	<li><var>plugin</var> - A string containing the filename of the plugin to change the active/inactive status of. If running for Skyrim, Skyrim.esm and Update.esm may not be deactivated.
 	<li><var>active</var> - Whether to activate or deactivate the plugin. If <code>true</code>, then the plugin is activated if it is not already active. If <code>false</code>, the plugin is deactivated unless it is already inactive.
 </ul>
-<div class="codebox">uint32_t <a href="#SetPluginActive">SetPluginActive</a> (boss_db db, const uint8_t * plugin, const bool active);</div>
+<code class="box">uint32_t <a href="#SetPluginActive">SetPluginActive</a> (boss_db db, const uint8_t * plugin, const bool active);</code>
 
 
 <h3 id="functions-access">Database Access Functions</h3>
@@ -396,7 +399,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>tagMap</var> - A pointer to the outputted array of <a href="#BashTag">BashTag</a> structures. <code>NULL</code> if no Bash Tags are encountered.
 	<li><var>numTags</var> - A pointer to the size of the <var>tagMap</var> array. 0 if <var>tagMap</var> is <code>NULL</code>.
 </ul>
-<div class="codebox">uint32_t <a href="#GetBashTagMap">GetBashTagMap</a> (boss_db db, BashTag ** tagMap, size_t * numTags);</div>
+<code class="box">uint32_t <a href="#GetBashTagMap">GetBashTagMap</a> (boss_db db, BashTag ** tagMap, size_t * numTags);</code>
 
 <dfn id="GetModBashTags">GetModBashTags</dfn> - Returns arrays of Bash Tag UIDs for Bash Tags suggested for addition and removal by BOSS's masterlist and userlist. <a href="#GetBashTagMap">GetBashTagMap</a> must be called before calling this function in order to assign UIDs to Bash Tags.
 <ul>
@@ -408,7 +411,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>numTags_removed</var> - A pointer to the size of the <var>tagIds_removed</var> array. 0 if <var>tagIds_removed</var> is <code>NULL</code>.
 	<li><var>userlistModified</var> - A pointer to a boolean that is <code>true</code> if the userlist contains Bash Tag suggestion message alterations for the specified plugin, and <code>false</code> otherwise.
 </ul>
-<div class="codebox">uint32_t <a href="#GetModBashTags">GetModBashTags</a> (boss_db db, const uint8_t * modName, uint32_t ** tagIds_added, size_t * numTags_added, uint32_t **tagIds_removed, size_t *numTags_removed, bool * userlistModified);</div>
+<code class="box">uint32_t <a href="#GetModBashTags">GetModBashTags</a> (boss_db db, const uint8_t * modName, uint32_t ** tagIds_added, size_t * numTags_added, uint32_t **tagIds_removed, size_t *numTags_removed, bool * userlistModified);</code>
 
 <dfn id="GetDirtyMessage">GetDirtyMessage</dfn> - Returns the message associated with a dirty mod and whether the mod needs cleaning.
 <ul>
@@ -417,7 +420,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>message</var> - A pointer to the outputted dirty message attached to the specified plugin. If the plugin has no dirty message, <var>message</var> will be <code>NULL</code>.
 	<li><var>needsCleaning</var> - A pointer to the outputted plugin cleanliness code for the specified plugin.
 </ul>
-<div class="codebox">uint32_t <a href="#GetDirtyMessage">GetDirtyMessage</a> (boss_db db, const uint8_t * modName, uint8_t ** message, uint32_t * needsCleaning);</div>
+<code class="box">uint32_t <a href="#GetDirtyMessage">GetDirtyMessage</a> (boss_db db, const uint8_t * modName, uint8_t ** message, uint32_t * needsCleaning);</code>
 
 <dfn id="DumpMinimal">DumpMinimal</dfn> - Writes a minimal masterlist that only contains mods that have Bash Tag suggestions and/or dirty messages, plus the Tag suggestions and/or dirty messages themselves.
 <ul>
@@ -425,21 +428,672 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>outputFile</var> - A string containing the relative or absolute path to the file to which the minimal masterlist shall be written.
 	<li><var>overwrite</var> - If <code>true</code> and <var>outputFile</var> already exists, the existing file will be overwritten. If <code>false</code> and <var>outputFile</var> already exists, no data will be written. Otherwise, data will be written to <var>outputFile</var>.
 </ul>
-<div class="codebox">uint32_t <a href="#DumpMinimal">DumpMinimal</a> (boss_db db, const uint8_t * outputFile, const bool overwrite);</div>
+<code class="box">uint32_t <a href="#DumpMinimal">DumpMinimal</a> (boss_db db, const uint8_t * outputFile, const bool overwrite);</code>
 
 
 <h2 id="examples">Examples</h2>
-<p>Below is a code snippet showing an example of how the BOSS API may be used.
+<p>Below are (lengthy) code snippets showing examples of how the BOSS API may be used.
 <h3 id="examples-python">Python</h3>
-<p style="font-style:italic;">This example was written by Lojack, with minor changes by WrinklyNinja. Reproduced here with permission. (Example removed pending update.)
-<h3 id="examples-c">C++</h3>
-<div class="codebox" style="white-space: pre;">
-#include &lt;iostream&gt;
-#include &lt;stdint.h&gt;
-#include &lt;fstream&gt;
-#include &lt;clocale&gt;
-#include &lt;boost/filesystem/detail/utf8_codecvt_facet.hpp&gt;
-#include &lt;boost/filesystem.hpp&gt;
+<p style="font-style:italic;">This example was written by Lojack for Wrye Bash. Reproduced here with permission.
+<code class="box">
+# -*- coding: utf-8 -*-
+# Python wrapper around BOSS's API libraries
+# by Jacob Lojewski (aka Lojack)
+
+from ctypes import *
+import os
+import platform
+
+try:
+    # Wrye Bash specific support
+    import bolt
+    from bolt import Path, GPath
+except:
+    class Path:
+        pass
+    def GPath(x): return x
+
+BAPI = None
+version = None
+
+# Version of BOSS API this Python script is written for.
+PythonAPIVersion = (2,0)
+
+DebugLevel = 0
+# DebugLevel
+#  Set this for more or less feedback
+#  0 - (default) no additional feedback
+#  1 - print a statement to stdout when any BOSS_API_WARN return code is found
+#  2 - print information about all return codes found
+
+class BossVersionError(Exception):
+    """Exception thrown if the BOSS API loaded is not
+       compatible with bapi.py"""
+    pass
+
+def Init(path):
+    """Called automatically by importing bapi.  Can also be called manaully
+       by the user to reload BAPI, pointing to a different path to the dll.
+   """
+
+    # If path is a directory, auto choose DLL based on platform
+    if os.path.isdir(path):
+        if '64bit' in platform.architecture():
+            path = os.path.join(path,u'boss64.dll')
+        else:
+            path = os.path.join(path,u'boss32.dll')
+
+    global BAPI
+
+    # First unload any BOSS dll previously loaded
+    del BAPI
+    BAPI = None
+
+    if not os.path.exists(path):
+        return
+
+    try:
+        BAPI = CDLL(path)
+    except Exception as e:
+        BAPI = None
+        raise
+
+    # Some types
+    boss_db = c_void_p
+    boss_db_p = POINTER(boss_db)
+    c_uint32_p = POINTER(c_uint32)
+    c_uint32_p_p = POINTER(c_uint32_p)
+    c_bool_p = POINTER(c_bool)
+    c_uint8_p = c_char_p
+    c_uint8_p_p = POINTER(c_uint8_p)
+    c_uint8_p_p_p = POINTER(c_uint8_p_p)
+    c_size_t_p = POINTER(c_size_t)
+    class BashTag(Structure):
+        _fields_ = [('id',c_uint32),
+                    ('name',c_uint8_p),
+                    ]
+    BashTag_p = POINTER(BashTag)
+    BashTag_p_p = POINTER(BashTag_p)
+    def list_of_strings(strings):
+        lst = (c_uint8_p * len(strings))()
+        lst = cast(lst,c_uint8_p_p)
+        for i,string in enumerate(strings):
+            lst[i] = cast(create_string_buffer(string),c_uint8_p)
+        return lst
+
+    # utility unicode functions
+    def _uni(x): return u'' if x is None else unicode(x,'utf8')
+    def _enc(x): return (x.encode('utf8') if isinstance(x,unicode)
+                         else x.s.encode('utf8') if isinstance(x,Path)
+                         else x)
+
+    # =========================================================================
+    # API Functions - Version
+    # =========================================================================
+    ## bool IsCompatibleVersion(const uint32_t bossVersionMajor, const uint32_t bossVersionMinor, const uint32_t bossVersionPatch)
+    _CIsCompatibleVersion = BAPI.IsCompatibleVersion
+    _CIsCompatibleVersion.restype = c_bool
+    _CIsCompatibleVersion.argtypes = [c_uint32, c_uint32, c_uint32]
+    def IsCompatibleVersion(majorVersion, minorVersion, patchVersion=0):
+        return True
+        return _CIsCompatibleVersion(majorVersion,minorVersion,patchVersion)
+    if not IsCompatibleVersion(*PythonAPIVersion):
+        try:
+            ver = c_uint8_p()
+            BAPI.GetVersionString(byref(ver))
+            ver = _uni(ver.value)
+        except:
+            ver = ''
+        raise BossVersionError('bapi.py is not compatible with the specified BOSS API DLL (%s).' % ver)
+
+    # =========================================================================
+    # API Constants - Games
+    # =========================================================================
+    BOSS_API_GAME_OBLIVION = c_uint.in_dll(BAPI,'BOSS_API_GAME_OBLIVION').value
+    BOSS_API_GAME_FALLOUT3 = c_uint.in_dll(BAPI,'BOSS_API_GAME_FALLOUT3').value
+    BOSS_API_GAME_FALLOUTNV=c_uint.in_dll(BAPI,'BOSS_API_GAME_FALLOUTNV').value
+    BOSS_API_GAME_NEHRIM = c_uint.in_dll(BAPI,'BOSS_API_GAME_NEHRIM').value
+    BOSS_API_GAME_SKYRIM = c_uint.in_dll(BAPI,'BOSS_API_GAME_SKYRIM').value
+    games = {
+        'Oblivion':BOSS_API_GAME_OBLIVION,
+        BOSS_API_GAME_OBLIVION:BOSS_API_GAME_OBLIVION,
+        'Fallout 3':BOSS_API_GAME_FALLOUT3,
+        BOSS_API_GAME_FALLOUT3:BOSS_API_GAME_FALLOUT3,
+        'Fallout: New Vegas':BOSS_API_GAME_FALLOUTNV,
+        BOSS_API_GAME_FALLOUTNV:BOSS_API_GAME_FALLOUTNV,
+        'Nehrim':BOSS_API_GAME_NEHRIM,
+        BOSS_API_GAME_NEHRIM:BOSS_API_GAME_NEHRIM,
+        'Skyrim':BOSS_API_GAME_SKYRIM,
+        BOSS_API_GAME_SKYRIM:BOSS_API_GAME_SKYRIM,
+        }
+
+    # =========================================================================
+    # API Constants - Load Order Method
+    # =========================================================================
+    BOSS_API_LOMETHOD_TIMESTAMP = c_uint.in_dll(BAPI,'BOSS_API_LOMETHOD_TIMESTAMP').value
+    BOSS_API_LOMETHOD_TEXTFILE = c_uint.in_dll(BAPI,'BOSS_API_LOMETHOD_TEXTFILE').value
+
+    # =========================================================================
+    # API Constants - Cleanliness
+    # =========================================================================
+    BOSS_API_CLEAN_NO = c_uint.in_dll(BAPI,'BOSS_API_CLEAN_NO').value
+    BOSS_API_CLEAN_YES = c_uint.in_dll(BAPI,'BOSS_API_CLEAN_YES').value
+    BOSS_API_CLEAN_UNKNOWN = c_uint.in_dll(BAPI,'BOSS_API_CLEAN_UNKNOWN').value
+
+    # =========================================================================
+    # API Constants - Return codes
+    # =========================================================================
+    errors = {}
+    ErrorCallbacks = {}
+    for name in ['OK',
+                 'OK_NO_UPDATE_NECESSARY',
+                 'WARN_BAD_FILENAME',
+                 'WARN_LO_MISMATCH',
+                 'ERROR_FILE_WRITE_FAIL',
+                 'ERROR_FILE_DELETE_FAIL',
+                 'ERROR_FILE_NOT_UTF8',
+                 'ERROR_FILE_NOT_FOUND',
+                 'ERROR_MASTER_TIME_READ_FAIL',
+                 'ERROR_MOD_TIME_READ_FAIL',
+                 'ERROR_MOD_TIME_WRITE_FAIL',
+                 'ERROR_PARSE_FAIL',
+                 'ERROR_CONDITION_EVAL_FAIL',
+                 'ERROR_NO_MEM',
+                 'ERROR_INVALID_ARGS',
+                 'ERROR_NETWORK_FAIL',
+                 'ERROR_NO_INTERNET_CONNECTION',
+                 'ERROR_NO_TAG_MAP',
+                 'ERROR_PLUGINS_FULL',
+                 'ERROR_GAME_NOT_FOUND',
+                 'ERROR_REGEX_EVAL_FAIL',
+                 ]:
+        name = 'BOSS_API_'+name
+        errors[name] = c_uint.in_dll(BAPI,name).value
+        ErrorCallbacks[errors[name]] = None
+    BOSS_API_RETURN_MAX = c_uint.in_dll(BAPI,'BOSS_API_RETURN_MAX').value
+    globals().update(errors)
+
+    # =========================================================================
+    # API Functions - Error Handling
+    # =========================================================================
+    ## uint32_t GetLastErrorDetails(const uint8_t **details)
+    _CGetLastErrorDetails = BAPI.GetLastErrorDetails
+    _CGetLastErrorDetails.restype = c_uint32
+    _CGetLastErrorDetails.argtypes = [c_uint8_p_p]
+    def GetLastErrorDetails():
+        details = c_uint8_p()
+        ret = _CGetLastErrorDetails(byref(details))
+        if ret != BOSS_API_OK:
+            raise Exception(u'An error occured while getting the details of a BOSS API error:\nOriginal error: %i\nResulting error: %s' % (return_code, ret))
+        return unicode(details.value,'utf8')
+
+    def RegisterCallback(errorCode,callback):
+        """Used to setup callback functions for whenever specific error codes
+           are encountered"""
+        ErrorCallbacks[errorCode] = callback
+
+    class BossError(Exception):
+        def __init__(self,value):
+            self.code = value
+            msg = 'UNKNOWN(%i)' % value
+            for code in errors:
+                if errors[code] == value:
+                    msg = code
+                    break
+            msg += ':'
+            try:
+                msg += GetLastErrorDetails()
+            except Exception as e:
+                msg += '%s' % e
+            self.msg = msg
+            Exception.__init__(self,msg)
+
+        def __repr__(self): return '&lt;BossError: %s&gt;' % self.msg
+        def __str__(self): return 'BossError: %s' % self.msg
+
+    def BossErrorCheck(result):
+        callback = ErrorCallbacks.get(result,None)
+        if callback: callback()
+        if result in {BOSS_API_OK,BOSS_API_OK_NO_UPDATE_NECESSARY}: return result
+        elif result in {BOSS_API_WARN_BAD_FILENAME,BOSS_API_WARN_LO_MISMATCH}:
+            if DebugLevel &gt; 0:
+                print GetLastErrorDetails()
+            return result
+        elif DebugLevel &gt; 1:
+            print GetLastErrorDetails()
+        raise BossError(result)
+
+    # =========================================================================
+    # API Functions - Version
+    # =========================================================================
+    ## uint32_t GetVersionString(const uint8_t **bossVersionStr)
+    _CGetVersionString = BAPI.GetVersionString
+    _CGetVersionString.restype = BossErrorCheck
+    _CGetVersionString.argtypes = [c_uint8_p_p]
+    global version
+    version = c_uint8_p()
+    try:
+        _CGetVersionString(byref(version))
+        version = _uni(version.value)
+    except BossError as e:
+        print u'Error getting BOSS API version:', e
+        version = u'Error'
+
+    # =========================================================================
+    # API Functions - Lifecycle Management
+    # =========================================================================
+    ## uint32_t CreateBossDb(boss_db *db, const uint32_t clientGame, const uint8_t *dataPath)
+    _CCreateBossDb = BAPI.CreateBossDb
+    _CCreateBossDb.restype = BossErrorCheck
+    _CCreateBossDb.argtypes = [boss_db_p, c_uint32, c_uint8_p]
+    ## void DestroyBossDb(boss_db db)
+    _CDestroyBossDb = BAPI.DestroyBossDb
+    _CDestroyBossDb.restype = None
+    _CDestroyBossDb.argtypes = [boss_db]
+
+    # =========================================================================
+    # API Functions - Database Loading
+    # =========================================================================
+    ## uint32_t Load(boss_db db, const uint8_t *masterlistPath, const uint8_t *userlistPath)
+    _CLoad = BAPI.Load
+    _CLoad.restype = BossErrorCheck
+    _CLoad.argtypes = [boss_db, c_uint8_p, c_uint8_p]
+    ## uint32_t EvalConditionals(boss_db db)
+    _CEvalConditionals = BAPI.EvalConditionals
+    _CEvalConditionals.restype = BossErrorCheck
+    _CEvalConditionals.argtypes = [boss_db]
+
+    # =========================================================================
+    # API Functions - Masterlist Updating
+    # =========================================================================
+    ## uint32_t UpateMasterlist(boss_db, const uint8_t *masterlistPath)
+    _CUpdateMasterlist = BAPI.UpdateMasterlist
+    _CUpdateMasterlist.restype = BossErrorCheck
+    _CUpdateMasterlist.argtypes = [boss_db, c_uint8_p]
+
+    # =========================================================================
+    # API Functions - Plugin Sorting
+    # =========================================================================
+    ## uint32_t GetLoadOrderMethod(boss_db db, uint32_t *method);
+    _CGetLoadOrderMethod = BAPI.GetLoadOrderMethod
+    _CGetLoadOrderMethod.restype = c_uint32
+    _CGetLoadOrderMethod.argtypes = [boss_db, c_uint32_p]
+
+    ## uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t ***sortedPlugins, size_t *listLength, size_t *lastRecPos)
+    _CSortMods = BAPI.SortMods
+    _CSortMods.restype = BossErrorCheck
+    _CSortMods.argtypes = [boss_db, c_bool, c_uint8_p_p_p, c_size_t_p, c_size_t_p]
+    ## uint32_t GetLoadOrder(boss_db db, uint8_t ***plugins, size_t *numPlugins)
+    _CGetLoadOrder = BAPI.GetLoadOrder
+    _CGetLoadOrder.restype = BossErrorCheck
+    _CGetLoadOrder.argtypes = [boss_db, c_uint8_p_p_p, c_size_t_p]
+    ## uint32_t SetLoadOrder(boss_db db, uint8_t **plugins, const size_t numPlugins)
+    _CSetLoadOrder = BAPI.SetLoadOrder
+    _CSetLoadOrder.restype = BossErrorCheck
+    _CSetLoadOrder.argtypes = [boss_db, c_uint8_p_p, c_size_t]
+    ## uint32_t GetActivePlugins(boss_db db, uint8_t ***plugins, size_t *numPlugins)
+    _CGetActivePlugins = BAPI.GetActivePlugins
+    _CGetActivePlugins.restype = BossErrorCheck
+    _CGetActivePlugins.argtypes = [boss_db, c_uint8_p_p_p, c_size_t_p]
+    ## uint32_t SetActivePlugins(boss_db db, uint8_t **plugins, const size_t numPlugins)
+    _CSetActivePlugins = BAPI.SetActivePlugins
+    _CSetActivePlugins.restype = BossErrorCheck
+    _CSetActivePlugins.argtypes = [boss_db, c_uint8_p_p, c_size_t]
+    ## uint32_t GetPluginLoadOrder(boss_db db, const uint8_t *plugin, size_t *index)
+    _CGetPluginLoadOrder = BAPI.GetPluginLoadOrder
+    _CGetPluginLoadOrder.restype = BossErrorCheck
+    _CGetPluginLoadOrder.argtypes = [boss_db, c_uint8_p, c_size_t_p]
+    ## uint32_t SetPluginLoadOrder(boss_db db, const uint8_t *plugin, size_t index)
+    _CSetPluginLoadOrder = BAPI.SetPluginLoadOrder
+    _CSetPluginLoadOrder.restype = BossErrorCheck
+    _CSetPluginLoadOrder.argtypes = [boss_db, c_uint8_p, c_size_t]
+    ## uint32_t GetIndexedPlugin(boss_db db, const size_t index, uint8_t **plugin)
+    _CGetIndexedPlugin = BAPI.GetIndexedPlugin
+    _CGetIndexedPlugin.restype = BossErrorCheck
+    _CGetIndexedPlugin.argtypes = [boss_db, c_size_t, c_uint8_p_p]
+    ## uint32_t SetPluginActive(boss_db db, const uint8_t *plugin, const bool active)
+    _CSetPluginActive = BAPI.SetPluginActive
+    _CSetPluginActive.restype = BossErrorCheck
+    _CSetPluginActive.argtypes = [boss_db, c_uint8_p, c_bool]
+    ## uint32_t IsPluginActive(boss_db db, const uint8_t *plugin, bool *isActive)
+    _CIsPluginActive = BAPI.IsPluginActive
+    _CIsPluginActive.restype = BossErrorCheck
+    _CIsPluginActive.argtypes = [boss_db, c_uint8_p, c_bool_p]
+
+    # =========================================================================
+    # API Functions - Database Access
+    # =========================================================================
+    ## uint32_t GetBashTagMap(boss_db db, BashTag **tagMap, size_t *numTags)
+    _CGetBashTagMap = BAPI.GetBashTagMap
+    _CGetBashTagMap.restype = BossErrorCheck
+    _CGetBashTagMap.argtypes = [boss_db, BashTag_p_p, c_size_t_p]
+    ## uint32_t GetModBashTags(boss_db db, const uint8_t *plugin, uint32_t **tagIds_added, size_t *numTags_added, uint32_t **tagIds_removed, size_t *numTags_removed, bool *userlistModified)
+    _CGetModBashTags = BAPI.GetModBashTags
+    _CGetModBashTags.restype = BossErrorCheck
+    _CGetModBashTags.argtypes = [boss_db, c_uint8_p, c_uint32_p_p, c_size_t_p, c_uint32_p_p, c_size_t_p, c_bool_p]
+    ## uint32_t GetDirtyMessage(boss_db db, const uint8_t *plugin, uint8_t **message, uint32_t *needsCleaning)
+    _CGetDirtyMessage = BAPI.GetDirtyMessage
+    _CGetDirtyMessage.restype = BossErrorCheck
+    _CGetDirtyMessage.argtypes = [boss_db, c_uint8_p, c_uint8_p_p, c_uint32_p]
+
+    # =========================================================================
+    # Class Wrapper
+    # =========================================================================
+    class BossDb(object):
+        def __init__(self,dataPath,game='Oblivion'):
+            """ game can be one of the BOSS_API_GAME_*** codes, or one of the
+                aliases defined above in the 'games' dictionary."""
+            if isinstance(game,basestring):
+                if game in games:
+                    game = games[game]
+                else:
+                    raise Exception('Game "%s" is not recognized' % game)
+            self.tags = {}   # BashTag map
+            self._DB = boss_db()
+            _CCreateBossDb(byref(self._DB),game,_enc(dataPath))
+            # Get Load Order Method
+            method = c_uint32()
+            _CGetLoadOrderMethod(self._DB,byref(method))
+            self._LOMethod = method.value
+
+        @property
+        def LoadOrderMethod(self): return self._LOMethod
+
+        def __del__(self):
+            if self._DB is not None:
+                _CDestroyBossDb(self._DB)
+                self._DB = None
+
+        # 'with' statement
+        def __enter__(self): return self
+        def __exit__(self,exc_type,exc_value,traceback): self.__del__()
+
+        # ---------------------------------------------------------------------
+        # Database Loading
+        # ---------------------------------------------------------------------
+        def Load(self, masterlist, userlist=None):
+            # Load masterlist/userlist
+            _CLoad(self._DB, _enc(masterlist), _enc(userlist) if userlist else None)
+            self._GetBashTags()
+
+        def EvalConditionals(self):
+            _CEvalConditionals(self._DB)
+            self._GetBashTags()
+
+        def _GetBashTags(self):
+            num = c_size_t()
+            bashTags = BashTag_p()
+            _CGetBashTagMap(self._DB, byref(bashTags), byref(num))
+            self.tags = {bashTags[i].id:_uni(bashTags[i].name)
+                         for i in xrange(num.value)}
+
+        # ---------------------------------------------------------------------
+        # Load Order management
+        # ---------------------------------------------------------------------
+        class LoadOrderList(list):
+            """list-like object for manipulating load order"""
+            def SetBossDb(self,db):
+                self._DB = db # BossDb python class, not boss_db pointer
+
+            # Block the following 'list' functions, since they don't make sense
+            # for use with the BOSS API and Load Order
+            ## LoadOrder[i] = x
+            def __setitem__(self,key,value): raise Exception('BossDb.LoadOrder does not support item setting')
+            ## del LoadOrder[i]
+            def __delitem__(self,key): raise Exception('BossDb.LoadOrder does not support item deletion')
+            ## LoadOrder += [s,3,5]
+            ##  and other compound assignment operators
+            def __iadd__(self,other): raise Exception('BossDb.LoadOrder does not support compound assignment')
+            def __isub__(self,other): raise Exception('BossDb.LoadOrder does not support compound assignment')
+            def __imul__(self,other): raise Exception('BossDb.LoadOrder does not support compound assignment')
+            def __idiv__(self,other): raise Exception('BossDb.LoadOrder does not support compound assignment')
+            def __itruediv__(self,other): raise Exception('BossDb.LoadOrder does not support compound assignment')
+            def __ifloordiv__(self,other): raise Exception('BossDb.LoadOrder does not support compound assignment')
+            def __imod__(self,other): raise Exception('BossDb.LoadOrder does not support compound assignment')
+            def __ipow__(self,other): raise Exception('BossDb.LoadOrder does not support compound assignment')
+            def __ilshift__(self,other): raise Exception('BossDb.LoadOrder does not support compound assignment')
+            def __irshift__(self,other): raise Exception('BossDb.LoadOrder does not support compound assignment')
+            def __iand__(self,other): raise Exception('BossDb.LoadOrder does not support compound assignment')
+            def __ixor__(self,other): raise Exception('BossDb.LoadOrder does not support compound assignment')
+            def __ior__(self,other): raise Exception('BossDb.LoadOrder does not support compound assignment')
+            ## LoadOrder.append('ahalal')
+            def append(self,item): raise Exception('BossDb.LoadOrder does not support append.')
+            ## LoadOrder.extend(['kkjjhk','kjhaskjd'])
+            def extend(self,items): raise Exception('BossDb.LoadOrder does not support extend.')
+            def remove(self,item): raise Exception('BossDb.LoadOrder does not support remove.')
+            def pop(self,item): raise Exception('BossDb.LoadOrder does not support pop.')
+            ## TODO: Possibly make this call BOSS's auto-sorting
+            def sort(self,*args,**kwdargs): raise Exception('BossDb.LoadOrder does not support sort.')
+            def reverse(self,*args,**kwdargs): raise Exception('BossDb.LoadOrder does not support reverse.')
+
+            # Override the following with custom functions
+            def insert(self,i,x):
+                # Change Load Order of single plugin
+                self._DB.SetPluginLoadOrder(x, i)
+            def index(self,x):
+                # Get Load Order of single plugin
+                return self._DB.GetPluginLoadOrder(x)
+            def count(self,x):
+                # 1 if the plugin is in the Load Order, 0 otherwise
+                # (plugins can't be in the load order multiple times)
+                return 1 if x in self else 0
+
+        def GetLoadOrder(self):
+            plugins = c_uint8_p_p()
+            num = c_size_t()
+            _CGetLoadOrder(self._DB, byref(plugins), byref(num))
+            return [GPath(_uni(plugins[i])) for i in xrange(num.value)]
+        def _GetLoadOrder(self):
+            ret = BossDb.LoadOrderList(self.GetLoadOrder())
+            ret.SetBossDb(self)
+            return ret
+        def SetLoadOrder(self, plugins):
+            plugins = [_enc(x) for x in plugins]
+            num = len(plugins)
+            plugins = list_of_strings(plugins)
+            _CSetLoadOrder(self._DB, plugins, num)
+        LoadOrder = property(_GetLoadOrder,SetLoadOrder)
+
+        def SortMods(self,trialOnly=False):
+            plugins = c_uint8_p_p()
+            num = c_size_t()
+            lastRec = c_size_t()
+            _CSortMods(self._DB,byref(plugins),byref(num),byref(lastRec))
+            return [GPath(_uni(plugins[i])) for i in xrange(num.value)]
+
+        def GetPluginLoadOrder(self, plugin):
+            plugin = _enc(plugin)
+            index = c_size_t()
+            _CGetPluginLoadOrder(self._DB,plugin,byref(index))
+            return index.value
+
+        def SetPluginLoadOrder(self, plugin, index):
+            plugin = _enc(plugin)
+            _CSetPluginLoadOrder(self._DB,plugin,index)
+
+        def GetIndexedPlugin(self, index):
+            plugin = c_uint8_p()
+            _CGetIndexedPlugin(self._DB,index,byref(plugin))
+            return GPath(_uni(plugin.value))
+
+        # ---------------------------------------------------------------------
+        # Active plugin management
+        # ---------------------------------------------------------------------
+        class ActivePluginsList(list):
+            """list-like object for modiying which plugins are active.
+               Currently, you cannot change the Load Order through this
+               object, perhaps in the future."""
+            def SetBossDb(self,db):
+                self._DB = db
+
+            def ReSync(self):
+                """Resync's contents with the BOSS API"""
+                list.__setslice__(self,0,len(self),self._DB.ActivePlugins)
+
+            # Block the following 'list' functions, since they don't make sense
+            # for use with the BOSS API and Active Plugins
+            ## ActivePlugins[i] = x
+            def __setitem__(self,key,value): raise Exception('BossDb.ActivePlugins does not support item setting')
+            ## LoadOrder *= 3
+            ##  and other compound assignment operators
+            def __imul__(self,other): raise Exception('BossDb.ActivePlugins does not support compound assignment')
+            def __idiv__(self,other): raise Exception('BossDb.ActivePlugins does not support compound assignment')
+            def __itruediv__(self,other): raise Exception('BossDb.ActivePlugins does not support compound assignment')
+            def __ifloordiv__(self,other): raise Exception('BossDb.ActivePlugins does not support compound assignment')
+            def __imod__(self,other): raise Exception('BossDb.ActivePlugins does not support compound assignment')
+            def __ipow__(self,other): raise Exception('BossDb.ActivePlugins does not support compound assignment')
+            def __ilshift__(self,other): raise Exception('BossDb.ActivePlugins does not support compound assignment')
+            def __irshift__(self,other): raise Exception('BossDb.ActivePlugins does not support compound assignment')
+            def __iand__(self,other): raise Exception('BossDb.ActivePlugins does not support compound assignment')
+            def __ixor__(self,other): raise Exception('BossDb.ActivePlugins does not support compound assignment')
+            def __ior__(self,other): raise Exception('BossDb.ActivePlugins does not support compound assignment')
+            def pop(self,item): raise Exception('BossDb.ActivePlugins does not support pop.')
+            def sort(self,*args,**kwdargs): raise Exception('BossDb.ActivePlugins does not support sort.')
+            def reverse(self,*args,**kwdargs): raise Exception('BossDb.ActivePlugins does not support reverse.')
+
+
+            ## del ActivePlugins[i]
+            def __delitem__(self,key):
+                # Deactivate the plugin
+                self._DB.SetPluginActive(self[key],False)
+                self.ReSync()
+
+            ## ActivePlugins += ['test.esp','another.esp']
+            def __iadd__(self,other):
+                for plugin in other:
+                    self._DB.SetPluginActive(plugin,True)
+                self.ReSync()
+                return self
+            ## ActivePlugins -= ['test.esp','another.esp']
+            def __isub__(self,other):
+                for plugin in other:
+                    self._DB.SetPluginActive(plugin,False)
+                self.ReSync()
+                return self
+
+            ## ActivePlugins.append('test.esp')
+            def append(self,item):
+                self._DB.SetPluginActive(item,True)
+                self.ReSync()
+
+            ## ActivePlugins.extend(['test.esp','another.esp'])
+            def extend(self,items):
+                for plugin in items:
+                    self._DB.SetPluginActive(plugin,True)
+                self.ReSync()
+
+            ## ActivePlugins.remove('test.esp')
+            def remove(self,item):
+                self._DB.SetPluginActive(item,False)
+                self.ReSync()
+
+            ## ActivePlugins.insert('test.esp')
+            def insert(self,index,item):
+                self._DB.SetPluginActive(item,True)
+                self.ReSync()
+
+            ## ActivePlugins.count('test.esp')
+            def count(self,item):
+                return 1 if x in self else 0
+
+        def GetActivePlugins(self):
+            plugins = c_uint8_p_p()
+            num = c_size_t()
+            try:
+                _CGetActivePlugins(self._DB, byref(plugins), byref(num))
+            except BossError as e:
+                if e.code == BOSS_API_ERROR_FILE_NOT_FOUND:
+                    self.SetActivePlugins([])
+                    _CGetActivePlugins(self._DB, byref(plugins), byref(num))
+                else:
+                    raise
+            return [GPath(_uni(plugins[i])) for i in xrange(num.value)]
+        def _GetActivePlugins(self):
+            ret = BossDb.ActivePluginsList(self.GetActivePlugins())
+            ret.SetBossDb(self)
+            return ret
+        def SetActivePlugins(self,plugins):
+            plugins = [_enc(x) for x in plugins]
+            num = len(plugins)
+            plugins = list_of_strings(plugins)
+            _CSetActivePlugins(self._DB, plugins, num)
+        ActivePlugins = property(_GetActivePlugins,SetActivePlugins)
+
+        def SetPluginActive(self,plugin,active=True):
+            _CSetPluginActive(self._DB,_enc(plugin),active)
+
+        def IsPluginActive(self,plugin):
+            active = c_bool()
+            _CIsPluginActive(self._DB,_enc(plugin),byref(active))
+            return active.value
+
+        # ---------------------------------------------------------------------
+        # DB Access
+        # ---------------------------------------------------------------------
+        def GetModBashTags(self,plugin):
+            tagIds_added = c_uint32_p()
+            numAdded = c_size_t()
+            tagIds_removed = c_uint32_p()
+            numRemoved = c_size_t()
+            userlist = c_bool()
+            _CGetModBashTags(self._DB, _enc(plugin),
+                             byref(tagIds_added), byref(numAdded),
+                             byref(tagIds_removed), byref(numRemoved),
+                             byref(userlist))
+            added = set([self.tags[tagIds_added[i]] for i in xrange(numAdded.value)])
+            removed = set([self.tags[tagIds_removed[i]] for i in xrange(numRemoved.value)])
+            return (added, removed, userlist.value)
+
+        def GetDirtyMessage(self,plugin):
+            message = c_uint8_p()
+            clean = c_uint32()
+            _CGetDirtyMessage(self._DB,_enc(plugin),byref(message),byref(clean))
+            return (_uni(message.value),clean.value)
+
+        # ---------------------------------------------------------------------
+        # Utility Functions (not added by the API, pure Python)
+        # ---------------------------------------------------------------------
+        def FilterActive(self,plugins,active=True):
+            """Given a list of plugins, returns the subset of that list,
+               consisting of:
+                - only active plugins if 'active' is True
+                - only inactive plugins if 'active' is False"""
+            return [x for x in plugins if self.IsPluginActive(x)]
+
+        def FilterDirty(self,plugins,cleanCode=BOSS_API_CLEAN_YES):
+            """Given a list of plugins, returns the subset of that list,
+               consisting of plugins that meet the given BOSS_API_CLEAN_*
+               code"""
+            return [x for x in plugins if self.GetDirtyMessage(x)[1] == cleanCode]
+
+        def DeactivatePlugins(self,plugins):
+            for plugin in plugins:
+                self.SetPluginActive(plugin,False)
+
+        def GetOrdered(self,plugins):
+            """Returns a list of the given plugins, sorted accoring to their
+               load order"""
+            return [x for x in self.LoadOrder if x in plugins]
+
+    # Put the locally defined functions, classes, etc into the module global namespace
+    globals().update(locals())
+
+# Initialize BAPI, assuming that boss32.dll and boss64.dll are in the same directory
+# Call Init again with the path to these dll's if this assumption is incorrect.
+# BAPI will be None if this is the case.
+try:
+    Init(os.getcwdu())
+except BossVersionError:
+    pass
+&lt;/code&gt;
+&lt;h3 id="examples-c"&gt;C++&lt;/h3&gt;
+&lt;code class="box"&gt;
+#include &amp;lt;iostream&amp;gt;
+#include &amp;lt;stdint.h&amp;gt;
+#include &amp;lt;fstream&amp;gt;
+#include &amp;lt;clocale&amp;gt;
+#include &amp;lt;boost/filesystem/detail/utf8_codecvt_facet.hpp&amp;gt;
+#include &amp;lt;boost/filesystem.hpp&amp;gt;
 
 #include "BOSS-API.h"
 
@@ -453,16 +1107,16 @@ int main() {
 	boost::filesystem::path::imbue(loc);
 
 	boss_db db;
-	uint8_t * mPath = reinterpret_cast&lt;uint8_t *&gt;("Skyrim/masterlist.txt");
-	uint8_t * uPath = reinterpret_cast&lt;uint8_t *&gt;("Skyrim/userlist.txt");
-	uint8_t * dPath = reinterpret_cast&lt;uint8_t *&gt;("../Data");
+	uint8_t * mPath = reinterpret_cast&amp;lt;uint8_t *&amp;gt;("Skyrim/masterlist.txt");
+	uint8_t * uPath = reinterpret_cast&amp;lt;uint8_t *&amp;gt;("Skyrim/userlist.txt");
+	uint8_t * dPath = reinterpret_cast&amp;lt;uint8_t *&amp;gt;("../Data");
 	uint32_t game = BOSS_API_GAME_SKYRIM;
 
-	const uint8_t * file = reinterpret_cast&lt;uint8_t *&gt;("minimal.txt");
-	const uint8_t * cleanMod = reinterpret_cast&lt;uint8_t *&gt;("All Natural.esp");
-	const uint8_t * doNotCleanMod = reinterpret_cast&lt;uint8_t *&gt;("bgBalancingEVLAMEAddition.esp");
-	const uint8_t * inactiveMod = reinterpret_cast&lt;uint8_t *&gt;("Alternative Beginnings.esp");
-	const uint8_t * isActiveMod = reinterpret_cast&lt;uint8_t *&gt;("bgMagicEV.esp");
+	const uint8_t * file = reinterpret_cast&amp;lt;uint8_t *&amp;gt;("minimal.txt");
+	const uint8_t * cleanMod = reinterpret_cast&amp;lt;uint8_t *&amp;gt;("All Natural.esp");
+	const uint8_t * doNotCleanMod = reinterpret_cast&amp;lt;uint8_t *&amp;gt;("bgBalancingEVLAMEAddition.esp");
+	const uint8_t * inactiveMod = reinterpret_cast&amp;lt;uint8_t *&amp;gt;("Alternative Beginnings.esp");
+	const uint8_t * isActiveMod = reinterpret_cast&amp;lt;uint8_t *&amp;gt;("bgMagicEV.esp");
 	uint8_t ** sortedPlugins;
 	size_t len;
 	size_t lastPos;
@@ -472,216 +1126,214 @@ int main() {
 	uint32_t * tagIDsAdded, * tagIDsRemoved;
 	bool active;
 	BashTag * BTmap;
-	size_t size;
 	uint32_t toClean;
 
 	uint32_t ret;
 	ofstream out("API test.txt");
 
-	out &lt;&lt; "TESTING IsCompatibleVersion(...)" &lt;&lt; endl;
+	out &amp;lt;&amp;lt; "TESTING IsCompatibleVersion(...)" &amp;lt;&amp;lt; endl;
 	bool b = IsCompatibleVersion(2,0,0);
 	if (b)
-		out &lt;&lt; '\t' &lt;&lt; "API is compatible." &lt;&lt; endl;
+		out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "API is compatible." &amp;lt;&amp;lt; endl;
 	else
-		out &lt;&lt; '\t' &lt;&lt; "API is incompatible." &lt;&lt; endl;
+		out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "API is incompatible." &amp;lt;&amp;lt; endl;
 
-	out &lt;&lt; "TESTING GetVersionString(...)" &lt;&lt; endl;
-	const uint8_t * ver;
-	ret = GetVersionString(&ver);
+	out &amp;lt;&amp;lt; "TESTING GetVersionString(...)" &amp;lt;&amp;lt; endl;
+	ret = GetVersionString(&amp;message);
 	if (ret != BOSS_API_OK)
-		out &lt;&lt; '\t' &lt;&lt; "Failed to get version string. Error: " &lt;&lt; ret &lt;&lt; endl;
+		out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Failed to get version string. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 	else
-		out &lt;&lt; '\t' &lt;&lt; "Version: " &lt;&lt; *ver &lt;&lt; endl;
+		out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Version: " &amp;lt;&amp;lt; *message &amp;lt;&amp;lt; endl;
 	
-	out &lt;&lt; "TESTING CreateBossDb(...)" &lt;&lt; endl;
-	ret = CreateBossDb(&db, game, dPath);
+	out &amp;lt;&amp;lt; "TESTING CreateBossDb(...)" &amp;lt;&amp;lt; endl;
+	ret = CreateBossDb(&amp;db, game, dPath);
 	if (ret != BOSS_API_OK) 
-		out &lt;&lt; '\t' &lt;&lt; "Creation failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+		out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Creation failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 	else {
-		out &lt;&lt; "TESTING UpdateMasterlist(...)" &lt;&lt; endl;
+		out &amp;lt;&amp;lt; "TESTING UpdateMasterlist(...)" &amp;lt;&amp;lt; endl;
 		ret = UpdateMasterlist(db, mPath);
 		if (ret != BOSS_API_OK)
-			out &lt;&lt; '\t' &lt;&lt; "Masterlist update failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+			out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Masterlist update failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 
-		out &lt;&lt; "TESTING Load(...)" &lt;&lt; endl;
+		out &amp;lt;&amp;lt; "TESTING Load(...)" &amp;lt;&amp;lt; endl;
 		ret = Load(db, mPath, uPath);
 		if (ret != BOSS_API_OK)
-			out &lt;&lt; '\t' &lt;&lt; "Loading failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+			out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Loading failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 		else {
-			out &lt;&lt; "TESTING EvalConditionals(...)" &lt;&lt; endl;
+			out &amp;lt;&amp;lt; "TESTING EvalConditionals(...)" &amp;lt;&amp;lt; endl;
 			ret = EvalConditionals(db);
 			if (BOSS_API_OK != ret)
-				out &lt;&lt; '\t' &lt;&lt; "Conditional evaluation failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+				out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Conditional evaluation failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 			else {
-				out &lt;&lt; "TESTING SortMods(...)" &lt;&lt; endl;
-				ret = SortMods(db, false, &sortedPlugins, &len, &lastPos);
+				out &amp;lt;&amp;lt; "TESTING SortMods(...)" &amp;lt;&amp;lt; endl;
+				ret = SortMods(db, false, &amp;sortedPlugins, &amp;len, &amp;lastPos);
 				if (BOSS_API_OK != ret)
-					out &lt;&lt; '\t' &lt;&lt; "Sorting failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Sorting failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "List size: " &lt;&lt; len &lt;&lt; endl;
-					out &lt;&lt; '\t' &lt;&lt; "Last recognised pos: " &lt;&lt; lastPos &lt;&lt; endl;
-					for (size_t i=0; i&lt;len; i++) {
-						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; i &lt;&lt; " : " &lt;&lt; sortedPlugins[i] &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "List size: " &amp;lt;&amp;lt; len &amp;lt;&amp;lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Last recognised pos: " &amp;lt;&amp;lt; lastPos &amp;lt;&amp;lt; endl;
+					for (size_t i=0; i&amp;lt;len; i++) {
+						out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; i &amp;lt;&amp;lt; " : " &amp;lt;&amp;lt; sortedPlugins[i] &amp;lt;&amp;lt; endl;
 					}
 				}
 				
-				out &lt;&lt; "TESTING GetDirtyMessage(...)" &lt;&lt; endl;
+				out &amp;lt;&amp;lt; "TESTING GetDirtyMessage(...)" &amp;lt;&amp;lt; endl;
 				//This should give no dirty message.
-				ret = GetDirtyMessage(db, cleanMod, &message, &toClean);
+				ret = GetDirtyMessage(db, cleanMod, &amp;message, &amp;toClean);
 				if (ret != BOSS_API_OK)
-					out &lt;&lt; '\t' &lt;&lt; "Failed to get dirty info on \"" &lt;&lt; cleanMod &lt;&lt; "\". Error no " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Failed to get dirty info on \"" &amp;lt;&amp;lt; cleanMod &amp;lt;&amp;lt; "\". Error no " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "\"" &lt;&lt; cleanMod &lt;&lt; "\" clean status: " &lt;&lt; toClean &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "\"" &amp;lt;&amp;lt; cleanMod &amp;lt;&amp;lt; "\" clean status: " &amp;lt;&amp;lt; toClean &amp;lt;&amp;lt; endl;
 					if (message != NULL) {
-						out &lt;&lt; '\t' &lt;&lt; "Message: " &lt;&lt; message &lt;&lt; endl;
+						out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Message: " &amp;lt;&amp;lt; message &amp;lt;&amp;lt; endl;
 					}
 				}
 				
-				out &lt;&lt; "TESTING GetDirtyMessage(...)" &lt;&lt; endl;
+				out &amp;lt;&amp;lt; "TESTING GetDirtyMessage(...)" &amp;lt;&amp;lt; endl;
 				//Now try getting dirty message from one that will have one.
-				ret = GetDirtyMessage(db, doNotCleanMod, &message, &toClean);
+				ret = GetDirtyMessage(db, doNotCleanMod, &amp;message, &amp;toClean);
 				if (ret != BOSS_API_OK)
-					out &lt;&lt; '\t' &lt;&lt; "Failed to get dirty info on \"" &lt;&lt; doNotCleanMod &lt;&lt; "\". Error no " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Failed to get dirty info on \"" &amp;lt;&amp;lt; doNotCleanMod &amp;lt;&amp;lt; "\". Error no " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "\"" &lt;&lt; doNotCleanMod &lt;&lt; "\" clean status: " &lt;&lt; toClean &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "\"" &amp;lt;&amp;lt; doNotCleanMod &amp;lt;&amp;lt; "\" clean status: " &amp;lt;&amp;lt; toClean &amp;lt;&amp;lt; endl;
 					if (message != NULL) {
-						out &lt;&lt; '\t' &lt;&lt; "Message: " &lt;&lt; message &lt;&lt; endl;
+						out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Message: " &amp;lt;&amp;lt; message &amp;lt;&amp;lt; endl;
 					}
 				}
 				
-				out &lt;&lt; "TESTING DumpMinimal(...)" &lt;&lt; endl;
+				out &amp;lt;&amp;lt; "TESTING DumpMinimal(...)" &amp;lt;&amp;lt; endl;
 				ret = DumpMinimal(db, file, true);
 				if (ret != BOSS_API_OK)
-					out &lt;&lt; '\t' &lt;&lt; "Dump failed. Error no " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Dump failed. Error no " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				
-				out &lt;&lt; "TESTING GetBashTagMap(...)" &lt;&lt; endl;
-				ret = GetBashTagMap(db, &BTmap, &size);
+				out &amp;lt;&amp;lt; "TESTING GetBashTagMap(...)" &amp;lt;&amp;lt; endl;
+				ret = GetBashTagMap(db, &amp;BTmap, &amp;len);
 				if (ret != BOSS_API_OK)
-					out &lt;&lt; '\t' &lt;&lt; "Failed to get Bash Tag map. Error no " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Failed to get Bash Tag map. Error no " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "Tag map size: " &lt;&lt; size &lt;&lt; endl;
-					out &lt;&lt; '\t' &lt;&lt; "Bash Tags:" &lt;&lt; endl;
-					for (size_t i=0; i&lt;size; i++)
-						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; BTmap[i].id &lt;&lt; " : " &lt;&lt; BTmap[i].name &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Tag map size: " &amp;lt;&amp;lt; len &amp;lt;&amp;lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Bash Tags:" &amp;lt;&amp;lt; endl;
+					for (size_t i=0; i&amp;lt;len; i++)
+						out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; BTmap[i].id &amp;lt;&amp;lt; " : " &amp;lt;&amp;lt; BTmap[i].name &amp;lt;&amp;lt; endl;
 				}
 				
-				out &lt;&lt; "TESTING GetModBashTags(...)" &lt;&lt; endl;
-				ret = GetModBashTags(db, doNotCleanMod, &tagIDsAdded, &numTagsAdded, &tagIDsRemoved, &numTagsRemoved, &modified);
+				out &amp;lt;&amp;lt; "TESTING GetModBashTags(...)" &amp;lt;&amp;lt; endl;
+				ret = GetModBashTags(db, doNotCleanMod, &amp;tagIDsAdded, &amp;numTagsAdded, &amp;tagIDsRemoved, &amp;numTagsRemoved, &amp;modified);
 				if (ret != BOSS_API_OK)
-					out &lt;&lt; '\t' &lt;&lt; "Failed to get Bash Tags for \"" &lt;&lt; doNotCleanMod &lt;&lt; "\". Error no " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Failed to get Bash Tags for \"" &amp;lt;&amp;lt; doNotCleanMod &amp;lt;&amp;lt; "\". Error no " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "Tags for \"" &lt;&lt; doNotCleanMod &lt;&lt; "\":" &lt;&lt; endl
-						&lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; "Modified by userlist: " &lt;&lt; modified &lt;&lt; endl
-						&lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; "Number of tags added: " &lt;&lt; numTagsAdded &lt;&lt; endl
-						&lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; "Number of tags removed: " &lt;&lt; numTagsRemoved &lt;&lt; endl
-						&lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; "Tags added:" &lt;&lt; endl;
-					for (size_t i=0; i&lt;numTagsAdded; i++)
-						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; tagIDsAdded[i] &lt;&lt; endl;
-					out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; "Tags removed:" &lt;&lt; endl;
-					for (size_t i=0; i&lt;numTagsRemoved; i++)
-						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; tagIDsRemoved[i] &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Tags for \"" &amp;lt;&amp;lt; doNotCleanMod &amp;lt;&amp;lt; "\":" &amp;lt;&amp;lt; endl
+						&amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Modified by userlist: " &amp;lt;&amp;lt; modified &amp;lt;&amp;lt; endl
+						&amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Number of tags added: " &amp;lt;&amp;lt; numTagsAdded &amp;lt;&amp;lt; endl
+						&amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Number of tags removed: " &amp;lt;&amp;lt; numTagsRemoved &amp;lt;&amp;lt; endl
+						&amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Tags added:" &amp;lt;&amp;lt; endl;
+					for (size_t i=0; i&amp;lt;numTagsAdded; i++)
+						out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; tagIDsAdded[i] &amp;lt;&amp;lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Tags removed:" &amp;lt;&amp;lt; endl;
+					for (size_t i=0; i&amp;lt;numTagsRemoved; i++)
+						out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; tagIDsRemoved[i] &amp;lt;&amp;lt; endl;
 				}
 
-				out &lt;&lt; "TESTING GetLoadOrder(...)" &lt;&lt; endl;
-				ret = GetLoadOrder(db, &sortedPlugins, &len);
+				out &amp;lt;&amp;lt; "TESTING GetLoadOrder(...)" &amp;lt;&amp;lt; endl;
+				ret = GetLoadOrder(db, &amp;sortedPlugins, &amp;len);
 				if (BOSS_API_OK != ret)
-					out &lt;&lt; '\t' &lt;&lt; "GetLoadOrder(...) failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "GetLoadOrder(...) failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "List size: " &lt;&lt; len &lt;&lt; endl;
-					for (size_t i=0; i&lt;len; i++) {
-						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; i &lt;&lt; " : " &lt;&lt; sortedPlugins[i] &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "List size: " &amp;lt;&amp;lt; len &amp;lt;&amp;lt; endl;
+					for (size_t i=0; i&amp;lt;len; i++) {
+						out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; i &amp;lt;&amp;lt; " : " &amp;lt;&amp;lt; sortedPlugins[i] &amp;lt;&amp;lt; endl;
 					}
 				}
 				
-				out &lt;&lt; "TESTING SetLoadOrder(...)" &lt;&lt; endl;
+				out &amp;lt;&amp;lt; "TESTING SetLoadOrder(...)" &amp;lt;&amp;lt; endl;
 				ret = SetLoadOrder(db, sortedPlugins, len);
 				if (BOSS_API_OK != ret)
-					out &lt;&lt; '\t' &lt;&lt; "SetLoadOrder(...) failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "SetLoadOrder(...) failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "List size: " &lt;&lt; len &lt;&lt; endl;
-					for (size_t i=0; i&lt;len; i++) {
-						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; i &lt;&lt; " : " &lt;&lt; sortedPlugins[i] &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "List size: " &amp;lt;&amp;lt; len &amp;lt;&amp;lt; endl;
+					for (size_t i=0; i&amp;lt;len; i++) {
+						out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; i &amp;lt;&amp;lt; " : " &amp;lt;&amp;lt; sortedPlugins[i] &amp;lt;&amp;lt; endl;
 					}
 				}
 				
-				out &lt;&lt; "TESTING GetActivePlugins(...)" &lt;&lt; endl;
-				ret = GetActivePlugins(db, &sortedPlugins, &len);
+				out &amp;lt;&amp;lt; "TESTING GetActivePlugins(...)" &amp;lt;&amp;lt; endl;
+				ret = GetActivePlugins(db, &amp;sortedPlugins, &amp;len);
 				if (BOSS_API_OK != ret)
-					out &lt;&lt; '\t' &lt;&lt; "GetActivePlugins(...) failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "GetActivePlugins(...) failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "List size: " &lt;&lt; len &lt;&lt; endl;
-					for (size_t i=0; i&lt;len; i++) {
-						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; i &lt;&lt; " : " &lt;&lt; sortedPlugins[i] &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "List size: " &amp;lt;&amp;lt; len &amp;lt;&amp;lt; endl;
+					for (size_t i=0; i&amp;lt;len; i++) {
+						out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; i &amp;lt;&amp;lt; " : " &amp;lt;&amp;lt; sortedPlugins[i] &amp;lt;&amp;lt; endl;
 					}
 				}
 				
-				out &lt;&lt; "TESTING SetActivePlugins(...)" &lt;&lt; endl;
+				out &amp;lt;&amp;lt; "TESTING SetActivePlugins(...)" &amp;lt;&amp;lt; endl;
 				ret = SetActivePlugins(db, sortedPlugins, len);
 				if (BOSS_API_OK != ret)
-					out &lt;&lt; '\t' &lt;&lt; "SetActivePlugins(...) failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "SetActivePlugins(...) failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "List size: " &lt;&lt; len &lt;&lt; endl;
-					for (size_t i=0; i&lt;len; i++) {
-						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; i &lt;&lt; " : " &lt;&lt; sortedPlugins[i] &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "List size: " &amp;lt;&amp;lt; len &amp;lt;&amp;lt; endl;
+					for (size_t i=0; i&amp;lt;len; i++) {
+						out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; i &amp;lt;&amp;lt; " : " &amp;lt;&amp;lt; sortedPlugins[i] &amp;lt;&amp;lt; endl;
 					}
 				}
 
-				out &lt;&lt; "TESTING GetPluginLoadOrder(...)" &lt;&lt; endl;
-				ret = GetPluginLoadOrder(db, doNotCleanMod, &len);
+				out &amp;lt;&amp;lt; "TESTING GetPluginLoadOrder(...)" &amp;lt;&amp;lt; endl;
+				ret = GetPluginLoadOrder(db, doNotCleanMod, &amp;len);
 				if (BOSS_API_OK != ret)
-					out &lt;&lt; '\t' &lt;&lt; "GetPluginLoadOrder(...) failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "GetPluginLoadOrder(...) failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "\"" &lt;&lt; doNotCleanMod &lt;&lt; "\" position: " &lt;&lt; len &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "\"" &amp;lt;&amp;lt; doNotCleanMod &amp;lt;&amp;lt; "\" position: " &amp;lt;&amp;lt; len &amp;lt;&amp;lt; endl;
 				}
 				
-				out &lt;&lt; "TESTING SetPluginLoadOrder(...)" &lt;&lt; endl;
+				out &amp;lt;&amp;lt; "TESTING SetPluginLoadOrder(...)" &amp;lt;&amp;lt; endl;
 				len = 1;
 				ret = SetPluginLoadOrder(db, doNotCleanMod, len);
 				if (BOSS_API_OK != ret)
-					out &lt;&lt; '\t' &lt;&lt; "SetPluginLoadOrder(...) failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "SetPluginLoadOrder(...) failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "\"" &lt;&lt; doNotCleanMod &lt;&lt; "\" set position: " &lt;&lt; len &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "\"" &amp;lt;&amp;lt; doNotCleanMod &amp;lt;&amp;lt; "\" set position: " &amp;lt;&amp;lt; len &amp;lt;&amp;lt; endl;
 				}
 
-				out &lt;&lt; "TESTING GetIndexedPlugin(...)" &lt;&lt; endl;
+				out &amp;lt;&amp;lt; "TESTING GetIndexedPlugin(...)" &amp;lt;&amp;lt; endl;
 				len = 10;
-				ret = GetIndexedPlugin(db, len, &message);
+				ret = GetIndexedPlugin(db, len, &amp;message);
 				if (BOSS_API_OK != ret)
-					out &lt;&lt; '\t' &lt;&lt; "GetIndexedPlugin(...) failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "GetIndexedPlugin(...) failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "Plugin at position " &lt;&lt; len &lt;&lt; " : " &lt;&lt; message &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "Plugin at position " &amp;lt;&amp;lt; len &amp;lt;&amp;lt; " : " &amp;lt;&amp;lt; message &amp;lt;&amp;lt; endl;
 				}
 				
-				out &lt;&lt; "TESTING SetPluginActive(...)" &lt;&lt; endl;
+				out &amp;lt;&amp;lt; "TESTING SetPluginActive(...)" &amp;lt;&amp;lt; endl;
 				ret = SetPluginActive(db, inactiveMod, true);
 				if (BOSS_API_OK != ret)
-					out &lt;&lt; '\t' &lt;&lt; "SetPluginActive(...) failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "SetPluginActive(...) failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "\"" &lt;&lt; inactiveMod &lt;&lt; "\" activated." &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "\"" &amp;lt;&amp;lt; inactiveMod &amp;lt;&amp;lt; "\" activated." &amp;lt;&amp;lt; endl;
 				}
 
-				out &lt;&lt; "TESTING IsPluginActive(...)" &lt;&lt; endl;
-				ret = IsPluginActive(db, inactiveMod, &active);
+				out &amp;lt;&amp;lt; "TESTING IsPluginActive(...)" &amp;lt;&amp;lt; endl;
+				ret = IsPluginActive(db, inactiveMod, &amp;active);
 				if (BOSS_API_OK != ret)
-					out &lt;&lt; '\t' &lt;&lt; "IsPluginActive(...) failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "IsPluginActive(...) failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "\"" &lt;&lt; inactiveMod &lt;&lt; "\" active status: " &lt;&lt; active &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "\"" &amp;lt;&amp;lt; inactiveMod &amp;lt;&amp;lt; "\" active status: " &amp;lt;&amp;lt; active &amp;lt;&amp;lt; endl;
 				}
 				
-				out &lt;&lt; "TESTING SetPluginActive(...)" &lt;&lt; endl;
+				out &amp;lt;&amp;lt; "TESTING SetPluginActive(...)" &amp;lt;&amp;lt; endl;
 				ret = SetPluginActive(db, isActiveMod, false);
 				if (BOSS_API_OK != ret)
-					out &lt;&lt; '\t' &lt;&lt; "SetPluginActive(...) failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "SetPluginActive(...) failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "\"" &lt;&lt; isActiveMod &lt;&lt; "\" deactivated." &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "\"" &amp;lt;&amp;lt; isActiveMod &amp;lt;&amp;lt; "\" deactivated." &amp;lt;&amp;lt; endl;
 				}
 
-				out &lt;&lt; "TESTING IsPluginActive(...)" &lt;&lt; endl;
-				ret = IsPluginActive(db, isActiveMod, &active);
+				out &amp;lt;&amp;lt; "TESTING IsPluginActive(...)" &amp;lt;&amp;lt; endl;
+				ret = IsPluginActive(db, isActiveMod, &amp;active);
 				if (BOSS_API_OK != ret)
-					out &lt;&lt; '\t' &lt;&lt; "IsPluginActive(...) failed. Error: " &lt;&lt; ret &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "IsPluginActive(...) failed. Error: " &amp;lt;&amp;lt; ret &amp;lt;&amp;lt; endl;
 				else {
-					out &lt;&lt; '\t' &lt;&lt; "\"" &lt;&lt; isActiveMod &lt;&lt; "\" active status: " &lt;&lt; active &lt;&lt; endl;
+					out &amp;lt;&amp;lt; '\t' &amp;lt;&amp;lt; "\"" &amp;lt;&amp;lt; isActiveMod &amp;lt;&amp;lt; "\" active status: " &amp;lt;&amp;lt; active &amp;lt;&amp;lt; endl;
 				}
 			}
 		}
@@ -692,10 +1344,10 @@ int main() {
 	out.close();
 	return 0;
 }
-</div>
+</code>
 
 <h2 id="contact">Contact</h2>
-<p>Contact information for the BOSS Development Team may be found in the <q><a href="#BOSS ReadMe.html#members">Project Members</a></q> section of the main BOSS readme. For API-specific support it is best to contact WrinklyNinja, who played a large role in setting up the textfile-based load order standard, created the API, and is currently responsible for BOSS code development.
+<p>Contact information for the BOSS Development Team may be found in the <q><a href="BOSS%20ReadMe.html#members">Project Members</a></q> section of the main BOSS readme. For API-specific support it is best to contact WrinklyNinja, who played a large role in setting up the textfile-based load order standard, created the API, and is currently responsible for BOSS code development.
 <p>Developers can also request additional functionality, report any bugs encountered and discuss anything API-related in the <a href="http://forums.bethsoft.com/index.php?showtopic=1221990">offical BOSS API thread</a>.
 
 <h2 id="credits">Credits</h2>

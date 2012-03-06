@@ -1,38 +1,39 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <meta charset="utf-8">
 <title>BOSS User Rules ReadMe</title>
 <style>
 	body {font-family:Calibri,Arial,Verdana,sans-serifs;}
-	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:0.2em;}
-	body > div {margin-bottom:5em;}
-	ol li, ul li {margin-bottom:10px;}
+	li {margin-bottom:10px;}
 	li ul, li ol {margin-top:0.4em;}
-	.codebox, .quotebox, .logbox {margin-left:40px; border:gray 1px dashed; display:table; min-width:300px; padding:5px 30px 5px 10px;}
-	.codebox { font-family:monospace; background:#F5F5F5; line-height:20px; white-space:pre;}
-	.quotebox {background:#E6E6FA;}
-	.logbox {background:#E0FFFF; line-height:30px;}
-	.logbox > ul > li {line-height:20px;}
 	q {font-style:italic;}
-	code {display:inline-box; padding:2px 5px; background:#EEEEEE;}
-	td {border:1px solid #ccc; padding: 5px;}
-	table {border:1px solid #CCCCCC; border-spacing:0; border-collapse:separate; margin:1em;}
+	code {display:inline-block; padding:2px 5px; background:#EEEEEE;}
+	td {border:1px solid #ccc; padding: 5px; vertical-align:top;}
+	table {border:1px solid #ccc; border-spacing:0; border-collapse:separate; margin:1em;}
 	thead > tr td {font-weight:bold}
+	code.box {line-height:20px; white-space:pre; margin:1em 0 0 3em; display:table; padding:5px 10px;}
+	ol li ol {list-style:lower-alpha;}
+	blockquote {background:#E6E6FA; display:table; padding:5px 30px 5px 10px;}
+	h1 { text-align:center;}
+	h2 {margin-top:3em;}
+	h3 {margin-top:2em;}
+	a:link {text-decoration:none;}
+	a:hover {text-decoration:underline;}
 </style>
 
-<div>BOSS User Rules Readme</div>
+<h1>BOSS User Rules Readme</h1>
 
-<div><h1>Contents</h1>
+<h2>Contents</h2>
 <ol>
 	<li><a href="#intro">Introduction</a>
 	<li><a href="#start">Getting Started With The Userlist</a>
 	<li><a href="#basics">Rule Basics</a>
-	<ol style="list-style:lower-alpha;">
+	<ol>
 		<li><a href="#basics-add">Sorting An Unknown Plugin</a>
 		<li><a href="#basics-override">Changing A Recognised Plugin's Position</a>
 		<li><a href="#basics-message">Editing A Plugin's BOSS Log Messages &amp; Bash Tag Suggestions</a>
 	</ol>
 	<li><a href="#syntax">Rule Definition Syntax</a>
-	<ol style="list-style:lower-alpha;">
+	<ol>
 		<li><a href="#syntax-rule">The Rule Line</a>
 		<li><a href="#syntax-sort">The Sort Line</a>
 		<li><a href="#syntax-message">The Message Line</a>
@@ -43,9 +44,8 @@
 	<li><a href="#messages">The BOSS Message Format</a>
 	<li><a href="#license">License</a>
 </ol>
-</div>
 
-<div id="intro"><h1>Introduction</h1>
+<h2 id="intro">Introduction</h2>
 <p>While BOSS is able to sort the large number of plugins listed in its masterlist without any user input, you may find that you wish to customise 
 the sorting of your plugins. This may be to include plugins not listed in the masterlist (either plugins not yet added or temporary plugins or private files not suitable for masterlist inclusion), or it could be to rearrange plugins present in the masterlist that can be loaded in a different configuration 
 for different results (eg. LAME and Supreme Magicka files). You may also wish to add extra messages to plugins, or edit existing messages.
@@ -53,11 +53,9 @@ for different results (eg. LAME and Supreme Magicka files). You may also wish to
 these edits, this is not very suitable as a long term solution.
 <p>This is where user rules come in. Using a separate userlist file, you can define rules for sorting specific plugins or groups of plugins as you like, 
 as well as for adding or editing messages attached to plugins, and these rules will not be lost when you update your masterlist.
-</div>
 
-<div id="start"><h1>Getting Started With The Userlist</h1>
-<p style="color:purple">NOTE: This ReadMe refers to .esp and .esm files as 'plugins'. Unless explicitely stated, the 'name' of a 'plugin' refers to its filename, including the extension.
-<p>Also, while the examples in this ReadMe reference Oblivion and some of its plugins, the functionality will work for all the games BOSS supports. When your game's master .ESM file is mentioned, this refers to Oblivion.esm, Nehrim.esm, Fallout3.esm or FalloutNV.esm for Oblivion, Nehrim, Fallout 3 or Fallout: New Vegas respectively.
+<h2 id="start">Getting Started With The Userlist</h2>
+<p><strong>Note:</strong> This ReadMe refers to .esp and .esm files as 'plugins'. Unless explicitely stated, the 'name' of a 'plugin' refers to its filename, including the extension. Also, while the examples in this ReadMe reference Oblivion and some of its plugins, the functionality will work for all the games BOSS supports. When your game's master .ESM file is mentioned, this refers to Oblivion.esm, Nehrim.esm, Fallout3.esm or FalloutNV.esm for Oblivion, Nehrim, Fallout 3 or Fallout: New Vegas respectively.
 <p>The userlist is the file which contains your custom rules for sorting plugins and editing plugins' messages. It is found at <code>BOSS\[GAME]\userlist.txt</code>, where <code>[GAME]</code> is one of <code>Oblivion</code>, <code>Nehrim</code>, <code>Skyrim</code>, <code>Fallout 3</code> or <code>Fallout New Vegas</code>, depending on the game the userlist is for. A blank userlist is automatically created for a game when BOSS is first run for that game.
 <p>Within this file, which you can edit in Notepad or any other text editor, you list your rule definitions. Rules can make two types of changes:
 <ol>
@@ -68,73 +66,76 @@ as well as for adding or editing messages attached to plugins, and these rules w
 			<li>Insert plugins into groups. You can put plugins at the beginning or end of groups.
 		</ul>
 		Plugins may be .esp or .esm files. Groups are all pre-defined in the BOSS masterlist, marked out by the 
-	<code>\BeginGroup\: <em>Group Name</em></code> and <code>\EndGroup\\</code>, or <code>BEGINGROUP: <em>Group Name</em></code> and <code>ENDGROUP</code>, lines.
+	<code>\BeginGroup\: <var>Group Name</var></code> and <code>\EndGroup\\</code>, or <code>BEGINGROUP: <var>Group Name</var></code> and <code>ENDGROUP</code>, lines.
 	<li><em>Edit BOSS messages.</em> You can add to or replace the plugin-specific messages that are displayed in the BOSS Log.
-	See <q><a href="#messages">The BOSS Message Format</a></q> below for more details on the message types and syntax.
+	See <a href="#messages">The BOSS Message Format</a> below for more details on the message types and syntax.
 </ol>
 <p>The rule definition syntax is simple and concise, and is explained below.
-</div>
 
-<div id="basics"><h1>Rule Basics</h1>
-<p>While it is strongly suggested that you read the <q><a href="#syntax">Rule Definition Syntax</a></q> section below to gain a proper understanding of user rules, here is a quick start guide for some simple rules.</p>
-<h2 id="basics-add">Sorting An Unknown Plugin</h2>
+<h2 id="basics">Rule Basics</h2>
+<p>While it is strongly suggested that you read the <a href="#syntax">Rule Definition Syntax</a> section below to gain a proper understanding of user rules, here is a quick start guide for some simple rules.
+<h3 id="basics-add">Sorting An Unknown Plugin</h3>
 <p>To sort a plugin that is not in the masterlist after another plugin:
-<div class="codebox">ADD: [RULE PLUGIN]
-AFTER: [SORT PLUGIN]</div>
+
+<code class="box">ADD: <var>[RULE PLUGIN]</var>
+AFTER: <var>[SORT PLUGIN]</var></code>
+
 <p>To sort it before another plugin:
-<div class="codebox">ADD: [RULE PLUGIN]
-BEFORE: [SORT PLUGIN]</div>
+
+<code class="box">ADD: <var>[RULE PLUGIN]</var>
+BEFORE: <var>[SORT PLUGIN]</var></code>
+
 <p>The <em>rule plugin</em> is the plugin you want to add, and the <em>sort plugin</em> is the plugin you want to sort it relative to.
 <p>Examples:
-<div class="codebox">ADD: Plugin1.esp
+<code class="box">ADD: Plugin1.esp
 AFTER: AFK_Weye.esp
 
 ADD: Plugin2.esp
-BEFORE: AFK_Weye.esp</div>
+BEFORE: AFK_Weye.esp</code>
 <p>This gives a load order of:
-<div class="quotebox">
+<blockquote>
 ...<br />
 Plugin2.esp<br />
 AFK_Weye.esp<br />
 Plugin1.esp<br />
 ...
-</div><br /><br />
+</blockquote>
 
-<h2 id="basics-override">Changing A Recognised Plugin's Position</h2>
+<h3 id="basics-override">Changing A Recognised Plugin's Position</h3>
 <p>To sort a plugin that is already in the masterlist after another plugin:
-<div class="codebox">OVERRIDE: [RULE PLUGIN]
-AFTER: [SORT PLUGIN]</div>
+<code class="box">OVERRIDE: <var>[RULE PLUGIN]</var>
+AFTER: <var>[SORT PLUGIN]</var></code>
 <p>To sort it before another plugin:
-<div class="codebox">OVERRIDE: [RULE PLUGIN]
-BEFORE: [SORT PLUGIN]</div>
+<code class="box">OVERRIDE: <var>[RULE PLUGIN]</var>
+BEFORE: <var>[SORT PLUGIN]</var></code>
 <p>The <em>rule plugin</em> is the plugin you want to sort, and the <em>sort plugin</em> is the plugin you want to sort it relative to.
 <p>Example:
-<div class="codebox">OVERRIDE: bgBalancingEVCore.esp
-AFTER: Unofficial Oblivion Patch.esp</div>
+<code class="box">OVERRIDE: bgBalancingEVCore.esp
+AFTER: Unofficial Oblivion Patch.esp</code>
 <p>This gives a load order of:
-<div class="quotebox">
+<blockquote>
 ...<br />
 Unofficial Oblivion Patch.esp<br />
 bgBalancingEVCore.esp<br />
 ...
-</div><br /><br />
+</blockquote>
 
-<h2 id="basics-message">Editing A Plugin's BOSS Log Messages &amp; Bash Tag Suggestions</h2>
+<h3 id="basics-message">Editing A Plugin's BOSS Log Messages &amp; Bash Tag Suggestions</h3>
 <p>To add a message to a plugin for display in the BOSS Log:
-<div class="codebox">FOR: [RULE PLUGIN]
-APPEND: [MESSAGE OBJECT]</div>
+<code class="box">FOR: <var>[RULE PLUGIN]</var>
+APPEND: <var>[MESSAGE OBJECT]</var></code>
 <p>To replace the messages attached to a plugin for display in the BOSS Log:
-<div class="codebox">FOR: [RULE PLUGIN]
-REPLACE: [MESSAGE OBJECT]</div>
-<p>The <em>rule plugin</em> is the plugin you want to add the message to. The <em>message object</em> is the formatted BOSS message that you want to attach. See the <q><a href="#messages">The BOSS Message Format</a></q> section later on in this readme if you are unfamiliar with BOSS message formatting.
+<code class="box">FOR: <var>[RULE PLUGIN]</var>
+REPLACE: <var>[MESSAGE OBJECT]</var></code>
+<p>The <em>rule plugin</em> is the plugin you want to add the message to. The <em>message object</em> is the formatted BOSS message that you want to attach. See the <a href="#messages">The BOSS Message Format</a> section later on in this readme if you are unfamiliar with BOSS message formatting.
 <p>An example:
-<div class="codebox">FOR: Unofficial Oblivion Patch.esp
+<code class="box">FOR: Unofficial Oblivion Patch.esp
 REPLACE: ? Replaced!
 
 FOR: bgMagicEV.esp.esp
-APPEND: % {{BASH:Names,Delev,Relev}}</div>
+APPEND: % {{BASH:Names,Delev,Relev}}</code>
 <p>This will print in the BOSS Log:
-<div class="quotebox">
+<blockquote>
 ...<br /><br />
 Unofficial Oblivion Patch.esp
 <ul>
@@ -146,60 +147,58 @@ bgMagicEV.esp.esp
 	<li>Bashed Patch tag suggestion: {{BASH:Names,Delev,Relev}}
 </ul>
 ...
-</div>
-</div>
+</blockquote>
 
-<div id="syntax"><h1>Rule Definition Syntax</h1>
-<p>User rules have a specific structure and syntax which your rules must follow to be applied. The information below provides the details on this structure and syntax.</p><br />
-<h2 id="syntax-rule">The Rule Line</h2>
+<h2 id="syntax">Rule Definition Syntax</h2>
+<p>User rules have a specific structure and syntax which your rules must follow to be applied. The information below provides the details on this structure and syntax.
+<h3 id="syntax-rule">The Rule Line</h3>
 <p>Every rule begins with a <em>rule line</em>, which defines what basic type of rule it is and what plugin it is applied to. It has the structure:
-<div class="codebox">[RULE KEYWORD]: [RULE OBJECT]</div>
+<code class="box"><var>[RULE KEYWORD]</var>: <var>[RULE OBJECT]</var></code>
 <p>This is the <em>rule line</em>. The <em>rule keyword</em> can be one of:
 <ul>
-	<li><em>ADD</em>: This tells BOSS that the rule sorts a plugin that is not in the 
+	<li><dfn>ADD</dfn>: This tells BOSS that the rule sorts a plugin that is not in the 
 	masterlist. The rule may also add and/or edit messages attached to that plugin.
-	<li><em>OVERRIDE</em>: This tells BOSS that the rule overrides the current position of a plugin or group in the masterlist with a new position. 
+	<li><dfn>OVERRIDE</dfn>: This tells BOSS that the rule overrides the current position of a plugin or group in the masterlist with a new position. 
 	The rule may also add and/or edit messages attached to that plugin.
-	<li><em>FOR</em>: This tells BOSS that the rule adds and/or edits the messages attached to a plugin, but does not sort it.
+	<li><dfn>FOR</dfn>: This tells BOSS that the rule adds and/or edits the messages attached to a plugin, but does not sort it.
 </ul>
 <p>The <em>rule object</em> is the plugin or group that the rule is applied to. If the rule keyword is ADD or FOR, the rule object must be a plugin.
 <p>When you define groups, the names of those groups are used as they appear in the masterlist. For example, 
-if you wanted to reference the group of plugins that begins with <code>\BeginGroup\: Supreme Magicka</code>, you would put it in the rule as 
-<code>Supreme Magicka</code>.
+if you wanted to reference the group of plugins that begins with <code>\BeginGroup\: Supreme Magicka</code>, you would put it in the rule as <code>Supreme Magicka</code>.
 <p>There is one more keyword that can be used on the rule line. <code>DISABLE</code> can be put before the rule keyword to prevent the rule from being applied. For example:
-<div class="codebox">DISABLE ADD: MyMod.esp
+<code class="box">DISABLE ADD: MyMod.esp
 AFTER: Unofficial Oblivion Patch.esp
-</div>
-<p>Would result in MyMod.esp not being sorted after Unofficial Oblivon Patch.esp. The DISABLE keyword should be used instead of silent comments to stop a rule being applied because the latter makes the rule invisible to the GUI's User Rule Editor whereas the former does not.</p><br />
+</code>
+<p>Would result in MyMod.esp not being sorted after Unofficial Oblivon Patch.esp. The <code>DISABLE</code> keyword should be used instead of silent comments to stop a rule being applied because the latter makes the rule invisible to the GUI's User Rule Editor whereas the former does not.
 
-<h2 id="syntax-sort">The Sort Line</h2>
+<h3 id="syntax-sort">The Sort Line</h3>
 <p>If a rule's rule keyword is ADD or OVERRIDE, it can sort plugins and should include a <em>sort line</em> directly below the rule line. If the rule keyword is FOR, the rule <b>must not</b> include a sort line. A rule may only contain one sort line. The sort line has the structure:
-<div class="codebox">[SORT KEYWORD]: [SORT OBJECT]</div>
+<code class="box"><var>[SORT KEYWORD]</var>: <var>[SORT OBJECT]</var></code>
 <p>The <em>sort keyword</em> can be one of:
 <ul>
-	<li><em>BEFORE</em>: This states that the rule object is to load immediately before the sort object.
-	<li><em>AFTER</em>: This states that the rule object is to load immediately after the sort object.
-	<li><em>TOP</em>: This states that the rule plugin is to be inserted into the top of the sort group. The rule plugin will then load before everything else in the sort group.
-	<li><em>BOTTOM</em>: This states that the rule plugin is to be inserted into the top of the sort group. The rule plugin will then load after everything else in the sort group.
+	<li><dfn>BEFORE</dfn>: This states that the rule object is to load immediately before the sort object.
+	<li><dfn>AFTER</dfn>: This states that the rule object is to load immediately after the sort object.
+	<li><dfn>TOP</dfn>: This states that the rule plugin is to be inserted into the top of the sort group. The rule plugin will then load before everything else in the sort group.
+	<li><dfn>BOTTOM</dfn>: This states that the rule plugin is to be inserted into the bottom of the sort group. The rule plugin will then load after everything else in the sort group.
 </ul>
 <p>When using the BEFORE or AFTER sort keywords, the <em>sort object</em> is the plugin or group that you wish the rule object 
 to be positioned relative to. Plugins must be sorted relative to other plugins, and groups must be sorted relative to groups. You cannot sort plugins relative to groups, or vice versa. You also cannot sort your game's master .ESM, sort other plugins before it, or sort groups before the "ESMs" group.
-<p>When using the TOP or BOTTOM sort keywords, the <em>sort object</em> is the <b>group</b> that you wish to insert the rule plugin into. You cannot insert groups into anything, plugins into plugins, or insert anything into the top of the "ESMs" group.</p><br />
+<p>When using the TOP or BOTTOM sort keywords, the <em>sort object</em> is the <b>group</b> that you wish to insert the rule plugin into. You cannot insert groups into anything, plugins into plugins, or insert anything into the top of the <q>ESMs</q> group.
 
-<h2 id="syntax-message">The Message Line</h2>
+<h3 id="syntax-message">The Message Line</h3>
 <p>If a rule's rule keyword is FOR, it should include at least one <em>message line</em>. A rule with a rule keyword of ADD or OVERRIDE can also include message lines, if they sort a plugin. Message lines have the structure:
-<div class="codebox">[MESSAGE KEYWORD]: [MESSAGE OBJECT]</div>
+<code class="box"><var>[MESSAGE KEYWORD]</var>: <var>[MESSAGE OBJECT]</var></code>
 <p>The <em>message keyword</em> can be one of:
 <ul>
-	<li><em>APPEND</em>: This states that the message is to be appended to the list of messages attached to the rule plugin.
-	<li><em>REPLACE</em>: This states that the message is to replace any existing message or messages attached to the rule plugin. You may only have up to one REPLACE message line per rule, and if used it must be the first message line.
+	<li><dfn>APPEND</dfn>: This states that the message is to be appended to the list of messages attached to the rule plugin.
+	<li><dfn>REPLACE</dfn>: This states that the message is to replace any existing message or messages attached to the rule plugin. You may only have up to one <code>REPLACE</code> message line per rule, and if used it must be the first message line.
 </ul>
 <p>The <em>message object</em> is the message, complete with symbol code, that you wish to attach to the plugin defined by the rule object. You cannot attach messages to groups.
-<p>You may have multiple message lines in a rule (but only the first may use the REPLACE message keyword), to add multiple messages to a plugin, or to override an existing set of messages with a new set.</p><br />
+<p>You may have multiple message lines in a rule (but only the first may use the <code>REPLACE</code> message keyword), to add multiple messages to a plugin, or to override an existing set of messages with a new set.
 
-<h2 id="syntax-examples">Examples</h2>
+<h3 id="syntax-examples">Examples</h3>
 <p>Here is the contents of an example userlist:
-<div class="codebox">ADD: MyPluginToAdd.esp
+<code class="box">ADD: MyPluginToAdd.esp
 AFTER: LoadAfterThis.esm
 APPEND: ? Adding a general message.
 APPEND: $ Incompatible with OOO!
@@ -212,9 +211,9 @@ BEFORE: Supreme Magicka
 
 FOR: bgBalancingEVOptionalNPCDiversity, Vanilla.esp
 REPLACE: ? This is a replacement message.
-APPEND: % {{BASH:NpcFaces,NoMerge}}</div>
+APPEND: % {{BASH:NpcFaces,NoMerge}}</code>
 <p>This is the equivalent of the masterlist having:
-<div class="quotebox">
+<blockquote>
 ...<br />
 LoadAfterThis.esm<br />
 MyPluginToAdd.esp<br />
@@ -228,9 +227,9 @@ bgBalancingEVOptionalNPCDiversity, Vanilla.esp<br />
 ? This is a replacement message.<br />
 % {{BASH:NpcFaces,NoMerge}}<br />
 ...
-</div>
+</blockquote>
 <p>Which would give in the BOSS Log:
-<div class="logbox" style="">
+<blockquote>
 ...<br />
 LoadAfterThis.esm<br />
 MyPluginToAdd.esp
@@ -248,29 +247,25 @@ bgBalancingEVOptionalNPCDiversity, Vanilla.esp
 <li> Bash Tag Suggestion(s): {{BASH:NpcFaces,NoMerge}}
 </ul>
 ...
-</div>
+</blockquote>
 <p>The rule sorting the two groups L.A.M.E. and Supreme Magicka simply moves the L.A.M.E. group from its current position to before the Supreme Magicka group.
-</div>
 
-<div id="apply"><h1>Enforcing Your Rules</h1>
+<h2 id="apply">Enforcing Your Rules</h2>
 <p>When BOSS is run, it will look for your userlist at <code>BOSS\[GAME]\userlist.txt</code>, where <code>[GAME]</code> is one of <code>Oblivion</code>, <code>Nehrim</code>, <code>Skyrim</code>, <code>Fallout 3</code> or <code>Fallout New Vegas</code>, depending on the game BOSS is running for. If it is found, and the userlist contains at least one rule, BOSS will first check the syntax of the rules, and apply those with the correct syntax. 
 It will print error messages detailing the problems with any rules it skips, and success messages for the plugins that are applied, into your BOSS Log, in the <q>Userlist Messages</q> section near the top. Disabled rules have their syntax checked, but are not applied.
 <p>If a rule is successfully applied, it will print one or more messages depending on what the rule does:
 <ol>
-	<li>If the rule includes a sort line and uses the sort keywords BEFORE or AFTER, it will print a message of the form: <code>"<em>Plugin/Group Name</em>" sorted <em>before/after</em> "<em>Plugin/Group Name</em>".</code>
-	<li>If the rule includes a sort line and uses the sort keywords TOP or BOTTOM, it will print a message of the form: <code>"<em>Plugin Name</em>" inserted into the <em>top/bottom</em> of group "<em>Group Name</em>".</code>
-	<li>If the rule includes one or more message lines, each message line will give a message of the form: <code>"<em>Message</em>" <em>appended to/replaced</em> messages attached to "<em>Plugin Name</em>".</code>
+	<li>If the rule includes a sort line and uses the sort keywords BEFORE or AFTER, it will print a message of the form: <code>"<var>Plugin/Group Name</var>" sorted <var>before/after</var> "<var>Plugin/Group Name</var>".</code>
+	<li>If the rule includes a sort line and uses the sort keywords TOP or BOTTOM, it will print a message of the form: <code>"<var>Plugin Name</var>" inserted into the <var>top/bottom</var> of group "<var>Group Name</var>".</code>
+	<li>If the rule includes one or more message lines, each message line will give a message of the form: <code>"<var>Message</var>" <var>appended to/replaced</var> messages attached to "<var>Plugin Name</var>".</code>
 </ol>
 <p>If the parser finds a major grammatical error in your userlist, it will stop parsing and discard any rules it has found before printing an error message detailing what was expected and where. In some cases, the expected item may not provide much useful meaning - in these cases look at where the error was found and determine the exact cause of the problem yourself.
-<p>If a rule is found to have errors in its syntax, it will be skipped and an error message of the form: <code>Syntax Error: The rule beginning "<em>First Line Of Rule</em>" <em>details of error</em></code> will be printed to your BOSS Log. See the main BOSS ReadMe for a full list of possible syntax errors.
+<p>If a rule is found to have errors in its syntax, it will be skipped and an error message of the form: <code>Syntax Error: The rule beginning "<var>First Line Of Rule</var>" <var>details of error</var></code> will be printed to your BOSS Log. See the main BOSS ReadMe for a full list of possible syntax errors.
 <p>If an error is encountered while trying to apply a rule, it will be skipped and an error message detailing the fault will be printed to your BOSS Log.
-<p><b>Rule application does not alter your masterlist.txt or userlist.txt.</b> This means that if you want to undo the application of
-a rule, all you need to do is remove it from your userlist.txt (or disable it) and re-run BOSS.
-</div>
+<p><b>Rule application does not alter your masterlist.txt or userlist.txt.</b> This means that if you want to undo the application of a rule, all you need to do is remove it from your userlist.txt (or disable it) and re-run BOSS.
 
-<div id="notes"><h1>Further Notes On Rules</h1>
-<p>While the <q><a href="#syntax">Rule Definition Syntax</a></q> section gave you most of the rules of defining rules, here are some further general notes on defining rules that may 
-not be evident:
+<h2 id="notes">Further Notes On Rules</h2>
+<p>While the <a href="#syntax">Rule Definition Syntax</a> section gave you most of the rules of defining rules, here are some further general notes on defining rules that may not be evident:
 <ol>
 	<li>Blank lines or lines beginning with <code>//</code> in your userlist will be ignored by BOSS. You can use blank lines to improve the formatting of your userlist, and use the <code>//</code> line start to provide comments or disable specific rules as you desire.
 		<ul>
@@ -289,7 +284,7 @@ not be evident:
 	<li>
 		<p><b>Rules are applied in the order they are listed</b>. This means you can have several rules sorting different rule objects relative to the same sort object, or have rules sorting rule objects relative to sort objects that were sorted in previous rules.
 		For example:
-		<div class="codebox">ADD: LoadBeforeThis.esp
+		<code class="box">ADD: LoadBeforeThis.esp
 AFTER: RTT.esp
 
 ADD: Plugin1.esp
@@ -299,24 +294,18 @@ OVERRIDE: xulAspenWood.esp
 AFTER: Plugin1.esp
 
 ADD: Plugin2.esp
-BEFORE: RTT.esp</div>
+BEFORE: RTT.esp</code>
 		<p>which will order the plugins as:
-		<div class="quotebox">Plugin2.esp<br />
+		<blockquote>Plugin2.esp<br />
 		RTT.esp<br />
 		Plugin1.esp<br />
 		xulAspenWood.esp<br />
-		LoadBeforeThis.esp</div>
-		<p>Take care when writing such rules though, 
-		as a small difference in the order of the rules in your userlist can have a very large difference on the resulting load order.
-	
+		LoadBeforeThis.esp</blockquote>
+		<p>Take care when writing such rules though, as a small difference in the order of the rules in your userlist can have a very large difference on the resulting load order.
 </ol>
-</div>
 
-<div id="messages"><h1>The BOSS Message Format</h1>
-<p>Understanding the BOSS message format is important if you wish to edit plugins' messages. There are actually two formats, either of which may be used. 
-Each of the four message types that can be added via the userlist begins with a 
-<em>message symbol</em> or <em>message keyword</em> depending on the format used. The symbol/keyword is then followed by the message itself. The message is just a standard 
-line of text. In addition, Bash Tag suggestion messages also have a special syntax for the suggestions they include.
+<h2 id="messages">The BOSS Message Format</h2>
+<p>Understanding the BOSS message format is important if you wish to edit plugins' messages. There are actually two formats, either of which may be used. Each of the four message types that can be added via the userlist begins with a <em>message symbol</em> or <em>message keyword</em> depending on the format used. The symbol/keyword is then followed by the message itself. The message is just a standard line of text. In addition, Bash Tag suggestion messages also have a special syntax for the suggestions they include.
 <p>The message message types, symbols and keywords are listen in the table below:
 <table>
 	<thead><tr><td><b>Message Type</b><td><b>Format 1 Symbol</b><td><b>Format 2 Keyword</b>
@@ -326,17 +315,15 @@ line of text. In addition, Bash Tag suggestion messages also have a special synt
 		<tr><td>Installation Requirement<td>:<td>REQ:
 		<tr><td>Specific Incompatibility<td>"<td>INC:
 </table>
-<p>The syntax for a Bash Tag suggestion is:<br /><br />
-% {{BASH:list suggested tags separated by ", " here}} you may also have some text here.<br />
+<p>The syntax for a Bash Tag suggestion is:
+<code class="box">% {{BASH:list suggested tags separated by ", " here}} you may also have some text here.</code>
 or:<br />
-TAG: {{BASH:list suggested tags separated by ", " here}} you may also have some text here.
+<code class="box">TAG: {{BASH:list suggested tags separated by ", " here}} you may also have some text here.</code>
 <p>For example:
-<div class="codebox">% {{BASH:Names, Graphics}} to prevent changes being lost when using overhauls.</div>
+<code class="box">% {{BASH:Names, Graphics}} to prevent changes being lost when using overhauls.</code>
 <p>You can also mix the two formats, giving one message in one format and another message in the other. You are not restricted to using only one format.
-</div>
 
-<div id="license"><h1>License</h1>
-<p>This document is part of the BOSS documentation.
-<br />Copyright (C) 2011 BOSS Development Team. 
-<br />See the file <q>BOSS ReadMe.html</q> for copying conditions.
-</div>
+<h2 id="license">License</h2>
+<p>This document is part of the BOSS documentation.<br />
+Copyright (C) 2011 BOSS Development Team.<br />
+See the file <q>BOSS ReadMe.html</q> for copying conditions.

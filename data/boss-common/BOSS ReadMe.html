@@ -1,26 +1,27 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <meta charset="utf-8">
 <title>BOSS ReadMe</title>
 <style>
 	body {font-family:Calibri,Arial,Verdana,sans-serifs;}
-	body > div:first-child {font-size:2.4em; font-weight:bold; text-align:center; margin-bottom:0.2em;}
-	body > div {margin-bottom:5em;}
-	ol li, ul li {margin-bottom:10px;}
+	li {margin-bottom:10px;}
 	li ul, li ol {margin-top:0.4em;}
-	.codebox, .quotebox, .logbox {margin-left:40px; border:gray 1px dashed; display:table; min-width:300px; padding:5px 30px 5px 10px;}
-	.codebox { font-family:monospace; background:#F5F5F5; line-height:20px; white-space:pre;}
-	.quotebox {background:#E6E6FA;}
-	.logbox {background:#E0FFFF; line-height:30px;}
-	.logbox > ul > li {line-height:20px;}
 	q {font-style:italic;}
-	code {display:inline-box; padding:2px 5px; background:#EEEEEE;}
+	code {display:inline-block; padding:2px 5px; background:#EEEEEE;}
 	td {border:1px solid #ccc; padding: 5px; vertical-align:top;}
 	table {border:1px solid #ccc; border-spacing:0; border-collapse:separate; margin:1em;}
 	thead > tr td {font-weight:bold}
-	.errorMessages > li {margin-bottom:1.4em;}
+	code.box {line-height:20px; white-space:pre; margin:1em 0 0 3em; display:table; padding:5px 10px;}
+	ol li ol {list-style:lower-alpha;}
+	blockquote {background:#E6E6FA; display:table; padding:5px 30px 5px 10px;}
+	h1 { text-align:center;}
+	h2 {margin-top:3em;}
+	h3 {margin-top:2em;}
+	a:link {text-decoration:none;}
+	a:hover {text-decoration:underline;}
+	
+	ul.errorMessages > li {margin-bottom:1.4em;}
 	.c {text-align:center;}
 	img {border:0;}
-	
 	#slideholder { height: 340px;}
 	#slideholder img {opacity:0; position:absolute;
 		transition: opacity 1.5s;
@@ -28,20 +29,21 @@
 		-webkit-transition: opacity 1.5s;
 		-o-transition: opacity 1.5s;}
 	#slideholder img:first-child {opacity:1;}
-	img+p, div#slideholder+p {font-style:italic; margin-top:0; margin-bottom:2em;}
-	.inactive {opacity:0.5;}
+	figcaption {font-style:italic; margin-bottom:2em;}
+	tr.inactive {opacity:0.5;}
+	code.box {margin-left:0em;}
 </style>
 
-<div>BOSS</div>
-<div style="text-align:center;">A "one-click" program for users that quickly optimises and avoids detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.</div>
+<h1>BOSS</h1>
+<p style="text-align:center;">A "one-click" program for users that quickly optimises and avoids detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.</p>
 
-<div><h1>Contents</h1>
+<h2>Contents</h2>
 <ol>
 	<li><a href="#features">Features &amp; Introduction</a>
 	<li><a href="#install">Installation &amp; Basic Usage</a>
 	<li><a href="#remove">Uninstallation</a>
 	<li><a href="#general">General Usage</a>
-	<ol style="list-style:lower-alpha;">
+	<ol>
 		<li><a href="#gui">The Graphical User Interface</a>
 		<li><a href="#updates">Keeping BOSS Up-To-Date</a>
 		<li><a href="#bosslog">The BOSS Log</a>
@@ -49,7 +51,7 @@
 	</ol>
 	<li><a href="#help">Contributions &amp; Help</a>
 	<li><a href="#advanced">Further Details</a>
-	<ol style="list-style:lower-alpha;">
+	<ol>
 		<li><a href="#userRules">User Rules</a>
 		<li><a href="#ini">The BOSS.ini</a>
 		<li><a href="#cli">Command Line Arguments</a>
@@ -58,7 +60,7 @@
 		<li><a href="#files">BOSS Changes and Files</a>
 	</ol>
 	<li><a href="#troubleshooting">Troubleshooting</a>
-	<ol style="list-style:lower-alpha;">
+	<ol>
 		<li><a href="#general-issues">General Problems</a>
 		<li><a href="#permissions">File Permissions</a>
 		<li><a href="#international">International Character Support</a>
@@ -70,9 +72,8 @@
 	<li><a href="#links">Quick Links</a>
 	<li><a href="#history">Version History</a>
 </ol>
-</div>
 
-<div id="features"><h1>Features &amp; Introduction</h1>
+<h2 id="features">Features &amp; Introduction</h2>
 <ul>
 	<li>Correctly positions over 22,100 mod plugins and counting for TES IV: Oblivion, TES V: Skyrim, Fallout 3, Fallout: New Vegas and Nehrim - At Fate's Edge.
 	<ul><li>Over 13,300 / 2,500 / 3,100 / 3,100 / 180 mod plugins respectively.</ul>
@@ -88,15 +89,14 @@
 </ul>
 <p>BOSS will re-order your mod plugins to their correct positions, putting any mods it doesn't recognise after them, in the same order as they were before BOSS was run.
 <p>BOSS is designed to assist in the usage of mods, helping mod users avoid serious conflicts. It is not a complete solution to load ordering issues, as there are far more mods out there than BOSS knows about. To properly place mods BOSS doesn't know about, a good working knowledge of mod load ordering for the relevant game is still necessary, for which some research and documentation reading will go a long way.
-</div>
 
-<div id="install"><h1>Installation &amp; Basic Usage</h1>
+<h2 id="install">Installation &amp; Basic Usage</h2>
 <p><b>Note that BOSS does not support Windows 2000 or earlier.</b>
 <p>BOSS can be installed for use with TES IV: Oblivion, TES V: Skyrim, Fallout 3, Fallout: New Vegas and Nehrim - At Fate's Edge (a Total Conversion mod for Oblivion). Installation may either be automated, using the BOSS Installer package, or manually, using the archive package. Either method is simple, and instructions for manual installation are given below.
 <ol>
 	<li>If upgrading from an earlier version of BOSS, delete all BOSS files and folders in all supported games' Data folders. Also delete any of the following from your BOSS folder(s) (but not from any folders within your BOSS folders): BOSSlog.txt; BOSSlog.html; masterlist.txt; modlist.txt; modlist.old. 
 	<ul><li>If you have existing userlists, you will need to move them into the subfolders BOSS creates for their games in the BOSS folder when it is run. The installer does this automatically for you.</ul>
-	<li>Within the archive you downloaded there is a BOSS folder. Extract this folder to a location of your choice. Make sure that you have the appropriate file permissions for the directory you choose. See the <q><a href="#permissions">File Permissions</a></q> section for more information.
+	<li>Within the archive you downloaded there is a BOSS folder. Extract this folder to a location of your choice. Make sure that you have the appropriate file permissions for the directory you choose. See the <a href="#permissions">File Permissions</a> section for more information.
 	<ul>
 		<li>If you only have one BOSS-supported game installed, it is best to install BOSS to the game's installation directory (ie. one of <q>Oblivion</q>, <q>Fallout 3</q>, <q>Nehrim</q>, <q>fallout new vegas</q> or <q>skyrim</q> depending on the game), so that the BOSS folder sits alongside the Data folder and the game's executable. This is referred to as a local install. BOSS by default will always run for the local game.
 		<li>If you have more than one BOSS-supported game installed, it is best to install BOSS to a location outside of the supported games' installation directories. This is referred to as a non-local install. In a non-local install, BOSS by default lets the user choose which game to run for. This is the default install type when installing BOSS using the installer.
@@ -107,38 +107,40 @@
 </ol>
 <p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. The <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities will automatically import and apply Bash Tag suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions makes thoroughly and adjust tags by hand in <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> if necessary.
 <p>Unrecognised mods must be re-ordered by hand using <abbr title="Oblivion Mod Manager">OBMM</abbr>/<abbr title="Fallout Mod Manager">FOMM</abbr> or <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>.
-</div>
 
-<div id="remove"><h1>Uninstallation</h1>
+<h2 id="remove">Uninstallation</h2>
 <p>If BOSS was installed using the installer, then use the uninstaller it provides a link to in the Start Menu to uninstall BOSS. If BOSS was installed manually, do the following:
-<ol><li>Delete the BOSS folder in the location you installed it to. If you installed BOSS to more than one location, delete each BOSS folder for each install of BOSS you wish to remove.
-</div>
+<ol><li>Delete the BOSS folder in the location you installed it to. If you installed BOSS to more than one location, delete each BOSS folder for each install of BOSS you wish to remove.</ol>
 
-<div id="general"><h1>General Usage</h1>
+<h2 id="general">General Usage</h2>
 <p>This section gives more information on the parts of BOSS's functionality that users are likely to come into contact with during the course of general usage of BOSS. It gives details on the capabilities of the GUI, information on how to keep BOSS up to date, information on the BOSS Log and its constituent parts, and provides some background information and BOSS-specific notes on the subject of dirty edits and mod cleaning.
-<h2 id="gui">The Graphical User Interface</h2>
+<h3 id="gui">The Graphical User Interface</h3>
 <p>While the <abbr title="Command Line Interface">CLI</abbr> provided by <q>BOSS.exe</q> offers the simplest way to run BOSS using just one click, the <abbr title="Graphical User Interface">GUI</abbr> provided by <q>BOSS GUI.exe</q> provides a way of accessing BOSS's options, settings and more powerful features without having to edit any other files manually. The CLI and GUI both possess the same core functionality, but differ in how they approach providing it, with the CLI being text-based and the GUI using graphical elements such as buttons, checkboxes and drop-down lists.
 <p>The GUI is composed of three windows: the Main window, which is the one displayed when the GUI is run; the Settings window; and the User Rules Editor window. Their content shall be explained in turn.
 
-<h3>The Main Window</h3>
-<img src="images/BOSS GUI Main.png"/>
-<p>The BOSS GUI's main window, containing the most commonly used options.
+<h4>The Main Window</h4>
+<figure>
+<img alt="main window" src="images/BOSS%20GUI%20Main.png"/>
+<figcaption>The BOSS GUI's main window, containing the most commonly used options.</figcaption>
+</figure>
 <p>The title bar of the main window displays which game BOSS is running for: this may also be checked by seeing which game is selected in the <q>Active Game</q> menu.
-<p>The menu bar holds four menus: <q>File</q>, <q>Edit</q>, <q>Active Game</q> and <q>Help</q>. The <q>File</q> menu just contains commands for opening the BOSS Log, running BOSS and quitting. The <q>Edit</q> menu contains a command for editing user rules, which works the same as the <q>Edit User Rules</q> button, and a command for opening the settings window. The <q>Help</q> menu contains links to BOSS's documentation and copyright licenses, and commands to view the <q>About</q> dialog and to check for updates to the BOSS program (see the <q><a href="#updates">Keeping BOSS Up-To-Date</a></q> section for details).
-<p>The <q>Active Game</q> menu allows you to change which game BOSS is running for without closing and re-opening the GUI. Games that BOSS does not detect as being installed are greyed out. The active game is marked with a dot next to it. To change the active game, simply select another game in the list. Setting the run type to <q>Update Masterlist Only</q> will un-grey all the games, allowing any of them to be selected, while changing from <q>Update Masterlist Only</q> to another run type will grey out undetected games again. If an undetected game is active when you change run type, BOSS will automatically switch to the first detected game in the list. If BOSS fails to detect any supported games, the active game will be set to <q>None</q> and the <q>Sort Plugins</q> and <q>Undo Changes</q> run types will be greyed out. You may then select a game from the <q>Active Game</q> menu to update its masterlist only. See <q><a href="#special">Updating Under Special Circumstances</a></q> for when this may be useful.
+<p>The menu bar holds four menus: <q>File</q>, <q>Edit</q>, <q>Active Game</q> and <q>Help</q>. The <q>File</q> menu just contains commands for opening the BOSS Log, running BOSS and quitting. The <q>Edit</q> menu contains a command for editing user rules, which works the same as the <q>Edit User Rules</q> button, and a command for opening the settings window. The <q>Help</q> menu contains links to BOSS's documentation and copyright licenses, and commands to view the <q>About</q> dialog and to check for updates to the BOSS program (see the <a href="#updates">Keeping BOSS Up-To-Date</a> section for details).
+<p>The <q>Active Game</q> menu allows you to change which game BOSS is running for without closing and re-opening the GUI. Games that BOSS does not detect as being installed are greyed out. The active game is marked with a dot next to it. To change the active game, simply select another game in the list. Setting the run type to <q>Update Masterlist Only</q> will un-grey all the games, allowing any of them to be selected, while changing from <q>Update Masterlist Only</q> to another run type will grey out undetected games again. If an undetected game is active when you change run type, BOSS will automatically switch to the first detected game in the list. If BOSS fails to detect any supported games, the active game will be set to <q>None</q> and the <q>Sort Plugins</q> and <q>Undo Changes</q> run types will be greyed out. You may then select a game from the <q>Active Game</q> menu to update its masterlist only. See <a href="#special">Updating Under Special Circumstances</a> for when this may be useful.
 <p>The output options on the left of the window tweak settings related to the BOSS Log. When the <q>Display File CRCs</q> option is enabled, the BOSS Log displays the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in the Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr>/<abbr title="Skyrim Script Extender">SKSE</abbr> and its installed plugins if present. The <q>BOSS Log Format</q> option decides both what format of BOSS Log is generated when BOSS is run and what format of BOSS Log the GUI opens when the <q>View BOSS Log</q> button or <q>File&#x2192;View BOSS Log</q> menu item is selected. <q>Display Plugin Versions</q> and <q>Show BOSS Log On Completion</q> do exactly as they say on the tin.
 <p>The run options on the right of the main window decide how BOSS runs. BOSS has three main modes of operation that are mutually exclusive to one another: it can either sort your plugins, only update your masterlist then quit or undo its changes to your load order. When <q>Update Masterlist</q> is enabled, BOSS will update your masterlist before sorting your plugins. When <q>Perform Trial Run</q> is enabled, BOSS simulates its changes to your load order without actually reordering your mods. The <q>Undo Level</q> option allows you to select how many runs of BOSS are to be undone.
-<p>The <q>Edit User Rules</q> button opens your userlist for editing. If the <q>Use User Rules Editor</q> setting in the Settings window is enabled, clicking the button will open the User Rules Editor window, otherwise it will open your userlist in your default text editor. The <q>Run BOSS</q> button runs BOSS's main sorting/updating/undoing functionality according to the options selected. The <q>View BOSS Log</q> button does exactly what it says on the tin, opening the BOSS Log in the format selected in the Output Options section.</p>
+<p>The <q>Edit User Rules</q> button opens your userlist for editing. If the <q>Use User Rules Editor</q> setting in the Settings window is enabled, clicking the button will open the User Rules Editor window, otherwise it will open your userlist in your default text editor. The <q>Run BOSS</q> button runs BOSS's main sorting/updating/undoing functionality according to the options selected. The <q>View BOSS Log</q> button does exactly what it says on the tin, opening the BOSS Log in the format selected in the Output Options section.
 
-<h3>The Settings Window</h3>
+<h4>The Settings Window</h4>
+<figure>
 <div id="slideholder">
-<img src="images/BOSS GUI Settings 1.png"/>
-<img src="images/BOSS GUI Settings 2.png"/>
-<img src="images/BOSS GUI Settings 3.png"/>
-<img src="images/BOSS GUI Settings 4.png"/>
-<img src="images/BOSS GUI Settings 5.png"/>
+<img alt="settings window tab 1" src="images/BOSS%20GUI%20Settings%201.png"/>
+<img alt="settings window tab 2" src="images/BOSS%20GUI%20Settings%202.png"/>
+<img alt="settings window tab 3" src="images/BOSS%20GUI%20Settings%203.png"/>
+<img alt="settings window tab 4" src="images/BOSS%20GUI%20Settings%204.png"/>
+<img alt="settings window tab 5" src="images/BOSS%20GUI%20Settings%205.png"/>
 </div>
-<p>The 5 tabs of the GUI's settings window, containing the various settings not displayed in the main window (animated slideshow).
+<figcaption>The 5 tabs of the GUI's settings window, containing the various settings not displayed in the main window (animated slideshow).</figcaption>
+</figure>
 <p>BOSS has a large number of settings, only a few of which can be displayed in the main window. As such, the less commonly used settings are found in the Settings window, which can be accessed by clicking <q>Edit&#x2192;Settings...</q> in the main window's menu bar. The settings are grouped into tabs depending on what area of BOSS's behaviour they control. The settings are detailed in the table below.
 <table>
 	<thead><tr><td>Tab<td>Setting<td>Description
@@ -153,15 +155,18 @@
 		<tr><td rowspan="3">Debugging<td>Debug Outout Verbosity<td>The verbosity of the debug output. As values increase, so does verbosity, 'Standard (0)' displays only warning and error messages.
 		<tr><td>Include Source Code References<td>Add source code references to the debug output.
 		<tr><td>Log Debug Output<td>Save the debug output to a <q>BOSSDebugLog.txt</q> text file.
-		<tr><td>BOSS Log Filters<td><i>Many</i><td>These settings control the default states of the BOSS Log filters. If a setting's box is checked, then the filter of the same name in the BOSS Log will be enabled when the BOSS Log is opened. See the <q><a href="#bosslog">The BOSS Log</a></q> section below for what each filter does.
+		<tr><td>BOSS Log Filters<td><i>Many</i><td>These settings control the default states of the BOSS Log filters. If a setting's box is checked, then the filter of the same name in the BOSS Log will be enabled when the BOSS Log is opened. See the <a href="#bosslog">The BOSS Log</a> section below for what each filter does.
 		<tr><td>BOSS Log CSS<td><i>Many</i><td>These settings control the BOSS Log's CSS styles, used to provide the formatting for the BOSS Log. A knowledge of CSS is expected if you wish to alter these settings. If you do not possess such knowledge, altering these settings is not recommended. The CSS selectors are given on the left, and their styling can be edited in the corresponding text boxes on the right. Curly brackets should be omitted.
 </table>
-<p>Each setting in the GUI corresponds to a command line parameter and/or an ini setting, the details of which can be found in the <q><a href="#cli">Command Line Arguments</a></q> and <q><a href="#customising">Customising How BOSS Works</a></q> sections of this ReadMe respectively.</p>
+<p>Each setting in the GUI corresponds to a command line parameter and/or an ini setting, the details of which can be found in the <a href="#cli">Command Line Arguments</a> and <a href="#customising">Customising How BOSS Works</a> sections of this ReadMe respectively.
 
-<h3>The User Rules Editor</h3>
-<img src="images/BOSS GUI User Rules Editor.png"/>
-<p>The User Rules Editor, a graphical interface for managing your user rules.
-<p>The User Rules Editor can be used instead of editing your userlist.txt directly. The information contained within the <q><a href="BOSS User Rules ReadMe.html">BOSS User Rules ReadMe</a></q> document is still required to understand user rules. The editor comprises of the following elements:
+<h4>The User Rules Editor</h4>
+<figure>
+<img alt="user rules editor window" src="images/BOSS%20GUI%20User%20Rules%20Editor.png"/>
+<figcaption>The User Rules Editor, a graphical interface for managing your user rules.</figcaption>
+</figure>
+<p>The User Rules Editor can be used instead of editing your userlist.txt directly. The information contained within the <a href="BOSS%20User%20Rules%20ReadMe.html">BOSS User Rules ReadMe</a> document is still required to understand user rules. The editor comprises of the following elements:
+<ul>
 	<li>User Rules:
 	<ul>
 		<li>This section lists your user rules in order. 
@@ -179,7 +184,7 @@
 	</ul>
 	<li>Masterlist Mod Messages:
 	<ul>
-		<li>This section displays the messages attached to the currently selected mod in the Masterlist section. The messages are displayed as they appear in the masterlist, not as they appear in the BOSS Log. See the <q><a href="BOSS User Rules ReadMe.html">BOSS User Rules ReadMe</a></q> for a brief overview of the most common message syntax, and the <q><a href="BOSS Masterlist Syntax.html">BOSS Masterlist Syntax</a></q> documentation for the full details.
+		<li>This section displays the messages attached to the currently selected mod in the Masterlist section. The messages are displayed as they appear in the masterlist, not as they appear in the BOSS Log. See the <a href="BOSS%20User%20Rules%20ReadMe.html">BOSS User Rules ReadMe</a> for a brief overview of the most common message syntax, and the <a href="BOSS%20Masterlist%20Syntax.html">BOSS Masterlist Syntax</a> documentation for the full details.
 		<li>The messages cannot be edited here: they must be replaced or added to via a user rule in the Rule Creator/Editor.
 	</ul>
 	<li>Rule Creator/Editor:
@@ -195,10 +200,9 @@
 </ul>
 <p>To save your changes to your userlist and exit, use the <q>Save</q> button. To exit without saving, use the <q>Cancel</q> button.
 <p>Plugins and groups may be added to the text boxes in the Rule Creator by dragging and dropping them from the Installed Mods and Masterlist lists on the right of the window. Dropping a plugin or group into a text box currently containing a plugin or group will cause the existing text to be replaced.</p>
-<p>The User Rules Editor ignores all silent comments in your userlist.txt, and will strip them from the file if you choose to save your user rules via the editor.</p>
-<br />
+<p>The User Rules Editor ignores all silent comments in your userlist.txt, and will strip them from the file if you choose to save your user rules via the editor.
 
-<h2 id="updates">Keeping BOSS Up-To-Date</h2>
+<h3 id="updates">Keeping BOSS Up-To-Date</h3>
 <p>It is important that you keep your BOSS installation updated, not only to benefit from the many frequent updates made to the masterlists, but also to benefit from bug fixes, improvements and new features introduced to new releases of BOSS itself.
 <p>Providing there is an Internet connection available when BOSS runs, it will automatically download and apply any updates available for the masterlist of the game it is running for by default. BOSS will also check for new releases and if an update is available it will notify the user, displaying release notes if any are available. Additionally, if you installed BOSS using the automated installer, BOSS will ask the user if they wish to update, and automatically download and run the updated version's installer if so. The check for new releases functionality behaves as outlined below:
 <ol>
@@ -209,17 +213,16 @@
  <li>No matter how the update check was started, if an update is available it will notify the user, asking whether or not to download and install the update if BOSS was installed using the automated installer. If the user decides not to update, the updater will quit.
  <li>If the user decides to update, then it will begin downloading the new installer to the BOSS folder, displaying the progress. If using the GUI, the download can be cancelled at any time, in which case any downloaded file will be deleted and the updater will quit. CLI users can cancel the download by quitting BOSS, but no cleanup will take place.
 </ol>
-<p>Under certain circumstances the masterlist and program updaters may be unable to function fully. If you have issues using them, see the <q><a href="#special">Updating Under Special Circumstances</a></q> section for alternative methods.
+<p>Under certain circumstances the masterlist and program updaters may be unable to function fully. If you have issues using them, see the <a href="#special">Updating Under Special Circumstances</a> section for alternative methods.
 
 <p>BOSS program updates are also published at the
 <a href="http://www.tesnexus.com/downloads/file.php?id=20516">TES Nexus</a>, 
 <a href="http://www.skyrimnexus.com/downloads/file.php?id=6">Skyrim Nexus</a>,
 <a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">Fallout 3 Nexus</a> and 
 <a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">New Vegas Nexus</a> BOSS pages. For those not using the masterlist updater, the latest masterlist is always on the <a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a>.
-<p>Always make sure to use the latest version of BOSS and the latest masterlist.</p>
-<br />
+<p>Always make sure to use the latest version of BOSS and the latest masterlist.
 
-<h2 id="bosslog">The BOSS Log</h2>
+<h3 id="bosslog">The BOSS Log</h3>
 <p>The BOSS Log is where you will find all of BOSS's outputted information. It can be generated in either HTML format (the default) or as a plain text file with minimal formatting. The HTML format has significant advantages over the plain text format, being considerably easier to read, containing colour-coded messages and a variety of filters to customise what is displayed. However, other than the HTML BOSS Log providing a notification if there has been no change in the recognised mod list since last run, there is no difference in information provided between the two formats.
 <p>The HTML BOSS Log has been tested in Mozilla Firefox 10, Google Chrome 17, Opera 11 and Internet Explorer 9. Using earlier browsers may result in parts of the BOSS Log not working or displaying correctly.
 <p>The BOSS Log comprises of a number of sections, which are detailed in the table below.
@@ -259,11 +262,9 @@
 		<tr><td>Hide 'Do Not Clean' Messages<td>Hides any messages attached to mods that begin with <q>Contains dirty edits: Do not clean.</q>.
 </table>
 <p>The number of plugins and messages hidden at any one time are displayed below the filters box in italics. In addition to the above filters, clicking on a section's title will collapse that section, hiding its contents. Clicking the title again will expand the section, making its contents visible again.
-<p>It is not possible to hide mod warning or error messages, as these are of a severity where they should almost certainly be acted upon, and not ignored. Be aware that if you hide all a mod's messages and then hide all messageless mods, that mod will be amongst those hidden.</p>
-<br />
+<p>It is not possible to hide mod warning or error messages, as these are of a severity where they should almost certainly be acted upon, and not ignored. Be aware that if you hide all a mod's messages and then hide all messageless mods, that mod will be amongst those hidden.
 
-<h2 id="dirtymods">Dirty Edits, Mod Cleaning &amp; CRCs</h2>
-<p>
+<h3 id="dirtymods">Dirty Edits, Mod Cleaning &amp; CRCs</h3>
 <p>Dirty edits are often a side-effect of mod creation, and are often due to bugs in the utilities Bethesda has provided to create mods, rather than bad practice by mod authors. Dirty edits can cause a wide range of issues, including incorrect game settings, missing content, broken quests and crashing to desktop. The more dirty edits there are, and the more mods with dirty edits you use, the more likely you are to experience issues.
 <p>Thankfully there is a way to remove dirty edits from mods relatively easily, a process known as <i>mod cleaning</i>, using TES4Edit (for Oblivion), FO3Edit (for Fallout 3), FNVEdit (for Fallout: New Vegas) or TES5Edit (for Skyrim). A detailed set of instructions and information on mod cleaning can be found on the CS Wiki's <a href="http://cs.elderscrolls.com/constwiki/index.php/TES4Edit_Cleaning_Guide">TES4Edit Cleaning Guide</a> (the page also applies to Fallout 3 Fallout: New Vegas and Skyrim). <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> can also scan plugins for dirty edits and return their ITM and UDR counts, though at the time of writing it cannot clean plugins itself.
 <p>The problem of dirty edits is largely a problem of ignorance on the part of mod authors and users alike of the problems unclean mods (more widely known as <i>dirty mods</i>) can cause. As such, there are community efforts to raise awareness of dirty edits and cleaning. BOSS plays a key role in these efforts, as it holds the complete list of all known dirty mods, and it uses this information to provide notification messages to users for any dirty mods they have installed.
@@ -274,12 +275,12 @@ There are three key pieces of information that are used to accurately describe a
 	<li><i>CRC</i> or <i>Checksum</i>: A file's CRC is a highly accurate way of identifying it, and is a number calculated from the file's contents. If the contents of a file changes, so will its CRC. BOSS uses CRCs to check if a user's mods are dirty by checking their CRCs against pre-determined CRCs of known dirty mods. This lets BOSS give precise notification messages for any dirty mods it detects. BOSS can calculate the CRCs of all your installed plugins if run from the GUI with the <q>Display File CRCs</q> option enabled.
 </ul>
 <p>However, not all unclean mods have all or any of these pieces of information. For unclean mods whose ITM and UDR counts have not been reported, BOSS cannot give them. For unclean mods whose CRCs have not been reported, BOSS cannot give precise notification and so prints a message whether or not the user has cleaned their mod.
-<p>BOSS and the modding communities rely on user contribution of this information to progress. For information on how to contribute, see the <q><a href="#help">Contributions &amp; Help</a></q> section below. If you find that a mod is dirty, you should also report this to the mod's author so that they can fix it.
+<p>BOSS and the modding communities rely on user contribution of this information to progress. For information on how to contribute, see the <a href="#help">Contributions &amp; Help</a> section below. If you find that a mod is dirty, you should also report this to the mod's author so that they can fix it.
 <p><b>Note:</b> TES4Edit et al. will include a variety of <em>junk records</em> in the ITM count for a plugin, such as new empty cells that are automatically generated by the Construction Set and are almost impossible to remove. These junk records are non-harmful, and BOSS will inform users when a mod contains these to avoid confusion. This is also the source of any discrepancies between the counts produced by TES4Edit and those produced by <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>. The latter's counts are more technically accurate, but both are acceptable for use.
 <p>There is also another type of unnecessary edit, known as a wild edit, that can also cause problems. These edits are neither Itentical To Master edits nor deleted records, so cannot be automatically cleaned. Cleaning must be manually done in TES4Edit/FO3Edit/FNVEdit. BOSS can still check for plugins with these edits if the CRCs of the plugins with wild edits are known, and it can provide notification of these edits and some information on fixing them if they are reported in an official BOSS thread.
-</div>
 
-<div id="help"><h1>Contributions &amp; Help</h1>
+
+<h2 id="help">Contributions &amp; Help</h2>
 <p>General discussion, and the submission of questions, suggestions and unrecognised or unclean plugins, takes place in BOSS's official threads for 
 <a href="http://forums.bethsoft.com/?showtopic=1195328">Oblivion</a>, 
 <a href="http://forums.bethsoft.com/?showtopic=1132338">Nehrim</a>, 
@@ -300,16 +301,14 @@ There are three key pieces of information that are used to accurately describe a
 	<li>The number of records undeleted (the UDR count) as shown by TES4Edit/FO3Edit/FNVEdit or <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> (not the number of records processed).
 	<li>The CRC(s) of the unlcean ESP/ESM file name(s). Make sure that the CRCs are of the uncleaned files, not the files after cleaning. The CRC(s) may be calculated using BOSS, <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> or 7-zip, with other sources being unverified as correct. In the case of 7-zip, the <q>CRC checksum for data</q> is the one required.
 </ul>
-</div>
 
-<div id="advanced"><h1>Advanced Usage</h1>
+<h2 id="advanced">Advanced Usage</h2>
 <p>This section gives information on how to operate BOSS under certain conditions, how to customise its behaviour more fully than previously covered, and provides details for all the BOSS files.
 
-<h2 id="userRules">User Rules</h2>
-<p>Users can customise how BOSS handles their plugins through the included User Rules feature. This feature allows you to define the positions of plugins not in the masterlist, and to override the masterlist positions of plugins, as well as edit the output messages of plugins, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes are not lost. All the information on the User Rules feature can be found in the <q><a href="BOSS User Rules ReadMe.html">BOSS User Rules ReadMe</a></q> file that accompanies this ReadMe.</p>
-<br />
+<h3 id="userRules">User Rules</h3>
+<p>Users can customise how BOSS handles their plugins through the included User Rules feature. This feature allows you to define the positions of plugins not in the masterlist, and to override the masterlist positions of plugins, as well as edit the output messages of plugins, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes are not lost. All the information on the User Rules feature can be found in the <a href="BOSS%20User%20Rules%20ReadMe.html">BOSS User Rules ReadMe</a> file that accompanies this ReadMe.
 
-<h2 id="ini">The BOSS.ini</h2>
+<h3 id="ini">The BOSS.ini</h3>
 <p>Users can edit all of BOSS's settings in the BOSS.ini. As this is where BOSS gets its settings from when both running the CLI client and when loading the GUI client, care must be taken to edit it correctly to prevent breaking BOSS's operation. If BOSS is run and it cannot find a BOSS.ini, it will generate a new one with default settings. If BOSS is run with both a BOSS.ini present and command line parameters set, the command line parameters override the settings in BOSS.ini. The ini is split into the following sections:
 <h4>BOSS.GeneralSettings</h4>
 <p>These settings control miscellaneous areas of BOSS's operation outside of the main sorting functionality.
@@ -349,7 +348,7 @@ There are three key pieces of information that are used to accurately describe a
 </table>
 
 <h4>BOSSLog.Filters</h4>
-<p>These settings control the default states of the BOSS Log filters. If a filter's default is set to be enabled, then it will be enabled and applied when the BOSS Log is opened. These settings are all boolean switches, so <code>true</code> enables them and <code>false</code> disables them. By default all filters are disabled. See the earlier <q><a href="#bosslog">The BOSS Log</a></q> section for what each filter does.
+<p>These settings control the default states of the BOSS Log filters. If a filter's default is set to be enabled, then it will be enabled and applied when the BOSS Log is opened. These settings are all boolean switches, so <code>true</code> enables them and <code>false</code> disables them. By default all filters are disabled. See the earlier <a href="#bosslog">The BOSS Log</a> section for what each filter does.
 <table>
 	<thead><tr><td>Ini Setting<td>Description
 	<tbody>
@@ -410,50 +409,48 @@ There are three key pieces of information that are used to accurately describe a
 		<tr><td>.req<td><i>None</i>
 		<tr><td>.inc<td><i>None</i>
 </table>
-<br />
 
-<h2 id="cli">Command Line Arguments</h2>
+<h3 id="cli">Command Line Arguments</h3>
 <p>While the BOSS GUI allows you to specify options using its graphical elements, the CLI uses a combination of the BOSS.ini file and command line arguments to do the same. The syntax for these arguments is:
-<p><code>boss [-hVuosndctUl] [-g [game]] [-r [level]] [-v [level]] [-f [type]] [-H [hostname]] [-P [port]]</code>
-<p><code>-h [ --help ]</code>
+<code class="box">boss [-hVuosndctUl] [-g [game]] [-r [level]] [-v [level]] [-f [type]] [-H [hostname]] [-P [port]]</code>
+<code class="box">-h [ --help ]</code>
 <p>This prints a short description of BOSS and some information on the function of the command line arguments, then exits.
-<p><code>-V [ --version ]</code>
+<code class="box">-V [ --version ]</code>
 <p>Prints the a banner displaying the program name and version number to the command line, then exits.
-<p><code>-u [ --update ]</code>
+<code class="box">-u [ --update ]</code>
 <p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then sorts your plugins. This behaviour is enabled by default, so the command line parameter will have no effect except when the automatic masterlist updating has been disabled in the ini.
-<p><code>-U [ --no-update ]</code>
+<code class="box">-U [ --no-update ]</code>
 <p>Inhibits the default automatic masterlist updater, preventing it from running. Must not be used alongside --update,-u.
-<p><code>-o [ --only-update ]</code>
+<code class="box">-o [ --only-update ]</code>
 <p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then does <b>not</b> sort your plugins.
-<p><code>-g [ --game ] [ game ]</code>
+<code class="box">-g [ --game ] [ game ]</code>
 <p>Overrides game autodetection. The valid values of the argument are: <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code> and <code>Skyrim</code>. If the game specified is not detected, BOSS falls back to autodetection, unless <code>-o</code> is also passed, in which case BOSS will run successfully whether or not the game is installed.
-<p><code>-s [ --silent ]</code>
+<code class="box">-s [ --silent ]</code>
 <p>Stops BOSS from automatically opening up the BOSS Log in your web browser (or text editor, depending on format chosen) after it has finished running.
-<p><code>-c [ --crc-display ]</code>
+<code class="box">-c [ --crc-display ]</code>
 <p>Calculates the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder, including <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr>/<abbr title="Skyrim Script Extender">SKSE</abbr> plugins, and displays them in your BOSS Log alongside the plugin names.
-<p><code>-n [ --no-version-parse ]</code>
+<code class="box">-n [ --no-version-parse ]</code>
 <p>Disables the parsing of each plugin's description to extract the author's version information, so it is not printed alongside the other data in the BOSS Log. This can be used if the version 
 parsing is not working properly for some of your plugins and you wish to remove the version notes.
-<p><code>-f [ --format ] [ type ]</code>
+<code class="box">-f [ --format ] [ type ]</code>
 <p>Allows the selection of the BOSS Log format. Valid argument values are: <code>html</code> and <code>text</code>. <code>html</code> is the default output format. The <code>text</code> value will print the BOSS Log as plain text into a 'BOSSlog.txt' file, similar to the BOSS Log in BOSS v1.5 and below.
-<p><code>-t [ --trial-run ]</code>
+<code class="box">-t [ --trial-run ]</code>
 <p>BOSS runs, but no plugins are redated, so your load order is not changed. The BOSS Log still displays the order BOSS would have placed them in, so it is useful for checking what would happen if you ran BOSS on your load order without having to then undo BOSS's changes.
-<p><code>-r [ --revert ] [ level ]</code>
+<code class="box">-r [ --revert ] [ level ]</code>
 <p>Revert to a previous load order. This parameter optionally accepts values of <code>1</code> or <code>2</code>, indicating how many undo steps to apply. If no option is specified, it defaults to <code>1</code>. A value of <code>1</code> will restore the load order to that stored in modlist.txt. 
 A value of <code>2</code> will restore the load order to that stored in modlist.old. If the modlist that you are reverting to does not exist, BOSS will cancel the undo and display an error message. The modlist files are not updated when BOSS is run with this parameter.
-<p><code>-v [ --verbose ] [ level ]</code>
+<code class="box">-v [ --verbose ] [ level ]</code>
 <p>Specify the verbosity level (<code>0</code> to <code>3</code>) of the debugging output. <code>0</code> is the default, showing only warning and error messages. <code>1</code> (warning, error and informational messages) is implied if this option is specified without an argument. Higher values increase the verbosity further.
-<p><code>-d [ --debug-with-source ]</code>
+<code class="box">-d [ --debug-with-source ]</code>
 <p>Adds source file references (filenames and line numbers) to debugging statements.
-<p><code>-l [ log-debug ]</code>
+<code class="box">-l [ log-debug ]</code>
 <p>Logs the debug output to the <q>BOSSDebugLog.txt</q> file instead of the command line.
-<p><code>-H [ --proxy-host ] [ hostname ]</code>
+<code class="box">-H [ --proxy-host ] [ hostname ]</code>
 <p>Sets the proxy hostname for the masterlist updater. The hostname may be an actual hostname (eg. <code>proxy.company.com</code>), an IP address (eg. <code>192.168.32.4</code>) or <code>none</code>. <code>none</code> is the default, and is equivalent to there being no proxy.
-<p><code>-P [ --proxy-port ] [ port ]</code>
-<p>Sets the proxy port number for the masterlist updater. The port number may be any valid port number. <code>0</code> is the default, and is equivalent to there being no proxy.</p>
-<br />
+<code class="box">-P [ --proxy-port ] [ port ]</code>
+<p>Sets the proxy port number for the masterlist updater. The port number may be any valid port number. <code>0</code> is the default, and is equivalent to there being no proxy.
 
-<h2 id="special">Updating Under Special Circumstances</h2>
+<h3 id="special">Updating Under Special Circumstances</h3>
 <p>The vast majority of users will be able to use BOSS's masterlist updater and the auto-updater with no problems. However, some users' circumstances may be such that the standard method will not work. This section provides instructions for those users.
 <p>The most common special circumstance is when the computer the user has BOSS installed on is not connected to the Internet. In this circumstance, the following instructions should be used to obtain masterlist updates:
 <ol>
@@ -463,17 +460,15 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 	<li>If you use a proxy to connect to the Internet, also record your proxy settings in the relevant part of the GUI's <q>Settings</q> window.
 	<li>Select <q>Run BOSS</q>. The masterlist will be downloaded into a subfolder, named after the game you selected, in the same location as your <q>BOSS GUI.exe</q>. Some other BOSS files will also be created, you can safely delete these.
 </ol>
-<p>A rarer circumstance is when the user connects to the Internet using a proxy. This is most common in enterprise environments, and such users will generally know if they use a proxy. If you use a proxy to connect to the Internet, you must either record your proxy settings in the relevant part of the GUI's <q>Settings</q> window or manually enter your proxy settings into your <q>BOSS.ini</q> settings file. See the <q><a href="#customising">Customising How BOSS Works</a></q> section above for details on the expected settings.
+<p>A rarer circumstance is when the user connects to the Internet using a proxy. This is most common in enterprise environments, and such users will generally know if they use a proxy. If you use a proxy to connect to the Internet, you must either record your proxy settings in the relevant part of the GUI's <q>Settings</q> window or manually enter your proxy settings into your <q>BOSS.ini</q> settings file. See the <a href="#customising">Customising How BOSS Works</a> section above for details on the expected settings.
 <p>If your circumstances are such that the computer you have BOSS installed on is not connected to the Internet, or if you use a proxy to connect to the Internet, it is recommended that you avoid using the auto-updater, simply because it is easier in these circumstances to download new releases through your web browser.
-<p>There may also be other special cases which cause problems for BOSS's updaters that the BOSS team is unaware of. If you are having issues using the updaters, contact the BOSS team for support.</p>
-<br />
+<p>There may also be other special cases which cause problems for BOSS's updaters that the BOSS team is unaware of. If you are having issues using the updaters, contact the BOSS team for support.
 
-<h2 id="linux">Running BOSS Under Linux</h2>
+<h3 id="linux">Running BOSS Under Linux</h3>
 <p>It is possible to run BOSS on Linux through the Wine compatibility layer, though no official support for doing so is given. Installation and usage is as on Windows. 
-It is also possible to compile BOSS natively for Linux, although there is again no official support for doing so. Native Linux builds are case-sensitive in their recognition of plugins in the masterlist, and while plugins are generally added with the correct case, occasionally a plugin might have the incorrect case which would cause problems for a user with a native Linux build.</p>
-<br />
+It is also possible to compile BOSS natively for Linux, although there is again no official support for doing so. Native Linux builds are case-sensitive in their recognition of plugins in the masterlist, and while plugins are generally added with the correct case, occasionally a plugin might have the incorrect case which would cause problems for a user with a native Linux build.
 
-<h2 id="files">BOSS Changes and Files</h2>
+<h3 id="files">BOSS Changes and Files</h3>
 <p>The only changes BOSS makes to your game install are to re-date the .esp and .esm files in your Data folder, and create a few files in your BOSS folder. Your game's master file (Oblivion.esm, Nehrim.esm, Fallout3.esm, FalloutNV.esm or Skyrim.esm) is never altered, and all dates are derived from it.
 <p><b>Note:</b> Skyrim v1.4.26+ uses a different load order mechanism to earlier games and versions of Skyrim. It uses the order of plugins in its <q>plugins.txt</q> file (found in the user's local application data folder) to determine load order instead of plugin timestamps. As such, when running for Skyrim v1.4.26+, BOSS will not alter any plugin timestamps but will instead alter the order of the contents of your <q>plugins.txt</q> file.
 <p>BOSS stores all its files in the BOSS folder. BOSS's files are detailed in the table below (images for this readme are omitted).
@@ -498,13 +493,12 @@ It is also possible to compile BOSS natively for Linux, although there is again 
 		<tr><td>Licenses.txt<td>Contains the full text of the GNU General Public License v3.0 and GNU Free Documentation License v1.3 copyright licenses.
 		<tr><td>loadorder.txt<td>Holds the load order of all active and inactive plugins installed in a game's Data folder. <b>This file is not stored in the BOSS folder.</b> It is instead found in the user's local application data folder, next to <q>plugins.txt</q>. It forms part of a community adaptation to Bethesda's alteration of the load order system in Skyrim v1.4.26+ to allow the continued load ordering of inactive plugins. As it is intended to be shared between modding utilities, it is not removed when BOSS is uninstalled using the uninstaller or when the BOSS folder is deleted.
 </table>
-</div>
 
-<div id="troubleshooting"><h1>Troubleshooting</h1>
+<h2 id="troubleshooting">Troubleshooting</h2>
 <p>Although BOSS is simple to use, it has grown to become a relatively complex application. As such, there are some circumstances under which BOSS may not be able to run correctly, due to a variety of possible reasons. In such cases, an error message detailing the problem should be provided. If the program unexpectedly crashes, or you experience 
-a problem for which no error message is given, please report the crash or problem to an official BOSS thread (linked to in the <q><a href="#links">Quick Links</a></q> section below), so that we may fix it.
-<p>If the information below does not help you to solve any problems you are experiencing, please seek further support in one of the official BOSS threads.</p>
-<h2 id="general-issues">General Problems</h2>
+a problem for which no error message is given, please report the crash or problem to an official BOSS thread (linked to in the <a href="#links">Quick Links</a> section below), so that we may fix it.
+<p>If the information below does not help you to solve any problems you are experiencing, please seek further support in one of the official BOSS threads.
+<h3 id="general-issues">General Problems</h3>
 <p>There are a few general reasons why BOSS may fail to function correctly. Check if any of the symptoms listed below fit your issue.
 <ul class="errorMessages">
 	<li><b>Symptom:</b> No change in load order.
@@ -533,10 +527,10 @@ a problem for which no error message is given, please report the crash or proble
 	<ul>
 		<li><b>Issue:</b> This is a Windows error unrelated to BOSS that may occur when it tries to open your BOSS Log (or another file, but most commonly reported for the BOSS Log).
 		<li><b>Solution:</b> The exact cause is unknown, but make sure that you have the default program for HTML files set to your web browser, using the Control Panel settings.
+	</ul>
 </ul>
-<br />
 
-<h2 id="permissions">File Permissions</h2>
+<h3 id="permissions">File Permissions</h3>
 <p>If you are running Windows Vista or Windows 7, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:
 <ol>
 	<li>Install the game outside the <q>Program Files</q> (or <q>Program Files (x86)</q> if on 64-bit Windows). UAC prevents unauthorised edits to these folders, so by installing the game outside of them, you remove it from UAC's reach, allowing you to use mods more easily.
@@ -552,9 +546,8 @@ a problem for which no error message is given, please report the crash or proble
 	<li>In the lower box, check the box opposite <q>Full Control</q> in the <q>Allow</q> column. Press OK to exit. If a UAC prompt appears, allow the change.
 	<li>In the <q>Properties</q> window, select OK to exit. You should now have Full Control permissions over your chosen folder.
 </ol>
-<br />
 
-<h2 id="international">International Character Support</h2>
+<h3 id="international">International Character Support</h3>
 <p>BOSS provides support for sorting plugins containing characters from any language via the Unicode character encoding, specifically UTF-8. All BOSS's files are encoded in UTF-8 by default. However, if you created your userlist.txt before BOSS automatically created one, you will probably need to convert it to the UTF-8 encoding, as it is not Notepad's default encoding. Below are some instructions for converting a file's encoding to UTF-8:
 <ul>
 	<li>Using Notepad:
@@ -571,10 +564,9 @@ a problem for which no error message is given, please report the crash or proble
 			<li>Save the file as normal.
 		</ol>
 </ul>
-<p>A file only needs to be converted to the correct encoding once, thereafter it will continue to save in the correct encoding whenever you edit it.</p>
-<br />
+<p>A file only needs to be converted to the correct encoding once, thereafter it will continue to save in the correct encoding whenever you edit it.
 
-<h2 id="errors">Error Messages</h2>
+<h3 id="errors">Error Messages</h3>
 <p>If BOSS can detect a specific reason for being unable to function correctly, it will print an error message detailing the problem. BOSS's error messages are listed below, along with details of the issues and possible solutions.
 <ul class="errorMessages">
 	<li><b>Message:</b> <i>No game master .esm file found!</i>
@@ -592,7 +584,7 @@ a problem for which no error message is given, please report the crash or proble
 	<li><b>Message:</b> <i>"<code>filename</code>" cannot be written to!</i>
 	<ul>
 		<li><b>Issue:</b> BOSS does not have permission to write to <code>filename</code> if it exists.
-		<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
+		<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <a href="#permissions">File Permissions</a> section for details on how to obtain write permissions on Windows Vista or 7.
 	</ul>
 	<li><b>Message:</b> <i>"<code>filename</code>" is not encoded in valid UTF-8!</i>
 	<ul>
@@ -641,19 +633,19 @@ a problem for which no error message is given, please report the crash or proble
 	</ul>
 	<li><b>Message:</b> <i>"<code>filename</code>" cannot be renamed! Filesystem response: "<code>further details</code>".</i>
 	<ul>
-		<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
+		<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <a href="#permissions">File Permissions</a> section for details on how to obtain write permissions on Windows Vista or 7.
 	</ul>
 	<li><b>Message:</b> <i>"<code>filename</code>" cannot be deleted! Filesystem response: "<code>further details</code>".</i>
 	<ul>
-		<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
+		<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <a href="#permissions">File Permissions</a> section for details on how to obtain write permissions on Windows Vista or 7.
 	</ul>
 	<li><b>Message:</b> <i>"<code>directory</code>" cannot be created! Filesystem response: "<code>further details</code>".</i>
 	<ul>
-		<li><b>Solution:</b> Make sure that you have write permissions for the location the directory is being create in. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
+		<li><b>Solution:</b> Make sure that you have write permissions for the location the directory is being create in. See the <a href="#permissions">File Permissions</a> section for details on how to obtain write permissions on Windows Vista or 7.
 	</ul>
 	<li><b>Message:</b> <i>"<code>directory</code>" cannot be scanned! Filesystem response: "<code>further details</code>".</i>
 	<ul>
-		<li><b>Solution:</b> Make sure that you have read permissions for the location that is being scanned. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
+		<li><b>Solution:</b> Make sure that you have read permissions for the location that is being scanned. See the <a href="#permissions">File Permissions</a> section for details on how to obtain write permissions on Windows Vista or 7.
 	</ul>
 	<li><b>Message:</b> <i>cURL cannot be initialised!</i>
 	<ul>
@@ -706,7 +698,7 @@ a problem for which no error message is given, please report the crash or proble
 	</ul>
 	<li><b>Message:</b> <i>The modification date of "<code>filename</code>" cannot be written!</i>
 	<ul>
-		<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <q><a href="#permissions">File Permissions</a></q> section for details on how to obtain write permissions on Windows Vista or 7.
+		<li><b>Solution:</b> Make sure that the file, if it exists, is not read-only, and that you have write permissions. See the <a href="#permissions">File Permissions</a> section for details on how to obtain write permissions on Windows Vista or 7.
 	</ul>
 	<li><b>Message:</b> <i>No Internet connection detected.</i>
 	<ul>
@@ -753,9 +745,8 @@ a problem for which no error message is given, please report the crash or proble
 	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" tries to sort a master file before a plugin.
 	<li><b>Message:</b> Userlist Syntax Error: The rule beginning "<code>rule keyword</code>: <code>rule object</code>" tries to sort a plugin bfore a master file.
 </ul>
-</div>
 
-<div id="credits"><h1>Credits</h1>
+<h2 id="credits">Credits</h2>
 <p>As BOSS is very much a community project, credit is due to a very large number of sources and people outside of the BOSS Development Team. Credit goes to the following for load order information:
 <ul>
 	<li>Agiel's Annotated Load Order.
@@ -782,9 +773,8 @@ a problem for which no error message is given, please report the crash or proble
 	</ul>
 </ul>
 <p>The BOSS programs are written in C/C++ and make use of the <a href="http://www.boost.org/">Boost</a>, <a href="http://curl.haxx.se/libcurl/">libcurl</a>, <a href="http://www.wxwidgets.org/">wxWidgets</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries. Without them, the majority of BOSS's features would probably never have been implemented.
-</div>
 
-<div id="team"><h1>Project Members</h1>
+<h2 id="team">Project Members</h2>
 <p>Since June 2009, BOSS has been a collaborative project on Google Code using the Subversion version control system. In alphabetical order, the project members are:
 <table>
 	<thead class="c"><tr><td colspan="2" rowspan="2">Member<td rowspan="2">Admin<td rowspan="2">Programmer<td colspan="5">Masterlists Member Contributes To
@@ -811,32 +801,30 @@ a problem for which no error message is given, please report the crash or proble
 		<tr class="inactive"><td style="border-right:0;">ZiggyX200		<td style="border-left:0;">									<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;
 </table>
 <p>Members with faded rows are currently inactive, with no contributions in the last 3 months. Unless otherwise noted, project members can be contacted on the <a href="http://forums.bethsoft.com/index.php">Bethesda Softworks Forums</a> or on <a href="http://www.thenexusforums.com/">The Nexus Forums</a> via the private messaging system.
-</div>
 
-<div id="license"><h1>License</h1>
+<h2 id="license">License</h2>
 <p>BOSS is distributed under the <a href="http://www.gnu.org/licenses/gpl.html">GNU General Public License v3.0</a>, aside from the documentation, which is distributed under the <a href="http://www.gnu.org/licenses/fdl.html">GNU Free Documentation License v1.3</a>. The documents covered by the latter license are <q>BOSS ReadMe.html</q>, <q>BOSS User Rules ReadMe.html</q>, <q>BOSS API ReadMe.html</q> and <q>BOSS Masterlist Syntax.html</q>. For the full text of both licenses, see the included <q>Licenses.txt</q> file.
 
 <p>While the GPL license allows anyone to make derivative works of BOSS, the BOSS Development Team encourages those thinking of doing so to first discuss their reasoning for such an endevour with the Team. It may be that what the derivative work would do differently from BOSS itself is already planned for a future version of BOSS or would be happily integrated into BOSS by the Team, thus avoiding any extra effort by others.
 <p>The BOSS Team also appeals to the community to avoid the distribution and development of alternative masterlists, as this would only hamper the community effort to create one universally-optimised load order for all plugins available for download. Any issues with a masterlist are best brought to the attention of the BOSS Team so that we may remedy them ourselves.
 
-<h2>GNU Free Documentation License Version 1.3 Notice</h2>
+<h3>GNU Free Documentation License Version 1.3 Notice</h3>
 <blockquote><pre>Copyright (C)  2009-2012  BOSS Development Team
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
 or any later version published by the Free Software Foundation;
 with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the file named "Licenses.txt".</pre></blockquote>
-</div>
 
-<div id="links"><h1>Quick Links</h1>
-<h3>Download Locations</h3>
+<h2 id="links">Quick Links</h2>
+<h4>Download Locations</h4>
 <ul>
 <li><a href="http://www.tesnexus.com/downloads/file.php?id=20516">BOSS at TES Nexus</a>
 <li><a href="http://www.skyrimnexus.com/downloads/file.php?id=6">BOSS at Skyrim Nexus</a>
 <li><a href="http://www.fallout3nexus.com/downloads/file.php?id=10193">BOSS at Fallout 3 Nexus</a>
 <li><a href="http://www.newvegasnexus.com/downloads/file.php?id=35999">BOSS at New Vegas Nexus</a>
 </ul>
-<h3>Official Threads</h3>
+<h4>Official Threads</h4>
 <ul>
 <li><a href="http://forums.bethsoft.com/?showtopic=1280759">Official BOSS thread for Oblivion</a>
 <li><a href="http://forums.bethsoft.com/?showtopic=1132338">Official BOSS thread for Nehrim</a>
@@ -846,15 +834,14 @@ A copy of the license is included in the file named "Licenses.txt".</pre></block
 </ul>
 <p>Due to a 200 maximum post limit, new official threads are created periodically (with the end of one thread usually providing a link to the next), so the links provided may refer to old 
 threads when you read this. Just navigate through to the latest thread to post a message. You must register for free to post messages.
-<h3>Other Links</h3>
+<h4>Other Links</h4>
 <ul>
 <li><a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code SVN repository</a>
 <li><a href="http://www.gnu.org/licenses/gpl.html">GNU General Public License v3.0</a>
 <li><a href="http://www.gnu.org/licenses/fdl.html">GNU Free Documentation License v1.3</a>
 </ul>
-</div>
 
-<div id="history"><h1>Version History</h1>
+<h2 id="history">Version History</h2>
 <p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.
 <p><b>Version 2.0.0</b> - <i>2012</i>
 <ul>
@@ -877,7 +864,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Changed: Only a single instance of the GUI is now allowed to run at any one time.
 	<li>Changed: Pretty pictures now in the main readme! Also updated content to reflect various changes and additions.
  	<li>Changed: Rewrote NSIS installer to reflect various changes and additions, and simplified the installer code greatly.
-	<li>Changed: You can no longer sort non-master plugins before master plugins, or master plugins after non-master plugins, using user rules. Masters are commonly .ESM files, and non-master plugins are commonly .ESP files, but whether a plugin is a master or not is actually decided by a variable in the file, not the file extension. (An example of this in action would be <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>ESMify Self<q> function, which makes a plugin into a master without changing the file extension.)
+	<li>Changed: You can no longer sort non-master plugins before master plugins, or master plugins after non-master plugins, using user rules. Masters are commonly .ESM files, and non-master plugins are commonly .ESP files, but whether a plugin is a master or not is actually decided by a variable in the file, not the file extension. (An example of this in action would be <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>ESMify Self</q> function, which makes a plugin into a master without changing the file extension.)
 	<li>Changed: BOSS now enforces the game's <q>masters before plugins</q> rule for load ordering when reading the current load order. It is not enforced for BOSS's sorting output, as only unrecognised masters are positioned after plugins, and these should be moved by the user anyway.
 	<li>Added: Support for multiple games from a single BOSS install:
 	<ul>
@@ -888,7 +875,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 		<li>An <q>Active Game</q> menu has been added to the GUI that allows you to change which game BOSS is currently active for without closing the GUI. Undetected games are greyed out, unless the <q>Update Masterlist Only</q> run option is selected. If you have an undetected game active and switch from <q>Update Masterlist Only</q> to another run option, the BOSS automatically switches to the first detected game in the list.
 		<li>If the GUI is launched and no game is detected, only the <q>Update Masterlist Only</q> run option is enabled.
 	</ul>
-	<li>Added: BOSS API for use by third party utilities to access BOSS information and functionality. See <q><a href="BOSS API ReadMe.html">BOSS API ReadMe</a></q> for details.
+	<li>Added: BOSS API for use by third party utilities to access BOSS information and functionality. See <a href="BOSS%20API%20ReadMe.html">BOSS API ReadMe</a> for details.
 	<li>Added: BOSS can now read the <q>plugins.txt</q> file that the supported games use to store their active plugin list in. BOSS also adapts to the value of the <code>bUseMyGamesDirectory</code> setting in <code>Oblivion.ini</code> when running for Oblivion.
 	<li>Added: An <q>Active</q> label to the BOSS Log for plugins that are active when BOSS is run, and <q>Hide Inactive Mods</q> and <q>Hide 'Active' Label</q> BOSS Log filters.
 	<li>Added: Support for the load order mechanism used by TES V: Skyrim version 1.4.26+. This outputs load order of active plugins to <q>plugins.txt</q>, and outputs the full load order to <q>loadorder.txt</q>, which is created in the same directory as <q>plugins.txt</q>.
@@ -1176,7 +1163,6 @@ threads when you read this. Just navigate through to the latest thread to post a
 <ul>
 	<li>Changes Not Recorded.
 </ul>
-</div>
 <script>
 function nextImage(){
 	var imgs=document.getElementById('slideholder').getElementsByTagName('img');

@@ -96,6 +96,7 @@ namespace boss {
 	//File/Folder Path Functions
 	///////////////////////////////
 
+	BOSS_COMMON fs::path boss_game_path();		//Path to BOSS's folder for that game.
 	BOSS_COMMON fs::path bosslog_path();		//Output decided by log format.
 	BOSS_COMMON fs::path masterlist_path();		//Output decided by game.
 	BOSS_COMMON fs::path userlist_path();		//Output decided by game.
