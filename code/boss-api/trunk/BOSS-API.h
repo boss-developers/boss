@@ -293,6 +293,9 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * plugin,
 // function is called. The string should not be freed by the client.
 BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * plugin, 
 									uint8_t ** message, uint32_t * needsCleaning);
+
+// Checks if the given mod is present in BOSS's masterlist for the DB's game.
+BOSS_API uint32_t IsRecognised (boss_db db, const uint8_t * plugin, bool * recognised);
 									
 // Writes a minimal masterlist that only contains mods that have Bash Tag suggestions, 
 // and/or dirty messages, plus the Tag suggestions and/or messages themselves. outputFile 

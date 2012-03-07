@@ -421,7 +421,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 </ul>
 <code class="box">uint32_t <a href="#GetModBashTags">GetModBashTags</a> (boss_db db, const uint8_t * modName, uint32_t ** tagIds_added, size_t * numTags_added, uint32_t **tagIds_removed, size_t *numTags_removed, bool * userlistModified);</code>
 
-<dfn id="GetDirtyMessage">GetDirtyMessage</dfn> - Returns the message associated with a dirty mod and whether the mod needs cleaning.
+<dfn id="GetDirtyMessage">GetDirtyMessage</dfn> - Outputs the message associated with a dirty mod and whether the mod needs cleaning.
 <ul>
 	<li><var>db</var> - The database the function acts on.
 	<li><var>modName</var> - A string containing the filename of the plugin to look up dirty status information for.
@@ -429,6 +429,14 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>needsCleaning</var> - A pointer to the outputted plugin cleanliness code for the specified plugin.
 </ul>
 <code class="box">uint32_t <a href="#GetDirtyMessage">GetDirtyMessage</a> (boss_db db, const uint8_t * modName, uint8_t ** message, uint32_t * needsCleaning);</code>
+
+<dfn id="IsRecognised">IsRecognised</dfn> - Outputs whether or not a plugin is listed in the masterlist for the database's game.
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>plugin</var> - A string containing the filename of the plugin to look in the masterlist for.
+	<li><var>recognised</var> -  A pointer to the boolean output. The output is <code>true</code> if the plugin is present in the masterlist, and <code>false</code> otherwise.
+</ul>
+<code class="box">uint32_t <a href="#IsRecognised">IsRecognised</a> (boss_db db, const uint8_t * plugin, bool * recognised);</code>
 
 <dfn id="DumpMinimal">DumpMinimal</dfn> - Writes a minimal masterlist that only contains mods that have Bash Tag suggestions and/or dirty messages, plus the Tag suggestions and/or dirty messages themselves.
 <ul>

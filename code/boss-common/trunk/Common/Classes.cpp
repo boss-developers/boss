@@ -429,9 +429,8 @@ namespace boss {
 						}
 					}
 				} else { 
-					//First add Skyrim.esm and Update.esm.
+					//First add Skyrim.esm.
 					items.push_back(Item("Skyrim.esm"));
-					items.push_back(Item("Update.esm"));
 					//Now check if plugins.txt exists. If so, add any plugins in it that aren't in loadorder.
 					ItemList plugins;
 					size_t max;
@@ -440,9 +439,21 @@ namespace boss {
 						vector<Item> pluginsVec = plugins.Items();
 						max = pluginsVec.size();
 						for (size_t i=0; i < max; i++) {
-							if (pluginsVec[i].Name() != "Skyrim.esm" && pluginsVec[i].Name() != "Update.esm")
+							if (pluginsVec[i].Name() != "Skyrim.esm")
 								items.push_back(pluginsVec[i]);
 						}
+					}
+					//Add Update.esm if not already present.
+					if (Item("Update.esm").Exists() && FindItem("Update.esm") == items.size())
+						Insert(GetLastMasterPos() + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
+
+					//Then scan through loadorder, removing any plugins that aren't in the data folder.
+					vector<Item>::iterator itemIter = items.begin();
+					while (itemIter != items.end()) {
+						if (!itemIter->Exists())
+							itemIter = items.erase(itemIter);
+						else
+							++itemIter;
 					}
 					max = items.size();
 					//Now iterate through the Data directory, adding any plugins to loadorder that aren't already in it.
@@ -464,7 +475,6 @@ namespace boss {
 						}
 					}
 				}
-				sort(items.begin(),items.end(), CompareItems);  //Does this work?
 			} else {  //Non-Skyrim.
 				for (fs::directory_iterator itr(path); itr!=fs::directory_iterator(); ++itr) {
 					const fs::path filename = itr->path().filename();
@@ -483,8 +493,13 @@ namespace boss {
 				sort(items.begin(),items.end());
 				LOG_DEBUG("Reading user mods done: %" PRIuS " total mods found.", items.size());
 			}
-		} else if (path == loadorder_path() && fs::exists(path)) {  //Only try loading loadorder.txt if it exists. Just in case somewhere calls it without checking first.
-			if (!ValidateUTF8File(path))
+			sort(items.begin(),items.end(), CompareItems);  //Does this work?
+		} else if (path == loadorder_path() || path == plugins_path()) {
+			
+			Transcoder trans;
+			trans.SetEncoding(1252);  //Only used if path == plugins_path().
+
+			if (path == loadorder_path() && !ValidateUTF8File(path))
 				throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, path.string());
 
 			//loadorder.txt is simple enough that we can avoid needing the full modlist parser which has the crashing issue.
@@ -501,13 +516,15 @@ namespace boss {
 				 if (line.empty() || line[0] == '#')  //Character comparison is OK because it's ASCII.
 					 continue;
 
+				 if (path == plugins_path())
+					 line = trans.EncToUtf8(line);
 				 items.push_back(Item(line));
 			 }
 			 in.close();
+
+			 sort(items.begin(),items.end(), CompareItems);  //Does this work?
 		} else {
 			Skipper skipper;
-			if (path == plugins_path()) //We should skip ini comments. (#)
-				skipper.SkipIniComments(true);
 			modlist_grammar grammar;
 			string::const_iterator begin, end;
 			string contents;
@@ -519,17 +536,10 @@ namespace boss {
 
 			if (!fs::exists(path))
 				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, path.string());
-			else if (path != plugins_path() && !ValidateUTF8File(path))  //plugins.txt is not going to be UTF-8.
+			else if (!ValidateUTF8File(path))  //plugins.txt is not going to be UTF-8.
 				throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, path.string());
 
 			fileToBuffer(path,contents);
-
-			//Now check if plugins_path() then detect encoding if it is and translate to UTF-8.
-			if (path == plugins_path()) {
-				Transcoder trans;
-				trans.SetEncoding(1252);
-				contents = trans.EncToUtf8(contents);
-			}
 
 			begin = contents.begin();
 			end = contents.end();
@@ -542,9 +552,6 @@ namespace boss {
 
 			if (!r || begin != end)
 				throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
-
-			if (path == plugins_path())
-				sort(items.begin(),items.end(), CompareItems);  //Does this work?
 		}
 	}
 	
