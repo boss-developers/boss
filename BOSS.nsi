@@ -349,7 +349,6 @@ Section "Installer Section"
 	WriteRegStr HKLM "Software\BOSS" "Installed Path" $INSTDIR
 	
 	;Write registry keys for Windows' uninstaller.
-	WriteRegStr HKLM "Software\BOSS" "Installer Path" "$EXEPATH"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayName" "BOSS"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "UninstallString" '"$INSTDIR\Uninstall.exe"'
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "URLInfoAbout" 'http://better-oblivion-sorting-software.googlecode.com/'
@@ -454,6 +453,9 @@ Section "Uninstall"
 	DeleteRegKey HKLM "Software\BOSS"
 	
 	;Delete stupid Windows created registry keys:
+	DeleteRegKey HKCU "Software\BOSS"
+	DeleteRegKey HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\BOSS"
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS"
 	DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\App Management\ARPCache\BOSS"
 	DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$INSTDIR"
 	DeleteRegValue HKCR "Local Settings\Software\Microsoft\Windows\Shell\MuiCache" "$INSTDIR\BOSS.exe"
