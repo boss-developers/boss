@@ -147,12 +147,7 @@ bool BossGUI::OnInit() {
 		games = DetectGame(frame);
 		LOG_INFO("Game detected: %d", gl_current_game);
 	} catch (boss_error &e) {
-		wxMessageBox(wxString::Format(
-				wxT("Error: " + e.getString())
-			),
-			wxT("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
+		return false;
 	}
 	frame->SetGames(games);
 
@@ -918,6 +913,17 @@ void MainFrame::SetGames(vector<uint32_t> inGames) {
 		break;
 	case AUTODETECT:  //No game detected. Only valid option is to force a game and update masterlist only, so set options to that and disable selecting of other run types.
 		GameMenu->FindItem(MENU_None)->Check();
+		gl_update_only = true;
+		SortOption->Enable(false);
+		UpdateOption->SetValue(true);
+		UndoOption->Enable(false);
+	}
+	size_t i=0;
+	for (i=0; i < games.size(); i++) {
+		if (games[i] == gl_current_game)
+			break;
+	}
+	if (i == games.size()) {  //The current game wasn't in the list of detected games. Run in update only mode.
 		gl_update_only = true;
 		SortOption->Enable(false);
 		UpdateOption->SetValue(true);

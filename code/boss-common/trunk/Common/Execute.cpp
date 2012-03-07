@@ -434,28 +434,22 @@ namespace boss {
 		summaryCounters counters;
 
 		BuildWorkingModlist(modlist, masterlist, userlist);
-		LOG_INFO("modlist now filled with ordered mods and unknowns.");
+		LOG_INFO("masterlist now filled with ordered mods and modlist filled with unknowns.");
 
-		//Check to see if the masters before plugins rule is being obeyed.
+		//Check to see that masterlist and modlist obey the masters before plugins rule.
 		try {
-			size_t modlistSize = modlist.Items().size();
+			//Modlist.
+			size_t size = modlist.Items().size();
 			size_t pos = modlist.GetLastMasterPos();
-			if (modlist.GetNextMasterPos(pos+1) != modlistSize) {  //Masters exist after the initial set of masters. Not allowed.
-				Outputter output;
-				output.SetFormat(gl_log_format);
-				output.PrintHeader();
-				output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: Master files loading after non-master plugins!" << LINE_BREAK
-					<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-					<< "Utility will end now." << LIST_CLOSE;
-				output.PrintFooter();
-				try {
-					output.Save(bosslog_path(), true);
-				} catch (boss_error &e) {
-					LOG_ERROR("Critical Error: %s", e.getString().c_str());
-				}
-				LOG_ERROR("Critical Error: Master files loading after non-master plugins!");
-				return;
-			}
+			pos = modlist.GetNextMasterPos(pos+1);
+			if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
+				throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER, modlist.Items()[pos].Name());
+			//Masterlist.
+			size = masterlist.Items().size();
+			pos = masterlist.GetLastMasterPos();
+			pos = masterlist.GetNextMasterPos(pos+1);
+			if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
+				throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER, modlist.Items()[pos].Name());
 		} catch (boss_error &e) {
 			Outputter output;
 			output.SetFormat(gl_log_format);
@@ -472,6 +466,10 @@ namespace boss {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 			return;
 		}
+
+		//Now stick them back together.
+		modlist.Insert(0,masterlist.Items(), 0, masterlist.Items().size());
+		modlist.LastRecognisedPos(masterlist.LastRecognisedPos());
 
 		//Modlist error buffer may have had some regex errors added to it. It will be empty otherwise.
 		contents.regexError = modlist.ErrorBuffer().FormatFor(gl_log_format);
@@ -631,10 +629,6 @@ namespace boss {
 		}
 		masterlist.Items(holdingVec);  //Masterlist now only contains the items needed to sort the user's mods.
 		masterlist.LastRecognisedPos(masterlist.Items().size()-1);
-		
-		//Add modlist's mods to masterlist, then set the modlist to the masterlist as that's the output.
-		masterlist.Insert(masterlist.Items().size(), modlist.Items(), 0, modlist.Items().size());
-		modlist = masterlist;
 	}
 
 	//Applies the userlist rules to the working modlist.

@@ -397,43 +397,15 @@ namespace boss {
 				Patch's Masters list if it exists. That isn't something that can be easily accounted
 				for though.
 				*/
-				LOG_INFO("Game is Skyrim v1.4.26+. Using non-timestamp-based load order mechanism.");
-				if (fs::exists(loadorder_path())) {  //If the loadorder.txt exists, get the active plugin load order from that.
+				LOG_INFO("Game is Skyrim v1.4.26+. Using textfile-based load order mechanism.");
+				size_t max;
+				if (fs::exists(loadorder_path()))  //If the loadorder.txt exists, get the active plugin load order from that.
 					Load(loadorder_path());
-					//We may need to update the loadorder as some plugins may have been installed/uninstalled.
-					//First scan through loadorder, removing any plugins that aren't in the data folder.
-					vector<Item>::iterator itemIter = items.begin();
-					while (itemIter != items.end()) {
-						if (!itemIter->Exists())
-							itemIter = items.erase(itemIter);
-						else
-							++itemIter;
-					}
-					//Now scan through Data folder. Add any plugins that aren't already in loadorder to loadorder, at the end.
-					size_t max = items.size();
-					for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
-						const fs::path filename = itr->path().filename();
-						const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
-						if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
-							LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());
-							//Add file to modlist. If the filename has a '.ghost' extension, remove it.
-							Item tempItem;
-							if (ext == ".ghost")
-								tempItem = Item(filename.stem().string());
-							else
-								tempItem = Item(filename.string());
-							if (FindItem(tempItem.Name()) == max) {  //If the plugin is not in loadorder, add it.
-								Insert(max, tempItem);
-								max++;
-							}
-						}
-					}
-				} else { 
+				else { 
 					//First add Skyrim.esm.
 					items.push_back(Item("Skyrim.esm"));
 					//Now check if plugins.txt exists. If so, add any plugins in it that aren't in loadorder.
 					ItemList plugins;
-					size_t max;
 					if (fs::exists(plugins_path())) {
 						plugins.Load(plugins_path());
 						vector<Item> pluginsVec = plugins.Items();
@@ -446,32 +418,31 @@ namespace boss {
 					//Add Update.esm if not already present.
 					if (Item("Update.esm").Exists() && FindItem("Update.esm") == items.size())
 						Insert(GetLastMasterPos() + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
-
-					//Then scan through loadorder, removing any plugins that aren't in the data folder.
-					vector<Item>::iterator itemIter = items.begin();
-					while (itemIter != items.end()) {
-						if (!itemIter->Exists())
-							itemIter = items.erase(itemIter);
+				}
+				//Then scan through loadorder, removing any plugins that aren't in the data folder.
+				vector<Item>::iterator itemIter = items.begin();
+				while (itemIter != items.end()) {
+					if (!itemIter->Exists())
+						itemIter = items.erase(itemIter);
+					else
+						++itemIter;
+				}
+				max = items.size();
+				//Now scan through Data folder. Add any plugins that aren't already in loadorder to loadorder, at the end.
+				for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
+					const fs::path filename = itr->path().filename();
+					const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
+					if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
+						LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());
+						//Add file to modlist. If the filename has a '.ghost' extension, remove it.
+						Item tempItem;
+						if (ext == ".ghost")
+							tempItem = Item(filename.stem().string());
 						else
-							++itemIter;
-					}
-					max = items.size();
-					//Now iterate through the Data directory, adding any plugins to loadorder that aren't already in it.
-					for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
-						const fs::path filename = itr->path().filename();
-						const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
-						if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
-							LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());
-							//Add file to modlist. If the filename has a '.ghost' extension, remove it.
-							Item tempItem;
-							if (ext == ".ghost")
-								tempItem = Item(filename.stem().string());
-							else
-								tempItem = Item(filename.string());
-							if (FindItem(tempItem.Name()) == max) {  //If the plugin is not present, add it.
-								items.push_back(tempItem);
-								max++;
-							}
+							tempItem = Item(filename.string());
+						if (FindItem(tempItem.Name()) == max) {  //If the plugin is not in loadorder, add it.
+							Insert(max, tempItem);
+							max++;
 						}
 					}
 				}
@@ -752,6 +723,8 @@ namespace boss {
 
 	size_t	ItemList::GetNextMasterPos(size_t currPos) const {
 		size_t i=currPos;
+		if (i >= items.size())
+			return items.size();
 		while (i < items.size() && !items[i].IsMasterFile()) {  //SLLOOOOOWWWWW probably.
 			i++;
 		}

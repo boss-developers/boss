@@ -150,6 +150,7 @@ BOSS_API const uint32_t BOSS_API_ERROR_NO_INTERNET_CONNECTION	= BOSS_ERROR_NO_IN
 BOSS_API const uint32_t BOSS_API_ERROR_NO_TAG_MAP				= BOSS_ERROR_NO_TAG_MAP;
 BOSS_API const uint32_t BOSS_API_ERROR_PLUGINS_FULL				= BOSS_ERROR_PLUGINS_FULL;
 BOSS_API const uint32_t BOSS_API_ERROR_GAME_NOT_FOUND			= BOSS_ERROR_NO_GAME_DETECTED;
+BOSS_API const uint32_t BOSS_API_ERROR_PLUGIN_BEFORE_MASTER		= BOSS_ERROR_PLUGIN_BEFORE_MASTER;
 BOSS_API const uint32_t BOSS_API_RETURN_MAX						= BOSS_API_ERROR_NO_TAG_MAP;
 
 // The following are the mod cleanliness states that the API can return.
@@ -686,16 +687,27 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	RuleList userlist = db->userlist;
 	BuildWorkingModlist(modlist, masterlist, userlist);
 
-	//Check to see if the masters before plugins rule is being obeyed.
+	//Check to see that masterlist and modlist obey the masters before plugins rule.
 	try {
-		size_t modlistSize = modlist.Items().size();
+		//Modlist.
+		size_t size = modlist.Items().size();
 		size_t pos = modlist.GetLastMasterPos();
-		if (modlist.GetNextMasterPos(pos+1) != modlistSize) {  //Masters exist after the initial set of masters. Not allowed.
-			return ReturnCode(BOSS_API_ERROR_PARSE_FAIL, "Master files must load before other plugins.");
-		}
+		pos = modlist.GetNextMasterPos(pos+1);
+		if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
+			return ReturnCode(BOSS_ERROR_PLUGIN_BEFORE_MASTER, modlist.Items()[pos].Name());
+		//Masterlist.
+		size = masterlist.Items().size();
+		pos = masterlist.GetLastMasterPos();
+		pos = masterlist.GetNextMasterPos(pos+1);
+		if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
+			return ReturnCode(BOSS_ERROR_PLUGIN_BEFORE_MASTER, modlist.Items()[pos].Name());
 	} catch (boss_error &e) {
-		return ReturnCode(BOSS_API_ERROR_PARSE_FAIL, "Master files must load before other plugins.");
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
+
+	//Now stick them back together.
+	modlist.Insert(0,masterlist.Items(), 0, masterlist.Items().size());
+	modlist.LastRecognisedPos(masterlist.LastRecognisedPos());
 
 	string dummy;
 	ApplyUserRules(modlist, userlist, dummy);  //This needs to be done to get sensible ordering as the userlist has been taken into account in the working modlist.

@@ -266,6 +266,64 @@ namespace boss {
 		else if (fs::exists(data_path / "Skyrim.esm")) 
 			gl_current_game = SKYRIM;
 		else {
+			/* New behaviour:
+			1. Try to detect all games.
+			2. If CLI, list detected games. If GUI, list all games, denoting missing games.
+			3. If CLI and no games are detected, quit.
+			4. If CLI and one game detected, run for that.
+			5. Otherwise, use GUI logic.*/
+			size_t ans;
+#ifdef BOSSGUI
+			/* New behaviour:
+			1. If a game that is installed is selected, run for that game.
+			2. If a game that is not installed is selected, run for that game in update only mode.
+			3. If the dialog is cancelled, quit.
+			*/
+			wxArrayString choices;
+			string text;
+			text = GetGameString(OBLIVION);
+			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion") && !RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion"))
+				text += " (not detected)";
+			choices.Add(text);
+			text = GetGameString(NEHRIM);
+			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1"))
+				text += " (not detected)";
+			choices.Add(text);
+			text = GetGameString(SKYRIM);
+			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim") && !RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim"))
+				text += " (not detected)";
+			choices.Add(text);
+			text = GetGameString(FALLOUT3);
+			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3") && !RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3"))
+				text += " (not detected)";
+			choices.Add(text);
+			text = GetGameString(FALLOUTNV);
+			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV") && !RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV"))
+				text += " (not detected)";
+			choices.Add(text);
+
+			wxSingleChoiceDialog* choiceDia = new wxSingleChoiceDialog((wxWindow*)parent, wxT("Please pick which game to run BOSS for:"),
+				wxT("BOSS: Select Game"), choices);
+
+			if (choiceDia->ShowModal() != wxID_OK)
+				throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
+
+			ans = choiceDia->GetSelection();
+			choiceDia->Close(true);
+
+			if (ans == 0)
+				gl_current_game = OBLIVION;
+			else if (ans == 1)
+				gl_current_game = NEHRIM;
+			else if (ans == 2)
+				gl_current_game = SKYRIM;
+			else if (ans == 3)
+				gl_current_game = FALLOUT3;
+			else if (ans == 4)
+				gl_current_game = FALLOUTNV;
+			else
+				throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
+#else
 			vector<uint32_t> gamesDetected;
 			//Look for Windows Registry entries for the games.
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion")) //Look for Oblivion.
@@ -286,35 +344,18 @@ namespace boss {
 				gl_current_game = gamesDetected.front();
 			else {
 				//Ask user to choose game.
-				size_t ans;
-				if (parent != NULL) {
-#ifdef BOSSGUI
-					wxArrayString choices;
-					for (size_t i=0; i < gamesDetected.size(); i++)
-						choices.Add(GetGameString(gamesDetected[i]));
+				cout << endl << "Please pick which game to run BOSS for:" << endl;
+				for (size_t i=0; i < gamesDetected.size(); i++)
+					cout << i << " : " << GetGameString(gamesDetected[i]) << endl;
 
-					wxSingleChoiceDialog* choiceDia = new wxSingleChoiceDialog((wxWindow*)parent, wxT("Please pick which game to run BOSS for:"),
-						wxT("BOSS: Select Game"), choices);
-
-					if (choiceDia->ShowModal() == wxID_OK) {
-						ans = choiceDia->GetSelection();
-						choiceDia->Close(true);
-					} else
-						throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
-#endif
-				} else {
-					cout << endl << "Please pick which game to run BOSS for:" << endl;
-					for (size_t i=0; i < gamesDetected.size(); i++)
-						cout << i << " : " << GetGameString(gamesDetected[i]) << endl;
-
-					cin >> ans;
-					if (ans < 0 || ans >= gamesDetected.size()) {
-						cout << "Invalid selection." << endl;
-						throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
-					}
+				cin >> ans;
+				if (ans < 0 || ans >= gamesDetected.size()) {
+					cout << "Invalid selection." << endl;
+					throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
 				}
-				gl_current_game = gamesDetected[ans];
 			}
+			gl_current_game = gamesDetected[ans];
+#endif
 		}
 	}
 

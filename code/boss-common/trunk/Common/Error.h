@@ -54,6 +54,7 @@ namespace boss {
 	BOSS_COMMON const uint32_t BOSS_ERROR_REGEX_EVAL_FAIL						= 8;
 	BOSS_COMMON const uint32_t BOSS_ERROR_NO_GAME_DETECTED						= 9;
 	BOSS_COMMON const uint32_t BOSS_ERROR_ENCODING_CONVERSION_FAIL				= 10;
+	BOSS_COMMON const uint32_t BOSS_ERROR_PLUGIN_BEFORE_MASTER					= 39;
 
 	BOSS_COMMON const uint32_t BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL	= 11;
 	BOSS_COMMON const uint32_t BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL		= 12;
@@ -131,6 +132,8 @@ namespace boss {
 				return "No game detected!"; 
 			case BOSS_ERROR_ENCODING_CONVERSION_FAIL:
 				return "\"" + errSubject + "\" cannot be converted from UTF-8 to \"" + errString + "\".";
+			case BOSS_ERROR_PLUGIN_BEFORE_MASTER:
+				return "Master file \"" + errSubject +  "\" loading after non-master plugins!";
 			case BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL:
 				return "Cannot find online masterlist revision number!"; 
 			case BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL:
