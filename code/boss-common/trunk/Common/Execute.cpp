@@ -436,6 +436,43 @@ namespace boss {
 		BuildWorkingModlist(modlist, masterlist, userlist);
 		LOG_INFO("modlist now filled with ordered mods and unknowns.");
 
+		//Check to see if the masters before plugins rule is being obeyed.
+		try {
+			size_t modlistSize = modlist.Items().size();
+			size_t pos = modlist.GetLastMasterPos();
+			if (modlist.GetNextMasterPos(pos+1) != modlistSize) {  //Masters exist after the initial set of masters. Not allowed.
+				Outputter output;
+				output.SetFormat(gl_log_format);
+				output.PrintHeader();
+				output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: Master files loading after non-master plugins!" << LINE_BREAK
+					<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+					<< "Utility will end now." << LIST_CLOSE;
+				output.PrintFooter();
+				try {
+					output.Save(bosslog_path(), true);
+				} catch (boss_error &e) {
+					LOG_ERROR("Critical Error: %s", e.getString().c_str());
+				}
+				LOG_ERROR("Critical Error: Master files loading after non-master plugins!");
+				return;
+			}
+		} catch (boss_error &e) {
+			Outputter output;
+			output.SetFormat(gl_log_format);
+			output.PrintHeader();
+			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+				<< "Utility will end now." << LIST_CLOSE;
+			output.PrintFooter();
+			try {
+				output.Save(bosslog_path(), true);
+			} catch (boss_error &e) {
+				LOG_ERROR("Critical Error: %s", e.getString().c_str());
+			}
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
+			return;
+		}
+
 		//Modlist error buffer may have had some regex errors added to it. It will be empty otherwise.
 		contents.regexError = modlist.ErrorBuffer().FormatFor(gl_log_format);
 

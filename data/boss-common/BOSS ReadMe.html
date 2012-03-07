@@ -610,6 +610,11 @@ a problem for which no error message is given, please report the crash or proble
 		<li><b>Issue:</b> BOSS cannot tell what game it is running for.
 		<li><b>Solution:</b> This may occur if BOSS has been unable to detect a supported game but it is made to run anyway, eg. by running the GUI with <q>Update Masterlist Only</q> selected but the <q>Active Game</q> set to <q>None</q>. Make sure that you have selected a game to run for or set the active game.
 	</ul>
+	<li><b>Message:</b> <i>Master files loading after non-master plugins!</i>
+	<ul>
+		<li><b>Issue:</b> BOSS is trying to set master plugins after non-master plugins in the load order. This won't break anything, because the game always loads masters before non-masters regardless of their load order, but it means that BOSS's output would be incorrect.
+		<li><b>Solution:</b> If you have ESMified any non-master plugins, ESPify them back again before running BOSS. If you have not ESMified any non-master plugins, or don't know what that means, report this issue to the BOSS Development Team.
+	</ul>
 	<li><b>Message:</b> <i>Cannot find online masterlist revision number!</i>
 	<ul>
 		<li><b>Solution:</b> Report this issue to the BOSS Development Team.

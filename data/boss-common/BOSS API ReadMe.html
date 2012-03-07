@@ -138,6 +138,14 @@ There is no way of knowing which is the correct order to choose for the full loa
 </blockquote>
 <h3 id="lo-bapi">Load Ordering with BOSS API</h3>
 <p>BAPI's implementation of load ordering support presents one set of functions that handle the differences between timestamp-based and textfile-based load ordering opaquely, so there is no difference in usage for clients. It is fully compatible with the community standard for textfile-based load ordering, handling all requirements internally.
+<p>In addition, BAPI also handles the following:
+<ul>
+	<li>Ghosted plugins: Wrye Bash has the option to <q>ghost</q> inactive plugins by appending a <code>.ghost</code> extension to the filename. This reduces the effect of a bug in several supported games known as <q>directory thrashing</q>, which can lead to significant performance hits. BAPI treats ghosted plugins like normal plugins, and accepts their unghosted filenames in its function parameters, so the client doesn't need to keep track of their ghosted status. BAPI will also automatically unghost any plugins that are activated through its interface.
+	<li><code>Skyrim.esm</code> &amp; <code>Update.esm</code>: These two Skyrim plugins are special cases, as they are always loaded by the game. However, if <code>Update.esm</code> is not included in <code>plugins.txt</code>, it is loaded after any other active master files. BAPI handles the special treatment of Skyrim.esm and Update.esm for the client, ensuring that they can never be deactivated and that <code>Update.esm</code> is always explicitly loaded in <code>plugins.txt</code>, either at the client's specified position or after other master files.
+	<li>Game master file position: BAPI validates any input to its load order setting functions to ensure that the game's master file is always loaded first.
+	<li>Masters before plugin files: BAPI validates any input to its load order setting functions to ensure that they will always set load orders to reflect the games' rule that master files always load before plugin files.
+	<li>Encoding conversion: In order to be most widely applicable, BAPI works in the UTF-8 character encoding, using it internally and for all its inputs and outputs. However, the games it supports specify that the active load order must be specified in a file encoded in Windows-1252. BAPI handles the encoding conversions between this encoding and UTF-8 internally, and warns the client when they have tried to activate a plugin whose filename cannot be represented in the Windows-1252 encoding.
+</ul>
 
 
 <h2 id="types">Variable Types</h2>

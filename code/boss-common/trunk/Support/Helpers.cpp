@@ -242,10 +242,9 @@ namespace boss {
 		//Requires Windows XP 64 bit or Vista+.
 		//LONG lRes = RegGetValue(key, fs::path(subkey).wstring().c_str(), fs::path(value).wstring().c_str(), RRF_RT_REG_SZ, NULL, (PVOID)&val, &BufferSize);
 
-		if (lRes == ERROR_SUCCESS) {
-			cout << fs::path(val).string() << endl;
+		if (lRes == ERROR_SUCCESS)
 			return fs::path(val).string();  //Easiest way to convert from wide to narrow character strings.
-		} else
+		else
 			return "";
 #else
 		return "";

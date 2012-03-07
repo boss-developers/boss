@@ -683,6 +683,18 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 
 	RuleList userlist = db->userlist;
 	BuildWorkingModlist(modlist, masterlist, userlist);
+
+	//Check to see if the masters before plugins rule is being obeyed.
+	try {
+		size_t modlistSize = modlist.Items().size();
+		size_t pos = modlist.GetLastMasterPos();
+		if (modlist.GetNextMasterPos(pos+1) != modlistSize) {  //Masters exist after the initial set of masters. Not allowed.
+			return ReturnCode(BOSS_API_ERROR_PARSE_FAIL, "Master files must load before other plugins.");
+		}
+	} catch (boss_error &e) {
+		return ReturnCode(BOSS_API_ERROR_PARSE_FAIL, "Master files must load before other plugins.");
+	}
+
 	string dummy;
 	ApplyUserRules(modlist, userlist, dummy);  //This needs to be done to get sensible ordering as the userlist has been taken into account in the working modlist.
 
@@ -872,7 +884,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 
 		//If Update.esm is installed, check if it is listed. If not, add it after the rest of the master files.
 		if (gl_current_game == SKYRIM && fs::exists(data_path / "Update.esm") && loadorder.FindItem("Update.esm") == loSize) {
-			loadorder.Insert(loadorder.GetLastMasterPos() + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
+			loadorder.Insert(pos + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
 			loSize++;
 		}
 	} catch (boss_error &e) {
