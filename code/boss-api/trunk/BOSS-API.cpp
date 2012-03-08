@@ -986,7 +986,8 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 	//Load plugins.txt.
 	ItemList pluginsTxt;
 	try {
-		pluginsTxt.Load(plugins_path());
+		if (fs::exists(plugins_path()))
+			pluginsTxt.Load(plugins_path());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -1325,7 +1326,8 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 	//Load plugins.txt.
 	ItemList pluginsList;
 	try {
-		pluginsList.Load(plugins_path());
+		if (fs::exists(plugins_path()))
+			pluginsList.Load(plugins_path());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -1388,7 +1390,8 @@ BOSS_API uint32_t IsPluginActive(boss_db db, const uint8_t * plugin, bool * isAc
 	//Load plugins.txt. A hashset would be more efficient.
 	ItemList pluginsList;
 	try {
-		pluginsList.Load(plugins_path());
+		if (fs::exists(plugins_path()))
+			pluginsList.Load(plugins_path());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
