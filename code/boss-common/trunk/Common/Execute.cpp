@@ -479,16 +479,18 @@ namespace boss {
 
 		SE = GetSEPluginInfo(contents.seInfo);
 
-		LOG_INFO("Loading plugins.txt into ItemList.");
-		ItemList pluginsList;
-		pluginsList.Load(plugins_path());
-		vector<Item> pluginsEntries = pluginsList.Items();
-		size_t pluginsMax = pluginsEntries.size();
 		boost::unordered_set<string> hashset;
-		LOG_INFO("Populating hashset with ItemList contents.");
-		for (size_t i=0; i<pluginsMax; i++) {
-			if (pluginsEntries[i].Type() == MOD)
-				hashset.insert(to_lower_copy(pluginsEntries[i].Name()));
+		if (fs::exists(plugins_path())) {
+			LOG_INFO("Loading plugins.txt into ItemList.");
+			ItemList pluginsList;
+			pluginsList.Load(plugins_path());
+			vector<Item> pluginsEntries = pluginsList.Items();
+			size_t pluginsMax = pluginsEntries.size();
+			LOG_INFO("Populating hashset with ItemList contents.");
+			for (size_t i=0; i<pluginsMax; i++) {
+				if (pluginsEntries[i].Type() == MOD)
+					hashset.insert(to_lower_copy(pluginsEntries[i].Name()));
+			}
 		}
 
 		SortRecognisedMods(modlist, contents.recognisedPlugins, esmtime, counters, hashset);
