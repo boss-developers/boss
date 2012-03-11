@@ -34,27 +34,20 @@
 ;--------------------------------
 ;Variables
 
-
 Var OB_Path
 Var NE_Path
 Var SK_Path
 Var FO_Path
 Var NV_Path
-;Var GameNum
 Var Empty ;An empty string.
 Var InstallPath ;Path to existing BOSS install.
-
-Var Dialog
-Var Check_Run
-Var CheckState_Run
-Var Check_Readme
-
-Var Check_RemoveUserFiles
-Var CheckState_RemoveUserFiles
   
 ;--------------------------------
 ;Initialise Install Path
 Function .onInit
+
+StrCpy $Empty ""
+
 ; First check to see if BOSS is already installed via installer, and launch the existing uninstaller if so.
 IfFileExists "$COMMONFILES\BOSS\uninstall.exe" 0 +6
 	MessageBox MB_OKCANCEL|MB_ICONQUESTION "BOSS is already installed, and must be uninstalled before continuing. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade." IDOK oldCont IDCANCEL oldCancel
@@ -62,9 +55,13 @@ IfFileExists "$COMMONFILES\BOSS\uninstall.exe" 0 +6
 		Quit
 	oldCont:
 	ExecWait '$COMMONFILES\BOSS\uninstall.exe _?=$COMMONFILES\BOSS' ;Run the uninstaller in its folder and wait until it's done.
+
 ;That was the old uninstaller location, now see if the current version is already installed.
 ReadRegStr $InstallPath HKLM "Software\BOSS" "Installed Path"
-${If} $InstallPath != ""
+${If} $InstallPath == $Empty ;Try 64 bit path.
+	ReadRegStr $InstallPath HKLM "Software\Wow6432Node\BOSS" "Installed Path"
+${EndIf}
+${If} $InstallPath != $Empty
 	IfFileExists "$InstallPath\Uninstall.exe" 0 +8
 		MessageBox MB_OKCANCEL|MB_ICONQUESTION "BOSS is already installed, and must be uninstalled before continuing. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade." IDOK cont IDCANCEL cancel
 		cancel:
@@ -77,50 +74,24 @@ ${EndIf}
 
 
 ; Look for games, counting them.
-StrCpy $Empty ""
 ReadRegStr $OB_Path HKLM "Software\Bethesda Softworks\Oblivion" "Installed Path"
 ${If} $OB_Path == $Empty ;Try 64 bit path.
 	ReadRegStr $OB_Path HKLM "Software\Wow6432Node\Bethesda Softworks\Oblivion" "Installed Path"
 ${EndIf}
-;${If} $OB_Path != $Empty
-;	StrCpy $INSTDIR $OB_Path
-;	IntOp $GameNum $GameNum + 1
-;${EndIf}
 ReadRegStr $NE_Path HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Nehrim - At Fate's Edge_is1" "InstallLocation" ;No 64 bit path.
-;${If} $NE_Path != $Empty
-;	StrCpy $INSTDIR $NE_Path
-;	IntOp $GameNum $GameNum + 1
-;${EndIf}
 ReadRegStr $SK_Path HKLM "Software\Bethesda Softworks\Skyrim" "Installed Path"
 ${If} $SK_Path == $Empty ;Try 64 bit path.
 	ReadRegStr $SK_Path HKLM "Software\Wow6432Node\Bethesda Softworks\Skyrim" "Installed Path"
 ${EndIf}
-;${If} $SK_Path != $Empty
-;	StrCpy $INSTDIR $SK_Path
-;	IntOp $GameNum $GameNum + 1
-;${EndIf}
 ReadRegStr $FO_Path HKLM "Software\Bethesda Softworks\Fallout3" "Installed Path"
 ${If} $FO_Path == $Empty ;Try 64 bit path.
 	ReadRegStr $FO_Path HKLM "Software\Wow6432Node\Bethesda Softworks\Fallout3" "Installed Path"
 ${EndIf}
-;${If} $FO_Path != $Empty
-;	StrCpy $INSTDIR $FO_Path
-;	IntOp $GameNum $GameNum + 1
-;${EndIf}
 ReadRegStr $NV_Path HKLM "Software\Bethesda Softworks\FalloutNV" "Installed Path"
 ${If} $NV_Path == $Empty ;Try 64 bit path.
 	ReadRegStr $NV_Path HKLM "Software\Wow6432Node\Bethesda Softworks\FalloutNV" "Installed Path"
 ${EndIf}
-;${If} $NV_Path != $Empty
-;	StrCpy $INSTDIR $NV_Path
-;	IntOp $GameNum $GameNum + 1
-;${EndIf}
-;All games looked for. If only one game exists, then INSTDIR will be set to its location. 
-;If > 1 game exists, INSTDIR will be set to the last game detected's location. Set this instead to C:\.
-;${If} $GameNum != 1
-	StrCpy $INSTDIR "C:\"
-;${EndIf}
-StrCpy $INSTDIR "$INSTDIR\BOSS"
+StrCpy $INSTDIR "C:\BOSS"
 FunctionEnd
 
 ;--------------------------------
@@ -130,83 +101,19 @@ FunctionEnd
   !insertmacro MUI_PAGE_LICENSE "data\boss-common\Licenses.txt"
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
-  Page custom PAGE_FINISH PAGE_FINISH_Leave
+  !define MUI_FINISHPAGE_NOAUTOCLOSE
+  !define MUI_FINISHPAGE_TEXT "If you have multiple copies of one or more of the games BOSS supports, you must manually install a separate copy of BOSS for each copy other than the original install.$\n$\nThis can be done using the manual archive, or by copy/pasting the BOSS folder that has just been installed. See the BOSS Readme for more information."
+  !define MUI_FINISHPAGE_TEXT_LARGE
+  !define MUI_FINISHPAGE_RUN "$INSTDIR\BOSS.exe"
+  !define MUI_FINISHPAGE_RUN_TEXT "Run BOSS"
+  !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\Docs\BOSS ReadMe.html"
+  !define MUI_FINISHPAGE_SHOWREADME_TEXT "View Readme"
+  !insertmacro MUI_PAGE_FINISH
   
   !insertmacro MUI_UNPAGE_WELCOME
-  UninstPage custom un.PAGE_SELECT_OPTIONS un.PAGE_SELECT_OPTIONS_Leave
+  !insertmacro MUI_UNPAGE_COMPONENTS
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
-  
-;--------------------------------
-;Languages
- 
-  !insertmacro MUI_LANGUAGE "English"
-  LangString unPAGE_SELECT_GAMES_TITLE ${LANG_ENGLISH} "Choose Options"
-  LangString unPAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select from the following uninstall options."
-  LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished installing BOSS v2.0.0."
-  LangString PAGE_FINISH_SUBTITLE ${LANG_ENGLISH} "Please select post-install tasks."
-  
-
-;-------------------------------- Custom Installation Pages and their Functions:
-    Function PAGE_FINISH
-        !insertmacro MUI_HEADER_TEXT $(PAGE_FINISH_TITLE) $(PAGE_FINISH_SUBTITLE)
-        
-        nsDialogs::Create 1018
-            Pop $Dialog
-
-        ${If} $Dialog == error
-            Abort
-        ${EndIf}
-        
-        IntOp $0 0 + 0
-		${NSD_CreateCheckBox} 0 $0u 100% 8u "Run BOSS"
-			Pop $Check_Run
-			${NSD_AddStyle} $Check_Run ${WS_GROUP}
-			${NSD_SetState} $Check_Run $CheckState_Run
-		IntOp $0 $0 + 15
-        IntOp $1 0 + 0
-        IfFileExists "$INSTDIR\Docs\BOSS ReadMe.html" 0 +6
-            ${NSD_CreateCheckBox} $1% $0u 25% 8u "View Readme"
-                Pop $Check_Readme
-                ${NSD_AddStyle} $Check_Readme ${WS_GROUP}
-                ${NSD_SetState} $Check_Readme ${BST_CHECKED}
-                IntOp $1 $1 + 25
-		nsDialogs::Show		
-    FunctionEnd
-    Function PAGE_FINISH_Leave
-		${NSD_GetState} $Check_Run $CheckState_Run
-        ${If} $CheckState_Run == ${BST_CHECKED}
-			SetOutPath "$INSTDIR"
-            Exec '"$INSTDIR\BOSS.exe"'
-        ${EndIf}
-        ${NSD_GetState} $Check_Readme $0
-        ${If} $0 == ${BST_CHECKED}
-            SetOutPath "$INSTDIR"
-            ExecShell "open" '"$INSTDIR\Docs\BOSS ReadMe.html"'
-        ${EndIf}
-		
-    FunctionEnd
-
-;-------------------------------- Custom Uninstallation Pages and their Functions:
-    Function un.PAGE_SELECT_OPTIONS
-        !insertmacro MUI_HEADER_TEXT $(unPAGE_SELECT_GAMES_TITLE) $(unPAGE_SELECT_GAMES_SUBTITLE)
-     ;   GetFunctionAddress $unFunction_Browse un.OnClick_Browse
-        
-        nsDialogs::Create 1018
-            Pop $Dialog
-
-        ${If} $Dialog == error
-            Abort
-        ${EndIf}
-        
-        
-        ${NSD_CreateCheckBox} 0 $0u 100% 13u "Uninstall userlist and ini file if they exist."
-            Pop $Check_RemoveUserFiles
-        nsDialogs::Show
-    FunctionEnd
-    Function un.PAGE_SELECT_OPTIONS_Leave
-        ${NSD_GetState} $Check_RemoveUserFiles $CheckState_RemoveUserFiles
-    FunctionEnd
 
 ;--------------------------------
 ;Installer Sections
@@ -345,9 +252,9 @@ Section "Installer Section"
 	CreateShortCut "$SMPROGRAMS\BOSS\Docs\Masterlist Syntax Doc.lnk" "$INSTDIR\Docs\BOSS Masterlist Syntax.html"
 	CreateShortCut "$SMPROGRAMS\BOSS\Docs\Copyright Licenses.lnk" "$INSTDIR\Docs\Licenses.txt"
   
-	;Store installation folder in registry key.
-	WriteRegStr HKLM "Software\BOSS" "Installed Path" $INSTDIR
 	
+	;Store installation folder in registry key.
+	WriteRegStr HKLM "Software\BOSS" "Installed Path" "$INSTDIR"
 	;Write registry keys for Windows' uninstaller.
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayName" "BOSS"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "UninstallString" '"$INSTDIR\Uninstall.exe"'
@@ -357,7 +264,7 @@ Section "Installer Section"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '2.0.0'      
 	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoModify" 1
 	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoRepair" 1
-
+	
 	;Create uninstaller
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 
@@ -366,7 +273,8 @@ SectionEnd
 ;--------------------------------
 ;Uninstaller Section
 
-Section "Uninstall"
+
+Section "un.BOSS" Main
 
 	;Change this to optionally remove userlist and BOSS.ini, rather than by default.
 
@@ -422,16 +330,6 @@ Section "Uninstall"
 	Delete "$INSTDIR\Fallout New Vegas\masterlist.txt"
 	Delete "$INSTDIR\Fallout New Vegas\modlist.txt"
 	Delete "$INSTDIR\Fallout New Vegas\modlist.old"
-	;The following user files are only removed if set to.
-	${If} $CheckState_RemoveUserFiles == ${BST_CHECKED}
-		Delete "$INSTDIR\BOSS.ini"
-		Delete "$INSTDIR\BOSS.ini.old"
-		Delete "$INSTDIR\Oblivion\userlist.txt"
-		Delete "$INSTDIR\Nehrim\userlist.txt"
-		Delete "$INSTDIR\Skyrim\userlist.txt"
-		Delete "$INSTDIR\Fallout 3\userlist.txt"
-		Delete "$INSTDIR\Fallout New Vegas\userlist.txt"
-	${EndIf}
 	
 	;Remove subfolders.
 	RMDir "$INSTDIR\API"
@@ -474,3 +372,29 @@ Section "Uninstall"
 	RMDir /r "$SMPROGRAMS\BOSS"
 
 SectionEnd
+
+Section "un.User Files" UserFiles
+	;The following user files are only removed if set to.
+		Delete "$INSTDIR\BOSS.ini"
+		Delete "$INSTDIR\BOSS.ini.old"
+		Delete "$INSTDIR\Oblivion\userlist.txt"
+		Delete "$INSTDIR\Nehrim\userlist.txt"
+		Delete "$INSTDIR\Skyrim\userlist.txt"
+		Delete "$INSTDIR\Fallout 3\userlist.txt"
+		Delete "$INSTDIR\Fallout New Vegas\userlist.txt"
+SectionEnd
+
+
+;--------------------------------
+;Languages
+ 
+  !insertmacro MUI_LANGUAGE "English"
+  LangString unPAGE_SELECT_GAMES_TITLE ${LANG_ENGLISH} "Choose Options"
+  LangString unPAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select from the following uninstall options."
+  LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished installing BOSS v2.0.0."
+  LangString PAGE_FINISH_SUBTITLE ${LANG_ENGLISH} "Please select post-install tasks."
+  
+!insertmacro MUI_UNFUNCTION_DESCRIPTION_BEGIN
+  !insertmacro MUI_DESCRIPTION_TEXT ${Main} "All BOSS's files, minus userlists and the BOSS.ini"
+  !insertmacro MUI_DESCRIPTION_TEXT ${UserFiles} "BOSS's userlist files and BOSS.ini file."
+!insertmacro MUI_UNFUNCTION_DESCRIPTION_END
