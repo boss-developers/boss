@@ -170,7 +170,7 @@ namespace boss {
 																	//Throws exception on fail.
 		void	SavePluginNames(fs::path file, bool activeOnly, bool doEncodingConversion);	//Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
 		void	EvalConditions();					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
-		
+		void	EvalRegex();
 		void	ApplyMasterPartition();				//Puts all master files before other plugins. Can throw exception.
 		
 		size_t	FindItem		(string name) const;	//Find the position of the item with name 'name'. Case-insensitive.

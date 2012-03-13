@@ -35,6 +35,7 @@
 #include <cstring>
 #include <iostream>
 #include <boost/filesystem.hpp>
+#include <boost/regex.hpp>
 
 namespace boss {
 	using namespace std;
@@ -77,6 +78,9 @@ namespace boss {
 
 	//Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
 	fs::path GetLocalAppDataPath();
+
+	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
+	BOSS_COMMON boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos);
 
 	//Version class for more robust version comparisons. Only handles executable versions 
 	//(ie. of the form a.b.c.d where a, b, c and d are all integers) at this time.

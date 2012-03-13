@@ -519,66 +519,16 @@ BOSS_API uint32_t EvalConditionals(boss_db db) {
 	//Set globals again in case they've been changed.
 	data_path = db->data_path;
 	gl_current_game = db->game;
-
 	
 	ItemList masterlist = db->rawMasterlist;
 	vector<modEntry> matches;
 	ItemList modlist;
 	try {
-		//First re-evaluate conditionals.
-		masterlist.EvalConditions();
-		//Build modlist. Not using boss::ItemList::Load() as that builds to a vector<item> in load order, which isn't necessary.
-		//Famous last words! Both are necessary in these dark times...
-		modlist.Load(data_path);
+		masterlist.EvalConditions();	//First evaluate conditionals.
+		masterlist.EvalRegex();			//Now evaluate regex.
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
-
-	boost::unordered_set<string> hashset;  //Holds installed mods for checking against masterlist
-	boost::unordered_set<string>::iterator setPos;
-	for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
-		const fs::path filename = itr->path().filename();
-		const string ext = to_lower_copy(itr->path().extension().string());
-		if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost"))	//Add file to hashset.
-			hashset.insert(to_lower_copy(filename.string()));
-	}
-
-	//Now evaluate regular expressions.
-	vector<Item> items = masterlist.Items();
-	size_t max = items.size();
-	for (size_t i=0; i<max; i++) {
-		if (items[i].Type() == REGEX) {
-			//First thing's first, make a copy of the entry, then remove it from the masterlist.
-			Item regexItem = items[i];
-			items.erase(items.begin()+i);
-			//Now form a regex.
-			boost::regex reg;
-			try {
-				reg = boost::regex(to_lower_copy(regexItem.Name())+"(.ghost)?", boost::regex::extended|boost::regex::icase);  //Ghost extension is added so ghosted mods will also be found.
-			} catch (boost::regex_error e) {
-				return ReturnCode(BOSS_API_ERROR_REGEX_EVAL_FAIL, to_lower_copy(regexItem.Name())+"(.ghost)?");
-			}
-			//Now start looking.
-			setPos = hashset.begin();
-			do {
-				setPos = FindRegexMatch(hashset, reg, setPos);
-				if (setPos == hashset.end())  //Exit if the mod hasn't been found.
-					break;
-				string mod = *setPos;
-				//Look for mod in modlist. Replace with case-preserved mod name.
-				size_t modlistPos = modlist.FindItem(mod);
-				if (modlistPos != modlist.Items().size())
-					mod = modlist.Items()[modlistPos].Name();
-				//Now do the adding/removing.
-				//Create new temporary item to hold current found mod.
-				Item tempItem = Item(mod, MOD, regexItem.Messages());
-				//Now insert it in the position of the regex mod.
-				items.insert(items.begin()+i, tempItem);
-				++setPos;
-			} while (setPos != hashset.end());
-		}
-	}
-	masterlist.Items(items);
 
 	//Now set DB ItemList to function's ItemList.
 	db->filteredMasterlist = masterlist;
@@ -680,6 +630,7 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 		masterTime = GetMasterTime();
 		modlist.Load(data_path);
 		masterlist.EvalConditions();
+		masterlist.EvalRegex();
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}

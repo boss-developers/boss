@@ -672,7 +672,42 @@ namespace boss {
 		}
 	}
 
-	
+	void		ItemList::EvalRegex() {
+		//Store installed mods in a hashset. Case insensitivity not required as regex itself is case-insensitive.
+		boost::unordered_set<string> hashset;
+		boost::unordered_set<string>::iterator setPos;
+		for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
+			const string ext = to_lower_copy(itr->path().extension().string());
+			if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost"))	//Add file to hashset.
+				hashset.insert(itr->path().filename().string());
+		}
+
+		//Now iterate through items vector, working on regex entries.
+		//First remove a regex entry, then look for matches in the hashset.
+		//Add all matches with the messages attached to the regex entry to the items vector in the position the regex entry occupied.
+		for (vector<Item>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter) {
+			if (itemIter->Type() == REGEX) {
+				boost::regex reg;  //Form a regex.
+				try {
+					reg = boost::regex(itemIter->Name()+"(.ghost)?", boost::regex::extended|boost::regex::icase);  //Ghost extension is added so ghosted mods will also be found.
+				} catch (boost::regex_error &e) {
+					boss_error be = boss_error(BOSS_ERROR_REGEX_EVAL_FAIL, itemIter->Name());
+					LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", be.getString().c_str());
+					errorBuffer = ParsingError(be.getString());
+					continue;
+				}
+				vector<Message> messages = itemIter->Messages();
+				itemIter = items.erase(itemIter);
+				//Now start looking.
+				setPos = FindRegexMatch(hashset, reg, hashset.begin());
+				while (setPos != hashset.end()) {  //Now insert the current found mod in the position of the regex mod.
+					itemIter = items.insert(itemIter, Item(*setPos, MOD, messages));
+					setPos = FindRegexMatch(hashset, reg, ++setPos);
+				}
+				--itemIter;
+			}
+		}
+	}
 
 	void		ItemList::ApplyMasterPartition() {
 		//Need to iterate through items vector, sorting it according to the rule that master items come before other items.

@@ -566,7 +566,9 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		masterlist.Load(sortfile);
 		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
 		masterlist.EvalConditions();
+		masterlist.EvalRegex();
 		contents.globalMessages = masterlist.GlobalMessageBuffer();
+		contents.regexError = masterlist.ErrorBuffer().FormatFor(gl_log_format);
 	} catch (boss_error &e) {
 		output.Clear();
 		output.PrintHeader();

@@ -399,16 +399,6 @@ namespace boss {
 	summaryCounters::summaryCounters()
 		: recognised(0), unrecognised(0), ghosted(0), messages(0), warnings(0), errors(0) {}
 
-	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
-	BOSS_COMMON boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
-		while(startPos != set.end()) {
-			if (boost::regex_match(*startPos,reg))
-				return startPos;
-			++startPos;
-		}
-		return set.end();
-	}
-
 	//Record recognised mod list from last HTML BOSSlog generated.
 	BOSS_COMMON string GetOldRecognisedList(const fs::path log) {
 		size_t pos1, pos2;
@@ -471,9 +461,6 @@ namespace boss {
 		modlist.Insert(0,masterlist.Items(), 0, masterlist.Items().size());
 		modlist.LastRecognisedPos(masterlist.LastRecognisedPos());
 
-		//Modlist error buffer may have had some regex errors added to it. It will be empty otherwise.
-		contents.regexError = modlist.ErrorBuffer().FormatFor(gl_log_format);
-
 		ApplyUserRules(modlist, userlist, contents.userlistMessages);
 		LOG_INFO("userlist sorting process finished.");
 
@@ -499,6 +486,7 @@ namespace boss {
 
 		//Now set the load order using Skyrim method.
 		if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
+			modlist.ApplyMasterPartition();
 			modlist.SavePluginNames(loadorder_path(), false, false);
 			modlist.SavePluginNames(plugins_path(), true, true);
 		}
@@ -516,7 +504,6 @@ namespace boss {
 		vector<Item> items = modlist.Items();
 		size_t modlistSize = items.size();
 		size_t userlistSize = userlist.rules.size();
-		size_t linesSize;
 		/* Hashset must be a set of unique mods.
 		Ghosted mods take priority over non-ghosted mods, as they are specifically what is installed. 
 		*/
@@ -580,52 +567,6 @@ namespace boss {
 						addedMods.insert(to_lower_copy(items[i].Name()));
 					}
 				}
-			} else if (items[i].Type() == REGEX) {
-				//Form a regex.
-				boost::regex reg;
-				try {
-					reg = boost::regex(to_lower_copy(items[i].Name())+"(.ghost)?",boost::regex::extended|boost::regex::icase);  //Ghost extension is added so ghosted mods will also be found.
-				} catch (boost::regex_error e) {
-					boss_error be = boss_error(BOSS_ERROR_REGEX_EVAL_FAIL, items[i].Name());
-					LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", be.getString().c_str());
-					masterlist.ErrorBuffer(ParsingError(be.getString()));
-					continue;
-				}
-				//Now start looking.
-				setPos = hashset.begin();
-				do {
-					setPos = FindRegexMatch(hashset, reg, setPos);
-					if (setPos == hashset.end())  //Exit if the mod hasn't been found.
-						break;
-					string mod = *setPos;
-					//Look for mod in modlist, and userlist. Replace with case-preserved mod name.
-					modlistPos = modlist.FindItem(mod);
-					if (modlistPos != modlist.Items().size())
-						mod = modlist.Items()[modlistPos].Name();
-					else {
-						for (size_t i=0; i<userlistSize; i++) {
-							linesSize = userlist.rules[i].Lines().size();
-							for (size_t j=0; j<linesSize; j++) {
-								if (to_lower_copy(userlist.rules[i].Lines()[j].Object()) == mod)
-									mod = userlist.rules[i].Lines()[j].Object();
-							}
-						}
-					}
-					//Check that the mod hasn't already been added to the holding vector.
-					addedPos = addedMods.find(to_lower_copy(mod));
-					if (addedPos == addedMods.end()) {							//The mod is not already in the holding vector.
-						//Now do the adding/removing.
-						//Create new temporary item to hold current found mod.
-						Item tempItem = Item(mod, MOD, items[i].Messages());
-
-						holdingVec.push_back(tempItem);							//Record it in the holding vector.
-						modlistPos = modlist.FindItem(mod);
-						if (modlistPos != modlist.Items().size())
-							modlist.Erase(modlistPos);
-						addedMods.insert(to_lower_copy(mod));
-					}
-					++setPos;
-				} while (setPos != hashset.end());
 			} else //Group lines must stay recorded.
 				holdingVec.push_back(items[i]);
 		}

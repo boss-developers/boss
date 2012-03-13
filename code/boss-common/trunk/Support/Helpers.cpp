@@ -268,6 +268,17 @@ namespace boss {
 #endif
 	}
 
+	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
+	BOSS_COMMON boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
+		while(startPos != set.end()) {
+			if (boost::regex_match(*startPos, reg))
+				break;
+			++startPos;
+		}
+		return startPos;
+	}
+
+
 	Version::Version() {
 		verString = "";
 	}
