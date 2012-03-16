@@ -711,10 +711,7 @@ namespace boss {
 
 	void		ItemList::ApplyMasterPartition() {
 		//Need to iterate through items vector, sorting it according to the rule that master items come before other items.
-		/* However, have to think about masterlist groups. They shouldn't change.
-		   Easiest to just use std::sort().
-		*/
-		sort(items.begin(), items.end(), CompareItems);  //Does this work?
+		sort(items.begin() + GetLastMasterPos()+1, items.end(), CompareItems);  //Does this work?
 	}
 	
 	size_t		ItemList::FindItem			(string name) const {

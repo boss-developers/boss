@@ -236,7 +236,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	ReplaceMessagesCheckBox->Enable(false);
 
 	//Tooltips.
-	ModMessagesBox->SetToolTip("Messages must be entered in the correct format. See the User Rules Readme for more information.");
+	NewModMessagesBox->SetToolTip("Messages must be entered in the correct format. See the User Rules Readme for more information.");
 
 	//Set up drag 'n' drop.
 	ForDropTarget = new TextDropTarget(RuleModBox);

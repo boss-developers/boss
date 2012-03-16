@@ -102,112 +102,105 @@ namespace boss {
 		}
 	}
 
-	//Sort recognised mods. Usage internal to BOSS-Common.
-	void SortRecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters, boost::unordered_set<string> hashset) {
-		Outputter buffer(gl_log_format);
-		time_t modfiletime = 0;
+	//List and redate mods.
+	void SortMods(ItemList& modlist, bosslogContents& contents, const time_t esmtime, summaryCounters& counters) {
+		//Need to obey masters before plugins rule when sorting, but separate display of recognised and unrecognised mods.
+		//Also need to display which plugins are active, for both recognised and unrecognised mods.
+
+		//Load active plugin list.
+		boost::unordered_set<string> hashset;
+		if (fs::exists(plugins_path())) {
+			LOG_INFO("Loading plugins.txt into ItemList.");
+			ItemList pluginsList;
+			try {
+				pluginsList.Load(plugins_path());
+			} catch (boss_error &e) {
+				//Handle exception.
+			}
+			vector<Item> pluginsEntries = pluginsList.Items();
+			size_t pluginsMax = pluginsEntries.size();
+			LOG_INFO("Populating hashset with ItemList contents.");
+			for (size_t i=0; i<pluginsMax; i++) {
+				if (pluginsEntries[i].Type() == MOD)
+					hashset.insert(to_lower_copy(pluginsEntries[i].Name()));
+			}
+		}
+
+		//modlist stores recognised mods then unrecognised mods in order. Make a hashset of unrecognised mods.
+		boost::unordered_set<string> unrecognised;
 		vector<Item> items = modlist.Items();
+		size_t max = items.size();
+		for (size_t i=modlist.LastRecognisedPos()+1; i < max; i++)
+			unrecognised.insert(items[i].Name());
+
+		//Now apply master partition to get modlist to obey masters before plugins rule. 
+		//This retains recognised before unrecognised, with the exception of unrecognised masters, which get put after recognised masters.
+		modlist.ApplyMasterPartition();
+		items = modlist.Items();
+
+		//Now loop through items, redating and outputting. Check against unrecognised hashset and treat unrecognised mods appropriately.
+		time_t modfiletime = 0;
 		boost::unordered_set<string>::iterator setPos;
 
 		bool isSkyrim1426plus = (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
 
 		LOG_INFO("Applying calculated ordering to user files...");
-		for (size_t i=0; i <= modlist.LastRecognisedPos(); i++) {
-			if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
-				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << items[i].Name() << SPAN_CLOSE;
+		for (vector<Item>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter) {
+			if (itemIter->Type() == MOD && itemIter->Exists()) {  //Only act on mods that exist.
+				Outputter buffer(gl_log_format);
+				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
+			/*	if (unrecognised.find(itemIter->Name()) != unrecognised.end())
+					buffer << BUTTON_SUBMIT_PLUGIN;*/
 				if (!gl_skip_version_parse) {
-					string version = items[i].GetVersion();
+					string version = itemIter->GetVersion();
 					if (!version.empty())
 						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
 				}
-				if (hashset.find(to_lower_copy(items[i].Name())) != hashset.end())  //Plugin is active.
+				if (hashset.find(to_lower_copy(itemIter->Name())) != hashset.end())  //Plugin is active.
 					buffer << SPAN_CLASS_ACTIVE_OPEN << "Active" << SPAN_CLOSE;
-				if (items[i].IsGhosted()) {
+				if (itemIter->IsGhosted()) {
 					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
 					counters.ghosted++;
 					if (gl_show_CRCs)
-						buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(items[i].Name() + ".ghost"))) << SPAN_CLOSE;
+						buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(itemIter->Name() + ".ghost"))) << SPAN_CLOSE;
 				} else if (gl_show_CRCs)
-					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / items[i].Name())) << SPAN_CLOSE;
+					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / itemIter->Name())) << SPAN_CLOSE;
 			
-				if (!gl_trial_run && !items[i].IsGameMasterFile() && !isSkyrim1426plus) {
+				if (!gl_trial_run && !itemIter->IsGameMasterFile() && !isSkyrim1426plus) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
-					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
+					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", itemIter->Name().c_str());
 					try {
-						items[i].SetModTime(esmtime + counters.recognised*60);
+						itemIter->SetModTime(esmtime + (counters.recognised + counters.unrecognised)*60);
 					} catch(boss_error &e) {
 						buffer << SPAN_CLASS_ERROR_OPEN << "Error: " << e.getString() << SPAN_CLOSE;
 						LOG_ERROR(" * Error: %s", e.getString().c_str());
 					}
 				}
-				//Finally, print the mod's messages.
-				if (!items[i].Messages().empty()) {
-					vector<Message> messages = items[i].Messages();
-					size_t jmax = messages.size();
-					buffer << LIST_OPEN;
-					for (size_t j=0; j < jmax; j++) {
-						buffer << messages[j];
-						counters.messages++;
-						if (messages[j].Key() == WARN)
-							counters.warnings++;
-						else if (messages[j].Key() == ERR)
-							counters.errors++;
+				if (unrecognised.find(itemIter->Name()) == unrecognised.end()) {  //Recognised plugin.
+					//Finally, print the mod's messages.
+					if (!itemIter->Messages().empty()) {
+						vector<Message> messages = itemIter->Messages();
+						size_t jmax = messages.size();
+						buffer << LIST_OPEN;
+						for (size_t j=0; j < jmax; j++) {
+							buffer << messages[j];
+							counters.messages++;
+							if (messages[j].Key() == WARN)
+								counters.warnings++;
+							else if (messages[j].Key() == ERR)
+								counters.errors++;
+						}
+						buffer << LIST_CLOSE;
 					}
-					buffer << LIST_CLOSE;
+					counters.recognised++;
+					contents.recognisedPlugins += buffer.AsString();
+				} else {  //Unrecognised plugin.
+					counters.unrecognised++;
+					contents.unrecognisedPlugins += buffer.AsString();
 				}
-				counters.recognised++;
 			}
 		}
-		outputBuffer = buffer.AsString();
-		LOG_INFO("User file ordering applied successfully.");		
-	}
-
-	//List unrecognised mods. Usage internal to BOSS-Common.
-	void ListUnrecognisedMods(ItemList& modlist, string& outputBuffer, const time_t esmtime, summaryCounters& counters, boost::unordered_set<string> hashset) {
-		Outputter buffer(gl_log_format);
-		time_t modfiletime = 0;
-		size_t max = modlist.Items().size();
-		vector<Item> items = modlist.Items();
-		
-		bool isSkyrim1426plus = (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
-
-		//Find and show found mods not recognised. These are the mods that are found at and after index x in the mods vector.
-		//Order their dates to be i days after the master esm to ensure they load last.
-		LOG_INFO("Reporting unrecognized mods...");
-		for (size_t i = modlist.LastRecognisedPos()+1; i < max; i++) {
-			if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
-				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << items[i].Name() << SPAN_CLOSE
-					/*<< BUTTON_SUBMIT_PLUGIN*/;
-				if (!gl_skip_version_parse) {
-					string version = items[i].GetVersion();
-					if (!version.empty())
-						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
-				}
-				if (hashset.find(to_lower_copy(items[i].Name())) != hashset.end())  //Plugin is active.
-					buffer << SPAN_CLASS_ACTIVE_OPEN << "Active" << SPAN_CLOSE;
-				if (items[i].IsGhosted()) {
-					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
-					counters.ghosted++;
-					if (gl_show_CRCs)
-						buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(items[i].Name() + ".ghost"))) << SPAN_CLOSE;
-				} else if (gl_show_CRCs)
-					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / items[i].Name())) << SPAN_CLOSE;
-
-				if (!gl_trial_run && !items[i].IsGameMasterFile() && !isSkyrim1426plus) {
-					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
-					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", items[i].Name().c_str());
-					try {
-						items[i].SetModTime(esmtime + (counters.recognised + counters.unrecognised)*60);
-					} catch(boss_error &e) {
-						buffer << SPAN_CLASS_ERROR_OPEN << "Error: " << e.getString() << SPAN_CLOSE;
-						LOG_ERROR(" * Error: %s", e.getString().c_str());
-					}
-				}
-				counters.unrecognised++;
-			}
-		}
-		outputBuffer = buffer.AsString();
-		LOG_INFO("Unrecognized mods reported.");
+		LOG_INFO("User plugin ordering applied successfully.");
 	}
 
 	//Prints the full BOSSlog.
@@ -466,27 +459,10 @@ namespace boss {
 
 		SE = GetSEPluginInfo(contents.seInfo);
 
-		boost::unordered_set<string> hashset;
-		if (fs::exists(plugins_path())) {
-			LOG_INFO("Loading plugins.txt into ItemList.");
-			ItemList pluginsList;
-			pluginsList.Load(plugins_path());
-			vector<Item> pluginsEntries = pluginsList.Items();
-			size_t pluginsMax = pluginsEntries.size();
-			LOG_INFO("Populating hashset with ItemList contents.");
-			for (size_t i=0; i<pluginsMax; i++) {
-				if (pluginsEntries[i].Type() == MOD)
-					hashset.insert(to_lower_copy(pluginsEntries[i].Name()));
-			}
-		}
-
-		SortRecognisedMods(modlist, contents.recognisedPlugins, esmtime, counters, hashset);
-
-		ListUnrecognisedMods(modlist, contents.unrecognisedPlugins, esmtime, counters, hashset);
+		SortMods(modlist, contents, esmtime, counters);
 
 		//Now set the load order using Skyrim method.
 		if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
-			modlist.ApplyMasterPartition();
 			modlist.SavePluginNames(loadorder_path(), false, false);
 			modlist.SavePluginNames(plugins_path(), true, true);
 		}
