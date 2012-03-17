@@ -927,6 +927,8 @@ void MainFrame::SetGames(vector<uint32_t> inGames) {
 	}
 	if (i == games.size()) {  //The current game wasn't in the list of detected games. Run in update only mode.
 		gl_update_only = true;
+		UpdateBox->Enable(false);
+		TrialRunBox->Enable(false);
 		SortOption->Enable(false);
 		UpdateOption->SetValue(true);
 		UndoOption->Enable(false);

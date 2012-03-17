@@ -221,8 +221,9 @@ BOSS_API uint32_t GetLoadOrderMethod(boss_db db, uint32_t * method);
  If trialOnly is false, then sortedPlugins, listLength and lastRecPos can be null
  pointers, in case you do not require the information. */
 BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedPlugins, 
-								size_t * listLength, 
-								size_t * lastRecPos);
+								size_t * sortedListLength, 
+								uint8_t *** unrecognisedPlugins,
+								size_t * unrecListLength);
 
 // Outputs a list of the plugins installed in the data path specified when the DB was 
 // created in load order, with the number of plugins given by numPlugins.

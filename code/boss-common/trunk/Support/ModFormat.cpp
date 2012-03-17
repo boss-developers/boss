@@ -127,6 +127,39 @@ namespace boss {
 	//			http://www.uesp.net/wiki/Tes4Mod:Mod_File_Format/TES4
 	//
 
+	bool IsPluginMaster(boost::filesystem::path filename) {
+		char		buffer[MAXLENGTH];
+		char*		bufptr = buffer;
+		ModHeader	modHeader;
+
+		if (filename.empty())
+			return false;
+
+		ifstream	file(filename.native().c_str(), ios_base::binary | ios_base::in);
+
+		if (file.bad())
+			//throw boss_error(BOSS_ERROR_FILE_READ_FAIL, filename.string());
+			return false;
+
+		// Reads the first MAXLENGTH bytes into the buffer
+		file.read(&buffer[0], sizeof(buffer));
+
+		// Check for the 'magic' marker at start
+		if (Read<uint>(bufptr) != Record::TES4){
+			return false;
+		}
+
+		// Next field is the total header size
+		/*uint headerSize =*/ Read<uint>(bufptr);
+
+		// Next comes the header record Flags
+		uint flags = Read<uint>(bufptr);
+
+		// LSb of this record's flags is used to indicate if the 
+		//	mod is a master or a plugin
+		return ((flags & 0x1) != 0);
+	}
+
 	ModHeader ReadHeader(boost::filesystem::path filename) {
 		char		buffer[MAXLENGTH];
 		char*		bufptr = buffer;

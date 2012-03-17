@@ -57,6 +57,8 @@ namespace boss {
 	};
 
 	ModHeader ReadHeader(boost::filesystem::path filename);
+
+	bool IsPluginMaster(boost::filesystem::path filename);  //Shorter version of the above, to only get master flag.
 }
 
 #endif

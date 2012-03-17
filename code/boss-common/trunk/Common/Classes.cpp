@@ -255,7 +255,7 @@ namespace boss {
 	}
 
 	bool	Item::IsMasterFile() const {
-		return ReadHeader(data_path / Data()).IsMaster;
+		return IsPluginMaster(data_path / Data());
 	}
 
 	bool	Item::IsGhosted		() const {
@@ -711,7 +711,14 @@ namespace boss {
 
 	void		ItemList::ApplyMasterPartition() {
 		//Need to iterate through items vector, sorting it according to the rule that master items come before other items.
-		sort(items.begin() + GetLastMasterPos()+1, items.end(), CompareItems);  //Does this work?
+		size_t lastMasterPos = GetLastMasterPos();
+		size_t pos = GetNextMasterPos(lastMasterPos+1);
+		while (pos < items.size()) {
+			Item master = items[pos];
+			items.erase(items.begin() + pos);
+			items.insert(items.begin() + lastMasterPos, master);
+			pos = GetNextMasterPos(pos+1);
+		}
 	}
 	
 	size_t		ItemList::FindItem			(string name) const {
@@ -744,23 +751,22 @@ namespace boss {
 
 	size_t		ItemList::GetLastMasterPos() const {
 		size_t i=0;
-		while (i < items.size() && items[i].IsMasterFile()) {  //SLLOOOOOWWWWW probably.
+		while (i < items.size() && (items[i].IsGroup() || items[i].IsMasterFile())) {  //SLLOOOOOWWWWW probably.
 			i++;
 		}
 		if (i > 0)
 			return i-1;  //i is position of first plugin.
 		else 
-			return items.size();
+			return 0;
 	}
 
 	size_t	ItemList::GetNextMasterPos(size_t currPos) const {
-		size_t i=currPos;
-		if (i >= items.size())
+		if (currPos >= items.size())
 			return items.size();
-		while (i < items.size() && !items[i].IsMasterFile()) {  //SLLOOOOOWWWWW probably.
-			i++;
+		while (currPos < items.size() && (items[currPos].IsGroup() || !items[currPos].IsMasterFile())) {  //SLLOOOOOWWWWW probably.
+			currPos++;
 		}
-		return i;  //i is position of first master after currPos.
+		return currPos;  //position of first master after currPos.
 	}
 
 	vector<Item> ItemList::Items() const {

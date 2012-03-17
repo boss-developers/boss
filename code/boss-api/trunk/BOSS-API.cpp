@@ -79,9 +79,11 @@ struct _boss_db_int {
 	uint32_t * extRemovedTagIds;
 	uint8_t * extString;
 	uint8_t ** extStringArray;
+	uint8_t ** extStringArray2;
 
 	//Pointer array sizes.
 	size_t extStringArraySize;
+	size_t extStringArray2Size;
 
 	//Constructor
 	_boss_db_int() {
@@ -103,6 +105,12 @@ struct _boss_db_int {
 			for (size_t i=0; i < extStringArraySize; i++)
 				delete[] extStringArray[i];  //Clear all the uint8_t strings created.
 			delete[] extStringArray;  //Clear the string array.
+		}
+
+		if (extStringArray2 != NULL) {
+			for (size_t i=0; i < extStringArray2Size; i++)
+				delete[] extStringArray2[i];  //Clear all the uint8_t strings created.
+			delete[] extStringArray2;  //Clear the string array.
 		}
 	}
 
@@ -609,16 +617,15 @@ BOSS_API uint32_t GetLoadOrderMethod(boss_db db, uint32_t * method) {
 // pointers, in case you do not require the information. If one of them is null, the
 // other two must also be null.
 BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedPlugins, 
-								size_t * listLength, 
-								size_t * lastRecPos) {
-	if (db == NULL || (trialOnly == true && (sortedPlugins == NULL || listLength == NULL || lastRecPos == NULL)))
+								size_t * sortedListLength, 
+								uint8_t *** unrecognisedPlugins,
+								size_t * unrecListLength) {
+	if (db == NULL || (trialOnly && (sortedPlugins == NULL || sortedListLength == NULL || unrecognisedPlugins == NULL || unrecListLength == NULL)))
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
 	//Set globals again in case they've been changed.
 	data_path = db->data_path;
 	gl_current_game = db->game;
-
-	
 
 	//Set up working modlist.
 	//The function below changes the input, so make copies.
@@ -642,16 +649,14 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	try {
 		//Modlist.
 		size_t size = modlist.Items().size();
-		size_t pos = modlist.GetLastMasterPos();
-		pos = modlist.GetNextMasterPos(pos+1);
+		size_t pos = modlist.GetNextMasterPos(modlist.GetLastMasterPos() + 1);
 		if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
 			return ReturnCode(BOSS_ERROR_PLUGIN_BEFORE_MASTER, modlist.Items()[pos].Name());
 		//Masterlist.
 		size = masterlist.Items().size();
-		pos = masterlist.GetLastMasterPos();
-		pos = masterlist.GetNextMasterPos(pos+1);
+		pos = masterlist.GetNextMasterPos(masterlist.GetLastMasterPos() + 1);
 		if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
-			return ReturnCode(BOSS_ERROR_PLUGIN_BEFORE_MASTER, modlist.Items()[pos].Name());
+			return ReturnCode(BOSS_ERROR_PLUGIN_BEFORE_MASTER, masterlist.Items()[pos].Name());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -664,12 +669,14 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	ApplyUserRules(modlist, userlist, dummy);  //This needs to be done to get sensible ordering as the userlist has been taken into account in the working modlist.
 
 	//Initialise vars.
-	if (listLength != NULL)
-		*listLength = 0;
 	if (sortedPlugins != NULL)
 		*sortedPlugins = NULL;
-	if (lastRecPos != NULL)
-		*lastRecPos = 0;
+	if (unrecognisedPlugins != NULL)
+		*unrecognisedPlugins = NULL;
+	if (sortedListLength != NULL)
+		*sortedListLength = 0;
+	if (unrecListLength != NULL)
+		*unrecListLength = 0;
 
 	//Free memory if already used.
 	if (db->extStringArray != NULL) {
@@ -678,6 +685,13 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 		delete[] db->extStringArray;  //Clear the string array.
 		db->extStringArray = NULL;
 		db->extStringArraySize = 0;
+	}
+	if (db->extStringArray2 != NULL) {
+		for (size_t i=0; i<db->extStringArray2Size; i++)
+			delete[] db->extStringArray2[i];  //Clear all the uint8_t strings created.
+		delete[] db->extStringArray2;  //Clear the string array.
+		db->extStringArray2 = NULL;
+		db->extStringArray2Size = 0;
 	}
 
 	//Need to throw out any repeats. Keep only the first instance of a plugin.
@@ -699,33 +713,42 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	modlist.Items(items);
 	modlist.LastRecognisedPos(modlist.FindItem(lastRec));
 
-	vector<string> plugins;
-	size_t lastRecPluginPos;
+
+	//Need to add unrecognised plugins to a separate vector.
 	size_t max = items.size();
-	for (size_t i=0; i < max; i++) {
-		if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
-			if (!trialOnly && !items[i].IsGameMasterFile() && !db->isSkyrim1426plus) {
-				try {
-					items[i].SetModTime(masterTime + plugins.size()*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-				} catch(boss_error &e) {
-					return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
-				}
-			}
-			//Add plugin to vector.
-			plugins.push_back(items[i].Name());
-		}
-		//Also need to store the position of the last recognised plugin.
-		if (i == modlist.LastRecognisedPos())
-			lastRecPluginPos = plugins.size() - 1;
+	vector<string> unrecognised;
+	for (size_t i= modlist.LastRecognisedPos() + 1; i < max; i++) {
+		if (items[i].Type() == MOD && items[i].Exists())
+			unrecognised.push_back(items[i].Name());
 	}
 
-	//Skyrim >= 1.4.26 load order setting.
-	if (!trialOnly && db->isSkyrim1426plus) {
-		try {
-			modlist.SavePluginNames(loadorder_path(), false, false);
-			modlist.SavePluginNames(plugins_path(), true, true);
-		} catch (boss_error &e) {
-			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+	//Now apply master partition.
+	modlist.ApplyMasterPartition();
+	items = modlist.Items();
+	
+	//Now reorder plugins.
+	vector<string> plugins;
+	if (!trialOnly) {
+		for (size_t i=0; i < max; i++) {
+			if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
+				if (!items[i].IsGameMasterFile() && !db->isSkyrim1426plus) {
+					try {
+						items[i].SetModTime(masterTime + plugins.size()*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+					} catch(boss_error &e) {
+						return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
+					}
+				}
+				//Add plugin to vector.
+				plugins.push_back(items[i].Name());
+			}
+		}
+		if (db->isSkyrim1426plus) {
+			try {
+				modlist.SavePluginNames(loadorder_path(), false, false);
+				modlist.SavePluginNames(plugins_path(), true, true);
+			} catch (boss_error &e) {
+				return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+			}
 		}
 	}
 
@@ -733,12 +756,18 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	if (plugins.empty())
 		return ReturnCode(BOSS_API_OK);
 
-	//Now create external array.
+	//Now create external arrays.
 	db->extStringArraySize = plugins.size();
+	db->extStringArray2Size = unrecognised.size();
 	try {
+		//All plugins.
 		db->extStringArray = new uint8_t*[db->extStringArraySize];
 		for (size_t i=0; i < db->extStringArraySize; i++)
 			db->extStringArray[i] = StringToUint8_tString(plugins[i]);
+		//Unrecognised plugins.
+		db->extStringArray2 = new uint8_t*[db->extStringArray2Size];
+		for (size_t i=0; i < db->extStringArray2Size; i++)
+			db->extStringArray2[i] = StringToUint8_tString(unrecognised[i]);
 	} catch (bad_alloc &e) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 	}
@@ -746,10 +775,12 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	//Set outputs.
 	if (sortedPlugins != NULL)
 		*sortedPlugins = db->extStringArray;
-	if (listLength != NULL)
-		*listLength = db->extStringArraySize;
-	if (lastRecPos != NULL)
-		*lastRecPos = lastRecPluginPos;
+	if (sortedListLength != NULL)
+		*sortedListLength = db->extStringArraySize;
+	if (unrecognisedPlugins != NULL)
+		*unrecognisedPlugins = db->extStringArray2;
+	if (unrecListLength != NULL)
+		*unrecListLength = db->extStringArray2Size;
 
 	return ReturnCode(BOSS_API_OK);
 }

@@ -423,16 +423,14 @@ namespace boss {
 		try {
 			//Modlist.
 			size_t size = modlist.Items().size();
-			size_t pos = modlist.GetLastMasterPos();
-			pos = modlist.GetNextMasterPos(pos+1);
+			size_t pos = modlist.GetNextMasterPos(modlist.GetLastMasterPos() + 1);
 			if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
 				throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER, modlist.Items()[pos].Name());
 			//Masterlist.
 			size = masterlist.Items().size();
-			pos = masterlist.GetLastMasterPos();
-			pos = masterlist.GetNextMasterPos(pos+1);
+			pos = masterlist.GetNextMasterPos(masterlist.GetLastMasterPos() + 1);
 			if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
-				throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER, modlist.Items()[pos].Name());
+				throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER, masterlist.Items()[pos].Name());
 		} catch (boss_error &e) {
 			Outputter output;
 			output.SetFormat(gl_log_format);
