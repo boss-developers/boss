@@ -92,7 +92,9 @@ struct _boss_db_int {
 		extRemovedTagIds = NULL;
 		extString = NULL;
 		extStringArray = NULL;
+		extStringArray2 = NULL;
 		extStringArraySize = 0;
+		extStringArray2Size = 0;
 	}
 
 	~_boss_db_int() {
