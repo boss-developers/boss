@@ -597,8 +597,10 @@ namespace boss {
 			//To save needing a new parser, load plugins.txt into an ItemList then fill a hashset from that.
 			//Also check if plugins_path() then detect encoding if it is and translate outputted text from UTF-8 to the detected encoding.
 			LOG_INFO("Loading plugins.txt into ItemList.");
-			activePlugins.Load(plugins_path());
-			numActivePlugins = activePlugins.Items().size();
+			if (fs::exists(plugins_path())) {
+				activePlugins.Load(plugins_path());
+				numActivePlugins = activePlugins.Items().size();
+			}
 		}
 		if (doEncodingConversion) {
 			string contents;
