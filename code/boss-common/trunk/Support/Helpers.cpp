@@ -203,13 +203,15 @@ namespace boss {
 			key = HKEY_LOCAL_MACHINE;
 		else if (keyStr == "HKEY_USERS")
 			key = HKEY_USERS;
+		else
+			return false;
 
 		LONG lRes = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(), 0, KEY_READ, &hKey);
-		RegCloseKey(hKey);
 
-		if (lRes == ERROR_SUCCESS)
+		if (lRes == ERROR_SUCCESS) {
+			RegCloseKey(hKey);
 			return true;
-		else
+		} else
 			return false;
 #else
 		return false;
@@ -237,14 +239,11 @@ namespace boss {
 		LONG lRes = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(), 0, KEY_READ, &hKey);
 		if (lRes == ERROR_SUCCESS)
 			LONG lRes = RegQueryValueEx(hKey, fs::path(value).wstring().c_str(), NULL, NULL, (LPBYTE)&val, &BufferSize);
-		RegCloseKey(hKey);
-		
-		//Requires Windows XP 64 bit or Vista+.
-		//LONG lRes = RegGetValue(key, fs::path(subkey).wstring().c_str(), fs::path(value).wstring().c_str(), RRF_RT_REG_SZ, NULL, (PVOID)&val, &BufferSize);
 
-		if (lRes == ERROR_SUCCESS)
+		if (lRes == ERROR_SUCCESS) {
+			RegCloseKey(hKey);
 			return fs::path(val).string();  //Easiest way to convert from wide to narrow character strings.
-		else
+		} else
 			return "";
 #else
 		return "";

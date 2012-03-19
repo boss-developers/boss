@@ -510,6 +510,14 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 		db->extStringArray = NULL;
 		db->extStringArraySize = 0;
 	}
+
+	if (db->extStringArray2 != NULL) {
+		for (size_t i=0; i<db->extStringArray2Size; i++)
+			delete[] db->extStringArray2[i];  //Clear all the uint8_t strings created.
+		delete[] db->extStringArray2;  //Clear the string array.
+		db->extStringArray2 = NULL;
+		db->extStringArray2Size = 0;
+	}
 	
 	//DB SET
 	db->rawMasterlist = masterlist;
@@ -1481,8 +1489,9 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 		try {
 			db->extTagMap = new BashTag[mapSize];
 			for (size_t i=0; i<mapSize; i++) {
-				db->extTagMap[i].id = uint32_t(i);
-				db->extTagMap[i].name = StringToUint8_tString(db->bashTagMap[i]);
+				uint32_t ii = uint32_t(i);
+				db->extTagMap[i].id = ii;
+				db->extTagMap[i].name = StringToUint8_tString(db->bashTagMap[ii]);
 			}
 		} catch (bad_alloc &e) {
 			return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
