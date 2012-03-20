@@ -124,6 +124,8 @@ namespace boss {
 				if (pluginsEntries[i].Type() == MOD)
 					hashset.insert(to_lower_copy(pluginsEntries[i].Name()));
 			}
+			if (gl_current_game == SKYRIM && hashset.find("skyrim.esm") == hashset.end())
+				hashset.insert("skyrim.esm");
 		}
 
 		//modlist stores recognised mods then unrecognised mods in order. Make a hashset of unrecognised mods.
