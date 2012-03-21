@@ -156,16 +156,21 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li>All array sizes and positions use the unsigned data type size_t.
 	<li>File paths are case-sensitive if the underlying file system is case-sensitive.
 </ul>
-<p>The API also introduces two new structures:
+<p>The API also introduces three new structures:
 <code class="box" id="boss_db">typedef struct _boss_db_int * boss_db;</code>
 <p>The boss_db structure abstracts the definition of BOSS's internal state while still providing type safety across the API.
 
-<code class="box" id ="BashTag">typedef struct {
+<code class="box" id="BashTag">typedef struct {
     uint32_t id;
     const uint8_t * name;
 } BashTag;</code>
 <p>The BashTag structure gives the Unique Identifier (UID) for each Bash Tag and the corresponding Bash Tag name.
 
+<code class="box" id="BossMessage">typedef struct {
+	uint32_t type;
+	const uint8_t * message;
+} BossMessage;</code>
+<p>The BossMessage structure gives the type of a message and the message string itself.
 
 <h2 id="memory">Memory Management</h2>
 <p>BAPI manages the memory of strings and arrays it returns internally, so such strings and arrays should not be deallocated by the client.
@@ -230,6 +235,19 @@ There is no way of knowing which is the correct order to choose for the full loa
 		<tr><td>BOSS_API_CLEAN_NO<td>The plugin does not need cleaning or should not be cleaned.
 		<tr><td>BOSS_API_CLEAN_YES<td>The plugin needs cleaning.
 		<tr><td>BOSS_API_CLEAN_UNKNOWN<td>BOSS does not know whether the plugin needs cleaning or not, or if it should not be cleaned.
+</table>
+<h3 id="codes-messages">Message Type Codes</h3>
+<p>The following codes are used in the <a href="#BossMessage">BossMessage</a> data structure to signify what type of message a particular message is.
+<table>
+	<thead><tr><td>Message Type Code<td>Description
+	<tbody>
+		<tr><td>BOSS_API_MESSAGE_SAY<td>A general message.
+		<tr><td>BOSS_API_MESSAGE_TAG<td>A Bash Tag suggestion or suggestions.
+		<tr><td>BOSS_API_MESSAGE_REQUIREMENT<td>An installation requirement or requirements.
+		<tr><td>BOSS_API_MESSAGE_INCOMPATIBILITY<td>An incompatibility or incompatibilities.
+		<tr><td>BOSS_API_MESSAGE_DIRTY<td>A message about dirty edits.
+		<tr><td>BOSS_API_MESSAGE_WARN<td>A warning message.
+		<tr><td>BOSS_API_MESSAGE_ERROR<td>An error message.
 </table>
 
 
@@ -428,6 +446,15 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>modName</var> - A string containing the filename of the plugin to look up dirty status information for.
 	<li><var>message</var> - A pointer to the outputted dirty message attached to the specified plugin. If the plugin has no dirty message, <var>message</var> will be <code>NULL</code>.
 	<li><var>needsCleaning</var> - A pointer to the outputted plugin cleanliness code for the specified plugin.
+</ul>
+
+<dfn id="GetPluginMessages">GetPluginMessages</dfn> - Outputs the messages associated with a plugin. 
+<code class="box">uint32_t <a href="#GetPluginMessages">GetPluginMessages</a> (boss_db db, const uint8_t * plugin, BossMessage ** message, size_t * numMessages);</code>
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>plugin</var> - A string containing the filename of the plugin to return the messages of.
+	<li><var>messages</var> - A pointer to the outputted array of messages associated with the specified plugin, given as <a href="#BossMessage">BossMessage</a> structures. If the plugin has no messages associated with it, <var>messages</var> will be <code>NULL</code>.
+	<li><var>numMessages</var> - A pointer to the size of the <var>messages</var> array. 0 if <var>messages</var> is <code>NULL</code>.
 </ul>
 
 <dfn id="IsRecognised">IsRecognised</dfn> - Outputs whether or not a plugin is listed in the masterlist for the database's game.

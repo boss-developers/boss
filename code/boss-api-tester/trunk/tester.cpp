@@ -1,4 +1,4 @@
-﻿/*	BOSS
+/*	BOSS
 
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -53,10 +53,11 @@ int main() {
 	const uint8_t * cleanMod = reinterpret_cast<uint8_t *>("All Natural.esp");
 	const uint8_t * doNotCleanMod = reinterpret_cast<uint8_t *>("bgBalancingEVLAMEAddition.esp");
 	const uint8_t * inactiveMod = reinterpret_cast<uint8_t *>("français.esp");
-//	const uint8_t * isActiveMod = reinterpret_cast<uint8_t *>("汉语漢語.esp");
+	const uint8_t * messageMod = reinterpret_cast<uint8_t *>("PerkUP-5555.esp");
+	const uint8_t * isActiveMod = reinterpret_cast<uint8_t *>("汉语漢語.esp");
 	uint8_t ** sortedPlugins;
+	uint8_t ** unrecPlugins;
 	size_t len;
-	size_t lastPos;
 	uint8_t * message;
 	size_t numTagsAdded, numTagsRemoved;
 	bool modified;
@@ -65,6 +66,7 @@ int main() {
 	BashTag * BTmap;
 	size_t size;
 	uint32_t toClean;
+	BossMessage * messages;
 
 	uint32_t ret;
 	ofstream out("API test.txt");
@@ -105,14 +107,17 @@ int main() {
 				out << '\t' << "Conditional evaluation failed. Error: " << ret << endl;
 			else {
 				out << "TESTING SortMods(...)" << endl;
-				ret = SortMods(db, false, &sortedPlugins, &len, &lastPos);
+				ret = SortMods(db, false, &sortedPlugins, &len, &unrecPlugins, &size);
 				if (BOSS_API_OK != ret)
 					out << '\t' << "Sorting failed. Error: " << ret << endl;
 				else {
 					out << '\t' << "List size: " << len << endl;
-					out << '\t' << "Last recognised pos: " << lastPos << endl;
 					for (size_t i=0; i<len; i++) {
 						out << '\t' << '\t' << i << " : " << sortedPlugins[i] << endl;
+					}
+					out << '\t' << "Unrecognised plugin list size: " << size << endl;
+					for (size_t i=0; i<size; i++) {
+						out << '\t' << '\t' << i << " : " << unrecPlugins[i] << endl;
 					}
 				}
 				
@@ -194,28 +199,26 @@ int main() {
 						out << '\t' << '\t' << i << " : " << sortedPlugins[i] << endl;
 					}
 				}
-				
-				uint8_t ** activePlugins = sortedPlugins;
-				
+
 				out << "TESTING GetActivePlugins(...)" << endl;
-				ret = GetActivePlugins(db, &activePlugins, &len);
+				ret = GetActivePlugins(db, &sortedPlugins, &len);
 				if (BOSS_API_OK != ret)
 					out << '\t' << "GetActivePlugins(...) failed. Error: " << ret << endl;
 				else {
 					out << '\t' << "List size: " << len << endl;
 					for (size_t i=0; i<len; i++) {
-						out << '\t' << '\t' << i << " : " << activePlugins[i] << endl;
+						out << '\t' << '\t' << i << " : " << sortedPlugins[i] << endl;
 					}
 				}
 				
 				out << "TESTING SetActivePlugins(...)" << endl;
-				ret = SetActivePlugins(db, activePlugins, len);
+				ret = SetActivePlugins(db, sortedPlugins, len);
 				if (BOSS_API_OK != ret)
 					out << '\t' << "SetActivePlugins(...) failed. Error: " << ret << endl;
 				else {
 					out << '\t' << "List size: " << len << endl;
 					for (size_t i=0; i<len; i++) {
-						out << '\t' << '\t' << i << " : " << activePlugins[i] << endl;
+						out << '\t' << '\t' << i << " : " << sortedPlugins[i] << endl;
 					}
 				}
 				
@@ -244,86 +247,35 @@ int main() {
 				else {
 					out << '\t' << "Plugin at position " << len << " : " << message << endl;
 				}
-				/*
-				out << "TESTING SetPluginActive(...)" << endl;
-				ret = SetPluginActive(db, sortedPlugins[16], true);
+
+				out << "TESTING GetPluginMessages(...)" << endl;
+				ret = GetPluginMessages(db, messageMod, &messages, &len);
 				if (BOSS_API_OK != ret)
-					out << '\t' << "SetPluginActive(...) failed. Error: " << ret << endl;
+					out << '\t' << "GetIndexedPlugin(...) failed. Error: " << ret << endl;
 				else {
-					out << '\t' << "\"" << sortedPlugins[16] << "\" activated." << endl;
-				}
-				
-				out << "TESTING IsPluginActive(...)" << endl;
-				ret = IsPluginActive(db, sortedPlugins[16], &active);  //sortedPlugins[16] is français.esp. Declaring explicitly in the code seems to encode it in ANSI...
-				if (BOSS_API_OK != ret)
-					out << '\t' << "IsPluginActive(...) failed. Error: " << ret << endl;
-				else {
-					out << '\t' << "\"" << sortedPlugins[16] << "\" active status: " << active << endl;
-				}
-				
-				out << "TESTING SetPluginActive(...)" << endl;
-				ret = SetPluginActive(db, sortedPlugins[17], true);
-				if (BOSS_API_OK != ret)
-					out << '\t' << "SetPluginActive(...) failed. Error: " << ret << endl;
-				else {
-					out << '\t' << "\"" << sortedPlugins[17] << "\" deactivated." << endl;
+					out << '\t' << "Message array size: " << size << endl;
+					out << '\t' << "Messages:" << endl;
+					for (size_t i=0; i<len; i++)
+						out << '\t' << '\t' << messages[i].type << " : " << messages[i].message << endl;
 				}
 
-				out << "TESTING IsPluginActive(...)" << endl;
-				ret = IsPluginActive(db, sortedPlugins[17], &active);
-				if (BOSS_API_OK != ret)
-					out << '\t' << "IsPluginActive(...) failed. Error: " << ret << endl;
-				else {
-					out << '\t' << "\"" << sortedPlugins[17] << "\" active status: " << active << endl;
-				}
-				
+				//Assume there are at least 3 plugins.
 				out << "TESTING SetPluginActive(...)" << endl;
-				ret = SetPluginActive(db, sortedPlugins[18], true);
+				ret = SetPluginActive(db, sortedPlugins[2], true);
 				if (BOSS_API_OK != ret)
 					out << '\t' << "SetPluginActive(...) failed. Error: " << ret << endl;
 				else {
-					out << '\t' << "\"" << sortedPlugins[18] << "\" deactivated." << endl;
-				}
-
-				out << "TESTING IsPluginActive(...)" << endl;
-				ret = IsPluginActive(db, sortedPlugins[18], &active);
-				if (BOSS_API_OK != ret)
-					out << '\t' << "IsPluginActive(...) failed. Error: " << ret << endl;
-				else {
-					out << '\t' << "\"" << sortedPlugins[18] << "\" active status: " << active << endl;
+					out << '\t' << "\"" << sortedPlugins[2] << "\" activated." << endl;
 				}
 				
-				out << "TESTING SetPluginActive(...)" << endl;
-				ret = SetPluginActive(db, sortedPlugins[19], true);
-				if (BOSS_API_OK != ret)
-					out << '\t' << "SetPluginActive(...) failed. Error: " << ret << endl;
-				else {
-					out << '\t' << "\"" << sortedPlugins[19] << "\" deactivated." << endl;
-				}
-
+				//Assume there are at least 3 plugins.
 				out << "TESTING IsPluginActive(...)" << endl;
-				ret = IsPluginActive(db, sortedPlugins[19], &active);
+				ret = IsPluginActive(db, sortedPlugins[2], &active);
 				if (BOSS_API_OK != ret)
 					out << '\t' << "IsPluginActive(...) failed. Error: " << ret << endl;
 				else {
-					out << '\t' << "\"" << sortedPlugins[19] << "\" active status: " << active << endl;
+					out << '\t' << "\"" << sortedPlugins[2] << "\" active status: " << active << endl;
 				}
-				
-				out << "TESTING SetPluginActive(...)" << endl;
-				ret = SetPluginActive(db, sortedPlugins[20], true);
-				if (BOSS_API_OK != ret)
-					out << '\t' << "SetPluginActive(...) failed. Error: " << ret << endl;
-				else {
-					out << '\t' << "\"" << sortedPlugins[20] << "\" deactivated." << endl;
-				}
-
-				out << "TESTING IsPluginActive(...)" << endl;
-				ret = IsPluginActive(db, sortedPlugins[20], &active);
-				if (BOSS_API_OK != ret)
-					out << '\t' << "IsPluginActive(...) failed. Error: " << ret << endl;
-				else {
-					out << '\t' << "\"" << sortedPlugins[20] << "\" active status: " << active << endl;
-				}*/
 			}
 		}
 

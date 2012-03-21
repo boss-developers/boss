@@ -73,6 +73,7 @@ struct _boss_db_int {
 	RuleList userlist;
 	map<uint32_t,string> bashTagMap;				//A hashmap containing all the Bash Tag strings found in the masterlist and userlist and their unique IDs.
 													//Ordered to make ensuring UIDs easy (check the UID of the last element then increment). Strings are case-preserved.
+	
 	//Externally-visible data pointers storage.
 	BashTag * extTagMap;				//Holds the pointer for the bashTagMap returned by GetBashTagMap().
 	uint32_t * extAddedTagIds;
@@ -80,10 +81,12 @@ struct _boss_db_int {
 	uint8_t * extString;
 	uint8_t ** extStringArray;
 	uint8_t ** extStringArray2;
+	BossMessage * extMessageArray;
 
 	//Pointer array sizes.
 	size_t extStringArraySize;
 	size_t extStringArray2Size;
+	size_t extMessageArraySize;
 
 	//Constructor
 	_boss_db_int() {
@@ -93,15 +96,28 @@ struct _boss_db_int {
 		extString = NULL;
 		extStringArray = NULL;
 		extStringArray2 = NULL;
+		extMessageArray = NULL;
 		extStringArraySize = 0;
 		extStringArray2Size = 0;
+		extMessageArraySize = 0;
 	}
 
 	~_boss_db_int() {
-		delete[] extTagMap;
 		delete[] extAddedTagIds;
 		delete[] extRemovedTagIds;
-		delete[] extString;;
+		delete[] extString;
+
+		if (extTagMap != NULL) {
+			for (size_t i=0; i < bashTagMap.size(); i++)
+				delete [] extTagMap[i].name;  //Gotta clear those allocated strings.
+			delete[] extTagMap;
+		}
+
+		if (extMessageArray != NULL) {
+			for (size_t i=0; i < extMessageArraySize; i++)
+				delete [] extMessageArray[i].message;  //Gotta clear those allocated strings.
+			delete[] extMessageArray;
+		}
 
 		if (extStringArray != NULL) {
 			for (size_t i=0; i < extStringArraySize; i++)
@@ -178,6 +194,15 @@ BOSS_API const uint32_t BOSS_API_GAME_FALLOUT3	= FALLOUT3;
 BOSS_API const uint32_t BOSS_API_GAME_FALLOUTNV	= FALLOUTNV;
 BOSS_API const uint32_t BOSS_API_GAME_NEHRIM	= NEHRIM;
 BOSS_API const uint32_t BOSS_API_GAME_SKYRIM	= SKYRIM;
+
+// BOSS message types.
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_SAY				= SAY;
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_TAG				= TAG;
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_REQUIREMENT		= REQ;
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_INCOMPATIBILITY	= INC;
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_DIRTY			= DIRTY;
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_WARN			= WARN;
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_ERROR			= ERR;
 
 
 //////////////////////////////
@@ -493,15 +518,29 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 
 	//FREE CURRENT POINTERS
 	//Free memory at pointers stored in structure.
-	delete[] db->extTagMap;
 	delete[] db->extAddedTagIds;
 	delete[] db->extRemovedTagIds;
 	delete[] db->extString;
 
-	db->extTagMap = NULL;
 	db->extAddedTagIds = NULL;
 	db->extRemovedTagIds = NULL;
 	db->extString = NULL;
+
+	if (db->extTagMap != NULL) {
+		for (size_t i=0; i < db->bashTagMap.size(); i++)
+			delete [] db->extTagMap[i].name;  //Gotta clear those allocated strings.
+		delete[] db->extTagMap;
+		db->extTagMap = NULL;
+		db->bashTagMap.clear();
+	}
+
+	if (db->extMessageArray != NULL) {
+		for (size_t i=0; i < db->extMessageArraySize; i++)
+			delete [] db->extMessageArray[i].message;  //Gotta clear those allocated strings.
+		delete[] db->extMessageArray;
+		db->extMessageArray = NULL;
+		db->extMessageArraySize = 0;
+	}
 
 	if (db->extStringArray != NULL) {
 		for (size_t i=0; i<db->extStringArraySize; i++)
@@ -1667,6 +1706,64 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * plugin,
 			}
 		}
 	}
+
+	return ReturnCode(BOSS_API_OK);
+}
+
+// Returns the messages attached to the given plugin. Messages are valid until Load, 
+// DestroyBossDb or GetPluginMessages are next called. plugin is case-insensitive.
+// If no messages are attached, *messages will be NULL and numMessages will equal 0.
+BOSS_API uint32_t GetPluginMessages (boss_db db, const uint8_t * plugin, BossMessage ** messages, size_t * numMessages) {
+	//Check for valid args.
+	if (db == NULL || plugin == NULL || messages == NULL || numMessages == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+									
+	//Convert modName.
+	string mod(reinterpret_cast<const char *>(plugin));
+
+	if (mod.empty())
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugin name is empty.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->data_path;
+	gl_current_game = db->game;
+
+	//Initialise pointers.
+	*messages = NULL;
+	*numMessages = 0;
+
+	//Clear previously allocated memory.
+	if (db->extMessageArray != NULL) {
+		for (size_t i=0; i < db->extMessageArraySize; i++)
+			delete [] db->extMessageArray[i].message;  //Gotta clear those allocated strings.
+		delete[] db->extMessageArray;
+		db->extMessageArray = NULL;
+		db->extMessageArraySize = 0;
+	}
+
+	//Now search filtered masterlist for mod.
+	vector<Message> modMessages;
+	size_t pos = db->filteredMasterlist.FindItem(mod);
+	if (pos != db->filteredMasterlist.Items().size())
+		modMessages = db->filteredMasterlist.Items()[pos].Messages();
+
+	if (modMessages.empty())
+		return ReturnCode(BOSS_API_OK);
+
+	//Allocate memory, then loop through internal bashTagMap and fill output elements.
+	db->extMessageArraySize = modMessages.size();
+	try {
+		db->extMessageArray = new BossMessage[db->extMessageArraySize];
+		for (size_t i=0; i < db->extMessageArraySize; i++) {
+			db->extMessageArray[i].type = modMessages[i].Key();
+			db->extMessageArray[i].message = StringToUint8_tString(modMessages[i].Data());
+		}
+	} catch (bad_alloc &e) {
+		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+	}
+
+	*messages = db->extMessageArray;
+	*numMessages = db->extMessageArraySize;
 
 	return ReturnCode(BOSS_API_OK);
 }

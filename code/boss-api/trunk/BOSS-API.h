@@ -87,6 +87,12 @@ typedef struct {
     const uint8_t * name;  // don't use char for utf-8 since char can be signed
 } BashTag;
 
+// BossMessage structure gives the type of message and it contents.
+typedef struct {
+	uint32_t type;
+	const uint8_t * message;
+} BossMessage;
+
 // The following are the possible codes that the API can return.
 BOSS_API extern const uint32_t BOSS_API_OK;
 BOSS_API extern const uint32_t BOSS_API_OK_NO_UPDATE_NECESSARY;
@@ -127,6 +133,16 @@ BOSS_API extern const uint32_t BOSS_API_GAME_FALLOUT3;
 BOSS_API extern const uint32_t BOSS_API_GAME_FALLOUTNV;
 BOSS_API extern const uint32_t BOSS_API_GAME_NEHRIM;
 BOSS_API extern const uint32_t BOSS_API_GAME_SKYRIM;
+
+// BOSS message types.
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_SAY;
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_TAG;
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_REQUIREMENT;
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_INCOMPATIBILITY;
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_DIRTY;
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_WARN;
+BOSS_API extern const uint32_t BOSS_API_MESSAGE_ERROR;
+
 
 
 //////////////////////////////
@@ -295,6 +311,11 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * plugin,
 // function is called. The string should not be freed by the client.
 BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * plugin, 
 									uint8_t ** message, uint32_t * needsCleaning);
+
+// Returns the messages attached to the given plugin. Messages are valid until Load, 
+// DestroyBossDb or GetPluginMessages are next called. plugin is case-insensitive.
+// If no messages are attached, *messages will be NULL and numMessages will equal 0.
+BOSS_API uint32_t GetPluginMessages (boss_db db, const uint8_t * plugin, BossMessage ** messages, size_t * numMessages);
 
 // Checks if the given mod is present in BOSS's masterlist for the DB's game.
 BOSS_API uint32_t IsRecognised (boss_db db, const uint8_t * plugin, bool * recognised);
