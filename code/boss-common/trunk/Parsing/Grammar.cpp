@@ -226,7 +226,11 @@ namespace boss {
 			("dirty",DIRTY)
 			("warn",WARN)
 			("error",ERR)
-			//Old message symbols.
+		;
+	}
+
+	oldMasterlistMsgKey_::oldMasterlistMsgKey_() {
+		add //Old message symbols.
 			("?",SAY)
 			("%",TAG)
 			(":",REQ)
@@ -317,6 +321,7 @@ namespace boss {
 
 		errorBuffer = NULL;
 		masterlistMsgKey_ masterlistMsgKey;
+		oldMasterlistMsgKey_ oldMasterlistMsgKey;
 		typeKey_ typeKey;
 		const vector<Message> noMessages;  //An empty set of messages.
 
@@ -374,8 +379,7 @@ namespace boss {
 				oldConditional 
 				| conditionals
 			) 
-			>> (messageKeyword
-			>> -lit(':')	//The double >> matters. A single > doesn't work.
+			>> ((messageSymbol | (messageKeyword >> ':'))
 			>> charString)	//The double >> matters. A single > doesn't work.
 			;
 
@@ -392,6 +396,8 @@ namespace boss {
 		charString %= lexeme[+(char_ - eol)]; //String, with no skipper.
 
 		messageKeyword %= no_case[masterlistMsgKey];
+
+		messageSymbol %= no_case[oldMasterlistMsgKey];
 
 		oldConditional = 
 			(
@@ -448,6 +454,7 @@ namespace boss {
 		itemMessage.name("itemMessage");
 		charString.name("charString");
 		messageKeyword.name("messageKeyword");
+		messageSymbol.name("messageSymbol");
 		oldConditional.name("oldConditional");
 		conditionals.name("conditional");
 		andOr.name("andOr");
@@ -462,6 +469,7 @@ namespace boss {
 		on_error<fail>(itemMessage,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(charString,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(messageKeyword,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageSymbol,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(oldConditional,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(conditionals,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(andOr,				phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));

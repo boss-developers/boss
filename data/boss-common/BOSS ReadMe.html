@@ -622,6 +622,11 @@ a problem for which no error message is given, please report the crash or proble
 		<li><b>Issue:</b> BOSS is trying to set master plugins after non-master plugins in the load order. This won't break anything, because the game always loads masters before non-masters regardless of their load order, but it means that BOSS's output would be incorrect.
 		<li><b>Solution:</b> If you have ESMified any non-master plugins, ESPify them back again before running BOSS. If you have not ESMified any non-master plugins, or don't know what that means, report this issue to the BOSS Development Team.
 	</ul>
+	<li><b>Message:</b> <i>This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa.</i>
+	<ul>
+		<li><b>Issue:</b> Whether a plugin is a master file or not is not decided by its file extension, but rather by a bit flag within the plugin. Some mod authors do not know this and so attempt to turn plugins into masters or masters into plugins by changing the file's extension. This does not work, and the game will only pay attention to the bit flag value, so it can appear to users that the plugin is loading in one position when it is actually loading on another. BOSS checks for such <i>false-flagged</i> plugins and alerts the user.
+		<li><b>Solution:</b> Contact the mod author notifying them of the issue politely. The bit flag of a plugin can be changed using Wrye Bash's <q>ESMify/ESPify Self</q> functionality.
+	</ul>
 	<li><b>Message:</b> <i>Cannot find online masterlist revision number!</i>
 	<ul>
 		<li><b>Solution:</b> Report this issue to the BOSS Development Team.
@@ -806,7 +811,7 @@ a problem for which no error message is given, please report the crash or proble
 		<tr class="inactive"><td style="border-right:0;">Random007		<td style="border-left:0;">									<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
 		<tr class="inactive"><td style="border-right:0;">RiddlingLynx	<td style="border-left:0;"><i>(Nexus only)</i>				<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
 		<tr class="inactive"><td style="border-right:0;">Skyline			<td style="border-left:0;"><i>(skyline99 on Nexus)</i>		<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;
-		<tr class="inactive"><td style="border-right:0;">Space Oden69	<td style="border-left:0;"><i>(SpaceOden on Nexus)</i>		<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
+		<tr><td style="border-right:0;">Space Oden69	<td style="border-left:0;"><i>(SpaceOden on Nexus)</i>		<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
 		<tr class="inactive"><td style="border-right:0;">Televator		<td style="border-left:0;">									<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
 		<tr><td style="border-right:0;">Tokc.D.K.		<td style="border-left:0;"><i>(Bethesda Softworks only)</i>	<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;
 		<tr><td style="border-right:0;">Torrello		<td style="border-left:0;">									<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;
@@ -863,24 +868,25 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Removed: BOSS Updater for manual installs. When an update is checked for and found on a manual install, BOSS will notify the user of the update and its download locations, but not download or install the update itself. Behaviour on installer installs is unchanged.
 	<li>Removed: <code>iRunType</code> ini setting, as it was unnecessary.
 	<li>Fixed: GUI mixing up Nehrim and Fallout: New Vegas in the Game drop-down box.
-	<li>Fixed: Saving a masterlist-format file no longer omits its conditionals. This bug was never exposed.
-	<li>Fixed: Conditional parsing errors not being reported correctly in the BOSS Log. This bug was never exposed.
+	<li>Fixed: Masterlist parser getting confused when a plugin filename shared starting characters with a keyword.
 	<li>Fixed: Invalid regular expressions in masterlist-format files causing crashes.
 	<li>Fixed: Plugins with filenames containing international characters causing the GUI's User Rules Editor to fail to load.
 	<li>Fixed: Masterlist-format files beginning with blank lines will no longer create an initial empty item in their data structures.
+	<li>Fixed: Saving a masterlist-format file no longer omits its conditionals. This bug was never exposed.
+	<li>Fixed: Conditional parsing errors not being reported correctly in the BOSS Log. This bug was never exposed.
 	<li>Fixed: Messages being outputted in the format set globally instead of the outputters local format. This bug was never exposed.
 	<li>Fixed: Version number comparisons being sometimes evaluated wrongly for versions of the form a.b.c.d where a, b, c and d were integers. This bug was never exposed.
 	<li>Changed: This utility's name has been changed from <q>Better Oblivion Sorting Software</q> to <q>BOSS</q>.
 	<li>Changed: Tidied up code, making better use of class inheritance and swapping Boost filesystem paths for strings in plugin names.
-	<li>Changed: Updated version of libcurl used from 7.23.1 to 7.24.0, and updated version of wxWidgets used from 2.9.2 to 2.9.3.
-	<li>Changed: GUI's User Rules Editor is now resizeable and the Installed Mods and Masterlist lists are now tabbed to give more space for them.
+	<li>Changed: Updated libcurl from 7.23.1 to 7.24.0, wxWidgets from 2.9.2 to 2.9.3, and Boost from 1.48.0 to 1.49.0.
+	<li>Changed: GUI's User Rules Editor is now resizeable and the Installed Mods and Masterlist lists are now tabbed to give more space for them. Also fixed the position of the tooltip intended for the new messages box in the User Rules Editor.
 	<li>Changed: BOSS no longer quits with an error message without sorting plugins when both Nehrim.esm and Oblivion.esm are present in the same Data folder, as this arrangement may be valid for modders porting mods, so long as Oblivion.esm remains inactive when Nehrim is run.
 	<li>Changed: BOSS update release notes are now displayed before the update download confirmation.
 	<li>Changed: Only a single instance of the GUI is now allowed to run at any one time.
 	<li>Changed: Pretty pictures now in the main readme! Also updated content to reflect various changes and additions.
  	<li>Changed: Rewrote NSIS installer to reflect various changes and additions, and simplified the installer code greatly.
 	<li>Changed: You can no longer sort non-master plugins before master plugins, or master plugins after non-master plugins, using user rules. Masters are commonly .ESM files, and non-master plugins are commonly .ESP files, but whether a plugin is a master or not is actually decided by a variable in the file, not the file extension. (An example of this in action would be <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>ESMify Self</q> function, which makes a plugin into a master without changing the file extension.)
-	<li>Changed: BOSS now enforces the game's <q>masters before plugins</q> rule for load ordering when reading the current load order. It is not enforced for BOSS's sorting output, as only unrecognised masters are positioned after plugins, and these should be moved by the user anyway.
+	<li>Changed: BOSS now enforces the game's <q>masters before plugins</q> rule for load ordering when reading the current load order and sorting plugins.
 	<li>Added: Support for multiple games from a single BOSS install:
 	<ul>
 		<li>BOSS now has two different install types: local installs place the BOSS folder beside a game's Data folder. Non-local installs place the BOSS folder anywhere else. Local installs will always run for the local game by default. Non-local installs will look for supported games and prompt the user to choose one to run for each time BOSS is run. If only one game is found, BOSS will run for it without user prompt.
@@ -894,6 +900,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Added: BOSS can now read the <q>plugins.txt</q> file that the supported games use to store their active plugin list in. BOSS also adapts to the value of the <code>bUseMyGamesDirectory</code> setting in <code>Oblivion.ini</code> when running for Oblivion.
 	<li>Added: An <q>Active</q> label to the BOSS Log for plugins that are active when BOSS is run, and <q>Hide Inactive Mods</q> and <q>Hide 'Active' Label</q> BOSS Log filters.
 	<li>Added: Support for the load order mechanism used by TES V: Skyrim version 1.4.26+. This outputs load order of active plugins to <q>plugins.txt</q>, and outputs the full load order to <q>loadorder.txt</q>, which is created in the same directory as <q>plugins.txt</q>.
+	<li>Added: BOSS now checks for <q>false-flagged</q> plugins and warns the user of any found. False-flagged plugins are those with an extension that does not match the state of the plugin's internal master bit flag.
 </ul>
 <p><b>Version 1.9.1</b> - <i>1 January 2012</i>
 <ul>
