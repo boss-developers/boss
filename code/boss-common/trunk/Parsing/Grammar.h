@@ -54,7 +54,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 BOOST_FUSION_ADAPT_STRUCT(
     boss::Message,
 	(std::string, conditions)
-    (boss::keyType, key)
+    (uint32_t, key)
     (std::string, data)
 )
 
@@ -72,14 +72,14 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 BOOST_FUSION_ADAPT_STRUCT(
 	boss::RuleLine,
-	(boss::keyType, key)
+	(uint32_t, key)
 	(std::string, object)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
 	boss::Rule,
 	(bool, enabled)
-	(boss::keyType, key)
+	(uint32_t, key)
 	(std::string, object)
 	(std::vector<boss::RuleLine>, lines)
 )
@@ -111,15 +111,15 @@ namespace boss {
 	// Keyword structures
 	///////////////////////////////
 
-	struct ruleKeys_ : qi::symbols<char, keyType> {
+	struct ruleKeys_ : qi::symbols<char, uint32_t> {
 		ruleKeys_();
 	};
 
-	struct messageKeys_ : qi::symbols<char, keyType> {
+	struct messageKeys_ : qi::symbols<char, uint32_t> {
 		messageKeys_();
 	};
 
-	struct masterlistMsgKey_ : qi::symbols<char, keyType> {
+	struct masterlistMsgKey_ : qi::symbols<char, uint32_t> {
 		masterlistMsgKey_();
 	};
 
@@ -162,7 +162,7 @@ namespace boss {
 		qi::rule<grammarIter, Message(), Skipper> itemMessage, globalMessage, oldCondItemMessage;
 		qi::rule<grammarIter, MasterlistVar(), Skipper> listVar;
 		qi::rule<grammarIter, string(), Skipper> charString, andOr, conditional, conditionals, oldConditional, condition, version, variable, file, regexFile;
-		qi::rule<grammarIter, keyType(), Skipper> messageKeyword;
+		qi::rule<grammarIter, uint32_t(), Skipper> messageKeyword;
 		ParsingError * errorBuffer;
 		vector<Message> * globalMessageBuffer;
 		vector<MasterlistVar> * setVars;					//Vars set by masterlist.
@@ -233,7 +233,7 @@ namespace boss {
 	public:
 		shorthand_grammar();
 		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
-		inline void SetMessageType(keyType type) { messageType = type; }
+		inline void SetMessageType(uint32_t type) { messageType = type; }
 		inline void SetVarStore(boost::unordered_set<string> * varStore) { setVars = varStore; }
 		inline void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {fileCRCs = CRCStore; }
 	private:
@@ -242,7 +242,7 @@ namespace boss {
 		ParsingError * errorBuffer;
 		boost::unordered_set<string> * setVars;				//Vars set by masterlist.
 		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
-		keyType messageType;
+		uint32_t messageType;
 
 		//Parser error reporter.
 		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);
@@ -298,7 +298,7 @@ namespace boss {
 		qi::rule<grammarIter, vector<Rule>(), Skipper> ruleList;
 		qi::rule<grammarIter, Rule(), Skipper> userlistRule;
 		qi::rule<grammarIter, RuleLine(), Skipper> sortOrMessageLine;
-		qi::rule<grammarIter, keyType(), Skipper> ruleKey, sortOrMessageKey;
+		qi::rule<grammarIter, uint32_t(), Skipper> ruleKey, sortOrMessageKey;
 		qi::rule<grammarIter, string(), Skipper> object;
 		qi::rule<grammarIter, bool(), Skipper> stateKey;
 	

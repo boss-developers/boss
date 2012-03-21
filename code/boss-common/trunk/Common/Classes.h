@@ -42,27 +42,26 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-	enum keyType : uint32_t {
-		NONE,
-		//RuleList keywords.
-		ADD,
-		OVERRIDE,
-		FOR,
-		BEFORE,
-		AFTER,
-		TOP,
-		BOTTOM,
-		APPEND,
-		REPLACE,
-		//Masterlist keywords.
-		SAY,
-		TAG,
-		REQ,
-		INC,
-		DIRTY,
-		WARN,
-		ERR,
-	};
+	//DO NOT CHANGE THE VALUES. THEY MUST BE INVARIANT ACROSS RELEASES FOR API USERS.
+	BOSS_COMMON const uint32_t NONE		= 0;
+	//RuleList keywords.
+	BOSS_COMMON const uint32_t ADD		= 1;
+	BOSS_COMMON const uint32_t OVERRIDE	= 2;
+	BOSS_COMMON const uint32_t FOR		= 3;
+	BOSS_COMMON const uint32_t BEFORE	= 4;
+	BOSS_COMMON const uint32_t AFTER	= 5;
+	BOSS_COMMON const uint32_t TOP		= 6;
+	BOSS_COMMON const uint32_t BOTTOM	= 7;
+	BOSS_COMMON const uint32_t APPEND	= 8;
+	BOSS_COMMON const uint32_t REPLACE	= 9;
+	//Masterlist keywords.
+	BOSS_COMMON const uint32_t SAY		= 10;
+	BOSS_COMMON const uint32_t TAG		= 11;
+	BOSS_COMMON const uint32_t REQ		= 12;
+	BOSS_COMMON const uint32_t INC		= 13;
+	BOSS_COMMON const uint32_t DIRTY	= 14;
+	BOSS_COMMON const uint32_t WARN		= 15;
+	BOSS_COMMON const uint32_t ERR		= 16;
 
 	enum itemType : uint32_t {
 		MOD,
@@ -103,13 +102,13 @@ namespace boss {
 	class BOSS_COMMON Message : public conditionalData {
 		friend struct boost::fusion::extension::access;
 	private:
-		keyType key;
+		uint32_t key;
 	public:
 		Message();
-		Message(keyType inKey, string inData);
+		Message(uint32_t inKey, string inData);
 
-		keyType Key() const;
-		void Key(keyType inKey);
+		uint32_t Key() const;
+		void Key(uint32_t inKey);
 		string KeyToString() const;		//Has HTML-safe output.
 
 		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
@@ -141,6 +140,7 @@ namespace boss {
 		bool	IsGroup		() const;
 		bool	IsGameMasterFile() const;
 		bool	IsMasterFile() const;
+		bool	IsFalseFlagged() const;			//True if IsMasterFile does not match file extension.
 		bool	IsGhosted	() const;			//Checks if the file exists in ghosted form.
 		bool	Exists		() const;			//Checks if the file exists in data_path, ghosted or not.
 		string	GetVersion	() const;			//Outputs the file's header.
@@ -206,20 +206,20 @@ namespace boss {
 	class BOSS_COMMON RuleLine {
 		friend struct boost::fusion::extension::access;
 	private:
-		keyType key;
+		uint32_t key;
 		string	object;
 	public:
 				RuleLine			();
-				RuleLine			(keyType inKey, string inObject);
+				RuleLine			(uint32_t inKey, string inObject);
 
 		bool	IsObjectMessage		() const;
-		keyType ObjectMessageKey	() const;
+		uint32_t ObjectMessageKey	() const;
 		string	ObjectMessageData	() const;
 		string	KeyToString			() const;		//Has HTML-safe output.
 
-		keyType Key() const;
+		uint32_t Key() const;
 		string Object() const;
-		void Key(keyType inKey);
+		void Key(uint32_t inKey);
 		void Object(string inObject);
 	};
 

@@ -116,15 +116,15 @@ namespace boss {
 		key = SAY;
 	}
 	
-	Message::Message	(keyType inKey, string inData) : conditionalData(inData, "") {
+	Message::Message	(uint32_t inKey, string inData) : conditionalData(inData, "") {
 		key = inKey;
 	}
 
-	keyType Message::Key() const {
+	uint32_t Message::Key() const {
 		return key;
 	}
 
-	void Message::Key(keyType inKey) {
+	void Message::Key(uint32_t inKey) {
 		key = inKey;
 	}
 
@@ -256,6 +256,10 @@ namespace boss {
 
 	bool	Item::IsMasterFile() const {
 		return IsPluginMaster(data_path / Data());
+	}
+
+	bool	Item::IsFalseFlagged() const {
+		return ((IsMasterFile() && boost::algorithm::to_lower_copy(fs::path(Data()).extension().string()) != ".esm") || (!IsMasterFile() && boost::algorithm::to_lower_copy(fs::path(Data()).extension().string()) == ".esm"));
 	}
 
 	bool	Item::IsGhosted		() const {
@@ -680,18 +684,24 @@ namespace boss {
 		boost::unordered_set<string>::iterator setPos;
 		for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
 			const string ext = to_lower_copy(itr->path().extension().string());
-			if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost"))	//Add file to hashset.
-				hashset.insert(itr->path().filename().string());
+			if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {	//Add file to hashset.
+				if (ext == ".ghost")
+					hashset.insert(itr->path().filename().stem().string());
+				else
+					hashset.insert(itr->path().filename().string());
+
+			}
 		}
 
 		//Now iterate through items vector, working on regex entries.
 		//First remove a regex entry, then look for matches in the hashset.
 		//Add all matches with the messages attached to the regex entry to the items vector in the position the regex entry occupied.
-		for (vector<Item>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter) {
+		vector<Item>::iterator itemIter = items.begin();
+		while (itemIter != items.end()) {
 			if (itemIter->Type() == REGEX) {
 				boost::regex reg;  //Form a regex.
 				try {
-					reg = boost::regex(itemIter->Name()+"(.ghost)?", boost::regex::extended|boost::regex::icase);  //Ghost extension is added so ghosted mods will also be found.
+					reg = boost::regex(itemIter->Name()+"(\\.ghost)?", boost::regex::extended|boost::regex::icase);  //Ghost extension is added so ghosted mods will also be found.
 				} catch (boost::regex_error &e) {
 					boss_error be = boss_error(BOSS_ERROR_REGEX_EVAL_FAIL, itemIter->Name());
 					LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", be.getString().c_str());
@@ -705,9 +715,10 @@ namespace boss {
 				while (setPos != hashset.end()) {  //Now insert the current found mod in the position of the regex mod.
 					itemIter = items.insert(itemIter, Item(*setPos, MOD, messages));
 					setPos = FindRegexMatch(hashset, reg, ++setPos);
+					++itemIter;
 				}
-				--itemIter;
-			}
+			} else
+				++itemIter;
 		}
 	}
 
@@ -753,7 +764,12 @@ namespace boss {
 
 	size_t		ItemList::GetLastMasterPos() const {
 		size_t i=0;
-		while (i < items.size() && (items[i].IsGroup() || items[i].IsMasterFile())) {  //SLLOOOOOWWWWW probably.
+		while (i < items.size() && (items[i].IsGroup() || items[i].IsMasterFile() || items[i].IsFalseFlagged())) {  //SLLOOOOOWWWWW probably.
+			if (items[i].IsFalseFlagged()) {
+				vector<Message> messages = items[i].Messages();
+				messages.push_back(Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa."));
+		//		items[i].Messages(messages);
+			}
 			i++;
 		}
 		if (i > 0)
@@ -844,7 +860,7 @@ namespace boss {
 				object = "";
 			}
 
-			RuleLine::RuleLine			(keyType inKey, string inObject) {
+			RuleLine::RuleLine			(uint32_t inKey, string inObject) {
 				key = inKey;
 				object = inObject;
 			}
@@ -868,7 +884,7 @@ namespace boss {
 		}
 	}
 	
-	keyType	RuleLine::ObjectMessageKey	() const {
+	uint32_t	RuleLine::ObjectMessageKey	() const {
 		if (key != APPEND && key != REPLACE)
 			return NONE;
 
@@ -951,7 +967,7 @@ namespace boss {
 		}
 	}
 
-	keyType RuleLine::Key() const {
+	uint32_t RuleLine::Key() const {
 		return key;
 	}
 
@@ -959,7 +975,7 @@ namespace boss {
 		return object;
 	}
 
-	void RuleLine::Key(keyType inKey) {
+	void RuleLine::Key(uint32_t inKey) {
 		key = inKey;
 	}
 
