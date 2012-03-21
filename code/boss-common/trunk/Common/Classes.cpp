@@ -765,11 +765,6 @@ namespace boss {
 	size_t		ItemList::GetLastMasterPos() const {
 		size_t i=0;
 		while (i < items.size() && (items[i].IsGroup() || items[i].IsMasterFile() || items[i].IsFalseFlagged())) {  //SLLOOOOOWWWWW probably.
-			if (items[i].IsFalseFlagged()) {
-				vector<Message> messages = items[i].Messages();
-				messages.push_back(Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa."));
-		//		items[i].Messages(messages);
-			}
 			i++;
 		}
 		if (i > 0)

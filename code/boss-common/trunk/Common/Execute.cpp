@@ -192,7 +192,14 @@ namespace boss {
 							else if (messages[j].Key() == ERR)
 								counters.errors++;
 						}
+						if (itemIter->IsFalseFlagged())
+							buffer << Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa.");
 						buffer << LIST_CLOSE;
+					} else if (itemIter->IsFalseFlagged()) {
+						buffer << LIST_OPEN
+								<< Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa.")
+								<< LIST_CLOSE;
+						counters.warnings++;
 					}
 					counters.recognised++;
 					contents.recognisedPlugins += buffer.AsString();
