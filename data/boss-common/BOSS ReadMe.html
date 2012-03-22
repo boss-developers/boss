@@ -883,13 +883,15 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Fixed: Conditional parsing errors not being reported correctly in the BOSS Log. This bug was never exposed.
 	<li>Fixed: Messages being outputted in the format set globally instead of the outputters local format. This bug was never exposed.
 	<li>Fixed: Version number comparisons being sometimes evaluated wrongly for versions of the form a.b.c.d where a, b, c and d were integers. This bug was never exposed.
+	<li>Fixed: The tooltip intended for the new messages text box was attached to the masterlist mod messages box in the User Rules Editor.
 	<li>Changed: This utility's name has been changed from <q>Better Oblivion Sorting Software</q> to <q>BOSS</q>.
 	<li>Changed: Tidied up code, making better use of class inheritance and swapping Boost filesystem paths for strings in plugin names.
 	<li>Changed: Updated libcurl from 7.23.1 to 7.24.0, wxWidgets from 2.9.2 to 2.9.3, and Boost from 1.48.0 to 1.49.0.
-	<li>Changed: GUI's User Rules Editor is now resizeable and the Installed Mods and Masterlist lists are now tabbed to give more space for them. Also fixed the position of the tooltip intended for the new messages box in the User Rules Editor.
+	<li>Changed: GUI's User Rules Editor is now resizeable and the Installed Mods and Masterlist lists are now tabbed to give them more space.
+	<li>Changed: The GUI now uses the User Rules Editor to edit the userlist by default.
+	<li>Changed: Only a single instance of the GUI is now allowed to run at any one time.
 	<li>Changed: BOSS no longer quits with an error message without sorting plugins when both Nehrim.esm and Oblivion.esm are present in the same Data folder, as this arrangement may be valid for modders porting mods, so long as Oblivion.esm remains inactive when Nehrim is run.
 	<li>Changed: BOSS update release notes are now displayed before the update download confirmation.
-	<li>Changed: Only a single instance of the GUI is now allowed to run at any one time.
 	<li>Changed: Pretty pictures now in the main readme! Also updated content to reflect various changes and additions.
  	<li>Changed: Rewrote NSIS installer to reflect various changes and additions, and simplified the installer code greatly.
 	<li>Changed: You can no longer sort non-master plugins before master plugins, or master plugins after non-master plugins, using user rules. Masters are commonly .ESM files, and non-master plugins are commonly .ESP files, but whether a plugin is a master or not is actually decided by a variable in the file, not the file extension. (An example of this in action would be <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>ESMify Self</q> function, which makes a plugin into a master without changing the file extension.)

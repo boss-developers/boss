@@ -157,7 +157,7 @@ namespace boss {
 
 	//GUI variables
 	BOSS_COMMON uint32_t	gl_run_type					= 0;
-	BOSS_COMMON	bool		gl_use_user_rules_editor	= false;
+	BOSS_COMMON	bool		gl_use_user_rules_editor	= true;
 
 	//Command line variables
 	BOSS_COMMON string		gl_proxy_host				= "";
