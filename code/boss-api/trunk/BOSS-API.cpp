@@ -699,13 +699,13 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 		//Modlist.
 		size_t size = modlist.Items().size();
 		size_t pos = modlist.GetNextMasterPos(modlist.GetLastMasterPos() + 1);
-		if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
-			return ReturnCode(BOSS_ERROR_PLUGIN_BEFORE_MASTER, modlist.Items()[pos].Name());
+		if (pos != size)   //Masters exist after the initial set of masters. Not allowed. Since order is not decided by BOSS though, silently fix.
+			modlist.ApplyMasterPartition();
 		//Masterlist.
 		size = masterlist.Items().size();
 		pos = masterlist.GetNextMasterPos(masterlist.GetLastMasterPos() + 1);
 		if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
-			return ReturnCode(BOSS_ERROR_PLUGIN_BEFORE_MASTER, masterlist.Items()[pos].Name());
+			masterlist.ApplyMasterPartition();
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}

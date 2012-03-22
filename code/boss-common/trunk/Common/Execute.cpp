@@ -192,15 +192,15 @@ namespace boss {
 							else if (messages[j].Key() == ERR)
 								counters.errors++;
 						}
-						if (itemIter->IsFalseFlagged())
+			/*			if (itemIter->IsFalseFlagged())
 							buffer << Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa.");
-						buffer << LIST_CLOSE;
-					} else if (itemIter->IsFalseFlagged()) {
+			*/			buffer << LIST_CLOSE;
+			/*		} else if (itemIter->IsFalseFlagged()) {
 						buffer << LIST_OPEN
 								<< Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa.")
 								<< LIST_CLOSE;
 						counters.warnings++;
-					}
+			*/		}
 					counters.recognised++;
 					contents.recognisedPlugins += buffer.AsString();
 				} else {  //Unrecognised plugin.
@@ -429,32 +429,22 @@ namespace boss {
 		LOG_INFO("masterlist now filled with ordered mods and modlist filled with unknowns.");
 
 		//Check to see that masterlist and modlist obey the masters before plugins rule.
+		//If they don't, add a global warning saying so.
 		try {
 			//Modlist.
 			size_t size = modlist.Items().size();
 			size_t pos = modlist.GetNextMasterPos(modlist.GetLastMasterPos() + 1);
-			if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
-				throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER, modlist.Items()[pos].Name());
+			if (pos != size)   //Masters exist after the initial set of masters. Not allowed. Since order is not decided by BOSS though, silently fix.
+				modlist.ApplyMasterPartition();
 			//Masterlist.
 			size = masterlist.Items().size();
 			pos = masterlist.GetNextMasterPos(masterlist.GetLastMasterPos() + 1);
 			if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
 				throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER, masterlist.Items()[pos].Name());
 		} catch (boss_error &e) {
-			Outputter output;
-			output.SetFormat(gl_log_format);
-			output.PrintHeader();
-			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
-				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-				<< "Utility will end now." << LIST_CLOSE;
-			output.PrintFooter();
-			try {
-				output.Save(bosslog_path(), true);
-			} catch (boss_error &e) {
-				LOG_ERROR("Critical Error: %s", e.getString().c_str());
-			}
-			LOG_ERROR("Critical Error: %s", e.getString().c_str());
-			return;
+			contents.globalMessages.push_back(Message(SAY, "The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see the readme section on False-Flagged Plugins."));
+			masterlist.ApplyMasterPartition();
+			LOG_WARN("Error: The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see the readme section on False-Flagged Plugins.");
 		}
 
 		//Now stick them back together.

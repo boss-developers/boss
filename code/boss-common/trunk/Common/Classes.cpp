@@ -729,7 +729,9 @@ namespace boss {
 		while (pos < items.size()) {
 			Item master = items[pos];
 			items.erase(items.begin() + pos);
-			items.insert(items.begin() + lastMasterPos, master);
+			items.insert(items.begin() + lastMasterPos + 1, master);
+			++lastMasterPos;
+			LOG_INFO("Master file \"%s\" moved before non-master plugins.", master.Name().c_str());
 			pos = GetNextMasterPos(pos+1);
 		}
 	}
