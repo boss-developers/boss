@@ -49,12 +49,14 @@ Function .onInit
 StrCpy $Empty ""
 
 ; First check to see if BOSS is already installed via installer, and launch the existing uninstaller if so.
-IfFileExists "$COMMONFILES\BOSS\uninstall.exe" 0 +6
+IfFileExists "$COMMONFILES\BOSS\uninstall.exe" 0 +8
 	MessageBox MB_OKCANCEL|MB_ICONQUESTION "BOSS is already installed, and must be uninstalled before continuing. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade." IDOK oldCont IDCANCEL oldCancel
 	oldCancel:
 		Quit
 	oldCont:
-	ExecWait '$COMMONFILES\BOSS\uninstall.exe _?=$COMMONFILES\BOSS' ;Run the uninstaller in its folder and wait until it's done.
+		ExecWait '$COMMONFILES\BOSS\uninstall.exe _?=$COMMONFILES\BOSS' ;Run the uninstaller in its folder and wait until it's done.
+	Delete "$COMMONFILES\BOSS\uninstall.exe"
+	RMDir "$COMMONFILES\BOSS"
 
 ;That was the old uninstaller location, now see if the current version is already installed.
 ReadRegStr $InstallPath HKLM "Software\BOSS" "Installed Path"
@@ -375,13 +377,21 @@ SectionEnd
 
 Section "un.User Files" UserFiles
 	;The following user files are only removed if set to.
-		Delete "$INSTDIR\BOSS.ini"
-		Delete "$INSTDIR\BOSS.ini.old"
-		Delete "$INSTDIR\Oblivion\userlist.txt"
-		Delete "$INSTDIR\Nehrim\userlist.txt"
-		Delete "$INSTDIR\Skyrim\userlist.txt"
-		Delete "$INSTDIR\Fallout 3\userlist.txt"
-		Delete "$INSTDIR\Fallout New Vegas\userlist.txt"
+	Delete "$INSTDIR\BOSS.ini"
+	Delete "$INSTDIR\BOSS.ini.old"
+	Delete "$INSTDIR\Oblivion\userlist.txt"
+	Delete "$INSTDIR\Nehrim\userlist.txt"
+	Delete "$INSTDIR\Skyrim\userlist.txt"
+	Delete "$INSTDIR\Fallout 3\userlist.txt"
+	Delete "$INSTDIR\Fallout New Vegas\userlist.txt"
+	;Also try removing the folders storing them, in case they are otherwise empty.
+	RMDir "$INSTDIR\Oblivion"
+	RMDir "$INSTDIR\Nehrim"
+	RMDir "$INSTDIR\Skyrim"
+	RMDir "$INSTDIR\Fallout 3"
+	RMDir "$INSTDIR\Fallout New Vegas"
+	;Try removing install directory.
+	RMDir "$INSTDIR"
 SectionEnd
 
 

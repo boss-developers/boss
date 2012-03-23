@@ -512,7 +512,7 @@ a problem for which no error message is given, please report the crash or proble
 <ul class="errorMessages">
 	<li><b>Symptom:</b> No change in load order.
 	<ul>
-		<li><b>Issue:</b> <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>Lock Load Order</q><u title="previously Lock Times">*</u> load order locking feature is enabled, but <q>BOSS Disable Lock Load Order</q><span title="previously BOSS Disable Lock Times">*</span> is not.
+		<li><b>Issue:</b> <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>Lock Load Order</q><span title="previously Lock Times">*</span> load order locking feature is enabled, but <q>BOSS Disable Lock Load Order</q><span title="previously BOSS Disable Lock Times">*</span> is not.
 		<li><b>Solution:</b> Enable <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>BOSS Disable Lock Load Order</q><span title="previously BOSS Disable Lock Times">*</span> setting.
 	</ul>
 	<li><b>Symptom:</b> BOSS does not change/update the BOSS Log and/or modlists correctly.
@@ -879,11 +879,12 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Fixed: Invalid regular expressions in masterlist-format files causing crashes.
 	<li>Fixed: Plugins with filenames containing international characters causing the GUI's User Rules Editor to fail to load.
 	<li>Fixed: Masterlist-format files beginning with blank lines will no longer create an initial empty item in their data structures.
+	<li>Fixed: The tooltip intended for the new messages text box was attached to the masterlist mod messages box in the User Rules Editor.
+	<li>Fixed: The masterlist displayed GUI's User Rules Editor was unevaluated for conditionals and regex entries.
 	<li>Fixed: Saving a masterlist-format file no longer omits its conditionals. This bug was never exposed.
 	<li>Fixed: Conditional parsing errors not being reported correctly in the BOSS Log. This bug was never exposed.
 	<li>Fixed: Messages being outputted in the format set globally instead of the outputters local format. This bug was never exposed.
 	<li>Fixed: Version number comparisons being sometimes evaluated wrongly for versions of the form a.b.c.d where a, b, c and d were integers. This bug was never exposed.
-	<li>Fixed: The tooltip intended for the new messages text box was attached to the masterlist mod messages box in the User Rules Editor.
 	<li>Changed: This utility's name has been changed from <q>Better Oblivion Sorting Software</q> to <q>BOSS</q>.
 	<li>Changed: Tidied up code, making better use of class inheritance and swapping Boost filesystem paths for strings in plugin names.
 	<li>Changed: Updated libcurl from 7.23.1 to 7.24.0, wxWidgets from 2.9.2 to 2.9.3, and Boost from 1.48.0 to 1.49.0.

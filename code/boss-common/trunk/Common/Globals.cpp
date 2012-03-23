@@ -29,6 +29,7 @@
 #include "Common/Globals.h"
 #include "Parsing/Grammar.h"
 #include "Support/Helpers.h"
+#include "Support/Logger.h"
 #include "Output/Output.h"
 
 #ifdef BOSSGUI
@@ -218,6 +219,7 @@ namespace boss {
 	}
 
 	BOSS_COMMON void SetDataPath(uint32_t game) {
+		LOG_INFO("Setting data path for game: \"%s\"", GetGameString(game).c_str());
 		if (gl_update_only || game == AUTODETECT || fs::exists(data_path / GetGameMasterFile(game))) {
 			data_path = boss_path / ".." / "Data";
 			return;
@@ -255,6 +257,7 @@ namespace boss {
 	}
 
 	void AutodetectGame(void * parent) {  //Throws exception if error.
+		LOG_INFO("Autodetecting game.");
 		if (fs::exists(data_path / "Nehrim.esm"))  //Before Oblivion because Nehrim installs can have Oblivion.esm for porting mods.
 			gl_current_game = NEHRIM;
 		else if (fs::exists(data_path / "Oblivion.esm"))
@@ -266,6 +269,7 @@ namespace boss {
 		else if (fs::exists(data_path / "Skyrim.esm")) 
 			gl_current_game = SKYRIM;
 		else {
+			LOG_INFO("Game not detected locally. Checking Registry for paths.");
 			/* New behaviour:
 			1. Try to detect all games.
 			2. If CLI, list detected games. If GUI, list all games, denoting missing games.

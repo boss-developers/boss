@@ -535,6 +535,8 @@ void UserRulesEditorFrame::LoadLists() {
 	LOG_INFO("Starting to parse sorting file: %s", masterlist_path().string().c_str());
 	try {
 		masterlist.Load(masterlist_path());
+		masterlist.EvalConditions();
+		masterlist.EvalRegex();
 	} catch (boss_error &e) {
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
