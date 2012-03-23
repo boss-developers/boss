@@ -1,9 +1,7 @@
-;NSIS Modern User Interface
-;Basic Example Script
-;Written by Joost Verburg
+;BOSS NSIS Installer Script
 
 ;--------------------------------
-;Include Modern UI
+;Include NSIS files.
 
   !include "MUI2.nsh"
   !include "LogicLib.nsh"
@@ -22,7 +20,7 @@
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 2.0.0"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "2.0.0"
 
-  ;Request application privileges for Windows Vista
+  ;Request application privileges for Windows Vista/7
   RequestExecutionLevel admin
 
 ;--------------------------------
@@ -75,7 +73,7 @@ ${If} $InstallPath != $Empty
 ${EndIf}
 
 
-; Look for games, counting them.
+; Look for games, setting their paths if found.
 ReadRegStr $OB_Path HKLM "Software\Bethesda Softworks\Oblivion" "Installed Path"
 ${If} $OB_Path == $Empty ;Try 64 bit path.
 	ReadRegStr $OB_Path HKLM "Software\Wow6432Node\Bethesda Softworks\Oblivion" "Installed Path"
@@ -127,46 +125,16 @@ Section "Installer Section"
 	File "code\boss-cli\trunk\bin\Release-32\BOSS.exe"
 	File "code\boss-gui\trunk\bin\Release-32\BOSS GUI.exe"
 	
-	;Silently move files from past BOSS installs.
-	IfFileExists "$OB_Path\Data\BOSS\userlist.txt" 0 +3
-		CreateDirectory "$INSTDIR\Oblivion"
-		Rename "$OB_Path\Data\BOSS\userlist.txt" "$INSTDIR\Oblivion\userlist.txt"
-	IfFileExists "$NE_Path\Data\BOSS\userlist.txt" 0 +3
-		CreateDirectory "$INSTDIR\Nehrim"
-		Rename "$NE_Path\Data\BOSS\userlist.txt" "$INSTDIR\Nehrim\userlist.txt"
-	IfFileExists "$FO_Path\Data\BOSS\userlist.txt" 0 +3
-		CreateDirectory "$INSTDIR\Fallout 3"
-		Rename "$FO_Path\Data\BOSS\userlist.txt" "$INSTDIR\Fallout 3\userlist.txt"
-	IfFileExists "$NV_Path\Data\BOSS\userlist.txt" 0 +3
-		CreateDirectory "$INSTDIR\Fallout New Vegas"
-		Rename "$NV_Path\Data\BOSS\userlist.txt" "$INSTDIR\Fallout New Vegas\userlist.txt"
-	IfFileExists "$OB_Path\BOSS\userlist.txt" 0 +3
-		CreateDirectory "$INSTDIR\Oblivion"
-		Rename "$OB_Path\BOSS\userlist.txt" "$INSTDIR\Oblivion\userlist.txt"
-	IfFileExists "$NE_Path\BOSS\userlist.txt" 0 +3
-		CreateDirectory "$INSTDIR\Nehrim"
-		Rename "$NE_Path\BOSS\userlist.txt" "$INSTDIR\Nehrim\userlist.txt"
-	IfFileExists "$SK_Path\BOSS\userlist.txt" 0 +3
-		CreateDirectory "$INSTDIR\Skyrim"
-		Rename "$SK_Path\BOSS\userlist.txt" "$INSTDIR\Skyrim\userlist.txt"
-	IfFileExists "$FO_Path\BOSS\userlist.txt" 0 +3
-		CreateDirectory "$INSTDIR\Fallout 3"
-		Rename "$FO_Path\BOSS\userlist.txt" "$INSTDIR\Fallout 3\userlist.txt"
-	IfFileExists "$NV_Path\BOSS\userlist.txt" 0 +3
-		CreateDirectory "$INSTDIR\Fallout New Vegas"
-		Rename "$NV_Path\BOSS\userlist.txt" "$INSTDIR\Fallout New Vegas\userlist.txt"
-	IfFileExists "$OB_Path\BOSS\BOSS.ini" 0 +2
-		Rename "$OB_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
-	IfFileExists "$NE_Path\BOSS\BOSS.ini" 0 +2
-		Rename "$NE_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
-	IfFileExists "$SK_Path\BOSS\BOSS.ini" 0 +2
-		Rename "$SK_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
-	IfFileExists "$FO_Path\BOSS\BOSS.ini" 0 +2
-		Rename "$FO_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
-	IfFileExists "$NV_Path\BOSS\BOSS.ini" 0 +2
-		Rename "$NV_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
-	;Now remove files from past BOSS installations.
+	;Silently move and remove files from past BOSS installs.
 	 ${If} $OB_Path != $Empty
+		IfFileExists "$OB_Path\Data\BOSS\userlist.txt" 0 +3
+			CreateDirectory "$INSTDIR\Oblivion"
+			Rename "$OB_Path\Data\BOSS\userlist.txt" "$INSTDIR\Oblivion\userlist.txt"
+		IfFileExists "$OB_Path\BOSS\userlist.txt" 0 +3
+			CreateDirectory "$INSTDIR\Oblivion"
+			Rename "$OB_Path\BOSS\userlist.txt" "$INSTDIR\Oblivion\userlist.txt"
+		IfFileExists "$OB_Path\BOSS\BOSS.ini" 0 +2
+			Rename "$OB_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
 		Delete "$OB_Path\Data\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
 		Delete "$OB_Path\Data\modlist.*"
 		Delete "$OB_Path\Data\masterlist.txt"
@@ -176,6 +144,14 @@ Section "Installer Section"
 		RMDir  "$OB_Path\Data\BOSS"
 	${EndIf}
 	${If} $NE_Path != $Empty
+		IfFileExists "$NE_Path\Data\BOSS\userlist.txt" 0 +3
+			CreateDirectory "$INSTDIR\Nehrim"
+			Rename "$NE_Path\Data\BOSS\userlist.txt" "$INSTDIR\Nehrim\userlist.txt"
+		IfFileExists "$NE_Path\BOSS\userlist.txt" 0 +3
+			CreateDirectory "$INSTDIR\Nehrim"
+			Rename "$NE_Path\BOSS\userlist.txt" "$INSTDIR\Nehrim\userlist.txt"
+		IfFileExists "$NE_Path\BOSS\BOSS.ini" 0 +2
+			Rename "$NE_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
 		Delete "$NE_Path\Data\BOSS*"
 		Delete "$NE_Path\Data\modlist.*"
 		Delete "$NE_Path\Data\masterlist.txt"
@@ -185,6 +161,11 @@ Section "Installer Section"
 		RMDir  "$NE_Path\Data\BOSS"
 	${EndIf}
 	${If} $SK_Path != $Empty
+		IfFileExists "$SK_Path\BOSS\userlist.txt" 0 +3
+			CreateDirectory "$INSTDIR\Skyrim"
+			Rename "$SK_Path\BOSS\userlist.txt" "$INSTDIR\Skyrim\userlist.txt"
+		IfFileExists "$SK_Path\BOSS\BOSS.ini" 0 +2
+			Rename "$SK_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
 		Delete "$SK_Path\Data\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
 		Delete "$SK_Path\Data\modlist.*"
 		Delete "$SK_Path\Data\masterlist.txt"
@@ -194,6 +175,14 @@ Section "Installer Section"
 		RMDir  "$SK_Path\Data\BOSS"
 	${EndIf}
 	${If} $FO_Path != $Empty
+		IfFileExists "$FO_Path\Data\BOSS\userlist.txt" 0 +3
+			CreateDirectory "$INSTDIR\Fallout 3"
+			Rename "$FO_Path\Data\BOSS\userlist.txt" "$INSTDIR\Fallout 3\userlist.txt"
+		IfFileExists "$FO_Path\BOSS\userlist.txt" 0 +3
+			CreateDirectory "$INSTDIR\Fallout 3"
+			Rename "$FO_Path\BOSS\userlist.txt" "$INSTDIR\Fallout 3\userlist.txt"
+		IfFileExists "$FO_Path\BOSS\BOSS.ini" 0 +2
+			Rename "$FO_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
 		Delete "$FO_Path\Data\BOSS*"
 		Delete "$FO_Path\Data\modlist.*"
 		Delete "$FO_Path\Data\masterlist.txt"
@@ -203,6 +192,14 @@ Section "Installer Section"
 		RMDir  "$FO_Path\Data\BOSS"
 	${EndIf}
 	${If} $NV_Path != $Empty
+		IfFileExists "$NV_Path\Data\BOSS\userlist.txt" 0 +3
+			CreateDirectory "$INSTDIR\Fallout New Vegas"
+			Rename "$NV_Path\Data\BOSS\userlist.txt" "$INSTDIR\Fallout New Vegas\userlist.txt"
+		IfFileExists "$NV_Path\BOSS\userlist.txt" 0 +3
+			CreateDirectory "$INSTDIR\Fallout New Vegas"
+			Rename "$NV_Path\BOSS\userlist.txt" "$INSTDIR\Fallout New Vegas\userlist.txt"
+		IfFileExists "$NV_Path\BOSS\BOSS.ini" 0 +2
+			Rename "$NV_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
 		Delete "$NV_Path\Data\BOSS*"
 		Delete "$NV_Path\Data\modlist.*"
 		Delete "$NV_Path\Data\masterlist.txt"
@@ -211,7 +208,6 @@ Section "Installer Section"
 		Delete "$NV_Path\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
 		RMDir  "$NV_Path\Data\BOSS"
 	${EndIf}
-	
 
 	;Rename BOSS.ini if it exists.
 	IfFileExists "BOSS.ini" 0 +3
@@ -277,8 +273,6 @@ SectionEnd
 
 
 Section "un.BOSS" Main
-
-	;Change this to optionally remove userlist and BOSS.ini, rather than by default.
 
 	;Remove main executables.
 	Delete "$INSTDIR\BOSS.exe"
@@ -398,12 +392,8 @@ SectionEnd
 ;--------------------------------
 ;Languages
  
-  !insertmacro MUI_LANGUAGE "English"
-  LangString unPAGE_SELECT_GAMES_TITLE ${LANG_ENGLISH} "Choose Options"
-  LangString unPAGE_SELECT_GAMES_SUBTITLE ${LANG_ENGLISH} "Please select from the following uninstall options."
-  LangString PAGE_FINISH_TITLE ${LANG_ENGLISH} "Finished installing BOSS v2.0.0."
-  LangString PAGE_FINISH_SUBTITLE ${LANG_ENGLISH} "Please select post-install tasks."
-  
+!insertmacro MUI_LANGUAGE "English"
+
 !insertmacro MUI_UNFUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${Main} "All BOSS's files, minus userlists and the BOSS.ini"
   !insertmacro MUI_DESCRIPTION_TEXT ${UserFiles} "BOSS's userlist files and BOSS.ini file."
