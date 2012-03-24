@@ -818,7 +818,6 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 		UpdateBox->Enable(false);
 		TrialRunBox->Enable(false);
 	}
-	SetDataPath(gl_current_game);
 	DisableUndetectedGames();  //Doesn't actually disable games if (gl_update_only).
 }
 

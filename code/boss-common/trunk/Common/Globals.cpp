@@ -220,7 +220,7 @@ namespace boss {
 
 	BOSS_COMMON void SetDataPath(uint32_t game) {
 		LOG_INFO("Setting data path for game: \"%s\"", GetGameString(game).c_str());
-		if (gl_update_only || game == AUTODETECT || fs::exists(data_path / GetGameMasterFile(game))) {
+		if (game == AUTODETECT || fs::exists(data_path / GetGameMasterFile(game))) {
 			data_path = boss_path / ".." / "Data";
 			return;
 		}
@@ -230,28 +230,38 @@ namespace boss {
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path")) / "Data";
 			else if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion", "Installed Path")) / "Data";
+			else
+				data_path = boss_path / ".." / "Data";
 			break;
 		case NEHRIM:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation")) / "Data";
+			else
+				data_path = boss_path / ".." / "Data";
 			break;
 		case SKYRIM:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path")) / "Data";
 			else if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim", "Installed Path")) / "Data";
+			else
+				data_path = boss_path / ".." / "Data";
 			break;
 		case FALLOUT3:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path")) / "Data";
 			else if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3", "Installed Path")) / "Data";
+			else
+				data_path = boss_path / ".." / "Data";
 			break;
 		case FALLOUTNV:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path")) / "Data";
 			else if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV", "Installed Path")) / "Data";
+			else
+				data_path = boss_path / ".." / "Data";
 			break;
 		}
 	}
