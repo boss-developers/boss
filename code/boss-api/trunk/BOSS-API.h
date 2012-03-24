@@ -277,6 +277,9 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 // Checks to see if the given plugin is listed in plugins.txt.
 BOSS_API uint32_t IsPluginActive(boss_db db, const uint8_t * plugin, bool * isActive);
 
+// Checks to see if the given plugin is a master (using master bit flag value).
+BOSS_API uint32_t IsPluginMaster(boss_db db, const uint8_t * plugin, bool * isMaster);
+
 
 //////////////////////////
 // DB Access Functions

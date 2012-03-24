@@ -1436,6 +1436,19 @@ BOSS_API uint32_t IsPluginActive(boss_db db, const uint8_t * plugin, bool * isAc
 	return ReturnCode(BOSS_API_OK);
 }
 
+// Checks to see if the given plugin is a master (using master bit flag value).
+BOSS_API uint32_t IsPluginMaster(boss_db db, const uint8_t * plugin, bool * isMaster) {
+	if (db == NULL || plugin == NULL || isMaster == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
+
+	//Set globals again in case they've been changed.
+	data_path = db->data_path;
+	gl_current_game = db->game;
+
+	*isMaster = Item(string(reinterpret_cast<const char *>(plugin))).IsMasterFile();
+
+	return ReturnCode(BOSS_API_OK);
+}
 
 
 //////////////////////////

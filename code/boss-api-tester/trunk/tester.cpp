@@ -44,13 +44,13 @@ int main() {
 	boost::filesystem::path::imbue(loc);
 
 	boss_db db;
-	uint8_t * mPath = reinterpret_cast<uint8_t *>("Skyrim/masterlist.txt");
+	uint8_t * mPath = reinterpret_cast<uint8_t *>("Oblivion/masterlist.txt");
 	uint8_t * uPath = reinterpret_cast<uint8_t *>("");
 	uint8_t * dPath = reinterpret_cast<uint8_t *>("../Data");
-	uint32_t game = BOSS_API_GAME_SKYRIM;
+	uint32_t game = BOSS_API_GAME_OBLIVION;
 
 	const uint8_t * file = reinterpret_cast<uint8_t *>("minimal.txt");
-	const uint8_t * cleanMod = reinterpret_cast<uint8_t *>("All Natural.esp");
+	const uint8_t * cleanMod = reinterpret_cast<uint8_t *>("All Natural Base.esm");
 	const uint8_t * doNotCleanMod = reinterpret_cast<uint8_t *>("bgBalancingEVLAMEAddition.esp");
 	const uint8_t * inactiveMod = reinterpret_cast<uint8_t *>("français.esp");
 	const uint8_t * messageMod = reinterpret_cast<uint8_t *>("PerkUP-5555.esp");
@@ -276,6 +276,24 @@ int main() {
 				else {
 					out << '\t' << "\"" << sortedPlugins[2] << "\" active status: " << active << endl;
 				}
+
+				out << "TESTING IsPluginMaster(...)" << endl;
+				ret = IsPluginMaster(db, cleanMod, &active);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "IsPluginMaster(...) failed. Error: " << ret << endl;
+				else if (active)
+					out << '\t' << "\"" << cleanMod << "\" is a master." << endl;
+				else
+					out << '\t' << "\"" << cleanMod << "\" is not a master." << endl;
+
+				out << "TESTING IsPluginMaster(...)" << endl;
+				ret = IsPluginMaster(db, doNotCleanMod, &active);
+				if (BOSS_API_OK != ret)
+					out << '\t' << "IsPluginMaster(...) failed. Error: " << ret << endl;
+				else if (active)
+					out << '\t' << "\"" << doNotCleanMod << "\" is a master." << endl;
+				else
+					out << '\t' << "\"" << doNotCleanMod << "\" is not a master." << endl;
 			}
 		}
 
