@@ -606,7 +606,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 		newRule.Key(FOR);
 	else {
 		size_t pos = masterlist.FindItem(newRule.Object());
-		if (pos < masterlist.LastRecognisedPos() && pos != masterlist.Items().size())  //Mod in masterlist.
+		if (pos != masterlist.Items().size())  //Mod in masterlist.
 			newRule.Key(OVERRIDE);
 		else
 			newRule.Key(ADD);
@@ -879,9 +879,10 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, ItemList 
 	size_t size = rules.size();
 	for (size_t i=0;i<size;i++) {
 		size_t pos = masterlist.FindItem(rules[i].Object());
-		if (pos < masterlist.LastRecognisedPos() && pos != masterlist.Items().size())  //Mod in masterlist.
+		if (pos != masterlist.Items().size())  //Mod in masterlist.
 			rules[i].Enabled(false);
 	}
+	userlist.Rules(rules);
 
 	//Now set up GUI layout.
 	SetBackgroundColour(*wxWHITE);
