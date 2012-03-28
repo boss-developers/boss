@@ -369,7 +369,7 @@ Section "un.BOSS" Main
 
 SectionEnd
 
-Section "un.User Files" UserFiles
+Section /o "un.User Files" UserFiles
 	;The following user files are only removed if set to.
 	Delete "$INSTDIR\BOSS.ini"
 	Delete "$INSTDIR\BOSS.ini.old"
