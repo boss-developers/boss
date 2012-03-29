@@ -705,7 +705,8 @@ namespace boss {
 					continue;
 				}
 				//Copy the start, end and everything in between to a new variable.
-				group.assign(modlist.Items().begin() + modlistPos1, modlist.Items().begin() + modlistPos2+1);
+				vector<Item> items = modlist.Items();
+				group.assign(items.begin() + modlistPos1, items.begin() + modlistPos2+1);
 				//Now erase group from modlist. This breaks the lastRecognisedPos iterator, so that will be reset after rule application.
 				modlist.Erase(modlistPos1,modlistPos2+1);
 				//Find the group to sort relative to and insert it before or after it as appropriate.
