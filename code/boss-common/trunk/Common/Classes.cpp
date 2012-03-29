@@ -706,6 +706,7 @@ namespace boss {
 					boss_error be = boss_error(BOSS_ERROR_REGEX_EVAL_FAIL, itemIter->Name());
 					LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", be.getString().c_str());
 					errorBuffer = ParsingError(be.getString());
+					++itemIter;
 					continue;
 				}
 				vector<Message> messages = itemIter->Messages();
