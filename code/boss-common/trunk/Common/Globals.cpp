@@ -228,8 +228,6 @@ namespace boss {
 		case OBLIVION:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path")) / "Data";
-			else if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion", "Installed Path")) / "Data";
 			else
 				data_path = boss_path / ".." / "Data";
 			break;
@@ -242,24 +240,18 @@ namespace boss {
 		case SKYRIM:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path")) / "Data";
-			else if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim", "Installed Path")) / "Data";
 			else
 				data_path = boss_path / ".." / "Data";
 			break;
 		case FALLOUT3:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path")) / "Data";
-			else if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3", "Installed Path")) / "Data";
 			else
 				data_path = boss_path / ".." / "Data";
 			break;
 		case FALLOUTNV:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path")) / "Data";
-			else if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV", "Installed Path")) / "Data";
 			else
 				data_path = boss_path / ".." / "Data";
 			break;
@@ -296,7 +288,7 @@ namespace boss {
 			wxArrayString choices;
 			string text;
 			text = GetGameString(OBLIVION);
-			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion") && !RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion"))
+			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion"))
 				text += " (not detected)";
 			choices.Add(text);
 			text = GetGameString(NEHRIM);
@@ -304,15 +296,15 @@ namespace boss {
 				text += " (not detected)";
 			choices.Add(text);
 			text = GetGameString(SKYRIM);
-			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim") && !RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim"))
+			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim"))
 				text += " (not detected)";
 			choices.Add(text);
 			text = GetGameString(FALLOUT3);
-			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3") && !RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3"))
+			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3"))
 				text += " (not detected)";
 			choices.Add(text);
 			text = GetGameString(FALLOUTNV);
-			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV") && !RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV"))
+			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV"))
 				text += " (not detected)";
 			choices.Add(text);
 
@@ -340,15 +332,15 @@ namespace boss {
 #else
 			vector<uint32_t> gamesDetected;
 			//Look for Windows Registry entries for the games.
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion")) //Look for Oblivion.
+			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion")) //Look for Oblivion.
 				gamesDetected.push_back(OBLIVION);
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1")) //Look for Nehrim.
 				gamesDetected.push_back(NEHRIM);
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim")) //Look for Skyrim.
+			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim")) //Look for Skyrim.
 				gamesDetected.push_back(SKYRIM);
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3")) //Look for Fallout 3.
+			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3")) //Look for Fallout 3.
 				gamesDetected.push_back(FALLOUT3);
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV")) //Look for Fallout New Vegas.
+			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV")) //Look for Fallout New Vegas.
 				gamesDetected.push_back(FALLOUTNV);
 
 			//Now check what games were found.
@@ -376,15 +368,15 @@ namespace boss {
 	BOSS_COMMON vector<uint32_t> DetectGame(void * parent) {
 		//Detect all installed games.
 		vector<uint32_t> games;
-		if (fs::exists(data_path / "Oblivion.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion")) //Look for Oblivion.
+		if (fs::exists(data_path / "Oblivion.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion")) //Look for Oblivion.
 			games.push_back(OBLIVION);
 		if (fs::exists(data_path / "Nehrim.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1")) //Look for Nehrim.
 			games.push_back(NEHRIM);
-		if (fs::exists(data_path / "Skyrim.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim")) //Look for Skyrim.
+		if (fs::exists(data_path / "Skyrim.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim")) //Look for Skyrim.
 			games.push_back(SKYRIM);
-		if (fs::exists(data_path / "Fallout3.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3")) //Look for Fallout 3.
+		if (fs::exists(data_path / "Fallout3.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3")) //Look for Fallout 3.
 			games.push_back(FALLOUT3);
-		if (fs::exists(data_path / "FalloutNV.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV")) //Look for Fallout New Vegas.
+		if (fs::exists(data_path / "FalloutNV.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV")) //Look for Fallout New Vegas.
 			games.push_back(FALLOUTNV);
 		//Now set gl_current_game.
 		if (gl_game != AUTODETECT) {
@@ -394,15 +386,15 @@ namespace boss {
 				//Check for game. Check locally and for both registry entries.
 				if (fs::exists(data_path / GetGameMasterFile(gl_game)))
 					gl_current_game = gl_game;
-				else if (gl_game == OBLIVION && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion")))  //Look for Oblivion.
+				else if (gl_game == OBLIVION && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion")))  //Look for Oblivion.
 					gl_current_game = gl_game;
 				else if (gl_game == NEHRIM && RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1"))  //Look for Nehrim.
 					gl_current_game = gl_game;
-				else if (gl_game == SKYRIM && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim")))  //Look for Skyrim.
+				else if (gl_game == SKYRIM && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim")))  //Look for Skyrim.
 					gl_current_game = gl_game;
-				else if (gl_game == FALLOUT3 && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3")))  //Look for Fallout 3.
+				else if (gl_game == FALLOUT3 && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3")))  //Look for Fallout 3.
 					gl_current_game = gl_game;
-				else if (gl_game == FALLOUTNV && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV")))  //Look for Fallout New Vegas.
+				else if (gl_game == FALLOUTNV && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV")))  //Look for Fallout New Vegas.
 					gl_current_game = gl_game;
 				else
 					AutodetectGame(parent);  //Game not found. Autodetect.

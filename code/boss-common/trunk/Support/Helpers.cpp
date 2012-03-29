@@ -206,7 +206,7 @@ namespace boss {
 		else
 			return false;
 
-		LONG lRes = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(), 0, KEY_READ, &hKey);
+		LONG lRes = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(), 0, KEY_READ|KEY_WOW64_32KEY, &hKey);
 
 		if (lRes == ERROR_SUCCESS) {
 			RegCloseKey(hKey);
@@ -236,7 +236,7 @@ namespace boss {
 		else if (keyStr == "HKEY_USERS")
 			key = HKEY_USERS;
 
-		LONG lRes = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(), 0, KEY_READ, &hKey);
+		LONG lRes = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(), 0, KEY_READ|KEY_WOW64_32KEY, &hKey);
 		if (lRes == ERROR_SUCCESS)
 			LONG lRes = RegQueryValueEx(hKey, fs::path(value).wstring().c_str(), NULL, NULL, (LPBYTE)&val, &BufferSize);
 

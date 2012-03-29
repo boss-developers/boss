@@ -878,9 +878,11 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, ItemList 
 	vector<Rule> rules = userlist.Rules();
 	size_t size = rules.size();
 	for (size_t i=0;i<size;i++) {
-		size_t pos = masterlist.FindItem(rules[i].Object());
-		if (pos != masterlist.Items().size())  //Mod in masterlist.
-			rules[i].Enabled(false);
+		if (rules[i].Key() == ADD) {
+			size_t pos = masterlist.FindItem(rules[i].Object());
+			if (pos != masterlist.Items().size())  //Mod in masterlist.
+				rules[i].Enabled(false);
+		}
 	}
 	userlist.Rules(rules);
 
