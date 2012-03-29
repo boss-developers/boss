@@ -312,18 +312,20 @@ namespace boss {
 			bosslog << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN;
 			if (!contents.criticalError.empty())		//Print masterlist parsing error.
 				bosslog << contents.criticalError;
-			if (!contents.iniParsingError.empty())		//Print ini parsing error.
-				bosslog << contents.iniParsingError;
-			if (!contents.updaterErrors.empty())
-				bosslog << contents.updaterErrors;
-			if (!contents.regexError.empty())
-				bosslog << contents.regexError;
+			else {
+				if (!contents.iniParsingError.empty())		//Print ini parsing error.
+					bosslog << contents.iniParsingError;
+				if (!contents.updaterErrors.empty())
+					bosslog << contents.updaterErrors;
+				if (!contents.regexError.empty())
+					bosslog << contents.regexError;
 
-			bosslog.SetHTMLSpecialEscape(true);
-			size_t size = contents.globalMessages.size();
-			for (size_t i=0; i<size; i++)
-				bosslog << contents.globalMessages[i];  //Print global messages.
-			bosslog.SetHTMLSpecialEscape(false);
+				bosslog.SetHTMLSpecialEscape(true);
+				size_t size = contents.globalMessages.size();
+				for (size_t i=0; i<size; i++)
+					bosslog << contents.globalMessages[i];  //Print global messages.
+				bosslog.SetHTMLSpecialEscape(false);
+			}
 
 			bosslog << LIST_CLOSE;
 			if (!contents.criticalError.empty()) {  //Exit early.
@@ -460,8 +462,16 @@ namespace boss {
 
 		//Now set the load order using Skyrim method.
 		if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
-			modlist.SavePluginNames(loadorder_path(), false, false);
-			modlist.SavePluginNames(plugins_path(), true, true);
+			try {
+				modlist.SavePluginNames(loadorder_path(), false, false);
+				modlist.SavePluginNames(plugins_path(), true, true);
+			} catch (boss_error &e) {
+				Outputter output(HTML);
+				output << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+					<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+					<< "Utility will end now.";
+				contents.criticalError = output.AsString();
+			}
 		}
 
 		PrintBOSSlog(file, contents, counters, SE);
