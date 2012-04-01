@@ -40,7 +40,7 @@
 namespace boss {
 	using namespace std;
 
-	BOSS_COMMON const string gl_boss_release_date	= "27 March 2012";
+	BOSS_COMMON const string gl_boss_release_date	= "X April 2012";
 
 	BOSS_COMMON uint32_t gl_current_game			= AUTODETECT;
 
@@ -312,7 +312,7 @@ namespace boss {
 				wxT("BOSS: Select Game"), choices);
 
 			if (choiceDia->ShowModal() != wxID_OK)
-				throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
+				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 
 			ans = choiceDia->GetSelection();
 			choiceDia->Close(true);
@@ -328,7 +328,7 @@ namespace boss {
 			else if (ans == 4)
 				gl_current_game = FALLOUTNV;
 			else
-				throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
+				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 #else
 			vector<uint32_t> gamesDetected;
 			//Look for Windows Registry entries for the games.
@@ -345,7 +345,7 @@ namespace boss {
 
 			//Now check what games were found.
 			if (gamesDetected.empty())
-				throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
+				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 			else if (gamesDetected.size() == 1)
 				gl_current_game = gamesDetected.front();
 			else {
@@ -357,10 +357,10 @@ namespace boss {
 				cin >> ans;
 				if (ans < 0 || ans >= gamesDetected.size()) {
 					cout << "Invalid selection." << endl;
-					throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
+					throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 				}
+				gl_current_game = gamesDetected[ans];
 			}
-			gl_current_game = gamesDetected[ans];
 #endif
 		}
 	}
@@ -427,7 +427,7 @@ namespace boss {
 			case FALLOUTNV:
 				return fs::last_write_time(data_path / "FalloutNV.esm");
 			default:
-				throw boss_error(BOSS_ERROR_NO_MASTER_FILE);
+				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 			}
 		} catch(fs::filesystem_error e) {
 			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, GetGameMasterFile(gl_current_game), e.what());

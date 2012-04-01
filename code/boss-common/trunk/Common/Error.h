@@ -44,7 +44,7 @@ namespace boss {
 	//DO NOT CHANGE THEIR VALUES. THEY MUST BE INVARIANT ACROSS RELEASES FOR API USERS.
 	BOSS_COMMON const uint32_t BOSS_OK											= 0;
 
-	BOSS_COMMON const uint32_t BOSS_ERROR_NO_MASTER_FILE						= 1;
+	BOSS_COMMON const uint32_t BOSS_ERROR_NO_MASTER_FILE						= 1;  //Deprecated.
 	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_READ_FAIL						= 2;
 	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_WRITE_FAIL						= 3;
 	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_NOT_UTF8							= 4;
@@ -89,7 +89,7 @@ namespace boss {
 	BOSS_COMMON const uint32_t BOSS_ERROR_NO_TAG_MAP							= 37;
 	BOSS_COMMON const uint32_t BOSS_ERROR_PLUGINS_FULL							= 38;
 
-	BOSS_COMMON const uint32_t BOSS_ERROR_MAX = BOSS_ERROR_PLUGINS_FULL;
+	BOSS_COMMON const uint32_t BOSS_ERROR_MAX = BOSS_ERROR_PLUGIN_BEFORE_MASTER;
 
 	class BOSS_COMMON boss_error {
 	public:
