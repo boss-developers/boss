@@ -552,11 +552,6 @@ a problem for which no error message is given, please report the crash or proble
 		<li><b>Issue:</b> The Registry entry for your Skyrim install is missing. This can occur if Steam's <q>Verify Integrity Of Game Cache</q> function is used.
 		<li><b>Solution:</b> Running Skyrim's launcher will add the Registry entry back in, allowing BOSS to detect Skyrim correctly.
 	</ul>
-	<li><b>Symptom:</b> BOSS detects games that are not installed.
-	<ul>
-		<li><b>Issue:</b> For a minority of users, BOSS's Registry checks return false positives for one or more games. The cause is unknown.
-		<li><b>Solution:</b> No known solution. Just don't select a game that you don't have installed, unless you're only updating its masterlist, or else BOSS will exit with an error.
-	</ul>
 </ul>
 
 <h3 id="permissions">File Permissions</h3>
@@ -891,6 +886,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Fixed: Plugins referenced in user rules that are not installed getting added to loadorder.txt when running for Skyrim v1.4.26+.
 	<li>Fixed: Update.esm not being labelled as active in the BOSS Log when it is missing from plugins.txt and BOSS is running for Skyrim.
 	<li>Fixed: BOSS crash when it detects a single non-local game install.
+	<li>Fixed: BOSS detecting games that are not installed.
 	<li>Changed: Uninstaller's User Files option is now unselected by default.
 	<li>Changed: Switched installer from NSIS to NSIS Unicode.
 	<li>Added: Russian language option to installer. Translation by Tokc.D.K.
