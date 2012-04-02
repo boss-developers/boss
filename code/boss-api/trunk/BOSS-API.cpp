@@ -376,15 +376,15 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 		//If dataPath is null, then we need to look for the specified game.
 		if (fs::exists(data_path / GetGameMasterFile(clientGame)))
 			gl_current_game = clientGame;
-		else if (clientGame == OBLIVION && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Oblivion")))  //Look for Oblivion.
+		else if (clientGame == OBLIVION && RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path"))  //Look for Oblivion.
 			gl_current_game = clientGame;
-		else if (clientGame == NEHRIM && RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1"))  //Look for Nehrim.
+		else if (clientGame == NEHRIM && RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation"))  //Look for Nehrim.
 			gl_current_game = clientGame;
-		else if (clientGame == SKYRIM && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Skyrim")))  //Look for Skyrim.
+		else if (clientGame == SKYRIM && RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path"))  //Look for Skyrim.
 			gl_current_game = clientGame;
-		else if (clientGame == FALLOUT3 && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\Fallout3")))  //Look for Fallout 3.
+		else if (clientGame == FALLOUT3 && RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path"))  //Look for Fallout 3.
 			gl_current_game = clientGame;
-		else if (clientGame == FALLOUTNV && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Wow6432Node\\Bethesda Softworks\\FalloutNV")))  //Look for Fallout New Vegas.
+		else if (clientGame == FALLOUTNV && RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path"))  //Look for Fallout New Vegas.
 			gl_current_game = clientGame;
 		else  //The game has not been found.
 			return ReturnCode(BOSS_API_ERROR_GAME_NOT_FOUND);

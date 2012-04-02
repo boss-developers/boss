@@ -9,14 +9,6 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release DLL|Win32">
-      <Configuration>Release DLL</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release DLL|x64">
-      <Configuration>Release DLL</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -62,12 +54,12 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -78,21 +70,7 @@
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release DLL|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>false</UseOfMfc>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>false</UseOfMfc>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release DLL|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -111,25 +89,21 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release DLL|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release DLL|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>BOSS</TargetName>
-    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
-    <IntDir>out\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Configuration)-$(PlatformArchitecture)\</OutDir>
+    <IntDir>out\$(Configuration)-$(PlatformArchitecture)\</IntDir>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>BOSS</TargetName>
-    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
-    <IntDir>out\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Configuration)-$(PlatformArchitecture)\</OutDir>
+    <IntDir>out\$(Configuration)-$(PlatformArchitecture)\</IntDir>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>BOSS</TargetName>
@@ -137,19 +111,7 @@
     <IntDir>out\$(Configuration)-$(PlatformArchitecture)\</IntDir>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release DLL|Win32'">
-    <TargetName>BOSS</TargetName>
-    <OutDir>$(SolutionDir)bin\$(Configuration)-$(PlatformArchitecture)\</OutDir>
-    <IntDir>out\$(Configuration)-$(PlatformArchitecture)\</IntDir>
-    <TargetExt>.dll</TargetExt>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <TargetName>BOSS</TargetName>
-    <OutDir>$(SolutionDir)bin\$(Configuration)-$(PlatformArchitecture)\</OutDir>
-    <IntDir>out\$(Configuration)-$(PlatformArchitecture)\</IntDir>
-    <TargetExt>.lib</TargetExt>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release DLL|x64'">
     <TargetName>BOSS</TargetName>
     <OutDir>$(SolutionDir)bin\$(Configuration)-$(PlatformArchitecture)\</OutDir>
     <IntDir>out\$(Configuration)-$(PlatformArchitecture)\</IntDir>
@@ -160,30 +122,38 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\lib\wxWidgets\include;$(SolutionDir)..\..\lib\wxWidgets\include\msvc;$(SolutionDir)..\..\lib\curl\include;$(SolutionDir)..\..\lib\boost;$(SolutionDir);$(SolutionDir)..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\include;$(ProjectDir)..\..\..\lib\wxWidgets\include\msvc;$(ProjectDir)..\..\..\lib\curl\include;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WINVER=0x0400;__WXMSW__;_UNICODE;CURL_STATICLIB;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\lib\wxWidgets\lib\vc_lib;$(SolutionDir)..\..\lib\wxWidgets\lib\vc_lib\mswu;$(SolutionDir)..\..\lib\curl\lib\Release;$(SolutionDir)..\..\lib\boost\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName);$(ProjectDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);$(ProjectDir)..\..\..\lib\curl\lib\Release-$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;comctl32.lib;rpcrt4.lib;advapi32.lib;wsock32.lib;Version.lib;libcurl.lib;winmm.lib;wldap32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>1.8.1</Version>
     </Link>
+    <Lib>
+      <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;libcurl.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;Version.lib;wldap32.lib;ws2_32.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName);$(ProjectDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);$(ProjectDir)..\..\..\lib\curl\lib\Release-$(PlatformArchitecture)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\lib\wxWidgets\include;$(SolutionDir)..\..\lib\wxWidgets\include\msvc;$(SolutionDir)..\..\lib\curl\include;$(SolutionDir)..\..\lib\boost;$(SolutionDir);$(SolutionDir)..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\include;$(ProjectDir)..\..\..\lib\wxWidgets\include\msvc;$(ProjectDir)..\..\..\lib\curl\include;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WINVER=0x0400;__WXMSW__;_UNICODE;CURL_STATICLIB;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\lib\wxWidgets\lib\vc_lib;$(SolutionDir)..\..\lib\wxWidgets\lib\vc_lib\mswu;$(SolutionDir)..\..\lib\curl\lib\Release;$(SolutionDir)..\..\lib\boost\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName);$(ProjectDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);$(ProjectDir)..\..\..\lib\curl\lib\Release-$(PlatformArchitecture)</AdditionalLibraryDirectories>
       <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;comctl32.lib;rpcrt4.lib;advapi32.lib;wsock32.lib;Version.lib;libcurl.lib;winmm.lib;wldap32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>1.8.1</Version>
     </Link>
+    <Lib>
+      <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;libcurl.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;Version.lib;wldap32.lib;ws2_32.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName);$(ProjectDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);$(ProjectDir)..\..\..\lib\curl\lib\Release-$(PlatformArchitecture)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -194,7 +164,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\include;$(SolutionDir)..\..\..\lib\wxWidgets\include\msvc;$(SolutionDir)..\..\..\lib\curl\include;$(SolutionDir)..\..\..\lib\boost;$(SolutionDir);$(SolutionDir)..\..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\include;$(ProjectDir)..\..\..\lib\wxWidgets\include\msvc;$(ProjectDir)..\..\..\lib\curl\include;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WINVER=0x0400;__WXMSW__;_UNICODE;CURL_STATICLIB;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
@@ -207,31 +177,7 @@
     </Link>
     <Lib>
       <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;libcurl.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;Version.lib;wldap32.lib;ws2_32.lib;shell32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName);$(SolutionDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);$(SolutionDir)..\..\..\lib\curl\lib\Release-$(PlatformArchitecture)</AdditionalLibraryDirectories>
-    </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release DLL|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\include;$(SolutionDir)..\..\..\lib\wxWidgets\include\msvc;$(SolutionDir)..\..\..\lib\curl\include;$(SolutionDir)..\..\..\lib\boost;$(SolutionDir);$(SolutionDir)..\..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BOSS_EXPORT;WINVER=0x0400;__WXMSW__;_UNICODE;CURL_STATICLIB;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <Link>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName);$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName)\mswu;$(SolutionDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);$(SolutionDir)..\..\..\lib\curl\lib\Release-$(PlatformArchitecture)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;comctl32.lib;rpcrt4.lib;advapi32.lib;wsock32.lib;Version.lib;libcurl.lib;winmm.lib;wldap32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <Version>1.9</Version>
-    </Link>
-    <Lib>
-      <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;libcurl.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;Version.lib;wldap32.lib;ws2_32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName);$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName)\mswu;$(SolutionDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);$(SolutionDir)..\..\..\lib\curl\lib\Release-$(PlatformArchitecture)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName);$(ProjectDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);$(ProjectDir)..\..\..\lib\curl\lib\Release-$(PlatformArchitecture)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -243,7 +189,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\include;$(SolutionDir)..\..\..\lib\wxWidgets\include\msvc;$(SolutionDir)..\..\..\lib\curl\include;$(SolutionDir)..\..\..\lib\boost;$(SolutionDir);$(SolutionDir)..\..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\include;$(ProjectDir)..\..\..\lib\wxWidgets\include\msvc;$(ProjectDir)..\..\..\lib\curl\include;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WINVER=0x0400;__WXMSW__;_UNICODE;CURL_STATICLIB;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
@@ -256,31 +202,7 @@
     </Link>
     <Lib>
       <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;libcurl.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;Version.lib;wldap32.lib;ws2_32.lib;Shell32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName);$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName)\mswu;$(SolutionDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);$(SolutionDir)..\..\..\lib\curl\lib\Release-$(PlatformArchitecture)</AdditionalLibraryDirectories>
-    </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release DLL|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\include;$(SolutionDir)..\..\..\lib\wxWidgets\include\msvc;$(SolutionDir)..\..\..\lib\curl\include;$(SolutionDir)..\..\..\lib\boost;$(SolutionDir);$(SolutionDir)..\..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WINVER=0x0400;__WXMSW__;_UNICODE;CURL_STATICLIB;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <Link>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\lib\wxWidgets\lib\vc_lib;$(SolutionDir)..\..\lib\wxWidgets\lib\vc_lib\mswu;$(SolutionDir)..\..\lib\curl\lib\Release;$(SolutionDir)..\..\lib\boost\stage\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;comctl32.lib;rpcrt4.lib;advapi32.lib;wsock32.lib;Version.lib;libcurl.lib;winmm.lib;wldap32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <Version>1.9</Version>
-    </Link>
-    <Lib>
-      <AdditionalDependencies>wxmsw29u_core.lib;wxbase29u.lib;libcurl.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;Version.lib;wldap32.lib;ws2_32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName);$(SolutionDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName)\mswu;$(SolutionDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);$(SolutionDir)..\..\..\lib\curl\lib\Release-$(PlatformArchitecture)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\lib\vc_lib\$(PlatformName);$(ProjectDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);$(ProjectDir)..\..\..\lib\curl\lib\Release-$(PlatformArchitecture)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

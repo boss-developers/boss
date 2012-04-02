@@ -1048,7 +1048,7 @@ void MainFrame::OnThreadUpdate(wxThreadEvent& evt) {
 		wxMessageBox(updateCheckString, wxT("BOSS: Check For Updates"), wxOK | wxICON_INFORMATION, this);
 	else if (updateCheckCode == 0) {
 		wxMessageDialog *dlg;
-		if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS"))  //Manual.
+		if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS", "Installed Path"))  //Manual.
 			dlg = new wxMessageDialog(this,
 				"Update available! New version: " + updateCheckString + "\nThe update may be downloaded from any of the locations listed in the BOSS Log."
 				, wxT("BOSS: Check For Updates"), wxOK);

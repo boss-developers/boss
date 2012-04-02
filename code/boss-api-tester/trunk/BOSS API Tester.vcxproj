@@ -89,12 +89,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\boss-api\trunk\bin\$(Configuration)-$(PlatformArchitecture)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\boss-api\trunk;$(ProjectDir)..\..\..\lib\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\boss-api\trunk\bin\$(Configuration)-$(PlatformArchitecture)\;%(AdditionalIncludeDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\boss-api\trunk\bin\$(Configuration)-$(PlatformArchitecture)\;$(ProjectDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);%(AdditionalIncludeDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>boss$(PlatformArchitecture).dll;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -105,12 +105,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\boss-api\trunk\bin\$(Configuration)-$(PlatformArchitecture)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\boss-api\trunk;$(ProjectDir)..\..\..\lib\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\boss-api\trunk\bin\$(Configuration)-$(PlatformArchitecture)\;%(AdditionalIncludeDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\boss-api\trunk\bin\$(Configuration)-$(PlatformArchitecture)\;$(ProjectDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);%(AdditionalIncludeDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>boss$(PlatformArchitecture).dll;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -123,14 +123,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\boss-api\trunk;$(SolutionDir)..\..\..\lib\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\boss-api\trunk;$(ProjectDir)..\..\..\lib\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\boss-api\trunk\bin\$(Configuration)-$(PlatformArchitecture)\;%(AdditionalIncludeDirectories);$(SolutionDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\boss-api\trunk\bin\$(Configuration)-$(PlatformArchitecture)\;$(ProjectDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);%(AdditionalIncludeDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>boss$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -143,14 +143,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\boss-api\trunk;$(SolutionDir)..\..\..\lib\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\boss-api\trunk;$(ProjectDir)..\..\..\lib\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\boss-api\trunk\bin\$(Configuration)-$(PlatformArchitecture)\;%(AdditionalIncludeDirectories);$(SolutionDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\boss-api\trunk\bin\$(Configuration)-$(PlatformArchitecture)\;$(ProjectDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);%(AdditionalIncludeDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>boss$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
