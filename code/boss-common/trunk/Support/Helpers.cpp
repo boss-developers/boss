@@ -189,33 +189,11 @@ namespace boss {
 	}
 
 	//Check if registry subkey exists.
-	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey) {
-#if _WIN32 || _WIN64
-		HKEY hKey, key;
-
-		if (keyStr == "HKEY_CLASSES_ROOT")
-			key = HKEY_CLASSES_ROOT;
-		else if (keyStr == "HKEY_CURRENT_CONFIG")
-			key = HKEY_CURRENT_CONFIG;
-		else if (keyStr == "HKEY_CURRENT_USER")
-			key = HKEY_CURRENT_USER;
-		else if (keyStr == "HKEY_LOCAL_MACHINE")
-			key = HKEY_LOCAL_MACHINE;
-		else if (keyStr == "HKEY_USERS")
-			key = HKEY_USERS;
+	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey, string value) {
+		if (RegKeyStringValue(keyStr, subkey, value).empty())
+			return false;
 		else
-			return false;
-
-		LONG lRes = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(), 0, KEY_READ|KEY_WOW64_32KEY, &hKey);
-
-		if (lRes == ERROR_SUCCESS) {
-			RegCloseKey(hKey);
 			return true;
-		} else
-			return false;
-#else
-		return false;
-#endif
 	}
 
 	//Get registry subkey value string.
@@ -236,13 +214,16 @@ namespace boss {
 		else if (keyStr == "HKEY_USERS")
 			key = HKEY_USERS;
 
-		LONG lRes = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(), 0, KEY_READ|KEY_WOW64_32KEY, &hKey);
-		if (lRes == ERROR_SUCCESS)
-			LONG lRes = RegQueryValueEx(hKey, fs::path(value).wstring().c_str(), NULL, NULL, (LPBYTE)&val, &BufferSize);
+		LONG ret = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(), 0, KEY_READ|KEY_WOW64_32KEY, &hKey);
 
-		if (lRes == ERROR_SUCCESS) {
+		if (ret == ERROR_SUCCESS) {
+			ret = RegQueryValueEx(hKey, fs::path(value).wstring().c_str(), NULL, NULL, (LPBYTE)&val, &BufferSize);
 			RegCloseKey(hKey);
-			return fs::path(val).string();  //Easiest way to convert from wide to narrow character strings.
+
+			if (ret == ERROR_SUCCESS)
+				return fs::path(val).string();  //Easiest way to convert from wide to narrow character strings.
+			else
+				return "";
 		} else
 			return "";
 #else

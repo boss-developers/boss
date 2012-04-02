@@ -300,7 +300,7 @@ int main(int argc, char *argv[]) {
 					LOG_DEBUG("You are already using the latest version of BOSS.");
 				} else {
 					//First detect type of current install: manual or installer.
-					 if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS")) {  //Manual.
+					 if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS", "Installed Path")) {  //Manual.
 						//Point user to download locations.
 						cout << "Update available! New version: " << updateVersion << endl
 							 << "The update may be downloaded from any of the locations listed in the BOSS Log." << endl;		
