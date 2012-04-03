@@ -1,0 +1,42 @@
+// Comment test
+//
+////////// -------------------------
+
+
+
+// Examples taken from User Rules Readme
+
+add: MyModToAdd.esp
+    after: LoadAfterThis.esm
+    append: ? Adding a general comment.
+    append: $ Incompatible with OOO!
+
+override: MyModToOverride.esp
+    BEFORE: LoadBeforeThis.esp
+
+OVERRIDE: L.A.M.E.
+    BEFORE: Supreme Magicka
+
+    
+OVERRIDE: bgBalancingEVCore.esp
+    AFTER: Unofficial Oblivion Patch.esp    
+
+FOR: bgBalancingEVOptionalNPCDiversity, Vanilla.esp
+    REPLACE: ? This is a replacement message.
+    APPEND: % {{BASH:NpcFaces,NoMerge}}
+
+For: Unofficial Oblivion Patch.esp
+    REPLACE: ? Overrided!
+
+FOR: bgMagicEV.esp.esp
+    APPEND: % {{BASH:Names,Delev,Relev}}
+    
+    
+Override: SampleMod.esp
+    TOP: L.A.M.E.
+    
+    
+OVERRIDE: AfterLAME.esp
+    BOTTOM: L.A.M.E.    
+
+    
