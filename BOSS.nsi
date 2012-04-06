@@ -166,8 +166,8 @@
 
 		;Install main executables first.
 		SetOutPath "$INSTDIR"
-		File "code\boss-cli\trunk\bin\Release-32\BOSS.exe"
-		File "code\boss-gui\trunk\bin\Release-32\BOSS GUI.exe"
+		File "code\trunk\bin\Release-32\BOSS.exe"
+		File "code\trunk\bin\Release-32\BOSS GUI.exe"
 		
 		;Silently move and remove files from past BOSS installs.
 		 ${If} $OB_Path != $Empty
@@ -260,8 +260,8 @@
 	  
 		;Now install API DLLs.
 		SetOutPath "$INSTDIR\API"
-		File "code\boss-api\trunk\bin\Release-32\boss32.dll"
-		File "code\boss-api\trunk\bin\Release-64\boss64.dll"
+		File "code\trunk\bin\Release-32\boss32.dll"
+		File "code\trunk\bin\Release-64\boss64.dll"
 		
 		;Now install readme files.
 		SetOutPath "$INSTDIR\Docs"
