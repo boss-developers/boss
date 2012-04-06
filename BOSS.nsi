@@ -11,21 +11,32 @@
 ;General
 
 	;Name, file and version info for installer.
-	Name "BOSS v2.0.0"
+	Name "BOSS v2.0.1"
 	OutFile "BOSS Installer.exe"
-	VIProductVersion 2.0.0.0
+	VIProductVersion 2.0.1.0
 
 	;Request application privileges for Windows Vista/7
 	RequestExecutionLevel admin
+	
+	; This causes an "are you sure?" message to be displayed if you try to quit the installer or uninstaller.
+	!define MUI_ABORTWARNING
+	!define MUI_UNABORTWARNING
+	
+	;Checks that the installer's CRC is correct (means we can remove installer CRC checking from BOSS).
+	CRCCheck force
+	
+	;The SOLID lzma compressor gives the best compression ratio.
+	SetCompressor /SOLID lzma
 
 ;--------------------------------
 ;Interface Settings
 
-	; This causes an "are you sure?" message to be displayed if you try to quit the installer.
-	!define MUI_ABORTWARNING
+	
 
 ;--------------------------------
 ;Pages
+
+	!define MUI_CUSTOMFUNCTION_GUIINIT onGUIInit
 
 	!insertmacro MUI_PAGE_WELCOME
 	!insertmacro MUI_PAGE_LICENSE "data\boss-common\Licenses.txt"
@@ -50,6 +61,7 @@
 
 	!insertmacro MUI_LANGUAGE "English"
 	!insertmacro MUI_LANGUAGE "Russian"
+	!insertmacro MUI_LANGUAGE "German"
 	!insertmacro MUI_RESERVEFILE_LANGDLL
 
 ;--------------------------------
@@ -58,8 +70,8 @@
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "BOSS"
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "BOSS Development Team"
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© 2009-2012 BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 2.0.0"
-	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "2.0.0"
+	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 2.0.1"
+	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "2.0.1"
 
 	LangString TEXT_MESSAGEBOX ${LANG_ENGLISH} "BOSS is already installed, and must be uninstalled before continuing. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade."
 	LangString TEXT_FINISHPAGE ${LANG_ENGLISH} "If you have multiple copies of one or more of the games BOSS supports, you must manually install a separate copy of BOSS for each copy other than the original install.$\n$\nThis can be done using the manual archive, or by copy/pasting the BOSS folder that has just been installed. See the BOSS Readme for more information."
@@ -74,8 +86,8 @@
 	VIAddVersionKey /LANG=${LANG_RUSSIAN} "ProductName" "BOSS"
 	VIAddVersionKey /LANG=${LANG_RUSSIAN} "CompanyName" "BOSS Development Team"
 	VIAddVersionKey /LANG=${LANG_RUSSIAN} "LegalCopyright" "© 2009-2012 BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileDescription" "Установщик для BOSS 2.0.0"
-	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileVersion" "2.0.0"
+	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileDescription" "Установщик для BOSS 2.0.1"
+	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileVersion" "2.0.1"
 
 	LangString TEXT_MESSAGEBOX ${LANG_RUSSIAN} "BOSS уже установлен и должен быть удален перед продолжением. $\n$\nНажмите `OK` для удаления предыдущей версии или `Отмена` для отмены обновления."
 	LangString TEXT_FINISHPAGE ${LANG_RUSSIAN} "Если у вас много копий одной или более поддерживаемых в BOSS игр, вы должны вручную установить отдельные копии BOSS для каждой игры, кроме оригинальной установки.$\nЭто может быть сделано копированием/вставкой только что установленной папки BOSS. Для подробностей смотрите BOSS-Readme."
@@ -83,7 +95,23 @@
 	LangString TEXT_SHOWREADME ${LANG_RUSSIAN} "Смотреть BOSS-Readme"
 	LangString TEXT_MAIN ${LANG_RUSSIAN} "Все файлы BOSS, кроме пользовательских списков(userlist) и BOSS.ini"
 	LangString TEXT_USERFILES ${LANG_RUSSIAN} "Файлы пользовательских списков(userlists) и BOSS.ini."
-  
+ 
+;--------------------------------
+;German (Deutsch) Strings
+
+	VIAddVersionKey /LANG=${LANG_GERMAN} "ProductName" "BOSS"
+	VIAddVersionKey /LANG=${LANG_GERMAN} "CompanyName" "BOSS Development Team"
+	VIAddVersionKey /LANG=${LANG_GERMAN} "LegalCopyright" "© 2009-2012 BOSS Development Team"
+	VIAddVersionKey /LANG=${LANG_GERMAN} "FileDescription" "Installer für BOSS 2.0.1"
+	VIAddVersionKey /LANG=${LANG_GERMAN} "FileVersion" "2.0.1"
+
+	LangString TEXT_MESSAGEBOX ${LANG_GERMAN} "BOSS ist bereits installiert und muss deinstalliert werden, bevor fortgefahren wird. $\n$\nKlicke auf `Ok` um die vorherige Version zu entfernen oder auf `Abbrechen` um das Upgrade abzubrechen."
+	LangString TEXT_FINISHPAGE ${LANG_GERMAN} "Wenn du mehrere Kopien von einem oder mehreren Spielen hast, die BOSS unterstützt, musst du manuell eine separate Kopie von BOSS für jede Kopie installieren.$\n$\nDas kann durch das manuelle Archiv oder durch kopieren/einfügen des BOSS-Ordners, der bereits installiert wurde, gemacht werden. Lies die BOSS Readme für weitere Informationen."
+	LangString TEXT_RUN ${LANG_GERMAN} "BOSS starten"
+	LangString TEXT_SHOWREADME ${LANG_GERMAN} "Readme lesen"
+	LangString TEXT_MAIN ${LANG_GERMAN} "Alle Dateien von BOSS ohne die Benutzerlisten und die BOSS.ini."
+	LangString TEXT_USERFILES ${LANG_GERMAN} "Benutzerliste von BOSS und die BOSS.ini-Datei."
+	
 ;--------------------------------
 ;Variables
 
@@ -103,33 +131,6 @@
 		!insertmacro MUI_LANGDLL_DISPLAY
 
 		StrCpy $Empty ""
-
-		; First check to see if BOSS is already installed via installer, and launch the existing uninstaller if so.
-		IfFileExists "$COMMONFILES\BOSS\uninstall.exe" 0 +8
-			MessageBox MB_OKCANCEL|MB_ICONQUESTION "$(Text_MessageBox)" IDOK oldCont IDCANCEL oldCancel
-			oldCancel:
-				Quit
-			oldCont:
-				ExecWait '$COMMONFILES\BOSS\uninstall.exe _?=$COMMONFILES\BOSS' ;Run the uninstaller in its folder and wait until it's done.
-			Delete "$COMMONFILES\BOSS\uninstall.exe"
-			RMDir "$COMMONFILES\BOSS"
-
-		;That was the old uninstaller location, now see if the current version is already installed.
-		ReadRegStr $InstallPath HKLM "Software\BOSS" "Installed Path"
-		${If} $InstallPath == $Empty ;Try 64 bit path.
-			ReadRegStr $InstallPath HKLM "Software\Wow6432Node\BOSS" "Installed Path"
-		${EndIf}
-		${If} $InstallPath != $Empty
-			IfFileExists "$InstallPath\Uninstall.exe" 0 +8
-				MessageBox MB_OKCANCEL|MB_ICONQUESTION "$(Text_MessageBox)" IDOK cont IDCANCEL cancel
-				cancel:
-					Quit
-				cont:
-					ExecWait '$InstallPath\Uninstall.exe _?=$InstallPath' ;Run the uninstaller in its folder and wait until it's done.
-				Delete "$InstallPath\Uninstall.exe"
-				RMDir "$InstallPath"
-		${EndIf}
-
 
 		; Look for games, setting their paths if found.
 		ReadRegStr $OB_Path HKLM "Software\Bethesda Softworks\Oblivion" "Installed Path"
@@ -151,6 +152,35 @@
 		${EndIf}
 		StrCpy $INSTDIR "C:\BOSS"
 		
+	FunctionEnd
+	
+	Function onGUIInit
+		; Have to do this now as language isn't actually set until 
+		; First check to see if BOSS is already installed via installer, and launch the existing uninstaller if so.
+		IfFileExists "$COMMONFILES\BOSS\uninstall.exe" 0 +8
+			MessageBox MB_OKCANCEL|MB_ICONQUESTION "$(Text_MessageBox)" IDOK oldCont IDCANCEL oldCancel
+			oldCancel:
+				Quit
+			oldCont:
+				ExecWait '$COMMONFILES\BOSS\uninstall.exe _?=$COMMONFILES\BOSS' ;Run the uninstaller in its folder and wait until it's done.
+				Delete "$COMMONFILES\BOSS\uninstall.exe"
+				RMDir "$COMMONFILES\BOSS"
+
+		;That was the old uninstaller location, now see if the current version is already installed.
+		ReadRegStr $InstallPath HKLM "Software\BOSS" "Installed Path"
+		${If} $InstallPath == $Empty ;Try 64 bit path.
+			ReadRegStr $InstallPath HKLM "Software\Wow6432Node\BOSS" "Installed Path"
+		${EndIf}
+		${If} $InstallPath != $Empty
+			IfFileExists "$InstallPath\Uninstall.exe" 0 +8
+				MessageBox MB_OKCANCEL|MB_ICONQUESTION "$(Text_MessageBox)" IDOK cont IDCANCEL cancel
+				cancel:
+					Quit
+				cont:
+					ExecWait '$InstallPath\Uninstall.exe _?=$InstallPath' ;Run the uninstaller in its folder and wait until it's done.
+					Delete "$InstallPath\Uninstall.exe"
+					RMDir "$InstallPath"
+		${EndIf}
 	FunctionEnd
 
 	Function un.onInit
@@ -303,7 +333,7 @@
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "URLInfoAbout" 'http://better-oblivion-sorting-software.googlecode.com/'
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "HelpLink" 'http://better-oblivion-sorting-software.googlecode.com/'
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "Publisher" 'BOSS Development Team'
-		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '2.0.0'      
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '2.0.1'      
 		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoModify" 1
 		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoRepair" 1
 		
