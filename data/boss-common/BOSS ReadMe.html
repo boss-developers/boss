@@ -514,11 +514,13 @@ a problem for which no error message is given, please report the crash or proble
 	<ul>
 		<li><b>Issue:</b> <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>Lock Load Order</q><span title="previously Lock Times">*</span> load order locking feature is enabled, but <q>BOSS Disable Lock Load Order</q><span title="previously BOSS Disable Lock Times">*</span> is not.
 		<li><b>Solution:</b> Enable <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>BOSS Disable Lock Load Order</q><span title="previously BOSS Disable Lock Times">*</span> setting.
+		<li><b>Issue:</b> You are running BOSS for Skyrim and checking the load order using a utility that has not been updated to work with Skyrim's textfile-based load order system.
+		<li><b>Solution:</b> Update your utility to a version that works with the textfile-based load order system, or use Skyrim's launcher to view load order. Editing load order in Skyrim's launcher is not recommended as it does not record load order data for inactive plugins.
 	</ul>
-	<li><b>Symptom:</b> BOSS does not change/update the BOSS Log and/or modlists correctly.
+	<li><b>Symptom:</b> When viewing load order in Skyrim's launcher, some plugins are deactivated and moved to the bottom of the list.
 	<ul>
-		<li><b>Issue:</b> The BOSS Log and/or modlists are read-only, or the BOSS folder is read-only.
-		<li><b>Solution:</b> Ensure that the BOSS folder and any files in it are not read-only.
+		<li><b>Issue:</b> BOSS lists plugins in load order using their names in the masterlist, which can be in the wrong case. Skyrim's launcher is case-sensitive when it reads load order, so any plugins listed with incorrect cases will be removed from the load order. Skyrim itself is case-agnostic, so will load plugins listed with incorrect cases.
+		<li><b>Solution:</b> Report the deactivated plugins with their correct cases to the BOSS Development Team so that the case in the masterlist can be corrected.
 	</ul>
 	<li><b>Symptom:</b> BOSS does not recognise the plugins in my userlist correctly, and/or replaces some of the letters in their names with question marks.
 	<ul>
@@ -814,13 +816,13 @@ a problem for which no error message is given, please report the crash or proble
 	<thead class="c"><tr><td colspan="2" rowspan="2">Member<td rowspan="2">Admin<td rowspan="2">Programmer<td colspan="5">Masterlists Member Contributes To
 		<tr><td>Oblivion<td>Nehrim<td>Fallout 3<td>Fallout: New Vegas<td>Skyrim
 	<tbody>
-		<tr><td style="border-right:0;">AliTheLord		<td style="border-left:0;">									<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;
+		<tr class="inactive"><td style="border-right:0;">AliTheLord		<td style="border-left:0;">									<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;
 		<tr><td style="border-right:0;">Arthmoor		<td style="border-left:0;">									<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;
 		<tr class="inactive"><td style="border-right:0;">Gabba		<td style="border-left:0;">	<i>(Bethesda Softworks only)</i>								<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
 		<tr class="inactive"><td style="border-right:0;">Leandro Conde	<td style="border-left:0;"><i>(Bethesda Softworks only)</i>	<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
 		<tr class="inactive"><td style="border-right:0;">Loucifer		<td style="border-left:0;"><i>(Linmor on Nexus)</i>			<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;
 		<tr class="inactive"><td style="border-right:0;">Malonn			<td style="border-left:0;">									<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;
-		<tr><td style="border-right:0;">PacificMorrowind<td style="border-left:0;">									<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
+		<tr class="inactive"><td style="border-right:0;">PacificMorrowind<td style="border-left:0;">									<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
 		<tr><td style="border-right:0;">Psymon			<td style="border-left:0;"><i>(Bethesda Softworks only)</i>	<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
 		<tr class="inactive"><td style="border-right:0;">Random007		<td style="border-left:0;">									<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
 		<tr class="inactive"><td style="border-right:0;">RiddlingLynx	<td style="border-left:0;"><i>(Nexus only)</i>				<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
@@ -877,16 +879,16 @@ threads when you read this. Just navigate through to the latest thread to post a
 
 <h2 id="history">Version History</h2>
 <p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.
-<p><b>Version 2.0.1</b> - <i>April 2012</i>
+<p><b>Version 2.0.1</b> - <i>6 April 2012</i>
 <ul>
 	<li>Fixed: Masterlist regular expression errors being reported in an endless loop.
-	<li>Fixed: BOSS crash when running for Skyrim and plugins.txt is read-only.
-	<li>Fixed: BOSS crash when a user rule overrides a masterlist group position.
+	<li>Fixed: Crash when BOSS is running for Skyrim and plugins.txt is read-only.
+	<li>Fixed: Crash when a user rule overrides a masterlist group position.
 	<li>Fixed: GUI's User Rules Editor disabling OVERRIDE rules on load.
 	<li>Fixed: Plugins referenced in user rules that are not installed getting added to loadorder.txt when running for Skyrim v1.4.26+.
 	<li>Fixed: Update.esm not being labelled as active in the BOSS Log when it is missing from plugins.txt and BOSS is running for Skyrim.
-	<li>Fixed: BOSS crash when it detects a single non-local game install.
-	<li>Fixed: BOSS detecting games that are not installed.
+	<li>Fixed: Crash when a single non-local game install is detected.
+	<li>Fixed: Games that are not installed being detected.
 	<li>Changed: Uninstaller's User Files option is now unselected by default.
 	<li>Changed: Switched installer from NSIS to NSIS Unicode.
 	<li>Added: Russian language option to installer. Translation by Tokc.D.K.
