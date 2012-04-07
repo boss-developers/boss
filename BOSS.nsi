@@ -93,8 +93,8 @@
 	LangString TEXT_FINISHPAGE ${LANG_RUSSIAN} "Если у вас много копий одной или более поддерживаемых в BOSS игр, вы должны вручную установить отдельные копии BOSS для каждой игры, кроме оригинальной установки.$\nЭто может быть сделано копированием/вставкой только что установленной папки BOSS. Для подробностей смотрите BOSS-Readme."
 	LangString TEXT_RUN ${LANG_RUSSIAN} "Запустить BOSS"
 	LangString TEXT_SHOWREADME ${LANG_RUSSIAN} "Смотреть BOSS-Readme"
-	LangString TEXT_MAIN ${LANG_RUSSIAN} "Все файлы BOSS, кроме пользовательских списков(userlist) и BOSS.ini"
-	LangString TEXT_USERFILES ${LANG_RUSSIAN} "Файлы пользовательских списков(userlists) и BOSS.ini."
+	LangString TEXT_MAIN ${LANG_RUSSIAN} "Все файлы BOSS, кроме пользовательских списков и BOSS.ini"
+	LangString TEXT_USERFILES ${LANG_RUSSIAN} "Файлы пользовательских списков и BOSS.ini."
  
 ;--------------------------------
 ;German (Deutsch) Strings
