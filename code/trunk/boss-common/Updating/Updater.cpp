@@ -365,6 +365,9 @@ namespace boss {
 		case FALLOUTNV:
 			start = buffer.find("\"boss-fallout-nv\":");
 			break;
+		case MORROWIND:
+			start = buffer.find("\"boss-morrowind\":");
+			break;
 		default:
 			curl_easy_cleanup(curl);
 			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
@@ -406,6 +409,9 @@ namespace boss {
 			break;
 		case FALLOUTNV:
 			start = buffer.find("\"boss-fallout-nv\":");
+			break;
+		case MORROWIND:
+			start = buffer.find("\"boss-morrowind\":");
 			break;
 		default:
 			curl_easy_cleanup(curl);
@@ -557,6 +563,9 @@ namespace boss {
 				break;
 			case FALLOUTNV:
 				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/masterlist.txt";
+				break;
+			case MORROWIND:
+				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-morrowind/masterlist.txt";
 				break;
 			default:
 				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);

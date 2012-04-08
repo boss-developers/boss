@@ -64,6 +64,10 @@ namespace boss {
 			SE = "SKSE";
 			SELoc = data_path.parent_path() / "skse_loader.exe";
 			SEPluginLoc = data_path / "SKSE" / "Plugins";
+		} else if (gl_current_game == MORROWIND) {
+			SE = "MWSE";
+			SELoc = data_path.parent_path() / "MWSE.dll";  //MWSE works differently from the other script extenders.
+			SEPluginLoc = data_path / "MWSE" / "Plugins";  //AFAIK MWSE doesn't have a plugin system, but setting a path will be handled correctly below.
 		}
 
 		if (!fs::exists(SELoc) || SELoc.empty()) {

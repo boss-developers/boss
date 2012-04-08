@@ -194,6 +194,7 @@ BOSS_API const uint32_t BOSS_API_GAME_FALLOUT3	= FALLOUT3;
 BOSS_API const uint32_t BOSS_API_GAME_FALLOUTNV	= FALLOUTNV;
 BOSS_API const uint32_t BOSS_API_GAME_NEHRIM	= NEHRIM;
 BOSS_API const uint32_t BOSS_API_GAME_SKYRIM	= SKYRIM;
+BOSS_API const uint32_t BOSS_API_GAME_MORROWIND	= MORROWIND;
 
 // BOSS message types.
 BOSS_API extern const uint32_t BOSS_API_MESSAGE_SAY				= SAY;
@@ -353,7 +354,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 											   const uint8_t * dataPath) {
 	if (db == NULL) //Check for valid args.
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
-	else if (clientGame != OBLIVION && clientGame != FALLOUT3 && clientGame != FALLOUTNV && clientGame != NEHRIM && clientGame != SKYRIM)
+	else if (clientGame != OBLIVION && clientGame != FALLOUT3 && clientGame != FALLOUTNV && clientGame != NEHRIM && clientGame != SKYRIM && clientGame != MORROWIND)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Invalid game specified.");
 
 	//Set the locale to get encoding conversions working correctly.
@@ -385,6 +386,8 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 		else if (clientGame == FALLOUT3 && RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path"))  //Look for Fallout 3.
 			gl_current_game = clientGame;
 		else if (clientGame == FALLOUTNV && RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path"))  //Look for Fallout New Vegas.
+			gl_current_game = clientGame;
+		else if (clientGame == MORROWIND && RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path"))  //Look for Morrowind.
 			gl_current_game = clientGame;
 		else  //The game has not been found.
 			return ReturnCode(BOSS_API_ERROR_GAME_NOT_FOUND);

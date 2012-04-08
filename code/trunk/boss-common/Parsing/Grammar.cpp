@@ -83,9 +83,15 @@ namespace boss {
 		} else if (file == "SKSE") {
 			file_path = data_path.parent_path();
 			file = "skse_loader.exe";
+		} else if (file == "MWSE") {
+			file_path = data_path.parent_path();
+			file = "MWSE.dll";
 		} else if (file == "BOSS") {
 			file_path = boss_path;
 			file = "BOSS.exe";
+		} else if (file == "TES3") {
+			file_path = data_path.parent_path();
+			file = "Morrwind.exe";
 		} else if (file == "TES4") {
 			file_path = data_path.parent_path();
 			file = "Oblivion.exe";
@@ -108,7 +114,9 @@ namespace boss {
 				else if (fs::exists(data_path / "NVSE" / "Plugins"))
 					file_path = data_path / "NVSE" / "Plugins";  //Fallout: New Vegas - NVSE plugins.
 				else if (fs::exists(data_path / "SKSE" / "Plugins"))
-					file_path = data_path / "SKSE" / "Plugins";  //Fallout: New Vegas - NVSE plugins.
+					file_path = data_path / "SKSE" / "Plugins";  //Skyrim - SKSE plugins.
+				else if (fs::exists(data_path / "MWSE" / "Plugins"))
+					file_path = data_path / "MWSE" / "Plugins";  //Morrowind - MWSE plugins.
 			} else
 				file_path = data_path;
 		}
@@ -189,7 +197,9 @@ namespace boss {
 			else if (fs::exists(data_path / "NVSE"))
 				file_path = data_path / "NVSE" / "Plugins";  //Fallout: New Vegas - NVSE plugins.
 			else if (fs::exists(data_path / "SKSE"))
-				file_path = data_path / "SKSE" / "Plugins";  //Fallout: New Vegas - NVSE plugins.
+				file_path = data_path / "SKSE" / "Plugins";  //Skyrim - SKSE plugins.
+			else if (fs::exists(data_path / "MWSE"))
+				file_path = data_path / "MWSE" / "Plugins";  //Morrowind - MWSE plugins.
 		} else
 			file_path = data_path;
 			boost::regex regex;

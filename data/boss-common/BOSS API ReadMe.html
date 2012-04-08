@@ -62,11 +62,11 @@
 </ol>
 
 <h2 id="intro">Introduction</h2>
-<p>This documentation details the BOSS API (a.k.a. BAPI) and is intended for use by third party developers of modding utilities for TES IV: Oblivion, TES V: Skyrim, Nehrim - At Fate's Edge, Fallout 3 and Fallout: New Vegas.
+<p>This documentation details the BOSS API (a.k.a. BAPI) and is intended for use by third party developers of modding utilities for TES III: Morrowind, TES IV: Oblivion, TES V: Skyrim, Nehrim - At Fate's Edge, Fallout 3 and Fallout: New Vegas.
 
 <p>BAPI has a C frontend and is available as 32-bit and 64-bit DLLs that can be loaded by other modding utilities. BAPI currently has the following capabilities:
 <ul>
-	<li>Support for Oblivion, Nehrim, Skyrim, Fallout 3 and Fallout: New Vegas.
+	<li>Support for Morrowind, Oblivion, Nehrim, Skyrim, Fallout 3 and Fallout: New Vegas.
 	<li>Support for Skyrim's new load order mechanism (present in Skyrim v1.4.26+).
 	<li>Get/Set the load order for all plugins.
 	<li>Get/Set the active plugins.
@@ -90,8 +90,8 @@
 <h2 id="lo">Load Orders</h2>
 <h3 id="lo-intro">Introduction To Load Ordering</h3>
 <p>Load ordering is the method used to determine how conflicts between mod plugins should be decided. If two plugins alter the same game data, then the changes made by the plugin loading later will override those made by the plugin loading earlier. This <em>rule of one</em> results in a list of plugins, with those earlier in the list having any conflicting changes overriden by those later in the list. This list is the load order of the plugins.
-<p>A game will only load the plugins that are active. Up to 255 plugins, including the game's .esm file, can be active at any one time. Active plugins are listed in the game's <code>plugins.txt</code> file, which is stored in the user's local application data folder. Nevertheless, it is useful when working with load orders to consider the load order of all plugins, even if only some of them will actually be loaded. This is both because it is easier to display a single list of plugins than a list and an unordered set, and because modders have engineered methods that allow the changes made by inactive plugins to be loaded by another plugin (eg. <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s Bashed Patch). When any such methods are being used, the load order of inactive plugins decides which plugins override others, similar to as if they were active.
-<p>In Oblivion, Nehrim, Fallout 3, Fallout: New Vegas and early versions (pre-1.4.26) of Skyrim, load order is decided by the relative timestamps of plugins in the game's Data directory. An installed plugin's load order is therefore an intrinsic property of that plugin.
+<p>A game will only load the plugins that are active. Up to 255 plugins, including the game's .esm file, can be active at any one time. Active plugins are listed in the game's <code>plugins.txt</code> file (or <code>Morrowind.ini</code>, in the case of Morrowind), which is stored in the user's local application data folder. Nevertheless, it is useful when working with load orders to consider the load order of all plugins, even if only some of them will actually be loaded. This is both because it is easier to display a single list of plugins than a list and an unordered set, and because modders have engineered methods that allow the changes made by inactive plugins to be loaded by another plugin (eg. <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s Bashed Patch). When any such methods are being used, the load order of inactive plugins decides which plugins override others, similar to as if they were active.
+<p>In Morrowind, Oblivion, Nehrim, Fallout 3, Fallout: New Vegas and early versions (pre-1.4.26) of Skyrim, load order is decided by the relative timestamps of plugins in the game's Data directory. An installed plugin's load order is therefore an intrinsic property of that plugin.
 <p>In Skyrim v1.4.26+, a new textfile-based load order system was introduced, in which load order is decide by the order in which plugins are listed in <code>plugins.txt</code>. This brought with it a fundamental change, in that load order is no longer an intrinsic property of a plugin, and so inactive plugins do not have any load order.
 <p><b>Note:</b> The games enforce one rule that overrides the load order of plugins set by either system. This rule is that <em>master files always load before all plugin files</em>. Simple enough, except that master files are not necessarily <code>.esm</code> files, and plugin files aren't necessarily <code>.esp</code> files. Whether a file is a master or a plugin depends on the value of a bit flag in the file itself, rather than its file extension. This also confuses terminology, so the usage in this readme is clarified below:
 <ul>
@@ -218,6 +218,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 		<tr><td>BOSS_API_GAME_FALLOUTNV	<td>Fallout: New Vegas
 		<tr><td>BOSS_API_GAME_NEHRIM	<td>Nehrim - At Fate's Edge
 		<tr><td>BOSS_API_GAME_SKYRIM	<td>The Elder Scrolls V: Skyrim
+		<tr><td>BOSS_API_GAME_MORROWIND	<td>The Elder Scrolls III: Morrowind
 </table>
 <h3 id="codes-load">Load Order Method Codes</h3>
 <p>The following codes are used by <a href="#GetLoadOrderMethod">GetLoadOrderMethod</a> to signify which load order system BAPI is running for.

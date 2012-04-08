@@ -342,7 +342,7 @@ There are three key pieces of information that are used to accurately describe a
 <table>
 	<thead><tr><td>Ini Setting<td>Default<td>Valid Values<td>Description
 	<tbody>
-		<tr><td>sGame<td><code>auto</code><td><code>auto</code>, <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code>, <code>Skyrim</code><td>If set to something other than <code>auto</code>, this overrides game autodetection. If the game specified is not detected, BOSS falls back to autodetection, unless <code>bOnlyUpdateMasterlist = true</code>, in which case BOSS will run successfully whether or not the game is installed.
+		<tr><td>sGame<td><code>auto</code><td><code>auto</code>, <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code>, <code>Skyrim</code>, <code>Morrowind</code><td>If set to something other than <code>auto</code>, this overrides game autodetection. If the game specified is not detected, BOSS falls back to autodetection, unless <code>bOnlyUpdateMasterlist = true</code>, in which case BOSS will run successfully whether or not the game is installed.
 		<tr><td>sBOSSLogFormat<td><code>html</code><td><code>html</code>, <code>text</code><td>Specify the format of the BOSS Log generated.
 		<tr><td>iDebugVerbosity<td><code>0</code><td><code>0</code>, <code>1</code>, <code>2</code>, <code>3</code><td>The verbosity of the debug logging output. As values increase, so does verbosity. <code>0</code> displays only warning and error messages.
 		<tr><td>iRevertLevel<td><code>0</code><td><code>0</code>, <code>1</code>, <code>2</code><td>Specify how many runs of BOSS to undo. <code>0</code> tells BOSS to run as normal.
@@ -433,7 +433,7 @@ There are three key pieces of information that are used to accurately describe a
 <code class="box">-o [ --only-update ]</code>
 <p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then does <b>not</b> sort your plugins.
 <code class="box">-g [ --game ] [ game ]</code>
-<p>Overrides game autodetection. The valid values of the argument are: <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code> and <code>Skyrim</code>. If the game specified is not detected, BOSS falls back to autodetection, unless <code>-o</code> is also passed, in which case BOSS will run successfully whether or not the game is installed.
+<p>Overrides game autodetection. The valid values of the argument are: <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code>, <code>Skyrim</code> and <code>Morrowind</code>. If the game specified is not detected, BOSS falls back to autodetection, unless <code>-o</code> is also passed, in which case BOSS will run successfully whether or not the game is installed.
 <code class="box">-s [ --silent ]</code>
 <p>Stops BOSS from automatically opening up the BOSS Log in your web browser (or text editor, depending on format chosen) after it has finished running.
 <code class="box">-c [ --crc-display ]</code>
@@ -883,10 +883,17 @@ threads when you read this. Just navigate through to the latest thread to post a
 <p><b>Version 2.1</b> - <i>2012</i>
 <ul>
 	<li>Fixed: Installer's "old version of BOSS detected. Remove?" dialog ignoring the language previously selected.
+	<li>Fixed: GUI crash when deleting the last rule in a userlist.
 	<li>Changed: Installer/uninstaller now uses solid LZMA compression for a smaller file size.
 	<li>Added: German language option to installer/uninstaller. Translation by Scharesoft.
 	<li>Added: Confirmation dialog to uninstaller abortion.
 	<li>Added: CRC check to installer to avoid corrupted installs.
+	<li>Added: Support for TES III: Morrowind:
+	<ul>
+		<li>Added <code>TES3</code> and <code>MWSE</code> placeholders for use in the masterlist.
+		<li>Added <code>Morrowind</code> value for the sGame BOSS.ini setting.
+		<li>Morrowind's masterlist is unmaintained, and only recognises Morrowind.esm. The support is primarily intended for the API, and those wanting auto-sorting of load orders should consider using mlox.
+	</ul>
 </ul>
 <p><b>Version 2.0.1</b> - <i>6 April 2012</i>
 <ul>

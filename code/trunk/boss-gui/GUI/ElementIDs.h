@@ -55,6 +55,7 @@ enum {
 	MENU_Skyrim,
 	MENU_Fallout3,
 	MENU_FalloutNewVegas,
+	MENU_Morrowind,
 	DROPDOWN_LogFormat,
 	DROPDOWN_Game,
 	DROPDOWN_Revert,

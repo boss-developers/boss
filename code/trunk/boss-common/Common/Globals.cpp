@@ -79,6 +79,8 @@ namespace boss {
 			return boss_path / "Fallout 3";
 		case FALLOUTNV:
 			return boss_path / "Fallout New Vegas";
+		case MORROWIND:
+			return boss_path / "Morrowind";
 		default:
 			return boss_path;
 		}
@@ -124,6 +126,8 @@ namespace boss {
 				return GetLocalAppDataPath() / "Fallout3" / "plugins.txt";
 			case FALLOUTNV:
 				return GetLocalAppDataPath() / "FalloutNV" / "plugins.txt";
+			case MORROWIND:
+				return data_path.parent_path() / "Morrowind.ini";
 			default:
 				return boss_path;
 			}
@@ -131,7 +135,7 @@ namespace boss {
 			return data_path.parent_path() / "plugins.txt";
 	}
 
-	//This only makes sense for Skyrim.
+	//This is only actually used for Skyrim.
 	BOSS_COMMON fs::path loadorder_path() {
 		if (gl_using_local_app_data_folder || gl_current_game != OBLIVION) {  //The bUseMyGamesDirectory has no effect in games other than Oblivion.
 			switch (gl_current_game) {
@@ -145,6 +149,8 @@ namespace boss {
 				return GetLocalAppDataPath() / "Fallout3" / "loadorder.txt";
 			case FALLOUTNV:
 				return GetLocalAppDataPath() / "FalloutNV" / "loadorder.txt";
+			case MORROWIND:
+				return boss_path / "Morrowind" / "loadorder.txt";   //Morrowind doesn't have an AppData folder, so store loadorder.txt in BOSS's Morrowind folder (though loadorder.txt should really only ever be written for Skyrim).
 			default:
 				return boss_path;
 			}
@@ -196,6 +202,8 @@ namespace boss {
 			return "Fallout 3";
 		case FALLOUTNV:
 			return "Fallout: New Vegas";
+		case MORROWIND:
+			return "TES III: Morrowind";
 		default:
 			return "No Game Detected";
 		}
@@ -213,6 +221,8 @@ namespace boss {
 			return "Fallout3.esm";
 		case FALLOUTNV:
 			return "FalloutNV.esm";
+		case MORROWIND:
+			return "Morrowind.esm";
 		default:
 			return "No Game Detected";
 		}
@@ -221,7 +231,10 @@ namespace boss {
 	BOSS_COMMON void SetDataPath(uint32_t game) {
 		LOG_INFO("Setting data path for game: \"%s\"", GetGameString(game).c_str());
 		if (game == AUTODETECT || fs::exists(data_path / GetGameMasterFile(game))) {
-			data_path = boss_path / ".." / "Data";
+			if (game == MORROWIND)
+				data_path = boss_path / ".." / "Data Files";
+			else
+				data_path = boss_path / ".." / "Data";
 			return;
 		}
 		switch (game) {
@@ -255,6 +268,12 @@ namespace boss {
 			else
 				data_path = boss_path / ".." / "Data";
 			break;
+		case MORROWIND:
+			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path"))
+				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path")) / "Data Files";
+			else
+				data_path = boss_path / ".." / "Data Files";
+			break;
 		}
 	}
 
@@ -270,6 +289,8 @@ namespace boss {
 			gl_current_game = FALLOUT3;
 		else if (fs::exists(data_path / "Skyrim.esm")) 
 			gl_current_game = SKYRIM;
+		else if (fs::exists(data_path / "Morrowind.esm"))
+			gl_current_game = MORROWIND;
 		else {
 			LOG_INFO("Game not detected locally. Checking Registry for paths.");
 			/* New behaviour:
@@ -307,6 +328,10 @@ namespace boss {
 			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path"))
 				text += " (not detected)";
 			choices.Add(text);
+			text = GetGameString(MORROWIND);
+			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path"))
+				text += " (not detected)";
+			choices.Add(text);
 
 			wxSingleChoiceDialog* choiceDia = new wxSingleChoiceDialog((wxWindow*)parent, wxT("Please pick which game to run BOSS for:"),
 				wxT("BOSS: Select Game"), choices);
@@ -327,6 +352,8 @@ namespace boss {
 				gl_current_game = FALLOUT3;
 			else if (ans == 4)
 				gl_current_game = FALLOUTNV;
+			else if (ans == 5)
+				gl_current_game = MORROWIND;
 			else
 				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 #else
@@ -342,6 +369,8 @@ namespace boss {
 				gamesDetected.push_back(FALLOUT3);
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path")) //Look for Fallout New Vegas.
 				gamesDetected.push_back(FALLOUTNV);
+			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path")) //Look for Morrowind.
+				gamesDetected.push_back(MORROWIND);
 
 			//Now check what games were found.
 			if (gamesDetected.empty())
@@ -378,6 +407,8 @@ namespace boss {
 			games.push_back(FALLOUT3);
 		if (fs::exists(data_path / "FalloutNV.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path")) //Look for Fallout New Vegas.
 			games.push_back(FALLOUTNV);
+		if (fs::exists(data_path / "Morrowind.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path")) //Look for Morrowind.
+			games.push_back(MORROWIND);
 		//Now set gl_current_game.
 		if (gl_game != AUTODETECT) {
 			if (gl_update_only)
@@ -395,6 +426,8 @@ namespace boss {
 				else if (gl_game == FALLOUT3 && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path")))  //Look for Fallout 3.
 					gl_current_game = gl_game;
 				else if (gl_game == FALLOUTNV && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path")))  //Look for Fallout New Vegas.
+					gl_current_game = gl_game;
+				else if (gl_game == MORROWIND && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path")))  //Look for Morrowind.
 					gl_current_game = gl_game;
 				else
 					AutodetectGame(parent);  //Game not found. Autodetect.
@@ -426,6 +459,8 @@ namespace boss {
 				return fs::last_write_time(data_path / "Fallout3.esm");
 			case FALLOUTNV:
 				return fs::last_write_time(data_path / "FalloutNV.esm");
+			case MORROWIND:
+				return fs::last_write_time(data_path / "Morrowind.esm");
 			default:
 				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 			}
@@ -574,6 +609,8 @@ namespace boss {
 			return "FalloutNV";
 		else if (gl_game == SKYRIM)
 			return "Skyrim";
+		else if (gl_game == MORROWIND)
+			return "Morrowind";
 		else
 			return "";
 	}
@@ -626,6 +663,8 @@ namespace boss {
 						gl_game = FALLOUTNV;
 					else if (iter->value == "Skyrim")
 						gl_game = SKYRIM;
+					else if (iter->value == "Morrowind")
+						gl_game = MORROWIND;
 				}
 				else if (iter->key == "body")
 					CSSBody = iter->value;

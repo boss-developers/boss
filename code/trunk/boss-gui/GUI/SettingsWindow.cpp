@@ -50,7 +50,8 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 		wxT("Nehrim"),
 		wxT("Skyrim"),
 		wxT("Fallout 3"),
-		wxT("Fallout: New Vegas")
+		wxT("Fallout: New Vegas"),
+		wxT("Morrowind")
 	};
 
 	//Set up stuff in the frame.
@@ -74,7 +75,7 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	
 	wxBoxSizer *gameBox = new wxBoxSizer(wxHORIZONTAL);
 	gameBox->Add(new wxStaticText(GeneralTab, wxID_ANY, wxT("Default Game:")), 2, wxEXPAND);
-	gameBox->Add(GameChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 6, Game), 1);
+	gameBox->Add(GameChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 7, Game), 1);
 	GeneralTabSizer->Add(gameBox, BorderSizerFlags);
 	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Check for BOSS updates on startup")), BorderSizerFlags);
 	GeneralTabSizer->Add(UseUserRuleEditorBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Use User Rules Editor")), BorderSizerFlags);
@@ -383,6 +384,9 @@ void SettingsFrame::SetDefaultValues() {
 	case FALLOUTNV:
 		GameChoice->SetSelection(5);
 		break;
+	case MORROWIND:
+		GameChoice->SetSelection(6);
+		break;
 	}
 
 	//Internet Settings
@@ -510,6 +514,9 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 		break;
 	case 5:
 		gl_game = FALLOUTNV;
+		break;
+	case 6:
+		gl_game = MORROWIND;
 		break;
 	}
 

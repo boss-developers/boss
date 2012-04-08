@@ -69,6 +69,7 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_MENU ( MENU_Skyrim, MainFrame::OnGameChange )
 	EVT_MENU ( MENU_Fallout3, MainFrame::OnGameChange )
 	EVT_MENU ( MENU_FalloutNewVegas, MainFrame::OnGameChange )
+	EVT_MENU ( MENU_Morrowind, MainFrame::OnGameChange )
 	EVT_BUTTON ( OPTION_Run, MainFrame::OnRunBOSS )
 	EVT_BUTTON ( OPTION_EditUserRules, MainFrame::OnEditUserRules )
 	EVT_BUTTON ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
@@ -214,6 +215,7 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	GameMenu->AppendRadioItem(MENU_Skyrim, wxT("&Skyrim"), wxT("Switch to running BOSS for Skyrim."));
 	GameMenu->AppendRadioItem(MENU_Fallout3, wxT("&Fallout 3"), wxT("Switch to running BOSS for Fallout 3."));
 	GameMenu->AppendRadioItem(MENU_FalloutNewVegas, wxT("&Fallout: New Vegas"), wxT("Switch to running BOSS for Fallout: New Vegas."));
+	GameMenu->AppendRadioItem(MENU_Morrowind, wxT("&Morrowind"), wxT("Switch to running BOSS for Morrowind."));
 	MenuBar->Append(GameMenu, wxT("&Active Game"));
     // About menu
     HelpMenu = new wxMenu();
@@ -760,6 +762,9 @@ void MainFrame::OnGameChange(wxCommandEvent& event) {
 	case MENU_FalloutNewVegas:
 		gl_current_game = FALLOUTNV;
 		break;
+	case MENU_Morrowind:
+		gl_current_game = MORROWIND;
+		break;
 	}
 	SetDataPath(gl_current_game);
 	try {
@@ -839,6 +844,7 @@ void MainFrame::DisableUndetectedGames() {
 	GameMenu->FindItem(MENU_Skyrim)->Enable(enabled);
 	GameMenu->FindItem(MENU_Fallout3)->Enable(enabled);
 	GameMenu->FindItem(MENU_FalloutNewVegas)->Enable(enabled);
+	GameMenu->FindItem(MENU_Morrowind)->Enable(enabled);
 	for (size_t i=0; i < games.size(); i++) {
 		switch (games[i]) {
 		case OBLIVION:
@@ -856,6 +862,9 @@ void MainFrame::DisableUndetectedGames() {
 		case FALLOUTNV:
 			GameMenu->FindItem(MENU_FalloutNewVegas)->Enable();
 			break;
+		case MORROWIND:
+			GameMenu->FindItem(MENU_Morrowind)->Enable();
+			break;
 		}
 	}
 
@@ -864,7 +873,8 @@ void MainFrame::DisableUndetectedGames() {
 		|| (GameMenu->FindItem(MENU_Nehrim)->IsChecked() && !GameMenu->FindItem(MENU_Nehrim)->IsEnabled())
 		|| (GameMenu->FindItem(MENU_Skyrim)->IsChecked() && !GameMenu->FindItem(MENU_Skyrim)->IsEnabled())
 		|| (GameMenu->FindItem(MENU_Fallout3)->IsChecked() && !GameMenu->FindItem(MENU_Fallout3)->IsEnabled())
-		|| (GameMenu->FindItem(MENU_FalloutNewVegas)->IsChecked() && !GameMenu->FindItem(MENU_FalloutNewVegas)->IsEnabled())) {
+		|| (GameMenu->FindItem(MENU_FalloutNewVegas)->IsChecked() && !GameMenu->FindItem(MENU_FalloutNewVegas)->IsEnabled())
+		|| (GameMenu->FindItem(MENU_Morrowind)->IsChecked() && !GameMenu->FindItem(MENU_Morrowind)->IsEnabled())) {
 			if (games.size() > 0) {
 				switch (games.front()) {
 				case OBLIVION:
@@ -886,6 +896,10 @@ void MainFrame::DisableUndetectedGames() {
 				case FALLOUTNV:
 					gl_current_game = FALLOUTNV;
 					GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
+					break;
+				case MORROWIND:
+					gl_current_game = MORROWIND;
+					GameMenu->FindItem(MENU_Morrowind)->Check();
 					break;
 				}
 				SetDataPath(gl_current_game);
@@ -911,6 +925,9 @@ void MainFrame::SetGames(vector<uint32_t> inGames) {
 		break;
 	case FALLOUTNV:
 		GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
+		break;
+	case MORROWIND:
+		GameMenu->FindItem(MENU_Morrowind)->Check();
 		break;
 	case AUTODETECT:  //No game detected. Only valid option is to force a game and update masterlist only, so set options to that and disable selecting of other run types.
 		GameMenu->FindItem(MENU_None)->Check();

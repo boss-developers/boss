@@ -42,7 +42,7 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-//#define BOSSGUI
+#define BOSSGUI
 
 	BOSS_COMMON const uint32_t BOSS_VERSION_MAJOR = 2;
 	BOSS_COMMON const uint32_t BOSS_VERSION_MINOR = 0;
@@ -57,6 +57,7 @@ namespace boss {
 	BOSS_COMMON const uint32_t SKYRIM		= 3;
 	BOSS_COMMON const uint32_t FALLOUT3		= 4;
 	BOSS_COMMON const uint32_t FALLOUTNV	= 5;
+	BOSS_COMMON const uint32_t MORROWIND	= 6;
 
 	//These other uint32_t values are not (as yet) accessed by the API, so don't need to be
 	//invariant across versions.

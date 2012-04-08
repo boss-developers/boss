@@ -133,6 +133,7 @@ BOSS_API extern const uint32_t BOSS_API_GAME_FALLOUT3;
 BOSS_API extern const uint32_t BOSS_API_GAME_FALLOUTNV;
 BOSS_API extern const uint32_t BOSS_API_GAME_NEHRIM;
 BOSS_API extern const uint32_t BOSS_API_GAME_SKYRIM;
+BOSS_API extern const uint32_t BOSS_API_GAME_MORROWIND;
 
 // BOSS message types.
 BOSS_API extern const uint32_t BOSS_API_MESSAGE_SAY;

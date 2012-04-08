@@ -989,9 +989,11 @@ void RuleListFrameClass::SaveEditedRule(Rule editedRule) {
 void RuleListFrameClass::DeleteSelectedRule() {
 	userlist.rules.erase(userlist.rules.begin()+selectedRuleIndex);
 	ReDrawRuleList();
-	if (selectedRuleIndex == userlist.rules.size())  //Just shortened rules by one. Make sure index isn't invalid.
-		selectedRuleIndex--;
-	RuleListScroller->Scroll(RuleListScroller->GetChildren()[selectedRuleIndex]->GetPosition());
+	if (!userlist.rules.empty()) {
+		if (selectedRuleIndex == userlist.rules.size())  //Just shortened rules by one. Make sure index isn't invalid.
+			selectedRuleIndex--;
+		RuleListScroller->Scroll(RuleListScroller->GetChildren()[selectedRuleIndex]->GetPosition());
+	}
 }
 
 void RuleListFrameClass::OnRuleSelection(wxCommandEvent& event) {

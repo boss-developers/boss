@@ -479,25 +479,41 @@ namespace boss {
 
 			//loadorder.txt is simple enough that we can avoid needing the full modlist parser which has the crashing issue.
 			//It's just a text file with a plugin filename on each line. Skip lines which are blank or start with '#'.
-			 std::ifstream in(path.c_str());
-			 if (in.fail())
-				 throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
+			std::ifstream in(path.c_str());
+			if (in.fail())
+				throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
 
-			 string line;
+			string line;
 			 
-			 while (in.good()) {
-				 getline(in, line);
+			if (gl_current_game == MORROWIND) {  //Morrowind's active file list is stored in Morrowind.ini, and that has a different format from plugins.txt.
+				boost::regex reg = boost::regex("GameFile[0-9]{1,3}=.+\.es(m|p)", boost::regex::extended|boost::regex::icase);
+				while (in.good()) {
+					getline(in, line);
 
-				 if (line.empty() || line[0] == '#')  //Character comparison is OK because it's ASCII.
-					 continue;
+					if (line.empty() || !boost::regex_match(line, reg))
+						continue;
 
-				 if (path == plugins_path())
-					 line = trans.EncToUtf8(line);
-				 items.push_back(Item(line));
-			 }
-			 in.close();
+					//Now cut off everything up to and including the = sign.
+					line = line.substr(line.find('=')+1);
+					if (path == plugins_path())
+						line = trans.EncToUtf8(line);
+					items.push_back(Item(line));
+				}
+			} else {
+				while (in.good()) {
+					getline(in, line);
 
-			 sort(items.begin(),items.end(), CompareItems);  //Does this work?
+					if (line.empty() || line[0] == '#')  //Character comparison is OK because it's ASCII.
+						continue;
+
+					if (path == plugins_path())
+						line = trans.EncToUtf8(line);
+					items.push_back(Item(line));
+				}
+			}
+			in.close();
+
+			sort(items.begin(),items.end(), CompareItems);  //Does this work?
 		} else {
 			Skipper skipper;
 			modlist_grammar grammar;
