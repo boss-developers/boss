@@ -159,9 +159,9 @@ namespace boss {
 			if (itemIter->Type() == MOD && itemIter->Exists()) {  //Only act on mods that exist.
 				Outputter buffer(gl_log_format);
 				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
-			/*	if (unrecognised.find(itemIter->Name()) != unrecognised.end())
-					buffer << BUTTON_SUBMIT_PLUGIN;*/
-				if (!gl_skip_version_parse) {
+	/*/**/		if (unrecognised.find(itemIter->Name()) != unrecognised.end())
+					buffer << BUTTON_SUBMIT_PLUGIN;
+	/*/**/		if (!gl_skip_version_parse) {
 					string version = itemIter->GetVersion();
 					if (!version.empty())
 						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
@@ -231,85 +231,85 @@ namespace boss {
 		if (gl_log_format == HTML) {  //Since this bit is HTML-only, don't bother using formatting placeholders.
 			bosslog << "<ul id='filters'>";
 			
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (UseDarkColourScheme)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b1' onclick='swapColorScheme(this)' /><label for='b1'>Use Dark Colour Scheme</label>";
+			bosslog << "id='b1' onclick='swapColorScheme(this)' />Use Dark Colour Scheme</label>";
 
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideRuleWarnings)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b2' onclick='toggleRuleListWarnings(this)' /><label for='b2'>Hide Rule Warnings</label>";
+			bosslog << "id='b2' onclick='toggleRuleListWarnings(this)' />Hide Rule Warnings</label>";
 		
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideVersionNumbers)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b3' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' /><label for='b3'>Hide Version Numbers</label>";
+			bosslog << "id='b3' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' />Hide Version Numbers</label>";
 
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideGhostedLabel)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b4' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' /><label for='b4'>Hide 'Ghosted' Label</label>";
+			bosslog << "id='b4' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' />Hide 'Ghosted' Label</label>";
 
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideInactivePlugins)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b16' onclick='toggleDisplayCSS(this,\".active\")' /><label for='b16'>Hide 'Active' Label</label>";
+			bosslog << "id='b16' onclick='toggleDisplayCSS(this,\".active\")' />Hide 'Active' Label</label>";
 			
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideChecksums)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b5' onclick='toggleDisplayCSS(this,\".crc\")' /><label for='b5'>Hide Checksums</label>";
+			bosslog << "id='b5' onclick='toggleDisplayCSS(this,\".crc\")' />Hide Checksums</label>";
 
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideInactivePlugins)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b15' onclick='toggleMessages()' /><label for='b15'>Hide Inactive Mods</label>";
+			bosslog << "id='b15' onclick='toggleMessages()' />Hide Inactive Mods</label>";
 			
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideMessagelessMods)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b6' onclick='toggleMessages()' /><label for='b6'>Hide Messageless Mods</label>";
+			bosslog << "id='b6' onclick='toggleMessages()' />Hide Messageless Mods</label>";
 			
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideGhostedMods)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b7' onclick='toggleMessages()' /><label for='b7'>Hide Ghosted Mods</label>";
+			bosslog << "id='b7' onclick='toggleMessages()' />Hide Ghosted Mods</label>";
 			
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideCleanMods)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b8' onclick='toggleMessages()' /><label for='b8'>Hide Clean Mods</label>";
+			bosslog << "id='b8' onclick='toggleMessages()' />Hide Clean Mods</label>";
 			
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideAllModMessages)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b9' onclick='toggleMessages()' /><label for='b9'>Hide All Mod Messages</label>";
+			bosslog << "id='b9' onclick='toggleMessages()' />Hide All Mod Messages</label>";
 			
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideNotes)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b10' onclick='toggleMessages()' /><label for='b10'>Hide Notes</label>";
+			bosslog << "id='b10' onclick='toggleMessages()' />Hide Notes</label>";
 			
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideBashTagSuggestions)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b11' onclick='toggleMessages()' /><label for='b11'>Hide Bash Tag Suggestions</label>";
+			bosslog << "id='b11' onclick='toggleMessages()' />Hide Bash Tag Suggestions</label>";
 			
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideRequirements)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b12' onclick='toggleMessages()' /><label for='b12'>Hide Requirements</label>";
+			bosslog << "id='b12' onclick='toggleMessages()' />Hide Requirements</label>";
 			
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideIncompatibilities)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b13' onclick='toggleMessages()' /><label for='b13'>Hide Incompatibilities</label>";
+			bosslog << "id='b13' onclick='toggleMessages()' />Hide Incompatibilities</label>";
 			
-			bosslog << "<li><input type='checkbox' ";
+			bosslog << "<li><label><input type='checkbox' ";
 			if (HideDoNotCleanMessages)
 				bosslog << "checked='checked' ";
-			bosslog << "id='b14' onclick='toggleMessages()' /><label for='b14'>Hide 'Do Not Clean' Messages</label>";
+			bosslog << "id='b14' onclick='toggleMessages()' />Hide 'Do Not Clean' Messages</label>";
 
 			bosslog << "</ul>" << "<i><span id='hp'>0</span> of " << (counters.recognised+counters.unrecognised) << " plugins hidden. <span id='hm'>0</span> of " << counters.messages << " messages hidden.</i>";
 		}

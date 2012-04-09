@@ -93,7 +93,7 @@ namespace boss {
 	BOSS_COMMON string CSSPopupBoxLink		= "width:400px;";
 	BOSS_COMMON string CSSPopupBoxNotes		= "height:10em;width:400px;";
 	BOSS_COMMON string CSSPopupBoxClose		= "cursor:pointer;display:table-cell;";
-	BOSS_COMMON string CSSPopupBoxSubmit	= "display:block;margin:0 auto;margin-top:20px;";
+	BOSS_COMMON string CSSPopupBoxSubmit	= "display:block;margin:0 auto;margin-top:20px;width:5em;";
 	BOSS_COMMON string CSSMask				= "position:fixed;left:0px;top:0px;width:100%;height:100%;background:black;opacity:0.9;display:block;z-index:1;";
 	BOSS_COMMON string CSSActive			= "color:#0A0;margin-right:1em;padding:0 4px;";
 
@@ -172,6 +172,9 @@ namespace boss {
 				<< "#notes{" << CSSPopupBoxNotes << "}"
 				<< "#popupClose{" << CSSPopupBoxClose << "}"
 				<< "#popup_yes{" << CSSPopupBoxSubmit << "}"
+				<< "#plugin{" << "display:table-cell;font-style:italic;" << "}"
+				<< "#pluginLabel{" << "display:table-cell;padding-right:0.5em;" << "}"
+				<< "output {display:block;width:350px;margin:2em auto;}"
 				<< "</style>"<<endl;
 			outStream << "<div>BOSS Log</div>" << endl
 				<< "<div>&copy; 2009-2012 BOSS Development Team<br />" << endl
@@ -189,13 +192,14 @@ namespace boss {
 		if (outFormat == HTML) {
 			outStream << endl 
 				<< "<div id='popupBox'>" << endl
-				<< "<div>Plugin Submission</div>" << endl
+				<< "<div>BOSS Unrecognised Plugin Submission</div>" << endl
 				<< "<div onclick='hidePopupBox()' id='popupClose'>&#x2715;</div>" << endl
-				<< "<p>Plugin: <span id='plugin'></span>" << endl
-				<< "<p>Download Location:<br /> <input type='text' id='link' placeholder='Please supply this to speed up the addition process.'/>" << endl
-				<< "<p>Additional Notes:<br />" << endl
-				<< "<textarea id='notes' placeholder='Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here.'></textarea>" << endl
-				<< "<button id='popup_yes' onclick='submitPlugin()'>Submit Plugin</button>" << endl
+				<< "<p><span id='pluginLabel'>Plugin:</span><span id='plugin'></span>" << endl
+				<< "<form>" << endl
+				<< "<p><label>Download Location: <input type='url' required='true' placeholder=\"A link to the plugin's download location.\" id='link'></label>" << endl
+				<< "<p><label>Additional Notes: <textarea id='notes' placeholder='Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.'></textarea></label>" << endl
+				<< "<button type='button' id='popup_yes' onclick='submitPlugin()'>Submit</button>" << endl
+				<< "</form><output></output>" << endl
 				<< "</div>" << endl
 				<< "<script>" << endl
 				<< "function showPopupBox(plugin){" << endl
@@ -212,12 +216,150 @@ namespace boss {
 				<< "	document.getElementById('popupBox').style.display='none';" << endl
 				<< "	document.getElementById('notes').value='';" << endl
 				<< "	document.getElementById('link').value='';" << endl
+				<< "	document.getElementsByTagName('output')[0].value='';" << endl
+				<< "	document.getElementsByTagName('form')[0].style.display = 'block';" << endl
 				<< "	if(mask!=null){" << endl
 				<< "		var parent=mask.parentNode;" << endl
 				<< "		parent.removeChild(mask);" << endl
 				<< "	}" << endl
 				<< "}" << endl
-				<< "function submitPlugin(){" << endl
+				<< "var url = 'http://www.darkcreations.org/bugzilla/jsonrpc.cgi';" << endl
+				<< "var output = document.getElementsByTagName('output')[0];" << endl
+				<< "				function outputText(text) {" << endl
+				<< "	//document.getElementsByTagName('form')[0].style.opacity = '0';" << endl
+				<< "	//document.getElementsByTagName('form')[0].style.height = '0';" << endl
+				<< "	document.getElementsByTagName('form')[0].style.display = 'none';" << endl
+				<< "    output.value = text;" << endl
+				<< "}" << endl
+				<< "function submitPlugin() {" << endl
+				<< "    var plugin = document.getElementById('plugin').innerHTML;" << endl
+				<< "    var desc = document.getElementById('link').value + '\\n\\n' + document.getElementById('notes').value;" << endl
+				<< "	if (desc == '\\n\\n') {" << endl
+				<< "		outputText('Please supply at least a link or some information.');" << endl
+				<< "		return;" << endl
+				<< "	}" << endl
+ 				<< "   try {" << endl
+ 				<< "       getBugId(plugin, desc);" << endl
+				<< "     } catch(err) {" << endl
+				<< "		outputText('Exception occurred: ' + err.message);" << endl
+				<< "     }" << endl
+				<< "}" << endl
+				<< "function getBugId(plugin, desc) {" << endl
+				<< "    var request = {" << endl
+				<< "        \"method\":\"Bug.search\"," << endl
+				<< "        \"params\":[{" << endl
+ 				<< "           \"Bugzilla_login\":\"bossguest@darkcreations.org\"," << endl
+				<< "            \"Bugzilla_password\":\"bosspassword\"," << endl
+ 				<< "           \"product\":\"BOSS\"," << endl
+				<< "            \"component\":\"Oblivion Masterlist\"," << endl  //This needs changing depending on the current game.
+				<< "            \"summary\":plugin" << endl
+ 				<< "       }]," << endl
+				<< "        \"id\":1" << endl
+				<< "    }" << endl
+ 				<< "   var params = JSON.stringify(request);" << endl
+ 				<< "   console.log(request);" << endl
+ 				<< "   console.log(params);" << endl
+ 				<< "   var xhr = getXmlHttpRequestObject();" << endl
+ 				<< "   xhr.open('POST', url, true);" << endl
+ 				<< "   xhr.setRequestHeader('Content-Type', 'application/json');" << endl
+ 				<< "   xhr.onerror = error;" << endl
+ 				<< "   xhr.onload = function() {//Handler function for call back on state change." << endl
+				<< "	   if (xhr.status == 200) {" << endl
+				<< "	       var response = JSON.parse(xhr.responseText);" << endl
+				<< "	       console.log(response);" << endl
+				<< "	       if (response.result.bugs.length > 0) {" << endl
+				<< "				var id = response.result.bugs[0].id;" << endl
+				<< "				console.log(id);" << endl
+				<< "				addBugComment(id, desc);" << endl
+				<< "		   } else {" << endl
+				<< "				 addBug(plugin, desc);" << endl
+				<< "		   }" << endl
+				<< "	   } else {" << endl
+				<< "	       outputText('id get: not reachable. ' + xhr.statusText);" << endl
+				<< "	   }" << endl
+				<< "	}" << endl
+				<< "	xhr.send(params);" << endl
+				<< "}" << endl
+				<< "function addBugComment(id, comment) {" << endl
+				<< "    var request = {" << endl
+				<< "		\"method\":\"Bug.add_comment\"," << endl
+				<< "        \"params\":[{" << endl
+				<< "			\"Bugzilla_login\":\"bossguest@darkcreations.org\"," << endl
+				<< "			\"Bugzilla_password\":\"bosspassword\"," << endl
+				<< "			\"id\":id," << endl
+				<< "			\"comment\":comment" << endl
+				<< "		}]," << endl
+				<< "		\"id\":2" << endl
+ 				<< "   }" << endl
+				<< "    var params = JSON.stringify(request);" << endl
+				<< "	console.log(request);" << endl
+ 				<< "   console.log(params);" << endl
+ 				<< "   var xhr = getXmlHttpRequestObject();" << endl
+ 				<< "   xhr.open('POST', url, true);" << endl
+ 				<< "   xhr.setRequestHeader('Content-type', 'application/json');" << endl
+ 				<< "   xhr.onerror = error;" << endl
+ 				<< "   xhr.onload = function() {//Handler function for call back on state change." << endl
+				<< "	   if (xhr.status == 200) {" << endl
+				<< "	       console.log(JSON.parse(xhr.responseText));" << endl
+				<< "	       outputText('comment added successfully');" << endl
+				<< "	   } else {" << endl
+				<< "	       outputText('comment addition: not reachable. ' + xhr.statusText);" << endl
+				<< "	   }" << endl
+				<< "	}" << endl
+				<< "	xhr.send(params);" << endl
+				<< "}" << endl
+				<< "function addBug(summary, description) {" << endl
+				<< "    var request = {" << endl
+				<< "		\"method\":\"Bug.create\"," << endl
+ 				<< "       \"params\":[{" << endl
+				<< "			\"Bugzilla_login\":\"bossguest@darkcreations.org\"," << endl
+				<< "			\"Bugzilla_password\":\"bosspassword\"," << endl
+				<< "			\"product\":\"BOSS\"," << endl
+				<< "			\"component\":\"Oblivion Masterlist\"," << endl
+				<< "			\"summary\":summary," << endl
+				<< "			\"version\":\"2.1\"," << endl
+				<< "			\"description\":description," << endl
+				<< "			\"op_sys\":\"Windows\"," << endl
+				<< "			\"platform\":\"PC\"," << endl
+				<< "			\"priority\":\"---\"," << endl
+				<< "			\"severity\":\"enhancement\"" << endl
+				<< "		}]," << endl
+				<< "		\"id\":3" << endl
+				<< "    }" << endl
+				<< "    var params = JSON.stringify(request);" << endl
+				<< "	console.log(request);" << endl
+				<< "    console.log(params);" << endl
+				<< "    var xhr = getXmlHttpRequestObject();" << endl
+				<< "    xhr.open('POST', url, true);" << endl
+				<< "    xhr.setRequestHeader('Content-type', 'application/json');" << endl
+				<< "    xhr.onerror = error;" << endl
+				<< "    xhr.onload = function() {//Handler function for call back on state change." << endl
+				<< "	   if (xhr.status == 200) {" << endl
+				<< "	       console.log(JSON.parse(xhr.responseText));" << endl
+				<< "	       outputText('bug added successfully');" << endl
+				<< "	   } else {" << endl
+				<< "	       outputText('bug addition: not reachable. ' + xhr.statusText);" << endl
+				<< "	   }" << endl
+				<< "	}" << endl
+				<< "	xhr.send(params);" << endl
+				<< "}" << endl
+				<< "function error() {" << endl
+				<< "	outputText('The operation could not be completed successfully.');" << endl
+				<< "}" << endl
+				<< "function getXmlHttpRequestObject() {" << endl
+				<< "    if (window.XMLHttpRequest) {" << endl
+				<< "        var xhr = new XMLHttpRequest();    " << endl
+				<< "        if ('withCredentials' in xhr) {  //Supports CORS. Don't actually need credentials though. Maybe." << endl
+				<< "	//		xhr.withCredentials = 'true';" << endl
+				<< "            return xhr;" << endl
+				<< "        } else if (typeof XDomainRequest != 'undefined') {" << endl
+				<< "            outputText('Your Browser Sucks! It\\'s about time to upgrade don\\'t you think?');" << endl
+				<< "        } else {" << endl
+				<< "           outputText('Your Browser Sucks! It\\'s about time to upgrade don\\'t you think?');" << endl
+				<< "        }" << endl
+				<< "    } else {" << endl
+				<< "        outputText('Your Browser Sucks! It\\'s about time to upgrade don\\'t you think?');" << endl
+				<< "    }" << endl
 				<< "}" << endl
 
 				<< "var hm=0,hp=0,hpe=document.getElementById('hp'),hme=document.getElementById('hm');" << endl
