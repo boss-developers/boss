@@ -202,6 +202,8 @@ namespace boss {
 				<< "</form><output></output>" << endl
 				<< "</div>" << endl
 				<< "<script>" << endl
+				<< "'use strict';" << endl
+				<< "var hm=0,hp=0,hpe=document.getElementById('hp'),hme=document.getElementById('hm'),url = 'http://www.darkcreations.org/bugzilla/jsonrpc.cgi',form = document.getElementsByTagName('form')[0],output = document.getElementsByTagName('output')[0];" << endl
 				<< "function showPopupBox(plugin){" << endl
 				<< "	if(document.getElementById('mask')==null){" << endl
 				<< "		var mask=document.createElement('div');" << endl
@@ -216,72 +218,80 @@ namespace boss {
 				<< "	document.getElementById('popupBox').style.display='none';" << endl
 				<< "	document.getElementById('notes').value='';" << endl
 				<< "	document.getElementById('link').value='';" << endl
-				<< "	document.getElementsByTagName('output')[0].value='';" << endl
-				<< "	document.getElementsByTagName('form')[0].style.display = 'block';" << endl
+				<< "	output.value='';" << endl
+				<< "	form.style.display = 'block';" << endl
 				<< "	if(mask!=null){" << endl
 				<< "		var parent=mask.parentNode;" << endl
 				<< "		parent.removeChild(mask);" << endl
 				<< "	}" << endl
 				<< "}" << endl
-				<< "var url = 'http://www.darkcreations.org/bugzilla/jsonrpc.cgi';" << endl
-				<< "var output = document.getElementsByTagName('output')[0];" << endl
-				<< "				function outputText(text) {" << endl
-				<< "	//document.getElementsByTagName('form')[0].style.opacity = '0';" << endl
-				<< "	//document.getElementsByTagName('form')[0].style.height = '0';" << endl
-				<< "	document.getElementsByTagName('form')[0].style.display = 'none';" << endl
-				<< "    output.value = text;" << endl
+				<< "function isResponseOK(text) {" << endl
+				<< "	return (JSON.parse(text).error == null);" << endl
+				<< "}" << endl		
+				<< "function outputText(text, flag) {" << endl
+				<< "	//form.style.opacity = '0';" << endl
+				<< "	//form.style.height = '0';" << endl
+				<< "	form.style.display = 'none';" << endl
+				<< "    if (output.value.length != 0) {" << endl
+				<< "		output.innerHTML += '<br />';" << endl
+				<< "	}" << endl
+				<< "	if (flag == -1) {" << endl
+				<< "		text = \"<span style='color:red;'>\" + text + \"</span>\";" << endl
+				<< "	} else if (flag == 1) {" << endl
+				<< "		text = \"<span class='success'>\" + text + \"</span>\";" << endl
+				<< "	}" << endl
+				<< "	output.innerHTML += text;" << endl
 				<< "}" << endl
 				<< "function submitPlugin() {" << endl
-				<< "    var plugin = document.getElementById('plugin').innerHTML;" << endl
-				<< "    var desc = document.getElementById('link').value + '\\n\\n' + document.getElementById('notes').value;" << endl
-				<< "	if (desc == '\\n\\n') {" << endl
-				<< "		outputText('Please supply at least a link or some information.');" << endl
+				<< "	var desc = document.getElementById('link').value;" << endl
+				<< "	if (desc.length != 0) {" << endl
+				<< "		desc += '\\n\\n';" << endl
+				<< "	}" << endl
+				<< "	desc += document.getElementById('notes').value;" << endl
+				<< "	if (desc.length == 0) {" << endl
+				<< "		outputText('Please supply at least a link or some notes.', -1);" << endl
 				<< "		return;" << endl
 				<< "	}" << endl
- 				<< "   try {" << endl
- 				<< "       getBugId(plugin, desc);" << endl
-				<< "     } catch(err) {" << endl
-				<< "		outputText('Exception occurred: ' + err.message);" << endl
-				<< "     }" << endl
+				<< "	try {" << endl
+				<< "		var xhr = new XMLHttpRequest();" << endl
+				<< "		getBugId(document.getElementById('plugin').innerHTML, desc, xhr);" << endl
+				<< "	} catch(err) {" << endl
+				<< "		outputText('Exception occurred: ' + err.message, -1);" << endl
+				<< "	}" << endl
 				<< "}" << endl
-				<< "function getBugId(plugin, desc) {" << endl
+				<< "function getBugId(plugin, desc, xhr) {" << endl
 				<< "    var request = {" << endl
 				<< "        \"method\":\"Bug.search\"," << endl
 				<< "        \"params\":[{" << endl
  				<< "           \"Bugzilla_login\":\"bossguest@darkcreations.org\"," << endl
 				<< "            \"Bugzilla_password\":\"bosspassword\"," << endl
  				<< "           \"product\":\"BOSS\"," << endl
-				<< "            \"component\":\"Oblivion Masterlist\"," << endl  //This needs changing depending on the current game.
+				<< "            \"component\":\"" << GetGameString(gl_current_game) << "\"," << endl
 				<< "            \"summary\":plugin" << endl
  				<< "       }]," << endl
 				<< "        \"id\":1" << endl
 				<< "    }" << endl
- 				<< "   var params = JSON.stringify(request);" << endl
- 				<< "   console.log(request);" << endl
- 				<< "   console.log(params);" << endl
- 				<< "   var xhr = getXmlHttpRequestObject();" << endl
- 				<< "   xhr.open('POST', url, true);" << endl
- 				<< "   xhr.setRequestHeader('Content-Type', 'application/json');" << endl
- 				<< "   xhr.onerror = error;" << endl
- 				<< "   xhr.onload = function() {//Handler function for call back on state change." << endl
-				<< "	   if (xhr.status == 200) {" << endl
-				<< "	       var response = JSON.parse(xhr.responseText);" << endl
-				<< "	       console.log(response);" << endl
-				<< "	       if (response.result.bugs.length > 0) {" << endl
+				<< "	outputText('Checking for existing submission...', 0);" << endl
+ 				<< "	xhr.open('POST', url, true);" << endl
+ 				<< "	xhr.setRequestHeader('Content-Type', 'application/json');" << endl
+ 				<< "	xhr.onerror = error;" << endl
+ 				<< "	xhr.onload = function() {" << endl
+				<< "		if (xhr.status == 200 && isResponseOK(xhr.responseText)) {" << endl
+				<< "			var response = JSON.parse(xhr.responseText);" << endl
+				<< "			if (response.result.bugs.length > 0) {" << endl
 				<< "				var id = response.result.bugs[0].id;" << endl
-				<< "				console.log(id);" << endl
-				<< "				addBugComment(id, desc);" << endl
-				<< "		   } else {" << endl
-				<< "				 addBug(plugin, desc);" << endl
-				<< "		   }" << endl
-				<< "	   } else {" << endl
-				<< "	       outputText('id get: not reachable. ' + xhr.statusText);" << endl
-				<< "	   }" << endl
+				<< "				addBugComment(id, desc, xhr);" << endl
+				<< "			} else {" << endl
+				<< "				addBug(plugin, desc, xhr);" << endl
+				<< "			}" << endl
+				<< "		} else {" << endl
+				<< "			outputText('Error: Existing submission check failed!', -1);" << endl
+				<< "		}" << endl
 				<< "	}" << endl
-				<< "	xhr.send(params);" << endl
+				<< "	xhr.send(JSON.stringify(request));" << endl
 				<< "}" << endl
-				<< "function addBugComment(id, comment) {" << endl
-				<< "    var request = {" << endl
+				<< "function addBugComment(id, comment, xhr) {" << endl
+				<< "	var request = {" << endl
 				<< "		\"method\":\"Bug.add_comment\"," << endl
 				<< "        \"params\":[{" << endl
 				<< "			\"Bugzilla_login\":\"bossguest@darkcreations.org\"," << endl
@@ -290,32 +300,28 @@ namespace boss {
 				<< "			\"comment\":comment" << endl
 				<< "		}]," << endl
 				<< "		\"id\":2" << endl
- 				<< "   }" << endl
-				<< "    var params = JSON.stringify(request);" << endl
-				<< "	console.log(request);" << endl
- 				<< "   console.log(params);" << endl
- 				<< "   var xhr = getXmlHttpRequestObject();" << endl
- 				<< "   xhr.open('POST', url, true);" << endl
- 				<< "   xhr.setRequestHeader('Content-type', 'application/json');" << endl
- 				<< "   xhr.onerror = error;" << endl
- 				<< "   xhr.onload = function() {//Handler function for call back on state change." << endl
-				<< "	   if (xhr.status == 200) {" << endl
-				<< "	       console.log(JSON.parse(xhr.responseText));" << endl
-				<< "	       outputText('comment added successfully');" << endl
+ 				<< "	}" << endl
+				<< "	outputText('Previous submission found, updating with supplied details...', 0);" << endl
+ 				<< "	xhr.open('POST', url, true);" << endl
+ 				<< "	xhr.setRequestHeader('Content-type', 'application/json');" << endl
+ 				<< "	xhr.onerror = error;" << endl
+ 				<< "	xhr.onload = function() {" << endl
+				<< "	   if (xhr.status == 200 && isResponseOK(xhr.responseText)) {" << endl
+				<< "	       outputText('Plugin submission updated!', 1);" << endl
 				<< "	   } else {" << endl
-				<< "	       outputText('comment addition: not reachable. ' + xhr.statusText);" << endl
+				<< "	       outputText('Error: Plugin submission could not be updated.', -1);" << endl
 				<< "	   }" << endl
 				<< "	}" << endl
-				<< "	xhr.send(params);" << endl
+				<< "	xhr.send(JSON.stringify(request));" << endl
 				<< "}" << endl
-				<< "function addBug(summary, description) {" << endl
+				<< "function addBug(summary, description, xhr) {" << endl
 				<< "    var request = {" << endl
 				<< "		\"method\":\"Bug.create\"," << endl
  				<< "       \"params\":[{" << endl
 				<< "			\"Bugzilla_login\":\"bossguest@darkcreations.org\"," << endl
 				<< "			\"Bugzilla_password\":\"bosspassword\"," << endl
 				<< "			\"product\":\"BOSS\"," << endl
-				<< "			\"component\":\"Oblivion Masterlist\"," << endl
+				<< "			\"component\":\"" << GetGameString(gl_current_game) << "\"," << endl
 				<< "			\"summary\":summary," << endl
 				<< "			\"version\":\"2.1\"," << endl
 				<< "			\"description\":description," << endl
@@ -326,43 +332,22 @@ namespace boss {
 				<< "		}]," << endl
 				<< "		\"id\":3" << endl
 				<< "    }" << endl
-				<< "    var params = JSON.stringify(request);" << endl
-				<< "	console.log(request);" << endl
-				<< "    console.log(params);" << endl
-				<< "    var xhr = getXmlHttpRequestObject();" << endl
+				<< "	outputText('No previous submission found, creating new submission...', 0);" << endl
 				<< "    xhr.open('POST', url, true);" << endl
 				<< "    xhr.setRequestHeader('Content-type', 'application/json');" << endl
 				<< "    xhr.onerror = error;" << endl
-				<< "    xhr.onload = function() {//Handler function for call back on state change." << endl
-				<< "	   if (xhr.status == 200) {" << endl
-				<< "	       console.log(JSON.parse(xhr.responseText));" << endl
-				<< "	       outputText('bug added successfully');" << endl
+				<< "    xhr.onload = function() {" << endl
+				<< "	   if (xhr.status == 200 && isResponseOK(xhr.responseText)) {" << endl
+				<< "	       outputText('Plugin submitted!', 1);" << endl
 				<< "	   } else {" << endl
-				<< "	       outputText('bug addition: not reachable. ' + xhr.statusText);" << endl
+				<< "	       outputText('Error: Plugin could not be submitted.', -1);" << endl
 				<< "	   }" << endl
 				<< "	}" << endl
-				<< "	xhr.send(params);" << endl
+				<< "	xhr.send(JSON.stringify(request));" << endl
 				<< "}" << endl
 				<< "function error() {" << endl
-				<< "	outputText('The operation could not be completed successfully.');" << endl
+				<< "	outputText('Error: Data transfer failed.', -1);" << endl
 				<< "}" << endl
-				<< "function getXmlHttpRequestObject() {" << endl
-				<< "    if (window.XMLHttpRequest) {" << endl
-				<< "        var xhr = new XMLHttpRequest();    " << endl
-				<< "        if ('withCredentials' in xhr) {  //Supports CORS. Don't actually need credentials though. Maybe." << endl
-				<< "	//		xhr.withCredentials = 'true';" << endl
-				<< "            return xhr;" << endl
-				<< "        } else if (typeof XDomainRequest != 'undefined') {" << endl
-				<< "            outputText('Your Browser Sucks! It\\'s about time to upgrade don\\'t you think?');" << endl
-				<< "        } else {" << endl
-				<< "           outputText('Your Browser Sucks! It\\'s about time to upgrade don\\'t you think?');" << endl
-				<< "        }" << endl
-				<< "    } else {" << endl
-				<< "        outputText('Your Browser Sucks! It\\'s about time to upgrade don\\'t you think?');" << endl
-				<< "    }" << endl
-				<< "}" << endl
-
-				<< "var hm=0,hp=0,hpe=document.getElementById('hp'),hme=document.getElementById('hm');" << endl
 				<< "function toggleSectionDisplay(h){if(h.nextSibling.style.display=='none'){h.nextSibling.style.display='block';h.firstChild.innerHTML='&#x2212;'}else{h.nextSibling.style.display='none';h.firstChild.innerHTML='+'}}" << endl
 				<< "function swapColorScheme(b){var d=document.body,a=document.getElementsByTagName('a'),f=document.getElementById('filters');if(f==null){f=document.getElementById('darkFilters')}if(b.checked){d.id='darkBody';f.id='darkFilters';for(var i=0,z=a.length;i<z;i++){a[i].className='darkLink'}}else{d.id='';f.id='filters';for(var i=0,z=a.length;i<z;i++){a[i].className=''}}}" << endl
 				<< "function toggleDisplayCSS(b,s){var r=new Array();if(document.styleSheets[0].cssRules){r=document.styleSheets[0].cssRules}else if(document.styleSheets[0].rules){r=document.styleSheets[0].rules}for(var i=0,z=r.length;i<z;i++){if(r[i].selectorText.toLowerCase()==s){if(b.checked){r[i].style.display='none'}else{r[i].style.display='inline'}return}}}" << endl
@@ -370,7 +355,7 @@ namespace boss {
 				<< "function toggleMessages(){"<<endl
 				<< "	var m=document.getElementById('recognised').childNodes,b9=document.getElementById('b9').checked,b10=document.getElementById('b10').checked,b11=document.getElementById('b11').checked,b12=document.getElementById('b12').checked,b13=document.getElementById('b13').checked,b14=document.getElementById('b14').checked;"<<endl
 				<< "	for(var i=0,z=m.length;i<z;i++){"<<endl
-				<< "		var ac=false,g=false,n=true,c=true,a=m[i].getElementsByTagName('span');"<<endl
+				<< "		var ac=false,g=false,n=true,c=true,a=m[i].getElementsByTagName('span'),b=null;"<<endl
 				<< "		for(var j=0,y=a.length;j<y;j++){"<<endl
 				<< "			if(a[j].className=='ghosted'){"<<endl
 				<< "				g=true;"<<endl
@@ -433,6 +418,12 @@ namespace boss {
 				<< "	toggleDisplayCSS(document.getElementById('b4'),'.ghosted','inline');"<<endl
 				<< "	toggleDisplayCSS(document.getElementById('b5'),'.crc','inline');"<<endl
 				<< "	toggleMessages();"<<endl
+				<< "	if (!('value' in document.createElement('output')) || !('withCredentials' in new XMLHttpRequest) || !(typeof(JSON) === 'object' && typeof(JSON.parse) === 'function')) { //Disable submission buttons. Since the only buttons in the log are related to submitter, disable all buttoms."<<endl
+				<< "		var buttons = document.getElementsByTagName('button');"<<endl
+				<< "		for (var i=0, len=buttons.length; i < len; i++) {"<<endl
+				<< "			buttons[i].style.display = 'none';"<<endl
+				<< "		}"<<endl
+				<< "	}"<<endl
 				<< "}"<<endl
 				<< "function DomReady(fn){"<<endl
 				<< "	if(document.addEventListener){"<<endl
