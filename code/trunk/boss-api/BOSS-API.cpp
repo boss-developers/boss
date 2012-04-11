@@ -4,7 +4,7 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2011    BOSS Development Team.
+    Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
@@ -597,8 +597,30 @@ BOSS_API uint32_t EvalConditionals(boss_db db) {
 
 
 //////////////////////////////////
-// Masterlist Updating
+// Network Functions
 //////////////////////////////////
+
+// Sets the proxy settings for BAPI globally, so that all subsequent BAPI network 
+// function calls are affected until SetProxy is called again or BAPI is unloaded.
+uint32_t SetProxy (const uint8_t * hostname, const uint32_t port, 
+											const uint8_t * username, 
+											const uint8_t * password) {
+	if (hostname == NULL && (port != 0 || username != NULL || password != NULL))
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Hostname cannot be null if port is non-zero or username or password are non-null.");
+	else if (username == NULL && (port != 0 || hostname != NULL || password != NULL))
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Username cannot be null if port is non-zero or hostname or password are non-null.");
+	else if (password == NULL && (port != 0 || username != NULL || hostname != NULL))
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Password cannot be null if port is non-zero or username or hostname are non-null.");
+	else if (port == 0 && (hostname != NULL || username != NULL || password != NULL))
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Port cannot be non-zero if hostname or username or password are non-null.");
+
+	gl_proxy_host = string(reinterpret_cast<const char *>(hostname));
+	gl_proxy_user = string(reinterpret_cast<const char *>(username));
+	gl_proxy_passwd = string(reinterpret_cast<const char *>(password));
+	gl_proxy_port = port;
+
+	return ReturnCode(BOSS_API_OK);
+}
 
 // Checks if there is a masterlist at masterlistPath. If not,
 // it downloads the latest masterlist for the given game to masterlistPath.
@@ -642,6 +664,73 @@ BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath) {
 	}
 }
 
+// Submits the given plugin as unrecognised to BOSS's unrecognised plugin tracker, 
+// using the same method as the BOSS Log plugin submitter. Whether or not the plugin
+// is actually unrecognised is not checked, but recognised plugin submissions will be
+// ignored and slow down the addition of unrecognised plugin that are submitted, so 
+// recognised plugins should not be submitted. Either link or info can be NULL, but 
+// not both. If link is NULL, load order suggestions and detail on what the plugin does
+// is crucial for addition to the masterlist. 
+BOSS_API uint32_t SubmitUnrecognisedPlugin(boss_db db, const uint8_t * plugin, 
+														const uint8_t * link, 
+														const uint8_t * info) {
+	if (db == NULL || plugin == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed for db or plugin.");
+	else if (link == NULL && info == NULL)
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "link and info cannot both be null.");
+
+	//Set globals again in case they've been changed (data path not needed).
+	gl_current_game = db->game;
+
+	string pluginStr = string(reinterpret_cast<const char *>(plugin));
+	string linkStr = string(reinterpret_cast<const char *>(link));
+	string infoStr = string(reinterpret_cast<const char *>(info));
+
+	if (linkStr.empty() && infoStr.empty())
+		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "link and info cannot both be empty strings.");
+
+	string description;
+	if (linkStr.empty())
+		description = infoStr;
+	else
+		description = linkStr + "\\n\\n" + infoStr;
+
+
+	//URL to send data to.
+	char * url = "http://www.darkcreations.org/bugzilla/jsonrpc.cgi";
+
+	//Create JSON search data object.
+	string JSONbugSearch = "{\"method\":\"Bug.search\",\"params\":[{\"Bugzilla_login\":\"bossguest@darkcreations.org\",\"Bugzilla_password\":\"bosspassword\",\"product\":\"BOSS\",\"component\":\"TES IV: Oblivion\",\"summary\":\"";
+	JSONbugSearch += pluginStr;
+	JSONbugSearch += "\"}],\"id\":1}";
+
+	//Doing a single POST request with no HTTP headers seems to work, but that's not what the Cross-Origin Resource Sharing spec says should be done. Do it by the book.
+	//Add the following HTTP headers to an OPTIONS request, check that the response status is 200, then continue to the actual POST.
+	//Origin: null
+	//Access-Control-Request-Method: POST
+	//Access-Control-Request-Headers: content-type
+
+	//POST request headers:
+	//Origin: null
+	//Content-Type: application/json
+
+
+	//Create JSON bug creation data object.
+	string JSONbugReport = "{\"method\":\"Bug.create\",\"params\":[{\"Bugzilla_login\":\"bossguest@darkcreations.org\",\"Bugzilla_password\":\"bosspassword\",\"product\":\"BOSS\",\"component\":\"TES IV: Oblivion\",\"summary\":\"";
+	JSONbugReport += pluginStr + "\",\"version\":\"2.1\",\"description\":\"" + description + "\",\"op_sys\":\"Windows\",\"platform\":\"PC\",\"priority\":\"---\",\"severity\":\"enhancement\"}],\"id\":3}";
+
+
+	string id;
+	//Create JSON comment addition data object.
+	string JSONaddComment = "{\"method\":\"Bug.add_comment\",\"params\":[{\"Bugzilla_login\":\"bossguest@darkcreations.org\",\"Bugzilla_password\":\"bosspassword\",\"id\":";
+	JSONaddComment += id + ",\"comment\":" + description + "}],\"id\":2}";
+
+	
+
+	
+
+	return ReturnCode(BOSS_API_OK);
+}
 
 ////////////////////////////////
 // Plugin Sorting Functions

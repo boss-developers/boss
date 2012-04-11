@@ -47,7 +47,7 @@
 		<li><a href="#functions-version">Version Functions</a>
 		<li><a href="#functions-lifecycle">Lifecycle Management Functions</a>
 		<li><a href="#functions-loading">Database Loading Functions</a>
-		<li><a href="#functions-updating">Updater Functions</a>
+		<li><a href="#functions-updating">Network Functions</a>
 		<li><a href="#functions-activation">Plugin Activity Functions</a>
 		<li><a href="#functions-sorting">Plugin Sorting Functions</a>
 		<li><a href="#functions-access">Database Access Functions</a>
@@ -312,13 +312,32 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>db</var> - The database the function acts on.
 </ul>
 
-<h3 id="functions-updating">Updater Functions</h3>
+<h3 id="functions-updating">Network Functions</h3>
+<p>These functions require a database to be created, but do not require <a href="#SortMods">Load</a> to have been called, apart from <a href="#SetProxy">SetProxy</a>, which does not require a database to be created.</p>
 
-<dfn id="UpdateMasterlist">UpdateMasterlist</dfn> - Updates the masterlist at masterlistPath to the latest version of the masterlist for the game specified when the given database was created. If there is no masterlist present, then the latest masterlist will be downloaded to masterlistPath. If the local masterlist is already at the latest version, no masterlist is downloaded. Does not require <a href="#Load">Load</a> to have been called previously. 
+<dfn id="SetProxy">SetProxy</dfn> - Sets the proxy settings for BAPI globally, so that all subsequent BAPI network function calls are affected until SetProxy is called again or BAPI is unloaded.
+<code class="box">uint32_t <a href="#SetProxy">SetProxy</a> (const uint8_t * hostname, const uint32_t port, const uint8_t * username, const uint8_t * password);</code>
+<ul>
+	<li><var>hostname</var> - A string containing the hostname for the proxy host used. If set to <code>NULL</code>, no proxy will be used, allowing clients to unset a previously set proxy.
+	<li><var>port</var> - The port used to connect to the proxy host. If set to <code>0</code>, no proxy will be used, allowing clients to unset a previously set proxy.
+	<li><var>username</var> - A string containing the username used to connect to the Internet through an authenticated proxy. If no authentication is required, this should be <code>NULL</code>
+	<li><var>password</var> - A string containing the password ued to connect to the Internet through an authenticated proxy. If no authentication is required, this should be <code>NULL</code>
+</ul>
+
+<dfn id="UpdateMasterlist">UpdateMasterlist</dfn> - Updates the masterlist at masterlistPath to the latest version of the masterlist for the game specified when the given database was created. If there is no masterlist present, then the latest masterlist will be downloaded to masterlistPath. If the local masterlist is already at the latest version, no masterlist is downloaded.
 <code class="box">uint32_t <a href="#UpdateMasterlist">UpdateMasterlist</a> (boss_db db, const uint8_t * masterlistPath);</code>
 <ul>
 	<li><var>db</var> - The database the function acts on.
 	<li><var>masterlistPath</var> - A string containing the relative or absolute path to the masterlist file that should be created or updated.
+</ul>
+
+<dfn id="SubmitUnrecognisedPlugin">SubmitUnrecognisedPlugin</dfn> - Submits the given plugin as unrecognised to BOSS's unrecognised plugin tracker, using the same method as the BOSS Log plugin submitter. Whether or not the plugin is actually unrecognised is not checked, but recognised plugin submissions will be ignored and slow down the addition of unrecognised plugin that are submitted, so recognised plugins should not be submitted. Either <var>link</var> or <var>info</var> can be <code>NULL</code>, but not both. If <var>link</var> is <code>NULL</code>, load order suggestions and detail on what the plugin does is crucial for addition to the masterlist.
+<code class="box">uint32_t <a href="#SubmitUnrecognisedPlugin">SubmitUnrecognisedPlugin</a> (boss_db db, const uint8_t * plugin, const uint8_t * link, const uint8_t * info);</code>
+<ul>
+	<li><var>db</var> - The database the function acts on.
+	<li><var>plugin</var> - A string containing the filename of the plugin to be submitted.
+	<li><var>link</var> - A string containing a valid URL to the plugin's download location.
+	<li><var>info</var> - A string containing additional information about the plugin, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs.
 </ul>
 
 <h3 id="functions-activation">Plugin Activity Functions</h3>

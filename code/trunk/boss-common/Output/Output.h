@@ -44,24 +44,6 @@
 namespace boss {
 	using namespace std;
 
-	//Default filter options.
-	BOSS_COMMON extern bool UseDarkColourScheme;
-	BOSS_COMMON extern bool HideVersionNumbers;
-	BOSS_COMMON extern bool HideGhostedLabel;
-	BOSS_COMMON extern bool HideActiveLabel;
-	BOSS_COMMON extern bool HideChecksums;
-	BOSS_COMMON extern bool HideMessagelessMods;
-	BOSS_COMMON extern bool HideGhostedMods;
-	BOSS_COMMON extern bool HideCleanMods;
-	BOSS_COMMON extern bool HideRuleWarnings;
-	BOSS_COMMON extern bool HideAllModMessages;
-	BOSS_COMMON extern bool HideNotes;
-	BOSS_COMMON extern bool HideBashTagSuggestions;
-	BOSS_COMMON extern bool HideRequirements;
-	BOSS_COMMON extern bool HideIncompatibilities;
-	BOSS_COMMON extern bool HideDoNotCleanMessages;
-	BOSS_COMMON extern bool HideInactivePlugins;
-
 	//Default CSS.
 	BOSS_COMMON extern string CSSBody;
 	BOSS_COMMON extern string CSSDarkBody;
@@ -71,7 +53,6 @@ namespace boss {
 	BOSS_COMMON extern string CSSFiltersList;
 	BOSS_COMMON extern string CSSDarkFilters;
 	BOSS_COMMON extern string CSSTitle;
-	BOSS_COMMON extern string CSSCopyright;
 	BOSS_COMMON extern string CSSSections;
 	BOSS_COMMON extern string CSSSectionTitle;
 	BOSS_COMMON extern string CSSSectionPlusMinus;
@@ -123,10 +104,15 @@ namespace boss {
 		LIST_ITEM_CLASS_WARN,
 		LIST_ITEM_CLASS_ERROR,
 		LIST_ITEM_SPAN_CLASS_MOD_OPEN,
-		HEADING_ID_END_OPEN,
-		HEADING_OPEN,
+		HEADING_ID_SUMMARY_OPEN,
+		HEADING_ID_GENERAL_OPEN,
+		HEADING_ID_USERLIST_OPEN,
+		HEADING_ID_SE_OPEN,
+		HEADING_ID_RECOGNISEDSEC_OPEN,
+		HEADING_ID_UNRECOGNISED_OPEN,
 		HEADING_CLOSE,
 		PARAGRAPH,
+		SPAN_CLASS_MOD_OPEN,
 		SPAN_CLASS_VERSION_OPEN,
 		SPAN_CLASS_GHOSTED_OPEN,
 		SPAN_CLASS_CRC_OPEN,

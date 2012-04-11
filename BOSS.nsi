@@ -62,6 +62,7 @@
 	!insertmacro MUI_LANGUAGE "English"
 	!insertmacro MUI_LANGUAGE "Russian"
 	!insertmacro MUI_LANGUAGE "German"
+	!insertmacro MUI_LANGUAGE "Spanish"
 	!insertmacro MUI_RESERVEFILE_LANGDLL
 
 ;--------------------------------
@@ -77,7 +78,7 @@
 	LangString TEXT_FINISHPAGE ${LANG_ENGLISH} "If you have multiple copies of one or more of the games BOSS supports, you must manually install a separate copy of BOSS for each copy other than the original install.$\n$\nThis can be done using the manual archive, or by copy/pasting the BOSS folder that has just been installed. See the BOSS Readme for more information."
 	LangString TEXT_RUN ${LANG_ENGLISH} "Run BOSS"
 	LangString TEXT_SHOWREADME ${LANG_ENGLISH} "View Readme"
-	LangString TEXT_MAIN ${LANG_ENGLISH} "All BOSS's files, minus userlists and the BOSS.ini"
+	LangString TEXT_MAIN ${LANG_ENGLISH} "All BOSS's files, minus userlists and the BOSS.ini."
 	LangString TEXT_USERFILES ${LANG_ENGLISH} "BOSS's userlist files and BOSS.ini file."
 
 ;--------------------------------
@@ -111,6 +112,22 @@
 	LangString TEXT_SHOWREADME ${LANG_GERMAN} "Readme lesen"
 	LangString TEXT_MAIN ${LANG_GERMAN} "Alle Dateien von BOSS ohne die Benutzerlisten und die BOSS.ini."
 	LangString TEXT_USERFILES ${LANG_GERMAN} "Benutzerliste von BOSS und die BOSS.ini-Datei."
+	
+;--------------------------------
+;Spanish (castellano) Strings
+
+	VIAddVersionKey /LANG=${LANG_SPANISH} "ProductName" "BOSS"
+	VIAddVersionKey /LANG=${LANG_SPANISH} "CompanyName" "BOSS Development Team"
+	VIAddVersionKey /LANG=${LANG_SPANISH} "LegalCopyright" "© 2009-2012 BOSS Development Team"
+	VIAddVersionKey /LANG=${LANG_SPANISH} "FileDescription" "El instalador para BOSS 2.0.1"
+	VIAddVersionKey /LANG=${LANG_SPANISH} "FileVersion" "2.0.1"
+
+	LangString TEXT_MESSAGEBOX ${LANG_SPANISH} "BOSS está instalado, y debe ser desinstalado antes de continuar. $\n$\nPresione `OK` para eliminar la versión anterior o `Cancel` para cancelar la actualización."
+	LangString TEXT_FINISHPAGE ${LANG_SPANISH} "Si usted tiene instalado otras copias de los juegos que BOSS soporta, debe de instalar manualmente una copia separada de BOSS por cada juego aparte de la instalación original.$\n$\nEste se puede hacer con el archivo manual, o por copiar y pegar la carpeta de BOSS despues se acaba de instalar. Vea el archivo Léame de BOSS para obtener más información."
+	LangString TEXT_RUN ${LANG_SPANISH} "Ejecutar BOSS"
+	LangString TEXT_SHOWREADME ${LANG_SPANISH} "Ver Léame"
+	LangString TEXT_MAIN ${LANG_SPANISH} "Todos los archivos de BOSS, menos BOSS.ini y listas de usuarios."
+	LangString TEXT_USERFILES ${LANG_SPANISH} "BOSS.ini y listas de usuarios."
 	
 ;--------------------------------
 ;Variables

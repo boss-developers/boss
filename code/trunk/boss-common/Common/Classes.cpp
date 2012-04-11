@@ -486,7 +486,7 @@ namespace boss {
 			string line;
 			 
 			if (gl_current_game == MORROWIND) {  //Morrowind's active file list is stored in Morrowind.ini, and that has a different format from plugins.txt.
-				boost::regex reg = boost::regex("GameFile[0-9]{1,3}=.+\.es(m|p)", boost::regex::extended|boost::regex::icase);
+				boost::regex reg = boost::regex("GameFile[0-9]{1,3}=.+\\.es(m|p)", boost::regex::extended|boost::regex::icase);
 				while (in.good()) {
 					getline(in, line);
 

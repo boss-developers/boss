@@ -466,11 +466,10 @@ int main(int argc, char *argv[]) {
 		output.Clear();
 		output.PrintHeader();
 		if (contents.updaterErrors.empty())
-			output << HEADING_OPEN << "Summary" << HEADING_CLOSE << contents.summary;
+			output << HEADING_ID_SUMMARY_OPEN << "Summary" << HEADING_CLOSE << contents.summary;
 		else
-			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
+			output << HEADING_ID_GENERAL_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
 				<< contents.updaterErrors << LIST_CLOSE;
-		output << HEADING_ID_END_OPEN << "Execution Complete" << HEADING_CLOSE;
 		output.PrintFooter();
 		try {
 			output.Save(bosslog_path(), true);
@@ -562,10 +561,10 @@ int main(int argc, char *argv[]) {
 		output.PrintHeader();
 		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
 			output.SetHTMLSpecialEscape(false);
-			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
+			output << HEADING_ID_GENERAL_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
 				<< masterlist.ErrorBuffer().FormatFor(gl_log_format) << LIST_CLOSE;
 		} else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
-			output << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
+			output << HEADING_ID_GENERAL_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
 				<< LIST_ITEM << SPAN_CLASS_ERROR_OPEN << e.getString() << SPAN_CLOSE << LIST_CLOSE;
 		} else
 			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK

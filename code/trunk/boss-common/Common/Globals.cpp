@@ -537,62 +537,6 @@ namespace boss {
 			<<	"bDisplayCRCs             = " << BoolToString(gl_show_CRCs) << endl
 			<<	"bDoTrialRun              = " << BoolToString(gl_trial_run) << endl
 			<<	"bLogDebugOutput          = " << BoolToString(gl_log_debug_output) << endl << endl
-			
-			<<	"[BOSSLog.Filters]" << endl
-			<<	"bUseDarkColourScheme     = " << BoolToString(UseDarkColourScheme) << endl
-			<<	"bHideVersionNumbers      = " << BoolToString(HideVersionNumbers) << endl
-			<<	"bHideGhostedLabel        = " << BoolToString(HideGhostedLabel) << endl
-			<<	"bHideActiveLabel         = " << BoolToString(HideActiveLabel) << endl
-			<<	"bHideChecksums           = " << BoolToString(HideChecksums) << endl
-			<<	"bHideMessagelessMods     = " << BoolToString(HideMessagelessMods) << endl
-			<<	"bHideGhostedMods         = " << BoolToString(HideGhostedMods) << endl
-			<<	"bHideCleanMods           = " << BoolToString(HideCleanMods) << endl
-			<<	"bHideRuleWarnings        = " << BoolToString(HideRuleWarnings) << endl
-			<<	"bHideAllModMessages      = " << BoolToString(HideAllModMessages) << endl
-			<<	"bHideNotes               = " << BoolToString(HideNotes) << endl
-			<<	"bHideBashTagSuggestions  = " << BoolToString(HideBashTagSuggestions) << endl
-			<<	"bHideRequirements        = " << BoolToString(HideRequirements) << endl
-			<<	"bHideIncompatibilities   = " << BoolToString(HideIncompatibilities) << endl
-			<<	"bHideDoNotCleanMessages  = " << BoolToString(HideDoNotCleanMessages) << endl
-			<<	"bHideInactiveMods        = " << BoolToString(HideInactivePlugins) << endl << endl
-
-			<<	"[BOSSLog.Styles]" << endl
-			<<	"# A style with nothing specified uses the coded defaults." << endl
-			<<	"# These defaults are given in the BOSS ReadMe as with the rest of the ini settings." << endl
-			<<	"\"body\"                                     = " << CSSBody << endl
-			<<	"\"#darkBody\"                                = " << CSSDarkBody << endl
-			<<	"\".darkLink:link\"                           = " << CSSDarkLink << endl
-			<<	"\".darkLink:visited\"                        = " << CSSDarkLinkVisited << endl
-			<<	"\"#filters\"                                 = " << CSSFilters << endl
-			<<	"\"#filters > li\"                            = " << CSSFiltersList << endl
-			<<	"\"#darkFilters\"                             = " << CSSDarkFilters << endl
-			<<	"\"body > div:first-child\"                   = " << CSSTitle << endl
-			<<	"\"body > div:first-child + div\"             = " << CSSCopyright << endl
-			<<	"\"h3 + *\"                                   = " << CSSSections << endl
-			<<	"\"h3\"                                       = " << CSSSectionTitle << endl
-			<<	"\"h3 > span\"                                = " << CSSSectionPlusMinus << endl
-			<<	"\"#end\"                                     = " << CSSLastSection << endl
-			<<	"\"td\"                                       = " << CSSTable << endl
-			<<	"\"ul\"                                       = " << CSSList << endl
-			<<	"\"ul li\"                                    = " << CSSListItem << endl
-			<<	"\"li ul\"                                    = " << CSSSubList << endl
-			<<	"\"input[type='checkbox']\"                   = " << CSSCheckbox << endl
-			<<	"\"blockquote\"                               = " << CSSBlockquote << endl
-			<<	"\".error\"                                   = " << CSSError << endl
-			<<	"\".warn\"                                    = " << CSSWarning << endl
-			<<	"\".success\"                                 = " << CSSSuccess << endl
-			<<	"\".version\"                                 = " << CSSVersion << endl
-			<<	"\".ghosted\"                                 = " << CSSGhost << endl
-			<<	"\".crc\"                                     = " << CSSCRC << endl
-			<<	"\".active\"                                  = " << CSSActive << endl
-			<<	"\".tagPrefix\"                               = " << CSSTagPrefix << endl
-			<<	"\".dirty\"                                   = " << CSSDirty << endl
-			<<	"\".message\"                                 = " << CSSQuotedMessage << endl
-			<<	"\".mod\"                                     = " << CSSMod << endl
-			<<	"\".tag\"                                     = " << CSSTag << endl
-			<<	"\".note\"                                    = " << CSSNote << endl
-			<<	"\".req\"                                     = " << CSSRequirement << endl
-			<<	"\".inc\"                                     = " << CSSIncompatibility;
 		ini.close();
 	}
 
@@ -666,74 +610,6 @@ namespace boss {
 					else if (iter->value == "Morrowind")
 						gl_game = MORROWIND;
 				}
-				else if (iter->key == "body")
-					CSSBody = iter->value;
-				else if (iter->key == "#darkBody")
-					CSSDarkBody = iter->value;
-				else if (iter->key == ".darkLink:link")
-					CSSDarkLink = iter->value;
-				else if (iter->key == ".darkLink:visited")
-					CSSDarkLinkVisited = iter->value;
-				else if (iter->key == "#filters")
-					CSSFilters = iter->value;
-				else if (iter->key == "#filters > li")
-					CSSFiltersList = iter->value;
-				else if (iter->key == "#darkFilters")
-					CSSDarkFilters = iter->value;
-				else if (iter->key == "body > div:first-child")
-					CSSTitle = iter->value;
-				else if (iter->key == "body > div:first-child + div")
-					CSSCopyright = iter->value;
-				else if (iter->key == "h3 + *")
-					CSSSections = iter->value;
-				else if (iter->key == "h3")
-					CSSSectionTitle = iter->value;
-				else if (iter->key == "h3 > span")
-					CSSSectionPlusMinus = iter->value;
-				else if (iter->key == "#end")
-					CSSLastSection = iter->value;
-				else if (iter->key == "td")
-					CSSTable = iter->value;
-				else if (iter->key == "ul")
-					CSSList = iter->value;
-				else if (iter->key == "ul li")
-					CSSListItem = iter->value;
-				else if (iter->key == "li ul")
-					CSSSubList = iter->value;
-				else if (iter->key == "input[type='checkbox']")
-					CSSCheckbox = iter->value;
-				else if (iter->key == "blockquote")
-					CSSBlockquote = iter->value;
-				else if (iter->key == ".error")
-					CSSError = iter->value;
-				else if (iter->key == ".warn")
-					CSSWarning = iter->value;
-				else if (iter->key == ".success")
-					CSSSuccess = iter->value;
-				else if (iter->key == ".version")
-					CSSVersion = iter->value;
-				else if (iter->key == ".ghosted")
-					CSSGhost = iter->value;
-				else if (iter->key == ".crc")
-					CSSCRC = iter->value;
-				else if (iter->key == ".active")
-					CSSActive = iter->value;
-				else if (iter->key == ".tagPrefix")
-					CSSTagPrefix = iter->value;
-				else if (iter->key == ".dirty")
-					CSSDirty = iter->value;
-				else if (iter->key == ".message")
-					CSSQuotedMessage = iter->value;
-				else if (iter->key == ".mod")
-					CSSMod = iter->value;
-				else if (iter->key == ".tag")
-					CSSTag = iter->value;
-				else if (iter->key == ".note")
-					CSSNote = iter->value;
-				else if (iter->key == ".req")
-					CSSRequirement = iter->value;
-				else if (iter->key == ".inc")
-					CSSIncompatibility = iter->value;
 				//Now integers.
 				else if (iter->key == "iProxyPort")
 					gl_proxy_port = atoi(iter->value.c_str());
@@ -766,38 +642,6 @@ namespace boss {
 					gl_trial_run = StringToBool(iter->value);
 				else if (iter->key == "bLogDebugOutput")
 					gl_log_debug_output = StringToBool(iter->value);
-				if (iter->key == "bUseDarkColourScheme")
-					UseDarkColourScheme = StringToBool(iter->value);
-				else if (iter->key == "bHideVersionNumbers")
-					HideVersionNumbers = StringToBool(iter->value);
-				else if (iter->key == "bHideGhostedLabel")
-					HideGhostedLabel = StringToBool(iter->value);
-				else if (iter->key == "bHideActiveLabel")
-					HideActiveLabel = StringToBool(iter->value);
-				else if (iter->key == "bHideChecksums")
-					HideChecksums = StringToBool(iter->value);
-				else if (iter->key == "bHideMessagelessMods")
-					HideMessagelessMods = StringToBool(iter->value);
-				else if (iter->key == "bHideGhostedMods")
-					HideGhostedMods = StringToBool(iter->value);
-				else if (iter->key == "bHideCleanMods")
-					HideCleanMods = StringToBool(iter->value);
-				else if (iter->key == "bHideRuleWarnings")
-					HideRuleWarnings = StringToBool(iter->value);
-				else if (iter->key == "bHideAllModMessages")
-					HideAllModMessages = StringToBool(iter->value);
-				else if (iter->key == "bHideNotes")
-					HideNotes = StringToBool(iter->value);
-				else if (iter->key == "bHideBashTagSuggestions")
-					HideBashTagSuggestions = StringToBool(iter->value);
-				else if (iter->key == "bHideRequirements")
-					HideRequirements = StringToBool(iter->value);
-				else if (iter->key == "bHideIncompatibilities")
-					HideIncompatibilities = StringToBool(iter->value);
-				else if (iter->key == "bHideDoNotCleanMessages")
-					HideDoNotCleanMessages = StringToBool(iter->value);
-				else if (iter->key == "bHideInactivePlugins")
-					HideInactivePlugins = StringToBool(iter->value);
 			}
 		} else if (iniFile == "Oblivion.ini") {
 			for (vector<IniPair>::iterator iter = iniSettings.begin(); iter != iniSettings.end(); ++iter) {

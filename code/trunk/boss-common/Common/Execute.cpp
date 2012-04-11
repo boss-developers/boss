@@ -158,10 +158,11 @@ namespace boss {
 		for (vector<Item>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter) {
 			if (itemIter->Type() == MOD && itemIter->Exists()) {  //Only act on mods that exist.
 				Outputter buffer(gl_log_format);
-				buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
-	/*/**/		if (unrecognised.find(itemIter->Name()) != unrecognised.end())
+				buffer << LIST_ITEM;
+				if (unrecognised.find(itemIter->Name()) != unrecognised.end())
 					buffer << BUTTON_SUBMIT_PLUGIN;
-	/*/**/		if (!gl_skip_version_parse) {
+				buffer << SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
+				if (!gl_skip_version_parse) {
 					string version = itemIter->GetVersion();
 					if (!version.empty())
 						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
@@ -229,95 +230,40 @@ namespace boss {
 
 		// Print BOSSLog Filters
 		if (gl_log_format == HTML) {  //Since this bit is HTML-only, don't bother using formatting placeholders.
-			bosslog << "<ul id='filters'>";
-			
-			bosslog << "<li><label><input type='checkbox' ";
-			if (UseDarkColourScheme)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b1' onclick='swapColorScheme(this)' />Use Dark Colour Scheme</label>";
 
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideRuleWarnings)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b2' onclick='toggleRuleListWarnings(this)' />Hide Rule Warnings</label>";
-		
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideVersionNumbers)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b3' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' />Hide Version Numbers</label>";
-
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideGhostedLabel)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b4' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' />Hide 'Ghosted' Label</label>";
-
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideInactivePlugins)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b16' onclick='toggleDisplayCSS(this,\".active\")' />Hide 'Active' Label</label>";
-			
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideChecksums)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b5' onclick='toggleDisplayCSS(this,\".crc\")' />Hide Checksums</label>";
-
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideInactivePlugins)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b15' onclick='toggleMessages()' />Hide Inactive Mods</label>";
-			
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideMessagelessMods)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b6' onclick='toggleMessages()' />Hide Messageless Mods</label>";
-			
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideGhostedMods)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b7' onclick='toggleMessages()' />Hide Ghosted Mods</label>";
-			
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideCleanMods)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b8' onclick='toggleMessages()' />Hide Clean Mods</label>";
-			
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideAllModMessages)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b9' onclick='toggleMessages()' />Hide All Mod Messages</label>";
-			
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideNotes)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b10' onclick='toggleMessages()' />Hide Notes</label>";
-			
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideBashTagSuggestions)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b11' onclick='toggleMessages()' />Hide Bash Tag Suggestions</label>";
-			
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideRequirements)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b12' onclick='toggleMessages()' />Hide Requirements</label>";
-			
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideIncompatibilities)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b13' onclick='toggleMessages()' />Hide Incompatibilities</label>";
-			
-			bosslog << "<li><label><input type='checkbox' ";
-			if (HideDoNotCleanMessages)
-				bosslog << "checked='checked' ";
-			bosslog << "id='b14' onclick='toggleMessages()' />Hide 'Do Not Clean' Messages</label>";
-
-			bosslog << "</ul>" << "<i><span id='hp'>0</span> of " << (counters.recognised+counters.unrecognised) << " plugins hidden. <span id='hm'>0</span> of " << counters.messages << " messages hidden.</i>";
+			bosslog << "<aside>"
+					<< "<div id='cssSettingsButton'>CSS Settings</div>"
+					<< "<div id='filtersButton' onclick='toggleFilters()'>"
+					<< "	<span>Filters</span>"
+					<< "	<span id='arrow'>&#xbb;</span>"
+					<< "</div>"
+					<< "</aside>"
+					<< "<ul id='filters'>"
+					<< "	<li><label><input type='checkbox' id='b1' onclick='swapColorScheme(this)' />Use Dark Colour Scheme</label>"
+					<< "	<li><label><input type='checkbox' id='b2' onclick='toggleRuleListWarnings(this)' />Hide Rule Warnings</label>"
+					<< "	<li><label><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' />Hide Version Numbers</label>"
+					<< "	<li><label><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' />Hide 'Ghosted' Label</label>"
+					<< "	<li><label><input type='checkbox' id='b16' onclick='toggleDisplayCSS(this,\".active\")' />Hide 'Active' Label</label>"
+					<< "	<li><label><input type='checkbox' id='b5' onclick='toggleDisplayCSS(this,\".crc\")' />Hide Checksums</label>"
+					<< "	<li><label><input type='checkbox' id='b15' onclick='toggleMessages(this)' />Hide Inactive Mods</label>"
+					<< "	<li><label><input type='checkbox' id='b6' onclick='toggleMessages(this)' />Hide Messageless Mods</label>"
+					<< "	<li><label><input type='checkbox' id='b7' onclick='toggleMessages(this)' />Hide Ghosted Mods</label>"
+					<< "	<li><label><input type='checkbox' id='b8' onclick='toggleMessages(this)' />Hide Clean Mods</label>"
+					<< "	<li><label><input type='checkbox' id='b9' onclick='toggleMessages(this)' />Hide All Mod Messages</label>"
+					<< "	<li><label><input type='checkbox' id='b10' onclick='toggleMessages(this)' />Hide Notes</label>"
+					<< "	<li><label><input type='checkbox' id='b11' onclick='toggleMessages(this)' />Hide Bash Tag Suggestions</label>"
+					<< "	<li><label><input type='checkbox' id='b12' onclick='toggleMessages(this)' />Hide Requirements</label>"
+					<< "	<li><label><input type='checkbox' id='b13' onclick='toggleMessages(this)' />Hide Incompatibilities</label>"
+					<< "	<li><label><input type='checkbox' id='b14' onclick='toggleMessages(this)' />Hide 'Do Not Clean' Messages</label>"
+					<< "	<li style='font-style:italic;'><span id='hp'>0</span> of " << (counters.recognised+counters.unrecognised) << " plugins hidden."
+					<< "	<li style='font-style:italic;'><span id='hm'>0</span> of " << counters.messages << " messages hidden."
+					<< "</ul>";
 		}
 
 		// Display Global Messages
 		if (!contents.globalMessages.empty() || !contents.iniParsingError.empty() || !contents.criticalError.empty() || !contents.updaterErrors.empty() || !contents.regexError.empty()) {
 
-			bosslog << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN;
+			bosslog << HEADING_ID_GENERAL_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN;
 			if (!contents.criticalError.empty())		//Print masterlist parsing error.
 				bosslog << contents.criticalError;
 			else {
@@ -344,7 +290,7 @@ namespace boss {
 		}
 
 		// Print Summary
-		bosslog << HEADING_OPEN << "Summary" << HEADING_CLOSE << DIV_OPEN;
+		bosslog << HEADING_ID_SUMMARY_OPEN << "Summary" << HEADING_CLOSE << DIV_OPEN;
 
 		if (contents.oldRecognisedPlugins == contents.recognisedPlugins)
 			bosslog << PARAGRAPH << "No change in recognised plugin list since last run.";
@@ -363,7 +309,7 @@ namespace boss {
 
 		// Display RuleList Messages
 		if (!contents.userlistMessages.empty() || !contents.userlistParsingError.empty() || !contents.userlistSyntaxErrors.empty()) {
-			bosslog << HEADING_OPEN << "Userlist Messages" << HEADING_CLOSE << LIST_ID_USERLIST_MESSAGES_OPEN;
+			bosslog << HEADING_ID_USERLIST_OPEN << "Userlist Messages" << HEADING_CLOSE << LIST_ID_USERLIST_MESSAGES_OPEN;
 			if (!contents.userlistParsingError.empty())  //First print parser/syntax error messages.
 				bosslog << contents.userlistParsingError;
 
@@ -377,29 +323,28 @@ namespace boss {
 
 		// Display Script Extender Info
 		if (!contents.seInfo.empty())
-			bosslog << HEADING_OPEN << "Script Extender And Script Extender Plugins" << HEADING_CLOSE << LIST_OPEN
+			bosslog << HEADING_ID_SE_OPEN << "Script Extender And Script Extender Plugins" << HEADING_CLOSE << LIST_OPEN
 				<< contents.seInfo
 				<< LIST_CLOSE;
 
 		// Display Recognised Mods
 		if (gl_revert < 1) 
-			bosslog << HEADING_OPEN << "Recognised And Re-ordered Plugins" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
+			bosslog << HEADING_ID_RECOGNISEDSEC_OPEN << "Recognised And Re-ordered Plugins" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
 		else if (gl_revert == 1)
-			bosslog << HEADING_OPEN << "Restored Load Order (Using modlist.txt)" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
+			bosslog << HEADING_ID_RECOGNISEDSEC_OPEN << "Restored Load Order (Using modlist.txt)" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
 		else if (gl_revert == 2) 
-			bosslog << HEADING_OPEN << "Restored Load Order (Using modlist.old)" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
+			bosslog << HEADING_ID_RECOGNISEDSEC_OPEN << "Restored Load Order (Using modlist.old)" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
 		bosslog << contents.recognisedPlugins
 			<< LIST_CLOSE;
 
 		// Display Unrecognised Mods
 		if (!contents.unrecognisedPlugins.empty())
-			bosslog << HEADING_OPEN << "Unrecognised Plugins" << HEADING_CLOSE << DIV_OPEN 
+			bosslog << HEADING_ID_UNRECOGNISED_OPEN << "Unrecognised Plugins" << HEADING_CLOSE << DIV_OPEN 
 				<< PARAGRAPH << "Reorder these by hand using your favourite mod ordering utility." << LIST_OPEN
 				<< contents.unrecognisedPlugins
 				<< LIST_CLOSE << DIV_CLOSE;
 
 		// Finish
-		bosslog << HEADING_ID_END_OPEN << "Execution Complete" << HEADING_CLOSE;
 		bosslog.PrintFooter();
 		bosslog.Save(file, true);
 	}

@@ -1,4 +1,4 @@
-﻿/*	BOSS
+/*	BOSS
 	
 	A "one-click" program for users that quickly optimises and avoids 
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
@@ -35,36 +35,17 @@ namespace boss {
 	using namespace std;
 	using boost::algorithm::replace_all;
 
-	//Default filter options.
-	BOSS_COMMON bool UseDarkColourScheme    = false;
-	BOSS_COMMON bool HideVersionNumbers     = false;
-	BOSS_COMMON bool HideGhostedLabel       = false;
-	BOSS_COMMON bool HideActiveLabel		= false;
-	BOSS_COMMON bool HideChecksums          = false;
-	BOSS_COMMON bool HideMessagelessMods    = false;
-	BOSS_COMMON bool HideGhostedMods        = false;
-	BOSS_COMMON bool HideCleanMods			= false;
-	BOSS_COMMON bool HideRuleWarnings       = false;
-	BOSS_COMMON bool HideAllModMessages     = false;
-	BOSS_COMMON bool HideNotes              = false;
-	BOSS_COMMON bool HideBashTagSuggestions = false;
-	BOSS_COMMON bool HideRequirements       = false;
-	BOSS_COMMON bool HideIncompatibilities  = false;
-	BOSS_COMMON bool HideDoNotCleanMessages	= false;
-	BOSS_COMMON bool HideInactivePlugins	= false;
-
 	//Default CSS.
 	BOSS_COMMON string CSSBody				= "font-family:Calibri,Arial,sans-serifs;";
 	BOSS_COMMON string CSSDarkBody			= "color:white;background:black;";
 	BOSS_COMMON string CSSDarkLink			= "color:#0AF;";
 	BOSS_COMMON string CSSDarkLinkVisited	= "color:#E000E0;";
 	BOSS_COMMON string CSSFilters			= "border:1px gray dashed;background:#F5F5F5;padding:.3em;display:table;";
-	BOSS_COMMON string CSSFiltersList		= "display:inline-block;padding:.2em .5em;white-space:nowrap;margin:0;width:200px;";
-	BOSS_COMMON string CSSDarkFilters		= "border:1px gray dashed;padding:.3em;display:table;background:#333;";
-	BOSS_COMMON string CSSTitle				= "font-size:2.4em;font-weight:700;text-align:center;margin-bottom:.2em;";
-	BOSS_COMMON string CSSCopyright			= "text-align:center;";
+	BOSS_COMMON string CSSFiltersList		= "margin:0;padding:0.2em 0.5em; white-space:nowrap;";
+	BOSS_COMMON string CSSDarkFilters		= "background:#333;";
+	BOSS_COMMON string CSSTitle				= "display:inline;font-size:2.4em;font-weight:700;margin-right:1em;";
 	BOSS_COMMON string CSSSections			= "margin-bottom:3em;";
-	BOSS_COMMON string CSSSectionTitle		= "cursor:pointer;";
+	BOSS_COMMON string CSSSectionTitle		= "font-size:1.17em;display:table;cursor:pointer;";
 	BOSS_COMMON string CSSSectionPlusMinus	= "display:inline-block;position:relative;top:.05em; font-size:1.3em;width:.6em;margin-right:.1em;";
 	BOSS_COMMON string CSSLastSection		= "text-align:center;cursor:default;";
 	BOSS_COMMON string CSSTable				= "padding:0 .5em;";
@@ -131,19 +112,21 @@ namespace boss {
 			outStream << "<!DOCTYPE html>"<<endl<<"<meta charset='utf-8'>"<<endl
 				<< "<title>BOSS Log</title>"<<endl<<"<style>"
 				<< "body{" << CSSBody << "}"
-				<< "#darkBody{" << CSSDarkBody << "}"
-				<< ".darkLink:link{" << CSSDarkLink << "}"
-				<< ".darkLink:visited{" << CSSDarkLinkVisited << "}"
-				<< "#filters{" << CSSFilters << "}"
-				<< "#filters > li,#darkFilters > li{" << CSSFiltersList << "}"
-				<< "#darkFilters{" << CSSDarkFilters << "}"
-				<< "body > div:first-child{" << CSSTitle << "}"
-				<< "body > div:first-child + div{" << CSSCopyright << "}"
-				<< "h3 + *{" << CSSSections << "}"
-				<< "h3{" << CSSSectionTitle << "}"
-				<< "h3 > span{" << CSSSectionPlusMinus << "}"			
-				<< "#end{" << CSSLastSection << "}"
-				<< "td{" << CSSTable << "}"
+				<< "body.dark{" << CSSDarkBody << "}"
+				<< "a.dark:link{" << CSSDarkLink << "}"
+				<< "a.dark:visited{" << CSSDarkLinkVisited << "}"
+				<< "#filters{" << "background:#F5F5F5; width:252px; position:fixed; right:0; top:-32em; z-index:0; box-shadow: -1px 1px 1px 1px rgba(0,0,0,0.5);"
+				<< "	transition: top 0.2s;"
+				<< "	-moz-transition: top 0.2s;"
+				<< "	-webkit-transition: top 0.2s;"
+				<< "	-ms-transition: top 0.2s;"
+				<< "	-o-transition: top 0.2s;" << "}"
+				<< "#filters.dark{" << CSSDarkFilters << "}"
+				<< "#filters > li{" << CSSFiltersList << "}"
+				<< "h1{" << CSSTitle << "}"
+				<< "h2 + *{" << CSSSections << "}"
+				<< "h2{" << CSSSectionTitle << "}"
+				<< "h2 > span{" << CSSSectionPlusMinus << "}"
 				<< "ul{" << CSSList << "}"
 				<< "ul li{" << CSSListItem << "}"
 				<< "li ul{" << CSSSubList << "}"
@@ -175,11 +158,32 @@ namespace boss {
 				<< "#plugin{" << "display:table-cell;font-style:italic;" << "}"
 				<< "#pluginLabel{" << "display:table-cell;padding-right:0.5em;" << "}"
 				<< "output {display:block;width:350px;margin:2em auto;}"
+
+				<< "#arrow {"
+				<< "	display:table-cell;font-size:1.5em;"
+				<< "	transform: rotate(-90deg);"
+				<< "   -moz-transform: rotate(-90deg);"
+				<< "   -webkit-transform: rotate(-90deg);"
+				<< "   -ms-transform: rotate(-90deg);"
+				<< "   -o-transform: rotate(-90deg);"
+				<< "}"
+				<< "#cssSettingsButton, #filtersButton { display:table-cell;padding:0.5em 1em;"
+				<< "	transition: background 0.2s;"
+				<< "	-webkit-transition: background 0.2s;"
+				<< "	-moz-transition: background 0.2s;"
+				<< "	-ms-transition: background 0.2s;"
+				<< "	-o-transition: background 0.2s;"
+				<< "}"
+				<< "#cssSettingsButton:hover, #filtersButton:hover {background:lightgrey;}"
+				<< "#filtersButton {width:220px;}"
+				<< "#filtersButton > span:first-child {display:table-cell;width:100%;}"
+				<< "aside {position:fixed;right:0;top:0;background:#F5F5F5;line-height:1em;cursor:pointer;z-index:1; box-shadow: -1px 1px 1px 1px rgba(0,0,0,0.5);}"
+				<< "aside.dark {background:#333;}"
+
 				<< "</style>"<<endl;
-			outStream << "<div>BOSS Log</div>" << endl
-				<< "<div>&copy; 2009-2012 BOSS Development Team<br />" << endl
-				<< "<a href=\"http://www.gnu.org/licenses/gpl.html\">GNU General Public License v3.0</a><br />" << endl
-				<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << gl_boss_release_date << ")</div>";
+			outStream << "<h1>BOSS Log</h1>"
+				<< "BOSS v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << gl_boss_release_date << ")."
+				<< " &copy; 2009-2012 BOSS Development Team." << endl;
 		} else
 			outStream << endl << "BOSS Log" << endl
 				<< "Copyright 2009-2012 BOSS Development Team" << endl
@@ -196,7 +200,7 @@ namespace boss {
 				<< "<div onclick='hidePopupBox()' id='popupClose'>&#x2715;</div>" << endl
 				<< "<p><span id='pluginLabel'>Plugin:</span><span id='plugin'></span>" << endl
 				<< "<form>" << endl
-				<< "<p><label>Download Location: <input type='url' required='true' placeholder=\"A link to the plugin's download location.\" id='link'></label>" << endl
+				<< "<p><label>Download Location: <input type='url' required placeholder=\"A link to the plugin's download location.\" id='link'></label>" << endl
 				<< "<p><label>Additional Notes: <textarea id='notes' placeholder='Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.'></textarea></label>" << endl
 				<< "<button type='button' id='popup_yes' onclick='submitPlugin()'>Submit</button>" << endl
 				<< "</form><output></output>" << endl
@@ -204,6 +208,39 @@ namespace boss {
 				<< "<script>" << endl
 				<< "'use strict';" << endl
 				<< "var hm=0,hp=0,hpe=document.getElementById('hp'),hme=document.getElementById('hm'),url = 'http://www.darkcreations.org/bugzilla/jsonrpc.cgi',form = document.getElementsByTagName('form')[0],output = document.getElementsByTagName('output')[0];" << endl
+				<< "function toggleFilters(){"<<endl
+				<< "	var filters = document.getElementById('filters');"<<endl
+				<< "	var arrow = document.getElementById('arrow');"<<endl
+				<< "	if (filters.style.top == '-32em' || filters.style.top == '') {"<<endl
+				<< "		filters.style.top = '1.25em';"<<endl
+				<< "		arrow.style.transform = 'rotate(90deg)';"<<endl
+				<< "		arrow.style.MozTransform = 'rotate(90deg)';"<<endl
+				<< "		arrow.style.webkitTransform = 'rotate(90deg)';"<<endl
+				<< "		arrow.style.msTransform = 'rotate(90deg)';"<<endl
+				<< "		arrow.style.oTransform = 'rotate(90deg)';"<<endl
+				<< "	} else {"<<endl
+				<< "		filters.style.top = '-32em';"<<endl
+				<< "		arrow.style.transform = 'rotate(-90deg)';"<<endl
+				<< "		arrow.style.MozTransform = 'rotate(-90deg)';"<<endl
+				<< "		arrow.style.webkitTransform = 'rotate(-90deg)';"<<endl
+				<< "		arrow.style.msTransform = 'rotate(-90deg)';"<<endl
+				<< "		arrow.style.oTransform = 'rotate(-90deg)';"<<endl
+				<< "	}"<<endl
+				<< "}"<<endl
+				<< "function saveFilterState(filter) {"<<endl
+				<< "	if (filter.checked) {  //Add to local storage."<<endl
+				<< "		localStorage.setItem(filter.id, true);"<<endl
+				<< "	} else {"<<endl
+				<< "		localStorage.removeItem(filter.id);"<<endl
+				<< "	}"<<endl
+				<< "}"<<endl
+				<< "function saveSectionState(section, isCollapsed) {"<<endl
+				<< "	if (isCollapsed) {  //Add to local storage."<<endl
+				<< "		localStorage.setItem(section.id, true);"<<endl
+				<< "	} else {"<<endl
+				<< "		localStorage.removeItem(section.id);"<<endl
+				<< "	}"<<endl
+				<< "}"<<endl
 				<< "function showPopupBox(plugin){" << endl
 				<< "	if(document.getElementById('mask')==null){" << endl
 				<< "		var mask=document.createElement('div');" << endl
@@ -348,11 +385,12 @@ namespace boss {
 				<< "function error() {" << endl
 				<< "	outputText('Error: Data transfer failed.', -1);" << endl
 				<< "}" << endl
-				<< "function toggleSectionDisplay(h){if(h.nextSibling.style.display=='none'){h.nextSibling.style.display='block';h.firstChild.innerHTML='&#x2212;'}else{h.nextSibling.style.display='none';h.firstChild.innerHTML='+'}}" << endl
-				<< "function swapColorScheme(b){var d=document.body,a=document.getElementsByTagName('a'),f=document.getElementById('filters');if(f==null){f=document.getElementById('darkFilters')}if(b.checked){d.id='darkBody';f.id='darkFilters';for(var i=0,z=a.length;i<z;i++){a[i].className='darkLink'}}else{d.id='';f.id='filters';for(var i=0,z=a.length;i<z;i++){a[i].className=''}}}" << endl
-				<< "function toggleDisplayCSS(b,s){var r=new Array();if(document.styleSheets[0].cssRules){r=document.styleSheets[0].cssRules}else if(document.styleSheets[0].rules){r=document.styleSheets[0].rules}for(var i=0,z=r.length;i<z;i++){if(r[i].selectorText.toLowerCase()==s){if(b.checked){r[i].style.display='none'}else{r[i].style.display='inline'}return}}}" << endl
-				<< "function toggleRuleListWarnings(b){var u=document.getElementById('userlistMessages');if(u!=null){u=u.childNodes;for(var i=0,z=u.length;i<z;i++){if(u[i].className=='warn'){if(b.checked){u[i].style.display='none';hm++}else if(u[i].style.display=='none'){u[i].style.display='table';hm--}}}}hme.innerHTML=hm}" << endl
-				<< "function toggleMessages(){"<<endl
+				<< "function toggleSectionDisplay(h){if(h.nextSibling.style.display=='none'){h.nextSibling.style.display='block';saveSectionState(h, false);h.firstChild.innerHTML='&#x2212;'}else{h.nextSibling.style.display='none';saveSectionState(h, true);h.firstChild.innerHTML='+'}}" << endl
+				<< "function swapColorScheme(b){saveFilterState(b);var d=document.body,a=document.getElementsByTagName('a'),f=document.getElementById('filters'),m=document.getElementsByTagName('aside')[0],p=document.getElementById('popupBox');if(b.checked){d.className='dark';f.className='dark';m.className='dark';p.className='dark';for(var i=0,z=a.length;i<z;i++){a[i].className='dark'}}else{d.className='';f.className='';m.className='';p.className='';for(var i=0,z=a.length;i<z;i++){a[i].className=''}}}" << endl
+				<< "function toggleDisplayCSS(b,s){saveFilterState(b);var r=new Array();if(document.styleSheets[0].cssRules){r=document.styleSheets[0].cssRules}else if(document.styleSheets[0].rules){r=document.styleSheets[0].rules}for(var i=0,z=r.length;i<z;i++){if(r[i].selectorText.toLowerCase()==s){if(b.checked){r[i].style.display='none'}else{r[i].style.display='inline'}return}}}" << endl
+				<< "function toggleRuleListWarnings(b){saveFilterState(b);var u=document.getElementById('userlistMessages');if(u!=null){u=u.childNodes;for(var i=0,z=u.length;i<z;i++){if(u[i].className=='warn'){if(b.checked){u[i].style.display='none';hm++}else if(u[i].style.display=='none'){u[i].style.display='table';hm--}}}}hme.innerHTML=hm}" << endl
+				<< "function toggleMessages(filter){"<<endl
+				<< "	if(filter!=null){saveFilterState(filter);}"<<endl
 				<< "	var m=document.getElementById('recognised').childNodes,b9=document.getElementById('b9').checked,b10=document.getElementById('b10').checked,b11=document.getElementById('b11').checked,b12=document.getElementById('b12').checked,b13=document.getElementById('b13').checked,b14=document.getElementById('b14').checked;"<<endl
 				<< "	for(var i=0,z=m.length;i<z;i++){"<<endl
 				<< "		var ac=false,g=false,n=true,c=true,a=m[i].getElementsByTagName('span'),b=null;"<<endl
@@ -412,12 +450,25 @@ namespace boss {
 				<< "	hpe.innerHTML=hp"<<endl
 				<< "}"<<endl
 				<< "function initialSetup() {"<<endl
+				<< "	if ('localStorage' in window && window['localStorage'] !== null) {  //Local storage read on page load."<<endl
+				<< "		var len = localStorage.length;"<<endl
+				<< "		for (var i=0; i < len; i++) {"<<endl
+				<< "			var elem = document.getElementById(localStorage.key(i));"<<endl
+				<< "			if (elem != null) {"<<endl
+				<< "				if ('defaultChecked' in elem) {  //It's a checkbox."<<endl
+				<< "					elem.checked = 'true';"<<endl
+				<< "				} else {"<<endl
+				<< "					toggleSectionDisplay(elem);"<<endl
+				<< "				}"<<endl
+				<< "			}"<<endl
+				<< "		}"<<endl
+				<< "	}"<<endl
 				<< "	swapColorScheme(document.getElementById('b1'));"<<endl
 				<< "	toggleRuleListWarnings(document.getElementById('b2'));"<<endl
 				<< "	toggleDisplayCSS(document.getElementById('b3'),'.version','inline');"<<endl
 				<< "	toggleDisplayCSS(document.getElementById('b4'),'.ghosted','inline');"<<endl
 				<< "	toggleDisplayCSS(document.getElementById('b5'),'.crc','inline');"<<endl
-				<< "	toggleMessages();"<<endl
+				<< "	toggleMessages(null);"<<endl
 				<< "	if (!('value' in document.createElement('output')) || !('withCredentials' in new XMLHttpRequest) || !(typeof(JSON) === 'object' && typeof(JSON.parse) === 'function')) { //Disable submission buttons. Since the only buttons in the log are related to submitter, disable all buttoms."<<endl
 				<< "		var buttons = document.getElementsByTagName('button');"<<endl
 				<< "		for (var i=0, len=buttons.length; i < len; i++) {"<<endl
@@ -545,12 +596,6 @@ namespace boss {
 			if (outFormat == HTML)
 				outStream << "</table>";
 			break;
-		case HEADING_ID_END_OPEN:
-			if (outFormat == HTML)
-				outStream << "<h3 id='end'>";
-			else
-				outStream << endl << endl << "======================================" << endl;
-			break;
 		case LIST_ID_RECOGNISED_OPEN:
 			if (outFormat == HTML)
 				outStream << "<ul id='recognised'>";
@@ -569,15 +614,45 @@ namespace boss {
 			else
 				outStream << endl;
 			break;
-		case HEADING_OPEN:
+		case HEADING_ID_SUMMARY_OPEN:
 			if (outFormat == HTML)
-				outStream << "<h3 onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>";
+				outStream << "<h2 id='summary' onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>";
+			else
+				outStream << endl << endl << "======================================" << endl;
+			break;
+		case HEADING_ID_GENERAL_OPEN:
+			if (outFormat == HTML)
+				outStream << "<h2 id='general' onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>";
+			else
+				outStream << endl << endl << "======================================" << endl;
+			break;
+		case HEADING_ID_USERLIST_OPEN:
+			if (outFormat == HTML)
+				outStream << "<h2 id='userlist' onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>";
+			else
+				outStream << endl << endl << "======================================" << endl;
+			break;
+		case HEADING_ID_SE_OPEN:
+			if (outFormat == HTML)
+				outStream << "<h2 id='se' onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>";
+			else
+				outStream << endl << endl << "======================================" << endl;
+			break;
+		case HEADING_ID_RECOGNISEDSEC_OPEN:
+			if (outFormat == HTML)
+				outStream << "<h2 id='recognisedSec' onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>";
+			else
+				outStream << endl << endl << "======================================" << endl;
+			break;
+		case HEADING_ID_UNRECOGNISED_OPEN:
+			if (outFormat == HTML)
+				outStream << "<h2 id='unrecognised' onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>";
 			else
 				outStream << endl << endl << "======================================" << endl;
 			break;
 		case HEADING_CLOSE:
 			if (outFormat == HTML)
-				outStream << "</h3>";
+				outStream << "</h2>";
 			else
 				outStream << endl << "======================================" << endl << endl;
 			break;
@@ -611,9 +686,9 @@ namespace boss {
 			else
 				outStream << endl << "*  ";
 			break;
-		case LIST_ITEM_SPAN_CLASS_MOD_OPEN:
+		case SPAN_CLASS_MOD_OPEN:
 			if (outFormat == HTML)
-				outStream << "<li><span class='mod'>";
+				outStream << "<span class='mod'>";
 			else
 				outStream << endl << endl;
 			break;
@@ -676,6 +751,7 @@ namespace boss {
 		case BUTTON_SUBMIT_PLUGIN:
 			if (outFormat == HTML)
 				outStream << "<button class='submit' onclick='showPopupBox(this.previousSibling.innerHTML)'>Submit Plugin</button>";
+			break;
 		default:
 			break;
 		}

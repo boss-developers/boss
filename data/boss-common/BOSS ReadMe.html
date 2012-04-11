@@ -158,8 +158,6 @@
 		<tr><td rowspan="3">Debugging<td>Debug Outout Verbosity<td>The verbosity of the debug output. As values increase, so does verbosity, 'Standard (0)' displays only warning and error messages.
 		<tr><td>Include Source Code References<td>Add source code references to the debug output.
 		<tr><td>Log Debug Output<td>Save the debug output to a <q>BOSSDebugLog.txt</q> text file.
-		<tr><td>BOSS Log Filters<td><i>Many</i><td>These settings control the default states of the BOSS Log filters. If a setting's box is checked, then the filter of the same name in the BOSS Log will be enabled when the BOSS Log is opened. See the <a href="#bosslog">The BOSS Log</a> section below for what each filter does.
-		<tr><td>BOSS Log CSS<td><i>Many</i><td>These settings control the BOSS Log's CSS styles, used to provide the formatting for the BOSS Log. A knowledge of CSS is expected if you wish to alter these settings. If you do not possess such knowledge, altering these settings is not recommended. The CSS selectors are given on the left, and their styling can be edited in the corresponding text boxes on the right. Curly brackets should be omitted.
 </table>
 <p>Each setting in the GUI corresponds to a command line parameter and/or an ini setting, the details of which can be found in the <a href="#cli">Command Line Arguments</a> and <a href="#customising">Customising How BOSS Works</a> sections of this ReadMe respectively.
 
@@ -243,7 +241,7 @@
 <p>BOSS will display the version numbers of any plugins that provide them in their description fields. If a plugin supplies no version number, it cannot be displayed. The version numbers may not reflect the actual version of the mod installed - this could either be due to the mod author forgetting to update the description, or due to a mistake in BOSS's detection. As version numbers are supplied by mod authors in a wide range of formats and BOSS has to detect as many as possible, it occasionally identifies parts of some descriptions as version numbers incorrectly. This is largely unavoidable, but any discrepancies should be reported to the BOSS team in case they can be fixed. When in doubt, check the version number given in a mod's readme. 
 <p>It should be noted that the vast majority of BOSS's mod messages are non-conditional, in that they are not displayed in response to your specific install. For example, a message that gives some of the mod's incompatibilities does not know if you have them installed or not, and a message telling you to do something will not know if it has been done.
 <p>BOSS's mod messages are one of the most important features BOSS provides, acting as a means of providing users with information that they might otherwise not obtain. It is important for a stable, healthy game that you act on any messages that require action. If you think a message suggests an action that is not necessary, report it to an official BOSS thread.
-<p>The HTML BOSS Log includes a few features and a number of filters to customise what is displayed. The majority of these are found in the shaded box near the top of the BOSS Log, and are enabled and disabled via their checkboxes:
+<p>The HTML BOSS Log includes a few features and a number of filters to customise what is displayed. The filters can be accessed by clicking on the Filters menu in the upper right-hand corner of the BOSS Log, and are enabled and disabled via their checkboxes:
 <table>
 	<thead><tr><td>BOSS Log Filter<td>Description
 	<tbody>
@@ -264,7 +262,7 @@
 		<tr><td>Hide Incompatibilities<td>Hides any messages attached to mods that have the <q>Incompatible with: </q> prefix.
 		<tr><td>Hide 'Do Not Clean' Messages<td>Hides any messages attached to mods that begin with <q>Contains dirty edits: Do not clean.</q>.
 </table>
-<p>The number of plugins and messages hidden at any one time are displayed below the filters box in italics. In addition to the above filters, clicking on a section's title will collapse that section, hiding its contents. Clicking the title again will expand the section, making its contents visible again.
+<p>The number of plugins and messages hidden at any one time are displayed below the filters in italics. In addition to the above filters, clicking on a section's title will collapse that section, hiding its contents. Clicking the title again will expand the section, making its contents visible again.
 <p>It is not possible to hide mod warning or error messages, as these are of a severity where they should almost certainly be acted upon, and not ignored. Be aware that if you hide all a mod's messages and then hide all messageless mods, that mod will be amongst those hidden.
 
 <h3 id="dirtymods">Dirty Edits, Mod Cleaning &amp; CRCs</h3>
@@ -356,69 +354,6 @@ There are three key pieces of information that are used to accurately describe a
 		<tr><td>bLogDebugOutput<td><code>false</code><td><code>false</code>, <code>true</code><td>If <code>true</code>, debug output is recorded in the BOSSDebugLog.txt file, otherwise it is printed to the command line.
 </table>
 
-<h4>BOSSLog.Filters</h4>
-<p>These settings control the default states of the BOSS Log filters. If a filter's default is set to be enabled, then it will be enabled and applied when the BOSS Log is opened. These settings are all boolean switches, so <code>true</code> enables them and <code>false</code> disables them. By default all filters are disabled. See the earlier <a href="#bosslog">The BOSS Log</a> section for what each filter does.
-<table>
-	<thead><tr><td>Ini Setting<td>Description
-	<tbody>
-		<tr><td>bUseDarkColourScheme<td>Controls the state of the <q>Use Dark Colour Scheme</q> filter.
-		<tr><td>bHideVersionNumbers<td>Controls the state of the <q>Hide Version Numbers</q> filter.
-		<tr><td>bHideGhostedLabel<td>Controls the state of the <q>Hide 'Ghosted' Label</q> filter.
-		<tr><td>bHideActiveLabel<td>Controls the state of the <q>Hide 'Active' Label</q> filter.
-		<tr><td>bHideChecksums<td>Controls the state of the <q>Hide Checksums</q> filter.
-		<tr><td>bHideInactiveMods<td>Controls the state of the <q>Hide Inactive Mods</q> filter.
-		<tr><td>bHideMessagelessMods<td>Controls the state of the <q>Hide Messageless Mods</q> filter.
-		<tr><td>bHideGhostedMods<td>Controls the state of the <q>Hide Ghosted Mods</q> filter.
-		<tr><td>bHideCleanMods<td>Controls the state of the <q>Hide Clean Mods</q> filter.
-		<tr><td>bHideRuleWarnings<td>Controls the state of the <q>Hide Rule Warnings</q> filter.
-		<tr><td>bHideAllModMessages<td>Controls the state of the <q>Hide All Mod Messages</q> filter.
-		<tr><td>bHideNotes<td>Controls the state of the <q>Hide Notes</q> filter.
-		<tr><td>bHideBashTagSuggestions<td>Controls the state of the <q>Hide Bash Tag Suggestions</q> filter.
-		<tr><td>bHideRequirements<td>Controls the state of the <q>Hide Requirements</q> filter.
-		<tr><td>bHideIncompatibilities<td>Controls the state of the <q>Hide Incompatibilities</q> filter.
-		<tr><td>bHideDoNotCleanMessages<td>Controls the state of the <q>Hide 'Do Not Clean' Messages</q> filter.
-</table>
-<h4>BOSSLog.Styles</h4>
-<p>These settings control the BOSS Log's CSS styles, used to provide the formatting for the BOSS Log. A knowledge of CSS is expected if you wish to alter these settings. If you do not possess such knowledge, altering these settings is not recommended.</p>
-<table>
-	<thead><tr><td>CSS Selector<td>Default Styling
-	<tbody>
-		<tr><td>body<td>font-family: Calibri,Arial,sans-serifs;
-		<tr><td>#darkBody<td>color: white; background: black;
-		<tr><td>.darkLink:link<td>color: #00AAFF;
-		<tr><td>.darkLink:visited<td>color: #E000E0;
-		<tr><td>#filters<td>border: 1px gray dashed; background: #F5F5F5; padding: 0.3em; display: table;
-		<tr><td>#filters > li<td>display: inline-block; padding: 0.2em 0.5em; white-space: nowrap; margin: 0; width: 200px;
-		<tr><td>#darkFilters<td>border: 1px gray dashed; background: #333333; padding:.3em; display:table;
-		<tr><td>body > div:first-child<td>font-size: 2.4em; font-weight: 700; text-align: center; margin-bottom: 0.2em;
-		<tr><td>body > div:first-child + div<td>text-align: center;
-		<tr><td>h3 + *<td>margin-bottom: 3em;
-		<tr><td>h3<td>cursor: pointer;
-		<tr><td>h3 > span<td>display: inline-block; position: relative; top: 0.05em;  font-size: 1.3em; width: 0.6em; margin-right: 0.1em;
-		<tr><td>#end<td>text-align: center; cursor: default;
-		<tr><td>td<td>padding: 0 0.5em;
-		<tr><td>ul<td>list-style: none; padding-left: 0;
-		<tr><td>ul li<td>margin-left: 0; margin-bottom: 1em;
-		<tr><td>li ul<td>margin-top: 0.5em; padding-left: 2.5em; margin-bottom: 2em;
-		<tr><td>input[type='checkbox']<td>position: relative; top: 0.15em; margin-right: 0.5em;
-		<tr><td>blockquote<td>font-style: italic;
-		<tr><td>.error<td>background: red; color: #FFFFFF; display: table; padding: 0 4px;
-		<tr><td>.warn<td>background: orange; color: #FFFFFF; display: table; padding: 0 4px;
-		<tr><td>.success<td>color: green;
-		<tr><td>.version<td>color: #6394F8; margin-right: 1em; padding: 0 4px;
-		<tr><td>.ghosted<td>color: #888888; margin-right: 1em; padding: 0 4px;
-		<tr><td>.crc<td>color: #BC8923; margin-right: 1em; padding: 0 4px;
-		<tr><td>.active<td>color: #009900; margin-right: 1em; padding: 0 4px;
-		<tr><td>.tagPrefix<td>color: #CD5555;
-		<tr><td>.dirty<td>color: #996600;
-		<tr><td>.message<td>color: gray;
-		<tr><td>.mod<td>margin-right: 1em;
-		<tr><td>.tag<td><i>None</i>
-		<tr><td>.note<td><i>None</i>
-		<tr><td>.req<td><i>None</i>
-		<tr><td>.inc<td><i>None</i>
-</table>
-
 <h3 id="cli">Command Line Arguments</h3>
 <p>While the BOSS GUI allows you to specify options using its graphical elements, the CLI uses a combination of the BOSS.ini file and command line arguments to do the same. The syntax for these arguments is:
 <code class="box">boss [-hVuosndctUl] [-g [game]] [-r [level]] [-v [level]] [-f [type]] [-H [hostname]] [-P [port]]</code>
@@ -493,7 +428,7 @@ It is also possible to compile BOSS natively for Linux, although there is again 
 		<tr><td>modlist.txt<td>Contains the list of your plugins in the order they were before you last ran BOSS, which can be used to undo changes to your load order.
 		<tr><td>modlist.old<td>Contains the contents of your modlist.txt before you last ran BOSS, providing a second level of undo for load order changes.
 		<tr><td>userlist.txt<td>Contains your custom rules to be implemented by the User Rules feature.
-		<tr><td>BOSS.ini<td>Stores BOSS's settings, including the default run options, the default BOSS Log filters and more.
+		<tr><td>BOSS.ini<td>Stores BOSS's settings, including the default run options.
 		<tr><td>BOSS.ini.old<td>A backup of your previous BOSS.ini, created when you update BOSS via the installer or the GUI's auto-updater.
 		<tr><td>BOSS ReadMe.html<td>This ReadMe file.
 		<tr><td>BOSS User Rules ReadMe.html<td>The ReadMe file for BOSS's User Rules functionality.
@@ -791,7 +726,7 @@ a problem for which no error message is given, please report the crash or proble
 </ul>
 <p>Some people have gone out of their way and provided continuing, expert and detailed help - <b>thank you very much</b>! In addition to the above, the following are credited with additional application-related support:
 <ul>
-	<li>The Wrye Bash Development Team: For implementing the importing of BOSS's Bashed Patch tag suggestions and general support for BOSS into <a href="http://tesnexus.com/downloads/file.php?id=22368">Wrye Bash</a>.
+	<li><a href="http://www.darkcreations.org">Dark Creations</a>: For hosting BOSS's Bugzilla bug tracker that is used to collect anonymous unrecognised plugin reports. Particular thanks to its administrators Andalaybay and Xae for offering to host the tracker and helping to work around Firefox and Bugzilla bugs encountered.
 	<li>Surazal: For extensive testing of v1.6+ prior to release and for providing the inspiration for many features through his BOSS Masterlist Manager macro for Microsoft Word.
 	<li>myk002: For extensive testing and code contributions during development of v1.6+.
 	<li>Hickory: For extensive testing and for providing the icon used by the BOSS and GUI executables.
@@ -809,7 +744,7 @@ a problem for which no error message is given, please report the crash or proble
 		<li>Zanderat
 	</ul>
 </ul>
-<p>The BOSS programs are written in C/C++ and make use of the <a href="http://www.boost.org/">Boost</a>, <a href="http://curl.haxx.se/libcurl/">libcurl</a>, <a href="http://www.wxwidgets.org/">wxWidgets</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries. Without them, the majority of BOSS's features would probably never have been implemented.
+<p>The BOSS programs are written in C/C++ and make use of the <a href="http://www.boost.org/">Boost</a>, <a href="http://curl.haxx.se/libcurl/">libcurl</a>, <a href="http://www.wxwidgets.org/">wxWidgets</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries. Without them, the majority of BOSS's features would probably never have been implemented. BOSS uses various web technologies in its HTML BOSS Log, including <a href="http://www.w3.org/TR/html5/">HTML5</a>, <a href="http://www.w3.org/TR/XMLHttpRequest/">XMLHttpRequest 2</a>, <a href="http://www.w3.org/TR/cors/">Cross-Origin Resource Sharing</a> and <a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">ECMAScript 5</a>. Without the work of the <a href="www.w3.org/">World Wide Web Consortium</a> and <a href="http://www.ecma-international.org/">ECMA International</a>, none of these technologies would exist.
 
 <h2 id="team">Project Members</h2>
 <p>Since June 2009, BOSS has been a collaborative project on Google Code using the Subversion version control system. In alphabetical order, the project members are:
@@ -874,6 +809,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 <h4>Other Links</h4>
 <ul>
 <li><a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code SVN repository</a>
+<li><a href="http://www.darkcreations.org/bugzilla/describecomponents.cgi?product=BOSS">Dark Creations Bugzilla tracker</a>
 <li><a href="http://www.gnu.org/licenses/gpl.html">GNU General Public License v3.0</a>
 <li><a href="http://www.gnu.org/licenses/fdl.html">GNU Free Documentation License v1.3</a>
 </ul>
@@ -882,17 +818,33 @@ threads when you read this. Just navigate through to the latest thread to post a
 <p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.
 <p><b>Version 2.1</b> - <i>2012</i>
 <ul>
-	<li>Fixed: Installer's "old version of BOSS detected. Remove?" dialog ignoring the language previously selected.
+	<li>Removed: BOSS.ini settings for BOSS Log filters and CSS.
+	<li>Removed: GUI settings for BOSS Log filters and CSS.
+	<li>Fixed: Installer's "old BOSS version detected" dialog ignoring the language previously selected.
 	<li>Fixed: GUI crash when deleting the last rule in a userlist.
 	<li>Changed: Installer/uninstaller now uses solid LZMA compression for a smaller file size.
+	<li>Changed: Redesigned BOSS Log:
+	<ul>
+		<li>The size of the BOSS Log's heading has been reduced, putting the title, version information and copyright information on one line.
+		<li>The <q>Execution Complete</q> footer has been removed.
+		<li>The filters have been moved to a new Filters menu, accessible through the button in the upper right-hand corner of the BOSS log.
+		<li>A new CSS Settings page has been added, accessible through the button in the upper right-hand corner of the BOSS log.
+		<li>The BOSS Log now remembers your filter settings and which sections you have collapsed, and restores them to their last configuration when you open the BOSS Log. Note that this requires a browser that supports Web Storage technology, eg. Internet Explorer 8+, Firefox 3.6+, Chrome 17+, Safari 5+ or Opera 11.6+.
+	</ul>
 	<li>Added: German language option to installer/uninstaller. Translation by Scharesoft.
+	<li>Added: Spanish (Castilian) language option to installer/uninstaller. Translation by Shurengyla.
 	<li>Added: Confirmation dialog to uninstaller abortion.
 	<li>Added: CRC check to installer to avoid corrupted installs.
 	<li>Added: Support for TES III: Morrowind:
 	<ul>
-		<li>Added <code>TES3</code> and <code>MWSE</code> placeholders for use in the masterlist.
+		<li>Added <code>TES3</code> and <code>MWSE</code> placeholders for use in the masterlist. See the <a href="BOSS%20Masterlist%20Syntax.html">BOSS Masterlist Syntax</a> document for details.
 		<li>Added <code>Morrowind</code> value for the sGame BOSS.ini setting.
 		<li>Morrowind's masterlist is unmaintained, and only recognises Morrowind.esm. The support is primarily intended for the API, and those wanting auto-sorting of load orders should consider using mlox.
+	</ul>
+	<li>Added: BOSS Log unrecognised plugin submitter:
+	<ul>
+		<li>The plugin submitter uses the XMLHttpRequest 2, Cross-Origin Resource Sharing and JSON technologies to send unrecognised plugin reports to a Bugzilla bug tracker hosted by Dark Creations that the BOSS team uses to help keep track of unrecognised plugins. Submissions are performed anonymously.
+		<li>The plugin submitter requires the BOSS Log to be opened in Firefox 4+, Google Chrome 17+ or Opera 12+. Internet Explorer 10+ and Safari 5+ are technically compatible but untested. The plugin submitter will be disabled if an incompatible browser is detected.
 	</ul>
 </ul>
 <p><b>Version 2.0.1</b> - <i>6 April 2012</i>
