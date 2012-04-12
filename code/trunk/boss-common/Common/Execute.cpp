@@ -77,7 +77,7 @@ namespace boss {
 			string CRC = IntToHexString(GetCrc32(SELoc));
 			string ver = GetExeDllVersion(SELoc);
 
-			buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << SE << SPAN_CLOSE;
+			buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << SE << SPAN_CLOSE;
 			if (ver.length() != 0)
 				buffer << SPAN_CLASS_VERSION_OPEN << "Version: " << ver << SPAN_CLOSE;
 			if (gl_show_CRCs)
@@ -93,7 +93,7 @@ namespace boss {
 						string CRC = IntToHexString(GetCrc32(itr->path()));
 						string ver = GetExeDllVersion(itr->path());
 
-						buffer << LIST_ITEM_SPAN_CLASS_MOD_OPEN << filename.string() << SPAN_CLOSE;
+						buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << filename.string() << SPAN_CLOSE;
 						if (ver.length() != 0)
 							buffer << SPAN_CLASS_VERSION_OPEN << "Version: " + ver << SPAN_CLOSE;
 						if (gl_show_CRCs)
@@ -228,36 +228,34 @@ namespace boss {
 		bosslog.PrintHeader();
 		bosslog.SetHTMLSpecialEscape(false);
 
-		// Print BOSSLog Filters
-		if (gl_log_format == HTML) {  //Since this bit is HTML-only, don't bother using formatting placeholders.
-
-			bosslog << "<aside>"
-					<< "<div id='cssSettingsButton'>CSS Settings</div>"
-					<< "<div id='filtersButton' onclick='toggleFilters()'>"
-					<< "	<span>Filters</span>"
-					<< "	<span id='arrow'>&#xbb;</span>"
-					<< "</div>"
-					<< "</aside>"
-					<< "<ul id='filters'>"
-					<< "	<li><label><input type='checkbox' id='b1' onclick='swapColorScheme(this)' />Use Dark Colour Scheme</label>"
-					<< "	<li><label><input type='checkbox' id='b2' onclick='toggleRuleListWarnings(this)' />Hide Rule Warnings</label>"
-					<< "	<li><label><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".version\",\"inline\")' />Hide Version Numbers</label>"
-					<< "	<li><label><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".ghosted\",\"inline\")' />Hide 'Ghosted' Label</label>"
-					<< "	<li><label><input type='checkbox' id='b16' onclick='toggleDisplayCSS(this,\".active\")' />Hide 'Active' Label</label>"
-					<< "	<li><label><input type='checkbox' id='b5' onclick='toggleDisplayCSS(this,\".crc\")' />Hide Checksums</label>"
-					<< "	<li><label><input type='checkbox' id='b15' onclick='toggleMessages(this)' />Hide Inactive Mods</label>"
-					<< "	<li><label><input type='checkbox' id='b6' onclick='toggleMessages(this)' />Hide Messageless Mods</label>"
-					<< "	<li><label><input type='checkbox' id='b7' onclick='toggleMessages(this)' />Hide Ghosted Mods</label>"
-					<< "	<li><label><input type='checkbox' id='b8' onclick='toggleMessages(this)' />Hide Clean Mods</label>"
-					<< "	<li><label><input type='checkbox' id='b9' onclick='toggleMessages(this)' />Hide All Mod Messages</label>"
-					<< "	<li><label><input type='checkbox' id='b10' onclick='toggleMessages(this)' />Hide Notes</label>"
-					<< "	<li><label><input type='checkbox' id='b11' onclick='toggleMessages(this)' />Hide Bash Tag Suggestions</label>"
-					<< "	<li><label><input type='checkbox' id='b12' onclick='toggleMessages(this)' />Hide Requirements</label>"
-					<< "	<li><label><input type='checkbox' id='b13' onclick='toggleMessages(this)' />Hide Incompatibilities</label>"
-					<< "	<li><label><input type='checkbox' id='b14' onclick='toggleMessages(this)' />Hide 'Do Not Clean' Messages</label>"
-					<< "	<li style='font-style:italic;'><span id='hp'>0</span> of " << (counters.recognised+counters.unrecognised) << " plugins hidden."
-					<< "	<li style='font-style:italic;'><span id='hm'>0</span> of " << counters.messages << " messages hidden."
-					<< "</ul>";
+		if (gl_log_format == HTML) {
+			bosslog	<< "<div id='menu'>"
+				<< "<div onclick='showCSSBox()'>CSS Settings</div>"
+				<< "<div id='filtersButton' onclick='toggleFilters()'>"
+				<< "	<span>Filters</span>"
+				<< "	<span id='arrow'>&#xbb;</span>"
+				<< "</div>"
+				<< "</div>"
+				<< "<ul id='filters'>"
+				<< "	<li><label><input type='checkbox' id='b1' onclick='swapColorScheme(this)' />Use Dark Colour Scheme</label>"
+				<< "	<li><label><input type='checkbox' id='b2' onclick='toggleRuleListWarnings(this)' />Hide Rule Warnings</label>"
+				<< "	<li><label><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".version\")' />Hide Version Numbers</label>"
+				<< "	<li><label><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".ghosted\")' />Hide 'Ghosted' Label</label>"
+				<< "	<li><label><input type='checkbox' id='b16' onclick='toggleDisplayCSS(this,\".active\")' />Hide 'Active' Label</label>"
+				<< "	<li><label><input type='checkbox' id='b5' onclick='toggleDisplayCSS(this,\".crc\")' />Hide Checksums</label>"
+				<< "	<li><label><input type='checkbox' id='b15' onclick='toggleMessages(this)' />Hide Inactive Mods</label>"
+				<< "	<li><label><input type='checkbox' id='b6' onclick='toggleMessages(this)' />Hide Messageless Mods</label>"
+				<< "	<li><label><input type='checkbox' id='b7' onclick='toggleMessages(this)' />Hide Ghosted Mods</label>"
+				<< "	<li><label><input type='checkbox' id='b8' onclick='toggleMessages(this)' />Hide Clean Mods</label>"
+				<< "	<li><label><input type='checkbox' id='b9' onclick='toggleMessages(this)' />Hide All Mod Messages</label>"
+				<< "	<li><label><input type='checkbox' id='b10' onclick='toggleMessages(this)' />Hide Notes</label>"
+				<< "	<li><label><input type='checkbox' id='b11' onclick='toggleMessages(this)' />Hide Bash Tag Suggestions</label>"
+				<< "	<li><label><input type='checkbox' id='b12' onclick='toggleMessages(this)' />Hide Requirements</label>"
+				<< "	<li><label><input type='checkbox' id='b13' onclick='toggleMessages(this)' />Hide Incompatibilities</label>"
+				<< "	<li><label><input type='checkbox' id='b14' onclick='toggleMessages(this)' />Hide 'Do Not Clean' Messages</label>"
+				<< "	<li style='font-style:italic;'><span id='hp'>0</span> of " << (counters.recognised+counters.unrecognised) << " plugins hidden."
+				<< "	<li style='font-style:italic;'><span id='hm'>0</span> of " << counters.messages << " messages hidden."
+				<< "</ul>";
 		}
 
 		// Display Global Messages
@@ -349,6 +347,40 @@ namespace boss {
 		bosslog.Save(file, true);
 	}
 
+	//Structures necessary for case-insensitive hashsets used in BuildWorkingModlist. Taken from the BOOST docs.
+	struct iequal_to : std::binary_function<std::string, std::string, bool> {
+		iequal_to() {}
+        explicit iequal_to(std::locale const& l) : locale_(l) {}
+
+        template <typename String1, typename String2>
+        bool operator()(String1 const& x1, String2 const& x2) const {
+            return boost::algorithm::iequals(x1, x2, locale_);
+        }
+	private:
+		std::locale locale_;
+	};
+
+	struct ihash : std::unary_function<std::string, std::size_t> {
+		ihash() {}
+        explicit ihash(std::locale const& l) : locale_(l) {}
+
+        template <typename String>
+        std::size_t operator()(String const& x) const
+        {
+            std::size_t seed = 0;
+
+            for(typename String::const_iterator it = x.begin();
+                it != x.end(); ++it)
+            {
+                boost::hash_combine(seed, std::toupper(*it, locale_));
+            }
+
+            return seed;
+        }
+    private:
+        std::locale locale_;
+	};
+
 	//////////////////////////////////
 	// Externally-Visible Functions
 	//////////////////////////////////
@@ -434,43 +466,32 @@ namespace boss {
 	//Returns the vector position of the last recognised mod in modlist.
 	BOSS_COMMON void BuildWorkingModlist(ItemList& modlist, ItemList& masterlist, RuleList& userlist) {
 		//Add all modlist and userlist mods to a hashset to optimise comparison against masterlist.
-		boost::unordered_set<string> hashset;  //Holds mods for checking against masterlist
+		boost::unordered_set<string, ihash, iequal_to> mHashset, uHashset;  //Holds mods for checking against masterlist
 		boost::unordered_set<string>::iterator setPos;
 
 		vector<Item> items = modlist.Items();
 		size_t modlistSize = items.size();
 		size_t userlistSize = userlist.rules.size();
-		/* Hashset must be a set of unique mods.
-		Ghosted mods take priority over non-ghosted mods, as they are specifically what is installed. 
-		*/
 
 		LOG_INFO("Populating hashset with modlist.");
 		for (size_t i=0; i<modlistSize; i++) {
 			if (items[i].Type() == MOD)
-				hashset.insert(to_lower_copy(items[i].Name()));
+				mHashset.insert(items[i].Name());
 		}
 		LOG_INFO("Populating hashset with userlist.");
 		//Need to get ruleObject and sort line object if plugins.
 		for (size_t i=0; i<userlistSize; i++) {
 			if (Item(userlist.rules[i].Object()).IsPlugin()) {
-				setPos = hashset.find(to_lower_copy(userlist.rules[i].Object()));
-				if (setPos == hashset.end()) {  //Mod not already in hashset.
-					setPos = hashset.find(to_lower_copy(userlist.rules[i].Object() + ".ghost"));
-					if (setPos == hashset.end()) {  //Ghosted mod not already in hashset. 
-						//Unique plugin, so add to hashset.
-						hashset.insert(to_lower_copy(userlist.rules[i].Object()));
-					}
+				setPos = mHashset.find(to_lower_copy(userlist.rules[i].Object()));
+				if (setPos == mHashset.end()) {  //Mod not already in hashset.
+					uHashset.insert(userlist.rules[i].Object());  //Unique plugin, so add to hashset.
 				}
 			}
 			if (userlist.rules[i].Key() != FOR) {  //First line is a sort line.
 				if (Item(userlist.rules[i].Lines()[0].Object()).IsPlugin()) {
-					setPos = hashset.find(to_lower_copy(userlist.rules[i].Lines()[0].Object()));
-					if (setPos == hashset.end()) {  //Mod not already in hashset.
-						setPos = hashset.find(to_lower_copy(userlist.rules[i].Lines()[0].Object() + ".ghost"));
-						if (setPos == hashset.end()) {  //Ghosted mod not already in hashset. 
-							//Unique plugin, so add to hashset.
-							hashset.insert(to_lower_copy(userlist.rules[i].Lines()[0].Object()));
-						}
+					setPos = mHashset.find(userlist.rules[i].Lines()[0].Object());
+					if (setPos == mHashset.end()) {  //Mod not already in hashset.
+						uHashset.insert(userlist.rules[i].Lines()[0].Object());  //Unique plugin, so add to hashset.
 					}
 				}
 			}
@@ -482,26 +503,25 @@ namespace boss {
 		size_t max = masterlist.Items().size();
 		vector<Item> holdingVec;
 		boost::unordered_set<string>::iterator addedPos;
-		boost::unordered_set<string> addedMods;
+		boost::unordered_set<string, ihash, iequal_to> addedMods;
 		LOG_INFO("Comparing hashset against masterlist.");
 		for (size_t i=0; i < max; i++) {
 			if (items[i].Type() == MOD) {
 				//Check to see if the mod is in the hashset. If it is, or its ghosted version is, also check if 
 				//the mod is already in the holding vector. If not, add it.
-				setPos = hashset.find(to_lower_copy(items[i].Name()));
-				if (setPos == hashset.end()) {
-					items[i].Name(items[i].Name() + ".ghost");		//Add ghost extension to mod name.
-					setPos = hashset.find(to_lower_copy(items[i].Name()));
-				}
-				if (setPos != hashset.end()) {										//Mod found in hashset. 
-					addedPos = addedMods.find(to_lower_copy(items[i].Name()));
-					if (addedPos == addedMods.end()) {								//The mod is not already in the holding vector.
-						holdingVec.push_back(items[i]);									//Record it in the holding vector.
-						modlistPos = modlist.FindItem(items[i].Name());
-						if (modlistPos != modlist.Items().size())
-							modlist.Erase(modlistPos);
-						addedMods.insert(to_lower_copy(items[i].Name()));
-					}
+				setPos = mHashset.find(items[i].Name());
+				if (setPos != mHashset.end())  //Mod is installed. Ensure that correct case is recorded.
+					items[i].Name(*setPos);
+				else if (uHashset.find(items[i].Name()) == uHashset.end())  //Mod not in modlist or userlist, skip.
+					continue;
+				
+				addedPos = addedMods.find(items[i].Name());
+				if (addedPos == addedMods.end()) {								//The mod is not already in the holding vector.
+					holdingVec.push_back(items[i]);									//Record it in the holding vector.
+					modlistPos = modlist.FindItem(items[i].Name());
+					if (modlistPos != modlist.Items().size())
+						modlist.Erase(modlistPos);
+					addedMods.insert(items[i].Name());
 				}
 			} else //Group lines must stay recorded.
 				holdingVec.push_back(items[i]);

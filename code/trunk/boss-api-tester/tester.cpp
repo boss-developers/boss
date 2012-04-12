@@ -55,6 +55,7 @@ int main() {
 	const uint8_t * inactiveMod = reinterpret_cast<uint8_t *>("français.esp");
 	const uint8_t * messageMod = reinterpret_cast<uint8_t *>("PerkUP-5555.esp");
 	const uint8_t * isActiveMod = reinterpret_cast<uint8_t *>("汉语漢語.esp");
+	const uint8_t * info = reinterpret_cast<uint8_t *>("Testing the API's SubmitUnrecognisedPlugin function.");
 	uint8_t ** sortedPlugins;
 	uint8_t ** unrecPlugins;
 	size_t len;
@@ -94,6 +95,11 @@ int main() {
 		ret = UpdateMasterlist(db, mPath);
 		if (ret != BOSS_API_OK)
 			out << '\t' << "Masterlist update failed. Error: " << ret << endl;
+
+		out << "TESTING SubmitUnrecognisedPlugin(...)" << endl;
+		ret = SubmitUnrecognisedPlugin(db, cleanMod, NULL, info);
+		if (ret != BOSS_API_OK)
+			out << '\t' << "SubmitUnrecognisedPlugin(...) failed. Error: " << ret << endl;
 
 		out << "TESTING Load(...)" << endl;
 		ret = Load(db, mPath, NULL);

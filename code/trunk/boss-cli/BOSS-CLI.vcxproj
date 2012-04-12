@@ -96,7 +96,7 @@
       <Optimization>
       </Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\boss-common;$(ProjectDir)..\..\..\lib\boost</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\boss-common;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir)..\..\..\lib\curl\include</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
@@ -118,7 +118,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\boss-common;$(ProjectDir)..\..\..\lib\boost</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\boss-common;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir)..\..\..\lib\curl\include</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
@@ -144,7 +144,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\boss-common;$(ProjectDir)..\..\..\lib\boost</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\boss-common;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir)..\..\..\lib\curl\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -169,7 +169,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\boss-common;$(ProjectDir)..\..\..\lib\boost</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\boss-common;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir)..\..\..\lib\curl\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

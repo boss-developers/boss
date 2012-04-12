@@ -35,49 +35,6 @@ namespace boss {
 	using namespace std;
 	using boost::algorithm::replace_all;
 
-	//Default CSS.
-	BOSS_COMMON string CSSBody				= "font-family:Calibri,Arial,sans-serifs;";
-	BOSS_COMMON string CSSDarkBody			= "color:white;background:black;";
-	BOSS_COMMON string CSSDarkLink			= "color:#0AF;";
-	BOSS_COMMON string CSSDarkLinkVisited	= "color:#E000E0;";
-	BOSS_COMMON string CSSFilters			= "border:1px gray dashed;background:#F5F5F5;padding:.3em;display:table;";
-	BOSS_COMMON string CSSFiltersList		= "margin:0;padding:0.2em 0.5em; white-space:nowrap;";
-	BOSS_COMMON string CSSDarkFilters		= "background:#333;";
-	BOSS_COMMON string CSSTitle				= "display:inline;font-size:2.4em;font-weight:700;margin-right:1em;";
-	BOSS_COMMON string CSSSections			= "margin-bottom:3em;";
-	BOSS_COMMON string CSSSectionTitle		= "font-size:1.17em;display:table;cursor:pointer;";
-	BOSS_COMMON string CSSSectionPlusMinus	= "display:inline-block;position:relative;top:.05em; font-size:1.3em;width:.6em;margin-right:.1em;";
-	BOSS_COMMON string CSSLastSection		= "text-align:center;cursor:default;";
-	BOSS_COMMON string CSSTable				= "padding:0 .5em;";
-	BOSS_COMMON string CSSList				= "list-style:none;padding-left:0;";
-	BOSS_COMMON string CSSListItem			= "margin-left:0;margin-bottom:1em;";
-	BOSS_COMMON string CSSSubList			= "margin-top:.5em;padding-left:2.5em;margin-bottom:2em;";
-	BOSS_COMMON string CSSCheckbox			= "position:relative;top:.15em;margin-right:.5em;";
-	BOSS_COMMON string CSSBlockquote		= "font-style:italic;";
-	BOSS_COMMON string CSSError				= "background:red;color:#FFF;display:table;padding:0 4px;";
-	BOSS_COMMON string CSSWarning			= "background:orange;color:#FFF;display:table;padding:0 4px;";
-	BOSS_COMMON string CSSSuccess			= "color:green;";
-	BOSS_COMMON string CSSVersion			= "color:#6394F8;margin-right:1em;padding:0 4px;";
-	BOSS_COMMON string CSSGhost				= "color:#888;margin-right:1em;padding:0 4px;";
-	BOSS_COMMON string CSSCRC				= "color:#BC8923;margin-right:1em;padding:0 4px;";
-	BOSS_COMMON string CSSTagPrefix			= "color:#CD5555;";
-	BOSS_COMMON string CSSDirty				= "color:#960;";
-	BOSS_COMMON string CSSQuotedMessage		= "color:gray;";
-	BOSS_COMMON string CSSMod				= "margin-right:1em;";
-	BOSS_COMMON string CSSTag				= "";
-	BOSS_COMMON string CSSNote				= "";
-	BOSS_COMMON string CSSRequirement		= "";
-	BOSS_COMMON string CSSIncompatibility	= "";
-	BOSS_COMMON string CSSSubmit			= "margin-right:1em;";
-	BOSS_COMMON string CSSPopupBox			= "padding:10px;width:410px;background:white;display:none;z-index:2;position:fixed;top:25%;left:35%;";
-	BOSS_COMMON string CSSPopupBoxTitle		= "font-weight:bold;width:100%;display:table-cell;";
-	BOSS_COMMON string CSSPopupBoxLink		= "width:400px;";
-	BOSS_COMMON string CSSPopupBoxNotes		= "height:10em;width:400px;";
-	BOSS_COMMON string CSSPopupBoxClose		= "cursor:pointer;display:table-cell;";
-	BOSS_COMMON string CSSPopupBoxSubmit	= "display:block;margin:0 auto;margin-top:20px;width:5em;";
-	BOSS_COMMON string CSSMask				= "position:fixed;left:0px;top:0px;width:100%;height:100%;background:black;opacity:0.9;display:block;z-index:1;";
-	BOSS_COMMON string CSSActive			= "color:#0A0;margin-right:1em;padding:0 4px;";
-
 	Outputter::Outputter() {
 		outFormat = PLAINTEXT;
 		escapeHTMLSpecialChars = false;
@@ -111,50 +68,51 @@ namespace boss {
 		if (outFormat == HTML) {
 			outStream << "<!DOCTYPE html>"<<endl<<"<meta charset='utf-8'>"<<endl
 				<< "<title>BOSS Log</title>"<<endl<<"<style>"
-				<< "body{" << CSSBody << "}"
-				<< "body.dark{" << CSSDarkBody << "}"
-				<< "a.dark:link{" << CSSDarkLink << "}"
-				<< "a.dark:visited{" << CSSDarkLinkVisited << "}"
+				<< "body{font-family:Calibri,Arial,sans-serifs;}"
+				<< "body.dark{color:white;background:black;}"
+				<< "a.dark:link{color:#0AF;}"
+				<< "a.dark:visited{color:#E000E0;}"
 				<< "#filters{" << "background:#F5F5F5; width:252px; position:fixed; right:0; top:-32em; z-index:0; box-shadow: -1px 1px 1px 1px rgba(0,0,0,0.5);"
 				<< "	transition: top 0.2s;"
 				<< "	-moz-transition: top 0.2s;"
 				<< "	-webkit-transition: top 0.2s;"
 				<< "	-ms-transition: top 0.2s;"
 				<< "	-o-transition: top 0.2s;" << "}"
-				<< "#filters.dark{" << CSSDarkFilters << "}"
-				<< "#filters > li{" << CSSFiltersList << "}"
-				<< "h1{" << CSSTitle << "}"
-				<< "h2 + *{" << CSSSections << "}"
-				<< "h2{" << CSSSectionTitle << "}"
-				<< "h2 > span{" << CSSSectionPlusMinus << "}"
-				<< "ul{" << CSSList << "}"
-				<< "ul li{" << CSSListItem << "}"
-				<< "li ul{" << CSSSubList << "}"
-				<< "input[type='checkbox']{" << CSSCheckbox << "}"
-				<< "blockquote{" << CSSBlockquote << "}"
-				<< ".error{" << CSSError << "}"
-				<< ".warn{" << CSSWarning << "}"
-				<< ".success{" << CSSSuccess << "}"
-				<< ".version{" << CSSVersion << "}"
-				<< ".ghosted{" << CSSGhost << "}"
-				<< ".crc{" << CSSCRC << "}"
-				<< ".active{" << CSSActive << "}"
-				<< ".tagPrefix{" << CSSTagPrefix << "}"
-				<< ".dirty{" << CSSDirty << "}"
-				<< ".message{" << CSSQuotedMessage << "}"
-				<< ".mod{" << CSSMod << "}"
-				<< ".tag{" << CSSTag << "}"
-				<< ".note{" << CSSNote << "}"
-				<< ".req{" << CSSRequirement << "}"
-				<< ".inc{" << CSSIncompatibility << "}"
-				<< ".submit{" << CSSSubmit << "}"
-				<< "#popupBox{" << CSSPopupBox << "}"
-				<< "#mask{" << CSSMask << "}"
-				<< "#popupBox > div:first-child{" << CSSPopupBoxTitle << "}"
-				<< "#link{" << CSSPopupBoxLink << "}"
-				<< "#notes{" << CSSPopupBoxNotes << "}"
-				<< "#popupClose{" << CSSPopupBoxClose << "}"
-				<< "#popup_yes{" << CSSPopupBoxSubmit << "}"
+				<< "#filters.dark{background:#333;}"
+				<< "#filters > li{margin:0;padding:0.2em 0.5em; white-space:nowrap;}"
+				<< "h1{display:inline;font-size:2.4em;font-weight:700;margin-right:1em;}"
+				<< "h2 + *{margin-bottom:3em;}"
+				<< "h2{font-size:1.17em;display:table;cursor:pointer;}"
+				<< "h2 > span{display:inline-block;position:relative;top:.05em; font-size:1.3em;width:.6em;margin-right:.1em;}"
+				<< "ul{list-style:none;padding-left:0;}"
+				<< "ul li{margin-left:0;margin-bottom:1em;}"
+				<< "li ul{margin-top:.5em;padding-left:2.5em;margin-bottom:2em;}"
+				<< "td{padding:0 .5em;}"
+				<< "input[type='checkbox']{position:relative;top:.15em;margin-right:.5em;}"
+				<< "blockquote{font-style:italic;}"
+				<< ".error{background:red;color:#FFF;display:table;padding:0 4px;}"
+				<< ".warn{background:orange;color:#FFF;display:table;padding:0 4px;}"
+				<< ".success{color:green;}"
+				<< ".version{color:#6394F8;margin-right:1em;padding:0 4px;}"
+				<< ".ghosted{color:#888;margin-right:1em;padding:0 4px;}"
+				<< ".crc{color:#BC8923;margin-right:1em;padding:0 4px;}"
+				<< ".active{color:#0A0;margin-right:1em;padding:0 4px;}"
+				<< ".tagPrefix{color:#CD5555;}"
+				<< ".dirty{color:#960;}"
+				<< ".message{color:gray;}"
+				<< ".mod{margin-right:1em;}"
+				<< ".tag{}"
+				<< ".note{}"
+				<< ".req{}"
+				<< ".inc{}"
+				<< ".submit{margin-right:1em;}"
+				<< "#submitBox{padding:10px;width:410px;background:white;display:none;z-index:2;position:fixed;top:25%;left:35%;}"
+				<< "#mask{position:fixed;left:0px;top:0px;width:100%;height:100%;background:black;opacity:0.9;display:block;z-index:1;}"
+				<< "#submitBox > div:first-child{font-weight:bold;width:100%;display:table-cell;}"
+				<< "#link{width:400px;}"
+				<< "#notes{height:10em;width:400px;}"
+				<< "#popupClose{cursor:pointer;display:table-cell;}"
+				<< "#popup_yes{display:block;margin:0 auto;margin-top:20px;width:5em;}"
 				<< "#plugin{" << "display:table-cell;font-style:italic;" << "}"
 				<< "#pluginLabel{" << "display:table-cell;padding-right:0.5em;" << "}"
 				<< "output {display:block;width:350px;margin:2em auto;}"
@@ -167,18 +125,35 @@ namespace boss {
 				<< "   -ms-transform: rotate(-90deg);"
 				<< "   -o-transform: rotate(-90deg);"
 				<< "}"
-				<< "#cssSettingsButton, #filtersButton { display:table-cell;padding:0.5em 1em;"
+				<< "#menu > div { display:table-cell;padding:0.5em 1em;"
 				<< "	transition: background 0.2s;"
 				<< "	-webkit-transition: background 0.2s;"
 				<< "	-moz-transition: background 0.2s;"
 				<< "	-ms-transition: background 0.2s;"
 				<< "	-o-transition: background 0.2s;"
 				<< "}"
-				<< "#cssSettingsButton:hover, #filtersButton:hover {background:lightgrey;}"
+				<< "#menu > div:hover {background:lightgrey;}"
 				<< "#filtersButton {width:220px;}"
 				<< "#filtersButton > span:first-child {display:table-cell;width:100%;}"
-				<< "aside {position:fixed;right:0;top:0;background:#F5F5F5;line-height:1em;cursor:pointer;z-index:1; box-shadow: -1px 1px 1px 1px rgba(0,0,0,0.5);}"
-				<< "aside.dark {background:#333;}"
+				<< "#menu {position:fixed;right:0;top:0;background:#F5F5F5;line-height:1em;cursor:pointer;z-index:1; box-shadow: -1px 1px 1px 1px rgba(0,0,0,0.5);}"
+				<< "#menu.dark {background:#333;}"
+				<< "#submitBox.dark {background:#333;}"
+				<< "#cssBox.visible, #submitBox.visible {display:block;}"
+				<< "#filters.visible {top:1.25em;}"
+				<< "#cssBox{padding:10px;width:70%;background:white;display:none;z-index:2;position:fixed;top:10%;left:10%;}"
+				<< "#cssBox > h2 {display:block;text-align:center;}"
+				<< "#cssBox input:invalid {background:red;}"
+				<< "#cssBox hr {width:90%;}"
+				<< "#cssBox p, #cssBox table {width:85%;margin-left:auto; margin-right:auto;}"
+				<< "#cssBox.dark {background:#333;}"
+				<< "#arrow.rotated {"
+				<< "	transform: rotate(90deg);"
+				<< "	-moz-transform: rotate(-90deg);"
+				<< "	-webkit-transform: rotate(-90deg);"
+				<< "	-ms-transform: rotate(-90deg);"
+				<< "	-o-transform: rotate(-90deg);"
+				<< "}"
+				<< ".hidden {display:none;}"
 
 				<< "</style>"<<endl;
 			outStream << "<h1>BOSS Log</h1>"
@@ -195,7 +170,7 @@ namespace boss {
 	void Outputter::PrintFooter() {
 		if (outFormat == HTML) {
 			outStream << endl 
-				<< "<div id='popupBox'>" << endl
+				<< "<div id='submitBox'>" << endl
 				<< "<div>BOSS Unrecognised Plugin Submission</div>" << endl
 				<< "<div onclick='hidePopupBox()' id='popupClose'>&#x2715;</div>" << endl
 				<< "<p><span id='pluginLabel'>Plugin:</span><span id='plugin'></span>" << endl
@@ -205,79 +180,196 @@ namespace boss {
 				<< "<button type='button' id='popup_yes' onclick='submitPlugin()'>Submit</button>" << endl
 				<< "</form><output></output>" << endl
 				<< "</div>" << endl
+
+
+				<< "<div id='cssBox'>" << endl
+				<< "<h2>CSS Settings</h2>" << endl
+				<< "<hr>" << endl
+				<< "<p>Here you can customise the colours used by the dark colour scheme, by entering the CSS for the colours you want into the boxes below. The placeholders display the default colours. A blank box will use the default." << endl
+				<< "<table>" << endl
+				<< "	<thead><tr><td>Element<td>Dark Theme Colour<td>Element<td>Dark Theme Colour" << endl
+				<< "	<tbody>" << endl
+				<< "		<tr><td>General Text<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark' data-property='color'>" << endl
+				<< "		<td>Errors<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.error.dark' data-property='color'>" << endl
+				<< "		<tr><td>Window Backgrounds<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark,#cssBox.dark,#submitBox.dark' data-property='background'>" << endl
+				<< "		<td>Warnings<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.warn.dark' data-property='color'>" << endl
+				<< "		<tr><td>Links<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='a.dark:link' data-property='color'>" << endl
+				<< "		<td>Ghosted Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.ghost.dark' data-property='color'>" << endl
+				<< "		<tr><td>Visited Links<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='a.dark:visited' data-property='color'>" << endl
+				<< "		<td>CRC Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.crc.dark' data-property='color'>" << endl
+				<< "		<tr><td>Menu Background<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='#menu.dark,#filters.dark' data-property='background'>" << endl
+				<< "		<td>Active Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.active.dark' data-property='color'>" << endl
+				<< "		<tr><td>Menu Button Hover<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='#menu.dark > div:hover' data-property='background'>" << endl
+				<< "		<td>Dirty Messages<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.dirty.dark' data-property='color'>" << endl
+				<< "		<tr><td>Bash Tag Suggestion Prefixes<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.tagPrefix.dark' data-property='color'><td><td>" << endl
+				<< "</table>" << endl
+				<< "<p>Note that your settings will be lost if you clear your browser's cache. You can back up and restore your CSS settings using the options below." << endl
+				<< "<p><button type='button' id='cssBackup' onclick='backupCSS()'>Backup Settings</button>" << endl
+				<< "<button type='button' id='cssBackup' onclick='restoreCSS()'>Restore From Backup</button>" << endl
+				<< "<hr>" << endl
+				<< "<p style='text-align:center;'><button type='button' id='cssOK' onclick='applyCSS()'>Apply</button>" << endl
+				<< "<button type='button' id='cssCancel' onclick='hideCSSBox()'>Cancel</button>" << endl
+				<< "</div>" << endl
+
+
 				<< "<script>" << endl
 				<< "'use strict';" << endl
 				<< "var hm=0,hp=0,hpe=document.getElementById('hp'),hme=document.getElementById('hm'),url = 'http://www.darkcreations.org/bugzilla/jsonrpc.cgi',form = document.getElementsByTagName('form')[0],output = document.getElementsByTagName('output')[0];" << endl
+
+				<< "function showCSSBox(){"<<endl
+				<< "	if(document.getElementById('mask')==null){"<<endl
+				<< "		var mask=document.createElement('div');"<<endl
+				<< "		mask.id='mask';"<<endl
+				<< "		document.body.appendChild(mask);"<<endl
+				<< "	}"<<endl
+				<< "	document.getElementById('cssBox').className += ' visible';"<<endl
+				<< "}"<<endl
+				<< "function hideCSSBox(){"<<endl
+				<< "	var mask=document.getElementById('mask');"<<endl
+				<< "	var box=document.getElementById('cssBox');"<<endl
+				<< "	box.className = box.className.replace('visible',''); "<<endl
+				<< "	if(mask!=null){"<<endl
+				<< "		var parent=mask.parentNode;"<<endl
+				<< "		parent.removeChild(mask);"<<endl
+				<< "	}"<<endl
+				<< "}"<<endl
 				<< "function toggleFilters(){"<<endl
 				<< "	var filters = document.getElementById('filters');"<<endl
 				<< "	var arrow = document.getElementById('arrow');"<<endl
-				<< "	if (filters.style.top == '-32em' || filters.style.top == '') {"<<endl
-				<< "		filters.style.top = '1.25em';"<<endl
-				<< "		arrow.style.transform = 'rotate(90deg)';"<<endl
-				<< "		arrow.style.MozTransform = 'rotate(90deg)';"<<endl
-				<< "		arrow.style.webkitTransform = 'rotate(90deg)';"<<endl
-				<< "		arrow.style.msTransform = 'rotate(90deg)';"<<endl
-				<< "		arrow.style.oTransform = 'rotate(90deg)';"<<endl
+				<< "	if (filters.className.indexOf('visible') == -1) {"<<endl
+				<< "		filters.className += ' visible';"<<endl
+				<< "		arrow.className += ' rotated';"<<endl
 				<< "	} else {"<<endl
-				<< "		filters.style.top = '-32em';"<<endl
-				<< "		arrow.style.transform = 'rotate(-90deg)';"<<endl
-				<< "		arrow.style.MozTransform = 'rotate(-90deg)';"<<endl
-				<< "		arrow.style.webkitTransform = 'rotate(-90deg)';"<<endl
-				<< "		arrow.style.msTransform = 'rotate(-90deg)';"<<endl
-				<< "		arrow.style.oTransform = 'rotate(-90deg)';"<<endl
+				<< "		filters.className = filters.className.replace('visible',''); "<<endl
+				<< "		arrow.className = arrow.className.replace('rotated','');"<<endl
 				<< "	}"<<endl
 				<< "}"<<endl
+				<< "function showPopupBox(plugin){"<<endl
+				<< "	if(document.getElementById('mask')==null){"<<endl
+				<< "		var mask=document.createElement('div');"<<endl
+				<< "		mask.id='mask';"<<endl
+				<< "		document.body.appendChild(mask);"<<endl
+				<< "	}"<<endl
+				<< "	document.getElementById('plugin').innerHTML=plugin;"<<endl
+				<< "	document.getElementById('submitBox').className += ' visible';"<<endl
+				<< "}"<<endl
+				<< "function hidePopupBox(){"<<endl
+				<< "	var mask=document.getElementById('mask');"<<endl
+				<< "	var box=document.getElementById('submitBox');"<<endl
+				<< "	box.className = box.className.replace('visible',''); "<<endl
+				<< "	document.getElementById('notes').value='';"<<endl
+				<< "	document.getElementById('link').value='';"<<endl
+				<< "	output.value='';"<<endl
+				<< "	form.className = form.className.replace('hidden',''); "<<endl
+				<< "	if(mask!=null){"<<endl
+				<< "		var parent=mask.parentNode;"<<endl
+				<< "		parent.removeChild(mask);"<<endl
+				<< "	}"<<endl
+				<< "}"<<endl
+				<< "function outputText(text, flag) {"<<endl
+				<< "	form.className += ' hidden';"<<endl
+				<< "	if (output.value.length != 0) {"<<endl
+				<< "		output.innerHTML += '<br />';"<<endl
+				<< "	}"<<endl
+				<< "	if (flag == -1) {"<<endl
+				<< "		text = \"<span style='color:red;'>\" + text + \"</span>\";"<<endl
+				<< "	} else if (flag == 1) {"<<endl
+				<< "		text = \"<span class='success'>\" + text + \"</span>\";"<<endl
+				<< "	}"<<endl
+				<< "	output.innerHTML += text;"<<endl
+				<< "}"<<endl
+				<< "function toggleSectionDisplay(h){"<<endl
+				<< "	if(h.nextSibling.className.indexOf('hidden') != -1){"<<endl
+				<< "		h.nextSibling.className = h.nextSibling.className.replace('hidden','');"<<endl
+				<< "		saveSectionState(h, false);"<<endl
+				<< "		h.firstChild.innerHTML='&#x2212;'"<<endl
+				<< "	}else{"<<endl
+				<< "		h.nextSibling.className += ' hidden';"<<endl
+				<< "		saveSectionState(h, true);"<<endl
+				<< "		h.firstChild.innerHTML='+'"<<endl
+				<< "	}"<<endl
+				<< "}"<<endl
+				<< "function swapColorScheme(b){"<<endl
+				<< "	saveFilterState(b);"<<endl
+				<< "	var a = document.getElementById('cssBox').getElementsByTagName('input');"<<endl
+				<< "	if(b.checked){"<<endl
+				<< "		for(var i=0,z=a.length;i<z;i++){"<<endl
+				<< "			var s = a[i].getAttribute('data-selector').replace(/\\.dark/g,'');"<<endl
+				<< "			var c = document.querySelectorAll(s);"<<endl
+				<< "			for(var j=0,d=c.length;j<d;j++){"<<endl
+				<< "				c[j].className += ' dark';"<<endl
+				<< "			}"<<endl
+				<< "		}"<<endl
+				<< "	}else{"<<endl
+				<< "		for(var i=0,z=a.length;i<z;i++){"<<endl
+				<< "			var c = document.querySelectorAll(a[i].getAttribute('data-selector'));"<<endl
+				<< "			for(var j=0,d=c.length;j<d;j++){"<<endl
+				<< "				c[j].className = c[j].className.replace(' dark','');"<<endl
+				<< "			}"<<endl
+				<< "		}"<<endl
+				<< "	}"<<endl
+				<< "}"<<endl
+				<< "function toggleDisplayCSS(b,s){"<<endl
+				<< "	saveFilterState(b);"<<endl
+				<< "	var e = document.querySelectorAll(s);"<<endl
+				<< "	if(b.checked){"<<endl
+				<< "		for(var i=0,z=e.length;i<z;i++){"<<endl
+				<< "			e[i].className += ' hidden';"<<endl
+				<< "		}"<<endl
+				<< "	}else{"<<endl
+				<< "		for(var i=0,z=e.length;i<z;i++){"<<endl
+				<< "			e[i].className = e[i].className.replace(' hidden','');"<<endl
+				<< "		}"<<endl
+				<< "	}"<<endl
+				<< "}"<<endl
+				<< "function applyCSS(){"<<endl
+				<< "	var a = document.getElementById('cssBox').getElementsByTagName('input');"<<endl
+				<< "	var d;"<<endl
+				<< "	if (document.styleSheets[0].cssRules) {"<<endl
+				<< "		d = document.styleSheets[0].cssRules;"<<endl
+				<< "	} else if (document.styleSheets[0].rules) {  //IE8"<<endl
+				<< "		d = document.styleSheets[0].rules;"<<endl
+				<< "	}"<<endl
+				<< "	for(var i=0,z=a.length;i<z;i++){"<<endl
+				<< "		var c = document.querySelectorAll(a[i].getAttribute('data-selector'));"<<endl
+				<< "		for(var j=0,d=c.length;j<d;j++){"<<endl
+				<< "			c[j].className += ' dark';"<<endl
+				<< "		}"<<endl
+				<< "	}"<<endl
+				<< "}"<<endl
+
 				<< "function saveFilterState(filter) {"<<endl
-				<< "	if (filter.checked) {  //Add to local storage."<<endl
-				<< "		localStorage.setItem(filter.id, true);"<<endl
-				<< "	} else {"<<endl
-				<< "		localStorage.removeItem(filter.id);"<<endl
+				<< "	if ('localStorage' in window && window['localStorage'] !== null && window['localStorage'] !== undefined) {"<<endl
+				<< "		if (filter.checked) {  //Add to local storage."<<endl
+				<< "			try {"<<endl
+				<< "				localStorage.setItem(filter.id, true);"<<endl
+				<< "			} catch (e) {"<<endl
+				<< "				if (e == QUOTA_EXCEEDED_ERR) {"<<endl
+				<< "					alert('Web storage quota for this document has been exceeded. Please empty your browser\\'s cache. Note that this will delete all locally stored data.');"<<endl
+				<< "				}"<<endl
+				<< "			}"<<endl
+				<< "		} else {"<<endl
+				<< "			localStorage.removeItem(filter.id);"<<endl
+				<< "		}"<<endl
 				<< "	}"<<endl
 				<< "}"<<endl
 				<< "function saveSectionState(section, isCollapsed) {"<<endl
-				<< "	if (isCollapsed) {  //Add to local storage."<<endl
-				<< "		localStorage.setItem(section.id, true);"<<endl
-				<< "	} else {"<<endl
-				<< "		localStorage.removeItem(section.id);"<<endl
+				<< "	if ('localStorage' in window && window['localStorage'] !== null && window['localStorage'] !== undefined) {"<<endl
+				<< "		if (isCollapsed) {  //Add to local storage."<<endl
+				<< "			try {"<<endl
+				<< "			localStorage.setItem(section.id, true);"<<endl
+				<< "			} catch (e) {"<<endl
+				<< "				if (e == QUOTA_EXCEEDED_ERR) {"<<endl
+				<< "					alert('Web storage quota for this document has been exceeded. Please empty your browser\\'s cache. Note that this will delete all locally stored data.');"<<endl
+				<< "				}"<<endl
+				<< "			}"<<endl
+				<< "		} else {"<<endl
+				<< "			localStorage.removeItem(section.id);"<<endl
+				<< "		}"<<endl
 				<< "	}"<<endl
 				<< "}"<<endl
-				<< "function showPopupBox(plugin){" << endl
-				<< "	if(document.getElementById('mask')==null){" << endl
-				<< "		var mask=document.createElement('div');" << endl
-				<< "		mask.id='mask';" << endl
-				<< "		document.body.appendChild(mask);" << endl
-				<< "	}" << endl
-				<< "	document.getElementById('plugin').innerHTML=plugin;" << endl
-				<< "	document.getElementById('popupBox').style.display='block';" << endl
-				<< "}" << endl
-				<< "function hidePopupBox(){" << endl
-				<< "	var mask=document.getElementById('mask');" << endl
-				<< "	document.getElementById('popupBox').style.display='none';" << endl
-				<< "	document.getElementById('notes').value='';" << endl
-				<< "	document.getElementById('link').value='';" << endl
-				<< "	output.value='';" << endl
-				<< "	form.style.display = 'block';" << endl
-				<< "	if(mask!=null){" << endl
-				<< "		var parent=mask.parentNode;" << endl
-				<< "		parent.removeChild(mask);" << endl
-				<< "	}" << endl
-				<< "}" << endl
 				<< "function isResponseOK(text) {" << endl
 				<< "	return (JSON.parse(text).error == null);" << endl
-				<< "}" << endl		
-				<< "function outputText(text, flag) {" << endl
-				<< "	//form.style.opacity = '0';" << endl
-				<< "	//form.style.height = '0';" << endl
-				<< "	form.style.display = 'none';" << endl
-				<< "    if (output.value.length != 0) {" << endl
-				<< "		output.innerHTML += '<br />';" << endl
-				<< "	}" << endl
-				<< "	if (flag == -1) {" << endl
-				<< "		text = \"<span style='color:red;'>\" + text + \"</span>\";" << endl
-				<< "	} else if (flag == 1) {" << endl
-				<< "		text = \"<span class='success'>\" + text + \"</span>\";" << endl
-				<< "	}" << endl
-				<< "	output.innerHTML += text;" << endl
 				<< "}" << endl
 				<< "function submitPlugin() {" << endl
 				<< "	var desc = document.getElementById('link').value;" << endl
@@ -385,9 +477,6 @@ namespace boss {
 				<< "function error() {" << endl
 				<< "	outputText('Error: Data transfer failed.', -1);" << endl
 				<< "}" << endl
-				<< "function toggleSectionDisplay(h){if(h.nextSibling.style.display=='none'){h.nextSibling.style.display='block';saveSectionState(h, false);h.firstChild.innerHTML='&#x2212;'}else{h.nextSibling.style.display='none';saveSectionState(h, true);h.firstChild.innerHTML='+'}}" << endl
-				<< "function swapColorScheme(b){saveFilterState(b);var d=document.body,a=document.getElementsByTagName('a'),f=document.getElementById('filters'),m=document.getElementsByTagName('aside')[0],p=document.getElementById('popupBox');if(b.checked){d.className='dark';f.className='dark';m.className='dark';p.className='dark';for(var i=0,z=a.length;i<z;i++){a[i].className='dark'}}else{d.className='';f.className='';m.className='';p.className='';for(var i=0,z=a.length;i<z;i++){a[i].className=''}}}" << endl
-				<< "function toggleDisplayCSS(b,s){saveFilterState(b);var r=new Array();if(document.styleSheets[0].cssRules){r=document.styleSheets[0].cssRules}else if(document.styleSheets[0].rules){r=document.styleSheets[0].rules}for(var i=0,z=r.length;i<z;i++){if(r[i].selectorText.toLowerCase()==s){if(b.checked){r[i].style.display='none'}else{r[i].style.display='inline'}return}}}" << endl
 				<< "function toggleRuleListWarnings(b){saveFilterState(b);var u=document.getElementById('userlistMessages');if(u!=null){u=u.childNodes;for(var i=0,z=u.length;i<z;i++){if(u[i].className=='warn'){if(b.checked){u[i].style.display='none';hm++}else if(u[i].style.display=='none'){u[i].style.display='table';hm--}}}}hme.innerHTML=hm}" << endl
 				<< "function toggleMessages(filter){"<<endl
 				<< "	if(filter!=null){saveFilterState(filter);}"<<endl
@@ -450,7 +539,7 @@ namespace boss {
 				<< "	hpe.innerHTML=hp"<<endl
 				<< "}"<<endl
 				<< "function initialSetup() {"<<endl
-				<< "	if ('localStorage' in window && window['localStorage'] !== null) {  //Local storage read on page load."<<endl
+				<< "	if ('localStorage' in window && window['localStorage'] !== null && window['localStorage'] !== undefined) {  //Local storage read on page load."<<endl
 				<< "		var len = localStorage.length;"<<endl
 				<< "		for (var i=0; i < len; i++) {"<<endl
 				<< "			var elem = document.getElementById(localStorage.key(i));"<<endl
@@ -750,7 +839,7 @@ namespace boss {
 			break;
 		case BUTTON_SUBMIT_PLUGIN:
 			if (outFormat == HTML)
-				outStream << "<button class='submit' onclick='showPopupBox(this.previousSibling.innerHTML)'>Submit Plugin</button>";
+				outStream << "<button class='submit' onclick='showPopupBox(this.nextSibling.innerHTML)'>Submit Plugin</button>";
 			break;
 		default:
 			break;

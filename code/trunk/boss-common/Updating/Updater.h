@@ -38,6 +38,12 @@
 #include <boost/filesystem.hpp>
 #include "Common/DllDef.h"
 
+#ifndef CURL_STATICLIB
+#define CURL_STATICLIB			//Tells the compiler to use curl as a static library.
+#endif
+#include <curl/curl.h>
+#include <curl/easy.h>
+
 namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
@@ -61,6 +67,11 @@ namespace boss {
 	//Throws boss_error exception on fail.
 	BOSS_COMMON void CleanUp();
 
+	//Initalise a curl handle.
+	CURL * InitCurl(char * errbuff);
+
+	//File writer.
+	size_t writer(char * data, size_t size, size_t nmemb, void * buffer);
 
 	////////////////////////
 	// Masterlist Updating

@@ -289,7 +289,7 @@ namespace boss {
 			gl_current_game = FALLOUT3;
 		else if (fs::exists(data_path / "Skyrim.esm")) 
 			gl_current_game = SKYRIM;
-		else if (fs::exists(data_path / "Morrowind.esm"))
+		else if (fs::exists(boss_path / ".." / "Data Files" / "Morrowind.esm"))  //Morrowind uses a different data path to the other games.
 			gl_current_game = MORROWIND;
 		else {
 			LOG_INFO("Game not detected locally. Checking Registry for paths.");
@@ -407,7 +407,7 @@ namespace boss {
 			games.push_back(FALLOUT3);
 		if (fs::exists(data_path / "FalloutNV.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path")) //Look for Fallout New Vegas.
 			games.push_back(FALLOUTNV);
-		if (fs::exists(data_path / "Morrowind.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path")) //Look for Morrowind.
+		if (fs::exists(boss_path / ".." / "Data Files" / "Morrowind.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path")) //Look for Morrowind. Morrowind uses a different data path to the other games.
 			games.push_back(MORROWIND);
 		//Now set gl_current_game.
 		if (gl_game != AUTODETECT) {
@@ -536,7 +536,7 @@ namespace boss {
 			<<	"bDebugWithSourceRefs     = " << BoolToString(gl_debug_with_source) << endl
 			<<	"bDisplayCRCs             = " << BoolToString(gl_show_CRCs) << endl
 			<<	"bDoTrialRun              = " << BoolToString(gl_trial_run) << endl
-			<<	"bLogDebugOutput          = " << BoolToString(gl_log_debug_output) << endl << endl
+			<<	"bLogDebugOutput          = " << BoolToString(gl_log_debug_output) << endl << endl;
 		ini.close();
 	}
 

@@ -683,8 +683,12 @@ BOSS_API uint32_t SubmitUnrecognisedPlugin(boss_db db, const uint8_t * plugin,
 	gl_current_game = db->game;
 
 	string pluginStr = string(reinterpret_cast<const char *>(plugin));
-	string linkStr = string(reinterpret_cast<const char *>(link));
-	string infoStr = string(reinterpret_cast<const char *>(info));
+
+	string linkStr, infoStr;
+	if (link != NULL)
+		linkStr = string(reinterpret_cast<const char *>(link));
+	if (info != NULL)
+		infoStr = string(reinterpret_cast<const char *>(info));
 
 	if (linkStr.empty() && infoStr.empty())
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "link and info cannot both be empty strings.");
@@ -694,40 +698,142 @@ BOSS_API uint32_t SubmitUnrecognisedPlugin(boss_db db, const uint8_t * plugin,
 		description = infoStr;
 	else
 		description = linkStr + "\\n\\n" + infoStr;
-
-
-	//URL to send data to.
-	char * url = "http://www.darkcreations.org/bugzilla/jsonrpc.cgi";
-
-	//Create JSON search data object.
-	string JSONbugSearch = "{\"method\":\"Bug.search\",\"params\":[{\"Bugzilla_login\":\"bossguest@darkcreations.org\",\"Bugzilla_password\":\"bosspassword\",\"product\":\"BOSS\",\"component\":\"TES IV: Oblivion\",\"summary\":\"";
-	JSONbugSearch += pluginStr;
-	JSONbugSearch += "\"}],\"id\":1}";
-
-	//Doing a single POST request with no HTTP headers seems to work, but that's not what the Cross-Origin Resource Sharing spec says should be done. Do it by the book.
-	//Add the following HTTP headers to an OPTIONS request, check that the response status is 200, then continue to the actual POST.
-	//Origin: null
-	//Access-Control-Request-Method: POST
-	//Access-Control-Request-Headers: content-type
-
-	//POST request headers:
-	//Origin: null
-	//Content-Type: application/json
-
-
-	//Create JSON bug creation data object.
-	string JSONbugReport = "{\"method\":\"Bug.create\",\"params\":[{\"Bugzilla_login\":\"bossguest@darkcreations.org\",\"Bugzilla_password\":\"bosspassword\",\"product\":\"BOSS\",\"component\":\"TES IV: Oblivion\",\"summary\":\"";
-	JSONbugReport += pluginStr + "\",\"version\":\"2.1\",\"description\":\"" + description + "\",\"op_sys\":\"Windows\",\"platform\":\"PC\",\"priority\":\"---\",\"severity\":\"enhancement\"}],\"id\":3}";
-
-
 	string id;
-	//Create JSON comment addition data object.
-	string JSONaddComment = "{\"method\":\"Bug.add_comment\",\"params\":[{\"Bugzilla_login\":\"bossguest@darkcreations.org\",\"Bugzilla_password\":\"bosspassword\",\"id\":";
-	JSONaddComment += id + ",\"comment\":" + description + "}],\"id\":2}";
+	char * url = "http://www.darkcreations.org/bugzilla/jsonrpc.cgi";  //URL to send data to.
 
-	
+	//Now start curling.
+	char errbuff[CURL_ERROR_SIZE];
+	CURL *curl;									//cURL handle
+	CURLcode ret;
+	string buffer, JSON;
 
-	
+	try {
+		curl = InitCurl(errbuff);  //Init curl.
+
+		//Now set up the common curl options.
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		ret = curl_easy_setopt(curl, CURLOPT_POST, 1);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);	
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer );
+		if (ret!=CURLE_OK) {
+			string err = errbuff;
+			curl_easy_cleanup(curl);
+			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
+		}
+		//Need a structure containing the HTTP headers for curl to use.
+		struct curl_slist *slist = NULL;
+		slist = curl_slist_append(slist, "origin:null");
+		if (slist == NULL) {
+			curl_easy_cleanup(curl);
+			throw boss_error("Could not set HTTP headers.", BOSS_ERROR_CURL_SET_OPTION_FAIL);
+		}
+		slist = curl_slist_append(slist, "content-type:application/json");
+		if (slist == NULL) {
+			curl_slist_free_all(slist);
+			curl_easy_cleanup(curl);
+			throw boss_error("Could not set HTTP headers.", BOSS_ERROR_CURL_SET_OPTION_FAIL);
+		}
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, slist); 
+		if (ret!=CURLE_OK) {
+			string err = errbuff;
+			curl_slist_free_all(slist);
+			curl_easy_cleanup(curl);
+			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
+		}
+
+		//There are two stages to submission, with three possible requests.
+		//The first is a bug search, so do that now.
+		//Create JSON search data object.
+		JSON = "{\"method\":\"Bug.search\",\"params\":[{\"Bugzilla_login\":\"bossguest@darkcreations.org\",\"Bugzilla_password\":\"bosspassword\",\"product\":\"BOSS\",\"component\":\"TES IV: Oblivion\",\"summary\":\"";
+		JSON += pluginStr + "\"}],\"id\":1}";
+
+		for (uint32_t i=0;i<2;i++) {
+			//Set POST data.
+			ret = curl_easy_setopt(curl, CURLOPT_POSTFIELDS, JSON.c_str());
+			if (ret!=CURLE_OK) {
+				string err = errbuff;
+				curl_slist_free_all(slist);
+				curl_easy_cleanup(curl);
+				throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
+			}
+			//Perform POST request.
+			ret = curl_easy_perform(curl);
+			if (ret!=CURLE_OK) {
+				string err = errbuff;
+				curl_slist_free_all(slist);
+				curl_easy_cleanup(curl);
+				throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
+			}
+			//Check result.
+			long int code;
+			ret = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
+			if (ret!=CURLE_OK) {
+				string err = errbuff;
+				curl_slist_free_all(slist);
+				curl_easy_cleanup(curl);
+				throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
+			}
+			if (code != 200) {
+				curl_slist_free_all(slist);
+				curl_easy_cleanup(curl);
+				throw boss_error("Server responded with code " + IntToString(code) + ".", BOSS_ERROR_CURL_PERFORM_FAIL);
+			}
+
+			//Now check returned data for errors and a returned bug ID.
+			size_t pos1,pos2;
+			pos1 = buffer.find("\"error\":");
+			if (pos1 == string::npos) {
+				curl_slist_free_all(slist);
+				curl_easy_cleanup(curl);
+				return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, "Could not parse return data.");
+			}
+			pos2 = buffer.find(',', pos1);
+			if (pos2 == string::npos) {
+				curl_slist_free_all(slist);
+				curl_easy_cleanup(curl);
+				return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, "Could not parse return data.");
+			}
+			if (buffer.substr(pos1+8, pos2-pos1-8) != "null") {
+				curl_slist_free_all(slist);
+				curl_easy_cleanup(curl);
+				return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, "Bugzilla API call failed.");
+			}
+
+			if (i == 0) {  //First loop is a bug search, so try extracting an ID (if there is one).
+				pos1 = buffer.find("\"groups\"");  //There are 4 "id" strings in the returned JSON. The one we want comes after "groups".
+				if (pos1 != string::npos) {  //Bug found. Extract id.
+					pos1 = buffer.find("\"id\":", pos1);
+					if (pos1 == string::npos) {
+						curl_slist_free_all(slist);
+						curl_easy_cleanup(curl);
+						return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, "Could not parse return data.");
+					}
+					pos2 = buffer.find(',', pos1);
+					if (pos2 == string::npos) {
+						curl_slist_free_all(slist);
+						curl_easy_cleanup(curl);
+						return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, "Could not parse return data.");
+					}
+					id = buffer.substr(pos1+5, pos2-pos1-5);
+				}
+				//Now set up request for the second loop.
+				if (id.empty()) {  //Create a new bug.
+					//Create JSON bug creation data object.
+					JSON = "{\"method\":\"Bug.create\",\"params\":[{\"Bugzilla_login\":\"bossguest@darkcreations.org\",\"Bugzilla_password\":\"bosspassword\",\"product\":\"BOSS\",\"component\":\"TES IV: Oblivion\",\"summary\":\"";
+					JSON += pluginStr + "\",\"version\":\"2.1\",\"description\":\"" + description + "\",\"op_sys\":\"Windows\",\"platform\":\"PC\",\"priority\":\"---\",\"severity\":\"enhancement\"}],\"id\":3}";
+				} else {  //Adda a comment to the existing bug.
+					JSON = "{\"method\":\"Bug.add_comment\",\"params\":[{\"Bugzilla_login\":\"bossguest@darkcreations.org\",\"Bugzilla_password\":\"bosspassword\",\"id\":";
+					JSON += id + ",\"comment\":" + description + "}],\"id\":2}";
+				}
+			}
+		}
+
+		curl_slist_free_all(slist);
+		curl_easy_cleanup(curl);
+
+	} catch (boss_error &e) {
+		return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, e.getString());
+	}
 
 	return ReturnCode(BOSS_API_OK);
 }

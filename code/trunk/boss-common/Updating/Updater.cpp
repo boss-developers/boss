@@ -41,12 +41,6 @@
 #include <iostream>
 #include <fstream>
 
-#ifndef CURL_STATICLIB
-#define CURL_STATICLIB			//Tells the compiler to use curl as a static library.
-#endif
-#include <curl/curl.h>
-#include <curl/easy.h>
-
 #ifdef BOSSGUI
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
@@ -432,7 +426,7 @@ namespace boss {
 			start = buffer.find("\"", start+1); 
 			if (start == string::npos) {
 				curl_easy_cleanup(curl);
-			throw boss_error(BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL);
+				throw boss_error(BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL);
 			}
 		}  
 		//Now start is the first character of the date string.
@@ -443,6 +437,7 @@ namespace boss {
 		}
 		date = buffer.substr(start+1,end - (start+1));  //Date string recorded.
 		buffer.clear();
+		curl_easy_cleanup(curl);
 
 		//Month Day, Year
 		//Now we need to get the date string extracted turned into a sensible absolute date.

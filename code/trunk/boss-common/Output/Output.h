@@ -44,49 +44,6 @@
 namespace boss {
 	using namespace std;
 
-	//Default CSS.
-	BOSS_COMMON extern string CSSBody;
-	BOSS_COMMON extern string CSSDarkBody;
-	BOSS_COMMON extern string CSSDarkLink;
-	BOSS_COMMON extern string CSSDarkLinkVisited;
-	BOSS_COMMON extern string CSSFilters;
-	BOSS_COMMON extern string CSSFiltersList;
-	BOSS_COMMON extern string CSSDarkFilters;
-	BOSS_COMMON extern string CSSTitle;
-	BOSS_COMMON extern string CSSSections;
-	BOSS_COMMON extern string CSSSectionTitle;
-	BOSS_COMMON extern string CSSSectionPlusMinus;
-	BOSS_COMMON extern string CSSLastSection;
-	BOSS_COMMON extern string CSSTable;
-	BOSS_COMMON extern string CSSList;
-	BOSS_COMMON extern string CSSListItem;
-	BOSS_COMMON extern string CSSSubList;
-	BOSS_COMMON extern string CSSCheckbox;
-	BOSS_COMMON extern string CSSBlockquote;
-	BOSS_COMMON extern string CSSError;
-	BOSS_COMMON extern string CSSWarning;
-	BOSS_COMMON extern string CSSSuccess;
-	BOSS_COMMON extern string CSSVersion;
-	BOSS_COMMON extern string CSSGhost;
-	BOSS_COMMON extern string CSSCRC;
-	BOSS_COMMON extern string CSSTagPrefix;
-	BOSS_COMMON extern string CSSDirty;
-	BOSS_COMMON extern string CSSQuotedMessage;
-	BOSS_COMMON extern string CSSMod;
-	BOSS_COMMON extern string CSSTag;
-	BOSS_COMMON extern string CSSNote;
-	BOSS_COMMON extern string CSSRequirement;
-	BOSS_COMMON extern string CSSIncompatibility;
-	BOSS_COMMON extern string CSSSubmit;
-	BOSS_COMMON extern string CSSPopupBox;
-	BOSS_COMMON extern string CSSPopupBoxTitle;
-	BOSS_COMMON extern string CSSPopupBoxLink;
-	BOSS_COMMON extern string CSSPopupBoxNotes;
-	BOSS_COMMON extern string CSSPopupBoxClose;
-	BOSS_COMMON extern string CSSPopupBoxSubmit;
-	BOSS_COMMON extern string CSSMask;
-	BOSS_COMMON extern string CSSActive;
-
 	enum logFormatting : uint32_t {
 		DIV_OPEN,
 		DIV_CLOSE,
@@ -103,7 +60,6 @@ namespace boss {
 		LIST_ITEM_CLASS_SUCCESS,
 		LIST_ITEM_CLASS_WARN,
 		LIST_ITEM_CLASS_ERROR,
-		LIST_ITEM_SPAN_CLASS_MOD_OPEN,
 		HEADING_ID_SUMMARY_OPEN,
 		HEADING_ID_GENERAL_OPEN,
 		HEADING_ID_USERLIST_OPEN,
