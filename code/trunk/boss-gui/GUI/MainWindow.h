@@ -62,7 +62,6 @@ public:
 	void OnRevertChange(wxCommandEvent& event);
 	void OnLogDisplayChange(wxCommandEvent& event);
 	void OnUpdateChange(wxCommandEvent& event);
-	void OnVersionDisplayChange(wxCommandEvent& event);
 	void OnCRCDisplayChange(wxCommandEvent& event);
 	void OnTrialRunChange(wxCommandEvent& event);
 	void OnEditUserRules(wxCommandEvent& event);
@@ -84,7 +83,6 @@ private:
 	wxButton *OpenBOSSlogButton;
 	wxButton *EditUserRulesButton;
 	wxCheckBox *ShowLogBox;
-	wxCheckBox *VersionBox;
 	wxCheckBox *CRCBox;
 	wxCheckBox *UpdateBox;
 	wxCheckBox *TrialRunBox;

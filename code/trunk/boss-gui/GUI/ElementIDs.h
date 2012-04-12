@@ -61,7 +61,6 @@ enum {
 	DROPDOWN_Revert,
 	CHECKBOX_ShowBOSSlog,
 	CHECKBOX_Update,
-	CHECKBOX_EnableVersions,
 	CHECKBOX_EnableCRCs,
 	CHECKBOX_TrialRun,
 	RADIOBUTTON_SortOption,

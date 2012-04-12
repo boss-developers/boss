@@ -141,9 +141,6 @@ int main(int argc, char *argv[]) {
 		("silent,s", po::value(&gl_silent)->zero_tokens(),
 								"don't launch a browser to show the HTML log"
 								" at program completion")
-		("no-version-parse,n", po::value(&gl_skip_version_parse)->zero_tokens(),
-								"don't extract mod version numbers for"
-								" printing in the HTML log")
 		("revert,r", po::value(&gl_revert)->implicit_value(1, ""),
 								"revert to a previous load order.  this"
 								" parameter optionally accepts values of 1 or"

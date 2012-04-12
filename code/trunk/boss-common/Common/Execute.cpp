@@ -162,11 +162,9 @@ namespace boss {
 				if (unrecognised.find(itemIter->Name()) != unrecognised.end())
 					buffer << BUTTON_SUBMIT_PLUGIN;
 				buffer << SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
-				if (!gl_skip_version_parse) {
-					string version = itemIter->GetVersion();
-					if (!version.empty())
+				string version = itemIter->GetVersion();
+				if (!version.empty())
 						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
-				}
 				if (hashset.find(to_lower_copy(itemIter->Name())) != hashset.end())  //Plugin is active.
 					buffer << SPAN_CLASS_ACTIVE_OPEN << "Active" << SPAN_CLOSE;
 				if (itemIter->IsGhosted()) {

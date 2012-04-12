@@ -79,7 +79,6 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_CHOICE ( DROPDOWN_Revert, MainFrame::OnRevertChange )
 	EVT_CHECKBOX ( CHECKBOX_ShowBOSSlog, MainFrame::OnLogDisplayChange )
 	EVT_CHECKBOX ( CHECKBOX_Update, MainFrame::OnUpdateChange )
-	EVT_CHECKBOX ( CHECKBOX_EnableVersions, MainFrame::OnVersionDisplayChange )
 	EVT_CHECKBOX ( CHECKBOX_EnableCRCs, MainFrame::OnCRCDisplayChange )
 	EVT_CHECKBOX ( CHECKBOX_TrialRun, MainFrame::OnTrialRunChange )
 	EVT_RADIOBUTTON ( RADIOBUTTON_SortOption, MainFrame::OnRunTypeChange )
@@ -311,9 +310,6 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 
 	if (gl_show_CRCs)
 		CRCBox->SetValue(true);
-
-	if (!gl_skip_version_parse)
-		VersionBox->SetValue(true);
 
 	if (gl_update)
 		UpdateBox->SetValue(true);
@@ -726,10 +722,6 @@ void MainFrame::OnFormatChange(wxCommandEvent& event) {
 		gl_log_format = HTML;
 	else
 		gl_log_format = PLAINTEXT;
-}
-
-void MainFrame::OnVersionDisplayChange(wxCommandEvent& event) {
-	gl_skip_version_parse = (!event.IsChecked());
 }
 
 void MainFrame::OnCRCDisplayChange(wxCommandEvent& event) {

@@ -106,16 +106,16 @@ namespace boss {
 				<< ".req{}"
 				<< ".inc{}"
 				<< ".submit{margin-right:1em;}"
-				<< "#submitBox{padding:10px;width:410px;background:white;display:none;z-index:2;position:fixed;top:25%;left:35%;}"
 				<< "#mask{position:fixed;left:0px;top:0px;width:100%;height:100%;background:black;opacity:0.9;display:block;z-index:1;}"
-				<< "#submitBox > div:first-child{font-weight:bold;width:100%;display:table-cell;}"
+				<< "#submitBox{padding:10px;background:white;display:none;z-index:2;position:fixed;top:0;width:430px;left:50%;margin-left:-220px;}"
+				<< "#submitBox > h1{text-align:center;display:block;margin:0;}"
+				<< "#submitBox p {margin-left:10px; margin-right:10px;}"
+				<< "#submitBox > p:last-child {text-align:center;margin-bottom:0;}"
 				<< "#link{width:400px;}"
 				<< "#notes{height:10em;width:400px;}"
-				<< "#popupClose{cursor:pointer;display:table-cell;}"
-				<< "#popup_yes{display:block;margin:0 auto;margin-top:20px;width:5em;}"
-				<< "#plugin{" << "display:table-cell;font-style:italic;" << "}"
-				<< "#pluginLabel{" << "display:table-cell;padding-right:0.5em;" << "}"
-				<< "output {display:block;width:350px;margin:2em auto;}"
+				<< "#plugin{display:table-cell;font-style:italic;}"
+				<< "#pluginLabel{display:table-cell;padding-right:0.5em;}"
+				<< "output {display:none;width:400;margin:2em auto;text-align:center;}"
 
 				<< "#arrow {"
 				<< "	display:table-cell;font-size:1.5em;"
@@ -138,22 +138,24 @@ namespace boss {
 				<< "#menu {position:fixed;right:0;top:0;background:#F5F5F5;line-height:1em;cursor:pointer;z-index:1; box-shadow: -1px 1px 1px 1px rgba(0,0,0,0.5);}"
 				<< "#menu.dark {background:#333;}"
 				<< "#submitBox.dark {background:#333;}"
-				<< "#cssBox.visible, #submitBox.visible {display:block;}"
+				<< "#cssBox.visible, #submitBox.visible, output.visible {display:block;}"
 				<< "#filters.visible {top:1.25em;}"
-				<< "#cssBox{padding:10px;width:70%;background:white;display:none;z-index:2;position:fixed;top:10%;left:10%;}"
-				<< "#cssBox > h2 {display:block;text-align:center;}"
+				<< "#cssBox{padding:20px;width:70%;background:white;display:none;z-index:2;position:fixed;top:-1em;left:14%;overflow:auto;}"
+				<< "#cssBox > h1 {display:block;text-align:center;margin:0;}"
 				<< "#cssBox input:invalid {background:red;}"
-				<< "#cssBox hr {width:90%;}"
-				<< "#cssBox p, #cssBox table {width:85%;margin-left:auto; margin-right:auto;}"
+				<< "#cssBox p, #cssBox table {margin-left:20px; margin-right:20px;}"
 				<< "#cssBox.dark {background:#333;}"
+				<< "#cssBox thead {font-weight:bold;}"
+				<< "#cssBox p:last-child {text-align:center;margin-bottom:0;}"
 				<< "#arrow.rotated {"
 				<< "	transform: rotate(90deg);"
-				<< "	-moz-transform: rotate(-90deg);"
-				<< "	-webkit-transform: rotate(-90deg);"
-				<< "	-ms-transform: rotate(-90deg);"
-				<< "	-o-transform: rotate(-90deg);"
+				<< "	-moz-transform: rotate(90deg);"
+				<< "	-webkit-transform: rotate(90deg);"
+				<< "	-ms-transform: rotate(90deg);"
+				<< "	-o-transform: rotate(90deg);"
 				<< "}"
 				<< ".hidden {display:none;}"
+				<< ".button {cursor:pointer;text-decoration:underline;}"
 
 				<< "</style>"<<endl;
 			outStream << "<h1>BOSS Log</h1>"
@@ -171,44 +173,45 @@ namespace boss {
 		if (outFormat == HTML) {
 			outStream << endl 
 				<< "<div id='submitBox'>" << endl
-				<< "<div>BOSS Unrecognised Plugin Submission</div>" << endl
-				<< "<div onclick='hidePopupBox()' id='popupClose'>&#x2715;</div>" << endl
+				<< "<h1>Submit Plugin</h1>" << endl
+				<< "<hr>" << endl
 				<< "<p><span id='pluginLabel'>Plugin:</span><span id='plugin'></span>" << endl
 				<< "<form>" << endl
-				<< "<p><label>Download Location: <input type='url' required placeholder=\"A link to the plugin's download location.\" id='link'></label>" << endl
-				<< "<p><label>Additional Notes: <textarea id='notes' placeholder='Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.'></textarea></label>" << endl
-				<< "<button type='button' id='popup_yes' onclick='submitPlugin()'>Submit</button>" << endl
-				<< "</form><output></output>" << endl
+				<< "<p><label>Download Location:<br /><input type='url' required placeholder=\"A link to the plugin's download location.\" id='link'></label>" << endl
+				<< "<p><label>Additional Notes:<br /><textarea id='notes' placeholder='Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.'></textarea></label>" << endl
+				<< "</form>" << endl
+				<< "<output></output>" << endl
+				<< "<hr>" << endl
+				<< "<p><button type='button' onclick='submitPlugin()'>Submit</button>" << endl
+				<< "<button type='button' onclick='hidePopupBox()'>Cancel</button>" << endl
 				<< "</div>" << endl
 
 
 				<< "<div id='cssBox'>" << endl
-				<< "<h2>CSS Settings</h2>" << endl
+				<< "<h1>CSS Settings</h1>" << endl
 				<< "<hr>" << endl
-				<< "<p>Here you can customise the colours used by the dark colour scheme, by entering the CSS for the colours you want into the boxes below. The placeholders display the default colours. A blank box will use the default." << endl
+				<< "<p>Here you can customise the colours used by the dark colour scheme. Colours must be specified using their lowercase hex codes, or by using the colour picker if supported by your browser. Boxes left blank will use their default values, which are given by their placeholders." << endl
 				<< "<table>" << endl
-				<< "	<thead><tr><td>Element<td>Dark Theme Colour<td>Element<td>Dark Theme Colour" << endl
+				<< "	<thead><tr><td>Element<td>Colour<td>Element<td>Colour" << endl
 				<< "	<tbody>" << endl
-				<< "		<tr><td>General Text<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark' data-property='color'>" << endl
-				<< "		<td>Errors<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.error.dark' data-property='color'>" << endl
-				<< "		<tr><td>Window Backgrounds<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark,#cssBox.dark,#submitBox.dark' data-property='background'>" << endl
-				<< "		<td>Warnings<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.warn.dark' data-property='color'>" << endl
-				<< "		<tr><td>Links<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='a.dark:link' data-property='color'>" << endl
-				<< "		<td>Ghosted Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.ghost.dark' data-property='color'>" << endl
-				<< "		<tr><td>Visited Links<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='a.dark:visited' data-property='color'>" << endl
-				<< "		<td>CRC Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.crc.dark' data-property='color'>" << endl
-				<< "		<tr><td>Menu Background<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='#menu.dark,#filters.dark' data-property='background'>" << endl
-				<< "		<td>Active Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.active.dark' data-property='color'>" << endl
-				<< "		<tr><td>Menu Button Hover<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='#menu.dark > div:hover' data-property='background'>" << endl
-				<< "		<td>Dirty Messages<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.dirty.dark' data-property='color'>" << endl
-				<< "		<tr><td>Bash Tag Suggestion Prefixes<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.tagPrefix.dark' data-property='color'><td><td>" << endl
+				<< "		<tr><td>General Text<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark' data-property='color' placeholder='#ffffff'>" << endl
+				<< "		<td>Errors<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.error.dark' data-property='background' placeholder='#ff0000'>" << endl
+				<< "		<tr><td>Window Backgrounds<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark,#cssBox.dark,#submitBox.dark' data-property='background' placeholder='#000000'>" << endl
+				<< "		<td>Warnings<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.warn.dark' data-property='background' placeholder='#ffa500'>" << endl
+				<< "		<tr><td>Links<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='a.dark:link' data-property='color' placeholder='#00aaff'>" << endl
+				<< "		<td>Ghosted Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.ghost.dark' data-property='color' placeholder='#888888'>" << endl
+				<< "		<tr><td>Visited Links<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='a.dark:visited' data-property='color' placeholder='#e000e0'>" << endl
+				<< "		<td>CRC Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.crc.dark' data-property='color' placeholder='#bc8923'>" << endl
+				<< "		<tr><td>Menu Background<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='#menu.dark,#filters.dark' data-property='background' placeholder='#333333'>" << endl
+				<< "		<td>Active Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.active.dark' data-property='color' placeholder='#00aa00'>" << endl
+				<< "		<tr><td>Menu Button Hover<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='#menu.dark > div:hover' data-property='background' placeholder='#d3d3d3'>" << endl
+				<< "		<td>Dirty Messages<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.dirty.dark' data-property='color' placeholder='#996600'>" << endl
+				<< "		<tr><td>Bash Tag Suggestion Prefixes<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.tagPrefix.dark' data-property='color' placeholder='#cd5555'><td><td>" << endl
 				<< "</table>" << endl
-				<< "<p>Note that your settings will be lost if you clear your browser's cache. You can back up and restore your CSS settings using the options below." << endl
-				<< "<p><button type='button' id='cssBackup' onclick='backupCSS()'>Backup Settings</button>" << endl
-				<< "<button type='button' id='cssBackup' onclick='restoreCSS()'>Restore From Backup</button>" << endl
+				<< "<p>Your settings will be lost if you clear your browser's cache, but you can <span class='button' onclick='backupCSS(this)'>back them up</span>. Backup files are given nonsensical names by your browser, but you can rename them to whatever you want. Drag 'n' drop the backup file into this panel to restore your settings again." << endl
 				<< "<hr>" << endl
-				<< "<p style='text-align:center;'><button type='button' id='cssOK' onclick='applyCSS()'>Apply</button>" << endl
-				<< "<button type='button' id='cssCancel' onclick='hideCSSBox()'>Cancel</button>" << endl
+				<< "<p><button type='button' onclick='applyCSS()'>Apply</button>" << endl
+				<< "<button type='button' onclick='hideCSSBox()'>Cancel</button>" << endl
 				<< "</div>" << endl
 
 
@@ -216,7 +219,65 @@ namespace boss {
 				<< "'use strict';" << endl
 				<< "var hm=0,hp=0,hpe=document.getElementById('hp'),hme=document.getElementById('hm'),url = 'http://www.darkcreations.org/bugzilla/jsonrpc.cgi',form = document.getElementsByTagName('form')[0],output = document.getElementsByTagName('output')[0];" << endl
 
+				<< "function backupCSS(a){"<<endl
+				<< "	if (typeof(JSON) === 'object' && typeof(JSON.parse) === 'function') {"<<endl
+				<< "		var a = document.getElementById('cssBox').getElementsByTagName('input');"<<endl
+				<< "		var json = '{\"colors\":{'"<<endl
+				<< "		for(var i=0,z=a.length;i<z;i++){"<<endl
+				<< "			json += '\"' + a[i].getAttribute('data-selector') + '\":\"' + a[i].getAttribute('data-property') + ':' + a[i].value + '\",'"<<endl
+				<< "		}"<<endl
+				<< "		json = json.substr(0,json.length-1);"<<endl
+				<< "		json += '}}';"<<endl
+				<< "		var uriContent = 'data:json/settings-backup,' + encodeURIComponent(json);"<<endl
+				<< "		location.href = uriContent;"<<endl
+				<< "	}"<<endl
+				<< "}"<<endl
+				<< "function handleFileSelect(evt) {"<<endl
+				<< "	evt.stopPropagation();"<<endl
+				<< "	evt.preventDefault();"<<endl
+				<< "	var files = evt.dataTransfer.files; // FileList object"<<endl
+				<< "	var a = document.getElementById('cssBox').getElementsByTagName('input');"<<endl
+				<< "	for (var i = 0, f; f = files[i]; i++) {"<<endl
+				<< "		var reader = new FileReader();"<<endl
+				<< "		reader.onload = (function(theFile) {"<<endl
+				<< "			return function(e) {"<<endl
+				<< "				try {"<<endl
+				<< "					var json = JSON.parse(e.target.result).colors;"<<endl
+				<< "					for (var key in json) {"<<endl
+				<< "						if (json.hasOwnProperty(key) && json[key].length != 0) {"<<endl
+				<< "							for (var i=0, z=a.length; i < z; i++) {"<<endl
+				<< "								if (a[i].getAttribute('data-selector') == key) {"<<endl
+				<< "									a[i].value = json[key].split(':').pop();"<<endl
+				<< "								}"<<endl
+				<< "							}"<<endl
+				<< "						}"<<endl
+				<< "					}"<<endl
+				<< "				} catch (e) {"<<endl
+				<< "					alert(e);"<<endl
+				<< "				}"<<endl
+				<< "			};"<<endl
+				<< "		})(f);"<<endl
+				<< "		reader.readAsText(f);"<<endl
+				<< "	}"<<endl
+				<< "}"<<endl
+				<< "function handleDragOver(evt) {"<<endl
+				<< "	evt.stopPropagation();"<<endl
+				<< "	evt.preventDefault();"<<endl
+				<< "	evt.dataTransfer.dropEffect = 'copy';"<<endl
+				<< "}"<<endl
+
+
 				<< "function showCSSBox(){"<<endl
+				<< "	if ('localStorage' in window && window['localStorage'] !== null && window['localStorage'] !== undefined) {"<<endl
+				<< "		var a = document.getElementById('cssBox').getElementsByTagName('input');"<<endl
+				<< "		var len = localStorage.length;"<<endl
+				<< "		for (var i=0, z=a.length; i < z; i++) {"<<endl
+				<< "			var s = localStorage.getItem(a[i].getAttribute('data-selector'));"<<endl
+				<< "			if (s != null) {"<<endl
+				<< "				a[i].value = s.split(':').pop();"<<endl
+				<< "			}"<<endl
+				<< "		}"<<endl
+				<< "	}"<<endl
 				<< "	if(document.getElementById('mask')==null){"<<endl
 				<< "		var mask=document.createElement('div');"<<endl
 				<< "		mask.id='mask';"<<endl
@@ -260,14 +321,26 @@ namespace boss {
 				<< "	document.getElementById('notes').value='';"<<endl
 				<< "	document.getElementById('link').value='';"<<endl
 				<< "	output.value='';"<<endl
+				<< "	output.className = output.className.replace('visible',''); "<<endl
 				<< "	form.className = form.className.replace('hidden',''); "<<endl
+				<< "	var button = document.querySelector('#submitBox > p:last-child > button:first-child');"<<endl
+				<< "	button.className = button.className.replace('hidden','');"<<endl
 				<< "	if(mask!=null){"<<endl
 				<< "		var parent=mask.parentNode;"<<endl
 				<< "		parent.removeChild(mask);"<<endl
 				<< "	}"<<endl
 				<< "}"<<endl
 				<< "function outputText(text, flag) {"<<endl
-				<< "	form.className += ' hidden';"<<endl
+				<< "	if (form.className.indexOf('hidden') == -1) {"<<endl
+				<< "		form.className += ' hidden';"<<endl
+				<< "	}"<<endl
+				<< "	if (output.className.indexOf('visible') == -1) {"<<endl
+				<< "		output.className += ' visible';"<<endl
+				<< "	}"<<endl
+				<< "	var button = document.querySelector('#submitBox > p:last-child > button:first-child');"<<endl
+				<< "	if (button.className.indexOf('hidden') == -1) {"<<endl
+				<< "		button.className += ' hidden';"<<endl
+				<< "	}"<<endl
 				<< "	if (output.value.length != 0) {"<<endl
 				<< "		output.innerHTML += '<br />';"<<endl
 				<< "	}"<<endl
@@ -324,18 +397,35 @@ namespace boss {
 				<< "}"<<endl
 				<< "function applyCSS(){"<<endl
 				<< "	var a = document.getElementById('cssBox').getElementsByTagName('input');"<<endl
-				<< "	var d;"<<endl
 				<< "	if (document.styleSheets[0].cssRules) {"<<endl
-				<< "		d = document.styleSheets[0].cssRules;"<<endl
+				<< "		var d = document.styleSheets[0];"<<endl
+				<< "		for(var i=0,z=a.length;i<z;i++){"<<endl
+				<< "			//Set rule."<<endl
+				<< "			var css = a[i].getAttribute('data-property') + ':' + a[i].value;"<<endl
+				<< "			//Store rule."<<endl
+				<< "			if ('localStorage' in window && window['localStorage'] !== null && window['localStorage'] !== undefined) {"<<endl
+				<< "				try {"<<endl
+				<< "					localStorage.setItem(a[i].getAttribute('data-selector'), css);"<<endl
+				<< "				} catch (e) {"<<endl
+				<< "					if (e == QUOTA_EXCEEDED_ERR) {"<<endl
+				<< "						alert('Web storage quota for this document has been exceeded. Please empty your browser\\'s cache. Note that this will delete all locally stored data.');"<<endl
+				<< "					}"<<endl
+				<< "				}"<<endl
+				<< "			}"<<endl
+				<< "			if (a[i].value.length == 0) {"<<endl
+				<< "				css += a[i].placeholder;"<<endl
+				<< "			}"<<endl
+				<< "			var rule = a[i].getAttribute('data-selector') + '{' + css + '}';"<<endl
+				<< "			d.insertRule(rule, d.cssRules.length);"<<endl
+				<< "		}"<<endl
 				<< "	} else if (document.styleSheets[0].rules) {  //IE8"<<endl
-				<< "		d = document.styleSheets[0].rules;"<<endl
-				<< "	}"<<endl
-				<< "	for(var i=0,z=a.length;i<z;i++){"<<endl
-				<< "		var c = document.querySelectorAll(a[i].getAttribute('data-selector'));"<<endl
-				<< "		for(var j=0,d=c.length;j<d;j++){"<<endl
-				<< "			c[j].className += ' dark';"<<endl
+				<< "		var d = document.styleSheets[0].rules;"<<endl
+				<< "		for(var i=0,z=a.length;i<z;i++){"<<endl
+				<< "			var css = a[i].getAttribute('data-property') + ':' + a[i].value;"<<endl
+				<< "			d.addRule(a[i].getAttribute('data-selector'), css, -1);"<<endl
 				<< "		}"<<endl
 				<< "	}"<<endl
+				<< "	hideCSSBox();"<<endl
 				<< "}"<<endl
 
 				<< "function saveFilterState(filter) {"<<endl
@@ -549,6 +639,12 @@ namespace boss {
 				<< "				} else {"<<endl
 				<< "					toggleSectionDisplay(elem);"<<endl
 				<< "				}"<<endl
+				<< "			} else {  //It's a CSS selector."<<endl
+				<< "				if (document.styleSheets[0].cssRules) {"<<endl
+				<< "					var k = localStorage.key(i);"<<endl
+				<< "					var d = document.styleSheets[0];"<<endl
+				<< "					d.insertRule(k + '{' + localStorage.getItem(k) + '}', d.cssRules.length);"<<endl
+				<< "				}"<<endl
 				<< "			}"<<endl
 				<< "		}"<<endl
 				<< "	}"<<endl
@@ -563,6 +659,11 @@ namespace boss {
 				<< "		for (var i=0, len=buttons.length; i < len; i++) {"<<endl
 				<< "			buttons[i].style.display = 'none';"<<endl
 				<< "		}"<<endl
+				<< "	}"<<endl
+				<< "	if (window.File && window.FileReader && window.FileList && window.Blob) {"<<endl
+				<< "		var dropZone = document.getElementById('cssBox');"<<endl
+				<< "		dropZone.addEventListener('dragover', handleDragOver, false);"<<endl
+				<< "		dropZone.addEventListener('drop', handleFileSelect, false);"<<endl
 				<< "	}"<<endl
 				<< "}"<<endl
 				<< "function DomReady(fn){"<<endl
@@ -845,6 +946,23 @@ namespace boss {
 			break;
 		}
 		return *this;
+	}
+
+	Outputter& Outputter::operator<< (const langString l) {
+		switch(l) {
+		case LOG_UseDarkColourScheme:
+			if (gl_language == ENGLISH)
+				outStream << "";
+			else if (gl_language == SPANISH)
+				outStream << "";
+			else if (gl_language == GERMAN)
+				outStream << "";
+			else if (gl_language == RUSSIAN)
+				outStream << "";
+			break;
+		default:
+			break;
+		}
 	}
 	
 	Outputter& Outputter::operator<< (const int32_t i) {

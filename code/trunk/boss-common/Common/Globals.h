@@ -68,7 +68,12 @@ namespace boss {
 		//Run types (for 'run_type' setting)
 		SORT,
 		UPDATE,
-		UNDO
+		UNDO,
+		//Languages
+		ENGLISH,
+		SPANISH,
+		GERMAN,
+		RUSSIAN
 	};
 
 	BOSS_COMMON extern uint32_t gl_current_game;  //The game that BOSS is currently running for. Matches gl_game if gl_game != AUTODETECT.
@@ -115,6 +120,7 @@ namespace boss {
 	//General variables
 	BOSS_COMMON extern bool		gl_do_startup_update_check;	// Whether or not to check for updates on startup.
 	BOSS_COMMON extern bool		gl_use_user_rules_editor;	// Use the User Rules Editor or edit userlist.txt directly?
+	BOSS_COMMON extern uint32_t	gl_language;				// What language to run BOSS in?
 
 	//Command line variables.
 	BOSS_COMMON extern string	gl_proxy_host;
@@ -128,7 +134,6 @@ namespace boss {
 	BOSS_COMMON extern bool		gl_update;					// update the masterlist?
 	BOSS_COMMON extern bool		gl_update_only;				// only update the masterlist and don't sort currently.
 	BOSS_COMMON extern bool		gl_silent;					// silent mode?
-	BOSS_COMMON extern bool		gl_skip_version_parse;		// enable parsing of mod's headers to look for version strings
 	BOSS_COMMON extern bool		gl_debug_with_source;		// whether to include origin information in logging statements
 	BOSS_COMMON extern bool		gl_show_CRCs;				// whether or not to show mod CRCs.
 	BOSS_COMMON extern bool		gl_trial_run;				// If true, don't redate files.
@@ -163,7 +168,8 @@ namespace boss {
 
 		string	GetIniGameString	() const;
 		string	GetLogFormatString	() const;
-		void ApplyIniSettings();
+		string	GetLanguageString	() const;
+		void	ApplyIniSettings	();
 	public:
 		void	Load(fs::path file);		//Throws exception on fail.
 		void	Save(fs::path file);		//Throws exception on fail.

@@ -162,9 +162,10 @@ namespace boss {
 	//Ini Settings
 	///////////////////////////////
 
-	//GUI variables
-	BOSS_COMMON uint32_t	gl_run_type					= 0;
+	//General variables
+	BOSS_COMMON bool		gl_do_startup_update_check	= true;
 	BOSS_COMMON	bool		gl_use_user_rules_editor	= true;
+	BOSS_COMMON uint32_t	gl_language					= ENGLISH;
 
 	//Command line variables
 	BOSS_COMMON string		gl_proxy_host				= "";
@@ -178,12 +179,10 @@ namespace boss {
 	BOSS_COMMON bool		gl_update					= true;
 	BOSS_COMMON bool		gl_update_only				= false;
 	BOSS_COMMON bool		gl_silent					= false;
-	BOSS_COMMON bool		gl_skip_version_parse		= false;
 	BOSS_COMMON bool		gl_debug_with_source		= false;
 	BOSS_COMMON bool		gl_show_CRCs				= false;
 	BOSS_COMMON bool		gl_trial_run				= false;
 	BOSS_COMMON bool		gl_log_debug_output			= false;
-	BOSS_COMMON bool		gl_do_startup_update_check	= true;
 
 
 	///////////////////////////////
@@ -516,7 +515,8 @@ namespace boss {
 
 			<<	"[BOSS.GeneralSettings]" << endl
 			<<	"bDoStartupUpdateCheck    = " << BoolToString(gl_do_startup_update_check) << endl
-			<<	"bUseUserRulesEditor      = " << BoolToString(gl_use_user_rules_editor) << endl << endl
+			<<	"bUseUserRulesEditor      = " << BoolToString(gl_use_user_rules_editor) << endl 
+			<<	"sLanguage                = " << GetLanguageString() << endl << endl
 
 			<<	"[BOSS.InternetSettings]" << endl
 			<<	"sProxyHostname           = " << gl_proxy_host << endl
@@ -532,7 +532,6 @@ namespace boss {
 			<<	"bUpdateMasterlist        = " << BoolToString(gl_update) << endl
 			<<	"bOnlyUpdateMasterlist    = " << BoolToString(gl_update_only) << endl
 			<<	"bSilentRun               = " << BoolToString(gl_silent) << endl
-			<<	"bNoVersionParse          = " << BoolToString(gl_skip_version_parse) << endl
 			<<	"bDebugWithSourceRefs     = " << BoolToString(gl_debug_with_source) << endl
 			<<	"bDisplayCRCs             = " << BoolToString(gl_show_CRCs) << endl
 			<<	"bDoTrialRun              = " << BoolToString(gl_trial_run) << endl
@@ -555,6 +554,19 @@ namespace boss {
 			return "Skyrim";
 		else if (gl_game == MORROWIND)
 			return "Morrowind";
+		else
+			return "";
+	}
+
+	string	Settings::GetLanguageString	() const {
+		if (gl_language == ENGLISH)
+			return "english";
+		else if (gl_language == SPANISH)
+			return "spanish";
+		else if (gl_language == GERMAN)
+			return "german";
+		else if (gl_language == RUSSIAN)
+			return "russian";
 		else
 			return "";
 	}
@@ -609,6 +621,15 @@ namespace boss {
 						gl_game = SKYRIM;
 					else if (iter->value == "Morrowind")
 						gl_game = MORROWIND;
+				} else if (iter->key == "sLanguage") {
+					if (iter->value == "english")
+						gl_language = ENGLISH;
+					else if (iter->value == "spanish")
+						gl_language = SPANISH;
+					else if (iter->value == "german")
+						gl_language = GERMAN;
+					else if (iter->value == "russian")
+						gl_language = RUSSIAN;
 				}
 				//Now integers.
 				else if (iter->key == "iProxyPort")
@@ -621,7 +642,7 @@ namespace boss {
 					uint32_t value = atoi(iter->value.c_str());
 					if (value >= 0 && value < 4)
 						gl_debug_verbosity = value;
-				//Now on to BOSS.ini boolean settings.
+				//Now on to boolean settings.
 				} else if (iter->key == "bDoStartupUpdateCheck")
 					gl_do_startup_update_check = StringToBool(iter->value);
 				else if (iter->key == "bUseUserRulesEditor")
@@ -632,8 +653,6 @@ namespace boss {
 					gl_update_only = StringToBool(iter->value);
 				else if (iter->key == "bSilentRun")
 					gl_silent = StringToBool(iter->value);
-				else if (iter->key == "bNoVersionParse")
-					gl_skip_version_parse = StringToBool(iter->value);
 				else if (iter->key == "bDebugWithSourceRefs")
 					gl_debug_with_source = StringToBool(iter->value);
 				else if (iter->key == "bDisplayCRCs")
