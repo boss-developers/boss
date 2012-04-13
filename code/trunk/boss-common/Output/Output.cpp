@@ -78,7 +78,6 @@ namespace boss {
 				<< "	-webkit-transition: top 0.2s;"
 				<< "	-ms-transition: top 0.2s;"
 				<< "	-o-transition: top 0.2s;" << "}"
-				<< "#filters.dark{background:#333;}"
 				<< "#filters > li{margin:0;padding:0.2em 0.5em; white-space:nowrap;}"
 				<< "h1{display:inline;font-size:2.4em;font-weight:700;margin-right:1em;}"
 				<< "h2 + *{margin-bottom:3em;}"
@@ -87,7 +86,7 @@ namespace boss {
 				<< "ul{list-style:none;padding-left:0;}"
 				<< "ul li{margin-left:0;margin-bottom:1em;}"
 				<< "li ul{margin-top:.5em;padding-left:2.5em;margin-bottom:2em;}"
-				<< "td{padding:0 .5em;}"
+				<< "td{padding:0 .5em;vertical-align:top;}"
 				<< "input[type='checkbox']{position:relative;top:.15em;margin-right:.5em;}"
 				<< "blockquote{font-style:italic;}"
 				<< ".error{background:red;color:#FFF;display:table;padding:0 4px;}"
@@ -106,57 +105,38 @@ namespace boss {
 				<< ".req{}"
 				<< ".inc{}"
 				<< ".submit{margin-right:1em;}"
+				<< ".hidden {display:none;}"
+				<< ".button {cursor:pointer;text-decoration:underline;}"
+				<< "p.last {text-align:center;margin-bottom:0;}"
+				<< ".t {color:green;margin-right:0.5em;}"
+				<< ".c {color:red;margin-right:0.5em;}"
+				<< ".t:after {content: '\\2713';}"
+				<< ".c:after {content: '\\2717';}"
 				<< "#mask{position:fixed;left:0px;top:0px;width:100%;height:100%;background:black;opacity:0.9;display:block;z-index:1;}"
 				<< "#submitBox{padding:10px;background:white;display:none;z-index:2;position:fixed;top:0;width:430px;left:50%;margin-left:-220px;}"
 				<< "#submitBox > h1{text-align:center;display:block;margin:0;}"
 				<< "#submitBox p {margin-left:10px; margin-right:10px;}"
-				<< "#submitBox > p:last-child {text-align:center;margin-bottom:0;}"
 				<< "#link{width:400px;}"
 				<< "#notes{height:10em;width:400px;}"
 				<< "#plugin{display:table-cell;font-style:italic;}"
 				<< "#pluginLabel{display:table-cell;padding-right:0.5em;}"
-				<< "output {display:none;width:400;margin:2em auto;text-align:center;}"
-
-				<< "#arrow {"
-				<< "	display:table-cell;font-size:1.5em;"
-				<< "	transform: rotate(-90deg);"
-				<< "   -moz-transform: rotate(-90deg);"
-				<< "   -webkit-transform: rotate(-90deg);"
-				<< "   -ms-transform: rotate(-90deg);"
-				<< "   -o-transform: rotate(-90deg);"
-				<< "}"
-				<< "#menu > div { display:table-cell;padding:0.5em 1em;"
-				<< "	transition: background 0.2s;"
-				<< "	-webkit-transition: background 0.2s;"
-				<< "	-moz-transition: background 0.2s;"
-				<< "	-ms-transition: background 0.2s;"
-				<< "	-o-transition: background 0.2s;"
-				<< "}"
+				<< "#output {display:none;width:400px;margin:2em auto;text-align:center;}"
+				<< "#arrow {display:inline-block;font-size:1.5em;position:relative;top:3px;	transform: rotate(-90deg);   -moz-transform: rotate(-90deg);   -webkit-transform: rotate(-90deg);   -ms-transform: rotate(-90deg);   -o-transform: rotate(-90deg);}"
+				<< "#arrow.rotated {position:relative;left:0.2em;	transform: rotate(90deg);	-moz-transform: rotate(90deg);	-webkit-transform: rotate(90deg);	-ms-transform: rotate(90deg);	-o-transform: rotate(90deg);}"
+				<< "#menu > div { display:table-cell;padding:0.5em 1em; transition: background 0.2s;	-webkit-transition: background 0.2s;	-moz-transition: background 0.2s;	-ms-transition: background 0.2s;	-o-transition: background 0.2s;}"
 				<< "#menu > div:hover {background:lightgrey;}"
 				<< "#filtersButton {width:220px;}"
-				<< "#filtersButton > span:first-child {display:table-cell;width:100%;}"
+				<< "#filtersButton > span:first-child {display:inline-block;width:200px;}"
 				<< "#menu {position:fixed;right:0;top:0;background:#F5F5F5;line-height:1em;cursor:pointer;z-index:1; box-shadow: -1px 1px 1px 1px rgba(0,0,0,0.5);}"
-				<< "#menu.dark {background:#333;}"
-				<< "#submitBox.dark {background:#333;}"
-				<< "#cssBox.visible, #submitBox.visible, output.visible {display:block;}"
+				<< "#filters.dark, #menu.dark, #submitBox.dark, #cssBox.dark, #browserBox.dark {background:#333;}"
+				<< "#cssBox.visible, #submitBox.visible, #output.visible, #browserBox.visible {display:block;}"
 				<< "#filters.visible {top:1.25em;}"
-				<< "#cssBox{padding:20px;width:70%;background:white;display:none;z-index:2;position:fixed;top:-1em;left:14%;overflow:auto;}"
-				<< "#cssBox > h1 {display:block;text-align:center;margin:0;}"
-				<< "#cssBox input:invalid {background:red;}"
-				<< "#cssBox p, #cssBox table {margin-left:20px; margin-right:20px;}"
-				<< "#cssBox.dark {background:#333;}"
+				<< "#cssBox, #browserBox{padding:20px;width:70%;background:white;display:none;z-index:2;position:fixed;top:-1em;left:14%;overflow:auto;}"
+				<< "#cssBox > h1, #browserBox > h1 {display:block;text-align:center;margin:0;}"
+				<< "input:invalid {background:#FF6347;}"
+				<< "#cssBox p, #cssBox table, #browserBox p, #browserBox table, #browserBox h3 {margin-left:20px; margin-right:20px;}"
 				<< "#cssBox thead {font-weight:bold;}"
-				<< "#cssBox p:last-child {text-align:center;margin-bottom:0;}"
-				<< "#arrow.rotated {"
-				<< "	transform: rotate(90deg);"
-				<< "	-moz-transform: rotate(90deg);"
-				<< "	-webkit-transform: rotate(90deg);"
-				<< "	-ms-transform: rotate(90deg);"
-				<< "	-o-transform: rotate(90deg);"
-				<< "}"
-				<< ".hidden {display:none;}"
-				<< ".button {cursor:pointer;text-decoration:underline;}"
-
+				<< "#browserBox > p > span {display:inline-block;padding:5px 10px;}"
 				<< "</style>"<<endl;
 			outStream << "<h1>BOSS Log</h1>"
 				<< "BOSS v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << gl_boss_release_date << ")."
@@ -180,9 +160,9 @@ namespace boss {
 				<< "<p><label>Download Location:<br /><input type='url' required placeholder=\"A link to the plugin's download location.\" id='link'></label>" << endl
 				<< "<p><label>Additional Notes:<br /><textarea id='notes' placeholder='Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.'></textarea></label>" << endl
 				<< "</form>" << endl
-				<< "<output></output>" << endl
+				<< "<div id='output'></div>" << endl
 				<< "<hr>" << endl
-				<< "<p><button type='button' onclick='submitPlugin()'>Submit</button>" << endl
+				<< "<p class='last'><button type='button' onclick='submitPlugin()' autofocus>Submit</button>" << endl
 				<< "<button type='button' onclick='hidePopupBox()'>Cancel</button>" << endl
 				<< "</div>" << endl
 
@@ -190,13 +170,13 @@ namespace boss {
 				<< "<div id='cssBox'>" << endl
 				<< "<h1>CSS Settings</h1>" << endl
 				<< "<hr>" << endl
-				<< "<p>Here you can customise the colours used by the dark colour scheme. Colours must be specified using their lowercase hex codes, or by using the colour picker if supported by your browser. Boxes left blank will use their default values, which are given by their placeholders." << endl
+				<< "<p>Here you can customise the colours used by the dark colour scheme.<span id='colorPickerNote'> Colours must be specified using their lowercase hex codes.</span> Boxes left blank will use their default values, which are given by their placeholders." << endl
 				<< "<table>" << endl
 				<< "	<thead><tr><td>Element<td>Colour<td>Element<td>Colour" << endl
 				<< "	<tbody>" << endl
 				<< "		<tr><td>General Text<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark' data-property='color' placeholder='#ffffff'>" << endl
 				<< "		<td>Errors<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.error.dark' data-property='background' placeholder='#ff0000'>" << endl
-				<< "		<tr><td>Window Backgrounds<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark,#cssBox.dark,#submitBox.dark' data-property='background' placeholder='#000000'>" << endl
+				<< "		<tr><td>Window Backgrounds<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark,#cssBox.dark,#submitBox.dark,#browserBox.dark' data-property='background' placeholder='#000000'>" << endl
 				<< "		<td>Warnings<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.warn.dark' data-property='background' placeholder='#ffa500'>" << endl
 				<< "		<tr><td>Links<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='a.dark:link' data-property='color' placeholder='#00aaff'>" << endl
 				<< "		<td>Ghosted Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.ghost.dark' data-property='color' placeholder='#888888'>" << endl
@@ -208,16 +188,57 @@ namespace boss {
 				<< "		<td>Dirty Messages<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.dirty.dark' data-property='color' placeholder='#996600'>" << endl
 				<< "		<tr><td>Bash Tag Suggestion Prefixes<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.tagPrefix.dark' data-property='color' placeholder='#cd5555'><td><td>" << endl
 				<< "</table>" << endl
-				<< "<p>Your settings will be lost if you clear your browser's cache, but you can <span class='button' onclick='backupCSS(this)'>back them up</span>. Backup files are given nonsensical names by your browser, but you can rename them to whatever you want. Drag 'n' drop the backup file into this panel to restore your settings again." << endl
+				<< "<p id='backupCSSNote'>You can <span class='button' onclick='backupCSS(this)'>back up</span> your CSS settings to avoid losing them when you <span id='loseSettingsClose'>close the BOSS Log</span><span id='loseSettingsCacheClear'>clear your browser's cache</span>. Backup files are given nonsensical names by your browser, but you can rename them to whatever you want. Drag 'n' drop the backup file into this panel to restore your settings again." << endl
 				<< "<hr>" << endl
-				<< "<p><button type='button' onclick='applyCSS()'>Apply</button>" << endl
+				<< "<p class='last'><button type='button' onclick='applyCSS()' autofocus>Apply</button>" << endl
 				<< "<button type='button' onclick='hideCSSBox()'>Cancel</button>" << endl
+				<< "</div>" << endl
+
+				<< "<div id='browserBox'>" << endl
+				<< "<h1>Browser Compatability</h1>" << endl
+				<< "<hr>" << endl
+				<< "<p>The BOSS Log's more advanced features require some of the latest web technologies, for which browser support varies. Here's what your browser supports:" << endl
+				<< "<h3>Functionality</h3>" << endl
+				<< "<table>" << endl
+				<< "	<tbody>" << endl
+				<< "		<tr><td id='pluginSubmitSupport'><td>In-Log Plugin Submission<td>Allows unrecognised plugins to be submitted straight from the BOSS Log." << endl
+				<< "		<tr><td id='cssBackupSupport'><td>Backup/Restore of CSS Settings<td>Allows backup and restore of your custom CSS settings." << endl
+				<< "		<tr><td id='memorySupport'><td>Settings Memory<td>Allows the BOSS Log to restore the configuration of CSS settings, filters and collapsed sections last used, and to prevent this panel being displayed, whenever the BOSS Log is opened." << endl
+				<< "</table>" << endl
+				<< "<h3>Appearance</h3>" << endl
+				<< "<p><span><span id='opacitySupport'></span>Opacity</span>" << endl
+				<< "<span><span id='shadowsSupport'></span>Shadows</span>" << endl
+				<< "<span><span id='transitionsSupport'></span>Transitions</span>" << endl
+				<< "<span><span id='transformsSupport'></span>Transforms</span>" << endl
+				<< "<span><span id='colorSupport'></span>Colour Picker Input</span>" << endl
+				<< "<span><span id='placeholderSupport'></span>Input Placeholders</span>" << endl
+				<< "<span><span id='validationSupport'></span>Form Validation</span>" << endl
+				<< "<p><label><input type=checkbox>Do not display this panel again for this browser.</label>" << endl
+				<< "<hr>" << endl
+				<< "<p class='last'><button type='button' onclick='closeBrowserBox()' autofocus>OK</button>" << endl
 				<< "</div>" << endl
 
 
 				<< "<script>" << endl
 				<< "'use strict';" << endl
-				<< "var hm=0,hp=0,hpe=document.getElementById('hp'),hme=document.getElementById('hm'),url = 'http://www.darkcreations.org/bugzilla/jsonrpc.cgi',form = document.getElementsByTagName('form')[0],output = document.getElementsByTagName('output')[0];" << endl
+				<< "var hm=0,hp=0,hpe=document.getElementById('hp'),hme=document.getElementById('hm'),url = 'http://www.darkcreations.org/bugzilla/jsonrpc.cgi',form = document.getElementsByTagName('form')[0],output = document.getElementById('output');" << endl
+
+				<< "var hideBrowserBox = false, supportsPluginSubmit = false, suppportsStateMemory = false, supportsCSSBackupRestore = false;"<<endl
+				<< "function isSupported (propName) {"<<endl
+				<< "	return typeof document.body.style[propName] !== 'undefined';"<<endl
+				<< "}"<<endl
+				<< "function closeBrowserBox(){"<<endl
+				<< "	var mask=document.getElementById('mask');"<<endl
+				<< "	var box=document.getElementById('browserBox');"<<endl
+				<< "	box.className = box.className.replace('visible',''); "<<endl
+				<< "	if (document.getElementById('browserBox').querySelector('input[type=checkbox]').checked && suppportsStateMemory) {"<<endl
+				<< "		localStorage.setItem('hideBrowserBox','true');"<<endl
+				<< "	}"<<endl
+				<< "	if(mask!=null){"<<endl
+				<< "		var parent=mask.parentNode;"<<endl
+				<< "		parent.removeChild(mask);"<<endl
+				<< "	}"<<endl
+				<< "}"<<endl
 
 				<< "function backupCSS(a){"<<endl
 				<< "	if (typeof(JSON) === 'object' && typeof(JSON.parse) === 'function') {"<<endl
@@ -320,10 +341,10 @@ namespace boss {
 				<< "	box.className = box.className.replace('visible',''); "<<endl
 				<< "	document.getElementById('notes').value='';"<<endl
 				<< "	document.getElementById('link').value='';"<<endl
-				<< "	output.value='';"<<endl
+				<< "	output.innerHTML='';"<<endl
 				<< "	output.className = output.className.replace('visible',''); "<<endl
 				<< "	form.className = form.className.replace('hidden',''); "<<endl
-				<< "	var button = document.querySelector('#submitBox > p:last-child > button:first-child');"<<endl
+				<< "	var button = document.querySelector('#submitBox > p.last > button:first-child');"<<endl
 				<< "	button.className = button.className.replace('hidden','');"<<endl
 				<< "	if(mask!=null){"<<endl
 				<< "		var parent=mask.parentNode;"<<endl
@@ -337,11 +358,11 @@ namespace boss {
 				<< "	if (output.className.indexOf('visible') == -1) {"<<endl
 				<< "		output.className += ' visible';"<<endl
 				<< "	}"<<endl
-				<< "	var button = document.querySelector('#submitBox > p:last-child > button:first-child');"<<endl
+				<< "	var button = document.querySelector('#submitBox > p.last > button:first-child');"<<endl
 				<< "	if (button.className.indexOf('hidden') == -1) {"<<endl
 				<< "		button.className += ' hidden';"<<endl
 				<< "	}"<<endl
-				<< "	if (output.value.length != 0) {"<<endl
+				<< "	if (output.innerHTML.length != 0) {"<<endl
 				<< "		output.innerHTML += '<br />';"<<endl
 				<< "	}"<<endl
 				<< "	if (flag == -1) {"<<endl
@@ -629,21 +650,33 @@ namespace boss {
 				<< "	hpe.innerHTML=hp"<<endl
 				<< "}"<<endl
 				<< "function initialSetup() {"<<endl
-				<< "	if ('localStorage' in window && window['localStorage'] !== null && window['localStorage'] !== undefined) {  //Local storage read on page load."<<endl
+				<< "	var supportsXhr2CORS = ('withCredentials' in new XMLHttpRequest);"<<endl
+				<< "	var supportsJSON = (typeof(JSON) === 'object' && typeof(JSON.parse) === 'function');"<<endl
+				<< "	var supportsFileDnD = (window.File && window.FileReader && window.FileList && window.Blob && 'draggable' in document.createElement('span'));"<<endl
+				<< "	supportsPluginSubmit = (supportsXhr2CORS && supportsJSON);"<<endl
+				<< "	supportsCSSBackupRestore = (supportsFileDnD && supportsJSON);"<<endl
+				<< "	try {"<<endl
+				<< "		suppportsStateMemory = ('localStorage' in window && window['localStorage'] !== null && window['localStorage'] !== undefined);"<<endl
+				<< "	} catch (e) {}"<<endl
+				<< "	if (suppportsStateMemory) {  //Local storage read on page load."<<endl
 				<< "		var len = localStorage.length;"<<endl
 				<< "		for (var i=0; i < len; i++) {"<<endl
-				<< "			var elem = document.getElementById(localStorage.key(i));"<<endl
-				<< "			if (elem != null) {"<<endl
-				<< "				if ('defaultChecked' in elem) {  //It's a checkbox."<<endl
-				<< "					elem.checked = 'true';"<<endl
-				<< "				} else {"<<endl
-				<< "					toggleSectionDisplay(elem);"<<endl
-				<< "				}"<<endl
-				<< "			} else {  //It's a CSS selector."<<endl
-				<< "				if (document.styleSheets[0].cssRules) {"<<endl
-				<< "					var k = localStorage.key(i);"<<endl
-				<< "					var d = document.styleSheets[0];"<<endl
-				<< "					d.insertRule(k + '{' + localStorage.getItem(k) + '}', d.cssRules.length);"<<endl
+				<< "			if (localStorage.key(i) == 'hideBrowserBox') {"<<endl
+				<< "				hideBrowserBox = true;"<<endl
+				<< "			} else {"<<endl
+				<< "				var elem = document.getElementById(localStorage.key(i));"<<endl
+				<< "				if (elem != null) {"<<endl
+				<< "					if ('defaultChecked' in elem) {  //It's a checkbox."<<endl
+				<< "						elem.checked = 'true';"<<endl
+				<< "					} else {  //It's a section."<<endl
+				<< "						toggleSectionDisplay(elem);"<<endl
+				<< "					}"<<endl
+				<< "				} else {  //It's a CSS selector."<<endl
+				<< "					if (document.styleSheets[0].cssRules) {"<<endl
+				<< "						var k = localStorage.key(i);"<<endl
+				<< "						var d = document.styleSheets[0];"<<endl
+				<< "						d.insertRule(k + '{' + localStorage.getItem(k) + '}', d.cssRules.length);"<<endl
+				<< "					}"<<endl
 				<< "				}"<<endl
 				<< "			}"<<endl
 				<< "		}"<<endl
@@ -654,16 +687,88 @@ namespace boss {
 				<< "	toggleDisplayCSS(document.getElementById('b4'),'.ghosted','inline');"<<endl
 				<< "	toggleDisplayCSS(document.getElementById('b5'),'.crc','inline');"<<endl
 				<< "	toggleMessages(null);"<<endl
-				<< "	if (!('value' in document.createElement('output')) || !('withCredentials' in new XMLHttpRequest) || !(typeof(JSON) === 'object' && typeof(JSON.parse) === 'function')) { //Disable submission buttons. Since the only buttons in the log are related to submitter, disable all buttoms."<<endl
-				<< "		var buttons = document.getElementsByTagName('button');"<<endl
+				<< "	if (!supportsPluginSubmit) { //Disable submission buttons."<<endl
+				<< "		var buttons = document.getElementById('unrecognised').nextSibling.getElementsByTagName('button');"<<endl
 				<< "		for (var i=0, len=buttons.length; i < len; i++) {"<<endl
 				<< "			buttons[i].style.display = 'none';"<<endl
 				<< "		}"<<endl
 				<< "	}"<<endl
-				<< "	if (window.File && window.FileReader && window.FileList && window.Blob) {"<<endl
+				<< "	if (supportsCSSBackupRestore) {"<<endl
 				<< "		var dropZone = document.getElementById('cssBox');"<<endl
 				<< "		dropZone.addEventListener('dragover', handleDragOver, false);"<<endl
 				<< "		dropZone.addEventListener('drop', handleFileSelect, false);"<<endl
+				<< "		if (suppportsStateMemory) {"<<endl
+				<< "			document.getElementById('loseSettingsClose').className += ' hidden';"<<endl
+				<< "		} else {"<<endl
+				<< "			document.getElementById('loseSettingsCacheClear').className += ' hidden';"<<endl
+				<< "		}"<<endl
+				<< "	} else {"<<endl
+				<< "		document.getElementById('backupCSSNote').className += ' hidden';"<<endl
+				<< "	}"<<endl
+				<< "	//Display browser compatibility panel."<<endl
+				<< "	if (!hideBrowserBox) {  //Set feedback."<<endl
+				<< "		if (supportsPluginSubmit) {"<<endl
+				<< "			document.getElementById('pluginSubmitSupport').className = 't';"<<endl
+				<< "		} else {"<<endl
+				<< "			document.getElementById('pluginSubmitSupport').className = 'c';"<<endl
+				<< "		}"<<endl
+				<< "		if (supportsCSSBackupRestore) {"<<endl
+				<< "			document.getElementById('cssBackupSupport').className = 't';"<<endl
+				<< "		} else {"<<endl
+				<< "			document.getElementById('cssBackupSupport').className = 'c';"<<endl
+				<< "		}"<<endl
+				<< "		if (suppportsStateMemory) {"<<endl
+				<< "			document.getElementById('memorySupport').className = 't';"<<endl
+				<< "		} else {"<<endl
+				<< "			document.getElementById('browserBox').querySelector('label').className += ' hidden';"<<endl
+				<< "			document.getElementById('memorySupport').className = 'c';"<<endl
+				<< "		}"<<endl
+				<< "		if (isSupported('opacity')) {"<<endl
+				<< "			document.getElementById('opacitySupport').className = 't';"<<endl
+				<< "		} else {"<<endl
+				<< "			document.getElementById('opacitySupport').className = 'c';"<<endl
+				<< "		}"<<endl
+				<< "		if (isSupported('boxShadow')) {"<<endl
+				<< "			document.getElementById('shadowsSupport').className = 't';"<<endl
+				<< "		} else {"<<endl
+				<< "			document.getElementById('shadowsSupport').className = 'c';"<<endl
+				<< "		}"<<endl
+				<< "		if (isSupported('transition') || isSupported('MozTransition') || isSupported('webkitTransition') || isSupported('OTransition') || isSupported('msTransition')) {"<<endl
+				<< "			document.getElementById('transitionsSupport').className = 't';"<<endl
+				<< "		} else {"<<endl
+				<< "			document.getElementById('transitionsSupport').className = 'c';"<<endl
+				<< "		}"<<endl
+				<< "		if (isSupported('transform') || isSupported('MozTransform') || isSupported('webkitTransform') || isSupported('OTransform') || isSupported('msTransform')) {"<<endl
+				<< "			document.getElementById('transformsSupport').className = 't';"<<endl
+				<< "		} else {"<<endl
+				<< "			document.getElementById('transformsSupport').className = 'c';"<<endl
+				<< "		}"<<endl
+				<< "		var i = document.createElement('input');"<<endl
+				<< "		i.setAttribute('type', 'color');"<<endl
+				<< "		if (i.type !== 'text') {"<<endl
+				<< "			document.getElementById('colorSupport').className = 't';"<<endl
+				<< "			document.getElementById('colorPickerNote').className += ' hidden';"<<endl
+				<< "		} else {"<<endl
+				<< "			document.getElementById('colorSupport').className = 'c';"<<endl
+				<< "		}"<<endl
+				<< "		if ('placeholder' in document.createElement('input')) {"<<endl
+				<< "			document.getElementById('placeholderSupport').className = 't';"<<endl
+				<< "		} else {"<<endl
+				<< "			document.getElementById('placeholderSupport').className = 'c';"<<endl
+				<< "		}"<<endl
+				<< "		var i = document.createElement('input');"<<endl
+				<< "		i.setAttribute('type', 'url');"<<endl
+				<< "		if (i.type !== 'text') {"<<endl
+				<< "			document.getElementById('validationSupport').className = 't';"<<endl
+				<< "		} else {"<<endl
+				<< "			document.getElementById('validationSupport').className = 'c';"<<endl
+				<< "		}"<<endl
+				<< "		if(document.getElementById('mask')==null){"<<endl
+				<< "			var mask=document.createElement('div');"<<endl
+				<< "			mask.id='mask';"<<endl
+				<< "			document.body.appendChild(mask);"<<endl
+				<< "		}"<<endl
+				<< "		document.getElementById('browserBox').className += ' visible';"<<endl
 				<< "	}"<<endl
 				<< "}"<<endl
 				<< "function DomReady(fn){"<<endl
