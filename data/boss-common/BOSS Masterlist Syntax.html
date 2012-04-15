@@ -21,6 +21,8 @@
 
 	td.t {background:#90ff90;text-align:center;}
 	td.c {background:#ff9090;text-align:center;}
+	td.t:after {content: '\2713';}
+	td.c:after {content: '\2717';}
 </style>
 
 <h1>BOSS Masterlist Syntax Readme</h1>
@@ -89,10 +91,10 @@
 <table>
 	<thead><tr><td>BOSS Version	<td>MF1<td>MF2.0<td>MF2.1<td>MF2.2
 	<tbody>
-		<tr><td>1.6.x and below	<td class="t">&#x2713;<td class="c">&#x2717;<td class="c">&#x2717;<td class="c">&#x2717;
-		<tr><td>1.7.x			<td class="t">&#x2713;<td class="t">&#x2713;<td class="c">&#x2717;<td class="c">&#x2717;
-		<tr><td>1.8				<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="c">&#x2717;
-		<tr><td>1.9				<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
+		<tr><td>1.6.x and below	<td class="t"><td class="c"><td class="c"><td class="c">
+		<tr><td>1.7.x			<td class="t"><td class="t"><td class="c"><td class="c">
+		<tr><td>1.8				<td class="t"><td class="t"><td class="t"><td class="c">
+		<tr><td>1.9				<td class="t"><td class="t"><td class="t"><td class="t">
 </table>
 <p>If a version of BOSS does not recognise the syntax in which a line is written, it will assume that it is a plugin line, and so the line will effectively be ignored. This means that a masterlist may contain a mix of format syntaxes without issue.
 
@@ -103,29 +105,29 @@
 	<tbody>
 		<tr><td>Type Identifiers						<td>Symbols<td>Keywords<td>Keywords<td>Keywords
 		<tr><td>Type Identifier Case					<td><i>N/A</i><td>Upper<td>Upper<td>Insensitive
-		<tr><td>Basic Plugin Ordering					<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Plugin Grouping							<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>C++-Style Comments						<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>General Messages						<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Bash Tag Suggestions					<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Requirement Messages					<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Incompatibility Messages				<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Better Cities-Specific Messages			<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>OOO/FWE/FOOK-Specific Messages			<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>FCOM/FOOK2/nVamp Error Messages			<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Dirty Plugin Messages					<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Warning Messages						<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Error Messages							<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Global Messages							<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Whitespace Skipped <a href="#1">&#x00B9;</a><td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Masterlist Variables					<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>General Conditionals					<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Regular Expression Plugins						<td class="c">&#x2717;<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Conditional Incompatibilities Shorthand	<td class="c">&#x2717;<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Conditional Requirements Shorthand		<td class="c">&#x2717;<td class="c">&#x2717;<td class="t">&#x2713;<td class="t">&#x2713;
-		<tr><td>Conditional Message Shorthand				<td class="c">&#x2717;<td class="c">&#x2717;<td class="c">&#x2717;<td class="t">&#x2713;
-		<tr><td>C-Style Comments						<td class="c">&#x2717;<td class="c">&#x2717;<td class="c">&#x2717;<td class="t">&#x2713;
-  <tr><td>Regular Expression Conditions						<td class="c">&#x2717;<td class="c">&#x2717;<td class="c">&#x2717;<td class="t">&#x2713;
+		<tr><td>Basic Plugin Ordering					<td class="t"><td class="t"><td class="t"><td class="t">
+		<tr><td>Plugin Grouping							<td class="t"><td class="t"><td class="t"><td class="t">
+		<tr><td>C++-Style Comments						<td class="t"><td class="t"><td class="t"><td class="t">
+		<tr><td>General Messages						<td class="t"><td class="t"><td class="t"><td class="t">
+		<tr><td>Bash Tag Suggestions					<td class="t"><td class="t"><td class="t"><td class="t">
+		<tr><td>Requirement Messages					<td class="t"><td class="t"><td class="t"><td class="t">
+		<tr><td>Incompatibility Messages				<td class="t"><td class="t"><td class="t"><td class="t">
+		<tr><td>Better Cities-Specific Messages			<td class="t"><td class="t"><td class="t"><td class="t">
+		<tr><td>OOO/FWE/FOOK-Specific Messages			<td class="t"><td class="t"><td class="t"><td class="t">
+		<tr><td>FCOM/FOOK2/nVamp Error Messages			<td class="t"><td class="t"><td class="t"><td class="t">
+		<tr><td>Dirty Plugin Messages					<td class="c"><td class="t"><td class="t"><td class="t">
+		<tr><td>Warning Messages						<td class="c"><td class="t"><td class="t"><td class="t">
+		<tr><td>Error Messages							<td class="c"><td class="t"><td class="t"><td class="t">
+		<tr><td>Global Messages							<td class="c"><td class="t"><td class="t"><td class="t">
+		<tr><td>Whitespace Skipped <a href="#1">&#x00B9;</a><td class="c"><td class="t"><td class="t"><td class="t">
+		<tr><td>Masterlist Variables					<td class="c"><td class="t"><td class="t"><td class="t">
+		<tr><td>General Conditionals					<td class="c"><td class="t"><td class="t"><td class="t">
+		<tr><td>Regular Expression Plugins						<td class="c"><td class="c"><td class="t"><td class="t">
+		<tr><td>Conditional Incompatibilities Shorthand	<td class="c"><td class="c"><td class="t"><td class="t">
+		<tr><td>Conditional Requirements Shorthand		<td class="c"><td class="c"><td class="t"><td class="t">
+		<tr><td>Conditional Message Shorthand				<td class="c"><td class="c"><td class="c"><td class="t">
+		<tr><td>C-Style Comments						<td class="c"><td class="c"><td class="c"><td class="t">
+  <tr><td>Regular Expression Conditions						<td class="c"><td class="c"><td class="c"><td class="t">
 </table>
 <small>&#x00B9; In all formats, whitespace is always preserved inside plugin and group names and messages.</small>
 
