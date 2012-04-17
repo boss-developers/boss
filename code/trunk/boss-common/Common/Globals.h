@@ -42,7 +42,7 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-//#define BOSSGUI
+#define BOSSGUI
 
 	BOSS_COMMON const uint32_t BOSS_VERSION_MAJOR = 2;
 	BOSS_COMMON const uint32_t BOSS_VERSION_MINOR = 1;
@@ -129,6 +129,7 @@ namespace boss {
 	BOSS_COMMON extern uint32_t gl_proxy_port;
 	BOSS_COMMON extern uint32_t gl_log_format;				// what format the output should be in.  Uses the enums defined above.
 	BOSS_COMMON extern uint32_t gl_game;					// What game's mods are we sorting? Uses the enums defined above.
+	BOSS_COMMON extern uint32_t	gl_last_game;				// what game was last run? Only affects GUI behaviour.
 	BOSS_COMMON extern uint32_t gl_revert;					// what level to revert to
 	BOSS_COMMON extern uint32_t gl_debug_verbosity;			// log levels above INFO to output
 	BOSS_COMMON extern bool		gl_update;					// update the masterlist?
@@ -166,7 +167,7 @@ namespace boss {
 		vector<IniPair> iniSettings;
 		string iniFile;
 
-		string	GetIniGameString	() const;
+		string	GetIniGameString	(uint32_t game) const;
 		string	GetLogFormatString	() const;
 		string	GetLanguageString	() const;
 		void	ApplyIniSettings	();

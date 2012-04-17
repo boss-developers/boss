@@ -174,6 +174,7 @@ namespace boss {
 	BOSS_COMMON uint32_t	gl_proxy_port				= 0;
 	BOSS_COMMON uint32_t	gl_log_format				= HTML;
 	BOSS_COMMON uint32_t	gl_game						= AUTODETECT;
+	BOSS_COMMON uint32_t	gl_last_game				= AUTODETECT;
 	BOSS_COMMON uint32_t	gl_revert					= 0;
 	BOSS_COMMON uint32_t	gl_debug_verbosity			= 0;
 	BOSS_COMMON bool		gl_update					= true;
@@ -277,6 +278,36 @@ namespace boss {
 	}
 
 	void AutodetectGame(void * parent) {  //Throws exception if error.
+#ifdef BOSSGUI
+		if (gl_last_game != AUTODETECT) {
+			//BOSS GUI was run previously and recorded the game it was running for when it closed.
+			//Check that the specified game exists. If it does, use it and skip the 'select game' dialog. 
+			//Otherwise, continue to the 'select game' dialog.
+			if (fs::exists(data_path / GetGameMasterFile(gl_last_game))) {
+				gl_current_game = gl_last_game;
+				return;
+			} else if (gl_last_game == OBLIVION && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path"))) {  //Look for Oblivion.
+				gl_current_game = gl_last_game;
+				return;
+			} else if (gl_last_game == NEHRIM && RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation")) {  //Look for Nehrim.
+				gl_current_game = gl_last_game;
+				return;
+			} else if (gl_last_game == SKYRIM && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path"))) {  //Look for Skyrim.
+				gl_current_game = gl_last_game;
+				return;
+			} else if (gl_last_game == FALLOUT3 && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path"))) {  //Look for Fallout 3.
+				gl_current_game = gl_last_game;
+				return;
+			} else if (gl_last_game == FALLOUTNV && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path"))) {  //Look for Fallout New Vegas.
+				gl_current_game = gl_last_game;
+				return;
+			} else if (gl_last_game == MORROWIND && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path"))) {  //Look for Morrowind.
+				gl_current_game = gl_last_game;
+				return;
+			}
+		}
+
+#endif
 		LOG_INFO("Autodetecting game.");
 		if (fs::exists(data_path / "Nehrim.esm"))  //Before Oblivion because Nehrim installs can have Oblivion.esm for porting mods.
 			gl_current_game = NEHRIM;
@@ -292,19 +323,8 @@ namespace boss {
 			gl_current_game = MORROWIND;
 		else {
 			LOG_INFO("Game not detected locally. Checking Registry for paths.");
-			/* New behaviour:
-			1. Try to detect all games.
-			2. If CLI, list detected games. If GUI, list all games, denoting missing games.
-			3. If CLI and no games are detected, quit.
-			4. If CLI and one game detected, run for that.
-			5. Otherwise, use GUI logic.*/
 			size_t ans;
 #ifdef BOSSGUI
-			/* New behaviour:
-			1. If a game that is installed is selected, run for that game.
-			2. If a game that is not installed is selected, run for that game in update only mode.
-			3. If the dialog is cancelled, quit.
-			*/
 			wxArrayString choices;
 			string text;
 			text = GetGameString(OBLIVION);
@@ -525,7 +545,8 @@ namespace boss {
 			<<	"sProxyPassword           = " << gl_proxy_passwd << endl << endl
 
 			<<	"[BOSS.RunOptions]" << endl
-			<<	"sGame                    = " << GetIniGameString() << endl
+			<<	"sGame                    = " << GetIniGameString(gl_game) << endl
+			<<	"sLastGame                = " << GetIniGameString(gl_current_game) << endl  //Writing current game because that's what we want recorded when BOSS writes the ini.
 			<<	"sBOSSLogFormat           = " << GetLogFormatString() << endl
 			<<	"iDebugVerbosity          = " << IntToString(gl_debug_verbosity) << endl
 			<<	"iRevertLevel             = " << IntToString(gl_revert) << endl
@@ -539,20 +560,20 @@ namespace boss {
 		ini.close();
 	}
 
-	string	Settings::GetIniGameString	() const {
-		if (gl_game == AUTODETECT)
+	string	Settings::GetIniGameString	(uint32_t game) const {
+		if (game == AUTODETECT)
 			return "auto";
-		else if (gl_game == OBLIVION)
+		else if (game == OBLIVION)
 			return "Oblivion";
-		else if (gl_game == FALLOUT3)
+		else if (game == FALLOUT3)
 			return "Fallout3";
-		else if (gl_game == NEHRIM)
+		else if (game == NEHRIM)
 			return "Nehrim";
-		else if (gl_game == FALLOUTNV)
+		else if (game == FALLOUTNV)
 			return "FalloutNV";
-		else if (gl_game == SKYRIM)
+		else if (game == SKYRIM)
 			return "Skyrim";
-		else if (gl_game == MORROWIND)
+		else if (game == MORROWIND)
 			return "Morrowind";
 		else
 			return "";
@@ -621,6 +642,21 @@ namespace boss {
 						gl_game = SKYRIM;
 					else if (iter->value == "Morrowind")
 						gl_game = MORROWIND;
+				} else if (iter->key == "sLastGame") {
+					if (iter->value == "auto")
+						gl_last_game = AUTODETECT;
+					else if (iter->value == "Oblivion")
+						gl_last_game = OBLIVION;
+					else if (iter->value == "Nehrim")
+						gl_last_game = NEHRIM;
+					else if (iter->value == "Fallout3")
+						gl_last_game = FALLOUT3;
+					else if (iter->value == "FalloutNV")
+						gl_last_game = FALLOUTNV;
+					else if (iter->value == "Skyrim")
+						gl_last_game = SKYRIM;
+					else if (iter->value == "Morrowind")
+						gl_last_game = MORROWIND;
 				} else if (iter->key == "sLanguage") {
 					if (iter->value == "english")
 						gl_language = ENGLISH;
