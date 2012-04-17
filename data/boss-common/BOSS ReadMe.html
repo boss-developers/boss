@@ -20,7 +20,10 @@
 	a:hover {text-decoration:underline;}
 	
 	ul.errorMessages > li {margin-bottom:1.4em;}
-	.c {text-align:center;}
+	td.t {background:#90ff90;text-align:center;}
+	td.c {background:#ff9090;text-align:center;}
+	td.t:after {content: '\2713';}
+	td.c:after {content: '\2717';}
 	img {border:0;}
 	#slideholder { height: 340px;}
 	#slideholder img {opacity:0; position:absolute;
@@ -107,8 +110,8 @@
 	<li>If any of the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities are installed, make sure their <q>BOSS Disable Lock Load Order</q><span title="previously BOSS Disable Lock Times">*</span> setting is enabled.
 	<li>In the BOSS folder, run <q>BOSS.exe</q>. This will download the latest masterlist from the Internet and then sort your mods.
 </ol>
-<p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. The <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities will automatically import and apply Bash Tag suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions makes thoroughly and adjust tags by hand in <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> if necessary.
-<p>Unrecognised mods must be re-ordered by hand using <abbr title="Oblivion Mod Manager">OBMM</abbr>/<abbr title="Fallout Mod Manager">FOMM</abbr> or <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>.
+<p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. The <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities will automatically import and apply Bash Tag suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions made thoroughly and adjust tags by hand in <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> if necessary.
+<p>Unrecognised mods must be re-ordered by hand using a mod manager such as <abbr title="Nexus Mod Manager">NMM</abbr>/<abbr title="Oblivion Mod Manager">OBMM</abbr>/<abbr title="Fallout Mod Manager">FOMM</abbr> or <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>, or using BOSS's <a href="#userRules">user rules</a> functionality.
 
 <h2 id="remove">Uninstallation</h2>
 <p>If BOSS was installed using the installer, then use the uninstaller it provides a link to in the Start Menu to uninstall BOSS. If BOSS was installed manually, do the following:
@@ -129,7 +132,7 @@
 <p>The title bar of the main window displays which game BOSS is running for: this may also be checked by seeing which game is selected in the <q>Active Game</q> menu.
 <p>The menu bar holds four menus: <q>File</q>, <q>Edit</q>, <q>Active Game</q> and <q>Help</q>. The <q>File</q> menu just contains commands for opening the BOSS Log, running BOSS and quitting. The <q>Edit</q> menu contains a command for editing user rules, which works the same as the <q>Edit User Rules</q> button, and a command for opening the settings window. The <q>Help</q> menu contains links to BOSS's documentation and copyright licenses, and commands to view the <q>About</q> dialog and to check for updates to the BOSS program (see the <a href="#updates">Keeping BOSS Up-To-Date</a> section for details).
 <p>The <q>Active Game</q> menu allows you to change which game BOSS is running for without closing and re-opening the GUI. Games that BOSS does not detect as being installed are greyed out. The active game is marked with a dot next to it. To change the active game, simply select another game in the list. Setting the run type to <q>Update Masterlist Only</q> will un-grey all the games, allowing any of them to be selected, while changing from <q>Update Masterlist Only</q> to another run type will grey out undetected games again. If an undetected game is active when you change run type, BOSS will automatically switch to the first detected game in the list.
-<p>The output options on the left of the window tweak settings related to the BOSS Log. When the <q>Display File CRCs</q> option is enabled, the BOSS Log displays the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in the Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr>/<abbr title="Skyrim Script Extender">SKSE</abbr> and its installed plugins if present. The <q>BOSS Log Format</q> option decides both what format of BOSS Log is generated when BOSS is run and what format of BOSS Log the GUI opens when the <q>View BOSS Log</q> button or <q>File&#x2192;View BOSS Log</q> menu item is selected. <q>Display Plugin Versions</q> and <q>Show BOSS Log On Completion</q> do exactly as they say on the tin.
+<p>The output options on the left of the window tweak settings related to the BOSS Log. When the <q>Display File CRCs</q> option is enabled, the BOSS Log displays the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in the Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr>/<abbr title="Skyrim Script Extender">SKSE</abbr> and its installed plugins if present. The <q>BOSS Log Format</q> option decides both what format of BOSS Log is generated when BOSS is run and what format of BOSS Log the GUI opens when the <q>View BOSS Log</q> button or <q>File&#x2192;View BOSS Log</q> menu item is selected. <q>Show BOSS Log On Completion</q> does exactly what it says on the tin.
 <p>The run options on the right of the main window decide how BOSS runs. BOSS has three main modes of operation that are mutually exclusive to one another: it can either sort your plugins, only update your masterlist then quit or undo its changes to your load order. When <q>Update Masterlist</q> is enabled, BOSS will update your masterlist before sorting your plugins. When <q>Perform Trial Run</q> is enabled, BOSS simulates its changes to your load order without actually reordering your mods. The <q>Undo Level</q> option allows you to select how many runs of BOSS are to be undone.
 <p>The <q>Edit User Rules</q> button opens your userlist for editing. If the <q>Use User Rules Editor</q> setting in the Settings window is enabled, clicking the button will open the User Rules Editor window, otherwise it will open your userlist in your default text editor. The <q>Run BOSS</q> button runs BOSS's main sorting/updating/undoing functionality according to the options selected. The <q>View BOSS Log</q> button does exactly what it says on the tin, opening the BOSS Log in the format selected in the Output Options section.
 
@@ -139,12 +142,10 @@
 <img alt="settings window tab 1" src="images/BOSS%20GUI%20Settings%201.png"/>
 <img alt="settings window tab 2" src="images/BOSS%20GUI%20Settings%202.png"/>
 <img alt="settings window tab 3" src="images/BOSS%20GUI%20Settings%203.png"/>
-<img alt="settings window tab 4" src="images/BOSS%20GUI%20Settings%204.png"/>
-<img alt="settings window tab 5" src="images/BOSS%20GUI%20Settings%205.png"/>
 </div>
-<figcaption>The 5 tabs of the GUI's settings window, containing the various settings not displayed in the main window (animated slideshow).</figcaption>
+<figcaption>The 3 tabs of the GUI's settings window, containing the various settings not displayed in the main window (animated slideshow).</figcaption>
 </figure>
-<p>BOSS has a large number of settings, only a few of which can be displayed in the main window. As such, the less commonly used settings are found in the Settings window, which can be accessed by clicking <q>Edit&#x2192;Settings...</q> in the main window's menu bar. The settings are grouped into tabs depending on what area of BOSS's behaviour they control. The settings are detailed in the table below.
+<p>BOSS's less commonly used settings are found in the Settings window, which can be accessed by clicking <q>Edit&#x2192;Settings...</q> in the main window's menu bar. The settings are grouped into tabs depending on what area of BOSS's behaviour they control. The settings are detailed in the table below.
 <table>
 	<thead><tr><td>Tab<td>Setting<td>Description
 	<tbody>
@@ -224,46 +225,65 @@
 <p>Always make sure to use the latest version of BOSS and the latest masterlist.
 
 <h3 id="bosslog">The BOSS Log</h3>
-<p>The BOSS Log is where you will find all of BOSS's outputted information. It can be generated in either HTML format (the default) or as a plain text file with minimal formatting. The HTML format has significant advantages over the plain text format, being considerably easier to read, containing colour-coded messages and a variety of filters to customise what is displayed. However, other than the HTML BOSS Log providing a notification if there has been no change in the recognised mod list since last run, there is no difference in information provided between the two formats.
-<p>The HTML BOSS Log has been tested in Mozilla Firefox 10, Google Chrome 17, Opera 11 and Internet Explorer 9. Using earlier browsers may result in parts of the BOSS Log not working or displaying correctly.
-<p>The BOSS Log comprises of a number of sections, which are detailed in the table below.
+<p>The BOSS Log is where you will find all of BOSS's outputted information. It can be generated in either HTML format (the default) or as a plain text file with minimal formatting. The HTML format has significant advantages over the plain text format, being considerably easier to read, containing colour-coded messages and a variety of interactive features to customise what is displayed.
+
+<p>Both log formats contain the following sections:
 <table>
 	<thead><tr><td>BOSS Log Section<td>Description
 	<tbody>
-		<tr><td>General Messages<td>This section is only displayed if there are any applicable messages to be displayed. Its primary purpose is to allow BOSS to display messages specific to your Oblivion install that are not specific to any one mod. Parser and updater error messages are also displayed in this section.
 		<tr><td>Summary<td>This section gives a short summary of BOSS's actions. It breaks down the numbers of plugins installed and messages attached to them and gives the local masterlist version and whether or not it was updated. If the BOSS Log is in the HTML format it will also display a message if your recognised plugin list has not changed since you last ran BOSS.
-		<tr><td>Userlist Messages<td>This section is only displayed if BOSS finds any user rules in your userlist. It details the successes or failures of the application of your userlist rules.
-		<tr><td>Script Extender And Script Extender Plugins<td>This section is displayed if you have your game's Script Extender installed. It will list the Script Extender and any plugins for it that you have installed, displaying their versions (if given) and their CRCs (if run with <q>Display File CRCs</q> enabled).
-		<tr><td>Recognised And Re-ordered Plugins<td>This section comprises the bulk of BOSS's output, listing all your recognised installed plugins and any messages BOSS has attached to them, as well as version information (if given) and the plugin CRCs (if run with <q>Display File CRCs</q> enabled). 
-		<tr><td>Restored Load Order<td>This section is only displayed when BOSS is run to undo its changes, and lists your restored load order.
+		<tr><td>General Messages<td>This section is only displayed if there are any applicable messages to be displayed. Its primary purpose is to allow BOSS to display messages specific to your Oblivion install that are not specific to any one mod. Parser and updater error messages are also displayed in this section.
+		<tr><td>User Rules<td>This section is only displayed if BOSS finds any user rules in your userlist. It details the successes or failures of the application of your userlist rules.
+		<tr><td>Script Extender Plugins<td>This section is displayed if you have your game's Script Extender installed. It will list the Script Extender and any plugins for it that you have installed, displaying their versions (if given) and their CRCs (if run with <q>Display File CRCs</q> enabled).
+		<tr><td>Recognised Plugins<br /><i>or</i><br />Restored Load Order<td>This section comprises the bulk of BOSS's output, listing all your recognised installed plugins and any messages BOSS has attached to them, as well as version information (if given) and the plugin CRCs (if run with <q>Display File CRCs</q> enabled). If you are running BOSS to undo its changes, this section is titled <q>Restored Load Order</q>, and lists the restored load order.
 		<tr><td>Unrecognised Plugins<td>This section is only displayed if you have plugins installed that are unrecognised by BOSS, and lists them. These plugins should be reported in an official BOSS thread with download links to their mods so they can be added to the relevant masterlist.
 </table>
+
 <p>BOSS will display the version numbers of any plugins that provide them in their description fields. If a plugin supplies no version number, it cannot be displayed. The version numbers may not reflect the actual version of the mod installed - this could either be due to the mod author forgetting to update the description, or due to a mistake in BOSS's detection. As version numbers are supplied by mod authors in a wide range of formats and BOSS has to detect as many as possible, it occasionally identifies parts of some descriptions as version numbers incorrectly. This is largely unavoidable, but any discrepancies should be reported to the BOSS team in case they can be fixed. When in doubt, check the version number given in a mod's readme. 
 <p>It should be noted that the vast majority of BOSS's mod messages are non-conditional, in that they are not displayed in response to your specific install. For example, a message that gives some of the mod's incompatibilities does not know if you have them installed or not, and a message telling you to do something will not know if it has been done.
 <p>BOSS's mod messages are one of the most important features BOSS provides, acting as a means of providing users with information that they might otherwise not obtain. It is important for a stable, healthy game that you act on any messages that require action. If you think a message suggests an action that is not necessary, report it to an official BOSS thread.
-<p>The HTML BOSS Log includes a few features and a number of filters to customise what is displayed. The filters can be accessed by clicking on the Filters menu in the upper right-hand corner of the BOSS Log, and are enabled and disabled via their checkboxes:
-<table>
-	<thead><tr><td>BOSS Log Filter<td>Description
-	<tbody>
-		<tr><td>Use Dark Colour Scheme<td>Changes the BOSS Log's colour scheme to a darker variety, more suitable for reading in low light levels and putting less strain on the eyes. Users with vision impairments may find the darker colour scheme easier to read.
-		<tr><td>Hide Rule Warnings<td>Hides any warning messages printed in the <q>Userlist Messages</q> section of the BOSS Log.
-		<tr><td>Hide Version Numbers<td>Hides the version numbers printed in blue next to those mods that provide them.
-		<tr><td>Hide 'Ghosted' Label<td>Hides the 'Ghosted' label printed in grey next to any mods ghosted by Wrye Bash.
-		<tr><td>Hide 'Active' Label<td>Hides the 'Active' label printed in green next to any active mods.
-		<tr><td>Hide Checksums<td>Hides the checksums of mods and Script Extender plugins printed in brown next to their names.
-		<tr><td>Hide Inactive Mods<td>Hides any mods that are not active.
-		<tr><td>Hide Messageless Mods<td>Hides any recognised mods that do not have messages attached to them.
-		<tr><td>Hide Ghosted Mods<td>Hides any mods that have been ghosted by Wrye Bash.
-		<tr><td>Hide Clean Mods<td>Hides any mods in your load order that don't have messages beginning <q>Contains dirty edits: </q> attached. Note that this doesn't mean the mods hidden are definitely clean, only that BOSS doesn't know they're dirty.
-		<tr><td>Hide All Mod Nessages<td>Hides all messages attached to mods.
-		<tr><td>Hide Notes<td>Hides any messages attached to mods that have the <q>Note: </q> prefix.
-		<tr><td>Hide Bash Tag Suggestions<td>Hides any Bash Tag suggestions attached to mods.
-		<tr><td>Hide Requirements<td>Hides any messages attached to mods that have the <q>Requires: </q> prefix.
-		<tr><td>Hide Incompatibilities<td>Hides any messages attached to mods that have the <q>Incompatible with: </q> prefix.
-		<tr><td>Hide 'Do Not Clean' Messages<td>Hides any messages attached to mods that begin with <q>Contains dirty edits: Do not clean.</q>.
-</table>
-<p>The number of plugins and messages hidden at any one time are displayed below the filters in italics. In addition to the above filters, clicking on a section's title will collapse that section, hiding its contents. Clicking the title again will expand the section, making its contents visible again.
-<p>It is not possible to hide mod warning or error messages, as these are of a severity where they should almost certainly be acted upon, and not ignored. Be aware that if you hide all a mod's messages and then hide all messageless mods, that mod will be amongst those hidden.
+
+<h4>The HTML BOSS Log</h4>
+
+<p>While the plain text BOSS Log simply lists the sections detailed above and their contents, the HTML BOSS Log functions more like an extension of the BOSS program, and uses a much richer interface. It requires a minimum of Internet Explorer 8, Firefox 3.5, Chrome 4, Safari 4, Opera 10.5 or any equivalent browser to function and display correctly, though some of the features have additional requirements with varying levels of browser support. When the BOSS Log is opened, it will display a <q>Browser Compatibility</q> panel detailing which of these features the browser being used supports, and which it does not, with unsupported features being automatically disabled.
+<p>The HTML BOSS Log's additional features are:
+<ul>
+	<li><b>Filters</b>
+		<p>The BOSS Log's filters can be used to selectively hide different types of information in the BOSS Log from view, making it easier to see what you're looking for. The filters are found in a floating panel at the bottom of the window that can have its visibility toggled by clicking on the <q>Filters</q> button in the sidebar. Filters are turned on and off via their checkboxes, and the numbers of hidden plugins and messages are given below the filter checkboxes. If a filter doesn't apply to the currently-displayed BOSS Log section, its checkbox is disabled. The filters available are:
+		<table>
+			<thead><tr><td>BOSS Log Filter<td>Description
+			<tbody>
+				<tr><td>Hide Version Numbers<td>Hides the version numbers printed in blue next to those plugins that provide them.
+				<tr><td>Hide 'Active' Label<td>Hides the 'Active' label printed in green next to any active plugins.
+				<tr><td>Hide Checksums<td>Hides the checksums of plugins and Script Extender plugins printed in brown next to their names.
+				<tr><td>Hide Notes<td>Hides any messages attached to plugins that have the <q>Note: </q> prefix.
+				<tr><td>Hide Bash Tag Suggestions<td>Hides any Bash Tag suggestions attached to plugins.
+				<tr><td>Hide Requirements<td>Hides any messages attached to plugins that have the <q>Requires: </q> prefix.
+				<tr><td>Hide Incompatibilities<td>Hides any messages attached to plugins that have the <q>Incompatible with: </q> prefix.
+				<tr><td>Hide 'Do Not Clean' Messages<td>Hides any messages attached to plugins that begin with <q>Contains dirty edits: Do not clean.</q>.
+				<tr><td>Hide All Mod Nessages<td>Hides all messages attached to plugins.
+				<tr><td>Hide Inactive Plugins<td>Hides any plugins that are not active.
+				<tr><td>Hide Messageless Plugins<td>Hides any recognised plugins that do not have messages attached to them.
+				<tr><td>Hide Clean Plugins<td>Hides any plugins in your load order that don't have messages beginning <q>Contains dirty edits: </q> attached. Note that this doesn't mean the plugins hidden are definitely clean, only that BOSS doesn't know they're dirty.
+		</table>
+	<li><b>In-Log Unrecognised Plugin Submission</b>
+		<p>The submission of unrecognised plugins by users is vital to the upkeep of BOSS. The HTML BOSS Log allows you to submit such plugins without having to register for an account on the official Bethesda Softworks forums and post in one of BOSS's official threads, instead anonymously sending the plugin filename together with a link to the plugin's download location and/or a description of the plugin to the BOSS Development Team's unrecognised plugin tracker, so that it can then be added to the masterlist. 
+		<p>The Submit Plugin interface is displayed by clicking on a plugin in the <q>Unrecognised Plugins</q> section of the BOSS Log, but only if your browser supports the feature. If unrecognised plugins are not displayed with a dotted underline which becomes a solid underline when you hover over them with your mouse, then your browser does not support this feature.
+	<li><b>CSS Settings</b>
+		<p>The CSS Settings panel is displayed by clicking on the <q>CSS Settings</q> button in the sidebar. In it, you can choose to use the BOSS Log's dark colour scheme, which is more suitable for reading in low light levels and reduces eye strain, by checking the <q>Use Dark Colour Scheme</q> checkbox at the bottom of the panel.
+		<p>You can customise the colours that are used by the dark colour scheme for each of the elements listed. If your browser supports the colour picker input type, then the elements in the <q>Colours</q> columns are displayed as colour pickers that allow you to visually select a colour. If your browser does not support the colour picker input type, the elements in the <q>Colours</q> columns will be displayed as text boxes. If your browser supports placeholders, then the defaults for each element will be displayed as placeholders. Colours must be specified using their lowercase hexadecimal codes. If your browser supports form validation, your custom colours will not be applied unless they have been specified properly.
+		<p>You can also back up and restore your custom colours in this panel, provided your browser supports the feaure. The colours currently given in the inputs can be backed up by clicking on the underlined <u>back up</u> text button in the paragraph following the inputs. Clicking this button will cause the BOSS Log to generate a file that contains your settings and make it available for your browser to download, at which point your browser's default behaviour for downloading files takes over. Note that your browser will most likely give the settings file a nonsensical name, but you can rename the file to whatever you want, including changing its extension, without breaking anything. You can then restore colour settings from a settings file by dragging and dropping the file into the CSS Settings panel: the panel will change colour when you hover over it to tell you that you can drop the file in it. When the file is dropped into the CSS Settings panel, its settings will be applied.
+		<p>Note that to apply any changes you make in the CSS Settings panel, you must click the <q>Apply</q> button. If you leave the CSS Settings panel without clicking the <q>Apply</q> button, then your changes will be discarded.
+	<li><b>Settings Memory</b>
+		<p>The Settings Memory feature allows the BOSS Log to remember the following settings when you close it, and re-apply them when you next open it:
+		<ul>
+			<li>Which filters you have applied.
+			<li>Whether or not you are using the dark colour scheme.
+			<li>What your custom dark colour scheme colours are.
+			<li>Whether or not you want to stop the Browser Compatibility panel from being displayed.
+		</ul>
+		<p>The settings stored are unique to each BOSS Log, so if you run BOSS for two different games, each BOSS Log's settings will be stored separately. Also, the settings are stored in your browser's cache, so if you clear your browsing data, the settings will be lost, hence why there is a custom colours backup/restore feature available.
+</ul>
 
 <h3 id="dirtymods">Dirty Edits, Mod Cleaning &amp; CRCs</h3>
 <p>Dirty edits are often a side-effect of mod creation, and are often due to bugs in the utilities Bethesda has provided to create mods, rather than bad practice by mod authors. Dirty edits can cause a wide range of issues, including incorrect game settings, missing content, broken quests and crashing to desktop. The more dirty edits there are, and the more mods with dirty edits you use, the more likely you are to experience issues.
@@ -294,6 +314,7 @@ There are three key pieces of information that are used to accurately describe a
 <a href="http://forums.bethsoft.com/?showtopic=1256118">Skyrim</a>,
 <a href="http://forums.bethsoft.com/?showtopic=1175276">Fallout 3</a> and 
 <a href="http://forums.bethsoft.com/?showtopic=1313081">Fallout: New Vegas</a>.
+<p>You can also submit unrecognised plugins directly from your BOSS Log, providing your browser supports the feature, by clicking on any unrecognised plugin listed and filling in the submission form that is displayed. The submission is sent anonymously to BOSS's tracker so that the team then know to add it. This avoids the need for users to register for a new forum account, and is generally a more efficient submission method.
 <p>User contribution of additions and corrections to the masterlist are vital to the upkeep of BOSS. Let us know what you know.
 <p>Lists of unrecognised plugins are welcome but the only way we can include them in the database in a timely way is if we get:
 <ul>
@@ -324,6 +345,7 @@ There are three key pieces of information that are used to accurately describe a
 	<tbody>
 		<tr><td>bDoStartupUpdateCheck<td><code>true</code><td><code>true</code>, <code>false</code><td>Controls whether or not BOSS's Automatic Updater checks for new releases when BOSS is run.
 		<tr><td>bUseUserRulesEditor<td><code>true</code><td><code>true</code>, <code>false</code><td>Controls whether the GUI uses the User Rules Editor window to edit user rules or whether it opens the userlist.txt for manual editing.
+		<tr><td>sLanguage<td><code>english</code><td><code>english</code>, <code>german</code>, <code>russian</code>, <code>spanish</code><td>Controls the language BOSS uses in its interfaces. Note that plugin messages are always displayed in English.
 </table>
 <h4>BOSS.InternetSettings</h4>
 <p>These settings control how the masterlist updater and GUI auto-updater connect to the Internet. They are shared by BOSS.exe and BOSS GUI.exe, and can be overriden for the masterlist updater using BOSS's command line parameters. They may also be edited through the GUI. You will probably know if you need to alter them.
@@ -347,7 +369,6 @@ There are three key pieces of information that are used to accurately describe a
 		<tr><td>bUpdateMasterlist<td><code>true</code><td><code>false</code>, <code>true</code><td>Run the masterlist updater.
 		<tr><td>bOnlyUpdateMasterlist<td><code>false</code><td><code>false</code>, <code>true</code><td>Exit BOSS immediately after running the masterlist updater.
 		<tr><td>bSilentRun<td><code>false</code><td><code>false</code>, <code>true</code><td>Do not open the BOSS Log automatically after BOSS is finished.
-		<tr><td>bNoVersionParse<td><code>false</code><td><code>false</code>, <code>true</code><td>Do not parse plugin header description fields for their version numbers.
 		<tr><td>bDebugWithSourceRefs<td><code>false</code><td><code>false</code>, <code>true</code><td>Add source code references to debug output.
 		<tr><td>bDisplayCRCs<td><code>false</code><td><code>false</code>, <code>true</code><td>Calculate and display the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr>/<abbr title="Skyrim Script Extender">SKSE</abbr> and its installed plugins.
 		<tr><td>bDoTrialRun<td><code>false</code><td><code>false</code>, <code>true</code><td>Run BOSS and simulate its changes to your load order without actually reordering your plugins.
@@ -356,7 +377,7 @@ There are three key pieces of information that are used to accurately describe a
 
 <h3 id="cli">Command Line Arguments</h3>
 <p>While the BOSS GUI allows you to specify options using its graphical elements, the CLI uses a combination of the BOSS.ini file and command line arguments to do the same. The syntax for these arguments is:
-<code class="box">boss [-hVuosndctUl] [-g [game]] [-r [level]] [-v [level]] [-f [type]] [-H [hostname]] [-P [port]]</code>
+<code class="box">boss [-hVuosdctUl] [-g [game]] [-r [level]] [-v [level]] [-f [type]] [-H [hostname]] [-P [port]]</code>
 <code class="box">-h [ --help ]</code>
 <p>This prints a short description of BOSS and some information on the function of the command line arguments, then exits.
 <code class="box">-V [ --version ]</code>
@@ -373,9 +394,6 @@ There are three key pieces of information that are used to accurately describe a
 <p>Stops BOSS from automatically opening up the BOSS Log in your web browser (or text editor, depending on format chosen) after it has finished running.
 <code class="box">-c [ --crc-display ]</code>
 <p>Calculates the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder, including <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr>/<abbr title="Skyrim Script Extender">SKSE</abbr> plugins, and displays them in your BOSS Log alongside the plugin names.
-<code class="box">-n [ --no-version-parse ]</code>
-<p>Disables the parsing of each plugin's description to extract the author's version information, so it is not printed alongside the other data in the BOSS Log. This can be used if the version 
-parsing is not working properly for some of your plugins and you wish to remove the version notes.
 <code class="box">-f [ --format ] [ type ]</code>
 <p>Allows the selection of the BOSS Log format. Valid argument values are: <code>html</code> and <code>text</code>. <code>html</code> is the default output format. The <code>text</code> value will print the BOSS Log as plain text into a 'BOSSlog.txt' file, similar to the BOSS Log in BOSS v1.5 and below.
 <code class="box">-t [ --trial-run ]</code>
@@ -488,6 +506,16 @@ a problem for which no error message is given, please report the crash or proble
 	<ul>
 		<li><b>Issue:</b> The Registry entry for your Skyrim install is missing. This can occur if Steam's <q>Verify Integrity Of Game Cache</q> function is used.
 		<li><b>Solution:</b> Running Skyrim's launcher will add the Registry entry back in, allowing BOSS to detect Skyrim correctly.
+	</ul>
+	<li><b>Symptom:</b> The BOSS Log keeps displaying a <q>Browser Compatibility</q> panel when it opens.
+	<ul>
+		<li><b>Issue:</b> Not an issue. This is done so that you know what features you can and cannot access with the browser you are using to view the BOSS Log.
+		<li><b>Solution:</b> You can choose to prevent the panel from displaying if your browser supports the Web Storage API. If you don't see a checkbox labelled <q>Do not display this panel again for this browser.</q>, you need to upgrade your browser.
+	</ul>
+	<li><b>Symptom:</b> The BOSS Log says my browser supports the <q>Settings Memory</q> functionality, but all my settings have been lost!
+	<ul>
+		<li><b>Issue:</b> Settings are stored in your browser's application cache, which is emptied when your browsing data is cleared.
+		<li><b>Solution:</b> No solution, as BOSS has no control over how the settings are stored, but you can back up and restore your CSS settings quickly and easily if your browser supports the feature, or simply take a note of your custom colours, and setting your filters and collapsed sections up again takes seconds.
 	</ul>
 </ul>
 
@@ -744,7 +772,7 @@ a problem for which no error message is given, please report the crash or proble
 		<li>Zanderat
 	</ul>
 </ul>
-<p>The BOSS programs are written in C/C++ and make use of the <a href="http://www.boost.org/">Boost</a>, <a href="http://curl.haxx.se/libcurl/">libcurl</a>, <a href="http://www.wxwidgets.org/">wxWidgets</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries. Without them, the majority of BOSS's features would probably never have been implemented. BOSS uses various web technologies in its HTML BOSS Log, including <a href="http://www.w3.org/TR/html5/">HTML5</a>, <a href="http://www.w3.org/TR/XMLHttpRequest/">XMLHttpRequest 2</a>, <a href="http://www.w3.org/TR/cors/">Cross-Origin Resource Sharing</a> and <a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">ECMAScript 5</a>. Without the work of the <a href="www.w3.org/">World Wide Web Consortium</a> and <a href="http://www.ecma-international.org/">ECMA International</a>, none of these technologies would exist.
+<p>The BOSS programs are written in C/C++ and make use of the <a href="http://www.boost.org/">Boost</a>, <a href="http://curl.haxx.se/libcurl/">libcurl</a>, <a href="http://www.wxwidgets.org/">wxWidgets</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries. Without them, the majority of BOSS's features would probably never have been implemented. BOSS uses various web technologies in its HTML BOSS Log, including <a href="http://www.w3.org/TR/html5/">HTML5</a>, <a href="http://www.w3.org/TR/XMLHttpRequest/">XMLHttpRequest 2</a>, <a href="http://www.w3.org/TR/cors/">Cross-Origin Resource Sharing</a>, the <a href="http://www.w3.org/TR/XMLHttpRequest/">File API</a>, the <a href="http://www.w3.org/TR/FileAPI/">Web Storage API</a>, <a href="http://tools.ietf.org/html/rfc2397">Data URIs</a> and <a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">ECMAScript 5</a>. Without the work of the <a href="www.w3.org/">World Wide Web Consortium</a> and <a href="http://www.ecma-international.org/">ECMA International</a>, none of these technologies would exist.
 
 <h2 id="team">Project Members</h2>
 <p>Since June 2009, BOSS has been a collaborative project on Google Code using the Subversion version control system. In alphabetical order, the project members are:
@@ -752,25 +780,26 @@ a problem for which no error message is given, please report the crash or proble
 	<thead class="c"><tr><td colspan="2" rowspan="2">Member<td rowspan="2">Admin<td rowspan="2">Programmer<td colspan="5">Masterlists Member Contributes To
 		<tr><td>Oblivion<td>Nehrim<td>Fallout 3<td>Fallout: New Vegas<td>Skyrim
 	<tbody>
-		<tr class="inactive"><td style="border-right:0;">AliTheLord		<td style="border-left:0;">									<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;
-		<tr><td style="border-right:0;">Arthmoor		<td style="border-left:0;">									<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;
-		<tr class="inactive"><td style="border-right:0;">Gabba		<td style="border-left:0;">	<i>(Bethesda Softworks only)</i>								<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
-		<tr class="inactive"><td style="border-right:0;">Leandro Conde	<td style="border-left:0;"><i>(Bethesda Softworks only)</i>	<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
-		<tr class="inactive"><td style="border-right:0;">Loucifer		<td style="border-left:0;"><i>(Linmor on Nexus)</i>			<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;
-		<tr class="inactive"><td style="border-right:0;">Malonn			<td style="border-left:0;">									<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;
-		<tr class="inactive"><td style="border-right:0;">PacificMorrowind<td style="border-left:0;">									<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
-		<tr><td style="border-right:0;">Psymon			<td style="border-left:0;"><i>(Bethesda Softworks only)</i>	<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
-		<tr class="inactive"><td style="border-right:0;">Random007		<td style="border-left:0;">									<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
-		<tr class="inactive"><td style="border-right:0;">RiddlingLynx	<td style="border-left:0;"><i>(Nexus only)</i>				<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
-		<tr class="inactive"><td style="border-right:0;">Skyline			<td style="border-left:0;"><i>(skyline99 on Nexus)</i>		<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;
-		<tr><td style="border-right:0;">Space Oden69	<td style="border-left:0;"><i>(SpaceOden on Nexus)</i>		<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
-		<tr class="inactive"><td style="border-right:0;">Televator		<td style="border-left:0;">									<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
-		<tr><td style="border-right:0;">Tokc.D.K.		<td style="border-left:0;"><i>(Bethesda Softworks only)</i>	<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;
-		<tr><td style="border-right:0;">Torrello		<td style="border-left:0;">									<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;
-		<tr class="inactive"><td style="border-right:0;">Vacuity			<td style="border-left:0;">									<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
-		<tr><td style="border-right:0;">Valda			<td style="border-left:0;">									<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;
-		<tr><td style="border-right:0;">WrinklyNinja	<td style="border-left:0;">									<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;
-		<tr class="inactive"><td style="border-right:0;">ZiggyX200		<td style="border-left:0;">									<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#ff9090">&#x2717;<td class="c" style="background:#90ff90">&#x2713;
+		<tr class="inactive"><td style="border-right:0;">AliTheLord		<td style="border-left:0;">									<td class="c"><td class="t"><td class="t"><td class="c"><td class="t"><td class="c"><td class="t">
+		<tr><td style="border-right:0;">Arthmoor		<td style="border-left:0;">									<td class="t"><td class="c"><td class="t"><td class="c"><td class="c"><td class="c"><td class="t">
+		<tr class="inactive"><td style="border-right:0;">Gabba		<td style="border-left:0;">	<i>(Bethesda Softworks only)</i>								<td class="c"><td class="c"><td class="t"><td class="c"><td class="c"><td class="c"><td class="c">
+		<tr class="inactive"><td style="border-right:0;">Leandro Conde	<td style="border-left:0;"><i>(Bethesda Softworks only)</i>	<td class="c"><td class="t"><td class="c"><td class="c"><td class="c"><td class="c"><td class="c">
+		<tr class="inactive"><td style="border-right:0;">Loucifer		<td style="border-left:0;"><i>(Linmor on Nexus)</i>			<td class="c"><td class="c"><td class="c"><td class="c"><td class="c"><td class="t"><td class="c">
+		<tr class="inactive"><td style="border-right:0;">Malonn			<td style="border-left:0;">									<td class="c"><td class="c"><td class="c"><td class="c"><td class="c"><td class="t"><td class="c">
+		<tr class="inactive"><td style="border-right:0;">PacificMorrowind<td style="border-left:0;">									<td class="t"><td class="t"><td class="t"><td class="c"><td class="t"><td class="c"><td class="c">
+		<tr><td style="border-right:0;">Psymon			<td style="border-left:0;"><i>(Bethesda Softworks only)</i>	<td class="c"><td class="c"><td class="c"><td class="t"><td class="c"><td class="c"><td class="c">
+		<tr class="inactive"><td style="border-right:0;">Random007		<td style="border-left:0;">									<td class="t"><td class="t"><td class="t"><td class="c"><td class="c"><td class="c"><td class="c">
+		<tr class="inactive"><td style="border-right:0;">RiddlingLynx	<td style="border-left:0;"><i>(Nexus only)</i>				<td class="c"><td class="c"><td class="t"><td class="c"><td class="c"><td class="c"><td class="c">
+		<tr><td style="border-right:0;">Sharlikran	<td style="border-left:0;">	<td class="c"><td class="c"><td class="c"><td class="c"><td class="c"><td class="c"><td class="t">
+		<tr class="inactive"><td style="border-right:0;">Skyline			<td style="border-left:0;"><i>(skyline99 on Nexus)</i>		<td class="c"><td class="c"><td class="c"><td class="c"><td class="c"><td class="t"><td class="c">
+		<tr><td style="border-right:0;">Space Oden69	<td style="border-left:0;"><i>(SpaceOden on Nexus)</i>		<td class="c"><td class="c"><td class="c"><td class="c"><td class="t"><td class="c"><td class="c">
+		<tr class="inactive"><td style="border-right:0;">Televator		<td style="border-left:0;">									<td class="c"><td class="c"><td class="c"><td class="c"><td class="t"><td class="c"><td class="c">
+		<tr><td style="border-right:0;">Tokc.D.K.		<td style="border-left:0;"><i>(Bethesda Softworks only)</i>	<td class="c"><td class="c"><td class="t"><td class="c"><td class="c"><td class="c"><td class="t">
+		<tr><td style="border-right:0;">Torrello		<td style="border-left:0;">									<td class="c"><td class="c"><td class="c"><td class="c"><td class="t"><td class="c"><td class="t">
+		<tr class="inactive"><td style="border-right:0;">Vacuity			<td style="border-left:0;">									<td class="c"><td class="c"><td class="t"><td class="c"><td class="c"><td class="c"><td class="c">
+		<tr><td style="border-right:0;">Valda			<td style="border-left:0;">									<td class="c"><td class="c"><td class="c"><td class="c"><td class="t"><td class="t"><td class="c">
+		<tr><td style="border-right:0;">WrinklyNinja	<td style="border-left:0;">									<td class="t"><td class="t"><td class="t"><td class="c"><td class="c"><td class="c"><td class="c">
+		<tr class="inactive"><td style="border-right:0;">ZiggyX200		<td style="border-left:0;">									<td class="c"><td class="c"><td class="t"><td class="c"><td class="c"><td class="c"><td class="t">
 </table>
 <p>Members with faded rows are currently inactive, with no contributions in the last 3 months. Unless otherwise noted, project members can be contacted on the <a href="http://forums.bethsoft.com/index.php">Bethesda Softworks Forums</a> or on <a href="http://www.thenexusforums.com/">The Nexus Forums</a> via the private messaging system.
 
@@ -818,21 +847,34 @@ threads when you read this. Just navigate through to the latest thread to post a
 <p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.
 <p><b>Version 2.1</b> - <i>2012</i>
 <ul>
-	<li>Removed: BOSS.ini settings for BOSS Log filters and CSS.
-	<li>Removed: GUI settings for BOSS Log filters and CSS.
+	<li>Removed: Settings for BOSS Log filters and CSS from BOSS.ini and the GUI.
+	<li>Removed: <code>bNoVersionParse</code> BOSS.ini setting, and corresponding <code>-n [ --no-version-parse ]</code> CLI parameter and <q>Display Plugin Versions</q> GUI setting.
 	<li>Fixed: Installer's "old BOSS version detected" dialog ignoring the language previously selected.
 	<li>Fixed: GUI crash when deleting the last rule in a userlist.
-	<li>Changed: Installer/uninstaller now uses solid LZMA compression for a smaller file size.
-	<li>Changed: Redesigned BOSS Log:
+	<li>Changed: Major BOSS Log redesign/rewrite:
 	<ul>
-		<li>The size of the BOSS Log's heading has been reduced, putting the title, version information and copyright information on one line.
+		<li>The BOSS Log now supports a minimum browser version of Internet Explorer 8, Firefox 3.5, Chrome 4, Safari 4, Opera 10.5 or their equivalents in other browsers.
+		<li>The BOSS Log now primarily consists of a fixed-position left-hand sidebar and a scrollable right-hand main display panel.
+		<li>The sidebar contains the log title, version and copyright information, followed by buttons for the sections present in the BOSS Log. At the foot of the sidebar are buttons for a new <q>CSS Settings</q> section and and anew floating Filters panel, which now contains the BOSS Log's filters.
+		<li>Clicking on a section's button will display it in the main display panel. Clicking on the Filters button will toggle the display of the Filters panel along the bottom of the window. The currently-displayed section has its button highlighted in the sidebar.
+		<li>The <q>Use Dark Colour Scheme</q> filter has been moved to the new CSS Settings section.
+		<li>The <q>Ghosted</q> label and the <q>Hide 'Ghosted' Label</q> and <q>Hide Ghosted Mods</q> filters have been removed.
+		<li>The <q>Hide Rule Warnings</q> filter has been removed.
+		<li>The <q>Userlist Messages</q> section has been renamed <q>User Rules</q>.
 		<li>The <q>Execution Complete</q> footer has been removed.
-		<li>The filters have been moved to a new Filters menu, accessible through the button in the upper right-hand corner of the BOSS log.
-		<li>A new CSS Settings page has been added, accessible through the button in the upper right-hand corner of the BOSS log.
-		<li>The BOSS Log now remembers your filter settings and which sections you have collapsed, and restores them to their last configuration when you open the BOSS Log. Note that this requires a browser that supports Web Storage technology, eg. Internet Explorer 8+, Firefox 3.6+, Chrome 17+, Safari 5+ or Opera 11.6+.
+		<li>The Dark Colour Scheme has been changed to slightly reduce contrast between text and background, making it easier to read.
+		<li>Some CSS3 effects have been added to the BOSS Log for browsers that support them.
+		<li>Filters are selectively enabled and disabled based on what section is currently visible, so you cannot apply a filter to a page where it has no effect, to avoid confusion.
+		<li>Added a Submit Plugin panel. This panel allows you to anonymously submit unrecognised plugins to a Bugzilla bug tracker hosted by Dark Creations that the BOSS team uses to help keep track of unrecognised plugins. It requires browser support for Cross-Origin Resource Sharing, ECMAScript 5 and XMLHttpRequest 2. The panel is displayed when you click on an unrecognised plugin's filename.
+		<li>Added a CSS Settings panel. This panel allows you to customise the colours used by the dark colour scheme, and also allows you to backup and restore custom settings if your browser supports the File API, HTML5 Drag and Drop and ECMAScript 5. It replaces the CSS customisation features found in previous versions of BOSS, removing the ability to customise layout but giving more control over the colours of the BOSS Log.
+		<li>Added settings memory, which requires browser support for the Web Storage API, and restores the last configuration of filters and colours used when the BOSS Log is opened.
+		<li>Added a Browser Compatibility panel. This panel is displayed in the main display panel when the BOSS Log is opened and gives an indication of your browser's level of support for the new features added in this release. If the Web Storage API is supported by your browser, it can then be prevented from being displayed for that browser in the future.
+		<li>Rewrote most of the BOSS Log's Javascript, especially with regards to how it alters styling, to make it tidier and give better cross-browser support. It also now runs in ECMAScript 5's Strict Mode on compatible browsers.
 	</ul>
+	<li>Changed: BOSS now uses the exact filenames of installed plugins instead of their filenames in the masterlist, preventing any case-sensitivity issues (eg. Skyrim's launcher).
+	<li>Changed: Installer/uninstaller now uses solid LZMA compression for a smaller file size.
 	<li>Added: German language option to installer/uninstaller. Translation by Scharesoft.
-	<li>Added: Spanish (Castilian) language option to installer/uninstaller. Translation by Shurengyla.
+	<li>Added: Spanish language option to installer/uninstaller. Translation by Sharlikran.
 	<li>Added: Confirmation dialog to uninstaller abortion.
 	<li>Added: CRC check to installer to avoid corrupted installs.
 	<li>Added: Support for TES III: Morrowind:
@@ -841,11 +883,8 @@ threads when you read this. Just navigate through to the latest thread to post a
 		<li>Added <code>Morrowind</code> value for the sGame BOSS.ini setting.
 		<li>Morrowind's masterlist is unmaintained, and only recognises Morrowind.esm. The support is primarily intended for the API, and those wanting auto-sorting of load orders should consider using mlox.
 	</ul>
-	<li>Added: BOSS Log unrecognised plugin submitter:
-	<ul>
-		<li>The plugin submitter uses the XMLHttpRequest 2, Cross-Origin Resource Sharing and JSON technologies to send unrecognised plugin reports to a Bugzilla bug tracker hosted by Dark Creations that the BOSS team uses to help keep track of unrecognised plugins. Submissions are performed anonymously.
-		<li>The plugin submitter requires the BOSS Log to be opened in Firefox 4+, Google Chrome 17+ or Opera 12+. Internet Explorer 10+ and Safari 5+ are technically compatible but untested. The plugin submitter will be disabled if an incompatible browser is detected.
-	</ul>
+	<li>Added: SetProxy function to API.
+	<li>Added: SubmitUnrecognisedPlugin function to API.
 </ul>
 <p><b>Version 2.0.1</b> - <i>6 April 2012</i>
 <ul>

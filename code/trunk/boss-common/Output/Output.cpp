@@ -730,6 +730,21 @@ namespace boss {
 				<< "	if (evt.currentTarget.className.indexOf('current') == -1) {" << endl
 				<< "		evt.currentTarget.className += ' current';" << endl
 				<< "	}" << endl
+				<< "	//Also enable/disable filters based on current page." << endl
+				<< "	var elemArr = document.getElementsByTagName('aside')[0].getElementsByTagName('input');" << endl
+				<< "	for (var i=0, z=elemArr.length;i<z;i++){" << endl
+				<< "		if (elemArr[i].id  == 'hideVersionNumbers' && (evt.currentTarget.getAttribute('data-section') == 'sePlugins' || evt.currentTarget.getAttribute('data-section') == 'recPlugins' || evt.currentTarget.getAttribute('data-section') == 'unrecPlugins')){" << endl
+				<< "			elemArr[i].disabled = false;" << endl
+				<< "		} else if (elemArr[i].id  == 'hideActiveLabel' && (evt.currentTarget.getAttribute('data-section') == 'sePlugins' || evt.currentTarget.getAttribute('data-section') == 'recPlugins' || evt.currentTarget.getAttribute('data-section') == 'unrecPlugins')){" << endl
+				<< "			elemArr[i].disabled = false;" << endl
+				<< "		} else if (elemArr[i].id  == 'hideChecksums' && (evt.currentTarget.getAttribute('data-section') == 'sePlugins' || evt.currentTarget.getAttribute('data-section') == 'recPlugins' || evt.currentTarget.getAttribute('data-section') == 'unrecPlugins')){" << endl
+				<< "			elemArr[i].disabled = false;" << endl
+				<< "		} else if (evt.currentTarget.getAttribute('data-section') == 'recPlugins'){" << endl
+				<< "			elemArr[i].disabled = false;" << endl
+				<< "		} else {" << endl
+				<< "			elemArr[i].disabled = true;" << endl
+				<< "		}" << endl
+				<< "	}" << endl
 				<< "}" << endl
 				<< "function toggleMessages(evt){" << endl
 				<< "	var listItems = document.getElementById('recPlugins').getElementsByTagName('li');" << endl
@@ -898,7 +913,7 @@ namespace boss {
 				<< "		} else {" << endl
 				<< "			var elem = document.getElementById(localStorage.key(i));" << endl
 				<< "			if (elem != null && 'defaultChecked' in elem) {" << endl
-				<< "				elem.checked ='true';" << endl
+				<< "				elem.checked = true;" << endl
 				<< "				dispatchEvent(elem,'click'); " << endl
 				<< "			} else {" << endl
 				<< "				if (document.styleSheets[0].cssRules) {" << endl
