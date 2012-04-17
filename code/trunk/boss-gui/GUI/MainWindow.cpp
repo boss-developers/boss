@@ -242,7 +242,6 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	
 	//Add stuff to output options sizer.
 	outputOptionsBox->Add(ShowLogBox = new wxCheckBox(this,CHECKBOX_ShowBOSSlog, wxT("Show BOSS Log On Completion")), 0, wxALL, 5);
-	outputOptionsBox->Add(VersionBox = new wxCheckBox(this,CHECKBOX_EnableVersions, wxT("Display Plugin Versions")), 0, wxLEFT | wxBOTTOM, 5);
 	outputOptionsBox->Add(CRCBox = new wxCheckBox(this,CHECKBOX_EnableCRCs, wxT("Display File CRCs")), 0, wxLEFT | wxBOTTOM, 5);
 	formatBox->Add(new wxStaticText(this, wxID_ANY, wxT("BOSS Log Format: ")), 1, wxLEFT | wxBOTTOM, 5);
 	formatBox->Add(FormatChoice = new wxChoice(this, DROPDOWN_LogFormat, wxPoint(110,60), wxDefaultSize, 2, BOSSlogFormat, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
@@ -462,13 +461,19 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
 	if (gl_update_only == true) {
 		output.Clear();
-		output.PrintHeader();
-		if (contents.updaterErrors.empty())
-			output << HEADING_ID_SUMMARY_OPEN << "Summary" << HEADING_CLOSE << contents.summary;
-		else
-			output << HEADING_ID_GENERAL_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
-				<< contents.updaterErrors << LIST_CLOSE;
-		output.PrintFooter();
+		output.PrintHeaderTop();
+		output.SetHTMLSpecialEscape(false);
+		if (contents.updaterErrors.empty()) {
+			output << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
+			output.PrintHeaderBottom();
+			output << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE << contents.summary << SECTION_CLOSE;
+		} else {
+			output << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
+			output.PrintHeaderBottom();
+			output << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
+				<< contents.updaterErrors << LIST_CLOSE << SECTION_CLOSE;
+		}
+		output.PrintFooter(0,0);
 		try {
 			output.Save(bosslog_path(), true);
 		} catch (boss_error &e) {
@@ -495,11 +500,14 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		esmtime = GetMasterTime();
 	} catch (boss_error &e) {
 		output.Clear();
-		output.PrintHeader();
-		output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+		output.PrintHeaderTop();
+		output << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
+		output.PrintHeaderBottom();
+		output << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN 
+			<< LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-			<< "Utility will end now." << LIST_CLOSE;
-		output.PrintFooter();
+			<< "Utility will end now." << LIST_CLOSE << SECTION_CLOSE;
+		output.PrintFooter(0,0);
 		try {
 			output.Save(bosslog_path(), true);
 		} catch (boss_error &e) {
@@ -519,11 +527,14 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 			modlist.Save(modlist_path(), old_modlist_path());
 	} catch (boss_error &e) {
 		output.Clear();
-		output.PrintHeader();
-		output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+		output.PrintHeaderTop();
+		output << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
+		output.PrintHeaderBottom();
+		output << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN 
+			<< LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-			<< "Utility will end now." << LIST_CLOSE;
-		output.PrintFooter();
+			<< "Utility will end now." << LIST_CLOSE << SECTION_CLOSE;
+		output.PrintFooter(0,0);
 		try {
 			output.Save(bosslog_path(), true);
 		} catch (boss_error &e) {
@@ -568,19 +579,20 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		contents.regexError = masterlist.ErrorBuffer().FormatFor(gl_log_format);
 	} catch (boss_error &e) {
 		output.Clear();
-		output.PrintHeader();
+		output.PrintHeaderTop();
+		output << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
+		output.PrintHeaderBottom();
+		output << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN;
 		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
 			output.SetHTMLSpecialEscape(false);
-			output << HEADING_ID_GENERAL_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
-				<< masterlist.ErrorBuffer().FormatFor(gl_log_format) << LIST_CLOSE;
+			output << masterlist.ErrorBuffer().FormatFor(gl_log_format) << LIST_CLOSE << SECTION_CLOSE;
 		} else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
-			output << HEADING_ID_GENERAL_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
-				<< LIST_ITEM << SPAN_CLASS_ERROR_OPEN << e.getString() << SPAN_CLOSE << LIST_CLOSE;
+			output << LIST_ITEM << SPAN_CLASS_ERROR_OPEN << e.getString() << SPAN_CLOSE << LIST_CLOSE << SECTION_CLOSE;
 		} else
-			output << LIST_OPEN << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+			output << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-				<< "Utility will end now." << LIST_CLOSE;
-		output.PrintFooter();
+				<< "Utility will end now." << LIST_CLOSE << SECTION_CLOSE;
+		output.PrintFooter(0,0);
 		try {
 			output.Save(bosslog_path(), true);
 		} catch (boss_error &e) {

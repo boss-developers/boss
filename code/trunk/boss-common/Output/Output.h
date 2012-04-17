@@ -45,32 +45,37 @@ namespace boss {
 	using namespace std;
 
 	enum logFormatting : uint32_t {
+		SECTION_ID_SUMMARY_OPEN,
+		SECTION_ID_GENERAL_OPEN,
+		SECTION_ID_USERLIST_OPEN,
+		SECTION_ID_SE_OPEN,
+		SECTION_ID_RECOGNISED_OPEN,
+		SECTION_ID_UNRECOGNISED_OPEN,
+		SECTION_CLOSE,
 		DIV_OPEN,
+		DIV_SUMMARY_BUTTON_OPEN,
+		DIV_GENERAL_BUTTON_OPEN,
+		DIV_USERLIST_BUTTON_OPEN,
+		DIV_SE_BUTTON_OPEN,
+		DIV_RECOGNISED_BUTTON_OPEN,
+		DIV_UNRECOGNISED_BUTTON_OPEN,
 		DIV_CLOSE,
 		LINE_BREAK,
 		TABLE_OPEN,
 		TABLE_CLOSE,
 		TABLE_ROW,
 		TABLE_DATA,
-		LIST_ID_RECOGNISED_OPEN,
-		LIST_ID_USERLIST_MESSAGES_OPEN,
 		LIST_OPEN,
 		LIST_CLOSE,
 		LIST_ITEM,
 		LIST_ITEM_CLASS_SUCCESS,
 		LIST_ITEM_CLASS_WARN,
 		LIST_ITEM_CLASS_ERROR,
-		HEADING_ID_SUMMARY_OPEN,
-		HEADING_ID_GENERAL_OPEN,
-		HEADING_ID_USERLIST_OPEN,
-		HEADING_ID_SE_OPEN,
-		HEADING_ID_RECOGNISEDSEC_OPEN,
-		HEADING_ID_UNRECOGNISED_OPEN,
+		HEADING_OPEN,
 		HEADING_CLOSE,
 		PARAGRAPH,
 		SPAN_CLASS_MOD_OPEN,
 		SPAN_CLASS_VERSION_OPEN,
-		SPAN_CLASS_GHOSTED_OPEN,
 		SPAN_CLASS_CRC_OPEN,
 		SPAN_CLASS_ACTIVE_OPEN,
 		SPAN_CLASS_ERROR_OPEN,
@@ -79,8 +84,7 @@ namespace boss {
 		ITALIC_OPEN,
 		ITALIC_CLOSE,
 		BLOCKQUOTE_OPEN,
-		BLOCKQUOTE_CLOSE,
-		BUTTON_SUBMIT_PLUGIN
+		BLOCKQUOTE_CLOSE
 	};
 
 	enum langString : uint32_t {
@@ -136,8 +140,9 @@ namespace boss {
 		void SetHTMLSpecialEscape(bool shouldEscape);	//Set when formatting is set, generally, but this can be used to override.
 		void Clear();			//Erase all current content.
 
-		void PrintHeader();		//Prints BOSS Log header.
-		void PrintFooter();		//Prints BOSS Log footer.
+		void PrintHeaderTop();
+		void PrintHeaderBottom();
+		void PrintFooter(const uint32_t pluginNo, const uint32_t messageNo);
 
 		void Save(fs::path file, bool overwrite);		//Saves contents to file. 
 														//Throws boss_error exception on fail.

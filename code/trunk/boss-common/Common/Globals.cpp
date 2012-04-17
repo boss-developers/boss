@@ -40,7 +40,7 @@
 namespace boss {
 	using namespace std;
 
-	BOSS_COMMON const string gl_boss_release_date	= "6 April 2012";
+	BOSS_COMMON const string gl_boss_release_date	= "X Y 2012";
 
 	BOSS_COMMON uint32_t gl_current_game			= AUTODETECT;
 

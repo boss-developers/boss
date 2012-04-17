@@ -64,83 +64,140 @@ namespace boss {
 		outStream.str(std::string());
 	}
 
-	void Outputter::PrintHeader() {
+	void Outputter::PrintHeaderTop() {
 		if (outFormat == HTML) {
 			outStream << "<!DOCTYPE html>"<<endl<<"<meta charset='utf-8'>"<<endl
 				<< "<title>BOSS Log</title>"<<endl<<"<style>"
-				<< "body{font-family:Calibri,Arial,sans-serifs;}"
-				<< "body.dark{color:white;background:black;}"
-				<< "a.dark:link{color:#0AF;}"
-				<< "a.dark:visited{color:#E000E0;}"
-				<< "#filters{" << "background:#F5F5F5; width:252px; position:fixed; right:0; top:-32em; z-index:0; box-shadow: -1px 1px 1px 1px rgba(0,0,0,0.5);"
-				<< "	transition: top 0.2s;"
-				<< "	-moz-transition: top 0.2s;"
-				<< "	-webkit-transition: top 0.2s;"
-				<< "	-ms-transition: top 0.2s;"
-				<< "	-o-transition: top 0.2s;" << "}"
-				<< "#filters > li{margin:0;padding:0.2em 0.5em; white-space:nowrap;}"
-				<< "h1{display:inline;font-size:2.4em;font-weight:700;margin-right:1em;}"
-				<< "h2 + *{margin-bottom:3em;}"
-				<< "h2{font-size:1.17em;display:table;cursor:pointer;}"
-				<< "h2 > span{display:inline-block;position:relative;top:.05em; font-size:1.3em;width:.6em;margin-right:.1em;}"
-				<< "ul{list-style:none;padding-left:0;}"
-				<< "ul li{margin-left:0;margin-bottom:1em;}"
-				<< "li ul{margin-top:.5em;padding-left:2.5em;margin-bottom:2em;}"
-				<< "td{padding:0 .5em;vertical-align:top;}"
-				<< "input[type='checkbox']{position:relative;top:.15em;margin-right:.5em;}"
-				<< "blockquote{font-style:italic;}"
-				<< ".error{background:red;color:#FFF;display:table;padding:0 4px;}"
-				<< ".warn{background:orange;color:#FFF;display:table;padding:0 4px;}"
-				<< ".success{color:green;}"
-				<< ".version{color:#6394F8;margin-right:1em;padding:0 4px;}"
-				<< ".ghosted{color:#888;margin-right:1em;padding:0 4px;}"
-				<< ".crc{color:#BC8923;margin-right:1em;padding:0 4px;}"
-				<< ".active{color:#0A0;margin-right:1em;padding:0 4px;}"
-				<< ".tagPrefix{color:#CD5555;}"
-				<< ".dirty{color:#960;}"
-				<< ".message{color:gray;}"
-				<< ".mod{margin-right:1em;}"
-				<< ".tag{}"
-				<< ".note{}"
-				<< ".req{}"
-				<< ".inc{}"
-				<< ".submit{margin-right:1em;}"
-				<< ".hidden {display:none;}"
-				<< ".button {cursor:pointer;text-decoration:underline;}"
-				<< "p.last {text-align:center;margin-bottom:0;}"
-				<< ".t {color:green;margin-right:0.5em;}"
-				<< ".c {color:red;margin-right:0.5em;}"
-				<< ".t:after {content: '\\2713';}"
-				<< ".c:after {content: '\\2717';}"
-				<< "#mask{position:fixed;left:0px;top:0px;width:100%;height:100%;background:black;opacity:0.9;display:block;z-index:1;}"
-				<< "#submitBox{padding:10px;background:white;display:none;z-index:2;position:fixed;top:0;width:430px;left:50%;margin-left:-220px;}"
-				<< "#submitBox > h1{text-align:center;display:block;margin:0;}"
-				<< "#submitBox p {margin-left:10px; margin-right:10px;}"
-				<< "#link{width:400px;}"
-				<< "#notes{height:10em;width:400px;}"
-				<< "#plugin{display:table-cell;font-style:italic;}"
-				<< "#pluginLabel{display:table-cell;padding-right:0.5em;}"
-				<< "#output {display:none;width:400px;margin:2em auto;text-align:center;}"
-				<< "#arrow {display:inline-block;font-size:1.5em;position:relative;top:3px;	transform: rotate(-90deg);   -moz-transform: rotate(-90deg);   -webkit-transform: rotate(-90deg);   -ms-transform: rotate(-90deg);   -o-transform: rotate(-90deg);}"
-				<< "#arrow.rotated {position:relative;left:0.2em;	transform: rotate(90deg);	-moz-transform: rotate(90deg);	-webkit-transform: rotate(90deg);	-ms-transform: rotate(90deg);	-o-transform: rotate(90deg);}"
-				<< "#menu > div { display:table-cell;padding:0.5em 1em; transition: background 0.2s;	-webkit-transition: background 0.2s;	-moz-transition: background 0.2s;	-ms-transition: background 0.2s;	-o-transition: background 0.2s;}"
-				<< "#menu > div:hover {background:lightgrey;}"
-				<< "#filtersButton {width:220px;}"
-				<< "#filtersButton > span:first-child {display:inline-block;width:200px;}"
-				<< "#menu {position:fixed;right:0;top:0;background:#F5F5F5;line-height:1em;cursor:pointer;z-index:1; box-shadow: -1px 1px 1px 1px rgba(0,0,0,0.5);}"
-				<< "#filters.dark, #menu.dark, #submitBox.dark, #cssBox.dark, #browserBox.dark {background:#333;}"
-				<< "#cssBox.visible, #submitBox.visible, #output.visible, #browserBox.visible {display:block;}"
-				<< "#filters.visible {top:1.25em;}"
-				<< "#cssBox, #browserBox{padding:20px;width:70%;background:white;display:none;z-index:2;position:fixed;top:-1em;left:14%;overflow:auto;}"
-				<< "#cssBox > h1, #browserBox > h1 {display:block;text-align:center;margin:0;}"
-				<< "input:invalid {background:#FF6347;}"
-				<< "#cssBox p, #cssBox table, #browserBox p, #browserBox table, #browserBox h3 {margin-left:20px; margin-right:20px;}"
-				<< "#cssBox thead {font-weight:bold;}"
-				<< "#browserBox > p > span {display:inline-block;padding:5px 10px;}"
-				<< "</style>"<<endl;
-			outStream << "<h1>BOSS Log</h1>"
-				<< "BOSS v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << gl_boss_release_date << ")."
-				<< " &copy; 2009-2012 BOSS Development Team." << endl;
+				<< "body{font-family:Calibri,Arial,sans-serifs;margin:0;height:100%;}" << endl
+				<< "body.dark, #submitBox.dark{color:#eee;background:#222;}" << endl
+				<< "a.dark:link{color:#0AF;}" << endl
+				<< "a.dark:visited{color:#E000E0;}" << endl
+				<< "h1{font-size:3em;margin:0;}" << endl
+				<< "h2{font-size:2em;padding-top:0.24em;margin-top:0;}" << endl
+				<< "ul{list-style:none;padding-left:0;}" << endl
+				<< "ul li{margin-left:0;margin-bottom:1em;}" << endl
+				<< "li ul{margin-top:.5em;padding-left:2.5em;margin-bottom:2em;}" << endl
+				<< "table {margin-left:2em;}" << endl
+				<< "thead {font-weight:bold;}" << endl
+				<< "td{padding:0 .5em;vertical-align:top;}" << endl
+				<< "blockquote{font-style:italic;}" << endl
+				<< "input[type='checkbox']{position:relative;top:.15em;margin-right:.5em;}" << endl
+				<< "noscript p {position:absolute;top:0;left:154px;padding-right:0.5em;padding-left:1em;}" << endl
+				<< "small {padding-top:1em;font-size:0.5em;}" << endl
+				<< ".error{background:red;color:#FFF;display:table;padding:0 4px;}" << endl
+				<< ".warn{background:orange;color:#FFF;display:table;padding:0 4px;}" << endl
+				<< ".success{color:green;}" << endl
+				<< ".version{color:#6394F8;margin-right:1em;}" << endl
+				<< ".crc{color:#BC8923;margin-right:1em;}" << endl
+				<< ".active{color:#0A0;margin-right:1em;}" << endl
+				<< ".tagPrefix{color:#CD5555;}" << endl
+				<< ".dirty{color:#960;}" << endl
+				<< ".message{color:gray;}" << endl
+				<< ".mod{margin-right:1em;}" << endl
+				<< ".tag{}" << endl
+				<< ".note{}" << endl
+				<< ".req{}" << endl
+				<< ".inc{}" << endl
+				<< ".submit{margin-right:1em;}" << endl
+				<< ".hidden {display:none;}" << endl
+				<< ".button {cursor:pointer;text-decoration:underline;}" << endl
+				<< "p.last {text-align:center;margin-bottom:0;}" << endl
+				<< ".t {color:green;margin-right:0.5em;}" << endl
+				<< ".c {color:red;margin-right:0.5em;}" << endl
+				<< ".t:after {content: '\\2713';}" << endl
+				<< ".c:after {content: '\\2717';}" << endl
+				<< ".dragHover {background:#DDD;}" << endl
+				<< "body.dark section.dragHover {background:#444;}" << endl
+				<< "#overlay{position:fixed;left:0px;top:0px;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:3;visibility:hidden;opacity:0;" << endl
+				<< "	transition: opacity 0.3s;" << endl
+				<< "	-webkit-transition: opacity 0.3s;" << endl
+				<< "	-moz-transition: opacity 0.3s;" << endl
+				<< "	-ms-transition: opacity 0.3s;" << endl
+				<< "	-o-transition: opacity 0.3s;" << endl
+				<< "}" << endl
+				<< "#overlay.visible {opacity:1;visibility:visible;}" << endl
+				<< "#output.visible, section.visible {display:block;}" << endl
+				<< "nav.dark {background:#333;}" << endl
+				<< "aside.dark {background:#666;}" << endl
+				<< "#submitBox{padding:10px;background:white;z-index:2;position:fixed;top:0;width:430px;left:50%;margin-left:-220px;}" << endl
+				<< "#submitBox > h2{text-align:center;margin:0;}" << endl
+				<< "#submitBox p {margin-left:10px; margin-right:10px;}" << endl
+				<< "#submitBox label {margin:16px 10px;display:block;}" << endl
+				<< "#link{width:400px;}" << endl
+				<< "#notes{height:10em;width:400px;}" << endl
+				<< "#plugin{display:table-cell;font-style:italic;}" << endl
+				<< "#pluginLabel{display:table-cell;padding-right:0.5em;}" << endl
+				<< "#output {display:none;width:400px;margin:2em auto;text-align:center;}" << endl
+				<< "nav {display:block;background:#F5F5F5;width:154px;position:fixed;top:0;left:0;height:100%;z-index:2;border-right:1px solid #CCC;box-shadow: 0 0 3px 1px rgba(0,0,0,0.5);}" << endl
+				<< "nav div.button {cursor:pointer;padding:0.5em;text-decoration:none;border-top:1px solid transparent;border-bottom:1px solid transparent;" << endl
+				<< "	transition: background 0.2s;" << endl
+				<< "	-webkit-transition: background 0.2s;" << endl
+				<< "	-moz-transition: background 0.2s;" << endl
+				<< "	-ms-transition: background 0.2s;" << endl
+				<< "	-o-transition: background 0.2s;" << endl
+				<< "}" << endl
+				<< "nav div.button:hover {background:lightgrey;}" << endl
+				<< "nav div.button.dark:hover {background:darkgrey;}" << endl
+				<< "nav div.button.current {background:lightgrey;border-color: #AAA;}" << endl
+				<< "nav div.button.current.dark {background:darkgrey;border-color: #AAA;}" << endl
+				<< "nav > footer {display:block;position:fixed;bottom:0;width:154px;background:inherit;}" << endl
+				<< "nav > header {display:block;padding:0.5em;padding-top:0;margin-bottom:1em;}" << endl
+				<< "#arrow {margin-left:5em;" << endl
+				<< "/*	transition: transform 0.2s;" << endl
+				<< "	-moz-transition: -moz-transform 0.2s;	" << endl
+				<< "	-webkit-transition: -webkit-transform 0.2s;	" << endl
+				<< "	-ms-transition: -ms-transform 0.2s;	" << endl
+				<< "	-o-transition: -o-transform 0.2s;*/" << endl
+				<< "	color:#757575;" << endl
+				<< "}/*" << endl
+				<< "#arrow.rotated {" << endl
+				<< "	transform: rotate(180deg);	" << endl
+				<< "	-moz-transform: rotate(180deg);	" << endl
+				<< "	-webkit-transform: rotate(90deg);	" << endl
+				<< "	-ms-transform: rotate(90deg);	" << endl
+				<< "	-o-transform: rotate(90deg);" << endl
+				<< "}*/" << endl
+				<< "#arrow:after {" << endl
+				<< "	content: '\\25b2';" << endl
+				<< "}" << endl
+				<< "#arrow.rotated:after {" << endl
+				<< "	content: '\\25bc';" << endl
+				<< "}" << endl
+				<< "/*#arrow:after {" << endl
+				<< "	content: '\\2C5';" << endl
+				<< "}" << endl
+				<< "#arrow.rotated:after {" << endl
+				<< "	content: '\\2C4';" << endl
+				<< "}*/" << endl
+				<< "aside {display:block;background:#DDD;z-index:1;overflow:hidden;border-top:1px solid #AAA;position:fixed;left:154px;bottom:-1px;height:0;" << endl
+				<< "/*	transition: height 0.2s;" << endl
+				<< "	-moz-transition: height 0.2s;" << endl
+				<< "	-webkit-transition: height 0.2s;" << endl
+				<< "	-ms-transition: height 0.2s;" << endl
+				<< "	-o-transition: height 0.2s;*/" << endl
+				<< "	box-shadow: 0 0 3px 1px rgba(0,0,0,0.5);" << endl
+				<< "	" << endl
+				<< "}" << endl
+				<< "aside.visible {height:auto;}" << endl
+				<< "aside > label {display:inline-block;padding:0.2em 0.5em; white-space:nowrap;width:12.5em;cursor:pointer;}" << endl
+				<< "aside > footer {display:block;padding:0.5em;padding-left:0.8em;font-style:italic;}" << endl
+				<< "section {position:absolute;top:0;left:154px;display:none;padding-right:0.5em;padding-left:1em;height:100%;}" << endl
+				<< "#unrecPlugins span.mod {cursor:pointer;border-bottom:#888 dotted 1px;}" << endl
+				<< "#unrecPlugins span.mod:hover {border-bottom:#888 solid 1px;}" << endl
+				<< "#unrecPlugins span.mod.nosubmit {border-bottom:;cursor:auto;}" << endl
+				<< "</style>" << endl
+				<< "<!--[if lt IE 9]>" << endl
+				<< "<script>" << endl
+				<< "document.createElement('nav');document.createElement('header');document.createElement('footer');document.createElement('section');document.createElement('aside');" << endl
+				<< "</script>" << endl
+				<< "<![endif]-->" << endl;
+			outStream << "<nav>" << endl
+				<< "<header>" << endl
+				<< "	<h1>BOSS</h1>" << endl
+				<< "	Version " << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << "<br />" << endl
+				<< "	" << gl_boss_release_date << "<br />" << endl
+				<< "<small>&copy; 2009-2012 BOSS Development Team</small>" << endl
+				<< "</header>" << endl;
 		} else
 			outStream << endl << "BOSS Log" << endl
 				<< "Copyright 2009-2012 BOSS Development Team" << endl
@@ -149,373 +206,132 @@ namespace boss {
 				<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << gl_boss_release_date << ")" << endl;
 	}
 
-	void Outputter::PrintFooter() {
+	void Outputter::PrintHeaderBottom() {
 		if (outFormat == HTML) {
-			outStream << endl 
-				<< "<div id='submitBox'>" << endl
-				<< "<h1>Submit Plugin</h1>" << endl
-				<< "<hr>" << endl
-				<< "<p><span id='pluginLabel'>Plugin:</span><span id='plugin'></span>" << endl
-				<< "<form>" << endl
-				<< "<p><label>Download Location:<br /><input type='url' required placeholder=\"A link to the plugin's download location.\" id='link'></label>" << endl
-				<< "<p><label>Additional Notes:<br /><textarea id='notes' placeholder='Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.'></textarea></label>" << endl
-				<< "</form>" << endl
-				<< "<div id='output'></div>" << endl
-				<< "<hr>" << endl
-				<< "<p class='last'><button type='button' onclick='submitPlugin()' autofocus>Submit</button>" << endl
-				<< "<button type='button' onclick='hidePopupBox()'>Cancel</button>" << endl
-				<< "</div>" << endl
+			outStream << "<footer>" << endl
+				<< "	<div class='button' data-section='cssSettings' id='cssButtonShow'>CSS Settings</div>" << endl
+				<< "	<div class='button' id='filtersButtonToggle'>Filters<span id='arrow'></span></div>" << endl
+				<< "</footer>" << endl
+				<< "</nav>" << endl
+				<< "<noscript>" << endl
+				<< "<p>The BOSS Log requires Javascript to be enabled in order to function.</p>" << endl
+				<< "</noscript>" << endl;
+		}
+	}
 
-
-				<< "<div id='cssBox'>" << endl
-				<< "<h1>CSS Settings</h1>" << endl
-				<< "<hr>" << endl
+	void Outputter::PrintFooter(const uint32_t pluginNo, const uint32_t messageNo) {
+		if (outFormat == HTML) {
+			outStream << "<section id='cssSettings'>" << endl
+				<< "<h2>CSS Settings</h2>" << endl
 				<< "<p>Here you can customise the colours used by the dark colour scheme.<span id='colorPickerNote'> Colours must be specified using their lowercase hex codes.</span> Boxes left blank will use their default values, which are given by their placeholders." << endl
+				<< "<form>" << endl
 				<< "<table>" << endl
-				<< "	<thead><tr><td>Element<td>Colour<td>Element<td>Colour" << endl
+				<< "	<thead><tr><td>Element<td>Colour" << endl
 				<< "	<tbody>" << endl
-				<< "		<tr><td>General Text<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark' data-property='color' placeholder='#ffffff'>" << endl
-				<< "		<td>Errors<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.error.dark' data-property='background' placeholder='#ff0000'>" << endl
-				<< "		<tr><td>Window Backgrounds<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark,#cssBox.dark,#submitBox.dark,#browserBox.dark' data-property='background' placeholder='#000000'>" << endl
-				<< "		<td>Warnings<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.warn.dark' data-property='background' placeholder='#ffa500'>" << endl
+				<< "		<tr><td>General Text<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark' data-property='color' placeholder='#eeeeee'>" << endl
+				<< "		<tr><td>Window Backgrounds<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark,#submitBox.dark' data-property='background' placeholder='#222222'>" << endl
+				<< "		<tr><td>Menu Background<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='nav.dark' data-property='background' placeholder='#333333'>" << endl
+				<< "		<tr><td>Menu Button Hover<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='nav div.button.dark:hover' data-property='background' placeholder='#a9a9a9'>" << endl
+				<< "		<tr><td>Active Menu Button<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='nav div.button.current.dark' data-property='background' placeholder='#a9a9a9'>" << endl
 				<< "		<tr><td>Links<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='a.dark:link' data-property='color' placeholder='#00aaff'>" << endl
-				<< "		<td>Ghosted Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.ghost.dark' data-property='color' placeholder='#888888'>" << endl
 				<< "		<tr><td>Visited Links<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='a.dark:visited' data-property='color' placeholder='#e000e0'>" << endl
-				<< "		<td>CRC Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.crc.dark' data-property='color' placeholder='#bc8923'>" << endl
-				<< "		<tr><td>Menu Background<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='#menu.dark,#filters.dark' data-property='background' placeholder='#333333'>" << endl
-				<< "		<td>Active Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.active.dark' data-property='color' placeholder='#00aa00'>" << endl
-				<< "		<tr><td>Menu Button Hover<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='#menu.dark > div:hover' data-property='background' placeholder='#d3d3d3'>" << endl
-				<< "		<td>Dirty Messages<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.dirty.dark' data-property='color' placeholder='#996600'>" << endl
-				<< "		<tr><td>Bash Tag Suggestion Prefixes<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.tagPrefix.dark' data-property='color' placeholder='#cd5555'><td><td>" << endl
+				<< "		<tr><td>CRC Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.crc.dark' data-property='color' placeholder='#bc8923'>" << endl
+				<< "		<tr><td>Active Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.active.dark' data-property='color' placeholder='#00aa00'>" << endl
+				<< "		<tr><td>Version Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.version.dark' data-property='color' placeholder='#6394F8'>" << endl
+				<< "		<tr><td>Errors<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.error.dark' data-property='background' placeholder='#ff0000'>" << endl
+				<< "		<tr><td>Warnings<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.warn.dark' data-property='background' placeholder='#ffa500'>" << endl
+				<< "		<tr><td>Dirty Messages<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.dirty.dark' data-property='color' placeholder='#996600'>" << endl
+				<< "		<tr><td>Bash Tag Suggestion Prefixes<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.tagPrefix.dark' data-property='color' placeholder='#cd5555'>" << endl
+				<< "		<tr><td>CSS Settings Panel File Drag Highlight<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.dark.dragHover' data-property='background' placeholder='#444444'>" << endl
+				<< "		<tr><td>Filters Background<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='aside.dark' data-property='background' placeholder='#666666'>" << endl
+				<< "		<tr><td>Success Messages<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.success.dark' data-property='color' placeholder='#008000'>" << endl
+				<< "		<tr><td>Quoted Userlist Messages<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.message.dark' data-property='color' placeholder='#808080'>" << endl
 				<< "</table>" << endl
-				<< "<p id='backupCSSNote'>You can <span class='button' onclick='backupCSS(this)'>back up</span> your CSS settings to avoid losing them when you <span id='loseSettingsClose'>close the BOSS Log</span><span id='loseSettingsCacheClear'>clear your browser's cache</span>. Backup files are given nonsensical names by your browser, but you can rename them to whatever you want. Drag 'n' drop the backup file into this panel to restore your settings again." << endl
-				<< "<hr>" << endl
-				<< "<p class='last'><button type='button' onclick='applyCSS()' autofocus>Apply</button>" << endl
-				<< "<button type='button' onclick='hideCSSBox()'>Cancel</button>" << endl
-				<< "</div>" << endl
-
-				<< "<div id='browserBox'>" << endl
-				<< "<h1>Browser Compatability</h1>" << endl
-				<< "<hr>" << endl
+				<< "<p id='backupCSSNote'>You can <span class='button' id='cssButtonBackup'>back up</span> your CSS settings to avoid losing them when you <span id='loseSettingsClose'>close the BOSS Log</span><span id='loseSettingsCacheClear'>clear your browser's cache</span>. Backup files are given nonsensical names by your browser, but you can rename them to whatever you want. Drag and drop a backup file into this panel to restore the settings it contains." << endl
+				<< "<p><label><input type='checkbox' id='useDarkColourScheme'/>Use Dark Colour Scheme</label>" << endl
+				<< "<p><button>Apply</button>" << endl
+				<< "</form>" << endl
+				<< "</section>" << endl
+				<< "" << endl
+				<< "<section id='browserBox'>" << endl
+				<< "<h2>Browser Compatibility</h2>" << endl
 				<< "<p>The BOSS Log's more advanced features require some of the latest web technologies, for which browser support varies. Here's what your browser supports:" << endl
 				<< "<h3>Functionality</h3>" << endl
 				<< "<table>" << endl
 				<< "	<tbody>" << endl
 				<< "		<tr><td id='pluginSubmitSupport'><td>In-Log Plugin Submission<td>Allows unrecognised plugins to be submitted straight from the BOSS Log." << endl
 				<< "		<tr><td id='cssBackupSupport'><td>Backup/Restore of CSS Settings<td>Allows backup and restore of your custom CSS settings." << endl
-				<< "		<tr><td id='memorySupport'><td>Settings Memory<td>Allows the BOSS Log to restore the configuration of CSS settings, filters and collapsed sections last used, and to prevent this panel being displayed, whenever the BOSS Log is opened." << endl
+				<< "		<tr><td id='memorySupport'><td>Settings Memory<td>Allows the BOSS Log to restore the configuration of CSS settings and filters last used, and to prevent this panel being displayed, whenever the BOSS Log is opened." << endl
 				<< "</table>" << endl
 				<< "<h3>Appearance</h3>" << endl
-				<< "<p><span><span id='opacitySupport'></span>Opacity</span>" << endl
-				<< "<span><span id='shadowsSupport'></span>Shadows</span>" << endl
-				<< "<span><span id='transitionsSupport'></span>Transitions</span>" << endl
-				<< "<span><span id='transformsSupport'></span>Transforms</span>" << endl
-				<< "<span><span id='colorSupport'></span>Colour Picker Input</span>" << endl
-				<< "<span><span id='placeholderSupport'></span>Input Placeholders</span>" << endl
-				<< "<span><span id='validationSupport'></span>Form Validation</span>" << endl
-				<< "<p><label><input type=checkbox>Do not display this panel again for this browser.</label>" << endl
-				<< "<hr>" << endl
-				<< "<p class='last'><button type='button' onclick='closeBrowserBox()' autofocus>OK</button>" << endl
-				<< "</div>" << endl
+				<< "<table>" << endl
+				<< "	<tbody>" << endl
+				<< "	<tr><td id='opacitySupport'><td>Opacity" << endl
+				<< "	<tr><td id='shadowsSupport'><td>Shadows" << endl
+				<< "	<tr><td id='transitionsSupport'><td>Transitions" << endl
+				<< "	<tr><td id='transformsSupport'><td>Transforms" << endl
+				<< "	<tr><td id='colorSupport'><td>Colour Picker Input" << endl
+				<< "	<tr><td id='placeholderSupport'><td>Input Placeholders" << endl
+				<< "	<tr><td id='validationSupport'><td>Form Validation" << endl
+				<< "</table>" << endl
+				<< "<p><label><input type=checkbox id='suppressBrowserBox'>Do not display this panel again for this browser. If this checkbox is left unchecked, this panel will be displayed every time you open the BOSS Log.</label>" << endl
+				<< "</section>" << endl
+				
+				
+				<< "<aside>" << endl
+				<< "<label><input type='checkbox' id='hideVersionNumbers' data-class='version'/>Hide Version Numbers</label>" << endl
+				<< "<label><input type='checkbox' id='hideActiveLabel' data-class='active'/>Hide 'Active' Label</label>" << endl
+				<< "<label><input type='checkbox' id='hideChecksums' data-class='crc'/>Hide Checksums</label>" << endl
+				<< "<label><input type='checkbox' id='hideNotes'/>Hide Notes</label>" << endl
+				<< "<label><input type='checkbox' id='hideBashTags'/>Hide Bash Tag Suggestions</label>" << endl
+				<< "<label><input type='checkbox' id='hideRequirements'/>Hide Requirements</label>" << endl
+				<< "<label><input type='checkbox' id='hideIncompatibilities'/>Hide Incompatibilities</label>" << endl
+				<< "<label><input type='checkbox' id='hideDoNotCleanMessages'/>Hide 'Do Not Clean' Messages</label>" << endl
+				<< "<label><input type='checkbox' id='hideAllPluginMessages'/>Hide All Plugin Messages</label>" << endl
+				<< "<label><input type='checkbox' id='hideInactivePlugins'/>Hide Inactive Plugins</label>" << endl
+				<< "<label><input type='checkbox' id='hideMessagelessPlugins'/>Hide Messageless Plugins</label>" << endl
+				<< "<label><input type='checkbox' id='hideCleanPlugins'/>Hide Clean Plugins</label>" << endl
+				<< "<footer>" << endl
+				<< "	<span id='hiddenPluginNo'>0</span> of " << pluginNo << " plugins hidden." << endl
+				<< "	<span id='hiddenMessageNo'>0</span> of " << messageNo << " messages hidden." << endl
+				<< "</footer>" << endl
+				<< "</aside>" << endl
 
+				<< "<div id='overlay'>" << endl
+				<< "<div id='submitBox'>" << endl
+				<< "<h2>Submit Plugin</h2>" << endl
+				<< "<p><span id='pluginLabel'>Plugin:</span><span id='plugin'></span>" << endl
+				<< "<form>" << endl
+				<< "<label>Download Location:<br /><input type='url' placeholder='A link to the plugin&#x27;s download location.' id='link'></label>" << endl
+				<< "<label>Additional Notes:<br /><textarea id='notes' placeholder='Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.'></textarea></label>" << endl
+				<< "<div id='output'></div>" << endl
+				<< "<p class='last'><button>Submit</button>" << endl
+				<< "<button type='reset'>Close</button>" << endl
+				<< "</form>" << endl
+				<< "</div>" << endl
+				<< "</div>" << endl
 
 				<< "<script>" << endl
 				<< "'use strict';" << endl
-				<< "var hm=0,hp=0,hpe=document.getElementById('hp'),hme=document.getElementById('hm'),url = 'http://www.darkcreations.org/bugzilla/jsonrpc.cgi',form = document.getElementsByTagName('form')[0],output = document.getElementById('output');" << endl
-
-				<< "var hideBrowserBox = false, supportsPluginSubmit = false, suppportsStateMemory = false, supportsCSSBackupRestore = false;"<<endl
-				<< "function isSupported (propName) {"<<endl
-				<< "	return typeof document.body.style[propName] !== 'undefined';"<<endl
-				<< "}"<<endl
-				<< "function closeBrowserBox(){"<<endl
-				<< "	var mask=document.getElementById('mask');"<<endl
-				<< "	var box=document.getElementById('browserBox');"<<endl
-				<< "	box.className = box.className.replace('visible',''); "<<endl
-				<< "	if (document.getElementById('browserBox').querySelector('input[type=checkbox]').checked && suppportsStateMemory) {"<<endl
-				<< "		localStorage.setItem('hideBrowserBox','true');"<<endl
-				<< "	}"<<endl
-				<< "	if(mask!=null){"<<endl
-				<< "		var parent=mask.parentNode;"<<endl
-				<< "		parent.removeChild(mask);"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-
-				<< "function backupCSS(a){"<<endl
-				<< "	if (typeof(JSON) === 'object' && typeof(JSON.parse) === 'function') {"<<endl
-				<< "		var a = document.getElementById('cssBox').getElementsByTagName('input');"<<endl
-				<< "		var json = '{\"colors\":{'"<<endl
-				<< "		for(var i=0,z=a.length;i<z;i++){"<<endl
-				<< "			json += '\"' + a[i].getAttribute('data-selector') + '\":\"' + a[i].getAttribute('data-property') + ':' + a[i].value + '\",'"<<endl
-				<< "		}"<<endl
-				<< "		json = json.substr(0,json.length-1);"<<endl
-				<< "		json += '}}';"<<endl
-				<< "		var uriContent = 'data:json/settings-backup,' + encodeURIComponent(json);"<<endl
-				<< "		location.href = uriContent;"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "function handleFileSelect(evt) {"<<endl
-				<< "	evt.stopPropagation();"<<endl
-				<< "	evt.preventDefault();"<<endl
-				<< "	var files = evt.dataTransfer.files; // FileList object"<<endl
-				<< "	var a = document.getElementById('cssBox').getElementsByTagName('input');"<<endl
-				<< "	for (var i = 0, f; f = files[i]; i++) {"<<endl
-				<< "		var reader = new FileReader();"<<endl
-				<< "		reader.onload = (function(theFile) {"<<endl
-				<< "			return function(e) {"<<endl
-				<< "				try {"<<endl
-				<< "					var json = JSON.parse(e.target.result).colors;"<<endl
-				<< "					for (var key in json) {"<<endl
-				<< "						if (json.hasOwnProperty(key) && json[key].length != 0) {"<<endl
-				<< "							for (var i=0, z=a.length; i < z; i++) {"<<endl
-				<< "								if (a[i].getAttribute('data-selector') == key) {"<<endl
-				<< "									a[i].value = json[key].split(':').pop();"<<endl
-				<< "								}"<<endl
-				<< "							}"<<endl
-				<< "						}"<<endl
-				<< "					}"<<endl
-				<< "				} catch (e) {"<<endl
-				<< "					alert(e);"<<endl
-				<< "				}"<<endl
-				<< "			};"<<endl
-				<< "		})(f);"<<endl
-				<< "		reader.readAsText(f);"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "function handleDragOver(evt) {"<<endl
-				<< "	evt.stopPropagation();"<<endl
-				<< "	evt.preventDefault();"<<endl
-				<< "	evt.dataTransfer.dropEffect = 'copy';"<<endl
-				<< "}"<<endl
-
-
-				<< "function showCSSBox(){"<<endl
-				<< "	if ('localStorage' in window && window['localStorage'] !== null && window['localStorage'] !== undefined) {"<<endl
-				<< "		var a = document.getElementById('cssBox').getElementsByTagName('input');"<<endl
-				<< "		var len = localStorage.length;"<<endl
-				<< "		for (var i=0, z=a.length; i < z; i++) {"<<endl
-				<< "			var s = localStorage.getItem(a[i].getAttribute('data-selector'));"<<endl
-				<< "			if (s != null) {"<<endl
-				<< "				a[i].value = s.split(':').pop();"<<endl
-				<< "			}"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "	if(document.getElementById('mask')==null){"<<endl
-				<< "		var mask=document.createElement('div');"<<endl
-				<< "		mask.id='mask';"<<endl
-				<< "		document.body.appendChild(mask);"<<endl
-				<< "	}"<<endl
-				<< "	document.getElementById('cssBox').className += ' visible';"<<endl
-				<< "}"<<endl
-				<< "function hideCSSBox(){"<<endl
-				<< "	var mask=document.getElementById('mask');"<<endl
-				<< "	var box=document.getElementById('cssBox');"<<endl
-				<< "	box.className = box.className.replace('visible',''); "<<endl
-				<< "	if(mask!=null){"<<endl
-				<< "		var parent=mask.parentNode;"<<endl
-				<< "		parent.removeChild(mask);"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "function toggleFilters(){"<<endl
-				<< "	var filters = document.getElementById('filters');"<<endl
-				<< "	var arrow = document.getElementById('arrow');"<<endl
-				<< "	if (filters.className.indexOf('visible') == -1) {"<<endl
-				<< "		filters.className += ' visible';"<<endl
-				<< "		arrow.className += ' rotated';"<<endl
-				<< "	} else {"<<endl
-				<< "		filters.className = filters.className.replace('visible',''); "<<endl
-				<< "		arrow.className = arrow.className.replace('rotated','');"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "function showPopupBox(plugin){"<<endl
-				<< "	if(document.getElementById('mask')==null){"<<endl
-				<< "		var mask=document.createElement('div');"<<endl
-				<< "		mask.id='mask';"<<endl
-				<< "		document.body.appendChild(mask);"<<endl
-				<< "	}"<<endl
-				<< "	document.getElementById('plugin').innerHTML=plugin;"<<endl
-				<< "	document.getElementById('submitBox').className += ' visible';"<<endl
-				<< "}"<<endl
-				<< "function hidePopupBox(){"<<endl
-				<< "	var mask=document.getElementById('mask');"<<endl
-				<< "	var box=document.getElementById('submitBox');"<<endl
-				<< "	box.className = box.className.replace('visible',''); "<<endl
-				<< "	document.getElementById('notes').value='';"<<endl
-				<< "	document.getElementById('link').value='';"<<endl
-				<< "	output.innerHTML='';"<<endl
-				<< "	output.className = output.className.replace('visible',''); "<<endl
-				<< "	form.className = form.className.replace('hidden',''); "<<endl
-				<< "	var button = document.querySelector('#submitBox > p.last > button:first-child');"<<endl
-				<< "	button.className = button.className.replace('hidden','');"<<endl
-				<< "	if(mask!=null){"<<endl
-				<< "		var parent=mask.parentNode;"<<endl
-				<< "		parent.removeChild(mask);"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "function outputText(text, flag) {"<<endl
-				<< "	if (form.className.indexOf('hidden') == -1) {"<<endl
-				<< "		form.className += ' hidden';"<<endl
-				<< "	}"<<endl
-				<< "	if (output.className.indexOf('visible') == -1) {"<<endl
-				<< "		output.className += ' visible';"<<endl
-				<< "	}"<<endl
-				<< "	var button = document.querySelector('#submitBox > p.last > button:first-child');"<<endl
-				<< "	if (button.className.indexOf('hidden') == -1) {"<<endl
-				<< "		button.className += ' hidden';"<<endl
-				<< "	}"<<endl
-				<< "	if (output.innerHTML.length != 0) {"<<endl
-				<< "		output.innerHTML += '<br />';"<<endl
-				<< "	}"<<endl
-				<< "	if (flag == -1) {"<<endl
-				<< "		text = \"<span style='color:red;'>\" + text + \"</span>\";"<<endl
-				<< "	} else if (flag == 1) {"<<endl
-				<< "		text = \"<span class='success'>\" + text + \"</span>\";"<<endl
-				<< "	}"<<endl
-				<< "	output.innerHTML += text;"<<endl
-				<< "}"<<endl
-				<< "function toggleSectionDisplay(h){"<<endl
-				<< "	if(h.nextSibling.className.indexOf('hidden') != -1){"<<endl
-				<< "		h.nextSibling.className = h.nextSibling.className.replace('hidden','');"<<endl
-				<< "		saveSectionState(h, false);"<<endl
-				<< "		h.firstChild.innerHTML='&#x2212;'"<<endl
-				<< "	}else{"<<endl
-				<< "		h.nextSibling.className += ' hidden';"<<endl
-				<< "		saveSectionState(h, true);"<<endl
-				<< "		h.firstChild.innerHTML='+'"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "function swapColorScheme(b){"<<endl
-				<< "	saveFilterState(b);"<<endl
-				<< "	var a = document.getElementById('cssBox').getElementsByTagName('input');"<<endl
-				<< "	if(b.checked){"<<endl
-				<< "		for(var i=0,z=a.length;i<z;i++){"<<endl
-				<< "			var s = a[i].getAttribute('data-selector').replace(/\\.dark/g,'');"<<endl
-				<< "			var c = document.querySelectorAll(s);"<<endl
-				<< "			for(var j=0,d=c.length;j<d;j++){"<<endl
-				<< "				c[j].className += ' dark';"<<endl
-				<< "			}"<<endl
-				<< "		}"<<endl
-				<< "	}else{"<<endl
-				<< "		for(var i=0,z=a.length;i<z;i++){"<<endl
-				<< "			var c = document.querySelectorAll(a[i].getAttribute('data-selector'));"<<endl
-				<< "			for(var j=0,d=c.length;j<d;j++){"<<endl
-				<< "				c[j].className = c[j].className.replace(' dark','');"<<endl
-				<< "			}"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "function toggleDisplayCSS(b,s){"<<endl
-				<< "	saveFilterState(b);"<<endl
-				<< "	var e = document.querySelectorAll(s);"<<endl
-				<< "	if(b.checked){"<<endl
-				<< "		for(var i=0,z=e.length;i<z;i++){"<<endl
-				<< "			e[i].className += ' hidden';"<<endl
-				<< "		}"<<endl
-				<< "	}else{"<<endl
-				<< "		for(var i=0,z=e.length;i<z;i++){"<<endl
-				<< "			e[i].className = e[i].className.replace(' hidden','');"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "function applyCSS(){"<<endl
-				<< "	var a = document.getElementById('cssBox').getElementsByTagName('input');"<<endl
-				<< "	if (document.styleSheets[0].cssRules) {"<<endl
-				<< "		var d = document.styleSheets[0];"<<endl
-				<< "		for(var i=0,z=a.length;i<z;i++){"<<endl
-				<< "			//Set rule."<<endl
-				<< "			var css = a[i].getAttribute('data-property') + ':' + a[i].value;"<<endl
-				<< "			//Store rule."<<endl
-				<< "			if ('localStorage' in window && window['localStorage'] !== null && window['localStorage'] !== undefined) {"<<endl
-				<< "				try {"<<endl
-				<< "					localStorage.setItem(a[i].getAttribute('data-selector'), css);"<<endl
-				<< "				} catch (e) {"<<endl
-				<< "					if (e == QUOTA_EXCEEDED_ERR) {"<<endl
-				<< "						alert('Web storage quota for this document has been exceeded. Please empty your browser\\'s cache. Note that this will delete all locally stored data.');"<<endl
-				<< "					}"<<endl
-				<< "				}"<<endl
-				<< "			}"<<endl
-				<< "			if (a[i].value.length == 0) {"<<endl
-				<< "				css += a[i].placeholder;"<<endl
-				<< "			}"<<endl
-				<< "			var rule = a[i].getAttribute('data-selector') + '{' + css + '}';"<<endl
-				<< "			d.insertRule(rule, d.cssRules.length);"<<endl
-				<< "		}"<<endl
-				<< "	} else if (document.styleSheets[0].rules) {  //IE8"<<endl
-				<< "		var d = document.styleSheets[0].rules;"<<endl
-				<< "		for(var i=0,z=a.length;i<z;i++){"<<endl
-				<< "			var css = a[i].getAttribute('data-property') + ':' + a[i].value;"<<endl
-				<< "			d.addRule(a[i].getAttribute('data-selector'), css, -1);"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "	hideCSSBox();"<<endl
-				<< "}"<<endl
-
-				<< "function saveFilterState(filter) {"<<endl
-				<< "	if ('localStorage' in window && window['localStorage'] !== null && window['localStorage'] !== undefined) {"<<endl
-				<< "		if (filter.checked) {  //Add to local storage."<<endl
-				<< "			try {"<<endl
-				<< "				localStorage.setItem(filter.id, true);"<<endl
-				<< "			} catch (e) {"<<endl
-				<< "				if (e == QUOTA_EXCEEDED_ERR) {"<<endl
-				<< "					alert('Web storage quota for this document has been exceeded. Please empty your browser\\'s cache. Note that this will delete all locally stored data.');"<<endl
-				<< "				}"<<endl
-				<< "			}"<<endl
-				<< "		} else {"<<endl
-				<< "			localStorage.removeItem(filter.id);"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "function saveSectionState(section, isCollapsed) {"<<endl
-				<< "	if ('localStorage' in window && window['localStorage'] !== null && window['localStorage'] !== undefined) {"<<endl
-				<< "		if (isCollapsed) {  //Add to local storage."<<endl
-				<< "			try {"<<endl
-				<< "			localStorage.setItem(section.id, true);"<<endl
-				<< "			} catch (e) {"<<endl
-				<< "				if (e == QUOTA_EXCEEDED_ERR) {"<<endl
-				<< "					alert('Web storage quota for this document has been exceeded. Please empty your browser\\'s cache. Note that this will delete all locally stored data.');"<<endl
-				<< "				}"<<endl
-				<< "			}"<<endl
-				<< "		} else {"<<endl
-				<< "			localStorage.removeItem(section.id);"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "function isResponseOK(text) {" << endl
-				<< "	return (JSON.parse(text).error == null);" << endl
-				<< "}" << endl
-				<< "function submitPlugin() {" << endl
-				<< "	var desc = document.getElementById('link').value;" << endl
-				<< "	if (desc.length != 0) {" << endl
-				<< "		desc += '\\n\\n';" << endl
-				<< "	}" << endl
-				<< "	desc += document.getElementById('notes').value;" << endl
-				<< "	if (desc.length == 0) {" << endl
-				<< "		outputText('Please supply at least a link or some notes.', -1);" << endl
-				<< "		return;" << endl
-				<< "	}" << endl
-				<< "	try {" << endl
-				<< "		var xhr = new XMLHttpRequest();" << endl
-				<< "		getBugId(document.getElementById('plugin').innerHTML, desc, xhr);" << endl
-				<< "	} catch(err) {" << endl
-				<< "		outputText('Exception occurred: ' + err.message, -1);" << endl
-				<< "	}" << endl
-				<< "}" << endl
+				<< "var url = 'http://www.darkcreations.org/bugzilla/jsonrpc.cgi';" << endl
+				<< "var suppressBrowserBox = false;" << endl
 				<< "function getBugId(plugin, desc, xhr) {" << endl
-				<< "    var request = {" << endl
-				<< "        \"method\":\"Bug.search\"," << endl
-				<< "        \"params\":[{" << endl
- 				<< "           \"Bugzilla_login\":\"bossguest@darkcreations.org\"," << endl
-				<< "            \"Bugzilla_password\":\"bosspassword\"," << endl
- 				<< "           \"product\":\"BOSS\"," << endl
-				<< "            \"component\":\"" << GetGameString(gl_current_game) << "\"," << endl
-				<< "            \"summary\":plugin" << endl
- 				<< "       }]," << endl
-				<< "        \"id\":1" << endl
-				<< "    }" << endl
-				<< "	outputText('Checking for existing submission...', 0);" << endl
- 				<< "	xhr.open('POST', url, true);" << endl
- 				<< "	xhr.setRequestHeader('Content-Type', 'application/json');" << endl
- 				<< "	xhr.onerror = error;" << endl
- 				<< "	xhr.onload = function() {" << endl
+				<< "	var request = {" << endl
+				<< "		\"method\":\"Bug.search\"," << endl
+				<< "		\"params\":[{" << endl
+				<< "			\"Bugzilla_login\":\"bossguest@darkcreations.org\"," << endl
+				<< "			\"Bugzilla_password\":\"bosspassword\"," << endl
+				<< "			\"product\":\"BOSS\"," << endl
+				<< "			\"component\":\"TES IV: Oblivion\"," << endl
+				<< "			\"summary\":plugin" << endl
+				<< "		}]," << endl
+				<< "		\"id\":1" << endl
+				<< "	};" << endl
+				<< "	outputPluginSubmitText('Checking for existing submission...', 0);" << endl
+				<< "	xhr.open('POST', url, true);" << endl
+				<< "	xhr.setRequestHeader('Content-Type', 'application/json');" << endl
+				<< "	xhr.onerror = pluginSubmitError;" << endl
+				<< "	xhr.onload = function() {" << endl
 				<< "		if (xhr.status == 200 && isResponseOK(xhr.responseText)) {" << endl
 				<< "			var response = JSON.parse(xhr.responseText);" << endl
 				<< "			if (response.result.bugs.length > 0) {" << endl
@@ -525,39 +341,39 @@ namespace boss {
 				<< "				addBug(plugin, desc, xhr);" << endl
 				<< "			}" << endl
 				<< "		} else {" << endl
-				<< "			outputText('Error: Existing submission check failed!', -1);" << endl
+				<< "			outputPluginSubmitText('Error: Existing submission check failed!', -1);" << endl
 				<< "		}" << endl
-				<< "	}" << endl
+				<< "	};" << endl
 				<< "	xhr.send(JSON.stringify(request));" << endl
 				<< "}" << endl
 				<< "function addBugComment(id, comment, xhr) {" << endl
 				<< "	var request = {" << endl
 				<< "		\"method\":\"Bug.add_comment\"," << endl
-				<< "        \"params\":[{" << endl
+				<< "		\"params\":[{" << endl
 				<< "			\"Bugzilla_login\":\"bossguest@darkcreations.org\"," << endl
 				<< "			\"Bugzilla_password\":\"bosspassword\"," << endl
 				<< "			\"id\":id," << endl
 				<< "			\"comment\":comment" << endl
 				<< "		}]," << endl
 				<< "		\"id\":2" << endl
- 				<< "	}" << endl
-				<< "	outputText('Previous submission found, updating with supplied details...', 0);" << endl
- 				<< "	xhr.open('POST', url, true);" << endl
- 				<< "	xhr.setRequestHeader('Content-type', 'application/json');" << endl
- 				<< "	xhr.onerror = error;" << endl
- 				<< "	xhr.onload = function() {" << endl
-				<< "	   if (xhr.status == 200 && isResponseOK(xhr.responseText)) {" << endl
-				<< "	       outputText('Plugin submission updated!', 1);" << endl
-				<< "	   } else {" << endl
-				<< "	       outputText('Error: Plugin submission could not be updated.', -1);" << endl
-				<< "	   }" << endl
-				<< "	}" << endl
+				<< "	};" << endl
+				<< "	outputPluginSubmitText('Previous submission found, updating with supplied details...', 0);" << endl
+				<< "	xhr.open('POST', url, true);" << endl
+				<< "	xhr.setRequestHeader('Content-type', 'application/json');" << endl
+				<< "	xhr.onerror = pluginSubmitError;" << endl
+				<< "	xhr.onload = function() {" << endl
+				<< "		if (xhr.status == 200 && isResponseOK(xhr.responseText)) {" << endl
+				<< "			outputPluginSubmitText('Plugin submission updated!', 1);" << endl
+				<< "		} else {" << endl
+				<< "			outputPluginSubmitText('Error: Plugin submission could not be updated.', -1);" << endl
+				<< "		}" << endl
+				<< "	};" << endl
 				<< "	xhr.send(JSON.stringify(request));" << endl
 				<< "}" << endl
 				<< "function addBug(summary, description, xhr) {" << endl
-				<< "    var request = {" << endl
+				<< "	var request = {" << endl
 				<< "		\"method\":\"Bug.create\"," << endl
- 				<< "       \"params\":[{" << endl
+				<< "		\"params\":[{" << endl
 				<< "			\"Bugzilla_login\":\"bossguest@darkcreations.org\"," << endl
 				<< "			\"Bugzilla_password\":\"bosspassword\"," << endl
 				<< "			\"product\":\"BOSS\"," << endl
@@ -571,221 +387,618 @@ namespace boss {
 				<< "			\"severity\":\"enhancement\"" << endl
 				<< "		}]," << endl
 				<< "		\"id\":3" << endl
-				<< "    }" << endl
-				<< "	outputText('No previous submission found, creating new submission...', 0);" << endl
-				<< "    xhr.open('POST', url, true);" << endl
-				<< "    xhr.setRequestHeader('Content-type', 'application/json');" << endl
-				<< "    xhr.onerror = error;" << endl
-				<< "    xhr.onload = function() {" << endl
-				<< "	   if (xhr.status == 200 && isResponseOK(xhr.responseText)) {" << endl
-				<< "	       outputText('Plugin submitted!', 1);" << endl
-				<< "	   } else {" << endl
-				<< "	       outputText('Error: Plugin could not be submitted.', -1);" << endl
-				<< "	   }" << endl
-				<< "	}" << endl
+				<< "	};" << endl
+				<< "	outputPluginSubmitText('No previous submission found, creating new submission...', 0);" << endl
+				<< "	xhr.open('POST', url, true);" << endl
+				<< "	xhr.setRequestHeader('Content-type', 'application/json');" << endl
+				<< "	xhr.onerror = pluginSubmitError;" << endl
+				<< "	xhr.onload = function() {" << endl
+				<< "		if (xhr.status == 200 && isResponseOK(xhr.responseText)) {" << endl
+				<< "			outputPluginSubmitText('Plugin submitted!', 1);" << endl
+				<< "		} else {" << endl
+				<< "			outputPluginSubmitText('Error: Plugin could not be submitted.', -1);" << endl
+				<< "		}" << endl
+				<< "	};" << endl
 				<< "	xhr.send(JSON.stringify(request));" << endl
 				<< "}" << endl
-				<< "function error() {" << endl
-				<< "	outputText('Error: Data transfer failed.', -1);" << endl
+				<< "function pluginSubmitError() {" << endl
+				<< "	outputPluginSubmitText('Error: Data transfer failed.', -1);" << endl
 				<< "}" << endl
-				<< "function toggleRuleListWarnings(b){saveFilterState(b);var u=document.getElementById('userlistMessages');if(u!=null){u=u.childNodes;for(var i=0,z=u.length;i<z;i++){if(u[i].className=='warn'){if(b.checked){u[i].style.display='none';hm++}else if(u[i].style.display=='none'){u[i].style.display='table';hm--}}}}hme.innerHTML=hm}" << endl
-				<< "function toggleMessages(filter){"<<endl
-				<< "	if(filter!=null){saveFilterState(filter);}"<<endl
-				<< "	var m=document.getElementById('recognised').childNodes,b9=document.getElementById('b9').checked,b10=document.getElementById('b10').checked,b11=document.getElementById('b11').checked,b12=document.getElementById('b12').checked,b13=document.getElementById('b13').checked,b14=document.getElementById('b14').checked;"<<endl
-				<< "	for(var i=0,z=m.length;i<z;i++){"<<endl
-				<< "		var ac=false,g=false,n=true,c=true,a=m[i].getElementsByTagName('span'),b=null;"<<endl
-				<< "		for(var j=0,y=a.length;j<y;j++){"<<endl
-				<< "			if(a[j].className=='ghosted'){"<<endl
-				<< "				g=true;"<<endl
-				<< "			}else if(a[j].className=='active'){"<<endl
-				<< "				ac=true;"<<endl
-				<< "			}"<<endl
-				<< "		}"<<endl
-				<< "		a=m[i].getElementsByTagName('li');"<<endl
-				<< "		for(var j=0,y=a.length;j<y;j++){"<<endl
-				<< "			if(!b9&&a[j].style.display=='none'){"<<endl
-				<< "				a[j].style.display='table';"<<endl
-				<< "				hm--"<<endl
-				<< "			}"<<endl
-				<< "			if(a[j].className=='note'){"<<endl
-				<< "				b=b10"<<endl
-				<< "			}else if(a[j].className=='tag'){"<<endl
-				<< "				b=b11"<<endl
-				<< "			}else if(a[j].className=='req'){"<<endl
-				<< "				b=b12"<<endl
-				<< "			}else if(a[j].className=='inc'){"<<endl
-				<< "				b=b13"<<endl
-				<< "			}else if(a[j].className=='dirty'){"<<endl
-				<< "				c=false;"<<endl
-				<< "				if(a[j].innerHTML.substr(0,35)=='Contains dirty edits: Do not clean.'){"<<endl
-				<< "					b=b14"<<endl
-				<< "				}"<<endl
-				<< "			}"<<endl
-				<< "			if(b!=null){"<<endl
-				<< "				if(b&&a[j].style.display!='none'){"<<endl
-				<< "					a[j].style.display='none';"<<endl
-				<< "					hm++"<<endl
-				<< "				}else if(!b&&a[j].style.display=='none'){"<<endl
-				<< "					a[j].style.display='table';"<<endl
-				<< "					hm--"<<endl
-				<< "				}"<<endl
-				<< "			}"<<endl
-				<< "			if(b9&&a[j].style.display!='none'){"<<endl
-				<< "				a[j].style.display='none';"<<endl
-				<< "				hm++"<<endl
-				<< "			}"<<endl
-				<< "			if(a[j].style.display!='none'){"<<endl
-				<< "				n=false"<<endl
-				<< "			}"<<endl
-				<< "		}"<<endl
-				<< "		if(!((document.getElementById('b6').checked&&n)||(document.getElementById('b7').checked&&g)||(document.getElementById('b8').checked&&c)||(document.getElementById('b15').checked&&!ac))&&m[i].style.display=='none'){"<<endl
-				<< "			m[i].style.display='block';"<<endl
-				<< "			hp--"<<endl
-				<< "		}else if(((document.getElementById('b6').checked&&n)||(document.getElementById('b7').checked&&g)||(document.getElementById('b8').checked&&c)||(document.getElementById('b15').checked&&!ac))&&m[i].style.display!='none'){"<<endl
-				<< "			m[i].style.display='none';"<<endl
-				<< "			hp++"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "	hme.innerHTML=hm;"<<endl
-				<< "	hpe.innerHTML=hp"<<endl
-				<< "}"<<endl
-				<< "function initialSetup() {"<<endl
-				<< "	var supportsXhr2CORS = ('withCredentials' in new XMLHttpRequest);"<<endl
-				<< "	var supportsJSON = (typeof(JSON) === 'object' && typeof(JSON.parse) === 'function');"<<endl
-				<< "	var supportsFileDnD = (window.File && window.FileReader && window.FileList && window.Blob && 'draggable' in document.createElement('span'));"<<endl
-				<< "	supportsPluginSubmit = (supportsXhr2CORS && supportsJSON);"<<endl
-				<< "	supportsCSSBackupRestore = (supportsFileDnD && supportsJSON);"<<endl
-				<< "	try {"<<endl
-				<< "		suppportsStateMemory = ('localStorage' in window && window['localStorage'] !== null && window['localStorage'] !== undefined);"<<endl
-				<< "	} catch (e) {}"<<endl
-				<< "	if (suppportsStateMemory) {  //Local storage read on page load."<<endl
-				<< "		var len = localStorage.length;"<<endl
-				<< "		for (var i=0; i < len; i++) {"<<endl
-				<< "			if (localStorage.key(i) == 'hideBrowserBox') {"<<endl
-				<< "				hideBrowserBox = true;"<<endl
-				<< "			} else {"<<endl
-				<< "				var elem = document.getElementById(localStorage.key(i));"<<endl
-				<< "				if (elem != null) {"<<endl
-				<< "					if ('defaultChecked' in elem) {  //It's a checkbox."<<endl
-				<< "						elem.checked = 'true';"<<endl
-				<< "					} else {  //It's a section."<<endl
-				<< "						toggleSectionDisplay(elem);"<<endl
-				<< "					}"<<endl
-				<< "				} else {  //It's a CSS selector."<<endl
-				<< "					if (document.styleSheets[0].cssRules) {"<<endl
-				<< "						var k = localStorage.key(i);"<<endl
-				<< "						var d = document.styleSheets[0];"<<endl
-				<< "						d.insertRule(k + '{' + localStorage.getItem(k) + '}', d.cssRules.length);"<<endl
-				<< "					}"<<endl
-				<< "				}"<<endl
-				<< "			}"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "	swapColorScheme(document.getElementById('b1'));"<<endl
-				<< "	toggleRuleListWarnings(document.getElementById('b2'));"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b3'),'.version','inline');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b4'),'.ghosted','inline');"<<endl
-				<< "	toggleDisplayCSS(document.getElementById('b5'),'.crc','inline');"<<endl
-				<< "	toggleMessages(null);"<<endl
-				<< "	if (!supportsPluginSubmit) { //Disable submission buttons."<<endl
-				<< "		var buttons = document.getElementById('unrecognised').nextSibling.getElementsByTagName('button');"<<endl
-				<< "		for (var i=0, len=buttons.length; i < len; i++) {"<<endl
-				<< "			buttons[i].style.display = 'none';"<<endl
-				<< "		}"<<endl
-				<< "	}"<<endl
-				<< "	if (supportsCSSBackupRestore) {"<<endl
-				<< "		var dropZone = document.getElementById('cssBox');"<<endl
-				<< "		dropZone.addEventListener('dragover', handleDragOver, false);"<<endl
-				<< "		dropZone.addEventListener('drop', handleFileSelect, false);"<<endl
-				<< "		if (suppportsStateMemory) {"<<endl
-				<< "			document.getElementById('loseSettingsClose').className += ' hidden';"<<endl
-				<< "		} else {"<<endl
-				<< "			document.getElementById('loseSettingsCacheClear').className += ' hidden';"<<endl
-				<< "		}"<<endl
-				<< "	} else {"<<endl
-				<< "		document.getElementById('backupCSSNote').className += ' hidden';"<<endl
-				<< "	}"<<endl
-				<< "	//Display browser compatibility panel."<<endl
-				<< "	if (!hideBrowserBox) {  //Set feedback."<<endl
-				<< "		if (supportsPluginSubmit) {"<<endl
-				<< "			document.getElementById('pluginSubmitSupport').className = 't';"<<endl
-				<< "		} else {"<<endl
-				<< "			document.getElementById('pluginSubmitSupport').className = 'c';"<<endl
-				<< "		}"<<endl
-				<< "		if (supportsCSSBackupRestore) {"<<endl
-				<< "			document.getElementById('cssBackupSupport').className = 't';"<<endl
-				<< "		} else {"<<endl
-				<< "			document.getElementById('cssBackupSupport').className = 'c';"<<endl
-				<< "		}"<<endl
-				<< "		if (suppportsStateMemory) {"<<endl
-				<< "			document.getElementById('memorySupport').className = 't';"<<endl
-				<< "		} else {"<<endl
-				<< "			document.getElementById('browserBox').querySelector('label').className += ' hidden';"<<endl
-				<< "			document.getElementById('memorySupport').className = 'c';"<<endl
-				<< "		}"<<endl
-				<< "		if (isSupported('opacity')) {"<<endl
-				<< "			document.getElementById('opacitySupport').className = 't';"<<endl
-				<< "		} else {"<<endl
-				<< "			document.getElementById('opacitySupport').className = 'c';"<<endl
-				<< "		}"<<endl
-				<< "		if (isSupported('boxShadow')) {"<<endl
-				<< "			document.getElementById('shadowsSupport').className = 't';"<<endl
-				<< "		} else {"<<endl
-				<< "			document.getElementById('shadowsSupport').className = 'c';"<<endl
-				<< "		}"<<endl
-				<< "		if (isSupported('transition') || isSupported('MozTransition') || isSupported('webkitTransition') || isSupported('OTransition') || isSupported('msTransition')) {"<<endl
-				<< "			document.getElementById('transitionsSupport').className = 't';"<<endl
-				<< "		} else {"<<endl
-				<< "			document.getElementById('transitionsSupport').className = 'c';"<<endl
-				<< "		}"<<endl
-				<< "		if (isSupported('transform') || isSupported('MozTransform') || isSupported('webkitTransform') || isSupported('OTransform') || isSupported('msTransform')) {"<<endl
-				<< "			document.getElementById('transformsSupport').className = 't';"<<endl
-				<< "		} else {"<<endl
-				<< "			document.getElementById('transformsSupport').className = 'c';"<<endl
-				<< "		}"<<endl
-				<< "		var i = document.createElement('input');"<<endl
-				<< "		i.setAttribute('type', 'color');"<<endl
-				<< "		if (i.type !== 'text') {"<<endl
-				<< "			document.getElementById('colorSupport').className = 't';"<<endl
-				<< "			document.getElementById('colorPickerNote').className += ' hidden';"<<endl
-				<< "		} else {"<<endl
-				<< "			document.getElementById('colorSupport').className = 'c';"<<endl
-				<< "		}"<<endl
-				<< "		if ('placeholder' in document.createElement('input')) {"<<endl
-				<< "			document.getElementById('placeholderSupport').className = 't';"<<endl
-				<< "		} else {"<<endl
-				<< "			document.getElementById('placeholderSupport').className = 'c';"<<endl
-				<< "		}"<<endl
-				<< "		var i = document.createElement('input');"<<endl
-				<< "		i.setAttribute('type', 'url');"<<endl
-				<< "		if (i.type !== 'text') {"<<endl
-				<< "			document.getElementById('validationSupport').className = 't';"<<endl
-				<< "		} else {"<<endl
-				<< "			document.getElementById('validationSupport').className = 'c';"<<endl
-				<< "		}"<<endl
-				<< "		if(document.getElementById('mask')==null){"<<endl
-				<< "			var mask=document.createElement('div');"<<endl
-				<< "			mask.id='mask';"<<endl
-				<< "			document.body.appendChild(mask);"<<endl
-				<< "		}"<<endl
-				<< "		document.getElementById('browserBox').className += ' visible';"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "function DomReady(fn){"<<endl
-				<< "	if(document.addEventListener){"<<endl
-				<< "		document.addEventListener('DOMContentLoaded', fn, false)"<<endl
-				<< "	}else{"<<endl
-				<< "		document.onreadystatechange = function(){readyState(fn)}"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "function readyState(fn){"<<endl
-				<< "	if(document.readyState == 'interactive'){"<<endl
-				<< "		fn()"<<endl
-				<< "	}"<<endl
-				<< "}"<<endl
-				<< "window.onDomReady = DomReady;"<<endl
-				<< "window.onDomReady(initialSetup);"<<endl
-				<< "</script>"<<endl;
+				<< "function isResponseOK(text) {" << endl
+				<< "	return (JSON.parse(text).error == null);" << endl
+				<< "}" << endl
+				<< "function isStorageSupported(){" << endl
+				<< "	try {" << endl
+				<< "		return ('localStorage' in window && window['localStorage'] !== null && window['localStorage'] !== undefined);" << endl
+				<< "	} catch (e) {" << endl
+				<< "		return false;" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function isCSSBackupRestoreSupported(){" << endl
+				<< "	return (window.File && window.FileReader && window.FileList && window.Blob && 'draggable' in document.createElement('span') && typeof(JSON) === 'object' && typeof(JSON.parse) === 'function');" << endl
+				<< "}" << endl
+				<< "function isPluginSubmitSupported(){" << endl
+				<< "	return ('withCredentials' in new XMLHttpRequest && typeof(JSON) === 'object' && typeof(JSON.parse) === 'function');" << endl
+				<< "}" << endl
+				<< "function isStyleSupported(propName) {" << endl
+				<< "	return typeof document.body.style[propName] !== 'undefined';" << endl
+				<< "}" << endl
+				<< "function isValidationSupported(){" << endl
+				<< "	return ('checkValidity' in document.createElement('form'));" << endl
+				<< "}" << endl
+				<< "function storeData(key, value){" << endl
+				<< "	try {" << endl
+				<< "		localStorage.setItem(key, value);" << endl
+				<< "	} catch (e) {" << endl
+				<< "		if (e == QUOTA_EXCEEDED_ERR) {" << endl
+				<< "			alert('Web storage quota for this document has been exceeded. Please empty your browser\\'s cache. Note that this will delete all locally stored data.');" << endl
+				<< "		}" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "/*Wrapper for native getElementsByClassName, or Dustin Diaz's getElementsByClass if no native function available.*/" << endl
+				<< "function getElementsByClassName(parent, className, tagName){" << endl
+				<< "	if (document.getElementsByClassName){" << endl
+				<< "		return parent.getElementsByClassName(className);" << endl
+				<< "	}else{" << endl
+				<< "		var classElements = new Array();" << endl
+				<< "		if ( parent == null )" << endl
+				<< "		parent = document;" << endl
+				<< "		if ( tagName == null )" << endl
+				<< "		tagName = '*';" << endl
+				<< "		var els = parent.getElementsByTagName(tagName);" << endl
+				<< "		var elsLen = els.length;" << endl
+				<< "		var pattern = new RegExp(\"(^|\\\\s)\"+className+\"(\\\\s|$)\");" << endl
+				<< "		for (i = 0, j = 0; i < elsLen; i++) {" << endl
+				<< "			if ( pattern.test(els[i].className) ) {" << endl
+				<< "				classElements[j] = els[i];" << endl
+				<< "				j++;" << endl
+				<< "			}" << endl
+				<< "		}" << endl
+				<< "		return classElements;" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function insertRule(styleSheet, selector, css){" << endl
+				<< "	if (styleSheet.cssRules) {" << endl
+				<< "		styleSheet.insertRule(selector + '{' + css + '}', styleSheet.cssRules.length);" << endl
+				<< "	} else if (styleSheet.rules) {" << endl
+				<< "		styleSheet.addRule(selector, css, -1);" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function addEventListener(element, event, fn) {" << endl
+				<< "	if(document.addEventListener){" << endl
+				<< "		element.addEventListener(event, fn, false);" << endl
+				<< "	} else {" << endl
+				<< "		element.attachEvent('on' + event, fn);" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function dispatchEvent(target, type) {" << endl
+				<< "	var event;" << endl
+				<< "	if (document.createEvent) {" << endl
+				<< "		event = document.createEvent('Event');" << endl
+				<< "		event.initEvent(type, true, true);" << endl
+				<< "	} else {" << endl
+				<< "		event = document.createEventObject();" << endl
+				<< "		event.eventType = 'on' + type;" << endl
+				<< "	}" << endl
+				<< "	if (document.dispatchEvent) {" << endl
+				<< "		target.dispatchEvent(event);" << endl
+				<< "	} else {" << endl
+				<< "		target.fireEvent(event.eventType, event);" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function showElement(element){" << endl
+				<< "	if (element != null){" << endl
+				<< "		if (element.className.indexOf('hidden') != -1) {" << endl
+				<< "			element.className = element.className.replace('hidden','');" << endl
+				<< "		} else if (element.className.indexOf('visible') == -1) {" << endl
+				<< "			element.className += ' visible';" << endl
+				<< "		}" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function hideElement(element){" << endl
+				<< "	if (element != null) {" << endl
+				<< "		if (element.className.indexOf('visible') != -1) {" << endl
+				<< "			element.className = element.className.replace('visible','');" << endl
+				<< "		}else if (element.className.indexOf('hidden') == -1) {" << endl
+				<< "			element.className += ' hidden';" << endl
+				<< "		}" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function stepUnhideElement(element){" << endl
+				<< "	if (element != null && element.className.indexOf('hidden') != -1){" << endl
+				<< "		element.className = element.className.replace('hidden','');" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function stepHideElement(element){" << endl
+				<< "	if (element != null) {" << endl
+				<< "		element.className += ' hidden';" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function saveCheckboxState(evt) {" << endl
+				<< "	if (evt.currentTarget.checked) {" << endl
+				<< "		storeData(evt.currentTarget.id, true);" << endl
+				<< "	} else {" << endl
+				<< "		localStorage.removeItem(evt.currentTarget.id);" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function handleFileSelect(evt) {" << endl
+				<< "	evt.stopPropagation();" << endl
+				<< "	evt.preventDefault();" << endl
+				<< "	evt.currentTarget.className = evt.currentTarget.className.replace('dragHover',''); " << endl
+				<< "	var files = evt.dataTransfer.files;" << endl
+				<< "	var a = document.getElementById('cssSettings').querySelectorAll('input[type=text], input[type=color]');" << endl
+				<< "	for (var i = 0, f; f = files[i]; i++) {" << endl
+				<< "		var reader = new FileReader();" << endl
+				<< "		reader.onload = (function(theFile) {" << endl
+				<< "			return function(e) {" << endl
+				<< "				try {" << endl
+				<< "					var json = JSON.parse(e.target.result).colors;" << endl
+				<< "					for (var key in json) {" << endl
+				<< "						if (json.hasOwnProperty(key) && json[key].length != 0) {" << endl
+				<< "							for (var i=0, z=a.length; i < z; i++) {" << endl
+				<< "								if (a[i].getAttribute('data-selector') == key) {" << endl
+				<< "									a[i].value = json[key].split(':').pop();" << endl
+				<< "								}" << endl
+				<< "							}" << endl
+				<< "						}" << endl
+				<< "					}" << endl
+				<< "				} catch (e) {" << endl
+				<< "					alert(e);" << endl
+				<< "				}" << endl
+				<< "			};" << endl
+				<< "		})(f);" << endl
+				<< "		reader.readAsText(f);" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function handleDragOver(evt) {" << endl
+				<< "	evt.stopPropagation();" << endl
+				<< "	evt.preventDefault();" << endl
+				<< "	evt.dataTransfer.dropEffect = 'copy';" << endl
+				<< "	if (evt.currentTarget.className.indexOf('dragHover') == -1) {" << endl
+				<< "		evt.currentTarget.className = 'dragHover ' + evt.currentTarget.className;" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function handleDragLeave(evt) {" << endl
+				<< "	evt.stopPropagation();" << endl
+				<< "	evt.preventDefault();" << endl
+				<< "	evt.currentTarget.className = evt.currentTarget.className.replace('dragHover',''); " << endl
+				<< "}" << endl
+				<< "function swapColorScheme(evt){" << endl
+				<< "	if (evt.currentTarget.id == 'useDarkColourScheme' && document.getElementById('cssButtonShow').className.indexOf('current') != -1){" << endl
+				<< "		return;" << endl
+				<< "	} else {" << endl
+				<< "		evt.stopPropagation();" << endl
+				<< "		evt.preventDefault();" << endl
+				<< "		if (isValidationSupported() && !evt.currentTarget.checkValidity()){" << endl
+				<< "			return;" << endl
+				<< "		}" << endl
+				<< "	}" << endl
+				<< "	var checkbox, a;" << endl
+				<< "	if (evt.currentTarget.id == 'useDarkColourScheme'){" << endl
+				<< "		checkbox = evt.currentTarget;" << endl
+				<< "		a = document.getElementById('cssSettings').querySelectorAll('input[type=text], input[type=color]');" << endl
+				<< "	} else {" << endl
+				<< "		checkbox = document.getElementById('useDarkColourScheme');" << endl
+				<< "		a = evt.currentTarget;" << endl
+				<< "	}" << endl
+				<< "	if(checkbox.checked){" << endl
+				<< "		for(var i=0,z=a.length;i<z;i++){" << endl
+				<< "			if (a[i].type == 'text' || a[i].type == 'color'){" << endl
+				<< "				var s = a[i].getAttribute('data-selector').replace(/\\.dark/g,'').replace('.current','').replace(':hover','');" << endl
+				<< "				var c = document.querySelectorAll(s);" << endl
+				<< "				for(var j=0,d=c.length;j<d;j++){" << endl
+				<< "					if (c[j].className.indexOf('dark') == -1){" << endl
+				<< "						c[j].className += ' dark';" << endl
+				<< "					}" << endl
+				<< "				}" << endl
+				<< "			}" << endl
+				<< "		}" << endl
+				<< "	}else{" << endl
+				<< "		for(var i=0,z=a.length;i<z;i++){" << endl
+				<< "			if (a[i].type == 'text' || a[i].type == 'color'){" << endl
+				<< "				var c = document.querySelectorAll(a[i].getAttribute('data-selector').replace('.current','').replace(':hover',''));" << endl
+				<< "				for(var j=0,d=c.length;j<d;j++){" << endl
+				<< "					c[j].className = c[j].className.replace(' dark','');" << endl
+				<< "				}" << endl
+				<< "			}" << endl
+				<< "		}" << endl
+				<< "	}" << endl
+				<< "	return false;" << endl
+				<< "}" << endl
+				<< "function toggleDisplayCSS(evt){" << endl
+				<< "	var e = getElementsByClassName(document, evt.currentTarget.getAttribute('data-class'), 'span');" << endl
+				<< "	if(evt.currentTarget.checked){" << endl
+				<< "		for(var i=0,z=e.length;i<z;i++){" << endl
+				<< "			e[i].className += ' hidden';" << endl
+				<< "		}" << endl
+				<< "	}else{" << endl
+				<< "		for(var i=0,z=e.length;i<z;i++){" << endl
+				<< "			e[i].className = e[i].className.replace(' hidden','');" << endl
+				<< "		}" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function backupCSS(evt){" << endl
+				<< "	if (isCSSBackupRestoreSupported()) {" << endl
+				<< "		var a = document.getElementById('cssSettings').querySelectorAll('input[type=text], input[type=color]');" << endl
+				<< "		var json = '{\"colors\":{';" << endl
+				<< "		for(var i=0,z=a.length;i<z;i++){" << endl
+				<< "			json += '\"' + a[i].getAttribute('data-selector') + '\":\"' + a[i].getAttribute('data-property') + ':' + a[i].value + '\",'" << endl
+				<< "		}" << endl
+				<< "		json = json.substr(0,json.length-1);" << endl
+				<< "		json += '}}';" << endl
+				<< "		var uriContent = 'data:json/settings-backup,' + encodeURIComponent(json);" << endl
+				<< "		location.href = uriContent;" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function toggleFilters(evt){" << endl
+				<< "	var filters = document.getElementsByTagName('aside')[0];" << endl
+				<< "	var arrow = document.getElementById('arrow');" << endl
+				<< "	if (arrow.className.indexOf('rotated') == -1) {" << endl
+				<< "		showElement(filters);" << endl
+				<< "		arrow.className += ' rotated';" << endl
+				<< "	} else {" << endl
+				<< "		hideElement(filters);" << endl
+				<< "		arrow.className = arrow.className.replace('rotated','');" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function showCSSBox(evt){" << endl
+				<< "	if (isStorageSupported()) {" << endl
+				<< "		var a = document.getElementById('cssSettings').querySelectorAll('input[type=text], input[type=color]');" << endl
+				<< "		var len = localStorage.length;" << endl
+				<< "		for (var i=0, z=a.length; i < z; i++) {" << endl
+				<< "			var s = localStorage.getItem(a[i].getAttribute('data-selector'));" << endl
+				<< "			if (s != null) {" << endl
+				<< "				a[i].value = s.split(':').pop();" << endl
+				<< "			}" << endl
+				<< "		}" << endl
+				<< "	}" << endl
+				<< "	showElement(document.getElementById('cssSettings'));" << endl
+				<< "}" << endl
+				<< "function showSubmitBox(evt){" << endl
+				<< "	document.getElementById('plugin').innerHTML=evt.currentTarget.innerHTML;" << endl
+				<< "	showElement(document.getElementById('overlay'));" << endl
+				<< "}" << endl
+				<< "function hideSubmitBox(evt){" << endl
+				<< "	var output = document.getElementById('output');" << endl
+				<< "	hideElement(document.getElementById('overlay'));" << endl
+				<< "	hideElement(output);" << endl
+				<< "	showElement(document.getElementById('submitBox').getElementsByTagName('form')[0][2]);" << endl
+				<< "	output.innerHTML='';" << endl
+				<< "}" << endl
+				<< "function submitPlugin(evt) {" << endl
+				<< "	evt.stopPropagation();" << endl
+				<< "	evt.preventDefault();" << endl
+				<< "	if (evt.currentTarget[0].value.length == 0 && evt.currentTarget[1].value.length == 0){" << endl
+				<< "		outputPluginSubmitText('Please supply at least a link or some notes.', -2);" << endl
+				<< "		return;" << endl
+				<< "	} else if (isValidationSupported() && !evt.currentTarget.checkValidity()){" << endl
+				<< "		return;" << endl
+				<< "	}" << endl
+				<< "	var desc = evt.currentTarget[0].value;" << endl
+				<< "	if (desc.length != 0) {" << endl
+				<< "		desc += '\\n\\n';" << endl
+				<< "	}" << endl
+				<< "	desc += evt.currentTarget[1].value;" << endl
+				<< "	try {" << endl
+				<< "		var xhr = new XMLHttpRequest();" << endl
+				<< "		getBugId(document.getElementById('plugin').innerHTML, desc, xhr);" << endl
+				<< "	} catch(err) {" << endl
+				<< "		outputPluginSubmitText('Exception occurred: ' + err.message, -1);" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function applyCSS(evt){" << endl
+				<< "	evt.stopPropagation();" << endl
+				<< "	evt.preventDefault();" << endl
+				<< "	if (isValidationSupported() && !evt.currentTarget.checkValidity()){" << endl
+				<< "		return;" << endl
+				<< "	}" << endl
+				<< "	for(var i=0,z=evt.currentTarget.length;i<z;i++){" << endl
+				<< "		if (evt.currentTarget[i].type == 'text' || evt.currentTarget[i].type == 'color'){" << endl
+				<< "			var css = evt.currentTarget[i].getAttribute('data-property') + ':' + evt.currentTarget[i].value;" << endl
+				<< "			if (evt.currentTarget[i].value.length == 0) {" << endl
+				<< "				css += evt.currentTarget[i].placeholder;" << endl
+				<< "			}" << endl
+				<< "			insertRule(document.styleSheets[0], evt.currentTarget[i].getAttribute('data-selector'), css);" << endl
+				<< "		}" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function storeCSS(evt){" << endl
+				<< "	evt.stopPropagation();" << endl
+				<< "	evt.preventDefault();" << endl
+				<< "	if (isValidationSupported() && !evt.currentTarget.checkValidity()){" << endl
+				<< "		return;" << endl
+				<< "	}" << endl
+				<< "	for(var i=0,z=evt.currentTarget.length;i<z;i++){" << endl
+				<< "		if (evt.currentTarget[i].type == 'text' || evt.currentTarget[i].type == 'color'){" << endl
+				<< "			storeData(evt.currentTarget[i].getAttribute('data-selector'), evt.currentTarget[i].getAttribute('data-property') + ':' + evt.currentTarget[i].value);" << endl
+				<< "		} else if (evt.currentTarget[i].type == 'checkbox'){" << endl
+				<< "			if (evt.currentTarget[i].checked) {" << endl
+				<< "				storeData(evt.currentTarget[i].id, true);" << endl
+				<< "			} else {" << endl
+				<< "				localStorage.removeItem(evt.currentTarget[i].id);" << endl
+				<< "			}" << endl
+				<< "		}" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function showSection(evt){" << endl
+				<< "	hideElement(document.querySelector('section.visible'));" << endl
+				<< "	showElement(document.getElementById(evt.currentTarget.getAttribute('data-section')));" << endl
+				<< "	var elem = document.querySelector('nav div.current');" << endl
+				<< "	if (elem != null){" << endl
+				<< "		elem.className = elem.className.replace('current', '');" << endl
+				<< "	}" << endl
+				<< "	if (evt.currentTarget.className.indexOf('current') == -1) {" << endl
+				<< "		evt.currentTarget.className += ' current';" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function toggleMessages(evt){" << endl
+				<< "	var listItems = document.getElementById('recPlugins').getElementsByTagName('li');" << endl
+				<< "	var i = listItems.length - 1;" << endl
+				<< "	var hiddenNo = parseInt(document.getElementById('hiddenMessageNo').innerHTML);" << endl
+				<< "	while (i>-1){" << endl
+				<< "		var spans = listItems[i].getElementsByTagName('span');" << endl
+				<< "		if (spans.length == 0 || spans[0].className.indexOf('mod') == -1){" << endl
+				<< "			var filterMatch = false;" << endl
+				<< "			if (evt.currentTarget.id == 'hideAllPluginMessages'){" << endl
+				<< "				filterMatch = true;" << endl
+				<< "			} else if (evt.currentTarget.id == 'hideNotes' && listItems[i].className.indexOf('note') != -1){" << endl
+				<< "				filterMatch = true;" << endl
+				<< "			} else if (evt.currentTarget.id == 'hideBashTags' && listItems[i].className.indexOf('tag') != -1){" << endl
+				<< "				filterMatch = true;" << endl
+				<< "			} else if (evt.currentTarget.id == 'hideRequirements' && listItems[i].className.indexOf('req') != -1){" << endl
+				<< "				filterMatch = true;" << endl
+				<< "			} else if (evt.currentTarget.id == 'hideIncompatibilities' && listItems[i].className.indexOf('inc') != -1){" << endl
+				<< "				filterMatch = true;" << endl
+				<< "			} else if (evt.currentTarget.id == 'hideDoNotCleanMessages' && listItems[i].className.indexOf('dirty') != -1 && listItems[i].innerHTML.indexOf('Contains dirty edits: Do not clean.') != -1){" << endl
+				<< "				filterMatch = true;" << endl
+				<< "			}" << endl
+				<< "			if (filterMatch){" << endl
+				<< "				if (evt.currentTarget.checked){" << endl
+				<< "					if (listItems[i].className.indexOf('hidden') == -1){" << endl
+				<< "						hiddenNo++;" << endl
+				<< "					}" << endl
+				<< "					stepHideElement(listItems[i]);" << endl
+				<< "				} else {" << endl
+				<< "					stepUnhideElement(listItems[i]);" << endl
+				<< "					if (listItems[i].className.indexOf('hidden') == -1){" << endl
+				<< "						hiddenNo--;" << endl
+				<< "					}" << endl
+				<< "				}" << endl
+				<< "			}" << endl
+				<< "		}" << endl
+				<< "		i--;" << endl
+				<< "	}" << endl
+				<< "	document.getElementById('hiddenMessageNo').innerHTML = hiddenNo;" << endl
+				<< "}" << endl
+				<< "function togglePlugins(evt){" << endl
+				<< "	var plugins = document.getElementById('recPlugins').getElementsByTagName('ul')[0].childNodes;" << endl
+				<< "	var i = plugins.length - 1;" << endl
+				<< "	var hiddenNo = parseInt(document.getElementById('hiddenPluginNo').innerHTML);" << endl
+				<< "	while (i>-1){" << endl
+				<< "		if (plugins[i].nodeType == Node.ELEMENT_NODE){" << endl
+				<< "			var filterMatch = false;" << endl
+				<< "			if (evt.currentTarget.id == 'hideMessagelessPlugins'){" << endl
+				<< "				var messages = plugins[i].getElementsByTagName('li');" << endl
+				<< "				var filterMatch = true;" << endl
+				<< "				var j = messages.length - 1;" << endl
+				<< "				while (j > -1){" << endl
+				<< "					if (messages[j].className.indexOf('hidden') == -1){" << endl
+				<< "						filterMatch = false;" << endl
+				<< "						break;" << endl
+				<< "					}" << endl
+				<< "					j--;" << endl
+				<< "				}" << endl
+				<< "			} else if (evt.currentTarget.id == 'hideInactivePlugins' && getElementsByClassName(plugins[i], 'active', 'span').length == 0){" << endl
+				<< "				filterMatch = true;" << endl
+				<< "			} else if (evt.currentTarget.id == 'hideCleanPlugins' && getElementsByClassName(plugins[i], 'dirty', 'li').length == 0){" << endl
+				<< "				filterMatch = true;" << endl
+				<< "			}" << endl
+				<< "			if (filterMatch){" << endl
+				<< "				if (evt.currentTarget.checked){" << endl
+				<< "					if (plugins[i].className.indexOf('hidden') == -1){" << endl
+				<< "						hiddenNo++;" << endl
+				<< "					}" << endl
+				<< "					stepHideElement(plugins[i]);" << endl
+				<< "				} else {" << endl
+				<< "					stepUnhideElement(plugins[i]);" << endl
+				<< "					if (plugins[i].className.indexOf('hidden') == -1){" << endl
+				<< "						hiddenNo--;" << endl
+				<< "					}" << endl
+				<< "				}" << endl
+				<< "			}" << endl
+				<< "		}" << endl
+				<< "		i--;" << endl
+				<< "	}" << endl
+				<< "	document.getElementById('hiddenPluginNo').innerHTML = hiddenNo;" << endl
+				<< "}" << endl
+				<< "function outputPluginSubmitText(text, flag) {" << endl
+				<< "	var output = document.getElementById('output');" << endl
+				<< "	if (flag != -2)" << endl
+				<< "	hideElement(document.getElementById('submitBox').getElementsByTagName('form')[0][2]);" << endl
+				<< "	showElement(output);" << endl
+				<< "	if (output.innerHTML.length != 0) {" << endl
+				<< "		output.innerHTML += '<br />';" << endl
+				<< "	}" << endl
+				<< "	if (flag < 0) {" << endl
+				<< "		text = \"<span style='color:red;'>\" + text + \"</span>\";" << endl
+				<< "	} else if (flag == 1) {" << endl
+				<< "		text = \"<span class='success'>\" + text + \"</span>\";" << endl
+				<< "	}" << endl
+				<< "	output.innerHTML += text;" << endl
+				<< "}" << endl
+				<< "function showBrowserBox(){" << endl
+				<< "	if (suppressBrowserBox){" << endl
+				<< "		var summaryButton = getElementsByClassName(document.getElementsByTagName('nav')[0], 'button', 'div')[0];" << endl
+				<< "		if (summaryButton.className.indexOf('current') == -1){" << endl
+				<< "			summaryButton.className += ' current';" << endl
+				<< "		}" << endl
+				<< "		showElement(document.getElementsByTagName('section')[0]);" << endl
+				<< "		return;" << endl
+				<< "	}" << endl
+				<< "	if (isPluginSubmitSupported()) {" << endl
+				<< "		document.getElementById('pluginSubmitSupport').className = 't';" << endl
+				<< "	} else {" << endl
+				<< "		document.getElementById('pluginSubmitSupport').className = 'c';" << endl
+				<< "	}" << endl
+				<< "	if (isCSSBackupRestoreSupported()) {" << endl
+				<< "		document.getElementById('cssBackupSupport').className = 't';" << endl
+				<< "	} else {" << endl
+				<< "		document.getElementById('cssBackupSupport').className = 'c';" << endl
+				<< "	}" << endl
+				<< "	if (isStorageSupported()) {" << endl
+				<< "		document.getElementById('memorySupport').className = 't';" << endl
+				<< "	} else {" << endl
+				<< "		hideElement(document.getElementById('browserBox').querySelector('label'));" << endl
+				<< "		document.getElementById('memorySupport').className = 'c';" << endl
+				<< "	}" << endl
+				<< "	if (isStyleSupported('opacity')) {" << endl
+				<< "		document.getElementById('opacitySupport').className = 't';" << endl
+				<< "	} else {" << endl
+				<< "		document.getElementById('opacitySupport').className = 'c';" << endl
+				<< "	}" << endl
+				<< "	if (isStyleSupported('boxShadow')) {" << endl
+				<< "		document.getElementById('shadowsSupport').className = 't';" << endl
+				<< "	} else {" << endl
+				<< "		document.getElementById('shadowsSupport').className = 'c';" << endl
+				<< "	}" << endl
+				<< "	if (isStyleSupported('transition') || isStyleSupported('MozTransition') || isStyleSupported('webkitTransition') || isStyleSupported('OTransition') || isStyleSupported('msTransition')) {" << endl
+				<< "		document.getElementById('transitionsSupport').className = 't';" << endl
+				<< "	} else {" << endl
+				<< "		document.getElementById('transitionsSupport').className = 'c';" << endl
+				<< "	}" << endl
+				<< "	if (isStyleSupported('transform') || isStyleSupported('MozTransform') || isStyleSupported('webkitTransform') || isStyleSupported('OTransform') || isStyleSupported('msTransform')) {" << endl
+				<< "		document.getElementById('transformsSupport').className = 't';" << endl
+				<< "	} else {" << endl
+				<< "		document.getElementById('transformsSupport').className = 'c';" << endl
+				<< "	}" << endl
+				<< "	var i = document.createElement('input');" << endl
+				<< "	i.setAttribute('type', 'color');" << endl
+				<< "	if (i.type !== 'text') {" << endl
+				<< "		document.getElementById('colorSupport').className = 't';" << endl
+				<< "	} else {" << endl
+				<< "		document.getElementById('colorSupport').className = 'c';" << endl
+				<< "	}" << endl
+				<< "	if ('placeholder' in document.createElement('input')) {" << endl
+				<< "		document.getElementById('placeholderSupport').className = 't';" << endl
+				<< "	} else {" << endl
+				<< "		document.getElementById('placeholderSupport').className = 'c';" << endl
+				<< "	}" << endl
+				<< "	if (isValidationSupported()) {" << endl
+				<< "		document.getElementById('validationSupport').className = 't';" << endl
+				<< "	} else {" << endl
+				<< "		document.getElementById('validationSupport').className = 'c';" << endl
+				<< "	}" << endl
+				<< "	showElement(document.getElementById('browserBox'));" << endl
+				<< "}" << endl
+				<< "function loadSettings(){" << endl
+				<< "	var i = localStorage.length - 1;" << endl
+				<< "	while (i > -1) {" << endl
+				<< "		if (localStorage.key(i) == 'suppressBrowserBox') {" << endl
+				<< "			suppressBrowserBox = true;" << endl
+				<< "		} else {" << endl
+				<< "			var elem = document.getElementById(localStorage.key(i));" << endl
+				<< "			if (elem != null && 'defaultChecked' in elem) {" << endl
+				<< "				elem.checked ='true';" << endl
+				<< "				dispatchEvent(elem,'click'); " << endl
+				<< "			} else {" << endl
+				<< "				if (document.styleSheets[0].cssRules) {" << endl
+				<< "					var k = localStorage.key(i);" << endl
+				<< "					var d = document.styleSheets[0];" << endl
+				<< "					d.insertRule(k + '{' + localStorage.getItem(k) + '}', d.cssRules.length);" << endl
+				<< "				}" << endl
+				<< "			}" << endl
+				<< "		}" << endl
+				<< "		i--;" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function setupEventHandlers(){" << endl
+				<< "	var i, elemArr;" << endl
+				<< "	if (isStorageSupported()){  /*Set up filter value and CSS setting storage read/write handlers.*/" << endl
+				<< "		elemArr = document.getElementsByTagName('aside')[0].getElementsByTagName('input');" << endl
+				<< "		i = elemArr.length - 1;" << endl
+				<< "		while(i > -1){" << endl
+				<< "			addEventListener(elemArr[i], 'click', saveCheckboxState);" << endl
+				<< "			i--;" << endl
+				<< "		}" << endl
+				<< "		addEventListener(document.getElementById('suppressBrowserBox'), 'click', saveCheckboxState);" << endl
+				<< "		addEventListener(document.getElementById('cssSettings').getElementsByTagName('form')[0], 'submit', storeCSS);" << endl
+				<< "	}" << endl
+				<< "	if (isCSSBackupRestoreSupported()){  /*Set up handlers for CSS backup & restore.*/" << endl
+				<< "		var dropZone = document.getElementById('cssSettings');" << endl
+				<< "		addEventListener(dropZone, 'dragover', handleDragOver);" << endl
+				<< "		addEventListener(dropZone, 'drop', handleFileSelect);" << endl
+				<< "		addEventListener(dropZone, 'dragleave', handleDragLeave);" << endl
+				<< "		addEventListener(document.getElementById('cssButtonBackup'), 'click', backupCSS);" << endl
+				<< "	}" << endl
+				<< "	if (isPluginSubmitSupported() && document.getElementById('unrecPlugins') != null){  /*Set up handlers for plugin submitter.*/" << endl
+				<< "		elemArr = document.getElementById('unrecPlugins').querySelectorAll('span.mod');" << endl
+				<< "		i = elemArr.length - 1;" << endl
+				<< "		while(i > -1){" << endl
+				<< "			addEventListener(elemArr[i], 'click', showSubmitBox);" << endl
+				<< "			i--;" << endl
+				<< "		}" << endl
+				<< "		addEventListener(document.getElementById('submitBox').getElementsByTagName('form')[0], 'reset', hideSubmitBox);" << endl
+				<< "		addEventListener(document.getElementById('submitBox').getElementsByTagName('form')[0], 'submit', submitPlugin);" << endl
+				<< "	}" << endl
+				<< "	addEventListener(document.getElementById('filtersButtonToggle'), 'click', toggleFilters);" << endl
+				<< "	/*Set up handlers for section display.*/" << endl
+				<< "	elemArr = document.getElementsByTagName('nav')[0].querySelectorAll('nav > div.button');" << endl
+				<< "	var i = elemArr.length - 1;" << endl
+				<< "	while(i > -1){" << endl
+				<< "		addEventListener(elemArr[i], 'click', showSection);" << endl
+				<< "		i--;" << endl
+				<< "	}" << endl
+				<< "	addEventListener(document.getElementById('cssButtonShow'), 'click', showSection);" << endl
+				<< "	addEventListener(document.getElementById('cssButtonShow'), 'click', showCSSBox);" << endl
+				<< "	addEventListener(document.getElementById('cssSettings').getElementsByTagName('form')[0], 'submit', applyCSS);" << endl
+				<< "	addEventListener(document.getElementById('cssSettings').getElementsByTagName('form')[0], 'submit', swapColorScheme);" << endl
+				<< "	addEventListener(document.getElementById('useDarkColourScheme'), 'click', swapColorScheme);" << endl
+				<< "	/*Set up handlers for filters.*/" << endl
+				<< "	addEventListener(document.getElementById('hideVersionNumbers'), 'click', toggleDisplayCSS);" << endl
+				<< "	addEventListener(document.getElementById('hideActiveLabel'), 'click', toggleDisplayCSS);" << endl
+				<< "	addEventListener(document.getElementById('hideChecksums'), 'click', toggleDisplayCSS);" << endl
+				<< "	addEventListener(document.getElementById('hideNotes'), 'click', toggleMessages);" << endl
+				<< "	addEventListener(document.getElementById('hideBashTags'), 'click', toggleMessages);" << endl
+				<< "	addEventListener(document.getElementById('hideRequirements'), 'click', toggleMessages);" << endl
+				<< "	addEventListener(document.getElementById('hideIncompatibilities'), 'click', toggleMessages);" << endl
+				<< "	addEventListener(document.getElementById('hideDoNotCleanMessages'), 'click', toggleMessages);" << endl
+				<< "	addEventListener(document.getElementById('hideAllPluginMessages'), 'click', toggleMessages);" << endl
+				<< "	addEventListener(document.getElementById('hideInactivePlugins'), 'click', togglePlugins);" << endl
+				<< "	addEventListener(document.getElementById('hideMessagelessPlugins'), 'click', togglePlugins);" << endl
+				<< "	addEventListener(document.getElementById('hideCleanPlugins'), 'click', togglePlugins);" << endl
+				<< "}" << endl
+				<< "function applyFeatureSupportRestrictions(){" << endl
+				<< "	if (!isPluginSubmitSupported()) { /*Disable unrecognised mod underline effect.*/" << endl
+				<< "		var buttons = document.getElementById('unrecPlugins').querySelectorAll('span.mod');" << endl
+				<< "		for (var i=0, len=buttons.length; i < len; i++) {" << endl
+				<< "			buttons[i].className += 'nosubmit';" << endl
+				<< "		}" << endl
+				<< "		hideElement(document.getElementById('unrecPluginsSubmitNote'));" << endl
+				<< "	}" << endl
+				<< "	if (isStorageSupported()) {" << endl
+				<< "		hideElement(document.getElementById('loseSettingsClose'));" << endl
+				<< "	} else {" << endl
+				<< "		hideElement(document.getElementById('loseSettingsCacheClear'));" << endl
+				<< "	}" << endl
+				<< "	if (!isCSSBackupRestoreSupported()) {" << endl
+				<< "		hideElement(document.getElementById('backupCSSNote'));" << endl
+				<< "	}" << endl
+				<< "	var i = document.createElement('input');" << endl
+				<< "	i.setAttribute('type', 'color');" << endl
+				<< "	if (i.type === 'text') {" << endl
+				<< "		hideElement(document.getElementById('colorPickerNote'));" << endl
+				<< "	}" << endl
+				<< "}" << endl
+				<< "function init(){" << endl
+				<< "	setupEventHandlers();" << endl
+				<< "	if (isStorageSupported()){" << endl
+				<< "		loadSettings();" << endl
+				<< "	}" << endl
+				<< "	applyFeatureSupportRestrictions();" << endl
+				<< "	showBrowserBox();" << endl
+				<< "}" << endl
+				<< "init();" << endl
+				<< "</script>" << endl;
 		}
 	}
 
@@ -857,11 +1070,75 @@ namespace boss {
 
 	Outputter& Outputter::operator<< (const logFormatting l) {
 		switch(l) {
+		case SECTION_ID_SUMMARY_OPEN:
+			if (outFormat == HTML)
+				outStream << "<section id='summary'>";
+			else
+				outStream << endl << endl << "======================================" << endl;
+			break;
+		case SECTION_ID_GENERAL_OPEN:
+			if (outFormat == HTML)
+				outStream << "<section id='generalMessages'>";
+			else
+				outStream << endl << endl << "======================================" << endl;
+			break;
+		case SECTION_ID_USERLIST_OPEN:
+			if (outFormat == HTML)
+				outStream << "<section id='userRules'>";
+			else
+				outStream << endl << endl << "======================================" << endl;
+			break;
+		case SECTION_ID_SE_OPEN:
+			if (outFormat == HTML)
+				outStream << "<section id='sePlugins'>";
+			else
+				outStream << endl << endl << "======================================" << endl;
+			break;
+		case SECTION_ID_RECOGNISED_OPEN:
+			if (outFormat == HTML)
+				outStream << "<section id='recPlugins'>";
+			else
+				outStream << endl << endl << "======================================" << endl;
+			break;
+		case SECTION_ID_UNRECOGNISED_OPEN:
+			if (outFormat == HTML)
+				outStream << "<section id='unrecPlugins'>";
+			else
+				outStream << endl << endl << "======================================" << endl;
+			break;
+		case SECTION_CLOSE:
+			if (outFormat == HTML)
+				outStream << "</section>";
+			break;
 		case DIV_OPEN:
 			if (outFormat == HTML)
 				outStream << "<div>";
 			else
 				outStream << endl;
+			break;
+		case DIV_SUMMARY_BUTTON_OPEN:
+			if (outFormat == HTML)
+				outStream << "<div class='button' data-section='summary'>";
+			break;
+		case DIV_GENERAL_BUTTON_OPEN:
+			if (outFormat == HTML)
+				outStream << "<div class='button' data-section='generalMessages'>";
+			break;
+		case DIV_USERLIST_BUTTON_OPEN:
+			if (outFormat == HTML)
+				outStream << "<div class='button' data-section='userRules'>";
+			break;
+		case DIV_SE_BUTTON_OPEN:
+			if (outFormat == HTML)
+				outStream << "<div class='button' data-section='sePlugins'>";
+			break;
+		case DIV_RECOGNISED_BUTTON_OPEN:
+			if (outFormat == HTML)
+				outStream << "<div class='button' data-section='recPlugins'>";
+			break;
+		case DIV_UNRECOGNISED_BUTTON_OPEN:
+			if (outFormat == HTML)
+				outStream << "<div class='button' data-section='unrecPlugins'>";
 			break;
 		case DIV_CLOSE:
 			if (outFormat == HTML)
@@ -891,14 +1168,6 @@ namespace boss {
 			if (outFormat == HTML)
 				outStream << "</table>";
 			break;
-		case LIST_ID_RECOGNISED_OPEN:
-			if (outFormat == HTML)
-				outStream << "<ul id='recognised'>";
-			break;
-		case LIST_ID_USERLIST_MESSAGES_OPEN:
-			if (outFormat == HTML)
-				outStream << "<ul id='userlistMessages'>";
-			break;
 		case LIST_OPEN:
 			if (outFormat == HTML)
 				outStream << "<ul>";
@@ -909,39 +1178,9 @@ namespace boss {
 			else
 				outStream << endl;
 			break;
-		case HEADING_ID_SUMMARY_OPEN:
+		case HEADING_OPEN:
 			if (outFormat == HTML)
-				outStream << "<h2 id='summary' onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>";
-			else
-				outStream << endl << endl << "======================================" << endl;
-			break;
-		case HEADING_ID_GENERAL_OPEN:
-			if (outFormat == HTML)
-				outStream << "<h2 id='general' onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>";
-			else
-				outStream << endl << endl << "======================================" << endl;
-			break;
-		case HEADING_ID_USERLIST_OPEN:
-			if (outFormat == HTML)
-				outStream << "<h2 id='userlist' onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>";
-			else
-				outStream << endl << endl << "======================================" << endl;
-			break;
-		case HEADING_ID_SE_OPEN:
-			if (outFormat == HTML)
-				outStream << "<h2 id='se' onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>";
-			else
-				outStream << endl << endl << "======================================" << endl;
-			break;
-		case HEADING_ID_RECOGNISEDSEC_OPEN:
-			if (outFormat == HTML)
-				outStream << "<h2 id='recognisedSec' onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>";
-			else
-				outStream << endl << endl << "======================================" << endl;
-			break;
-		case HEADING_ID_UNRECOGNISED_OPEN:
-			if (outFormat == HTML)
-				outStream << "<h2 id='unrecognised' onclick='toggleSectionDisplay(this)'><span>&#x2212;</span>";
+				outStream << "<h2>";
 			else
 				outStream << endl << endl << "======================================" << endl;
 			break;
@@ -993,12 +1232,6 @@ namespace boss {
 			else
 				outStream << " ";
 			break;
-		case SPAN_CLASS_GHOSTED_OPEN:
-			if (outFormat == HTML)
-				outStream << "<span class='ghosted'>&nbsp;";
-			else
-				outStream << " ";
-			break;
 		case SPAN_CLASS_CRC_OPEN:
 			if (outFormat == HTML)
 				outStream << "<span class='crc'>&nbsp;";
@@ -1042,10 +1275,6 @@ namespace boss {
 				outStream << "</blockquote>";
 			else
 				outStream << endl << endl;
-			break;
-		case BUTTON_SUBMIT_PLUGIN:
-			if (outFormat == HTML)
-				outStream << "<button class='submit' onclick='showPopupBox(this.nextSibling.innerHTML)'>Submit Plugin</button>";
 			break;
 		default:
 			break;

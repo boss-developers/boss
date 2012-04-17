@@ -92,7 +92,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WINVER=0x0400;__WXMSW__;_WINDOWS;_DEBUG;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\include;$(ProjectDir)..\..\..\lib\wxWidgets\include\msvc;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\boss-common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\include;$(ProjectDir)..\..\..\lib\wxWidgets\include\msvc;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\boss-common;$(ProjectDir)..\..\..\lib\curl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -108,7 +108,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;WINVER=0x0400;__WXMSW__;_WINDOWS;_DEBUG;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\include;$(ProjectDir)..\..\..\lib\wxWidgets\include\msvc;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\boss-common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\include;$(ProjectDir)..\..\..\lib\wxWidgets\include\msvc;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\boss-common;$(ProjectDir)..\..\..\lib\curl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -126,7 +126,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>BOSSGUI;CURL_STATICLIB;WIN32;WINVER=0x0400;__WXMSW__;_UNICODE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\include;$(ProjectDir)..\..\..\lib\wxWidgets\include\msvc;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\boss-common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\include;$(ProjectDir)..\..\..\lib\wxWidgets\include\msvc;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\boss-common;$(ProjectDir)..\..\..\lib\curl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -146,7 +146,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>CURL_STATICLIB;WIN32;WINVER=0x0400;__WXMSW__;_UNICODE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\include;$(ProjectDir)..\..\..\lib\wxWidgets\include\msvc;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\boss-common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\include;$(ProjectDir)..\..\..\lib\wxWidgets\include\msvc;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\boss-common;$(ProjectDir)..\..\..\lib\curl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>

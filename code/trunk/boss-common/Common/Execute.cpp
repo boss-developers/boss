@@ -158,20 +158,14 @@ namespace boss {
 		for (vector<Item>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter) {
 			if (itemIter->Type() == MOD && itemIter->Exists()) {  //Only act on mods that exist.
 				Outputter buffer(gl_log_format);
-				buffer << LIST_ITEM;
-				if (unrecognised.find(itemIter->Name()) != unrecognised.end())
-					buffer << BUTTON_SUBMIT_PLUGIN;
-				buffer << SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
+				buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
 				string version = itemIter->GetVersion();
 				if (!version.empty())
 						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
 				if (hashset.find(to_lower_copy(itemIter->Name())) != hashset.end())  //Plugin is active.
 					buffer << SPAN_CLASS_ACTIVE_OPEN << "Active" << SPAN_CLOSE;
-				if (itemIter->IsGhosted()) {
-					buffer << SPAN_CLASS_GHOSTED_OPEN << "Ghosted" << SPAN_CLOSE;
-					counters.ghosted++;
-					if (gl_show_CRCs)
-						buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(itemIter->Name() + ".ghost"))) << SPAN_CLOSE;
+				if (gl_show_CRCs && itemIter->IsGhosted()) {
+					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(itemIter->Name() + ".ghost"))) << SPAN_CLOSE;
 				} else if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / itemIter->Name())) << SPAN_CLOSE;
 			
@@ -223,43 +217,52 @@ namespace boss {
 	void PrintBOSSlog(fs::path file, bosslogContents contents, const summaryCounters counters, const string scriptExtender) {
 
 		Outputter bosslog(gl_log_format);
-		bosslog.PrintHeader();
-		bosslog.SetHTMLSpecialEscape(false);
+		bosslog.PrintHeaderTop();
 
 		if (gl_log_format == HTML) {
-			bosslog	<< "<div id='menu'>"
-				<< "<div onclick='showCSSBox()'>CSS Settings</div>"
-				<< "<div id='filtersButton' onclick='toggleFilters()'>"
-				<< "	<span>Filters</span>"
-				<< "	<span id='arrow'>&#xbb;</span>"
-				<< "</div>"
-				<< "</div>"
-				<< "<ul id='filters'>"
-				<< "	<li><label><input type='checkbox' id='b1' onclick='swapColorScheme(this)' />Use Dark Colour Scheme</label>"
-				<< "	<li><label><input type='checkbox' id='b2' onclick='toggleRuleListWarnings(this)' />Hide Rule Warnings</label>"
-				<< "	<li><label><input type='checkbox' id='b3' onclick='toggleDisplayCSS(this,\".version\")' />Hide Version Numbers</label>"
-				<< "	<li><label><input type='checkbox' id='b4' onclick='toggleDisplayCSS(this,\".ghosted\")' />Hide 'Ghosted' Label</label>"
-				<< "	<li><label><input type='checkbox' id='b16' onclick='toggleDisplayCSS(this,\".active\")' />Hide 'Active' Label</label>"
-				<< "	<li><label><input type='checkbox' id='b5' onclick='toggleDisplayCSS(this,\".crc\")' />Hide Checksums</label>"
-				<< "	<li><label><input type='checkbox' id='b15' onclick='toggleMessages(this)' />Hide Inactive Mods</label>"
-				<< "	<li><label><input type='checkbox' id='b6' onclick='toggleMessages(this)' />Hide Messageless Mods</label>"
-				<< "	<li><label><input type='checkbox' id='b7' onclick='toggleMessages(this)' />Hide Ghosted Mods</label>"
-				<< "	<li><label><input type='checkbox' id='b8' onclick='toggleMessages(this)' />Hide Clean Mods</label>"
-				<< "	<li><label><input type='checkbox' id='b9' onclick='toggleMessages(this)' />Hide All Mod Messages</label>"
-				<< "	<li><label><input type='checkbox' id='b10' onclick='toggleMessages(this)' />Hide Notes</label>"
-				<< "	<li><label><input type='checkbox' id='b11' onclick='toggleMessages(this)' />Hide Bash Tag Suggestions</label>"
-				<< "	<li><label><input type='checkbox' id='b12' onclick='toggleMessages(this)' />Hide Requirements</label>"
-				<< "	<li><label><input type='checkbox' id='b13' onclick='toggleMessages(this)' />Hide Incompatibilities</label>"
-				<< "	<li><label><input type='checkbox' id='b14' onclick='toggleMessages(this)' />Hide 'Do Not Clean' Messages</label>"
-				<< "	<li style='font-style:italic;'><span id='hp'>0</span> of " << (counters.recognised+counters.unrecognised) << " plugins hidden."
-				<< "	<li style='font-style:italic;'><span id='hm'>0</span> of " << counters.messages << " messages hidden."
-				<< "</ul>";
+			bosslog << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
+
+			if (!contents.globalMessages.empty() || !contents.iniParsingError.empty() || !contents.criticalError.empty() || !contents.updaterErrors.empty() || !contents.regexError.empty())
+				bosslog << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
+
+			if (!contents.userlistMessages.empty() || !contents.userlistParsingError.empty() || !contents.userlistSyntaxErrors.empty())
+				bosslog << DIV_USERLIST_BUTTON_OPEN << "User Rules" << DIV_CLOSE;
+
+			if (!contents.seInfo.empty())
+				bosslog << DIV_SE_BUTTON_OPEN << scriptExtender << " Plugins" << DIV_CLOSE;
+
+			bosslog << DIV_RECOGNISED_BUTTON_OPEN << "Recognised Plugins" << DIV_CLOSE;
+
+			if (!contents.unrecognisedPlugins.empty())
+				bosslog << DIV_UNRECOGNISED_BUTTON_OPEN << "Unrecognised Plugins" << DIV_CLOSE;
+
+			bosslog.PrintHeaderBottom();
 		}
+
+		bosslog.SetHTMLSpecialEscape(false);
+
+		// Print Summary
+		bosslog << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE;
+
+		if (contents.oldRecognisedPlugins == contents.recognisedPlugins)
+			bosslog << PARAGRAPH << "No change in recognised plugin list since last run.";
+
+		if (!contents.summary.empty())
+			bosslog << contents.summary;
+	
+		bosslog << TABLE_OPEN
+			<< TABLE_ROW << TABLE_DATA << "Recognised plugins:" << TABLE_DATA << counters.recognised << TABLE_DATA << "Warning messages:" << TABLE_DATA << counters.warnings
+			<< TABLE_ROW << TABLE_DATA << "Unrecognised plugins:" << TABLE_DATA << counters.unrecognised << TABLE_DATA << "Error messages:" << TABLE_DATA << counters.errors
+			<< TABLE_ROW << TABLE_DATA << "Ghosted plugins:" << TABLE_DATA << counters.ghosted << TABLE_DATA << "Total number of messages:" << TABLE_DATA << counters.messages
+			<< TABLE_ROW << TABLE_DATA << "Total number of plugins:" << TABLE_DATA << (counters.recognised+counters.unrecognised) << TABLE_DATA << TABLE_DATA
+			<< TABLE_CLOSE
+			<< PARAGRAPH << "Plugins sorted by user rules are counted as recognised plugins."
+			<< SECTION_CLOSE;
 
 		// Display Global Messages
 		if (!contents.globalMessages.empty() || !contents.iniParsingError.empty() || !contents.criticalError.empty() || !contents.updaterErrors.empty() || !contents.regexError.empty()) {
 
-			bosslog << HEADING_ID_GENERAL_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN;
+			bosslog << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN;
 			if (!contents.criticalError.empty())		//Print masterlist parsing error.
 				bosslog << contents.criticalError;
 			else {
@@ -277,35 +280,17 @@ namespace boss {
 				bosslog.SetHTMLSpecialEscape(false);
 			}
 
-			bosslog << LIST_CLOSE;
+			bosslog << LIST_CLOSE << SECTION_CLOSE;
 			if (!contents.criticalError.empty()) {  //Exit early.
-				bosslog.PrintFooter();
+				bosslog.PrintFooter(counters.recognised+counters.unrecognised, counters.messages);
 				bosslog.Save(file, true);
 				return;
 			}
 		}
 
-		// Print Summary
-		bosslog << HEADING_ID_SUMMARY_OPEN << "Summary" << HEADING_CLOSE << DIV_OPEN;
-
-		if (contents.oldRecognisedPlugins == contents.recognisedPlugins)
-			bosslog << PARAGRAPH << "No change in recognised plugin list since last run.";
-
-		if (!contents.summary.empty())
-			bosslog << contents.summary;
-	
-		bosslog << TABLE_OPEN
-			<< TABLE_ROW << TABLE_DATA << "Recognised plugins:" << TABLE_DATA << counters.recognised << TABLE_DATA << "Warning messages:" << TABLE_DATA << counters.warnings
-			<< TABLE_ROW << TABLE_DATA << "Unrecognised plugins:" << TABLE_DATA << counters.unrecognised << TABLE_DATA << "Error messages:" << TABLE_DATA << counters.errors
-			<< TABLE_ROW << TABLE_DATA << "Ghosted plugins:" << TABLE_DATA << counters.ghosted << TABLE_DATA << "Total number of messages:" << TABLE_DATA << counters.messages
-			<< TABLE_ROW << TABLE_DATA << "Total number of plugins:" << TABLE_DATA << (counters.recognised+counters.unrecognised) << TABLE_DATA << TABLE_DATA
-			<< TABLE_CLOSE
-			<< PARAGRAPH << "Plugins sorted by user rules are counted as recognised plugins."
-			<< DIV_CLOSE;
-
 		// Display RuleList Messages
 		if (!contents.userlistMessages.empty() || !contents.userlistParsingError.empty() || !contents.userlistSyntaxErrors.empty()) {
-			bosslog << HEADING_ID_USERLIST_OPEN << "Userlist Messages" << HEADING_CLOSE << LIST_ID_USERLIST_MESSAGES_OPEN;
+			bosslog << SECTION_ID_USERLIST_OPEN << HEADING_OPEN << "User Rules" << HEADING_CLOSE << LIST_OPEN;
 			if (!contents.userlistParsingError.empty())  //First print parser/syntax error messages.
 				bosslog << contents.userlistParsingError;
 
@@ -314,34 +299,38 @@ namespace boss {
 				bosslog << contents.userlistSyntaxErrors[i];
 
 			bosslog << contents.userlistMessages  //Now print the rest of the userlist messages.
-				<< LIST_CLOSE;
+				<< LIST_CLOSE << SECTION_CLOSE;
 		}
 
 		// Display Script Extender Info
 		if (!contents.seInfo.empty())
-			bosslog << HEADING_ID_SE_OPEN << "Script Extender And Script Extender Plugins" << HEADING_CLOSE << LIST_OPEN
+			bosslog << SECTION_ID_SE_OPEN << HEADING_OPEN << scriptExtender << " Plugins" << HEADING_CLOSE << LIST_OPEN
 				<< contents.seInfo
-				<< LIST_CLOSE;
+				<< LIST_CLOSE << SECTION_CLOSE;
 
 		// Display Recognised Mods
+		bosslog << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN;
 		if (gl_revert < 1) 
-			bosslog << HEADING_ID_RECOGNISEDSEC_OPEN << "Recognised And Re-ordered Plugins" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
+			bosslog << "Recognised Plugins";
 		else if (gl_revert == 1)
-			bosslog << HEADING_ID_RECOGNISEDSEC_OPEN << "Restored Load Order (Using modlist.txt)" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
+			bosslog << "Restored Load Order (Using modlist.txt)";
 		else if (gl_revert == 2) 
-			bosslog << HEADING_ID_RECOGNISEDSEC_OPEN << "Restored Load Order (Using modlist.old)" << HEADING_CLOSE << LIST_ID_RECOGNISED_OPEN;
-		bosslog << contents.recognisedPlugins
-			<< LIST_CLOSE;
+			bosslog << "Restored Load Order (Using modlist.old)";
+		bosslog  << HEADING_CLOSE << PARAGRAPH 
+			<< "These plugins are recognised by BOSS and have been sorted according to its masterlist. Please read any attached messages and act on any that require action."
+			<< LIST_OPEN
+			<< contents.recognisedPlugins
+			<< LIST_CLOSE << SECTION_CLOSE;
 
 		// Display Unrecognised Mods
 		if (!contents.unrecognisedPlugins.empty())
-			bosslog << HEADING_ID_UNRECOGNISED_OPEN << "Unrecognised Plugins" << HEADING_CLOSE << DIV_OPEN 
+			bosslog << SECTION_ID_UNRECOGNISED_OPEN << HEADING_OPEN << "Unrecognised Plugins" << HEADING_CLOSE 
 				<< PARAGRAPH << "Reorder these by hand using your favourite mod ordering utility." << LIST_OPEN
 				<< contents.unrecognisedPlugins
-				<< LIST_CLOSE << DIV_CLOSE;
+				<< LIST_CLOSE << SECTION_CLOSE;
 
 		// Finish
-		bosslog.PrintFooter();
+		bosslog.PrintFooter(counters.recognised+counters.unrecognised, counters.messages);
 		bosslog.Save(file, true);
 	}
 
@@ -596,7 +585,7 @@ namespace boss {
 						if (lines[i].Key() == AFTER)
 							++modlistPos2;
 						modlist.Insert(modlistPos2, mod);
-						buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << ruleIter->Object() << "\" has been sorted " << lines[i].KeyToString() << " \"" << lines[i].Object() << "\".";
+						buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << ruleIter->Object() << "\" has been sorted " << to_lower_copy(lines[i].KeyToString()) << " \"" << lines[i].Object() << "\".";
 					} else if (lines[i].Key() == TOP || lines[i].Key() == BOTTOM) {
 						Item mod;
 						modlistPos1 = modlist.FindItem(ruleItem.Name());
@@ -635,7 +624,7 @@ namespace boss {
 							modlistPos2 = modlist.FindGroupEnd(lines[i].Object());  //Find the end.
 						modlist.Insert(modlistPos2, mod);  //Now insert the mod into the group. This breaks all modlist iterators active.
 						//Print success message.
-						buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << ruleIter->Object() << "\" inserted at the " << lines[i].KeyToString() << " of group \"" << lines[i].Object() << "\".";
+						buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << ruleIter->Object() << "\" inserted at the " << to_lower_copy(lines[i].KeyToString()) << " of group \"" << lines[i].Object() << "\".";
 					}
 					i++;
 				}
@@ -697,7 +686,7 @@ namespace boss {
 				//Now insert the group.
 				modlist.Insert(modlistPos2, group, 0, group.size());
 				//Print success message.
-				buffer << LIST_ITEM_CLASS_SUCCESS << "The group \"" << ruleIter->Object() << "\" has been sorted " << lines[i].KeyToString() << " the group \"" << lines[i].Object() << "\".";
+				buffer << LIST_ITEM_CLASS_SUCCESS << "The group \"" << ruleIter->Object() << "\" has been sorted " << to_lower_copy(lines[i].KeyToString()) << " the group \"" << lines[i].Object() << "\".";
 			}
 			//Now find that last recognised mod and set the iterator again.
 			modlist.LastRecognisedPos(modlist.FindLastItem(lastRecognisedItem));
