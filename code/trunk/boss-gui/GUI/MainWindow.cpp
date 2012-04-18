@@ -247,7 +247,7 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	formatBox->Add(FormatChoice = new wxChoice(this, DROPDOWN_LogFormat, wxPoint(110,60), wxDefaultSize, 2, BOSSlogFormat, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	//Add the verbosityBox to its parent now to preserve layout.
 	outputOptionsBox->Add(formatBox, 0, wxEXPAND, 0);
-	columnBox->Add(outputOptionsBox, 0, wxBOTTOM, 30);
+	columnBox->Add(outputOptionsBox, 0, wxBOTTOM, 20);
 
 	//Now add the main buttons to the first column.
 	wxBoxSizer *buttonBox = new wxBoxSizer(wxVERTICAL);

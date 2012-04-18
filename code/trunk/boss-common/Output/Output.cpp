@@ -184,7 +184,7 @@ namespace boss {
 				<< "section {position:absolute;top:0;left:154px;display:none;padding-right:0.5em;padding-left:1em;height:100%;}" << endl
 				<< "#unrecPlugins span.mod {cursor:pointer;border-bottom:#888 dotted 1px;}" << endl
 				<< "#unrecPlugins span.mod:hover {border-bottom:#888 solid 1px;}" << endl
-				<< "#unrecPlugins span.mod.nosubmit {border-bottom:;cursor:auto;}" << endl
+				<< "#unrecPlugins span.mod.nosubmit {border-bottom:none;cursor:auto;}" << endl
 				<< "</style>" << endl
 				<< "<!--[if lt IE 9]>" << endl
 				<< "<script>" << endl
@@ -292,7 +292,7 @@ namespace boss {
 				<< "<label><input type='checkbox' id='hideMessagelessPlugins'/>Hide Messageless Plugins</label>" << endl
 				<< "<label><input type='checkbox' id='hideCleanPlugins'/>Hide Clean Plugins</label>" << endl
 				<< "<footer>" << endl
-				<< "	<span id='hiddenPluginNo'>0</span> of " << pluginNo << " plugins hidden." << endl
+				<< "	<span id='hiddenPluginNo'>0</span> of " << pluginNo << " recognised plugins hidden." << endl
 				<< "	<span id='hiddenMessageNo'>0</span> of " << messageNo << " messages hidden." << endl
 				<< "</footer>" << endl
 				<< "</aside>" << endl
@@ -784,6 +784,7 @@ namespace boss {
 				<< "		i--;" << endl
 				<< "	}" << endl
 				<< "	document.getElementById('hiddenMessageNo').innerHTML = hiddenNo;" << endl
+				<< "	dispatchEvent(document.getElementById('hideMessagelessPlugins'),'click');" << endl
 				<< "}" << endl
 				<< "function togglePlugins(evt){" << endl
 				<< "	var plugins = document.getElementById('recPlugins').getElementsByTagName('ul')[0].childNodes;" << endl
@@ -791,35 +792,34 @@ namespace boss {
 				<< "	var hiddenNo = parseInt(document.getElementById('hiddenPluginNo').innerHTML);" << endl
 				<< "	while (i>-1){" << endl
 				<< "		if (plugins[i].nodeType == Node.ELEMENT_NODE){" << endl
-				<< "			var filterMatch = false;" << endl
-				<< "			if (evt.currentTarget.id == 'hideMessagelessPlugins'){" << endl
-				<< "				var messages = plugins[i].getElementsByTagName('li');" << endl
-				<< "				var filterMatch = true;" << endl
-				<< "				var j = messages.length - 1;" << endl
-				<< "				while (j > -1){" << endl
-				<< "					if (messages[j].className.indexOf('hidden') == -1){" << endl
-				<< "						filterMatch = false;" << endl
-				<< "						break;" << endl
-				<< "					}" << endl
-				<< "					j--;" << endl
+				<< "			var isMessageless = true," << endl
+				<< "			isInactive = true," << endl
+				<< "			isClean = true;" << endl
+				<< "			var messages = plugins[i].getElementsByTagName('li');" << endl
+				<< "			var j = messages.length - 1;" << endl
+				<< "			while (j > -1){" << endl
+				<< "				if (messages[j].className.indexOf('hidden') == -1){" << endl
+				<< "					isMessageless = false;" << endl
+				<< "					break;" << endl
 				<< "				}" << endl
-				<< "			} else if (evt.currentTarget.id == 'hideInactivePlugins' && getElementsByClassName(plugins[i], 'active', 'span').length == 0){" << endl
-				<< "				filterMatch = true;" << endl
-				<< "			} else if (evt.currentTarget.id == 'hideCleanPlugins' && getElementsByClassName(plugins[i], 'dirty', 'li').length == 0){" << endl
-				<< "				filterMatch = true;" << endl
+				<< "				j--;" << endl
 				<< "			}" << endl
-				<< "			if (filterMatch){" << endl
-				<< "				if (evt.currentTarget.checked){" << endl
-				<< "					if (plugins[i].className.indexOf('hidden') == -1){" << endl
-				<< "						hiddenNo++;" << endl
-				<< "					}" << endl
-				<< "					stepHideElement(plugins[i]);" << endl
-				<< "				} else {" << endl
-				<< "					stepUnhideElement(plugins[i]);" << endl
-				<< "					if (plugins[i].className.indexOf('hidden') == -1){" << endl
-				<< "						hiddenNo--;" << endl
-				<< "					}" << endl
+				<< "			if (getElementsByClassName(plugins[i], 'active', 'span').length != 0){" << endl
+				<< "				isInactive = false;" << endl
+				<< "			}" << endl
+				<< "			if (getElementsByClassName(plugins[i], 'dirty', 'li').length != 0){" << endl
+				<< "				isClean = false;" << endl
+				<< "			}" << endl
+				<< "			if ((document.getElementById('hideMessagelessPlugins').checked && isMessageless)" << endl
+				<< "				|| (document.getElementById('hideInactivePlugins').checked && isInactive)" << endl
+				<< "				|| (document.getElementById('hideCleanPlugins').checked && isClean)){" << endl
+				<< "				if (plugins[i].className.indexOf('hidden') == -1){" << endl
+				<< "					hiddenNo++;" << endl
+				<< "					hideElement(plugins[i]);" << endl
 				<< "				}" << endl
+				<< "			} else if (plugins[i].className.indexOf('hidden') != -1){" << endl
+				<< "					hiddenNo--;" << endl
+				<< "					showElement(plugins[i]);" << endl
 				<< "			}" << endl
 				<< "		}" << endl
 				<< "		i--;" << endl
@@ -1010,6 +1010,11 @@ namespace boss {
 				<< "		loadSettings();" << endl
 				<< "	}" << endl
 				<< "	applyFeatureSupportRestrictions();" << endl
+				<< "	//Initially disable all filters." << endl
+				<< "	var elemArr = document.getElementsByTagName('aside')[0].getElementsByTagName('input');" << endl
+				<< "	for (var i=0, z=elemArr.length;i<z;i++){" << endl
+				<< "		elemArr[i].disabled = true;" << endl
+				<< "	}" << endl
 				<< "	showBrowserBox();" << endl
 				<< "}" << endl
 				<< "init();" << endl

@@ -330,7 +330,7 @@ namespace boss {
 				<< LIST_CLOSE << SECTION_CLOSE;
 
 		// Finish
-		bosslog.PrintFooter(counters.recognised+counters.unrecognised, counters.messages);
+		bosslog.PrintFooter(counters.recognised, counters.messages);
 		bosslog.Save(file, true);
 	}
 

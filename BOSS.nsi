@@ -11,9 +11,9 @@
 ;General
 
 	;Name, file and version info for installer.
-	Name "BOSS v2.0.1"
+	Name "BOSS v2.1.0"
 	OutFile "BOSS Installer.exe"
-	VIProductVersion 2.0.1.0
+	VIProductVersion 2.1.0.0
 
 	;Request application privileges for Windows Vista/7
 	RequestExecutionLevel admin
@@ -71,8 +71,8 @@
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "BOSS"
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "BOSS Development Team"
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© 2009-2012 BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 2.0.1"
-	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "2.0.1"
+	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 2.1.0"
+	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "2.1.0"
 
 	LangString TEXT_MESSAGEBOX ${LANG_ENGLISH} "BOSS is already installed, and must be uninstalled before continuing. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade."
 	LangString TEXT_FINISHPAGE ${LANG_ENGLISH} "If you have multiple copies of one or more of the games BOSS supports, you must manually install a separate copy of BOSS for each copy other than the original install.$\n$\nThis can be done using the manual archive, or by copy/pasting the BOSS folder that has just been installed. See the BOSS Readme for more information."
@@ -87,8 +87,8 @@
 	VIAddVersionKey /LANG=${LANG_RUSSIAN} "ProductName" "BOSS"
 	VIAddVersionKey /LANG=${LANG_RUSSIAN} "CompanyName" "BOSS Development Team"
 	VIAddVersionKey /LANG=${LANG_RUSSIAN} "LegalCopyright" "© 2009-2012 BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileDescription" "Установщик для BOSS 2.0.1"
-	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileVersion" "2.0.1"
+	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileDescription" "Установщик для BOSS 2.1.0"
+	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileVersion" "2.1.0"
 
 	LangString TEXT_MESSAGEBOX ${LANG_RUSSIAN} "BOSS уже установлен и должен быть удален перед продолжением. $\n$\nНажмите `OK` для удаления предыдущей версии или `Отмена` для отмены обновления."
 	LangString TEXT_FINISHPAGE ${LANG_RUSSIAN} "Если у вас много копий одной или более поддерживаемых в BOSS игр, вы должны вручную установить отдельные копии BOSS для каждой игры, кроме оригинальной установки.$\nЭто может быть сделано копированием/вставкой только что установленной папки BOSS. Для подробностей смотрите BOSS-Readme."
@@ -103,8 +103,8 @@
 	VIAddVersionKey /LANG=${LANG_GERMAN} "ProductName" "BOSS"
 	VIAddVersionKey /LANG=${LANG_GERMAN} "CompanyName" "BOSS Development Team"
 	VIAddVersionKey /LANG=${LANG_GERMAN} "LegalCopyright" "© 2009-2012 BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_GERMAN} "FileDescription" "Installer für BOSS 2.0.1"
-	VIAddVersionKey /LANG=${LANG_GERMAN} "FileVersion" "2.0.1"
+	VIAddVersionKey /LANG=${LANG_GERMAN} "FileDescription" "Installer für BOSS 2.1.0"
+	VIAddVersionKey /LANG=${LANG_GERMAN} "FileVersion" "2.1.0"
 
 	LangString TEXT_MESSAGEBOX ${LANG_GERMAN} "BOSS ist bereits installiert und muss deinstalliert werden, bevor fortgefahren wird. $\n$\nKlicke auf `Ok` um die vorherige Version zu entfernen oder auf `Abbrechen` um das Upgrade abzubrechen."
 	LangString TEXT_FINISHPAGE ${LANG_GERMAN} "Wenn du mehrere Kopien von einem oder mehreren Spielen hast, die BOSS unterstützt, musst du manuell eine separate Kopie von BOSS für jede Kopie installieren.$\n$\nDas kann durch das manuelle Archiv oder durch kopieren/einfügen des BOSS-Ordners, der bereits installiert wurde, gemacht werden. Lies die BOSS Readme für weitere Informationen."
@@ -119,8 +119,8 @@
 	VIAddVersionKey /LANG=${LANG_SPANISH} "ProductName" "BOSS"
 	VIAddVersionKey /LANG=${LANG_SPANISH} "CompanyName" "BOSS Development Team"
 	VIAddVersionKey /LANG=${LANG_SPANISH} "LegalCopyright" "© 2009-2012 BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_SPANISH} "FileDescription" "El instalador para BOSS 2.0.1"
-	VIAddVersionKey /LANG=${LANG_SPANISH} "FileVersion" "2.0.1"
+	VIAddVersionKey /LANG=${LANG_SPANISH} "FileDescription" "El instalador para BOSS 2.1.0"
+	VIAddVersionKey /LANG=${LANG_SPANISH} "FileVersion" "2.1.0"
 
 	LangString TEXT_MESSAGEBOX ${LANG_SPANISH} "BOSS está instalado, y debe ser desinstalado antes de continuar. $\n$\nPresione `OK` para eliminar la versión anterior o `Cancel` para cancelar la actualización."
 	LangString TEXT_FINISHPAGE ${LANG_SPANISH} "Si usted tiene instalado otras copias de los juegos que BOSS soporta, debe de instalar manualmente una copia separada de BOSS por cada juego aparte de la instalación original.$\n$\nEste se puede hacer con el archivo manual, o por copiar y pegar la carpeta de BOSS despues se acaba de instalar. Vea el archivo Léame de BOSS para obtener más información."
@@ -350,7 +350,7 @@
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "URLInfoAbout" 'http://better-oblivion-sorting-software.googlecode.com/'
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "HelpLink" 'http://better-oblivion-sorting-software.googlecode.com/'
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "Publisher" 'BOSS Development Team'
-		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '2.0.1'      
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '2.1.0'      
 		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoModify" 1
 		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoRepair" 1
 		
