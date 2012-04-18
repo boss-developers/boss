@@ -35,7 +35,7 @@ END_EVENT_TABLE()
 using namespace boss;
 using namespace std;
 
-SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize) {
+SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title) {
 
 	wxString DebugVerbosity[] = {
         wxT("Standard (0)"),

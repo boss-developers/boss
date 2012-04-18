@@ -72,7 +72,7 @@ using namespace std;
 
 using boost::algorithm::trim_copy;
 
-UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition) {
+UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title) {
 
 	//Let's give this a progress bar.
 	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Initialising User Rules Editor..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
@@ -109,16 +109,6 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	//Set up stuff in the frame.
 	SetBackgroundColour(wxColour(255,255,255));
 
-	//Sizer flags.
-	wxSizerFlags ContentSizerFlags(1);
-	ContentSizerFlags.Expand().Border(wxTOP|wxBOTTOM, 5);
-
-	wxSizerFlags ItemSizerFlags(1);
-	ItemSizerFlags.Border(wxLEFT|wxRIGHT, 10);
-
-	wxSizerFlags BorderSizerFlags(0);
-	BorderSizerFlags.Border(wxALL, 10);
-
 	////////////////////////
 	// Layout
 	////////////////////////
@@ -153,35 +143,35 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	wxStaticBoxSizer *ruleEditorTopBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Rule Creator/Editor"));  //Needs to go in an oulined box.
 	wxBoxSizer *ruleEditorBox = new wxBoxSizer(wxVERTICAL);  //To get internal padding.
 	wxBoxSizer *forBox = new wxBoxSizer(wxHORIZONTAL);
-	forBox->Add(new wxStaticText(this, wxID_ANY, wxT("For")));
-	forBox->Add(RuleModBox = new wxTextCtrl(this, TEXT_RuleMod, "", wxDefaultPosition, wxSize(200,wxDefaultSize.y)), 1, wxEXPAND|wxLEFT, 10);
+	forBox->Add(new wxStaticText(ruleEditorTopBox->GetStaticBox(), wxID_ANY, wxT("For")));
+	forBox->Add(RuleModBox = new wxTextCtrl(ruleEditorTopBox->GetStaticBox(), TEXT_RuleMod, ""), 1, wxEXPAND|wxLEFT, 10);
 	ruleEditorBox->Add(forBox, 0, wxEXPAND);
 	ruleEditorBox->AddSpacer(10);
-	ruleEditorBox->Add(SortModsCheckBox = new wxCheckBox(this, CHECKBOX_SortMods, wxT("Sort Item")));
+	ruleEditorBox->Add(SortModsCheckBox = new wxCheckBox(ruleEditorTopBox->GetStaticBox(), CHECKBOX_SortMods, wxT("Sort Item")));
 	ruleEditorBox->AddSpacer(10);
 	wxBoxSizer *sortModOptionBox = new wxBoxSizer(wxHORIZONTAL);
-	sortModOptionBox->Add(SortModOption = new wxRadioButton(this, RADIO_SortMod, wxT("Sort"), wxDefaultPosition, wxDefaultSize));
-	sortModOptionBox->Add(BeforeAfterChoiceBox = new wxChoice(this, CHOICE_BeforeAfter, wxDefaultPosition, wxDefaultSize, 2, BeforeAfter), 0, wxLEFT, 10);
-	sortModOptionBox->Add(SortModBox = new wxTextCtrl(this, TEXT_SortMod, "", wxDefaultPosition, wxSize(150,wxDefaultSize.y)), 1, wxEXPAND|wxLEFT, 10);
+	sortModOptionBox->Add(SortModOption = new wxRadioButton(ruleEditorTopBox->GetStaticBox(), RADIO_SortMod, wxT("Sort")));
+	sortModOptionBox->Add(BeforeAfterChoiceBox = new wxChoice(ruleEditorTopBox->GetStaticBox(), CHOICE_BeforeAfter, wxDefaultPosition, wxDefaultSize, 2, BeforeAfter), 0, wxLEFT, 10);
+	sortModOptionBox->Add(SortModBox = new wxTextCtrl(ruleEditorTopBox->GetStaticBox(), TEXT_SortMod, ""), 1, wxEXPAND|wxLEFT, 10);
 	ruleEditorBox->Add(sortModOptionBox, 0, wxEXPAND|wxLEFT, 20);
 	ruleEditorBox->AddSpacer(10);
 	wxBoxSizer *InsertOptionBox = new wxBoxSizer(wxHORIZONTAL);
-	InsertOptionBox->Add(InsertModOption = new wxRadioButton(this, RADIO_InsertMod, wxT("Insert at the"), wxDefaultPosition, wxDefaultSize));
-	InsertOptionBox->Add(TopBottomChoiceBox = new wxChoice(this, CHOICE_TopBottom, wxDefaultPosition, wxDefaultSize, 2, TopBottom), 0, wxLEFT, 10);
-	InsertOptionBox->Add(new wxStaticText(this, wxID_ANY, wxT("of")), 0, wxLEFT, 10);
-	InsertOptionBox->Add(InsertModBox = new wxTextCtrl(this,TEXT_InsertMod), 1, wxEXPAND|wxLEFT, 10);
+	InsertOptionBox->Add(InsertModOption = new wxRadioButton(ruleEditorTopBox->GetStaticBox(), RADIO_InsertMod, wxT("Insert at the")));
+	InsertOptionBox->Add(TopBottomChoiceBox = new wxChoice(ruleEditorTopBox->GetStaticBox(), CHOICE_TopBottom, wxDefaultPosition, wxDefaultSize, 2, TopBottom), 0, wxLEFT, 10);
+	InsertOptionBox->Add(new wxStaticText(ruleEditorTopBox->GetStaticBox(), wxID_ANY, wxT("of")), 0, wxLEFT, 10);
+	InsertOptionBox->Add(InsertModBox = new wxTextCtrl(ruleEditorTopBox->GetStaticBox(),TEXT_InsertMod), 1, wxEXPAND|wxLEFT, 10);
 	ruleEditorBox->Add(InsertOptionBox, 0, wxEXPAND|wxLEFT, 20);
 	ruleEditorBox->AddSpacer(10);
-	ruleEditorBox->Add(AddMessagesCheckBox = new wxCheckBox(this, CHECKBOX_AddMessages, wxT("Add the following messages:")));
+	ruleEditorBox->Add(AddMessagesCheckBox = new wxCheckBox(ruleEditorTopBox->GetStaticBox(), CHECKBOX_AddMessages, wxT("Add the following messages:")));
 	ruleEditorBox->AddSpacer(10);
-	ruleEditorBox->Add(NewModMessagesBox = new wxTextCtrl(this,TEXT_NewMessages, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), 1, wxEXPAND|wxLEFT, 20);
+	ruleEditorBox->Add(NewModMessagesBox = new wxTextCtrl(ruleEditorTopBox->GetStaticBox(),TEXT_NewMessages, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), 1, wxEXPAND|wxLEFT, 20);
 	ruleEditorBox->AddSpacer(10);
-	ruleEditorBox->Add(ReplaceMessagesCheckBox = new wxCheckBox(this, CHECKBOX_RemoveMessages, wxT("Replace Existing Messages")));
+	ruleEditorBox->Add(ReplaceMessagesCheckBox = new wxCheckBox(ruleEditorTopBox->GetStaticBox(), CHECKBOX_RemoveMessages, wxT("Replace Existing Messages")));
 	ruleEditorTopBox->Add(ruleEditorBox, 1, wxEXPAND|wxALL, 10);
 	editorMessagesBox->Add(ruleEditorTopBox, 0, wxEXPAND);
 	editorMessagesBox->AddSpacer(10);
 	wxStaticBoxSizer *messBox = new wxStaticBoxSizer(wxVERTICAL, this, "Masterlist Mod Messages");
-	messBox->Add(ModMessagesBox = new wxTextCtrl(this,TEXT_ModMessages,wxT(""),wxDefaultPosition,wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY), 1, wxEXPAND);
+	messBox->Add(ModMessagesBox = new wxTextCtrl(messBox->GetStaticBox(),TEXT_ModMessages,wxT(""),wxDefaultPosition,wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY), 1, wxEXPAND);
 	editorMessagesBox->Add(messBox, 1, wxEXPAND);
 	rulesBox->Add(editorMessagesBox, 1, wxEXPAND);
 	mainBox->Add(rulesBox, 3, wxEXPAND);
@@ -208,15 +198,15 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 
 	////Window buttons
 	wxBoxSizer *mainButtonBox = new wxBoxSizer(wxHORIZONTAL);
-	mainButtonBox->Add(new wxButton(this, BUTTON_NewRule, wxT("Create New Rule"), wxDefaultPosition, wxDefaultSize));
-	mainButtonBox->Add(new wxButton(this, BUTTON_EditRule, wxT("Apply Rule Edits"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 10);
-	mainButtonBox->Add(new wxButton(this, BUTTON_DeleteRule, wxT("Delete Rule"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 10);
+	mainButtonBox->Add(new wxButton(this, BUTTON_NewRule, wxT("Create New Rule")));
+	mainButtonBox->Add(new wxButton(this, BUTTON_EditRule, wxT("Apply Rule Edits")), 0, wxLEFT, 10);
+	mainButtonBox->Add(new wxButton(this, BUTTON_DeleteRule, wxT("Delete Rule")), 0, wxLEFT, 10);
 	mainButtonBox->AddStretchSpacer(2);
-	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleUp, wxT("Move Up"), wxDefaultPosition, wxDefaultSize));
-	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleDown, wxT("Move Down"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 10);
+	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleUp, wxT("Move Up")));
+	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleDown, wxT("Move Down")), 0, wxLEFT, 10);
 	mainButtonBox->AddStretchSpacer(2);
-	mainButtonBox->Add(new wxButton(this, BUTTON_OKExitEditor, wxT("Save and Close"), wxDefaultPosition, wxDefaultSize));
-	mainButtonBox->Add(new wxButton(this, BUTTON_CancelExitEditor, wxT("Cancel"), wxDefaultPosition, wxDefaultSize), 0, wxLEFT, 10);
+	mainButtonBox->Add(new wxButton(this, BUTTON_OKExitEditor, wxT("Save and Close")));
+	mainButtonBox->Add(new wxButton(this, BUTTON_CancelExitEditor, wxT("Cancel")), 0, wxLEFT, 10);
 	//Now add buttons to window sizer.
 	bigBox->Add(mainButtonBox, 0, wxALL|wxEXPAND, 10);
 
@@ -578,11 +568,11 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 		}
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
-				if (SortModBox->IsEmpty()) {  //Sort object is a plugin. Error.
+				if (SortModBox->IsEmpty()) {  //No sort object specified. Error.
 					newRule.Enabled(false);
 					newRule.Object("No mod is specified to sort relative to.");
 					return newRule;
-				} else if (Item(SortModBox->GetValue().ToStdString()).IsPlugin()) {
+				} else if (Item(SortModBox->GetValue().ToStdString()).IsPlugin()) {  //Sort object is a plugin. Error.
 					newRule.Enabled(false);
 					newRule.Object("Cannot sort a group relative to a plugin.");
 					return newRule;
@@ -650,9 +640,17 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 					newLine.Key(REPLACE);
 				else
 					newLine.Key(APPEND);
-					vector<RuleLine> lines = newRule.Lines();
-					lines.push_back(newLine);
-					newRule.Lines(lines);
+				
+				if (!newLine.IsObjectMessage()) {  //Message is formatted incorrectly. Error.
+					Rule errRule;			
+					errRule.Enabled(false);
+					errRule.Object("The message \"" + newLine.Object() + "\" is formatted incorrectly.");
+					return errRule;
+				}
+				
+				vector<RuleLine> lines = newRule.Lines();
+				lines.push_back(newLine);
+				newRule.Lines(lines);
 
 				if (pos2 >= messages.length()-1)
 					break;
@@ -821,15 +819,15 @@ RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, uint32
 	mainSizer->SetFlexibleDirection(wxHORIZONTAL);
 	mainSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_NONE);
 	mainSizer->AddGrowableCol(1,0);
-	mainSizer->Add(ruleCheckbox = new wxCheckBox(this, wxID_ANY,""),0,wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxBOTTOM,10);
-	mainSizer->Add(ruleContent = new wxStaticText(this, wxID_ANY,text),0,wxEXPAND|wxRIGHT,5);
+	mainSizer->Add(ruleCheckbox = new wxCheckBox(this, wxID_ANY,""),0,wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxTOP|wxBOTTOM,10);
+	mainSizer->Add(ruleContent = new wxStaticText(this, wxID_ANY,text),0,wxEXPAND|wxRIGHT|wxTOP,10);
 
 	ruleCheckbox->SetValue(currentRule.Enabled());
 	ruleContent->Bind(wxEVT_LEFT_DOWN, &RuleBoxClass::OnSelect, this, wxID_ANY);
 	if (!currentRule.Enabled())
 		ruleContent->Enable(false);
 	if (isSelected)
-		ruleContent->SetBackgroundColour(wxColour(240,240,240));
+		SetBackgroundColour(wxColour(240,240,240));
 
 	SetSizerAndFit(mainSizer);
 	Show();
@@ -853,9 +851,9 @@ void RuleBoxClass::OnSelect(wxMouseEvent& event) {
 
 void RuleBoxClass::Highlight(bool highlight) {
 	if (highlight)
-		ruleContent->SetBackgroundColour(wxColour(240,240,240));
+		SetBackgroundColour(wxColour(240,240,240));
 	else
-		ruleContent->SetBackgroundColour(wxColour(255,255,255));
+		SetBackgroundColour(wxColour(255,255,255));
 	Refresh();
 }
 

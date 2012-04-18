@@ -493,11 +493,6 @@ a problem for which no error message is given, please report the crash or proble
 		<li><b>Issue:</b> This is a Windows error unrelated to BOSS that may occur when it tries to open your BOSS Log (or another file, but most commonly reported for the BOSS Log).
 		<li><b>Solution:</b> The exact cause is unknown, but make sure that you have the default program for HTML files set to your web browser, using the Control Panel settings. If your default program is set correctly, then restarting your computer will probably fix the issue.
 	</ul>
-	<li><b>Symptom:</b> Text boxes in the GUI's User Rules Editor are invisible or displayed without a border.
-	<ul>
-		<li><b>Issue:</b> Something is wrong with how the User Rules Editor window is drawn. The cause is currently unknown.
-		<li><b>Solution:</b> Hovering your mouse over where the text boxes should be will cause them to refresh and be displayed correctly.
-	</ul>
 	<li><b>Symptom:</b> The BOSS Log labels plugins as active incorrectly on Windows Vista or Windows 7.
 	<ul>
 		<li><b>Issue:</b> For some reason BOSS is finding it difficult to read which of your plugins are active, due to a lack of permissions.
@@ -852,6 +847,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Removed: <code>bNoVersionParse</code> BOSS.ini setting, and corresponding <code>-n [ --no-version-parse ]</code> CLI parameter and <q>Display Plugin Versions</q> GUI setting.
 	<li>Fixed: Installer's "old BOSS version detected" dialog ignoring the language previously selected.
 	<li>Fixed: GUI crash when deleting the last rule in a userlist.
+	<li>Fixed: GUI's User Rules Editor not displaying text boxes correctly, with borders often not appearing until mouseover.
 	<li>Changed: Major BOSS Log redesign/rewrite:
 	<ul>
 		<li>The BOSS Log now supports a minimum browser version of Internet Explorer 8, Firefox 3.5, Chrome 4, Safari 4, Opera 10.5 or their equivalents in other browsers.
@@ -874,6 +870,8 @@ threads when you read this. Just navigate through to the latest thread to post a
 	</ul>
 	<li>Changed: BOSS now uses the exact filenames of installed plugins instead of their filenames in the masterlist, preventing any case-sensitivity issues (eg. Skyrim's launcher).
 	<li>Changed: GUI now records the game it was last run for using the <code>sLastGame</code> BOSS.ini setting. If the <code>sGame</code> setting is set to <code>auto</code> (or the corresponding <q>Default Game</q> GUI setting set to <q>Autodetect</q>), then the GUI will first attempt to run for the game it was last run for. If the game cannot be detected, or the <code>sLastGame</code> setting is set to <code>auto</code>, then it will then prompt the user to select a game to run for.
+	<li>Changed: The GUI's User Rule Editor now checks that added messages have the correct message syntax and displays an error message if invalid syntax is found.
+	<li>Changed: Minor tweaks to the spacing of rules listed in the GUI's User Rules Editor.
 	<li>Changed: Installer/uninstaller now uses solid LZMA compression for a smaller file size.
 	<li>Added: German language option to installer/uninstaller. Translation by Scharesoft.
 	<li>Added: Spanish language option to installer/uninstaller. Translation by Sharlikran.
