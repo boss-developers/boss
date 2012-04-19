@@ -262,7 +262,6 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	//The second column has a border.
 	wxStaticBoxSizer *runOptionsBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Run Options"));
 	wxBoxSizer *sortBox = new wxBoxSizer(wxVERTICAL);
-	wxBoxSizer *updateBox = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *undoBox = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *revertBox = new wxBoxSizer(wxHORIZONTAL);
 
@@ -270,20 +269,21 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	runOptionsBox->Add(SortOption = new wxRadioButton(this, RADIOBUTTON_SortOption, wxT("Sort Plugins")), 0, wxALL, 5);
 	
 	//Sort option stuff.
-	sortBox->Add(UpdateBox = new wxCheckBox(this,CHECKBOX_Update, wxT("Update Masterlist")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	sortBox->Add(TrialRunBox = new wxCheckBox(this,CHECKBOX_TrialRun, wxT("Perform Trial Run")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	runOptionsBox->Add(sortBox, 0, wxLEFT | wxBOTTOM, 20);
+	sortBox->Add(UpdateBox = new wxCheckBox(this,CHECKBOX_Update, wxT("Update Masterlist")), 0, wxBOTTOM, 5);
+	sortBox->Add(TrialRunBox = new wxCheckBox(this,CHECKBOX_TrialRun, wxT("Perform Trial Run")));
+	runOptionsBox->Add(sortBox, 0, wxLEFT | wxRIGHT, 20);
+	runOptionsBox->AddSpacer(10);
 	
 	//Update only stuff.
-	runOptionsBox->Add(UpdateOption = new wxRadioButton(this, RADIOBUTTON_UpdateOption, wxT("Update Masterlist Only")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	runOptionsBox->AddSpacer(20);
+	runOptionsBox->Add(UpdateOption = new wxRadioButton(this, RADIOBUTTON_UpdateOption, wxT("Update Masterlist Only")), 0, wxALL, 5);
+	runOptionsBox->AddSpacer(10);
 	
 	//Undo option stuff.
-	runOptionsBox->Add(UndoOption = new wxRadioButton(this, RADIOBUTTON_UndoOption, wxT("Undo Changes")), 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
-	revertBox->Add(RevertText = new wxStaticText(this, wxID_ANY, wxT("Undo Level: ")), 1, wxLEFT | wxBOTTOM, 5);
-	revertBox->Add(RevertChoice = new wxChoice(this, DROPDOWN_Revert, wxDefaultPosition, wxDefaultSize, 2, UndoLevel), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
-	undoBox->Add(revertBox, 0, wxEXPAND, 0);
-	runOptionsBox->Add(undoBox, 0, wxEXPAND | wxLEFT | wxBOTTOM, 20);
+	runOptionsBox->Add(UndoOption = new wxRadioButton(this, RADIOBUTTON_UndoOption, wxT("Undo Changes")), 0, wxALL, 5);
+	revertBox->Add(RevertText = new wxStaticText(this, wxID_ANY, wxT("Undo Level: ")));
+	revertBox->Add(RevertChoice = new wxChoice(this, DROPDOWN_Revert, wxDefaultPosition, wxDefaultSize, 2, UndoLevel));
+	runOptionsBox->Add(revertBox, 0, wxLEFT | wxRIGHT, 20);
+	runOptionsBox->AddSpacer(10);
 
 	bigBox->Add(runOptionsBox, 0, wxTOP | wxRIGHT | wxBOTTOM, 20);
 

@@ -74,6 +74,7 @@ namespace boss {
 		HEADING_OPEN,
 		HEADING_CLOSE,
 		PARAGRAPH,
+		SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN,
 		SPAN_CLASS_MOD_OPEN,
 		SPAN_CLASS_VERSION_OPEN,
 		SPAN_CLASS_CRC_OPEN,
@@ -85,50 +86,6 @@ namespace boss {
 		ITALIC_CLOSE,
 		BLOCKQUOTE_OPEN,
 		BLOCKQUOTE_CLOSE
-	};
-
-	enum langString : uint32_t {
-		LOG_UseDarkColourScheme,
-		LOG_HideRuleWarnings,
-		LOG_HideVersionNumbers,
-		LOG_HideGhostedLabel,
-		LOG_HideActiveLabel,
-		LOG_HideChecksums,
-		LOG_HideInactiveMods,
-		LOG_HideMessagelessMods,
-		LOG_HideGhostedMods,
-		LOG_HideCleanMods,
-		LOG_HideAllModMessages,
-		LOG_HideNotes,
-		LOG_HideBashTagSuggestions,
-		LOG_HideRequirements,
-		LOG_HideIncompatibilities,
-		LOG_HideDoNotCleanMessages,
-	//	# of # plugins hidden
-	//	# of # messages hidden
-		LOG_SummaryHeading,
-		LOG_MasterlistUpToDate,
-		LOG_MasterlistUpdated,
-		LOG_NoUpdateNecessary,
-		LOG_RecognisedCount,
-		LOG_WarningsCount,
-		LOG_UnrecognisedCount,
-		LOG_ErrorsCount,
-		LOG_GhostedPluginsCount,
-		LOG_TotalMessageNumber,
-		LOG_TotalPluginNumber,
-		LOG_UserRuleCountNote,
-		LOG_SEHeading,
-		LOG_RecognisedHeading,
-		LOG_UnrecognisedHeading,
-		LOG_UnrecognisedNote,
-		LOG_MessageNote,
-		LOG_MessageRequires,
-		LOG_MessageIncompatible,
-		LOG_MessageBashTag,
-		LOG_MessageDirty,
-		LOG_MessageWarning,
-		LOG_MessageError
 	};
 
 	class BOSS_COMMON Outputter {
@@ -152,7 +109,6 @@ namespace boss {
 		Outputter& operator<< (const char * s);
 		Outputter& operator<< (const char c);
 		Outputter& operator<< (const logFormatting l);
-		Outputter& operator<< (const langString l);
 		Outputter& operator<< (const int32_t i);
 		Outputter& operator<< (const uint32_t i);
 		Outputter& operator<< (const bool b);

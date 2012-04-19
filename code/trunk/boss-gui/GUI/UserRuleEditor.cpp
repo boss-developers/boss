@@ -202,8 +202,8 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	mainButtonBox->Add(new wxButton(this, BUTTON_EditRule, wxT("Apply Rule Edits")), 0, wxLEFT, 10);
 	mainButtonBox->Add(new wxButton(this, BUTTON_DeleteRule, wxT("Delete Rule")), 0, wxLEFT, 10);
 	mainButtonBox->AddStretchSpacer(2);
-	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleUp, wxT("Move Up")));
-	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleDown, wxT("Move Down")), 0, wxLEFT, 10);
+	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleUp, wxT("Move Rule Up")));
+	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleDown, wxT("Move Rule Down")), 0, wxLEFT, 10);
 	mainButtonBox->AddStretchSpacer(2);
 	mainButtonBox->Add(new wxButton(this, BUTTON_OKExitEditor, wxT("Save and Close")));
 	mainButtonBox->Add(new wxButton(this, BUTTON_CancelExitEditor, wxT("Cancel")), 0, wxLEFT, 10);

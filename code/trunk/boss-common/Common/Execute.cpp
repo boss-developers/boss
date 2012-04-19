@@ -325,7 +325,8 @@ namespace boss {
 		// Display Unrecognised Mods
 		if (!contents.unrecognisedPlugins.empty())
 			bosslog << SECTION_ID_UNRECOGNISED_OPEN << HEADING_OPEN << "Unrecognised Plugins" << HEADING_CLOSE 
-				<< PARAGRAPH << "Reorder these by hand using your favourite mod ordering utility." << LIST_OPEN
+				<< PARAGRAPH << "The following plugins were not found in the masterlist, and must be positioned manually, using your favourite mod manager or by using BOSS's user rules functionality."
+				<< SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN << " You can submit unrecognised plugins for addition to the masterlist directly from this log by clicking on a plugin and supplying a link and/or description of its contents in the panel that is displayed." << SPAN_CLOSE << LIST_OPEN
 				<< contents.unrecognisedPlugins
 				<< LIST_CLOSE << SECTION_CLOSE;
 

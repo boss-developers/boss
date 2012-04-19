@@ -1240,6 +1240,10 @@ namespace boss {
 			else
 				outStream << endl << "*  ";
 			break;
+		case SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN:
+			if (outFormat == HTML)
+				outStream << "<span id='unrecPluginsSubmitNote'>";
+			break;
 		case SPAN_CLASS_MOD_OPEN:
 			if (outFormat == HTML)
 				outStream << "<span class='mod'>";
@@ -1300,23 +1304,6 @@ namespace boss {
 			break;
 		}
 		return *this;
-	}
-
-	Outputter& Outputter::operator<< (const langString l) {
-		switch(l) {
-		case LOG_UseDarkColourScheme:
-			if (gl_language == ENGLISH)
-				outStream << "";
-			else if (gl_language == SPANISH)
-				outStream << "";
-			else if (gl_language == GERMAN)
-				outStream << "";
-			else if (gl_language == RUSSIAN)
-				outStream << "";
-			break;
-		default:
-			break;
-		}
 	}
 	
 	Outputter& Outputter::operator<< (const int32_t i) {
