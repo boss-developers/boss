@@ -81,6 +81,7 @@ private:
 
 class UserRulesEditorFrame : public wxFrame {
 public:
+	ItemList masterlist;
 	UserRulesEditorFrame(const wxChar *title, wxFrame *parent);
 	void OnOKQuit(wxCommandEvent& event);
 	void OnCancelQuit(wxCommandEvent& event);
@@ -99,13 +100,13 @@ public:
 	void OnDragStart(wxTreeEvent& event);
 
 	DECLARE_EVENT_TABLE()
+	
 
 	friend class TextDropTarget;
 private:
 	void LoadLists();
 	Rule GetRuleFromForm();
 
-	ItemList masterlist;
 
 	wxArrayString ModlistMods;
 

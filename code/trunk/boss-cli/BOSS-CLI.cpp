@@ -324,7 +324,8 @@ int main(int argc, char *argv[]) {
 						} else if (answer == 'y') {
 							try {
 								uiStruct ui;
-								string file = DownloadInstallBOSSUpdate(ui, updateVersion);
+								string file = "BOSS Installer.exe";
+								DownloadInstallBOSSUpdate(fs::path(file), ui, updateVersion);
 
 								cout << endl << "New installer successfully downloaded!" << endl
 									 << "BOSS will now launch the downloaded installer and exit. Complete the installer to complete the update." << endl << endl;

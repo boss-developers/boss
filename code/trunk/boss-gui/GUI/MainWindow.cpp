@@ -967,9 +967,9 @@ void MainFrame::Update(string updateVersion) {
 
 	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Automatic Updater"),wxT("Initialising download..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
 	uiStruct ui(progDia);
-	string file;
+	string file = "BOSS Installer.exe";
 	try {
-		file = DownloadInstallBOSSUpdate(ui, updateVersion);
+		DownloadInstallBOSSUpdate(fs::path(file), ui, updateVersion);
 
 		//Remind the user to run the installer.
 		wxMessageBox(wxT("New installer successfully downloaded! When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);

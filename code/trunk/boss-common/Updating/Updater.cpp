@@ -101,95 +101,6 @@ namespace boss {
 		return 0;
 	}
 
-	//Buffer writer for downloaders.
-	size_t writer(char * data, size_t size, size_t nmemb, void * buffer) {
-		string *str = (string*)buffer;
-		if(str != NULL) {
-			str -> append(data, size * nmemb);
-			return size * nmemb;
-		}
-		return 0;
-	}
-
-	//Initialise a curl handle. Throws exception on error.
-	CURL * InitCurl(char * errbuff) {
-		CURLcode ret;
-		string proxy_str;
-		CURL *curl;
-
-		curl = curl_easy_init();
-		if (!curl)
-			throw boss_error(BOSS_ERROR_CURL_INIT_FAIL);
-
-		ret = curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
-		if (ret != CURLE_OK) {
-			curl_easy_cleanup(curl);
-			throw boss_error(BOSS_ERROR_CURL_SET_ERRBUFF_FAIL);
-		}
-		ret = curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
-		if (ret != CURLE_OK) {
-			string err = errbuff;
-			curl_easy_cleanup(curl);
-			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
-		}
-		ret = curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
-		if (ret != CURLE_OK) {
-			string err = errbuff;
-			curl_easy_cleanup(curl);
-			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
-		}
-		ret = curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
-		if (ret != CURLE_OK) {
-			string err = errbuff;
-			curl_easy_cleanup(curl);
-			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
-		}
-
-		if (!gl_proxy_host.empty() && gl_proxy_port != 0) {
-			//All of the settings have potentially valid proxy-ing values.
-			ret = curl_easy_setopt(curl, CURLOPT_PROXYTYPE, 
-										CURLPROXY_HTTP|
-										CURLPROXY_HTTP_1_0|
-										CURLPROXY_SOCKS4|
-										CURLPROXY_SOCKS4A|
-										CURLPROXY_SOCKS5|
-										CURLPROXY_SOCKS5_HOSTNAME);
-			if (ret != CURLE_OK) {
-				string err = errbuff;
-				curl_easy_cleanup(curl);
-				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL);
-			}
-
-			proxy_str = gl_proxy_host + ":" + IntToString(gl_proxy_port);
-			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
-			if (ret!=CURLE_OK) {
-				string err = errbuff;
-				curl_easy_cleanup(curl);
-				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_FAIL);
-			}
-
-			if (!gl_proxy_user.empty() && !gl_proxy_passwd.empty()) {
-				ret = curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_BASIC|
-																CURLAUTH_DIGEST|
-																CURLAUTH_NTLM);
-				if (ret != CURLE_OK) {
-					string err = errbuff;
-					curl_easy_cleanup(curl);
-					throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL);
-				}
-
-				string proxy_auth = gl_proxy_user + ":" + gl_proxy_passwd;
-				ret = curl_easy_setopt(curl, CURLOPT_PROXYUSERPWD, proxy_auth.c_str());
-				if (ret != CURLE_OK) {
-					string err = errbuff;
-					curl_easy_cleanup(curl);
-					throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL);
-				}
-			}
-		}
-		return curl;
-	}
-
 	//Download the remote file to local. Throws exception on error.
 	void DownloadFile(uiStruct ui, const string remote, const fs::path local) {
 		string fileBuffer;
@@ -239,48 +150,6 @@ namespace boss {
 			fs::rename(fs::path(downloadedName), fs::path(installedName));
 		} catch (fs::filesystem_error e) {
 			throw boss_error(BOSS_ERROR_FS_FILE_RENAME_FAIL, downloadedName, e.what());
-		}
-	}
-
-	//Gets a filename and a crc from a text file containing a single line of the form:
-	//"File" : "CRC"
-	//Throws exception on error.
-	void GetBOSSFileInfo(const string remoteInfoFile, string& file, uint32_t& crc) {
-		string fileBuffer;
-		char errbuff[CURL_ERROR_SIZE];
-		CURL *curl;									//cURL handle
-		CURLcode ret;
-
-		//curl will be used to get stuff from the internet, so initialise it.
-		curl = InitCurl(errbuff);
-
-		//First get file list and crcs to build updatedFiles vector.
-		curl_easy_setopt(curl, CURLOPT_URL, remoteInfoFile.c_str());
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);	
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
-		ret = curl_easy_perform(curl);
-		if (ret!=CURLE_OK) {
-			string err = errbuff;
-			curl_easy_cleanup(curl);
-			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
-		}
-		curl_easy_cleanup(curl);
-
-		//Now parse list to extract file info.
-		string::const_iterator start = fileBuffer.begin(), end = fileBuffer.end();
-
-		qi::rule<string::const_iterator, string()> text;
-		
-		text %= '"' > qi::lexeme[+(unicode::char_ - '"')] > '"';
-
-		bool p = qi::phrase_parse(start,end,
-			text[phoenix::ref(file) = qi::_1]
-			> qi::lit(':')
-			> qi::hex[phoenix::ref(crc) = qi::_1]
-			, unicode::space);
-
-		if (!p || start != end) {
-			throw boss_error(BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL);
 		}
 	}
 
@@ -521,6 +390,95 @@ namespace boss {
 		}
 	}
 
+	//Buffer writer for downloaders.
+	size_t writer(char * data, size_t size, size_t nmemb, void * buffer) {
+		string *str = (string*)buffer;
+		if(str != NULL) {
+			str -> append(data, size * nmemb);
+			return size * nmemb;
+		}
+		return 0;
+	}
+
+	//Initialise a curl handle. Throws exception on error.
+	CURL * InitCurl(char * errbuff) {
+		CURLcode ret;
+		string proxy_str;
+		CURL *curl;
+
+		curl = curl_easy_init();
+		if (!curl)
+			throw boss_error(BOSS_ERROR_CURL_INIT_FAIL);
+
+		ret = curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
+		if (ret != CURLE_OK) {
+			curl_easy_cleanup(curl);
+			throw boss_error(BOSS_ERROR_CURL_SET_ERRBUFF_FAIL);
+		}
+		ret = curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+		if (ret != CURLE_OK) {
+			string err = errbuff;
+			curl_easy_cleanup(curl);
+			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
+		}
+		ret = curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
+		if (ret != CURLE_OK) {
+			string err = errbuff;
+			curl_easy_cleanup(curl);
+			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
+		}
+		ret = curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+		if (ret != CURLE_OK) {
+			string err = errbuff;
+			curl_easy_cleanup(curl);
+			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
+		}
+
+		if (!gl_proxy_host.empty() && gl_proxy_port != 0) {
+			//All of the settings have potentially valid proxy-ing values.
+			ret = curl_easy_setopt(curl, CURLOPT_PROXYTYPE, 
+										CURLPROXY_HTTP|
+										CURLPROXY_HTTP_1_0|
+										CURLPROXY_SOCKS4|
+										CURLPROXY_SOCKS4A|
+										CURLPROXY_SOCKS5|
+										CURLPROXY_SOCKS5_HOSTNAME);
+			if (ret != CURLE_OK) {
+				string err = errbuff;
+				curl_easy_cleanup(curl);
+				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL);
+			}
+
+			proxy_str = gl_proxy_host + ":" + IntToString(gl_proxy_port);
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
+			if (ret!=CURLE_OK) {
+				string err = errbuff;
+				curl_easy_cleanup(curl);
+				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_FAIL);
+			}
+
+			if (!gl_proxy_user.empty() && !gl_proxy_passwd.empty()) {
+				ret = curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_BASIC|
+																CURLAUTH_DIGEST|
+																CURLAUTH_NTLM);
+				if (ret != CURLE_OK) {
+					string err = errbuff;
+					curl_easy_cleanup(curl);
+					throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL);
+				}
+
+				string proxy_auth = gl_proxy_user + ":" + gl_proxy_passwd;
+				ret = curl_easy_setopt(curl, CURLOPT_PROXYUSERPWD, proxy_auth.c_str());
+				if (ret != CURLE_OK) {
+					string err = errbuff;
+					curl_easy_cleanup(curl);
+					throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL);
+				}
+			}
+		}
+		return curl;
+	}
+
 
 	////////////////////////
 	// Masterlist Updating
@@ -670,30 +628,14 @@ namespace boss {
 	}
 
 	//Downloads and installs a BOSS update.
-	BOSS_COMMON string DownloadInstallBOSSUpdate(uiStruct ui, const string updateVersion) {
-		string file, releaseURL;
-		uint32_t crc;
-		releaseURL = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/";
+	BOSS_COMMON void DownloadInstallBOSSUpdate(fs::path file, uiStruct ui, const string updateVersion) {
+		string url = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/BOSS%20Installer.exe";
 
-		//Get file info.
-		GetBOSSFileInfo(releaseURL + "checksums.txt", file, crc);
-			
 		//Set file.
-		ui.file = boss_path.string() + '/' + file;
+		ui.file = file.string();
 
-		//Download file.
-		string remote_file = releaseURL + file;
-		string dest_file = boss_path.string() + '/' + file + ".new";
-		boost::replace_all(remote_file, " ", "%20");  //Need to put the %20s back in for the file's web address.
-		DownloadFile(ui, remote_file, fs::path(dest_file));
-		
-		//Check if file is valid.
-		if (GetCrc32(fs::path(dest_file)) != crc)
-			throw boss_error(BOSS_ERROR_FILE_CRC_MISMATCH, dest_file);
-		
-		//Now install file.
-		InstallFile(dest_file, (boss_path / file).string());
-
-		return (boss_path / file).string();
+		//Now download and install.
+		DownloadFile(ui, url, fs::path(file.string() + ".new"));
+		InstallFile(file.string() + ".new", file.string());
 	}
 }

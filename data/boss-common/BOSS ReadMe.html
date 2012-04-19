@@ -845,6 +845,7 @@ threads when you read this. Just navigate through to the latest thread to post a
 <ul>
 	<li>Removed: Settings for BOSS Log filters and CSS from BOSS.ini and the GUI.
 	<li>Removed: <code>bNoVersionParse</code> BOSS.ini setting, and corresponding <code>-n [ --no-version-parse ]</code> CLI parameter and <q>Display Plugin Versions</q> GUI setting.
+	<li>Removed: BOSS Updater download CRC check.
 	<li>Fixed: Installer's "old BOSS version detected" dialog ignoring the language previously selected.
 	<li>Fixed: GUI crash when deleting the last rule in a userlist.
 	<li>Fixed: GUI's User Rules Editor not displaying text boxes correctly, with borders often not appearing until mouseover.
@@ -871,7 +872,11 @@ threads when you read this. Just navigate through to the latest thread to post a
 	<li>Changed: BOSS now uses the exact filenames of installed plugins instead of their filenames in the masterlist, preventing any case-sensitivity issues (eg. Skyrim's launcher).
 	<li>Changed: GUI now records the game it was last run for using the <code>sLastGame</code> BOSS.ini setting. If the <code>sGame</code> setting is set to <code>auto</code> (or the corresponding <q>Default Game</q> GUI setting set to <q>Autodetect</q>), then the GUI will first attempt to run for the game it was last run for. If the game cannot be detected, or the <code>sLastGame</code> setting is set to <code>auto</code>, then it will then prompt the user to select a game to run for.
 	<li>Changed: The GUI's User Rule Editor now checks that added messages have the correct message syntax and displays an error message if invalid syntax is found.
-	<li>Changed: Minor tweaks to the spacing of rules listed in the GUI's User Rules Editor.
+	<li>Changed: Minor tweaks to the spacing of rules listed in the User Rules Editor and options in the main window.
+	<li>Changed: The <q>Move Up</q> and <q>Move Down</q> buttons in the User Rules Editor have been renamed <q>Move Rule Up</q> and <q>Move Rule Down</q> to make their purpose explicit.
+	<li>Changed: Internal tweaks to how the BOSS Updater works.
+	<li>Changed: Implemented more accurate comparison of versions in the masterlist.
+	<li>Changed: The User Rules Editor now changes ADD to OVERRIDE automatically for rules that are enabled after being disabled because they added plugins that are now in the masterlist.
 	<li>Changed: Installer/uninstaller now uses solid LZMA compression for a smaller file size.
 	<li>Added: German language option to installer/uninstaller. Translation by Scharesoft.
 	<li>Added: Spanish language option to installer/uninstaller. Translation by Sharlikran.

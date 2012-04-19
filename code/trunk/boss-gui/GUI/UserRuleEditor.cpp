@@ -713,7 +713,7 @@ bool TextDropTarget::OnDropText(wxCoord x, wxCoord y, const wxString &data) {
 	wxString originalValue = targetOwner->GetValue();
 	targetOwner->SetValue(data);
 
-	UserRulesEditorFrame *ureFrame = (UserRulesEditorFrame*)targetOwner->GetParent();
+	UserRulesEditorFrame *ureFrame = (UserRulesEditorFrame*)targetOwner->GetParent()->GetParent();  //Targets are owned by the static box created by the sizer they're in, which is in turn owned by the URE window.
 	Item sortItem(ureFrame->SortModBox->GetValue().ToStdString());
 	Item forItem(ureFrame->RuleModBox->GetValue().ToStdString());
 	Item insertItem(ureFrame->InsertModBox->GetValue().ToStdString());
@@ -956,8 +956,15 @@ void RuleListFrameClass::MoveRule(wxWindowID id) {
 }
 
 void RuleListFrameClass::OnToggleRule(wxCommandEvent& event) {
-	if (event.GetId() >= 0 && event.GetId() < userlist.rules.size())
-		userlist.rules[event.GetId()].Enabled(event.IsChecked());
+	if (event.GetId() >= 0 && event.GetId() < userlist.rules.size()) {
+		uint32_t id = event.GetId();
+		bool checked = event.IsChecked();
+		UserRulesEditorFrame * parent = (UserRulesEditorFrame*)this->GetParent();
+
+		userlist.rules[id].Enabled(checked);
+		if (checked && userlist.rules[id].Key() == ADD && parent->masterlist.FindItem(userlist.rules[id].Object()) != parent->masterlist.Items().size())
+			userlist.rules[id].Key(OVERRIDE);
+	}
 }
 
 Rule RuleListFrameClass::GetSelectedRule() {

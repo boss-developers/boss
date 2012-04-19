@@ -273,32 +273,36 @@ namespace boss {
 
 	bool Version::operator < (Version ver) {
 		//Version string could have a wide variety of formats. Use regex to choose specific comparison types.
-		boost::regex reg1("[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+");  //a.b.c.d where a, b, c, d are all integers.
+
+		boost::regex reg1("(\\d+\\.?)+");  //a.b.c.d.e.f.... where the letters are all integers, and 'a' is the shortest possible match.
+
+		//boost::regex reg2("(\\d+\\.?)+([a-zA-Z\\-]+(\\d+\\.?)*)+");  //Matches a mix of letters and numbers - from "0.99.xx", "1.35Alpha2", "0.9.9MB8b1", "10.52EV-D", "1.62EV" to "10.0EV-D1.62EV".
+
 		if (boost::regex_match(verString, reg1) && boost::regex_match(ver.VerString(), reg1)) {
-			uint32_t ver1Nums[4], ver2Nums[4];
-
-			//Explode ver1, ver2 into components.
-			istringstream parser1(verString);
-			parser1 >> ver1Nums[0];  //This adds everything up to the first period (as it is cast to an integer).
-			for (uint32_t i=1; i < 4; i++) {
-				parser1.get();  //This returns everything up to the next period (as it is cast to an integer), advancing the stream iterator to the character beyond.
-				parser1 >> ver1Nums[i];  //This puts everything after the next period mentioned above, but before the period after that, into the ith version number index.
-			}
-			//Do the same again for the other version string.
-			istringstream parser2(ver.VerString());
-			parser2 >> ver2Nums[0];
-			for (uint32_t i=1; i < 4; i++) {
-				parser2.get();  //Casts the string as an integer, so the stuff after the first period is ignored.
-				parser2 >> ver2Nums[i];
-			}
-
-			//Now compare components.
-			return lexicographical_compare(ver1Nums, ver1Nums + 4, ver2Nums, ver2Nums + 4);
-		} else {
-			//Split into integer and alphabetical parts, and evaluate each part in turn.
+			//First type: numbers separated by periods. If two versions have a different number of numbers, then the shorter should be padded 
+			//with zeros. An arbitrary number of numbers should be supported.
 			istringstream parser1(verString);
 			istringstream parser2(ver.VerString());
+			while (parser1.good() || parser2.good()) {
+				//Check if each stringstream is OK for i/o before doing anything with it. If not, replace its extracted value with a 0.
+				uint32_t n1, n2;
+				if (parser1.good()) {
+					parser1 >> n1;
+					parser1.get();
+				} else
+					n1 = 0;
+				if (parser2.good()) {
+					parser2 >> n2;
+					parser2.get();
+				} else
+					n2 = 0;
+				if (n1 < n2)
+					return true;
+			}
 			return false;
+		} else {
+			//Wacky format. Just eval using string compare.
+			return (verString.compare(ver.VerString()) < 0);
 		}
 	}
 
@@ -315,6 +319,6 @@ namespace boss {
 	}
 
 	bool Version::operator != (Version ver) {
-		return (verString != ver.VerString());
+		return !(*this == ver);
 	}
 }

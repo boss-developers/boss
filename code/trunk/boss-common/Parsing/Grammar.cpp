@@ -145,15 +145,15 @@ namespace boss {
 		//Note that this string comparison is unsafe (may give incorrect result).
 		switch (comp) {
 		case '>':
-			if (trueVersion.compare(version) > 0)
+			if (Version(trueVersion) > Version(version))
 				result = true;
 			break;
 		case '<':
-			if (trueVersion.compare(version) < 0)
+			if (Version(trueVersion) < Version(version))
 				result = true;
 			break;
 		case '=':
-			if (version == trueVersion)
+			if (Version(trueVersion) == Version(version))
 				result = true;
 			break;
 		}

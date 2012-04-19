@@ -73,6 +73,7 @@ namespace boss {
 	//File writer.
 	size_t writer(char * data, size_t size, size_t nmemb, void * buffer);
 
+
 	////////////////////////
 	// Masterlist Updating
 	////////////////////////
@@ -96,6 +97,6 @@ namespace boss {
 
 	//Downloads and installs a BOSS update.
 	//Throws boss_error exception on fail.
-	BOSS_COMMON string DownloadInstallBOSSUpdate(uiStruct ui, const string updateVersion);
+	BOSS_COMMON void DownloadInstallBOSSUpdate(fs::path file, uiStruct ui, const string updateVersion);
 }
 #endif
