@@ -354,6 +354,7 @@ namespace boss {
 
 			wxSingleChoiceDialog* choiceDia = new wxSingleChoiceDialog((wxWindow*)parent, wxT("Please pick which game to run BOSS for:"),
 				wxT("BOSS: Select Game"), choices);
+			choiceDia->SetIcon(wxIconLocation("BOSS GUI.exe"));
 
 			if (choiceDia->ShowModal() != wxID_OK)
 				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);

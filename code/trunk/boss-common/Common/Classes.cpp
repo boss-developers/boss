@@ -609,7 +609,7 @@ namespace boss {
 		exception is the neatest way to go about showing it occurred.
 	activeOnly is the measure of whether a conversion is necessary.*/
 	void	ItemList::SavePluginNames(fs::path file, bool activeOnly, bool doEncodingConversion) {
-		string badFilename = "";
+		string badFilename = "",  contents, settings;
 		ItemList activePlugins;
 		size_t numActivePlugins;
 		Transcoder trans;
@@ -622,10 +622,15 @@ namespace boss {
 				numActivePlugins = activePlugins.Items().size();
 			}
 		}
-		if (doEncodingConversion) {
-			string contents;
-			fileToBuffer(file, contents);
+		if (doEncodingConversion)
 			trans.SetEncoding(1252);
+		if (gl_current_game == MORROWIND) {  //Must be the plugins file, since loadorder.txt isn't used for MW.
+			//If Morrowind, BOSS writes active plugin list to Morrowind.ini, which also holds a lot of other game settings.
+			//BOSS needs to read everything up to the active plugin list in the current ini and stick that on before the first saved plugin name.
+			fileToBuffer(file, contents);
+			size_t pos = contents.find("[Game Files]");
+			if (pos != string::npos)
+				settings = contents.substr(0, pos + 12); //+12 is for the characters in "[Game Files]".
 		}
 
 		bool isSkyrim1426plus = (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
@@ -636,6 +641,9 @@ namespace boss {
 		if (outfile.fail())
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 
+		if (!settings.empty())
+			outfile << settings << endl;  //Get those Morrowind settings back in.
+
 		size_t max = items.size();
 		for (size_t i=0; i < max; i++) {
 			if (items[i].Type() == MOD) {
@@ -644,6 +652,8 @@ namespace boss {
 				else if (!items[i].Exists())  //Only installed plugins should be written to the plugins.txt/loadorder.txt. The vector may contain others for user rule sorting purposes.
 					continue;
 				LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
+				if (gl_current_game == MORROWIND) //Need to write "GameFileN=" before plugin name, where N is an integer from 0 up.
+					outfile << "GameFile" << i << "=";
 				if (doEncodingConversion) {  //Not UTF-8.
 					try {
 						outfile << trans.Utf8ToEnc(items[i].Name()) << endl;
@@ -785,7 +795,7 @@ namespace boss {
 
 	size_t		ItemList::GetLastMasterPos() const {
 		size_t i=0;
-		while (i < items.size() && (items[i].IsGroup() || items[i].IsMasterFile() || items[i].IsFalseFlagged())) {  //SLLOOOOOWWWWW probably.
+		while (i < items.size() && (items[i].IsGroup() || items[i].IsMasterFile())) {  //SLLOOOOOWWWWW probably.
 			i++;
 		}
 		if (i > 0)

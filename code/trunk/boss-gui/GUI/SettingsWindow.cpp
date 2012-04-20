@@ -35,7 +35,7 @@ END_EVENT_TABLE()
 using namespace boss;
 using namespace std;
 
-SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title) {
+SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCAPTION|wxCLOSE_BOX|wxCLIP_CHILDREN) {
 
 	wxString DebugVerbosity[] = {
         wxT("Standard (0)"),
@@ -52,6 +52,13 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 		wxT("Fallout 3"),
 		wxT("Fallout: New Vegas"),
 		wxT("Morrowind")
+	};
+
+	wxString Language[] = {
+		wxT("English"),
+		wxT("Spanish"),
+		wxT("German"),
+		wxT("Russian")
 	};
 
 	//Set up stuff in the frame.
@@ -71,12 +78,15 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	//Create General Settings tab.
 	GeneralTab = new wxPanel(TabHolder);
 	wxBoxSizer *GeneralTabSizer = new wxBoxSizer(wxVERTICAL);
-
 	
 	wxBoxSizer *gameBox = new wxBoxSizer(wxHORIZONTAL);
-	gameBox->Add(new wxStaticText(GeneralTab, wxID_ANY, wxT("Default Game:")), 2, wxEXPAND);
+	gameBox->Add(new wxStaticText(GeneralTab, wxID_ANY, wxT("Default Game:")), 3, wxEXPAND);
 	gameBox->Add(GameChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 7, Game), 1);
 	GeneralTabSizer->Add(gameBox, BorderSizerFlags);
+	wxBoxSizer *languageBox = new wxBoxSizer(wxHORIZONTAL);
+	languageBox->Add(new wxStaticText(GeneralTab, wxID_ANY, wxT("Language:")), 3, wxEXPAND);
+	languageBox->Add(LanguageChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, Language), 1);
+	GeneralTabSizer->Add(languageBox, BorderSizerFlags);
 	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Check for BOSS updates on startup")), BorderSizerFlags);
 	GeneralTabSizer->Add(UseUserRuleEditorBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Use User Rules Editor")), BorderSizerFlags);
 
@@ -177,6 +187,20 @@ void SettingsFrame::SetDefaultValues() {
 		GameChoice->SetSelection(6);
 		break;
 	}
+	switch (gl_language) {
+	case ENGLISH:
+		LanguageChoice->SetSelection(0);
+		break;
+	case SPANISH:
+		LanguageChoice->SetSelection(1);
+		break;
+	case GERMAN:
+		LanguageChoice->SetSelection(2);
+		break;
+	case RUSSIAN:
+		LanguageChoice->SetSelection(3);
+		break;
+	}
 
 	//Internet Settings
 	ProxyHostBox->SetValue(gl_proxy_host);
@@ -236,6 +260,20 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 		break;
 	case 6:
 		gl_game = MORROWIND;
+		break;
+	}
+	switch (LanguageChoice->GetSelection()) {
+	case 0:
+		gl_game = ENGLISH;
+		break;
+	case 1:
+		gl_game = SPANISH;
+		break;
+	case 2:
+		gl_game = GERMAN;
+		break;
+	case 3:
+		gl_game = RUSSIAN;
 		break;
 	}
 

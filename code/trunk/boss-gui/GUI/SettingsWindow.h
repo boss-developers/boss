@@ -47,6 +47,7 @@ private:
 	wxCheckBox *LogDebugOutputBox;
 	wxChoice *DebugVerbosityChoice;
 	wxChoice *GameChoice;
+	wxChoice *LanguageChoice;
 	wxTextCtrl *ProxyHostBox;
 	wxTextCtrl *ProxyPortBox;
 	wxTextCtrl *ProxyUserBox;
