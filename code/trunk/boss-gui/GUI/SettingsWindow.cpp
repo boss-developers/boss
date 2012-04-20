@@ -66,29 +66,31 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 
 	TabHolder = new wxNotebook(this,wxID_ANY);
 
-	wxSizerFlags ContentSizerFlags(1);
-	ContentSizerFlags.Expand().Border(wxTOP|wxBOTTOM, 5);
+	wxSizerFlags leftItem(1);
+	leftItem.Border(wxALL, 10).Expand().Left();
 
-	wxSizerFlags ItemSizerFlags(1);
-	ItemSizerFlags.Border(wxLEFT|wxRIGHT, 10);
+	wxSizerFlags rightItem(1);
+	rightItem.Border(wxALL, 10).Expand().Right();
 
-	wxSizerFlags BorderSizerFlags(0);
-	BorderSizerFlags.Border(wxALL, 10);
+	wxSizerFlags wholeItem(0);
+	wholeItem.Border(wxALL, 10);
 
 	//Create General Settings tab.
 	GeneralTab = new wxPanel(TabHolder);
 	wxBoxSizer *GeneralTabSizer = new wxBoxSizer(wxVERTICAL);
+
+	wxGridSizer *GeneralGridSizer = new wxGridSizer(2, 5, 5);
 	
-	wxBoxSizer *gameBox = new wxBoxSizer(wxHORIZONTAL);
-	gameBox->Add(new wxStaticText(GeneralTab, wxID_ANY, wxT("Default Game:")), 3, wxEXPAND);
-	gameBox->Add(GameChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 7, Game), 1);
-	GeneralTabSizer->Add(gameBox, BorderSizerFlags);
-	wxBoxSizer *languageBox = new wxBoxSizer(wxHORIZONTAL);
-	languageBox->Add(new wxStaticText(GeneralTab, wxID_ANY, wxT("Language:")), 3, wxEXPAND);
-	languageBox->Add(LanguageChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, Language), 1);
-	GeneralTabSizer->Add(languageBox, BorderSizerFlags);
-	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Check for BOSS updates on startup")), BorderSizerFlags);
-	GeneralTabSizer->Add(UseUserRuleEditorBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Use User Rules Editor")), BorderSizerFlags);
+	//wxBoxSizer *gameBox = new wxBoxSizer(wxHORIZONTAL);
+	GeneralGridSizer->Add(new wxStaticText(GeneralTab, wxID_ANY, wxT("Default Game:")), leftItem);
+	GeneralGridSizer->Add(GameChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 7, Game), rightItem);
+	//GeneralTabSizer->Add(gameBox, wholeItem);
+	//wxBoxSizer *languageBox = new wxBoxSizer(wxHORIZONTAL);
+	GeneralGridSizer->Add(new wxStaticText(GeneralTab, wxID_ANY, wxT("Language:")), leftItem);
+	GeneralGridSizer->Add(LanguageChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, Language), rightItem);
+	GeneralTabSizer->Add(GeneralGridSizer);
+	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Check for BOSS updates on startup")), wholeItem);
+	GeneralTabSizer->Add(UseUserRuleEditorBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Use User Rules Editor")), wholeItem);
 
 	/*wxStaticText *gameText;
 	wxString text = wxT("If the default game is set to Autodetect, BOSS will try to autodetect a game to run for, and will ask you to choose a game if it finds more than one.\n\n");
@@ -99,27 +101,19 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 
 	//Create Internet Settings tab.
 	InternetTab = new wxPanel(TabHolder);
-	wxBoxSizer *InternetTabSizer = new wxBoxSizer(wxVERTICAL);
+	wxGridSizer *InternetTabSizer = new wxGridSizer(2, 5, 5);
 	
-	wxBoxSizer *proxyHostSizer = new wxBoxSizer(wxHORIZONTAL);
-	proxyHostSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Hostname:")), 3, wxEXPAND);
-	proxyHostSizer->Add(ProxyHostBox = new wxTextCtrl(InternetTab,wxID_ANY), 1);
-	InternetTabSizer->Add(proxyHostSizer, BorderSizerFlags);
+	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Hostname:")), leftItem);
+	InternetTabSizer->Add(ProxyHostBox = new wxTextCtrl(InternetTab,wxID_ANY), rightItem);
 
-	wxBoxSizer *proxyPortSizer = new wxBoxSizer(wxHORIZONTAL);
-	proxyPortSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Port Number:")), 3, wxEXPAND);
-	proxyPortSizer->Add(ProxyPortBox = new wxTextCtrl(InternetTab,wxID_ANY), 1);
-	InternetTabSizer->Add(proxyPortSizer, BorderSizerFlags);
+	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Port Number:")), leftItem);
+	InternetTabSizer->Add(ProxyPortBox = new wxTextCtrl(InternetTab,wxID_ANY), rightItem);
 
-	wxBoxSizer *proxyUserSizer = new wxBoxSizer(wxHORIZONTAL);
-	proxyUserSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Username:")), 3, wxEXPAND);
-	proxyUserSizer->Add(ProxyUserBox = new wxTextCtrl(InternetTab,wxID_ANY), 1);
-	InternetTabSizer->Add(proxyUserSizer, BorderSizerFlags);
+	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Username:")), leftItem);
+	InternetTabSizer->Add(ProxyUserBox = new wxTextCtrl(InternetTab,wxID_ANY), rightItem);
 
-	wxBoxSizer *proxyPasswdSizer = new wxBoxSizer(wxHORIZONTAL);
-	proxyPasswdSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Password:")), 3, wxEXPAND);
-	proxyPasswdSizer->Add(ProxyPasswdBox = new wxTextCtrl(InternetTab,wxID_ANY), 1);
-	InternetTabSizer->Add(proxyPasswdSizer, BorderSizerFlags);
+	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, wxT("Proxy Password:")), leftItem);
+	InternetTabSizer->Add(ProxyPasswdBox = new wxTextCtrl(InternetTab,wxID_ANY), rightItem);
 
 	InternetTab->SetSizer(InternetTabSizer);
 
@@ -127,12 +121,12 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	DebugTab = new wxPanel(TabHolder);
 	wxBoxSizer *DebugTabSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxBoxSizer *verbosityBox = new wxBoxSizer(wxHORIZONTAL);
-	verbosityBox->Add(new wxStaticText(DebugTab, wxID_ANY, wxT("Debug Output Verbosity:")), 3, wxEXPAND);
-	verbosityBox->Add(DebugVerbosityChoice = new wxChoice(DebugTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, DebugVerbosity), 1);
-	DebugTabSizer->Add(verbosityBox, BorderSizerFlags);
-	DebugTabSizer->Add(DebugSourceReferencesBox = new wxCheckBox(DebugTab,wxID_ANY, wxT("Include Source Code References")), BorderSizerFlags);
-	DebugTabSizer->Add(LogDebugOutputBox = new wxCheckBox(DebugTab,wxID_ANY, wxT("Log Debug Output")), BorderSizerFlags);
+	wxGridSizer *DebugGridSizer = new wxGridSizer(2, 5, 5);
+	DebugGridSizer->Add(new wxStaticText(DebugTab, wxID_ANY, wxT("Debug Output Verbosity:")), leftItem);
+	DebugGridSizer->Add(DebugVerbosityChoice = new wxChoice(DebugTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, DebugVerbosity), rightItem);
+	DebugTabSizer->Add(DebugGridSizer);
+	DebugTabSizer->Add(DebugSourceReferencesBox = new wxCheckBox(DebugTab,wxID_ANY, wxT("Include Source Code References")), wholeItem);
+	DebugTabSizer->Add(LogDebugOutputBox = new wxCheckBox(DebugTab,wxID_ANY, wxT("Log Debug Output")), wholeItem);
 
 	DebugTab->SetSizer(DebugTabSizer);
 
