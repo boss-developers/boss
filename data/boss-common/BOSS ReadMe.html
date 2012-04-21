@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>BOSS ReadMe</title>
+<title>BOSS Readme</title>
 <style>
 	body {font-family:Calibri,Arial,Verdana,sans-serif;}
+	h1 + p {text-align:center;}
 	li {margin-bottom:10px;}
 	li ul, li ol {margin-top:0.4em;}
 	q {font-style:italic;}
@@ -12,6 +13,7 @@
 	thead > tr td {font-weight:bold}
 	code.box {line-height:20px; white-space:pre; margin:1em 0 0 3em; display:table; padding:5px 10px;}
 	ol li ol {list-style:lower-alpha;}
+	ol li ol li ol {list-style:lower-roman;}
 	blockquote {background:#E6E6FA; display:table; padding:5px 30px 5px 10px;}
 	h1 { text-align:center;}
 	h2 {margin-top:3em;}
@@ -25,13 +27,13 @@
 	td.t:after {content: '\2713';}
 	td.c:after {content: '\2717';}
 	img {border:0;}
-	#slideholder { height: 340px;}
-	#slideholder img {opacity:0; position:absolute;
+	.slideshow img {opacity:0; 
+		position:absolute;
 		transition: opacity 1.5s;
 		-moz-transition: opacity 1.5s;
 		-webkit-transition: opacity 1.5s;
 		-o-transition: opacity 1.5s;}
-	#slideholder img:first-child {opacity:1;}
+	.slideshow img:first-child {opacity:1;}
 	figcaption {font-style:italic; margin-bottom:2em;}
 	tr.inactive {opacity:0.5;}
 	code.box {margin-left:0em;}
@@ -39,31 +41,65 @@
 </style>
 
 <h1>BOSS</h1>
-<p style="text-align:center;">A "one-click" program for users that quickly optimises and avoids detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.</p>
+<p>A "one-click" program that quickly optimises plugin load orders for TES III: Morrowind, TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas.
 
 <h2>Contents</h2>
 <ol>
-	<li><a href="#features">Features &amp; Introduction</a>
-	<li><a href="#install">Installation &amp; Basic Usage</a>
+	<li><a href="#intro">Introduction</a>
+	<li><a href="#install">Installation</a>
 	<li><a href="#remove">Uninstallation</a>
-	<li><a href="#general">General Usage</a>
+	<li><a href="#gui">The Graphical User Interface</a>
 	<ol>
-		<li><a href="#gui">The Graphical User Interface</a>
-		<li><a href="#updates">Keeping BOSS Up-To-Date</a>
-		<li><a href="#bosslog">The BOSS Log</a>
-		<li><a href="#dirtymods">Dirty Edits, Mod Cleaning &amp; CRCs</a>
-		<li><a href="#falseflags">False-Flagged Plugins</a>
+		<li><a href="#">Startup</a>
+		<li><a href="#">The Main Window</a>
+		<li><a href="#">The User Rules Manager</a>
+		<ol>
+			<li><a href="#">What Everything Does</a>
+			<li><a href="#">How To Create A Rule</a>
+		</ol>
+		<li><a href="#">The Settings Window</a>
+	</ol>
+	<li><a href="#bosslog">The BOSS Log</a>
+	<ol>
+		<li><a href="#">General</a>
+		<li><a href="#">Additional HTML BOSS Log Functionality</a>
+		<ol>
+			<li><a href="#">Filters</a>
+			<li><a href="#">In-Log Unrecognised Plugin Submission</a>
+			<li><a href="#">CSS Settings</a>
+			<li><a href="#">Settings Memory</a>
+		</ol>
 	</ol>
 	<li><a href="#help">Contributions &amp; Help</a>
-	<li><a href="#advanced">Further Details</a>
+	<li><a href="#cli">The Command Line Interface</a>
 	<ol>
-		<li><a href="#userRules">User Rules</a>
-		<li><a href="#ini">The BOSS.ini</a>
-		<li><a href="#cli">Command Line Arguments</a>
-		<li><a href="#special">Updating Under Special Circumstances</a>
-		<li><a href="#linux">Running BOSS Under Linux</a>
-		<li><a href="#files">BOSS Changes and Files</a>
+		<li><a href="#">Command Line Arguments</a>
+		<li><a href="#">The BOSS.ini</a>
 	</ol>
+	<li><a href="#">User Rules</a>
+	<ol>
+		<li><a href="#intro">Introduction</a>
+		<li><a href="#start">Getting Started With The Userlist</a>
+		<li><a href="#basics">Rule Basics</a>
+		<ol>
+			<li><a href="#basics-add">Sorting An Unknown Plugin</a>
+			<li><a href="#basics-override">Changing A Recognised Plugin's Position</a>
+			<li><a href="#basics-message">Editing A Plugin's BOSS Log Messages &amp; Bash Tag Suggestions</a>
+		</ol>
+		<li><a href="#syntax">Rule Definition Syntax</a>
+		<ol>
+			<li><a href="#syntax-rule">The Rule Line</a>
+			<li><a href="#syntax-sort">The Sort Line</a>
+			<li><a href="#syntax-message">The Message Line</a>
+			<li><a href="#syntax-examples">Examples</a>
+		</ol>
+		<li><a href="#apply">Enforcing Your Rules</a>
+		<li><a href="#notes">Further Notes On Rules</a>
+		<li><a href="#messages">The BOSS Message Format</a>
+	</ol>
+	<li><a href="#">Keeping BOSS Up To Date</a>
+	<li><a href="#special">Updating Under Special Circumstances</a>
+	<li><a href="#files">BOSS Changes and Files</a>
 	<li><a href="#troubleshooting">Troubleshooting</a>
 	<ol>
 		<li><a href="#general-issues">General Problems</a>
@@ -75,83 +111,146 @@
 	<li><a href="#team">Project Members</a>
 	<li><a href="#license">License</a>
 	<li><a href="#links">Quick Links</a>
-	<li><a href="#history">Version History</a>
+	<li><a href="#">Appendix 1: Dirty Edits, Mod Cleaning &amp; CRCs</a>
+	<li><a href="#">Appendix 2: False-Flagged Plugins</a>
 </ol>
 
-<h2 id="features">Features &amp; Introduction</h2>
+<h2 id="intro">Introduction</h2>
+
+<p>BOSS is designed to assist in the usage of mods, helping mod users avoid serious conflicts by setting their plugins in their optimal load order. It is not a complete solution to load order issues, as there are far more mods available than BOSS knows about. To properly place mod plugins that BOSS doesn't know about, a good working knowledge of load ordering is still necessary, for which some research and documentation reading will go a long way.
+<p>Although BOSS doesn't recognise every plugin available, it does recognise over 22,100 plugins across the 6 games it supports, with the breakdown being roughly:
 <ul>
-	<li>Correctly positions over 22,100 mod plugins and counting for TES IV: Oblivion, TES V: Skyrim, Fallout 3, Fallout: New Vegas and Nehrim - At Fate's Edge.
-	<ul><li>Over 13,300 / 3,500 / 3,100 / 3,100 / 180 mod plugins respectively.</ul>
-	<li>Provides a large number of usage notes for many plugins, including requirements, incompatibilities, updates and bug warnings.
-	<li>Provides detection and warning of installation mistakes for some popular mods.
-	<li>Displays the version number of plugins when it is available.
-	<li>Provides Bash Tag suggestions that are automatically applied by Wrye Bash (for Oblivion and Skyrim), Wrye Flash (for Fallout 3), Wrye Flash NV (for Fallout: New Vegas).
-	<li>Sorts plugins ghosted by the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities.
-	<li>Allows easy user customisation of mod positions and the messages provided.
-	<li>Includes both <abbr title="Command Line Interface">CLI</abbr> and <abbr title="Graphical User Interface">GUI</abbr> clients, offering full functionality and ease-of-use for all users.
-	<li>Includes a semi-automatic updater to ensure that the latest version is always installed.
-	<li>Is under constant development and improvement by a team of modders and experts on all supported games.
+	<li>Over 13,300 TES IV: Oblivion plugins.
+	<li>Over 3,500 TES V: Skyrim plugins.
+	<li>Over 3,100 Fallout 3 plugins.
+	<li>Over 3,100 Fallout: New Vegas plugins.
+	<li>Over 180 Nehrim - At Fate's Edge plugins.
 </ul>
-<p>BOSS will re-order your mod plugins to their correct positions, putting any mods it doesn't recognise after them, in the same order as they were before BOSS was run.
-<p>BOSS is designed to assist in the usage of mods, helping mod users avoid serious conflicts. It is not a complete solution to load ordering issues, as there are far more mods out there than BOSS knows about. To properly place mods BOSS doesn't know about, a good working knowledge of mod load ordering for the relevant game is still necessary, for which some research and documentation reading will go a long way.
+<p>Although BOSS technically supports TES III: Morrowind, no mod plugins are recognised and no further support is planned. Morrowind users looking for an automated load order manager should consider using <a href="http://code.google.com/p/mlox/">mlox</a> instead.
+<p>As well as sorting a large number of plugins, BOSS also provides over 10,000 plugin-specific messages, including usage notes, requirements, incompatibilities, warnings on bugs and installation mistake notifications. BOSS also sorts plugins that are ghosted by the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities, and provides Bash Tag suggestions for use with them.
+<p>BOSS is also highly customisable, with a feature that allows users to set where plugins should load and what messages should be displayed for them, not to mention a host of filters and display options available in its HTML-format output file, which is itself one of two output formats supported.
+<p>Community contributions of unrecognised plugins and other information and feedback are vital to BOSS's upkeep, so make sure to let us know what you know. See the <a href="#help">Contributions &amp; Help</a> section for details.
+<p>Finally, if you're developing a modding utility yourself and find yourself dealing with load orders, the BOSS API gives access to almost all of BOSS's functionality, plus more general load order and active status management functionality that works uniformly across all supported games. See the <a href="BOSS%20API%20Readme.html">BOSS API Readme</a> for more information on that.
 
-<h2 id="install">Installation &amp; Basic Usage</h2>
-<p><b>Note that BOSS does not support Windows 2000 or earlier.</b>
-<p>BOSS can be installed for use with TES IV: Oblivion, TES V: Skyrim, Fallout 3, Fallout: New Vegas and Nehrim - At Fate's Edge (a Total Conversion mod for Oblivion). Installation may either be automated, using the BOSS Installer package, or manually, using the archive package. Either method is simple, and instructions for manual installation are given below.
+
+<h2 id="install">Installation</h2>
+<p><b>BOSS does not support Windows 2000 or earlier.</b>
+<p>The simplest way to install BOSS is to use the installer. However, the instructions below are provided if a manual install method is preferred.
 <ol>
-	<li>If upgrading from an earlier version of BOSS, delete all BOSS files and folders in all supported games' Data folders. Also delete any of the following from your BOSS folder(s) (but not from any folders within your BOSS folders): BOSSlog.txt; BOSSlog.html; masterlist.txt; modlist.txt; modlist.old. 
-	<ul><li>If you have existing userlists, you will need to move them into the subfolders BOSS creates for their games in the BOSS folder when it is run. The installer does this automatically for you.</ul>
-	<li>Within the archive you downloaded there is a BOSS folder. Extract this folder to a location of your choice. Make sure that you have the appropriate file permissions for the directory you choose. See the <a href="#permissions">File Permissions</a> section for more information.
-	<ul>
-		<li>If you only have one BOSS-supported game installed, it is best to install BOSS to the game's installation directory (ie. one of <q>Oblivion</q>, <q>Fallout 3</q>, <q>Nehrim</q>, <q>fallout new vegas</q> or <q>skyrim</q> depending on the game), so that the BOSS folder sits alongside the Data folder and the game's executable. This is referred to as a local install. BOSS by default will always run for the local game.
-		<li>If you have more than one BOSS-supported game installed, it is best to install BOSS to a location outside of the supported games' installation directories. This is referred to as a non-local install. In a non-local install, BOSS by default lets the user choose which game to run for. This is the default install type when installing BOSS using the installer.
-		<li>If you have multiple copies of the same game installed, then you must also copy the BOSS folder you installed to each instance of that game, apart from the original install, so that it is installed locally for each copy. These copies act as totally separate installs of BOSS, independent of each other and the 'main' BOSS install.
-	</ul>
+	<li>If updating from an earlier version of BOSS, uninstall the existing BOSS install before continuing. Any userlists you have should be moved to a temporary location while you install the BOSS update.
+	<li>Extract the <q>BOSS</q> folder the downloaded archive contains to a location of your choice. Make sure that you have the appropriate file permissions for the directory you choose. See the <a href="#permissions">File Permissions</a> section for more information. Note that if you install the BOSS folder to the same location as a supported game's executable, BOSS will only run for that game by default, and will not ask you to choose which game it should run for, even if you have other supported games installed.
 	<li>If any of the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities are installed, make sure their <q>BOSS Disable Lock Load Order</q><span title="previously BOSS Disable Lock Times">*</span> setting is enabled.
-	<li>In the BOSS folder, run <q>BOSS.exe</q>. This will download the latest masterlist from the Internet and then sort your mods.
+	<li>If updating from an earlier version of BOSS and you moved any userlists you have to a temporary location, after you have run BOSS at least once for each game with a userlist, you will need to move your userlist(s) into the game(s) subfolders that are created within the BOSS folder.
 </ol>
-<p>Once BOSS has finished running, the output will be displayed automatically. Read any notes, errors if applicable, and make any relevant changes that are suggested by them. The <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities will automatically import and apply Bash Tag suggestions from BOSS. Some Bash Tag suggestions can come with conditions and notes that require human intervention though, so read the suggestions made thoroughly and adjust tags by hand in <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> if necessary.
-<p>Unrecognised mods must be re-ordered by hand using a mod manager such as <abbr title="Nexus Mod Manager">NMM</abbr>/<abbr title="Oblivion Mod Manager">OBMM</abbr>/<abbr title="Fallout Mod Manager">FOMM</abbr> or <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>, or using BOSS's <a href="#userRules">user rules</a> functionality.
+<p>See the <a href="#gui">The Graphical User Interface</a> or <a href="#cli">The Command Line Interface</a> sections for information on running BOSS.
+
 
 <h2 id="remove">Uninstallation</h2>
-<p>If BOSS was installed using the installer, then use the uninstaller it provides a link to in the Start Menu to uninstall BOSS. If BOSS was installed manually, do the following:
-<ol><li>Delete the BOSS folder in the location you installed it to. If you installed BOSS to more than one location, delete each BOSS folder for each install of BOSS you wish to remove.</ol>
+<p>If BOSS was installed using the installer, then use the uninstaller it provides a link to in the Start Menu to uninstall BOSS. If BOSS was installed manually, simply delete the <q>BOSS</q> folder you installed.
 
-<h2 id="general">General Usage</h2>
-<p>This section gives more information on the parts of BOSS's functionality that users are likely to come into contact with during the course of general usage of BOSS. It gives details on the capabilities of the GUI, information on how to keep BOSS up to date, information on the BOSS Log and its constituent parts, and provides some background information and BOSS-specific notes on the subject of dirty edits and mod cleaning.
-<h3 id="gui">The Graphical User Interface</h3>
-<p>While the <abbr title="Command Line Interface">CLI</abbr> provided by <q>BOSS.exe</q> offers the simplest way to run BOSS using just one click, the <abbr title="Graphical User Interface">GUI</abbr> provided by <q>BOSS GUI.exe</q> provides a way of accessing BOSS's options, settings and more powerful features without having to edit any other files manually. The CLI and GUI both possess the same core functionality, but differ in how they approach providing it, with the CLI being text-based and the GUI using graphical elements such as buttons, checkboxes and drop-down lists.
-<p>The GUI is composed of three major windows: the Main window, which is the one displayed when the GUI is run; the Settings window; and the User Rules Editor window. Their content shall be explained in turn.
-<p>When the GUI is run, it first checks if the last game it run for (if previously run) can be detected, and runs for that if so. If this is the first time the GUI has been run (or the first time since the BOSS.ini was last deleted) or the game it last ran for cannot be found, it then attempts to detect which supported games are installed. If BOSS is installed locally to any supported game, the GUI will immediately load up the Main window. Otherwise, it will display a selection dialog so that the user may select which game it should run for. In this dialog, games that are not detected are labelled as such, and choosing one such game will cause the GUI to run in a limited mode, only allowing masterlist updating. See <a href="#special">Updating Under Special Circumstances</a> for when this may be useful. If a detected game is chosen, the GUI will run normally. Cancelling the selection dialog will cause the GUI to quit.
 
-<h4>The Main Window</h4>
+<h2 id="gui">The Graphical User Interface</h2>
+<p>The <abbr title="Graphical User Interface">GUI</abbr> provides a simple way to run BOSS while allowing access to its various settings and more powerful features without having to manually edit any files. It can be launched by clicking the <q>BOSS GUI</q> Start Menu link (if you installed BOSS using the installer) or by running the <q>BOSS GUI.exe</q> found in the BOSS folder.
+<h3>Startup</h3>
+<p>When you first run the GUI, you may be presented with the following dialog.
 <figure>
-<img alt="main window" src="images/BOSS%20GUI%20Main.png"/>
+<img alt="select game" src="images/GUI-Select-Game.png"/>
+<figcaption>The Select Game dialog.</figcaption>
+</figure>
+<p>This dialog is displayed if you did not install the BOSS folder next to a supported game's executable and you have either not run the GUI before, or it cannot find the game that you last ran it for. Pick the game that you want to run BOSS for, and click <q>OK</q>. If you select a game marked <q>(not detected)</q> then you will only be able to download the latest masterlist for that game, and not sort any plugins.
+<p>After you have selected a game and clicked <q>OK</q>, the dialog will close and you will be presented with the GUI's main window.
+<h3>The Main Window</h3>
+<figure>
+<img alt="main window" src="images/GUI-Main.png"/>
 <figcaption>The BOSS GUI's main window, containing the most commonly used options.</figcaption>
 </figure>
-<p>The title bar of the main window displays which game BOSS is running for: this may also be checked by seeing which game is selected in the <q>Active Game</q> menu.
-<p>The menu bar holds four menus: <q>File</q>, <q>Edit</q>, <q>Active Game</q> and <q>Help</q>. The <q>File</q> menu just contains commands for opening the BOSS Log, running BOSS and quitting. The <q>Edit</q> menu contains a command for editing user rules, which works the same as the <q>Edit User Rules</q> button, and a command for opening the settings window. The <q>Help</q> menu contains links to BOSS's documentation and copyright licenses, and commands to view the <q>About</q> dialog and to check for updates to the BOSS program (see the <a href="#updates">Keeping BOSS Up-To-Date</a> section for details).
-<p>The <q>Active Game</q> menu allows you to change which game BOSS is running for without closing and re-opening the GUI. Games that BOSS does not detect as being installed are greyed out. The active game is marked with a dot next to it. To change the active game, simply select another game in the list. Setting the run type to <q>Update Masterlist Only</q> will un-grey all the games, allowing any of them to be selected, while changing from <q>Update Masterlist Only</q> to another run type will grey out undetected games again. If an undetected game is active when you change run type, BOSS will automatically switch to the first detected game in the list.
-<p>The output options on the left of the window tweak settings related to the BOSS Log. When the <q>Display File CRCs</q> option is enabled, the BOSS Log displays the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in the Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr>/<abbr title="Skyrim Script Extender">SKSE</abbr> and its installed plugins if present. The <q>BOSS Log Format</q> option decides both what format of BOSS Log is generated when BOSS is run and what format of BOSS Log the GUI opens when the <q>View BOSS Log</q> button or <q>File&#x2192;View BOSS Log</q> menu item is selected. <q>Show BOSS Log On Completion</q> does exactly what it says on the tin.
-<p>The run options on the right of the main window decide how BOSS runs. BOSS has three main modes of operation that are mutually exclusive to one another: it can either sort your plugins, only update your masterlist then quit or undo its changes to your load order. When <q>Update Masterlist</q> is enabled, BOSS will update your masterlist before sorting your plugins. When <q>Perform Trial Run</q> is enabled, BOSS simulates its changes to your load order without actually reordering your mods. The <q>Undo Level</q> option allows you to select how many runs of BOSS are to be undone.
-<p>The <q>Edit User Rules</q> button opens your userlist for editing. If the <q>Use User Rules Editor</q> setting in the Settings window is enabled, clicking the button will open the User Rules Editor window, otherwise it will open your userlist in your default text editor. The <q>Run BOSS</q> button runs BOSS's main sorting/updating/undoing functionality according to the options selected. The <q>View BOSS Log</q> button does exactly what it says on the tin, opening the BOSS Log in the format selected in the Output Options section.
-
-<h4>The Settings Window</h4>
+<p>The title bar of the main window displays which game the GUI is running for: this may also be checked by seeing which game is selected in the <q>Active Game</q> menu.
+<p>The buttons and options are all fairly self-explanatory, but are detailed in the tables below. The <q>Run BOSS</q> button and <q>File&#x2192;Run BOSS</q> menu entry both do exactly the same thing, as do the <q>View BOSS Log</q> button and <q>File&#x2192;View BOSS Log</q> menu entry, and the <q>Edit User Rules</q> button and <q>Edit&#x2192;User Rules...</q> menu entry.
+<p>The behaviour of the <q>Active Game</q> menu requires some explanation. The menu allows you to change which game the GUI is running for without having to close and re-open it. Games that the GUI cannot find are greyed out, and the active game, ie. the one the GUI is running for, is marked with a dot to its left. To change the active game, simply select another game in the list. Setting the run type to <q>Update Masterlist Only</q> will un-grey all the games, allowing any of them to be selected, while changing from <q>Update Masterlist Only</q> to another run type will grey out undetected games again. If an undetected game is active when you change run type, the GUI will automatically switch to the first detected game in the list.
+<p>The run options on the right of the main window decide how BOSS runs. BOSS has three main modes of operation that are mutually exclusive to one another: it can either sort your plugins, only update your masterlist then quit or undo its changes to your load order. The options specific to each mode of operation are listed under each mode's radio button. When BOSS sorts your plugins, it will re-order the plugins it recognises to their correct positions, putting any plugins it doesn't recognise after them in the same order as they were before BOSS was run.
+<table>
+	<thead><tr><td>Setting<td>Description
+	<tbody>
+		<tr><td>Show BOSS Log On Completion<td>If checked, the BOSS Log will automatically be opened when BOSS has finished running.
+		<tr><td>Display File CRCs<td>If checked, the BOSS Log displays the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in the Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr>/<abbr title="Skyrim Script Extender">SKSE</abbr> and its installed plugins if present.
+		<tr><td>BOSS Log Format<td>This decides both what format of BOSS Log is generated when BOSS is run and what format of BOSS Log the GUI opens when the <q>View BOSS Log</q> button or <q>File&#x2192;View BOSS Log</q> menu item is selected.
+		<tr><td>Update Masterlist<td>If checked, BOSS will update your masterlist before sorting your plugins.
+		<tr><td>Perform Trial Run<td>If checked, BOSS simulates its changes to your load order without actually reordering your mods.
+		<tr><td>Undo Level<td>This decides how many runs of BOSS are to be undone when BOSS is run to undo changes.
+</table>
+<table>
+	<thead><tr><td colspan="2">Menu Item<td>Description
+	<tbody>
+		<tr><td rowspan="3">File<td>View BOSS Log<td>Opens the BOSS Log for viewing. The format of BOSS Log that it opens is decided by the format selected in the Output Options box.
+		<tr><td>Run BOSS<td>Runs BOSS's main functionality with the selected mode of operation and settings.
+		<tr><td>Quit<td>Quits the GUI.
+		<tr><td rowspan="2">Edit<td>User Rules...<td>This opens the <q>User Rules Manager</q> window by default, but if the <q>Use User Rules Manager</q> setting in the <q>Settings</q> window is unchecked, your userlist will be opened in your default text editor instead.
+		<tr><td>Settings...<td>Opens the <q>Settings</q> window.
+		<tr><td rowspan="7">Active Game<td>None<td>Never selectable. If this menu item is checked, something has gone wrong.
+		<tr><td>Oblivion<td>Clicking on this will change the game the GUI is running for to TES IV: Oblivion.
+		<tr><td>Nehrim<td>Clicking on this will change the game the GUI is running for to Nehrim - At Fate's Edge.
+		<tr><td>Skyrim<td>Clicking on this will change the game the GUI is running for to TES V: Skyrim.
+		<tr><td>Fallout 3<td>Clicking on this will change the game the GUI is running for to Fallout 3.
+		<tr><td>Fallout: New Vegas<td>Clicking on this will change the game the GUI is running for to Fallout: New Vegas.
+		<tr><td>Morrowind<td>Clicking on this will change the game the GUI is running for to TES III: Morrowind.
+		<tr><td rowspan="5">Help<td>Open Main Readme<td>Opens the main readme in your default web browser.
+		<tr><td>Open User Rules Readme<td>Opens the user rules readme in your default web browser.
+		<tr><td>View Copyright Licenses<td>Opens the file containing BOSS's copyright licenses in your default text editor.
+		<tr><td>Check For Updates...<td>Check for updates to BOSS.
+		<tr><td>About BOSS...<td>Displays an <q>About</q> dialog, giving the version number, some copyright and license information, a link to BOSS's Google Code page and a short blurb.
+</table>
+<h3>The User Rules Manager</h3>
 <figure>
-<div id="slideholder">
-<img alt="settings window tab 1" src="images/BOSS%20GUI%20Settings%201.png"/>
-<img alt="settings window tab 2" src="images/BOSS%20GUI%20Settings%202.png"/>
-<img alt="settings window tab 3" src="images/BOSS%20GUI%20Settings%203.png"/>
-</div>
-<figcaption>The 3 tabs of the GUI's settings window, containing the various settings not displayed in the main window (animated slideshow).</figcaption>
+<img alt="user rules editor window" src="images/GUI-User-Rules-Manager.png"/>
+<figcaption>The User Rules Manager, a graphical interface for customising how BOSS sorts your plugins and what messages it displays.</figcaption>
+</figure>
+<p>BOSS's sorting of your plugins and the messages it displays can be customised using <em>user rules</em>. User rules can:
+<ol>
+	<li>Sort plugins relative to other plugins. Plugins can be <code>.esp</code> or <code>.esm</code> files, and you can both override the positions of plugins BOSS recognises and sort plugins that are unrecognised.
+	<li>Sort groups of plugins relative to other groups of plugins. BOSS's masterlist generally lists plugins in thematic groups, which you can override the relative positioning of. You can't create new groups though.
+	<li>Insert plugins into the top or bottom of groups of plugins.
+	<li>Edit the messages BOSS attaches to plugins. You can add new messages to them, or replace them with your own messages.
+</ol>
+<p>The User Rules Manager allows easy management of your user rules without having to know any of their syntax (though if you want to customise messages, you need to know their syntax - fortunately it is pretty simple).
+<p>The <q>User Rules</q> box lists any user rules you have created. Rules are applied in the order they are listed, and their order can be changed using the <q>Move Rule Up</q> and <q>Move Rule Down</q> buttons at the bottom of the window. A rule that is greyed out and has its checkbox unchecked is disabled, and will not be applied when BOSS is run. The currently selected rule is highlighted with a grey background.
+
+<p>If a rule was created to sort a plugin that was not listed in the masterlist, and that plugin was then added to the masterlist in an update, the User Rules Manager will automatically disable the rule when it loads, to signify that the rule is no longer required. You can then choose to re-enable the rule by checking its checkbox, or delete it, by selecting the rule and clicking the <q>Delete Rule</q> button at the bottom of the window.
+<p>Clicking on a rule will load it into the <q>Rule Editor</q> box, where you can then change what it does and either overwrite the existing rule with your edits, using the <q>Save Edited Rule</q> button, or create a new rule from your edits, using the <q>Create New Rule</q> button.
+<p>The <q>Installed Plugins</q> tab lists all the plugins found in the active game's Data folder. Plugins are listed in load order. The <q>Masterlist</q> tab displays the masterlist contents as a tree list, showing the plugins in their groups. Double clicking on a collapsed group will expand it, showing the plugins and groups it contains, while double clicking on an expanded group will collapse it, hiding the plugins and groups it contains. Selecting a plugin will display the messages attached to it by the masterlist in the <q>Default Plugin Messages</q> box. You can search either list using the search box at the top of each tab. Searching looks for matches from the start of plugin and group names, and is performed when the <code>Enter</code> keyboard key is pressed, and may be cancelled by clicking the grey cross that appears in the search box.
+
+<p>How to use the Rule Editor:
+<ol>
+	<li>Drag and drop the plugin or group you want to sort and/or edit messages for from the <q>Installed Plugins</q> or <q>Masterlist</q> tab into the <q>For</q> text box. You can also type the plugin/group name in yourself.
+	<li>If you want to sort the plugin or group, check the <q>Sort Item</q> checkbox.
+	<ul>
+		<li>If you want to sort the plugin/group after another plugin/group, make sure the <q>Sort</q> radio button is selected and choose <q>before</q> or <q>after</q> as desired from the drop down box next to it. Drag and drop (or type in) the plugin/group you want to sort your plugin/group relative to into the text box next to the drop-down box.
+		<li>If the item you're sorting is a plugin, not a group, and you want to insert the plugin into a group, make sure the <q>Insert</q> radio button is selected and choose <q>top</q> or <q>bottom</q> as desired from the drop down box next to it. Then drag and drop the group you want to insert the plugin into from the <q>Masterlist</q> tab into the text box next to the drop-down menu.
+	</ul>
+	<li>If the item you're creating a rule for is a plugin, and you want to edit the messages attached to it, check the <q>Add the following messages</q> checkbox.
+	<ul>
+		<li>Any messages you write in the text box following the checkbox will be added to the plugin in addition to those already attached by the masterlist. If you want to replace the messages attached by the masterlist with your own, also check the <q>Replace Existing Messages</q> checkbox.
+		<li>Any messages you write in the text box must be written using the correct syntax, a summary of which is given in the <a href="#">BOSS Message Format</a> section of the User Rules Readme.
+	</ul>
+</ol>
+<p>When you click either of the <q>Create New Rule</q> or <q>Save Edited Rule</q> buttons, the User Rules Manager will check that the rule has valid syntax, and warn you of any errors encountered. Invalid rules will not be saved.
+<p>Once you have finished editing your user rules, use the <q>Save and Exit</q> button to save your changes to your userlist, or the <q>Cancel</q> button to exit without saving.
+<p>Further information on user rules, including the details on their syntax, can be found in the <a href="BOSS%20User%20Rules%20ReadMe.html">BOSS User Rules ReadMe</a>.
+
+<h3>The Settings Window</h3>
+<figure class="slideshow">
+<img alt="settings window tab 1" src="images/GUI-Settings-1.png"/>
+<img alt="settings window tab 2" src="images/GUI-Settings-2.png"/>
+<img alt="settings window tab 3" src="images/GUI-Settings-3.png"/>
+<figcaption style="padding-top:340px;">The 3 tabs of the GUI's Settings window (animated slideshow).</figcaption>
 </figure>
 <p>BOSS's less commonly used settings are found in the Settings window, which can be accessed by clicking <q>Edit&#x2192;Settings...</q> in the main window's menu bar. The settings are grouped into tabs depending on what area of BOSS's behaviour they control. The settings are detailed in the table below.
 <table>
 	<thead><tr><td>Tab<td>Setting<td>Description
 	<tbody>
-		<tr><td rowspan="3">General<td>Check for BOSS updates on startup<td>Controls whether or not BOSS checks for program (not masterlist) updates automatically when it starts up.
+		<tr><td rowspan="4">General<td>Default Game<td>If set to something other than <q>Autodetect</q>, this overrides game autodetection. If the game specified is not detected, BOSS falls back to autodetection, unless BOSS is run with the <q>Masterlist Update Only</q> option selected, in which case BOSS will run successfully whether or not the game is installed.
+		<tr><td>Language<td>Controls the language BOSS uses in its interfaces. Plugin messages are always displayed in English.
+		<tr><td>Check for BOSS updates on startup<td>Controls whether or not BOSS checks for program (not masterlist) updates automatically when it starts up.
 		<tr><td>Use User Rules Editor<td>Controls whether the GUI uses the User Rules Editor window to edit user rules or whether it opens the userlist.txt for manual editing.
-		<tr><td>Default Game<td>If set to something other than <q>Autodetect</q>, this overrides game autodetection. If the game specified is not detected, BOSS falls back to autodetection, unless BOSS is run with the <q>Masterlist Update Only</q> option selected, in which case BOSS will run successfully whether or not the game is installed.
 		<tr><td rowspan="4">Internet<td>Proxy Hostname<td>If you use a proxy to connect to the Internet, specify its hostname here.
 		<tr><td>Proxy Port Number<td>If you use a proxy to connect to the Internet, specify its port number here.
 		<tr><td>Proxy Username<td>If you use a proxy that requires authentication to connect to the Internet, specify your username here.
@@ -160,71 +259,14 @@
 		<tr><td>Include Source Code References<td>Add source code references to the debug output.
 		<tr><td>Log Debug Output<td>Save the debug output to a <q>BOSSDebugLog.txt</q> text file.
 </table>
-<p>Each setting in the GUI corresponds to a command line parameter and/or an ini setting, the details of which can be found in the <a href="#cli">Command Line Arguments</a> and <a href="#customising">Customising How BOSS Works</a> sections of this ReadMe respectively.
 
-<h4>The User Rules Editor</h4>
+
+<h2 id="bosslog">The BOSS Log</h2>
+<h3>General</h3>
 <figure>
-<img alt="user rules editor window" src="images/BOSS%20GUI%20User%20Rules%20Editor.png"/>
-<figcaption>The User Rules Editor, a graphical interface for managing your user rules.</figcaption>
+<img alt="boss log" src="images/Log.png"/>
+<figcaption>The HTML-format BOSS Log.</figcaption>
 </figure>
-<p>The User Rules Editor can be used instead of editing your userlist.txt directly. The information contained within the <a href="BOSS%20User%20Rules%20ReadMe.html">BOSS User Rules ReadMe</a> document is still required to understand user rules. The editor comprises of the following elements:
-<ul>
-	<li>User Rules:
-	<ul>
-		<li>This section lists your user rules in order. 
-		<li>Rules that are currently enabled have their checkboxes checked, whereas disabled rules are unchecked. Rules are disabled using the <code>DISABLE</code> keyword.
-		<li>Rules can be moved up or down by selecting a rule and using the <q>Move Up</q> and <q>Move Down</q> buttons at the bottom of the window.
-		<li>When the User Rules Editor is loaded, it will automatically disable any rules adding mods that are already in the masterlist.
-	</ul>
-	<li>Installed Mods/Masterlist tabs:
-	<ul>
-		<li>The Installed Mods tab lists the plugins found in your Data folder. Plugins are listed in the order that they are loaded. All plugins installed are displayed, not just those in your currently active load order.
-		<li>The Masterlist tab displays the masterlist as a tree list, showing plugins and groups. The tree list is by default fully collapsed. Double clicking on a collapsed group (any row without a <code>.esp</code> or <code>.esm</code> in its name) will expand that group, showing its children. Double clicking an expanded group will collapse it again, hiding its children.
-		<li>Selecting a plugin in the Masterlist tab's list will cause the messages attached to it by the masterlist to be displayed in the Masterlist Mod Messages section.
-		<li>Either list may be searched using the search box at the top of each tab. Searching looks for matches from the start of plugin and group names, searching for <code>xul</code> would return all plugins and groups with names that start with <code>xul</code>. Searches are performed when the <q>Enter</q> keyboard key is pressed, and may be cancelled by clicking the grey cross that appears in the search box.
-		<li>A plugin or group may be selected frm either list and drag 'n' dropped into a text box in the Rule Creator/Editor to add that plugin or group to the text box, rather than having to write out its name.
-	</ul>
-	<li>Masterlist Mod Messages:
-	<ul>
-		<li>This section displays the messages attached to the currently selected mod in the Masterlist section. The messages are displayed as they appear in the masterlist, not as they appear in the BOSS Log. See the <a href="BOSS%20User%20Rules%20ReadMe.html">BOSS User Rules ReadMe</a> for a brief overview of the most common message syntax, and the <a href="BOSS%20Masterlist%20Syntax.html">BOSS Masterlist Syntax</a> documentation for the full details.
-		<li>The messages cannot be edited here: they must be replaced or added to via a user rule in the Rule Creator/Editor.
-	</ul>
-	<li>Rule Creator/Editor:
-	<ul>
-		<li>This section is where the user edits or creates user rules. Selecting a rule in the User Rules list will load it into this section.
-		<li>The <em>rule object</em> is specified in the first text box. This is the plugin or group that the rule acts upon.
-		<li>If the rule object is to be sorted, the object it is sorted relative to must be specified in one of the two text boxes in the Sort Item subsection, depending whether the user is sorting the object relative to another, or inserting a mod into a group.
-		<li>Messages for addition or to replace existing messages should be written in the large text box. They must use valid syntax.
-		<li>To add the current contents of the Rule Creator/Editor as a new rule, use the <q>Create New Rule</q> button. To save edits to the selected rule in the User Rules list, use the <q>Save Edited Rule</q> button. The User Rules Editor will ask for confirmation before applying the edits.
-		<li>To delete the rule selected in the User Rules list, use the <q>Delete Rule</q> button. The User Rules Editor will ask for confirmation before deleting the rule.
-		<li>The User Rules Editor will catch most, if not all, syntax errors in created and edited rules and warn the user of the errors encountered. No invalid rules will be saved.
-	</ul>
-</ul>
-<p>To save your changes to your userlist and exit, use the <q>Save</q> button. To exit without saving, use the <q>Cancel</q> button.
-<p>Plugins and groups may be added to the text boxes in the Rule Creator by dragging and dropping them from the Installed Mods and Masterlist lists on the right of the window. Dropping a plugin or group into a text box currently containing a plugin or group will cause the existing text to be replaced.</p>
-<p>The User Rules Editor ignores all silent comments in your userlist.txt, and will strip them from the file if you choose to save your user rules via the editor.
-
-<h3 id="updates">Keeping BOSS Up-To-Date</h3>
-<p>It is important that you keep your BOSS installation updated, not only to benefit from the many frequent updates made to the masterlists, but also to benefit from bug fixes, improvements and new features introduced to new releases of BOSS itself.
-<p>Providing there is an Internet connection available when BOSS runs, it will automatically download and apply any updates available for the masterlist of the game it is running for by default. BOSS will also check for new releases and if an update is available it will notify the user, displaying release notes if any are available. Additionally, if you installed BOSS using the automated installer, BOSS will ask the user if they wish to update, and automatically download and run the updated version's installer if so. The check for new releases functionality behaves as outlined below:
-<ol>
- <li>On launching, it automatically checks for updates to BOSS. If an update is found, it proceeds to the next step. If no update is available, or no Internet connection is present, it will display no message.
- <ul>
-  <li>If you run the <q>Check For Updates</q> option from the GUI's Help option, then it will display messages detailing if no update was found or if there were any errors.
- </ul>
- <li>No matter how the update check was started, if an update is available it will notify the user, asking whether or not to download and install the update if BOSS was installed using the automated installer. If the user decides not to update, the updater will quit.
- <li>If the user decides to update, then it will begin downloading the new installer to the BOSS folder, displaying the progress. If using the GUI, the download can be cancelled at any time, in which case any downloaded file will be deleted and the updater will quit. CLI users can cancel the download by quitting BOSS, but no cleanup will take place.
-</ol>
-<p>Under certain circumstances the masterlist and program updaters may be unable to function correctly. If you have issues using them, see the <a href="#special">Updating Under Special Circumstances</a> section for alternative methods.
-
-<p>BOSS program updates are also published at the
-<a href="http://tes.nexusmods.com/downloads/file.php?id=20516">TES Nexus</a>, 
-<a href="http://skyrim.nexusmods.com/downloads/file.php?id=6">Skyrim Nexus</a>,
-<a href="http://fallout3.nexusmods.com/downloads/file.php?id=10193">Fallout 3 Nexus</a> and 
-<a href="http://newvegas.nexusmods.com/downloads/file.php?id=35999">New Vegas Nexus</a> BOSS pages. For those not using the masterlist updater, the latest masterlist is always on the <a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a>.
-<p>Always make sure to use the latest version of BOSS and the latest masterlist.
-
-<h3 id="bosslog">The BOSS Log</h3>
 <p>The BOSS Log is where you will find all of BOSS's outputted information. It can be generated in either HTML format (the default) or as a plain text file with minimal formatting. The HTML format has significant advantages over the plain text format, being considerably easier to read, containing colour-coded messages and a variety of interactive features to customise what is displayed.
 
 <p>Both log formats contain the following sections:
@@ -238,76 +280,54 @@
 		<tr><td>Recognised Plugins<br /><i>or</i><br />Restored Load Order<td>This section comprises the bulk of BOSS's output, listing all your recognised installed plugins and any messages BOSS has attached to them, as well as version information (if given) and the plugin CRCs (if run with <q>Display File CRCs</q> enabled). If you are running BOSS to undo its changes, this section is titled <q>Restored Load Order</q>, and lists the restored load order.
 		<tr><td>Unrecognised Plugins<td>This section is only displayed if you have plugins installed that are unrecognised by BOSS, and lists them. These plugins should be reported in an official BOSS thread with download links to their mods so they can be added to the relevant masterlist.
 </table>
-
-<p>BOSS will display the version numbers of any plugins that provide them in their description fields. If a plugin supplies no version number, it cannot be displayed. The version numbers may not reflect the actual version of the mod installed - this could either be due to the mod author forgetting to update the description, or due to a mistake in BOSS's detection. As version numbers are supplied by mod authors in a wide range of formats and BOSS has to detect as many as possible, it occasionally identifies parts of some descriptions as version numbers incorrectly. This is largely unavoidable, but any discrepancies should be reported to the BOSS team in case they can be fixed. When in doubt, check the version number given in a mod's readme. 
+<p>BOSS will display the version numbers of any plugins that provide them in their description fields. If a plugin supplies no version number, it cannot be displayed. The version numbers may not reflect the actual version of the mod installed - this could either be due to the mod author forgetting to update the description, or due to a mistake in BOSS's detection. As version numbers are supplied by mod authors in a wide range of formats and BOSS has to detect as many as possible, it occasionally identifies parts of some descriptions as version numbers incorrectly. When in doubt, check the version number given in a mod's readme. 
 <p>It should be noted that the vast majority of BOSS's mod messages are non-conditional, in that they are not displayed in response to your specific install. For example, a message that gives some of the mod's incompatibilities does not know if you have them installed or not, and a message telling you to do something will not know if it has been done.
-<p>BOSS's mod messages are one of the most important features BOSS provides, acting as a means of providing users with information that they might otherwise not obtain. It is important for a stable, healthy game that you act on any messages that require action. If you think a message suggests an action that is not necessary, report it to an official BOSS thread.
+<p>BOSS's mod messages are one of the most important features BOSS provides, acting as a means of providing users with information that they might otherwise not obtain. It is important for a stable, healthy game that you act on any messages that require action. If you think a message suggests an action that is not necessary, report it to an official BOSS thread. While the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities will automatically import and apply Bash Tag suggestions from BOSS, some Bash Tag suggestions can come with conditions and notes that require human intervention, so read the suggestions made thoroughly and adjust tags by hand in <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> if necessary.
+<p>Unrecognised mods must be re-ordered by hand using a mod manager such as <abbr title="Nexus Mod Manager">NMM</abbr>/<abbr title="Oblivion Mod Manager">OBMM</abbr>/<abbr title="Fallout Mod Manager">FOMM</abbr> or <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>, or using BOSS's <a href="#userRules">user rules</a> functionality.
 
-<h4>The HTML BOSS Log</h4>
+<h3>The HTML BOSS Log</h3>
 
 <p>While the plain text BOSS Log simply lists the sections detailed above and their contents, the HTML BOSS Log functions more like an extension of the BOSS program, and uses a much richer interface. It requires a minimum of Internet Explorer 8, Firefox 3.5, Chrome 4, Safari 4, Opera 10.5 or any equivalent browser to function and display correctly, though some of the features have additional requirements with varying levels of browser support. When the BOSS Log is opened, it will display a <q>Browser Compatibility</q> panel detailing which of these features the browser being used supports, and which it does not, with unsupported features being automatically disabled.
 <p>The HTML BOSS Log's additional features are:
+<h4>Filters</h4>
+<p>The BOSS Log's filters can be used to selectively hide different types of information in the BOSS Log from view, making it easier to see what you're looking for. The filters are found in a floating panel at the bottom of the window that can have its visibility toggled by clicking on the <q>Filters</q> button in the sidebar. Filters are turned on and off via their checkboxes, and the numbers of hidden plugins and messages are given below the filter checkboxes. If a filter doesn't apply to the currently-displayed BOSS Log section, its checkbox is disabled. The filters available are:
+<table>
+	<thead><tr><td>BOSS Log Filter<td>Description
+	<tbody>
+		<tr><td>Hide Version Numbers<td>Hides the version numbers printed in blue next to those plugins that provide them.
+		<tr><td>Hide 'Active' Label<td>Hides the 'Active' label printed in green next to any active plugins.
+		<tr><td>Hide Checksums<td>Hides the checksums of plugins and Script Extender plugins printed in brown next to their names.
+		<tr><td>Hide Notes<td>Hides any messages attached to plugins that have the <q>Note: </q> prefix.
+		<tr><td>Hide Bash Tag Suggestions<td>Hides any Bash Tag suggestions attached to plugins.
+		<tr><td>Hide Requirements<td>Hides any messages attached to plugins that have the <q>Requires: </q> prefix.
+		<tr><td>Hide Incompatibilities<td>Hides any messages attached to plugins that have the <q>Incompatible with: </q> prefix.
+		<tr><td>Hide 'Do Not Clean' Messages<td>Hides any messages attached to plugins that begin with <q>Contains dirty edits: Do not clean.</q>.
+		<tr><td>Hide All Mod Nessages<td>Hides all messages attached to plugins.
+		<tr><td>Hide Inactive Plugins<td>Hides any plugins that are not active.
+		<tr><td>Hide Messageless Plugins<td>Hides any recognised plugins that do not have messages attached to them.
+		<tr><td>Hide Clean Plugins<td>Hides any plugins in your load order that don't have messages beginning <q>Contains dirty edits: </q> attached. Note that this doesn't mean the plugins hidden are definitely clean, only that BOSS doesn't know they're dirty.
+</table>
+<h4>In-Log Unrecognised Plugin Submission</h4>
+<p>The submission of unrecognised plugins by users is vital to the upkeep of BOSS. The HTML BOSS Log allows you to submit such plugins without having to register for an account on the official Bethesda Softworks forums and post in one of BOSS's official threads, instead anonymously sending the plugin filename together with a link to the plugin's download location and/or a description of the plugin to the BOSS Development Team's unrecognised plugin tracker, so that it can then be added to the masterlist. 
+<p>The Submit Plugin interface is displayed by clicking on a plugin in the <q>Unrecognised Plugins</q> section of the BOSS Log, but only if your browser supports the feature. If unrecognised plugins are not displayed with a dotted underline which becomes a solid underline when you hover over them with your mouse, then your browser does not support this feature.
+<h4>CSS Settings</h4>
+<p>The CSS Settings panel is displayed by clicking on the <q>CSS Settings</q> button in the sidebar. In it, you can choose to use the BOSS Log's alternative colour scheme, which is more suitable for reading in low light levels and reduces eye strain, by checking the <q>Use Alternative Colour Scheme</q> checkbox at the bottom of the panel.
+<p>You can customise the colours that are used by the alternative colour scheme for each of the elements listed. If your browser supports the colour picker input type, then the elements in the <q>Colours</q> columns are displayed as colour pickers that allow you to visually select a colour. If your browser does not support the colour picker input type, the elements in the <q>Colours</q> columns will be displayed as text boxes. If your browser supports placeholders, then the defaults for each element will be displayed as placeholders. Colours must be specified using their lowercase hexadecimal codes. If your browser supports form validation, your custom colours will not be applied unless they have been specified properly.
+<p>You can also back up and restore your custom colours in this panel, provided your browser supports the feaure. The colours currently given in the inputs can be backed up by clicking on the underlined <u>back up</u> text button in the paragraph following the inputs. Clicking this button will cause the BOSS Log to generate a file that contains your settings and make it available for your browser to download, at which point your browser's default behaviour for downloading files takes over. Note that your browser will most likely give the settings file a nonsensical name, but you can rename the file to whatever you want, including changing its extension, without breaking anything. You can then restore colour settings from a settings file by dragging and dropping the file into the CSS Settings panel: the panel will change colour when you hover over it to tell you that you can drop the file in it. When the file is dropped into the CSS Settings panel, its settings will be applied.
+<p>Note that to apply any changes you make in the CSS Settings panel, you must click the <q>Apply</q> button. If you leave the CSS Settings panel without clicking the <q>Apply</q> button, then your changes will be discarded.
+<h4>Settings Memory</h4>
+<p>The Settings Memory feature allows the BOSS Log to remember the following settings when you close it, and re-apply them when you next open it:
 <ul>
-	<li><b>Filters</b>
-		<p>The BOSS Log's filters can be used to selectively hide different types of information in the BOSS Log from view, making it easier to see what you're looking for. The filters are found in a floating panel at the bottom of the window that can have its visibility toggled by clicking on the <q>Filters</q> button in the sidebar. Filters are turned on and off via their checkboxes, and the numbers of hidden plugins and messages are given below the filter checkboxes. If a filter doesn't apply to the currently-displayed BOSS Log section, its checkbox is disabled. The filters available are:
-		<table>
-			<thead><tr><td>BOSS Log Filter<td>Description
-			<tbody>
-				<tr><td>Hide Version Numbers<td>Hides the version numbers printed in blue next to those plugins that provide them.
-				<tr><td>Hide 'Active' Label<td>Hides the 'Active' label printed in green next to any active plugins.
-				<tr><td>Hide Checksums<td>Hides the checksums of plugins and Script Extender plugins printed in brown next to their names.
-				<tr><td>Hide Notes<td>Hides any messages attached to plugins that have the <q>Note: </q> prefix.
-				<tr><td>Hide Bash Tag Suggestions<td>Hides any Bash Tag suggestions attached to plugins.
-				<tr><td>Hide Requirements<td>Hides any messages attached to plugins that have the <q>Requires: </q> prefix.
-				<tr><td>Hide Incompatibilities<td>Hides any messages attached to plugins that have the <q>Incompatible with: </q> prefix.
-				<tr><td>Hide 'Do Not Clean' Messages<td>Hides any messages attached to plugins that begin with <q>Contains dirty edits: Do not clean.</q>.
-				<tr><td>Hide All Mod Nessages<td>Hides all messages attached to plugins.
-				<tr><td>Hide Inactive Plugins<td>Hides any plugins that are not active.
-				<tr><td>Hide Messageless Plugins<td>Hides any recognised plugins that do not have messages attached to them.
-				<tr><td>Hide Clean Plugins<td>Hides any plugins in your load order that don't have messages beginning <q>Contains dirty edits: </q> attached. Note that this doesn't mean the plugins hidden are definitely clean, only that BOSS doesn't know they're dirty.
-		</table>
-	<li><b>In-Log Unrecognised Plugin Submission</b>
-		<p>The submission of unrecognised plugins by users is vital to the upkeep of BOSS. The HTML BOSS Log allows you to submit such plugins without having to register for an account on the official Bethesda Softworks forums and post in one of BOSS's official threads, instead anonymously sending the plugin filename together with a link to the plugin's download location and/or a description of the plugin to the BOSS Development Team's unrecognised plugin tracker, so that it can then be added to the masterlist. 
-		<p>The Submit Plugin interface is displayed by clicking on a plugin in the <q>Unrecognised Plugins</q> section of the BOSS Log, but only if your browser supports the feature. If unrecognised plugins are not displayed with a dotted underline which becomes a solid underline when you hover over them with your mouse, then your browser does not support this feature.
-	<li><b>CSS Settings</b>
-		<p>The CSS Settings panel is displayed by clicking on the <q>CSS Settings</q> button in the sidebar. In it, you can choose to use the BOSS Log's dark colour scheme, which is more suitable for reading in low light levels and reduces eye strain, by checking the <q>Use Dark Colour Scheme</q> checkbox at the bottom of the panel.
-		<p>You can customise the colours that are used by the dark colour scheme for each of the elements listed. If your browser supports the colour picker input type, then the elements in the <q>Colours</q> columns are displayed as colour pickers that allow you to visually select a colour. If your browser does not support the colour picker input type, the elements in the <q>Colours</q> columns will be displayed as text boxes. If your browser supports placeholders, then the defaults for each element will be displayed as placeholders. Colours must be specified using their lowercase hexadecimal codes. If your browser supports form validation, your custom colours will not be applied unless they have been specified properly.
-		<p>You can also back up and restore your custom colours in this panel, provided your browser supports the feaure. The colours currently given in the inputs can be backed up by clicking on the underlined <u>back up</u> text button in the paragraph following the inputs. Clicking this button will cause the BOSS Log to generate a file that contains your settings and make it available for your browser to download, at which point your browser's default behaviour for downloading files takes over. Note that your browser will most likely give the settings file a nonsensical name, but you can rename the file to whatever you want, including changing its extension, without breaking anything. You can then restore colour settings from a settings file by dragging and dropping the file into the CSS Settings panel: the panel will change colour when you hover over it to tell you that you can drop the file in it. When the file is dropped into the CSS Settings panel, its settings will be applied.
-		<p>Note that to apply any changes you make in the CSS Settings panel, you must click the <q>Apply</q> button. If you leave the CSS Settings panel without clicking the <q>Apply</q> button, then your changes will be discarded.
-	<li><b>Settings Memory</b>
-		<p>The Settings Memory feature allows the BOSS Log to remember the following settings when you close it, and re-apply them when you next open it:
-		<ul>
-			<li>Which filters you have applied.
-			<li>Whether or not you are using the dark colour scheme.
-			<li>What your custom dark colour scheme colours are.
-			<li>Whether or not you want to stop the Browser Compatibility panel from being displayed.
-		</ul>
-		<p>The settings stored are unique to each BOSS Log, so if you run BOSS for two different games, each BOSS Log's settings will be stored separately. Also, the settings are stored in your browser's cache, so if you clear your browsing data, the settings will be lost, hence why there is a custom colours backup/restore feature available.
+	<li>Which filters you have applied.
+	<li>Whether or not you are using the alternative colour scheme.
+	<li>What your custom alernative colour scheme colours are.
+	<li>Whether or not you want to stop the Browser Compatibility panel from being displayed.
 </ul>
-
-<h3 id="dirtymods">Dirty Edits, Mod Cleaning &amp; CRCs</h3>
-<p>Dirty edits are often a side-effect of mod creation, and are often due to bugs in the utilities Bethesda has provided to create mods, rather than bad practice by mod authors. Dirty edits can cause a wide range of issues, including incorrect game settings, missing content, broken quests and crashing to desktop. The more dirty edits there are, and the more mods with dirty edits you use, the more likely you are to experience issues.
-<p>Thankfully there is a way to remove dirty edits from mods relatively easily, a process known as <i>mod cleaning</i>, using TES4Edit (for Oblivion), FO3Edit (for Fallout 3), FNVEdit (for Fallout: New Vegas) or TES5Edit (for Skyrim). A detailed set of instructions and information on mod cleaning can be found on the CS Wiki's <a href="http://cs.elderscrolls.com/constwiki/index.php/TES4Edit_Cleaning_Guide">TES4Edit Cleaning Guide</a> (the page also applies to Fallout 3 Fallout: New Vegas and Skyrim). <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> can also scan plugins for dirty edits and return their ITM and UDR counts, though at the time of writing it cannot clean plugins itself.
-<p>The problem of dirty edits is largely a problem of ignorance on the part of mod authors and users alike of the problems unclean mods (more widely known as <i>dirty mods</i>) can cause. As such, there are community efforts to raise awareness of dirty edits and cleaning. BOSS plays a key role in these efforts, as it holds the complete list of all known dirty mods, and it uses this information to provide notification messages to users for any dirty mods they have installed.
-There are three key pieces of information that are used to accurately describe and identify an unclean mod. They are:
-<ul>
-	<li><i><abbr title="Identical To Master">ITM</abbr> Count</i>: ITM records are a type of dirty edit where a mod has overwritten something in the game without actually changing anything. If another mod lower in the load order makes an intentional change to that thing, it will have its effect cancelled out by the ITM record, which can cause problems. The ITM count is the number of ITM records found and corrected in the mod plugin.
-	<li><i><abbr title="Undeleted and Disabled Reference">UDR</abbr> Count</i>: Deleting records is a significant cause of crashes and game bugs. UDRs are records that the mod deleted from the game or from another mod that have been corrected safely by undeleting them and disabling them instead, which has the same intended effect without causing issues. The UDR count is the number of deleted reference records found and corrected in the mod plugin.
-	<li><i>CRC</i> or <i>Checksum</i>: A file's CRC is a highly accurate way of identifying it, and is a number calculated from the file's contents. If the contents of a file changes, so will its CRC. BOSS uses CRCs to check if a user's mods are dirty by checking their CRCs against pre-determined CRCs of known dirty mods. This lets BOSS give precise notification messages for any dirty mods it detects. BOSS can calculate the CRCs of all your installed plugins if run from the GUI with the <q>Display File CRCs</q> option enabled.
-</ul>
-<p>However, not all unclean mods have all or any of these pieces of information. For unclean mods whose ITM and UDR counts have not been reported, BOSS cannot give them. For unclean mods whose CRCs have not been reported, BOSS cannot give precise notification and so prints a message whether or not the user has cleaned their mod.
-<p>BOSS and the modding communities rely on user contribution of this information to progress. For information on how to contribute, see the <a href="#help">Contributions &amp; Help</a> section below. If you find that a mod is dirty, you should also report this to the mod's author so that they can fix it.
-<p><b>Note:</b> TES4Edit et al. will include a variety of <em>junk records</em> in the ITM count for a plugin, such as new empty cells that are automatically generated by the Construction Set and are almost impossible to remove. These junk records are non-harmful, and BOSS will inform users when a mod contains these to avoid confusion. This is also the source of any discrepancies between the counts produced by TES4Edit and those produced by <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>. The latter's counts are more technically accurate, but both are acceptable for use.
-<p>There is also another type of unnecessary edit, known as a wild edit, that can also cause problems. These edits are neither Identical To Master edits nor deleted records, so cannot be automatically cleaned. Cleaning must be manually done in TES4Edit/FO3Edit/FNVEdit. BOSS can still check for plugins with these edits if the CRCs of the plugins with wild edits are known, and it can provide notification of these edits and some information on fixing them if they are reported in an official BOSS thread.
-
-<h3 id="falseflags">False-Flagged Plugins</h3>
-<p>Whether a mod plugin is a master file or a non-master file is dependent not on its file extension (<code>.esp</code>, <code>.esm</code>), but is instead decided by the value of a setting inside the plugin file, known as its <q>master bit flag</q>. Master files have this set to <code>1</code>, and non-master files have it set to <code>0</code>. However, because ESM is an acronym for <q>Elder Scrolls Master</q>, and ESP is an acronym for <q>Elder Scrolls Plugin</q> (even for Fallout 3 and Fallout: New Vegas), most people assume that master plugins are files with <code>.esm</code> extensions, while non-master plugins are files with <code>.esp</code> extensions.
-<p>This assumption is valid for the most part, as the vast majority of masters are <code>.esm</code> files, and the vast majority of plugins are <code>.esp</code> files. However, sometimes this is not the case. When a plugin has a <code>.esm</code> extension but has a master bit flag value of <code>0</code>, or has an extension of <code>.esp</code> and a master bit flag value of <code>1</code>, the plugin is said to be <q>false-flagged</q>, as its extension does not match its master bit flag value. False-flagged plugins are most common in Fallout 3 due to the use of FO3Edit's <q>Master Update</q> feature, which turns non-master plugins into false-flagged plugins, to avoid bugs that only manifest for non-master plugins.
-<p>The distinction between masters and non-masters is important for load order because the game will always load all masters before all non-masters, regardless of whether they are listed or dated (depending on your game) as such by the mechanism used to determine load order. Earlier versions of BOSS, and most if not all mod managers, put all <code>.esm</code> files before all <code>.esp</code> files, but failed to take into account the value of the master bit flag of plugins. As such, the load order they displayed was incorrect, as it failed to take into account the game always loading masters before plugins.
-<p>Since the master bit flag can be changed by users, it is not sufficient to update the masterlists to take into account the values of plugin master bit flags in the plugins available for download, as the user may have changed the master bit flag values (eg. using FO3Edit's Master Update). As such, BOSS instead checks that the masterlist used is ordering masters before non-masters, and moves any masters loading after non-masters so that they load before non-masters. If any masters are moved, it then displays a message in the BOSS Log to notify the user of this change. The BOSS Log does not detail which masters were moved.
+<p>The settings stored are unique to each BOSS Log, so if you run BOSS for two different games, each BOSS Log's settings will be stored separately. Also, the settings are stored in your browser's cache, so if you clear your browsing data, the settings will be lost, hence why there is a custom colours backup/restore feature available.
 
 
 <h2 id="help">Contributions &amp; Help</h2>
+<p>User contribution of additions and corrections to the masterlist are vital to the upkeep of BOSS. Let us know what you know.
 <p>General discussion, and the submission of questions, suggestions and unrecognised or unclean plugins, takes place in BOSS's official threads for 
 <a href="http://forums.bethsoft.com/?showtopic=1195328">Oblivion</a>, 
 <a href="http://forums.bethsoft.com/?showtopic=1132338">Nehrim</a>, 
@@ -315,26 +335,57 @@ There are three key pieces of information that are used to accurately describe a
 <a href="http://forums.bethsoft.com/?showtopic=1175276">Fallout 3</a> and 
 <a href="http://forums.bethsoft.com/?showtopic=1313081">Fallout: New Vegas</a>.
 <p>You can also submit unrecognised plugins directly from your BOSS Log, providing your browser supports the feature, by clicking on any unrecognised plugin listed and filling in the submission form that is displayed. The submission is sent anonymously to BOSS's tracker so that the team then know to add it. This avoids the need for users to register for a new forum account, and is generally a more efficient submission method.
-<p>User contribution of additions and corrections to the masterlist are vital to the upkeep of BOSS. Let us know what you know.
 <p>Lists of unrecognised plugins are welcome but the only way we can include them in the database in a timely way is if we get:
 <ul>
 	<li>The ESP/ESM file name(s).
 	<li>A link to where the description, mod or readme can be found to read or download.
 	<li>A brief description of each mod will also help. Feel free to make load order suggestions.
 </ul>
-<p>Lists of unclean plugins are also very welcome, but for the report to be most useful we require:
+<p>Lists of dirty plugins are also very welcome, but for the report to be most useful we require:
 <ul>
 	<li>The ESP/ESM file name(s).
 	<li>The number of records removed (the ITM count) as shown by TES4Edit/FO3Edit/FNVEdit or <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> (not the number of records processed).
 	<li>The number of records undeleted (the UDR count) as shown by TES4Edit/FO3Edit/FNVEdit or <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> (not the number of records processed).
-	<li>The CRC(s) of the unlcean ESP/ESM file name(s). Make sure that the CRCs are of the uncleaned files, not the files after cleaning. The CRC(s) may be calculated using BOSS, <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> or 7-zip, with other sources being unverified as correct. In the case of 7-zip, the <q>CRC checksum for data</q> is the one required.
+	<li>The CRC(s) of the dirty ESP/ESM file name(s). Make sure that the CRCs are of the dirty files, not the files after cleaning. The CRC(s) may be calculated using BOSS, <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> or 7-zip, with other sources being unverified as correct. In the case of 7-zip, the <q>CRC checksum for data</q> is the one required.
 </ul>
 
-<h2 id="advanced">Advanced Usage</h2>
-<p>This section gives information on how to operate BOSS under certain conditions, how to customise its behaviour more fully than previously covered, and provides details for all the BOSS files.
 
-<h3 id="userRules">User Rules</h3>
-<p>Users can customise how BOSS handles their plugins through the included User Rules feature. This feature allows you to define the positions of plugins not in the masterlist, and to override the masterlist positions of plugins, as well as edit the output messages of plugins, and more. In addition, this is all done without editing the masterlist.txt, so when you update it using the built-in updater, your changes are not lost. All the information on the User Rules feature can be found in the <a href="BOSS%20User%20Rules%20ReadMe.html">BOSS User Rules ReadMe</a> file that accompanies this ReadMe.
+<h3 id="cli">Command Line Arguments</h3>
+<p>While the BOSS GUI allows you to specify options using its graphical elements, the CLI uses a combination of the BOSS.ini file and command line arguments to do the same. The syntax for these arguments is:
+<code class="box">boss [-hVuosdctUl] [-g [game]] [-r [level]] [-v [level]] [-f [type]] [-H [hostname]] [-P [port]]</code>
+<code class="box">-h [ --help ]</code>
+<p>This prints a short description of BOSS and some information on the function of the command line arguments, then exits.
+<code class="box">-V [ --version ]</code>
+<p>Prints the a banner displaying the program name and version number to the command line, then exits.
+<code class="box">-u [ --update ]</code>
+<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then sorts your plugins. This behaviour is enabled by default, so the command line parameter will have no effect except when the automatic masterlist updating has been disabled in the ini.
+<code class="box">-U [ --no-update ]</code>
+<p>Inhibits the default automatic masterlist updater, preventing it from running. Must not be used alongside --update,-u.
+<code class="box">-o [ --only-update ]</code>
+<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then does <b>not</b> sort your plugins.
+<code class="box">-g [ --game ] [ game ]</code>
+<p>Overrides game autodetection. The valid values of the argument are: <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code>, <code>Skyrim</code> and <code>Morrowind</code>. If the game specified is not detected, BOSS falls back to autodetection, unless <code>-o</code> is also passed, in which case BOSS will run successfully whether or not the game is installed.
+<code class="box">-s [ --silent ]</code>
+<p>Stops BOSS from automatically opening up the BOSS Log in your web browser (or text editor, depending on format chosen) after it has finished running.
+<code class="box">-c [ --crc-display ]</code>
+<p>Calculates the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder, including <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr>/<abbr title="Skyrim Script Extender">SKSE</abbr> plugins, and displays them in your BOSS Log alongside the plugin names.
+<code class="box">-f [ --format ] [ type ]</code>
+<p>Allows the selection of the BOSS Log format. Valid argument values are: <code>html</code> and <code>text</code>. <code>html</code> is the default output format. The <code>text</code> value will print the BOSS Log as plain text into a 'BOSSlog.txt' file, similar to the BOSS Log in BOSS v1.5 and below.
+<code class="box">-t [ --trial-run ]</code>
+<p>BOSS runs, but no plugins are redated, so your load order is not changed. The BOSS Log still displays the order BOSS would have placed them in, so it is useful for checking what would happen if you ran BOSS on your load order without having to then undo BOSS's changes.
+<code class="box">-r [ --revert ] [ level ]</code>
+<p>Revert to a previous load order. This parameter optionally accepts values of <code>1</code> or <code>2</code>, indicating how many undo steps to apply. If no option is specified, it defaults to <code>1</code>. A value of <code>1</code> will restore the load order to that stored in modlist.txt. 
+A value of <code>2</code> will restore the load order to that stored in modlist.old. If the modlist that you are reverting to does not exist, BOSS will cancel the undo and display an error message. The modlist files are not updated when BOSS is run with this parameter.
+<code class="box">-v [ --verbose ] [ level ]</code>
+<p>Specify the verbosity level (<code>0</code> to <code>3</code>) of the debugging output. <code>0</code> is the default, showing only warning and error messages. <code>1</code> (warning, error and informational messages) is implied if this option is specified without an argument. Higher values increase the verbosity further.
+<code class="box">-d [ --debug-with-source ]</code>
+<p>Adds source file references (filenames and line numbers) to debugging statements.
+<code class="box">-l [ log-debug ]</code>
+<p>Logs the debug output to the <q>BOSSDebugLog.txt</q> file instead of the command line.
+<code class="box">-H [ --proxy-host ] [ hostname ]</code>
+<p>Sets the proxy hostname for the masterlist updater. The hostname may be an actual hostname (eg. <code>proxy.company.com</code>), an IP address (eg. <code>192.168.32.4</code>) or <code>none</code>. <code>none</code> is the default, and is equivalent to there being no proxy.
+<code class="box">-P [ --proxy-port ] [ port ]</code>
+<p>Sets the proxy port number for the masterlist updater. The port number may be any valid port number. <code>0</code> is the default, and is equivalent to there being no proxy.
 
 <h3 id="ini">The BOSS.ini</h3>
 <p>Users can edit all of BOSS's settings in the BOSS.ini. As this is where BOSS gets its settings from when both running the CLI client and when loading the GUI client, care must be taken to edit it correctly to prevent breaking BOSS's operation. If BOSS is run and it cannot find a BOSS.ini, it will generate a new one with default settings. If BOSS is run with both a BOSS.ini present and command line parameters set, the command line parameters override the settings in BOSS.ini. The ini is split into the following sections:
@@ -376,42 +427,306 @@ There are three key pieces of information that are used to accurately describe a
 		<tr><td>bLogDebugOutput<td><code>false</code><td><code>false</code>, <code>true</code><td>If <code>true</code>, debug output is recorded in the BOSSDebugLog.txt file, otherwise it is printed to the command line.
 </table>
 
-<h3 id="cli">Command Line Arguments</h3>
-<p>While the BOSS GUI allows you to specify options using its graphical elements, the CLI uses a combination of the BOSS.ini file and command line arguments to do the same. The syntax for these arguments is:
-<code class="box">boss [-hVuosdctUl] [-g [game]] [-r [level]] [-v [level]] [-f [type]] [-H [hostname]] [-P [port]]</code>
-<code class="box">-h [ --help ]</code>
-<p>This prints a short description of BOSS and some information on the function of the command line arguments, then exits.
-<code class="box">-V [ --version ]</code>
-<p>Prints the a banner displaying the program name and version number to the command line, then exits.
-<code class="box">-u [ --update ]</code>
-<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then sorts your plugins. This behaviour is enabled by default, so the command line parameter will have no effect except when the automatic masterlist updating has been disabled in the ini.
-<code class="box">-U [ --no-update ]</code>
-<p>Inhibits the default automatic masterlist updater, preventing it from running. Must not be used alongside --update,-u.
-<code class="box">-o [ --only-update ]</code>
-<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then does <b>not</b> sort your plugins.
-<code class="box">-g [ --game ] [ game ]</code>
-<p>Overrides game autodetection. The valid values of the argument are: <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code>, <code>Skyrim</code> and <code>Morrowind</code>. If the game specified is not detected, BOSS falls back to autodetection, unless <code>-o</code> is also passed, in which case BOSS will run successfully whether or not the game is installed.
-<code class="box">-s [ --silent ]</code>
-<p>Stops BOSS from automatically opening up the BOSS Log in your web browser (or text editor, depending on format chosen) after it has finished running.
-<code class="box">-c [ --crc-display ]</code>
-<p>Calculates the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in your Data folder, including <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr>/<abbr title="Skyrim Script Extender">SKSE</abbr> plugins, and displays them in your BOSS Log alongside the plugin names.
-<code class="box">-f [ --format ] [ type ]</code>
-<p>Allows the selection of the BOSS Log format. Valid argument values are: <code>html</code> and <code>text</code>. <code>html</code> is the default output format. The <code>text</code> value will print the BOSS Log as plain text into a 'BOSSlog.txt' file, similar to the BOSS Log in BOSS v1.5 and below.
-<code class="box">-t [ --trial-run ]</code>
-<p>BOSS runs, but no plugins are redated, so your load order is not changed. The BOSS Log still displays the order BOSS would have placed them in, so it is useful for checking what would happen if you ran BOSS on your load order without having to then undo BOSS's changes.
-<code class="box">-r [ --revert ] [ level ]</code>
-<p>Revert to a previous load order. This parameter optionally accepts values of <code>1</code> or <code>2</code>, indicating how many undo steps to apply. If no option is specified, it defaults to <code>1</code>. A value of <code>1</code> will restore the load order to that stored in modlist.txt. 
-A value of <code>2</code> will restore the load order to that stored in modlist.old. If the modlist that you are reverting to does not exist, BOSS will cancel the undo and display an error message. The modlist files are not updated when BOSS is run with this parameter.
-<code class="box">-v [ --verbose ] [ level ]</code>
-<p>Specify the verbosity level (<code>0</code> to <code>3</code>) of the debugging output. <code>0</code> is the default, showing only warning and error messages. <code>1</code> (warning, error and informational messages) is implied if this option is specified without an argument. Higher values increase the verbosity further.
-<code class="box">-d [ --debug-with-source ]</code>
-<p>Adds source file references (filenames and line numbers) to debugging statements.
-<code class="box">-l [ log-debug ]</code>
-<p>Logs the debug output to the <q>BOSSDebugLog.txt</q> file instead of the command line.
-<code class="box">-H [ --proxy-host ] [ hostname ]</code>
-<p>Sets the proxy hostname for the masterlist updater. The hostname may be an actual hostname (eg. <code>proxy.company.com</code>), an IP address (eg. <code>192.168.32.4</code>) or <code>none</code>. <code>none</code> is the default, and is equivalent to there being no proxy.
-<code class="box">-P [ --proxy-port ] [ port ]</code>
-<p>Sets the proxy port number for the masterlist updater. The port number may be any valid port number. <code>0</code> is the default, and is equivalent to there being no proxy.
+
+
+<h2 id="intro">Introduction</h2>
+<p>While BOSS is able to sort the large number of plugins listed in its masterlist without any user input, you may find that you wish to customise 
+the sorting of your plugins. This may be to include plugins not listed in the masterlist (either plugins not yet added or temporary plugins or private files not suitable for masterlist inclusion), or it could be to rearrange plugins present in the masterlist that can be loaded in a different configuration 
+for different results (eg. LAME and Supreme Magicka files). You may also wish to add extra messages to plugins, or edit existing messages.
+<p>One possible solution is to edit your copy of the masterlist to include the desired changes. However, as updating your masterlist will remove 
+these edits, this is not very suitable as a long term solution.
+<p>This is where user rules come in. Using a separate userlist file, you can define rules for sorting specific plugins or groups of plugins as you like, 
+as well as for adding or editing messages attached to plugins, and these rules will not be lost when you update your masterlist.
+
+<h2 id="start">Getting Started With The Userlist</h2>
+<p><strong>Note:</strong> This ReadMe refers to .esp and .esm files as 'plugins'. Unless explicitely stated, the 'name' of a 'plugin' refers to its filename, including the extension. Also, while the examples in this ReadMe reference Oblivion and some of its plugins, the functionality will work for all the games BOSS supports. When your game's master .ESM file is mentioned, this refers to Oblivion.esm, Nehrim.esm, Fallout3.esm or FalloutNV.esm for Oblivion, Nehrim, Fallout 3 or Fallout: New Vegas respectively.
+<p>The userlist is the file which contains your custom rules for sorting plugins and editing plugins' messages. It is found at <code>BOSS\[GAME]\userlist.txt</code>, where <code>[GAME]</code> is one of <code>Oblivion</code>, <code>Nehrim</code>, <code>Skyrim</code>, <code>Fallout 3</code> or <code>Fallout New Vegas</code>, depending on the game the userlist is for. A blank userlist is automatically created for a game when BOSS is first run for that game.
+<p>Within this file, which you can edit in Notepad or any other text editor, you list your rule definitions. Rules can make two types of changes:
+<ol>
+	<li><em>Sort plugins and groups.</em> You can:
+		<ul>
+			<li>Sort plugins relative to other plugins. You can both override the positions of plugins BOSS recognises and sort plugins unrecognised by BOSS.
+			<li>Sort groups of plugins relative to other groups of plugins. You can override the positions of the groups in the BOSS sorts plugins into.
+			<li>Insert plugins into groups. You can put plugins at the beginning or end of groups.
+		</ul>
+		Plugins may be .esp or .esm files. Groups are all pre-defined in the BOSS masterlist, marked out by the 
+	<code>\BeginGroup\: <var>Group Name</var></code> and <code>\EndGroup\\</code>, or <code>BEGINGROUP: <var>Group Name</var></code> and <code>ENDGROUP</code>, lines.
+	<li><em>Edit BOSS messages.</em> You can add to or replace the plugin-specific messages that are displayed in the BOSS Log.
+	See <a href="#messages">The BOSS Message Format</a> below for more details on the message types and syntax.
+</ol>
+<p>The rule definition syntax is simple and concise, and is explained below.
+
+<h2 id="basics">Rule Basics</h2>
+<p>While it is strongly suggested that you read the <a href="#syntax">Rule Definition Syntax</a> section below to gain a proper understanding of user rules, here is a quick start guide for some simple rules.
+<h3 id="basics-add">Sorting An Unknown Plugin</h3>
+<p>To sort a plugin that is not in the masterlist after another plugin:
+
+<code class="box">ADD: <var>[RULE PLUGIN]</var>
+AFTER: <var>[SORT PLUGIN]</var></code>
+
+<p>To sort it before another plugin:
+
+<code class="box">ADD: <var>[RULE PLUGIN]</var>
+BEFORE: <var>[SORT PLUGIN]</var></code>
+
+<p>The <em>rule plugin</em> is the plugin you want to add, and the <em>sort plugin</em> is the plugin you want to sort it relative to.
+<p>Examples:
+<code class="box">ADD: Plugin1.esp
+AFTER: AFK_Weye.esp
+
+ADD: Plugin2.esp
+BEFORE: AFK_Weye.esp</code>
+<p>This gives a load order of:
+<blockquote>
+...<br />
+Plugin2.esp<br />
+AFK_Weye.esp<br />
+Plugin1.esp<br />
+...
+</blockquote>
+
+<h3 id="basics-override">Changing A Recognised Plugin's Position</h3>
+<p>To sort a plugin that is already in the masterlist after another plugin:
+<code class="box">OVERRIDE: <var>[RULE PLUGIN]</var>
+AFTER: <var>[SORT PLUGIN]</var></code>
+<p>To sort it before another plugin:
+<code class="box">OVERRIDE: <var>[RULE PLUGIN]</var>
+BEFORE: <var>[SORT PLUGIN]</var></code>
+<p>The <em>rule plugin</em> is the plugin you want to sort, and the <em>sort plugin</em> is the plugin you want to sort it relative to.
+<p>Example:
+<code class="box">OVERRIDE: bgBalancingEVCore.esp
+AFTER: Unofficial Oblivion Patch.esp</code>
+<p>This gives a load order of:
+<blockquote>
+...<br />
+Unofficial Oblivion Patch.esp<br />
+bgBalancingEVCore.esp<br />
+...
+</blockquote>
+
+<h3 id="basics-message">Editing A Plugin's BOSS Log Messages &amp; Bash Tag Suggestions</h3>
+<p>To add a message to a plugin for display in the BOSS Log:
+<code class="box">FOR: <var>[RULE PLUGIN]</var>
+APPEND: <var>[MESSAGE OBJECT]</var></code>
+<p>To replace the messages attached to a plugin for display in the BOSS Log:
+<code class="box">FOR: <var>[RULE PLUGIN]</var>
+REPLACE: <var>[MESSAGE OBJECT]</var></code>
+<p>The <em>rule plugin</em> is the plugin you want to add the message to. The <em>message object</em> is the formatted BOSS message that you want to attach. See the <a href="#messages">The BOSS Message Format</a> section later on in this readme if you are unfamiliar with BOSS message formatting.
+<p>An example:
+<code class="box">FOR: Unofficial Oblivion Patch.esp
+REPLACE: ? Replaced!
+
+FOR: bgMagicEV.esp.esp
+APPEND: % {{BASH:Names,Delev,Relev}}</code>
+<p>This will print in the BOSS Log:
+<blockquote>
+...<br /><br />
+Unofficial Oblivion Patch.esp
+<ul>
+	<li>Note:  Replaced!
+</ul>
+...<br /><br />
+bgMagicEV.esp.esp
+<ul>
+	<li>Bashed Patch tag suggestion: {{BASH:Names,Delev,Relev}}
+</ul>
+...
+</blockquote>
+
+<h2 id="syntax">Rule Definition Syntax</h2>
+<p>User rules have a specific structure and syntax which your rules must follow to be applied. The information below provides the details on this structure and syntax.
+<h3 id="syntax-rule">The Rule Line</h3>
+<p>Every rule begins with a <em>rule line</em>, which defines what basic type of rule it is and what plugin it is applied to. It has the structure:
+<code class="box"><var>[RULE KEYWORD]</var>: <var>[RULE OBJECT]</var></code>
+<p>This is the <em>rule line</em>. The <em>rule keyword</em> can be one of:
+<ul>
+	<li><dfn>ADD</dfn>: This tells BOSS that the rule sorts a plugin that is not in the 
+	masterlist. The rule may also add and/or edit messages attached to that plugin.
+	<li><dfn>OVERRIDE</dfn>: This tells BOSS that the rule overrides the current position of a plugin or group in the masterlist with a new position. 
+	The rule may also add and/or edit messages attached to that plugin.
+	<li><dfn>FOR</dfn>: This tells BOSS that the rule adds and/or edits the messages attached to a plugin, but does not sort it.
+</ul>
+<p>The <em>rule object</em> is the plugin or group that the rule is applied to. If the rule keyword is ADD or FOR, the rule object must be a plugin.
+<p>When you define groups, the names of those groups are used as they appear in the masterlist. For example, 
+if you wanted to reference the group of plugins that begins with <code>\BeginGroup\: Supreme Magicka</code>, you would put it in the rule as <code>Supreme Magicka</code>.
+<p>There is one more keyword that can be used on the rule line. <code>DISABLE</code> can be put before the rule keyword to prevent the rule from being applied. For example:
+<code class="box">DISABLE ADD: MyMod.esp
+AFTER: Unofficial Oblivion Patch.esp
+</code>
+<p>Would result in MyMod.esp not being sorted after Unofficial Oblivon Patch.esp. The <code>DISABLE</code> keyword should be used instead of silent comments to stop a rule being applied because the latter makes the rule invisible to the GUI's User Rule Editor whereas the former does not.
+
+<h3 id="syntax-sort">The Sort Line</h3>
+<p>If a rule's rule keyword is ADD or OVERRIDE, it can sort plugins and should include a <em>sort line</em> directly below the rule line. If the rule keyword is FOR, the rule <b>must not</b> include a sort line. A rule may only contain one sort line. The sort line has the structure:
+<code class="box"><var>[SORT KEYWORD]</var>: <var>[SORT OBJECT]</var></code>
+<p>The <em>sort keyword</em> can be one of:
+<ul>
+	<li><dfn>BEFORE</dfn>: This states that the rule object is to load immediately before the sort object.
+	<li><dfn>AFTER</dfn>: This states that the rule object is to load immediately after the sort object.
+	<li><dfn>TOP</dfn>: This states that the rule plugin is to be inserted into the top of the sort group. The rule plugin will then load before everything else in the sort group.
+	<li><dfn>BOTTOM</dfn>: This states that the rule plugin is to be inserted into the bottom of the sort group. The rule plugin will then load after everything else in the sort group.
+</ul>
+<p>When using the BEFORE or AFTER sort keywords, the <em>sort object</em> is the plugin or group that you wish the rule object 
+to be positioned relative to. Plugins must be sorted relative to other plugins, and groups must be sorted relative to groups. You cannot sort plugins relative to groups, or vice versa. You also cannot sort your game's master .ESM, sort other plugins before it, or sort groups before the "ESMs" group.
+<p>When using the TOP or BOTTOM sort keywords, the <em>sort object</em> is the <b>group</b> that you wish to insert the rule plugin into. You cannot insert groups into anything, plugins into plugins, or insert anything into the top of the <q>ESMs</q> group.
+
+<h3 id="syntax-message">The Message Line</h3>
+<p>If a rule's rule keyword is FOR, it should include at least one <em>message line</em>. A rule with a rule keyword of ADD or OVERRIDE can also include message lines, if they sort a plugin. Message lines have the structure:
+<code class="box"><var>[MESSAGE KEYWORD]</var>: <var>[MESSAGE OBJECT]</var></code>
+<p>The <em>message keyword</em> can be one of:
+<ul>
+	<li><dfn>APPEND</dfn>: This states that the message is to be appended to the list of messages attached to the rule plugin.
+	<li><dfn>REPLACE</dfn>: This states that the message is to replace any existing message or messages attached to the rule plugin. You may only have up to one <code>REPLACE</code> message line per rule, and if used it must be the first message line.
+</ul>
+<p>The <em>message object</em> is the message, complete with symbol code, that you wish to attach to the plugin defined by the rule object. You cannot attach messages to groups.
+<p>You may have multiple message lines in a rule (but only the first may use the <code>REPLACE</code> message keyword), to add multiple messages to a plugin, or to override an existing set of messages with a new set.
+
+<h3 id="syntax-examples">Examples</h3>
+<p>Here is the contents of an example userlist:
+<code class="box">ADD: MyPluginToAdd.esp
+AFTER: LoadAfterThis.esm
+APPEND: ? Adding a general message.
+APPEND: $ Incompatible with OOO!
+
+OVERRIDE: MyPluginToOverride.esp
+BEFORE: LoadBeforeThis.esp
+
+OVERRIDE: L.A.M.E.
+BEFORE: Supreme Magicka
+
+FOR: bgBalancingEVOptionalNPCDiversity, Vanilla.esp
+REPLACE: ? This is a replacement message.
+APPEND: % {{BASH:NpcFaces,NoMerge}}</code>
+<p>This is the equivalent of the masterlist having:
+<blockquote>
+...<br />
+LoadAfterThis.esm<br />
+MyPluginToAdd.esp<br />
+? Adding a general message.<br />
+$ Incompatible with OOO!<br />
+...<br />
+MyPluginToOverride.esp<br />
+LoadBeforeThis.esp<br />
+...<br />
+bgBalancingEVOptionalNPCDiversity, Vanilla.esp<br />
+? This is a replacement message.<br />
+% {{BASH:NpcFaces,NoMerge}}<br />
+...
+</blockquote>
+<p>Which would give in the BOSS Log:
+<blockquote>
+...<br />
+LoadAfterThis.esm<br />
+MyPluginToAdd.esp
+<ul>
+	<li>Note: Adding a general message.
+	<li>Note: Incompatible with OOO!
+</ul>
+...<br />
+MyPluginToOverride.esp<br />
+LoadBeforeThis.esp<br />
+...<br />
+bgBalancingEVOptionalNPCDiversity, Vanilla.esp
+<ul>
+<li> Note: This is a replacement message.
+<li> Bash Tag Suggestion(s): {{BASH:NpcFaces,NoMerge}}
+</ul>
+...
+</blockquote>
+<p>The rule sorting the two groups L.A.M.E. and Supreme Magicka simply moves the L.A.M.E. group from its current position to before the Supreme Magicka group.
+
+<h2 id="apply">Enforcing Your Rules</h2>
+<p>When BOSS is run, it will look for your userlist at <code>BOSS\[GAME]\userlist.txt</code>, where <code>[GAME]</code> is one of <code>Oblivion</code>, <code>Nehrim</code>, <code>Skyrim</code>, <code>Fallout 3</code> or <code>Fallout New Vegas</code>, depending on the game BOSS is running for. If it is found, and the userlist contains at least one rule, BOSS will first check the syntax of the rules, and apply those with the correct syntax. 
+It will print error messages detailing the problems with any rules it skips, and success messages for the plugins that are applied, into your BOSS Log, in the <q>Userlist Messages</q> section near the top. Disabled rules have their syntax checked, but are not applied.
+<p>If a rule is successfully applied, it will print one or more messages depending on what the rule does:
+<ol>
+	<li>If the rule includes a sort line and uses the sort keywords BEFORE or AFTER, it will print a message of the form: <code>"<var>Plugin/Group Name</var>" sorted <var>before/after</var> "<var>Plugin/Group Name</var>".</code>
+	<li>If the rule includes a sort line and uses the sort keywords TOP or BOTTOM, it will print a message of the form: <code>"<var>Plugin Name</var>" inserted into the <var>top/bottom</var> of group "<var>Group Name</var>".</code>
+	<li>If the rule includes one or more message lines, each message line will give a message of the form: <code>"<var>Message</var>" <var>appended to/replaced</var> messages attached to "<var>Plugin Name</var>".</code>
+</ol>
+<p>If the parser finds a major grammatical error in your userlist, it will stop parsing and discard any rules it has found before printing an error message detailing what was expected and where. In some cases, the expected item may not provide much useful meaning - in these cases look at where the error was found and determine the exact cause of the problem yourself.
+<p>If a rule is found to have errors in its syntax, it will be skipped and an error message of the form: <code>Syntax Error: The rule beginning "<var>First Line Of Rule</var>" <var>details of error</var></code> will be printed to your BOSS Log. See the main BOSS ReadMe for a full list of possible syntax errors.
+<p>If an error is encountered while trying to apply a rule, it will be skipped and an error message detailing the fault will be printed to your BOSS Log.
+<p><b>Rule application does not alter your masterlist.txt or userlist.txt.</b> This means that if you want to undo the application of a rule, all you need to do is remove it from your userlist.txt (or disable it) and re-run BOSS.
+
+<h2 id="notes">Further Notes On Rules</h2>
+<p>While the <a href="#syntax">Rule Definition Syntax</a> section gave you most of the rules of defining rules, here are some further general notes on defining rules that may not be evident:
+<ol>
+	<li>Blank lines or lines beginning with <code>//</code> in your userlist will be ignored by BOSS. You can use blank lines to improve the formatting of your userlist, and use the <code>//</code> line start to provide comments or disable specific rules as you desire.
+		<ul>
+			<li>You can also begin lines with <code>\</code> instead of <code>//</code> to have the same effect, and comment out multiple lines by enclosing them between <code>/*</code> and <code>*/</code>.
+			<li>It is better to use the <code>DISABLE</code> keyword to disable rules, as this means that they are still visible to the GUI's User Rule Editor without being applied. Rules with incorrect syntax should be commented out, as disabled rules are still parsed with error checking.
+		</ul>
+	<li>User rules are case-insensitive. The only exception is the message object, which will retain its case when displayed in the BOSS Log.
+	<li>If a rule's rule plugin is not installed in your Data folder, the rule will be skipped.
+	<li>Plugins ghosted by Wrye Bash are treated no differently from non-ghosted plugins, but they must be referenced without their ".ghost" extension.
+	<li>The group "ESMs" must always load first. You cannot sort this group or sort another group before it.
+	<li>The game's master .ESM file must always load first. You cannot sort it, sort another plugin before it, or insert another plugin into the top of the "ESMs" group.
+	<li>You cannot sort a plugin relative to another plugin that is not in the masterlist and has not been sorted by a previous rule.
+	<li>You cannot include conditionals in any messages added through user rules. While BOSS will not display any errors, the message will be added as if it were a general message with no conditional.
+	<li>You cannot sort mods or groups relative to themselves.
+	<li>You cannot sort a non-master plugin before a master, or a master after a non-master plugin. Masters are commonly .ESM files, and non-master plugins are commonly .ESP files, but whether a plugin is a master or not is actually decided by a variable in the file, not the file extension. (An example of this in action would be <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>ESMify Self</q> function, which makes a plugin into a master without changing the file extension.)
+	<li>
+		<p><b>Rules are applied in the order they are listed</b>. This means you can have several rules sorting different rule objects relative to the same sort object, or have rules sorting rule objects relative to sort objects that were sorted in previous rules.
+		For example:
+		<code class="box">ADD: LoadBeforeThis.esp
+AFTER: RTT.esp
+
+ADD: Plugin1.esp
+BEFORE: LoadBeforeThis.esp
+
+OVERRIDE: xulAspenWood.esp
+AFTER: Plugin1.esp
+
+ADD: Plugin2.esp
+BEFORE: RTT.esp</code>
+		<p>which will order the plugins as:
+		<blockquote>Plugin2.esp<br />
+		RTT.esp<br />
+		Plugin1.esp<br />
+		xulAspenWood.esp<br />
+		LoadBeforeThis.esp</blockquote>
+		<p>Take care when writing such rules though, as a small difference in the order of the rules in your userlist can have a very large difference on the resulting load order.
+</ol>
+
+<h2 id="messages">The BOSS Message Format</h2>
+<p>Understanding the BOSS message format is important if you wish to edit plugins' messages. There are actually two formats, either of which may be used. Each of the four message types that can be added via the userlist begins with a <em>message symbol</em> or <em>message keyword</em> depending on the format used. The symbol/keyword is then followed by the message itself. The message is just a standard line of text. In addition, Bash Tag suggestion messages also have a special syntax for the suggestions they include.
+<p>The message message types, symbols and keywords are listen in the table below:
+<table>
+	<thead><tr><td><b>Message Type</b><td><b>Format 1 Symbol</b><td><b>Format 2 Keyword</b>
+	<tbody>
+		<tr><td>Bash Tag Suggestion<td>%<td>TAG:
+		<tr><td>General Message<td>?<td>SAY:
+		<tr><td>Installation Requirement<td>:<td>REQ:
+		<tr><td>Specific Incompatibility<td>"<td>INC:
+</table>
+<p>The syntax for a Bash Tag suggestion is:
+<code class="box">% {{BASH:list suggested tags separated by ", " here}} you may also have some text here.</code>
+or:<br />
+<code class="box">TAG: {{BASH:list suggested tags separated by ", " here}} you may also have some text here.</code>
+<p>For example:
+<code class="box">% {{BASH:Names, Graphics}} to prevent changes being lost when using overhauls.</code>
+<p>You can also mix the two formats, giving one message in one format and another message in the other. You are not restricted to using only one format.
+
+<h3 id="updates">Keeping BOSS Up-To-Date</h3>
+<p>It is important that you keep your BOSS installation updated, not only to benefit from the many frequent updates made to the masterlists, but also to benefit from bug fixes, improvements and new features introduced to new releases of BOSS itself.
+<p>Providing there is an Internet connection available when BOSS runs, it will automatically download and apply any updates available for the masterlist of the game it is running for by default. BOSS will also check for new releases and if an update is available it will notify the user, displaying release notes if any are available. Additionally, if you installed BOSS using the automated installer, BOSS will ask the user if they wish to update, and automatically download and run the updated version's installer if so. The check for new releases functionality behaves as outlined below:
+<ol>
+ <li>On launching, it automatically checks for updates to BOSS. If an update is found, it proceeds to the next step. If no update is available, or no Internet connection is present, it will display no message.
+ <ul>
+  <li>If you run the <q>Check For Updates</q> option from the GUI's Help option, then it will display messages detailing if no update was found or if there were any errors.
+ </ul>
+ <li>No matter how the update check was started, if an update is available it will notify the user, asking whether or not to download and install the update if BOSS was installed using the automated installer. If the user decides not to update, the updater will quit.
+ <li>If the user decides to update, then it will begin downloading the new installer to the BOSS folder, displaying the progress. If using the GUI, the download can be cancelled at any time, in which case any downloaded file will be deleted and the updater will quit. CLI users can cancel the download by quitting BOSS, but no cleanup will take place.
+</ol>
+<p>Under certain circumstances the masterlist and program updaters may be unable to function correctly. If you have issues using them, see the <a href="#special">Updating Under Special Circumstances</a> section for alternative methods.
+
+<p>BOSS program updates are also published at the
+<a href="http://tes.nexusmods.com/downloads/file.php?id=20516">TES Nexus</a>, 
+<a href="http://skyrim.nexusmods.com/downloads/file.php?id=6">Skyrim Nexus</a>,
+<a href="http://fallout3.nexusmods.com/downloads/file.php?id=10193">Fallout 3 Nexus</a> and 
+<a href="http://newvegas.nexusmods.com/downloads/file.php?id=35999">New Vegas Nexus</a> BOSS pages. For those not using the masterlist updater, the latest masterlist is always on the <a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code repository</a>.
+<p>Always make sure to use the latest version of BOSS and the latest masterlist.
+
 
 <h3 id="special">Updating Under Special Circumstances</h3>
 <p>The vast majority of users will be able to use BOSS's masterlist updater and the auto-updater with no problems. However, some users' circumstances may be such that the standard method will not work. This section provides instructions for those users.
@@ -427,9 +742,6 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 <p>If your circumstances are such that the computer you have BOSS installed on is not connected to the Internet, or if you use a proxy to connect to the Internet, it is recommended that you avoid using the auto-updater, simply because it is easier in these circumstances to download new releases through your web browser.
 <p>There may also be other special cases which cause problems for BOSS's updaters that the BOSS team is unaware of. If you are having issues using the updaters, contact the BOSS team for support.
 
-<h3 id="linux">Running BOSS Under Linux</h3>
-<p>It is possible to run BOSS on Linux through the Wine compatibility layer, though no official support for doing so is given. Installation and usage is as on Windows. 
-It is also possible to compile BOSS natively for Linux, although there is again no official support for doing so. Native Linux builds are case-sensitive in their recognition of plugins in the masterlist, and while plugins are generally added with the correct case, occasionally a plugin might have the incorrect case which would cause problems for a user with a native Linux build.
 
 <h3 id="files">BOSS Changes and Files</h3>
 <p>The only changes BOSS makes to your game install are to re-date the .esp and .esm files in your Data folder, and create a few files in your BOSS folder. Your game's master file (Oblivion.esm, Nehrim.esm, Fallout3.esm, FalloutNV.esm or Skyrim.esm) is never altered, and all dates are derived from it.
@@ -456,6 +768,27 @@ It is also possible to compile BOSS natively for Linux, although there is again 
 		<tr><td>Licenses.txt<td>Contains the full text of the GNU General Public License v3.0 and GNU Free Documentation License v1.3 copyright licenses.
 		<tr><td>loadorder.txt<td>Holds the load order of all active and inactive plugins installed in a game's Data folder. <b>This file is not stored in the BOSS folder.</b> It is instead found in the user's local application data folder, next to <q>plugins.txt</q>. It forms part of a community adaptation to Bethesda's alteration of the load order system in Skyrim v1.4.26+ to allow the continued load ordering of inactive plugins. As it is intended to be shared between modding utilities, it is not removed when BOSS is uninstalled using the uninstaller or when the BOSS folder is deleted.
 </table>
+
+<h3 id="dirtymods">Dirty Edits, Mod Cleaning &amp; CRCs</h3>
+<p>Dirty edits are often a side-effect of mod creation, and are often due to bugs in the utilities Bethesda has provided to create mods, rather than bad practice by mod authors. Dirty edits can cause a wide range of issues, including incorrect game settings, missing content, broken quests and crashing to desktop. The more dirty edits there are, and the more mods with dirty edits you use, the more likely you are to experience issues.
+<p>Thankfully there is a way to remove dirty edits from mods relatively easily, a process known as <i>mod cleaning</i>, using TES4Edit (for Oblivion), FO3Edit (for Fallout 3), FNVEdit (for Fallout: New Vegas) or TES5Edit (for Skyrim). A detailed set of instructions and information on mod cleaning can be found on the CS Wiki's <a href="http://cs.elderscrolls.com/constwiki/index.php/TES4Edit_Cleaning_Guide">TES4Edit Cleaning Guide</a> (the page also applies to Fallout 3 Fallout: New Vegas and Skyrim). <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> can also scan plugins for dirty edits and return their ITM and UDR counts, though at the time of writing it cannot clean plugins itself.
+<p>The problem of dirty edits is largely a problem of ignorance on the part of mod authors and users alike of the problems unclean mods (more widely known as <i>dirty mods</i>) can cause. As such, there are community efforts to raise awareness of dirty edits and cleaning. BOSS plays a key role in these efforts, as it holds the complete list of all known dirty mods, and it uses this information to provide notification messages to users for any dirty mods they have installed.
+There are three key pieces of information that are used to accurately describe and identify an unclean mod. They are:
+<ul>
+	<li><i><abbr title="Identical To Master">ITM</abbr> Count</i>: ITM records are a type of dirty edit where a mod has overwritten something in the game without actually changing anything. If another mod lower in the load order makes an intentional change to that thing, it will have its effect cancelled out by the ITM record, which can cause problems. The ITM count is the number of ITM records found and corrected in the mod plugin.
+	<li><i><abbr title="Undeleted and Disabled Reference">UDR</abbr> Count</i>: Deleting records is a significant cause of crashes and game bugs. UDRs are records that the mod deleted from the game or from another mod that have been corrected safely by undeleting them and disabling them instead, which has the same intended effect without causing issues. The UDR count is the number of deleted reference records found and corrected in the mod plugin.
+	<li><i>CRC</i> or <i>Checksum</i>: A file's CRC is a highly accurate way of identifying it, and is a number calculated from the file's contents. If the contents of a file changes, so will its CRC. BOSS uses CRCs to check if a user's mods are dirty by checking their CRCs against pre-determined CRCs of known dirty mods. This lets BOSS give precise notification messages for any dirty mods it detects. BOSS can calculate the CRCs of all your installed plugins if run from the GUI with the <q>Display File CRCs</q> option enabled.
+</ul>
+<p>However, not all unclean mods have all or any of these pieces of information. For unclean mods whose ITM and UDR counts have not been reported, BOSS cannot give them. For unclean mods whose CRCs have not been reported, BOSS cannot give precise notification and so prints a message whether or not the user has cleaned their mod.
+<p>BOSS and the modding communities rely on user contribution of this information to progress. For information on how to contribute, see the <a href="#help">Contributions &amp; Help</a> section below. If you find that a mod is dirty, you should also report this to the mod's author so that they can fix it.
+<p><b>Note:</b> TES4Edit et al. will include a variety of <em>junk records</em> in the ITM count for a plugin, such as new empty cells that are automatically generated by the Construction Set and are almost impossible to remove. These junk records are non-harmful, and BOSS will inform users when a mod contains these to avoid confusion. This is also the source of any discrepancies between the counts produced by TES4Edit and those produced by <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>. The latter's counts are more technically accurate, but both are acceptable for use.
+<p>There is also another type of unnecessary edit, known as a wild edit, that can also cause problems. These edits are neither Identical To Master edits nor deleted records, so cannot be automatically cleaned. Cleaning must be manually done in TES4Edit/FO3Edit/FNVEdit. BOSS can still check for plugins with these edits if the CRCs of the plugins with wild edits are known, and it can provide notification of these edits and some information on fixing them if they are reported in an official BOSS thread.
+
+<h3 id="falseflags">False-Flagged Plugins</h3>
+<p>Whether a mod plugin is a master file or a non-master file is dependent not on its file extension (<code>.esp</code>, <code>.esm</code>), but is instead decided by the value of a setting inside the plugin file, known as its <q>master bit flag</q>. Master files have this set to <code>1</code>, and non-master files have it set to <code>0</code>. However, because ESM is an acronym for <q>Elder Scrolls Master</q>, and ESP is an acronym for <q>Elder Scrolls Plugin</q> (even for Fallout 3 and Fallout: New Vegas), most people assume that master plugins are files with <code>.esm</code> extensions, while non-master plugins are files with <code>.esp</code> extensions.
+<p>This assumption is valid for the most part, as the vast majority of masters are <code>.esm</code> files, and the vast majority of plugins are <code>.esp</code> files. However, sometimes this is not the case. When a plugin has a <code>.esm</code> extension but has a master bit flag value of <code>0</code>, or has an extension of <code>.esp</code> and a master bit flag value of <code>1</code>, the plugin is said to be <q>false-flagged</q>, as its extension does not match its master bit flag value. False-flagged plugins are most common in Fallout 3 due to the use of FO3Edit's <q>Master Update</q> feature, which turns non-master plugins into false-flagged plugins, to avoid bugs that only manifest for non-master plugins.
+<p>The distinction between masters and non-masters is important for load order because the game will always load all masters before all non-masters, regardless of whether they are listed or dated (depending on your game) as such by the mechanism used to determine load order. Earlier versions of BOSS, and most if not all mod managers, put all <code>.esm</code> files before all <code>.esp</code> files, but failed to take into account the value of the master bit flag of plugins. As such, the load order they displayed was incorrect, as it failed to take into account the game always loading masters before plugins.
+<p>Since the master bit flag can be changed by users, it is not sufficient to update the masterlists to take into account the values of plugin master bit flags in the plugins available for download, as the user may have changed the master bit flag values (eg. using FO3Edit's Master Update). As such, BOSS instead checks that the masterlist used is ordering masters before non-masters, and moves any masters loading after non-masters so that they load before non-masters. If any masters are moved, it then displays a message in the BOSS Log to notify the user of this change. The BOSS Log does not detail which masters were moved.
 
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>Although BOSS is simple to use, it has grown to become a relatively complex application. As such, there are some circumstances under which BOSS may not be able to run correctly, due to a variety of possible reasons. In such cases, an error message detailing the problem should be provided. If the program unexpectedly crashes, or you experience 
@@ -549,7 +882,7 @@ a problem for which no error message is given, please report the crash or proble
 			<li>Save the file as normal.
 		</ol>
 </ul>
-<p>A file only needs to be converted to the correct encoding once, thereafter it will continue to save in the correct encoding whenever you edit it.
+<p>A file only needs to be converted to the correct encoding once, thereafter it will continue to save in the correct encoding whenever you edit it. 
 
 <h3 id="errors">Error Messages</h3>
 <p>If BOSS can detect a specific reason for being unable to function correctly, it will print an error message detailing the problem. BOSS's error messages are listed below, along with details of the issues and possible solutions.
@@ -839,400 +1172,8 @@ threads when you read this. Just navigate through to the latest thread to post a
 <li><a href="http://www.gnu.org/licenses/fdl.html">GNU Free Documentation License v1.3</a>
 </ul>
 
-<h2 id="history">Version History</h2>
-<p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.
-<p><b>Version 2.1</b> - <i>2012</i>
-<ul>
-	<li>Removed: Settings for BOSS Log filters and CSS from BOSS.ini and the GUI.
-	<li>Removed: <code>bNoVersionParse</code> BOSS.ini setting, and corresponding <code>-n [ --no-version-parse ]</code> CLI parameter and <q>Display Plugin Versions</q> GUI setting.
-	<li>Removed: BOSS Updater download CRC check.
-	<li>Fixed: Installer's "old BOSS version detected" dialog ignoring the language previously selected.
-	<li>Fixed: GUI crash when deleting the last rule in a userlist.
-	<li>Fixed: GUI's User Rules Editor not displaying text boxes correctly, with borders often not appearing until mouseover.
-	<li>Changed: Major BOSS Log redesign/rewrite:
-	<ul>
-		<li>The BOSS Log now supports a minimum browser version of Internet Explorer 8, Firefox 3.5, Chrome 4, Safari 4, Opera 10.5 or their equivalents in other browsers.
-		<li>The BOSS Log now primarily consists of a fixed-position left-hand sidebar and a scrollable right-hand main display panel.
-		<li>The sidebar contains the log title, version and copyright information, followed by buttons for the sections present in the BOSS Log. At the foot of the sidebar are buttons for a new <q>CSS Settings</q> section and and anew floating Filters panel, which now contains the BOSS Log's filters.
-		<li>Clicking on a section's button will display it in the main display panel. Clicking on the Filters button will toggle the display of the Filters panel along the bottom of the window. The currently-displayed section has its button highlighted in the sidebar.
-		<li>The <q>Use Dark Colour Scheme</q> filter has been moved to the new CSS Settings section.
-		<li>The <q>Ghosted</q> label and the <q>Hide 'Ghosted' Label</q> and <q>Hide Ghosted Mods</q> filters have been removed.
-		<li>The <q>Hide Rule Warnings</q> filter has been removed.
-		<li>The <q>Userlist Messages</q> section has been renamed <q>User Rules</q>.
-		<li>The <q>Execution Complete</q> footer has been removed.
-		<li>The Dark Colour Scheme has been changed to slightly reduce contrast between text and background, making it easier to read.
-		<li>Some CSS3 effects have been added to the BOSS Log for browsers that support them.
-		<li>Filters are selectively enabled and disabled based on what section is currently visible, so you cannot apply a filter to a page where it has no effect, to avoid confusion.
-		<li>Added a Submit Plugin panel. This panel allows you to anonymously submit unrecognised plugins to a Bugzilla bug tracker hosted by Dark Creations that the BOSS team uses to help keep track of unrecognised plugins. It requires browser support for Cross-Origin Resource Sharing, ECMAScript 5 and XMLHttpRequest 2. The panel is displayed when you click on an unrecognised plugin's filename.
-		<li>Added a CSS Settings panel. This panel allows you to customise the colours used by the dark colour scheme, and also allows you to backup and restore custom settings if your browser supports the File API, HTML5 Drag and Drop and ECMAScript 5. It replaces the CSS customisation features found in previous versions of BOSS, removing the ability to customise layout but giving more control over the colours of the BOSS Log.
-		<li>Added settings memory, which requires browser support for the Web Storage API, and restores the last configuration of filters and colours used when the BOSS Log is opened.
-		<li>Added a Browser Compatibility panel. This panel is displayed in the main display panel when the BOSS Log is opened and gives an indication of your browser's level of support for the new features added in this release. If the Web Storage API is supported by your browser, it can then be prevented from being displayed for that browser in the future.
-		<li>Rewrote most of the BOSS Log's Javascript, especially with regards to how it alters styling, to make it tidier and give better cross-browser support. It also now runs in ECMAScript 5's Strict Mode on compatible browsers.
-	</ul>
-	<li>Changed: BOSS now uses the exact filenames of installed plugins instead of their filenames in the masterlist, preventing any case-sensitivity issues (eg. Skyrim's launcher).
-	<li>Changed: GUI now records the game it was last run for using the <code>sLastGame</code> BOSS.ini setting. If the <code>sGame</code> setting is set to <code>auto</code> (or the corresponding <q>Default Game</q> GUI setting set to <q>Autodetect</q>), then the GUI will first attempt to run for the game it was last run for. If the game cannot be detected, or the <code>sLastGame</code> setting is set to <code>auto</code>, then it will then prompt the user to select a game to run for.
-	<li>Changed: The GUI's User Rule Editor now checks that added messages have the correct message syntax and displays an error message if invalid syntax is found.
-	<li>Changed: Minor tweaks to the spacing of rules listed in the User Rules Editor and options in the main window.
-	<li>Changed: The <q>Move Up</q> and <q>Move Down</q> buttons in the User Rules Editor have been renamed <q>Move Rule Up</q> and <q>Move Rule Down</q> to make their purpose explicit.
-	<li>Changed: Internal tweaks to how the BOSS Updater works.
-	<li>Changed: Implemented more accurate comparison of versions in the masterlist.
-	<li>Changed: The User Rules Editor now changes ADD to OVERRIDE automatically for rules that are enabled after being disabled because they added plugins that are now in the masterlist.
-	<li>Changed: Installer/uninstaller now uses solid LZMA compression for a smaller file size.
-	<li>Added: German language option to installer/uninstaller. Translation by Scharesoft.
-	<li>Added: Spanish language option to installer/uninstaller. Translation by Sharlikran.
-	<li>Added: Confirmation dialog to uninstaller abortion.
-	<li>Added: CRC check to installer to avoid corrupted installs.
-	<li>Added: Support for TES III: Morrowind:
-	<ul>
-		<li>Added <code>TES3</code> and <code>MWSE</code> placeholders for use in the masterlist. See the <a href="BOSS%20Masterlist%20Syntax.html">BOSS Masterlist Syntax</a> document for details.
-		<li>Added <code>Morrowind</code> value for the sGame BOSS.ini setting.
-		<li>Morrowind's masterlist is unmaintained, and only recognises Morrowind.esm. The support is primarily intended for the API, and those wanting auto-sorting of load orders should consider using mlox.
-	</ul>
-	<li>Added: SetProxy function to API.
-	<li>Added: SubmitUnrecognisedPlugin function to API.
-</ul>
-<p><b>Version 2.0.1</b> - <i>6 April 2012</i>
-<ul>
-	<li>Fixed: Masterlist regular expression errors being reported in an endless loop.
-	<li>Fixed: Crash when BOSS is running for Skyrim and plugins.txt is read-only.
-	<li>Fixed: Crash when a user rule overrides a masterlist group position.
-	<li>Fixed: GUI's User Rules Editor disabling OVERRIDE rules on load.
-	<li>Fixed: Plugins referenced in user rules that are not installed getting added to loadorder.txt when running for Skyrim v1.4.26+.
-	<li>Fixed: Update.esm not being labelled as active in the BOSS Log when it is missing from plugins.txt and BOSS is running for Skyrim.
-	<li>Fixed: Crash when a single non-local game install is detected.
-	<li>Fixed: Games that are not installed being detected.
-	<li>Changed: Uninstaller's User Files option is now unselected by default.
-	<li>Changed: Switched installer from NSIS to NSIS Unicode.
-	<li>Added: Russian language option to installer/uninstaller. Translation by Tokc.D.K.
-</ul>
-<p><b>Version 2.0.0</b> - <i>27 March 2012</i>
-<ul>
-	<li>Removed: BOSS Updater for manual installs. When an update is checked for and found on a manual install, BOSS will notify the user of the update and its download locations, but not download or install the update itself. Behaviour on installer installs is unchanged.
-	<li>Removed: <code>iRunType</code> ini setting, as it was unnecessary.
-	<li>Fixed: GUI mixing up Nehrim and Fallout: New Vegas in the Game drop-down box.
-	<li>Fixed: Masterlist parser getting confused when a plugin filename shared starting characters with a keyword.
-	<li>Fixed: Invalid regular expressions in masterlist-format files causing crashes.
-	<li>Fixed: Plugins with filenames containing international characters causing the GUI's User Rules Editor to fail to load.
-	<li>Fixed: Masterlist-format files beginning with blank lines will no longer create an initial empty item in their data structures.
-	<li>Fixed: The tooltip intended for the new messages text box was attached to the masterlist mod messages box in the User Rules Editor.
-	<li>Fixed: The masterlist displayed GUI's User Rules Editor was unevaluated for conditionals and regex entries.
-	<li>Fixed: Saving a masterlist-format file no longer omits its conditionals. This bug was never exposed.
-	<li>Fixed: Conditional parsing errors not being reported correctly in the BOSS Log. This bug was never exposed.
-	<li>Fixed: Messages being outputted in the format set globally instead of the outputters local format. This bug was never exposed.
-	<li>Fixed: Version number comparisons being sometimes evaluated wrongly for versions of the form a.b.c.d where a, b, c and d were integers. This bug was never exposed.
-	<li>Changed: This utility's name has been changed from <q>Better Oblivion Sorting Software</q> to <q>BOSS</q>.
-	<li>Changed: Tidied up code, making better use of class inheritance and swapping Boost filesystem paths for strings in plugin names.
-	<li>Changed: Updated libcurl from 7.23.1 to 7.25.0, wxWidgets from 2.9.2 to 2.9.3, and Boost from 1.48.0 to 1.49.0.
-	<li>Changed: GUI's User Rules Editor is now resizeable and the Installed Mods and Masterlist lists are now tabbed to give them more space.
-	<li>Changed: The GUI now uses the User Rules Editor to edit the userlist by default.
-	<li>Changed: Only a single instance of the GUI is now allowed to run at any one time.
-	<li>Changed: BOSS no longer quits with an error message without sorting plugins when both Nehrim.esm and Oblivion.esm are present in the same Data folder, as this arrangement may be valid for modders porting mods, so long as Oblivion.esm remains inactive when Nehrim is run.
-	<li>Changed: BOSS update release notes are now displayed before the update download confirmation.
-	<li>Changed: Pretty pictures now in the main readme! Also updated content to reflect various changes and additions.
- 	<li>Changed: Rewrote NSIS installer to reflect various changes and additions, and simplified the installer code greatly.
-	<li>Changed: You can no longer sort non-master plugins before master plugins, or master plugins after non-master plugins, using user rules. Masters are commonly .ESM files, and non-master plugins are commonly .ESP files, but whether a plugin is a master or not is actually decided by a variable in the file, not the file extension. (An example of this in action would be <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>ESMify Self</q> function, which makes a plugin into a master without changing the file extension.)
-	<li>Changed: BOSS now enforces the game's <q>masters before plugins</q> rule for load ordering when reading the current load order and sorting plugins.
-	<li>Added: Support for multiple games from a single BOSS install:
-	<ul>
-		<li>BOSS now has two different install types: local installs place the BOSS folder beside a game's Data folder. Non-local installs place the BOSS folder anywhere else. Local installs will always run for the local game by default. Non-local installs will look for supported games and prompt the user to choose one to run for each time BOSS is run. If only one game is found, BOSS will run for it without user prompt.
-		<li>BOSS game files (masterlist, BOSS Log, etc.) are now stored in separate sub-folders within the BOSS folder for each game to avoid conflict.
-		<li>The <code>--game,-g [ game ]</code> command line parameter and corresponding ini and GUI settings now behaves slightly differently: when BOSS is run with the game not set to autodetect, and it is not set to only update the masterlist, the game parameter specifies the default game to run for. If the default cannot be found, BOSS falls back to autodetection.
-		<li>The GUI now prompts the user to choose which game it should run for on startup. Games that are not detected are selectable, but will only allow their masterlists to be updated.
-		<li>The <q>Game</q> drop-down list in the GUI has been moved to the <q>Settings</q> window.
-		<li>An <q>Active Game</q> menu has been added to the GUI that allows you to change which game BOSS is currently active for without closing the GUI. Undetected games are greyed out, unless the <q>Update Masterlist Only</q> run option is selected. If you have an undetected game active and switch from <q>Update Masterlist Only</q> to another run option, the BOSS automatically switches to the first detected game in the list.
-	</ul>
-	<li>Added: BOSS API for use by third party utilities to access BOSS information and functionality. See <a href="BOSS%20API%20ReadMe.html">BOSS API ReadMe</a> for details.
-	<li>Added: BOSS can now read the <q>plugins.txt</q> file that the supported games use to store their active plugin list in. BOSS also adapts to the value of the <code>bUseMyGamesDirectory</code> setting in <code>Oblivion.ini</code> when running for Oblivion.
-	<li>Added: An <q>Active</q> label to the BOSS Log for plugins that are active when BOSS is run, and <q>Hide Inactive Mods</q> and <q>Hide 'Active' Label</q> BOSS Log filters.
-	<li>Added: Support for the load order mechanism used by TES V: Skyrim version 1.4.26+. This outputs load order of active plugins to <q>plugins.txt</q>, and outputs the full load order to <q>loadorder.txt</q>, which is created in the same directory as <q>plugins.txt</q>.
-	<li>Added: BOSS now checks for <q>false-flagged</q> plugins and moves any found to the correct side of the master/non-master partition. False-flagged plugins are those with an extension that does not match the state of the plugin's internal master bit flag.
-</ul>
-<p><b>Version 1.9.1</b> - <i>1 January 2012</i>
-<ul>
-	<li>Fixed: Mods in the last group of a masterlist being unrecognised when one or more user rules were enabled.
-	<li>Fixed: Masterlist-format files saved by BOSS that contain messages cannot be loaded successfully by BOSS. This bug was never exposed.
-	<li>Fixed: Every second link in a message displayed in the BOSS Log not being displayed as a hyperlink when using the HTML BOSS Log.
-	<li>Fixed: MF1 legacy conditionals always being evaluated for Oblivion, even when BOSS was run for other games.
-	<li>Fixed: Masterlist parsing errors were not correctly reported in the BOSS Log.
-	<li>Fixed: BOSS Updater version checking not returning correct result with some versions.
-	<li>Changed: Masterlist conditional evaluation now occurs separately from masterlist parsing.
-	<li>Changed: BOSS Log's <q>Unrecognised Plugins</q> section is now only displayed if there are any unrecognised plugins present.
-	<li>Changed: Some tidying up of the BOSS Log text and formatting.
-	<li>Changed: Code type safety work. BOSS can now be built to 32 and 64 bit binaries, although 64 bit binaries will not be distributed.
-	<li>Changed: Copyright license is now GNU General Public License v3.0 for everything but the documentation, and GNU Free Documentation License v1.3 for the documentation.
-	<li>Changed: Updated version of libcurl used from 7.22.0 to 7.23.1, and updated version of Boost libraries used from 1.47.0 to 1.48.0.
-	<li>Changed: Expanded/Collapsed indicators added for masterlist groups in the GUI's User Rules Editor.
-	<li>Changed: GUI's User Rules Editor will now auto-scroll the rule list so that the currently selected rule is visible whenever the rule list is altered.
-</ul>
-<p><b>Version 1.9</b> - <i>13 November 2011</i>
-<ul>
-	<li>Changed: Major refactoring of BOSS code into a common library, a Command Line Interface and a Graphical User Interface.
-	<li>Common Library:
-	<ul>
-		<li>Removed: Checking for changes to the recognised mod list since last run for the plain text BOSS Log, as this did not work correctly and is not feasible to fix.
-		<li>Removed: Command line parameter <code>-T [ --proxy-type ] [ type ]</code> and BOSS.ini setting <code>sProxyType</code> Internet proxy type specification options. Proxy type is now automatically determined.
-		<li>Fixed: A bug where if a plugin filename started with "SET" or "GLOBAL" (or case variations) then BOSS would incorrectly classify it as a variable or global message line and so result in syntax errors.
-		<li>Fixed: User Rules which failed to add a plugin into the beginning or end of a group still incremented the number of recognised plugins as if the rule application had succeeded.
-		<li>Fixed: Userlist rules which reference plugins that are not installed now have warning messages reported instead of error messages.
-		<li>Fixed: Masterlist conditions now detect ghosted mods correctly.
-		<li>Fixed: The online Fallout: New Vegas masterlist's revision being checked instead of the online Fallout 3 masterlist's revision when updating the Fallout 3 masterlist.
-		<li>Fixed: The <q>Hide Messageless Mods</q> BOSS Log filter not acting when another filter resulted in all a mod's messages being hidden.
-		<li>Fixed: The last group of mods in a masterlist being unrecognised.
-		<li>Changed: More robust error handling.
-		<li>Changed: User rules can now only use up to one sort line and/or one REPLACE message line per rule, and cannot sort mods/groups relative to themselves.
-		<li>Changed: Updated version of libcurl used when building BOSS.exe and BOSS GUI.exe to 7.22.0 from 7.21.7.
-		<li>Changed: Content and slight formatting changes to BOSS Log:
-		<ul>
-			<li><q>Masterlist Update</q> section removed. Update information is now displayed in the <q>Summary</q> section. Updater errors are displayed in the <q>General Messages</q> section.
-			<li>Javascript optimisations for filters.
-			<li><q>Execution Complete</q> text is now centred.
-			<li>All BOSS Log output now has special characters escaped so that it is valid HTML.
-			<li>The date of the user's masterlist is now displayed in the <q>Summary</q>.
-			<li>Ini parsing errors are now displayed in the <q>General Messages</q> section.
-			<li>The filters are now laid out in a more grid-like fashion.
-			<li>Added whitespace characters between plugin filenames, versions, ghosted labels and CRCs to make copy/pasted text more readable.
-			<li>Coloured links in the dark colour scheme so that they are easier to read.
-			<li>The number of plugins and messages hidden at any one time is displayed below the filters box in italics.
-			<li>The Script Extender And Script Extender Plugins section is now always displayed, with CRCs only being calculated if the <q>Display File CRCs</q> option is set.
-		</ul>
-		<li>Changes to BOSS.ini variables:
-		<ul>
-			<li>Removed <q>GUI.Settings</q> and <q>GUI.LastOptions</q> sections.
-			<li><q>DoStartupUpdateCheck</q> moved to a new <q>BOSS.GeneralSettings</q> section.
-			<li>Removed <q>DisableMasterlistUpdate</q> setting.
-			<li>Added variable type prefixes to variable names (s, i, b).
-			<li>Boolean variables now accept <code>true</code> or <code>false</code> instead of <code>1</code> or <code>0</code>.
-			<li><q>CommandLineVerbosity</q> renamed to <q>iDebugVerbosity</q>.
-			<li><q>Debug</q> renamed to <q>bDebugWithSourceRefs</q>.
-			<li>Added <q>bLogDebugOutput</q> setting to <q>BOSS.RunOptions</q> to control the logging of debugging output.
-			<li>Added <q>bUseUserRulesEditor</q> setting to <q>BOSS.GeneralSettings</q> to control how to the GUI chooses to edit user rules.
-			<li>Default values for the <q>BOSSLog.Styles</q> settings are now given, and values are no longer enclosed in {} brackets.
-		</ul>
-		<li>Changed: Major rewrite of most of the common code, including more object-orientation of code, removal of some unused functions, implementation of an class for formatted output using generic placeholders and much more.
-		<li>Added: <q>Hide Clean Mods</q> and <q>Hide 'Do Not Clean' Messages</q> BOSS Log filters.
-		<li>Added: Support for TES V: Skyrim and the Skyrim Script Extender.
-		<li>Added: Support for MF2.2 syntax, including C-style comments, regular expression conditions, case-insensitive keywords and expanded conditional shorthands.
-		<li>Added: Built-in debug output logging support.
-		<li>Added: <code>DISABLE</code> keyword to user rules that can be placed before a rule's rule keyword to disable it, instead of commenting it out to do the same.
-		<li>Added: Support for authenticated proxies, using the <code>sProxyUsername</code> and <code>sProxyPassword</code> BOSS.ini settings.
-			<ul><li>Note that the support is untested. Feedback from users with authenticated proxies would be appreciated.</ul>
-	</ul>
-	<li>Command Line Interface:
-	<ul>
-		<li>Changed: The command line parameter <code>--debug, -d</code> is now <code>--debug-with-source, -d</code>.
-		<li>Added: Progress indication for downloads.
-		<li>Added: A new command line parameter <code>log-debug, -l</code> to allow logging of the debug output to the <q>BOSSDebugLog.txt</q> file.
-		<li>Added: BOSS Updater functionality.
-	</ul>
-	<li>Graphical User Interface:
-	<ul>
-		<li>Added: A User Rules Editor to allow creation and editing of user rules without manually editing the userlist.txt.
-		<li>Changed: The GUI is now completely independent of the CLI interface.
-		<li>Changed: <q>Settings</q> window overhauled:
-		<ul>
-			<li>Debugging-related settings moved to the from the main window.
-			<li>Settings catagorised into tabs.
-			<li>Added settings for controlling the default state of the BOSS Log filters and the BOSS Log CSS.
-			<li>Added a <q>Log Debug Output</q> setting to allow logging of the debug output to the <q>BOSSDebugLog.txt</q> file.
-			<li>Added an option to select whether to use the GUI's User Rule Editor or to manually edit the userlist when editing user rules.
-			<li>Updated proxy settings to reflect changes to proxy support.
-		</ul>
-		<li>Changed: Simplified layout of main window options.
-		<li>Changed: Renamed some options to reflect their functions better.
-		<li>Changed: Opening files from the GUI no longer causes a command line window to display.
-		<li>Changed: The Check For Updates feature no longer causes the GUI to stop responding, either run on startup or through the menu option.
-	</ul>
-	<li>(Installer) Changed: Updated to support Skyrim.
-	<li>(Docs) Changed: Major updates to main readme to reflect changes.
-	<li>(Docs) Added: Masterlist Syntax HTML documentation for BOSS team members and interested third parties.
-</ul>
-<p><b>Version 1.8</b> - <i>6 July 2011</i>
-<ul>
-	<li>Fixed: Junction-linked data folders not being scanned for plugins.
-	<li>Fixed: Links being displayed incorrectly in the BOSS Log if more than one was given in a message.
-	<li>Changed: Masterlist updater now runs by default.
-	<li>Changed: Updated version of libcurl used when building BOSS.exe and BOSS GUI.exe to 7.21.7 from 7.21.4.
-	<li>Changed: Overhauled the <q>Plugin Numbers</q> section of the BOSS Log:
-	<ul>
-		<li>Moved the section to the top of the BOSS Log.
-		<li>Renamed the section from <q>Plugin Numbers</q> to <q>Summary</q>.
-		<li>Added message counts, with numbers of total messages, warning messages and error messages.
-		<li>Added a notice that is displayed when there has been no change in the recognised plugin list since BOSS was last run.
-	</ul>
-	
-	<li>Added: A settings file (<q>BOSS.ini</q>) to allow users to set default behaviours, options and BOSS Log formatting styles.
-	<li>Added: Support for unauthenticated proxies to the masterlist updater and the GUI's <q>Check For Updates</q> functionality.
-	<li>Added: Five new command line parameters:
-	<ul>
-		<li><code>--proxy-host,-H [ hostname ]</code> to specify a proxy's host server for the masterlist updater.
-		<li><code>--proxy-port,-P [ port ]</code> to specify a proxy's port for the masterlist updater.
-		<li><code>--proxy-type,-T [ type ]</code> to specify a proxy type for the masterlist updater.
-		<li><code>--trial-run,-t</code> to run BOSS without actually changing the load order.
-		<li><code>--no-update,-U</code> to inhibit automatic masterlist updating.
-	</ul>
-	
-	<li>Added: Support for Fallout: New Vegas plugins that use the Fallout 3 master file, such as <q>A Requiem for the Capital Wasteland</q>.
-	<li>Added: Support for MF2.1 regular expressions, conditional incompatibility and conditional requirement messages in the masterlist.
-	<li>Added: BOSS Log filter option to hide userlist warning messages.
-	<li>(GUI) Fixed: The <q>Enable File CRC Display</q> and <q>Enable Mod Version Display</q> options getting confused between their values under the <q>Sort Mods</q> and <q>Undo Changes</q> run options.
-	<li>(GUI) Fixed: The icon not appearing in the title bar.
-	<li>(GUI) Fixed: The GUI hanging when BOSS is launched.
-	<li>(GUI) Changed: The <q>Masterlist Update</q> checkbox now sets the --no-update command line parameter if unchecked to override BOSS's default behaviour.
-	<li>(GUI) Changed: The look of the <q>About</q> window.
-	<li>(GUI) Changed: Overhauled the <q>Check For Updates</q> functionality:
-	<ul>
-		<li>Removed the masterlist update checker, as it has been made redundant by BOSS's automatic masterlist updating.
-		<li>Added automatic updater functionality. Replaced <q>Check For Updates</q> output window with a series of notification dialogs asking if the update should be downloaded and installed. If no update was found, or there was an error, relevant dialog messages are displayed.
-		<li><q>Check For Updates</q> now also automatically runs when the GUI starts. This only displays a message if an update was found.
-	</ul>
-	
-	<li>(GUI) Changed: Renamed a number of options, simplifying their names slightly.
-	<li>(GUI) Changed: Options selected are now saved on exit and loaded on start.
-	<li>(GUI) Added: <q>Perform Trial Run</q> option.
-	<li>(GUI) Added: Settings page for specifying how the GUI behaves.
-	<li>(Installer) Changed: Updated to reflect various changes to programs.
-	<li>(Installer) Changed: Installer now runs uninstaller before installing if a previous installation of BOSS is found.
-	<li>(Docs) Changed: Significant content and formatting changes to main ReadMe, slight formatting changes to User Rules readme.
-</ul>
-<p><b>Version 1.7</b> - <i>10 June 2011</i>
-<ul>
-	<li>Fixed: A bug in the masterlist updater causing the wrong masterlist version to be displayed.
-	<li>Changed: Ghosted plugins must now be referenced in user rules without their ".ghost" extension.
-	<li>Changed: Moved all BOSS's files into a new BOSS folder, located in the game's installation directory, one level above the Data folder.
-	<li>Changed: Switched to using the Unicode character encoding, allowing the sorting of plugins with international characters in their names.
-	<ul>
-		<li>BOSS now uses the UTF-8 encoding for all its operations.
-		<li>All BOSS files must now be encoded in UTF-8: this includes the modlists, masterlist and userlist.
-		<li>Converted the masterlists and modlists to use the UTF-8 encoding.
-		<li>Added a UTF-8 validator to ensure that the correct encoding for the required files is being used.
-	</ul>
-	
-	<li>Changed: Removed batch files as they are no longer necessary.
-	<li>Changed: The release date of updated masterlists is now displayed beside the revision number in the BOSS Log.
-	<li>Changed: Significant rewrite of source code, resulting in performance gains.
-	<li>Changed: Implemented new file parsers for the masterlist, modlists and userlist.
-	<li>Changed: Improved the formatting of the BOSS Log, making it more readable.
-	<li>Changed: Links in the BOSS Log are now hyperlinks that can be clicked on to take you to the given URL.
-	<li>Added: A unique icon to the executables, made by Hickory.
-	<li>Added: Support for Masterlist Format 2, which offers an alternative syntax and a wide range of new features and capabilities.
-	<li>Added: Display of the numbers of recognised, unrecognised, ghosted and total plugins to the end of the BOSS Log.
-	<li>Added: Javascript-based filter options and collapsible sections to the BOSS Log.
-	<li>Added: A Graphical User Interface (GUI) that can be used to launch BOSS with whatever options are desired without having to use the command line.
-	<li>Added: Three new command line parameters:
-	<ul>
-		<li><code>--game,-g [ game ]</code> to override game autodetection. To be used in conjunction with -o to allow updating of the masterlist on computers where the specified game is not installed.
-		<li><code>--crc-display,-c</code> to calculate and display in the BOSS Log the CRCs of all your plugins. CRCs can be used as accurate version checks in masterlist conditionals.
-		<li><code>--format,-f [ type ]</code> to select the BOSS Log format, choosing from either HTML or plaintext. HTML formatting is the default.
-	</ul>
-	
-	<li>(Installer) Changed: Updated installer to reflect the various changes to BOSS's files and folders.
-	<li>(Docs) Changed: Significant content and formatting changes to main ReadMe, slight formatting changes to User Rules readme.
-</ul>
-<p><b>Version 1.6.5</b> - <i>1 December 2010</i>
-<ul>
-	<li>Fixed: Userlist parser giving incorrect error messages for rules inserting plugins into groups.
-	<li>Fixed: BOSS reporting some plugins as unknown when they are ghosted.
-</ul>
-<p><b>Version 1.6.4</b> - <i>28 November 2010</i>
-<ul>
-	<li>Fixed: Keywords, plugins and groups in user rules being unrecognised if they are padded by spaces.
-	<li>Fixed: Non-ASCII characters in plugin filenames causing crashes.
-	<li>Changed: Slight improvements to user rule error reporting when sorting groups that do not exist.
-	<li>Added: <code>--only-update,-o</code> command line parameter to only update the masterlist without then sorting any plugins.
-	<li>Added: <q>BOSS - Print Debug Info.bat</q> file to make debugging of BOSS errors simpler.
-	<li>Added: Nullsoft Scriptable Install installer for simpler BOSS installation.
-</ul>
-<p><b>Version 1.6.3</b> - <i>15 November 2010</i>
-<ul>
-	<li>Fixed: Crashing when updating the masterlist if downloading an incorrectly formatted masterlist.
-	<li>Fixed: Plugins with duplicate masterlist entries causing load order errors.
-	<li>Fixed: Another crash when parsing an incorrectly formatted userlist.
-	<li>Changed: User rule keywords are now case-insensitive.
-	<li>Changed: User rules can no longer sort a plugin relative to a plugin that is not in the masterlist and has not been sorted by another rule.
-	<li>Added: Check to userlist application of override rules to prevent incorrect usage resulting in load order errors.
-</ul>
-<p><b>Version 1.6.2</b> - <i>1 November 2010</i>
-<ul>
-	<li>Fixed: Crashing when userlist contains badly formatted lines.
-	<li>Changed: Many code portability enhancements.
-	<li>Changed: Command line parameters to be more standardised:
-	<ul>
-		<li><code>--disable-version-parse,-V</code> is now <code>--no-version-parse,-n</code>.
-		<li><code>--silent-mode,-s</code>  is now <code>--silent,-s</code>.
-		<li><code>--revert-level,-r [ level ]</code> is now <code>--revert,-r [ level ]</code>.
-	</ul>
-	
-	<li>Added: Support for <q>Fallout: New Vegas</q>.
-	<li>Added: Ability to insert plugins into groups to user rules functionality.
-	<li>Added: Ability to sort plugins relative to plugins that are not installed, but are in the masterlist, to user rules functionality.
-	<li>Added: Three new command line parameters:
-	<ul>
-		<li><code>--verbose,-v [ level ]</code> to enable logging statements, where <code>level</code> goes from 1 to 3 with increasing verbosity.
-		<li><code>--version,-V</code> to show BOSS version.
-		<li><code>--debug,-d</code> to add filename and line numbers to log messages.
-	</ul>
-	
-</ul>
-<p><b>Version 1.6.1</b> - <i>19 October 2010</i>
-<ul>
-	<li>Fixed: Non-lowercase plugin extensions not being recognised and causing crashes and load order mistakes.
-	<li>Fixed: A potential bug with the masterlist updater causing memory issues.
-	<li>Fixed: Several compiler warnings when compiling on Linux.
-	<li>Changed: Increased timeout delay for the masterlist updater to prevent the updater failing when Google Code is slow.
-	<li>Changed: Improved masterlist updater error handling.
-	<li>Added: <code>--silent,-s</code> command line parameter to suppress the automatic opening of the BOSS Log when BOSS is run.
-	<li>Added: Version info to <q>BOSS.exe</q> to make Wrye Bash integration/debugging easier.
-</ul>
-<p><b>Version 1.6</b> - <i>8 October 2010</i>
-<ul>
-	<li>Fixed: Fallout3.esm being reported as an 'unknown mod file'.
-	<li>Changed: Removed need for <q>BOSS.bat</q>.
-	<li>Changed: Moved BOSS's input and output files to <q>Data\BOSS\</q>.
-	<li>Changed: Converted BOSS Log from plain text to HTML format.
-	<li>Changed: Improved error handling to catch more errors and provide more useful error messages when BOSS doesn't work properly.
-	<li>Changed: Improved portability of source code.
-	<li>Changed: Merged BOSS and BOSS-F source code, allowing one <q>BOSS.exe</q> to work with all the games BOSS supports.
-	<li>Changed: Major refactoring and rewrite of BOSS source code, resulting in a significant performance improvement.
-	<li>Added: Fallout Wanderers Edition (FWE) specific message type for the Fallout 3 masterlist.
-	<li>Added: Plugin version display to BOSS Log output.
-	<li>Added: Three new command line parameters:
-	<ul>
-		<li><code>--update,-u</code> to update the masterlist before sorting plugins.
-		<li><code>--disable-version-parse,-V</code> to disable version display in the BOSS Log.
-		<li><code>--revert-level,-r [ level ]</code> to allow undoing of BOSS's changes. <code>level</code> can be either 1 or 2, to go back to the load order before the last run of BOSS, or the load order before the run before that respectively.
-	</ul>
-	
-	<li>Added: <q>BOSS - Update Masterlist.bat</q> file to allow updating of the masterlist without having to use the command line.
-	<li>Added: Sorting of ghosted plugins.
-	<li>Added: Custom user rules functionality to allow users to customise how BOSS sorts their files, and more.
-	<li>Added: Support for the <q>Nehrim - At Fate's Edge</q> total conversion for TES IV: Oblivion.
-	<li>(Docs) Changed: Converted Readme from RTF to HTML format.
-</ul>
-<p><b>Version 1.5</b> - <i>24 March 2010</i>
-<ul>
-	<li>Changed: Switched source code project and solution files to Visual Studio 2010.
-	<li>Added: Four new message types:
-	<ul>
-		<li>OOO-specific messages.
-		<li>Requirement messages.
-		<li>Incompatibility messages.
-		<li>Better Cities-specific messages.
-	</ul>
-	<li>Added: A separate masterlist for Fallout 3.
-	<li>Added: A version of BOSS specifically for Fallout 3 (BOSS-F).
-</ul>
-<p><b>Version 1.4.1</b> - <i>31 August 2009</i>
-<ul>
-	<li>Fixed: Incorrect master file defined for Fallout 3.
-	<li>Fixed: Error messages not being displayed on some machines.
-</ul>
-<p><b>Versions 1.0 - 1.3.5</b> - <i>22 October 2008 to 24 June 2009</i>
-<ul>
-	<li>Changes Not Recorded.
-</ul>
 <script>
-function nextImage(){
-	var imgs=document.getElementById('slideholder').getElementsByTagName('img');
+function nextImage(imgs, i){
 	for(var i=0;i<imgs.length;i++){
 		if(imgs[i].style.opacity=='1' || imgs[i].style.opacity==''){
 			imgs[i].style.opacity='0';
@@ -1241,14 +1182,18 @@ function nextImage(){
 			}else{
 				imgs[0].style.opacity='1';
 			}
-			
 			break;
 		}
 	}
-	t=setTimeout("nextImage()",5000);
+	t=setTimeout(nextImage, 5000, imgs);
 }
 
-if(document.getElementById('slideholder')!=null){
-	t=setTimeout("nextImage()",5000);
+var figures = document.getElementsByTagName('figure');
+if(figures!=null){
+	for (var i=0; i < figures.length; i++) {
+		if (figures[i].className == 'slideshow'){
+			t=setTimeout(nextImage,5000, figures[i].getElementsByTagName('img'));
+		}
+	}
 }
 </script>

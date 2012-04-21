@@ -75,7 +75,7 @@ using boost::algorithm::trim_copy;
 UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title) {
 
 	//Let's give this a progress bar.
-	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Initialising User Rules Editor..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
+	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
 	progDia->Pulse();
 
 	try{
@@ -97,13 +97,13 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 
 	//Some variable setup.
 	wxString BeforeAfter[] = {
-        wxT("BEFORE"),
-        wxT("AFTER")
+        wxT("before"),
+        wxT("after")
     };
 
 	wxString TopBottom[] = {
-        wxT("TOP"),
-        wxT("BOTTOM")
+        wxT("top"),
+        wxT("bottom")
     };
 
 	//Set up stuff in the frame.
@@ -140,7 +140,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 
 	////////Rule Creator/Editor
 	wxBoxSizer *editorMessagesBox = new wxBoxSizer(wxHORIZONTAL);
-	wxStaticBoxSizer *ruleEditorTopBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Rule Creator/Editor"));  //Needs to go in an oulined box.
+	wxStaticBoxSizer *ruleEditorTopBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Rule Editor"));  //Needs to go in an oulined box.
 	wxBoxSizer *ruleEditorBox = new wxBoxSizer(wxVERTICAL);  //To get internal padding.
 	wxBoxSizer *forBox = new wxBoxSizer(wxHORIZONTAL);
 	forBox->Add(new wxStaticText(ruleEditorTopBox->GetStaticBox(), wxID_ANY, wxT("For")));
@@ -166,11 +166,11 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	ruleEditorBox->AddSpacer(10);
 	ruleEditorBox->Add(NewModMessagesBox = new wxTextCtrl(ruleEditorTopBox->GetStaticBox(),TEXT_NewMessages, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), 1, wxEXPAND|wxLEFT, 20);
 	ruleEditorBox->AddSpacer(10);
-	ruleEditorBox->Add(ReplaceMessagesCheckBox = new wxCheckBox(ruleEditorTopBox->GetStaticBox(), CHECKBOX_RemoveMessages, wxT("Replace Existing Messages")));
+	ruleEditorBox->Add(ReplaceMessagesCheckBox = new wxCheckBox(ruleEditorTopBox->GetStaticBox(), CHECKBOX_RemoveMessages, wxT("Replace existing messages")));
 	ruleEditorTopBox->Add(ruleEditorBox, 1, wxEXPAND|wxALL, 10);
 	editorMessagesBox->Add(ruleEditorTopBox, 0, wxEXPAND);
 	editorMessagesBox->AddSpacer(10);
-	wxStaticBoxSizer *messBox = new wxStaticBoxSizer(wxVERTICAL, this, "Masterlist Mod Messages");
+	wxStaticBoxSizer *messBox = new wxStaticBoxSizer(wxVERTICAL, this, "Default Plugin Messages");
 	messBox->Add(ModMessagesBox = new wxTextCtrl(messBox->GetStaticBox(),TEXT_ModMessages,wxT(""),wxDefaultPosition,wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY), 1, wxEXPAND);
 	editorMessagesBox->Add(messBox, 1, wxEXPAND);
 	rulesBox->Add(editorMessagesBox, 1, wxEXPAND);
@@ -190,7 +190,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	MasterlistTabSizer->Add(MasterlistModsList = new wxTreeCtrl(MasterlistTab, LIST_Masterlist, wxDefaultPosition, wxSize(100,550), wxTR_HAS_BUTTONS|wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT), 1, wxEXPAND);
 	MasterlistTab->SetSizer(MasterlistTabSizer);
 	//Add tabs to window.
-	TabHolder->AddPage(ModlistTab,wxT("Installed Mods"),true);
+	TabHolder->AddPage(ModlistTab,wxT("Installed Plugins"),true);
 	TabHolder->AddPage(MasterlistTab,wxT("Masterlist"));
 	mainBox->AddSpacer(10);
 	mainBox->Add(TabHolder, 2, wxEXPAND);
@@ -199,13 +199,13 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	////Window buttons
 	wxBoxSizer *mainButtonBox = new wxBoxSizer(wxHORIZONTAL);
 	mainButtonBox->Add(new wxButton(this, BUTTON_NewRule, wxT("Create New Rule")));
-	mainButtonBox->Add(new wxButton(this, BUTTON_EditRule, wxT("Apply Rule Edits")), 0, wxLEFT, 10);
+	mainButtonBox->Add(new wxButton(this, BUTTON_EditRule, wxT("Save Edited Rule")), 0, wxLEFT, 10);
 	mainButtonBox->Add(new wxButton(this, BUTTON_DeleteRule, wxT("Delete Rule")), 0, wxLEFT, 10);
 	mainButtonBox->AddStretchSpacer(2);
 	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleUp, wxT("Move Rule Up")));
 	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleDown, wxT("Move Rule Down")), 0, wxLEFT, 10);
 	mainButtonBox->AddStretchSpacer(2);
-	mainButtonBox->Add(new wxButton(this, BUTTON_OKExitEditor, wxT("Save and Close")));
+	mainButtonBox->Add(new wxButton(this, BUTTON_OKExitEditor, wxT("Save and Exit")));
 	mainButtonBox->Add(new wxButton(this, BUTTON_CancelExitEditor, wxT("Cancel")), 0, wxLEFT, 10);
 	//Now add buttons to window sizer.
 	bigBox->Add(mainButtonBox, 0, wxALL|wxEXPAND, 10);

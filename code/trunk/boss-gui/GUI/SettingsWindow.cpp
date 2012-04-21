@@ -90,7 +90,7 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	GeneralGridSizer->Add(LanguageChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, Language), rightItem);
 	GeneralTabSizer->Add(GeneralGridSizer);
 	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Check for BOSS updates on startup")), wholeItem);
-	GeneralTabSizer->Add(UseUserRuleEditorBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Use User Rules Editor")), wholeItem);
+	GeneralTabSizer->Add(UseUserRuleManagerBox = new wxCheckBox(GeneralTab,wxID_ANY,wxT("Use User Rules Manager")), wholeItem);
 
 	/*wxStaticText *gameText;
 	wxString text = wxT("If the default game is set to Autodetect, BOSS will try to autodetect a game to run for, and will ask you to choose a game if it finds more than one.\n\n");
@@ -156,8 +156,8 @@ void SettingsFrame::SetDefaultValues() {
 	//General Settings
 	if (gl_do_startup_update_check)
 		StartupUpdateCheckBox->SetValue(true);
-	if (gl_use_user_rules_editor)
-		UseUserRuleEditorBox->SetValue(true);
+	if (gl_use_user_rules_manager)
+		UseUserRuleManagerBox->SetValue(true);
 	switch (gl_game) {
 	case AUTODETECT:
 		GameChoice->SetSelection(0);
@@ -232,7 +232,7 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 
 	//General
 	gl_do_startup_update_check = StartupUpdateCheckBox->IsChecked();
-	gl_use_user_rules_editor = UseUserRuleEditorBox->IsChecked();
+	gl_use_user_rules_manager = UseUserRuleManagerBox->IsChecked();
 	switch (GameChoice->GetSelection()) {
 	case 0:
 		gl_game = AUTODETECT;

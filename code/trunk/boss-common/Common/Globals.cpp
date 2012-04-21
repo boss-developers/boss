@@ -164,7 +164,7 @@ namespace boss {
 
 	//General variables
 	BOSS_COMMON bool		gl_do_startup_update_check	= true;
-	BOSS_COMMON	bool		gl_use_user_rules_editor	= true;
+	BOSS_COMMON	bool		gl_use_user_rules_manager	= true;
 	BOSS_COMMON uint32_t	gl_language					= ENGLISH;
 
 	//Command line variables
@@ -536,7 +536,7 @@ namespace boss {
 
 			<<	"[BOSS.GeneralSettings]" << endl
 			<<	"bDoStartupUpdateCheck    = " << BoolToString(gl_do_startup_update_check) << endl
-			<<	"bUseUserRulesEditor      = " << BoolToString(gl_use_user_rules_editor) << endl 
+			<<	"bUseUserRulesManager     = " << BoolToString(gl_use_user_rules_manager) << endl 
 			<<	"sLanguage                = " << GetLanguageString() << endl << endl
 
 			<<	"[BOSS.InternetSettings]" << endl
@@ -683,7 +683,7 @@ namespace boss {
 				} else if (iter->key == "bDoStartupUpdateCheck")
 					gl_do_startup_update_check = StringToBool(iter->value);
 				else if (iter->key == "bUseUserRulesEditor")
-					gl_use_user_rules_editor = StringToBool(iter->value);
+					gl_use_user_rules_manager = StringToBool(iter->value);
 				if (iter->key == "bUpdateMasterlist")
 					gl_update = StringToBool(iter->value);
 				else if (iter->key == "bOnlyUpdateMasterlist")

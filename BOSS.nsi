@@ -43,8 +43,6 @@
 	!insertmacro MUI_PAGE_DIRECTORY
 	!insertmacro MUI_PAGE_INSTFILES
 	!define MUI_FINISHPAGE_NOAUTOCLOSE
-	!define MUI_FINISHPAGE_TEXT "$(Text_FinishPage)"
-	!define MUI_FINISHPAGE_TEXT_LARGE
 	!define MUI_FINISHPAGE_RUN "$INSTDIR\BOSS.exe"
 	!define MUI_FINISHPAGE_RUN_TEXT "$(Text_Run)"
 	!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\Docs\BOSS ReadMe.html"
@@ -75,7 +73,6 @@
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "2.1.0"
 
 	LangString TEXT_MESSAGEBOX ${LANG_ENGLISH} "BOSS is already installed, and must be uninstalled before continuing. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade."
-	LangString TEXT_FINISHPAGE ${LANG_ENGLISH} "If you have multiple copies of one or more of the games BOSS supports, you must manually install a separate copy of BOSS for each copy other than the original install.$\n$\nThis can be done using the manual archive, or by copy/pasting the BOSS folder that has just been installed. See the BOSS Readme for more information."
 	LangString TEXT_RUN ${LANG_ENGLISH} "Run BOSS"
 	LangString TEXT_SHOWREADME ${LANG_ENGLISH} "View Readme"
 	LangString TEXT_MAIN ${LANG_ENGLISH} "All BOSS's files, minus userlists and the BOSS.ini."
@@ -91,7 +88,6 @@
 	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileVersion" "2.1.0"
 
 	LangString TEXT_MESSAGEBOX ${LANG_RUSSIAN} "BOSS уже установлен и должен быть удален перед продолжением. $\n$\nНажмите `OK` для удаления предыдущей версии или `Отмена` для отмены обновления."
-	LangString TEXT_FINISHPAGE ${LANG_RUSSIAN} "Если у вас много копий одной или более поддерживаемых в BOSS игр, вы должны вручную установить отдельные копии BOSS для каждой игры, кроме оригинальной установки.$\nЭто может быть сделано копированием/вставкой только что установленной папки BOSS. Для подробностей смотрите BOSS-Readme."
 	LangString TEXT_RUN ${LANG_RUSSIAN} "Запустить BOSS"
 	LangString TEXT_SHOWREADME ${LANG_RUSSIAN} "Смотреть BOSS-Readme"
 	LangString TEXT_MAIN ${LANG_RUSSIAN} "Все файлы BOSS, кроме пользовательских списков и BOSS.ini"
@@ -107,7 +103,6 @@
 	VIAddVersionKey /LANG=${LANG_GERMAN} "FileVersion" "2.1.0"
 
 	LangString TEXT_MESSAGEBOX ${LANG_GERMAN} "BOSS ist bereits installiert und muss deinstalliert werden, bevor fortgefahren wird. $\n$\nKlicke auf `Ok` um die vorherige Version zu entfernen oder auf `Abbrechen` um das Upgrade abzubrechen."
-	LangString TEXT_FINISHPAGE ${LANG_GERMAN} "Wenn du mehrere Kopien von einem oder mehreren Spielen hast, die BOSS unterstützt, musst du manuell eine separate Kopie von BOSS für jede Kopie installieren.$\n$\nDas kann durch das manuelle Archiv oder durch kopieren/einfügen des BOSS-Ordners, der bereits installiert wurde, gemacht werden. Lies die BOSS Readme für weitere Informationen."
 	LangString TEXT_RUN ${LANG_GERMAN} "BOSS starten"
 	LangString TEXT_SHOWREADME ${LANG_GERMAN} "Readme lesen"
 	LangString TEXT_MAIN ${LANG_GERMAN} "Alle Dateien von BOSS ohne die Benutzerlisten und die BOSS.ini."
@@ -123,7 +118,6 @@
 	VIAddVersionKey /LANG=${LANG_SPANISH} "FileVersion" "2.1.0"
 
 	LangString TEXT_MESSAGEBOX ${LANG_SPANISH} "BOSS está instalado, y debe ser desinstalado antes de continuar. $\n$\nPresione `OK` para eliminar la versión anterior o `Cancel` para cancelar la actualización."
-	LangString TEXT_FINISHPAGE ${LANG_SPANISH} "Si usted tiene instalado otras copias de los juegos que BOSS soporta, debe de instalar manualmente una copia separada de BOSS por cada juego aparte de la instalación original.$\n$\nEste se puede hacer con el archivo manual, o por copiar y pegar la carpeta de BOSS despues se acaba de instalar. Vea el archivo Léame de BOSS para obtener más información."
 	LangString TEXT_RUN ${LANG_SPANISH} "Ejecutar BOSS"
 	LangString TEXT_SHOWREADME ${LANG_SPANISH} "Ver Léame"
 	LangString TEXT_MAIN ${LANG_SPANISH} "Todos los archivos de BOSS, menos BOSS.ini y listas de usuarios."
@@ -189,6 +183,7 @@
 			ReadRegStr $InstallPath HKLM "Software\Wow6432Node\BOSS" "Installed Path"
 		${EndIf}
 		${If} $InstallPath != $Empty
+			StrCpy $INSTDIR $InstallPath  ;Set the default install path to the previous install's path.
 			IfFileExists "$InstallPath\Uninstall.exe" 0 +8
 				MessageBox MB_OKCANCEL|MB_ICONQUESTION "$(Text_MessageBox)" IDOK cont IDCANCEL cancel
 				cancel:
@@ -320,13 +315,14 @@
 		
 		;Now install readme images.
 		SetOutPath "$INSTDIR\Docs\images"
-		File "data\boss-common\images\BOSS GUI Main.png"
-		File "data\boss-common\images\BOSS GUI Settings 1.png"
-		File "data\boss-common\images\BOSS GUI Settings 2.png"
-		File "data\boss-common\images\BOSS GUI Settings 3.png"
-		File "data\boss-common\images\BOSS GUI Settings 4.png"
-		File "data\boss-common\images\BOSS GUI Settings 5.png"
-		File "data\boss-common\images\BOSS GUI User Rules Editor.png"
+		File "data\boss-common\images\GUI-Main.png"
+		File "data\boss-common\images\GUI-Select-Game.png"
+		File "data\boss-common\images\GUI-Settings-1.png"
+		File "data\boss-common\images\GUI-Settings-2.png"
+		File "data\boss-common\images\GUI-Settings-3.png"
+		File "data\boss-common\images\GUI-User-Rules-Manager.png"
+		File "data\boss-common\images\HTML-Log.png"
+		File "data\boss-common\images\Userlist.png"
 		
 		;Add Start Menu shortcuts. Set out path back to $INSTDIR otherwise the shortcuts start in the wrong place.
 		SetOutPath "$INSTDIR"
@@ -381,13 +377,14 @@
 		Delete "$INSTDIR\Docs\Licenses.txt"
 		
 		;Remove readme images.
-		Delete "$INSTDIR\Docs\images\BOSS GUI Main.png"
-		Delete "$INSTDIR\Docs\images\BOSS GUI Settings 1.png"
-		Delete "$INSTDIR\Docs\images\BOSS GUI Settings 2.png"
-		Delete "$INSTDIR\Docs\images\BOSS GUI Settings 3.png"
-		Delete "$INSTDIR\Docs\images\BOSS GUI Settings 4.png"
-		Delete "$INSTDIR\Docs\images\BOSS GUI Settings 5.png"
-		Delete "$INSTDIR\Docs\images\BOSS GUI User Rules Editor.png"
+		Delete "$INSTDIR\Docs\images\GUI-Main.png"
+		Delete "$INSTDIR\Docs\images\GUI-Select-Game.png"
+		Delete "$INSTDIR\Docs\images\GUI-Settings-1.png"
+		Delete "$INSTDIR\Docs\images\GUI-Settings-2.png"
+		Delete "$INSTDIR\Docs\images\GUI-Settings-3.png"
+		Delete "$INSTDIR\Docs\images\GUI-User-Rules-Manager.png"
+		Delete "$INSTDIR\Docs\images\HTML-Log.png"
+		Delete "$INSTDIR\Docs\images\Userlist.png"
 		
 		;Now we have to remove the files BOSS generates when it runs.
 		Delete "$INSTDIR\BOSSDebugLog.txt"

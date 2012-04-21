@@ -223,7 +223,7 @@ namespace boss {
 		if (outFormat == HTML) {
 			outStream << "<section id='cssSettings'>" << endl
 				<< "<h2>CSS Settings</h2>" << endl
-				<< "<p>Here you can customise the colours used by the dark colour scheme.<span id='colorPickerNote'> Colours must be specified using their lowercase hex codes.</span> Boxes left blank will use their default values, which are given by their placeholders." << endl
+				<< "<p>Here you can customise the colours used by the alternative colour scheme.<span id='colorPickerNote'> Colours must be specified using their lowercase hex codes.</span> Boxes left blank will use their default values, which are given by their placeholders." << endl
 				<< "<form>" << endl
 				<< "<table>" << endl
 				<< "	<thead><tr><td>Element<td>Colour" << endl
@@ -248,7 +248,7 @@ namespace boss {
 				<< "		<tr><td>Quoted Userlist Messages<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.message.dark' data-property='color' placeholder='#808080'>" << endl
 				<< "</table>" << endl
 				<< "<p id='backupCSSNote'>You can <span class='button' id='cssButtonBackup'>back up</span> your CSS settings to avoid losing them when you <span id='loseSettingsClose'>close the BOSS Log</span><span id='loseSettingsCacheClear'>clear your browser's cache</span>. Backup files are given nonsensical names by your browser, but you can rename them to whatever you want. Drag and drop a backup file into this panel to restore the settings it contains." << endl
-				<< "<p><label><input type='checkbox' id='useDarkColourScheme'/>Use Dark Colour Scheme</label>" << endl
+				<< "<p><label><input type='checkbox' id='useDarkColourScheme'/>Use Alternative Colour Scheme</label>" << endl
 				<< "<p><button>Apply</button>" << endl
 				<< "</form>" << endl
 				<< "</section>" << endl
@@ -1093,38 +1093,26 @@ namespace boss {
 		case SECTION_ID_SUMMARY_OPEN:
 			if (outFormat == HTML)
 				outStream << "<section id='summary'>";
-			else
-				outStream << endl << endl << "======================================" << endl;
 			break;
 		case SECTION_ID_GENERAL_OPEN:
 			if (outFormat == HTML)
 				outStream << "<section id='generalMessages'>";
-			else
-				outStream << endl << endl << "======================================" << endl;
 			break;
 		case SECTION_ID_USERLIST_OPEN:
 			if (outFormat == HTML)
 				outStream << "<section id='userRules'>";
-			else
-				outStream << endl << endl << "======================================" << endl;
 			break;
 		case SECTION_ID_SE_OPEN:
 			if (outFormat == HTML)
 				outStream << "<section id='sePlugins'>";
-			else
-				outStream << endl << endl << "======================================" << endl;
 			break;
 		case SECTION_ID_RECOGNISED_OPEN:
 			if (outFormat == HTML)
 				outStream << "<section id='recPlugins'>";
-			else
-				outStream << endl << endl << "======================================" << endl;
 			break;
 		case SECTION_ID_UNRECOGNISED_OPEN:
 			if (outFormat == HTML)
 				outStream << "<section id='unrecPlugins'>";
-			else
-				outStream << endl << endl << "======================================" << endl;
 			break;
 		case SECTION_CLOSE:
 			if (outFormat == HTML)

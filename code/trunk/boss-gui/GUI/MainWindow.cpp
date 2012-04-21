@@ -283,7 +283,7 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	revertBox->Add(RevertText = new wxStaticText(this, wxID_ANY, wxT("Undo Level: ")));
 	revertBox->Add(RevertChoice = new wxChoice(this, DROPDOWN_Revert, wxDefaultPosition, wxDefaultSize, 2, UndoLevel));
 	runOptionsBox->Add(revertBox, 0, wxLEFT | wxRIGHT, 20);
-	runOptionsBox->AddSpacer(10);
+	runOptionsBox->AddSpacer(5);
 
 	bigBox->Add(runOptionsBox, 0, wxTOP | wxRIGHT | wxBOTTOM, 20);
 
@@ -637,8 +637,8 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 }
 
 void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
-	if (gl_use_user_rules_editor) {
-		UserRulesEditorFrame *editor = new UserRulesEditorFrame(wxT("BOSS: User Rules Editor"),this);
+	if (gl_use_user_rules_manager) {
+		UserRulesEditorFrame *editor = new UserRulesEditorFrame(wxT("BOSS: User Rules Manager"),this);
 		editor->SetIcon(wxIconLocation("BOSS GUI.exe"));
 		editor->Show();
 		return;

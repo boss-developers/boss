@@ -42,7 +42,7 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-//#define BOSSGUI
+#define BOSSGUI
 
 	BOSS_COMMON const uint32_t BOSS_VERSION_MAJOR = 2;
 	BOSS_COMMON const uint32_t BOSS_VERSION_MINOR = 1;
@@ -119,7 +119,7 @@ namespace boss {
 
 	//General variables
 	BOSS_COMMON extern bool		gl_do_startup_update_check;	// Whether or not to check for updates on startup.
-	BOSS_COMMON extern bool		gl_use_user_rules_editor;	// Use the User Rules Editor or edit userlist.txt directly?
+	BOSS_COMMON extern bool		gl_use_user_rules_manager;	// Use the User Rules Editor or edit userlist.txt directly?
 	BOSS_COMMON extern uint32_t	gl_language;				// What language to run BOSS in?
 
 	//Command line variables.

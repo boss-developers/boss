@@ -42,7 +42,7 @@ public:
 	DECLARE_EVENT_TABLE()
 private:
 	wxCheckBox *StartupUpdateCheckBox;
-	wxCheckBox *UseUserRuleEditorBox;
+	wxCheckBox *UseUserRuleManagerBox;
 	wxCheckBox *DebugSourceReferencesBox;
 	wxCheckBox *LogDebugOutputBox;
 	wxChoice *DebugVerbosityChoice;
