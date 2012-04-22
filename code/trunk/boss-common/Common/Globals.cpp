@@ -534,18 +534,18 @@ namespace boss {
 			<<	"# Settings with names starting with 's' are strings and their accepted values vary." << endl
 			<<	"# See the BOSS ReadMe for details on what each setting does and the accepted values for integer and string settings." << endl << endl
 
-			<<	"[BOSS.GeneralSettings]" << endl
+			<<	"[General Settings]" << endl
 			<<	"bDoStartupUpdateCheck    = " << BoolToString(gl_do_startup_update_check) << endl
 			<<	"bUseUserRulesManager     = " << BoolToString(gl_use_user_rules_manager) << endl 
 			<<	"sLanguage                = " << GetLanguageString() << endl << endl
 
-			<<	"[BOSS.InternetSettings]" << endl
+			<<	"[Internet Settings]" << endl
 			<<	"sProxyHostname           = " << gl_proxy_host << endl
 			<<	"iProxyPort               = " << IntToString(gl_proxy_port) << endl
 			<<	"sProxyUsername           = " << gl_proxy_user << endl
 			<<	"sProxyPassword           = " << gl_proxy_passwd << endl << endl
 
-			<<	"[BOSS.RunOptions]" << endl
+			<<	"[Run Options]" << endl
 			<<	"sGame                    = " << GetIniGameString(gl_game) << endl
 			<<	"sLastGame                = " << GetIniGameString(gl_current_game) << endl  //Writing current game because that's what we want recorded when BOSS writes the ini.
 			<<	"sBOSSLogFormat           = " << GetLogFormatString() << endl

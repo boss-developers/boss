@@ -39,6 +39,7 @@
     <ClInclude Include="Common\Globals.h" />
     <ClInclude Include="Output\Output.h" />
     <ClInclude Include="Parsing\Grammar.h" />
+    <ClInclude Include="Support\alphanum.hpp" />
     <ClInclude Include="Support\Helpers.h" />
     <ClInclude Include="Support\Logger.h" />
     <ClInclude Include="Support\ModFormat.h" />

@@ -29,6 +29,7 @@
 #include "Support/Helpers.h"
 #include "Support/ModFormat.h"
 #include "Support/Logger.h"
+#include "Support/alphanum.hpp"
 #include "Common/Globals.h"
 
 #include <boost/spirit/include/karma.hpp>
@@ -301,8 +302,8 @@ namespace boss {
 			}
 			return false;
 		} else {
-			//Wacky format. Just eval using string compare.
-			return (verString.compare(ver.VerString()) < 0);
+			//Wacky format. Use the Alphanum Algorithm. (what a name!)
+			return (doj::alphanum_comp(verString, ver.VerString()) < 0);
 		}
 	}
 

@@ -93,5 +93,8 @@
     <ClInclude Include="Common\Classes.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="Support\alphanum.hpp">
+      <Filter>Support</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
