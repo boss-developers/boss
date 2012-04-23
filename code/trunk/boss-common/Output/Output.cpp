@@ -1208,7 +1208,7 @@ namespace boss {
 			if (outFormat == HTML)
 				outStream << "<li>";
 			else
-				outStream << endl << "*  ";
+				outStream << endl << endl;
 			break;
 		case LIST_ITEM_CLASS_SUCCESS:
 			if (outFormat == HTML)
@@ -1235,8 +1235,6 @@ namespace boss {
 		case SPAN_CLASS_MOD_OPEN:
 			if (outFormat == HTML)
 				outStream << "<span class='mod'>";
-			else
-				outStream << endl << endl;
 			break;
 		case SPAN_CLASS_VERSION_OPEN:
 			if (outFormat == HTML)
