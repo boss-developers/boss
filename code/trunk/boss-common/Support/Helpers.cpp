@@ -299,6 +299,8 @@ namespace boss {
 					n2 = 0;
 				if (n1 < n2)
 					return true;
+				else if (n1 > n2)
+					return false;
 			}
 			return false;
 		} else {

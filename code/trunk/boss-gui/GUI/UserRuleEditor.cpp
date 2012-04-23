@@ -262,17 +262,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 }
 
 void UserRulesEditorFrame::OnOKQuit(wxCommandEvent& event) {
-	try {
-		RulesList->SaveUserlist(userlist_path());
-	} catch (boss_error &e) {
-		wxMessageBox(wxString::Format(
-			wxT("Error: "+e.getString()+" Unable to save changes.")
-		),
-		wxT("BOSS: Error"),
-		wxOK | wxICON_ERROR,
-		NULL);
-	}
-
+	RulesList->SaveUserlist(userlist_path());
 	this->Close();
 }
 
@@ -401,7 +391,7 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 	Rule newRule = GetRuleFromForm();
 	if (!newRule.Enabled())
 		wxMessageBox(wxString::Format(
-				wxT("Rule Syntax Error: " + newRule.Object() + " Please correct the mistake before continuing.")
+				wxT(newRule.Object() + " Please correct the mistake before continuing.")
 			),
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
@@ -421,7 +411,7 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 		Rule newRule = GetRuleFromForm();
 		if (!newRule.Enabled())
 			wxMessageBox(wxString::Format(
-					wxT("Rule Syntax Error: " + newRule.Object() + " Please correct the mistake before continuing.")
+					wxT(newRule.Object() + " Please correct the mistake before continuing.")
 				),
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,
@@ -944,14 +934,6 @@ void RuleListFrameClass::MoveRule(wxWindowID id) {
 			selectedRuleIndex++;
 			ReDrawRuleList();
 		}
-	} else {
-		LOG_ERROR("Could not move rule %i.", selectedRuleIndex);
-		wxMessageBox(wxString::Format(
-			wxT("Error: Could not move rule.")
-		),
-		wxT("BOSS: Error"),
-		wxOK | wxICON_ERROR,
-		NULL);
 	}
 }
 

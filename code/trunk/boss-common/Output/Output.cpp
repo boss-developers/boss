@@ -1041,7 +1041,7 @@ namespace boss {
 
 	//Escapes HTML special characters.
 	string Outputter::EscapeHTMLSpecial(string text) {
-		if (escapeHTMLSpecialChars) {
+		if (escapeHTMLSpecialChars && outFormat == HTML) {
 			replace_all(text, "&", "&amp;");
 			replace_all(text, "\"", "&quot;");
 			replace_all(text, "'", "&#039;");
@@ -1053,7 +1053,7 @@ namespace boss {
 	}
 
 	string Outputter::EscapeHTMLSpecial(char c) {
-		if (escapeHTMLSpecialChars) {
+		if (escapeHTMLSpecialChars && outFormat == HTML) {
 			switch(c) {
 			case '&':
 				return "&amp;";

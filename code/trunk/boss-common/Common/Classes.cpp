@@ -310,7 +310,7 @@ namespace boss {
 			else
 				return fs::last_write_time(data_path / Data());
 		} catch(fs::filesystem_error e) {
-			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL, Data(), e.what());
+			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, Data(), e.what());
 		}
 	}
 
