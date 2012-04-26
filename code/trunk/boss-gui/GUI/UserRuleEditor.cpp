@@ -388,16 +388,18 @@ void UserRulesEditorFrame::OnSortInsertChange(wxCommandEvent& event) {
 }
 
 void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
-	Rule newRule = GetRuleFromForm();
-	if (!newRule.Enabled())
+	try {
+		Rule newRule = GetRuleFromForm();
+		RulesList->AppendRule(newRule);
+	} catch (boss_error &e) {
 		wxMessageBox(wxString::Format(
-				wxT(newRule.Object() + " Please correct the mistake before continuing.")
+				wxT("Rule Syntax Error: " + e.getString() + " Please correct the mistake before continuing.")
 			),
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
 			NULL);
-	else
-		RulesList->AppendRule(newRule);
+	}
+		
 }
 
 void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
@@ -408,16 +410,18 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 	if (dlg->ShowModal() != wxID_YES)  //User has chosen not to save.
 		return;
 	else {  //User has chosen to save.
-		Rule newRule = GetRuleFromForm();
-		if (!newRule.Enabled())
+		try {
+			Rule newRule = GetRuleFromForm();
+			RulesList->SaveEditedRule(newRule);
+		} catch (boss_error &e) {
 			wxMessageBox(wxString::Format(
-					wxT(newRule.Object() + " Please correct the mistake before continuing.")
+					wxT("Rule Syntax Error: " + e.getString() + " Please correct the mistake before continuing.")
 				),
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,
 				NULL);
-		else
-			RulesList->SaveEditedRule(newRule);
+		}
+			
 	}
 }
 
@@ -527,57 +531,33 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 	if (Item(RuleModBox->GetValue().ToStdString()).IsPlugin()) {
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
-				if (SortModOption->GetValue() && SortModBox->IsEmpty()) {
-					newRule.Enabled(false);
-					newRule.Object("No mod is specified to sort relative to.");
-					return newRule;
-				} else if (!Item(SortModBox->GetValue().ToStdString()).IsPlugin()) {  //Sort object is a group. Error.
-					newRule.Enabled(false);
-					newRule.Object("Cannot sort a plugin relative to a group.");
-					return newRule;
-				}
+				if (SortModOption->GetValue() && SortModBox->IsEmpty())
+					throw boss_error("No mod is specified to sort relative to.", BOSS_ERROR_INVALID_SYNTAX);
+				else if (!Item(SortModBox->GetValue().ToStdString()).IsPlugin())  //Sort object is a group. Error.
+					throw boss_error("Cannot sort a plugin relative to a group.", BOSS_ERROR_INVALID_SYNTAX);
 			} else if (InsertModOption->GetValue() && !Item(InsertModBox->GetValue().ToStdString()).IsGroup()) {  //Inserting into a mod. Error.
-				newRule.Enabled(false);
 				if (InsertModBox->IsEmpty())
-					newRule.Object("No group is specified to insert into.");
+					throw boss_error("No group is specified to insert into.", BOSS_ERROR_INVALID_SYNTAX);
 				else
-					newRule.Object("Cannot insert into a plugin.");
-				return newRule;
+					throw boss_error("Cannot insert into a plugin.", BOSS_ERROR_INVALID_SYNTAX);
 			}
 		}
-		if (AddMessagesCheckBox->IsChecked() && NewModMessagesBox->IsEmpty()) {  //Can't add no messages. Error.
-			newRule.Enabled(false);
-			newRule.Object("Cannot add messages when none are given.");
-			return newRule;
-		}
+		if (AddMessagesCheckBox->IsChecked() && NewModMessagesBox->IsEmpty())  //Can't add no messages. Error.
+			throw boss_error("Cannot add messages when none are given.", BOSS_ERROR_INVALID_SYNTAX);
 	} else {  //Rule object is a group, or empty.
-		if (RuleModBox->IsEmpty()) {
-			newRule.Enabled(false);
-			newRule.Object("No rule mod is specified.");
-			return newRule;
-		}
+		if (RuleModBox->IsEmpty())
+			throw boss_error("No rule mod is specified.", BOSS_ERROR_INVALID_SYNTAX);
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
-				if (SortModBox->IsEmpty()) {  //No sort object specified. Error.
-					newRule.Enabled(false);
-					newRule.Object("No mod is specified to sort relative to.");
-					return newRule;
-				} else if (Item(SortModBox->GetValue().ToStdString()).IsPlugin()) {  //Sort object is a plugin. Error.
-					newRule.Enabled(false);
-					newRule.Object("Cannot sort a group relative to a plugin.");
-					return newRule;
-				}
-			} else if (InsertModOption->GetValue()) {  //Can't insert groups. Error.
-				newRule.Enabled(false);
-				newRule.Object("Cannot insert groups.");
-				return newRule;
-			}
+				if (SortModBox->IsEmpty())  //No sort object specified. Error.
+					throw boss_error("No mod is specified to sort relative to.", BOSS_ERROR_INVALID_SYNTAX);
+				else if (Item(SortModBox->GetValue().ToStdString()).IsPlugin())  //Sort object is a plugin. Error.
+					throw boss_error("Cannot sort a group relative to a plugin.", BOSS_ERROR_INVALID_SYNTAX);
+			} else if (InsertModOption->GetValue())  //Can't insert groups. Error.
+				throw boss_error("Cannot insert groups.", BOSS_ERROR_INVALID_SYNTAX);
 		}
-		if (AddMessagesCheckBox->IsChecked()) {  //Can't add messages to a group. Error.
-			newRule.Enabled(false);
-			newRule.Object("Cannot add messages to groups.");
-			return newRule;
-		}
+		if (AddMessagesCheckBox->IsChecked())  //Can't add messages to a group. Error.
+			throw boss_error("Cannot add messages to groups.", BOSS_ERROR_INVALID_SYNTAX);
 	}
 
 	newRule.Enabled(true);
@@ -631,12 +611,8 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 				else
 					newLine.Key(APPEND);
 				
-				if (!newLine.IsObjectMessage()) {  //Message is formatted incorrectly. Error.
-					Rule errRule;			
-					errRule.Enabled(false);
-					errRule.Object("The message \"" + newLine.Object() + "\" is formatted incorrectly.");
-					return errRule;
-				}
+				if (!newLine.IsObjectMessage())  //Message is formatted incorrectly. Error.
+					throw boss_error("The message \"" + newLine.Object() + "\" is formatted incorrectly.", BOSS_ERROR_INVALID_SYNTAX);
 				
 				vector<RuleLine> lines = newRule.Lines();
 				lines.push_back(newLine);

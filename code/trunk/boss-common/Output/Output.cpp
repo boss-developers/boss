@@ -186,11 +186,6 @@ namespace boss {
 				<< "#unrecPlugins span.mod:hover {border-bottom:#888 solid 1px;}" << endl
 				<< "#unrecPlugins span.mod.nosubmit {border-bottom:none;cursor:auto;}" << endl
 				<< "</style>" << endl
-				<< "<!--[if lt IE 9]>" << endl
-				<< "<script>" << endl
-				<< "document.createElement('nav');document.createElement('header');document.createElement('footer');document.createElement('section');document.createElement('aside');" << endl
-				<< "</script>" << endl
-				<< "<![endif]-->" << endl;
 			outStream << "<nav>" << endl
 				<< "<header>" << endl
 				<< "	<h1>BOSS</h1>" << endl
@@ -435,57 +430,6 @@ namespace boss {
 				<< "		}" << endl
 				<< "	}" << endl
 				<< "}" << endl
-				<< "/*Wrapper for native getElementsByClassName, or Dustin Diaz's getElementsByClass if no native function available.*/" << endl
-				<< "function getElementsByClassName(parent, className, tagName){" << endl
-				<< "	if (document.getElementsByClassName){" << endl
-				<< "		return parent.getElementsByClassName(className);" << endl
-				<< "	}else{" << endl
-				<< "		var classElements = new Array();" << endl
-				<< "		if ( parent == null )" << endl
-				<< "		parent = document;" << endl
-				<< "		if ( tagName == null )" << endl
-				<< "		tagName = '*';" << endl
-				<< "		var els = parent.getElementsByTagName(tagName);" << endl
-				<< "		var elsLen = els.length;" << endl
-				<< "		var pattern = new RegExp(\"(^|\\\\s)\"+className+\"(\\\\s|$)\");" << endl
-				<< "		for (i = 0, j = 0; i < elsLen; i++) {" << endl
-				<< "			if ( pattern.test(els[i].className) ) {" << endl
-				<< "				classElements[j] = els[i];" << endl
-				<< "				j++;" << endl
-				<< "			}" << endl
-				<< "		}" << endl
-				<< "		return classElements;" << endl
-				<< "	}" << endl
-				<< "}" << endl
-				<< "function insertRule(styleSheet, selector, css){" << endl
-				<< "	if (styleSheet.cssRules) {" << endl
-				<< "		styleSheet.insertRule(selector + '{' + css + '}', styleSheet.cssRules.length);" << endl
-				<< "	} else if (styleSheet.rules) {" << endl
-				<< "		styleSheet.addRule(selector, css, -1);" << endl
-				<< "	}" << endl
-				<< "}" << endl
-				<< "function addEventListener(element, event, fn) {" << endl
-				<< "	if(document.addEventListener){" << endl
-				<< "		element.addEventListener(event, fn, false);" << endl
-				<< "	} else {" << endl
-				<< "		element.attachEvent('on' + event, fn);" << endl
-				<< "	}" << endl
-				<< "}" << endl
-				<< "function dispatchEvent(target, type) {" << endl
-				<< "	var event;" << endl
-				<< "	if (document.createEvent) {" << endl
-				<< "		event = document.createEvent('Event');" << endl
-				<< "		event.initEvent(type, true, true);" << endl
-				<< "	} else {" << endl
-				<< "		event = document.createEventObject();" << endl
-				<< "		event.eventType = 'on' + type;" << endl
-				<< "	}" << endl
-				<< "	if (document.dispatchEvent) {" << endl
-				<< "		target.dispatchEvent(event);" << endl
-				<< "	} else {" << endl
-				<< "		target.fireEvent(event.eventType, event);" << endl
-				<< "	}" << endl
-				<< "}" << endl
 				<< "function showElement(element){" << endl
 				<< "	if (element != null){" << endl
 				<< "		if (element.className.indexOf('hidden') != -1) {" << endl
@@ -606,7 +550,7 @@ namespace boss {
 				<< "	return false;" << endl
 				<< "}" << endl
 				<< "function toggleDisplayCSS(evt){" << endl
-				<< "	var e = getElementsByClassName(document, evt.currentTarget.getAttribute('data-class'), 'span');" << endl
+				<< "	var e = document.getElementsByClassName(evt.currentTarget.getAttribute('data-class'));" << endl
 				<< "	if(evt.currentTarget.checked){" << endl
 				<< "		for(var i=0,z=e.length;i<z;i++){" << endl
 				<< "			e[i].className += ' hidden';" << endl
@@ -698,7 +642,7 @@ namespace boss {
 				<< "			if (evt.currentTarget[i].value.length == 0) {" << endl
 				<< "				css += evt.currentTarget[i].placeholder;" << endl
 				<< "			}" << endl
-				<< "			insertRule(document.styleSheets[0], evt.currentTarget[i].getAttribute('data-selector'), css);" << endl
+				<< "			document.styleSheets[0].insertRule(evt.currentTarget[i].getAttribute('data-selector') + '{' + css + '}', styleSheet.cssRules.length);" << endl
 				<< "		}" << endl
 				<< "	}" << endl
 				<< "}" << endl
@@ -784,7 +728,9 @@ namespace boss {
 				<< "		i--;" << endl
 				<< "	}" << endl
 				<< "	document.getElementById('hiddenMessageNo').innerHTML = hiddenNo;" << endl
-				<< "	dispatchEvent(document.getElementById('hideMessagelessPlugins'),'click');" << endl
+				<< "	var event = document.createEvent('Event');" << endl
+				<< "	event.initEvent('click', true, true);" << endl
+				<< "	document.getElementById('hideMessagelessPlugins').dispatchEvent(event);" << endl
 				<< "}" << endl
 				<< "function togglePlugins(evt){" << endl
 				<< "	var plugins = document.getElementById('recPlugins').getElementsByTagName('ul')[0].childNodes;" << endl
@@ -804,10 +750,10 @@ namespace boss {
 				<< "				}" << endl
 				<< "				j--;" << endl
 				<< "			}" << endl
-				<< "			if (getElementsByClassName(plugins[i], 'active', 'span').length != 0){" << endl
+				<< "			if (plugins[i].getElementsByClassName('active').length != 0){" << endl
 				<< "				isInactive = false;" << endl
 				<< "			}" << endl
-				<< "			if (getElementsByClassName(plugins[i], 'dirty', 'li').length != 0){" << endl
+				<< "			if (plugins[i].getElementsByClassName('dirty').length != 0){" << endl
 				<< "				isClean = false;" << endl
 				<< "			}" << endl
 				<< "			if ((document.getElementById('hideMessagelessPlugins').checked && isMessageless)" << endl
@@ -843,7 +789,7 @@ namespace boss {
 				<< "}" << endl
 				<< "function showBrowserBox(){" << endl
 				<< "	if (suppressBrowserBox){" << endl
-				<< "		var summaryButton = getElementsByClassName(document.getElementsByTagName('nav')[0], 'button', 'div')[0];" << endl
+				<< "		var summaryButton = document.getElementsByTagName('nav')[0].getElementsByClassName('button')[0];" << endl
 				<< "		if (summaryButton.className.indexOf('current') == -1){" << endl
 				<< "			summaryButton.className += ' current';" << endl
 				<< "		}" << endl
@@ -914,73 +860,74 @@ namespace boss {
 				<< "			var elem = document.getElementById(localStorage.key(i));" << endl
 				<< "			if (elem != null && 'defaultChecked' in elem) {" << endl
 				<< "				elem.checked = true;" << endl
-				<< "				dispatchEvent(elem,'click'); " << endl
+				<< "				var event = document.createEvent('Event');" << endl
+				<< "				event.initEvent('click', true, true);" << endl
+				<< "				elem.dispatchEvent(event);" << endl
 				<< "			} else {" << endl
 				<< "				if (document.styleSheets[0].cssRules) {" << endl
 				<< "					var k = localStorage.key(i);" << endl
-				<< "					var d = document.styleSheets[0];" << endl
-				<< "					d.insertRule(k + '{' + localStorage.getItem(k) + '}', d.cssRules.length);" << endl
+				<< "					document.styleSheets[0].insertRule(k + '{' + localStorage.getItem(k) + '}', document.styleSheets[0].cssRules.length);" << endl
 				<< "				}" << endl
 				<< "			}" << endl
 				<< "		}" << endl
 				<< "		i--;" << endl
 				<< "	}" << endl
 				<< "}" << endl
-				<< "function setupEventHandlers(){" << endl
-				<< "	var i, elemArr;" << endl
-				<< "	if (isStorageSupported()){  /*Set up filter value and CSS setting storage read/write handlers.*/" << endl
-				<< "		elemArr = document.getElementsByTagName('aside')[0].getElementsByTagName('input');" << endl
-				<< "		i = elemArr.length - 1;" << endl
-				<< "		while(i > -1){" << endl
-				<< "			addEventListener(elemArr[i], 'click', saveCheckboxState);" << endl
-				<< "			i--;" << endl
-				<< "		}" << endl
-				<< "		addEventListener(document.getElementById('suppressBrowserBox'), 'click', saveCheckboxState);" << endl
-				<< "		addEventListener(document.getElementById('cssSettings').getElementsByTagName('form')[0], 'submit', storeCSS);" << endl
-				<< "	}" << endl
-				<< "	if (isCSSBackupRestoreSupported()){  /*Set up handlers for CSS backup & restore.*/" << endl
-				<< "		var dropZone = document.getElementById('cssSettings');" << endl
-				<< "		addEventListener(dropZone, 'dragover', handleDragOver);" << endl
-				<< "		addEventListener(dropZone, 'drop', handleFileSelect);" << endl
-				<< "		addEventListener(dropZone, 'dragleave', handleDragLeave);" << endl
-				<< "		addEventListener(document.getElementById('cssButtonBackup'), 'click', backupCSS);" << endl
-				<< "	}" << endl
-				<< "	if (isPluginSubmitSupported() && document.getElementById('unrecPlugins') != null){  /*Set up handlers for plugin submitter.*/" << endl
-				<< "		elemArr = document.getElementById('unrecPlugins').querySelectorAll('span.mod');" << endl
-				<< "		i = elemArr.length - 1;" << endl
-				<< "		while(i > -1){" << endl
-				<< "			addEventListener(elemArr[i], 'click', showSubmitBox);" << endl
-				<< "			i--;" << endl
-				<< "		}" << endl
-				<< "		addEventListener(document.getElementById('submitBox').getElementsByTagName('form')[0], 'reset', hideSubmitBox);" << endl
-				<< "		addEventListener(document.getElementById('submitBox').getElementsByTagName('form')[0], 'submit', submitPlugin);" << endl
-				<< "	}" << endl
-				<< "	addEventListener(document.getElementById('filtersButtonToggle'), 'click', toggleFilters);" << endl
-				<< "	/*Set up handlers for section display.*/" << endl
-				<< "	elemArr = document.getElementsByTagName('nav')[0].querySelectorAll('nav > div.button');" << endl
-				<< "	var i = elemArr.length - 1;" << endl
-				<< "	while(i > -1){" << endl
-				<< "		addEventListener(elemArr[i], 'click', showSection);" << endl
-				<< "		i--;" << endl
-				<< "	}" << endl
-				<< "	addEventListener(document.getElementById('cssButtonShow'), 'click', showSection);" << endl
-				<< "	addEventListener(document.getElementById('cssButtonShow'), 'click', showCSSBox);" << endl
-				<< "	addEventListener(document.getElementById('cssSettings').getElementsByTagName('form')[0], 'submit', applyCSS);" << endl
-				<< "	addEventListener(document.getElementById('cssSettings').getElementsByTagName('form')[0], 'submit', swapColorScheme);" << endl
-				<< "	addEventListener(document.getElementById('useDarkColourScheme'), 'click', swapColorScheme);" << endl
-				<< "	/*Set up handlers for filters.*/" << endl
-				<< "	addEventListener(document.getElementById('hideVersionNumbers'), 'click', toggleDisplayCSS);" << endl
-				<< "	addEventListener(document.getElementById('hideActiveLabel'), 'click', toggleDisplayCSS);" << endl
-				<< "	addEventListener(document.getElementById('hideChecksums'), 'click', toggleDisplayCSS);" << endl
-				<< "	addEventListener(document.getElementById('hideNotes'), 'click', toggleMessages);" << endl
-				<< "	addEventListener(document.getElementById('hideBashTags'), 'click', toggleMessages);" << endl
-				<< "	addEventListener(document.getElementById('hideRequirements'), 'click', toggleMessages);" << endl
-				<< "	addEventListener(document.getElementById('hideIncompatibilities'), 'click', toggleMessages);" << endl
-				<< "	addEventListener(document.getElementById('hideDoNotCleanMessages'), 'click', toggleMessages);" << endl
-				<< "	addEventListener(document.getElementById('hideAllPluginMessages'), 'click', toggleMessages);" << endl
-				<< "	addEventListener(document.getElementById('hideInactivePlugins'), 'click', togglePlugins);" << endl
-				<< "	addEventListener(document.getElementById('hideMessagelessPlugins'), 'click', togglePlugins);" << endl
-				<< "	addEventListener(document.getElementById('hideCleanPlugins'), 'click', togglePlugins);" << endl
+				<< "function setupEventHandlers(){"<<endl
+				<< "	var i, elemArr;"<<endl
+				<< "	if (isStorageSupported()){  /*Set up filter value and CSS setting storage read/write handlers.*/"<<endl
+				<< "		elemArr = document.getElementsByTagName('aside')[0].getElementsByTagName('input');"<<endl
+				<< "		i = elemArr.length - 1;"<<endl
+				<< "		while(i > -1){"<<endl
+				<< "			elemArr[i].addEventListener('click', saveCheckboxState, false);"<<endl
+				<< "			i--;"<<endl
+				<< "		}"<<endl
+				<< "		document.getElementById('suppressBrowserBox').addEventListener('click', saveCheckboxState, false);"<<endl
+				<< "		document.getElementById('cssSettings').getElementsByTagName('form')[0].addEventListener('submit', storeCSS, false);"<<endl
+				<< "	}"<<endl
+				<< "	if (isCSSBackupRestoreSupported()){  /*Set up handlers for CSS backup & restore.*/"<<endl
+				<< "		var dropZone = document.getElementById('cssSettings');"<<endl
+				<< "		dropZone.addEventListener('dragover', handleDragOver, false);"<<endl
+				<< "		dropZone.addEventListener('drop', handleFileSelect, false);"<<endl
+				<< "		dropZone.addEventListener('dragleave', handleDragLeave, false);"<<endl
+				<< "		document.getElementById('cssButtonBackup').addEventListener('click', backupCSS, false);"<<endl
+				<< "	}"<<endl
+				<< "	if (isPluginSubmitSupported() && document.getElementById('unrecPlugins') != null){  /*Set up handlers for plugin submitter.*/"<<endl
+				<< "		elemArr = document.getElementById('unrecPlugins').querySelectorAll('span.mod');"<<endl
+				<< "		i = elemArr.length - 1;"<<endl
+				<< "		while(i > -1){"<<endl
+				<< "			elemArr[i].addEventListener('click', showSubmitBox, false);"<<endl
+				<< "			i--;"<<endl
+				<< "		}"<<endl
+				<< "		document.getElementById('submitBox').getElementsByTagName('form')[0].addEventListener('reset', hideSubmitBox, false);"<<endl
+				<< "		document.getElementById('submitBox').getElementsByTagName('form')[0].addEventListener('submit', submitPlugin, false);"<<endl
+				<< "	}"<<endl
+				<< "	document.getElementById('filtersButtonToggle').addEventListener('click', toggleFilters, false);"<<endl
+				<< "	/*Set up handlers for section display.*/"<<endl
+				<< "	elemArr = document.getElementsByTagName('nav')[0].querySelectorAll('nav > div.button');"<<endl
+				<< "	var i = elemArr.length - 1;"<<endl
+				<< "	while(i > -1){"<<endl
+				<< "		elemArr[i].addEventListener('click', showSection, false);"<<endl
+				<< "		i--;"<<endl
+				<< "	}"<<endl
+				<< "	document.getElementById('cssButtonShow').addEventListener('click', showSection, false);"<<endl
+				<< "	document.getElementById('cssButtonShow').addEventListener('click', showCSSBox, false);"<<endl
+				<< "	document.getElementById('cssSettings').getElementsByTagName('form')[0].addEventListener('submit', applyCSS, false);"<<endl
+				<< "	document.getElementById('cssSettings').getElementsByTagName('form')[0].addEventListener('submit', swapColorScheme, false);"<<endl
+				<< "	document.getElementById('useDarkColourScheme').addEventListener('click', swapColorScheme, false);"<<endl
+				<< "	/*Set up handlers for filters.*/"<<endl
+				<< "	document.getElementById('hideVersionNumbers').addEventListener('click', toggleDisplayCSS, false);"<<endl
+				<< "	document.getElementById('hideActiveLabel').addEventListener('click', toggleDisplayCSS, false);"<<endl
+				<< "	document.getElementById('hideChecksums').addEventListener('click', toggleDisplayCSS, false);"<<endl
+				<< "	document.getElementById('hideNotes').addEventListener('click', toggleMessages, false);"<<endl
+				<< "	document.getElementById('hideBashTags').addEventListener('click', toggleMessages, false);"<<endl
+				<< "	document.getElementById('hideRequirements').addEventListener('click', toggleMessages, false);"<<endl
+				<< "	document.getElementById('hideIncompatibilities').addEventListener('click', toggleMessages, false);"<<endl
+				<< "	document.getElementById('hideDoNotCleanMessages').addEventListener('click', toggleMessages, false);"<<endl
+				<< "	document.getElementById('hideAllPluginMessages').addEventListener('click', toggleMessages, false);"<<endl
+				<< "	document.getElementById('hideInactivePlugins').addEventListener('click', togglePlugins, false);"<<endl
+				<< "	document.getElementById('hideMessagelessPlugins').addEventListener('click', togglePlugins, false);"<<endl
+				<< "	document.getElementById('hideCleanPlugins').addEventListener('click', togglePlugins, false);"<<endl
 				<< "}" << endl
 				<< "function applyFeatureSupportRestrictions(){" << endl
 				<< "	if (!isPluginSubmitSupported()) { /*Disable unrecognised mod underline effect.*/" << endl
