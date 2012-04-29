@@ -7,9 +7,9 @@
 	li ul, li ol {margin-top:0.4em;}
 	q {font-style:italic;}
 	code {display:inline-block; padding:2px 5px; background:#eee;}
-	td {border:1px solid #ccc; padding: 5px; vertical-align:top;}
-	table {border:1px solid #ccc; border-spacing:0; border-collapse:separate; margin:1em;}
-	thead > tr td {font-weight:bold}
+	td, th {border:1px solid #ccc; padding: 5px; vertical-align:top;}
+	table {border-collapse:collapse; margin:1em;}
+	thead {font-weight:bold}
 	code.box {line-height:20px; white-space:pre; margin:1em 0 0 3em; display:table; padding:5px 10px;}
 	ol li ol {list-style:lower-alpha;}
 	blockquote {background:#E6E6FA; display:table; padding:5px 30px 5px 10px;}
@@ -118,7 +118,7 @@
 </ul>
 <p>There are some circumstances that produce scenarios in which the behaviour of utilities is not defined. These are detailed in the table below.
 <table>
-	<thead><tr><td>Circumstance<td>Recommended Behaviour<td>BOSS API Behaviour
+	<thead><tr><th>Circumstance<th>Recommended Behaviour<th>BOSS API Behaviour
 	<tbody>
 		<tr><td>An attempt is made to activate a plugin with a filename that cannot be represented in the Windows-1252 encoding.<td>Utilities check that filename strings are encoded correctly before outputting them. On a failure to convert to the correct encoding, the user should be alerted that the plugin in question cannot be activated.<td>BAPI attempts to convert the filename string, fails and returns a warning code with an associated string containing the filename in question to the client, after performing whatever other processing that was required by the function the client called. The client is then free to decide on the action taken.
 		<tr><td>The <q>plugins.txt</q> and <q>loadorder.txt</q> files become unsynchronised.<td>Utilities check for synchronisation on startup and maintain it throughout their operation, rather than re-synchronising the files on program close, for instance. This is to prevent issues for any other programs open at the same time. If desynchronisation is detected, the only standard-based recovery option is to derive <q>plugins.txt</q> from <q>loadorder.txt</q>, first getting a list of filenames to be written from <q>plugins.txt</q>. Alternatively, a utility could use some internal load order backup to restore from. See the coloured box below for a more detailed breakdown of the issue.<td>BAPI detects loss of synchronisation when a database is created and returns a warning code to the client after creating the database. The client is then free to decide on the action taken.
@@ -184,7 +184,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 <h3 id="codes-return">Return Codes</h3>
 <p>The BOSS API functions uses the following uint32_t return codes to signal how a function completes. WARN return codes signify a problem that did not cause the function to exit prematurely, whereas ERROR return codes signify issues that did cause the function to exit prematurely.
 <table>
-	<thead><tr><td>Return Code<td>Description
+	<thead><tr><th>Return Code<th>Description
 	<tbody>
 		<tr><td>BOSS_API_OK								<td>The function completed successfully.
 		<tr><td>BOSS_API_OK_NO_UPDATE_NECESSARY			<td>No update was found for the masterlist.
@@ -212,7 +212,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 <h3 id="codes-game">Game Codes</h3>
 <p>The following uint32_t codes are used by <a href="#CreateBossDb">CreateBossDb</a> to specify which game the API is acting for, in cases where distinctions between games are necessary.
 <table>
-	<thead><tr><td>Game Code<td>Game
+	<thead><tr><th>Game Code<th>Game
 	<tbody>
 		<tr><td>BOSS_API_GAME_OBLIVION	<td>The Elder Scrolls IV: Oblivion
 		<tr><td>BOSS_API_GAME_FALLOUT3	<td>Fallout 3
@@ -224,7 +224,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 <h3 id="codes-load">Load Order Method Codes</h3>
 <p>The following codes are used by <a href="#GetLoadOrderMethod">GetLoadOrderMethod</a> to signify which load order system BAPI is running for.
 <table>
-	<thead><tr><td>Load Order Method Code<td>Description
+	<thead><tr><th>Load Order Method Code<th>Description
 	<tbody>
 		<tr><td>BOSS_API_LOMETHOD_TIMESTAMP<td>The API is running for a game which uses the timestamp-based load order system. Oblivion, Fallout 3, Fallout: New Vegas all use this system, as does pre-v1.4.26 Skyrim.
 		<tr><td>BOSS_API_LOMETHOD_TEXTFILE<td>The API is running for a game which uses the textfile-based load order system. Skyrim v1.4.26+ uses this system.
@@ -232,7 +232,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 <h3 id="codes-clean">Plugin Cleanliness Codes</h3>
 <p>The following codes are returned by <a href="#GetDirtyMessage">GetDirtyMessage</a> to signify the cleanliness status of the plugin passed to the function.
 <table>
-	<thead><tr><td>Plugin Cleanliness Code<td>Description
+	<thead><tr><th>Plugin Cleanliness Code<th>Description
 	<tbody>
 		<tr><td>BOSS_API_CLEAN_NO<td>The plugin does not need cleaning or should not be cleaned.
 		<tr><td>BOSS_API_CLEAN_YES<td>The plugin needs cleaning.
@@ -241,7 +241,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 <h3 id="codes-messages">Message Type Codes</h3>
 <p>The following codes are used in the <a href="#BossMessage">BossMessage</a> data structure to signify what type of message a particular message is.
 <table>
-	<thead><tr><td>Message Type Code<td>Description
+	<thead><tr><th>Message Type Code<th>Description
 	<tbody>
 		<tr><td>BOSS_API_MESSAGE_SAY<td>A general message.
 		<tr><td>BOSS_API_MESSAGE_TAG<td>A Bash Tag suggestion or suggestions.

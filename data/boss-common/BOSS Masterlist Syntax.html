@@ -7,9 +7,9 @@
 	li ul, li ol {margin-top:0.4em;}
 	q {font-style:italic;}
 	code {display:inline-block; padding:2px 5px; background:#eee;}
-	td {border:1px solid #ccc; padding: 5px; vertical-align:top;}
-	table {border:1px solid #ccc; border-spacing:0; border-collapse:separate; margin:1em;}
-	thead > tr td {font-weight:bold}
+	td, th {border:1px solid #ccc; padding: 5px; vertical-align:top;}
+	table {border-collapse:collapse; margin:1em;}
+	thead {font-weight:bold}
 	code.box {line-height:20px; white-space:pre; margin:1em 0 0 3em; display:table; padding:5px 10px;}
 	ol li ol {list-style:lower-alpha;}
 	blockquote {background:#E6E6FA; display:table; padding:5px 30px 5px 10px;}
@@ -90,9 +90,9 @@
 <p>The table below displays which versions of BOSS are compatible with which masterlist formats.
 
 <table>
-	<thead><tr><td>BOSS Version	<td>MF1<td>MF2.0<td>MF2.1<td>MF2.2
+	<thead><tr><th>BOSS Version <th>MF1<th>MF2.0<th>MF2.1<th>MF2.2
 	<tbody>
-		<tr><td>1.6.x and below	<td class="t"><td class="c"><td class="c"><td class="c">
+		<tr><td>1.6.x and below <td class="t"><td class="c"><td class="c"><td class="c">
 		<tr><td>1.7.x			<td class="t"><td class="t"><td class="c"><td class="c">
 		<tr><td>1.8				<td class="t"><td class="t"><td class="t"><td class="c">
 		<tr><td>1.9				<td class="t"><td class="t"><td class="t"><td class="t">
@@ -102,7 +102,7 @@
 <h3 id="compare">Format Comparison</h3>
 <p>The table below gives a quick overview of the differences between the masterlist formats.
 <table>
-	<thead><tr><td>Item<td>MF1<td>MF2.0<td>MF2.1<td>MF2.2
+	<thead><tr><th>Item<th>MF1<th>MF2.0<th>MF2.1<th>MF2.2
 	<tbody>
 		<tr><td>Type Identifiers						<td>Symbols<td>Keywords<td>Keywords<td>Keywords
 		<tr><td>Type Identifier Case					<td><i>N/A</i><td>Upper<td>Upper<td>Insensitive
@@ -159,7 +159,7 @@
 <h3 id="common-comments">Silent Comments</h3>
 <p>Silent comments are character strings that are skipped by the BOSS parser and so have no effect on BOSS's output. C++ style comments must start at the beginning of a line. C style comments must start and end at the beginning of lines. Comments may not be used inline. In the table below, <code><var>[comment]</var></code> is the comment being made.
 <table>
-	<thead><tr><td>Type<td>MF1 Syntax<td>MF2 Syntax<td>Description
+	<thead><tr><th>Type<th>MF1 Syntax<th>MF2 Syntax<th>Description
 	<tbody>
 		<tr><td>C++ Style<td><code>\&nbsp;<var>[comment]</var></code><td><code>//&nbsp;<var>[comment]</var></code><td>Skips everything on the line after the type identifier.
 		<tr><td>C Style<td><i>N/A</i><td><code>/*&nbsp;<var>[comment...<br />...]</var><br />*/</code><td>Skips everything between the <code>/*</code> and <code>*/</code> delimiters.
@@ -169,7 +169,7 @@
 <h3 id="common-messages">Message Lines</h3>
 <p>Message lines are listed under the plugin line of the plugin that they are to be attached to. There are several different types of message line, with not all being available in all syntaxes. In the table below, <code><var>[message]</var></code> is the message to be attached. Messages have no special syntax unless otherwise noted.
 <table>
-	<thead><tr><td>Type<td>MF1 Syntax<td>MF2 Syntax<td>BOSS Log Prefix<td>Description
+	<thead><tr><th>Type<th>MF1 Syntax<th>MF2 Syntax<th>BOSS Log Prefix<th>Description
 	<tbody>
 		<tr><td>General							<td><code>?&nbsp;<var>[message]</var></code>		<td><code>SAY:&nbsp;<var>[message]</var></code>	<td>Note:<td>A general message.
 		<tr><td>Bash Tag Suggestion <a href="#2">&#x00B2;</a>	<td><code>%&nbsp;<var>[message]</var></code>		<td><code>TAG:&nbsp;<var>[message]</var></code>	<td><span style="color:#CD5555;">Bash Tag suggestion(s):</span><td>A Bash Tag suggestion or suggestions.
@@ -189,8 +189,8 @@
 <p>The above table references some Oblivion mods. The table below gives the Fallout 3 and Fallout: New Vegas equivalents. Replace all references in the above table with the relevant equivalents below for the game in question. The masterlist variables listed are conditionally defined at the top of the relevant games' masterlists if the user has the corresponding mods installed and are used by the MF2 mod-specific messages. In MF1, the checks are hardcoded into BOSS.
 <table>
 	<thead>
-		<tr><td colspan="2">Oblivion<td colspan="2">Fallout 3<td colspan="2">Fallout: New Vegas
-		<tr><td>Mod<td>Variable ($)<td>Mod<td>Variable ($)<td>Mod<td>Variable ($)
+		<tr><th colspan="2">Oblivion<th colspan="2">Fallout 3<th colspan="2">Fallout: New Vegas
+		<tr><th>Mod<th>Variable ($)<th>Mod<th>Variable ($)<th>Mod<th>Variable ($)
 	<tbody>
 		<tr><td>FCOM: Convergence<td>FCOM<td>FOOK2<td>FOOK2<td>nVamp<td>NVAMP
 		<tr><td>Oscuro's Oblivion Overhaul<td>OOO<td>FO3 Wanderers Edition<td>FWE<td>FOOK<td>FOOK
@@ -200,7 +200,7 @@
 <h3 id="common-groups">Group Lines</h3>
 <p>As mentioned before, groups are used to provide some order in the masterlist and to allow bulk plugin sorting via User Rules. A group is defined by start and end lines which enclose the plugins to be contained in the group.
 <table>
-	<thead><tr><td>Type<td>MF1 Syntax<td>MF2 Syntax
+	<thead><tr><th>Type<th>MF1 Syntax<th>MF2 Syntax
 	<tbody>
 		<tr><td>Start Group<td><code>\BeginGroup\: <var>[name]</var></code><td><code>BEGINGROUP: <var>[name]</var></code>
 		<tr><td>End Group<td><code>\EndGroup\\</code><td><code>ENDGROUP: <var>[name]</var></code>
@@ -214,7 +214,7 @@
 <p>MF1 supports only two specific conditionals other than the plugin-specific messages given earlier, while MF2 supports a generalised conditional expression. The specific conditionals written in both syntaxes are given in the table below, where <code>[line]</code> is the rest of the line's contents.
 
 <table>
-	<thead><tr><td>Type<td>MF1 Syntax<td>MF2 Syntax<td>Description
+	<thead><tr><th>Type<th>MF1 Syntax<th>MF2 Syntax<th>Description
 	<tbody>
 		<tr><td>FCOM-installed<td><code>&gt; <var>[line]</var></code><td><code>IF ($FCOM) <var>[line]</var></code><td>Only parses the line if FCOM is installed.
 		<tr><td>FCOM-not-installed<td><code>&lt; <var>[line]</var></code><td><code>IFNOT ($FCOM) <var>[line]</var></code><td>Only parses the line if FCOM is not installed.
@@ -263,7 +263,7 @@
 </ul>
 <p>There are two types of conditional: one that tests if the condition it contains is true, and one that tests if the condition it contains is false. The table below gives their syntaxes, where <code>[line]</code> is the rest of the line.
 <table>
-	<thead><tr><td>Conditional Type<td>Syntax<td>Description
+	<thead><tr><th>Conditional Type<th>Syntax<th>Description
 	<tbody>
 		<tr><td>If True<td><code>IF (<var>[condition]</var>) <var>[line]</var></code><td>If the <code><var>[condition]</var></code> evaluates to true, the conditional will be true. Otherwise, the conditional will be false.
 		<tr><td>If False<td><code>IFNOT (<var>[condition]</var>) <var>[line]</var></code><td>If the <code><var>[condition]</var></code> evaluates to false, the conditional will be true. Otherwise, the conditional will be false.
@@ -272,7 +272,7 @@
 
 <p>There are four types of condition that can be tested for within a conditional. These types and their syntaxes are described in the table below.
 <table>
-	<thead><tr><td>Type<td>Syntax<td>Description
+	<thead><tr><th>Type<th>Syntax<th>Description
 	<tbody>
 		<tr><td>Variable<td><code>$<var>[variable]</var></code><td>Returns true if the masterlist variable given is defined, otherwise false.
 		<tr><td>File<td><code>"<var>[file]</var>"</code><td>Returns true if the user has the file given installed, otherwise false.
@@ -290,7 +290,7 @@
 <p>In addition to explicitly referencing files, there are a few placeholders that can be used to reference certain files, given in the table below:
 
 <table>
-	<thead><tr><td>Placeholder<td>Path Referenced
+	<thead><tr><th>Placeholder<th>Path Referenced
 	<tbody>
 		<tr><td>BOSS<td>..\BOSS\BOSS.exe
 		<tr><td>OBSE<td>..\obse_1_2_416.dll
@@ -333,7 +333,7 @@ IF ($Mod1Correct) MOD: Mod5.esp</code>
 <code class="box">A && B || C && D</code>
 <p>where <code>A</code>, <code>B</code>, <code>C</code> and <code>D</code> are all individual conditionals, is evaluated as <code>((A && B) || C) && D</code>, <b>not</b> <code>(A && B) || (C && D)</code>
 <table>
-	<thead><tr><td>Logical Operator<td>Syntax<td>Description
+	<thead><tr><th>Logical Operator<th>Syntax<th>Description
 	<tbody>
 		<tr><td>AND<td><code>&&</code><td>Both sides must evaluate to true for the compound conditional to evaluate to true. If not, the compound conditional evaluates to false.
 		<tr><td>OR<td><code>||</code><td>One side (or both sides) must evaluate to true for the compound conditional to evaluate to true. If neither side is true, then the compound conditional evaluates to false.

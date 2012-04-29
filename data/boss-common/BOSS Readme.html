@@ -8,9 +8,9 @@
 	li ul, li ol {margin-top:0.4em;}
 	q {font-style:italic;}
 	code {display:inline-block; padding:2px 5px; background:#eee;}
-	td {border:1px solid #ccc; padding: 5px; vertical-align:top;}
-	table {border:1px solid #ccc; border-spacing:0; border-collapse:separate; margin:1em;}
-	thead > tr td {font-weight:bold}
+	td, th {border:1px solid #ccc; padding: 5px; vertical-align:top;}
+	table {border-collapse:collapse; margin:1em;}
+	thead {font-weight:bold}
 	code.box {line-height:20px; white-space:pre; margin:1em 0 0 3em; display:table; padding:5px 10px;}
 	ol li ol {list-style:lower-alpha;}
 	ol li ol li ol {list-style:lower-roman;}
@@ -37,7 +37,7 @@
 	figcaption {font-style:italic; margin-bottom:2em;}
 	tr.inactive {opacity:0.5;}
 	code.box {margin-left:0em;}
-	span[title] {border-bottom: 1px dotted; font-family: sans-serif;}
+	span[title] {border-bottom: 1px dotted; font-family: sans-serif; cursor:help;}
 	dt {margin-bottom:0.5em; margin-top:1em; font-style:italic;}
 	dd {margin-bottom:0.8em;}
 	abbr {cursor:help;}
@@ -174,7 +174,7 @@
 <p>The behaviour of the <q>Active Game</q> menu requires some explanation. The menu allows you to change which game the GUI is running for without having to close and re-open it. Games that the GUI cannot find are greyed out, and the active game, ie. the one the GUI is running for, is marked with a dot to its left. To change the active game, simply select another game in the list. Setting the run type to <q>Update Masterlist Only</q> will un-grey all the games, allowing any of them to be selected, while changing from <q>Update Masterlist Only</q> to another run type will grey out undetected games again. If an undetected game is active when you change run type, the GUI will automatically switch to the first detected game in the list.
 <p>The run options on the right of the main window decide how BOSS runs. BOSS has three main modes of operation that are mutually exclusive to one another: it can either sort your plugins, only update your masterlist then quit or undo its changes to your load order. The options specific to each mode of operation are listed under each mode's radio button. When BOSS sorts your plugins, it will re-order the plugins it recognises to their correct positions, putting any plugins it doesn't recognise after them in the same order as they were before BOSS was run.
 <table>
-	<thead><tr><td>Setting<td>Description
+	<thead><tr><th>Setting<th>Description
 	<tbody>
 		<tr><td>Show BOSS Log On Completion<td>If checked, the BOSS Log will automatically be opened when BOSS has finished running.
 		<tr><td>Display File CRCs<td>If checked, the BOSS Log displays the <abbr title="Cyclic Redundancy Checks">CRCs</abbr> of all the plugins in the Data folder, and of <abbr title="Oblivion Script Extender">OBSE</abbr>/<abbr title="Fallout Script Extender">FOSE</abbr>/<abbr title="New Vegas Script Extender">NVSE</abbr>/<abbr title="Skyrim Script Extender">SKSE</abbr> and its installed plugins if present.
@@ -184,7 +184,7 @@
 		<tr><td>Undo Level<td>This decides how many runs of BOSS are to be undone when BOSS is run to undo changes.
 </table>
 <table>
-	<thead><tr><td colspan="2">Menu Item<td>Description
+	<thead><tr><th colspan="2">Menu Item<th>Description
 	<tbody>
 		<tr><td rowspan="3">File<td>View BOSS Log<td>Opens the BOSS Log for viewing. The format of BOSS Log that it opens is decided by the format selected in the Output Options box.
 		<tr><td>Run BOSS<td>Runs BOSS's main functionality with the selected mode of operation and settings.
@@ -250,7 +250,7 @@
 </figure>
 <p>BOSS's less commonly used settings are found in the Settings window, which can be accessed by clicking <q>Edit&#x2192;Settings...</q> in the main window's menu bar. The settings are grouped into tabs depending on what area of BOSS's behaviour they control. The settings are detailed in the table below.
 <table>
-	<thead><tr><td>Tab<td>Setting<td>Description
+	<thead><tr><th>Tab<th>Setting<th>Description
 	<tbody>
 		<tr><td rowspan="4">General<td>Default Game<td>If set to something other than <q>Autodetect</q>, this overrides game autodetection. If the game specified is not detected, BOSS falls back to autodetection, unless BOSS is run with the <q>Masterlist Update Only</q> option selected, in which case BOSS will run successfully whether or not the game is installed.
 		<tr><td>Language<td>Controls the language BOSS uses in its interfaces. Plugin messages are always displayed in English.
@@ -276,7 +276,7 @@
 <h3 id="bosslog-common">Common Features</h3>
 <p>Both log formats contain the following sections:
 <table>
-	<thead><tr><td>BOSS Log Section<td>Description
+	<thead><tr><th>BOSS Log Section<th>Description
 	<tbody>
 		<tr><td>Summary<td>This section gives a short summary of BOSS's actions. It breaks down the numbers of plugins installed and messages attached to them and gives the local masterlist version and whether or not it was updated. If the BOSS Log is in the HTML format it will also display a message if your recognised plugin list has not changed since you last ran BOSS.
 		<tr><td>General Messages<td>This section is only displayed if there are any applicable messages to be displayed. Its primary purpose is to allow BOSS to display messages specific to your Oblivion install that are not specific to any one mod. Parser and updater error messages are also displayed in this section.
@@ -297,7 +297,7 @@
 <h4 id="bosslog-html-filters">Filters</h4>
 <p>The BOSS Log's filters can be used to selectively hide different types of information in the BOSS Log from view, making it easier to see what you're looking for. The filters are found in a floating panel at the bottom of the window that can have its visibility toggled by clicking on the <q>Filters</q> button in the sidebar. Filters are turned on and off via their checkboxes, and the numbers of hidden plugins and messages are given below the filter checkboxes. If a filter doesn't apply to the currently-displayed BOSS Log section, its checkbox is disabled. The filters available are:
 <table>
-	<thead><tr><td>BOSS Log Filter<td>Description
+	<thead><tr><th>BOSS Log Filter<th>Description
 	<tbody>
 		<tr><td>Hide Version Numbers<td>Hides the version numbers printed in blue next to those plugins that provide them.
 		<tr><td>Hide 'Active' Label<td>Hides the 'Active' label printed in green next to any active plugins.
@@ -410,7 +410,7 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 <h4 id="cli-ini-general">General Settings</h4>
 <p>These settings control miscellaneous areas of BOSS's operation outside of the main sorting functionality.
 <table>
-	<thead><tr><td>Ini Setting<td>Default<td>Valid Values<td>Description
+	<thead><tr><th>Ini Setting<th>Default<th>Valid Values<th>Description
 	<tbody>
 		<tr><td>bDoStartupUpdateCheck<td><code>true</code><td><code>true</code>, <code>false</code><td>Controls whether or not BOSS's Automatic Updater checks for new releases when BOSS is run.
 		<tr><td>bUseUserRulesEditor<td><code>true</code><td><code>true</code>, <code>false</code><td>Controls whether the GUI uses the User Rules Editor window to edit user rules or whether it opens the userlist.txt for manual editing.
@@ -419,7 +419,7 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 <h4 id="cli-ini-internet">Internet Settings</h4>
 <p>These settings control how the masterlist updater and GUI auto-updater connect to the Internet. They are shared by BOSS.exe and BOSS GUI.exe, and can be overriden for the masterlist updater using BOSS's command line parameters. They may also be edited through the GUI. You will probably know if you need to alter them.
 <table>
-	<thead><tr><td>Ini Setting<td>Default<td>Valid Values<td>Description
+	<thead><tr><th>Ini Setting<th>Default<th>Valid Values<th>Description
 	<tbody>
 		<tr><td>sProxyHostname<td>Default is an empty string.<td>An empty string, hostname (eg. <code>proxy.company.com</code>), IP address (eg. <code>192.168.32.4</code>)<td>The hostname for the proxy host used, if a proxy is required to connect to the Internet. If no hostname is given, BOSS assumes that no proxy should be used.
 		<tr><td>iProxyPort<td><code>0</code><td>Any valid port number.<td>The port used to connect to the proxy host, if a proxy is required to connect to the Internet. <code>0</code> tells BOSS to use no proxy.
@@ -429,7 +429,7 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 <h4 id="cli-ini-run">Run Options</h4>
 <p>These settings specify BOSS's run options. They allow you to run BOSS with non-default settings without having to use the command line or the GUI.
 <table>
-	<thead><tr><td>Ini Setting<td>Default<td>Valid Values<td>Description
+	<thead><tr><th>Ini Setting<th>Default<th>Valid Values<th>Description
 	<tbody>
 		<tr><td>sGame<td><code>auto</code><td><code>auto</code>, <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code>, <code>Skyrim</code>, <code>Morrowind</code><td>If set to something other than <code>auto</code>, this overrides game autodetection. If the game specified is not detected, BOSS falls back to autodetection, unless <code>bOnlyUpdateMasterlist = true</code>, in which case BOSS will run successfully whether or not the game is installed.
 		<tr><td>sLastGame<td><code>auto</code><td><code>auto</code>, <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code>, <code>Skyrim</code>, <code>Morrowind</code><td>This setting records the last game that the GUI was run for. If <code>sGame = auto</code> then this setting's value is used to override game selection, providing the specified game can be detected. If the game cannot be detected, or it is set to <code>auto</code>, then game selection occurs as normal.
@@ -629,7 +629,7 @@ BEFORE: RTT.esp</code>
 <p>Each of the four message types that can be added via the userlist begins with a <em>message keyword</em>. The keyword is then followed by the message itself. The message is just a standard line of text. In addition, Bash Tag suggestion messages must include the suggested Bash Tags in a comma-separated list beginning with <code>{{BASH:</code> and ending with <code>}}</code>.
 <p>The message message types, symbols and keywords are listen in the table below:
 <table>
-	<thead><tr><td><b>Message Type</b><td><b>Keyword</b><td>Example
+	<thead><tr><th><b>Message Type</b><th><b>Keyword</b><th>Example
 	<tbody>
 		<tr><td>Bash Tag Suggestion<td>TAG:<td><code>TAG: {{BASH: Names, Graphics}} to prevent changes being lost when using overhauls.</code>
 		<tr><td>General Message<td>SAY:<td><code>SAY: This message was added in a user rule.</code>
@@ -828,8 +828,8 @@ a problem for which no error message is given, please report the crash or proble
 <h2 id="team">Project Members</h2>
 <p>Since June 2009, BOSS has been a collaborative project on Google Code using the Subversion version control system. In alphabetical order, the project members are:
 <table>
-	<thead class="c"><tr><td colspan="2" rowspan="2">Member<td rowspan="2">Admin<td rowspan="2">Programmer<td colspan="5">Masterlists Member Contributes To
-		<tr><td>Oblivion<td>Nehrim<td>Fallout 3<td>Fallout: New Vegas<td>Skyrim
+	<thead class="c"><tr><th colspan="2" rowspan="2">Member<th rowspan="2">Admin<th rowspan="2">Programmer<th colspan="5">Masterlists Member Contributes To
+		<tr><th>Oblivion<th>Nehrim<th>Fallout 3<th>Fallout: New Vegas<th>Skyrim
 	<tbody>
 		<tr class="inactive"><td style="border-right:0;">AliTheLord		<td style="border-left:0;">									<td class="c"><td class="t"><td class="t"><td class="c"><td class="t"><td class="c"><td class="t">
 		<tr><td style="border-right:0;">Arthmoor		<td style="border-left:0;">									<td class="t"><td class="c"><td class="t"><td class="c"><td class="c"><td class="c"><td class="t">
