@@ -46,7 +46,6 @@ namespace boss {
 
 	enum logFormatting : uint32_t {
 		SECTION_ID_SUMMARY_OPEN,
-		SECTION_ID_GENERAL_OPEN,
 		SECTION_ID_USERLIST_OPEN,
 		SECTION_ID_SE_OPEN,
 		SECTION_ID_RECOGNISED_OPEN,
@@ -54,7 +53,6 @@ namespace boss {
 		SECTION_CLOSE,
 		DIV_OPEN,
 		DIV_SUMMARY_BUTTON_OPEN,
-		DIV_GENERAL_BUTTON_OPEN,
 		DIV_USERLIST_BUTTON_OPEN,
 		DIV_SE_BUTTON_OPEN,
 		DIV_RECOGNISED_BUTTON_OPEN,
@@ -63,7 +61,13 @@ namespace boss {
 		LINE_BREAK,
 		TABLE_OPEN,
 		TABLE_CLOSE,
+		TABLE_HEAD,
+		TABLE_HEADING,
+		TABLE_BODY,
 		TABLE_ROW,
+		TABLE_ROW_CLASS_SUCCESS,
+		TABLE_ROW_CLASS_WARN,
+		TABLE_ROW_CLASS_ERROR,
 		TABLE_DATA,
 		LIST_OPEN,
 		LIST_CLOSE,
@@ -79,29 +83,32 @@ namespace boss {
 		SPAN_CLASS_VERSION_OPEN,
 		SPAN_CLASS_CRC_OPEN,
 		SPAN_CLASS_ACTIVE_OPEN,
-		SPAN_CLASS_ERROR_OPEN,
 		SPAN_CLASS_MESSAGE_OPEN,
 		SPAN_CLOSE,
 		ITALIC_OPEN,
 		ITALIC_CLOSE,
 		BLOCKQUOTE_OPEN,
-		BLOCKQUOTE_CLOSE
+		BLOCKQUOTE_CLOSE,
+		VAR_OPEN,
+		VAR_CLOSE
 	};
 
 	class BOSS_COMMON Outputter {
 	public:
 		Outputter();
-		Outputter(uint32_t format);
+		Outputter(const uint32_t format);
+		Outputter(const uint32_t format, const ParsingError e);
+		Outputter(const uint32_t format, const Rule r);
 
-		void SetFormat(uint32_t format);	//Sets the formatting type of the output.
-		void SetHTMLSpecialEscape(bool shouldEscape);	//Set when formatting is set, generally, but this can be used to override.
+		void SetFormat(const uint32_t format);	//Sets the formatting type of the output.
+		void SetHTMLSpecialEscape(const bool shouldEscape);	//Set when formatting is set, generally, but this can be used to override.
 		void Clear();			//Erase all current content.
 
 		void PrintHeaderTop();
 		void PrintHeaderBottom();
 		void PrintFooter(const uint32_t pluginNo, const uint32_t messageNo);
 
-		void Save(fs::path file, bool overwrite);		//Saves contents to file. 
+		void Save(fs::path file, const bool overwrite);		//Saves contents to file. 
 														//Throws boss_error exception on fail.
 		string AsString();				//Outputs contents as a string.
 		
@@ -114,6 +121,8 @@ namespace boss {
 		Outputter& operator<< (const bool b);
 		Outputter& operator<< (const fs::path p);
 		Outputter& operator<< (const Message m);
+		Outputter& operator<< (const ParsingError e);
+		Outputter& operator<< (const Rule r);
 	private:
 		stringstream outStream;
 		uint32_t outFormat;			//The formatting type of the output.

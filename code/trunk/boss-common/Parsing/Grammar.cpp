@@ -500,7 +500,7 @@ namespace boss {
 
 		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
 		*errorBuffer = e;
-		LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
+		LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
 		return;
 	}
 
@@ -648,7 +648,7 @@ namespace boss {
 
 		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
 		*errorBuffer = e;
-		LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
+		LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
 		return;
 	}
 
@@ -780,7 +780,7 @@ namespace boss {
 
 		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
 		*errorBuffer = e;
-		LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
+		LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
 		return;
 	}
 
@@ -900,12 +900,7 @@ namespace boss {
 
 		setting %= var > '=' > stringVal;
 
-		var %=
-			lexeme[
-				('"' > +(char_ - '"') > '"')
-				|
-				+(char_ - '=')
-			];
+		var %= char_("a-zA-Z_") >> *char_("a-zA-Z_0-9");
 
 		stringVal %= lexeme[*(char_ - eol)];
 		
@@ -937,7 +932,7 @@ namespace boss {
 
 		ParsingError e(str(IniParsingErrorHeader % expect), context, IniParsingErrorFooter);
 		*errorBuffer = e;
-		LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
+		LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
 		return;
 	}
 
@@ -1020,7 +1015,7 @@ namespace boss {
 			skip = true;
 			if (syntaxErrorBuffer != NULL)
 				syntaxErrorBuffer->push_back(e);
-			LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
+			LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
 		}
 		if (!skip)
 			userlist.push_back(currentRule);
@@ -1090,7 +1085,7 @@ namespace boss {
 
 		ParsingError e(str(RuleListParsingErrorHeader % expect), context, RuleListParsingErrorFooter);
 		*parsingErrorBuffer = e;
-		LOG_ERROR(e.FormatFor(PLAINTEXT).c_str());
+		LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
 		return;
 	}
 }

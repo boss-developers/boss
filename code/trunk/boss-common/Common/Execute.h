@@ -41,7 +41,7 @@ namespace boss {
 	struct BOSS_COMMON summaryCounters {
 		uint32_t recognised; 
 		uint32_t unrecognised;
-		uint32_t ghosted;
+		uint32_t inactive;
 		uint32_t messages;
 		uint32_t warnings;
 		uint32_t errors;
@@ -50,7 +50,7 @@ namespace boss {
 	};
 
 	struct BOSS_COMMON bosslogContents {
-		string summary;
+		string updater;
 		string userlistMessages;
 		string seInfo;
 		string recognisedPlugins;
@@ -59,13 +59,8 @@ namespace boss {
 		string oldRecognisedPlugins;
 
 		string criticalError;
-		string regexError;
-		string updaterErrors;
-		string iniParsingError;
+		vector<ParsingError> parsingErrors;
 		vector<Message> globalMessages;
-		
-		string userlistParsingError;
-		vector<string> userlistSyntaxErrors;
 	};
 
 	//Record recognised mod list from last HTML BOSSlog generated.

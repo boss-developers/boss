@@ -40,7 +40,7 @@ namespace boss {
 		escapeHTMLSpecialChars = false;
 	}
 
-	Outputter::Outputter(uint32_t format) {
+	Outputter::Outputter(const uint32_t format) {
 		outFormat = format;
 		if (outFormat == HTML)
 			escapeHTMLSpecialChars = true;
@@ -48,7 +48,27 @@ namespace boss {
 			escapeHTMLSpecialChars = false;
 	}
 
-	void Outputter::SetFormat(uint32_t format) {
+	Outputter::Outputter(const uint32_t format, const ParsingError e) {
+		outFormat = format;
+		if (outFormat == HTML)
+			escapeHTMLSpecialChars = true;
+		else
+			escapeHTMLSpecialChars = false;
+
+		*this << e;
+	}
+	
+	Outputter::Outputter(const uint32_t format, const Rule r) {
+		outFormat = format;
+		if (outFormat == HTML)
+			escapeHTMLSpecialChars = true;
+		else
+			escapeHTMLSpecialChars = false;
+
+		*this << r;
+	}
+
+	void Outputter::SetFormat(const uint32_t format) {
 		outFormat = format;
 		if (outFormat == HTML)
 			escapeHTMLSpecialChars = true;
@@ -56,7 +76,7 @@ namespace boss {
 			escapeHTMLSpecialChars = false;
 	}
 
-	void Outputter::SetHTMLSpecialEscape(bool shouldEscape) {
+	void Outputter::SetHTMLSpecialEscape(const bool shouldEscape) {
 		escapeHTMLSpecialChars = shouldEscape;
 	}
 
@@ -68,25 +88,24 @@ namespace boss {
 		if (outFormat == HTML) {
 			outStream << "<!DOCTYPE html>"<<endl<<"<meta charset='utf-8'>"<<endl
 				<< "<title>BOSS Log</title>"<<endl<<"<style>"
-				<< "body{font-family:Calibri,Arial,sans-serifs;margin:0;height:100%;}" << endl
+				<< "body{font-family:Helvetica,sans-serifs;margin:0;height:100%;background:#f5f5f5;font-size:12pt;}" << endl
 				<< "body.dark, #submitBox.dark{color:#eee;background:#222;}" << endl
 				<< "a.dark:link{color:#0AF;}" << endl
 				<< "a.dark:visited{color:#E000E0;}" << endl
 				<< "h1{font-size:3em;margin:0;}" << endl
-				<< "h2{font-size:2em;padding-top:0.24em;margin-top:0;}" << endl
+				<< "h2{font-size:2em;margin-top:0;}" << endl
 				<< "ul{list-style:none;padding-left:0;}" << endl
 				<< "ul li{margin-left:0;margin-bottom:1em;}" << endl
 				<< "li ul{margin-top:.5em;padding-left:2.5em;margin-bottom:2em;}" << endl
 				<< "table {margin-left:2em;}" << endl
 				<< "thead {font-weight:bold;}" << endl
 				<< "td{padding:0 .5em;vertical-align:top;}" << endl
-				<< "blockquote{font-style:italic;}" << endl
+				<< "blockquote{font-family:monospace;}" << endl
 				<< "input[type='checkbox']{position:relative;top:.15em;margin-right:.5em;}" << endl
 				<< "noscript p {position:absolute;top:0;left:154px;padding-right:0.5em;padding-left:1em;}" << endl
-				<< "small {padding-top:1em;font-size:0.5em;}" << endl
-				<< ".error{background:red;color:#FFF;display:table;padding:0 4px;}" << endl
-				<< ".warn{background:orange;color:#FFF;display:table;padding:0 4px;}" << endl
-				<< ".success{color:green;}" << endl
+				<< "li.error{background:#ff9090;display:table;padding:0 4px;}" << endl
+				<< "li.warn{background:#FFDD55;display:table;padding:0 4px;}" << endl
+				<< "li.success{background:#90ff90;display:table;padding:0 4px;}" << endl
 				<< ".version{color:#6394F8;margin-right:1em;}" << endl
 				<< ".crc{color:#BC8923;margin-right:1em;}" << endl
 				<< ".active{color:#0A0;margin-right:1em;}" << endl
@@ -119,7 +138,7 @@ namespace boss {
 				<< "#output.visible, section.visible {display:block;}" << endl
 				<< "nav.dark {background:#333;}" << endl
 				<< "aside.dark {background:#666;}" << endl
-				<< "#submitBox{padding:10px;background:white;z-index:2;position:fixed;top:0;width:430px;left:50%;margin-left:-220px;}" << endl
+				<< "#submitBox{padding:10px;background:#fafafa;z-index:2;position:fixed;top:1em;width:430px;left:50%;margin-left:-220px;border-radius:0.5em;}" << endl
 				<< "#submitBox > h2{text-align:center;margin:0;}" << endl
 				<< "#submitBox p {margin-left:10px; margin-right:10px;}" << endl
 				<< "#submitBox label {margin:16px 10px;display:block;}" << endl
@@ -128,48 +147,34 @@ namespace boss {
 				<< "#plugin{display:table-cell;font-style:italic;}" << endl
 				<< "#pluginLabel{display:table-cell;padding-right:0.5em;}" << endl
 				<< "#output {display:none;width:400px;margin:2em auto;text-align:center;}" << endl
-				<< "nav {display:block;background:#F5F5F5;width:154px;position:fixed;top:0;left:0;height:100%;z-index:2;border-right:1px solid #CCC;box-shadow: 0 0 3px 1px rgba(0,0,0,0.5);}" << endl
-				<< "nav div.button {cursor:pointer;padding:0.5em;text-decoration:none;border-top:1px solid transparent;border-bottom:1px solid transparent;" << endl
+				<< "nav {display:block;background:#DDD;width:154px;position:fixed;top:0;left:0;height:100%;z-index:2;box-shadow: 0 0 3px 1px rgba(0,0,0,0.5);}" << endl
+				<< "nav div.button {cursor:pointer;padding:0.5em;text-decoration:none;" << endl
 				<< "	transition: background 0.2s;" << endl
 				<< "	-webkit-transition: background 0.2s;" << endl
 				<< "	-moz-transition: background 0.2s;" << endl
 				<< "	-ms-transition: background 0.2s;" << endl
 				<< "	-o-transition: background 0.2s;" << endl
 				<< "}" << endl
-				<< "nav div.button:hover {background:lightgrey;}" << endl
+				<< "nav div.button:hover {background:#bbb;}" << endl
 				<< "nav div.button.dark:hover {background:darkgrey;}" << endl
-				<< "nav div.button.current {background:lightgrey;border-color: #AAA;}" << endl
-				<< "nav div.button.current.dark {background:darkgrey;border-color: #AAA;}" << endl
-				<< "nav > footer {display:block;position:fixed;bottom:0;width:154px;background:inherit;}" << endl
-				<< "nav > header {display:block;padding:0.5em;padding-top:0;margin-bottom:1em;}" << endl
+				<< "nav div.button.current {background:lightgrey;}" << endl
+				<< "nav div.button.current.dark {background:darkgrey;}" << endl
+				<< "nav > footer {position:fixed;bottom:0;width:154px;background:inherit;}" << endl
+				<< "header {padding:0.5em;padding-top:0;margin-bottom:1em;text-align:center;}" << endl
 				<< "#arrow {margin-left:5em;" << endl
 				<< "/*	transition: transform 0.2s;" << endl
 				<< "	-moz-transition: -moz-transform 0.2s;	" << endl
 				<< "	-webkit-transition: -webkit-transform 0.2s;	" << endl
 				<< "	-ms-transition: -ms-transform 0.2s;	" << endl
 				<< "	-o-transition: -o-transform 0.2s;*/" << endl
-				<< "	color:#757575;" << endl
-				<< "}/*" << endl
-				<< "#arrow.rotated {" << endl
-				<< "	transform: rotate(180deg);	" << endl
-				<< "	-moz-transform: rotate(180deg);	" << endl
-				<< "	-webkit-transform: rotate(90deg);	" << endl
-				<< "	-ms-transform: rotate(90deg);	" << endl
-				<< "	-o-transform: rotate(90deg);" << endl
-				<< "}*/" << endl
+				<< "}" << endl
 				<< "#arrow:after {" << endl
-				<< "	content: '\\25b2';" << endl
+				<< "	content: '+';" << endl
 				<< "}" << endl
 				<< "#arrow.rotated:after {" << endl
-				<< "	content: '\\25bc';" << endl
+				<< "	content: '\\2212';" << endl
 				<< "}" << endl
-				<< "/*#arrow:after {" << endl
-				<< "	content: '\\2C5';" << endl
-				<< "}" << endl
-				<< "#arrow.rotated:after {" << endl
-				<< "	content: '\\2C4';" << endl
-				<< "}*/" << endl
-				<< "aside {display:block;background:#DDD;z-index:1;overflow:hidden;border-top:1px solid #AAA;position:fixed;left:154px;bottom:-1px;height:0;" << endl
+				<< "aside {display:block;background:#e9e9e9;z-index:1;overflow:hidden;position:fixed;left:154px;bottom:-1px;height:0;" << endl
 				<< "/*	transition: height 0.2s;" << endl
 				<< "	-moz-transition: height 0.2s;" << endl
 				<< "	-webkit-transition: height 0.2s;" << endl
@@ -181,24 +186,40 @@ namespace boss {
 				<< "aside.visible {height:auto;}" << endl
 				<< "aside > label {display:inline-block;padding:0.2em 0.5em; white-space:nowrap;width:12.5em;cursor:pointer;}" << endl
 				<< "aside > footer {display:block;padding:0.5em;padding-left:0.8em;font-style:italic;}" << endl
-				<< "section {position:absolute;top:0;left:154px;display:none;padding-right:0.5em;padding-left:1em;height:100%;}" << endl
+				<< "section {position:absolute;top:0;left:154px;display:none;padding:1em;}" << endl
 				<< "#unrecPlugins span.mod {cursor:pointer;border-bottom:#888 dotted 1px;}" << endl
 				<< "#unrecPlugins span.mod:hover {border-bottom:#888 solid 1px;}" << endl
 				<< "#unrecPlugins span.mod.nosubmit {border-bottom:none;cursor:auto;}" << endl
-				<< "</style>" << endl
+
+				<< "var { color:brown;}" << endl
+				<< "tr.success td {background: #90ff90;}" << endl
+				<< "tr.warn td {background: #FFDD55;}" << endl
+				<< "tr.error td {background:#ff9090;}" << endl
+				<< "#userRules tr.success td:nth-of-type(2) {color:green;}" << endl
+				<< "#userRules tr.warn td:nth-of-type(2), tr.error td:nth-of-type(2) {color:red;}" << endl
+				<< "table { margin:0; border-radius: 10px; border-collapse:separate; border-spacing:0;}" << endl
+				<< "td {padding:0.7em; line-height:1.5;}" << endl
+				<< "th {text-align:left; padding:1em; background:lightblue;}" << endl
+				<< "table tr:first-child th:first-child { border-top-left-radius: 10px; }" << endl
+				<< "table tr:first-child th:last-child { border-top-right-radius: 10px; }" << endl
+				<< "table tr:last-child td:first-child { border-bottom-left-radius: 10px; }" << endl
+				<< "table tr:last-child td:last-child { border-bottom-right-radius: 10px; }" << endl
+				<< ".message {color:#880088;}" << endl
+				<< "table ul {padding-left:2.5em;margin:0;}" << endl
+				<< "table li { margin:0;}" << endl
+				<< "#summary li {border-radius: 0.5em; padding:0.5em 1em;}" << endl
+				<< "#summary table:first-of-type {display:table-cell; padding-right:1em;}" << endl
+				<< "#summary table:last-of-type {display:table-cell; padding-right:1em;}" << endl
+
+				<< "</style>" << endl;
 			outStream << "<nav>" << endl
 				<< "<header>" << endl
 				<< "	<h1>BOSS</h1>" << endl
-				<< "	Version " << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << "<br />" << endl
-				<< "	" << gl_boss_release_date << "<br />" << endl
-				<< "<small>&copy; 2009-2012 BOSS Development Team</small>" << endl
+				<< "	Version " << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << endl
 				<< "</header>" << endl;
 		} else
-			outStream << endl << "BOSS Log" << endl
-				<< "Copyright 2009-2012 BOSS Development Team" << endl
-				<< "License: GNU General Public License v3.0" << endl
-				<< "(http://www.gnu.org/licenses/gpl.html)" << endl
-				<< "v" << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << " (" << gl_boss_release_date << ")" << endl;
+			outStream << endl << "BOSS" << endl
+				<< "Version " << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << endl;
 	}
 
 	void Outputter::PrintHeaderBottom() {
@@ -209,7 +230,7 @@ namespace boss {
 				<< "</footer>" << endl
 				<< "</nav>" << endl
 				<< "<noscript>" << endl
-				<< "<p>The BOSS Log requires Javascript to be enabled in order to function.</p>" << endl
+				<< "The BOSS Log requires Javascript to be enabled in order to function." << endl
 				<< "</noscript>" << endl;
 		}
 	}
@@ -969,7 +990,7 @@ namespace boss {
 		}
 	}
 
-	void Outputter::Save(fs::path file, bool overwrite) {
+	void Outputter::Save(fs::path file, const bool overwrite) {
 		ofstream outFile;
 		if (overwrite)
 			outFile.open(file.c_str());
@@ -995,6 +1016,9 @@ namespace boss {
 			replace_all(text, "<", "&lt;");
 			replace_all(text, ">", "&gt;");
 			replace_all(text, "©", "&copy;");
+			replace_all(text, "✗", "&#x2717;");
+			replace_all(text, "✓", "&#x2713;");
+			replace_all(text, "\n", "<br />");  //Not an HTML special char escape, but this needs to happen here to get the details of parser errors formatted correctly.
 		}
 		return text;
 	}
@@ -1017,7 +1041,8 @@ namespace boss {
 			default:
 				return string(1, c);
 			}
-		}
+		} else
+			return string(1, c);
 	}
 	
 	Outputter& Outputter::operator<< (const string s) {
@@ -1040,10 +1065,6 @@ namespace boss {
 		case SECTION_ID_SUMMARY_OPEN:
 			if (outFormat == HTML)
 				outStream << "<section id='summary'>";
-			break;
-		case SECTION_ID_GENERAL_OPEN:
-			if (outFormat == HTML)
-				outStream << "<section id='generalMessages'>";
 			break;
 		case SECTION_ID_USERLIST_OPEN:
 			if (outFormat == HTML)
@@ -1075,10 +1096,6 @@ namespace boss {
 			if (outFormat == HTML)
 				outStream << "<div class='button' data-section='summary'>";
 			break;
-		case DIV_GENERAL_BUTTON_OPEN:
-			if (outFormat == HTML)
-				outStream << "<div class='button' data-section='generalMessages'>";
-			break;
 		case DIV_USERLIST_BUTTON_OPEN:
 			if (outFormat == HTML)
 				outStream << "<div class='button' data-section='userRules'>";
@@ -1105,23 +1122,59 @@ namespace boss {
 			else
 				outStream << endl;
 			break;
+		case TABLE_HEAD:
+			if (outFormat == HTML)
+				outStream << "<thead>";
+			break;
+		case TABLE_HEADING:
+			if (outFormat == HTML)
+				outStream << "<th>";
+			else
+				outStream << '\t';
+			break;
+		case TABLE_BODY:
+			if (outFormat == HTML)
+				outStream << "<tbody>";
+			break;
 		case TABLE_ROW:
 			if (outFormat == HTML)
 				outStream << "<tr>";
+			else
+				outStream << endl;
+			break;
+		case TABLE_ROW_CLASS_SUCCESS:
+			if (outFormat == HTML)
+				outStream << "<tr class='success'>";
+			else
+				outStream << endl;
+			break;
+		case TABLE_ROW_CLASS_WARN:
+			if (outFormat == HTML)
+				outStream << "<tr class='warn'>";
+			else
+				outStream << endl;
+			break;
+		case TABLE_ROW_CLASS_ERROR:
+			if (outFormat == HTML)
+				outStream << "<tr class='error'>";
+			else
+				outStream << endl;
 			break;
 		case TABLE_DATA:
 			if (outFormat == HTML)
 				outStream << "<td>";
 			else
-				outStream << endl;
+				outStream  << '\t';
 			break;
 		case TABLE_OPEN:
 			if (outFormat == HTML)
-				outStream << "<table><tbody>";
+				outStream << "<table>";
 			break;
 		case TABLE_CLOSE:
 			if (outFormat == HTML)
 				outStream << "</table>";
+			else
+				outStream << endl << endl;
 			break;
 		case LIST_OPEN:
 			if (outFormat == HTML)
@@ -1201,10 +1254,6 @@ namespace boss {
 			else
 				outStream << " ";
 			break;
-		case SPAN_CLASS_ERROR_OPEN:
-			if (outFormat == HTML)
-				outStream << "<span class='error'>";
-			break;
 		case SPAN_CLASS_MESSAGE_OPEN:
 			if (outFormat == HTML)
 				outStream << "<span class='message'>";
@@ -1232,6 +1281,18 @@ namespace boss {
 				outStream << "</blockquote>";
 			else
 				outStream << endl << endl;
+			break;
+		case VAR_OPEN:
+			if (outFormat == HTML)
+				outStream << "<var>";
+			else
+				outStream << "\"";
+			break;
+		case VAR_CLOSE:
+			if (outFormat == HTML)
+				outStream << "</var>";
+			else
+				outStream << "\"";
 			break;
 		default:
 			break;
@@ -1332,21 +1393,65 @@ namespace boss {
 		return *this;
 	}
 
-	//Outputs correctly-formatted error message.
-	string ParsingError::FormatFor(const uint32_t format) {
-		Outputter output(format);
-		if (Empty())
-			output << "";
-		else if (!wholeMessage.empty())
-			output << LIST_ITEM_CLASS_ERROR << wholeMessage;
+	Outputter& Outputter::operator<< (const ParsingError e) {
+		if (e.Empty())
+			return *this;
+		else if (!e.WholeMessage().empty())
+			*this << LIST_ITEM_CLASS_ERROR << e.WholeMessage();
 		else {
-			if (format == HTML)
-				boost::replace_all(detail, "\n", "<br />");
-			output << LIST_ITEM << SPAN_CLASS_ERROR_OPEN << header << SPAN_CLOSE 
-				<< BLOCKQUOTE_OPEN << detail << BLOCKQUOTE_CLOSE
-				<< SPAN_CLASS_ERROR_OPEN << footer << SPAN_CLOSE;
+			bool htmlEscape = escapeHTMLSpecialChars;
+			escapeHTMLSpecialChars = true;
+			*this << LIST_ITEM_CLASS_ERROR << e.Header()
+				<< BLOCKQUOTE_OPEN << e.Detail() << BLOCKQUOTE_CLOSE
+				<< e.Footer();
+			escapeHTMLSpecialChars = htmlEscape;
 		}
-		return output.AsString();
+		return *this;
+	}
+
+	Outputter& Outputter::operator<< (const Rule r) {
+		bool hasEditedMessages = false;
+		vector<RuleLine> lines = r.Lines();
+		size_t linesSize = lines.size();
+		for (size_t j=0;j<linesSize;j++) {
+			switch (lines[j].Key()) {
+			case BEFORE:
+				*this << "Sort " << VAR_OPEN << r.Object() << VAR_CLOSE << " before " << VAR_OPEN << lines[j].Object() << VAR_CLOSE;
+				break;
+			case AFTER:
+				*this << "Sort " << VAR_OPEN << r.Object() << VAR_CLOSE << " after " << VAR_OPEN << lines[j].Object() << VAR_CLOSE;
+				break;
+			case TOP:
+				*this << "Insert " << VAR_OPEN << r.Object() << VAR_CLOSE << " at the top of " << VAR_OPEN << lines[j].Object() << VAR_CLOSE;
+				break;
+			case BOTTOM:
+				*this << "Insert " << VAR_OPEN << r.Object() << VAR_CLOSE << " at the bottom of " << VAR_OPEN << lines[j].Object() << VAR_CLOSE;
+				break;
+			case APPEND:
+				if (!hasEditedMessages) {
+					if (r.Key() == FOR)
+						*this << "Add the following messages to " << VAR_OPEN << r.Object() << VAR_CLOSE << ':' << LINE_BREAK << LIST_OPEN;
+					else
+						*this << LINE_BREAK << "Add the following messages:" << LINE_BREAK << LIST_OPEN;
+				}
+				*this << lines[j].ObjectAsMessage();
+				hasEditedMessages = true;
+				break;
+			case REPLACE:
+				if (!hasEditedMessages) {
+					if (r.Key() == FOR)
+						*this << "Replace the messages attached to " << VAR_OPEN << r.Object() << VAR_CLOSE << " with:" << LINE_BREAK << LIST_OPEN;
+					else
+						*this << LINE_BREAK << "Replace the attached messages with:" << LINE_BREAK << LIST_OPEN;
+				}
+				*this << lines[j].ObjectAsMessage();
+				hasEditedMessages = true;
+				break;
+			}
+		}
+		if (hasEditedMessages)
+			*this << LIST_CLOSE;
+		return *this;
 	}
 
 	Transcoder::Transcoder() {

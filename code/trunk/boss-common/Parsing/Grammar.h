@@ -35,8 +35,11 @@
 #include "Common/Classes.h"
 #include <string>
 #include <vector>
+#include <utility>
+#include <map>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
+#include <boost/fusion/include/std_pair.hpp>
 #include <boost/spirit/include/qi.hpp>
 
 namespace fs = boost::filesystem;
@@ -82,16 +85,6 @@ BOOST_FUSION_ADAPT_STRUCT(
 	(uint32_t, key)
 	(std::string, object)
 	(std::vector<boss::RuleLine>, lines)
-)
-
-//////////////////////////////
-//Ini Data Conversions
-//////////////////////////////
-
-BOOST_FUSION_ADAPT_STRUCT(
-	boss::IniPair,
-	(std::string, key)
-	(std::string, value)
 )
 
 
@@ -272,15 +265,15 @@ namespace boss {
 	////////////////////////////
 
 	//Ini grammar.
-	class ini_grammar : public grammar<grammarIter, vector<IniPair>(), Skipper> {
+	class ini_grammar : public grammar<grammarIter, map<string, string>(), Skipper> {
 	public:
 		ini_grammar();
 		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
 	private:
 		
 		qi::rule<grammarIter, Skipper> heading;
-		qi::rule<grammarIter, vector<IniPair>(), Skipper> ini;
-		qi::rule<grammarIter, IniPair(), Skipper> setting;
+		qi::rule<grammarIter, map<string, string>(), Skipper> ini;
+		qi::rule<grammarIter, pair<string, string>(), Skipper> setting;
 		qi::rule<grammarIter, string(), Skipper> var, stringVal;
 	
 		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what);

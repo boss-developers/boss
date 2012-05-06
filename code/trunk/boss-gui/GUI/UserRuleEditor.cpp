@@ -739,43 +739,7 @@ bool TextDropTarget::OnDropText(wxCoord x, wxCoord y, const wxString &data) {
 
 RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, uint32_t index, bool isSelected) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize) {
 	//First get text representation of rule.
-	string text = "";
-	bool hasEditedMessages = false;
-	vector<RuleLine> lines = currentRule.Lines();
-	size_t linesSize = lines.size();
-	for (size_t j=0;j<linesSize;j++) {
-		switch (lines[j].Key()) {
-		case BEFORE:
-			text = "Sort \"" + currentRule.Object() + "\" before \"" + lines[j].Object() + "\"\n";
-			break;
-		case AFTER:
-			text = "Sort \"" + currentRule.Object() + "\" after \"" + lines[j].Object() + "\"\n";
-			break;
-		case TOP:
-			text = "Insert \"" + currentRule.Object() + "\" at the top of \"" + lines[j].Object() + "\"\n";
-			break;
-		case BOTTOM:
-			text = "Insert \"" + currentRule.Object() + "\" at the bottom of \"" + lines[j].Object() + "\"\n";
-			break;
-		case APPEND:
-			if (currentRule.Key() == FOR && text.empty())
-				text += "Add the following messages to \"" + currentRule.Object() + "\":\n";
-			else if (currentRule.Key() != FOR && !hasEditedMessages)
-				text += "Add the following messages:\n";
-			text += "  " + lines[j].Object() + "\n";
-			hasEditedMessages = true;
-			break;
-		case REPLACE:
-			if (currentRule.Key() == FOR && text.empty())
-				text += "Replace the messages attached to \"" + currentRule.Object() + "\" with:\n";
-			else if (currentRule.Key() != FOR && !hasEditedMessages)
-				text += "Replace the attached messages with:\n";
-			text += "  " + lines[j].Object() + "\n";
-			hasEditedMessages = true;
-			break;
-		}
-	}
-
+	string text = Outputter(PLAINTEXT, currentRule).AsString();
 	ruleIndex = index;
 	
 	//Now do GUI stuff.
@@ -785,8 +749,8 @@ RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, uint32
 	mainSizer->SetFlexibleDirection(wxHORIZONTAL);
 	mainSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_NONE);
 	mainSizer->AddGrowableCol(1,0);
-	mainSizer->Add(ruleCheckbox = new wxCheckBox(this, wxID_ANY,""),0,wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxTOP|wxBOTTOM,10);
-	mainSizer->Add(ruleContent = new wxStaticText(this, wxID_ANY,text),0,wxEXPAND|wxRIGHT|wxTOP,10);
+	mainSizer->Add(ruleCheckbox = new wxCheckBox(this, wxID_ANY, ""),0,wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxTOP|wxBOTTOM,10);
+	mainSizer->Add(ruleContent = new wxStaticText(this, wxID_ANY, text),0,wxEXPAND|wxRIGHT|wxTOP,10);
 
 	ruleCheckbox->SetValue(currentRule.Enabled());
 	ruleContent->Bind(wxEVT_LEFT_DOWN, &RuleBoxClass::OnSelect, this, wxID_ANY);

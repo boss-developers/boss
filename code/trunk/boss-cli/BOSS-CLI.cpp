@@ -194,9 +194,10 @@ int main(int argc, char *argv[]) {
 		try {
 			ini.Save(ini_path);
 		} catch (boss_error &e) {
-			contents.iniParsingError = "<p class='error'>Error: " + e.getString();
+			ini.ErrorBuffer(ParsingError("Error: " + e.getString()));
 		}
 	}
+	contents.parsingErrors.push_back(ini.ErrorBuffer());
 
 	// parse command line arguments
 	po::variables_map vm;
@@ -274,7 +275,6 @@ int main(int argc, char *argv[]) {
 		LOG_DEBUG("BOSSlog format set to: '%s'", bosslogFormat.c_str());
 	}
 	output.SetFormat(gl_log_format);
-	contents.iniParsingError = ini.ErrorBuffer().FormatFor(gl_log_format);
 
 
 	/////////////////////////
@@ -386,9 +386,9 @@ int main(int argc, char *argv[]) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		output.Clear();
 		output.PrintHeaderTop();
-		output << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
+		output << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
 		output.PrintHeaderBottom();
-		output << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN 
+		output << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE << LIST_OPEN
 			<< LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now." << LIST_CLOSE << SECTION_CLOSE;
@@ -411,7 +411,7 @@ int main(int argc, char *argv[]) {
 			oblivionIni.Load(data_path.parent_path() / "Oblivion.ini");  //This also sets the variable up.
 		} catch (boss_error &e) {
 			LOG_ERROR("Error: %s", e.getString().c_str());
-			contents.iniParsingError = oblivionIni.ErrorBuffer().FormatFor(gl_log_format);
+			contents.parsingErrors.push_back(oblivionIni.ErrorBuffer());
 		}
 	}
 
@@ -425,10 +425,9 @@ int main(int argc, char *argv[]) {
 		try {
 			connection = CheckConnection();
 		} catch (boss_error &e) {
-			output << LIST_ITEM_CLASS_WARN << "Error: masterlist update failed." << LINE_BREAK
+			output << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
 				<< "Details: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
-			contents.updaterErrors = output.AsString();
 			LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
 		}
 		if (connection) {
@@ -440,26 +439,24 @@ int main(int argc, char *argv[]) {
 				uiStruct ui;
 				UpdateMasterlist(masterlist_path(), ui, localRevision, localDate, remoteRevision, remoteDate);
 				if (localRevision == remoteRevision) {
-					output << PARAGRAPH << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
+					output << LIST_ITEM_CLASS_SUCCESS << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
 					cout << endl << "Your masterlist is already at the latest revision (" << localRevision << "; " << localDate << "). No update necessary." << endl;
 					LOG_DEBUG("masterlist update unnecessary.");
 				} else {
-					output << PARAGRAPH << "Your masterlist has been updated to revision " << remoteRevision << " (" << remoteDate << ").";
+					output << LIST_ITEM_CLASS_SUCCESS << "Your masterlist has been updated to revision " << remoteRevision << " (" << remoteDate << ").";
 					cout << endl << "Your masterlist has been updated to revision " << remoteRevision << endl;
 					LOG_DEBUG("masterlist updated successfully.");
 				}
-				contents.summary = output.AsString();
 			} catch (boss_error &e) {
-				output << LIST_ITEM_CLASS_WARN << "Error: masterlist update failed." << LINE_BREAK
+				output << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
 					<< "Details: " << e.getString() << LINE_BREAK
 					<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
-				contents.updaterErrors = output.AsString();
 				LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
 			}
 		} else {
-			output << PARAGRAPH << "No internet connection detected. Masterlist auto-updater aborted.";
-			contents.summary = output.AsString();
+			output << LIST_ITEM_CLASS_WARN << "No internet connection detected. Masterlist auto-updater could not check for updates.";
 		}
+		contents.updater = output.AsString();
 	}
 
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
@@ -467,16 +464,11 @@ int main(int argc, char *argv[]) {
 		output.Clear();
 		output.PrintHeaderTop();
 		output.SetHTMLSpecialEscape(false);
-		if (contents.updaterErrors.empty()) {
-			output << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
-			output.PrintHeaderBottom();
-			output << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE << contents.summary << SECTION_CLOSE;
-		} else {
-			output << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
-			output.PrintHeaderBottom();
-			output << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
-				<< contents.updaterErrors << LIST_CLOSE << SECTION_CLOSE;
-		}
+		output << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
+		output.PrintHeaderBottom();
+		output << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE << LIST_OPEN
+			<< contents.updater 
+			<< LIST_CLOSE << SECTION_CLOSE;
 		output.PrintFooter(0,0);
 		try {
 			output.Save(bosslog_path(), true);
@@ -501,9 +493,9 @@ int main(int argc, char *argv[]) {
 	} catch(boss_error &e) {
 		output.Clear();
 		output.PrintHeaderTop();
-		output << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
+		output << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
 		output.PrintHeaderBottom();
-		output << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN 
+		output << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE << LIST_OPEN 
 			<< LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now." << LIST_CLOSE << SECTION_CLOSE;
@@ -527,9 +519,9 @@ int main(int argc, char *argv[]) {
 	} catch (boss_error &e) {
 		output.Clear();
 		output.PrintHeaderTop();
-		output << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
+		output << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
 		output.PrintHeaderBottom();
-		output << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN 
+		output << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE << LIST_OPEN
 			<< LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now." << LIST_CLOSE << SECTION_CLOSE;
@@ -568,18 +560,18 @@ int main(int argc, char *argv[]) {
 		masterlist.EvalConditions();
 		masterlist.EvalRegex();
 		contents.globalMessages = masterlist.GlobalMessageBuffer();
-		contents.regexError = masterlist.ErrorBuffer().FormatFor(gl_log_format);
+		contents.parsingErrors.push_back(masterlist.ErrorBuffer());
 	} catch (boss_error &e) {
 		output.Clear();
 		output.PrintHeaderTop();
-		output << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
+		output << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
 		output.PrintHeaderBottom();
-		output << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN;
+		output << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE << LIST_OPEN;
 		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
 			output.SetHTMLSpecialEscape(false);
-			output << masterlist.ErrorBuffer().FormatFor(gl_log_format) << LIST_CLOSE << SECTION_CLOSE;
+			output << masterlist.ErrorBuffer() << LIST_CLOSE << SECTION_CLOSE;
 		} else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
-			output << LIST_ITEM << SPAN_CLASS_ERROR_OPEN << e.getString() << SPAN_CLOSE << LIST_CLOSE << SECTION_CLOSE;
+			output << LIST_ITEM_CLASS_ERROR << e.getString() << LIST_CLOSE << SECTION_CLOSE;
 		} else
 			output << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
@@ -600,9 +592,9 @@ int main(int argc, char *argv[]) {
 	try {
 		userlist.Load(userlist_path());
 		for (vector<ParsingError>::iterator iter; iter != userlist.syntaxErrorBuffer.end(); ++iter)
-			contents.userlistSyntaxErrors.push_back(iter->FormatFor(gl_log_format));
+			contents.parsingErrors.push_back(*iter);
 	} catch (boss_error &e) {
-		contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(gl_log_format);
+		contents.parsingErrors.push_back(userlist.parsingErrorBuffer);
 		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}

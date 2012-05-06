@@ -541,7 +541,7 @@ namespace boss {
 		//	bool r = phrase_parse(u32b, u32e, grammar, skipper, items);
 			bool r = phrase_parse(begin, end, grammar, skipper, items);
 
-			if (!r || begin != end)
+			if (!r || begin != end || !errorBuffer.Empty())
 				throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
 		}
 	}
@@ -892,9 +892,6 @@ namespace boss {
 			}
 
 	bool	RuleLine::IsObjectMessage	() const {
-		if (key != APPEND && key != REPLACE)
-			return false;
-
 		//First character of message, must be a message symbol, or part of an MF2 keyword.
 		if (object[0] == '?' || object[0] == '$' || object[0] == '^' || object[0] == '%' || object[0] == ':' || object[0] == '"' || object[0] == '*')
 			return true;
@@ -907,64 +904,6 @@ namespace boss {
 				return true;
 			else
 				return false;
-		}
-	}
-	
-	uint32_t	RuleLine::ObjectMessageKey	() const {
-		if (key != APPEND && key != REPLACE)
-			return NONE;
-
-		switch(object[0]) {
-		case '?':
-			return SAY;
-		case '$':
-			return SAY;
-		case '^':
-			return SAY;
-		case '%':
-			return TAG;
-		case ':':
-			return REQ;
-		case '"':
-			return INC;
-		case '*':
-			return ERR;
-		default:
-			size_t pos = object.find(':');
-			if (pos == string::npos)
-				return NONE;
-			string keyString = object.substr(0,pos);
-			if (keyString == "SAY")
-				return SAY;
-			else if (keyString == "TAG")
-				return TAG;
-			else if (keyString == "REQ")
-				return REQ;
-			else if (keyString == "INC")
-				return INC;
-			else if (keyString == "DIRTY")
-				return DIRTY;
-			else if (keyString == "WARN")
-				return WARN;
-			else if (keyString == "ERROR")
-				return ERR;
-			else 
-				return NONE;
-		}
-	}
-
-	string	RuleLine::ObjectMessageData	() const {
-		if (key != APPEND && key != REPLACE)
-			return "";
-
-		//First character of message, must be a message symbol, or part of an MF2 keyword.
-		if (object[0] == '?' || object[0] == '$' || object[0] == '^' || object[0] == '%' || object[0] == ':' || object[0] == '"' || object[0] == '*')
-			return object.substr(1);
-		else {
-			size_t pos = object.find(':');
-			if (pos == string::npos)
-				return "";
-			return object.substr(pos+1);
 		}
 	}
 
@@ -990,6 +929,47 @@ namespace boss {
 			return "REPLACE";
 		default:
 			return "NONE";
+		}
+	}
+
+	Message RuleLine::ObjectAsMessage		() const {
+		switch(object[0]) {
+		case '?':
+			return Message(SAY, object.substr(1));
+		case '$':
+			return Message(SAY, object.substr(1));
+		case '^':
+			return Message(SAY, object.substr(1));
+		case '%':
+			return Message(TAG, object.substr(1));
+		case ':':
+			return Message(REQ, object.substr(1));
+		case '"':
+			return Message(INC, object.substr(1));
+		case '*':
+			return Message(ERR, object.substr(1));
+		default:
+			size_t pos = object.find(':');
+			if (pos == string::npos)
+				return Message(NONE, "");
+
+			string keyString = object.substr(0,pos);
+			if (keyString == "SAY")
+				return Message(SAY, object.substr(pos+1));
+			else if (keyString == "TAG")
+				return Message(TAG, object.substr(pos+1));
+			else if (keyString == "REQ")
+				return Message(REQ, object.substr(pos+1));
+			else if (keyString == "INC")
+				return Message(INC, object.substr(pos+1));
+			else if (keyString == "DIRTY")
+				return Message(DIRTY, object.substr(pos+1));
+			else if (keyString == "WARN")
+				return Message(WARN, object.substr(pos+1));
+			else if (keyString == "ERROR")
+				return Message(ERR, object.substr(pos+1));
+			else 
+				return Message(NONE, object.substr(pos+1));
 		}
 	}
 
@@ -1136,9 +1116,219 @@ namespace boss {
 		syntaxErrorBuffer = buffer;
 	}
 
-	//////////////////////////////
-	// Ini Class Functions
-	//////////////////////////////
 
-	
+	///////////////////////////////
+	//Settings Class
+	///////////////////////////////
+
+	void	Settings::Load			(fs::path file) {
+		Skipper skipper;
+		ini_grammar grammar;
+		string::const_iterator begin, end;
+		string contents;
+		
+		skipper.SkipIniComments(true);
+		grammar.SetErrorBuffer(&errorBuffer);
+
+		fileToBuffer(file,contents);
+
+		begin = contents.begin();
+		end = contents.end();
+		
+	//	iterator_type u32b(begin);
+	//	iterator_type u32e(end);
+
+	//	bool r = phrase_parse(u32b, u32e, grammar, skipper, iniSettings);
+		bool r = phrase_parse(begin, end, grammar, skipper, iniSettings);
+
+		if (!r || begin != end || !errorBuffer.Empty())  //This might not work correctly.
+			throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, file.string());
+
+		ApplyIniSettings();
+	}
+
+	void	Settings::Save			(fs::path file) {
+		ofstream ini(file.c_str(), ios_base::trunc);
+		if (ini.fail())
+			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
+		ini <<  '\xEF' << '\xBB' << '\xBF'  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
+			<<	"#---------------" << endl
+			<<	"# BOSS Ini File" << endl
+			<<	"#---------------" << endl
+			<<	"# Settings with names starting with 'b' are boolean and accept values of 'true' or 'false'." << endl
+			<<	"# Settings with names starting with 'i' are unsigned integers and accept varying ranges of whole numbers." << endl
+			<<	"# Settings with names starting with 's' are strings and their accepted values vary." << endl
+			<<	"# See the BOSS ReadMe for details on what each setting does and the accepted values for integer and string settings." << endl << endl
+
+			<<	"[General Settings]" << endl
+			<<	"bDoStartupUpdateCheck    = " << BoolToString(gl_do_startup_update_check) << endl
+			<<	"bUseUserRulesManager     = " << BoolToString(gl_use_user_rules_manager) << endl 
+			<<	"sLanguage                = " << GetLanguageString() << endl << endl
+
+			<<	"[Internet Settings]" << endl
+			<<	"sProxyHostname           = " << gl_proxy_host << endl
+			<<	"iProxyPort               = " << IntToString(gl_proxy_port) << endl
+			<<	"sProxyUsername           = " << gl_proxy_user << endl
+			<<	"sProxyPassword           = " << gl_proxy_passwd << endl << endl
+
+			<<	"[Run Options]" << endl
+			<<	"sGame                    = " << GetIniGameString(gl_game) << endl
+			<<	"sLastGame                = " << GetIniGameString(gl_current_game) << endl  //Writing current game because that's what we want recorded when BOSS writes the ini.
+			<<	"sBOSSLogFormat           = " << GetLogFormatString() << endl
+			<<	"iDebugVerbosity          = " << IntToString(gl_debug_verbosity) << endl
+			<<	"iRevertLevel             = " << IntToString(gl_revert) << endl
+			<<	"bUpdateMasterlist        = " << BoolToString(gl_update) << endl
+			<<	"bOnlyUpdateMasterlist    = " << BoolToString(gl_update_only) << endl
+			<<	"bSilentRun               = " << BoolToString(gl_silent) << endl
+			<<	"bDebugWithSourceRefs     = " << BoolToString(gl_debug_with_source) << endl
+			<<	"bDisplayCRCs             = " << BoolToString(gl_show_CRCs) << endl
+			<<	"bDoTrialRun              = " << BoolToString(gl_trial_run) << endl
+			<<	"bLogDebugOutput          = " << BoolToString(gl_log_debug_output) << endl << endl;
+		ini.close();
+	}
+
+	string	Settings::GetIniGameString	(uint32_t game) const {
+		if (game == AUTODETECT)
+			return "auto";
+		else if (game == OBLIVION)
+			return "Oblivion";
+		else if (game == FALLOUT3)
+			return "Fallout3";
+		else if (game == NEHRIM)
+			return "Nehrim";
+		else if (game == FALLOUTNV)
+			return "FalloutNV";
+		else if (game == SKYRIM)
+			return "Skyrim";
+		else if (game == MORROWIND)
+			return "Morrowind";
+		else
+			return "";
+	}
+
+	string	Settings::GetLanguageString	() const {
+		if (gl_language == ENGLISH)
+			return "english";
+		else if (gl_language == SPANISH)
+			return "spanish";
+		else if (gl_language == GERMAN)
+			return "german";
+		else if (gl_language == RUSSIAN)
+			return "russian";
+		else
+			return "";
+	}
+
+	string Settings::GetLogFormatString() const {
+		if (gl_log_format == HTML)
+			return "html";
+		else
+			return "text";
+	}
+
+	ParsingError Settings::ErrorBuffer() const {
+		return errorBuffer;
+	}
+
+	void Settings::ErrorBuffer(ParsingError buffer) {
+		errorBuffer = buffer;
+	}
+
+	void Settings::ApplyIniSettings() {
+		for (map<string, string>::iterator iter = iniSettings.begin(); iter != iniSettings.end(); ++iter) {
+			if (iter->second.empty())
+				continue;
+
+			//String settings.
+			if (iter->first == "sProxyHostname")
+				gl_proxy_host = iter->second;
+			else if (iter->first == "sProxyUsername")
+				gl_proxy_user = iter->second;
+			else if (iter->first == "sProxyPassword")
+				gl_proxy_passwd = iter->second;
+			else if (iter->first == "sBOSSLogFormat") {
+				if (iter->second == "html")
+					gl_log_format = HTML;
+				else
+					gl_log_format = PLAINTEXT;
+			} else if (iter->first == "sGame") {
+				if (iter->second == "auto")
+					gl_game = AUTODETECT;
+				else if (iter->second == "Oblivion")
+					gl_game = OBLIVION;
+				else if (iter->second == "Nehrim")
+					gl_game = NEHRIM;
+				else if (iter->second == "Fallout3")
+					gl_game = FALLOUT3;
+				else if (iter->second == "FalloutNV")
+					gl_game = FALLOUTNV;
+				else if (iter->second == "Skyrim")
+					gl_game = SKYRIM;
+				else if (iter->second == "Morrowind")
+					gl_game = MORROWIND;
+			} else if (iter->first == "sLastGame") {
+				if (iter->second == "auto")
+					gl_last_game = AUTODETECT;
+				else if (iter->second == "Oblivion")
+					gl_last_game = OBLIVION;
+				else if (iter->second == "Nehrim")
+					gl_last_game = NEHRIM;
+				else if (iter->second == "Fallout3")
+					gl_last_game = FALLOUT3;
+				else if (iter->second == "FalloutNV")
+					gl_last_game = FALLOUTNV;
+				else if (iter->second == "Skyrim")
+					gl_last_game = SKYRIM;
+				else if (iter->second == "Morrowind")
+					gl_last_game = MORROWIND;
+			} else if (iter->first == "sLanguage") {
+				if (iter->second == "english")
+					gl_language = ENGLISH;
+				else if (iter->second == "spanish")
+					gl_language = SPANISH;
+				else if (iter->second == "german")
+					gl_language = GERMAN;
+				else if (iter->second == "russian")
+					gl_language = RUSSIAN;
+			}
+			//Now integers.
+			else if (iter->first == "iProxyPort")
+				gl_proxy_port = atoi(iter->second.c_str());
+			else if (iter->first == "iRevertLevel") {
+				uint32_t value = atoi(iter->second.c_str());
+				if (value >= 0 && value < 3)
+					gl_revert = value;
+			} else if (iter->first == "iDebugVerbosity") {
+				uint32_t value = atoi(iter->second.c_str());
+				if (value >= 0 && value < 4)
+					gl_debug_verbosity = value;
+			//Now on to boolean settings.
+			} else if (iter->first == "bDoStartupUpdateCheck")
+				gl_do_startup_update_check = StringToBool(iter->second);
+			else if (iter->first == "bUseUserRulesEditor")
+				gl_use_user_rules_manager = StringToBool(iter->second);
+			if (iter->first == "bUpdateMasterlist")
+				gl_update = StringToBool(iter->second);
+			else if (iter->first == "bOnlyUpdateMasterlist")
+				gl_update_only = StringToBool(iter->second);
+			else if (iter->first == "bSilentRun")
+				gl_silent = StringToBool(iter->second);
+			else if (iter->first == "bDebugWithSourceRefs")
+				gl_debug_with_source = StringToBool(iter->second);
+			else if (iter->first == "bDisplayCRCs")
+				gl_show_CRCs = StringToBool(iter->second);
+			else if (iter->first == "bDoTrialRun")
+				gl_trial_run = StringToBool(iter->second);
+			else if (iter->first == "bLogDebugOutput")
+				gl_log_debug_output = StringToBool(iter->second);
+
+
+			//Don't evaluate whether these should have any effect here, as the game will not have been set yet.
+			if (iter->first == "bUseMyGamesDirectory")
+				gl_using_local_app_data_folder = StringToBool(iter->second);
+			/*else if (iter->first == "sLocalMasterPath")
+				//This setting does not seem to function correctly on Oblivion, and isn't used in Fallout 3, Fallout New Vegas and Skyrim.
+				gl_local_data_path = fs::path(iter->second);  //Incorrect if absolute paths can be specified.*/
+		}
+	}
 }

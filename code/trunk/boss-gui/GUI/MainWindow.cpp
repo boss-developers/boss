@@ -125,7 +125,7 @@ bool BossGUI::OnInit() {
 		} catch (boss_error &e) {
 			LOG_ERROR("Error: %s", e.getString().c_str());
 			wxMessageBox(wxString::Format(
-					wxT("Error: " + e.getString() + " Details: " + ini.ErrorBuffer().FormatFor(PLAINTEXT))
+					wxT("Error: " + e.getString() + " Details: " + Outputter(PLAINTEXT, ini.ErrorBuffer()).AsString())
 				),
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,
@@ -159,7 +159,7 @@ bool BossGUI::OnInit() {
 		} catch (boss_error &e) {
 			LOG_ERROR("Error: %s", e.getString().c_str());
 			wxMessageBox(wxString::Format(
-					wxT("Error: " + e.getString() + " Details: " + oblivionIni.ErrorBuffer().FormatFor(PLAINTEXT))
+					wxT("Error: " + e.getString() + " Details: " + Outputter(PLAINTEXT, oblivionIni.ErrorBuffer()).AsString())
 				),
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,
@@ -420,10 +420,9 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		try {
 			connection = CheckConnection();
 		} catch (boss_error &e) {
-			output << LIST_ITEM_CLASS_WARN << "Error: masterlist update failed." << LINE_BREAK
+			output << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
 				<< "Details: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
-			contents.updaterErrors = output.AsString();
 			LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
 		}
 		if (connection) {
@@ -436,26 +435,24 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 				uiStruct ui(progDia);
 				UpdateMasterlist(masterlist_path(), ui, localRevision, localDate, remoteRevision, remoteDate);
 				if (localRevision == remoteRevision) {
-					output << PARAGRAPH << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
+					output << LIST_ITEM_CLASS_SUCCESS << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
 					progDia->Pulse(wxT("Masterlist already up-to-date."));
 					LOG_DEBUG("Masterlist update unnecessary.");
 				} else {
-					output << PARAGRAPH << "Your masterlist has been updated to revision " << remoteRevision << " (" << remoteDate << ").";
+					output << LIST_ITEM_CLASS_SUCCESS << "Your masterlist has been updated to revision " << remoteRevision << " (" << remoteDate << ").";
 					progDia->Pulse(wxT("Masterlist updated successfully."));
 					LOG_DEBUG("Masterlist updated successfully.");
 				}
-				contents.summary = output.AsString();
 			} catch (boss_error &e) {
-				output << LIST_ITEM_CLASS_WARN << "Error: masterlist update failed." << LINE_BREAK
+				output << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
 					<< "Details: " << e.getString() << LINE_BREAK
 					<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
-				contents.updaterErrors = output.AsString();
 				LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
 			}
 		} else {
-			output << PARAGRAPH << "No internet connection detected. masterlist auto-updater aborted.";
-			contents.summary = output.AsString();
+			output << LIST_ITEM_CLASS_WARN << "No internet connection detected. Masterlist auto-updater could not check for updates.";
 		}
+		contents.updater = output.AsString();
 	}
 
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
@@ -463,16 +460,11 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		output.Clear();
 		output.PrintHeaderTop();
 		output.SetHTMLSpecialEscape(false);
-		if (contents.updaterErrors.empty()) {
-			output << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
-			output.PrintHeaderBottom();
-			output << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE << contents.summary << SECTION_CLOSE;
-		} else {
-			output << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
-			output.PrintHeaderBottom();
-			output << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN
-				<< contents.updaterErrors << LIST_CLOSE << SECTION_CLOSE;
-		}
+		output << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
+		output.PrintHeaderBottom();
+		output << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE << LIST_OPEN
+			<< contents.updater 
+			<< LIST_CLOSE << SECTION_CLOSE;
 		output.PrintFooter(0,0);
 		try {
 			output.Save(bosslog_path(), true);
@@ -501,9 +493,9 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	} catch (boss_error &e) {
 		output.Clear();
 		output.PrintHeaderTop();
-		output << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
+		output << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
 		output.PrintHeaderBottom();
-		output << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN 
+		output << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE << LIST_OPEN 
 			<< LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now." << LIST_CLOSE << SECTION_CLOSE;
@@ -528,9 +520,9 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	} catch (boss_error &e) {
 		output.Clear();
 		output.PrintHeaderTop();
-		output << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
+		output << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
 		output.PrintHeaderBottom();
-		output << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN 
+		output << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE << LIST_OPEN 
 			<< LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now." << LIST_CLOSE << SECTION_CLOSE;
@@ -576,18 +568,18 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		masterlist.EvalConditions();
 		masterlist.EvalRegex();
 		contents.globalMessages = masterlist.GlobalMessageBuffer();
-		contents.regexError = masterlist.ErrorBuffer().FormatFor(gl_log_format);
+		contents.parsingErrors.push_back(masterlist.ErrorBuffer());
 	} catch (boss_error &e) {
 		output.Clear();
 		output.PrintHeaderTop();
-		output << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
+		output << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
 		output.PrintHeaderBottom();
-		output << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN;
+		output << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE << LIST_OPEN;
 		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
 			output.SetHTMLSpecialEscape(false);
-			output << masterlist.ErrorBuffer().FormatFor(gl_log_format) << LIST_CLOSE << SECTION_CLOSE;
+			output << masterlist.ErrorBuffer() << LIST_CLOSE << SECTION_CLOSE;
 		} else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
-			output << LIST_ITEM << SPAN_CLASS_ERROR_OPEN << e.getString() << SPAN_CLOSE << LIST_CLOSE << SECTION_CLOSE;
+			output << LIST_ITEM_CLASS_ERROR << e.getString() << LIST_CLOSE << SECTION_CLOSE;
 		} else
 			output << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
@@ -609,9 +601,9 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	try {
 		userlist.Load(userlist_path());
 		for (vector<ParsingError>::iterator iter; iter != userlist.syntaxErrorBuffer.end(); ++iter)
-			contents.userlistSyntaxErrors.push_back(iter->FormatFor(gl_log_format));
+			contents.parsingErrors.push_back(*iter);
 	} catch (boss_error &e) {
-		contents.userlistParsingError = userlist.parsingErrorBuffer.FormatFor(gl_log_format);
+		contents.parsingErrors.push_back(userlist.parsingErrorBuffer);
 		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
@@ -785,7 +777,7 @@ void MainFrame::OnGameChange(wxCommandEvent& event) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Error: %s", e.getString().c_str());
 			wxMessageBox(wxString::Format(
-					wxT("Error: " + e.getString() + " Details: " + oblivionIni.ErrorBuffer().FormatFor(PLAINTEXT))
+					wxT("Error: " + e.getString() + " Details: " + Outputter(PLAINTEXT, oblivionIni.ErrorBuffer()).AsString())
 				),
 				wxT("BOSS: Error"),
 				wxOK | wxICON_ERROR,

@@ -30,6 +30,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <boost/filesystem.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
@@ -213,9 +214,8 @@ namespace boss {
 				RuleLine			(uint32_t inKey, string inObject);
 
 		bool	IsObjectMessage		() const;
-		uint32_t ObjectMessageKey	() const;
-		string	ObjectMessageData	() const;
 		string	KeyToString			() const;		//Has HTML-safe output.
+		Message ObjectAsMessage		() const;
 
 		uint32_t Key() const;
 		string Object() const;
@@ -230,11 +230,13 @@ namespace boss {
 		vector<RuleLine>	lines;
 	public:
 		Rule();
+
 		bool Enabled() const;
 		vector<RuleLine> Lines() const;
 
 		void Enabled(bool e);
 		void Lines(vector<RuleLine> inLines);
+
 	};
 
 	class BOSS_COMMON RuleList {
@@ -255,6 +257,28 @@ namespace boss {
 		void Rules(vector<Rule> inRules);
 		void ParsingErrorBuffer(ParsingError buffer);
 		void SyntaxErrorBuffer(vector<ParsingError> buffer);
+	};
+
+
+	///////////////////////////////
+	//Settings Class
+	///////////////////////////////
+
+	class BOSS_COMMON Settings {
+	private:
+		ParsingError errorBuffer;
+		map<string, string> iniSettings;
+
+		string	GetIniGameString	(uint32_t game) const;
+		string	GetLogFormatString	() const;
+		string	GetLanguageString	() const;
+		void	ApplyIniSettings	();
+	public:
+		void	Load(fs::path file);		//Throws exception on fail.
+		void	Save(fs::path file);		//Throws exception on fail.
+
+		ParsingError ErrorBuffer() const;
+		void ErrorBuffer(ParsingError buffer);
 	};
 }
 #endif

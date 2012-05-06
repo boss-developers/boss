@@ -233,10 +233,11 @@ namespace boss {
 		inline ParsingError(const string inWholeMessage) 
 			: wholeMessage(inWholeMessage) {}
 
-		//Outputs correctly-formatted error message.
-		string FormatFor(const uint32_t format);
-
-		inline bool Empty() { return (header.empty() && footer.empty() && detail.empty() && wholeMessage.empty()); }
+		inline bool Empty() const { return (header.empty() && footer.empty() && detail.empty() && wholeMessage.empty()); }
+		inline string Header() const { return header; }
+		inline string Footer() const { return footer; }
+		inline string Detail() const { return detail; }
+		inline string WholeMessage() const { return wholeMessage; }
 	private:
 		string header;
 		string footer;

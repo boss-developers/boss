@@ -1698,7 +1698,7 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 			vector<RuleLine> lines = rules[i].Lines();
 			size_t jmax = lines.size();
 			for (size_t j=0; j < jmax; j++) {
-				if (lines[j].ObjectMessageKey() == TAG) {
+				if (lines[j].ObjectAsMessage().Key() == TAG) {
 					GetBashTagsFromString(lines[j].Object(), tagsAdded, tagsRemoved);
 				}
 			}
@@ -1813,7 +1813,7 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * plugin,
 				tagsRemoved.clear();
 				*userlistModified = true;
 			}
-			if (lineIter->ObjectMessageKey() == TAG) {
+			if (lineIter->ObjectAsMessage().Key() == TAG) {
 				GetBashTagsFromString(lineIter->Object(), tagsAdded, tagsRemoved);
 				*userlistModified = true;
 			}

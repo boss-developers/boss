@@ -164,44 +164,49 @@ namespace boss {
 						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
 				if (hashset.find(to_lower_copy(itemIter->Name())) != hashset.end())  //Plugin is active.
 					buffer << SPAN_CLASS_ACTIVE_OPEN << "Active" << SPAN_CLOSE;
+				else
+					counters.inactive++;
 				if (gl_show_CRCs && itemIter->IsGhosted()) {
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(itemIter->Name() + ".ghost"))) << SPAN_CLOSE;
 				} else if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / itemIter->Name())) << SPAN_CLOSE;
-			
+		
+		/*		if (itemIter->IsFalseFlagged()) {
+					vector<Message> messages = itemIter->Messages();
+					messages.insert(messages.begin(), Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa."));
+					itemIter->Messages(messages);
+					counters.warnings++;
+				}
+		*/	
 				if (!gl_trial_run && !itemIter->IsGameMasterFile() && !isSkyrim1426plus) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", itemIter->Name().c_str());
 					try {
 						itemIter->SetModTime(esmtime + (counters.recognised + counters.unrecognised)*60);
 					} catch(boss_error &e) {
-						buffer << SPAN_CLASS_ERROR_OPEN << "Error: " << e.getString() << SPAN_CLOSE;
+						vector<Message> messages = itemIter->Messages();
+						messages.insert(messages.begin(), Message(ERR, "Error: " + e.getString()));
+						itemIter->Messages(messages);
 						LOG_ERROR(" * Error: %s", e.getString().c_str());
 					}
 				}
+				//Print the mod's messages. Unrecognised plugins might have a redate error message.
+				if (!itemIter->Messages().empty()) {
+					vector<Message> messages = itemIter->Messages();
+					size_t jmax = messages.size();
+					buffer << LIST_OPEN;
+					for (size_t j=0; j < jmax; j++) {
+						buffer << messages[j];
+						counters.messages++;
+						if (messages[j].Key() == WARN)
+							counters.warnings++;
+						else if (messages[j].Key() == ERR)
+							counters.errors++;
+					}
+					buffer << LIST_CLOSE;
+				}
 				if (unrecognised.find(itemIter->Name()) == unrecognised.end()) {  //Recognised plugin.
-					//Finally, print the mod's messages.
-					if (!itemIter->Messages().empty()) {
-						vector<Message> messages = itemIter->Messages();
-						size_t jmax = messages.size();
-						buffer << LIST_OPEN;
-						for (size_t j=0; j < jmax; j++) {
-							buffer << messages[j];
-							counters.messages++;
-							if (messages[j].Key() == WARN)
-								counters.warnings++;
-							else if (messages[j].Key() == ERR)
-								counters.errors++;
-						}
-			/*			if (itemIter->IsFalseFlagged())
-							buffer << Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa.");
-			*/			buffer << LIST_CLOSE;
-			/*		} else if (itemIter->IsFalseFlagged()) {
-						buffer << LIST_OPEN
-								<< Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa.")
-								<< LIST_CLOSE;
-						counters.warnings++;
-			*/		}
+					
 					counters.recognised++;
 					contents.recognisedPlugins += buffer.AsString();
 				} else {  //Unrecognised plugin.
@@ -222,10 +227,7 @@ namespace boss {
 		if (gl_log_format == HTML) {
 			bosslog << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
 
-			if (!contents.globalMessages.empty() || !contents.iniParsingError.empty() || !contents.criticalError.empty() || !contents.updaterErrors.empty() || !contents.regexError.empty())
-				bosslog << DIV_GENERAL_BUTTON_OPEN << "General Messages" << DIV_CLOSE;
-
-			if (!contents.userlistMessages.empty() || !contents.userlistParsingError.empty() || !contents.userlistSyntaxErrors.empty())
+			if (!contents.userlistMessages.empty())
 				bosslog << DIV_USERLIST_BUTTON_OPEN << "User Rules" << DIV_CLOSE;
 
 			if (!contents.seInfo.empty())
@@ -244,62 +246,64 @@ namespace boss {
 		// Print Summary
 		bosslog << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE;
 
-		if (contents.oldRecognisedPlugins == contents.recognisedPlugins)
-			bosslog << PARAGRAPH << "No change in recognised plugin list since last run.";
-
-		if (!contents.summary.empty())
-			bosslog << contents.summary;
-	
-		bosslog << TABLE_OPEN
-			<< TABLE_ROW << TABLE_DATA << "Recognised plugins:" << TABLE_DATA << counters.recognised << TABLE_DATA << "Warning messages:" << TABLE_DATA << counters.warnings
-			<< TABLE_ROW << TABLE_DATA << "Unrecognised plugins:" << TABLE_DATA << counters.unrecognised << TABLE_DATA << "Error messages:" << TABLE_DATA << counters.errors
-			<< TABLE_ROW << TABLE_DATA << "Ghosted plugins:" << TABLE_DATA << counters.ghosted << TABLE_DATA << "Total number of messages:" << TABLE_DATA << counters.messages
-			<< TABLE_ROW << TABLE_DATA << "Total number of plugins:" << TABLE_DATA << (counters.recognised+counters.unrecognised) << TABLE_DATA << TABLE_DATA
+		bosslog << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << "Plugin Type" << TABLE_HEADING << "Count"
+			<< TABLE_BODY << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Recognised (or sorted by user rules)" << TABLE_DATA << counters.recognised;
+		if (counters.unrecognised != 0)
+			bosslog	<< TABLE_ROW_CLASS_WARN << TABLE_DATA << "Unrecognised" << TABLE_DATA << counters.unrecognised;
+		else
+			bosslog	<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Unrecognised" << TABLE_DATA << counters.unrecognised;
+		bosslog	<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Inactive" << TABLE_DATA << counters.inactive
+			<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "All" << TABLE_DATA << (counters.recognised+counters.unrecognised)
 			<< TABLE_CLOSE
-			<< PARAGRAPH << "Plugins sorted by user rules are counted as recognised plugins."
-			<< SECTION_CLOSE;
 
-		// Display Global Messages
-		if (!contents.globalMessages.empty() || !contents.iniParsingError.empty() || !contents.criticalError.empty() || !contents.updaterErrors.empty() || !contents.regexError.empty()) {
+			<< TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << "Plugin Message Type" << TABLE_HEADING << "Count"
+			<< TABLE_BODY;
+		if (counters.warnings != 0)
+			bosslog << TABLE_ROW_CLASS_WARN << TABLE_DATA << "Warning" << TABLE_DATA << counters.warnings;
+		else
+			bosslog	<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Warning" << TABLE_DATA << counters.warnings;
+		if (counters.errors != 0)
+			bosslog	<< TABLE_ROW_CLASS_ERROR << TABLE_DATA << "Error" << TABLE_DATA << counters.errors;
+		else
+			bosslog	<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Error" << TABLE_DATA << counters.errors;
+		bosslog	<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "All" << TABLE_DATA << counters.messages
+			<< TABLE_CLOSE
 
-			bosslog << SECTION_ID_GENERAL_OPEN << HEADING_OPEN << "General Messages" << HEADING_CLOSE << LIST_OPEN;
-			if (!contents.criticalError.empty())		//Print masterlist parsing error.
-				bosslog << contents.criticalError;
-			else {
-				if (!contents.iniParsingError.empty())		//Print ini parsing error.
-					bosslog << contents.iniParsingError;
-				if (!contents.updaterErrors.empty())
-					bosslog << contents.updaterErrors;
-				if (!contents.regexError.empty())
-					bosslog << contents.regexError;
+			<< LIST_OPEN;
 
-				bosslog.SetHTMLSpecialEscape(true);
-				size_t size = contents.globalMessages.size();
-				for (size_t i=0; i<size; i++)
-					bosslog << contents.globalMessages[i];  //Print global messages.
-				bosslog.SetHTMLSpecialEscape(false);
-			}
+		if (!contents.updater.empty())  //This contains BOSS & masterlist update strings.
+			bosslog << contents.updater;
 
-			bosslog << LIST_CLOSE << SECTION_CLOSE;
-			if (!contents.criticalError.empty()) {  //Exit early.
-				bosslog.PrintFooter(counters.recognised+counters.unrecognised, counters.messages);
-				bosslog.Save(file, true);
-				return;
-			}
+		if (contents.oldRecognisedPlugins == contents.recognisedPlugins)
+			bosslog << LIST_ITEM_CLASS_SUCCESS << "No change in recognised plugin list since last run.";
+
+		size_t size = contents.parsingErrors.size();  //First print parser/syntax error messages.
+		for (size_t i=0;i<size;i++)
+			bosslog << contents.parsingErrors[i];
+
+		if (!contents.criticalError.empty())		//Print masterlist parsing error.
+			bosslog << contents.criticalError;
+		else {
+
+			bosslog.SetHTMLSpecialEscape(true);
+			size = contents.globalMessages.size();
+			for (size_t i=0; i<size; i++)
+				bosslog << contents.globalMessages[i];  //Print global messages.
+			bosslog.SetHTMLSpecialEscape(false);
+		}
+
+		bosslog << LIST_CLOSE << SECTION_CLOSE;
+		if (!contents.criticalError.empty()) {  //Exit early.
+			bosslog.PrintFooter(counters.recognised+counters.unrecognised, counters.messages);
+			bosslog.Save(file, true);
+			return;
 		}
 
 		// Display RuleList Messages
-		if (!contents.userlistMessages.empty() || !contents.userlistParsingError.empty() || !contents.userlistSyntaxErrors.empty()) {
-			bosslog << SECTION_ID_USERLIST_OPEN << HEADING_OPEN << "User Rules" << HEADING_CLOSE << LIST_OPEN;
-			if (!contents.userlistParsingError.empty())  //First print parser/syntax error messages.
-				bosslog << contents.userlistParsingError;
-
-			size_t size = contents.userlistSyntaxErrors.size();
-			for (size_t i=0;i<size;i++)
-				bosslog << contents.userlistSyntaxErrors[i];
-
-			bosslog << contents.userlistMessages  //Now print the rest of the userlist messages.
-				<< LIST_CLOSE << SECTION_CLOSE;
+		if (!contents.userlistMessages.empty()) {
+			bosslog << SECTION_ID_USERLIST_OPEN << HEADING_OPEN << "User Rules" << HEADING_CLOSE 
+				<< TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << "Rule" << TABLE_HEADING << "Applied" << TABLE_HEADING << "Details (if applicable)"
+				<< TABLE_BODY << contents.userlistMessages << TABLE_CLOSE << SECTION_CLOSE;
 		}
 
 		// Display Script Extender Info
@@ -332,7 +336,11 @@ namespace boss {
 
 		// Finish
 		bosslog.PrintFooter(counters.recognised, counters.messages);
-		bosslog.Save(file, true);
+		try {
+			bosslog.Save(file, true);
+		} catch (boss_error &e) {
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
+		}
 	}
 
 	//Structures necessary for case-insensitive hashsets used in BuildWorkingModlist. Taken from the BOOST docs.
@@ -374,20 +382,20 @@ namespace boss {
 	//////////////////////////////////
 
 	summaryCounters::summaryCounters()
-		: recognised(0), unrecognised(0), ghosted(0), messages(0), warnings(0), errors(0) {}
+		: recognised(0), unrecognised(0), inactive(0), messages(0), warnings(0), errors(0) {}
 
 	//Record recognised mod list from last HTML BOSSlog generated.
 	BOSS_COMMON string GetOldRecognisedList(const fs::path log) {
 		size_t pos1, pos2;
 		string result;
-		fileToBuffer(log,result);
-		pos1 = result.find("<ul id='recognised'>");
+		fileToBuffer(log, result);
+		pos1 = result.find("<section id='recPlugins'>");
 		if (pos1 != string::npos)
-			pos2 = result.find("<h3", pos1+20);
+			pos1 = result.find("<ul>", pos1);
+		if (pos1 != string::npos)
+			pos2 = result.find("</ul>", pos1);
 		if (pos2 != string::npos)
-			pos2 = result.rfind("</ul>",pos2);
-		if (pos2 != string::npos)
-			result = result.substr(pos1+20, pos2-pos1-20);
+			result = result.substr(pos1+4, pos2-pos1-4);
 		return result;
 	}
 
@@ -538,10 +546,11 @@ namespace boss {
 			ruleNo++;
 			LOG_DEBUG(" -- Processing rule #%" PRIuS ".", ruleNo);
 			if (!ruleIter->Enabled()) {
-				buffer << LIST_ITEM_CLASS_SUCCESS << "The rule beginning \"" << ruleIter->KeyToString() << ": " << ruleIter->Object() << "\" is disabled. Rule skipped.";
+				buffer << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << "Rule is disabled.";
 				LOG_INFO("Rule beginning \"%s: %s\" is disabled. Rule skipped.", ruleIter->KeyToString().c_str(), ruleIter->Object().c_str());
 				continue;
-			}	
+			}
+			bool messageLineFail = false;
 			size_t i = 0;
 			vector<RuleLine> lines = ruleIter->Lines();
 			size_t max = lines.size();
@@ -553,27 +562,27 @@ namespace boss {
 						modlistPos1 = modlist.FindItem(ruleItem.Name());
 						//Do checks.
 						if (ruleIter->Key() == ADD && modlistPos1 == modlist.Items().size()) {
-							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->Object() << "\" is not installed or in the masterlist. Rule skipped.";
+							buffer << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << " is not installed or in the masterlist.";
 							LOG_WARN(" * \"%s\" is not installed.", ruleIter->Object().c_str());
 							continue;
 						//If it adds a mod already sorted, skip the rule.
 						} else if (ruleIter->Key() == ADD  && modlistPos1 <= modlist.LastRecognisedPos()) {
-							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->Object() << "\" is already in the masterlist. Rule skipped.";
+							buffer << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << " is already in the masterlist.";
 							LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->Object().c_str());
 							continue;
 						} else if (ruleIter->Key() == OVERRIDE && (modlistPos1 > modlist.LastRecognisedPos())) {
-							buffer << LIST_ITEM_CLASS_ERROR << "\"" << ruleIter->Object() << "\" is not in the masterlist, cannot override. Rule skipped.";
+							buffer << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << " is not in the masterlist, cannot override.";
 							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->Object().c_str());
 							continue;
 						}
 						modlistPos2 = modlist.FindItem(lines[i].Object());  //Find sort mod.
 						//Do checks.
 						if (modlistPos2 == modlist.Items().size()) {  //Handle case of mods that don't exist at all.
-							buffer << LIST_ITEM_CLASS_WARN << "\"" << lines[i].Object() << "\" is not installed, and is not in the masterlist. Rule skipped.";
+							buffer << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << lines[i].Object() << VAR_CLOSE << " is not installed, and is not in the masterlist.";
 							LOG_WARN(" * \"%s\" is not installed or in the masterlist.", lines[i].Object().c_str());
 							continue;
 						} else if (modlistPos2 > modlist.LastRecognisedPos()) {  //Handle the case of a rule sorting a mod into a position in unsorted mod territory.
-							buffer << LIST_ITEM_CLASS_ERROR << "\"" << lines[i].Object() << "\" is not in the masterlist and has not been sorted by a rule. Rule skipped.";
+							buffer << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << lines[i].Object() << VAR_CLOSE << " is not in the masterlist and has not been sorted by a rule.";
 							LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", lines[i].Object().c_str());
 							continue;
 						} else if (lines[i].Key() == AFTER && modlistPos2 == modlist.LastRecognisedPos())
@@ -586,22 +595,21 @@ namespace boss {
 						if (lines[i].Key() == AFTER)
 							++modlistPos2;
 						modlist.Insert(modlistPos2, mod);
-						buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << ruleIter->Object() << "\" has been sorted " << to_lower_copy(lines[i].KeyToString()) << " \"" << lines[i].Object() << "\".";
 					} else if (lines[i].Key() == TOP || lines[i].Key() == BOTTOM) {
 						Item mod;
 						modlistPos1 = modlist.FindItem(ruleItem.Name());
 						//Do checks.
 						if (ruleIter->Key() == ADD && modlistPos1 == modlist.Items().size()) {
-							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->Object() << "\" is not installed or in the masterlist. Rule skipped.";
+							buffer << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << " is not installed or in the masterlist.";
 							LOG_WARN(" * \"%s\" is not installed.", ruleIter->Object().c_str());
 							continue;
 						//If it adds a mod already sorted, skip the rule.
 						} else if (ruleIter->Key() == ADD  && modlistPos1 <= modlist.LastRecognisedPos()) {
-							buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->Object() << "\" is already in the masterlist. Rule skipped.";
+							buffer << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << " is already in the masterlist.";
 							LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->Object().c_str());
 							continue;
 						} else if (ruleIter->Key() == OVERRIDE && (modlistPos1 > modlist.LastRecognisedPos() || modlistPos1 == modlist.Items().size())) {
-							buffer << LIST_ITEM_CLASS_ERROR << "\"" << ruleIter->Object() << "\" is not in the masterlist, cannot override. Rule skipped.";
+							buffer << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << " is not in the masterlist, cannot override.";
 							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->Object().c_str());
 							continue;
 						}
@@ -612,7 +620,7 @@ namespace boss {
 							modlistPos2 = modlist.FindGroupEnd(lines[i].Object());  //Find the end.
 						//Check that the sort group actually exists.
 						if (modlistPos2 == modlist.Items().size()) {
-							buffer << LIST_ITEM_CLASS_ERROR << "The group \"" << lines[i].Object() << "\" is not in the masterlist or is malformatted. Rule skipped.";
+							buffer << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << "The group " << VAR_OPEN << lines[i].Object() << VAR_CLOSE << " is not in the masterlist or is malformatted.";
 							LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", lines[i].Object().c_str());
 							continue;
 						}
@@ -624,8 +632,6 @@ namespace boss {
 						else
 							modlistPos2 = modlist.FindGroupEnd(lines[i].Object());  //Find the end.
 						modlist.Insert(modlistPos2, mod);  //Now insert the mod into the group. This breaks all modlist iterators active.
-						//Print success message.
-						buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << ruleIter->Object() << "\" inserted at the " << to_lower_copy(lines[i].KeyToString()) << " of group \"" << lines[i].Object() << "\".";
 					}
 					i++;
 				}
@@ -633,26 +639,19 @@ namespace boss {
 					//Find the mod which will have its messages edited.
 					modlistPos1 = modlist.FindItem(ruleItem.Name());
 					if (modlistPos1 == modlist.Items().size()) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
-						buffer << LIST_ITEM_CLASS_WARN << "\"" << ruleIter->Object() << "\" is not installed or in the masterlist. Rule skipped.";
+						buffer << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << " is not installed or in the masterlist.";
 						LOG_WARN(" * \"%s\" is not installed.", ruleIter->Object().c_str());
+						messageLineFail = true;
 						break;
 					}
-					Message newMessage = Message(lines[i].ObjectMessageKey(), lines[i].ObjectMessageData());
 					vector<Message> messages = modlist.Items()[modlistPos1].Messages();
 					if (lines[i].Key() == REPLACE)  //If the rule is to replace messages, clear existing messages.
 						messages.clear();
 					//Append message to message list of mod.
-					messages.push_back(newMessage);
+					messages.push_back(lines[i].ObjectAsMessage());
 					vector<Item> items = modlist.Items();
 					items[modlistPos1].Messages(messages);
 					modlist.Items(items);
-					//Output confirmation.
-					buffer << LIST_ITEM_CLASS_SUCCESS << "\"" << SPAN_CLASS_MESSAGE_OPEN << lines[i].Object() << SPAN_CLOSE <<"\"";
-					if (lines[i].Key() == APPEND)
-						buffer << " appended to ";
-					else
-						buffer << " replaced ";
-					buffer << "messages attached to \"" << ruleIter->Object() << "\".";
 				}
 			} else if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {  //Group: Can only sort.
 				vector<Item> group;
@@ -661,7 +660,7 @@ namespace boss {
 				modlistPos2 = modlist.FindGroupEnd(ruleItem.Name());
 				//Check to see group actually exists.
 				if (modlistPos1 == modlist.Items().size() || modlistPos2 == modlist.Items().size()) {
-					buffer << LIST_ITEM_CLASS_ERROR << "The group \"" << ruleIter->Object() << "\" is not in the masterlist or is malformatted. Rule skipped.";
+					buffer << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << "The group " << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << " is not in the masterlist or is malformatted.";
 					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", ruleIter->Object().c_str());
 					continue;
 				}
@@ -678,7 +677,7 @@ namespace boss {
 				//Check that the sort group actually exists.
 				if (modlistPos2 == modlist.Items().size()) {
 					modlist.Insert(modlistPos1, group, 0, group.size());  //Insert the group back in its old position.
-					buffer << LIST_ITEM_CLASS_ERROR << "The group \"" << lines[i].Object() << "\" is not in the masterlist or is malformatted. Rule skipped.";
+					buffer << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << "The group " << VAR_OPEN << lines[i].Object() << VAR_CLOSE << " is not in the masterlist or is malformatted.";
 					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", lines[i].Object().c_str());
 					continue;
 				}
@@ -686,16 +685,16 @@ namespace boss {
 					modlistPos2++;
 				//Now insert the group.
 				modlist.Insert(modlistPos2, group, 0, group.size());
-				//Print success message.
-				buffer << LIST_ITEM_CLASS_SUCCESS << "The group \"" << ruleIter->Object() << "\" has been sorted " << to_lower_copy(lines[i].KeyToString()) << " the group \"" << lines[i].Object() << "\".";
 			}
+			if (!messageLineFail)  //Print success message.
+				buffer << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << *ruleIter << TABLE_DATA << "✓" << TABLE_DATA;
 			//Now find that last recognised mod and set the iterator again.
 			modlist.LastRecognisedPos(modlist.FindLastItem(lastRecognisedItem));
 		}
 
 
 		if (userlist.rules.empty()) 
-			buffer << ITALIC_OPEN << "No valid rules were found in your userlist.txt." << ITALIC_CLOSE;
+			buffer << ITALIC_OPEN << "No valid rules were found in your userlist." << ITALIC_CLOSE;
 		outputBuffer = buffer.AsString();
 	}
 }

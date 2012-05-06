@@ -145,39 +145,11 @@ namespace boss {
 	//Settings Functions
 	///////////////////////////////
 	
-	BOSS_COMMON string	GetGameString		(uint32_t game);
-	BOSS_COMMON string	GetGameMasterFile	(uint32_t game);
-	BOSS_COMMON void SetDataPath(uint32_t game);
-	BOSS_COMMON vector<uint32_t>	DetectGame			(void * parent);  //Throws exception if error.
-	BOSS_COMMON time_t	GetMasterTime		();  //Throws exception if error.
-
-
-	///////////////////////////////
-	//Settings Class
-	///////////////////////////////
-
-	struct IniPair {
-		string key;
-		string value;
-	};
-
-	class BOSS_COMMON Settings {
-	private:
-		ParsingError errorBuffer;
-		vector<IniPair> iniSettings;
-		string iniFile;
-
-		string	GetIniGameString	(uint32_t game) const;
-		string	GetLogFormatString	() const;
-		string	GetLanguageString	() const;
-		void	ApplyIniSettings	();
-	public:
-		void	Load(fs::path file);		//Throws exception on fail.
-		void	Save(fs::path file);		//Throws exception on fail.
-
-		ParsingError ErrorBuffer() const;
-		void ErrorBuffer(ParsingError buffer);
-	};
+	BOSS_COMMON string				GetGameString		(uint32_t game);
+	BOSS_COMMON string				GetGameMasterFile	(uint32_t game);
+	BOSS_COMMON void				SetDataPath			(uint32_t game);
+	BOSS_COMMON vector<uint32_t>	DetectGame			(void * parent);	//Throws exception if error.
+	BOSS_COMMON time_t				GetMasterTime		();					//Throws exception if error.
 }
 
 #endif
