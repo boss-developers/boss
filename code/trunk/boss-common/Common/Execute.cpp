@@ -393,9 +393,9 @@ namespace boss {
 		if (pos1 != string::npos)
 			pos1 = result.find("<ul>", pos1);
 		if (pos1 != string::npos)
-			pos2 = result.find("</ul>", pos1);
+			pos2 = result.find("</section>", pos1);
 		if (pos2 != string::npos)
-			result = result.substr(pos1+4, pos2-pos1-4);
+			result = result.substr(pos1+4, pos2-pos1-9);
 		return result;
 	}
 

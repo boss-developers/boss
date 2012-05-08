@@ -379,16 +379,6 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-
-	////////////////////////////////////////////////
-	// Record last BOSSlog's recognised mod list
-	////////////////////////////////////////////////
-
-	//Back up old recognised mod list for diff later. Only works for HTML bosslog due to formatting conversion.
-	if (fs::exists(bosslog_path()))
-		contents.oldRecognisedPlugins = GetOldRecognisedList(bosslog_path());
-
-
 	/////////////////////////////////////////
 	// Check for critical error conditions
 	/////////////////////////////////////////
@@ -462,6 +452,16 @@ int main(int argc, char *argv[]) {
 			contents.parsingErrors.push_back(oblivionIni.ErrorBuffer());
 		}
 	}
+
+
+	////////////////////////////////////////////////
+	// Record last BOSSlog's recognised mod list
+	////////////////////////////////////////////////
+
+	//Back up old recognised mod list for diff later. Only works for HTML bosslog due to formatting conversion.
+	if (fs::exists(bosslog_path()))
+		contents.oldRecognisedPlugins = GetOldRecognisedList(bosslog_path());
+
 
 	/////////////////////////////////////////////////////////
 	// Error Condition Check Interlude - Update masterlist
