@@ -41,11 +41,6 @@
 #include <iostream>
 #include <fstream>
 
-#ifdef BOSSGUI
-#include <wx/msgdlg.h>
-#include <wx/progdlg.h>
-#endif
-
 namespace boss {
 	namespace unicode = boost::spirit::unicode;
 	namespace qi = boost::spirit::qi;
@@ -54,55 +49,113 @@ namespace boss {
 
 	using boost::algorithm::replace_all;
 
-	//////////////////////////////////////
-	// Struct Contstructors / Variables
-	//////////////////////////////////////
-
-	BOSS_COMMON uiStruct::uiStruct() {
-		p = NULL;
-		file = "";
-	}
-
-	BOSS_COMMON uiStruct::uiStruct(void *GUIpoint) {
-		p = GUIpoint;
-		file = "";
-	}
-
-	////////////////////////
-	// Internal Functions
-	////////////////////////
-
-	//Download progress for downloader functions.
-	int progress_func(void *data, double dlTotal, double dlNow, double ulTotal, double ulNow) {
-		double fractiondownloaded = dlNow / dlTotal;
-		if (dlTotal <= 0 || dlNow <= 0)
-			fractiondownloaded = 0.0f;
-
-		uiStruct * ui = (uiStruct*)data;
-		if (ui->p != NULL) {
-#ifdef BOSSGUI
-			int currentProgress = (int)floor(fractiondownloaded * 1000);
-			if (currentProgress == 1000)
-				--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
-			wxProgressDialog* progress = (wxProgressDialog*)ui->p;
-			bool cont = progress->Update(currentProgress, "Downloading: " + ui->file);
-			if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
-				uint32_t ans = wxMessageBox(wxT("Are you sure you want to cancel?"), wxT("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
-				if (ans == wxYES)
-					return 1;
-				progress->Resume();
-				ans = NULL;
-			}
-#endif
-		} else {
-			printf("Downloading: %s; %3.0f%% of %3.0f KB\r", ui->file.c_str(), fractiondownloaded*100, (dlTotal/1024)+20);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
-			fflush(stdout);
+	
+	//Buffer writer for downloaders.
+	int writer(char * data, size_t size, size_t nmemb, void * buffer) {
+		string *str = (string*)buffer;
+		if(str != NULL) {
+			str -> append(data, size * nmemb);
+			return size * nmemb;
 		}
 		return 0;
 	}
 
+	//Initialise a curl handle. Throws exception on error.
+	CURL * InitCurl(char * errbuff) {
+		CURLcode ret;
+		string proxy_str;
+		CURL *curl;
+
+		curl = curl_easy_init();
+		if (!curl)
+			throw boss_error(BOSS_ERROR_CURL_INIT_FAIL);
+
+		ret = curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
+		if (ret != CURLE_OK) {
+			curl_easy_cleanup(curl);
+			throw boss_error(BOSS_ERROR_CURL_SET_ERRBUFF_FAIL);
+		}
+		ret = curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
+		if (ret != CURLE_OK) {
+			string err = errbuff;
+			curl_easy_cleanup(curl);
+			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
+		}
+		ret = curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
+		if (ret != CURLE_OK) {
+			string err = errbuff;
+			curl_easy_cleanup(curl);
+			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
+		}
+		ret = curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+		if (ret != CURLE_OK) {
+			string err = errbuff;
+			curl_easy_cleanup(curl);
+			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
+		}
+
+		if (!gl_proxy_host.empty() && gl_proxy_port != 0) {
+			//All of the settings have potentially valid proxy-ing values.
+			ret = curl_easy_setopt(curl, CURLOPT_PROXYTYPE, 
+										CURLPROXY_HTTP|
+										CURLPROXY_HTTP_1_0|
+										CURLPROXY_SOCKS4|
+										CURLPROXY_SOCKS4A|
+										CURLPROXY_SOCKS5|
+										CURLPROXY_SOCKS5_HOSTNAME);
+			if (ret != CURLE_OK) {
+				string err = errbuff;
+				curl_easy_cleanup(curl);
+				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL);
+			}
+
+			proxy_str = gl_proxy_host + ":" + IntToString(gl_proxy_port);
+			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
+			if (ret!=CURLE_OK) {
+				string err = errbuff;
+				curl_easy_cleanup(curl);
+				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_FAIL);
+			}
+
+			if (!gl_proxy_user.empty() && !gl_proxy_passwd.empty()) {
+				ret = curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_BASIC|
+																CURLAUTH_DIGEST|
+																CURLAUTH_NTLM);
+				if (ret != CURLE_OK) {
+					string err = errbuff;
+					curl_easy_cleanup(curl);
+					throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL);
+				}
+
+				string proxy_auth = gl_proxy_user + ":" + gl_proxy_passwd;
+				ret = curl_easy_setopt(curl, CURLOPT_PROXYUSERPWD, proxy_auth.c_str());
+				if (ret != CURLE_OK) {
+					string err = errbuff;
+					curl_easy_cleanup(curl);
+					throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL);
+				}
+			}
+		}
+		return curl;
+	}
+
+	/////////////////////////////
+	// Updater Class Functions
+	/////////////////////////////
+
+	//Handler for progress outputter.
+	int Updater::progress_func(void * data, double dlTotal, double dlNow, double ulTotal, double ulNow) { 
+		double dlFraction = 100 * dlNow / dlTotal;
+		if (dlTotal <= 0 || dlNow <= 0)
+			dlFraction = 0.0f;
+
+		Updater * updater = static_cast<Updater*>(data);
+
+		return updater->progress(updater, dlFraction, (dlTotal / 1024) + 20);
+	}
+
 	//Download the remote file to local. Throws exception on error.
-	void DownloadFile(uiStruct ui, const string remote, const fs::path local) {
+	void Updater::DownloadFile(const string remote, const fs::path local) {
 		string fileBuffer;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
@@ -125,8 +178,8 @@ namespace boss {
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writer);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &fileBuffer);
 		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
-		curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, &progress_func);
-		curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, &ui);
+		curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, &boss::Updater::progress_func);
+		curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, this);
 		ret = curl_easy_perform(curl);
 		if (ret == CURLE_ABORTED_BY_CALLBACK) {  //Cancelled by user.
 			curl_easy_cleanup(curl);
@@ -145,7 +198,7 @@ namespace boss {
 	}
 
 	//Install file by renaming it. Throws exception on error.
-	void InstallFile(string downloadedName, string installedName) {
+	void Updater::InstallFile(string downloadedName, string installedName) {
 		try {
 			fs::rename(fs::path(downloadedName), fs::path(installedName));
 		} catch (fs::filesystem_error e) {
@@ -153,8 +206,122 @@ namespace boss {
 		}
 	}
 
+	//Checks if an Internet connection is present.
+	bool Updater::IsInternetReachable() {
+		CURL *curl;									//cURL handle
+		char errbuff[CURL_ERROR_SIZE];
+		CURLcode ret;
+		string proxy_str;
+		const char *url = "http://code.google.com/p/better-oblivion-sorting-software/";
+
+		//curl will be used to get stuff from the internet, so initialise it.
+		curl = InitCurl(errbuff);
+
+		//Check that there is an internet connection. Easiest way to do this is to check that the BOSS google code page exists.
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1);	
+		ret = curl_easy_perform(curl);
+
+		if (ret!=CURLE_OK) {
+			LOG_INFO("Failed to find Internet connection: %s",errbuff);
+			curl_easy_cleanup(curl);
+			return false;
+		} else {
+			//Clean up and close curl handle now that it's finished with.
+			curl_easy_cleanup(curl);
+			return true;
+		}
+	}
+
+	//Cleans up after the user cancels a download. Throws exception on error.
+	void Updater::CleanUp() {
+		try {
+			//Use a recursive directory iterator to find and delete and files with a ".new" extension.
+			for (fs::directory_iterator itr(boss_path); itr!=fs::directory_iterator(); ++itr) {
+				if (itr->path().extension().string() == ".new") {
+					LOG_DEBUG("-- Deleting mod: '%s'", itr->path().string().c_str());
+					try {
+						fs::remove(itr->path());
+					} catch (fs::filesystem_error e) {
+						throw boss_error(BOSS_ERROR_FS_FILE_DELETE_FAIL, itr->path().string());
+					}
+				}
+			}
+		} catch (fs::filesystem_error e) {
+			throw boss_error(BOSS_ERROR_FS_ITER_DIRECTORY_FAIL, boss_path.string());
+		}
+	}
+
+
+	///////////////////////////////////////
+	// MasterlistUpdater Class Functions
+	///////////////////////////////////////
+
+	//Updates the local masterlist to the latest available online. Throws exception on error.
+	void MasterlistUpdater::Update(fs::path file, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate) {							//cURL handle
+		string url, buffer, newline;		//A bunch of strings.
+		ifstream mlist;								//Input stream.
+		ofstream out;								//Output stream.
+		const string SVN_REVISION_KW = "$" "Revision" "$";                   // Left as separated parts to avoid keyword expansion
+		const string SVN_DATE_KW = "$" "Date" "$";                           // Left as separated parts to avoid keyword expansion
+		const string SVN_CHANGEDBY_KW= "$" "LastChangedBy" "$";              // Left as separated parts to avoid keyword expansion
+		string oldline = "Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
+
+		//Get local and remote masterlist info.
+		GetLocalMasterlistRevisionDate(file, localRevision, localDate);
+		GetRemoteMasterlistRevisionDate(remoteRevision, remoteDate);
+
+		//Is an update available?
+		if (localRevision == 0 || localRevision < remoteRevision) {
+			//Set url.
+			switch (gl_current_game) {
+			case OBLIVION:
+				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
+				break;
+			case NEHRIM:
+				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/masterlist.txt";
+				break;
+			case SKYRIM:
+				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-skyrim/masterlist.txt";
+				break;
+			case FALLOUT3:
+				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
+				break;
+			case FALLOUTNV:
+				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/masterlist.txt";
+				break;
+			case MORROWIND:
+				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-morrowind/masterlist.txt";
+				break;
+			default:
+				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
+			}
+
+			targetFile = file.string();
+
+			//Now download and install.
+			DownloadFile(url, fs::path(file.string() + ".new"));
+			InstallFile(file.string() + ".new", file.string());
+
+			//Now replace the SVN info in the downloaded file with the revision and date.
+			newline = "Masterlist Revision: "+IntToString(remoteRevision)+" ("+remoteDate+")";
+
+			fileToBuffer(file, buffer);
+
+			size_t pos = buffer.find(oldline);
+			if (pos != string::npos)
+				buffer.replace(pos, oldline.length(), newline);
+
+			out.open(file.c_str());
+			if (out.fail())
+				throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
+			out << buffer;
+			out.close();
+		}
+	}
+
 	//Gets the revision number of the local masterlist. Throws exception on error.
-	void GetLocalMasterlistRevisionDate(fs::path file, uint32_t& revision, string& date) {
+	void MasterlistUpdater::GetLocalMasterlistRevisionDate(fs::path file, uint32_t& revision, string& date) {
 		string line, newline = "Masterlist Revision:";
 		ifstream mlist;
 		char cbuffer[MAXLENGTH];
@@ -185,7 +352,7 @@ namespace boss {
 	}
 
 	//Gets the revision number of the online masterlist. Throws exception on error.
-	void GetRemoteMasterlistRevisionDate(uint32_t& revision, string& date) {
+	void MasterlistUpdater::GetRemoteMasterlistRevisionDate(uint32_t& revision, string& date) {
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		string buffer;		//A bunch of strings.
@@ -340,221 +507,12 @@ namespace boss {
 	}
 
 
-	////////////////////////
-	// General Functions
-	////////////////////////
-
-	//Checks if an Internet connection is present.
-	BOSS_COMMON bool CheckConnection() {
-		CURL *curl;									//cURL handle
-		char errbuff[CURL_ERROR_SIZE];
-		CURLcode ret;
-		string proxy_str;
-		const char *url = "http://code.google.com/p/better-oblivion-sorting-software/";
-
-		//curl will be used to get stuff from the internet, so initialise it.
-		curl = InitCurl(errbuff);
-
-		//Check that there is an internet connection. Easiest way to do this is to check that the BOSS google code page exists.
-		curl_easy_setopt(curl, CURLOPT_URL, url);
-		curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1);	
-		ret = curl_easy_perform(curl);
-
-		if (ret!=CURLE_OK) {
-			LOG_INFO("Failed to find Internet connection: %s",errbuff);
-			curl_easy_cleanup(curl);
-			return false;
-		} else {
-			//Clean up and close curl handle now that it's finished with.
-			curl_easy_cleanup(curl);
-			return true;
-		}
-	}
-
-	//Cleans up after the user cancels a download. Throws exception on error.
-	BOSS_COMMON void CleanUp() {
-		try {
-			//Use a recursive directory iterator to find and delete and files with a ".new" extension.
-			for (fs::directory_iterator itr(boss_path); itr!=fs::directory_iterator(); ++itr) {
-				if (itr->path().extension().string() == ".new") {
-					LOG_DEBUG("-- Deleting mod: '%s'", itr->path().string().c_str());
-					try {
-						fs::remove(itr->path());
-					} catch (fs::filesystem_error e) {
-						throw boss_error(BOSS_ERROR_FS_FILE_DELETE_FAIL, itr->path().string());
-					}
-				}
-			}
-		} catch (fs::filesystem_error e) {
-			throw boss_error(BOSS_ERROR_FS_ITER_DIRECTORY_FAIL, boss_path.string());
-		}
-	}
-
-	//Buffer writer for downloaders.
-	size_t writer(char * data, size_t size, size_t nmemb, void * buffer) {
-		string *str = (string*)buffer;
-		if(str != NULL) {
-			str -> append(data, size * nmemb);
-			return size * nmemb;
-		}
-		return 0;
-	}
-
-	//Initialise a curl handle. Throws exception on error.
-	CURL * InitCurl(char * errbuff) {
-		CURLcode ret;
-		string proxy_str;
-		CURL *curl;
-
-		curl = curl_easy_init();
-		if (!curl)
-			throw boss_error(BOSS_ERROR_CURL_INIT_FAIL);
-
-		ret = curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuff);	//Set error buffer for curl.
-		if (ret != CURLE_OK) {
-			curl_easy_cleanup(curl);
-			throw boss_error(BOSS_ERROR_CURL_SET_ERRBUFF_FAIL);
-		}
-		ret = curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);		//Set connection timeout to 20s.
-		if (ret != CURLE_OK) {
-			string err = errbuff;
-			curl_easy_cleanup(curl);
-			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
-		}
-		ret = curl_easy_setopt(curl, CURLOPT_AUTOREFERER, 1);
-		if (ret != CURLE_OK) {
-			string err = errbuff;
-			curl_easy_cleanup(curl);
-			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
-		}
-		ret = curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
-		if (ret != CURLE_OK) {
-			string err = errbuff;
-			curl_easy_cleanup(curl);
-			throw boss_error(err, BOSS_ERROR_CURL_SET_OPTION_FAIL);
-		}
-
-		if (!gl_proxy_host.empty() && gl_proxy_port != 0) {
-			//All of the settings have potentially valid proxy-ing values.
-			ret = curl_easy_setopt(curl, CURLOPT_PROXYTYPE, 
-										CURLPROXY_HTTP|
-										CURLPROXY_HTTP_1_0|
-										CURLPROXY_SOCKS4|
-										CURLPROXY_SOCKS4A|
-										CURLPROXY_SOCKS5|
-										CURLPROXY_SOCKS5_HOSTNAME);
-			if (ret != CURLE_OK) {
-				string err = errbuff;
-				curl_easy_cleanup(curl);
-				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL);
-			}
-
-			proxy_str = gl_proxy_host + ":" + IntToString(gl_proxy_port);
-			ret = curl_easy_setopt(curl, CURLOPT_PROXY, proxy_str.c_str());
-			if (ret!=CURLE_OK) {
-				string err = errbuff;
-				curl_easy_cleanup(curl);
-				throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_FAIL);
-			}
-
-			if (!gl_proxy_user.empty() && !gl_proxy_passwd.empty()) {
-				ret = curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_BASIC|
-																CURLAUTH_DIGEST|
-																CURLAUTH_NTLM);
-				if (ret != CURLE_OK) {
-					string err = errbuff;
-					curl_easy_cleanup(curl);
-					throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL);
-				}
-
-				string proxy_auth = gl_proxy_user + ":" + gl_proxy_passwd;
-				ret = curl_easy_setopt(curl, CURLOPT_PROXYUSERPWD, proxy_auth.c_str());
-				if (ret != CURLE_OK) {
-					string err = errbuff;
-					curl_easy_cleanup(curl);
-					throw boss_error(err, BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL);
-				}
-			}
-		}
-		return curl;
-	}
-
-
-	////////////////////////
-	// Masterlist Updating
-	////////////////////////
-
-	//Updates the local masterlist to the latest available online. Throws exception on error.
-	BOSS_COMMON void UpdateMasterlist(fs::path file, uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate) {							//cURL handle
-		string url, buffer, newline;		//A bunch of strings.
-		ifstream mlist;								//Input stream.
-		ofstream out;								//Output stream.
-		const string SVN_REVISION_KW = "$" "Revision" "$";                   // Left as separated parts to avoid keyword expansion
-		const string SVN_DATE_KW = "$" "Date" "$";                           // Left as separated parts to avoid keyword expansion
-		const string SVN_CHANGEDBY_KW= "$" "LastChangedBy" "$";              // Left as separated parts to avoid keyword expansion
-		string oldline = "Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
-
-		//Get local and remote masterlist info.
-		GetLocalMasterlistRevisionDate(file, localRevision, localDate);
-		GetRemoteMasterlistRevisionDate(remoteRevision, remoteDate);
-
-		//Is an update available?
-		if (localRevision == 0 || localRevision < remoteRevision) {
-			//Set url.
-			switch (gl_current_game) {
-			case OBLIVION:
-				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
-				break;
-			case NEHRIM:
-				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/masterlist.txt";
-				break;
-			case SKYRIM:
-				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-skyrim/masterlist.txt";
-				break;
-			case FALLOUT3:
-				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
-				break;
-			case FALLOUTNV:
-				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/masterlist.txt";
-				break;
-			case MORROWIND:
-				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-morrowind/masterlist.txt";
-				break;
-			default:
-				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
-			}
-
-			//Set file.
-			ui.file = file.string();
-
-			//Now download and install.
-			DownloadFile(ui, url, fs::path(file.string() + ".new"));
-			InstallFile(file.string() + ".new", file.string());
-
-			//Now replace the SVN info in the downloaded file with the revision and date.
-			newline = "Masterlist Revision: "+IntToString(remoteRevision)+" ("+remoteDate+")";
-
-			fileToBuffer(file, buffer);
-
-			size_t pos = buffer.find(oldline);
-			if (pos != string::npos)
-				buffer.replace(pos, oldline.length(), newline);
-
-			out.open(file.c_str());
-			if (out.fail())
-				throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
-			out << buffer;
-			out.close();
-		}
-	}
-
-
-	////////////////////////
-	// BOSS Updating
-	////////////////////////
+	/////////////////////////////////
+	// BOSSUpdater Class Functions
+	/////////////////////////////////
 
 	//Checks if a new release of BOSS is available or not. Throws exception on error.
-	BOSS_COMMON string IsBOSSUpdateAvailable() {
+	string BOSSUpdater::IsUpdateAvailable() {
 		string ver, proxy_str;
 		uint32_t majorV=0, minorV=0, patchV=0;
 		char errbuff[CURL_ERROR_SIZE];
@@ -598,7 +556,7 @@ namespace boss {
 	}
 
 	//Gets the release notes for the update. Throws exception on error.
-	string FetchReleaseNotes(const string updateVersion) {
+	string BOSSUpdater::FetchReleaseNotes(const string updateVersion) {
 		string url, fileBuffer;
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
@@ -620,7 +578,15 @@ namespace boss {
 			curl_easy_cleanup(curl);
 			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
 		}
-		if (fileBuffer.substr(0,9) == "<!DOCTYPE")  //No release notes.
+		//Check result.
+		long int code;
+		ret = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
+		if (ret!=CURLE_OK) {
+			string err = errbuff;
+			curl_easy_cleanup(curl);
+			throw boss_error(err, BOSS_ERROR_CURL_PERFORM_FAIL);
+		}
+		if (code != 200)  //No release notes.
 			fileBuffer.clear();
 		curl_easy_cleanup(curl);
 
@@ -628,14 +594,13 @@ namespace boss {
 	}
 
 	//Downloads and installs a BOSS update.
-	BOSS_COMMON void DownloadInstallBOSSUpdate(fs::path file, uiStruct ui, const string updateVersion) {
+	void BOSSUpdater::GetUpdate(fs::path file, const string updateVersion) {
 		string url = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/BOSS%20Installer.exe";
 
-		//Set file.
-		ui.file = file.string();
+		targetFile = file.string();
 
 		//Now download and install.
-		DownloadFile(ui, url, fs::path(file.string() + ".new"));
+		DownloadFile(url, fs::path(file.string() + ".new"));
 		InstallFile(file.string() + ".new", file.string());
 	}
 }

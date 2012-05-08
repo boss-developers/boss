@@ -48,55 +48,60 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-	struct BOSS_COMMON uiStruct {
-		void * p;
-		string file;
-
-		uiStruct();
-		uiStruct(void *GUIpoint);
-	};
-
-	////////////////////////
-	// General Functions
-	////////////////////////
-
-	//Checks if an Internet connection is present.
-	BOSS_COMMON bool CheckConnection();
-
-	//Cleans up after the user cancels a download.
-	//Throws boss_error exception on fail.
-	BOSS_COMMON void CleanUp();
-
 	//Initalise a curl handle.
 	CURL * InitCurl(char * errbuff);
 
-	//File writer.
-	size_t writer(char * data, size_t size, size_t nmemb, void * buffer);
+	//Data writer.
+	int writer(char * data, size_t size, size_t nmemb, void * buffer);
 
+	class BOSS_COMMON Updater {
+	public:
+		string targetFile;
+		void * progDialog;
 
-	////////////////////////
-	// Masterlist Updating
-	////////////////////////
+		//Checks if an Internet connection is present.
+		bool IsInternetReachable();
 
-	//Updates the local masterlist to the latest available online.
-	//Throws boss_error exception on fail.
-	BOSS_COMMON void UpdateMasterlist(fs::path file, uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate);
+		//Cleans up after the user cancels a download. Throws boss_error exception on fail.
+		void CleanUp();
 
+	protected:
+		//Handler for progress outputter.
+		static int progress_func(void *data, double dlTotal, double dlNow, double ulTotal, double ulNow);
+		
+		//Download progress for downloader functions.
+		virtual int progress(Updater * updater, double dlFraction, double dlTotal) = 0;
 
-	////////////////////////
-	// BOSS Updating
-	////////////////////////
+		//Download the remote file to local. Throws exception on error.
+		void DownloadFile(const string remote, const fs::path local);
 
-	//Checks if a new release of BOSS is available or not.
-	//Throws boss_error exception on fail.
-	BOSS_COMMON string IsBOSSUpdateAvailable();
+		//Install file by renaming it. Throws exception on error.
+		void InstallFile(string downloadedName, string installedName);
+	};
 
-	//Gets the release notes for the update.
-	//Throws boss_error exception on fail.
-	BOSS_COMMON string FetchReleaseNotes(const string updateVersion);
+	class BOSS_COMMON MasterlistUpdater : public Updater {
+	public:
+		//Updates the local masterlist to the latest available online. Throws boss_error exception on fail.
+		void Update(fs::path file, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate);
 
-	//Downloads and installs a BOSS update.
-	//Throws boss_error exception on fail.
-	BOSS_COMMON void DownloadInstallBOSSUpdate(fs::path file, uiStruct ui, const string updateVersion);
+	private:
+		//Gets the revision number of the local masterlist. Throws exception on error.
+		void GetLocalMasterlistRevisionDate(fs::path file, uint32_t& revision, string& date);
+
+		//Gets the revision number of the online masterlist. Throws exception on error.
+		void GetRemoteMasterlistRevisionDate(uint32_t& revision, string& date);
+	};
+
+	class BOSS_COMMON BOSSUpdater : public Updater {
+	public:
+		//Checks if a new release of BOSS is available or not. Throws boss_error exception on fail.
+		string IsUpdateAvailable();
+
+		//Gets the release notes for the update. Throws boss_error exception on fail.
+		string FetchReleaseNotes(const string updateVersion);
+
+		//Downloads and installs a BOSS update. Throws boss_error exception on fail.
+		void GetUpdate(fs::path file, const string updateVersion);
+	};
 }
 #endif

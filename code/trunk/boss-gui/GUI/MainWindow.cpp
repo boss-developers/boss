@@ -46,7 +46,6 @@
 #include "GUI/SettingsWindow.h"
 #include "GUI/UserRuleEditor.h"
 #include "GUI/ElementIDs.h"
-#include "BOSS-Common.h"
 
 wxDEFINE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
 
@@ -103,7 +102,7 @@ bool BossGUI::OnInit() {
 	//Check if GUI is already running.
 	checker = new wxSingleInstanceChecker;
 
-	if (checker->IsAnotherRunning()) {  //It makes sense for BOSS v1.9 to have multiple instances, one for each game. Code will be useful in v2.0 when only one exe will be needed.
+	if (checker->IsAnotherRunning()) {
 		wxMessageBox(wxString::Format(
 				wxT("Error: The BOSS GUI is already running. This instance will now quit.")
 			),
@@ -144,12 +143,49 @@ bool BossGUI::OnInit() {
 
 	LOG_DEBUG("Detecting game...");
 	try {
-		games = DetectGame(frame);
+		vector<uint32_t> undetected;
+		DetectGame(detected, undetected);
+		if (gl_current_game == AUTODETECT) {
+			wxArrayString choices;
+
+			for (size_t i=0, max = detected.size(); i < max; i++)
+				choices.Add(GetGameString(detected[i]));
+			for (size_t i=0, max = undetected.size(); i < max; i++)
+				choices.Add(GetGameString(undetected[i]) + " (not detected)");
+
+			size_t ans;
+
+			wxSingleChoiceDialog* choiceDia = new wxSingleChoiceDialog(frame, wxT("Please pick which game to run BOSS for:"),
+				wxT("BOSS: Select Game"), choices);
+			choiceDia->SetIcon(wxIconLocation("BOSS GUI.exe"));
+
+			if (choiceDia->ShowModal() != wxID_OK)
+				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
+
+			ans = choiceDia->GetSelection();
+			choiceDia->Close(true);
+
+			if (ans < detected.size())
+				gl_current_game = detected[ans];
+			else if (ans < detected.size() + undetected.size())
+				gl_current_game = undetected[ans - detected.size()];
+			else
+				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
+		}
+		//Now set data_path.
+		SetDataPath(gl_current_game);
+		//Make sure that boss_game_path() exists.
+		try {
+			if (!fs::exists(boss_game_path()))
+				fs::create_directory(boss_game_path());
+		} catch (fs::filesystem_error e) {
+			throw boss_error(BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL, GetGameMasterFile(gl_current_game), e.what());
+		}
 		LOG_INFO("Game detected: %d", gl_current_game);
 	} catch (boss_error &e) {
 		return false;
 	}
-	frame->SetGames(games);
+	frame->SetGames(detected);
 
 	//Load game ini file (only matters for Oblivion).
 	if (gl_current_game == OBLIVION && fs::exists(data_path.parent_path() / "Oblivion.ini")) {  //Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
@@ -416,41 +452,40 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	
 	if (gl_revert<1 && (gl_update || gl_update_only)) {
 		//First check for internet connection, then update masterlist if connection present.
-		bool connection = false;
+		GUIMlistUpdater mUpdater;
 		try {
-			connection = CheckConnection();
+			if (mUpdater.IsInternetReachable()) {
+				output.SetHTMLSpecialEscape(false);
+				progDia->Update(0,wxT("Updating to the latest masterlist from the Google Code repository..."));
+				LOG_DEBUG("Updating masterlist...");
+				try {
+					string localDate, remoteDate;
+					uint32_t localRevision, remoteRevision;
+					mUpdater.progDialog = progDia;
+					mUpdater.Update(masterlist_path(), localRevision, localDate, remoteRevision, remoteDate);
+					if (localRevision == remoteRevision) {
+						output << LIST_ITEM_CLASS_SUCCESS << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
+						progDia->Pulse(wxT("Masterlist already up-to-date."));
+						LOG_DEBUG("Masterlist update unnecessary.");
+					} else {
+						output << LIST_ITEM_CLASS_SUCCESS << "Your masterlist has been updated to revision " << remoteRevision << " (" << remoteDate << ").";
+						progDia->Pulse(wxT("Masterlist updated successfully."));
+						LOG_DEBUG("Masterlist updated successfully.");
+					}
+				} catch (boss_error &e) {
+					output << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
+						<< "Details: " << e.getString() << LINE_BREAK
+						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
+					LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
+				}
+			} else {
+				output << LIST_ITEM_CLASS_WARN << "No internet connection detected. Masterlist auto-updater could not check for updates.";
+			}
 		} catch (boss_error &e) {
 			output << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
 				<< "Details: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
 			LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
-		}
-		if (connection) {
-			output.SetHTMLSpecialEscape(false);
-			progDia->Update(0,wxT("Updating to the latest masterlist from the Google Code repository..."));
-			LOG_DEBUG("Updating masterlist...");
-			try {
-				string localDate, remoteDate;
-				uint32_t localRevision, remoteRevision;
-				uiStruct ui(progDia);
-				UpdateMasterlist(masterlist_path(), ui, localRevision, localDate, remoteRevision, remoteDate);
-				if (localRevision == remoteRevision) {
-					output << LIST_ITEM_CLASS_SUCCESS << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
-					progDia->Pulse(wxT("Masterlist already up-to-date."));
-					LOG_DEBUG("Masterlist update unnecessary.");
-				} else {
-					output << LIST_ITEM_CLASS_SUCCESS << "Your masterlist has been updated to revision " << remoteRevision << " (" << remoteDate << ").";
-					progDia->Pulse(wxT("Masterlist updated successfully."));
-					LOG_DEBUG("Masterlist updated successfully.");
-				}
-			} catch (boss_error &e) {
-				output << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
-					<< "Details: " << e.getString() << LINE_BREAK
-					<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
-				LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
-			}
-		} else {
-			output << LIST_ITEM_CLASS_WARN << "No internet connection detected. Masterlist auto-updater could not check for updates.";
 		}
 		contents.updater = output.AsString();
 	}
@@ -958,10 +993,11 @@ void MainFrame::Update(string updateVersion) {
 	}
 
 	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Automatic Updater"),wxT("Initialising download..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
-	uiStruct ui(progDia);
 	string file = "BOSS Installer.exe";
+	GUIBOSSUpdater bUpdater;
 	try {
-		DownloadInstallBOSSUpdate(fs::path(file), ui, updateVersion);
+		bUpdater.progDialog = progDia;
+		bUpdater.GetUpdate(fs::path(file), updateVersion);
 
 		//Remind the user to run the installer.
 		wxMessageBox(wxT("New installer successfully downloaded! When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
@@ -970,7 +1006,7 @@ void MainFrame::Update(string updateVersion) {
 	} catch (boss_error &e) {
 		progDia->Destroy();
 		try {
-			CleanUp();
+			bUpdater.CleanUp();
 			if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL)
 				wxMessageBox(wxT("Update cancelled."), wxT("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 			else
@@ -1013,40 +1049,39 @@ wxThread::ExitCode MainFrame::Entry() {
     // IMPORTANT:
     // this function gets executed in the secondary thread context!
 
+	GUIBOSSUpdater bUpdater;
 	string updateText, updateVersion;
-	bool connection = false;
 	try {
-		connection = CheckConnection();
+		if (bUpdater.IsInternetReachable()) {
+			try {
+				updateVersion = bUpdater.IsUpdateAvailable();
+				if (updateVersion.empty()) {
+					wxCriticalSectionLocker lock(updateData);
+					updateCheckCode = 1;
+					updateCheckString = "You are already using the latest version of BOSS.";
+					wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
+				} else {
+					wxCriticalSectionLocker lock(updateData);
+					updateCheckCode = 0;
+					updateCheckString = updateVersion;
+					wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
+				}
+			} catch (boss_error &e) {
+				wxCriticalSectionLocker lock(updateData);
+				updateCheckCode = 2;
+				updateCheckString = "Update check failed. Details: " + e.getString();
+				wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
+			}
+		} else {
+			wxCriticalSectionLocker lock(updateData);
+			updateCheckCode = 1;
+			updateCheckString = "Update check failed. No Internet connection detected.";
+			wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
+		}
 	} catch (boss_error &e) {
 		wxCriticalSectionLocker lock(updateData);
 		updateCheckCode = 2;
 		updateCheckString = "Update check failed. Details: " + e.getString();
-		wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
-	}
-	if (connection) {
-		try {
-			updateVersion = IsBOSSUpdateAvailable();
-			if (updateVersion.empty()) {
-				wxCriticalSectionLocker lock(updateData);
-				updateCheckCode = 1;
-				updateCheckString = "You are already using the latest version of BOSS.";
-				wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
-			} else {
-				wxCriticalSectionLocker lock(updateData);
-				updateCheckCode = 0;
-				updateCheckString = updateVersion;
-				wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
-			}
-		} catch (boss_error &e) {
-			wxCriticalSectionLocker lock(updateData);
-			updateCheckCode = 2;
-			updateCheckString = "Update check failed. Details: " + e.getString();
-			wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
-		}
-	} else {
-		wxCriticalSectionLocker lock(updateData);
-		updateCheckCode = 1;
-		updateCheckString = "Update check failed. No Internet connection detected.";
 		wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
 	}
 	return (wxThread::ExitCode)0;
@@ -1065,10 +1100,11 @@ void MainFrame::OnThreadUpdate(wxThreadEvent& evt) {
 				"Update available! New version: " + updateCheckString + "\nThe update may be downloaded from any of the locations listed in the BOSS Log."
 				, wxT("BOSS: Check For Updates"), wxOK);
 		else {
+			GUIBOSSUpdater bUpdater;
 			string notes;
 			//Display release notes.
 			try {
-				notes = FetchReleaseNotes(updateCheckString);
+				notes = bUpdater.FetchReleaseNotes(updateCheckString);
 			} catch (boss_error &e) {
 				wxMessageBox("Failed to get release notes. Details: " + e.getString(), wxT("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			}

@@ -284,6 +284,13 @@ uint32_t ReturnCode(uint32_t returnCode) {
 	return returnCode;
 }
 
+class APIMlistUpdater : public MasterlistUpdater {
+protected:
+	int progress(Updater * updater, double dlFraction, double dlTotal) {
+		return 0;
+	}
+};
+
 
 //////////////////////////////
 // Error Handling Functions
@@ -640,27 +647,25 @@ BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath) {
 	if (masterlist_path.empty())
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Masterlist path is empty.");
 
-	bool connection = false;
+	APIMlistUpdater mUpdater;
 	try {
-		connection = CheckConnection();
+		if (!mUpdater.IsInternetReachable())
+			return ReturnCode(BOSS_API_ERROR_NO_INTERNET_CONNECTION);
+		else {
+			try {
+				string localDate, remoteDate;
+				uint32_t localRevision, remoteRevision;
+				mUpdater.Update(masterlist_path, localRevision, localDate, remoteRevision, remoteDate);
+				if (localRevision == remoteRevision)
+					return ReturnCode(BOSS_API_OK_NO_UPDATE_NECESSARY);
+				else
+					return ReturnCode(BOSS_API_OK);
+			} catch (boss_error &e) {
+				return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, e.getString());
+			}
+		}
 	} catch (boss_error &e) {
 		return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, e.getString());
-	}
-	if (!connection)
-		return ReturnCode(BOSS_API_ERROR_NO_INTERNET_CONNECTION);
-	else {
-		try {
-			string localDate, remoteDate;
-			uint32_t localRevision, remoteRevision;
-			uiStruct ui;
-			UpdateMasterlist(masterlist_path, ui, localRevision, localDate, remoteRevision, remoteDate);
-			if (localRevision == remoteRevision)
-				return ReturnCode(BOSS_API_OK_NO_UPDATE_NECESSARY);
-			else
-				return ReturnCode(BOSS_API_OK);
-		} catch (boss_error &e) {
-			return ReturnCode(BOSS_API_ERROR_NETWORK_FAIL, e.getString());
-		}
 	}
 }
 

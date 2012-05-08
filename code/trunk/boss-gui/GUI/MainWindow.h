@@ -29,6 +29,7 @@
 #define __MAIN__HPP__
 
 
+#include "BOSS-Common.h"
 #include "GUI/ElementIDs.h"
 #include <wx/hyperlink.h>
 #include <wx/progdlg.h>
@@ -40,7 +41,7 @@ public:
 	virtual bool OnInit();
 private:
 	wxSingleInstanceChecker *checker;
-	std::vector<uint32_t> games;
+	std::vector<uint32_t> detected;
 };
 
 wxDECLARE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
@@ -100,5 +101,41 @@ protected:
 	std::string updateCheckString;  //Holds wxMessageBox text.
 	wxCriticalSection updateData; // protects fields above
 	DECLARE_EVENT_TABLE()
+};
+
+class GUIMlistUpdater : public boss::MasterlistUpdater {
+protected:
+	int progress(boss::Updater * updater, double dlFraction, double dlTotal) {
+		int currentProgress = (int)floor(dlFraction * 10);
+		if (currentProgress == 1000)
+			--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
+		wxProgressDialog* progress = (wxProgressDialog*)updater->progDialog;
+		bool cont = progress->Update(currentProgress, "Downloading: " + updater->targetFile);
+		if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
+			uint32_t ans = wxMessageBox(wxT("Are you sure you want to cancel?"), wxT("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
+			if (ans == wxYES)
+				return 1;
+			progress->Resume();
+		}
+		return 0;
+	}
+};
+
+class GUIBOSSUpdater : public boss::BOSSUpdater {
+protected:
+	int progress(boss::Updater * updater, double dlFraction, double dlTotal) {
+		int currentProgress = (int)floor(dlFraction * 10);
+		if (currentProgress == 1000)
+			--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
+		wxProgressDialog* progress = (wxProgressDialog*)updater->progDialog;
+		bool cont = progress->Update(currentProgress, "Downloading: " + updater->targetFile);
+		if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
+			uint32_t ans = wxMessageBox(wxT("Are you sure you want to cancel?"), wxT("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
+			if (ans == wxYES)
+				return 1;
+			progress->Resume();
+		}
+		return 0;
+	}
 };
 #endif

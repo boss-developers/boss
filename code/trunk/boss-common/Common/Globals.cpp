@@ -30,11 +30,6 @@
 #include "Support/Helpers.h"
 #include "Support/Logger.h"
 
-#ifdef BOSSGUI
-#include <wx/choicdlg.h>
-#include <wx/arrstr.h>
-#endif
-
 namespace boss {
 	using namespace std;
 
@@ -228,84 +223,50 @@ namespace boss {
 
 	BOSS_COMMON void SetDataPath(uint32_t game) {
 		LOG_INFO("Setting data path for game: \"%s\"", GetGameString(game).c_str());
-		if (game == AUTODETECT || fs::exists(data_path / GetGameMasterFile(game))) {
-			if (game == MORROWIND)
-				data_path = boss_path / ".." / "Data Files";
-			else
-				data_path = boss_path / ".." / "Data";
+		if (game == MORROWIND && fs::exists(boss_path / ".." / "Data Files" / GetGameMasterFile(game))) {
+			data_path = boss_path / ".." / "Data Files";
+			return;
+		} else if (fs::exists(boss_path / ".." / "Data" / GetGameMasterFile(game))) {
+			data_path = boss_path / ".." / "Data";
 			return;
 		}
 		switch (game) {
 		case OBLIVION:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path")) / "Data";
-			else
-				data_path = boss_path / ".." / "Data";
 			break;
 		case NEHRIM:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation")) / "Data";
-			else
-				data_path = boss_path / ".." / "Data";
 			break;
 		case SKYRIM:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path")) / "Data";
-			else
-				data_path = boss_path / ".." / "Data";
 			break;
 		case FALLOUT3:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path")) / "Data";
-			else
-				data_path = boss_path / ".." / "Data";
 			break;
 		case FALLOUTNV:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path")) / "Data";
-			else
-				data_path = boss_path / ".." / "Data";
 			break;
 		case MORROWIND:
 			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path"))
 				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path")) / "Data Files";
-			else
-				data_path = boss_path / ".." / "Data Files";
 			break;
 		}
 	}
 
-	void AutodetectGame(void * parent) {  //Throws exception if error.
-#ifdef BOSSGUI
+	void AutodetectGame(vector<uint32_t> detectedGames) {  //Throws exception if error.
 		if (gl_last_game != AUTODETECT) {
-			//BOSS GUI was run previously and recorded the game it was running for when it closed.
-			//Check that the specified game exists. If it does, use it and skip the 'select game' dialog. 
-			//Otherwise, continue to the 'select game' dialog.
-			if (fs::exists(data_path / GetGameMasterFile(gl_last_game))) {
-				gl_current_game = gl_last_game;
-				return;
-			} else if (gl_last_game == OBLIVION && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path"))) {  //Look for Oblivion.
-				gl_current_game = gl_last_game;
-				return;
-			} else if (gl_last_game == NEHRIM && RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation")) {  //Look for Nehrim.
-				gl_current_game = gl_last_game;
-				return;
-			} else if (gl_last_game == SKYRIM && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path"))) {  //Look for Skyrim.
-				gl_current_game = gl_last_game;
-				return;
-			} else if (gl_last_game == FALLOUT3 && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path"))) {  //Look for Fallout 3.
-				gl_current_game = gl_last_game;
-				return;
-			} else if (gl_last_game == FALLOUTNV && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path"))) {  //Look for Fallout New Vegas.
-				gl_current_game = gl_last_game;
-				return;
-			} else if (gl_last_game == MORROWIND && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path"))) {  //Look for Morrowind.
-				gl_current_game = gl_last_game;
-				return;
+			for (size_t i=0, max = detectedGames.size(); i < max; i++) {
+				if (gl_last_game == detectedGames[i]) {
+					gl_current_game = gl_last_game;
+					return;
+				}
 			}
 		}
-
-#endif
 		LOG_INFO("Autodetecting game.");
 		if (fs::exists(data_path / "Nehrim.esm"))  //Before Oblivion because Nehrim installs can have Oblivion.esm for porting mods.
 			gl_current_game = NEHRIM;
@@ -319,114 +280,36 @@ namespace boss {
 			gl_current_game = SKYRIM;
 		else if (fs::exists(boss_path / ".." / "Data Files" / "Morrowind.esm"))  //Morrowind uses a different data path to the other games.
 			gl_current_game = MORROWIND;
-		else {
+		else
 			LOG_INFO("Game not detected locally. Checking Registry for paths.");
-			size_t ans;
-#ifdef BOSSGUI
-			wxArrayString choices;
-			string text;
-			text = GetGameString(OBLIVION);
-			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path"))
-				text += " (not detected)";
-			choices.Add(text);
-			text = GetGameString(NEHRIM);
-			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation"))
-				text += " (not detected)";
-			choices.Add(text);
-			text = GetGameString(SKYRIM);
-			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path"))
-				text += " (not detected)";
-			choices.Add(text);
-			text = GetGameString(FALLOUT3);
-			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path"))
-				text += " (not detected)";
-			choices.Add(text);
-			text = GetGameString(FALLOUTNV);
-			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path"))
-				text += " (not detected)";
-			choices.Add(text);
-			text = GetGameString(MORROWIND);
-			if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path"))
-				text += " (not detected)";
-			choices.Add(text);
-
-			wxSingleChoiceDialog* choiceDia = new wxSingleChoiceDialog((wxWindow*)parent, wxT("Please pick which game to run BOSS for:"),
-				wxT("BOSS: Select Game"), choices);
-			choiceDia->SetIcon(wxIconLocation("BOSS GUI.exe"));
-
-			if (choiceDia->ShowModal() != wxID_OK)
-				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
-
-			ans = choiceDia->GetSelection();
-			choiceDia->Close(true);
-
-			if (ans == 0)
-				gl_current_game = OBLIVION;
-			else if (ans == 1)
-				gl_current_game = NEHRIM;
-			else if (ans == 2)
-				gl_current_game = SKYRIM;
-			else if (ans == 3)
-				gl_current_game = FALLOUT3;
-			else if (ans == 4)
-				gl_current_game = FALLOUTNV;
-			else if (ans == 5)
-				gl_current_game = MORROWIND;
-			else
-				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
-#else
-			vector<uint32_t> gamesDetected;
-			//Look for Windows Registry entries for the games.
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path")) //Look for Oblivion.
-				gamesDetected.push_back(OBLIVION);
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation")) //Look for Nehrim.
-				gamesDetected.push_back(NEHRIM);
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path")) //Look for Skyrim.
-				gamesDetected.push_back(SKYRIM);
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path")) //Look for Fallout 3.
-				gamesDetected.push_back(FALLOUT3);
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path")) //Look for Fallout New Vegas.
-				gamesDetected.push_back(FALLOUTNV);
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path")) //Look for Morrowind.
-				gamesDetected.push_back(MORROWIND);
-
-			//Now check what games were found.
-			if (gamesDetected.empty())
-				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
-			else if (gamesDetected.size() == 1)
-				gl_current_game = gamesDetected.front();
-			else {
-				//Ask user to choose game.
-				cout << endl << "Please pick which game to run BOSS for:" << endl;
-				for (size_t i=0; i < gamesDetected.size(); i++)
-					cout << i << " : " << GetGameString(gamesDetected[i]) << endl;
-
-				cin >> ans;
-				if (ans < 0 || ans >= gamesDetected.size()) {
-					cout << "Invalid selection." << endl;
-					throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
-				}
-				gl_current_game = gamesDetected[ans];
-			}
-#endif
-		}
 	}
 
-	BOSS_COMMON vector<uint32_t> DetectGame(void * parent) {
+	BOSS_COMMON void DetectGame(vector<uint32_t>& detectedGames, vector<uint32_t>& undetectedGames) {
 		//Detect all installed games.
-		vector<uint32_t> games;
 		if (fs::exists(data_path / "Oblivion.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path")) //Look for Oblivion.
-			games.push_back(OBLIVION);
+			detectedGames.push_back(OBLIVION);
+		else
+			undetectedGames.push_back(OBLIVION);
 		if (fs::exists(data_path / "Nehrim.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation")) //Look for Nehrim.
-			games.push_back(NEHRIM);
+			detectedGames.push_back(NEHRIM);
+		else
+			undetectedGames.push_back(NEHRIM);
 		if (fs::exists(data_path / "Skyrim.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path")) //Look for Skyrim.
-			games.push_back(SKYRIM);
+			detectedGames.push_back(SKYRIM);
+		else
+			undetectedGames.push_back(SKYRIM);
 		if (fs::exists(data_path / "Fallout3.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path")) //Look for Fallout 3.
-			games.push_back(FALLOUT3);
+			detectedGames.push_back(FALLOUT3);
+		else
+			undetectedGames.push_back(FALLOUT3);
 		if (fs::exists(data_path / "FalloutNV.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path")) //Look for Fallout New Vegas.
-			games.push_back(FALLOUTNV);
+			detectedGames.push_back(FALLOUTNV);
+		else
+			undetectedGames.push_back(FALLOUTNV);
 		if (fs::exists(boss_path / ".." / "Data Files" / "Morrowind.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path")) //Look for Morrowind. Morrowind uses a different data path to the other games.
-			games.push_back(MORROWIND);
+			detectedGames.push_back(MORROWIND);
+		else
+			undetectedGames.push_back(MORROWIND);
 		//Now set gl_current_game.
 		if (gl_game != AUTODETECT) {
 			if (gl_update_only)
@@ -448,20 +331,10 @@ namespace boss {
 				else if (gl_game == MORROWIND && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path")))  //Look for Morrowind.
 					gl_current_game = gl_game;
 				else
-					AutodetectGame(parent);  //Game not found. Autodetect.
+					AutodetectGame(detectedGames);  //Game not found. Autodetect.
 			}
 		} else
-			AutodetectGame(parent);
-		//Now set data_path.
-		SetDataPath(gl_current_game);
-		//Make sure that boss_game_path() exists.
-		try {
-			if (!fs::exists(boss_game_path()))
-				fs::create_directory(boss_game_path());
-		} catch (fs::filesystem_error e) {
-			throw boss_error(BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL, GetGameMasterFile(gl_current_game), e.what());
-		}
-		return games;
+			AutodetectGame(detectedGames);
 	}
 
 	BOSS_COMMON time_t GetMasterTime() {  //Throws exception if error.
