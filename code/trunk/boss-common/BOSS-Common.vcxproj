@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common\Classes.cpp" />
+    <ClCompile Include="Common\Error.cpp" />
     <ClCompile Include="Common\Execute.cpp" />
     <ClCompile Include="Common\Globals.cpp" />
     <ClCompile Include="Output\Output.cpp" />

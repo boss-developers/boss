@@ -32,7 +32,6 @@
 #include <string>
 #include <boost/cstdint.hpp>
 #include <boost/format.hpp>
-#include <boost/algorithm/string.hpp>
 #include "Common/DllDef.h"
 
 namespace boss {
@@ -95,97 +94,23 @@ namespace boss {
 	class BOSS_COMMON boss_error {
 	public:
 		//For general errors not referencing specific files.
-		inline boss_error(const uint32_t internalErrCode) 
-			: errCode(internalErrCode), errString(""), errSubject("") {}
+		boss_error(const uint32_t internalErrCode) ;
 
 		//For general errors referencing specific files.
-		inline boss_error(const uint32_t internalErrCode, const string internalErrSubject) 
-			: errCode(internalErrCode), errString(""), errSubject(internalErrSubject) {}
+		boss_error(const uint32_t internalErrCode, const string internalErrSubject);
 
 		//For errors from BOOST Filesystem functions.
-		inline boss_error(const uint32_t internalErrCode, const string internalErrSubject, const string externalErrString) 
-			: errCode(internalErrCode), errString(externalErrString), errSubject(internalErrSubject) {}
+		boss_error(const uint32_t internalErrCode, const string internalErrSubject, const string externalErrString);
 
 		//For errors from cURL functions.
-		inline boss_error(const string externalErrString, const uint32_t internalErrCode) 
-			: errCode(internalErrCode), errString(externalErrString), errSubject("") {}
-
-		//Returns the error string for the object.
-		inline string getString() {
-			switch(errCode) {
-			case BOSS_OK:
-				return "No error.";
-			case BOSS_ERROR_NO_MASTER_FILE:
-				return "No game master .esm file found!"; 
-			case BOSS_ERROR_FILE_READ_FAIL:
-				return "\"" + errSubject + "\" cannot be read!"; 
-			case BOSS_ERROR_FILE_WRITE_FAIL:
-				return "\"" + errSubject + "\" cannot be written to!"; 
-			case BOSS_ERROR_FILE_NOT_UTF8:
-				return "\"" + errSubject + "\" is not encoded in valid UTF-8!"; 
-			case BOSS_ERROR_FILE_NOT_FOUND:
-				return "\"" + errSubject + "\" cannot be found!";
-			case BOSS_ERROR_CONDITION_EVAL_FAIL:
-				return "Evaluation of conditional \"" + errSubject + "\" failed!";
-			case BOSS_ERROR_REGEX_EVAL_FAIL:
-				return "\"" + errSubject + "\" is not a valid regular expression. Item skipped.";
-			case BOSS_ERROR_NO_GAME_DETECTED:
-				return "No game detected!"; 
-			case BOSS_ERROR_ENCODING_CONVERSION_FAIL:
-				return "\"" + errSubject + "\" cannot be converted from UTF-8 to \"" + errString + "\".";
-			case BOSS_ERROR_PLUGIN_BEFORE_MASTER:
-				return "Master file \"" + errSubject +  "\" loading after non-master plugins!";
-			case BOSS_ERROR_INVALID_SYNTAX:
-				return errString;
-			case BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL:
-				return "Cannot find online masterlist revision number!"; 
-			case BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL:
-				return "Cannot find online masterlist revision date!"; 
-			case BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL:
-				return "Cannot read list of files to be updated!"; 
-			case BOSS_ERROR_FILE_CRC_MISMATCH:
-				return "Downloaded file \"" + errSubject + "\" failed verification test!"; 
-			case BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL:
-				return "The modification date of \"" + errSubject + "\" cannot be read! Filesystem response: \"" + errString + "\".";
-			case BOSS_ERROR_FS_FILE_RENAME_FAIL:
-				return "\"" + errSubject + "\" cannot be renamed! Filesystem response: \"" + errString + "\".";
-			case BOSS_ERROR_FS_FILE_DELETE_FAIL:
-				return "\"" + errSubject + "\" cannot be deleted! Filesystem response: \"" + errString + "\".";
-			case BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL:
-				return "\"" + errSubject + "\" cannot be created! Filesystem response: \"" + errString + "\".";
-			case BOSS_ERROR_FS_ITER_DIRECTORY_FAIL:
-				return "\"" + errSubject + "\" cannot be scanned! Filesystem response: \"" + errString + "\".";
-			case BOSS_ERROR_CURL_INIT_FAIL:
-				return "cURL cannot be initialised!";
-			case BOSS_ERROR_CURL_SET_ERRBUFF_FAIL:
-				return "cURL's error buffer could not be set! cURL response: \"" + errString + "\".";
-			case BOSS_ERROR_CURL_SET_OPTION_FAIL:
-				return "A cURL option could not be set! cURL response: \"" + errString + "\".";
-			case BOSS_ERROR_CURL_SET_PROXY_FAIL:
-				return "Proxy hostname or port invalid! cURL response: \"" + errString + "\".";
-			case BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL:
-				return "Failed to set proxy type! cURL response: \"" + errString + "\".";
-			case BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL:
-				return "Proxy authentication username or password invalid! cURL response: \"" + errString + "\".";
-			case BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL:
-				return "Failed to set proxy authentication type! cURL response: \"" + errString + "\".";
-			case BOSS_ERROR_CURL_PERFORM_FAIL:
-				return "cURL could not perform task! cURL response: \"" + errString + "\".";
-			case BOSS_ERROR_CURL_USER_CANCEL:
-				return "Cancelled by user.";
-			case BOSS_ERROR_FILE_PARSE_FAIL:
-				return "Parsing of \"" + errSubject + "\" failed!";
-			case BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL:
-				return "The modification date of \"" + errSubject + "\" cannot be written! Filesystem response: \"" + errString + "\".";
-			case BOSS_ERROR_GUI_WINDOW_INIT_FAIL:
-				return "The window \"" + errSubject + "\" failed to initialise. Details: \"" + errString + "\".";
-			default:
-				return "No error.";
-			}
-		}
+		boss_error(const string externalErrString, const uint32_t internalErrCode);
 
 		//Returns the error code for the object.
-		inline uint32_t getCode() { return errCode; }
+		uint32_t getCode();
+
+		//Returns the error string for the object.
+		string getString();
+
 	private:
 		uint32_t errCode;
 		string errString;
@@ -224,20 +149,20 @@ namespace boss {
 	//Parsing error class.
 	class BOSS_COMMON ParsingError {
 	public:
-		inline ParsingError() : header(""), footer(""), detail(""), wholeMessage("") {}
+		ParsingError();
+
 		//For parsing errors.
-		inline ParsingError(const string inHeader, const string inDetail, const string inFooter)
-			: header(inHeader), detail(inDetail), footer(inFooter) {}
+		ParsingError(const string inHeader, const string inDetail, const string inFooter);
 
 		//For userlist syntax errors.
-		inline ParsingError(const string inWholeMessage) 
-			: wholeMessage(inWholeMessage) {}
+		ParsingError(const string inWholeMessage);
 
-		inline bool Empty() const { return (header.empty() && footer.empty() && detail.empty() && wholeMessage.empty()); }
-		inline string Header() const { return header; }
-		inline string Footer() const { return footer; }
-		inline string Detail() const { return detail; }
-		inline string WholeMessage() const { return wholeMessage; }
+		bool Empty() const;
+		string Header() const;
+		string Footer() const;
+		string Detail() const;
+		string WholeMessage() const;
+
 	private:
 		string header;
 		string footer;

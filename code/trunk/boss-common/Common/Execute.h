@@ -32,53 +32,25 @@
 #include <boost/filesystem.hpp>
 #include <boost/unordered_set.hpp>
 #include "Common/Classes.h"
+#include "Output/Output.h"
 #include "Common/DllDef.h"
 
 namespace boss {
 	namespace fs = boost::filesystem;
 	using namespace std;
 
-	struct BOSS_COMMON summaryCounters {
-		uint32_t recognised; 
-		uint32_t unrecognised;
-		uint32_t inactive;
-		uint32_t messages;
-		uint32_t warnings;
-		uint32_t errors;
-
-		summaryCounters();
-	};
-
-	struct BOSS_COMMON bosslogContents {
-		string updater;
-		string userlistMessages;
-		string seInfo;
-		string recognisedPlugins;
-		string unrecognisedPlugins;
-
-		string oldRecognisedPlugins;
-
-		string criticalError;
-		vector<ParsingError> parsingErrors;
-		vector<Message> globalMessages;
-	};
-
-	//Record recognised mod list from last HTML BOSSlog generated.
-	BOSS_COMMON string GetOldRecognisedList(const fs::path log);
-
 	//Performs BOSS's main sorting functionality. Each stage is implemented by a separate function for neatness and to make future adjustments easier. 
-	BOSS_COMMON void PerformSortingFunctionality(fs::path file,
+	BOSS_COMMON void PerformSortingFunctionality(BossLog& bosslog,
 												ItemList& modlist,
 												ItemList& masterlist,
 												RuleList& userlist,
-												const time_t esmtime,
-												bosslogContents contents);
+												const time_t esmtime);
 
 	//Create a modlist containing all the mods that are installed or referenced in the userlist with their masterlist messages.
 	//Returns the vector position of the last recognised mod in modlist.
 	BOSS_COMMON void BuildWorkingModlist(ItemList& modlist, ItemList& masterlist, RuleList& userlist);
 
 	//Applies the userlist rules to the working modlist.
-	BOSS_COMMON void ApplyUserRules(ItemList& modlist, RuleList& userlist, string& outputBuffer);
+	BOSS_COMMON void ApplyUserRules(ItemList& modlist, RuleList& userlist, Outputter& outputBuffer);
 }
 #endif

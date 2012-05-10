@@ -917,7 +917,7 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	modlist.Insert(0,masterlist.Items(), 0, masterlist.Items().size());
 	modlist.LastRecognisedPos(masterlist.LastRecognisedPos());
 
-	string dummy;
+	Outputter dummy;
 	ApplyUserRules(modlist, userlist, dummy);  //This needs to be done to get sensible ordering as the userlist has been taken into account in the working modlist.
 
 	//Initialise vars.

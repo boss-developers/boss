@@ -341,6 +341,14 @@ namespace boss {
 			return (diff < 0);
 	}
 
+	void Item::InsertMessage(size_t pos, Message message) {
+		messages.insert(messages.begin()+pos, message);
+	}
+
+	void Item::ClearMessages() {
+		messages.clear();
+	}
+
 	bool	Item::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer) {
 		LOG_TRACE("Evaluating conditions for item \"%s\"", Data().c_str());
 
@@ -371,7 +379,7 @@ namespace boss {
 			return false;
 	}
 
-							ItemList::ItemList					() {
+			ItemList::ItemList			() {
 		items.clear();
 		errorBuffer = ParsingError();
 		globalMessageBuffer.clear();
@@ -380,11 +388,6 @@ namespace boss {
 		fileCRCs.clear();
 	}
 
-	/*I need to worry about the encoding of the file only if it's plugins_path() being loaded.
-	 Otherwise it's going to be UTF-8 and I can check validation.
-	 If it is plugins_path():
-	 1. Detect encoding.
-	 2. Convert string buffer from detected encoding to UTF-8.*/
 	void	ItemList::Load				(fs::path path) {
 		if (fs::exists(path) && fs::is_directory(path)) {
 			LOG_DEBUG("Reading user mods...");
@@ -596,18 +599,7 @@ namespace boss {
 		LOG_INFO("Backup saved successfully.");
 		return;
 	}
-	
-	/*I need to worry about the encoding of the file only if it's plugins_path() being saved.
-	 Otherwise it's going to be UTF-8 and BOSS uses that internally already.
-	 If it is plugins_path():
-	 1. Detect the encoding of plugins_path().
-	 2. Convert output from UTF-8 to the detected encoding before writing it. 
-	 3. If the output cannot be converted, throw an exception (BOSS_ERROR_ENCODING_CONVERSION_FAIL).
-	    The errSubject should be the plugin causing problems and errString should be the encoding detected. 
-		Don't throw an exception immediately though! Set a "there's been a problem" flag and record the plugin
-		name, then throw the exception when the file has been written. It's not a breaking bug, but using an
-		exception is the neatest way to go about showing it occurred.
-	activeOnly is the measure of whether a conversion is necessary.*/
+
 	void	ItemList::SavePluginNames(fs::path file, bool activeOnly, bool doEncodingConversion) {
 		string badFilename = "",  contents, settings;
 		ItemList activePlugins;

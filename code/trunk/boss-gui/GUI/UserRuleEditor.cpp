@@ -29,8 +29,7 @@
 
 #include <wx/progdlg.h>
 
-#include <boost/algorithm/string/case_conv.hpp>
-#include <boost/algorithm/string/trim_all.hpp>
+#include <boost/algorithm/string.hpp>
 
 BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
 	EVT_BUTTON ( BUTTON_OKExitEditor, UserRulesEditorFrame::OnOKQuit )

@@ -150,6 +150,9 @@ namespace boss {
 		void	UnGhost		() const;			//Can throw exception.
 		void	SetModTime	(time_t modificationTime) const;			//Can throw exception.
 
+		void InsertMessage(size_t pos, Message item);
+		void ClearMessages();
+
 		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
 	};
 

@@ -103,13 +103,8 @@ namespace boss {
 		void SetFormat(const uint32_t format);	//Sets the formatting type of the output.
 		void SetHTMLSpecialEscape(const bool shouldEscape);	//Set when formatting is set, generally, but this can be used to override.
 		void Clear();			//Erase all current content.
+		bool Empty();
 
-		void PrintHeaderTop();
-		void PrintHeaderBottom();
-		void PrintFooter(const uint32_t pluginNo, const uint32_t messageNo);
-
-		void Save(fs::path file, const bool overwrite);		//Saves contents to file. 
-														//Throws boss_error exception on fail.
 		string AsString();				//Outputs contents as a string.
 		
 		Outputter& operator<< (const string s);
@@ -136,7 +131,6 @@ namespace boss {
 	private:
 		//0x81, 0x8D, 0x8F, 0x90, 0x9D in 1252 are undefined in UTF-8.
 		boost::unordered_map<char, uint32_t> commonMap;  //1251/1252, UTF-8. 0-127, plus some more.
-	//	boost::unordered_map<char, uint32_t> map1251toUtf8; //1251, UTF-8. 128-255, minus a few common characters.
 		boost::unordered_map<char, uint32_t> map1252toUtf8; //1252, UTF-8. 128-255, minus a few common characters.
 		boost::unordered_map<uint32_t, char> utf8toEnc;
 		boost::unordered_map<char, uint32_t> encToUtf8;
@@ -148,6 +142,44 @@ namespace boss {
 
 		string Utf8ToEnc(string inString);
 		string EncToUtf8(string inString);
+	};
+
+	class BossLog {
+	public:
+		BossLog();
+		BossLog(uint32_t format);
+
+		void SetFormat(uint32_t format);
+		void Save(fs::path file, const bool overwrite);		//Saves contents to file. Throws boss_error exception on fail.
+
+		uint32_t recognised; 
+		uint32_t unrecognised;
+		uint32_t inactive;
+		uint32_t messages;
+		uint32_t warnings;
+		uint32_t errors;
+
+		string scriptExtender;
+
+		Outputter updaterOutput;
+		Outputter criticalError;
+		Outputter userRules;
+		Outputter sePlugins;
+		Outputter recognisedPlugins;
+		Outputter unrecognisedPlugins;
+
+		vector<ParsingError> parsingErrors;
+		vector<Message> globalMessages;
+	private:
+		uint32_t logFormat;
+		bool recognisedHasChanged;
+
+		string PrintLog();
+		string PrintHeaderTop();
+		string PrintHeaderBottom();
+		string PrintFooter();
+
+		bool HasRecognisedListChanged(const fs::path file);
 	};
 }
 #endif

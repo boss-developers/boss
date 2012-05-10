@@ -105,37 +105,11 @@ protected:
 
 class GUIMlistUpdater : public boss::MasterlistUpdater {
 protected:
-	int progress(boss::Updater * updater, double dlFraction, double dlTotal) {
-		int currentProgress = (int)floor(dlFraction * 10);
-		if (currentProgress == 1000)
-			--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
-		wxProgressDialog* progress = (wxProgressDialog*)updater->progDialog;
-		bool cont = progress->Update(currentProgress, "Downloading: " + updater->targetFile);
-		if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
-			uint32_t ans = wxMessageBox(wxT("Are you sure you want to cancel?"), wxT("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
-			if (ans == wxYES)
-				return 1;
-			progress->Resume();
-		}
-		return 0;
-	}
+	int progress(boss::Updater * updater, double dlFraction, double dlTotal);
 };
 
 class GUIBOSSUpdater : public boss::BOSSUpdater {
 protected:
-	int progress(boss::Updater * updater, double dlFraction, double dlTotal) {
-		int currentProgress = (int)floor(dlFraction * 10);
-		if (currentProgress == 1000)
-			--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
-		wxProgressDialog* progress = (wxProgressDialog*)updater->progDialog;
-		bool cont = progress->Update(currentProgress, "Downloading: " + updater->targetFile);
-		if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
-			uint32_t ans = wxMessageBox(wxT("Are you sure you want to cancel?"), wxT("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
-			if (ans == wxYES)
-				return 1;
-			progress->Resume();
-		}
-		return 0;
-	}
+	int progress(boss::Updater * updater, double dlFraction, double dlTotal);
 };
 #endif

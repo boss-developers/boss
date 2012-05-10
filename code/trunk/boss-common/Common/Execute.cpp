@@ -44,8 +44,7 @@ namespace boss {
 	////////////////////////
 
 	//Lists Script Extender plugin info in the output buffer. Usage internal to BOSS-Common.
-	string GetSEPluginInfo(string& outputBuffer) {
-		Outputter buffer(gl_log_format);
+	string GetSEPluginInfo(Outputter& buffer) {
 		string SE;
 		fs::path SELoc, SEPluginLoc;
 		if (gl_current_game == OBLIVION || gl_current_game == NEHRIM) {
@@ -101,15 +100,16 @@ namespace boss {
 					}
 				}
 			}
-			outputBuffer = buffer.AsString();
 			return SE;
 		}
 	}
 
 	//List and redate mods.
-	void SortMods(ItemList& modlist, bosslogContents& contents, const time_t esmtime, summaryCounters& counters) {
+	void SortMods(ItemList& modlist, const time_t esmtime, BossLog& bosslog) {
 		//Need to obey masters before plugins rule when sorting, but separate display of recognised and unrecognised mods.
 		//Also need to display which plugins are active, for both recognised and unrecognised mods.
+		bosslog.recognisedPlugins.SetHTMLSpecialEscape(false);
+		bosslog.unrecognisedPlugins.SetHTMLSpecialEscape(false);
 
 		//Load active plugin list.
 		boost::unordered_set<string> hashset;
@@ -165,16 +165,14 @@ namespace boss {
 				if (hashset.find(to_lower_copy(itemIter->Name())) != hashset.end())  //Plugin is active.
 					buffer << SPAN_CLASS_ACTIVE_OPEN << "Active" << SPAN_CLOSE;
 				else
-					counters.inactive++;
+					bosslog.inactive++;
 				if (gl_show_CRCs && itemIter->IsGhosted()) {
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / fs::path(itemIter->Name() + ".ghost"))) << SPAN_CLOSE;
 				} else if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(data_path / itemIter->Name())) << SPAN_CLOSE;
 		
 		/*		if (itemIter->IsFalseFlagged()) {
-					vector<Message> messages = itemIter->Messages();
-					messages.insert(messages.begin(), Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa."));
-					itemIter->Messages(messages);
+					itemIter->InsertMessage(0, Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa."));
 					counters.warnings++;
 				}
 		*/	
@@ -182,11 +180,9 @@ namespace boss {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", itemIter->Name().c_str());
 					try {
-						itemIter->SetModTime(esmtime + (counters.recognised + counters.unrecognised)*60);
+						itemIter->SetModTime(esmtime + (bosslog.recognised + bosslog.unrecognised)*60);
 					} catch(boss_error &e) {
-						vector<Message> messages = itemIter->Messages();
-						messages.insert(messages.begin(), Message(ERR, "Error: " + e.getString()));
-						itemIter->Messages(messages);
+						itemIter->InsertMessage(0, Message(ERR, "Error: " + e.getString()));
 						LOG_ERROR(" * Error: %s", e.getString().c_str());
 					}
 				}
@@ -197,150 +193,24 @@ namespace boss {
 					buffer << LIST_OPEN;
 					for (size_t j=0; j < jmax; j++) {
 						buffer << messages[j];
-						counters.messages++;
+						bosslog.messages++;
 						if (messages[j].Key() == WARN)
-							counters.warnings++;
+							bosslog.warnings++;
 						else if (messages[j].Key() == ERR)
-							counters.errors++;
+							bosslog.errors++;
 					}
 					buffer << LIST_CLOSE;
 				}
 				if (unrecognised.find(itemIter->Name()) == unrecognised.end()) {  //Recognised plugin.
-					
-					counters.recognised++;
-					contents.recognisedPlugins += buffer.AsString();
+					bosslog.recognised++;
+					bosslog.recognisedPlugins << buffer.AsString();
 				} else {  //Unrecognised plugin.
-					counters.unrecognised++;
-					contents.unrecognisedPlugins += buffer.AsString();
+					bosslog.unrecognised++;
+					bosslog.unrecognisedPlugins << buffer.AsString();
 				}
 			}
 		}
 		LOG_INFO("User plugin ordering applied successfully.");
-	}
-
-	//Prints the full BOSSlog.
-	void PrintBOSSlog(fs::path file, bosslogContents contents, const summaryCounters counters, const string scriptExtender) {
-
-		Outputter bosslog(gl_log_format);
-		bosslog.PrintHeaderTop();
-
-		if (gl_log_format == HTML) {
-			bosslog << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
-
-			if (!contents.userlistMessages.empty())
-				bosslog << DIV_USERLIST_BUTTON_OPEN << "User Rules" << DIV_CLOSE;
-
-			if (!contents.seInfo.empty())
-				bosslog << DIV_SE_BUTTON_OPEN << scriptExtender << " Plugins" << DIV_CLOSE;
-
-			bosslog << DIV_RECOGNISED_BUTTON_OPEN << "Recognised Plugins" << DIV_CLOSE;
-
-			if (!contents.unrecognisedPlugins.empty())
-				bosslog << DIV_UNRECOGNISED_BUTTON_OPEN << "Unrecognised Plugins" << DIV_CLOSE;
-
-			bosslog.PrintHeaderBottom();
-		}
-
-		bosslog.SetHTMLSpecialEscape(false);
-
-		// Print Summary
-		bosslog << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE;
-
-		bosslog << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << "Plugin Type" << TABLE_HEADING << "Count"
-			<< TABLE_BODY << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Recognised (or sorted by user rules)" << TABLE_DATA << counters.recognised;
-		if (counters.unrecognised != 0)
-			bosslog	<< TABLE_ROW_CLASS_WARN << TABLE_DATA << "Unrecognised" << TABLE_DATA << counters.unrecognised;
-		else
-			bosslog	<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Unrecognised" << TABLE_DATA << counters.unrecognised;
-		bosslog	<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Inactive" << TABLE_DATA << counters.inactive
-			<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "All" << TABLE_DATA << (counters.recognised+counters.unrecognised)
-			<< TABLE_CLOSE
-
-			<< TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << "Plugin Message Type" << TABLE_HEADING << "Count"
-			<< TABLE_BODY;
-		if (counters.warnings != 0)
-			bosslog << TABLE_ROW_CLASS_WARN << TABLE_DATA << "Warning" << TABLE_DATA << counters.warnings;
-		else
-			bosslog	<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Warning" << TABLE_DATA << counters.warnings;
-		if (counters.errors != 0)
-			bosslog	<< TABLE_ROW_CLASS_ERROR << TABLE_DATA << "Error" << TABLE_DATA << counters.errors;
-		else
-			bosslog	<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Error" << TABLE_DATA << counters.errors;
-		bosslog	<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "All" << TABLE_DATA << counters.messages
-			<< TABLE_CLOSE
-
-			<< LIST_OPEN;
-
-		if (!contents.updater.empty())  //This contains BOSS & masterlist update strings.
-			bosslog << contents.updater;
-
-		if (contents.oldRecognisedPlugins == contents.recognisedPlugins)
-			bosslog << LIST_ITEM_CLASS_SUCCESS << "No change in recognised plugin list since last run.";
-
-		size_t size = contents.parsingErrors.size();  //First print parser/syntax error messages.
-		for (size_t i=0;i<size;i++)
-			bosslog << contents.parsingErrors[i];
-
-		if (!contents.criticalError.empty())		//Print masterlist parsing error.
-			bosslog << contents.criticalError;
-		else {
-
-			bosslog.SetHTMLSpecialEscape(true);
-			size = contents.globalMessages.size();
-			for (size_t i=0; i<size; i++)
-				bosslog << contents.globalMessages[i];  //Print global messages.
-			bosslog.SetHTMLSpecialEscape(false);
-		}
-
-		bosslog << LIST_CLOSE << SECTION_CLOSE;
-		if (!contents.criticalError.empty()) {  //Exit early.
-			bosslog.PrintFooter(counters.recognised+counters.unrecognised, counters.messages);
-			bosslog.Save(file, true);
-			return;
-		}
-
-		// Display RuleList Messages
-		if (!contents.userlistMessages.empty()) {
-			bosslog << SECTION_ID_USERLIST_OPEN << HEADING_OPEN << "User Rules" << HEADING_CLOSE 
-				<< TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << "Rule" << TABLE_HEADING << "Applied" << TABLE_HEADING << "Details (if applicable)"
-				<< TABLE_BODY << contents.userlistMessages << TABLE_CLOSE << SECTION_CLOSE;
-		}
-
-		// Display Script Extender Info
-		if (!contents.seInfo.empty())
-			bosslog << SECTION_ID_SE_OPEN << HEADING_OPEN << scriptExtender << " Plugins" << HEADING_CLOSE << LIST_OPEN
-				<< contents.seInfo
-				<< LIST_CLOSE << SECTION_CLOSE;
-
-		// Display Recognised Mods
-		bosslog << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN;
-		if (gl_revert < 1) 
-			bosslog << "Recognised Plugins";
-		else if (gl_revert == 1)
-			bosslog << "Restored Load Order (Using modlist.txt)";
-		else if (gl_revert == 2) 
-			bosslog << "Restored Load Order (Using modlist.old)";
-		bosslog  << HEADING_CLOSE << PARAGRAPH 
-			<< "These plugins are recognised by BOSS and have been sorted according to its masterlist. Please read any attached messages and act on any that require action."
-			<< LIST_OPEN
-			<< contents.recognisedPlugins
-			<< LIST_CLOSE << SECTION_CLOSE;
-
-		// Display Unrecognised Mods
-		if (!contents.unrecognisedPlugins.empty())
-			bosslog << SECTION_ID_UNRECOGNISED_OPEN << HEADING_OPEN << "Unrecognised Plugins" << HEADING_CLOSE 
-				<< PARAGRAPH << "The following plugins were not found in the masterlist, and must be positioned manually, using your favourite mod manager or by using BOSS's user rules functionality."
-				<< SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN << " You can submit unrecognised plugins for addition to the masterlist directly from this log by clicking on a plugin and supplying a link and/or description of its contents in the panel that is displayed." << SPAN_CLOSE << LIST_OPEN
-				<< contents.unrecognisedPlugins
-				<< LIST_CLOSE << SECTION_CLOSE;
-
-		// Finish
-		bosslog.PrintFooter(counters.recognised, counters.messages);
-		try {
-			bosslog.Save(file, true);
-		} catch (boss_error &e) {
-			LOG_ERROR("Critical Error: %s", e.getString().c_str());
-		}
 	}
 
 	//Structures necessary for case-insensitive hashsets used in BuildWorkingModlist. Taken from the BOOST docs.
@@ -377,37 +247,16 @@ namespace boss {
         std::locale locale_;
 	};
 
+
 	//////////////////////////////////
 	// Externally-Visible Functions
 	//////////////////////////////////
 
-	summaryCounters::summaryCounters()
-		: recognised(0), unrecognised(0), inactive(0), messages(0), warnings(0), errors(0) {}
-
-	//Record recognised mod list from last HTML BOSSlog generated.
-	BOSS_COMMON string GetOldRecognisedList(const fs::path log) {
-		size_t pos1, pos2;
-		string result;
-		fileToBuffer(log, result);
-		pos1 = result.find("<section id='recPlugins'>");
-		if (pos1 != string::npos)
-			pos1 = result.find("<ul>", pos1);
-		if (pos1 != string::npos)
-			pos2 = result.find("</section>", pos1);
-		if (pos2 != string::npos)
-			result = result.substr(pos1+4, pos2-pos1-9);
-		return result;
-	}
-
-	BOSS_COMMON void PerformSortingFunctionality(fs::path file,
+	BOSS_COMMON void PerformSortingFunctionality(BossLog& bosslog,
 												ItemList& modlist,
 												ItemList& masterlist,
 												RuleList& userlist,
-												const time_t esmtime,
-												bosslogContents contents) {
-		string SE;
-		summaryCounters counters;
-
+												const time_t esmtime) {
 		BuildWorkingModlist(modlist, masterlist, userlist);
 		LOG_INFO("masterlist now filled with ordered mods and modlist filled with unknowns.");
 
@@ -425,7 +274,7 @@ namespace boss {
 			if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
 				throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER, masterlist.Items()[pos].Name());
 		} catch (boss_error &e) {
-			contents.globalMessages.push_back(Message(SAY, "The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see the readme section on False-Flagged Plugins."));
+			bosslog.globalMessages.push_back(Message(SAY, "The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see the readme section on False-Flagged Plugins."));
 			masterlist.ApplyMasterPartition();
 			LOG_WARN("The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see the readme section on False-Flagged Plugins.");
 		}
@@ -434,12 +283,12 @@ namespace boss {
 		modlist.Insert(0,masterlist.Items(), 0, masterlist.Items().size());
 		modlist.LastRecognisedPos(masterlist.LastRecognisedPos());
 
-		ApplyUserRules(modlist, userlist, contents.userlistMessages);
+		ApplyUserRules(modlist, userlist, bosslog.userRules);
 		LOG_INFO("userlist sorting process finished.");
 
-		SE = GetSEPluginInfo(contents.seInfo);
+		bosslog.scriptExtender = GetSEPluginInfo(bosslog.sePlugins);
 
-		SortMods(modlist, contents, esmtime, counters);
+		SortMods(modlist, esmtime, bosslog);
 
 		//Now set the load order using Skyrim method.
 		if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
@@ -447,15 +296,17 @@ namespace boss {
 				modlist.SavePluginNames(loadorder_path(), false, false);
 				modlist.SavePluginNames(plugins_path(), true, true);
 			} catch (boss_error &e) {
-				Outputter output(HTML);
-				output << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+				bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 					<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 					<< "Utility will end now.";
-				contents.criticalError = output.AsString();
 			}
 		}
 
-		PrintBOSSlog(file, contents, counters, SE);
+		try {
+			bosslog.Save(bosslog_path(), true);
+		} catch (boss_error &e) {
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
+		}
 	}
 
 	//Create a modlist containing all the mods that are installed or referenced in the userlist with their masterlist messages.
@@ -527,7 +378,7 @@ namespace boss {
 	}
 
 	//Applies the userlist rules to the working modlist.
-	BOSS_COMMON void ApplyUserRules(ItemList& modlist, RuleList& userlist, string& outputBuffer) {
+	BOSS_COMMON void ApplyUserRules(ItemList& modlist, RuleList& userlist, Outputter& buffer) {
 		if (userlist.rules.empty())
 			return;
 		//Because erase operations invalidate iterators after the position(s) erased, the last recognised mod needs to be recorded, then
@@ -535,8 +386,6 @@ namespace boss {
 		//Note that if a mod is sorted after the last recognised mod by the userlist, it becomes the last recognised mod, and the item will
 		//need to be re-assigned to this item. This only occurs for BEFORE/AFTER plugin sorting rules.
 		string lastRecognisedItem = modlist.Items()[modlist.LastRecognisedPos()].Name();
-
-		Outputter buffer(gl_log_format);
 
 		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", userlist.rules.size());
 		vector<Rule>::iterator ruleIter = userlist.rules.begin();
@@ -644,13 +493,11 @@ namespace boss {
 						messageLineFail = true;
 						break;
 					}
-					vector<Message> messages = modlist.Items()[modlistPos1].Messages();
-					if (lines[i].Key() == REPLACE)  //If the rule is to replace messages, clear existing messages.
-						messages.clear();
-					//Append message to message list of mod.
-					messages.push_back(lines[i].ObjectAsMessage());
 					vector<Item> items = modlist.Items();
-					items[modlistPos1].Messages(messages);
+					if (lines[i].Key() == REPLACE)  //If the rule is to replace messages, clear existing messages.
+						items[modlistPos1].ClearMessages();
+					//Append message to message list of mod.
+					items[modlistPos1].InsertMessage(items[modlistPos1].Messages().size(), lines[i].ObjectAsMessage());
 					modlist.Items(items);
 				}
 			} else if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {  //Group: Can only sort.
@@ -692,9 +539,7 @@ namespace boss {
 			modlist.LastRecognisedPos(modlist.FindLastItem(lastRecognisedItem));
 		}
 
-
 		if (userlist.rules.empty()) 
 			buffer << ITALIC_OPEN << "No valid rules were found in your userlist." << ITALIC_CLOSE;
-		outputBuffer = buffer.AsString();
 	}
 }
