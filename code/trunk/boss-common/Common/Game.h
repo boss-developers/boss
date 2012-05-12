@@ -78,6 +78,9 @@ namespace boss {
 		fs::path loadorderPath;  //Path to the file which lists total load order.
 
 		//Each game also has a masterlist, userlist, modlist and BOSS Log associated with them. Make these members?
+
+		//Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
+		fs::path GetLocalAppDataPath();
 	};
 }
 

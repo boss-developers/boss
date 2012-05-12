@@ -160,6 +160,7 @@ namespace boss {
 		uint32_t errors;
 
 		string scriptExtender;
+		string gameName;
 
 		Outputter updaterOutput;
 		Outputter criticalError;

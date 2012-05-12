@@ -288,6 +288,7 @@ namespace boss {
 		LOG_INFO("userlist sorting process finished.");
 
 		bosslog.scriptExtender = GetSEPluginInfo(bosslog.sePlugins);
+		bosslog.gameName = gl_current_game.Name();
 
 		SortMods(modlist, esmtime, bosslog);
 

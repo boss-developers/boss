@@ -316,16 +316,14 @@ namespace boss {
 	void MasterlistUpdater::GetLocalMasterlistRevisionDate(fs::path file, uint32_t& revision, string& date) {
 		string line, newline = "Masterlist Revision:";
 		ifstream mlist;
-		char cbuffer[MAXLENGTH];
 		size_t pos1,pos2,pos3;
 
 		if (fs::exists(file)) {
 			mlist.open(file.c_str());
 			if (mlist.fail())
 				throw boss_error(BOSS_ERROR_FILE_READ_FAIL, file.string());
-			while (!mlist.eof()) {
-				mlist.getline(cbuffer,sizeof(cbuffer));
-				line=cbuffer;
+			while (mlist.good()) {
+				getline(mlist, line);
 				if (line.find(newline) != string::npos) {
 					//Hooray, we've found the line.
 					pos1 = line.find(": ");

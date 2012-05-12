@@ -24,27 +24,46 @@
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
 */
-#define wxUSE_CHOICEDLG 1
 
 #include "Common/Globals.h"
-#include "Support/Helpers.h"
-#include "Support/Logger.h"
 
 namespace boss {
 	using namespace std;
+	
+	//BOSS version number.
+	BOSS_COMMON const uint32_t BOSS_VERSION_MAJOR	= 2;
+	BOSS_COMMON const uint32_t BOSS_VERSION_MINOR	= 1;
+	BOSS_COMMON const uint32_t BOSS_VERSION_PATCH	= 0;
+	
+	//Supported game values.
+	BOSS_COMMON const uint32_t AUTODETECT			= 0;
+	BOSS_COMMON const uint32_t OBLIVION				= 1;
+	BOSS_COMMON const uint32_t NEHRIM				= 2;
+	BOSS_COMMON const uint32_t SKYRIM				= 3;
+	BOSS_COMMON const uint32_t FALLOUT3				= 4;
+	BOSS_COMMON const uint32_t FALLOUTNV			= 5;
+	BOSS_COMMON const uint32_t MORROWIND			= 6;
 
+	//BOSS Log formatting values.
+	BOSS_COMMON const uint32_t HTML					= 0;
+	BOSS_COMMON const uint32_t PLAINTEXT			= 1;
+
+	//Language values.
+	BOSS_COMMON const uint32_t ENGLISH				= 0;
+	BOSS_COMMON const uint32_t SPANISH				= 1;
+	BOSS_COMMON const uint32_t GERMAN				= 2;
+	BOSS_COMMON const uint32_t RUSSIAN				= 3;
+	
+	//Some misc. globals.
 	BOSS_COMMON const string gl_boss_release_date	= "X Y 2012";
-
-	BOSS_COMMON uint32_t gl_current_game			= AUTODETECT;
-
-	BOSS_COMMON extern bool gl_using_local_app_data_folder = true;  //Set by bUseMyGamesDirectory in the game's ini file if different from default.
-
+	BOSS_COMMON Game gl_current_game				= Game();
+	
+	
 	///////////////////////////////
 	//File/Folder Paths
 	///////////////////////////////
 
 	BOSS_COMMON const fs::path boss_path			= fs::path(".");
-	BOSS_COMMON fs::path data_path					= boss_path / ".." / "Data";
 	BOSS_COMMON const fs::path ini_path				= boss_path / "BOSS.ini";
 	BOSS_COMMON const fs::path old_ini_path			= boss_path / "BOSS.ini.old";
 	BOSS_COMMON const fs::path debug_log_path		= boss_path / "BOSSDebugLog.txt";
@@ -54,102 +73,6 @@ namespace boss {
 	BOSS_COMMON const fs::path api_doc_path			= boss_path / "Docs" / "BOSS API ReadMe.html";
 	BOSS_COMMON const fs::path licenses_path		= boss_path / "Docs" / "Licenses.txt";
 
-	
-	///////////////////////////////
-	//File/Folder Path Functions
-	///////////////////////////////
-
-	//Path to the BOSS files for the game that BOSS is currently running for, relative to executable (ie. boss_path).
-	BOSS_COMMON fs::path boss_game_path() {
-		switch (gl_current_game) {
-		case OBLIVION:
-			return boss_path / "Oblivion";
-		case NEHRIM:
-			return boss_path / "Nehrim";
-		case SKYRIM:
-			return boss_path / "Skyrim";
-		case FALLOUT3:
-			return boss_path / "Fallout 3";
-		case FALLOUTNV:
-			return boss_path / "Fallout New Vegas";
-		case MORROWIND:
-			return boss_path / "Morrowind";
-		default:
-			return boss_path;
-		}
-	}
-
-	BOSS_COMMON fs::path bosslog_path() {
-		switch (gl_log_format) {
-		case HTML:
-			return boss_game_path() / "BOSSlog.html";
-		case PLAINTEXT:
-			return boss_game_path() / "BOSSlog.txt";
-		default:
-			return boss_game_path() / "BOSSlog.html";
-		}
-	}
-
-	BOSS_COMMON fs::path masterlist_path() {
-		return boss_game_path() / "masterlist.txt";
-	}
-
-	BOSS_COMMON fs::path userlist_path() {
-		return boss_game_path() / "userlist.txt";
-	}
-
-	BOSS_COMMON fs::path modlist_path() {
-		return boss_game_path() / "modlist.txt";
-	}
-
-	BOSS_COMMON fs::path old_modlist_path() {
-		return boss_game_path() / "modlist.old";
-	}
-
-	BOSS_COMMON fs::path plugins_path() {
-		if (gl_using_local_app_data_folder || gl_current_game != OBLIVION) {  //The bUseMyGamesDirectory has no effect in games other than Oblivion.
-			switch (gl_current_game) {
-			case OBLIVION:
-				return GetLocalAppDataPath() / "Oblivion" / "plugins.txt";
-			case NEHRIM:
-				return GetLocalAppDataPath() / "Oblivion" / "plugins.txt";  //Shared with Oblivion.
-			case SKYRIM:
-				return GetLocalAppDataPath() / "Skyrim" / "plugins.txt";
-			case FALLOUT3:
-				return GetLocalAppDataPath() / "Fallout3" / "plugins.txt";
-			case FALLOUTNV:
-				return GetLocalAppDataPath() / "FalloutNV" / "plugins.txt";
-			case MORROWIND:
-				return data_path.parent_path() / "Morrowind.ini";
-			default:
-				return boss_path;
-			}
-		} else
-			return data_path.parent_path() / "plugins.txt";
-	}
-
-	//This is only actually used for Skyrim.
-	BOSS_COMMON fs::path loadorder_path() {
-		if (gl_using_local_app_data_folder || gl_current_game != OBLIVION) {  //The bUseMyGamesDirectory has no effect in games other than Oblivion.
-			switch (gl_current_game) {
-			case OBLIVION:
-				return GetLocalAppDataPath() / "Oblivion" / "loadorder.txt";
-			case NEHRIM:
-				return GetLocalAppDataPath() / "Oblivion" / "loadorder.txt";  //Shared with Oblivion.
-			case SKYRIM:
-				return GetLocalAppDataPath() / "Skyrim" / "loadorder.txt";
-			case FALLOUT3:
-				return GetLocalAppDataPath() / "Fallout3" / "loadorder.txt";
-			case FALLOUTNV:
-				return GetLocalAppDataPath() / "FalloutNV" / "loadorder.txt";
-			case MORROWIND:
-				return boss_path / "Morrowind" / "loadorder.txt";   //Morrowind doesn't have an AppData folder, so store loadorder.txt in BOSS's Morrowind folder (though loadorder.txt should really only ever be written for Skyrim).
-			default:
-				return boss_path;
-			}
-		} else
-			return data_path.parent_path() / "loadorder.txt";
-	}
 
 	///////////////////////////////
 	//Ini Settings
@@ -177,186 +100,4 @@ namespace boss {
 	BOSS_COMMON bool		gl_show_CRCs				= false;
 	BOSS_COMMON bool		gl_trial_run				= false;
 	BOSS_COMMON bool		gl_log_debug_output			= false;
-
-
-	///////////////////////////////
-	//Settings Functions
-	///////////////////////////////
-
-	BOSS_COMMON string GetGameString(uint32_t game) {
-		switch (game) {
-		case OBLIVION:
-			return "TES IV: Oblivion";
-		case NEHRIM:
-			return "Nehrim - At Fate's Edge";
-		case SKYRIM:
-			return "TES V: Skyrim";
-		case FALLOUT3:
-			return "Fallout 3";
-		case FALLOUTNV:
-			return "Fallout: New Vegas";
-		case MORROWIND:
-			return "TES III: Morrowind";
-		default:
-			return "No Game Detected";
-		}
-	}
-
-	BOSS_COMMON string	GetGameMasterFile(uint32_t game) {
-		switch (game) {
-		case OBLIVION:
-			return "Oblivion.esm";
-		case NEHRIM:
-			return "Nehrim.esm";
-		case SKYRIM:
-			return "Skyrim.esm";
-		case FALLOUT3:
-			return "Fallout3.esm";
-		case FALLOUTNV:
-			return "FalloutNV.esm";
-		case MORROWIND:
-			return "Morrowind.esm";
-		default:
-			return "No Game Detected";
-		}
-	}
-
-	BOSS_COMMON void SetDataPath(uint32_t game) {
-		LOG_INFO("Setting data path for game: \"%s\"", GetGameString(game).c_str());
-		if (game == MORROWIND && fs::exists(boss_path / ".." / "Data Files" / GetGameMasterFile(game))) {
-			data_path = boss_path / ".." / "Data Files";
-			return;
-		} else if (fs::exists(boss_path / ".." / "Data" / GetGameMasterFile(game))) {
-			data_path = boss_path / ".." / "Data";
-			return;
-		}
-		switch (game) {
-		case OBLIVION:
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path")) / "Data";
-			break;
-		case NEHRIM:
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation")) / "Data";
-			break;
-		case SKYRIM:
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path")) / "Data";
-			break;
-		case FALLOUT3:
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path")) / "Data";
-			break;
-		case FALLOUTNV:
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path")) / "Data";
-			break;
-		case MORROWIND:
-			if (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path"))
-				data_path = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path")) / "Data Files";
-			break;
-		}
-	}
-
-	void AutodetectGame(vector<uint32_t> detectedGames) {  //Throws exception if error.
-		if (gl_last_game != AUTODETECT) {
-			for (size_t i=0, max = detectedGames.size(); i < max; i++) {
-				if (gl_last_game == detectedGames[i]) {
-					gl_current_game = gl_last_game;
-					return;
-				}
-			}
-		}
-		LOG_INFO("Autodetecting game.");
-		if (fs::exists(data_path / "Nehrim.esm"))  //Before Oblivion because Nehrim installs can have Oblivion.esm for porting mods.
-			gl_current_game = NEHRIM;
-		else if (fs::exists(data_path / "Oblivion.esm"))
-			gl_current_game = OBLIVION;
-		else if (fs::exists(data_path / "FalloutNV.esm"))   //Before Fallout 3 because some mods for New Vegas require Fallout3.esm.
-			gl_current_game = FALLOUTNV;
-		else if (fs::exists(data_path / "Fallout3.esm")) 
-			gl_current_game = FALLOUT3;
-		else if (fs::exists(data_path / "Skyrim.esm")) 
-			gl_current_game = SKYRIM;
-		else if (fs::exists(boss_path / ".." / "Data Files" / "Morrowind.esm"))  //Morrowind uses a different data path to the other games.
-			gl_current_game = MORROWIND;
-		else
-			LOG_INFO("Game not detected locally. Checking Registry for paths.");
-	}
-
-	BOSS_COMMON void DetectGame(vector<uint32_t>& detectedGames, vector<uint32_t>& undetectedGames) {
-		//Detect all installed games.
-		if (fs::exists(data_path / "Oblivion.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path")) //Look for Oblivion.
-			detectedGames.push_back(OBLIVION);
-		else
-			undetectedGames.push_back(OBLIVION);
-		if (fs::exists(data_path / "Nehrim.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation")) //Look for Nehrim.
-			detectedGames.push_back(NEHRIM);
-		else
-			undetectedGames.push_back(NEHRIM);
-		if (fs::exists(data_path / "Skyrim.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path")) //Look for Skyrim.
-			detectedGames.push_back(SKYRIM);
-		else
-			undetectedGames.push_back(SKYRIM);
-		if (fs::exists(data_path / "Fallout3.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path")) //Look for Fallout 3.
-			detectedGames.push_back(FALLOUT3);
-		else
-			undetectedGames.push_back(FALLOUT3);
-		if (fs::exists(data_path / "FalloutNV.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path")) //Look for Fallout New Vegas.
-			detectedGames.push_back(FALLOUTNV);
-		else
-			undetectedGames.push_back(FALLOUTNV);
-		if (fs::exists(boss_path / ".." / "Data Files" / "Morrowind.esm") || RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path")) //Look for Morrowind. Morrowind uses a different data path to the other games.
-			detectedGames.push_back(MORROWIND);
-		else
-			undetectedGames.push_back(MORROWIND);
-		//Now set gl_current_game.
-		if (gl_game != AUTODETECT) {
-			if (gl_update_only)
-				gl_current_game = gl_game;  //Assumed to be local, no data_path change needed.
-			else {
-				//Check for game. Check locally and for both registry entries.
-				if (fs::exists(data_path / GetGameMasterFile(gl_game)))
-					gl_current_game = gl_game;
-				else if (gl_game == OBLIVION && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Oblivion", "Installed Path")))  //Look for Oblivion.
-					gl_current_game = gl_game;
-				else if (gl_game == NEHRIM && RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1", "InstallLocation"))  //Look for Nehrim.
-					gl_current_game = gl_game;
-				else if (gl_game == SKYRIM && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Skyrim", "Installed Path")))  //Look for Skyrim.
-					gl_current_game = gl_game;
-				else if (gl_game == FALLOUT3 && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Fallout3", "Installed Path")))  //Look for Fallout 3.
-					gl_current_game = gl_game;
-				else if (gl_game == FALLOUTNV && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\FalloutNV", "Installed Path")))  //Look for Fallout New Vegas.
-					gl_current_game = gl_game;
-				else if (gl_game == MORROWIND && (RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\Bethesda Softworks\\Morrowind", "Installed Path")))  //Look for Morrowind.
-					gl_current_game = gl_game;
-				else
-					AutodetectGame(detectedGames);  //Game not found. Autodetect.
-			}
-		} else
-			AutodetectGame(detectedGames);
-	}
-
-	BOSS_COMMON time_t GetMasterTime() {  //Throws exception if error.
-		try {
-			switch (gl_current_game) {
-			case OBLIVION:
-				return fs::last_write_time(data_path / "Oblivion.esm");
-			case NEHRIM:
-				return fs::last_write_time(data_path / "Nehrim.esm");
-			case SKYRIM:
-				return fs::last_write_time(data_path / "Skyrim.esm");
-			case FALLOUT3:
-				return fs::last_write_time(data_path / "Fallout3.esm");
-			case FALLOUTNV:
-				return fs::last_write_time(data_path / "FalloutNV.esm");
-			case MORROWIND:
-				return fs::last_write_time(data_path / "Morrowind.esm");
-			default:
-				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
-			}
-		} catch(fs::filesystem_error e) {
-			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, GetGameMasterFile(gl_current_game), e.what());
-		}
-	}
 }

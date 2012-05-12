@@ -35,6 +35,7 @@
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/fusion/adapted/struct/detail/extension.hpp>
+#include <boost/regex.hpp>
 #include "Common/DllDef.h"
 #include "Common/Error.h"
 
@@ -143,7 +144,7 @@ namespace boss {
 		bool	IsMasterFile() const;
 		bool	IsFalseFlagged() const;			//True if IsMasterFile does not match file extension.
 		bool	IsGhosted	() const;			//Checks if the file exists in ghosted form.
-		bool	Exists		() const;			//Checks if the file exists in gl_current_game.DataFolder(), ghosted or not.
+		bool	Exists		() const;			//Checks if the file exists in the data folder, ghosted or not.
 		string	GetVersion	() const;			//Outputs the file's header.
 		time_t	GetModTime	() const;			//Can throw exception.
 
@@ -164,8 +165,10 @@ namespace boss {
 		size_t					lastRecognisedPos;
 		vector<MasterlistVar>	masterlistVariables;
 		boost::unordered_map<string,uint32_t> fileCRCs;
-	public:
 
+		//Searches a hashset for the first matching string of a regex and returns its iterator position.
+		boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos);
+	public:
 				ItemList();
 		void	Load			(fs::path path);	//Load by scanning path. If path is a directory, it scans it for plugins. 
 																	//If path is a file, it parses it using the modlist grammar.

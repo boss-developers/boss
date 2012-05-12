@@ -28,14 +28,10 @@
 #ifndef __SUPPORT_HELPERS__HPP__
 #define __SUPPORT_HELPERS__HPP__
 
-#include "Types.h"
 #include "Common/DllDef.h"
-#include "Common/Classes.h"
 
-#include <cstring>
-#include <iostream>
+#include <string>
 #include <boost/filesystem.hpp>
-#include <boost/regex.hpp>
 
 namespace boss {
 	using namespace std;
@@ -76,17 +72,10 @@ namespace boss {
 	//Get registry subkey value string.
 	string RegKeyStringValue(string keyStr, string subkey, string value);
 
-	//Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
-	fs::path GetLocalAppDataPath();
-
-	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
-	BOSS_COMMON boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos);
-
 	//Version class for more robust version comparisons.
 	class Version {
 	private:
 		string verString;
-		uint32_t verNum[4];
 	public:
 		Version();
 		Version(string ver);

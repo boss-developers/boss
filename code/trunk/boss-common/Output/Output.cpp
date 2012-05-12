@@ -1189,7 +1189,7 @@ namespace boss {
 				<< "			\"Bugzilla_login\":\"bossguest@darkcreations.org\","
 				<< "			\"Bugzilla_password\":\"bosspassword\","
 				<< "			\"product\":\"BOSS\","
-				<< "			\"component\":\"" << gl_current_game.Name() << "\","
+				<< "			\"component\":\"" << gameName << "\","
 				<< "			\"summary\":summary,"
 				<< "			\"version\":\"2.1\","
 				<< "			\"description\":description,"

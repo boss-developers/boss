@@ -30,6 +30,11 @@
 #include "Support/Helpers.h"
 #include "Support/Logger.h"
 
+#if _WIN32 || _WIN64
+#	include "Windows.h"
+#	include "Shlobj.h"
+#endif
+
 namespace boss {
 	using namespace std;
  
@@ -90,7 +95,7 @@ namespace boss {
 		//Now set return a game.
 		if (gl_game != AUTODETECT) {
 			if (gl_update_only)
-				return gl_game;  //Assumed to be local, no gl_current_game.DataFolder() change needed.
+				return gl_game;
 			else if (Game(gl_game, "", true).IsInstalled())
 				return gl_game;
 			else
@@ -195,15 +200,17 @@ namespace boss {
 		if (!noPathInit) {
 			if (dataFolder.empty()) {
 				//First look for local install, then look for Registry.
-				if (fs::exists(boss_path / ".." / pluginsFolderName / masterFile))
+				if (fs::exists(boss_path / ".." / pluginsFolderName / masterFile) || gl_update_only)
 					dataPath = boss_path / ".." / pluginsFolderName;
 				else if (RegKeyExists("HKEY_LOCAL_MACHINE", registryKey, registrySubKey))
 					dataPath = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", registryKey, registrySubKey)) / pluginsFolderName;
+				else if (gl_update_only)  //Update only games are treated as installed locally if not actually installed.
+					dataPath = boss_path / ".." / pluginsFolderName;
 				else
 					throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 			}
 			
-			//Requires gl_current_game.DataFolder() to be set.
+			//Requires data path to be set.
 			if (inGame == OBLIVION) {
 				//Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
 				if (fs::exists(dataPath.parent_path() / "Oblivion.ini")) {
@@ -289,5 +296,22 @@ namespace boss {
 			return boss_path / bossFolderName / "BOSSlog.html";
 		else
 			return boss_path / bossFolderName / "BOSSlog.txt";
+	}
+
+	//Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
+	fs::path Game::GetLocalAppDataPath() {
+#if _WIN32 || _WIN64
+		HWND owner;
+		TCHAR path[MAX_PATH];
+
+		HRESULT res = SHGetFolderPath(owner, CSIDL_LOCAL_APPDATA, NULL, SHGFP_TYPE_CURRENT, path);
+
+		if (res == S_OK)
+			return fs::path(path);
+		else
+			return fs::path("");
+#else
+		return fs::path("");
+#endif
 	}
 }

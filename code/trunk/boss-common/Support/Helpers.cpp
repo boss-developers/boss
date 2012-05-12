@@ -26,6 +26,7 @@
 */
 
 
+#include "Support/Types.h"
 #include "Support/Helpers.h"
 #include "Support/ModFormat.h"
 #include "Support/Logger.h"
@@ -39,6 +40,8 @@
 
 #include "source/utf8.h"
 
+#include <cstring>
+#include <iostream>
 #include <ctype.h>
 #include <stdio.h>
 #include <time.h>
@@ -232,33 +235,10 @@ namespace boss {
 #endif
 	}
 
-	//Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
-	fs::path GetLocalAppDataPath() {
-#if _WIN32 || _WIN64
-		HWND owner;
-		TCHAR path[MAX_PATH];
-
-		HRESULT res = SHGetFolderPath(owner, CSIDL_LOCAL_APPDATA, NULL, SHGFP_TYPE_CURRENT, path);
-
-		if (res == S_OK)
-			return fs::path(path);
-		else
-			return fs::path("");
-#else
-		return fs::path("");
-#endif
-	}
-
-	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
-	BOSS_COMMON boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
-		while(startPos != set.end()) {
-			if (boost::regex_match(*startPos, reg))
-				break;
-			++startPos;
-		}
-		return startPos;
-	}
-
+	
+	//////////////////////////////
+	// Version Class Functions
+	//////////////////////////////
 
 	Version::Version() {
 		verString = "";

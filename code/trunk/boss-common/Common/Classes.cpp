@@ -557,7 +557,7 @@ namespace boss {
 
 			if (!fs::exists(path))
 				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, path.string());
-			else if (!ValidateUTF8File(path))  //plugins.txt is not going to be UTF-8.
+			else if (!ValidateUTF8File(path))
 				throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, path.string());
 
 			fileToBuffer(path,contents);
@@ -901,6 +901,16 @@ namespace boss {
 
 	void ItemList::Insert(size_t pos, Item item) {
 		items.insert(items.begin()+pos, item);
+	}
+
+	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
+	boost::unordered_set<string>::iterator ItemList::FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos) {
+		while(startPos != set.end()) {
+			if (boost::regex_match(*startPos, reg))
+				break;
+			++startPos;
+		}
+		return startPos;
 	}
 
 	//////////////////////////////
