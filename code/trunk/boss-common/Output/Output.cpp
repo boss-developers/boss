@@ -27,6 +27,7 @@
 
 #include "Output/Output.h"
 #include "Common/Error.h"
+#include "Common/Globals.h"
 #include "Support/Helpers.h"
 #include <boost/algorithm/string.hpp>
 #include "source/utf8.h"
@@ -428,55 +429,46 @@ namespace boss {
 			}
 		}
 		//Select message formatting.
-		switch(m.Key()) {
-		case TAG:
+		if (m.Key() == SAY) {
+			if (outFormat == HTML)
+				outStream << "<li class='note'>Note: " << data;
+			else
+				outStream << endl << "*  Note: " << data;
+		} else if (m.Key() == TAG) {
 			if (outFormat == HTML)
 				outStream << "<li class='tag'><span class='tagPrefix'>Bash Tag suggestion(s):</span> " << data;
 			else
 				outStream << endl << "*  Bash Tag suggestion(s):" << data;
-			break;
-		case SAY:
-			if (outFormat == HTML)
-				outStream << "<li class='note'>Note: " << data;
-			else
-				outStream << endl << "*  Note: " << data;
-			break;
-		case REQ:
+		} else if (m.Key() == REQ) {
 			if (outFormat == HTML)
 				outStream << "<li class='req'>Requires: " << data;
 			else
 				outStream << endl << "*  Requires: " << data;
-			break;
-		case INC:
+		} else if (m.Key() == INC) {
 			if (outFormat == HTML)
 				outStream << "<li class='inc'>Incompatible with: " << data;
 			else
 				outStream << endl << "*  Incompatible with: " << data;
-			break;
-		case WARN:
+		} else if (m.Key() == WARN) {
 			if (outFormat == HTML)
 				outStream << "<li class='warn'>Warning: " << data;
 			else
 				outStream << endl << "*  Warning: " << data;
-			break;
-		case ERR:
+		} else if (m.Key() == ERR) {
 			if (outFormat == HTML)
 				outStream << "<li class='error'>ERROR: " << data;
 			else
 				outStream << endl << "*  ERROR: " << data;
-			break;
-		case DIRTY:
+		} else if (m.Key() == DIRTY) {
 			if (outFormat == HTML)
 				outStream << "<li class='dirty'>Contains dirty edits: " << data;
 			else
 				outStream << endl << "*  Contains dirty edits: " << data;
-			break;
-		default:
+		} else {
 			if (outFormat == HTML)
 				outStream << "<li class='note'>Note: " << data;
 			else
 				outStream << endl << "*  Note: " << data;
-			break;
 		}
 		return *this;
 	}
@@ -502,20 +494,15 @@ namespace boss {
 		vector<RuleLine> lines = r.Lines();
 		size_t linesSize = lines.size();
 		for (size_t j=0;j<linesSize;j++) {
-			switch (lines[j].Key()) {
-			case BEFORE:
+			if (lines[j].Key() == BEFORE)
 				*this << "Sort " << VAR_OPEN << r.Object() << VAR_CLOSE << " before " << VAR_OPEN << lines[j].Object() << VAR_CLOSE;
-				break;
-			case AFTER:
+			else if (lines[j].Key() == AFTER)
 				*this << "Sort " << VAR_OPEN << r.Object() << VAR_CLOSE << " after " << VAR_OPEN << lines[j].Object() << VAR_CLOSE;
-				break;
-			case TOP:
+			else if (lines[j].Key() == TOP)
 				*this << "Insert " << VAR_OPEN << r.Object() << VAR_CLOSE << " at the top of " << VAR_OPEN << lines[j].Object() << VAR_CLOSE;
-				break;
-			case BOTTOM:
+			else if (lines[j].Key() == BOTTOM)
 				*this << "Insert " << VAR_OPEN << r.Object() << VAR_CLOSE << " at the bottom of " << VAR_OPEN << lines[j].Object() << VAR_CLOSE;
-				break;
-			case APPEND:
+			else if (lines[j].Key() == APPEND) {
 				if (!hasEditedMessages) {
 					if (r.Key() == FOR)
 						*this << "Add the following messages to " << VAR_OPEN << r.Object() << VAR_CLOSE << ':' << LINE_BREAK << LIST_OPEN;
@@ -524,8 +511,7 @@ namespace boss {
 				}
 				*this << lines[j].ObjectAsMessage();
 				hasEditedMessages = true;
-				break;
-			case REPLACE:
+			} else if (lines[j].Key() == REPLACE) {
 				if (!hasEditedMessages) {
 					if (r.Key() == FOR)
 						*this << "Replace the messages attached to " << VAR_OPEN << r.Object() << VAR_CLOSE << " with:" << LINE_BREAK << LIST_OPEN;
@@ -534,7 +520,6 @@ namespace boss {
 				}
 				*this << lines[j].ObjectAsMessage();
 				hasEditedMessages = true;
-				break;
 			}
 		}
 		if (hasEditedMessages)
@@ -1204,7 +1189,7 @@ namespace boss {
 				<< "			\"Bugzilla_login\":\"bossguest@darkcreations.org\","
 				<< "			\"Bugzilla_password\":\"bosspassword\","
 				<< "			\"product\":\"BOSS\","
-				<< "			\"component\":\"" << GetGameString(gl_current_game) << "\","
+				<< "			\"component\":\"" << gl_current_game.Name() << "\","
 				<< "			\"summary\":summary,"
 				<< "			\"version\":\"2.1\","
 				<< "			\"description\":description,"

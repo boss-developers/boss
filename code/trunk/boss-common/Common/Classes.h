@@ -36,40 +36,38 @@
 #include <boost/unordered_map.hpp>
 #include <boost/fusion/adapted/struct/detail/extension.hpp>
 #include "Common/DllDef.h"
-#include "Common/Globals.h"
 #include "Common/Error.h"
 
 namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-	//DO NOT CHANGE THE VALUES. THEY MUST BE INVARIANT ACROSS RELEASES FOR API USERS.
-	BOSS_COMMON const uint32_t NONE		= 0;
+	BOSS_COMMON extern const uint32_t NONE;
 	//RuleList keywords.
-	BOSS_COMMON const uint32_t ADD		= 1;
-	BOSS_COMMON const uint32_t OVERRIDE	= 2;
-	BOSS_COMMON const uint32_t FOR		= 3;
-	BOSS_COMMON const uint32_t BEFORE	= 4;
-	BOSS_COMMON const uint32_t AFTER	= 5;
-	BOSS_COMMON const uint32_t TOP		= 6;
-	BOSS_COMMON const uint32_t BOTTOM	= 7;
-	BOSS_COMMON const uint32_t APPEND	= 8;
-	BOSS_COMMON const uint32_t REPLACE	= 9;
+	BOSS_COMMON extern const uint32_t ADD;
+	BOSS_COMMON extern const uint32_t OVERRIDE;
+	BOSS_COMMON extern const uint32_t FOR;
+	BOSS_COMMON extern const uint32_t BEFORE;
+	BOSS_COMMON extern const uint32_t AFTER;
+	BOSS_COMMON extern const uint32_t TOP;
+	BOSS_COMMON extern const uint32_t BOTTOM;
+	BOSS_COMMON extern const uint32_t APPEND;
+	BOSS_COMMON extern const uint32_t REPLACE;
 	//Masterlist keywords.
-	BOSS_COMMON const uint32_t SAY		= 10;
-	BOSS_COMMON const uint32_t TAG		= 11;
-	BOSS_COMMON const uint32_t REQ		= 12;
-	BOSS_COMMON const uint32_t INC		= 13;
-	BOSS_COMMON const uint32_t DIRTY	= 14;
-	BOSS_COMMON const uint32_t WARN		= 15;
-	BOSS_COMMON const uint32_t ERR		= 16;
+	BOSS_COMMON extern const uint32_t SAY;
+	BOSS_COMMON extern const uint32_t TAG;
+	BOSS_COMMON extern const uint32_t REQ;
+	BOSS_COMMON extern const uint32_t INC;
+	BOSS_COMMON extern const uint32_t DIRTY;
+	BOSS_COMMON extern const uint32_t WARN;
+	BOSS_COMMON extern const uint32_t ERR;
 
-	enum itemType : uint32_t {
-		MOD,
-		BEGINGROUP,
-		ENDGROUP,
-		REGEX
-	};
+	//Item types.
+	BOSS_COMMON extern const uint32_t MOD;
+	BOSS_COMMON extern const uint32_t BEGINGROUP;
+	BOSS_COMMON extern const uint32_t ENDGROUP;
+	BOSS_COMMON extern const uint32_t REGEX;
+
 
 	//////////////////////////////
 	// Masterlist Classes
@@ -87,6 +85,7 @@ namespace boss {
 
 		string Data() const;
 		string Conditions() const;
+
 		void Data(string inData);
 		void Conditions(string inConditions);
 
@@ -110,6 +109,7 @@ namespace boss {
 
 		uint32_t Key() const;
 		void Key(uint32_t inKey);
+
 		string KeyToString() const;		//Has HTML-safe output.
 
 		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer);
@@ -120,19 +120,19 @@ namespace boss {
 	private:
 		vector<Message> messages;
 		//string data is now filename (or group name). Trimmed and case-preserved. ".ghost" extensions are removed.
-		itemType		type;
+		uint32_t		type;
 	public:
 
 		Item		();
 		Item		(string inName);
-		Item		(string inName, itemType inType);
-		Item		(string inName, itemType inType, vector<Message> inMessages);
+		Item		(string inName, uint32_t inType);
+		Item		(string inName, uint32_t inType, vector<Message> inMessages);
 
 		vector<Message> Messages() const;
-		itemType Type() const;
+		uint32_t Type() const;
 		string Name() const;
 		void Messages(vector<Message> inMessages);
-		void Type(itemType inType);
+		void Type(uint32_t inType);
 		void Name(string inName);
 
 		bool	operator <	(Item);		//Throws boss_error exception on fail. Timestamp comparison, not content.
@@ -143,7 +143,7 @@ namespace boss {
 		bool	IsMasterFile() const;
 		bool	IsFalseFlagged() const;			//True if IsMasterFile does not match file extension.
 		bool	IsGhosted	() const;			//Checks if the file exists in ghosted form.
-		bool	Exists		() const;			//Checks if the file exists in data_path, ghosted or not.
+		bool	Exists		() const;			//Checks if the file exists in gl_current_game.DataFolder(), ghosted or not.
 		string	GetVersion	() const;			//Outputs the file's header.
 		time_t	GetModTime	() const;			//Can throw exception.
 
@@ -183,6 +183,7 @@ namespace boss {
 		size_t	GetLastMasterPos() const;				 //Can throw exception.
 		size_t	GetNextMasterPos(size_t currPos) const; //Can throw exception.
 
+		Item	ItemAt(size_t pos) const;
 
 		vector<Item>							Items() const;
 		ParsingError							ErrorBuffer() const;
@@ -190,6 +191,7 @@ namespace boss {
 		size_t									LastRecognisedPos() const;
 		vector<MasterlistVar>					Variables() const;
 		boost::unordered_map<string,uint32_t>	FileCRCs() const;
+
 		void	Items(vector<Item> items);
 		void	ErrorBuffer(ParsingError buffer);
 		void	GlobalMessageBuffer(vector<Message> buffer);
@@ -222,6 +224,7 @@ namespace boss {
 
 		uint32_t Key() const;
 		string Object() const;
+
 		void Key(uint32_t inKey);
 		void Object(string inObject);
 	};
@@ -237,29 +240,37 @@ namespace boss {
 		bool Enabled() const;
 		vector<RuleLine> Lines() const;
 
+		RuleLine LineAt(size_t pos) const;
+
 		void Enabled(bool e);
 		void Lines(vector<RuleLine> inLines);
-
 	};
 
 	class BOSS_COMMON RuleList {
-	public:
+	private:
 		vector<Rule>			rules;
-		ParsingError			parsingErrorBuffer;
-		vector<ParsingError>	syntaxErrorBuffer;
+		vector<ParsingError>	errorBuffer;
 
+		void CheckSyntax();  //Rule checker function, checks for syntax (not parsing) errors.
+	public:
 		RuleList();
-		void 					Load	(fs::path file);		//Throws exception on fail.
-		void 					Save	(fs::path file);		//Throws exception on fail.
-		size_t				 	FindRule(string ruleObject, bool onlyEnabled) const;
+		void 	Load	(fs::path file);		//Throws exception on fail.
+		void	Save	(fs::path file);		//Throws exception on fail.
+		size_t	FindRule(string ruleObject, bool onlyEnabled) const;
 
 		vector<Rule> Rules() const;
-		ParsingError ParsingErrorBuffer() const;
-		vector<ParsingError> SyntaxErrorBuffer() const;
+		vector<ParsingError> ErrorBuffer() const;
+
+		Rule RuleAt(size_t pos) const;
 		
 		void Rules(vector<Rule> inRules);
-		void ParsingErrorBuffer(ParsingError buffer);
-		void SyntaxErrorBuffer(vector<ParsingError> buffer);
+		void ErrorBuffer(vector<ParsingError>);
+
+		void Erase(size_t pos);
+		void Insert(size_t pos, Rule rule);
+		void Replace(size_t pos, Rule rule);
+
+		void Clear();
 	};
 
 
@@ -282,6 +293,8 @@ namespace boss {
 
 		ParsingError ErrorBuffer() const;
 		void ErrorBuffer(ParsingError buffer);
+
+		string GetValue(string setting) const;
 	};
 }
 #endif

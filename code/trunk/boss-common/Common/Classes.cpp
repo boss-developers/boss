@@ -26,6 +26,7 @@
 */
 
 #include "Common/Classes.h"
+#include "Common/Game.h"
 #include "Common/Globals.h"
 #include "Output/Output.h"
 #include "Support/Logger.h"
@@ -40,6 +41,32 @@ namespace boss {
 	namespace fs = boost::filesystem;
 
 	using boost::algorithm::to_lower_copy;
+
+	BOSS_COMMON const uint32_t NONE		= 0;
+	//RuleList keywords.
+	BOSS_COMMON const uint32_t ADD		= 1;
+	BOSS_COMMON const uint32_t OVERRIDE	= 2;
+	BOSS_COMMON const uint32_t FOR		= 3;
+	BOSS_COMMON const uint32_t BEFORE	= 4;
+	BOSS_COMMON const uint32_t AFTER	= 5;
+	BOSS_COMMON const uint32_t TOP		= 6;
+	BOSS_COMMON const uint32_t BOTTOM	= 7;
+	BOSS_COMMON const uint32_t APPEND	= 8;
+	BOSS_COMMON const uint32_t REPLACE	= 9;
+	//Masterlist keywords.
+	BOSS_COMMON const uint32_t SAY		= 10;
+	BOSS_COMMON const uint32_t TAG		= 11;
+	BOSS_COMMON const uint32_t REQ		= 12;
+	BOSS_COMMON const uint32_t INC		= 13;
+	BOSS_COMMON const uint32_t DIRTY	= 14;
+	BOSS_COMMON const uint32_t WARN		= 15;
+	BOSS_COMMON const uint32_t ERR		= 16;
+
+	//Item types.
+	BOSS_COMMON const uint32_t MOD			= 0;
+	BOSS_COMMON const uint32_t BEGINGROUP	= 1;
+	BOSS_COMMON const uint32_t ENDGROUP		= 2;
+	BOSS_COMMON const uint32_t REGEX		= 3;
 
 	/////////////////////////////////////
 	// conditionalData Class Methods
@@ -203,12 +230,12 @@ namespace boss {
 		messages.clear();
 	}
 	
-	Item::Item			(string inName, itemType inType) : conditionalData(inName, "") {
+	Item::Item			(string inName, uint32_t inType) : conditionalData(inName, "") {
 		type = inType;
 		messages.clear();
 	}
 	
-	Item::Item			(string inName, itemType inType, vector<Message> inMessages) : conditionalData(inName, "") {
+	Item::Item			(string inName, uint32_t inType, vector<Message> inMessages) : conditionalData(inName, "") {
 		type = inType;
 		messages = inMessages;
 	}
@@ -217,7 +244,7 @@ namespace boss {
 		return messages;
 	}
 
-	itemType Item::Type() const {
+	uint32_t Item::Type() const {
 		return type;
 	}
 
@@ -229,7 +256,7 @@ namespace boss {
 		messages = inMessages;
 	}
 
-	void Item::Type(itemType inType) {
+	void Item::Type(uint32_t inType) {
 		type = inType;
 	}
 
@@ -247,15 +274,15 @@ namespace boss {
 	}
 
 	bool	Item::Exists		() const { 
-		return (fs::exists(data_path / Data()) || fs::exists(data_path / fs::path(Data() + ".ghost"))); 
+		return (fs::exists(gl_current_game.DataFolder() / Data()) || fs::exists(gl_current_game.DataFolder() / fs::path(Data() + ".ghost"))); 
 	}
 	
 	bool	Item::IsGameMasterFile	() const {
-		return boost::iequals(Data(), GetGameMasterFile(gl_current_game));
+		return boost::iequals(Data(), gl_current_game.MasterFile().Name());
 	}
 
 	bool	Item::IsMasterFile() const {
-		return IsPluginMaster(data_path / Data());
+		return IsPluginMaster(gl_current_game.DataFolder() / Data());
 	}
 
 	bool	Item::IsFalseFlagged() const {
@@ -263,7 +290,7 @@ namespace boss {
 	}
 
 	bool	Item::IsGhosted		() const {
-		return (fs::exists(data_path / fs::path(Data() + ".ghost")));
+		return (fs::exists(gl_current_game.DataFolder() / fs::path(Data() + ".ghost")));
 	}
 	
 	string	Item::GetVersion		() const {
@@ -274,9 +301,9 @@ namespace boss {
 
 		// Read mod's header now...
 		if (IsGhosted())
-			header = ReadHeader(data_path / fs::path(Data() + ".ghost"));
+			header = ReadHeader(gl_current_game.DataFolder() / fs::path(Data() + ".ghost"));
 		else
-			header = ReadHeader(data_path / Data());
+			header = ReadHeader(gl_current_game.DataFolder() / Data());
 
 		// The current mod's version if found, or empty otherwise.
 		return header.Version;
@@ -285,9 +312,9 @@ namespace boss {
 	void	Item::SetModTime	(time_t modificationTime) const {
 		try {			
 			if (IsGhosted())
-				fs::last_write_time(data_path / fs::path(Data() + ".ghost"), modificationTime);
+				fs::last_write_time(gl_current_game.DataFolder() / fs::path(Data() + ".ghost"), modificationTime);
 			else
-				fs::last_write_time(data_path / Data(), modificationTime);
+				fs::last_write_time(gl_current_game.DataFolder() / Data(), modificationTime);
 		} catch(fs::filesystem_error e) {
 			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL, Data(), e.what());
 		}
@@ -296,7 +323,7 @@ namespace boss {
 	void	Item::UnGhost		() const {			//Can throw exception.
 		if (IsGhosted()) {
 			try {
-				fs::rename(data_path / fs::path(Data() + ".ghost"), data_path / Data());
+				fs::rename(gl_current_game.DataFolder() / fs::path(Data() + ".ghost"), gl_current_game.DataFolder() / Data());
 			} catch (fs::filesystem_error e) {
 				throw boss_error(BOSS_ERROR_FS_FILE_RENAME_FAIL, Data() + ".ghost", e.what());
 			}
@@ -306,9 +333,9 @@ namespace boss {
 	time_t	Item::GetModTime	() const {			//Can throw exception.
 		try {			
 			if (IsGhosted())
-				return fs::last_write_time(data_path / fs::path(Data() + ".ghost"));
+				return fs::last_write_time(gl_current_game.DataFolder() / fs::path(Data() + ".ghost"));
 			else
-				return fs::last_write_time(data_path / Data());
+				return fs::last_write_time(gl_current_game.DataFolder() / Data());
 		} catch(fs::filesystem_error e) {
 			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, Data(), e.what());
 		}
@@ -319,13 +346,13 @@ namespace boss {
 		time_t t1 = 0,t2 = 0;
 		try {
 			if (this->IsGhosted())
-				t1 = fs::last_write_time(data_path / fs::path(Data() + ".ghost"));
+				t1 = fs::last_write_time(gl_current_game.DataFolder() / fs::path(Data() + ".ghost"));
 			else
-				t1 = fs::last_write_time(data_path / Data());
+				t1 = fs::last_write_time(gl_current_game.DataFolder() / Data());
 			if (item2.IsGhosted())
-				t2 = fs::last_write_time(data_path / fs::path(item2.Data() + ".ghost"));
+				t2 = fs::last_write_time(gl_current_game.DataFolder() / fs::path(item2.Data() + ".ghost"));
 			else
-				t2 = fs::last_write_time(data_path / item2.Data());
+				t2 = fs::last_write_time(gl_current_game.DataFolder() / item2.Data());
 		}catch (fs::filesystem_error e){
 			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, Data() + "\" or \"" + item2.Data(), e.what());
 			LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.", e.what());
@@ -391,7 +418,7 @@ namespace boss {
 	void	ItemList::Load				(fs::path path) {
 		if (fs::exists(path) && fs::is_directory(path)) {
 			LOG_DEBUG("Reading user mods...");
-			if (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
+			if (gl_current_game.GetGame() == SKYRIM && Version(GetExeDllVersion(gl_current_game.DataFolder().parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
 				/*Game is Skyrim v1.4.26, so uses the new load order system.
 
 				Check if loadorder.txt exists, and read that if it does.
@@ -406,15 +433,15 @@ namespace boss {
 				*/
 				LOG_INFO("Game is Skyrim v1.4.26+. Using textfile-based load order mechanism.");
 				size_t max;
-				if (fs::exists(loadorder_path()))  //If the loadorder.txt exists, get the active plugin load order from that.
-					Load(loadorder_path());
+				if (fs::exists(gl_current_game.LoadOrderFile()))  //If the loadorder.txt exists, get the active plugin load order from that.
+					Load(gl_current_game.LoadOrderFile());
 				else { 
 					//First add Skyrim.esm.
 					items.push_back(Item("Skyrim.esm"));
 					//Now check if plugins.txt exists. If so, add any plugins in it that aren't in loadorder.
 					ItemList plugins;
-					if (fs::exists(plugins_path())) {
-						plugins.Load(plugins_path());
+					if (fs::exists(gl_current_game.ActivePluginsFile())) {
+						plugins.Load(gl_current_game.ActivePluginsFile());
 						vector<Item> pluginsVec = plugins.Items();
 						max = pluginsVec.size();
 						for (size_t i=0; i < max; i++) {
@@ -436,7 +463,7 @@ namespace boss {
 				}
 				max = items.size();
 				//Now scan through Data folder. Add any plugins that aren't already in loadorder to loadorder, at the end.
-				for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
+				for (fs::directory_iterator itr(gl_current_game.DataFolder()); itr!=fs::directory_iterator(); ++itr) {
 					const fs::path filename = itr->path().filename();
 					const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
 					if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
@@ -472,12 +499,12 @@ namespace boss {
 				LOG_DEBUG("Reading user mods done: %" PRIuS " total mods found.", items.size());
 			}
 			sort(items.begin(),items.end(), CompareItems);  //Does this work?
-		} else if (path == loadorder_path() || path == plugins_path()) {
+		} else if (path == gl_current_game.LoadOrderFile() || path == gl_current_game.ActivePluginsFile()) {
 			
 			Transcoder trans;
-			trans.SetEncoding(1252);  //Only used if path == plugins_path().
+			trans.SetEncoding(1252);  //Only used if path == gl_current_game.ActivePluginsFile().
 
-			if (path == loadorder_path() && !ValidateUTF8File(path))
+			if (path == gl_current_game.LoadOrderFile() && !ValidateUTF8File(path))
 				throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, path.string());
 
 			//loadorder.txt is simple enough that we can avoid needing the full modlist parser which has the crashing issue.
@@ -488,7 +515,7 @@ namespace boss {
 
 			string line;
 			 
-			if (gl_current_game == MORROWIND) {  //Morrowind's active file list is stored in Morrowind.ini, and that has a different format from plugins.txt.
+			if (gl_current_game.GetGame() == MORROWIND) {  //Morrowind's active file list is stored in Morrowind.ini, and that has a different format from plugins.txt.
 				boost::regex reg = boost::regex("GameFile[0-9]{1,3}=.+\\.es(m|p)", boost::regex::extended|boost::regex::icase);
 				while (in.good()) {
 					getline(in, line);
@@ -498,7 +525,7 @@ namespace boss {
 
 					//Now cut off everything up to and including the = sign.
 					line = line.substr(line.find('=')+1);
-					if (path == plugins_path())
+					if (path == gl_current_game.ActivePluginsFile())
 						line = trans.EncToUtf8(line);
 					items.push_back(Item(line));
 				}
@@ -509,7 +536,7 @@ namespace boss {
 					if (line.empty() || line[0] == '#')  //Character comparison is OK because it's ASCII.
 						continue;
 
-					if (path == plugins_path())
+					if (path == gl_current_game.ActivePluginsFile())
 						line = trans.EncToUtf8(line);
 					items.push_back(Item(line));
 				}
@@ -607,16 +634,16 @@ namespace boss {
 		Transcoder trans;
 		if (activeOnly) {
 			//To save needing a new parser, load plugins.txt into an ItemList then fill a hashset from that.
-			//Also check if plugins_path() then detect encoding if it is and translate outputted text from UTF-8 to the detected encoding.
+			//Also check if gl_current_game.ActivePluginsFile() then detect encoding if it is and translate outputted text from UTF-8 to the detected encoding.
 			LOG_INFO("Loading plugins.txt into ItemList.");
-			if (fs::exists(plugins_path())) {
-				activePlugins.Load(plugins_path());
+			if (fs::exists(gl_current_game.ActivePluginsFile())) {
+				activePlugins.Load(gl_current_game.ActivePluginsFile());
 				numActivePlugins = activePlugins.Items().size();
 			}
 		}
 		if (doEncodingConversion)
 			trans.SetEncoding(1252);
-		if (gl_current_game == MORROWIND) {  //Must be the plugins file, since loadorder.txt isn't used for MW.
+		if (gl_current_game.GetGame() == MORROWIND) {  //Must be the plugins file, since loadorder.txt isn't used for MW.
 			//If Morrowind, BOSS writes active plugin list to Morrowind.ini, which also holds a lot of other game settings.
 			//BOSS needs to read everything up to the active plugin list in the current ini and stick that on before the first saved plugin name.
 			fileToBuffer(file, contents);
@@ -625,7 +652,7 @@ namespace boss {
 				settings = contents.substr(0, pos + 12); //+12 is for the characters in "[Game Files]".
 		}
 
-		bool isSkyrim1426plus = (gl_current_game == SKYRIM && Version(GetExeDllVersion(data_path.parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
+		bool isSkyrim1426plus = (gl_current_game.GetGame() == SKYRIM && Version(GetExeDllVersion(gl_current_game.DataFolder().parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
 
 		LOG_INFO("Writing new \"%s\"", file.string().c_str());
 		ofstream outfile;
@@ -644,7 +671,7 @@ namespace boss {
 				else if (!items[i].Exists())  //Only installed plugins should be written to the plugins.txt/loadorder.txt. The vector may contain others for user rule sorting purposes.
 					continue;
 				LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
-				if (gl_current_game == MORROWIND) //Need to write "GameFileN=" before plugin name, where N is an integer from 0 up.
+				if (gl_current_game.GetGame() == MORROWIND) //Need to write "GameFileN=" before plugin name, where N is an integer from 0 up.
 					outfile << "GameFile" << i << "=";
 				if (doEncodingConversion) {  //Not UTF-8.
 					try {
@@ -702,7 +729,7 @@ namespace boss {
 		//Store installed mods in a hashset. Case insensitivity not required as regex itself is case-insensitive.
 		boost::unordered_set<string> hashset;
 		boost::unordered_set<string>::iterator setPos;
-		for (fs::directory_iterator itr(data_path); itr!=fs::directory_iterator(); ++itr) {
+		for (fs::directory_iterator itr(gl_current_game.DataFolder()); itr!=fs::directory_iterator(); ++itr) {
 			const string ext = to_lower_copy(itr->path().extension().string());
 			if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {	//Add file to hashset.
 				if (ext == ".ghost")
@@ -827,6 +854,13 @@ namespace boss {
 
 	boost::unordered_map<string,uint32_t> ItemList::FileCRCs() const {
 		return fileCRCs;
+	}
+
+	Item ItemList::ItemAt(size_t pos) const {
+		if (pos < items.size())
+			return items[pos];
+		else
+			return Item();
 	}
 
 	void ItemList::Items(vector<Item> inItems) {
@@ -997,6 +1031,13 @@ namespace boss {
 	vector<RuleLine> Rule::Lines() const {
 		return lines;
 	}
+		
+	RuleLine Rule::LineAt(size_t pos) const {
+		if (pos < lines.size())
+			return lines[pos];
+		else
+			return RuleLine();
+	}
 
 	void Rule::Enabled(bool e) {
 		enabled = e;
@@ -1013,8 +1054,7 @@ namespace boss {
 
 	RuleList::RuleList() {
 		rules.clear();
-		parsingErrorBuffer = ParsingError();
-		syntaxErrorBuffer.clear();
+		errorBuffer.clear();
 	}
 
 	void RuleList::Load(fs::path file) {
@@ -1024,7 +1064,7 @@ namespace boss {
 		string contents;
 
 		skipper.SkipIniComments(false);
-		grammar.SetParsingErrorBuffer(&parsingErrorBuffer);
+		grammar.SetErrorBuffer(&errorBuffer);
 
 		if (!fs::exists(file)) {
 			ofstream userlist_file(file.c_str(),ios_base::binary);
@@ -1050,6 +1090,8 @@ namespace boss {
 
 		if (!r || begin != end)  //This might not work correctly.
 			throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, file.string());
+
+		CheckSyntax();
 	}
 
 	void RuleList::Save(fs::path file) {
@@ -1073,6 +1115,86 @@ namespace boss {
 		outFile.close();
 	}
 
+	void RuleList::CheckSyntax() {
+		// Loop through rules, check syntax of each. If a rule has invalid syntax, remove it.
+		vector<Rule>::iterator it=rules.begin();
+		while(it != rules.end()) {
+			string ruleKeyString = it->KeyToString();
+			Item ruleObject = Item(it->Object());
+			try {
+				if (ruleObject.IsPlugin()) {
+					if (ruleKeyString != "FOR" && ruleObject.IsGameMasterFile())
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingMasterEsm).str());
+				} else {
+					if (boost::iequals(ruleObject.Name(), "esms"))
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingGroupEsms).str());
+					if (ruleKeyString == "ADD" && !ruleObject.IsPlugin())
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EAddingModGroup).str());
+					else if (ruleKeyString == "FOR")
+						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EAttachingMessageToGroup).str());
+				}
+				vector<RuleLine> lines = it->Lines();
+				size_t size = lines.size();
+				bool hasSortLine = false, hasReplaceLine = false;
+				for (size_t i=0; i<size; i++) {
+					Item subject = Item(lines[i].Object());
+					if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {
+						if (hasSortLine)
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EMultipleSortLines).str());
+						if (i != 0)
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortNotSecond).str());
+						if (ruleKeyString == "FOR")
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortLineInForRule).str());
+						if (boost::iequals(ruleObject.Name(), subject.Name()))
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingToItself).str());
+						if ((ruleObject.IsPlugin() && !subject.IsPlugin()) || (!ruleObject.IsPlugin() && subject.IsPlugin()))
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EReferencingModAndGroup).str());
+						if (lines[i].Key() == BEFORE) {
+							if (boost::iequals(subject.Name(), "esms"))
+								throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingGroupBeforeEsms).str());
+							else if (subject.IsGameMasterFile())
+								throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingModBeforeGameMaster).str());
+							else if (!ruleObject.IsMasterFile() && subject.IsMasterFile())
+								throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingPluginBeforeMaster).str());
+						} else if (ruleObject.IsMasterFile() && !subject.IsMasterFile())
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingMasterAfterPlugin).str());
+						hasSortLine = true;
+					} else if (lines[i].Key() == TOP || lines[i].Key() == BOTTOM) {
+						if (hasSortLine)
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EMultipleSortLines).str());
+						if (i != 0)
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortNotSecond).str());
+						if (ruleKeyString == "FOR")
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortLineInForRule).str());
+						if (lines[i].Key() == TOP && boost::iequals(subject.Name(), "esms"))
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EInsertingToTopOfEsms).str());
+						if (!ruleObject.IsPlugin() || subject.IsPlugin())
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EInsertingGroupOrIntoMod).str());
+						hasSortLine = true;
+					} else if (lines[i].Key() == APPEND || lines[i].Key() == REPLACE) {
+						if (!ruleObject.IsPlugin())
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EAttachingMessageToGroup).str());
+						if (lines[i].Key() == REPLACE) {
+							if (hasReplaceLine)
+								throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EMultipleReplaceLines).str());
+							if ((ruleKeyString == "FOR" && i != 0) || (ruleKeyString != "FOR" && i != 1))
+								throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EReplaceNotFirst).str());
+							hasReplaceLine = true;
+						}
+						if (!lines[i].IsObjectMessage())
+							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EAttachingNonMessage).str());
+					}
+				}
+				++it;
+			} catch (ParsingError & e) {
+				it = rules.erase(it);
+				errorBuffer.push_back(e);
+				LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
+			}
+		}
+		return;
+	}
+
 	size_t RuleList::FindRule(string ruleObject, bool onlyEnabled) const {
 		size_t max = rules.size();
 		for (size_t i=0; i<max; i++) {
@@ -1088,24 +1210,40 @@ namespace boss {
 		return rules;
 	}
 
-	ParsingError RuleList::ParsingErrorBuffer() const {
-		return parsingErrorBuffer;
-	}
-
-	vector<ParsingError> RuleList::SyntaxErrorBuffer() const {
-		return syntaxErrorBuffer;
+	vector<ParsingError> RuleList::ErrorBuffer() const {
+		return errorBuffer;
 	}
 		
+	Rule RuleList::RuleAt(size_t pos) const {
+		if (pos < rules.size())
+			return rules[pos];
+		else
+			return Rule();
+	}
+
 	void RuleList::Rules(vector<Rule> inRules) {
 		rules = inRules;
 	}
 
-	void RuleList::ParsingErrorBuffer(ParsingError buffer) {
-		parsingErrorBuffer = buffer;
+	void RuleList::ErrorBuffer(vector<ParsingError> buffer) {
+		errorBuffer = buffer;
 	}
 
-	void RuleList::SyntaxErrorBuffer(vector<ParsingError> buffer) {
-		syntaxErrorBuffer = buffer;
+	void RuleList::Clear() {
+		rules.clear();
+	}
+	
+	void RuleList::Erase(size_t pos) {
+		rules.erase(rules.begin() + pos);
+	}
+
+	void RuleList::Insert(size_t pos, Rule rule) {
+		rules.insert(rules.begin()+pos, rule);
+	}
+	
+	void RuleList::Replace(size_t pos, Rule rule) {
+		if (pos < rules.size())
+			rules[pos] = rule;
 	}
 
 
@@ -1165,7 +1303,7 @@ namespace boss {
 
 			<<	"[Run Options]" << endl
 			<<	"sGame                    = " << GetIniGameString(gl_game) << endl
-			<<	"sLastGame                = " << GetIniGameString(gl_current_game) << endl  //Writing current game because that's what we want recorded when BOSS writes the ini.
+			<<	"sLastGame                = " << GetIniGameString(gl_current_game.GetGame()) << endl  //Writing current game because that's what we want recorded when BOSS writes the ini.
 			<<	"sBOSSLogFormat           = " << GetLogFormatString() << endl
 			<<	"iDebugVerbosity          = " << IntToString(gl_debug_verbosity) << endl
 			<<	"iRevertLevel             = " << IntToString(gl_revert) << endl
@@ -1313,14 +1451,14 @@ namespace boss {
 				gl_trial_run = StringToBool(iter->second);
 			else if (iter->first == "bLogDebugOutput")
 				gl_log_debug_output = StringToBool(iter->second);
-
-
-			//Don't evaluate whether these should have any effect here, as the game will not have been set yet.
-			if (iter->first == "bUseMyGamesDirectory")
-				gl_using_local_app_data_folder = StringToBool(iter->second);
-			/*else if (iter->first == "sLocalMasterPath")
-				//This setting does not seem to function correctly on Oblivion, and isn't used in Fallout 3, Fallout New Vegas and Skyrim.
-				gl_local_data_path = fs::path(iter->second);  //Incorrect if absolute paths can be specified.*/
 		}
+	}
+
+	string Settings::GetValue(string setting) const {
+		map<string, string>::const_iterator it = iniSettings.find(setting);
+		if (it != iniSettings.end())
+			return it->second;
+		else
+			return "";
 	}
 }

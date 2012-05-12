@@ -72,53 +72,53 @@ namespace boss {
 	//Returns the true path based on what type of file or keyword it is.
 	void GetPath(fs::path& file_path, string& file) {
 		if (file == "OBSE") {
-			file_path = data_path.parent_path();
+			file_path = gl_current_game.DataFolder().parent_path();
 			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
 		} else if (file == "FOSE") {
-			file_path = data_path.parent_path();
+			file_path = gl_current_game.DataFolder().parent_path();
 			file = "fose_loader.exe";
 		} else if (file == "NVSE") {
-			file_path = data_path.parent_path();
+			file_path = gl_current_game.DataFolder().parent_path();
 			file = "nvse_loader.exe";
 		} else if (file == "SKSE") {
-			file_path = data_path.parent_path();
+			file_path = gl_current_game.DataFolder().parent_path();
 			file = "skse_loader.exe";
 		} else if (file == "MWSE") {
-			file_path = data_path.parent_path();
+			file_path = gl_current_game.DataFolder().parent_path();
 			file = "MWSE.dll";
 		} else if (file == "BOSS") {
 			file_path = boss_path;
 			file = "BOSS.exe";
 		} else if (file == "TES3") {
-			file_path = data_path.parent_path();
+			file_path = gl_current_game.DataFolder().parent_path();
 			file = "Morrwind.exe";
 		} else if (file == "TES4") {
-			file_path = data_path.parent_path();
+			file_path = gl_current_game.DataFolder().parent_path();
 			file = "Oblivion.exe";
 		} else if (file == "TES5") {
-			file_path = data_path.parent_path();
+			file_path = gl_current_game.DataFolder().parent_path();
 			file = "TESV.exe";
 		} else if (file == "FO3") {
-			file_path = data_path.parent_path();
+			file_path = gl_current_game.DataFolder().parent_path();
 			file = "Fallout3.exe";
 		} else if (file == "FONV") {
-			file_path = data_path.parent_path();
+			file_path = gl_current_game.DataFolder().parent_path();
 			file = "FalloutNV.exe";
 		} else {
 			fs::path p(file);
 			if (to_lower_copy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos) {
-				if (fs::exists(data_path / "OBSE" / "Plugins"))
-					file_path = data_path / "OBSE" / "Plugins";  //Oblivion - OBSE plugins.
-				else if (fs::exists(data_path / "FOSE" / "Plugins"))
-					file_path = data_path / "FOSE" / "Plugins";  //Fallout 3 - FOSE plugins.
-				else if (fs::exists(data_path / "NVSE" / "Plugins"))
-					file_path = data_path / "NVSE" / "Plugins";  //Fallout: New Vegas - NVSE plugins.
-				else if (fs::exists(data_path / "SKSE" / "Plugins"))
-					file_path = data_path / "SKSE" / "Plugins";  //Skyrim - SKSE plugins.
-				else if (fs::exists(data_path / "MWSE" / "Plugins"))
-					file_path = data_path / "MWSE" / "Plugins";  //Morrowind - MWSE plugins.
+				if (fs::exists(gl_current_game.DataFolder() / "OBSE" / "Plugins"))
+					file_path = gl_current_game.DataFolder() / "OBSE" / "Plugins";  //Oblivion - OBSE plugins.
+				else if (fs::exists(gl_current_game.DataFolder() / "FOSE" / "Plugins"))
+					file_path = gl_current_game.DataFolder() / "FOSE" / "Plugins";  //Fallout 3 - FOSE plugins.
+				else if (fs::exists(gl_current_game.DataFolder() / "NVSE" / "Plugins"))
+					file_path = gl_current_game.DataFolder() / "NVSE" / "Plugins";  //Fallout: New Vegas - NVSE plugins.
+				else if (fs::exists(gl_current_game.DataFolder() / "SKSE" / "Plugins"))
+					file_path = gl_current_game.DataFolder() / "SKSE" / "Plugins";  //Skyrim - SKSE plugins.
+				else if (fs::exists(gl_current_game.DataFolder() / "MWSE" / "Plugins"))
+					file_path = gl_current_game.DataFolder() / "MWSE" / "Plugins";  //Morrowind - MWSE plugins.
 			} else
-				file_path = data_path;
+				file_path = gl_current_game.DataFolder();
 		}
 	}
 
@@ -190,18 +190,18 @@ namespace boss {
 			boost::algorithm::replace_all(p,"\\\\","\\");
 			file_path = fs::path(p);
 		} else if (to_lower_copy(fs::path(reg).extension().string()) == ".dll") {
-			if (fs::exists(data_path / "OBSE"))
-				file_path = data_path / "OBSE" / "Plugins";  //Oblivion - OBSE plugins.
-			else if (fs::exists(data_path / "FOSE"))
-				file_path = data_path / "FOSE" / "Plugins";  //Fallout 3 - FOSE plugins.
-			else if (fs::exists(data_path / "NVSE"))
-				file_path = data_path / "NVSE" / "Plugins";  //Fallout: New Vegas - NVSE plugins.
-			else if (fs::exists(data_path / "SKSE"))
-				file_path = data_path / "SKSE" / "Plugins";  //Skyrim - SKSE plugins.
-			else if (fs::exists(data_path / "MWSE"))
-				file_path = data_path / "MWSE" / "Plugins";  //Morrowind - MWSE plugins.
+			if (fs::exists(gl_current_game.DataFolder() / "OBSE"))
+				file_path = gl_current_game.DataFolder() / "OBSE" / "Plugins";  //Oblivion - OBSE plugins.
+			else if (fs::exists(gl_current_game.DataFolder() / "FOSE"))
+				file_path = gl_current_game.DataFolder() / "FOSE" / "Plugins";  //Fallout 3 - FOSE plugins.
+			else if (fs::exists(gl_current_game.DataFolder() / "NVSE"))
+				file_path = gl_current_game.DataFolder() / "NVSE" / "Plugins";  //Fallout: New Vegas - NVSE plugins.
+			else if (fs::exists(gl_current_game.DataFolder() / "SKSE"))
+				file_path = gl_current_game.DataFolder() / "SKSE" / "Plugins";  //Skyrim - SKSE plugins.
+			else if (fs::exists(gl_current_game.DataFolder() / "MWSE"))
+				file_path = gl_current_game.DataFolder() / "MWSE" / "Plugins";  //Morrowind - MWSE plugins.
 		} else
-			file_path = data_path;
+			file_path = gl_current_game.DataFolder();
 			boost::regex regex;
 		try {
 			regex = boost::regex(reg, boost::regex::extended|boost::regex::icase);
@@ -528,37 +528,37 @@ namespace boss {
 	void modlist_grammar::ConvertOldConditional(string& result, const char var) {
 		switch(var) {
 		case '>':
-			if (gl_current_game == OBLIVION)
+			if (gl_current_game.GetGame() == OBLIVION)
 				result = "IF ($FCOM)";
-			else if (gl_current_game == FALLOUT3)
+			else if (gl_current_game.GetGame() == FALLOUT3)
 				result = "IF ($FOOK2)";
-			else if (gl_current_game == FALLOUTNV)
+			else if (gl_current_game.GetGame() == FALLOUTNV)
 				result = "IF ($NVAMP)";
 			else
 				result = "";
 			break;
 		case '<':
-			if (gl_current_game == OBLIVION)
+			if (gl_current_game.GetGame() == OBLIVION)
 				result = "IFNOT ($FCOM)";
-			else if (gl_current_game == FALLOUT3)
+			else if (gl_current_game.GetGame() == FALLOUT3)
 				result = "IFNOT ($FOOK2)";
-			else if (gl_current_game == FALLOUTNV)
+			else if (gl_current_game.GetGame() == FALLOUTNV)
 				result = "IFNOT ($NVAMP)";
 			else
 				result = "";
 			break;
 		case '$':
-			if (gl_current_game == OBLIVION)
+			if (gl_current_game.GetGame() == OBLIVION)
 				result = "IF ($OOO)";
-			else if (gl_current_game == FALLOUT3)
+			else if (gl_current_game.GetGame() == FALLOUT3)
 				result = "IF ($FWE)";
-			else if (gl_current_game == FALLOUTNV)
+			else if (gl_current_game.GetGame() == FALLOUTNV)
 				result = "IF ($FOOK)";
 			else
 				result = "";
 			break;
 		case '^':
-			if (gl_current_game == OBLIVION)
+			if (gl_current_game.GetGame() == OBLIVION)
 				result = "IF ($BC)";
 			else
 				result = "";
@@ -940,99 +940,16 @@ namespace boss {
 	//RuleList Grammar.
 	////////////////////////////
 
-	//Rule checker function, checks for syntax (not parsing) errors.
-	void userlist_grammar::RuleSyntaxCheck(vector<Rule>& userlist, Rule currentRule) {
-		bool skip = false;
-		currentRule.Object(boost::algorithm::trim_copy(currentRule.Object()));  //Make sure there are no preceding or trailing spaces.
-		string ruleKeyString = currentRule.KeyToString();
-		Item ruleObject = Item(currentRule.Object());
-		try {
-			if (ruleObject.IsPlugin()) {
-				if (ruleKeyString != "FOR" && ruleObject.IsGameMasterFile())
-					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingMasterEsm).str());
-			} else {
-				if (to_lower_copy(ruleObject.Name()) == "esms")
-					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingGroupEsms).str());
-				if (ruleKeyString == "ADD" && !ruleObject.IsPlugin())
-					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EAddingModGroup).str());
-				else if (ruleKeyString == "FOR")
-					throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EAttachingMessageToGroup).str());
-			}
-			vector<RuleLine> lines = currentRule.Lines();
-			size_t size = lines.size();
-			bool hasSortLine = false, hasReplaceLine = false;
-			for (size_t i=0; i<size; i++) {
-				lines[i].Object(boost::algorithm::trim_copy(lines[i].Object()));  //Make sure there are no preceding or trailing spaces.
-				Item subject = Item(lines[i].Object());
-				if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {
-					if (hasSortLine)
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EMultipleSortLines).str());
-					if (i != 0)
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortNotSecond).str());
-					if (ruleKeyString == "FOR")
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortLineInForRule).str());
-					if (ruleObject.Name() == subject.Name())
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingToItself).str());
-					if ((ruleObject.IsPlugin() && !subject.IsPlugin()) || (!ruleObject.IsPlugin() && subject.IsPlugin()))
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EReferencingModAndGroup).str());
-					if (lines[i].Key() == BEFORE) {
-						if (to_lower_copy(subject.Name()) == "esms")
-							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingGroupBeforeEsms).str());
-						else if (subject.IsGameMasterFile())
-							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingModBeforeGameMaster).str());
-						else if (!ruleObject.IsMasterFile() && subject.IsMasterFile())
-							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingPluginBeforeMaster).str());
-					} else if (ruleObject.IsMasterFile() && !subject.IsMasterFile())
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingMasterAfterPlugin).str());
-					hasSortLine = true;
-				} else if (lines[i].Key() == TOP || lines[i].Key() == BOTTOM) {
-					if (hasSortLine)
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EMultipleSortLines).str());
-					if (i != 0)
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortNotSecond).str());
-					if (ruleKeyString == "FOR")
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortLineInForRule).str());
-					if (lines[i].Key() == TOP && to_lower_copy(subject.Name()) == "esms")
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EInsertingToTopOfEsms).str());
-					if (!ruleObject.IsPlugin() || subject.IsPlugin())
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EInsertingGroupOrIntoMod).str());
-					hasSortLine = true;
-				} else if (lines[i].Key() == APPEND || lines[i].Key() == REPLACE) {
-					if (!ruleObject.IsPlugin())
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EAttachingMessageToGroup).str());
-					if (lines[i].Key() == REPLACE) {
-						if (hasReplaceLine)
-							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EMultipleReplaceLines).str());
-						if ((ruleKeyString == "FOR" && i != 0) || (ruleKeyString != "FOR" && i != 1))
-							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EReplaceNotFirst).str());
-						hasReplaceLine = true;
-					}
-					if (!lines[i].IsObjectMessage())
-						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EAttachingNonMessage).str());
-				}
-			}
-		} catch (ParsingError & e) {
-			skip = true;
-			if (syntaxErrorBuffer != NULL)
-				syntaxErrorBuffer->push_back(e);
-			LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
-		}
-		if (!skip)
-			userlist.push_back(currentRule);
-		return;
-	}
-
 	userlist_grammar::userlist_grammar() : userlist_grammar::base_type(ruleList, "userlist grammar") {
 
-		syntaxErrorBuffer = NULL;
-		parsingErrorBuffer = NULL;
+		errorBuffer = NULL;
 		ruleKeys_ ruleKeys;
 		messageKeys_ sortOrMessageKeys;
 
 		//A list is a vector of rules. Rules are separated by line endings.
-		ruleList = 
+		ruleList %= 
 			*eol 
-			> (eoi | (userlistRule[phoenix::bind(&userlist_grammar::RuleSyntaxCheck, this, _val, _1)] % eol)); 
+			> (eoi | (userlistRule % eol)); 
 
 		//A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
 		userlistRule %=
@@ -1072,8 +989,12 @@ namespace boss {
 		on_error<fail>(stateKey,			phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
 	}
 
+	void userlist_grammar::SetErrorBuffer(vector<ParsingError> * inErrorBuffer) { 
+		errorBuffer = inErrorBuffer; 
+	}
+
 	void userlist_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what) {
-		if (parsingErrorBuffer == NULL || !parsingErrorBuffer->Empty())
+		if (errorBuffer == NULL || !errorBuffer->empty())
 			return;
 		
 		ostringstream out;
@@ -1084,7 +1005,8 @@ namespace boss {
 		boost::trim_left(context);
 
 		ParsingError e(str(RuleListParsingErrorHeader % expect), context, RuleListParsingErrorFooter);
-		*parsingErrorBuffer = e;
+		if (errorBuffer != NULL)
+			errorBuffer->push_back(e);
 		LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
 		return;
 	}

@@ -89,9 +89,9 @@ int main() {
 	}
 
 	//Check if it actually exists, because the parser doesn't fail if there is no file...
-	if (!fs::exists(masterlist_path())) {
+	if (!fs::exists(gl_current_game.Masterlist())) {
 		//Print error message to console and exit.
-		dirtylist << "Critical Error: \"" +masterlist_path().string() +"\" cannot be read! Exiting." << endl;
+		dirtylist << "Critical Error: \"" +gl_current_game.Masterlist().string() +"\" cannot be read! Exiting." << endl;
         exit (1); //fail in screaming heap.
     } else if (!fs::exists(cleanlist_path)) {
 		//Print error message to console and exit.
@@ -102,7 +102,7 @@ int main() {
 	//Parse masterlist into data structure.
 	try {
 		ItemList Masterlist, Cleanlist;
-		Masterlist.Load(masterlist_path());
+		Masterlist.Load(gl_current_game.Masterlist());
 		Cleanlist.Load(cleanlist_path);
 
 		masterlist = Masterlist.Items();

@@ -32,6 +32,58 @@
 namespace boss {
 	using namespace std;
 
+	//Return codes, mostly error codes.
+	//DO NOT CHANGE THEIR VALUES. THEY MUST BE INVARIANT ACROSS RELEASES FOR API USERS.
+	BOSS_COMMON const uint32_t BOSS_OK											= 0;
+
+	BOSS_COMMON const uint32_t BOSS_ERROR_NO_MASTER_FILE						= 1;  //Deprecated.
+	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_READ_FAIL						= 2;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_WRITE_FAIL						= 3;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_NOT_UTF8							= 4;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_NOT_FOUND						= 5;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_PARSE_FAIL						= 6;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CONDITION_EVAL_FAIL					= 7;
+	BOSS_COMMON const uint32_t BOSS_ERROR_REGEX_EVAL_FAIL						= 8;
+	BOSS_COMMON const uint32_t BOSS_ERROR_NO_GAME_DETECTED						= 9;
+	BOSS_COMMON const uint32_t BOSS_ERROR_ENCODING_CONVERSION_FAIL				= 10;
+	BOSS_COMMON const uint32_t BOSS_ERROR_PLUGIN_BEFORE_MASTER					= 39;
+	BOSS_COMMON const uint32_t BOSS_ERROR_INVALID_SYNTAX						= 40;
+
+	BOSS_COMMON const uint32_t BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL	= 11;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL		= 12;
+	BOSS_COMMON const uint32_t BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL			= 13;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_CRC_MISMATCH						= 14;
+
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL			= 15;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL			= 16;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_RENAME_FAIL					= 17;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_DELETE_FAIL					= 18;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL				= 19;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_ITER_DIRECTORY_FAIL				= 20;
+
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_INIT_FAIL						= 21;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_ERRBUFF_FAIL					= 22;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_OPTION_FAIL					= 23;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_PROXY_FAIL					= 24;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL				= 25;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL				= 26;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL			= 27;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_PERFORM_FAIL						= 28;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_USER_CANCEL						= 29;
+
+	BOSS_COMMON const uint32_t BOSS_ERROR_GUI_WINDOW_INIT_FAIL					= 30;
+
+	BOSS_COMMON const uint32_t BOSS_OK_NO_UPDATE_NECESSARY						= 31;
+	BOSS_COMMON const uint32_t BOSS_ERROR_LO_MISMATCH							= 32;
+	BOSS_COMMON const uint32_t BOSS_ERROR_NO_MEM								= 33;
+	BOSS_COMMON const uint32_t BOSS_ERROR_INVALID_ARGS							= 34;
+	BOSS_COMMON const uint32_t BOSS_ERROR_NETWORK_FAIL							= 35;
+	BOSS_COMMON const uint32_t BOSS_ERROR_NO_INTERNET_CONNECTION				= 36;
+	BOSS_COMMON const uint32_t BOSS_ERROR_NO_TAG_MAP							= 37;
+	BOSS_COMMON const uint32_t BOSS_ERROR_PLUGINS_FULL							= 38;
+
+	BOSS_COMMON const uint32_t BOSS_ERROR_MAX = BOSS_ERROR_INVALID_SYNTAX;
+
 	////////////////////////////////
 	// boss_error Class Functions
 	////////////////////////////////
@@ -57,82 +109,80 @@ namespace boss {
 	{}
 
 	//Returns the error code for the object.
-	uint32_t boss_error::getCode() { 
+	uint32_t boss_error::getCode() const { 
 		return errCode; 
 	}
 
 	//Returns the error string for the object.
-	string boss_error::getString() {
-		switch(errCode) {
-		case BOSS_OK:
+	string boss_error::getString() const {
+		if (errCode == BOSS_OK)
 			return "No error.";
-		case BOSS_ERROR_NO_MASTER_FILE:
+		else if (errCode == BOSS_ERROR_NO_MASTER_FILE)
 			return "No game master .esm file found!"; 
-		case BOSS_ERROR_FILE_READ_FAIL:
+		else if (errCode == BOSS_ERROR_FILE_READ_FAIL)
 			return "\"" + errSubject + "\" cannot be read!"; 
-		case BOSS_ERROR_FILE_WRITE_FAIL:
+		else if (errCode == BOSS_ERROR_FILE_WRITE_FAIL)
 			return "\"" + errSubject + "\" cannot be written to!"; 
-		case BOSS_ERROR_FILE_NOT_UTF8:
+		else if (errCode == BOSS_ERROR_FILE_NOT_UTF8)
 			return "\"" + errSubject + "\" is not encoded in valid UTF-8!"; 
-		case BOSS_ERROR_FILE_NOT_FOUND:
+		else if (errCode == BOSS_ERROR_FILE_NOT_FOUND)
 			return "\"" + errSubject + "\" cannot be found!";
-		case BOSS_ERROR_CONDITION_EVAL_FAIL:
+		else if (errCode == BOSS_ERROR_CONDITION_EVAL_FAIL)
 			return "Evaluation of conditional \"" + errSubject + "\" failed!";
-		case BOSS_ERROR_REGEX_EVAL_FAIL:
+		else if (errCode == BOSS_ERROR_REGEX_EVAL_FAIL)
 			return "\"" + errSubject + "\" is not a valid regular expression. Item skipped.";
-		case BOSS_ERROR_NO_GAME_DETECTED:
+		else if (errCode == BOSS_ERROR_NO_GAME_DETECTED)
 			return "No game detected!"; 
-		case BOSS_ERROR_ENCODING_CONVERSION_FAIL:
+		else if (errCode == BOSS_ERROR_ENCODING_CONVERSION_FAIL)
 			return "\"" + errSubject + "\" cannot be converted from UTF-8 to \"" + errString + "\".";
-		case BOSS_ERROR_PLUGIN_BEFORE_MASTER:
+		else if (errCode == BOSS_ERROR_PLUGIN_BEFORE_MASTER)
 			return "Master file \"" + errSubject +  "\" loading after non-master plugins!";
-		case BOSS_ERROR_INVALID_SYNTAX:
+		else if (errCode == BOSS_ERROR_INVALID_SYNTAX)
 			return errString;
-		case BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL:
+		else if (errCode == BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL)
 			return "Cannot find online masterlist revision number!"; 
-		case BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL:
+		else if (errCode == BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL)
 			return "Cannot find online masterlist revision date!"; 
-		case BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL:
+		else if (errCode == BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL)
 			return "Cannot read list of files to be updated!"; 
-		case BOSS_ERROR_FILE_CRC_MISMATCH:
+		else if (errCode == BOSS_ERROR_FILE_CRC_MISMATCH)
 			return "Downloaded file \"" + errSubject + "\" failed verification test!"; 
-		case BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL:
+		else if (errCode == BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL)
 			return "The modification date of \"" + errSubject + "\" cannot be read! Filesystem response: \"" + errString + "\".";
-		case BOSS_ERROR_FS_FILE_RENAME_FAIL:
+		else if (errCode == BOSS_ERROR_FS_FILE_RENAME_FAIL)
 			return "\"" + errSubject + "\" cannot be renamed! Filesystem response: \"" + errString + "\".";
-		case BOSS_ERROR_FS_FILE_DELETE_FAIL:
+		else if (errCode == BOSS_ERROR_FS_FILE_DELETE_FAIL)
 			return "\"" + errSubject + "\" cannot be deleted! Filesystem response: \"" + errString + "\".";
-		case BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL:
+		else if (errCode == BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL)
 			return "\"" + errSubject + "\" cannot be created! Filesystem response: \"" + errString + "\".";
-		case BOSS_ERROR_FS_ITER_DIRECTORY_FAIL:
+		else if (errCode == BOSS_ERROR_FS_ITER_DIRECTORY_FAIL)
 			return "\"" + errSubject + "\" cannot be scanned! Filesystem response: \"" + errString + "\".";
-		case BOSS_ERROR_CURL_INIT_FAIL:
+		else if (errCode == BOSS_ERROR_CURL_INIT_FAIL)
 			return "cURL cannot be initialised!";
-		case BOSS_ERROR_CURL_SET_ERRBUFF_FAIL:
+		else if (errCode == BOSS_ERROR_CURL_SET_ERRBUFF_FAIL)
 			return "cURL's error buffer could not be set! cURL response: \"" + errString + "\".";
-		case BOSS_ERROR_CURL_SET_OPTION_FAIL:
+		else if (errCode == BOSS_ERROR_CURL_SET_OPTION_FAIL)
 			return "A cURL option could not be set! cURL response: \"" + errString + "\".";
-		case BOSS_ERROR_CURL_SET_PROXY_FAIL:
+		else if (errCode == BOSS_ERROR_CURL_SET_PROXY_FAIL)
 			return "Proxy hostname or port invalid! cURL response: \"" + errString + "\".";
-		case BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL:
+		else if (errCode == BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL)
 			return "Failed to set proxy type! cURL response: \"" + errString + "\".";
-		case BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL:
+		else if (errCode == BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL)
 			return "Proxy authentication username or password invalid! cURL response: \"" + errString + "\".";
-		case BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL:
+		else if (errCode == BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL)
 			return "Failed to set proxy authentication type! cURL response: \"" + errString + "\".";
-		case BOSS_ERROR_CURL_PERFORM_FAIL:
+		else if (errCode == BOSS_ERROR_CURL_PERFORM_FAIL)
 			return "cURL could not perform task! cURL response: \"" + errString + "\".";
-		case BOSS_ERROR_CURL_USER_CANCEL:
+		else if (errCode == BOSS_ERROR_CURL_USER_CANCEL)
 			return "Cancelled by user.";
-		case BOSS_ERROR_FILE_PARSE_FAIL:
+		else if (errCode == BOSS_ERROR_FILE_PARSE_FAIL)
 			return "Parsing of \"" + errSubject + "\" failed!";
-		case BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL:
+		else if (errCode == BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL)
 			return "The modification date of \"" + errSubject + "\" cannot be written! Filesystem response: \"" + errString + "\".";
-		case BOSS_ERROR_GUI_WINDOW_INIT_FAIL:
+		else if (errCode == BOSS_ERROR_GUI_WINDOW_INIT_FAIL)
 			return "The window \"" + errSubject + "\" failed to initialise. Details: \"" + errString + "\".";
-		default:
+		else
 			return "No error.";
-		}
 	}
 
 

@@ -144,14 +144,14 @@ bool BossGUI::OnInit() {
 	LOG_DEBUG("Detecting game...");
 	try {
 		vector<uint32_t> undetected;
-		DetectGame(detected, undetected);
-		if (gl_current_game == AUTODETECT) {
+		uint32_t game = DetectGame(detected, undetected);
+		if (game == AUTODETECT) {
 			wxArrayString choices;
 
 			for (size_t i=0, max = detected.size(); i < max; i++)
-				choices.Add(GetGameString(detected[i]));
+				choices.Add(Game(detected[i], "", true).Name());
 			for (size_t i=0, max = undetected.size(); i < max; i++)
-				choices.Add(GetGameString(undetected[i]) + " (not detected)");
+				choices.Add(Game(undetected[i], "", true).Name() + " (not detected)");
 
 			size_t ans;
 
@@ -166,42 +166,18 @@ bool BossGUI::OnInit() {
 			choiceDia->Close(true);
 
 			if (ans < detected.size())
-				gl_current_game = detected[ans];
+				game = detected[ans];
 			else if (ans < detected.size() + undetected.size())
-				gl_current_game = undetected[ans - detected.size()];
+				game = undetected[ans - detected.size()];
 			else
 				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 		}
-		//Now set data_path.
-		SetDataPath(gl_current_game);
-		//Make sure that boss_game_path() exists.
-		try {
-			if (!fs::exists(boss_game_path()))
-				fs::create_directory(boss_game_path());
-		} catch (fs::filesystem_error e) {
-			throw boss_error(BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL, GetGameMasterFile(gl_current_game), e.what());
-		}
-		LOG_INFO("Game detected: %d", gl_current_game);
+		gl_current_game = Game(game);
+		LOG_INFO("Game detected: %s", gl_current_game.Name().c_str());
 	} catch (boss_error &e) {
 		return false;
 	}
 	frame->SetGames(detected);
-
-	//Load game ini file (only matters for Oblivion).
-	if (gl_current_game == OBLIVION && fs::exists(data_path.parent_path() / "Oblivion.ini")) {  //Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
-		Settings oblivionIni;
-		try {
-			oblivionIni.Load(data_path.parent_path() / "Oblivion.ini");  //This also sets the variable up.
-		} catch (boss_error &e) {
-			LOG_ERROR("Error: %s", e.getString().c_str());
-			wxMessageBox(wxString::Format(
-					wxT("Error: " + e.getString() + " Details: " + Outputter(PLAINTEXT, oblivionIni.ErrorBuffer()).AsString())
-				),
-				wxT("BOSS: Error"),
-				wxOK | wxICON_ERROR,
-				NULL);
-		}
-	}
 
 	frame->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	frame->Show(TRUE);
@@ -447,7 +423,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 					string localDate, remoteDate;
 					uint32_t localRevision, remoteRevision;
 					mUpdater.progDialog = progDia;
-					mUpdater.Update(masterlist_path(), localRevision, localDate, remoteRevision, remoteDate);
+					mUpdater.Update(gl_current_game.GetGame(), gl_current_game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
 					if (localRevision == remoteRevision) {
 						bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
 						progDia->Pulse(wxT("Masterlist already up-to-date."));
@@ -477,12 +453,12 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
 	if (gl_update_only == true) {
 		try {
-			bosslog.Save(bosslog_path(), true);
+			bosslog.Save(gl_current_game.BossLog(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if ( !gl_silent ) 
-			wxLaunchDefaultApplication(bosslog_path().string());	//Displays the BOSSlog.
+			wxLaunchDefaultApplication(gl_current_game.BossLog(gl_log_format).string());	//Displays the BOSSlog.
 		progDia->Destroy();
 		return;
 	}
@@ -499,40 +475,40 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 
 	//Get the master esm's modification date. 
 	try {
-		esmtime = GetMasterTime();
+		esmtime = gl_current_game.MasterFile().GetModTime();
 	} catch (boss_error &e) {
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
 		bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now.";
 		try {
-			bosslog.Save(bosslog_path(), true);
+			bosslog.Save(gl_current_game.BossLog(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if ( !gl_silent ) 
-			wxLaunchDefaultApplication(bosslog_path().string());	//Displays the BOSSlog.txt.
+			wxLaunchDefaultApplication(gl_current_game.BossLog(gl_log_format).string());	//Displays the BOSSlog.txt.
 		progDia->Destroy();
 		return; //fail in screaming heap.
 	}
 
 	//Build and save modlist.
 	try {
-		modlist.Load(data_path);
+		modlist.Load(gl_current_game.DataFolder());
 		if (gl_revert<1)
-			modlist.Save(modlist_path(), old_modlist_path());
+			modlist.Save(gl_current_game.Modlist(), gl_current_game.OldModlist());
 	} catch (boss_error &e) {
 		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
 		bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now.";
 		try {
-			bosslog.Save(bosslog_path(), true);
+			bosslog.Save(gl_current_game.BossLog(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if ( !gl_silent ) 
-			wxLaunchDefaultApplication(bosslog_path().string());	//Displays the BOSSlog.txt.
+			wxLaunchDefaultApplication(gl_current_game.BossLog(gl_log_format).string());	//Displays the BOSSlog.txt.
 		progDia->Destroy();
 		return; //fail in screaming heap.
 	}
@@ -551,11 +527,11 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	
 	//Set masterlist path to be used.
 	if (gl_revert==1)
-		sortfile = modlist_path();	
+		sortfile = gl_current_game.Modlist();	
 	else if (gl_revert==2) 
-		sortfile = old_modlist_path();
+		sortfile = gl_current_game.OldModlist();
 	else 
-		sortfile = masterlist_path();
+		sortfile = gl_current_game.Masterlist();
 	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
 
 	//Parse masterlist/modlist backup into data structure.
@@ -578,24 +554,25 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 				<< "Utility will end now.";
 		try {
-			bosslog.Save(bosslog_path(), true);
+			bosslog.Save(gl_current_game.BossLog(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
         if ( !gl_silent ) 
-			wxLaunchDefaultApplication(bosslog_path().string());  //Displays the BOSSlog.txt.
+			wxLaunchDefaultApplication(gl_current_game.BossLog(gl_log_format).string());  //Displays the BOSSlog.txt.
 		progDia->Destroy();
         return; //fail in screaming heap.
 	}
 
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		userlist.Load(userlist_path());
-		for (vector<ParsingError>::iterator iter; iter != userlist.syntaxErrorBuffer.end(); ++iter)
-			bosslog.parsingErrors.push_back(*iter);
+		userlist.Load(gl_current_game.Userlist());
+		vector<ParsingError> errs = userlist.ErrorBuffer();
+		bosslog.parsingErrors.insert(bosslog.parsingErrors.end(), errs.begin(), errs.end());
 	} catch (boss_error &e) {
-		bosslog.parsingErrors.push_back(userlist.parsingErrorBuffer);
-		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
+		vector<ParsingError> errs = userlist.ErrorBuffer();
+		bosslog.parsingErrors.insert(bosslog.parsingErrors.end(), errs.begin(), errs.end());
+		userlist.Clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
 
@@ -609,11 +586,11 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	// Perform Sorting Functionality
 	/////////////////////////////////////////////////
 
-	PerformSortingFunctionality(bosslog, modlist, masterlist, userlist, esmtime);
+	PerformSortingFunctionality(gl_current_game.BossLog(gl_log_format), bosslog, modlist, masterlist, userlist, esmtime);
 
 	LOG_INFO("Launching boss log in browser.");
 	if ( !gl_silent ) 
-		wxLaunchDefaultApplication(bosslog_path().string());	//Displays the BOSSlog.txt.
+		wxLaunchDefaultApplication(gl_current_game.BossLog(gl_log_format).string());	//Displays the BOSSlog.txt.
 	LOG_INFO("BOSS finished.");
 	progDia->Destroy();
 	return;
@@ -626,13 +603,13 @@ void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
 		editor->Show();
 		return;
 	} else {
-		if (fs::exists(userlist_path()))
-			wxLaunchDefaultApplication(userlist_path().string());
+		if (fs::exists(gl_current_game.Userlist()))
+			wxLaunchDefaultApplication(gl_current_game.Userlist().string());
 		else {
 			try {
 				RuleList userlist;
-				userlist.Save(userlist_path());
-				wxLaunchDefaultApplication(userlist_path().string());
+				userlist.Save(gl_current_game.Userlist());
+				wxLaunchDefaultApplication(gl_current_game.Userlist().string());
 			} catch (boss_error &e) {
 				wxMessageBox(wxString::Format(
 					wxT("Error: " + e.getString())
@@ -648,11 +625,11 @@ void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
 //Call when a file is opened. Either readmes or BOSS Logs.
 void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 	if (event.GetId() == OPTION_OpenBOSSlog) {
-		if (fs::exists(bosslog_path()))
-			wxLaunchDefaultApplication(bosslog_path().string());
+		if (fs::exists(gl_current_game.BossLog(gl_log_format)))
+			wxLaunchDefaultApplication(gl_current_game.BossLog(gl_log_format).string());
 		else
 			wxMessageBox(wxString::Format(
-				wxT("Error: \"" + bosslog_path().string() + "\" cannot be found!")
+				wxT("Error: \"" + gl_current_game.BossLog(gl_log_format).string() + "\" cannot be found!")
 			),
 			wxT("BOSS: Error"),
 			wxOK | wxICON_ERROR,
@@ -734,47 +711,25 @@ void MainFrame::OnTrialRunChange(wxCommandEvent& event) {
 void MainFrame::OnGameChange(wxCommandEvent& event) {
 	switch (event.GetId()) {
 	case MENU_Oblivion:
-		gl_current_game = OBLIVION;
+		gl_current_game = Game(OBLIVION);
 		break;
 	case MENU_Nehrim:
-		gl_current_game = NEHRIM;
+		gl_current_game = Game(NEHRIM);
 		break;
 	case MENU_Skyrim:
-		gl_current_game = SKYRIM;
+		gl_current_game = Game(SKYRIM);
 		break;
 	case MENU_Fallout3:
-		gl_current_game = FALLOUT3;
+		gl_current_game = Game(FALLOUT3);
 		break;
 	case MENU_FalloutNewVegas:
-		gl_current_game = FALLOUTNV;
+		gl_current_game = Game(FALLOUTNV);
 		break;
 	case MENU_Morrowind:
-		gl_current_game = MORROWIND;
+		gl_current_game = Game(MORROWIND);
 		break;
 	}
-	SetDataPath(gl_current_game);
-	try {
-		if (!fs::exists(boss_game_path()))
-			fs::create_directory(boss_game_path());
-	} catch (fs::filesystem_error e) {
-		throw boss_error(BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL, GetGameMasterFile(gl_current_game), e.what());
-	}
-	SetTitle(wxT("BOSS - " + GetGameString(gl_current_game)));
-	//Load game ini file (only matters for Oblivion).
-	if (gl_current_game == OBLIVION && fs::exists(data_path.parent_path() / "Oblivion.ini")) {  //Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
-		Settings oblivionIni;
-		try {
-			oblivionIni.Load(data_path.parent_path() / "Oblivion.ini");  //This also sets the variable up.
-		} catch (boss_error &e) {
-			LOG_ERROR("Error: %s", e.getString().c_str());
-			wxMessageBox(wxString::Format(
-					wxT("Error: " + e.getString() + " Details: " + Outputter(PLAINTEXT, oblivionIni.ErrorBuffer()).AsString())
-				),
-				wxT("BOSS: Error"),
-				wxOK | wxICON_ERROR,
-				NULL);
-		}
-	}
+	SetTitle(wxT("BOSS - " + gl_current_game.Name()));
 }
 
 void MainFrame::OnRevertChange(wxCommandEvent& event) {
@@ -832,26 +787,18 @@ void MainFrame::DisableUndetectedGames() {
 	GameMenu->FindItem(MENU_FalloutNewVegas)->Enable(enabled);
 	GameMenu->FindItem(MENU_Morrowind)->Enable(enabled);
 	for (size_t i=0; i < games.size(); i++) {
-		switch (games[i]) {
-		case OBLIVION:
+		if (games[i] == OBLIVION)
 			GameMenu->FindItem(MENU_Oblivion)->Enable();
-			break;
-		case NEHRIM:
+		else if (games[i] == NEHRIM)
 			GameMenu->FindItem(MENU_Nehrim)->Enable();
-			break;
-		case SKYRIM:
+		else if (games[i] == SKYRIM)
 			GameMenu->FindItem(MENU_Skyrim)->Enable();
-			break;
-		case FALLOUT3:
+		else if (games[i] == FALLOUT3)
 			GameMenu->FindItem(MENU_Fallout3)->Enable();
-			break;
-		case FALLOUTNV:
+		else if (games[i] == FALLOUTNV)
 			GameMenu->FindItem(MENU_FalloutNewVegas)->Enable();
-			break;
-		case MORROWIND:
+		else if (games[i] == MORROWIND)
 			GameMenu->FindItem(MENU_Morrowind)->Enable();
-			break;
-		}
 	}
 
 	//Swapping from gl_update_only to !gl_update_only with undetected game active: need to change game to a detected game.
@@ -861,61 +808,46 @@ void MainFrame::DisableUndetectedGames() {
 		|| (GameMenu->FindItem(MENU_Fallout3)->IsChecked() && !GameMenu->FindItem(MENU_Fallout3)->IsEnabled())
 		|| (GameMenu->FindItem(MENU_FalloutNewVegas)->IsChecked() && !GameMenu->FindItem(MENU_FalloutNewVegas)->IsEnabled())
 		|| (GameMenu->FindItem(MENU_Morrowind)->IsChecked() && !GameMenu->FindItem(MENU_Morrowind)->IsEnabled())) {
-			if (games.size() > 0) {
-				switch (games.front()) {
-				case OBLIVION:
-					gl_current_game = OBLIVION;
+			if (!games.empty()) {
+				if (games.front() == OBLIVION) {
+					gl_current_game = Game(OBLIVION);
 					GameMenu->FindItem(MENU_Oblivion)->Check();
-					break;
-				case NEHRIM:
-					gl_current_game = NEHRIM;
+				} else if (games.front() == NEHRIM) {
+					gl_current_game = Game(NEHRIM);
 					GameMenu->FindItem(MENU_Nehrim)->Check();
-					break;
-				case SKYRIM:
-					gl_current_game = SKYRIM;
+				} else if (games.front() == SKYRIM) {
+					gl_current_game = Game(SKYRIM);
 					GameMenu->FindItem(MENU_Skyrim)->Check();
-					break;
-				case FALLOUT3:
-					gl_current_game = FALLOUT3;
+				} else if (games.front() == FALLOUT3) {
+					gl_current_game = Game(FALLOUT3);
 					GameMenu->FindItem(MENU_Fallout3)->Check();
-					break;
-				case FALLOUTNV:
-					gl_current_game = FALLOUTNV;
+				} else if (games.front() == FALLOUTNV) {
+					gl_current_game = Game(FALLOUTNV);
 					GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
-					break;
-				case MORROWIND:
-					gl_current_game = MORROWIND;
+				} else if (games.front() == MORROWIND) {
+					gl_current_game = Game(MORROWIND);
 					GameMenu->FindItem(MENU_Morrowind)->Check();
-					break;
 				}
-				SetDataPath(gl_current_game);
 			}
 	}
-	SetTitle(wxT("BOSS - " + GetGameString(gl_current_game)));
+	SetTitle(wxT("BOSS - " + gl_current_game.Name()));
 }
 
 void MainFrame::SetGames(vector<uint32_t> inGames) {
 	games = inGames;
-	switch (gl_current_game) {
-	case OBLIVION:
+	if (gl_current_game.GetGame() == OBLIVION)
 		GameMenu->FindItem(MENU_Oblivion)->Check();
-		break;
-	case NEHRIM:
+	else if (gl_current_game.GetGame() == NEHRIM)
 		GameMenu->FindItem(MENU_Nehrim)->Check();
-		break;
-	case SKYRIM:
+	else if (gl_current_game.GetGame() == SKYRIM)
 		GameMenu->FindItem(MENU_Skyrim)->Check();
-		break;
-	case FALLOUT3:
+	else if (gl_current_game.GetGame() == FALLOUT3)
 		GameMenu->FindItem(MENU_Fallout3)->Check();
-		break;
-	case FALLOUTNV:
+	else if (gl_current_game.GetGame() == FALLOUTNV)
 		GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
-		break;
-	case MORROWIND:
+	else if (gl_current_game.GetGame() == MORROWIND)
 		GameMenu->FindItem(MENU_Morrowind)->Check();
-		break;
-	case AUTODETECT:  //No game detected. Only valid option is to force a game and update masterlist only, so set options to that and disable selecting of other run types.
+	else {  //No game detected. Only valid option is to force a game and update masterlist only, so set options to that and disable selecting of other run types.
 		GameMenu->FindItem(MENU_None)->Check();
 		gl_update_only = true;
 		SortOption->Enable(false);
@@ -924,7 +856,7 @@ void MainFrame::SetGames(vector<uint32_t> inGames) {
 	}
 	size_t i=0;
 	for (i=0; i < games.size(); i++) {
-		if (games[i] == gl_current_game)
+		if (games[i] == gl_current_game.GetGame())
 			break;
 	}
 	if (i == games.size()) {  //The current game wasn't in the list of detected games. Run in update only mode.

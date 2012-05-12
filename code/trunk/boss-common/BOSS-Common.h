@@ -57,8 +57,6 @@ void			Ini::Save					(fs::path file);
 
 void			GetGame						();
 
-time_t			GetMasterTime				();
-
 void			Outputter::Save				(fs::path file, bool overwrite);
 
 void			CleanUp						();

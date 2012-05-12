@@ -72,6 +72,8 @@ public:
 	void OnToggleRule(wxCommandEvent& event);
 	void OnRuleSelection(wxCommandEvent& event);
 	DECLARE_EVENT_TABLE()
+
+	wxWindow * GetChild(size_t pos) const;
 private:
 	void ReDrawRuleList();					//Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
 	RuleList userlist;

@@ -387,62 +387,43 @@ int main(int argc, char *argv[]) {
 	try {
 		gl_last_game = AUTODETECT;  //Clear this setting in case the GUI was run.
 		vector<uint32_t> detected, undetected;
-		DetectGame(detected, undetected);
-		if (gl_current_game == AUTODETECT) {
+		uint32_t game = DetectGame(detected, undetected);
+		if (game == AUTODETECT) {
 			//Now check what games were found.
 			if (detected.empty())
 				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 			else if (detected.size() == 1)
-				gl_current_game = detected.front();
+				game = detected.front();
 			else {
 				size_t ans;
 				//Ask user to choose game.
 				cout << endl << "Please pick which game to run BOSS for:" << endl;
 				for (size_t i=0; i < detected.size(); i++)
-					cout << i << " : " << GetGameString(detected[i]) << endl;
+					cout << i << " : " << Game(detected[i], "", true).Name() << endl;
 
 				cin >> ans;
 				if (ans < 0 || ans >= detected.size()) {
 					cout << "Invalid selection." << endl;
 					throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 				}
-				gl_current_game = detected[ans];
+				game = detected[ans];
 			}
 		}
-		//Now set data_path.
-		SetDataPath(gl_current_game);
-		//Make sure that boss_game_path() exists.
-		try {
-			if (!fs::exists(boss_game_path()))
-				fs::create_directory(boss_game_path());
-		} catch (fs::filesystem_error e) {
-			throw boss_error(BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL, GetGameMasterFile(gl_current_game), e.what());
-		}
-		LOG_INFO("Game detected: %d", gl_current_game);
+		gl_current_game = Game(game);
+		LOG_INFO("Game detected: %s", gl_current_game.Name().c_str());
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now.";
 		try {
-			bosslog.Save(bosslog_path(), true);
+			bosslog.Save(gl_current_game.BossLog(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if ( !gl_silent ) 
-			Launch(bosslog_path().string());	//Displays the BOSSlog.txt.
+			Launch(gl_current_game.BossLog(gl_log_format).string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
-	}
-
-	//Load game ini file (only matters for Oblivion).
-	if (gl_current_game == OBLIVION && fs::exists(data_path.parent_path() / "Oblivion.ini")) {  //Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
-		Settings oblivionIni;
-		try {
-			oblivionIni.Load(data_path.parent_path() / "Oblivion.ini");  //This also sets the variable up.
-		} catch (boss_error &e) {
-			LOG_ERROR("Error: %s", e.getString().c_str());
-			bosslog.parsingErrors.push_back(oblivionIni.ErrorBuffer());
-		}
 	}
 
 
@@ -460,7 +441,7 @@ int main(int argc, char *argv[]) {
 				try {
 					string localDate, remoteDate;
 					uint32_t localRevision, remoteRevision;
-					MlistUpdater.Update(masterlist_path(), localRevision, localDate, remoteRevision, remoteDate);
+					MlistUpdater.Update(gl_current_game.GetGame(), gl_current_game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
 					if (localRevision == remoteRevision) {
 						bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
 						cout << endl << "Your masterlist is already at the latest revision (" << localRevision << "; " << localDate << "). No update necessary." << endl;
@@ -490,12 +471,12 @@ int main(int argc, char *argv[]) {
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
 	if (gl_update_only) {
 		try {
-			bosslog.Save(bosslog_path(), true);
+			bosslog.Save(gl_current_game.BossLog(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if ( !gl_silent ) 
-			Launch(bosslog_path().string());	//Displays the BOSSlog.
+			Launch(gl_current_game.BossLog(gl_log_format).string());	//Displays the BOSSlog.
 		return (0);
 	}
 
@@ -508,39 +489,39 @@ int main(int argc, char *argv[]) {
 
 	//Get the master esm's modification date. 
 	try {
-		esmtime = GetMasterTime();
+		esmtime = gl_current_game.MasterFile().GetModTime();
 	} catch(boss_error &e) {
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
 		bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now.";
 		try {
-			bosslog.Save(bosslog_path(), true);
+			bosslog.Save(gl_current_game.BossLog(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if ( !gl_silent ) 
-			Launch(bosslog_path().string());	//Displays the BOSSlog.txt.
+			Launch(gl_current_game.BossLog(gl_log_format).string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
 	//Build and save modlist.
 	try {
-		modlist.Load(data_path);
+		modlist.Load(gl_current_game.DataFolder());
 		if (gl_revert < 1)
-			modlist.Save(modlist_path(), old_modlist_path());
+			modlist.Save(gl_current_game.Modlist(), gl_current_game.OldModlist());
 	} catch (boss_error &e) {
 		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
 		bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now.";
 		try {
-			bosslog.Save(bosslog_path(), true);
+			bosslog.Save(gl_current_game.BossLog(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if ( !gl_silent ) 
-			Launch(bosslog_path().string());	//Displays the BOSSlog.txt.
+			Launch(gl_current_game.BossLog(gl_log_format).string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
 
@@ -552,11 +533,11 @@ int main(int argc, char *argv[]) {
 
 	//Set masterlist path to be used.
 	if (gl_revert == 1)
-		sortfile = modlist_path();	
+		sortfile = gl_current_game.Modlist();	
 	else if (gl_revert == 2) 
-		sortfile = old_modlist_path();
+		sortfile = gl_current_game.OldModlist();
 	else 
-		sortfile = masterlist_path();
+		sortfile = gl_current_game.Masterlist();
 	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
 	
 	//Parse masterlist/modlist backup into data structure.
@@ -579,23 +560,24 @@ int main(int argc, char *argv[]) {
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 				<< "Utility will end now.";
 		try {
-			bosslog.Save(bosslog_path(), true);
+			bosslog.Save(gl_current_game.BossLog(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if ( !gl_silent ) 
-                Launch(bosslog_path().string());  //Displays the BOSSlog.txt.
+                Launch(gl_current_game.BossLog(gl_log_format).string());  //Displays the BOSSlog.txt.
         exit (1); //fail in screaming heap.
 	}
 	
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		userlist.Load(userlist_path());
-		for (vector<ParsingError>::iterator iter; iter != userlist.syntaxErrorBuffer.end(); ++iter)
-			bosslog.parsingErrors.push_back(*iter);
+		userlist.Load(gl_current_game.Userlist());
+		vector<ParsingError> errs = userlist.ErrorBuffer();
+		bosslog.parsingErrors.insert(bosslog.parsingErrors.end(), errs.begin(), errs.end());
 	} catch (boss_error &e) {
-		bosslog.parsingErrors.push_back(userlist.parsingErrorBuffer);
-		userlist.rules.clear();  //If userlist has parsing errors, empty it so no rules are applied.
+		vector<ParsingError> errs = userlist.ErrorBuffer();
+		bosslog.parsingErrors.insert(bosslog.parsingErrors.end(), errs.begin(), errs.end());
+		userlist.Clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
 	
@@ -603,11 +585,11 @@ int main(int argc, char *argv[]) {
 	// Perform sorting functionality
 	//////////////////////////////////
 
-	PerformSortingFunctionality(bosslog, modlist, masterlist, userlist, esmtime);
+	PerformSortingFunctionality(gl_current_game.BossLog(gl_log_format), bosslog, modlist, masterlist, userlist, esmtime);
 
 	LOG_INFO("Launching boss log in browser.");
 	if ( !gl_silent ) 
-		Launch(bosslog_path().string());	//Displays the BOSSlog.txt.
+		Launch(gl_current_game.BossLog(gl_log_format).string());	//Displays the BOSSlog.txt.
 	LOG_INFO("BOSS finished.");
 	return (0);
 }

@@ -40,7 +40,8 @@ namespace boss {
 	using namespace std;
 
 	//Performs BOSS's main sorting functionality. Each stage is implemented by a separate function for neatness and to make future adjustments easier. 
-	BOSS_COMMON void PerformSortingFunctionality(BossLog& bosslog,
+	BOSS_COMMON void PerformSortingFunctionality(fs::path file,
+												BossLog& bosslog,
 												ItemList& modlist,
 												ItemList& masterlist,
 												RuleList& userlist,

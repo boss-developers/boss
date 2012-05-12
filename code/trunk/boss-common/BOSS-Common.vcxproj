@@ -22,6 +22,7 @@
     <ClCompile Include="Common\Classes.cpp" />
     <ClCompile Include="Common\Error.cpp" />
     <ClCompile Include="Common\Execute.cpp" />
+    <ClCompile Include="Common\Game.cpp" />
     <ClCompile Include="Common\Globals.cpp" />
     <ClCompile Include="Output\Output.cpp" />
     <ClCompile Include="Parsing\Grammar.cpp" />
@@ -37,6 +38,7 @@
     <ClInclude Include="Common\DllDef.h" />
     <ClInclude Include="Common\Error.h" />
     <ClInclude Include="Common\Execute.h" />
+    <ClInclude Include="Common\Game.h" />
     <ClInclude Include="Common\Globals.h" />
     <ClInclude Include="Output\Output.h" />
     <ClInclude Include="Parsing\Grammar.h" />

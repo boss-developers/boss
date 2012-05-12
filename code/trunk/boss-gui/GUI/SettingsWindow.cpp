@@ -158,43 +158,30 @@ void SettingsFrame::SetDefaultValues() {
 		StartupUpdateCheckBox->SetValue(true);
 	if (gl_use_user_rules_manager)
 		UseUserRuleManagerBox->SetValue(true);
-	switch (gl_game) {
-	case AUTODETECT:
+
+	if (gl_game == AUTODETECT)
 		GameChoice->SetSelection(0);
-		break;
-	case OBLIVION:
+	else if (gl_game == OBLIVION)
 		GameChoice->SetSelection(1);
-		break;
-	case NEHRIM:
+	else if (gl_game == NEHRIM)
 		GameChoice->SetSelection(2);
-		break;
-	case SKYRIM:
+	else if (gl_game == SKYRIM)
 		GameChoice->SetSelection(3);
-		break;
-	case FALLOUT3:
+	else if (gl_game == FALLOUT3)
 		GameChoice->SetSelection(4);
-		break;
-	case FALLOUTNV:
+	else if (gl_game == FALLOUTNV)
 		GameChoice->SetSelection(5);
-		break;
-	case MORROWIND:
+	else if (gl_game == MORROWIND)
 		GameChoice->SetSelection(6);
-		break;
-	}
-	switch (gl_language) {
-	case ENGLISH:
+	
+	if (gl_language == ENGLISH)
 		LanguageChoice->SetSelection(0);
-		break;
-	case SPANISH:
+	else if (gl_language == SPANISH)
 		LanguageChoice->SetSelection(1);
-		break;
-	case GERMAN:
+	else if (gl_language == GERMAN)
 		LanguageChoice->SetSelection(2);
-		break;
-	case RUSSIAN:
+	else if (gl_language == RUSSIAN)
 		LanguageChoice->SetSelection(3);
-		break;
-	}
 
 	//Internet Settings
 	ProxyHostBox->SetValue(gl_proxy_host);

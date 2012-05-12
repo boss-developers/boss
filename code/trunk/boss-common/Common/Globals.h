@@ -36,58 +36,47 @@
 #include <boost/filesystem.hpp>
 #include <boost/cstdint.hpp>
 #include "Common/DllDef.h"
-#include "Common/Error.h"
+#include "Common/Game.h"
 
 namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
-//#define BOSSGUI
-
-	BOSS_COMMON const uint32_t BOSS_VERSION_MAJOR = 2;
-	BOSS_COMMON const uint32_t BOSS_VERSION_MINOR = 1;
-	BOSS_COMMON const uint32_t BOSS_VERSION_PATCH = 0;
-
-	BOSS_COMMON extern const string gl_boss_release_date;
+	//BOSS version number.
+	BOSS_COMMON extern const uint32_t BOSS_VERSION_MAJOR;
+	BOSS_COMMON extern const uint32_t BOSS_VERSION_MINOR;
+	BOSS_COMMON extern const uint32_t BOSS_VERSION_PATCH;
 	
-	//DO NOT CHANGE THE GAME VALUES. THEY MUST BE INVARIANT ACROSS RELEASES FOR API USERS.
-	BOSS_COMMON const uint32_t AUTODETECT	= 0;
-	BOSS_COMMON const uint32_t OBLIVION		= 1;
-	BOSS_COMMON const uint32_t NEHRIM		= 2;
-	BOSS_COMMON const uint32_t SKYRIM		= 3;
-	BOSS_COMMON const uint32_t FALLOUT3		= 4;
-	BOSS_COMMON const uint32_t FALLOUTNV	= 5;
-	BOSS_COMMON const uint32_t MORROWIND	= 6;
+	//Supported game values.
+	BOSS_COMMON extern const uint32_t AUTODETECT;
+	BOSS_COMMON extern const uint32_t OBLIVION;
+	BOSS_COMMON extern const uint32_t NEHRIM;
+	BOSS_COMMON extern const uint32_t SKYRIM;
+	BOSS_COMMON extern const uint32_t FALLOUT3;
+	BOSS_COMMON extern const uint32_t FALLOUTNV;
+	BOSS_COMMON extern const uint32_t MORROWIND;
 
-	//These other uint32_t values are not (as yet) accessed by the API, so don't need to be
-	//invariant across versions.
-	enum : uint32_t {
-		//BOSS Log Formats (for 'log_format' setting)
-		HTML,
-		PLAINTEXT,
-		//Run types (for 'run_type' setting)
-		SORT,
-		UPDATE,
-		UNDO,
-		//Languages
-		ENGLISH,
-		SPANISH,
-		GERMAN,
-		RUSSIAN
-	};
+	//BOSS Log formatting values.
+	BOSS_COMMON extern const uint32_t HTML;
+	BOSS_COMMON extern const uint32_t PLAINTEXT;
 
-	BOSS_COMMON extern uint32_t gl_current_game;  //The game that BOSS is currently running for. Matches gl_game if gl_game != AUTODETECT.
-
-	BOSS_COMMON extern bool gl_using_local_app_data_folder;  //Set by bUseMyGamesDirectory in the game's ini file if different from default.
-
+	//Language values.
+	BOSS_COMMON extern const uint32_t ENGLISH;
+	BOSS_COMMON extern const uint32_t SPANISH;
+	BOSS_COMMON extern const uint32_t GERMAN;
+	BOSS_COMMON extern const uint32_t RUSSIAN;
+	
+	//Some misc. globals.
+	BOSS_COMMON extern const string gl_boss_release_date;
+	BOSS_COMMON extern Game gl_current_game;
+	
 
 	///////////////////////////////
 	//File/Folder Paths
 	///////////////////////////////
-
-	//These globals exist for ease-of-use, so that a Settings object doesn't need to be passed in infinity+1 functions.
-	BOSS_COMMON extern const fs::path boss_path;		//Path to the BOSS folder, relative to executable (ie. '.').
-	BOSS_COMMON extern		 fs::path data_path;		//Path to the data folder of the game that BOSS is currently running for, relative to executable (ie. boss_path).
+	
+	//Paths that are game-invariant.
+	BOSS_COMMON extern const fs::path boss_path;  //Path to the BOSS folder, relative to executable (ie. '.').
 	BOSS_COMMON extern const fs::path ini_path;
 	BOSS_COMMON extern const fs::path old_ini_path;
 	BOSS_COMMON extern const fs::path debug_log_path;
@@ -97,41 +86,27 @@ namespace boss {
 	BOSS_COMMON extern const fs::path api_doc_path;
 	BOSS_COMMON extern const fs::path licenses_path;
 
-
-	///////////////////////////////
-	//File/Folder Path Functions
-	///////////////////////////////
-
-	BOSS_COMMON fs::path boss_game_path();		//Path to BOSS's folder for that game.
-	BOSS_COMMON fs::path bosslog_path();		//Output decided by log format.
-	BOSS_COMMON fs::path masterlist_path();		//Output decided by game.
-	BOSS_COMMON fs::path userlist_path();		//Output decided by game.
-	BOSS_COMMON fs::path modlist_path();		//Output decided by game.
-	BOSS_COMMON fs::path old_modlist_path();	//Output decided by game.
-
-	BOSS_COMMON fs::path plugins_path();		//Path to plugins.txt.
-	BOSS_COMMON fs::path loadorder_path();		//Path to loadorder.txt.
 	
-
 	///////////////////////////////
 	//Ini Settings
 	///////////////////////////////
+	//These globals exist for ease-of-use, so that a Settings object doesn't need to be passed in infinity+1 functions.
 
 	//General variables
 	BOSS_COMMON extern bool		gl_do_startup_update_check;	// Whether or not to check for updates on startup.
-	BOSS_COMMON extern bool		gl_use_user_rules_manager;	// Use the User Rules Editor or edit userlist.txt directly?
+	BOSS_COMMON	extern bool		gl_use_user_rules_manager;	// Use the User Rules Editor or edit userlist.txt directly?
 	BOSS_COMMON extern uint32_t	gl_language;				// What language to run BOSS in?
 
-	//Command line variables.
+	//Command line variables
 	BOSS_COMMON extern string	gl_proxy_host;
 	BOSS_COMMON extern string	gl_proxy_user;
 	BOSS_COMMON extern string	gl_proxy_passwd;
-	BOSS_COMMON extern uint32_t gl_proxy_port;
-	BOSS_COMMON extern uint32_t gl_log_format;				// what format the output should be in.  Uses the enums defined above.
-	BOSS_COMMON extern uint32_t gl_game;					// What game's mods are we sorting? Uses the enums defined above.
+	BOSS_COMMON extern uint32_t	gl_proxy_port;				
+	BOSS_COMMON extern uint32_t	gl_log_format;				// what format the output should be in.  Uses the enums defined above.
+	BOSS_COMMON extern uint32_t	gl_game;					// What game's mods are we sorting? Uses the enums defined above.
 	BOSS_COMMON extern uint32_t	gl_last_game;				// what game was last run? Only affects GUI behaviour.
-	BOSS_COMMON extern uint32_t gl_revert;					// what level to revert to
-	BOSS_COMMON extern uint32_t gl_debug_verbosity;			// log levels above INFO to output
+	BOSS_COMMON extern uint32_t	gl_revert;					// what level to revert to
+	BOSS_COMMON extern uint32_t	gl_debug_verbosity;			// log levels above INFO to output
 	BOSS_COMMON extern bool		gl_update;					// update the masterlist?
 	BOSS_COMMON extern bool		gl_update_only;				// only update the masterlist and don't sort currently.
 	BOSS_COMMON extern bool		gl_silent;					// silent mode?
@@ -139,17 +114,5 @@ namespace boss {
 	BOSS_COMMON extern bool		gl_show_CRCs;				// whether or not to show mod CRCs.
 	BOSS_COMMON extern bool		gl_trial_run;				// If true, don't redate files.
 	BOSS_COMMON extern bool		gl_log_debug_output;		// If true, logs command line output in BOSSDebugLog.txt.
-
-
-	///////////////////////////////
-	//Settings Functions
-	///////////////////////////////
-	
-	BOSS_COMMON string	GetGameString		(uint32_t game);
-	BOSS_COMMON string	GetGameMasterFile	(uint32_t game);
-	BOSS_COMMON void	SetDataPath			(uint32_t game);
-	BOSS_COMMON void	DetectGame			(vector<uint32_t>& detectedGames, vector<uint32_t>& undetectedGames);	//Throws exception if error.
-	BOSS_COMMON time_t	GetMasterTime		();					//Throws exception if error.
 }
-
 #endif

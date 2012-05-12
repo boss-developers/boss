@@ -258,7 +258,7 @@ namespace boss {
 	///////////////////////////////////////
 
 	//Updates the local masterlist to the latest available online. Throws exception on error.
-	void MasterlistUpdater::Update(fs::path file, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate) {							//cURL handle
+	void MasterlistUpdater::Update(const uint32_t game, fs::path file, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate) {							//cURL handle
 		string url, buffer, newline;		//A bunch of strings.
 		ifstream mlist;								//Input stream.
 		ofstream out;								//Output stream.
@@ -269,33 +269,25 @@ namespace boss {
 
 		//Get local and remote masterlist info.
 		GetLocalMasterlistRevisionDate(file, localRevision, localDate);
-		GetRemoteMasterlistRevisionDate(remoteRevision, remoteDate);
+		GetRemoteMasterlistRevisionDate(game, remoteRevision, remoteDate);
 
 		//Is an update available?
 		if (localRevision == 0 || localRevision < remoteRevision) {
 			//Set url.
-			switch (gl_current_game) {
-			case OBLIVION:
+			if (game == OBLIVION)
 				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
-				break;
-			case NEHRIM:
+			else if (game == NEHRIM)
 				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/masterlist.txt";
-				break;
-			case SKYRIM:
+			else if (game == SKYRIM)
 				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-skyrim/masterlist.txt";
-				break;
-			case FALLOUT3:
+			else if (game == FALLOUT3)
 				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
-				break;
-			case FALLOUTNV:
+			else if (game == FALLOUTNV)
 				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/masterlist.txt";
-				break;
-			case MORROWIND:
+			else if (game == MORROWIND)
 				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-morrowind/masterlist.txt";
-				break;
-			default:
+			else
 				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
-			}
 
 			targetFile = file.string();
 
@@ -352,7 +344,7 @@ namespace boss {
 	}
 
 	//Gets the revision number of the online masterlist. Throws exception on error.
-	void MasterlistUpdater::GetRemoteMasterlistRevisionDate(uint32_t& revision, string& date) {
+	void MasterlistUpdater::GetRemoteMasterlistRevisionDate(const uint32_t game, uint32_t& revision, string& date) {
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		string buffer;		//A bunch of strings.
@@ -379,26 +371,19 @@ namespace boss {
 		}
 		
 		//Extract revision number from page text.
-		switch (gl_current_game) {
-		case OBLIVION:
+		if (game == OBLIVION)
 			start = buffer.find("\"boss-oblivion\":");
-			break;
-		case NEHRIM:
+		else if (game == NEHRIM)
 			start = buffer.find("\"boss-nehrim\":");
-			break;
-		case SKYRIM:
+		else if (game == SKYRIM)
 			start = buffer.find("\"boss-skyrim\":");
-			break;
-		case FALLOUT3:
+		else if (game == FALLOUT3)
 			start = buffer.find("\"boss-fallout\":");
-			break;
-		case FALLOUTNV:
+		else if (game == FALLOUTNV)
 			start = buffer.find("\"boss-fallout-nv\":");
-			break;
-		case MORROWIND:
+		else if (game == MORROWIND)
 			start = buffer.find("\"boss-morrowind\":");
-			break;
-		default:
+		else {
 			curl_easy_cleanup(curl);
 			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 		}
@@ -424,26 +409,19 @@ namespace boss {
 		revision = atoi(buffer.substr(start,end).c_str());
 
 		//Extract revision date from page text.
-		switch (gl_current_game) {
-		case OBLIVION:
+		if (game == OBLIVION)
 			start = buffer.find("\"boss-oblivion\":");
-			break;
-		case NEHRIM:
+		else if (game == NEHRIM)
 			start = buffer.find("\"boss-nehrim\":");
-			break;
-		case SKYRIM:
+		else if (game == SKYRIM)
 			start = buffer.find("\"boss-skyrim\":");
-			break;
-		case FALLOUT3:
+		else if (game == FALLOUT3)
 			start = buffer.find("\"boss-fallout\":");
-			break;
-		case FALLOUTNV:
+		else if (game == FALLOUTNV)
 			start = buffer.find("\"boss-fallout-nv\":");
-			break;
-		case MORROWIND:
+		else if (game == MORROWIND)
 			start = buffer.find("\"boss-morrowind\":");
-			break;
-		default:
+		else {
 			curl_easy_cleanup(curl);
 			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 		}

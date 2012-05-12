@@ -64,7 +64,7 @@ BOOST_FUSION_ADAPT_STRUCT(
 BOOST_FUSION_ADAPT_STRUCT(
     boss::Item,
 	(std::string, conditions)
-	(boss::itemType, type)
+	(uint32_t, type)
     (std::string, data)
     (std::vector<boss::Message>, messages)
 )
@@ -120,7 +120,7 @@ namespace boss {
 		oldMasterlistMsgKey_();
 	};
 
-	struct typeKey_ : qi::symbols<char, itemType> {
+	struct typeKey_ : qi::symbols<char, uint32_t> {
 		typeKey_();
 	};
 
@@ -153,7 +153,7 @@ namespace boss {
 	private:
 		qi::rule<grammarIter, vector<Item>(), Skipper> modList;
 		qi::rule<grammarIter, Item(), Skipper> listItem;
-		qi::rule<grammarIter, itemType(), Skipper> ItemType;
+		qi::rule<grammarIter, uint32_t(), Skipper> ItemType;
 		qi::rule<grammarIter, string(), Skipper> itemName;
 		qi::rule<grammarIter, vector<Message>(), Skipper> itemMessages;
 		qi::rule<grammarIter, Message(), Skipper> itemMessage, globalMessage, oldCondItemMessage;
@@ -183,8 +183,6 @@ namespace boss {
 
 		//Turns a given string into a path. Can't be done directly because of the openGroups checks.
 		void ToName(string& p, string itemName);
-
-		
 	};
 
 
@@ -289,8 +287,7 @@ namespace boss {
 	class userlist_grammar : public qi::grammar<grammarIter, vector<Rule>(), Skipper> {
 	public:
 		userlist_grammar();
-		inline void SetParsingErrorBuffer(ParsingError * inErrorBuffer) { parsingErrorBuffer = inErrorBuffer; }
-		inline void SetSyntaxErrorBuffer(vector<ParsingError> * inErrorBuffer) { syntaxErrorBuffer = inErrorBuffer; }
+		void SetErrorBuffer(vector<ParsingError> * inErrorBuffer);
 	private:
 		qi::rule<grammarIter, vector<Rule>(), Skipper> ruleList;
 		qi::rule<grammarIter, Rule(), Skipper> userlistRule;
@@ -301,10 +298,7 @@ namespace boss {
 	
 		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what);
 
-		void RuleSyntaxCheck(vector<Rule>& userlist, Rule currentRule);
-
-		ParsingError * parsingErrorBuffer;
-		vector<ParsingError> * syntaxErrorBuffer;
+		vector<ParsingError> * errorBuffer;
 	};
 
 }
