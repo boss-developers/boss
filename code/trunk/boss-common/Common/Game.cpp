@@ -109,9 +109,13 @@ namespace boss {
 	////////////////////////////
 
 	Game::Game() {
-		game = AUTODETECT;
+		id = AUTODETECT;
 		name = "";
+
+		executable = "";
 		masterFile = "";
+		scriptExtender = "";
+		seExecutable = "";
 			
 		registryKey = "";
 		registrySubKey = "";
@@ -121,16 +125,20 @@ namespace boss {
 		pluginsFolderName = "";
 		pluginsFileName = "";
 
-		dataPath = fs::path();
+		gamePath = fs::path();
 		pluginsPath = fs::path();
 		loadorderPath = fs::path();
 	}
 	
 	Game::Game(uint32_t inGame, string dataFolder, bool noPathInit) {
-		game = inGame;
+		id = inGame;
 		if (inGame == OBLIVION) {
 			name = "TES IV: Oblivion";
+
+			executable = "Oblivion.exe";
 			masterFile = "Oblivion.esm";
+			scriptExtender = "OBSE";
+			seExecutable = "obse_1_2_416.dll";
 			
 			registryKey = "Software\\Bethesda Softworks\\Oblivion";
 			registrySubKey = "Installed Path";
@@ -141,7 +149,11 @@ namespace boss {
 			pluginsFileName = "plugins.txt";
 		} else if (inGame == NEHRIM) {
 			name = "Nehrim - At Fate's Edge";
+			
+			executable = "Oblivion.exe";
 			masterFile = "Nehrim.esm";
+			scriptExtender = "OBSE";
+			seExecutable = "obse_1_2_416.dll";
 			
 			registryKey = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1";
 			registrySubKey = "InstallLocation";
@@ -152,7 +164,11 @@ namespace boss {
 			pluginsFileName = "plugins.txt";
 		} else if (inGame == SKYRIM) {
 			name = "TES V: Skyrim";
+			
+			executable = "TESV.exe";
 			masterFile = "Skyrim.esm";
+			scriptExtender = "SKSE";
+			seExecutable = "skse_loader.exe";
 			
 			registryKey = "Software\\Bethesda Softworks\\Skyrim";
 			registrySubKey = "Installed Path";
@@ -163,7 +179,11 @@ namespace boss {
 			pluginsFileName = "plugins.txt";
 		} else if (inGame == FALLOUT3) {
 			name = "Fallout 3";
+			
+			executable = "Fallout3.exe";
 			masterFile = "Fallout3.esm";
+			scriptExtender = "FOSE";
+			seExecutable = "fose_loader.exe";
 			
 			registryKey = "Software\\Bethesda Softworks\\Fallout3";
 			registrySubKey = "Installed Path";
@@ -174,7 +194,11 @@ namespace boss {
 			pluginsFileName = "plugins.txt";
 		} else if (inGame == FALLOUTNV) {
 			name = "Fallout: New Vegas";
+			
+			executable = "FalloutNV.exe";
 			masterFile = "FalloutNV.esm";
+			scriptExtender = "NVSE";
+			seExecutable = "nvse_loader.exe";
 			
 			registryKey = "Software\\Bethesda Softworks\\FalloutNV";
 			registrySubKey = "Installed Path";
@@ -185,7 +209,11 @@ namespace boss {
 			pluginsFileName = "plugins.txt";
 		} else if (inGame == MORROWIND) {
 			name = "TES III: Morrowind";
+			
+			executable = "Morrwind.exe";
 			masterFile = "Morrowind.esm";
+			scriptExtender = "MWSE";
+			seExecutable = "MWSE.dll";
 			
 			registryKey = "Software\\Bethesda Softworks\\Morrowind";
 			registrySubKey = "Installed Path";
@@ -201,33 +229,37 @@ namespace boss {
 			if (dataFolder.empty()) {
 				//First look for local install, then look for Registry.
 				if (fs::exists(boss_path / ".." / pluginsFolderName / masterFile) || gl_update_only)
-					dataPath = boss_path / ".." / pluginsFolderName;
+					gamePath = boss_path / "..";
 				else if (RegKeyExists("HKEY_LOCAL_MACHINE", registryKey, registrySubKey))
-					dataPath = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", registryKey, registrySubKey)) / pluginsFolderName;
+					gamePath = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", registryKey, registrySubKey));
 				else if (gl_update_only)  //Update only games are treated as installed locally if not actually installed.
-					dataPath = boss_path / ".." / pluginsFolderName;
+					gamePath = boss_path / "..";
 				else
 					throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 			}
 			
+			//Check if game master file exists. Requires data path to be set. This should call MasterFile().Exists(), but that depends on gl_current_game ATM.
+			if (!fs::exists(DataFolder() / MasterFile().Name()))
+				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, MasterFile().Name());
+			
 			//Requires data path to be set.
 			if (inGame == OBLIVION) {
 				//Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
-				if (fs::exists(dataPath.parent_path() / "Oblivion.ini")) {
+				if (fs::exists(GameFolder() / "Oblivion.ini")) {
 					Settings oblivionIni;
-					oblivionIni.Load(dataPath.parent_path() / "Oblivion.ini");  //This also sets the variable up.
+					oblivionIni.Load(GameFolder() / "Oblivion.ini");  //This also sets the variable up.
 
-					if (oblivionIni.GetValue("bUseMyGamesDirectory") == "1") {
-						pluginsPath = dataPath.parent_path() / pluginsFileName;
-						loadorderPath = dataPath.parent_path() / "loadorder.txt";
+					if (oblivionIni.GetValue("bUseMyGamesDirectory") == "0") {
+						pluginsPath = GameFolder() / pluginsFileName;
+						loadorderPath = GameFolder() / "loadorder.txt";
 					} else {
 						pluginsPath = GetLocalAppDataPath() / appdataFolderName / pluginsFileName;
 						loadorderPath = GetLocalAppDataPath() / appdataFolderName / "loadorder.txt";
 					}
 				}
 			} else if (inGame == MORROWIND) {
-				pluginsPath = dataPath.parent_path() / pluginsFileName;
-				loadorderPath = dataPath.parent_path() / "loadorder.txt";
+				pluginsPath = GameFolder() / pluginsFileName;
+				loadorderPath = GameFolder() / "loadorder.txt";
 			} else {
 				pluginsPath = GetLocalAppDataPath() / appdataFolderName / pluginsFileName;
 				loadorderPath = GetLocalAppDataPath() / appdataFolderName / "loadorder.txt";
@@ -244,27 +276,51 @@ namespace boss {
 	}
 	
 	bool Game::IsInstalled() const {
-		return (fs::exists(boss_path / ".." / pluginsFolderName / masterFile) || RegKeyExists("HKEY_LOCAL_MACHINE", registryKey, registrySubKey));
+		return (IsInstalledLocally() || RegKeyExists("HKEY_LOCAL_MACHINE", registryKey, registrySubKey));
 	}
 	
 	bool Game::IsInstalledLocally() const {
 		return fs::exists(boss_path / ".." / pluginsFolderName / masterFile);
 	}
 	
-	uint32_t Game::GetGame() const {
-		return game;
+	uint32_t Game::Id() const {
+		return id;
 	}
 
 	string Game::Name() const {
 		return name;
 	}
+
+	string Game::ScriptExtender() const {
+		return scriptExtender;
+	}
 	
 	Item Game::MasterFile() const {
 		return Item(masterFile);
 	}
+
+	Version Game::GetVersion() const {
+		return Version(Executable());
+	}
+
+	fs::path Game::Executable() const {
+		return GameFolder() / executable;
+	}
+
+	fs::path Game::GameFolder() const {
+		return gamePath;
+	}
 	
 	fs::path Game::DataFolder() const {
-		return dataPath;
+		return GameFolder() / pluginsFolderName;
+	}
+	
+	fs::path Game::SEPluginsFolder() const {
+		return DataFolder() / scriptExtender / "Plugins";
+	}
+	
+	fs::path Game::SEExecutable() const {
+		return GameFolder() / seExecutable;
 	}
 	
 	fs::path Game::ActivePluginsFile() const {
@@ -291,7 +347,7 @@ namespace boss {
 		return boss_path / bossFolderName / "modlist.old";
 	}
 	
-	fs::path Game::BossLog(uint32_t format) const {
+	fs::path Game::Log(uint32_t format) const {
 		if (format == HTML)
 			return boss_path / bossFolderName / "BOSSlog.html";
 		else

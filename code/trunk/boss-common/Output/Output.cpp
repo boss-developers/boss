@@ -1871,7 +1871,7 @@ namespace boss {
 		formattedOut.Clear();  //Clear formattedOut for re-use.
 
 		if (!criticalError.Empty()) {  //Exit early.
-			PrintFooter();
+			out << PrintFooter();
 			return out.str();
 		}
 

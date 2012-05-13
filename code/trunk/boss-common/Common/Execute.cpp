@@ -44,53 +44,28 @@ namespace boss {
 	////////////////////////
 
 	//Lists Script Extender plugin info in the output buffer. Usage internal to BOSS-Common.
-	string GetSEPluginInfo(Outputter& buffer) {
-		string SE;
-		fs::path SELoc, SEPluginLoc;
-		if (gl_current_game.GetGame() == OBLIVION || gl_current_game.GetGame() == NEHRIM) {
-			SE = "OBSE";
-			SELoc = gl_current_game.DataFolder().parent_path() / "obse_1_2_416.dll";
-			SEPluginLoc = gl_current_game.DataFolder() / "OBSE" / "Plugins";
-		} else if (gl_current_game.GetGame() == FALLOUT3) {  //Fallout 3
-			SE = "FOSE";
-			SELoc = gl_current_game.DataFolder().parent_path() / "fose_loader.exe";
-			SEPluginLoc = gl_current_game.DataFolder() / "FOSE" / "Plugins";
-		} else if (gl_current_game.GetGame() == FALLOUTNV) {  //Fallout: New Vegas
-			SE = "NVSE";
-			SELoc = gl_current_game.DataFolder().parent_path() / "nvse_loader.exe";
-			SEPluginLoc = gl_current_game.DataFolder() / "NVSE" / "Plugins";
-		} else if (gl_current_game.GetGame() == SKYRIM) {  //Skyrim
-			SE = "SKSE";
-			SELoc = gl_current_game.DataFolder().parent_path() / "skse_loader.exe";
-			SEPluginLoc = gl_current_game.DataFolder() / "SKSE" / "Plugins";
-		} else if (gl_current_game.GetGame() == MORROWIND) {
-			SE = "MWSE";
-			SELoc = gl_current_game.DataFolder().parent_path() / "MWSE.dll";  //MWSE works differently from the other script extenders.
-			SEPluginLoc = gl_current_game.DataFolder() / "MWSE" / "Plugins";  //AFAIK MWSE doesn't have a plugin system, but setting a path will be handled correctly below.
-		}
-
-		if (!fs::exists(SELoc) || SELoc.empty()) {
+	void GetSEPluginInfo(Outputter& buffer, const Game& game) {
+		if (!fs::exists(game.SEExecutable()))
 			LOG_DEBUG("Script Extender not detected");
-			return "";
-		} else {
-			string CRC = IntToHexString(GetCrc32(SELoc));
-			string ver = GetExeDllVersion(SELoc);
+		else {
+			string CRC = IntToHexString(GetCrc32(game.SEExecutable()));
+			string ver = Version(game.SEExecutable()).AsString();
 
-			buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << SE << SPAN_CLOSE;
+			buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << game.ScriptExtender() << SPAN_CLOSE;
 			if (ver.length() != 0)
 				buffer << SPAN_CLASS_VERSION_OPEN << "Version: " << ver << SPAN_CLOSE;
 			if (gl_show_CRCs)
 				buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << CRC << SPAN_CLOSE;
 
-			if (!fs::is_directory(SEPluginLoc)) {
+			if (!fs::is_directory(game.SEPluginsFolder())) {
 				LOG_DEBUG("Script extender plugins directory not detected");
 			} else {
-				for (fs::directory_iterator itr(SEPluginLoc); itr!=fs::directory_iterator(); ++itr) {
+				for (fs::directory_iterator itr(game.SEPluginsFolder()); itr!=fs::directory_iterator(); ++itr) {
 					const fs::path filename = itr->path().filename();
 					const string ext = to_lower_copy(itr->path().extension().string());
 					if (fs::is_regular_file(itr->status()) && ext==".dll") {
 						string CRC = IntToHexString(GetCrc32(itr->path()));
-						string ver = GetExeDllVersion(itr->path());
+						string ver = Version(itr->path()).AsString();
 
 						buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << filename.string() << SPAN_CLOSE;
 						if (ver.length() != 0)
@@ -100,12 +75,11 @@ namespace boss {
 					}
 				}
 			}
-			return SE;
 		}
 	}
 
 	//List and redate mods.
-	void SortMods(ItemList& modlist, const time_t esmtime, BossLog& bosslog) {
+	void SortMods(ItemList& modlist, const time_t esmtime, BossLog& bosslog, const Game& game) {
 		//Need to obey masters before plugins rule when sorting, but separate display of recognised and unrecognised mods.
 		//Also need to display which plugins are active, for both recognised and unrecognised mods.
 		bosslog.recognisedPlugins.SetHTMLSpecialEscape(false);
@@ -113,11 +87,11 @@ namespace boss {
 
 		//Load active plugin list.
 		boost::unordered_set<string> hashset;
-		if (fs::exists(gl_current_game.ActivePluginsFile())) {
+		if (fs::exists(game.ActivePluginsFile())) {
 			LOG_INFO("Loading plugins.txt into ItemList.");
 			ItemList pluginsList;
 			try {
-				pluginsList.Load(gl_current_game.ActivePluginsFile());
+				pluginsList.Load(game.ActivePluginsFile());
 			} catch (boss_error &e) {
 				//Handle exception.
 			}
@@ -128,7 +102,7 @@ namespace boss {
 				if (pluginsEntries[i].Type() == MOD)
 					hashset.insert(to_lower_copy(pluginsEntries[i].Name()));
 			}
-			if (gl_current_game.GetGame() == SKYRIM) {  //Update.esm and Skyrim.esm are always active.
+			if (game.Id() == SKYRIM) {  //Update.esm and Skyrim.esm are always active.
 				if (hashset.find("skyrim.esm") == hashset.end())
 					hashset.insert("skyrim.esm");
 				if (hashset.find("update.esm") == hashset.end())
@@ -152,14 +126,14 @@ namespace boss {
 		time_t modfiletime = 0;
 		boost::unordered_set<string>::iterator setPos;
 
-		bool isSkyrim1426plus = (gl_current_game.GetGame() == SKYRIM && Version(GetExeDllVersion(gl_current_game.DataFolder().parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
+		bool isSkyrim1426plus = (game.Id() == SKYRIM && game.GetVersion() >= Version("1.4.26.0"));
 
 		LOG_INFO("Applying calculated ordering to user files...");
 		for (vector<Item>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter) {
 			if (itemIter->Type() == MOD && itemIter->Exists()) {  //Only act on mods that exist.
 				Outputter buffer(gl_log_format);
 				buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
-				string version = itemIter->GetVersion();
+				string version = itemIter->GetVersion().AsString();
 				if (!version.empty())
 						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
 				if (hashset.find(to_lower_copy(itemIter->Name())) != hashset.end())  //Plugin is active.
@@ -167,9 +141,9 @@ namespace boss {
 				else
 					bosslog.inactive++;
 				if (gl_show_CRCs && itemIter->IsGhosted()) {
-					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(gl_current_game.DataFolder() / fs::path(itemIter->Name() + ".ghost"))) << SPAN_CLOSE;
+					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(game.DataFolder() / fs::path(itemIter->Name() + ".ghost"))) << SPAN_CLOSE;
 				} else if (gl_show_CRCs)
-					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(gl_current_game.DataFolder() / itemIter->Name())) << SPAN_CLOSE;
+					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(game.DataFolder() / itemIter->Name())) << SPAN_CLOSE;
 		
 		/*		if (itemIter->IsFalseFlagged()) {
 					itemIter->InsertMessage(0, Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa."));
@@ -257,7 +231,8 @@ namespace boss {
 												ItemList& modlist,
 												ItemList& masterlist,
 												RuleList& userlist,
-												const time_t esmtime) {
+												const time_t esmtime,
+												const Game& game) {
 		BuildWorkingModlist(modlist, masterlist, userlist);
 		LOG_INFO("masterlist now filled with ordered mods and modlist filled with unknowns.");
 
@@ -287,16 +262,17 @@ namespace boss {
 		ApplyUserRules(modlist, userlist, bosslog.userRules);
 		LOG_INFO("userlist sorting process finished.");
 
-		bosslog.scriptExtender = GetSEPluginInfo(bosslog.sePlugins);
-		bosslog.gameName = gl_current_game.Name();
+		GetSEPluginInfo(bosslog.sePlugins, game);
+		bosslog.scriptExtender = game.ScriptExtender();
+		bosslog.gameName = game.Name();
 
-		SortMods(modlist, esmtime, bosslog);
+		SortMods(modlist, esmtime, bosslog, game);
 
 		//Now set the load order using Skyrim method.
-		if (gl_current_game.GetGame() == SKYRIM && Version(GetExeDllVersion(gl_current_game.DataFolder().parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
+		if (game.Id() == SKYRIM && game.GetVersion() >= Version("1.4.26.0")) {
 			try {
-				modlist.SavePluginNames(gl_current_game.LoadOrderFile(), false, false);
-				modlist.SavePluginNames(gl_current_game.ActivePluginsFile(), true, true);
+				modlist.SavePluginNames(game.LoadOrderFile(), false, false);
+				modlist.SavePluginNames(game.ActivePluginsFile(), true, true);
 			} catch (boss_error &e) {
 				bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 					<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK

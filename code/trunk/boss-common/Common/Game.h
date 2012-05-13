@@ -32,6 +32,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/cstdint.hpp>
 #include "Common/Classes.h"
+#include "Support/Helpers.h"
 
 namespace boss {
 	using namespace std;
@@ -39,7 +40,7 @@ namespace boss {
  
 	BOSS_COMMON uint32_t	DetectGame(vector<uint32_t>& detectedGames, vector<uint32_t>& undetectedGames);	//Throws exception if error.
 
-	class BOSS_COMMON Game {
+	class BOSS_COMMON Game {  //Constructor depends on gl_update_only.
 	public:
 		Game();  //Sets game to AUTODETECT, with all other vars being empty.
 		Game(uint32_t inGame, string dataFolder = "", bool noPathInit = false); //Empty dataFolder means constructor will detect its location. If noPathInit is true, then the data, active plugins list and loadorder.txt paths will not be set, and the game's BOSS subfolder will not be created.
@@ -47,23 +48,34 @@ namespace boss {
 		bool IsInstalled() const;
 		bool IsInstalledLocally() const;
 		
-		uint32_t GetGame() const;
+		uint32_t Id() const;
 		string Name() const;  //Returns the game's name, eg. "TES IV: Oblivion".
+		string ScriptExtender() const;
 		Item MasterFile() const;  //Returns the game's master file. To get its timestamp, use .GetModTime() on it.
-		
+
+		Version GetVersion() const;
+
+		fs::path Executable() const;
+		fs::path GameFolder() const;
 		fs::path DataFolder() const;
+		fs::path SEPluginsFolder() const;
+		fs::path SEExecutable() const;
 		fs::path ActivePluginsFile() const;
 		fs::path LoadOrderFile() const;
 		fs::path Masterlist() const;
 		fs::path Userlist() const;
 		fs::path Modlist() const;
 		fs::path OldModlist() const;
-		fs::path BossLog(uint32_t format) const;
+		fs::path Log(uint32_t format) const;
 		
 	private:
-		uint32_t game;
+		uint32_t id;
 		string name;
+
+		string executable;
 		string masterFile;
+		string scriptExtender;
+		string seExecutable;
 	
 		string registryKey;
 		string registrySubKey;
@@ -73,7 +85,7 @@ namespace boss {
 		string pluginsFolderName;
 		string pluginsFileName;
 		
-		fs::path dataPath;  //Path to the game's plugins folder.
+		fs::path gamePath;  //Path to the game's folder.
 		fs::path pluginsPath;  //Path to the file in which active plugins are listed.
 		fs::path loadorderPath;  //Path to the file which lists total load order.
 

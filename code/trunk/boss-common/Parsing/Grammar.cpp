@@ -65,163 +65,6 @@ namespace boss {
 	using unicode::space;
 	using unicode::xdigit;
 
-	///////////////////////////////
-	// Internal Common Functions
-	///////////////////////////////
-
-	//Returns the true path based on what type of file or keyword it is.
-	void GetPath(fs::path& file_path, string& file) {
-		if (file == "OBSE") {
-			file_path = gl_current_game.DataFolder().parent_path();
-			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
-		} else if (file == "FOSE") {
-			file_path = gl_current_game.DataFolder().parent_path();
-			file = "fose_loader.exe";
-		} else if (file == "NVSE") {
-			file_path = gl_current_game.DataFolder().parent_path();
-			file = "nvse_loader.exe";
-		} else if (file == "SKSE") {
-			file_path = gl_current_game.DataFolder().parent_path();
-			file = "skse_loader.exe";
-		} else if (file == "MWSE") {
-			file_path = gl_current_game.DataFolder().parent_path();
-			file = "MWSE.dll";
-		} else if (file == "BOSS") {
-			file_path = boss_path;
-			file = "BOSS.exe";
-		} else if (file == "TES3") {
-			file_path = gl_current_game.DataFolder().parent_path();
-			file = "Morrwind.exe";
-		} else if (file == "TES4") {
-			file_path = gl_current_game.DataFolder().parent_path();
-			file = "Oblivion.exe";
-		} else if (file == "TES5") {
-			file_path = gl_current_game.DataFolder().parent_path();
-			file = "TESV.exe";
-		} else if (file == "FO3") {
-			file_path = gl_current_game.DataFolder().parent_path();
-			file = "Fallout3.exe";
-		} else if (file == "FONV") {
-			file_path = gl_current_game.DataFolder().parent_path();
-			file = "FalloutNV.exe";
-		} else {
-			fs::path p(file);
-			if (to_lower_copy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos) {
-				if (fs::exists(gl_current_game.DataFolder() / "OBSE" / "Plugins"))
-					file_path = gl_current_game.DataFolder() / "OBSE" / "Plugins";  //Oblivion - OBSE plugins.
-				else if (fs::exists(gl_current_game.DataFolder() / "FOSE" / "Plugins"))
-					file_path = gl_current_game.DataFolder() / "FOSE" / "Plugins";  //Fallout 3 - FOSE plugins.
-				else if (fs::exists(gl_current_game.DataFolder() / "NVSE" / "Plugins"))
-					file_path = gl_current_game.DataFolder() / "NVSE" / "Plugins";  //Fallout: New Vegas - NVSE plugins.
-				else if (fs::exists(gl_current_game.DataFolder() / "SKSE" / "Plugins"))
-					file_path = gl_current_game.DataFolder() / "SKSE" / "Plugins";  //Skyrim - SKSE plugins.
-				else if (fs::exists(gl_current_game.DataFolder() / "MWSE" / "Plugins"))
-					file_path = gl_current_game.DataFolder() / "MWSE" / "Plugins";  //Morrowind - MWSE plugins.
-			} else
-				file_path = gl_current_game.DataFolder();
-		}
-	}
-
-	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
-	void CheckVersion(bool& result, const string var) {
-		char comp = var[0];
-		size_t pos = var.find("|") + 1;
-		string version = var.substr(1,pos-2);
-		string file = var.substr(pos);
-		result = false;
-		fs::path file_path;
-
-		GetPath(file_path,file);
-
-		Item tempItem = Item(file);
-		string trueVersion;
-		if (tempItem.Exists()) {
-			trueVersion = tempItem.GetVersion();
-		} else if (fs::exists(file_path / file))
-			trueVersion = GetExeDllVersion(file_path / file);
-		else
-			return;
-
-		//Note that this string comparison is unsafe (may give incorrect result).
-		switch (comp) {
-		case '>':
-			if (Version(trueVersion) > Version(version))
-				result = true;
-			break;
-		case '<':
-			if (Version(trueVersion) < Version(version))
-				result = true;
-			break;
-		case '=':
-			if (Version(trueVersion) == Version(version))
-				result = true;
-			break;
-		}
-		return;
-	}
-
-	//Checks if the given file exists.
-	void CheckFile(bool& result, string file) {
-		result = false;
-		fs::path file_path;
-		GetPath(file_path,file);
-		result = (fs::exists(file_path / file) || Item(file).IsGhosted());
-	}
-
-	//Checks if a file which matches the given regex exists.
-	//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
-	//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
-	//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
-	//be removed when getting the path and filename.
-	void CheckRegex(bool& result, string reg) {
-		result = false;
-		fs::path file_path;
-		//If the regex includes '/' or '\\' then it includes folders. Need to split the regex into the parent path and the filename.
-		//No reason for the regex to include both.
-		if (reg.find("/") != string::npos) {
-			size_t pos1 = reg.rfind("/");
-			string p = reg.substr(0,pos1);
-			reg = reg.substr(pos1+1);
-			file_path = fs::path(p);
-		} else if (reg.find("\\\\") != string::npos) {
-			size_t pos1 = reg.rfind("\\\\");
-			string p = reg.substr(0,pos1);
-			reg = reg.substr(pos1+2);
-			boost::algorithm::replace_all(p,"\\\\","\\");
-			file_path = fs::path(p);
-		} else if (to_lower_copy(fs::path(reg).extension().string()) == ".dll") {
-			if (fs::exists(gl_current_game.DataFolder() / "OBSE"))
-				file_path = gl_current_game.DataFolder() / "OBSE" / "Plugins";  //Oblivion - OBSE plugins.
-			else if (fs::exists(gl_current_game.DataFolder() / "FOSE"))
-				file_path = gl_current_game.DataFolder() / "FOSE" / "Plugins";  //Fallout 3 - FOSE plugins.
-			else if (fs::exists(gl_current_game.DataFolder() / "NVSE"))
-				file_path = gl_current_game.DataFolder() / "NVSE" / "Plugins";  //Fallout: New Vegas - NVSE plugins.
-			else if (fs::exists(gl_current_game.DataFolder() / "SKSE"))
-				file_path = gl_current_game.DataFolder() / "SKSE" / "Plugins";  //Skyrim - SKSE plugins.
-			else if (fs::exists(gl_current_game.DataFolder() / "MWSE"))
-				file_path = gl_current_game.DataFolder() / "MWSE" / "Plugins";  //Morrowind - MWSE plugins.
-		} else
-			file_path = gl_current_game.DataFolder();
-			boost::regex regex;
-		try {
-			regex = boost::regex(reg, boost::regex::extended|boost::regex::icase);
-		} catch (boost::regex_error e) {
-			LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", reg.c_str());
-			result = false;  //Fail the check.
-			return;
-		}
-
-		fs::directory_iterator iter_end;
-		for (fs::directory_iterator itr(file_path); itr!=iter_end; ++itr) {
-			if (fs::is_regular_file(itr->status())) {
-				if (boost::regex_match(itr->path().filename().string(),regex)) {
-					result = true;
-					break;
-				}
-			}
-		}
-	}
-
 
 	///////////////////////////////
 	// Keyword structures
@@ -528,37 +371,37 @@ namespace boss {
 	void modlist_grammar::ConvertOldConditional(string& result, const char var) {
 		switch(var) {
 		case '>':
-			if (gl_current_game.GetGame() == OBLIVION)
+			if (parentGameId == OBLIVION)
 				result = "IF ($FCOM)";
-			else if (gl_current_game.GetGame() == FALLOUT3)
+			else if (parentGameId == FALLOUT3)
 				result = "IF ($FOOK2)";
-			else if (gl_current_game.GetGame() == FALLOUTNV)
+			else if (parentGameId == FALLOUTNV)
 				result = "IF ($NVAMP)";
 			else
 				result = "";
 			break;
 		case '<':
-			if (gl_current_game.GetGame() == OBLIVION)
+			if (parentGameId == OBLIVION)
 				result = "IFNOT ($FCOM)";
-			else if (gl_current_game.GetGame() == FALLOUT3)
+			else if (parentGameId == FALLOUT3)
 				result = "IFNOT ($FOOK2)";
-			else if (gl_current_game.GetGame() == FALLOUTNV)
+			else if (parentGameId == FALLOUTNV)
 				result = "IFNOT ($NVAMP)";
 			else
 				result = "";
 			break;
 		case '$':
-			if (gl_current_game.GetGame() == OBLIVION)
+			if (parentGameId == OBLIVION)
 				result = "IF ($OOO)";
-			else if (gl_current_game.GetGame() == FALLOUT3)
+			else if (parentGameId == FALLOUT3)
 				result = "IF ($FWE)";
-			else if (gl_current_game.GetGame() == FALLOUTNV)
+			else if (parentGameId == FALLOUTNV)
 				result = "IF ($FOOK)";
 			else
 				result = "";
 			break;
 		case '^':
-			if (gl_current_game.GetGame() == OBLIVION)
+			if (parentGameId == OBLIVION)
 				result = "IF ($BC)";
 			else
 				result = "";
@@ -575,6 +418,223 @@ namespace boss {
 			p = itemName;
 	}
 	
+	void modlist_grammar::SetParentGame(uint32_t gameId) {
+		parentGameId = gameId;
+	}
+
+
+	////////////////////////////
+	// Conditional Evaluator
+	////////////////////////////
+
+	void conditional_evaler::SetErrorBuffer(ParsingError * inErrorBuffer) {
+		errorBuffer = inErrorBuffer;
+	}
+
+	void conditional_evaler::SetVarStore(boost::unordered_set<string> * varStore) {
+		setVars = varStore;
+	}
+
+	void conditional_evaler::SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {
+		fileCRCs = CRCStore;
+	}
+
+	void conditional_evaler::SetDataPath(const fs::path data) {
+		data_path = data;
+	}
+
+	void conditional_evaler::SetSEPluginPath(const fs::path sePlugins) {
+		sePluginPath = sePlugins;
+	}
+
+	//Returns the true path based on what type of file or keyword it is.
+	void conditional_evaler::GetPath(fs::path& file_path, string& file) {
+		if (file == "OBSE") {
+			file_path = data_path.parent_path();
+			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
+		} else if (file == "FOSE") {
+			file_path = data_path.parent_path();
+			file = "fose_loader.exe";
+		} else if (file == "NVSE") {
+			file_path = data_path.parent_path();
+			file = "nvse_loader.exe";
+		} else if (file == "SKSE") {
+			file_path = data_path.parent_path();
+			file = "skse_loader.exe";
+		} else if (file == "MWSE") {
+			file_path = data_path.parent_path();
+			file = "MWSE.dll";
+		} else if (file == "BOSS") {
+			file_path = boss_path;
+			file = "BOSS.exe";
+		} else if (file == "TES3") {
+			file_path = data_path.parent_path();
+			file = "Morrwind.exe";
+		} else if (file == "TES4") {
+			file_path = data_path.parent_path();
+			file = "Oblivion.exe";
+		} else if (file == "TES5") {
+			file_path = data_path.parent_path();
+			file = "TESV.exe";
+		} else if (file == "FO3") {
+			file_path = data_path.parent_path();
+			file = "Fallout3.exe";
+		} else if (file == "FONV") {
+			file_path = data_path.parent_path();
+			file = "FalloutNV.exe";
+		} else {
+			fs::path p(file);
+			if (to_lower_copy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos && fs::exists(sePluginPath))
+				file_path = sePluginPath;
+			else
+				file_path = data_path;
+		}
+	}
+
+	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
+	void conditional_evaler::CheckVersion(bool& result, const string var) {
+		char comp = var[0];
+		size_t pos = var.find("|") + 1;
+		string version = var.substr(1,pos-2);
+		string file = var.substr(pos);
+		result = false;
+		fs::path file_path;
+
+		GetPath(file_path,file);
+
+		Item tempItem = Item(file);
+		Version trueVersion;
+		if (tempItem.Exists()) {
+			trueVersion = tempItem.GetVersion();
+		} else if (fs::exists(file_path / file))
+			trueVersion = Version(file_path / file);
+		else
+			return;
+
+		//Note that this string comparison is unsafe (may give incorrect result).
+		switch (comp) {
+		case '>':
+			if (trueVersion > Version(version))
+				result = true;
+			break;
+		case '<':
+			if (trueVersion < Version(version))
+				result = true;
+			break;
+		case '=':
+			if (trueVersion == Version(version))
+				result = true;
+			break;
+		}
+		return;
+	}
+
+	//Checks if the given file exists.
+	void conditional_evaler::CheckFile(bool& result, string file) {
+		result = false;
+		fs::path file_path;
+		GetPath(file_path,file);
+		result = (fs::exists(file_path / file) || Item(file).IsGhosted());
+	}
+
+	//Checks if a file which matches the given regex exists.
+	//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
+	//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
+	//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
+	//be removed when getting the path and filename.
+	void conditional_evaler::CheckRegex(bool& result, string reg) {
+		result = false;
+		fs::path file_path;
+		//If the regex includes '/' or '\\' then it includes folders. Need to split the regex into the parent path and the filename.
+		//No reason for the regex to include both.
+		if (reg.find("/") != string::npos) {
+			size_t pos1 = reg.rfind("/");
+			string p = reg.substr(0,pos1);
+			reg = reg.substr(pos1+1);
+			file_path = fs::path(p);
+		} else if (reg.find("\\\\") != string::npos) {
+			size_t pos1 = reg.rfind("\\\\");
+			string p = reg.substr(0,pos1);
+			reg = reg.substr(pos1+2);
+			boost::algorithm::replace_all(p,"\\\\","\\");
+			file_path = fs::path(p);
+		} else if (to_lower_copy(fs::path(reg).extension().string()) == ".dll" && fs::exists(sePluginPath))
+			file_path = sePluginPath;
+		else
+			file_path = data_path;
+		boost::regex regex;
+		try {
+			regex = boost::regex(reg, boost::regex::extended|boost::regex::icase);
+		} catch (boost::regex_error e) {
+			LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", reg.c_str());
+			result = false;  //Fail the check.
+			return;
+		}
+
+		fs::directory_iterator iter_end;
+		for (fs::directory_iterator itr(file_path); itr!=iter_end; ++itr) {
+			if (fs::is_regular_file(itr->status())) {
+				if (boost::regex_match(itr->path().filename().string(),regex)) {
+					result = true;
+					break;
+				}
+			}
+		}
+	}
+
+	//Checks if a masterlist variable is defined.
+	void conditional_evaler::CheckVar(bool& result, const string var) {
+		if (setVars->find(var) == setVars->end())
+			result = false;
+		else
+			result = true;
+		return;
+	}
+
+	//Checks if the given mod has the given checksum.
+	void conditional_evaler::CheckSum(bool& result, const uint32_t sum, string file) {
+		result = false;
+		fs::path file_path;
+		uint32_t CRC;
+
+		GetPath(file_path,file);
+		boost::unordered_map<string,uint32_t>::iterator iter = fileCRCs->find(file);
+
+		if (iter != fileCRCs->end()) {
+			CRC = fileCRCs->at(file);
+		} else {
+			if (fs::exists(file_path / file))
+				CRC = GetCrc32(file_path / file);
+			else if (Item(file).IsGhosted())
+				CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
+			else 
+				return;
+
+			fileCRCs->emplace(file,CRC);
+		}
+
+		if (sum == CRC)
+			result = true;
+		return;
+	}
+
+	//Parser error reporter.
+	void conditional_evaler::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
+		if (errorBuffer == NULL || !errorBuffer->Empty())
+			return;
+		
+		ostringstream out;
+		out << what;
+		string expect = out.str();
+
+		string context(errorpos, min(errorpos +50, last));
+		boost::trim_left(context);
+
+		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
+		*errorBuffer = e;
+		LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
+		return;
+	}
 
 	////////////////////////////
 	// Conditional Grammar
@@ -596,10 +656,10 @@ namespace boss {
 
 		condition = 
 			variable									[phoenix::bind(&conditional_grammar::CheckVar, this, _val, _1)]
-			| version									[phoenix::bind(&CheckVersion, _val, _1)]
+			| version									[phoenix::bind(&conditional_grammar::CheckVersion, this, _val, _1)]
 			| (hex > '|' > file)						[phoenix::bind(&conditional_grammar::CheckSum, this, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
-			| file										[phoenix::bind(&CheckFile, _val, _1)]
-			| regexFile									[phoenix::bind(&CheckRegex, _val, _1)]
+			| file										[phoenix::bind(&conditional_grammar::CheckFile, this, _val, _1)]
+			| regexFile									[phoenix::bind(&conditional_grammar::CheckRegex, this, _val, _1)]
 			;
 
 		variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
@@ -632,60 +692,6 @@ namespace boss {
 		on_error<fail>(file,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(version,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(regexFile,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
-	}
-
-	//Parser error reporter.
-	void conditional_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
-		if (errorBuffer == NULL || !errorBuffer->Empty())
-			return;
-
-		ostringstream out;
-		out << what;
-		string expect = out.str();
-
-		string context(errorpos, min(errorpos +50, last));
-		boost::trim_left(context);
-
-		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
-		*errorBuffer = e;
-		LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
-		return;
-	}
-
-	//Checks if a masterlist variable is defined.
-	void conditional_grammar::CheckVar(bool& result, const string var) {
-		if (setVars->find(var) == setVars->end())
-			result = false;
-		else
-			result = true;
-		return;
-	}
-
-	//Checks if the given mod has the given checksum.
-	void conditional_grammar::CheckSum(bool& result, const uint32_t sum, string file) {
-		result = false;
-		fs::path file_path;
-		uint32_t CRC;
-
-		GetPath(file_path,file);
-		boost::unordered_map<string,uint32_t>::iterator iter = fileCRCs->find(file);
-
-		if (iter != fileCRCs->end()) {
-			CRC = fileCRCs->at(file);
-		} else {
-			if (fs::exists(file_path / file))
-				CRC = GetCrc32(file_path / file);
-			else if (Item(file).IsGhosted())
-				CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
-			else 
-				return;
-
-			fileCRCs->emplace(file,CRC);
-		}
-
-		if (sum == CRC)
-			result = true;
-		return;
 	}
 
 	//Evaluate a single conditional.
@@ -766,58 +772,8 @@ namespace boss {
 		on_error<fail>(file,				phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
-	//Parser error reporter.
-	void shorthand_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
-		if (errorBuffer == NULL || !errorBuffer->Empty())
-			return;
-		
-		ostringstream out;
-		out << what;
-		string expect = out.str();
-
-		string context(errorpos, min(errorpos +50, last));
-		boost::trim_left(context);
-
-		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
-		*errorBuffer = e;
-		LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
-		return;
-	}
-
-	//Checks if a masterlist variable is defined.
-	void shorthand_grammar::CheckVar(bool& result, const string var) {
-		if (setVars->find(var) == setVars->end())
-			result = false;
-		else
-			result = true;
-		return;
-	}
-
-	//Checks if the given mod has the given checksum.
-	void shorthand_grammar::CheckSum(bool& result, const uint32_t sum, string file) {
-		result = false;
-		fs::path file_path;
-		uint32_t CRC;
-
-		GetPath(file_path,file);
-		boost::unordered_map<string,uint32_t>::iterator iter = fileCRCs->find(file);
-
-		if (iter != fileCRCs->end()) {
-			CRC = fileCRCs->at(file);
-		} else {
-			if (fs::exists(file_path / file))
-				CRC = GetCrc32(file_path / file);
-			else if (Item(file).IsGhosted())
-				CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
-			else 
-				return;
-
-			fileCRCs->emplace(file,CRC);
-		}
-
-		if (sum == CRC)
-			result = true;
-		return;
+	void shorthand_grammar::SetMessageType(uint32_t type) { 
+		messageType = type; 
 	}
 
 	//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.

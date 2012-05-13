@@ -44,10 +44,6 @@ namespace boss {
 	//Calculate the CRC of the given file for comparison purposes.
 	uint32_t GetCrc32(const fs::path& filename);
 
-	//Gets the given OBSE dll or OBSE plugin dll's version number.
-	//Also works for FOSE and NVSE.
-	string GetExeDllVersion(const fs::path& filename);
-
 	//Reads an entire file into a string buffer.
 	void fileToBuffer(const fs::path file, string& buffer);
 
@@ -78,9 +74,11 @@ namespace boss {
 		string verString;
 	public:
 		Version();
-		Version(string ver);
+		Version(const char * ver);
+		Version(const string ver);
+		Version(const fs::path file);
 
-		string VerString() const;  //Returns a 4 index array;
+		string AsString() const;
 
 		bool operator > (Version);
 		bool operator < (Version);

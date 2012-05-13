@@ -36,7 +36,6 @@
 #include <string>
 #include <vector>
 #include <utility>
-#include <map>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
 #include <boost/fusion/include/std_pair.hpp>
@@ -150,6 +149,7 @@ namespace boss {
 		inline void SetGlobalMessageBuffer(vector<Message> * inGlobalMessageBuffer) { globalMessageBuffer = inGlobalMessageBuffer; }
 		inline void SetVarStore(vector<MasterlistVar> * varStore) { setVars = varStore; }
 		inline void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {fileCRCs = CRCStore; }
+		void SetParentGame(uint32_t game);
 	private:
 		qi::rule<grammarIter, vector<Item>(), Skipper> modList;
 		qi::rule<grammarIter, Item(), Skipper> listItem;
@@ -164,6 +164,7 @@ namespace boss {
 		vector<Message> * globalMessageBuffer;
 		vector<MasterlistVar> * setVars;					//Vars set by masterlist.
 		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
+		uint32_t parentGameId;
 		vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in MF1.
 
 		//Parser error reporter.
@@ -185,32 +186,61 @@ namespace boss {
 		void ToName(string& p, string itemName);
 	};
 
-
+	
 	////////////////////////////
-	// Conditional Grammar
+	// Conditional Evaluator
 	////////////////////////////
 
-	class conditional_grammar : public grammar<grammarIter, bool(), Skipper> {
+	class conditional_evaler {
 	public:
-		conditional_grammar();
-		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
-		inline void SetVarStore(boost::unordered_set<string> * varStore) { setVars = varStore; }
-		inline void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {fileCRCs = CRCStore; }
-	private:
-		qi::rule<grammarIter, string(), Skipper> ifIfNot, variable, file, version, andOr, regexFile;
-		qi::rule<grammarIter, bool(), Skipper> conditional, conditionals, condition;
-		ParsingError * errorBuffer;
-		boost::unordered_set<string> * setVars;				//Vars set by masterlist.
-		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
-		
-		//Parser error reporter.
-		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);
+		void SetErrorBuffer(ParsingError * inErrorBuffer);
+		void SetVarStore(boost::unordered_set<string> * varStore);
+		void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore);
+		void SetDataPath(const fs::path data);
+		void SetSEPluginPath(const fs::path sePlugins);
+	protected:
+		//Returns the true path based on what type of file or keyword it is.
+		void GetPath(fs::path& file_path, string& file);
 
+		//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
+		void CheckVersion(bool& result, const string var);
+
+		//Checks if the given file exists.
+		void CheckFile(bool& result, string file);
+
+		//Checks if a file which matches the given regex exists.
+		//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
+		//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
+		//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
+		//be removed when getting the path and filename.
+		void CheckRegex(bool& result, string reg);
+		
 		//Checks if a masterlist variable is defined.
 		void CheckVar(bool& result, const string var);
 
 		//Checks if the given mod has the given checksum.
 		void CheckSum(bool& result, const uint32_t sum, string file);
+
+		//Parser error reporter.
+		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);
+	private:
+		ParsingError * errorBuffer;
+		boost::unordered_set<string> * setVars;				//Vars set by masterlist.
+		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
+		fs::path data_path;
+		fs::path sePluginPath;
+	};
+
+	////////////////////////////
+	// Conditional Grammar
+	////////////////////////////
+
+	class conditional_grammar : public grammar<grammarIter, bool(), Skipper>, public conditional_evaler {
+	public:
+		conditional_grammar();
+	private:
+		qi::rule<grammarIter, string(), Skipper> ifIfNot, variable, file, version, andOr, regexFile;
+		qi::rule<grammarIter, bool(), Skipper> conditional, conditionals, condition;
 
 		//Evaluate a single conditional.
 		void EvaluateConditional(bool& result, const string type, const bool condition);
@@ -224,29 +254,14 @@ namespace boss {
 	// Conditional Shorthand Grammar
 	///////////////////////////////////
 
-	class shorthand_grammar : public grammar<grammarIter, string(), Skipper> {
+	class shorthand_grammar : public grammar<grammarIter, string(), Skipper>, public conditional_evaler {
 	public:
 		shorthand_grammar();
-		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
-		inline void SetMessageType(uint32_t type) { messageType = type; }
-		inline void SetVarStore(boost::unordered_set<string> * varStore) { setVars = varStore; }
-		inline void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {fileCRCs = CRCStore; }
+		void SetMessageType(uint32_t type);
 	private:
 		qi::rule<grammarIter, string(), Skipper> charString, messageItem, messageString, messageVersionCRC, messageModString, messageModVariable, file;
 		qi::rule<grammarIter, Skipper> messageItemDelimiter;
-		ParsingError * errorBuffer;
-		boost::unordered_set<string> * setVars;				//Vars set by masterlist.
-		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
 		uint32_t messageType;
-
-		//Parser error reporter.
-		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);
-		
-		//Checks if a masterlist variable is defined.
-		void CheckVar(bool& result, const string var);
-
-		//Checks if the given mod has the given checksum.
-		void CheckSum(bool& result, const uint32_t sum, string file);
 
 		//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.
 		uint32_t HexStringToInt(string str);
@@ -263,14 +278,14 @@ namespace boss {
 	////////////////////////////
 
 	//Ini grammar.
-	class ini_grammar : public grammar<grammarIter, map<string, string>(), Skipper> {
+	class ini_grammar : public grammar<grammarIter, boost::unordered_map<string, string>(), Skipper> {
 	public:
 		ini_grammar();
 		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
 	private:
 		
 		qi::rule<grammarIter, Skipper> heading;
-		qi::rule<grammarIter, map<string, string>(), Skipper> ini;
+		qi::rule<grammarIter, boost::unordered_map<string, string>(), Skipper> ini;
 		qi::rule<grammarIter, pair<string, string>(), Skipper> setting;
 		qi::rule<grammarIter, string(), Skipper> var, stringVal;
 	

@@ -30,7 +30,6 @@
 
 #include <string>
 #include <vector>
-#include <map>
 #include <boost/filesystem.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
@@ -38,6 +37,7 @@
 #include <boost/regex.hpp>
 #include "Common/DllDef.h"
 #include "Common/Error.h"
+#include "Support/Helpers.h"
 
 namespace boss {
 	using namespace std;
@@ -145,7 +145,7 @@ namespace boss {
 		bool	IsFalseFlagged() const;			//True if IsMasterFile does not match file extension.
 		bool	IsGhosted	() const;			//Checks if the file exists in ghosted form.
 		bool	Exists		() const;			//Checks if the file exists in the data folder, ghosted or not.
-		string	GetVersion	() const;			//Outputs the file's header.
+		Version	GetVersion	() const;			//Outputs the file's header.
 		time_t	GetModTime	() const;			//Can throw exception.
 
 		void	UnGhost		() const;			//Can throw exception.
@@ -284,7 +284,7 @@ namespace boss {
 	class BOSS_COMMON Settings {
 	private:
 		ParsingError errorBuffer;
-		map<string, string> iniSettings;
+		boost::unordered_map<string, string> iniSettings;
 
 		string	GetIniGameString	(uint32_t game) const;
 		string	GetLogFormatString	() const;
@@ -292,7 +292,7 @@ namespace boss {
 		void	ApplyIniSettings	();
 	public:
 		void	Load(fs::path file);		//Throws exception on fail.
-		void	Save(fs::path file);		//Throws exception on fail.
+		void	Save(fs::path file, uint32_t currentGameId);		//Throws exception on fail.
 
 		ParsingError ErrorBuffer() const;
 		void ErrorBuffer(ParsingError buffer);

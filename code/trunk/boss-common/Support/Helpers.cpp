@@ -81,62 +81,6 @@ namespace boss {
         return chksum;
 	}
 
-	//Gets the given .exe or .dll file's version number.
-	string GetExeDllVersion(const fs::path& filepath) {
-		string filename = filepath.string();
-		LOG_TRACE("extracting version from '%s'", filename.c_str());
-		string retVal = "";
-#if _WIN32 || _WIN64
-		// WARNING - NOT VERY SAFE, SEE http://www.boost.org/doc/libs/1_46_1/libs/filesystem/v3/doc/reference.html#current_path
-		DWORD dummy = 0;
-		DWORD size = GetFileVersionInfoSize(filepath.wstring().c_str(), &dummy);
-
-		if (size > 0) {
-			LPBYTE point = new BYTE[size];
-			UINT uLen;
-			VS_FIXEDFILEINFO *info;
-			string ver;
-
-			GetFileVersionInfo(filepath.wstring().c_str(),0,size,point);
-
-			VerQueryValue(point,L"\\",(LPVOID *)&info,&uLen);
-
-			DWORD dwLeftMost     = HIWORD(info->dwFileVersionMS);
-			DWORD dwSecondLeft   = LOWORD(info->dwFileVersionMS);
-			DWORD dwSecondRight  = HIWORD(info->dwFileVersionLS);
-			DWORD dwRightMost    = LOWORD(info->dwFileVersionLS);
-			
-			delete [] point;
-
-			retVal = IntToString(dwLeftMost) + '.' + IntToString(dwSecondLeft) + '.' + IntToString(dwSecondRight) + '.' + IntToString(dwRightMost);
-		}
-#else
-        // ensure filename has no quote characters in it to avoid command injection attacks
-        if (string::npos != filename.find('"')) {
-    	    LOG_WARN("filename has embedded quotes; skipping to avoid command injection: '%s'", filename.c_str());
-        } else {
-            // command mostly borrowed from the gnome-exe-thumbnailer.sh script
-            // wrestool is part of the icoutils package
-            string cmd = "wrestool --extract --raw --type=version \"" + filename + "\" | tr '\\0, ' '\\t.\\0' | sed 's/\\t\\t/_/g' | tr -c -d '[:print:]' | sed -r 's/.*Version[^0-9]*([0-9]+(\\.[0-9]+)+).*/\\1/'";
-
-            FILE *fp = popen(cmd.c_str(), "r");
-
-            // read out the version string
-            static const uint32_t BUFSIZE = 32;
-            char buf[BUFSIZE];
-            if (NULL == fgets(buf, BUFSIZE, fp)) {
-    	        LOG_DEBUG("failed to extract version from '%s'", filename.c_str());
-            }
-            else {
-                retVal = string(buf);
-	   	        LOG_DEBUG("extracted version from '%s': %s", filename.c_str(), retVal.c_str());
-            }
-            pclose(fp);
-        }
-#endif
-		return retVal;
-	}
-
 	//Reads an entire file into a string buffer.
 	void fileToBuffer(const fs::path file, string& buffer) {
 		ifstream ifile(file.c_str());
@@ -244,11 +188,68 @@ namespace boss {
 		verString = "";
 	}
 
+	
+	Version::Version(const char * ver) {
+		verString = string(ver);
+	}
+
 	Version::Version(const string ver) {
 		verString = ver;
 	}
+
+	Version::Version(const fs::path file) {
+		LOG_TRACE("extracting version from '%s'", file.string().c_str());
+#if _WIN32 || _WIN64
+		// WARNING - NOT VERY SAFE, SEE http://www.boost.org/doc/libs/1_46_1/libs/filesystem/v3/doc/reference.html#current_path
+		DWORD dummy = 0;
+		DWORD size = GetFileVersionInfoSize(file.wstring().c_str(), &dummy);
+
+		if (size > 0) {
+			LPBYTE point = new BYTE[size];
+			UINT uLen;
+			VS_FIXEDFILEINFO *info;
+			string ver;
+
+			GetFileVersionInfo(file.wstring().c_str(),0,size,point);
+
+			VerQueryValue(point,L"\\",(LPVOID *)&info,&uLen);
+
+			DWORD dwLeftMost     = HIWORD(info->dwFileVersionMS);
+			DWORD dwSecondLeft   = LOWORD(info->dwFileVersionMS);
+			DWORD dwSecondRight  = HIWORD(info->dwFileVersionLS);
+			DWORD dwRightMost    = LOWORD(info->dwFileVersionLS);
+			
+			delete [] point;
+
+			verString = IntToString(dwLeftMost) + '.' + IntToString(dwSecondLeft) + '.' + IntToString(dwSecondRight) + '.' + IntToString(dwRightMost);
+		}
+#else
+        // ensure filename has no quote characters in it to avoid command injection attacks
+        if (string::npos != file.string().find('"')) {
+    	    LOG_WARN("filename has embedded quotes; skipping to avoid command injection: '%s'", file.string().c_str());
+        } else {
+            // command mostly borrowed from the gnome-exe-thumbnailer.sh script
+            // wrestool is part of the icoutils package
+            string cmd = "wrestool --extract --raw --type=version \"" + file.string() + "\" | tr '\\0, ' '\\t.\\0' | sed 's/\\t\\t/_/g' | tr -c -d '[:print:]' | sed -r 's/.*Version[^0-9]*([0-9]+(\\.[0-9]+)+).*/\\1/'";
+
+            FILE *fp = popen(cmd.c_str(), "r");
+
+            // read out the version string
+            static const uint32_t BUFSIZE = 32;
+            char buf[BUFSIZE];
+            if (NULL == fgets(buf, BUFSIZE, fp)) {
+    	        LOG_DEBUG("failed to extract version from '%s'", file.string().c_str());
+            }
+            else {
+                verString = string(buf);
+	   	        LOG_DEBUG("extracted version from '%s': %s", file.string().c_str(), retVal.c_str());
+            }
+            pclose(fp);
+        }
+#endif
+	}
 	
-	string Version::VerString() const {
+	string Version::AsString() const {
 		return verString;
 	}
 
@@ -259,11 +260,11 @@ namespace boss {
 
 		//boost::regex reg2("(\\d+\\.?)+([a-zA-Z\\-]+(\\d+\\.?)*)+");  //Matches a mix of letters and numbers - from "0.99.xx", "1.35Alpha2", "0.9.9MB8b1", "10.52EV-D", "1.62EV" to "10.0EV-D1.62EV".
 
-		if (boost::regex_match(verString, reg1) && boost::regex_match(ver.VerString(), reg1)) {
+		if (boost::regex_match(verString, reg1) && boost::regex_match(ver.AsString(), reg1)) {
 			//First type: numbers separated by periods. If two versions have a different number of numbers, then the shorter should be padded 
 			//with zeros. An arbitrary number of numbers should be supported.
 			istringstream parser1(verString);
-			istringstream parser2(ver.VerString());
+			istringstream parser2(ver.AsString());
 			while (parser1.good() || parser2.good()) {
 				//Check if each stringstream is OK for i/o before doing anything with it. If not, replace its extracted value with a 0.
 				uint32_t n1, n2;
@@ -285,7 +286,7 @@ namespace boss {
 			return false;
 		} else {
 			//Wacky format. Use the Alphanum Algorithm. (what a name!)
-			return (doj::alphanum_comp(verString, ver.VerString()) < 0);
+			return (doj::alphanum_comp(verString, ver.AsString()) < 0);
 		}
 	}
 
@@ -298,7 +299,7 @@ namespace boss {
 	}
 
 	bool Version::operator == (Version ver) {
-		return (verString == ver.VerString());
+		return (verString == ver.AsString());
 	}
 
 	bool Version::operator != (Version ver) {

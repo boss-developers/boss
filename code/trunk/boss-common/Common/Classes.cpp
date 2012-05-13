@@ -30,7 +30,6 @@
 #include "Common/Globals.h"
 #include "Output/Output.h"
 #include "Support/Logger.h"
-#include "Support/Helpers.h"
 #include "Support/ModFormat.h"
 #include "Parsing/Grammar.h"
 
@@ -109,6 +108,8 @@ namespace boss {
 			grammar.SetVarStore(&setVars);
 			grammar.SetCRCStore(&fileCRCs);
 			grammar.SetErrorBuffer(&errorBuffer);
+			grammar.SetDataPath(gl_current_game.DataFolder());
+			grammar.SetSEPluginPath(gl_current_game.SEPluginsFolder());
 
 			begin = conditions.begin();
 			end = conditions.end();
@@ -192,6 +193,8 @@ namespace boss {
 			grammar.SetVarStore(&setVars);
 			grammar.SetCRCStore(&fileCRCs);
 			grammar.SetErrorBuffer(&errorBuffer);
+			grammar.SetDataPath(gl_current_game.DataFolder());
+			grammar.SetSEPluginPath(gl_current_game.SEPluginsFolder());
 
 			//Now we must check if the message is using a conditional shorthand and evaluate that if so.
 			grammar.SetMessageType(key);
@@ -293,9 +296,9 @@ namespace boss {
 		return (fs::exists(gl_current_game.DataFolder() / fs::path(Data() + ".ghost")));
 	}
 	
-	string	Item::GetVersion		() const {
+	Version	Item::GetVersion		() const {
 		if (!IsPlugin())
-			return "";
+			return Version();
 		
 		ModHeader header;	
 
@@ -306,7 +309,7 @@ namespace boss {
 			header = ReadHeader(gl_current_game.DataFolder() / Data());
 
 		// The current mod's version if found, or empty otherwise.
-		return header.Version;
+		return Version(header.Version);
 	}
 
 	void	Item::SetModTime	(time_t modificationTime) const {
@@ -418,7 +421,7 @@ namespace boss {
 	void	ItemList::Load				(fs::path path) {
 		if (fs::exists(path) && fs::is_directory(path)) {
 			LOG_DEBUG("Reading user mods...");
-			if (gl_current_game.GetGame() == SKYRIM && Version(GetExeDllVersion(gl_current_game.DataFolder().parent_path() / "TESV.exe")) >= Version("1.4.26.0")) {
+			if (gl_current_game.Id() == SKYRIM && gl_current_game.GetVersion() >= Version("1.4.26.0")) {
 				/*Game is Skyrim v1.4.26, so uses the new load order system.
 
 				Check if loadorder.txt exists, and read that if it does.
@@ -515,7 +518,7 @@ namespace boss {
 
 			string line;
 			 
-			if (gl_current_game.GetGame() == MORROWIND) {  //Morrowind's active file list is stored in Morrowind.ini, and that has a different format from plugins.txt.
+			if (gl_current_game.Id() == MORROWIND) {  //Morrowind's active file list is stored in Morrowind.ini, and that has a different format from plugins.txt.
 				boost::regex reg = boost::regex("GameFile[0-9]{1,3}=.+\\.es(m|p)", boost::regex::extended|boost::regex::icase);
 				while (in.good()) {
 					getline(in, line);
@@ -554,6 +557,7 @@ namespace boss {
 			grammar.SetGlobalMessageBuffer(&globalMessageBuffer);
 			grammar.SetVarStore(&masterlistVariables);
 			grammar.SetCRCStore(&fileCRCs);
+			grammar.SetParentGame(gl_current_game.Id());
 
 			if (!fs::exists(path))
 				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, path.string());
@@ -643,7 +647,7 @@ namespace boss {
 		}
 		if (doEncodingConversion)
 			trans.SetEncoding(1252);
-		if (gl_current_game.GetGame() == MORROWIND) {  //Must be the plugins file, since loadorder.txt isn't used for MW.
+		if (gl_current_game.Id() == MORROWIND) {  //Must be the plugins file, since loadorder.txt isn't used for MW.
 			//If Morrowind, BOSS writes active plugin list to Morrowind.ini, which also holds a lot of other game settings.
 			//BOSS needs to read everything up to the active plugin list in the current ini and stick that on before the first saved plugin name.
 			fileToBuffer(file, contents);
@@ -652,7 +656,7 @@ namespace boss {
 				settings = contents.substr(0, pos + 12); //+12 is for the characters in "[Game Files]".
 		}
 
-		bool isSkyrim1426plus = (gl_current_game.GetGame() == SKYRIM && Version(GetExeDllVersion(gl_current_game.DataFolder().parent_path() / "TESV.exe")) >= Version("1.4.26.0"));
+		bool isSkyrim1426plus = (gl_current_game.Id() == SKYRIM && gl_current_game.GetVersion() >= Version("1.4.26.0"));
 
 		LOG_INFO("Writing new \"%s\"", file.string().c_str());
 		ofstream outfile;
@@ -671,7 +675,7 @@ namespace boss {
 				else if (!items[i].Exists())  //Only installed plugins should be written to the plugins.txt/loadorder.txt. The vector may contain others for user rule sorting purposes.
 					continue;
 				LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
-				if (gl_current_game.GetGame() == MORROWIND) //Need to write "GameFileN=" before plugin name, where N is an integer from 0 up.
+				if (gl_current_game.Id() == MORROWIND) //Need to write "GameFileN=" before plugin name, where N is an integer from 0 up.
 					outfile << "GameFile" << i << "=";
 				if (doEncodingConversion) {  //Not UTF-8.
 					try {
@@ -1287,7 +1291,7 @@ namespace boss {
 		ApplyIniSettings();
 	}
 
-	void	Settings::Save			(fs::path file) {
+	void	Settings::Save			(fs::path file, uint32_t currentGameId) {
 		ofstream ini(file.c_str(), ios_base::trunc);
 		if (ini.fail())
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
@@ -1313,7 +1317,7 @@ namespace boss {
 
 			<<	"[Run Options]" << endl
 			<<	"sGame                    = " << GetIniGameString(gl_game) << endl
-			<<	"sLastGame                = " << GetIniGameString(gl_current_game.GetGame()) << endl  //Writing current game because that's what we want recorded when BOSS writes the ini.
+			<<	"sLastGame                = " << GetIniGameString(currentGameId) << endl  //Writing current game because that's what we want recorded when BOSS writes the ini.
 			<<	"sBOSSLogFormat           = " << GetLogFormatString() << endl
 			<<	"iDebugVerbosity          = " << IntToString(gl_debug_verbosity) << endl
 			<<	"iRevertLevel             = " << IntToString(gl_revert) << endl
@@ -1375,7 +1379,7 @@ namespace boss {
 	}
 
 	void Settings::ApplyIniSettings() {
-		for (map<string, string>::iterator iter = iniSettings.begin(); iter != iniSettings.end(); ++iter) {
+		for (boost::unordered_map<string, string>::iterator iter = iniSettings.begin(); iter != iniSettings.end(); ++iter) {
 			if (iter->second.empty())
 				continue;
 
@@ -1465,7 +1469,7 @@ namespace boss {
 	}
 
 	string Settings::GetValue(string setting) const {
-		map<string, string>::const_iterator it = iniSettings.find(setting);
+		boost::unordered_map<string, string>::const_iterator it = iniSettings.find(setting);
 		if (it != iniSettings.end())
 			return it->second;
 		else

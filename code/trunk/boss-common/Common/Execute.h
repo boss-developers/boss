@@ -32,6 +32,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/unordered_set.hpp>
 #include "Common/Classes.h"
+#include "Common/Game.h"
 #include "Output/Output.h"
 #include "Common/DllDef.h"
 
@@ -45,7 +46,8 @@ namespace boss {
 												ItemList& modlist,
 												ItemList& masterlist,
 												RuleList& userlist,
-												const time_t esmtime);
+												const time_t esmtime,
+												const Game& game);
 
 	//Create a modlist containing all the mods that are installed or referenced in the userlist with their masterlist messages.
 	//Returns the vector position of the last recognised mod in modlist.
