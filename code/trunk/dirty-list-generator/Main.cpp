@@ -70,6 +70,7 @@ bool SortModsByName(Item mod1,Item mod2) {
 
 
 int main() {
+	Game game;
 	vector<Item> masterlist, cleanlist;
 	ofstream dirtylist;
 	const fs::path dirtylist_path		= "dirtylist.txt";
@@ -82,6 +83,41 @@ int main() {
 	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
 	boost::filesystem::path::imbue(loc);
 
+	//Game checks.
+	LOG_DEBUG("Detecting game...");
+	try {
+		gl_last_game = AUTODETECT;  //Clear this setting in case the GUI was run.
+		vector<uint32_t> detected, undetected;
+		uint32_t detectedGame = DetectGame(detected, undetected);
+		if (detectedGame == AUTODETECT) {
+			//Now check what games were found.
+			if (detected.empty())
+				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
+			else if (detected.size() == 1)
+				detectedGame = detected.front();
+			else {
+				size_t ans;
+				//Ask user to choose game.
+				cout << endl << "Please pick which game to run BOSS for:" << endl;
+				for (size_t i=0; i < detected.size(); i++)
+					cout << i << " : " << Game(detected[i], "", true).Name() << endl;
+
+				cin >> ans;
+				if (ans < 0 || ans >= detected.size()) {
+					cout << "Invalid selection." << endl;
+					throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
+				}
+				detectedGame = detected[ans];
+			}
+		}
+		game = Game(detectedGame);
+		gl_current_game = game;
+		LOG_INFO("Game detected: %s", game.Name().c_str());
+	} catch (boss_error &e) {
+		LOG_ERROR("Critical Error: %s", e.getString().c_str());
+		exit (1); //fail in screaming heap.
+	}
+
 	//Open output file.
 	dirtylist.open(dirtylist_path.c_str());
 	if (dirtylist.fail()) {
@@ -89,9 +125,9 @@ int main() {
 	}
 
 	//Check if it actually exists, because the parser doesn't fail if there is no file...
-	if (!fs::exists(gl_current_game.Masterlist())) {
+	if (!fs::exists(game.Masterlist())) {
 		//Print error message to console and exit.
-		dirtylist << "Critical Error: \"" +gl_current_game.Masterlist().string() +"\" cannot be read! Exiting." << endl;
+		dirtylist << "Critical Error: \"" +game.Masterlist().string() +"\" cannot be read! Exiting." << endl;
         exit (1); //fail in screaming heap.
     } else if (!fs::exists(cleanlist_path)) {
 		//Print error message to console and exit.
@@ -102,7 +138,7 @@ int main() {
 	//Parse masterlist into data structure.
 	try {
 		ItemList Masterlist, Cleanlist;
-		Masterlist.Load(gl_current_game.Masterlist());
+		Masterlist.Load(game.Masterlist());
 		Cleanlist.Load(cleanlist_path);
 
 		masterlist = Masterlist.Items();

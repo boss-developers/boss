@@ -38,10 +38,7 @@
 //Program class.
 class BossGUI : public wxApp {
 public:
-	virtual bool OnInit();
-private:
-	wxSingleInstanceChecker *checker;
-	std::vector<uint32_t> detected;
+	bool OnInit();
 };
 
 wxDECLARE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
@@ -68,7 +65,7 @@ public:
 	void OnEditUserRules(wxCommandEvent& event);
 	void OnClose(wxCloseEvent& event);
 
-	inline void SetGames(std::vector<uint32_t> inGames);
+	void SetGames(const boss::Game& inGame, const std::vector<uint32_t> inGames);
 	void DisableUndetectedGames();
 
 	//Multithreaded update stuff.
@@ -93,8 +90,10 @@ private:
 	wxRadioButton *UpdateOption;
 	wxRadioButton *UndoOption;
 	wxStaticText *RevertText;
+
 	bool isStartup;
-	std::vector<uint32_t> games;
+	std::vector<uint32_t> detectedGames;
+	boss::Game game;
 protected:
 	virtual wxThread::ExitCode Entry();
 	uint32_t updateCheckCode;  //0 = update, 1 = no update, 2 = error.

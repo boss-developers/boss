@@ -443,7 +443,7 @@ namespace boss {
 		data_path = data;
 	}
 
-	void conditional_evaler::SetSEPluginPath(const fs::path sePlugins) {
+	void conditional_evaler::SetSEPluginsPath(const fs::path sePlugins) {
 		sePluginPath = sePlugins;
 	}
 

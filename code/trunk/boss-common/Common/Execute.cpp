@@ -335,8 +335,10 @@ namespace boss {
 					holdingVec.push_back(items[i]);
 					addedItems.insert(items[i].Name());								//Record it in the holding vector.
 					modlistPos = modlist.FindItem(items[i].Name());
-					if (modlistPos != modlistSize)
+					if (modlistPos != modlistSize) {
 						modlist.Erase(modlistPos);  //Remove recognised plugin from modlist.
+						--modlistSize;
+					}
 				}
 			} else if (items[i].Type() == BEGINGROUP || items[i].Type() == ENDGROUP) { //Group lines must stay recorded.
 				if (uHashset.find(items[i].Name()) == uHashset.end())  //Mod not in modlist or userlist, skip.

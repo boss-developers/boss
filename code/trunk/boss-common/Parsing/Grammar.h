@@ -197,7 +197,7 @@ namespace boss {
 		void SetVarStore(boost::unordered_set<string> * varStore);
 		void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore);
 		void SetDataPath(const fs::path data);
-		void SetSEPluginPath(const fs::path sePlugins);
+		void SetSEPluginsPath(const fs::path sePlugins);
 	protected:
 		//Returns the true path based on what type of file or keyword it is.
 		void GetPath(fs::path& file_path, string& file);

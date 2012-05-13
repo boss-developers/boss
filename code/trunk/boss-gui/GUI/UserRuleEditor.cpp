@@ -71,7 +71,9 @@ using namespace std;
 
 using boost::algorithm::trim_copy;
 
-UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title) {
+UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent, const Game& inGame) : wxFrame(parent, wxID_ANY, title) {
+
+	game = inGame;
 
 	//Let's give this a progress bar.
 	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
@@ -121,7 +123,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 	//////First column
 	wxBoxSizer *rulesBox = new wxBoxSizer(wxVERTICAL);
 	try{
-		rulesBox->Add(RulesList = new RuleListFrameClass(this, LIST_RuleList, masterlist), 1, wxEXPAND);
+		rulesBox->Add(RulesList = new RuleListFrameClass(this, LIST_RuleList, masterlist, game.Userlist()), 1, wxEXPAND);
 	} catch(boss_error &e) {
 		progDia->Destroy();
 		this->Close();
@@ -261,7 +263,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent)
 }
 
 void UserRulesEditorFrame::OnOKQuit(wxCommandEvent& event) {
-	RulesList->SaveUserlist(gl_current_game.Userlist());
+	RulesList->SaveUserlist(game.Userlist());
 	this->Close();
 }
 
@@ -497,7 +499,7 @@ void UserRulesEditorFrame::LoadLists() {
 
 	//Need to parse userlist, masterlist and build modlist.
 	try {
-		modlist.Load(gl_current_game.DataFolder());
+		modlist.Load(game.DataFolder());
 	} catch (boss_error &e) {
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
@@ -512,9 +514,9 @@ void UserRulesEditorFrame::LoadLists() {
 	////////////////
 
 	//Parse masterlist/modlist backup into data structure.
-	LOG_INFO("Starting to parse sorting file: %s", gl_current_game.Masterlist().string().c_str());
+	LOG_INFO("Starting to parse sorting file: %s", game.Masterlist().string().c_str());
 	try {
-		masterlist.Load(gl_current_game.Masterlist());
+		masterlist.Load(game.Masterlist());
 		masterlist.EvalConditions();
 		masterlist.EvalRegex();
 	} catch (boss_error &e) {
@@ -790,11 +792,11 @@ void RuleBoxClass::Highlight(bool highlight) {
 // RuleListFrameClass functions
 //////////////////////////////////
 
-RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, ItemList &masterlist) : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize) {
+RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, const ItemList& masterlist, const fs::path& userlist_path) : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize) {
 	//Parse userlist.
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		userlist.Load(gl_current_game.Userlist());
+		userlist.Load(userlist_path);
 	} catch (boss_error &e) {
 		userlist.Clear();
 		LOG_ERROR("Error: %s", e.getString().c_str());

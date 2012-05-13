@@ -109,7 +109,7 @@ namespace boss {
 			grammar.SetCRCStore(&fileCRCs);
 			grammar.SetErrorBuffer(&errorBuffer);
 			grammar.SetDataPath(gl_current_game.DataFolder());
-			grammar.SetSEPluginPath(gl_current_game.SEPluginsFolder());
+			grammar.SetSEPluginsPath(gl_current_game.SEPluginsFolder());
 
 			begin = conditions.begin();
 			end = conditions.end();
@@ -194,7 +194,7 @@ namespace boss {
 			grammar.SetCRCStore(&fileCRCs);
 			grammar.SetErrorBuffer(&errorBuffer);
 			grammar.SetDataPath(gl_current_game.DataFolder());
-			grammar.SetSEPluginPath(gl_current_game.SEPluginsFolder());
+			grammar.SetSEPluginsPath(gl_current_game.SEPluginsFolder());
 
 			//Now we must check if the message is using a conditional shorthand and evaluate that if so.
 			grammar.SetMessageType(key);
