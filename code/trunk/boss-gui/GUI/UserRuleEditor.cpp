@@ -123,7 +123,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent,
 	//////First column
 	wxBoxSizer *rulesBox = new wxBoxSizer(wxVERTICAL);
 	try{
-		rulesBox->Add(RulesList = new RuleListFrameClass(this, LIST_RuleList, masterlist, game.Userlist()), 1, wxEXPAND);
+		rulesBox->Add(RulesList = new RuleListFrameClass(this, LIST_RuleList, masterlist, inGame), 1, wxEXPAND);
 	} catch(boss_error &e) {
 		progDia->Destroy();
 		this->Close();
@@ -499,7 +499,7 @@ void UserRulesEditorFrame::LoadLists() {
 
 	//Need to parse userlist, masterlist and build modlist.
 	try {
-		modlist.Load(game.DataFolder());
+		modlist.Load(&game, game.DataFolder());
 	} catch (boss_error &e) {
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
@@ -516,9 +516,9 @@ void UserRulesEditorFrame::LoadLists() {
 	//Parse masterlist/modlist backup into data structure.
 	LOG_INFO("Starting to parse sorting file: %s", game.Masterlist().string().c_str());
 	try {
-		masterlist.Load(game.Masterlist());
-		masterlist.EvalConditions();
-		masterlist.EvalRegex();
+		masterlist.Load(&game, game.Masterlist());
+		masterlist.EvalConditions(&game);
+		masterlist.EvalRegex(&game);
 	} catch (boss_error &e) {
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
@@ -792,11 +792,11 @@ void RuleBoxClass::Highlight(bool highlight) {
 // RuleListFrameClass functions
 //////////////////////////////////
 
-RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, const ItemList& masterlist, const fs::path& userlist_path) : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize) {
+RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, const ItemList& masterlist, const Game& game) : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize) {
 	//Parse userlist.
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		userlist.Load(userlist_path);
+		userlist.Load(&game, game.Userlist());
 	} catch (boss_error &e) {
 		userlist.Clear();
 		LOG_ERROR("Error: %s", e.getString().c_str());

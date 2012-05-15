@@ -62,7 +62,7 @@ private:
 
 class RuleListFrameClass : public wxPanel {
 public:
-	RuleListFrameClass(wxFrame *parent, wxWindowID id, const ItemList &masterlist, const fs::path& userlist_path);		//Initialise the RuleListFrameClass object.
+	RuleListFrameClass(wxFrame *parent, wxWindowID id, const ItemList &masterlist, const Game& game);		//Initialise the RuleListFrameClass object.
 	void SaveUserlist(const fs::path path);	//Save the changes made to the userlist.
 	Rule GetSelectedRule();					//Returns the currently selected rule.
 	void AppendRule(Rule newRule);			//Append to RuleList object and update GUI.

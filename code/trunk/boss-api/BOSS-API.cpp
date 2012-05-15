@@ -380,7 +380,6 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 	} else if (!Game(clientGame, "", true).IsInstalled())
 		return ReturnCode(BOSS_API_ERROR_GAME_NOT_FOUND);
 	Game game = Game(clientGame, data);
-	gl_current_game = game;
 
 	//Now check if plugins.txt and loadorder.txt are in sync.
 	uint32_t crc1 = 0, crc2 = 0;
@@ -388,8 +387,8 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 		//Load loadorder.txt and save a temporary filtered version.
 		ItemList loadorder;
 		try {
-			loadorder.Load(game.DataFolder());
-			loadorder.SavePluginNames(game.LoadOrderFile().string() + ".new", true, true);
+			loadorder.Load(&game, game.DataFolder());
+			loadorder.SavePluginNames(&game, game.LoadOrderFile().string() + ".new", true, true);
 		} catch (boss_error &e) {
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
@@ -455,9 +454,6 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	//Check for valid args.
 	if (db == NULL || masterlistPath == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
-
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
 	
 	//PATH SETTING
 	fs::path masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
@@ -472,7 +468,7 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 		
 	//PARSING - Masterlist
 	try {
-		masterlist.Load(masterlist_path);
+		masterlist.Load(&db->game, masterlist_path);
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -480,7 +476,7 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 	//PARSING - Userlist
 	if (userlistPath != NULL) {
 		try {
-			userlist.Load(userlist_path);
+			userlist.Load(&db->game, userlist_path);
 		} catch (boss_error &e) {
 			db->userlist.Clear();  //If userlist has parsing errors, empty it so no rules are applied.
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
@@ -543,16 +539,13 @@ BOSS_API uint32_t EvalConditionals(boss_db db) {
 	//Check for valid args.
 	if (db == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
-		
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
 	
 	ItemList masterlist = db->rawMasterlist;
 	vector<modEntry> matches;
 	ItemList modlist;
 	try {
-		masterlist.EvalConditions();	//First evaluate conditionals.
-		masterlist.EvalRegex();			//Now evaluate regex.
+		masterlist.EvalConditions(&db->game);	//First evaluate conditionals.
+		masterlist.EvalRegex(&db->game);			//Now evaluate regex.
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -597,9 +590,6 @@ BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath) {
 	if (db == NULL || masterlistPath == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
-
 	//PATH SETTING
 	fs::path masterlist_path = fs::path(reinterpret_cast<const char *>(masterlistPath));
 
@@ -642,9 +632,6 @@ BOSS_API uint32_t SubmitUnrecognisedPlugin(boss_db db, const uint8_t * plugin,
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed for db or plugin.");
 	else if (link == NULL && info == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "link and info cannot both be null.");
-
-	//Set globals again in case they've been changed (data path not needed).
-	gl_current_game = db->game;
 
 	string pluginStr = string(reinterpret_cast<const char *>(plugin));
 
@@ -834,9 +821,6 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	if (db == NULL || (trialOnly && (sortedPlugins == NULL || sortedListLength == NULL || unrecognisedPlugins == NULL || unrecListLength == NULL)))
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
-
 	//Set up working modlist.
 	//The function below changes the input, so make copies.
 	ItemList masterlist = db->filteredMasterlist;
@@ -844,10 +828,10 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	time_t masterTime, modfiletime = 0;
 
 	try {
-		masterTime = db->game.MasterFile().GetModTime();
-		modlist.Load(db->game.DataFolder());
-		masterlist.EvalConditions();
-		masterlist.EvalRegex();
+		masterTime = db->game.MasterFile().GetModTime(&db->game);
+		modlist.Load(&db->game, db->game.DataFolder());
+		masterlist.EvalConditions(&db->game);
+		masterlist.EvalRegex(&db->game);
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -859,14 +843,14 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	try {
 		//Modlist.
 		size_t size = modlist.Items().size();
-		size_t pos = modlist.GetNextMasterPos(modlist.GetLastMasterPos() + 1);
+		size_t pos = modlist.GetNextMasterPos(&db->game, modlist.GetLastMasterPos(&db->game) + 1);
 		if (pos != size)   //Masters exist after the initial set of masters. Not allowed. Since order is not decided by BOSS though, silently fix.
-			modlist.ApplyMasterPartition();
+			modlist.ApplyMasterPartition(&db->game);
 		//Masterlist.
 		size = masterlist.Items().size();
-		pos = masterlist.GetNextMasterPos(masterlist.GetLastMasterPos() + 1);
+		pos = masterlist.GetNextMasterPos(&db->game, masterlist.GetLastMasterPos(&db->game) + 1);
 		if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
-			masterlist.ApplyMasterPartition();
+			masterlist.ApplyMasterPartition(&db->game);
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -928,22 +912,22 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 	size_t max = items.size();
 	vector<string> unrecognised;
 	for (size_t i= modlist.LastRecognisedPos() + 1; i < max; i++) {
-		if (items[i].Type() == MOD && items[i].Exists())
+		if (items[i].Type() == MOD && items[i].Exists(&db->game))
 			unrecognised.push_back(items[i].Name());
 	}
 
 	//Now apply master partition.
-	modlist.ApplyMasterPartition();
+	modlist.ApplyMasterPartition(&db->game);
 	items = modlist.Items();
 	
 	//Now reorder plugins.
 	vector<string> plugins;
 	if (!trialOnly) {
 		for (size_t i=0; i < max; i++) {
-			if (items[i].Type() == MOD && items[i].Exists()) {  //Only act on mods that exist.
-				if (!items[i].IsGameMasterFile() && !db->isSkyrim1426plus) {
+			if (items[i].Type() == MOD && items[i].Exists(&db->game)) {  //Only act on mods that exist.
+				if (!items[i].IsGameMasterFile(&db->game) && !db->isSkyrim1426plus) {
 					try {
-						items[i].SetModTime(masterTime + plugins.size()*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+						items[i].SetModTime(&db->game, masterTime + plugins.size()*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 					} catch(boss_error &e) {
 						return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
 					}
@@ -954,8 +938,8 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 		}
 		if (db->isSkyrim1426plus) {
 			try {
-				modlist.SavePluginNames(db->game.LoadOrderFile(), false, false);
-				modlist.SavePluginNames(db->game.ActivePluginsFile(), true, true);
+				modlist.SavePluginNames(&db->game, db->game.LoadOrderFile(), false, false);
+				modlist.SavePluginNames(&db->game, db->game.ActivePluginsFile(), true, true);
 			} catch (boss_error &e) {
 				return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 			}
@@ -1000,9 +984,6 @@ BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t *** plugins, size_t * numPlug
 	if (db == NULL || plugins == NULL || numPlugins == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
-
 	//Initialise vars.
 	*numPlugins = 0;
 	*plugins = NULL;
@@ -1018,7 +999,7 @@ BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t *** plugins, size_t * numPlug
 
 	ItemList loadorder;
 	try {
-		loadorder.Load(db->game.DataFolder());
+		loadorder.Load(&db->game, db->game.DataFolder());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -1064,11 +1045,8 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 	if (db == NULL || plugins == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
-
 	//Check load order to see if it's valid.
-	if (numPlugins > 0 && !Item(string(reinterpret_cast<const char *>(plugins[0]))).IsGameMasterFile())
+	if (numPlugins > 0 && !Item(string(reinterpret_cast<const char *>(plugins[0]))).IsGameMasterFile(&db->game))
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before the game's master file.");
 
 	//Create a vector to hold the new loadorder.
@@ -1081,8 +1059,8 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 
 	//Check to see if the masters before plugins rule is being obeyed.
 	try {
-		size_t pos = loadorder.GetLastMasterPos();
-		if (loadorder.GetNextMasterPos(pos+1) != loSize)  //Masters exist after the initial set of masters. Not allowed.
+		size_t pos = loadorder.GetLastMasterPos(&db->game);
+		if (loadorder.GetNextMasterPos(&db->game, pos+1) != loSize)  //Masters exist after the initial set of masters. Not allowed.
 			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Master files must load before other plugins.");
 
 		//If Update.esm is installed, check if it is listed. If not, add it after the rest of the master files.
@@ -1113,7 +1091,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 		}
 	}
 	try {
-		loadorder.ApplyMasterPartition();  //Apply partition to sort those just added.
+		loadorder.ApplyMasterPartition(&db->game);  //Apply partition to sort those just added.
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -1121,8 +1099,8 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 	if (db->isSkyrim1426plus) { //Skyrim.
 		//Now save the new loadorder. Also update the plugins.txt.
 		try {
-			loadorder.SavePluginNames(db->game.LoadOrderFile(), false, false);
-			loadorder.SavePluginNames(db->game.ActivePluginsFile(), true, true);
+			loadorder.SavePluginNames(&db->game, db->game.LoadOrderFile(), false, false);
+			loadorder.SavePluginNames(&db->game, db->game.ActivePluginsFile(), true, true);
 		} catch (boss_error &e) {
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
@@ -1130,7 +1108,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 		//Get the master time to derive dates from.
 		time_t masterTime;
 		try {
-			masterTime = db->game.MasterFile().GetModTime();
+			masterTime = db->game.MasterFile().GetModTime(&db->game);
 		} catch (boss_error &e) {
 			return ReturnCode(e.getCode(), e.getString());
 		}
@@ -1138,9 +1116,9 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 		//Loop through given array and set the modification time for each one.
 		vector<Item> items = loadorder.Items();
 		for (size_t i=0; i < loSize; i++) {
-			if (!items[i].IsGameMasterFile()) {
+			if (!items[i].IsGameMasterFile(&db->game)) {
 				try {
-					items[i].SetModTime(masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+					items[i].SetModTime(&db->game, masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 				} catch(boss_error &e) {
 					return ReturnCode(e.getCode(), items[i].Name());
 				}
@@ -1155,9 +1133,6 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * numPlugins) {
 	if (db == NULL || plugins == NULL || numPlugins == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
-
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
 
 	//Initialise vars.
 	*numPlugins = 0;
@@ -1176,7 +1151,7 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 	ItemList pluginsTxt;
 	try {
 		if (fs::exists(db->game.ActivePluginsFile()))
-			pluginsTxt.Load(db->game.ActivePluginsFile());
+			pluginsTxt.Load(&db->game, db->game.ActivePluginsFile());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -1192,7 +1167,7 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 		//If Update.esm is installed, check if it is listed. If not, add it after the rest of the master files.
 		if (fs::exists(db->game.DataFolder() / "Update.esm") && pluginsTxt.FindItem("Update.esm") == size) {
 			try {
-				pluginsTxt.Insert(pluginsTxt.GetLastMasterPos() + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
+				pluginsTxt.Insert(pluginsTxt.GetLastMasterPos(&db->game) + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
 				size++;
 			} catch (boss_error &e) {
 				return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
@@ -1231,11 +1206,8 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 	if (numPlugins > 255)
 		return ReturnCode(BOSS_API_ERROR_PLUGINS_FULL);
 
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
-
 	//Check load order to see if it's valid.
-	if (numPlugins > 0 && !Item(string(reinterpret_cast<const char *>(plugins[0]))).IsGameMasterFile())
+	if (numPlugins > 0 && !Item(string(reinterpret_cast<const char *>(plugins[0]))).IsGameMasterFile(&db->game))
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before the game's master file.");
 
 	//Fill an ItemList with the input.
@@ -1244,7 +1216,7 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 		Item plugin = Item(string(reinterpret_cast<const char *>(plugins[i])));
 		pluginsTxt.Insert(i, plugin);
 		try {
-			plugin.UnGhost();
+			plugin.UnGhost(&db->game);
 		} catch (boss_error &e) {
 			return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, plugin.Name());
 		}
@@ -1259,7 +1231,7 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 	//Now save plugins.txt.
 	string badFilename;
 	try {
-		pluginsTxt.SavePluginNames(db->game.ActivePluginsFile(), false, true);  //False to ensure newly-added plugins are actually added.
+		pluginsTxt.SavePluginNames(&db->game, db->game.ActivePluginsFile(), false, true);  //False to ensure newly-added plugins are actually added.
 	} catch (boss_error &e) {
 		if (e.getCode() == BOSS_ERROR_ENCODING_CONVERSION_FAIL)
 			badFilename = e.getString();
@@ -1272,10 +1244,10 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 		//Now get the load order from loadorder.txt.
 		ItemList loadorder;
 		try {
-			loadorder.Load(db->game.DataFolder());
+			loadorder.Load(&db->game, db->game.DataFolder());
 			//Save the load order and derive plugins.txt order from it.
-			loadorder.SavePluginNames(db->game.LoadOrderFile(), false, false);
-			loadorder.SavePluginNames(db->game.ActivePluginsFile(), true, true);
+			loadorder.SavePluginNames(&db->game, db->game.LoadOrderFile(), false, false);
+			loadorder.SavePluginNames(&db->game, db->game.ActivePluginsFile(), true, true);
 		} catch (boss_error &e) {
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
@@ -1292,16 +1264,13 @@ BOSS_API uint32_t GetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 	if (db == NULL || plugin == NULL || index == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
-
 	//Initialise vars.
 	*index = 0;
 
 	//Now get the load order.
 	ItemList loadorder;
 	try {
-		loadorder.Load(db->game.DataFolder());
+		loadorder.Load(&db->game, db->game.DataFolder());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -1325,9 +1294,6 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 	if (db == NULL || plugin == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
-
 	string pluginStr = string(reinterpret_cast<const char *>(plugin));
 
 	//Check to see if the plugin is being set to the first position in the load order. Only the game master file should be set there.
@@ -1338,11 +1304,11 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 	//Now get the load order from loadorder.txt.
 	ItemList loadorder;
 	try {
-		loadorder.Load(db->game.DataFolder());
+		loadorder.Load(&db->game, db->game.DataFolder());
 		//Check to see if the masters before plugins rule is being obeyed.
-		if (Item(pluginStr).IsMasterFile() && index > loadorder.GetLastMasterPos() + 1)  //Sorting master after plugin, not allowed.
+		if (Item(pluginStr).IsMasterFile(&db->game) && index > loadorder.GetLastMasterPos(&db->game) + 1)  //Sorting master after plugin, not allowed.
 			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Masters may not be sorted after non-master plugins.");
-		else if (!Item(pluginStr).IsMasterFile() && index <= loadorder.GetLastMasterPos())  //Sorting plugin before master, not allowed.
+		else if (!Item(pluginStr).IsMasterFile(&db->game) && index <= loadorder.GetLastMasterPos(&db->game))  //Sorting plugin before master, not allowed.
 			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Non-master plugins may not be sorted before master plugins.");
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
@@ -1363,8 +1329,8 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 	if (db->isSkyrim1426plus) { //Skyrim.
 		//Now write out the new loadorder.txt. Also update the plugins.txt.
 		try {
-			loadorder.SavePluginNames(db->game.LoadOrderFile(), false, false);
-			loadorder.SavePluginNames(db->game.ActivePluginsFile(), true, true);
+			loadorder.SavePluginNames(&db->game, db->game.LoadOrderFile(), false, false);
+			loadorder.SavePluginNames(&db->game, db->game.ActivePluginsFile(), true, true);
 		} catch (boss_error &e) {
 			return ReturnCode(e.getCode(), e.getString());
 		}
@@ -1383,7 +1349,7 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 		//Get the master time to derive dates from.
 		time_t masterTime;
 		try {
-			masterTime = db->game.MasterFile().GetModTime();
+			masterTime = db->game.MasterFile().GetModTime(&db->game);
 		} catch (boss_error &e) {
 			return ReturnCode(BOSS_API_ERROR_MASTER_TIME_READ_FAIL, e.getString());
 		}
@@ -1395,16 +1361,16 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 		if (index - pos >= max - 3 || pos - index >= max - 3) {  //Equivalent to abs(), which doesn't have size_t overloads.
 			for (size_t i=0; i < max; i++) {
 				try {
-					if (!items[i].IsGameMasterFile())
-						items[i].SetModTime(masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+					if (!items[i].IsGameMasterFile(&db->game))
+						items[i].SetModTime(&db->game, masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 				} catch(boss_error &e) {
 					return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
 				}
 			}
 		} else {
 			try {
-				time_t currTime = items[pos].GetModTime();
-				time_t newTime = items[index].GetModTime();
+				time_t currTime = items[pos].GetModTime(&db->game);
+				time_t newTime = items[index].GetModTime(&db->game);
 				time_t deltaTime = (currTime - newTime) / (pos - index);  //Will always be > 0.
 				size_t start;
 				time_t startTime;
@@ -1419,8 +1385,8 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 				}
 				for (size_t i = start; i < max; i++) {
 					try {
-						if (!items[i].IsGameMasterFile())
-							items[i].SetModTime(startTime + (i-start)*deltaTime);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+						if (!items[i].IsGameMasterFile(&db->game))
+							items[i].SetModTime(&db->game, startTime + (i-start)*deltaTime);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 					} catch(boss_error &e) {
 						return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
 					}
@@ -1439,9 +1405,6 @@ BOSS_API uint32_t GetIndexedPlugin(boss_db db, const size_t index, uint8_t ** pl
 	if (db == NULL || plugin == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
-
 	//Initialise vars.
 	*plugin = NULL;
 
@@ -1452,7 +1415,7 @@ BOSS_API uint32_t GetIndexedPlugin(boss_db db, const size_t index, uint8_t ** pl
 	//Now get the load order.
 	ItemList loadorder;
 	try {
-		loadorder.Load(db->game.DataFolder());
+		loadorder.Load(&db->game, db->game.DataFolder());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -1481,9 +1444,6 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 	if (db == NULL || plugin == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
-
 	//Catch Skyrim.esm and Update.esm for Skyrim.
 	string pluginStr = string(reinterpret_cast<const char *>(plugin));
 	if (db->game.Id() == SKYRIM) {
@@ -1502,7 +1462,7 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 
 	//Unghost if ghosted.
 	try {
-		Item(pluginStr).UnGhost();
+		Item(pluginStr).UnGhost(&db->game);
 	} catch (boss_error &e) {
 		return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, pluginStr);
 	}
@@ -1511,7 +1471,7 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 	ItemList pluginsList;
 	try {
 		if (fs::exists(db->game.ActivePluginsFile()))
-			pluginsList.Load(db->game.ActivePluginsFile());
+			pluginsList.Load(&db->game, db->game.ActivePluginsFile());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -1536,14 +1496,14 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 
 	//Now save the change.
 	try {
-		pluginsList.SavePluginNames(db->game.ActivePluginsFile(), false, true);  //Must be false because we're not adding a currently active file, if we're adding something.
+		pluginsList.SavePluginNames(&db->game, db->game.ActivePluginsFile(), false, true);  //Must be false because we're not adding a currently active file, if we're adding something.
 		if (db->isSkyrim1426plus) {
 			//Now get the load order from loadorder.txt.
 			ItemList loadorder;
-			loadorder.Load(db->game.DataFolder());
+			loadorder.Load(&db->game, db->game.DataFolder());
 			//Save the load order and derive plugins.txt order from it.
-			loadorder.SavePluginNames(db->game.LoadOrderFile(), false, false);
-			loadorder.SavePluginNames(db->game.ActivePluginsFile(), true, true);
+			loadorder.SavePluginNames(&db->game, db->game.LoadOrderFile(), false, false);
+			loadorder.SavePluginNames(&db->game, db->game.ActivePluginsFile(), true, true);
 		}
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());
@@ -1556,9 +1516,6 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 BOSS_API uint32_t IsPluginActive(boss_db db, const uint8_t * plugin, bool * isActive) {
 	if (db == NULL || plugin == NULL || isActive == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
-
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
 
 	string pluginStr = string(reinterpret_cast<const char *>(plugin));
 
@@ -1574,7 +1531,7 @@ BOSS_API uint32_t IsPluginActive(boss_db db, const uint8_t * plugin, bool * isAc
 	ItemList pluginsList;
 	try {
 		if (fs::exists(db->game.ActivePluginsFile()))
-			pluginsList.Load(db->game.ActivePluginsFile());
+			pluginsList.Load(&db->game, db->game.ActivePluginsFile());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -1593,10 +1550,7 @@ BOSS_API uint32_t IsPluginMaster(boss_db db, const uint8_t * plugin, bool * isMa
 	if (db == NULL || plugin == NULL || isMaster == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
-
-	*isMaster = Item(string(reinterpret_cast<const char *>(plugin))).IsMasterFile();
+	*isMaster = Item(string(reinterpret_cast<const char *>(plugin))).IsMasterFile(&db->game);
 
 	return ReturnCode(BOSS_API_OK);
 }
@@ -1612,9 +1566,6 @@ BOSS_API uint32_t IsPluginMaster(boss_db db, const uint8_t * plugin, bool * isMa
 BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags) {
 	if (db == NULL || tagMap == NULL || numTags == NULL)  //Check for valid args.
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
-
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
 
 	if (db->extTagMap != NULL) {  //Check to see if bashTagMap is already allocated. An empty bashTagMap is a valid option, if no tags exist.
 		*numTags = db->bashTagMap.size();  //Set size.
@@ -1738,9 +1689,6 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * plugin,
 	if (db->extTagMap == NULL)
 		return ReturnCode(BOSS_API_ERROR_NO_TAG_MAP);
 
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
-
 	//Bash Tag temporary internal holders.
 	boost::unordered_set<string> tagsAdded, tagsRemoved;
 
@@ -1839,9 +1787,6 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * plugin,
 	if (mod.empty())
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugin name is empty.");
 
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
-
 	//Initialise pointers.
 	*message = NULL;
 	*needsCleaning = BOSS_API_CLEAN_UNKNOWN;
@@ -1884,9 +1829,6 @@ BOSS_API uint32_t GetPluginMessages (boss_db db, const uint8_t * plugin, BossMes
 
 	if (mod.empty())
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugin name is empty.");
-
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
 
 	//Initialise pointers.
 	*messages = NULL;
@@ -1950,9 +1892,6 @@ BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const boo
 	//Check for valid args.
 	if (db == NULL || outputFile == NULL)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
-
-	//Set globals again in case they've been changed.
-	gl_current_game = db->game;
 
 	string path(reinterpret_cast<const char *>(outputFile));
 	if (!fs::exists(path) || overwrite) {

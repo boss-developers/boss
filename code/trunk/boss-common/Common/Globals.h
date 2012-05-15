@@ -66,9 +66,8 @@ namespace boss {
 	BOSS_COMMON extern const uint32_t GERMAN;
 	BOSS_COMMON extern const uint32_t RUSSIAN;
 	
-	//Some misc. globals.
+	//BOSS release date.
 	BOSS_COMMON extern const string gl_boss_release_date;
-	BOSS_COMMON extern Game gl_current_game;
 	
 
 	///////////////////////////////

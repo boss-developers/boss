@@ -492,8 +492,8 @@ namespace boss {
 
 		Item tempItem = Item(file);
 		Version trueVersion;
-		if (tempItem.Exists()) {
-			trueVersion = tempItem.GetVersion();
+		if (tempItem.Exists(parentGame)) {
+			trueVersion = tempItem.GetVersion(parentGame);
 		} else if (fs::exists(file_path / file))
 			trueVersion = Version(file_path / file);
 		else
@@ -522,7 +522,7 @@ namespace boss {
 		result = false;
 		fs::path file_path;
 		GetPath(file_path,file);
-		result = (fs::exists(file_path / file) || Item(file).IsGhosted());
+		result = Item(file).Exists(parentGame);
 	}
 
 	//Checks if a file which matches the given regex exists.
@@ -593,7 +593,7 @@ namespace boss {
 		} else {
 			if (fs::exists(file_path / file))
 				CRC = GetCrc32(file_path / file);
-			else if (Item(file).IsGhosted())
+			else if (Item(file).IsGhosted(parentGame))
 				CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
 			else 
 				return;

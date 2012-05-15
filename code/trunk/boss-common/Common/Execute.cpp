@@ -91,7 +91,7 @@ namespace boss {
 			LOG_INFO("Loading plugins.txt into ItemList.");
 			ItemList pluginsList;
 			try {
-				pluginsList.Load(game.ActivePluginsFile());
+				pluginsList.Load(&game, game.ActivePluginsFile());
 			} catch (boss_error &e) {
 				//Handle exception.
 			}
@@ -119,7 +119,7 @@ namespace boss {
 
 		//Now apply master partition to get modlist to obey masters before plugins rule. 
 		//This retains recognised before unrecognised, with the exception of unrecognised masters, which get put after recognised masters.
-		modlist.ApplyMasterPartition();
+		modlist.ApplyMasterPartition(&game);
 		items = modlist.Items();
 
 		//Now loop through items, redating and outputting. Check against unrecognised hashset and treat unrecognised mods appropriately.
@@ -130,17 +130,17 @@ namespace boss {
 
 		LOG_INFO("Applying calculated ordering to user files...");
 		for (vector<Item>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter) {
-			if (itemIter->Type() == MOD && itemIter->Exists()) {  //Only act on mods that exist.
+			if (itemIter->Type() == MOD && itemIter->Exists(&game)) {  //Only act on mods that exist.
 				Outputter buffer(gl_log_format);
 				buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
-				string version = itemIter->GetVersion().AsString();
+				string version = itemIter->GetVersion(&game).AsString();
 				if (!version.empty())
 						buffer << SPAN_CLASS_VERSION_OPEN << "Version " << version << SPAN_CLOSE;
 				if (hashset.find(to_lower_copy(itemIter->Name())) != hashset.end())  //Plugin is active.
 					buffer << SPAN_CLASS_ACTIVE_OPEN << "Active" << SPAN_CLOSE;
 				else
 					bosslog.inactive++;
-				if (gl_show_CRCs && itemIter->IsGhosted()) {
+				if (gl_show_CRCs && itemIter->IsGhosted(&game)) {
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(game.DataFolder() / fs::path(itemIter->Name() + ".ghost"))) << SPAN_CLOSE;
 				} else if (gl_show_CRCs)
 					buffer << SPAN_CLASS_CRC_OPEN << "Checksum: " << IntToHexString(GetCrc32(game.DataFolder() / itemIter->Name())) << SPAN_CLOSE;
@@ -150,11 +150,11 @@ namespace boss {
 					counters.warnings++;
 				}
 		*/	
-				if (!gl_trial_run && !itemIter->IsGameMasterFile() && !isSkyrim1426plus) {
+				if (!gl_trial_run && !itemIter->IsGameMasterFile(&game) && !isSkyrim1426plus) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", itemIter->Name().c_str());
 					try {
-						itemIter->SetModTime(esmtime + (bosslog.recognised + bosslog.unrecognised)*60);
+						itemIter->SetModTime(&game, esmtime + (bosslog.recognised + bosslog.unrecognised)*60);
 					} catch(boss_error &e) {
 						itemIter->InsertMessage(0, Message(ERR, "Error: " + e.getString()));
 						LOG_ERROR(" * Error: %s", e.getString().c_str());
@@ -241,18 +241,23 @@ namespace boss {
 		try {
 			//Modlist.
 			size_t size = modlist.Items().size();
-			size_t pos = modlist.GetNextMasterPos(modlist.GetLastMasterPos() + 1);
+			size_t pos = modlist.GetNextMasterPos(&game, modlist.GetLastMasterPos(&game) + 1);
 			if (pos != size)   //Masters exist after the initial set of masters. Not allowed. Since order is not decided by BOSS though, silently fix.
-				modlist.ApplyMasterPartition();
+				modlist.ApplyMasterPartition(&game);
 			//Masterlist.
 			size = masterlist.Items().size();
-			pos = masterlist.GetNextMasterPos(masterlist.GetLastMasterPos() + 1);
+			pos = masterlist.GetNextMasterPos(&game, masterlist.GetLastMasterPos(&game) + 1);
 			if (pos != size)  //Masters exist after the initial set of masters. Not allowed.
 				throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER, masterlist.ItemAt(pos).Name());
 		} catch (boss_error &e) {
+			try {
 			bosslog.globalMessages.push_back(Message(SAY, "The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see the readme section on False-Flagged Plugins."));
-			masterlist.ApplyMasterPartition();
+			masterlist.ApplyMasterPartition(&game);
 			LOG_WARN("The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see the readme section on False-Flagged Plugins.");
+			} catch (boss_error &e) {
+				bosslog.globalMessages.push_back(Message(ERR, "Could not enforce load order master/plugin partition. Details: " + e.getString()));
+				LOG_ERROR("Error: %s", e.getString().c_str());
+			}
 		}
 
 		//Now stick them back together.
@@ -271,8 +276,8 @@ namespace boss {
 		//Now set the load order using Skyrim method.
 		if (game.Id() == SKYRIM && game.GetVersion() >= Version("1.4.26.0")) {
 			try {
-				modlist.SavePluginNames(game.LoadOrderFile(), false, false);
-				modlist.SavePluginNames(game.ActivePluginsFile(), true, true);
+				modlist.SavePluginNames(&game, game.LoadOrderFile(), false, false);
+				modlist.SavePluginNames(&game, game.ActivePluginsFile(), true, true);
 			} catch (boss_error &e) {
 				bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 					<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK

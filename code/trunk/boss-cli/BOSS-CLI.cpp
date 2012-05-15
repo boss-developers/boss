@@ -411,7 +411,6 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		game = Game(detectedGame);
-		gl_current_game = game;
 		LOG_INFO("Game detected: %s", game.Name().c_str());
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
@@ -491,7 +490,7 @@ int main(int argc, char *argv[]) {
 
 	//Get the master esm's modification date. 
 	try {
-		esmtime = game.MasterFile().GetModTime();
+		esmtime = game.MasterFile().GetModTime(&game);
 	} catch(boss_error &e) {
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
 		bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
@@ -509,7 +508,7 @@ int main(int argc, char *argv[]) {
 
 	//Build and save modlist.
 	try {
-		modlist.Load(game.DataFolder());
+		modlist.Load(&game, game.DataFolder());
 		if (gl_revert < 1)
 			modlist.Save(game.Modlist(), game.OldModlist());
 	} catch (boss_error &e) {
@@ -545,10 +544,10 @@ int main(int argc, char *argv[]) {
 	//Parse masterlist/modlist backup into data structure.
 	try {
 		LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
-		masterlist.Load(sortfile);
+		masterlist.Load(&game, sortfile);
 		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
-		masterlist.EvalConditions();
-		masterlist.EvalRegex();
+		masterlist.EvalConditions(&game);
+		masterlist.EvalRegex(&game);
 		bosslog.globalMessages = masterlist.GlobalMessageBuffer();
 		bosslog.parsingErrors.push_back(masterlist.ErrorBuffer());
 	} catch (boss_error &e) {
@@ -573,7 +572,7 @@ int main(int argc, char *argv[]) {
 	
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		userlist.Load(game.Userlist());
+		userlist.Load(&game, game.Userlist());
 		vector<ParsingError> errs = userlist.ErrorBuffer();
 		bosslog.parsingErrors.insert(bosslog.parsingErrors.end(), errs.begin(), errs.end());
 	} catch (boss_error &e) {

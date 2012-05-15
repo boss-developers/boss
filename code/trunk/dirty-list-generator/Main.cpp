@@ -111,7 +111,6 @@ int main() {
 			}
 		}
 		game = Game(detectedGame);
-		gl_current_game = game;
 		LOG_INFO("Game detected: %s", game.Name().c_str());
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
@@ -138,8 +137,8 @@ int main() {
 	//Parse masterlist into data structure.
 	try {
 		ItemList Masterlist, Cleanlist;
-		Masterlist.Load(game.Masterlist());
-		Cleanlist.Load(cleanlist_path);
+		Masterlist.Load(&game, game.Masterlist());
+		Cleanlist.Load(&game, cleanlist_path);
 
 		masterlist = Masterlist.Items();
 		cleanlist = Cleanlist.Items();
