@@ -379,28 +379,29 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Data path is empty.");
 	} else if (!Game(clientGame, "", true).IsInstalled())
 		return ReturnCode(BOSS_API_ERROR_GAME_NOT_FOUND);
-	gl_current_game = Game(clientGame, data);
+	Game game = Game(clientGame, data);
+	gl_current_game = game;
 
 	//Now check if plugins.txt and loadorder.txt are in sync.
 	uint32_t crc1 = 0, crc2 = 0;
-	if (fs::exists(gl_current_game.ActivePluginsFile()) && fs::exists(gl_current_game.LoadOrderFile())) {
+	if (fs::exists(game.ActivePluginsFile()) && fs::exists(game.LoadOrderFile())) {
 		//Load loadorder.txt and save a temporary filtered version.
 		ItemList loadorder;
 		try {
-			loadorder.Load(gl_current_game.DataFolder());
-			loadorder.SavePluginNames(gl_current_game.LoadOrderFile().string() + ".new", true, true);
+			loadorder.Load(game.DataFolder());
+			loadorder.SavePluginNames(game.LoadOrderFile().string() + ".new", true, true);
 		} catch (boss_error &e) {
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
 
-		crc1 = GetCrc32(gl_current_game.ActivePluginsFile());
-		crc2 = GetCrc32(gl_current_game.LoadOrderFile().string() + ".new");
+		crc1 = GetCrc32(game.ActivePluginsFile());
+		crc2 = GetCrc32(game.LoadOrderFile().string() + ".new");
 
 		//Now delete temporary filtered loadorder.txt.
 		try {
-			fs::remove(gl_current_game.LoadOrderFile().string() + ".new");
+			fs::remove(game.LoadOrderFile().string() + ".new");
 		} catch (fs::filesystem_error e) {
-			return ReturnCode(BOSS_API_ERROR_FILE_DELETE_FAIL, gl_current_game.LoadOrderFile().string() + ".new");
+			return ReturnCode(BOSS_API_ERROR_FILE_DELETE_FAIL, game.LoadOrderFile().string() + ".new");
 		}
 	}
 	
@@ -410,7 +411,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 	} catch (bad_alloc &e) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 	}
-	retVal->game = gl_current_game;
+	retVal->game = game;
 	retVal->isSkyrim1426plus = (retVal->game.Id() == SKYRIM && retVal->game.GetVersion() >= Version("1.4.26.0"));
 
 	*db = retVal;

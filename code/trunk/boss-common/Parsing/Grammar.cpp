@@ -329,6 +329,26 @@ namespace boss {
 		on_error<fail>(conditional,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
+	void modlist_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) { 
+		errorBuffer = inErrorBuffer; 
+	}
+
+	void modlist_grammar::SetGlobalMessageBuffer(vector<Message> * inGlobalMessageBuffer) { 
+		globalMessageBuffer = inGlobalMessageBuffer; 
+	}
+
+	void modlist_grammar::SetVarStore(vector<MasterlistVar> * varStore) { 
+		setVars = varStore; 
+	}
+
+	void modlist_grammar::SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {
+		fileCRCs = CRCStore; 
+	}
+
+	void modlist_grammar::SetParentGame(const Game * game) {
+		parentGame = game;
+	}
+
 	//Parser error reporter.
 	void modlist_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
@@ -371,37 +391,37 @@ namespace boss {
 	void modlist_grammar::ConvertOldConditional(string& result, const char var) {
 		switch(var) {
 		case '>':
-			if (parentGameId == OBLIVION)
+			if (parentGame->Id() == OBLIVION)
 				result = "IF ($FCOM)";
-			else if (parentGameId == FALLOUT3)
+			else if (parentGame->Id() == FALLOUT3)
 				result = "IF ($FOOK2)";
-			else if (parentGameId == FALLOUTNV)
+			else if (parentGame->Id() == FALLOUTNV)
 				result = "IF ($NVAMP)";
 			else
 				result = "";
 			break;
 		case '<':
-			if (parentGameId == OBLIVION)
+			if (parentGame->Id() == OBLIVION)
 				result = "IFNOT ($FCOM)";
-			else if (parentGameId == FALLOUT3)
+			else if (parentGame->Id() == FALLOUT3)
 				result = "IFNOT ($FOOK2)";
-			else if (parentGameId == FALLOUTNV)
+			else if (parentGame->Id() == FALLOUTNV)
 				result = "IFNOT ($NVAMP)";
 			else
 				result = "";
 			break;
 		case '$':
-			if (parentGameId == OBLIVION)
+			if (parentGame->Id() == OBLIVION)
 				result = "IF ($OOO)";
-			else if (parentGameId == FALLOUT3)
+			else if (parentGame->Id() == FALLOUT3)
 				result = "IF ($FWE)";
-			else if (parentGameId == FALLOUTNV)
+			else if (parentGame->Id() == FALLOUTNV)
 				result = "IF ($FOOK)";
 			else
 				result = "";
 			break;
 		case '^':
-			if (parentGameId == OBLIVION)
+			if (parentGame->Id() == OBLIVION)
 				result = "IF ($BC)";
 			else
 				result = "";
@@ -416,10 +436,6 @@ namespace boss {
 			p = openGroups.back();
 		else
 			p = itemName;
-	}
-	
-	void modlist_grammar::SetParentGame(uint32_t gameId) {
-		parentGameId = gameId;
 	}
 
 
@@ -439,65 +455,37 @@ namespace boss {
 		fileCRCs = CRCStore;
 	}
 
-	void conditional_evaler::SetDataPath(const fs::path data) {
-		data_path = data;
-	}
-
-	void conditional_evaler::SetSEPluginsPath(const fs::path sePlugins) {
-		sePluginPath = sePlugins;
+	void conditional_evaler::SetParentGame(const Game * game) {
+		parentGame = game;
 	}
 
 	//Returns the true path based on what type of file or keyword it is.
 	void conditional_evaler::GetPath(fs::path& file_path, string& file) {
-		if (file == "OBSE") {
-			file_path = data_path.parent_path();
-			file = "obse_1_2_416.dll";  //Don't look for the loader because steam users don't need it.
-		} else if (file == "FOSE") {
-			file_path = data_path.parent_path();
-			file = "fose_loader.exe";
-		} else if (file == "NVSE") {
-			file_path = data_path.parent_path();
-			file = "nvse_loader.exe";
-		} else if (file == "SKSE") {
-			file_path = data_path.parent_path();
-			file = "skse_loader.exe";
-		} else if (file == "MWSE") {
-			file_path = data_path.parent_path();
-			file = "MWSE.dll";
+		if (file == "OBSE" || file == "FOSE" || file == "NVSE" || file == "SKSE" || file == "MWSE") {
+			file_path = parentGame->GameFolder();
+			file = parentGame->SEExecutable().filename().string();
+		} else if (file == "TES3" || file == "TES4" || file == "TES5" || file == "FO3" || file == "FONV") {
+			file_path = parentGame->GameFolder();
+			file = parentGame->Executable().filename().string();
 		} else if (file == "BOSS") {
 			file_path = boss_path;
 			file = "BOSS.exe";
-		} else if (file == "TES3") {
-			file_path = data_path.parent_path();
-			file = "Morrwind.exe";
-		} else if (file == "TES4") {
-			file_path = data_path.parent_path();
-			file = "Oblivion.exe";
-		} else if (file == "TES5") {
-			file_path = data_path.parent_path();
-			file = "TESV.exe";
-		} else if (file == "FO3") {
-			file_path = data_path.parent_path();
-			file = "Fallout3.exe";
-		} else if (file == "FONV") {
-			file_path = data_path.parent_path();
-			file = "FalloutNV.exe";
 		} else {
 			fs::path p(file);
-			if (to_lower_copy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos && fs::exists(sePluginPath))
-				file_path = sePluginPath;
+			if (to_lower_copy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos && fs::exists(parentGame->SEPluginsFolder()))
+				file_path = parentGame->SEPluginsFolder();
 			else
-				file_path = data_path;
+				file_path = parentGame->DataFolder();
 		}
 	}
 
 	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
 	void conditional_evaler::CheckVersion(bool& result, const string var) {
 		char comp = var[0];
-		size_t pos = var.find("|") + 1;
-		string version = var.substr(1,pos-2);
-		string file = var.substr(pos);
 		result = false;
+		size_t pos = var.find("|") + 1;
+		Version givenVersion = var.substr(1,pos-2);
+		string file = var.substr(pos);
 		fs::path file_path;
 
 		GetPath(file_path,file);
@@ -514,15 +502,15 @@ namespace boss {
 		//Note that this string comparison is unsafe (may give incorrect result).
 		switch (comp) {
 		case '>':
-			if (trueVersion > Version(version))
+			if (trueVersion > givenVersion)
 				result = true;
 			break;
 		case '<':
-			if (trueVersion < Version(version))
+			if (trueVersion < givenVersion)
 				result = true;
 			break;
 		case '=':
-			if (trueVersion == Version(version))
+			if (trueVersion == givenVersion)
 				result = true;
 			break;
 		}
@@ -558,10 +546,10 @@ namespace boss {
 			reg = reg.substr(pos1+2);
 			boost::algorithm::replace_all(p,"\\\\","\\");
 			file_path = fs::path(p);
-		} else if (to_lower_copy(fs::path(reg).extension().string()) == ".dll" && fs::exists(sePluginPath))
-			file_path = sePluginPath;
+		} else if (to_lower_copy(fs::path(reg).extension().string()) == ".dll" && fs::exists(parentGame->SEPluginsFolder()))
+			file_path = parentGame->SEPluginsFolder();
 		else
-			file_path = data_path;
+			file_path = parentGame->DataFolder();
 		boost::regex regex;
 		try {
 			regex = boost::regex(reg, boost::regex::extended|boost::regex::icase);
@@ -873,6 +861,10 @@ namespace boss {
 		on_error<fail>(setting,		phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
 		on_error<fail>(var,			phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
 		on_error<fail>(stringVal,	phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
+	}
+
+	void ini_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) { 
+		errorBuffer = inErrorBuffer; 
 	}
 
 	void ini_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what) {

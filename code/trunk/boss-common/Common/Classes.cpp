@@ -108,8 +108,7 @@ namespace boss {
 			grammar.SetVarStore(&setVars);
 			grammar.SetCRCStore(&fileCRCs);
 			grammar.SetErrorBuffer(&errorBuffer);
-			grammar.SetDataPath(gl_current_game.DataFolder());
-			grammar.SetSEPluginsPath(gl_current_game.SEPluginsFolder());
+			grammar.SetParentGame(&gl_current_game);
 
 			begin = conditions.begin();
 			end = conditions.end();
@@ -193,8 +192,7 @@ namespace boss {
 			grammar.SetVarStore(&setVars);
 			grammar.SetCRCStore(&fileCRCs);
 			grammar.SetErrorBuffer(&errorBuffer);
-			grammar.SetDataPath(gl_current_game.DataFolder());
-			grammar.SetSEPluginsPath(gl_current_game.SEPluginsFolder());
+			grammar.SetParentGame(&gl_current_game);
 
 			//Now we must check if the message is using a conditional shorthand and evaluate that if so.
 			grammar.SetMessageType(key);
@@ -557,7 +555,7 @@ namespace boss {
 			grammar.SetGlobalMessageBuffer(&globalMessageBuffer);
 			grammar.SetVarStore(&masterlistVariables);
 			grammar.SetCRCStore(&fileCRCs);
-			grammar.SetParentGame(gl_current_game.Id());
+			grammar.SetParentGame(&gl_current_game);
 
 			if (!fs::exists(path))
 				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, path.string());

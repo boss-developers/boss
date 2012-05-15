@@ -33,6 +33,7 @@
 #endif
 
 #include "Common/Classes.h"
+#include "Common/Game.h"
 #include <string>
 #include <vector>
 #include <utility>
@@ -145,11 +146,11 @@ namespace boss {
 	class modlist_grammar : public grammar<grammarIter, vector<Item>(), Skipper> {
 	public:
 		modlist_grammar();
-		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
-		inline void SetGlobalMessageBuffer(vector<Message> * inGlobalMessageBuffer) { globalMessageBuffer = inGlobalMessageBuffer; }
-		inline void SetVarStore(vector<MasterlistVar> * varStore) { setVars = varStore; }
-		inline void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {fileCRCs = CRCStore; }
-		void SetParentGame(uint32_t game);
+		void SetErrorBuffer(ParsingError * inErrorBuffer);
+		void SetGlobalMessageBuffer(vector<Message> * inGlobalMessageBuffer);
+		void SetVarStore(vector<MasterlistVar> * varStore);
+		void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore);
+		void SetParentGame(const Game * game);
 	private:
 		qi::rule<grammarIter, vector<Item>(), Skipper> modList;
 		qi::rule<grammarIter, Item(), Skipper> listItem;
@@ -164,7 +165,7 @@ namespace boss {
 		vector<Message> * globalMessageBuffer;
 		vector<MasterlistVar> * setVars;					//Vars set by masterlist.
 		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
-		uint32_t parentGameId;
+		const Game * parentGame;
 		vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in MF1.
 
 		//Parser error reporter.
@@ -196,8 +197,7 @@ namespace boss {
 		void SetErrorBuffer(ParsingError * inErrorBuffer);
 		void SetVarStore(boost::unordered_set<string> * varStore);
 		void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore);
-		void SetDataPath(const fs::path data);
-		void SetSEPluginsPath(const fs::path sePlugins);
+		void SetParentGame(const Game * game);
 	protected:
 		//Returns the true path based on what type of file or keyword it is.
 		void GetPath(fs::path& file_path, string& file);
@@ -227,8 +227,7 @@ namespace boss {
 		ParsingError * errorBuffer;
 		boost::unordered_set<string> * setVars;				//Vars set by masterlist.
 		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
-		fs::path data_path;
-		fs::path sePluginPath;
+		const Game * parentGame;
 	};
 
 	////////////////////////////
@@ -281,9 +280,8 @@ namespace boss {
 	class ini_grammar : public grammar<grammarIter, boost::unordered_map<string, string>(), Skipper> {
 	public:
 		ini_grammar();
-		inline void SetErrorBuffer(ParsingError * inErrorBuffer) { errorBuffer = inErrorBuffer; }
+		void SetErrorBuffer(ParsingError * inErrorBuffer);
 	private:
-		
 		qi::rule<grammarIter, Skipper> heading;
 		qi::rule<grammarIter, boost::unordered_map<string, string>(), Skipper> ini;
 		qi::rule<grammarIter, pair<string, string>(), Skipper> setting;
