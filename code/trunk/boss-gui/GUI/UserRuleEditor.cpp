@@ -499,7 +499,7 @@ void UserRulesEditorFrame::LoadLists() {
 
 	//Need to parse userlist, masterlist and build modlist.
 	try {
-		modlist.Load(&game, game.DataFolder());
+		modlist.Load(game, game.DataFolder());
 	} catch (boss_error &e) {
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
@@ -516,9 +516,9 @@ void UserRulesEditorFrame::LoadLists() {
 	//Parse masterlist/modlist backup into data structure.
 	LOG_INFO("Starting to parse sorting file: %s", game.Masterlist().string().c_str());
 	try {
-		masterlist.Load(&game, game.Masterlist());
-		masterlist.EvalConditions(&game);
-		masterlist.EvalRegex(&game);
+		masterlist.Load(game, game.Masterlist());
+		masterlist.EvalConditions(game);
+		masterlist.EvalRegex(game);
 	} catch (boss_error &e) {
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
@@ -796,7 +796,7 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, const Ite
 	//Parse userlist.
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		userlist.Load(&game, game.Userlist());
+		userlist.Load(game, game.Userlist());
 	} catch (boss_error &e) {
 		userlist.Clear();
 		LOG_ERROR("Error: %s", e.getString().c_str());

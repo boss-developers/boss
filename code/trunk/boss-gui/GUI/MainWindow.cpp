@@ -478,7 +478,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 
 	//Get the master esm's modification date. 
 	try {
-		esmtime = game.MasterFile().GetModTime(&game);
+		esmtime = game.MasterFile().GetModTime(game);
 	} catch (boss_error &e) {
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
 		bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
@@ -497,7 +497,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 
 	//Build and save modlist.
 	try {
-		modlist.Load(&game, game.DataFolder());
+		modlist.Load(game, game.DataFolder());
 		if (gl_revert<1)
 			modlist.Save(game.Modlist(), game.OldModlist());
 	} catch (boss_error &e) {
@@ -540,10 +540,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	//Parse masterlist/modlist backup into data structure.
 	try {
 		LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
-		masterlist.Load(&game, sortfile);
+		masterlist.Load(game, sortfile);
 		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
-		masterlist.EvalConditions(&game);
-		masterlist.EvalRegex(&game);
+		masterlist.EvalConditions(game);
+		masterlist.EvalRegex(game);
 		bosslog.globalMessages = masterlist.GlobalMessageBuffer();
 		bosslog.parsingErrors.push_back(masterlist.ErrorBuffer());
 	} catch (boss_error &e) {
@@ -569,7 +569,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		userlist.Load(&game, game.Userlist());
+		userlist.Load(game, game.Userlist());
 		vector<ParsingError> errs = userlist.ErrorBuffer();
 		bosslog.parsingErrors.insert(bosslog.parsingErrors.end(), errs.begin(), errs.end());
 	} catch (boss_error &e) {

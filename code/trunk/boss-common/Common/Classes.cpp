@@ -41,6 +41,7 @@ namespace boss {
 
 	using boost::algorithm::to_lower_copy;
 
+	//DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
 	BOSS_COMMON const uint32_t NONE		= 0;
 	//RuleList keywords.
 	BOSS_COMMON const uint32_t ADD		= 1;
@@ -97,7 +98,7 @@ namespace boss {
 		conditions = inConditions;
 	}
 
-	bool conditionalData::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer, const Game * parentGame) {
+	bool conditionalData::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer, const Game& parentGame) {
 		if (!conditions.empty()) {
 			Skipper skipper;
 			conditional_grammar grammar;
@@ -108,7 +109,7 @@ namespace boss {
 			grammar.SetVarStore(&setVars);
 			grammar.SetCRCStore(&fileCRCs);
 			grammar.SetErrorBuffer(&errorBuffer);
-			grammar.SetParentGame(parentGame);
+			grammar.SetParentGame(&parentGame);
 
 			begin = conditions.begin();
 			end = conditions.end();
@@ -176,7 +177,7 @@ namespace boss {
 		}
 	}
 
-	bool	Message::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer, const Game * parentGame) {
+	bool	Message::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer, const Game& parentGame) {
 		LOG_TRACE("Evaluating conditional for message \"%s\"", Data().c_str());
 		if (!conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer, parentGame))
 			return false;
@@ -190,7 +191,7 @@ namespace boss {
 			grammar.SetVarStore(&setVars);
 			grammar.SetCRCStore(&fileCRCs);
 			grammar.SetErrorBuffer(&errorBuffer);
-			grammar.SetParentGame(parentGame);
+			grammar.SetParentGame(&parentGame);
 
 			//Now we must check if the message is using a conditional shorthand and evaluate that if so.
 			grammar.SetMessageType(key);
@@ -272,27 +273,27 @@ namespace boss {
 		return (!fs::path(Data()).has_extension() && !Data().empty()); 
 	}
 
-	bool	Item::Exists		(const Game * parentGame) const { 
-		return (fs::exists(parentGame->DataFolder() / Data()) || fs::exists(parentGame->DataFolder() / fs::path(Data() + ".ghost"))); 
+	bool	Item::Exists		(const Game& parentGame) const { 
+		return (fs::exists(parentGame.DataFolder() / Data()) || fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost"))); 
 	}
 	
-	bool	Item::IsGameMasterFile	(const Game * parentGame) const {
-		return boost::iequals(Data(), parentGame->MasterFile().Name());
+	bool	Item::IsGameMasterFile	(const Game& parentGame) const {
+		return boost::iequals(Data(), parentGame.MasterFile().Name());
 	}
 
-	bool	Item::IsMasterFile(const Game * parentGame) const {
-		return IsPluginMaster(parentGame->DataFolder() / Data());
+	bool	Item::IsMasterFile(const Game& parentGame) const {
+		return IsPluginMaster(parentGame.DataFolder() / Data());
 	}
 
-	bool	Item::IsFalseFlagged(const Game * parentGame) const {
+	bool	Item::IsFalseFlagged(const Game& parentGame) const {
 		return ((IsMasterFile(parentGame) && boost::algorithm::to_lower_copy(fs::path(Data()).extension().string()) != ".esm") || (!IsMasterFile(parentGame) && boost::algorithm::to_lower_copy(fs::path(Data()).extension().string()) == ".esm"));
 	}
 
-	bool	Item::IsGhosted		(const Game * parentGame) const {
-		return (fs::exists(parentGame->DataFolder() / fs::path(Data() + ".ghost")));
+	bool	Item::IsGhosted		(const Game& parentGame) const {
+		return (fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost")));
 	}
 	
-	Version	Item::GetVersion		(const Game * parentGame) const {
+	Version	Item::GetVersion		(const Game& parentGame) const {
 		if (!IsPlugin())
 			return Version();
 		
@@ -300,41 +301,41 @@ namespace boss {
 
 		// Read mod's header now...
 		if (IsGhosted(parentGame))
-			header = ReadHeader(parentGame->DataFolder() / fs::path(Data() + ".ghost"));
+			header = ReadHeader(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
 		else
-			header = ReadHeader(parentGame->DataFolder() / Data());
+			header = ReadHeader(parentGame.DataFolder() / Data());
 
 		// The current mod's version if found, or empty otherwise.
 		return Version(header.Version);
 	}
 
-	void	Item::SetModTime	(const Game * parentGame, time_t modificationTime) const {
+	void	Item::SetModTime	(const Game& parentGame, time_t modificationTime) const {
 		try {			
 			if (IsGhosted(parentGame))
-				fs::last_write_time(parentGame->DataFolder() / fs::path(Data() + ".ghost"), modificationTime);
+				fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"), modificationTime);
 			else
-				fs::last_write_time(parentGame->DataFolder() / Data(), modificationTime);
+				fs::last_write_time(parentGame.DataFolder() / Data(), modificationTime);
 		} catch(fs::filesystem_error e) {
 			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL, Data(), e.what());
 		}
 	}
 
-	void	Item::UnGhost		(const Game * parentGame) const {			//Can throw exception.
+	void	Item::UnGhost		(const Game& parentGame) const {			//Can throw exception.
 		if (IsGhosted(parentGame)) {
 			try {
-				fs::rename(parentGame->DataFolder() / fs::path(Data() + ".ghost"), parentGame->DataFolder() / Data());
+				fs::rename(parentGame.DataFolder() / fs::path(Data() + ".ghost"), parentGame.DataFolder() / Data());
 			} catch (fs::filesystem_error e) {
 				throw boss_error(BOSS_ERROR_FS_FILE_RENAME_FAIL, Data() + ".ghost", e.what());
 			}
 		}
 	}
 
-	time_t	Item::GetModTime	(const Game * parentGame) const {			//Can throw exception.
+	time_t	Item::GetModTime	(const Game& parentGame) const {			//Can throw exception.
 		try {			
 			if (IsGhosted(parentGame))
-				return fs::last_write_time(parentGame->DataFolder() / fs::path(Data() + ".ghost"));
+				return fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
 			else
-				return fs::last_write_time(parentGame->DataFolder() / Data());
+				return fs::last_write_time(parentGame.DataFolder() / Data());
 		} catch(fs::filesystem_error e) {
 			LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.", e.what());
 			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, Data(), e.what());
@@ -349,7 +350,7 @@ namespace boss {
 		messages.clear();
 	}
 
-	bool	Item::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer, const Game * parentGame) {
+	bool	Item::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer, const Game& parentGame) {
 		LOG_TRACE("Evaluating conditions for item \"%s\"", Data().c_str());
 
 		bool eval = conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer, parentGame);
@@ -370,8 +371,8 @@ namespace boss {
 	//////////////////////////////
 	
 	struct itemComparator {
-		const Game * parentGame;
-		itemComparator(const Game * game) {parentGame = game;}
+		const Game& parentGame;
+		itemComparator(const Game& game) : parentGame(game) {}
 
 		bool	operator () (Item item1, Item item2) {
 			//Return true if item1 goes before item2, false otherwise.
@@ -395,10 +396,10 @@ namespace boss {
 		fileCRCs.clear();
 	}
 
-	void	ItemList::Load				(const Game * parentGame, fs::path path) {
+	void	ItemList::Load				(const Game& parentGame, fs::path path) {
 		if (fs::exists(path) && fs::is_directory(path)) {
 			LOG_DEBUG("Reading user mods...");
-			if (parentGame->Id() == SKYRIM && parentGame->GetVersion() >= Version("1.4.26.0")) {
+			if (parentGame.Id() == SKYRIM && parentGame.GetVersion() >= Version("1.4.26.0")) {
 				/*Game is Skyrim v1.4.26, so uses the new load order system.
 
 				Check if loadorder.txt exists, and read that if it does.
@@ -413,15 +414,15 @@ namespace boss {
 				*/
 				LOG_INFO("Game is Skyrim v1.4.26+. Using textfile-based load order mechanism.");
 				size_t max;
-				if (fs::exists(parentGame->LoadOrderFile()))  //If the loadorder.txt exists, get the active plugin load order from that.
-					Load(parentGame, parentGame->LoadOrderFile());
+				if (fs::exists(parentGame.LoadOrderFile()))  //If the loadorder.txt exists, get the active plugin load order from that.
+					Load(parentGame, parentGame.LoadOrderFile());
 				else { 
 					//First add Skyrim.esm.
 					items.push_back(Item("Skyrim.esm"));
 					//Now check if plugins.txt exists. If so, add any plugins in it that aren't in loadorder.
 					ItemList plugins;
-					if (fs::exists(parentGame->ActivePluginsFile())) {
-						plugins.Load(parentGame, parentGame->ActivePluginsFile());
+					if (fs::exists(parentGame.ActivePluginsFile())) {
+						plugins.Load(parentGame, parentGame.ActivePluginsFile());
 						vector<Item> pluginsVec = plugins.Items();
 						max = pluginsVec.size();
 						for (size_t i=0; i < max; i++) {
@@ -443,7 +444,7 @@ namespace boss {
 				}
 				max = items.size();
 				//Now scan through Data folder. Add any plugins that aren't already in loadorder to loadorder, at the end.
-				for (fs::directory_iterator itr(parentGame->DataFolder()); itr!=fs::directory_iterator(); ++itr) {
+				for (fs::directory_iterator itr(parentGame.DataFolder()); itr!=fs::directory_iterator(); ++itr) {
 					const fs::path filename = itr->path().filename();
 					const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
 					if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
@@ -479,12 +480,12 @@ namespace boss {
 			}
 			itemComparator ic(parentGame);
 			sort(items.begin(),items.end(), ic);  //Does this work?
-		} else if (path == parentGame->LoadOrderFile() || path == parentGame->ActivePluginsFile()) {
+		} else if (path == parentGame.LoadOrderFile() || path == parentGame.ActivePluginsFile()) {
 			
 			Transcoder trans;
 			trans.SetEncoding(1252);  //Only used if path == gl_current_game.ActivePluginsFile().
 
-			if (path == parentGame->LoadOrderFile() && !ValidateUTF8File(path))
+			if (path == parentGame.LoadOrderFile() && !ValidateUTF8File(path))
 				throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, path.string());
 
 			//loadorder.txt is simple enough that we can avoid needing the full modlist parser which has the crashing issue.
@@ -495,7 +496,7 @@ namespace boss {
 
 			string line;
 			 
-			if (parentGame->Id() == MORROWIND) {  //Morrowind's active file list is stored in Morrowind.ini, and that has a different format from plugins.txt.
+			if (parentGame.Id() == MORROWIND) {  //Morrowind's active file list is stored in Morrowind.ini, and that has a different format from plugins.txt.
 				boost::regex reg = boost::regex("GameFile[0-9]{1,3}=.+\\.es(m|p)", boost::regex::extended|boost::regex::icase);
 				while (in.good()) {
 					getline(in, line);
@@ -505,7 +506,7 @@ namespace boss {
 
 					//Now cut off everything up to and including the = sign.
 					line = line.substr(line.find('=')+1);
-					if (path == parentGame->ActivePluginsFile())
+					if (path == parentGame.ActivePluginsFile())
 						line = trans.EncToUtf8(line);
 					items.push_back(Item(line));
 				}
@@ -516,7 +517,7 @@ namespace boss {
 					if (line.empty() || line[0] == '#')  //Character comparison is OK because it's ASCII.
 						continue;
 
-					if (path == parentGame->ActivePluginsFile())
+					if (path == parentGame.ActivePluginsFile())
 						line = trans.EncToUtf8(line);
 					items.push_back(Item(line));
 				}
@@ -535,7 +536,7 @@ namespace boss {
 			grammar.SetGlobalMessageBuffer(&globalMessageBuffer);
 			grammar.SetVarStore(&masterlistVariables);
 			grammar.SetCRCStore(&fileCRCs);
-			grammar.SetParentGame(parentGame);
+			grammar.SetParentGame(&parentGame);
 
 			if (!fs::exists(path))
 				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, path.string());
@@ -609,7 +610,7 @@ namespace boss {
 		return;
 	}
 
-	void	ItemList::SavePluginNames(const Game * parentGame, fs::path file, bool activeOnly, bool doEncodingConversion) {
+	void	ItemList::SavePluginNames(const Game& parentGame, fs::path file, bool activeOnly, bool doEncodingConversion) {
 		string badFilename = "",  contents, settings;
 		ItemList activePlugins;
 		size_t numActivePlugins;
@@ -618,14 +619,14 @@ namespace boss {
 			//To save needing a new parser, load plugins.txt into an ItemList then fill a hashset from that.
 			//Also check if gl_current_game.ActivePluginsFile() then detect encoding if it is and translate outputted text from UTF-8 to the detected encoding.
 			LOG_INFO("Loading plugins.txt into ItemList.");
-			if (fs::exists(parentGame->ActivePluginsFile())) {
-				activePlugins.Load(parentGame, parentGame->ActivePluginsFile());
+			if (fs::exists(parentGame.ActivePluginsFile())) {
+				activePlugins.Load(parentGame, parentGame.ActivePluginsFile());
 				numActivePlugins = activePlugins.Items().size();
 			}
 		}
 		if (doEncodingConversion)
 			trans.SetEncoding(1252);
-		if (parentGame->Id() == MORROWIND) {  //Must be the plugins file, since loadorder.txt isn't used for MW.
+		if (parentGame.Id() == MORROWIND) {  //Must be the plugins file, since loadorder.txt isn't used for MW.
 			//If Morrowind, BOSS writes active plugin list to Morrowind.ini, which also holds a lot of other game settings.
 			//BOSS needs to read everything up to the active plugin list in the current ini and stick that on before the first saved plugin name.
 			fileToBuffer(file, contents);
@@ -634,7 +635,7 @@ namespace boss {
 				settings = contents.substr(0, pos + 12); //+12 is for the characters in "[Game Files]".
 		}
 
-		bool isSkyrim1426plus = (parentGame->Id() == SKYRIM && parentGame->GetVersion() >= Version("1.4.26.0"));
+		bool isSkyrim1426plus = (parentGame.Id() == SKYRIM && parentGame.GetVersion() >= Version("1.4.26.0"));
 
 		LOG_INFO("Writing new \"%s\"", file.string().c_str());
 		ofstream outfile;
@@ -653,7 +654,7 @@ namespace boss {
 				else if (!items[i].Exists(parentGame))  //Only installed plugins should be written to the plugins.txt/loadorder.txt. The vector may contain others for user rule sorting purposes.
 					continue;
 				LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
-				if (parentGame->Id() == MORROWIND) //Need to write "GameFileN=" before plugin name, where N is an integer from 0 up.
+				if (parentGame.Id() == MORROWIND) //Need to write "GameFileN=" before plugin name, where N is an integer from 0 up.
 					outfile << "GameFile" << i << "=";
 				if (doEncodingConversion) {  //Not UTF-8.
 					try {
@@ -671,7 +672,7 @@ namespace boss {
 			throw boss_error(BOSS_ERROR_ENCODING_CONVERSION_FAIL, badFilename, "1252");
 	}
 
-	void		ItemList::EvalConditions	(const Game * parentGame) {
+	void		ItemList::EvalConditions	(const Game& parentGame) {
 		boost::unordered_set<string> setVars;
 
 		//First eval variables.
@@ -707,11 +708,11 @@ namespace boss {
 		}
 	}
 
-	void		ItemList::EvalRegex(const Game * parentGame) {
+	void		ItemList::EvalRegex(const Game& parentGame) {
 		//Store installed mods in a hashset. Case insensitivity not required as regex itself is case-insensitive.
 		boost::unordered_set<string> hashset;
 		boost::unordered_set<string>::iterator setPos;
-		for (fs::directory_iterator itr(parentGame->DataFolder()); itr!=fs::directory_iterator(); ++itr) {
+		for (fs::directory_iterator itr(parentGame.DataFolder()); itr!=fs::directory_iterator(); ++itr) {
 			const string ext = to_lower_copy(itr->path().extension().string());
 			if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {	//Add file to hashset.
 				if (ext == ".ghost")
@@ -752,7 +753,7 @@ namespace boss {
 		}
 	}
 
-	void		ItemList::ApplyMasterPartition(const Game * parentGame) {
+	void		ItemList::ApplyMasterPartition(const Game& parentGame) {
 		//Need to iterate through items vector, sorting it according to the rule that master items come before other items.
 		size_t lastMasterPos = GetLastMasterPos(parentGame);
 		size_t pos = GetNextMasterPos(parentGame, lastMasterPos+1);
@@ -794,7 +795,7 @@ namespace boss {
 		return max;
 	}
 
-	size_t		ItemList::GetLastMasterPos(const Game * parentGame) const {
+	size_t		ItemList::GetLastMasterPos(const Game& parentGame) const {
 		size_t i=0;
 		while (i < items.size() && (items[i].IsGroup() || items[i].IsMasterFile(parentGame))) {  //SLLOOOOOWWWWW probably.
 			i++;
@@ -805,7 +806,7 @@ namespace boss {
 			return 0;
 	}
 
-	size_t	ItemList::GetNextMasterPos(const Game * parentGame, size_t currPos) const {
+	size_t	ItemList::GetNextMasterPos(const Game& parentGame, size_t currPos) const {
 		if (currPos >= items.size())
 			return items.size();
 		while (currPos < items.size() && (items[currPos].IsGroup() || !items[currPos].IsMasterFile(parentGame))) {  //SLLOOOOOWWWWW probably.
@@ -883,6 +884,18 @@ namespace boss {
 
 	void ItemList::Insert(size_t pos, Item item) {
 		items.insert(items.begin()+pos, item);
+	}
+	
+	void ItemList::Move(size_t newPos, Item item) {
+		size_t itemPos = FindItem(item.Name());
+		if (itemPos == items.size())
+			Insert(newPos, item);
+		else { 
+			if (itemPos < newPos)
+				newPos--;
+			Erase(itemPos);
+			Insert(newPos, item);
+		}
 	}
 
 	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
@@ -1025,7 +1038,13 @@ namespace boss {
 	}
 		
 	RuleLine Rule::LineAt(size_t pos) const {
-		if (pos < lines.size())
+/*		if (pos == 0)
+			return RuleLine(Key(), Object());  //Return sort line.
+		else if (pos - 1 < lines.size())
+			return lines[pos-1];
+		else
+			return RuleLine();
+*/		if (pos < lines.size())
 			return lines[pos];
 		else
 			return RuleLine();
@@ -1049,7 +1068,7 @@ namespace boss {
 		errorBuffer.clear();
 	}
 
-	void RuleList::Load(const Game * parentGame, fs::path file) {
+	void RuleList::Load(const Game& parentGame, fs::path file) {
 		Skipper skipper;
 		userlist_grammar grammar;
 		string::const_iterator begin, end;
@@ -1107,7 +1126,7 @@ namespace boss {
 		outFile.close();
 	}
 
-	void RuleList::CheckSyntax(const Game * parentGame) {
+	void RuleList::CheckSyntax(const Game& parentGame) {
 		// Loop through rules, check syntax of each. If a rule has invalid syntax, remove it.
 		vector<Rule>::iterator it=rules.begin();
 		while(it != rules.end()) {

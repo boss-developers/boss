@@ -37,6 +37,7 @@
 #include <boost/cstdint.hpp>
 #include <boost/filesystem.hpp>
 #include "Common/DllDef.h"
+#include "Common/Game.h"
 
 #ifndef CURL_STATICLIB
 #define CURL_STATICLIB			//Tells the compiler to use curl as a static library.
@@ -82,14 +83,14 @@ namespace boss {
 	class BOSS_COMMON MasterlistUpdater : public Updater {
 	public:
 		//Updates the local masterlist to the latest available online. Throws boss_error exception on fail.
-		void Update(const uint32_t game, fs::path file, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate);
+		void Update(const Game& game, fs::path file, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate);
 
 	private:
 		//Gets the revision number of the local masterlist. Throws exception on error.
-		void GetLocalMasterlistRevisionDate(fs::path file, uint32_t& revision, string& date);
+		void GetLocalRevisionDate(fs::path file, uint32_t& revision, string& date);
 
 		//Gets the revision number of the online masterlist. Throws exception on error.
-		void GetRemoteMasterlistRevisionDate(const uint32_t game, uint32_t& revision, string& date);
+		void GetRemoteRevisionDate(const Game& game, uint32_t& revision, string& date);
 	};
 
 	class BOSS_COMMON BOSSUpdater : public Updater {

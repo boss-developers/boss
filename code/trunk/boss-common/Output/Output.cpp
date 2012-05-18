@@ -40,21 +40,26 @@ namespace boss {
 	// Outputter Class Functions
 	////////////////////////////////
 
-	Outputter::Outputter() {
-		outFormat = PLAINTEXT;
-		escapeHTMLSpecialChars = false;
+	Outputter::Outputter() 
+		: outFormat(PLAINTEXT), 
+		  escapeHTMLSpecialChars(false) {}
+
+	Outputter::Outputter(const Outputter& o) {
+		outStream << o.AsString();
+		outFormat = o.GetFormat();
+		escapeHTMLSpecialChars = o.GetHTMLSpecialEscape();
 	}
 
-	Outputter::Outputter(const uint32_t format) {
-		outFormat = format;
+	Outputter::Outputter(const uint32_t format) 
+		: outFormat(format) {
 		if (outFormat == HTML)
 			escapeHTMLSpecialChars = true;
 		else
 			escapeHTMLSpecialChars = false;
 	}
 
-	Outputter::Outputter(const uint32_t format, const ParsingError e) {
-		outFormat = format;
+	Outputter::Outputter(const uint32_t format, const ParsingError e)
+		: outFormat(format) {
 		if (outFormat == HTML)
 			escapeHTMLSpecialChars = true;
 		else
@@ -63,8 +68,8 @@ namespace boss {
 		*this << e;
 	}
 	
-	Outputter::Outputter(const uint32_t format, const Rule r) {
-		outFormat = format;
+	Outputter::Outputter(const uint32_t format, const Rule r)
+		: outFormat(format) {
 		if (outFormat == HTML)
 			escapeHTMLSpecialChars = true;
 		else
@@ -89,11 +94,19 @@ namespace boss {
 		outStream.str(std::string());
 	}
 
-	bool Outputter::Empty() {
+	bool Outputter::Empty() const {
 		return outStream.str().empty();
 	}
 
-	string Outputter::AsString() {
+	uint32_t Outputter::GetFormat() const {
+		return outFormat;
+	}
+
+	bool Outputter::GetHTMLSpecialEscape() const {
+		return escapeHTMLSpecialChars;
+	}
+
+	string Outputter::AsString() const {
 		return outStream.str();
 	}
 
@@ -132,6 +145,13 @@ namespace boss {
 			}
 		} else
 			return string(1, c);
+	}
+
+	Outputter& Outputter::operator= (const Outputter& o) {
+		outStream << o.AsString();
+		outFormat = o.GetFormat();
+		escapeHTMLSpecialChars = o.GetHTMLSpecialEscape();
+		return *this;
 	}
 	
 	Outputter& Outputter::operator<< (const string s) {

@@ -170,9 +170,9 @@ namespace boss {
 	///////////////////////////////
 
 	//Modlist grammar constructor.
-	modlist_grammar::modlist_grammar() : modlist_grammar::base_type(modList, "modlist grammar") {
-
-		errorBuffer = NULL;
+	modlist_grammar::modlist_grammar() 
+		: modlist_grammar::base_type(modList, "modlist grammar"), 
+		  errorBuffer(NULL) {
 		masterlistMsgKey_ masterlistMsgKey;
 		oldMasterlistMsgKey_ oldMasterlistMsgKey;
 		typeKey_ typeKey;
@@ -481,8 +481,11 @@ namespace boss {
 
 	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
 	void conditional_evaler::CheckVersion(bool& result, const string var) {
-		char comp = var[0];
 		result = false;
+		if (parentGame == NULL)
+			return;
+
+		char comp = var[0];
 		size_t pos = var.find("|") + 1;
 		Version givenVersion = var.substr(1,pos-2);
 		string file = var.substr(pos);
@@ -492,8 +495,8 @@ namespace boss {
 
 		Item tempItem = Item(file);
 		Version trueVersion;
-		if (tempItem.Exists(parentGame)) {
-			trueVersion = tempItem.GetVersion(parentGame);
+		if (tempItem.Exists(*parentGame)) {
+			trueVersion = tempItem.GetVersion(*parentGame);
 		} else if (fs::exists(file_path / file))
 			trueVersion = Version(file_path / file);
 		else
@@ -520,9 +523,11 @@ namespace boss {
 	//Checks if the given file exists.
 	void conditional_evaler::CheckFile(bool& result, string file) {
 		result = false;
+		if (parentGame == NULL)
+			return;
 		fs::path file_path;
 		GetPath(file_path,file);
-		result = Item(file).Exists(parentGame);
+		result = Item(file).Exists(*parentGame);
 	}
 
 	//Checks if a file which matches the given regex exists.
@@ -582,6 +587,8 @@ namespace boss {
 	//Checks if the given mod has the given checksum.
 	void conditional_evaler::CheckSum(bool& result, const uint32_t sum, string file) {
 		result = false;
+		if (parentGame == NULL)
+			return;
 		fs::path file_path;
 		uint32_t CRC;
 
@@ -593,7 +600,7 @@ namespace boss {
 		} else {
 			if (fs::exists(file_path / file))
 				CRC = GetCrc32(file_path / file);
-			else if (Item(file).IsGhosted(parentGame))
+			else if (Item(file).IsGhosted(*parentGame))
 				CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
 			else 
 				return;
@@ -707,9 +714,9 @@ namespace boss {
 	///////////////////////////////////
 
 	//Shorthand grammar constructor.
-	shorthand_grammar::shorthand_grammar() : shorthand_grammar::base_type(messageString, "conditional message shorthand grammar") {
-
-		messageType = NONE;
+	shorthand_grammar::shorthand_grammar() 
+		: shorthand_grammar::base_type(messageString, "conditional message shorthand grammar"), 
+		  messageType(NONE) {
 
 		messageString %=
 			((messageItem | eoi) % messageItemDelimiter > eoi)
@@ -832,9 +839,9 @@ namespace boss {
 	//Ini Grammar.
 	////////////////////////////
 
-	ini_grammar::ini_grammar() : ini_grammar::base_type(ini, "ini grammar") {
-
-		errorBuffer = NULL;
+	ini_grammar::ini_grammar() 
+		: ini_grammar::base_type(ini, "ini grammar"), 
+		  errorBuffer(NULL) {
 
 		ini %= *eol
 				> (omit[heading] | (!lit('[') >> setting)) % +eol
@@ -888,9 +895,10 @@ namespace boss {
 	//RuleList Grammar.
 	////////////////////////////
 
-	userlist_grammar::userlist_grammar() : userlist_grammar::base_type(ruleList, "userlist grammar") {
+	userlist_grammar::userlist_grammar() 
+		: userlist_grammar::base_type(ruleList, "userlist grammar"), 
+		  errorBuffer(NULL) {
 
-		errorBuffer = NULL;
 		ruleKeys_ ruleKeys;
 		messageKeys_ sortOrMessageKeys;
 

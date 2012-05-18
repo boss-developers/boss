@@ -39,9 +39,6 @@
     <ClCompile Include="Updating\Updater.cpp">
       <Filter>Updating</Filter>
     </ClCompile>
-    <ClCompile Include="Common\Execute.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="Common\Classes.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -88,9 +85,6 @@
     </ClInclude>
     <ClInclude Include="Updating\Updater.h">
       <Filter>Updating</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\Execute.h">
-      <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="BOSS-Common.h" />
     <ClInclude Include="Common\DllDef.h">

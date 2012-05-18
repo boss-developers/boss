@@ -184,18 +184,13 @@ namespace boss {
 	// Version Class Functions
 	//////////////////////////////
 
-	Version::Version() {
-		verString = "";
-	}
+	Version::Version() {}
 
-	
-	Version::Version(const char * ver) {
-		verString = string(ver);
-	}
+	Version::Version(const char * ver) 
+		: verString(ver) {}
 
-	Version::Version(const string ver) {
-		verString = ver;
-	}
+	Version::Version(const string ver) 
+		: verString(ver) {}
 
 	Version::Version(const fs::path file) {
 		LOG_TRACE("extracting version from '%s'", file.string().c_str());

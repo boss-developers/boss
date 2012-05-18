@@ -35,7 +35,7 @@ namespace boss {
 	BOSS_COMMON const uint32_t BOSS_VERSION_MINOR	= 1;
 	BOSS_COMMON const uint32_t BOSS_VERSION_PATCH	= 0;
 	
-	//Supported game values.
+	//Supported game values. DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
 	BOSS_COMMON const uint32_t AUTODETECT			= 0;
 	BOSS_COMMON const uint32_t OBLIVION				= 1;
 	BOSS_COMMON const uint32_t NEHRIM				= 2;

@@ -126,11 +126,8 @@ protected:
 
 int main(int argc, char *argv[]) {
 	time_t esmtime = 0;						//File modification times.
-	ItemList modlist, masterlist;		//modlist and masterlist data structures.
-	RuleList userlist;					//userlist data structure.
 	Settings ini;
 	Game game;
-	BossLog bosslog;
 	string gameStr;							// allow for autodetection override
 	string bosslogFormat;
 	fs::path sortfile;						//modlist/masterlist to sort plugins using.
@@ -215,7 +212,6 @@ int main(int argc, char *argv[]) {
 			ini.ErrorBuffer(ParsingError("Error: " + e.getString()));
 		}
 	}
-	bosslog.parsingErrors.push_back(ini.ErrorBuffer());
 
 	// parse command line arguments
 	po::variables_map vm;
@@ -292,7 +288,6 @@ int main(int argc, char *argv[]) {
 		}
 		LOG_DEBUG("BOSSlog format set to: '%s'", bosslogFormat.c_str());
 	}
-	bosslog.SetFormat(gl_log_format);
 
 
 	/////////////////////////
@@ -414,11 +409,12 @@ int main(int argc, char *argv[]) {
 		LOG_INFO("Game detected: %s", game.Name().c_str());
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
-		bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+		game.bosslog.SetFormat(gl_log_format);
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now.";
 		try {
-			bosslog.Save(game.Log(gl_log_format), true);
+			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
@@ -426,6 +422,8 @@ int main(int argc, char *argv[]) {
 			Launch(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
+	game.bosslog.SetFormat(gl_log_format);
+	game.bosslog.parsingErrors.push_back(ini.ErrorBuffer());
 
 
 	/////////////////////////////////////////////////////////
@@ -444,25 +442,25 @@ int main(int argc, char *argv[]) {
 					uint32_t localRevision, remoteRevision;
 					MlistUpdater.Update(game.Id(), game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
 					if (localRevision == remoteRevision) {
-						bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
+						game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
 						cout << endl << "Your masterlist is already at the latest revision (" << localRevision << "; " << localDate << "). No update necessary." << endl;
 						LOG_DEBUG("masterlist update unnecessary.");
 					} else {
-						bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << "Your masterlist has been updated to revision " << remoteRevision << " (" << remoteDate << ").";
+						game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << "Your masterlist has been updated to revision " << remoteRevision << " (" << remoteDate << ").";
 						cout << endl << "Your masterlist has been updated to revision " << remoteRevision << endl;
 						LOG_DEBUG("masterlist updated successfully.");
 					}
 				} catch (boss_error &e) {
-					bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
+					game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
 						<< "Details: " << e.getString() << LINE_BREAK
 						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
 					LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
 				}
 			} else {
-				bosslog.updaterOutput << LIST_ITEM_CLASS_WARN << "No internet connection detected. Masterlist auto-updater could not check for updates.";
+				game.bosslog.updaterOutput << LIST_ITEM_CLASS_WARN << "No internet connection detected. Masterlist auto-updater could not check for updates.";
 			}
 		} catch (boss_error &e) {
-			bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
+			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
 				<< "Details: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
 			LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
@@ -472,7 +470,7 @@ int main(int argc, char *argv[]) {
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
 	if (gl_update_only) {
 		try {
-			bosslog.Save(game.Log(gl_log_format), true);
+			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
@@ -490,14 +488,14 @@ int main(int argc, char *argv[]) {
 
 	//Get the master esm's modification date. 
 	try {
-		esmtime = game.MasterFile().GetModTime(&game);
+		
 	} catch(boss_error &e) {
 		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
-		bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now.";
 		try {
-			bosslog.Save(game.Log(gl_log_format), true);
+			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
@@ -508,16 +506,16 @@ int main(int argc, char *argv[]) {
 
 	//Build and save modlist.
 	try {
-		modlist.Load(&game, game.DataFolder());
+		game.modlist.Load(game, game.DataFolder());
 		if (gl_revert < 1)
-			modlist.Save(game.Modlist(), game.OldModlist());
+			game.modlist.Save(game.Modlist(), game.OldModlist());
 	} catch (boss_error &e) {
 		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
-		bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now.";
 		try {
-			bosslog.Save(game.Log(gl_log_format), true);
+			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
@@ -544,24 +542,24 @@ int main(int argc, char *argv[]) {
 	//Parse masterlist/modlist backup into data structure.
 	try {
 		LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
-		masterlist.Load(&game, sortfile);
+		game.masterlist.Load(game, sortfile);
 		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
-		masterlist.EvalConditions(&game);
-		masterlist.EvalRegex(&game);
-		bosslog.globalMessages = masterlist.GlobalMessageBuffer();
-		bosslog.parsingErrors.push_back(masterlist.ErrorBuffer());
+		game.masterlist.EvalConditions(game);
+		game.masterlist.EvalRegex(game);
+		game.bosslog.globalMessages = game.masterlist.GlobalMessageBuffer();
+		game.bosslog.parsingErrors.push_back(game.masterlist.ErrorBuffer());
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
         if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
-			bosslog.criticalError << masterlist.ErrorBuffer();
+			game.bosslog.criticalError << game.masterlist.ErrorBuffer();
 		else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL)
-			bosslog.criticalError << LIST_ITEM_CLASS_ERROR << e.getString();
+			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << e.getString();
 		else
-			bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 				<< "Utility will end now.";
 		try {
-			bosslog.Save(game.Log(gl_log_format), true);
+			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
@@ -572,13 +570,13 @@ int main(int argc, char *argv[]) {
 	
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		userlist.Load(&game, game.Userlist());
-		vector<ParsingError> errs = userlist.ErrorBuffer();
-		bosslog.parsingErrors.insert(bosslog.parsingErrors.end(), errs.begin(), errs.end());
+		game.userlist.Load(game, game.Userlist());
+		vector<ParsingError> errs = game.userlist.ErrorBuffer();
+		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(), errs.begin(), errs.end());
 	} catch (boss_error &e) {
-		vector<ParsingError> errs = userlist.ErrorBuffer();
-		bosslog.parsingErrors.insert(bosslog.parsingErrors.end(), errs.begin(), errs.end());
-		userlist.Clear();  //If userlist has parsing errors, empty it so no rules are applied.
+		vector<ParsingError> errs = game.userlist.ErrorBuffer();
+		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(), errs.begin(), errs.end());
+		game.userlist.Clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
 	
@@ -586,7 +584,28 @@ int main(int argc, char *argv[]) {
 	// Perform sorting functionality
 	//////////////////////////////////
 
-	PerformSortingFunctionality(game.Log(gl_log_format), bosslog, modlist, masterlist, userlist, esmtime, game);
+	try {
+		game.ApplyMasterlist();
+		LOG_INFO("masterlist now filled with ordered mods and modlist filled with unknowns.");
+		game.ApplyUserlist();
+		LOG_INFO("userlist sorting process finished.");
+		game.ScanSEPlugins();
+		game.SortPlugins();
+		game.bosslog.Save(game.Log(gl_log_format), true);
+	} catch (boss_error &e) {
+		LOG_ERROR("Critical Error: %s", e.getString().c_str());
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+			<< "Utility will end now.";
+		try {
+			game.bosslog.Save(game.Log(gl_log_format), true);
+		} catch (boss_error &e) {
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
+		}
+		if ( !gl_silent ) 
+                Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
+        exit (1); //fail in screaming heap.
+	}
 
 	LOG_INFO("Launching boss log in browser.");
 	if ( !gl_silent ) 

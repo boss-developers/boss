@@ -32,11 +32,16 @@
 #include <boost/filesystem.hpp>
 #include <boost/cstdint.hpp>
 #include "Common/Classes.h"
+#include "Output/Output.h"
 #include "Support/Helpers.h"
 
 namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
+
+	// The following are for signifying what load order method is being used:
+	BOSS_COMMON extern const uint32_t LOMETHOD_TIMESTAMP;
+	BOSS_COMMON extern const uint32_t LOMETHOD_TEXTFILE;
  
 	BOSS_COMMON uint32_t	DetectGame(vector<uint32_t>& detectedGames, vector<uint32_t>& undetectedGames);	//Throws exception if error.
 
@@ -51,9 +56,11 @@ namespace boss {
 		uint32_t Id() const;
 		string Name() const;  //Returns the game's name, eg. "TES IV: Oblivion".
 		string ScriptExtender() const;
+		string OnlineId() const;
 		Item MasterFile() const;  //Returns the game's master file. To get its timestamp, use .GetModTime() on it.
 
 		Version GetVersion() const;
+		uint32_t GetLoadOrderMethod() const;
 
 		fs::path Executable() const;
 		fs::path GameFolder() const;
@@ -67,10 +74,28 @@ namespace boss {
 		fs::path Modlist() const;
 		fs::path OldModlist() const;
 		fs::path Log(uint32_t format) const;
+
+		//Apply the positioning of plugins in the masterlist to the modlist, putting unrecognised plugins after recognised plugins in their original order. Alters modlist.
+		void ApplyMasterlist();
+
+		//Apply any user rules to the modlist. Alters modlist and bosslog.
+		void ApplyUserlist();
+		
+		//Scans the data folder for script extender plugins and outputs their info to the bosslog. Alters bosslog.
+		void ScanSEPlugins();
+
+		//Sorts the plugins in the data folder, changing timestamps or plugins.txt/loadorder.txt as required. Alters bosslog.
+		void SortPlugins();
+
+		ItemList modlist;
+		ItemList masterlist;
+		RuleList userlist;
+		BossLog bosslog;
 		
 	private:
 		uint32_t id;
 		string name;
+		string onlineId;
 
 		string executable;
 		string masterFile;
@@ -88,8 +113,6 @@ namespace boss {
 		fs::path gamePath;  //Path to the game's folder.
 		fs::path pluginsPath;  //Path to the file in which active plugins are listed.
 		fs::path loadorderPath;  //Path to the file which lists total load order.
-
-		//Each game also has a masterlist, userlist, modlist and BOSS Log associated with them. Make these members?
 
 		//Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
 		fs::path GetLocalAppDataPath();

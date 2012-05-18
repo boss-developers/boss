@@ -258,7 +258,7 @@ namespace boss {
 	///////////////////////////////////////
 
 	//Updates the local masterlist to the latest available online. Throws exception on error.
-	void MasterlistUpdater::Update(const uint32_t game, fs::path file, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate) {							//cURL handle
+	void MasterlistUpdater::Update(const Game& game, fs::path file, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate) {							//cURL handle
 		string url, buffer, newline;		//A bunch of strings.
 		ifstream mlist;								//Input stream.
 		ofstream out;								//Output stream.
@@ -268,27 +268,12 @@ namespace boss {
 		string oldline = "Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
 
 		//Get local and remote masterlist info.
-		GetLocalMasterlistRevisionDate(file, localRevision, localDate);
-		GetRemoteMasterlistRevisionDate(game, remoteRevision, remoteDate);
+		GetLocalRevisionDate(file, localRevision, localDate);
+		GetRemoteRevisionDate(game, remoteRevision, remoteDate);
 
 		//Is an update available?
 		if (localRevision == 0 || localRevision < remoteRevision) {
-			//Set url.
-			if (game == OBLIVION)
-				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-oblivion/masterlist.txt";
-			else if (game == NEHRIM)
-				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-nehrim/masterlist.txt";
-			else if (game == SKYRIM)
-				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-skyrim/masterlist.txt";
-			else if (game == FALLOUT3)
-				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout/masterlist.txt";
-			else if (game == FALLOUTNV)
-				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-fallout-nv/masterlist.txt";
-			else if (game == MORROWIND)
-				url = "http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-morrowind/masterlist.txt";
-			else
-				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
-
+			url = string("http://better-oblivion-sorting-software.googlecode.com/svn/data/" + game.OnlineId() + "/masterlist.txt");
 			targetFile = file.string();
 
 			//Now download and install.
@@ -313,7 +298,7 @@ namespace boss {
 	}
 
 	//Gets the revision number of the local masterlist. Throws exception on error.
-	void MasterlistUpdater::GetLocalMasterlistRevisionDate(fs::path file, uint32_t& revision, string& date) {
+	void MasterlistUpdater::GetLocalRevisionDate(fs::path file, uint32_t& revision, string& date) {
 		string line, newline = "Masterlist Revision:";
 		ifstream mlist;
 		size_t pos1,pos2,pos3;
@@ -342,7 +327,7 @@ namespace boss {
 	}
 
 	//Gets the revision number of the online masterlist. Throws exception on error.
-	void MasterlistUpdater::GetRemoteMasterlistRevisionDate(const uint32_t game, uint32_t& revision, string& date) {
+	void MasterlistUpdater::GetRemoteRevisionDate(const Game& game, uint32_t& revision, string& date) {
 		char errbuff[CURL_ERROR_SIZE];
 		CURL *curl;									//cURL handle
 		string buffer;		//A bunch of strings.
@@ -369,22 +354,7 @@ namespace boss {
 		}
 		
 		//Extract revision number from page text.
-		if (game == OBLIVION)
-			start = buffer.find("\"boss-oblivion\":");
-		else if (game == NEHRIM)
-			start = buffer.find("\"boss-nehrim\":");
-		else if (game == SKYRIM)
-			start = buffer.find("\"boss-skyrim\":");
-		else if (game == FALLOUT3)
-			start = buffer.find("\"boss-fallout\":");
-		else if (game == FALLOUTNV)
-			start = buffer.find("\"boss-fallout-nv\":");
-		else if (game == MORROWIND)
-			start = buffer.find("\"boss-morrowind\":");
-		else {
-			curl_easy_cleanup(curl);
-			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
-		}
+		start = buffer.find("\""+ game.OnlineId() + "\":");
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
 			throw boss_error(BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL);
@@ -407,22 +377,7 @@ namespace boss {
 		revision = atoi(buffer.substr(start,end).c_str());
 
 		//Extract revision date from page text.
-		if (game == OBLIVION)
-			start = buffer.find("\"boss-oblivion\":");
-		else if (game == NEHRIM)
-			start = buffer.find("\"boss-nehrim\":");
-		else if (game == SKYRIM)
-			start = buffer.find("\"boss-skyrim\":");
-		else if (game == FALLOUT3)
-			start = buffer.find("\"boss-fallout\":");
-		else if (game == FALLOUTNV)
-			start = buffer.find("\"boss-fallout-nv\":");
-		else if (game == MORROWIND)
-			start = buffer.find("\"boss-morrowind\":");
-		else {
-			curl_easy_cleanup(curl);
-			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
-		}
+		start = buffer.find("\""+ game.OnlineId() + "\":");
 		if (start == string::npos) {
 			curl_easy_cleanup(curl);
 			throw boss_error(BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL);

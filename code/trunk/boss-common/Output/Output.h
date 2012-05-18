@@ -96,6 +96,7 @@ namespace boss {
 	class BOSS_COMMON Outputter {
 	public:
 		Outputter();
+		Outputter(const Outputter& o);
 		Outputter(const uint32_t format);
 		Outputter(const uint32_t format, const ParsingError e);
 		Outputter(const uint32_t format, const Rule r);
@@ -103,10 +104,14 @@ namespace boss {
 		void SetFormat(const uint32_t format);	//Sets the formatting type of the output.
 		void SetHTMLSpecialEscape(const bool shouldEscape);	//Set when formatting is set, generally, but this can be used to override.
 		void Clear();			//Erase all current content.
-		bool Empty();
 
-		string AsString();				//Outputs contents as a string.
+		bool Empty() const;
+		uint32_t GetFormat() const;
+		bool GetHTMLSpecialEscape() const;
+
+		string AsString() const;				//Outputs contents as a string.
 		
+		Outputter& operator= (const Outputter& o);
 		Outputter& operator<< (const string s);
 		Outputter& operator<< (const char * s);
 		Outputter& operator<< (const char c);

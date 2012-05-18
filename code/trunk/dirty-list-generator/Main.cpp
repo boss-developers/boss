@@ -137,8 +137,8 @@ int main() {
 	//Parse masterlist into data structure.
 	try {
 		ItemList Masterlist, Cleanlist;
-		Masterlist.Load(&game, game.Masterlist());
-		Cleanlist.Load(&game, cleanlist_path);
+		Masterlist.Load(game, game.Masterlist());
+		Cleanlist.Load(game, cleanlist_path);
 
 		masterlist = Masterlist.Items();
 		cleanlist = Cleanlist.Items();

@@ -184,8 +184,8 @@ BOSS_API const uint32_t BOSS_API_CLEAN_YES		= 1;
 BOSS_API const uint32_t BOSS_API_CLEAN_UNKNOWN	= 2;
 
 // The following are for signifying what load order method is being used:
-BOSS_API const uint32_t BOSS_API_LOMETHOD_TIMESTAMP	= 0;
-BOSS_API const uint32_t BOSS_API_LOMETHOD_TEXTFILE	= 1;
+BOSS_API const uint32_t BOSS_API_LOMETHOD_TIMESTAMP	= LOMETHOD_TIMESTAMP;
+BOSS_API const uint32_t BOSS_API_LOMETHOD_TEXTFILE	= LOMETHOD_TEXTFILE;
 
 // The following are the games identifiers used by the API.
 BOSS_API const uint32_t BOSS_API_GAME_OBLIVION	= OBLIVION;
@@ -387,8 +387,8 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 		//Load loadorder.txt and save a temporary filtered version.
 		ItemList loadorder;
 		try {
-			loadorder.Load(&game, game.DataFolder());
-			loadorder.SavePluginNames(&game, game.LoadOrderFile().string() + ".new", true, true);
+			loadorder.Load(game, game.DataFolder());
+			loadorder.SavePluginNames(game, game.LoadOrderFile().string() + ".new", true, true);
 		} catch (boss_error &e) {
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
