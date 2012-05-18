@@ -521,7 +521,6 @@ BOSS_API uint32_t EvalConditionals(boss_db db) {
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 	
 	ItemList masterlist = db->rawMasterlist;
-	ItemList modlist;
 	try {
 		masterlist.EvalConditions(db->game);	//First evaluate conditionals.
 		masterlist.EvalRegex(db->game);			//Now evaluate regex.

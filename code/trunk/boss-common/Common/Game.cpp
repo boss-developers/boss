@@ -282,19 +282,17 @@ namespace boss {
 				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, MasterFile().Name());
 			
 			//Requires data path to be set.
-			if (inGame == OBLIVION) {
+			if (inGame == OBLIVION && fs::exists(GameFolder() / "Oblivion.ini")) {
 				//Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
-				if (fs::exists(GameFolder() / "Oblivion.ini")) {
-					Settings oblivionIni;
-					oblivionIni.Load(GameFolder() / "Oblivion.ini");  //This also sets the variable up.
+				Settings oblivionIni;
+				oblivionIni.Load(GameFolder() / "Oblivion.ini");  //This also sets the variable up.
 
-					if (oblivionIni.GetValue("bUseMyGamesDirectory") == "0") {
-						pluginsPath = GameFolder() / pluginsFileName;
-						loadorderPath = GameFolder() / "loadorder.txt";
-					} else {
-						pluginsPath = GetLocalAppDataPath() / appdataFolderName / pluginsFileName;
-						loadorderPath = GetLocalAppDataPath() / appdataFolderName / "loadorder.txt";
-					}
+				if (oblivionIni.GetValue("bUseMyGamesDirectory") == "0") {
+					pluginsPath = GameFolder() / pluginsFileName;
+					loadorderPath = GameFolder() / "loadorder.txt";
+				} else {
+					pluginsPath = GetLocalAppDataPath() / appdataFolderName / pluginsFileName;
+					loadorderPath = GetLocalAppDataPath() / appdataFolderName / "loadorder.txt";
 				}
 			} else if (inGame == MORROWIND) {
 				pluginsPath = GameFolder() / pluginsFileName;

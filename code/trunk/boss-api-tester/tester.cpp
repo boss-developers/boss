@@ -259,8 +259,7 @@ int main() {
 				if (BOSS_API_OK != ret)
 					out << '\t' << "GetIndexedPlugin(...) failed. Error: " << ret << endl;
 				else {
-					out << '\t' << "Message array size: " << size << endl;
-					out << '\t' << "Messages:" << endl;
+					out << '\t' << "Message array size: " << len << endl;
 					for (size_t i=0; i<len; i++)
 						out << '\t' << '\t' << messages[i].type << " : " << messages[i].message << endl;
 				}
