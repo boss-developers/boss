@@ -71,9 +71,7 @@ using namespace std;
 
 using boost::algorithm::trim_copy;
 
-UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent, const Game& inGame) : wxFrame(parent, wxID_ANY, title) {
-
-	game = inGame;
+UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent, Game& inGame) : wxFrame(parent, wxID_ANY, title), game(inGame) {
 
 	//Let's give this a progress bar.
 	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
@@ -123,7 +121,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent,
 	//////First column
 	wxBoxSizer *rulesBox = new wxBoxSizer(wxVERTICAL);
 	try{
-		rulesBox->Add(RulesList = new RuleListFrameClass(this, LIST_RuleList, masterlist, inGame), 1, wxEXPAND);
+		rulesBox->Add(RulesList = new RuleListFrameClass(this, LIST_RuleList, inGame), 1, wxEXPAND);
 	} catch(boss_error &e) {
 		progDia->Destroy();
 		this->Close();
@@ -490,7 +488,6 @@ void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
 }
 
 void UserRulesEditorFrame::LoadLists() {
-	ItemList modlist;
 	size_t size;
 
 	///////////////
@@ -499,12 +496,12 @@ void UserRulesEditorFrame::LoadLists() {
 
 	//Need to parse userlist, masterlist and build modlist.
 	try {
-		modlist.Load(game, game.DataFolder());
+		game.modlist.Load(game, game.DataFolder());
 	} catch (boss_error &e) {
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
 
-	vector<Item> items = modlist.Items();
+	vector<Item> items = game.modlist.Items();
 	size = items.size();
 	for (size_t i=0;i<size;i++)
 		ModlistMods.push_back(items[i].Name());
@@ -516,9 +513,9 @@ void UserRulesEditorFrame::LoadLists() {
 	//Parse masterlist/modlist backup into data structure.
 	LOG_INFO("Starting to parse sorting file: %s", game.Masterlist().string().c_str());
 	try {
-		masterlist.Load(game, game.Masterlist());
-		masterlist.EvalConditions(game);
-		masterlist.EvalRegex(game);
+		game.masterlist.Load(game, game.Masterlist());
+		game.masterlist.EvalConditions(game);
+		game.masterlist.EvalRegex(game);
 	} catch (boss_error &e) {
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
@@ -792,28 +789,28 @@ void RuleBoxClass::Highlight(bool highlight) {
 // RuleListFrameClass functions
 //////////////////////////////////
 
-RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, const ItemList& masterlist, const Game& game) : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize) {
+RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inGame) : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize), game(inGame) {
 	//Parse userlist.
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		userlist.Load(game, game.Userlist());
+		game.userlist.Load(game, game.Userlist());
 	} catch (boss_error &e) {
-		userlist.Clear();
+		game.userlist.Clear();
 		LOG_ERROR("Error: %s", e.getString().c_str());
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
 	}
 
 	//Now disable any ADD rules with rule mods that are in the masterlist.
-	vector<Rule> rules = userlist.Rules();
+	vector<Rule> rules = game.userlist.Rules();
 	size_t size = rules.size();
 	for (size_t i=0;i<size;i++) {
 		if (rules[i].Key() == ADD) {
-			size_t pos = masterlist.FindItem(rules[i].Object());
-			if (pos != masterlist.Items().size())  //Mod in masterlist.
+			size_t pos = game.masterlist.FindItem(rules[i].Object());
+			if (pos != game.masterlist.Items().size())  //Mod in masterlist.
 				rules[i].Enabled(false);
 		}
 	}
-	userlist.Rules(rules);
+	game.userlist.Rules(rules);
 
 	//Now set up GUI layout.
 	SetBackgroundColour(*wxWHITE);
@@ -834,7 +831,7 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, const Ite
 
 void RuleListFrameClass::SaveUserlist(const fs::path path) {
 	try {
-		userlist.Save(path);
+		game.userlist.Save(path);
 	} catch (boss_error &e) {
 		wxMessageBox(wxString::Format(
 			wxT("Error: " + e.getString())
@@ -847,13 +844,13 @@ void RuleListFrameClass::SaveUserlist(const fs::path path) {
 
 void RuleListFrameClass::ReDrawRuleList() {
 	RuleListScroller->DestroyChildren();
-	size_t size = userlist.Rules().size();
+	size_t size = game.userlist.Rules().size();
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 	for (size_t i=0;i<size;i++) {
 		if (i == selectedRuleIndex)
-			sizer->Add(new RuleBoxClass(RuleListScroller, userlist.RuleAt(i), i, true), 0, wxEXPAND);
+			sizer->Add(new RuleBoxClass(RuleListScroller, game.userlist.RuleAt(i), i, true), 0, wxEXPAND);
 		else
-			sizer->Add(new RuleBoxClass(RuleListScroller, userlist.RuleAt(i), i, false), 0, wxEXPAND);
+			sizer->Add(new RuleBoxClass(RuleListScroller, game.userlist.RuleAt(i), i, false), 0, wxEXPAND);
 	}
 	RuleListScroller->SetSizer(sizer);
 	RuleListScroller->FitInside();
@@ -861,17 +858,17 @@ void RuleListFrameClass::ReDrawRuleList() {
 }
 
 void RuleListFrameClass::MoveRule(wxWindowID id) {
-	if (selectedRuleIndex >= 0 && selectedRuleIndex < userlist.Rules().size()) {
+	if (selectedRuleIndex >= 0 && selectedRuleIndex < game.userlist.Rules().size()) {
 		if (id == BUTTON_MoveRuleUp && selectedRuleIndex != 0) {
-			Rule selectedRule = userlist.RuleAt(selectedRuleIndex);
-			userlist.Erase(selectedRuleIndex);
-			userlist.Insert(selectedRuleIndex - 1, selectedRule);
+			Rule selectedRule = game.userlist.RuleAt(selectedRuleIndex);
+			game.userlist.Erase(selectedRuleIndex);
+			game.userlist.Insert(selectedRuleIndex - 1, selectedRule);
 			selectedRuleIndex--;
 			ReDrawRuleList();
-		} else if (id == BUTTON_MoveRuleDown && selectedRuleIndex != userlist.Rules().size()-1) {
-			Rule selectedRule = userlist.RuleAt(selectedRuleIndex);
-			userlist.Erase(selectedRuleIndex);
-			userlist.Insert(selectedRuleIndex + 1, selectedRule);
+		} else if (id == BUTTON_MoveRuleDown && selectedRuleIndex != game.userlist.Rules().size()-1) {
+			Rule selectedRule = game.userlist.RuleAt(selectedRuleIndex);
+			game.userlist.Erase(selectedRuleIndex);
+			game.userlist.Insert(selectedRuleIndex + 1, selectedRule);
 			selectedRuleIndex++;
 			ReDrawRuleList();
 		}
@@ -879,46 +876,44 @@ void RuleListFrameClass::MoveRule(wxWindowID id) {
 }
 
 void RuleListFrameClass::OnToggleRule(wxCommandEvent& event) {
-	if (event.GetId() >= 0 && event.GetId() < userlist.Rules().size()) {
+	if (event.GetId() >= 0 && event.GetId() < game.userlist.Rules().size()) {
 		uint32_t id = event.GetId();
 		bool checked = event.IsChecked();
-		UserRulesEditorFrame * parent = (UserRulesEditorFrame*)this->GetParent();
-
-		Rule rule = userlist.RuleAt(id);
+		Rule rule = game.userlist.RuleAt(id);
 
 		rule.Enabled(checked);
-		if (checked && rule.Key() == ADD && parent->masterlist.FindItem(rule.Object()) != parent->masterlist.Items().size())
+		if (checked && rule.Key() == ADD && game.masterlist.FindItem(rule.Object()) != game.masterlist.Items().size())
 			rule.Key(OVERRIDE);
-		userlist.Replace(id, rule);
+		game.userlist.Replace(id, rule);
 	}
 }
 
 Rule RuleListFrameClass::GetSelectedRule() {
-	return userlist.RuleAt(selectedRuleIndex);  //If >= userlist.Rules().size() the function returns a Rule() anyway.
+	return game.userlist.RuleAt(selectedRuleIndex);  //If >= userlist.Rules().size() the function returns a Rule() anyway.
 }
 
 void RuleListFrameClass::AppendRule(Rule newRule) {
 	//Add the rule to the end of the userlist.
-	selectedRuleIndex = userlist.Rules().size();
-	userlist.Insert(selectedRuleIndex, newRule);
+	selectedRuleIndex = game.userlist.Rules().size();
+	game.userlist.Insert(selectedRuleIndex, newRule);
 	//Now refresh GUI.
 	ReDrawRuleList();
 	RuleListScroller->Scroll(RuleListScroller->GetChildren().back()->GetPosition());
 }
 
 void RuleListFrameClass::SaveEditedRule(Rule editedRule) {
-	if (selectedRuleIndex >= 0 && selectedRuleIndex < userlist.Rules().size()) {
-		userlist.Replace(selectedRuleIndex, editedRule);
+	if (selectedRuleIndex >= 0 && selectedRuleIndex < game.userlist.Rules().size()) {
+		game.userlist.Replace(selectedRuleIndex, editedRule);
 		ReDrawRuleList();
 	}
 	RuleListScroller->Scroll(RuleListScroller->GetChildren()[selectedRuleIndex]->GetPosition());
 }
 
 void RuleListFrameClass::DeleteSelectedRule() {
-	userlist.Erase(selectedRuleIndex);
+	game.userlist.Erase(selectedRuleIndex);
 	ReDrawRuleList();
-	if (!userlist.Rules().empty()) {
-		if (selectedRuleIndex == userlist.Rules().size())  //Just shortened rules by one. Make sure index isn't invalid.
+	if (!game.userlist.Rules().empty()) {
+		if (selectedRuleIndex == game.userlist.Rules().size())  //Just shortened rules by one. Make sure index isn't invalid.
 			selectedRuleIndex--;
 		RuleListScroller->Scroll(RuleListScroller->GetChildren()[selectedRuleIndex]->GetPosition());
 	}
@@ -926,7 +921,7 @@ void RuleListFrameClass::DeleteSelectedRule() {
 
 void RuleListFrameClass::OnRuleSelection(wxCommandEvent& event) {
 	selectedRuleIndex = event.GetId();
-	size_t size = userlist.Rules().size();
+	size_t size = game.userlist.Rules().size();
 	wxWindowList list = RuleListScroller->GetChildren();
 	for (size_t i=0; i<size; i++) {
 		RuleBoxClass *temp = (RuleBoxClass*)list[i];

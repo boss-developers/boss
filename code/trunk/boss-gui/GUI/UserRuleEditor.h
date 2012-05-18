@@ -62,7 +62,7 @@ private:
 
 class RuleListFrameClass : public wxPanel {
 public:
-	RuleListFrameClass(wxFrame *parent, wxWindowID id, const ItemList &masterlist, const Game& game);		//Initialise the RuleListFrameClass object.
+	RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inGame);		//Initialise the RuleListFrameClass object.
 	void SaveUserlist(const fs::path path);	//Save the changes made to the userlist.
 	Rule GetSelectedRule();					//Returns the currently selected rule.
 	void AppendRule(Rule newRule);			//Append to RuleList object and update GUI.
@@ -74,15 +74,15 @@ public:
 	DECLARE_EVENT_TABLE()
 private:
 	void ReDrawRuleList();					//Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
-	RuleList userlist;
 	size_t selectedRuleIndex;
 	wxScrolled<wxPanel> *RuleListScroller;
+	Game& game;
 };
 
 class UserRulesEditorFrame : public wxFrame {
 public:
 	ItemList masterlist;
-	UserRulesEditorFrame(const wxChar *title, wxFrame *parent, const Game& game);
+	UserRulesEditorFrame(const wxChar *title, wxFrame *parent, Game& inGame);
 	void OnOKQuit(wxCommandEvent& event);
 	void OnCancelQuit(wxCommandEvent& event);
 	void OnSearchList(wxCommandEvent& event);
@@ -107,7 +107,7 @@ private:
 	void LoadLists();
 	Rule GetRuleFromForm();
 
-	Game game;
+	Game& game;
 
 	wxArrayString ModlistMods;
 

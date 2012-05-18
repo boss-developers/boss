@@ -399,8 +399,8 @@ namespace boss {
 	void	ItemList::Load				(const Game& parentGame, fs::path path) {
 		if (fs::exists(path) && fs::is_directory(path)) {
 			LOG_DEBUG("Reading user mods...");
-			if (parentGame.Id() == SKYRIM && parentGame.GetVersion() >= Version("1.4.26.0")) {
-				/*Game is Skyrim v1.4.26, so uses the new load order system.
+			if (parentGame.GetLoadOrderMethod() == LOMETHOD_TEXTFILE) {
+				/*Game uses the new load order system.
 
 				Check if loadorder.txt exists, and read that if it does.
 				If it doesn't exist, then read plugins.txt and scan the given directory for mods,
@@ -412,27 +412,29 @@ namespace boss {
 				Patch's Masters list if it exists. That isn't something that can be easily accounted
 				for though.
 				*/
-				LOG_INFO("Game is Skyrim v1.4.26+. Using textfile-based load order mechanism.");
+				LOG_INFO("Using textfile-based load order mechanism.");
 				size_t max;
 				if (fs::exists(parentGame.LoadOrderFile()))  //If the loadorder.txt exists, get the active plugin load order from that.
 					Load(parentGame, parentGame.LoadOrderFile());
 				else { 
-					//First add Skyrim.esm.
-					items.push_back(Item("Skyrim.esm"));
-					//Now check if plugins.txt exists. If so, add any plugins in it that aren't in loadorder.
-					ItemList plugins;
-					if (fs::exists(parentGame.ActivePluginsFile())) {
-						plugins.Load(parentGame, parentGame.ActivePluginsFile());
-						vector<Item> pluginsVec = plugins.Items();
-						max = pluginsVec.size();
-						for (size_t i=0; i < max; i++) {
-							if (pluginsVec[i].Name() != "Skyrim.esm")
-								items.push_back(pluginsVec[i]);
+					if (parentGame.Id() == SKYRIM) {
+						//First add Skyrim.esm.
+						items.push_back(Item("Skyrim.esm"));
+						//Now check if plugins.txt exists. If so, add any plugins in it that aren't in loadorder.
+						ItemList plugins;
+						if (fs::exists(parentGame.ActivePluginsFile())) {
+							plugins.Load(parentGame, parentGame.ActivePluginsFile());
+							vector<Item> pluginsVec = plugins.Items();
+							max = pluginsVec.size();
+							for (size_t i=0; i < max; i++) {
+								if (pluginsVec[i].Name() != "Skyrim.esm")
+									items.push_back(pluginsVec[i]);
+							}
 						}
+						//Add Update.esm if not already present.
+						if (Item("Update.esm").Exists(parentGame) && FindItem("Update.esm") == items.size())
+							Insert(GetLastMasterPos(parentGame) + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
 					}
-					//Add Update.esm if not already present.
-					if (Item("Update.esm").Exists(parentGame) && FindItem("Update.esm") == items.size())
-						Insert(GetLastMasterPos(parentGame) + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
 				}
 				//Then scan through loadorder, removing any plugins that aren't in the data folder.
 				vector<Item>::iterator itemIter = items.begin();
@@ -461,7 +463,7 @@ namespace boss {
 						}
 					}
 				}
-			} else {  //Non-Skyrim.
+			} else {  //Timestamp-based.
 				for (fs::directory_iterator itr(path); itr!=fs::directory_iterator(); ++itr) {
 					const fs::path filename = itr->path().filename();
 					const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
@@ -635,8 +637,6 @@ namespace boss {
 				settings = contents.substr(0, pos + 12); //+12 is for the characters in "[Game Files]".
 		}
 
-		bool isSkyrim1426plus = (parentGame.Id() == SKYRIM && parentGame.GetVersion() >= Version("1.4.26.0"));
-
 		LOG_INFO("Writing new \"%s\"", file.string().c_str());
 		ofstream outfile;
 		outfile.open(file.c_str(), ios_base::trunc);
@@ -649,7 +649,7 @@ namespace boss {
 		size_t max = items.size();
 		for (size_t i=0; i < max; i++) {
 			if (items[i].Type() == MOD) {
-				if (activeOnly && (activePlugins.FindItem(items[i].Name()) == numActivePlugins || (isSkyrim1426plus && items[i].Name() == "Skyrim.esm")))
+				if (activeOnly && (activePlugins.FindItem(items[i].Name()) == numActivePlugins || (parentGame.Id() == SKYRIM && items[i].Name() == "Skyrim.esm")))
 					continue;
 				else if (!items[i].Exists(parentGame))  //Only installed plugins should be written to the plugins.txt/loadorder.txt. The vector may contain others for user rule sorting purposes.
 					continue;
@@ -868,6 +868,10 @@ namespace boss {
 
 	void ItemList::FileCRCs(boost::unordered_map<string,uint32_t> crcs) {
 		fileCRCs = crcs;
+	}
+	
+	void ItemList::Clear() {
+		items.clear();
 	}
 
 	void ItemList::Erase(size_t pos) {

@@ -486,24 +486,6 @@ int main(int argc, char *argv[]) {
 
 	cout << endl << "BOSS working..." << endl;
 
-	//Get the master esm's modification date. 
-	try {
-		
-	} catch(boss_error &e) {
-		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
-		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
-			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-			<< "Utility will end now.";
-		try {
-			game.bosslog.Save(game.Log(gl_log_format), true);
-		} catch (boss_error &e) {
-			LOG_ERROR("Critical Error: %s", e.getString().c_str());
-		}
-		if ( !gl_silent ) 
-			Launch(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
-		exit (1); //fail in screaming heap.
-	}
-
 	//Build and save modlist.
 	try {
 		game.modlist.Load(game, game.DataFolder());

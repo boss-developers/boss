@@ -252,6 +252,12 @@ namespace boss {
 		} else
 			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 
+		//Load order method init.
+		if (Id() == SKYRIM && GetVersion() >= Version("1.4.26.0"))
+			loMethod = LOMETHOD_TEXTFILE;
+		else
+			loMethod = LOMETHOD_TIMESTAMP;
+
 		//BOSS Log init.
 		bosslog.scriptExtender = ScriptExtender();
 		bosslog.gameName = Name();
@@ -341,10 +347,7 @@ namespace boss {
 	}
 
 	uint32_t Game::GetLoadOrderMethod() const {
-		if (Id() == SKYRIM && GetVersion() >= Version("1.4.26.0"))
-			return LOMETHOD_TEXTFILE;
-		else
-			return LOMETHOD_TIMESTAMP;
+		return loMethod;
 	}
 
 	fs::path Game::Executable() const {
@@ -715,9 +718,9 @@ namespace boss {
 		try {
 			size_t size = modlist.Items().size();
 			size_t pos = modlist.GetNextMasterPos(*this, modlist.GetLastMasterPos(*this) + 1);
+			modlist.ApplyMasterPartition(*this);
 			if (pos <= modlist.LastRecognisedPos())   //Masters exist after the initial set of masters in the recognised load order. Not allowed by game.
 				throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER, modlist.ItemAt(pos).Name());
-			modlist.ApplyMasterPartition(*this);
 		} catch (boss_error &e) {
 			try {
 				bosslog.globalMessages.push_back(Message(SAY, "The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see the readme section on False-Flagged Plugins."));
@@ -732,7 +735,6 @@ namespace boss {
 		time_t modfiletime = 0;
 		items = modlist.Items();
 		boost::unordered_set<string>::iterator setPos;
-		bool isTimestampMethod = (GetLoadOrderMethod() == LOMETHOD_TIMESTAMP);
 		bosslog.recognisedPlugins.SetHTMLSpecialEscape(false);
 		bosslog.unrecognisedPlugins.SetHTMLSpecialEscape(false);
 
@@ -758,7 +760,7 @@ namespace boss {
 					counters.warnings++;
 				}
 		*/	
-				if (isTimestampMethod && !gl_trial_run && !itemIter->IsGameMasterFile(*this)) {
+				if (GetLoadOrderMethod() == LOMETHOD_TIMESTAMP && !gl_trial_run && !itemIter->IsGameMasterFile(*this)) {
 					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", itemIter->Name().c_str());
 					try {

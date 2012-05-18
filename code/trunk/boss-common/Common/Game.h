@@ -94,6 +94,7 @@ namespace boss {
 		
 	private:
 		uint32_t id;
+		uint32_t loMethod;
 		string name;
 		string onlineId;
 

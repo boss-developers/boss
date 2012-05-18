@@ -398,10 +398,6 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 }
 
 void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
-
-	time_t esmtime = 0;						//File modification times.
-	ItemList modlist, masterlist;		//Modlist and masterlist data structures.
-	RuleList userlist;					//Userlist data structure.
 	BossLog bosslog(gl_log_format);				//BOSSlog contents.
 	fs::path sortfile;						//Modlist/masterlist to sort plugins using.
 
@@ -409,6 +405,11 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("BOSS working..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
 
 	LOG_INFO("BOSS starting...");
+
+	//Clear modlist, masterlist and userlist in case they were filled by the User Rules Manager but the user has made changes to their game.
+	game.modlist.Clear();
+	game.masterlist.Clear();
+	game.userlist.Clear();
 
 
 	/////////////////////////////////////////////////////////
@@ -476,37 +477,18 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	// Resume Error Condition Checks
 	///////////////////////////////////
 
-	//Get the master esm's modification date. 
-	try {
-		esmtime = game.MasterFile().GetModTime(game);
-	} catch (boss_error &e) {
-		LOG_ERROR("Failed to set modification time of game master file, error was: %s", e.getString().c_str());
-		bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
-			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-			<< "Utility will end now.";
-		try {
-			bosslog.Save(game.Log(gl_log_format), true);
-		} catch (boss_error &e) {
-			LOG_ERROR("Critical Error: %s", e.getString().c_str());
-		}
-		if ( !gl_silent ) 
-			wxLaunchDefaultApplication(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
-		progDia->Destroy();
-		return; //fail in screaming heap.
-	}
-
 	//Build and save modlist.
 	try {
-		modlist.Load(game, game.DataFolder());
+		game.modlist.Load(game, game.DataFolder());
 		if (gl_revert<1)
-			modlist.Save(game.Modlist(), game.OldModlist());
+			game.modlist.Save(game.Modlist(), game.OldModlist());
 	} catch (boss_error &e) {
 		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
-		bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 			<< "Utility will end now.";
 		try {
-			bosslog.Save(game.Log(gl_log_format), true);
+			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
@@ -540,16 +522,16 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	//Parse masterlist/modlist backup into data structure.
 	try {
 		LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
-		masterlist.Load(game, sortfile);
+		game.masterlist.Load(game, sortfile);
 		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
-		masterlist.EvalConditions(game);
-		masterlist.EvalRegex(game);
-		bosslog.globalMessages = masterlist.GlobalMessageBuffer();
-		bosslog.parsingErrors.push_back(masterlist.ErrorBuffer());
+		game.masterlist.EvalConditions(game);
+		game.masterlist.EvalRegex(game);
+		game.bosslog.globalMessages = game.masterlist.GlobalMessageBuffer();
+		game.bosslog.parsingErrors.push_back(game.masterlist.ErrorBuffer());
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
         if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
-			bosslog.criticalError << masterlist.ErrorBuffer();
+			bosslog.criticalError << game.masterlist.ErrorBuffer();
 		else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL)
 			bosslog.criticalError << LIST_ITEM_CLASS_ERROR << e.getString();
 		else
@@ -557,7 +539,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 				<< "Utility will end now.";
 		try {
-			bosslog.Save(game.Log(gl_log_format), true);
+			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
@@ -569,13 +551,13 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 
 	LOG_INFO("Starting to parse userlist.");
 	try {
-		userlist.Load(game, game.Userlist());
-		vector<ParsingError> errs = userlist.ErrorBuffer();
-		bosslog.parsingErrors.insert(bosslog.parsingErrors.end(), errs.begin(), errs.end());
+		game.userlist.Load(game, game.Userlist());
+		vector<ParsingError> errs = game.userlist.ErrorBuffer();
+		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(), errs.begin(), errs.end());
 	} catch (boss_error &e) {
-		vector<ParsingError> errs = userlist.ErrorBuffer();
-		bosslog.parsingErrors.insert(bosslog.parsingErrors.end(), errs.begin(), errs.end());
-		userlist.Clear();  //If userlist has parsing errors, empty it so no rules are applied.
+		vector<ParsingError> errs = game.userlist.ErrorBuffer();
+		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(), errs.begin(), errs.end());
+		game.userlist.Clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
 
@@ -589,7 +571,28 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	// Perform Sorting Functionality
 	/////////////////////////////////////////////////
 
-	PerformSortingFunctionality(game.Log(gl_log_format), bosslog, modlist, masterlist, userlist, esmtime, game);
+	try {
+		game.ApplyMasterlist();
+		LOG_INFO("masterlist now filled with ordered mods and modlist filled with unknowns.");
+		game.ApplyUserlist();
+		LOG_INFO("userlist sorting process finished.");
+		game.ScanSEPlugins();
+		game.SortPlugins();
+		game.bosslog.Save(game.Log(gl_log_format), true);
+	} catch (boss_error &e) {
+		LOG_ERROR("Critical Error: %s", e.getString().c_str());
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
+			<< "Utility will end now.";
+		try {
+			game.bosslog.Save(game.Log(gl_log_format), true);
+		} catch (boss_error &e) {
+			LOG_ERROR("Critical Error: %s", e.getString().c_str());
+		}
+		if ( !gl_silent ) 
+                wxLaunchDefaultApplication(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
+        exit (1); //fail in screaming heap.
+	}
 
 	LOG_INFO("Launching boss log in browser.");
 	if ( !gl_silent ) 

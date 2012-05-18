@@ -201,7 +201,8 @@ namespace boss {
 		void	LastRecognisedPos(size_t pos);
 		void	Variables(vector<MasterlistVar> variables);
 		void	FileCRCs(boost::unordered_map<string,uint32_t> crcs);
-
+		
+		void Clear();
 		void Erase(size_t pos);
 		void Erase(size_t startPos, size_t endPos);
 		void Insert(size_t pos, vector<Item> source, size_t sourceStart, size_t sourceEnd);
