@@ -151,7 +151,7 @@ namespace boss {
 	Game::Game() 
 		: id(AUTODETECT) {}
 	
-	Game::Game(uint32_t inGame, string dataFolder, bool noPathInit) 
+	Game::Game(const uint32_t inGame, const string dataFolder, const bool noPathInit) 
 		: id(inGame) {
 		if (inGame == OBLIVION) {
 			name = "TES IV: Oblivion";
@@ -487,7 +487,7 @@ namespace boss {
 		//set correctly again after all operations have completed.
 		//Note that if a mod is sorted after the last recognised mod by the userlist, it becomes the last recognised mod, and the item will
 		//need to be re-assigned to this item. This only occurs for BEFORE/AFTER plugin sorting rules.
-		string lastRecognisedItem = modlist.ItemAt(modlist.LastRecognisedPos()).Name();
+		Item lastRecognisedItem = modlist.ItemAt(modlist.LastRecognisedPos());
 
 		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", rules.size());
 		vector<Rule>::iterator ruleIter = rules.begin();
@@ -510,7 +510,7 @@ namespace boss {
 				if (ruleIter->Key() != FOR) { //First non-rule line is a sort line.
 					if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {
 						Item mod;
-						modlistPos1 = modlist.FindItem(ruleItem.Name());
+						modlistPos1 = modlist.FindItem(ruleItem.Name(), MOD);
 						//Do checks.
 						if (ruleIter->Key() == ADD && modlistPos1 == modlist.Items().size()) {
 							bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << " is not installed or in the masterlist.";
@@ -526,7 +526,7 @@ namespace boss {
 							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->Object().c_str());
 							continue;
 						}
-						modlistPos2 = modlist.FindItem(lines[i].Object());  //Find sort mod.
+						modlistPos2 = modlist.FindItem(lines[i].Object(), MOD);  //Find sort mod.
 						//Do checks.
 						if (modlistPos2 == modlist.Items().size()) {  //Handle case of mods that don't exist at all.
 							bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << lines[i].Object() << VAR_CLOSE << " is not installed, and is not in the masterlist.";
@@ -541,14 +541,14 @@ namespace boss {
 						mod = modlist.ItemAt(modlistPos1);  //Record the rule mod in a new variable.
 						modlist.Erase(modlistPos1);  //Now remove the rule mod from its old position. This breaks all modlist iterators active.
 						//Need to find sort mod pos again, to fix iterator.
-						modlistPos2 = modlist.FindItem(lines[i].Object());  //Find sort mod.
+						modlistPos2 = modlist.FindItem(lines[i].Object(), MOD);  //Find sort mod.
 						//Insert the mod into its new position.
 						if (lines[i].Key() == AFTER)
 							++modlistPos2;
 						modlist.Insert(modlistPos2, mod);
 					} else if (lines[i].Key() == TOP || lines[i].Key() == BOTTOM) {
 						Item mod;
-						modlistPos1 = modlist.FindItem(ruleItem.Name());
+						modlistPos1 = modlist.FindItem(ruleItem.Name(), MOD);
 						//Do checks.
 						if (ruleIter->Key() == ADD && modlistPos1 == modlist.Items().size()) {
 							bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << " is not installed or in the masterlist.";
@@ -566,9 +566,9 @@ namespace boss {
 						}
 						//Find the group to sort relative to.
 						if (lines[i].Key() == TOP)
-							modlistPos2 = modlist.FindItem(lines[i].Object()) + 1;  //Find the start, and increment by 1 so that mod is inserted after start.
+							modlistPos2 = modlist.FindItem(lines[i].Object(), BEGINGROUP) + 1;  //Find the start, and increment by 1 so that mod is inserted after start.
 						else
-							modlistPos2 = modlist.FindGroupEnd(lines[i].Object());  //Find the end.
+							modlistPos2 = modlist.FindLastItem(lines[i].Object(), ENDGROUP);  //Find the end.
 						//Check that the sort group actually exists.
 						if (modlistPos2 == modlist.Items().size()) {
 							bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << "The group " << VAR_OPEN << lines[i].Object() << VAR_CLOSE << " is not in the masterlist or is malformatted.";
@@ -579,16 +579,16 @@ namespace boss {
 						modlist.Erase(modlistPos1);  //Now remove the rule mod from its old position. This breaks all modlist iterators active.
 						//Need to find group pos again, to fix iterators.
 						if (lines[i].Key() == TOP)
-							modlistPos2 = modlist.FindItem(lines[i].Object()) + 1;  //Find the start, and increment by 1 so that mod is inserted after start.
+							modlistPos2 = modlist.FindItem(lines[i].Object(), BEGINGROUP) + 1;  //Find the start, and increment by 1 so that mod is inserted after start.
 						else
-							modlistPos2 = modlist.FindGroupEnd(lines[i].Object());  //Find the end.
+							modlistPos2 = modlist.FindLastItem(lines[i].Object(), ENDGROUP);  //Find the end.
 						modlist.Insert(modlistPos2, mod);  //Now insert the mod into the group. This breaks all modlist iterators active.
 					}
 					i++;
 				}
 				for (i; i < max; i++) {  //Message lines.
 					//Find the mod which will have its messages edited.
-					modlistPos1 = modlist.FindItem(ruleItem.Name());
+					modlistPos1 = modlist.FindItem(ruleItem.Name(), MOD);
 					if (modlistPos1 == modlist.Items().size()) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
 						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << " is not installed or in the masterlist.";
 						LOG_WARN(" * \"%s\" is not installed.", ruleIter->Object().c_str());
@@ -605,8 +605,8 @@ namespace boss {
 			} else if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {  //Group: Can only sort.
 				vector<Item> group;
 				//Look for group to sort. Find start and end positions.
-				modlistPos1 = modlist.FindItem(ruleItem.Name());
-				modlistPos2 = modlist.FindGroupEnd(ruleItem.Name());
+				modlistPos1 = modlist.FindItem(ruleItem.Name(), BEGINGROUP);
+				modlistPos2 = modlist.FindLastItem(ruleItem.Name(), ENDGROUP);
 				//Check to see group actually exists.
 				if (modlistPos1 == modlist.Items().size() || modlistPos2 == modlist.Items().size()) {
 					bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << "The group " << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << " is not in the masterlist or is malformatted.";
@@ -620,9 +620,9 @@ namespace boss {
 				modlist.Erase(modlistPos1,modlistPos2+1);
 				//Find the group to sort relative to and insert it before or after it as appropriate.
 				if (lines[i].Key() == BEFORE)
-					modlistPos2 = modlist.FindItem(lines[i].Object());  //Find the start.
+					modlistPos2 = modlist.FindItem(lines[i].Object(), BEGINGROUP);  //Find the start.
 				else
-					modlistPos2 = modlist.FindGroupEnd(lines[i].Object());  //Find the end, and add one, as inserting works before the given element.
+					modlistPos2 = modlist.FindLastItem(lines[i].Object(), ENDGROUP);  //Find the end, and add one, as inserting works before the given element.
 				//Check that the sort group actually exists.
 				if (modlistPos2 == modlist.Items().size()) {
 					modlist.Insert(modlistPos1, group, 0, group.size());  //Insert the group back in its old position.
@@ -637,8 +637,20 @@ namespace boss {
 			}
 			if (!messageLineFail)  //Print success message.
 				bosslog.userRules << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << *ruleIter << TABLE_DATA << "✓" << TABLE_DATA;
+			
+			//Now that all the rules have been applied, there is no need for groups or plugins that are not installed to be listed in
+			//modlist. Scan through it and remove these lines.
+			vector<Item> items = modlist.Items();
+			vector<Item>::iterator it = items.begin(), endIt = items.end();
+			while (it != endIt) {
+				if (it->Type() != MOD || !it->Exists(*this))
+					it = items.erase(it);
+				else
+					++it;
+			}
+			modlist.Items(items);
 			//Now find that last recognised mod and set the iterator again.
-			modlist.LastRecognisedPos(modlist.FindLastItem(lastRecognisedItem));
+			modlist.LastRecognisedPos(modlist.FindLastItem(lastRecognisedItem.Name(), lastRecognisedItem.Type()));
 		}
 	}
 

@@ -142,20 +142,20 @@ namespace boss {
 		uint32_t currentEncoding;
 	public:
 		Transcoder();
-		void SetEncoding(uint32_t inEncoding);
+		void SetEncoding(const uint32_t inEncoding);
 		uint32_t GetEncoding();
 
-		string Utf8ToEnc(string inString);
-		string EncToUtf8(string inString);
+		string Utf8ToEnc(const string inString);
+		string EncToUtf8(const string inString);
 	};
 
 	class BossLog {
 	public:
 		BossLog();
-		BossLog(uint32_t format);
+		BossLog(const uint32_t format);
 
-		void SetFormat(uint32_t format);
-		void Save(fs::path file, const bool overwrite);		//Saves contents to file. Throws boss_error exception on fail.
+		void SetFormat(const uint32_t format);
+		void Save(const fs::path file, const bool overwrite);		//Saves contents to file. Throws boss_error exception on fail.
 
 		uint32_t recognised; 
 		uint32_t unrecognised;

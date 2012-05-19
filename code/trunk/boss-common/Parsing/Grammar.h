@@ -133,7 +133,7 @@ namespace boss {
 	class Skipper : public grammar<grammarIter> {
 	public:
 		Skipper();
-		void SkipIniComments(bool b);
+		void SkipIniComments(const bool b);
 	private:
 		qi::rule<grammarIter> start, spc, eof, CComment, CPlusPlusComment, lineComment, iniComment, UTF8;
 	};
@@ -187,18 +187,32 @@ namespace boss {
 		void ToName(string& p, string itemName);
 	};
 
-	
+
 	////////////////////////////
-	// Conditional Evaluator
+	// Conditional Grammar
 	////////////////////////////
 
-	class conditional_evaler {
+	class conditional_grammar : public grammar<grammarIter, bool(), Skipper> {
 	public:
+		conditional_grammar();
 		void SetErrorBuffer(ParsingError * inErrorBuffer);
 		void SetVarStore(boost::unordered_set<string> * varStore);
 		void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore);
 		void SetParentGame(const Game * game);
-	protected:
+	private:
+		qi::rule<grammarIter, string(), Skipper> ifIfNot, variable, file, version, andOr, regexFile;
+		qi::rule<grammarIter, bool(), Skipper> conditional, conditionals, condition;
+		ParsingError * errorBuffer;
+		boost::unordered_set<string> * setVars;				//Vars set by masterlist.
+		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
+		const Game * parentGame;
+
+		//Evaluate a single conditional.
+		void EvaluateConditional(bool& result, const string type, const bool condition);
+
+		//Evaluate the second half of a complex conditional.
+		void EvaluateCompoundConditional(bool& lhsCondition, const string andOr, const bool rhsCondition);
+
 		//Returns the true path based on what type of file or keyword it is.
 		void GetPath(fs::path& file_path, string& file);
 
@@ -223,52 +237,6 @@ namespace boss {
 
 		//Parser error reporter.
 		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);
-	private:
-		ParsingError * errorBuffer;
-		boost::unordered_set<string> * setVars;				//Vars set by masterlist.
-		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
-		const Game * parentGame;
-	};
-
-	////////////////////////////
-	// Conditional Grammar
-	////////////////////////////
-
-	class conditional_grammar : public grammar<grammarIter, bool(), Skipper>, public conditional_evaler {
-	public:
-		conditional_grammar();
-	private:
-		qi::rule<grammarIter, string(), Skipper> ifIfNot, variable, file, version, andOr, regexFile;
-		qi::rule<grammarIter, bool(), Skipper> conditional, conditionals, condition;
-
-		//Evaluate a single conditional.
-		void EvaluateConditional(bool& result, const string type, const bool condition);
-
-		//Evaluate the second half of a complex conditional.
-		void EvaluateCompoundConditional(bool& lhsCondition, const string andOr, const bool rhsCondition);
-	};
-
-
-	///////////////////////////////////
-	// Conditional Shorthand Grammar
-	///////////////////////////////////
-
-	class shorthand_grammar : public grammar<grammarIter, string(), Skipper>, public conditional_evaler {
-	public:
-		shorthand_grammar();
-		void SetMessageType(uint32_t type);
-	private:
-		qi::rule<grammarIter, string(), Skipper> charString, messageItem, messageString, messageVersionCRC, messageModString, messageModVariable, file;
-		qi::rule<grammarIter, Skipper> messageItemDelimiter;
-		uint32_t messageType;
-
-		//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.
-		uint32_t HexStringToInt(string str);
-
-		//Evaluate part of a shorthand conditional message.
-		//Most message types would make sense for the message to display if the condition evaluates to true. (eg. incompatibilities)
-		//Requirement messages need the condition to eval to false.
-		void EvaluateConditionalMessage(string& message, string version, string file, const string mod);
 	};
 
 

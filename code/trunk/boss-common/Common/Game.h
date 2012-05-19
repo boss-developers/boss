@@ -48,7 +48,7 @@ namespace boss {
 	class BOSS_COMMON Game {  //Constructor depends on gl_update_only.
 	public:
 		Game();  //Sets game to AUTODETECT, with all other vars being empty.
-		Game(uint32_t inGame, string dataFolder = "", bool noPathInit = false); //Empty dataFolder means constructor will detect its location. If noPathInit is true, then the data, active plugins list and loadorder.txt paths will not be set, and the game's BOSS subfolder will not be created.
+		Game(const uint32_t inGame, const string dataFolder = "", const bool noPathInit = false); //Empty dataFolder means constructor will detect its location. If noPathInit is true, then the data, active plugins list and loadorder.txt paths will not be set, and the game's BOSS subfolder will not be created.
 		
 		bool IsInstalled() const;
 		bool IsInstalledLocally() const;

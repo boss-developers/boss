@@ -77,7 +77,7 @@ namespace boss {
 		conditions = "";
 	}
 
-	conditionalData::conditionalData(string inData, string inConditions) {
+	conditionalData::conditionalData(const string inData, const string inConditions) {
 		data = inData;
 		conditions = inConditions;
 	}
@@ -90,11 +90,11 @@ namespace boss {
 		return conditions;
 	}
 
-	void conditionalData::Data(string inData) {
+	void conditionalData::Data(const string inData) {
 		data = inData;
 	}
 
-	void conditionalData::Conditions(string inConditions) {
+	void conditionalData::Conditions(const string inConditions) {
 		conditions = inConditions;
 	}
 
@@ -140,19 +140,17 @@ namespace boss {
 	// Message Class Functions
 	//////////////////////////////
 
-	Message::Message	() : conditionalData() {
-		key = SAY;
-	}
+	Message::Message	() 
+		: conditionalData(), key(SAY) {}
 	
-	Message::Message	(uint32_t inKey, string inData) : conditionalData(inData, "") {
-		key = inKey;
-	}
+	Message::Message	(const uint32_t inKey, const string inData) 
+		: conditionalData(inData, ""), key(inKey) {}
 
 	uint32_t Message::Key() const {
 		return key;
 	}
 
-	void Message::Key(uint32_t inKey) {
+	void Message::Key(const uint32_t inKey) {
 		key = inKey;
 	}
 
@@ -177,68 +175,21 @@ namespace boss {
 		}
 	}
 
-	bool	Message::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer, const Game& parentGame) {
-		LOG_TRACE("Evaluating conditional for message \"%s\"", Data().c_str());
-		if (!conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer, parentGame))
-			return false;
-		else if (!Data().empty()) {
-			Skipper skipper;
-			shorthand_grammar grammar;
-			string::const_iterator begin, end;
-			string newMessage;
-		
-			skipper.SkipIniComments(false);
-			grammar.SetVarStore(&setVars);
-			grammar.SetCRCStore(&fileCRCs);
-			grammar.SetErrorBuffer(&errorBuffer);
-			grammar.SetParentGame(&parentGame);
-
-			//Now we must check if the message is using a conditional shorthand and evaluate that if so.
-			grammar.SetMessageType(key);
-
-			string contents = Data();
-			begin = contents.begin();
-			end = contents.end();
-			
-		//	iterator_type u32b(begin);
-		//	iterator_type u32e(end);
-
-		//	bool r = phrase_parse(u32b, u32e, grammar, skipper, newMessage);
-			bool r = phrase_parse(begin, end, grammar, skipper, newMessage);
-
-			if (!r || begin != end)
-				throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, Data());
-
-			if (newMessage.empty())
-				return false;
-			Data(newMessage);
-		}
-		return true;
-	}
-
 	//////////////////////////////
 	// Item Class Functions
 	//////////////////////////////
 	
-	Item::Item			() : conditionalData() {
-		type = MOD;
-		messages.clear();
-	}
+	Item::Item			() 
+		: conditionalData(), type(MOD) {}
 	
-	Item::Item			(string inName) : conditionalData(inName, "") {
-		type = MOD;
-		messages.clear();
-	}
+	Item::Item			(const string inName) 
+		: conditionalData(inName, ""), type(MOD) {}
 	
-	Item::Item			(string inName, uint32_t inType) : conditionalData(inName, "") {
-		type = inType;
-		messages.clear();
-	}
+	Item::Item			(const string inName, const uint32_t inType) 
+		: conditionalData(inName, ""), type(inType) {}
 	
-	Item::Item			(string inName, uint32_t inType, vector<Message> inMessages) : conditionalData(inName, "") {
-		type = inType;
-		messages = inMessages;
-	}
+	Item::Item			(const string inName, const uint32_t inType, const vector<Message> inMessages) 
+		: conditionalData(inName, ""), type(inType), messages(inMessages) {}
 
 	vector<Message> Item::Messages() const {
 		return messages;
@@ -252,15 +203,15 @@ namespace boss {
 		return Data();
 	}
 
-	void Item::Messages(vector<Message> inMessages) {
+	void Item::Messages(const vector<Message> inMessages) {
 		messages = inMessages;
 	}
 
-	void Item::Type(uint32_t inType) {
+	void Item::Type(const uint32_t inType) {
 		type = inType;
 	}
 
-	void Item::Name(string inName) {
+	void Item::Name(const string inName) {
 		Data(inName);
 	}
 	
@@ -309,7 +260,7 @@ namespace boss {
 		return Version(header.Version);
 	}
 
-	void	Item::SetModTime	(const Game& parentGame, time_t modificationTime) const {
+	void	Item::SetModTime	(const Game& parentGame, const time_t modificationTime) const {
 		try {			
 			if (IsGhosted(parentGame))
 				fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"), modificationTime);
@@ -342,7 +293,7 @@ namespace boss {
 		}
 	}
 
-	void Item::InsertMessage(size_t pos, Message message) {
+	void Item::InsertMessage(const size_t pos, const Message message) {
 		messages.insert(messages.begin()+pos, message);
 	}
 
@@ -353,8 +304,6 @@ namespace boss {
 	bool	Item::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer, const Game& parentGame) {
 		LOG_TRACE("Evaluating conditions for item \"%s\"", Data().c_str());
 
-		bool eval = conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer, parentGame);
-
 		vector<Message>::iterator messageIter = messages.begin();
 		while (messageIter != messages.end()) {
 			if (messageIter->EvalConditions(setVars, fileCRCs, errorBuffer, parentGame))
@@ -363,7 +312,7 @@ namespace boss {
 				messageIter = messages.erase(messageIter);
 		}
 
-		return eval;
+		return conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer, parentGame);
 	}
 
 	//////////////////////////////
@@ -374,7 +323,7 @@ namespace boss {
 		const Game& parentGame;
 		itemComparator(const Game& game) : parentGame(game) {}
 
-		bool	operator () (Item item1, Item item2) {
+		bool	operator () (const Item item1, const Item item2) {
 			//Return true if item1 goes before item2, false otherwise.
 			//Master files should go before other files.
 			//Groups should not change position (but master files should be able to cross groups).
@@ -387,16 +336,9 @@ namespace boss {
 		}
 	};
 
-			ItemList::ItemList			() {
-		items.clear();
-		errorBuffer = ParsingError();
-		globalMessageBuffer.clear();
-		lastRecognisedPos = 0;
-		masterlistVariables.clear();
-		fileCRCs.clear();
-	}
+			ItemList::ItemList			() : lastRecognisedPos(0) {}
 
-	void	ItemList::Load				(const Game& parentGame, fs::path path) {
+	void	ItemList::Load				(const Game& parentGame, const fs::path path) {
 		if (fs::exists(path) && fs::is_directory(path)) {
 			LOG_DEBUG("Reading user mods...");
 			if (parentGame.GetLoadOrderMethod() == LOMETHOD_TEXTFILE) {
@@ -432,7 +374,7 @@ namespace boss {
 							}
 						}
 						//Add Update.esm if not already present.
-						if (Item("Update.esm").Exists(parentGame) && FindItem("Update.esm") == items.size())
+						if (Item("Update.esm").Exists(parentGame) && FindItem("Update.esm", MOD) == items.size())
 							Insert(GetLastMasterPos(parentGame) + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
 					}
 				}
@@ -457,7 +399,7 @@ namespace boss {
 							tempItem = Item(filename.stem().string());
 						else
 							tempItem = Item(filename.string());
-						if (FindItem(tempItem.Name()) == max) {  //If the plugin is not in loadorder, add it.
+						if (FindItem(tempItem.Name(), MOD) == max) {  //If the plugin is not in loadorder, add it.
 							Insert(max, tempItem);
 							max++;
 						}
@@ -561,7 +503,7 @@ namespace boss {
 		}
 	}
 	
-	void	ItemList::Save				(fs::path file, fs::path oldFile) {
+	void	ItemList::Save				(const fs::path file, const fs::path oldFile) {
 		ofstream ofile;
 		//Back up file if it already exists.
 		try {
@@ -612,7 +554,7 @@ namespace boss {
 		return;
 	}
 
-	void	ItemList::SavePluginNames(const Game& parentGame, fs::path file, bool activeOnly, bool doEncodingConversion) {
+	void	ItemList::SavePluginNames(const Game& parentGame, const fs::path file, const bool activeOnly, const bool doEncodingConversion) {
 		string badFilename = "",  contents, settings;
 		ItemList activePlugins;
 		size_t numActivePlugins;
@@ -649,7 +591,7 @@ namespace boss {
 		size_t max = items.size();
 		for (size_t i=0; i < max; i++) {
 			if (items[i].Type() == MOD) {
-				if (activeOnly && (activePlugins.FindItem(items[i].Name()) == numActivePlugins || (parentGame.Id() == SKYRIM && items[i].Name() == "Skyrim.esm")))
+				if (activeOnly && (activePlugins.FindItem(items[i].Name(), MOD) == numActivePlugins || (parentGame.Id() == SKYRIM && items[i].Name() == "Skyrim.esm")))
 					continue;
 				else if (!items[i].Exists(parentGame))  //Only installed plugins should be written to the plugins.txt/loadorder.txt. The vector may contain others for user rule sorting purposes.
 					continue;
@@ -767,29 +709,19 @@ namespace boss {
 		}
 	}
 	
-	size_t		ItemList::FindItem			(string name) const {
+	size_t		ItemList::FindItem			(const string name, const uint32_t type) const {
 		size_t max = items.size();
 		for (size_t i=0; i < max; i++) {
-			if (boost::iequals(items[i].Name(), name))
+			if (items[i].Type() == type && boost::iequals(items[i].Name(), name))
 				return i;
 		}
 		return max;
 	}
 
-	size_t		ItemList::FindLastItem		(string name) const {
+	size_t		ItemList::FindLastItem		(const string name, const uint32_t type) const {
 		size_t max = items.size();
 		for (size_t i=max-1; i >= 0; i--) {
-			if (boost::iequals(items[i].Name(), name))
-				return i;
-		}
-		return max;
-	}
-	
-	//This looks a bit weird, but I need a non-reverse iterator outputted, and searching backwards is probably more efficient for my purposes.
-	size_t		ItemList::FindGroupEnd		(string name) const {
-		size_t max = items.size();
-		for (size_t i=max-1; i >= 0; i--) {
-			if (items[i].Type() == ENDGROUP && boost::iequals(items[i].Name(), name))
+			if (items[i].Type() == type && boost::iequals(items[i].Name(), name))
 				return i;
 		}
 		return max;
@@ -839,34 +771,34 @@ namespace boss {
 		return fileCRCs;
 	}
 
-	Item ItemList::ItemAt(size_t pos) const {
+	Item ItemList::ItemAt(const size_t pos) const {
 		if (pos < items.size())
 			return items[pos];
 		else
 			return Item();
 	}
 
-	void ItemList::Items(vector<Item> inItems) {
+	void ItemList::Items(const vector<Item> inItems) {
 		items = inItems;
 	}
 
-	void ItemList::ErrorBuffer(ParsingError buffer) {
+	void ItemList::ErrorBuffer(const ParsingError buffer) {
 		errorBuffer = buffer;
 	}
 
-	void ItemList::GlobalMessageBuffer(vector<Message> buffer) {
+	void ItemList::GlobalMessageBuffer(const vector<Message> buffer) {
 		globalMessageBuffer = buffer;
 	}
 
-	void ItemList::LastRecognisedPos(size_t pos) {
+	void ItemList::LastRecognisedPos(const size_t pos) {
 		lastRecognisedPos = pos;
 	}
 
-	void ItemList::Variables(vector<MasterlistVar> variables) {
+	void ItemList::Variables(const vector<MasterlistVar> variables) {
 		masterlistVariables = variables;
 	}
 
-	void ItemList::FileCRCs(boost::unordered_map<string,uint32_t> crcs) {
+	void ItemList::FileCRCs(const boost::unordered_map<string,uint32_t> crcs) {
 		fileCRCs = crcs;
 	}
 	
@@ -874,24 +806,24 @@ namespace boss {
 		items.clear();
 	}
 
-	void ItemList::Erase(size_t pos) {
+	void ItemList::Erase(const size_t pos) {
 		items.erase(items.begin() + pos);
 	}
 	
-	void ItemList::Erase(size_t startPos, size_t endPos) {
+	void ItemList::Erase(const size_t startPos, const size_t endPos) {
 		items.erase(items.begin() + startPos, items.begin() + endPos);
 	}
 	
-	void ItemList::Insert(size_t pos, vector<Item> source, size_t sourceStart, size_t sourceEnd) {
+	void ItemList::Insert(const size_t pos, const vector<Item> source, const size_t sourceStart, const size_t sourceEnd) {
 		items.insert(items.begin()+pos, source.begin()+sourceStart, source.begin()+sourceEnd);
 	}
 
-	void ItemList::Insert(size_t pos, Item item) {
+	void ItemList::Insert(const size_t pos, const Item item) {
 		items.insert(items.begin()+pos, item);
 	}
 	
-	void ItemList::Move(size_t newPos, Item item) {
-		size_t itemPos = FindItem(item.Name());
+	void ItemList::Move(size_t newPos, const Item item) {
+		size_t itemPos = FindItem(item.Name(), item.Type());
 		if (itemPos == items.size())
 			Insert(newPos, item);
 		else { 
@@ -921,7 +853,7 @@ namespace boss {
 				object = "";
 			}
 
-			RuleLine::RuleLine			(uint32_t inKey, string inObject) {
+			RuleLine::RuleLine			(const uint32_t inKey, const string inObject) {
 				key = inKey;
 				object = inObject;
 			}
@@ -1016,11 +948,11 @@ namespace boss {
 		return object;
 	}
 
-	void RuleLine::Key(uint32_t inKey) {
+	void RuleLine::Key(const uint32_t inKey) {
 		key = inKey;
 	}
 
-	void RuleLine::Object(string inObject) {
+	void RuleLine::Object(const string inObject) {
 		object = inObject;
 	}
 
@@ -1041,7 +973,7 @@ namespace boss {
 		return lines;
 	}
 		
-	RuleLine Rule::LineAt(size_t pos) const {
+	RuleLine Rule::LineAt(const size_t pos) const {
 /*		if (pos == 0)
 			return RuleLine(Key(), Object());  //Return sort line.
 		else if (pos - 1 < lines.size())
@@ -1054,11 +986,11 @@ namespace boss {
 			return RuleLine();
 	}
 
-	void Rule::Enabled(bool e) {
+	void Rule::Enabled(const bool e) {
 		enabled = e;
 	}
 
-	void Rule::Lines(vector<RuleLine> inLines) {
+	void Rule::Lines(const vector<RuleLine> inLines) {
 		lines = inLines;
 	}
 
@@ -1072,7 +1004,7 @@ namespace boss {
 		errorBuffer.clear();
 	}
 
-	void RuleList::Load(const Game& parentGame, fs::path file) {
+	void RuleList::Load(const Game& parentGame, const fs::path file) {
 		Skipper skipper;
 		userlist_grammar grammar;
 		string::const_iterator begin, end;
@@ -1109,7 +1041,7 @@ namespace boss {
 		CheckSyntax(parentGame);
 	}
 
-	void RuleList::Save(fs::path file) {
+	void RuleList::Save(const fs::path file) {
 		ofstream outFile(file.c_str(),ios_base::trunc);
 
 		if (outFile.fail()) {  //Provide error message if it can't be written.
@@ -1210,7 +1142,7 @@ namespace boss {
 		return;
 	}
 
-	size_t RuleList::FindRule(string ruleObject, bool onlyEnabled) const {
+	size_t RuleList::FindRule(const string ruleObject, const bool onlyEnabled) const {
 		size_t max = rules.size();
 		for (size_t i=0; i<max; i++) {
 			if ((onlyEnabled && rules[i].Enabled()) || !onlyEnabled) {
@@ -1229,18 +1161,18 @@ namespace boss {
 		return errorBuffer;
 	}
 		
-	Rule RuleList::RuleAt(size_t pos) const {
+	Rule RuleList::RuleAt(const size_t pos) const {
 		if (pos < rules.size())
 			return rules[pos];
 		else
 			return Rule();
 	}
 
-	void RuleList::Rules(vector<Rule> inRules) {
+	void RuleList::Rules(const vector<Rule> inRules) {
 		rules = inRules;
 	}
 
-	void RuleList::ErrorBuffer(vector<ParsingError> buffer) {
+	void RuleList::ErrorBuffer(const vector<ParsingError> buffer) {
 		errorBuffer = buffer;
 	}
 
@@ -1248,15 +1180,15 @@ namespace boss {
 		rules.clear();
 	}
 	
-	void RuleList::Erase(size_t pos) {
+	void RuleList::Erase(const size_t pos) {
 		rules.erase(rules.begin() + pos);
 	}
 
-	void RuleList::Insert(size_t pos, Rule rule) {
+	void RuleList::Insert(const size_t pos, const Rule rule) {
 		rules.insert(rules.begin()+pos, rule);
 	}
 	
-	void RuleList::Replace(size_t pos, Rule rule) {
+	void RuleList::Replace(const size_t pos, const Rule rule) {
 		if (pos < rules.size())
 			rules[pos] = rule;
 	}
@@ -1266,7 +1198,7 @@ namespace boss {
 	//Settings Class
 	///////////////////////////////
 
-	void	Settings::Load			(fs::path file) {
+	void	Settings::Load			(const fs::path file) {
 		Skipper skipper;
 		ini_grammar grammar;
 		string::const_iterator begin, end;
@@ -1292,7 +1224,7 @@ namespace boss {
 		ApplyIniSettings();
 	}
 
-	void	Settings::Save			(fs::path file, uint32_t currentGameId) {
+	void	Settings::Save			(const fs::path file, const uint32_t currentGameId) {
 		ofstream ini(file.c_str(), ios_base::trunc);
 		if (ini.fail())
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
@@ -1332,7 +1264,7 @@ namespace boss {
 		ini.close();
 	}
 
-	string	Settings::GetIniGameString	(uint32_t game) const {
+	string	Settings::GetIniGameString	(const uint32_t game) const {
 		if (game == AUTODETECT)
 			return "auto";
 		else if (game == OBLIVION)
@@ -1375,7 +1307,7 @@ namespace boss {
 		return errorBuffer;
 	}
 
-	void Settings::ErrorBuffer(ParsingError buffer) {
+	void Settings::ErrorBuffer(const ParsingError buffer) {
 		errorBuffer = buffer;
 	}
 
@@ -1469,7 +1401,7 @@ namespace boss {
 		}
 	}
 
-	string Settings::GetValue(string setting) const {
+	string Settings::GetValue(const string setting) const {
 		boost::unordered_map<string, string>::const_iterator it = iniSettings.find(setting);
 		if (it != iniSettings.end())
 			return it->second;

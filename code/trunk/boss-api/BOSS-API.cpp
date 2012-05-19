@@ -958,7 +958,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Master files must load before other plugins.");
 
 		//If Update.esm is installed, check if it is listed. If not, add it after the rest of the master files.
-		if (db->game.Id() == SKYRIM && fs::exists(db->game.DataFolder() / "Update.esm") && loadorder.FindItem("Update.esm") == loSize) {
+		if (db->game.Id() == SKYRIM && fs::exists(db->game.DataFolder() / "Update.esm") && loadorder.FindItem("Update.esm", MOD) == loSize) {
 			loadorder.Insert(pos + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
 			loSize++;
 		}
@@ -978,7 +978,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 				tempItem = Item(filename.stem().string());
 			else
 				tempItem = Item(filename.string());
-			if (loadorder.FindItem(tempItem.Name()) == loSize) {  //If the plugin is not present, add it.
+			if (loadorder.FindItem(tempItem.Name(), MOD) == loSize) {  //If the plugin is not present, add it.
 				loadorder.Insert(loSize, tempItem);
 				loSize++;
 			}
@@ -1054,12 +1054,12 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 	size_t size = pluginsTxt.Items().size();
 	if (db->game.Id() == SKYRIM) {
 		//Check if Skyrim.esm is missing.
-		if (pluginsTxt.FindItem("Skyrim.esm") == size) {
+		if (pluginsTxt.FindItem("Skyrim.esm", MOD) == size) {
 			pluginsTxt.Insert(0, Item("Skyrim.esm"));
 			size++;
 		}
 		//If Update.esm is installed, check if it is listed. If not, add it after the rest of the master files.
-		if (fs::exists(db->game.DataFolder() / "Update.esm") && pluginsTxt.FindItem("Update.esm") == size) {
+		if (fs::exists(db->game.DataFolder() / "Update.esm") && pluginsTxt.FindItem("Update.esm", MOD) == size) {
 			try {
 				pluginsTxt.Insert(pluginsTxt.GetLastMasterPos(db->game) + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
 				size++;
@@ -1118,7 +1118,7 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 
 	//If Update.esm is installed, check if it is listed. If not, add it (order is decided later).
 	size_t size = pluginsTxt.Items().size();
-	if (db->game.Id() == SKYRIM && fs::exists(db->game.DataFolder() / "Update.esm") && pluginsTxt.FindItem("Update.esm") == size) {
+	if (db->game.Id() == SKYRIM && fs::exists(db->game.DataFolder() / "Update.esm") && pluginsTxt.FindItem("Update.esm", MOD) == size) {
 		pluginsTxt.Insert(size, Item("Update.esm")); 
 	}
 
@@ -1170,7 +1170,7 @@ BOSS_API uint32_t GetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 	}
 
 	//Now search for the given plugin.
-	size_t pos = loadorder.FindItem(string(reinterpret_cast<const char *>(plugin)));
+	size_t pos = loadorder.FindItem(string(reinterpret_cast<const char *>(plugin)), MOD);
 	if (pos == loadorder.Items().size())
 		return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND);
 
@@ -1209,7 +1209,7 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 	}
 
 	//Now search for the given plugin.
-	size_t pos = loadorder.FindItem(pluginStr);
+	size_t pos = loadorder.FindItem(pluginStr, MOD);
 	if (pos == index)
 		return ReturnCode(BOSS_API_OK);
 	if (pos != loadorder.Items().size())  //Plugin found. Erase it.
@@ -1372,14 +1372,14 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 
 	//If Update.esm is installed, check if it is listed. If not, add it (order is decided later).
 	size_t size = pluginsList.Items().size();
-	if (db->game.Id() == SKYRIM && fs::exists(db->game.DataFolder() / "Update.esm") && pluginsList.FindItem("Update.esm") == size) {
+	if (db->game.Id() == SKYRIM && fs::exists(db->game.DataFolder() / "Update.esm") && pluginsList.FindItem("Update.esm", MOD) == size) {
 		pluginsList.Insert(size, Item("Update.esm")); 
 	}
 
 	//Check if the given plugin is in plugins.txt.
-	if (pluginsList.FindItem(pluginStr) != pluginsList.Items().size() && !active) //Exists, but shouldn't.
-		pluginsList.Erase(pluginsList.FindItem(pluginStr));
-	else if (pluginsList.FindItem(pluginStr) == pluginsList.Items().size() && active)  //Doesn't exist, but should.
+	if (pluginsList.FindItem(pluginStr, MOD) != pluginsList.Items().size() && !active) //Exists, but shouldn't.
+		pluginsList.Erase(pluginsList.FindItem(pluginStr, MOD));
+	else if (pluginsList.FindItem(pluginStr, MOD) == pluginsList.Items().size() && active)  //Doesn't exist, but should.
 		pluginsList.Insert(pluginsList.Items().size(), pluginStr);
 
 	//Check that there aren't too many plugins in plugins.txt.
@@ -1431,7 +1431,7 @@ BOSS_API uint32_t IsPluginActive(boss_db db, const uint8_t * plugin, bool * isAc
 	}
 	
 	//Check if the given plugin is in plugins.txt.
-	if (pluginsList.FindItem(pluginStr) != pluginsList.Items().size())
+	if (pluginsList.FindItem(pluginStr, MOD) != pluginsList.Items().size())
 		*isActive = true;
 	else
 		*isActive = false;
@@ -1587,7 +1587,7 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * plugin,
 	boost::unordered_set<string> tagsAdded, tagsRemoved;
 
 	//Now search filtered masterlist for mod.
-	size_t pos = db->game.masterlist.FindItem(mod);
+	size_t pos = db->game.masterlist.FindItem(mod, MOD);
 	if (pos != db->game.masterlist.Items().size()) {
 		vector<Message> messages = db->game.masterlist.ItemAt(pos).Messages();
 		for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter) {
@@ -1686,7 +1686,7 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * plugin,
 	*needsCleaning = BOSS_API_CLEAN_UNKNOWN;
 
 	//Now search filtered masterlist for mod.
-	size_t pos = db->game.masterlist.FindItem(mod);
+	size_t pos = db->game.masterlist.FindItem(mod, MOD);
 	if (pos != db->game.masterlist.Items().size()) {
 		vector<Message> messages = db->game.masterlist.ItemAt(pos).Messages();
 		for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter) {
@@ -1739,7 +1739,7 @@ BOSS_API uint32_t GetPluginMessages (boss_db db, const uint8_t * plugin, BossMes
 
 	//Now search filtered masterlist for mod.
 	vector<Message> modMessages;
-	size_t pos = db->game.masterlist.FindItem(mod);
+	size_t pos = db->game.masterlist.FindItem(mod, MOD);
 	if (pos != db->game.masterlist.Items().size())
 		modMessages = db->game.masterlist.ItemAt(pos).Messages();
 
@@ -1770,7 +1770,7 @@ BOSS_API uint32_t IsRecognised (boss_db db, const uint8_t * plugin, bool * recog
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
 	//Search filtered masterlist.
-	if (db->game.masterlist.FindItem(string(reinterpret_cast<const char *>(plugin))) != db->game.masterlist.Items().size())
+	if (db->game.masterlist.FindItem(string(reinterpret_cast<const char *>(plugin)), MOD) != db->game.masterlist.Items().size())
 		*recognised = true;
 	else
 		*recognised = false;

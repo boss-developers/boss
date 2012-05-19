@@ -109,7 +109,7 @@ void Fail() {
 class CLIMlistUpdater : public MasterlistUpdater {
 protected:
 	int progress(Updater * updater, double dlFraction, double dlTotal) {
-		printf("Downloading: %s; %3.0f%% of %3.0f KB\r", updater->targetFile.c_str(), dlFraction, dlTotal);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
+		printf("Downloading: %s; %3.0f%% of %3.0f KB\r", updater->TargetFile().c_str(), dlFraction, dlTotal);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
 		fflush(stdout);
 		return 0;
 	}
@@ -118,7 +118,7 @@ protected:
 class CLIBOSSUpdater : public BOSSUpdater {
 protected:
 	int progress(Updater * updater, double dlFraction, double dlTotal) {
-		printf("Downloading: %s; %3.0f%% of %3.0f KB\r", updater->targetFile.c_str(), dlFraction, dlTotal);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
+		printf("Downloading: %s; %3.0f%% of %3.0f KB\r", updater->TargetFile().c_str(), dlFraction, dlTotal);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
 		fflush(stdout);
 		return 0;
 	}
@@ -308,7 +308,7 @@ int main(int argc, char *argv[]) {
 						LOG_DEBUG("You are already using the latest version of BOSS.");
 					} else {
 						//First detect type of current install: manual or installer.
-						 if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS", "Installed Path")) {  //Manual.
+						if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS", "Installed Path")) {  //Manual.
 							//Point user to download locations.
 							cout << "Update available! New version: " << updateVersion << endl
 								 << "The update may be downloaded from any of the locations listed in the BOSS Log." << endl;		

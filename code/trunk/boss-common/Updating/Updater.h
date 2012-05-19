@@ -57,8 +57,11 @@ namespace boss {
 
 	class BOSS_COMMON Updater {
 	public:
-		string targetFile;
-		void * progDialog;
+		string TargetFile() const;
+		void * ProgDialog() const;
+
+		void TargetFile(string file);
+		void ProgDialog(void * dialog);
 
 		//Checks if an Internet connection is present.
 		bool IsInternetReachable();
@@ -78,6 +81,9 @@ namespace boss {
 
 		//Install file by renaming it. Throws exception on error.
 		void InstallFile(string downloadedName, string installedName);
+	private:
+		string targetFile;
+		void * progDialog;
 	};
 
 	class BOSS_COMMON MasterlistUpdater : public Updater {

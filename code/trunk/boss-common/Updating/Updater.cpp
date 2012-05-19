@@ -142,6 +142,22 @@ namespace boss {
 	/////////////////////////////
 	// Updater Class Functions
 	/////////////////////////////
+	
+	string Updater::TargetFile() const {
+		return targetFile;
+	}
+
+	void * Updater::ProgDialog() const {
+		return progDialog;
+	}
+
+	void Updater::TargetFile(string file) {
+		targetFile = file;
+	}
+
+	void Updater::ProgDialog(void * dialog) {
+		progDialog = dialog;
+	}
 
 	//Handler for progress outputter.
 	int Updater::progress_func(void * data, double dlTotal, double dlNow, double ulTotal, double ulNow) { 
@@ -274,7 +290,7 @@ namespace boss {
 		//Is an update available?
 		if (localRevision == 0 || localRevision < remoteRevision) {
 			url = string("http://better-oblivion-sorting-software.googlecode.com/svn/data/" + game.OnlineId() + "/masterlist.txt");
-			targetFile = file.string();
+			TargetFile(file.string());
 
 			//Now download and install.
 			DownloadFile(url, fs::path(file.string() + ".new"));
@@ -528,7 +544,7 @@ namespace boss {
 	void BOSSUpdater::GetUpdate(fs::path file, const string updateVersion) {
 		string url = "http://better-oblivion-sorting-software.googlecode.com/svn/releases/"+updateVersion+"/BOSS%20Installer.exe";
 
-		targetFile = file.string();
+		TargetFile(file.string());
 
 		//Now download and install.
 		DownloadFile(url, fs::path(file.string() + ".new"));

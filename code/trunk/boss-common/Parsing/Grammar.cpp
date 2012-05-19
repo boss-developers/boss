@@ -158,7 +158,7 @@ namespace boss {
 		eof = *(spc | CComment | CPlusPlusComment | lineComment | eol) >> eoi;
 	}
 
-	void Skipper::SkipIniComments(bool b) {
+	void Skipper::SkipIniComments(const bool b) {
 		if (b)
 			iniComment = lit("#") >> *(char_ - eol);
 		else
@@ -440,198 +440,6 @@ namespace boss {
 
 
 	////////////////////////////
-	// Conditional Evaluator
-	////////////////////////////
-
-	void conditional_evaler::SetErrorBuffer(ParsingError * inErrorBuffer) {
-		errorBuffer = inErrorBuffer;
-	}
-
-	void conditional_evaler::SetVarStore(boost::unordered_set<string> * varStore) {
-		setVars = varStore;
-	}
-
-	void conditional_evaler::SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {
-		fileCRCs = CRCStore;
-	}
-
-	void conditional_evaler::SetParentGame(const Game * game) {
-		parentGame = game;
-	}
-
-	//Returns the true path based on what type of file or keyword it is.
-	void conditional_evaler::GetPath(fs::path& file_path, string& file) {
-		if (file == "OBSE" || file == "FOSE" || file == "NVSE" || file == "SKSE" || file == "MWSE") {
-			file_path = parentGame->GameFolder();
-			file = parentGame->SEExecutable().filename().string();
-		} else if (file == "TES3" || file == "TES4" || file == "TES5" || file == "FO3" || file == "FONV") {
-			file_path = parentGame->GameFolder();
-			file = parentGame->Executable().filename().string();
-		} else if (file == "BOSS") {
-			file_path = boss_path;
-			file = "BOSS.exe";
-		} else {
-			fs::path p(file);
-			if (to_lower_copy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos && fs::exists(parentGame->SEPluginsFolder()))
-				file_path = parentGame->SEPluginsFolder();
-			else
-				file_path = parentGame->DataFolder();
-		}
-	}
-
-	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
-	void conditional_evaler::CheckVersion(bool& result, const string var) {
-		result = false;
-		if (parentGame == NULL)
-			return;
-
-		char comp = var[0];
-		size_t pos = var.find("|") + 1;
-		Version givenVersion = var.substr(1,pos-2);
-		string file = var.substr(pos);
-		fs::path file_path;
-
-		GetPath(file_path,file);
-
-		Item tempItem = Item(file);
-		Version trueVersion;
-		if (tempItem.Exists(*parentGame)) {
-			trueVersion = tempItem.GetVersion(*parentGame);
-		} else if (fs::exists(file_path / file))
-			trueVersion = Version(file_path / file);
-		else
-			return;
-
-		//Note that this string comparison is unsafe (may give incorrect result).
-		switch (comp) {
-		case '>':
-			if (trueVersion > givenVersion)
-				result = true;
-			break;
-		case '<':
-			if (trueVersion < givenVersion)
-				result = true;
-			break;
-		case '=':
-			if (trueVersion == givenVersion)
-				result = true;
-			break;
-		}
-		return;
-	}
-
-	//Checks if the given file exists.
-	void conditional_evaler::CheckFile(bool& result, string file) {
-		result = false;
-		if (parentGame == NULL)
-			return;
-		fs::path file_path;
-		GetPath(file_path,file);
-		result = Item(file).Exists(*parentGame);
-	}
-
-	//Checks if a file which matches the given regex exists.
-	//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
-	//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
-	//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
-	//be removed when getting the path and filename.
-	void conditional_evaler::CheckRegex(bool& result, string reg) {
-		result = false;
-		fs::path file_path;
-		//If the regex includes '/' or '\\' then it includes folders. Need to split the regex into the parent path and the filename.
-		//No reason for the regex to include both.
-		if (reg.find("/") != string::npos) {
-			size_t pos1 = reg.rfind("/");
-			string p = reg.substr(0,pos1);
-			reg = reg.substr(pos1+1);
-			file_path = fs::path(p);
-		} else if (reg.find("\\\\") != string::npos) {
-			size_t pos1 = reg.rfind("\\\\");
-			string p = reg.substr(0,pos1);
-			reg = reg.substr(pos1+2);
-			boost::algorithm::replace_all(p,"\\\\","\\");
-			file_path = fs::path(p);
-		} else if (to_lower_copy(fs::path(reg).extension().string()) == ".dll" && fs::exists(parentGame->SEPluginsFolder()))
-			file_path = parentGame->SEPluginsFolder();
-		else
-			file_path = parentGame->DataFolder();
-		boost::regex regex;
-		try {
-			regex = boost::regex(reg, boost::regex::extended|boost::regex::icase);
-		} catch (boost::regex_error e) {
-			LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", reg.c_str());
-			result = false;  //Fail the check.
-			return;
-		}
-
-		fs::directory_iterator iter_end;
-		for (fs::directory_iterator itr(file_path); itr!=iter_end; ++itr) {
-			if (fs::is_regular_file(itr->status())) {
-				if (boost::regex_match(itr->path().filename().string(),regex)) {
-					result = true;
-					break;
-				}
-			}
-		}
-	}
-
-	//Checks if a masterlist variable is defined.
-	void conditional_evaler::CheckVar(bool& result, const string var) {
-		if (setVars->find(var) == setVars->end())
-			result = false;
-		else
-			result = true;
-		return;
-	}
-
-	//Checks if the given mod has the given checksum.
-	void conditional_evaler::CheckSum(bool& result, const uint32_t sum, string file) {
-		result = false;
-		if (parentGame == NULL)
-			return;
-		fs::path file_path;
-		uint32_t CRC;
-
-		GetPath(file_path,file);
-		boost::unordered_map<string,uint32_t>::iterator iter = fileCRCs->find(file);
-
-		if (iter != fileCRCs->end()) {
-			CRC = fileCRCs->at(file);
-		} else {
-			if (fs::exists(file_path / file))
-				CRC = GetCrc32(file_path / file);
-			else if (Item(file).IsGhosted(*parentGame))
-				CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
-			else 
-				return;
-
-			fileCRCs->emplace(file,CRC);
-		}
-
-		if (sum == CRC)
-			result = true;
-		return;
-	}
-
-	//Parser error reporter.
-	void conditional_evaler::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
-		if (errorBuffer == NULL || !errorBuffer->Empty())
-			return;
-		
-		ostringstream out;
-		out << what;
-		string expect = out.str();
-
-		string context(errorpos, min(errorpos +50, last));
-		boost::trim_left(context);
-
-		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
-		*errorBuffer = e;
-		LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
-		return;
-	}
-
-	////////////////////////////
 	// Conditional Grammar
 	////////////////////////////
 
@@ -707,133 +515,195 @@ namespace boss {
 		else if (andOr == "&&" && lhsCondition && !rhsCondition)
 			lhsCondition = false;
 	}
-
-
-	///////////////////////////////////
-	// Conditional Shorthand Grammar
-	///////////////////////////////////
-
-	//Shorthand grammar constructor.
-	shorthand_grammar::shorthand_grammar() 
-		: shorthand_grammar::base_type(messageString, "conditional message shorthand grammar"), 
-		  messageType(NONE) {
-
-		messageString %=
-			((messageItem | eoi) % messageItemDelimiter > eoi)
-			| charString;
-
-		messageItem =
-			(messageVersionCRC
-			>> messageModVariable
-			>> messageModString)[phoenix::bind(&shorthand_grammar::EvaluateConditionalMessage, this, _val, _1, _2, _3)];
-
-		messageItemDelimiter = lit('|') | lit(',');
-
-		messageVersionCRC %=
-			(
-				(lexeme[('"' >> (char_('=') | char_('>') | char_('<')) > +(char_ - '"') > lit('"'))] 
-				| +(xdigit - ':')) 
-				>> ':'
-			) 
-			| "";
-
-		messageModVariable %= 
-			lexeme[(char_('"') > +(char_ - '"') > char_('"'))]
-			| (char_('$') > +(char_ - '='))
-			| (no_case[char_('r')] >> lexeme[char_('"') > +(char_ - '"') > char_('"')]);
-
-		messageModString %=
-			(lit("=") >> file) 
-			| "";
-
-		charString %= lexeme[+(char_ - eol)]; //String, with no skipper.
-
-		file %= lexeme['"' > +(char_ - '"') > '"'];  //An OBSE plugin or a mod plugin.
-
-
-		
-		charString.name("charString");
-		messageString.name("messageString");
-		messageModVariable.name("messageKeyword");
-		messageVersionCRC.name("conditional shorthand version/CRC");
-		messageModString.name("conditional shorthand mod");
-		file.name("file");
-			
-		on_error<fail>(charString,			phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(messageString,		phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(messageVersionCRC,	phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(messageModString,	phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(messageModVariable,	phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(file,				phoenix::bind(&shorthand_grammar::SyntaxError, this, _1, _2, _3, _4));
+	
+	void conditional_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
+		errorBuffer = inErrorBuffer;
 	}
 
-	void shorthand_grammar::SetMessageType(uint32_t type) { 
-		messageType = type; 
+	void conditional_grammar::SetVarStore(boost::unordered_set<string> * varStore) {
+		setVars = varStore;
 	}
 
-	//Converts a hex string to an integer using BOOST's Spirit.Qi. Faster than a stringstream conversion.
-	uint32_t shorthand_grammar::HexStringToInt(string str) {
-		string::const_iterator begin, end;
-		begin = str.begin();
-		end = str.end();
-		uint32_t out;
-		qi::parse(begin, end, hex[phoenix::ref(out) = _1]);
-		return out;
+	void conditional_grammar::SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {
+		fileCRCs = CRCStore;
 	}
 
-	//Evaluate part of a shorthand conditional message.
-	//Most message types would make sense for the message to display if the condition evaluates to true. (eg. incompatibilities)
-	//Requirement messages need the condition to eval to false.
-	void shorthand_grammar::EvaluateConditionalMessage(string& message, string version, string file, const string mod) {
-		bool addItem = false;
+	void conditional_grammar::SetParentGame(const Game * game) {
+		parentGame = game;
+	}
 
-		if (file[0] == '\"') {  //It's a file.
-			file = file.substr(1,file.length()-2);  //Cut off the quotes.
-					
-			fs::path file_path;
-			GetPath(file_path,file);
-			if (fs::exists(file_path / file)) {  //File exists. Was a version or checksum given? 
-				
-				if (!version.empty()) {
-					bool versionCheck;
-					if (version[0] == '>' || version[0] == '=' || version[0] == '<')  //Version
-						CheckVersion(versionCheck, version + "|" + file);
-					else
-						CheckSum(versionCheck, HexStringToInt(version), file);
-					if (versionCheck && messageType != REQ)
-						addItem = true;
-					else if (!versionCheck && messageType == REQ)
-						addItem = true;
-				} else if (messageType != REQ)  //No version or checksum given. File exists, condition is true.
-					addItem = true;
-			} else if (messageType == REQ)  //File isn't installed.
-					addItem = true;
-		} else if (file[0] == '$') {  //File is actually a masterlist variable.
-			file = file.substr(1);  //Cut off the '$'.
-			bool varExists;
-			CheckVar(varExists, file);
-			if (varExists && messageType != REQ)
-				addItem = true;
-			else if (!varExists && messageType == REQ)
-				addItem = true;
-		} else {  //File is actually a regex.
-			file = file.substr(2,file.length()-3); //Cut off starting r" and ending ".
-			bool regexMatch;
-			CheckRegex(regexMatch, file);
-			if (regexMatch && messageType != REQ)
-				addItem = true;
-			else if (!regexMatch && messageType == REQ)
-				addItem = true;
-		}
-		if (addItem) {
-			if (!message.empty())
-				message += ", ";
-			if (!mod.empty())  //Was a valid mod name given?
-				message += "\"" + mod + "\"";
+	//Returns the true path based on what type of file or keyword it is.
+	void conditional_grammar::GetPath(fs::path& file_path, string& file) {
+		if (file == "OBSE" || file == "FOSE" || file == "NVSE" || file == "SKSE" || file == "MWSE") {
+			file_path = parentGame->GameFolder();
+			file = parentGame->SEExecutable().filename().string();
+		} else if (file == "TES3" || file == "TES4" || file == "TES5" || file == "FO3" || file == "FONV") {
+			file_path = parentGame->GameFolder();
+			file = parentGame->Executable().filename().string();
+		} else if (file == "BOSS") {
+			file_path = boss_path;
+			file = "BOSS.exe";
+		} else {
+			fs::path p(file);
+			if (to_lower_copy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos && fs::exists(parentGame->SEPluginsFolder()))
+				file_path = parentGame->SEPluginsFolder();
 			else
-				message += "\"" + file + "\"";
+				file_path = parentGame->DataFolder();
 		}
 	}
+
+	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
+	void conditional_grammar::CheckVersion(bool& result, const string var) {
+		result = false;
+		if (parentGame == NULL)
+			return;
+
+		char comp = var[0];
+		size_t pos = var.find("|") + 1;
+		Version givenVersion = var.substr(1,pos-2);
+		string file = var.substr(pos);
+		fs::path file_path;
+
+		GetPath(file_path,file);
+
+		Item tempItem = Item(file);
+		Version trueVersion;
+		if (tempItem.Exists(*parentGame)) {
+			trueVersion = tempItem.GetVersion(*parentGame);
+		} else if (fs::exists(file_path / file))
+			trueVersion = Version(file_path / file);
+		else
+			return;
+
+		//Note that this string comparison is unsafe (may give incorrect result).
+		switch (comp) {
+		case '>':
+			if (trueVersion > givenVersion)
+				result = true;
+			break;
+		case '<':
+			if (trueVersion < givenVersion)
+				result = true;
+			break;
+		case '=':
+			if (trueVersion == givenVersion)
+				result = true;
+			break;
+		}
+		return;
+	}
+
+	//Checks if the given file exists.
+	void conditional_grammar::CheckFile(bool& result, string file) {
+		result = false;
+		if (parentGame == NULL)
+			return;
+		fs::path file_path;
+		GetPath(file_path,file);
+		result = Item(file).Exists(*parentGame);
+	}
+
+	//Checks if a file which matches the given regex exists.
+	//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
+	//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
+	//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
+	//be removed when getting the path and filename.
+	void conditional_grammar::CheckRegex(bool& result, string reg) {
+		result = false;
+		fs::path file_path;
+		//If the regex includes '/' or '\\' then it includes folders. Need to split the regex into the parent path and the filename.
+		//No reason for the regex to include both.
+		if (reg.find("/") != string::npos) {
+			size_t pos1 = reg.rfind("/");
+			string p = reg.substr(0,pos1);
+			reg = reg.substr(pos1+1);
+			file_path = fs::path(p);
+		} else if (reg.find("\\\\") != string::npos) {
+			size_t pos1 = reg.rfind("\\\\");
+			string p = reg.substr(0,pos1);
+			reg = reg.substr(pos1+2);
+			boost::algorithm::replace_all(p,"\\\\","\\");
+			file_path = fs::path(p);
+		} else if (to_lower_copy(fs::path(reg).extension().string()) == ".dll" && fs::exists(parentGame->SEPluginsFolder()))
+			file_path = parentGame->SEPluginsFolder();
+		else
+			file_path = parentGame->DataFolder();
+		boost::regex regex;
+		try {
+			regex = boost::regex(reg, boost::regex::extended|boost::regex::icase);
+		} catch (boost::regex_error e) {
+			LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", reg.c_str());
+			result = false;  //Fail the check.
+			return;
+		}
+
+		fs::directory_iterator iter_end;
+		for (fs::directory_iterator itr(file_path); itr!=iter_end; ++itr) {
+			if (fs::is_regular_file(itr->status())) {
+				if (boost::regex_match(itr->path().filename().string(),regex)) {
+					result = true;
+					break;
+				}
+			}
+		}
+	}
+
+	//Checks if a masterlist variable is defined.
+	void conditional_grammar::CheckVar(bool& result, const string var) {
+		if (setVars->find(var) == setVars->end())
+			result = false;
+		else
+			result = true;
+		return;
+	}
+
+	//Checks if the given mod has the given checksum.
+	void conditional_grammar::CheckSum(bool& result, const uint32_t sum, string file) {
+		result = false;
+		if (parentGame == NULL)
+			return;
+		fs::path file_path;
+		uint32_t CRC;
+
+		GetPath(file_path,file);
+		boost::unordered_map<string,uint32_t>::iterator iter = fileCRCs->find(file);
+
+		if (iter != fileCRCs->end()) {
+			CRC = fileCRCs->at(file);
+		} else {
+			if (fs::exists(file_path / file))
+				CRC = GetCrc32(file_path / file);
+			else if (Item(file).IsGhosted(*parentGame))
+				CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
+			else 
+				return;
+
+			fileCRCs->emplace(file,CRC);
+		}
+
+		if (sum == CRC)
+			result = true;
+		return;
+	}
+
+	//Parser error reporter.
+	void conditional_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
+		if (errorBuffer == NULL || !errorBuffer->Empty())
+			return;
+		
+		ostringstream out;
+		out << what;
+		string expect = out.str();
+
+		string context(errorpos, min(errorpos +50, last));
+		boost::trim_left(context);
+
+		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
+		*errorBuffer = e;
+		LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
+		return;
+	}
+
 
 	////////////////////////////
 	//Ini Grammar.

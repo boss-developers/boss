@@ -338,7 +338,7 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 
 void UserRulesEditorFrame::OnSelectModInMasterlist(wxTreeEvent& event) {
 	//Need to find item in masterlist. :( Why can't tree lists store index number?
-	size_t pos = masterlist.FindItem(MasterlistModsList->GetItemText(event.GetItem()).ToStdString());
+	size_t pos = masterlist.FindItem(MasterlistModsList->GetItemText(event.GetItem()).ToStdString(), MOD);
 	if (pos != masterlist.Items().size()) {
 		string messagesOut = "";
 		vector<Message> messages = masterlist.ItemAt(pos).Messages();
@@ -563,11 +563,16 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 	if (!SortModsCheckBox->IsChecked())
 		newRule.Key(FOR);
 	else {
-		size_t pos = masterlist.FindItem(newRule.Object());
-		if (pos != masterlist.Items().size())  //Mod in masterlist.
+		if (Item(newRule.Object()).IsGroup())
 			newRule.Key(OVERRIDE);
-		else
-			newRule.Key(ADD);
+		else {
+			size_t pos = masterlist.FindItem(newRule.Object(), MOD);
+			if (pos != masterlist.Items().size())  //Mod in masterlist.
+				newRule.Key(OVERRIDE);
+			else
+				newRule.Key(ADD);
+		}
+			
 		
 		if (SortModOption->GetValue()) {
 			RuleLine newLine;
@@ -805,7 +810,7 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inG
 	size_t size = rules.size();
 	for (size_t i=0;i<size;i++) {
 		if (rules[i].Key() == ADD) {
-			size_t pos = game.masterlist.FindItem(rules[i].Object());
+			size_t pos = game.masterlist.FindItem(rules[i].Object(), MOD);
 			if (pos != game.masterlist.Items().size())  //Mod in masterlist.
 				rules[i].Enabled(false);
 		}
@@ -882,7 +887,7 @@ void RuleListFrameClass::OnToggleRule(wxCommandEvent& event) {
 		Rule rule = game.userlist.RuleAt(id);
 
 		rule.Enabled(checked);
-		if (checked && rule.Key() == ADD && game.masterlist.FindItem(rule.Object()) != game.masterlist.Items().size())
+		if (checked && rule.Key() == ADD && game.masterlist.FindItem(rule.Object(), MOD) != game.masterlist.Items().size())
 			rule.Key(OVERRIDE);
 		game.userlist.Replace(id, rule);
 	}

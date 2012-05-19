@@ -812,7 +812,7 @@ namespace boss {
 		currentEncoding = 0;
 	}
 
-	void Transcoder::SetEncoding(uint32_t inEncoding) {
+	void Transcoder::SetEncoding(const uint32_t inEncoding) {
 		if (inEncoding != 1252)
 			return;
 
@@ -830,12 +830,12 @@ namespace boss {
 		return currentEncoding;
 	}
 
-	string Transcoder::Utf8ToEnc(string inString) {
+	string Transcoder::Utf8ToEnc(const string inString) {
 		stringstream outString;
-		string::iterator strIter = inString.begin();
+		string::const_iterator strIter = inString.begin();
 		//I need to use a UTF-8 string iterator. See UTF-CPP for usage.
 		try {
-			utf8::iterator<string::iterator> iter(strIter, strIter, inString.end());
+			utf8::iterator<string::const_iterator> iter(strIter, strIter, inString.end());
 			for (iter; iter.base() != inString.end(); ++iter) {
 				boost::unordered_map<uint32_t, char>::iterator mapIter = utf8toEnc.find(*iter);
 				if (mapIter != utf8toEnc.end())
@@ -849,9 +849,9 @@ namespace boss {
 		return outString.str();
 	}
 
-	string Transcoder::EncToUtf8(string inString) {
+	string Transcoder::EncToUtf8(const string inString) {
 		string outString;
-		for (string::iterator iter = inString.begin(); iter != inString.end(); ++iter) {
+		for (string::const_iterator iter = inString.begin(); iter != inString.end(); ++iter) {
 			boost::unordered_map<char, uint32_t>::iterator mapIter = encToUtf8.find(*iter);
 			if (mapIter != encToUtf8.end()) {
 				try {
@@ -874,8 +874,7 @@ namespace boss {
 	////////////////////////////////
 
 	BossLog::BossLog() 
-		: recognised(0), unrecognised(0), inactive(0), messages(0), warnings(0), errors(0) {
-		logFormat = HTML;
+		: recognised(0), unrecognised(0), inactive(0), messages(0), warnings(0), errors(0), logFormat(HTML) {
 		updaterOutput.SetFormat(HTML);
 		criticalError.SetFormat(HTML);
 		userRules.SetFormat(HTML);
@@ -884,9 +883,8 @@ namespace boss {
 		unrecognisedPlugins.SetFormat(HTML);
 	}
 
-	BossLog::BossLog(uint32_t format) 
-		: recognised(0), unrecognised(0), inactive(0), messages(0), warnings(0), errors(0) {
-		logFormat = format;
+	BossLog::BossLog(const uint32_t format) 
+		: recognised(0), unrecognised(0), inactive(0), messages(0), warnings(0), errors(0), logFormat(format) {
 		updaterOutput.SetFormat(format);
 		criticalError.SetFormat(format);
 		userRules.SetFormat(format);
@@ -1963,7 +1961,7 @@ namespace boss {
 		return out.str();
 	}
 
-	void BossLog::SetFormat(uint32_t format) {
+	void BossLog::SetFormat(const uint32_t format) {
 		logFormat = format;
 		updaterOutput.SetFormat(format);
 		criticalError.SetFormat(format);
@@ -1973,7 +1971,7 @@ namespace boss {
 		unrecognisedPlugins.SetFormat(format);
 	}
 
-	void BossLog::Save(fs::path file, const bool overwrite) {
+	void BossLog::Save(const fs::path file, const bool overwrite) {
 		if (fs::exists(file))
 			recognisedHasChanged = HasRecognisedListChanged(file);
 

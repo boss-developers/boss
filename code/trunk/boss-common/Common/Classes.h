@@ -84,13 +84,13 @@ namespace boss {
 		string conditions;
 	public:
 		conditionalData();
-		conditionalData(string inData, string inConditions);
+		conditionalData(const string inData, const string inConditions);
 
 		string Data() const;
 		string Conditions() const;
 
-		void Data(string inData);
-		void Conditions(string inConditions);
+		void Data(const string inData);
+		void Conditions(const string inConditions);
 
 		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer, const Game& parentGame);
 	};
@@ -108,14 +108,12 @@ namespace boss {
 		uint32_t key;
 	public:
 		Message();
-		Message(uint32_t inKey, string inData);
+		Message(const uint32_t inKey, const string inData);
 
 		uint32_t Key() const;
-		void Key(uint32_t inKey);
+		void Key(const uint32_t inKey);
 
 		string KeyToString() const;		//Has HTML-safe output.
-
-		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer, const Game& parentGame);
 	};
 
 	class BOSS_COMMON Item : public conditionalData {
@@ -127,16 +125,16 @@ namespace boss {
 	public:
 
 		Item		();
-		Item		(string inName);
-		Item		(string inName, uint32_t inType);
-		Item		(string inName, uint32_t inType, vector<Message> inMessages);
+		Item		(const string inName);
+		Item		(const string inName, const uint32_t inType);
+		Item		(const string inName, const uint32_t inType, const vector<Message> inMessages);
 
 		vector<Message> Messages() const;
 		uint32_t Type() const;
 		string Name() const;
-		void Messages(vector<Message> inMessages);
-		void Type(uint32_t inType);
-		void Name(string inName);
+		void Messages(const vector<Message> inMessages);
+		void Type(const uint32_t inType);
+		void Name(const string inName);
 
 		bool	IsPlugin	() const;
 		bool	IsGroup		() const;
@@ -149,7 +147,7 @@ namespace boss {
 		time_t	GetModTime	(const Game& parentGame) const;			//Can throw exception.
 
 		void	UnGhost		(const Game& parentGame) const;			//Can throw exception.
-		void	SetModTime	(const Game& parentGame, time_t modificationTime) const;			//Can throw exception.
+		void	SetModTime	(const Game& parentGame, const time_t modificationTime) const;			//Can throw exception.
 
 		void InsertMessage(size_t pos, Message item);
 		void ClearMessages();
@@ -170,19 +168,18 @@ namespace boss {
 		boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos);
 	public:
 				ItemList();
-		void	Load			(const Game& parentGame, fs::path path);	//Load by scanning path. If path is a directory, it scans it for plugins. 
+		void	Load			(const Game& parentGame, const fs::path path);	//Load by scanning path. If path is a directory, it scans it for plugins. 
 																	//If path is a file, it parses it using the modlist grammar.
 																	//May throw exception on fail.
-		void	Save			(fs::path file, fs::path oldFile);	//Output to file in MF2. Backs up any existing file to oldFile.
+		void	Save			(const fs::path file, const fs::path oldFile);	//Output to file in MF2. Backs up any existing file to oldFile.
 																	//Throws exception on fail.
-		void	SavePluginNames(const Game& parentGame, fs::path file, bool activeOnly, bool doEncodingConversion);	//Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
+		void	SavePluginNames(const Game& parentGame, const fs::path file, const bool activeOnly, const bool doEncodingConversion);	//Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
 		void	EvalConditions(const Game& parentGame);					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
 		void	EvalRegex(const Game& parentGame);
 		void	ApplyMasterPartition(const Game& parentGame);				//Puts all master files before other plugins. Can throw exception.
 		
-		size_t	FindItem		(string name) const;	//Find the position of the item with name 'name'. Case-insensitive.
-		size_t	FindLastItem	(string name) const;	//Find the last item with the name 'name'. Case-insensitive.
-		size_t	FindGroupEnd	(string name) const;	//Find the end position of the group with the given name. Case-insensitive.
+		size_t	FindItem		(const string name, const uint32_t type) const;	//Find the position of the item with name 'name'. Case-insensitive.
+		size_t	FindLastItem	(const string name, const uint32_t type) const;	//Find the last item with the name 'name'. Case-insensitive.
 		size_t	GetLastMasterPos(const Game& parentGame) const;				 //Can throw exception.
 		size_t	GetNextMasterPos(const Game& parentGame, size_t currPos) const; //Can throw exception.
 
@@ -195,19 +192,19 @@ namespace boss {
 		vector<MasterlistVar>					Variables() const;
 		boost::unordered_map<string,uint32_t>	FileCRCs() const;
 
-		void	Items(vector<Item> items);
-		void	ErrorBuffer(ParsingError buffer);
-		void	GlobalMessageBuffer(vector<Message> buffer);
-		void	LastRecognisedPos(size_t pos);
-		void	Variables(vector<MasterlistVar> variables);
-		void	FileCRCs(boost::unordered_map<string,uint32_t> crcs);
+		void	Items(const vector<Item> items);
+		void	ErrorBuffer(const ParsingError buffer);
+		void	GlobalMessageBuffer(const vector<Message> buffer);
+		void	LastRecognisedPos(const size_t pos);
+		void	Variables(const vector<MasterlistVar> variables);
+		void	FileCRCs(const boost::unordered_map<string,uint32_t> crcs);
 		
 		void Clear();
-		void Erase(size_t pos);
-		void Erase(size_t startPos, size_t endPos);
-		void Insert(size_t pos, vector<Item> source, size_t sourceStart, size_t sourceEnd);
-		void Insert(size_t pos, Item item);
-		void Move(size_t newPos, Item item);  //Adds the item if it isn't already present.
+		void Erase(const size_t pos);
+		void Erase(const size_t startPos, const size_t endPos);
+		void Insert(const size_t pos, const vector<Item> source, size_t sourceStart, size_t sourceEnd);
+		void Insert(const size_t pos, const Item item);
+		void Move(size_t newPos, const Item item);  //Adds the item if it isn't already present.
 	};
 
 	//////////////////////////////
@@ -221,7 +218,7 @@ namespace boss {
 		string	object;
 	public:
 				RuleLine			();
-				RuleLine			(uint32_t inKey, string inObject);
+				RuleLine			(const uint32_t inKey, const string inObject);
 
 		bool	IsObjectMessage		() const;
 		string	KeyToString			() const;		//Has HTML-safe output.
@@ -230,8 +227,8 @@ namespace boss {
 		uint32_t Key() const;
 		string Object() const;
 
-		void Key(uint32_t inKey);
-		void Object(string inObject);
+		void Key(const uint32_t inKey);
+		void Object(const string inObject);
 	};
 
 	class BOSS_COMMON Rule : public RuleLine {
@@ -245,10 +242,10 @@ namespace boss {
 		bool Enabled() const;
 		vector<RuleLine> Lines() const;
 
-		RuleLine LineAt(size_t pos) const;
+		RuleLine LineAt(const size_t pos) const;
 
-		void Enabled(bool e);
-		void Lines(vector<RuleLine> inLines);
+		void Enabled(const bool e);
+		void Lines(const vector<RuleLine> inLines);
 	};
 
 	class BOSS_COMMON RuleList {
@@ -259,21 +256,21 @@ namespace boss {
 		void CheckSyntax(const Game& parentGame);  //Rule checker function, checks for syntax (not parsing) errors.
 	public:
 		RuleList();
-		void 	Load	(const Game& parentGame, fs::path file);		//Throws exception on fail.
-		void	Save	(fs::path file);		//Throws exception on fail.
-		size_t	FindRule(string ruleObject, bool onlyEnabled) const;
+		void 	Load	(const Game& parentGame, const fs::path file);		//Throws exception on fail.
+		void	Save	(const fs::path file);		//Throws exception on fail.
+		size_t	FindRule(const string ruleObject, const bool onlyEnabled) const;
 
 		vector<Rule> Rules() const;
 		vector<ParsingError> ErrorBuffer() const;
 
-		Rule RuleAt(size_t pos) const;
+		Rule RuleAt(const size_t pos) const;
 		
-		void Rules(vector<Rule> inRules);
-		void ErrorBuffer(vector<ParsingError>);
+		void Rules(const vector<Rule> inRules);
+		void ErrorBuffer(const vector<ParsingError>);
 
-		void Erase(size_t pos);
-		void Insert(size_t pos, Rule rule);
-		void Replace(size_t pos, Rule rule);
+		void Erase(const size_t pos);
+		void Insert(const size_t pos, const Rule rule);
+		void Replace(const size_t pos, const Rule rule);
 
 		void Clear();
 	};
@@ -288,18 +285,18 @@ namespace boss {
 		ParsingError errorBuffer;
 		boost::unordered_map<string, string> iniSettings;
 
-		string	GetIniGameString	(uint32_t game) const;
+		string	GetIniGameString	(const uint32_t game) const;
 		string	GetLogFormatString	() const;
 		string	GetLanguageString	() const;
 		void	ApplyIniSettings	();
 	public:
-		void	Load(fs::path file);		//Throws exception on fail.
-		void	Save(fs::path file, uint32_t currentGameId);		//Throws exception on fail.
+		void	Load(const fs::path file);		//Throws exception on fail.
+		void	Save(const fs::path file, const uint32_t currentGameId);		//Throws exception on fail.
 
 		ParsingError ErrorBuffer() const;
-		void ErrorBuffer(ParsingError buffer);
+		void ErrorBuffer(const ParsingError buffer);
 
-		string GetValue(string setting) const;
+		string GetValue(const string setting) const;
 	};
 }
 #endif

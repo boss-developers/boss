@@ -426,7 +426,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 				try {
 					string localDate, remoteDate;
 					uint32_t localRevision, remoteRevision;
-					mUpdater.progDialog = progDia;
+					mUpdater.ProgDialog(progDia);
 					mUpdater.Update(game.Id(), game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
 					if (localRevision == remoteRevision) {
 						bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
@@ -891,7 +891,7 @@ void MainFrame::Update(string updateVersion) {
 	string file = "BOSS Installer.exe";
 	GUIBOSSUpdater bUpdater;
 	try {
-		bUpdater.progDialog = progDia;
+		bUpdater.ProgDialog(progDia);
 		bUpdater.GetUpdate(fs::path(file), updateVersion);
 
 		//Remind the user to run the installer.
@@ -1016,8 +1016,8 @@ int GUIMlistUpdater::progress(boss::Updater * updater, double dlFraction, double
 	int currentProgress = (int)floor(dlFraction * 10);
 	if (currentProgress == 1000)
 		--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
-	wxProgressDialog* progress = (wxProgressDialog*)updater->progDialog;
-	bool cont = progress->Update(currentProgress, "Downloading: " + updater->targetFile);
+	wxProgressDialog* progress = (wxProgressDialog*)updater->ProgDialog();
+	bool cont = progress->Update(currentProgress, "Downloading: " + updater->TargetFile());
 	if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
 		uint32_t ans = wxMessageBox(wxT("Are you sure you want to cancel?"), wxT("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
 		if (ans == wxYES)
@@ -1031,8 +1031,8 @@ int GUIBOSSUpdater::progress(boss::Updater * updater, double dlFraction, double 
 	int currentProgress = (int)floor(dlFraction * 10);
 	if (currentProgress == 1000)
 		--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
-	wxProgressDialog* progress = (wxProgressDialog*)updater->progDialog;
-	bool cont = progress->Update(currentProgress, "Downloading: " + updater->targetFile);
+	wxProgressDialog* progress = (wxProgressDialog*)updater->ProgDialog();
+	bool cont = progress->Update(currentProgress, "Downloading: " + updater->TargetFile());
 	if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
 		uint32_t ans = wxMessageBox(wxT("Are you sure you want to cancel?"), wxT("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
 		if (ans == wxYES)
