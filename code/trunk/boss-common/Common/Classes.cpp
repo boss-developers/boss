@@ -331,8 +331,10 @@ namespace boss {
 				return true;
 			else if (!item1.IsMasterFile(parentGame) && item2.IsMasterFile(parentGame))
 				return false;
-			else
+			else if (parentGame.GetLoadOrderMethod() == LOMETHOD_TIMESTAMP)
 				return (difftime(item1.GetModTime(parentGame), item2.GetModTime(parentGame)) < 0);
+			else
+				return false;
 		}
 	};
 
@@ -341,6 +343,7 @@ namespace boss {
 	void	ItemList::Load				(const Game& parentGame, const fs::path path) {
 		if (fs::exists(path) && fs::is_directory(path)) {
 			LOG_DEBUG("Reading user mods...");
+			size_t max;
 			if (parentGame.GetLoadOrderMethod() == LOMETHOD_TEXTFILE) {
 				/*Game uses the new load order system.
 
@@ -355,28 +358,24 @@ namespace boss {
 				for though.
 				*/
 				LOG_INFO("Using textfile-based load order mechanism.");
-				size_t max;
 				if (fs::exists(parentGame.LoadOrderFile()))  //If the loadorder.txt exists, get the active plugin load order from that.
 					Load(parentGame, parentGame.LoadOrderFile());
-				else { 
-					if (parentGame.Id() == SKYRIM) {
-						//First add Skyrim.esm.
-						items.push_back(Item("Skyrim.esm"));
-						//Now check if plugins.txt exists. If so, add any plugins in it that aren't in loadorder.
-						ItemList plugins;
-						if (fs::exists(parentGame.ActivePluginsFile())) {
-							plugins.Load(parentGame, parentGame.ActivePluginsFile());
-							vector<Item> pluginsVec = plugins.Items();
-							max = pluginsVec.size();
-							for (size_t i=0; i < max; i++) {
-								if (pluginsVec[i].Name() != "Skyrim.esm")
-									items.push_back(pluginsVec[i]);
-							}
-						}
-						//Add Update.esm if not already present.
-						if (Item("Update.esm").Exists(parentGame) && FindItem("Update.esm", MOD) == items.size())
-							Insert(GetLastMasterPos(parentGame) + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
+				else if (parentGame.Id() == SKYRIM) {
+					//First add Skyrim.esm.
+					items.push_back(Item("Skyrim.esm"));
+					//Now check if plugins.txt exists. If so, add any plugins in it that aren't in loadorder.
+					ItemList plugins;
+					if (fs::exists(parentGame.ActivePluginsFile())) {
+						plugins.Load(parentGame, parentGame.ActivePluginsFile());
+						vector<Item> pluginsVec = plugins.Items();
+						for (size_t i=0, max = pluginsVec.size(); i < max; i++)
+							items.push_back(pluginsVec[i]);
 					}
+					//Now make sure that Skyrim.esm is first.
+					Move(0, Item("Skyrim.esm"));
+					//Add Update.esm if not already present.
+					if (Item("Update.esm").Exists(parentGame))
+						Move(GetLastMasterPos(parentGame) + 1, Item("Update.esm"));
 				}
 				//Then scan through loadorder, removing any plugins that aren't in the data folder.
 				vector<Item>::iterator itemIter = items.begin();
@@ -386,42 +385,27 @@ namespace boss {
 					else
 						++itemIter;
 				}
-				max = items.size();
-				//Now scan through Data folder. Add any plugins that aren't already in loadorder to loadorder, at the end.
-				for (fs::directory_iterator itr(parentGame.DataFolder()); itr!=fs::directory_iterator(); ++itr) {
-					const fs::path filename = itr->path().filename();
-					const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
-					if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
-						LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());
-						//Add file to modlist. If the filename has a '.ghost' extension, remove it.
-						Item tempItem;
-						if (ext == ".ghost")
-							tempItem = Item(filename.stem().string());
-						else
-							tempItem = Item(filename.string());
-						if (FindItem(tempItem.Name(), MOD) == max) {  //If the plugin is not in loadorder, add it.
-							Insert(max, tempItem);
-							max++;
-						}
-					}
-				}
-			} else {  //Timestamp-based.
-				for (fs::directory_iterator itr(path); itr!=fs::directory_iterator(); ++itr) {
-					const fs::path filename = itr->path().filename();
-					const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
-					if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
-						LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());
-						//Add file to modlist. If the filename has a '.ghost' extension, remove it.
-						Item tempItem;
-						if (ext == ".ghost")
-							tempItem = Item(filename.stem().string());
-						else
-							tempItem = Item(filename.string());
-						items.push_back(tempItem);
-					}
-				}
-				LOG_DEBUG("Reading user mods done: %" PRIuS " total mods found.", items.size());
 			}
+			max = items.size();
+			//Now scan through Data folder. Add any plugins that aren't already in loadorder to loadorder, at the end.
+			for (fs::directory_iterator itr(parentGame.DataFolder()); itr!=fs::directory_iterator(); ++itr) {
+				const fs::path filename = itr->path().filename();
+				const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
+				if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
+					LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());
+					//Add file to modlist. If the filename has a '.ghost' extension, remove it.
+					Item tempItem;
+					if (ext == ".ghost")
+						tempItem = Item(filename.stem().string());
+					else
+						tempItem = Item(filename.string());
+					if (parentGame.GetLoadOrderMethod() == LOMETHOD_TEXTFILE && FindItem(tempItem.Name(), MOD) == max) {  //If the plugin is not in loadorder, add it.
+						items.push_back(tempItem);
+						max++;
+					}
+				}
+			}
+			LOG_DEBUG("Reading user mods done: %" PRIuS " total mods found.", items.size());
 			itemComparator ic(parentGame);
 			sort(items.begin(),items.end(), ic);  //Does this work?
 		} else if (path == parentGame.LoadOrderFile() || path == parentGame.ActivePluginsFile()) {

@@ -533,23 +533,17 @@ namespace boss {
 	}
 
 	//Returns the true path based on what type of file or keyword it is.
-	void conditional_grammar::GetPath(fs::path& file_path, string& file) {
-		if (file == "OBSE" || file == "FOSE" || file == "NVSE" || file == "SKSE" || file == "MWSE") {
-			file_path = parentGame->GameFolder();
-			file = parentGame->SEExecutable().filename().string();
-		} else if (file == "TES3" || file == "TES4" || file == "TES5" || file == "FO3" || file == "FONV") {
-			file_path = parentGame->GameFolder();
-			file = parentGame->Executable().filename().string();
-		} else if (file == "BOSS") {
-			file_path = boss_path;
-			file = "BOSS.exe";
-		} else {
-			fs::path p(file);
-			if (to_lower_copy(p.extension().string()) == ".dll" && p.string().find("/") == string::npos && p.string().find("\\") == string::npos && fs::exists(parentGame->SEPluginsFolder()))
-				file_path = parentGame->SEPluginsFolder();
-			else
-				file_path = parentGame->DataFolder();
-		}
+	fs::path conditional_grammar::GetPath(const string file) {
+		if (file == "OBSE" || file == "FOSE" || file == "NVSE" || file == "SKSE" || file == "MWSE")
+			return parentGame->SEExecutable();
+		else if (file == "TES3" || file == "TES4" || file == "TES5" || file == "FO3" || file == "FONV")
+			return parentGame->Executable();
+		else if (file == "BOSS")
+			return boss_path / "BOSS.exe";
+		else if (boost::iequals(fs::path(file).extension().string(), ".dll") && file.find('/') == string::npos && file.find('\\') == string::npos && fs::exists(parentGame->SEPluginsFolder()))
+			return parentGame->SEPluginsFolder() / file;
+		else
+			return parentGame->DataFolder() / file;
 	}
 
 	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
@@ -562,18 +556,18 @@ namespace boss {
 		size_t pos = var.find("|") + 1;
 		Version givenVersion = var.substr(1,pos-2);
 		string file = var.substr(pos);
-		fs::path file_path;
 
-		GetPath(file_path,file);
-
-		Item tempItem = Item(file);
+		Item tempItem(file);
 		Version trueVersion;
-		if (tempItem.Exists(*parentGame)) {
+		if (tempItem.Exists(*parentGame))
 			trueVersion = tempItem.GetVersion(*parentGame);
-		} else if (fs::exists(file_path / file))
-			trueVersion = Version(file_path / file);
-		else
-			return;
+		else {
+			fs::path filePath = GetPath(file);
+			if (fs::exists(filePath))
+				trueVersion = Version(filePath);
+			else
+				return;
+		}
 
 		//Note that this string comparison is unsafe (may give incorrect result).
 		switch (comp) {
@@ -598,9 +592,7 @@ namespace boss {
 		result = false;
 		if (parentGame == NULL)
 			return;
-		fs::path file_path;
-		GetPath(file_path,file);
-		result = Item(file).Exists(*parentGame);
+		result = fs::exists(GetPath(file));
 	}
 
 	//Checks if a file which matches the given regex exists.
@@ -662,19 +654,17 @@ namespace boss {
 		result = false;
 		if (parentGame == NULL)
 			return;
-		fs::path file_path;
 		uint32_t CRC;
-
-		GetPath(file_path,file);
+		fs::path file_path = GetPath(file);
 		boost::unordered_map<string,uint32_t>::iterator iter = fileCRCs->find(file);
 
 		if (iter != fileCRCs->end()) {
 			CRC = fileCRCs->at(file);
 		} else {
-			if (fs::exists(file_path / file))
-				CRC = GetCrc32(file_path / file);
+			if (fs::exists(file_path))
+				CRC = GetCrc32(file_path);
 			else if (Item(file).IsGhosted(*parentGame))
-				CRC = GetCrc32(file_path / fs::path(file + ".ghost"));
+				CRC = GetCrc32(fs::path(file_path.string() + ".ghost"));
 			else 
 				return;
 

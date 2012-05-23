@@ -2,25 +2,49 @@
 <meta charset="utf-8">
 <title>BOSS API ReadMe</title>
 <style>
-	body {font-family:Calibri,Arial,Verdana,sans-serif;}
+	body {font-family:Helvetica,sans-serif;font-size:10pt;}
+	h1 + p {text-align:center;}
 	li {margin-bottom:10px;}
 	li ul, li ol {margin-top:0.4em;}
 	q {font-style:italic;}
 	code {display:inline-block; padding:2px 5px; background:#eee;}
-	td, th {border:1px solid #ccc; padding: 5px; vertical-align:top;}
-	table {border-collapse:collapse; margin:1em;}
-	thead {font-weight:bold}
+	td, th {border:1px solid #ddd; padding: 5px; vertical-align:top;}
+	table {border-collapse:collapse; margin:1em;background:#FafaFf;}
+	thead {font-weight:bold;background:#99CCFF;}
 	code.box {line-height:20px; white-space:pre; margin:1em 0 0 3em; display:table; padding:5px 10px;}
 	ol li ol {list-style:lower-alpha;}
+	ol li ol li ol {list-style:lower-roman;}
 	blockquote {background:#E6E6FA; display:table; padding:5px 30px 5px 10px;}
-	h1 { text-align:center;}
-	h2 {margin-top:3em;}
-	h3 {margin-top:2em;}
+	h1 {text-align:center;font-size:24pt;}
+	h2 {margin-top:3em;font-size:20pt;}
+	h3 {margin-top:2em;font-size:16pt;}
+	h4 {margin-top:2em;font-size:12pt;}
 	a:link {text-decoration:none;}
 	a:hover {text-decoration:underline;}
 	
-	ul {margin-bottom:2em;}
+	ul.errorMessages > li {margin-bottom:1.4em;}
+	td.t {background:#90ff90;text-align:center;}
+	td.c {background:#ff9090;text-align:center;}
+	td.t:after {content: '\2713';}
+	td.c:after {content: '\2717';}
+	img {border:0;}
+	.slideshow img {opacity:0; 
+		position:absolute;
+		transition: opacity 1.5s;
+		-moz-transition: opacity 1.5s;
+		-webkit-transition: opacity 1.5s;
+		-o-transition: opacity 1.5s;}
+	.slideshow img:first-child {opacity:1;}
+	figcaption {font-style:italic; margin-bottom:2em;}
+	tr.inactive {color:#888;}
+ tr.inactive td.c, tr.inactive td.t {background:#E3E3E3;}
+	code.box {margin-left:0em;}
+	span[title] {border-bottom: 1px dotted; font-family: sans-serif; cursor:help;}
+	dt {margin-bottom:0.5em; margin-top:1em; font-style:italic;}
+	dd {margin-bottom:0.8em;}
 	abbr {cursor:help;}
+	
+	ul {margin-bottom:2em;}
 </style>
 
 <h1>BOSS API Readme</h1>

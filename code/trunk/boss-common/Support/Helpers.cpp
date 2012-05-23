@@ -195,7 +195,6 @@ namespace boss {
 	Version::Version(const fs::path file) {
 		LOG_TRACE("extracting version from '%s'", file.string().c_str());
 #if _WIN32 || _WIN64
-		// WARNING - NOT VERY SAFE, SEE http://www.boost.org/doc/libs/1_46_1/libs/filesystem/v3/doc/reference.html#current_path
 		DWORD dummy = 0;
 		DWORD size = GetFileVersionInfoSize(file.wstring().c_str(), &dummy);
 

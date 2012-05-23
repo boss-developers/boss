@@ -811,8 +811,15 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inG
 	for (size_t i=0;i<size;i++) {
 		if (rules[i].Key() == ADD) {
 			size_t pos = game.masterlist.FindItem(rules[i].Object(), MOD);
-			if (pos != game.masterlist.Items().size())  //Mod in masterlist.
+			if (pos != game.masterlist.Items().size()) {  //Mod in masterlist.
 				rules[i].Enabled(false);
+				wxMessageBox(wxString::Format(
+						wxT("The rule sorting the unrecognised plugin \"" + rules[i].Object() + "\" has been disabled as the plugin is now recognised. If you wish to override its position in the masterlist, re-enable the rule.")
+					),
+					wxT("BOSS: Rule Disabled"),
+					wxOK | wxICON_ERROR,
+					NULL);
+					}
 		}
 	}
 	game.userlist.Rules(rules);

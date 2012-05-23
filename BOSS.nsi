@@ -310,7 +310,8 @@
 		File "data\boss-common\BOSS API ReadMe.html"
 		File "data\boss-common\BOSS Masterlist Syntax.html"
 		File "data\boss-common\BOSS ReadMe.html"
-		File "data\boss-common\BOSS User Rules ReadMe.html"
+		File "data\boss-common\BOSS Userlist Syntax.html"
+		File "data\boss-common\BOSS Version History.html"
 		File "data\boss-common\Licenses.txt"
 		
 		;Now install readme images.
@@ -323,6 +324,8 @@
 		File "data\boss-common\images\GUI-User-Rules-Manager.png"
 		File "data\boss-common\images\HTML-Log.png"
 		File "data\boss-common\images\Userlist.png"
+		File "data\boss-common\images\Ini.png"
+		File "data\boss-common\images\CLI.png"
 		
 		;Add Start Menu shortcuts. Set out path back to $INSTDIR otherwise the shortcuts start in the wrong place.
 		SetOutPath "$INSTDIR"
@@ -332,9 +335,10 @@
 		CreateShortCut "$SMPROGRAMS\BOSS\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 		CreateDirectory "$SMPROGRAMS\BOSS\Docs"
 		CreateShortCut "$SMPROGRAMS\BOSS\Docs\Main ReadMe.lnk" "$INSTDIR\Docs\BOSS Readme.html"
-		CreateShortCut "$SMPROGRAMS\BOSS\Docs\User Rules ReadMe.lnk" "$INSTDIR\Docs\BOSS User Rules ReadMe.html"
+		CreateShortCut "$SMPROGRAMS\BOSS\Docs\Userlist Syntax.lnk" "$INSTDIR\Docs\BOSS Userlist Syntax.html"
+		CreateShortCut "$SMPROGRAMS\BOSS\Docs\Version History.lnk" "$INSTDIR\Docs\BOSS Version History.html"
 		CreateShortCut "$SMPROGRAMS\BOSS\Docs\API ReadMe.lnk" "$INSTDIR\Docs\BOSS API ReadMe.html"
-		CreateShortCut "$SMPROGRAMS\BOSS\Docs\Masterlist Syntax Doc.lnk" "$INSTDIR\Docs\BOSS Masterlist Syntax.html"
+		CreateShortCut "$SMPROGRAMS\BOSS\Docs\Masterlist Syntax.lnk" "$INSTDIR\Docs\BOSS Masterlist Syntax.html"
 		CreateShortCut "$SMPROGRAMS\BOSS\Docs\Copyright Licenses.lnk" "$INSTDIR\Docs\Licenses.txt"
 	  
 		
@@ -373,7 +377,8 @@
 		Delete "$INSTDIR\Docs\BOSS API ReadMe.html"
 		Delete "$INSTDIR\Docs\BOSS Masterlist Syntax.html"
 		Delete "$INSTDIR\Docs\BOSS ReadMe.html"
-		Delete "$INSTDIR\Docs\BOSS User Rules ReadMe.html"
+		Delete "$INSTDIR\Docs\BOSS Userlist Syntax.html"
+		Delete "$INSTDIR\Docs\BOSS Version History.html"
 		Delete "$INSTDIR\Docs\Licenses.txt"
 		
 		;Remove readme images.
@@ -385,6 +390,8 @@
 		Delete "$INSTDIR\Docs\images\GUI-User-Rules-Manager.png"
 		Delete "$INSTDIR\Docs\images\HTML-Log.png"
 		Delete "$INSTDIR\Docs\images\Userlist.png"
+		Delete "$INSTDIR\Docs\images\Ini.png"
+		Delete "$INSTDIR\Docs\images\CLI.png"
 		
 		;Now we have to remove the files BOSS generates when it runs.
 		Delete "$INSTDIR\BOSSDebugLog.txt"

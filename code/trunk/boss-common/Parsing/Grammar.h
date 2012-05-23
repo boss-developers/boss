@@ -214,7 +214,7 @@ namespace boss {
 		void EvaluateCompoundConditional(bool& lhsCondition, const string andOr, const bool rhsCondition);
 
 		//Returns the true path based on what type of file or keyword it is.
-		void GetPath(fs::path& file_path, string& file);
+		fs::path GetPath(const string file);
 
 		//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
 		void CheckVersion(bool& result, const string var);

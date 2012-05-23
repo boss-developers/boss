@@ -1030,7 +1030,7 @@ namespace boss {
 				<< "</header>";
 		else
 			out << "\nBOSS\n"
-				<< "Version " << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << LINE_BREAK;
+				<< "Version " << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << endl;
 		return out.str();
 	}
 
@@ -1991,13 +1991,21 @@ namespace boss {
 		size_t pos1, pos2;
 		string result;
 		fileToBuffer(file, result);
-		pos1 = result.find("<section id='recPlugins'>");
-		if (pos1 != string::npos)
-			pos1 = result.find("<ul>", pos1);
-		if (pos1 != string::npos)
-			pos2 = result.find("</section>", pos1);
-		if (pos2 != string::npos)
-			result = result.substr(pos1+4, pos2-pos1-9);
+		if (logFormat == HTML) {
+			pos1 = result.find("<section id='recPlugins'>");
+			if (pos1 != string::npos)
+				pos1 = result.find("<ul>", pos1);
+			if (pos1 != string::npos)
+				pos2 = result.find("</section>", pos1);
+			if (pos2 != string::npos)
+				result = result.substr(pos1+4, pos2-pos1-9);
+		} else {
+			pos1 = result.find("Please read any attached messages and act on any that require action.");
+			if (pos1 != string::npos)
+				pos2 = result.find("======================================", pos1);
+			if (pos2 != string::npos)
+				result = result.substr(pos1+69, pos2-pos1-69-3);
+		}
 		return (result == recognisedPlugins.AsString());
 	}
 }

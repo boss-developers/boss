@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>BOSS Version History</title>
+<style>
+	body {font-family:Helvetica,sans-serif;font-size:10pt;}
+	h1 + p {text-align:center;}
+	li {margin-bottom:10px;}
+	li ul, li ol {margin-top:0.4em;}
+	q {font-style:italic;}
+	code {display:inline-block; padding:2px 5px; background:#eee;}
+	td, th {border:1px solid #ddd; padding: 5px; vertical-align:top;}
+	table {border-collapse:collapse; margin:1em;background:#FafaFf;}
+	thead {font-weight:bold;background:#99CCFF;}
+	code.box {line-height:20px; white-space:pre; margin:1em 0 0 3em; display:table; padding:5px 10px;}
+	ol li ol {list-style:lower-alpha;}
+	ol li ol li ol {list-style:lower-roman;}
+	blockquote {background:#E6E6FA; display:table; padding:5px 30px 5px 10px;}
+	h1 {text-align:center;font-size:24pt;}
+	h2 {margin-top:3em;font-size:20pt;}
+	h3 {margin-top:2em;font-size:16pt;}
+	h4 {margin-top:2em;font-size:12pt;}
+	a:link {text-decoration:none;}
+	a:hover {text-decoration:underline;}
+	
+	ul.errorMessages > li {margin-bottom:1.4em;}
+	td.t {background:#90ff90;text-align:center;}
+	td.c {background:#ff9090;text-align:center;}
+	td.t:after {content: '\2713';}
+	td.c:after {content: '\2717';}
+	img {border:0;}
+	.slideshow img {opacity:0; 
+		position:absolute;
+		transition: opacity 1.5s;
+		-moz-transition: opacity 1.5s;
+		-webkit-transition: opacity 1.5s;
+		-o-transition: opacity 1.5s;}
+	.slideshow img:first-child {opacity:1;}
+	figcaption {font-style:italic; margin-bottom:2em;}
+	tr.inactive {color:#888;}
+ tr.inactive td.c, tr.inactive td.t {background:#E3E3E3;}
+	code.box {margin-left:0em;}
+	span[title] {border-bottom: 1px dotted; font-family: sans-serif; cursor:help;}
+	dt {margin-bottom:0.5em; margin-top:1em; font-style:italic;}
+	dd {margin-bottom:0.8em;}
+	abbr {cursor:help;}
+</style>
+
+<h1>BOSS Version History</h1>
+<p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.
+
+<h2>Contents</h2>
+<ol>
+ <li><a href="#2.1.0">2.1.0 - <i>2012</i></a>
+ <li><a href="#2.0.1">2.0.1 - <i>6 April 2012</i></a>
+ <li><a href="#2.0.0">2.0.0 - <i>27 March 2012</i></a>
+ <li><a href="#1.9.1">1.9.1 - <i>1 January 2012</i></a>
+ <li><a href="#1.9.0">1.9.0 - <i>13 November 2011</i></a>
+ <li><a href="#1.8.0">1.8.0 - <i>6 July 2011</i></a>
+ <li><a href="#1.7.0">1.7.0 - <i>10 June 2011</i></a>
+ <li><a href="#1.6.5">1.6.5 - <i>1 December 2010</i></a>
+ <li><a href="#1.6.4">1.6.4 - <i>28 November 2010</i></a>
+ <li><a href="#1.6.3">1.6.3 - <i>15 November 2010</i></a>
+ <li><a href="#1.6.2">1.6.2 - <i>1 November 2010</i></a>
+ <li><a href="#1.6.1">1.6.1 - <i>19 October 2010</i></a>
+ <li><a href="#1.6.0">1.6.0 - <i>8 October 2010</i></a>
+ <li><a href="#1.5.0">1.5.0 - <i>24 March 2010</i></a>
+ <li><a href="#1.4.1">1.4.1 - <i>31 August 2009</i></a>
+ <li><a href="#lost">1.0.0 to 1.3.5 - <i>22 October 2008 to 24 June 2009</i></a>
+ <li><a href="#license">License</a>
+</ol>
+
+<h2>2.1.0 - <i>2012</i></h2>
+<ul>
+<li>Removed: <code>bNoVersionParse</code> BOSS.ini setting, and corresponding <code>-n [ --no-version-parse ]</code> CLI parameter and <q>Display Plugin Versions</q> GUI setting.
+	<li>Removed: BOSS Updater download CRC check.
+ <li>Removed: Support for conditional shorthand messages in the masterlist. They were a pain to work with, so never really got adopted, and were the cause of a couple of accidental broken updates to the masterlist.
+	<li>Fixed: BOSS counting false-flagged <code>.esm</code> files as masters when applying the master partition.
+	<li>Fixed: Some plain text BOSS Log formatting issues.
+ <li>Fixed: Some parsing errors not causing error messages to be displayed.
+ <li>Fixed: An crash if there was an issue creating the BOSS Log.
+ <li>Changed: Lots of refactoring of code to make BOSS more robust "under the hood".
+	<li>Changed: BOSS now uses the exact filenames of installed plugins instead of their filenames in the masterlist, preventing any case-sensitivity issues (eg. Skyrim's launcher).
+	<li>Changed: Internal tweaks to how the BOSS Updater works.
+	<li>Changed: Implemented more accurate comparison of versions in the masterlist, using Dirk Jagdmann's implementation of Dave Koelle's Alphanum Algorithm.
+	<li>Changed: Re-organised and partially rewrote readmes. The User Rules Readme has been included in the main readme, which has had its contents shuffled around to better organise information. More images have also been added, and the section on the GUI rewritten to be more accessible.
+	<li>Major HTML BOSS Log rewrite and redesign:
+	<ul>
+		<li>Removed: Settings for BOSS Log filters and CSS from BOSS.ini and the GUI.
+		<li>Removed: The <q>Ghosted</q> label.
+		<li>Removed: Link to GNU General Public License, copyright notice and version release date.
+		<li>Removed: The <q>Hide Rule Warnings</q>, <q>Hide 'Ghosted' Label</q> and <q>Hide Ghosted Mods</q> filters.
+		<li>Removed: The <q>Execution Complete</q> footer.
+  <li>Removed: The <q>General Messages</q> section. General messages now appear in the <q>Summary</q> section.
+  <li>Removed: The ghosted plugin count in the <q>Summary</q> section.
+  <li>Changed: Parsing errors from all files are displayed, instead of only the parsing error last encountered.
+		<li>Changed: The BOSS Log now supports a minimum browser version of Internet Explorer 9, Firefox 3.5, Chrome 4, Safari 4, Opera 10.5 or their equivalents in other browsers.
+		<li>Changed: The BOSS Log now primarily consists of a fixed-position left-hand sidebar and a scrollable right-hand main display panel. See <a href="#bosslog">The BOSS Log</a> for a screenshot.
+		<li>Changed: The <q>Use Dark Colour Scheme</q> filter has been renamed <q>Use Alternative Colour Scheme</q> and has been moved to the new CSS Settings section. The colour scheme itself has been altered to reduce text contrast, making it easier to read.
+		<li>Changed: Filters are selectively enabled and disabled based on what section is currently visible, so you cannot apply a filter to a page where it has no effect, to avoid confusion.
+		<li>Changed: Renamed the <q>Userlist Messages</q> section to <q>User Rules</q>.
+		<li>Changed: Rewrote most of the BOSS Log's Javascript, especially with regards to how it alters styling, to make it tidier and give better cross-browser support. It also now runs in ECMAScript 5's Strict Mode on compatible browsers.
+  <li>Changed: If an error is encountered when trying to change a plugin's timestamp, it is not displayed as an error message below the plugin, rather than inline with the plugin.
+  <li>Changed: The tables in the <q>Summary</q> section are now colour-coded, with the unrecognised plugin and warning message rows coloured amber if their counts are non-zero and the error message row coloured red if its count is non-zero, with rows otherwise coloured green.
+  <li>Changed: The <q>User Rules</q> section now displays the full text of the rules in your userlist, whether each rule was applied and why a rule was not applied, if applicable, in a table. The rows are coloured coded such that applied rules are coloured green, rules that were not applied as they are disabled are coloured amber and rules that were not applied due to errors are coloured red.
+  <li>Changed: The font used in the BOSS Log is now Helvetica, from Calibri, to make it easier to read.
+  <li>Changed: The general background colour is now a light grey, from white, to reduce eye strain.
+  <li>Changed: Quoted file text in parsing errorrs is now displayed in the browser's default monospace font.
+  <li>Added: An active plugin count in the <q>Summary</q> section.
+		<li>Added: Some CSS3 effects for browsers that support them.
+		<li>Added: A Submit Plugin panel. This panel allows you to anonymously submit unrecognised plugins to a Bugzilla bug tracker hosted by Dark Creations that the BOSS team uses to help keep track of unrecognised plugins. It requires browser support for Cross-Origin Resource Sharing, ECMAScript 5 and XMLHttpRequest 2. The panel is displayed when you click on an unrecognised plugin's filename.
+		<li>Added: A CSS Settings section. This panel allows you to customise the colours used by the dark colour scheme, and also allows you to backup and restore custom settings if your browser supports the File API, HTML5 Drag and Drop and ECMAScript 5. It replaces the CSS customisation features found in previous versions of BOSS, removing the ability to customise layout but giving more control over the colours of the BOSS Log.
+		<li>Added: Settings memory, which requires browser support for the Web Storage API, and restores the last configuration of filters and colours used when the BOSS Log is opened.
+		<li>Added: A Browser Compatibility panel. This panel is displayed in the main display panel when the BOSS Log is opened and gives an indication of your browser's level of support for the new features added in this release. If the Web Storage API is supported by your browser, it can then be prevented from being displayed for that browser in the future.
+	</ul>
+	<li>Installer changes:
+	<ul>
+		<li>Removed: Text from installer regarding what to do if you have multiple copies of a supported game installed, as this was confusing users and was pointed out to not apply to anyone that would make use of multiple copies.
+		<li>Fixed: Installer's "old BOSS version detected" dialog ignoring the language previously selected.
+		<li>Changed: Installer/uninstaller now uses solid LZMA compression for a smaller file size.
+		<li>Added: German language option to installer/uninstaller. Translation by Scharesoft.
+		<li>Added: Spanish language option to installer/uninstaller. Translation by Sharlikran.
+		<li>Added: Confirmation dialog to uninstaller abortion.
+		<li>Added: CRC check to installer to avoid corrupted installs.
+	</ul>
+	<li>User Rules Editor changes:
+	<ul>
+		<li>Fixed: Crash when deleting the last rule in a userlist.
+		<li>Fixed: Text boxes not displaying correctly, with borders often not appearing until mouseover.
+		<li>Changed: Renamed the <q>User Rules Editor</q> to <q>User Rules Manager</q> to reflect that the editing of rules is only part of its functionality.
+		<li>Changed: Renamed the <q>Rule Creator/Editor</q> box to <q>Rule Editor</q>.
+		<li>Changed: Renamed the <q>Masterlist Mod Messages</q> box to <q>Default Plugin Messages</q> to make its purpose clearer.
+		<li>Changed: Renamed the <q>Installed Mods</q> tab to <q>Installed Plugins</q> to avoid confusion between the terms <q>mod</q> and <q>plugin</q>.
+		<li>Changed: Renamed the <q>Move Up</q> and <q>Move Down</q> buttons to <q>Move Rule Up</q> and <q>Move Rule Down</q> respectively to make their purpose explicit.
+		<li>Changed: Minor tweaks to the spacing of rules listed in the User Rules Editor and options in the main window.
+		<li>Changed: When the user enables ADD rules that were disabled because they add plugins that are in the masterlist, the User Rules Manager now also changes them to OVERRIDE rules.
+		<li>Changed: The text in the drop-down boxes in the Rule Editor has been lowercased to read better.
+		<li>Added: Added messages now have their syntax checked before a rule is saved, and an error message is displayed if invalid syntax is found.
+	</ul>
+	<li>Added: GUI's Select Game dialog now displays the BOSS icon in the title bar, matching the other GUI windows.
+	<li>Added: <code>sLanguage</code> option to BOSS.ini, and Language setting to the GUI's Settings window, to control BOSS's operating language. These options are currently non-functional, with the translations themselves to be implemented shortly.
+	<li>Added: GUI now records the game it was last run for using the <code>sLastGame</code> BOSS.ini setting. If the <code>sGame</code> setting is set to <code>auto</code> (or the corresponding <q>Default Game</q> GUI setting set to <q>Autodetect</q>), then the GUI will first attempt to run for the game it was last run for. If the game cannot be detected, or the <code>sLastGame</code> setting is set to <code>auto</code>, then it will then prompt the user to select a game to run for.
+	<li>Added: Support for TES III: Morrowind:
+	<ul>
+		<li>Added <code>TES3</code> and <code>MWSE</code> placeholders for use in the masterlist. See the <a href="BOSS%20Masterlist%20Syntax.html">BOSS Masterlist Syntax</a> document for details.
+		<li>Added <code>Morrowind</code> value for the sGame BOSS.ini setting.
+		<li>Morrowind's masterlist is unmaintained, and only recognises Morrowind.esm, Bloodmoon.esm and Tribunal.esm. The support is primarily intended for the API, and those wanting auto-sorting of load orders should consider using mlox.
+	</ul>
+	<li>Added: SetProxy function to API.
+	<li>Added: SubmitUnrecognisedPlugin function to API.
+</ul>
+<h2>2.0.1 - <i>6 April 2012</i></h2>
+<ul>
+	<li>Fixed: Masterlist regular expression errors being reported in an endless loop.
+	<li>Fixed: Crash when BOSS is running for Skyrim and plugins.txt is read-only.
+	<li>Fixed: Crash when a user rule overrides a masterlist group position.
+	<li>Fixed: GUI's User Rules Editor disabling OVERRIDE rules on load.
+	<li>Fixed: Plugins referenced in user rules that are not installed getting added to loadorder.txt when running for Skyrim v1.4.26+.
+	<li>Fixed: Update.esm not being labelled as active in the BOSS Log when it is missing from plugins.txt and BOSS is running for Skyrim.
+	<li>Fixed: Crash when a single non-local game install is detected.
+	<li>Fixed: Games that are not installed being detected.
+	<li>Changed: Uninstaller's User Files option is now unselected by default.
+	<li>Changed: Switched installer from NSIS to NSIS Unicode.
+	<li>Added: Russian language option to installer/uninstaller. Translation by Tokc.D.K.
+</ul>
+<h2>2.0.0 - <i>27 March 2012</i></h2>
+<ul>
+	<li>Removed: BOSS Updater for manual installs. When an update is checked for and found on a manual install, BOSS will notify the user of the update and its download locations, but not download or install the update itself. Behaviour on installer installs is unchanged.
+	<li>Removed: <code>iRunType</code> ini setting, as it was unnecessary.
+	<li>Fixed: GUI mixing up Nehrim and Fallout: New Vegas in the Game drop-down box.
+	<li>Fixed: Masterlist parser getting confused when a plugin filename shared starting characters with a keyword.
+	<li>Fixed: Invalid regular expressions in masterlist-format files causing crashes.
+	<li>Fixed: Plugins with filenames containing international characters causing the GUI's User Rules Editor to fail to load.
+	<li>Fixed: Masterlist-format files beginning with blank lines will no longer create an initial empty item in their data structures.
+	<li>Fixed: The tooltip intended for the new messages text box was attached to the masterlist mod messages box in the User Rules Editor.
+	<li>Fixed: The masterlist displayed GUI's User Rules Editor was unevaluated for conditionals and regex entries.
+	<li>Fixed: Saving a masterlist-format file no longer omits its conditionals. This bug was never exposed.
+	<li>Fixed: Conditional parsing errors not being reported correctly in the BOSS Log. This bug was never exposed.
+	<li>Fixed: Messages being outputted in the format set globally instead of the outputters local format. This bug was never exposed.
+	<li>Fixed: Version number comparisons being sometimes evaluated wrongly for versions of the form a.b.c.d where a, b, c and d were integers. This bug was never exposed.
+	<li>Changed: This utility's name has been changed from <q>Better Oblivion Sorting Software</q> to <q>BOSS</q>.
+	<li>Changed: Tidied up code, making better use of class inheritance and swapping Boost filesystem paths for strings in plugin names.
+	<li>Changed: Updated libcurl from 7.23.1 to 7.25.0, wxWidgets from 2.9.2 to 2.9.3, and Boost from 1.48.0 to 1.49.0.
+	<li>Changed: GUI's User Rules Editor is now resizeable and the Installed Mods and Masterlist lists are now tabbed to give them more space.
+	<li>Changed: The GUI now uses the User Rules Editor to edit the userlist by default.
+	<li>Changed: Only a single instance of the GUI is now allowed to run at any one time.
+	<li>Changed: BOSS no longer quits with an error message without sorting plugins when both Nehrim.esm and Oblivion.esm are present in the same Data folder, as this arrangement may be valid for modders porting mods, so long as Oblivion.esm remains inactive when Nehrim is run.
+	<li>Changed: BOSS update release notes are now displayed before the update download confirmation.
+	<li>Changed: Pretty pictures now in the main readme! Also updated content to reflect various changes and additions.
+ 	<li>Changed: Rewrote NSIS installer to reflect various changes and additions, and simplified the installer code greatly.
+	<li>Changed: You can no longer sort non-master plugins before master plugins, or master plugins after non-master plugins, using user rules. Masters are commonly .ESM files, and non-master plugins are commonly .ESP files, but whether a plugin is a master or not is actually decided by a variable in the file, not the file extension. (An example of this in action would be <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>'s <q>ESMify Self</q> function, which makes a plugin into a master without changing the file extension.)
+	<li>Changed: BOSS now enforces the game's <q>masters before plugins</q> rule for load ordering when reading the current load order and sorting plugins.
+	<li>Added: Support for multiple games from a single BOSS install:
+	<ul>
+		<li>BOSS now has two different install types: local installs place the BOSS folder beside a game's Data folder. Non-local installs place the BOSS folder anywhere else. Local installs will always run for the local game by default. Non-local installs will look for supported games and prompt the user to choose one to run for each time BOSS is run. If only one game is found, BOSS will run for it without user prompt.
+		<li>BOSS game files (masterlist, BOSS Log, etc.) are now stored in separate sub-folders within the BOSS folder for each game to avoid conflict.
+		<li>The <code>--game,-g [ game ]</code> command line parameter and corresponding ini and GUI settings now behaves slightly differently: when BOSS is run with the game not set to autodetect, and it is not set to only update the masterlist, the game parameter specifies the default game to run for. If the default cannot be found, BOSS falls back to autodetection.
+		<li>The GUI now prompts the user to choose which game it should run for on startup. Games that are not detected are selectable, but will only allow their masterlists to be updated.
+		<li>The <q>Game</q> drop-down list in the GUI has been moved to the <q>Settings</q> window.
+		<li>An <q>Active Game</q> menu has been added to the GUI that allows you to change which game BOSS is currently active for without closing the GUI. Undetected games are greyed out, unless the <q>Update Masterlist Only</q> run option is selected. If you have an undetected game active and switch from <q>Update Masterlist Only</q> to another run option, the BOSS automatically switches to the first detected game in the list.
+	</ul>
+	<li>Added: BOSS API for use by third party utilities to access BOSS information and functionality. See <a href="BOSS%20API%20Readme.html">BOSS API Readme</a> for details.
+	<li>Added: BOSS can now read the <q>plugins.txt</q> file that the supported games use to store their active plugin list in. BOSS also adapts to the value of the <code>bUseMyGamesDirectory</code> setting in <code>Oblivion.ini</code> when running for Oblivion.
+	<li>Added: An <q>Active</q> label to the BOSS Log for plugins that are active when BOSS is run, and <q>Hide Inactive Mods</q> and <q>Hide 'Active' Label</q> BOSS Log filters.
+	<li>Added: Support for the load order mechanism used by TES V: Skyrim version 1.4.26+. This outputs load order of active plugins to <q>plugins.txt</q>, and outputs the full load order to <q>loadorder.txt</q>, which is created in the same directory as <q>plugins.txt</q>.
+	<li>Added: BOSS now checks for <q>false-flagged</q> plugins and moves any found to the correct side of the master/non-master partition. False-flagged plugins are those with an extension that does not match the state of the plugin's internal master bit flag.
+</ul>
+<h2>1.9.1 - <i>1 January 2012</i></h2>
+<ul>
+	<li>Fixed: Mods in the last group of a masterlist being unrecognised when one or more user rules were enabled.
+	<li>Fixed: Masterlist-format files saved by BOSS that contain messages cannot be loaded successfully by BOSS. This bug was never exposed.
+	<li>Fixed: Every second link in a message displayed in the BOSS Log not being displayed as a hyperlink when using the HTML BOSS Log.
+	<li>Fixed: MF1 legacy conditionals always being evaluated for Oblivion, even when BOSS was run for other games.
+	<li>Fixed: Masterlist parsing errors were not correctly reported in the BOSS Log.
+	<li>Fixed: BOSS Updater version checking not returning correct result with some versions.
+	<li>Changed: Masterlist conditional evaluation now occurs separately from masterlist parsing.
+	<li>Changed: BOSS Log's <q>Unrecognised Plugins</q> section is now only displayed if there are any unrecognised plugins present.
+	<li>Changed: Some tidying up of the BOSS Log text and formatting.
+	<li>Changed: Code type safety work. BOSS can now be built to 32 and 64 bit binaries, although 64 bit binaries will not be distributed.
+	<li>Changed: Copyright license is now GNU General Public License v3.0 for everything but the documentation, and GNU Free Documentation License v1.3 for the documentation.
+	<li>Changed: Updated version of libcurl used from 7.22.0 to 7.23.1, and updated version of Boost libraries used from 1.47.0 to 1.48.0.
+	<li>Changed: Expanded/Collapsed indicators added for masterlist groups in the GUI's User Rules Editor.
+	<li>Changed: GUI's User Rules Editor will now auto-scroll the rule list so that the currently selected rule is visible whenever the rule list is altered.
+</ul>
+<h2>1.9.0 - <i>13 November 2011</i></h2>
+<ul>
+	<li>Changed: Major refactoring of BOSS code into a common library, a Command Line Interface and a Graphical User Interface.
+	<li>Common Library:
+	<ul>
+		<li>Removed: Checking for changes to the recognised mod list since last run for the plain text BOSS Log, as this did not work correctly and is not feasible to fix.
+		<li>Removed: Command line parameter <code>-T [ --proxy-type ] [ type ]</code> and BOSS.ini setting <code>sProxyType</code> Internet proxy type specification options. Proxy type is now automatically determined.
+		<li>Fixed: A bug where if a plugin filename started with "SET" or "GLOBAL" (or case variations) then BOSS would incorrectly classify it as a variable or global message line and so result in syntax errors.
+		<li>Fixed: User Rules which failed to add a plugin into the beginning or end of a group still incremented the number of recognised plugins as if the rule application had succeeded.
+		<li>Fixed: Userlist rules which reference plugins that are not installed now have warning messages reported instead of error messages.
+		<li>Fixed: Masterlist conditions now detect ghosted mods correctly.
+		<li>Fixed: The online Fallout: New Vegas masterlist's revision being checked instead of the online Fallout 3 masterlist's revision when updating the Fallout 3 masterlist.
+		<li>Fixed: The <q>Hide Messageless Mods</q> BOSS Log filter not acting when another filter resulted in all a mod's messages being hidden.
+		<li>Fixed: The last group of mods in a masterlist being unrecognised.
+		<li>Changed: More robust error handling.
+		<li>Changed: User rules can now only use up to one sort line and/or one REPLACE message line per rule, and cannot sort mods/groups relative to themselves.
+		<li>Changed: Updated version of libcurl used when building BOSS.exe and BOSS GUI.exe to 7.22.0 from 7.21.7.
+		<li>Changed: Content and slight formatting changes to BOSS Log:
+		<ul>
+			<li><q>Masterlist Update</q> section removed. Update information is now displayed in the <q>Summary</q> section. Updater errors are displayed in the <q>General Messages</q> section.
+			<li>Javascript optimisations for filters.
+			<li><q>Execution Complete</q> text is now centred.
+			<li>All BOSS Log output now has special characters escaped so that it is valid HTML.
+			<li>The date of the user's masterlist is now displayed in the <q>Summary</q>.
+			<li>Ini parsing errors are now displayed in the <q>General Messages</q> section.
+			<li>The filters are now laid out in a more grid-like fashion.
+			<li>Added whitespace characters between plugin filenames, versions, ghosted labels and CRCs to make copy/pasted text more readable.
+			<li>Coloured links in the dark colour scheme so that they are easier to read.
+			<li>The number of plugins and messages hidden at any one time is displayed below the filters box in italics.
+			<li>The Script Extender And Script Extender Plugins section is now always displayed, with CRCs only being calculated if the <q>Display File CRCs</q> option is set.
+		</ul>
+		<li>Changes to BOSS.ini variables:
+		<ul>
+			<li>Removed <q>GUI.Settings</q> and <q>GUI.LastOptions</q> sections.
+			<li><q>DoStartupUpdateCheck</q> moved to a new <q>BOSS.GeneralSettings</q> section.
+			<li>Removed <q>DisableMasterlistUpdate</q> setting.
+			<li>Added variable type prefixes to variable names (s, i, b).
+			<li>Boolean variables now accept <code>true</code> or <code>false</code> instead of <code>1</code> or <code>0</code>.
+			<li><q>CommandLineVerbosity</q> renamed to <q>iDebugVerbosity</q>.
+			<li><q>Debug</q> renamed to <q>bDebugWithSourceRefs</q>.
+			<li>Added <q>bLogDebugOutput</q> setting to <q>BOSS.RunOptions</q> to control the logging of debugging output.
+			<li>Added <q>bUseUserRulesEditor</q> setting to <q>BOSS.GeneralSettings</q> to control how to the GUI chooses to edit user rules.
+			<li>Default values for the <q>BOSSLog.Styles</q> settings are now given, and values are no longer enclosed in {} brackets.
+		</ul>
+		<li>Changed: Major rewrite of most of the common code, including more object-orientation of code, removal of some unused functions, implementation of an class for formatted output using generic placeholders and much more.
+		<li>Added: <q>Hide Clean Mods</q> and <q>Hide 'Do Not Clean' Messages</q> BOSS Log filters.
+		<li>Added: Support for TES V: Skyrim and the Skyrim Script Extender.
+		<li>Added: Support for MF2.2 syntax, including C-style comments, regular expression conditions, case-insensitive keywords and expanded conditional shorthands.
+		<li>Added: Built-in debug output logging support.
+		<li>Added: <code>DISABLE</code> keyword to user rules that can be placed before a rule's rule keyword to disable it, instead of commenting it out to do the same.
+		<li>Added: Support for authenticated proxies, using the <code>sProxyUsername</code> and <code>sProxyPassword</code> BOSS.ini settings.
+			<ul><li>Note that the support is untested. Feedback from users with authenticated proxies would be appreciated.</ul>
+	</ul>
+	<li>Command Line Interface:
+	<ul>
+		<li>Changed: The command line parameter <code>--debug, -d</code> is now <code>--debug-with-source, -d</code>.
+		<li>Added: Progress indication for downloads.
+		<li>Added: A new command line parameter <code>log-debug, -l</code> to allow logging of the debug output to the <q>BOSSDebugLog.txt</q> file.
+		<li>Added: BOSS Updater functionality.
+	</ul>
+	<li>Graphical User Interface:
+	<ul>
+		<li>Added: A User Rules Editor to allow creation and editing of user rules without manually editing the userlist.txt.
+		<li>Changed: The GUI is now completely independent of the CLI interface.
+		<li>Changed: <q>Settings</q> window overhauled:
+		<ul>
+			<li>Debugging-related settings moved to the from the main window.
+			<li>Settings catagorised into tabs.
+			<li>Added settings for controlling the default state of the BOSS Log filters and the BOSS Log CSS.
+			<li>Added a <q>Log Debug Output</q> setting to allow logging of the debug output to the <q>BOSSDebugLog.txt</q> file.
+			<li>Added an option to select whether to use the GUI's User Rule Editor or to manually edit the userlist when editing user rules.
+			<li>Updated proxy settings to reflect changes to proxy support.
+		</ul>
+		<li>Changed: Simplified layout of main window options.
+		<li>Changed: Renamed some options to reflect their functions better.
+		<li>Changed: Opening files from the GUI no longer causes a command line window to display.
+		<li>Changed: The Check For Updates feature no longer causes the GUI to stop responding, either run on startup or through the menu option.
+	</ul>
+	<li>(Installer) Changed: Updated to support Skyrim.
+	<li>(Docs) Changed: Major updates to main readme to reflect changes.
+	<li>(Docs) Added: Masterlist Syntax HTML documentation for BOSS team members and interested third parties.
+</ul>
+<h2>1.8.0 - <i>6 July 2011</i></h2>
+<ul>
+	<li>Fixed: Junction-linked data folders not being scanned for plugins.
+	<li>Fixed: Links being displayed incorrectly in the BOSS Log if more than one was given in a message.
+	<li>Changed: Masterlist updater now runs by default.
+	<li>Changed: Updated version of libcurl used when building BOSS.exe and BOSS GUI.exe to 7.21.7 from 7.21.4.
+	<li>Changed: Overhauled the <q>Plugin Numbers</q> section of the BOSS Log:
+	<ul>
+		<li>Moved the section to the top of the BOSS Log.
+		<li>Renamed the section from <q>Plugin Numbers</q> to <q>Summary</q>.
+		<li>Added message counts, with numbers of total messages, warning messages and error messages.
+		<li>Added a notice that is displayed when there has been no change in the recognised plugin list since BOSS was last run.
+	</ul>
+	
+	<li>Added: A settings file (<q>BOSS.ini</q>) to allow users to set default behaviours, options and BOSS Log formatting styles.
+	<li>Added: Support for unauthenticated proxies to the masterlist updater and the GUI's <q>Check For Updates</q> functionality.
+	<li>Added: Five new command line parameters:
+	<ul>
+		<li><code>--proxy-host,-H [ hostname ]</code> to specify a proxy's host server for the masterlist updater.
+		<li><code>--proxy-port,-P [ port ]</code> to specify a proxy's port for the masterlist updater.
+		<li><code>--proxy-type,-T [ type ]</code> to specify a proxy type for the masterlist updater.
+		<li><code>--trial-run,-t</code> to run BOSS without actually changing the load order.
+		<li><code>--no-update,-U</code> to inhibit automatic masterlist updating.
+	</ul>
+	
+	<li>Added: Support for Fallout: New Vegas plugins that use the Fallout 3 master file, such as <q>A Requiem for the Capital Wasteland</q>.
+	<li>Added: Support for MF2.1 regular expressions, conditional incompatibility and conditional requirement messages in the masterlist.
+	<li>Added: BOSS Log filter option to hide userlist warning messages.
+	<li>(GUI) Fixed: The <q>Enable File CRC Display</q> and <q>Enable Mod Version Display</q> options getting confused between their values under the <q>Sort Mods</q> and <q>Undo Changes</q> run options.
+	<li>(GUI) Fixed: The icon not appearing in the title bar.
+	<li>(GUI) Fixed: The GUI hanging when BOSS is launched.
+	<li>(GUI) Changed: The <q>Masterlist Update</q> checkbox now sets the --no-update command line parameter if unchecked to override BOSS's default behaviour.
+	<li>(GUI) Changed: The look of the <q>About</q> window.
+	<li>(GUI) Changed: Overhauled the <q>Check For Updates</q> functionality:
+	<ul>
+		<li>Removed the masterlist update checker, as it has been made redundant by BOSS's automatic masterlist updating.
+		<li>Added automatic updater functionality. Replaced <q>Check For Updates</q> output window with a series of notification dialogs asking if the update should be downloaded and installed. If no update was found, or there was an error, relevant dialog messages are displayed.
+		<li><q>Check For Updates</q> now also automatically runs when the GUI starts. This only displays a message if an update was found.
+	</ul>
+	
+	<li>(GUI) Changed: Renamed a number of options, simplifying their names slightly.
+	<li>(GUI) Changed: Options selected are now saved on exit and loaded on start.
+	<li>(GUI) Added: <q>Perform Trial Run</q> option.
+	<li>(GUI) Added: Settings page for specifying how the GUI behaves.
+	<li>(Installer) Changed: Updated to reflect various changes to programs.
+	<li>(Installer) Changed: Installer now runs uninstaller before installing if a previous installation of BOSS is found.
+	<li>(Docs) Changed: Significant content and formatting changes to main ReadMe, slight formatting changes to User Rules readme.
+</ul>
+<h2>1.7.0 - <i>10 June 2011</i></h2>
+<ul>
+	<li>Fixed: A bug in the masterlist updater causing the wrong masterlist version to be displayed.
+	<li>Changed: Ghosted plugins must now be referenced in user rules without their ".ghost" extension.
+	<li>Changed: Moved all BOSS's files into a new BOSS folder, located in the game's installation directory, one level above the Data folder.
+	<li>Changed: Switched to using the Unicode character encoding, allowing the sorting of plugins with international characters in their names.
+	<ul>
+		<li>BOSS now uses the UTF-8 encoding for all its operations.
+		<li>All BOSS files must now be encoded in UTF-8: this includes the modlists, masterlist and userlist.
+		<li>Converted the masterlists and modlists to use the UTF-8 encoding.
+		<li>Added a UTF-8 validator to ensure that the correct encoding for the required files is being used.
+	</ul>
+	
+	<li>Changed: Removed batch files as they are no longer necessary.
+	<li>Changed: The release date of updated masterlists is now displayed beside the revision number in the BOSS Log.
+	<li>Changed: Significant rewrite of source code, resulting in performance gains.
+	<li>Changed: Implemented new file parsers for the masterlist, modlists and userlist.
+	<li>Changed: Improved the formatting of the BOSS Log, making it more readable.
+	<li>Changed: Links in the BOSS Log are now hyperlinks that can be clicked on to take you to the given URL.
+	<li>Added: A unique icon to the executables, made by Hickory.
+	<li>Added: Support for Masterlist Format 2, which offers an alternative syntax and a wide range of new features and capabilities.
+	<li>Added: Display of the numbers of recognised, unrecognised, ghosted and total plugins to the end of the BOSS Log.
+	<li>Added: Javascript-based filter options and collapsible sections to the BOSS Log.
+	<li>Added: A Graphical User Interface (GUI) that can be used to launch BOSS with whatever options are desired without having to use the command line.
+	<li>Added: Three new command line parameters:
+	<ul>
+		<li><code>--game,-g [ game ]</code> to override game autodetection. To be used in conjunction with -o to allow updating of the masterlist on computers where the specified game is not installed.
+		<li><code>--crc-display,-c</code> to calculate and display in the BOSS Log the CRCs of all your plugins. CRCs can be used as accurate version checks in masterlist conditionals.
+		<li><code>--format,-f [ type ]</code> to select the BOSS Log format, choosing from either HTML or plaintext. HTML formatting is the default.
+	</ul>
+	
+	<li>(Installer) Changed: Updated installer to reflect the various changes to BOSS's files and folders.
+	<li>(Docs) Changed: Significant content and formatting changes to main ReadMe, slight formatting changes to User Rules readme.
+</ul>
+<h2>1.6.5 - <i>1 December 2010</i></h2>
+<ul>
+	<li>Fixed: Userlist parser giving incorrect error messages for rules inserting plugins into groups.
+	<li>Fixed: BOSS reporting some plugins as unknown when they are ghosted.
+</ul>
+<h2>1.6.4 - <i>28 November 2010</i></h2>
+<ul>
+	<li>Fixed: Keywords, plugins and groups in user rules being unrecognised if they are padded by spaces.
+	<li>Fixed: Non-ASCII characters in plugin filenames causing crashes.
+	<li>Changed: Slight improvements to user rule error reporting when sorting groups that do not exist.
+	<li>Added: <code>--only-update,-o</code> command line parameter to only update the masterlist without then sorting any plugins.
+	<li>Added: <q>BOSS - Print Debug Info.bat</q> file to make debugging of BOSS errors simpler.
+	<li>Added: Nullsoft Scriptable Install installer for simpler BOSS installation.
+</ul>
+<h2>1.6.3 - <i>15 November 2010</i></h2>
+<ul>
+	<li>Fixed: Crashing when updating the masterlist if downloading an incorrectly formatted masterlist.
+	<li>Fixed: Plugins with duplicate masterlist entries causing load order errors.
+	<li>Fixed: Another crash when parsing an incorrectly formatted userlist.
+	<li>Changed: User rule keywords are now case-insensitive.
+	<li>Changed: User rules can no longer sort a plugin relative to a plugin that is not in the masterlist and has not been sorted by another rule.
+	<li>Added: Check to userlist application of override rules to prevent incorrect usage resulting in load order errors.
+</ul>
+<h2>1.6.2 - <i>1 November 2010</i></h2>
+<ul>
+	<li>Fixed: Crashing when userlist contains badly formatted lines.
+	<li>Changed: Many code portability enhancements.
+	<li>Changed: Command line parameters to be more standardised:
+	<ul>
+		<li><code>--disable-version-parse,-V</code> is now <code>--no-version-parse,-n</code>.
+		<li><code>--silent-mode,-s</code>  is now <code>--silent,-s</code>.
+		<li><code>--revert-level,-r [ level ]</code> is now <code>--revert,-r [ level ]</code>.
+	</ul>
+	
+	<li>Added: Support for <q>Fallout: New Vegas</q>.
+	<li>Added: Ability to insert plugins into groups to user rules functionality.
+	<li>Added: Ability to sort plugins relative to plugins that are not installed, but are in the masterlist, to user rules functionality.
+	<li>Added: Three new command line parameters:
+	<ul>
+		<li><code>--verbose,-v [ level ]</code> to enable logging statements, where <code>level</code> goes from 1 to 3 with increasing verbosity.
+		<li><code>--version,-V</code> to show BOSS version.
+		<li><code>--debug,-d</code> to add filename and line numbers to log messages.
+	</ul>
+	
+</ul>
+<h2>1.6.1 - <i>19 October 2010</i></h2>
+<ul>
+	<li>Fixed: Non-lowercase plugin extensions not being recognised and causing crashes and load order mistakes.
+	<li>Fixed: A potential bug with the masterlist updater causing memory issues.
+	<li>Fixed: Several compiler warnings when compiling on Linux.
+	<li>Changed: Increased timeout delay for the masterlist updater to prevent the updater failing when Google Code is slow.
+	<li>Changed: Improved masterlist updater error handling.
+	<li>Added: <code>--silent,-s</code> command line parameter to suppress the automatic opening of the BOSS Log when BOSS is run.
+	<li>Added: Version info to <q>BOSS.exe</q> to make Wrye Bash integration/debugging easier.
+</ul>
+<h2>1.6.0 - <i>8 October 2010</i></h2>
+<ul>
+	<li>Fixed: Fallout3.esm being reported as an 'unknown mod file'.
+	<li>Changed: Removed need for <q>BOSS.bat</q>.
+	<li>Changed: Moved BOSS's input and output files to <q>Data\BOSS\</q>.
+	<li>Changed: Converted BOSS Log from plain text to HTML format.
+	<li>Changed: Improved error handling to catch more errors and provide more useful error messages when BOSS doesn't work properly.
+	<li>Changed: Improved portability of source code.
+	<li>Changed: Merged BOSS and BOSS-F source code, allowing one <q>BOSS.exe</q> to work with all the games BOSS supports.
+	<li>Changed: Major refactoring and rewrite of BOSS source code, resulting in a significant performance improvement.
+	<li>Added: Fallout Wanderers Edition (FWE) specific message type for the Fallout 3 masterlist.
+	<li>Added: Plugin version display to BOSS Log output.
+	<li>Added: Three new command line parameters:
+	<ul>
+		<li><code>--update,-u</code> to update the masterlist before sorting plugins.
+		<li><code>--disable-version-parse,-V</code> to disable version display in the BOSS Log.
+		<li><code>--revert-level,-r [ level ]</code> to allow undoing of BOSS's changes. <code>level</code> can be either 1 or 2, to go back to the load order before the last run of BOSS, or the load order before the run before that respectively.
+	</ul>
+	
+	<li>Added: <q>BOSS - Update Masterlist.bat</q> file to allow updating of the masterlist without having to use the command line.
+	<li>Added: Sorting of ghosted plugins.
+	<li>Added: Custom user rules functionality to allow users to customise how BOSS sorts their files, and more.
+	<li>Added: Support for the <q>Nehrim - At Fate's Edge</q> total conversion for TES IV: Oblivion.
+	<li>(Docs) Changed: Converted Readme from RTF to HTML format.
+</ul>
+<h2>1.5.0 - <i>24 March 2010</i></h2>
+<ul>
+	<li>Changed: Switched source code project and solution files to Visual Studio 2010.
+	<li>Added: Four new message types:
+	<ul>
+		<li>OOO-specific messages.
+		<li>Requirement messages.
+		<li>Incompatibility messages.
+		<li>Better Cities-specific messages.
+	</ul>
+	<li>Added: A separate masterlist for Fallout 3.
+	<li>Added: A version of BOSS specifically for Fallout 3 (BOSS-F).
+</ul>
+<h2>1.4.1 - <i>31 August 2009</i></h2>
+<ul>
+	<li>Fixed: Incorrect master file defined for Fallout 3.
+	<li>Fixed: Error messages not being displayed on some machines.
+</ul>
+<h2>1.0.0 to 1.3.5 - <i>22 October 2008 to 24 June 2009</i></h2>
+<ul>
+	<li>Changes Not Recorded.
+</ul>
+
+
+<h2 id="license">License</h2>
+<p>This document is part of the BOSS documentation.<br />
+Copyright (C) 2009-2012 BOSS Development Team.<br />
+See the file <q>BOSS ReadMe.html</q> for copying conditions.
