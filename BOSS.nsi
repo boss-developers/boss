@@ -39,7 +39,6 @@
 	!define MUI_CUSTOMFUNCTION_GUIINIT onGUIInit
 
 	!insertmacro MUI_PAGE_WELCOME
-	!insertmacro MUI_PAGE_LICENSE "data\boss-common\Licenses.txt"
 	!insertmacro MUI_PAGE_DIRECTORY
 	!insertmacro MUI_PAGE_INSTFILES
 	!define MUI_FINISHPAGE_NOAUTOCLOSE
