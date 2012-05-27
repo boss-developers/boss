@@ -53,8 +53,8 @@
 	<li><a href="#intro">Introduction</a>
 	<li><a href="#lo">Load Orders</a>
 	<ol>
-		<li><a href="#intro-lo">Introduction To Load Ordering</a>
-		<li><a href="#intro-textfile">The Textfile-based Load Order Standard</a>
+		<li><a href="#lo-intro">Introduction To Load Ordering</a>
+		<li><a href="#lo-textfile">The Textfile-based Load Order Standard</a>
 		<li><a href="#lo-bapi">Load Ordering With BOSS API</a>
 	</ol>
 	<li><a href="#types">Variable Types</a>
@@ -87,30 +87,30 @@
 </ol>
 
 <h2 id="intro">Introduction</h2>
-<p>This documentation details the BOSS API (a.k.a. BAPI) and is intended for use by third party developers of modding utilities for TES III: Morrowind, TES IV: Oblivion, TES V: Skyrim, Nehrim - At Fate's Edge, Fallout 3 and Fallout: New Vegas.
+<p>BOSS is a utility that helps mod users avoid serious conflicts by setting the mod plugins they have installed in their optimal load order. It also provides over 10,000 plugin-specific messages, including usage notes, requirements, incompatibilities, warnings on bugs and installation mistake notifications.
+<p>The load order BOSS sets is decided by its <dfn>masterlist</dfn>, which lists all the plugins recognised by BOSS in their optimal load order, and contains the plugin-specific messages BOSS provides. Each game that BOSS supports has a separate masterlist, which are kept up to date via community submissions. Users can customise BOSS's positioning of plugins and the messages it displays using a <dfn>userlist</dfn> file. Each game has a separate userlist.</p><br />
 
+<p>This documentation details the BOSS API (a.k.a. BAPI) and is intended for use by third party developers of modding utilities for TES III: Morrowind, TES IV: Oblivion, TES V: Skyrim, Nehrim - At Fate's Edge, Fallout 3 and Fallout: New Vegas.
 <p>BAPI has a C frontend and is available as 32-bit and 64-bit DLLs that can be loaded by other modding utilities. BAPI currently has the following capabilities:
 <ul>
-	<li>Support for Morrowind, Oblivion, Nehrim, Skyrim, Fallout 3 and Fallout: New Vegas.
-	<li>Support for Skyrim's new load order mechanism (present in Skyrim v1.4.26+).
+	<li>Support for Morrowind, Oblivion, Nehrim, Skyrim, Fallout 3 and Fallout: New Vegas, including support for Skyrim's load order mechanism.
 	<li>Get/Set the load order for all plugins.
 	<li>Get/Set the active plugins.
 	<li>Get/Set the load order position of individual plugins.
 	<li>Get/Set the active/inactive status of individual plugins.
 	<li>Get the filename of the plugin at a specific load order position.
+ <li>Check whether a plugin is a master or not.
 	<li>Auto-sort mods using BOSS's functionality.
 	<li>Trial auto-sorting of mods using BOSS's functionality, outputting the sorted order without actually making any changes.
 	<li>Create a slimmed-down BOSS masterlist containing only Bash Tag suggestions and dirty mod information.
-	<li>Download the latest BOSS masterlist.
-	<li>Extract dirty mod information from BOSS's masterlist.
-	<li>Extract Bash Tag suggestions from BOSS masterlist and userlist, differentiating between those added and removed.
+	<li>Download the latest BOSS masterlists.
+	<li>Extract dirty mod information from BOSS's masterlists.
+	<li>Extract Bash Tag suggestions from BOSS masterlists and userlists, differentiating between those added and removed.
+ <li>Extract all the messages attached to a plugin in a BOSS masterlist.
+ <li>Submit unrecognised plugins for addition to BOSS's masterlists.
 </ul>
 <p>BAPI is intended as a full solution to the management of load order and plugin activation status across all supported games, freeing client utilities from the requirement to maintain their own code for those functions. The source code is available at <a href="http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn%2Fcode%2Fboss-api%2Ftrunk">BOSS's Google Code repository</a>. BAPI is licensed as part of BOSS under the GNU General Public License v3, see the main BOSS readme for more information.
 
-<p>For those unfamiliar with BOSS and its files, the following is a brief summary of its main features.
-<p>BOSS is a utility that automatically sorts a user's load order to minimise incompatibilities. It does so according to the load order of the <dfn>masterlist</dfn>, which contains the optimal load order for all plugins known to BOSS and is kept up to date via community submissions to the BOSS Development Team. Each game that BOSS supports has a separate masterlist, and BOSS will by default check for masterlist updates and download the latest one for the relevant game when it runs.
-<p>The masterlist also contains a large number of messages attached to plugins conveying information on compatibility, requirements, installation errors, dirty mod information, Bash Tag suggestions for use with the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities, and more. These messages are displayed in the BOSS Log after BOSS has run, so that the user may read them and take any action that the messages suggest.
-<p>BOSS allows users to override, or add to, the positions mods are put in and the messages attached to each mod by the masterlist using a <dfn>userlist</dfn> file.
 
 <h2 id="lo">Load Orders</h2>
 <h3 id="lo-intro">Introduction To Load Ordering</h3>
@@ -126,7 +126,7 @@
 	<li><var>ghosted plugin</var>: Any plugin that has had a <code>.ghost</code> extension appended to its filename.
 </ul>
 
-<h3 id="intro-textfile">The Textfile-based Load Order Standard</h3>
+<h3 id="lo-textfile">The Textfile-based Load Order Standard</h3>
 <p>As the load order of all plugins, not just inactive plugins, is important, a standard solution that would allow ordering of inactive plugins was decided by Lojack (Wrye Bash), Kaburke (Nexus Mod Manager), WrinklyNinja (BOSS) and Dark0ne (owner of the Nexus sites) that could serve the community's needs. The BOSS API contains the canonical implementation of this standard.
 <p>The standard dictates that:
 <ul>

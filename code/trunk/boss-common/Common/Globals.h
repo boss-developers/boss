@@ -83,6 +83,7 @@ namespace boss {
 	BOSS_COMMON extern const fs::path rules_readme_path;
 	BOSS_COMMON extern const fs::path masterlist_doc_path;
 	BOSS_COMMON extern const fs::path api_doc_path;
+	BOSS_COMMON extern const fs::path version_history_path;
 	BOSS_COMMON extern const fs::path licenses_path;
 
 	

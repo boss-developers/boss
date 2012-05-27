@@ -56,9 +56,10 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_MENU ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
 	EVT_MENU ( OPTION_Run, MainFrame::OnRunBOSS )
 	EVT_MENU ( MENU_OpenMainReadMe, MainFrame::OnOpenFile )
-	EVT_MENU ( MENU_OpenUserRulesReadMe, MainFrame::OnOpenFile )
+	EVT_MENU ( MENU_OpenUserlistReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_OpenMasterlistReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_OpenAPIReadMe, MainFrame::OnOpenFile )
+	EVT_MENU ( MENU_OpenVersionHistory, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_OpenLicenses, MainFrame::OnOpenFile )
 	EVT_MENU ( OPTION_CheckForUpdates, MainFrame::OnUpdateCheck )
 	EVT_MENU ( MENU_ShowAbout, MainFrame::OnAbout )
@@ -233,10 +234,11 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	MenuBar->Append(GameMenu, wxT("&Active Game"));
     // About menu
     HelpMenu = new wxMenu();
-	HelpMenu->Append(MENU_OpenMainReadMe, wxT("Open &Main ReadMe"), wxT("Opens the main BOSS ReadMe in your default web browser."));
-	HelpMenu->Append(MENU_OpenUserRulesReadMe, wxT("Open &User Rules ReadMe"), wxT("Opens the User Rules ReadMe in your default web browser."));
-	HelpMenu->Append(MENU_OpenMasterlistReadMe, wxT("Open &Masterlist &ReadMe"), wxT("Opens the BOSS Masterlist Syntax ReadMe in your default web browser."));
-	//HelpMenu->Append(MENU_OpenAPIReadMe, wxT("&Open API ReadMe"), wxT("Opens the BOSS API ReadMe in your default web browser."));
+	HelpMenu->Append(MENU_OpenMainReadMe, wxT("Open &Main Readme"), wxT("Opens the main BOSS readme in your default web browser."));
+	HelpMenu->Append(MENU_OpenUserlistReadMe, wxT("Open &Userlist Syntax Doc"), wxT("Opens the BOSS userlist syntax documentation in your default web browser."));
+	HelpMenu->Append(MENU_OpenMasterlistReadMe, wxT("Open &Masterlist Syntax Doc"), wxT("Opens the BOSS masterlist syntax documentation in your default web browser."));
+	HelpMenu->Append(MENU_OpenAPIReadMe, wxT("&Open API Readme"), wxT("Opens the BOSS API readme in your default web browser."));
+	HelpMenu->Append(MENU_OpenAPIReadMe, wxT("Open &Version History"), wxT("Opens the BOSS version history in your default web browser."));
 	HelpMenu->Append(MENU_OpenLicenses, wxT("View &Copyright Licenses"), wxT("View the GNU General Public License v3.0 and GNU Free Documentation License v1.3."));
 	HelpMenu->AppendSeparator();
 	HelpMenu->Append(OPTION_CheckForUpdates, wxT("&Check For Updates..."), wxT("Checks for updates to BOSS."));
@@ -645,12 +647,14 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 		string file;
 		if (event.GetId() == MENU_OpenMainReadMe)
 			file = readme_path.string();
-		else if (event.GetId() == MENU_OpenUserRulesReadMe)
+		else if (event.GetId() == MENU_OpenUserlistReadMe)
 			file = rules_readme_path.string();
 		else if (event.GetId() == MENU_OpenMasterlistReadMe)
 			file = masterlist_doc_path.string();
 		else if (event.GetId() == MENU_OpenAPIReadMe)
 			file = api_doc_path.string();
+		else if (event.GetId() == MENU_OpenVersionHistory)
+			file = version_history_path.string();
 		else if (event.GetId() == MENU_OpenLicenses)
 			file = licenses_path.string();
 		//Look for file.

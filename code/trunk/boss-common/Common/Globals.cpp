@@ -66,10 +66,11 @@ namespace boss {
 	BOSS_COMMON const fs::path ini_path				= boss_path / "BOSS.ini";
 	BOSS_COMMON const fs::path old_ini_path			= boss_path / "BOSS.ini.old";
 	BOSS_COMMON const fs::path debug_log_path		= boss_path / "BOSSDebugLog.txt";
-	BOSS_COMMON const fs::path readme_path			= boss_path / "Docs" / "BOSS ReadMe.html";
-	BOSS_COMMON const fs::path rules_readme_path	= boss_path / "Docs" / "BOSS User Rules ReadMe.html";
+	BOSS_COMMON const fs::path readme_path			= boss_path / "Docs" / "BOSS Readme.html";
+	BOSS_COMMON const fs::path rules_readme_path	= boss_path / "Docs" / "BOSS Userlist Syntax.html";
 	BOSS_COMMON const fs::path masterlist_doc_path	= boss_path / "Docs" / "BOSS Masterlist Syntax.html";
-	BOSS_COMMON const fs::path api_doc_path			= boss_path / "Docs" / "BOSS API ReadMe.html";
+	BOSS_COMMON const fs::path api_doc_path			= boss_path / "Docs" / "BOSS API Readme.html";
+	BOSS_COMMON const fs::path version_history_path = boss_path / "Docs" / "BOSS Version History.html";
 	BOSS_COMMON const fs::path licenses_path		= boss_path / "Docs" / "Licenses.txt";
 
 
