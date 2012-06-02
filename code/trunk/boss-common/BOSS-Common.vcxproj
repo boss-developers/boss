@@ -108,7 +108,7 @@
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>BOSS</TargetName>
+    <TargetName>BOSS-Common</TargetName>
     <OutDir>$(SolutionDir)bin\$(Configuration)-$(PlatformArchitecture)\</OutDir>
     <IntDir>out\$(Configuration)-$(PlatformArchitecture)\</IntDir>
     <TargetExt>.lib</TargetExt>
