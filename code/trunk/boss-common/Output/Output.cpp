@@ -969,7 +969,7 @@ namespace boss {
 				<< "}"
 				<< "nav div.button:hover {background:#bbb;}"
 				<< "nav div.button.dark:hover {background:darkgrey;}"
-				<< "nav div.button.current {background:lightgrey;}"
+				<< "nav div.button.current {background:#bbb;}"
 				<< "nav div.button.current.dark {background:darkgrey;}"
 				<< "nav > footer {position:absolute;bottom:0;width:154px;background:inherit;}"
 				<< "header {padding:0.5em;padding-top:0;margin-bottom:1em;text-align:center;}"
