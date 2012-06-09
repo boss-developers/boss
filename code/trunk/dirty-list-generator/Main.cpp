@@ -111,6 +111,7 @@ int main() {
 			}
 		}
 		game = Game(detectedGame);
+		game.CreateBOSSGameFolder();
 		LOG_INFO("Game detected: %s", game.Name().c_str());
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());

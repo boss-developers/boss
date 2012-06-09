@@ -177,6 +177,7 @@ bool BossGUI::OnInit() {
 				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 		}
 		game = Game(detectedGame);
+		game.CreateBOSSGameFolder();
 		LOG_INFO("Game detected: %s", game.Name().c_str());
 	} catch (boss_error &e) {
 		return false;
@@ -739,6 +740,7 @@ void MainFrame::OnGameChange(wxCommandEvent& event) {
 		game = Game(MORROWIND);
 		break;
 	}
+	game.CreateBOSSGameFolder();
 	SetTitle(wxT("BOSS - " + game.Name()));
 }
 
@@ -838,6 +840,7 @@ void MainFrame::DisableUndetectedGames() {
 					game = Game(MORROWIND);
 					GameMenu->FindItem(MENU_Morrowind)->Check();
 				}
+				game.CreateBOSSGameFolder();
 			}
 	}
 	SetTitle(wxT("BOSS - " + game.Name()));

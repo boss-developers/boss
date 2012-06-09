@@ -75,6 +75,9 @@ namespace boss {
 		fs::path OldModlist() const;
 		fs::path Log(uint32_t format) const;
 
+		//Creates directory in BOSS folder for BOSS's game-specific files.
+		void CreateBOSSGameFolder();
+
 		//Apply the positioning of plugins in the masterlist to the modlist, putting unrecognised plugins after recognised plugins in their original order. Alters modlist.
 		void ApplyMasterlist();
 

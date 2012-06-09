@@ -352,7 +352,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 	else if (clientGame != OBLIVION && clientGame != FALLOUT3 && clientGame != FALLOUTNV && clientGame != NEHRIM && clientGame != SKYRIM && clientGame != MORROWIND)
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Invalid game specified.");
-
+	
 	//Set the locale to get encoding conversions working correctly.
 	setlocale(LC_CTYPE, "");
 	locale global_loc = locale();
@@ -369,7 +369,13 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Data path is empty.");
 	} else if (!Game(clientGame, "", true).IsInstalled())
 		return ReturnCode(BOSS_API_ERROR_GAME_NOT_FOUND);
-	Game game = Game(clientGame, data);
+
+	Game game;
+	try {
+		game = Game(clientGame, data);
+	} catch (boss_error& e) {
+		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+	}
 
 	//Now check if plugins.txt and loadorder.txt are in sync.
 	uint32_t crc1 = 0, crc2 = 0;
@@ -833,16 +839,14 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 		db->game.ApplyUserlist();
 		//Before the master partition is applied in SortPlugins(), record recognised and unrecognised plugins.
 		items = db->game.modlist.Items();
-		recognised = vector<Item>(items.begin(), items.begin() + db->game.modlist.LastRecognisedPos());
-		unrecognised = vector<Item>(items.begin() + db->game.modlist.LastRecognisedPos() + 1, items.end());
+		if (db->game.modlist.LastRecognisedPos() > 0) {
+			recognised = vector<Item>(items.begin(), items.begin() + db->game.modlist.LastRecognisedPos());
+			unrecognised = vector<Item>(items.begin() + db->game.modlist.LastRecognisedPos() + 1, items.end());
+		}
 		db->game.SortPlugins();
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
-
-	//Check size of array. If zero, exit.
-	if (recognised.empty())
-		return ReturnCode(BOSS_API_OK);
 
 	//Now create external arrays.
 	db->extStringArraySize = recognised.size();

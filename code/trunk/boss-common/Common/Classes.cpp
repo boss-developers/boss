@@ -233,11 +233,19 @@ namespace boss {
 	}
 
 	bool	Item::IsMasterFile(const Game& parentGame) const {
-		return IsPluginMaster(parentGame.DataFolder() / Data());
+		if (IsGhosted(parentGame))
+			return IsPluginMaster(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
+		else
+			return IsPluginMaster(parentGame.DataFolder() / Data());
 	}
 
 	bool	Item::IsFalseFlagged(const Game& parentGame) const {
-		return ((IsMasterFile(parentGame) && boost::algorithm::to_lower_copy(fs::path(Data()).extension().string()) != ".esm") || (!IsMasterFile(parentGame) && boost::algorithm::to_lower_copy(fs::path(Data()).extension().string()) == ".esm"));
+		string ext;
+		if (IsGhosted(parentGame))
+			ext = fs::path(Data()).stem().extension().string();
+		else
+			ext = fs::path(Data()).extension().string();
+		return ((IsMasterFile(parentGame) && !boost::iequals(ext, ".esm")) || (!IsMasterFile(parentGame) && boost::iequals(ext, ".esm")));
 	}
 
 	bool	Item::IsGhosted		(const Game& parentGame) const {
@@ -341,6 +349,7 @@ namespace boss {
 			ItemList::ItemList			() : lastRecognisedPos(0) {}
 
 	void	ItemList::Load				(const Game& parentGame, const fs::path path) {
+		items.clear();
 		if (fs::exists(path) && fs::is_directory(path)) {
 			LOG_DEBUG("Reading user mods...");
 			size_t max;
@@ -374,7 +383,7 @@ namespace boss {
 					//Now make sure that Skyrim.esm is first.
 					Move(0, Item("Skyrim.esm"));
 					//Add Update.esm if not already present.
-					if (Item("Update.esm").Exists(parentGame))
+					if (Item("Update.esm").Exists(parentGame) && FindItem("Update.esm", MOD) == items.size())
 						Move(GetLastMasterPos(parentGame) + 1, Item("Update.esm"));
 				}
 				//Then scan through loadorder, removing any plugins that aren't in the data folder.
@@ -388,7 +397,7 @@ namespace boss {
 			}
 			max = items.size();
 			//Now scan through Data folder. Add any plugins that aren't already in loadorder to loadorder, at the end.
-			for (fs::directory_iterator itr(parentGame.DataFolder()); itr!=fs::directory_iterator(); ++itr) {
+			for (fs::directory_iterator itr(path); itr!=fs::directory_iterator(); ++itr) {
 				const fs::path filename = itr->path().filename();
 				const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
 				if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
@@ -399,7 +408,7 @@ namespace boss {
 						tempItem = Item(filename.stem().string());
 					else
 						tempItem = Item(filename.string());
-					if (parentGame.GetLoadOrderMethod() == LOMETHOD_TEXTFILE && FindItem(tempItem.Name(), MOD) == max) {  //If the plugin is not in loadorder, add it.
+					if (parentGame.GetLoadOrderMethod() == LOMETHOD_TIMESTAMP || (parentGame.GetLoadOrderMethod() == LOMETHOD_TEXTFILE && FindItem(tempItem.Name(), MOD) == max)) {  //If the plugin is not in loadorder, add it.
 						items.push_back(tempItem);
 						max++;
 					}

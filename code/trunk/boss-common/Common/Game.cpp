@@ -275,10 +275,11 @@ namespace boss {
 					gamePath = boss_path / "..";
 				else
 					throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
-			}
+			} else
+				gamePath = fs::path(dataFolder).parent_path();
 			
-			//Check if game master file exists. Requires data path to be set. This should call MasterFile().Exists(), but that depends on gl_current_game ATM.
-			if (!fs::exists(DataFolder() / MasterFile().Name()))
+			//Check if game master file exists. Requires data path to be set.
+			if (!MasterFile().Exists(*this))
 				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, MasterFile().Name());
 			
 			//Requires data path to be set.
@@ -300,14 +301,6 @@ namespace boss {
 			} else {
 				pluginsPath = GetLocalAppDataPath() / appdataFolderName / pluginsFileName;
 				loadorderPath = GetLocalAppDataPath() / appdataFolderName / "loadorder.txt";
-			}
-		
-			//Make sure that the BOSS game path exists.
-			try {
-				if (!fs::exists(boss_path / bossFolderName))
-					fs::create_directory(boss_path / bossFolderName);
-			} catch (fs::filesystem_error e) {
-				throw boss_error(BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL, fs::path(boss_path / bossFolderName).string(), e.what());
 			}
 		}
 	}
@@ -416,6 +409,16 @@ namespace boss {
 #endif
 	}
 
+	void Game::CreateBOSSGameFolder() {
+		//Make sure that the BOSS game path exists.
+		try {
+			if (!fs::exists(boss_path / bossFolderName))
+				fs::create_directory(boss_path / bossFolderName);
+		} catch (fs::filesystem_error e) {
+			throw boss_error(BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL, fs::path(boss_path / bossFolderName).string(), e.what());
+		}
+	}
+
 	void Game::ApplyMasterlist() {
 		//Add all modlist and userlist mods and groups referenced in userlist to a hashset to optimise comparison against masterlist.
 		boost::unordered_set<string, ihash, iequal_to> mHashset, uHashset, addedItems;  //Holds mods and groups for checking against masterlist.
@@ -461,7 +464,7 @@ namespace boss {
 				if (addedItems.find(items[i].Name()) == addedItems.end()) {			//The mod is not already in the holding vector.
 					addedItems.insert(items[i].Name());								//Record it in the holding vector.
 					modlist.Move(addedNum, items[i]);
-					++addedNum;
+					addedNum++;
 				}
 			} else if (items[i].Type() == BEGINGROUP || items[i].Type() == ENDGROUP) { //Group lines must stay recorded.
 				if (uHashset.find(items[i].Name()) == uHashset.end())  //Mod not in modlist or userlist, skip.
@@ -470,11 +473,12 @@ namespace boss {
 				if (addedItems.find(items[i].Name()) == addedItems.end()) {
 					addedItems.insert(items[i].Name());								//Record it in the holding vector.
 					modlist.Move(addedNum, items[i]);
-					++addedNum;
+					addedNum++;
 				}
 			}
 		}
-		modlist.LastRecognisedPos(addedNum - 1);
+		if (addedNum > 0)
+			modlist.LastRecognisedPos(addedNum - 1);
 		//Modlist now contains the files in Data folder in load order, interspersed by other files that are not installed but referenced by the userlist, and groups.
 		//This is followed by the unrecognised plugins in their load order, and the last recognised position has been recorded.
 	}
