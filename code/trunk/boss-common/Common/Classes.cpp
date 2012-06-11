@@ -335,13 +335,18 @@ namespace boss {
 			//Return true if item1 goes before item2, false otherwise.
 			//Master files should go before other files.
 			//Groups should not change position (but master files should be able to cross groups).
-			if (item1.IsMasterFile(parentGame) && !item2.IsMasterFile(parentGame))
+
+			bool isItem1MasterFile = item1.IsMasterFile(parentGame);
+			bool isItem2MasterFile = item2.IsMasterFile(parentGame);
+
+			if (isItem1MasterFile && !isItem2MasterFile)
 				return true;
-			else if (!item1.IsMasterFile(parentGame) && item2.IsMasterFile(parentGame))
-				return false;
-			else if (parentGame.GetLoadOrderMethod() == LOMETHOD_TIMESTAMP)
-				return (difftime(item1.GetModTime(parentGame), item2.GetModTime(parentGame)) < 0);
-			else
+			else if (parentGame.GetLoadOrderMethod() == LOMETHOD_TIMESTAMP) {
+				if (!isItem1MasterFile && isItem2MasterFile)
+					return false;
+				else
+					return (difftime(item1.GetModTime(parentGame), item2.GetModTime(parentGame)) < 0);
+			} else
 				return false;
 		}
 	};
@@ -460,6 +465,16 @@ namespace boss {
 				}
 			}
 			in.close();
+
+			
+			//Then scan through items, removing any plugins that aren't in the data folder.
+			vector<Item>::iterator itemIter = items.begin();
+			while (itemIter != items.end()) {
+				if (!itemIter->Exists(parentGame))
+					itemIter = items.erase(itemIter);
+				else
+					++itemIter;
+			}
 
 			itemComparator ic(parentGame);
 			sort(items.begin(),items.end(), ic);  //Does this work?

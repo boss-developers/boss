@@ -252,12 +252,6 @@ namespace boss {
 		} else
 			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 
-		//Load order method init.
-		if (Id() == SKYRIM && GetVersion() >= Version("1.4.26.0"))
-			loMethod = LOMETHOD_TEXTFILE;
-		else
-			loMethod = LOMETHOD_TIMESTAMP;
-
 		//BOSS Log init.
 		bosslog.scriptExtender = ScriptExtender();
 		bosslog.gameName = Name();
@@ -302,6 +296,12 @@ namespace boss {
 				pluginsPath = GetLocalAppDataPath() / appdataFolderName / pluginsFileName;
 				loadorderPath = GetLocalAppDataPath() / appdataFolderName / "loadorder.txt";
 			}
+
+			//Load order method init. Requires game path to be set.
+			if (Id() == SKYRIM && GetVersion() >= Version("1.4.26.0"))
+				loMethod = LOMETHOD_TEXTFILE;
+			else
+				loMethod = LOMETHOD_TIMESTAMP;
 		}
 	}
 	
