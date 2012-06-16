@@ -900,7 +900,7 @@ namespace boss {
 				<< "<meta charset='utf-8'>"
 				<< "<title>BOSS Log</title>"
 				<< "<style>"
-				<< "body{font-family:Helvetica,sans-serifs;margin:0;height:100%;background:#f5f5f5;font-size:12pt;}"
+				<< "body{font-family:Helvetica,sans-serif;margin:0;height:100%;background:#f5f5f5;font-size:12pt;}"
 				<< "body.dark, #submitBox.dark{color:#eee;background:#222;}"
 				<< "a.dark:link{color:#0AF;}"
 				<< "a.dark:visited{color:#E000E0;}"
