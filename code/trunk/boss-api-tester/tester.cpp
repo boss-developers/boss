@@ -46,7 +46,7 @@ int main() {
 	boss_db db;
 	uint8_t * mPath = reinterpret_cast<uint8_t *>("Oblivion/masterlist.txt");
 	uint8_t * uPath = reinterpret_cast<uint8_t *>("");
-	uint8_t * dPath = reinterpret_cast<uint8_t *>("../Data");
+	uint8_t * gPath = reinterpret_cast<uint8_t *>("..");
 	uint32_t game = BOSS_API_GAME_OBLIVION;
 
 	const uint8_t * file = reinterpret_cast<uint8_t *>("minimal.txt");
@@ -73,11 +73,13 @@ int main() {
 	ofstream out("API test.txt");
 
 	out << "TESTING IsCompatibleVersion(...)" << endl;
-	bool b = IsCompatibleVersion(2,0,0);
+	bool b = IsCompatibleVersion(2,1,0);
 	if (b)
 		out << '\t' << "API is compatible." << endl;
-	else
+	else {
 		out << '\t' << "API is incompatible." << endl;
+		exit(0);
+	}
 
 	out << "TESTING GetVersionString(...)" << endl;
 	ret = GetVersionString(&message);

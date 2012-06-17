@@ -181,7 +181,7 @@ BOSS_API uint32_t GetVersionString (uint8_t ** bossVersionStr);
 // plugins.txt and loadorder.txt (if they both exist) are in sync. If 
 // dataPath == NULL then the API will attempt to detect the data path of
 // the specified game.
-BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame, const uint8_t * dataPath);
+BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame, const uint8_t * gamePath);
 
 // Destroys the given DB, freeing any memory allocated as part of its use.
 BOSS_API void DestroyBossDb (boss_db db);
@@ -342,9 +342,9 @@ BOSS_API uint32_t GetPluginMessages (boss_db db, const uint8_t * plugin, BossMes
 BOSS_API uint32_t IsRecognised (boss_db db, const uint8_t * plugin, bool * recognised);
 									
 // Writes a minimal masterlist that only contains mods that have Bash Tag suggestions, 
-// and/or dirty messages, plus the Tag suggestions and/or messages themselves. outputFile 
-// is the path to use for output. If  outputFile already exists, it will only be overwritten 
-// if overwrite is true.
+// and/or dirty messages, plus the Tag suggestions and/or messages themselves and their 
+// conditions, in order to create the Wrye Bash taglist. outputFile is the path to use 
+// for output. If outputFile already exists, it will only be overwritten if overwrite is true.
 BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const bool overwrite);
 
 

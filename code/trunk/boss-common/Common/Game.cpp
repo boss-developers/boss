@@ -151,9 +151,9 @@ namespace boss {
 	Game::Game() 
 		: id(AUTODETECT) {}
 	
-	Game::Game(const uint32_t inGame, const string dataFolder, const bool noPathInit) 
-		: id(inGame) {
-		if (inGame == OBLIVION) {
+	Game::Game(const uint32_t gameCode, const string path, const bool noPathInit) 
+		: id(gameCode) {
+		if (Id() == OBLIVION) {
 			name = "TES IV: Oblivion";
 			onlineId = "boss-oblivion";
 
@@ -169,7 +169,7 @@ namespace boss {
 			appdataFolderName = "Oblivion";
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
-		} else if (inGame == NEHRIM) {
+		} else if (Id() == NEHRIM) {
 			name = "Nehrim - At Fate's Edge";
 			onlineId = "boss-nehrim";
 			
@@ -185,7 +185,7 @@ namespace boss {
 			appdataFolderName = "Oblivion";
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
-		} else if (inGame == SKYRIM) {
+		} else if (Id() == SKYRIM) {
 			name = "TES V: Skyrim";
 			onlineId = "boss-skyrim";
 			
@@ -201,7 +201,7 @@ namespace boss {
 			appdataFolderName = "Skyrim";
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
-		} else if (inGame == FALLOUT3) {
+		} else if (Id() == FALLOUT3) {
 			name = "Fallout 3";
 			onlineId = "boss-fallout";
 			
@@ -217,7 +217,7 @@ namespace boss {
 			appdataFolderName = "Fallout3";
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
-		} else if (inGame == FALLOUTNV) {
+		} else if (Id() == FALLOUTNV) {
 			name = "Fallout: New Vegas";
 			onlineId = "boss-fallout-nv";
 			
@@ -233,7 +233,7 @@ namespace boss {
 			appdataFolderName = "FalloutNV";
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
-		} else if (inGame == MORROWIND) {
+		} else if (Id() == MORROWIND) {
 			name = "TES III: Morrowind";
 			onlineId = "boss-morrowind";
 			
@@ -259,7 +259,7 @@ namespace boss {
 		bosslog.unrecognisedPlugins.SetHTMLSpecialEscape(false);
 		
 		if (!noPathInit) {
-			if (dataFolder.empty()) {
+			if (path.empty()) {
 				//First look for local install, then look for Registry.
 				if (fs::exists(boss_path / ".." / pluginsFolderName / masterFile) || gl_update_only)
 					gamePath = boss_path / "..";
@@ -270,14 +270,14 @@ namespace boss {
 				else
 					throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 			} else
-				gamePath = fs::path(dataFolder).parent_path();
+				gamePath = fs::path(path);
 			
 			//Check if game master file exists. Requires data path to be set.
 			if (!MasterFile().Exists(*this))
 				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, MasterFile().Name());
 			
 			//Requires data path to be set.
-			if (inGame == OBLIVION && fs::exists(GameFolder() / "Oblivion.ini")) {
+			if (Id() == OBLIVION && fs::exists(GameFolder() / "Oblivion.ini")) {
 				//Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
 				Settings oblivionIni;
 				oblivionIni.Load(GameFolder() / "Oblivion.ini");  //This also sets the variable up.
@@ -289,7 +289,7 @@ namespace boss {
 					pluginsPath = GetLocalAppDataPath() / appdataFolderName / pluginsFileName;
 					loadorderPath = GetLocalAppDataPath() / appdataFolderName / "loadorder.txt";
 				}
-			} else if (inGame == MORROWIND) {
+			} else if (Id() == MORROWIND) {
 				pluginsPath = GameFolder() / pluginsFileName;
 				loadorderPath = GameFolder() / "loadorder.txt";
 			} else {

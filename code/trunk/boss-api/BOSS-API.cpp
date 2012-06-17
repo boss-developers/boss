@@ -313,6 +313,8 @@ BOSS_API uint32_t GetLastErrorDetails(uint8_t ** details) {
 BOSS_API bool IsCompatibleVersion (const uint32_t bossVersionMajor, const uint32_t bossVersionMinor, const uint32_t bossVersionPatch) {
 	if (bossVersionMajor < 2)  //The 1.9 API was different.
 		return false;
+	else if (bossVersionMajor == 2 && bossVersionMinor < 1) //The 2.0 API was different.
+		return false;
 	if (bossVersionMajor <= BOSS_VERSION_MAJOR && bossVersionMinor <= BOSS_VERSION_MINOR)
 		return true;
 	else
@@ -347,7 +349,7 @@ BOSS_API uint32_t GetVersionString (uint8_t ** bossVersionStr) {
 // is the path to that game's Data folder. This function also checks that
 // plugins.txt and loadorder.txt (if they both exist) are in sync.
 BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
-											   const uint8_t * dataPath) {
+											   const uint8_t * gamePath) {
 	if (db == NULL) //Check for valid args.
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 	else if (clientGame != OBLIVION && clientGame != FALLOUT3 && clientGame != FALLOUTNV && clientGame != NEHRIM && clientGame != SKYRIM && clientGame != MORROWIND)
@@ -362,17 +364,17 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 	//Set game. Because this is a global and there may be multiple DBs for different games,
 	//each time a DB's function is called, it should be reset.
 	//If dataPath is null, then we need to look for the specified game.
-	string data = "";
-	if (dataPath != NULL) {
-		data = string(reinterpret_cast<const char *>(dataPath));
-		if (data.empty())
-			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Data path is empty.");
+	string game_path = "";
+	if (gamePath != NULL) {
+		game_path = string(reinterpret_cast<const char *>(gamePath));
+		if (game_path.empty())
+			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Game path is empty.");
 	} else if (!Game(clientGame, "", true).IsInstalled())
 		return ReturnCode(BOSS_API_ERROR_GAME_NOT_FOUND);
 
 	Game game;
 	try {
-		game = Game(clientGame, data);
+		game = Game(clientGame, game_path);
 	} catch (boss_error& e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -1783,9 +1785,9 @@ BOSS_API uint32_t IsRecognised (boss_db db, const uint8_t * plugin, bool * recog
 }
 
 // Writes a minimal masterlist that only contains mods that have Bash Tag suggestions, 
-// and/or dirty messages, plus the Tag suggestions and/or messages themselves, in order 
-// to create the Wrye Bash taglist. outputFile is the path to use for output. If 
-// outputFile already exists, it will only be overwritten if overwrite is true.
+// and/or dirty messages, plus the Tag suggestions and/or messages themselves and their 
+// conditions, in order to create the Wrye Bash taglist. outputFile is the path to use 
+// for output. If outputFile already exists, it will only be overwritten if overwrite is true.
 BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const bool overwrite) {
 	//Check for valid args.
 	if (db == NULL || outputFile == NULL)
@@ -1806,10 +1808,18 @@ BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const boo
 					for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter) {
 						if (messageIter->Key() == TAG || messageIter->Key() == DIRTY) {
 							if (!namePrinted) {
+								if (!itemIter->Conditions().empty()) {
+									mlist << itemIter->Conditions() << ' ';
+									if (itemIter->Type() == MOD)
+										mlist << "MOD: ";
+								}
 								if (itemIter->Type() == REGEX)
 									mlist << "REGEX: ";
 								mlist << itemIter->Name() << endl;  //Print the mod name.
+								namePrinted = true;
 							}
+							if (!messageIter->Conditions().empty())
+								mlist << ' ' << messageIter->Conditions();
 							mlist << " " << messageIter->KeyToString() << ": " << messageIter->Data() << endl;
 						}
 					}
