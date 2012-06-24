@@ -14,6 +14,7 @@
 	code.box {line-height:20px; white-space:pre; margin:1em 0 0 3em; display:table; padding:5px 10px;}
 	ol li ol {list-style:lower-alpha;}
 	ol li ol li ol {list-style:lower-roman;}
+ ol ol li {margin-bottom:0.2em;}
 	blockquote {background:#E6E6FA; display:table; padding:5px 30px 5px 10px;}
 	h1 {text-align:center;font-size:24pt;}
 	h2 {margin-top:3em;font-size:20pt;}
@@ -21,6 +22,7 @@
 	h4 {margin-top:2em;font-size:12pt;}
 	a:link {text-decoration:none;}
 	a:hover {text-decoration:underline;}
+	a[href^="http"]:after {padding-left:2px; content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAVklEQVR4Xn3PgQkAMQhDUXfqTu7kTtkpd5RA8AInfArtQ2iRXFWT2QedAfttj2FsPIOE1eCOlEuoWWjgzYaB/IkeGOrxXhqB+uA9Bfcm0lAZuh+YIeAD+cAqSz4kCMUAAAAASUVORK5CYII=);}
 	
 	ul.errorMessages > li {margin-bottom:1.4em;}
 	td.t {background:#90ff90;text-align:center;}
@@ -49,7 +51,7 @@
 <p>A "one-click" program that quickly optimises plugin load orders for TES III: Morrowind, TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas.
 
 <h2>Contents</h2>
-<ol>
+<ol style="float:left;margin:0;margin-right:4em;">
 	<li><a href="#intro">Introduction</a>
 	<li><a href="#install">Installation</a>
 	<li><a href="#remove">Uninstallation</a>
@@ -86,7 +88,8 @@
 			<li><a href="#cli-ini-run">Run Options</a>
 		</ol>
 	</ol>
-	<li><a href="BOSS%20Userlist%20Syntax.html">Userlist Syntax</a> (separate document)
+</ol>
+<ol start="8" style="float:left;margin-top:0;">
 	<li><a href="#updates">Keeping BOSS Up To Date</a>
 	<li><a href="#files">BOSS Changes and Files</a>
 	<li><a href="#trouble">Troubleshooting</a>
@@ -106,8 +109,11 @@
 		<li><a href="#appendix-d">Appendix D: International Character Support</a>
   <li><a href="#appendix-e">Appendix E: Introduction To Load Orders</a>
 	</ol>
+	<li><a href="BOSS%20Userlist%20Syntax.html">Userlist Syntax</a> (separate document)
+	<li><a href="BOSS%20Userlist%20Syntax.html">API Readme</a> (separate document - for utility developers)
 	<li><a href="BOSS%20Version%20History.html">Version History</a> (separate document)
 </ol>
+<p style="clear:both;">
 
 <h2 id="intro">Introduction</h2>
 <p>BOSS helps mod users avoid serious conflicts by setting the mod plugins they have installed in their optimal load order. BOSS recognises over 22,100 plugins across the 6 games it supports, with the breakdown being roughly:
@@ -500,7 +506,7 @@ a problem for which no error message is given, please report the crash or proble
 	<dt>You get an error message of the form <q>There is a problem sending the command to the program.</q>
 		<dd>Windows sometimes does this when it tries to open files in their default application. If you're sure that you have a default program for HTML files set, restarting your computer generally fixes the issue.
 	<dt>Skyrim is installed, but BOSS cannot detect it.
-		<dd>Skyrim's Registry entry is missing. This happens to a lot of people, for some unknown reason. Run Skyrim's launcher to add the Registry entry back again.
+		<dd>Skyrim's Registry entry is missing. This happens to a lot of people, because Steam likes to remove it whenever Skyrim is updated or its game cache is verified. Run Skyrim's launcher to add the Registry entry back again.
 	<dt>Your browser supports the <q>Settings Memory</q> functionality of the HTML BOSS Log, but all your settings have been lost.
 		<dd>You've emptied your browser's cache, which is where the BOSS Log's settings are stored. If you've lost custom CSS settings, back them up in future. The other things remembered by the BOSS Log can be set back up how you like them in seconds.
 </dl>

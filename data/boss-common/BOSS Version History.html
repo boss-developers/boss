@@ -14,6 +14,7 @@
 	code.box {line-height:20px; white-space:pre; margin:1em 0 0 3em; display:table; padding:5px 10px;}
 	ol li ol {list-style:lower-alpha;}
 	ol li ol li ol {list-style:lower-roman;}
+ ol ol li {margin-bottom:0.2em;}
 	blockquote {background:#E6E6FA; display:table; padding:5px 30px 5px 10px;}
 	h1 {text-align:center;font-size:24pt;}
 	h2 {margin-top:3em;font-size:20pt;}
@@ -21,6 +22,7 @@
 	h4 {margin-top:2em;font-size:12pt;}
 	a:link {text-decoration:none;}
 	a:hover {text-decoration:underline;}
+	a[href^="http"]:after {padding-left:2px; content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAVklEQVR4Xn3PgQkAMQhDUXfqTu7kTtkpd5RA8AInfArtQ2iRXFWT2QedAfttj2FsPIOE1eCOlEuoWWjgzYaB/IkeGOrxXhqB+uA9Bfcm0lAZuh+YIeAD+cAqSz4kCMUAAAAASUVORK5CYII=);}
 	
 	ul.errorMessages > li {margin-bottom:1.4em;}
 	td.t {background:#90ff90;text-align:center;}
@@ -136,6 +138,14 @@
 		<li>Changed: The text in the drop-down boxes in the Rule Editor has been lowercased to read better.
 		<li>Added: Added messages now have their syntax checked before a rule is saved, and an error message is displayed if invalid syntax is found.
 	</ul>
+ <li>API changes:
+ <ul>
+  <li>Changed: CreateBossDb now takes the path to the game executable's folder, rather than the path to the game plugin's folder. It now also treats empty paths in the same manner as it does null path string pointers.
+  <li>Changed: DumpMinimal now includes conditionals in the file it creates.
+  <li>Changed: The API now caches the load order and active plugin list and does not re-load them unless the files/folders they are derived from have changed.
+	 <li>Added: SetProxy function.
+	 <li>Added: SubmitUnrecognisedPlugin function.
+ </ul>
 	<li>Added: GUI's Select Game dialog now displays the BOSS icon in the title bar, matching the other GUI windows.
 	<li>Added: <code>sLanguage</code> option to BOSS.ini, and Language setting to the GUI's Settings window, to control BOSS's operating language. These options are currently non-functional, with the translations themselves to be implemented shortly.
 	<li>Added: GUI now records the game it was last run for using the <code>sLastGame</code> BOSS.ini setting. If the <code>sGame</code> setting is set to <code>auto</code> (or the corresponding <q>Default Game</q> GUI setting set to <q>Autodetect</q>), then the GUI will first attempt to run for the game it was last run for. If the game cannot be detected, or the <code>sLastGame</code> setting is set to <code>auto</code>, then it will then prompt the user to select a game to run for.
@@ -145,8 +155,6 @@
 		<li>Added <code>Morrowind</code> value for the sGame BOSS.ini setting.
 		<li>Morrowind's masterlist is unmaintained, and only recognises Morrowind.esm, Bloodmoon.esm and Tribunal.esm. The support is primarily intended for the API, and those wanting auto-sorting of load orders should consider using mlox.
 	</ul>
-	<li>Added: SetProxy function to API.
-	<li>Added: SubmitUnrecognisedPlugin function to API.
 </ul>
 <h2>2.0.1 - <i>6 April 2012</i></h2>
 <ul>

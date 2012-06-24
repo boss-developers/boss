@@ -60,6 +60,10 @@ struct _boss_db_int {
 	//Internal data storage.
 	Game game;
 	ItemList rawMasterlist;
+	ItemList loadOrder;
+	ItemList activePlugins;
+	time_t activePluginsMTime;	//Holds the modification date of plugins.txt.
+	time_t loadOrderMTime;		//For timestamp-based system, holds modification date of loadorder.txt, otherwise it holds the modification date of the Data folder.
 	map<uint32_t,string> bashTagMap;				//A hashmap containing all the Bash Tag strings found in the masterlist and userlist and their unique IDs.
 													//Ordered to make ensuring UIDs easy (check the UID of the last element then increment). Strings are case-preserved.
 	
@@ -78,17 +82,19 @@ struct _boss_db_int {
 	size_t extMessageArraySize;
 
 	//Constructor
-	_boss_db_int() {
-		extTagMap = NULL;
-		extAddedTagIds = NULL;
-		extRemovedTagIds = NULL;
-		extString = NULL;
-		extStringArray = NULL;
-		extStringArray2 = NULL;
-		extMessageArray = NULL;
-		extStringArraySize = 0;
-		extStringArray2Size = 0;
-		extMessageArraySize = 0;
+	_boss_db_int() 
+		: extTagMap(NULL), 
+		extAddedTagIds(NULL), 
+		extRemovedTagIds(NULL), 
+		extString(NULL), 
+		extStringArray(NULL), 
+		extStringArray2(NULL), 
+		extMessageArray(NULL), 
+		extStringArraySize(0),
+		extStringArray2Size(0),
+		extMessageArraySize(0),
+		activePluginsMTime(0),
+		loadOrderMTime(0) {
 	}
 
 	~_boss_db_int() {
@@ -280,6 +286,32 @@ protected:
 	}
 };
 
+time_t GetLoadOrderMTime(const Game& game) {
+	try {			
+		if (game.GetLoadOrderMethod() == LOMETHOD_TEXTFILE) {
+			//Load order is stored in game.LoadOrderFile(), but load order must also be reloaded if game.DataFolder() has been altered.
+			time_t t1 = fs::last_write_time(game.LoadOrderFile());
+			time_t t2 = fs::last_write_time(game.DataFolder());
+			if (t1 > t2) //Return later time.
+				return t1;
+			else
+				return t2;
+		} else
+			return fs::last_write_time(game.DataFolder());
+	} catch(fs::filesystem_error e) {
+		throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, game.DataFolder().string(), e.what());
+	}
+}
+
+//Not really necessary, but it means we can handle the two mtime checks similarly.
+time_t GetActivePluginsMTime(const Game& game) {
+	try {			
+		return fs::last_write_time(game.ActivePluginsFile());
+	} catch(fs::filesystem_error e) {
+		throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, game.ActivePluginsFile().string(), e.what());
+	}
+}
+
 
 //////////////////////////////
 // Error Handling Functions
@@ -365,16 +397,12 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 	//each time a DB's function is called, it should be reset.
 	//If dataPath is null, then we need to look for the specified game.
 	string game_path = "";
-	if (gamePath != NULL) {
+	if (gamePath != NULL)
 		game_path = string(reinterpret_cast<const char *>(gamePath));
-		if (game_path.empty())
-			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Game path is empty.");
-	} else if (!Game(clientGame, "", true).IsInstalled())
-		return ReturnCode(BOSS_API_ERROR_GAME_NOT_FOUND);
 
 	Game game;
 	try {
-		game = Game(clientGame, game_path);
+		game = Game(clientGame, game_path);  //This also checks to see if the game is installed if game_path is empty and throws an exception if it is not detected.
 	} catch (boss_error& e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -897,16 +925,16 @@ BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t *** plugins, size_t * numPlug
 		db->extStringArraySize = 0;
 	}
 
-	ItemList loadorder;
 	try {
-		loadorder.Load(db->game, db->game.DataFolder());
+		if (GetLoadOrderMTime(db->game) != db->loadOrderMTime)
+			db->loadOrder.Load(db->game, db->game.DataFolder());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Need to throw out any repeats. Keep only the first instance of a plugin.
 	boost::unordered_set<string> hashset;
-	vector<Item> items = loadorder.Items();
+	vector<Item> items = db->loadOrder.Items();
 	vector<Item>::iterator itemIter = items.begin();
 	while (itemIter != items.end()) {
 		//Check if plugin is in hashset. If not, add it.
@@ -950,22 +978,22 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before the game's master file.");
 
 	//Create a vector to hold the new loadorder.
-	ItemList loadorder;
+	db->loadOrder.Clear();
 	//We need to loop through the plugin array given and enter each plugin into the vector.
 	for (size_t i=0; i < numPlugins; i++) {
-		loadorder.Insert(i, Item(string(reinterpret_cast<const char *>(plugins[i]))));
+		db->loadOrder.Insert(i, Item(string(reinterpret_cast<const char *>(plugins[i]))));
 	}
-	size_t loSize = loadorder.Items().size();
+	size_t loSize = db->loadOrder.Items().size();
 
 	//Check to see if the masters before plugins rule is being obeyed.
 	try {
-		size_t pos = loadorder.GetLastMasterPos(db->game);
-		if (loadorder.GetNextMasterPos(db->game, pos+1) != loSize)  //Masters exist after the initial set of masters. Not allowed.
+		size_t pos = db->loadOrder.GetLastMasterPos(db->game);
+		if (db->loadOrder.GetNextMasterPos(db->game, pos+1) != loSize)  //Masters exist after the initial set of masters. Not allowed.
 			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Master files must load before other plugins.");
 
 		//If Update.esm is installed, check if it is listed. If not, add it after the rest of the master files.
-		if (db->game.Id() == SKYRIM && fs::exists(db->game.DataFolder() / "Update.esm") && loadorder.FindItem("Update.esm", MOD) == loSize) {
-			loadorder.Insert(pos + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
+		if (db->game.Id() == SKYRIM && fs::exists(db->game.DataFolder() / "Update.esm") && db->loadOrder.FindItem("Update.esm", MOD) == loSize) {
+			db->loadOrder.Insert(pos + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadOrder.size().
 			loSize++;
 		}
 	} catch (boss_error &e) {
@@ -984,14 +1012,14 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 				tempItem = Item(filename.stem().string());
 			else
 				tempItem = Item(filename.string());
-			if (loadorder.FindItem(tempItem.Name(), MOD) == loSize) {  //If the plugin is not present, add it.
-				loadorder.Insert(loSize, tempItem);
+			if (db->loadOrder.FindItem(tempItem.Name(), MOD) == loSize) {  //If the plugin is not present, add it.
+				db->loadOrder.Insert(loSize, tempItem);
 				loSize++;
 			}
 		}
 	}
 	try {
-		loadorder.ApplyMasterPartition(db->game);  //Apply partition to sort those just added.
+		db->loadOrder.ApplyMasterPartition(db->game);  //Apply partition to sort those just added.
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
@@ -999,11 +1027,13 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 	if (db->game.GetLoadOrderMethod() == LOMETHOD_TEXTFILE) { //Skyrim.
 		//Now save the new loadorder. Also update the plugins.txt.
 		try {
-			loadorder.SavePluginNames(db->game, db->game.LoadOrderFile(), false, false);
-			loadorder.SavePluginNames(db->game, db->game.ActivePluginsFile(), true, true);
+			db->loadOrder.SavePluginNames(db->game, db->game.LoadOrderFile(), false, false);
+			db->loadOrder.SavePluginNames(db->game, db->game.ActivePluginsFile(), true, true);
 		} catch (boss_error &e) {
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
+		//Now update cached mtime for plugins.txt.
+		db->activePluginsMTime = GetActivePluginsMTime(db->game);
 	} else {  //Non-skyrim.
 		//Get the master time to derive dates from.
 		time_t masterTime;
@@ -1014,7 +1044,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 		}
 
 		//Loop through given array and set the modification time for each one.
-		vector<Item> items = loadorder.Items();
+		vector<Item> items = db->loadOrder.Items();
 		for (size_t i=0; i < loSize; i++) {
 			if (!items[i].IsGameMasterFile(db->game)) {
 				try {
@@ -1025,6 +1055,8 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 			}
 		}
 	}
+	//Now update cached mtime for load order.
+	db->loadOrderMTime = GetLoadOrderMTime(db->game);
 
 	return ReturnCode(BOSS_API_OK);
 }
@@ -1048,26 +1080,25 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 	}
 
 	//Load plugins.txt.
-	ItemList pluginsTxt;
 	try {
-		if (fs::exists(db->game.ActivePluginsFile()))
-			pluginsTxt.Load(db->game, db->game.ActivePluginsFile());
+		if (fs::exists(db->game.ActivePluginsFile()) && GetActivePluginsMTime(db->game) != db->activePluginsMTime)
+			db->activePlugins.Load(db->game, db->game.ActivePluginsFile());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 	
 	//If Skyrim, we want to also output Skyrim.esm, Update.esm, if they are missing.
-	size_t size = pluginsTxt.Items().size();
+	size_t size = db->activePlugins.Items().size();
 	if (db->game.Id() == SKYRIM) {
 		//Check if Skyrim.esm is missing.
-		if (pluginsTxt.FindItem("Skyrim.esm", MOD) == size) {
-			pluginsTxt.Insert(0, Item("Skyrim.esm"));
+		if (db->activePlugins.FindItem("Skyrim.esm", MOD) == size) {
+			db->activePlugins.Insert(0, Item("Skyrim.esm"));
 			size++;
 		}
 		//If Update.esm is installed, check if it is listed. If not, add it after the rest of the master files.
-		if (fs::exists(db->game.DataFolder() / "Update.esm") && pluginsTxt.FindItem("Update.esm", MOD) == size) {
+		if (fs::exists(db->game.DataFolder() / "Update.esm") && db->activePlugins.FindItem("Update.esm", MOD) == size) {
 			try {
-				pluginsTxt.Insert(pluginsTxt.GetLastMasterPos(db->game) + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
+				db->activePlugins.Insert(db->activePlugins.GetLastMasterPos(db->game) + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
 				size++;
 			} catch (boss_error &e) {
 				return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
@@ -1076,7 +1107,7 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 	}
 
 	//Check array size. Exit if zero.
-	vector<Item> items = pluginsTxt.Items();
+	vector<Item> items = db->activePlugins.Items();
 	if (items.empty())
 		return ReturnCode(BOSS_API_OK);
 
@@ -1110,11 +1141,11 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 	if (numPlugins > 0 && !Item(string(reinterpret_cast<const char *>(plugins[0]))).IsGameMasterFile(db->game))
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before the game's master file.");
 
-	//Fill an ItemList with the input.
-	ItemList pluginsTxt;
+	//Fill the ItemList with the input.
+	db->activePlugins.Clear();
 	for (size_t i=0; i < numPlugins; i++) {
 		Item plugin = Item(string(reinterpret_cast<const char *>(plugins[i])));
-		pluginsTxt.Insert(i, plugin);
+		db->activePlugins.Insert(i, plugin);
 		try {
 			plugin.UnGhost(db->game);
 		} catch (boss_error &e) {
@@ -1123,15 +1154,15 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 	}
 
 	//If Update.esm is installed, check if it is listed. If not, add it (order is decided later).
-	size_t size = pluginsTxt.Items().size();
-	if (db->game.Id() == SKYRIM && fs::exists(db->game.DataFolder() / "Update.esm") && pluginsTxt.FindItem("Update.esm", MOD) == size) {
-		pluginsTxt.Insert(size, Item("Update.esm")); 
+	size_t size = db->activePlugins.Items().size();
+	if (db->game.Id() == SKYRIM && fs::exists(db->game.DataFolder() / "Update.esm") && db->activePlugins.FindItem("Update.esm", MOD) == size) {
+		db->activePlugins.Insert(size, Item("Update.esm")); 
 	}
 
 	//Now save plugins.txt.
 	string badFilename;
 	try {
-		pluginsTxt.SavePluginNames(db->game, db->game.ActivePluginsFile(), false, true);  //False to ensure newly-added plugins are actually added.
+		db->activePlugins.SavePluginNames(db->game, db->game.ActivePluginsFile(), false, true);  //False to ensure newly-added plugins are actually added.
 	} catch (boss_error &e) {
 		if (e.getCode() == BOSS_ERROR_ENCODING_CONVERSION_FAIL)
 			badFilename = e.getString();
@@ -1142,16 +1173,21 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 	//Now if running for textfile-based load order system, reorder plugins.txt, deriving the order from loadorder.txt.
 	if (db->game.GetLoadOrderMethod() == LOMETHOD_TEXTFILE) {
 		//Now get the load order from loadorder.txt.
-		ItemList loadorder;
 		try {
-			loadorder.Load(db->game, db->game.DataFolder());
+			if (GetLoadOrderMTime(db->game) != db->loadOrderMTime)
+				db->loadOrder.Load(db->game, db->game.DataFolder());
 			//Save the load order and derive plugins.txt order from it.
-			loadorder.SavePluginNames(db->game, db->game.LoadOrderFile(), false, false);
-			loadorder.SavePluginNames(db->game, db->game.ActivePluginsFile(), true, true);
+			db->loadOrder.SavePluginNames(db->game, db->game.LoadOrderFile(), false, false);
+			db->loadOrder.SavePluginNames(db->game, db->game.ActivePluginsFile(), true, true);
+			//Now update cached mtime.
+			db->loadOrderMTime = GetLoadOrderMTime(db->game);
 		} catch (boss_error &e) {
 			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
 	}
+	//Now update cached mtimes.
+	db->activePluginsMTime = GetActivePluginsMTime(db->game);
+
 	if (badFilename.empty())
 		return ReturnCode(BOSS_API_OK);
 	else
@@ -1168,16 +1204,16 @@ BOSS_API uint32_t GetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 	*index = 0;
 
 	//Now get the load order.
-	ItemList loadorder;
 	try {
-		loadorder.Load(db->game, db->game.DataFolder());
+		if (GetLoadOrderMTime(db->game) != db->loadOrderMTime)
+			db->loadOrder.Load(db->game, db->game.DataFolder());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Now search for the given plugin.
-	size_t pos = loadorder.FindItem(string(reinterpret_cast<const char *>(plugin)), MOD);
-	if (pos == loadorder.Items().size())
+	size_t pos = db->loadOrder.FindItem(string(reinterpret_cast<const char *>(plugin)), MOD);
+	if (pos == db->loadOrder.Items().size())
 		return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND);
 
 	//Set output.
@@ -1201,36 +1237,38 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before the game's master file.");
 
 
-	//Now get the load order from loadorder.txt.
-	ItemList loadorder;
+	//Now get the current load order.
 	try {
-		loadorder.Load(db->game, db->game.DataFolder());
+		if (GetLoadOrderMTime(db->game) != db->loadOrderMTime)
+			db->loadOrder.Load(db->game, db->game.DataFolder());
 		//Check to see if the masters before plugins rule is being obeyed.
-		if (Item(pluginStr).IsMasterFile(db->game) && index > loadorder.GetLastMasterPos(db->game) + 1)  //Sorting master after plugin, not allowed.
+		if (Item(pluginStr).IsMasterFile(db->game) && index > db->loadOrder.GetLastMasterPos(db->game) + 1)  //Sorting master after plugin, not allowed.
 			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Masters may not be sorted after non-master plugins.");
-		else if (!Item(pluginStr).IsMasterFile(db->game) && index <= loadorder.GetLastMasterPos(db->game))  //Sorting plugin before master, not allowed.
+		else if (!Item(pluginStr).IsMasterFile(db->game) && index <= db->loadOrder.GetLastMasterPos(db->game))  //Sorting plugin before master, not allowed.
 			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Non-master plugins may not be sorted before master plugins.");
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Now search for the given plugin.
-	size_t pos = loadorder.FindItem(pluginStr, MOD);
+	size_t pos = db->loadOrder.FindItem(pluginStr, MOD);
 	if (pos == index)
 		return ReturnCode(BOSS_API_OK);
-	if (pos != loadorder.Items().size())  //Plugin found. Erase it.
-		loadorder.Erase(pos);
+	if (pos != db->loadOrder.Items().size())  //Plugin found. Erase it.
+		db->loadOrder.Erase(pos);
 
 	//Now insert the plugin into its new position.
-	if (index >= loadorder.Items().size())
-		index = loadorder.Items().size()-1;
-	loadorder.Insert(index, Item(pluginStr));
+	if (index >= db->loadOrder.Items().size())
+		index = db->loadOrder.Items().size()-1;
+	db->loadOrder.Insert(index, Item(pluginStr));
 
 	if (db->game.GetLoadOrderMethod() == LOMETHOD_TEXTFILE) { //Skyrim.
 		//Now write out the new loadorder.txt. Also update the plugins.txt.
 		try {
-			loadorder.SavePluginNames(db->game, db->game.LoadOrderFile(), false, false);
-			loadorder.SavePluginNames(db->game, db->game.ActivePluginsFile(), true, true);
+			db->loadOrder.SavePluginNames(db->game, db->game.LoadOrderFile(), false, false);
+			db->loadOrder.SavePluginNames(db->game, db->game.ActivePluginsFile(), true, true);
+			//Now update cached mtime.
+			db->activePluginsMTime = GetActivePluginsMTime(db->game);
 		} catch (boss_error &e) {
 			return ReturnCode(e.getCode(), e.getString());
 		}
@@ -1255,7 +1293,7 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 		}
 
 		//Now set the new timestamps.
-		vector<Item> items = loadorder.Items();
+		vector<Item> items = db->loadOrder.Items();
 		size_t max = items.size();
 
 		if (index - pos >= max - 3 || pos - index >= max - 3) {  //Equivalent to abs(), which doesn't have size_t overloads.
@@ -1296,6 +1334,8 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 			}
 		}
 	}
+	//Now update cached mtime.
+	db->loadOrderMTime = GetLoadOrderMTime(db->game);
 
 	return ReturnCode(BOSS_API_OK);
 }
@@ -1313,20 +1353,20 @@ BOSS_API uint32_t GetIndexedPlugin(boss_db db, const size_t index, uint8_t ** pl
 	db->extString = NULL;
 
 	//Now get the load order.
-	ItemList loadorder;
 	try {
-		loadorder.Load(db->game, db->game.DataFolder());
+		if (GetLoadOrderMTime(db->game) != db->loadOrderMTime)
+			db->loadOrder.Load(db->game, db->game.DataFolder());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Check that the index is within bounds.
-	if (index >= loadorder.Items().size())
+	if (index >= db->loadOrder.Items().size())
 		return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND);
 
 	//Allocate memory.
 	try {
-		db->extString = StringToUint8_tString(loadorder.ItemAt(index).Name());
+		db->extString = StringToUint8_tString(db->loadOrder.ItemAt(index).Name());
 	} catch (bad_alloc &e) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 	}
@@ -1368,46 +1408,49 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 	}
 
 	//Load plugins.txt.
-	ItemList pluginsList;
 	try {
-		if (fs::exists(db->game.ActivePluginsFile()))
-			pluginsList.Load(db->game, db->game.ActivePluginsFile());
+		if (fs::exists(db->game.ActivePluginsFile()) && GetActivePluginsMTime(db->game) != db->activePluginsMTime)
+			db->activePlugins.Load(db->game, db->game.ActivePluginsFile());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//If Update.esm is installed, check if it is listed. If not, add it (order is decided later).
-	size_t size = pluginsList.Items().size();
-	if (db->game.Id() == SKYRIM && fs::exists(db->game.DataFolder() / "Update.esm") && pluginsList.FindItem("Update.esm", MOD) == size) {
-		pluginsList.Insert(size, Item("Update.esm")); 
+	size_t size = db->activePlugins.Items().size();
+	if (db->game.Id() == SKYRIM && fs::exists(db->game.DataFolder() / "Update.esm") && db->activePlugins.FindItem("Update.esm", MOD) == size) {
+		db->activePlugins.Insert(size, Item("Update.esm")); 
 	}
 
 	//Check if the given plugin is in plugins.txt.
-	if (pluginsList.FindItem(pluginStr, MOD) != pluginsList.Items().size() && !active) //Exists, but shouldn't.
-		pluginsList.Erase(pluginsList.FindItem(pluginStr, MOD));
-	else if (pluginsList.FindItem(pluginStr, MOD) == pluginsList.Items().size() && active)  //Doesn't exist, but should.
-		pluginsList.Insert(pluginsList.Items().size(), pluginStr);
+	if (db->activePlugins.FindItem(pluginStr, MOD) != db->activePlugins.Items().size() && !active) //Exists, but shouldn't.
+		db->activePlugins.Erase(db->activePlugins.FindItem(pluginStr, MOD));
+	else if (db->activePlugins.FindItem(pluginStr, MOD) == db->activePlugins.Items().size() && active)  //Doesn't exist, but should.
+		db->activePlugins.Insert(db->activePlugins.Items().size(), pluginStr);
 
 	//Check that there aren't too many plugins in plugins.txt.
-	if (pluginsList.Items().size() > 255)
+	if (db->activePlugins.Items().size() > 255)
 		return ReturnCode(BOSS_API_ERROR_PLUGINS_FULL);
-	else if (db->game.GetLoadOrderMethod() == LOMETHOD_TEXTFILE && pluginsList.Items().size() > 254)  //textfile-based system doesn't list Skyrim.esm in plugins.txt.
+	else if (db->game.GetLoadOrderMethod() == LOMETHOD_TEXTFILE && db->activePlugins.Items().size() > 254)  //textfile-based system doesn't list Skyrim.esm in plugins.txt.
 		return ReturnCode(BOSS_API_ERROR_PLUGINS_FULL);
 
 	//Now save the change.
 	try {
-		pluginsList.SavePluginNames(db->game, db->game.ActivePluginsFile(), false, true);  //Must be false because we're not adding a currently active file, if we're adding something.
+		db->activePlugins.SavePluginNames(db->game, db->game.ActivePluginsFile(), false, true);  //Must be false because we're not adding a currently active file, if we're adding something.
 		if (db->game.GetLoadOrderMethod() == LOMETHOD_TEXTFILE) {
-			//Now get the load order from loadorder.txt.
-			ItemList loadorder;
-			loadorder.Load(db->game, db->game.DataFolder());
+			//Now get the current load order.
+			if (GetLoadOrderMTime(db->game) != db->loadOrderMTime)
+				db->loadOrder.Load(db->game, db->game.DataFolder());
 			//Save the load order and derive plugins.txt order from it.
-			loadorder.SavePluginNames(db->game, db->game.LoadOrderFile(), false, false);
-			loadorder.SavePluginNames(db->game, db->game.ActivePluginsFile(), true, true);
+			db->loadOrder.SavePluginNames(db->game, db->game.LoadOrderFile(), false, false);
+			db->loadOrder.SavePluginNames(db->game, db->game.ActivePluginsFile(), true, true);
+			//Now update cached mtime.
+			db->loadOrderMTime = GetLoadOrderMTime(db->game);
 		}
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());
 	}
+	//Now update cached mtimes.
+	db->activePluginsMTime = GetActivePluginsMTime(db->game);
 
 	return ReturnCode(BOSS_API_OK);
 }
@@ -1430,14 +1473,14 @@ BOSS_API uint32_t IsPluginActive(boss_db db, const uint8_t * plugin, bool * isAc
 	//Load plugins.txt. A hashset would be more efficient.
 	ItemList pluginsList;
 	try {
-		if (fs::exists(db->game.ActivePluginsFile()))
-			pluginsList.Load(db->game, db->game.ActivePluginsFile());
+		if (fs::exists(db->game.ActivePluginsFile()) && GetActivePluginsMTime(db->game) != db->activePluginsMTime)
+			db->activePlugins.Load(db->game, db->game.ActivePluginsFile());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 	
 	//Check if the given plugin is in plugins.txt.
-	if (pluginsList.FindItem(pluginStr, MOD) != pluginsList.Items().size())
+	if (db->activePlugins.FindItem(pluginStr, MOD) != db->activePlugins.Items().size())
 		*isActive = true;
 	else
 		*isActive = false;
