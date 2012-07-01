@@ -375,9 +375,7 @@ namespace boss {
 				if (fs::exists(parentGame.LoadOrderFile()))  //If the loadorder.txt exists, get the active plugin load order from that.
 					Load(parentGame, parentGame.LoadOrderFile());
 				else if (parentGame.Id() == SKYRIM) {
-					//First add Skyrim.esm.
-					items.push_back(Item("Skyrim.esm"));
-					//Now check if plugins.txt exists. If so, add any plugins in it that aren't in loadorder.
+					//Check if plugins.txt exists. If so, add any plugins in it that aren't in loadorder.
 					ItemList plugins;
 					if (fs::exists(parentGame.ActivePluginsFile())) {
 						plugins.Load(parentGame, parentGame.ActivePluginsFile());
