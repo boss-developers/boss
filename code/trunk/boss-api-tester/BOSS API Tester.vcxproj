@@ -95,7 +95,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\bin\$(Configuration)-$(PlatformArchitecture)\;$(ProjectDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);%(AdditionalIncludeDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>boss$(PlatformArchitecture).dll;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boss$(PlatformArchitecture).lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -111,7 +111,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\bin\$(Configuration)-$(PlatformArchitecture)\;$(ProjectDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);%(AdditionalIncludeDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>boss$(PlatformArchitecture).dll;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boss$(PlatformArchitecture).lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -131,7 +131,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(ProjectDir)..\bin\$(Configuration)-$(PlatformArchitecture)\;$(ProjectDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);%(AdditionalIncludeDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>boss$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boss$(PlatformArchitecture).lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -151,7 +151,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(ProjectDir)..\bin\$(Configuration)-$(PlatformArchitecture)\;$(ProjectDir)..\..\..\lib\boost\stage\lib-$(PlatformArchitecture);%(AdditionalIncludeDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>boss$(PlatformArchitecture).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boss$(PlatformArchitecture).lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

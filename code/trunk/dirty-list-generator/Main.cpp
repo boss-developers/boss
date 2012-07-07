@@ -154,7 +154,7 @@ int main() {
 	ItemList tempItemList;
 	tempItemList.Items(masterlist);
 	for (vector<Item>::iterator itemIter = cleanlist.begin(); itemIter != cleanlist.end(); ++itemIter) {
-		pos = tempItemList.FindItem(itemIter->Name());
+		pos = tempItemList.FindItem(itemIter->Name(), MOD);
 		if (pos != tempItemList.Items().size())
 			tempItemList.Erase(pos);
 	}
