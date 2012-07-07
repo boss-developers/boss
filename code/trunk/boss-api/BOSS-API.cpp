@@ -288,7 +288,7 @@ protected:
 
 time_t GetLoadOrderMTime(const Game& game) {
 	try {			
-		if (game.GetLoadOrderMethod() == LOMETHOD_TEXTFILE) {
+		if (game.GetLoadOrderMethod() == LOMETHOD_TEXTFILE && fs::exists(game.LoadOrderFile())) {
 			//Load order is stored in game.LoadOrderFile(), but load order must also be reloaded if game.DataFolder() has been altered.
 			time_t t1 = fs::last_write_time(game.LoadOrderFile());
 			time_t t2 = fs::last_write_time(game.DataFolder());
@@ -305,8 +305,11 @@ time_t GetLoadOrderMTime(const Game& game) {
 
 //Not really necessary, but it means we can handle the two mtime checks similarly.
 time_t GetActivePluginsMTime(const Game& game) {
-	try {			
-		return fs::last_write_time(game.ActivePluginsFile());
+	try {
+		if (fs::exists(game.ActivePluginsFile()))
+			return fs::last_write_time(game.ActivePluginsFile());
+		else
+			return 0;
 	} catch(fs::filesystem_error e) {
 		throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, game.ActivePluginsFile().string(), e.what());
 	}
