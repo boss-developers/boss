@@ -103,11 +103,11 @@
 	<li><a href="#links">Quick Links</a>
 	<li><a href="#appendix">Appendices</a>
 	<ol>
-		<li><a href="#appendix-a">Appendix A: Dirty Edits, Mod Cleaning &amp; CRCs</a>
-		<li><a href="#appendix-b">Appendix B: False-Flagged Plugins</a>
-		<li><a href="#appendix-c">Appendix C: File Permissions</a>
-		<li><a href="#appendix-d">Appendix D: International Character Support</a>
-  <li><a href="#appendix-e">Appendix E: Introduction To Load Orders</a>
+  <li><a href="#appendix-a">Appendix A: Introduction To Load Orders</a>
+		<li><a href="#appendix-b">Appendix B: Dirty Edits, Mod Cleaning &amp; CRCs</a>
+		<li><a href="#appendix-c">Appendix C: False-Flagged Plugins</a>
+		<li><a href="#appendix-d">Appendix D: File Permissions</a>
+		<li><a href="#appendix-e">Appendix E: International Character Support</a>
 	</ol>
 	<li><a href="BOSS%20Userlist%20Syntax.html">Userlist Syntax</a> (separate document)
 	<li><a href="BOSS%20Userlist%20Syntax.html">API Readme</a> (separate document - for utility developers)
@@ -124,7 +124,7 @@
 	<li>3,100+ Fallout: New Vegas plugins.
 	<li>180+ Nehrim - At Fate's Edge plugins.
 </ul>
-<p>To set the proper load order for mod plugins that BOSS doesn't know about, a good working knowledge of load ordering is still necessary. See <a href="#appendix-e">Introduction To Load Orders</a> for an overview.
+<p>To set the proper load order for mod plugins that BOSS doesn't know about, a good working knowledge of load ordering is still necessary. See <a href="#appendix-a">Introduction To Load Orders</a> for an overview.
 <p><strong>Although BOSS technically supports TES III: Morrowind, no mod plugins are recognised and no further support is planned.</strong> Morrowind users looking for an automated load order manager should consider using <a href="http://code.google.com/p/mlox/">mlox</a> instead.
 <p>BOSS sorts plugins ghosted by the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities, and provides Bash Tag suggestions. It also provides over 10,000 plugin-specific messages, including usage notes, requirements, incompatibilities, warnings on bugs and installation mistake notifications. The positioning of plugins and the messages BOSS displays for them can be easily customised, and BOSS has a large number of options to control its features and how it displays its output.
 <p>Finally, if you're developing a modding utility and find yourself dealing with load orders, the BOSS API gives access to almost all of BOSS's functionality, plus more general load order and active status management functionality that works uniformly across all supported games. See the <a href="BOSS%20API%20Readme.html">BOSS API Readme</a> for more information on that.
@@ -135,7 +135,7 @@
 <p>The simplest way to install BOSS is to use the installer. However, the instructions below are provided if a manual install method is preferred.
 <ol>
 	<li>If updating from an earlier version of BOSS, uninstall the existing BOSS install before continuing. Any userlists you have should be moved to a temporary location while you install the BOSS update.
-	<li>Extract the <q>BOSS</q> folder the downloaded archive contains to a location of your choice. Make sure that you have the appropriate file permissions for the directory you choose. See the <a href="#appendix-c">File Permissions</a> section for more information. Note that if you install the BOSS folder to the same location as a supported game's executable, BOSS will only run for that game by default, and will not ask you to choose which game it should run for, even if you have other supported games installed.
+	<li>Extract the <q>BOSS</q> folder the downloaded archive contains to a location of your choice. Make sure that you have the appropriate file permissions for the directory you choose. See the <a href="#appendix-d">File Permissions</a> section for more information. Note that if you install the BOSS folder to the same location as a supported game's executable, BOSS will only run for that game by default, and will not ask you to choose which game it should run for, even if you have other supported games installed.
 	<li>If any of the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities are installed, make sure their <q>BOSS Disable Lock Load Order</q><span title="previously BOSS Disable Lock Times">*</span> setting is enabled.
 	<li>If updating from an earlier version of BOSS and you moved any userlists you have to a temporary location, after you have run BOSS at least once for each game with a userlist, you will need to move your userlist(s) into the game(s) subfolders that are created within the BOSS folder.
 </ol>
@@ -525,11 +525,11 @@ a problem for which no error message is given, please report the crash or proble
 		<dd>If <code>filename</code> is the masterlist, ensure that the masterlist updater is enabled and run BOSS again to download the masterlist to the correct location.
 		<dd>Ensure <code>filename</code> exists, and that you have read permissions for the file and its parent folders.
 	<dt><code>filename</code>" cannot be written to!
-		<dd>Make sure that the file, if it exists, is not read-only, and that you have write permissions. See <a href="#appendix-c">File Permissions</a> for details on how to obtain write permissions on Windows Vista or 7.
+		<dd>Make sure that the file, if it exists, is not read-only, and that you have write permissions. See <a href="#appendix-d">File Permissions</a> for details on how to obtain write permissions on Windows Vista or 7.
 	<dt>"<code>filename</code>" is not encoded in valid UTF-8!
 		<dd>Re-save the file given in the correct "UTF-8" encoding. See <a href="#appendix-d">International Character Support</a> for instructions.
 	<dt>The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged.
-		<dd>See <a href="#appendix-b">False-Flagged Plugins</a> for more information.
+		<dd>See <a href="#appendix-c">False-Flagged Plugins</a> for more information.
 	<dt>Cannot find online masterlist revision number!
 	<dt>Cannot find online masterlist revision date!
 	<dt>Cannot read list of files to be updated!
@@ -545,11 +545,11 @@ a problem for which no error message is given, please report the crash or proble
 	<dt>"<code>filename</code>" cannot be renamed! Filesystem response: "<code>further details</code>".
 	<dt>"<code>filename</code>" cannot be deleted! Filesystem response: "<code>further details</code>".
 	<dt>The modification date of "<code>filename</code>" cannot be written!
-		<dd>Make sure that the file, if it exists, is not read-only, and that you have write permissions. See <a href="#appendix-c">File Permissions</a> for details on how to obtain write permissions on Windows Vista or 7.
+		<dd>Make sure that the file, if it exists, is not read-only, and that you have write permissions. See <a href="#appendix-d">File Permissions</a> for details on how to obtain write permissions on Windows Vista or 7.
 	<dt>"<code>directory</code>" cannot be created! Filesystem response: "<code>further details</code>".
-		<dd>Make sure that you have write permissions for the location the directory is being create in. See <a href="#appendix-c">File Permissions</a> for details on how to obtain write permissions on Windows Vista or 7.
+		<dd>Make sure that you have write permissions for the location the directory is being create in. See <a href="#appendix-d">File Permissions</a> for details on how to obtain write permissions on Windows Vista or 7.
 	<dt>"<code>directory</code>" cannot be scanned! Filesystem response: "<code>further details</code>".
-		<dd>Make sure that you have read permissions for the location that is being scanned. See <a href="#appendix-c">File Permissions</a> for details on how to obtain write permissions on Windows Vista or 7.
+		<dd>Make sure that you have read permissions for the location that is being scanned. See <a href="#appendix-d">File Permissions</a> for details on how to obtain write permissions on Windows Vista or 7.
 	<dt>Proxy hostname or port invalid! cURL response: "<code>further details</code>".
 		<dd>Your proxy settings for BOSS are invalid. Correct them before running BOSS again.
 	<dt>Proxy authentication username or password invalid! cURL response: "<code>further details</code>".
@@ -635,7 +635,7 @@ a problem for which no error message is given, please report the crash or proble
 		<tr class="inactive"><td style="border-right:0;">Malonn			<td style="border-left:0;">									<td class="c"><td class="c"><td class="c"><td class="c"><td class="c"><td class="t"><td class="c">
 		<tr class="inactive"><td style="border-right:0;">PacificMorrowind<td style="border-left:0;">									<td class="t"><td class="t"><td class="t"><td class="c"><td class="t"><td class="c"><td class="c">
 		<tr><td style="border-right:0;">Peste<td style="border-left:0;"><i>(ztrathego on Nexus)</i>									<td class="c"><td class="c"><td class="c"><td class="c"><td class="c"><td class="c"><td class="t">
-		<tr><td style="border-right:0;">Psymon			<td style="border-left:0;"><i>(Bethesda Softworks only)</i>	<td class="c"><td class="c"><td class="c"><td class="t"><td class="c"><td class="c"><td class="c">
+		<tr class="inactive"><td style="border-right:0;">Psymon			<td style="border-left:0;"><i>(Bethesda Softworks only)</i>	<td class="c"><td class="c"><td class="c"><td class="t"><td class="c"><td class="c"><td class="c">
 		<tr class="inactive"><td style="border-right:0;">Random007		<td style="border-left:0;">									<td class="t"><td class="t"><td class="t"><td class="c"><td class="c"><td class="c"><td class="c">
 		<tr><td style="border-right:0;">Red Eye		<td style="border-left:0;"><i>(redeye85 on Nexus)</i>				<td class="c"><td class="c"><td class="c"><td class="c"><td class="c"><td class="t"><td class="c">
 		<tr class="inactive"><td style="border-right:0;">RiddlingLynx	<td style="border-left:0;"><i>(Nexus only)</i>				<td class="c"><td class="c"><td class="t"><td class="c"><td class="c"><td class="c"><td class="c">
@@ -646,7 +646,7 @@ a problem for which no error message is given, please report the crash or proble
 		<tr><td style="border-right:0;">Tokc.D.K.		<td style="border-left:0;"><i>(Bethesda Softworks only)</i>	<td class="c"><td class="c"><td class="t"><td class="c"><td class="c"><td class="c"><td class="t">
 		<tr><td style="border-right:0;">Torrello		<td style="border-left:0;">									<td class="c"><td class="c"><td class="c"><td class="c"><td class="t"><td class="c"><td class="t">
 		<tr class="inactive"><td style="border-right:0;">Vacuity			<td style="border-left:0;">									<td class="c"><td class="c"><td class="t"><td class="c"><td class="c"><td class="c"><td class="c">
-		<tr><td style="border-right:0;">Valda			<td style="border-left:0;">									<td class="c"><td class="c"><td class="c"><td class="c"><td class="t"><td class="t"><td class="c">
+		<tr class="inactive"><td style="border-right:0;">Valda			<td style="border-left:0;">									<td class="c"><td class="c"><td class="c"><td class="c"><td class="t"><td class="t"><td class="c">
 		<tr><td style="border-right:0;">WrinklyNinja	<td style="border-left:0;">									<td class="t"><td class="t"><td class="t"><td class="c"><td class="c"><td class="c"><td class="c">
 		<tr class="inactive"><td style="border-right:0;">ZiggyX200		<td style="border-left:0;">									<td class="c"><td class="c"><td class="t"><td class="c"><td class="c"><td class="c"><td class="t">
 </table>
@@ -693,7 +693,26 @@ threads when you read this. Just navigate through to the latest thread to post a
 </ul>
 
 <h2 id="appendix">Appendices</h2>
-<h3 id="appendix-a">Appendix A: Dirty Edits, Mod Cleaning &amp; CRCs</h3>
+<h3 id="appendix-a">Appendix A: Introduction To Load Orders</h3>
+<p>This appendix provides a general overview of load ordering in the games BOSS supports for those who are unfamiliar with the concept. For simplicity, <q>the game</q> will be used when the text refers to any of the games that BOSS supports.
+<p>Mod plugins for the game are files that end in <code>.esp</code> or <code>.esm</code>. These files are created by the game's official editing tools, or by third party modders' tools. They contain various data entries. These entries can either be brand new additions, or changes to entries added by another plugin, including the game's main master file (Morrowind.esm, Oblivion.esm, Nehrim.esm, Skyrim.esm, Fallout3.esm or FalloutNV.esm depending on the game). Entries cover almost all aspects of what is in the game, eg. NPCs, items, races, interiors, worlds, quests, etc.
+<p>When the game is run, it reads the contents of the active plugins and applies their entries in the order that the plugins are read. This leads to the <q>rule of one</q>, ie. one entry can only be modified by one plugin. As such, when several plugins modify the same entry, the plugin that is read last has its changes override the other plugins' changes for that entry. There is one exception to the <q>rule of one</q>, and that is that the contents of cells (the physical space in which your character moves) can be changed by any number of plugins, so different plugins can add objects to cells, move them around or remove them and all will see their changes applied by the game.
+<p>This order in which the game reads active plugins is, unsurprisingly, what is referred to as the load order. By changing the load order, you can change which plugins override and which are overridden, and so reduce detrimental conflicts. You cannot actually reduce how much is overridden through load order alone, but it is often the case that some overrides are acceptable while others cause problems in game. Setting a good load order is the process by which you seek to maximise the former instead of the latter. That is why load order matters. 
+<p>Further compatibility between mods is then possible through the use of patches, which are made to address incompatibilities between specific mods, and through the use of Wrye Bash, which can create a <q>Bashed Patch</q> that allows you to select between types of changes for different mods. For example, two mods change a piece of armour, but one changes how it looks and the other changes its effectiveness: through load order alone you could only ever get one change, but using Wrye Bash you can get both, because they change different things in the same armour entry.
+<p>There are a few hardcoded rules that trump load order in many cases:
+<ul>
+ <li>Master plugins always load before non-master plugins. This is discussed in greater detail in <a href="appendix-c">False-Flagged Plugins</a>.
+ <li>There is a limit of 255 active plugins that can be loaded by the game. This isn't strictly a load <em>order</em> thing, but is worth mentioning.
+ <li>In Skyrim, <code>Skyrim.esm</code> always loads before all other plugins.
+ <li>In Skyrim, if <code>Update.esm</code> is present, it is always loaded. If it has no load order position set, it loads after all other master plugins. That might sound a bit odd, but thanks to Skyrim's load order mechanism, it is possible for it to have no set load order position, even though it is always loaded.
+</ul>
+<p>A plugin's position in the load order is often displayed by mod managers as a hexadecimal number, from 00 to FE (0 to 255 in decimal). The plugin with position 00 loads first, and the plugin with position FE is loaded last. Hexadecimal numbers are used to display the load order positions of plugins because these numbers form the first two digits of the code that the game uses to reference the entries that the plugin adds, so knowing the numbers is very useful to modders or anyone trying to reference entries in the in-game console, which uses these codes.
+<p>That's all that you as a mod user <em>need</em> to know about load orders. If you want to find out more about the actual mechanism by which the game decides the load order, read on.
+<p>Morrowind, Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas all share the same mechanism for deciding load order (though Morrowind uses a different file to list its active load order in - but that won't be discussed here). Skyrim, since the 1.4.26 patch, uses a different mechanism.
+<p>Load order for Morrowind, Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas is decided by the modification date timestamps of the mod plugins. The active plugin with the earliest date loads first, with plugins being listed in descending date order (earliest to latest). It's a bad idea for a plugin that isn't the game's main master file to load first.
+<p>Skyrim's mechanism uses the order that plugins are listed within its <code>plugins.txt</code> file as its load order (from top to bottom). This file is the one in which the list of active plugins is stored, so only active plugins can be strictly said to have a load order. As any further discussion of this and its consequences gets a bit technical, see the <a href="BOSS%20API%20Readme.html">BOSS API Readme</a> for more information.
+
+<h3 id="appendix-b">Appendix B: Dirty Edits, Mod Cleaning &amp; CRCs</h3>
 <p>Dirty edits are often a side-effect of mod creation, and are often due to bugs in the utilities Bethesda has provided to create mods, rather than bad practice by mod authors. Dirty edits can cause a wide range of issues, including incorrect game settings, missing content, broken quests and crashing to desktop. The more dirty edits there are in a mod, and the more mods with dirty edits you use, the more likely you are to experience issues.
 <p>Thankfully there is a way to remove dirty edits from mods relatively easily, a process known as <i>mod cleaning</i>, using TES4Edit (for Oblivion), FO3Edit (for Fallout 3), FNVEdit (for Fallout: New Vegas) or TES5Edit (for Skyrim). A detailed set of instructions and information on mod cleaning can be found on the CS Wiki's <a href="http://cs.elderscrolls.com/constwiki/index.php/TES4Edit_Cleaning_Guide">TES4Edit Cleaning Guide</a> (the page also applies to Fallout 3, Fallout: New Vegas and Skyrim). <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> can also scan plugins for dirty edits and return their ITM and UDR counts, though at the time of writing it cannot clean plugins itself.
 <p>The problem of dirty edits is largely a problem of ignorance on the part of mod authors and users alike of the problems dirty mods can cause. As such, there are community efforts to raise awareness of dirty edits and cleaning. BOSS plays a key role in these efforts, as it holds the complete list of all known dirty mods, and it uses this information to provide notification messages to users for any dirty mods they have installed.
@@ -708,7 +727,7 @@ There are three key pieces of information that are used to accurately describe a
 <p><b>Note:</b> TES4Edit et al. will include a variety of <em>junk records</em> in the ITM count for a plugin, such as new empty cells that are automatically generated by the Construction Set and are almost impossible to remove. These junk records are non-harmful, and BOSS will inform users when a mod contains these to avoid confusion. This is also the source of any discrepancies between the counts produced by TES4Edit and those produced by <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr>. The latter's counts are more technically accurate, but both are acceptable for use.
 <p>There is also another type of unnecessary edit, known as a wild edit, that can also cause problems. These edits are neither Identical To Master edits nor deleted records, so cannot be automatically cleaned. Cleaning must be manually done in TES4Edit/FO3Edit/FNVEdit. BOSS can still check for plugins with these edits if the CRCs of the plugins with wild edits are known, and it can provide notification of these edits and some information on fixing them if they are reported in an official BOSS thread.
 
-<h3 id="appendix-b">Appendix B: False-Flagged Plugins</h3>
+<h3 id="appendix-c">Appendix C: False-Flagged Plugins</h3>
 <p>Whether a mod plugin is a master file or a non-master file is dependent not on its file extension (<code>.esp</code>, <code>.esm</code>), but is instead decided by the value of a setting inside the plugin file, known as its <q>master bit flag</q>. Master files have this set to <code>1</code>, and non-master files have it set to <code>0</code>. However, because ESM is an acronym for <q>Elder Scrolls Master</q>, and ESP is an acronym for <q>Elder Scrolls Plugin</q> (even for Fallout 3 and Fallout: New Vegas), most people assume that master plugins are files with <code>.esm</code> extensions, while non-master plugins are files with <code>.esp</code> extensions.
 <p>This assumption is valid for the most part, as the vast majority of masters are <code>.esm</code> files, and the vast majority of plugins are <code>.esp</code> files. However, sometimes this is not the case. When a plugin has a <code>.esm</code> extension but has a master bit flag value of <code>0</code>, or has an extension of <code>.esp</code> and a master bit flag value of <code>1</code>, the plugin is said to be <q>false-flagged</q>, as its extension does not match its master bit flag value. False-flagged plugins are most common in Fallout 3 due to the use of FO3Edit's <q>Master Update</q> feature, which turns non-master plugins into false-flagged plugins, to avoid bugs that only manifest for non-master plugins.
 <p>The distinction between masters and non-masters is important for load order because the game will always load all masters before all non-masters, regardless of whether they are listed or dated (depending on your game) as such by the mechanism used to determine load order. Earlier versions of BOSS, and most if not all mod managers, put all <code>.esm</code> files before all <code>.esp</code> files, but failed to take into account the value of the master bit flag of plugins. As such, the load order they displayed was incorrect, as it failed to take into account the game always loading masters before plugins.
@@ -716,7 +735,7 @@ There are three key pieces of information that are used to accurately describe a
 
 
 
-<h3 id="appendix-c">Appendix C: File Permissions</h3>
+<h3 id="appendix-d">Appendix D: File Permissions</h3>
 <p>If you are running Windows Vista or Windows 7, BOSS (and other modding programs) may be prevented from working correctly by the UAC security feature. There are four common workarounds to this problem:
 <ol>
 	<li>Install the game outside the <q>Program Files</q> (or <q>Program Files (x86)</q> if on 64-bit Windows). UAC prevents unauthorised edits to these folders, so by installing the game outside of them, you remove it from UAC's reach, allowing you to use mods more easily.
@@ -733,7 +752,7 @@ There are three key pieces of information that are used to accurately describe a
 	<li>In the <q>Properties</q> window, select OK to exit. You should now have Full Control permissions over your chosen folder.
 </ol>
 
-<h3 id="appendix-d">Appendix D: International Character Support</h3>
+<h3 id="appendix-e">Appendix E: International Character Support</h3>
 <p>BOSS provides support for sorting plugins containing characters from any language via the Unicode character encoding, specifically UTF-8. All BOSS's files are encoded in UTF-8 by default. However, if you accidently save a file in another encoding, or need to convert an old userlist to UTF-8, here's how to convert a text file to UTF-8:
 <ul>
 	<li>Using Notepad:
@@ -751,26 +770,6 @@ There are three key pieces of information that are used to accurately describe a
 		</ol>
 </ul>
 <p>A file only needs to be converted to the correct encoding once, thereafter it will continue to save in the correct encoding whenever you edit it. 
-
-
-<h3 id="appendix-e">Appendix E: Introduction To Load Orders</h3>
-<p>This appendix provides a general overview of load ordering in the games BOSS supports for those who are unfamiliar with the concept. For simplicity, <q>the game</q> will be used when the text refers to any of the games that BOSS supports.
-<p>Mod plugins for the game are files that end in <code>.esp</code> or <code>.esm</code>. These files are created by the game's official editing tools, or by third party modders' tools. They contain various data entries. These entries can either be brand new additions, or changes to entries added by another plugin, including the game's main master file (Morrowind.esm, Oblivion.esm, Nehrim.esm, Skyrim.esm, Fallout3.esm or FalloutNV.esm depending on the game). Entries cover almost all aspects of what is in the game, eg. NPCs, items, races, interiors, worlds, quests, etc.
-<p>When the game is run, it reads the contents of the active plugins and applies their entries in the order that the plugins are read. This leads to the <q>rule of one</q>, ie. one entry can only be modified by one plugin. As such, when several plugins modify the same entry, the plugin that is read last has its changes override the other plugins' changes for that entry. There is one exception to the <q>rule of one</q>, and that is that the contents of cells (the physical space in which your character moves) can be changed by any number of plugins, so different plugins can add objects to cells, move them around or remove them and all will see their changes applied by the game.
-<p>This order in which the game reads active plugins is, unsurprisingly, what is referred to as the load order. By changing the load order, you can change which plugins override and which are overridden, and so reduce detrimental conflicts. You cannot actually reduce how much is overridden through load order alone, but it is often the case that some overrides are acceptable while others cause problems in game. Setting a good load order is the process by which you seek to maximise the former instead of the latter. That is why load order matters. 
-<p>Further compatibility between mods is then possible through the use of patches, which are made to address incompatibilities between specific mods, and through the use of Wrye Bash, which can create a <q>Bashed Patch</q> that allows you to select between types of changes for different mods. For example, two mods change a piece of armour, but one changes how it looks and the other changes its effectiveness: through load order alone you could only ever get one change, but using Wrye Bash you can get both, because they change different things in the same armour entry.
-<p>There are a few hardcoded rules that trump load order in many cases:
-<ul>
- <li>Master plugins always load before non-master plugins. This is discussed in greater detail in <a href="appendix-b">Appendix B: False-Flagged Plugins</a>.
- <li>There is a limit of 255 active plugins that can be loaded by the game. This isn't strictly a load <em>order</em> thing, but is worth mentioning.
- <li>In Skyrim, <code>Skyrim.esm</code> always loads before all other plugins.
- <li>In Skyrim, if <code>Update.esm</code> is present, it is always loaded. If it has no load order position set, it loads after all other master plugins. That might sound a bit odd, but thanks to Skyrim's load order mechanism, it is possible for it to have no set load order position, even though it is always loaded.
-</ul>
-<p>A plugin's position in the load order is often displayed by mod managers as a hexadecimal number, from 00 to FE (0 to 255 in decimal). The plugin with position 00 loads first, and the plugin with position FE is loaded last. Hexadecimal numbers are used to display the load order positions of plugins because these numbers form the first two digits of the code that the game uses to reference the entries that the plugin adds, so knowing the numbers is very useful to modders or anyone trying to reference entries in the in-game console, which uses these codes.
-<p>That's all that you as a mod user <em>need</em> to know about load orders. If you want to find out more about the actual mechanism by which the game decides the load order, read on.
-<p>Morrowind, Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas all share the same mechanism for deciding load order (though Morrowind uses a different file to list its active load order in - but that won't be discussed here). Skyrim, since the 1.4.26 patch, uses a different mechanism.
-<p>Load order for Morrowind, Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas is decided by the modification date timestamps of the mod plugins. The active plugin with the earliest date loads first, with plugins being listed in descending date order (earliest to latest). It's a bad idea for a plugin that isn't the game's main master file to load first.
-<p>Skyrim's mechanism uses the order that plugins are listed within its <code>plugins.txt</code> file as its load order (from top to bottom). This file is the one in which the list of active plugins is stored, so only active plugins can be strictly said to have a load order. As any further discussion of this and its consequences gets a bit technical, see the <a href="BOSS%20API%20Readme.html">BOSS API Readme</a> for more information.
 
 <script>
 function nextImage(imgs, i){
