@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<style>html {font-family: Helvetica,sans-serif;}</style>
 <title>BOSS Build Instructions</title>
 
 <h1>BOSS Build Instructions</h1>
@@ -13,9 +14,9 @@ This guide also assumes that you are building the 'trunk' of the  code. If you a
 <ul>
  <li><a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express">Microsoft Visual C++ 2010 Express Edition</a>
  <li><a href="http://curl.haxx.se/download.html">Curl Source Code</a> - Download the latest zipped source code from the top of the page.
- <li><a href="http://sourceforge.net/projects/boost/files/boost/1.48.0/">Boost C++ libraries</a> - Download the latest 7-zipped source code.
+ <li><a href="http://sourceforge.net/projects/boost/files/boost/">Boost C++ libraries</a> - Download the latest 7-zipped source code.
  <li><a href="http://sourceforge.net/projects/utfcpp/">UTF8-CPP</a> - Download the latest version.
- <li><a href="http://www.wxwidgets.org/downloads/">wxWidgets Source Code</a> - Download the 2.9.3 source code. The line ending type shouldn't matter.
+ <li><a href="http://www.wxwidgets.org/downloads/">wxWidgets Source Code</a> - Download the 2.9.4 source code. The line ending type shouldn't matter.
  <li>An SVN client of your choice.
 </ul>
 
@@ -49,10 +50,9 @@ This guide also assumes that you are building the 'trunk' of the  code. If you a
 <h3>wxWidgets</h3>
 	<ol>
 		<li>Extract the contents of the <code>wxWidgets-x.x.x</code> (x is a number) archive you downloaded to <code><em>$BOSS</em>\lib\wxWidgets\</code> (you should have build, include, lib, etc. in this folder).
-		<li>Open the VC6 workspace <code><em>$BOSS</em>\lib\wxWidgets\build\msw\wx.dsw</code>, answering "Yes" to any conversion prompts.
-		<li>Using the "Find In Files" option (Edit->Find and Replace->Replace in Files), make the following replacements to the files in <code><em>$BOSS</em>\lib\wxWidgets\build</code>:
+		<li>Open the VC6 workspace <code><em>$BOSS</em>\lib\wxWidgets\build\msw\wx.dsw</code>, answering "Yes" to any conversion prompts. Close the workspace again.
+		<li>Open all the .vcxproj files in <code><em>$BOSS</em>\lib\wxWidgets\build\msw</code> in Notepad++ (or another text editor) and make the following replacements to their contents:
 		<ul>
-		 <li><code>OutputDirectory="..\..\lib\vc_lib"</code> with <code>OutputDirectory="$(PlatformName)\$(ConfigurationName)"</code>
 		 <li><code>lib\vc_lib\</code> with <code>lib\vc_lib\$(PlatformName)\</code>
 		 <li><code>vc_msw</code> with <code>$(PlatformName)\vc_msw</code>
 		 <li><code>&lt;RuntimeLibrary&gt;MultiThreadedDLL&lt;/RuntimeLibrary&gt;</code> with <code>&lt;RuntimeLibrary&gt;MultiThreaded&lt;/RuntimeLibrary&gt;</code>
