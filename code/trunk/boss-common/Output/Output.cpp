@@ -434,19 +434,57 @@ namespace boss {
 
 	Outputter& Outputter::operator<< (const Message m) {
 		string data = EscapeHTMLSpecial(m.Data());
+		//Need to handle web addresses. Recognised are those in the following formats:
+		//"http:someAddress", "http:someAddress label", "file:somelocalAddress", "file:someLocalAddress label"
 		//If bosslog format is HTML, wrap web addresses in HTML link format.
-		if (outFormat == HTML) {
-			size_t pos1,pos2;
-			string link;
-			pos1 = data.find("&quot;http");  //Start of a link, HTML escaped.
-			while (pos1 != string::npos) {
-				pos1 += 6;  //Now points to start of actual link.
-				pos2 = data.find("&quot;",pos1);  //First character after the end of the link.
+		
+		size_t pos1,pos2,pos3;
+		string link, label;
+		//Look for http: addresses
+		pos1 = data.find("&quot;http:");  //Start of a remote link, HTML escaped.
+		while (pos1 != string::npos) {
+			pos1 += 6;  //Now points to start of actual link.
+			pos2 = data.find("&quot;",pos1);  //First character after the end of the link string (may include label).
+			//Need to check if there was a label.
+			pos3 = data.find(' ', pos1);
+			if (pos3 < pos2) {  //There was a label.
+				link = data.substr(pos1,pos3-pos1);
+				label = data.substr(pos3+1, pos2-pos3-1);
+			} else {  //There was no label
 				link = data.substr(pos1,pos2-pos1);
-				link = "<a href=\"" + link + "\">" + link + "</a>";
-				data.replace(pos1-6,pos2-pos1+12,link);
-				pos1 = data.find("&quot;http",pos1);
+				label = link;
 			}
+			if (outFormat == HTML)
+				link = "<a href=\"" + link + "\">" + label + "</a>";
+			else if (label == link)
+				link = "&quot;" + link + "&quot;";
+			else
+				link = label + " (&quot;" + link + "&quot;)";
+			data.replace(pos1-6,pos2-pos1+12,link);
+			pos1 = data.find("&quot;http",pos1);
+		}
+		//Now look for file:addresses.
+		pos1 = data.find("&quot;file:");  //Start of a remote link, HTML escaped.
+		while (pos1 != string::npos) {
+			pos1 += 6;  //Now points to start of actual link.
+			pos2 = data.find("&quot;",pos1);  //First character after the end of the link string (may include label).
+			//Need to check if there was a label.
+			pos3 = data.find(' ', pos1);
+			if (pos3 < pos2) {  //There was a label.
+				link = data.substr(pos1,pos3-pos1);
+				label = data.substr(pos3+1, pos2-pos3-1);
+			} else {  //There was no label
+				link = data.substr(pos1,pos2-pos1);
+				label = link;
+			}
+			if (outFormat == HTML)
+				link = "<a href=\"" + link + "\">" + label + "</a>";
+			else if (label == link)
+				link = "&quot;" + link + "&quot;";
+			else
+				link = label + " (&quot;" + link + "&quot;)";
+			data.replace(pos1-6,pos2-pos1+12,link);
+			pos1 = data.find("&quot;file",pos1);
 		}
 		//Select message formatting.
 		if (m.Key() == SAY) {

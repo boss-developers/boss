@@ -737,7 +737,7 @@ namespace boss {
 				throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER, modlist.ItemAt(pos).Name());
 		} catch (boss_error &e) {
 			try {
-				bosslog.globalMessages.push_back(Message(SAY, "The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see the readme section on False-Flagged Plugins."));
+				bosslog.globalMessages.push_back(Message(SAY, "The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see \"file:../Docs/BOSS%20Readme.html#appendix-c False-Flagged Plugins\"."));
 				LOG_WARN("The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see the readme section on False-Flagged Plugins.");
 			} catch (boss_error &e) {
 				bosslog.globalMessages.push_back(Message(ERR, "Could not enforce load order master/plugin partition. Details: " + e.getString()));
