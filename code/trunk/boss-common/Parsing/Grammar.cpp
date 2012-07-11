@@ -711,7 +711,7 @@ namespace boss {
 
 		setting %= var > '=' > stringVal;
 
-		var %= lexeme[+(char_ - '=')];
+		var %= +(char_ - '=');
 
 		stringVal %= lexeme[*(char_ - eol)];
 		

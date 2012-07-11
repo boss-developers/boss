@@ -810,6 +810,11 @@ namespace boss {
 	
 	void ItemList::Clear() {
 		items.clear();
+		errorBuffer.Clear();
+		globalMessageBuffer.clear();
+		lastRecognisedPos = 0;
+		masterlistVariables.clear();
+		fileCRCs.clear();
 	}
 
 	void ItemList::Erase(const size_t pos) {
@@ -1184,6 +1189,7 @@ namespace boss {
 
 	void RuleList::Clear() {
 		rules.clear();
+		errorBuffer.clear();
 	}
 	
 	void RuleList::Erase(const size_t pos) {

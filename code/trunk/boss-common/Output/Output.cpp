@@ -436,55 +436,43 @@ namespace boss {
 		string data = EscapeHTMLSpecial(m.Data());
 		//Need to handle web addresses. Recognised are those in the following formats:
 		//"http:someAddress", "http:someAddress label", "file:somelocalAddress", "file:someLocalAddress label"
-		//If bosslog format is HTML, wrap web addresses in HTML link format.
 		
 		size_t pos1,pos2,pos3;
-		string link, label;
-		//Look for http: addresses
-		pos1 = data.find("&quot;http:");  //Start of a remote link, HTML escaped.
-		while (pos1 != string::npos) {
-			pos1 += 6;  //Now points to start of actual link.
-			pos2 = data.find("&quot;",pos1);  //First character after the end of the link string (may include label).
-			//Need to check if there was a label.
-			pos3 = data.find(' ', pos1);
-			if (pos3 < pos2) {  //There was a label.
-				link = data.substr(pos1,pos3-pos1);
-				label = data.substr(pos3+1, pos2-pos3-1);
-			} else {  //There was no label
-				link = data.substr(pos1,pos2-pos1);
-				label = link;
+		string link, label, dq;
+		string addressTypes[] = {
+			"http:",
+			"file:"
+		};
+
+		if (outFormat == HTML)
+			dq = "&quot;";
+		else
+			dq = "\"";
+
+		//Do replacements for all addressTypes.
+		for (uint32_t i=0; i < 2; i++) {
+			pos1 = data.find(dq + addressTypes[i]);
+			while (pos1 != string::npos) {
+				pos1 += dq.length();
+				pos3 = data.find(dq, pos1);  //End of quoted string.
+				//Check if there is a label in the quoted string.
+				pos2 = data.find(' ', pos1);
+				if (pos2 < pos3) {  //Label present.
+					link = data.substr(pos1, pos2-pos1);
+					label = data.substr(pos2+1, pos3-pos2-1);
+				} else {  //Label not present.
+					link = data.substr(pos1, pos3-pos1);
+					label = link;
+				}
+				if (outFormat == HTML)
+					link = "<a href=\"" + link + "\">" + label + "</a>";
+				else if (pos2 > pos3)
+					link = '"' + link + '"';
+				else
+					link = label + " (\"" + link + "\")";
+				data.replace(pos1 - dq.length(), pos3-pos1 + (2 * dq.length()), link);
+				pos1 = data.find(dq + addressTypes[i], pos1);
 			}
-			if (outFormat == HTML)
-				link = "<a href=\"" + link + "\">" + label + "</a>";
-			else if (label == link)
-				link = "&quot;" + link + "&quot;";
-			else
-				link = label + " (&quot;" + link + "&quot;)";
-			data.replace(pos1-6,pos2-pos1+12,link);
-			pos1 = data.find("&quot;http",pos1);
-		}
-		//Now look for file:addresses.
-		pos1 = data.find("&quot;file:");  //Start of a remote link, HTML escaped.
-		while (pos1 != string::npos) {
-			pos1 += 6;  //Now points to start of actual link.
-			pos2 = data.find("&quot;",pos1);  //First character after the end of the link string (may include label).
-			//Need to check if there was a label.
-			pos3 = data.find(' ', pos1);
-			if (pos3 < pos2) {  //There was a label.
-				link = data.substr(pos1,pos3-pos1);
-				label = data.substr(pos3+1, pos2-pos3-1);
-			} else {  //There was no label
-				link = data.substr(pos1,pos2-pos1);
-				label = link;
-			}
-			if (outFormat == HTML)
-				link = "<a href=\"" + link + "\">" + label + "</a>";
-			else if (label == link)
-				link = "&quot;" + link + "&quot;";
-			else
-				link = label + " (&quot;" + link + "&quot;)";
-			data.replace(pos1-6,pos2-pos1+12,link);
-			pos1 = data.find("&quot;file",pos1);
 		}
 		//Select message formatting.
 		if (m.Key() == SAY) {
@@ -2023,6 +2011,28 @@ namespace boss {
 
 		outFile << PrintLog();
 		outFile.close();
+	}
+
+	void BossLog::Clear() {
+		recognised = 0; 
+		unrecognised = 0;
+		inactive = 0;
+		messages = 0;
+		warnings = 0;
+		errors = 0;
+
+		scriptExtender.clear();
+		gameName.clear();
+
+		updaterOutput.Clear();
+		criticalError.Clear();
+		userRules.Clear();
+		sePlugins.Clear();
+		recognisedPlugins.Clear();
+		unrecognisedPlugins.Clear();
+
+		parsingErrors.clear();
+		globalMessages.clear();
 	}
 	
 	bool BossLog::HasRecognisedListChanged(const fs::path file) {

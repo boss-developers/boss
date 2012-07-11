@@ -401,7 +401,6 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 }
 
 void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
-	BossLog bosslog(gl_log_format);				//BOSSlog contents.
 	fs::path sortfile;						//Modlist/masterlist to sort plugins using.
 
 	//Tell the user that stuff is happenining.
@@ -413,6 +412,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	game.modlist.Clear();
 	game.masterlist.Clear();
 	game.userlist.Clear();
+	game.bosslog.Clear();
+
+	//Set format for BOSS Log.
+	game.bosslog.SetFormat(gl_log_format);
 
 
 	/////////////////////////////////////////////////////////
@@ -432,25 +435,25 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 					mUpdater.ProgDialog(progDia);
 					mUpdater.Update(game.Id(), game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
 					if (localRevision == remoteRevision) {
-						bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
+						game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
 						progDia->Pulse(wxT("Masterlist already up-to-date."));
 						LOG_DEBUG("Masterlist update unnecessary.");
 					} else {
-						bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << "Your masterlist has been updated to revision " << remoteRevision << " (" << remoteDate << ").";
+						game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << "Your masterlist has been updated to revision " << remoteRevision << " (" << remoteDate << ").";
 						progDia->Pulse(wxT("Masterlist updated successfully."));
 						LOG_DEBUG("Masterlist updated successfully.");
 					}
 				} catch (boss_error &e) {
-					bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
+					game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
 						<< "Details: " << e.getString() << LINE_BREAK
 						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
 					LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
 				}
 			} else {
-				bosslog.updaterOutput << LIST_ITEM_CLASS_WARN << "No internet connection detected. Masterlist auto-updater could not check for updates.";
+				game.bosslog.updaterOutput << LIST_ITEM_CLASS_WARN << "No internet connection detected. Masterlist auto-updater could not check for updates.";
 			}
 		} catch (boss_error &e) {
-			bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
+			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
 				<< "Details: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
 			LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
@@ -460,7 +463,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
 	if (gl_update_only == true) {
 		try {
-			bosslog.Save(game.Log(gl_log_format), true);
+			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
@@ -534,11 +537,11 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
         if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
-			bosslog.criticalError << game.masterlist.ErrorBuffer();
+			game.bosslog.criticalError << game.masterlist.ErrorBuffer();
 		else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL)
-			bosslog.criticalError << LIST_ITEM_CLASS_ERROR << e.getString();
+			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << e.getString();
 		else
-			bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
+			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
 				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
 				<< "Utility will end now.";
 		try {

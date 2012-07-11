@@ -156,6 +156,7 @@ namespace boss {
 
 		void SetFormat(const uint32_t format);
 		void Save(const fs::path file, const bool overwrite);		//Saves contents to file. Throws boss_error exception on fail.
+		void Clear();
 
 		uint32_t recognised; 
 		uint32_t unrecognised;

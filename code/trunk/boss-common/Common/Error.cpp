@@ -223,4 +223,11 @@ namespace boss {
 	string ParsingError::WholeMessage() const { 
 		return wholeMessage; 
 	}
+
+	void ParsingError::Clear() {
+		header.clear();
+		footer.clear();
+		detail.clear();
+		wholeMessage.clear();
+	}
 }

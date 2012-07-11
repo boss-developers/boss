@@ -162,6 +162,8 @@ namespace boss {
 		string Detail() const;
 		string WholeMessage() const;
 
+		void Clear();
+
 	private:
 		string header;
 		string footer;
