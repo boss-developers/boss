@@ -116,73 +116,73 @@ namespace boss {
 	//Returns the error string for the object.
 	string boss_error::getString() const {
 		if (errCode == BOSS_OK)
-			return "No error.";
+			return translate("No error.");
 		else if (errCode == BOSS_ERROR_NO_MASTER_FILE)
-			return "No game master .esm file found!"; 
+			return translate("No game master .esm file found!"); 
 		else if (errCode == BOSS_ERROR_FILE_READ_FAIL)
-			return "\"" + errSubject + "\" cannot be read!"; 
+			return (format(translate("\"%1%\" cannot be read!")) % errSubject).str(); 
 		else if (errCode == BOSS_ERROR_FILE_WRITE_FAIL)
-			return "\"" + errSubject + "\" cannot be written to!"; 
+			return (format(translate("\"%1%\" cannot be written to!")) % errSubject).str();
 		else if (errCode == BOSS_ERROR_FILE_NOT_UTF8)
-			return "\"" + errSubject + "\" is not encoded in valid UTF-8!"; 
+			return (format(translate("\"%1%\" is not encoded in valid UTF-8!")) % errSubject).str(); 
 		else if (errCode == BOSS_ERROR_FILE_NOT_FOUND)
-			return "\"" + errSubject + "\" cannot be found!";
+			return (format(translate("\"%1%\" cannot be found!")) % errSubject).str();
 		else if (errCode == BOSS_ERROR_CONDITION_EVAL_FAIL)
-			return "Evaluation of conditional \"" + errSubject + "\" failed!";
+			return (format(translate("Evaluation of conditional \"%1%\" failed!")) % errSubject).str();
 		else if (errCode == BOSS_ERROR_REGEX_EVAL_FAIL)
-			return "\"" + errSubject + "\" is not a valid regular expression. Item skipped.";
+			return (format(translate("\"%1%\" is not a valid regular expression. Item skipped.")) % errSubject).str();
 		else if (errCode == BOSS_ERROR_NO_GAME_DETECTED)
-			return "No game detected!"; 
+			return translate("No game detected!"); 
 		else if (errCode == BOSS_ERROR_ENCODING_CONVERSION_FAIL)
-			return "\"" + errSubject + "\" cannot be converted from UTF-8 to \"" + errString + "\".";
+			return (format(translate("\"%1%\" cannot be converted from UTF-8 to \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_PLUGIN_BEFORE_MASTER)
-			return "Master file \"" + errSubject +  "\" loading after non-master plugins!";
+			return (format(translate("Master file \"%1%\" loading after non-master plugins!")) % errSubject).str();
 		else if (errCode == BOSS_ERROR_INVALID_SYNTAX)
 			return errString;
 		else if (errCode == BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL)
-			return "Cannot find online masterlist revision number!"; 
+			return translate("Cannot find online masterlist revision number!"); 
 		else if (errCode == BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL)
-			return "Cannot find online masterlist revision date!"; 
+			return translate("Cannot find online masterlist revision date!"); 
 		else if (errCode == BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL)
-			return "Cannot read list of files to be updated!"; 
+			return translate("Cannot read list of files to be updated!"); 
 		else if (errCode == BOSS_ERROR_FILE_CRC_MISMATCH)
-			return "Downloaded file \"" + errSubject + "\" failed verification test!"; 
+			return (format(translate("Downloaded file \"%1%\" failed verification test!")) % errSubject).str(); 
 		else if (errCode == BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL)
-			return "The modification date of \"" + errSubject + "\" cannot be read! Filesystem response: \"" + errString + "\".";
+			return (format(translate("The modification date of \"%1%\" cannot be read! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_FS_FILE_RENAME_FAIL)
-			return "\"" + errSubject + "\" cannot be renamed! Filesystem response: \"" + errString + "\".";
+			return (format(translate("\"%1%\" cannot be renamed! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_FS_FILE_DELETE_FAIL)
-			return "\"" + errSubject + "\" cannot be deleted! Filesystem response: \"" + errString + "\".";
+			return (format(translate("\"%1%\" cannot be deleted! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL)
-			return "\"" + errSubject + "\" cannot be created! Filesystem response: \"" + errString + "\".";
+			return (format(translate("\"%1%\" cannot be created! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_FS_ITER_DIRECTORY_FAIL)
-			return "\"" + errSubject + "\" cannot be scanned! Filesystem response: \"" + errString + "\".";
+			return (format(translate("\"%1%\" cannot be scanned! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_CURL_INIT_FAIL)
-			return "cURL cannot be initialised!";
+			return translate("cURL cannot be initialised!");
 		else if (errCode == BOSS_ERROR_CURL_SET_ERRBUFF_FAIL)
-			return "cURL's error buffer could not be set! cURL response: \"" + errString + "\".";
+			return (format(translate("cURL's error buffer could not be set! cURL response: \"%1%\".")) % errString).str();
 		else if (errCode == BOSS_ERROR_CURL_SET_OPTION_FAIL)
-			return "A cURL option could not be set! cURL response: \"" + errString + "\".";
+			return (format(translate("A cURL option could not be set! cURL response: \"%1%\".")) % errString).str();
 		else if (errCode == BOSS_ERROR_CURL_SET_PROXY_FAIL)
-			return "Proxy hostname or port invalid! cURL response: \"" + errString + "\".";
+			return (format(translate("Proxy hostname or port invalid! cURL response: \"%1%\".")) % errString).str();
 		else if (errCode == BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL)
-			return "Failed to set proxy type! cURL response: \"" + errString + "\".";
+			return (format(translate("Failed to set proxy type! cURL response: \"%1%\".")) % errString).str();
 		else if (errCode == BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL)
-			return "Proxy authentication username or password invalid! cURL response: \"" + errString + "\".";
+			return (format(translate("Proxy authentication username or password invalid! cURL response: \"%1%\".")) % errString).str();
 		else if (errCode == BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL)
-			return "Failed to set proxy authentication type! cURL response: \"" + errString + "\".";
+			return (format(translate("Failed to set proxy authentication type! cURL response: \"%1%\".")) % errString).str();
 		else if (errCode == BOSS_ERROR_CURL_PERFORM_FAIL)
-			return "cURL could not perform task! cURL response: \"" + errString + "\".";
+			return (format(translate("cURL could not perform task! cURL response: \"%1%\".")) % errString).str();
 		else if (errCode == BOSS_ERROR_CURL_USER_CANCEL)
-			return "Cancelled by user.";
+			return translate("Cancelled by user.");
 		else if (errCode == BOSS_ERROR_FILE_PARSE_FAIL)
-			return "Parsing of \"" + errSubject + "\" failed!";
+			return (format(translate("Parsing of \"%1%\" failed!")) % errSubject).str();
 		else if (errCode == BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL)
-			return "The modification date of \"" + errSubject + "\" cannot be written! Filesystem response: \"" + errString + "\".";
+			return (format(translate("The modification date of \"%1%\" cannot be written! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_GUI_WINDOW_INIT_FAIL)
-			return "The window \"" + errSubject + "\" failed to initialise. Details: \"" + errString + "\".";
+			return (format(translate("The window \"%1%\" failed to initialise. Details: \"%2%\".")) % errSubject % errString).str();
 		else
-			return "No error.";
+			return translate("No error.");
 	}
 
 

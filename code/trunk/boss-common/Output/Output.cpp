@@ -30,11 +30,13 @@
 #include "Common/Globals.h"
 #include "Support/Helpers.h"
 #include <boost/algorithm/string.hpp>
+#include <boost/locale.hpp>
 #include "source/utf8.h"
 
 namespace boss {
 	using namespace std;
 	using boost::algorithm::replace_all;
+	namespace loc = boost::locale;
 
 	////////////////////////////////
 	// Outputter Class Functions
@@ -1052,11 +1054,11 @@ namespace boss {
 				<< "<nav>"
 				<< "<header>"
 				<< "	<h1>BOSS</h1>"
-				<< "	Version " << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH)
+				<< loc::translate("	Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH)
 				<< "</header>";
 		else
 			out << "\nBOSS\n"
-				<< "Version " << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << endl;
+				<< loc::translate("Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << endl;
 		return out.str();
 	}
 
@@ -1079,7 +1081,7 @@ namespace boss {
 		if (logFormat == HTML)
 			out << "<section id='cssSettings'>"
 				<< "<h2>CSS Settings</h2>"
-				<< "<p>Here you can customise the colours used by the alternative colour scheme.<span id='colorPickerNote'> Colours must be specified using their lowercase hex codes.</span> Boxes left blank will use their default values, which are given by their placeholders."
+				<< "<p>" << loc::translate("Here you can customise the colours used by the alternative colour scheme.") << "<span id='colorPickerNote'> " << loc::translate("Colours must be specified using their lowercase hex codes.") << "</span> " << loc::translate("Boxes left blank will use their default values, which are given by their placeholders.")
 				<< "<form>"
 				<< "<table>"
 				<< "	<thead><tr><td>Element<td>Colour"
@@ -1864,30 +1866,30 @@ namespace boss {
 
 		formattedOut.SetHTMLSpecialEscape(false);
 
-		formattedOut << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << "Summary" << HEADING_CLOSE;
+		formattedOut << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << loc::translate("Summary") << HEADING_CLOSE;
 
 		if (recognised != 0 || unrecognised != 0 || messages != 0) {
-			formattedOut << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << "Plugin Type" << TABLE_HEADING << "Count"
-				<< TABLE_BODY << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Recognised (or sorted by user rules)" << TABLE_DATA << recognised;
+			formattedOut << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << loc::translate("Plugin Type") << TABLE_HEADING << loc::translate("Count")
+				<< TABLE_BODY << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Recognised (or sorted by user rules)") << TABLE_DATA << recognised;
 			if (unrecognised != 0)
-				formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << "Unrecognised" << TABLE_DATA << unrecognised;
+				formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << loc::translate("Unrecognised") << TABLE_DATA << unrecognised;
 			else
-				formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Unrecognised" << TABLE_DATA << unrecognised;
-			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Inactive" << TABLE_DATA << inactive
-				<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "All" << TABLE_DATA << (recognised + unrecognised)
+				formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Unrecognised") << TABLE_DATA << unrecognised;
+			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Inactive") << TABLE_DATA << inactive
+				<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("All") << TABLE_DATA << (recognised + unrecognised)
 				<< TABLE_CLOSE
 
-				<< TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << "Plugin Message Type" << TABLE_HEADING << "Count"
+				<< TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << loc::translate("Plugin Message Type") << TABLE_HEADING << loc::translate("Count")
 				<< TABLE_BODY;
 			if (warnings != 0)
-				formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << "Warning" << TABLE_DATA << warnings;
+				formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << loc::translate("Warning") << TABLE_DATA << warnings;
 			else
-				formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Warning" << TABLE_DATA << warnings;
+				formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Warning") << TABLE_DATA << warnings;
 			if (errors != 0)
-				formattedOut << TABLE_ROW_CLASS_ERROR << TABLE_DATA << "Error" << TABLE_DATA << errors;
+				formattedOut << TABLE_ROW_CLASS_ERROR << TABLE_DATA << loc::translate("Error") << TABLE_DATA << errors;
 			else
-				formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "Error" << TABLE_DATA << errors;
-			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << "All" << TABLE_DATA << messages
+				formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Error") << TABLE_DATA << errors;
+			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("All") << TABLE_DATA << messages
 				<< TABLE_CLOSE;
 		}
 
@@ -1896,7 +1898,7 @@ namespace boss {
 		formattedOut << updaterOutput.AsString();  //This contains BOSS & masterlist update strings.
 
 		if (recognisedHasChanged)
-			formattedOut << LIST_ITEM_CLASS_SUCCESS << "No change in recognised plugin list since last run.";
+			formattedOut << LIST_ITEM_CLASS_SUCCESS << loc::translate("No change in recognised plugin list since last run.");
 
 		size_t size = parsingErrors.size();  //First print parser/syntax error messages.
 		for (size_t i=0; i < size; i++)
@@ -1924,8 +1926,8 @@ namespace boss {
 		//-------------------------
 
 		if (!userRules.Empty()) {
-			formattedOut << SECTION_ID_USERLIST_OPEN << HEADING_OPEN << "User Rules" << HEADING_CLOSE 
-				<< TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << "Rule" << TABLE_HEADING << "Applied" << TABLE_HEADING << "Details (if applicable)"
+			formattedOut << SECTION_ID_USERLIST_OPEN << HEADING_OPEN << loc::translate("User Rules") << HEADING_CLOSE 
+				<< TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << loc::translate("Rule") << TABLE_HEADING << loc::translate("Applied") << TABLE_HEADING << loc::translate("Details (if applicable)")
 				<< TABLE_BODY << userRules.AsString() << TABLE_CLOSE << SECTION_CLOSE;
 			out << formattedOut.AsString();
 			formattedOut.Clear();
@@ -1936,7 +1938,7 @@ namespace boss {
 		//--------------------------------------
 
 		if (!sePlugins.Empty()) {
-			formattedOut << SECTION_ID_SE_OPEN << HEADING_OPEN << scriptExtender << " Plugins" << HEADING_CLOSE << LIST_OPEN
+			formattedOut << SECTION_ID_SE_OPEN << HEADING_OPEN << scriptExtender << loc::translate(" Plugins") << HEADING_CLOSE << LIST_OPEN
 				<< sePlugins.AsString()
 				<< LIST_CLOSE << SECTION_CLOSE;
 			out << formattedOut.AsString();
@@ -1950,13 +1952,13 @@ namespace boss {
 		if (!recognisedPlugins.Empty()) {
 			formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN;
 			if (gl_revert < 1) 
-				formattedOut << "Recognised Plugins";
+				formattedOut << loc::translate("Recognised Plugins");
 			else if (gl_revert == 1)
-				formattedOut << "Restored Load Order (Using modlist.txt)";
+				formattedOut << loc::translate("Restored Load Order (Using modlist.txt)");
 			else if (gl_revert == 2) 
-				formattedOut << "Restored Load Order (Using modlist.old)";
+				formattedOut << loc::translate("Restored Load Order (Using modlist.old)");
 			formattedOut  << HEADING_CLOSE << PARAGRAPH 
-				<< "These plugins are recognised by BOSS and have been sorted according to its masterlist. Please read any attached messages and act on any that require action."
+				<< loc::translate("These plugins are recognised by BOSS and have been sorted according to its masterlist. Please read any attached messages and act on any that require action.")
 				<< LIST_OPEN
 				<< recognisedPlugins.AsString()
 				<< LIST_CLOSE << SECTION_CLOSE;
@@ -1969,9 +1971,9 @@ namespace boss {
 		//--------------------------------
 
 		if (!unrecognisedPlugins.Empty()) {
-			formattedOut << SECTION_ID_UNRECOGNISED_OPEN << HEADING_OPEN << "Unrecognised Plugins" << HEADING_CLOSE 
-				<< PARAGRAPH << "The following plugins were not found in the masterlist, and must be positioned manually, using your favourite mod manager or by using BOSS's user rules functionality."
-				<< SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN << " You can submit unrecognised plugins for addition to the masterlist directly from this log by clicking on a plugin and supplying a link and/or description of its contents in the panel that is displayed." << SPAN_CLOSE << LIST_OPEN
+			formattedOut << SECTION_ID_UNRECOGNISED_OPEN << HEADING_OPEN << loc::translate("Unrecognised Plugins") << HEADING_CLOSE 
+				<< PARAGRAPH << loc::translate("The following plugins were not found in the masterlist, and must be positioned manually, using your favourite mod manager or by using BOSS's user rules functionality.")
+				<< SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN << loc::translate(" You can submit unrecognised plugins for addition to the masterlist directly from this log by clicking on a plugin and supplying a link and/or description of its contents in the panel that is displayed.") << SPAN_CLOSE << LIST_OPEN
 				<< unrecognisedPlugins.AsString()
 				<< LIST_CLOSE << SECTION_CLOSE;
 			out << formattedOut.AsString();
@@ -2048,7 +2050,7 @@ namespace boss {
 			if (pos2 != string::npos)
 				result = result.substr(pos1+4, pos2-pos1-9);
 		} else {
-			pos1 = result.find("Please read any attached messages and act on any that require action.");
+			pos1 = result.find(loc::translate("Please read any attached messages and act on any that require action."));
 			if (pos1 != string::npos)
 				pos2 = result.find("======================================", pos1);
 			if (pos2 != string::npos)
