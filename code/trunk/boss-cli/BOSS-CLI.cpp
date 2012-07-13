@@ -34,6 +34,7 @@
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 #include <boost/exception/get_error_info.hpp>
 #include <boost/unordered_set.hpp>
+#include <boost/locale.hpp>
 
 #include <clocale>
 #include <cstdlib>
@@ -212,6 +213,15 @@ int main(int argc, char *argv[]) {
 			ini.ErrorBuffer(ParsingError("Error: " + e.getString()));
 		}
 	}
+
+	//Specify location of language dictionaries
+	boost::locale::generator gen;
+	gen.add_messages_path(fs::path(boss_path / "l10n").string());
+	gen.add_messages_domain("messages");
+
+	//Generate locales and imbue them to iostream
+    locale::global(gen(""));
+    cout.imbue(locale());
 
 	// parse command line arguments
 	po::variables_map vm;

@@ -1,0 +1,1 @@
+msgunfmt --output-file=messages.po messages.mo

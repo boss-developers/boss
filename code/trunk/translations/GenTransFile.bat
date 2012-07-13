@@ -1,0 +1,1 @@
+msgfmt --check messages.po
