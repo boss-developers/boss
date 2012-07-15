@@ -148,7 +148,7 @@
 	 <li>Added: SubmitUnrecognisedPlugin function.
  </ul>
 	<li>Added: GUI's Select Game dialog now displays the BOSS icon in the title bar, matching the other GUI windows.
-	<li>Added: <code>sLanguage</code> option to BOSS.ini, and Language setting to the GUI's Settings window, to control BOSS's operating language. These options are currently non-functional, with the translations themselves to be implemented shortly.
+	<li>Added: 
 	<li>Added: GUI now records the game it was last run for using the <code>sLastGame</code> BOSS.ini setting. If the <code>sGame</code> setting is set to <code>auto</code> (or the corresponding <q>Default Game</q> GUI setting set to <q>Autodetect</q>), then the GUI will first attempt to run for the game it was last run for. If the game cannot be detected, or the <code>sLastGame</code> setting is set to <code>auto</code>, then it will then prompt the user to select a game to run for.
 	<li>Added: Support for TES III: Morrowind:
 	<ul>
@@ -156,6 +156,11 @@
 		<li>Added <code>Morrowind</code> value for the sGame BOSS.ini setting.
 		<li>Morrowind's masterlist is unmaintained, and only recognises Morrowind.esm, Bloodmoon.esm and Tribunal.esm. The support is primarily intended for the API, and those wanting auto-sorting of load orders should consider using mlox.
 	</ul>
+ <li>Added: Support for translations:
+ <ul>
+  <li><code>sLanguage</code> option to BOSS.ini, and Language setting to the GUI's Settings window, to control BOSS's operating language.
+  <li>English, Russian, Spanish and German are currently supported with varying levels of completion. Russian translation by Tokc.D.K..
+ </ul>
  <li>Added: Support for MF2.3 Web Links in the masterlists.
 </ul>
 <h2>2.0.1 - <i>6 April 2012</i></h2>

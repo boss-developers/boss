@@ -1084,7 +1084,7 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 
 	//Load plugins.txt.
 	try {
-		if (fs::exists(db->game.ActivePluginsFile()) && GetActivePluginsMTime(db->game) != db->activePluginsMTime)
+		if (fs::exists(db->game.ActivePluginsFile()) && (GetActivePluginsMTime(db->game) != db->activePluginsMTime || GetLoadOrderMTime(db->game) != db->loadOrderMTime))
 			db->activePlugins.Load(db->game, db->game.ActivePluginsFile());
 	} catch (boss_error &e) {
 		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
