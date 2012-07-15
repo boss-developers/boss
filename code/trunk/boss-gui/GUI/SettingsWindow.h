@@ -35,7 +35,7 @@ using namespace std;
 
 class SettingsFrame : public wxFrame {
 public:
-	SettingsFrame(const wxChar *title, wxFrame *parent);
+	SettingsFrame(const string title, wxFrame *parent);
 	void OnOKQuit(wxCommandEvent& event);
 	void OnCancelQuit(wxCommandEvent& event);
 	void SetDefaultValues();

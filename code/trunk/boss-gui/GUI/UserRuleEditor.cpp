@@ -30,6 +30,7 @@
 #include <wx/progdlg.h>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/locale.hpp>
 
 BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
 	EVT_BUTTON ( BUTTON_OKExitEditor, UserRulesEditorFrame::OnOKQuit )
@@ -70,11 +71,12 @@ using namespace boss;
 using namespace std;
 
 using boost::algorithm::trim_copy;
+using boost::locale::translate;
 
-UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent, Game& inGame) : wxFrame(parent, wxID_ANY, title), game(inGame) {
+UserRulesEditorFrame::UserRulesEditorFrame(const string title, wxFrame *parent, Game& inGame) : wxFrame(parent, wxID_ANY, title), game(inGame) {
 
 	//Let's give this a progress bar.
-	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."),wxT("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
+	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."), translate("Initialising User Rules Manager...").str(), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
 	progDia->Pulse();
 
 	try{
@@ -82,10 +84,9 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent,
 	} catch(boss_error &e) {
 		progDia->Destroy();
 		this->Close();
-		wxMessageBox(wxString::Format(
-				wxT("Error: "+e.getString())
-			),
-			wxT("BOSS: Error"),
+		wxMessageBox(
+			(boost::format(translate("Error: %1%")) % e.getString()).str(),
+			translate("BOSS: Error").str(),
 			wxOK | wxICON_ERROR,
 			NULL);
 		return;
@@ -96,13 +97,13 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent,
 
 	//Some variable setup.
 	wxString BeforeAfter[] = {
-        wxT("before"),
-        wxT("after")
+        translate("before").str(),
+        translate("after").str()
     };
 
 	wxString TopBottom[] = {
-        wxT("top"),
-        wxT("bottom")
+        translate("top").str(),
+        translate("bottom").str()
     };
 
 	//Set up stuff in the frame.
@@ -139,37 +140,37 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent,
 
 	////////Rule Creator/Editor
 	wxBoxSizer *editorMessagesBox = new wxBoxSizer(wxHORIZONTAL);
-	wxStaticBoxSizer *ruleEditorTopBox = new wxStaticBoxSizer(wxVERTICAL, this, wxT("Rule Editor"));  //Needs to go in an oulined box.
+	wxStaticBoxSizer *ruleEditorTopBox = new wxStaticBoxSizer(wxVERTICAL, this, translate("Rule Editor").str());  //Needs to go in an oulined box.
 	wxBoxSizer *ruleEditorBox = new wxBoxSizer(wxVERTICAL);  //To get internal padding.
 	wxBoxSizer *forBox = new wxBoxSizer(wxHORIZONTAL);
-	forBox->Add(new wxStaticText(ruleEditorTopBox->GetStaticBox(), wxID_ANY, wxT("For")));
+	forBox->Add(new wxStaticText(ruleEditorTopBox->GetStaticBox(), wxID_ANY, translate("For").str()));
 	forBox->Add(RuleModBox = new wxTextCtrl(ruleEditorTopBox->GetStaticBox(), TEXT_RuleMod, ""), 1, wxEXPAND|wxLEFT, 10);
 	ruleEditorBox->Add(forBox, 0, wxEXPAND);
 	ruleEditorBox->AddSpacer(10);
-	ruleEditorBox->Add(SortModsCheckBox = new wxCheckBox(ruleEditorTopBox->GetStaticBox(), CHECKBOX_SortMods, wxT("Sort Item")));
+	ruleEditorBox->Add(SortModsCheckBox = new wxCheckBox(ruleEditorTopBox->GetStaticBox(), CHECKBOX_SortMods, translate("Sort Item").str()));
 	ruleEditorBox->AddSpacer(10);
 	wxBoxSizer *sortModOptionBox = new wxBoxSizer(wxHORIZONTAL);
-	sortModOptionBox->Add(SortModOption = new wxRadioButton(ruleEditorTopBox->GetStaticBox(), RADIO_SortMod, wxT("Sort")));
+	sortModOptionBox->Add(SortModOption = new wxRadioButton(ruleEditorTopBox->GetStaticBox(), RADIO_SortMod, translate("Sort").str()));
 	sortModOptionBox->Add(BeforeAfterChoiceBox = new wxChoice(ruleEditorTopBox->GetStaticBox(), CHOICE_BeforeAfter, wxDefaultPosition, wxDefaultSize, 2, BeforeAfter), 0, wxLEFT, 10);
 	sortModOptionBox->Add(SortModBox = new wxTextCtrl(ruleEditorTopBox->GetStaticBox(), TEXT_SortMod, ""), 1, wxEXPAND|wxLEFT, 10);
 	ruleEditorBox->Add(sortModOptionBox, 0, wxEXPAND|wxLEFT, 20);
 	ruleEditorBox->AddSpacer(10);
 	wxBoxSizer *InsertOptionBox = new wxBoxSizer(wxHORIZONTAL);
-	InsertOptionBox->Add(InsertModOption = new wxRadioButton(ruleEditorTopBox->GetStaticBox(), RADIO_InsertMod, wxT("Insert at the")));
+	InsertOptionBox->Add(InsertModOption = new wxRadioButton(ruleEditorTopBox->GetStaticBox(), RADIO_InsertMod, translate("Insert at the").str()));
 	InsertOptionBox->Add(TopBottomChoiceBox = new wxChoice(ruleEditorTopBox->GetStaticBox(), CHOICE_TopBottom, wxDefaultPosition, wxDefaultSize, 2, TopBottom), 0, wxLEFT, 10);
-	InsertOptionBox->Add(new wxStaticText(ruleEditorTopBox->GetStaticBox(), wxID_ANY, wxT("of")), 0, wxLEFT, 10);
+	InsertOptionBox->Add(new wxStaticText(ruleEditorTopBox->GetStaticBox(), wxID_ANY, translate("of").str()), 0, wxLEFT, 10);
 	InsertOptionBox->Add(InsertModBox = new wxTextCtrl(ruleEditorTopBox->GetStaticBox(),TEXT_InsertMod), 1, wxEXPAND|wxLEFT, 10);
 	ruleEditorBox->Add(InsertOptionBox, 0, wxEXPAND|wxLEFT, 20);
 	ruleEditorBox->AddSpacer(10);
-	ruleEditorBox->Add(AddMessagesCheckBox = new wxCheckBox(ruleEditorTopBox->GetStaticBox(), CHECKBOX_AddMessages, wxT("Add the following messages:")));
+	ruleEditorBox->Add(AddMessagesCheckBox = new wxCheckBox(ruleEditorTopBox->GetStaticBox(), CHECKBOX_AddMessages, translate("Add the following messages:").str()));
 	ruleEditorBox->AddSpacer(10);
 	ruleEditorBox->Add(NewModMessagesBox = new wxTextCtrl(ruleEditorTopBox->GetStaticBox(),TEXT_NewMessages, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), 1, wxEXPAND|wxLEFT, 20);
 	ruleEditorBox->AddSpacer(10);
-	ruleEditorBox->Add(ReplaceMessagesCheckBox = new wxCheckBox(ruleEditorTopBox->GetStaticBox(), CHECKBOX_RemoveMessages, wxT("Replace existing messages")));
+	ruleEditorBox->Add(ReplaceMessagesCheckBox = new wxCheckBox(ruleEditorTopBox->GetStaticBox(), CHECKBOX_RemoveMessages, translate("Replace existing messages").str()));
 	ruleEditorTopBox->Add(ruleEditorBox, 1, wxEXPAND|wxALL, 10);
 	editorMessagesBox->Add(ruleEditorTopBox, 0, wxEXPAND);
 	editorMessagesBox->AddSpacer(10);
-	wxStaticBoxSizer *messBox = new wxStaticBoxSizer(wxVERTICAL, this, "Default Plugin Messages");
+	wxStaticBoxSizer *messBox = new wxStaticBoxSizer(wxVERTICAL, this, translate("Default Plugin Messages").str());
 	messBox->Add(ModMessagesBox = new wxTextCtrl(messBox->GetStaticBox(),TEXT_ModMessages,wxT(""),wxDefaultPosition,wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY), 1, wxEXPAND);
 	editorMessagesBox->Add(messBox, 1, wxEXPAND);
 	rulesBox->Add(editorMessagesBox, 1, wxEXPAND);
@@ -189,23 +190,23 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent,
 	MasterlistTabSizer->Add(MasterlistModsList = new wxTreeCtrl(MasterlistTab, LIST_Masterlist, wxDefaultPosition, wxSize(100,550), wxTR_HAS_BUTTONS|wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT), 1, wxEXPAND);
 	MasterlistTab->SetSizer(MasterlistTabSizer);
 	//Add tabs to window.
-	TabHolder->AddPage(ModlistTab,wxT("Installed Plugins"),true);
-	TabHolder->AddPage(MasterlistTab,wxT("Masterlist"));
+	TabHolder->AddPage(ModlistTab,translate("Installed Plugins").str(),true);
+	TabHolder->AddPage(MasterlistTab,translate("Masterlist").str());
 	mainBox->AddSpacer(10);
 	mainBox->Add(TabHolder, 2, wxEXPAND);
 	bigBox->Add(mainBox, 1, wxALL|wxEXPAND, 10);
 
 	////Window buttons
 	wxBoxSizer *mainButtonBox = new wxBoxSizer(wxHORIZONTAL);
-	mainButtonBox->Add(new wxButton(this, BUTTON_NewRule, wxT("Create New Rule")));
-	mainButtonBox->Add(new wxButton(this, BUTTON_EditRule, wxT("Save Edited Rule")), 0, wxLEFT, 10);
-	mainButtonBox->Add(new wxButton(this, BUTTON_DeleteRule, wxT("Delete Rule")), 0, wxLEFT, 10);
+	mainButtonBox->Add(new wxButton(this, BUTTON_NewRule, translate("Create New Rule").str()));
+	mainButtonBox->Add(new wxButton(this, BUTTON_EditRule, translate("Save Edited Rule").str()), 0, wxLEFT, 10);
+	mainButtonBox->Add(new wxButton(this, BUTTON_DeleteRule, translate("Delete Rule").str()), 0, wxLEFT, 10);
 	mainButtonBox->AddStretchSpacer(2);
-	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleUp, wxT("Move Rule Up")));
-	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleDown, wxT("Move Rule Down")), 0, wxLEFT, 10);
+	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleUp, translate("Move Rule Up").str()));
+	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleDown, translate("Move Rule Down").str()), 0, wxLEFT, 10);
 	mainButtonBox->AddStretchSpacer(2);
-	mainButtonBox->Add(new wxButton(this, BUTTON_OKExitEditor, wxT("Save and Exit")));
-	mainButtonBox->Add(new wxButton(this, BUTTON_CancelExitEditor, wxT("Cancel")), 0, wxLEFT, 10);
+	mainButtonBox->Add(new wxButton(this, BUTTON_OKExitEditor, translate("Save and Exit").str()));
+	mainButtonBox->Add(new wxButton(this, BUTTON_CancelExitEditor, translate("Cancel").str()), 0, wxLEFT, 10);
 	//Now add buttons to window sizer.
 	bigBox->Add(mainButtonBox, 0, wxALL|wxEXPAND, 10);
 
@@ -224,7 +225,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxChar *title, wxFrame *parent,
 	ReplaceMessagesCheckBox->Enable(false);
 
 	//Tooltips.
-	NewModMessagesBox->SetToolTip("Messages must be entered in the correct format. See the User Rules Readme for more information.");
+	NewModMessagesBox->SetToolTip(translate("Messages must be entered in the correct format. See the User Rules Readme for more information.").str());
 
 	//Set up drag 'n' drop.
 	ForDropTarget = new TextDropTarget(RuleModBox);
@@ -391,10 +392,9 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 		Rule newRule = GetRuleFromForm();
 		RulesList->AppendRule(newRule);
 	} catch (boss_error &e) {
-		wxMessageBox(wxString::Format(
-				wxT("Rule Syntax Error: " + e.getString() + " Please correct the mistake before continuing.")
-			),
-			wxT("BOSS: Error"),
+		wxMessageBox(
+			(boost::format(translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) %  e.getString()).str(),
+			translate("BOSS: Error").str(),
 			wxOK | wxICON_ERROR,
 			NULL);
 	}
@@ -403,8 +403,8 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 
 void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 	wxMessageDialog *dlg = new wxMessageDialog(this,
-			wxT("Are you sure you want to save your changes to the selected rule?")
-			, wxT("BOSS: User Rules Editor"), wxYES_NO);
+			translate("Are you sure you want to save your changes to the selected rule?").str(), 
+			translate("BOSS: User Rules Editor").str(), wxYES_NO);
 
 	if (dlg->ShowModal() != wxID_YES)  //User has chosen not to save.
 		return;
@@ -413,10 +413,9 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 			Rule newRule = GetRuleFromForm();
 			RulesList->SaveEditedRule(newRule);
 		} catch (boss_error &e) {
-			wxMessageBox(wxString::Format(
-					wxT("Rule Syntax Error: " + e.getString() + " Please correct the mistake before continuing.")
-				),
-				wxT("BOSS: Error"),
+			wxMessageBox(
+				(boost::format(translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) %  e.getString()).str(),
+				translate("BOSS: Error").str(),
 				wxOK | wxICON_ERROR,
 				NULL);
 		}
@@ -426,8 +425,8 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 
 void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
 	wxMessageDialog *dlg = new wxMessageDialog(this,
-			wxT("Are you sure you want to delete the selected rule?")
-			, wxT("BOSS: User Rules Editor"), wxYES_NO);
+			translate("Are you sure you want to delete the selected rule?").str(), 
+			translate("BOSS: User Rules Editor").str(), wxYES_NO);
 
 	if (dlg->ShowModal() != wxID_YES)  //User has chosen not to delete.
 		return;
@@ -498,7 +497,7 @@ void UserRulesEditorFrame::LoadLists() {
 	try {
 		game.modlist.Load(game, game.DataFolder());
 	} catch (boss_error &e) {
-		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, translate("User Rules Editor"), e.getString());
 	}
 
 	vector<Item> items = game.modlist.Items();
@@ -517,7 +516,7 @@ void UserRulesEditorFrame::LoadLists() {
 		game.masterlist.EvalConditions(game);
 		game.masterlist.EvalRegex(game);
 	} catch (boss_error &e) {
-		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, translate("User Rules Editor"), e.getString());
 	}
 }
 
@@ -530,32 +529,32 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
 				if (SortModOption->GetValue() && SortModBox->IsEmpty())
-					throw boss_error("No mod is specified to sort relative to.", BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error(translate("No mod is specified to sort relative to."), BOSS_ERROR_INVALID_SYNTAX);
 				else if (!Item(SortModBox->GetValue().ToStdString()).IsPlugin())  //Sort object is a group. Error.
-					throw boss_error("Cannot sort a plugin relative to a group.", BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error(translate("Cannot sort a plugin relative to a group."), BOSS_ERROR_INVALID_SYNTAX);
 			} else if (InsertModOption->GetValue() && !Item(InsertModBox->GetValue().ToStdString()).IsGroup()) {  //Inserting into a mod. Error.
 				if (InsertModBox->IsEmpty())
-					throw boss_error("No group is specified to insert into.", BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error(translate("No group is specified to insert into."), BOSS_ERROR_INVALID_SYNTAX);
 				else
-					throw boss_error("Cannot insert into a plugin.", BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error(translate("Cannot insert into a plugin."), BOSS_ERROR_INVALID_SYNTAX);
 			}
 		}
 		if (AddMessagesCheckBox->IsChecked() && NewModMessagesBox->IsEmpty())  //Can't add no messages. Error.
-			throw boss_error("Cannot add messages when none are given.", BOSS_ERROR_INVALID_SYNTAX);
+			throw boss_error(translate("Cannot add messages when none are given."), BOSS_ERROR_INVALID_SYNTAX);
 	} else {  //Rule object is a group, or empty.
 		if (RuleModBox->IsEmpty())
-			throw boss_error("No rule mod is specified.", BOSS_ERROR_INVALID_SYNTAX);
+			throw boss_error(translate("No rule mod is specified."), BOSS_ERROR_INVALID_SYNTAX);
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
 				if (SortModBox->IsEmpty())  //No sort object specified. Error.
-					throw boss_error("No mod is specified to sort relative to.", BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error(translate("No mod is specified to sort relative to."), BOSS_ERROR_INVALID_SYNTAX);
 				else if (Item(SortModBox->GetValue().ToStdString()).IsPlugin())  //Sort object is a plugin. Error.
-					throw boss_error("Cannot sort a group relative to a plugin.", BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error(translate("Cannot sort a group relative to a plugin."), BOSS_ERROR_INVALID_SYNTAX);
 			} else if (InsertModOption->GetValue())  //Can't insert groups. Error.
-				throw boss_error("Cannot insert groups.", BOSS_ERROR_INVALID_SYNTAX);
+				throw boss_error(translate("Cannot insert groups."), BOSS_ERROR_INVALID_SYNTAX);
 		}
 		if (AddMessagesCheckBox->IsChecked())  //Can't add messages to a group. Error.
-			throw boss_error("Cannot add messages to groups.", BOSS_ERROR_INVALID_SYNTAX);
+			throw boss_error(translate("Cannot add messages to groups."), BOSS_ERROR_INVALID_SYNTAX);
 	}
 
 	newRule.Enabled(true);
@@ -615,7 +614,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 					newLine.Key(APPEND);
 				
 				if (!newLine.IsObjectMessage())  //Message is formatted incorrectly. Error.
-					throw boss_error("The message \"" + newLine.Object() + "\" is formatted incorrectly.", BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error((boost::format(translate("The message \"%1%\" is formatted incorrectly.")) % newLine.Object()).str(), BOSS_ERROR_INVALID_SYNTAX);
 				
 				vector<RuleLine> lines = newRule.Lines();
 				lines.push_back(newLine);
@@ -802,7 +801,7 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inG
 	} catch (boss_error &e) {
 		game.userlist.Clear();
 		LOG_ERROR("Error: %s", e.getString().c_str());
-		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, "User Rules Editor", e.getString());
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, translate("User Rules Editor"), e.getString());
 	}
 
 	//Now disable any ADD rules with rule mods that are in the masterlist.
@@ -813,10 +812,9 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inG
 			size_t pos = game.masterlist.FindItem(rules[i].Object(), MOD);
 			if (pos != game.masterlist.Items().size()) {  //Mod in masterlist.
 				rules[i].Enabled(false);
-				wxMessageBox(wxString::Format(
-						wxT("The rule sorting the unrecognised plugin \"" + rules[i].Object() + "\" has been disabled as the plugin is now recognised. If you wish to override its position in the masterlist, re-enable the rule.")
-					),
-					wxT("BOSS: Rule Disabled"),
+				wxMessageBox(
+					(boost::format(translate("The rule sorting the unrecognised plugin \"%1%\" has been disabled as the plugin is now recognised. If you wish to override its position in the masterlist, re-enable the rule.")) % rules[i].Object()).str(),
+					translate("BOSS: Rule Disabled").str(),
 					wxOK | wxICON_ERROR,
 					NULL);
 					}
@@ -827,7 +825,7 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inG
 	//Now set up GUI layout.
 	SetBackgroundColour(*wxWHITE);
 
-	wxStaticBoxSizer *staticListBox = new wxStaticBoxSizer(wxVERTICAL, this, "User Rules");
+	wxStaticBoxSizer *staticListBox = new wxStaticBoxSizer(wxVERTICAL, this, translate("User Rules").str());
 	staticListBox->Add(RuleListScroller = new wxScrolled<wxPanel>(this, wxID_ANY), 1, wxEXPAND);
 
 	RuleListScroller->SetBackgroundColour(*wxWHITE);
@@ -845,10 +843,9 @@ void RuleListFrameClass::SaveUserlist(const fs::path path) {
 	try {
 		game.userlist.Save(path);
 	} catch (boss_error &e) {
-		wxMessageBox(wxString::Format(
-			wxT("Error: " + e.getString())
-		),
-		wxT("BOSS: Error"),
+		wxMessageBox(
+		(boost::format(translate("Error: %1%")) % e.getString()).str(),
+		translate("BOSS: Error").str(),
 		wxOK | wxICON_ERROR,
 		NULL);
 	}
