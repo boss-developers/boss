@@ -97,7 +97,12 @@ SettingsFrame::SettingsFrame(const wxChar *title, wxFrame *parent) : wxFrame(par
 	text += wxT("If the default game is set to a specific game, and BOSS is not run to only update the masterlist, BOSS will attempt to run for that game, falling back to autodetection if it cannot be found.\n\n");
 	text += wxT("If the default game is set to a specific game, and BOSS is run to only update the masterlist, BOSS will run for that game whether or not it is detected.");
 	GeneralTabSizer->Add(gameText = new wxStaticText(GeneralTab, wxID_ANY, text), 1, wxEXPAND|wxALL, 10);
-	*/GeneralTab->SetSizer(GeneralTabSizer);
+	*/
+	wxStaticText *langText;
+	wxString text = wxT("Language settings will be applied after the BOSS GUI is closed and re-opened.");
+	GeneralTabSizer->Add(langText = new wxStaticText(GeneralTab, wxID_ANY, text), 1, wxEXPAND|wxALL, 10);
+	
+	GeneralTab->SetSizer(GeneralTabSizer);
 
 	//Create Internet Settings tab.
 	InternetTab = new wxPanel(TabHolder);
@@ -245,16 +250,16 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	}
 	switch (LanguageChoice->GetSelection()) {
 	case 0:
-		gl_game = ENGLISH;
+		gl_language = ENGLISH;
 		break;
 	case 1:
-		gl_game = SPANISH;
+		gl_language = SPANISH;
 		break;
 	case 2:
-		gl_game = GERMAN;
+		gl_language = GERMAN;
 		break;
 	case 3:
-		gl_game = RUSSIAN;
+		gl_language = RUSSIAN;
 		break;
 	}
 

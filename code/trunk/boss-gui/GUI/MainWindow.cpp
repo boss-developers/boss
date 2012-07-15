@@ -94,12 +94,6 @@ using namespace std;
 
 //Draws the main window when program starts.
 bool BossGUI::OnInit() {
-	//Set locale.
-	setlocale(LC_CTYPE, "");
-	locale global_loc = locale();
-	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
-	boost::filesystem::path::imbue(loc);
-
 	//Check if GUI is already running.
 	wxSingleInstanceChecker *checker = new wxSingleInstanceChecker;
 
@@ -139,6 +133,33 @@ bool BossGUI::OnInit() {
 	g_logger.setOriginTracking(gl_debug_with_source);
 	// it's ok if this number is too high.  setVerbosity will handle it
 	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));
+	
+	//Specify location of language dictionaries
+	boost::locale::generator gen;
+	gen.add_messages_path(fs::path(boss_path / "l10n").string());
+	gen.add_messages_domain("messages");
+
+	//Set the locale to get encoding and language conversions working correctly.
+	string localeId = "";
+	if (gl_language == ENGLISH)
+		localeId = "en.UTF-8";
+	else if (gl_language == SPANISH)
+		localeId = "es.UTF-8";
+	else if (gl_language == GERMAN)
+		localeId = "de.UTF-8";
+	else if (gl_language == RUSSIAN)
+		localeId = "ru.UTF-8";
+
+	try {
+		locale::global(gen(localeId));
+		cout.imbue(locale());
+	} catch(exception &e) {
+		LOG_ERROR("could not implement translation: %s", e.what());
+		cout << e.what() << endl;
+	}
+	locale global_loc = locale();
+	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
+	boost::filesystem::path::imbue(loc);
 
 	MainFrame *frame = new MainFrame(wxT("BOSS"));
 

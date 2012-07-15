@@ -132,12 +132,6 @@ int main(int argc, char *argv[]) {
 	string gameStr;							// allow for autodetection override
 	string bosslogFormat;
 	fs::path sortfile;						//modlist/masterlist to sort plugins using.
-
-	//Set the locale to get encoding conversions working correctly.
-	setlocale(LC_CTYPE, "");
-	locale global_loc = locale();
-	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
-	boost::filesystem::path::imbue(loc);
 	
 	// declare the supported options
 	po::options_description opts("Options");
@@ -218,10 +212,28 @@ int main(int argc, char *argv[]) {
 	boost::locale::generator gen;
 	gen.add_messages_path(fs::path(boss_path / "l10n").string());
 	gen.add_messages_domain("messages");
+	
+	//Set the locale to get encoding and language conversions working correctly.
+	string localeId = "";
+	if (gl_language == ENGLISH)
+		localeId = "en.UTF-8";
+	else if (gl_language == SPANISH)
+		localeId = "es.UTF-8";
+	else if (gl_language == GERMAN)
+		localeId = "de.UTF-8";
+	else if (gl_language == RUSSIAN)
+		localeId = "ru.UTF-8";
 
-	//Generate locales and imbue them to iostream
-    locale::global(gen(""));
-    cout.imbue(locale());
+	try {
+		locale::global(gen(localeId));
+		cout.imbue(locale());
+	} catch(exception &e) {
+		LOG_ERROR("could not implement translation: %s", e.what());
+		cout << e.what() << endl;
+	}
+	locale global_loc = locale();
+	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
+	boost::filesystem::path::imbue(loc);
 
 	// parse command line arguments
 	po::variables_map vm;

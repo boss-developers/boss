@@ -1,1 +1,1 @@
-msgunfmt --output-file=messages.po messages.mo
+start cmd /k "msgunfmt --output-file=messages.po messages.mo"
