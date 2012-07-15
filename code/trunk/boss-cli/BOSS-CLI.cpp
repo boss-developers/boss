@@ -49,6 +49,7 @@
 using namespace boss;
 using namespace std;
 namespace po = boost::program_options;
+using boost::locale::translate;
 
 #if _WIN32 || _WIN64
 	const string launcher_cmd = "start";
@@ -71,7 +72,7 @@ int Launch(string filename) {
 
 void ShowVersion() {
 	cout << "BOSS" << endl;
-	cout << "Version " << BOSS_VERSION_MAJOR << "." << BOSS_VERSION_MINOR
+	cout << translate("Version ") << BOSS_VERSION_MAJOR << "." << BOSS_VERSION_MINOR
 		 << "." << BOSS_VERSION_PATCH << " (" << gl_boss_release_date << ")" << endl;
 }
 
@@ -85,18 +86,18 @@ void ShowUsage(po::options_description opts) {
 #endif
 
 	ShowVersion();
-	cout << endl << "Description:" << endl;
-	cout << "  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, Nehrim," << endl;
-	cout << "  Fallout 3, Fallout: New Vegas and TESV: Skyrim according to a frequently updated" << endl;
-	cout << "  masterlist to minimise incompatibilities between mods." << endl << endl;
-	cout << opts << endl;
-	cout << "Examples:" << endl;
-	cout << "  " << progName << " -u" << endl;
-	cout << "    updates the masterlist, sorts your mods, and shows the log" << endl << endl;
-	cout << "  " << progName << " -sr" << endl;
-	cout << "    reverts your load order 1 level and skips showing the log" << endl << endl;
-	cout << "  " << progName << " -r 2" << endl;
-	cout << "    reverts your load order 2 levels and shows the log" << endl << endl;
+	cout << endl << translate("Description:") << endl
+	 << translate("  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, Nehrim,"
+				  "  Fallout 3, Fallout: New Vegas and TESV: Skyrim according to a frequently updated"
+				  "  masterlist to minimise incompatibilities between mods.") << endl << endl
+	 << opts << endl
+	 << translate("Examples:") << endl
+	 << "  " << progName << " -u" << endl
+	 << translate("    updates the masterlist, sorts your mods, and shows the log") << endl << endl
+	 << "  " << progName << " -sr" << endl
+	 << translate("    reverts your load order 1 level and skips showing the log") << endl << endl
+	 << "  " << progName << " -r 2" << endl
+	 << translate("    reverts your load order 2 levels and shows the log") << endl << endl;
 }
 
 void Fail() {
@@ -110,7 +111,7 @@ void Fail() {
 class CLIMlistUpdater : public MasterlistUpdater {
 protected:
 	int progress(Updater * updater, double dlFraction, double dlTotal) {
-		printf("Downloading: %s; %3.0f%% of %3.0f KB\r", updater->TargetFile().c_str(), dlFraction, dlTotal);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
+		printf(translate("Downloading: %s; %3.0f%% of %3.0f KB\r").str().c_str(), updater->TargetFile().c_str(), dlFraction, dlTotal);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
 		fflush(stdout);
 		return 0;
 	}
@@ -119,71 +120,19 @@ protected:
 class CLIBOSSUpdater : public BOSSUpdater {
 protected:
 	int progress(Updater * updater, double dlFraction, double dlTotal) {
-		printf("Downloading: %s; %3.0f%% of %3.0f KB\r", updater->TargetFile().c_str(), dlFraction, dlTotal);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
+		printf(translate("Downloading: %s; %3.0f%% of %3.0f KB\r").str().c_str(), updater->TargetFile().c_str(), dlFraction, dlTotal);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
 		fflush(stdout);
 		return 0;
 	}
 };
 
 int main(int argc, char *argv[]) {
-	time_t esmtime = 0;						//File modification times.
 	Settings ini;
 	Game game;
 	string gameStr;							// allow for autodetection override
 	string bosslogFormat;
 	fs::path sortfile;						//modlist/masterlist to sort plugins using.
-	
-	// declare the supported options
-	po::options_description opts("Options");
-	opts.add_options()
-		("help,h",				"produces this help message")
-		("version,V",			"prints the version banner")
-		("update,u", po::value(&gl_update)->zero_tokens(),
-								"automatically update the local copy of the"
-								" masterlist to the latest version"
-								" available on the web before sorting")
-		("no-update,U",			"inhibit the automatic masterlist updater")
-		("only-update,o", po::value(&gl_update_only)->zero_tokens(),
-								"automatically update the local copy of the"
-								" masterlist to the latest version"
-								" available on the web but don't sort right"
-								" now")
-		("silent,s", po::value(&gl_silent)->zero_tokens(),
-								"don't launch a browser to show the HTML log"
-								" at program completion")
-		("revert,r", po::value(&gl_revert)->implicit_value(1, ""),
-								"revert to a previous load order.  this"
-								" parameter optionally accepts values of 1 or"
-								" 2, indicating how many undo steps to apply."
-								"  if no option value is specified, it"
-								" defaults to 1")
-		("verbose,v", po::value(&gl_debug_verbosity)->implicit_value(1, ""),
-								"specify verbosity level (0-3) of the debugging output.  0 is the"
-								" default, showing only WARN and ERROR messges."
-								" 1 (INFO and above) is implied if this option"
-								" is specified without an argument.  higher"
-								" values increase the verbosity further")
-		("game,g", po::value(&gameStr),
-								"override game autodetection.  valid values"
-								" are: 'Oblivion', 'Nehrim', 'Fallout3',"
-								" 'FalloutNV', and 'Skyrim'")
-		("debug-with-source,d", po::value(&gl_debug_with_source)->zero_tokens(),
-								"add source file references to debug statements")
-		("crc-display,c", po::value(&gl_show_CRCs)->zero_tokens(),
-								"show mod file CRCs, so that a file's CRC can be"
-								" added to the masterlist in a conditional")
-		("format,f", po::value(&bosslogFormat),
-								"select output format. valid values"
-								" are: 'html', 'text'")
-		("trial-run,t", po::value(&gl_trial_run)->zero_tokens(),
-								"run BOSS without actually making any changes to load order")
-		("proxy-host,H", po::value(&gl_proxy_host),
-								"sets the proxy hostname for the masterlist updater")
-		("proxy-port,P", po::value(&gl_proxy_port),
-								"sets the proxy port number for the masterlist updater")
-		("log-debug,l", po::value(&gl_log_debug_output)->zero_tokens(),
-								"logs the debug output to the BOSSDebugLog.txt file instead"
-								" of the command line.");
+
 	
 	///////////////////////////////
 	// Set up initial conditions
@@ -234,6 +183,62 @@ int main(int argc, char *argv[]) {
 	locale global_loc = locale();
 	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
 	boost::filesystem::path::imbue(loc);
+
+	//////////////////////////////
+	// Handle Command Line Args
+	//////////////////////////////
+
+	// declare the supported options
+	po::options_description opts("Options");
+	opts.add_options()
+		("help,h",				translate("produces this help message").str().c_str())
+		("version,V",			translate("prints the version banner").str().c_str())
+		("update,u", po::value(&gl_update)->zero_tokens(),
+								translate("automatically update the local copy of the"
+								" masterlist to the latest version"
+								" available on the web before sorting").str().c_str())
+		("no-update,U",			translate("inhibit the automatic masterlist updater").str().c_str())
+		("only-update,o", po::value(&gl_update_only)->zero_tokens(),
+								translate("automatically update the local copy of the"
+								" masterlist to the latest version"
+								" available on the web but don't sort right"
+								" now").str().c_str())
+		("silent,s", po::value(&gl_silent)->zero_tokens(),
+								translate("don't launch a browser to show the HTML log"
+								" at program completion").str().c_str())
+		("revert,r", po::value(&gl_revert)->implicit_value(1, ""),
+								translate("revert to a previous load order.  this"
+								" parameter optionally accepts values of 1 or"
+								" 2, indicating how many undo steps to apply."
+								"  if no option value is specified, it"
+								" defaults to 1").str().c_str())
+		("verbose,v", po::value(&gl_debug_verbosity)->implicit_value(1, ""),
+								translate("specify verbosity level (0-3) of the debugging output.  0 is the"
+								" default, showing only WARN and ERROR messges."
+								" 1 (INFO and above) is implied if this option"
+								" is specified without an argument.  higher"
+								" values increase the verbosity further").str().c_str())
+		("game,g", po::value(&gameStr),
+								translate("override game autodetection.  valid values"
+								" are: 'Oblivion', 'Nehrim', 'Fallout3',"
+								" 'FalloutNV', and 'Skyrim'").str().c_str())
+		("debug-with-source,d", po::value(&gl_debug_with_source)->zero_tokens(),
+								translate("add source file references to debug statements").str().c_str())
+		("crc-display,c", po::value(&gl_show_CRCs)->zero_tokens(),
+								translate("show mod file CRCs, so that a file's CRC can be"
+								" added to the masterlist in a conditional").str().c_str())
+		("format,f", po::value(&bosslogFormat),
+								translate("select output format. valid values"
+								" are: 'html', 'text'").str().c_str())
+		("trial-run,t", po::value(&gl_trial_run)->zero_tokens(),
+								translate("run BOSS without actually making any changes to load order").str().c_str())
+		("proxy-host,H", po::value(&gl_proxy_host),
+								translate("sets the proxy hostname for the masterlist updater").str().c_str())
+		("proxy-port,P", po::value(&gl_proxy_port),
+								translate("sets the proxy port number for the masterlist updater").str().c_str())
+		("log-debug,l", po::value(&gl_log_debug_output)->zero_tokens(),
+								translate("logs the debug output to the BOSSDebugLog.txt file instead"
+								" of the command line.").str().c_str());
 
 	// parse command line arguments
 	po::variables_map vm;
@@ -321,21 +326,24 @@ int main(int argc, char *argv[]) {
 		CLIBOSSUpdater BossUpdater;
 		try {
 			if (BossUpdater.IsInternetReachable()) {
-				cout << "Checking for BOSS updates..." << endl;
+				cout << translate("Checking for BOSS updates...") << endl;
 				LOG_DEBUG("Checking for BOSS updates...");
 				try {
 					updateVersion = BossUpdater.IsUpdateAvailable();
 					if (updateVersion.empty()) {
-						cout << "You are already using the latest version of BOSS." << endl;
+						cout << translate("You are already using the latest version of BOSS.") << endl;
 						LOG_DEBUG("You are already using the latest version of BOSS.");
 					} else {
 						//First detect type of current install: manual or installer.
 						if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS", "Installed Path")) {  //Manual.
 							//Point user to download locations.
-							cout << "Update available! New version: " << updateVersion << endl
-								 << "The update may be downloaded from any of the locations listed in the BOSS Log." << endl;		
+							cout << translate("Update available! New version: %s") << endl
+								 << translate("The update may be downloaded from any of the locations listed in the BOSS Log.") << endl;
+							LOG_DEBUG("Update available! New version: %s", updateVersion);
+							LOG_DEBUG("The update may be downloaded from any of the locations listed in the BOSS Log.");		
 						} else {  //Installer
-							cout << "Update available! New version: " << updateVersion << endl;
+							cout << translate("Update available! New version: %s") << endl;
+							LOG_DEBUG("Update available! New version: %s", updateVersion);
 							string notes;
 							try {
 								notes = BossUpdater.FetchReleaseNotes(updateVersion);
@@ -343,22 +351,22 @@ int main(int argc, char *argv[]) {
 								LOG_ERROR("Failed to get release notes. Details: '%s'", e.getString().c_str());
 							}
 							if (!notes.empty())
-								cout << "Release notes:" << endl << endl << notes << endl << endl;
-							cout << "Do you want to download and install the update? (y/n)" << endl;
+								cout << translate("Release notes:") << endl << endl << notes << endl << endl;
+							cout << translate("Do you want to download and install the update? (y/n)") << endl;
 						
 							//Does the user want to update?
 							char answer;
 							cin >> answer;
 							if (answer == 'n') {
-								cout << "No update has been downloaded or installed." << endl;
+								cout << translate("No update has been downloaded or installed.") << endl;
 								LOG_DEBUG("No update has been downloaded or installed.");
 							} else if (answer == 'y') {
 								try {
 									string file = "BOSS Installer.exe";
 									BossUpdater.GetUpdate(fs::path(file), updateVersion);
 
-									cout << endl << "New installer successfully downloaded!" << endl
-										 << "BOSS will now launch the downloaded installer and exit. Complete the installer to complete the update." << endl << endl;
+									cout << endl << translate("New installer successfully downloaded!") << endl
+										 << translate("BOSS will now launch the downloaded installer and exit. Complete the installer to complete the update.") << endl << endl;
 									if (fs::exists(file))
 										Launch(file);
 									Fail();
@@ -372,7 +380,7 @@ int main(int argc, char *argv[]) {
 										Fail();
 									}
 									if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL) {
-										cout << "Update cancelled." << endl;
+										cout << translate("Update cancelled.") << endl;
 										LOG_DEBUG("Update cancelled.");
 									} else {
 										LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
@@ -389,6 +397,7 @@ int main(int argc, char *argv[]) {
 					LOG_ERROR("BOSS Update check failed. Details: '%s'", e.getString().c_str());
 				}
 			} else {
+				cout << translate("BOSS Update check failed. No Internet connection detected.") << endl;
 				LOG_DEBUG("BOSS Update check failed. No Internet connection detected.");
 			}
 		} catch (boss_error &e) {
@@ -415,13 +424,13 @@ int main(int argc, char *argv[]) {
 			else {
 				size_t ans;
 				//Ask user to choose game.
-				cout << endl << "Please pick which game to run BOSS for:" << endl;
+				cout << endl << translate("Please pick which game to run BOSS for:") << endl;
 				for (size_t i=0; i < detected.size(); i++)
 					cout << i << " : " << Game(detected[i], "", true).Name() << endl;
 
 				cin >> ans;
 				if (ans < 0 || ans >= detected.size()) {
-					cout << "Invalid selection." << endl;
+					cout << translate("Invalid selection.") << endl;
 					throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 				}
 				detectedGame = detected[ans];
@@ -433,9 +442,9 @@ int main(int argc, char *argv[]) {
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		game.bosslog.SetFormat(gl_log_format);
-		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
-			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-			<< "Utility will end now.";
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << translate("Critical Error: ") << e.getString() << LINE_BREAK
+			<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+			<< translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
@@ -458,34 +467,34 @@ int main(int argc, char *argv[]) {
 		CLIMlistUpdater MlistUpdater;
 		try {
 			if (MlistUpdater.IsInternetReachable()) {
-				cout << endl << "Updating to the latest masterlist from the Google Code repository..." << endl;
+				cout << endl << translate("Updating to the latest masterlist from the Google Code repository...") << endl;
 				LOG_DEBUG("Updating masterlist...");
 				try {
-					string localDate, remoteDate;
+					string localDate, remoteDate, message;
 					uint32_t localRevision, remoteRevision;
 					MlistUpdater.Update(game.Id(), game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
 					if (localRevision == remoteRevision) {
-						game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << "Your masterlist is already at the latest revision (r" << localRevision << "; " << localDate << "). No update necessary.";
-						cout << endl << "Your masterlist is already at the latest revision (" << localRevision << "; " << localDate << "). No update necessary." << endl;
+						message = (boost::format(translate("Your masterlist is already at the latest revision (r %1%; %2%). No update necessary.")) % localRevision % localDate).str();
 						LOG_DEBUG("masterlist update unnecessary.");
 					} else {
-						game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << "Your masterlist has been updated to revision " << remoteRevision << " (" << remoteDate << ").";
-						cout << endl << "Your masterlist has been updated to revision " << remoteRevision << endl;
+						message =  (boost::format(translate("Your masterlist has been updated to revision %1% (%2%). No update necessary.")) % localRevision % localDate).str();
 						LOG_DEBUG("masterlist updated successfully.");
 					}
+					game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
+					cout << endl << message << endl;
 				} catch (boss_error &e) {
-					game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
-						<< "Details: " << e.getString() << LINE_BREAK
-						<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
+					game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
+						<< (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK
+						<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.");
 					LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
 				}
 			} else {
-				game.bosslog.updaterOutput << LIST_ITEM_CLASS_WARN << "No internet connection detected. Masterlist auto-updater could not check for updates.";
+				game.bosslog.updaterOutput << LIST_ITEM_CLASS_WARN << translate("No internet connection detected. Masterlist auto-updater could not check for updates.");
 			}
 		} catch (boss_error &e) {
-			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << "Error: masterlist update failed." << LINE_BREAK
-				<< "Details: " << e.getString() << LINE_BREAK
-				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions.";
+			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
+				<< (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK
+				<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.");
 			LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
 		}
 	}
@@ -507,7 +516,7 @@ int main(int argc, char *argv[]) {
 	// Resume Error Condition Checks
 	///////////////////////////////////
 
-	cout << endl << "BOSS working..." << endl;
+	cout << endl << translate("BOSS working...") << endl;
 
 	//Build and save modlist.
 	try {
@@ -516,9 +525,9 @@ int main(int argc, char *argv[]) {
 			game.modlist.Save(game.Modlist(), game.OldModlist());
 	} catch (boss_error &e) {
 		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
-		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
-			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-			<< "Utility will end now.";
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+			<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+			<< translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
@@ -560,9 +569,9 @@ int main(int argc, char *argv[]) {
 		else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL)
 			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << e.getString();
 		else
-			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
-				<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-				<< "Utility will end now.";
+			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+				<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+				<< translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
@@ -599,9 +608,9 @@ int main(int argc, char *argv[]) {
 		game.bosslog.Save(game.Log(gl_log_format), true);
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
-		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << "Critical Error: " << e.getString() << LINE_BREAK
-			<< "Check the Troubleshooting section of the ReadMe for more information and possible solutions." << LINE_BREAK
-			<< "Utility will end now.";
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+			<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+			<< translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
