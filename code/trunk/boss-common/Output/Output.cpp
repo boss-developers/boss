@@ -36,7 +36,7 @@
 namespace boss {
 	using namespace std;
 	using boost::algorithm::replace_all;
-	namespace loc = boost::locale;
+	using boost::locale::translate;
 
 	////////////////////////////////
 	// Outputter Class Functions
@@ -78,6 +78,16 @@ namespace boss {
 			escapeHTMLSpecialChars = false;
 
 		*this << r;
+	}
+
+	Outputter::Outputter(const uint32_t format, const logFormatting l)
+		: outFormat(format) {
+		if (outFormat == HTML)
+			escapeHTMLSpecialChars = true;
+		else
+			escapeHTMLSpecialChars = false;
+
+		*this << l;
 	}
 
 	void Outputter::SetFormat(const uint32_t format) {
@@ -479,44 +489,44 @@ namespace boss {
 		//Select message formatting.
 		if (m.Key() == SAY) {
 			if (outFormat == HTML)
-				outStream << "<li class='note'>Note: " << data;
+				outStream << "<li class='note'>" << translate("Note") << ": " << data;
 			else
-				outStream << endl << "*  Note: " << data;
+				outStream << endl << "*  " << translate("Note") << ": " << data;
 		} else if (m.Key() == TAG) {
 			if (outFormat == HTML)
-				outStream << "<li class='tag'><span class='tagPrefix'>Bash Tag suggestion(s):</span> " << data;
+				outStream << "<li class='tag'><span class='tagPrefix'>" << translate("Bash Tag suggestion(s)") << ":</span> " << data;
 			else
-				outStream << endl << "*  Bash Tag suggestion(s):" << data;
+				outStream << endl << "*  " << translate("Bash Tag suggestion(s)") << ": " << data;
 		} else if (m.Key() == REQ) {
 			if (outFormat == HTML)
-				outStream << "<li class='req'>Requires: " << data;
+				outStream << "<li class='req'>" << translate("Requires") << ": " << data;
 			else
-				outStream << endl << "*  Requires: " << data;
+				outStream << endl << "*  " << translate("Requires") << ": " << data;
 		} else if (m.Key() == INC) {
 			if (outFormat == HTML)
-				outStream << "<li class='inc'>Incompatible with: " << data;
+				outStream << "<li class='inc'>" << translate("Incompatible with") << ": " << data;
 			else
-				outStream << endl << "*  Incompatible with: " << data;
+				outStream << endl << "*  " << translate("Incompatible with") << ": " << data;
 		} else if (m.Key() == WARN) {
 			if (outFormat == HTML)
-				outStream << "<li class='warn'>Warning: " << data;
+				outStream << "<li class='warn'>" << translate("Warning") << ": " << data;
 			else
-				outStream << endl << "*  Warning: " << data;
+				outStream << endl << "*  " << translate("Warning") << ": " << data;
 		} else if (m.Key() == ERR) {
 			if (outFormat == HTML)
-				outStream << "<li class='error'>ERROR: " << data;
+				outStream << "<li class='error'>" << translate("Error") << ": " << data;
 			else
-				outStream << endl << "*  ERROR: " << data;
+				outStream << endl << "*  " << translate("Error") << ": " << data;
 		} else if (m.Key() == DIRTY) {
 			if (outFormat == HTML)
-				outStream << "<li class='dirty'>Contains dirty edits: " << data;
+				outStream << "<li class='dirty'>" << translate("Contains dirty edits") << ": " << data;
 			else
-				outStream << endl << "*  Contains dirty edits: " << data;
+				outStream << endl << "*  " << translate("Contains dirty edits") << ": " << data;
 		} else {
 			if (outFormat == HTML)
-				outStream << "<li class='note'>Note: " << data;
+				outStream << "<li class='note'>" << translate("Note") << ": " << data;
 			else
-				outStream << endl << "*  Note: " << data;
+				outStream << endl << "*  " << translate("Note") << ": " << data;
 		}
 		return *this;
 	}
@@ -541,30 +551,36 @@ namespace boss {
 		bool hasEditedMessages = false;
 		vector<RuleLine> lines = r.Lines();
 		size_t linesSize = lines.size();
+		string varOpen = Outputter(outFormat, VAR_OPEN).AsString();
+		string varClose = Outputter(outFormat, VAR_CLOSE).AsString();
 		for (size_t j=0;j<linesSize;j++) {
+
+			string rObject = varOpen + r.Object() + varClose;
+			string lObject = varOpen + lines[j].Object() + varClose;
+
 			if (lines[j].Key() == BEFORE)
-				*this << "Sort " << VAR_OPEN << r.Object() << VAR_CLOSE << " before " << VAR_OPEN << lines[j].Object() << VAR_CLOSE;
+				*this << (boost::format(translate("Sort %1% before %2%")) % rObject % lObject).str();
 			else if (lines[j].Key() == AFTER)
-				*this << "Sort " << VAR_OPEN << r.Object() << VAR_CLOSE << " after " << VAR_OPEN << lines[j].Object() << VAR_CLOSE;
+				*this << (boost::format(translate("Sort %1% after %2%")) % rObject % lObject).str();
 			else if (lines[j].Key() == TOP)
-				*this << "Insert " << VAR_OPEN << r.Object() << VAR_CLOSE << " at the top of " << VAR_OPEN << lines[j].Object() << VAR_CLOSE;
+				*this << (boost::format(translate("Insert %1% at the top of %2%")) % rObject % lObject).str();
 			else if (lines[j].Key() == BOTTOM)
-				*this << "Insert " << VAR_OPEN << r.Object() << VAR_CLOSE << " at the bottom of " << VAR_OPEN << lines[j].Object() << VAR_CLOSE;
+				*this << (boost::format(translate("Insert %1% at the bottom of %2%")) % rObject % lObject).str();
 			else if (lines[j].Key() == APPEND) {
 				if (!hasEditedMessages) {
 					if (r.Key() == FOR)
-						*this << "Add the following messages to " << VAR_OPEN << r.Object() << VAR_CLOSE << ':' << LINE_BREAK << LIST_OPEN;
+						*this << (boost::format(translate("Add the following messages to %1%:")) % rObject).str() << LINE_BREAK << LIST_OPEN;
 					else
-						*this << LINE_BREAK << "Add the following messages:" << LINE_BREAK << LIST_OPEN;
+						*this << LINE_BREAK << translate("Add the following messages:") << LINE_BREAK << LIST_OPEN;
 				}
 				*this << lines[j].ObjectAsMessage();
 				hasEditedMessages = true;
 			} else if (lines[j].Key() == REPLACE) {
 				if (!hasEditedMessages) {
 					if (r.Key() == FOR)
-						*this << "Replace the messages attached to " << VAR_OPEN << r.Object() << VAR_CLOSE << " with:" << LINE_BREAK << LIST_OPEN;
+						*this << (boost::format(translate("Replace the messages attached to %1% with:")) % rObject).str() << LINE_BREAK << LIST_OPEN;
 					else
-						*this << LINE_BREAK << "Replace the attached messages with:" << LINE_BREAK << LIST_OPEN;
+						*this << LINE_BREAK << translate("Replace the attached messages with:") << LINE_BREAK << LIST_OPEN;
 				}
 				*this << lines[j].ObjectAsMessage();
 				hasEditedMessages = true;
@@ -1054,11 +1070,11 @@ namespace boss {
 				<< "<nav>"
 				<< "<header>"
 				<< "	<h1>BOSS</h1>"
-				<< loc::translate("	Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH)
+				<< translate("	Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH)
 				<< "</header>";
 		else
 			out << "\nBOSS\n"
-				<< loc::translate("Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << endl;
+				<< translate("Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << endl;
 		return out.str();
 	}
 
@@ -1078,93 +1094,95 @@ namespace boss {
 	
 	string BossLog::PrintFooter() {
 		stringstream out;
+		string colourTooltip = translate("Colours must be specified using lowercase hex codes.");
+
 		if (logFormat == HTML)
 			out << "<section id='cssSettings'>"
-				<< "<h2>CSS Settings</h2>"
-				<< "<p>" << loc::translate("Here you can customise the colours used by the alternative colour scheme.") << "<span id='colorPickerNote'> " << loc::translate("Colours must be specified using their lowercase hex codes.") << "</span> " << loc::translate("Boxes left blank will use their default values, which are given by their placeholders.")
+				<< "<h2>" << translate("CSS Settings") << "</h2>"
+				<< "<p>" << translate("Here you can customise the colours used by the alternative colour scheme.") << "<span id='colorPickerNote'> " << translate("Colours must be specified using their lowercase hex codes.") << "</span> " << translate("Boxes left blank will use their default values, which are given by their placeholders.")
 				<< "<form>"
 				<< "<table>"
-				<< "	<thead><tr><td>Element<td>Colour"
+				<< "	<thead><tr><td>" << translate("Element") << "<td>" << translate("Colour")
 				<< "	<tbody>"
-				<< "		<tr><td>General Text<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark' data-property='color' placeholder='#eeeeee'>"
-				<< "		<tr><td>Window Backgrounds<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='body.dark,#submitBox.dark' data-property='background' placeholder='#222222'>"
-				<< "		<tr><td>Menu Background<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='nav.dark' data-property='background' placeholder='#333333'>"
-				<< "		<tr><td>Menu Button Hover<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='nav div.button.dark:hover' data-property='background' placeholder='#a9a9a9'>"
-				<< "		<tr><td>Active Menu Button<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='nav div.button.current.dark' data-property='background' placeholder='#a9a9a9'>"
-				<< "		<tr><td>Links<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='a.dark:link' data-property='color' placeholder='#00aaff'>"
-				<< "		<tr><td>Visited Links<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='a.dark:visited' data-property='color' placeholder='#e000e0'>"
-				<< "		<tr><td>CRC Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.crc.dark' data-property='color' placeholder='#bc8923'>"
-				<< "		<tr><td>Active Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.active.dark' data-property='color' placeholder='#00aa00'>"
-				<< "		<tr><td>Version Labels<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.version.dark' data-property='color' placeholder='#6394F8'>"
-				<< "		<tr><td>Errors<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.error.dark' data-property='background' placeholder='#ff0000'>"
-				<< "		<tr><td>Warnings<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.warn.dark' data-property='background' placeholder='#ffa500'>"
-				<< "		<tr><td>Dirty Messages<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.dirty.dark' data-property='color' placeholder='#996600'>"
-				<< "		<tr><td>Bash Tag Suggestion Prefixes<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.tagPrefix.dark' data-property='color' placeholder='#cd5555'>"
-				<< "		<tr><td>CSS Settings Panel File Drag Highlight<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.dark.dragHover' data-property='background' placeholder='#444444'>"
-				<< "		<tr><td>Filters Background<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='aside.dark' data-property='background' placeholder='#666666'>"
-				<< "		<tr><td>Success Messages<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.success.dark' data-property='color' placeholder='#008000'>"
-				<< "		<tr><td>Quoted Userlist Messages<td><input type=color pattern='#[a-f0-9]{6}' title='Colours must be specified using lowercase hex codes.' data-selector='.message.dark' data-property='color' placeholder='#808080'>"
+				<< "		<tr><td>" << translate("General Text") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='body.dark' data-property='color' placeholder='#eeeeee'>"
+				<< "		<tr><td>" << translate("Window Backgrounds") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='body.dark,#submitBox.dark' data-property='background' placeholder='#222222'>"
+				<< "		<tr><td>" << translate("Menu Background") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='nav.dark' data-property='background' placeholder='#333333'>"
+				<< "		<tr><td>" << translate("Menu Button Hover") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='nav div.button.dark:hover' data-property='background' placeholder='#a9a9a9'>"
+				<< "		<tr><td>" << translate("Active Menu Button") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='nav div.button.current.dark' data-property='background' placeholder='#a9a9a9'>"
+				<< "		<tr><td>" << translate("Links") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='a.dark:link' data-property='color' placeholder='#00aaff'>"
+				<< "		<tr><td>" << translate("Visited Links") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='a.dark:visited' data-property='color' placeholder='#e000e0'>"
+				<< "		<tr><td>" << translate("CRC Labels") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.crc.dark' data-property='color' placeholder='#bc8923'>"
+				<< "		<tr><td>" << translate("Active Labels") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.active.dark' data-property='color' placeholder='#00aa00'>"
+				<< "		<tr><td>" << translate("Version Labels") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.version.dark' data-property='color' placeholder='#6394F8'>"
+				<< "		<tr><td>" << translate("Errors") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.error.dark' data-property='background' placeholder='#ff0000'>"
+				<< "		<tr><td>" << translate("Warnings") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.warn.dark' data-property='background' placeholder='#ffa500'>"
+				<< "		<tr><td>" << translate("Dirty Messages") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.dirty.dark' data-property='color' placeholder='#996600'>"
+				<< "		<tr><td>" << translate("Bash Tag Suggestion Prefixes") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.tagPrefix.dark' data-property='color' placeholder='#cd5555'>"
+				<< "		<tr><td>" << translate("CSS Settings Panel File Drag Highlight") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.dark.dragHover' data-property='background' placeholder='#444444'>"
+				<< "		<tr><td>" << translate("Filters Background") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='aside.dark' data-property='background' placeholder='#666666'>"
+				<< "		<tr><td>" << translate("Success Messages") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.success.dark' data-property='color' placeholder='#008000'>"
+				<< "		<tr><td>" << translate("Quoted Userlist Messages") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.message.dark' data-property='color' placeholder='#808080'>"
 				<< "</table>"
-				<< "<p id='backupCSSNote'>You can <span class='button' id='cssButtonBackup'>back up</span> your CSS settings to avoid losing them when you <span id='loseSettingsClose'>close the BOSS Log</span><span id='loseSettingsCacheClear'>clear your browser's cache</span>. Backup files are given nonsensical names by your browser, but you can rename them to whatever you want. Drag and drop a backup file into this panel to restore the settings it contains."
-				<< "<p><label><input type='checkbox' id='useDarkColourScheme'/>Use Alternative Colour Scheme</label>"
-				<< "<p><button>Apply</button>"
+				<< "<p id='backupCSSNote'>" << translate("You can <span class='button' id='cssButtonBackup'>back up</span> your CSS settings to avoid losing them when you <span id='loseSettingsClose'>close the BOSS Log</span><span id='loseSettingsCacheClear'>clear your browser's cache</span>.") << ' ' << translate("Backup files are given nonsensical names by your browser, but you can rename them to whatever you want. Drag and drop a backup file into this panel to restore the settings it contains.")
+				<< "<p><label><input type='checkbox' id='useDarkColourScheme'/>" << translate("Use Alternative Colour Scheme") << "</label>"
+				<< "<p><button>" << translate("Apply") << "</button>"
 				<< "</form>"
 				<< "</section>"
 				<< ""
 				<< "<section id='browserBox'>"
-				<< "<h2>Browser Compatibility</h2>"
-				<< "<p>The BOSS Log's more advanced features require some of the latest web technologies, for which browser support varies. Here's what your browser supports:"
-				<< "<h3>Functionality</h3>"
+				<< "<h2>" << translate("Browser Compatibility") << "</h2>"
+				<< "<p>" << translate("The BOSS Log's more advanced features require some of the latest web technologies, for which browser support varies. Here's what your browser supports:")
+				<< "<h3>" << translate("Functionality") << "</h3>"
 				<< "<table>"
 				<< "	<tbody>"
-				<< "		<tr><td id='pluginSubmitSupport'><td>In-Log Plugin Submission<td>Allows unrecognised plugins to be submitted straight from the BOSS Log."
-				<< "		<tr><td id='cssBackupSupport'><td>Backup/Restore of CSS Settings<td>Allows backup and restore of your custom CSS settings."
-				<< "		<tr><td id='memorySupport'><td>Settings Memory<td>Allows the BOSS Log to restore the configuration of CSS settings and filters last used, and to prevent this panel being displayed, whenever the BOSS Log is opened."
+				<< "		<tr><td id='pluginSubmitSupport'><td>" << translate("In-Log Plugin Submission") << "<td>" << translate("Allows unrecognised plugins to be submitted straight from the BOSS Log.")
+				<< "		<tr><td id='cssBackupSupport'><td>" << translate("Backup/Restore of CSS Settings") << "<td>" << translate("Allows backup and restore of your custom CSS settings.")
+				<< "		<tr><td id='memorySupport'><td>" << translate("Settings Memory") << "<td>" << translate("Allows the BOSS Log to restore the configuration of CSS settings and filters last used, and to prevent this panel being displayed, whenever the BOSS Log is opened.")
 				<< "</table>"
-				<< "<h3>Appearance</h3>"
+				<< "<h3>" << translate("Appearance") << "</h3>"
 				<< "<table>"
 				<< "	<tbody>"
-				<< "	<tr><td id='opacitySupport'><td>Opacity"
-				<< "	<tr><td id='shadowsSupport'><td>Shadows"
-				<< "	<tr><td id='transitionsSupport'><td>Transitions"
-				<< "	<tr><td id='transformsSupport'><td>Transforms"
-				<< "	<tr><td id='colorSupport'><td>Colour Picker Input"
-				<< "	<tr><td id='placeholderSupport'><td>Input Placeholders"
-				<< "	<tr><td id='validationSupport'><td>Form Validation"
+				<< "	<tr><td id='opacitySupport'><td>" << translate("Opacity")
+				<< "	<tr><td id='shadowsSupport'><td>" << translate("Shadows")
+				<< "	<tr><td id='transitionsSupport'><td>" << translate("Transitions")
+				<< "	<tr><td id='transformsSupport'><td>" << translate("Transforms")
+				<< "	<tr><td id='colorSupport'><td>" << translate("Colour Picker Input")
+				<< "	<tr><td id='placeholderSupport'><td>" << translate("Input Placeholders")
+				<< "	<tr><td id='validationSupport'><td>" << translate("Form Validation")
 				<< "</table>"
-				<< "<p><label><input type=checkbox id='suppressBrowserBox'>Do not display this panel again for this browser. If this checkbox is left unchecked, this panel will be displayed every time you open the BOSS Log.</label>"
+				<< "<p><label><input type=checkbox id='suppressBrowserBox'>" << translate("Do not display this panel again for this browser. If this checkbox is left unchecked, this panel will be displayed every time you open the BOSS Log.") << "</label>"
 				<< "</section>"
 				
 				
 				<< "<aside>"
-				<< "<label><input type='checkbox' id='hideVersionNumbers' data-class='version'/>Hide Version Numbers</label>"
-				<< "<label><input type='checkbox' id='hideActiveLabel' data-class='active'/>Hide 'Active' Label</label>"
-				<< "<label><input type='checkbox' id='hideChecksums' data-class='crc'/>Hide Checksums</label>"
-				<< "<label><input type='checkbox' id='hideNotes'/>Hide Notes</label>"
-				<< "<label><input type='checkbox' id='hideBashTags'/>Hide Bash Tag Suggestions</label>"
-				<< "<label><input type='checkbox' id='hideRequirements'/>Hide Requirements</label>"
-				<< "<label><input type='checkbox' id='hideIncompatibilities'/>Hide Incompatibilities</label>"
-				<< "<label><input type='checkbox' id='hideDoNotCleanMessages'/>Hide 'Do Not Clean' Messages</label>"
-				<< "<label><input type='checkbox' id='hideAllPluginMessages'/>Hide All Plugin Messages</label>"
-				<< "<label><input type='checkbox' id='hideInactivePlugins'/>Hide Inactive Plugins</label>"
-				<< "<label><input type='checkbox' id='hideMessagelessPlugins'/>Hide Messageless Plugins</label>"
-				<< "<label><input type='checkbox' id='hideCleanPlugins'/>Hide Clean Plugins</label>"
+				<< "<label><input type='checkbox' id='hideVersionNumbers' data-class='version'/>" << translate("Hide Version Numbers") << "</label>"
+				<< "<label><input type='checkbox' id='hideActiveLabel' data-class='active'/>" << translate("Hide 'Active' Label") << "</label>"
+				<< "<label><input type='checkbox' id='hideChecksums' data-class='crc'/>" << translate("Hide Checksums") << "</label>"
+				<< "<label><input type='checkbox' id='hideNotes'/>" << translate("Hide Notes") << "</label>"
+				<< "<label><input type='checkbox' id='hideBashTags'/>" << translate("Hide Bash Tag Suggestions") << "</label>"
+				<< "<label><input type='checkbox' id='hideRequirements'/>" << translate("Hide Requirements") << "</label>"
+				<< "<label><input type='checkbox' id='hideIncompatibilities'/>" << translate("Hide Incompatibilities") << "</label>"
+				<< "<label><input type='checkbox' id='hideDoNotCleanMessages'/>" << translate("Hide 'Do Not Clean' Messages") << "</label>"
+				<< "<label><input type='checkbox' id='hideAllPluginMessages'/>" << translate("Hide All Plugin Messages") << "</label>"
+				<< "<label><input type='checkbox' id='hideInactivePlugins'/>" << translate("Hide Inactive Plugins") << "</label>"
+				<< "<label><input type='checkbox' id='hideMessagelessPlugins'/>" << translate("Hide Messageless Plugins") << "</label>"
+				<< "<label><input type='checkbox' id='hideCleanPlugins'/>" << translate("Hide Clean Plugins") << "</label>"
 				<< "<footer>"
-				<< "	<span id='hiddenPluginNo'>0</span> of " << (recognised + unrecognised) << " recognised plugins hidden."
-				<< "	<span id='hiddenMessageNo'>0</span> of " << messages << " messages hidden."
+				<< "	" << (boost::format(translate("%1% of %2% recognised plugins hidden.")) % "<span id='hiddenPluginNo'>0</span>" % messages).str()
+				<< "	" << (boost::format(translate("%1% of %2% messages hidden.")) % "<span id='hiddenMessageNo'>0</span>" % messages).str()
 				<< "</footer>"
 				<< "</aside>"
 
 				<< "<div id='overlay'>"
 				<< "<div id='submitBox'>"
-				<< "<h2>Submit Plugin</h2>"
-				<< "<p><span id='pluginLabel'>Plugin:</span><span id='plugin'></span>"
+				<< "<h2>" << translate("Submit Plugin") << "</h2>"
+				<< "<p><span id='pluginLabel'>" << translate("Plugin") << ":</span><span id='plugin'></span>"
 				<< "<form>"
-				<< "<label>Download Location:<br /><input type='url' placeholder='A link to the plugin&#x27;s download location.' id='link'></label>"
-				<< "<label>Additional Notes:<br /><textarea id='notes' placeholder='Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.'></textarea></label>"
+				<< "<label>" << translate("Download Location") << ":<br /><input type='url' placeholder='" << translate("Label for text box. Do not use a single quote in translation, use '&#x27;' instead", "A link to the plugin&#x27;s download location.") << "' id='link'></label>"
+				<< "<label>" << translate("Additional Notes") << ":<br /><textarea id='notes' placeholder='" << translate("Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.") << "'></textarea></label>"
 				<< "<div id='output'></div>"
-				<< "<p class='last'><button>Submit</button>"
-				<< "<button type='reset'>Close</button>"
+				<< "<p class='last'><button>" << translate("Submit") << "</button>"
+				<< "<button type='reset'>" << translate("Close") << "</button>"
 				<< "</form>"
 				<< "</div>"
 				<< "</div>"
@@ -1180,7 +1198,7 @@ namespace boss {
 				<< "			\"Bugzilla_login\":\"bossguest@darkcreations.org\","
 				<< "			\"Bugzilla_password\":\"bosspassword\","
 				<< "			\"product\":\"BOSS\","
-				<< "			\"component\":\"TES IV: Oblivion\","
+				<< "			\"component\":\"" << gameName << "\","
 				<< "			\"summary\":plugin"
 				<< "		}],"
 				<< "		\"id\":1"
@@ -1866,30 +1884,30 @@ namespace boss {
 
 		formattedOut.SetHTMLSpecialEscape(false);
 
-		formattedOut << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << loc::translate("Summary") << HEADING_CLOSE;
+		formattedOut << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << translate("Summary") << HEADING_CLOSE;
 
 		if (recognised != 0 || unrecognised != 0 || messages != 0) {
-			formattedOut << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << loc::translate("Plugin Type") << TABLE_HEADING << loc::translate("Count")
-				<< TABLE_BODY << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Recognised (or sorted by user rules)") << TABLE_DATA << recognised;
+			formattedOut << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << translate("Plugin Type") << TABLE_HEADING << translate("Count")
+				<< TABLE_BODY << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Recognised (or sorted by user rules)") << TABLE_DATA << recognised;
 			if (unrecognised != 0)
-				formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << loc::translate("Unrecognised") << TABLE_DATA << unrecognised;
+				formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << translate("Unrecognised") << TABLE_DATA << unrecognised;
 			else
-				formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Unrecognised") << TABLE_DATA << unrecognised;
-			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Inactive") << TABLE_DATA << inactive
-				<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("All") << TABLE_DATA << (recognised + unrecognised)
+				formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Unrecognised") << TABLE_DATA << unrecognised;
+			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Inactive") << TABLE_DATA << inactive
+				<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("All") << TABLE_DATA << (recognised + unrecognised)
 				<< TABLE_CLOSE
 
-				<< TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << loc::translate("Plugin Message Type") << TABLE_HEADING << loc::translate("Count")
+				<< TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << translate("Plugin Message Type") << TABLE_HEADING << translate("Count")
 				<< TABLE_BODY;
 			if (warnings != 0)
-				formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << loc::translate("Warning") << TABLE_DATA << warnings;
+				formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << translate("Warning") << TABLE_DATA << warnings;
 			else
-				formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Warning") << TABLE_DATA << warnings;
+				formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Warning") << TABLE_DATA << warnings;
 			if (errors != 0)
-				formattedOut << TABLE_ROW_CLASS_ERROR << TABLE_DATA << loc::translate("Error") << TABLE_DATA << errors;
+				formattedOut << TABLE_ROW_CLASS_ERROR << TABLE_DATA << translate("Error") << TABLE_DATA << errors;
 			else
-				formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Error") << TABLE_DATA << errors;
-			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("All") << TABLE_DATA << messages
+				formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Error") << TABLE_DATA << errors;
+			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("All") << TABLE_DATA << messages
 				<< TABLE_CLOSE;
 		}
 
@@ -1898,7 +1916,7 @@ namespace boss {
 		formattedOut << updaterOutput.AsString();  //This contains BOSS & masterlist update strings.
 
 		if (recognisedHasChanged)
-			formattedOut << LIST_ITEM_CLASS_SUCCESS << loc::translate("No change in recognised plugin list since last run.");
+			formattedOut << LIST_ITEM_CLASS_SUCCESS << translate("No change in recognised plugin list since last run.");
 
 		size_t size = parsingErrors.size();  //First print parser/syntax error messages.
 		for (size_t i=0; i < size; i++)
@@ -1926,8 +1944,8 @@ namespace boss {
 		//-------------------------
 
 		if (!userRules.Empty()) {
-			formattedOut << SECTION_ID_USERLIST_OPEN << HEADING_OPEN << loc::translate("User Rules") << HEADING_CLOSE 
-				<< TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << loc::translate("Rule") << TABLE_HEADING << loc::translate("Applied") << TABLE_HEADING << loc::translate("Details (if applicable)")
+			formattedOut << SECTION_ID_USERLIST_OPEN << HEADING_OPEN << translate("User Rules") << HEADING_CLOSE 
+				<< TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << translate("Rule") << TABLE_HEADING << translate("Applied") << TABLE_HEADING << translate("Details (if applicable)")
 				<< TABLE_BODY << userRules.AsString() << TABLE_CLOSE << SECTION_CLOSE;
 			out << formattedOut.AsString();
 			formattedOut.Clear();
@@ -1938,7 +1956,7 @@ namespace boss {
 		//--------------------------------------
 
 		if (!sePlugins.Empty()) {
-			formattedOut << SECTION_ID_SE_OPEN << HEADING_OPEN << scriptExtender << loc::translate(" Plugins") << HEADING_CLOSE << LIST_OPEN
+			formattedOut << SECTION_ID_SE_OPEN << HEADING_OPEN << scriptExtender << translate(" Plugins") << HEADING_CLOSE << LIST_OPEN
 				<< sePlugins.AsString()
 				<< LIST_CLOSE << SECTION_CLOSE;
 			out << formattedOut.AsString();
@@ -1952,13 +1970,13 @@ namespace boss {
 		if (!recognisedPlugins.Empty()) {
 			formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN;
 			if (gl_revert < 1) 
-				formattedOut << loc::translate("Recognised Plugins");
+				formattedOut << translate("Recognised Plugins");
 			else if (gl_revert == 1)
-				formattedOut << loc::translate("Restored Load Order (Using modlist.txt)");
+				formattedOut << translate("Restored Load Order (Using modlist.txt)");
 			else if (gl_revert == 2) 
-				formattedOut << loc::translate("Restored Load Order (Using modlist.old)");
+				formattedOut << translate("Restored Load Order (Using modlist.old)");
 			formattedOut  << HEADING_CLOSE << PARAGRAPH 
-				<< loc::translate("These plugins are recognised by BOSS and have been sorted according to its masterlist. Please read any attached messages and act on any that require action.")
+				<< translate("These plugins are recognised by BOSS and have been sorted according to its masterlist. Please read any attached messages and act on any that require action.")
 				<< LIST_OPEN
 				<< recognisedPlugins.AsString()
 				<< LIST_CLOSE << SECTION_CLOSE;
@@ -1971,9 +1989,9 @@ namespace boss {
 		//--------------------------------
 
 		if (!unrecognisedPlugins.Empty()) {
-			formattedOut << SECTION_ID_UNRECOGNISED_OPEN << HEADING_OPEN << loc::translate("Unrecognised Plugins") << HEADING_CLOSE 
-				<< PARAGRAPH << loc::translate("The following plugins were not found in the masterlist, and must be positioned manually, using your favourite mod manager or by using BOSS's user rules functionality.")
-				<< SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN << loc::translate(" You can submit unrecognised plugins for addition to the masterlist directly from this log by clicking on a plugin and supplying a link and/or description of its contents in the panel that is displayed.") << SPAN_CLOSE << LIST_OPEN
+			formattedOut << SECTION_ID_UNRECOGNISED_OPEN << HEADING_OPEN << translate("Unrecognised Plugins") << HEADING_CLOSE 
+				<< PARAGRAPH << translate("The following plugins were not found in the masterlist, and must be positioned manually, using your favourite mod manager or by using BOSS's user rules functionality.")
+				<< SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN << translate(" You can submit unrecognised plugins for addition to the masterlist directly from this log by clicking on a plugin and supplying a link and/or description of its contents in the panel that is displayed.") << SPAN_CLOSE << LIST_OPEN
 				<< unrecognisedPlugins.AsString()
 				<< LIST_CLOSE << SECTION_CLOSE;
 			out << formattedOut.AsString();
@@ -2050,7 +2068,7 @@ namespace boss {
 			if (pos2 != string::npos)
 				result = result.substr(pos1+4, pos2-pos1-9);
 		} else {
-			pos1 = result.find(loc::translate("Please read any attached messages and act on any that require action."));
+			pos1 = result.find(translate("Please read any attached messages and act on any that require action."));
 			if (pos1 != string::npos)
 				pos2 = result.find("======================================", pos1);
 			if (pos2 != string::npos)

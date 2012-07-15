@@ -100,6 +100,7 @@ namespace boss {
 		Outputter(const uint32_t format);
 		Outputter(const uint32_t format, const ParsingError e);
 		Outputter(const uint32_t format, const Rule r);
+		Outputter(const uint32_t format, const logFormatting l);
 
 		void SetFormat(const uint32_t format);	//Sets the formatting type of the output.
 		void SetHTMLSpecialEscape(const bool shouldEscape);	//Set when formatting is set, generally, but this can be used to override.
