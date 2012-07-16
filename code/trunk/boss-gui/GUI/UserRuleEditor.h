@@ -82,7 +82,7 @@ private:
 class UserRulesEditorFrame : public wxFrame {
 public:
 	ItemList masterlist;
-	UserRulesEditorFrame(const string title, wxFrame *parent, Game& inGame);
+	UserRulesEditorFrame(const wxString title, wxFrame *parent, Game& inGame);
 	void OnOKQuit(wxCommandEvent& event);
 	void OnCancelQuit(wxCommandEvent& event);
 	void OnSearchList(wxCommandEvent& event);

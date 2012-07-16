@@ -35,17 +35,17 @@ END_EVENT_TABLE()
 using namespace boss;
 using namespace std;
 
-SettingsFrame::SettingsFrame(const string title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCAPTION|wxCLOSE_BOX|wxCLIP_CHILDREN) {
+SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCAPTION|wxCLOSE_BOX|wxCLIP_CHILDREN) {
 
 	wxString DebugVerbosity[] = {
-        translate("Standard (0)").str(),
-        translate("Level 1").str(),
-		translate("Level 2").str(),
-		translate("Level 3").str()
+        translate("Standard (0)"),
+        translate("Level 1"),
+		translate("Level 2"),
+		translate("Level 3")
     };
 
 	wxString Game[] = {
-		translate("Autodetect").str(),
+		translate("Autodetect"),
 		wxT("Oblivion"),
 		wxT("Nehrim"),
 		wxT("Skyrim"),
@@ -56,9 +56,9 @@ SettingsFrame::SettingsFrame(const string title, wxFrame *parent) : wxFrame(pare
 
 	wxString Language[] = {
 		wxT("English"),
-		wxT("Español"),
+		wxString("Español", wxConvUTF8),
 		wxT("Deutsch"),
-		wxT("русский")
+		wxString("русский", wxConvUTF8)
 	};
 
 	//Set up stuff in the frame.
@@ -82,15 +82,15 @@ SettingsFrame::SettingsFrame(const string title, wxFrame *parent) : wxFrame(pare
 	wxGridSizer *GeneralGridSizer = new wxGridSizer(2, 5, 5);
 	
 	//wxBoxSizer *gameBox = new wxBoxSizer(wxHORIZONTAL);
-	GeneralGridSizer->Add(new wxStaticText(GeneralTab, wxID_ANY, translate("Default Game:").str()), leftItem);
+	GeneralGridSizer->Add(new wxStaticText(GeneralTab, wxID_ANY, translate("Default Game:")), leftItem);
 	GeneralGridSizer->Add(GameChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 7, Game), rightItem);
 	//GeneralTabSizer->Add(gameBox, wholeItem);
 	//wxBoxSizer *languageBox = new wxBoxSizer(wxHORIZONTAL);
-	GeneralGridSizer->Add(new wxStaticText(GeneralTab, wxID_ANY, translate("Language:").str()), leftItem);
+	GeneralGridSizer->Add(new wxStaticText(GeneralTab, wxID_ANY, translate("Language:")), leftItem);
 	GeneralGridSizer->Add(LanguageChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, Language), rightItem);
 	GeneralTabSizer->Add(GeneralGridSizer);
-	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Check for BOSS updates on startup").str()), wholeItem);
-	GeneralTabSizer->Add(UseUserRuleManagerBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Use User Rules Manager").str()), wholeItem);
+	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Check for BOSS updates on startup")), wholeItem);
+	GeneralTabSizer->Add(UseUserRuleManagerBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Use User Rules Manager")), wholeItem);
 
 	/*wxStaticText *gameText;
 	wxString text = wxT("If the default game is set to Autodetect, BOSS will try to autodetect a game to run for, and will ask you to choose a game if it finds more than one.\n\n");
@@ -108,16 +108,16 @@ SettingsFrame::SettingsFrame(const string title, wxFrame *parent) : wxFrame(pare
 	InternetTab = new wxPanel(TabHolder);
 	wxGridSizer *InternetTabSizer = new wxGridSizer(2, 5, 5);
 	
-	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, translate("Proxy Hostname:").str()), leftItem);
+	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, translate("Proxy Hostname:")), leftItem);
 	InternetTabSizer->Add(ProxyHostBox = new wxTextCtrl(InternetTab,wxID_ANY), rightItem);
 
-	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, translate("Proxy Port Number:").str()), leftItem);
+	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, translate("Proxy Port Number:")), leftItem);
 	InternetTabSizer->Add(ProxyPortBox = new wxTextCtrl(InternetTab,wxID_ANY), rightItem);
 
-	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, translate("Proxy Username:").str()), leftItem);
+	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, translate("Proxy Username:")), leftItem);
 	InternetTabSizer->Add(ProxyUserBox = new wxTextCtrl(InternetTab,wxID_ANY), rightItem);
 
-	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, translate("Proxy Password:").str()), leftItem);
+	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, translate("Proxy Password:")), leftItem);
 	InternetTabSizer->Add(ProxyPasswdBox = new wxTextCtrl(InternetTab,wxID_ANY), rightItem);
 
 	InternetTab->SetSizer(InternetTabSizer);
@@ -127,23 +127,23 @@ SettingsFrame::SettingsFrame(const string title, wxFrame *parent) : wxFrame(pare
 	wxBoxSizer *DebugTabSizer = new wxBoxSizer(wxVERTICAL);
 
 	wxGridSizer *DebugGridSizer = new wxGridSizer(2, 5, 5);
-	DebugGridSizer->Add(new wxStaticText(DebugTab, wxID_ANY, translate("Debug Output Verbosity:").str()), leftItem);
+	DebugGridSizer->Add(new wxStaticText(DebugTab, wxID_ANY, translate("Debug Output Verbosity:")), leftItem);
 	DebugGridSizer->Add(DebugVerbosityChoice = new wxChoice(DebugTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, DebugVerbosity), rightItem);
 	DebugTabSizer->Add(DebugGridSizer);
-	DebugTabSizer->Add(DebugSourceReferencesBox = new wxCheckBox(DebugTab,wxID_ANY, translate("Include Source Code References").str()), wholeItem);
-	DebugTabSizer->Add(LogDebugOutputBox = new wxCheckBox(DebugTab,wxID_ANY, translate("Log Debug Output").str()), wholeItem);
+	DebugTabSizer->Add(DebugSourceReferencesBox = new wxCheckBox(DebugTab,wxID_ANY, translate("Include Source Code References")), wholeItem);
+	DebugTabSizer->Add(LogDebugOutputBox = new wxCheckBox(DebugTab,wxID_ANY, translate("Log Debug Output")), wholeItem);
 
 	DebugTab->SetSizer(DebugTabSizer);
 
 	//Attach all pages.
-	TabHolder->AddPage(GeneralTab, translate("General").str(), true);
-	TabHolder->AddPage(InternetTab, translate("Internet").str());
-	TabHolder->AddPage(DebugTab, translate("Debugging").str());
+	TabHolder->AddPage(GeneralTab, translate("General"), true);
+	TabHolder->AddPage(InternetTab, translate("Internet"));
+	TabHolder->AddPage(DebugTab, translate("Debugging"));
 	
 	//Need to add 'OK' and 'Cancel' buttons.
 	wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
-	hbox->Add(new wxButton(this, OPTION_OKExitSettings, translate("OK").str(), wxDefaultPosition, wxSize(70, 30)));
-	hbox->Add(new wxButton(this, OPTION_CancelExitSettings, translate("Cancel").str(), wxDefaultPosition, wxSize(70, 30)), 0, wxLEFT, 20);
+	hbox->Add(new wxButton(this, OPTION_OKExitSettings, translate("OK"), wxDefaultPosition, wxSize(70, 30)));
+	hbox->Add(new wxButton(this, OPTION_CancelExitSettings, translate("Cancel"), wxDefaultPosition, wxSize(70, 30)), 0, wxLEFT, 20);
 
 	//Now add TabHolder and OK button to window sizer.
 	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
@@ -154,9 +154,9 @@ SettingsFrame::SettingsFrame(const string title, wxFrame *parent) : wxFrame(pare
 	SetDefaultValues();
 
 	//Tooltips.
-	LogDebugOutputBox->SetToolTip(translate("The output is logged to the BOSSDebugLog.txt file").str());
-	DebugSourceReferencesBox->SetToolTip(translate("Adds source code references to command line output.").str());
-	DebugVerbosityChoice->SetToolTip(translate("The higher the verbosity level, the more information is outputted to the command line.").str());
+	LogDebugOutputBox->SetToolTip(translate("The output is logged to the BOSSDebugLog.txt file"));
+	DebugSourceReferencesBox->SetToolTip(translate("Adds source code references to command line output."));
+	DebugVerbosityChoice->SetToolTip(translate("The higher the verbosity level, the more information is outputted to the command line."));
 	
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);

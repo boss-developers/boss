@@ -25,37 +25,10 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-#ifndef __SETTINGS__HPP__
-#define __SETTINGS__HPP__
-
 #include "GUI/ElementIDs.h"
-#include <wx/notebook.h>
 
-using namespace std;
-
-class SettingsFrame : public wxFrame {
-public:
-	SettingsFrame(const wxString title, wxFrame *parent);
-	void OnOKQuit(wxCommandEvent& event);
-	void OnCancelQuit(wxCommandEvent& event);
-	void SetDefaultValues();
-	DECLARE_EVENT_TABLE()
-private:
-	wxCheckBox *StartupUpdateCheckBox;
-	wxCheckBox *UseUserRuleManagerBox;
-	wxCheckBox *DebugSourceReferencesBox;
-	wxCheckBox *LogDebugOutputBox;
-	wxChoice *DebugVerbosityChoice;
-	wxChoice *GameChoice;
-	wxChoice *LanguageChoice;
-	wxTextCtrl *ProxyHostBox;
-	wxTextCtrl *ProxyPortBox;
-	wxTextCtrl *ProxyUserBox;
-	wxTextCtrl *ProxyPasswdBox;
-	wxNotebook *TabHolder;
-	wxPanel *GeneralTab;
-	wxPanel *InternetTab;
-	wxPanel *DebugTab;
-};
-
-#endif
+namespace boss {
+	wxString translate(char * cstr) {
+		return wxString(boost::locale::translate(cstr).str().c_str(), wxConvUTF8);
+	}
+}

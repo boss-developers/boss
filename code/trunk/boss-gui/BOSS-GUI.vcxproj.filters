@@ -32,6 +32,9 @@
     <ClCompile Include="GUI\UserRuleEditor.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\ElementIDs.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\BOSS.ico">

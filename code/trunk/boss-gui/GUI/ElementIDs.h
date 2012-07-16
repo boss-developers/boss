@@ -99,4 +99,10 @@ enum {
 	BUTTON_MoveRuleUp,
 	BUTTON_MoveRuleDown
 };
+
+//Convenience wrapper function, because wxWidgets's own translation system doesn't work as well as Boost's,
+//but Boost's requires a UTF-8 -> (whatever display encoding) conversion to work with the UI.
+namespace boss {
+	wxString translate(char * cstr);
+}
 #endif

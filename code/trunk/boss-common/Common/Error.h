@@ -38,8 +38,7 @@
 namespace boss {
 	using namespace std;
 
-	using boost::format;
-	using boost::locale::translate;
+	namespace loc = boost::locale;
 	
 	//Return codes, mostly error codes.
 	BOSS_COMMON extern const uint32_t BOSS_OK;
@@ -119,33 +118,33 @@ namespace boss {
 	};
 
 	//Parsing error formats.
-	static format MasterlistParsingErrorHeader(translate("Masterlist Parsing Error: Expected a %1% at:"));
-	static format IniParsingErrorHeader(translate("Ini Parsing Error: Expected a %1% at:"));
-	static format RuleListParsingErrorHeader(translate("Userlist Parsing Error: Expected a %1% at:"));
-	static format RuleListSyntaxErrorMessage(translate("Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"));
-	static const string MasterlistParsingErrorFooter(translate("Masterlist parsing aborted. Utility will end now."));
-	static const string IniParsingErrorFooter(translate("Ini parsing aborted. Some or all of the options may not have been set correctly."));
-	static const string RuleListParsingErrorFooter(translate("Userlist parsing aborted. No rules will be applied."));
+	static boost::format MasterlistParsingErrorHeader(loc::translate("Masterlist Parsing Error: Expected a %1% at:"));
+	static boost::format IniParsingErrorHeader(loc::translate("Ini Parsing Error: Expected a %1% at:"));
+	static boost::format RuleListParsingErrorHeader(loc::translate("Userlist Parsing Error: Expected a %1% at:"));
+	static boost::format RuleListSyntaxErrorMessage(loc::translate("Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"));
+	static const string MasterlistParsingErrorFooter(loc::translate("Masterlist parsing aborted. Utility will end now."));
+	static const string IniParsingErrorFooter(loc::translate("Ini parsing aborted. Some or all of the options may not have been set correctly."));
+	static const string RuleListParsingErrorFooter(loc::translate("Userlist parsing aborted. No rules will be applied."));
 
 	//RuleList syntax error strings.
-	static const string ESortLineInForRule(translate("includes a sort line in a rule with a FOR rule keyword."));
-	static const string EAddingModGroup(translate("tries to add a group."));
-	static const string ESortingGroupEsms(translate("tries to sort the group \"ESMs\"."));
-	static const string ESortingMasterEsm(translate("tries to sort the master .ESM file."));
-	static const string EReferencingModAndGroup(translate("references a mod and a group."));
-	static const string ESortingGroupBeforeEsms(translate("tries to sort a group before the group \"ESMs\"."));
-	static const string ESortingModBeforeGameMaster(translate("tries to sort a mod before the master .ESM file."));
-	static const string EInsertingToTopOfEsms(translate("tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file."));
-	static const string EInsertingGroupOrIntoMod(translate("tries to insert a group or insert something into a mod."));
-	static const string EAttachingMessageToGroup(translate("tries to attach a message to a group."));
-	static const string EMultipleSortLines(translate("has more than one sort line."));
-	static const string EMultipleReplaceLines(translate("has more than one REPLACE-using message line."));
-	static const string EReplaceNotFirst(translate("has a REPLACE-using message line that is not the first message line."));
-	static const string ESortNotSecond(translate("has a sort line that is not the second line of the rule."));
-	static const string ESortingToItself(translate("tries to sort a mod or group relative to itself."));
-	static const string EAttachingNonMessage(translate("tries to attach an malformatted message."));
-	static const string ESortingMasterAfterPlugin(translate("tries to sort a plugin before a master file."));
-	static const string ESortingPluginBeforeMaster(translate("tries to sort a master file before a plugin."));
+	static const string ESortLineInForRule(loc::translate("includes a sort line in a rule with a FOR rule keyword."));
+	static const string EAddingModGroup(loc::translate("tries to add a group."));
+	static const string ESortingGroupEsms(loc::translate("tries to sort the group \"ESMs\"."));
+	static const string ESortingMasterEsm(loc::translate("tries to sort the master .ESM file."));
+	static const string EReferencingModAndGroup(loc::translate("references a mod and a group."));
+	static const string ESortingGroupBeforeEsms(loc::translate("tries to sort a group before the group \"ESMs\"."));
+	static const string ESortingModBeforeGameMaster(loc::translate("tries to sort a mod before the master .ESM file."));
+	static const string EInsertingToTopOfEsms(loc::translate("tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file."));
+	static const string EInsertingGroupOrIntoMod(loc::translate("tries to insert a group or insert something into a mod."));
+	static const string EAttachingMessageToGroup(loc::translate("tries to attach a message to a group."));
+	static const string EMultipleSortLines(loc::translate("has more than one sort line."));
+	static const string EMultipleReplaceLines(loc::translate("has more than one REPLACE-using message line."));
+	static const string EReplaceNotFirst(loc::translate("has a REPLACE-using message line that is not the first message line."));
+	static const string ESortNotSecond(loc::translate("has a sort line that is not the second line of the rule."));
+	static const string ESortingToItself(loc::translate("tries to sort a mod or group relative to itself."));
+	static const string EAttachingNonMessage(loc::translate("tries to attach an malformatted message."));
+	static const string ESortingMasterAfterPlugin(loc::translate("tries to sort a plugin before a master file."));
+	static const string ESortingPluginBeforeMaster(loc::translate("tries to sort a master file before a plugin."));
 	
 	//Parsing error class.
 	class BOSS_COMMON ParsingError {

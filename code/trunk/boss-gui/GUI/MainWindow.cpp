@@ -99,8 +99,8 @@ bool BossGUI::OnInit() {
 
 	if (checker->IsAnotherRunning()) {
 		wxMessageBox(
-			translate("Error: The BOSS GUI is already running. This instance will now quit.").str(),
-			translate("BOSS: Error").str(),
+			translate("Error: The BOSS GUI is already running. This instance will now quit."),
+			translate("BOSS: Error"),
 			wxOK | wxICON_ERROR,
 			NULL);
 
@@ -119,7 +119,7 @@ bool BossGUI::OnInit() {
 			LOG_ERROR("Error: %s", e.getString().c_str());
 			wxMessageBox(
 				(boost::format(translate("Error: %1% Details: %2%")) % e.getString() % Outputter(PLAINTEXT, ini.ErrorBuffer()).AsString()).str(),
-				translate("BOSS: Error").str(),
+				translate("BOSS: Error"),
 				wxOK | wxICON_ERROR,
 				NULL);
 		}
@@ -139,18 +139,33 @@ bool BossGUI::OnInit() {
 
 	//Set the locale to get encoding and language conversions working correctly.
 	string localeId = "";
-	if (gl_language == ENGLISH)
+	wxLanguage lang;
+	if (gl_language == ENGLISH) {
 		localeId = "en.UTF-8";
-	else if (gl_language == SPANISH)
+		lang = wxLANGUAGE_ENGLISH;
+	} else if (gl_language == SPANISH) {
 		localeId = "es.UTF-8";
-	else if (gl_language == GERMAN)
+		lang = wxLANGUAGE_SPANISH;
+	} else if (gl_language == GERMAN) {
 		localeId = "de.UTF-8";
-	else if (gl_language == RUSSIAN)
+		lang = wxLANGUAGE_GERMAN;
+	} else if (gl_language == RUSSIAN) {
 		localeId = "ru.UTF-8";
+		lang = wxLANGUAGE_RUSSIAN;
+	}
 
 	try {
 		locale::global(gen(localeId));
 		cout.imbue(locale());
+
+	/*	wxLocale * m_locale = new wxLocale(wxLANGUAGE_ENGLISH);
+		//Can't get wxWidgets to find the language files when pointed at .\\l10n, possibly they use a different "lang".
+		m_locale->AddCatalogLookupPathPrefix(".\\l10n\\en\\LC_MESSAGES");
+		m_locale->AddCatalogLookupPathPrefix(".\\l10n\\es\\LC_MESSAGES");
+		m_locale->AddCatalogLookupPathPrefix(".\\l10n\\de\\LC_MESSAGES");
+		m_locale->AddCatalogLookupPathPrefix(".\\l10n\\ru\\LC_MESSAGES");
+		if (!m_locale->AddCatalog("messages", lang, "UTF-8"))
+			throw exception();*/
 	} catch(exception &e) {
 		LOG_ERROR("could not implement translation: %s", e.what());
 		cout << e.what() << endl;
@@ -174,12 +189,12 @@ bool BossGUI::OnInit() {
 			for (size_t i=0, max = detected.size(); i < max; i++)
 				choices.Add(Game(detected[i], "", true).Name());
 			for (size_t i=0, max = undetected.size(); i < max; i++)
-				choices.Add(Game(undetected[i], "", true).Name() + translate(" (not detected)").str());
+				choices.Add(Game(undetected[i], "", true).Name() + translate(" (not detected)"));
 
 			size_t ans;
 
-			wxSingleChoiceDialog* choiceDia = new wxSingleChoiceDialog(frame, translate("Please pick which game to run BOSS for:").str(),
-				translate("BOSS: Select Game").str(), choices);
+			wxSingleChoiceDialog* choiceDia = new wxSingleChoiceDialog(frame, translate("Please pick which game to run BOSS for:"),
+				translate("BOSS: Select Game"), choices);
 			choiceDia->SetIcon(wxIconLocation("BOSS GUI.exe"));
 
 			if (choiceDia->ShowModal() != wxID_OK)
@@ -220,50 +235,50 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 
 	wxString BOSSlogFormat[] = {
         wxT("HTML"),
-        translate("Plain Text").str()
+        translate("Plain Text")
     };
 
 	wxString UndoLevel[] = {
-		translate("Last Run").str(),
-		translate("2nd Last Run").str()
+		translate("Last Run"),
+		translate("2nd Last Run")
 	};
 
 	//Set up menu bar first.
     MenuBar = new wxMenuBar();
     // File Menu
     FileMenu = new wxMenu();
-	FileMenu->Append(OPTION_OpenBOSSlog, translate("&View BOSS Log").str(), translate("Opens your BOSSlog.").str());
-    FileMenu->Append(OPTION_Run, translate("&Run BOSS").str(), translate("Runs BOSS with the options you have chosen.").str());
+	FileMenu->Append(OPTION_OpenBOSSlog, translate("&View BOSS Log"), translate("Opens your BOSSlog."));
+    FileMenu->Append(OPTION_Run, translate("&Run BOSS"), translate("Runs BOSS with the options you have chosen."));
     FileMenu->AppendSeparator();
-    FileMenu->Append(MENU_Quit, translate("&Quit").str(), translate("Quit BOSS.").str());
-    MenuBar->Append(FileMenu, translate("&File").str());
+    FileMenu->Append(MENU_Quit, translate("&Quit"), translate("Quit BOSS."));
+    MenuBar->Append(FileMenu, translate("&File"));
 	//Edit Menu
 	EditMenu = new wxMenu();
-	EditMenu->Append(OPTION_EditUserRules, translate("&User Rules...").str(), translate("Opens your userlist in your default text editor.").str());
-	EditMenu->Append(MENU_ShowSettings, translate("&Settings...").str(), translate("Opens the Settings window.").str());
-	MenuBar->Append(EditMenu, translate("&Edit").str());
+	EditMenu->Append(OPTION_EditUserRules, translate("&User Rules..."), translate("Opens your userlist in your default text editor."));
+	EditMenu->Append(MENU_ShowSettings, translate("&Settings..."), translate("Opens the Settings window."));
+	MenuBar->Append(EditMenu, translate("&Edit"));
 	//Game menu
 	GameMenu = new wxMenu();
-	GameMenu->AppendRadioItem(MENU_None, translate("&None").str(), translate("If selected, BOSS was unable to detect or run for a game.").str());
-	GameMenu->AppendRadioItem(MENU_Oblivion, translate("&Oblivion").str(), translate("Switch to running BOSS for Oblivion.").str());
-	GameMenu->AppendRadioItem(MENU_Nehrim, translate("&Nehrim").str(), translate("Switch to running BOSS for Nehrim.").str());
-	GameMenu->AppendRadioItem(MENU_Skyrim, translate("&Skyrim").str(), translate("Switch to running BOSS for Skyrim.").str());
-	GameMenu->AppendRadioItem(MENU_Fallout3, translate("&Fallout 3").str(), translate("Switch to running BOSS for Fallout 3.").str());
-	GameMenu->AppendRadioItem(MENU_FalloutNewVegas, translate("&Fallout: New Vegas").str(), translate("Switch to running BOSS for Fallout: New Vegas.").str());
-	GameMenu->AppendRadioItem(MENU_Morrowind, translate("&Morrowind").str(), translate("Switch to running BOSS for Morrowind.").str());
-	MenuBar->Append(GameMenu, translate("&Active Game").str());
+	GameMenu->AppendRadioItem(MENU_None, translate("&None"), translate("If selected, BOSS was unable to detect or run for a game."));
+	GameMenu->AppendRadioItem(MENU_Oblivion, translate("&Oblivion"), translate("Switch to running BOSS for Oblivion."));
+	GameMenu->AppendRadioItem(MENU_Nehrim, translate("&Nehrim"), translate("Switch to running BOSS for Nehrim."));
+	GameMenu->AppendRadioItem(MENU_Skyrim, translate("&Skyrim"), translate("Switch to running BOSS for Skyrim."));
+	GameMenu->AppendRadioItem(MENU_Fallout3, translate("&Fallout 3"), translate("Switch to running BOSS for Fallout 3."));
+	GameMenu->AppendRadioItem(MENU_FalloutNewVegas, translate("&Fallout: New Vegas"), translate("Switch to running BOSS for Fallout: New Vegas."));
+	GameMenu->AppendRadioItem(MENU_Morrowind, translate("&Morrowind"), translate("Switch to running BOSS for Morrowind."));
+	MenuBar->Append(GameMenu, translate("&Active Game"));
     // About menu
     HelpMenu = new wxMenu();
-	HelpMenu->Append(MENU_OpenMainReadMe, translate("Open &Main Readme").str(), translate("Opens the main BOSS readme in your default web browser.").str());
-	HelpMenu->Append(MENU_OpenUserlistReadMe, translate("Open &Userlist Syntax Doc").str(), translate("Opens the BOSS userlist syntax documentation in your default web browser.").str());
-	HelpMenu->Append(MENU_OpenMasterlistReadMe, translate("Open &Masterlist Syntax Doc").str(), translate("Opens the BOSS masterlist syntax documentation in your default web browser.").str());
-	HelpMenu->Append(MENU_OpenAPIReadMe, translate("&Open API Readme").str(), translate("Opens the BOSS API readme in your default web browser.").str());
-	HelpMenu->Append(MENU_OpenAPIReadMe, translate("Open &Version History").str(), translate("Opens the BOSS version history in your default web browser.").str());
-	HelpMenu->Append(MENU_OpenLicenses, translate("View &Copyright Licenses").str(), translate("View the GNU General Public License v3.0 and GNU Free Documentation License v1.3.").str());
+	HelpMenu->Append(MENU_OpenMainReadMe, translate("Open &Main Readme"), translate("Opens the main BOSS readme in your default web browser."));
+	HelpMenu->Append(MENU_OpenUserlistReadMe, translate("Open &Userlist Syntax Doc"), translate("Opens the BOSS userlist syntax documentation in your default web browser."));
+	HelpMenu->Append(MENU_OpenMasterlistReadMe, translate("Open &Masterlist Syntax Doc"), translate("Opens the BOSS masterlist syntax documentation in your default web browser."));
+	HelpMenu->Append(MENU_OpenAPIReadMe, translate("&Open API Readme"), translate("Opens the BOSS API readme in your default web browser."));
+	HelpMenu->Append(MENU_OpenAPIReadMe, translate("Open &Version History"), translate("Opens the BOSS version history in your default web browser."));
+	HelpMenu->Append(MENU_OpenLicenses, translate("View &Copyright Licenses"), translate("View the GNU General Public License v3.0 and GNU Free Documentation License v1.3."));
 	HelpMenu->AppendSeparator();
-	HelpMenu->Append(OPTION_CheckForUpdates, translate("&Check For Updates...").str(), translate("Checks for updates to BOSS.").str());
-	HelpMenu->Append(MENU_ShowAbout, translate("&About BOSS...").str(), translate("Shows information about BOSS.").str());
-    MenuBar->Append(HelpMenu, translate("&Help").str());
+	HelpMenu->Append(OPTION_CheckForUpdates, translate("&Check For Updates..."), translate("Checks for updates to BOSS."));
+	HelpMenu->Append(MENU_ShowAbout, translate("&About BOSS..."), translate("Shows information about BOSS."));
+    MenuBar->Append(HelpMenu, translate("&Help"));
     SetMenuBar(MenuBar);
 
 	//Set up stuff in the frame.
@@ -274,13 +289,13 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 
 	//Create first column box and add the output options to it.
 	wxBoxSizer *columnBox = new wxBoxSizer(wxVERTICAL);
-	wxStaticBoxSizer *outputOptionsBox = new wxStaticBoxSizer(wxVERTICAL, this, translate("Output Options").str());
+	wxStaticBoxSizer *outputOptionsBox = new wxStaticBoxSizer(wxVERTICAL, this, translate("Output Options"));
 	wxBoxSizer *formatBox = new wxBoxSizer(wxHORIZONTAL);
 	
 	//Add stuff to output options sizer.
-	outputOptionsBox->Add(ShowLogBox = new wxCheckBox(this,CHECKBOX_ShowBOSSlog, translate("Show BOSS Log On Completion").str()), 0, wxALL, 5);
-	outputOptionsBox->Add(CRCBox = new wxCheckBox(this,CHECKBOX_EnableCRCs, translate("Display File CRCs").str()), 0, wxLEFT | wxBOTTOM, 5);
-	formatBox->Add(new wxStaticText(this, wxID_ANY, translate("BOSS Log Format: ").str()), 1, wxLEFT | wxBOTTOM, 5);
+	outputOptionsBox->Add(ShowLogBox = new wxCheckBox(this,CHECKBOX_ShowBOSSlog, translate("Show BOSS Log On Completion")), 0, wxALL, 5);
+	outputOptionsBox->Add(CRCBox = new wxCheckBox(this,CHECKBOX_EnableCRCs, translate("Display File CRCs")), 0, wxLEFT | wxBOTTOM, 5);
+	formatBox->Add(new wxStaticText(this, wxID_ANY, translate("BOSS Log Format: ")), 1, wxLEFT | wxBOTTOM, 5);
 	formatBox->Add(FormatChoice = new wxChoice(this, DROPDOWN_LogFormat, wxPoint(110,60), wxDefaultSize, 2, BOSSlogFormat, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
 	//Add the verbosityBox to its parent now to preserve layout.
 	outputOptionsBox->Add(formatBox, 0, wxEXPAND, 0);
@@ -288,36 +303,36 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 
 	//Now add the main buttons to the first column.
 	wxBoxSizer *buttonBox = new wxBoxSizer(wxVERTICAL);
-	buttonBox->Add(EditUserRulesButton = new wxButton(this,OPTION_EditUserRules, translate("Edit User Rules").str(), wxDefaultPosition, wxSize(120,30)), 0, wxBOTTOM, 5);
-	buttonBox->Add(RunBOSSButton = new wxButton(this,OPTION_Run, translate("Run BOSS").str(), wxDefaultPosition, wxSize(120,30)));
-	buttonBox->Add(OpenBOSSlogButton = new wxButton(this,OPTION_OpenBOSSlog, translate("View BOSS Log").str(), wxDefaultPosition, wxSize(120,30)), 0, wxTOP, 5);
+	buttonBox->Add(EditUserRulesButton = new wxButton(this,OPTION_EditUserRules, translate("Edit User Rules")), 0, wxALIGN_CENTRE|wxBOTTOM, 5);
+	buttonBox->Add(RunBOSSButton = new wxButton(this,OPTION_Run, translate("Run BOSS")), 0, wxALIGN_CENTRE);
+	buttonBox->Add(OpenBOSSlogButton = new wxButton(this,OPTION_OpenBOSSlog, translate("View BOSS Log")), 0, wxALIGN_CENTRE|wxTOP, 5);
 	columnBox->Add(buttonBox, 0, wxALIGN_CENTER, 20);
 
 	//Add the first column to the big box.
 	bigBox->Add(columnBox, 0, wxALL, 20);
 
 	//The second column has a border.
-	wxStaticBoxSizer *runOptionsBox = new wxStaticBoxSizer(wxVERTICAL, this, translate("Run Options").str());
+	wxStaticBoxSizer *runOptionsBox = new wxStaticBoxSizer(wxVERTICAL, this, translate("Run Options"));
 	wxBoxSizer *sortBox = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *undoBox = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *revertBox = new wxBoxSizer(wxHORIZONTAL);
 
 	//Run Options
-	runOptionsBox->Add(SortOption = new wxRadioButton(this, RADIOBUTTON_SortOption, translate("Sort Plugins").str()), 0, wxALL, 5);
+	runOptionsBox->Add(SortOption = new wxRadioButton(this, RADIOBUTTON_SortOption, translate("Sort Plugins")), 0, wxALL, 5);
 	
 	//Sort option stuff.
-	sortBox->Add(UpdateBox = new wxCheckBox(this,CHECKBOX_Update, translate("Update Masterlist").str()), 0, wxBOTTOM, 5);
-	sortBox->Add(TrialRunBox = new wxCheckBox(this,CHECKBOX_TrialRun, translate("Perform Trial Run").str()));
+	sortBox->Add(UpdateBox = new wxCheckBox(this,CHECKBOX_Update, translate("Update Masterlist")), 0, wxBOTTOM, 5);
+	sortBox->Add(TrialRunBox = new wxCheckBox(this,CHECKBOX_TrialRun, translate("Perform Trial Run")));
 	runOptionsBox->Add(sortBox, 0, wxLEFT | wxRIGHT, 20);
 	runOptionsBox->AddSpacer(10);
 	
 	//Update only stuff.
-	runOptionsBox->Add(UpdateOption = new wxRadioButton(this, RADIOBUTTON_UpdateOption, translate("Update Masterlist Only").str()), 0, wxALL, 5);
+	runOptionsBox->Add(UpdateOption = new wxRadioButton(this, RADIOBUTTON_UpdateOption, translate("Update Masterlist Only")), 0, wxALL, 5);
 	runOptionsBox->AddSpacer(10);
 	
 	//Undo option stuff.
-	runOptionsBox->Add(UndoOption = new wxRadioButton(this, RADIOBUTTON_UndoOption, translate("Undo Changes").str()), 0, wxALL, 5);
-	revertBox->Add(RevertText = new wxStaticText(this, wxID_ANY, translate("Undo Level: ").str()));
+	runOptionsBox->Add(UndoOption = new wxRadioButton(this, RADIOBUTTON_UndoOption, translate("Undo Changes")), 0, wxALL, 5);
+	revertBox->Add(RevertText = new wxStaticText(this, wxID_ANY, translate("Undo Level: ")));
 	revertBox->Add(RevertChoice = new wxChoice(this, DROPDOWN_Revert, wxDefaultPosition, wxDefaultSize, 2, UndoLevel));
 	runOptionsBox->Add(revertBox, 0, wxLEFT | wxRIGHT, 20);
 	runOptionsBox->AddSpacer(5);
@@ -326,9 +341,9 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 
 
 	//Tooltips
-	FormatChoice->SetToolTip(translate("This decides both the format of BOSSlog generated when you click the \"Run BOSS\" button and the BOSSlog format opened when you click the \"View BOSSlog\" button.").str());
-	OpenBOSSlogButton->SetToolTip(translate("The format of BOSSlog this opens is decided by the setting of the \"BOSSlog Format\" Output Option above.").str());
-	TrialRunBox->SetToolTip(translate("Runs BOSS, simulating its changes to your load order, but doesn't actually reorder your mods.").str());
+	FormatChoice->SetToolTip(translate("This decides both the format of BOSSlog generated when you click the \"Run BOSS\" button and the BOSSlog format opened when you click the \"View BOSSlog\" button."));
+	OpenBOSSlogButton->SetToolTip(translate("The format of BOSSlog this opens is decided by the setting of the \"BOSSlog Format\" Output Option above."));
+	TrialRunBox->SetToolTip(translate("Runs BOSS, simulating its changes to your load order, but doesn't actually reorder your mods."));
 
 	//Set option values based on initialised variable values.
 	RunBOSSButton->SetDefault();
@@ -383,7 +398,7 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 
 	//Now set up the status bar.
 	CreateStatusBar(1);
-    SetStatusText(translate("Ready").str());
+    SetStatusText(translate("Ready"));
 
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
@@ -423,7 +438,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	fs::path sortfile;						//Modlist/masterlist to sort plugins using.
 
 	//Tell the user that stuff is happenining.
-	wxProgressDialog *progDia = new wxProgressDialog(translate("BOSS: Working...").str(),translate("BOSS working...").str(), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
+	wxProgressDialog *progDia = new wxProgressDialog(translate("BOSS: Working..."),translate("BOSS working..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
 
 	LOG_INFO("BOSS starting...");
 
@@ -446,7 +461,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		GUIMlistUpdater mUpdater;
 		try {
 			if (mUpdater.IsInternetReachable()) {
-				progDia->Update(0,translate("Updating to the latest masterlist from the Google Code repository...").str());
+				progDia->Update(0,translate("Updating to the latest masterlist from the Google Code repository..."));
 				LOG_DEBUG("Updating masterlist...");
 				try {
 					string localDate, remoteDate, message;
@@ -455,11 +470,11 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 					mUpdater.Update(game.Id(), game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
 					if (localRevision == remoteRevision) {
 						message = (boost::format(translate("Your masterlist is already at the latest revision (r %1%; %2%). No update necessary.")) % localRevision % localDate).str();
-						progDia->Pulse(translate("Masterlist already up-to-date.").str());
+						progDia->Pulse(translate("Masterlist already up-to-date."));
 						LOG_DEBUG("masterlist update unnecessary.");
 					} else {
 						message =  (boost::format(translate("Your masterlist has been updated to revision %1% (%2%). No update necessary.")) % localRevision % localDate).str();
-						progDia->Pulse(translate("Masterlist updated successfully.").str());
+						progDia->Pulse(translate("Masterlist updated successfully."));
 						LOG_DEBUG("masterlist updated successfully.");
 					}
 					game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
@@ -493,7 +508,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		return;
 	}
 
-	progDia->Pulse(translate("BOSS working...").str());
+	progDia->Pulse(translate("BOSS working..."));
 	if (progDia->WasCancelled()) {
 		progDia->Destroy();
 		return;
@@ -645,7 +660,7 @@ void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
 			} catch (boss_error &e) {
 				wxMessageBox(
 				(boost::format(translate("Error: %1%")) % e.getString()).str(),
-				translate("BOSS: Error").str(),
+				translate("BOSS: Error"),
 				wxOK | wxICON_ERROR,
 				this);
 			}
@@ -661,7 +676,7 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 		else
 			wxMessageBox(
 			(boost::format(translate("Error: \"%1%\" cannot be found")) % game.Log(gl_log_format).string()).str(),
-			translate("BOSS: Error").str(),
+			translate("BOSS: Error"),
 			wxOK | wxICON_ERROR,
 			this);
 	} else {
@@ -685,7 +700,7 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 		} else  //No ReadMe exists, show a pop-up message saying so.
 			wxMessageBox(
 			(boost::format(translate("Error: \"%1%\" cannot be found")) % file).str(),
-			translate("BOSS: Error").str(),
+			translate("BOSS: Error"),
 			wxOK | wxICON_ERROR,
 			this);
 
@@ -696,7 +711,7 @@ void MainFrame::OnAbout(wxCommandEvent& event) {
 	wxAboutDialogInfo aboutInfo;
     aboutInfo.SetName("BOSS");
     aboutInfo.SetVersion(IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH));
-    aboutInfo.SetDescription(translate("A \"one-click\" program for users that quickly optimises and avoids detrimental conflicts in their\nTES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.").str());
+    aboutInfo.SetDescription(translate("A \"one-click\" program for users that quickly optimises and avoids detrimental conflicts in their\nTES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders."));
     aboutInfo.SetCopyright("Copyright (C) 2009-2012 BOSS Development Team.");
     aboutInfo.SetWebSite("http://code.google.com/p/better-oblivion-sorting-software/");
 	aboutInfo.SetLicence("This program is free software: you can redistribute it and/or modify\n"
@@ -905,15 +920,15 @@ void MainFrame::SetGames(const Game& inGame, const vector<uint32_t> inGames) {
 
 void MainFrame::Update(string updateVersion) {
 	wxString message = translate("The automatic updater will download the installer for the new version to this BOSS folder.\n\n");
-	message += translate("It will then launch the installer before exiting. Complete the installer to complete the update.").str();
+	message += translate("It will then launch the installer before exiting. Complete the installer to complete the update.");
 		
-	wxMessageDialog *dlg = new wxMessageDialog(this,message, translate("BOSS: Automatic Updater").str(), wxOK | wxCANCEL);
+	wxMessageDialog *dlg = new wxMessageDialog(this,message, translate("BOSS: Automatic Updater"), wxOK | wxCANCEL);
 	if (dlg->ShowModal() != wxID_OK) {  //User has chosen to cancel. Quit now.
-		wxMessageBox(translate("Automatic updater cancelled.").str(), translate("BOSS: Automatic Updater").str(), wxOK | wxICON_EXCLAMATION, this);
+		wxMessageBox(translate("Automatic updater cancelled."), translate("BOSS: Automatic Updater"), wxOK | wxICON_EXCLAMATION, this);
 		return;
 	}
 
-	wxProgressDialog *progDia = new wxProgressDialog(translate("BOSS: Automatic Updater").str(), translate("Initialising download...").str(), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
+	wxProgressDialog *progDia = new wxProgressDialog(translate("BOSS: Automatic Updater"), translate("Initialising download..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
 	string file = "BOSS Installer.exe";
 	GUIBOSSUpdater bUpdater;
 	try {
@@ -921,7 +936,7 @@ void MainFrame::Update(string updateVersion) {
 		bUpdater.GetUpdate(fs::path(file), updateVersion);
 
 		//Remind the user to run the installer.
-		wxMessageBox(translate("New installer successfully downloaded! When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update.").str(), translate("BOSS: Automatic Updater").str(), wxOK | wxICON_INFORMATION, this);
+		wxMessageBox(translate("New installer successfully downloaded! When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), translate("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 		if (fs::exists(file))
 			wxLaunchDefaultApplication(file);
 	} catch (boss_error &e) {
@@ -929,14 +944,14 @@ void MainFrame::Update(string updateVersion) {
 		try {
 			bUpdater.CleanUp();
 			if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL)
-				wxMessageBox(translate("Update cancelled.").str(), translate("BOSS: Automatic Updater").str(), wxOK | wxICON_INFORMATION, this);
+				wxMessageBox(translate("Update cancelled."), translate("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 			else
-				wxMessageBox((boost::format(translate("Update failed. Details: %1%\n\nUpdate cancelled.")) % e.getString()).str(), translate("BOSS: Automatic Updater").str(), wxOK | wxICON_ERROR, this);
+				wxMessageBox((boost::format(translate("Update failed. Details: %1%\n\nUpdate cancelled.")) % e.getString()).str(), translate("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 		} catch (boss_error &ee) {
 			if (e.getCode() != BOSS_ERROR_CURL_USER_CANCEL)
 				LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
 			LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-			wxMessageBox((boost::format(translate("Update failed. Details: %1%; %2%\n\nUpdate cancelled.")) % e.getString() % ee.getString()).str(), translate("BOSS: Automatic Updater").str(), wxOK | wxICON_ERROR, this);
+			wxMessageBox((boost::format(translate("Update failed. Details: %1%; %2%\n\nUpdate cancelled.")) % e.getString() % ee.getString()).str(), translate("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 		}
 	}
 	this->Close();
@@ -944,7 +959,7 @@ void MainFrame::Update(string updateVersion) {
 
 void MainFrame::OnOpenSettings(wxCommandEvent& event) {
 	//Tell the user that stuff is happenining.
-	SettingsFrame *settings = new SettingsFrame(translate("BOSS: Settings").str().c_str(),this);
+	SettingsFrame *settings = new SettingsFrame(translate("BOSS: Settings"),this);
 	settings->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	settings->Show();
 }
@@ -1011,15 +1026,15 @@ wxThread::ExitCode MainFrame::Entry() {
 void MainFrame::OnThreadUpdate(wxThreadEvent& evt) {
     wxCriticalSectionLocker lock(updateData);
 	if (updateCheckCode == 2 && !isStartup)
-		wxMessageBox(updateCheckString, translate("BOSS: Check For Updates").str(), wxOK | wxICON_ERROR, this);
+		wxMessageBox(updateCheckString, translate("BOSS: Check For Updates"), wxOK | wxICON_ERROR, this);
 	else if (updateCheckCode == 1 && !isStartup)
-		wxMessageBox(updateCheckString, translate("BOSS: Check For Updates").str(), wxOK | wxICON_INFORMATION, this);
+		wxMessageBox(updateCheckString, translate("BOSS: Check For Updates"), wxOK | wxICON_INFORMATION, this);
 	else if (updateCheckCode == 0) {
 		wxMessageDialog *dlg;
 		if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS", "Installed Path"))  //Manual.
 			dlg = new wxMessageDialog(this,
 				(boost::format(translate("Update available! New version: %1%\nThe update may be downloaded from any of the locations listed in the BOSS Log.")) % updateCheckString).str(), 
-				translate("BOSS: Check For Updates").str(), wxOK);
+				translate("BOSS: Check For Updates"), wxOK);
 		else {
 			GUIBOSSUpdater bUpdater;
 			string notes;
@@ -1027,10 +1042,10 @@ void MainFrame::OnThreadUpdate(wxThreadEvent& evt) {
 			try {
 				notes = bUpdater.FetchReleaseNotes(updateCheckString);
 			} catch (boss_error &e) {
-				wxMessageBox((boost::format(translate("Failed to get release notes. Details: %1%")) % e.getString()).str(), translate("BOSS: Automatic Updater").str(), wxOK | wxICON_ERROR, this);
+				wxMessageBox((boost::format(translate("Failed to get release notes. Details: %1%")) % e.getString()).str(), translate("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			}
 			notes = (boost::format(translate("Update available! New version: %1%\nRelease notes:\n\n%2%\n\nDo you want to download and install the update?")) % updateCheckString % notes).str();
-			dlg = new wxMessageDialog(this, notes, translate("BOSS: Check For Updates").str(), wxYES_NO);
+			dlg = new wxMessageDialog(this, notes, translate("BOSS: Check For Updates"), wxYES_NO);
 
 			if (dlg->ShowModal() == wxID_YES)
 				this->Update(updateCheckString);
@@ -1045,7 +1060,7 @@ int GUIMlistUpdater::progress(boss::Updater * updater, double dlFraction, double
 	wxProgressDialog* progress = (wxProgressDialog*)updater->ProgDialog();
 	bool cont = progress->Update(currentProgress, (boost::format(translate("Downloading: %1%")) % updater->TargetFile()).str());
 	if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
-		uint32_t ans = wxMessageBox(translate("Are you sure you want to cancel?").str(), translate("BOSS: Updater").str(), wxYES_NO | wxICON_EXCLAMATION, progress);
+		uint32_t ans = wxMessageBox(translate("Are you sure you want to cancel?"), translate("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
 		if (ans == wxYES)
 			return 1;
 		progress->Resume();
@@ -1060,7 +1075,7 @@ int GUIBOSSUpdater::progress(boss::Updater * updater, double dlFraction, double 
 	wxProgressDialog* progress = (wxProgressDialog*)updater->ProgDialog();
 	bool cont = progress->Update(currentProgress, (boost::format(translate("Downloading: %1%")) % updater->TargetFile()).str());
 	if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
-		uint32_t ans = wxMessageBox(translate("Are you sure you want to cancel?").str(), translate("BOSS: Updater").str(), wxYES_NO | wxICON_EXCLAMATION, progress);
+		uint32_t ans = wxMessageBox(translate("Are you sure you want to cancel?"), translate("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
 		if (ans == wxYES)
 			return 1;
 		progress->Resume();

@@ -32,6 +32,9 @@
 namespace boss {
 	using namespace std;
 
+	using boost::format;
+	using boost::locale::translate;
+
 	//Return codes, mostly error codes.
 	//DO NOT CHANGE THEIR VALUES. THEY MUST BE INVARIANT ACROSS RELEASES FOR API USERS.
 	BOSS_COMMON const uint32_t BOSS_OK											= 0;

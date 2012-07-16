@@ -165,6 +165,7 @@
     <ClInclude Include="GUI\UserRuleEditor.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GUI\ElementIDs.cpp" />
     <ClCompile Include="GUI\MainWindow.cpp" />
     <ClCompile Include="GUI\SettingsWindow.cpp" />
     <ClCompile Include="GUI\UserRuleEditor.cpp" />

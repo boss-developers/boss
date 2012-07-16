@@ -1,1 +1,1 @@
-msgfmt --check messages.po
+cmd /k "msgfmt --check messages.po"
