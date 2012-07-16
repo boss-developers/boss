@@ -81,7 +81,6 @@ private:
 
 class UserRulesEditorFrame : public wxFrame {
 public:
-	ItemList masterlist;
 	UserRulesEditorFrame(const wxString title, wxFrame *parent, Game& inGame);
 	void OnOKQuit(wxCommandEvent& event);
 	void OnCancelQuit(wxCommandEvent& event);

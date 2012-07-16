@@ -243,7 +243,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 
 	vector<wxTreeItemId> opengroups;
 	opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
-	vector<Item> items = masterlist.Items();
+	vector<Item> items = game.masterlist.Items();
 	size_t max = items.size();
 	for (size_t i=0;i<max;i++) {
 		if (items[i].Type() == ENDGROUP)
@@ -296,7 +296,7 @@ void UserRulesEditorFrame::OnSearchList(wxCommandEvent& event) {
 		MasterlistModsList->DeleteAllItems();
 		vector<wxTreeItemId> opengroups;
 		opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
-		vector<Item> items = masterlist.Items();
+		vector<Item> items = game.masterlist.Items();
 		size_t max = items.size();
 		for (size_t i=0;i<max;i++) {
 			if (boost::iequals(items[i].Name().substr(0,length), searchStr)) {
@@ -324,7 +324,7 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 		MasterlistSearch->SetValue("");
 		MasterlistModsList->DeleteAllItems();
 		vector<wxTreeItemId> opengroups;
-		vector<Item> items = masterlist.Items();
+		vector<Item> items = game.masterlist.Items();
 		size_t max = items.size();
 		opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
 		for (size_t i=0;i<max;i++) {
@@ -339,10 +339,10 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 
 void UserRulesEditorFrame::OnSelectModInMasterlist(wxTreeEvent& event) {
 	//Need to find item in masterlist. :( Why can't tree lists store index number?
-	size_t pos = masterlist.FindItem(MasterlistModsList->GetItemText(event.GetItem()).ToStdString(), MOD);
-	if (pos != masterlist.Items().size()) {
+	size_t pos = game.masterlist.FindItem(MasterlistModsList->GetItemText(event.GetItem()).ToStdString(), MOD);
+	if (pos != game.masterlist.Items().size()) {
 		string messagesOut = "";
-		vector<Message> messages = masterlist.ItemAt(pos).Messages();
+		vector<Message> messages = game.masterlist.ItemAt(pos).Messages();
 		for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter)
 			messagesOut += messageIter->KeyToString() + ": " + messageIter->Data() + "\n\n";
 		ModMessagesBox->SetValue(messagesOut.substr(0,messagesOut.length()-2));
@@ -565,8 +565,8 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 		if (Item(newRule.Object()).IsGroup())
 			newRule.Key(OVERRIDE);
 		else {
-			size_t pos = masterlist.FindItem(newRule.Object(), MOD);
-			if (pos != masterlist.Items().size())  //Mod in masterlist.
+			size_t pos = game.masterlist.FindItem(newRule.Object(), MOD);
+			if (pos != game.masterlist.Items().size())  //Mod in masterlist.
 				newRule.Key(OVERRIDE);
 			else
 				newRule.Key(ADD);

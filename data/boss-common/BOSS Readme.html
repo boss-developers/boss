@@ -354,6 +354,7 @@
 </figure>
 <p>Like the GUI, when the CLI is run it will first look for any supported games. If BOSS is not installed next to a supported game's executable, and more than one supported game is found, then it will present the user with a dialog in the command line window asking the user to select a game to run for, as seen above. Unlike the GUI, it will not offer to run for games that are not detected.
 <p>Once a game has been selected (if applicable), the CLI's execution is almost identical to what the GUI does when its <q>Run BOSS</q> button is pressed.
+<p><strong>Note:</strong> Depending on your operating system and command line application's settings, BOSS's command line text may not display correctly in some languages, eg. Russian on Windows' command line with default settings will be displayed as gibberish. There are ways of getting around the issue, but they are beyond the scope of this documentation. A quick search on the Internet will yield some of these methods, but for the particular case of using BOSS when this occurs, it is recommended that you use the GUI instead, which does not suffer from this limitation.
 
 <h3 id="cli-cla">Command Line Arguments</h3>
 <p>While the BOSS GUI allows you to specify options using its graphical elements, the CLI uses a combination of the BOSS.ini file and command line arguments to do the same. The syntax for these arguments is:
@@ -509,6 +510,8 @@ a problem for which no error message is given, please report the crash or proble
 		<dd>Skyrim's Registry entry is missing. This happens to a lot of people, because Steam likes to remove it whenever Skyrim is updated or its game cache is verified. Run Skyrim's launcher to add the Registry entry back again.
 	<dt>Your browser supports the <q>Settings Memory</q> functionality of the HTML BOSS Log, but all your settings have been lost.
 		<dd>You've emptied your browser's cache, which is where the BOSS Log's settings are stored. If you've lost custom CSS settings, back them up in future. The other things remembered by the BOSS Log can be set back up how you like them in seconds.
+ <dt>When running the BOSS CLI in a non-English language, the text in the command line window is displayed as gibberish.
+  <dd>This is a limitation of the operating system or command line application you are using for the language you are trying to run BOSS in. It is recommended that you run the BOSS GUI instead, which does not suffer from this issue.
 </dl>
 
 <h3 id="trouble-errors">Error Messages</h3>
