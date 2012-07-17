@@ -54,9 +54,6 @@ namespace boss {
 	BOSS_COMMON const uint32_t GERMAN				= 2;
 	BOSS_COMMON const uint32_t RUSSIAN				= 3;
 	
-	//BOSS release date.
-	BOSS_COMMON const string gl_boss_release_date	= "X Y 2012";
-	
 	
 	///////////////////////////////
 	//File/Folder Paths

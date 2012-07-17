@@ -349,10 +349,6 @@ namespace boss {
 		string buffer;		//A bunch of strings.
 		size_t start,end;								//Position holders for trimming strings.
 		CURLcode ret;
-		const string SVN_REVISION_KW = "$" "Revision" "$";                   // Left as separated parts to avoid keyword expansion
-		const string SVN_DATE_KW = "$" "Date" "$";                           // Left as separated parts to avoid keyword expansion
-		const string SVN_CHANGEDBY_KW= "$" "LastChangedBy" "$";              // Left as separated parts to avoid keyword expansion
-		string oldline = "Masterlist Information: "+SVN_REVISION_KW+", "+SVN_DATE_KW+", "+SVN_CHANGEDBY_KW;
 		const char *revision_url = "http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn";
 
 		//curl will be used to get stuff from the internet, so initialise it.
@@ -418,39 +414,82 @@ namespace boss {
 			curl_easy_cleanup(curl);
 			throw boss_error(BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL);
 		}
-		date = buffer.substr(start+1,end - (start+1));  //Date string recorded.
-		buffer.clear();
+		date = GetISO8601Date(buffer.substr(start+1,end - (start+1)));
 		curl_easy_cleanup(curl);
+	}
 
-		//Month Day, Year
-		//Now we need to get the date string extracted turned into a sensible absolute date.
-		if (date.find("Today") != string::npos) {
-			const time_t currTime = time(NULL);
-			char * time = ctime(&currTime);
-			date = time;
-			string monthday = date.substr(4,6);
-			string year = date.substr(date.length()-5,4);
-			date = monthday + ", " + year;
-		} else if (date.find("Yesterday") != string::npos) {
-			//Same as for Today, but we need to turn back one day.
-			time_t currTime = time(NULL);
-			currTime = currTime - 86400;  //Time travel!
-			char * time = ctime(&currTime);
-			date = time;
-			string monthday = date.substr(4,6);
-			string year = date.substr(date.length()-5,4);
-			date = monthday + ", " + year;
-		} else if (date.find("(") != string::npos) {
-			//Need to go from "Month Day (...)" to "Month Day, Year".
-			//Remove everything from the space before the bracket onwards.
-			start = date.find("(");
-			date.resize(start);
-			//Now get year from system and append.
-			const time_t currTime = time(NULL);
-			char * time = ctime(&currTime);
-			string year = time;
-			date += ", " + year.substr(year.length()-5,4);
-		} //Otherwise it's already in a sensible format.
+	string MasterlistUpdater::GetISO8601Date(string str) {
+		string year, month, day;
+		//Need format "YYYY-MM-DD".
+		if (str.find("Today") != string::npos || str.find("Yesterday") != string::npos) {
+			time_t currTimeTT = time(NULL);
+			if (str.find("Yesterday") != string::npos)
+				currTimeTT -= 86400;  //Time travel! Do this here instead of with tm_mday, because it might be the first of the month.
+			tm * currTimeTM = localtime(&currTimeTT);
+
+			year = IntToString(currTimeTM->tm_year + 1900);  //tm_year counts from 1900. (Why?) Don't need to pad.
+			month = IntToString(currTimeTM->tm_mon + 1);  //tm_mon starts from zero. May need to pad so it is 2 digits long.
+			if (month.length() == 1)
+				month = "0" + month;
+			day = IntToString(currTimeTM->tm_mday);  //May need to pad.
+			if (day.length() == 1)
+				day = "0" + day;
+		} else {
+			/* Two possible formats:
+			     1. The date is in the format "Mmm (D)?D (...)". The year is the current year.
+			     2. The date is in the format "Mmm (D)?D, YYYY".
+			   (D)? means that the day isn't padded.
+			*/
+			if (str.length() > 5) {
+
+				//First turn month word string into a number string.
+				month = str.substr(0, 3);
+				if (month == "Jan")
+					month = "01";
+				else if (month == "Feb")
+					month = "02";
+				else if (month == "Mar")
+					month = "03";
+				else if (month == "Apr")
+					month = "04";
+				else if (month == "May")
+					month = "05";
+				else if (month == "Jun")
+					month = "06";
+				else if (month == "Jul")
+					month = "07";
+				else if (month == "Aug")
+					month = "08";
+				else if (month == "Sep")
+					month = "09";
+				else if (month == "Oct")
+					month = "10";
+				else if (month == "Nov")
+					month = "11";
+				else
+					month = "12";
+
+				if (str[5] == ',' || str[5] == ' ')  //Day is one digit long, pad.
+					day = "0" + str.substr(4, 1);
+				else  //Day is two digits long.
+					day = str.substr(4, 2);
+
+				if (str.find("(") != string::npos) {
+					//The date is in the format "Month (D)?D (...)". The year is the current year.
+					//Get the current year.
+					const time_t currTimeTT = time(NULL);
+					tm * currTimeTM = localtime(&currTimeTT);
+
+					year = IntToString(currTimeTM->tm_year + 1900);  //tm_year counts from 1900. (Why?) Don't need to pad.
+				} else {
+					//The date is in the format "Mmm (D)?D, YYYY".
+					size_t pos = str.find(',');
+					if (pos != string::npos)
+						string year = str.substr(pos + 2, 4);
+				}
+			}
+		}
+		return (year + '-' + month + '-' + day);
 	}
 
 

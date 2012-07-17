@@ -72,8 +72,7 @@ int Launch(string filename) {
 
 void ShowVersion() {
 	cout << "BOSS" << endl;
-	cout << translate("Version ") << BOSS_VERSION_MAJOR << "." << BOSS_VERSION_MINOR
-		 << "." << BOSS_VERSION_PATCH << " (" << gl_boss_release_date << ")" << endl;
+	cout << translate("Version ") << BOSS_VERSION_MAJOR << "." << BOSS_VERSION_MINOR << "." << BOSS_VERSION_PATCH << endl;
 }
 
 void ShowUsage(po::options_description opts) {
@@ -474,10 +473,10 @@ int main(int argc, char *argv[]) {
 					uint32_t localRevision, remoteRevision;
 					MlistUpdater.Update(game.Id(), game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
 					if (localRevision == remoteRevision) {
-						message = (boost::format(translate("Your masterlist is already at the latest revision (r %1%; %2%). No update necessary.")) % localRevision % localDate).str();
+						message = (boost::format(translate("Your masterlist is already at the latest revision (r%1%; %2%). No update necessary.")) % localRevision % localDate).str();
 						LOG_DEBUG("masterlist update unnecessary.");
 					} else {
-						message =  (boost::format(translate("Your masterlist has been updated to revision %1% (%2%). No update necessary.")) % localRevision % localDate).str();
+						message =  (boost::format(translate("Your masterlist has been updated to revision %1% (%2%).")) % remoteRevision % remoteDate).str();
 						LOG_DEBUG("masterlist updated successfully.");
 					}
 					game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;

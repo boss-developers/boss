@@ -91,6 +91,7 @@ IMPLEMENT_APP(BossGUI)
 
 using namespace boss;
 using namespace std;
+namespace loc = boost::locale;
 
 //Draws the main window when program starts.
 bool BossGUI::OnInit() {
@@ -462,28 +463,28 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 					mUpdater.ProgDialog(progDia);
 					mUpdater.Update(game.Id(), game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
 					if (localRevision == remoteRevision) {
-						message = (boost::format(translate("Your masterlist is already at the latest revision (r %1%; %2%). No update necessary.")) % localRevision % localDate).str();
+						message = (boost::format(loc::translate("Your masterlist is already at the latest revision (r%1%; %2%). No update necessary.")) % localRevision % localDate).str();
 						progDia->Pulse(translate("Masterlist already up-to-date."));
 						LOG_DEBUG("masterlist update unnecessary.");
 					} else {
-						message =  (boost::format(translate("Your masterlist has been updated to revision %1% (%2%). No update necessary.")) % localRevision % localDate).str();
+						message =  (boost::format(loc::translate("Your masterlist has been updated to revision %1% (%2%).")) % remoteRevision % remoteDate).str();
 						progDia->Pulse(translate("Masterlist updated successfully."));
 						LOG_DEBUG("masterlist updated successfully.");
 					}
 					game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
 				} catch (boss_error &e) {
-					game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
-						<< (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK
-						<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.");
+					game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << loc::translate("Error: masterlist update failed.") << LINE_BREAK
+						<< (boost::format(loc::translate("Details: %1%")) % e.getString()).str() << LINE_BREAK
+						<< loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.");
 					LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
 				}
 			} else {
-				game.bosslog.updaterOutput << LIST_ITEM_CLASS_WARN << translate("No internet connection detected. Masterlist auto-updater could not check for updates.");
+				game.bosslog.updaterOutput << LIST_ITEM_CLASS_WARN << loc::translate("No internet connection detected. Masterlist auto-updater could not check for updates.");
 			}
 		} catch (boss_error &e) {
-			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
-				<< (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK
-				<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.");
+			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << loc::translate("Error: masterlist update failed.") << LINE_BREAK
+				<< (boost::format(loc::translate("Details: %1%")) % e.getString()).str() << LINE_BREAK
+				<< loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.");
 			LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
 		}
 	}
@@ -518,9 +519,9 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 			game.modlist.Save(game.Modlist(), game.OldModlist());
 	} catch (boss_error &e) {
 		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
-		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-			<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-			<< translate("Utility will end now.");
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+			<< loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+			<< loc::translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
@@ -569,9 +570,9 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL)
 			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << e.getString();
 		else
-			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-				<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-				<< translate("Utility will end now.");
+			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+				<< loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+				<< loc::translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
@@ -615,9 +616,9 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		game.bosslog.Save(game.Log(gl_log_format), true);
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
-		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-			<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-			<< translate("Utility will end now.");
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+			<< loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+			<< loc::translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
@@ -1066,7 +1067,7 @@ int GUIBOSSUpdater::progress(boss::Updater * updater, double dlFraction, double 
 	if (currentProgress == 1000)
 		--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
 	wxProgressDialog* progress = (wxProgressDialog*)updater->ProgDialog();
-	bool cont = progress->Update(currentProgress, (boost::format(translate("Downloading: %1%")) % updater->TargetFile()).str());
+	bool cont = progress->Update(currentProgress, (boost::format(translate("Downloading: %1%")) % updater->TargetFile().c_str()).str());
 	if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
 		uint32_t ans = wxMessageBox(translate("Are you sure you want to cancel?"), translate("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
 		if (ans == wxYES)

@@ -1082,12 +1082,12 @@ namespace boss {
 		stringstream out;
 		if (logFormat == HTML)
 			out << "<footer>"
-				<< "	<div class='button' data-section='cssSettings' id='cssButtonShow'>CSS Settings</div>"
-				<< "	<div class='button' id='filtersButtonToggle'>Filters<span id='arrow'></span></div>"
+				<< "	<div class='button' data-section='cssSettings' id='cssButtonShow'>" << translate("CSS Settings") << "</div>"
+				<< "	<div class='button' id='filtersButtonToggle'>" << translate("Filters") << "<span id='arrow'></span></div>"
 				<< "</footer>"
 				<< "</nav>"
 				<< "<noscript>"
-				<< "The BOSS Log requires Javascript to be enabled in order to function."
+				<< translate("The BOSS Log requires Javascript to be enabled in order to function.")
 				<< "</noscript>";
 		return out.str();
 	}
@@ -1860,19 +1860,19 @@ namespace boss {
 		out << PrintHeaderTop();
 
 		if (logFormat == HTML) {
-			formattedOut << DIV_SUMMARY_BUTTON_OPEN << "Summary" << DIV_CLOSE;
+			formattedOut << DIV_SUMMARY_BUTTON_OPEN << translate("Summary") << DIV_CLOSE;
 
 			if (!userRules.Empty())
-				formattedOut << DIV_USERLIST_BUTTON_OPEN << "User Rules" << DIV_CLOSE;
+				formattedOut << DIV_USERLIST_BUTTON_OPEN << translate("User Rules") << DIV_CLOSE;
 
 			if (!sePlugins.Empty())
-				formattedOut << DIV_SE_BUTTON_OPEN << scriptExtender << " Plugins" << DIV_CLOSE;
+				formattedOut << DIV_SE_BUTTON_OPEN << (boost::format(translate("%1% Plugins")) % scriptExtender).str() << DIV_CLOSE;
 
 			if (!recognisedPlugins.Empty())
-				formattedOut << DIV_RECOGNISED_BUTTON_OPEN << "Recognised Plugins" << DIV_CLOSE;
+				formattedOut << DIV_RECOGNISED_BUTTON_OPEN << translate("Recognised Plugins") << DIV_CLOSE;
 
 			if (!unrecognisedPlugins.Empty())
-				formattedOut << DIV_UNRECOGNISED_BUTTON_OPEN << "Unrecognised Plugins" << DIV_CLOSE;
+				formattedOut << DIV_UNRECOGNISED_BUTTON_OPEN << translate("Unrecognised Plugins") << DIV_CLOSE;
 
 			out << formattedOut.AsString() << PrintHeaderBottom();
 			formattedOut.Clear();  //Clear formattedOut for re-use.

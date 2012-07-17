@@ -325,6 +325,12 @@
 		File "data\boss-common\images\Userlist.png"
 		File "data\boss-common\images\Ini.png"
 		File "data\boss-common\images\CLI.png"
+  
+  ;Now install language files.
+  SetOutPath "$INSTDIR\l10n\en\LC_MESSAGES"
+  File "data\boss-common\l10n\en\LC_MESSAGES\messages.mo"
+  SetOutPath "$INSTDIR\l10n\ru\LC_MESSAGES"
+  File "data\boss-common\l10n\ru\LC_MESSAGES\messages.mo"
 		
 		;Add Start Menu shortcuts. Set out path back to $INSTDIR otherwise the shortcuts start in the wrong place.
 		SetOutPath "$INSTDIR"
@@ -391,6 +397,10 @@
 		Delete "$INSTDIR\Docs\images\Userlist.png"
 		Delete "$INSTDIR\Docs\images\Ini.png"
 		Delete "$INSTDIR\Docs\images\CLI.png"
+  
+  ;Remove language files.
+  Delete "$INSTDIR\l10n\en\LC_MESSAGES\messages.mo"
+  Delete "$INSTDIR\l10n\ru\LC_MESSAGES\messages.mo"
 		
 		;Now we have to remove the files BOSS generates when it runs.
 		Delete "$INSTDIR\BOSSDebugLog.txt"

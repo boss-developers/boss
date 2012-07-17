@@ -38,6 +38,7 @@
 namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
+	namespace loc = boost::locale;
 
 	using boost::algorithm::to_lower_copy;
 
@@ -1244,10 +1245,10 @@ namespace boss {
 			<<	"#---------------" << endl
 			<<	"# BOSS Ini File" << endl
 			<<	"#---------------" << endl
-			<<	"# Settings with names starting with 'b' are boolean and accept values of 'true' or 'false'." << endl
-			<<	"# Settings with names starting with 'i' are unsigned integers and accept varying ranges of whole numbers." << endl
-			<<	"# Settings with names starting with 's' are strings and their accepted values vary." << endl
-			<<	"# See the BOSS ReadMe for details on what each setting does and the accepted values for integer and string settings." << endl << endl
+			<<	loc::translate("# Settings with names starting with 'b' are boolean and accept values of 'true' or 'false'.") << endl
+			<<	loc::translate("# Settings with names starting with 'i' are unsigned integers and accept varying ranges of whole numbers.") << endl
+			<<	loc::translate("# Settings with names starting with 's' are strings and their accepted values vary.") << endl
+			<<	loc::translate("# See the BOSS ReadMe for details on what each setting does and the accepted values for integer and string settings.") << endl << endl
 
 			<<	"[General Settings]" << endl
 			<<	"bDoStartupUpdateCheck    = " << BoolToString(gl_do_startup_update_check) << endl

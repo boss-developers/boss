@@ -97,6 +97,8 @@ namespace boss {
 
 		//Gets the revision number of the online masterlist. Throws exception on error.
 		void GetRemoteRevisionDate(const Game& game, uint32_t& revision, string& date);
+
+		string GetISO8601Date(string str);
 	};
 
 	class BOSS_COMMON BOSSUpdater : public Updater {

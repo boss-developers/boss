@@ -66,9 +66,6 @@ namespace boss {
 	BOSS_COMMON extern const uint32_t GERMAN;
 	BOSS_COMMON extern const uint32_t RUSSIAN;
 	
-	//BOSS release date.
-	BOSS_COMMON extern const string gl_boss_release_date;
-	
 
 	///////////////////////////////
 	//File/Folder Paths
