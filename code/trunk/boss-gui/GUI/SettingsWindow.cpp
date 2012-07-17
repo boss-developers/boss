@@ -194,13 +194,13 @@ void SettingsFrame::SetDefaultValues() {
 		LanguageChoice->SetSelection(3);
 
 	//Internet Settings
-	ProxyHostBox->SetValue(gl_proxy_host);
+	ProxyHostBox->SetValue(wxString(gl_proxy_host.c_str(), wxConvUTF8));
 
 	ProxyPortBox->SetValue(wxString::Format(wxT("%i"),gl_proxy_port));
 
-	ProxyUserBox->SetValue(gl_proxy_user);
+	ProxyUserBox->SetValue(wxString(gl_proxy_user.c_str(), wxConvUTF8));
 
-	ProxyPasswdBox->SetValue(gl_proxy_passwd);
+	ProxyPasswdBox->SetValue(wxString(gl_proxy_passwd.c_str(), wxConvUTF8));
 
 	//Debugging Settings
 	if (gl_debug_with_source)
@@ -264,10 +264,10 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	}
 
 	//Network
-	gl_proxy_host = ProxyHostBox->GetValue();
-	gl_proxy_port = wxAtoi(ProxyPortBox->GetValue());
-	gl_proxy_user = ProxyUserBox->GetValue();
-	gl_proxy_passwd = ProxyPasswdBox->GetValue();
+	gl_proxy_host = ProxyHostBox->GetValue().ToUTF8();
+	gl_proxy_port = wxAtoi(ProxyPortBox->GetValue().ToUTF8());
+	gl_proxy_user = ProxyUserBox->GetValue().ToUTF8();
+	gl_proxy_passwd = ProxyPasswdBox->GetValue().ToUTF8();
 
 	//Debugging
 	gl_debug_verbosity = DebugVerbosityChoice->GetSelection();

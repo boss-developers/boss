@@ -118,7 +118,7 @@ bool BossGUI::OnInit() {
 		} catch (boss_error &e) {
 			LOG_ERROR("Error: %s", e.getString().c_str());
 			wxMessageBox(
-				(boost::format(translate("Error: %1% Details: %2%")) % e.getString() % Outputter(PLAINTEXT, ini.ErrorBuffer()).AsString()).str(),
+				(boost::format(translate("Error: %1% Details: %2%")) % wxString(e.getString().c_str(), wxConvUTF8) % wxString(Outputter(PLAINTEXT, ini.ErrorBuffer()).AsString().c_str(), wxConvUTF8)).str(),
 				translate("BOSS: Error"),
 				wxOK | wxICON_ERROR,
 				NULL);
@@ -157,18 +157,12 @@ bool BossGUI::OnInit() {
 	try {
 		locale::global(gen(localeId));
 		cout.imbue(locale());
-
-	/*	wxLocale * m_locale = new wxLocale(wxLANGUAGE_ENGLISH);
-		//Can't get wxWidgets to find the language files when pointed at .\\l10n, possibly they use a different "lang".
-		m_locale->AddCatalogLookupPathPrefix(".\\l10n\\en\\LC_MESSAGES");
-		m_locale->AddCatalogLookupPathPrefix(".\\l10n\\es\\LC_MESSAGES");
-		m_locale->AddCatalogLookupPathPrefix(".\\l10n\\de\\LC_MESSAGES");
-		m_locale->AddCatalogLookupPathPrefix(".\\l10n\\ru\\LC_MESSAGES");
-		if (!m_locale->AddCatalog("messages", lang, "UTF-8"))
-			throw exception();*/
 	} catch(exception &e) {
 		LOG_ERROR("could not implement translation: %s", e.what());
-		cout << e.what() << endl;
+		wxMessageBox((boost::format(translate("Error: could not apply translation: %1%")) % e.what()).str(),
+			translate("BOSS: Error"),
+				wxOK | wxICON_ERROR,
+				NULL);
 	}
 	locale global_loc = locale();
 	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
@@ -187,9 +181,9 @@ bool BossGUI::OnInit() {
 			wxArrayString choices;
 
 			for (size_t i=0, max = detected.size(); i < max; i++)
-				choices.Add(Game(detected[i], "", true).Name());
+				choices.Add(Game(detected[i], "", true).Name());  //Don't need to convert name, known to be only ASCII chars.
 			for (size_t i=0, max = undetected.size(); i < max; i++)
-				choices.Add(Game(undetected[i], "", true).Name() + translate(" (not detected)"));
+				choices.Add(Game(undetected[i], "", true).Name() + translate(" (not detected)"));  //Don't need to convert name, known to be only ASCII chars.
 
 			size_t ans;
 
@@ -415,12 +409,11 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 	try {
 		ini.Save(ini_path, game.Id());
 	} catch (boss_error &e) {
-			wxMessageBox(wxString::Format(
-				wxT("Error: " + e.getString())
-			),
-			wxT("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
+			wxMessageBox(
+				(boost::format(translate("Error: %1%")) % wxString(e.getString().c_str(), wxConvUTF8)).str(),
+				translate("BOSS: Error"),
+				wxOK | wxICON_ERROR,
+				NULL);
 	}
 
 	// important: before terminating, we _must_ wait for our joinable
@@ -775,7 +768,7 @@ void MainFrame::OnGameChange(wxCommandEvent& event) {
 		break;
 	}
 	game.CreateBOSSGameFolder();
-	SetTitle(wxT("BOSS - " + game.Name()));
+	SetTitle(wxT("BOSS - " + game.Name()));  //Don't need to convert name, known to be only ASCII chars.
 }
 
 void MainFrame::OnRevertChange(wxCommandEvent& event) {
@@ -877,7 +870,7 @@ void MainFrame::DisableUndetectedGames() {
 				game.CreateBOSSGameFolder();
 			}
 	}
-	SetTitle(wxT("BOSS - " + game.Name()));
+	SetTitle(wxT("BOSS - " + game.Name()));  //Don't need to convert name, known to be only ASCII chars.
 }
 
 void MainFrame::SetGames(const Game& inGame, const vector<uint32_t> inGames) {
@@ -946,12 +939,12 @@ void MainFrame::Update(string updateVersion) {
 			if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL)
 				wxMessageBox(translate("Update cancelled."), translate("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
 			else
-				wxMessageBox((boost::format(translate("Update failed. Details: %1%\n\nUpdate cancelled.")) % e.getString()).str(), translate("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+				wxMessageBox((boost::format(translate("Update failed. Details: %1%\n\nUpdate cancelled.")) % wxString(e.getString().c_str(), wxConvUTF8)).str(), translate("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 		} catch (boss_error &ee) {
 			if (e.getCode() != BOSS_ERROR_CURL_USER_CANCEL)
 				LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
 			LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-			wxMessageBox((boost::format(translate("Update failed. Details: %1%; %2%\n\nUpdate cancelled.")) % e.getString() % ee.getString()).str(), translate("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
+			wxMessageBox((boost::format(translate("Update failed. Details: %1%; %2%\n\nUpdate cancelled.")) % wxString(e.getString().c_str(), wxConvUTF8) % wxString(ee.getString().c_str(), wxConvUTF8)).str(), translate("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 		}
 	}
 	this->Close();
@@ -1005,7 +998,7 @@ wxThread::ExitCode MainFrame::Entry() {
 			} catch (boss_error &e) {
 				wxCriticalSectionLocker lock(updateData);
 				updateCheckCode = 2;
-				updateCheckString = (boost::format(translate("Update check failed. Details: %1%")) % e.getString()).str();
+				updateCheckString = (boost::format(translate("Update check failed. Details: %1%")) % wxString(e.getString().c_str(), wxConvUTF8)).str();
 				wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
 			}
 		} else {
@@ -1017,7 +1010,7 @@ wxThread::ExitCode MainFrame::Entry() {
 	} catch (boss_error &e) {
 		wxCriticalSectionLocker lock(updateData);
 		updateCheckCode = 2;
-		updateCheckString = (boost::format(translate("Update check failed. Details: %1%")) % e.getString()).str();
+		updateCheckString = (boost::format(translate("Update check failed. Details: %1%")) % wxString(e.getString().c_str(), wxConvUTF8)).str();
 		wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
 	}
 	return (wxThread::ExitCode)0;
@@ -1033,7 +1026,7 @@ void MainFrame::OnThreadUpdate(wxThreadEvent& evt) {
 		wxMessageDialog *dlg;
 		if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS", "Installed Path"))  //Manual.
 			dlg = new wxMessageDialog(this,
-				(boost::format(translate("Update available! New version: %1%\nThe update may be downloaded from any of the locations listed in the BOSS Log.")) % updateCheckString).str(), 
+				(boost::format(translate("Update available! New version: %1%\nThe update may be downloaded from any of the locations listed in the BOSS Log.")) % wxString(updateCheckString.c_str(), wxConvUTF8)).str(), 
 				translate("BOSS: Check For Updates"), wxOK);
 		else {
 			GUIBOSSUpdater bUpdater;
@@ -1044,7 +1037,7 @@ void MainFrame::OnThreadUpdate(wxThreadEvent& evt) {
 			} catch (boss_error &e) {
 				wxMessageBox((boost::format(translate("Failed to get release notes. Details: %1%")) % e.getString()).str(), translate("BOSS: Automatic Updater"), wxOK | wxICON_ERROR, this);
 			}
-			notes = (boost::format(translate("Update available! New version: %1%\nRelease notes:\n\n%2%\n\nDo you want to download and install the update?")) % updateCheckString % notes).str();
+			notes = (boost::format(translate("Update available! New version: %1%\nRelease notes:\n\n%2%\n\nDo you want to download and install the update?")) % wxString(updateCheckString.c_str(), wxConvUTF8) % wxString(notes.c_str(), wxConvUTF8)).str();
 			dlg = new wxMessageDialog(this, notes, translate("BOSS: Check For Updates"), wxYES_NO);
 
 			if (dlg->ShowModal() == wxID_YES)
