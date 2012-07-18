@@ -159,7 +159,7 @@ namespace boss {
 		qi::rule<grammarIter, vector<Message>(), Skipper> itemMessages;
 		qi::rule<grammarIter, Message(), Skipper> itemMessage, globalMessage, oldCondItemMessage;
 		qi::rule<grammarIter, MasterlistVar(), Skipper> listVar;
-		qi::rule<grammarIter, string(), Skipper> charString, andOr, conditional, conditionals, oldConditional, condition, version, variable, file, regexFile;
+		qi::rule<grammarIter, string(), Skipper> charString, andOr, conditional, conditionals, oldConditional, functCondition, shortCondition, variable, file, checksum, version, comparator, regex, language;
 		qi::rule<grammarIter, uint32_t(), Skipper> messageKeyword, messageSymbol;
 		ParsingError * errorBuffer;
 		vector<Message> * globalMessageBuffer;
@@ -200,10 +200,13 @@ namespace boss {
 		void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore);
 		void SetParentGame(const Game * game);
 	private:
-		qi::rule<grammarIter, string(), Skipper> ifIfNot, variable, file, version, andOr, regexFile;
-		qi::rule<grammarIter, bool(), Skipper> conditional, conditionals, condition;
+		qi::rule<grammarIter, string(), Skipper> ifIfNot, andOr, variable, file, version, regex, language;
+		qi::rule<grammarIter, bool(), Skipper> conditional, conditionals, condition, shortCondition, functCondition;
+		qi::rule<grammarIter, uint32_t(), Skipper> checksum;
+		qi::rule<grammarIter, char(), Skipper> comparator;
 		ParsingError * errorBuffer;
 		boost::unordered_set<string> * setVars;				//Vars set by masterlist.
+		boost::unordered_set<string> * activePlugins;		//Active plugins, with lowercase filenames.
 		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
 		const Game * parentGame;
 
@@ -217,7 +220,7 @@ namespace boss {
 		fs::path GetPath(const string file);
 
 		//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
-		void CheckVersion(bool& result, const string var);
+		void CheckVersion(bool& result, const string file, const string version, const char comparator);
 
 		//Checks if the given file exists.
 		void CheckFile(bool& result, string file);
@@ -232,8 +235,14 @@ namespace boss {
 		//Checks if a masterlist variable is defined.
 		void CheckVar(bool& result, const string var);
 
+		//Checks if the given plugin is active.
+		void CheckActive(bool& result, const string plugin);
+
+		//Checks if the given language is the current language.
+		void CheckLanguage(bool& result, const string language);
+
 		//Checks if the given mod has the given checksum.
-		void CheckSum(bool& result, const uint32_t sum, string file);
+		void CheckSum(bool& result, string file, const uint32_t sum);
 
 		//Parser error reporter.
 		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what);

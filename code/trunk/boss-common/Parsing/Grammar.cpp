@@ -274,29 +274,58 @@ namespace boss {
 				no_case[unicode::string("ifnot")
 				| unicode::string("if")]
 			) 
-			> char_('(') 
-			> condition
-			> char_(')');
-
-		condition %= 
-			variable
-			| version
-			| (+(xdigit - '|') > char_('|') > file)
-			| file
-			| regexFile
+			> (
+				(
+					char_('(')
+					> shortCondition
+					> char_(')')
+				) 
+				| functCondition
+			);
+			
+		functCondition %=
+			(
+				no_case[unicode::string("var")] > char_('(') > variable > char_(')')													//New function-style variable condition.
+			) | (
+				no_case[unicode::string("file")] > char_('(') > file > char_(')')														//New function-style file condition.
+			) | (
+				no_case[unicode::string("checksum")] > char_('(') > file > char_(',') > checksum > char_(')')							//New function-style checksum condition.
+			) | (
+				no_case[unicode::string("version")] > char_('(') > file > char_(',') > version > char_(',') > comparator > char_(')')	//New function-style version condition.
+			) | (
+				no_case[unicode::string("regex")] > char_('(') > regex > char_(')')														//New function-style regex condition.
+			) | (
+				no_case[unicode::string("active")] > char_('(') > file > char_(')')														//New function-style active condition.
+			) | (
+				no_case[unicode::string("lang")] > char_('(') > language > char_(')')													//New function-style language condition.
+			)
 			;
 
-		variable %= char_('$') > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
+		shortCondition %= 
+			(char_('$') > variable)							//Masterlist variable condition.
+			| (comparator > version > char_('|') > file)	//Version condition.
+			| (checksum > char_('|') > file)				//CRC condition.
+			| file											//File condition.
+			| (no_case[char_('r')] > file)					//Regex condition.
+			;
+
+		variable %= +(char_ - ')'); 
 
 		file %= lexeme[char_('"') > +(char_ - '"') > char_('"')];  //An OBSE plugin or a mod plugin.
 
-		version %=   //A version, followed by the mod it applies to.
-			(char_('=') | char_('>') | char_('<'))
-			> lexeme[+(char_ - '|')]
-			> char_('|')
-			> file;
+		checksum %= +xdigit;
 
-		regexFile %= no_case[char_('r')] > file;
+		version %= 
+			file					//functCondition def.
+			| lexeme[+(char_ - '|')]  //shortCondition def.
+			;
+
+		comparator %= char_('=') | char_('>') | char_('<');
+
+		regex %= file;
+
+		language %= file;
+
 
 		modList.name("modList");
 		listVar.name("listVar");
@@ -312,21 +341,39 @@ namespace boss {
 		conditionals.name("conditional");
 		andOr.name("andOr");
 		conditional.name("conditional");
+		functCondition.name("condition");
+		shortCondition.name("condition");
+		variable.name("variable");
+		file.name("file");
+		checksum.name("checksum");
+		version.name("version");
+		comparator.name("comparator");
+		regex.name("regex file");
+		file.name("language");
 			
-		on_error<fail>(modList,				phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(listVar,				phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(listItem,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(ItemType,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(itemName,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(itemMessages,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(itemMessage,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(charString,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(messageKeyword,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(messageSymbol,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(oldConditional,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(conditionals,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(andOr,				phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(conditional,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(modList,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(listVar,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(listItem,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(ItemType,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(itemName,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(itemMessages,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(itemMessage,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(charString,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageKeyword,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(messageSymbol,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(oldConditional,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(conditionals,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(andOr,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(conditional,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(functCondition,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(shortCondition,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(variable,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(file,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(checksum,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(version,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(comparator,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(regex,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(language,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
 	void modlist_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) { 
@@ -455,46 +502,80 @@ namespace boss {
 
 		ifIfNot %= no_case[unicode::string("ifnot") | unicode::string("if")];
 
-		conditional = (ifIfNot > '(' > condition > ')')	[phoenix::bind(&conditional_grammar::EvaluateConditional, this, _val, _1, _2)];
+		conditional = (ifIfNot > condition)									[phoenix::bind(&conditional_grammar::EvaluateConditional, this, _val, _1, _2)];
 
-		condition = 
-			variable									[phoenix::bind(&conditional_grammar::CheckVar, this, _val, _1)]
-			| version									[phoenix::bind(&conditional_grammar::CheckVersion, this, _val, _1)]
-			| (hex > '|' > file)						[phoenix::bind(&conditional_grammar::CheckSum, this, _val, _1, _2)] //A CRC-32 checksum, as calculated by BOSS, followed by the file it applies to.
-			| file										[phoenix::bind(&conditional_grammar::CheckFile, this, _val, _1)]
-			| regexFile									[phoenix::bind(&conditional_grammar::CheckRegex, this, _val, _1)]
+		condition %=
+			('(' > shortCondition > ')')
+			| functCondition
+			;
+			
+		functCondition =
+			(no_case[lit("var")] > '(' > variable > ')')												[phoenix::bind(&conditional_grammar::CheckVar, this, _val, _1)]
+			| 
+			(no_case[lit("file")] > '(' > file > ')')													[phoenix::bind(&conditional_grammar::CheckFile, this, _val, _1)]
+			| 
+			(no_case[lit("checksum")] > '(' > file > lit(',') > checksum > ')')							[phoenix::bind(&conditional_grammar::CheckSum, this, _val, _1, _2)]
+			| 
+			(no_case[lit("version")] > '(' > file > lit(',') > version > lit(',') > comparator > ')')	[phoenix::bind(&conditional_grammar::CheckVersion, this, _val, _1, _2, _3)]
+			| 
+			(no_case[lit("regex")] > '(' > regex > ')')													[phoenix::bind(&conditional_grammar::CheckRegex, this, _val, _1)]
+			| 
+			(no_case[lit("active")] > '(' > file > ')')													[phoenix::bind(&conditional_grammar::CheckActive, this, _val, _1)]
+			| 
+			(no_case[lit("lang")] > '(' > language > ')')												[phoenix::bind(&conditional_grammar::CheckLanguage, this, _val, _1)]
 			;
 
-		variable %= '$' > +(char_ - ')');  //A masterlist variable, prepended by a '$' character to differentiate between vars and mods.
+		shortCondition = 
+			('$' > variable)								[phoenix::bind(&conditional_grammar::CheckVar, this, _val, _1)]
+			| (comparator > version > '|' > file)			[phoenix::bind(&conditional_grammar::CheckVersion, this, _val, _3, _2, _1)]
+			| (checksum > '|' > file)						[phoenix::bind(&conditional_grammar::CheckSum, this, _val, _2, _1)]
+			| file											[phoenix::bind(&conditional_grammar::CheckFile, this, _val, _1)]
+			| (no_case['r'] > file)							[phoenix::bind(&conditional_grammar::CheckRegex, this, _val, _1)]
+			;
+
+		variable %= +(char_ - ')'); 
 
 		file %= lexeme['"' > +(char_ - '"') > '"'];  //An OBSE plugin or a mod plugin.
 
-		version %=   //A version, followed by the mod it applies to.
-			(char_('=') | char_('>') | char_('<'))
-			> lexeme[+(char_ - '|')]
-			> char_('|')
-			> file;
+		checksum %= hex;
 
-		regexFile %= no_case['r'] > file;
+		version %= 
+			file					//functCondition def.
+			| lexeme[+(char_ - '|')]  //shortCondition def.
+		;
+
+		comparator %= char_('=') | char_('>') | char_('<');
+
+		regex %= file;
+
+		language %= file;
 		
 
 		conditionals.name("conditional");
 		andOr.name("andOr");
 		conditional.name("conditional");
-		condition.name("condition");
+		functCondition.name("condition");
+		shortCondition.name("condition");
 		variable.name("variable");
 		file.name("file");
+		checksum.name("checksum");
 		version.name("version");
-		regexFile.name("regex file");
+		comparator.name("comparator");
+		regex.name("regex file");
+		file.name("language");
 			
 		on_error<fail>(conditionals,	phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(andOr,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(conditional,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(condition,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(functCondition,	phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(shortCondition,	phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(variable,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(file,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(checksum,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(version,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(regexFile,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(comparator,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(regex,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(language,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
 	//Evaluate a single conditional.
@@ -547,15 +628,12 @@ namespace boss {
 	}
 
 	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
-	void conditional_grammar::CheckVersion(bool& result, const string var) {
+	void conditional_grammar::CheckVersion(bool& result, const string file, const string version, const char comparator) {
 		result = false;
 		if (parentGame == NULL)
 			return;
 
-		char comp = var[0];
-		size_t pos = var.find("|") + 1;
-		Version givenVersion = var.substr(1,pos-2);
-		string file = var.substr(pos);
+		Version givenVersion = Version(version);
 
 		Item tempItem(file);
 		Version trueVersion;
@@ -569,8 +647,7 @@ namespace boss {
 				return;
 		}
 
-		//Note that this string comparison is unsafe (may give incorrect result).
-		switch (comp) {
+		switch (comparator) {
 		case '>':
 			if (trueVersion > givenVersion)
 				result = true;
@@ -649,8 +726,30 @@ namespace boss {
 		return;
 	}
 
+	//Checks if the given plugin is active.
+	void conditional_grammar::CheckActive(bool& result, const string plugin) {
+		if (activePlugins->find(to_lower_copy(plugin)) != activePlugins->end())
+			result = true;
+		else
+			result = false;
+	}
+
+	//Checks if the given language is the current language.
+	void conditional_grammar::CheckLanguage(bool& result, const string language) {
+		if (language == "english")
+			result = (gl_language == ENGLISH);
+		else if (language == "russian")
+			result = (gl_language == RUSSIAN);
+		else if (language == "german")
+			result = (gl_language == GERMAN);
+		else if (language == "spanish")
+			result = (gl_language == SPANISH);
+		else
+			result = false;
+	}
+
 	//Checks if the given mod has the given checksum.
-	void conditional_grammar::CheckSum(bool& result, const uint32_t sum, string file) {
+	void conditional_grammar::CheckSum(bool& result, string file, const uint32_t sum) {
 		result = false;
 		if (parentGame == NULL)
 			return;
