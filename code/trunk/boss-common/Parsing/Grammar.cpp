@@ -609,6 +609,10 @@ namespace boss {
 		fileCRCs = CRCStore;
 	}
 
+	void conditional_grammar::SetActivePlugins(boost::unordered_set<string> * plugins) {
+		activePlugins = plugins;
+	}
+
 	void conditional_grammar::SetParentGame(const Game * game) {
 		parentGame = game;
 	}
@@ -633,19 +637,12 @@ namespace boss {
 		if (parentGame == NULL)
 			return;
 
+		fs::path filePath = GetPath(file);
+		if (!fs::exists(filePath))
+			return;
+		
 		Version givenVersion = Version(version);
-
-		Item tempItem(file);
-		Version trueVersion;
-		if (tempItem.Exists(*parentGame))
-			trueVersion = tempItem.GetVersion(*parentGame);
-		else {
-			fs::path filePath = GetPath(file);
-			if (fs::exists(filePath))
-				trueVersion = Version(filePath);
-			else
-				return;
-		}
+		Version trueVersion = Version(filePath);
 
 		switch (comparator) {
 		case '>':

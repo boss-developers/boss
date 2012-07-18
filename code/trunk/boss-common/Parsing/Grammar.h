@@ -198,6 +198,7 @@ namespace boss {
 		void SetErrorBuffer(ParsingError * inErrorBuffer);
 		void SetVarStore(boost::unordered_set<string> * varStore);
 		void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore);
+		void SetActivePlugins(boost::unordered_set<string> * plugins);
 		void SetParentGame(const Game * game);
 	private:
 		qi::rule<grammarIter, string(), Skipper> ifIfNot, andOr, variable, file, version, regex, language;

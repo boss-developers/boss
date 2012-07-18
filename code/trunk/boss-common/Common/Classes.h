@@ -92,7 +92,7 @@ namespace boss {
 		void Data(const string inData);
 		void Conditions(const string inConditions);
 
-		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer, const Game& parentGame);
+		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, boost::unordered_set<string> activePlugins, ParsingError& errorBuffer, const Game& parentGame);
 	};
 
 	class BOSS_COMMON MasterlistVar : public conditionalData {
@@ -152,7 +152,7 @@ namespace boss {
 		void InsertMessage(size_t pos, Message item);
 		void ClearMessages();
 
-		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer, const Game& parentGame);
+		bool EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, boost::unordered_set<string> activePlugins, ParsingError& errorBuffer, const Game& parentGame);
 	};
 
 	class BOSS_COMMON ItemList {

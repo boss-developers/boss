@@ -99,7 +99,7 @@ namespace boss {
 		conditions = inConditions;
 	}
 
-	bool conditionalData::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer, const Game& parentGame) {
+	bool conditionalData::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, boost::unordered_set<string> activePlugins, ParsingError& errorBuffer, const Game& parentGame) {
 		if (!conditions.empty()) {
 			Skipper skipper;
 			conditional_grammar grammar;
@@ -111,6 +111,7 @@ namespace boss {
 			grammar.SetCRCStore(&fileCRCs);
 			grammar.SetErrorBuffer(&errorBuffer);
 			grammar.SetParentGame(&parentGame);
+			grammar.SetActivePlugins(&activePlugins);
 
 			begin = conditions.begin();
 			end = conditions.end();
@@ -310,18 +311,18 @@ namespace boss {
 		messages.clear();
 	}
 
-	bool	Item::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, ParsingError& errorBuffer, const Game& parentGame) {
+	bool	Item::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, boost::unordered_set<string> activePlugins, ParsingError& errorBuffer, const Game& parentGame) {
 		LOG_TRACE("Evaluating conditions for item \"%s\"", Data().c_str());
 
 		vector<Message>::iterator messageIter = messages.begin();
 		while (messageIter != messages.end()) {
-			if (messageIter->EvalConditions(setVars, fileCRCs, errorBuffer, parentGame))
+			if (messageIter->EvalConditions(setVars, fileCRCs, activePlugins, errorBuffer, parentGame))
 				++messageIter;
 			else
 				messageIter = messages.erase(messageIter);
 		}
 
-		return conditionalData::EvalConditions(setVars, fileCRCs, errorBuffer, parentGame);
+		return conditionalData::EvalConditions(setVars, fileCRCs, activePlugins, errorBuffer, parentGame);
 	}
 
 	//////////////////////////////
@@ -623,13 +624,21 @@ namespace boss {
 
 	void		ItemList::EvalConditions	(const Game& parentGame) {
 		boost::unordered_set<string> setVars;
+		boost::unordered_set<string> activePlugins;
+
+		ItemList active;
+		active.Load(parentGame, parentGame.ActivePluginsFile());
+		vector<Item> items = active.Items();
+		for (size_t i=0, max=items.size(); i < max; i++) {
+			activePlugins.insert(to_lower_copy(items[i].Name()));
+		}
 
 		//First eval variables.
 		//Need to convert these from a vector to an unordered set.
 		LOG_INFO("Starting to evaluate variable conditionals.");
 		vector<MasterlistVar>::iterator varIter = masterlistVariables.begin();
 		while (varIter != masterlistVariables.end()) {
-			if (varIter->EvalConditions(setVars, fileCRCs, errorBuffer, parentGame)) {
+			if (varIter->EvalConditions(setVars, fileCRCs, activePlugins, errorBuffer, parentGame)) {
 				setVars.insert(varIter->Data());
 				++varIter;
 			} else
@@ -640,17 +649,23 @@ namespace boss {
 		LOG_INFO("Starting to evaluate item conditionals.");
 		vector<Item>::iterator itemIter = items.begin();
 		while (itemIter != items.end()) {
-			if (itemIter->EvalConditions(setVars, fileCRCs, errorBuffer, parentGame))
+			if (itemIter->EvalConditions(setVars, fileCRCs, activePlugins, errorBuffer, parentGame))
 				++itemIter;
-			else
+			else if (itemIter->Type() == MOD)
 				itemIter = items.erase(itemIter);
+			else if (itemIter->Type() == BEGINGROUP) {
+				//Need to remove all the plugins in the group. 
+				size_t endPos = FindLastItem(itemIter->Name(), ENDGROUP);
+				itemIter = items.erase(itemIter, items.begin() + endPos + 1);
+			} else
+				++itemIter;  //ENDGROUP items should not be conditional, so treat them like they're not.
 		}
 
 		//Now eval global messages.
 		LOG_INFO("Starting to evaluate global message conditionals.");
 		vector<Message>::iterator messageIter = globalMessageBuffer.begin();
 		while (messageIter != globalMessageBuffer.end()) {
-			if (messageIter->EvalConditions(setVars, fileCRCs, errorBuffer, parentGame))
+			if (messageIter->EvalConditions(setVars, fileCRCs, activePlugins, errorBuffer, parentGame))
 				++messageIter;
 			else
 				messageIter = globalMessageBuffer.erase(messageIter);
