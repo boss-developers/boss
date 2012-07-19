@@ -52,7 +52,7 @@
 <ol>
 	<li><a href="#intro">Introduction</a>
 	<li><a href="#structure">Structure</a>
-	<li><a href="#formats">Formats</a>
+	<li><a href="#formats">Format Differences</a>
 	<li><a href="#rules">Rules &amp; Guidelines</a>
 	<li><a href="#syntax">Syntax</a>
 	<ol>
@@ -96,40 +96,23 @@
 <var>[group line (end)]</var>
 </code>
 
-<h2 id="formats">Formats</h2>
-<p>The table below gives a quick overview of the differences between the masterlist formats. Only the latest current release and the next version are detailed.
+<h2 id="formats">Format Differences</h2>
+<p>The table below gives a quick overview of the differences between the masterlist formats. Only the latest current release and the next version are shown, and features which both versions share are omitted.
 <table>
-	<thead><tr><th>Item<th>MF2.2<th>MF2.3
+	<thead>
+  <tr><th rowspan="2">Feature<th colspan="2">Masterlist Format Version
+  <tr><th>2.2<th>2.3
 	<tbody>
-		<tr><td>Type Identifiers						                        <td>Keywords<td>Keywords
-		<tr><td>Type Identifier Case					                     <td>Insensitive<td>Insensitive
-		<tr><td>Basic Plugin Ordering					                    <td class="t"><td class="t">
-		<tr><td>Plugin Grouping							                        <td class="t"><td class="t">
-		<tr><td>C++-Style Comments						                      <td class="t"><td class="t">
-		<tr><td>General Messages						                        <td class="t"><td class="t">
-		<tr><td>Bash Tag Suggestions					                     <td class="t"><td class="t">
-		<tr><td>Requirement Messages					                     <td class="t"><td class="t">
-		<tr><td>Incompatibility Messages				                  <td class="t"><td class="t">
-		<tr><td>Dirty Plugin Messages					                    <td class="t"><td class="t">
-		<tr><td>Warning Messages						                        <td class="t"><td class="t">
-		<tr><td>Error Messages							                         <td class="t"><td class="t">
-		<tr><td>Global Messages							                        <td class="t"><td class="t">
-		<tr><td>Whitespace Skipped <a href="#1">&#x00B9;</a>  <td class="t"><td class="t">
-		<tr><td>Masterlist Variables					                     <td class="t"><td class="t">
-		<tr><td>General Conditionals					                     <td class="t"><td class="t">
-		<tr><td>Regular Expression Plugins						              <td class="t"><td class="t">
 		<tr><td>Conditional Incompatibilities Shorthand	      <td class="t"><td class="c">
 		<tr><td>Conditional Requirements Shorthand		          <td class="t"><td class="c">
 		<tr><td>Conditional Message Shorthand				             <td class="t"><td class="c">
-		<tr><td>C-Style Comments						                        <td class="t"><td class="t">
-  <tr><td>Regular Expression Conditions				             <td class="t"><td class="t">
   <tr><td>Function-Style Conditions                     <td class="c"><td class="t">
   <tr><td>Labelled Web Links                            <td class="c"><td class="t">
   <tr><td>Else Conditionals                             <td class="c"><td class="t">
   <tr><td>Conditional Groups                            <td class="c"><td class="t">
   <tr><td>Active Status Conditions                      <td class="c"><td class="t">
 </table>
-<small id="1">&#x00B9; In all formats, whitespace is always preserved inside plugin and group names and messages.</small>
+<p>As the conditional shorthands are to be removed in the next version of the masterlist format, they are not detailed in this readme.
 
 <h2 id="rules">Rules &amp; Guidelines</h2>
 <p>The following are some rules and guidelines that should be followed when editing the masterlist.

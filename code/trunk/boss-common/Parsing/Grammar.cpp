@@ -82,23 +82,11 @@ namespace boss {
 		;
 	}
 
-	oldMasterlistMsgKey_::oldMasterlistMsgKey_() {
-		add //Old message symbols.
-			("?",SAY)
-			("%",TAG)
-			(":",REQ)
-			("\"",INC) //Incompatibility
-			("*",ERR) //FCOM install error.
-		;
-	}
-
 	typeKey_::typeKey_() {
 		add //Group keywords.
-			("begingroup:",BEGINGROUP)  //Needs the colon there unfortunately.
-			("endgroup:",ENDGROUP)  //Needs the colon there unfortunately.
-			("endgroup",ENDGROUP)
-			("\\begingroup\\:",BEGINGROUP)
-			("\\endgroup\\\\",ENDGROUP)
+			("begingroup:", BEGINGROUP)  //Needs the colon there unfortunately.
+			("endgroup:", ENDGROUP)  //Needs the colon there unfortunately.
+			("endgroup", ENDGROUP)
 			("mod:", MOD)  //Needs the colon there unfortunately.
 			("regex:", REGEX)
 		;
@@ -174,7 +162,6 @@ namespace boss {
 		: modlist_grammar::base_type(modList, "modlist grammar"), 
 		  errorBuffer(NULL) {
 		masterlistMsgKey_ masterlistMsgKey;
-		oldMasterlistMsgKey_ oldMasterlistMsgKey;
 		typeKey_ typeKey;
 		const vector<Message> noMessages;  //An empty set of messages.
 
@@ -191,7 +178,7 @@ namespace boss {
 			conditionals
 			>> no_case[lit("set")]
 			>>	(
-					lit(':')
+					':'
 					> charString
 				);
 
@@ -200,15 +187,12 @@ namespace boss {
 			>> no_case[lit("global")]
 			>>	(
 					messageKeyword
-					>> lit(':')
+					>> ':'
 					>> charString
 				);
 
 		listItem %= 
-			(
-				oldConditional 
-				| conditionals
-			)
+			conditionals
 			> ItemType
 			> itemName
 			> itemMessages;
@@ -224,39 +208,19 @@ namespace boss {
 		itemMessages %= 
 			(
 				+eol
-				>> (itemMessage | oldCondItemMessage) % +eol
+				>> itemMessage % +eol
 			) | eps		[_1 = noMessages];
 
 		itemMessage %= 
-			(
-				oldConditional 
-				| conditionals
-			) 
-			>> ((messageSymbol | (messageKeyword >> ':'))
-			>> charString)	//The double >> matters. A single > doesn't work.
-			;
-
-		oldCondItemMessage %=
-			(
-				unicode::string("$")		[phoenix::bind(&modlist_grammar::ConvertOldConditional, this, _1, '$')]
-				| unicode::string("^")		[phoenix::bind(&modlist_grammar::ConvertOldConditional, this, _1, '^')]
-			)
-			>> (qi::attr(SAY)
-			>> -lit(':')	//The double >> matters. A single > doesn't work.
-			>> charString)	//The double >> matters. A single > doesn't work.
+			conditionals 
+			>> messageKeyword 
+			>> ':'
+			>> charString	//The double >> matters. A single > doesn't work.
 			;
 
 		charString %= lexeme[+(char_ - eol)]; //String, with no skipper.
 
 		messageKeyword %= no_case[masterlistMsgKey];
-
-		messageSymbol %= no_case[oldMasterlistMsgKey];
-
-		oldConditional = 
-			(
-				char_('>') 
-				| char_('<')
-			)			[phoenix::bind(&modlist_grammar::ConvertOldConditional, this, _val, _1)];
 
 		conditionals = 
 			(
@@ -336,8 +300,6 @@ namespace boss {
 		itemMessage.name("itemMessage");
 		charString.name("charString");
 		messageKeyword.name("messageKeyword");
-		messageSymbol.name("messageSymbol");
-		oldConditional.name("oldConditional");
 		conditionals.name("conditional");
 		andOr.name("andOr");
 		conditional.name("conditional");
@@ -360,8 +322,6 @@ namespace boss {
 		on_error<fail>(itemMessage,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(charString,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(messageKeyword,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(messageSymbol,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-		on_error<fail>(oldConditional,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(conditionals,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(andOr,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(conditional,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));

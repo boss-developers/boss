@@ -116,10 +116,6 @@ namespace boss {
 		masterlistMsgKey_();
 	};
 
-	struct oldMasterlistMsgKey_ : qi::symbols<char, uint32_t> {
-		oldMasterlistMsgKey_();
-	};
-
 	struct typeKey_ : qi::symbols<char, uint32_t> {
 		typeKey_();
 	};
@@ -157,10 +153,10 @@ namespace boss {
 		qi::rule<grammarIter, uint32_t(), Skipper> ItemType;
 		qi::rule<grammarIter, string(), Skipper> itemName;
 		qi::rule<grammarIter, vector<Message>(), Skipper> itemMessages;
-		qi::rule<grammarIter, Message(), Skipper> itemMessage, globalMessage, oldCondItemMessage;
+		qi::rule<grammarIter, Message(), Skipper> itemMessage, globalMessage;
 		qi::rule<grammarIter, MasterlistVar(), Skipper> listVar;
-		qi::rule<grammarIter, string(), Skipper> charString, andOr, conditional, conditionals, oldConditional, functCondition, shortCondition, variable, file, checksum, version, comparator, regex, language;
-		qi::rule<grammarIter, uint32_t(), Skipper> messageKeyword, messageSymbol;
+		qi::rule<grammarIter, string(), Skipper> charString, andOr, conditional, conditionals, functCondition, shortCondition, variable, file, checksum, version, comparator, regex, language;
+		qi::rule<grammarIter, uint32_t(), Skipper> messageKeyword;
 		ParsingError * errorBuffer;
 		vector<Message> * globalMessageBuffer;
 		vector<MasterlistVar> * setVars;					//Vars set by masterlist.
