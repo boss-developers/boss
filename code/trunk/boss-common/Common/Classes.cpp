@@ -625,12 +625,14 @@ namespace boss {
 	void		ItemList::EvalConditions	(const Game& parentGame) {
 		boost::unordered_set<string> setVars;
 		boost::unordered_set<string> activePlugins;
-
-		ItemList active;
-		active.Load(parentGame, parentGame.ActivePluginsFile());
-		vector<Item> items = active.Items();
-		for (size_t i=0, max=items.size(); i < max; i++) {
-			activePlugins.insert(to_lower_copy(items[i].Name()));
+		
+		if (fs::exists(parentGame.ActivePluginsFile())) {
+			ItemList active;
+			active.Load(parentGame, parentGame.ActivePluginsFile());
+			vector<Item> items = active.Items();
+			for (size_t i=0, max=items.size(); i < max; i++) {
+				activePlugins.insert(to_lower_copy(items[i].Name()));
+			}
 		}
 
 		//First eval variables.
