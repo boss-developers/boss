@@ -76,6 +76,7 @@
 <li>Removed: <code>bNoVersionParse</code> BOSS.ini setting, and corresponding <code>-n [ --no-version-parse ]</code> CLI parameter and <q>Display Plugin Versions</q> GUI setting.
 	<li>Removed: BOSS Updater download CRC check.
  <li>Removed: Support for conditional shorthand messages in the masterlist. They were a pain to work with, so never really got adopted, and were the cause of a couple of accidental broken updates to the masterlist.
+ <li>Removed: Support for Masterlist Format 1, and Masterlist Format 2.2's conditional message shorthand. The former is obsolete, and the latter was causing some issues with committers accidentally making their messages conditional. All masterlists have been updated so that there should be no noticeable changes.
 	<li>Fixed: BOSS counting false-flagged <code>.esm</code> files as masters when applying the master partition.
 	<li>Fixed: Some plain text BOSS Log formatting issues.
  <li>Fixed: Some parsing errors not causing error messages to be displayed.
@@ -86,6 +87,7 @@
 	<li>Changed: Implemented more accurate comparison of versions in the masterlist, using Dirk Jagdmann's implementation of Dave Koelle's Alphanum Algorithm.
 	<li>Changed: Re-organised and partially rewrote readmes. The User Rules Readme has been included in the main readme, which has had its contents shuffled around to better organise information. More images have also been added, and the section on the GUI rewritten to be more accessible.
  <li>Changed: Updated libcurl from 7.25.0 to 7.26.0, wxWidgets from 2.9.3 to 2.9.4, and Boost from 1.49.0 to 1.50.0.
+ <li>Changed: BOSS now displays the date of the last masterlist update to occur according to ISO 8601 (YYYY-MM-DD).
 	<li>Major HTML BOSS Log rewrite and redesign:
 	<ul>
 		<li>Removed: Settings for BOSS Log filters and CSS from BOSS.ini and the GUI.
@@ -161,7 +163,7 @@
   <li><code>sLanguage</code> option to BOSS.ini, and Language setting to the GUI's Settings window, to control BOSS's operating language.
   <li>English, Russian, Spanish and German are currently supported with varying levels of completion. Russian translation by Tokc.D.K..
  </ul>
- <li>Added: Support for MF2.3 Web Links in the masterlists.
+ <li>Added: Support for MF2.3 Labelled Web Links, Function-Style Conditions, Conditional Groups and Active Status Conditions in the masterlists.
 </ul>
 <h2>2.0.1 - <i>6 April 2012</i></h2>
 <ul>
