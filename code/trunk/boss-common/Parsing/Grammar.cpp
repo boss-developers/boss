@@ -227,6 +227,7 @@ namespace boss {
 				conditional								[_val = _1] 
 				> *((andOr > conditional)				[_val += _1 + _2])
 			)
+			| no_case[unicode::string("else")]
 			| eps [_val = ""];
 
 		andOr %= 
@@ -394,48 +395,6 @@ namespace boss {
 		globalMessageBuffer->push_back(message);
 	}
 
-	//MF1 compatibility function. Evaluates the MF1 FCOM conditional. Like it says on the tin.
-	void modlist_grammar::ConvertOldConditional(string& result, const char var) {
-		switch(var) {
-		case '>':
-			if (parentGame->Id() == OBLIVION)
-				result = "IF ($FCOM)";
-			else if (parentGame->Id() == FALLOUT3)
-				result = "IF ($FOOK2)";
-			else if (parentGame->Id() == FALLOUTNV)
-				result = "IF ($NVAMP)";
-			else
-				result = "";
-			break;
-		case '<':
-			if (parentGame->Id() == OBLIVION)
-				result = "IFNOT ($FCOM)";
-			else if (parentGame->Id() == FALLOUT3)
-				result = "IFNOT ($FOOK2)";
-			else if (parentGame->Id() == FALLOUTNV)
-				result = "IFNOT ($NVAMP)";
-			else
-				result = "";
-			break;
-		case '$':
-			if (parentGame->Id() == OBLIVION)
-				result = "IF ($OOO)";
-			else if (parentGame->Id() == FALLOUT3)
-				result = "IF ($FWE)";
-			else if (parentGame->Id() == FALLOUTNV)
-				result = "IF ($FOOK)";
-			else
-				result = "";
-			break;
-		case '^':
-			if (parentGame->Id() == OBLIVION)
-				result = "IF ($BC)";
-			else
-				result = "";
-			break;
-		}
-	}
-
 	//Turns a given string into a path. Can't be done directly because of the openGroups checks.
 	void modlist_grammar::ToName(string& p, string itemName) {
 		boost::algorithm::trim(itemName);
@@ -456,6 +415,7 @@ namespace boss {
 		conditionals = 
 			(conditional[_val = _1] 
 			> *((andOr > conditional)			[phoenix::bind(&conditional_grammar::EvaluateCompoundConditional, this, _val, _1, _2)]))
+			| no_case[unicode::string("else")]	[phoenix::bind(&conditional_grammar::EvalElseConditional, this, _val)]
 			| eps[_val = true];
 
 		andOr %= unicode::string("&&") | unicode::string("||");
@@ -557,6 +517,10 @@ namespace boss {
 			lhsCondition = false;
 	}
 	
+	void conditional_grammar::EvalElseConditional(bool& result) {
+		result = !(*lastResult);
+	}
+
 	void conditional_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
 		errorBuffer = inErrorBuffer;
 	}
@@ -575,6 +539,10 @@ namespace boss {
 
 	void conditional_grammar::SetParentGame(const Game * game) {
 		parentGame = game;
+	}
+
+	void conditional_grammar::SetLastConditionalResult(bool * result) {
+		lastResult = result;
 	}
 
 	//Returns the true path based on what type of file or keyword it is.

@@ -176,9 +176,6 @@ namespace boss {
 		//Stores the global message.
 		void StoreGlobalMessage(const Message message);
 
-		//MF1 compatibility function. Evaluates the MF1 FCOM conditional. Like it says on the tin.
-		void ConvertOldConditional(string& result, const char var);
-
 		//Turns a given string into a path. Can't be done directly because of the openGroups checks.
 		void ToName(string& p, string itemName);
 	};
@@ -195,6 +192,7 @@ namespace boss {
 		void SetVarStore(boost::unordered_set<string> * varStore);
 		void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore);
 		void SetActivePlugins(boost::unordered_set<string> * plugins);
+		void SetLastConditionalResult(bool * result);
 		void SetParentGame(const Game * game);
 	private:
 		qi::rule<grammarIter, string(), Skipper> ifIfNot, andOr, variable, file, version, regex, language;
@@ -206,12 +204,15 @@ namespace boss {
 		boost::unordered_set<string> * activePlugins;		//Active plugins, with lowercase filenames.
 		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
 		const Game * parentGame;
+		bool * lastResult;
 
 		//Evaluate a single conditional.
 		void EvaluateConditional(bool& result, const string type, const bool condition);
 
 		//Evaluate the second half of a complex conditional.
 		void EvaluateCompoundConditional(bool& lhsCondition, const string andOr, const bool rhsCondition);
+
+		void EvalElseConditional(bool& result);
 
 		//Returns the true path based on what type of file or keyword it is.
 		fs::path GetPath(const string file);
