@@ -31,4 +31,12 @@ namespace boss {
 	wxString translate(char * cstr) {
 		return wxString(boost::locale::translate(cstr).str().c_str(), wxConvUTF8);
 	}
+
+	wxString FromUTF8(string str) {
+		return wxString(str.c_str(), wxConvUTF8);
+	}
+
+	wxString FromUTF8(boost::format f) {
+		return FromUTF8(f.str());
+	}
 }

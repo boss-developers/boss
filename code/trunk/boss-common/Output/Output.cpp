@@ -553,10 +553,15 @@ namespace boss {
 		size_t linesSize = lines.size();
 		string varOpen = Outputter(outFormat, VAR_OPEN).AsString();
 		string varClose = Outputter(outFormat, VAR_CLOSE).AsString();
+
+		//Need to temporarily turn off escaping of special characters so that <var> and </var> are printed correctly.
+		bool wasEscaped = escapeHTMLSpecialChars;
+		escapeHTMLSpecialChars = false;
+
 		for (size_t j=0;j<linesSize;j++) {
 
-			string rObject = varOpen + r.Object() + varClose;
-			string lObject = varOpen + lines[j].Object() + varClose;
+			string rObject = varOpen + EscapeHTMLSpecial(r.Object()) + varClose;
+			string lObject = varOpen + EscapeHTMLSpecial(lines[j].Object()) + varClose;
 
 			if (lines[j].Key() == BEFORE)
 				*this << (boost::format(translate("Sort %1% before %2%")) % rObject % lObject).str();
@@ -588,6 +593,9 @@ namespace boss {
 		}
 		if (hasEditedMessages)
 			*this << LIST_CLOSE;
+
+		escapeHTMLSpecialChars = wasEscaped;
+
 		return *this;
 	}
 

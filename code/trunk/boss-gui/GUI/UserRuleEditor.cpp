@@ -72,6 +72,7 @@ using namespace std;
 
 using boost::algorithm::trim_copy;
 using boss::translate;
+using boost::format;
 
 UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent, Game& inGame) : wxFrame(parent, wxID_ANY, title), game(inGame) {
 
@@ -85,7 +86,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 		progDia->Destroy();
 		this->Close();
 		wxMessageBox(
-			(boost::format(translate("Error: %1%")) % e.getString()).str(),
+			FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
 			translate("BOSS: Error"),
 			wxOK | wxICON_ERROR,
 			NULL);
@@ -127,7 +128,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 		progDia->Destroy();
 		this->Close();
 		wxMessageBox(
-			(boost::format(translate("Error: %1%")) % wxString(e.getString().c_str(), wxConvUTF8)).str(),
+			FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
 			translate("BOSS: Error"),
 			wxOK | wxICON_ERROR,
 			NULL);
@@ -392,7 +393,7 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 		RulesList->AppendRule(newRule);
 	} catch (boss_error &e) {
 		wxMessageBox(
-			(boost::format(translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) %  wxString(e.getString().c_str(), wxConvUTF8)).str(),
+			FromUTF8(format(loc::translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) % e.getString()),
 			translate("BOSS: Error"),
 			wxOK | wxICON_ERROR,
 			NULL);
@@ -413,7 +414,7 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 			RulesList->SaveEditedRule(newRule);
 		} catch (boss_error &e) {
 			wxMessageBox(
-				(boost::format(translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) %  wxString(e.getString().c_str(), wxConvUTF8)).str(),
+				FromUTF8(format(loc::translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) % e.getString()),
 				translate("BOSS: Error"),
 				wxOK | wxICON_ERROR,
 				NULL);
@@ -613,7 +614,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 					newLine.Key(APPEND);
 				
 				if (!newLine.IsObjectMessage())  //Message is formatted incorrectly. Error.
-					throw boss_error((boost::format(translate("The message \"%1%\" is formatted incorrectly.")) % wxString(newLine.Object().c_str(), wxConvUTF8)).str(), BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error((format("The message \"%1%\" is formatted incorrectly.") % newLine.Object()).str(), BOSS_ERROR_INVALID_SYNTAX);
 				
 				vector<RuleLine> lines = newRule.Lines();
 				lines.push_back(newLine);
@@ -792,7 +793,7 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inG
 			if (pos != game.masterlist.Items().size()) {  //Mod in masterlist.
 				rules[i].Enabled(false);
 				wxMessageBox(
-					(boost::format(translate("The rule sorting the unrecognised plugin \"%1%\" has been disabled as the plugin is now recognised. If you wish to override its position in the masterlist, re-enable the rule.")) % wxString(rules[i].Object().c_str(), wxConvUTF8)).str(),
+					FromUTF8(format(loc::translate("The rule sorting the unrecognised plugin \"%1%\" has been disabled as the plugin is now recognised. If you wish to override its position in the masterlist, re-enable the rule.")) % rules[i].Object()),
 					translate("BOSS: Rule Disabled"),
 					wxOK | wxICON_ERROR,
 					NULL);
@@ -823,7 +824,7 @@ void RuleListFrameClass::SaveUserlist(const fs::path path) {
 		game.userlist.Save(path);
 	} catch (boss_error &e) {
 		wxMessageBox(
-		(boost::format(translate("Error: %1%")) % wxString(e.getString().c_str(), wxConvUTF8)).str(),
+		FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
 		translate("BOSS: Error"),
 		wxOK | wxICON_ERROR,
 		NULL);

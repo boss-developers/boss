@@ -104,5 +104,9 @@ enum {
 //but Boost's requires a UTF-8 -> (whatever display encoding) conversion to work with the UI.
 namespace boss {
 	wxString translate(char * cstr);
+
+	wxString FromUTF8(string str);
+
+	wxString FromUTF8(boost::format f);
 }
 #endif

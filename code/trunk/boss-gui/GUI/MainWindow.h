@@ -39,6 +39,7 @@
 class BossGUI : public wxApp {
 public:
 	bool OnInit();
+	wxLocale * wxLoc;
 };
 
 wxDECLARE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
