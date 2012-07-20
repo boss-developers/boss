@@ -398,7 +398,7 @@ namespace boss {
 	//Turns a given string into a path. Can't be done directly because of the openGroups checks.
 	void modlist_grammar::ToName(string& p, string itemName) {
 		boost::algorithm::trim(itemName);
-		if (itemName.length() == 0 && !openGroups.empty()) 
+		if (itemName.empty() && !openGroups.empty()) 
 			p = openGroups.back();
 		else
 			p = itemName;
@@ -665,13 +665,13 @@ namespace boss {
 
 	//Checks if the given language is the current language.
 	void conditional_grammar::CheckLanguage(bool& result, const string language) {
-		if (language == "english")
+		if (boost::iequals(language, "english"))
 			result = (gl_language == ENGLISH);
-		else if (language == "russian")
+		else if (boost::iequals(language, "russian"))
 			result = (gl_language == RUSSIAN);
-		else if (language == "german")
+		else if (boost::iequals(language, "german"))
 			result = (gl_language == GERMAN);
-		else if (language == "spanish")
+		else if (boost::iequals(language, "spanish"))
 			result = (gl_language == SPANISH);
 		else
 			result = false;

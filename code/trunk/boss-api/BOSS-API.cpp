@@ -262,7 +262,7 @@ uint8_t * StringToUint8_tString(string str) {
 	size_t length = str.length() + 1;
 	uint8_t * p = new uint8_t[length];
 
-	for (size_t j=0; j < str.length(); j++) {
+	for (size_t j=0; j < str.length(); j++) {  //UTF-8, so this is code-point by code-point rather than char by char, but same result here.
 		p[j] = str[j];
 	}
 	p[length - 1] = '\0';
@@ -331,7 +331,7 @@ BOSS_API uint32_t GetLastErrorDetails(uint8_t ** details) {
 
 	try {
 		extErrorPointer = StringToUint8_tString(lastErrorDetails);
-	} catch (bad_alloc &e) {
+	} catch (bad_alloc /*&e*/) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 	}
 	*details = extErrorPointer;
@@ -367,7 +367,7 @@ BOSS_API uint32_t GetVersionString (uint8_t ** bossVersionStr) {
 
 	try {
 		extVersionPointer = StringToUint8_tString(boss_version);
-	} catch (bad_alloc &e) {
+	} catch (bad_alloc /*&e*/) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 	}
 	*bossVersionStr = extVersionPointer;
@@ -436,7 +436,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 	boss_db retVal;
 	try {
 		retVal = new _boss_db_int;
-	} catch (bad_alloc &e) {
+	} catch (bad_alloc /*&e*/) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 	}
 	retVal->game = game;
@@ -893,7 +893,7 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 		db->extStringArray2 = new uint8_t*[db->extStringArray2Size];
 		for (size_t i=0; i < db->extStringArray2Size; i++)
 			db->extStringArray2[i] = StringToUint8_tString(unrecognised[i].Name());
-	} catch (bad_alloc &e) {
+	} catch (bad_alloc /*&e*/) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 	}
 	
@@ -960,7 +960,7 @@ BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t *** plugins, size_t * numPlug
 		db->extStringArray = new uint8_t*[db->extStringArraySize];
 		for (size_t i=0; i < db->extStringArraySize; i++)
 			db->extStringArray[i] = StringToUint8_tString(items[i].Name());
-	} catch (bad_alloc &e) {
+	} catch (bad_alloc /*&e*/) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 	}
 	
@@ -1120,7 +1120,7 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 		db->extStringArray = new uint8_t*[db->extStringArraySize];
 		for (size_t i=0; i < db->extStringArraySize; i++)
 			db->extStringArray[i] = StringToUint8_tString(items[i].Name());
-	} catch (bad_alloc &e) {
+	} catch (bad_alloc /*&e*/) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 	}
 	
@@ -1151,7 +1151,7 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 		db->activePlugins.Insert(i, plugin);
 		try {
 			plugin.UnGhost(db->game);
-		} catch (boss_error &e) {
+		} catch (boss_error /*&e*/) {
 			return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, plugin.Name());
 		}
 	}
@@ -1304,7 +1304,7 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 				try {
 					if (!items[i].IsGameMasterFile(db->game))
 						items[i].SetModTime(db->game, masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-				} catch(boss_error &e) {
+				} catch(boss_error /*&e*/) {
 					return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
 				}
 			}
@@ -1328,7 +1328,7 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 					try {
 						if (!items[i].IsGameMasterFile(db->game))
 							items[i].SetModTime(db->game, startTime + (i-start)*deltaTime);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-					} catch(boss_error &e) {
+					} catch(boss_error /*&e*/) {
 						return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
 					}
 				}
@@ -1370,7 +1370,7 @@ BOSS_API uint32_t GetIndexedPlugin(boss_db db, const size_t index, uint8_t ** pl
 	//Allocate memory.
 	try {
 		db->extString = StringToUint8_tString(db->loadOrder.ItemAt(index).Name());
-	} catch (bad_alloc &e) {
+	} catch (bad_alloc /*&e*/) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 	}
 	
@@ -1406,7 +1406,7 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 	//Unghost if ghosted.
 	try {
 		Item(pluginStr).UnGhost(db->game);
-	} catch (boss_error &e) {
+	} catch (boss_error /*&e*/) {
 		return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, pluginStr);
 	}
 
@@ -1575,7 +1575,7 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 		if (db->bashTagMap.empty()) {
 			try {
 				db->extTagMap = new BashTag[0];
-			} catch (bad_alloc &e) {
+			} catch (bad_alloc /*&e*/) {
 				return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 			}
 			return ReturnCode(BOSS_API_OK);
@@ -1592,7 +1592,7 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 				db->extTagMap[i].id = ii;
 				db->extTagMap[i].name = StringToUint8_tString(db->bashTagMap[ii]);
 			}
-		} catch (bad_alloc &e) {
+		} catch (bad_alloc /*&e*/) {
 			return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 		}
 
@@ -1700,7 +1700,7 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * plugin,
 			for (size_t i=0; i < numRemoved; i++)
 				db->extRemovedTagIds[i] = tagsRemovedUIDs[i];
 		}
-	} catch (bad_alloc &e) {
+	} catch (bad_alloc /*&e*/) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 	}
 
@@ -1745,7 +1745,7 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * plugin,
 			if (messageIter->Key() == DIRTY) {
 				try {
 					db->extString = StringToUint8_tString(messageIter->Data());
-				} catch (bad_alloc &e) {
+				} catch (bad_alloc /*&e*/) {
 					return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 				}
 				 *message = db->extString;
@@ -1806,7 +1806,7 @@ BOSS_API uint32_t GetPluginMessages (boss_db db, const uint8_t * plugin, BossMes
 			db->extMessageArray[i].type = modMessages[i].Key();
 			db->extMessageArray[i].message = StringToUint8_tString(modMessages[i].Data());
 		}
-	} catch (bad_alloc &e) {
+	} catch (bad_alloc /*&e*/) {
 		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
 	}
 

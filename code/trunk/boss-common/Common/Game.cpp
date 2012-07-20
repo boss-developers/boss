@@ -685,7 +685,7 @@ namespace boss {
 						string ver = Version(itr->path()).AsString();
 
 						bosslog.sePlugins << LIST_ITEM << SPAN_CLASS_MOD_OPEN << filename.string() << SPAN_CLOSE;
-						if (ver.length() != 0)
+						if (!ver.empty())
 							bosslog.sePlugins << SPAN_CLASS_VERSION_OPEN << loc::translate("Version: ") << ver << SPAN_CLOSE;
 						if (gl_show_CRCs)
 							bosslog.sePlugins << SPAN_CLASS_CRC_OPEN << loc::translate("Checksum: ") << CRC << SPAN_CLOSE;
@@ -737,13 +737,13 @@ namespace boss {
 			modlist.ApplyMasterPartition(*this);
 			if (pos <= modlist.LastRecognisedPos())   //Masters exist after the initial set of masters in the recognised load order. Not allowed by game.
 				throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER, modlist.ItemAt(pos).Name());
-		} catch (boss_error &e) {
+		} catch (boss_error /*&e*/) {
 			try {
 				bosslog.globalMessages.push_back(Message(SAY, loc::translate("The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see \"file:../Docs/BOSS%20Readme.html#appendix-c False-Flagged Plugins\".")));
 				LOG_WARN("The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see the readme section on False-Flagged Plugins.");
-			} catch (boss_error &e) {
-				bosslog.globalMessages.push_back(Message(ERR, loc::translate("Could not enforce load order master/plugin partition. Details: ").str() + e.getString()));
-				LOG_ERROR("Error: %s", e.getString().c_str());
+			} catch (boss_error &ee) {
+				bosslog.globalMessages.push_back(Message(ERR, loc::translate("Could not enforce load order master/plugin partition. Details: ").str() + ee.getString()));
+				LOG_ERROR("Error: %s", ee.getString().c_str());
 			}
 		}
 
