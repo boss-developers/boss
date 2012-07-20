@@ -227,7 +227,7 @@ namespace boss {
 				conditional								[_val = _1] 
 				> *((andOr > conditional)				[_val += _1 + _2])
 			)
-			| no_case[unicode::string("else")]
+			| no_case[unicode::string("else")][_val = _1]
 			| eps [_val = ""];
 
 		andOr %= 
@@ -415,7 +415,7 @@ namespace boss {
 		conditionals = 
 			(conditional[_val = _1] 
 			> *((andOr > conditional)			[phoenix::bind(&conditional_grammar::EvaluateCompoundConditional, this, _val, _1, _2)]))
-			| no_case[unicode::string("else")]	[phoenix::bind(&conditional_grammar::EvalElseConditional, this, _val)]
+			| no_case[unicode::string("else")]	[phoenix::bind(&conditional_grammar::EvalElseConditional, this, _val, _pass)]
 			| eps[_val = true];
 
 		andOr %= unicode::string("&&") | unicode::string("||");
@@ -517,8 +517,12 @@ namespace boss {
 			lhsCondition = false;
 	}
 	
-	void conditional_grammar::EvalElseConditional(bool& result) {
-		result = !(*lastResult);
+	void conditional_grammar::EvalElseConditional(bool& result, bool& ok) {
+		if (lastResult == NULL) {
+			ok = false;
+			result = false;
+		} else
+			result = !(*lastResult);
 	}
 
 	void conditional_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {

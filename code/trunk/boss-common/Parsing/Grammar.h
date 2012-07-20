@@ -212,7 +212,7 @@ namespace boss {
 		//Evaluate the second half of a complex conditional.
 		void EvaluateCompoundConditional(bool& lhsCondition, const string andOr, const bool rhsCondition);
 
-		void EvalElseConditional(bool& result);
+		void EvalElseConditional(bool& result, bool& ok);
 
 		//Returns the true path based on what type of file or keyword it is.
 		fs::path GetPath(const string file);

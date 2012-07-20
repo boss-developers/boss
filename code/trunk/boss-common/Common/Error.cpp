@@ -131,7 +131,7 @@ namespace boss {
 		else if (errCode == BOSS_ERROR_FILE_NOT_FOUND)
 			return (format(translate("\"%1%\" cannot be found!")) % errSubject).str();
 		else if (errCode == BOSS_ERROR_CONDITION_EVAL_FAIL)
-			return (format(translate("Evaluation of conditional \"%1%\" failed!")) % errSubject).str();
+			return (format(translate("Evaluation of conditional \"%1%\" for item \"%2%\" failed!")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_REGEX_EVAL_FAIL)
 			return (format(translate("\"%1%\" is not a valid regular expression. Item skipped.")) % errSubject).str();
 		else if (errCode == BOSS_ERROR_NO_GAME_DETECTED)

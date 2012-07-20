@@ -99,7 +99,7 @@ namespace boss {
 		conditions = inConditions;
 	}
 
-	bool conditionalData::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, boost::unordered_set<string> activePlugins, bool& condResult, ParsingError& errorBuffer, const Game& parentGame) {
+	bool conditionalData::EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string,uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool * condResult, ParsingError& errorBuffer, const Game& parentGame) {
 		if (!conditions.empty()) {
 			Skipper skipper;
 			conditional_grammar grammar;
@@ -112,7 +112,7 @@ namespace boss {
 			grammar.SetErrorBuffer(&errorBuffer);
 			grammar.SetParentGame(&parentGame);
 			grammar.SetActivePlugins(&activePlugins);
-			grammar.SetLastConditionalResult(&condResult);
+			grammar.SetLastConditionalResult(condResult);
 
 			begin = conditions.begin();
 			end = conditions.end();
@@ -124,7 +124,7 @@ namespace boss {
 			bool r = phrase_parse(begin, end, grammar, skipper, eval);
 
 			if (!r || begin != end)
-				throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, conditions);
+				throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, conditions, data);
 
 			return eval;
 		} else
@@ -312,21 +312,37 @@ namespace boss {
 		messages.clear();
 	}
 
-	bool	Item::EvalConditions(boost::unordered_set<string> setVars, boost::unordered_map<string,uint32_t> fileCRCs, boost::unordered_set<string> activePlugins, bool& condResult, ParsingError& errorBuffer, const Game& parentGame) {
+	bool	Item::EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string,uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool * condResult, ParsingError& errorBuffer, const Game& parentGame) {
+		if (Type() == ENDGROUP)
+			return true;
+		
 		LOG_TRACE("Evaluating conditions for item \"%s\"", Data().c_str());
 
-		vector<Message>::iterator messageIter = messages.begin();
-		while (messageIter != messages.end()) {
-			if (messageIter->EvalConditions(setVars, fileCRCs, activePlugins, condResult, errorBuffer, parentGame)) {
+		if (!conditionalData::EvalConditions(setVars, fileCRCs, activePlugins, condResult, errorBuffer, parentGame))  //Plugin needs to know what previous plugin's condition eval result was.
+			return false;
+
+		if (Type() == BEGINGROUP)
+			return true;
+
+		//Eval attached messages.
+		if (!messages.empty()) {
+			vector<Message>::iterator messageIter = messages.begin();
+			bool res = messageIter->EvalConditions(setVars, fileCRCs, activePlugins, NULL, errorBuffer, parentGame);  //No previous message for this plugin.
+			if (res)
 				++messageIter;
-				condResult = true;
-			} else {
+			else
 				messageIter = messages.erase(messageIter);
-				condResult = false;
+			//Eval the rest of the messages now that res has been initialised.
+			while (messageIter != messages.end()) {
+				res = messageIter->EvalConditions(setVars, fileCRCs, activePlugins, &res, errorBuffer, parentGame);
+				if (res)
+					++messageIter;
+				else
+					messageIter = messages.erase(messageIter);
 			}
 		}
 
-		return conditionalData::EvalConditions(setVars, fileCRCs, activePlugins, condResult, errorBuffer, parentGame);
+		return true;
 	}
 
 	//////////////////////////////
@@ -629,7 +645,7 @@ namespace boss {
 	void		ItemList::EvalConditions	(const Game& parentGame) {
 		boost::unordered_set<string> setVars;
 		boost::unordered_set<string> activePlugins;
-		bool condResult;
+		bool res;
 		
 		if (fs::exists(parentGame.ActivePluginsFile())) {
 			ItemList active;
@@ -642,46 +658,73 @@ namespace boss {
 
 		//First eval variables.
 		//Need to convert these from a vector to an unordered set.
-		LOG_INFO("Starting to evaluate variable conditionals.");
-		vector<MasterlistVar>::iterator varIter = masterlistVariables.begin();
-		while (varIter != masterlistVariables.end()) {
-			if (varIter->EvalConditions(setVars, fileCRCs, activePlugins, condResult, errorBuffer, parentGame)) {
+		if (!masterlistVariables.empty()) {
+			LOG_INFO("Starting to evaluate variable conditionals.");
+			vector<MasterlistVar>::iterator varIter = masterlistVariables.begin();
+			res = varIter->EvalConditions(setVars, fileCRCs, activePlugins, NULL, errorBuffer, parentGame);
+			if (res) {
 				setVars.insert(varIter->Data());
 				++varIter;
-				condResult = true;
-			} else {
+			} else
 				varIter = masterlistVariables.erase(varIter);
-				condResult = false;
+			//Eval the rest of the vars now that res has been initialised.
+			while (varIter != masterlistVariables.end()) {
+				res = varIter->EvalConditions(setVars, fileCRCs, activePlugins, &res, errorBuffer, parentGame);
+				if (res) {
+					setVars.insert(varIter->Data());
+					++varIter;
+				} else
+					varIter = masterlistVariables.erase(varIter);
 			}
 		}
 
-		//Now eval items.
-		LOG_INFO("Starting to evaluate item conditionals.");
-		vector<Item>::iterator itemIter = items.begin();
-		while (itemIter != items.end()) {
-			if (itemIter->EvalConditions(setVars, fileCRCs, activePlugins, condResult, errorBuffer, parentGame)) {
-				++itemIter;
-				condResult = true;
-			} else if (itemIter->Type() == MOD) {
-				itemIter = items.erase(itemIter);
-				condResult = false;
-			} else if (itemIter->Type() == BEGINGROUP) {
-				//Need to remove all the plugins in the group. 
-				size_t endPos = FindLastItem(itemIter->Name(), ENDGROUP);
-				itemIter = items.erase(itemIter, items.begin() + endPos + 1);
-				condResult = false;
-			} else
-				++itemIter;  //ENDGROUP items should not be conditional, so treat them like they're not.
-		}
-
 		//Now eval global messages.
-		LOG_INFO("Starting to evaluate global message conditionals.");
-		vector<Message>::iterator messageIter = globalMessageBuffer.begin();
-		while (messageIter != globalMessageBuffer.end()) {
-			if (messageIter->EvalConditions(setVars, fileCRCs, activePlugins, condResult, errorBuffer, parentGame))
+		if (!globalMessageBuffer.empty()) {
+			LOG_INFO("Starting to evaluate global message conditionals.");
+			vector<Message>::iterator messageIter = globalMessageBuffer.begin();
+			res = messageIter->EvalConditions(setVars, fileCRCs, activePlugins, NULL, errorBuffer, parentGame);
+			if (res)
 				++messageIter;
 			else
 				messageIter = globalMessageBuffer.erase(messageIter);
+			//Eval the rest of the global messages now that res has been initialised.
+			while (messageIter != globalMessageBuffer.end()) {
+				res = messageIter->EvalConditions(setVars, fileCRCs, activePlugins, &res, errorBuffer, parentGame);
+				if (res)
+					++messageIter;
+				else
+					messageIter = globalMessageBuffer.erase(messageIter);
+			}
+		}
+
+		//Now eval items. Need to keep track of the previous item.
+		LOG_INFO("Starting to evaluate item conditionals.");
+		bool wasPlugin = false;
+		vector<Item>::iterator itemIter = items.begin();
+		while (itemIter != items.end()) {
+			if (itemIter->Type() == MOD || itemIter->Type() == REGEX) {
+				if (!wasPlugin)
+					res = itemIter->EvalConditions(setVars, fileCRCs, activePlugins, NULL, errorBuffer, parentGame);
+				else
+					res = itemIter->EvalConditions(setVars, fileCRCs, activePlugins, &res, errorBuffer, parentGame);  //Look at previous plugin's conditional eval result.
+				if (res)
+					++itemIter;
+				else
+					itemIter = items.erase(itemIter);
+				wasPlugin = true;
+			} else if (itemIter->Type() == BEGINGROUP) {
+				if (itemIter->EvalConditions(setVars, fileCRCs, activePlugins, NULL, errorBuffer, parentGame))  //Don't need to record result as nothing will look at a previous group's conditional.
+					++itemIter;
+				else {
+					//Need to remove all the plugins in the group. 
+					size_t endPos = FindLastItem(itemIter->Name(), ENDGROUP);
+					itemIter = items.erase(itemIter, items.begin() + endPos + 1);
+				}
+				wasPlugin = false;
+			} else {
+				++itemIter;  //ENDGROUP items should not be conditional, so treat them like they're not.
+				wasPlugin = false;
+			}
 		}
 	}
 
