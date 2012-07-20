@@ -58,7 +58,7 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 		wxT("English"),
 		wxString("Español", wxConvUTF8),
 		wxT("Deutsch"),
-		wxString("русский", wxConvUTF8)
+		wxString("Русский", wxConvUTF8)
 	};
 
 	//Set up stuff in the frame.
