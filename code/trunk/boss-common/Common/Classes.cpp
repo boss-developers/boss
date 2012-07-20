@@ -629,7 +629,7 @@ namespace boss {
 				if (doEncodingConversion) {  //Not UTF-8.
 					try {
 						outfile << trans.Utf8ToEnc(items[i].Name()) << endl;
-					} catch (boss_error &e) {
+					} catch (boss_error /*&e*/) {
 						badFilename = items[i].Name();
 					}
 				} else
@@ -752,7 +752,7 @@ namespace boss {
 				boost::regex reg;  //Form a regex.
 				try {
 					reg = boost::regex(itemIter->Name()+"(\\.ghost)?", boost::regex::extended|boost::regex::icase);  //Ghost extension is added so ghosted mods will also be found.
-				} catch (boost::regex_error &e) {
+				} catch (boost::regex_error /*&e*/) {
 					boss_error be = boss_error(BOSS_ERROR_REGEX_EVAL_FAIL, itemIter->Name());
 					LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", be.getString().c_str());
 					errorBuffer = ParsingError(be.getString());

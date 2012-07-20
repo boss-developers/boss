@@ -327,9 +327,6 @@
 		File "data\boss-common\images\CLI.png"
   
   ;Now install language files.
-  SetOutPath "$INSTDIR\l10n\en\LC_MESSAGES"
-  File "data\boss-common\l10n\en\LC_MESSAGES\messages.mo"
-  File "data\boss-common\l10n\en\LC_MESSAGES\wxstd.mo"
   SetOutPath "$INSTDIR\l10n\ru\LC_MESSAGES"
   File "data\boss-common\l10n\ru\LC_MESSAGES\messages.mo"
   File "data\boss-common\l10n\ru\LC_MESSAGES\wxstd.mo"
@@ -401,9 +398,7 @@
 		Delete "$INSTDIR\Docs\images\CLI.png"
   
   ;Remove language files.
-  Delete "$INSTDIR\l10n\en\LC_MESSAGES\messages.mo"
   Delete "$INSTDIR\l10n\ru\LC_MESSAGES\messages.mo"
-  Delete "$INSTDIR\l10n\en\LC_MESSAGES\wxstd.mo"
   Delete "$INSTDIR\l10n\ru\LC_MESSAGES\wxstd.mo"
 		
 		;Now we have to remove the files BOSS generates when it runs.
