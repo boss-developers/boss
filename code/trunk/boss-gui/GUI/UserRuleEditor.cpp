@@ -77,7 +77,7 @@ using boost::format;
 UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent, Game& inGame) : wxFrame(parent, wxID_ANY, title), game(inGame) {
 
 	//Let's give this a progress bar.
-	wxProgressDialog *progDia = new wxProgressDialog(wxT("BOSS: Working..."), translate("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
+	wxProgressDialog *progDia = new wxProgressDialog(translate("BOSS: Working..."), translate("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
 	progDia->Pulse();
 
 	try{
@@ -671,19 +671,17 @@ bool TextDropTarget::OnDropText(wxCoord x, wxCoord y, const wxString &data) {
 	if (isSorting && !forItem.Name().empty()) {
 		if (forItem.IsPlugin()) {
 			if (!isInserting && sortItem.IsGroup()) {  //Sort object is a group. Error.
-				wxMessageBox(wxString::Format(
-						wxT("Rule Syntax Error: Cannot sort a plugin relative to a group.")
-					),
-					wxT("BOSS: Error"),
+				wxMessageBox(
+					translate("Rule Syntax Error: Cannot sort a plugin relative to a group."),
+					translate("BOSS: Error"),
 					wxOK | wxICON_ERROR,
 					NULL);
 				targetOwner->SetValue(originalValue);
 				return false;
 			} else if (isInserting && insertItem.IsPlugin()) {  //Inserting into a mod. Error.
-				wxMessageBox(wxString::Format(
-						wxT("Rule Syntax Error: Cannot insert into a plugin.")
-					),
-					wxT("BOSS: Error"),
+				wxMessageBox(
+					translate("Rule Syntax Error: Cannot insert into a plugin."),
+					translate("BOSS: Error"),
 					wxOK | wxICON_ERROR,
 					NULL);
 				targetOwner->SetValue(originalValue);
@@ -691,19 +689,17 @@ bool TextDropTarget::OnDropText(wxCoord x, wxCoord y, const wxString &data) {
 			}
 		} else {  //Rule object is a group.
 			if (!isInserting && sortItem.IsPlugin()) {  //Sort object is a plugin. Error.
-				wxMessageBox(wxString::Format(
-						wxT("Rule Syntax Error: Cannot sort a group relative to a plugin.")
-					),
-					wxT("BOSS: Error"),
+				wxMessageBox(
+					translate("Rule Syntax Error: Cannot sort a group relative to a plugin."),
+					translate("BOSS: Error"),
 					wxOK | wxICON_ERROR,
 					NULL);
 				targetOwner->SetValue(originalValue);
 				return false;
 			} else if (isInserting) {  //Can't insert groups. Error.
-				wxMessageBox(wxString::Format(
-						wxT("Rule Syntax Error: Cannot insert groups.")
-					),
-					wxT("BOSS: Error"),
+				wxMessageBox(
+					translate("Rule Syntax Error: Cannot insert groups."),
+					translate("BOSS: Error"),
 					wxOK | wxICON_ERROR,
 					NULL);
 				targetOwner->SetValue(originalValue);

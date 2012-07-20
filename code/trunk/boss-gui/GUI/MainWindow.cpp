@@ -143,8 +143,12 @@ bool BossGUI::OnInit() {
 	try {
 		locale::global(gen(localeId));
 		cout.imbue(locale());
-		//Need to also set up wxWidgets locale so that its default interface text comes out in the right language. This doesn't seem to work though...
-		wxLoc = new wxLocale(lang);
+		//Need to also set up wxWidgets locale so that its default interface text comes out in the right language.
+		wxLoc = new wxLocale();
+		if (!wxLoc->Init(lang, wxLOCALE_LOAD_DEFAULT))
+			throw exception("System GUI text could not be set.");
+		wxLocale::AddCatalogLookupPathPrefix(".\\l10n");
+		wxLoc->AddCatalog("wxstd");
 	} catch(exception &e) {
 		LOG_ERROR("could not implement translation: %s", e.what());
 		wxMessageBox(
@@ -647,7 +651,6 @@ void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
 		UserRulesEditorFrame *editor = new UserRulesEditorFrame(translate("BOSS: User Rules Manager"), this, game);
 		editor->SetIcon(wxIconLocation("BOSS GUI.exe"));
 		editor->Show();
-		return;
 	} else {
 		if (fs::exists(game.Userlist()))
 			wxLaunchDefaultApplication(game.Userlist().string());
