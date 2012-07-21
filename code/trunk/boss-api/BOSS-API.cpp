@@ -989,7 +989,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 		if (plugin.Exists(db->game))
 			db->loadOrder.Insert(i, plugin);
 		else
-			return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND, pluginStr);
+			return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND, plugin.Name());
 	}
 	size_t loSize = db->loadOrder.Items().size();
 
@@ -1162,7 +1162,7 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 				return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, plugin.Name());
 			}
 		} else
-			return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND, pluginStr);
+			return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND, plugin.Name());
 	}
 
 	//If Update.esm is installed, check if it is listed. If not, add it (order is decided later).
