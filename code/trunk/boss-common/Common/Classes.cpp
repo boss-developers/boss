@@ -394,22 +394,18 @@ namespace boss {
 				for though.
 				*/
 				LOG_INFO("Using textfile-based load order mechanism.");
-				if (fs::exists(parentGame.LoadOrderFile()))  //If the loadorder.txt exists, get the active plugin load order from that.
+				if (fs::exists(parentGame.LoadOrderFile()))  //If the loadorder.txt exists, get the load order from that.
 					Load(parentGame, parentGame.LoadOrderFile());
-				else if (parentGame.Id() == SKYRIM) {
-					//Check if plugins.txt exists. If so, add any plugins in it that aren't in loadorder.
-					ItemList plugins;
-					if (fs::exists(parentGame.ActivePluginsFile())) {
-						plugins.Load(parentGame, parentGame.ActivePluginsFile());
-						vector<Item> pluginsVec = plugins.Items();
-						for (size_t i=0, max = pluginsVec.size(); i < max; i++)
-							items.push_back(pluginsVec[i]);
+				else {
+					if (fs::exists(parentGame.ActivePluginsFile()))  //If the plugins.txt exists, get the active load order from that.
+						Load(parentGame, parentGame.ActivePluginsFile());
+					if (parentGame.Id() == SKYRIM) {
+						//Make sure that Skyrim.esm is first.
+						Move(0, Item("Skyrim.esm"));
+						//Add Update.esm if not already present.
+						if (Item("Update.esm").Exists(parentGame) && FindItem("Update.esm", MOD) == items.size())
+							Move(GetLastMasterPos(parentGame) + 1, Item("Update.esm"));
 					}
-					//Now make sure that Skyrim.esm is first.
-					Move(0, Item("Skyrim.esm"));
-					//Add Update.esm if not already present.
-					if (Item("Update.esm").Exists(parentGame) && FindItem("Update.esm", MOD) == items.size())
-						Move(GetLastMasterPos(parentGame) + 1, Item("Update.esm"));
 				}
 				//Then scan through loadorder, removing any plugins that aren't in the data folder.
 				vector<Item>::iterator itemIter = items.begin();
@@ -441,7 +437,7 @@ namespace boss {
 			}
 			LOG_DEBUG("Reading user mods done: %" PRIuS " total mods found.", items.size());
 			itemComparator ic(parentGame);
-			sort(items.begin(),items.end(), ic);  //Does this work?
+			sort(items.begin(),items.end(), ic);
 		} else if (path == parentGame.LoadOrderFile() || path == parentGame.ActivePluginsFile()) {
 			
 			Transcoder trans;

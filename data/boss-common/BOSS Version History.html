@@ -143,14 +143,17 @@
 	</ul>
  <li>API changes:
  <ul>
-  <li>Changed: CreateBossDb now takes the path to the game executable's folder, rather than the path to the game plugin's folder. It now also treats empty paths in the same manner as it does null path string pointers.
+  <li>Fixed: SortMods no longer includes groups and plugins that are not installed in its outputs.
+  <li>Changed: CreateBossDb now takes the path to the game executable's folder, rather than the path to the game plugin's folder.
+  <li>Changed: CreateBossDb now accepts a non-null empty path, treating it in the same manner as a null path (ie. BAPI tries to autodetect game install location).
   <li>Changed: DumpMinimal now includes conditionals in the file it creates.
   <li>Changed: The API now caches the load order and active plugin list and does not re-load them unless the files/folders they are derived from have changed.
+  <li>Changed: The API now returns BOSS_API_ERROR_FILE_NOT_FOUND if a plugin that is not installed is passed to any of the load order or active status modification functions, aside from when deactivating a single plugin through SetPluginActive.
 	 <li>Added: SetProxy function.
 	 <li>Added: SubmitUnrecognisedPlugin function.
+  <li>Added: Support for TES III: Morrowind.
  </ul>
 	<li>Added: GUI's Select Game dialog now displays the BOSS icon in the title bar, matching the other GUI windows.
-	<li>Added: 
 	<li>Added: GUI now records the game it was last run for using the <code>sLastGame</code> BOSS.ini setting. If the <code>sGame</code> setting is set to <code>auto</code> (or the corresponding <q>Default Game</q> GUI setting set to <q>Autodetect</q>), then the GUI will first attempt to run for the game it was last run for. If the game cannot be detected, or the <code>sLastGame</code> setting is set to <code>auto</code>, then it will then prompt the user to select a game to run for.
 	<li>Added: Support for TES III: Morrowind:
 	<ul>
@@ -163,7 +166,7 @@
   <li><code>sLanguage</code> option to BOSS.ini, and Language setting to the GUI's Settings window, to control BOSS's operating language.
   <li>English, Russian, Spanish and German are currently supported with varying levels of completion. Russian translation by Tokc.D.K..
  </ul>
- <li>Added: Support for MF2.3 Labelled Web Links, Function-Style Conditions, Conditional Groups and Active Status Conditions in the masterlists.
+ <li>Added: Support for Masterlist Format 2.3.
 </ul>
 <h2>2.0.1 - <i>6 April 2012</i></h2>
 <ul>
