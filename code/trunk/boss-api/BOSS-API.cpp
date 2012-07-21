@@ -983,8 +983,13 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 	//Create a vector to hold the new loadorder.
 	db->loadOrder.Clear();
 	//We need to loop through the plugin array given and enter each plugin into the vector.
+	//Also check that the plugins being added actually exist.
 	for (size_t i=0; i < numPlugins; i++) {
-		db->loadOrder.Insert(i, Item(string(reinterpret_cast<const char *>(plugins[i]))));
+		Item plugin = Item(string(reinterpret_cast<const char *>(plugins[i])));
+		if (plugin.Exists(db->game))
+			db->loadOrder.Insert(i, plugin);
+		else
+			return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND, pluginStr);
 	}
 	size_t loSize = db->loadOrder.Items().size();
 
@@ -1145,15 +1150,19 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Plugins may not be sorted before the game's master file.");
 
 	//Fill the ItemList with the input.
+	//Check that plugins being added actually exist.
 	db->activePlugins.Clear();
 	for (size_t i=0; i < numPlugins; i++) {
 		Item plugin = Item(string(reinterpret_cast<const char *>(plugins[i])));
-		db->activePlugins.Insert(i, plugin);
-		try {
-			plugin.UnGhost(db->game);
-		} catch (boss_error /*&e*/) {
-			return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, plugin.Name());
-		}
+		if (plugin.Exists(db->game)) {
+			db->activePlugins.Insert(i, plugin);
+			try {
+				plugin.UnGhost(db->game);
+			} catch (boss_error /*&e*/) {
+				return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, plugin.Name());
+			}
+		} else
+			return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND, pluginStr);
 	}
 
 	//If Update.esm is installed, check if it is listed. If not, add it (order is decided later).
@@ -1402,6 +1411,10 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 				return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Update.esm cannot be deactivated.");
 		}
 	}
+
+	//Check that plugin exists if activating it.
+	if (active && !Item(pluginStr).Exists(db->game))
+		return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND, pluginStr);
 
 	//Unghost if ghosted.
 	try {

@@ -621,8 +621,6 @@ namespace boss {
 			if (items[i].Type() == MOD) {
 				if (activeOnly && (activePlugins.FindItem(items[i].Name(), MOD) == numActivePlugins || (parentGame.Id() == SKYRIM && items[i].Name() == "Skyrim.esm")))
 					continue;
-				else if (!items[i].Exists(parentGame))  //Only installed plugins should be written to the plugins.txt/loadorder.txt. The vector may contain others for user rule sorting purposes.
-					continue;
 				LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
 				if (parentGame.Id() == MORROWIND) //Need to write "GameFileN=" before plugin name, where N is an integer from 0 up.
 					outfile << "GameFile" << i << "=";

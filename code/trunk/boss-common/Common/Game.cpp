@@ -644,20 +644,21 @@ namespace boss {
 			if (!messageLineFail)  //Print success message.
 				bosslog.userRules << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << *ruleIter << TABLE_DATA << "✓" << TABLE_DATA;
 			
-			//Now that all the rules have been applied, there is no need for groups or plugins that are not installed to be listed in
-			//modlist. Scan through it and remove these lines.
-			vector<Item> items = modlist.Items();
-			vector<Item>::iterator it = items.begin(), endIt = items.end();
-			while (it != endIt) {
-				if (it->Type() != MOD || !it->Exists(*this))
-					it = items.erase(it);
-				else
-					++it;
-			}
-			modlist.Items(items);
 			//Now find that last recognised mod and set the iterator again.
 			modlist.LastRecognisedPos(modlist.FindLastItem(lastRecognisedItem.Name(), lastRecognisedItem.Type()));
 		}
+		
+		//Now that all the rules have been applied, there is no need for groups or plugins that are not installed to be listed in
+		//modlist. Scan through it and remove these lines.
+		vector<Item> items = modlist.Items();
+		vector<Item>::iterator it = items.begin(), endIt = items.end();
+		while (it != endIt) {
+			if (it->Type() != MOD || !it->Exists(*this))
+				it = items.erase(it);
+			else
+				++it;
+		}
+		modlist.Items(items);
 	}
 
 	//Scans the data folder for script extender plugins and outputs their info to the bosslog.
@@ -748,6 +749,7 @@ namespace boss {
 		}
 
 		//Now loop through items, redating and outputting. Check against unrecognised hashset and treat unrecognised mods appropriately.
+		//Only act on mods that exist. However, all items that aren't installed mods are removed after applying user rules (even if there were no rules), so nothing needs to be checked.
 		time_t modfiletime = 0;
 		items = modlist.Items();
 		boost::unordered_set<string>::iterator setPos;
@@ -756,58 +758,56 @@ namespace boss {
 
 		LOG_INFO("Applying calculated ordering to user files...");
 		for (vector<Item>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter) {
-			if (itemIter->Type() == MOD && itemIter->Exists(*this)) {  //Only act on mods that exist.
-				Outputter buffer(gl_log_format);
-				buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
-				string version = itemIter->GetVersion(*this).AsString();
-				if (!version.empty())
-						buffer << SPAN_CLASS_VERSION_OPEN << loc::translate("Version ") << version << SPAN_CLOSE;
-				if (hashset.find(boost::to_lower_copy(itemIter->Name())) != hashset.end())  //Plugin is active.
-					buffer << SPAN_CLASS_ACTIVE_OPEN << loc::translate("Active") << SPAN_CLOSE;
-				else
-					bosslog.inactive++;
-				if (gl_show_CRCs && itemIter->IsGhosted(*this)) {
-					buffer << SPAN_CLASS_CRC_OPEN << loc::translate("Checksum: ") << IntToHexString(GetCrc32(DataFolder() / fs::path(itemIter->Name() + ".ghost"))) << SPAN_CLOSE;
-				} else if (gl_show_CRCs)
-					buffer << SPAN_CLASS_CRC_OPEN << loc::translate("Checksum: ") << IntToHexString(GetCrc32(DataFolder() / itemIter->Name())) << SPAN_CLOSE;
+			Outputter buffer(gl_log_format);
+			buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
+			string version = itemIter->GetVersion(*this).AsString();
+			if (!version.empty())
+					buffer << SPAN_CLASS_VERSION_OPEN << loc::translate("Version ") << version << SPAN_CLOSE;
+			if (hashset.find(boost::to_lower_copy(itemIter->Name())) != hashset.end())  //Plugin is active.
+				buffer << SPAN_CLASS_ACTIVE_OPEN << loc::translate("Active") << SPAN_CLOSE;
+			else
+				bosslog.inactive++;
+			if (gl_show_CRCs && itemIter->IsGhosted(*this)) {
+				buffer << SPAN_CLASS_CRC_OPEN << loc::translate("Checksum: ") << IntToHexString(GetCrc32(DataFolder() / fs::path(itemIter->Name() + ".ghost"))) << SPAN_CLOSE;
+			} else if (gl_show_CRCs)
+				buffer << SPAN_CLASS_CRC_OPEN << loc::translate("Checksum: ") << IntToHexString(GetCrc32(DataFolder() / itemIter->Name())) << SPAN_CLOSE;
 		
-		/*		if (itemIter->IsFalseFlagged()) {
-					itemIter->InsertMessage(0, Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa."));
-					counters.warnings++;
+	/*		if (itemIter->IsFalseFlagged()) {
+				itemIter->InsertMessage(0, Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa."));
+				counters.warnings++;
+			}
+	*/	
+			if (GetLoadOrderMethod() == LOMETHOD_TIMESTAMP && !gl_trial_run && !itemIter->IsGameMasterFile(*this)) {
+				//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
+				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", itemIter->Name().c_str());
+				try {
+					itemIter->SetModTime(*this, esmtime + (bosslog.recognised + bosslog.unrecognised)*60);
+				} catch(boss_error &e) {
+					itemIter->InsertMessage(0, Message(ERR, loc::translate("Error: ").str() + e.getString()));
+					LOG_ERROR(" * Error: %s", e.getString().c_str());
 				}
-		*/	
-				if (GetLoadOrderMethod() == LOMETHOD_TIMESTAMP && !gl_trial_run && !itemIter->IsGameMasterFile(*this)) {
-					//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
-					LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", itemIter->Name().c_str());
-					try {
-						itemIter->SetModTime(*this, esmtime + (bosslog.recognised + bosslog.unrecognised)*60);
-					} catch(boss_error &e) {
-						itemIter->InsertMessage(0, Message(ERR, loc::translate("Error: ").str() + e.getString()));
-						LOG_ERROR(" * Error: %s", e.getString().c_str());
-					}
+			}
+			//Print the mod's messages. Unrecognised plugins might have a redate error message.
+			if (!itemIter->Messages().empty()) {
+				vector<Message> messages = itemIter->Messages();
+				size_t jmax = messages.size();
+				buffer << LIST_OPEN;
+				for (size_t j=0; j < jmax; j++) {
+					buffer << messages[j];
+					bosslog.messages++;
+					if (messages[j].Key() == WARN)
+						bosslog.warnings++;
+					else if (messages[j].Key() == ERR)
+						bosslog.errors++;
 				}
-				//Print the mod's messages. Unrecognised plugins might have a redate error message.
-				if (!itemIter->Messages().empty()) {
-					vector<Message> messages = itemIter->Messages();
-					size_t jmax = messages.size();
-					buffer << LIST_OPEN;
-					for (size_t j=0; j < jmax; j++) {
-						buffer << messages[j];
-						bosslog.messages++;
-						if (messages[j].Key() == WARN)
-							bosslog.warnings++;
-						else if (messages[j].Key() == ERR)
-							bosslog.errors++;
-					}
-					buffer << LIST_CLOSE;
-				}
-				if (unrecognised.find(itemIter->Name()) == unrecognised.end()) {  //Recognised plugin.
-					bosslog.recognised++;
-					bosslog.recognisedPlugins << buffer.AsString();
-				} else {  //Unrecognised plugin.
-					bosslog.unrecognised++;
-					bosslog.unrecognisedPlugins << buffer.AsString();
-				}
+				buffer << LIST_CLOSE;
+			}
+			if (unrecognised.find(itemIter->Name()) == unrecognised.end()) {  //Recognised plugin.
+				bosslog.recognised++;
+				bosslog.recognisedPlugins << buffer.AsString();
+			} else {  //Unrecognised plugin.
+				bosslog.unrecognised++;
+				bosslog.unrecognisedPlugins << buffer.AsString();
 			}
 		}
 		LOG_INFO("User plugin ordering applied successfully.");
