@@ -952,7 +952,7 @@ namespace boss {
 				<< "<meta charset='utf-8'>"
 				<< "<title>BOSS Log</title>"
 				<< "<style>"
-				<< "body{font-family:Helvetica,sans-serif;margin:0;height:100%;background:#f5f5f5;font-size:12pt;}"
+				<< "body{font-family:Helvetica,sans-serif;margin:0;height:100%;background:#f5f5f5;font-size:10pt;}"
 				<< "body.dark, #submitBox.dark{color:#eee;background:#222;}"
 				<< "a.dark:link{color:#0AF;}"
 				<< "a.dark:visited{color:#E000E0;}"
@@ -1011,7 +1011,7 @@ namespace boss {
 				<< "#plugin{display:table-cell;font-style:italic;}"
 				<< "#pluginLabel{display:table-cell;padding-right:0.5em;}"
 				<< "#output {display:none;width:400px;margin:2em auto;text-align:center;}"
-				<< "nav {display:block;background:#DDD;width:154px;position:fixed;top:0;left:0;height:100%;z-index:2;box-shadow: 0 0 3px 1px rgba(0,0,0,0.5);}"
+				<< "nav {display:block;background:#DDD;width:140px;position:fixed;top:0;left:0;height:100%;z-index:2;box-shadow: 0 0 3px 1px rgba(0,0,0,0.5);}"
 				<< "nav div.button {cursor:pointer;padding:0.5em;text-decoration:none;"
 				<< "	transition: background 0.2s;"
 				<< "	-webkit-transition: background 0.2s;"
@@ -1023,9 +1023,9 @@ namespace boss {
 				<< "nav div.button.dark:hover {background:darkgrey;}"
 				<< "nav div.button.current {background:#bbb;}"
 				<< "nav div.button.current.dark {background:darkgrey;}"
-				<< "nav > footer {position:absolute;bottom:0;width:154px;background:inherit;}"
+				<< "nav > footer {position:absolute;bottom:0;background:inherit;width:100%;}"
 				<< "header {padding:0.5em;padding-top:0;margin-bottom:1em;text-align:center;}"
-				<< "#arrow {margin-left:5em;"
+				<< "#arrow {position:absolute;right:0;margin-right:1em;"
 				<< "/*	transition: transform 0.2s;"
 				<< "	-moz-transition: -moz-transform 0.2s;	"
 				<< "	-webkit-transition: -webkit-transform 0.2s;	"
@@ -1038,7 +1038,7 @@ namespace boss {
 				<< "#arrow.rotated:after {"
 				<< "	content: '\\2212';"
 				<< "}"
-				<< "aside {display:block;background:#e9e9e9;z-index:1;overflow:hidden;position:fixed;left:154px;bottom:-1px;height:0;"
+				<< "aside {display:block;background:#e9e9e9;z-index:1;overflow:hidden;position:fixed;left:140px;bottom:-1px;height:0;"
 				<< "/*	transition: height 0.2s;"
 				<< "	-moz-transition: height 0.2s;"
 				<< "	-webkit-transition: height 0.2s;"
@@ -1047,9 +1047,9 @@ namespace boss {
 				<< "	box-shadow: 0 0 3px 1px rgba(0,0,0,0.5);"
 				<< "}"
 				<< "aside.visible {height:auto;}"
-				<< "aside > label {display:inline-block;padding:0.2em 0.5em; white-space:nowrap;width:12.5em;cursor:pointer;}"
+				<< "aside > label {display:inline-block;padding:0.2em 0.5em;white-space:nowrap;cursor:pointer;}"
 				<< "aside > footer {display:block;padding:0.5em;padding-left:0.8em;font-style:italic;}"
-				<< "section {position:absolute;top:0;left:154px;display:none;padding:1em;}"
+				<< "section {position:absolute;top:0;left:140px;display:none;padding:1em;}"
 				<< "#unrecPlugins span.mod {cursor:pointer;border-bottom:#888 dotted 1px;}"
 				<< "#unrecPlugins span.mod:hover {border-bottom:#888 solid 1px;}"
 				<< "#unrecPlugins span.mod.nosubmit {border-bottom:none;cursor:auto;}"
@@ -1074,6 +1074,8 @@ namespace boss {
 				<< "#summary table:first-of-type {display:table-cell; padding-right:1em;}"
 				<< "#summary table:last-of-type {display:table-cell; padding-right:1em;}"
 
+				<< "section p:first-child {margin-top:0;}"
+
 				<< "</style>"
 				<< "<nav>"
 				<< "<header>"
@@ -1090,7 +1092,8 @@ namespace boss {
 		stringstream out;
 		if (logFormat == HTML)
 			out << "<footer>"
-				<< "	<div class='button' data-section='cssSettings' id='cssButtonShow'>" << translate("CSS Settings") << "</div>"
+				<< "	<div class='button' data-section='browserBox' id='supportButtonShow'>" << translate("Log Feature Support") << "</div>"
+				<< "	<div class='button' data-section='cssSettings' id='cssButtonShow'>" << translate("Display Settings") << "</div>"
 				<< "	<div class='button' id='filtersButtonToggle'>" << translate("Filters") << "<span id='arrow'></span></div>"
 				<< "</footer>"
 				<< "</nav>"
@@ -1106,8 +1109,8 @@ namespace boss {
 
 		if (logFormat == HTML)
 			out << "<section id='cssSettings'>"
-				<< "<h2>" << translate("CSS Settings") << "</h2>"
-				<< "<p>" << translate("Here you can customise the colours used by the alternative colour scheme.") << "<span id='colorPickerNote'> " << translate("Colours must be specified using their lowercase hex codes.") << "</span> " << translate("Boxes left blank will use their default values, which are given by their placeholders.")
+				<< "<p>" << translate("The BOSS Log can be displayed using an alternative colour scheme, which can be enabled and customised using the options below.") << "<span id='colorPickerNote'> " << translate("Colours must be specified using their lowercase hex codes.") << "</span> " << translate("Boxes left blank will use their default values, which are given by their placeholders.")
+				<< "<p><label><input type='checkbox' id='useDarkColourScheme'/>" << translate("Use Alternative Colour Scheme") << "</label>"
 				<< "<form>"
 				<< "<table>"
 				<< "	<thead><tr><td>" << translate("Element") << "<td>" << translate("Colour")
@@ -1131,21 +1134,19 @@ namespace boss {
 				<< "		<tr><td>" << translate("Success Messages") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.success.dark' data-property='color' placeholder='#008000'>"
 				<< "		<tr><td>" << translate("Quoted Userlist Messages") << "<td><input type=color pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.message.dark' data-property='color' placeholder='#808080'>"
 				<< "</table>"
-				<< "<p id='backupCSSNote'>" << translate("You can <span class='button' id='cssButtonBackup'>back up</span> your CSS settings to avoid losing them when you <span id='loseSettingsClose'>close the BOSS Log</span><span id='loseSettingsCacheClear'>clear your browser's cache</span>.") << ' ' << translate("Backup files are given nonsensical names by your browser, but you can rename them to whatever you want. Drag and drop a backup file into this panel to restore the settings it contains.")
-				<< "<p><label><input type='checkbox' id='useDarkColourScheme'/>" << translate("Use Alternative Colour Scheme") << "</label>"
+				<< "<p id='backupCSSNote'>" << translate("You can <span class='button' id='cssButtonBackup'>back up</span> your display settings to avoid losing them when you <span id='loseSettingsClose'>close the BOSS Log</span><span id='loseSettingsCacheClear'>clear your browser's cache</span>.") << ' ' << translate("Backup files are given nonsensical names by your browser, but you can rename them to whatever you want. Drag and drop a backup file into this panel to restore the settings it contains.")
 				<< "<p><button>" << translate("Apply") << "</button>"
 				<< "</form>"
 				<< "</section>"
 				<< ""
 				<< "<section id='browserBox'>"
-				<< "<h2>" << translate("Browser Compatibility") << "</h2>"
-				<< "<p>" << translate("The BOSS Log's more advanced features require some of the latest web technologies, for which browser support varies. Here's what your browser supports:")
+				<< "<p>" << translate("Support for the BOSS Log's more advanced features varies. Here's what your browser supports:")
 				<< "<h3>" << translate("Functionality") << "</h3>"
 				<< "<table>"
 				<< "	<tbody>"
-				<< "		<tr><td id='pluginSubmitSupport'><td>" << translate("In-Log Plugin Submission") << "<td>" << translate("Allows unrecognised plugins to be submitted straight from the BOSS Log.")
-				<< "		<tr><td id='cssBackupSupport'><td>" << translate("Backup/Restore of CSS Settings") << "<td>" << translate("Allows backup and restore of your custom CSS settings.")
-				<< "		<tr><td id='memorySupport'><td>" << translate("Settings Memory") << "<td>" << translate("Allows the BOSS Log to restore the configuration of CSS settings and filters last used, and to prevent this panel being displayed, whenever the BOSS Log is opened.")
+				<< "		<tr><td id='pluginSubmitSupport'><td>" << translate("In-Log Plugin Submission") << "<td>" << translate("Allows unrecognised plugins to be anonymously submitted to the BOSS team directly from the BOSS Log.")
+				<< "		<tr><td id='cssBackupSupport'><td>" << translate("Backup/Restore of Display Settings") << "<td>" << translate("Allows the backup and restore of custom display settings.")
+				<< "		<tr><td id='memorySupport'><td>" << translate("Settings Memory") << "<td>" << translate("Allows the BOSS Log to automatically restore the display settings and filter configuration last used, and to hide this panel, whenever the BOSS Log is opened.")
 				<< "</table>"
 				<< "<h3>" << translate("Appearance") << "</h3>"
 				<< "<table>"
@@ -1176,7 +1177,7 @@ namespace boss {
 				<< "<label><input type='checkbox' id='hideMessagelessPlugins'/>" << translate("Hide Messageless Plugins") << "</label>"
 				<< "<label><input type='checkbox' id='hideCleanPlugins'/>" << translate("Hide Clean Plugins") << "</label>"
 				<< "<footer>"
-				<< "	" << (boost::format(translate("%1% of %2% recognised plugins hidden.")) % "<span id='hiddenPluginNo'>0</span>" % messages).str()
+				<< "	" << (boost::format(translate("%1% of %2% recognised plugins hidden.")) % "<span id='hiddenPluginNo'>0</span>" % recognised).str()
 				<< "	" << (boost::format(translate("%1% of %2% messages hidden.")) % "<span id='hiddenMessageNo'>0</span>" % messages).str()
 				<< "</footer>"
 				<< "</aside>"
@@ -1677,14 +1678,6 @@ namespace boss {
 				<< "	output.innerHTML += text;"
 				<< "}"
 				<< "function showBrowserBox(){"
-				<< "	if (suppressBrowserBox){"
-				<< "		var summaryButton = document.getElementsByTagName('nav')[0].getElementsByClassName('button')[0];"
-				<< "		if (summaryButton.className.indexOf('current') == -1){"
-				<< "			summaryButton.className += ' current';"
-				<< "		}"
-				<< "		showElement(document.getElementsByTagName('section')[0]);"
-				<< "		return;"
-				<< "	}"
 				<< "	if (isPluginSubmitSupported()) {"
 				<< "		document.getElementById('pluginSubmitSupport').className = 't';"
 				<< "	} else {"
@@ -1738,7 +1731,16 @@ namespace boss {
 				<< "	} else {"
 				<< "		document.getElementById('validationSupport').className = 'c';"
 				<< "	}"
-				<< "	showElement(document.getElementById('browserBox'));"
+				<< "	if (suppressBrowserBox){"
+				<< "		var summaryButton = document.getElementsByTagName('nav')[0].getElementsByClassName('button')[0];"
+				<< "		if (summaryButton.className.indexOf('current') == -1){"
+				<< "			summaryButton.className += ' current';"
+				<< "		}"
+				<< "		showElement(document.getElementsByTagName('section')[0]);"
+				<< "	} else {"
+				<< "		showElement(document.getElementById('browserBox'));"
+				<< "		var elem = document.getElementById('supportButtonShow').className += ' current';"
+				<< "	}"
 				<< "}"
 				<< "function loadSettings(){"
 				<< "	var i = localStorage.length - 1;"
@@ -1799,6 +1801,7 @@ namespace boss {
 				<< "		elemArr[i].addEventListener('click', showSection, false);"<<endl
 				<< "		i--;"<<endl
 				<< "	}"<<endl
+				<< "	document.getElementById('supportButtonShow').addEventListener('click', showSection, false);"<<endl
 				<< "	document.getElementById('cssButtonShow').addEventListener('click', showSection, false);"<<endl
 				<< "	document.getElementById('cssButtonShow').addEventListener('click', showCSSBox, false);"<<endl
 				<< "	document.getElementById('cssSettings').getElementsByTagName('form')[0].addEventListener('submit', applyCSS, false);"<<endl
@@ -1836,7 +1839,7 @@ namespace boss {
 				<< "	}"
 				<< "	var i = document.createElement('input');"
 				<< "	i.setAttribute('type', 'color');"
-				<< "	if (i.type === 'text') {"
+				<< "	if (i.type !== 'text') {"
 				<< "		hideElement(document.getElementById('colorPickerNote'));"
 				<< "	}"
 				<< "}"
@@ -1876,8 +1879,12 @@ namespace boss {
 			if (!sePlugins.Empty())
 				formattedOut << DIV_SE_BUTTON_OPEN << (boost::format(translate("%1% Plugins")) % scriptExtender).str() << DIV_CLOSE;
 
-			if (!recognisedPlugins.Empty())
-				formattedOut << DIV_RECOGNISED_BUTTON_OPEN << translate("Recognised Plugins") << DIV_CLOSE;
+			if (!recognisedPlugins.Empty()) {
+				if (gl_revert < 1) 
+					formattedOut << DIV_RECOGNISED_BUTTON_OPEN << translate("Recognised Plugins") << DIV_CLOSE;
+				else
+					formattedOut << DIV_RECOGNISED_BUTTON_OPEN << translate("Restored Load Order") << DIV_CLOSE;
+			}
 
 			if (!unrecognisedPlugins.Empty())
 				formattedOut << DIV_UNRECOGNISED_BUTTON_OPEN << translate("Unrecognised Plugins") << DIV_CLOSE;
@@ -1892,7 +1899,10 @@ namespace boss {
 
 		formattedOut.SetHTMLSpecialEscape(false);
 
-		formattedOut << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << translate("Summary") << HEADING_CLOSE;
+		if (logFormat == HTML)
+			formattedOut << SECTION_ID_SUMMARY_OPEN;
+		else
+			formattedOut << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << translate("Summary") << HEADING_CLOSE;
 
 		if (recognised != 0 || unrecognised != 0 || messages != 0) {
 			formattedOut << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << translate("Plugin Type") << TABLE_HEADING << translate("Count")
@@ -1952,8 +1962,11 @@ namespace boss {
 		//-------------------------
 
 		if (!userRules.Empty()) {
-			formattedOut << SECTION_ID_USERLIST_OPEN << HEADING_OPEN << translate("User Rules") << HEADING_CLOSE 
-				<< TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << translate("Rule") << TABLE_HEADING << translate("Applied") << TABLE_HEADING << translate("Details (if applicable)")
+			if (logFormat == HTML)
+				formattedOut << SECTION_ID_USERLIST_OPEN;
+			else
+				formattedOut << SECTION_ID_USERLIST_OPEN << HEADING_OPEN << translate("User Rules") << HEADING_CLOSE;
+			formattedOut << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << translate("Rule") << TABLE_HEADING << translate("Applied") << TABLE_HEADING << translate("Details (if applicable)")
 				<< TABLE_BODY << userRules.AsString() << TABLE_CLOSE << SECTION_CLOSE;
 			out << formattedOut.AsString();
 			formattedOut.Clear();
@@ -1964,7 +1977,11 @@ namespace boss {
 		//--------------------------------------
 
 		if (!sePlugins.Empty()) {
-			formattedOut << SECTION_ID_SE_OPEN << HEADING_OPEN << scriptExtender << translate(" Plugins") << HEADING_CLOSE << LIST_OPEN
+			if (logFormat == HTML)
+				formattedOut << SECTION_ID_SE_OPEN;
+			else
+				formattedOut << SECTION_ID_SE_OPEN << HEADING_OPEN << scriptExtender << translate(" Plugins") << HEADING_CLOSE;
+			formattedOut << LIST_OPEN
 				<< sePlugins.AsString()
 				<< LIST_CLOSE << SECTION_CLOSE;
 			out << formattedOut.AsString();
@@ -1976,14 +1993,17 @@ namespace boss {
 		//-------------------------------
 
 		if (!recognisedPlugins.Empty()) {
-			formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN;
-			if (gl_revert < 1) 
-				formattedOut << translate("Recognised Plugins");
-			else if (gl_revert == 1)
-				formattedOut << translate("Restored Load Order (Using modlist.txt)");
-			else if (gl_revert == 2) 
-				formattedOut << translate("Restored Load Order (Using modlist.old)");
-			formattedOut  << HEADING_CLOSE << PARAGRAPH 
+			if (logFormat == HTML)
+				formattedOut << SECTION_ID_RECOGNISED_OPEN;
+			else {
+				if (gl_revert < 1) 
+					formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN << translate("Recognised Plugins") << HEADING_CLOSE;
+				else if (gl_revert == 1)
+					formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN << translate("Restored Load Order (Using modlist.txt)") << HEADING_CLOSE;
+				else if (gl_revert == 2) 
+					formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN << translate("Restored Load Order (Using modlist.old)") << HEADING_CLOSE;
+			}
+			formattedOut << PARAGRAPH 
 				<< translate("These plugins are recognised by BOSS and have been sorted according to its masterlist. Please read any attached messages and act on any that require action.")
 				<< LIST_OPEN
 				<< recognisedPlugins.AsString()
@@ -1997,8 +2017,12 @@ namespace boss {
 		//--------------------------------
 
 		if (!unrecognisedPlugins.Empty()) {
-			formattedOut << SECTION_ID_UNRECOGNISED_OPEN << HEADING_OPEN << translate("Unrecognised Plugins") << HEADING_CLOSE 
-				<< PARAGRAPH << translate("The following plugins were not found in the masterlist, and must be positioned manually, using your favourite mod manager or by using BOSS's user rules functionality.")
+			if (logFormat == HTML)
+				formattedOut << SECTION_ID_UNRECOGNISED_OPEN;
+			else
+				formattedOut << SECTION_ID_UNRECOGNISED_OPEN << HEADING_OPEN << translate("Unrecognised Plugins") << HEADING_CLOSE;
+
+			formattedOut << PARAGRAPH << translate("The following plugins were not found in the masterlist, and must be positioned manually, using your favourite mod manager or by using BOSS's user rules functionality.")
 				<< SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN << translate(" You can submit unrecognised plugins for addition to the masterlist directly from this log by clicking on a plugin and supplying a link and/or description of its contents in the panel that is displayed.") << SPAN_CLOSE << LIST_OPEN
 				<< unrecognisedPlugins.AsString()
 				<< LIST_CLOSE << SECTION_CLOSE;
