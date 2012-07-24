@@ -258,7 +258,7 @@ in the HTML BOSS Log, and
   <tr><td><code>[version]</code><td>A string of characters representing the version of a plugin or executable. BOSS displays the versions of plugins and Script Extender executables.
   <tr><td><code>[comparator]</code><td>One of <code>=</code>, <code>&gt;</code> or <code>&lt;</code>, meaning "is equal to", "is greater than" and "is less than" respectively.
   <tr><td><code>[regex]</code><td>The syntax is as for <code>[file]</code>, but the filename can contain <a href="http://www.boost.org/doc/libs/1_50_0/libs/regex/doc/html/boost_regex/syntax/basic_extended.html">POSIX Extended</a> regular expression syntax. If a path is supplied, it may not contain any regular expression syntax other than the escaping of any backslashes present. I.e. <code>Textures\\testtexture(_n)?\.dds</code> is valid but <code>Te[xX]tures\\testtexture(_n)?\.dds</code> is not.
-  <tr><td><code>[language]</code><td>A language name, in the same form as required by the BOSS.ini's <code>sLanguage</code> setting.
+  <tr><td><code>[language]</code><td><strong>This is MF2.3 functionality.</strong> A language name, in the same form as required by the BOSS.ini's <code>sLanguage</code> setting.
 </table>
 <p>Filenames, checksums, regular expressions and languages are case-insensitive. Version strings and masterlist variables are case-sensitive.
 <p>In addition to explicitly referencing files, there are some placeholders that can be used to reference certain files, given in the table below. These placeholders may be used as <code>[file]</code> variables, but not as any other variable type, including <code>[regex]</code> variables.
@@ -270,8 +270,8 @@ in the HTML BOSS Log, and
 		<tr><td>FOSE<td>..\fose_loader.exe
 		<tr><td>NVSE<td>..\nvse_loader.exe
 		<tr><td>SKSE<td>..\skse_loader.exe
-		<tr><td>MWSE<td>..\MWSE.dll
-		<tr><td>TES3<td>..\Morrowind.exe
+		<tr><td>MWSE<td><strong>This is MF2.3 functionality.</strong> ..\MWSE.dll
+		<tr><td>TES3<td><strong>This is MF2.3 functionality.</strong> ..\Morrowind.exe
 		<tr><td>TES4<td>..\Oblivion.exe
 		<tr><td>TES5<td>..\TESV.exe
 		<tr><td>FO3<td>..\Fallout3.exe

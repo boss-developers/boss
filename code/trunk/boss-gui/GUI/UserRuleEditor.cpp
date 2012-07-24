@@ -497,7 +497,7 @@ void UserRulesEditorFrame::LoadLists() {
 	try {
 		game.modlist.Load(game, game.DataFolder());
 	} catch (boss_error &e) {
-		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, translate("User Rules Editor").ToStdString(), e.getString());
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, loc::translate("User Rules Editor"), e.getString());
 	}
 
 	vector<Item> items = game.modlist.Items();
@@ -516,7 +516,7 @@ void UserRulesEditorFrame::LoadLists() {
 		game.masterlist.EvalConditions(game);
 		game.masterlist.EvalRegex(game);
 	} catch (boss_error &e) {
-		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, translate("User Rules Editor").ToStdString(), e.getString());
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, loc::translate("User Rules Editor"), e.getString());
 	}
 }
 
@@ -529,32 +529,32 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
 				if (SortModOption->GetValue() && SortModBox->IsEmpty())
-					throw boss_error(translate("No mod is specified to sort relative to.").ToStdString(), BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error(loc::translate("No mod is specified to sort relative to."), BOSS_ERROR_INVALID_SYNTAX);
 				else if (!Item(SortModBox->GetValue().ToStdString()).IsPlugin())  //Sort object is a group. Error.
-					throw boss_error(translate("Cannot sort a plugin relative to a group.").ToStdString(), BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error(loc::translate("Cannot sort a plugin relative to a group."), BOSS_ERROR_INVALID_SYNTAX);
 			} else if (InsertModOption->GetValue() && !Item(InsertModBox->GetValue().ToStdString()).IsGroup()) {  //Inserting into a mod. Error.
 				if (InsertModBox->IsEmpty())
-					throw boss_error(translate("No group is specified to insert into.").ToStdString(), BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error(loc::translate("No group is specified to insert into."), BOSS_ERROR_INVALID_SYNTAX);
 				else
-					throw boss_error(translate("Cannot insert into a plugin.").ToStdString(), BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error(loc::translate("Cannot insert into a plugin."), BOSS_ERROR_INVALID_SYNTAX);
 			}
 		}
 		if (AddMessagesCheckBox->IsChecked() && NewModMessagesBox->IsEmpty())  //Can't add no messages. Error.
-			throw boss_error(translate("Cannot add messages when none are given.").ToStdString(), BOSS_ERROR_INVALID_SYNTAX);
+			throw boss_error(loc::translate("Cannot add messages when none are given."), BOSS_ERROR_INVALID_SYNTAX);
 	} else {  //Rule object is a group, or empty.
 		if (RuleModBox->IsEmpty())
-			throw boss_error(translate("No rule mod is specified.").ToStdString(), BOSS_ERROR_INVALID_SYNTAX);
+			throw boss_error(loc::translate("No rule mod is specified."), BOSS_ERROR_INVALID_SYNTAX);
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
 				if (SortModBox->IsEmpty())  //No sort object specified. Error.
-					throw boss_error(translate("No mod is specified to sort relative to.").ToStdString(), BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error(loc::translate("No mod is specified to sort relative to."), BOSS_ERROR_INVALID_SYNTAX);
 				else if (Item(SortModBox->GetValue().ToStdString()).IsPlugin())  //Sort object is a plugin. Error.
-					throw boss_error(translate("Cannot sort a group relative to a plugin.").ToStdString(), BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error(loc::translate("Cannot sort a group relative to a plugin."), BOSS_ERROR_INVALID_SYNTAX);
 			} else if (InsertModOption->GetValue())  //Can't insert groups. Error.
-				throw boss_error(translate("Cannot insert groups.").ToStdString(), BOSS_ERROR_INVALID_SYNTAX);
+				throw boss_error(loc::translate("Cannot insert groups."), BOSS_ERROR_INVALID_SYNTAX);
 		}
 		if (AddMessagesCheckBox->IsChecked())  //Can't add messages to a group. Error.
-			throw boss_error(translate("Cannot add messages to groups.").ToStdString(), BOSS_ERROR_INVALID_SYNTAX);
+			throw boss_error(loc::translate("Cannot add messages to groups."), BOSS_ERROR_INVALID_SYNTAX);
 	}
 
 	newRule.Enabled(true);
@@ -777,7 +777,7 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inG
 	} catch (boss_error &e) {
 		game.userlist.Clear();
 		LOG_ERROR("Error: %s", e.getString().c_str());
-		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, translate("User Rules Editor").ToStdString(), e.getString());
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, loc::translate("User Rules Editor"), e.getString());
 	}
 
 	//Now disable any ADD rules with rule mods that are in the masterlist.
