@@ -667,7 +667,7 @@ BOSS_API uint32_t SubmitUnrecognisedPlugin(boss_db db, const uint8_t * plugin,
 	else
 		description = linkStr + "\\n\\n" + infoStr;
 	string id;
-	char * url = "http://www.darkcreations.org/bugzilla/jsonrpc.cgi";  //URL to send data to.
+	char * url = "http://bugzilla.darkcreations.org/jsonrpc.cgi";  //URL to send data to.
 
 	//Now start curling.
 	char errbuff[CURL_ERROR_SIZE];
