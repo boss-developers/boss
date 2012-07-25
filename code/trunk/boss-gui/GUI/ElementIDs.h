@@ -50,7 +50,6 @@ enum {
 	MENU_OpenLicenses,
 	MENU_ShowAbout,
 	MENU_ShowSettings,
-	MENU_None,
 	MENU_Oblivion,
 	MENU_Nehrim,
 	MENU_Skyrim,
@@ -73,7 +72,7 @@ enum {
 	OPTION_OKExitSettings,
 	OPTION_CancelExitSettings,
 	DROPDOWN_ProxyType,
-	//User Rules Editor.
+	//User Rules Manager.
 	LIST_RuleList,
 	BUTTON_NewRule,
 	BUTTON_EditRule,

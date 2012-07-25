@@ -404,7 +404,7 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 	wxMessageDialog *dlg = new wxMessageDialog(this,
 			translate("Are you sure you want to save your changes to the selected rule?"), 
-			translate("BOSS: User Rules Editor"), wxYES_NO);
+			translate("BOSS: User Rules Manager"), wxYES_NO);
 
 	if (dlg->ShowModal() != wxID_YES)  //User has chosen not to save.
 		return;
@@ -426,7 +426,7 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
 	wxMessageDialog *dlg = new wxMessageDialog(this,
 			translate("Are you sure you want to delete the selected rule?"), 
-			translate("BOSS: User Rules Editor"), wxYES_NO);
+			translate("BOSS: User Rules Manager"), wxYES_NO);
 
 	if (dlg->ShowModal() != wxID_YES)  //User has chosen not to delete.
 		return;
@@ -497,7 +497,7 @@ void UserRulesEditorFrame::LoadLists() {
 	try {
 		game.modlist.Load(game, game.DataFolder());
 	} catch (boss_error &e) {
-		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, loc::translate("User Rules Editor"), e.getString());
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, loc::translate("User Rules Manager"), e.getString());
 	}
 
 	vector<Item> items = game.modlist.Items();
@@ -516,7 +516,7 @@ void UserRulesEditorFrame::LoadLists() {
 		game.masterlist.EvalConditions(game);
 		game.masterlist.EvalRegex(game);
 	} catch (boss_error &e) {
-		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, loc::translate("User Rules Editor"), e.getString());
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, loc::translate("User Rules Manager"), e.getString());
 	}
 }
 
@@ -777,7 +777,7 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inG
 	} catch (boss_error &e) {
 		game.userlist.Clear();
 		LOG_ERROR("Error: %s", e.getString().c_str());
-		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, loc::translate("User Rules Editor"), e.getString());
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, loc::translate("User Rules Manager"), e.getString());
 	}
 
 	//Now disable any ADD rules with rule mods that are in the masterlist.

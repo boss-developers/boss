@@ -217,7 +217,7 @@ bool BossGUI::OnInit() {
 		game = Game(detectedGame);
 		game.CreateBOSSGameFolder();
 		LOG_INFO("Game detected: %s", game.Name().c_str());
-	} catch (boss_error &e) {
+	} catch (boss_error /*&e*/) {
 		return false;
 	}
 	frame->SetGames(game, detected);
@@ -263,7 +263,6 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	MenuBar->Append(EditMenu, translate("&Edit"));
 	//Game menu
 	GameMenu = new wxMenu();
-	GameMenu->AppendRadioItem(MENU_None, translate("&None"), translate("If selected, BOSS was unable to detect or run for a game."));
 	GameMenu->AppendRadioItem(MENU_Oblivion, translate("&Oblivion"), translate("Switch to running BOSS for Oblivion."));
 	GameMenu->AppendRadioItem(MENU_Nehrim, translate("&Nehrim"), translate("Switch to running BOSS for Nehrim."));
 	GameMenu->AppendRadioItem(MENU_Skyrim, translate("&Skyrim"), translate("Switch to running BOSS for Skyrim."));
@@ -352,9 +351,6 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	//Set option values based on initialised variable values.
 	RunBOSSButton->SetDefault();
 
-	//Disable the None option from the Active Game menu. It should stay disabled.
-	GameMenu->FindItem(MENU_None)->Enable(false);
-
 	if (!gl_silent)
 		ShowLogBox->SetValue(true);
 
@@ -414,9 +410,9 @@ void MainFrame::OnQuit( wxCommandEvent& event ) {
 }
 
 void MainFrame::OnClose(wxCloseEvent& event) {
-	Settings ini;
 	//Save settings to BOSS.ini before quitting.
 	try {
+		Settings ini;
 		ini.Save(ini_path, game.Id());
 	} catch (boss_error &e) {
 			wxMessageBox(
@@ -508,12 +504,16 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		if ( !gl_silent ) 
 			wxLaunchDefaultApplication(game.Log(gl_log_format).string());	//Displays the BOSSlog.
 		progDia->Destroy();
+		if (gl_close_gui_after_sorting)
+			this->Close(true);
 		return;
 	}
 
 	progDia->Pulse(translate("BOSS working..."));
 	if (progDia->WasCancelled()) {
 		progDia->Destroy();
+		if (gl_close_gui_after_sorting)
+			this->Close(true);
 		return;
 	}
 
@@ -539,12 +539,16 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		if ( !gl_silent ) 
 			wxLaunchDefaultApplication(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
 		progDia->Destroy();
+		if (gl_close_gui_after_sorting)
+			this->Close(true);
 		return; //fail in screaming heap.
 	}
 
 	progDia->Pulse();
 	if (progDia->WasCancelled()) {
 		progDia->Destroy();
+		if (gl_close_gui_after_sorting)
+			this->Close(true);
 		return;
 	}
 
@@ -590,6 +594,8 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
         if ( !gl_silent ) 
 			wxLaunchDefaultApplication(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
 		progDia->Destroy();
+		if (gl_close_gui_after_sorting)
+			this->Close(true);
         return; //fail in screaming heap.
 	}
 
@@ -608,6 +614,8 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	progDia->Pulse();
 	if (progDia->WasCancelled()) {
 		progDia->Destroy();
+		if (gl_close_gui_after_sorting)
+			this->Close(true);
 		return;
 	}
 
@@ -634,8 +642,11 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if ( !gl_silent ) 
-                wxLaunchDefaultApplication(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
-        exit (1); //fail in screaming heap.
+			wxLaunchDefaultApplication(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
+        progDia->Destroy();
+		if (gl_close_gui_after_sorting)
+			this->Close(true);
+        return; //fail in screaming heap.
 	}
 
 	LOG_INFO("Launching boss log in browser.");
@@ -643,7 +654,8 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		wxLaunchDefaultApplication(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
 	LOG_INFO("BOSS finished.");
 	progDia->Destroy();
-	return;
+	if (gl_close_gui_after_sorting)
+		this->Close(true);
 }
 
 void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
@@ -756,6 +768,7 @@ void MainFrame::OnTrialRunChange(wxCommandEvent& event) {
 }
 
 void MainFrame::OnGameChange(wxCommandEvent& event) {
+	try {
 	switch (event.GetId()) {
 	case MENU_Oblivion:
 		game = Game(OBLIVION);
@@ -775,6 +788,9 @@ void MainFrame::OnGameChange(wxCommandEvent& event) {
 	case MENU_Morrowind:
 		game = Game(MORROWIND);
 		break;
+	}
+	} catch (boss_error& e) {
+		wxMessageBox(e.getString());
 	}
 	game.CreateBOSSGameFolder();
 	SetTitle(wxT("BOSS - " + game.Name()));  //Don't need to convert name, known to be only ASCII chars.
@@ -897,13 +913,7 @@ void MainFrame::SetGames(const Game& inGame, const vector<uint32_t> inGames) {
 		GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
 	else if (game.Id() == MORROWIND)
 		GameMenu->FindItem(MENU_Morrowind)->Check();
-	else {  //No game detected. Only valid option is to force a game and update masterlist only, so set options to that and disable selecting of other run types.
-		GameMenu->FindItem(MENU_None)->Check();
-		gl_update_only = true;
-		SortOption->Enable(false);
-		UpdateOption->SetValue(true);
-		UndoOption->Enable(false);
-	}
+
 	size_t i=0;
 	for (i=0; i < detectedGames.size(); i++) {
 		if (detectedGames[i] == game.Id())

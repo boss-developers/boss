@@ -1318,6 +1318,7 @@ namespace boss {
 			<<	"[General Settings]" << endl
 			<<	"bDoStartupUpdateCheck    = " << BoolToString(gl_do_startup_update_check) << endl
 			<<	"bUseUserRulesManager     = " << BoolToString(gl_use_user_rules_manager) << endl 
+			<<	"bCloseGUIAfterSorting    = " << BoolToString(gl_close_gui_after_sorting) << endl
 			<<	"sLanguage                = " << GetLanguageString() << endl << endl
 
 			<<	"[Internet Settings]" << endl
@@ -1462,7 +1463,9 @@ namespace boss {
 				gl_do_startup_update_check = StringToBool(iter->second);
 			else if (iter->first == "bUseUserRulesEditor")
 				gl_use_user_rules_manager = StringToBool(iter->second);
-			if (iter->first == "bUpdateMasterlist")
+			else if (iter->first == "bCloseGUIAfterSorting")
+				gl_close_gui_after_sorting = StringToBool(iter->second);
+			else if (iter->first == "bUpdateMasterlist")
 				gl_update = StringToBool(iter->second);
 			else if (iter->first == "bOnlyUpdateMasterlist")
 				gl_update_only = StringToBool(iter->second);

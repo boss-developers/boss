@@ -91,6 +91,7 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 	GeneralTabSizer->Add(GeneralGridSizer);
 	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Check for BOSS updates on startup")), wholeItem);
 	GeneralTabSizer->Add(UseUserRuleManagerBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Use User Rules Manager")), wholeItem);
+	GeneralTabSizer->Add(CloseGUIAfterRunningBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Close the GUI after running BOSS.")), wholeItem);
 
 	/*wxStaticText *gameText;
 	wxString text = wxT("If the default game is set to Autodetect, BOSS will try to autodetect a game to run for, and will ask you to choose a game if it finds more than one.\n\n");
@@ -168,6 +169,8 @@ void SettingsFrame::SetDefaultValues() {
 		StartupUpdateCheckBox->SetValue(true);
 	if (gl_use_user_rules_manager)
 		UseUserRuleManagerBox->SetValue(true);
+	if (gl_close_gui_after_sorting)
+		CloseGUIAfterRunningBox->SetValue(true);
 
 	if (gl_game == AUTODETECT)
 		GameChoice->SetSelection(0);
@@ -225,6 +228,7 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	//General
 	gl_do_startup_update_check = StartupUpdateCheckBox->IsChecked();
 	gl_use_user_rules_manager = UseUserRuleManagerBox->IsChecked();
+	gl_close_gui_after_sorting = CloseGUIAfterRunningBox->IsChecked();
 	switch (GameChoice->GetSelection()) {
 	case 0:
 		gl_game = AUTODETECT;

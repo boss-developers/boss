@@ -45,6 +45,7 @@ private:
 	wxCheckBox *UseUserRuleManagerBox;
 	wxCheckBox *DebugSourceReferencesBox;
 	wxCheckBox *LogDebugOutputBox;
+	wxCheckBox *CloseGUIAfterRunningBox;
 	wxChoice *DebugVerbosityChoice;
 	wxChoice *GameChoice;
 	wxChoice *LanguageChoice;

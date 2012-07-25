@@ -92,6 +92,7 @@ namespace boss {
 	//General variables
 	BOSS_COMMON extern bool		gl_do_startup_update_check;	// Whether or not to check for updates on startup.
 	BOSS_COMMON	extern bool		gl_use_user_rules_manager;	// Use the User Rules Editor or edit userlist.txt directly?
+	BOSS_COMMON extern bool		gl_close_gui_after_sorting;	//Close the GUI after BOSS has finished running or not.
 	BOSS_COMMON extern uint32_t	gl_language;				// What language to run BOSS in?
 
 	//Command line variables

@@ -263,7 +263,7 @@ namespace boss {
 		if (!noPathInit) {
 			if (path.empty()) {
 				//First look for local install, then look for Registry.
-				if (fs::exists(boss_path / ".." / pluginsFolderName / masterFile) || gl_update_only)
+				if (fs::exists(boss_path / ".." / pluginsFolderName / masterFile))
 					gamePath = boss_path / "..";
 				else if (RegKeyExists("HKEY_LOCAL_MACHINE", registryKey, registrySubKey))
 					gamePath = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", registryKey, registrySubKey));
