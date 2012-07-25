@@ -93,15 +93,8 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 	GeneralTabSizer->Add(UseUserRuleManagerBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Use User Rules Manager")), wholeItem);
 	GeneralTabSizer->Add(CloseGUIAfterRunningBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Close the GUI after running BOSS")), wholeItem);
 
-	/*wxStaticText *gameText;
-	wxString text = wxT("If the default game is set to Autodetect, BOSS will try to autodetect a game to run for, and will ask you to choose a game if it finds more than one.\n\n");
-	text += wxT("If the default game is set to a specific game, and BOSS is not run to only update the masterlist, BOSS will attempt to run for that game, falling back to autodetection if it cannot be found.\n\n");
-	text += wxT("If the default game is set to a specific game, and BOSS is run to only update the masterlist, BOSS will run for that game whether or not it is detected.");
-	GeneralTabSizer->Add(gameText = new wxStaticText(GeneralTab, wxID_ANY, text), 1, wxEXPAND|wxALL, 10);
-	*/
-	wxStaticText *langText;
-	wxString text = translate("Language settings will be applied after the BOSS GUI is closed and re-opened.");
-	GeneralTabSizer->Add(langText = new wxStaticText(GeneralTab, wxID_ANY, text), 1, wxEXPAND|wxALL, 10);
+	wxString text = translate("Language settings will be applied after the BOSS GUI is restarted.");
+	GeneralTabSizer->Add(new wxStaticText(GeneralTab, wxID_ANY, text), 1, wxEXPAND|wxALL, 10);
 	
 	GeneralTab->SetSizer(GeneralTabSizer);
 
@@ -121,7 +114,9 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, translate("Proxy Password:")), leftItem);
 	InternetTabSizer->Add(ProxyPasswdBox = new wxTextCtrl(InternetTab,wxID_ANY), rightItem);
 
-	InternetTab->SetSizer(InternetTabSizer);
+	InternetTabSizer->AddStretchSpacer();
+
+	InternetTab->SetSizerAndFit(InternetTabSizer);
 
 	//Create Debugging Settings tab.
 	DebugTab = new wxPanel(TabHolder);

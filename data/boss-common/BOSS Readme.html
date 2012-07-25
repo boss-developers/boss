@@ -121,7 +121,7 @@
 <p style="clear:both;">
 
 <h2 id="intro">Introduction</h2>
-<p>BOSS helps mod users avoid serious conflicts by setting the mod plugins they have installed in their optimal load order. BOSS recognises over 22,100 plugins across the 6 games it supports, with the breakdown being roughly:
+<p>BOSS is designed to assist mod users in avoiding serious conflicts, by setting the correct load order for the plugins they have installed. BOSS recognises over 22,100 plugins across the 6 games it supports, with the breakdown being roughly:
 <ul>
 	<li>13,300+ TES IV: Oblivion plugins.
 	<li>3,500+ TES V: Skyrim plugins.
@@ -129,7 +129,7 @@
 	<li>3,100+ Fallout: New Vegas plugins.
 	<li>180+ Nehrim - At Fate's Edge plugins.
 </ul>
-<p>To set the proper load order for mod plugins that BOSS doesn't know about, a good working knowledge of load ordering is still necessary. See <a href="#appendix-a">Introduction To Load Orders</a> for an overview.
+<p>BOSS is not a complete solution to load ordering issues, as there are far more mods available than it knows about. To properly place plugins from such mods, a good working knowledge of mod load ordering is still necessary, for which some research and documentation reading will go a long way. See <a href="#appendix-a">Introduction To Load Orders</a> for an overview.
 <p><strong>Although BOSS technically supports TES III: Morrowind, no mod plugins are recognised and no further support is planned.</strong> Morrowind users looking for an automated load order manager should consider using <a href="http://code.google.com/p/mlox/">mlox</a> instead.
 <p>BOSS sorts plugins ghosted by the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities, and provides Bash Tag suggestions. It also provides over 10,000 plugin-specific messages, including usage notes, requirements, incompatibilities, warnings on bugs and installation mistake notifications. The positioning of plugins and the messages BOSS displays for them can be easily customised, and BOSS has a large number of options to control its features and how it displays its output.
 <p>Finally, if you're developing a modding utility and find yourself dealing with load orders, the BOSS API gives access to almost all of BOSS's functionality, plus more general load order and active status management functionality that works uniformly across all supported games. See the <a href="BOSS%20API%20Readme.html">BOSS API Readme</a> for more information on that.
@@ -243,7 +243,7 @@
 <img alt="settings window tab 1" src="images/GUI-Settings-1.png"/>
 <img alt="settings window tab 2" src="images/GUI-Settings-2.png"/>
 <img alt="settings window tab 3" src="images/GUI-Settings-3.png"/>
-<figcaption style="padding-top:340px;">The 3 tabs of the GUI's Settings window (animated slideshow).</figcaption>
+<figcaption style="padding-top:350px;">The 3 tabs of the GUI's Settings window (animated slideshow).</figcaption>
 </figure>
 <p>BOSS's less commonly used settings are found in the Settings window, which can be accessed by clicking <q>Edit&#x2192;Settings...</q> in the main window's menu bar. The settings are grouped into tabs depending on what area of BOSS's behaviour they control. The settings are detailed in the table below.
 <table>
@@ -402,7 +402,7 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 <h3 id="cli-ini">The BOSS.ini</h3>
 <figure>
 <img alt="userlist" src="images/Ini.png"/>
-<figcaption>An example BOSS.ini, as viewed in Notepad. In this BOSS.ini, the BOSS Log format has been set to plain text.</figcaption>
+<figcaption>An example BOSS.ini, as viewed in Notepad.</figcaption>
 </figure>
 <p>Users can edit all of BOSS's settings in the BOSS.ini. This is where BOSS gets its settings from when launching the CLI and the GUI. If BOSS is run and it cannot find a BOSS.ini, it will generate a new one with default settings. If the CLI is run with both a BOSS.ini present and command line parameters set, the command line parameters override the settings in BOSS.ini. The ini is split into the following sections:
 <h4 id="cli-ini-general">General Settings</h4>
@@ -804,9 +804,15 @@ threads when you read this. Just navigate through to the latest thread to post a
 <h2 id="appendix">Appendices</h2>
 <h3 id="appendix-a">Appendix A: Introduction To Load Orders</h3>
 <p>This appendix provides a general overview of load ordering in the games BOSS supports for those who are unfamiliar with the concept. For simplicity, <q>the game</q> will be used when the text refers to any of the games that BOSS supports.
-<p>Mod plugins for the game are files that end in <code>.esp</code> or <code>.esm</code>. These files are created by the game's official editing tools, or by third party modders' tools. They contain various data entries. These entries can either be brand new additions, or changes to entries added by another plugin, including the game's main master file (Morrowind.esm, Oblivion.esm, Nehrim.esm, Skyrim.esm, Fallout3.esm or FalloutNV.esm depending on the game). Entries cover almost all aspects of what is in the game, eg. NPCs, items, races, interiors, worlds, quests, etc.
-<p>When the game is run, it reads the contents of the active plugins and applies their entries in the order that the plugins are read. This leads to the <q>rule of one</q>, ie. one entry can only be modified by one plugin. As such, when several plugins modify the same entry, the plugin that is read last has its changes override the other plugins' changes for that entry. There is one exception to the <q>rule of one</q>, and that is that the contents of cells (the physical space in which your character moves) can be changed by any number of plugins, so different plugins can add objects to cells, move them around or remove them and all will see their changes applied by the game.
-<p>This order in which the game reads active plugins is, unsurprisingly, what is referred to as the load order. By changing the load order, you can change which plugins override and which are overridden, and so reduce detrimental conflicts. You cannot actually reduce how much is overridden through load order alone, but it is often the case that some overrides are acceptable while others cause problems in game. Setting a good load order is the process by which you seek to maximise the former instead of the latter. That is why load order matters. 
+<p>Mod plugins for the game are files that end in <code>.esp</code> or <code>.esm</code>. These files are created by the game's official editing tools, or by third party modders' tools. They contain various data entries, which can either be brand new additions or changes to the entries added by another plugin, including the game's main master file (Morrowind.esm, Oblivion.esm, Nehrim.esm, Skyrim.esm, Fallout3.esm or FalloutNV.esm depending on the game). These entries cover almost all aspects of what is in the game, eg. NPCs, items, races, interiors, worlds, quests, etc.
+<p>When the game is run, it loads each of the plugins you have installed one by one. The order in which it loads them is, unsurprisingly, what is referred to as the load order. The load order is important for two reasons:
+<ul>
+ <li>Dependency resolution.
+ <li>Conflict resolution.
+</ul>
+<p>A plugin which changes the entries added by other plugins is dependent on those other plugins, and the game requires all of the latter plugins to be loaded before the former. If they aren't, the game will crash on launch.
+<p>The game can only apply one version of any one entry (this is known as the <q>rule of one</q>). Therefore, when more than one plugin changes the same entry, the load order is used to decide which plugin's changes are applied. Put simply, the last loaded plugin's changes are applied. The one exception to the <q>rule of one</q> is that the contents of cells (the physical space in which your character moves) can be changed by any number of plugins, so different plugins can add objects to cells, move them around or remove them and all will see their changes applied by the game.
+<p>By changing the load order, you can change which plugins override and which are overridden, and so reduce detrimental conflicts. You cannot actually reduce how much is overridden through load order alone, but it is often the case that some overrides are acceptable while others cause problems in game. Setting a good load order is the process by which you seek to maximise the former instead of the latter.
 <p>Further compatibility between mods is then possible through the use of patches, which are made to address incompatibilities between specific mods, and through the use of Wrye Bash, which can create a <q>Bashed Patch</q> that allows you to select between types of changes for different mods. For example, two mods change a piece of armour, but one changes how it looks and the other changes its effectiveness: through load order alone you could only ever get one change, but using Wrye Bash you can get both, because they change different things in the same armour entry.
 <p>There are a few hardcoded rules that trump load order in many cases:
 <ul>
@@ -815,9 +821,9 @@ threads when you read this. Just navigate through to the latest thread to post a
  <li>In Skyrim, <code>Skyrim.esm</code> always loads before all other plugins.
  <li>In Skyrim, if <code>Update.esm</code> is present, it is always loaded. If it has no load order position set, it loads after all other master plugins. That might sound a bit odd, but thanks to Skyrim's load order mechanism, it is possible for it to have no set load order position, even though it is always loaded.
 </ul>
-<p>A plugin's position in the load order is often displayed by mod managers as a hexadecimal number, from 00 to FE (0 to 255 in decimal). The plugin with position 00 loads first, and the plugin with position FE is loaded last. Hexadecimal numbers are used to display the load order positions of plugins because these numbers form the first two digits of the code that the game uses to reference the entries that the plugin adds, so knowing the numbers is very useful to modders or anyone trying to reference entries in the in-game console, which uses these codes.
+<p>A plugin's position in the load order is often displayed by mod managers as a hexadecimal number, from 00 to FE (0 to 255 in decimal). The plugin with position 00 loads first, and the plugin with position FE is loaded last. Hexadecimal numbers are used to display the load order positions of plugins because these numbers form the first two digits of the code that the game uses to reference the entries that the plugin adds, so knowing the numbers allows modders and mod users to determine from which plugin an entry is from.
 <p>That's all that you as a mod user <em>need</em> to know about load orders. If you want to find out more about the actual mechanism by which the game decides the load order, read on.
-<p>Morrowind, Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas all share the same mechanism for deciding load order (though Morrowind uses a different file to list its active load order in - but that won't be discussed here). Skyrim, since the 1.4.26 patch, uses a different mechanism.
+<p>Morrowind, Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas all share the same mechanism for deciding load order (though Morrowind uses a different file to list its active load order in from the others - but that won't be discussed here). Skyrim, since the 1.4.26 patch, uses a different mechanism.
 <p>Load order for Morrowind, Oblivion, Nehrim, Fallout 3 and Fallout: New Vegas is decided by the modification date timestamps of the mod plugins. The active plugin with the earliest date loads first, with plugins being listed in descending date order (earliest to latest). It's a bad idea for a plugin that isn't the game's main master file to load first.
 <p>Skyrim's mechanism uses the order that plugins are listed within its <code>plugins.txt</code> file as its load order (from top to bottom). This file is the one in which the list of active plugins is stored, so only active plugins can be strictly said to have a load order. As any further discussion of this and its consequences gets a bit technical, see the <a href="BOSS%20API%20Readme.html">BOSS API Readme</a> for more information.
 
