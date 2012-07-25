@@ -110,7 +110,7 @@ void Fail() {
 class CLIMlistUpdater : public MasterlistUpdater {
 protected:
 	int progress(Updater * updater, double dlFraction, double dlTotal) {
-		printf(translate("Downloading: %s; %3.0f%% of %3.0f KB\r").str().c_str(), updater->TargetFile().c_str(), dlFraction, dlTotal);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
+		printf((translate("Downloading: %s; %3.0f%% of %3.0f KB").str() + "\r").c_str(), updater->TargetFile().c_str(), dlFraction, dlTotal);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
 		fflush(stdout);
 		return 0;
 	}
@@ -119,7 +119,7 @@ protected:
 class CLIBOSSUpdater : public BOSSUpdater {
 protected:
 	int progress(Updater * updater, double dlFraction, double dlTotal) {
-		printf(translate("Downloading: %s; %3.0f%% of %3.0f KB\r").str().c_str(), updater->TargetFile().c_str(), dlFraction, dlTotal);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
+		printf((translate("Downloading: %s; %3.0f%% of %3.0f KB").str() + "\r").c_str(), updater->TargetFile().c_str(), dlFraction, dlTotal);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
 		fflush(stdout);
 		return 0;
 	}
