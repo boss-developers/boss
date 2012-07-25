@@ -91,7 +91,7 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 	GeneralTabSizer->Add(GeneralGridSizer);
 	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Check for BOSS updates on startup")), wholeItem);
 	GeneralTabSizer->Add(UseUserRuleManagerBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Use User Rules Manager")), wholeItem);
-	GeneralTabSizer->Add(CloseGUIAfterRunningBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Close the GUI after running BOSS.")), wholeItem);
+	GeneralTabSizer->Add(CloseGUIAfterRunningBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Close the GUI after running BOSS")), wholeItem);
 
 	/*wxStaticText *gameText;
 	wxString text = wxT("If the default game is set to Autodetect, BOSS will try to autodetect a game to run for, and will ask you to choose a game if it finds more than one.\n\n");

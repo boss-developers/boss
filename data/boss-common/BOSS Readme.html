@@ -249,10 +249,11 @@
 <table>
 	<thead><tr><th>Tab<th>Setting<th>Description
 	<tbody>
-		<tr><td rowspan="4">General<td>Default Game<td>If set to something other than <q>Autodetect</q>, this overrides game autodetection. If the game specified is not detected, BOSS falls back to autodetection, unless BOSS is run with the <q>Masterlist Update Only</q> option selected, in which case BOSS will run successfully whether or not the game is installed.
-		<tr><td>Language<td>Controls the language BOSS uses in its interfaces. Plugin messages, debug log messages and the BOSS.ini are always displayed in English.
+		<tr><td rowspan="5">General<td>Default Game<td>If set to something other than <q>Autodetect</q>, this overrides game autodetection. If the game specified is not detected, BOSS falls back to autodetection, unless BOSS is run with the <q>Masterlist Update Only</q> option selected, in which case BOSS will run successfully whether or not the game is installed.
+		<tr><td>Language<td>Controls the language BOSS uses in its interfaces. Debug log messages are always displayed in English, and very few of the messages attached to plugins have been translated into other languages.
 		<tr><td>Check for BOSS updates on startup<td>Controls whether or not BOSS checks for program (not masterlist) updates automatically when it starts up.
 		<tr><td>Use User Rules Editor<td>Controls whether the GUI uses the User Rules Editor window to edit user rules or whether it opens the userlist.txt for manual editing.
+  <tr><td>Close the GUI after running BOSS<td>Controls whether or not the GUI quits after it has run to sort your plugins, update your masterlist or undo changes.
 		<tr><td rowspan="4">Internet<td>Proxy Hostname<td>If you use a proxy to connect to the Internet, specify its hostname here.
 		<tr><td>Proxy Port Number<td>If you use a proxy to connect to the Internet, specify its port number here.
 		<tr><td>Proxy Username<td>If you use a proxy that requires authentication to connect to the Internet, specify your username here.
@@ -411,7 +412,8 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 	<tbody>
 		<tr><td>bDoStartupUpdateCheck<td><code>true</code><td><code>true</code>, <code>false</code><td>Controls whether or not BOSS's Automatic Updater checks for new releases when BOSS is run.
 		<tr><td>bUseUserRulesEditor<td><code>true</code><td><code>true</code>, <code>false</code><td>Controls whether the GUI uses the User Rules Editor window to edit user rules or whether it opens the userlist.txt for manual editing.
-		<tr><td>sLanguage<td><code>english</code><td><code>english</code>, <code>german</code>, <code>russian</code>, <code>spanish</code><td>Controls the language BOSS uses in its interfaces. Note that plugin messages are always displayed in English.
+  <tr><td>bCloseGUIAfterSorting<td><code>false</code><td><code>true</code>, <code>false</code><td>Controls whether or not the GUI quits after it has run to sort your plugins, update your masterlist or undo changes.
+		<tr><td>sLanguage<td><code>english</code><td><code>english</code>, <code>german</code>, <code>russian</code>, <code>spanish</code><td>Controls the language BOSS uses in its interfaces. Debug log messages are always displayed in English, and very few of the messages attached to plugins have been translated into other languages.
 </table>
 <h4 id="cli-ini-internet">Internet Settings</h4>
 <p>These settings control how the masterlist updater and GUI auto-updater connect to the Internet. You will probably know if you need to alter them.

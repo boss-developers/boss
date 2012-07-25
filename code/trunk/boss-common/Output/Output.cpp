@@ -1107,6 +1107,7 @@ namespace boss {
 		if (logFormat == HTML)
 			out << "<section id='cssSettings'>"
 				<< "<p>" << translate("The BOSS Log can be displayed using an alternative colour scheme, which can be enabled and customised using the options below. Colours must be specified using their lowercase hex codes. The default value for each element is displayed as the placeholder for its text box, and this value is used if the text box is left empty.")
+				<< translate(" Some examples of colour codes that can be used may be found <a href='http://en.wikipedia.org/wiki/Web_colors#Color_table'>here</a>.")
 				<< "<form>"
 				<< "<p><label><input type='checkbox' id='useDarkColourScheme'/>" << translate("Use Alternative Colour Scheme") << "</label>"
 				<< "<table>"
