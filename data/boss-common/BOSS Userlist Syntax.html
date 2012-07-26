@@ -152,10 +152,10 @@ REPLACE: <var>[MESSAGE OBJECT]</var></code>
 <p>The <em>rule plugin</em> is the plugin you want to add the message to. The <em>message object</em> is the formatted BOSS message that you want to attach. See the <a href="#messages">The BOSS Message Format</a> section later on in this readme if you are unfamiliar with BOSS message formatting.
 <p>An example:
 <code class="box">FOR: Unofficial Oblivion Patch.esp
-REPLACE: ? Replaced!
+REPLACE: SAY: Replaced!
 
 FOR: bgMagicEV.esp.esp
-APPEND: % {{BASH:Names,Delev,Relev}}</code>
+APPEND: TAG: {{BASH:Names,Delev,Relev}}</code>
 <p>This will print in the BOSS Log:
 <blockquote>
 ...<br /><br />
@@ -316,7 +316,7 @@ BEFORE: RTT.esp</code>
 
 <h2 id="messages">The BOSS Message Format</h2>
 <p>Each of the four message types that can be added via the userlist begins with a <em>message keyword</em>. The keyword is then followed by the message itself. The message is just a standard line of text. In addition, Bash Tag suggestion messages must include the suggested Bash Tags in a comma-separated list beginning with <code>{{BASH:</code> and ending with <code>}}</code>.
-<p>The message message types, symbols and keywords are listen in the table below:
+<p>The message types and keywords are listed in the table below:
 <table>
 	<thead><tr><th><b>Message Type</b><th><b>Keyword</b><th>Example
 	<tbody>
