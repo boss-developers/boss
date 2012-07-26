@@ -171,6 +171,8 @@ int main(int argc, char *argv[]) {
 		localeId = "de.UTF-8";
 	else if (gl_language == RUSSIAN)
 		localeId = "ru.UTF-8";
+	else if (gl_language == SIMPCHINESE)
+		localeId = "zh.UTF-8";
 
 	try {
 		locale::global(gen(localeId));

@@ -58,7 +58,8 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 		wxT("English"),
 		wxString("Español", wxConvUTF8),
 		wxT("Deutsch"),
-		wxString("Русский", wxConvUTF8)
+		wxString("Русский", wxConvUTF8),
+		wxString("简体中文", wxConvUTF8)
 	};
 
 	//Set up stuff in the frame.
@@ -190,6 +191,8 @@ void SettingsFrame::SetDefaultValues() {
 		LanguageChoice->SetSelection(2);
 	else if (gl_language == RUSSIAN)
 		LanguageChoice->SetSelection(3);
+	else if (gl_language == SIMPCHINESE)
+		LanguageChoice->SetSelection(4);
 
 	//Internet Settings
 	ProxyHostBox->SetValue(wxString(gl_proxy_host.c_str(), wxConvUTF8));
@@ -259,6 +262,9 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 		break;
 	case 3:
 		gl_language = RUSSIAN;
+		break;
+	case 4:
+		gl_language = SIMPCHINESE;
 		break;
 	}
 

@@ -1371,6 +1371,8 @@ namespace boss {
 			return "german";
 		else if (gl_language == RUSSIAN)
 			return "russian";
+		else if (gl_language == SIMPCHINESE)
+			return "chinese";
 		else
 			return "";
 	}
@@ -1446,6 +1448,8 @@ namespace boss {
 					gl_language = GERMAN;
 				else if (iter->second == "russian")
 					gl_language = RUSSIAN;
+				else if (iter->second == "chinese")
+					gl_language = SIMPCHINESE;
 			}
 			//Now integers.
 			else if (iter->first == "iProxyPort")

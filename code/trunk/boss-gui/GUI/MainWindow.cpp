@@ -138,6 +138,9 @@ bool BossGUI::OnInit() {
 	} else if (gl_language == RUSSIAN) {
 		localeId = "ru.UTF-8";
 		lang = wxLANGUAGE_RUSSIAN;
+	} else if (gl_language == SIMPCHINESE) {
+		localeId = "zh.UTF-8";
+		lang = wxLANGUAGE_CHINESE_SIMPLIFIED;
 	}
 
 	try {

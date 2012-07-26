@@ -65,6 +65,7 @@ namespace boss {
 	BOSS_COMMON extern const uint32_t SPANISH;
 	BOSS_COMMON extern const uint32_t GERMAN;
 	BOSS_COMMON extern const uint32_t RUSSIAN;
+	BOSS_COMMON extern const uint32_t SIMPCHINESE;
 	
 
 	///////////////////////////////

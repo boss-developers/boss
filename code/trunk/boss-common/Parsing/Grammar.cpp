@@ -673,6 +673,8 @@ namespace boss {
 			result = (gl_language == GERMAN);
 		else if (boost::iequals(language, "spanish"))
 			result = (gl_language == SPANISH);
+		else if (boost::iequals(language, "chinese"))
+			result = (gl_language == SIMPCHINESE);
 		else
 			result = false;
 	}

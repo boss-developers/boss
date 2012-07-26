@@ -53,6 +53,7 @@ namespace boss {
 	BOSS_COMMON const uint32_t SPANISH				= 1;
 	BOSS_COMMON const uint32_t GERMAN				= 2;
 	BOSS_COMMON const uint32_t RUSSIAN				= 3;
+	BOSS_COMMON const uint32_t SIMPCHINESE			= 4;
 	
 	
 	///////////////////////////////
