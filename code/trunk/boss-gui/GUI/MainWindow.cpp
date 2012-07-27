@@ -450,8 +450,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	game.userlist.Clear();
 	game.bosslog.Clear();
 
-	//Set format for BOSS Log.
+	//Set format and some vars for BOSS Log.
 	game.bosslog.SetFormat(gl_log_format);
+	game.bosslog.scriptExtender = game.ScriptExtender();
+	game.bosslog.gameName = game.Name();
 
 
 	/////////////////////////////////////////////////////////

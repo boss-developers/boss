@@ -376,7 +376,7 @@ namespace boss {
 			ItemList::ItemList			() : lastRecognisedPos(0) {}
 
 	void	ItemList::Load				(const Game& parentGame, const fs::path path) {
-		items.clear();
+		Clear();
 		if (fs::exists(path) && fs::is_directory(path)) {
 			LOG_DEBUG("Reading user mods...");
 			size_t max;
@@ -1086,6 +1086,8 @@ namespace boss {
 		userlist_grammar grammar;
 		string::const_iterator begin, end;
 		string contents;
+
+		Clear();
 
 		skipper.SkipIniComments(false);
 		grammar.SetErrorBuffer(&errorBuffer);
