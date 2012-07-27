@@ -198,12 +198,12 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 
 	////Window buttons
 	wxBoxSizer *mainButtonBox = new wxBoxSizer(wxHORIZONTAL);
-	mainButtonBox->Add(new wxButton(this, BUTTON_NewRule, translate("Create New Rule")));
-	mainButtonBox->Add(new wxButton(this, BUTTON_EditRule, translate("Save Edited Rule")), 0, wxLEFT, 10);
-	mainButtonBox->Add(new wxButton(this, BUTTON_DeleteRule, translate("Delete Rule")), 0, wxLEFT, 10);
+	mainButtonBox->Add(CreateNewRuleButton = new wxButton(this, BUTTON_NewRule, translate("Create New Rule")));
+	mainButtonBox->Add(SaveEditedRuleButton = new wxButton(this, BUTTON_EditRule, translate("Save Edited Rule")), 0, wxLEFT, 10);
+	mainButtonBox->Add(DeleteRuleButton = new wxButton(this, BUTTON_DeleteRule, translate("Delete Rule")), 0, wxLEFT, 10);
 	mainButtonBox->AddStretchSpacer(2);
-	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleUp, translate("Move Rule Up")));
-	mainButtonBox->Add(new wxButton(this, BUTTON_MoveRuleDown, translate("Move Rule Down")), 0, wxLEFT, 10);
+	mainButtonBox->Add(MoveRuleUpButton = new wxButton(this, BUTTON_MoveRuleUp, translate("Move Rule Up")));
+	mainButtonBox->Add(MoveRuleDownButton = new wxButton(this, BUTTON_MoveRuleDown, translate("Move Rule Down")), 0, wxLEFT, 10);
 	mainButtonBox->AddStretchSpacer(2);
 	mainButtonBox->Add(new wxButton(this, BUTTON_OKExitEditor, translate("Save and Exit")));
 	mainButtonBox->Add(new wxButton(this, BUTTON_CancelExitEditor, translate("Cancel")), 0, wxLEFT, 10);
@@ -257,6 +257,14 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
+
+	//Disable buttons if they can do nothing.
+	if (game.userlist.Rules().empty()) {
+		SaveEditedRuleButton->Enable(false);
+		DeleteRuleButton->Enable(false);
+		MoveRuleUpButton->Enable(false);
+		MoveRuleDownButton->Enable(false);
+	}
 
 	progDia->Destroy();
 }
@@ -398,7 +406,13 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 			wxOK | wxICON_ERROR,
 			NULL);
 	}
-		
+	
+	if (!game.userlist.Rules().empty()) {
+		SaveEditedRuleButton->Enable();
+		DeleteRuleButton->Enable();
+		MoveRuleUpButton->Enable();
+		MoveRuleDownButton->Enable();
+	}
 }
 
 void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
@@ -432,6 +446,13 @@ void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
 		return;
 	else  //User has chosen to delete.
 		RulesList->DeleteSelectedRule();  //This doesn't work.
+
+	if (game.userlist.Rules().empty()) {
+		SaveEditedRuleButton->Enable(false);
+		DeleteRuleButton->Enable(false);
+		MoveRuleUpButton->Enable(false);
+		MoveRuleDownButton->Enable(false);
+	}
 }
 
 void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
@@ -771,7 +792,7 @@ void RuleBoxClass::Highlight(bool highlight) {
 // RuleListFrameClass functions
 //////////////////////////////////
 
-RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inGame) : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize), game(inGame) {
+RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inGame) : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize), game(inGame), selectedRuleIndex(0) {
 	//Parse userlist.
 	LOG_INFO("Starting to parse userlist.");
 	try {
@@ -822,18 +843,17 @@ void RuleListFrameClass::SaveUserlist(const fs::path path) {
 		game.userlist.Save(path);
 	} catch (boss_error &e) {
 		wxMessageBox(
-		FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
-		translate("BOSS: Error"),
-		wxOK | wxICON_ERROR,
-		NULL);
+			FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
+			translate("BOSS: Error"),
+			wxOK | wxICON_ERROR,
+			NULL);
 	}
 }
 
 void RuleListFrameClass::ReDrawRuleList() {
 	RuleListScroller->DestroyChildren();
-	size_t size = game.userlist.Rules().size();
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
-	for (size_t i=0;i<size;i++) {
+	for (size_t i=0,size = game.userlist.Rules().size();i<size;i++) {
 		if (i == selectedRuleIndex)
 			sizer->Add(new RuleBoxClass(RuleListScroller, game.userlist.RuleAt(i), i, true), 0, wxEXPAND);
 		else
@@ -892,18 +912,18 @@ void RuleListFrameClass::SaveEditedRule(Rule editedRule) {
 	if (selectedRuleIndex >= 0 && selectedRuleIndex < game.userlist.Rules().size()) {
 		game.userlist.Replace(selectedRuleIndex, editedRule);
 		ReDrawRuleList();
+		RuleListScroller->Scroll(RuleListScroller->GetChildren()[selectedRuleIndex]->GetPosition());
 	}
-	RuleListScroller->Scroll(RuleListScroller->GetChildren()[selectedRuleIndex]->GetPosition());
 }
 
 void RuleListFrameClass::DeleteSelectedRule() {
-	game.userlist.Erase(selectedRuleIndex);
+	if (!game.userlist.Rules().empty())
+		game.userlist.Erase(selectedRuleIndex);
+	if (!game.userlist.Rules().empty() && selectedRuleIndex == game.userlist.Rules().size())  //Just shortened rules by one. Make sure index isn't invalid.
+		selectedRuleIndex--;
 	ReDrawRuleList();
-	if (!game.userlist.Rules().empty()) {
-		if (selectedRuleIndex == game.userlist.Rules().size())  //Just shortened rules by one. Make sure index isn't invalid.
-			selectedRuleIndex--;
+	if (!game.userlist.Rules().empty())
 		RuleListScroller->Scroll(RuleListScroller->GetChildren()[selectedRuleIndex]->GetPosition());
-	}
 }
 
 void RuleListFrameClass::OnRuleSelection(wxCommandEvent& event) {

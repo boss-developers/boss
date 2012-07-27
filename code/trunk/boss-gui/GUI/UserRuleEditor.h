@@ -138,6 +138,12 @@ private:
 	wxNotebook *TabHolder;
 	wxPanel *ModlistTab;
 	wxPanel *MasterlistTab;
+
+	wxButton * CreateNewRuleButton;
+	wxButton * SaveEditedRuleButton;
+	wxButton * DeleteRuleButton;
+	wxButton * MoveRuleUpButton;
+	wxButton * MoveRuleDownButton;
 };
 
 #endif
