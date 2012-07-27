@@ -547,7 +547,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
 				if (SortModBox->IsEmpty())  //No sort object specified. Error.
-					throw boss_error(loc::translate("No mod is specified to sort relative to."), BOSS_ERROR_INVALID_SYNTAX);
+					throw boss_error(loc::translate("No group is specified to sort relative to."), BOSS_ERROR_INVALID_SYNTAX);
 				else if (Item(SortModBox->GetValue().ToStdString()).IsPlugin())  //Sort object is a plugin. Error.
 					throw boss_error(loc::translate("Cannot sort a group relative to a plugin."), BOSS_ERROR_INVALID_SYNTAX);
 			} else if (InsertModOption->GetValue())  //Can't insert groups. Error.
@@ -556,6 +556,8 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 		if (AddMessagesCheckBox->IsChecked())  //Can't add messages to a group. Error.
 			throw boss_error(loc::translate("Cannot add messages to groups."), BOSS_ERROR_INVALID_SYNTAX);
 	}
+	if (!SortModsCheckBox->IsChecked() && !AddMessagesCheckBox->IsChecked())
+		throw boss_error(loc::translate("The rule mod is not being sorted nor having its attached messages altered."), BOSS_ERROR_INVALID_SYNTAX);
 
 	newRule.Enabled(true);
 	newRule.Object(RuleModBox->GetValue().ToStdString());
