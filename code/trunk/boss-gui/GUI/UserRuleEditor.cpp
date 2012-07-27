@@ -92,23 +92,11 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 				if (mUpdater.IsInternetReachable()) {
 					progDia->Update(0,translate("Updating to the latest masterlist from the Google Code repository..."));
 					LOG_DEBUG("Updating masterlist...");
-					try {
-						string localDate, remoteDate, message;
-						uint32_t localRevision, remoteRevision;
-						mUpdater.ProgDialog(progDia);
-						mUpdater.Update(game.Id(), game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
-						LOG_DEBUG("masterlist updated successfully.");
-					} catch (boss_error &e) {
-						LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
-						progDia->Destroy();
-						this->Close();
-						wxMessageBox(
-							FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
-							translate("BOSS: Error"),
-							wxOK | wxICON_ERROR,
-							NULL);
-						return;
-					}
+					string localDate, remoteDate, message;
+					uint32_t localRevision, remoteRevision;
+					mUpdater.ProgDialog(progDia);
+					mUpdater.Update(game.Id(), game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
+					LOG_DEBUG("masterlist updated successfully.");
 				} else {
 					progDia->Destroy();
 					this->Close();
