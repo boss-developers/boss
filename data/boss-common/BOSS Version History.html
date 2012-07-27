@@ -126,10 +126,10 @@
  <li>Changed: Minor tweaks to the spacing of rules listed in the User Rules Editor and options in the main window.
  <li>Changed: When the user enables ADD rules that were disabled because they add plugins that are in the masterlist, the User Rules Manager now also changes them to OVERRIDE rules.
  <li>Changed: The text in the drop-down boxes in the Rule Editor has been lowercased to read better.
- <li>API changes:
- <li>Changed: CreateBossDb now takes the path to the game executable's folder, rather than the path to the game plugin's folder.
- <li>Changed: CreateBossDb now accepts a non-null empty path, treating it in the same manner as a null path (ie. BAPI tries to autodetect game install location).
- <li>Changed: DumpMinimal now includes conditionals in the file it creates.
+ <li>Changed: The User Rules Manager now disables the <q>Save Edited Rule</q>, <q>Delete Rule</q>, <q>Move Rule Up</q> and <q>Move Rule Down</q> buttons when there are no rules present in the rule list.
+ <li>Changed: The API's CreateBossDb now takes the path to the game executable's folder, rather than the path to the game plugin's folder.
+ <li>Changed: The API's CreateBossDb now accepts a non-null empty path, treating it in the same manner as a null path (ie. BAPI tries to autodetect game install location).
+ <li>Changed: The API's DumpMinimal now includes conditionals in the file it creates.
  <li>Changed: The API now caches the load order and active plugin list and does not re-load them unless the files/folders they are derived from have changed.
  <li>Changed: The API now returns BOSS_API_ERROR_FILE_NOT_FOUND if a plugin that is not installed is passed to any of the load order or active status modification functions, aside from when deactivating a single plugin through SetPluginActive.
  <li>Added: SetProxy function.

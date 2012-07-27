@@ -468,15 +468,14 @@ namespace boss {
 					modlist.Move(addedNum, items[i]);
 					addedNum++;
 				}
-			} else if (items[i].Type() == BEGINGROUP || items[i].Type() == ENDGROUP) { //Group lines must stay recorded.
+			} else if (items[i].Type() == BEGINGROUP || items[i].Type() == ENDGROUP) {
 				if (uHashset.find(items[i].Name()) == uHashset.end())  //Mod not in modlist or userlist, skip.
 					continue;
 
-				if (addedItems.find(items[i].Name()) == addedItems.end()) {
-					addedItems.insert(items[i].Name());								//Record it in the holding vector.
-					modlist.Move(addedNum, items[i]);
-					addedNum++;
-				}
+				//Don't check if it has already been added, as groups will have two entries anyway.
+				//Also don't Move it, for the same reason.
+				modlist.Insert(addedNum, items[i]);
+				addedNum++;
 			}
 		}
 		if (addedNum > 0)
