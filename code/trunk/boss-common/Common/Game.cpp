@@ -442,7 +442,7 @@ namespace boss {
 			if (uHashset.find(ruleObject.Name()) == uHashset.end())  //Mod or group not already in hashset, so add to hashset.
 				uHashset.insert(ruleObject.Name());
 			if (rules[i].Key() != FOR) {  //First line is a sort line.
-				Item sortObject(rules[i].LineAt(1).Object());
+				Item sortObject(rules[i].LineAt(0).Object());
 				if (uHashset.find(sortObject.Name()) == uHashset.end())  //Mod or group not already in hashset, so add to hashset.
 					uHashset.insert(sortObject.Name());
 			}
@@ -520,7 +520,7 @@ namespace boss {
 						//Do checks.
 						if (ruleIter->Key() == ADD && modlistPos1 == modlist.Items().size()) {
 							bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not installed or in the masterlist.");
-							LOG_WARN(" * \"%s\" is not installed.", ruleIter->Object().c_str());
+							LOG_WARN(" * \"%s\" is not in the masterlist or installed.", ruleIter->Object().c_str());
 							continue;
 						//If it adds a mod already sorted, skip the rule.
 						} else if (ruleIter->Key() == ADD  && modlistPos1 <= modlist.LastRecognisedPos()) {
