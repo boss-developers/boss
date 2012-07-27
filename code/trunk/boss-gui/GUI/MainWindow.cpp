@@ -1096,33 +1096,3 @@ void MainFrame::OnThreadUpdate(wxThreadEvent& evt) {
 		}
 	}
 }
-
-int GUIMlistUpdater::progress(boss::Updater * updater, double dlFraction, double dlTotal) {
-	int currentProgress = (int)floor(dlFraction * 10);
-	if (currentProgress == 1000)
-		--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
-	wxProgressDialog* progress = (wxProgressDialog*)updater->ProgDialog();
-	bool cont = progress->Update(currentProgress, FromUTF8(format(loc::translate("Downloading: %1%")) % updater->TargetFile()));
-	if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
-		uint32_t ans = wxMessageBox(translate("Are you sure you want to cancel?"), translate("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
-		if (ans == wxYES)
-			return 1;
-		progress->Resume();
-	}
-	return 0;
-}
-
-int GUIBOSSUpdater::progress(boss::Updater * updater, double dlFraction, double dlTotal) {
-	int currentProgress = (int)floor(dlFraction * 10);
-	if (currentProgress == 1000)
-		--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
-	wxProgressDialog* progress = (wxProgressDialog*)updater->ProgDialog();
-	bool cont = progress->Update(currentProgress, FromUTF8(format(loc::translate("Downloading: %1%")) % updater->TargetFile()));
-	if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
-		uint32_t ans = wxMessageBox(translate("Are you sure you want to cancel?"), translate("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
-		if (ans == wxYES)
-			return 1;
-		progress->Resume();
-	}
-	return 0;
-}

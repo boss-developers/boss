@@ -80,6 +80,59 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 	wxProgressDialog *progDia = new wxProgressDialog(translate("BOSS: Working..."), translate("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
 	progDia->Pulse();
 
+	//First check if masterlist is installed, and offer to download it if not.
+	if (!fs::exists(game.Masterlist())) {
+		wxMessageDialog *dlg = new wxMessageDialog(this,
+			FromUTF8(format(loc::translate("The User Rules Manager requires the BOSS masterlist for %1% to have been downloaded, but it cannot be detected. Do you wish to download the latest masterlist now?")) % game.Name()), 
+			translate("BOSS: User Rules Manager"), wxYES_NO);
+
+		if (dlg->ShowModal() == wxID_YES) {  //User has chosen not to download.
+			GUIMlistUpdater mUpdater;
+			try {
+				if (mUpdater.IsInternetReachable()) {
+					progDia->Update(0,translate("Updating to the latest masterlist from the Google Code repository..."));
+					LOG_DEBUG("Updating masterlist...");
+					try {
+						string localDate, remoteDate, message;
+						uint32_t localRevision, remoteRevision;
+						mUpdater.ProgDialog(progDia);
+						mUpdater.Update(game.Id(), game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
+						LOG_DEBUG("masterlist updated successfully.");
+					} catch (boss_error &e) {
+						LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
+						progDia->Destroy();
+						this->Close();
+						wxMessageBox(
+							FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
+							translate("BOSS: Error"),
+							wxOK | wxICON_ERROR,
+							NULL);
+						return;
+					}
+				} else {
+					progDia->Destroy();
+					this->Close();
+					wxMessageBox(
+						FromUTF8(format(loc::translate("Error: No internet connection detected. Masterlist could not be downloaded."))),
+						translate("BOSS: Error"),
+						wxOK | wxICON_ERROR,
+						NULL);
+					return;
+				}
+			} catch (boss_error &e) {
+				LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
+				progDia->Destroy();
+				this->Close();
+				wxMessageBox(
+					FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
+					translate("BOSS: Error"),
+					wxOK | wxICON_ERROR,
+					NULL);
+				return;
+			}
+		}
+	}
+
 	try{
 		LoadLists();
 	} catch(boss_error &e) {

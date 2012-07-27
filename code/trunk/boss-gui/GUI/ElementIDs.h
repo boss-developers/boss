@@ -103,9 +103,21 @@ enum {
 //but Boost's requires a UTF-8 -> (whatever display encoding) conversion to work with the UI.
 namespace boss {
 	wxString translate(char * cstr);
+	
+	wxString translate(string str);
 
 	wxString FromUTF8(string str);
 
 	wxString FromUTF8(boost::format f);
+
+	class GUIMlistUpdater : public boss::MasterlistUpdater {
+	protected:
+		int progress(boss::Updater * updater, double dlFraction, double dlTotal);
+	};
+
+	class GUIBOSSUpdater : public boss::BOSSUpdater {
+	protected:
+		int progress(boss::Updater * updater, double dlFraction, double dlTotal);
+	};
 }
 #endif

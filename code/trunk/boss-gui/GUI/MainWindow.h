@@ -102,14 +102,4 @@ protected:
 	wxCriticalSection updateData; // protects fields above
 	DECLARE_EVENT_TABLE()
 };
-
-class GUIMlistUpdater : public boss::MasterlistUpdater {
-protected:
-	int progress(boss::Updater * updater, double dlFraction, double dlTotal);
-};
-
-class GUIBOSSUpdater : public boss::BOSSUpdater {
-protected:
-	int progress(boss::Updater * updater, double dlFraction, double dlTotal);
-};
 #endif
