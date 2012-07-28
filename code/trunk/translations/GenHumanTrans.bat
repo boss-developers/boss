@@ -4,5 +4,3 @@ cmd /k "msgunfmt -o oldMessages.po messages.mo && xgettext --output=newMessages.
 ) else (
  cmd /k "xgettext --keyword=translate:1,1t --directory=..\boss-common\Common --directory=..\boss-gui\GUI --directory=. Error.h Error.cpp Game.cpp ..\boss-common\Output\Output.cpp ..\boss-cli\BOSS-CLI.cpp ElementIDs.cpp MainWindow.cpp SettingsWindow.cpp UserRuleEditor.cpp"
 )
-
-code\trunk\boss-gui\GUI\ElementIDs.cpp
