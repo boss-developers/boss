@@ -279,7 +279,7 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	HelpMenu->Append(MENU_OpenUserlistReadMe, translate("Open &Userlist Syntax Doc"), translate("Opens the BOSS userlist syntax documentation in your default web browser."));
 	HelpMenu->Append(MENU_OpenMasterlistReadMe, translate("Open &Masterlist Syntax Doc"), translate("Opens the BOSS masterlist syntax documentation in your default web browser."));
 	HelpMenu->Append(MENU_OpenAPIReadMe, translate("&Open API Readme"), translate("Opens the BOSS API readme in your default web browser."));
-	HelpMenu->Append(MENU_OpenAPIReadMe, translate("Open &Version History"), translate("Opens the BOSS version history in your default web browser."));
+	HelpMenu->Append(MENU_OpenVersionHistory, translate("Open &Version History"), translate("Opens the BOSS version history in your default web browser."));
 	HelpMenu->Append(MENU_OpenLicenses, translate("View &Copyright Licenses"), translate("View the GNU General Public License v3.0 and GNU Free Documentation License v1.3."));
 	HelpMenu->AppendSeparator();
 	HelpMenu->Append(OPTION_CheckForUpdates, translate("&Check For Updates..."), translate("Checks for updates to BOSS."));

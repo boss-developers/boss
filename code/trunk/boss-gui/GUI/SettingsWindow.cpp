@@ -88,7 +88,7 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 	//GeneralTabSizer->Add(gameBox, wholeItem);
 	//wxBoxSizer *languageBox = new wxBoxSizer(wxHORIZONTAL);
 	GeneralGridSizer->Add(new wxStaticText(GeneralTab, wxID_ANY, translate("Language:")), leftItem);
-	GeneralGridSizer->Add(LanguageChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, Language), rightItem);
+	GeneralGridSizer->Add(LanguageChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 5, Language), rightItem);
 	GeneralTabSizer->Add(GeneralGridSizer);
 	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Check for BOSS updates on startup")), wholeItem);
 	GeneralTabSizer->Add(UseUserRuleManagerBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Use User Rules Manager")), wholeItem);

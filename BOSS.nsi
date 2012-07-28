@@ -455,6 +455,9 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		RMDir "$INSTDIR\Skyrim"
 		RMDir "$INSTDIR\Fallout 3"
 		RMDir "$INSTDIR\Fallout New Vegas"
+  RMDir "$INSTDIR\l10n\ru\LC_MESSAGES"
+  RMDir "$INSTDIR\l10n\ru"
+  RMDir "$INSTDIR\l10n"
 		
 		;Remove uninstaller.
 		Delete "$INSTDIR\Uninstall.exe"
