@@ -966,7 +966,7 @@ namespace boss {
 				<< "td{padding:0 .5em;vertical-align:top;}"
 				<< "blockquote{font-family:monospace;}"
 				<< "input[type='checkbox']{position:relative;top:.15em;margin-right:.5em;}"
-				<< "noscript p {position:absolute;top:0;left:154px;padding-right:0.5em;padding-left:1em;}"
+				<< "noscript{position:absolute;top:0;left:140px;padding:1em;}"
 				<< "li.error{background:#ff9090;display:table;padding:0.3em 0.5em;border-radius:0.5em;}"
 				<< "li.warn{background:#FFDD55;display:table;padding:0.3em 0.5em;border-radius:0.5em;}"
 				<< "li.success{background:#90ff90;display:table;padding:0.3em 0.5em;border-radius:0.5em;}"

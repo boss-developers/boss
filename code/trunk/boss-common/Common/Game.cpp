@@ -519,8 +519,7 @@ namespace boss {
 							bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not installed or in the masterlist.");
 							LOG_WARN(" * \"%s\" is not in the masterlist or installed.", ruleIter->Object().c_str());
 							continue;
-						//If it adds a mod already sorted, skip the rule.
-						} else if (ruleIter->Key() == ADD  && modlistPos1 <= modlist.LastRecognisedPos()) {
+						} else if (ruleIter->Key() == ADD  && modlistPos1 <= modlist.LastRecognisedPos()) {  //If it adds a mod already sorted, skip the rule.
 							bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is already in the masterlist.");
 							LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->Object().c_str());
 							continue;
@@ -528,7 +527,8 @@ namespace boss {
 							bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not in the masterlist, cannot override.");
 							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->Object().c_str());
 							continue;
-						}
+						} else if (modlistPos1 == modlist.LastRecognisedPos())  //The last recognised item is being moved. It can only be moved earlier, so set the previous item as the last recognised item.
+							lastRecognisedItem = modlist.ItemAt(modlistPos1 - 1);
 						modlistPos2 = modlist.FindItem(lines[i].Object(), MOD);  //Find sort mod.
 						//Do checks.
 						if (modlistPos2 == modlist.Items().size()) {  //Handle case of mods that don't exist at all.
@@ -540,7 +540,7 @@ namespace boss {
 							LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", lines[i].Object().c_str());
 							continue;
 						} else if (lines[i].Key() == AFTER && modlistPos2 == modlist.LastRecognisedPos())
-							lastRecognisedItem = modlist.ItemAt(modlistPos1).Name();
+							lastRecognisedItem = modlist.ItemAt(modlistPos1);
 						mod = modlist.ItemAt(modlistPos1);  //Record the rule mod in a new variable.
 						modlist.Erase(modlistPos1);  //Now remove the rule mod from its old position. This breaks all modlist iterators active.
 						//Need to find sort mod pos again, to fix iterator.
@@ -615,11 +615,12 @@ namespace boss {
 					bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << loc::translate("The group ") << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not in the masterlist or is malformatted.");
 					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", ruleIter->Object().c_str());
 					continue;
-				}
+				} else if (ruleItem.Name() == lastRecognisedItem.Name())  //Last recognised item is being moved. Set the item before the start of this group to the lastRecognisedItem.
+					lastRecognisedItem = modlist.ItemAt(modlistPos1 - 1);
 				//Copy the start, end and everything in between to a new variable.
 				vector<Item> items = modlist.Items();
 				group.assign(items.begin() + modlistPos1, items.begin() + modlistPos2+1);
-				//Now erase group from modlist. This breaks the lastRecognisedPos iterator, so that will be reset after rule application.
+				//Now erase group from modlist.
 				modlist.Erase(modlistPos1,modlistPos2+1);
 				//Find the group to sort relative to and insert it before or after it as appropriate.
 				if (lines[i].Key() == BEFORE)
@@ -632,14 +633,18 @@ namespace boss {
 					bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << loc::translate("The group ") << VAR_OPEN << lines[i].Object() << VAR_CLOSE << loc::translate(" is not in the masterlist or is malformatted.");
 					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", lines[i].Object().c_str());
 					continue;
-				}
+				} else if (lines[i].Key() == AFTER && lines[i].Object() == lastRecognisedItem.Name())  //Sorting after the last recognised item (which is a group). Set the item to be sorted as the last recognised.
+					lastRecognisedItem = Item(ruleItem.Name(), ENDGROUP);
+							
 				if (lines[i].Key() == AFTER)
 					modlistPos2++;
 				//Now insert the group.
 				modlist.Insert(modlistPos2, group, 0, group.size());
 			}
-			if (!messageLineFail)  //Print success message.
+			if (!messageLineFail) { //Print success message.
+				LOG_DEBUG("Rule #%" PRIuS " applied successfully.", ruleNo);
 				bosslog.userRules << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << *ruleIter << TABLE_DATA << "✓" << TABLE_DATA;
+			}
 			
 			//Now find that last recognised mod and set the iterator again.
 			modlist.LastRecognisedPos(modlist.FindLastItem(lastRecognisedItem.Name(), lastRecognisedItem.Type()));
@@ -647,6 +652,7 @@ namespace boss {
 		
 		//Now that all the rules have been applied, there is no need for groups or plugins that are not installed to be listed in
 		//modlist. Scan through it and remove these lines.
+		LOG_INFO("Removing unnecessary items...");
 		vector<Item> items = modlist.Items();
 		vector<Item>::iterator beginIt = items.begin(), endIt = items.end(), it = items.begin();
 		size_t lastRecPos = modlist.LastRecognisedPos();
@@ -664,6 +670,7 @@ namespace boss {
 
 	//Scans the data folder for script extender plugins and outputs their info to the bosslog.
 	void Game::ScanSEPlugins() {
+		LOG_INFO("Looking for Script Extender...");
 		if (!fs::exists(SEExecutable()))
 			LOG_DEBUG("Script Extender not detected.");
 		else {
@@ -676,6 +683,7 @@ namespace boss {
 			if (gl_show_CRCs)
 				bosslog.sePlugins << SPAN_CLASS_CRC_OPEN << loc::translate("Checksum: ") << CRC << SPAN_CLOSE;
 
+			LOG_INFO("Looking for Script Extender plugins...");
 			if (!fs::is_directory(SEPluginsFolder())) {
 				LOG_DEBUG("Script extender plugins directory not detected.");
 			} else {
@@ -702,6 +710,7 @@ namespace boss {
 		//Get the master esm time.
 		time_t esmtime = MasterFile().GetModTime(*this);
 		
+		LOG_INFO("Filling hashset of unrecognised and active plugins...");
 		//Load active plugin list.
 		boost::unordered_set<string> hashset;
 		if (fs::exists(ActivePluginsFile())) {
@@ -730,6 +739,7 @@ namespace boss {
 		for (size_t i=modlist.LastRecognisedPos()+1; i < max; i++)
 			unrecognised.insert(items[i].Name());
 
+		LOG_INFO("Enforcing masters before plugins rule...");
 		//Now check that the recognised plugins in their masterlist order obey the "masters before plugins" rule, and if not post a BOSS Log message saying that the
 		//masterlist order has been altered to reflect the "masters before plugins" rule. Then apply the rule. This retains recognised before unrecognised, with the 
 		//exception of unrecognised masters, which get put after recognised masters.
