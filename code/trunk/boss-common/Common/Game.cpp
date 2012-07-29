@@ -442,7 +442,7 @@ namespace boss {
 			if (uHashset.find(ruleObject.Name()) == uHashset.end())  //Mod or group not already in hashset, so add to hashset.
 				uHashset.insert(ruleObject.Name());
 			if (rules[i].Key() != FOR) {  //First line is a sort line.
-				Item sortObject(rules[i].LineAt(0).Object());
+				Item sortObject(rules[i].LineAt(1).Object());
 				if (uHashset.find(sortObject.Name()) == uHashset.end())  //Mod or group not already in hashset, so add to hashset.
 					uHashset.insert(sortObject.Name());
 			}
@@ -451,9 +451,7 @@ namespace boss {
 		LOG_INFO("Comparing hashset against masterlist.");
 		size_t addedNum = 0;
 		items = masterlist.Items();
-		size_t max = masterlist.Items().size();
-		vector<Item> holdingVec;
-		for (size_t i=0; i < max; i++) {
+		for (size_t i=0, max = items.size(); i < max; i++) {
 			if (items[i].Type() == MOD) {
 				//Check to see if the mod is in the hashset. If it is, also check if 
 				//the mod is already in the holding vector. If not, add it.
@@ -650,14 +648,18 @@ namespace boss {
 		//Now that all the rules have been applied, there is no need for groups or plugins that are not installed to be listed in
 		//modlist. Scan through it and remove these lines.
 		vector<Item> items = modlist.Items();
-		vector<Item>::iterator it = items.begin(), endIt = items.end();
+		vector<Item>::iterator beginIt = items.begin(), endIt = items.end(), it = items.begin();
+		size_t lastRecPos = modlist.LastRecognisedPos();
 		while (it != endIt) {
-			if (it->Type() != MOD || !it->Exists(*this))
+			if (it->Type() != MOD || !it->Exists(*this)) {
+				if (it - beginIt <= lastRecPos)
+					lastRecPos--;
 				it = items.erase(it);
-			else
+			} else
 				++it;
 		}
 		modlist.Items(items);
+		modlist.LastRecognisedPos(lastRecPos);
 	}
 
 	//Scans the data folder for script extender plugins and outputs their info to the bosslog.

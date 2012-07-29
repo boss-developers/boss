@@ -1051,14 +1051,10 @@ namespace boss {
 	}
 		
 	RuleLine Rule::LineAt(const size_t pos) const {
-/*		if (pos == 0)
+		if (pos == 0)
 			return RuleLine(Key(), Object());  //Return sort line.
 		else if (pos - 1 < lines.size())
 			return lines[pos-1];
-		else
-			return RuleLine();
-*/		if (pos < lines.size())
-			return lines[pos];
 		else
 			return RuleLine();
 	}

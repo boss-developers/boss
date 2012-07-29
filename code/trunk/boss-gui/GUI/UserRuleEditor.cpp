@@ -76,20 +76,24 @@ using boost::format;
 
 UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent, Game& inGame) : wxFrame(parent, wxID_ANY, title), game(inGame) {
 
-	//Let's give this a progress bar.
-	wxProgressDialog *progDia = new wxProgressDialog(translate("BOSS: Working..."), translate("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
-	progDia->Pulse();
+	wxProgressDialog * progDia;
 
 	//First check if masterlist is installed, and offer to download it if not.
 	if (!fs::exists(game.Masterlist())) {
+
 		wxMessageDialog *dlg = new wxMessageDialog(this,
 			FromUTF8(format(loc::translate("The User Rules Manager requires the BOSS masterlist for %1% to have been downloaded, but it cannot be detected. Do you wish to download the latest masterlist now?")) % game.Name()), 
 			translate("BOSS: User Rules Manager"), wxYES_NO);
 
-		if (dlg->ShowModal() == wxID_YES) {  //User has chosen not to download.
+		if (dlg->ShowModal() != wxID_YES) {  //User has chosen not to download.
+			this->Close();
+			return;
+		} else {
+			progDia = new wxProgressDialog(translate("BOSS: Working..."), translate("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
 			GUIMlistUpdater mUpdater;
 			try {
 				if (mUpdater.IsInternetReachable()) {
+					//Init progress bar.
 					progDia->Update(0,translate("Updating to the latest masterlist from the Google Code repository..."));
 					LOG_DEBUG("Updating masterlist...");
 					string localDate, remoteDate, message;
@@ -119,7 +123,8 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 				return;
 			}
 		}
-	}
+	} else
+		progDia = new wxProgressDialog(translate("BOSS: Working..."), translate("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
 
 	try{
 		LoadLists();
