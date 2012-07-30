@@ -792,9 +792,9 @@ namespace boss {
 
 	size_t		ItemList::FindLastItem		(const string name, const uint32_t type) const {
 		size_t max = items.size();
-		for (size_t i=max-1; i >= 0; i--) {
-			if (items[i].Type() == type && boost::iequals(items[i].Name(), name))
-				return i;
+		for (vector<Item>::const_iterator it=items.end(), begin=items.begin(); it != begin; --it) {
+			if (it->Type() == type && boost::iequals(it->Name(), name))
+				return size_t(it - begin);
 		}
 		return max;
 	}
