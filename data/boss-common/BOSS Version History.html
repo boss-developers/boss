@@ -93,6 +93,7 @@
  <li>Removed: The <q>General Messages</q> section. General messages now appear in the <q>Summary</q> section.
  <li>Removed: The ghosted plugin count in the <q>Summary</q> section.
  <li>Removed: BOSS Updater download CRC check.
+ <li>Removed: The API's BOSS_API_ERROR_MASTER_TIME_READ_FAIL return code.
  <li>Changed: BOSS now uses the exact filenames of installed plugins instead of their filenames in the masterlist, preventing any case-sensitivity issues (eg. Skyrim's launcher).
  <li>Changed: The main readme has had a large restructuring, with new sections being added on translations and general load order information. More images have also been added showcasing BOSS's various UI elements.
  <li>Changed: The <q>BOSS User Rules Readme</q> has been renamed <q>BOSS Userlist Syntax</q> to reflect its focus.
@@ -133,8 +134,11 @@
  <li>Changed: The API's DumpMinimal now includes conditionals in the file it creates.
  <li>Changed: The API now caches the load order and active plugin list and does not re-load them unless the files/folders they are derived from have changed.
  <li>Changed: The API now returns BOSS_API_ERROR_FILE_NOT_FOUND if a plugin that is not installed is passed to any of the load order or active status modification functions, aside from when deactivating a single plugin through SetPluginActive.
- <li>Added: SetProxy function.
- <li>Added: SubmitUnrecognisedPlugin function.
+ <li>Changed: The API's BOSS_API_ERROR_MOD_TIME_READ_FAIL has been renamed BOSS_API_ERROR_TIMESTAMP_READ_FAIL to be less misleading.
+ <li>Changed: The API's BOSS_API_ERROR_MOD_TIME_WRITE_FAIL has been renamed BOSS_API_ERROR_TIMESTAMP_WRITE_FAIL to be less misleading.
+ <li>Added: BOSS_API_ERROR_FILE_RENAME_FAIL return code to API.
+ <li>Added: SetProxy function to API.
+ <li>Added: SubmitUnrecognisedPlugin function to API.
  <li>Added: Support for TES III: Morrowind.
  <li>Added: Added messages now have their syntax checked before a rule is saved, and an error message is displayed if invalid syntax is found.
  <li>Added: GUI's Select Game dialog now displays the BOSS icon in the title bar, matching the other GUI windows.
