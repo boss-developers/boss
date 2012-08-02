@@ -654,11 +654,11 @@ namespace boss {
 		//modlist. Scan through it and remove these lines.
 		LOG_INFO("Removing unnecessary items...");
 		vector<Item> items = modlist.Items();
-		vector<Item>::iterator beginIt = items.begin(), endIt = items.end(), it = items.begin();
+		vector<Item>::iterator it = items.begin();
 		size_t lastRecPos = modlist.LastRecognisedPos();
-		while (it != endIt) {
+		while (it != items.end()) {
 			if (it->Type() != MOD || !it->Exists(*this)) {
-				if (it - beginIt <= lastRecPos)
+				if (it - items.begin() <= lastRecPos)
 					lastRecPos--;
 				it = items.erase(it);
 			} else

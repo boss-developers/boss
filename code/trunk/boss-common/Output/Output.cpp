@@ -1049,7 +1049,7 @@ namespace boss {
 				<< "tr.warn td {background: #FFDD55;}"
 				<< "tr.error td {background:#ff9090;}"
 				<< "#userRules tr.success td:nth-of-type(2) {color:green;}"
-				<< "#userRules tr.warn td:nth-of-type(2), tr.error td:nth-of-type(2) {color:red;}"
+				<< "#userRules tr.warn td:nth-of-type(2) {color:red;}"
 				<< "table { margin:0; border-radius: 10px; border-collapse:separate; border-spacing:0;}"
 				<< "td {padding:0.7em; line-height:1.5;}"
 				<< "th {text-align:left; padding:1em; background:lightblue;}"
