@@ -158,9 +158,9 @@ BOSS_API const uint32_t BOSS_API_ERROR_FILE_WRITE_FAIL			= BOSS_ERROR_FILE_WRITE
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_DELETE_FAIL			= BOSS_ERROR_FS_FILE_DELETE_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_UTF8			= BOSS_ERROR_FILE_NOT_UTF8;
 BOSS_API const uint32_t BOSS_API_ERROR_FILE_NOT_FOUND			= BOSS_ERROR_FILE_NOT_FOUND;
-BOSS_API const uint32_t BOSS_API_ERROR_MASTER_TIME_READ_FAIL	= BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL;
-BOSS_API const uint32_t BOSS_API_ERROR_MOD_TIME_READ_FAIL		= BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL;
-BOSS_API const uint32_t BOSS_API_ERROR_MOD_TIME_WRITE_FAIL		= BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_FILE_RENAME_FAIL			= BOSS_ERROR_FS_FILE_RENAME_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_TIMESTAMP_READ_FAIL		= BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL;
+BOSS_API const uint32_t BOSS_API_ERROR_TIMESTAMP_WRITE_FAIL		= BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_CONDITION_EVAL_FAIL		= BOSS_ERROR_CONDITION_EVAL_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_REGEX_EVAL_FAIL			= BOSS_ERROR_REGEX_EVAL_FAIL;
 BOSS_API const uint32_t BOSS_API_ERROR_PARSE_FAIL				= BOSS_ERROR_FILE_PARSE_FAIL;
@@ -172,7 +172,7 @@ BOSS_API const uint32_t BOSS_API_ERROR_NO_TAG_MAP				= BOSS_ERROR_NO_TAG_MAP;
 BOSS_API const uint32_t BOSS_API_ERROR_PLUGINS_FULL				= BOSS_ERROR_PLUGINS_FULL;
 BOSS_API const uint32_t BOSS_API_ERROR_GAME_NOT_FOUND			= BOSS_ERROR_NO_GAME_DETECTED;
 BOSS_API const uint32_t BOSS_API_ERROR_PLUGIN_BEFORE_MASTER		= BOSS_ERROR_PLUGIN_BEFORE_MASTER;
-BOSS_API const uint32_t BOSS_API_RETURN_MAX						= BOSS_API_ERROR_NO_TAG_MAP;
+BOSS_API const uint32_t BOSS_API_RETURN_MAX						= BOSS_ERROR_INVALID_SYNTAX;
 
 // The following are the mod cleanliness states that the API can return.
 BOSS_API const uint32_t BOSS_API_CLEAN_NO		= 0;
@@ -279,6 +279,11 @@ uint32_t ReturnCode(uint32_t returnCode) {
 	return returnCode;
 }
 
+uint32_t ReturnCode(boss_error e) {
+	lastErrorDetails = e.getString();
+	return e.getCode();
+}
+
 class APIMlistUpdater : public MasterlistUpdater {
 protected:
 	int progress(Updater * updater, double dlFraction, double dlTotal) {
@@ -332,7 +337,7 @@ BOSS_API uint32_t GetLastErrorDetails(uint8_t ** details) {
 	try {
 		extErrorPointer = StringToUint8_tString(lastErrorDetails);
 	} catch (bad_alloc /*&e*/) {
-		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+		return ReturnCode(boss_error(BOSS_ERROR_NO_MEM));
 	}
 	*details = extErrorPointer;
 	return ReturnCode(BOSS_API_OK);
@@ -368,7 +373,7 @@ BOSS_API uint32_t GetVersionString (uint8_t ** bossVersionStr) {
 	try {
 		extVersionPointer = StringToUint8_tString(boss_version);
 	} catch (bad_alloc /*&e*/) {
-		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+		return ReturnCode(boss_error(BOSS_ERROR_NO_MEM));
 	}
 	*bossVersionStr = extVersionPointer;
 	return ReturnCode(BOSS_API_OK);
@@ -407,7 +412,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 	try {
 		game = Game(clientGame, game_path);  //This also checks to see if the game is installed if game_path is empty and throws an exception if it is not detected.
 	} catch (boss_error& e) {
-		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		return ReturnCode(e);
 	}
 
 	//Now check if plugins.txt and loadorder.txt are in sync.
@@ -419,7 +424,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 			loadorder.Load(game, game.DataFolder());
 			loadorder.SavePluginNames(game, game.LoadOrderFile().string() + ".new", true, true);
 		} catch (boss_error &e) {
-			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+			return ReturnCode(e);
 		}
 
 		crc1 = GetCrc32(game.ActivePluginsFile());
@@ -429,7 +434,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 		try {
 			fs::remove(game.LoadOrderFile().string() + ".new");
 		} catch (fs::filesystem_error e) {
-			return ReturnCode(BOSS_API_ERROR_FILE_DELETE_FAIL, game.LoadOrderFile().string() + ".new");
+			return ReturnCode(boss_error(BOSS_ERROR_FS_FILE_DELETE_FAIL, game.LoadOrderFile().string() + ".new", e.what()));
 		}
 	}
 	
@@ -437,7 +442,7 @@ BOSS_API uint32_t CreateBossDb  (boss_db * db, const uint32_t clientGame,
 	try {
 		retVal = new _boss_db_int;
 	} catch (bad_alloc /*&e*/) {
-		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+		return ReturnCode(boss_error(BOSS_ERROR_NO_MEM));
 	}
 	retVal->game = game;
 	*db = retVal;
@@ -499,7 +504,7 @@ BOSS_API uint32_t Load (boss_db db, const uint8_t * masterlistPath,
 		if (userlistPath != NULL)
 			userlist.Load(db->game, userlist_path);
 	} catch (boss_error &e) {
-		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//FREE CURRENT POINTERS
@@ -564,7 +569,7 @@ BOSS_API uint32_t EvalConditionals(boss_db db) {
 		masterlist.EvalConditions(db->game);	//First evaluate conditionals.
 		masterlist.EvalRegex(db->game);			//Now evaluate regex.
 	} catch (boss_error &e) {
-		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Now set DB ItemList to function's ItemList.
@@ -616,7 +621,7 @@ BOSS_API uint32_t UpdateMasterlist(boss_db db, const uint8_t * masterlistPath) {
 	APIMlistUpdater mUpdater;
 	try {
 		if (!mUpdater.IsInternetReachable())
-			return ReturnCode(BOSS_API_ERROR_NO_INTERNET_CONNECTION);
+			return ReturnCode(boss_error(BOSS_API_ERROR_NO_INTERNET_CONNECTION));
 		else {
 			try {
 				string localDate, remoteDate;
@@ -878,7 +883,7 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 		}
 		db->game.SortPlugins();
 	} catch (boss_error &e) {
-		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Now create external arrays.
@@ -894,7 +899,7 @@ BOSS_API uint32_t SortMods(boss_db db, const bool trialOnly, uint8_t *** sortedP
 		for (size_t i=0; i < db->extStringArray2Size; i++)
 			db->extStringArray2[i] = StringToUint8_tString(unrecognised[i].Name());
 	} catch (bad_alloc /*&e*/) {
-		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+		return ReturnCode(boss_error(BOSS_ERROR_NO_MEM));
 	}
 	
 	//Set outputs.
@@ -932,7 +937,7 @@ BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t *** plugins, size_t * numPlug
 		if (GetLoadOrderMTime(db->game) != db->loadOrderMTime)
 			db->loadOrder.Load(db->game, db->game.DataFolder());
 	} catch (boss_error &e) {
-		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Need to throw out any repeats. Keep only the first instance of a plugin.
@@ -961,7 +966,7 @@ BOSS_API uint32_t GetLoadOrder(boss_db db, uint8_t *** plugins, size_t * numPlug
 		for (size_t i=0; i < db->extStringArraySize; i++)
 			db->extStringArray[i] = StringToUint8_tString(items[i].Name());
 	} catch (bad_alloc /*&e*/) {
-		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+		return ReturnCode(boss_error(BOSS_ERROR_NO_MEM));
 	}
 	
 	//Set outputs.
@@ -989,7 +994,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 		if (plugin.Exists(db->game))
 			db->loadOrder.Insert(i, plugin);
 		else
-			return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND, plugin.Name());
+			return ReturnCode(boss_error(BOSS_ERROR_FILE_NOT_FOUND, plugin.Name()));
 	}
 	size_t loSize = db->loadOrder.Items().size();
 
@@ -1005,7 +1010,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 			loSize++;
 		}
 	} catch (boss_error &e) {
-		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Now iterate through the Data directory, adding any plugins to loadorder that aren't already in it.
@@ -1029,7 +1034,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 	try {
 		db->loadOrder.ApplyMasterPartition(db->game);  //Apply partition to sort those just added.
 	} catch (boss_error &e) {
-		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	if (db->game.GetLoadOrderMethod() == LOMETHOD_TEXTFILE) { //Skyrim.
@@ -1038,7 +1043,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 			db->loadOrder.SavePluginNames(db->game, db->game.LoadOrderFile(), false, false);
 			db->loadOrder.SavePluginNames(db->game, db->game.ActivePluginsFile(), true, true);
 		} catch (boss_error &e) {
-			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+			return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
 		//Now update cached mtime for plugins.txt.
 		db->activePluginsMTime = GetActivePluginsMTime(db->game);
@@ -1048,7 +1053,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 		try {
 			masterTime = db->game.MasterFile().GetModTime(db->game);
 		} catch (boss_error &e) {
-			return ReturnCode(e.getCode(), e.getString());
+			return ReturnCode(e);
 		}
 
 		//Loop through given array and set the modification time for each one.
@@ -1058,7 +1063,7 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 				try {
 					items[i].SetModTime(db->game, masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
 				} catch(boss_error &e) {
-					return ReturnCode(e.getCode(), items[i].Name());
+					return ReturnCode(e);
 				}
 			}
 		}
@@ -1092,7 +1097,7 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 		if (fs::exists(db->game.ActivePluginsFile()) && (GetActivePluginsMTime(db->game) != db->activePluginsMTime || GetLoadOrderMTime(db->game) != db->loadOrderMTime))
 			db->activePlugins.Load(db->game, db->game.ActivePluginsFile());
 	} catch (boss_error &e) {
-		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 	
 	//If Skyrim, we want to also output Skyrim.esm, Update.esm, if they are missing.
@@ -1109,7 +1114,7 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 				db->activePlugins.Insert(db->activePlugins.GetLastMasterPos(db->game) + 1, Item("Update.esm"));  //Previous master check ensures that GetLastMasterPos() will be not be loadorder.size().
 				size++;
 			} catch (boss_error &e) {
-				return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+				return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 			}
 		}
 	}
@@ -1126,7 +1131,7 @@ BOSS_API uint32_t GetActivePlugins(boss_db db, uint8_t *** plugins, size_t * num
 		for (size_t i=0; i < db->extStringArraySize; i++)
 			db->extStringArray[i] = StringToUint8_tString(items[i].Name());
 	} catch (bad_alloc /*&e*/) {
-		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+		return ReturnCode(boss_error(BOSS_ERROR_NO_MEM));
 	}
 	
 	//Set outputs.
@@ -1143,7 +1148,7 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 		return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Null pointer passed.");
 
 	if (numPlugins > 255)
-		return ReturnCode(BOSS_API_ERROR_PLUGINS_FULL);
+		return ReturnCode(boss_error(BOSS_API_ERROR_PLUGINS_FULL));
 
 	//Check load order to see if it's valid.
 	if (numPlugins > 0 && !Item(string(reinterpret_cast<const char *>(plugins[0]))).IsGameMasterFile(db->game))
@@ -1158,11 +1163,11 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 			db->activePlugins.Insert(i, plugin);
 			try {
 				plugin.UnGhost(db->game);
-			} catch (boss_error /*&e*/) {
-				return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, plugin.Name());
+			} catch (boss_error &e) {
+				return ReturnCode(e);
 			}
 		} else
-			return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND, plugin.Name());
+			return ReturnCode(boss_error(BOSS_ERROR_FILE_NOT_FOUND, plugin.Name()));
 	}
 
 	//If Update.esm is installed, check if it is listed. If not, add it (order is decided later).
@@ -1172,14 +1177,14 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 	}
 
 	//Now save plugins.txt.
-	string badFilename;
+	boss_error conversionStatus(BOSS_API_OK);  //An error object that will be set to BOSS_API_WARN_BAD_FILENAME if one occurs.
 	try {
 		db->activePlugins.SavePluginNames(db->game, db->game.ActivePluginsFile(), false, true);  //False to ensure newly-added plugins are actually added.
 	} catch (boss_error &e) {
 		if (e.getCode() == BOSS_ERROR_ENCODING_CONVERSION_FAIL)
-			badFilename = e.getString();
+			conversionStatus = e;
 		else
-			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+			return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Now if running for textfile-based load order system, reorder plugins.txt, deriving the order from loadorder.txt.
@@ -1194,16 +1199,13 @@ BOSS_API uint32_t SetActivePlugins(boss_db db, uint8_t ** plugins, const size_t 
 			//Now update cached mtime.
 			db->loadOrderMTime = GetLoadOrderMTime(db->game);
 		} catch (boss_error &e) {
-			return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+			return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 		}
 	}
 	//Now update cached mtimes.
 	db->activePluginsMTime = GetActivePluginsMTime(db->game);
 
-	if (badFilename.empty())
-		return ReturnCode(BOSS_API_OK);
-	else
-		return ReturnCode(BOSS_API_WARN_BAD_FILENAME, badFilename);
+	return ReturnCode(conversionStatus);
 }
 
 // Gets the load order of the specified plugin, giving it as index. The first position 
@@ -1220,13 +1222,14 @@ BOSS_API uint32_t GetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 		if (GetLoadOrderMTime(db->game) != db->loadOrderMTime)
 			db->loadOrder.Load(db->game, db->game.DataFolder());
 	} catch (boss_error &e) {
-		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Now search for the given plugin.
-	size_t pos = db->loadOrder.FindItem(string(reinterpret_cast<const char *>(plugin)), MOD);
+	string pluginStr = string(reinterpret_cast<const char *>(plugin));
+	size_t pos = db->loadOrder.FindItem(pluginStr, MOD);
 	if (pos == db->loadOrder.Items().size())
-		return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND);
+		return ReturnCode(boss_error(BOSS_ERROR_FILE_NOT_FOUND, pluginStr));
 
 	//Set output.
 	*index = pos;
@@ -1259,7 +1262,7 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 		else if (!Item(pluginStr).IsMasterFile(db->game) && index <= db->loadOrder.GetLastMasterPos(db->game))  //Sorting plugin before master, not allowed.
 			return ReturnCode(BOSS_API_ERROR_INVALID_ARGS, "Non-master plugins may not be sorted before master plugins.");
 	} catch (boss_error &e) {
-		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Now search for the given plugin.
@@ -1282,7 +1285,7 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 			//Now update cached mtime.
 			db->activePluginsMTime = GetActivePluginsMTime(db->game);
 		} catch (boss_error &e) {
-			return ReturnCode(e.getCode(), e.getString());
+			return ReturnCode(e);
 		}
 	} else {  //Non-skyrim. Scan data directory, and arrange plugins found in timestamp load order.
 
@@ -1301,7 +1304,7 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 		try {
 			masterTime = db->game.MasterFile().GetModTime(db->game);
 		} catch (boss_error &e) {
-			return ReturnCode(BOSS_API_ERROR_MASTER_TIME_READ_FAIL, e.getString());
+			return ReturnCode(e);
 		}
 
 		//Now set the new timestamps.
@@ -1313,8 +1316,8 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 				try {
 					if (!items[i].IsGameMasterFile(db->game))
 						items[i].SetModTime(db->game, masterTime + i*60);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-				} catch(boss_error /*&e*/) {
-					return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
+				} catch(boss_error &e) {
+					return ReturnCode(e);
 				}
 			}
 		} else {
@@ -1337,12 +1340,12 @@ BOSS_API uint32_t SetPluginLoadOrder(boss_db db, const uint8_t * plugin, size_t 
 					try {
 						if (!items[i].IsGameMasterFile(db->game))
 							items[i].SetModTime(db->game, startTime + (i-start)*deltaTime);  //time_t is an integer number of seconds, so adding 60 on increases it by a minute.
-					} catch(boss_error /*&e*/) {
-						return ReturnCode(BOSS_API_ERROR_MOD_TIME_WRITE_FAIL, items[i].Name());
+					} catch(boss_error &e) {
+						return ReturnCode(e);
 					}
 				}
 			} catch(boss_error &e) {
-				return ReturnCode(e.getCode(), e.getString());
+				return ReturnCode(e);
 			}
 		}
 	}
@@ -1369,18 +1372,18 @@ BOSS_API uint32_t GetIndexedPlugin(boss_db db, const size_t index, uint8_t ** pl
 		if (GetLoadOrderMTime(db->game) != db->loadOrderMTime)
 			db->loadOrder.Load(db->game, db->game.DataFolder());
 	} catch (boss_error &e) {
-		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//Check that the index is within bounds.
 	if (index >= db->loadOrder.Items().size())
-		return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND);
+		return ReturnCode(boss_error(BOSS_API_ERROR_INVALID_ARGS, "Given index is larger than the index of the last plugin in the load order."));
 
 	//Allocate memory.
 	try {
 		db->extString = StringToUint8_tString(db->loadOrder.ItemAt(index).Name());
 	} catch (bad_alloc /*&e*/) {
-		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+		return ReturnCode(boss_error(BOSS_ERROR_NO_MEM));
 	}
 	
 	//Set outputs.
@@ -1414,13 +1417,13 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 
 	//Check that plugin exists if activating it.
 	if (active && !Item(pluginStr).Exists(db->game))
-		return ReturnCode(BOSS_API_ERROR_FILE_NOT_FOUND, pluginStr);
+		return ReturnCode(boss_error(BOSS_ERROR_FILE_NOT_FOUND, pluginStr));
 
 	//Unghost if ghosted.
 	try {
 		Item(pluginStr).UnGhost(db->game);
-	} catch (boss_error /*&e*/) {
-		return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, pluginStr);
+	} catch (boss_error &e) {
+		return ReturnCode(e);
 	}
 
 	//Load plugins.txt.
@@ -1428,7 +1431,7 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 		if (fs::exists(db->game.ActivePluginsFile()) && GetActivePluginsMTime(db->game) != db->activePluginsMTime)
 			db->activePlugins.Load(db->game, db->game.ActivePluginsFile());
 	} catch (boss_error &e) {
-		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 
 	//If Update.esm is installed, check if it is listed. If not, add it (order is decided later).
@@ -1445,9 +1448,9 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 
 	//Check that there aren't too many plugins in plugins.txt.
 	if (db->activePlugins.Items().size() > 255)
-		return ReturnCode(BOSS_API_ERROR_PLUGINS_FULL);
+		return ReturnCode(boss_error(BOSS_API_ERROR_PLUGINS_FULL));
 	else if (db->game.GetLoadOrderMethod() == LOMETHOD_TEXTFILE && db->activePlugins.Items().size() > 254)  //textfile-based system doesn't list Skyrim.esm in plugins.txt.
-		return ReturnCode(BOSS_API_ERROR_PLUGINS_FULL);
+		return ReturnCode(boss_error(BOSS_API_ERROR_PLUGINS_FULL));
 
 	//Now save the change.
 	try {
@@ -1463,7 +1466,7 @@ BOSS_API uint32_t SetPluginActive(boss_db db, const uint8_t * plugin, const bool
 			db->loadOrderMTime = GetLoadOrderMTime(db->game);
 		}
 	} catch (boss_error &e) {
-		return ReturnCode(e.getCode(), e.getString());
+		return ReturnCode(e);
 	}
 	//Now update cached mtimes.
 	db->activePluginsMTime = GetActivePluginsMTime(db->game);
@@ -1492,7 +1495,7 @@ BOSS_API uint32_t IsPluginActive(boss_db db, const uint8_t * plugin, bool * isAc
 		if (fs::exists(db->game.ActivePluginsFile()) && GetActivePluginsMTime(db->game) != db->activePluginsMTime)
 			db->activePlugins.Load(db->game, db->game.ActivePluginsFile());
 	} catch (boss_error &e) {
-		return ReturnCode(e.getCode(), e.getString());  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
+		return ReturnCode(e);  //BOSS_ERRORs map directly to BOSS_API_ERRORs.
 	}
 	
 	//Check if the given plugin is in plugins.txt.
@@ -1589,7 +1592,7 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 			try {
 				db->extTagMap = new BashTag[0];
 			} catch (bad_alloc /*&e*/) {
-				return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+				return ReturnCode(boss_error(BOSS_ERROR_NO_MEM));
 			}
 			return ReturnCode(BOSS_API_OK);
 		}
@@ -1606,7 +1609,7 @@ BOSS_API uint32_t GetBashTagMap (boss_db db, BashTag ** tagMap, size_t * numTags
 				db->extTagMap[i].name = StringToUint8_tString(db->bashTagMap[ii]);
 			}
 		} catch (bad_alloc /*&e*/) {
-			return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+			return ReturnCode(boss_error(BOSS_ERROR_NO_MEM));
 		}
 
 		*tagMap = db->extTagMap;
@@ -1714,7 +1717,7 @@ BOSS_API uint32_t GetModBashTags (boss_db db, const uint8_t * plugin,
 				db->extRemovedTagIds[i] = tagsRemovedUIDs[i];
 		}
 	} catch (bad_alloc /*&e*/) {
-		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+		return ReturnCode(boss_error(BOSS_ERROR_NO_MEM));
 	}
 
 	//Set outputs.
@@ -1759,7 +1762,7 @@ BOSS_API uint32_t GetDirtyMessage (boss_db db, const uint8_t * plugin,
 				try {
 					db->extString = StringToUint8_tString(messageIter->Data());
 				} catch (bad_alloc /*&e*/) {
-					return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+					return ReturnCode(boss_error(BOSS_ERROR_NO_MEM));
 				}
 				 *message = db->extString;
 
@@ -1820,7 +1823,7 @@ BOSS_API uint32_t GetPluginMessages (boss_db db, const uint8_t * plugin, BossMes
 			db->extMessageArray[i].message = StringToUint8_tString(modMessages[i].Data());
 		}
 	} catch (bad_alloc /*&e*/) {
-		return ReturnCode(BOSS_API_ERROR_NO_MEM, "Memory allocation failed.");
+		return ReturnCode(boss_error(BOSS_ERROR_NO_MEM));
 	}
 
 	*messages = db->extMessageArray;
@@ -1856,7 +1859,7 @@ BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const boo
 	if (!fs::exists(path) || overwrite) {
 		ofstream mlist(path.c_str());
 		if (mlist.fail())
-			return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, path);
+			return ReturnCode(boss_error(BOSS_ERROR_FILE_WRITE_FAIL, path));
 		else {
 			//Iterate through items, printing out all relevant info.
 			vector<Item> items = db->rawMasterlist.Items();  //Filtered works, but not raw.
@@ -1888,5 +1891,5 @@ BOSS_API uint32_t DumpMinimal (boss_db db, const uint8_t * outputFile, const boo
 		}
 		return ReturnCode(BOSS_API_OK);
 	} else
-		return ReturnCode(BOSS_API_ERROR_FILE_WRITE_FAIL, path);
+		return ReturnCode(boss_error(BOSS_API_ERROR_FILE_WRITE_FAIL, path));
 }

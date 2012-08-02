@@ -259,7 +259,7 @@ namespace boss {
 					try {
 						fs::remove(itr->path());
 					} catch (fs::filesystem_error e) {
-						throw boss_error(BOSS_ERROR_FS_FILE_DELETE_FAIL, itr->path().string());
+						throw boss_error(BOSS_ERROR_FS_FILE_DELETE_FAIL, itr->path().string(), e.what());
 					}
 				}
 			}

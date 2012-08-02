@@ -184,6 +184,14 @@ namespace boss {
 			return (format(translate("The modification date of \"%1%\" cannot be written! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_GUI_WINDOW_INIT_FAIL)
 			return (format(translate("The window \"%1%\" failed to initialise. Details: \"%2%\".")) % errSubject % errString).str();
+		else if (errCode == BOSS_ERROR_NO_MEM)
+			return translate("Memory allocation failed.");
+		else if (errCode == BOSS_ERROR_NO_INTERNET_CONNECTION)
+			return translate("No Internet connection detected.");
+		else if (errCode == BOSS_ERROR_NO_TAG_MAP)
+			return translate("No tag map has yet been initialised.");
+		else if (errCode == BOSS_ERROR_PLUGINS_FULL)
+			return translate("The requested change to the active plugins list would result in over 255 plugins being active.");
 		else
 			return translate("No error.");
 	}

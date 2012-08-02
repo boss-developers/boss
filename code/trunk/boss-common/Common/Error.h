@@ -94,7 +94,7 @@ namespace boss {
 	class BOSS_COMMON boss_error {
 	public:
 		//For general errors not referencing specific files.
-		boss_error(const uint32_t internalErrCode) ;
+		boss_error(const uint32_t internalErrCode);
 
 		//For general errors referencing specific files.
 		boss_error(const uint32_t internalErrCode, const string internalErrSubject);
