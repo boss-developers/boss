@@ -1814,7 +1814,7 @@ namespace boss {
 				<< "	document.getElementById('hideCleanPlugins').addEventListener('click', togglePlugins, false);"<<endl
 				<< "}"
 				<< "function applyFeatureSupportRestrictions(){"
-				<< "	if (!isPluginSubmitSupported()) { /*Disable unrecognised mod underline effect.*/"
+				<< "	if (!isPluginSubmitSupported() && document.getElementById('unrecPlugins') != null) { /*Disable unrecognised mod underline effect.*/"
 				<< "		var buttons = document.getElementById('unrecPlugins').querySelectorAll('span.mod');"
 				<< "		for (var i=0, len=buttons.length; i < len; i++) {"
 				<< "			buttons[i].className += 'nosubmit';"
