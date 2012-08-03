@@ -52,7 +52,7 @@
 
 <h2>Contents</h2>
 <ol>
- <li><a href="#2.1.0">2.1.0 - <i>2012</i></a>
+ <li><a href="#2.1.0">2.1.0 - <i>August 2012</i></a>
  <li><a href="#2.0.1">2.0.1 - <i>6 April 2012</i></a>
  <li><a href="#2.0.0">2.0.0 - <i>27 March 2012</i></a>
  <li><a href="#1.9.1">1.9.1 - <i>1 January 2012</i></a>
@@ -71,64 +71,76 @@
  <li><a href="#license">License</a>
 </ol>
 
-<h2>2.1.0 - <i>2012</i></h2>
+<h2>2.1.0 - <i>August 2012</i></h2>
+<h3>General Changes</h3>
 <ul>
  <li>Fixed: BOSS counting false-flagged <code>.esm</code> files as masters when applying the master partition.
- <li>Fixed: Some plain text BOSS Log formatting issues.
- <li>Fixed: Some masterlist and ini parsing errors not causing error messages to be displayed.
- <li>Fixed: A crash if the BOSS Log could not be created.
+ <li>Fixed: Some masterlist and ini parsing errors not being detected.
  <li>Fixed: Installer's "old BOSS version detected" dialog ignoring the language previously selected.
- <li>Fixed: Crash when deleting the last remaining rule in a userlist via the GUI's User Rules Manager.
- <li>Fixed: Text boxes in the GUI's User Rules Manager not displaying correctly, with borders often not appearing until mouseover.
- <li>Fixed: The API's SortMods function no longer includes groups and plugins that are not installed in its outputs.
  <li>Fixed: User rules sorting groups after the last recognised item, or sorting the last recognised item itself, causing recognised plugins to appear in the BOSS Log as unrecognised and vice-versa.
- <li>Removed: <code>bNoVersionParse</code> BOSS.ini setting, and corresponding <code>-n [ --no-version-parse ]</code> CLI parameter and <q>Display Plugin Versions</q> GUI setting.
- <li>Removed: Support for Masterlist Format 1, and Masterlist Format 2.2's conditional message shorthand. The former is obsolete, and the latter was causing some issues with committers accidentally making their messages conditional. All masterlists have been updated so that there should be no noticeable changes.
- <li>Removed: BOSS Log filter and CSS settings from the BOSS.ini. These have been replaced by in-Log analogues.
- <li>Removed: Labelling of ghosted plugins, and filtering of ghosted plugins, in the BOSS Log.
+ <li>Fixed: A crash if the BOSS Log could not be created.
+ <li>Removed: Support for Masterlist Formats below 2.2, and Masterlist Format 2.2's conditional message shorthand. All masterlists have been updated so that there should be no noticeable changes.
+ <li>Removed: The <code>bNoVersionParse</code>, BOSS Log filter and CSS settings from the BOSS.ini.
  <li>Removed: Text from installer regarding what to do if you have multiple copies of a supported game installed, as this was confusing users and was pointed out to not apply to anyone that would make use of multiple copies in a sensible manner.
- <li>Removed: Link to GNU General Public License, copyright notice and version release date.
- <li>Removed: The <q>Hide Rule Warnings</q>, <q>Hide 'Ghosted' Label</q> and <q>Hide Ghosted Mods</q> filters.
- <li>Removed: The <q>Execution Complete</q> footer.
- <li>Removed: The <q>General Messages</q> section. General messages now appear in the <q>Summary</q> section.
- <li>Removed: The ghosted plugin count in the <q>Summary</q> section.
  <li>Removed: BOSS Updater download CRC check.
- <li>Removed: The API's BOSS_API_ERROR_MASTER_TIME_READ_FAIL return code.
  <li>Changed: BOSS now uses the exact filenames of installed plugins instead of their filenames in the masterlist, preventing any case-sensitivity issues (eg. Skyrim's launcher).
- <li>Changed: The main readme has had a large restructuring, with new sections being added on translations and general load order information. More images have also been added showcasing BOSS's various UI elements.
- <li>Changed: The <q>BOSS User Rules Readme</q> has been renamed <q>BOSS Userlist Syntax</q> to reflect its focus.
- <li>Changed: The <q>BOSS Masterlist Syntax</q> document has been rewritten to only include information relevant to the latest available version of the masterlist format.
- <li>Changed: The version history is now contained within a separate document.
- <li>Changed: The BOSS Log has been almost completely redesigned and rewritten.
- <li>Changed: Lots of refactoring of code to make BOSS more robust "under the hood".
- <li>Changed: Internal tweaks to how the BOSS Updater works.
+ <li>Changed: Large update to the documentation:
+ <ul>
+     <li>Changed: All documentation uses Helvetica as the default font.
+	 <li>Changed: The main readme has had a large restructuring, with new sections being added on translations and general load order information. More images have also been added showcasing BOSS's various UI elements.
+	 <li>Changed: The <q>BOSS User Rules Readme</q> has been renamed <q>BOSS Userlist Syntax</q> to reflect its focus.
+	 <li>Changed: The <q>BOSS Masterlist Syntax</q> document has been rewritten to only include information relevant to the latest available version of the masterlist format.
+	 <li>Changed: The version history is now contained within a separate document.
+ </ul>
+ <li>Changed: Lots of refactoring of code.
  <li>Changed: Implemented more accurate comparison of versions in the masterlist, using Dirk Jagdmann's implementation of Dave Koelle's Alphanum Algorithm.
  <li>Changed: Updated libcurl from 7.25.0 to 7.27.0, wxWidgets from 2.9.3 to 2.9.4, and Boost from 1.49.0 to 1.50.0.
  <li>Changed: BOSS now displays the date of the last masterlist update to occur according to ISO 8601 (YYYY-MM-DD).
  <li>Changed: Installer/uninstaller now uses solid LZMA compression for a smaller file size.
-
- <li>Changed: Parsing errors from all files are displayed, instead of only the parsing error last encountered.
- <li>Changed: The BOSS Log now supports a minimum browser version of Internet Explorer 9, Firefox 3.5, Chrome 4, Safari 4, Opera 10.5 or their equivalents in other browsers.
- <li>Changed: The BOSS Log now primarily consists of a fixed-position left-hand sidebar and a scrollable right-hand main display panel. See <a href="#bosslog">The BOSS Log</a> for a screenshot.
- <li>Changed: The <q>Use Dark Colour Scheme</q> filter has been renamed <q>Use Alternative Colour Scheme</q> and has been moved to the new Display Settings section. The colour scheme itself has been altered to reduce text contrast, making it easier to read.
+ <li>Added: Support for TES III: Morrowind. A <code>Morrowind</code> value for the sGame BOSS.ini setting has been added.
+ <li>Added: Support for translations of BOSS. A <code>sLanguage</code> setting has been added to the BOSS.ini, with accepted values of <code>english</code>, <code>spanish</code>, <code>german</code>, <code>russian</code> and <code>chinese</code>.
+ <li>Added: German language option for installer/uninstaller. Translation by Scharesoft.
+ <li>Added: Spanish language option for installer/uninstaller. Translation by Sharlikran.
+ <li>Added: Simplified Chinese language option for BOSS and its installer/uninstaller. Translation by bluesky404.
+ <li>Added: Russian language option for BOSS. Translation by Tokc.D.K.
+ <li>Added: Confirmation dialog to uninstaller abortion.
+ <li>Added: CRC check to installer to avoid corrupted installs.
+ <li>Added: Support for Masterlist Format 2.3.
+ <li>Added: <code>bCloseGUIAfterSorting</code> BOSS.ini setting.
+</ul>
+<h3>BOSS Log Changes</h3>
+<ul>
+ <li>Fixed: Some plain text formatting issues.
+ <li>Removed: The link to GNU General Public License, copyright notice and version release date.
+ <li>Removed: Labelling and filtering of ghosted plugins.
+ <li>Removed: The <q>Hide Rule Warnings</q>, <q>Hide 'Ghosted' Label</q> and <q>Hide Ghosted Mods</q> filters.
+ <li>Removed: The <q>Execution Complete</q> footer.
+ <li>Removed: The <q>General Messages</q> section. General messages now appear in the <q>Summary</q> section.
+ <li>Removed: The ghosted plugin count in the <q>Summary</q> section.
+ <li>Changed: All parsing errors from all files are now displayed, instead of only the parsing error last encountered.
+ <li>Changed: The HTML BOSS Log now supports a minimum browser version of Internet Explorer 9, Firefox 3.5, Chrome 4, Safari 4, Opera 10.5 or their equivalents in other browsers.
+ <li>Changed: The HTML BOSS Log now primarily consists of a fixed-position left-hand sidebar and a scrollable right-hand main display panel. See <a href="BOSS%20Readme.html#bosslog">The BOSS Log</a> for a screenshot.
+ <li>Changed: The <q>Use Dark Colour Scheme</q> filter has been renamed <q>Use Alternative Colour Scheme</q>. The colour scheme itself has been altered to reduce text contrast, making it easier to read.
  <li>Changed: Filters are selectively enabled and disabled based on what section is currently visible, so you cannot apply a filter to a page where it has no effect, to avoid confusion.
  <li>Changed: Renamed the <q>Userlist Messages</q> section to <q>User Rules</q>.
- <li>Changed: Rewrote most of the BOSS Log's Javascript, especially with regards to how it alters styling, to make it tidier and give better cross-browser support. It also now runs in ECMAScript 5's Strict Mode on compatible browsers.
- <li>Changed: If an error is encountered when trying to change a plugin's timestamp, it is not displayed as an error message below the plugin, rather than inline with the plugin.
- <li>Changed: The tables in the <q>Summary</q> section are now colour-coded, with the unrecognised plugin and warning message rows coloured amber if their counts are non-zero and the error message row coloured red if its count is non-zero, with rows otherwise coloured green.
+ <li>Changed: Rewrote the BOSS Log's Javascript to make it tidier and have better cross-browser support.
+ <li>Changed: If an error is encountered when trying to change a plugin's timestamp, it is now displayed as an error message below the plugin, rather than inline with the plugin's filename.
+ <li>Changed: The tables in the <q>Summary</q> section are now colour-coded green, amber or red to give some indication of whether the number for a row is good or bad and, if bad, how sever.
  <li>Changed: The <q>User Rules</q> section now displays the full text of the rules in your userlist, whether each rule was applied and why a rule was not applied, if applicable, in a table. The rows are coloured coded such that applied rules are coloured green, rules that were not applied as they are disabled are coloured amber and rules that were not applied due to errors are coloured red.
  <li>Changed: The font used in the BOSS Log is now Helvetica to make it easier to read.
  <li>Changed: The general background colour is now a light grey, from white, to reduce eye strain.
- <li>Changed: Quoted file text in parsing errorrs is now displayed in the browser's default monospace font.
- <li>Changed: Renamed the <q>User Rules Editor</q> to <q>User Rules Manager</q> to reflect that the editing of rules is only part of its functionality.
- <li>Changed: Renamed the <q>Rule Creator/Editor</q> box to <q>Rule Editor</q>.
- <li>Changed: Renamed the <q>Masterlist Mod Messages</q> box to <q>Default Plugin Messages</q> to make its purpose clearer.
- <li>Changed: Renamed the <q>Installed Mods</q> tab to <q>Installed Plugins</q> to avoid confusion between the terms <q>mod</q> and <q>plugin</q>.
- <li>Changed: Renamed the <q>Move Up</q> and <q>Move Down</q> buttons to <q>Move Rule Up</q> and <q>Move Rule Down</q> respectively to make their purpose explicit.
- <li>Changed: Minor tweaks to the spacing of rules listed in the User Rules Editor and options in the main window.
- <li>Changed: When the user enables ADD rules that were disabled because they add plugins that are in the masterlist, the User Rules Manager now also changes them to OVERRIDE rules.
- <li>Changed: The text in the drop-down boxes in the Rule Editor has been lowercased to read better.
- <li>Changed: The User Rules Manager now disables the <q>Save Edited Rule</q>, <q>Delete Rule</q>, <q>Move Rule Up</q> and <q>Move Rule Down</q> buttons when there are no rules present in the rule list.
+ <li>Changed: Quoted file text in parsing errors is now displayed in the browser's default monospace font.
+ <li>Added: A Submit Plugin dialog that allows the anonymous submission of unrecognised plugins to the BOSS team.
+ <li>Added: A Display Settings panel that allows the activation and customisation of an alternative colour scheme (previously known as the dark colour scheme), and back up and restore functionality for custom settings.
+ <li>Added: Settings memory functionality that restores the last used configuration of filters and colours when the BOSS Log is opened.
+ <li>Added: A Log Feature Support panel that indicates what BOSS Log features the user's browser supports.
+ <li>Added: An active plugin count in the <q>Summary</q> section.
+ <li>Added: Some CSS3 effects for browsers that support them.
+</ul>
+<h3>API Changes</h3>
+<ul>
+ <li>Fixed: The API's SortMods function no longer includes groups and plugins that are not installed in its outputs.
+ <li>Removed: The API's BOSS_API_ERROR_MASTER_TIME_READ_FAIL return code.
  <li>Changed: The API's CreateBossDb now takes the path to the game executable's folder, rather than the path to the game plugin's folder.
  <li>Changed: The API's CreateBossDb now accepts a non-null empty path, treating it in the same manner as a null path (ie. BAPI tries to autodetect game install location).
  <li>Changed: The API's DumpMinimal now includes conditionals in the file it creates.
@@ -139,30 +151,35 @@
  <li>Added: BOSS_API_ERROR_FILE_RENAME_FAIL return code to API.
  <li>Added: SetProxy function to API.
  <li>Added: SubmitUnrecognisedPlugin function to API.
- <li>Added: Support for TES III: Morrowind.
- <li>Added: Added messages now have their syntax checked before a rule is saved, and an error message is displayed if invalid syntax is found.
- <li>Added: GUI's Select Game dialog now displays the BOSS icon in the title bar, matching the other GUI windows.
- <li>Added: A Submit Plugin panel. This panel allows you to anonymously submit unrecognised plugins to a Bugzilla bug tracker hosted by Dark Creations that the BOSS team uses to help keep track of unrecognised plugins. It requires browser support for Cross-Origin Resource Sharing, ECMAScript 5 and XMLHttpRequest 2. The panel is displayed when you click on an unrecognised plugin's filename.
- <li>Added: A Display Settings section. This panel allows you to customise the colours used by the alternative colour scheme, and also allows you to backup and restore custom settings if your browser supports the File API, HTML5 Drag and Drop and ECMAScript 5. It replaces the CSS customisation features found in previous versions of BOSS, removing the ability to customise layout but giving more control over the colours of the BOSS Log.
- <li>Added: Settings memory, which requires browser support for the Web Storage API, and restores the last configuration of filters and colours used when the BOSS Log is opened.
- <li>Added: A Browser Compatibility panel. This panel is displayed in the main display panel when the BOSS Log is opened and gives an indication of your browser's level of support for the new features added in this release. If the Web Storage API is supported by your browser, it can then be prevented from being displayed for that browser in the future.
- <li>Added: An active plugin count in the <q>Summary</q> section.
- <li>Added: Some CSS3 effects for browsers that support them.
- <li>Added: A <code>sLanguage</code> setting has been added to the BOSS.ini, and a Language setting added to the GUI to control the language BOSS displays its UI in. 
- <li>Added: German language option for installer/uninstaller. Translation by Scharesoft.
- <li>Added: Spanish language option for installer/uninstaller. Translation by Sharlikran.
- <li>Added: Simplified Chinese language option for BOSS and its installer/uninstaller. Translation by bluesky404.
- <li>Added: Russian language option for BOSS. Translation by Tokc.D.K.
- <li>Added: Confirmation dialog to uninstaller abortion.
- <li>Added: CRC check to installer to avoid corrupted installs.
- <li>Added: Support for TES III: Morrowind.
- <li>Added <code>Morrowind</code> value for the sGame BOSS.ini setting.
- <li>Morrowind's masterlist is unmaintained, and only recognises Morrowind.esm, Bloodmoon.esm and Tribunal.esm. The support is primarily intended for the API, and those wanting auto-sorting of load orders should consider using mlox.
- <li>Added: GUI now records the game it was last run for using the <code>sLastGame</code> BOSS.ini setting. If the <code>sGame</code> setting is set to <code>auto</code> (or the corresponding <q>Default Game</q> GUI setting set to <q>Autodetect</q>), then the GUI will first attempt to run for the game it was last run for. If the game cannot be detected, or the <code>sLastGame</code> setting is set to <code>auto</code>, then it will then prompt the user to select a game to run for.
- <li>Added: Support for Masterlist Format 2.3.
- <li>Added: <code>bCloseGUIAfterSorting</code> and <q>Close GUI after running BOSS</q> ini and GUI settings.
- <li>Added: If the User Rules Manager is opened before BOSS has been run for the first time, it will now give you the option of downloading the masterlist.
 </ul>
+<h3>GUI Changes</h3>
+<ul>
+ <li>Fixed: Crash when deleting the last remaining rule in a userlist via the User Rules Manager.
+ <li>Fixed: Text boxes in the User Rules Manager not displaying correctly, with borders often not appearing until mouseover.
+ <li>Removed: <q>Display Plugin Versions</q> setting.
+ <li>Changed: Renamed the <q>User Rules Editor</q> to <q>User Rules Manager</q> to reflect that the editing of rules is only part of its functionality.
+ <li>Changed: Renamed the User Rules Manager's <q>Rule Creator/Editor</q> box to <q>Rule Editor</q>.
+ <li>Changed: Renamed the User Rules Manager's <q>Masterlist Mod Messages</q> box to <q>Default Plugin Messages</q> to make its purpose clearer.
+ <li>Changed: Renamed the User Rules Manager's <q>Installed Mods</q> tab to <q>Installed Plugins</q> to avoid confusion between the terms <q>mod</q> and <q>plugin</q>.
+ <li>Changed: Renamed the User Rules Manager's <q>Move Up</q> and <q>Move Down</q> buttons to <q>Move Rule Up</q> and <q>Move Rule Down</q> respectively to make their purpose explicit.
+ <li>Changed: Minor tweaks to the spacing of rules listed in the User Rules Manager and options in the main window.
+ <li>Changed: When the user enables ADD rules that were disabled because they add plugins that are in the masterlist, the User Rules Manager now also changes them to OVERRIDE rules.
+ <li>Changed: The text in the drop-down boxes in the User Rules Manager's Rule Editor has been lowercased to read better.
+ <li>Changed: The User Rules Manager now disables the <q>Save Edited Rule</q>, <q>Delete Rule</q>, <q>Move Rule Up</q> and <q>Move Rule Down</q> buttons when there are no rules present in the rule list.
+ <li>Added: The Select Game dialog now displays the BOSS icon in the title bar, matching the other GUI windows.
+ <li>Added: Options for selecting Morrowind in all game selection controls.
+ <li>Added: The GUI now records the game it was last run for using the <code>sLastGame</code> BOSS.ini setting. If the <code>sGame</code> setting is set to <code>auto</code> (or the corresponding <q>Default Game</q> GUI setting set to <q>Autodetect</q>), then the GUI will first attempt to run for the game it was last run for. If the game cannot be detected, or the <code>sLastGame</code> setting is set to <code>auto</code>, then it will then prompt the user to select a game to run for.
+ <li>Added: <q>Close GUI after running BOSS</q> setting.
+ <li>Added: Prompt to download the latest masterlist if the User Rules Manager is opened and the masterlist cannot be found.
+ <li>Added: Messages now have their syntax checked before a rule is saved, and an error message is displayed if invalid syntax is found.
+ <li>Added: A Language setting to control the language BOSS displays its UI in. 
+</ul>
+<h3>CLI Changes</h3>
+<ul>
+ <li>Removed: <code>-n [ --no-version-parse ]</code> parameter.
+</ul>
+
+
 <h2>2.0.1 - <i>6 April 2012</i></h2>
 <ul>
 	<li>Fixed: Masterlist regular expression errors being reported in an endless loop.
