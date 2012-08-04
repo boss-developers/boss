@@ -1150,15 +1150,14 @@ namespace boss {
 				} else {
 					if (boost::iequals(ruleObject.Name(), "esms"))
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingGroupEsms).str());
-					if (ruleKeyString == "ADD" && !ruleObject.IsPlugin())
+					if (ruleKeyString == "ADD")
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EAddingModGroup).str());
 					else if (ruleKeyString == "FOR")
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % EAttachingMessageToGroup).str());
 				}
 				vector<RuleLine> lines = it->Lines();
-				size_t size = lines.size();
 				bool hasSortLine = false, hasReplaceLine = false;
-				for (size_t i=0; i<size; i++) {
+				for (size_t i=0, max=lines.size(); i<max; i++) {
 					Item subject = Item(lines[i].Object());
 					if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {
 						if (hasSortLine)

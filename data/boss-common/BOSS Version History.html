@@ -52,7 +52,7 @@
 
 <h2>Contents</h2>
 <ol>
- <li><a href="#2.1.0">2.1.0 - <i>August 2012</i></a>
+ <li><a href="#2.1.0">2.1.0 - <i>4 August 2012</i></a>
  <li><a href="#2.0.1">2.0.1 - <i>6 April 2012</i></a>
  <li><a href="#2.0.0">2.0.0 - <i>27 March 2012</i></a>
  <li><a href="#1.9.1">1.9.1 - <i>1 January 2012</i></a>
@@ -71,7 +71,7 @@
  <li><a href="#license">License</a>
 </ol>
 
-<h2>2.1.0 - <i>August 2012</i></h2>
+<h2>2.1.0 - <i>4 August 2012</i></h2>
 <h3>General Changes</h3>
 <ul>
  <li>Fixed: BOSS counting false-flagged <code>.esm</code> files as masters when applying the master partition.
@@ -139,23 +139,27 @@
 </ul>
 <h3>API Changes</h3>
 <ul>
- <li>Fixed: The API's SortMods function no longer includes groups and plugins that are not installed in its outputs.
- <li>Removed: The API's BOSS_API_ERROR_MASTER_TIME_READ_FAIL return code.
- <li>Changed: The API's CreateBossDb now takes the path to the game executable's folder, rather than the path to the game plugin's folder.
- <li>Changed: The API's CreateBossDb now accepts a non-null empty path, treating it in the same manner as a null path (ie. BAPI tries to autodetect game install location).
- <li>Changed: The API's DumpMinimal now includes conditionals in the file it creates.
+ <li>Fixed: The SortMods function no longer includes groups and plugins that are not installed in its outputs.
+ <li>Removed: The BOSS_API_ERROR_MASTER_TIME_READ_FAIL return code.
+ <li>Changed: The CreateBossDb now takes the path to the game executable's folder, rather than the path to the game plugin's folder.
+ <li>Changed: The CreateBossDb now accepts a non-null empty path, treating it in the same manner as a null path (ie. BAPI tries to autodetect game install location).
+ <li>Changed: The DumpMinimal now includes conditionals in the file it creates.
  <li>Changed: The API now caches the load order and active plugin list and does not re-load them unless the files/folders they are derived from have changed.
  <li>Changed: The API now returns BOSS_API_ERROR_FILE_NOT_FOUND if a plugin that is not installed is passed to any of the load order or active status modification functions, aside from when deactivating a single plugin through SetPluginActive.
- <li>Changed: The API's BOSS_API_ERROR_MOD_TIME_READ_FAIL has been renamed BOSS_API_ERROR_TIMESTAMP_READ_FAIL to be less misleading.
- <li>Changed: The API's BOSS_API_ERROR_MOD_TIME_WRITE_FAIL has been renamed BOSS_API_ERROR_TIMESTAMP_WRITE_FAIL to be less misleading.
- <li>Added: BOSS_API_ERROR_FILE_RENAME_FAIL return code to API.
- <li>Added: SetProxy function to API.
- <li>Added: SubmitUnrecognisedPlugin function to API.
+ <li>Changed: The BOSS_API_ERROR_MOD_TIME_READ_FAIL has been renamed BOSS_API_ERROR_TIMESTAMP_READ_FAIL to be less misleading.
+ <li>Changed: The BOSS_API_ERROR_MOD_TIME_WRITE_FAIL has been renamed BOSS_API_ERROR_TIMESTAMP_WRITE_FAIL to be less misleading.
+ <li>Added: BOSS_API_ERROR_FILE_RENAME_FAIL return code.
+ <li>Added: SetProxy function.
+ <li>Added: SubmitUnrecognisedPlugin function.
 </ul>
 <h3>GUI Changes</h3>
 <ul>
  <li>Fixed: Crash when deleting the last remaining rule in a userlist via the User Rules Manager.
  <li>Fixed: Text boxes in the User Rules Manager not displaying correctly, with borders often not appearing until mouseover.
+ <li>Fixed: Non-ASCII text not being displayed or recorded correctly for user rules.
+ <li>Fixed: The last character of the last message attached to a plugin by a rule in the User Rules Manager being cut off.
+ <li>Fixed: User Rules Manager silently skipping invalid rules, instead of causing an initialisation error.
+ <li>Fixed: Cancelling User Rules Manager initialisation not cancelling display of the window.
  <li>Removed: <q>Display Plugin Versions</q> setting.
  <li>Changed: Renamed the <q>User Rules Editor</q> to <q>User Rules Manager</q> to reflect that the editing of rules is only part of its functionality.
  <li>Changed: Renamed the User Rules Manager's <q>Rule Creator/Editor</q> box to <q>Rule Editor</q>.

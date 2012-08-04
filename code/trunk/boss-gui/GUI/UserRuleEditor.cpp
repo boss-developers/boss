@@ -139,8 +139,11 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 		return;
 	}
 
-	if (!progDia->Pulse())
+	if (!progDia->Pulse()) {
 		progDia->Destroy();
+		this->Close();
+		return;
+	}
 
 	//Some variable setup.
 	wxString BeforeAfter[] = {
@@ -181,8 +184,11 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 		return;
 	}
 
-	if (!progDia->Pulse())
+	if (!progDia->Pulse()) {
 		progDia->Destroy();
+		this->Close();
+		return;
+	}
 
 	////////Rule Creator/Editor
 	wxBoxSizer *editorMessagesBox = new wxBoxSizer(wxHORIZONTAL);
@@ -327,32 +333,32 @@ void UserRulesEditorFrame::OnCancelQuit(wxCommandEvent& event) {
 void UserRulesEditorFrame::OnSearchList(wxCommandEvent& event) {
 	if (event.GetId() == SEARCH_Modlist) {
 		ModlistSearch->ShowCancelButton(true);
-		string searchStr = ModlistSearch->GetValue();
-		size_t length = searchStr.length();
-		if (length == 0) {
+		string searchStr = ModlistSearch->GetValue().ToUTF8();
+		if (searchStr.empty()) {
 			OnCancelSearch(event);
 			return;
 		}
+		size_t length = searchStr.length();
 		InstalledModsList->DeleteAllItems();
 		wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
 		for (size_t i=0;i<ModlistMods.size();i++) {
-			if (boost::iequals(ModlistMods[i].substr(0,length).ToStdString(), searchStr))
+			string itemStr = ModlistMods[i].ToUTF8();
+			if (boost::iequals(itemStr.substr(0,length), searchStr))
 				InstalledModsList->AppendItem(root, ModlistMods[i]);
 		}
 	} else {
 		MasterlistSearch->ShowCancelButton(true);
-		string searchStr = MasterlistSearch->GetValue();
-		size_t length = searchStr.length();
-		if (length == 0) {
+		string searchStr = MasterlistSearch->GetValue().ToUTF8();
+		if (searchStr.empty()) {
 			OnCancelSearch(event);
 			return;
 		}
+		size_t length = searchStr.length();
 		MasterlistModsList->DeleteAllItems();
 		vector<wxTreeItemId> opengroups;
 		opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
 		vector<Item> items = game.masterlist.Items();
-		size_t max = items.size();
-		for (size_t i=0;i<max;i++) {
+		for (size_t i=0, max = items.size();i<max;i++) {
 			if (boost::iequals(items[i].Name().substr(0,length), searchStr)) {
 					wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), items[i].Name());
 				if (items[i].Type() == BEGINGROUP)
@@ -370,7 +376,7 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 		ModlistSearch->SetValue("");
 		InstalledModsList->DeleteAllItems();
 		wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
-		for (size_t i=0;i<ModlistMods.size();i++) {
+		for (size_t i=0, max=ModlistMods.size(); i<max; i++) {
 			InstalledModsList->AppendItem(root, ModlistMods[i]);
 		}
 	} else {
@@ -379,9 +385,8 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 		MasterlistModsList->DeleteAllItems();
 		vector<wxTreeItemId> opengroups;
 		vector<Item> items = game.masterlist.Items();
-		size_t max = items.size();
 		opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
-		for (size_t i=0;i<max;i++) {
+		for (size_t i=0, max=items.size(); i<max; i++) {
 			wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), items[i].Name());
 			if (items[i].Type() == BEGINGROUP)
 				opengroups.push_back(item);
@@ -393,7 +398,8 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 
 void UserRulesEditorFrame::OnSelectModInMasterlist(wxTreeEvent& event) {
 	//Need to find item in masterlist. :( Why can't tree lists store index number?
-	size_t pos = game.masterlist.FindItem(MasterlistModsList->GetItemText(event.GetItem()).ToStdString(), MOD);
+	string itemStr = MasterlistModsList->GetItemText(event.GetItem()).ToUTF8();
+	size_t pos = game.masterlist.FindItem(itemStr, MOD);
 	if (pos != game.masterlist.Items().size()) {
 		string messagesOut = "";
 		vector<Message> messages = game.masterlist.ItemAt(pos).Messages();
@@ -515,18 +521,17 @@ void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
 	NewModMessagesBox->Enable(false);
 	ReplaceMessagesCheckBox->Enable(false);
 	ReplaceMessagesCheckBox->SetValue(false);
-	RuleModBox->SetValue(currentRule.Object());
+	RuleModBox->SetValue(wxString(currentRule.Object().c_str(), wxConvUTF8));
 	SortModBox->SetValue("");
 	InsertModBox->SetValue("");
 	vector<RuleLine> lines = currentRule.Lines();
-	size_t size = lines.size();
-	for (size_t j=0;j<size;j++) {
+	for (size_t j=0, max=lines.size(); j<max; j++) {
 		if (lines[j].Key() == BEFORE || lines[j].Key() == AFTER) {
 			SortModsCheckBox->SetValue(true);
 			SortModOption->SetValue(true);
 			SortModBox->Enable(true);
 			BeforeAfterChoiceBox->Enable(true);
-			SortModBox->SetValue(lines[j].Object());
+			SortModBox->SetValue(wxString(lines[j].Object().c_str(), wxConvUTF8));
 			if (lines[j].Key() == BEFORE)
 				BeforeAfterChoiceBox->SetSelection(0);
 			else
@@ -536,7 +541,7 @@ void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
 			InsertModOption->SetValue(true);
 			TopBottomChoiceBox->Enable(true);
 			InsertModBox->Enable(true);
-			InsertModBox->SetValue(lines[j].Object());
+			InsertModBox->SetValue(wxString(lines[j].Object().c_str(), wxConvUTF8));
 			if (lines[j].Key() == TOP)
 				TopBottomChoiceBox->SetSelection(0);
 			else
@@ -592,14 +597,17 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 	//First validate.
 	//Calling functions need to check for an enabled = false; rule as a failure.
 	//Failure description is given in ruleObject.
-	if (Item(RuleModBox->GetValue().ToStdString()).IsPlugin()) {
+	string ruleItem = RuleModBox->GetValue().ToUTF8();
+	string sortItem = SortModBox->GetValue().ToUTF8();
+	string insertItem = InsertModBox->GetValue().ToUTF8();
+	if (Item(ruleItem).IsPlugin()) {
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
 				if (SortModOption->GetValue() && SortModBox->IsEmpty())
 					throw boss_error(loc::translate("No mod is specified to sort relative to."), BOSS_ERROR_INVALID_SYNTAX);
-				else if (!Item(SortModBox->GetValue().ToStdString()).IsPlugin())  //Sort object is a group. Error.
+				else if (!Item(sortItem).IsPlugin())  //Sort object is a group. Error.
 					throw boss_error(loc::translate("Cannot sort a plugin relative to a group."), BOSS_ERROR_INVALID_SYNTAX);
-			} else if (InsertModOption->GetValue() && !Item(InsertModBox->GetValue().ToStdString()).IsGroup()) {  //Inserting into a mod. Error.
+			} else if (InsertModOption->GetValue() && !Item(insertItem).IsGroup()) {  //Inserting into a mod. Error.
 				if (InsertModBox->IsEmpty())
 					throw boss_error(loc::translate("No group is specified to insert into."), BOSS_ERROR_INVALID_SYNTAX);
 				else
@@ -615,7 +623,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 			if (SortModOption->GetValue()) {
 				if (SortModBox->IsEmpty())  //No sort object specified. Error.
 					throw boss_error(loc::translate("No group is specified to sort relative to."), BOSS_ERROR_INVALID_SYNTAX);
-				else if (Item(SortModBox->GetValue().ToStdString()).IsPlugin())  //Sort object is a plugin. Error.
+				else if (Item(sortItem).IsPlugin())  //Sort object is a plugin. Error.
 					throw boss_error(loc::translate("Cannot sort a group relative to a plugin."), BOSS_ERROR_INVALID_SYNTAX);
 			} else if (InsertModOption->GetValue())  //Can't insert groups. Error.
 				throw boss_error(loc::translate("Cannot insert groups."), BOSS_ERROR_INVALID_SYNTAX);
@@ -627,7 +635,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 		throw boss_error(loc::translate("The rule mod is not being sorted nor having its attached messages altered."), BOSS_ERROR_INVALID_SYNTAX);
 
 	newRule.Enabled(true);
-	newRule.Object(RuleModBox->GetValue().ToStdString());
+	newRule.Object(ruleItem);
 	if (!SortModsCheckBox->IsChecked())
 		newRule.Key(FOR);
 	else {
@@ -644,7 +652,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 		
 		if (SortModOption->GetValue()) {
 			RuleLine newLine;
-			newLine.Object(SortModBox->GetValue().ToStdString());
+			newLine.Object(sortItem);
 			if (BeforeAfterChoiceBox->GetSelection() == 0)
 				newLine.Key(BEFORE);
 			else
@@ -654,7 +662,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 			newRule.Lines(lines);
 		} else if (InsertModOption->GetValue()) {
 			RuleLine newLine;
-			newLine.Object(InsertModBox->GetValue().ToStdString());
+			newLine.Object(insertItem);
 			if (TopBottomChoiceBox->GetSelection() == 0)
 				newLine.Key(TOP);
 			else
@@ -668,7 +676,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 	//Now add message lines.
 	if (AddMessagesCheckBox->IsChecked()) {
 		RuleLine newLine;
-		string messages = NewModMessagesBox->GetValue();
+		string messages = NewModMessagesBox->GetValue().ToUTF8();
 		if (!messages.empty()) {
 			//Split messages string by \n characters.
 			size_t pos1 = 0, pos2 = string::npos;
@@ -694,7 +702,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 				pos1 = pos2 + 1;
 				pos2 = messages.find("\n", pos1);
 				if (pos2 == string::npos && pos1 < messages.length()-1)
-					pos2 = messages.length()-1;
+					pos2 = messages.length();
 			}
 		}
 	}
@@ -731,9 +739,9 @@ bool TextDropTarget::OnDropText(wxCoord x, wxCoord y, const wxString &data) {
 	targetOwner->SetValue(data);
 
 	UserRulesEditorFrame *ureFrame = (UserRulesEditorFrame*)targetOwner->GetParent()->GetParent();  //Targets are owned by the static box created by the sizer they're in, which is in turn owned by the URE window.
-	Item sortItem(ureFrame->SortModBox->GetValue().ToStdString());
-	Item forItem(ureFrame->RuleModBox->GetValue().ToStdString());
-	Item insertItem(ureFrame->InsertModBox->GetValue().ToStdString());
+	Item sortItem(string(ureFrame->SortModBox->GetValue().ToUTF8()));
+	Item forItem(string(ureFrame->RuleModBox->GetValue().ToUTF8()));
+	Item insertItem(string(ureFrame->InsertModBox->GetValue().ToUTF8()));
 	bool isSorting = ureFrame->SortModsCheckBox->IsChecked();
 	bool isInserting = ureFrame->InsertModOption->GetValue();
 
@@ -843,6 +851,9 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inG
 	LOG_INFO("Starting to parse userlist.");
 	try {
 		game.userlist.Load(game, game.Userlist());
+		//Check for parsing errors.
+		if (!game.userlist.ErrorBuffer().empty())
+			throw boss_error(Outputter(PLAINTEXT, game.userlist.ErrorBuffer().front()).AsString(), BOSS_ERROR_INVALID_SYNTAX);
 	} catch (boss_error &e) {
 		game.userlist.Clear();
 		LOG_ERROR("Error: %s", e.getString().c_str());
@@ -851,8 +862,7 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inG
 
 	//Now disable any ADD rules with rule mods that are in the masterlist.
 	vector<Rule> rules = game.userlist.Rules();
-	size_t size = rules.size();
-	for (size_t i=0;i<size;i++) {
+	for (size_t i=0, max=rules.size();i<max;i++) {
 		if (rules[i].Key() == ADD) {
 			size_t pos = game.masterlist.FindItem(rules[i].Object(), MOD);
 			if (pos != game.masterlist.Items().size()) {  //Mod in masterlist.
