@@ -682,7 +682,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 			size_t pos1 = 0, pos2 = string::npos;
 			pos2 = messages.find("\n");
 			if (pos2 == string::npos)  //No \n characters.
-				pos2 = messages.length()-1;
+				pos2 = messages.length();
 			while (pos2 != string::npos) {
 				newLine.Object(trim_copy(messages.substr(pos1,pos2-pos1)));
 				if (pos1 == 0 && ReplaceMessagesCheckBox->IsChecked())
