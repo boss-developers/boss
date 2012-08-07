@@ -60,7 +60,7 @@
 	!insertmacro MUI_LANGUAGE "Russian"
 	!insertmacro MUI_LANGUAGE "German"
 	!insertmacro MUI_LANGUAGE "Spanish"
- !insertmacro MUI_LANGUAGE "SimpChinese"
+	!insertmacro MUI_LANGUAGE "SimpChinese"
 	!insertmacro MUI_RESERVEFILE_LANGDLL
 
 ;--------------------------------
@@ -342,10 +342,17 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		File "data\boss-common\images\Ini.png"
 		File "data\boss-common\images\CLI.png"
   
-  ;Now install language files.
-  SetOutPath "$INSTDIR\l10n\ru\LC_MESSAGES"
-  File "data\boss-common\l10n\ru\LC_MESSAGES\messages.mo"
-  File "data\boss-common\l10n\ru\LC_MESSAGES\wxstd.mo"
+		;Now install language files.
+		SetOutPath "$INSTDIR\l10n\ru\LC_MESSAGES"
+		File "data\boss-common\l10n\ru\LC_MESSAGES\messages.mo"
+		File "data\boss-common\l10n\ru\LC_MESSAGES\wxstd.mo"
+		SetOutPath "$INSTDIR\l10n\es\LC_MESSAGES"
+		File "data\boss-common\l10n\es\LC_MESSAGES\wxstd.mo"
+		SetOutPath "$INSTDIR\l10n\de\LC_MESSAGES"
+		File "data\boss-common\l10n\de\LC_MESSAGES\wxstd.mo"
+		SetOutPath "$INSTDIR\l10n\zh\LC_MESSAGES"
+		File "data\boss-common\l10n\zh\LC_MESSAGES\messages.mo"
+		File "data\boss-common\l10n\zh\LC_MESSAGES\wxstd.mo"
 		
 		;Add Start Menu shortcuts. Set out path back to $INSTDIR otherwise the shortcuts start in the wrong place.
 		SetOutPath "$INSTDIR"
@@ -413,9 +420,13 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		Delete "$INSTDIR\Docs\images\Ini.png"
 		Delete "$INSTDIR\Docs\images\CLI.png"
   
-  ;Remove language files.
-  Delete "$INSTDIR\l10n\ru\LC_MESSAGES\messages.mo"
-  Delete "$INSTDIR\l10n\ru\LC_MESSAGES\wxstd.mo"
+		;Remove language files.
+		Delete "$INSTDIR\l10n\ru\LC_MESSAGES\messages.mo"
+		Delete "$INSTDIR\l10n\ru\LC_MESSAGES\wxstd.mo"
+		Delete "$INSTDIR\l10n\es\LC_MESSAGES\wxstd.mo"
+		Delete "$INSTDIR\l10n\de\LC_MESSAGES\wxstd.mo"
+		Delete "$INSTDIR\l10n\zh\LC_MESSAGES\messages.mo"
+		Delete "$INSTDIR\l10n\zh\LC_MESSAGES\wxstd.mo"
 		
 		;Now we have to remove the files BOSS generates when it runs.
 		Delete "$INSTDIR\BOSSDebugLog.txt"
@@ -455,9 +466,15 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		RMDir "$INSTDIR\Skyrim"
 		RMDir "$INSTDIR\Fallout 3"
 		RMDir "$INSTDIR\Fallout New Vegas"
-  RMDir "$INSTDIR\l10n\ru\LC_MESSAGES"
-  RMDir "$INSTDIR\l10n\ru"
-  RMDir "$INSTDIR\l10n"
+		RMDir "$INSTDIR\l10n\ru\LC_MESSAGES"
+		RMDir "$INSTDIR\l10n\ru"
+		RMDir "$INSTDIR\l10n\es\LC_MESSAGES"
+		RMDir "$INSTDIR\l10n\es"
+		RMDir "$INSTDIR\l10n\de\LC_MESSAGES"
+		RMDir "$INSTDIR\l10n\de"
+		RMDir "$INSTDIR\l10n\zh\LC_MESSAGES"
+		RMDir "$INSTDIR\l10n\zh"
+		RMDir "$INSTDIR\l10n"
 		
 		;Remove uninstaller.
 		Delete "$INSTDIR\Uninstall.exe"
