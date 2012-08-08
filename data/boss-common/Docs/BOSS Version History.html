@@ -52,6 +52,7 @@
 
 <h2>Contents</h2>
 <ol>
+ <li><a href="#2.1.1">2.1.1 - <i>2012</i></a>
  <li><a href="#2.1.0">2.1.0 - <i>6 August 2012</i></a>
  <li><a href="#2.0.1">2.0.1 - <i>6 April 2012</i></a>
  <li><a href="#2.0.0">2.0.0 - <i>27 March 2012</i></a>
@@ -71,7 +72,14 @@
  <li><a href="#license">License</a>
 </ol>
 
-<h2>2.1.0 - <i>6 August 2012</i></h2>
+<h2 id="2.1.1">2.1.1 - <i>2012</i></h2>
+<ul>
+ <li>Fixed: BOSS Log plugin submitter sending escaped HTML special characters in JSON data to the Bugzilla tracker.
+ <li>Fixed: Links to versions in BOSS Version History.html.
+ <li>Changed: Removed links to BOSS's pages on the Nexus sites, as they are no longer of importance to users.
+</ul>
+
+<h2 id="2.1.0">2.1.0 - <i>6 August 2012</i></h2>
 <h3>General Changes</h3>
 <ul>
  <li>Fixed: BOSS counting false-flagged <code>.esm</code> files as masters when applying the master partition.
@@ -184,7 +192,7 @@
 </ul>
 
 
-<h2>2.0.1 - <i>6 April 2012</i></h2>
+<h2 id="2.0.1">2.0.1 - <i>6 April 2012</i></h2>
 <ul>
 	<li>Fixed: Masterlist regular expression errors being reported in an endless loop.
 	<li>Fixed: Crash when BOSS is running for Skyrim and plugins.txt is read-only.
@@ -198,7 +206,9 @@
 	<li>Changed: Switched installer from NSIS to NSIS Unicode.
 	<li>Added: Russian language option to installer/uninstaller. Translation by Tokc.D.K.
 </ul>
-<h2>2.0.0 - <i>27 March 2012</i></h2>
+
+
+<h2 id="2.0.0">2.0.0 - <i>27 March 2012</i></h2>
 <ul>
 	<li>Removed: BOSS Updater for manual installs. When an update is checked for and found on a manual install, BOSS will notify the user of the update and its download locations, but not download or install the update itself. Behaviour on installer installs is unchanged.
 	<li>Removed: <code>iRunType</code> ini setting, as it was unnecessary.
@@ -240,7 +250,7 @@
 	<li>Added: Support for the load order mechanism used by TES V: Skyrim version 1.4.26+. This outputs load order of active plugins to <q>plugins.txt</q>, and outputs the full load order to <q>loadorder.txt</q>, which is created in the same directory as <q>plugins.txt</q>.
 	<li>Added: BOSS now checks for <q>false-flagged</q> plugins and moves any found to the correct side of the master/non-master partition. False-flagged plugins are those with an extension that does not match the state of the plugin's internal master bit flag.
 </ul>
-<h2>1.9.1 - <i>1 January 2012</i></h2>
+<h2 id="1.9.1">1.9.1 - <i>1 January 2012</i></h2>
 <ul>
 	<li>Fixed: Mods in the last group of a masterlist being unrecognised when one or more user rules were enabled.
 	<li>Fixed: Masterlist-format files saved by BOSS that contain messages cannot be loaded successfully by BOSS. This bug was never exposed.
@@ -257,7 +267,7 @@
 	<li>Changed: Expanded/Collapsed indicators added for masterlist groups in the GUI's User Rules Editor.
 	<li>Changed: GUI's User Rules Editor will now auto-scroll the rule list so that the currently selected rule is visible whenever the rule list is altered.
 </ul>
-<h2>1.9.0 - <i>13 November 2011</i></h2>
+<h2 id="1.9.0">1.9.0 - <i>13 November 2011</i></h2>
 <ul>
 	<li>Changed: Major refactoring of BOSS code into a common library, a Command Line Interface and a Graphical User Interface.
 	<li>Common Library:
@@ -339,7 +349,7 @@
 	<li>(Docs) Changed: Major updates to main readme to reflect changes.
 	<li>(Docs) Added: Masterlist Syntax HTML documentation for BOSS team members and interested third parties.
 </ul>
-<h2>1.8.0 - <i>6 July 2011</i></h2>
+<h2 id="1.8.0">1.8.0 - <i>6 July 2011</i></h2>
 <ul>
 	<li>Fixed: Junction-linked data folders not being scanned for plugins.
 	<li>Fixed: Links being displayed incorrectly in the BOSS Log if more than one was given in a message.
@@ -387,7 +397,7 @@
 	<li>(Installer) Changed: Installer now runs uninstaller before installing if a previous installation of BOSS is found.
 	<li>(Docs) Changed: Significant content and formatting changes to main ReadMe, slight formatting changes to User Rules readme.
 </ul>
-<h2>1.7.0 - <i>10 June 2011</i></h2>
+<h2 id="1.7.0">1.7.0 - <i>10 June 2011</i></h2>
 <ul>
 	<li>Fixed: A bug in the masterlist updater causing the wrong masterlist version to be displayed.
 	<li>Changed: Ghosted plugins must now be referenced in user rules without their ".ghost" extension.
@@ -421,12 +431,12 @@
 	<li>(Installer) Changed: Updated installer to reflect the various changes to BOSS's files and folders.
 	<li>(Docs) Changed: Significant content and formatting changes to main ReadMe, slight formatting changes to User Rules readme.
 </ul>
-<h2>1.6.5 - <i>1 December 2010</i></h2>
+<h2 id="1.6.5">1.6.5 - <i>1 December 2010</i></h2>
 <ul>
 	<li>Fixed: Userlist parser giving incorrect error messages for rules inserting plugins into groups.
 	<li>Fixed: BOSS reporting some plugins as unknown when they are ghosted.
 </ul>
-<h2>1.6.4 - <i>28 November 2010</i></h2>
+<h2 id="1.6.4">1.6.4 - <i>28 November 2010</i></h2>
 <ul>
 	<li>Fixed: Keywords, plugins and groups in user rules being unrecognised if they are padded by spaces.
 	<li>Fixed: Non-ASCII characters in plugin filenames causing crashes.
@@ -435,7 +445,7 @@
 	<li>Added: <q>BOSS - Print Debug Info.bat</q> file to make debugging of BOSS errors simpler.
 	<li>Added: Nullsoft Scriptable Install installer for simpler BOSS installation.
 </ul>
-<h2>1.6.3 - <i>15 November 2010</i></h2>
+<h2 id="1.6.3">1.6.3 - <i>15 November 2010</i></h2>
 <ul>
 	<li>Fixed: Crashing when updating the masterlist if downloading an incorrectly formatted masterlist.
 	<li>Fixed: Plugins with duplicate masterlist entries causing load order errors.
@@ -444,7 +454,7 @@
 	<li>Changed: User rules can no longer sort a plugin relative to a plugin that is not in the masterlist and has not been sorted by another rule.
 	<li>Added: Check to userlist application of override rules to prevent incorrect usage resulting in load order errors.
 </ul>
-<h2>1.6.2 - <i>1 November 2010</i></h2>
+<h2 id="1.6.2">1.6.2 - <i>1 November 2010</i></h2>
 <ul>
 	<li>Fixed: Crashing when userlist contains badly formatted lines.
 	<li>Changed: Many code portability enhancements.
@@ -466,7 +476,7 @@
 	</ul>
 	
 </ul>
-<h2>1.6.1 - <i>19 October 2010</i></h2>
+<h2 id="1.6.1">1.6.1 - <i>19 October 2010</i></h2>
 <ul>
 	<li>Fixed: Non-lowercase plugin extensions not being recognised and causing crashes and load order mistakes.
 	<li>Fixed: A potential bug with the masterlist updater causing memory issues.
@@ -476,7 +486,7 @@
 	<li>Added: <code>--silent,-s</code> command line parameter to suppress the automatic opening of the BOSS Log when BOSS is run.
 	<li>Added: Version info to <q>BOSS.exe</q> to make Wrye Bash integration/debugging easier.
 </ul>
-<h2>1.6.0 - <i>8 October 2010</i></h2>
+<h2 id="1.6.0">1.6.0 - <i>8 October 2010</i></h2>
 <ul>
 	<li>Fixed: Fallout3.esm being reported as an 'unknown mod file'.
 	<li>Changed: Removed need for <q>BOSS.bat</q>.
@@ -501,7 +511,7 @@
 	<li>Added: Support for the <q>Nehrim - At Fate's Edge</q> total conversion for TES IV: Oblivion.
 	<li>(Docs) Changed: Converted Readme from RTF to HTML format.
 </ul>
-<h2>1.5.0 - <i>24 March 2010</i></h2>
+<h2 id="1.5.0">1.5.0 - <i>24 March 2010</i></h2>
 <ul>
 	<li>Changed: Switched source code project and solution files to Visual Studio 2010.
 	<li>Added: Four new message types:
@@ -514,12 +524,12 @@
 	<li>Added: A separate masterlist for Fallout 3.
 	<li>Added: A version of BOSS specifically for Fallout 3 (BOSS-F).
 </ul>
-<h2>1.4.1 - <i>31 August 2009</i></h2>
+<h2 id="1.4.1">1.4.1 - <i>31 August 2009</i></h2>
 <ul>
 	<li>Fixed: Incorrect master file defined for Fallout 3.
 	<li>Fixed: Error messages not being displayed on some machines.
 </ul>
-<h2>1.0.0 to 1.3.5 - <i>22 October 2008 to 24 June 2009</i></h2>
+<h2 id="lost">1.0.0 to 1.3.5 - <i>22 October 2008 to 24 June 2009</i></h2>
 <ul>
 	<li>Changes Not Recorded.
 </ul>
