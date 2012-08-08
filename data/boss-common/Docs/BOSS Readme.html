@@ -48,7 +48,7 @@
 </style>
 
 <h1>BOSS</h1>
-<p>A "one-click" program that quickly optimises plugin load orders for TES III: Morrowind, TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas.
+<p>A plugin load order optimiser for TES III: Morrowind, TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas.
 
 <h2>Contents</h2>
 <ol style="float:left;margin:0;margin-right:4em;">
@@ -121,18 +121,11 @@
 <p style="clear:both;">
 
 <h2 id="intro">Introduction</h2>
-<p>BOSS is designed to assist mod users in avoiding serious conflicts, by setting the correct load order for the plugins they have installed. BOSS recognises over 27,600 plugins across the 6 games it supports, with the breakdown being roughly:
-<ul>
-	<li>13,600+ TES IV: Oblivion plugins.
-	<li>7,500+ TES V: Skyrim plugins.
-	<li>3,200+ Fallout 3 plugins.
-	<li>3,200+ Fallout: New Vegas plugins.
-	<li>180+ Nehrim - At Fate's Edge plugins.
-</ul>
-<p>BOSS is not a complete solution to load ordering issues, as there are far more mods available than it knows about. To properly place plugins from such mods, a good working knowledge of mod load ordering is still necessary, for which some research and documentation reading will go a long way. See <a href="#appendix-a">Introduction To Load Orders</a> for an overview.
-<p><strong>Although BOSS technically supports TES III: Morrowind, no mod plugins are recognised and no further support is planned.</strong> Morrowind users looking for an automated load order manager should consider using <a href="http://code.google.com/p/mlox/">mlox</a> instead.
-<p>BOSS sorts plugins ghosted by the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities, and provides Bash Tag suggestions. It also provides over 10,000 plugin-specific messages, including usage notes, requirements, incompatibilities, warnings on bugs and installation mistake notifications. The positioning of plugins and the messages BOSS displays for them can be easily customised, and BOSS has a large number of options to control its features and how it displays its output.
-<p>Finally, if you're developing a modding utility and find yourself dealing with load orders, the BOSS API gives access to almost all of BOSS's functionality, plus more general load order and active status management functionality that works uniformly across all supported games. See the <a href="BOSS%20API%20Readme.html">BOSS API Readme</a> for more information on that.
+<p>BOSS is designed to assist mod users in avoiding detrimental conflicts, by setting the correct load order for the plugins they have installed.
+<p>BOSS also provides thousands of plugin-specific messages, including usage notes, Bash Tag suggestions, requirements, incompatibilities, bug warnings and installation mistake notifications. It supports the sorting of plugins ghosted by the <abbr title="Wrye Bash, Wrye Flash or Wrye Flash NV">Wrye *ash</abbr> utilities, is highly customisable, has been translated into multiple languages, and is simple to use. 
+<p>Although BOSS recognises tens of thousands of plugins, it is not a complete solution to load ordering issues, as there are many more mods available. To properly place unrecognised plugins, a good working knowledge of mod load ordering is still necessary, for which some research and documentation reading will go a long way. See <a href="#appendix-a">Introduction To Load Orders</a> for an overview.
+<p><strong>While BOSS technically supports TES III: Morrowind, no mod plugins are recognised and no further support is planned.</strong> Morrowind users looking for an automated load order manager should consider using <a href="http://code.google.com/p/mlox/">mlox</a> instead.
+<p>BOSS also has an API that gives programmers access to almost all of BOSS's functionality, plus more general load order management functionality that greatly simplifies working with load orders across the supported games. See the <a href="BOSS%20API%20Readme.html">BOSS API Readme</a> for more information on that.
 
 
 <h2 id="install">Installation</h2>
@@ -331,10 +324,10 @@
 <h2 id="help">Contributions &amp; Help</h2>
 <p>User contribution of additions and corrections to the masterlist are vital to the upkeep of BOSS. Let us know what you know.
 <p>General discussion, and the submission of questions, suggestions and unrecognised or unclean plugins, takes place in BOSS's official threads for 
-<a href="http://forums.bethsoft.com/?showtopic=1195328">Oblivion</a>, 
+<a href="http://forums.bethsoft.com/?showtopic=1375486">Oblivion</a>, 
 <a href="http://forums.bethsoft.com/?showtopic=1132338">Nehrim</a>, 
-<a href="http://forums.bethsoft.com/?showtopic=1256118">Skyrim</a>,
-<a href="http://forums.bethsoft.com/?showtopic=1175276">Fallout 3</a> and 
+<a href="http://forums.bethsoft.com/?showtopic=1402404">Skyrim</a>,
+<a href="http://forums.bethsoft.com/?showtopic=1282711">Fallout 3</a> and 
 <a href="http://forums.bethsoft.com/?showtopic=1313081">Fallout: New Vegas</a>.
 <p>If your browser supports it, you can also submit unrecognised plugins directly from the HTML-format BOSS Log. This avoids the need for users to register for a new forum account if they do not already possess an account on Bethesda's forums. However, only unrecognised plugins can be submitted this way at this time.
 <p>Lists of unrecognised plugins are welcome but the only way we can include them in the database in a timely way is if we get:
@@ -478,6 +471,7 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 <ul>
 	<li><code>API</code> - This folder contains the BOSS API DLLs, which can be used by other utilities.
 	<li><code>Docs</code> - This folder contains BOSS's documentation and the images it uses. <q>BOSS Readme.html</q> is this readme file, <q>BOSS API Readme.html</q> is the BOSS API readme, and <q>BOSS Masterlist Syntax.html</q> is developer documentation detailing the formats and syntaxes used by the masterlists. <q>Licenses.txt</q> contains copies of the copyright licenses that BOSS is distributed under.
+	<li><code>l10n</code> - This folder contains BOSS's translation files.
 	<li><code>BOSS.exe</code> - This is BOSS's <abbr title="Command Line Interface">CLI</abbr> executable.
 	<li><code>BOSS GUI.exe</code> - This is BOSS's <abbr title="Graphical User Interface">GUI</abbr> executable.
 	<li><code>BOSSDebugLog.txt</code> - The log file for BOSS's debugging output. You can view it in any text editor.
@@ -779,9 +773,9 @@ A copy of the license is included in the file named "Licenses.txt".</pre></block
 </ul>
 <h4>Official Threads</h4>
 <ul>
-<li><a href="http://forums.bethsoft.com/?showtopic=1280759">Official BOSS thread for Oblivion</a>
+<li><a href="http://forums.bethsoft.com/?showtopic=1375486">Official BOSS thread for Oblivion</a>
 <li><a href="http://forums.bethsoft.com/?showtopic=1132338">Official BOSS thread for Nehrim</a>
-<li><a href="http://forums.bethsoft.com/?showtopic=1316089">Official BOSS thread for Skyrim</a>
+<li><a href="http://forums.bethsoft.com/?showtopic=1402404">Official BOSS thread for Skyrim</a>
 <li><a href="http://forums.bethsoft.com/?showtopic=1282711">Official BOSS thread for Fallout 3</a>
 <li><a href="http://forums.bethsoft.com/?showtopic=1313081">Official BOSS thread for Fallout: New Vegas</a>
 </ul>
