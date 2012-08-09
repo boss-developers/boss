@@ -18,6 +18,10 @@
 	;Request application privileges for Windows Vista/7
 	RequestExecutionLevel admin
 	
+	;Icon for installer\uninstaller
+	!define MUI_ICON "code\trunk\BOSS.ico"
+	!define MUI_UNICON "code\trunk\BOSS.ico"
+	
 	; This causes an "are you sure?" message to be displayed if you try to quit the installer or uninstaller.
 	!define MUI_ABORTWARNING
 	!define MUI_UNABORTWARNING
@@ -220,11 +224,6 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 ;Installer Sections
 
 	Section "Installer Section"
-
-		;Install main executables first.
-		SetOutPath "$INSTDIR"
-		File "code\trunk\bin\Release-32\BOSS.exe"
-		File "code\trunk\bin\Release-32\BOSS GUI.exe"
 		
 		;Silently move and remove files from past BOSS installs.
 		 ${If} $OB_Path != $Empty
@@ -314,7 +313,26 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		IfFileExists "BOSS.ini" 0 +3
 			Delete "BOSS.ini.old"
 			Rename "BOSS.ini" "BOSS.ini.old"
-	  
+			
+		;Install new BOSS ini.
+		SetOutPath "$INSTDIR"
+		File "data\boss-common\BOSS.ini"
+		
+		;Write language ini setting to BOSS.ini. The space is there because otherwise it would be printed as =russian or whatever. Purely to look good.
+		StrCmp $LANGUAGE ${LANG_RUSSIAN} 0 +2
+		WriteINIStr $INSTDIR\BOSS.ini "General Settings" "sLanguage" " russian"
+		StrCmp $LANGUAGE ${LANG_GERMAN} 0 +2
+		WriteINIStr $INSTDIR\BOSS.ini "General Settings" "sLanguage" " german"
+		StrCmp $LANGUAGE ${LANG_SPANISH} 0 +2
+		WriteINIStr $INSTDIR\BOSS.ini "General Settings" "sLanguage" " spanish"
+		StrCmp $LANGUAGE ${LANG_SIMPCHINESE} 0 +2
+		WriteINIStr $INSTDIR\BOSS.ini "General Settings" "sLanguage" " chinese"
+		
+		;Install main executables.
+		SetOutPath "$INSTDIR"
+		File "code\trunk\bin\Release-32\BOSS.exe"
+		File "code\trunk\bin\Release-32\BOSS GUI.exe"
+			  
 		;Now install API DLLs.
 		SetOutPath "$INSTDIR\API"
 		File "code\trunk\bin\Release-32\boss32.dll"
