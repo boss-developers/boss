@@ -447,12 +447,13 @@ namespace boss {
 	Outputter& Outputter::operator<< (const Message m) {
 		string data = EscapeHTMLSpecial(m.Data());
 		//Need to handle web addresses. Recognised are those in the following formats:
-		//"http:someAddress", "http:someAddress label", "file:somelocalAddress", "file:someLocalAddress label"
+		//"http:someAddress", "http:someAddress label", "https:someAddress", "https:someAddress label", "file:somelocalAddress", "file:someLocalAddress label"
 		
 		size_t pos1,pos2,pos3;
 		string link, label, dq;
 		string addressTypes[] = {
 			"http:",
+			"https:",
 			"file:"
 		};
 

@@ -373,7 +373,9 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		File "data\boss-common\l10n\zh\LC_MESSAGES\wxstd.mo"
 		
 		;Add Start Menu shortcuts. Set out path back to $INSTDIR otherwise the shortcuts start in the wrong place.
+		;Set Shell Var Context to all so that shortcuts are installed for all users, not just admin.
 		SetOutPath "$INSTDIR"
+		SetShellVarContext all
 		CreateDirectory "$SMPROGRAMS\BOSS"
 		CreateShortCut "$SMPROGRAMS\BOSS\BOSS.lnk" "$INSTDIR\BOSS.exe"
 		CreateShortCut "$SMPROGRAMS\BOSS\BOSS GUI.lnk" "$INSTDIR\BOSS GUI.exe"
@@ -522,6 +524,7 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$INSTDIR\Uninstall.exe"
 		
 		;Delete Start Menu folder.
+		SetShellVarContext all
 		RMDir /r "$SMPROGRAMS\BOSS"
 
 	SectionEnd

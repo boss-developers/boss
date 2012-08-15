@@ -123,7 +123,6 @@ namespace boss {
 			| UTF8
 			| CComment
 			| CPlusPlusComment
-			| lineComment
 			| iniComment
 			| eof;
 			
@@ -135,15 +134,9 @@ namespace boss {
 
 		iniComment = lit("#") >> *(char_ - eol);
 
-		CPlusPlusComment = !(lit("http:") | lit("https:")) >> "//" >> *(char_ - eol);
+		CPlusPlusComment = !(lit("http:") | lit("https:") | lit("file:")) >> "//" >> *(char_ - eol);
 
-		//Need to skip lines that start with '\', but only if they don't follow with EndGroup or BeginGroup.
-		lineComment = 
-			lit("\\")
-			>> !(lit("EndGroup") | lit("BeginGroup"))
-			>> *(char_ - eol);
-
-		eof = *(spc | CComment | CPlusPlusComment | lineComment | eol) >> eoi;
+		eof = *(spc | CComment | CPlusPlusComment | eol) >> eoi;
 	}
 
 	void Skipper::SkipIniComments(const bool b) {
@@ -239,51 +232,33 @@ namespace boss {
 				no_case[unicode::string("ifnot")
 				| unicode::string("if")]
 			) 
-			> (
-				(
-					char_('(')
-					> shortCondition
-					> char_(')')
-				) 
-				| functCondition
-			);
+			> functCondition;
 			
 		functCondition %=
 			(
-				no_case[unicode::string("var")] > char_('(') > variable > char_(')')													//New function-style variable condition.
+				no_case[unicode::string("var")] > char_('(') > variable > char_(')')													//Variable condition.
 			) | (
-				no_case[unicode::string("file")] > char_('(') > file > char_(')')														//New function-style file condition.
+				no_case[unicode::string("file")] > char_('(') > file > char_(')')														//File condition.
 			) | (
-				no_case[unicode::string("checksum")] > char_('(') > file > char_(',') > checksum > char_(')')							//New function-style checksum condition.
+				no_case[unicode::string("checksum")] > char_('(') > file > char_(',') > checksum > char_(')')							//Checksum condition.
 			) | (
-				no_case[unicode::string("version")] > char_('(') > file > char_(',') > version > char_(',') > comparator > char_(')')	//New function-style version condition.
+				no_case[unicode::string("version")] > char_('(') > file > char_(',') > version > char_(',') > comparator > char_(')')	//Version condition.
 			) | (
-				no_case[unicode::string("regex")] > char_('(') > regex > char_(')')														//New function-style regex condition.
+				no_case[unicode::string("regex")] > char_('(') > regex > char_(')')														//Regex condition.
 			) | (
-				no_case[unicode::string("active")] > char_('(') > file > char_(')')														//New function-style active condition.
+				no_case[unicode::string("active")] > char_('(') > file > char_(')')														//Active condition.
 			) | (
-				no_case[unicode::string("lang")] > char_('(') > language > char_(')')													//New function-style language condition.
+				no_case[unicode::string("lang")] > char_('(') > language > char_(')')													//Language condition.
 			)
 			;
 
-		shortCondition %= 
-			(char_('$') > variable)							//Masterlist variable condition.
-			| (comparator > version > char_('|') > file)	//Version condition.
-			| (checksum > char_('|') > file)				//CRC condition.
-			| file											//File condition.
-			| (no_case[char_('r')] > file)					//Regex condition.
-			;
+		variable %= +(char_ - (')' | eol)); 
 
-		variable %= +(char_ - ')'); 
-
-		file %= lexeme[char_('"') > +(char_ - '"') > char_('"')];  //An OBSE plugin or a mod plugin.
+		file %= lexeme[char_('"') > +(char_ - ('"' | eol)) > char_('"')];
 
 		checksum %= +xdigit;
 
-		version %= 
-			file					//functCondition def.
-			| lexeme[+(char_ - '|')]  //shortCondition def.
-			;
+		version %= file;
 
 		comparator %= char_('=') | char_('>') | char_('<');
 
@@ -424,45 +399,29 @@ namespace boss {
 
 		conditional = (ifIfNot > condition)									[phoenix::bind(&conditional_grammar::EvaluateConditional, this, _val, _1, _2)];
 
-		condition %=
-			('(' > shortCondition > ')')
-			| functCondition
-			;
-			
-		functCondition =
-			(no_case[lit("var")] > '(' > variable > ')')												[phoenix::bind(&conditional_grammar::CheckVar, this, _val, _1)]
+		condition =
+			(no_case[lit("var")] > '(' > variable > ')')									[phoenix::bind(&conditional_grammar::CheckVar, this, _val, _1)]
 			| 
-			(no_case[lit("file")] > '(' > file > ')')													[phoenix::bind(&conditional_grammar::CheckFile, this, _val, _1)]
+			(no_case[lit("file")] > '(' > file > ')')										[phoenix::bind(&conditional_grammar::CheckFile, this, _val, _1)]
 			| 
-			(no_case[lit("checksum")] > '(' > file > lit(',') > checksum > ')')							[phoenix::bind(&conditional_grammar::CheckSum, this, _val, _1, _2)]
+			(no_case[lit("checksum")] > '(' > file > ',' > checksum > ')')					[phoenix::bind(&conditional_grammar::CheckSum, this, _val, _1, _2)]
 			| 
-			(no_case[lit("version")] > '(' > file > lit(',') > version > lit(',') > comparator > ')')	[phoenix::bind(&conditional_grammar::CheckVersion, this, _val, _1, _2, _3)]
+			(no_case[lit("version")] > '(' > file > ',' > version > ',' > comparator > ')')	[phoenix::bind(&conditional_grammar::CheckVersion, this, _val, _1, _2, _3)]
 			| 
-			(no_case[lit("regex")] > '(' > regex > ')')													[phoenix::bind(&conditional_grammar::CheckRegex, this, _val, _1)]
+			(no_case[lit("regex")] > '(' > regex > ')')										[phoenix::bind(&conditional_grammar::CheckRegex, this, _val, _1)]
 			| 
-			(no_case[lit("active")] > '(' > file > ')')													[phoenix::bind(&conditional_grammar::CheckActive, this, _val, _1)]
+			(no_case[lit("active")] > '(' > file > ')')										[phoenix::bind(&conditional_grammar::CheckActive, this, _val, _1)]
 			| 
-			(no_case[lit("lang")] > '(' > language > ')')												[phoenix::bind(&conditional_grammar::CheckLanguage, this, _val, _1)]
+			(no_case[lit("lang")] > '(' > language > ')')									[phoenix::bind(&conditional_grammar::CheckLanguage, this, _val, _1)]
 			;
 
-		shortCondition = 
-			('$' > variable)								[phoenix::bind(&conditional_grammar::CheckVar, this, _val, _1)]
-			| (comparator > version > '|' > file)			[phoenix::bind(&conditional_grammar::CheckVersion, this, _val, _3, _2, _1)]
-			| (checksum > '|' > file)						[phoenix::bind(&conditional_grammar::CheckSum, this, _val, _2, _1)]
-			| file											[phoenix::bind(&conditional_grammar::CheckFile, this, _val, _1)]
-			| (no_case['r'] > file)							[phoenix::bind(&conditional_grammar::CheckRegex, this, _val, _1)]
-			;
+		variable %= +(char_ - (')' | eol)); 
 
-		variable %= +(char_ - ')'); 
-
-		file %= lexeme['"' > +(char_ - '"') > '"'];  //An OBSE plugin or a mod plugin.
+		file %= lexeme['"' > +(char_ - ('"' | eol)) > '"'];
 
 		checksum %= hex;
 
-		version %= 
-			file					//functCondition def.
-			| lexeme[+(char_ - '|')]  //shortCondition def.
-		;
+		version %= file;
 
 		comparator %= char_('=') | char_('>') | char_('<');
 
@@ -737,11 +696,11 @@ namespace boss {
 				> (omit[heading] | (!lit('[') >> setting)) % +eol
 				> *eol;
 
-		heading = '[' > +(char_ - ']') > ']';
+		heading = '[' > +(char_ - (']' | eol)) > ']';
 
 		setting %= var > '=' > stringVal;
 
-		var %= +(char_ - '=');
+		var %= +(char_ - ('=' | eol));
 
 		stringVal %= lexeme[*(char_ - eol)];
 		
