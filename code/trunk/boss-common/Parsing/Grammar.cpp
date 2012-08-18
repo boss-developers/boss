@@ -529,8 +529,11 @@ namespace boss {
 			return;
 
 		fs::path filePath = GetPath(file);
-		if (!fs::exists(filePath))
+		if (!fs::exists(filePath)) {
+			if (comparator == '<')
+				result = true;
 			return;
+		}
 		
 		Version givenVersion = Version(version);
 		Version trueVersion = Version(filePath);

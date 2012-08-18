@@ -1600,7 +1600,7 @@ namespace boss {
 				<< "				filterMatch = true;"
 				<< "			} else if (evt.currentTarget.id == 'hideIncompatibilities' && listItems[i].className.indexOf('inc') != -1){"
 				<< "				filterMatch = true;"
-				<< "			} else if (evt.currentTarget.id == 'hideDoNotCleanMessages' && listItems[i].className.indexOf('dirty') != -1 && listItems[i].innerHTML.indexOf('Contains dirty edits: Do not clean.') != -1){"
+				<< "			} else if (evt.currentTarget.id == 'hideDoNotCleanMessages' && listItems[i].className.indexOf('dirty') != -1 && (listItems[i].innerHTML.indexOf('Do not clean.') != -1 || listItems[i].innerHTML.indexOf('" << translate("Do not clean.") << "') != -1)){"
 				<< "				filterMatch = true;"
 				<< "			}"
 				<< "			if (filterMatch){"
