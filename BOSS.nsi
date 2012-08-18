@@ -366,6 +366,7 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		File "data\boss-common\l10n\ru\LC_MESSAGES\wxstd.mo"
 		SetOutPath "$INSTDIR\l10n\es\LC_MESSAGES"
 		File "data\boss-common\l10n\es\LC_MESSAGES\wxstd.mo"
+		File "data\boss-common\l10n\es\LC_MESSAGES\messages.mo"
 		SetOutPath "$INSTDIR\l10n\de\LC_MESSAGES"
 		File "data\boss-common\l10n\de\LC_MESSAGES\wxstd.mo"
 		SetOutPath "$INSTDIR\l10n\zh\LC_MESSAGES"
@@ -443,6 +444,7 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		;Remove language files.
 		Delete "$INSTDIR\l10n\ru\LC_MESSAGES\messages.mo"
 		Delete "$INSTDIR\l10n\ru\LC_MESSAGES\wxstd.mo"
+		Delete "$INSTDIR\l10n\es\LC_MESSAGES\messages.mo"
 		Delete "$INSTDIR\l10n\es\LC_MESSAGES\wxstd.mo"
 		Delete "$INSTDIR\l10n\de\LC_MESSAGES\wxstd.mo"
 		Delete "$INSTDIR\l10n\zh\LC_MESSAGES\messages.mo"
