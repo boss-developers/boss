@@ -52,7 +52,6 @@
 <ol>
 	<li><a href="#intro">Introduction</a>
 	<li><a href="#structure">Structure</a>
-	<li><a href="#formats">Format Differences</a>
 	<li><a href="#rules">Rules &amp; Guidelines</a>
 	<li><a href="#syntax">Syntax</a>
 	<ol>
@@ -79,7 +78,7 @@
 
 <h2 id="intro">Introduction</h2>
 <p>This documentation is a complete record of all information on the masterlist syntax, including rules and guidelines on usage, detailed explanations of features and syntaxes, and examples of usage. It is intended for use by BOSS developers rather than as a document that should be read by users. 
-<p>As BOSS has developed, so too has the masterlist format. This documentation covers all the functionality present in the latest masterlist format supported by the latest release of BOSS, and also details the next version of the masterlist format to be released. The current release of BOSS is v2.0.1, which supports MF2.2 (MF = Masterlist Format). The next release of BOSS will be v2.1.0, which will support MF2.3.
+<p>As BOSS has developed, so too has the masterlist format. This documentation covers all the functionality present in the latest masterlist format supported by the latest release of BOSS, and also details the next version of the masterlist format to be released. <p>The current release of BOSS is v2.1.0, which supports MF2.2 and MF2.3 (MF = Masterlist Format). The next release of BOSS will be v2.1.1, which will support only MF2.3. As MF2.4 has not yet been created, this documentation will only cover MF2.3 syntax.
 
 <h2 id="structure">Structure</h2>
 <p>The masterlist is a plain text file encoded in UTF-8 which lists mod plugins, which are files with <code>.esp</code> or <code>.esm</code> extensions, in the order in which they co-exist best in. Each plugin may optionally have one or more messages attached to it for display in the BOSS Log. To make managing the masterlist easier, mods are often placed in groups that are often themed. These groups are defined and named in the masterlist, and also provide some sorting functionality for BOSS's User Rules feature.
@@ -98,26 +97,6 @@
 <var>[plugin line]</var>
 <var>[group line (end)]</var>
 </code>
-
-<h2 id="formats">Format Differences</h2>
-<p>The table below gives a quick overview of the differences between the masterlist formats. Only the latest current release and the next version are shown, and features which both versions share are omitted.
-<table>
-	<thead>
-  <tr><th rowspan="2">Feature<th colspan="2">Masterlist Format Version
-  <tr><th>2.2<th>2.3
-	<tbody>
-  <tr><td>Symbol-Style Conditions<a href="#1">&#185;</a><td class="t"><td class="c">
-		<tr><td>Conditional Incompatibilities Shorthand	      <td class="t"><td class="c">
-		<tr><td>Conditional Requirements Shorthand		          <td class="t"><td class="c">
-		<tr><td>Conditional Message Shorthand				             <td class="t"><td class="c">
-  <tr><td>Function-Style Conditions                     <td class="c"><td class="t">
-  <tr><td>Labelled Web Links                            <td class="c"><td class="t">
-  <tr><td>Else Conditionals                             <td class="c"><td class="t">
-  <tr><td>Conditional Groups                            <td class="c"><td class="t">
-  <tr><td>Active Status Conditions                      <td class="c"><td class="t">
-</table>
-<small id="1">&#185; While MF2.3 will not include symbol-style conditions, they will still be supported in BOSS v2.1.0 to allow migration from MF2.2 to MF2.3 during that release.</small>
-<p>As the conditional shorthands are being removed in the next version of the masterlist format to prevent bugs that have been occurring due to their inadvertant use, they are not detailed in this readme.
 
 <h2 id="rules">Rules &amp; Guidelines</h2>
 <p>The following are some rules and guidelines that should be followed when editing the masterlist.
@@ -138,6 +117,11 @@
 <h2 id="syntax">Syntax</h2>
 <p>This section details the syntaxes for functionality found at least partially in all masterlist formats.
 <p>Note that a colon <code>:</code> must be put after the last keyword on a line, before the plugin or group name or message that follows it, to mark the boundary. While most of the syntax examples below include the colon with the keyword, they are not two parts of the same thing, and this should be kept in mind.
+<p>Some general features of MF2:
+<ul>
+ <li>Keywords are case-insensitive.
+ <li>Whitespace is ignored, except within plugin filenames, group names, message strings and file, version, regex and language condition arguments.
+</ul>
 
 
 <h3 id="syntax-comments">Silent Comments</h3>
@@ -204,12 +188,17 @@
 
 
 <h3 id="syntax-weblinks">Web Links</h3>
-<p>URLs in messages will be turned into hyperlinks in the HTML-format BOSS Log if they are enclosed in double quotes. The full URL, including protocol identifier, is required for the URL to be detected as such. For example:
+<p>URLs in messages will be turned into hyperlinks in the HTML-format BOSS Log if they are enclosed in double quotes. The full URL, including protocol identifier, is required for the URL to be detected as such. URLs in messages can be given labels by including a space followed by the label within the quoted string after the URL itself. Recognised protocol identifiers are:
+<ul>
+ <li><code>http</code>
+ <li><code>https</code>
+ <li><code>file</code>
+</ul>
+<p>Examples:
 <code class="box">"http://www.example.com"</code>
 <p>becomes:
 <blockquote><a href="http://www.example.com">http://www.example.com</a></blockquote>
 in the HTML BOSS Log, and is unchanged in the plain text BOSS Log.
-<p><b>In MF2.3:</b> URLs in messages can be given labels by including a space followed by the label within the quoted string after the URL itself. For example:
 <code class="box">"http://www.example.com example link"</code>
 <p>becomes:
 <blockquote><a href="http://www.example.com">example link</a></blockquote>
@@ -225,10 +214,10 @@ in the HTML BOSS Log, and
 
 
 <h3 id="syntax-cond">Conditional Expressions</h3>
-<p>A line can be made to only be applied in certain circumstances by adding a conditional expression to the start of that line. Conditional expressions can be added to any line except group lines. The syntax for a conditional expression with only one condition is:
+<p>A line can be made to only be applied in certain circumstances by adding a conditional expression to the start of that line. Conditional expressions can be added to any line. The syntax for a conditional expression with only one condition is:
 <code class="box">[condition keyword] [condition] [line]</code>
-<p>If <code><var>[line]</var></code> is a plugin line, then the conditional must be followed by the <code>MOD</code> keyword, eg. <code>IF ("Foo.esp") MOD: MyPlugin.esp</code> will place <code>MyPlugin.esp</code> in that position if <code>Foo.esp</code> is installed.
-<p><b>In MF2.3:</b> <code><var>[line]</var></code> can be a group start line, in which case the conditional expression is also effectively applied to all the lines within the group in addition to any conditional expressions attached to each of those lines individually, such that both conditional expressions must evaluate to true for a line to be applied.
+<p>If <code><var>[line]</var></code> is a plugin line, then the conditional must be followed by the <code>MOD</code> keyword, eg. <code>IF FILE("Foo.esp") MOD: MyPlugin.esp</code> will place <code>MyPlugin.esp</code> in that position if <code>Foo.esp</code> is installed.
+<p>If <code><var>[line]</var></code> is a group line, then the plugins and groups it contains will only be evaluated if the conditional expression evaluates to true, otherwise they will be skipped.
 <p>There are two condition keywords available:
 <table>
 	<thead><tr><th>Condition Keyword<th>Description
@@ -238,15 +227,15 @@ in the HTML BOSS Log, and
 </table>
 <p>There are several types of condition that can be tested for, detailed in the table below.
 <table>
-	<thead><tr><th>Condition Type<th>MF2.2 Syntax<th>MF2.3 Syntax<th>Description
+	<thead><tr><th>Condition Type<th>Syntax<th>Description
 	<tbody>
-		<tr><td>Variable<td><code>($<var>[variable]</var>)</code><td><code>VAR(<var>[variable]</var>)</code><td>Returns true if <var>[variable]</var> is defined, false otherwise.
-		<tr><td>File<td><code>("<var>[file]</var>")</code><td><code>FILE("<var>[file]</var>")</code><td>Returns true if <var>[file]</var> is installed, false otherwise.
-		<tr><td>Checksum<td><code>(<var>[checksum]</var>|"<var>[file]</var>")</code><td><code>CHECKSUM("<var>[file]</var>", <var>[checksum]</var>)</code><td>Returns true if the calculated checksum of <var>[file]</var> matches <var>[checksum]</var>, false otherwise.
-		<tr><td>Version<td><code>(<var>[comparator][version]</var>|"<var>[file]</var>")</code><td><code>VERSION("<var>[file]</var>", "<var>[version]</var>", <var>[comparator]</var>)</code><td>Returns true if the expression <code><var>[version] [comparator] [actual version of [file]]</var></code> holds true, false otherwise.
-  <tr><td>Regular Expression<td><code>(r"<var>[regex]</var>")</code><td><code>REGEX("<var>[regex]</var>")</code><td>Returns true if a file matching <var>[regex]</var> is installed, false otherwise.
-  <tr><td>Plugin Active Status<td><i>N/A</i><td><code>ACTIVE("<var>[file]</var>")</code><td><strong>This is MF2.3 functionality.</strong> Returns true if <var>[file]</var> is a <code>.esp</code> or <code>.esm</code> file that is both installed and active, false otherwise.
-  <tr><td>BOSS Language<td><i>N/A</i><td><code>LANG("<var>[language]</var>")</code><td><strong>This is MF2.3 functionality.</strong> Returns true if <var>[language]</var> is the language BOSS is currently running in, false otherwise.
+		<tr><td>Variable<td><code>VAR(<var>[variable]</var>)</code><td>Returns true if <var>[variable]</var> is defined, false otherwise.
+		<tr><td>File<td><code>FILE("<var>[file]</var>")</code><td>Returns true if <var>[file]</var> is installed, false otherwise.
+		<tr><td>Checksum<td><code>CHECKSUM("<var>[file]</var>", <var>[checksum]</var>)</code><td>Returns true if the calculated checksum of <var>[file]</var> matches <var>[checksum]</var>, false otherwise. If <var>[file]</var> does not exist, returns false.
+		<tr><td>Version<td><code>VERSION("<var>[file]</var>", "<var>[version]</var>", <var>[comparator]</var>)</code><td>Returns true if the expression <code><var>[version] [comparator] [actual version of [file]]</var></code> holds true, false otherwise. If <var>[file]</var> does not exist and <var>[comparator]</var> is <code>=</code> or <code>&gt;</code>, returns false. If <var>[file]</var> does not exist and <var>[comparator]</var> is <code>&lt;</code>, returns true.
+		<tr><td>Regular Expression<td><code>REGEX("<var>[regex]</var>")</code><td>Returns true if a file matching <var>[regex]</var> is installed, false otherwise.
+		<tr><td>Plugin Active Status<td><code>ACTIVE("<var>[file]</var>")</code><td>Returns true if <var>[file]</var> is a <code>.esp</code> or <code>.esm</code> file that is both installed and active, false otherwise. If <var>[file]</var> does not exist, returns false.
+		<tr><td>BOSS Language<td><code>LANG("<var>[language]</var>")</code><td>Returns true if <var>[language]</var> is the language BOSS is currently running in, false otherwise.
 </table>
 <p>The syntaxes for the different types of condition variable are:
 <table>
@@ -258,7 +247,7 @@ in the HTML BOSS Log, and
   <tr><td><code>[version]</code><td>A string of characters representing the version of a plugin or executable. BOSS displays the versions of plugins and Script Extender executables.
   <tr><td><code>[comparator]</code><td>One of <code>=</code>, <code>&gt;</code> or <code>&lt;</code>, meaning "is equal to", "is greater than" and "is less than" respectively.
   <tr><td><code>[regex]</code><td>The syntax is as for <code>[file]</code>, but the filename can contain <a href="http://www.boost.org/doc/libs/1_50_0/libs/regex/doc/html/boost_regex/syntax/basic_extended.html">POSIX Extended</a> regular expression syntax. If a path is supplied, it may not contain any regular expression syntax other than the escaping of any backslashes present. I.e. <code>Textures\\testtexture(_n)?\.dds</code> is valid but <code>Te[xX]tures\\testtexture(_n)?\.dds</code> is not.
-  <tr><td><code>[language]</code><td><strong>This is MF2.3 functionality.</strong> A language name, in the same form as required by the BOSS.ini's <code>sLanguage</code> setting.
+  <tr><td><code>[language]</code><td>A language name, in the same form as required by the BOSS.ini's <code>sLanguage</code> setting.
 </table>
 <p>Filenames, checksums, regular expressions and languages are case-insensitive. Version strings and masterlist variables are case-sensitive.
 <p>In addition to explicitly referencing files, there are some placeholders that can be used to reference certain files, given in the table below. These placeholders may be used as <code>[file]</code> variables, but not as any other variable type, including <code>[regex]</code> variables.
@@ -270,8 +259,8 @@ in the HTML BOSS Log, and
 		<tr><td>FOSE<td>..\fose_loader.exe
 		<tr><td>NVSE<td>..\nvse_loader.exe
 		<tr><td>SKSE<td>..\skse_loader.exe
-		<tr><td>MWSE<td><strong>This is MF2.3 functionality.</strong> ..\MWSE.dll
-		<tr><td>TES3<td><strong>This is MF2.3 functionality.</strong> ..\Morrowind.exe
+		<tr><td>MWSE<td>..\MWSE.dll
+		<tr><td>TES3<td>..\Morrowind.exe
 		<tr><td>TES4<td>..\Oblivion.exe
 		<tr><td>TES5<td>..\TESV.exe
 		<tr><td>FO3<td>..\Fallout3.exe
@@ -297,7 +286,6 @@ in the HTML BOSS Log, and
 <p>If the operators were such that the expression was <code>A && B || C && D</code>, it would be evaluated as <code>((A && B) || C) && D</code>, <b>not</b> <code>(A && B) || (C && D)</code>.
 
 <h4 id="syntax-cond-else">Else Conditional Expressions</h4>
-<p style="font-weight:bold;">This is MF2.3 functionality.
 <p>The else conditional expression can be used when a line should be conditional on the opposite of the conditional expression for the previous line of the same type. The syntax is:
 <code class="box">ELSE [line]</code>
 <p>The else conditional may not be used on group lines, the first line of each type in the masterlist, the first plugin line following a group start line, or the first message line following a plugin line.
@@ -314,9 +302,9 @@ in the HTML BOSS Log, and
 </ol>
 <p>As such, a group's conditional expression does not affect any variable or global message lines contained within that group, and all variables that will be defined for a user's install will already be defined by the time that any non-variable lines get their conditionals evaluated. For example:
 <code class="box">SET: Var1
-IF ($Var2) MOD: Var2Mod.esm
-IF ($Var1) SET: Var2
-IF ($Var2) MOD: Var2Mod.esp</code>
+IF VAR(Var2) MOD: Var2Mod.esm
+IF VAR(Var1) SET: Var2
+IF VAR(Var2) MOD: Var2Mod.esp</code>
 <p>Var1 is set first, then Var2 is set, then the conditional for Var2Mod.esm is evaluated (to true), then the conditional for Var2Mod.esp is evaluated (to true).
 
 <h3 id="perf">Performance</h3>
@@ -324,19 +312,19 @@ IF ($Var2) MOD: Var2Mod.esp</code>
 <ol>
  <li>Use conditional groups wherever you have more than at least four plugins in the same location of the masterlist that share at least one conditional. In practice, four is probably slightly too few plugins to justify a group, since it increases the length of the masterlist. Use your judgement, and ask if you are not sure.
  <li>If multiple lines throughout the masterlist use the same conditional, and that conditional is not a single variable condition, use that conditional to define a masterlist variable, and change the rest of the lines that use that conditional to instead use a conditional that only contains a variable condition. For example:
- <code class="box">IF (=1.2|Mod1.esp) MOD: Mod2.esp
-IF (=1.2|Mod1.esp) MOD: Mod3.esp
+ <code class="box">IF VERSION("Mod1.esp", "1.2", =) MOD: Mod2.esp
+IF VERSION("Mod1.esp", "1.2", =) MOD: Mod3.esp
 ...
-IF (=1.2|Mod1.esp) MOD: Mod4.esp
-IF (=1.2|Mod1.esp) MOD: Mod5.esp</code>
+IF VERSION("Mod1.esp", "1.2", =) MOD: Mod4.esp
+IF VERSION("Mod1.esp", "1.2", =) MOD: Mod5.esp</code>
 <p>is better written as:
-<code class="box">IF (=1.2|Mod1.esp) SET: Mod1
+<code class="box">IF VERSION("Mod1.esp", "1.2", =) SET: Mod1
 ...
-IF ($Mod1) MOD: Mod2.esp
-IF ($Mod1) MOD: Mod3.esp
+IF VAR(Mod1) MOD: Mod2.esp
+IF VAR(Mod1) MOD: Mod3.esp
 ...
-IF ($Mod1) MOD: Mod4.esp
-IF ($Mod1) MOD: Mod5.esp</code>
+IF VAR(Mod1) MOD: Mod4.esp
+IF VAR(Mod1) MOD: Mod5.esp</code>
  <li>Use else conditional expressions wherever possible. Evaluating an IF/ELSE or IFNOT/ELSE pair of lines requires very nearly half the computation that an IF/IFNOT or IFNOT/IF pair of lines requires.
  <li>Use file conditions instead of regular expression conditions wherever possible.
  <li>Use version conditions instead of checksum conditions wherever possible. A version condition can often be used to check if a plugin came from a certain release of a mod, while a checksum condition can be used to check if that plugin was also modified by the user. If you do not require the extra precision, and the version information of the plugin changes consistently between releases, use a version condition and not a checksum condition.
@@ -357,31 +345,31 @@ IF ($Mod1) MOD: Mod5.esp</code>
 
 <h2 id="examples">Examples</h2>
 <p>Below are some examples of the syntaxes covered in this documentation. The examples use some real plugins, but the content is purely exemplary and does not necessarily contain any valid information.
-<code class="box"> IF (&lt;1.8|"BOSS") GLOBAL ERROR: An update to BOSS is available. Please download BOSS v1.8.
+<code class="box"> IF VERSION("BOSS", "2.1.1", &lt;) GLOBAL ERROR: An update to BOSS is available. Please download BOSS v2.1.1.
 
    //Make a variable for if OOO is installed.
    //We can indent this comment because in MF2 whitespace doesn't matter, so it looks like it's at the start of the line.
- IF ("Oscuro's Oblivion Overhaul.esm") && IF("Oscuro's Oblivion Overhaul.esp") SET: OOO
+ IF FILE("Oscuro's Oblivion Overhaul.esm") &amp;&amp; IF FILE("Oscuro's Oblivion Overhaul.esp") SET: OOO
  
 //Also make a variable for FCOM:
-IF ("FCOM_Convergence.esp") SET: FCOM
+IF FILE("FCOM_Convergence.esp") SET: FCOM
 
 Mart's Monster Mod for OOO.esm
- IFNOT ($OOO) WARN: Oscuro's Oblivion Overhaul.esm missing. Re-install OOO.
+ IFNOT VAR(OOO) WARN: Oscuro's Oblivion Overhaul.esm missing. Re-install OOO.
 //The above line will only be shown in the BOSS Log if OOO is not installed correctly.
 
 Unofficial Oblivion Patch.esp
- IF (&lt;3.3|"Unofficial Oblivion Patch.esp") SAY: Upgrade to the latest version of the UOP  Supplementals, found here: "http://oblivion.nexusmods.com/mods/27710"
+ IF VERSION("Unofficial Oblivion Patch.esp", "3.3", &lt;) SAY: Upgrade to the latest version of the UOP  Supplementals, found here: "http://oblivion.nexusmods.com/mods/27710"
  TAG: {{BASH: Relev}} and [NoMerge]. Wrye Bash will automatically add the Relev tag and remove the NoMerge tag for you.
- IF (CACF51FC|"FastExit2.dll") SAY: You have a legitimate copy of Fast Exit 2 installed. Good on you!
+ IF CHECKSUM("FastExit2.dll", CACF51FC) SAY: You have a legitimate copy of Fast Exit 2 installed. Good on you!
 
 All Natural.esp
- IF (&gt;0.0.20.0|"OBSE") WARN: You have the correct version of OBSE installed.
+ IF VERSION("OBSE", "0.0.20.0", &gt;) WARN: You have the correct version of OBSE installed.
 
 Unofficial Shivering Isles Patch.esp
- IF (E0DDDD00|"Unofficial Oblivion Patch.esp") SAY: You are using version 3.3.5 of the UOP.
+ IF CHECKSUM("Unofficial Oblivion Patch.esp", E0DDDD00) SAY: You are using version 3.3.5 of the UOP.
 //The given checksum is the checksum of v3.3.5, as calculated by BOSS.
- IF (=4.1.0.0|"sr_Oblivion_Stutter_Remover.dll") SAY: You have Oblivion Stutter Remover v4.1 installed.
+ IF VERSION("sr_Oblivion_Stutter_Remover.dll", "4.1.0.0", =) SAY: You have Oblivion Stutter Remover v4.1 installed.
  
 //Comment out the below section.
 /*
@@ -389,8 +377,8 @@ PluginNotParsed.esp
  TAG: {{BASH: Graphics}} You'll never see this in your BOSS Log.
 */
 
-IF ($FCOM) MOD: Mart's Monster Mod - Fran's Leveled Quests.esp 
- IF ($FCOM) ERROR: Delete. Already integrated into FCOM.
+IF VAR(FCOM) MOD: Mart's Monster Mod - Fran's Leveled Quests.esp 
+ IF VAR(FCOM) ERROR: Delete. Already integrated into FCOM.
 </code>
 <p>Assuming that all version and plugin conditionals evaluate to true apart from the first, the above would have the following output. 
 <blockquote>
