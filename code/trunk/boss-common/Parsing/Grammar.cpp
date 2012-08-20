@@ -141,7 +141,7 @@ namespace boss {
 
 	void Skipper::SkipIniComments(const bool b) {
 		if (b)
-			iniComment = lit("#") >> *(char_ - eol);
+			iniComment = (lit("#") | lit(";")) >> *(char_ - eol);
 		else
 			iniComment = CComment;
 	}
@@ -699,11 +699,11 @@ namespace boss {
 				> (omit[heading] | (!lit('[') >> setting)) % +eol
 				> *eol;
 
-		heading = '[' > +(char_ - (']' | eol)) > ']';
+		heading = '[' > +(char_ - ']') > ']';
 
 		setting %= var > '=' > stringVal;
 
-		var %= +(char_ - ('=' | eol));
+		var %= +(char_ - '=');
 
 		stringVal %= lexeme[*(char_ - eol)];
 		

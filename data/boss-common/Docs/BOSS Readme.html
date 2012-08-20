@@ -625,48 +625,41 @@ LangString TEXT_USERFILES ${LANG_ENGLISH} "BOSS's userlist files and BOSS.ini fi
  <li>If you don't have a Google account and are unwilling to sign up for one, you can also send your translation to WrinklyNinja directly, using one of the methods given in the <a href="#team">Project Members</a> section below. If WrinklyNinja is not listed as an active member, send the translation to another admin or programmer, if any are available.
 </ol>
 <h3 id="translate-boss">Translating The BOSS Applications</h3>
-<p>There are some prerequisites to translating the BOSS applications:
+<p>There are two prerequisites to translating the BOSS applications:
 <ul>
  <li><a href="http://code.google.com/p/better-oblivion-sorting-software/source/checkout">BOSS source code</a>: Perform a checkout of the BOSS Subversion repository using a Subversion client of your choice. The location on your hard drive that you performed the checkout to will be referred to as <var>$BOSS</var>. If you're not sure how to perform a checkout, look up the documentation of the Subversion client you chose.
- <li><a href="http://sourceforge.net/projects/cppcms/files/boost_locale/gettext_for_windows/">GNU gettext</a>: Download the latest version and put the <code>xgettext.exe</code>, <code>msgen.exe</code>, <code>msgfmt.exe</code>, <code>msgunfmt.exe</code> and <code>msgmerge.exe</code> executables in your <code><var>$BOSS</var>\code\trunk\translations</code> folder, so that they're next to a set of batch files.
+ <li><a href="http://www.poedit.net/">Poedit</a>: Download and install the latest version. Once this is done, open Poedit and select <q>File->Preferences</q>, then in the <q>Editor</q> tab ensure that the checkbox for the <q>Automatically compile .mo file on save</q> setting is checked. Click <q>OK</q> and exit Poedit to ensure the setting is saved.
 </ul>
 <p>The workflow for translating the BOSS applications is as follows:
 <ol>
- <li>Generate a human-readable translation file from the source code and, if available, a previously created machine-readable translation file.
- <ol>
-  <li>If you are updating a previous translation, first put its <code>messages.mo</code> file in the <code><var>$BOSS</var>\code\trunk\translations</code> folder.
-  <li>Run the <code>GenHumanTrans.bat</code> file in that folder to generate a human-readable translation file that will include the translations in the <code>messages.mo</code> file if one is present. The file created will have the filename <code>messages.po</code>.
- </ol>
- <li>Edit the human-readable translation file to add or update translations of the programs' text. See the <a href="translate-boss-edit">Editing The Human-Readable Translation File</a> section below for instructions.
- <li>Compile the human-readable translation file to a machine-readable translation file.
- <ol>
-  <li>Run the <code>GenMachineTrans.bat</code> file. It will open a command line window, and if it finds any errors while trying to compile, it will list them. If any errors are listed, fix them and run the batch file again. The batch file will create a <code>messages.mo</code> file if no errors are encountered.
- </ol>
- <li>If you are updating an existing translation, you should then test your translation:
- <ol>
-  <li>Put your translation in the appropriate subfolder of your BOSS install, according to which language it is:
-  <ul>
-   <li>German: Put your <code>messages.mo</code> file into the <code>l10n\de\LC_MESSAGES</code> folder.
-   <li>Russian: Put your <code>messages.mo</code> file into the <code>l10n\ru\LC_MESSAGES</code> folder.
-   <li>Spanish:  Put your <code>messages.mo</code> file into the <code>l10n\es\LC_MESSAGES</code> folder.
-   <li>Simplified Chinese:  Put your <code>messages.mo</code> file into the <code>l10n\zh\LC_MESSAGES</code> folder.
-  </ul>
-  <li>Run the BOSS GUI and select the language you updated in the Settings window, then close and re-open the BOSS GUI for the language selection to take effect. Make sure the text is displayed correctly in all windows and dialogs and in the BOSS Log.
- </ol>
+ <li>Do one of two things:
+ <ul>
+  <li>If you are translating BOSS into a new language, open Poedit and select <q>File->New catalogue from POT file...</q>. Choose the file at <code><var>$BOSS</var>\data\boss-common\l10n\template.pot</code>. In the <q>Catalog properties</q> dialog, just click <q>OK</q> without changing anything.
+  <li>If updating a previous translation, open its <code>messages.po</code> file in Poedit. The <code>messages.po</code> files are stored in subfolders at <code><var>$BOSS</var>\data\boss-common\l10n</code>. Each subfolder contains a different language's translation file and is named according to that language, using the two-letter locale code. A list of languages and their locale codes may be found <a href="http://www.loc.gov/standards/iso639-2/php/code_list.php">here</a> (the correct codes to use are in the second column).
+  <ol>
+   <li>Once you have opened the translation file in Poedit, select <q>Catalogue->Update from POT file...</q> and choose the file at <code><var>$BOSS</var>\data\boss-common\l10n\template.pot</code>. Click <q>OK</q> in the <q>Update summary</q> dialog. This will make sure that your translation includes any new text in the source code since the current translation was created.
+  </ol>
+ </ul>
+ <li>Edit the translation file to add or update translations of the programs' text. See the <a href="translate-boss-edit">Editing The Human-Readable Translation File</a> section below for instructions.
+ <li>Save the translation file with the filename <code>messages.po</code> in a location of your choosing. This will also create a <code>messages.mo</code> file.
+ <li>If you are updating an existing translation, you should then test it:
+  <ol>
+   <li>Put your translation in the appropriate subfolder of your BOSS install, according to which language it is:
+   <ul>
+    <li>German: Put your <code>messages.mo</code> file into the <code>l10n\de\LC_MESSAGES</code> folder.
+    <li>Russian: Put your <code>messages.mo</code> file into the <code>l10n\ru\LC_MESSAGES</code> folder.
+    <li>Spanish:  Put your <code>messages.mo</code> file into the <code>l10n\es\LC_MESSAGES</code> folder.
+    <li>Simplified Chinese:  Put your <code>messages.mo</code> file into the <code>l10n\zh\LC_MESSAGES</code> folder.
+   </ul>
+   <li>Run the BOSS GUI and select the language you updated in the Settings window, then close and re-open the BOSS GUI for the language selection to take effect. Make sure the text is displayed correctly in all windows and dialogs and in the BOSS Log.
+  </ol>
+ <li>The best way to send your translation to the BOSS Development Team is to submit it as an issue in <a href="http://code.google.com/p/better-oblivion-sorting-software/issues/list">BOSS's Google Code bug tracker</a>. Create a new issue and for the summary enter <q>BOSS &lt;your language&gt; Translation</q>, where &lt;your language&gt; is the language you've translated it into. Attach your <code>messages.mo</code> and <code>messages.po</code> files containing the translation, then submit the issue. The BOSS team will then add your translation to the installer for a future release. Note that this method requires you to have a Google Account with which to submit the issue.
+ <li>If you don't have a Google account and are unwilling to sign up for one, you can also send your translation to WrinklyNinja directly, using one of the methods given in the <a href="#team">Project Members</a> section below. If WrinklyNinja is not listed as an active member, send the translation to another admin or programmer, if any are available.
 </ol>
+ 
 <h4 id="translate-boss-edit">Editing The Human-Readable Translation File</h4>
-<p>The human-readable translation file <code>messages.po</code> can be opened in any text editor. It consists of a header section that contains some metadata, followed by a list of structures containing strings that can be translated.
-<p>The only required change in the header is to set the character set up. Replace the text <code>charset=CHARSET</code> with <code>charset=UTF-8</code>.
-<p>Each structure containing a string that can be translated has the form:
-<code class="box">#: source\code:line number
-msgid "some message as in the source code"
-msgstr ""</code>
-<p>You can ignore the line(s) beginning with <code>#</code>, only the lines beginning with <code>msgid</code> and <code>msgstr</code> are of importance to translators. The quoted msgid text is the text as it appears in the source code. The translated text is written as the quoted msgstr, eg. the following is a translation into Russian:
-<code class="box">#: Error.h:126
-msgid "Masterlist parsing aborted. Utility will end now."
-msgstr "Обработка мастерлиста прервана. Утилита будет закрыта."</code>
+<p>Poedit gives translators a simple interface through which they can edit translations. The interface is fairly obvious, the strings that can be translated are listed with their original text on the left and their translation on the right. Clicking a string's row will fill in the boxes at the bottom of Poedit's UI. You write your translation of the text in the <q>Source text</q> box into the <q>Translation</q> box, paying attention to any notes that may be given in the <q>Notes for translators</q> box to the right. Strings that were added since the last translation are displayed in bold and dark blue, and strings you have edited the translations of are marked with a star to the left of their source text in the main list.
 <p>Some languages may use different words or phrases for different contexts where only one word or phrase may be used for all contexts in English. <strong>While no contextual information is supplied to translators by default, it can be added on request. To request the addition of contextual information to a text string, contact WrinklyNinja, quoting the structure that contains the string for which you are requesting contextual information.</strong>
-<p>The <code>messages.po</code> file <strong>must</strong> be saved in the <q>UTF-8 without BOM</q> encoding.
 <p>Some strings to be translated may contain special characters. Different types of special character that may be encountered are:
 <ul>
  <li>Backslashes. Backslashes must be escaped using another backslash, so if you wanted to display a single backslash <code>\</code>, you would put <code>\\</code> in your translated string.
