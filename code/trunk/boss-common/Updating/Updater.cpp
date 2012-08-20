@@ -485,7 +485,7 @@ namespace boss {
 					//The date is in the format "Mmm (D)?D, YYYY".
 					size_t pos = str.find(',');
 					if (pos != string::npos)
-						string year = str.substr(pos + 2, 4);
+						year = str.substr(pos + 2, 4);
 				}
 			}
 		}
