@@ -536,7 +536,11 @@ namespace boss {
 		}
 		
 		Version givenVersion = Version(version);
-		Version trueVersion = Version(filePath);
+		Version trueVersion;
+		if (Item(file).IsPlugin())
+			trueVersion = Item(file).GetVersion(*parentGame);
+		else
+			trueVersion = Version(filePath);
 
 		switch (comparator) {
 		case '>':
