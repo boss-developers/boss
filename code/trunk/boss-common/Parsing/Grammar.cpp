@@ -441,7 +441,7 @@ namespace boss {
 		version.name("version");
 		comparator.name("comparator");
 		regex.name("regex file");
-		file.name("language");
+		language.name("language");
 			
 		on_error<fail>(conditionals,	phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(andOr,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
