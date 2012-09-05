@@ -1015,19 +1015,21 @@ BOSS_API uint32_t SetLoadOrder(boss_db db, uint8_t ** plugins, const size_t numP
 
 	//Now iterate through the Data directory, adding any plugins to loadorder that aren't already in it.
 	for (fs::directory_iterator itr(db->game.DataFolder()); itr!=fs::directory_iterator(); ++itr) {
-		const fs::path filename = itr->path().filename();
-		const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
-		if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
-			LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());
-			//Add file to modlist. If the filename has a '.ghost' extension, remove it.
-			Item tempItem;
-			if (ext == ".ghost")
-				tempItem = Item(filename.stem().string());
-			else
-				tempItem = Item(filename.string());
-			if (db->loadOrder.FindItem(tempItem.Name(), MOD) == loSize) {  //If the plugin is not present, add it.
-				db->loadOrder.Insert(loSize, tempItem);
-				loSize++;
+		if (fs::is_regular_file(itr->status())) {
+			fs::path filename = itr->path().filename();
+			string ext = filename.extension().string();
+			if (boost::iequals(ext, ".ghost")) {
+				filename = filename.stem();
+				ext = filename.extension().string();
+			}
+			if (boost::iequals(ext, ".esp") || boost::iequals(ext, ".esm")) {
+				LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());
+				//Add file to modlist. If the filename has a '.ghost' extension, remove it.
+				const Item tempItem = Item(filename.string());
+				if (db->loadOrder.FindItem(tempItem.Name(), MOD) == loSize) {  //If the plugin is not present, add it.
+					db->loadOrder.Insert(loSize, tempItem);
+					loSize++;
+				}
 			}
 		}
 	}

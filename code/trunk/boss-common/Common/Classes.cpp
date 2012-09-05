@@ -419,19 +419,21 @@ namespace boss {
 			max = items.size();
 			//Now scan through Data folder. Add any plugins that aren't already in loadorder to loadorder, at the end.
 			for (fs::directory_iterator itr(path); itr!=fs::directory_iterator(); ++itr) {
-				const fs::path filename = itr->path().filename();
-				const string ext = boost::algorithm::to_lower_copy(itr->path().extension().string());
-				if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {
-					LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());
-					//Add file to modlist. If the filename has a '.ghost' extension, remove it.
-					Item tempItem;
-					if (ext == ".ghost")
-						tempItem = Item(filename.stem().string());
-					else
-						tempItem = Item(filename.string());
-					if (parentGame.GetLoadOrderMethod() == LOMETHOD_TIMESTAMP || (parentGame.GetLoadOrderMethod() == LOMETHOD_TEXTFILE && FindItem(tempItem.Name(), MOD) == max)) {  //If the plugin is not in loadorder, add it.
-						items.push_back(tempItem);
-						max++;
+				if (fs::is_regular_file(itr->status())) {
+					fs::path filename = itr->path().filename();
+					string ext = filename.extension().string();
+					if (boost::iequals(ext, ".ghost")) {
+						filename = filename.stem();
+						ext = filename.extension().string();
+					}
+					if (boost::iequals(ext, ".esp") || boost::iequals(ext, ".esm")) {
+						LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());
+						//Add file to modlist. If the filename has a '.ghost' extension, remove it.
+						const Item tempItem = Item(filename.string());
+						if (parentGame.GetLoadOrderMethod() == LOMETHOD_TIMESTAMP || (parentGame.GetLoadOrderMethod() == LOMETHOD_TEXTFILE && FindItem(tempItem.Name(), MOD) == max)) {  //If the plugin is not in loadorder, add it.
+							items.push_back(tempItem);
+							max++;
+						}
 					}
 				}
 			}
@@ -727,13 +729,16 @@ namespace boss {
 		boost::unordered_set<string> hashset;
 		boost::unordered_set<string>::iterator setPos;
 		for (fs::directory_iterator itr(parentGame.DataFolder()); itr!=fs::directory_iterator(); ++itr) {
-			const string ext = to_lower_copy(itr->path().extension().string());
-			if (fs::is_regular_file(itr->status()) && (ext==".esp" || ext==".esm" || ext==".ghost")) {	//Add file to hashset.
-				if (ext == ".ghost")
-					hashset.insert(itr->path().filename().stem().string());
-				else
-					hashset.insert(itr->path().filename().string());
-
+			if (fs::is_regular_file(itr->status())) {
+				fs::path filename = itr->path().filename();
+				string ext = filename.extension().string();
+				if (boost::iequals(ext, ".ghost")) {
+					filename = filename.stem();
+					ext = filename.extension().string();
+				}
+				if (boost::iequals(ext, ".esp") || boost::iequals(ext, ".esm")) {
+					hashset.insert(filename.string());
+				}
 			}
 		}
 

@@ -688,13 +688,12 @@ namespace boss {
 				LOG_DEBUG("Script extender plugins directory not detected.");
 			} else {
 				for (fs::directory_iterator itr(SEPluginsFolder()); itr!=fs::directory_iterator(); ++itr) {
-					const fs::path filename = itr->path().filename();
 					const string ext = itr->path().extension().string();
 					if (fs::is_regular_file(itr->status()) && boost::iequals(ext, ".dll")) {
 						string CRC = IntToHexString(GetCrc32(itr->path()));
 						string ver = Version(itr->path()).AsString();
 
-						bosslog.sePlugins << LIST_ITEM << SPAN_CLASS_MOD_OPEN << filename.string() << SPAN_CLOSE;
+						bosslog.sePlugins << LIST_ITEM << SPAN_CLASS_MOD_OPEN << itr->path().filename().string() << SPAN_CLOSE;
 						if (!ver.empty())
 							bosslog.sePlugins << SPAN_CLASS_VERSION_OPEN << loc::translate("Version: ") << ver << SPAN_CLOSE;
 						if (gl_show_CRCs)

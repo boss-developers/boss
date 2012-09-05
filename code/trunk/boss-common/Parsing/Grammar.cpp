@@ -601,8 +601,7 @@ namespace boss {
 			return;
 		}
 
-		fs::directory_iterator iter_end;
-		for (fs::directory_iterator itr(file_path); itr!=iter_end; ++itr) {
+		for (fs::directory_iterator itr(file_path); itr!=fs::directory_iterator(); ++itr) {
 			if (fs::is_regular_file(itr->status())) {
 				if (boost::regex_match(itr->path().filename().string(),regex)) {
 					result = true;
