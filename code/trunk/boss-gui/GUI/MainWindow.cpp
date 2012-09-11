@@ -266,12 +266,12 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	MenuBar->Append(EditMenu, translate("&Edit"));
 	//Game menu
 	GameMenu = new wxMenu();
-	GameMenu->AppendRadioItem(MENU_Oblivion, translate("&Oblivion"), translate("Switch to running BOSS for Oblivion."));
-	GameMenu->AppendRadioItem(MENU_Nehrim, translate("&Nehrim"), translate("Switch to running BOSS for Nehrim."));
-	GameMenu->AppendRadioItem(MENU_Skyrim, translate("&Skyrim"), translate("Switch to running BOSS for Skyrim."));
-	GameMenu->AppendRadioItem(MENU_Fallout3, translate("&Fallout 3"), translate("Switch to running BOSS for Fallout 3."));
-	GameMenu->AppendRadioItem(MENU_FalloutNewVegas, translate("&Fallout: New Vegas"), translate("Switch to running BOSS for Fallout: New Vegas."));
-	GameMenu->AppendRadioItem(MENU_Morrowind, translate("&Morrowind"), translate("Switch to running BOSS for Morrowind."));
+	GameMenu->AppendRadioItem(MENU_Oblivion, wxT("&Oblivion"), translate("Switch to running BOSS for Oblivion."));
+	GameMenu->AppendRadioItem(MENU_Nehrim, wxT("&Nehrim"), translate("Switch to running BOSS for Nehrim."));
+	GameMenu->AppendRadioItem(MENU_Skyrim, wxT("&Skyrim"), translate("Switch to running BOSS for Skyrim."));
+	GameMenu->AppendRadioItem(MENU_Fallout3, wxT("&Fallout 3"), translate("Switch to running BOSS for Fallout 3."));
+	GameMenu->AppendRadioItem(MENU_FalloutNewVegas, wxT("&Fallout: New Vegas"), translate("Switch to running BOSS for Fallout: New Vegas."));
+	GameMenu->AppendRadioItem(MENU_Morrowind, wxT("&Morrowind"), translate("Switch to running BOSS for Morrowind."));
 	MenuBar->Append(GameMenu, translate("&Active Game"));
     // About menu
     HelpMenu = new wxMenu();
