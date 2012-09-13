@@ -838,6 +838,7 @@ There are three key pieces of information that are used to accurately describe a
 <p>A file only needs to be converted to the correct encoding once, thereafter it will continue to save in the correct encoding whenever you edit it. 
 
 <script>
+"use strict";
 function nextImage(imgs, i){
 	for(var i=0;i<imgs.length;i++){
 		if(imgs[i].style.opacity=='1' || imgs[i].style.opacity==''){
@@ -850,14 +851,14 @@ function nextImage(imgs, i){
 			break;
 		}
 	}
-	t=setTimeout(nextImage, 5000, imgs);
+	var t=setTimeout(nextImage, 5000, imgs);
 }
 
 var figures = document.getElementsByTagName('figure');
 if(figures!=null){
 	for (var i=0; i < figures.length; i++) {
 		if (figures[i].className == 'slideshow'){
-			t=setTimeout(nextImage,5000, figures[i].getElementsByTagName('img'));
+			var t=setTimeout(nextImage,5000, figures[i].getElementsByTagName('img'));
 		}
 	}
 }
