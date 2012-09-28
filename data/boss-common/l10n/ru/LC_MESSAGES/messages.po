@@ -120,7 +120,7 @@ msgstr "пытается отсортировать плагин перед ма
 
 #: Error.h:147
 msgid "tries to sort a master file before a plugin."
-msgstr "пытается отсортировать мастерфал перед плагином."
+msgstr "пытается отсортировать мастерфайл перед плагином."
 
 #: Error.cpp:122 Error.cpp:196
 msgid "No error."
