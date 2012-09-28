@@ -40,7 +40,6 @@
     <ClInclude Include="Common\Globals.h" />
     <ClInclude Include="Output\Output.h" />
     <ClInclude Include="Parsing\Grammar.h" />
-    <ClInclude Include="Support\alphanum.hpp" />
     <ClInclude Include="Support\Helpers.h" />
     <ClInclude Include="Support\Logger.h" />
     <ClInclude Include="Support\ModFormat.h" />
@@ -124,7 +123,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\curl\include;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\curl\include;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\..\..\lib\utf8;$(ProjectDir)..\..\..\lib\alphanum;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WINVER=0x0400;__WXMSW__;_UNICODE;CURL_STATICLIB;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -143,7 +142,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\curl\include;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\curl\include;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\..\..\lib\utf8;$(ProjectDir)..\..\..\lib\alphanum;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WINVER=0x0400;__WXMSW__;_UNICODE;CURL_STATICLIB;WIN32;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -166,7 +165,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\curl\include;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\curl\include;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\..\..\lib\utf8;$(ProjectDir)..\..\..\lib\alphanum;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WINVER=0x0400;__WXMSW__;_UNICODE;CURL_STATICLIB;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
@@ -191,7 +190,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\curl\include;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\..\..\lib\utf8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\curl\include;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\..\..\lib\utf8;$(ProjectDir)..\..\..\lib\alphanum;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WINVER=0x0400;__WXMSW__;_UNICODE;CURL_STATICLIB;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>

@@ -30,7 +30,6 @@
 #include "Support/Helpers.h"
 #include "Support/ModFormat.h"
 #include "Support/Logger.h"
-#include "Support/alphanum.hpp"
 #include "Common/Globals.h"
 
 #include <boost/spirit/include/karma.hpp>
@@ -38,6 +37,7 @@
 #include <boost/crc.hpp>
 #include <boost/regex.hpp>
 
+#include "alphanum.hpp"
 #include "source/utf8.h"
 
 #include <cstring>
