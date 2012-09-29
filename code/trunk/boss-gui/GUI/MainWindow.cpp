@@ -951,6 +951,7 @@ void MainFrame::Update(string updateVersion) {
 	try {
 		bUpdater.ProgDialog(progDia);
 		bUpdater.GetUpdate(fs::path(file), updateVersion);
+		progDia->Destroy();
 
 		//Remind the user to run the installer.
 		wxMessageBox(translate("New installer successfully downloaded! When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), translate("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
