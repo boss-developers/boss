@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>html {font-family: Helvetica,sans-serif;}</style>
+<title>BOSS Build Instructions</title>
+
+<h1>BOSS Build Instructions</h1>
+
+<p>This guide presumes that you are building on Windows. If not, presumably you are experienced enough to know what you're doing. 
+If after following this guide, you are still having trouble compiling BOSS, feel free to PM WrinklyNinja for help.<br /><br />
+This guide also assumes that you are building the 'trunk' of the  code. If you are building a branch, change all references to 
+<code>trunk\</code> to the directory that contains the solution file of the code you are building.</p>
+
+<h2>Downloads</h2>
+<ul>
+ <li><a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express">Microsoft Visual C++ 2010 Express Edition</a>
+ <li><a href="http://curl.haxx.se/download.html">Curl Source Code</a> - Download the latest zipped source code from the top of the page.
+ <li><a href="http://sourceforge.net/projects/boost/files/boost/">Boost C++ libraries</a> - Download the latest 7-zipped source code.
+ <li><a href="http://sourceforge.net/projects/utfcpp/">UTF8-CPP</a> - Download the latest version.
+ <li><a href="http://www.wxwidgets.org/downloads/">wxWidgets Source Code</a> - Download the 2.9.4 source code. The line ending type shouldn't matter.
+ <li>An SVN client of your choice.
+</ul>
+
+<h2>Setting Up Environment</h2>
+<ol>
+ <li>Install the Microsoft Visual C++ 2010 package you downloaded.
+ <li>Install the SVN client you downloaded.
+ <li>Perform a SVN Checkout from <a href="https://better-oblivion-sorting-software.googlecode.com/svn">https://better-oblivion-sorting-software.googlecode.com/svn</a>
+ to a local directory of your own choice to create your working copy. (This directory shall be referred to as <em>$BOSS</em> from here on in.)
+</ol>
+
+<h2>Preparing Dependencies</h2>
+<h3>UTF-CPP</h3>
+<ol>
+ <li>Extract the contents of the <code>utf8_vx_x_x</code> (x is a number) archive to <code><em>$BOSS</em>\lib\utf8\</code>, so that your utf8 folder contains a 'doc' and 'source' folder.
+</ol>
+
+<h3>Boost</h3>
+<ol>
+ <li>Extract the contents of the <code>boost-x.xx.x</code> (x is a number) folder in the BOOST libaries archive you downloaded to <code><em>$BOSS</em>\lib\boost\</code> (you should have lib, include, boostrap.bat, etc. in this folder).
+ <li>Start a Command Prompt and cd to <code><em>$BOSS</em>\lib\boost</code> and run <code>bootstrap.bat</code> .
+ <li>In the Command Prompt, run <code>b2 --toolset=msvc-10.0 --build-type=complete stage</code> . This will take a long time.
+ <li>Rename <code><em>$BOSS</em>\lib\boost\stage\lib</code> to <code><em>$BOSS</em>\lib\boost\stage\lib-32</code> .
+ <li>To build 64 bit Boost libraries:
+ <ol>
+  <li>If you then want to build for x64, run <code>b2 --toolset=msvc-10.0 --build-type=complete address-model=64 stage</code> . This will take a long time.
+  <li>Rename <code><em>$BOSS</em>\lib\boost\stage\lib</code> to <code><em>$BOSS</em>\lib\boost\stage\lib-64</code> .
+ </ol>
+</ol>
+
+<h3>wxWidgets</h3>
+	<ol>
+		<li>Extract the contents of the <code>wxWidgets-x.x.x</code> (x is a number) archive you downloaded to <code><em>$BOSS</em>\lib\wxWidgets\</code> (you should have build, include, lib, etc. in this folder).
+		<li>Open the VC6 workspace <code><em>$BOSS</em>\lib\wxWidgets\build\msw\wx.dsw</code>, answering "Yes" to any conversion prompts. Close the workspace again.
+		<li>Open all the .vcxproj files in <code><em>$BOSS</em>\lib\wxWidgets\build\msw</code> in Notepad++ (or another text editor) and make the following replacements to their contents:
+		<ul>
+		 <li><code>lib\vc_lib\</code> with <code>lib\vc_lib\$(PlatformName)\</code>
+		 <li><code>vc_msw</code> with <code>$(PlatformName)\vc_msw</code>
+		 <li><code>&lt;RuntimeLibrary&gt;MultiThreadedDLL&lt;/RuntimeLibrary&gt;</code> with <code>&lt;RuntimeLibrary&gt;MultiThreaded&lt;/RuntimeLibrary&gt;</code>
+		</ul>
+		<li>In <code><em>$BOSS</em>\lib\wxWidgets\include\msvc\wx\setup.h</code>, replace the line 
+		<pre><code>   #define wxLIB_SUBDIR wxCONCAT3(wxCOMPILER_PREFIX, wxARCH_SUFFIX, _lib)</code></pre> 
+		with 
+		<pre><code>   #ifdef _M_X64
+       #define wxLIB_SUBDIR wxCONCAT3(wxCOMPILER_PREFIX, _lib, /x64)
+   #else
+       #define wxLIB_SUBDIR wxCONCAT3(wxCOMPILER_PREFIX, _lib, /Win32)
+   #endif</code></pre>
+		<li>Set the build type to Release and the active platform to Win32, then build the solution.
+ <li>To build 64 bit wxWidgets:
+ <ol>
+	<li>In Build->Configuration Manager, select &lt;New...&gt;. Make sure the new platform is "x64" and you are copying settings from "Win32", then select OK.
+	<li>Ensure that the active platform is "x64".
+	<li>Build the solution.
+ </ol>
+	</ol>
+
+<h3>libcurl</h3>
+<ol>
+ <li>Extract the contents of the <code>curl-x.xx.x</code> (x is a number) folder in the curl archive to <code><em>$BOSS</em>\lib\curl\</code> (you should have lib, include, README, etc. in this folder).
+ <li>Open <code><em>$BOSS</em>\lib\curl\lib\libcurl.vcproj</code> in Visual C++ 2010. When the Conversion Wizard window appears, just click 'Finish' then 'Close'.
+ <li>Set the build type to Release. In Project->Properties->Configuration Properties->C/C++->Code Generation, set the Runtime Library to "Multi-threaded (/MT)".
+ <li>Build the libcurl project.
+ <li>Rename the <code><em>$BOSS</em>\lib\curl\lib\Release</code> directory to <code><em>$BOSS</em>\lib\curl\lib\Release-32</code> .
+ <li>To build 64 bit libcurl:
+ <ol>
+	<li>In Build->Configuration Manager, select &lt;New...&gt;. Make sure the new platform is "x64" and you are copying settings from "Win32", then select OK.
+	<li>Ensure that the active platform is "x64".
+	<li>Build the libcurl project.
+	<li>Rename the <code><em>$BOSS</em>\lib\curl\lib\Release</code> directory to <code><em>$BOSS</em>\lib\curl\lib\Release-64</code> .
+ </ol>
+ <li>Close the libcurl solution.
+</ol>
+
+<h2>Building BOSS</h2>
+<p>Each of the BOSS components can be built for 32 or 64 bit platforms. Providing you have built the dependencies, you can build the BOSS components for either platform using the corresponding build option.
+<p>The binaries are easiest built using the solution file , which should be opened in Visual C++ 2010.
+<ol>
+ <li>Open <code><var>$BOSS</var>\code\trunk\BOSS.sln</code> in Visual C++ 2010.
+ <li>Set the build type to <q>Release</q> and ensure that you are building for the correct architecture.
+ <li>Right-click the project you wish to build in the Solution Explorer sidebar and select <q>Build</q>.
+ <li>An error may pop up saying "Unable to start program...". Ignore this.
+</ol>
+<p>This procedure can be used to build any of the BOSS binaries, with the binaries being outputted to a release and architecture-specific folder in <code><var>$BOSS</var>\code\trunk\bin</code>.

@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Updating">
+      <UniqueIdentifier>{a64503d7-38d4-427d-9848-44dd691beccb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{50e9bd28-0666-4962-a1de-432d300dc71d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parsing">
+      <UniqueIdentifier>{48769a97-fc08-42b7-b771-d56606502be0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Support">
+      <UniqueIdentifier>{b2c9e196-2fe4-401d-8aa2-d83fc1709e22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Output">
+      <UniqueIdentifier>{07560db6-fd46-4380-900b-5eb2ce63fbe3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Parsing\Grammar.cpp">
+      <Filter>Parsing</Filter>
+    </ClCompile>
+    <ClCompile Include="Support\Helpers.cpp">
+      <Filter>Support</Filter>
+    </ClCompile>
+    <ClCompile Include="Support\Logger.cpp">
+      <Filter>Support</Filter>
+    </ClCompile>
+    <ClCompile Include="Support\ModFormat.cpp">
+      <Filter>Support</Filter>
+    </ClCompile>
+    <ClCompile Include="Support\VersionRegex.cpp">
+      <Filter>Support</Filter>
+    </ClCompile>
+    <ClCompile Include="Output\Output.cpp">
+      <Filter>Output</Filter>
+    </ClCompile>
+    <ClCompile Include="Updating\Updater.cpp">
+      <Filter>Updating</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Classes.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Error.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Game.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Globals.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Common\Error.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Globals.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Parsing\Grammar.h">
+      <Filter>Parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="Support\Helpers.h">
+      <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="Support\Logger.h">
+      <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="Support\ModFormat.h">
+      <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="Support\Platform.h">
+      <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="Support\Types.h">
+      <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="Support\VersionRegex.h">
+      <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="Output\Output.h">
+      <Filter>Output</Filter>
+    </ClInclude>
+    <ClInclude Include="Updating\Updater.h">
+      <Filter>Updating</Filter>
+    </ClInclude>
+    <ClInclude Include="BOSS-Common.h" />
+    <ClInclude Include="Common\DllDef.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Classes.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Game.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
