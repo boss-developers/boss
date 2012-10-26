@@ -51,6 +51,9 @@
     <ClCompile Include="Common\Globals.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="Support\libloadorder-interface.cpp">
+      <Filter>Support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Error.h">
@@ -95,6 +98,9 @@
     </ClInclude>
     <ClInclude Include="Common\Game.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Support\libloadorder-interface.h">
+      <Filter>Support</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

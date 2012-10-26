@@ -348,185 +348,40 @@ namespace boss {
 	//////////////////////////////
 	// ItemList Class Functions
 	//////////////////////////////
-	
-	struct itemComparator {
-		const Game& parentGame;
-		itemComparator(const Game& game) : parentGame(game) {}
-
-		bool	operator () (const Item item1, const Item item2) {
-			//Return true if item1 goes before item2, false otherwise.
-			//Master files should go before other files.
-			//Groups should not change position (but master files should be able to cross groups).
-
-			bool isItem1MasterFile = item1.IsMasterFile(parentGame);
-			bool isItem2MasterFile = item2.IsMasterFile(parentGame);
-
-			if (isItem1MasterFile && !isItem2MasterFile)
-				return true;
-			else if (parentGame.GetLoadOrderMethod() == LOMETHOD_TIMESTAMP) {
-				if (!isItem1MasterFile && isItem2MasterFile)
-					return false;
-				else
-					return (difftime(item1.GetModTime(parentGame), item2.GetModTime(parentGame)) < 0);
-			} else
-				return false;
-		}
-	};
 
 			ItemList::ItemList			() : lastRecognisedPos(0) {}
 
 	void	ItemList::Load				(const Game& parentGame, const fs::path path) {
 		Clear();
-		if (fs::exists(path) && fs::is_directory(path)) {
-			LOG_DEBUG("Reading user mods...");
-			size_t max;
-			if (parentGame.GetLoadOrderMethod() == LOMETHOD_TEXTFILE) {
-				/*Game uses the new load order system.
+		Skipper skipper;
+		modlist_grammar grammar;
+		string::const_iterator begin, end;
+		string contents;
 
-				Check if loadorder.txt exists, and read that if it does.
-				If it doesn't exist, then read plugins.txt and scan the given directory for mods,
-				adding those that weren't in the plugins.txt to the end of the load order, in the order they are read.
+		grammar.SetErrorBuffer(&errorBuffer);
+		grammar.SetGlobalMessageBuffer(&globalMessageBuffer);
+		grammar.SetVarStore(&masterlistVariables);
+		grammar.SetCRCStore(&fileCRCs);
+		grammar.SetParentGame(&parentGame);
 
-				There is no sure-fire way of managing such a situation. If no loadorder.txt, then
-				no utilties compatible with that load order method have been installed, so it won't
-				break anything apart from the load order not matching the load order in the Bashed
-				Patch's Masters list if it exists. That isn't something that can be easily accounted
-				for though.
-				*/
-				LOG_INFO("Using textfile-based load order mechanism.");
-				if (fs::exists(parentGame.LoadOrderFile()))  //If the loadorder.txt exists, get the load order from that.
-					Load(parentGame, parentGame.LoadOrderFile());
-				else {
-					if (fs::exists(parentGame.ActivePluginsFile()))  //If the plugins.txt exists, get the active load order from that.
-						Load(parentGame, parentGame.ActivePluginsFile());
-					if (parentGame.Id() == SKYRIM) {
-						//Make sure that Skyrim.esm is first.
-						Move(0, Item("Skyrim.esm"));
-						//Add Update.esm if not already present.
-						if (Item("Update.esm").Exists(parentGame) && FindItem("Update.esm", MOD) == items.size())
-							Move(GetLastMasterPos(parentGame) + 1, Item("Update.esm"));
-					}
-				}
-				//Then scan through loadorder, removing any plugins that aren't in the data folder.
-				vector<Item>::iterator itemIter = items.begin();
-				while (itemIter != items.end()) {
-					if (!itemIter->Exists(parentGame))
-						itemIter = items.erase(itemIter);
-					else
-						++itemIter;
-				}
-			}
-			max = items.size();
-			//Now scan through Data folder. Add any plugins that aren't already in loadorder to loadorder, at the end.
-			for (fs::directory_iterator itr(path); itr!=fs::directory_iterator(); ++itr) {
-				if (fs::is_regular_file(itr->status())) {
-					fs::path filename = itr->path().filename();
-					string ext = filename.extension().string();
-					if (boost::iequals(ext, ".ghost")) {
-						filename = filename.stem();
-						ext = filename.extension().string();
-					}
-					if (boost::iequals(ext, ".esp") || boost::iequals(ext, ".esm")) {
-						LOG_TRACE("-- Found mod: '%s'", filename.string().c_str());
-						//Add file to modlist. If the filename has a '.ghost' extension, remove it.
-						const Item tempItem = Item(filename.string());
-						if (parentGame.GetLoadOrderMethod() == LOMETHOD_TIMESTAMP || (parentGame.GetLoadOrderMethod() == LOMETHOD_TEXTFILE && FindItem(tempItem.Name(), MOD) == max)) {  //If the plugin is not in loadorder, add it.
-							items.push_back(tempItem);
-							max++;
-						}
-					}
-				}
-			}
-			LOG_DEBUG("Reading user mods done: %" PRIuS " total mods found.", items.size());
-			itemComparator ic(parentGame);
-			sort(items.begin(),items.end(), ic);
-		} else if (path == parentGame.LoadOrderFile() || path == parentGame.ActivePluginsFile()) {
+		if (!fs::exists(path))
+			throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, path.string());
+		else if (!ValidateUTF8File(path))
+			throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, path.string());
+
+		fileToBuffer(path,contents);
+
+		begin = contents.begin();
+		end = contents.end();
 			
-			Transcoder trans;
-			trans.SetEncoding(1252);  //Only used if path == gl_current_game.ActivePluginsFile().
+	//	iterator_type u32b(begin);
+	//	iterator_type u32e(end);
 
-			if (path == parentGame.LoadOrderFile() && !ValidateUTF8File(path))
-				throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, path.string());
+	//	bool r = phrase_parse(u32b, u32e, grammar, skipper, items);
+		bool r = phrase_parse(begin, end, grammar, skipper, items);
 
-			//loadorder.txt is simple enough that we can avoid needing the full modlist parser which has the crashing issue.
-			//It's just a text file with a plugin filename on each line. Skip lines which are blank or start with '#'.
-			std::ifstream in(path.c_str());
-			if (in.fail())
-				throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
-
-			string line;
-			 
-			if (parentGame.Id() == MORROWIND) {  //Morrowind's active file list is stored in Morrowind.ini, and that has a different format from plugins.txt.
-				boost::regex reg = boost::regex("GameFile[0-9]{1,3}=.+\\.es(m|p)", boost::regex::extended|boost::regex::icase);
-				while (in.good()) {
-					getline(in, line);
-
-					if (line.empty() || !boost::regex_match(line, reg))
-						continue;
-
-					//Now cut off everything up to and including the = sign.
-					line = line.substr(line.find('=')+1);
-					if (path == parentGame.ActivePluginsFile())
-						line = trans.EncToUtf8(line);
-					items.push_back(Item(line));
-				}
-			} else {
-				while (in.good()) {
-					getline(in, line);
-
-					if (line.empty() || line[0] == '#')  //Character comparison is OK because it's ASCII.
-						continue;
-
-					if (path == parentGame.ActivePluginsFile())
-						line = trans.EncToUtf8(line);
-					items.push_back(Item(line));
-				}
-			}
-			in.close();
-
-			
-			//Then scan through items, removing any plugins that aren't in the data folder.
-			vector<Item>::iterator itemIter = items.begin();
-			while (itemIter != items.end()) {
-				if (!itemIter->Exists(parentGame))
-					itemIter = items.erase(itemIter);
-				else
-					++itemIter;
-			}
-
-			itemComparator ic(parentGame);
-			sort(items.begin(),items.end(), ic);  //Does this work?
-		} else {
-			Skipper skipper;
-			modlist_grammar grammar;
-			string::const_iterator begin, end;
-			string contents;
-
-			grammar.SetErrorBuffer(&errorBuffer);
-			grammar.SetGlobalMessageBuffer(&globalMessageBuffer);
-			grammar.SetVarStore(&masterlistVariables);
-			grammar.SetCRCStore(&fileCRCs);
-			grammar.SetParentGame(&parentGame);
-
-			if (!fs::exists(path))
-				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, path.string());
-			else if (!ValidateUTF8File(path))
-				throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, path.string());
-
-			fileToBuffer(path,contents);
-
-			begin = contents.begin();
-			end = contents.end();
-			
-		//	iterator_type u32b(begin);
-		//	iterator_type u32e(end);
-
-		//	bool r = phrase_parse(u32b, u32e, grammar, skipper, items);
-			bool r = phrase_parse(begin, end, grammar, skipper, items);
-
-			if (!r || begin != end || !errorBuffer.Empty())
-				throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
-		}
+		if (!r || begin != end || !errorBuffer.Empty())
+			throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
 	}
 	
 	void	ItemList::Save				(const fs::path file, const fs::path oldFile) {
@@ -580,77 +435,10 @@ namespace boss {
 		return;
 	}
 
-	void	ItemList::SavePluginNames(const Game& parentGame, const fs::path file, const bool activeOnly, const bool doEncodingConversion) {
-		string badFilename = "",  contents, settings;
-		ItemList activePlugins;
-		size_t numActivePlugins;
-		Transcoder trans;
-		if (activeOnly) {
-			//To save needing a new parser, load plugins.txt into an ItemList then fill a hashset from that.
-			//Also check if gl_current_game.ActivePluginsFile() then detect encoding if it is and translate outputted text from UTF-8 to the detected encoding.
-			LOG_INFO("Loading plugins.txt into ItemList.");
-			if (fs::exists(parentGame.ActivePluginsFile())) {
-				activePlugins.Load(parentGame, parentGame.ActivePluginsFile());
-				numActivePlugins = activePlugins.Items().size();
-			}
-		}
-		if (doEncodingConversion)
-			trans.SetEncoding(1252);
-		if (parentGame.Id() == MORROWIND) {  //Must be the plugins file, since loadorder.txt isn't used for MW.
-			//If Morrowind, BOSS writes active plugin list to Morrowind.ini, which also holds a lot of other game settings.
-			//BOSS needs to read everything up to the active plugin list in the current ini and stick that on before the first saved plugin name.
-			fileToBuffer(file, contents);
-			size_t pos = contents.find("[Game Files]");
-			if (pos != string::npos)
-				settings = contents.substr(0, pos + 12); //+12 is for the characters in "[Game Files]".
-		}
-
-		LOG_INFO("Writing new \"%s\"", file.string().c_str());
-		ofstream outfile;
-		outfile.open(file.c_str(), ios_base::trunc);
-		if (outfile.fail())
-			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
-
-		if (!settings.empty())
-			outfile << settings << endl;  //Get those Morrowind settings back in.
-
-		size_t max = items.size();
-		for (size_t i=0; i < max; i++) {
-			if (items[i].Type() == MOD) {
-				if (activeOnly && (activePlugins.FindItem(items[i].Name(), MOD) == numActivePlugins || (parentGame.Id() == SKYRIM && items[i].Name() == "Skyrim.esm")))
-					continue;
-				LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
-				if (parentGame.Id() == MORROWIND) //Need to write "GameFileN=" before plugin name, where N is an integer from 0 up.
-					outfile << "GameFile" << i << "=";
-				if (doEncodingConversion) {  //Not UTF-8.
-					try {
-						outfile << trans.Utf8ToEnc(items[i].Name()) << endl;
-					} catch (boss_error /*&e*/) {
-						badFilename = items[i].Name();
-					}
-				} else
-					outfile << items[i].Name() << endl;
-			}
-		}
-		outfile.close();
-
-		if (!badFilename.empty())
-			throw boss_error(BOSS_ERROR_ENCODING_CONVERSION_FAIL, badFilename, "1252");
-	}
-
-	void		ItemList::EvalConditions	(const Game& parentGame) {
+	void		ItemList::EvalConditions	(Game& parentGame) {
 		boost::unordered_set<string> setVars;
-		boost::unordered_set<string> activePlugins;
+		boost::unordered_set<string> activePlugins = parentGame.ActivePlugins();
 		bool res;
-		
-		if (fs::exists(parentGame.ActivePluginsFile())) {
-			ItemList active;
-			active.Load(parentGame, parentGame.ActivePluginsFile());
-			vector<Item> items = active.Items();
-			for (size_t i=0, max=items.size(); i < max; i++) {
-				activePlugins.insert(to_lower_copy(items[i].Name()));
-			}
-		}
 
 		//First eval variables.
 		//Need to convert these from a vector to an unordered set.

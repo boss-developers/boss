@@ -173,8 +173,8 @@ namespace boss {
 																	//May throw exception on fail.
 		void	Save			(const fs::path file, const fs::path oldFile);	//Output to file in MF2. Backs up any existing file to oldFile.
 																	//Throws exception on fail.
-		void	SavePluginNames(const Game& parentGame, const fs::path file, const bool activeOnly, const bool doEncodingConversion);	//Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
-		void	EvalConditions(const Game& parentGame);					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
+		
+		void	EvalConditions(Game& parentGame);					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
 		void	EvalRegex(const Game& parentGame);
 		void	ApplyMasterPartition(const Game& parentGame);				//Puts all master files before other plugins. Can throw exception.
 		

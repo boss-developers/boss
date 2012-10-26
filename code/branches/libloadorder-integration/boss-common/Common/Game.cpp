@@ -41,10 +41,6 @@ namespace boss {
 	using namespace std;
 	namespace loc = boost::locale;
 
-	//DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
-	BOSS_COMMON const uint32_t LOMETHOD_TIMESTAMP	= 0;
-	BOSS_COMMON const uint32_t LOMETHOD_TEXTFILE	= 1;
- 
 	uint32_t AutodetectGame(vector<uint32_t> detectedGames) {  //Throws exception if error.
 		if (gl_last_game != AUTODETECT) {
 			for (size_t i=0, max = detectedGames.size(); i < max; i++) {
@@ -54,17 +50,17 @@ namespace boss {
 		}
 		LOG_INFO("Autodetecting game.");
 		
-		if (Game(NEHRIM, "", true).IsInstalledLocally())  //Before Oblivion because Nehrim installs can have Oblivion.esm for porting mods.
+		if (GameData(NEHRIM).IsInstalledLocally())  //Before Oblivion because Nehrim installs can have Oblivion.esm for porting mods.
 			return NEHRIM;
-		else if (Game(OBLIVION, "", true).IsInstalledLocally())
+		else if (GameData(OBLIVION).IsInstalledLocally())
 			return OBLIVION;
-		else if (Game(SKYRIM, "", true).IsInstalledLocally())
+		else if (GameData(SKYRIM).IsInstalledLocally())
 			return SKYRIM;
-		else if (Game(FALLOUTNV, "", true).IsInstalledLocally())  //Before Fallout 3 because some mods for New Vegas require Fallout3.esm.
+		else if (GameData(FALLOUTNV).IsInstalledLocally())  //Before Fallout 3 because some mods for New Vegas require Fallout3.esm.
 			return FALLOUTNV;
-		else if (Game(FALLOUT3, "", true).IsInstalledLocally())
+		else if (GameData(FALLOUT3).IsInstalledLocally())
 			return FALLOUT3;
-		else if (Game(MORROWIND, "", true).IsInstalledLocally())
+		else if (GameData(MORROWIND).IsInstalledLocally())
 			return MORROWIND;
 		else {
 			LOG_INFO("No game detected locally. Using Registry paths.");
@@ -74,27 +70,27 @@ namespace boss {
 
 	BOSS_COMMON uint32_t DetectGame(vector<uint32_t>& detectedGames, vector<uint32_t>& undetectedGames) {
 		//Detect all installed games.
-		if (Game(OBLIVION, "", true).IsInstalled()) //Look for Oblivion.
+		if (GameData(OBLIVION).IsInstalled()) //Look for Oblivion.
 			detectedGames.push_back(OBLIVION);
 		else
 			undetectedGames.push_back(OBLIVION);
-		if (Game(NEHRIM, "", true).IsInstalled()) //Look for Nehrim.
+		if (GameData(NEHRIM).IsInstalled()) //Look for Nehrim.
 			detectedGames.push_back(NEHRIM);
 		else
 			undetectedGames.push_back(NEHRIM);
-		if (Game(SKYRIM, "", true).IsInstalled()) //Look for Skyrim.
+		if (GameData(SKYRIM).IsInstalled()) //Look for Skyrim.
 			detectedGames.push_back(SKYRIM);
 		else
 			undetectedGames.push_back(SKYRIM);
-		if (Game(FALLOUT3, "", true).IsInstalled()) //Look for Fallout 3.
+		if (GameData(FALLOUT3).IsInstalled()) //Look for Fallout 3.
 			detectedGames.push_back(FALLOUT3);
 		else
 			undetectedGames.push_back(FALLOUT3);
-		if (Game(FALLOUTNV, "", true).IsInstalled()) //Look for Fallout New Vegas.
+		if (GameData(FALLOUTNV).IsInstalled()) //Look for Fallout New Vegas.
 			detectedGames.push_back(FALLOUTNV);
 		else
 			undetectedGames.push_back(FALLOUTNV);
-		if (Game(MORROWIND, "", true).IsInstalled()) //Look for Morrowind.
+		if (GameData(MORROWIND).IsInstalled()) //Look for Morrowind.
 			detectedGames.push_back(MORROWIND);
 		else
 			undetectedGames.push_back(MORROWIND);
@@ -103,7 +99,7 @@ namespace boss {
 		if (gl_game != AUTODETECT) {
 			if (gl_update_only)
 				return gl_game;
-			else if (Game(gl_game, "", true).IsInstalled())
+			else if (GameData(gl_game).IsInstalled())
 				return gl_game;
 			else
 				return AutodetectGame(detectedGames);  //Game not found. Autodetect.
@@ -147,14 +143,95 @@ namespace boss {
 
 
 	////////////////////////////
+	// GameData Class Functions
+	////////////////////////////
+
+	GameData::GameData(const uint32_t gameCode) {
+		if (gameCode == OBLIVION) {
+			name = "TES IV: Oblivion";
+			masterFile = "Oblivion.esm";
+			
+			registryKey = "Software\\Bethesda Softworks\\Oblivion";
+			registrySubKey = "Installed Path";
+			
+			pluginsFolderName = "Data";
+		} else if (gameCode == NEHRIM) {
+			name = "Nehrim - At Fate's Edge";
+			masterFile = "Nehrim.esm";
+			
+			registryKey = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1";
+			registrySubKey = "InstallLocation";
+			
+			pluginsFolderName = "Data";
+		} else if (gameCode == SKYRIM) {
+			name = "TES V: Skyrim";
+			masterFile = "Skyrim.esm";
+			
+			registryKey = "Software\\Bethesda Softworks\\Skyrim";
+			registrySubKey = "Installed Path";
+			
+			pluginsFolderName = "Data";
+		} else if (gameCode == FALLOUT3) {
+			name = "Fallout 3";
+			masterFile = "Fallout3.esm";
+			
+			registryKey = "Software\\Bethesda Softworks\\Fallout3";
+			registrySubKey = "Installed Path";
+			
+			pluginsFolderName = "Data";
+		} else if (gameCode == FALLOUTNV) {
+			name = "Fallout: New Vegas";
+			masterFile = "FalloutNV.esm";
+
+			registryKey = "Software\\Bethesda Softworks\\FalloutNV";
+			registrySubKey = "Installed Path";
+
+			pluginsFolderName = "Data";
+		} else if (gameCode == MORROWIND) {
+			name = "TES III: Morrowind";
+			masterFile = "Morrowind.esm";
+			
+			registryKey = "Software\\Bethesda Softworks\\Morrowind";
+			registrySubKey = "Installed Path";
+			
+			pluginsFolderName = "Data Files";
+		} else
+			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
+	}
+
+	bool GameData::IsInstalled() const {
+		return (IsInstalledLocally() || RegKeyExists("HKEY_LOCAL_MACHINE", registryKey, registrySubKey));
+	}
+	
+	bool GameData::IsInstalledLocally() const {
+		return fs::exists(boss_path / ".." / pluginsFolderName / masterFile);
+	}
+
+	string GameData::Name() const {
+		return name;
+	}
+	
+	string GameData::GetInstallPath() const {
+		//First look for local install, then look for Registry.
+		if (IsInstalledLocally())
+			return boss_path.string() + "/..";
+		else if (RegKeyExists("HKEY_LOCAL_MACHINE", registryKey, registrySubKey))
+			return RegKeyStringValue("HKEY_LOCAL_MACHINE", registryKey, registrySubKey);
+		else if (gl_update_only)  //Update only games are treated as installed locally if not actually installed.
+			return boss_path.string() + "/..";
+		else
+			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
+	};
+
+
+	////////////////////////////
 	// Game Class Functions
 	////////////////////////////
 
-	Game::Game() 
-		: id(AUTODETECT) {}
+	Game::Game() : GameHandle() {}
 	
-	Game::Game(const uint32_t gameCode, const string path, const bool noPathInit) 
-		: id(gameCode) {
+	Game::Game(const uint32_t gameCode, const string path) 
+		: id(gameCode), GameHandle(gameCode, path) {
 		if (Id() == OBLIVION) {
 			name = "TES IV: Oblivion";
 			onlineId = "boss-oblivion";
@@ -164,13 +241,8 @@ namespace boss {
 			scriptExtender = "OBSE";
 			seExecutable = "obse_1_2_416.dll";
 			
-			registryKey = "Software\\Bethesda Softworks\\Oblivion";
-			registrySubKey = "Installed Path";
-			
 			bossFolderName = "Oblivion";
-			appdataFolderName = "Oblivion";
 			pluginsFolderName = "Data";
-			pluginsFileName = "plugins.txt";
 		} else if (Id() == NEHRIM) {
 			name = "Nehrim - At Fate's Edge";
 			onlineId = "boss-nehrim";
@@ -180,13 +252,8 @@ namespace boss {
 			scriptExtender = "OBSE";
 			seExecutable = "obse_1_2_416.dll";
 			
-			registryKey = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1";
-			registrySubKey = "InstallLocation";
-			
 			bossFolderName = "Nehrim";
-			appdataFolderName = "Oblivion";
 			pluginsFolderName = "Data";
-			pluginsFileName = "plugins.txt";
 		} else if (Id() == SKYRIM) {
 			name = "TES V: Skyrim";
 			onlineId = "boss-skyrim";
@@ -196,13 +263,8 @@ namespace boss {
 			scriptExtender = "SKSE";
 			seExecutable = "skse_loader.exe";
 			
-			registryKey = "Software\\Bethesda Softworks\\Skyrim";
-			registrySubKey = "Installed Path";
-			
 			bossFolderName = "Skyrim";
-			appdataFolderName = "Skyrim";
 			pluginsFolderName = "Data";
-			pluginsFileName = "plugins.txt";
 		} else if (Id() == FALLOUT3) {
 			name = "Fallout 3";
 			onlineId = "boss-fallout";
@@ -212,13 +274,8 @@ namespace boss {
 			scriptExtender = "FOSE";
 			seExecutable = "fose_loader.exe";
 			
-			registryKey = "Software\\Bethesda Softworks\\Fallout3";
-			registrySubKey = "Installed Path";
-			
 			bossFolderName = "Fallout 3";
-			appdataFolderName = "Fallout3";
 			pluginsFolderName = "Data";
-			pluginsFileName = "plugins.txt";
 		} else if (Id() == FALLOUTNV) {
 			name = "Fallout: New Vegas";
 			onlineId = "boss-fallout-nv";
@@ -228,13 +285,8 @@ namespace boss {
 			scriptExtender = "NVSE";
 			seExecutable = "nvse_loader.exe";
 			
-			registryKey = "Software\\Bethesda Softworks\\FalloutNV";
-			registrySubKey = "Installed Path";
-			
 			bossFolderName = "Fallout New Vegas";
-			appdataFolderName = "FalloutNV";
 			pluginsFolderName = "Data";
-			pluginsFileName = "plugins.txt";
 		} else if (Id() == MORROWIND) {
 			name = "TES III: Morrowind";
 			onlineId = "boss-morrowind";
@@ -244,13 +296,8 @@ namespace boss {
 			scriptExtender = "MWSE";
 			seExecutable = "MWSE.dll";
 			
-			registryKey = "Software\\Bethesda Softworks\\Morrowind";
-			registrySubKey = "Installed Path";
-			
 			bossFolderName = "Morrowind";
-			appdataFolderName = "";
 			pluginsFolderName = "Data Files";
-			pluginsFileName = "Morrowind.ini";
 		} else
 			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 
@@ -260,59 +307,14 @@ namespace boss {
 		bosslog.recognisedPlugins.SetHTMLSpecialEscape(false);
 		bosslog.unrecognisedPlugins.SetHTMLSpecialEscape(false);
 		
-		if (!noPathInit) {
-			if (path.empty()) {
-				//First look for local install, then look for Registry.
-				if (fs::exists(boss_path / ".." / pluginsFolderName / masterFile))
-					gamePath = boss_path / "..";
-				else if (RegKeyExists("HKEY_LOCAL_MACHINE", registryKey, registrySubKey))
-					gamePath = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", registryKey, registrySubKey));
-				else if (gl_update_only)  //Update only games are treated as installed locally if not actually installed.
-					gamePath = boss_path / "..";
-				else
-					throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
-			} else
-				gamePath = fs::path(path);
+		gamePath = fs::path(path);
 			
-			//Check if game master file exists. Requires data path to be set.
-			if (!MasterFile().Exists(*this))
-				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, MasterFile().Name());
-			
-			//Requires data path to be set.
-			if (Id() == OBLIVION && fs::exists(GameFolder() / "Oblivion.ini")) {
-				//Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
-				Settings oblivionIni;
-				oblivionIni.Load(GameFolder() / "Oblivion.ini");  //This also sets the variable up.
+		//Check if game master file exists. Requires data path to be set.
+		if (!MasterFile().Exists(*this))
+			throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, MasterFile().Name());
 
-				if (oblivionIni.GetValue("bUseMyGamesDirectory") == "0") {
-					pluginsPath = GameFolder() / pluginsFileName;
-					loadorderPath = GameFolder() / "loadorder.txt";
-				} else {
-					pluginsPath = GetLocalAppDataPath() / appdataFolderName / pluginsFileName;
-					loadorderPath = GetLocalAppDataPath() / appdataFolderName / "loadorder.txt";
-				}
-			} else if (Id() == MORROWIND) {
-				pluginsPath = GameFolder() / pluginsFileName;
-				loadorderPath = GameFolder() / "loadorder.txt";
-			} else {
-				pluginsPath = GetLocalAppDataPath() / appdataFolderName / pluginsFileName;
-				loadorderPath = GetLocalAppDataPath() / appdataFolderName / "loadorder.txt";
-			}
-
-			//Load order method init. Requires game path to be set.
-			if (Id() == SKYRIM && GetVersion() >= Version("1.4.26.0"))
-				loMethod = LOMETHOD_TEXTFILE;
-			else
-				loMethod = LOMETHOD_TIMESTAMP;
-		}
-	}
-	
-	bool Game::IsInstalled() const {
-		return (IsInstalledLocally() || RegKeyExists("HKEY_LOCAL_MACHINE", registryKey, registrySubKey));
-	}
-	
-	bool Game::IsInstalledLocally() const {
-		return fs::exists(boss_path / ".." / pluginsFolderName / masterFile);
+		if (Id() == NEHRIM)
+			SetGameMaster(masterFile);
 	}
 	
 	uint32_t Game::Id() const {
@@ -335,14 +337,6 @@ namespace boss {
 		return Item(masterFile);
 	}
 
-	Version Game::GetVersion() const {
-		return Version(Executable());
-	}
-
-	uint32_t Game::GetLoadOrderMethod() const {
-		return loMethod;
-	}
-
 	fs::path Game::Executable() const {
 		return GameFolder() / executable;
 	}
@@ -361,14 +355,6 @@ namespace boss {
 	
 	fs::path Game::SEExecutable() const {
 		return GameFolder() / seExecutable;
-	}
-	
-	fs::path Game::ActivePluginsFile() const {
-		return pluginsPath;
-	}
-	
-	fs::path Game::LoadOrderFile() const {
-		return loadorderPath;
 	}
 	
 	fs::path Game::Masterlist() const {
@@ -711,25 +697,7 @@ namespace boss {
 		
 		LOG_INFO("Filling hashset of unrecognised and active plugins...");
 		//Load active plugin list.
-		boost::unordered_set<string> hashset;
-		if (fs::exists(ActivePluginsFile())) {
-			LOG_INFO("Loading plugins.txt into ItemList.");
-			ItemList pluginsList;
-			pluginsList.Load(*this, ActivePluginsFile());
-			vector<Item> pluginsEntries = pluginsList.Items();
-			size_t pluginsMax = pluginsEntries.size();
-			LOG_INFO("Populating hashset with ItemList contents.");
-			for (size_t i=0; i<pluginsMax; i++) {
-				if (pluginsEntries[i].Type() == MOD)
-					hashset.insert(boost::to_lower_copy(pluginsEntries[i].Name()));
-			}
-			if (Id() == SKYRIM) {  //Update.esm and Skyrim.esm are always active.
-				if (hashset.find("skyrim.esm") == hashset.end())
-					hashset.insert("skyrim.esm");
-				if (hashset.find("update.esm") == hashset.end())
-					hashset.insert("update.esm");
-			}
-		}
+		boost::unordered_set<string> hashset = this->ActivePlugins();
 
 		//modlist stores recognised mods then unrecognised mods in order. Make a hashset of unrecognised mods.
 		boost::unordered_set<string> unrecognised;
@@ -767,6 +735,7 @@ namespace boss {
 		bosslog.unrecognisedPlugins.SetHTMLSpecialEscape(false);
 
 		LOG_INFO("Applying calculated ordering to user files...");
+		vector<string> pluginVec;
 		for (vector<Item>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter) {
 			Outputter buffer(gl_log_format);
 			buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
@@ -787,16 +756,6 @@ namespace boss {
 				counters.warnings++;
 			}
 	*/	
-			if (GetLoadOrderMethod() == LOMETHOD_TIMESTAMP && !gl_trial_run && !itemIter->IsGameMasterFile(*this)) {
-				//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
-				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", itemIter->Name().c_str());
-				try {
-					itemIter->SetModTime(*this, esmtime + (bosslog.recognised + bosslog.unrecognised)*60);
-				} catch(boss_error &e) {
-					itemIter->InsertMessage(0, Message(ERR, loc::translate("Error: ").str() + e.getString()));
-					LOG_ERROR(" * Error: %s", e.getString().c_str());
-				}
-			}
 			//Print the mod's messages. Unrecognised plugins might have a redate error message.
 			if (!itemIter->Messages().empty()) {
 				vector<Message> messages = itemIter->Messages();
@@ -819,19 +778,16 @@ namespace boss {
 				bosslog.unrecognised++;
 				bosslog.unrecognisedPlugins << buffer.AsString();
 			}
+			pluginVec.push_back(itemIter->Name());
 		}
 		LOG_INFO("User plugin ordering applied successfully.");
 
-		//Now set the load order using Skyrim method.
-		if (GetLoadOrderMethod() == LOMETHOD_TEXTFILE) {
-			try {
-				modlist.SavePluginNames(*this, LoadOrderFile(), false, false);
-				modlist.SavePluginNames(*this, ActivePluginsFile(), true, true);
-			} catch (boss_error &e) {
-				bosslog.criticalError << LIST_ITEM_CLASS_ERROR << loc::translate("Critical Error: ") << e.getString() << LINE_BREAK
-					<< loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-					<< loc::translate("Utility will end now.");
-			}
+		//Now apply load order.
+		try {
+			this->LoadOrder(pluginVec);
+		} catch (liblo::exception& e) {
+			bosslog.globalMessages.push_back(Message(ERR, loc::translate("Error: ").str() + e.what()));
+			LOG_ERROR(" * Error: %s", e.what().c_str());
 		}
 	}
 }

@@ -27,6 +27,10 @@
 
 #define NOMINMAX // we don't want the dummy min/max macros since they overlap with the std:: algorithms
 
+#ifndef LIBLO_STATIC
+#define LIBLO_STATIC
+#endif
+
 #include "BOSS-Common.h"
 
 #include <boost/algorithm/string.hpp>
@@ -126,8 +130,8 @@ protected:
 };
 
 int main(int argc, char *argv[]) {
+	boss::Game game;
 	Settings ini;
-	Game game;
 	string gameStr;							// allow for autodetection override
 	string bosslogFormat;
 	fs::path sortfile;						//modlist/masterlist to sort plugins using.
@@ -427,7 +431,7 @@ int main(int argc, char *argv[]) {
 				//Ask user to choose game.
 				cout << endl << translate("Please pick which game to run BOSS for:") << endl;
 				for (size_t i=0; i < detected.size(); i++)
-					cout << i << " : " << Game(detected[i], "", true).Name() << endl;
+					cout << i << " : " << GameData(detected[i]).Name() << endl;
 
 				cin >> ans;
 				if (ans < 0 || ans >= detected.size()) {
@@ -437,7 +441,7 @@ int main(int argc, char *argv[]) {
 				detectedGame = detected[ans];
 			}
 		}
-		game = Game(detectedGame);
+		game = boss::Game(detectedGame, GameData(detectedGame).GetInstallPath());
 		game.CreateBOSSGameFolder();
 		LOG_INFO("Game detected: %s", game.Name().c_str());
 	} catch (boss_error &e) {
@@ -473,7 +477,7 @@ int main(int argc, char *argv[]) {
 				try {
 					string localDate, remoteDate, message;
 					uint32_t localRevision, remoteRevision;
-					MlistUpdater.Update(game.Id(), game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
+					MlistUpdater.Update(game, game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
 					if (localRevision == remoteRevision) {
 						message = (boost::format(translate("Your masterlist is already at the latest revision (r%1%; %2%). No update necessary.")) % localRevision % localDate).str();
 						LOG_DEBUG("masterlist update unnecessary.");
