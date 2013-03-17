@@ -294,7 +294,7 @@ in the HTML BOSS Log, and
 
 
 <h2 id="eval">Conditional Expression Evaluation</h2>
-<p>Evaluation of conditionals attached to lines is deferred until after the masterlist is parsed, for greater flexibility. Evaluation of conditionals does not occur wholey in the order in which they were parsed, but rather in the following order:
+<p>Evaluation of conditionals attached to lines is deferred until after the masterlist is parsed, for greater flexibility. Evaluation of conditionals does not occur wholly in the order in which they were parsed, but rather in the following order:
 <ol>
  <li>Variable lines, in the order in which they were parsed.
  <li>Global message lines, in the order in which they were parsed.
@@ -310,7 +310,7 @@ IF VAR(Var2) MOD: Var2Mod.esp</code>
 <h3 id="perf">Performance</h3>
 <p>The more conditional expressions that BOSS has to parse, the longer it will take to run. Evaluation of conditional expressions is typically the bottleneck that lengthens execution time. It is therefore important to consider performance when using conditionals. Here are some guidelines to improving performance when using conditionals, in the order of their effectiveness:
 <ol>
- <li>Use conditional groups wherever you have more than at least four plugins in the same location of the masterlist that share at least one conditional. In practice, four is probably slightly too few plugins to justify a group, since it increases the length of the masterlist. Use your judgement, and ask if you are not sure.
+ <li>Use conditional groups wherever you have more than at least four plugins in the same location of the masterlist that share at least one conditional. In practice, four is probably slightly too few plugins to justify a group, since it increases the length of the masterlist. Use your judgment, and ask if you are not sure.
  <li>If multiple lines throughout the masterlist use the same conditional, and that conditional is not a single variable condition, use that conditional to define a masterlist variable, and change the rest of the lines that use that conditional to instead use a conditional that only contains a variable condition. For example:
  <code class="box">IF VERSION("Mod1.esp", "1.2", =) MOD: Mod2.esp
 IF VERSION("Mod1.esp", "1.2", =) MOD: Mod3.esp
