@@ -214,7 +214,7 @@ in the HTML BOSS Log, and
 
 
 <h3 id="syntax-cond">Conditional Expressions</h3>
-<p>A line can be made to only be applied in certain circumstances by adding a conditional expression to the start of that line. Conditional expressions can be added to any line. The syntax for a conditional expression with only one condition is:
+<p>A line can be made to be applied only under certain circumstances by adding a conditional expression to the start of that line. Conditional expressions can be added to any line. The syntax for a conditional expression with only one condition is:
 <code class="box">[condition keyword] [condition] [line]</code>
 <p>If <code><var>[line]</var></code> is a plugin line, then the conditional must be followed by the <code>MOD</code> keyword, eg. <code>IF FILE("Foo.esp") MOD: MyPlugin.esp</code> will place <code>MyPlugin.esp</code> in that position if <code>Foo.esp</code> is installed.
 <p>If <code><var>[line]</var></code> is a group line, then the plugins and groups it contains will only be evaluated if the conditional expression evaluates to true, otherwise they will be skipped.
@@ -294,7 +294,7 @@ in the HTML BOSS Log, and
 
 
 <h2 id="eval">Conditional Expression Evaluation</h2>
-<p>Evaluation of conditionals attached to lines is defered until after the masterlist is parsed, for greater flexibility. Evaluation of conditionals does not occur wholey in the order in which they were parsed, but rather in the following order:
+<p>Evaluation of conditionals attached to lines is deferred until after the masterlist is parsed, for greater flexibility. Evaluation of conditionals does not occur wholey in the order in which they were parsed, but rather in the following order:
 <ol>
  <li>Variable lines, in the order in which they were parsed.
  <li>Global message lines, in the order in which they were parsed.
