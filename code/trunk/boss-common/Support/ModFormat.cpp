@@ -192,9 +192,12 @@ namespace boss {
 		// ...and extra flags
 		/*uint flags2 =*/ Read<uint>(bufptr); // skip flags2
 	
-		// Here the Header record starts, check for its signature 'HEDR'
+		// For Oblivion plugins, the Header record starts here, check for its signature 'HEDR'.
 		if (Read<uint>(bufptr) != Record::HEDR){
-			return modHeader;
+            //Check if it's a FO3, FNV or TES5 plugin.
+            if (Read<uint>(bufptr) != Record::HEDR)  { //Nope, exit.
+                return modHeader;
+            }
 		}
 	
 		// HEDR record has fields: DataSize, Version (0.8 o 1.0), Record Count 
