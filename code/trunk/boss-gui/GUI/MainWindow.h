@@ -42,13 +42,10 @@ public:
 	wxLocale * wxLoc;
 };
 
-wxDECLARE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
-
 //Main frame class.
-class MainFrame : public wxFrame, public wxThreadHelper {
+class MainFrame : public wxFrame {
 public:
 	MainFrame(const wxChar *title);
-	void OnUpdateCheck(wxCommandEvent& event);
 	void Update(std::string updateVersion);
 	void OnOpenSettings(wxCommandEvent& event);
 	void OnQuit(wxCommandEvent& event);
@@ -68,10 +65,6 @@ public:
 
 	void SetGames(const boss::Game& inGame, const std::vector<uint32_t> inGames);
 	void DisableUndetectedGames();
-
-	//Multithreaded update stuff.
-	void CheckForUpdates();
-	void OnThreadUpdate(wxThreadEvent& evt);
 private:
 	wxMenuBar *MenuBar;
 	wxMenu *FileMenu;
@@ -96,7 +89,6 @@ private:
 	std::vector<uint32_t> detectedGames;
 	boss::Game game;
 protected:
-	virtual wxThread::ExitCode Entry();
 	uint32_t updateCheckCode;  //0 = update, 1 = no update, 2 = error.
 	std::string updateCheckString;  //Holds wxMessageBox text.
 	wxCriticalSection updateData; // protects fields above

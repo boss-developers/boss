@@ -29,7 +29,6 @@
     <ClCompile Include="Support\Logger.cpp" />
     <ClCompile Include="Support\ModFormat.cpp" />
     <ClCompile Include="Support\VersionRegex.cpp" />
-    <ClCompile Include="Updating\Updater.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BOSS-Common.h" />
@@ -168,7 +167,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\libgit2\include;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\..\..\lib\utf8;$(ProjectDir)..\..\..\lib\alphanum;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WINVER=0x0400;__WXMSW__;_UNICODE;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>

@@ -109,15 +109,7 @@ namespace boss {
 	wxString FromUTF8(string str);
 
 	wxString FromUTF8(boost::format f);
-
-	class GUIMlistUpdater : public boss::MasterlistUpdater {
-	protected:
-		int progress(boss::Updater * updater, double dlFraction, double dlTotal);
-	};
-
-	class GUIBOSSUpdater : public boss::BOSSUpdater {
-	protected:
-		int progress(boss::Updater * updater, double dlFraction, double dlTotal);
-	};
+	
+    int progress(void * out, double dlFraction, double dlTotal);
 }
 #endif

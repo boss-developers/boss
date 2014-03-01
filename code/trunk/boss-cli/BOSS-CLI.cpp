@@ -107,23 +107,11 @@ void Fail() {
 	exit(1);
 }
 
-class CLIMlistUpdater : public MasterlistUpdater {
-protected:
-	int progress(Updater * updater, double dlFraction, double dlTotal) {
-		printf((translate("Downloading: %s; %3.0f%% of %3.0f KB").str() + "\r").c_str(), updater->TargetFile().c_str(), dlFraction, dlTotal);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
-		fflush(stdout);
-		return 0;
-	}
-};
-
-class CLIBOSSUpdater : public BOSSUpdater {
-protected:
-	int progress(Updater * updater, double dlFraction, double dlTotal) {
-		printf((translate("Downloading: %s; %3.0f%% of %3.0f KB").str() + "\r").c_str(), updater->TargetFile().c_str(), dlFraction, dlTotal);  //The +20 is there because for some reason there's always a 20kb difference between reported size and Windows' size.
-		fflush(stdout);
-		return 0;
-	}
-};
+int progress(void * out, double dlFraction, double dlTotal) {
+	printf((translate("Downloading: %3.0f%% of %3.0f KB").str() + "\r").c_str(), dlFraction, dlTotal);
+	fflush(stdout);
+	return 0;
+}
 
 int main(int argc, char *argv[]) {
 	Settings ini;
@@ -318,94 +306,6 @@ int main(int argc, char *argv[]) {
 	}
 
 
-	/////////////////////////
-	// BOSS Updater Stuff
-	/////////////////////////
-
-	if (gl_do_startup_update_check) {
-		string updateText, updateVersion;
-		CLIBOSSUpdater BossUpdater;
-		try {
-			if (BossUpdater.IsInternetReachable()) {
-				cout << translate("Checking for BOSS updates...") << endl;
-				LOG_DEBUG("Checking for BOSS updates...");
-				try {
-					updateVersion = BossUpdater.IsUpdateAvailable();
-					if (updateVersion.empty()) {
-						cout << translate("You are already using the latest version of BOSS.") << endl;
-						LOG_DEBUG("You are already using the latest version of BOSS.");
-					} else {
-						//First detect type of current install: manual or installer.
-						if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS", "Installed Path")) {  //Manual.
-							//Point user to download locations.
-							cout << translate("Update available! New version: %s") << endl
-								 << translate("The update may be downloaded from any of the locations listed in the BOSS Log.") << endl;
-							LOG_DEBUG("Update available! New version: %s", updateVersion);
-							LOG_DEBUG("The update may be downloaded from any of the locations listed in the BOSS Log.");
-						} else {  //Installer
-							cout << translate("Update available! New version: %s") << endl;
-							LOG_DEBUG("Update available! New version: %s", updateVersion);
-							string notes;
-							try {
-								notes = BossUpdater.FetchReleaseNotes(updateVersion);
-							} catch (boss_error &e) {
-								LOG_ERROR("Failed to get release notes. Details: '%s'", e.getString().c_str());
-							}
-							if (!notes.empty())
-								cout << translate("Release notes:") << endl << endl << notes << endl << endl;
-							cout << translate("Do you want to download and install the update? (y/n)") << endl;
-
-							//Does the user want to update?
-							char answer;
-							cin >> answer;
-							if (answer == 'n') {
-								cout << translate("No update has been downloaded or installed.") << endl;
-								LOG_DEBUG("No update has been downloaded or installed.");
-							} else if (answer == 'y') {
-								try {
-									string file = "BOSS Installer.exe";
-									BossUpdater.GetUpdate(fs::path(file), updateVersion);
-
-									cout << endl << translate("New installer successfully downloaded!") << endl
-										 << translate("BOSS will now launch the downloaded installer and exit. Complete the installer to complete the update.") << endl << endl;
-									if (fs::exists(file))
-										Launch(file);
-									Fail();
-								} catch (boss_error &e) {
-									try {
-										BossUpdater.CleanUp();
-									} catch (boss_error &ee) {
-										if (e.getCode() != BOSS_ERROR_CURL_USER_CANCEL)
-											LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
-										LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-										Fail();
-									}
-									if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL) {
-										cout << translate("Update cancelled.") << endl;
-										LOG_DEBUG("Update cancelled.");
-									} else {
-										LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
-										Fail();
-									}
-								}
-							} else {
-								LOG_ERROR("invalid option given: '%s'", answer);
-								Fail();
-							}
-						}
-					}
-				} catch (boss_error &e) {
-					LOG_ERROR("BOSS Update check failed. Details: '%s'", e.getString().c_str());
-				}
-			} else {
-				cout << translate("BOSS Update check failed. No Internet connection detected.") << endl;
-				LOG_DEBUG("BOSS Update check failed. No Internet connection detected.");
-			}
-		} catch (boss_error &e) {
-			LOG_ERROR("Update check failed. Details: '%s'", e.getString().c_str());
-		}
-	}
-
 	/////////////////////////////////////////
 	// Check for critical error conditions
 	/////////////////////////////////////////
@@ -464,38 +364,16 @@ int main(int argc, char *argv[]) {
 	/////////////////////////////////////////////////////////
 
 	if (gl_revert < 1 && (gl_update || gl_update_only)) {
-		//First check for internet connection, then update masterlist if connection present.
-		CLIMlistUpdater MlistUpdater;
+		cout << endl << translate("Updating to the latest masterlist from the online repository...") << endl;
+		LOG_DEBUG("Updating masterlist...");
 		try {
-			if (MlistUpdater.IsInternetReachable()) {
-				cout << endl << translate("Updating to the latest masterlist from the online repository...") << endl;
-				LOG_DEBUG("Updating masterlist...");
-				try {
-					string localDate, remoteDate, message;
-					uint32_t localRevision, remoteRevision;
-					MlistUpdater.Update(game.Id(), game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
-					if (localRevision == remoteRevision) {
-						message = (boost::format(translate("Your masterlist is already at the latest revision (r%1%; %2%). No update necessary.")) % localRevision % localDate).str();
-						LOG_DEBUG("masterlist update unnecessary.");
-					} else {
-						message =  (boost::format(translate("Your masterlist has been updated to revision %1% (%2%).")) % remoteRevision % remoteDate).str();
-						LOG_DEBUG("masterlist updated successfully.");
-					}
-					game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
-					cout << endl << message << endl;
-				} catch (boss_error &e) {
-					game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
-						<< (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK
-						<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.");
-					LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
-				}
-			} else {
-				game.bosslog.updaterOutput << LIST_ITEM_CLASS_WARN << translate("No internet connection detected. Masterlist auto-updater could not check for updates.");
-			}
+            string revision = UpdateMasterlist(game, progress, NULL);
+			string message = (boost::format(translate("Masterlist revision: %1%.")) % revision).str();
+			game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
+			cout << endl << message << endl;
 		} catch (boss_error &e) {
-			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
-				<< (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK
-				<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.");
+            game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
+                << (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
 			LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
 		}
 	}

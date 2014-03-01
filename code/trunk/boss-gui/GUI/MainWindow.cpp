@@ -61,7 +61,6 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_MENU ( MENU_OpenAPIReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_OpenVersionHistory, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_OpenLicenses, MainFrame::OnOpenFile )
-	EVT_MENU ( OPTION_CheckForUpdates, MainFrame::OnUpdateCheck )
 	EVT_MENU ( MENU_ShowAbout, MainFrame::OnAbout )
 	EVT_MENU ( MENU_ShowSettings, MainFrame::OnOpenSettings )
 	EVT_MENU ( MENU_Oblivion, MainFrame::OnGameChange )
@@ -73,7 +72,6 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_BUTTON ( OPTION_Run, MainFrame::OnRunBOSS )
 	EVT_BUTTON ( OPTION_EditUserRules, MainFrame::OnEditUserRules )
 	EVT_BUTTON ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
-	EVT_BUTTON ( OPTION_CheckForUpdates, MainFrame::OnUpdateCheck )
 	EVT_CHOICE ( DROPDOWN_LogFormat, MainFrame::OnFormatChange )
 	EVT_CHOICE ( DROPDOWN_Game, MainFrame::OnGameChange )
 	EVT_CHOICE ( DROPDOWN_Revert, MainFrame::OnRevertChange )
@@ -84,7 +82,6 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_RADIOBUTTON ( RADIOBUTTON_SortOption, MainFrame::OnRunTypeChange )
 	EVT_RADIOBUTTON ( RADIOBUTTON_UpdateOption, MainFrame::OnRunTypeChange )
 	EVT_RADIOBUTTON ( RADIOBUTTON_UndoOption, MainFrame::OnRunTypeChange )
-	EVT_THREAD( wxEVT_COMMAND_MYTHREAD_UPDATE, MainFrame::OnThreadUpdate )
 END_EVENT_TABLE()
 
 IMPLEMENT_APP(BossGUI)
@@ -229,9 +226,6 @@ bool BossGUI::OnInit() {
 	frame->Show(TRUE);
 	SetTopWindow(frame);
 
-	//Now check for updates.
-	if (gl_do_startup_update_check)
-		frame->CheckForUpdates();
 	return true;
 }
 
@@ -425,13 +419,6 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 				NULL);
 	}
 
-	// important: before terminating, we _must_ wait for our joinable
-    // thread to end, if it's running; in fact it uses variables of this
-    // instance and posts events to *this event handler
-
-    if (GetThread() && GetThread()->IsRunning())
-        GetThread()->Wait();
-
     Destroy();  // you may also do:  event.Skip();
                 // since the default event handler does call Destroy(), too
 }
@@ -460,43 +447,19 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	// Update Masterlist
 	/////////////////////////////////////////////////////////
 
-	if (gl_revert<1 && (gl_update || gl_update_only)) {
-		//First check for internet connection, then update masterlist if connection present.
-		GUIMlistUpdater mUpdater;
-		try {
-			if (mUpdater.IsInternetReachable()) {
-				progDia->Update(0,translate("Updating to the latest masterlist from the online repository..."));
-				LOG_DEBUG("Updating masterlist...");
-				try {
-					string localDate, remoteDate, message;
-					uint32_t localRevision, remoteRevision;
-					mUpdater.ProgDialog(progDia);
-					mUpdater.Update(game.Id(), game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
-					if (localRevision == remoteRevision) {
-						message = (format(loc::translate("Your masterlist is already at the latest revision (r%1%; %2%). No update necessary.")) % localRevision % localDate).str();
-						progDia->Pulse(translate("Masterlist already up-to-date."));
-						LOG_DEBUG("masterlist update unnecessary.");
-					} else {
-						message =  (format(loc::translate("Your masterlist has been updated to revision %1% (%2%).")) % remoteRevision % remoteDate).str();
-						progDia->Pulse(translate("Masterlist updated successfully."));
-						LOG_DEBUG("masterlist updated successfully.");
-					}
-					game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
-				} catch (boss_error &e) {
-					game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << loc::translate("Error: masterlist update failed.") << LINE_BREAK
-						<< (format(loc::translate("Details: %1%")) % e.getString()).str() << LINE_BREAK
-						<< loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.");
-					LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
-				}
-			} else {
-				game.bosslog.updaterOutput << LIST_ITEM_CLASS_WARN << loc::translate("No internet connection detected. Masterlist auto-updater could not check for updates.");
-			}
-		} catch (boss_error &e) {
-			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << loc::translate("Error: masterlist update failed.") << LINE_BREAK
-				<< (format(loc::translate("Details: %1%")) % e.getString()).str() << LINE_BREAK
-				<< loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.");
-			LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
-		}
+    if (gl_revert<1 && (gl_update || gl_update_only)) {
+        progDia->Update(0, translate("Updating to the latest masterlist from the online repository..."));
+        LOG_DEBUG("Updating masterlist...");
+        try {
+            string revision = UpdateMasterlist(game, progress, progDia);
+            string message = (boost::format(translate("Masterlist revision: %1%.")) % revision).str();
+            game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
+        }
+        catch (boss_error &e) {
+            game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
+                << (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
+            LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
+        }
 	}
 
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
@@ -836,12 +799,6 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 	DisableUndetectedGames();  //Doesn't actually disable games if (gl_update_only).
 }
 
-//This is called when the menu "Check For Updates" option is selected.
-void MainFrame::OnUpdateCheck(wxCommandEvent& event) {
-	isStartup = false;
-	CheckForUpdates();
-}
-
 void MainFrame::DisableUndetectedGames() {
 	//Also disable the options for undetected games.
 	bool enabled;
@@ -935,165 +892,9 @@ void MainFrame::SetGames(const Game& inGame, const vector<uint32_t> inGames) {
 	DisableUndetectedGames();
 }
 
-void MainFrame::Update(string updateVersion) {
-	wxString message = translate("The automatic updater will download the installer for the new version to this BOSS folder.\n\n");
-	message += translate("It will then launch the installer before exiting. Complete the installer to complete the update.");
-
-	wxMessageDialog *dlg = new wxMessageDialog(this,message, translate("BOSS: Automatic Updater"), wxOK | wxCANCEL);
-	if (dlg->ShowModal() != wxID_OK) {  //User has chosen to cancel. Quit now.
-		wxMessageBox(translate("Automatic updater cancelled."), translate("BOSS: Automatic Updater"), wxOK | wxICON_EXCLAMATION, this);
-		return;
-	}
-
-	wxProgressDialog *progDia = new wxProgressDialog(translate("BOSS: Automatic Updater"), translate("Initialising download..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
-	string file = "BOSS Installer.exe";
-	GUIBOSSUpdater bUpdater;
-	try {
-		bUpdater.ProgDialog(progDia);
-		bUpdater.GetUpdate(fs::path(file), updateVersion);
-		progDia->Destroy();
-
-		//Remind the user to run the installer.
-		wxMessageBox(translate("New installer successfully downloaded! When you click 'OK', BOSS will launch the downloaded installer and exit. Complete the installer to complete the update."), translate("BOSS: Automatic Updater"), wxOK | wxICON_INFORMATION, this);
-		if (fs::exists(file))
-			wxLaunchDefaultApplication(file);
-	} catch (boss_error &e) {
-		progDia->Destroy();
-		try {
-			bUpdater.CleanUp();
-			if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL)
-				wxMessageBox(
-					translate("Update cancelled."),
-					translate("BOSS: Automatic Updater"),
-					wxOK | wxICON_INFORMATION,
-					this);
-			else
-				wxMessageBox(
-					FromUTF8(format(loc::translate("Update failed. Details: %1%\n\nUpdate cancelled.")) % e.getString()),
-					translate("BOSS: Automatic Updater"),
-					wxOK | wxICON_ERROR,
-					this);
-		} catch (boss_error &ee) {
-			if (e.getCode() != BOSS_ERROR_CURL_USER_CANCEL)
-				LOG_ERROR("Update failed. Details: '%s'", e.getString().c_str());
-			LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
-			wxMessageBox(
-				FromUTF8(format(loc::translate("Update failed. Details: %1%; %2%\n\nUpdate cancelled.")) % e.getString() % ee.getString()),
-				translate("BOSS: Automatic Updater"),
-				wxOK | wxICON_ERROR,
-				this);
-		}
-	}
-	this->Close();
-}
-
 void MainFrame::OnOpenSettings(wxCommandEvent& event) {
 	//Tell the user that stuff is happenining.
 	SettingsFrame *settings = new SettingsFrame(translate("BOSS: Settings"),this);
 	settings->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	settings->Show();
-}
-
-void MainFrame::CheckForUpdates() {
-	// we want to start a long task, but we don't want our GUI to block
-    // while it's executed, so we use a thread to do it.
-    if (CreateThread(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR)
-    {
-        LOG_ERROR("Could not create the worker thread!");
-        return;
-    }
-
-    // go!
-    if (GetThread()->Run() != wxTHREAD_NO_ERROR)
-    {
-        LOG_ERROR("Could not run the worker thread!");
-        return;
-    }
-}
-
-wxThread::ExitCode MainFrame::Entry() {
-    // IMPORTANT:
-    // this function gets executed in the secondary thread context!
-
-	GUIBOSSUpdater bUpdater;
-	string updateText, updateVersion;
-	try {
-		if (bUpdater.IsInternetReachable()) {
-			try {
-				updateVersion = bUpdater.IsUpdateAvailable();
-				if (updateVersion.empty()) {
-					wxCriticalSectionLocker lock(updateData);
-					updateCheckCode = 1;
-					updateCheckString = loc::translate("You are already using the latest version of BOSS.");
-					wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
-				} else {
-					wxCriticalSectionLocker lock(updateData);
-					updateCheckCode = 0;
-					updateCheckString = updateVersion;
-					wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
-				}
-			} catch (boss_error &e) {
-				wxCriticalSectionLocker lock(updateData);
-				updateCheckCode = 2;
-				updateCheckString = (format(loc::translate("Update check failed. Details: %1%")) % e.getString()).str();
-				wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
-			}
-		} else {
-			wxCriticalSectionLocker lock(updateData);
-			updateCheckCode = 1;
-			updateCheckString = loc::translate("Update check failed. No Internet connection detected.");
-			wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
-		}
-	} catch (boss_error &e) {
-		wxCriticalSectionLocker lock(updateData);
-		updateCheckCode = 2;
-		updateCheckString = (format(loc::translate("Update check failed. Details: %1%")) % e.getString()).str();
-		wxQueueEvent(this, new wxThreadEvent(wxEVT_THREAD, wxEVT_COMMAND_MYTHREAD_UPDATE));
-	}
-	return (wxThread::ExitCode)0;
-}
-
-void MainFrame::OnThreadUpdate(wxThreadEvent& evt) {
-    wxCriticalSectionLocker lock(updateData);
-	if (updateCheckCode == 2 && !isStartup)
-		wxMessageBox(
-			FromUTF8(updateCheckString),
-			translate("BOSS: Check For Updates"),
-			wxOK | wxICON_ERROR,
-			this);
-	else if (updateCheckCode == 1 && !isStartup)
-		wxMessageBox(
-			FromUTF8(updateCheckString),
-			translate("BOSS: Check For Updates"),
-			wxOK | wxICON_INFORMATION,
-			this);
-	else if (updateCheckCode == 0) {
-		wxMessageDialog *dlg;
-		if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS", "Installed Path"))  //Manual.
-			dlg = new wxMessageDialog(this,
-				FromUTF8(format(loc::translate("Update available! New version: %1%\nThe update may be downloaded from any of the locations listed in the BOSS Log.")) % updateCheckString),
-				translate("BOSS: Check For Updates"),
-				wxOK);
-		else {
-			GUIBOSSUpdater bUpdater;
-			string notes;
-			//Display release notes.
-			try {
-				notes = bUpdater.FetchReleaseNotes(updateCheckString);
-			} catch (boss_error &e) {
-				wxMessageBox(
-					FromUTF8(format(loc::translate("Failed to get release notes. Details: %1%")) % e.getString()),
-					translate("BOSS: Automatic Updater"),
-					wxOK | wxICON_ERROR,
-					this);
-			}
-			dlg = new wxMessageDialog(this,
-				FromUTF8(format(loc::translate("Update available! New version: %1%\nRelease notes:\n\n%2%\n\nDo you want to download and install the update?")) % updateCheckString % notes),
-				translate("BOSS: Check For Updates"),
-				wxYES_NO);
-
-			if (dlg->ShowModal() == wxID_YES)
-				this->Update(updateCheckString);
-		}
-	}
 }

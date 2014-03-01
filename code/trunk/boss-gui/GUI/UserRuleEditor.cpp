@@ -90,38 +90,19 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 			return;
 		} else {
 			progDia = new wxProgressDialog(translate("BOSS: Working..."), translate("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
-			GUIMlistUpdater mUpdater;
-			try {
-				if (mUpdater.IsInternetReachable()) {
-					//Init progress bar.
-					progDia->Update(0,translate("Updating to the latest masterlist from the online repository..."));
-					LOG_DEBUG("Updating masterlist...");
-					string localDate, remoteDate, message;
-					uint32_t localRevision, remoteRevision;
-					mUpdater.ProgDialog(progDia);
-					mUpdater.Update(game.Id(), game.Masterlist(), localRevision, localDate, remoteRevision, remoteDate);
-					LOG_DEBUG("masterlist updated successfully.");
-				} else {
-					progDia->Destroy();
-					this->Close();
-					wxMessageBox(
-						FromUTF8(format(loc::translate("Error: No internet connection detected. Masterlist could not be downloaded."))),
-						translate("BOSS: Error"),
-						wxOK | wxICON_ERROR,
-						NULL);
-					return;
-				}
-			} catch (boss_error &e) {
-				LOG_ERROR("Error: Masterlist update failed. Details: %s", e.getString().c_str());
-				progDia->Destroy();
-				this->Close();
-				wxMessageBox(
-					FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
-					translate("BOSS: Error"),
-					wxOK | wxICON_ERROR,
-					NULL);
-				return;
-			}
+
+            progDia->Update(0, translate("Updating to the latest masterlist from the online repository..."));
+            LOG_DEBUG("Updating masterlist...");
+            try {
+                string revision = UpdateMasterlist(game, progress, progDia);
+                string message = (boost::format(translate("Masterlist revision: %1%.")) % revision).str();
+                game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
+            }
+            catch (boss_error &e) {
+                game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
+                    << (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
+                LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
+            }
 		}
 	} else
 		progDia = new wxProgressDialog(translate("BOSS: Working..."), translate("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);

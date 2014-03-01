@@ -36,9 +36,6 @@
     <ClCompile Include="Output\Output.cpp">
       <Filter>Output</Filter>
     </ClCompile>
-    <ClCompile Include="Updating\Updater.cpp">
-      <Filter>Updating</Filter>
-    </ClCompile>
     <ClCompile Include="Common\Classes.cpp">
       <Filter>Common</Filter>
     </ClCompile>
