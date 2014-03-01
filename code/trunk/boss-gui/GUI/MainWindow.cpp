@@ -1,25 +1,25 @@
 /*	BOSS
 
-	A "one-click" program for users that quickly optimises and avoids 
-	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+	A "one-click" program for users that quickly optimises and avoids
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute 
-	it and/or modify it under the terms of the GNU General Public License 
-	as published by the Free Software Foundation, either version 3 of 
+    BOSS is free software: you can redistribute
+	it and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see 
+    along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -117,7 +117,7 @@ bool BossGUI::OnInit() {
 	g_logger.setOriginTracking(gl_debug_with_source);
 	// it's ok if this number is too high.  setVerbosity will handle it
 	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));
-	
+
 	//Specify location of language dictionaries
 	boost::locale::generator gen;
 	gen.add_messages_path(fs::path(boss_path / "l10n").string());
@@ -164,7 +164,7 @@ bool BossGUI::OnInit() {
 	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
 	boost::filesystem::path::imbue(loc);
 
-	
+
 	//Check if GUI is already running.
 	wxSingleInstanceChecker *checker = new wxSingleInstanceChecker;
 
@@ -184,7 +184,7 @@ bool BossGUI::OnInit() {
 	MainFrame *frame = new MainFrame(wxT("BOSS"));
 
 	LOG_DEBUG("Detecting game...");
-	
+
 	Game game;
 	std::vector<uint32_t> detected;
 	try {
@@ -297,7 +297,7 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	wxBoxSizer *columnBox = new wxBoxSizer(wxVERTICAL);
 	wxStaticBoxSizer *outputOptionsBox = new wxStaticBoxSizer(wxVERTICAL, this, translate("Output Options"));
 	wxBoxSizer *formatBox = new wxBoxSizer(wxHORIZONTAL);
-	
+
 	//Add stuff to output options sizer.
 	outputOptionsBox->Add(ShowLogBox = new wxCheckBox(this,CHECKBOX_ShowBOSSlog, translate("Show BOSS Log On Completion")), 0, wxALL, 5);
 	outputOptionsBox->Add(CRCBox = new wxCheckBox(this,CHECKBOX_EnableCRCs, translate("Display File CRCs")), 0, wxLEFT | wxBOTTOM, 5);
@@ -325,17 +325,17 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 
 	//Run Options
 	runOptionsBox->Add(SortOption = new wxRadioButton(this, RADIOBUTTON_SortOption, translate("Sort Plugins")), 0, wxALL, 5);
-	
+
 	//Sort option stuff.
 	sortBox->Add(UpdateBox = new wxCheckBox(this,CHECKBOX_Update, translate("Update Masterlist")), 0, wxBOTTOM, 5);
 	sortBox->Add(TrialRunBox = new wxCheckBox(this,CHECKBOX_TrialRun, translate("Perform Trial Run")));
 	runOptionsBox->Add(sortBox, 0, wxLEFT | wxRIGHT, 20);
 	runOptionsBox->AddSpacer(10);
-	
+
 	//Update only stuff.
 	runOptionsBox->Add(UpdateOption = new wxRadioButton(this, RADIOBUTTON_UpdateOption, translate("Update Masterlist Only")), 0, wxALL, 5);
 	runOptionsBox->AddSpacer(10);
-	
+
 	//Undo option stuff.
 	runOptionsBox->Add(UndoOption = new wxRadioButton(this, RADIOBUTTON_UndoOption, translate("Undo Changes")), 0, wxALL, 5);
 	revertBox->Add(RevertText = new wxStaticText(this, wxID_ANY, translate("Undo Level: ")));
@@ -459,13 +459,13 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	/////////////////////////////////////////////////////////
 	// Update Masterlist
 	/////////////////////////////////////////////////////////
-	
+
 	if (gl_revert<1 && (gl_update || gl_update_only)) {
 		//First check for internet connection, then update masterlist if connection present.
 		GUIMlistUpdater mUpdater;
 		try {
 			if (mUpdater.IsInternetReachable()) {
-				progDia->Update(0,translate("Updating to the latest masterlist from the Google Code repository..."));
+				progDia->Update(0,translate("Updating to the latest masterlist from the online repository..."));
 				LOG_DEBUG("Updating masterlist...");
 				try {
 					string localDate, remoteDate, message;
@@ -506,7 +506,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent ) 
+		if ( !gl_silent )
 			wxLaunchDefaultApplication(game.Log(gl_log_format).string());	//Displays the BOSSlog.
 		progDia->Destroy();
 		if (gl_close_gui_after_sorting)
@@ -541,7 +541,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent ) 
+		if ( !gl_silent )
 			wxLaunchDefaultApplication(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
 		progDia->Destroy();
 		if (gl_close_gui_after_sorting)
@@ -562,13 +562,13 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	/////////////////////////////////
 	//Masterlist parse errors are critical, ini and userlist parse errors are not.
 
-	
+
 	//Set masterlist path to be used.
 	if (gl_revert==1)
-		sortfile = game.Modlist();	
-	else if (gl_revert==2) 
+		sortfile = game.Modlist();
+	else if (gl_revert==2)
 		sortfile = game.OldModlist();
-	else 
+	else
 		sortfile = game.Masterlist();
 	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
 
@@ -596,7 +596,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-        if ( !gl_silent ) 
+        if ( !gl_silent )
 			wxLaunchDefaultApplication(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
 		progDia->Destroy();
 		if (gl_close_gui_after_sorting)
@@ -646,7 +646,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent ) 
+		if ( !gl_silent )
 			wxLaunchDefaultApplication(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
         progDia->Destroy();
 		if (gl_close_gui_after_sorting)
@@ -655,7 +655,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	}
 
 	LOG_INFO("Launching boss log in browser.");
-	if ( !gl_silent ) 
+	if ( !gl_silent )
 		wxLaunchDefaultApplication(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
 	LOG_INFO("BOSS finished.");
 	progDia->Destroy();
@@ -732,7 +732,7 @@ void MainFrame::OnAbout(wxCommandEvent& event) {
     aboutInfo.SetVersion(IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH));
     aboutInfo.SetDescription(translate("A \"one-click\" program for users that quickly optimises and avoids detrimental conflicts in their\nTES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders."));
     aboutInfo.SetCopyright("Copyright (C) 2009-2012 BOSS Development Team.");
-    aboutInfo.SetWebSite("http://code.google.com/p/better-oblivion-sorting-software/");
+    aboutInfo.SetWebSite("http://boss-developers.github.io");
 	aboutInfo.SetLicence("This program is free software: you can redistribute it and/or modify\n"
     "it under the terms of the GNU General Public License as published by\n"
     "the Free Software Foundation, either version 3 of the License, or\n"
@@ -938,7 +938,7 @@ void MainFrame::SetGames(const Game& inGame, const vector<uint32_t> inGames) {
 void MainFrame::Update(string updateVersion) {
 	wxString message = translate("The automatic updater will download the installer for the new version to this BOSS folder.\n\n");
 	message += translate("It will then launch the installer before exiting. Complete the installer to complete the update.");
-		
+
 	wxMessageDialog *dlg = new wxMessageDialog(this,message, translate("BOSS: Automatic Updater"), wxOK | wxCANCEL);
 	if (dlg->ShowModal() != wxID_OK) {  //User has chosen to cancel. Quit now.
 		wxMessageBox(translate("Automatic updater cancelled."), translate("BOSS: Automatic Updater"), wxOK | wxICON_EXCLAMATION, this);
@@ -963,15 +963,15 @@ void MainFrame::Update(string updateVersion) {
 			bUpdater.CleanUp();
 			if (e.getCode() == BOSS_ERROR_CURL_USER_CANCEL)
 				wxMessageBox(
-					translate("Update cancelled."), 
-					translate("BOSS: Automatic Updater"), 
-					wxOK | wxICON_INFORMATION, 
+					translate("Update cancelled."),
+					translate("BOSS: Automatic Updater"),
+					wxOK | wxICON_INFORMATION,
 					this);
 			else
 				wxMessageBox(
 					FromUTF8(format(loc::translate("Update failed. Details: %1%\n\nUpdate cancelled.")) % e.getString()),
-					translate("BOSS: Automatic Updater"), 
-					wxOK | wxICON_ERROR, 
+					translate("BOSS: Automatic Updater"),
+					wxOK | wxICON_ERROR,
 					this);
 		} catch (boss_error &ee) {
 			if (e.getCode() != BOSS_ERROR_CURL_USER_CANCEL)
@@ -979,8 +979,8 @@ void MainFrame::Update(string updateVersion) {
 			LOG_ERROR("Update clean up failed. Details: '%s'", ee.getString().c_str());
 			wxMessageBox(
 				FromUTF8(format(loc::translate("Update failed. Details: %1%; %2%\n\nUpdate cancelled.")) % e.getString() % ee.getString()),
-				translate("BOSS: Automatic Updater"), 
-				wxOK | wxICON_ERROR, 
+				translate("BOSS: Automatic Updater"),
+				wxOK | wxICON_ERROR,
 				this);
 		}
 	}
@@ -1057,22 +1057,22 @@ void MainFrame::OnThreadUpdate(wxThreadEvent& evt) {
     wxCriticalSectionLocker lock(updateData);
 	if (updateCheckCode == 2 && !isStartup)
 		wxMessageBox(
-			FromUTF8(updateCheckString), 
-			translate("BOSS: Check For Updates"), 
-			wxOK | wxICON_ERROR, 
+			FromUTF8(updateCheckString),
+			translate("BOSS: Check For Updates"),
+			wxOK | wxICON_ERROR,
 			this);
 	else if (updateCheckCode == 1 && !isStartup)
 		wxMessageBox(
-			FromUTF8(updateCheckString), 
-			translate("BOSS: Check For Updates"), 
-			wxOK | wxICON_INFORMATION, 
+			FromUTF8(updateCheckString),
+			translate("BOSS: Check For Updates"),
+			wxOK | wxICON_INFORMATION,
 			this);
 	else if (updateCheckCode == 0) {
 		wxMessageDialog *dlg;
 		if (!RegKeyExists("HKEY_LOCAL_MACHINE", "Software\\BOSS", "Installed Path"))  //Manual.
 			dlg = new wxMessageDialog(this,
 				FromUTF8(format(loc::translate("Update available! New version: %1%\nThe update may be downloaded from any of the locations listed in the BOSS Log.")) % updateCheckString),
-				translate("BOSS: Check For Updates"), 
+				translate("BOSS: Check For Updates"),
 				wxOK);
 		else {
 			GUIBOSSUpdater bUpdater;
@@ -1083,13 +1083,13 @@ void MainFrame::OnThreadUpdate(wxThreadEvent& evt) {
 			} catch (boss_error &e) {
 				wxMessageBox(
 					FromUTF8(format(loc::translate("Failed to get release notes. Details: %1%")) % e.getString()),
-					translate("BOSS: Automatic Updater"), 
-					wxOK | wxICON_ERROR, 
+					translate("BOSS: Automatic Updater"),
+					wxOK | wxICON_ERROR,
 					this);
 			}
-			dlg = new wxMessageDialog(this, 
-				FromUTF8(format(loc::translate("Update available! New version: %1%\nRelease notes:\n\n%2%\n\nDo you want to download and install the update?")) % updateCheckString % notes), 
-				translate("BOSS: Check For Updates"), 
+			dlg = new wxMessageDialog(this,
+				FromUTF8(format(loc::translate("Update available! New version: %1%\nRelease notes:\n\n%2%\n\nDo you want to download and install the update?")) % updateCheckString % notes),
+				translate("BOSS: Check For Updates"),
 				wxYES_NO);
 
 			if (dlg->ShowModal() == wxID_YES)

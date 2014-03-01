@@ -194,7 +194,7 @@
         <tr><td>Open User Rules Readme<td>Opens the user rules readme in your default web browser.
         <tr><td>View Copyright Licenses<td>Opens the file containing BOSS's copyright licenses in your default text editor.
         <tr><td>Check For Updates...<td>Check for updates to BOSS.
-        <tr><td>About BOSS...<td>Displays an <q>About</q> dialog, giving the version number, some copyright and license information, a link to BOSS's Google Code page and a short blurb.
+        <tr><td>About BOSS...<td>Displays an <q>About</q> dialog, giving the version number, some copyright and license information, a link to BOSS's website and a short blurb.
 </table>
 <h3 id="gui-urm">The User Rules Manager</h3>
 <figure>
@@ -366,11 +366,11 @@
 <code class="box">-V [ --version ]</code>
 <p>Prints the a banner displaying the program name and version number to the command line, then exits.
 <code class="box">-u [ --update ]</code>
-<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then sorts your plugins. This behaviour is enabled by default, so the command line parameter will have no effect except when the automatic masterlist updating has been disabled in the ini.
+<p>Automatically updates the local copy of the masterlist using the latest version on the online repository, and then sorts your plugins. This behaviour is enabled by default, so the command line parameter will have no effect except when the automatic masterlist updating has been disabled in the ini.
 <code class="box">-U [ --no-update ]</code>
 <p>Inhibits the default automatic masterlist updater, preventing it from running. Must not be used alongside --update,-u.
 <code class="box">-o [ --only-update ]</code>
-<p>Automatically updates the local copy of the masterlist using the latest version on the Google Code repository, and then does <b>not</b> sort your plugins.
+<p>Automatically updates the local copy of the masterlist using the latest version on the online repository, and then does <b>not</b> sort your plugins.
 <code class="box">-g [ --game ] [ game ]</code>
 <p>Overrides game autodetection. The valid values of the argument are: <code>Oblivion</code>, <code>Nehrim</code>, <code>Fallout3</code>, <code>FalloutNV</code>, <code>Skyrim</code> and <code>Morrowind</code>. If the game specified is not detected, BOSS falls back to autodetection, unless <code>-o</code> is also passed, in which case BOSS will run successfully whether or not the game is installed.
 <code class="box">-s [ --silent ]</code>
@@ -462,7 +462,7 @@ A value of <code>2</code> will restore the load order to that stored in modlist.
 </ol>
 <p>A rarer circumstance is when the user connects to the Internet using a proxy. This is most common in enterprise environments, and such users will generally know if they use a proxy. If you use a proxy to connect to the Internet, you must either record your proxy settings in the relevant part of the GUI's <q>Settings</q> window or manually enter your proxy settings into your <q>BOSS.ini</q> settings file. See <a href="#gui-settings">The Settings Window</a> or <a href="#cli-ini">The BOSS.ini</a> for information on the expected setting values.
 <p>There may also be other special cases which cause problems for BOSS's updaters that the BOSS team is unaware of. If you are having issues using the updaters, contact the BOSS team for support.
-<p>BOSS program updates are also published at BOSS's <a href="http://code.google.com/p/better-oblivion-sorting-software/">Google Code site</a>. For those not using the masterlist updater, the latest masterlist is always on the repository at the same site.
+<p>BOSS program updates are also published at BOSS's <a href="http://boss-developers.github.io">site</a>. For those not using the masterlist updater, the latest masterlist is always on the repository at the same site.
 <p>Always make sure to use the latest version of BOSS and the latest masterlist.
 
 
@@ -605,11 +605,11 @@ a problem for which no error message is given, please report the crash or proble
  <li>Masterlist messages but they must be submitted, as with all other masterlist-related matters, through the official BOSS threads so that translations can be added by the masterlist maintainers.
 </ul>
 <p>In addition to translations of the BOSS installer and applications, translations of the documentation are also welcome. If you are interested in translating the documentation, you are advised to contact WrinklyNinja as the documentation may have been significantly revised for the next release, and so translating the current release's docs may not be the best course of action.
-<p>To have your translation included in BOSS, either submit it as an issue in <a href="http://code.google.com/p/better-oblivion-sorting-software/issues/list">BOSS's Google Code bug tracker</a>, attaching your translation file(s), or send your translation to one of the active BOSS admins directly (preferably WrinklyNinja). How BOSS team members may be contacted is covered in the <a href="#team">Project Members</a> section below. Submitting your translation to BOSS's bug tracker requires a Google account, but is the preferred method.
+<p>To have your translation included in BOSS, either submit it as an issue in <a href="https://github.com/boss-developers/boss/issues">BOSS's code bug tracker</a>, attaching your translation file(s), or send your translation to one of the active BOSS admins directly (preferably WrinklyNinja). How BOSS team members may be contacted is covered in the <a href="#team">Project Members</a> section below. Submitting your translation to BOSS's bug tracker requires a GitHub account, but is the preferred method.
 <h3 id="translate-installer">Translating The BOSS Installer</h3>
 <p>To translate BOSS's installer:
 <ol>
- <li>Download the <a href="http://better-oblivion-sorting-software.googlecode.com/svn/BOSS.nsi">installer script</a>.
+ <li>Download the <a href="https://raw.github.com/boss-developers/boss/master/BOSS.nsi">installer script</a>.
  <li>Open the downloaded installer script in a text editor of your choice.
  <li>The English strings are located in the section with the heading <q>English Strings</q>. Copy and paste this section into a new text file, and translate the quoted strings, replacing the English text. For the lines beginning <code>VIAddVersionKey</code>, only translate the second quoted string.
  <li>Save the text file containing your translated strings.
@@ -621,9 +621,9 @@ To translate the BOSS applications:
  <li>Download <a href="">BOSS's translation template file</a>.
  <li>If you are updating an existing translation, download the relevant translation file for the language you're interested in:
  <ul>
-  <li><a href="http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-common/l10n/ru/LC_MESSAGES/messages.po">Russian</a>
-  <li><a href="http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-common/l10n/es/LC_MESSAGES/messages.po">Spanish</a>
-  <li><a href="http://better-oblivion-sorting-software.googlecode.com/svn/data/boss-common/l10n/zh/LC_MESSAGES/messages.po">Simplified Chinese</a>
+  <li><a href="https://raw.github.com/boss-developers/boss/master/data/boss-common/l10n/ru/LC_MESSAGES/messages.po">Russian</a>
+  <li><a href="https://raw.github.com/boss-developers/boss/master/data/boss-common/l10n/es/LC_MESSAGES/messages.po">Spanish</a>
+  <li><a href="https://raw.github.com/boss-developers/boss/master/data/boss-common/l10n/zh/LC_MESSAGES/messages.po">Simplified Chinese</a>
  </ul>
  <li>Open Poedit and select <q>File->Preferences</q>, then in the <q>Editor</q> tab ensure that the checkbox for the <q>Automatically compile .mo file on save</q> setting is checked. Click <q>OK</q> to close the preferences window.
  <li>If you are starting a new translation, select <q>File->New catalogue from POT file...</q> and choose the template file you downloaded. In the <q>Catalog properties</q> dialog, just click <q>OK</q> without changing anything.
@@ -682,7 +682,7 @@ To translate the BOSS applications:
 
 
 <h2 id="team">Project Members</h2>
-<p>Since June 2009, BOSS has been a collaborative project on Google Code using the Subversion version control system. In alphabetical order, the project members are:
+<p>Since June 2009, BOSS has been a collaborative project, first on Google Code and now on <a href="https://github.com/boss-developers">GitHub</a>. In alphabetical order, the project members are:
 <table>
     <thead class="c"><tr><th colspan="2" rowspan="2">Member<th rowspan="2">Admin<th rowspan="2">Programmer<th colspan="5">Masterlists Member Contributes To
         <tr><th>Oblivion<th>Nehrim<th>Fallout 3<th>Fallout: New Vegas<th>Skyrim
@@ -733,7 +733,7 @@ A copy of the license is included in the file named "Licenses.txt".</pre></block
 <h2 id="links">Quick Links</h2>
 <h4>Main Site</h4>
 <ul>
-<li><a href="http://code.google.com/p/better-oblivion-sorting-software/">BOSS at Google Code</a>
+<li><a href="https://github.com/boss-developers">BOSS on GitHub</a>
 </ul>
 <h4>Official Threads</h4>
 <ul>

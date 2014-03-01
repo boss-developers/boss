@@ -23,14 +23,14 @@
 	a:link {text-decoration:none;}
 	a:hover {text-decoration:underline;}
 	a[href^="http"]:after {padding-left:2px; content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAVklEQVR4Xn3PgQkAMQhDUXfqTu7kTtkpd5RA8AInfArtQ2iRXFWT2QedAfttj2FsPIOE1eCOlEuoWWjgzYaB/IkeGOrxXhqB+uA9Bfcm0lAZuh+YIeAD+cAqSz4kCMUAAAAASUVORK5CYII=);}
-	
+
 	ul.errorMessages > li {margin-bottom:1.4em;}
 	td.t {background:#90ff90;text-align:center;}
 	td.c {background:#ff9090;text-align:center;}
 	td.t:after {content: '\2713';}
 	td.c:after {content: '\2717';}
 	img {border:0;}
-	.slideshow img {opacity:0; 
+	.slideshow img {opacity:0;
 		position:absolute;
 		transition: opacity 1.5s;
 		-moz-transition: opacity 1.5s;
@@ -48,7 +48,7 @@
 </style>
 
 <h1>BOSS Version History</h1>
-<p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the Google Code repository.
+<p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the online repositories.
 
 <h2>Contents</h2>
 <ol>
@@ -198,7 +198,7 @@
  <li>Added: <q>Close GUI after running BOSS</q> setting.
  <li>Added: Prompt to download the latest masterlist if the User Rules Manager is opened and the masterlist cannot be found.
  <li>Added: Messages now have their syntax checked before a rule is saved, and an error message is displayed if invalid syntax is found.
- <li>Added: A Language setting to control the language BOSS displays its UI in. 
+ <li>Added: A Language setting to control the language BOSS displays its UI in.
 </ul>
 <h3>CLI Changes</h3>
 <ul>
@@ -376,7 +376,7 @@
 		<li>Added message counts, with numbers of total messages, warning messages and error messages.
 		<li>Added a notice that is displayed when there has been no change in the recognised plugin list since BOSS was last run.
 	</ul>
-	
+
 	<li>Added: A settings file (<q>BOSS.ini</q>) to allow users to set default behaviours, options and BOSS Log formatting styles.
 	<li>Added: Support for unauthenticated proxies to the masterlist updater and the GUI's <q>Check For Updates</q> functionality.
 	<li>Added: Five new command line parameters:
@@ -387,7 +387,7 @@
 		<li><code>--trial-run,-t</code> to run BOSS without actually changing the load order.
 		<li><code>--no-update,-U</code> to inhibit automatic masterlist updating.
 	</ul>
-	
+
 	<li>Added: Support for Fallout: New Vegas plugins that use the Fallout 3 master file, such as <q>A Requiem for the Capital Wasteland</q>.
 	<li>Added: Support for MF2.1 regular expressions, conditional incompatibility and conditional requirement messages in the masterlist.
 	<li>Added: BOSS Log filter option to hide userlist warning messages.
@@ -402,7 +402,7 @@
 		<li>Added automatic updater functionality. Replaced <q>Check For Updates</q> output window with a series of notification dialogs asking if the update should be downloaded and installed. If no update was found, or there was an error, relevant dialog messages are displayed.
 		<li><q>Check For Updates</q> now also automatically runs when the GUI starts. This only displays a message if an update was found.
 	</ul>
-	
+
 	<li>(GUI) Changed: Renamed a number of options, simplifying their names slightly.
 	<li>(GUI) Changed: Options selected are now saved on exit and loaded on start.
 	<li>(GUI) Added: <q>Perform Trial Run</q> option.
@@ -423,7 +423,7 @@
 		<li>Converted the masterlists and modlists to use the UTF-8 encoding.
 		<li>Added a UTF-8 validator to ensure that the correct encoding for the required files is being used.
 	</ul>
-	
+
 	<li>Changed: Removed batch files as they are no longer necessary.
 	<li>Changed: The release date of updated masterlists is now displayed beside the revision number in the BOSS Log.
 	<li>Changed: Significant rewrite of source code, resulting in performance gains.
@@ -441,7 +441,7 @@
 		<li><code>--crc-display,-c</code> to calculate and display in the BOSS Log the CRCs of all your plugins. CRCs can be used as accurate version checks in masterlist conditionals.
 		<li><code>--format,-f [ type ]</code> to select the BOSS Log format, choosing from either HTML or plaintext. HTML formatting is the default.
 	</ul>
-	
+
 	<li>(Installer) Changed: Updated installer to reflect the various changes to BOSS's files and folders.
 	<li>(Docs) Changed: Significant content and formatting changes to main ReadMe, slight formatting changes to User Rules readme.
 </ul>
@@ -478,7 +478,7 @@
 		<li><code>--silent-mode,-s</code>  is now <code>--silent,-s</code>.
 		<li><code>--revert-level,-r [ level ]</code> is now <code>--revert,-r [ level ]</code>.
 	</ul>
-	
+
 	<li>Added: Support for <q>Fallout: New Vegas</q>.
 	<li>Added: Ability to insert plugins into groups to user rules functionality.
 	<li>Added: Ability to sort plugins relative to plugins that are not installed, but are in the masterlist, to user rules functionality.
@@ -488,7 +488,7 @@
 		<li><code>--version,-V</code> to show BOSS version.
 		<li><code>--debug,-d</code> to add filename and line numbers to log messages.
 	</ul>
-	
+
 </ul>
 <h2 id="1.6.1">1.6.1 - <i>19 October 2010</i></h2>
 <ul>
@@ -518,7 +518,7 @@
 		<li><code>--disable-version-parse,-V</code> to disable version display in the BOSS Log.
 		<li><code>--revert-level,-r [ level ]</code> to allow undoing of BOSS's changes. <code>level</code> can be either 1 or 2, to go back to the load order before the last run of BOSS, or the load order before the run before that respectively.
 	</ul>
-	
+
 	<li>Added: <q>BOSS - Update Masterlist.bat</q> file to allow updating of the masterlist without having to use the command line.
 	<li>Added: Sorting of ghosted plugins.
 	<li>Added: Custom user rules functionality to allow users to customise how BOSS sorts their files, and more.

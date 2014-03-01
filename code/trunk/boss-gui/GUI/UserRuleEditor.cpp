@@ -1,25 +1,25 @@
 /*	BOSS
 
-	A "one-click" program for users that quickly optimises and avoids 
-	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+	A "one-click" program for users that quickly optimises and avoids
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute 
-	it and/or modify it under the terms of the GNU General Public License 
-	as published by the Free Software Foundation, either version 3 of 
+    BOSS is free software: you can redistribute
+	it and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see 
+    along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -82,7 +82,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 	if (!fs::exists(game.Masterlist())) {
 
 		wxMessageDialog *dlg = new wxMessageDialog(this,
-			FromUTF8(format(loc::translate("The User Rules Manager requires the BOSS masterlist for %1% to have been downloaded, but it cannot be detected. Do you wish to download the latest masterlist now?")) % game.Name()), 
+			FromUTF8(format(loc::translate("The User Rules Manager requires the BOSS masterlist for %1% to have been downloaded, but it cannot be detected. Do you wish to download the latest masterlist now?")) % game.Name()),
 			translate("BOSS: User Rules Manager"), wxYES_NO);
 
 		if (dlg->ShowModal() != wxID_YES) {  //User has chosen not to download.
@@ -94,7 +94,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 			try {
 				if (mUpdater.IsInternetReachable()) {
 					//Init progress bar.
-					progDia->Update(0,translate("Updating to the latest masterlist from the Google Code repository..."));
+					progDia->Update(0,translate("Updating to the latest masterlist from the online repository..."));
 					LOG_DEBUG("Updating masterlist...");
 					string localDate, remoteDate, message;
 					uint32_t localRevision, remoteRevision;
@@ -458,7 +458,7 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 			wxOK | wxICON_ERROR,
 			NULL);
 	}
-	
+
 	if (!game.userlist.Rules().empty()) {
 		SaveEditedRuleButton->Enable();
 		DeleteRuleButton->Enable();
@@ -469,7 +469,7 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 
 void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 	wxMessageDialog *dlg = new wxMessageDialog(this,
-			translate("Are you sure you want to save your changes to the selected rule?"), 
+			translate("Are you sure you want to save your changes to the selected rule?"),
 			translate("BOSS: User Rules Manager"), wxYES_NO);
 
 	if (dlg->ShowModal() != wxID_YES)  //User has chosen not to save.
@@ -485,13 +485,13 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 				wxOK | wxICON_ERROR,
 				NULL);
 		}
-			
+
 	}
 }
 
 void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
 	wxMessageDialog *dlg = new wxMessageDialog(this,
-			translate("Are you sure you want to delete the selected rule?"), 
+			translate("Are you sure you want to delete the selected rule?"),
 			translate("BOSS: User Rules Manager"), wxYES_NO);
 
 	if (dlg->ShowModal() != wxID_YES)  //User has chosen not to delete.
@@ -648,8 +648,8 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 			else
 				newRule.Key(ADD);
 		}
-			
-		
+
+
 		if (SortModOption->GetValue()) {
 			RuleLine newLine;
 			newLine.Object(sortItem);
@@ -689,10 +689,10 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 					newLine.Key(REPLACE);
 				else
 					newLine.Key(APPEND);
-				
+
 				if (!newLine.IsObjectMessage())  //Message is formatted incorrectly. Error.
 					throw boss_error((format("The message \"%1%\" is formatted incorrectly.") % newLine.Object()).str(), BOSS_ERROR_INVALID_SYNTAX);
-				
+
 				vector<RuleLine> lines = newRule.Lines();
 				lines.push_back(newLine);
 				newRule.Lines(lines);
@@ -796,7 +796,7 @@ RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, uint32
 	//First get text representation of rule.
 	string text = Outputter(PLAINTEXT, currentRule).AsString();
 	ruleIndex = index;
-	
+
 	//Now do GUI stuff.
 	SetBackgroundColour(wxColour(255,255,255));
 

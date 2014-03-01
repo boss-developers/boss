@@ -1,25 +1,25 @@
 /*	BOSS
 
-	A "one-click" program for users that quickly optimises and avoids 
-	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+	A "one-click" program for users that quickly optimises and avoids
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
     Copyright (C) 2009-2011    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute 
-	it and/or modify it under the terms of the GNU General Public License 
-	as published by the Free Software Foundation, either version 3 of 
+    BOSS is free software: you can redistribute
+	it and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see 
+    along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 1783 $, $Date: 2010-10-31 23:05:28 +0000 (Sun, 31 Oct 2010) $
@@ -132,7 +132,7 @@ int main(int argc, char *argv[]) {
 	string bosslogFormat;
 	fs::path sortfile;						//modlist/masterlist to sort plugins using.
 
-	
+
 	///////////////////////////////
 	// Set up initial conditions
 	///////////////////////////////
@@ -160,7 +160,7 @@ int main(int argc, char *argv[]) {
 	boost::locale::generator gen;
 	gen.add_messages_path(fs::path(boss_path / "l10n").string());
 	gen.add_messages_domain("messages");
-	
+
 	//Set the locale to get encoding and language conversions working correctly.
 	string localeId = "";
 	if (gl_language == ENGLISH)
@@ -341,7 +341,7 @@ int main(int argc, char *argv[]) {
 							cout << translate("Update available! New version: %s") << endl
 								 << translate("The update may be downloaded from any of the locations listed in the BOSS Log.") << endl;
 							LOG_DEBUG("Update available! New version: %s", updateVersion);
-							LOG_DEBUG("The update may be downloaded from any of the locations listed in the BOSS Log.");		
+							LOG_DEBUG("The update may be downloaded from any of the locations listed in the BOSS Log.");
 						} else {  //Installer
 							cout << translate("Update available! New version: %s") << endl;
 							LOG_DEBUG("Update available! New version: %s", updateVersion);
@@ -354,7 +354,7 @@ int main(int argc, char *argv[]) {
 							if (!notes.empty())
 								cout << translate("Release notes:") << endl << endl << notes << endl << endl;
 							cout << translate("Do you want to download and install the update? (y/n)") << endl;
-						
+
 							//Does the user want to update?
 							char answer;
 							cin >> answer;
@@ -405,7 +405,7 @@ int main(int argc, char *argv[]) {
 			LOG_ERROR("Update check failed. Details: '%s'", e.getString().c_str());
 		}
 	}
-	
+
 	/////////////////////////////////////////
 	// Check for critical error conditions
 	/////////////////////////////////////////
@@ -451,7 +451,7 @@ int main(int argc, char *argv[]) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent ) 
+		if ( !gl_silent )
 			Launch(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
@@ -462,13 +462,13 @@ int main(int argc, char *argv[]) {
 	/////////////////////////////////////////////////////////
 	// Update masterlist
 	/////////////////////////////////////////////////////////
-	
+
 	if (gl_revert < 1 && (gl_update || gl_update_only)) {
 		//First check for internet connection, then update masterlist if connection present.
 		CLIMlistUpdater MlistUpdater;
 		try {
 			if (MlistUpdater.IsInternetReachable()) {
-				cout << endl << translate("Updating to the latest masterlist from the Google Code repository...") << endl;
+				cout << endl << translate("Updating to the latest masterlist from the online repository...") << endl;
 				LOG_DEBUG("Updating masterlist...");
 				try {
 					string localDate, remoteDate, message;
@@ -507,7 +507,7 @@ int main(int argc, char *argv[]) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent ) 
+		if ( !gl_silent )
 			Launch(game.Log(gl_log_format).string());	//Displays the BOSSlog.
 		return (0);
 	}
@@ -534,7 +534,7 @@ int main(int argc, char *argv[]) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent ) 
+		if ( !gl_silent )
 			Launch(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
 		exit (1); //fail in screaming heap.
 	}
@@ -547,13 +547,13 @@ int main(int argc, char *argv[]) {
 
 	//Set masterlist path to be used.
 	if (gl_revert == 1)
-		sortfile = game.Modlist();	
-	else if (gl_revert == 2) 
+		sortfile = game.Modlist();
+	else if (gl_revert == 2)
 		sortfile = game.OldModlist();
-	else 
+	else
 		sortfile = game.Masterlist();
 	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
-	
+
 	//Parse masterlist/modlist backup into data structure.
 	try {
 		LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
@@ -578,11 +578,11 @@ int main(int argc, char *argv[]) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent ) 
+		if ( !gl_silent )
                 Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
         exit (1); //fail in screaming heap.
 	}
-	
+
 	LOG_INFO("Starting to parse userlist.");
 	try {
 		game.userlist.Load(game, game.Userlist());
@@ -594,7 +594,7 @@ int main(int argc, char *argv[]) {
 		game.userlist.Clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
-	
+
 	//////////////////////////////////
 	// Perform sorting functionality
 	//////////////////////////////////
@@ -617,13 +617,13 @@ int main(int argc, char *argv[]) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent ) 
+		if ( !gl_silent )
                 Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
         exit (1); //fail in screaming heap.
 	}
 
 	LOG_INFO("Launching boss log in browser.");
-	if ( !gl_silent ) 
+	if ( !gl_silent )
 		Launch(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
 	LOG_INFO("BOSS finished.");
 	return (0);

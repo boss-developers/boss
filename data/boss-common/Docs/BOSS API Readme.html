@@ -23,14 +23,14 @@
 	a:link {text-decoration:none;}
 	a:hover {text-decoration:underline;}
 	a[href^="http"]:after {padding-left:2px; content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAVklEQVR4Xn3PgQkAMQhDUXfqTu7kTtkpd5RA8AInfArtQ2iRXFWT2QedAfttj2FsPIOE1eCOlEuoWWjgzYaB/IkeGOrxXhqB+uA9Bfcm0lAZuh+YIeAD+cAqSz4kCMUAAAAASUVORK5CYII=);}
-	
+
 	ul.errorMessages > li {margin-bottom:1.4em;}
 	td.t {background:#90ff90;text-align:center;}
 	td.c {background:#ff9090;text-align:center;}
 	td.t:after {content: '\2713';}
 	td.c:after {content: '\2717';}
 	img {border:0;}
-	.slideshow img {opacity:0; 
+	.slideshow img {opacity:0;
 		position:absolute;
 		transition: opacity 1.5s;
 		-moz-transition: opacity 1.5s;
@@ -45,7 +45,7 @@
 	dt {margin-bottom:0.5em; margin-top:1em; font-style:italic;}
 	dd {margin-bottom:0.8em;}
 	abbr {cursor:help;}
-	
+
 	ul {margin-bottom:2em;}
 </style>
 
@@ -111,7 +111,7 @@
  <li>Extract all the messages attached to a plugin in a BOSS masterlist.
  <li>Submit unrecognised plugins for addition to BOSS's masterlists.
 </ul>
-<p>BAPI is intended as a full solution to the management of load order and plugin activation status across all supported games, freeing client utilities from the requirement to maintain their own code for those functions. The source code is available at <a href="http://code.google.com/p/better-oblivion-sorting-software/source/browse/#svn%2Fcode%2Fboss-api%2Ftrunk">BOSS's Google Code repository</a>. BAPI is licensed as part of BOSS under the GNU General Public License v3, see the main BOSS readme for more information.
+<p>BAPI is intended as a full solution to the management of load order and plugin activation status across all supported games, freeing client utilities from the requirement to maintain their own code for those functions. The source code is available at <a href="https://github.com/boss-developers/boss">BOSS's code repository</a>. BAPI is licensed as part of BOSS under the GNU General Public License v3, see the main BOSS readme for more information.
 
 
 <h2 id="lo">Load Orders</h2>
@@ -176,7 +176,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 
 
 <h2 id="types">Variable Types</h2>
-<p>The API uses character strings and integers for information input/output. 
+<p>The API uses character strings and integers for information input/output.
 <ul>
 	<li>All strings are unsigned 8-bit character strings (uint8_t*) encoded in UTF-8 and are null-terminated.
 	<li>All codes are unsigned 32-bit integers (uint32_t).
@@ -503,7 +503,7 @@ There is no way of knowing which is the correct order to choose for the full loa
 	<li><var>needsCleaning</var> - A pointer to the outputted plugin cleanliness code for the specified plugin.
 </ul>
 
-<dfn id="GetPluginMessages">GetPluginMessages</dfn> - Outputs the messages associated with a plugin. 
+<dfn id="GetPluginMessages">GetPluginMessages</dfn> - Outputs the messages associated with a plugin.
 <code class="box">uint32_t <a href="#GetPluginMessages">GetPluginMessages</a> (boss_db db, const uint8_t * plugin, BossMessage ** message, size_t * numMessages);</code>
 <ul>
 	<li><var>db</var> - The database the function acts on.
@@ -592,10 +592,10 @@ int main() {
 		out &lt;&lt; '\t' &lt;&lt; "Failed to get version string. Error: " &lt;&lt; ret &lt;&lt; endl;
 	else
 		out &lt;&lt; '\t' &lt;&lt; "Version: " &lt;&lt; *message &lt;&lt; endl;
-	
+
 	out &lt;&lt; "TESTING CreateBossDb(...)" &lt;&lt; endl;
 	ret = CreateBossDb(&amp;db, game, NULL);
-	if (ret != BOSS_API_OK) 
+	if (ret != BOSS_API_OK)
 		out &lt;&lt; '\t' &lt;&lt; "Creation failed. Error: " &lt;&lt; ret &lt;&lt; endl;
 	else {
 		out &lt;&lt; "TESTING UpdateMasterlist(...)" &lt;&lt; endl;
@@ -628,7 +628,7 @@ int main() {
 						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; i &lt;&lt; " : " &lt;&lt; unrecPlugins[i] &lt;&lt; endl;
 					}
 				}
-				
+
 				out &lt;&lt; "TESTING GetDirtyMessage(...)" &lt;&lt; endl;
 				//This should give no dirty message.
 				ret = GetDirtyMessage(db, cleanMod, &amp;message, &amp;toClean);
@@ -640,7 +640,7 @@ int main() {
 						out &lt;&lt; '\t' &lt;&lt; "Message: " &lt;&lt; message &lt;&lt; endl;
 					}
 				}
-				
+
 				out &lt;&lt; "TESTING GetDirtyMessage(...)" &lt;&lt; endl;
 				//Now try getting dirty message from one that will have one.
 				ret = GetDirtyMessage(db, doNotCleanMod, &amp;message, &amp;toClean);
@@ -652,12 +652,12 @@ int main() {
 						out &lt;&lt; '\t' &lt;&lt; "Message: " &lt;&lt; message &lt;&lt; endl;
 					}
 				}
-				
+
 				out &lt;&lt; "TESTING DumpMinimal(...)" &lt;&lt; endl;
 				ret = DumpMinimal(db, file, true);
 				if (ret != BOSS_API_OK)
 					out &lt;&lt; '\t' &lt;&lt; "Dump failed. Error no " &lt;&lt; ret &lt;&lt; endl;
-				
+
 				out &lt;&lt; "TESTING GetBashTagMap(...)" &lt;&lt; endl;
 				ret = GetBashTagMap(db, &amp;BTmap, &amp;size);
 				if (ret != BOSS_API_OK)
@@ -668,7 +668,7 @@ int main() {
 					for (size_t i=0; i&lt;size; i++)
 						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; BTmap[i].id &lt;&lt; " : " &lt;&lt; BTmap[i].name &lt;&lt; endl;
 				}
-				
+
 				out &lt;&lt; "TESTING GetModBashTags(...)" &lt;&lt; endl;
 				ret = GetModBashTags(db, doNotCleanMod, &amp;tagIDsAdded, &amp;numTagsAdded, &amp;tagIDsRemoved, &amp;numTagsRemoved, &amp;modified);
 				if (ret != BOSS_API_OK)
@@ -696,7 +696,7 @@ int main() {
 						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; i &lt;&lt; " : " &lt;&lt; sortedPlugins[i] &lt;&lt; endl;
 					}
 				}
-				
+
 				out &lt;&lt; "TESTING SetLoadOrder(...)" &lt;&lt; endl;
 				ret = SetLoadOrder(db, sortedPlugins, len);
 				if (BOSS_API_OK != ret)
@@ -718,7 +718,7 @@ int main() {
 						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; i &lt;&lt; " : " &lt;&lt; sortedPlugins[i] &lt;&lt; endl;
 					}
 				}
-				
+
 				out &lt;&lt; "TESTING SetActivePlugins(...)" &lt;&lt; endl;
 				ret = SetActivePlugins(db, sortedPlugins, len);
 				if (BOSS_API_OK != ret)
@@ -729,7 +729,7 @@ int main() {
 						out &lt;&lt; '\t' &lt;&lt; '\t' &lt;&lt; i &lt;&lt; " : " &lt;&lt; sortedPlugins[i] &lt;&lt; endl;
 					}
 				}
-				
+
 				out &lt;&lt; "TESTING GetPluginLoadOrder(...)" &lt;&lt; endl;
 				ret = GetPluginLoadOrder(db, doNotCleanMod, &amp;len);
 				if (BOSS_API_OK != ret)
@@ -737,7 +737,7 @@ int main() {
 				else {
 					out &lt;&lt; '\t' &lt;&lt; "\"" &lt;&lt; doNotCleanMod &lt;&lt; "\" position: " &lt;&lt; len &lt;&lt; endl;
 				}
-				
+
 				out &lt;&lt; "TESTING SetPluginLoadOrder(...)" &lt;&lt; endl;
 				len = 1;
 				ret = SetPluginLoadOrder(db, doNotCleanMod, len);
@@ -775,7 +775,7 @@ int main() {
 				else {
 					out &lt;&lt; '\t' &lt;&lt; "\"" &lt;&lt; sortedPlugins[2] &lt;&lt; "\" activated." &lt;&lt; endl;
 				}
-				
+
 				//Assume there are at least 3 plugins.
 				out &lt;&lt; "TESTING IsPluginActive(...)" &lt;&lt; endl;
 				ret = IsPluginActive(db, sortedPlugins[2], &amp;active);
@@ -817,10 +817,10 @@ int main() {
 <p>Contact information for the BOSS Development Team may be found in the <q><a href="BOSS%20ReadMe.html#members">Project Members</a></q> section of the main BOSS readme. For API-specific support it is best to contact WrinklyNinja, who played a large role in setting up the textfile-based load order standard, created the API, and is currently responsible for BOSS code development.
 
 <h2 id="credits">Credits</h2>
-<p>Credit goes to myk002 and Lojack for significant contributions to the API's development from initial template submission through to beta testing. Credit also goes to kaburke for his contribution to the beta testing of the API. 
+<p>Credit goes to myk002 and Lojack for significant contributions to the API's development from initial template submission through to beta testing. Credit also goes to kaburke for his contribution to the beta testing of the API.
 <p>The BOSS API is written in C/C++ and makes use of the <a href="http://www.boost.org/">Boost</a>, <a href="http://curl.haxx.se/libcurl/">libcurl</a> and <a href="http://utfcpp.sourceforge.net/">UTF8-CPP</a> libraries.
 
 <h2 id="license">License</h2>
 <p>This document is part of the BOSS documentation.
-<br />Copyright (C) 2012 BOSS Development Team. 
+<br />Copyright (C) 2012 BOSS Development Team.
 <br />See the file <q>BOSS ReadMe.html</q> for copying conditions.
