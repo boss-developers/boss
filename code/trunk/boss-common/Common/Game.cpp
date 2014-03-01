@@ -658,7 +658,7 @@ namespace boss {
 		size_t lastRecPos = modlist.LastRecognisedPos();
 		while (it != items.end()) {
 			if (it->Type() != MOD || !it->Exists(*this)) {
-				if (it - items.begin() <= lastRecPos)
+				if (std::distance(items.begin(), it) <= lastRecPos)
 					lastRecPos--;
 				it = items.erase(it);
 			} else
