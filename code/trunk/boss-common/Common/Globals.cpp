@@ -76,7 +76,6 @@ namespace boss {
 	///////////////////////////////
 
 	//General variables
-	BOSS_COMMON bool		gl_do_startup_update_check	= true;
 	BOSS_COMMON	bool		gl_use_user_rules_manager	= true;
 	BOSS_COMMON	bool		gl_close_gui_after_sorting  = false;
 	BOSS_COMMON uint32_t	gl_language					= ENGLISH;

@@ -50,7 +50,7 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 		wxT("Nehrim"),
 		wxT("Skyrim"),
 		wxT("Fallout 3"),
-		wxT("Fallout: New Vegas"),
+		wxT("Fallout: New Vegas")
 	};
 
 	wxString Language[] = {
@@ -81,15 +81,11 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 
 	wxGridSizer *GeneralGridSizer = new wxGridSizer(2, 5, 5);
 	
-	//wxBoxSizer *gameBox = new wxBoxSizer(wxHORIZONTAL);
 	GeneralGridSizer->Add(new wxStaticText(GeneralTab, wxID_ANY, translate("Default Game:")), leftItem);
-	GeneralGridSizer->Add(GameChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 7, Game), rightItem);
-	//GeneralTabSizer->Add(gameBox, wholeItem);
-	//wxBoxSizer *languageBox = new wxBoxSizer(wxHORIZONTAL);
+	GeneralGridSizer->Add(GameChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 6, Game), rightItem);
 	GeneralGridSizer->Add(new wxStaticText(GeneralTab, wxID_ANY, translate("Language:")), leftItem);
 	GeneralGridSizer->Add(LanguageChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 5, Language), rightItem);
 	GeneralTabSizer->Add(GeneralGridSizer);
-	GeneralTabSizer->Add(StartupUpdateCheckBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Check for BOSS updates on startup")), wholeItem);
 	GeneralTabSizer->Add(UseUserRuleManagerBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Use User Rules Manager")), wholeItem);
 	GeneralTabSizer->Add(CloseGUIAfterRunningBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Close the GUI after running BOSS")), wholeItem);
 
@@ -139,8 +135,6 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 
 void SettingsFrame::SetDefaultValues() {
 	//General Settings
-	if (gl_do_startup_update_check)
-		StartupUpdateCheckBox->SetValue(true);
 	if (gl_use_user_rules_manager)
 		UseUserRuleManagerBox->SetValue(true);
 	if (gl_close_gui_after_sorting)
@@ -191,7 +185,6 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	//Make sure the settings are saved.
 
 	//General
-	gl_do_startup_update_check = StartupUpdateCheckBox->IsChecked();
 	gl_use_user_rules_manager = UseUserRuleManagerBox->IsChecked();
 	gl_close_gui_after_sorting = CloseGUIAfterRunningBox->IsChecked();
 	switch (GameChoice->GetSelection()) {

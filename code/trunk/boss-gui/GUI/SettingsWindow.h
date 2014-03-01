@@ -41,7 +41,6 @@ public:
 	void SetDefaultValues();
 	DECLARE_EVENT_TABLE()
 private:
-	wxCheckBox *StartupUpdateCheckBox;
 	wxCheckBox *UseUserRuleManagerBox;
 	wxCheckBox *DebugSourceReferencesBox;
 	wxCheckBox *LogDebugOutputBox;

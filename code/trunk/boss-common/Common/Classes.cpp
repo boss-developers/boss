@@ -1288,7 +1288,6 @@ namespace boss {
 			<<	loc::translate("# See the BOSS ReadMe for details on what each setting does and the accepted values for integer and string settings.") << endl << endl
 
 			<<	"[General Settings]" << endl
-			<<	"bDoStartupUpdateCheck    = " << BoolToString(gl_do_startup_update_check) << endl
 			<<	"bUseUserRulesManager     = " << BoolToString(gl_use_user_rules_manager) << endl 
 			<<	"bCloseGUIAfterSorting    = " << BoolToString(gl_close_gui_after_sorting) << endl
 			<<	"sLanguage                = " << GetLanguageString() << endl << endl
@@ -1410,14 +1409,14 @@ namespace boss {
 				uint32_t value = atoi(iter->second.c_str());
 				if (value >= 0 && value < 3)
 					gl_revert = value;
-			} else if (iter->first == "iDebugVerbosity") {
-				uint32_t value = atoi(iter->second.c_str());
-				if (value >= 0 && value < 4)
-					gl_debug_verbosity = value;
-			//Now on to boolean settings.
-			} else if (iter->first == "bDoStartupUpdateCheck")
-				gl_do_startup_update_check = StringToBool(iter->second);
-			else if (iter->first == "bUseUserRulesEditor")
+            }
+            else if (iter->first == "iDebugVerbosity") {
+                uint32_t value = atoi(iter->second.c_str());
+                if (value >= 0 && value < 4)
+                    gl_debug_verbosity = value;
+                //Now on to boolean settings.
+            } 
+            else if (iter->first == "bUseUserRulesEditor")
 				gl_use_user_rules_manager = StringToBool(iter->second);
 			else if (iter->first == "bCloseGUIAfterSorting")
 				gl_close_gui_after_sorting = StringToBool(iter->second);
