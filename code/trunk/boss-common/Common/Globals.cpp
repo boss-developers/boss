@@ -42,7 +42,6 @@ namespace boss {
 	BOSS_COMMON const uint32_t SKYRIM				= 3;
 	BOSS_COMMON const uint32_t FALLOUT3				= 4;
 	BOSS_COMMON const uint32_t FALLOUTNV			= 5;
-	BOSS_COMMON const uint32_t MORROWIND			= 6;
 
 	//BOSS Log formatting values.
 	BOSS_COMMON const uint32_t HTML					= 0;

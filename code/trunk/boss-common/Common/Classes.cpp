@@ -455,32 +455,15 @@ namespace boss {
 				throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
 
 			string line;
-			 
-			if (parentGame.Id() == MORROWIND) {  //Morrowind's active file list is stored in Morrowind.ini, and that has a different format from plugins.txt.
-				boost::regex reg = boost::regex("GameFile[0-9]{1,3}=.+\\.es(m|p)", boost::regex::extended|boost::regex::icase);
-				while (in.good()) {
-					getline(in, line);
+			while (in.good()) {
+				getline(in, line);
 
-					if (line.empty() || !boost::regex_match(line, reg))
-						continue;
+				if (line.empty() || line[0] == '#')  //Character comparison is OK because it's ASCII.
+					continue;
 
-					//Now cut off everything up to and including the = sign.
-					line = line.substr(line.find('=')+1);
-					if (path == parentGame.ActivePluginsFile())
-						line = trans.EncToUtf8(line);
-					items.push_back(Item(line));
-				}
-			} else {
-				while (in.good()) {
-					getline(in, line);
-
-					if (line.empty() || line[0] == '#')  //Character comparison is OK because it's ASCII.
-						continue;
-
-					if (path == parentGame.ActivePluginsFile())
-						line = trans.EncToUtf8(line);
-					items.push_back(Item(line));
-				}
+				if (path == parentGame.ActivePluginsFile())
+					line = trans.EncToUtf8(line);
+				items.push_back(Item(line));
 			}
 			in.close();
 
@@ -581,7 +564,7 @@ namespace boss {
 	}
 
 	void	ItemList::SavePluginNames(const Game& parentGame, const fs::path file, const bool activeOnly, const bool doEncodingConversion) {
-		string badFilename = "",  contents, settings;
+		string badFilename = "",  contents;
 		ItemList activePlugins;
 		size_t numActivePlugins;
 		Transcoder trans;
@@ -596,14 +579,6 @@ namespace boss {
 		}
 		if (doEncodingConversion)
 			trans.SetEncoding(1252);
-		if (parentGame.Id() == MORROWIND) {  //Must be the plugins file, since loadorder.txt isn't used for MW.
-			//If Morrowind, BOSS writes active plugin list to Morrowind.ini, which also holds a lot of other game settings.
-			//BOSS needs to read everything up to the active plugin list in the current ini and stick that on before the first saved plugin name.
-			fileToBuffer(file, contents);
-			size_t pos = contents.find("[Game Files]");
-			if (pos != string::npos)
-				settings = contents.substr(0, pos + 12); //+12 is for the characters in "[Game Files]".
-		}
 
 		LOG_INFO("Writing new \"%s\"", file.string().c_str());
 		ofstream outfile;
@@ -611,17 +586,12 @@ namespace boss {
 		if (outfile.fail())
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 
-		if (!settings.empty())
-			outfile << settings << endl;  //Get those Morrowind settings back in.
-
 		size_t max = items.size();
 		for (size_t i=0; i < max; i++) {
 			if (items[i].Type() == MOD) {
 				if (activeOnly && (activePlugins.FindItem(items[i].Name(), MOD) == numActivePlugins || (parentGame.Id() == SKYRIM && items[i].Name() == "Skyrim.esm")))
 					continue;
 				LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
-				if (parentGame.Id() == MORROWIND) //Need to write "GameFileN=" before plugin name, where N is an integer from 0 up.
-					outfile << "GameFile" << i << "=";
 				if (doEncodingConversion) {  //Not UTF-8.
 					try {
 						outfile << trans.Utf8ToEnc(items[i].Name()) << endl;
@@ -1352,8 +1322,6 @@ namespace boss {
 			return "FalloutNV";
 		else if (game == SKYRIM)
 			return "Skyrim";
-		else if (game == MORROWIND)
-			return "Morrowind";
 		else
 			return "";
 	}
@@ -1412,8 +1380,6 @@ namespace boss {
 					gl_game = FALLOUTNV;
 				else if (iter->second == "Skyrim")
 					gl_game = SKYRIM;
-				else if (iter->second == "Morrowind")
-					gl_game = MORROWIND;
 			} else if (iter->first == "sLastGame") {
 				if (iter->second == "auto")
 					gl_last_game = AUTODETECT;
@@ -1427,8 +1393,6 @@ namespace boss {
 					gl_last_game = FALLOUTNV;
 				else if (iter->second == "Skyrim")
 					gl_last_game = SKYRIM;
-				else if (iter->second == "Morrowind")
-					gl_last_game = MORROWIND;
 			} else if (iter->first == "sLanguage") {
 				if (iter->second == "english")
 					gl_language = ENGLISH;

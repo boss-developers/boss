@@ -51,7 +51,6 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 		wxT("Skyrim"),
 		wxT("Fallout 3"),
 		wxT("Fallout: New Vegas"),
-		wxT("Morrowind")
 	};
 
 	wxString Language[] = {
@@ -159,8 +158,6 @@ void SettingsFrame::SetDefaultValues() {
 		GameChoice->SetSelection(4);
 	else if (gl_game == FALLOUTNV)
 		GameChoice->SetSelection(5);
-	else if (gl_game == MORROWIND)
-		GameChoice->SetSelection(6);
 	
 	if (gl_language == ENGLISH)
 		LanguageChoice->SetSelection(0);
@@ -215,9 +212,6 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 		break;
 	case 5:
 		gl_game = FALLOUTNV;
-		break;
-	case 6:
-		gl_game = MORROWIND;
 		break;
 	}
 	switch (LanguageChoice->GetSelection()) {

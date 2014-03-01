@@ -54,7 +54,6 @@ namespace boss {
 	BOSS_COMMON extern const uint32_t SKYRIM;
 	BOSS_COMMON extern const uint32_t FALLOUT3;
 	BOSS_COMMON extern const uint32_t FALLOUTNV;
-	BOSS_COMMON extern const uint32_t MORROWIND;
 
 	//BOSS Log formatting values.
 	BOSS_COMMON extern const uint32_t HTML;

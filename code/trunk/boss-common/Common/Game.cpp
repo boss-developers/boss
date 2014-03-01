@@ -64,8 +64,6 @@ namespace boss {
 			return FALLOUTNV;
 		else if (Game(FALLOUT3, "", true).IsInstalledLocally())
 			return FALLOUT3;
-		else if (Game(MORROWIND, "", true).IsInstalledLocally())
-			return MORROWIND;
 		else {
 			LOG_INFO("No game detected locally. Using Registry paths.");
 			return AUTODETECT;
@@ -94,10 +92,6 @@ namespace boss {
 			detectedGames.push_back(FALLOUTNV);
 		else
 			undetectedGames.push_back(FALLOUTNV);
-		if (Game(MORROWIND, "", true).IsInstalled()) //Look for Morrowind.
-			detectedGames.push_back(MORROWIND);
-		else
-			undetectedGames.push_back(MORROWIND);
 			
 		//Now set return a game.
 		if (gl_game != AUTODETECT) {
@@ -235,22 +229,6 @@ namespace boss {
 			appdataFolderName = "FalloutNV";
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
-		} else if (Id() == MORROWIND) {
-			name = "TES III: Morrowind";
-			onlineId = "boss-morrowind";
-			
-			executable = "Morrwind.exe";
-			masterFile = "Morrowind.esm";
-			scriptExtender = "MWSE";
-			seExecutable = "MWSE.dll";
-			
-			registryKey = "Software\\Bethesda Softworks\\Morrowind";
-			registrySubKey = "Installed Path";
-			
-			bossFolderName = "Morrowind";
-			appdataFolderName = "";
-			pluginsFolderName = "Data Files";
-			pluginsFileName = "Morrowind.ini";
 		} else
 			throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 
@@ -291,9 +269,6 @@ namespace boss {
 					pluginsPath = GetLocalAppDataPath() / appdataFolderName / pluginsFileName;
 					loadorderPath = GetLocalAppDataPath() / appdataFolderName / "loadorder.txt";
 				}
-			} else if (Id() == MORROWIND) {
-				pluginsPath = GameFolder() / pluginsFileName;
-				loadorderPath = GameFolder() / "loadorder.txt";
 			} else {
 				pluginsPath = GetLocalAppDataPath() / appdataFolderName / pluginsFileName;
 				loadorderPath = GetLocalAppDataPath() / appdataFolderName / "loadorder.txt";

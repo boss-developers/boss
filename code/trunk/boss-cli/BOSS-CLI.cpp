@@ -279,8 +279,6 @@ int main(int argc, char *argv[]) {
 			gl_game = FALLOUTNV;
 		else if (boost::iequals("Skyrim", gameStr))
 			gl_game = SKYRIM;
-		else if (boost::iequals("Morrowind", gameStr))
-			gl_game = MORROWIND;
 		else {
 			LOG_ERROR("invalid option for 'game' parameter: '%s'", gameStr.c_str());
 			Fail();

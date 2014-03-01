@@ -58,7 +58,6 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_MENU ( MENU_OpenMainReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_OpenUserlistReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_OpenMasterlistReadMe, MainFrame::OnOpenFile )
-	EVT_MENU ( MENU_OpenAPIReadMe, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_OpenVersionHistory, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_OpenLicenses, MainFrame::OnOpenFile )
 	EVT_MENU ( MENU_ShowAbout, MainFrame::OnAbout )
@@ -68,7 +67,6 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_MENU ( MENU_Skyrim, MainFrame::OnGameChange )
 	EVT_MENU ( MENU_Fallout3, MainFrame::OnGameChange )
 	EVT_MENU ( MENU_FalloutNewVegas, MainFrame::OnGameChange )
-	EVT_MENU ( MENU_Morrowind, MainFrame::OnGameChange )
 	EVT_BUTTON ( OPTION_Run, MainFrame::OnRunBOSS )
 	EVT_BUTTON ( OPTION_EditUserRules, MainFrame::OnEditUserRules )
 	EVT_BUTTON ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
@@ -265,18 +263,15 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	GameMenu->AppendRadioItem(MENU_Skyrim, wxT("&Skyrim"), translate("Switch to running BOSS for Skyrim."));
 	GameMenu->AppendRadioItem(MENU_Fallout3, wxT("&Fallout 3"), translate("Switch to running BOSS for Fallout 3."));
 	GameMenu->AppendRadioItem(MENU_FalloutNewVegas, wxT("&Fallout: New Vegas"), translate("Switch to running BOSS for Fallout: New Vegas."));
-	GameMenu->AppendRadioItem(MENU_Morrowind, wxT("&Morrowind"), translate("Switch to running BOSS for Morrowind."));
 	MenuBar->Append(GameMenu, translate("&Active Game"));
     // About menu
     HelpMenu = new wxMenu();
 	HelpMenu->Append(MENU_OpenMainReadMe, translate("Open &Main Readme"), translate("Opens the main BOSS readme in your default web browser."));
 	HelpMenu->Append(MENU_OpenUserlistReadMe, translate("Open &Userlist Syntax Doc"), translate("Opens the BOSS userlist syntax documentation in your default web browser."));
 	HelpMenu->Append(MENU_OpenMasterlistReadMe, translate("Open &Masterlist Syntax Doc"), translate("Opens the BOSS masterlist syntax documentation in your default web browser."));
-	HelpMenu->Append(MENU_OpenAPIReadMe, translate("&Open API Readme"), translate("Opens the BOSS API readme in your default web browser."));
 	HelpMenu->Append(MENU_OpenVersionHistory, translate("Open &Version History"), translate("Opens the BOSS version history in your default web browser."));
 	HelpMenu->Append(MENU_OpenLicenses, translate("View &Copyright Licenses"), translate("View the GNU General Public License v3.0 and GNU Free Documentation License v1.3."));
 	HelpMenu->AppendSeparator();
-	HelpMenu->Append(OPTION_CheckForUpdates, translate("&Check For Updates..."), translate("Checks for updates to BOSS."));
 	HelpMenu->Append(MENU_ShowAbout, translate("&About BOSS..."), translate("Shows information about BOSS."));
     MenuBar->Append(HelpMenu, translate("&Help"));
     SetMenuBar(MenuBar);
@@ -670,8 +665,6 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 			file = rules_readme_path.string();
 		else if (event.GetId() == MENU_OpenMasterlistReadMe)
 			file = masterlist_doc_path.string();
-		else if (event.GetId() == MENU_OpenAPIReadMe)
-			file = api_doc_path.string();
 		else if (event.GetId() == MENU_OpenVersionHistory)
 			file = version_history_path.string();
 		else if (event.GetId() == MENU_OpenLicenses)
@@ -753,9 +746,6 @@ void MainFrame::OnGameChange(wxCommandEvent& event) {
 	case MENU_FalloutNewVegas:
 		game = Game(FALLOUTNV);
 		break;
-	case MENU_Morrowind:
-		game = Game(MORROWIND);
-		break;
 	}
 	} catch (boss_error& e) {
 		wxMessageBox(e.getString());
@@ -811,7 +801,6 @@ void MainFrame::DisableUndetectedGames() {
 	GameMenu->FindItem(MENU_Skyrim)->Enable(enabled);
 	GameMenu->FindItem(MENU_Fallout3)->Enable(enabled);
 	GameMenu->FindItem(MENU_FalloutNewVegas)->Enable(enabled);
-	GameMenu->FindItem(MENU_Morrowind)->Enable(enabled);
 	for (size_t i=0; i < detectedGames.size(); i++) {
 		if (detectedGames[i] == OBLIVION)
 			GameMenu->FindItem(MENU_Oblivion)->Enable();
@@ -823,8 +812,6 @@ void MainFrame::DisableUndetectedGames() {
 			GameMenu->FindItem(MENU_Fallout3)->Enable();
 		else if (detectedGames[i] == FALLOUTNV)
 			GameMenu->FindItem(MENU_FalloutNewVegas)->Enable();
-		else if (detectedGames[i] == MORROWIND)
-			GameMenu->FindItem(MENU_Morrowind)->Enable();
 	}
 
 	//Swapping from gl_update_only to !gl_update_only with undetected game active: need to change game to a detected game.
@@ -832,8 +819,7 @@ void MainFrame::DisableUndetectedGames() {
 		|| (GameMenu->FindItem(MENU_Nehrim)->IsChecked() && !GameMenu->FindItem(MENU_Nehrim)->IsEnabled())
 		|| (GameMenu->FindItem(MENU_Skyrim)->IsChecked() && !GameMenu->FindItem(MENU_Skyrim)->IsEnabled())
 		|| (GameMenu->FindItem(MENU_Fallout3)->IsChecked() && !GameMenu->FindItem(MENU_Fallout3)->IsEnabled())
-		|| (GameMenu->FindItem(MENU_FalloutNewVegas)->IsChecked() && !GameMenu->FindItem(MENU_FalloutNewVegas)->IsEnabled())
-		|| (GameMenu->FindItem(MENU_Morrowind)->IsChecked() && !GameMenu->FindItem(MENU_Morrowind)->IsEnabled())) {
+		|| (GameMenu->FindItem(MENU_FalloutNewVegas)->IsChecked() && !GameMenu->FindItem(MENU_FalloutNewVegas)->IsEnabled())) {
 			if (!detectedGames.empty()) {
 				if (detectedGames.front() == OBLIVION) {
 					game = Game(OBLIVION);
@@ -850,9 +836,6 @@ void MainFrame::DisableUndetectedGames() {
 				} else if (detectedGames.front() == FALLOUTNV) {
 					game = Game(FALLOUTNV);
 					GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
-				} else if (detectedGames.front() == MORROWIND) {
-					game = Game(MORROWIND);
-					GameMenu->FindItem(MENU_Morrowind)->Check();
 				}
 				game.CreateBOSSGameFolder();
 			}
@@ -873,8 +856,6 @@ void MainFrame::SetGames(const Game& inGame, const vector<uint32_t> inGames) {
 		GameMenu->FindItem(MENU_Fallout3)->Check();
 	else if (game.Id() == FALLOUTNV)
 		GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
-	else if (game.Id() == MORROWIND)
-		GameMenu->FindItem(MENU_Morrowind)->Check();
 
 	size_t i=0;
 	for (i=0; i < detectedGames.size(); i++) {
