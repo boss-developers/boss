@@ -1323,12 +1323,6 @@ namespace boss {
 			<<	"bCloseGUIAfterSorting    = " << BoolToString(gl_close_gui_after_sorting) << endl
 			<<	"sLanguage                = " << GetLanguageString() << endl << endl
 
-			<<	"[Internet Settings]" << endl
-			<<	"sProxyHostname           = " << gl_proxy_host << endl
-			<<	"iProxyPort               = " << IntToString(gl_proxy_port) << endl
-			<<	"sProxyUsername           = " << gl_proxy_user << endl
-			<<	"sProxyPassword           = " << gl_proxy_passwd << endl << endl
-
 			<<	"[Run Options]" << endl
 			<<	"sGame                    = " << GetIniGameString(gl_game) << endl
 			<<	"sLastGame                = " << GetIniGameString(currentGameId) << endl  //Writing current game because that's what we want recorded when BOSS writes the ini.
@@ -1400,13 +1394,7 @@ namespace boss {
 				continue;
 
 			//String settings.
-			if (iter->first == "sProxyHostname")
-				gl_proxy_host = iter->second;
-			else if (iter->first == "sProxyUsername")
-				gl_proxy_user = iter->second;
-			else if (iter->first == "sProxyPassword")
-				gl_proxy_passwd = iter->second;
-			else if (iter->first == "sBOSSLogFormat") {
+			if (iter->first == "sBOSSLogFormat") {
 				if (iter->second == "html")
 					gl_log_format = HTML;
 				else
@@ -1454,8 +1442,6 @@ namespace boss {
 					gl_language = SIMPCHINESE;
 			}
 			//Now integers.
-			else if (iter->first == "iProxyPort")
-				gl_proxy_port = atoi(iter->second.c_str());
 			else if (iter->first == "iRevertLevel") {
 				uint32_t value = atoi(iter->second.c_str());
 				if (value >= 0 && value < 3)

@@ -221,10 +221,6 @@ int main(int argc, char *argv[]) {
 								" are: 'html', 'text'").str().c_str())
 		("trial-run,t", po::value(&gl_trial_run)->zero_tokens(),
 								translate("run BOSS without actually making any changes to load order").str().c_str())
-		("proxy-host,H", po::value(&gl_proxy_host),
-								translate("sets the proxy hostname for the masterlist updater").str().c_str())
-		("proxy-port,P", po::value(&gl_proxy_port),
-								translate("sets the proxy port number for the masterlist updater").str().c_str())
 		("log-debug,l", po::value(&gl_log_debug_output)->zero_tokens(),
 								translate("logs the debug output to the BOSSDebugLog.txt file instead"
 								" of the command line.").str().c_str());

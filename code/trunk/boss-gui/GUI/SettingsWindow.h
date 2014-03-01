@@ -49,13 +49,8 @@ private:
 	wxChoice *DebugVerbosityChoice;
 	wxChoice *GameChoice;
 	wxChoice *LanguageChoice;
-	wxTextCtrl *ProxyHostBox;
-	wxTextCtrl *ProxyPortBox;
-	wxTextCtrl *ProxyUserBox;
-	wxTextCtrl *ProxyPasswdBox;
 	wxNotebook *TabHolder;
 	wxPanel *GeneralTab;
-	wxPanel *InternetTab;
 	wxPanel *DebugTab;
 };
 

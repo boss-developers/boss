@@ -71,7 +71,6 @@ enum {
 	//Settings window.
 	OPTION_OKExitSettings,
 	OPTION_CancelExitSettings,
-	DROPDOWN_ProxyType,
 	//User Rules Manager.
 	LIST_RuleList,
 	BUTTON_NewRule,

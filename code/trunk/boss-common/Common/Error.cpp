@@ -64,16 +64,6 @@ namespace boss {
 	BOSS_COMMON const uint32_t BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL				= 19;
 	BOSS_COMMON const uint32_t BOSS_ERROR_FS_ITER_DIRECTORY_FAIL				= 20;
 
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_INIT_FAIL						= 21;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_ERRBUFF_FAIL					= 22;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_OPTION_FAIL					= 23;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_PROXY_FAIL					= 24;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL				= 25;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL				= 26;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL			= 27;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_PERFORM_FAIL						= 28;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CURL_USER_CANCEL						= 29;
-
 	BOSS_COMMON const uint32_t BOSS_ERROR_GUI_WINDOW_INIT_FAIL					= 30;
 
 	BOSS_COMMON const uint32_t BOSS_OK_NO_UPDATE_NECESSARY						= 31;
@@ -106,7 +96,7 @@ namespace boss {
 			: errCode(internalErrCode), errString(externalErrString), errSubject(internalErrSubject) 
 	{}
 
-	//For errors from cURL functions.
+	//For errors from other external functions.
 	boss_error::boss_error(const string externalErrString, const uint32_t internalErrCode) 
 			: errCode(internalErrCode), errString(externalErrString), errSubject("") 
 	{}
@@ -160,24 +150,6 @@ namespace boss {
 			return (format(translate("\"%1%\" cannot be created! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_FS_ITER_DIRECTORY_FAIL)
 			return (format(translate("\"%1%\" cannot be scanned! Filesystem response: \"%2%\".")) % errSubject % errString).str();
-		else if (errCode == BOSS_ERROR_CURL_INIT_FAIL)
-			return translate("cURL cannot be initialised!");
-		else if (errCode == BOSS_ERROR_CURL_SET_ERRBUFF_FAIL)
-			return (format(translate("cURL's error buffer could not be set! cURL response: \"%1%\".")) % errString).str();
-		else if (errCode == BOSS_ERROR_CURL_SET_OPTION_FAIL)
-			return (format(translate("A cURL option could not be set! cURL response: \"%1%\".")) % errString).str();
-		else if (errCode == BOSS_ERROR_CURL_SET_PROXY_FAIL)
-			return (format(translate("Proxy hostname or port invalid! cURL response: \"%1%\".")) % errString).str();
-		else if (errCode == BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL)
-			return (format(translate("Failed to set proxy type! cURL response: \"%1%\".")) % errString).str();
-		else if (errCode == BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL)
-			return (format(translate("Proxy authentication username or password invalid! cURL response: \"%1%\".")) % errString).str();
-		else if (errCode == BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL)
-			return (format(translate("Failed to set proxy authentication type! cURL response: \"%1%\".")) % errString).str();
-		else if (errCode == BOSS_ERROR_CURL_PERFORM_FAIL)
-			return (format(translate("cURL could not perform task! cURL response: \"%1%\".")) % errString).str();
-		else if (errCode == BOSS_ERROR_CURL_USER_CANCEL)
-			return translate("Cancelled by user.");
 		else if (errCode == BOSS_ERROR_FILE_PARSE_FAIL)
 			return (format(translate("Parsing of \"%1%\" failed!")) % errSubject).str();
 		else if (errCode == BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL)

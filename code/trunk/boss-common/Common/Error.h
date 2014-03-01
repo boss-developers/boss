@@ -68,16 +68,6 @@ namespace boss {
 	BOSS_COMMON extern const uint32_t BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL;
 	BOSS_COMMON extern const uint32_t BOSS_ERROR_FS_ITER_DIRECTORY_FAIL;
 
-	BOSS_COMMON extern const uint32_t BOSS_ERROR_CURL_INIT_FAIL;
-	BOSS_COMMON extern const uint32_t BOSS_ERROR_CURL_SET_ERRBUFF_FAIL;
-	BOSS_COMMON extern const uint32_t BOSS_ERROR_CURL_SET_OPTION_FAIL;
-	BOSS_COMMON extern const uint32_t BOSS_ERROR_CURL_SET_PROXY_FAIL;
-	BOSS_COMMON extern const uint32_t BOSS_ERROR_CURL_SET_PROXY_TYPE_FAIL;
-	BOSS_COMMON extern const uint32_t BOSS_ERROR_CURL_SET_PROXY_AUTH_FAIL;
-	BOSS_COMMON extern const uint32_t BOSS_ERROR_CURL_SET_PROXY_AUTH_TYPE_FAIL;
-	BOSS_COMMON extern const uint32_t BOSS_ERROR_CURL_PERFORM_FAIL;
-	BOSS_COMMON extern const uint32_t BOSS_ERROR_CURL_USER_CANCEL;
-
 	BOSS_COMMON extern const uint32_t BOSS_ERROR_GUI_WINDOW_INIT_FAIL;
 
 	BOSS_COMMON extern const uint32_t BOSS_OK_NO_UPDATE_NECESSARY;
@@ -102,7 +92,7 @@ namespace boss {
 		//For errors from BOOST Filesystem functions.
 		boss_error(const uint32_t internalErrCode, const string internalErrSubject, const string externalErrString);
 
-		//For errors from cURL functions.
+		//For errors from other external functions.
 		boss_error(const string externalErrString, const uint32_t internalErrCode);
 
 		//Returns the error code for the object.

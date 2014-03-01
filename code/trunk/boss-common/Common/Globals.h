@@ -97,10 +97,6 @@ namespace boss {
 	BOSS_COMMON extern uint32_t	gl_language;				// What language to run BOSS in?
 
 	//Command line variables
-	BOSS_COMMON extern string	gl_proxy_host;
-	BOSS_COMMON extern string	gl_proxy_user;
-	BOSS_COMMON extern string	gl_proxy_passwd;
-	BOSS_COMMON extern uint32_t	gl_proxy_port;				
 	BOSS_COMMON extern uint32_t	gl_log_format;				// what format the output should be in.  Uses the enums defined above.
 	BOSS_COMMON extern uint32_t	gl_game;					// What game's mods are we sorting? Uses the enums defined above.
 	BOSS_COMMON extern uint32_t	gl_last_game;				// what game was last run? Only affects GUI behaviour.

@@ -83,10 +83,6 @@ namespace boss {
 	BOSS_COMMON uint32_t	gl_language					= ENGLISH;
 
 	//Command line variables
-	BOSS_COMMON string		gl_proxy_host				= "";
-	BOSS_COMMON string		gl_proxy_user				= "";
-	BOSS_COMMON string		gl_proxy_passwd				= "";
-	BOSS_COMMON uint32_t	gl_proxy_port				= 0;
 	BOSS_COMMON uint32_t	gl_log_format				= HTML;
 	BOSS_COMMON uint32_t	gl_game						= AUTODETECT;
 	BOSS_COMMON uint32_t	gl_last_game				= AUTODETECT;

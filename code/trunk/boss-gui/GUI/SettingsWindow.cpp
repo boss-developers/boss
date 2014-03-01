@@ -99,26 +99,6 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 	
 	GeneralTab->SetSizer(GeneralTabSizer);
 
-	//Create Internet Settings tab.
-	InternetTab = new wxPanel(TabHolder);
-	wxGridSizer *InternetTabSizer = new wxGridSizer(2, 5, 5);
-	
-	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, translate("Proxy Hostname:")), leftItem);
-	InternetTabSizer->Add(ProxyHostBox = new wxTextCtrl(InternetTab,wxID_ANY), rightItem);
-
-	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, translate("Proxy Port Number:")), leftItem);
-	InternetTabSizer->Add(ProxyPortBox = new wxTextCtrl(InternetTab,wxID_ANY), rightItem);
-
-	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, translate("Proxy Username:")), leftItem);
-	InternetTabSizer->Add(ProxyUserBox = new wxTextCtrl(InternetTab,wxID_ANY), rightItem);
-
-	InternetTabSizer->Add(new wxStaticText(InternetTab, wxID_ANY, translate("Proxy Password:")), leftItem);
-	InternetTabSizer->Add(ProxyPasswdBox = new wxTextCtrl(InternetTab,wxID_ANY), rightItem);
-
-	InternetTabSizer->AddStretchSpacer();
-
-	InternetTab->SetSizerAndFit(InternetTabSizer);
-
 	//Create Debugging Settings tab.
 	DebugTab = new wxPanel(TabHolder);
 	wxBoxSizer *DebugTabSizer = new wxBoxSizer(wxVERTICAL);
@@ -134,7 +114,6 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 
 	//Attach all pages.
 	TabHolder->AddPage(GeneralTab, translate("General"), true);
-	TabHolder->AddPage(InternetTab, translate("Internet"));
 	TabHolder->AddPage(DebugTab, translate("Debugging"));
 	
 	//Need to add 'OK' and 'Cancel' buttons.
@@ -193,15 +172,6 @@ void SettingsFrame::SetDefaultValues() {
 		LanguageChoice->SetSelection(3);
 	else if (gl_language == SIMPCHINESE)
 		LanguageChoice->SetSelection(4);
-
-	//Internet Settings
-	ProxyHostBox->SetValue(wxString(gl_proxy_host.c_str(), wxConvUTF8));
-
-	ProxyPortBox->SetValue(wxString::Format(wxT("%i"),gl_proxy_port));
-
-	ProxyUserBox->SetValue(wxString(gl_proxy_user.c_str(), wxConvUTF8));
-
-	ProxyPasswdBox->SetValue(wxString(gl_proxy_passwd.c_str(), wxConvUTF8));
 
 	//Debugging Settings
 	if (gl_debug_with_source)
@@ -267,12 +237,6 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 		gl_language = SIMPCHINESE;
 		break;
 	}
-
-	//Network
-	gl_proxy_host = ProxyHostBox->GetValue().ToUTF8();
-	gl_proxy_port = wxAtoi(ProxyPortBox->GetValue().ToUTF8());
-	gl_proxy_user = ProxyUserBox->GetValue().ToUTF8();
-	gl_proxy_passwd = ProxyPasswdBox->GetValue().ToUTF8();
 
 	//Debugging
 	gl_debug_verbosity = DebugVerbosityChoice->GetSelection();
