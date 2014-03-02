@@ -32,8 +32,8 @@ namespace boss {
 	
 	//BOSS version number.
 	BOSS_COMMON const uint32_t BOSS_VERSION_MAJOR	= 2;
-	BOSS_COMMON const uint32_t BOSS_VERSION_MINOR	= 1;
-	BOSS_COMMON const uint32_t BOSS_VERSION_PATCH	= 1;
+	BOSS_COMMON const uint32_t BOSS_VERSION_MINOR	= 2;
+	BOSS_COMMON const uint32_t BOSS_VERSION_PATCH	= 0;
 	
 	//Supported game values. DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
 	BOSS_COMMON const uint32_t AUTODETECT			= 0;
@@ -66,7 +66,6 @@ namespace boss {
 	BOSS_COMMON const fs::path readme_path			= boss_path / "Docs" / "BOSS Readme.html";
 	BOSS_COMMON const fs::path rules_readme_path	= boss_path / "Docs" / "BOSS Userlist Syntax.html";
 	BOSS_COMMON const fs::path masterlist_doc_path	= boss_path / "Docs" / "BOSS Masterlist Syntax.html";
-	BOSS_COMMON const fs::path api_doc_path			= boss_path / "Docs" / "BOSS API Readme.html";
 	BOSS_COMMON const fs::path version_history_path = boss_path / "Docs" / "BOSS Version History.html";
 	BOSS_COMMON const fs::path licenses_path		= boss_path / "Docs" / "Licenses.txt";
 
