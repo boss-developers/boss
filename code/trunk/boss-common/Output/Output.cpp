@@ -969,7 +969,6 @@ namespace boss {
 		if (logFormat == HTML)
 			out << "<footer>"
 				<< "	<div class='button' data-section='browserBox' id='supportButtonShow'>" << translate("Log Feature Support") << "</div>"
-				<< "	<div class='button' data-section='cssSettings' id='cssButtonShow'>" << translate("Display Settings") << "</div>"
 				<< "	<div class='button' id='filtersButtonToggle'>" << translate("Filters") << "<span id='arrow'></span></div>"
 				<< "</footer>"
 				<< "</nav>"
@@ -984,48 +983,13 @@ namespace boss {
 		string colourTooltip = translate("Colours must be specified using lowercase hex codes.");
 
         if (logFormat == HTML)
-            out << "<section id='cssSettings'>"
-            << "<p>" << translate("The BOSS Log can be displayed using an alternative colour scheme, which can be enabled and customised using the options below. Colours must be specified using their lowercase hex codes. The default value for each element is displayed as the placeholder for its text box, and this value is used if the text box is left empty.")
-            << translate(" Some examples of colour codes that can be used may be found <a href='http://en.wikipedia.org/wiki/Web_colors#Color_table'>here</a>.")
-            << "<form>"
-            << "<p><label><input type='checkbox' id='useDarkColourScheme'/>" << translate("Use Alternative Colour Scheme") << "</label>"
-            << "<table>"
-            << "	<thead><tr><td>" << translate("Element") << "<td>" << translate("Colour")
-            << "	<tbody>"
-            << "		<tr><td>" << translate("General Text") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='body.dark' data-property='color' placeholder='#eeeeee'>"
-            << "		<tr><td>" << translate("Window Backgrounds") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='body.dark,#submitBox.dark' data-property='background' placeholder='#222222'>"
-            << "		<tr><td>" << translate("Menu Background") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='nav.dark' data-property='background' placeholder='#333333'>"
-            << "		<tr><td>" << translate("Menu Button Hover") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='nav div.button.dark:hover' data-property='background' placeholder='#777777'>"
-            << "		<tr><td>" << translate("Active Menu Button") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='nav div.button.current.dark' data-property='background' placeholder='#a9a9a9'>"
-            << "		<tr><td>" << translate("Links") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='a.dark:link' data-property='color' placeholder='#00aaff'>"
-            << "		<tr><td>" << translate("Visited Links") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='a.dark:visited' data-property='color' placeholder='#e000e0'>"
-            << "		<tr><td>" << translate("CRC Labels") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.crc.dark' data-property='color' placeholder='#bc8923'>"
-            << "		<tr><td>" << translate("Active Labels") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.active.dark' data-property='color' placeholder='#00aa00'>"
-            << "		<tr><td>" << translate("Version Labels") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.version.dark' data-property='color' placeholder='#6394F8'>"
-            << "		<tr><td>" << translate("Errors") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.error.dark,#summary li.error.dark,tr.error.dark td' data-property='background' placeholder='#ff0000'>"
-            << "		<tr><td>" << translate("Warnings") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.warn.dark,#summary li.warn.dark,tr.warn.dark td' data-property='background' placeholder='#ff6600'>"
-            << "		<tr><td>" << translate("Dirty Messages") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.dirty.dark' data-property='color' placeholder='#996600'>"
-            << "		<tr><td>" << translate("Bash Tag Suggestion Prefixes") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.tagPrefix.dark' data-property='color' placeholder='#cd5555'>"
-            << "		<tr><td>" << translate("CSS Settings Panel File Drag Highlight") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.dark.dragHover' data-property='background' placeholder='#444444'>"
-            << "		<tr><td>" << translate("Filters Background") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='aside.dark' data-property='background' placeholder='#666666'>"
-            << "		<tr><td>" << translate("Success Messages") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.success.dark,#summary li.success.dark,tr.success.dark td' data-property='background' placeholder='#009900'>"
-            << "		<tr><td>" << translate("Quoted Userlist Messages") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='.message.dark' data-property='color' placeholder='#808080'>"
-            << "		<tr><td>" << translate("Summary Messages Default Background") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='#summary li.dark' data-property='background' placeholder='#333333'>"
-            << "		<tr><td>" << translate("Table Headings") << "<td><input type=text pattern='#[a-f0-9]{6}' title='" << colourTooltip << "' data-selector='th.dark' data-property='background' placeholder='#003399'>"
-            << "</table>"
-            << "<p id='backupCSSNote'>" << translate("You can <span class='button' id='cssButtonBackup'>back up</span> your display settings to avoid losing them when you <span id='loseSettingsClose'>close the BOSS Log</span><span id='loseSettingsCacheClear'>clear your browser's cache</span>.") << ' ' << translate("Backup files are given nonsensical names by your browser, but you can rename them to whatever you want. Drag and drop a backup file into this panel to restore the settings it contains.")
-            << "<p><button>" << translate("Apply") << "</button>"
-            << "</form>"
-            << "</section>"
-            << ""
-            << "<section id='browserBox'>"
+            out << "<section id='browserBox'>"
             << "<p>" << translate("Support for the BOSS Log's more advanced features varies. Here's what your browser supports:")
             << "<h3>" << translate("Functionality") << "</h3>"
             << "<table>"
             << "	<tbody>"
             << "		<tr><td id='pluginSubmitSupport'><td>" << translate("In-Log Plugin Submission") << "<td>" << translate("Allows unrecognised plugins to be anonymously submitted to the BOSS team directly from the BOSS Log.")
-            << "		<tr><td id='cssBackupSupport'><td>" << translate("Backup/Restore of Display Settings") << "<td>" << translate("Allows the backup and restore of custom display settings.")
-            << "		<tr><td id='memorySupport'><td>" << translate("Settings Memory") << "<td>" << translate("Allows the BOSS Log to automatically restore the display settings and filter configuration last used, and to hide this panel, whenever the BOSS Log is opened.")
+            << "		<tr><td id='memorySupport'><td>" << translate("Settings Memory") << "<td>" << translate("Allows the BOSS Log to automatically restore the filter configuration last used whenever the BOSS Log is opened.")
             << "</table>"
             << "<h3>" << translate("Appearance") << "</h3>"
             << "<table>"
@@ -1037,9 +1001,7 @@ namespace boss {
             << "	<tr><td id='placeholderSupport'><td>" << translate("Input Placeholders")
             << "	<tr><td id='validationSupport'><td>" << translate("Form Validation")
             << "</table>"
-            << "<p><label><input type=checkbox id='suppressBrowserBox'>" << translate("Do not display this panel again for this browser. If this checkbox is left unchecked, this panel will be displayed every time you open the BOSS Log.") << "</label>"
             << "</section>"
-
 
             << "<aside>"
             << "<label><input type='checkbox' id='hideVersionNumbers' data-class='version'/>" << translate("Hide Version Numbers") << "</label>"

@@ -105,9 +105,6 @@ function isStorageSupported(){
 		return false;
 	}
 }
-function isCSSBackupRestoreSupported(){
-	return (window.File && window.FileReader && window.FileList && window.Blob && 'draggable' in document.createElement('span') && typeof(JSON) === 'object' && typeof(JSON.parse) === 'function');
-}
 function isPluginSubmitSupported(){
 	return ('withCredentials' in new XMLHttpRequest && typeof(JSON) === 'object' && typeof(JSON.parse) === 'function');
 }
@@ -203,71 +200,16 @@ function handleDragLeave(evt) {
 	evt.preventDefault();
 	evt.currentTarget.className = evt.currentTarget.className.replace('dragHover','');
 }
-function swapColorScheme(evt){
-	if (evt.currentTarget.id == 'useDarkColourScheme' && document.getElementById('cssButtonShow').className.indexOf('current') != -1){
-		return;
-	} else {
-		evt.stopPropagation();
-		evt.preventDefault();
-		if (isValidationSupported() && !evt.currentTarget.checkValidity()){
-			return;
-		}
-	}
-	var checkbox, a;
-	if (evt.currentTarget.id == 'useDarkColourScheme'){
-		checkbox = evt.currentTarget;
-		a = document.getElementById('cssSettings').querySelectorAll('input[type=text]');
-	} else {
-		checkbox = document.getElementById('useDarkColourScheme');
-		a = evt.currentTarget;
-	}
-	if(checkbox.checked){
-		for(var i=0,z=a.length;i<z;i++){
-			if (a[i].type == 'text'){
-				var s = a[i].getAttribute('data-selector').replace(/\.dark/g,'').replace('.current','').replace(':hover','');
-				var c = document.querySelectorAll(s);
-				for(var j=0,d=c.length;j<d;j++){
-					if (c[j].className.indexOf('dark') == -1){
-						c[j].className += ' dark';
-					}
-				}
-			}
-		}
-	}else{
-		for(var i=0,z=a.length;i<z;i++){
-			if (a[i].type == 'text'){
-				var c = document.querySelectorAll(a[i].getAttribute('data-selector').replace('.current','').replace(':hover',''));
-				for(var j=0,d=c.length;j<d;j++){
-					c[j].className = c[j].className.replace(' dark','');
-				}
-			}
-		}
-	}
-	return false;
-}
 function toggleDisplayCSS(evt){
 	var e = document.getElementsByClassName(evt.currentTarget.getAttribute('data-class'));
 	if(evt.currentTarget.checked){
 		for(var i=0,z=e.length;i<z;i++){
-			e[i].className += ' hidden';
+            e[i].className += ' hidden';
 		}
 	}else{
 		for(var i=0,z=e.length;i<z;i++){
 			e[i].className = e[i].className.replace(' hidden','');
 		}
-	}
-}
-function backupCSS(evt){
-	if (isCSSBackupRestoreSupported()) {
-		var a = document.getElementById('cssSettings').querySelectorAll('input[type=text]');
-		var json = '{"colors":{';
-		for(var i=0,z=a.length;i<z;i++){
-			json += '"' + a[i].getAttribute('data-selector') + '":"' + a[i].getAttribute('data-property') + ':' + a[i].value + '",'
-		}
-		json = json.substr(0,json.length-1);
-		json += '}}';
-		var uriContent = 'data:json/settings-backup,' + encodeURIComponent(json);
-		location.href = uriContent;
 	}
 }
 function toggleFilters(evt){
@@ -280,19 +222,6 @@ function toggleFilters(evt){
 		hideElement(filters);
 		arrow.className = arrow.className.replace('rotated','');
 	}
-}
-function showCSSBox(evt){
-	if (isStorageSupported()) {
-		var a = document.getElementById('cssSettings').querySelectorAll('input[type=text]');
-		var len = localStorage.length;
-		for (var i=0, z=a.length; i < z; i++) {
-			var s = localStorage.getItem(a[i].getAttribute('data-selector'));
-			if (s != null) {
-				a[i].value = s.split(':').pop();
-			}
-		}
-	}
-	showElement(document.getElementById('cssSettings'));
 }
 function showSubmitBox(evt){
 	document.getElementById('plugin').textContent=evt.currentTarget.textContent;
@@ -324,40 +253,6 @@ function submitPlugin(evt) {
 		getBugId(HTMLToJSON(document.getElementById('plugin').textContent), HTMLToJSON(desc), xhr);
 	} catch(err) {
 		outputPluginSubmitText(txt12 + err.message, -1);
-	}
-}
-function applyCSS(evt){
-	evt.stopPropagation();
-	evt.preventDefault();
-	if (isValidationSupported() && !evt.currentTarget.checkValidity()){
-		return;
-	}
-	for(var i=0,z=evt.currentTarget.length;i<z;i++){
-		if (evt.currentTarget[i].type == 'text'){
-			var css = evt.currentTarget[i].getAttribute('data-property') + ':' + evt.currentTarget[i].value;
-			if (evt.currentTarget[i].value.length == 0) {
-				css += evt.currentTarget[i].placeholder;
-			}
-			document.styleSheets[0].insertRule(evt.currentTarget[i].getAttribute('data-selector') + '{' + css + '}', document.styleSheets[0].cssRules.length);
-		}
-	}
-}
-function storeCSS(evt){
-	evt.stopPropagation();
-	evt.preventDefault();
-	if (isValidationSupported() && !evt.currentTarget.checkValidity()){
-		return;
-	}
-	for(var i=0,z=evt.currentTarget.length;i<z;i++){
-		if (evt.currentTarget[i].type == 'text'){
-			storeData(evt.currentTarget[i].getAttribute('data-selector'), evt.currentTarget[i].getAttribute('data-property') + ':' + evt.currentTarget[i].value);
-		} else if (evt.currentTarget[i].type == 'checkbox'){
-			if (evt.currentTarget[i].checked) {
-				storeData(evt.currentTarget[i].id, true);
-			} else {
-				localStorage.removeItem(evt.currentTarget[i].id);
-			}
-		}
 	}
 }
 function showSection(evt){
@@ -488,11 +383,6 @@ function showBrowserBox(){
 	} else {
 		document.getElementById('pluginSubmitSupport').className = 'c';
 	}
-	if (isCSSBackupRestoreSupported()) {
-		document.getElementById('cssBackupSupport').className = 't';
-	} else {
-		document.getElementById('cssBackupSupport').className = 'c';
-	}
 	if (isStorageSupported()) {
 		document.getElementById('memorySupport').className = 't';
 	} else {
@@ -529,16 +419,11 @@ function showBrowserBox(){
 	} else {
 		document.getElementById('validationSupport').className = 'c';
 	}
-	if (document.getElementById('suppressBrowserBox').checked){
-		var summaryButton = document.getElementsByTagName('nav')[0].getElementsByClassName('button')[0];
-		if (summaryButton.className.indexOf('current') == -1){
-			summaryButton.className += ' current';
-		}
-		showElement(document.getElementsByTagName('section')[0]);
-	} else {
-		showElement(document.getElementById('browserBox'));
-		var elem = document.getElementById('supportButtonShow').className += ' current';
-	}
+    var summaryButton = document.getElementsByTagName('nav')[0].getElementsByClassName('button')[0];
+    if (summaryButton.className.indexOf('current') == -1){
+        summaryButton.className += ' current';
+    }
+    showElement(document.getElementsByTagName('section')[0]);
 }
 function loadSettings(){
 	var i = localStorage.length - 1;
@@ -549,11 +434,6 @@ function loadSettings(){
 			var event = document.createEvent('Event');
 			event.initEvent('click', true, true);
 			elem.dispatchEvent(event);
-		} else {
-			if (document.styleSheets[0].cssRules) {
-				var k = localStorage.key(i);
-				document.styleSheets[0].insertRule(k + '{' + localStorage.getItem(k) + '}', document.styleSheets[0].cssRules.length);
-			}
 		}
 		i--;
 	}
@@ -567,15 +447,6 @@ function setupEventHandlers(){
 			elemArr[i].addEventListener('click', saveCheckboxState, false);
 			i--;
 		}
-		document.getElementById('suppressBrowserBox').addEventListener('click', saveCheckboxState, false);
-		document.getElementById('cssSettings').getElementsByTagName('form')[0].addEventListener('submit', storeCSS, false);
-	}
-	if (isCSSBackupRestoreSupported()){  /*Set up handlers for CSS backup & restore.*/
-		var dropZone = document.getElementById('cssSettings');
-		dropZone.addEventListener('dragover', handleDragOver, false);
-		dropZone.addEventListener('drop', handleFileSelect, false);
-		dropZone.addEventListener('dragleave', handleDragLeave, false);
-		document.getElementById('cssButtonBackup').addEventListener('click', backupCSS, false);
 	}
 	if (isPluginSubmitSupported() && document.getElementById('unrecPlugins') != null){  /*Set up handlers for plugin submitter.*/
 		elemArr = document.getElementById('unrecPlugins').querySelectorAll('span.mod');
@@ -596,11 +467,6 @@ function setupEventHandlers(){
 		i--;
 	}
 	document.getElementById('supportButtonShow').addEventListener('click', showSection, false);
-	document.getElementById('cssButtonShow').addEventListener('click', showSection, false);
-	document.getElementById('cssButtonShow').addEventListener('click', showCSSBox, false);
-	document.getElementById('cssSettings').getElementsByTagName('form')[0].addEventListener('submit', applyCSS, false);
-	document.getElementById('cssSettings').getElementsByTagName('form')[0].addEventListener('submit', swapColorScheme, false);
-	document.getElementById('useDarkColourScheme').addEventListener('click', swapColorScheme, false);
 	/*Set up handlers for filters.*/
 	document.getElementById('hideVersionNumbers').addEventListener('click', toggleDisplayCSS, false);
 	document.getElementById('hideActiveLabel').addEventListener('click', toggleDisplayCSS, false);
@@ -626,9 +492,6 @@ function applyFeatureSupportRestrictions(){
 		hideElement(document.getElementById('loseSettingsClose'));
 	} else {
 		hideElement(document.getElementById('loseSettingsCacheClear'));
-	}
-	if (!isCSSBackupRestoreSupported()) {
-		hideElement(document.getElementById('backupCSSNote'));
 	}
 }
 function init(){
