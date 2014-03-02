@@ -4,6 +4,7 @@
 ;Include NSIS files.
 
 	!include "MUI2.nsh"
+    !include "x64.nsh"
 	!include "LogicLib.nsh"
 	!include "nsDialogs.nsh"
 
@@ -224,6 +225,47 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 ;Installer Sections
 
 	Section "Installer Section"
+
+        ; Thanks to the pcsx2 installer for providing this!
+
+        ; Detection made easy: Unlike previous redists, VC2013 now generates a platform
+        ; independent key for checking availability.
+        ; HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\x86  for x64 Windows
+        ; HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\12.0\VC\Runtimes\x86  for x86 Windows
+
+        ; Download from:
+        ; http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe
+
+        ClearErrors
+
+        ${If} ${RunningX64}
+            ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\x86" "Installed"
+        ${Else}
+            ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\VisualStudio\12.0\VC\Runtimes\x86" "Installed"
+        ${EndIf}
+
+        ${If} $R0 == "1"
+            DetailPrint "Visual C++ 2013 Redistributable is already installed; skipping!"
+        ${Else}
+            DetailPrint "Visual C++ 2013 Redistributable registry key was not found; assumed to be uninstalled."
+            DetailPrint "Downloading Visual C++ 2013 Redistributable Setup..."
+            SetOutPath $TEMP
+            NSISdl::download "http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe" "vcredist_x86.exe"
+
+            Pop $R0 ;Get the return value
+            ${If} $R0 == "success"
+                DetailPrint "Running Visual C++ 2013 Redistributable Setup..."
+                Sleep 2000
+                HideWindow
+                ExecWait '"$TEMP\vcredist_x86.exe" /qb'
+                BringToFront
+                DetailPrint "Finished Visual C++ 2013 SP1 Redistributable Setup"
+
+                Delete "$TEMP\vcredist_x86.exe"
+            ${Else}
+                DetailPrint "Could not contact Microsoft.com, or the file has been (re)moved!"
+            ${EndIf}
+        ${EndIf}
 
 		;Silently move and remove files from past BOSS installs.
 		 ${If} $OB_Path != $Empty
