@@ -47,11 +47,11 @@ namespace boss {
 		return FromUTF8(f.str());
 	}
 
-	int progress(void * out, double dlFraction, double dlTotal) {
-		int currentProgress = (int)floor(dlFraction * 10);
+    int progress(const git_transfer_progress *stats, void *payload) {
+		int currentProgress = (int)floor(float(stats->received_objects) / stats->total_objects * 1000);
 		if (currentProgress == 1000)
 			--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
-        wxProgressDialog* progress = (wxProgressDialog*)out;
+        wxProgressDialog* progress = (wxProgressDialog*)payload;
 		bool cont = progress->Update(currentProgress, translate("Downloading masterlist..."));
 		if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
 			uint32_t ans = wxMessageBox(translate("Are you sure you want to cancel?"), translate("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);

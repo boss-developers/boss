@@ -107,8 +107,8 @@ void Fail() {
 	exit(1);
 }
 
-int progress(void * out, double dlFraction, double dlTotal) {
-	printf((translate("Downloading: %3.0f%% of %3.0f KB").str() + "\r").c_str(), dlFraction, dlTotal);
+int progress(const git_transfer_progress *stats, void *payload) {
+    printf((translate("Downloading: %i%% of %i objects (%i KB)").str() + "\r").c_str(), stats->received_objects, stats->total_objects, stats->received_bytes/1024);
 	fflush(stdout);
 	return 0;
 }

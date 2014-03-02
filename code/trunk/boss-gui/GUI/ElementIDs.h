@@ -106,6 +106,6 @@ namespace boss {
 
 	wxString FromUTF8(boost::format f);
 	
-    int progress(void * out, double dlFraction, double dlTotal);
+    int progress(const git_transfer_progress *stats, void *payload);
 }
 #endif
