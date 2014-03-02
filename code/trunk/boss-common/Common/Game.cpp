@@ -151,7 +151,7 @@ namespace boss {
 		: id(gameCode) {
 		if (Id() == OBLIVION) {
 			name = "TES IV: Oblivion";
-			onlineId = "boss-oblivion";
+            repoURL = "https://github.com/boss-developers/oblivion.git";
 
 			executable = "Oblivion.exe";
 			masterFile = "Oblivion.esm";
@@ -166,8 +166,8 @@ namespace boss {
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
 		} else if (Id() == NEHRIM) {
-			name = "Nehrim - At Fate's Edge";
-			onlineId = "boss-nehrim";
+            name = "Nehrim - At Fate's Edge";
+            repoURL = "https://github.com/boss-developers/nehrim.git";
 			
 			executable = "Oblivion.exe";
 			masterFile = "Nehrim.esm";
@@ -182,8 +182,8 @@ namespace boss {
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
 		} else if (Id() == SKYRIM) {
-			name = "TES V: Skyrim";
-			onlineId = "boss-skyrim";
+            name = "TES V: Skyrim";
+            repoURL = "https://github.com/boss-developers/skyrim.git";
 			
 			executable = "TESV.exe";
 			masterFile = "Skyrim.esm";
@@ -198,8 +198,8 @@ namespace boss {
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
 		} else if (Id() == FALLOUT3) {
-			name = "Fallout 3";
-			onlineId = "boss-fallout";
+            name = "Fallout 3";
+            repoURL = "https://github.com/boss-developers/fallout3.git";
 			
 			executable = "Fallout3.exe";
 			masterFile = "Fallout3.esm";
@@ -214,8 +214,8 @@ namespace boss {
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
 		} else if (Id() == FALLOUTNV) {
-			name = "Fallout: New Vegas";
-			onlineId = "boss-fallout-nv";
+            name = "Fallout: New Vegas";
+            repoURL = "https://github.com/boss-developers/falloutnv.git";
 			
 			executable = "FalloutNV.exe";
 			masterFile = "FalloutNV.esm";
@@ -298,8 +298,8 @@ namespace boss {
 		return name;
 	}
 
-	string Game::OnlineId() const {
-		return onlineId;
+	string Game::RepoURL() const {
+		return repoURL;
 	}
 
 	string Game::ScriptExtender() const {
@@ -367,7 +367,11 @@ namespace boss {
 			return boss_path / bossFolderName / "BOSSlog.html";
 		else
 			return boss_path / bossFolderName / "BOSSlog.txt";
-	}
+    }
+
+    void Game::SetRepoURL(const std::string& url) {
+        repoURL = url;
+    }
 
 	//Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
 	fs::path Game::GetLocalAppDataPath() {
