@@ -11,31 +11,31 @@
 ;General
 
 	;Name, file and version info for installer.
-	Name "BOSS v2.1.1"
+	Name "BOSS v2.2.0"
 	OutFile "BOSS Installer.exe"
-	VIProductVersion 2.1.1.0
+	VIProductVersion 2.2.0.0
 
 	;Request application privileges for Windows Vista/7
 	RequestExecutionLevel admin
-	
+
 	;Icon for installer\uninstaller
 	!define MUI_ICON "code\trunk\BOSS.ico"
 	!define MUI_UNICON "code\trunk\BOSS.ico"
-	
+
 	; This causes an "are you sure?" message to be displayed if you try to quit the installer or uninstaller.
 	!define MUI_ABORTWARNING
 	!define MUI_UNABORTWARNING
-	
+
 	;Checks that the installer's CRC is correct (means we can remove installer CRC checking from BOSS).
 	CRCCheck force
-	
+
 	;The SOLID lzma compressor gives the best compression ratio.
 	SetCompressor /SOLID lzma
 
 ;--------------------------------
 ;Interface Settings
 
-	
+
 
 ;--------------------------------
 ;Pages
@@ -56,7 +56,7 @@
 	!insertmacro MUI_UNPAGE_COMPONENTS
 	!insertmacro MUI_UNPAGE_CONFIRM
 	!insertmacro MUI_UNPAGE_INSTFILES
-  
+
 ;--------------------------------
 ;Languages
 
@@ -72,9 +72,9 @@
 
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "BOSS"
 	VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© 2009-2012 BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 2.1.1"
-	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "2.1.1"
+	VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© 2009-2014 BOSS Development Team"
+	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Installer for BOSS 2.2.0"
+	VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "2.2.0"
 
 	LangString TEXT_MESSAGEBOX ${LANG_ENGLISH} "BOSS is already installed, and must be uninstalled before continuing. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade."
 	LangString TEXT_RUN ${LANG_ENGLISH} "Run BOSS"
@@ -87,61 +87,61 @@
 
 	VIAddVersionKey /LANG=${LANG_RUSSIAN} "ProductName" "BOSS"
 	VIAddVersionKey /LANG=${LANG_RUSSIAN} "CompanyName" "BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_RUSSIAN} "LegalCopyright" "© 2009-2012 BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileDescription" "Установщик для BOSS 2.1.1"
-	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileVersion" "2.1.1"
+	VIAddVersionKey /LANG=${LANG_RUSSIAN} "LegalCopyright" "© 2009-2014 BOSS Development Team"
+	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileDescription" "Установщик для BOSS 2.2.0"
+	VIAddVersionKey /LANG=${LANG_RUSSIAN} "FileVersion" "2.2.0"
 
 	LangString TEXT_MESSAGEBOX ${LANG_RUSSIAN} "BOSS уже установлен и должен быть удален перед продолжением. $\n$\nНажмите `OK` для удаления предыдущей версии или `Отмена` для отмены обновления."
 	LangString TEXT_RUN ${LANG_RUSSIAN} "Запустить BOSS"
 	LangString TEXT_SHOWREADME ${LANG_RUSSIAN} "Смотреть BOSS-Readme"
 	LangString TEXT_MAIN ${LANG_RUSSIAN} "Все файлы BOSS, кроме пользовательских списков и BOSS.ini"
 	LangString TEXT_USERFILES ${LANG_RUSSIAN} "Файлы пользовательских списков и BOSS.ini."
- 
+
 ;--------------------------------
 ;German (Deutsch) Strings
 
 	VIAddVersionKey /LANG=${LANG_GERMAN} "ProductName" "BOSS"
 	VIAddVersionKey /LANG=${LANG_GERMAN} "CompanyName" "BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_GERMAN} "LegalCopyright" "© 2009-2012 BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_GERMAN} "FileDescription" "Installer für BOSS 2.1.1"
-	VIAddVersionKey /LANG=${LANG_GERMAN} "FileVersion" "2.1.1"
+	VIAddVersionKey /LANG=${LANG_GERMAN} "LegalCopyright" "© 2009-2014 BOSS Development Team"
+	VIAddVersionKey /LANG=${LANG_GERMAN} "FileDescription" "Installer für BOSS 2.2.0"
+	VIAddVersionKey /LANG=${LANG_GERMAN} "FileVersion" "2.2.0"
 
 	LangString TEXT_MESSAGEBOX ${LANG_GERMAN} "BOSS ist bereits installiert und muss deinstalliert werden, bevor fortgefahren wird. $\n$\nKlicke auf `Ok` um die vorherige Version zu entfernen oder auf `Abbrechen` um das Upgrade abzubrechen."
 	LangString TEXT_RUN ${LANG_GERMAN} "BOSS starten"
 	LangString TEXT_SHOWREADME ${LANG_GERMAN} "Readme lesen"
 	LangString TEXT_MAIN ${LANG_GERMAN} "Alle Dateien von BOSS ohne die Benutzerlisten und die BOSS.ini."
 	LangString TEXT_USERFILES ${LANG_GERMAN} "Benutzerliste von BOSS und die BOSS.ini-Datei."
-	
+
 ;--------------------------------
 ;Spanish (castellano) Strings
 
 	VIAddVersionKey /LANG=${LANG_SPANISH} "ProductName" "BOSS"
 	VIAddVersionKey /LANG=${LANG_SPANISH} "CompanyName" "BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_SPANISH} "LegalCopyright" "© 2009-2012 BOSS Development Team"
-	VIAddVersionKey /LANG=${LANG_SPANISH} "FileDescription" "El instalador para BOSS 2.1.1"
-	VIAddVersionKey /LANG=${LANG_SPANISH} "FileVersion" "2.1.1"
+	VIAddVersionKey /LANG=${LANG_SPANISH} "LegalCopyright" "© 2009-2014 BOSS Development Team"
+	VIAddVersionKey /LANG=${LANG_SPANISH} "FileDescription" "El instalador para BOSS 2.2.0"
+	VIAddVersionKey /LANG=${LANG_SPANISH} "FileVersion" "2.2.0"
 
 	LangString TEXT_MESSAGEBOX ${LANG_SPANISH} "BOSS está instalado, y debe ser desinstalado antes de continuar. $\n$\nPresione `OK` para eliminar la versión anterior o `Cancel` para cancelar la actualización."
 	LangString TEXT_RUN ${LANG_SPANISH} "Ejecutar BOSS"
 	LangString TEXT_SHOWREADME ${LANG_SPANISH} "Ver Léame"
 	LangString TEXT_MAIN ${LANG_SPANISH} "Todos los archivos de BOSS, menos BOSS.ini y listas de usuarios."
 	LangString TEXT_USERFILES ${LANG_SPANISH} "BOSS.ini y listas de usuarios."
- 
+
 ;--------------------------------
 ;Simplified Chinese (简体中文) Strings
 
 VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "ProductName" "BOSS"
 VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "CompanyName" "BOSS Development Team"
-VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "LegalCopyright" "© 2009-2012 BOSS Development Team"
-VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "FileDescription" "BOSS 2.1.1安装包"
-VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "FileVersion" "2.1.1"
+VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "LegalCopyright" "© 2009-2014 BOSS Development Team"
+VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "FileDescription" "BOSS 2.2.0安装包"
+VIAddVersionKey /LANG=${LANG_SIMPCHINESE} "FileVersion" "2.2.0"
 
 LangString TEXT_MESSAGEBOX ${LANG_SIMPCHINESE} "检测到旧版BOSS，您需要先卸载旧版才能安装新版。$\n$\n单击“确定”卸载旧版本或者“取消”取消更新。"
 LangString TEXT_RUN ${LANG_SIMPCHINESE} "运行BOSS"
 LangString TEXT_SHOWREADME ${LANG_SIMPCHINESE} "查看说明"
 LangString TEXT_MAIN ${LANG_SIMPCHINESE} "所有BOSS文件（除userlist和BOSS.ini）"
 LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件。"
-	
+
 ;--------------------------------
 ;Variables
 
@@ -157,7 +157,7 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 ;Initialisations
 
 	Function .onInit
-	
+
 		!insertmacro MUI_LANGDLL_DISPLAY
 
 		StrCpy $Empty ""
@@ -181,11 +181,11 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 			ReadRegStr $NV_Path HKLM "Software\Wow6432Node\Bethesda Softworks\FalloutNV" "Installed Path"
 		${EndIf}
 		StrCpy $INSTDIR "C:\BOSS"
-		
+
 	FunctionEnd
-	
+
 	Function onGUIInit
-		; Have to do this now as language isn't actually set until 
+		; Have to do this now as language isn't actually set until
 		; First check to see if BOSS is already installed via installer, and launch the existing uninstaller if so.
 		IfFileExists "$COMMONFILES\BOSS\uninstall.exe" 0 +8
 			MessageBox MB_OKCANCEL|MB_ICONQUESTION "$(Text_MessageBox)" IDOK oldCont IDCANCEL oldCancel
@@ -217,14 +217,14 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 	Function un.onInit
 
 		!insertmacro MUI_LANGDLL_DISPLAY
-		
+
 	FunctionEnd
 
 ;--------------------------------
 ;Installer Sections
 
 	Section "Installer Section"
-		
+
 		;Silently move and remove files from past BOSS installs.
 		 ${If} $OB_Path != $Empty
 			IfFileExists "$OB_Path\Data\BOSS\userlist.txt" 0 +3
@@ -313,11 +313,11 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		IfFileExists "BOSS.ini" 0 +3
 			Delete "BOSS.ini.old"
 			Rename "BOSS.ini" "BOSS.ini.old"
-			
+
 		;Install new BOSS ini.
 		SetOutPath "$INSTDIR"
 		File "data\boss-common\BOSS.ini"
-		
+
 		;Write language ini setting to BOSS.ini. The space is there because otherwise it would be printed as =russian or whatever. Purely to look good.
 		StrCmp $LANGUAGE ${LANG_RUSSIAN} 0 +2
 		WriteINIStr $INSTDIR\BOSS.ini "General Settings" "sLanguage" " russian"
@@ -327,26 +327,20 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		WriteINIStr $INSTDIR\BOSS.ini "General Settings" "sLanguage" " spanish"
 		StrCmp $LANGUAGE ${LANG_SIMPCHINESE} 0 +2
 		WriteINIStr $INSTDIR\BOSS.ini "General Settings" "sLanguage" " chinese"
-		
+
 		;Install main executables.
 		SetOutPath "$INSTDIR"
 		File "code\trunk\bin\Release-32\BOSS.exe"
 		File "code\trunk\bin\Release-32\BOSS GUI.exe"
-			  
-		;Now install API DLLs.
-		SetOutPath "$INSTDIR\API"
-		File "code\trunk\bin\Release-32\boss32.dll"
-		File "code\trunk\bin\Release-64\boss64.dll"
-		
+
 		;Now install readme files.
 		SetOutPath "$INSTDIR\Docs"
-		File "data\boss-common\Docs\BOSS API ReadMe.html"
 		File "data\boss-common\Docs\BOSS Masterlist Syntax.html"
 		File "data\boss-common\Docs\BOSS ReadMe.html"
 		File "data\boss-common\Docs\BOSS Userlist Syntax.html"
 		File "data\boss-common\Docs\BOSS Version History.html"
 		File "data\boss-common\Docs\Licenses.txt"
-		
+
 		;Now install readme images.
 		SetOutPath "$INSTDIR\Docs\images"
 		File "data\boss-common\Docs\images\GUI-Main.png"
@@ -359,7 +353,7 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		File "data\boss-common\Docs\images\Userlist.png"
 		File "data\boss-common\Docs\images\Ini.png"
 		File "data\boss-common\Docs\images\CLI.png"
-  
+
 		;Now install language files.
 		SetOutPath "$INSTDIR\l10n\ru\LC_MESSAGES"
 		File "data\boss-common\l10n\ru\LC_MESSAGES\messages.mo"
@@ -372,7 +366,7 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		SetOutPath "$INSTDIR\l10n\zh\LC_MESSAGES"
 		File "data\boss-common\l10n\zh\LC_MESSAGES\messages.mo"
 		File "data\boss-common\l10n\zh\LC_MESSAGES\wxstd.mo"
-		
+
 		;Add Start Menu shortcuts. Set out path back to $INSTDIR otherwise the shortcuts start in the wrong place.
 		;Set Shell Var Context to all so that shortcuts are installed for all users, not just admin.
 		SetOutPath "$INSTDIR"
@@ -385,11 +379,10 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		CreateShortCut "$SMPROGRAMS\BOSS\Docs\Main ReadMe.lnk" "$INSTDIR\Docs\BOSS Readme.html"
 		CreateShortCut "$SMPROGRAMS\BOSS\Docs\Userlist Syntax.lnk" "$INSTDIR\Docs\BOSS Userlist Syntax.html"
 		CreateShortCut "$SMPROGRAMS\BOSS\Docs\Version History.lnk" "$INSTDIR\Docs\BOSS Version History.html"
-		CreateShortCut "$SMPROGRAMS\BOSS\Docs\API ReadMe.lnk" "$INSTDIR\Docs\BOSS API ReadMe.html"
 		CreateShortCut "$SMPROGRAMS\BOSS\Docs\Masterlist Syntax.lnk" "$INSTDIR\Docs\BOSS Masterlist Syntax.html"
 		CreateShortCut "$SMPROGRAMS\BOSS\Docs\Copyright Licenses.lnk" "$INSTDIR\Docs\Licenses.txt"
-	  
-		
+
+
 		;Store installation folder in registry key.
 		WriteRegStr HKLM "Software\BOSS" "Installed Path" "$INSTDIR"
 		;Write registry keys for Windows' uninstaller.
@@ -398,10 +391,10 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "URLInfoAbout" 'http://better-oblivion-sorting-software.googlecode.com/'
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "HelpLink" 'http://better-oblivion-sorting-software.googlecode.com/'
 		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "Publisher" 'BOSS Development Team'
-		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '2.1.1'      
+		WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "DisplayVersion" '2.1.1'
 		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoModify" 1
 		WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\BOSS" "NoRepair" 1
-		
+
 		;Create uninstaller
 		WriteUninstaller "$INSTDIR\Uninstall.exe"
 
@@ -416,19 +409,14 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		;Remove main executables.
 		Delete "$INSTDIR\BOSS.exe"
 		Delete "$INSTDIR\BOSS GUI.exe"
-		
-		;Remove API DLLs.
-		Delete "$INSTDIR\API\boss32.dll"
-		Delete "$INSTDIR\API\boss64.dll"
-		
+
 		;Remove readme files.
-		Delete "$INSTDIR\Docs\BOSS API ReadMe.html"
 		Delete "$INSTDIR\Docs\BOSS Masterlist Syntax.html"
 		Delete "$INSTDIR\Docs\BOSS ReadMe.html"
 		Delete "$INSTDIR\Docs\BOSS Userlist Syntax.html"
 		Delete "$INSTDIR\Docs\BOSS Version History.html"
 		Delete "$INSTDIR\Docs\Licenses.txt"
-		
+
 		;Remove readme images.
 		Delete "$INSTDIR\Docs\images\GUI-Main.png"
 		Delete "$INSTDIR\Docs\images\GUI-Select-Game.png"
@@ -440,7 +428,7 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		Delete "$INSTDIR\Docs\images\Userlist.png"
 		Delete "$INSTDIR\Docs\images\Ini.png"
 		Delete "$INSTDIR\Docs\images\CLI.png"
-  
+
 		;Remove language files.
 		Delete "$INSTDIR\l10n\ru\LC_MESSAGES\messages.mo"
 		Delete "$INSTDIR\l10n\ru\LC_MESSAGES\wxstd.mo"
@@ -449,7 +437,7 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		Delete "$INSTDIR\l10n\de\LC_MESSAGES\wxstd.mo"
 		Delete "$INSTDIR\l10n\zh\LC_MESSAGES\messages.mo"
 		Delete "$INSTDIR\l10n\zh\LC_MESSAGES\wxstd.mo"
-		
+
 		;Now we have to remove the files BOSS generates when it runs.
 		Delete "$INSTDIR\BOSSDebugLog.txt"
 		;Trying to delete a file that doesn't exist doesn't cause an error, so delete all games' files.
@@ -478,7 +466,7 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		Delete "$INSTDIR\Fallout New Vegas\masterlist.txt"
 		Delete "$INSTDIR\Fallout New Vegas\modlist.txt"
 		Delete "$INSTDIR\Fallout New Vegas\modlist.old"
-		
+
 		;Remove subfolders.
 		RMDir "$INSTDIR\API"
 		RMDir "$INSTDIR\Docs\images"
@@ -497,7 +485,7 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		RMDir "$INSTDIR\l10n\zh\LC_MESSAGES"
 		RMDir "$INSTDIR\l10n\zh"
 		RMDir "$INSTDIR\l10n"
-		
+
 		;Remove uninstaller.
 		Delete "$INSTDIR\Uninstall.exe"
 
@@ -506,7 +494,7 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 
 		;Delete registry key.
 		DeleteRegKey HKLM "Software\BOSS"
-		
+
 		;Delete stupid Windows created registry keys:
 		DeleteRegKey HKCU "Software\BOSS"
 		DeleteRegKey HKLM "Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\BOSS"
@@ -524,7 +512,7 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$INSTDIR\BOSS.exe"
 		DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$INSTDIR\BOSS GUI.exe"
 		DeleteRegValue HKCU "Software\Microsoft\Windows\ShellNoRoam\MuiCache" "$INSTDIR\Uninstall.exe"
-		
+
 		;Delete Start Menu folder.
 		SetShellVarContext all
 		RMDir /r "$SMPROGRAMS\BOSS"
@@ -557,5 +545,5 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 	  !insertmacro MUI_DESCRIPTION_TEXT ${Main} "$(Text_Main)"
 	  !insertmacro MUI_DESCRIPTION_TEXT ${UserFiles} "$(Text_UserFiles)"
 	!insertmacro MUI_UNFUNCTION_DESCRIPTION_END
-	
+
 ;--------------------------------
