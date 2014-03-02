@@ -66,9 +66,6 @@ namespace boss
 		// sets the verbosity limit
 		void setVerbosity (LogVerbosity verbosity);
 
-		// sets whether filename and line number will be output with each message
-		void setOriginTracking (bool enabled);
-
 		// sets the output stream
 		inline void setStream(const char * file) {
 			m_out = fopen(file,"w");

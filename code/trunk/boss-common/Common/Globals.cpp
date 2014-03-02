@@ -88,10 +88,8 @@ namespace boss {
 	BOSS_COMMON bool		gl_update					= true;
 	BOSS_COMMON bool		gl_update_only				= false;
 	BOSS_COMMON bool		gl_silent					= false;
-	BOSS_COMMON bool		gl_debug_with_source		= false;
 	BOSS_COMMON bool		gl_show_CRCs				= false;
 	BOSS_COMMON bool		gl_trial_run				= false;
-	BOSS_COMMON bool		gl_log_debug_output			= false;
 
     //Repository URLs
     BOSS_COMMON std::string gl_oblivion_repo_url        = "https://github.com/boss-developers/oblivion.git";

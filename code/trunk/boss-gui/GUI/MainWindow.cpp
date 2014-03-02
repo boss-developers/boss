@@ -106,10 +106,8 @@ bool BossGUI::OnInit() {
 		}
 	}
 
-	// set alternative output stream for logger and whether to track log statement origins
-	if (gl_log_debug_output)
-		g_logger.setStream(debug_log_path.string().c_str());
-	g_logger.setOriginTracking(gl_debug_with_source);
+    if (gl_debug_verbosity > 0)
+	    g_logger.setStream(debug_log_path.string().c_str());
 	// it's ok if this number is too high.  setVerbosity will handle it
 	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));
 

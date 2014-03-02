@@ -42,15 +42,10 @@ public:
 	DECLARE_EVENT_TABLE()
 private:
 	wxCheckBox *UseUserRuleManagerBox;
-	wxCheckBox *DebugSourceReferencesBox;
-	wxCheckBox *LogDebugOutputBox;
 	wxCheckBox *CloseGUIAfterRunningBox;
 	wxChoice *DebugVerbosityChoice;
 	wxChoice *GameChoice;
 	wxChoice *LanguageChoice;
-	wxNotebook *TabHolder;
-	wxPanel *GeneralTab;
-	wxPanel *DebugTab;
 };
 
 #endif

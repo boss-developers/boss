@@ -1301,10 +1301,8 @@ namespace boss {
             << "bUpdateMasterlist       = " << BoolToString(gl_update) << endl
             << "bOnlyUpdateMasterlist   = " << BoolToString(gl_update_only) << endl
             << "bSilentRun              = " << BoolToString(gl_silent) << endl
-            << "bDebugWithSourceRefs    = " << BoolToString(gl_debug_with_source) << endl
             << "bDisplayCRCs            = " << BoolToString(gl_show_CRCs) << endl
             << "bDoTrialRun             = " << BoolToString(gl_trial_run) << endl
-            << "bLogDebugOutput         = " << BoolToString(gl_log_debug_output) << endl << endl
 
             << "[Repository URLs]" << endl
             << "sOblivionRepoURL        = " << gl_oblivion_repo_url << endl
@@ -1444,14 +1442,10 @@ namespace boss {
 				gl_update_only = StringToBool(iter->second);
 			else if (iter->first == "bSilentRun")
 				gl_silent = StringToBool(iter->second);
-			else if (iter->first == "bDebugWithSourceRefs")
-				gl_debug_with_source = StringToBool(iter->second);
 			else if (iter->first == "bDisplayCRCs")
 				gl_show_CRCs = StringToBool(iter->second);
 			else if (iter->first == "bDoTrialRun")
 				gl_trial_run = StringToBool(iter->second);
-			else if (iter->first == "bLogDebugOutput")
-				gl_log_debug_output = StringToBool(iter->second);
 		}
 	}
 

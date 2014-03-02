@@ -64,70 +64,50 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 	//Set up stuff in the frame.
 	SetBackgroundColour(wxColour(255,255,255));
 
-	TabHolder = new wxNotebook(this,wxID_ANY);
+    GameChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 6, Game);
+    LanguageChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 5, Language);
+    DebugVerbosityChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, DebugVerbosity);
+    UseUserRuleManagerBox = new wxCheckBox(this, wxID_ANY, translate("Use User Rules Manager"));
+    CloseGUIAfterRunningBox = new wxCheckBox(this, wxID_ANY, translate("Close the GUI after running BOSS"));
 
 	wxSizerFlags leftItem(1);
-	leftItem.Border(wxALL, 10).Expand().Left();
+	leftItem.Border(wxTOP | wxBOTTOM | wxRIGHT, 5).Expand().Left();
 
 	wxSizerFlags rightItem(1);
-	rightItem.Border(wxALL, 10).Expand().Right();
+    rightItem.Border(wxTOP | wxBOTTOM | wxLEFT, 5).Expand().Right();
 
 	wxSizerFlags wholeItem(0);
-	wholeItem.Border(wxALL, 10);
+    wholeItem.Border(wxALL, 10).Expand();
 
-	//Create General Settings tab.
-	GeneralTab = new wxPanel(TabHolder);
-	wxBoxSizer *GeneralTabSizer = new wxBoxSizer(wxVERTICAL);
-
-	wxGridSizer *GeneralGridSizer = new wxGridSizer(2, 5, 5);
-	
-	GeneralGridSizer->Add(new wxStaticText(GeneralTab, wxID_ANY, translate("Default Game:")), leftItem);
-	GeneralGridSizer->Add(GameChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 6, Game), rightItem);
-	GeneralGridSizer->Add(new wxStaticText(GeneralTab, wxID_ANY, translate("Language:")), leftItem);
-	GeneralGridSizer->Add(LanguageChoice = new wxChoice(GeneralTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 5, Language), rightItem);
-	GeneralTabSizer->Add(GeneralGridSizer);
-	GeneralTabSizer->Add(UseUserRuleManagerBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Use User Rules Manager")), wholeItem);
-	GeneralTabSizer->Add(CloseGUIAfterRunningBox = new wxCheckBox(GeneralTab,wxID_ANY,translate("Close the GUI after running BOSS")), wholeItem);
-
-	wxString text = translate("Language settings will be applied after the BOSS GUI is restarted.");
-	GeneralTabSizer->Add(new wxStaticText(GeneralTab, wxID_ANY, text), 1, wxEXPAND|wxALL, 10);
-	
-	GeneralTab->SetSizer(GeneralTabSizer);
-
-	//Create Debugging Settings tab.
-	DebugTab = new wxPanel(TabHolder);
-	wxBoxSizer *DebugTabSizer = new wxBoxSizer(wxVERTICAL);
-
-	wxGridSizer *DebugGridSizer = new wxGridSizer(2, 5, 5);
-	DebugGridSizer->Add(new wxStaticText(DebugTab, wxID_ANY, translate("Debug Output Verbosity:")), leftItem);
-	DebugGridSizer->Add(DebugVerbosityChoice = new wxChoice(DebugTab, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, DebugVerbosity), rightItem);
-	DebugTabSizer->Add(DebugGridSizer);
-	DebugTabSizer->Add(DebugSourceReferencesBox = new wxCheckBox(DebugTab,wxID_ANY, translate("Include Source Code References")), wholeItem);
-	DebugTabSizer->Add(LogDebugOutputBox = new wxCheckBox(DebugTab,wxID_ANY, translate("Log Debug Output")), wholeItem);
-
-	DebugTab->SetSizer(DebugTabSizer);
-
-	//Attach all pages.
-	TabHolder->AddPage(GeneralTab, translate("General"), true);
-	TabHolder->AddPage(DebugTab, translate("Debugging"));
-	
-	//Need to add 'OK' and 'Cancel' buttons.
-	wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
-	hbox->Add(new wxButton(this, OPTION_OKExitSettings, translate("OK"), wxDefaultPosition, wxSize(70, 30)));
-	hbox->Add(new wxButton(this, OPTION_CancelExitSettings, translate("Cancel"), wxDefaultPosition, wxSize(70, 30)), 0, wxLEFT, 20);
-
-	//Now add TabHolder and OK button to window sizer.
+	//Set up layout.
 	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
-	bigBox->Add(TabHolder, 1, wxEXPAND);
+
+    wxGridSizer *GridSizer = new wxGridSizer(2, 0, 0);
+    GridSizer->Add(new wxStaticText(this, wxID_ANY, translate("Default Game:")), leftItem);
+    GridSizer->Add(GameChoice, rightItem);
+    GridSizer->Add(new wxStaticText(this, wxID_ANY, translate("Language:")), leftItem);
+    GridSizer->Add(LanguageChoice, rightItem);
+    GridSizer->Add(new wxStaticText(this, wxID_ANY, translate("Debug Output Verbosity:")), leftItem);
+    GridSizer->Add(DebugVerbosityChoice, rightItem);
+
+    bigBox->Add(GridSizer, wholeItem);
+
+    bigBox->Add(UseUserRuleManagerBox, wholeItem);
+    bigBox->Add(CloseGUIAfterRunningBox, wholeItem);
+    wxString text = translate("Language settings will be applied after the BOSS GUI is restarted.");
+    bigBox->Add(new wxStaticText(this, wxID_ANY, text), 0, wxEXPAND | wxALL, 10);
+
+    //Need to add 'OK' and 'Cancel' buttons.
+    wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
+    hbox->Add(new wxButton(this, OPTION_OKExitSettings, translate("OK"), wxDefaultPosition, wxSize(70, 30)));
+    hbox->Add(new wxButton(this, OPTION_CancelExitSettings, translate("Cancel"), wxDefaultPosition, wxSize(70, 30)), 0, wxLEFT, 20);
 	bigBox->Add(hbox, 0, wxCENTER|wxALL, 10);
 
 	//Initialise options with values. For checkboxes, they are off by default.
 	SetDefaultValues();
 
 	//Tooltips.
-	LogDebugOutputBox->SetToolTip(translate("The output is logged to the BOSSDebugLog.txt file"));
-	DebugSourceReferencesBox->SetToolTip(translate("Adds source code references to command line output."));
-	DebugVerbosityChoice->SetToolTip(translate("The higher the verbosity level, the more information is outputted to the command line."));
+	DebugVerbosityChoice->SetToolTip(translate("The higher the verbosity level, the more information is outputted to BOSSDebugLog.txt."));
 	
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
@@ -165,12 +145,6 @@ void SettingsFrame::SetDefaultValues() {
 		LanguageChoice->SetSelection(4);
 
 	//Debugging Settings
-	if (gl_debug_with_source)
-		DebugSourceReferencesBox->SetValue(true);
-
-	if (gl_log_debug_output)
-		LogDebugOutputBox->SetValue(true);
-
 	if (gl_debug_verbosity == 0)
 		DebugVerbosityChoice->SetSelection(0);
 	else if (gl_debug_verbosity == 1)
@@ -227,14 +201,11 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 
 	//Debugging
 	gl_debug_verbosity = DebugVerbosityChoice->GetSelection();
-	gl_debug_with_source = DebugSourceReferencesBox->IsChecked();
-	gl_log_debug_output = LogDebugOutputBox->IsChecked();
 
 	//Also set the logger settings now.
-	g_logger.setOriginTracking(gl_debug_with_source);
 	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));
-	if (gl_log_debug_output)
-		g_logger.setStream(debug_log_path.string().c_str());
+    if (gl_debug_verbosity > 0)
+	    g_logger.setStream(debug_log_path.string().c_str());
 
 	this->Close();
 }

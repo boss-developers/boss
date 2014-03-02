@@ -103,10 +103,8 @@ namespace boss {
 	BOSS_COMMON extern bool		gl_update;					// update the masterlist?
 	BOSS_COMMON extern bool		gl_update_only;				// only update the masterlist and don't sort currently.
 	BOSS_COMMON extern bool		gl_silent;					// silent mode?
-	BOSS_COMMON extern bool		gl_debug_with_source;		// whether to include origin information in logging statements
 	BOSS_COMMON extern bool		gl_show_CRCs;				// whether or not to show mod CRCs.
 	BOSS_COMMON extern bool		gl_trial_run;				// If true, don't redate files.
-	BOSS_COMMON extern bool		gl_log_debug_output;		// If true, logs command line output in BOSSDebugLog.txt.
 
     //Repository URLs
     BOSS_COMMON extern std::string gl_oblivion_repo_url;

@@ -179,51 +179,46 @@ int main(int argc, char *argv[]) {
 
 	// declare the supported options
 	po::options_description opts("Options");
-	opts.add_options()
-		("help,h",				translate("produces this help message").str().c_str())
-		("version,V",			translate("prints the version banner").str().c_str())
-		("update,u", po::value(&gl_update)->zero_tokens(),
-								translate("automatically update the local copy of the"
-								" masterlist to the latest version"
-								" available on the web before sorting").str().c_str())
-		("no-update,U",			translate("inhibit the automatic masterlist updater").str().c_str())
-		("only-update,o", po::value(&gl_update_only)->zero_tokens(),
-								translate("automatically update the local copy of the"
-								" masterlist to the latest version"
-								" available on the web but don't sort right"
-								" now").str().c_str())
-		("silent,s", po::value(&gl_silent)->zero_tokens(),
-								translate("don't launch a browser to show the HTML log"
-								" at program completion").str().c_str())
-		("revert,r", po::value(&gl_revert)->implicit_value(1, ""),
-								translate("revert to a previous load order.  this"
-								" parameter optionally accepts values of 1 or"
-								" 2, indicating how many undo steps to apply."
-								"  if no option value is specified, it"
-								" defaults to 1").str().c_str())
-		("verbose,v", po::value(&gl_debug_verbosity)->implicit_value(1, ""),
-								translate("specify verbosity level (0-3) of the debugging output.  0 is the"
-								" default, showing only WARN and ERROR messges."
-								" 1 (INFO and above) is implied if this option"
-								" is specified without an argument.  higher"
-								" values increase the verbosity further").str().c_str())
-		("game,g", po::value(&gameStr),
-								translate("override game autodetection.  valid values"
-								" are: 'Oblivion', 'Nehrim', 'Fallout3',"
-								" 'FalloutNV', and 'Skyrim'").str().c_str())
-		("debug-with-source,d", po::value(&gl_debug_with_source)->zero_tokens(),
-								translate("add source file references to debug statements").str().c_str())
-		("crc-display,c", po::value(&gl_show_CRCs)->zero_tokens(),
-								translate("show mod file CRCs, so that a file's CRC can be"
-								" added to the masterlist in a conditional").str().c_str())
-		("format,f", po::value(&bosslogFormat),
-								translate("select output format. valid values"
-								" are: 'html', 'text'").str().c_str())
-		("trial-run,t", po::value(&gl_trial_run)->zero_tokens(),
-								translate("run BOSS without actually making any changes to load order").str().c_str())
-		("log-debug,l", po::value(&gl_log_debug_output)->zero_tokens(),
-								translate("logs the debug output to the BOSSDebugLog.txt file instead"
-								" of the command line.").str().c_str());
+    opts.add_options()
+        ("help,h", translate("produces this help message").str().c_str())
+        ("version,V", translate("prints the version banner").str().c_str())
+        ("update,u", po::value(&gl_update)->zero_tokens(),
+        translate("automatically update the local copy of the"
+        " masterlist to the latest version"
+        " available on the web before sorting").str().c_str())
+        ("no-update,U", translate("inhibit the automatic masterlist updater").str().c_str())
+        ("only-update,o", po::value(&gl_update_only)->zero_tokens(),
+        translate("automatically update the local copy of the"
+        " masterlist to the latest version"
+        " available on the web but don't sort right"
+        " now").str().c_str())
+        ("silent,s", po::value(&gl_silent)->zero_tokens(),
+        translate("don't launch a browser to show the HTML log"
+        " at program completion").str().c_str())
+        ("revert,r", po::value(&gl_revert)->implicit_value(1, ""),
+        translate("revert to a previous load order.  this"
+        " parameter optionally accepts values of 1 or"
+        " 2, indicating how many undo steps to apply."
+        "  if no option value is specified, it"
+        " defaults to 1").str().c_str())
+        ("verbose,v", po::value(&gl_debug_verbosity)->implicit_value(1, ""),
+        translate("specify verbosity level (0-3) of the debugging output.  0 is the"
+        " default, showing only WARN and ERROR messges."
+        " 1 (INFO and above) is implied if this option"
+        " is specified without an argument.  higher"
+        " values increase the verbosity further").str().c_str())
+        ("game,g", po::value(&gameStr),
+        translate("override game autodetection.  valid values"
+        " are: 'Oblivion', 'Nehrim', 'Fallout3',"
+        " 'FalloutNV', and 'Skyrim'").str().c_str())
+        ("crc-display,c", po::value(&gl_show_CRCs)->zero_tokens(),
+        translate("show mod file CRCs, so that a file's CRC can be"
+        " added to the masterlist in a conditional").str().c_str())
+        ("format,f", po::value(&bosslogFormat),
+        translate("select output format. valid values"
+        " are: 'html', 'text'").str().c_str())
+        ("trial-run,t", po::value(&gl_trial_run)->zero_tokens(),
+        translate("run BOSS without actually making any changes to load order").str().c_str());
 
 	// parse command line arguments
 	po::variables_map vm;
@@ -239,9 +234,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	// set alternative output stream for logger and whether to track log statement origins
-	if (gl_log_debug_output)
-		g_logger.setStream(debug_log_path.string().c_str());
-	g_logger.setOriginTracking(gl_debug_with_source);
+    if (gl_debug_verbosity > 0)
+	    g_logger.setStream(debug_log_path.string().c_str());
 	if (gl_debug_verbosity < 0) {
 		LOG_ERROR("invalid option for 'verbose' parameter: %d", gl_debug_verbosity);
 		Fail();

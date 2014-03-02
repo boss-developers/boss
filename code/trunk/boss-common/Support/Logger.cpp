@@ -77,12 +77,9 @@ namespace boss
         }
 
         m_verbosity = verbosity;
-    }
 
-    // sets whether to output log message origin information
-    void Logger::setOriginTracking (bool enabled)
-    {
-        m_originTracking = enabled;
+        if (m_verbosity == LV_TRACE)
+            m_originTracking = true;  //Automatically include origin info when tracing.
     }
 
     // formats the message and prints to stdout
