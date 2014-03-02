@@ -108,7 +108,7 @@ void Fail() {
 }
 
 int progress(const git_transfer_progress *stats, void *payload) {
-    printf((translate("Downloading: %i%% of %i objects (%i KB)").str() + "\r").c_str(), stats->received_objects, stats->total_objects, stats->received_bytes/1024);
+    printf((translate("Downloading masterlist: %i of %i objects (%i KB)").str() + "\r").c_str(), stats->received_objects, stats->total_objects, stats->received_bytes/1024);
 	fflush(stdout);
 	return 0;
 }

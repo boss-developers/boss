@@ -52,7 +52,7 @@ namespace boss {
 		if (currentProgress == 1000)
 			--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
         wxProgressDialog* progress = (wxProgressDialog*)payload;
-		bool cont = progress->Update(currentProgress, translate("Downloading masterlist..."));
+            bool cont = progress->Update(currentProgress, FromUTF8(format(loc::translate("Downloading masterlist: %1% of %2% objects (%3% KB)")) % stats->received_objects % stats->total_objects % (stats->received_bytes / 1024)));
 		if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
 			uint32_t ans = wxMessageBox(translate("Are you sure you want to cancel?"), translate("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
 			if (ans == wxYES)

@@ -135,7 +135,7 @@ namespace boss {
 
             std::ofstream out((game.Masterlist().parent_path() / ".git/info/sparse-checkout").string().c_str());
 
-            out << "masterlist.yaml";
+            out << "masterlist.txt";
 
             out.close();
 
@@ -199,13 +199,11 @@ namespace boss {
 
             LOG_INFO("Getting the hash for the tree.");
 
-            const git_oid * mlistOid = git_object_id(ptrs.obj);
-
             LOG_INFO("Converting and recording the first 10 hex characters of the hash.");
 
-            git_oid_tostr(revision, 10, mlistOid);
+            git_oid_tostr(revision, 10, git_object_id(ptrs.obj));
 
-            LOG_INFO("Tree hash is: %s", string(revision));
+            LOG_INFO("Tree hash is: %s", revision);
             LOG_INFO("Freeing the masterlist object.");
 
             git_object_free(ptrs.obj);
