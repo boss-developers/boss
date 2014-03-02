@@ -67,7 +67,8 @@ namespace boss {
 	BOSS_COMMON const fs::path rules_readme_path	= boss_path / "Docs" / "BOSS Userlist Syntax.html";
 	BOSS_COMMON const fs::path masterlist_doc_path	= boss_path / "Docs" / "BOSS Masterlist Syntax.html";
 	BOSS_COMMON const fs::path version_history_path = boss_path / "Docs" / "BOSS Version History.html";
-	BOSS_COMMON const fs::path licenses_path		= boss_path / "Docs" / "Licenses.txt";
+    BOSS_COMMON const fs::path licenses_path        = boss_path / "Docs" / "Licenses.txt";
+    BOSS_COMMON const fs::path l10n_path            = boss_path / "resources" / "l10n";
 
 
 	///////////////////////////////

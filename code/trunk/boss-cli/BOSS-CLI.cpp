@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
 
 	//Specify location of language dictionaries
 	boost::locale::generator gen;
-	gen.add_messages_path(fs::path(boss_path / "l10n").string());
+    gen.add_messages_path(l10n_path.string());
 	gen.add_messages_domain("messages");
 
 	//Set the locale to get encoding and language conversions working correctly.

@@ -113,7 +113,7 @@ bool BossGUI::OnInit() {
 
 	//Specify location of language dictionaries
 	boost::locale::generator gen;
-	gen.add_messages_path(fs::path(boss_path / "l10n").string());
+    gen.add_messages_path(l10n_path.string());
 	gen.add_messages_domain("messages");
 
 	//Set the locale to get encoding and language conversions working correctly.
@@ -143,7 +143,7 @@ bool BossGUI::OnInit() {
 		wxLoc = new wxLocale();
 		if (!wxLoc->Init(lang, wxLOCALE_LOAD_DEFAULT))
 			throw exception("System GUI text could not be set.");
-		wxLocale::AddCatalogLookupPathPrefix(".\\l10n");
+        wxLocale::AddCatalogLookupPathPrefix(l10n_path.string());
 		wxLoc->AddCatalog("wxstd");
 	} catch(exception &e) {
 		LOG_ERROR("could not implement translation: %s", e.what());
