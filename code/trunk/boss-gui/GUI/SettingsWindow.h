@@ -46,6 +46,11 @@ private:
 	wxChoice *DebugVerbosityChoice;
 	wxChoice *GameChoice;
 	wxChoice *LanguageChoice;
+    wxTextCtrl *OblivionRepoURLTxt;
+    wxTextCtrl *NehrimRepoURLTxt;
+    wxTextCtrl *SkyrimRepoURLTxt;
+    wxTextCtrl *Fallout3RepoURLTxt;
+    wxTextCtrl *FalloutNVRepoURLTxt;
 };
 
 #endif

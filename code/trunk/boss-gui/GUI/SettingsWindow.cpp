@@ -35,7 +35,7 @@ END_EVENT_TABLE()
 using namespace boss;
 using namespace std;
 
-SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCAPTION|wxCLOSE_BOX|wxCLIP_CHILDREN) {
+SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title) {
 
 	wxString DebugVerbosity[] = {
         translate("Standard (0)"),
@@ -69,6 +69,11 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
     DebugVerbosityChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, DebugVerbosity);
     UseUserRuleManagerBox = new wxCheckBox(this, wxID_ANY, translate("Use User Rules Manager"));
     CloseGUIAfterRunningBox = new wxCheckBox(this, wxID_ANY, translate("Close the GUI after running BOSS"));
+    OblivionRepoURLTxt = new wxTextCtrl(this, wxID_ANY);
+    NehrimRepoURLTxt = new wxTextCtrl(this, wxID_ANY);
+    SkyrimRepoURLTxt = new wxTextCtrl(this, wxID_ANY);
+    Fallout3RepoURLTxt = new wxTextCtrl(this, wxID_ANY);
+    FalloutNVRepoURLTxt = new wxTextCtrl(this, wxID_ANY);
 
 	wxSizerFlags leftItem(1);
 	leftItem.Border(wxTOP | wxBOTTOM | wxRIGHT, 5).Expand().Left();
@@ -89,6 +94,16 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
     GridSizer->Add(LanguageChoice, rightItem);
     GridSizer->Add(new wxStaticText(this, wxID_ANY, translate("Debug Output Verbosity:")), leftItem);
     GridSizer->Add(DebugVerbosityChoice, rightItem);
+    GridSizer->Add(new wxStaticText(this, wxID_ANY, translate("Oblivion Masterlist URL:")), leftItem);
+    GridSizer->Add(OblivionRepoURLTxt, rightItem);
+    GridSizer->Add(new wxStaticText(this, wxID_ANY, translate("Nehrim Masterlist URL:")), leftItem);
+    GridSizer->Add(NehrimRepoURLTxt, rightItem);
+    GridSizer->Add(new wxStaticText(this, wxID_ANY, translate("Skyrim Masterlist URL:")), leftItem);
+    GridSizer->Add(SkyrimRepoURLTxt, rightItem);
+    GridSizer->Add(new wxStaticText(this, wxID_ANY, translate("Fallout 3 Masterlist URL:")), leftItem);
+    GridSizer->Add(Fallout3RepoURLTxt, rightItem);
+    GridSizer->Add(new wxStaticText(this, wxID_ANY, translate("Falllout: New Vegas Masterlist URL:")), leftItem);
+    GridSizer->Add(FalloutNVRepoURLTxt, rightItem);
 
     bigBox->Add(GridSizer, wholeItem);
 
@@ -153,6 +168,13 @@ void SettingsFrame::SetDefaultValues() {
 		DebugVerbosityChoice->SetSelection(2);
 	else if (gl_debug_verbosity == 3)
 		DebugVerbosityChoice->SetSelection(3);
+
+    //Masterlist repository URL settings
+    OblivionRepoURLTxt->SetValue(FromUTF8(gl_oblivion_repo_url));
+    NehrimRepoURLTxt->SetValue(FromUTF8(gl_nehrim_repo_url));
+    SkyrimRepoURLTxt->SetValue(FromUTF8(gl_skyrim_repo_url));
+    Fallout3RepoURLTxt->SetValue(FromUTF8(gl_fallout3_repo_url));
+    FalloutNVRepoURLTxt->SetValue(FromUTF8(gl_falloutnv_repo_url));
 }
 
 void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
@@ -206,6 +228,13 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));
     if (gl_debug_verbosity > 0)
 	    g_logger.setStream(debug_log_path.string().c_str());
+
+    //Masterlist repository URLs
+    gl_oblivion_repo_url = string(OblivionRepoURLTxt->GetValue().ToUTF8());
+    gl_nehrim_repo_url = string(NehrimRepoURLTxt->GetValue().ToUTF8());
+    gl_skyrim_repo_url = string(SkyrimRepoURLTxt->GetValue().ToUTF8());
+    gl_fallout3_repo_url = string(Fallout3RepoURLTxt->GetValue().ToUTF8());
+    gl_falloutnv_repo_url = string(FalloutNVRepoURLTxt->GetValue().ToUTF8());
 
 	this->Close();
 }
