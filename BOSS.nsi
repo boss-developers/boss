@@ -396,18 +396,24 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		File "data\boss-common\Docs\images\Ini.png"
 		File "data\boss-common\Docs\images\CLI.png"
 
+        ;Install resource files.
+        SetOutPath "$INSTDIR\resources"
+		File "data\boss-common\resources\style.css"
+		File "data\boss-common\resources\script.js"
+
+
 		;Now install language files.
-		SetOutPath "$INSTDIR\l10n\ru\LC_MESSAGES"
-		File "data\boss-common\l10n\ru\LC_MESSAGES\messages.mo"
-		File "data\boss-common\l10n\ru\LC_MESSAGES\wxstd.mo"
-		SetOutPath "$INSTDIR\l10n\es\LC_MESSAGES"
-		File "data\boss-common\l10n\es\LC_MESSAGES\wxstd.mo"
-		File "data\boss-common\l10n\es\LC_MESSAGES\messages.mo"
-		SetOutPath "$INSTDIR\l10n\de\LC_MESSAGES"
-		File "data\boss-common\l10n\de\LC_MESSAGES\wxstd.mo"
-		SetOutPath "$INSTDIR\l10n\zh\LC_MESSAGES"
-		File "data\boss-common\l10n\zh\LC_MESSAGES\messages.mo"
-		File "data\boss-common\l10n\zh\LC_MESSAGES\wxstd.mo"
+		SetOutPath "$INSTDIR\resources\l10n\ru\LC_MESSAGES"
+		File "data\boss-common\resources\l10n\ru\LC_MESSAGES\messages.mo"
+		File "data\boss-common\resources\l10n\ru\LC_MESSAGES\wxstd.mo"
+		SetOutPath "$INSTDIR\resources\l10n\es\LC_MESSAGES"
+		File "data\boss-common\resources\l10n\es\LC_MESSAGES\wxstd.mo"
+		File "data\boss-common\resources\l10n\es\LC_MESSAGES\messages.mo"
+		SetOutPath "$INSTDIR\resources\l10n\de\LC_MESSAGES"
+		File "data\boss-common\resources\l10n\de\LC_MESSAGES\wxstd.mo"
+		SetOutPath "$INSTDIR\resources\l10n\zh\LC_MESSAGES"
+		File "data\boss-common\resources\l10n\zh\LC_MESSAGES\messages.mo"
+		File "data\boss-common\resources\l10n\zh\LC_MESSAGES\wxstd.mo"
 
 		;Add Start Menu shortcuts. Set out path back to $INSTDIR otherwise the shortcuts start in the wrong place.
 		;Set Shell Var Context to all so that shortcuts are installed for all users, not just admin.
@@ -472,13 +478,17 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		Delete "$INSTDIR\Docs\images\CLI.png"
 
 		;Remove language files.
-		Delete "$INSTDIR\l10n\ru\LC_MESSAGES\messages.mo"
-		Delete "$INSTDIR\l10n\ru\LC_MESSAGES\wxstd.mo"
-		Delete "$INSTDIR\l10n\es\LC_MESSAGES\messages.mo"
-		Delete "$INSTDIR\l10n\es\LC_MESSAGES\wxstd.mo"
-		Delete "$INSTDIR\l10n\de\LC_MESSAGES\wxstd.mo"
-		Delete "$INSTDIR\l10n\zh\LC_MESSAGES\messages.mo"
-		Delete "$INSTDIR\l10n\zh\LC_MESSAGES\wxstd.mo"
+		Delete "$INSTDIR\resources\l10n\ru\LC_MESSAGES\messages.mo"
+		Delete "$INSTDIR\resources\l10n\ru\LC_MESSAGES\wxstd.mo"
+		Delete "$INSTDIR\resources\l10n\es\LC_MESSAGES\messages.mo"
+		Delete "$INSTDIR\resources\l10n\es\LC_MESSAGES\wxstd.mo"
+		Delete "$INSTDIR\resources\l10n\de\LC_MESSAGES\wxstd.mo"
+		Delete "$INSTDIR\resources\l10n\zh\LC_MESSAGES\messages.mo"
+		Delete "$INSTDIR\resources\l10n\zh\LC_MESSAGES\wxstd.mo"
+
+        ;Remove other resources.
+		Delete "$INSTDIR\resources\style.css"
+		Delete "$INSTDIR\resources\script.js"
 
 		;Now we have to remove the files BOSS generates when it runs.
 		Delete "$INSTDIR\BOSSDebugLog.txt"
@@ -518,15 +528,16 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		RMDir "$INSTDIR\Skyrim"
 		RMDir "$INSTDIR\Fallout 3"
 		RMDir "$INSTDIR\Fallout New Vegas"
-		RMDir "$INSTDIR\l10n\ru\LC_MESSAGES"
-		RMDir "$INSTDIR\l10n\ru"
-		RMDir "$INSTDIR\l10n\es\LC_MESSAGES"
-		RMDir "$INSTDIR\l10n\es"
-		RMDir "$INSTDIR\l10n\de\LC_MESSAGES"
-		RMDir "$INSTDIR\l10n\de"
-		RMDir "$INSTDIR\l10n\zh\LC_MESSAGES"
-		RMDir "$INSTDIR\l10n\zh"
-		RMDir "$INSTDIR\l10n"
+		RMDir "$INSTDIR\resources\l10n\ru\LC_MESSAGES"
+		RMDir "$INSTDIR\resources\l10n\ru"
+		RMDir "$INSTDIR\resources\l10n\es\LC_MESSAGES"
+		RMDir "$INSTDIR\resources\l10n\es"
+		RMDir "$INSTDIR\resources\l10n\de\LC_MESSAGES"
+		RMDir "$INSTDIR\resources\l10n\de"
+		RMDir "$INSTDIR\resources\l10n\zh\LC_MESSAGES"
+		RMDir "$INSTDIR\resources\l10n\zh"
+		RMDir "$INSTDIR\resources\l10n"
+		RMDir "$INSTDIR\resources"
 
 		;Remove uninstaller.
 		Delete "$INSTDIR\Uninstall.exe"
