@@ -56,7 +56,6 @@ namespace boss {
 		uint32_t Id() const;
 		string Name() const;  //Returns the game's name, eg. "TES IV: Oblivion".
 		string ScriptExtender() const;
-		string RepoURL() const;
 		Item MasterFile() const;  //Returns the game's master file. To get its timestamp, use .GetModTime() on it.
 
 		Version GetVersion() const;
@@ -74,8 +73,6 @@ namespace boss {
 		fs::path Modlist() const;
 		fs::path OldModlist() const;
 		fs::path Log(uint32_t format) const;
-
-        void SetRepoURL(const std::string& url);
 
 		//Creates directory in BOSS folder for BOSS's game-specific files.
 		void CreateBOSSGameFolder();
@@ -101,7 +98,6 @@ namespace boss {
 		uint32_t id;
 		uint32_t loMethod;
 		string name;
-		string repoURL;
 
 		string executable;
 		string masterFile;

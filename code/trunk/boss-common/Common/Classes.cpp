@@ -1278,33 +1278,40 @@ namespace boss {
 		ofstream ini(file.c_str(), ios_base::trunc);
 		if (ini.fail())
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
-		ini <<  '\xEF' << '\xBB' << '\xBF'  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
-			<<	"#---------------" << endl
-			<<	"# BOSS Ini File" << endl
-			<<	"#---------------" << endl
-			<<	loc::translate("# Settings with names starting with 'b' are boolean and accept values of 'true' or 'false'.") << endl
-			<<	loc::translate("# Settings with names starting with 'i' are unsigned integers and accept varying ranges of whole numbers.") << endl
-			<<	loc::translate("# Settings with names starting with 's' are strings and their accepted values vary.") << endl
-			<<	loc::translate("# See the BOSS ReadMe for details on what each setting does and the accepted values for integer and string settings.") << endl << endl
+        ini << '\xEF' << '\xBB' << '\xBF'  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
+            << "#---------------" << endl
+            << "# BOSS Ini File" << endl
+            << "#---------------" << endl
+            << loc::translate("# Settings with names starting with 'b' are boolean and accept values of 'true' or 'false'.") << endl
+            << loc::translate("# Settings with names starting with 'i' are unsigned integers and accept varying ranges of whole numbers.") << endl
+            << loc::translate("# Settings with names starting with 's' are strings and their accepted values vary.") << endl
+            << loc::translate("# See the BOSS ReadMe for details on what each setting does and the accepted values for integer and string settings.") << endl << endl
 
-			<<	"[General Settings]" << endl
-			<<	"bUseUserRulesManager     = " << BoolToString(gl_use_user_rules_manager) << endl 
-			<<	"bCloseGUIAfterSorting    = " << BoolToString(gl_close_gui_after_sorting) << endl
-			<<	"sLanguage                = " << GetLanguageString() << endl << endl
+            << "[General Settings]" << endl
+            << "bUseUserRulesManager    = " << BoolToString(gl_use_user_rules_manager) << endl
+            << "bCloseGUIAfterSorting   = " << BoolToString(gl_close_gui_after_sorting) << endl
+            << "sLanguage               = " << GetLanguageString() << endl << endl
 
-			<<	"[Run Options]" << endl
-			<<	"sGame                    = " << GetIniGameString(gl_game) << endl
-			<<	"sLastGame                = " << GetIniGameString(currentGameId) << endl  //Writing current game because that's what we want recorded when BOSS writes the ini.
-			<<	"sBOSSLogFormat           = " << GetLogFormatString() << endl
-			<<	"iDebugVerbosity          = " << IntToString(gl_debug_verbosity) << endl
-			<<	"iRevertLevel             = " << IntToString(gl_revert) << endl
-			<<	"bUpdateMasterlist        = " << BoolToString(gl_update) << endl
-			<<	"bOnlyUpdateMasterlist    = " << BoolToString(gl_update_only) << endl
-			<<	"bSilentRun               = " << BoolToString(gl_silent) << endl
-			<<	"bDebugWithSourceRefs     = " << BoolToString(gl_debug_with_source) << endl
-			<<	"bDisplayCRCs             = " << BoolToString(gl_show_CRCs) << endl
-			<<	"bDoTrialRun              = " << BoolToString(gl_trial_run) << endl
-			<<	"bLogDebugOutput          = " << BoolToString(gl_log_debug_output) << endl << endl;
+            << "[Run Options]" << endl
+            << "sGame                   = " << GetIniGameString(gl_game) << endl
+            << "sLastGame               = " << GetIniGameString(currentGameId) << endl  //Writing current game because that's what we want recorded when BOSS writes the ini.
+            << "sBOSSLogFormat          = " << GetLogFormatString() << endl
+            << "iDebugVerbosity         = " << IntToString(gl_debug_verbosity) << endl
+            << "iRevertLevel            = " << IntToString(gl_revert) << endl
+            << "bUpdateMasterlist       = " << BoolToString(gl_update) << endl
+            << "bOnlyUpdateMasterlist   = " << BoolToString(gl_update_only) << endl
+            << "bSilentRun              = " << BoolToString(gl_silent) << endl
+            << "bDebugWithSourceRefs    = " << BoolToString(gl_debug_with_source) << endl
+            << "bDisplayCRCs            = " << BoolToString(gl_show_CRCs) << endl
+            << "bDoTrialRun             = " << BoolToString(gl_trial_run) << endl
+            << "bLogDebugOutput         = " << BoolToString(gl_log_debug_output) << endl << endl
+
+            << "[Repository URLs]" << endl
+            << "sOblivionRepoURL        = " << gl_oblivion_repo_url << endl
+            << "sNehrimRepoURL          = " << gl_nehrim_repo_url << endl
+            << "sSkyrimRepoURL          = " << gl_skyrim_repo_url << endl
+            << "sFallout3RepoURL        = " << gl_fallout3_repo_url << endl
+            << "sFalloutNVRepoURL       = " << gl_falloutnv_repo_url << endl;
 		ini.close();
 	}
 
@@ -1392,18 +1399,29 @@ namespace boss {
 					gl_last_game = FALLOUTNV;
 				else if (iter->second == "Skyrim")
 					gl_last_game = SKYRIM;
-			} else if (iter->first == "sLanguage") {
-				if (iter->second == "english")
-					gl_language = ENGLISH;
-				else if (iter->second == "spanish")
-					gl_language = SPANISH;
-				else if (iter->second == "german")
-					gl_language = GERMAN;
-				else if (iter->second == "russian")
-					gl_language = RUSSIAN;
-				else if (iter->second == "chinese")
-					gl_language = SIMPCHINESE;
-			}
+            }
+            else if (iter->first == "sLanguage") {
+                if (iter->second == "english")
+                    gl_language = ENGLISH;
+                else if (iter->second == "spanish")
+                    gl_language = SPANISH;
+                else if (iter->second == "german")
+                    gl_language = GERMAN;
+                else if (iter->second == "russian")
+                    gl_language = RUSSIAN;
+                else if (iter->second == "chinese")
+                    gl_language = SIMPCHINESE;
+            }
+            else if (iter->first == "sOblivionRepoURL")
+                gl_oblivion_repo_url = iter->second;
+            else if (iter->first == "sNehrimRepoURL")
+                gl_nehrim_repo_url = iter->second;
+            else if (iter->first == "sSkyrimRepoURL")
+                gl_skyrim_repo_url = iter->second;
+            else if (iter->first == "sFallout3RepoURL")
+                gl_fallout3_repo_url = iter->second;
+            else if (iter->first == "sFalloutNVRepoURL")
+                gl_falloutnv_repo_url = iter->second;
 			//Now integers.
 			else if (iter->first == "iRevertLevel") {
 				uint32_t value = atoi(iter->second.c_str());

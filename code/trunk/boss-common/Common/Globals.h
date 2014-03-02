@@ -107,5 +107,12 @@ namespace boss {
 	BOSS_COMMON extern bool		gl_show_CRCs;				// whether or not to show mod CRCs.
 	BOSS_COMMON extern bool		gl_trial_run;				// If true, don't redate files.
 	BOSS_COMMON extern bool		gl_log_debug_output;		// If true, logs command line output in BOSSDebugLog.txt.
+
+    //Repository URLs
+    BOSS_COMMON extern std::string gl_oblivion_repo_url;
+    BOSS_COMMON extern std::string gl_nehrim_repo_url;
+    BOSS_COMMON extern std::string gl_skyrim_repo_url;
+    BOSS_COMMON extern std::string gl_fallout3_repo_url;
+    BOSS_COMMON extern std::string gl_falloutnv_repo_url;
 }
 #endif

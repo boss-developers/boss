@@ -73,6 +73,19 @@ namespace boss {
         throw boss_error(error_message, BOSS_ERROR_GIT_ERROR);
     }
 
+    inline std::string RepoURL(const Game& game) {
+        if (game.Id() == OBLIVION)
+            return gl_oblivion_repo_url;
+        else if (game.Id() == NEHRIM)
+            return gl_nehrim_repo_url;
+        else if (game.Id() == SKYRIM)
+            return gl_skyrim_repo_url;
+        else if (game.Id() == FALLOUT3)
+            return gl_fallout3_repo_url;
+        else
+            return gl_falloutnv_repo_url;
+    }
+
     //Progress has form prog(const char *str, int len, void *data)
     template<class Progress>
     std::string UpdateMasterlist(Game& game, Progress prog, void * out) {
@@ -100,12 +113,12 @@ namespace boss {
             LOG_INFO("Checking to see if remote URL matches URL in settings.");
 
             //Check if the repo URLs match.
-            LOG_INFO("Remote URL given: %s", game.RepoURL());
+            LOG_INFO("Remote URL given: %s", RepoURL(game));
             LOG_INFO("Remote URL in repository settings: %s", url);
-            if (url != game.RepoURL()) {
+            if (url != RepoURL(game)) {
                 LOG_INFO("URLs do not match, setting repository URL to URL in settings.");
                 //The URLs don't match. Change the remote URL to match the one BOSS has.
-                handle_error(git_remote_set_url(ptrs.remote, game.RepoURL().c_str()), ptrs);
+                handle_error(git_remote_set_url(ptrs.remote, RepoURL(game).c_str()), ptrs);
 
                 //Now save change.
                 handle_error(git_remote_save(ptrs.remote), ptrs);
@@ -116,10 +129,10 @@ namespace boss {
             //Repository doesn't exist. Set up a repository.
             handle_error(git_repository_init(&ptrs.repo, game.Masterlist().parent_path().string().c_str(), false), ptrs);
 
-            LOG_INFO("Setting the new repository's remote to: %s", game.RepoURL());
+            LOG_INFO("Setting the new repository's remote to: %s", RepoURL(game));
 
             //Now set the repository's remote.
-            handle_error(git_remote_create(&ptrs.remote, ptrs.repo, "origin", game.RepoURL().c_str()), ptrs);
+            handle_error(git_remote_create(&ptrs.remote, ptrs.repo, "origin", RepoURL(game).c_str()), ptrs);
 
             LOG_INFO("Getting the repository config.");
 
