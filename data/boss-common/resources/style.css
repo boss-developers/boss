@@ -33,8 +33,8 @@ li.success{background:#90ff90;display:table;padding:0.3em 0.5em;border-radius:0.
 p.last {text-align:center;margin-bottom:0;}
 .t {color:green;margin-right:0.5em;}
 .c {color:red;margin-right:0.5em;}
-.t:after {content: '\\2713';}
-.c:after {content: '\\2717';}
+.t:after {content: '\2713';}
+.c:after {content: '\2717';}
 .dragHover {background:#DDD;}
 body.dark section.dragHover {background:#444;}
 #overlay{position:fixed;left:0px;top:0px;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:3;visibility:hidden;opacity:0;
@@ -76,7 +76,7 @@ header {padding:0.5em;padding-top:0;margin-bottom:1em;text-align:center;}
 	content: '+';
 }
 #arrow.rotated:after {
-	content: '\\2212';
+	content: '\2212';
 }
 aside {display:block;background:#E8E8E8;z-index:1;overflow:hidden;position:fixed;left:140px;bottom:-1px;height:0;
 	box-shadow: 0 0 3px 1px rgba(0,0,0,0.5);
