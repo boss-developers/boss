@@ -36,10 +36,7 @@ namespace boss {
 	using boost::locale::translate;
 
 	//Return codes, mostly error codes.
-	//DO NOT CHANGE THEIR VALUES. THEY MUST BE INVARIANT ACROSS RELEASES FOR API USERS.
 	BOSS_COMMON const uint32_t BOSS_OK											= 0;
-
-	BOSS_COMMON const uint32_t BOSS_ERROR_NO_MASTER_FILE						= 1;  //Deprecated.
 	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_READ_FAIL						= 2;
 	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_WRITE_FAIL						= 3;
 	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_NOT_UTF8							= 4;
@@ -52,10 +49,7 @@ namespace boss {
 	BOSS_COMMON const uint32_t BOSS_ERROR_PLUGIN_BEFORE_MASTER					= 39;
 	BOSS_COMMON const uint32_t BOSS_ERROR_INVALID_SYNTAX						= 40;
 
-	BOSS_COMMON const uint32_t BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL	= 11;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL		= 12;
-	BOSS_COMMON const uint32_t BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL			= 13;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_CRC_MISMATCH						= 14;
+    BOSS_COMMON const uint32_t BOSS_ERROR_GIT_ERROR                             = 41;
 
 	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL			= 15;
 	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL			= 16;
@@ -65,17 +59,6 @@ namespace boss {
 	BOSS_COMMON const uint32_t BOSS_ERROR_FS_ITER_DIRECTORY_FAIL				= 20;
 
 	BOSS_COMMON const uint32_t BOSS_ERROR_GUI_WINDOW_INIT_FAIL					= 30;
-
-	BOSS_COMMON const uint32_t BOSS_OK_NO_UPDATE_NECESSARY						= 31;
-	BOSS_COMMON const uint32_t BOSS_ERROR_LO_MISMATCH							= 32;
-	BOSS_COMMON const uint32_t BOSS_ERROR_NO_MEM								= 33;
-	BOSS_COMMON const uint32_t BOSS_ERROR_INVALID_ARGS							= 34;
-	BOSS_COMMON const uint32_t BOSS_ERROR_NETWORK_FAIL							= 35;
-	BOSS_COMMON const uint32_t BOSS_ERROR_NO_INTERNET_CONNECTION				= 36;
-	BOSS_COMMON const uint32_t BOSS_ERROR_NO_TAG_MAP							= 37;
-	BOSS_COMMON const uint32_t BOSS_ERROR_PLUGINS_FULL							= 38;
-
-	BOSS_COMMON const uint32_t BOSS_ERROR_MAX = BOSS_ERROR_INVALID_SYNTAX;
 
 	////////////////////////////////
 	// boss_error Class Functions
@@ -110,8 +93,6 @@ namespace boss {
 	string boss_error::getString() const {
 		if (errCode == BOSS_OK)
 			return translate("No error.");
-		else if (errCode == BOSS_ERROR_NO_MASTER_FILE)
-			return translate("No game master .esm file found!"); 
 		else if (errCode == BOSS_ERROR_FILE_READ_FAIL)
 			return (format(translate("\"%1%\" cannot be read!")) % errSubject).str(); 
 		else if (errCode == BOSS_ERROR_FILE_WRITE_FAIL)
@@ -130,16 +111,10 @@ namespace boss {
 			return (format(translate("\"%1%\" cannot be converted from UTF-8 to \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_PLUGIN_BEFORE_MASTER)
 			return (format(translate("Master file \"%1%\" loading after non-master plugins!")) % errSubject).str();
-		else if (errCode == BOSS_ERROR_INVALID_SYNTAX)
-			return errString;
-		else if (errCode == BOSS_ERROR_FIND_ONLINE_MASTERLIST_REVISION_FAIL)
-			return translate("Cannot find online masterlist revision number!"); 
-		else if (errCode == BOSS_ERROR_FIND_ONLINE_MASTERLIST_DATE_FAIL)
-			return translate("Cannot find online masterlist revision date!"); 
-		else if (errCode == BOSS_ERROR_READ_UPDATE_FILE_LIST_FAIL)
-			return translate("Cannot read list of files to be updated!"); 
-		else if (errCode == BOSS_ERROR_FILE_CRC_MISMATCH)
-			return (format(translate("Downloaded file \"%1%\" failed verification test!")) % errSubject).str(); 
+        else if (errCode == BOSS_ERROR_INVALID_SYNTAX)
+            return errString;
+        else if (errCode == BOSS_ERROR_GIT_ERROR)
+            return (format(translate("Git operation failed. Error: %1%")) % errString).str();
 		else if (errCode == BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL)
 			return (format(translate("The modification date of \"%1%\" cannot be read! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_FS_FILE_RENAME_FAIL)
@@ -156,14 +131,6 @@ namespace boss {
 			return (format(translate("The modification date of \"%1%\" cannot be written! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_GUI_WINDOW_INIT_FAIL)
 			return (format(translate("The window \"%1%\" failed to initialise. Details: \"%2%\".")) % errSubject % errString).str();
-		else if (errCode == BOSS_ERROR_NO_MEM)
-			return translate("Memory allocation failed.");
-		else if (errCode == BOSS_ERROR_NO_INTERNET_CONNECTION)
-			return translate("No Internet connection detected.");
-		else if (errCode == BOSS_ERROR_NO_TAG_MAP)
-			return translate("No tag map has yet been initialised.");
-		else if (errCode == BOSS_ERROR_PLUGINS_FULL)
-			return translate("The requested change to the active plugins list would result in over 255 plugins being active.");
 		else
 			return translate("No error.");
 	}
