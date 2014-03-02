@@ -77,17 +77,22 @@
 <ul>
  <li>Fixed: Version extraction from Fallout 3, Fallout: New Vegas and Skyrim plugins.
  <li>Fixed: The plugin submitter selecting existing entries that only partially matched the submitted plugin name.
- <li>Changed: BOSS has moved to GitHub, so all current references to Google Code have been removed from the program and its documentation.
  <li>Changed: BOSS now requires the MSVC 2013 redistributable.
+ <li>Changed: BOSS has moved to GitHub.
+ <ul>
+    <li>Changed: All current references to Google Code have been removed from the program and its documentation.
+    <li>Changed: Masterlist updater now updates the masterlists by cloning and syncing their Git repositories.
+    <li>Added: Ini and GUI settings for the masterlist repository URL for each game.
+ </ul>
  <li>Changed: The installer now downloads and installs the MSVC 2013 redistributable if it cannot detect it as installed.
- <li>Changed: Debugging settings for logging and source code references have been removed. Debug output is now logged at any level higher than standard, and source code references are included at maximum verbosity.
+ <li>Changed: Settings for logging and source code references have been removed. Debug output is now logged at any level higher than standard, and source code references are included at maximum verbosity.
  <li>Changed: GUI settings window layout tweaked.
- <li>Changed: BOSS now updates the masterlists by cloning and syncing their Git repositories. This is a much more robust mechanism than previously used, which was broken when Google changed their site layout slightly.
- <li>Added: Settings for the masterlist repository URL for each game.
  <li>Removed: The API, as better alternatives now exist.
  <li>Removed: Program updater, as it was poorly implemented, specific to the Google Code repository, and of limited use.
  <li>Removed: Proxy support, as it was reported to be non-functional, and it was decided that it wasn't worth retaining.
  <li>Removed: Morrowind support, as it was only token support present so that the API could function uniformly across all the games it supported.
+ <li>Removed: The "Hide Clean Plugins" BOSS Log filter, as it was misleading.
+ <li>Removed: The "Display Settings" BOSS Log feature, as the CSS used by the BOSS Logs is now stored in a separate static file which can be edited if desired.
 </ul>
 
 <h2 id="2.1.1">2.1.1 - <i>28 September 2012</i></h2>
