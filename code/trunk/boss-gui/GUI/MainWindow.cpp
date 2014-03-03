@@ -445,7 +445,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
         LOG_DEBUG("Updating masterlist...");
         try {
             string revision = UpdateMasterlist(game, progress, progDia);
-            string message = (boost::format(translate("Masterlist revision: %1%.")) % revision).str();
+            string message = (boost::format(translate("Masterlist updated; at revision: %1%.")) % revision).str();
             game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
         }
         catch (boss_error &e) {
@@ -453,7 +453,12 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
                 << (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
             LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
         }
-	}
+    }
+    else {
+        string revision = GetMasterlistVersion(game);
+        string message = (boost::format(translate("Masterlist updating disabled; at revision: %1%.")) % revision).str();
+        game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
+    }
 
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
 	if (gl_update_only == true) {

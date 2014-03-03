@@ -90,6 +90,20 @@ namespace boss {
             return gl_falloutnv_repo_url;
     }
 
+    // Gets the revision SHA (first 9 characters) for the currently checked-out masterlist, or "unknown".
+    inline std::string GetMasterlistVersion(Game& game) {
+        if (!fs::exists(game.Masterlist().parent_path() / ".git" / "HEAD"))
+            return "unknown";
+        else {
+            ifstream head((game.Masterlist().parent_path() / ".git" / "HEAD").string());
+            std::string rev;
+            head >> rev;
+            head.close();
+            rev.resize(9);
+            return rev;
+        }
+    }
+
     //Progress has form prog(const char *str, int len, void *data)
     template<class Progress>
     std::string UpdateMasterlist(Game& game, Progress prog, void * out) {
