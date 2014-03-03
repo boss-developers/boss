@@ -39,7 +39,7 @@
 namespace boss {
 
     struct pointers_struct {
-        pointers_struct() : repo(NULL), remote(NULL), cfg(NULL), obj(NULL), commit(NULL) {}
+        pointers_struct() : repo(NULL), remote(NULL), cfg(NULL), obj(NULL), commit(NULL), ref(NULL), sig(NULL) {}
 
         void free() {
             git_commit_free(commit);
@@ -47,6 +47,8 @@ namespace boss {
             git_config_free(cfg);
             git_remote_free(remote);
             git_repository_free(repo);
+            git_reference_free(ref);
+            git_signature_free(sig);
         }
 
         git_repository * repo;
@@ -54,6 +56,8 @@ namespace boss {
         git_config * cfg;
         git_object * obj;
         git_commit * commit;
+        git_reference * ref;
+        git_signature * sig;
     };
 
     inline void handle_error(int error_code, pointers_struct& pointers) {
@@ -168,33 +172,46 @@ namespace boss {
         opts.paths.count = 1;
 
         //Next, we need to do a looping checkout / parsing check / roll-back.
+        /* Here's what to do:
+        0. Create a git_signature using git_signature_default.
+        1. Get the git_object for the desired masterlist revision, using git_revparse_single.
+        2. Get the git_oid for that object, using git_object_id.
+        3. Get the git_reference for the HEAD reference using git_reference_lookup.
+        5. Generate a short string for the git_oid, to display in the log.
+        6. (Re)create a HEAD reference to point directly to the desired masterlist revision,
+           using its git_oid and git_reference_create.
+        7. Perform the checkout of HEAD.
+        */
+
+        //Apparently I'm using libgit2's head, not v0.20.0, so I don't need this...
+        //LOG_INFO("Creating a Git signature.");
+        //handle_error(git_signature_default(&ptrs.sig, ptrs.repo), ptrs);
 
         bool parsingFailed = false;
         unsigned int rollbacks = 0;
         char revision[10];
         do {
-            LOG_INFO("Getting the Git object for the tree at refs/remotes/origin/master~%i.", rollbacks);
-
-            //Get the commit hash so that we can report the revision if there is an error.
             string filespec = "refs/remotes/origin/master~" + IntToString(rollbacks);
-
+            LOG_INFO("Getting the Git object for the tree at refs/remotes/origin/master~%i.", rollbacks);
             handle_error(git_revparse_single(&ptrs.obj, ptrs.repo, filespec.c_str()), ptrs);
 
-            LOG_INFO("Checking out the tree at refs/remotes/origin/master~%i.", rollbacks);
+            LOG_INFO("Getting the Git object ID.");
+            const git_oid * oid = git_object_id(ptrs.obj);
 
-            //Now we can do the checkout.
-            handle_error(git_checkout_tree(ptrs.repo, ptrs.obj, &opts), ptrs);
+            LOG_INFO("Generating hex string for Git object ID.");
+            git_oid_tostr(revision, 10, oid);
 
-            LOG_INFO("Getting the hash for the tree.");
+            LOG_INFO("Recreating HEAD as a direct reference (overwriting it) to the desired revision.");
+            handle_error(git_reference_create(&ptrs.ref, ptrs.repo, "HEAD", oid, 1), ptrs);
 
-            LOG_INFO("Converting and recording the first 10 hex characters of the hash.");
-
-            git_oid_tostr(revision, 10, git_object_id(ptrs.obj));
+            LOG_INFO("Performing a Git checkout of HEAD.");
+            handle_error(git_checkout_head(ptrs.repo, &opts), ptrs);
 
             LOG_INFO("Tree hash is: %s", revision);
-            LOG_INFO("Freeing the masterlist object.");
-
+            LOG_INFO("Freeing pointers.");
             git_object_free(ptrs.obj);
+            git_reference_free(ptrs.ref);
+
             /*
             BOOST_LOG_TRIVIAL(trace) << "Testing masterlist parsing.";
 
