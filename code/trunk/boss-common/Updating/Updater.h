@@ -133,25 +133,6 @@ namespace boss {
 
             //Now set the repository's remote.
             handle_error(git_remote_create(&ptrs.remote, ptrs.repo, "origin", RepoURL(game).c_str()), ptrs);
-
-            LOG_INFO("Getting the repository config.");
-
-            handle_error(git_repository_config(&ptrs.cfg, ptrs.repo), ptrs);
-
-            LOG_INFO("Setting the repository up for sparse checkouts.");
-
-            handle_error(git_config_set_bool(ptrs.cfg, "core.sparseCheckout", true), ptrs);
-
-            //Now add the masterlist file to the list of files to be checked out. We can actually just overwrite anything that was there previously, since it's only one file.
-
-            LOG_INFO("Adding the masterlist to the list of files to be checked out.");
-
-            std::ofstream out((game.Masterlist().parent_path() / ".git/info/sparse-checkout").string().c_str());
-
-            out << "masterlist.txt";
-
-            out.close();
-
         }
 
         //WARNING: This is generally a very bad idea, since it makes HTTPS a little bit pointless, but in this case because we're only reading data and not really concerned about its integrity, it's acceptable. A better solution would be to figure out why GitHub's certificate appears to be invalid to OpenSSL.
@@ -169,13 +150,9 @@ namespace boss {
         callbacks.payload = out;
         git_remote_set_callbacks(ptrs.remote, &callbacks);
 
-        stats = git_remote_stats(ptrs.remote);
-
         //Fetch from remote.
         LOG_INFO("Fetching from remote.");
         handle_error(git_remote_fetch(ptrs.remote), ptrs);
-
-        LOG_INFO("Received %i of %i objects in %i bytes.", stats->indexed_objects, stats->total_objects, stats->received_bytes);
 
         // Now start the merging. Not entirely sure what's going on here, but it looks like libgit2's merge API is incomplete, you can create some git_merge_head objects, but can't do anything with them...
         // Thankfully, we don't really need a merge, we just need to replace whatever's in the working directory with the relevant file from FETCH_HEAD, which was updated in the fetching step before.
@@ -191,8 +168,6 @@ namespace boss {
         opts.paths.count = 1;
 
         //Next, we need to do a looping checkout / parsing check / roll-back.
-
-        git_object_free(ptrs.obj);  //Free object since it will be reallocated in loop.
 
         bool parsingFailed = false;
         unsigned int rollbacks = 0;
