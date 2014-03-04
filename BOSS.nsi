@@ -520,10 +520,6 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
         ${EndIf}
     SectionEnd
 
-    Section "Repositories"
-
-    SectionEnd
-
 ;--------------------------------
 ;Uninstaller Section
 
