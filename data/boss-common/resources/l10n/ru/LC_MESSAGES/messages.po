@@ -1,254 +1,169 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: BOSS2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-29 01:44+0600\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"POT-Creation-Date: 2012-08-18 13:39-0000\n"
+"PO-Revision-Date: 2014-03-06 14:59+0600\n"
 "Last-Translator: Tokc.D.K. <TokcDK@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.4\n"
 
-#: Error.h:121
-msgid "Masterlist Parsing Error: Expected a %1% at:"
-msgstr "Ошибка обработки мастерлиста: Ожидалось %1% на:"
-
-#: Error.h:122
-msgid "Ini Parsing Error: Expected a %1% at:"
-msgstr "Ошибка обработки INI: Ожидалось %1% на:"
-
-#: Error.h:123
-msgid "Userlist Parsing Error: Expected a %1% at:"
-msgstr "Ошибка обработки списка правил: Ожидалось %1% на:"
-
-#: Error.h:124
-msgid "Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
-msgstr ""
-"Ошибка в синтаксисе списка правил: Правило начинается с \"%1%: %2%\" %3%"
-
-#: Error.h:125
-msgid "Masterlist parsing aborted. Utility will end now."
-msgstr "Обработка мастерлиста прервана. Утилита будет закрыта."
-
-#: Error.h:126
+#: .\..\..\..\code\trunk\boss-common\Common/Classes.cpp:1310
 msgid ""
-"Ini parsing aborted. Some or all of the options may not have been set "
-"correctly."
+"# Settings with names starting with 'b' are boolean and accept values of "
+"'true' or 'false'."
 msgstr ""
-"Обработка ini прервана. Некоторые или все настройки не могут быть "
-"установлены правильно."
 
-#: Error.h:127
-msgid "Userlist parsing aborted. No rules will be applied."
-msgstr ""
-"Обработка списка правил прервана. Отсутствуют правила, которые могли быть "
-"применены"
-
-#: Error.h:130
-msgid "includes a sort line in a rule with a FOR rule keyword."
-msgstr "включает строку сортировки в правиле с ключом FOR."
-
-#: Error.h:131
-msgid "tries to add a group."
-msgstr "пытается добавить группу."
-
-#: Error.h:132
-msgid "tries to sort the group \"ESMs\"."
-msgstr "пытается отсортировать группу \"ESMs\"."
-
-#: Error.h:133
-msgid "tries to sort the master .ESM file."
-msgstr "пытается отсортировать ESM-файл."
-
-#: Error.h:134
-msgid "references a mod and a group."
-msgstr "ссылается на мод и группу."
-
-#: Error.h:135
-msgid "tries to sort a group before the group \"ESMs\"."
-msgstr "пытается отсортировать группу, перед группой \"ESMs\"."
-
-#: Error.h:136
-msgid "tries to sort a mod before the master .ESM file."
-msgstr "пытается отсортировать группу, перед ESM-файлом."
-
-#: Error.h:137
+#: .\..\..\..\code\trunk\boss-common\Common/Classes.cpp:1311
 msgid ""
-"tries to insert a mod into the top of the group \"ESMs\", before the master ."
-"ESM file."
+"# Settings with names starting with 'i' are unsigned integers and accept "
+"varying ranges of whole numbers."
 msgstr ""
-"пытается вставить мод вверх группы \"ESMs\", перед мастерфайлом .ESM-файл."
 
-#: Error.h:138
-msgid "tries to insert a group or insert something into a mod."
-msgstr "пытается вставить группу или что-то в мод."
-
-#: Error.h:139
-msgid "tries to attach a message to a group."
-msgstr "пытается прикрепить сообщение к группе"
-
-#: Error.h:140
-msgid "has more than one sort line."
-msgstr "имеет больше чем одну строку для сортировки."
-
-#: Error.h:141
-msgid "has more than one REPLACE-using message line."
-msgstr "имеет больше чем одно использующее замену сообщение."
-
-#: Error.h:142
-msgid "has a REPLACE-using message line that is not the first message line."
+#: .\..\..\..\code\trunk\boss-common\Common/Classes.cpp:1312
+msgid ""
+"# Settings with names starting with 's' are strings and their accepted "
+"values vary."
 msgstr ""
-"имеет использующее замену сообщение, которое не первое сообщения в строке."
 
-#: Error.h:143
-msgid "has a sort line that is not the second line of the rule."
-msgstr "имеет строку сортировки, которая не вторая в правиле."
+#: .\..\..\..\code\trunk\boss-common\Common/Classes.cpp:1313
+msgid ""
+"# See the BOSS ReadMe for details on what each setting does and the accepted "
+"values for integer and string settings."
+msgstr ""
 
-#: Error.h:144
-msgid "tries to sort a mod or group relative to itself."
-msgstr "пытается сортировать мод или группу по отношению к себе."
-
-#: Error.h:145
-msgid "tries to attach an malformatted message."
-msgstr "пытается прикрепить сообщение неизвестного типа."
-
-#: Error.h:146
-msgid "tries to sort a plugin before a master file."
-msgstr "пытается отсортировать плагин перед мастерфайлом."
-
-#: Error.h:147
-msgid "tries to sort a master file before a plugin."
-msgstr "пытается отсортировать мастерфайл перед плагином."
-
-#: Error.cpp:122 Error.cpp:196
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:122
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:196
 msgid "No error."
 msgstr "Нет ошибки."
 
-#: Error.cpp:124
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:124
 msgid "No game master .esm file found!"
 msgstr "Не найден .esm мастерфайл игры!"
 
-#: Error.cpp:126
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:126
 msgid "\"%1%\" cannot be read!"
 msgstr "\"%1%\" не может быть прочитан!"
 
-#: Error.cpp:128
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:128
 msgid "\"%1%\" cannot be written to!"
 msgstr "\"%1%\" не может быть записан!"
 
-#: Error.cpp:130
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:130
 msgid "\"%1%\" is not encoded in valid UTF-8!"
 msgstr "\"%1%\" не закодирован в верной кодировке UTF-8!"
 
-#: Error.cpp:132
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:132
 msgid "\"%1%\" cannot be found!"
 msgstr "\"%1%\" не найден!"
 
-#: Error.cpp:134
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:134
 msgid "Evaluation of conditional \"%1%\" for item \"%2%\" failed!"
 msgstr "Определение условия \"%1%\" для \"%2%\" не удалось!"
 
-#: Error.cpp:136
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:136
 msgid "\"%1%\" is not a valid regular expression. Item skipped."
 msgstr "\"%1%\" это неверное регулярное выражение. Запись пропущена."
 
-#: Error.cpp:138
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:138
 msgid "No game detected!"
 msgstr "Игра не найдена!"
 
-#: Error.cpp:140
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:140
 msgid "\"%1%\" cannot be converted from UTF-8 to \"%2%\"."
 msgstr "\"%1%\" не может быть конвертирован из UTF-8 в \"%2%\"."
 
-#: Error.cpp:142
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:142
 msgid "Master file \"%1%\" loading after non-master plugins!"
 msgstr ""
 "Мастерфайл \"%1%\" загружается после плагинов, не являющихся мастерфайлами!"
 
-#: Error.cpp:146
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:146
 msgid "Cannot find online masterlist revision number!"
 msgstr "Невозможно найти номер ревизии мастерлиста онлайн!"
 
-#: Error.cpp:148
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:148
 msgid "Cannot find online masterlist revision date!"
 msgstr "Невозможно найти дату ревизии мастерлиста онлайн!"
 
-#: Error.cpp:150
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:150
 msgid "Cannot read list of files to be updated!"
 msgstr "Невозможно прочесть список файлов для обновления!"
 
-#: Error.cpp:152
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:152
 msgid "Downloaded file \"%1%\" failed verification test!"
 msgstr "Загруженный файл \"%1%\" не прошел проверку!"
 
-#: Error.cpp:154
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:154
 msgid ""
 "The modification date of \"%1%\" cannot be read! Filesystem response: \"%2%"
 "\"."
 msgstr ""
 "Не читается дата модификации для \"%1%\"! Ответ файловой системы: \"%2%\"."
 
-#: Error.cpp:156
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:156
 msgid "\"%1%\" cannot be renamed! Filesystem response: \"%2%\"."
 msgstr "\"%1%\" не может быть переименован! Ответ файловой системы: \"%2%\"."
 
-#: Error.cpp:158
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:158
 msgid "\"%1%\" cannot be deleted! Filesystem response: \"%2%\"."
 msgstr "\"%1%\" не найден! Ответ файловой системы: \"%2%\"."
 
-#: Error.cpp:160
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:160
 msgid "\"%1%\" cannot be created! Filesystem response: \"%2%\"."
 msgstr "\"%1%\" не может быть создан! Ответ файловой системы: \"%2%\"."
 
-#: Error.cpp:162
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:162
 msgid "\"%1%\" cannot be scanned! Filesystem response: \"%2%\"."
 msgstr "\"%1%\" не может быть отсканирован! Ответ файловой системы: \"%2%\"."
 
-#: Error.cpp:164
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:164
 msgid "cURL cannot be initialised!"
 msgstr "cURL не может быть инициализирован!"
 
-#: Error.cpp:166
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:166
 msgid "cURL's error buffer could not be set! cURL response: \"%1%\"."
 msgstr "Ошибка cURL, буфер не может быть установлен! Ответ cURL: \"%1%\"."
 
-#: Error.cpp:168
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:168
 msgid "A cURL option could not be set! cURL response: \"%1%\"."
 msgstr "Опция cURL не может быть установлена! Ответ cURL: \"%1%\"."
 
-#: Error.cpp:170
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:170
 msgid "Proxy hostname or port invalid! cURL response: \"%1%\"."
 msgstr "Имя прокси или порт недействителен! Ответ cURL: \"%1%\"."
 
-#: Error.cpp:172
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:172
 msgid "Failed to set proxy type! cURL response: \"%1%\"."
 msgstr "Не удается установить тип прокси! Ответ cURL: \"%1%\"."
 
-#: Error.cpp:174
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:174
 msgid ""
 "Proxy authentication username or password invalid! cURL response: \"%1%\"."
 msgstr ""
 "Имя пользователя или пароль для прокси недействительны! Ответ cURL: \"%1%\"."
 
-#: Error.cpp:176
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:176
 msgid "Failed to set proxy authentication type! cURL response: \"%1%\"."
 msgstr "Невозможно установить тип идентификации прокси! Ответ cURL: \"%1%\"."
 
-#: Error.cpp:178
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:178
 msgid "cURL could not perform task! cURL response: \"%1%\"."
 msgstr "cURL не может выполнить задачу! Ответ cURL: \"%1%\"."
 
-#: Error.cpp:180
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:180
 msgid "Cancelled by user."
 msgstr "Отменено пользователем."
 
-#: Error.cpp:182
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:182
 msgid "Parsing of \"%1%\" failed!"
 msgstr "Обработка \"%1%\" не удалась!"
 
-#: Error.cpp:184
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:184
 msgid ""
 "The modification date of \"%1%\" cannot be written! Filesystem response: "
 "\"%2%\"."
@@ -256,25 +171,23 @@ msgstr ""
 "Дата изменения для \"%1%\" не может быть записана! Ответ файловой системы: "
 "\"%2%\"."
 
-#: Error.cpp:186
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:186
 msgid "The window \"%1%\" failed to initialise. Details: \"%2%\"."
 msgstr "Окно \"%1%\" не удалось инициализировать. Детали: \"%2%\"."
 
-#: Error.cpp:188
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:188
 msgid "Memory allocation failed."
 msgstr "Ошибка выделения памяти."
 
-#: Error.cpp:190
-#, fuzzy
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:190
 msgid "No Internet connection detected."
-msgstr ""
-"Проверка обновлений не удалась. Не найдено активное интернет-соединение."
+msgstr "Интернет-подключение не найдено."
 
-#: Error.cpp:192
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:192
 msgid "No tag map has yet been initialised."
 msgstr "Карты тегов еще не инициализирована"
 
-#: Error.cpp:194
+#: .\..\..\..\code\trunk\boss-common\Common/Error.cpp:194
 msgid ""
 "The requested change to the active plugins list would result in over 255 "
 "plugins being active."
@@ -282,47 +195,59 @@ msgstr ""
 "Запрошенные изменения в списке активных плагинов приведут к наличию более "
 "чем 255 активных плагинов."
 
-#: Game.cpp:503
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:503
 msgid "Rule is disabled."
 msgstr "Правило отключено."
 
-#: Game.cpp:519 Game.cpp:557 Game.cpp:596
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:519
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:557
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:596
 msgid " is not installed or in the masterlist."
 msgstr " не установлен или уже в мастерлисте."
 
-#: Game.cpp:523 Game.cpp:562
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:523
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:562
 msgid " is already in the masterlist."
 msgstr " уже в мастерлисте."
 
-#: Game.cpp:527 Game.cpp:566
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:527
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:566
 msgid " is not in the masterlist, cannot override."
 msgstr " не в мастерлисте, невозможно перезаписать."
 
-#: Game.cpp:535
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:535
 msgid " is not installed, and is not in the masterlist."
 msgstr " не установлен и отсутствует в мастерлисте."
 
-#: Game.cpp:539
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:539
 msgid " is not in the masterlist and has not been sorted by a rule."
 msgstr " отсутствует в мастерлисте и не может быть отсортирован правилом."
 
-#: Game.cpp:577 Game.cpp:615 Game.cpp:633
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:577
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:615
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:633
 msgid "The group "
 msgstr "Группа "
 
-#: Game.cpp:577 Game.cpp:615 Game.cpp:633
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:577
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:615
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:633
 msgid " is not in the masterlist or is malformatted."
 msgstr "  отсутствует в мастерлисте или неизвестного типа."
 
-#: Game.cpp:682 Game.cpp:698
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:682
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:699
 msgid "Version: "
 msgstr "Версия: "
 
-#: Game.cpp:684 Game.cpp:700 Game.cpp:781 Game.cpp:783
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:684
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:701
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:782
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:784
 msgid "Checksum: "
 msgstr "Контрольная сумма: "
 
-#: Game.cpp:753
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:754
 msgid ""
 "The order of plugins set by BOSS differs from their order in its masterlist, "
 "as one or more of the installed plugins is false-flagged. For more "
@@ -334,34 +259,43 @@ msgstr ""
 "подробной информации смотрите \"file:../Docs/BOSS%20Readme.html#appendix-c "
 "False-Flagged Plugins\"."
 
-#: Game.cpp:756
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:757
 msgid "Could not enforce load order master/plugin partition. Details: "
 msgstr ""
 "Не в состоянии обеспечить изменить порядок загрузки раздела плагинов/"
 "мастерфайлов. Детали: "
 
-#: Game.cpp:775 ..\boss-common\Output\Output.cpp:1085
-#: ..\boss-cli\BOSS-CLI.cpp:75
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:776
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1085
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:75
 msgid "Version "
 msgstr "Версия "
 
-#: Game.cpp:777
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:778
 msgid "Active"
 msgstr "Активен"
 
-#: Game.cpp:796
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:797
 msgid "Error: "
 msgstr "Ошибка: "
 
-#: Game.cpp:831 ..\boss-cli\BOSS-CLI.cpp:446
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:832
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:446
 msgid "Critical Error: "
 msgstr "Критическая ошибка: "
 
-#: Game.cpp:832 ..\boss-cli\BOSS-CLI.cpp:447 ..\boss-cli\BOSS-CLI.cpp:489
-#: ..\boss-cli\BOSS-CLI.cpp:498 ..\boss-cli\BOSS-CLI.cpp:530
-#: ..\boss-cli\BOSS-CLI.cpp:574 ..\boss-cli\BOSS-CLI.cpp:613
-#: MainWindow.cpp:488 MainWindow.cpp:497 MainWindow.cpp:537 MainWindow.cpp:592
-#: MainWindow.cpp:642
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:833
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:447
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:489
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:498
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:530
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:574
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:613
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:488
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:497
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:537
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:592
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:642
 msgid ""
 "Check the Troubleshooting section of the ReadMe for more information and "
 "possible solutions."
@@ -369,100 +303,116 @@ msgstr ""
 "Проверьте секцию ридми \"Решение проблем\", для большей информации и "
 "возможных решений."
 
-#: Game.cpp:833 ..\boss-cli\BOSS-CLI.cpp:448 ..\boss-cli\BOSS-CLI.cpp:531
-#: ..\boss-cli\BOSS-CLI.cpp:575 ..\boss-cli\BOSS-CLI.cpp:614
-#: MainWindow.cpp:538 MainWindow.cpp:593 MainWindow.cpp:643
+#: .\..\..\..\code\trunk\boss-common\Common/Game.cpp:834
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:448
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:531
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:575
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:614
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:538
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:593
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:643
 msgid "Utility will end now."
 msgstr "Утилита сейчас закроется."
 
-#: ..\boss-common\Output\Output.cpp:493 ..\boss-common\Output\Output.cpp:495
-#: ..\boss-common\Output\Output.cpp:528 ..\boss-common\Output\Output.cpp:530
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:493
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:495
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:528
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:530
 msgid "Note"
 msgstr "Примечание"
 
-#: ..\boss-common\Output\Output.cpp:498 ..\boss-common\Output\Output.cpp:500
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:498
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:500
 msgid "Bash Tag suggestion(s)"
 msgstr "Bash-теги"
 
-#: ..\boss-common\Output\Output.cpp:503 ..\boss-common\Output\Output.cpp:505
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:503
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:505
 msgid "Requires"
 msgstr "Требуется"
 
-#: ..\boss-common\Output\Output.cpp:508 ..\boss-common\Output\Output.cpp:510
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:508
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:510
 msgid "Incompatible with"
 msgstr "Несовместим с"
 
-#: ..\boss-common\Output\Output.cpp:513 ..\boss-common\Output\Output.cpp:515
-#: ..\boss-common\Output\Output.cpp:1907 ..\boss-common\Output\Output.cpp:1909
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:513
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:515
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1907
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1909
 msgid "Warning"
 msgstr "Предупреждение"
 
-#: ..\boss-common\Output\Output.cpp:518 ..\boss-common\Output\Output.cpp:520
-#: ..\boss-common\Output\Output.cpp:1911 ..\boss-common\Output\Output.cpp:1913
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:518
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:520
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1911
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1913
 msgid "Error"
 msgstr "Ошибка"
 
-#: ..\boss-common\Output\Output.cpp:523 ..\boss-common\Output\Output.cpp:525
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:523
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:525
 msgid "Contains dirty edits"
 msgstr "\"Грязные\" правки"
 
-#: ..\boss-common\Output\Output.cpp:568
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:568
 msgid "Sort %1% before %2%"
 msgstr "Сортировать %1% перед %2%"
 
-#: ..\boss-common\Output\Output.cpp:570
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:570
 msgid "Sort %1% after %2%"
 msgstr "Сортировать %1% после %2%"
 
-#: ..\boss-common\Output\Output.cpp:572
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:572
 msgid "Insert %1% at the top of %2%"
 msgstr "Вставлен %1% на верх группы %2%"
 
-#: ..\boss-common\Output\Output.cpp:574
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:574
 msgid "Insert %1% at the bottom of %2%"
 msgstr "Вставлен %1% в низ группы %2%"
 
-#: ..\boss-common\Output\Output.cpp:578
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:578
 msgid "Add the following messages to %1%:"
 msgstr "Добавить сообщение к %1%:"
 
-#: ..\boss-common\Output\Output.cpp:580 UserRuleEditor.cpp:217
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:580
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:217
 msgid "Add the following messages:"
 msgstr "Добавляет следующие сообщения:"
 
-#: ..\boss-common\Output\Output.cpp:587
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:587
 msgid "Replace the messages attached to %1% with:"
 msgstr "Заменяет сообщения, добавленные к %1% с:"
 
-#: ..\boss-common\Output\Output.cpp:589
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:589
 msgid "Replace the attached messages with:"
 msgstr "Заменяет сообщения, добавленные с"
 
-#: ..\boss-common\Output\Output.cpp:1081
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1081
 msgid "\tVersion "
 msgstr "\tВерсия "
 
-#: ..\boss-common\Output\Output.cpp:1093
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1093
 msgid "Log Feature Support"
 msgstr "Поддержка функций лога"
 
-#: ..\boss-common\Output\Output.cpp:1094
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1094
 msgid "Display Settings"
 msgstr "Настройки отображения"
 
-#: ..\boss-common\Output\Output.cpp:1095
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1095
 msgid "Filters"
 msgstr "Фильтры"
 
-#: ..\boss-common\Output\Output.cpp:1099
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1099
 msgid "The BOSS Log requires Javascript to be enabled in order to function."
 msgstr "Для работы всех функций лога BOSS требуется включить JavaScript"
 
-#: ..\boss-common\Output\Output.cpp:1106
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1106
 msgid "Colours must be specified using lowercase hex codes."
 msgstr "Цвета должны быть заданы с помощью строчных шестнадцатеричных кодов."
 
-#: ..\boss-common\Output\Output.cpp:1110
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1110
 msgid ""
 "The BOSS Log can be displayed using an alternative colour scheme, which can "
 "be enabled and customised using the options below. Colours must be specified "
@@ -476,7 +426,7 @@ msgstr ""
 "умолчанию для каждого элемента отобразится как заполнитель его текстового "
 "поля, и это значение используется, если  текстовое поле останется пустым."
 
-#: ..\boss-common\Output\Output.cpp:1111
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1111
 msgid ""
 " Some examples of colour codes that can be used may be found <a href='http://"
 "en.wikipedia.org/wiki/Web_colors#Color_table'>here</a>."
@@ -484,99 +434,99 @@ msgstr ""
 " Примеры цветовых кодов могут быть найдены <a href='http://ru.wikipedia.org/"
 "wiki/%D0%A6%D0%B2%D0%B5%D1%82%D0%B0_HTML'>здесь</a>."
 
-#: ..\boss-common\Output\Output.cpp:1113
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1113
 msgid "Use Alternative Colour Scheme"
 msgstr "Использовать альтернативную цветовую схему"
 
-#: ..\boss-common\Output\Output.cpp:1115
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1115
 msgid "Element"
 msgstr "Элемент"
 
-#: ..\boss-common\Output\Output.cpp:1115
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1115
 msgid "Colour"
 msgstr "Цвет"
 
-#: ..\boss-common\Output\Output.cpp:1117
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1117
 msgid "General Text"
 msgstr "Основной текст"
 
-#: ..\boss-common\Output\Output.cpp:1118
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1118
 msgid "Window Backgrounds"
 msgstr "Фон окна"
 
-#: ..\boss-common\Output\Output.cpp:1119
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1119
 msgid "Menu Background"
 msgstr "Фон меню"
 
-#: ..\boss-common\Output\Output.cpp:1120
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1120
 msgid "Menu Button Hover"
 msgstr "Покрытие кнопки меню"
 
-#: ..\boss-common\Output\Output.cpp:1121
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1121
 msgid "Active Menu Button"
 msgstr "Активная кнопка меню"
 
-#: ..\boss-common\Output\Output.cpp:1122
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1122
 msgid "Links"
 msgstr "Ссылки"
 
-#: ..\boss-common\Output\Output.cpp:1123
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1123
 msgid "Visited Links"
 msgstr "Посещенные ссылки"
 
-#: ..\boss-common\Output\Output.cpp:1124
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1124
 msgid "CRC Labels"
 msgstr "Метки контрольных сумм"
 
-#: ..\boss-common\Output\Output.cpp:1125
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1125
 msgid "Active Labels"
 msgstr "Метки активных"
 
-#: ..\boss-common\Output\Output.cpp:1126
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1126
 msgid "Version Labels"
 msgstr "Метки версий"
 
-#: ..\boss-common\Output\Output.cpp:1127
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1127
 msgid "Errors"
 msgstr "Ошибки"
 
-#: ..\boss-common\Output\Output.cpp:1128
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1128
 msgid "Warnings"
 msgstr "Предупреждения"
 
-#: ..\boss-common\Output\Output.cpp:1129
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1129
 msgid "Dirty Messages"
 msgstr "Сообщения о \"грязных правках\""
 
-#: ..\boss-common\Output\Output.cpp:1130
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1130
 msgid "Bash Tag Suggestion Prefixes"
 msgstr "Префиксы Bash-тегов"
 
-#: ..\boss-common\Output\Output.cpp:1131
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1131
 msgid "CSS Settings Panel File Drag Highlight"
 msgstr "Подсветка панели настроек стилей переноса файла"
 
-#: ..\boss-common\Output\Output.cpp:1132
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1132
 msgid "Filters Background"
 msgstr "Фон фильтров"
 
-#: ..\boss-common\Output\Output.cpp:1133
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1133
 msgid "Success Messages"
 msgstr "Сообщения об успехе"
 
-#: ..\boss-common\Output\Output.cpp:1134
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1134
 msgid "Quoted Userlist Messages"
 msgstr "Цитированные сообщения списка правил"
 
-#: ..\boss-common\Output\Output.cpp:1135
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1135
 msgid "Summary Messages Default Background"
 msgstr "Фон по умолчанию для общих сообщений"
 
-#: ..\boss-common\Output\Output.cpp:1136
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1136
 msgid "Table Headings"
 msgstr "Заголовки таблицы"
 
-#: ..\boss-common\Output\Output.cpp:1138
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1138
 msgid ""
 "You can <span class='button' id='cssButtonBackup'>back up</span> your "
 "display settings to avoid losing them when you <span "
@@ -588,7 +538,7 @@ msgstr ""
 "вы <span id='loseSettingsClose'>закроете лог BOSS и </span><span "
 "id='loseSettingsCacheClear'>очистите кэш браузера</span>."
 
-#: ..\boss-common\Output\Output.cpp:1138
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1138
 msgid ""
 "Backup files are given nonsensical names by your browser, but you can rename "
 "them to whatever you want. Drag and drop a backup file into this panel to "
@@ -598,11 +548,11 @@ msgstr ""
 "можете переименовать их так как вам нужно. Перетащите файл резервной копии "
 "на эту панель для восстановления содержащихся в нем настроек."
 
-#: ..\boss-common\Output\Output.cpp:1139
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1139
 msgid "Apply"
 msgstr "Сохранить"
 
-#: ..\boss-common\Output\Output.cpp:1144
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1144
 msgid ""
 "Support for the BOSS Log's more advanced features varies. Here's what your "
 "browser supports:"
@@ -610,15 +560,15 @@ msgstr ""
 "Поддержка дополнительных функций для лога BOSS варьируется. Здесь то, что "
 "поддерживает ваш браузер:"
 
-#: ..\boss-common\Output\Output.cpp:1145
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1145
 msgid "Functionality"
 msgstr "Функциональность"
 
-#: ..\boss-common\Output\Output.cpp:1148
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1148
 msgid "In-Log Plugin Submission"
 msgstr "Отправка плагинов из лога"
 
-#: ..\boss-common\Output\Output.cpp:1148
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1148
 msgid ""
 "Allows unrecognised plugins to be anonymously submitted to the BOSS team "
 "directly from the BOSS Log."
@@ -626,21 +576,21 @@ msgstr ""
 "Все неизвестные плагины могут быть анонимно предоставлены команде BOSS, "
 "напрямую из этого лога."
 
-#: ..\boss-common\Output\Output.cpp:1149
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1149
 msgid "Backup/Restore of Display Settings"
 msgstr "Сохранение/восстановление настроек отображения"
 
-#: ..\boss-common\Output\Output.cpp:1149
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1149
 msgid "Allows the backup and restore of custom display settings."
 msgstr ""
 "Позволяет сделать резервную копию и восстановить из неё измененные настройки "
 "отображения."
 
-#: ..\boss-common\Output\Output.cpp:1150
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1150
 msgid "Settings Memory"
 msgstr "Запоминание настроек"
 
-#: ..\boss-common\Output\Output.cpp:1150
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1150
 msgid ""
 "Allows the BOSS Log to automatically restore the display settings and filter "
 "configuration last used, and to hide this panel, whenever the BOSS Log is "
@@ -650,35 +600,35 @@ msgstr ""
 "отображения и фильтров. Скрывает эту панель, когда бы лог BOSS не был бы "
 "открыт."
 
-#: ..\boss-common\Output\Output.cpp:1152
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1152
 msgid "Appearance"
 msgstr "Внешний вид"
 
-#: ..\boss-common\Output\Output.cpp:1155
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1155
 msgid "Opacity"
 msgstr "Непрозрачность"
 
-#: ..\boss-common\Output\Output.cpp:1156
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1156
 msgid "Shadows"
 msgstr "Тени"
 
-#: ..\boss-common\Output\Output.cpp:1157
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1157
 msgid "Transitions"
 msgstr "Переходы"
 
-#: ..\boss-common\Output\Output.cpp:1158
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1158
 msgid "Transforms"
 msgstr "Преобразования"
 
-#: ..\boss-common\Output\Output.cpp:1159
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1159
 msgid "Input Placeholders"
 msgstr "Входные заполнители"
 
-#: ..\boss-common\Output\Output.cpp:1160
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1160
 msgid "Form Validation"
 msgstr "Проверка формы"
 
-#: ..\boss-common\Output\Output.cpp:1162
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1162
 msgid ""
 "Do not display this panel again for this browser. If this checkbox is left "
 "unchecked, this panel will be displayed every time you open the BOSS Log."
@@ -687,86 +637,86 @@ msgstr ""
 "неотмеченным, эта панель будет отображаться каждый раз, при открытии "
 "браузера."
 
-#: ..\boss-common\Output\Output.cpp:1167
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1167
 msgid "Hide Version Numbers"
 msgstr "Скрыть номера версии"
 
-#: ..\boss-common\Output\Output.cpp:1168
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1168
 msgid "Hide 'Active' Label"
 msgstr "Скрыть метку 'Активен'"
 
-#: ..\boss-common\Output\Output.cpp:1169
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1169
 msgid "Hide Checksums"
 msgstr "Скрыть CRC суммы"
 
-#: ..\boss-common\Output\Output.cpp:1170
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1170
 msgid "Hide Notes"
 msgstr "Скрыть примечания"
 
-#: ..\boss-common\Output\Output.cpp:1171
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1171
 msgid "Hide Bash Tag Suggestions"
 msgstr "Скрыть Bash-теги"
 
-#: ..\boss-common\Output\Output.cpp:1172
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1172
 msgid "Hide Requirements"
 msgstr "Скрыть требования"
 
-#: ..\boss-common\Output\Output.cpp:1173
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1173
 msgid "Hide Incompatibilities"
 msgstr "Скрыть несовместимости"
 
-#: ..\boss-common\Output\Output.cpp:1174
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1174
 msgid "Hide 'Do Not Clean' Messages"
 msgstr "Скрыть сообщения 'Не чистить'"
 
-#: ..\boss-common\Output\Output.cpp:1175
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1175
 msgid "Hide All Plugin Messages"
 msgstr "Скрыть все сообщения"
 
-#: ..\boss-common\Output\Output.cpp:1176
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1176
 msgid "Hide Inactive Plugins"
 msgstr "Скрыть неактивные плагины"
 
-#: ..\boss-common\Output\Output.cpp:1177
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1177
 msgid "Hide Messageless Plugins"
-msgstr "Скрыть плагины с сообщениями"
+msgstr "Скрыть плагины без сообщений"
 
-#: ..\boss-common\Output\Output.cpp:1178
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1178
 msgid "Hide Clean Plugins"
 msgstr "Скрыть \"чистые\" плагины"
 
-#: ..\boss-common\Output\Output.cpp:1180
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1180
 msgid "%1% of %2% recognised plugins hidden."
 msgstr "%1% из %2% известных плагинов скрыты."
 
-#: ..\boss-common\Output\Output.cpp:1181
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1181
 msgid "%1% of %2% messages hidden."
 msgstr "%1% из %2% сообщений скрыты."
 
-#: ..\boss-common\Output\Output.cpp:1187
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1187
 msgid "Submit Plugin"
 msgstr "Отправка плагина"
 
-#: ..\boss-common\Output\Output.cpp:1188
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1188
 msgid "Plugin"
 msgstr "Плагин"
 
-#: ..\boss-common\Output\Output.cpp:1190
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1190
 msgid "Download Location"
 msgstr "Источник загрузки"
 
-#: ..\boss-common\Output\Output.cpp:1190
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1190
 msgctxt ""
 "Label for text box. Do not use a single quote in translation, use '&#x27;' "
 "instead"
 msgid "A link to the plugin&#x27;s download location."
 msgstr "Ссылка на страницу загрузки плагина."
 
-#: ..\boss-common\Output\Output.cpp:1191
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1191
 msgid "Additional Notes"
 msgstr "Дополнительные заметки"
 
-#: ..\boss-common\Output\Output.cpp:1191
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1191
 msgid ""
 "Any additional information, such as recommended Bash Tags, load order "
 "suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no "
@@ -777,51 +727,51 @@ msgstr ""
 "\" плагинов, могут быть указаны здесь, если нет доступной ссылки для "
 "загрузки. Эта информация очень важна."
 
-#: ..\boss-common\Output\Output.cpp:1193
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1193
 msgid "Submit"
 msgstr "Отправить"
 
-#: ..\boss-common\Output\Output.cpp:1194
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1194
 msgid "Close"
 msgstr "Закрыть"
 
-#: ..\boss-common\Output\Output.cpp:1214
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1214
 msgid "Checking for existing submission..."
 msgstr "Проверка существования заявки..."
 
-#: ..\boss-common\Output\Output.cpp:1228
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1228
 msgid "Error: Existing submission check failed!"
 msgstr "Ошибка: Проверка существования заявки не удалась!"
 
-#: ..\boss-common\Output\Output.cpp:1244
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1244
 msgid "Previous submission found, updating with supplied details..."
 msgstr "Найдена предыдущая заявка, обновление переданными данными..."
 
-#: ..\boss-common\Output\Output.cpp:1250
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1250
 msgid "Plugin submission updated!"
 msgstr "Заявка плагина обновлена!"
 
-#: ..\boss-common\Output\Output.cpp:1252
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1252
 msgid "Error: Plugin submission could not be updated."
 msgstr "Ошибка: Заявка плагина не может быть отображена."
 
-#: ..\boss-common\Output\Output.cpp:1275
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1275
 msgid "No previous submission found, creating new submission..."
 msgstr "Не обнаружено предыдущей заявки, создание новой..."
 
-#: ..\boss-common\Output\Output.cpp:1281
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1281
 msgid "Plugin submitted!"
 msgstr "Плагин предоставлен!"
 
-#: ..\boss-common\Output\Output.cpp:1283
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1283
 msgid "Error: Plugin could not be submitted."
 msgstr "Ошибка: Плагин не может быть отправлен."
 
-#: ..\boss-common\Output\Output.cpp:1289
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1289
 msgid "Error: Data transfer failed."
 msgstr "Ошибка: Передача данных не удалась."
 
-#: ..\boss-common\Output\Output.cpp:1321
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1321
 msgid ""
 "Web storage quota for this document has been exceeded. Please empty your "
 "browser\\'s cache. Note that this will delete all locally stored data."
@@ -829,100 +779,107 @@ msgstr ""
 "Квода для Web-хранилища была превышена. Пожалуйста очистите кеш браузера. Но "
 "это удалит все локально сохраненные данные"
 
-#: ..\boss-common\Output\Output.cpp:1508
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1508
 msgid "Please supply at least a link or some notes."
 msgstr "Пожалуйста укажите хотя бы ссылку или некоторое описание."
 
-#: ..\boss-common\Output\Output.cpp:1522
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1522
 msgid "Exception occurred:"
 msgstr "Произошло исключение:"
 
-#: ..\boss-common\Output\Output.cpp:1603
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1603
 msgid "Do not clean."
 msgstr "Не чистить."
 
-#: ..\boss-common\Output\Output.cpp:1860 ..\boss-common\Output\Output.cpp:1891
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1860
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1891
 msgid "Summary"
 msgstr "Сводка"
 
-#: ..\boss-common\Output\Output.cpp:1863 ..\boss-common\Output\Output.cpp:1954
-#: UserRuleEditor.cpp:883
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1863
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1954
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:883
 msgid "User Rules"
 msgstr "Пользовательские правила"
 
-#: ..\boss-common\Output\Output.cpp:1866
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1866
 msgid "%1% Plugins"
 msgstr "%1% Плагины"
 
-#: ..\boss-common\Output\Output.cpp:1870 ..\boss-common\Output\Output.cpp:1986
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1870
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1986
 msgid "Recognised Plugins"
 msgstr "Известные плагины"
 
-#: ..\boss-common\Output\Output.cpp:1872
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1872
 msgid "Restored Load Order"
 msgstr "Порядок загрузки восстановлен"
 
-#: ..\boss-common\Output\Output.cpp:1876 ..\boss-common\Output\Output.cpp:2009
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1876
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:2009
 msgid "Unrecognised Plugins"
 msgstr "Неизвестные плагины"
 
-#: ..\boss-common\Output\Output.cpp:1894
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1894
 msgid "Plugin Type"
 msgstr "Тип плагина"
 
-#: ..\boss-common\Output\Output.cpp:1894 ..\boss-common\Output\Output.cpp:1904
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1894
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1904
 msgid "Count"
 msgstr "Количество"
 
-#: ..\boss-common\Output\Output.cpp:1895
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1895
 msgid "Recognised (or sorted by user rules)"
 msgstr "Известный (или отсортированный пользовательскими правилами)"
 
-#: ..\boss-common\Output\Output.cpp:1897 ..\boss-common\Output\Output.cpp:1899
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1897
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1899
 msgid "Unrecognised"
 msgstr "Неизвестный"
 
-#: ..\boss-common\Output\Output.cpp:1900
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1900
 msgid "Inactive"
 msgstr "Неактивный"
 
-#: ..\boss-common\Output\Output.cpp:1901 ..\boss-common\Output\Output.cpp:1914
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1901
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1914
 msgid "All"
 msgstr "Все"
 
-#: ..\boss-common\Output\Output.cpp:1904
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1904
 msgid "Plugin Message Type"
 msgstr "Тип сообщения"
 
-#: ..\boss-common\Output\Output.cpp:1923
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1923
 msgid "No change in recognised plugin list since last run."
 msgstr "Никаких изменений в списке известных плагинов, с последнего запуска."
 
-#: ..\boss-common\Output\Output.cpp:1955
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1955
 msgid "Rule"
 msgstr "Правило"
 
-#: ..\boss-common\Output\Output.cpp:1955
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1955
 msgid "Applied"
 msgstr "Принято"
 
-#: ..\boss-common\Output\Output.cpp:1955
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1955
 msgid "Details (if applicable)"
 msgstr "Детали (если имеются)"
 
-#: ..\boss-common\Output\Output.cpp:1969
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1969
 msgid " Plugins"
 msgstr " Плагины"
 
-#: ..\boss-common\Output\Output.cpp:1988
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1988
 msgid "Restored Load Order (Using modlist.txt)"
 msgstr "Восстановлен порядок загрузки(Использован modlist.txt)"
 
-#: ..\boss-common\Output\Output.cpp:1990
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1990
 msgid "Restored Load Order (Using modlist.old)"
 msgstr "Восстановлен порядок загрузки (Использован modlist.old)"
 
-#: ..\boss-common\Output\Output.cpp:1993
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:1993
 msgid ""
 "These plugins are recognised by BOSS and have been sorted according to its "
 "masterlist. Please read any attached messages and act on any that require "
@@ -932,7 +889,7 @@ msgstr ""
 "положением в мастерлисте. Пожалуйста, прочтите прикрепленные сообщения и "
 "выполните все требуемые действия."
 
-#: ..\boss-common\Output\Output.cpp:2011
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:2011
 msgid ""
 "The following plugins were not found in the masterlist, and must be "
 "positioned manually, using your favourite mod manager or by using BOSS's "
@@ -942,7 +899,7 @@ msgstr ""
 "с использованием вашего любимого менеджера модов или функционала "
 "пользовательских правил BOSS."
 
-#: ..\boss-common\Output\Output.cpp:2012
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:2012
 msgid ""
 " You can submit unrecognised plugins for addition to the masterlist directly "
 "from this log by clicking on a plugin and supplying a link and/or "
@@ -952,17 +909,17 @@ msgstr ""
 "напрямую, из HTML-лога, нажатием на плагин и предоставлением ссылки и/или "
 "описания его содержимого, в открывшейся панели."
 
-#: ..\boss-common\Output\Output.cpp:2089
+#: .\..\..\..\code\trunk\boss-common\Output/Output.cpp:2089
 msgid "Please read any attached messages and act on any that require action."
 msgstr ""
 "Пожалуйста, прочтите прикрепленные сообщения и выполните все требуемые "
 "действия."
 
-#: ..\boss-cli\BOSS-CLI.cpp:88
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:88
 msgid "Description:"
 msgstr "Описание:"
 
-#: ..\boss-cli\BOSS-CLI.cpp:89
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:89
 msgid ""
 "  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, "
 "Nehrim,  Fallout 3, Fallout: New Vegas and TESV: Skyrim according to a "
@@ -973,38 +930,39 @@ msgstr ""
 "Skyrim, в соответствии с порядком в часто обновляемом мастерлисте, чтобы "
 "минимизировать несовместимости между модами."
 
-#: ..\boss-cli\BOSS-CLI.cpp:93
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:93
 msgid "Examples:"
 msgstr "Примеры:"
 
-#: ..\boss-cli\BOSS-CLI.cpp:95
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:95
 msgid "    updates the masterlist, sorts your mods, and shows the log"
 msgstr "    обновляет мастерлист, сортирует ваши моды и открывает лог"
 
-#: ..\boss-cli\BOSS-CLI.cpp:97
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:97
 msgid "    reverts your load order 1 level and skips showing the log"
 msgstr "    возвращает ваш прошлый порядок загрузки и пропускает показ лога"
 
-#: ..\boss-cli\BOSS-CLI.cpp:99
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:99
 msgid "    reverts your load order 2 levels and shows the log"
 msgstr ""
 "    возвращает ваш порядок загрузки на два запуска назад и пропускает показ "
 "лога"
 
-#: ..\boss-cli\BOSS-CLI.cpp:113 ..\boss-cli\BOSS-CLI.cpp:122
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:113
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:122
 #, c-format
 msgid "Downloading: %s; %3.0f%% of %3.0f KB"
 msgstr "Загрузка: %s; %3.0f%% из %3.0f KB"
 
-#: ..\boss-cli\BOSS-CLI.cpp:195
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:195
 msgid "produces this help message"
 msgstr "вызывает это вспомогательное сообщение"
 
-#: ..\boss-cli\BOSS-CLI.cpp:196
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:196
 msgid "prints the version banner"
 msgstr "выводит всплывающее окно с версией"
 
-#: ..\boss-cli\BOSS-CLI.cpp:198
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:198
 msgid ""
 "automatically update the local copy of the masterlist to the latest version "
 "available on the web before sorting"
@@ -1012,11 +970,11 @@ msgstr ""
 "перед сортировкой, автоматически обновляет локальную копию мастерлиста до "
 "последней, доступной через web, версии."
 
-#: ..\boss-cli\BOSS-CLI.cpp:201
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:201
 msgid "inhibit the automatic masterlist updater"
 msgstr "задерживает автоматическое обновление мастерлиста."
 
-#: ..\boss-cli\BOSS-CLI.cpp:203
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:203
 msgid ""
 "automatically update the local copy of the masterlist to the latest version "
 "available on the web but don't sort right now"
@@ -1024,11 +982,11 @@ msgstr ""
 "автоматически обновляет локальную копию мастерлиста до последней версии,  "
 "доступной через web, но без запуска сортировки."
 
-#: ..\boss-cli\BOSS-CLI.cpp:208
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:208
 msgid "don't launch a browser to show the HTML log at program completion"
 msgstr "не открывать браузер для показа HTML лога по завершению программы."
 
-#: ..\boss-cli\BOSS-CLI.cpp:211
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:211
 msgid ""
 "revert to a previous load order.  this parameter optionally accepts values "
 "of 1 or 2, indicating how many undo steps to apply.  if no option value is "
@@ -1038,7 +996,7 @@ msgstr ""
 "значения 1 или 2, означающих, как много шагов отката сделать.  Если значение "
 "не установлено , то по умолчанию используется 1"
 
-#: ..\boss-cli\BOSS-CLI.cpp:217
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:217
 msgid ""
 "specify verbosity level (0-3) of the debugging output.  0 is the default, "
 "showing only WARN and ERROR messges. 1 (INFO and above) is implied if this "
@@ -1050,7 +1008,7 @@ msgstr ""
 "подразумевается, если эта опция указана без аргументов.  Большие значения "
 "повышают детализацию еще больше"
 
-#: ..\boss-cli\BOSS-CLI.cpp:223
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:223
 msgid ""
 "override game autodetection.  valid values are: 'Oblivion', 'Nehrim', "
 "'Fallout3', 'FalloutNV', and 'Skyrim'"
@@ -1058,11 +1016,11 @@ msgstr ""
 "заменяет авто. обнаружение игры.  допустимые значения: 'Oblivion', 'Nehrim', "
 "'Fallout3', 'FalloutNV', и 'Skyrim'"
 
-#: ..\boss-cli\BOSS-CLI.cpp:227
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:227
 msgid "add source file references to debug statements"
 msgstr "добавление ссылок на исходные файлы для отчета отладки"
 
-#: ..\boss-cli\BOSS-CLI.cpp:229
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:229
 msgid ""
 "show mod file CRCs, so that a file's CRC can be added to the masterlist in a "
 "conditional"
@@ -1070,44 +1028,45 @@ msgstr ""
 "показывает контрольные суммы(CRC) модов, так что CRC файла могжет быть "
 "добавлено в мастерлист, с помощью условий"
 
-#: ..\boss-cli\BOSS-CLI.cpp:232
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:232
 msgid "select output format. valid values are: 'html', 'text'"
 msgstr "выбор формата вывода. допустимые значения: 'html', 'text'"
 
-#: ..\boss-cli\BOSS-CLI.cpp:235
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:235
 msgid "run BOSS without actually making any changes to load order"
 msgstr "запуск BOSS без реального изменения порядка загрузки"
 
-#: ..\boss-cli\BOSS-CLI.cpp:237
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:237
 msgid "sets the proxy hostname for the masterlist updater"
 msgstr "устанавливает имя прокси для обновления мастерлиста."
 
-#: ..\boss-cli\BOSS-CLI.cpp:239
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:239
 msgid "sets the proxy port number for the masterlist updater"
 msgstr "устанавливает номер порта прокси для обновления мастерлиста."
 
-#: ..\boss-cli\BOSS-CLI.cpp:241
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:241
 msgid ""
 "logs the debug output to the BOSSDebugLog.txt file instead of the command "
 "line."
 msgstr ""
 "выводит сообщения отладки в файл BOSSDebugLog.txt вместо командной строки."
 
-#: ..\boss-cli\BOSS-CLI.cpp:330
-#, fuzzy
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:330
 msgid "Checking for BOSS updates..."
-msgstr "&Проверка обновлений..."
+msgstr "Проверка обновлений BOSS..."
 
-#: ..\boss-cli\BOSS-CLI.cpp:335 MainWindow.cpp:1026
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:335
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:1026
 msgid "You are already using the latest version of BOSS."
 msgstr "У вас уже последняя версия BOSS."
 
-#: ..\boss-cli\BOSS-CLI.cpp:341 ..\boss-cli\BOSS-CLI.cpp:346
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:341
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:346
 #, c-format
 msgid "Update available! New version: %s"
 msgstr "Доступно обновление! Новая версия: %s"
 
-#: ..\boss-cli\BOSS-CLI.cpp:342
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:342
 msgid ""
 "The update may be downloaded from any of the locations listed in the BOSS "
 "Log."
@@ -1115,74 +1074,84 @@ msgstr ""
 "Обновление может быть загружено из любого другого места, из представленных в "
 "логе  BOSS."
 
-#: ..\boss-cli\BOSS-CLI.cpp:355
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:355
 msgid "Release notes:"
 msgstr "Заметки к выпуску:"
 
-#: ..\boss-cli\BOSS-CLI.cpp:356
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:356
 msgid "Do you want to download and install the update? (y/n)"
 msgstr "Вы хотите загрузить и установить обновление? (y/n)"
 
-#: ..\boss-cli\BOSS-CLI.cpp:362
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:362
 msgid "No update has been downloaded or installed."
 msgstr "Никаких обновлений не было загружено или установлено"
 
-#: ..\boss-cli\BOSS-CLI.cpp:369
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:369
 msgid "New installer successfully downloaded!"
 msgstr "Новый установщик успешно загружен!"
 
-#: ..\boss-cli\BOSS-CLI.cpp:370
-#, fuzzy
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:370
 msgid ""
 "BOSS will now launch the downloaded installer and exit. Complete the "
 "installer to complete the update."
 msgstr ""
-"Перед выходом установщик будет запущен. Завершите установку для завершения "
-"обновления."
+"Теперь BOSS запустит скачанный установщик и закроется. Завершите установку "
+"для завершения обновления."
 
-#: ..\boss-cli\BOSS-CLI.cpp:384 MainWindow.cpp:965
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:384
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:965
 msgid "Update cancelled."
 msgstr "Обновление прервано"
 
-#: ..\boss-cli\BOSS-CLI.cpp:401
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:401
 msgid "BOSS Update check failed. No Internet connection detected."
 msgstr ""
 "Проверка обновлений BOSS не удалась. Не найдено активное интернет-соединение."
 
-#: ..\boss-cli\BOSS-CLI.cpp:428 MainWindow.cpp:203
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:428
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:203
 msgid "Please pick which game to run BOSS for:"
 msgstr "Пожалуйста выберете, для какой игры загрузить BOSS:"
 
-#: ..\boss-cli\BOSS-CLI.cpp:434
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:434
 msgid "Invalid selection."
 msgstr "Неправильный выбор."
 
-#: ..\boss-cli\BOSS-CLI.cpp:471 MainWindow.cpp:468 UserRuleEditor.cpp:97
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:471
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:468
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:97
 msgid "Updating to the latest masterlist from the Google Code repository..."
 msgstr "Обновление до последнего мастерлиста с репозиториев Google..."
 
-#: ..\boss-cli\BOSS-CLI.cpp:478 MainWindow.cpp:476
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:478
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:476
 msgid ""
 "Your masterlist is already at the latest revision (r%1%; %2%). No update "
 "necessary."
 msgstr ""
 "Ваш мастерлист уже последней версии (r %1%; %2%). Обновление не требуется."
 
-#: ..\boss-cli\BOSS-CLI.cpp:481 MainWindow.cpp:480
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:481
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:480
 msgid "Your masterlist has been updated to revision %1% (%2%)."
 msgstr "Ваш мастерлист был обновлен до версии %1% (%2%)."
 
-#: ..\boss-cli\BOSS-CLI.cpp:487 ..\boss-cli\BOSS-CLI.cpp:496
-#: MainWindow.cpp:486 MainWindow.cpp:495
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:487
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:496
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:486
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:495
 msgid "Error: masterlist update failed."
 msgstr "Ошибка: обновление мастерлиста не удалось."
 
-#: ..\boss-cli\BOSS-CLI.cpp:488 ..\boss-cli\BOSS-CLI.cpp:497
-#: MainWindow.cpp:487 MainWindow.cpp:496
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:488
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:497
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:487
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:496
 msgid "Details: %1%"
 msgstr "Детали: %1%"
 
-#: ..\boss-cli\BOSS-CLI.cpp:493 MainWindow.cpp:492
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:493
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:492
 msgid ""
 "No internet connection detected. Masterlist auto-updater could not check for "
 "updates."
@@ -1190,193 +1159,237 @@ msgstr ""
 "Не найдено активное интернет-соединение. Проверка обновлений не может быть "
 "произведена."
 
-#: ..\boss-cli\BOSS-CLI.cpp:520 MainWindow.cpp:443 MainWindow.cpp:517
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:520
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:443
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:517
 msgid "BOSS working..."
 msgstr "BOSS работает..."
 
-#: ..\boss-cli\BOSS-CLI.cpp:529 ..\boss-cli\BOSS-CLI.cpp:573
-#: ..\boss-cli\BOSS-CLI.cpp:612 MainWindow.cpp:536 MainWindow.cpp:591
-#: MainWindow.cpp:641
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:529
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:573
+#: .\..\..\..\code\trunk\boss-cli/BOSS-CLI.cpp:612
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:536
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:591
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:641
 msgid "Critical Error: %1%"
 msgstr "Критическая ошибка: %1%"
 
-#: ElementIDs.cpp:55 ElementIDs.cpp:70
+#: .\..\..\..\code\trunk\boss-gui\GUI/ElementIDs.cpp:55
+#: .\..\..\..\code\trunk\boss-gui\GUI/ElementIDs.cpp:70
 msgid "Downloading: %1%"
 msgstr "Загрузка: %1%"
 
-#: ElementIDs.cpp:57 ElementIDs.cpp:72
+#: .\..\..\..\code\trunk\boss-gui\GUI/ElementIDs.cpp:57
+#: .\..\..\..\code\trunk\boss-gui\GUI/ElementIDs.cpp:72
 msgid "Are you sure you want to cancel?"
 msgstr "Вы уверены, что хотите отменить?"
 
-#: ElementIDs.cpp:57 ElementIDs.cpp:72
+#: .\..\..\..\code\trunk\boss-gui\GUI/ElementIDs.cpp:57
+#: .\..\..\..\code\trunk\boss-gui\GUI/ElementIDs.cpp:72
 msgid "BOSS: Updater"
 msgstr "BOSS: Обновление"
 
-#: MainWindow.cpp:107
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:107
 msgid "Error: %1% Details: %2%"
 msgstr "Ошибка: %1% Детали: %2%"
 
-#: MainWindow.cpp:108 MainWindow.cpp:159 MainWindow.cpp:174 MainWindow.cpp:423
-#: MainWindow.cpp:682 MainWindow.cpp:698 MainWindow.cpp:722
-#: UserRuleEditor.cpp:109 UserRuleEditor.cpp:120 UserRuleEditor.cpp:136
-#: UserRuleEditor.cpp:181 UserRuleEditor.cpp:457 UserRuleEditor.cpp:484
-#: UserRuleEditor.cpp:753 UserRuleEditor.cpp:761 UserRuleEditor.cpp:771
-#: UserRuleEditor.cpp:779 UserRuleEditor.cpp:903
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:108
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:159
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:174
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:423
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:682
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:698
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:722
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:109
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:120
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:136
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:181
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:457
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:484
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:753
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:761
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:771
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:779
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:903
 msgid "BOSS: Error"
 msgstr "BOSS: Ошибка"
 
-#: MainWindow.cpp:158
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:158
 msgid "Error: could not apply translation: %1%"
 msgstr "Ошибка: Невозможно применить перевод: %1%"
 
-#: MainWindow.cpp:173
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:173
 msgid "Error: The BOSS GUI is already running. This instance will now quit."
 msgstr "Ошибка: BOSS GUI уже запущен. Этот экземпляр будет закрыт."
 
-#: MainWindow.cpp:199
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:199
 msgid " (not detected)"
 msgstr " (не найдена)"
 
-#: MainWindow.cpp:204
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:204
 msgid "BOSS: Select Game"
 msgstr "BOSS: Выбор игры"
 
-#: MainWindow.cpp:245
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:245
 msgid "Plain Text"
 msgstr "Обычный текст"
 
-#: MainWindow.cpp:249
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:249
 msgid "Last Run"
 msgstr "Последний запуск"
 
-#: MainWindow.cpp:250
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:250
 msgid "2nd Last Run"
 msgstr "Два последних запуска"
 
-#: MainWindow.cpp:257
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:257
 msgid "&View BOSS Log"
 msgstr "&Лог BOSS"
 
-#: MainWindow.cpp:257
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:257
 msgid "Opens your BOSSlog."
 msgstr "Открывает ваш лог BOSS"
 
-#: MainWindow.cpp:258
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:258
 msgid "&Run BOSS"
 msgstr "&Запуск BOSS"
 
-#: MainWindow.cpp:258
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:258
 msgid "Runs BOSS with the options you have chosen."
 msgstr "Запускает BOSS с выбранными вами опциями."
 
-#: MainWindow.cpp:260
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:260
 msgid "&Quit"
 msgstr "&Выход"
 
-#: MainWindow.cpp:260
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:260
 msgid "Quit BOSS."
 msgstr "Выйти из BOSS."
 
-#: MainWindow.cpp:261
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:261
 msgid "&File"
 msgstr "&Файл"
 
-#: MainWindow.cpp:264
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:264
 msgid "&User Rules..."
 msgstr "&Пользовательские правила..."
 
-#: MainWindow.cpp:264
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:264
 msgid "Opens your userlist in your default text editor."
 msgstr "Открывает ваш список правил в редакторе по умолчанию."
 
-#: MainWindow.cpp:265
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:265
 msgid "&Settings..."
 msgstr "&Настройки..."
 
-#: MainWindow.cpp:265
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:265
 msgid "Opens the Settings window."
 msgstr "Открывает окно настроек"
 
-#: MainWindow.cpp:266
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:266
 msgid "&Edit"
 msgstr "&Правка"
 
-#: MainWindow.cpp:269
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:269
+msgid "&Oblivion"
+msgstr ""
+
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:269
 msgid "Switch to running BOSS for Oblivion."
 msgstr "Переключение на запуск BOSS для Oblivion"
 
-#: MainWindow.cpp:270
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:270
+msgid "&Nehrim"
+msgstr ""
+
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:270
 msgid "Switch to running BOSS for Nehrim."
 msgstr "Переключение на запуск BOSS для Nehrim"
 
-#: MainWindow.cpp:271
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:271
+msgid "&Skyrim"
+msgstr ""
+
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:271
 msgid "Switch to running BOSS for Skyrim."
 msgstr "Переключение на запуск BOSS для Skyrim"
 
-#: MainWindow.cpp:272
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:272
+msgid "&Fallout 3"
+msgstr ""
+
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:272
 msgid "Switch to running BOSS for Fallout 3."
 msgstr "Переключение на запуск BOSS для Fallout 3"
 
-#: MainWindow.cpp:273
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:273
+msgid "&Fallout: New Vegas"
+msgstr ""
+
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:273
 msgid "Switch to running BOSS for Fallout: New Vegas."
 msgstr "Переключение на запуск BOSS для Fallout: New Vegas."
 
-#: MainWindow.cpp:274
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:274
+msgid "&Morrowind"
+msgstr ""
+
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:274
 msgid "Switch to running BOSS for Morrowind."
 msgstr "Переключение на запуск BOSS для Morrowind"
 
-#: MainWindow.cpp:275
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:275
 msgid "&Active Game"
 msgstr "&Игра"
 
-#: MainWindow.cpp:278
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:278
 msgid "Open &Main Readme"
 msgstr "Описание &BOSS"
 
-#: MainWindow.cpp:278
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:278
 msgid "Opens the main BOSS readme in your default web browser."
 msgstr "Открывает описание программы в браузере по умолчанию."
 
-#: MainWindow.cpp:279
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:279
 msgid "Open &Userlist Syntax Doc"
 msgstr "Описание &синтаксиса списка правил"
 
-#: MainWindow.cpp:279
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:279
 msgid ""
 "Opens the BOSS userlist syntax documentation in your default web browser."
 msgstr "Открывает документацию по списку правил BOSS в браузере по умолчанию."
 
-#: MainWindow.cpp:280
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:280
 msgid "Open &Masterlist Syntax Doc"
 msgstr "Описание синтаксиса &мастерлиста"
 
-#: MainWindow.cpp:280
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:280
 msgid ""
 "Opens the BOSS masterlist syntax documentation in your default web browser."
 msgstr ""
 "Открывает документацию по синтаксису мастерлиста в браузере по умолчанию."
 
-#: MainWindow.cpp:281
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:281
 msgid "&Open API Readme"
 msgstr "Описание &API"
 
-#: MainWindow.cpp:281
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:281
 msgid "Opens the BOSS API readme in your default web browser."
 msgstr "Открывает описание BOSS API в браузере по умолчанию."
 
-#: MainWindow.cpp:282
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:282
 msgid "Open &Version History"
 msgstr "&История версий"
 
-#: MainWindow.cpp:282
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:282
 msgid "Opens the BOSS version history in your default web browser."
 msgstr "Открывает историю версий BOSS в браузере по умолчанию."
 
-#: MainWindow.cpp:283
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:283
 msgid "View &Copyright Licenses"
 msgstr "&Лицензия"
 
-#: MainWindow.cpp:283
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:283
 msgid ""
 "View the GNU General Public License v3.0 and GNU Free Documentation License "
 "v1.3."
@@ -1384,83 +1397,83 @@ msgstr ""
 "Просмотр GNU General Public License v3.0 и GNU Free Documentation License "
 "v1.3."
 
-#: MainWindow.cpp:285
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:285
 msgid "&Check For Updates..."
 msgstr "&Проверка обновлений..."
 
-#: MainWindow.cpp:285
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:285
 msgid "Checks for updates to BOSS."
 msgstr "Проверить обновления для BOSS"
 
-#: MainWindow.cpp:286
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:286
 msgid "&About BOSS..."
 msgstr "&О BOSS..."
 
-#: MainWindow.cpp:286
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:286
 msgid "Shows information about BOSS."
 msgstr "Показать информацию о BOSS"
 
-#: MainWindow.cpp:287
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:287
 msgid "&Help"
 msgstr "&Справка"
 
-#: MainWindow.cpp:298
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:298
 msgid "Output Options"
 msgstr "Опции вывода"
 
-#: MainWindow.cpp:302
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:302
 msgid "Show BOSS Log On Completion"
 msgstr "Открыть лог BOSS по завершению"
 
-#: MainWindow.cpp:303
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:303
 msgid "Display File CRCs"
 msgstr "Показать CRC файлов"
 
-#: MainWindow.cpp:304
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:304
 msgid "BOSS Log Format: "
 msgstr "Формат лога BOSS: "
 
-#: MainWindow.cpp:312
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:312
 msgid "Edit User Rules"
 msgstr "Правила"
 
-#: MainWindow.cpp:313
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:313
 msgid "Run BOSS"
 msgstr "Запуск BOSS"
 
-#: MainWindow.cpp:314
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:314
 msgid "View BOSS Log"
 msgstr "Лог BOSS"
 
-#: MainWindow.cpp:321
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:321
 msgid "Run Options"
 msgstr "Открыть опции"
 
-#: MainWindow.cpp:327
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:327
 msgid "Sort Plugins"
 msgstr "Сортировать плагины"
 
-#: MainWindow.cpp:330
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:330
 msgid "Update Masterlist"
 msgstr "Обновить мастерлист"
 
-#: MainWindow.cpp:331
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:331
 msgid "Perform Trial Run"
 msgstr "Выполнить тестовый запуск"
 
-#: MainWindow.cpp:336
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:336
 msgid "Update Masterlist Only"
 msgstr "Только обновить мастерлист"
 
-#: MainWindow.cpp:340
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:340
 msgid "Undo Changes"
 msgstr "Отмена изменений"
 
-#: MainWindow.cpp:341
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:341
 msgid "Undo Level: "
 msgstr "Уровень отмены: "
 
-#: MainWindow.cpp:350
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:350
 msgid ""
 "This decides both the format of BOSSlog generated when you click the \"Run "
 "BOSS\" button and the BOSSlog format opened when you click the \"View BOSSlog"
@@ -1470,7 +1483,7 @@ msgstr ""
 "\"Запуск BOSS\" и формат лога, открытого нажатием кнопки \"Открыть лог BOSS"
 "\"."
 
-#: MainWindow.cpp:351
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:351
 msgid ""
 "The format of BOSSlog this opens is decided by the setting of the \"BOSSlog "
 "Format\" Output Option above."
@@ -1478,7 +1491,7 @@ msgstr ""
 "Формат открываемого лога BOSS, задается вышестоящей опцией - \"Формат лога "
 "BOSS\"."
 
-#: MainWindow.cpp:352
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:352
 msgid ""
 "Runs BOSS, simulating its changes to your load order, but doesn't actually "
 "reorder your mods."
@@ -1486,37 +1499,46 @@ msgstr ""
 "Запускает BOSS, имитируя изменения порядка загрузки, но в действительности, "
 "не меняет порядок ваших модов."
 
-#: MainWindow.cpp:404
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:404
 msgid "Ready"
 msgstr "Готов"
 
-#: MainWindow.cpp:422 MainWindow.cpp:681 UserRuleEditor.cpp:119
-#: UserRuleEditor.cpp:135 UserRuleEditor.cpp:180 UserRuleEditor.cpp:902
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:422
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:681
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:119
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:135
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:180
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:902
 msgid "Error: %1%"
 msgstr "Ошибка: %1%"
 
-#: MainWindow.cpp:443 UserRuleEditor.cpp:92 UserRuleEditor.cpp:127
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:443
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:92
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:127
 msgid "BOSS: Working..."
 msgstr "BOSS: Работает..."
 
-#: MainWindow.cpp:477
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:477
 msgid "Masterlist already up-to-date."
 msgstr "Мастерлист уже обновлен"
 
-#: MainWindow.cpp:481
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:481
 msgid "Masterlist updated successfully."
 msgstr "Мастерлист успешно обновлен"
 
-#: MainWindow.cpp:668 UserRuleEditor.cpp:86 UserRuleEditor.cpp:473
-#: UserRuleEditor.cpp:495
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:668
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:86
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:473
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:495
 msgid "BOSS: User Rules Manager"
 msgstr "BOSS: Менеджер пользовательских правил"
 
-#: MainWindow.cpp:697 MainWindow.cpp:721
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:697
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:721
 msgid "Error: \"%1%\" cannot be found."
 msgstr "Ошибка: \"%1%\" не найден"
 
-#: MainWindow.cpp:733
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:733
 msgid ""
 "A \"one-click\" program for users that quickly optimises and avoids "
 "detrimental conflicts in their\n"
@@ -1528,7 +1550,7 @@ msgstr ""
 " игр как:  TES IV: Oblivion, Nehrim - At Fate's Edge, TES V: Skyrim, Fallout "
 "3 и Fallout: New Vegas."
 
-#: MainWindow.cpp:939
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:939
 msgid ""
 "The automatic updater will download the installer for the new version to "
 "this BOSS folder.\n"
@@ -1538,7 +1560,7 @@ msgstr ""
 "BOSS.\n"
 "\n"
 
-#: MainWindow.cpp:940
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:940
 msgid ""
 "It will then launch the installer before exiting. Complete the installer to "
 "complete the update."
@@ -1546,21 +1568,26 @@ msgstr ""
 "Перед выходом установщик будет запущен. Завершите установку для завершения "
 "обновления."
 
-#: MainWindow.cpp:942 MainWindow.cpp:944 MainWindow.cpp:948 MainWindow.cpp:956
-#: MainWindow.cpp:966 MainWindow.cpp:972 MainWindow.cpp:981
-#: MainWindow.cpp:1085
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:942
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:944
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:948
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:956
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:966
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:972
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:981
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:1085
 msgid "BOSS: Automatic Updater"
 msgstr "BOSS: Автоматическое обновление"
 
-#: MainWindow.cpp:944
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:944
 msgid "Automatic updater cancelled."
 msgstr "Автоматическое обновление отменено"
 
-#: MainWindow.cpp:948
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:948
 msgid "Initialising download..."
 msgstr "Инизиализация загрузки..."
 
-#: MainWindow.cpp:956
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:956
 msgid ""
 "New installer successfully downloaded! When you click 'OK', BOSS will launch "
 "the downloaded installer and exit. Complete the installer to complete the "
@@ -1570,7 +1597,7 @@ msgstr ""
 "загруженный установщик и  закроется. Выполните установку для завершения "
 "обновления."
 
-#: MainWindow.cpp:971
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:971
 msgid ""
 "Update failed. Details: %1%\n"
 "\n"
@@ -1580,7 +1607,7 @@ msgstr ""
 "\n"
 "Обновление отменено."
 
-#: MainWindow.cpp:980
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:980
 msgid ""
 "Update failed. Details: %1%; %2%\n"
 "\n"
@@ -1590,25 +1617,28 @@ msgstr ""
 "\n"
 "Обновление отменено."
 
-#: MainWindow.cpp:991
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:991
 msgid "BOSS: Settings"
 msgstr "BOSS: Настройки"
 
-#: MainWindow.cpp:1037 MainWindow.cpp:1049
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:1037
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:1049
 msgid "Update check failed. Details: %1%"
 msgstr "Проверка обновлений не удалась. Детали: %1%"
 
-#: MainWindow.cpp:1043
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:1043
 msgid "Update check failed. No Internet connection detected."
 msgstr ""
 "Проверка обновлений не удалась. Не найдено активное интернет-соединение."
 
-#: MainWindow.cpp:1060 MainWindow.cpp:1066 MainWindow.cpp:1074
-#: MainWindow.cpp:1091
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:1060
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:1066
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:1074
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:1091
 msgid "BOSS: Check For Updates"
 msgstr "BOSS: Проверка обновлений"
 
-#: MainWindow.cpp:1073
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:1073
 msgid ""
 "Update available! New version: %1%\n"
 "The update may be downloaded from any of the locations listed in the BOSS "
@@ -1618,11 +1648,11 @@ msgstr ""
 "обновление может быть загружено из любого другого места, из представленных в "
 "логе BOSS."
 
-#: MainWindow.cpp:1084
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:1084
 msgid "Failed to get release notes. Details: %1%"
 msgstr "Не удалось получить замечания к выпуску. Детали: %1%"
 
-#: MainWindow.cpp:1090
+#: .\..\..\..\code\trunk\boss-gui\GUI/MainWindow.cpp:1090
 msgid ""
 "Update available! New version: %1%\n"
 "Release notes:\n"
@@ -1638,108 +1668,109 @@ msgstr ""
 "\n"
 "Вы хотите загрузить и установить обновление?"
 
-#: SettingsWindow.cpp:41
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:41
 msgid "Standard (0)"
 msgstr "Стандарт (0)"
 
-#: SettingsWindow.cpp:42
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:42
 msgid "Level 1"
 msgstr "Уровень 1"
 
-#: SettingsWindow.cpp:43
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:43
 msgid "Level 2"
 msgstr "Уровень 2"
 
-#: SettingsWindow.cpp:44
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:44
 msgid "Level 3"
 msgstr "Уровень 3"
 
-#: SettingsWindow.cpp:48
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:48
 msgid "Autodetect"
 msgstr "авто. обнаружение"
 
-#: SettingsWindow.cpp:86
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:86
 msgid "Default Game:"
 msgstr "Игра по умолч.:"
 
-#: SettingsWindow.cpp:90
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:90
 msgid "Language:"
 msgstr "Язык:"
 
-#: SettingsWindow.cpp:93
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:93
 msgid "Check for BOSS updates on startup"
 msgstr "Проверять обновления BOSS при запуске"
 
-#: SettingsWindow.cpp:94
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:94
 msgid "Use User Rules Manager"
 msgstr "Менеджер пользовательских правил"
 
-#: SettingsWindow.cpp:95
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:95
 msgid "Close the GUI after running BOSS"
 msgstr "Закрыть GUI после запуска BOSS"
 
-#: SettingsWindow.cpp:97
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:97
 msgid "Language settings will be applied after the BOSS GUI is restarted."
 msgstr "Установки языка будут применены после перезапуска BOSS GUI."
 
-#: SettingsWindow.cpp:106
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:106
 msgid "Proxy Hostname:"
 msgstr "Имя хоста:"
 
-#: SettingsWindow.cpp:109
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:109
 msgid "Proxy Port Number:"
 msgstr "Номер порта:"
 
-#: SettingsWindow.cpp:112
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:112
 msgid "Proxy Username:"
 msgstr "Имя пользователя:"
 
-#: SettingsWindow.cpp:115
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:115
 msgid "Proxy Password:"
 msgstr "Пароль:"
 
-#: SettingsWindow.cpp:127
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:127
 msgid "Debug Output Verbosity:"
 msgstr "Уровень детализации отладочных сообщений"
 
-#: SettingsWindow.cpp:130
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:130
 msgid "Include Source Code References"
 msgstr "Включает ссылки на исходный код"
 
-#: SettingsWindow.cpp:131
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:131
 msgid "Log Debug Output"
 msgstr "Вывод лога отладки"
 
-#: SettingsWindow.cpp:136
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:136
 msgid "General"
 msgstr "Основное"
 
-#: SettingsWindow.cpp:137
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:137
 msgid "Internet"
 msgstr "Прокси"
 
-#: SettingsWindow.cpp:138
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:138
 msgid "Debugging"
 msgstr "Отладка"
 
-#: SettingsWindow.cpp:142
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:142
 msgid "OK"
 msgstr "Принять"
 
-#: SettingsWindow.cpp:143 UserRuleEditor.cpp:261
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:143
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:261
 msgid "Cancel"
 msgstr "Отмена"
 
-#: SettingsWindow.cpp:154
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:154
 msgid "The output is logged to the BOSSDebugLog.txt file"
 msgstr "Сообщения будут записаны в файл BOSSDebugLog.txt"
 
-#: SettingsWindow.cpp:155
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:155
 msgid "Adds source code references to command line output."
 msgstr ""
 "Добавляет ссылки на исходный код в выводимые сообщения командной строки"
 
-#: SettingsWindow.cpp:156
+#: .\..\..\..\code\trunk\boss-gui\GUI/SettingsWindow.cpp:156
 msgid ""
 "The higher the verbosity level, the more information is outputted to the "
 "command line."
@@ -1747,7 +1778,7 @@ msgstr ""
 "Более глубокий уровень отладки, больше информации будет выведено в командную "
 "строку."
 
-#: UserRuleEditor.cpp:85
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:85
 msgid ""
 "The User Rules Manager requires the BOSS masterlist for %1% to have been "
 "downloaded, but it cannot be detected. Do you wish to download the latest "
@@ -1757,98 +1788,99 @@ msgstr ""
 "но не может его обнаружить. Желаете ли вы загрузить последний мастерлист "
 "сейчас?"
 
-#: UserRuleEditor.cpp:92 UserRuleEditor.cpp:127
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:92
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:127
 msgid "Initialising User Rules Manager..."
 msgstr "Инициализация менеджера пользовательских правил..."
 
-#: UserRuleEditor.cpp:108
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:108
 msgid ""
 "Error: No internet connection detected. Masterlist could not be downloaded."
 msgstr ""
 "Ошибка: Не найдено активное интернет-соединение. Мастерлист не может быть "
 "загружен."
 
-#: UserRuleEditor.cpp:150
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:150
 msgid "before"
 msgstr "перед"
 
-#: UserRuleEditor.cpp:151
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:151
 msgid "after"
 msgstr "после"
 
-#: UserRuleEditor.cpp:155
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:155
 msgid "top"
 msgstr "вверх"
 
-#: UserRuleEditor.cpp:156
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:156
 msgid "bottom"
 msgstr "вниз"
 
-#: UserRuleEditor.cpp:195
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:195
 msgid "Rule Editor"
 msgstr "Редактор правил"
 
-#: UserRuleEditor.cpp:198
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:198
 msgid "For"
 msgstr "Для"
 
-#: UserRuleEditor.cpp:202
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:202
 msgid "Sort Item"
 msgstr "Сортировать объект"
 
-#: UserRuleEditor.cpp:205
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:205
 msgid "Sort"
 msgstr "Сортировать"
 
-#: UserRuleEditor.cpp:211
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:211
 msgid "Insert at the"
 msgstr "Вставить в"
 
-#: UserRuleEditor.cpp:213
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:213
 msgid "of"
 msgstr "из"
 
-#: UserRuleEditor.cpp:221
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:221
 msgid "Replace existing messages"
 msgstr "Заменить существующие сообщения"
 
-#: UserRuleEditor.cpp:225
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:225
 msgid "Default Plugin Messages"
 msgstr "Сообщения плагина по умолчанию"
 
-#: UserRuleEditor.cpp:245
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:245
 msgid "Installed Plugins"
 msgstr "Установленные плагины"
 
-#: UserRuleEditor.cpp:246
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:246
 msgid "Masterlist"
 msgstr "Мастерлист"
 
-#: UserRuleEditor.cpp:253
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:253
 msgid "Create New Rule"
 msgstr "Создать новое правило"
 
-#: UserRuleEditor.cpp:254
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:254
 msgid "Save Edited Rule"
 msgstr "Сохранить измененное правило"
 
-#: UserRuleEditor.cpp:255
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:255
 msgid "Delete Rule"
 msgstr "Удалить правило"
 
-#: UserRuleEditor.cpp:257
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:257
 msgid "Move Rule Up"
-msgstr "Переместить правило ниже"
+msgstr "Переместить правило выше"
 
-#: UserRuleEditor.cpp:258
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:258
 msgid "Move Rule Down"
 msgstr "Переместить правило ниже"
 
-#: UserRuleEditor.cpp:260
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:260
 msgid "Save and Exit"
 msgstr "Сохранить и выйти"
 
-#: UserRuleEditor.cpp:280
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:280
 msgid ""
 "Messages must be entered in the correct format. See the User Rules Readme "
 "for more information."
@@ -1856,91 +1888,94 @@ msgstr ""
 "Сообщения должны быть введены в корректном формате. Смотрите описание "
 "пользовательских правил, для получения большей информации."
 
-#: UserRuleEditor.cpp:456 UserRuleEditor.cpp:483
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:456
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:483
 msgid "Rule Syntax Error: %1% Please correct the mistake before continuing."
 msgstr ""
 "Ошибка в синтаксисе правила: %1% Пожалуйста исправьте ошибку, перед "
 "продолжением."
 
-#: UserRuleEditor.cpp:472
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:472
 msgid "Are you sure you want to save your changes to the selected rule?"
 msgstr "Вы уверены, что хотите сохранить изменения в выбранном правиле?"
 
-#: UserRuleEditor.cpp:494
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:494
 msgid "Are you sure you want to delete the selected rule?"
 msgstr "Вы уверены, что хотите удалить выбранное правило?"
 
-#: UserRuleEditor.cpp:572 UserRuleEditor.cpp:591 UserRuleEditor.cpp:860
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:572
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:591
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:860
 msgid "User Rules Manager"
 msgstr "Менеджер пользовательских правил"
 
-#: UserRuleEditor.cpp:607
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:607
 msgid "No mod is specified to sort relative to."
 msgstr "Не указан мод, по отношению к которому сортировать."
 
-#: UserRuleEditor.cpp:609
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:609
 msgid "Cannot sort a plugin relative to a group."
 msgstr "Нельзя отсортировать плагин относительно группы."
 
-#: UserRuleEditor.cpp:612
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:612
 msgid "No group is specified to insert into."
 msgstr "Не указана группа для вставки"
 
-#: UserRuleEditor.cpp:614
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:614
 msgid "Cannot insert into a plugin."
 msgstr "Нельзя вставить в плагин"
 
-#: UserRuleEditor.cpp:618
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:618
 msgid "Cannot add messages when none are given."
 msgstr "Нельзя добавлять сообщения, когда ничего не задано."
 
-#: UserRuleEditor.cpp:621
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:621
 msgid "No rule mod is specified."
 msgstr "Нет указанного в правиле мода."
 
-#: UserRuleEditor.cpp:625
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:625
 msgid "No group is specified to sort relative to."
 msgstr "Не указана группа, по отношению к которой сортировать."
 
-#: UserRuleEditor.cpp:627
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:627
 msgid "Cannot sort a group relative to a plugin."
 msgstr "Нельзя сортировать группу по отношению к плагину"
 
-#: UserRuleEditor.cpp:629
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:629
 msgid "Cannot insert groups."
 msgstr "Невозможно вставлять группы"
 
-#: UserRuleEditor.cpp:632
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:632
 msgid "Cannot add messages to groups."
 msgstr "Нельзя добавить сообщения к группе"
 
-#: UserRuleEditor.cpp:635
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:635
 msgid ""
 "The rule mod is not being sorted nor having its attached messages altered."
 msgstr ""
 "Правило мода не может быть отсортировано, не имея добавленных им измененных "
 "сообщений."
 
-#: UserRuleEditor.cpp:752
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:752
 msgid "Rule Syntax Error: Cannot sort a plugin relative to a group."
 msgstr ""
 "Ошибка в синтаксисе правила: Нельзя сортировать плагин по отношению к группе"
 
-#: UserRuleEditor.cpp:760
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:760
 msgid "Rule Syntax Error: Cannot insert into a plugin."
 msgstr "Ошибка в синтаксисе правила: Нельзя вставить в плагин"
 
-#: UserRuleEditor.cpp:770
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:770
 msgid "Rule Syntax Error: Cannot sort a group relative to a plugin."
 msgstr ""
 "Ошибка в синтаксисе правила: Нельзя отсортировать группу по отношению к "
 "плагину"
 
-#: UserRuleEditor.cpp:778
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:778
 msgid "Rule Syntax Error: Cannot insert groups."
 msgstr "Ошибка в синтаксисе правила: Нельзя вставить группу"
 
-#: UserRuleEditor.cpp:871
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:871
 msgid ""
 "The rule sorting the unrecognised plugin \"%1%\" has been disabled as the "
 "plugin is now recognised. If you wish to override its position in the "
@@ -1950,6 +1985,117 @@ msgstr ""
 "плагин теперь известен. Если вы желаете изменить его позицию в мастерлисте, "
 "включите правило заново."
 
-#: UserRuleEditor.cpp:872
+#: .\..\..\..\code\trunk\boss-gui\GUI/UserRuleEditor.cpp:872
 msgid "BOSS: Rule Disabled"
 msgstr "BOSS: Правило отключено"
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:121
+msgid "Masterlist Parsing Error: Expected a %1% at:"
+msgstr "Ошибка обработки мастерлиста: Ожидалось %1% на:"
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:122
+msgid "Ini Parsing Error: Expected a %1% at:"
+msgstr "Ошибка обработки INI: Ожидалось %1% на:"
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:123
+msgid "Userlist Parsing Error: Expected a %1% at:"
+msgstr "Ошибка обработки списка правил: Ожидалось %1% на:"
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:124
+msgid "Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"
+msgstr ""
+"Ошибка в синтаксисе списка правил: Правило начинается с \"%1%: %2%\" %3%"
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:125
+msgid "Masterlist parsing aborted. Utility will end now."
+msgstr "Обработка мастерлиста прервана. Утилита будет закрыта."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:126
+msgid ""
+"Ini parsing aborted. Some or all of the options may not have been set "
+"correctly."
+msgstr ""
+"Обработка ini прервана. Некоторые или все настройки не могут быть "
+"установлены правильно."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:127
+msgid "Userlist parsing aborted. No rules will be applied."
+msgstr ""
+"Обработка списка правил прервана. Отсутствуют правила, которые могли быть "
+"применены"
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:130
+msgid "includes a sort line in a rule with a FOR rule keyword."
+msgstr "включает строку сортировки в правиле с ключом FOR."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:131
+msgid "tries to add a group."
+msgstr "пытается добавить группу."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:132
+msgid "tries to sort the group \"ESMs\"."
+msgstr "пытается отсортировать группу \"ESMs\"."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:133
+msgid "tries to sort the master .ESM file."
+msgstr "пытается отсортировать ESM-файл."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:134
+msgid "references a mod and a group."
+msgstr "ссылается на мод и группу."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:135
+msgid "tries to sort a group before the group \"ESMs\"."
+msgstr "пытается отсортировать группу, перед группой \"ESMs\"."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:136
+msgid "tries to sort a mod before the master .ESM file."
+msgstr "пытается отсортировать группу, перед ESM-файлом."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:137
+msgid ""
+"tries to insert a mod into the top of the group \"ESMs\", before the master ."
+"ESM file."
+msgstr ""
+"пытается вставить мод вверх группы \"ESMs\", перед мастерфайлом .ESM-файл."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:138
+msgid "tries to insert a group or insert something into a mod."
+msgstr "пытается вставить группу или что-то в мод."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:139
+msgid "tries to attach a message to a group."
+msgstr "пытается прикрепить сообщение к группе"
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:140
+msgid "has more than one sort line."
+msgstr "имеет больше чем одну строку для сортировки."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:141
+msgid "has more than one REPLACE-using message line."
+msgstr "имеет больше чем одно использующее замену сообщение."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:142
+msgid "has a REPLACE-using message line that is not the first message line."
+msgstr ""
+"имеет использующее замену сообщение, которое не первое сообщения в строке."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:143
+msgid "has a sort line that is not the second line of the rule."
+msgstr "имеет строку сортировки, которая не вторая в правиле."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:144
+msgid "tries to sort a mod or group relative to itself."
+msgstr "пытается сортировать мод или группу по отношению к себе."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:145
+msgid "tries to attach an malformatted message."
+msgstr "пытается прикрепить сообщение неизвестного типа."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:146
+msgid "tries to sort a plugin before a master file."
+msgstr "пытается отсортировать плагин перед мастерфайлом."
+
+#: .\..\..\..\code\trunk\boss-common\Common/Error.h:147
+msgid "tries to sort a master file before a plugin."
+msgstr "пытается отсортировать мастерфайл перед плагином."
