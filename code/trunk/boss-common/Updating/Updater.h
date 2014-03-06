@@ -39,7 +39,7 @@
 namespace boss {
 
     struct pointers_struct {
-        pointers_struct() : repo(NULL), remote(NULL), cfg(NULL), obj(NULL), commit(NULL), ref(NULL), sig(NULL) {}
+        pointers_struct() : repo(NULL), remote(NULL), cfg(NULL), obj(NULL), commit(NULL), ref(NULL), sig(NULL), blob(NULL) {}
 
         void free() {
             git_commit_free(commit);
@@ -49,6 +49,7 @@ namespace boss {
             git_repository_free(repo);
             git_reference_free(ref);
             git_signature_free(sig);
+            git_blob_free(blob);
         }
 
         git_repository * repo;
@@ -58,6 +59,7 @@ namespace boss {
         git_commit * commit;
         git_reference * ref;
         git_signature * sig;
+        git_blob * blob;
     };
 
     inline void handle_error(int error_code, pointers_struct& pointers) {
@@ -90,17 +92,64 @@ namespace boss {
             return gl_falloutnv_repo_url;
     }
 
+    inline bool are_files_equal(const void * buf1, size_t buf1_size, const void * buf2, size_t buf2_size) {
+        if (buf1_size != buf2_size)
+            return false;
+
+        size_t pos;
+        while (pos < buf1_size) {
+            if (*((char*)buf1 + pos) != *((char*)buf2 + pos))
+                return false;
+            ++pos;
+        }
+        return true;
+    }
+
     // Gets the revision SHA (first 9 characters) for the currently checked-out masterlist, or "unknown".
     inline std::string GetMasterlistVersion(Game& game) {
         if (!fs::exists(game.Masterlist().parent_path() / ".git" / "HEAD"))
-            return "unknown";
+            return "Unknown: Git repository missing";
         else {
-            ifstream head((game.Masterlist().parent_path() / ".git" / "HEAD").string());
             std::string rev;
-            head >> rev;
-            head.close();
-            rev.resize(9);
-            return rev;
+            //Naive check, ignoring working directory changes.
+            /*
+            */
+
+            /* Better check, which compares HEAD to the working dir.
+            1. Get an object for the masterlist in HEAD.
+            2. Get the blob for that object.
+            3. Open the masterlist file in the working dir in a file buffer.
+            4. Compare the file and blob buffers.
+            */
+            pointers_struct ptrs;
+            LOG_INFO("Existing repository found, attempting to open it.");
+            handle_error(git_repository_open(&ptrs.repo, game.Masterlist().parent_path().string().c_str()), ptrs);
+
+            LOG_INFO("Getting HEAD masterlist object.");
+            handle_error(git_revparse_single(&ptrs.obj, ptrs.repo, "HEAD:masterlist.txt"), ptrs);
+
+            LOG_INFO("Getting blob for masterlist object.");
+            handle_error(git_blob_lookup(&ptrs.blob, ptrs.repo, git_object_id(ptrs.obj)), ptrs);
+
+            LOG_INFO("Opening masterlist in working directory.");
+            std::string mlist;
+            fileToBuffer(game.Masterlist(), mlist);
+
+            LOG_INFO("Comparing files.");
+            if (are_files_equal(git_blob_rawcontent(ptrs.blob), git_blob_rawsize(ptrs.blob), mlist.data(), mlist.length())) {
+                ptrs.free();
+                //For some reason trying to get the revision of HEAD:masterlist.txt using libgit2 gives me 18efbc9d8 instead.
+                std::string revision;
+                ifstream head((game.Masterlist().parent_path() / ".git" / "HEAD").string());
+                head >> revision;
+                head.close();
+                revision.resize(9);
+                return revision;
+            }
+            else {
+                ptrs.free();
+                return "Unknown: Masterlist edited";
+            }
         }
     }
 
