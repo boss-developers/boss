@@ -223,8 +223,54 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 
 ;--------------------------------
 ;Installer Sections
+    Section "Microsoft Visual C++ 2013 SP1 Redist"
+        ; Thanks to the pcsx2 installer for providing this!
+
+        ; Detection made easy: Unlike previous redists, VC2013 now generates a platform
+        ; independent key for checking availability.
+        ; HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\x86  for x64 Windows
+        ; HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\12.0\VC\Runtimes\x86  for x86 Windows
+
+        ; Download from:
+        ; http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe
+
+        ClearErrors
+
+        ${If} ${RunningX64}
+            ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\x86" "Installed"
+        ${Else}
+            ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\VisualStudio\12.0\VC\Runtimes\x86" "Installed"
+        ${EndIf}
+
+        ${If} $R0 == "1"
+            DetailPrint "Visual C++ 2013 Redistributable is already installed; skipping!"
+        ${Else}
+            DetailPrint "Visual C++ 2013 Redistributable registry key was not found; assumed to be uninstalled."
+            DetailPrint "Downloading Visual C++ 2013 Redistributable Setup..."
+            SetOutPath $TEMP
+            NSISdl::download "http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe" "vcredist_x86.exe"
+
+            Pop $R0 ;Get the return value
+            ${If} $R0 == "success"
+                DetailPrint "Running Visual C++ 2013 Redistributable Setup..."
+                Sleep 2000
+                HideWindow
+                ExecWait '"$TEMP\vcredist_x86.exe" /qb'
+                BringToFront
+                DetailPrint "Finished Visual C++ 2013 SP1 Redistributable Setup"
+
+                Delete "$TEMP\vcredist_x86.exe"
+            ${Else}
+                DetailPrint "Could not contact Microsoft.com, or the file has been (re)moved!"
+            ${EndIf}
+        ${EndIf}
+    SectionEnd
 
 	Section "New Files"
+		;Rename BOSS.ini if it exists.
+		IfFileExists "BOSS.ini" 0 +3
+			Delete "BOSS.ini.old"
+			Rename "BOSS.ini" "BOSS.ini.old"
 
 		;Install new BOSS ini.
 		SetOutPath "$INSTDIR"
@@ -385,140 +431,6 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 		WriteUninstaller "$INSTDIR\Uninstall.exe"
 
 	SectionEnd
-
-    Section "Old Files"
-        ;Silently move and remove files from past BOSS installs.
-		 ${If} $OB_Path != $Empty
-			IfFileExists "$OB_Path\Data\BOSS\userlist.txt" 0 +3
-				CreateDirectory "$INSTDIR\Oblivion"
-				Rename "$OB_Path\Data\BOSS\userlist.txt" "$INSTDIR\Oblivion\userlist.txt"
-			IfFileExists "$OB_Path\BOSS\userlist.txt" 0 +3
-				CreateDirectory "$INSTDIR\Oblivion"
-				Rename "$OB_Path\BOSS\userlist.txt" "$INSTDIR\Oblivion\userlist.txt"
-			IfFileExists "$OB_Path\BOSS\BOSS.ini" 0 +2
-				Rename "$OB_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
-			Delete "$OB_Path\Data\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
-			Delete "$OB_Path\Data\modlist.*"
-			Delete "$OB_Path\Data\masterlist.txt"
-			Delete "$OB_Path\Data\BOSS\modlist.*"
-			Delete "$OB_Path\Data\BOSS\masterlist.txt"
-			Delete "$OB_Path\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
-			RMDir  "$OB_Path\Data\BOSS"
-		${EndIf}
-		${If} $NE_Path != $Empty
-			IfFileExists "$NE_Path\Data\BOSS\userlist.txt" 0 +3
-				CreateDirectory "$INSTDIR\Nehrim"
-				Rename "$NE_Path\Data\BOSS\userlist.txt" "$INSTDIR\Nehrim\userlist.txt"
-			IfFileExists "$NE_Path\BOSS\userlist.txt" 0 +3
-				CreateDirectory "$INSTDIR\Nehrim"
-				Rename "$NE_Path\BOSS\userlist.txt" "$INSTDIR\Nehrim\userlist.txt"
-			IfFileExists "$NE_Path\BOSS\BOSS.ini" 0 +2
-				Rename "$NE_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
-			Delete "$NE_Path\Data\BOSS*"
-			Delete "$NE_Path\Data\modlist.*"
-			Delete "$NE_Path\Data\masterlist.txt"
-			Delete "$NE_Path\Data\BOSS\modlist.*"
-			Delete "$NE_Path\Data\BOSS\masterlist.txt"
-			Delete "$NE_Path\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
-			RMDir  "$NE_Path\Data\BOSS"
-		${EndIf}
-		${If} $SK_Path != $Empty
-			IfFileExists "$SK_Path\BOSS\userlist.txt" 0 +3
-				CreateDirectory "$INSTDIR\Skyrim"
-				Rename "$SK_Path\BOSS\userlist.txt" "$INSTDIR\Skyrim\userlist.txt"
-			IfFileExists "$SK_Path\BOSS\BOSS.ini" 0 +2
-				Rename "$SK_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
-			Delete "$SK_Path\Data\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
-			Delete "$SK_Path\Data\modlist.*"
-			Delete "$SK_Path\Data\masterlist.txt"
-			Delete "$SK_Path\Data\BOSS\modlist.*"
-			Delete "$SK_Path\Data\BOSS\masterlist.txt"
-			Delete "$SK_Path\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
-			RMDir  "$SK_Path\Data\BOSS"
-		${EndIf}
-		${If} $FO_Path != $Empty
-			IfFileExists "$FO_Path\Data\BOSS\userlist.txt" 0 +3
-				CreateDirectory "$INSTDIR\Fallout 3"
-				Rename "$FO_Path\Data\BOSS\userlist.txt" "$INSTDIR\Fallout 3\userlist.txt"
-			IfFileExists "$FO_Path\BOSS\userlist.txt" 0 +3
-				CreateDirectory "$INSTDIR\Fallout 3"
-				Rename "$FO_Path\BOSS\userlist.txt" "$INSTDIR\Fallout 3\userlist.txt"
-			IfFileExists "$FO_Path\BOSS\BOSS.ini" 0 +2
-				Rename "$FO_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
-			Delete "$FO_Path\Data\BOSS*"
-			Delete "$FO_Path\Data\modlist.*"
-			Delete "$FO_Path\Data\masterlist.txt"
-			Delete "$FO_Path\Data\BOSS\modlist.*"
-			Delete "$FO_Path\Data\BOSS\masterlist.txt"
-			Delete "$FO_Path\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
-			RMDir  "$FO_Path\Data\BOSS"
-		${EndIf}
-		${If} $NV_Path != $Empty
-			IfFileExists "$NV_Path\Data\BOSS\userlist.txt" 0 +3
-				CreateDirectory "$INSTDIR\Fallout New Vegas"
-				Rename "$NV_Path\Data\BOSS\userlist.txt" "$INSTDIR\Fallout New Vegas\userlist.txt"
-			IfFileExists "$NV_Path\BOSS\userlist.txt" 0 +3
-				CreateDirectory "$INSTDIR\Fallout New Vegas"
-				Rename "$NV_Path\BOSS\userlist.txt" "$INSTDIR\Fallout New Vegas\userlist.txt"
-			IfFileExists "$NV_Path\BOSS\BOSS.ini" 0 +2
-				Rename "$NV_Path\BOSS\BOSS.ini" "$INSTDIR\BOSS.ini"
-			Delete "$NV_Path\Data\BOSS*"
-			Delete "$NV_Path\Data\modlist.*"
-			Delete "$NV_Path\Data\masterlist.txt"
-			Delete "$NV_Path\Data\BOSS\modlist.*"
-			Delete "$NV_Path\Data\BOSS\masterlist.txt"
-			Delete "$NV_Path\Data\BOSS\BOSS*" #Gets rid of readmes, logs and bat files in one fell swoop.
-			RMDir  "$NV_Path\Data\BOSS"
-		${EndIf}
-
-		;Rename BOSS.ini if it exists.
-		IfFileExists "BOSS.ini" 0 +3
-			Delete "BOSS.ini.old"
-			Rename "BOSS.ini" "BOSS.ini.old"
-    SectionEnd
-
-    Section "Microsoft Visual C++ 2013 SP1 Redist"
-        ; Thanks to the pcsx2 installer for providing this!
-
-        ; Detection made easy: Unlike previous redists, VC2013 now generates a platform
-        ; independent key for checking availability.
-        ; HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\x86  for x64 Windows
-        ; HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\12.0\VC\Runtimes\x86  for x86 Windows
-
-        ; Download from:
-        ; http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe
-
-        ClearErrors
-
-        ${If} ${RunningX64}
-            ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\x86" "Installed"
-        ${Else}
-            ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\VisualStudio\12.0\VC\Runtimes\x86" "Installed"
-        ${EndIf}
-
-        ${If} $R0 == "1"
-            DetailPrint "Visual C++ 2013 Redistributable is already installed; skipping!"
-        ${Else}
-            DetailPrint "Visual C++ 2013 Redistributable registry key was not found; assumed to be uninstalled."
-            DetailPrint "Downloading Visual C++ 2013 Redistributable Setup..."
-            SetOutPath $TEMP
-            NSISdl::download "http://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x86.exe" "vcredist_x86.exe"
-
-            Pop $R0 ;Get the return value
-            ${If} $R0 == "success"
-                DetailPrint "Running Visual C++ 2013 Redistributable Setup..."
-                Sleep 2000
-                HideWindow
-                ExecWait '"$TEMP\vcredist_x86.exe" /qb'
-                BringToFront
-                DetailPrint "Finished Visual C++ 2013 SP1 Redistributable Setup"
-
-                Delete "$TEMP\vcredist_x86.exe"
-            ${Else}
-                DetailPrint "Could not contact Microsoft.com, or the file has been (re)moved!"
-            ${EndIf}
-        ${EndIf}
-    SectionEnd
 
 ;--------------------------------
 ;Uninstaller Section
