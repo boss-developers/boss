@@ -250,71 +250,25 @@ namespace boss {
         //LOG_INFO("Creating a Git signature.");
         //handle_error(git_signature_default(&ptrs.sig, ptrs.repo), ptrs);
 
-        bool parsingFailed = false;
-        unsigned int rollbacks = 0;
         char revision[10];
-        do {
-            string filespec = "refs/remotes/origin/master~" + IntToString(rollbacks);
-            LOG_INFO("Getting the Git object for the tree at refs/remotes/origin/master~%i.", rollbacks);
-            handle_error(git_revparse_single(&ptrs.obj, ptrs.repo, filespec.c_str()), ptrs);
+        string filespec = "refs/remotes/origin/master~0";
+        LOG_INFO("Getting the Git object for the tree at refs/remotes/origin/master~0.");
+        handle_error(git_revparse_single(&ptrs.obj, ptrs.repo, filespec.c_str()), ptrs);
 
-            LOG_INFO("Getting the Git object ID.");
-            const git_oid * oid = git_object_id(ptrs.obj);
+        LOG_INFO("Getting the Git object ID.");
+        const git_oid * oid = git_object_id(ptrs.obj);
 
-            LOG_INFO("Generating hex string for Git object ID.");
-            git_oid_tostr(revision, 10, oid);
+        LOG_INFO("Generating hex string for Git object ID.");
+        git_oid_tostr(revision, 10, oid);
 
-            LOG_INFO("Recreating HEAD as a direct reference (overwriting it) to the desired revision.");
-            handle_error(git_reference_create(&ptrs.ref, ptrs.repo, "HEAD", oid, 1), ptrs);
+        LOG_INFO("Recreating HEAD as a direct reference (overwriting it) to the desired revision.");
+        handle_error(git_reference_create(&ptrs.ref, ptrs.repo, "HEAD", oid, 1), ptrs);
 
-            LOG_INFO("Performing a Git checkout of HEAD.");
-            handle_error(git_checkout_head(ptrs.repo, &opts), ptrs);
+        LOG_INFO("Performing a Git checkout of HEAD.");
+        handle_error(git_checkout_head(ptrs.repo, &opts), ptrs);
 
-            LOG_INFO("Tree hash is: %s", revision);
-            LOG_INFO("Freeing pointers.");
-            git_object_free(ptrs.obj);
-            git_reference_free(ptrs.ref);
-
-            /*
-            BOOST_LOG_TRIVIAL(trace) << "Testing masterlist parsing.";
-
-            //Now try parsing the masterlist.
-            list<boss::Message> messages;
-            list<boss::Plugin> plugins;
-            try {
-                boss::ifstream in(game.MasterlistPath());
-                YAML::Node mlist = YAML::Load(in);
-                in.close();
-
-                if (mlist["globals"])
-                    messages = mlist["globals"].as< list<boss::Message> >();
-                if (mlist["plugins"])
-                    plugins = mlist["plugins"].as< list<boss::Plugin> >();
-
-                for (list<boss::Plugin>::iterator it = plugins.begin(), endIt = plugins.end(); it != endIt; ++it) {
-                    it->EvalAllConditions(game, g_lang_any);
-                }
-
-                for (list<boss::Message>::iterator it = messages.begin(), endIt = messages.end(); it != endIt; ++it) {
-                    it->EvalCondition(game, g_lang_any);
-                }
-
-                parsingFailed = false;
-
-            }
-            catch (std::exception& e) {
-                parsingFailed = true;
-                rollbacks++;
-
-                //Roll back one revision if there's an error.
-                BOOST_LOG_TRIVIAL(error) << "Masterlist parsing failed. Masterlist revision " + string(revision) + ": " + e.what();
-
-                parsingErrors.push_back(boss::Message(boss::g_message_error, boost::locale::translate("Masterlist revision").str() + " " + string(revision) + ": " + e.what() + " " + boost::locale::translate("Rolled back to the previous revision.").str()));
-            }
-            */
-        } while (parsingFailed);
-
-        //Finally, free memory.
+        LOG_INFO("Tree hash is: %s", revision);
+        LOG_INFO("Freeing pointers.");
         ptrs.free();
 
         return string(revision);
