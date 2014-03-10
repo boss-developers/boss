@@ -35,7 +35,7 @@
 
 
 #define _LOG_IMPL(verbosity, formatStr, ...) \
-	boss::g_logger.log(verbosity, __FILE__, __LINE__, formatStr, ##__VA_ARGS__)
+	boss::g_logger.log(verbosity, formatStr, ##__VA_ARGS__)
 
 // convenience macros
 #define LOG_ERROR(formatStr, ...) _LOG_IMPL(boss::LV_ERROR, formatStr, ##__VA_ARGS__)
@@ -76,21 +76,19 @@ namespace boss
 		inline bool isTraceEnabled () { return _isVerbosityEnabled(LV_TRACE); }
 
 		// if a message is of a sufficient verbosity, outputs the given message
-		inline void log (LogVerbosity verbosity, const char * fileName,
-						 int lineNo, const char * formatStr, ...) __attribute__((__format__ (__printf__, 5, 6)))
+		inline void log (LogVerbosity verbosity, const char * formatStr, ...) __attribute__((__format__ (__printf__, 5, 6)))
 		{
 			if (_isVerbosityEnabled(verbosity))
 			{
 				va_list ap;
 				va_start(ap, formatStr);
-				_log(verbosity, fileName, lineNo, formatStr, ap);
+				_log(verbosity, formatStr, ap);
 				va_end(ap);
 			}
 		}
 
 	private:
 		LogVerbosity m_verbosity;
-		bool         m_originTracking;
 		FILE * m_out;
 
 	private:
@@ -99,8 +97,7 @@ namespace boss
 			return verbosity <= m_verbosity;
 		}
 
-		void _log (LogVerbosity verbosity, const char * fileName, 
-				   int lineNo, const char * formatStr, va_list ap);
+		void _log (LogVerbosity verbosity, const char * formatStr, va_list ap);
 	};
 
 	// declare global logger

@@ -64,7 +64,7 @@ namespace boss
 
     // sets the default verbosity to WARN and origin tracking off
     Logger::Logger ()
-        : m_verbosity(LV_WARN), m_originTracking(false), m_out(stdout)
+        : m_verbosity(LV_WARN), m_out(stdout)
     { }
 
     // sets the verbosity to the given value
@@ -77,14 +77,10 @@ namespace boss
         }
 
         m_verbosity = verbosity;
-
-        if (m_verbosity == LV_TRACE)
-            m_originTracking = true;  //Automatically include origin info when tracing.
     }
 
     // formats the message and prints to stdout
-    void Logger::_log (LogVerbosity verbosity, const char * fileName, 
-                       int lineNo, const char * formatStr, va_list ap)
+    void Logger::_log (LogVerbosity verbosity, const char * formatStr, va_list ap)
     {
         if (!_checkVerbosity(verbosity))
         {
@@ -95,19 +91,13 @@ namespace boss
 		// a thread safe version would use vasprintf to print to a temporary string first
 		printf("%s", LOG_VERBOSITY_NAMES[verbosity]);
 
-		// if enabled, print the log origin
-		if (m_originTracking) { printf(" %s:%d", fileName, lineNo); }
-
 		printf(": ");
 		vprintf(formatStr, ap);
 		printf("\n");
 		fflush(stdout);
 
 		if (m_out != stdout) {
-			fprintf(m_out, "%s", LOG_VERBOSITY_NAMES[verbosity]);
-			if (m_originTracking)
-				fprintf(m_out, " %s:%d", fileName, lineNo);
-			fprintf(m_out, ": ");
+			fprintf(m_out, "%s: ", LOG_VERBOSITY_NAMES[verbosity]);
 			vfprintf(m_out, formatStr, ap);
 			fprintf(m_out, "\n");
 			fflush(m_out);
