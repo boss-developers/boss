@@ -786,9 +786,10 @@ RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, uint32
 	mainSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_NONE);
 	mainSizer->AddGrowableCol(1,0);
 	mainSizer->Add(ruleCheckbox = new wxCheckBox(this, wxID_ANY, ""),0,wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxTOP|wxBOTTOM,10);
-	mainSizer->Add(ruleContent = new wxStaticText(this, wxID_ANY, wxString(text.c_str(), wxConvUTF8)),0,wxEXPAND|wxRIGHT|wxTOP,10);  //Need to convert text that is outputted by BOSS-Common from UTF-8.
+	mainSizer->Add(ruleContent = new wxStaticText(this, wxID_ANY, wxEmptyString),0,wxEXPAND|wxRIGHT|wxTOP,10);  //Need to convert text that is outputted by BOSS-Common from UTF-8.
 
-	ruleCheckbox->SetValue(currentRule.Enabled());
+    ruleCheckbox->SetValue(currentRule.Enabled());
+    ruleContent->SetLabelText(wxString(text.c_str(), wxConvUTF8));
 	ruleContent->Bind(wxEVT_LEFT_DOWN, &RuleBoxClass::OnSelect, this, wxID_ANY);
 	if (!currentRule.Enabled())
 		ruleContent->Enable(false);
