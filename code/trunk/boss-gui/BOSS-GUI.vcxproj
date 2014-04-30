@@ -131,7 +131,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>BOSSGUI;WIN32;WINVER=0x0400;__WXMSW__;_UNICODE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\lib\wxWidgets\include;$(ProjectDir)..\..\..\lib\wxWidgets\include\msvc;$(ProjectDir)..\..\..\lib\boost;$(ProjectDir);$(ProjectDir)..\boss-common;$(ProjectDir)..\..\..\lib\libgit2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
