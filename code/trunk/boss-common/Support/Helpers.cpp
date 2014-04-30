@@ -38,7 +38,6 @@
 #include <boost/regex.hpp>
 
 #include "alphanum.hpp"
-#include "source/utf8.h"
 
 #include <cstring>
 #include <iostream>
@@ -94,19 +93,6 @@ namespace boss {
 		);
 	}
 
-	//UTF-8 file validator.
-	bool ValidateUTF8File(const fs::path file) {
-		ifstream ifs(file.c_str());
-
-		istreambuf_iterator<char> it(ifs.rdbuf());
-		istreambuf_iterator<char> eos;
-
-		if (!utf8::is_valid(it, eos))
-			return false;
-		else
-			return true;
-	}
-
 	//Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
 	BOSS_COMMON string IntToString(const uint32_t n) {
 		string out;
@@ -136,13 +122,33 @@ namespace boss {
 		return (str == "true" || str == "1");
 	}
 
-	//Check if registry subkey exists.
-	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey, string value) {
-		if (RegKeyStringValue(keyStr, subkey, value).empty())
-			return false;
-		else
-			return true;
-	}
+    //Convert a Windows-1252 string to UTF-8.
+    std::string From1252ToUTF8(const std::string& str) {
+        try {
+            return boost::locale::conv::to_utf<char>(str, "Windows-1252", boost::locale::conv::stop);
+        }
+        catch (boost::locale::conv::conversion_error& e) {
+            throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
+        }
+    }
+
+    //Convert a UTF-8 string to Windows-1252.
+    std::string FromUTF8To1252(const std::string& str) {
+        try {
+            return boost::locale::conv::from_utf<char>(str, "Windows-1252", boost::locale::conv::stop);
+        }
+        catch (boost::locale::conv::conversion_error& e) {
+            throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
+        }
+    }
+
+    //Check if registry subkey exists.
+    BOSS_COMMON bool RegKeyExists(string keyStr, string subkey, string value) {
+        if (RegKeyStringValue(keyStr, subkey, value).empty())
+            return false;
+        else
+            return true;
+    }
 
 	//Get registry subkey value string.
 	string RegKeyStringValue(string keyStr, string subkey, string value) {

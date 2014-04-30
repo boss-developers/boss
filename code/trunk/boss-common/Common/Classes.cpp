@@ -441,12 +441,6 @@ namespace boss {
 			itemComparator ic(parentGame);
 			sort(items.begin(),items.end(), ic);
 		} else if (path == parentGame.LoadOrderFile() || path == parentGame.ActivePluginsFile()) {
-			
-			Transcoder trans;
-			trans.SetEncoding(1252);  //Only used if path == gl_current_game.ActivePluginsFile().
-
-			if (path == parentGame.LoadOrderFile() && !ValidateUTF8File(path))
-				throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, path.string());
 
 			//loadorder.txt is simple enough that we can avoid needing the full modlist parser which has the crashing issue.
 			//It's just a text file with a plugin filename on each line. Skip lines which are blank or start with '#'.
@@ -462,7 +456,7 @@ namespace boss {
 					continue;
 
 				if (path == parentGame.ActivePluginsFile())
-					line = trans.EncToUtf8(line);
+                    line = From1252ToUTF8(line);
 				items.push_back(Item(line));
 			}
 			in.close();
@@ -493,8 +487,6 @@ namespace boss {
 
 			if (!fs::exists(path))
 				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, path.string());
-			else if (!ValidateUTF8File(path))
-				throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, path.string());
 
 			fileToBuffer(path,contents);
 
@@ -567,7 +559,6 @@ namespace boss {
 		string badFilename = "",  contents;
 		ItemList activePlugins;
 		size_t numActivePlugins;
-		Transcoder trans;
 		if (activeOnly) {
 			//To save needing a new parser, load plugins.txt into an ItemList then fill a hashset from that.
 			//Also check if gl_current_game.ActivePluginsFile() then detect encoding if it is and translate outputted text from UTF-8 to the detected encoding.
@@ -577,8 +568,6 @@ namespace boss {
 				numActivePlugins = activePlugins.Items().size();
 			}
 		}
-		if (doEncodingConversion)
-			trans.SetEncoding(1252);
 
 		LOG_INFO("Writing new \"%s\"", file.string().c_str());
 		ofstream outfile;
@@ -594,7 +583,7 @@ namespace boss {
 				LOG_DEBUG("Writing \"%s\" to \"%s\"", items[i].Name().c_str(), file.string().c_str());
 				if (doEncodingConversion) {  //Not UTF-8.
 					try {
-						outfile << trans.Utf8ToEnc(items[i].Name()) << endl;
+                        outfile << FromUTF8To1252(items[i].Name()) << endl;
 					} catch (boss_error /*&e*/) {
 						badFilename = items[i].Name();
 					}
@@ -1063,26 +1052,21 @@ namespace boss {
 		skipper.SkipIniComments(false);
 		grammar.SetErrorBuffer(&errorBuffer);
 
-		if (!fs::exists(file)) {
-			ofstream userlist_file(file.c_str(),ios_base::binary);
-			if (!userlist_file.fail())
-				userlist_file << '\xEF' << '\xBB' << '\xBF';  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
-			else
-				throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
-			userlist_file.close();
-			return;
-		} else if (!ValidateUTF8File(file))
-			throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, file.string());
+        if (!fs::exists(file)) {
+            ofstream userlist_file(file.c_str(), ios_base::binary);
+            if (!userlist_file.fail())
+                userlist_file << '\xEF' << '\xBB' << '\xBF';  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
+            else
+                throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
+            userlist_file.close();
+            return;
+        }
 
 		fileToBuffer(file,contents);
 
 		begin = contents.begin();
 		end = contents.end();
-		
-	//	iterator_type u32b(begin);
-	//	iterator_type u32e(end);
 
-	//	bool r = phrase_parse(u32b, u32e, grammar, skipper, rules);
 		bool r = phrase_parse(begin, end, grammar, skipper, rules);
 
 		if (!r || begin != end)  //This might not work correctly.

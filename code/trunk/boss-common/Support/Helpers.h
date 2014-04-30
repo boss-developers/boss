@@ -47,9 +47,6 @@ namespace boss {
 	//Reads an entire file into a string buffer.
 	void fileToBuffer(const fs::path file, string& buffer);
 
-	//UTF-8 file validator.
-	bool ValidateUTF8File(const fs::path file);
-
 	//Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 	BOSS_COMMON string IntToString(const uint32_t n);
 
@@ -61,6 +58,12 @@ namespace boss {
 
 	//Turns "true", "false", "1", "0" into booleans.
 	bool StringToBool(string str);
+
+    //Convert a Windows-1252 string to UTF-8.
+    std::string From1252ToUTF8(const std::string& str);
+
+    //Convert a UTF-8 string to Windows-1252.
+    std::string FromUTF8To1252(const std::string& str);
 
 	//Check if registry subkey exists.
 	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey, string value);
