@@ -48,10 +48,11 @@
 </style>
 
 <h1>BOSS Version History</h1>
-<p>The changelogs for each release of BOSS are listed below. The masterlists are updated far too frequently for their changes to be concisely recorded here, but a full history of changes to them may be viewed by browsing the online repositories.
+<p>The changelogs for each release of BOSS are listed below. The masterlists' changes cannot be concisely recorded here, but a full history of changes to them may be viewed by browsing the online repositories.
 
 <h2>Contents</h2>
 <ol>
+ <li><a href="#2.3.0">2.3.0 - <i>X May 2014</i></a>
  <li><a href="#2.2.0">2.2.0 - <i>15 March 2014</i></a>
  <li><a href="#2.1.1">2.1.1 - <i>28 September 2012</i></a>
  <li><a href="#2.1.0">2.1.0 - <i>6 August 2012</i></a>
@@ -73,6 +74,15 @@
  <li><a href="#license">License</a>
 </ol>
 
+<h2 id="2.3.0">2.3.0 - <i>X May 2014</i></h2>
+<ul>
+ <li>Fixed: Ampersands now display correctly in the user rules editor's rule list.
+ <li>Changed: The BOSS Log's plugin submitter now sends submissions to issue trackers hosted on GitHub, rather than a Bugzilla tracker hosted on Dark Creations.
+ <li>Removed: Support checks for visual effects in the BOSS Log.
+ <li>Removed: The UTF8-CPP library as a build dependency.
+ <li>Removed: The MSVC 2013 Redistributable requirement, due to many reports from users encountering a variety of issues with it.
+</ul>
+
 <h2 id="2.2.0">2.2.0 - <i>15 March 2014</i></h2>
 <ul>
  <li>Fixed: Version extraction from Fallout 3, Fallout: New Vegas and Skyrim plugins.
@@ -87,12 +97,12 @@
  <li>Changed: The installer now downloads and installs the MSVC 2013 redistributable if it cannot detect it as installed.
  <li>Changed: Settings for logging and source code references have been removed. Debug output is now logged at any level higher than standard. Source code references have been removed as they're of no real use.
  <li>Changed: GUI settings window layout tweaked.
- <li>Removed: The API, as better alternatives now exist.
+ <li>Removed: The API, as better alternatives now exist (libloadorder, LOOT API).
  <li>Removed: Program updater, as it was poorly implemented, specific to the Google Code repository, and of limited use.
  <li>Removed: Proxy support, as it was reported to be non-functional, and it was decided that it wasn't worth retaining.
  <li>Removed: Morrowind support, as it was only token support present so that the API could function uniformly across all the games it supported.
  <li>Removed: The "Hide Clean Plugins" BOSS Log filter, as it was misleading.
- <li>Removed: The "Display Settings" BOSS Log feature, as the CSS used by the BOSS Logs is now stored in a separate static file which can be edited if desired.
+ <li>Removed: The "Display Settings" BOSS Log feature, as the CSS used by the BOSS Log is now stored in a separate static file (<code>resources/style.css</code>) which can be edited if desired.
 </ul>
 
 <h2 id="2.1.1">2.1.1 - <i>28 September 2012</i></h2>
