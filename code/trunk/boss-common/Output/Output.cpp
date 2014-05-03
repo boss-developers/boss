@@ -718,6 +718,8 @@ namespace boss {
             << "var txt9 = '" << translate("Please supply at least a link or some notes.") << "';"
             << "var txt10 = '" << translate("Do not clean.") << "';"
             << "</script>"
+            << "<script src='../resources/promise-1.0.0.min.js'></script>"
+            << "<script src='../resources/octokit.js'></script>"
             << "<script src='../resources/script.js'></script>";
 		return out.str();
 	}
