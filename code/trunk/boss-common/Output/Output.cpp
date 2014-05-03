@@ -667,16 +667,8 @@ namespace boss {
             << "	<tbody>"
             << "		<tr><td id='pluginSubmitSupport'><td>" << translate("In-Log Plugin Submission") << "<td>" << translate("Allows unrecognised plugins to be anonymously submitted to the BOSS team directly from the BOSS Log.")
             << "		<tr><td id='memorySupport'><td>" << translate("Settings Memory") << "<td>" << translate("Allows the BOSS Log to automatically restore the filter configuration last used whenever the BOSS Log is opened.")
-            << "</table>"
-            << "<h3>" << translate("Appearance") << "</h3>"
-            << "<table>"
-            << "	<tbody>"
-            << "	<tr><td id='opacitySupport'><td>" << translate("Opacity")
-            << "	<tr><td id='shadowsSupport'><td>" << translate("Shadows")
-            << "	<tr><td id='transitionsSupport'><td>" << translate("Transitions")
-            << "	<tr><td id='transformsSupport'><td>" << translate("Transforms")
-            << "	<tr><td id='placeholderSupport'><td>" << translate("Input Placeholders")
-            << "	<tr><td id='validationSupport'><td>" << translate("Form Validation")
+            << "	    <tr><td id='placeholderSupport'><td>" << translate("Input Placeholders")
+            << "	    <tr><td id='validationSupport'><td>" << translate("Form Validation")
             << "</table>"
             << "</section>"
 
@@ -716,18 +708,15 @@ namespace boss {
             << "<script>"
             << "var gameName = '" << gameName << "';"
             << "var txt1 = '" << translate("Checking for existing submission...") << "';"
-            << "var txt2 = '" << translate("Error: Existing submission check failed!") << "';"
-            << "var txt3 = '" << translate("Previous submission found, updating with supplied details...") << "';"
-            << "var txt4 = '" << translate("Plugin submission updated!") << "';"
-            << "var txt5 = '" << translate("Error: Plugin submission could not be updated.") << "';"
-            << "var txt6 = '" << translate("No previous submission found, creating new submission...") << "';"
-            << "var txt7 = '" << translate("Plugin submitted!") << "';"
-            << "var txt8 = '" << translate("Error: Plugin could not be submitted.") << "';"
-            << "var txt9 = '" << translate("Error: Data transfer failed.") << "';"
-            << "var txt10 = '" << translate("Web storage quota for this document has been exceeded.Please empty your browser\\'s cache. Note that this will delete all locally stored data.") << "';"
-            << "var txt11 = '" << translate("Please supply at least a link or some notes.") << "';"
-            << "var txt12 = '" << translate("Exception occurred:") << "';"
-            << "var txt13 = '" << translate("Do not clean.") << "';"
+            << "var txt2 = '" << translate("Matching submission already exists.") << "';"
+            << "var txt3 = '" << translate("Plugin already submitted. Submission updated with new comment.") << "';"
+            << "var txt4 = '" << translate("Plugin submitted!") << "';"
+            << "var txt5 = '" << translate("Plugin submission failed! Authorisation failure. Please report this to the BOSS team.") << "';"
+            << "var txt6 = '" << translate("Plugin submission failed! GitHub API rate limit exceeded. Please try again after %1%.") << "';"
+            << "var txt7 = '" << translate("Plugin submission failed!") << "';"
+            << "var txt8 = '" << translate("Web storage quota for this document has been exceeded.Please empty your browser\\'s cache. Note that this will delete all locally stored data.") << "';"
+            << "var txt9 = '" << translate("Please supply at least a link or some notes.") << "';"
+            << "var txt10 = '" << translate("Do not clean.") << "';"
             << "</script>"
             << "<script src='../resources/script.js'></script>";
 		return out.str();

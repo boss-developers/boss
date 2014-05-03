@@ -5,15 +5,14 @@
 // 5000/hour.
 var gh = new Octokit({token: "8ed50783e7dd02093cf43293f3c7f85386fb576a"});
 
-var repos = [
-    {owner: 'WrinklyNinja', repo: 'issue-api-test'},
-    {owner: 'WrinklyNinja', repo: 'issue-api-test'},
-    {owner: 'WrinklyNinja', repo: 'issue-api-test'},
-    {owner: 'WrinklyNinja', repo: 'issue-api-test'},
-    {owner: 'WrinklyNinja', repo: 'issue-api-test'}
-];
+var repos = {
+    'TES IV: Oblivion': {owner: 'WrinklyNinja', repo: 'issue-api-test'},
+    "Nehrim - At Fate's Edge": {owner: 'WrinklyNinja', repo: 'issue-api-test'},
+    'TES V: Skyrim': {owner: 'WrinklyNinja', repo: 'issue-api-test'},
+    'Fallout 3': {owner: 'WrinklyNinja', repo: 'issue-api-test'},
+    'Fallout: New Vegas': {owner: 'WrinklyNinja', repo: 'issue-api-test'},
+};
 
-var repoIndex = parseInt(document.getElementById('summary').getAttribute('data-repoIndex'), 10);
 var pluginName = '';
 var comment = '';
 function isStorageSupported(){
@@ -34,7 +33,7 @@ function storeData(key, value){
 		localStorage.setItem(key, value);
 	} catch (e) {
 		if (e == QUOTA_EXCEEDED_ERR) {
-			alert(txt10);
+			alert(txt8);
 		}
 	}
 }
@@ -111,7 +110,7 @@ function submitPlugin(evt) {
 	evt.stopPropagation();
 	evt.preventDefault();
 	if (evt.currentTarget[0].value.length == 0 && evt.currentTarget[1].value.length == 0){
-		outputPluginSubmitText(txt11, -2);
+		outputPluginSubmitText(txt9, -2);
 		return;
 	} else if (isValidationSupported() && !evt.currentTarget.checkValidity()){
 		return;
@@ -127,17 +126,17 @@ function submitPlugin(evt) {
         /* These issues may contain partial matches, so check returned issues. */
         for (var i = 0; i < issues.items.length; ++i) {
             if (issues.items[i].title.toLowerCase() === pluginName.toLowerCase()) {
-                var issue = new Issue(repos[repoIndex].owner, repos[repoIndex].repo, issues.items[i].number);
+                var issue = new Issue(repos[gameName].owner, repos[gameName].repo, issues.items[i].number);
                 /* Check to make sure the proposed comment isn't a duplicate. */
                 issue.getComments().then(function(comments){
                     for (var j = 0; j < comments.length; ++j) {
                         if (comments[j].body.toLowerCase() == comment.toLowerCase()) {
-                            outputPluginSubmitText('Matching submission already exists.', 0);
+                            outputPluginSubmitText(txt2, 0);
                             return;
                         }
                     }
                     issue.createComment(comment).then(function(data){
-                        outputPluginSubmitText('Plugin already submitted. Submission updated with new comment.', 0);
+                        outputPluginSubmitText(txt3, 0);
                     });
                 });
                 return;
@@ -146,10 +145,10 @@ function submitPlugin(evt) {
         if (issues.total_count == 0) {
             console.log('No matching submissions.');
             /* No matching issues found. Create a new issue. */
-            var repo = gh.getRepo(repos[repoIndex].owner, repos[repoIndex].repo);
+            var repo = gh.getRepo(repos[gameName].owner, repos[gameName].repo);
             repo.createIssue(pluginName, {body: comment}).then(function(data){
                 console.log(data);
-                outputPluginSubmitText('Plugin submitted!', 0);
+                outputPluginSubmitText(txt4, 0);
             });
         }
     }).catch(function(err){
@@ -157,7 +156,7 @@ function submitPlugin(evt) {
         if (err && err.status) {
             /* 401 for authentication failure. */
             if (err.status == 401 || err.status == 404) {
-                outputPluginSubmitText('Plugin submission failed! Authorisation failure. Please report this to the BOSS team.', -1);
+                outputPluginSubmitText(txt5, -1);
             }
             /* 403 for rate limit exceeded, or many authentication failures. */
             else if (err.status == 403) {
@@ -165,13 +164,13 @@ function submitPlugin(evt) {
                 if (time) {
                     /* Rate limit exceeded. */
                     var date = new Date(parseInt(time, 10) * 1000);
-                    outputPluginSubmitText('Plugin submission failed! GitHub API rate limit exceeded. Please try again after ' + date.toTimeString() + '.', -1);
+                    outputPluginSubmitText(txt6.substring(0, txt6.length - 4) + date.toTimeString() + '.', -1);
                 } else {
                     /* Auth failure. */
-                    outputPluginSubmitText('Plugin submission failed! Authorisation failure. Please report this to the BOSS team.', -1);
+                    outputPluginSubmitText(txt6, -1);
                 }
             } else {
-                outputPluginSubmitText('Plugin submission failed! ' + JSON.parse(err.error).message, -1);
+                outputPluginSubmitText(txt7 + ' ' + JSON.parse(err.error).message, -1);
             }
         }
     });
@@ -220,7 +219,7 @@ function toggleMessages(evt){
 				filterMatch = true;
 			} else if (evt.currentTarget.id == 'hideIncompatibilities' && listItems[i].className.indexOf('inc') != -1){
 				filterMatch = true;
-			} else if (evt.currentTarget.id == 'hideDoNotCleanMessages' && listItems[i].className.indexOf('dirty') != -1 && (listItems[i].textContent.indexOf('Do not clean.') != -1 || listItems[i].textContent.indexOf(txt13) != -1)){
+			} else if (evt.currentTarget.id == 'hideDoNotCleanMessages' && listItems[i].className.indexOf('dirty') != -1 && (listItems[i].textContent.indexOf('Do not clean.') != -1 || listItems[i].textContent.indexOf(txt10) != -1)){
 				filterMatch = true;
 			}
 			if (filterMatch){
