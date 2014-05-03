@@ -5,171 +5,17 @@
 // 5000/hour.
 var gh = new Octokit({token: "8ed50783e7dd02093cf43293f3c7f85386fb576a"});
 
-var owner = 'WrinklyNinja';
-var repo = 'issue-api-test';
-var pluginName = 'ethet.esm';
-var comment = 'This plugin is still unrecognised.';
-function handleError(err) {
-    /* err has members '_jqXHR' (an XHR object), 'status' (a HTTP return code) and 'error' (which has members 'message' and 'documentation_url'). */
-    if (err && err.status) {
-        /* 401 for authentication failure. */
-        if (err.status == 401 || err.status == 404) {
-            console.log('Authorisation failure. Please report this to the BOSS team.');
-        }
-        /* 403 for rate limit exceeded, or many authentication failures. */
-        else if (err.status == 403) {
-            /*console.log(JSON.parse(err.error).message);*/
-            var time = err._jqXHR.getResponseHeader('X-RateLimit-Reset');
-            if (time) {
-                /* Rate limit exceeded. */
-                var date = new Date(parseInt(time, 10) * 1000);
-                console.log('GitHub API rate limit exceeded. Please try again after ' + date.toTimeString() + '.');
-            } else {
-                /* Auth failure. */
-                console.log('Authorisation failure. Please report this to the BOSS team.');
-            }
-        } else {
-            console.log('Unknown error.');
-        }
-    }
-}
-gh.searchIssues(pluginName + ' in:title repo:WrinklyNinja/issue-api-test').then(function(issues){
-        console.log('Issues found:');
-        console.log(issues);
-        /* These issues may contain partial matches, so check returned issues. */
-        for (var i = 0; i < issues.items.length; ++i) {
-            if (issues.items[i].title.toLowerCase() === pluginName.toLowerCase()) {
-                var issue = new Issue(owner, repo, issues.items[i].number);
-                /* Check to make sure the proposed comment isn't a duplicate. */
-                issue.getComments().then(function(comments){
-                    console.log('Existing comments:');
-                    console.log(comments);
-                    for (var j = 0; j < comments.length; ++j) {
-                        if (comments[j].body.toLowerCase() == comment.toLowerCase()) {
-                            console.log('Matching comment already exists.');
-                            return;
-                        }
-                    }
-                    issue.createComment(comment).then(function(data){
-                        console.log('Created comment:');
-                        console.log(data);
-                    });
-                });
-                return;
-            }
-        }
-        if (issues.total_count == 0) {
-            /* No matching issues found. Create a new issue. */
-            repo = gh.getRepo(owner, repo);
-            repo.createIssue(pluginName, {body: comment}).then(function(data){
-                console.log('Issue created:');
-                console.log(data);
-            })
-        }
-    }).catch(function(err){
-    console.log(err);
-        handleError(err);
-    });
+var repos = [
+    {owner: 'WrinklyNinja', repo: 'issue-api-test'},
+    {owner: 'WrinklyNinja', repo: 'issue-api-test'},
+    {owner: 'WrinklyNinja', repo: 'issue-api-test'},
+    {owner: 'WrinklyNinja', repo: 'issue-api-test'},
+    {owner: 'WrinklyNinja', repo: 'issue-api-test'}
+];
 
-var url = 'http://bugzilla.darkcreations.org/jsonrpc.cgi';
-function getBugId(plugin, desc, xhr) {
-	var request = {
-		"method":"Bug.search",
-		"params":[{
-			"Bugzilla_login":"bossguest@darkcreations.org",
-			"Bugzilla_password":"bosspassword",
-			"product":"BOSS",
-			"component":gameName,
-			"summary":plugin
-		}],
-		"id":1
-	};
-	outputPluginSubmitText(txt1, 0);
-	xhr.open('POST', url, true);
-	xhr.setRequestHeader('Content-Type', 'application/json');
-	xhr.onerror = pluginSubmitError;
-	xhr.onload = function() {
-		if (xhr.status == 200 && isResponseOK(xhr.responseText)) {
-			var response = JSON.parse(xhr.responseText);
-			if (response.result.bugs.length > 0) {
-				for (var i = 0; i < response.result.bugs.length; i++) {
-				    if (response.result.bugs[i].summary.toLowerCase() == plugin.toLowerCase()) {
-	        	        addBugComment(response.result.bugs[i].id, desc, xhr);
-				    }
-			    }
-			} else {
-				addBug(plugin, desc, xhr);
-			}
-		} else {
-			outputPluginSubmitText(txt2, -1);
-		}
-	};
-	xhr.send(JSON.stringify(request));
-}
-function addBugComment(id, comment, xhr) {
-	var request = {
-		"method":"Bug.add_comment",
-		"params":[{
-			"Bugzilla_login":"bossguest@darkcreations.org",
-			"Bugzilla_password":"bosspassword",
-			"id":id,
-			"comment":comment
-		}],
-		"id":2
-	};
-	outputPluginSubmitText(txt3, 0);
-	xhr.open('POST', url, true);
-	xhr.setRequestHeader('Content-Type', 'application/json');
-	xhr.onerror = pluginSubmitError;
-	xhr.onload = function() {
-		if (xhr.status == 200 && isResponseOK(xhr.responseText)) {
-			outputPluginSubmitText(txt4, 1);
-		} else {
-			outputPluginSubmitText(txt5, -1);
-		}
-	};
-	xhr.send(JSON.stringify(request));
-}
-function addBug(summary, description, xhr) {
-	var request = {
-		"method":"Bug.create",
-		"params":[{
-			"Bugzilla_login":"bossguest@darkcreations.org",
-			"Bugzilla_password":"bosspassword",
-			"product":"BOSS",
-			"component":gameName,
-			"summary":summary,
-			"version":"2.1",
-			"description":description,
-			"op_sys":"Windows",
-			"platform":"PC",
-			"priority":"---",
-			"severity":"enhancement"
-		}],
-		"id":3
-	};
-	outputPluginSubmitText(txt6, 0);
-	xhr.open('POST', url, true);
-	xhr.setRequestHeader('Content-Type', 'application/json');
-	xhr.onerror = pluginSubmitError;
-	xhr.onload = function() {
-		if (xhr.status == 200 && isResponseOK(xhr.responseText)) {
-			outputPluginSubmitText(txt7, 1);
-		} else {
-			outputPluginSubmitText(txt8, -1);
-		}
-	};
-	xhr.send(JSON.stringify(request));
-}
-function pluginSubmitError() {
-	outputPluginSubmitText(txt9, -1);
-}
-function isResponseOK(text) {
-	return (JSON.parse(text).error == null);
-}
-function HTMLToJSON(text) {
-	return text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '\"').replace(/&#039;/g, '\'');
-}
+var repoIndex = parseInt(document.getElementById('summary').getAttribute('data-repoIndex'), 10);
+var pluginName = '';
+var comment = '';
 function isStorageSupported(){
 	try {
 		return ('localStorage' in window && window['localStorage'] !== null && window['localStorage'] !== undefined);
@@ -179,9 +25,6 @@ function isStorageSupported(){
 }
 function isPluginSubmitSupported(){
 	return ('withCredentials' in new XMLHttpRequest && typeof(JSON) === 'object' && typeof(JSON.parse) === 'function');
-}
-function isStyleSupported(propName) {
-	return typeof document.body.style[propName] !== 'undefined';
 }
 function isValidationSupported(){
 	return ('checkValidity' in document.createElement('form'));
@@ -230,48 +73,6 @@ function saveCheckboxState(evt) {
 		localStorage.removeItem(evt.currentTarget.id);
 	}
 }
-function handleFileSelect(evt) {
-	evt.stopPropagation();
-	evt.preventDefault();
-	evt.currentTarget.className = evt.currentTarget.className.replace('dragHover','');
-	var files = evt.dataTransfer.files;
-	var a = document.getElementById('cssSettings').querySelectorAll('input[type=text]');
-	for (var i = 0, f; f = files[i]; i++) {
-		var reader = new FileReader();
-		reader.onload = (function(theFile) {
-			return function(e) {
-				try {
-					var json = JSON.parse(e.target.result).colors;
-					for (var key in json) {
-						if (json.hasOwnProperty(key) && json[key].length != 0) {
-							for (var i=0, z=a.length; i < z; i++) {
-								if (a[i].getAttribute('data-selector') == key) {
-									a[i].value = json[key].split(':').pop();
-								}
-							}
-						}
-					}
-				} catch (e) {
-					alert(e);
-				}
-			};
-		})(f);
-		reader.readAsText(f);
-	}
-}
-function handleDragOver(evt) {
-	evt.stopPropagation();
-	evt.preventDefault();
-	evt.dataTransfer.dropEffect = 'copy';
-	if (evt.currentTarget.className.indexOf('dragHover') == -1) {
-		evt.currentTarget.className = 'dragHover ' + evt.currentTarget.className;
-	}
-}
-function handleDragLeave(evt) {
-	evt.stopPropagation();
-	evt.preventDefault();
-	evt.currentTarget.className = evt.currentTarget.className.replace('dragHover','');
-}
 function toggleDisplayCSS(evt){
 	var e = document.getElementsByClassName(evt.currentTarget.getAttribute('data-class'));
 	if(evt.currentTarget.checked){
@@ -315,17 +116,65 @@ function submitPlugin(evt) {
 	} else if (isValidationSupported() && !evt.currentTarget.checkValidity()){
 		return;
 	}
-	var desc = evt.currentTarget[0].value;
-	if (desc.length != 0) {
-		desc += '\n\n';
+	comment = evt.currentTarget[0].value;
+	if (comment.length != 0) {
+		comment += '\n\n';
 	}
-	desc += evt.currentTarget[1].value;
-	try {
-		var xhr = new XMLHttpRequest();
-		getBugId(HTMLToJSON(document.getElementById('plugin').textContent), HTMLToJSON(desc), xhr);
-	} catch(err) {
-		outputPluginSubmitText(txt12 + err.message, -1);
-	}
+	comment += evt.currentTarget[1].value;
+    pluginName = document.getElementById('plugin').textContent;
+	outputPluginSubmitText(txt1, 0);
+    gh.searchIssues(pluginName + ' in:title repo:WrinklyNinja/issue-api-test').then(function(issues){
+        /* These issues may contain partial matches, so check returned issues. */
+        for (var i = 0; i < issues.items.length; ++i) {
+            if (issues.items[i].title.toLowerCase() === pluginName.toLowerCase()) {
+                var issue = new Issue(repos[repoIndex].owner, repos[repoIndex].repo, issues.items[i].number);
+                /* Check to make sure the proposed comment isn't a duplicate. */
+                issue.getComments().then(function(comments){
+                    for (var j = 0; j < comments.length; ++j) {
+                        if (comments[j].body.toLowerCase() == comment.toLowerCase()) {
+                            outputPluginSubmitText('Matching submission already exists.', 0);
+                            return;
+                        }
+                    }
+                    issue.createComment(comment).then(function(data){
+                        outputPluginSubmitText('Plugin already submitted. Submission updated with new comment.', 0);
+                    });
+                });
+                return;
+            }
+        }
+        if (issues.total_count == 0) {
+            console.log('No matching submissions.');
+            /* No matching issues found. Create a new issue. */
+            var repo = gh.getRepo(repos[repoIndex].owner, repos[repoIndex].repo);
+            repo.createIssue(pluginName, {body: comment}).then(function(data){
+                console.log(data);
+                outputPluginSubmitText('Plugin submitted!', 0);
+            });
+        }
+    }).catch(function(err){
+        /* err has members '_jqXHR' (an XHR object), 'status' (a HTTP return code) and 'error' (which has members 'message' and 'documentation_url'). */
+        if (err && err.status) {
+            /* 401 for authentication failure. */
+            if (err.status == 401 || err.status == 404) {
+                outputPluginSubmitText('Plugin submission failed! Authorisation failure. Please report this to the BOSS team.', -1);
+            }
+            /* 403 for rate limit exceeded, or many authentication failures. */
+            else if (err.status == 403) {
+                var time = err._jqXHR.getResponseHeader('X-RateLimit-Reset');
+                if (time) {
+                    /* Rate limit exceeded. */
+                    var date = new Date(parseInt(time, 10) * 1000);
+                    outputPluginSubmitText('Plugin submission failed! GitHub API rate limit exceeded. Please try again after ' + date.toTimeString() + '.', -1);
+                } else {
+                    /* Auth failure. */
+                    outputPluginSubmitText('Plugin submission failed! Authorisation failure. Please report this to the BOSS team.', -1);
+                }
+            } else {
+                outputPluginSubmitText('Plugin submission failed! ' + JSON.parse(err.error).message, -1);
+            }
+        }
+    });
 }
 function showSection(evt){
 	hideElement(document.querySelector('section.visible'));
@@ -461,26 +310,6 @@ function showBrowserBox(){
 		hideElement(document.getElementById('browserBox').querySelector('label'));
 		document.getElementById('memorySupport').className = 'c';
 	}
-	if (isStyleSupported('opacity')) {
-		document.getElementById('opacitySupport').className = 't';
-	} else {
-		document.getElementById('opacitySupport').className = 'c';
-	}
-	if (isStyleSupported('boxShadow')) {
-		document.getElementById('shadowsSupport').className = 't';
-	} else {
-		document.getElementById('shadowsSupport').className = 'c';
-	}
-	if (isStyleSupported('transition') || isStyleSupported('MozTransition') || isStyleSupported('webkitTransition') || isStyleSupported('OTransition') || isStyleSupported('msTransition')) {
-		document.getElementById('transitionsSupport').className = 't';
-	} else {
-		document.getElementById('transitionsSupport').className = 'c';
-	}
-	if (isStyleSupported('transform') || isStyleSupported('MozTransform') || isStyleSupported('webkitTransform') || isStyleSupported('OTransform') || isStyleSupported('msTransform')) {
-		document.getElementById('transformsSupport').className = 't';
-	} else {
-		document.getElementById('transformsSupport').className = 'c';
-	}
 	if ('placeholder' in document.createElement('input')) {
 		document.getElementById('placeholderSupport').className = 't';
 	} else {
@@ -498,8 +327,7 @@ function showBrowserBox(){
     showElement(document.getElementsByTagName('section')[0]);
 }
 function loadSettings(){
-	var i = localStorage.length - 1;
-	while (i > -1) {
+    for (var i = localStorage.length - 1; i > -1; --i) {
 		var elem = document.getElementById(localStorage.key(i));
 		if (elem != null && 'defaultChecked' in elem) {
 			elem.checked = true;
@@ -507,7 +335,6 @@ function loadSettings(){
 			event.initEvent('click', true, true);
 			elem.dispatchEvent(event);
 		}
-		i--;
 	}
 }
 function setupEventHandlers(){
@@ -553,7 +380,7 @@ function setupEventHandlers(){
 	document.getElementById('hideMessagelessPlugins').addEventListener('click', togglePlugins, false);
 }
 function applyFeatureSupportRestrictions(){
-	if (!isPluginSubmitSupported() && document.getElementById('unrecPlugins') != null) { /*Disable unrecognised mod underline effect.*/
+	if (!isPluginSubmitSupported() && document.getElementById('unrecPlugins')) { /*Disable unrecognised mod underline effect.*/
 		var buttons = document.getElementById('unrecPlugins').querySelectorAll('span.mod');
 		for (var i=0, len=buttons.length; i < len; i++) {
 			buttons[i].className += 'nosubmit';
