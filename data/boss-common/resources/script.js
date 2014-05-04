@@ -110,19 +110,21 @@ function submitPlugin(evt) {
 	evt.stopPropagation();
 	evt.preventDefault();
 	if (evt.currentTarget[0].value.length == 0 && evt.currentTarget[1].value.length == 0){
-		outputPluginSubmitText(txt9, -2);
+        var output = document.getElementById('output');
+        output.textContent = txt9;
+        showElement(output);
 		return;
 	} else if (isValidationSupported() && !evt.currentTarget.checkValidity()){
 		return;
 	}
-	comment = evt.currentTarget[0].value;
-	if (comment.length != 0) {
-		comment += '\n\n';
-	}
+    if (evt.currentTarget[0].value.length > 0) {
+        /* Add link with Markdown hyperlinking. */
+        comment = '<' + evt.currentTarget[0].value + '>\n\n';
+    }
 	comment += evt.currentTarget[1].value;
     pluginName = document.getElementById('plugin').textContent;
-	outputPluginSubmitText(txt1, 0);
-    gh.searchIssues(pluginName + ' in:title repo:WrinklyNinja/issue-api-test').then(function(issues){
+	outputPluginSubmitText(txt1);
+    gh.searchIssues(pluginName + ' in:title repo:' + repos[gameName].owner + '/' + repos[gameName].repo).then(function(issues){
         /* These issues may contain partial matches, so check returned issues. */
         for (var i = 0; i < issues.items.length; ++i) {
             if (issues.items[i].title.toLowerCase() === pluginName.toLowerCase()) {
@@ -131,12 +133,12 @@ function submitPlugin(evt) {
                 issue.getComments().then(function(comments){
                     for (var j = 0; j < comments.length; ++j) {
                         if (comments[j].body.toLowerCase() == comment.toLowerCase()) {
-                            outputPluginSubmitText(txt2, 0);
+                            outputPluginSubmitText(txt2);
                             return;
                         }
                     }
                     issue.createComment(comment).then(function(data){
-                        outputPluginSubmitText(txt3, 0);
+                        outputPluginSubmitText(txt3);
                     });
                 });
                 return;
@@ -148,7 +150,7 @@ function submitPlugin(evt) {
             var repo = gh.getRepo(repos[gameName].owner, repos[gameName].repo);
             repo.createIssue(pluginName, {body: comment}).then(function(data){
                 console.log(data);
-                outputPluginSubmitText(txt4, 0);
+                outputPluginSubmitText(txt4);
             });
         }
     }).catch(function(err){
@@ -156,7 +158,7 @@ function submitPlugin(evt) {
         if (err && err.status) {
             /* 401 for authentication failure. */
             if (err.status == 401 || err.status == 404) {
-                outputPluginSubmitText(txt5, -1);
+                outputPluginSubmitText(txt5, true);
             }
             /* 403 for rate limit exceeded, or many authentication failures. */
             else if (err.status == 403) {
@@ -164,13 +166,13 @@ function submitPlugin(evt) {
                 if (time) {
                     /* Rate limit exceeded. */
                     var date = new Date(parseInt(time, 10) * 1000);
-                    outputPluginSubmitText(txt6.substring(0, txt6.length - 4) + date.toTimeString() + '.', -1);
+                    outputPluginSubmitText(txt6.substring(0, txt6.length - 4) + date.toTimeString() + '.', true);
                 } else {
                     /* Auth failure. */
-                    outputPluginSubmitText(txt6, -1);
+                    outputPluginSubmitText(txt6, true);
                 }
             } else {
-                outputPluginSubmitText(txt7 + ' ' + JSON.parse(err.error).message, -1);
+                outputPluginSubmitText(txt7 + ' GitHub error message: ' + JSON.parse(err.error).message, true);
             }
         }
     });
@@ -282,20 +284,14 @@ function togglePlugins(evt){
 	}
 	document.getElementById('hiddenPluginNo').textContent = hiddenNo;
 }
-function outputPluginSubmitText(text, flag) {
+function outputPluginSubmitText(text, isError) {
 	var output = document.getElementById('output');
-	if (flag != -2)
-	hideElement(document.getElementById('submitBox').getElementsByTagName('form')[0][2]);
+    if (isError) {
+        output.style.color = 'red';
+    }
+    output.textContent = text;
+    hideElement(document.getElementById('submitBox').getElementsByTagName('form')[0][2]);
 	showElement(output);
-	if (output.innerHTML.length != 0) {
-		output.innerHTML += '<br />';
-	}
-	if (flag < 0) {
-		text = "<span style='color:red;'>" + text + "</span>";
-	} else if (flag == 1) {
-		text = "<span class='success'>" + text + "</span>";
-	}
-	output.innerHTML += text;
 }
 function showBrowserBox(){
 	if (isPluginSubmitSupported()) {
