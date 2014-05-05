@@ -217,4 +217,6 @@ pip-log.txt
 
 lib/
 out/
-BOSS Installer.exe
+*.exe
+*.zip
+*.7z
