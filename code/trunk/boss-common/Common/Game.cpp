@@ -363,7 +363,7 @@ namespace boss {
 	//Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
 	fs::path Game::GetLocalAppDataPath() {
 #if _WIN32 || _WIN64
-		HWND owner;
+		HWND owner = NULL;
 		TCHAR path[MAX_PATH];
 
 		HRESULT res = SHGetFolderPath(owner, CSIDL_LOCAL_APPDATA, NULL, SHGFP_TYPE_CURRENT, path);
@@ -624,7 +624,7 @@ namespace boss {
 		size_t lastRecPos = modlist.LastRecognisedPos();
 		while (it != items.end()) {
 			if (it->Type() != MOD || !it->Exists(*this)) {
-				if (std::distance(items.begin(), it) <= lastRecPos)
+				if ((size_t)abs(std::distance(items.begin(), it)) <= lastRecPos)
 					lastRecPos--;
 				it = items.erase(it);
 			} else
