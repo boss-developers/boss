@@ -410,6 +410,41 @@
           queryString = toQueryString(options);
           return _request('GET', "/notifications" + queryString, null);
         };
+        Issue = (function() {
+          function Issue(owner, repo, number) {
+            var _repoPath = '/repos/' + owner + '/' + repo + '/issues';
+            this.number = number;
+            this.read = function() {
+              return _request('GET', _repoPath + '/' + this.number, null);
+            };
+            this.update = function(options) {
+              return _request('PATCH', _repoPath + '/' + this.number, options);
+            };
+            this.getComments = function() {
+              return _request('GET', _repoPath + '/' + this.number + '/comments', null);
+            };
+            this.getComment = function(id) {
+              return _request('GET', _repoPath + '/comments/' + id, null);
+            };
+            this.createComment = function(body) {
+              var options = {
+                body: body
+              };
+              return _request('POST', _repoPath + '/' + this.number + '/comments', options);
+            };
+            this.editComment = function(id, body) {
+              var options = {
+                body: body
+              };
+              return _request('POST', _repoPath + '/comments/' + id, options);
+            };
+            this.deleteComment = function(id) {
+              return _request('DELETE', _repoPath + '/comments/' + id, null);
+            };
+          }
+
+          return Issue;
+        })();
         User = (function() {
           function User(_username) {
             var _cachedInfo, _rootPath;
@@ -546,6 +581,13 @@
               options.name = name;
               return _request('POST', "/user/repos", options);
             };
+            this.getIssues = function(getAllOrgIssues, options) {
+              if (getOrgIssues) {
+                return _request('GET', "/issues", options);
+              } else {
+                return _request('GET', "/user/issues", options);
+              }
+            };
           }
 
           return AuthenticatedUser;
@@ -640,6 +682,9 @@
             };
             this.getRepos = function() {
               return _request('GET', "/orgs/" + this.name + "/repos?type=all", null);
+            };
+            this.getIssues = function(options) {
+              return _request('GET', "/orgs/" + this.name + "/issues", options);
             };
           }
 
@@ -1212,6 +1257,31 @@
             this.getReleases = function() {
               return _request('GET', "" + this.repoPath + "/releases", null);
             };
+            this.getContributors = function(anon) {
+              var data = {
+                anon: anon
+              };
+              return _request('GET', "" + this.repoPath + "/contributors", data);
+            };
+            this.getIssues = function(options) {
+              return _request('GET', "" + this.repoPath + "/issues", options);
+            };
+            this.createIssue = function(title, options) {
+              options.title = title;
+              return _request('POST', "" + this.repoPath + "/issues", options);
+            };
+            this.getComments = function(options) {
+              return _request('GET', "" + this.repoPath + "/issues/comments", options);
+            };
+            this.getComment = function(id) {
+              return new Issue(_user, _repo).getComment(id);
+            };
+            this.editComment = function(id) {
+              return new Issue(_user, _repo).editComment(id);
+            };
+            this.deleteComment = function(id) {
+              return new Issue(_user, _repo).deleteComment(id);
+            };
           }
 
           return Repository;
@@ -1276,6 +1346,40 @@
           return Gist;
 
         })();
+
+        _search = function(type, q, sort, order) {
+          if (sort == null) {
+            sort = null;
+          }
+          if (order == null) {
+            order = 'desc';
+          }
+          params = {
+            q: q,
+            order: order
+          };
+          if (sort != null) {
+            params.sort = sort;
+          }
+          return _request('GET', '/search/' + type + toQueryString(params), null);
+        };
+
+        this.searchRepos = function(q, sort, order) {
+          return _search('repositories', q, sort, order);
+        };
+
+        this.searchCode = function(q, sort, order) {
+          return _search('code', q, sort, order);
+        };
+
+        this.searchIssues = function(q, sort, order) {
+          return _search('issues', q, sort, order);
+        };
+
+        this.searchUsers = function(q, sort, order) {
+          return _search('users', q, sort, order);
+        };
+
         this.getRepo = function(user, repo) {
           if (!user) {
             throw new Error('BUG! user argument is required');
