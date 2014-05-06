@@ -6,11 +6,11 @@
 var gh = new Octokit({token: "8ed50783e7dd02093cf43293f3c7f85386fb576a"});
 
 var repos = {
-    'TES IV: Oblivion': {owner: 'WrinklyNinja', repo: 'issue-api-test'},
-    "Nehrim - At Fate's Edge": {owner: 'WrinklyNinja', repo: 'issue-api-test'},
-    'TES V: Skyrim': {owner: 'WrinklyNinja', repo: 'issue-api-test'},
-    'Fallout 3': {owner: 'WrinklyNinja', repo: 'issue-api-test'},
-    'Fallout: New Vegas': {owner: 'WrinklyNinja', repo: 'issue-api-test'},
+    'TES IV: Oblivion': {owner: 'boss-developers', repo: 'oblivion'},
+    "Nehrim - At Fate's Edge": {owner: 'boss-developers', repo: 'nehrim'},
+    'TES V: Skyrim': {owner: 'boss-developers', repo: 'skyrim'},
+    'Fallout 3': {owner: 'boss-developers', repo: 'fallout3'},
+    'Fallout: New Vegas': {owner: 'boss-developers', repo: 'falloutnv'},
 };
 
 var pluginName = '';
