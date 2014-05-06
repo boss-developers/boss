@@ -271,6 +271,8 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
         SetOutPath "$INSTDIR\resources"
 		File "data\boss-common\resources\style.css"
 		File "data\boss-common\resources\script.js"
+		File "data\boss-common\resources\octokit.js"
+		File "data\boss-common\resources\promise-1.0.0.min.js"
 
 
 		;Now install language files.
@@ -428,6 +430,8 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
         ;Remove other resources.
 		Delete "$INSTDIR\resources\style.css"
 		Delete "$INSTDIR\resources\script.js"
+		Delete "$INSTDIR\resources\octokit.js"
+		Delete "$INSTDIR\resources\promise-1.0.0.min.js"
 
 		;Now we have to remove the files BOSS generates when it runs.
 		Delete "$INSTDIR\BOSSDebugLog.txt"

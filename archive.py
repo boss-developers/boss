@@ -85,6 +85,8 @@ for lang in ['es', 'ru', 'zh']:
     shutil.copy( os.path.join('data', 'boss-common', 'resources', 'l10n', lang, 'LC_MESSAGES', 'wxstd.mo'), os.path.join(temp_path, 'resources', 'l10n', lang, 'LC_MESSAGES') )
 
 shutil.copy( os.path.join('data', 'boss-common', 'resources', 'script.js'), os.path.join(temp_path, 'resources') )
+shutil.copy( os.path.join('data', 'boss-common', 'resources', 'octokit.js'), os.path.join(temp_path, 'resources') )
+shutil.copy( os.path.join('data', 'boss-common', 'resources', 'promise-1.0.0.min.js'), os.path.join(temp_path, 'resources') )
 shutil.copy( os.path.join('data', 'boss-common', 'resources', 'style.css'), os.path.join(temp_path, 'resources') )
 shutil.copy( os.path.join('data', 'boss-common', 'BOSS.ini'), temp_path)
 
