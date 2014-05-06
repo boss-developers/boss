@@ -1,25 +1,25 @@
 /*	BOSS
-	
-	A "one-click" program for users that quickly optimises and avoids 
-	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+
+	A "one-click" program for users that quickly optimises and avoids
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute 
-	it and/or modify it under the terms of the GNU General Public License 
-	as published by the Free Software Foundation, either version 3 of 
+    BOSS is free software: you can redistribute
+	it and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see 
+    along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
@@ -29,12 +29,12 @@
 
 namespace boss {
 	using namespace std;
-	
+
 	//BOSS version number.
 	BOSS_COMMON const uint32_t BOSS_VERSION_MAJOR	= 2;
-	BOSS_COMMON const uint32_t BOSS_VERSION_MINOR	= 2;
+	BOSS_COMMON const uint32_t BOSS_VERSION_MINOR	= 3;
 	BOSS_COMMON const uint32_t BOSS_VERSION_PATCH	= 0;
-	
+
 	//Supported game values. DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
 	BOSS_COMMON const uint32_t AUTODETECT			= 0;
 	BOSS_COMMON const uint32_t OBLIVION				= 1;
@@ -53,8 +53,8 @@ namespace boss {
 	BOSS_COMMON const uint32_t GERMAN				= 2;
 	BOSS_COMMON const uint32_t RUSSIAN				= 3;
 	BOSS_COMMON const uint32_t SIMPCHINESE			= 4;
-	
-	
+
+
 	///////////////////////////////
 	//File/Folder Paths
 	///////////////////////////////
