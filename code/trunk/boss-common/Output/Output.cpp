@@ -921,9 +921,11 @@ namespace boss {
 
 		ofstream outFile;
 		if (overwrite)
-			outFile.open(file.c_str());
+			//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+			outFile.open(file.string());
 		else
-			outFile.open(file.c_str(), ios_base::out|ios_base::app);
+			//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+			outFile.open(file.string(), ios_base::out|ios_base::app);
 		if (outFile.fail())
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 

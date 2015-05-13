@@ -48,8 +48,8 @@
 #include <sstream>
 
 #if _WIN32 || _WIN64
-#	include "Windows.h"
-#	include "Shlobj.h"
+#	include <windows.h>
+#	include <shlobj.h>
 #endif
 
 namespace boss {
@@ -64,7 +64,8 @@ namespace boss {
 		uint32_t chksum = 0;
 		static const size_t buffer_size = 8192;
 		char buffer[buffer_size];
-		ifstream ifile(filename.c_str(), ios::binary);
+		//MCP Note: changed from filename.c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
+		ifstream ifile(filename.string(), ios::binary);
 		LOG_TRACE("calculating CRC for: '%s'", filename.string().c_str());
 		boost::crc_32_type result;
 		if (ifile) {
@@ -82,7 +83,8 @@ namespace boss {
 
 	//Reads an entire file into a string buffer.
 	void fileToBuffer(const fs::path file, string& buffer) {
-		ifstream ifile(file.c_str());
+		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+		ifstream ifile(file.string());
 		if (ifile.fail())
 			return;
 		ifile.unsetf(ios::skipws); // No white space skipping!

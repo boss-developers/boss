@@ -75,7 +75,7 @@ namespace boss {
         pointers.free();
         giterr_clear();
 
-        LOG_ERROR("Git operation failed. Error: %s", error_message);
+        LOG_ERROR("Git operation failed. Error: %s", error_message.c_str());
         throw boss_error(error_message, BOSS_ERROR_GIT_ERROR);
     }
 
@@ -180,7 +180,7 @@ namespace boss {
             LOG_INFO("Checking to see if remote URL matches URL in settings.");
 
             //Check if the repo URLs match.
-            LOG_INFO("Remote URL given: %s", RepoURL(game));
+            LOG_INFO("Remote URL given: %s", RepoURL(game).c_str());
             LOG_INFO("Remote URL in repository settings: %s", url);
             if (url != RepoURL(game)) {
                 LOG_INFO("URLs do not match, setting repository URL to URL in settings.");
@@ -196,14 +196,14 @@ namespace boss {
             //Repository doesn't exist. Set up a repository.
             handle_error(git_repository_init(&ptrs.repo, game.Masterlist().parent_path().string().c_str(), false), ptrs);
 
-            LOG_INFO("Setting the new repository's remote to: %s", RepoURL(game));
+            LOG_INFO("Setting the new repository's remote to: %s", RepoURL(game).c_str());
 
             //Now set the repository's remote.
             handle_error(git_remote_create(&ptrs.remote, ptrs.repo, "origin", RepoURL(game).c_str()), ptrs);
         }
 
         //WARNING: This is generally a very bad idea, since it makes HTTPS a little bit pointless, but in this case because we're only reading data and not really concerned about its integrity, it's acceptable. A better solution would be to figure out why GitHub's certificate appears to be invalid to OpenSSL.
-#ifndef _WIN32
+#ifndef _MSC_VER
         git_remote_check_cert(ptrs.remote, 0);
 #endif
 

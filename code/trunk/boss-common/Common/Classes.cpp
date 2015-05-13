@@ -444,7 +444,9 @@ namespace boss {
 
 			//loadorder.txt is simple enough that we can avoid needing the full modlist parser which has the crashing issue.
 			//It's just a text file with a plugin filename on each line. Skip lines which are blank or start with '#'.
-			std::ifstream in(path.c_str());
+			
+			//MCP Note: changed from path.c_str() to path.string(); needs testing as error was about not being able to convert wchar_t to char
+			std::ifstream in(path.string());
 			if (in.fail())
 				throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
 
@@ -517,7 +519,9 @@ namespace boss {
 			throw boss_error(BOSS_ERROR_FS_FILE_RENAME_FAIL, file.string(), e.what());
 		}
 		//Open output file.
-		ofile.open(file.c_str());
+		
+		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+		ofile.open(file.string());
 		if (ofile.fail()) {  //Provide error message if it can't be written.
 			LOG_ERROR("Backup cannot be saved.");
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
@@ -571,7 +575,9 @@ namespace boss {
 
 		LOG_INFO("Writing new \"%s\"", file.string().c_str());
 		ofstream outfile;
-		outfile.open(file.c_str(), ios_base::trunc);
+		
+		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+		outfile.open(file.string(), ios_base::trunc);
 		if (outfile.fail())
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 
@@ -1053,7 +1059,9 @@ namespace boss {
 		grammar.SetErrorBuffer(&errorBuffer);
 
         if (!fs::exists(file)) {
-            ofstream userlist_file(file.c_str(), ios_base::binary);
+			
+			//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+            ofstream userlist_file(file.string(), ios_base::binary);
             if (!userlist_file.fail())
                 userlist_file << '\xEF' << '\xBB' << '\xBF';  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
             else
@@ -1076,7 +1084,9 @@ namespace boss {
 	}
 
 	void RuleList::Save(const fs::path file) {
-		ofstream outFile(file.c_str(),ios_base::trunc);
+		
+		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+		ofstream outFile(file.string(),ios_base::trunc);
 
 		if (outFile.fail()) {  //Provide error message if it can't be written.
 			LOG_ERROR("Backup cannot be saved.");
@@ -1259,7 +1269,9 @@ namespace boss {
 	}
 
 	void	Settings::Save			(const fs::path file, const uint32_t currentGameId) {
-		ofstream ini(file.c_str(), ios_base::trunc);
+		
+		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+		ofstream ini(file.string(), ios_base::trunc);
 		if (ini.fail())
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
         ini << '\xEF' << '\xBB' << '\xBF'  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.

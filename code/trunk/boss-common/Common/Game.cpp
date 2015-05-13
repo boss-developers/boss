@@ -33,8 +33,8 @@
 #include <boost/locale.hpp>
 
 #if _WIN32 || _WIN64
-#	include "Windows.h"
-#	include "Shlobj.h"
+#	include <windows.h>
+#	include <shlobj.h>
 #endif
 
 namespace boss {

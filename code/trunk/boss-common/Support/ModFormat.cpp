@@ -135,7 +135,9 @@ namespace boss {
 		if (filename.empty())
 			return false;
 
-		ifstream	file(filename.native().c_str(), ios_base::binary | ios_base::in);
+		//MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
+		//Note 2: According to Boost docs, c_str() is the same as specifying native().c_str()?
+		ifstream	file(filename.string(), ios_base::binary | ios_base::in);
 
 		if (file.bad())
 			//throw boss_error(BOSS_ERROR_FILE_READ_FAIL, filename.string());
@@ -164,7 +166,8 @@ namespace boss {
 		char		buffer[MAXLENGTH];
 		char*		bufptr = buffer;
 		ModHeader	modHeader;
-		ifstream	file(filename.native().c_str(), ios_base::binary | ios_base::in);
+		//MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
+		ifstream	file(filename.string(), ios_base::binary | ios_base::in);
 	
 		modHeader.Name = filename.string();
 
