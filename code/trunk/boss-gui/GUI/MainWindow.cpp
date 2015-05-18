@@ -4,22 +4,22 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2012    BOSS Development Team.
+	Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute
+	BOSS is free software: you can redistribute
 	it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will
+	BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see
+	You should have received a copy of the GNU General Public License
+	along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -106,14 +106,14 @@ bool BossGUI::OnInit() {
 		}
 	}
 
-    if (gl_debug_verbosity > 0)
-	    g_logger.setStream(debug_log_path.string().c_str());
+	if (gl_debug_verbosity > 0)
+		g_logger.setStream(debug_log_path.string().c_str());
 	// it's ok if this number is too high.  setVerbosity will handle it
 	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));
 
 	//Specify location of language dictionaries
 	boost::locale::generator gen;
-    gen.add_messages_path(l10n_path.string());
+	gen.add_messages_path(l10n_path.string());
 	gen.add_messages_domain("messages");
 
 	//Set the locale to get encoding and language conversions working correctly.
@@ -143,7 +143,7 @@ bool BossGUI::OnInit() {
 		wxLoc = new wxLocale();
 		if (!wxLoc->Init(lang, wxLOCALE_LOAD_DEFAULT))
 			throw exception("System GUI text could not be set.");
-        wxLocale::AddCatalogLookupPathPrefix(l10n_path.string());
+		wxLocale::AddCatalogLookupPathPrefix(l10n_path.string());
 		wxLoc->AddCatalog("wxstd");
 	} catch(exception &e) {
 		LOG_ERROR("could not implement translation: %s", e.what());
@@ -231,9 +231,9 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	isStartup = true;
 
 	wxString BOSSlogFormat[] = {
-        wxT("HTML"),
-        translate("Plain Text")
-    };
+		wxT("HTML"),
+		translate("Plain Text")
+	};
 
 	wxString UndoLevel[] = {
 		translate("Last Run"),
@@ -241,14 +241,14 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	};
 
 	//Set up menu bar first.
-    MenuBar = new wxMenuBar();
-    // File Menu
-    FileMenu = new wxMenu();
+	MenuBar = new wxMenuBar();
+	// File Menu
+	FileMenu = new wxMenu();
 	FileMenu->Append(OPTION_OpenBOSSlog, translate("&View BOSS Log"), translate("Opens your BOSSlog."));
-    FileMenu->Append(OPTION_Run, translate("&Run BOSS"), translate("Runs BOSS with the options you have chosen."));
-    FileMenu->AppendSeparator();
-    FileMenu->Append(MENU_Quit, translate("&Quit"), translate("Quit BOSS."));
-    MenuBar->Append(FileMenu, translate("&File"));
+	FileMenu->Append(OPTION_Run, translate("&Run BOSS"), translate("Runs BOSS with the options you have chosen."));
+	FileMenu->AppendSeparator();
+	FileMenu->Append(MENU_Quit, translate("&Quit"), translate("Quit BOSS."));
+	MenuBar->Append(FileMenu, translate("&File"));
 	//Edit Menu
 	EditMenu = new wxMenu();
 	EditMenu->Append(OPTION_EditUserRules, translate("&User Rules..."), translate("Opens your userlist in your default text editor."));
@@ -262,8 +262,8 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	GameMenu->AppendRadioItem(MENU_Fallout3, wxT("&Fallout 3"), translate("Switch to running BOSS for Fallout 3."));
 	GameMenu->AppendRadioItem(MENU_FalloutNewVegas, wxT("&Fallout: New Vegas"), translate("Switch to running BOSS for Fallout: New Vegas."));
 	MenuBar->Append(GameMenu, translate("&Active Game"));
-    // About menu
-    HelpMenu = new wxMenu();
+	// About menu
+	HelpMenu = new wxMenu();
 	HelpMenu->Append(MENU_OpenMainReadMe, translate("Open &Main Readme"), translate("Opens the main BOSS readme in your default web browser."));
 	HelpMenu->Append(MENU_OpenUserlistReadMe, translate("Open &Userlist Syntax Doc"), translate("Opens the BOSS userlist syntax documentation in your default web browser."));
 	HelpMenu->Append(MENU_OpenMasterlistReadMe, translate("Open &Masterlist Syntax Doc"), translate("Opens the BOSS masterlist syntax documentation in your default web browser."));
@@ -271,8 +271,8 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	HelpMenu->Append(MENU_OpenLicenses, translate("View &Copyright Licenses"), translate("View the GNU General Public License v3.0 and GNU Free Documentation License v1.3."));
 	HelpMenu->AppendSeparator();
 	HelpMenu->Append(MENU_ShowAbout, translate("&About BOSS..."), translate("Shows information about BOSS."));
-    MenuBar->Append(HelpMenu, translate("&Help"));
-    SetMenuBar(MenuBar);
+	MenuBar->Append(HelpMenu, translate("&Help"));
+	SetMenuBar(MenuBar);
 
 	//Set up stuff in the frame.
 	SetBackgroundColour(wxColour(255,255,255));
@@ -388,7 +388,7 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 
 	//Now set up the status bar.
 	CreateStatusBar(1);
-    SetStatusText(translate("Ready"));
+	SetStatusText(translate("Ready"));
 
 	//Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
@@ -412,8 +412,8 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 				NULL);
 	}
 
-    Destroy();  // you may also do:  event.Skip();
-                // since the default event handler does call Destroy(), too
+	Destroy();  // you may also do:  event.Skip();
+				// since the default event handler does call Destroy(), too
 }
 
 void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
@@ -440,25 +440,25 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	// Update Masterlist
 	/////////////////////////////////////////////////////////
 
-    if (gl_revert<1 && (gl_update || gl_update_only)) {
-        progDia->Update(0, translate("Updating to the latest masterlist from the online repository..."));
-        LOG_DEBUG("Updating masterlist...");
-        try {
-            string revision = UpdateMasterlist(game, progress, progDia);
-            string message = (boost::format(translate("Masterlist updated; at revision: %1%.")) % revision).str();
-            game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
-        }
-        catch (boss_error &e) {
-            game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
-                << (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
-            LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
-        }
-    }
-    else {
-        string revision = GetMasterlistVersion(game);
-        string message = (boost::format(translate("Masterlist updating disabled; at revision: %1%.")) % revision).str();
-        game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
-    }
+	if (gl_revert<1 && (gl_update || gl_update_only)) {
+		progDia->Update(0, translate("Updating to the latest masterlist from the online repository..."));
+		LOG_DEBUG("Updating masterlist...");
+		try {
+			string revision = UpdateMasterlist(game, progress, progDia);
+			string message = (boost::format(translate("Masterlist updated; at revision: %1%.")) % revision).str();
+			game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
+		}
+		catch (boss_error &e) {
+			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
+				<< (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
+			LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
+		}
+	}
+	else {
+		string revision = GetMasterlistVersion(game);
+		string message = (boost::format(translate("Masterlist updating disabled; at revision: %1%.")) % revision).str();
+		game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
+	}
 
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
 	if (gl_update_only == true) {
@@ -544,7 +544,7 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		game.bosslog.parsingErrors.push_back(game.masterlist.ErrorBuffer());
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
-        if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
+		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
 			game.bosslog.criticalError << game.masterlist.ErrorBuffer();
 		else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL)
 			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << e.getString();
@@ -557,12 +557,12 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-        if ( !gl_silent )
+		if ( !gl_silent )
 			wxLaunchDefaultApplication(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
 		progDia->Destroy();
 		if (gl_close_gui_after_sorting)
 			this->Close(true);
-        return; //fail in screaming heap.
+		return; //fail in screaming heap.
 	}
 
 	LOG_INFO("Starting to parse userlist.");
@@ -609,10 +609,10 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 		}
 		if ( !gl_silent )
 			wxLaunchDefaultApplication(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
-        progDia->Destroy();
+		progDia->Destroy();
 		if (gl_close_gui_after_sorting)
 			this->Close(true);
-        return; //fail in screaming heap.
+		return; //fail in screaming heap.
 	}
 
 	LOG_INFO("Launching boss log in browser.");
@@ -687,25 +687,25 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 
 void MainFrame::OnAbout(wxCommandEvent& event) {
 	wxAboutDialogInfo aboutInfo;
-    aboutInfo.SetName("BOSS");
-    aboutInfo.SetVersion(IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH));
-    aboutInfo.SetDescription(translate("Load order sorting for Oblivion, Skyrim, Fallout 3 and Fallout: New Vegas."));
-    aboutInfo.SetCopyright("Copyright (C) 2009-2014 BOSS Development Team.");
-    aboutInfo.SetWebSite("http://boss-developers.github.io");
+	aboutInfo.SetName("BOSS");
+	aboutInfo.SetVersion(IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH));
+	aboutInfo.SetDescription(translate("Load order sorting for Oblivion, Skyrim, Fallout 3 and Fallout: New Vegas."));
+	aboutInfo.SetCopyright("Copyright (C) 2009-2014 BOSS Development Team.");
+	aboutInfo.SetWebSite("http://boss-developers.github.io");
 	aboutInfo.SetLicence("This program is free software: you can redistribute it and/or modify\n"
-    "it under the terms of the GNU General Public License as published by\n"
-    "the Free Software Foundation, either version 3 of the License, or\n"
-    "(at your option) any later version.\n"
+	"it under the terms of the GNU General Public License as published by\n"
+	"the Free Software Foundation, either version 3 of the License, or\n"
+	"(at your option) any later version.\n"
 	"\n"
-    "This program is distributed in the hope that it will be useful,\n"
-    "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-    "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-    "GNU General Public License for more details.\n"
+	"This program is distributed in the hope that it will be useful,\n"
+	"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+	"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+	"GNU General Public License for more details.\n"
 	"\n"
-    "You should have received a copy of the GNU General Public License\n"
-    "along with this program.  If not, see <http://www.gnu.org/licenses/>.");
+	"You should have received a copy of the GNU General Public License\n"
+	"along with this program.  If not, see <http://www.gnu.org/licenses/>.");
 	aboutInfo.SetIcon(wxIconLocation("BOSS GUI.exe"));
-    wxAboutBox(aboutInfo);
+	wxAboutBox(aboutInfo);
 }
 
 void MainFrame::OnLogDisplayChange(wxCommandEvent& event) {

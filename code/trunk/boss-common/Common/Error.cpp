@@ -4,22 +4,22 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2012    BOSS Development Team.
+	Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute
+	BOSS is free software: you can redistribute
 	it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will
+	BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see
+	You should have received a copy of the GNU General Public License
+	along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3135 $, $Date: 2011-08-17 22:01:17 +0100 (Wed, 17 Aug 2011) $
@@ -49,7 +49,7 @@ namespace boss {
 	BOSS_COMMON const uint32_t BOSS_ERROR_PLUGIN_BEFORE_MASTER					= 39;
 	BOSS_COMMON const uint32_t BOSS_ERROR_INVALID_SYNTAX						= 40;
 
-    BOSS_COMMON const uint32_t BOSS_ERROR_GIT_ERROR                             = 41;
+	BOSS_COMMON const uint32_t BOSS_ERROR_GIT_ERROR                             = 41;
 
 	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL			= 15;
 	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL			= 16;
@@ -111,10 +111,10 @@ namespace boss {
 			return (format(translate("\"%1%\" cannot be converted from UTF-8 to \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_PLUGIN_BEFORE_MASTER)
 			return (format(translate("Master file \"%1%\" loading after non-master plugins!")) % errSubject).str();
-        else if (errCode == BOSS_ERROR_INVALID_SYNTAX)
-            return errString;
-        else if (errCode == BOSS_ERROR_GIT_ERROR)
-            return (format(translate("Git operation failed. Error: %1%")) % errString).str();
+		else if (errCode == BOSS_ERROR_INVALID_SYNTAX)
+			return errString;
+		else if (errCode == BOSS_ERROR_GIT_ERROR)
+			return (format(translate("Git operation failed. Error: %1%")) % errString).str();
 		else if (errCode == BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL)
 			return (format(translate("The modification date of \"%1%\" cannot be read! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_FS_FILE_RENAME_FAIL)

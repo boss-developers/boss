@@ -4,22 +4,22 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2011    BOSS Development Team.
+	Copyright (C) 2009-2011    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute
+	BOSS is free software: you can redistribute
 	it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will
+	BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see
+	You should have received a copy of the GNU General Public License
+	along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 1783 $, $Date: 2010-10-31 23:05:28 +0000 (Sun, 31 Oct 2010) $
@@ -108,7 +108,7 @@ void Fail() {
 }
 
 int progress(const git_transfer_progress *stats, void *payload) {
-    printf((translate("Downloading masterlist: %i of %i objects (%i KB)").str() + "\r").c_str(), stats->received_objects, stats->total_objects, stats->received_bytes/1024);
+	printf((translate("Downloading masterlist: %i of %i objects (%i KB)").str() + "\r").c_str(), stats->received_objects, stats->total_objects, stats->received_bytes/1024);
 	fflush(stdout);
 	return 0;
 }
@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
 
 	//Specify location of language dictionaries
 	boost::locale::generator gen;
-    gen.add_messages_path(l10n_path.string());
+	gen.add_messages_path(l10n_path.string());
 	gen.add_messages_domain("messages");
 
 	//Set the locale to get encoding and language conversions working correctly.
@@ -179,46 +179,46 @@ int main(int argc, char *argv[]) {
 
 	// declare the supported options
 	po::options_description opts("Options");
-    opts.add_options()
-        ("help,h", translate("produces this help message").str().c_str())
-        ("version,V", translate("prints the version banner").str().c_str())
-        ("update,u", po::value(&gl_update)->zero_tokens(),
-        translate("automatically update the local copy of the"
-        " masterlist to the latest version"
-        " available on the web before sorting").str().c_str())
-        ("no-update,U", translate("inhibit the automatic masterlist updater").str().c_str())
-        ("only-update,o", po::value(&gl_update_only)->zero_tokens(),
-        translate("automatically update the local copy of the"
-        " masterlist to the latest version"
-        " available on the web but don't sort right"
-        " now").str().c_str())
-        ("silent,s", po::value(&gl_silent)->zero_tokens(),
-        translate("don't launch a browser to show the HTML log"
-        " at program completion").str().c_str())
-        ("revert,r", po::value(&gl_revert)->implicit_value(1, ""),
-        translate("revert to a previous load order.  this"
-        " parameter optionally accepts values of 1 or"
-        " 2, indicating how many undo steps to apply."
-        "  if no option value is specified, it"
-        " defaults to 1").str().c_str())
-        ("verbose,v", po::value(&gl_debug_verbosity)->implicit_value(1, ""),
-        translate("specify verbosity level (0-3) of the debugging output.  0 is the"
-        " default, showing only WARN and ERROR messges."
-        " 1 (INFO and above) is implied if this option"
-        " is specified without an argument.  higher"
-        " values increase the verbosity further").str().c_str())
-        ("game,g", po::value(&gameStr),
-        translate("override game autodetection.  valid values"
-        " are: 'Oblivion', 'Nehrim', 'Fallout3',"
-        " 'FalloutNV', and 'Skyrim'").str().c_str())
-        ("crc-display,c", po::value(&gl_show_CRCs)->zero_tokens(),
-        translate("show mod file CRCs, so that a file's CRC can be"
-        " added to the masterlist in a conditional").str().c_str())
-        ("format,f", po::value(&bosslogFormat),
-        translate("select output format. valid values"
-        " are: 'html', 'text'").str().c_str())
-        ("trial-run,t", po::value(&gl_trial_run)->zero_tokens(),
-        translate("run BOSS without actually making any changes to load order").str().c_str());
+	opts.add_options()
+		("help,h", translate("produces this help message").str().c_str())
+		("version,V", translate("prints the version banner").str().c_str())
+		("update,u", po::value(&gl_update)->zero_tokens(),
+		translate("automatically update the local copy of the"
+		" masterlist to the latest version"
+		" available on the web before sorting").str().c_str())
+		("no-update,U", translate("inhibit the automatic masterlist updater").str().c_str())
+		("only-update,o", po::value(&gl_update_only)->zero_tokens(),
+		translate("automatically update the local copy of the"
+		" masterlist to the latest version"
+		" available on the web but don't sort right"
+		" now").str().c_str())
+		("silent,s", po::value(&gl_silent)->zero_tokens(),
+		translate("don't launch a browser to show the HTML log"
+		" at program completion").str().c_str())
+		("revert,r", po::value(&gl_revert)->implicit_value(1, ""),
+		translate("revert to a previous load order.  this"
+		" parameter optionally accepts values of 1 or"
+		" 2, indicating how many undo steps to apply."
+		"  if no option value is specified, it"
+		" defaults to 1").str().c_str())
+		("verbose,v", po::value(&gl_debug_verbosity)->implicit_value(1, ""),
+		translate("specify verbosity level (0-3) of the debugging output.  0 is the"
+		" default, showing only WARN and ERROR messges."
+		" 1 (INFO and above) is implied if this option"
+		" is specified without an argument.  higher"
+		" values increase the verbosity further").str().c_str())
+		("game,g", po::value(&gameStr),
+		translate("override game autodetection.  valid values"
+		" are: 'Oblivion', 'Nehrim', 'Fallout3',"
+		" 'FalloutNV', and 'Skyrim'").str().c_str())
+		("crc-display,c", po::value(&gl_show_CRCs)->zero_tokens(),
+		translate("show mod file CRCs, so that a file's CRC can be"
+		" added to the masterlist in a conditional").str().c_str())
+		("format,f", po::value(&bosslogFormat),
+		translate("select output format. valid values"
+		" are: 'html', 'text'").str().c_str())
+		("trial-run,t", po::value(&gl_trial_run)->zero_tokens(),
+		translate("run BOSS without actually making any changes to load order").str().c_str());
 
 	// parse command line arguments
 	po::variables_map vm;
@@ -234,8 +234,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	// set alternative output stream for logger and whether to track log statement origins
-    if (gl_debug_verbosity > 0)
-	    g_logger.setStream(debug_log_path.string().c_str());
+	if (gl_debug_verbosity > 0)
+		g_logger.setStream(debug_log_path.string().c_str());
 	if (gl_debug_verbosity < 0) {
 		LOG_ERROR("invalid option for 'verbose' parameter: %d", gl_debug_verbosity);
 		Fail();
@@ -355,21 +355,21 @@ int main(int argc, char *argv[]) {
 		cout << endl << translate("Updating to the latest masterlist from the online repository...") << endl;
 		LOG_DEBUG("Updating masterlist...");
 		try {
-            string revision = UpdateMasterlist(game, progress, NULL);
-            string message = (boost::format(translate("Masterlist updated; at revision: %1%.")) % revision).str();
+			string revision = UpdateMasterlist(game, progress, NULL);
+			string message = (boost::format(translate("Masterlist updated; at revision: %1%.")) % revision).str();
 			game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
 			cout << endl << message << endl;
 		} catch (boss_error &e) {
-            game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
-                << (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
+			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
+				<< (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
 			LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
 		}
-    }
-    else {
-        string revision = GetMasterlistVersion(game);
-        string message = (boost::format(translate("Masterlist updating disabled; at revision: %1%.")) % revision).str();
-        game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
-    }
+	}
+	else {
+		string revision = GetMasterlistVersion(game);
+		string message = (boost::format(translate("Masterlist updating disabled; at revision: %1%.")) % revision).str();
+		game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
+	}
 
 	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
 	if (gl_update_only) {
@@ -436,7 +436,7 @@ int main(int argc, char *argv[]) {
 		game.bosslog.parsingErrors.push_back(game.masterlist.ErrorBuffer());
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
-        if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
+		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
 			game.bosslog.criticalError << game.masterlist.ErrorBuffer();
 		else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL)
 			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << e.getString();
@@ -450,8 +450,8 @@ int main(int argc, char *argv[]) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if ( !gl_silent )
-                Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
-        exit (1); //fail in screaming heap.
+				Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
+		exit (1); //fail in screaming heap.
 	}
 
 	LOG_INFO("Starting to parse userlist.");
@@ -489,8 +489,8 @@ int main(int argc, char *argv[]) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if ( !gl_silent )
-                Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
-        exit (1); //fail in screaming heap.
+				Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
+		exit (1); //fail in screaming heap.
 	}
 
 	LOG_INFO("Launching boss log in browser.");

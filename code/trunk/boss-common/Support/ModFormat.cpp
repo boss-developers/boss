@@ -4,22 +4,22 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2012    BOSS Development Team.
+	Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute
+	BOSS is free software: you can redistribute
 	it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will
+	BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see
+	You should have received a copy of the GNU General Public License
+	along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2488 $, $Date: 2011-03-27 14:31:33 +0100 (Sun, 27 Mar 2011) $
@@ -197,10 +197,10 @@ namespace boss {
 
 		// For Oblivion plugins, the Header record starts here, check for its signature 'HEDR'.
 		if (Read<uint>(bufptr) != Record::HEDR){
-            //Check if it's a FO3, FNV or TES5 plugin.
-            if (Read<uint>(bufptr) != Record::HEDR)  { //Nope, exit.
-                return modHeader;
-            }
+			//Check if it's a FO3, FNV or TES5 plugin.
+			if (Read<uint>(bufptr) != Record::HEDR)  { //Nope, exit.
+				return modHeader;
+			}
 		}
 
 		// HEDR record has fields: DataSize, Version (0.8 o 1.0), Record Count
@@ -213,34 +213,34 @@ namespace boss {
 		// Then comes the sub-records
 		uint signature = Read<uint>(bufptr);
 
-        // skip optional records
-        bool loop = true;
-        while (loop){
-            switch (signature)
-            {
-            case Record::OFST:
-            case Record::DELE:
-                bufptr += Read<ushort>(bufptr); // skip
-                signature = Read<uint>(bufptr);
-                break;
+		// skip optional records
+		bool loop = true;
+		while (loop){
+			switch (signature)
+			{
+			case Record::OFST:
+			case Record::DELE:
+				bufptr += Read<ushort>(bufptr); // skip
+				signature = Read<uint>(bufptr);
+				break;
 
-		    // extract author name, if present
-            case Record::CNAM:
-                modHeader.Author = ReadString(bufptr, Read<ushort>(bufptr));
-                signature = Read<uint>(bufptr);
-                break;
+			// extract author name, if present
+			case Record::CNAM:
+				modHeader.Author = ReadString(bufptr, Read<ushort>(bufptr));
+				signature = Read<uint>(bufptr);
+				break;
 
-		    // extract description and version, if present
-            case Record::SNAM:
-                modHeader.Description = ReadString(bufptr, Read<ushort>(bufptr));
-			    modHeader.Version     = ParseVersion(modHeader.Description);
-                signature = Read<uint>(bufptr);
-                break;
+			// extract description and version, if present
+			case Record::SNAM:
+				modHeader.Description = ReadString(bufptr, Read<ushort>(bufptr));
+				modHeader.Version     = ParseVersion(modHeader.Description);
+				signature = Read<uint>(bufptr);
+				break;
 
-            default:
-                loop = false;
-            }
-        }
+			default:
+				loop = false;
+			}
+		}
 
 		// We should have all the required information.
 		return modHeader;

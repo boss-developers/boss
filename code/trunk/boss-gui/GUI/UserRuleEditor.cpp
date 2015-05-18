@@ -4,22 +4,22 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2012    BOSS Development Team.
+	Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute
+	BOSS is free software: you can redistribute
 	it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will
+	BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see
+	You should have received a copy of the GNU General Public License
+	along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -91,18 +91,18 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 		} else {
 			progDia = new wxProgressDialog(translate("BOSS: Working..."), translate("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
 
-            progDia->Update(0, translate("Updating to the latest masterlist from the online repository..."));
-            LOG_DEBUG("Updating masterlist...");
-            try {
-                string revision = UpdateMasterlist(game, progress, progDia);
-                string message = (boost::format(translate("Masterlist revision: %1%.")) % revision).str();
-                game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
-            }
-            catch (boss_error &e) {
-                game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
-                    << (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
-                LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
-            }
+			progDia->Update(0, translate("Updating to the latest masterlist from the online repository..."));
+			LOG_DEBUG("Updating masterlist...");
+			try {
+				string revision = UpdateMasterlist(game, progress, progDia);
+				string message = (boost::format(translate("Masterlist revision: %1%.")) % revision).str();
+				game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
+			}
+			catch (boss_error &e) {
+				game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
+					<< (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
+				LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
+			}
 		}
 	} else
 		progDia = new wxProgressDialog(translate("BOSS: Working..."), translate("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
@@ -128,14 +128,14 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 
 	//Some variable setup.
 	wxString BeforeAfter[] = {
-        translate("before"),
-        translate("after")
-    };
+		translate("before"),
+		translate("after")
+	};
 
 	wxString TopBottom[] = {
-        translate("top"),
-        translate("bottom")
-    };
+		translate("top"),
+		translate("bottom")
+	};
 
 	//Set up stuff in the frame.
 	SetBackgroundColour(wxColour(255,255,255));
@@ -788,8 +788,8 @@ RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, uint32
 	mainSizer->Add(ruleCheckbox = new wxCheckBox(this, wxID_ANY, ""),0,wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxTOP|wxBOTTOM,10);
 	mainSizer->Add(ruleContent = new wxStaticText(this, wxID_ANY, wxEmptyString),0,wxEXPAND|wxRIGHT|wxTOP,10);  //Need to convert text that is outputted by BOSS-Common from UTF-8.
 
-    ruleCheckbox->SetValue(currentRule.Enabled());
-    ruleContent->SetLabelText(wxString(text.c_str(), wxConvUTF8));
+	ruleCheckbox->SetValue(currentRule.Enabled());
+	ruleContent->SetLabelText(wxString(text.c_str(), wxConvUTF8));
 	ruleContent->Bind(wxEVT_LEFT_DOWN, &RuleBoxClass::OnSelect, this, wxID_ANY);
 	if (!currentRule.Enabled())
 		ruleContent->Enable(false);

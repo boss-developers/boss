@@ -4,22 +4,22 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2012    BOSS Development Team.
+	Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute
+	BOSS is free software: you can redistribute
 	it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will
+	BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see
+	You should have received a copy of the GNU General Public License
+	along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -560,9 +560,9 @@ namespace boss {
 		for (size_t j=0;j<linesSize;j++) {
 
 			string rObject = varOpen + EscapeHTMLSpecial(r.Object()) + varClose;
-            string lObject = varOpen + EscapeHTMLSpecial(lines[j].Object()) + varClose;
+			string lObject = varOpen + EscapeHTMLSpecial(lines[j].Object()) + varClose;
 
-            escapeHTMLSpecialChars = false;
+			escapeHTMLSpecialChars = false;
 
 			if (lines[j].Key() == BEFORE)
 				*this << (boost::format(translate("Sort %1% before %2%")) % rObject % lObject).str();
@@ -590,9 +590,9 @@ namespace boss {
 				}
 				*this << lines[j].ObjectAsMessage();
 				hasEditedMessages = true;
-            }
+			}
 
-            escapeHTMLSpecialChars = wasEscaped;
+			escapeHTMLSpecialChars = wasEscaped;
 		}
 		if (hasEditedMessages)
 			*this << LIST_CLOSE;
@@ -632,7 +632,7 @@ namespace boss {
 			out << "<!DOCTYPE html>"
 				<< "<meta charset='utf-8'>"
 				<< "<title>BOSS Log</title>"
-                << "<link rel='stylesheet' href='../resources/style.css' />"
+				<< "<link rel='stylesheet' href='../resources/style.css' />"
 				<< "<nav>"
 				<< "<header>"
 				<< "	<h1>BOSS</h1>"
@@ -662,68 +662,68 @@ namespace boss {
 		stringstream out;
 		string colourTooltip = translate("Colours must be specified using lowercase hex codes.");
 
-        if (logFormat == HTML)
-            out << "<section id='browserBox'>"
-            << "<p>" << translate("Support for the BOSS Log's more advanced features varies. Here's what your browser supports:")
-            << "<h3>" << translate("Functionality") << "</h3>"
-            << "<table>"
-            << "	<tbody>"
-            << "		<tr><td id='pluginSubmitSupport'><td>" << translate("In-Log Plugin Submission") << "<td>" << translate("Allows unrecognised plugins to be anonymously submitted to the BOSS team directly from the BOSS Log.")
-            << "		<tr><td id='memorySupport'><td>" << translate("Settings Memory") << "<td>" << translate("Allows the BOSS Log to automatically restore the filter configuration last used whenever the BOSS Log is opened.")
-            << "	    <tr><td id='placeholderSupport'><td>" << translate("Input Placeholders")
-            << "	    <tr><td id='validationSupport'><td>" << translate("Form Validation")
-            << "</table>"
-            << "</section>"
+		if (logFormat == HTML)
+			out << "<section id='browserBox'>"
+			<< "<p>" << translate("Support for the BOSS Log's more advanced features varies. Here's what your browser supports:")
+			<< "<h3>" << translate("Functionality") << "</h3>"
+			<< "<table>"
+			<< "	<tbody>"
+			<< "		<tr><td id='pluginSubmitSupport'><td>" << translate("In-Log Plugin Submission") << "<td>" << translate("Allows unrecognised plugins to be anonymously submitted to the BOSS team directly from the BOSS Log.")
+			<< "		<tr><td id='memorySupport'><td>" << translate("Settings Memory") << "<td>" << translate("Allows the BOSS Log to automatically restore the filter configuration last used whenever the BOSS Log is opened.")
+			<< "	    <tr><td id='placeholderSupport'><td>" << translate("Input Placeholders")
+			<< "	    <tr><td id='validationSupport'><td>" << translate("Form Validation")
+			<< "</table>"
+			<< "</section>"
 
-            << "<aside>"
-            << "<label><input type='checkbox' id='hideVersionNumbers' data-class='version'/>" << translate("Hide Version Numbers") << "</label>"
-            << "<label><input type='checkbox' id='hideActiveLabel' data-class='active'/>" << translate("Hide 'Active' Label") << "</label>"
-            << "<label><input type='checkbox' id='hideChecksums' data-class='crc'/>" << translate("Hide Checksums") << "</label>"
-            << "<label><input type='checkbox' id='hideNotes'/>" << translate("Hide Notes") << "</label>"
-            << "<label><input type='checkbox' id='hideBashTags'/>" << translate("Hide Bash Tag Suggestions") << "</label>"
-            << "<label><input type='checkbox' id='hideRequirements'/>" << translate("Hide Requirements") << "</label>"
-            << "<label><input type='checkbox' id='hideIncompatibilities'/>" << translate("Hide Incompatibilities") << "</label>"
-            << "<label><input type='checkbox' id='hideDoNotCleanMessages'/>" << translate("Hide 'Do Not Clean' Messages") << "</label>"
-            << "<label><input type='checkbox' id='hideAllPluginMessages'/>" << translate("Hide All Plugin Messages") << "</label>"
-            << "<label><input type='checkbox' id='hideInactivePlugins'/>" << translate("Hide Inactive Plugins") << "</label>"
-            << "<label><input type='checkbox' id='hideMessagelessPlugins'/>" << translate("Hide Messageless Plugins") << "</label>"
-            << "<footer>"
-            << "	" << (boost::format(translate("%1% of %2% recognised plugins hidden.")) % "<span id='hiddenPluginNo'>0</span>" % recognised).str()
-            << "	" << (boost::format(translate("%1% of %2% messages hidden.")) % "<span id='hiddenMessageNo'>0</span>" % messages).str()
-            << "</footer>"
-            << "</aside>"
+			<< "<aside>"
+			<< "<label><input type='checkbox' id='hideVersionNumbers' data-class='version'/>" << translate("Hide Version Numbers") << "</label>"
+			<< "<label><input type='checkbox' id='hideActiveLabel' data-class='active'/>" << translate("Hide 'Active' Label") << "</label>"
+			<< "<label><input type='checkbox' id='hideChecksums' data-class='crc'/>" << translate("Hide Checksums") << "</label>"
+			<< "<label><input type='checkbox' id='hideNotes'/>" << translate("Hide Notes") << "</label>"
+			<< "<label><input type='checkbox' id='hideBashTags'/>" << translate("Hide Bash Tag Suggestions") << "</label>"
+			<< "<label><input type='checkbox' id='hideRequirements'/>" << translate("Hide Requirements") << "</label>"
+			<< "<label><input type='checkbox' id='hideIncompatibilities'/>" << translate("Hide Incompatibilities") << "</label>"
+			<< "<label><input type='checkbox' id='hideDoNotCleanMessages'/>" << translate("Hide 'Do Not Clean' Messages") << "</label>"
+			<< "<label><input type='checkbox' id='hideAllPluginMessages'/>" << translate("Hide All Plugin Messages") << "</label>"
+			<< "<label><input type='checkbox' id='hideInactivePlugins'/>" << translate("Hide Inactive Plugins") << "</label>"
+			<< "<label><input type='checkbox' id='hideMessagelessPlugins'/>" << translate("Hide Messageless Plugins") << "</label>"
+			<< "<footer>"
+			<< "	" << (boost::format(translate("%1% of %2% recognised plugins hidden.")) % "<span id='hiddenPluginNo'>0</span>" % recognised).str()
+			<< "	" << (boost::format(translate("%1% of %2% messages hidden.")) % "<span id='hiddenMessageNo'>0</span>" % messages).str()
+			<< "</footer>"
+			<< "</aside>"
 
-            << "<div id='overlay'>"
-            << "<div id='submitBox'>"
-            << "<h2>" << translate("Submit Plugin") << "</h2>"
-            << "<p><span id='pluginLabel'>" << translate("Plugin") << ":</span><span id='plugin'></span>"
-            << "<form>"
-            << "<label>" << translate("Download Location") << ":<br /><input type='url' placeholder='" << translate("Label for text box. Do not use a single quote in translation, use '&#x27;' instead", "A link to the plugin&#x27;s download location.") << "' id='link'></label>"
-            << "<label>" << translate("Additional Notes") << ":<br /><textarea id='notes' placeholder='" << translate("Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.") << "'></textarea></label>"
-            << "<div id='output'></div>"
-            << "<p class='last'><button>" << translate("Submit") << "</button>"
-            << "<button type='reset'>" << translate("Close") << "</button>"
-            << "</form>"
-            << "</div>"
-            << "</div>"
+			<< "<div id='overlay'>"
+			<< "<div id='submitBox'>"
+			<< "<h2>" << translate("Submit Plugin") << "</h2>"
+			<< "<p><span id='pluginLabel'>" << translate("Plugin") << ":</span><span id='plugin'></span>"
+			<< "<form>"
+			<< "<label>" << translate("Download Location") << ":<br /><input type='url' placeholder='" << translate("Label for text box. Do not use a single quote in translation, use '&#x27;' instead", "A link to the plugin&#x27;s download location.") << "' id='link'></label>"
+			<< "<label>" << translate("Additional Notes") << ":<br /><textarea id='notes' placeholder='" << translate("Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.") << "'></textarea></label>"
+			<< "<div id='output'></div>"
+			<< "<p class='last'><button>" << translate("Submit") << "</button>"
+			<< "<button type='reset'>" << translate("Close") << "</button>"
+			<< "</form>"
+			<< "</div>"
+			<< "</div>"
 
-            //Need to define some variables in code.
-            << "<script>"
-            << "var gameName = '" << gameName << "';"
-            << "var txt1 = '" << translate("Checking for existing submission...") << "';"
-            << "var txt2 = '" << translate("Matching submission already exists.") << "';"
-            << "var txt3 = '" << translate("Plugin already submitted. Submission updated with new comment.") << "';"
-            << "var txt4 = '" << translate("Plugin submitted!") << "';"
-            << "var txt5 = '" << translate("Plugin submission failed! Authorisation failure. Please report this to the BOSS team.") << "';"
-            << "var txt6 = '" << translate("Plugin submission failed! GitHub API rate limit exceeded. Please try again after %1%.") << "';"
-            << "var txt7 = '" << translate("Plugin submission failed!") << "';"
-            << "var txt8 = '" << translate("Web storage quota for this document has been exceeded.Please empty your browser\\'s cache. Note that this will delete all locally stored data.") << "';"
-            << "var txt9 = '" << translate("Please supply at least a link or some notes.") << "';"
-            << "var txt10 = '" << translate("Do not clean.") << "';"
-            << "</script>"
-            << "<script src='../resources/promise-1.0.0.min.js'></script>"
-            << "<script src='../resources/octokit.js'></script>"
-            << "<script src='../resources/script.js'></script>";
+			//Need to define some variables in code.
+			<< "<script>"
+			<< "var gameName = '" << gameName << "';"
+			<< "var txt1 = '" << translate("Checking for existing submission...") << "';"
+			<< "var txt2 = '" << translate("Matching submission already exists.") << "';"
+			<< "var txt3 = '" << translate("Plugin already submitted. Submission updated with new comment.") << "';"
+			<< "var txt4 = '" << translate("Plugin submitted!") << "';"
+			<< "var txt5 = '" << translate("Plugin submission failed! Authorisation failure. Please report this to the BOSS team.") << "';"
+			<< "var txt6 = '" << translate("Plugin submission failed! GitHub API rate limit exceeded. Please try again after %1%.") << "';"
+			<< "var txt7 = '" << translate("Plugin submission failed!") << "';"
+			<< "var txt8 = '" << translate("Web storage quota for this document has been exceeded.Please empty your browser\\'s cache. Note that this will delete all locally stored data.") << "';"
+			<< "var txt9 = '" << translate("Please supply at least a link or some notes.") << "';"
+			<< "var txt10 = '" << translate("Do not clean.") << "';"
+			<< "</script>"
+			<< "<script src='../resources/promise-1.0.0.min.js'></script>"
+			<< "<script src='../resources/octokit.js'></script>"
+			<< "<script src='../resources/script.js'></script>";
 		return out.str();
 	}
 

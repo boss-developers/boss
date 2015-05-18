@@ -4,22 +4,22 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2012    BOSS Development Team.
+	Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute
+	BOSS is free software: you can redistribute
 	it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will
+	BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see
+	You should have received a copy of the GNU General Public License
+	along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3163 $, $Date: 2011-08-21 22:03:18 +0100 (Sun, 21 Aug 2011) $
@@ -59,11 +59,11 @@ namespace boss {
 	//Turns "true", "false", "1", "0" into booleans.
 	bool StringToBool(string str);
 
-    //Convert a Windows-1252 string to UTF-8.
-    std::string From1252ToUTF8(const std::string& str);
+	//Convert a Windows-1252 string to UTF-8.
+	std::string From1252ToUTF8(const std::string& str);
 
-    //Convert a UTF-8 string to Windows-1252.
-    std::string FromUTF8To1252(const std::string& str);
+	//Convert a UTF-8 string to Windows-1252.
+	std::string FromUTF8To1252(const std::string& str);
 
 	//Check if registry subkey exists.
 	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey, string value);

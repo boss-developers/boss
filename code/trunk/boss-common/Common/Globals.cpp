@@ -4,22 +4,22 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2012    BOSS Development Team.
+	Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute
+	BOSS is free software: you can redistribute
 	it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will
+	BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see
+	You should have received a copy of the GNU General Public License
+	along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
@@ -67,8 +67,8 @@ namespace boss {
 	BOSS_COMMON const fs::path rules_readme_path	= boss_path / "Docs" / "BOSS Userlist Syntax.html";
 	BOSS_COMMON const fs::path masterlist_doc_path	= boss_path / "Docs" / "BOSS Masterlist Syntax.html";
 	BOSS_COMMON const fs::path version_history_path = boss_path / "Docs" / "BOSS Version History.html";
-    BOSS_COMMON const fs::path licenses_path        = boss_path / "Docs" / "Licenses.txt";
-    BOSS_COMMON const fs::path l10n_path            = boss_path / "resources" / "l10n";
+	BOSS_COMMON const fs::path licenses_path        = boss_path / "Docs" / "Licenses.txt";
+	BOSS_COMMON const fs::path l10n_path            = boss_path / "resources" / "l10n";
 
 
 	///////////////////////////////
@@ -92,10 +92,10 @@ namespace boss {
 	BOSS_COMMON bool		gl_show_CRCs				= false;
 	BOSS_COMMON bool		gl_trial_run				= false;
 
-    //Repository URLs
-    BOSS_COMMON std::string gl_oblivion_repo_url        = "https://github.com/boss-developers/oblivion.git";
-    BOSS_COMMON std::string gl_nehrim_repo_url          = "https://github.com/boss-developers/nehrim.git";
-    BOSS_COMMON std::string gl_skyrim_repo_url          = "https://github.com/boss-developers/skyrim.git";
-    BOSS_COMMON std::string gl_fallout3_repo_url        = "https://github.com/boss-developers/fallout3.git";
-    BOSS_COMMON std::string gl_falloutnv_repo_url       = "https://github.com/boss-developers/falloutnv.git";
+	//Repository URLs
+	BOSS_COMMON std::string gl_oblivion_repo_url        = "https://github.com/boss-developers/oblivion.git";
+	BOSS_COMMON std::string gl_nehrim_repo_url          = "https://github.com/boss-developers/nehrim.git";
+	BOSS_COMMON std::string gl_skyrim_repo_url          = "https://github.com/boss-developers/skyrim.git";
+	BOSS_COMMON std::string gl_fallout3_repo_url        = "https://github.com/boss-developers/fallout3.git";
+	BOSS_COMMON std::string gl_falloutnv_repo_url       = "https://github.com/boss-developers/falloutnv.git";
 }

@@ -4,22 +4,22 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2012    BOSS Development Team.
+	Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute
+	BOSS is free software: you can redistribute
 	it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will
+	BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see
+	You should have received a copy of the GNU General Public License
+	along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
@@ -78,7 +78,7 @@ namespace boss {
 			LOG_WARN("unable to open file for CRC calculation: '%s'", filename.string().c_str());
 		}
 		LOG_DEBUG("CRC32('%s'): 0x%x", filename.string().c_str(), chksum);
-        return chksum;
+		return chksum;
 	}
 
 	//Reads an entire file into a string buffer.
@@ -124,33 +124,33 @@ namespace boss {
 		return (str == "true" || str == "1");
 	}
 
-    //Convert a Windows-1252 string to UTF-8.
-    std::string From1252ToUTF8(const std::string& str) {
-        try {
-            return boost::locale::conv::to_utf<char>(str, "Windows-1252", boost::locale::conv::stop);
-        }
-        catch (boost::locale::conv::conversion_error& e) {
-            throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
-        }
-    }
+	//Convert a Windows-1252 string to UTF-8.
+	std::string From1252ToUTF8(const std::string& str) {
+		try {
+			return boost::locale::conv::to_utf<char>(str, "Windows-1252", boost::locale::conv::stop);
+		}
+		catch (boost::locale::conv::conversion_error& e) {
+			throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
+		}
+	}
 
-    //Convert a UTF-8 string to Windows-1252.
-    std::string FromUTF8To1252(const std::string& str) {
-        try {
-            return boost::locale::conv::from_utf<char>(str, "Windows-1252", boost::locale::conv::stop);
-        }
-        catch (boost::locale::conv::conversion_error& e) {
-            throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
-        }
-    }
+	//Convert a UTF-8 string to Windows-1252.
+	std::string FromUTF8To1252(const std::string& str) {
+		try {
+			return boost::locale::conv::from_utf<char>(str, "Windows-1252", boost::locale::conv::stop);
+		}
+		catch (boost::locale::conv::conversion_error& e) {
+			throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
+		}
+	}
 
-    //Check if registry subkey exists.
-    BOSS_COMMON bool RegKeyExists(string keyStr, string subkey, string value) {
-        if (RegKeyStringValue(keyStr, subkey, value).empty())
-            return false;
-        else
-            return true;
-    }
+	//Check if registry subkey exists.
+	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey, string value) {
+		if (RegKeyStringValue(keyStr, subkey, value).empty())
+			return false;
+		else
+			return true;
+	}
 
 	//Get registry subkey value string.
 	string RegKeyStringValue(string keyStr, string subkey, string value) {
@@ -226,28 +226,28 @@ namespace boss {
 			verString = IntToString(dwLeftMost) + '.' + IntToString(dwSecondLeft) + '.' + IntToString(dwSecondRight) + '.' + IntToString(dwRightMost);
 		}
 #else
-        // ensure filename has no quote characters in it to avoid command injection attacks
-        if (string::npos != file.string().find('"')) {
-    	    LOG_WARN("filename has embedded quotes; skipping to avoid command injection: '%s'", file.string().c_str());
-        } else {
-            // command mostly borrowed from the gnome-exe-thumbnailer.sh script
-            // wrestool is part of the icoutils package
-            string cmd = "wrestool --extract --raw --type=version \"" + file.string() + "\" | tr '\\0, ' '\\t.\\0' | sed 's/\\t\\t/_/g' | tr -c -d '[:print:]' | sed -r 's/.*Version[^0-9]*([0-9]+(\\.[0-9]+)+).*/\\1/'";
+		// ensure filename has no quote characters in it to avoid command injection attacks
+		if (string::npos != file.string().find('"')) {
+			LOG_WARN("filename has embedded quotes; skipping to avoid command injection: '%s'", file.string().c_str());
+		} else {
+			// command mostly borrowed from the gnome-exe-thumbnailer.sh script
+			// wrestool is part of the icoutils package
+			string cmd = "wrestool --extract --raw --type=version \"" + file.string() + "\" | tr '\\0, ' '\\t.\\0' | sed 's/\\t\\t/_/g' | tr -c -d '[:print:]' | sed -r 's/.*Version[^0-9]*([0-9]+(\\.[0-9]+)+).*/\\1/'";
 
-            FILE *fp = popen(cmd.c_str(), "r");
+			FILE *fp = popen(cmd.c_str(), "r");
 
-            // read out the version string
-            static const uint32_t BUFSIZE = 32;
-            char buf[BUFSIZE];
-            if (NULL == fgets(buf, BUFSIZE, fp)) {
-    	        LOG_DEBUG("failed to extract version from '%s'", file.string().c_str());
-            }
-            else {
-                verString = string(buf);
-	   	        LOG_DEBUG("extracted version from '%s': %s", file.string().c_str(), retVal.c_str());
-            }
-            pclose(fp);
-        }
+			// read out the version string
+			static const uint32_t BUFSIZE = 32;
+			char buf[BUFSIZE];
+			if (NULL == fgets(buf, BUFSIZE, fp)) {
+				LOG_DEBUG("failed to extract version from '%s'", file.string().c_str());
+			}
+			else {
+				verString = string(buf);
+	   			LOG_DEBUG("extracted version from '%s': %s", file.string().c_str(), retVal.c_str());
+			}
+			pclose(fp);
+		}
 #endif
 	}
 

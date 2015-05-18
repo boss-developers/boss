@@ -4,22 +4,22 @@
 	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
-    Copyright (C) 2009-2012    BOSS Development Team.
+	Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute
+	BOSS is free software: you can redistribute
 	it and/or modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will
+	BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see
+	You should have received a copy of the GNU General Public License
+	along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
@@ -108,35 +108,35 @@ namespace boss {
 	//Structures necessary for case-insensitive hashsets used in BuildWorkingModlist. Taken from the BOOST docs.
 	struct iequal_to : std::binary_function<std::string, std::string, bool> {
 		iequal_to() {}
-        explicit iequal_to(std::locale const& l) : locale_(l) {}
+		explicit iequal_to(std::locale const& l) : locale_(l) {}
 
-        template <typename String1, typename String2>
-        bool operator()(String1 const& x1, String2 const& x2) const {
-            return boost::algorithm::iequals(x1, x2, locale_);
-        }
+		template <typename String1, typename String2>
+		bool operator()(String1 const& x1, String2 const& x2) const {
+			return boost::algorithm::iequals(x1, x2, locale_);
+		}
 	private:
 		std::locale locale_;
 	};
 
 	struct ihash : std::unary_function<std::string, std::size_t> {
 		ihash() {}
-        explicit ihash(std::locale const& l) : locale_(l) {}
+		explicit ihash(std::locale const& l) : locale_(l) {}
 
-        template <typename String>
-        std::size_t operator()(String const& x) const
-        {
-            std::size_t seed = 0;
+		template <typename String>
+		std::size_t operator()(String const& x) const
+		{
+			std::size_t seed = 0;
 
-            for(typename String::const_iterator it = x.begin();
-                it != x.end(); ++it)
-            {
-                boost::hash_combine(seed, std::toupper(*it, locale_));
-            }
+			for(typename String::const_iterator it = x.begin();
+				it != x.end(); ++it)
+			{
+				boost::hash_combine(seed, std::toupper(*it, locale_));
+			}
 
-            return seed;
-        }
-    private:
-        std::locale locale_;
+			return seed;
+		}
+	private:
+		std::locale locale_;
 	};
 
 
@@ -165,7 +165,7 @@ namespace boss {
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
 		} else if (Id() == NEHRIM) {
-            name = "Nehrim - At Fate's Edge";
+			name = "Nehrim - At Fate's Edge";
 
 			executable = "Oblivion.exe";
 			masterFile = "Nehrim.esm";
@@ -180,7 +180,7 @@ namespace boss {
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
 		} else if (Id() == SKYRIM) {
-            name = "TES V: Skyrim";
+			name = "TES V: Skyrim";
 
 			executable = "TESV.exe";
 			masterFile = "Skyrim.esm";
@@ -195,7 +195,7 @@ namespace boss {
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
 		} else if (Id() == FALLOUT3) {
-            name = "Fallout 3";
+			name = "Fallout 3";
 
 			executable = "Fallout3.exe";
 			masterFile = "Fallout3.esm";
@@ -210,7 +210,7 @@ namespace boss {
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
 		} else if (Id() == FALLOUTNV) {
-            name = "Fallout: New Vegas";
+			name = "Fallout: New Vegas";
 
 			executable = "FalloutNV.exe";
 			masterFile = "FalloutNV.esm";
@@ -358,7 +358,7 @@ namespace boss {
 			return boss_path / bossFolderName / "BOSSlog.html";
 		else
 			return boss_path / bossFolderName / "BOSSlog.txt";
-    }
+	}
 
 	//Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
 	fs::path Game::GetLocalAppDataPath() {
