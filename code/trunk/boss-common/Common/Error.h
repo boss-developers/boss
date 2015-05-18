@@ -1,25 +1,25 @@
 /*	BOSS
-	
-	A "one-click" program for users that quickly optimises and avoids 
-	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+
+	A "one-click" program for users that quickly optimises and avoids
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute 
-	it and/or modify it under the terms of the GNU General Public License 
-	as published by the Free Software Foundation, either version 3 of 
+    BOSS is free software: you can redistribute
+	it and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see 
+    along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -39,7 +39,7 @@ namespace boss {
 	using namespace std;
 
 	namespace loc = boost::locale;
-	
+
 	//Return codes, mostly error codes.
 	BOSS_COMMON extern const uint32_t BOSS_OK;
 
@@ -120,7 +120,7 @@ namespace boss {
 	static const string EAttachingNonMessage(loc::translate("tries to attach an malformatted message."));
 	static const string ESortingMasterAfterPlugin(loc::translate("tries to sort a plugin before a master file."));
 	static const string ESortingPluginBeforeMaster(loc::translate("tries to sort a master file before a plugin."));
-	
+
 	//Parsing error class.
 	class BOSS_COMMON ParsingError {
 	public:

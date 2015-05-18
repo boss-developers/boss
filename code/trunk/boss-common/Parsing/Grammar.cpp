@@ -1,25 +1,25 @@
 /*	BOSS
-	
-	A "one-click" program for users that quickly optimises and avoids 
-	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+
+	A "one-click" program for users that quickly optimises and avoids
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute 
-	it and/or modify it under the terms of the GNU General Public License 
-	as published by the Free Software Foundation, either version 3 of 
+    BOSS is free software: you can redistribute
+	it and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see 
+    along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -59,7 +59,7 @@ namespace boss {
 	using qi::hex;
 	using qi::bool_;
 	using qi::uint_;
-	
+
 	using unicode::char_;
 	using unicode::no_case;
 	using unicode::space;
@@ -118,14 +118,14 @@ namespace boss {
 	//Constructor for modlist and userlist skipper.
 	Skipper::Skipper() : Skipper::base_type(start, "skipper grammar") {
 
-		start = 
+		start =
 			spc
 			| UTF8
 			| CComment
 			| CPlusPlusComment
 			| iniComment
 			| eof;
-			
+
 		spc = space - eol;
 
 		UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf"); //UTF8 BOM
@@ -151,19 +151,19 @@ namespace boss {
 	///////////////////////////////
 
 	//Modlist grammar constructor.
-	modlist_grammar::modlist_grammar() 
-		: modlist_grammar::base_type(modList, "modlist grammar"), 
+	modlist_grammar::modlist_grammar()
+		: modlist_grammar::base_type(modList, "modlist grammar"),
 		  errorBuffer(NULL) {
 		masterlistMsgKey_ masterlistMsgKey;
 		typeKey_ typeKey;
 		const vector<Message> noMessages;  //An empty set of messages.
 
-		modList = 
-			*eol 
+		modList =
+			*eol
 			>
 			(
-				listVar			[phoenix::bind(&modlist_grammar::StoreVar, this, _1)] 
-				| globalMessage	[phoenix::bind(&modlist_grammar::StoreGlobalMessage, this, _1)] 
+				listVar			[phoenix::bind(&modlist_grammar::StoreVar, this, _1)]
+				| globalMessage	[phoenix::bind(&modlist_grammar::StoreGlobalMessage, this, _1)]
 				| listItem		[phoenix::bind(&modlist_grammar::StoreItem, this, _val, _1)]
 			) % +eol;
 
@@ -184,29 +184,29 @@ namespace boss {
 					>> charString
 				);
 
-		listItem %= 
+		listItem %=
 			conditionals
 			> ItemType
 			> itemName
 			> itemMessages;
 
-		ItemType %= 
+		ItemType %=
 			no_case[typeKey]
 			| eps		[_val = MOD];
 
-		itemName = 
+		itemName =
 			charString	[phoenix::bind(&modlist_grammar::ToName, this, _val, _1)]
 			| eps		[phoenix::bind(&modlist_grammar::ToName, this, _val, "")];
 
-		itemMessages %= 
+		itemMessages %=
 			(
 				+eol
 				>> itemMessage % +eol
 			) | eps		[_1 = noMessages];
 
-		itemMessage %= 
-			conditionals 
-			>> messageKeyword 
+		itemMessage %=
+			conditionals
+			>> messageKeyword
 			>> ':'
 			>> charString	//The double >> matters. A single > doesn't work.
 			;
@@ -215,25 +215,25 @@ namespace boss {
 
 		messageKeyword %= no_case[masterlistMsgKey];
 
-		conditionals = 
+		conditionals =
 			(
-				conditional								[_val = _1] 
+				conditional								[_val = _1]
 				> *((andOr > conditional)				[_val += _1 + _2])
 			)
 			| no_case[unicode::string("else")][_val = _1]
 			| eps [_val = ""];
 
-		andOr %= 
-			unicode::string("&&") 
+		andOr %=
+			unicode::string("&&")
 			| unicode::string("||");
 
-		conditional %= 
+		conditional %=
 			(
 				no_case[unicode::string("ifnot")
 				| unicode::string("if")]
-			) 
+			)
 			> functCondition;
-			
+
 		functCondition %=
 			(
 				no_case[unicode::string("var")] > char_('(') > variable > char_(')')													//Variable condition.
@@ -252,7 +252,7 @@ namespace boss {
 			)
 			;
 
-		variable %= +(char_ - (')' | eol)); 
+		variable %= +(char_ - (')' | eol));
 
 		file %= lexeme[char_('"') > +(char_ - ('"' | eol)) > char_('"')];
 
@@ -288,7 +288,7 @@ namespace boss {
 		comparator.name("comparator");
 		regex.name("regex file");
 		file.name("language");
-			
+
 		on_error<fail>(modList,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(listVar,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(listItem,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
@@ -312,20 +312,20 @@ namespace boss {
 		on_error<fail>(language,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
-	void modlist_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) { 
-		errorBuffer = inErrorBuffer; 
+	void modlist_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
+		errorBuffer = inErrorBuffer;
 	}
 
-	void modlist_grammar::SetGlobalMessageBuffer(vector<Message> * inGlobalMessageBuffer) { 
-		globalMessageBuffer = inGlobalMessageBuffer; 
+	void modlist_grammar::SetGlobalMessageBuffer(vector<Message> * inGlobalMessageBuffer) {
+		globalMessageBuffer = inGlobalMessageBuffer;
 	}
 
-	void modlist_grammar::SetVarStore(vector<MasterlistVar> * varStore) { 
-		setVars = varStore; 
+	void modlist_grammar::SetVarStore(vector<MasterlistVar> * varStore) {
+		setVars = varStore;
 	}
 
 	void modlist_grammar::SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {
-		fileCRCs = CRCStore; 
+		fileCRCs = CRCStore;
 	}
 
 	void modlist_grammar::SetParentGame(const Game * game) {
@@ -336,7 +336,7 @@ namespace boss {
 	void modlist_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
-		
+
 		ostringstream out;
 		out << what;
 		string expect = out.str();
@@ -356,7 +356,7 @@ namespace boss {
 			openGroups.push_back(currentItem.Name());
 		else if (currentItem.Type() == ENDGROUP)
 			openGroups.pop_back();
-		if (!currentItem.Name().empty())  //A blank line can be confused with a mod entry. 
+		if (!currentItem.Name().empty())  //A blank line can be confused with a mod entry.
 			list.push_back(currentItem);
 	}
 
@@ -373,7 +373,7 @@ namespace boss {
 	//Turns a given string into a path. Can't be done directly because of the openGroups checks.
 	void modlist_grammar::ToName(string& p, string itemName) {
 		boost::algorithm::trim(itemName);
-		if (itemName.empty() && !openGroups.empty()) 
+		if (itemName.empty() && !openGroups.empty())
 			p = openGroups.back();
 		else
 			p = itemName;
@@ -387,8 +387,8 @@ namespace boss {
 	//Conditional grammar constructor.
 	conditional_grammar::conditional_grammar() : conditional_grammar::base_type(conditionals, "modlist grammar") {
 
-		conditionals = 
-			(conditional[_val = _1] 
+		conditionals =
+			(conditional[_val = _1]
 			> *((andOr > conditional)			[phoenix::bind(&conditional_grammar::EvaluateCompoundConditional, this, _val, _1, _2)]))
 			| no_case[unicode::string("else")]	[phoenix::bind(&conditional_grammar::EvalElseConditional, this, _val, _pass)]
 			| eps[_val = true];
@@ -401,21 +401,21 @@ namespace boss {
 
 		condition =
 			(no_case[lit("var")] > '(' > variable > ')')									[phoenix::bind(&conditional_grammar::CheckVar, this, _val, _1)]
-			| 
+			|
 			(no_case[lit("file")] > '(' > file > ')')										[phoenix::bind(&conditional_grammar::CheckFile, this, _val, _1)]
-			| 
+			|
 			(no_case[lit("checksum")] > '(' > file > ',' > checksum > ')')					[phoenix::bind(&conditional_grammar::CheckSum, this, _val, _1, _2)]
-			| 
+			|
 			(no_case[lit("version")] > '(' > file > ',' > version > ',' > comparator > ')')	[phoenix::bind(&conditional_grammar::CheckVersion, this, _val, _1, _2, _3)]
-			| 
+			|
 			(no_case[lit("regex")] > '(' > regex > ')')										[phoenix::bind(&conditional_grammar::CheckRegex, this, _val, _1)]
-			| 
+			|
 			(no_case[lit("active")] > '(' > file > ')')										[phoenix::bind(&conditional_grammar::CheckActive, this, _val, _1)]
-			| 
+			|
 			(no_case[lit("lang")] > '(' > language > ')')									[phoenix::bind(&conditional_grammar::CheckLanguage, this, _val, _1)]
 			;
 
-		variable %= +(char_ - (')' | eol)); 
+		variable %= +(char_ - (')' | eol));
 
 		file %= lexeme['"' > +(char_ - ('"' | eol)) > '"'];
 
@@ -428,7 +428,7 @@ namespace boss {
 		regex %= file;
 
 		language %= file;
-		
+
 
 		conditionals.name("conditional");
 		andOr.name("andOr");
@@ -442,7 +442,7 @@ namespace boss {
 		comparator.name("comparator");
 		regex.name("regex file");
 		language.name("language");
-			
+
 		on_error<fail>(conditionals,	phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(andOr,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(conditional,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
@@ -475,7 +475,7 @@ namespace boss {
 		else if (andOr == "&&" && lhsCondition && !rhsCondition)
 			lhsCondition = false;
 	}
-	
+
 	void conditional_grammar::EvalElseConditional(bool& result, bool& ok) {
 		if (lastResult == NULL) {
 			ok = false;
@@ -534,7 +534,7 @@ namespace boss {
 				result = true;
 			return;
 		}
-		
+
 		Version givenVersion = Version(version);
 		Version trueVersion;
 		if (Item(file).IsPlugin())
@@ -660,7 +660,7 @@ namespace boss {
 				CRC = GetCrc32(file_path);
 			else if (Item(file).IsGhosted(*parentGame))
 				CRC = GetCrc32(fs::path(file_path.string() + ".ghost"));
-			else 
+			else
 				return;
 
 			fileCRCs->emplace(file,CRC);
@@ -675,7 +675,7 @@ namespace boss {
 	void conditional_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
-		
+
 		ostringstream out;
 		out << what;
 		string expect = out.str();
@@ -694,8 +694,8 @@ namespace boss {
 	//Ini Grammar.
 	////////////////////////////
 
-	ini_grammar::ini_grammar() 
-		: ini_grammar::base_type(ini, "ini grammar"), 
+	ini_grammar::ini_grammar()
+		: ini_grammar::base_type(ini, "ini grammar"),
 		  errorBuffer(NULL) {
 
 		ini %= *eol
@@ -709,14 +709,14 @@ namespace boss {
 		var %= +(char_ - '=');
 
 		stringVal %= lexeme[*(char_ - eol)];
-		
+
 		//Give each rule names.
 		ini.name("ini");
 		heading.name("heading");
 		setting.name("setting");
 		var.name("variable");
 		stringVal.name("string value");
-		
+
 		//Error handling.
 		on_error<fail>(ini,			phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
 		on_error<fail>(heading,		phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
@@ -725,14 +725,14 @@ namespace boss {
 		on_error<fail>(stringVal,	phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
 	}
 
-	void ini_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) { 
-		errorBuffer = inErrorBuffer; 
+	void ini_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
+		errorBuffer = inErrorBuffer;
 	}
 
 	void ini_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
-		
+
 		ostringstream out;
 		out << what;
 		string expect = out.str();
@@ -750,17 +750,17 @@ namespace boss {
 	//RuleList Grammar.
 	////////////////////////////
 
-	userlist_grammar::userlist_grammar() 
-		: userlist_grammar::base_type(ruleList, "userlist grammar"), 
+	userlist_grammar::userlist_grammar()
+		: userlist_grammar::base_type(ruleList, "userlist grammar"),
 		  errorBuffer(NULL) {
 
 		ruleKeys_ ruleKeys;
 		messageKeys_ sortOrMessageKeys;
 
 		//A list is a vector of rules. Rules are separated by line endings.
-		ruleList %= 
-			*eol 
-			> (eoi | (userlistRule % eol)); 
+		ruleList %=
+			*eol
+			> (eoi | (userlistRule % eol));
 
 		//A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
 		userlistRule %=
@@ -790,7 +790,7 @@ namespace boss {
 		ruleKey.name("rule keyword");
 		sortOrMessageKey.name("sort or message keyword");
 		stateKey.name("state keyword");
-		
+
 		on_error<fail>(ruleList,			phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
 		on_error<fail>(userlistRule,		phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
 		on_error<fail>(sortOrMessageLine,	phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
@@ -800,14 +800,14 @@ namespace boss {
 		on_error<fail>(stateKey,			phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
 	}
 
-	void userlist_grammar::SetErrorBuffer(vector<ParsingError> * inErrorBuffer) { 
-		errorBuffer = inErrorBuffer; 
+	void userlist_grammar::SetErrorBuffer(vector<ParsingError> * inErrorBuffer) {
+		errorBuffer = inErrorBuffer;
 	}
 
 	void userlist_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->empty())
 			return;
-		
+
 		ostringstream out;
 		out << what;
 		string expect = out.str();

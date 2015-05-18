@@ -1,25 +1,25 @@
 /*	BOSS
-	
-	A "one-click" program for users that quickly optimises and avoids 
-	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+
+	A "one-click" program for users that quickly optimises and avoids
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute 
-	it and/or modify it under the terms of the GNU General Public License 
-	as published by the Free Software Foundation, either version 3 of 
+    BOSS is free software: you can redistribute
+	it and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see 
+    along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3135 $, $Date: 2011-08-17 22:01:17 +0100 (Wed, 17 Aug 2011) $
@@ -46,7 +46,7 @@ namespace boss {
 	BOSS_COMMON extern const uint32_t BOSS_VERSION_MAJOR;
 	BOSS_COMMON extern const uint32_t BOSS_VERSION_MINOR;
 	BOSS_COMMON extern const uint32_t BOSS_VERSION_PATCH;
-	
+
 	//Supported game values.
 	BOSS_COMMON extern const uint32_t AUTODETECT;
 	BOSS_COMMON extern const uint32_t OBLIVION;
@@ -65,12 +65,12 @@ namespace boss {
 	BOSS_COMMON extern const uint32_t GERMAN;
 	BOSS_COMMON extern const uint32_t RUSSIAN;
 	BOSS_COMMON extern const uint32_t SIMPCHINESE;
-	
+
 
 	///////////////////////////////
 	//File/Folder Paths
 	///////////////////////////////
-	
+
 	//Paths that are game-invariant.
 	BOSS_COMMON extern const fs::path boss_path;  //Path to the BOSS folder, relative to executable (ie. '.').
 	BOSS_COMMON extern const fs::path ini_path;
@@ -84,7 +84,7 @@ namespace boss {
 	BOSS_COMMON extern const fs::path licenses_path;
     BOSS_COMMON extern const fs::path l10n_path;
 
-	
+
 	///////////////////////////////
 	//Ini Settings
 	///////////////////////////////

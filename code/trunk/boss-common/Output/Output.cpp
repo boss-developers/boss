@@ -1,25 +1,25 @@
 /*	BOSS
-	
-	A "one-click" program for users that quickly optimises and avoids 
-	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+
+	A "one-click" program for users that quickly optimises and avoids
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute 
-	it and/or modify it under the terms of the GNU General Public License 
-	as published by the Free Software Foundation, either version 3 of 
+    BOSS is free software: you can redistribute
+	it and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see 
+    along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -41,8 +41,8 @@ namespace boss {
 	// Outputter Class Functions
 	////////////////////////////////
 
-	Outputter::Outputter() 
-		: outFormat(PLAINTEXT), 
+	Outputter::Outputter()
+		: outFormat(PLAINTEXT),
 		  escapeHTMLSpecialChars(false) {}
 
 	Outputter::Outputter(const Outputter& o) {
@@ -51,7 +51,7 @@ namespace boss {
 		escapeHTMLSpecialChars = o.GetHTMLSpecialEscape();
 	}
 
-	Outputter::Outputter(const uint32_t format) 
+	Outputter::Outputter(const uint32_t format)
 		: outFormat(format) {
 		if (outFormat == HTML)
 			escapeHTMLSpecialChars = true;
@@ -68,7 +68,7 @@ namespace boss {
 
 		*this << e;
 	}
-	
+
 	Outputter::Outputter(const uint32_t format, const Rule r)
 		: outFormat(format) {
 		if (outFormat == HTML)
@@ -164,7 +164,7 @@ namespace boss {
 		escapeHTMLSpecialChars = o.GetHTMLSpecialEscape();
 		return *this;
 	}
-	
+
 	Outputter& Outputter::operator<< (const string s) {
 		outStream << EscapeHTMLSpecial(s);
 		return *this;
@@ -419,12 +419,12 @@ namespace boss {
 		}
 		return *this;
 	}
-	
+
 	Outputter& Outputter::operator<< (const int32_t i) {
 		outStream << i;
 		return *this;
 	}
-	
+
 	Outputter& Outputter::operator<< (const uint32_t i) {
 		outStream << i;
 		return *this;
@@ -447,7 +447,7 @@ namespace boss {
 		string data = EscapeHTMLSpecial(m.Data());
 		//Need to handle web addresses. Recognised are those in the following formats:
 		//"http:someAddress", "http:someAddress label", "https:someAddress", "https:someAddress label", "file:somelocalAddress", "file:someLocalAddress label"
-		
+
 		size_t pos1,pos2,pos3;
 		string link, label, dq;
 		string addressTypes[] = {
@@ -606,7 +606,7 @@ namespace boss {
 	// BossLog Class Functions
 	////////////////////////////////
 
-	BossLog::BossLog() 
+	BossLog::BossLog()
 		: recognised(0), unrecognised(0), inactive(0), messages(0), warnings(0), errors(0), logFormat(HTML) {
 		updaterOutput.SetFormat(HTML);
 		criticalError.SetFormat(HTML);
@@ -616,7 +616,7 @@ namespace boss {
 		unrecognisedPlugins.SetFormat(HTML);
 	}
 
-	BossLog::BossLog(const uint32_t format) 
+	BossLog::BossLog(const uint32_t format)
 		: recognised(0), unrecognised(0), inactive(0), messages(0), warnings(0), errors(0), logFormat(format) {
 		updaterOutput.SetFormat(format);
 		criticalError.SetFormat(format);
@@ -657,7 +657,7 @@ namespace boss {
 				<< "</noscript>";
 		return out.str();
 	}
-	
+
 	string BossLog::PrintFooter() {
 		stringstream out;
 		string colourTooltip = translate("Colours must be specified using lowercase hex codes.");
@@ -746,7 +746,7 @@ namespace boss {
 				formattedOut << DIV_SE_BUTTON_OPEN << (boost::format(translate("%1% Plugins")) % scriptExtender).str() << DIV_CLOSE;
 
 			if (!recognisedPlugins.Empty()) {
-				if (gl_revert < 1) 
+				if (gl_revert < 1)
 					formattedOut << DIV_RECOGNISED_BUTTON_OPEN << translate("Recognised Plugins") << DIV_CLOSE;
 				else
 					formattedOut << DIV_RECOGNISED_BUTTON_OPEN << translate("Restored Load Order") << DIV_CLOSE;
@@ -862,14 +862,14 @@ namespace boss {
 			if (logFormat == HTML)
 				formattedOut << SECTION_ID_RECOGNISED_OPEN;
 			else {
-				if (gl_revert < 1) 
+				if (gl_revert < 1)
 					formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN << translate("Recognised Plugins") << HEADING_CLOSE;
 				else if (gl_revert == 1)
 					formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN << translate("Restored Load Order (Using modlist.txt)") << HEADING_CLOSE;
-				else if (gl_revert == 2) 
+				else if (gl_revert == 2)
 					formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN << translate("Restored Load Order (Using modlist.old)") << HEADING_CLOSE;
 			}
-			formattedOut << PARAGRAPH 
+			formattedOut << PARAGRAPH
 				<< translate("These plugins are recognised by BOSS and have been sorted according to its masterlist. Please read any attached messages and act on any that require action.")
 				<< LIST_OPEN
 				<< recognisedPlugins.AsString()
@@ -901,7 +901,7 @@ namespace boss {
 		//-------------------------
 
 		out << PrintFooter();
-		
+
 		return out.str();
 	}
 
@@ -934,7 +934,7 @@ namespace boss {
 	}
 
 	void BossLog::Clear() {
-		recognised = 0; 
+		recognised = 0;
 		unrecognised = 0;
 		inactive = 0;
 		messages = 0;
@@ -954,7 +954,7 @@ namespace boss {
 		parsingErrors.clear();
 		globalMessages.clear();
 	}
-	
+
 	bool BossLog::HasRecognisedListChanged(const fs::path file) {
 		size_t pos1, pos2;
 		string result;

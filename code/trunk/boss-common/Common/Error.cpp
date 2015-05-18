@@ -1,25 +1,25 @@
 /*	BOSS
-	
-	A "one-click" program for users that quickly optimises and avoids 
-	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+
+	A "one-click" program for users that quickly optimises and avoids
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute 
-	it and/or modify it under the terms of the GNU General Public License 
-	as published by the Free Software Foundation, either version 3 of 
+    BOSS is free software: you can redistribute
+	it and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see 
+    along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3135 $, $Date: 2011-08-17 22:01:17 +0100 (Wed, 17 Aug 2011) $
@@ -65,28 +65,28 @@ namespace boss {
 	////////////////////////////////
 
 	//For general errors not referencing specific files.
-	boss_error::boss_error(const uint32_t internalErrCode) 
-			: errCode(internalErrCode), errString(""), errSubject("") 
+	boss_error::boss_error(const uint32_t internalErrCode)
+			: errCode(internalErrCode), errString(""), errSubject("")
 	{}
 
 	//For general errors referencing specific files.
-	boss_error::boss_error(const uint32_t internalErrCode, const string internalErrSubject) 
-			: errCode(internalErrCode), errString(""), errSubject(internalErrSubject) 
+	boss_error::boss_error(const uint32_t internalErrCode, const string internalErrSubject)
+			: errCode(internalErrCode), errString(""), errSubject(internalErrSubject)
 	{}
 
 	//For errors from BOOST Filesystem functions.
-	boss_error::boss_error(const uint32_t internalErrCode, const string internalErrSubject, const string externalErrString) 
-			: errCode(internalErrCode), errString(externalErrString), errSubject(internalErrSubject) 
+	boss_error::boss_error(const uint32_t internalErrCode, const string internalErrSubject, const string externalErrString)
+			: errCode(internalErrCode), errString(externalErrString), errSubject(internalErrSubject)
 	{}
 
 	//For errors from other external functions.
-	boss_error::boss_error(const string externalErrString, const uint32_t internalErrCode) 
-			: errCode(internalErrCode), errString(externalErrString), errSubject("") 
+	boss_error::boss_error(const string externalErrString, const uint32_t internalErrCode)
+			: errCode(internalErrCode), errString(externalErrString), errSubject("")
 	{}
 
 	//Returns the error code for the object.
-	uint32_t boss_error::getCode() const { 
-		return errCode; 
+	uint32_t boss_error::getCode() const {
+		return errCode;
 	}
 
 	//Returns the error string for the object.
@@ -94,11 +94,11 @@ namespace boss {
 		if (errCode == BOSS_OK)
 			return translate("No error.");
 		else if (errCode == BOSS_ERROR_FILE_READ_FAIL)
-			return (format(translate("\"%1%\" cannot be read!")) % errSubject).str(); 
+			return (format(translate("\"%1%\" cannot be read!")) % errSubject).str();
 		else if (errCode == BOSS_ERROR_FILE_WRITE_FAIL)
 			return (format(translate("\"%1%\" cannot be written to!")) % errSubject).str();
 		else if (errCode == BOSS_ERROR_FILE_NOT_UTF8)
-			return (format(translate("\"%1%\" is not encoded in valid UTF-8!")) % errSubject).str(); 
+			return (format(translate("\"%1%\" is not encoded in valid UTF-8!")) % errSubject).str();
 		else if (errCode == BOSS_ERROR_FILE_NOT_FOUND)
 			return (format(translate("\"%1%\" cannot be found!")) % errSubject).str();
 		else if (errCode == BOSS_ERROR_CONDITION_EVAL_FAIL)
@@ -106,7 +106,7 @@ namespace boss {
 		else if (errCode == BOSS_ERROR_REGEX_EVAL_FAIL)
 			return (format(translate("\"%1%\" is not a valid regular expression. Item skipped.")) % errSubject).str();
 		else if (errCode == BOSS_ERROR_NO_GAME_DETECTED)
-			return translate("No game detected!"); 
+			return translate("No game detected!");
 		else if (errCode == BOSS_ERROR_ENCODING_CONVERSION_FAIL)
 			return (format(translate("\"%1%\" cannot be converted from UTF-8 to \"%2%\".")) % errSubject % errString).str();
 		else if (errCode == BOSS_ERROR_PLUGIN_BEFORE_MASTER)
@@ -140,38 +140,38 @@ namespace boss {
 	// ParsingError Class Functions
 	//////////////////////////////////
 
-	ParsingError::ParsingError() 
-		: header(""), footer(""), detail(""), wholeMessage("") 
+	ParsingError::ParsingError()
+		: header(""), footer(""), detail(""), wholeMessage("")
 	{}
 
 	//For parsing errors.
 	ParsingError::ParsingError(const string inHeader, const string inDetail, const string inFooter)
-		: header(inHeader), detail(inDetail), footer(inFooter) 
+		: header(inHeader), detail(inDetail), footer(inFooter)
 	{}
 
 	//For userlist syntax errors.
-	ParsingError::ParsingError(const string inWholeMessage) 
-		: wholeMessage(inWholeMessage) 
+	ParsingError::ParsingError(const string inWholeMessage)
+		: wholeMessage(inWholeMessage)
 	{}
 
-	bool ParsingError::Empty() const { 
-		return (header.empty() && footer.empty() && detail.empty() && wholeMessage.empty()); 
+	bool ParsingError::Empty() const {
+		return (header.empty() && footer.empty() && detail.empty() && wholeMessage.empty());
 	}
 
-	string ParsingError::Header() const { 
-		return header; 
+	string ParsingError::Header() const {
+		return header;
 	}
 
-	string ParsingError::Footer() const { 
-		return footer; 
+	string ParsingError::Footer() const {
+		return footer;
 	}
 
-	string ParsingError::Detail() const { 
-		return detail; 
+	string ParsingError::Detail() const {
+		return detail;
 	}
 
-	string ParsingError::WholeMessage() const { 
-		return wholeMessage; 
+	string ParsingError::WholeMessage() const {
+		return wholeMessage;
 	}
 
 	void ParsingError::Clear() {

@@ -1,25 +1,25 @@
 /*	BOSS
-	
-	A "one-click" program for users that quickly optimises and avoids 
-	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+
+	A "one-click" program for users that quickly optimises and avoids
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute 
-	it and/or modify it under the terms of the GNU General Public License 
-	as published by the Free Software Foundation, either version 3 of 
+    BOSS is free software: you can redistribute
+	it and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see 
+    along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3135 $, $Date: 2011-08-17 22:01:17 +0100 (Wed, 17 Aug 2011) $
@@ -105,7 +105,7 @@ namespace boss {
 			conditional_grammar grammar;
 			string::const_iterator begin, end;
 			bool eval;
-		
+
 			skipper.SkipIniComments(false);
 			grammar.SetVarStore(&setVars);
 			grammar.SetCRCStore(&fileCRCs);
@@ -138,15 +138,15 @@ namespace boss {
 	MasterlistVar::MasterlistVar() : conditionalData() {};
 
 	MasterlistVar::MasterlistVar(string inData, string inConditions) : conditionalData(inData, inConditions) {};
-	
+
 	//////////////////////////////
 	// Message Class Functions
 	//////////////////////////////
 
-	Message::Message	() 
+	Message::Message	()
 		: conditionalData(), key(SAY) {}
-	
-	Message::Message	(const uint32_t inKey, const string inData) 
+
+	Message::Message	(const uint32_t inKey, const string inData)
 		: conditionalData(inData, ""), key(inKey) {}
 
 	uint32_t Message::Key() const {
@@ -181,17 +181,17 @@ namespace boss {
 	//////////////////////////////
 	// Item Class Functions
 	//////////////////////////////
-	
-	Item::Item			() 
+
+	Item::Item			()
 		: conditionalData(), type(MOD) {}
-	
-	Item::Item			(const string inName) 
+
+	Item::Item			(const string inName)
 		: conditionalData(inName, ""), type(MOD) {}
-	
-	Item::Item			(const string inName, const uint32_t inType) 
+
+	Item::Item			(const string inName, const uint32_t inType)
 		: conditionalData(inName, ""), type(inType) {}
-	
-	Item::Item			(const string inName, const uint32_t inType, const vector<Message> inMessages) 
+
+	Item::Item			(const string inName, const uint32_t inType, const vector<Message> inMessages)
 		: conditionalData(inName, ""), type(inType), messages(inMessages) {}
 
 	vector<Message> Item::Messages() const {
@@ -217,20 +217,20 @@ namespace boss {
 	void Item::Name(const string inName) {
 		Data(inName);
 	}
-	
+
 	bool	Item::IsPlugin		() const {
 		const string ext = boost::algorithm::to_lower_copy(fs::path(Data()).extension().string());
 		return (ext == ".esp" || ext == ".esm");
 	}
 
-	bool	Item::IsGroup		() const { 
-		return (!fs::path(Data()).has_extension() && !Data().empty()); 
+	bool	Item::IsGroup		() const {
+		return (!fs::path(Data()).has_extension() && !Data().empty());
 	}
 
-	bool	Item::Exists		(const Game& parentGame) const { 
-		return (fs::exists(parentGame.DataFolder() / Data()) || fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost"))); 
+	bool	Item::Exists		(const Game& parentGame) const {
+		return (fs::exists(parentGame.DataFolder() / Data()) || fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost")));
 	}
-	
+
 	bool	Item::IsGameMasterFile	(const Game& parentGame) const {
 		return boost::iequals(Data(), parentGame.MasterFile().Name());
 	}
@@ -254,12 +254,12 @@ namespace boss {
 	bool	Item::IsGhosted		(const Game& parentGame) const {
 		return (fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost")));
 	}
-	
+
 	Version	Item::GetVersion		(const Game& parentGame) const {
 		if (!IsPlugin())
 			return Version();
-		
-		ModHeader header;	
+
+		ModHeader header;
 
 		// Read mod's header now...
 		if (IsGhosted(parentGame))
@@ -272,7 +272,7 @@ namespace boss {
 	}
 
 	void	Item::SetModTime	(const Game& parentGame, const time_t modificationTime) const {
-		try {			
+		try {
 			if (IsGhosted(parentGame))
 				fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"), modificationTime);
 			else
@@ -293,7 +293,7 @@ namespace boss {
 	}
 
 	time_t	Item::GetModTime	(const Game& parentGame) const {			//Can throw exception.
-		try {			
+		try {
 			if (IsGhosted(parentGame))
 				return fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
 			else
@@ -315,7 +315,7 @@ namespace boss {
 	bool	Item::EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string,uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool * condResult, ParsingError& errorBuffer, const Game& parentGame) {
 		if (Type() == ENDGROUP)
 			return true;
-		
+
 		LOG_TRACE("Evaluating conditions for item \"%s\"", Data().c_str());
 
 		if (!conditionalData::EvalConditions(setVars, fileCRCs, activePlugins, condResult, errorBuffer, parentGame))  //Plugin needs to know what previous plugin's condition eval result was.
@@ -348,7 +348,7 @@ namespace boss {
 	//////////////////////////////
 	// ItemList Class Functions
 	//////////////////////////////
-	
+
 	struct itemComparator {
 		const Game& parentGame;
 		itemComparator(const Game& game) : parentGame(game) {}
@@ -444,7 +444,7 @@ namespace boss {
 
 			//loadorder.txt is simple enough that we can avoid needing the full modlist parser which has the crashing issue.
 			//It's just a text file with a plugin filename on each line. Skip lines which are blank or start with '#'.
-			
+
 			//MCP Note: changed from path.c_str() to path.string(); needs testing as error was about not being able to convert wchar_t to char
 			std::ifstream in(path.string());
 			if (in.fail())
@@ -463,7 +463,7 @@ namespace boss {
 			}
 			in.close();
 
-			
+
 			//Then scan through items, removing any plugins that aren't in the data folder.
 			vector<Item>::iterator itemIter = items.begin();
 			while (itemIter != items.end()) {
@@ -494,7 +494,7 @@ namespace boss {
 
 			begin = contents.begin();
 			end = contents.end();
-			
+
 		//	iterator_type u32b(begin);
 		//	iterator_type u32e(end);
 
@@ -505,13 +505,13 @@ namespace boss {
 				throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
 		}
 	}
-	
+
 	void	ItemList::Save				(const fs::path file, const fs::path oldFile) {
 		ofstream ofile;
 		//Back up file if it already exists.
 		try {
 			LOG_DEBUG("Saving backup of current modlist...");
-			if (fs::exists(file)) 
+			if (fs::exists(file))
 				fs::rename(file, oldFile);
 		} catch(fs::filesystem_error e) {
 			//Couldn't rename the file, print an error message.
@@ -519,7 +519,7 @@ namespace boss {
 			throw boss_error(BOSS_ERROR_FS_FILE_RENAME_FAIL, file.string(), e.what());
 		}
 		//Open output file.
-		
+
 		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 		ofile.open(file.string());
 		if (ofile.fail()) {  //Provide error message if it can't be written.
@@ -549,7 +549,7 @@ namespace boss {
 				for (messageIter = messages.begin(); messageIter != messages.end(); ++messageIter) {
 					if (!messageIter->Conditions().empty())
 						ofile << ' ' << messageIter->Conditions();
-					ofile << ' ' << messageIter->KeyToString() << ": " << messageIter->Data() << endl; 
+					ofile << ' ' << messageIter->KeyToString() << ": " << messageIter->Data() << endl;
 				}
 			}
 		}
@@ -575,7 +575,7 @@ namespace boss {
 
 		LOG_INFO("Writing new \"%s\"", file.string().c_str());
 		ofstream outfile;
-		
+
 		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 		outfile.open(file.string(), ios_base::trunc);
 		if (outfile.fail())
@@ -607,7 +607,7 @@ namespace boss {
 		boost::unordered_set<string> setVars;
 		boost::unordered_set<string> activePlugins;
 		bool res;
-		
+
 		if (fs::exists(parentGame.ActivePluginsFile())) {
 			ItemList active;
 			active.Load(parentGame, parentGame.ActivePluginsFile());
@@ -677,7 +677,7 @@ namespace boss {
 				if (itemIter->EvalConditions(setVars, fileCRCs, activePlugins, NULL, errorBuffer, parentGame))  //Don't need to record result as nothing will look at a previous group's conditional.
 					++itemIter;
 				else {
-					//Need to remove all the plugins in the group. 
+					//Need to remove all the plugins in the group.
 					size_t endPos = FindLastItem(itemIter->Name(), ENDGROUP);
 					itemIter = items.erase(itemIter, items.begin() + endPos + 1);
 				}
@@ -750,7 +750,7 @@ namespace boss {
 			pos = GetNextMasterPos(parentGame, pos+1);
 		}
 	}
-	
+
 	size_t		ItemList::FindItem			(const string name, const uint32_t type) const {
 		size_t max = items.size();
 		for (size_t i=0; i < max; i++) {
@@ -776,7 +776,7 @@ namespace boss {
 		}
 		if (i > 0)
 			return i-1;  //i is position of first plugin.
-		else 
+		else
 			return 0;
 	}
 
@@ -843,7 +843,7 @@ namespace boss {
 	void ItemList::FileCRCs(const boost::unordered_map<string,uint32_t> crcs) {
 		fileCRCs = crcs;
 	}
-	
+
 	void ItemList::Clear() {
 		items.clear();
 		errorBuffer.Clear();
@@ -856,11 +856,11 @@ namespace boss {
 	void ItemList::Erase(const size_t pos) {
 		items.erase(items.begin() + pos);
 	}
-	
+
 	void ItemList::Erase(const size_t startPos, const size_t endPos) {
 		items.erase(items.begin() + startPos, items.begin() + endPos);
 	}
-	
+
 	void ItemList::Insert(const size_t pos, const vector<Item> source, const size_t sourceStart, const size_t sourceEnd) {
 		items.insert(items.begin()+pos, source.begin()+sourceStart, source.begin()+sourceEnd);
 	}
@@ -868,12 +868,12 @@ namespace boss {
 	void ItemList::Insert(const size_t pos, const Item item) {
 		items.insert(items.begin()+pos, item);
 	}
-	
+
 	void ItemList::Move(size_t newPos, const Item item) {
 		size_t itemPos = FindItem(item.Name(), item.Type());
 		if (itemPos == items.size())
 			Insert(newPos, item);
-		else { 
+		else {
 			if (itemPos < newPos)
 				newPos--;
 			Erase(itemPos);
@@ -982,7 +982,7 @@ namespace boss {
 				return Message(WARN, object.substr(pos+1));
 			else if (keyString == "ERROR")
 				return Message(ERR, object.substr(pos+1));
-			else 
+			else
 				return Message(NONE, object.substr(pos+1));
 		}
 	}
@@ -1019,7 +1019,7 @@ namespace boss {
 	vector<RuleLine> Rule::Lines() const {
 		return lines;
 	}
-		
+
 	RuleLine Rule::LineAt(const size_t pos) const {
 		if (pos == 0)
 			return RuleLine(Key(), Object());  //Return sort line.
@@ -1059,7 +1059,7 @@ namespace boss {
 		grammar.SetErrorBuffer(&errorBuffer);
 
         if (!fs::exists(file)) {
-			
+
 			//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
             ofstream userlist_file(file.string(), ios_base::binary);
             if (!userlist_file.fail())
@@ -1084,7 +1084,7 @@ namespace boss {
 	}
 
 	void RuleList::Save(const fs::path file) {
-		
+
 		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 		ofstream outFile(file.string(),ios_base::trunc);
 
@@ -1203,7 +1203,7 @@ namespace boss {
 	vector<ParsingError> RuleList::ErrorBuffer() const {
 		return errorBuffer;
 	}
-		
+
 	Rule RuleList::RuleAt(const size_t pos) const {
 		if (pos < rules.size())
 			return rules[pos];
@@ -1223,7 +1223,7 @@ namespace boss {
 		rules.clear();
 		errorBuffer.clear();
 	}
-	
+
 	void RuleList::Erase(const size_t pos) {
 		rules.erase(rules.begin() + pos);
 	}
@@ -1231,7 +1231,7 @@ namespace boss {
 	void RuleList::Insert(const size_t pos, const Rule rule) {
 		rules.insert(rules.begin()+pos, rule);
 	}
-	
+
 	void RuleList::Replace(const size_t pos, const Rule rule) {
 		if (pos < rules.size())
 			rules[pos] = rule;
@@ -1247,7 +1247,7 @@ namespace boss {
 		ini_grammar grammar;
 		string::const_iterator begin, end;
 		string contents;
-		
+
 		skipper.SkipIniComments(true);
 		grammar.SetErrorBuffer(&errorBuffer);
 
@@ -1255,7 +1255,7 @@ namespace boss {
 
 		begin = contents.begin();
 		end = contents.end();
-		
+
 	//	iterator_type u32b(begin);
 	//	iterator_type u32e(end);
 
@@ -1269,7 +1269,7 @@ namespace boss {
 	}
 
 	void	Settings::Save			(const fs::path file, const uint32_t currentGameId) {
-		
+
 		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 		ofstream ini(file.string(), ios_base::trunc);
 		if (ini.fail())
@@ -1427,7 +1427,7 @@ namespace boss {
                 if (value >= 0 && value < 4)
                     gl_debug_verbosity = value;
                 //Now on to boolean settings.
-            } 
+            }
             else if (iter->first == "bUseUserRulesEditor")
 				gl_use_user_rules_manager = StringToBool(iter->second);
 			else if (iter->first == "bCloseGUIAfterSorting")

@@ -1,25 +1,25 @@
 /*	BOSS
-	
-	A "one-click" program for users that quickly optimises and avoids 
-	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+
+	A "one-click" program for users that quickly optimises and avoids
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute 
-	it and/or modify it under the terms of the GNU General Public License 
-	as published by the Free Software Foundation, either version 3 of 
+    BOSS is free software: you can redistribute
+	it and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see 
+    along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3135 $, $Date: 2011-08-17 22:01:17 +0100 (Wed, 17 Aug 2011) $
@@ -42,17 +42,17 @@ namespace boss {
 	// The following are for signifying what load order method is being used:
 	BOSS_COMMON extern const uint32_t LOMETHOD_TIMESTAMP;
 	BOSS_COMMON extern const uint32_t LOMETHOD_TEXTFILE;
- 
+
 	BOSS_COMMON uint32_t	DetectGame(vector<uint32_t>& detectedGames, vector<uint32_t>& undetectedGames);	//Throws exception if error.
 
 	class BOSS_COMMON Game {  //Constructor depends on gl_update_only.
 	public:
 		Game();  //Sets game to AUTODETECT, with all other vars being empty.
 		Game(const uint32_t gameCode, const string path = "", const bool noPathInit = false); //Empty path means constructor will detect its location. If noPathInit is true, then the data, active plugins list and loadorder.txt paths will not be set, and the game's BOSS subfolder will not be created.
-		
+
 		bool IsInstalled() const;
 		bool IsInstalledLocally() const;
-		
+
 		uint32_t Id() const;
 		string Name() const;  //Returns the game's name, eg. "TES IV: Oblivion".
 		string ScriptExtender() const;
@@ -82,7 +82,7 @@ namespace boss {
 
 		//Apply any user rules to the modlist. Alters modlist and bosslog.
 		void ApplyUserlist();
-		
+
 		//Scans the data folder for script extender plugins and outputs their info to the bosslog. Alters bosslog.
 		void ScanSEPlugins();
 
@@ -93,7 +93,7 @@ namespace boss {
 		ItemList masterlist;
 		RuleList userlist;
 		BossLog bosslog;
-		
+
 	private:
 		uint32_t id;
 		uint32_t loMethod;
@@ -103,15 +103,15 @@ namespace boss {
 		string masterFile;
 		string scriptExtender;
 		string seExecutable;
-	
+
 		string registryKey;
 		string registrySubKey;
-		
+
 		string bossFolderName;
 		string appdataFolderName;
 		string pluginsFolderName;
 		string pluginsFileName;
-		
+
 		fs::path gamePath;  //Path to the game's folder.
 		fs::path pluginsPath;  //Path to the file in which active plugins are listed.
 		fs::path loadorderPath;  //Path to the file which lists total load order.

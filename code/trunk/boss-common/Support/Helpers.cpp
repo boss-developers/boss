@@ -1,25 +1,25 @@
 /*	BOSS
-	
-	A "one-click" program for users that quickly optimises and avoids 
-	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+
+	A "one-click" program for users that quickly optimises and avoids
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute 
-	it and/or modify it under the terms of the GNU General Public License 
-	as published by the Free Software Foundation, either version 3 of 
+    BOSS is free software: you can redistribute
+	it and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see 
+    along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
@@ -187,17 +187,17 @@ namespace boss {
 #endif
 	}
 
-	
+
 	//////////////////////////////
 	// Version Class Functions
 	//////////////////////////////
 
 	Version::Version() {}
 
-	Version::Version(const char * ver) 
+	Version::Version(const char * ver)
 		: verString(ver) {}
 
-	Version::Version(const string ver) 
+	Version::Version(const string ver)
 		: verString(ver) {}
 
 	Version::Version(const fs::path file) {
@@ -220,7 +220,7 @@ namespace boss {
 			DWORD dwSecondLeft   = LOWORD(info->dwFileVersionMS);
 			DWORD dwSecondRight  = HIWORD(info->dwFileVersionLS);
 			DWORD dwRightMost    = LOWORD(info->dwFileVersionLS);
-			
+
 			delete [] point;
 
 			verString = IntToString(dwLeftMost) + '.' + IntToString(dwSecondLeft) + '.' + IntToString(dwSecondRight) + '.' + IntToString(dwRightMost);
@@ -250,7 +250,7 @@ namespace boss {
         }
 #endif
 	}
-	
+
 	string Version::AsString() const {
 		return verString;
 	}
@@ -263,7 +263,7 @@ namespace boss {
 		//boost::regex reg2("(\\d+\\.?)+([a-zA-Z\\-]+(\\d+\\.?)*)+");  //Matches a mix of letters and numbers - from "0.99.xx", "1.35Alpha2", "0.9.9MB8b1", "10.52EV-D", "1.62EV" to "10.0EV-D1.62EV".
 
 		if (boost::regex_match(verString, reg1) && boost::regex_match(ver.AsString(), reg1)) {
-			//First type: numbers separated by periods. If two versions have a different number of numbers, then the shorter should be padded 
+			//First type: numbers separated by periods. If two versions have a different number of numbers, then the shorter should be padded
 			//with zeros. An arbitrary number of numbers should be supported.
 			istringstream parser1(verString);
 			istringstream parser2(ver.AsString());

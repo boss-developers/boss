@@ -1,25 +1,25 @@
 /*	BOSS
-	
-	A "one-click" program for users that quickly optimises and avoids 
-	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+
+	A "one-click" program for users that quickly optimises and avoids
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute 
-	it and/or modify it under the terms of the GNU General Public License 
-	as published by the Free Software Foundation, either version 3 of 
+    BOSS is free software: you can redistribute
+	it and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see 
+    along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
@@ -44,7 +44,7 @@ namespace boss {
 	//DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
 	BOSS_COMMON const uint32_t LOMETHOD_TIMESTAMP	= 0;
 	BOSS_COMMON const uint32_t LOMETHOD_TEXTFILE	= 1;
- 
+
 	uint32_t AutodetectGame(vector<uint32_t> detectedGames) {  //Throws exception if error.
 		if (gl_last_game != AUTODETECT) {
 			for (size_t i=0, max = detectedGames.size(); i < max; i++) {
@@ -53,7 +53,7 @@ namespace boss {
 			}
 		}
 		LOG_INFO("Autodetecting game.");
-		
+
 		if (Game(NEHRIM, "", true).IsInstalledLocally())  //Before Oblivion because Nehrim installs can have Oblivion.esm for porting mods.
 			return NEHRIM;
 		else if (Game(OBLIVION, "", true).IsInstalledLocally())
@@ -92,7 +92,7 @@ namespace boss {
 			detectedGames.push_back(FALLOUTNV);
 		else
 			undetectedGames.push_back(FALLOUTNV);
-			
+
 		//Now set return a game.
 		if (gl_game != AUTODETECT) {
 			if (gl_update_only)
@@ -144,10 +144,10 @@ namespace boss {
 	// Game Class Functions
 	////////////////////////////
 
-	Game::Game() 
+	Game::Game()
 		: id(AUTODETECT) {}
-	
-	Game::Game(const uint32_t gameCode, const string path, const bool noPathInit) 
+
+	Game::Game(const uint32_t gameCode, const string path, const bool noPathInit)
 		: id(gameCode) {
 		if (Id() == OBLIVION) {
 			name = "TES IV: Oblivion";
@@ -156,70 +156,70 @@ namespace boss {
 			masterFile = "Oblivion.esm";
 			scriptExtender = "OBSE";
 			seExecutable = "obse_1_2_416.dll";
-			
+
 			registryKey = "Software\\Bethesda Softworks\\Oblivion";
 			registrySubKey = "Installed Path";
-			
+
 			bossFolderName = "Oblivion";
 			appdataFolderName = "Oblivion";
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
 		} else if (Id() == NEHRIM) {
             name = "Nehrim - At Fate's Edge";
-			
+
 			executable = "Oblivion.exe";
 			masterFile = "Nehrim.esm";
 			scriptExtender = "OBSE";
 			seExecutable = "obse_1_2_416.dll";
-			
+
 			registryKey = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1";
 			registrySubKey = "InstallLocation";
-			
+
 			bossFolderName = "Nehrim";
 			appdataFolderName = "Oblivion";
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
 		} else if (Id() == SKYRIM) {
             name = "TES V: Skyrim";
-			
+
 			executable = "TESV.exe";
 			masterFile = "Skyrim.esm";
 			scriptExtender = "SKSE";
 			seExecutable = "skse_loader.exe";
-			
+
 			registryKey = "Software\\Bethesda Softworks\\Skyrim";
 			registrySubKey = "Installed Path";
-			
+
 			bossFolderName = "Skyrim";
 			appdataFolderName = "Skyrim";
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
 		} else if (Id() == FALLOUT3) {
             name = "Fallout 3";
-			
+
 			executable = "Fallout3.exe";
 			masterFile = "Fallout3.esm";
 			scriptExtender = "FOSE";
 			seExecutable = "fose_loader.exe";
-			
+
 			registryKey = "Software\\Bethesda Softworks\\Fallout3";
 			registrySubKey = "Installed Path";
-			
+
 			bossFolderName = "Fallout 3";
 			appdataFolderName = "Fallout3";
 			pluginsFolderName = "Data";
 			pluginsFileName = "plugins.txt";
 		} else if (Id() == FALLOUTNV) {
             name = "Fallout: New Vegas";
-			
+
 			executable = "FalloutNV.exe";
 			masterFile = "FalloutNV.esm";
 			scriptExtender = "NVSE";
 			seExecutable = "nvse_loader.exe";
-			
+
 			registryKey = "Software\\Bethesda Softworks\\FalloutNV";
 			registrySubKey = "Installed Path";
-			
+
 			bossFolderName = "Fallout New Vegas";
 			appdataFolderName = "FalloutNV";
 			pluginsFolderName = "Data";
@@ -232,7 +232,7 @@ namespace boss {
 		bosslog.gameName = Name();
 		bosslog.recognisedPlugins.SetHTMLSpecialEscape(false);
 		bosslog.unrecognisedPlugins.SetHTMLSpecialEscape(false);
-		
+
 		if (!noPathInit) {
 			if (path.empty()) {
 				//First look for local install, then look for Registry.
@@ -246,11 +246,11 @@ namespace boss {
 					throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 			} else
 				gamePath = fs::path(path);
-			
+
 			//Check if game master file exists. Requires data path to be set.
 			if (!MasterFile().Exists(*this))
 				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, MasterFile().Name());
-			
+
 			//Requires data path to be set.
 			if (Id() == OBLIVION && fs::exists(GameFolder() / "Oblivion.ini")) {
 				//Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
@@ -276,15 +276,15 @@ namespace boss {
 				loMethod = LOMETHOD_TIMESTAMP;
 		}
 	}
-	
+
 	bool Game::IsInstalled() const {
 		return (IsInstalledLocally() || RegKeyExists("HKEY_LOCAL_MACHINE", registryKey, registrySubKey));
 	}
-	
+
 	bool Game::IsInstalledLocally() const {
 		return fs::exists(boss_path / ".." / pluginsFolderName / masterFile);
 	}
-	
+
 	uint32_t Game::Id() const {
 		return id;
 	}
@@ -296,7 +296,7 @@ namespace boss {
 	string Game::ScriptExtender() const {
 		return scriptExtender;
 	}
-	
+
 	Item Game::MasterFile() const {
 		return Item(masterFile);
 	}
@@ -316,43 +316,43 @@ namespace boss {
 	fs::path Game::GameFolder() const {
 		return gamePath;
 	}
-	
+
 	fs::path Game::DataFolder() const {
 		return GameFolder() / pluginsFolderName;
 	}
-	
+
 	fs::path Game::SEPluginsFolder() const {
 		return DataFolder() / scriptExtender / "Plugins";
 	}
-	
+
 	fs::path Game::SEExecutable() const {
 		return GameFolder() / seExecutable;
 	}
-	
+
 	fs::path Game::ActivePluginsFile() const {
 		return pluginsPath;
 	}
-	
+
 	fs::path Game::LoadOrderFile() const {
 		return loadorderPath;
 	}
-	
+
 	fs::path Game::Masterlist() const {
 		return boss_path / bossFolderName / "masterlist.txt";
 	}
-	
+
 	fs::path Game::Userlist() const {
 		return boss_path / bossFolderName / "userlist.txt";
 	}
-	
+
 	fs::path Game::Modlist() const {
 		return boss_path / bossFolderName / "modlist.txt";
 	}
-	
+
 	fs::path Game::OldModlist() const {
 		return boss_path / bossFolderName / "modlist.old";
 	}
-	
+
 	fs::path Game::Log(uint32_t format) const {
 		if (format == HTML)
 			return boss_path / bossFolderName / "BOSSlog.html";
@@ -419,14 +419,14 @@ namespace boss {
 		items = masterlist.Items();
 		for (size_t i=0, max = items.size(); i < max; i++) {
 			if (items[i].Type() == MOD) {
-				//Check to see if the mod is in the hashset. If it is, also check if 
+				//Check to see if the mod is in the hashset. If it is, also check if
 				//the mod is already in the holding vector. If not, add it.
 				setPos = mHashset.find(items[i].Name());
 				if (setPos != mHashset.end())  //Mod is installed. Ensure that correct case is recorded.
 					items[i].Name(*setPos);
 				else if (uHashset.find(items[i].Name()) == uHashset.end())  //Mod not in modlist or userlist, skip.
 					continue;
-				
+
 				if (addedItems.find(items[i].Name()) == addedItems.end()) {			//The mod is not already in the holding vector.
 					addedItems.insert(items[i].Name());								//Record it in the holding vector.
 					modlist.Move(addedNum, items[i]);
@@ -601,7 +601,7 @@ namespace boss {
 					continue;
 				} else if (lines[i].Key() == AFTER && lines[i].Object() == lastRecognisedItem.Name())  //Sorting after the last recognised item (which is a group). Set the item to be sorted as the last recognised.
 					lastRecognisedItem = Item(ruleItem.Name(), ENDGROUP);
-							
+
 				if (lines[i].Key() == AFTER)
 					modlistPos2++;
 				//Now insert the group.
@@ -611,11 +611,11 @@ namespace boss {
 				LOG_DEBUG("Rule #%" PRIuS " applied successfully.", ruleNo);
 				bosslog.userRules << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << *ruleIter << TABLE_DATA << "✓" << TABLE_DATA;
 			}
-			
+
 			//Now find that last recognised mod and set the iterator again.
 			modlist.LastRecognisedPos(modlist.FindLastItem(lastRecognisedItem.Name(), lastRecognisedItem.Type()));
 		}
-		
+
 		//Now that all the rules have been applied, there is no need for groups or plugins that are not installed to be listed in
 		//modlist. Scan through it and remove these lines.
 		LOG_INFO("Removing unnecessary items...");
@@ -674,7 +674,7 @@ namespace boss {
 	void Game::SortPlugins() {
 		//Get the master esm time.
 		time_t esmtime = MasterFile().GetModTime(*this);
-		
+
 		LOG_INFO("Filling hashset of unrecognised and active plugins...");
 		//Load active plugin list.
 		boost::unordered_set<string> hashset;
@@ -706,7 +706,7 @@ namespace boss {
 
 		LOG_INFO("Enforcing masters before plugins rule...");
 		//Now check that the recognised plugins in their masterlist order obey the "masters before plugins" rule, and if not post a BOSS Log message saying that the
-		//masterlist order has been altered to reflect the "masters before plugins" rule. Then apply the rule. This retains recognised before unrecognised, with the 
+		//masterlist order has been altered to reflect the "masters before plugins" rule. Then apply the rule. This retains recognised before unrecognised, with the
 		//exception of unrecognised masters, which get put after recognised masters.
 		try {
 			size_t size = modlist.Items().size();
@@ -747,12 +747,12 @@ namespace boss {
 				buffer << SPAN_CLASS_CRC_OPEN << loc::translate("Checksum: ") << IntToHexString(GetCrc32(DataFolder() / fs::path(itemIter->Name() + ".ghost"))) << SPAN_CLOSE;
 			} else if (gl_show_CRCs)
 				buffer << SPAN_CLASS_CRC_OPEN << loc::translate("Checksum: ") << IntToHexString(GetCrc32(DataFolder() / itemIter->Name())) << SPAN_CLOSE;
-		
+
 	/*		if (itemIter->IsFalseFlagged()) {
 				itemIter->InsertMessage(0, Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa."));
 				counters.warnings++;
 			}
-	*/	
+	*/
 			if (GetLoadOrderMethod() == LOMETHOD_TIMESTAMP && !gl_trial_run && !itemIter->IsGameMasterFile(*this)) {
 				//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
 				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", itemIter->Name().c_str());

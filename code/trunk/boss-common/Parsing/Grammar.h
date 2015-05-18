@@ -1,25 +1,25 @@
 /*	BOSS
-	
-	A "one-click" program for users that quickly optimises and avoids 
-	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge, 
+
+	A "one-click" program for users that quickly optimises and avoids
+	detrimental conflicts in their TES IV: Oblivion, Nehrim - At Fate's Edge,
 	TES V: Skyrim, Fallout 3 and Fallout: New Vegas mod load orders.
 
     Copyright (C) 2009-2012    BOSS Development Team.
 
 	This file is part of BOSS.
 
-    BOSS is free software: you can redistribute 
-	it and/or modify it under the terms of the GNU General Public License 
-	as published by the Free Software Foundation, either version 3 of 
+    BOSS is free software: you can redistribute
+	it and/or modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation, either version 3 of
 	the License, or (at your option) any later version.
 
-    BOSS is distributed in the hope that it will 
+    BOSS is distributed in the hope that it will
 	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BOSS.  If not, see 
+    along with BOSS.  If not, see
 	<http://www.gnu.org/licenses/>.
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
@@ -29,7 +29,7 @@
 #define __BOSS_GRAMMAR_H__
 
 #ifndef BOOST_SPIRIT_UNICODE
-#define BOOST_SPIRIT_UNICODE 
+#define BOOST_SPIRIT_UNICODE
 #endif
 
 #include "Common/Classes.h"
@@ -124,7 +124,7 @@ namespace boss {
 	///////////////////////////////
 	//Skipper Grammar
 	///////////////////////////////
-	
+
 	//Skipper for userlist, modlist and ini parsers.
 	class Skipper : public grammar<grammarIter> {
 	public:
@@ -229,7 +229,7 @@ namespace boss {
 		//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
 		//be removed when getting the path and filename.
 		void CheckRegex(bool& result, string reg);
-		
+
 		//Checks if a masterlist variable is defined.
 		void CheckVar(bool& result, const string var);
 
@@ -261,7 +261,7 @@ namespace boss {
 		qi::rule<grammarIter, boost::unordered_map<string, string>(), Skipper> ini;
 		qi::rule<grammarIter, pair<string, string>(), Skipper> setting;
 		qi::rule<grammarIter, string(), Skipper> var, stringVal;
-	
+
 		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what);
 
 		ParsingError * errorBuffer;
@@ -283,7 +283,7 @@ namespace boss {
 		qi::rule<grammarIter, uint32_t(), Skipper> ruleKey, sortOrMessageKey;
 		qi::rule<grammarIter, string(), Skipper> object;
 		qi::rule<grammarIter, bool(), Skipper> stateKey;
-	
+
 		void SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what);
 
 		vector<ParsingError> * errorBuffer;
