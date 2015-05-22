@@ -28,7 +28,7 @@
 #ifndef __SUPPORT_LOGGER__HPP__
 #define __SUPPORT_LOGGER__HPP__
 
-#include "Platform.h"
+#include "Support/Platform.h"
 #include "Common/DllDef.h"
 #include <stdarg.h>
 #include <stdio.h>

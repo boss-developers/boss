@@ -26,7 +26,7 @@
 */
 
 
-#include "Logger.h"
+#include "Support/Logger.h"
 
 
 // the values in the LogVerbosity enum refer to indices in this array

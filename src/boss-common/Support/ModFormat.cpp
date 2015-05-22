@@ -26,10 +26,10 @@
 */
 
 
-#include "Types.h"
-#include "Helpers.h"
-#include "ModFormat.h"
-#include "VersionRegex.h"
+#include "Support/Types.h"
+#include "Support/Helpers.h"
+#include "Support/ModFormat.h"
+#include "Support/VersionRegex.h"
 
 #include <cstring>
 #include <fstream>

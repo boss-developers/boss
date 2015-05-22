@@ -28,7 +28,7 @@
 #ifndef __SUPPORT_MODFORMAT__HPP__
 #define __SUPPORT_MODFORMAT__HPP__
 
-#include "Types.h"
+#include "Support/Types.h"
 #include <cstring>
 #include <boost/filesystem.hpp>
 
