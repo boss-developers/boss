@@ -231,7 +231,7 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 
 		;Install new BOSS ini.
 		SetOutPath "$INSTDIR"
-		File "data\boss-common\BOSS.ini"
+		File "data\BOSS.ini"
 
 		;Write language ini setting to BOSS.ini. The space is there because otherwise it would be printed as =russian or whatever. Purely to look good.
 		StrCmp $LANGUAGE ${LANG_RUSSIAN} 0 +2
@@ -250,43 +250,43 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 
 		;Now install readme files.
 		SetOutPath "$INSTDIR\Docs"
-		File "data\boss-common\Docs\BOSS Masterlist Syntax.html"
-		File "data\boss-common\Docs\BOSS ReadMe.html"
-		File "data\boss-common\Docs\BOSS Userlist Syntax.html"
-		File "data\boss-common\Docs\BOSS Version History.html"
-		File "data\boss-common\Docs\Licenses.txt"
+		File "data\Docs\BOSS Masterlist Syntax.html"
+		File "data\Docs\BOSS ReadMe.html"
+		File "data\Docs\BOSS Userlist Syntax.html"
+		File "data\Docs\BOSS Version History.html"
+		File "data\Docs\Licenses.txt"
 
 		;Now install readme images.
 		SetOutPath "$INSTDIR\Docs\images"
-		File "data\boss-common\Docs\images\GUI-Main.png"
-		File "data\boss-common\Docs\images\GUI-Select-Game.png"
-		File "data\boss-common\Docs\images\GUI-Settings.png"
-		File "data\boss-common\Docs\images\GUI-User-Rules-Manager.png"
-		File "data\boss-common\Docs\images\HTML-Log.png"
-		File "data\boss-common\Docs\images\Userlist.png"
-		File "data\boss-common\Docs\images\Ini.png"
-		File "data\boss-common\Docs\images\CLI.png"
+		File "data\Docs\images\GUI-Main.png"
+		File "data\Docs\images\GUI-Select-Game.png"
+		File "data\Docs\images\GUI-Settings.png"
+		File "data\Docs\images\GUI-User-Rules-Manager.png"
+		File "data\Docs\images\HTML-Log.png"
+		File "data\Docs\images\Userlist.png"
+		File "data\Docs\images\Ini.png"
+		File "data\Docs\images\CLI.png"
 
         ;Install resource files.
         SetOutPath "$INSTDIR\resources"
-		File "data\boss-common\resources\style.css"
-		File "data\boss-common\resources\script.js"
-		File "data\boss-common\resources\octokit.js"
-		File "data\boss-common\resources\promise-1.0.0.min.js"
+		File "data\resources\style.css"
+		File "data\resources\script.js"
+		File "data\resources\octokit.js"
+		File "data\resources\promise-1.0.0.min.js"
 
 
 		;Now install language files.
 		SetOutPath "$INSTDIR\resources\l10n\ru\LC_MESSAGES"
-		File "data\boss-common\resources\l10n\ru\LC_MESSAGES\messages.mo"
-		File "data\boss-common\resources\l10n\ru\LC_MESSAGES\wxstd.mo"
+		File "data\resources\l10n\ru\LC_MESSAGES\messages.mo"
+		File "data\resources\l10n\ru\LC_MESSAGES\wxstd.mo"
 		SetOutPath "$INSTDIR\resources\l10n\es\LC_MESSAGES"
-		File "data\boss-common\resources\l10n\es\LC_MESSAGES\wxstd.mo"
-		File "data\boss-common\resources\l10n\es\LC_MESSAGES\messages.mo"
+		File "data\resources\l10n\es\LC_MESSAGES\wxstd.mo"
+		File "data\resources\l10n\es\LC_MESSAGES\messages.mo"
 		SetOutPath "$INSTDIR\resources\l10n\de\LC_MESSAGES"
-		File "data\boss-common\resources\l10n\de\LC_MESSAGES\wxstd.mo"
+		File "data\resources\l10n\de\LC_MESSAGES\wxstd.mo"
 		SetOutPath "$INSTDIR\resources\l10n\zh\LC_MESSAGES"
-		File "data\boss-common\resources\l10n\zh\LC_MESSAGES\messages.mo"
-		File "data\boss-common\resources\l10n\zh\LC_MESSAGES\wxstd.mo"
+		File "data\resources\l10n\zh\LC_MESSAGES\messages.mo"
+		File "data\resources\l10n\zh\LC_MESSAGES\wxstd.mo"
 
         ; The repositories can take a while to fetch for the first time, so by
         ; bundling in that data, we reduce the first-time run time.

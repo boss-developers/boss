@@ -7,16 +7,16 @@
 #
 # bin/Release-32/BOSS.exe
 # bin/Release-32/BOSS GUI.exe
-# data/boss-common/resources/l10n/es/LC_MESSAGES/boss.mo
-# data/boss-common/resources/l10n/es/LC_MESSAGES/wxstd.mo
-# data/boss-common/resources/l10n/ru/LC_MESSAGES/boss.mo
-# data/boss-common/resources/l10n/ru/LC_MESSAGES/wxstd.mo
-# data/boss-common/resources/l10n/zh/LC_MESSAGES/boss.mo
-# data/boss-common/resources/l10n/zh/LC_MESSAGES/wxstd.mo
-# data/boss-common/resources/script.js
-# data/boss-common/resources/style.css
-# data/boss-common/BOSS.ini
-# data/boss-common/Docs
+# data/resources/l10n/es/LC_MESSAGES/boss.mo
+# data/resources/l10n/es/LC_MESSAGES/wxstd.mo
+# data/resources/l10n/ru/LC_MESSAGES/boss.mo
+# data/resources/l10n/ru/LC_MESSAGES/wxstd.mo
+# data/resources/l10n/zh/LC_MESSAGES/boss.mo
+# data/resources/l10n/zh/LC_MESSAGES/wxstd.mo
+# data/resources/script.js
+# data/resources/style.css
+# data/BOSS.ini
+# data/Docs
 
 #   BOSS
 #
@@ -76,21 +76,21 @@ if not os.path.exists(temp_path):
     os.makedirs(temp_path)
 
 # Now copy everything into the temporary folder.
-shutil.copy( os.path.join(u'src', u'bin', u'Release-32', u'BOSS.exe'), temp_path )
-shutil.copy( os.path.join(u'src', u'bin', u'Release-32', u'BOSS GUI.exe'), temp_path )
+shutil.copy( os.path.join(u'bin', u'Release-32', u'BOSS.exe'), temp_path )
+shutil.copy( os.path.join(u'bin', u'Release-32', u'BOSS GUI.exe'), temp_path )
 
 for lang in ['es', 'ru', 'zh']:
     os.makedirs(os.path.join(temp_path, 'resources', 'l10n', lang, 'LC_MESSAGES'))
-    shutil.copy( os.path.join('data', 'boss-common', 'resources', 'l10n', lang, 'LC_MESSAGES', 'messages.mo'), os.path.join(temp_path, 'resources', 'l10n', lang, 'LC_MESSAGES') )
-    shutil.copy( os.path.join('data', 'boss-common', 'resources', 'l10n', lang, 'LC_MESSAGES', 'wxstd.mo'), os.path.join(temp_path, 'resources', 'l10n', lang, 'LC_MESSAGES') )
+    shutil.copy( os.path.join('data', 'resources', 'l10n', lang, 'LC_MESSAGES', 'messages.mo'), os.path.join(temp_path, 'resources', 'l10n', lang, 'LC_MESSAGES') )
+    shutil.copy( os.path.join('data', 'resources', 'l10n', lang, 'LC_MESSAGES', 'wxstd.mo'), os.path.join(temp_path, 'resources', 'l10n', lang, 'LC_MESSAGES') )
 
-shutil.copy( os.path.join('data', 'boss-common', 'resources', 'script.js'), os.path.join(temp_path, 'resources') )
-shutil.copy( os.path.join('data', 'boss-common', 'resources', 'octokit.js'), os.path.join(temp_path, 'resources') )
-shutil.copy( os.path.join('data', 'boss-common', 'resources', 'promise-1.0.0.min.js'), os.path.join(temp_path, 'resources') )
-shutil.copy( os.path.join('data', 'boss-common', 'resources', 'style.css'), os.path.join(temp_path, 'resources') )
-shutil.copy( os.path.join('data', 'boss-common', 'BOSS.ini'), temp_path)
+shutil.copy( os.path.join('data', 'resources', 'script.js'), os.path.join(temp_path, 'resources') )
+shutil.copy( os.path.join('data', 'resources', 'octokit.js'), os.path.join(temp_path, 'resources') )
+shutil.copy( os.path.join('data', 'resources', 'promise-1.0.0.min.js'), os.path.join(temp_path, 'resources') )
+shutil.copy( os.path.join('data', 'resources', 'style.css'), os.path.join(temp_path, 'resources') )
+shutil.copy( os.path.join('data', 'BOSS.ini'), temp_path)
 
-shutil.copytree( os.path.join('data', 'boss-common', 'docs'), os.path.join(temp_path, 'docs') )
+shutil.copytree( os.path.join('data', 'Docs'), os.path.join(temp_path, 'Docs') )
 
 # Git repositories.
 for game, boss_game in [('oblivion','Oblivion'), ('falloutnv','Fallout New Vegas'), ('skyrim','Skyrim'), ('fallout3','Fallout 3'), ('nehrim','Nehrim')]:
