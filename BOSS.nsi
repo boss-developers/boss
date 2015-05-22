@@ -20,8 +20,8 @@
 	RequestExecutionLevel admin
 
 	;Icon for installer\uninstaller
-	!define MUI_ICON "code\trunk\BOSS.ico"
-	!define MUI_UNICON "code\trunk\BOSS.ico"
+	!define MUI_ICON "BOSS.ico"
+	!define MUI_UNICON "BOSS.ico"
 
 	; This causes an "are you sure?" message to be displayed if you try to quit the installer or uninstaller.
 	!define MUI_ABORTWARNING
@@ -245,8 +245,8 @@ LangString TEXT_USERFILES ${LANG_SIMPCHINESE} "BOSS的userlist和BOSS.ini文件�
 
 		;Install main executables.
 		SetOutPath "$INSTDIR"
-		File "code\trunk\bin\Release-32\BOSS.exe"
-		File "code\trunk\bin\Release-32\BOSS GUI.exe"
+		File "bin\Release-32\BOSS.exe"
+		File "bin\Release-32\BOSS GUI.exe"
 
 		;Now install readme files.
 		SetOutPath "$INSTDIR\Docs"

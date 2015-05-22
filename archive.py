@@ -5,8 +5,8 @@
 
 # Files and folders that need to go in (relative to repository root):
 #
-# code/trunk/bin/Release-32/BOSS.exe
-# code/trunk/bin/Release-32/BOSS GUI.exe
+# bin/Release-32/BOSS.exe
+# bin/Release-32/BOSS GUI.exe
 # data/boss-common/resources/l10n/es/LC_MESSAGES/boss.mo
 # data/boss-common/resources/l10n/es/LC_MESSAGES/wxstd.mo
 # data/boss-common/resources/l10n/ru/LC_MESSAGES/boss.mo
@@ -76,8 +76,8 @@ if not os.path.exists(temp_path):
     os.makedirs(temp_path)
 
 # Now copy everything into the temporary folder.
-shutil.copy( os.path.join(u'code', u'trunk', u'bin', u'Release-32', u'BOSS.exe'), temp_path )
-shutil.copy( os.path.join(u'code', u'trunk', u'bin', u'Release-32', u'BOSS GUI.exe'), temp_path )
+shutil.copy( os.path.join(u'src', u'bin', u'Release-32', u'BOSS.exe'), temp_path )
+shutil.copy( os.path.join(u'src', u'bin', u'Release-32', u'BOSS GUI.exe'), temp_path )
 
 for lang in ['es', 'ru', 'zh']:
     os.makedirs(os.path.join(temp_path, 'resources', 'l10n', lang, 'LC_MESSAGES'))

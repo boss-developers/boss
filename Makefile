@@ -1,4 +1,4 @@
-CXXFLAGS = -O3 -Iboss-common -I../../../libgit2/include -std=c++11
+CXXFLAGS = -O3 -Isrc/boss-common -I../libgit2/include -std=c++11
 #CFLAGS += -O3 -Iboss-common -I../../../libgit2/include -std=c++11
 #CPPFLAGS += -I boss-common -I ../../../libgit2/include
 LDFLAGS += -static -Llib
@@ -11,9 +11,9 @@ LDLIBS += -lboost_filesystem -lboost_regex -lboost_program_options -lboost_excep
 #		rm -f $@.$$$$
 
 
-DIR1 = boss-cli
-DIR2 = boss-common
-DIR3 = boss-gui
+DIR1 = src/boss-cli
+DIR2 = src/boss-common
+DIR3 = src/boss-gui
 
 OBJECTS = 							$(DIR1)/BOSS-CLI.o $(DIR2)/Common/Globals.o \
 									$(DIR2)/Common/Classes.o $(DIR2)/Common/Game.o \
