@@ -222,3 +222,4 @@ out/
 *.7z
 
 *.o
+!data/"BOSS Icon.7z"
