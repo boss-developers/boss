@@ -3,14 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2013 for Windows Desktop
 VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BOSS-CLI", "src\boss-cli\BOSS-CLI.vcxproj", "{6713BCE3-A12F-430D-B68E-AA46DC9A5F46}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BOSS-CLI", "src\BOSS-CLI.vcxproj", "{6713BCE3-A12F-430D-B68E-AA46DC9A5F46}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2418BCC4-4F44-4508-82E2-6FAD862BC44C} = {2418BCC4-4F44-4508-82E2-6FAD862BC44C}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BOSS-Common", "src\boss-common\BOSS-Common.vcxproj", "{2418BCC4-4F44-4508-82E2-6FAD862BC44C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BOSS-Common", "src\BOSS-Common.vcxproj", "{2418BCC4-4F44-4508-82E2-6FAD862BC44C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BOSS-GUI", "src\boss-gui\BOSS-GUI.vcxproj", "{35AC25B6-0F97-4237-834A-F588405417E0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BOSS-GUI", "src\BOSS-GUI.vcxproj", "{35AC25B6-0F97-4237-834A-F588405417E0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2418BCC4-4F44-4508-82E2-6FAD862BC44C} = {2418BCC4-4F44-4508-82E2-6FAD862BC44C}
 	EndProjectSection
