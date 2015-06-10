@@ -99,7 +99,7 @@ namespace boss {
 		conditions = inConditions;
 	}
 
-	bool conditionalData::EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string,uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool * condResult, ParsingError& errorBuffer, const Game& parentGame) {
+	bool conditionalData::EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string, uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool * condResult, ParsingError& errorBuffer, const Game& parentGame) {
 		if (!conditions.empty()) {
 			Skipper skipper;
 			conditional_grammar grammar;
@@ -159,22 +159,22 @@ namespace boss {
 
 	string	Message::KeyToString() const {
 		switch(key) {
-		case SAY:
-			return "SAY";
-		case TAG:
-			return "TAG";
-		case REQ:
-			return "REQ";
-		case WARN:
-			return "WARN";
-		case ERR:
-			return "ERROR";
-		case INC:
-			return "INC";
-		case DIRTY:
-			return "DIRTY";
-		default:
-			return "NONE";
+			case SAY:
+				return "SAY";
+			case TAG:
+				return "TAG";
+			case REQ:
+				return "REQ";
+			case WARN:
+				return "WARN";
+			case ERR:
+				return "ERROR";
+			case INC:
+				return "INC";
+			case DIRTY:
+				return "DIRTY";
+			default:
+				return "NONE";
 		}
 	}
 

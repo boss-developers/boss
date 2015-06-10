@@ -25,7 +25,7 @@
 	$Revision: 1783 $, $Date: 2010-10-31 23:05:28 +0000 (Sun, 31 Oct 2010) $
 */
 
-#define NOMINMAX // we don't want the dummy min/max macros since they overlap with the std:: algorithms
+#define NOMINMAX  // we don't want the dummy min/max macros since they overlap with the std:: algorithms
 
 #include "BOSS-Common.h"
 
@@ -42,6 +42,7 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <vector>
 
 #include <boost/regex.hpp>
 
@@ -76,7 +77,6 @@ void ShowVersion() {
 }
 
 void ShowUsage(po::options_description opts) {
-
 	static string progName =
 #if _WIN32 || _WIN64
 		"BOSS";
@@ -222,13 +222,13 @@ int main(int argc, char *argv[]) {
 
 	// parse command line arguments
 	po::variables_map vm;
-	try{
+	try {
 		po::store(po::command_line_parser(argc, argv).options(opts).run(), vm);
 		po::notify(vm);
-	}catch (po::multiple_occurrences &){
+	} catch (po::multiple_occurrences &) {
 		LOG_ERROR("cannot specify options multiple times; please use the '--help' option to see usage instructions");
 		Fail();
-	}catch (exception & e){
+	} catch (exception & e) {
 		LOG_ERROR("%s; please use the '--help' option to see usage instructions", e.what());
 		Fail();
 	}
@@ -339,9 +339,9 @@ int main(int argc, char *argv[]) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent )
-			Launch(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
-		exit (1); //fail in screaming heap.
+		if (!gl_silent)
+			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
+		exit(1);  //fail in screaming heap.
 	}
 	game.bosslog.SetFormat(gl_log_format);
 	game.bosslog.parsingErrors.push_back(ini.ErrorBuffer());
@@ -364,8 +364,7 @@ int main(int argc, char *argv[]) {
 				<< (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
 			LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
 		}
-	}
-	else {
+	} else {
 		string revision = GetMasterlistVersion(game);
 		string message = (boost::format(translate("Masterlist updating disabled; at revision: %1%.")) % revision).str();
 		game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
@@ -378,8 +377,8 @@ int main(int argc, char *argv[]) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent )
-			Launch(game.Log(gl_log_format).string());	//Displays the BOSSlog.
+		if (!gl_silent)
+			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.
 		return (0);
 	}
 
@@ -405,9 +404,9 @@ int main(int argc, char *argv[]) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent )
-			Launch(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
-		exit (1); //fail in screaming heap.
+		if (!gl_silent)
+			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
+		exit(1);  //fail in screaming heap.
 	}
 
 
@@ -449,9 +448,9 @@ int main(int argc, char *argv[]) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent )
-				Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
-		exit (1); //fail in screaming heap.
+		if (!gl_silent)
+			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
+		exit(1);  //fail in screaming heap.
 	}
 
 	LOG_INFO("Starting to parse userlist.");
@@ -488,14 +487,14 @@ int main(int argc, char *argv[]) {
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent )
-				Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
-		exit (1); //fail in screaming heap.
+		if (!gl_silent)
+			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
+		exit(1);  //fail in screaming heap.
 	}
 
 	LOG_INFO("Launching boss log in browser.");
-	if ( !gl_silent )
-		Launch(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
+	if (!gl_silent)
+		Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
 	LOG_INFO("BOSS finished.");
-	return (0);
+	return 0;
 }
