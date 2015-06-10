@@ -91,8 +91,8 @@ namespace boss {
 	//These globals exist for ease-of-use, so that a Settings object doesn't need to be passed in infinity+1 functions.
 
 	//General variables
-	BOSS_COMMON	extern bool		gl_use_user_rules_manager;	// Use the User Rules Editor or edit userlist.txt directly?
-	BOSS_COMMON extern bool		gl_close_gui_after_sorting;	//Close the GUI after BOSS has finished running or not.
+	BOSS_COMMON	extern bool		gl_use_user_rules_manager;  // Use the User Rules Editor or edit userlist.txt directly?
+	BOSS_COMMON extern bool		gl_close_gui_after_sorting; //Close the GUI after BOSS has finished running or not.
 	BOSS_COMMON extern uint32_t	gl_language;				// What language to run BOSS in?
 
 	//Command line variables

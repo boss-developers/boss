@@ -71,19 +71,19 @@ namespace boss {
 	///////////////////////////////
 
 	masterlistMsgKey_::masterlistMsgKey_() {
-		add //New Message keywords.
-			("say",SAY)
-			("tag",TAG)
-			("req",REQ)
+		add  //New Message keywords.
+			("say", SAY)
+			("tag", TAG)
+			("req", REQ)
 			("inc", INC)
-			("dirty",DIRTY)
-			("warn",WARN)
-			("error",ERR)
+			("dirty", DIRTY)
+			("warn", WARN)
+			("error", ERR)
 		;
 	}
 
 	typeKey_::typeKey_() {
-		add //Group keywords.
+		add  //Group keywords.
 			("begingroup:", BEGINGROUP)  //Needs the colon there unfortunately.
 			("endgroup:", ENDGROUP)  //Needs the colon there unfortunately.
 			("endgroup", ENDGROUP)
@@ -94,20 +94,20 @@ namespace boss {
 
 	ruleKeys_::ruleKeys_() {
 		add
-			("add",ADD)
-			("override",OVERRIDE)
-			("for",FOR)
+			("add", ADD)
+			("override", OVERRIDE)
+			("for", FOR)
 		;
 	}
 
 	messageKeys_::messageKeys_() {
 		add
-			("append",APPEND)
-			("replace",REPLACE)
-			("before",BEFORE)
-			("after",AFTER)
-			("top",TOP)
-			("bottom",BOTTOM)
+			("append", APPEND)
+			("replace", REPLACE)
+			("before", BEFORE)
+			("after", AFTER)
+			("top", TOP)
+			("bottom", BOTTOM)
 		;
 	}
 
@@ -117,7 +117,6 @@ namespace boss {
 
 	//Constructor for modlist and userlist skipper.
 	Skipper::Skipper() : Skipper::base_type(start, "skipper grammar") {
-
 		start =
 			spc
 			| UTF8
@@ -128,7 +127,7 @@ namespace boss {
 
 		spc = space - eol;
 
-		UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf"); //UTF8 BOM
+		UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf");  //UTF8 BOM
 
 		CComment = "/*" >> *(char_ - "*/") >> "*/";
 
@@ -154,6 +153,7 @@ namespace boss {
 	modlist_grammar::modlist_grammar()
 		: modlist_grammar::base_type(modList, "modlist grammar"),
 		  errorBuffer(NULL) {
+
 		masterlistMsgKey_ masterlistMsgKey;
 		typeKey_ typeKey;
 		const vector<Message> noMessages;  //An empty set of messages.
@@ -208,10 +208,10 @@ namespace boss {
 			conditionals
 			>> messageKeyword
 			>> ':'
-			>> charString	//The double >> matters. A single > doesn't work.
+			>> charString  //The double >> matters. A single > doesn't work.
 			;
 
-		charString %= lexeme[+(char_ - eol)]; //String, with no skipper.
+		charString %= lexeme[+(char_ - eol)];  //String, with no skipper.
 
 		messageKeyword %= no_case[masterlistMsgKey];
 
@@ -324,7 +324,7 @@ namespace boss {
 		setVars = varStore;
 	}
 
-	void modlist_grammar::SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {
+	void modlist_grammar::SetCRCStore(boost::unordered_map<string, uint32_t> * CRCStore) {
 		fileCRCs = CRCStore;
 	}
 
@@ -386,7 +386,6 @@ namespace boss {
 
 	//Conditional grammar constructor.
 	conditional_grammar::conditional_grammar() : conditional_grammar::base_type(conditionals, "modlist grammar") {
-
 		conditionals =
 			(conditional[_val = _1]
 			> *((andOr > conditional)			[phoenix::bind(&conditional_grammar::EvaluateCompoundConditional, this, _val, _1, _2)]))
@@ -492,7 +491,7 @@ namespace boss {
 		setVars = varStore;
 	}
 
-	void conditional_grammar::SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore) {
+	void conditional_grammar::SetCRCStore(boost::unordered_map<string, uint32_t> * CRCStore) {
 		fileCRCs = CRCStore;
 	}
 
@@ -543,18 +542,18 @@ namespace boss {
 			trueVersion = Version(filePath);
 
 		switch (comparator) {
-		case '>':
-			if (trueVersion > givenVersion)
-				result = true;
-			break;
-		case '<':
-			if (trueVersion < givenVersion)
-				result = true;
-			break;
-		case '=':
-			if (trueVersion == givenVersion)
-				result = true;
-			break;
+			case '>':
+				if (trueVersion > givenVersion)
+					result = true;
+				break;
+			case '<':
+				if (trueVersion < givenVersion)
+					result = true;
+				break;
+			case '=':
+				if (trueVersion == givenVersion)
+					result = true;
+				break;
 		}
 		return;
 	}
@@ -579,14 +578,14 @@ namespace boss {
 		//No reason for the regex to include both.
 		if (reg.find("/") != string::npos) {
 			size_t pos1 = reg.rfind("/");
-			string p = reg.substr(0,pos1);
-			reg = reg.substr(pos1+1);
+			string p = reg.substr(0, pos1);
+			reg = reg.substr(pos1 + 1);
 			file_path = fs::path(p);
 		} else if (reg.find("\\\\") != string::npos) {
 			size_t pos1 = reg.rfind("\\\\");
-			string p = reg.substr(0,pos1);
-			reg = reg.substr(pos1+2);
-			boost::algorithm::replace_all(p,"\\\\","\\");
+			string p = reg.substr(0, pos1);
+			reg = reg.substr(pos1 + 2);
+			boost::algorithm::replace_all(p, "\\\\", "\\");
 			file_path = fs::path(p);
 		} else if (to_lower_copy(fs::path(reg).extension().string()) == ".dll" && fs::exists(parentGame->SEPluginsFolder()))
 			file_path = parentGame->SEPluginsFolder();
@@ -601,9 +600,9 @@ namespace boss {
 			return;
 		}
 
-		for (fs::directory_iterator itr(file_path); itr!=fs::directory_iterator(); ++itr) {
+		for (fs::directory_iterator itr(file_path); itr != fs::directory_iterator(); ++itr) {
 			if (fs::is_regular_file(itr->status())) {
-				if (boost::regex_match(itr->path().filename().string(),regex)) {
+				if (boost::regex_match(itr->path().filename().string(), regex)) {
 					result = true;
 					break;
 				}
@@ -651,7 +650,7 @@ namespace boss {
 			return;
 		uint32_t CRC;
 		fs::path file_path = GetPath(file);
-		boost::unordered_map<string,uint32_t>::iterator iter = fileCRCs->find(file);
+		boost::unordered_map<string, uint32_t>::iterator iter = fileCRCs->find(file);
 
 		if (iter != fileCRCs->end()) {
 			CRC = fileCRCs->at(file);
@@ -663,7 +662,7 @@ namespace boss {
 			else
 				return;
 
-			fileCRCs->emplace(file,CRC);
+			fileCRCs->emplace(file, CRC);
 		}
 
 		if (sum == CRC)
@@ -718,11 +717,11 @@ namespace boss {
 		stringVal.name("string value");
 
 		//Error handling.
-		on_error<fail>(ini,			phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
-		on_error<fail>(heading,		phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
-		on_error<fail>(setting,		phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
-		on_error<fail>(var,			phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
-		on_error<fail>(stringVal,	phoenix::bind(&ini_grammar::SyntaxError,this,_1,_2,_3,_4));
+		on_error<fail>(ini,			phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(heading,		phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(setting,		phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(var,			phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(stringVal,	phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
 	void ini_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
@@ -774,7 +773,7 @@ namespace boss {
 			> ':'
 			> object;
 
-		object %= lexeme[+(char_ - eol)]; //String, with no skipper.
+		object %= lexeme[+(char_ - eol)];  //String, with no skipper.
 
 		ruleKey %= no_case[ruleKeys];
 
@@ -791,13 +790,13 @@ namespace boss {
 		sortOrMessageKey.name("sort or message keyword");
 		stateKey.name("state keyword");
 
-		on_error<fail>(ruleList,			phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
-		on_error<fail>(userlistRule,		phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
-		on_error<fail>(sortOrMessageLine,	phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
-		on_error<fail>(object,				phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
-		on_error<fail>(ruleKey,				phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
-		on_error<fail>(sortOrMessageKey,	phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
-		on_error<fail>(stateKey,			phoenix::bind(&userlist_grammar::SyntaxError,this,_1,_2,_3,_4));
+		on_error<fail>(ruleList,			phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(userlistRule,		phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(sortOrMessageLine,	phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(object,				phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(ruleKey,				phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(sortOrMessageKey,	phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+		on_error<fail>(stateKey,			phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
 	void userlist_grammar::SetErrorBuffer(vector<ParsingError> * inErrorBuffer) {

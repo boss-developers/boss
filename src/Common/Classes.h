@@ -92,7 +92,7 @@ namespace boss {
 		void Data(const string inData);
 		void Conditions(const string inConditions);
 
-		bool EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string,uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool *condResult, ParsingError& errorBuffer, const Game& parentGame);
+		bool EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string, uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool *condResult, ParsingError& errorBuffer, const Game& parentGame);
 	};
 
 	class BOSS_COMMON MasterlistVar : public conditionalData {
@@ -122,8 +122,8 @@ namespace boss {
 		vector<Message> messages;
 		//string data is now filename (or group name). Trimmed and case-preserved. ".ghost" extensions are removed.
 		uint32_t		type;
-	public:
 
+	public:
 		Item		();
 		Item		(const string inName);
 		Item		(const string inName, const uint32_t inType);
@@ -152,7 +152,7 @@ namespace boss {
 		void InsertMessage(size_t pos, Message item);
 		void ClearMessages();
 
-		bool EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string,uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool * condResult, ParsingError& errorBuffer, const Game& parentGame);
+		bool EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string, uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool * condResult, ParsingError& errorBuffer, const Game& parentGame);
 	};
 
 	class BOSS_COMMON ItemList {
@@ -162,26 +162,27 @@ namespace boss {
 		vector<Message>			globalMessageBuffer;
 		size_t					lastRecognisedPos;
 		vector<MasterlistVar>	masterlistVariables;
-		boost::unordered_map<string,uint32_t> fileCRCs;
+		boost::unordered_map<string, uint32_t> fileCRCs;
 
 		//Searches a hashset for the first matching string of a regex and returns its iterator position.
 		boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos);
+
 	public:
 				ItemList();
-		void	Load			(const Game& parentGame, const fs::path path);	//Load by scanning path. If path is a directory, it scans it for plugins.
+		void	Load			(const Game& parentGame, const fs::path path);  //Load by scanning path. If path is a directory, it scans it for plugins.
 																	//If path is a file, it parses it using the modlist grammar.
 																	//May throw exception on fail.
-		void	Save			(const fs::path file, const fs::path oldFile);	//Output to file in MF2. Backs up any existing file to oldFile.
+		void	Save			(const fs::path file, const fs::path oldFile);  //Output to file in MF2. Backs up any existing file to oldFile.
 																	//Throws exception on fail.
-		void	SavePluginNames(const Game& parentGame, const fs::path file, const bool activeOnly, const bool doEncodingConversion);	//Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
+		void	SavePluginNames(const Game& parentGame, const fs::path file, const bool activeOnly, const bool doEncodingConversion);  //Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
 		void	EvalConditions(const Game& parentGame);					//Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
 		void	EvalRegex(const Game& parentGame);
 		void	ApplyMasterPartition(const Game& parentGame);				//Puts all master files before other plugins. Can throw exception.
 
-		size_t	FindItem		(const string name, const uint32_t type) const;	//Find the position of the item with name 'name'. Case-insensitive.
-		size_t	FindLastItem	(const string name, const uint32_t type) const;	//Find the last item with the name 'name'. Case-insensitive.
+		size_t	FindItem		(const string name, const uint32_t type) const;  //Find the position of the item with name 'name'. Case-insensitive.
+		size_t	FindLastItem	(const string name, const uint32_t type) const;  //Find the last item with the name 'name'. Case-insensitive.
 		size_t	GetLastMasterPos(const Game& parentGame) const;				 //Can throw exception.
-		size_t	GetNextMasterPos(const Game& parentGame, size_t currPos) const; //Can throw exception.
+		size_t	GetNextMasterPos(const Game& parentGame, size_t currPos) const;  //Can throw exception.
 
 		Item	ItemAt(size_t pos) const;
 
@@ -190,14 +191,14 @@ namespace boss {
 		vector<Message>							GlobalMessageBuffer() const;
 		size_t									LastRecognisedPos() const;
 		vector<MasterlistVar>					Variables() const;
-		boost::unordered_map<string,uint32_t>	FileCRCs() const;
+		boost::unordered_map<string, uint32_t>	FileCRCs() const;
 
 		void	Items(const vector<Item> items);
 		void	ErrorBuffer(const ParsingError buffer);
 		void	GlobalMessageBuffer(const vector<Message> buffer);
 		void	LastRecognisedPos(const size_t pos);
 		void	Variables(const vector<MasterlistVar> variables);
-		void	FileCRCs(const boost::unordered_map<string,uint32_t> crcs);
+		void	FileCRCs(const boost::unordered_map<string, uint32_t> crcs);
 
 		void Clear();
 		void Erase(const size_t pos);
@@ -254,6 +255,7 @@ namespace boss {
 		vector<ParsingError>	errorBuffer;
 
 		void CheckSyntax(const Game& parentGame);  //Rule checker function, checks for syntax (not parsing) errors.
+
 	public:
 		RuleList();
 		void 	Load	(const Game& parentGame, const fs::path file);		//Throws exception on fail.

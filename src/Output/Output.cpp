@@ -139,20 +139,20 @@ namespace boss {
 	string Outputter::EscapeHTMLSpecial(char c) {
 		if (escapeHTMLSpecialChars && outFormat == HTML) {
 			switch(c) {
-			case '&':
-				return "&amp;";
-			case '"':
-				return "&quot;";
-			case '\'':
-				return "&#039;";
-			case '<':
-				return "&lt;";
-			case '>':
-				return "&gt;";
-			case '©':
-				return "&copy;";
-			default:
-				return string(1, c);
+				case '&':
+					return "&amp;";
+				case '"':
+					return "&quot;";
+				case '\'':
+					return "&#039;";
+				case '<':
+					return "&lt;";
+				case '>':
+					return "&gt;";
+				case '©':
+					return "&copy;";
+				default:
+					return string(1, c);
 			}
 		} else
 			return string(1, c);
@@ -182,240 +182,240 @@ namespace boss {
 
 	Outputter& Outputter::operator<< (const logFormatting l) {
 		switch(l) {
-		case SECTION_ID_SUMMARY_OPEN:
-			if (outFormat == HTML)
-				outStream << "<section id='summary'>";
-			break;
-		case SECTION_ID_USERLIST_OPEN:
-			if (outFormat == HTML)
-				outStream << "<section id='userRules'>";
-			break;
-		case SECTION_ID_SE_OPEN:
-			if (outFormat == HTML)
-				outStream << "<section id='sePlugins'>";
-			break;
-		case SECTION_ID_RECOGNISED_OPEN:
-			if (outFormat == HTML)
-				outStream << "<section id='recPlugins'>";
-			break;
-		case SECTION_ID_UNRECOGNISED_OPEN:
-			if (outFormat == HTML)
-				outStream << "<section id='unrecPlugins'>";
-			break;
-		case SECTION_CLOSE:
-			if (outFormat == HTML)
-				outStream << "</section>";
-			break;
-		case DIV_OPEN:
-			if (outFormat == HTML)
-				outStream << "<div>";
-			else
-				outStream << endl;
-			break;
-		case DIV_SUMMARY_BUTTON_OPEN:
-			if (outFormat == HTML)
-				outStream << "<div class='button' data-section='summary'>";
-			break;
-		case DIV_USERLIST_BUTTON_OPEN:
-			if (outFormat == HTML)
-				outStream << "<div class='button' data-section='userRules'>";
-			break;
-		case DIV_SE_BUTTON_OPEN:
-			if (outFormat == HTML)
-				outStream << "<div class='button' data-section='sePlugins'>";
-			break;
-		case DIV_RECOGNISED_BUTTON_OPEN:
-			if (outFormat == HTML)
-				outStream << "<div class='button' data-section='recPlugins'>";
-			break;
-		case DIV_UNRECOGNISED_BUTTON_OPEN:
-			if (outFormat == HTML)
-				outStream << "<div class='button' data-section='unrecPlugins'>";
-			break;
-		case DIV_CLOSE:
-			if (outFormat == HTML)
-				outStream << "</div>";
-			break;
-		case LINE_BREAK:
-			if (outFormat == HTML)
-				outStream << "<br />";
-			else
-				outStream << endl;
-			break;
-		case TABLE_HEAD:
-			if (outFormat == HTML)
-				outStream << "<thead>";
-			break;
-		case TABLE_HEADING:
-			if (outFormat == HTML)
-				outStream << "<th>";
-			else
-				outStream << '\t';
-			break;
-		case TABLE_BODY:
-			if (outFormat == HTML)
-				outStream << "<tbody>";
-			break;
-		case TABLE_ROW:
-			if (outFormat == HTML)
-				outStream << "<tr>";
-			else
-				outStream << endl;
-			break;
-		case TABLE_ROW_CLASS_SUCCESS:
-			if (outFormat == HTML)
-				outStream << "<tr class='success'>";
-			else
-				outStream << endl;
-			break;
-		case TABLE_ROW_CLASS_WARN:
-			if (outFormat == HTML)
-				outStream << "<tr class='warn'>";
-			else
-				outStream << endl;
-			break;
-		case TABLE_ROW_CLASS_ERROR:
-			if (outFormat == HTML)
-				outStream << "<tr class='error'>";
-			else
-				outStream << endl;
-			break;
-		case TABLE_DATA:
-			if (outFormat == HTML)
-				outStream << "<td>";
-			else
-				outStream  << '\t';
-			break;
-		case TABLE_OPEN:
-			if (outFormat == HTML)
-				outStream << "<table>";
-			break;
-		case TABLE_CLOSE:
-			if (outFormat == HTML)
-				outStream << "</table>";
-			else
-				outStream << endl << endl;
-			break;
-		case LIST_OPEN:
-			if (outFormat == HTML)
-				outStream << "<ul>";
-			break;
-		case LIST_CLOSE:
-			if (outFormat == HTML)
-				outStream << "</ul>";
-			else
-				outStream << endl;
-			break;
-		case HEADING_OPEN:
-			if (outFormat == HTML)
-				outStream << "<h2>";
-			else
-				outStream << endl << endl << "======================================" << endl;
-			break;
-		case HEADING_CLOSE:
-			if (outFormat == HTML)
-				outStream << "</h2>";
-			else
-				outStream << endl << "======================================" << endl << endl;
-			break;
-		case PARAGRAPH:
-			if (outFormat == HTML)
-				outStream << "<p>";
-			else
-				outStream << endl;
-			break;
-		case LIST_ITEM:
-			if (outFormat == HTML)
-				outStream << "<li>";
-			else
-				outStream << endl << endl;
-			break;
-		case LIST_ITEM_CLASS_SUCCESS:
-			if (outFormat == HTML)
-				outStream << "<li class='success'>";
-			else
-				outStream << endl << "*  ";
-			break;
-		case LIST_ITEM_CLASS_WARN:
-			if (outFormat == HTML)
-				outStream << "<li class='warn'>";
-			else
-				outStream << endl << "*  ";
-			break;
-		case LIST_ITEM_CLASS_ERROR:
-			if (outFormat == HTML)
-				outStream << "<li class='error'>";
-			else
-				outStream << endl << "*  ";
-			break;
-		case SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN:
-			if (outFormat == HTML)
-				outStream << "<span id='unrecPluginsSubmitNote'>";
-			break;
-		case SPAN_CLASS_MOD_OPEN:
-			if (outFormat == HTML)
-				outStream << "<span class='mod'>";
-			break;
-		case SPAN_CLASS_VERSION_OPEN:
-			if (outFormat == HTML)
-				outStream << "<span class='version'>&nbsp;";
-			else
-				outStream << " ";
-			break;
-		case SPAN_CLASS_CRC_OPEN:
-			if (outFormat == HTML)
-				outStream << "<span class='crc'>&nbsp;";
-			else
-				outStream << " ";
-			break;
-		case SPAN_CLASS_ACTIVE_OPEN:
-			if (outFormat == HTML)
-				outStream << "<span class='active'>&nbsp;";
-			else
-				outStream << " ";
-			break;
-		case SPAN_CLASS_MESSAGE_OPEN:
-			if (outFormat == HTML)
-				outStream << "<span class='message'>";
-			break;
-		case SPAN_CLOSE:
-			if (outFormat == HTML)
-				outStream << "</span>";
-			break;
-		case ITALIC_OPEN:
-			if (outFormat == HTML)
-				outStream << "<i>";
-			break;
-		case ITALIC_CLOSE:
-			if (outFormat == HTML)
-				outStream << "</i>";
-			break;
-		case BLOCKQUOTE_OPEN:
-			if (outFormat == HTML)
-				outStream << "<blockquote>";
-			else
-				outStream << endl << endl;
-			break;
-		case BLOCKQUOTE_CLOSE:
-			if (outFormat == HTML)
-				outStream << "</blockquote>";
-			else
-				outStream << endl << endl;
-			break;
-		case VAR_OPEN:
-			if (outFormat == HTML)
-				outStream << "<var>";
-			else
-				outStream << "\"";
-			break;
-		case VAR_CLOSE:
-			if (outFormat == HTML)
-				outStream << "</var>";
-			else
-				outStream << "\"";
-			break;
-		default:
-			break;
+			case SECTION_ID_SUMMARY_OPEN:
+				if (outFormat == HTML)
+					outStream << "<section id='summary'>";
+				break;
+			case SECTION_ID_USERLIST_OPEN:
+				if (outFormat == HTML)
+					outStream << "<section id='userRules'>";
+				break;
+			case SECTION_ID_SE_OPEN:
+				if (outFormat == HTML)
+					outStream << "<section id='sePlugins'>";
+				break;
+			case SECTION_ID_RECOGNISED_OPEN:
+				if (outFormat == HTML)
+					outStream << "<section id='recPlugins'>";
+				break;
+			case SECTION_ID_UNRECOGNISED_OPEN:
+				if (outFormat == HTML)
+					outStream << "<section id='unrecPlugins'>";
+				break;
+			case SECTION_CLOSE:
+				if (outFormat == HTML)
+					outStream << "</section>";
+				break;
+			case DIV_OPEN:
+				if (outFormat == HTML)
+					outStream << "<div>";
+				else
+					outStream << endl;
+				break;
+			case DIV_SUMMARY_BUTTON_OPEN:
+				if (outFormat == HTML)
+					outStream << "<div class='button' data-section='summary'>";
+				break;
+			case DIV_USERLIST_BUTTON_OPEN:
+				if (outFormat == HTML)
+					outStream << "<div class='button' data-section='userRules'>";
+				break;
+			case DIV_SE_BUTTON_OPEN:
+				if (outFormat == HTML)
+					outStream << "<div class='button' data-section='sePlugins'>";
+				break;
+			case DIV_RECOGNISED_BUTTON_OPEN:
+				if (outFormat == HTML)
+					outStream << "<div class='button' data-section='recPlugins'>";
+				break;
+			case DIV_UNRECOGNISED_BUTTON_OPEN:
+				if (outFormat == HTML)
+					outStream << "<div class='button' data-section='unrecPlugins'>";
+				break;
+			case DIV_CLOSE:
+				if (outFormat == HTML)
+					outStream << "</div>";
+				break;
+			case LINE_BREAK:
+				if (outFormat == HTML)
+					outStream << "<br />";
+				else
+					outStream << endl;
+				break;
+			case TABLE_HEAD:
+				if (outFormat == HTML)
+					outStream << "<thead>";
+				break;
+			case TABLE_HEADING:
+				if (outFormat == HTML)
+					outStream << "<th>";
+				else
+					outStream << '\t';
+				break;
+			case TABLE_BODY:
+				if (outFormat == HTML)
+					outStream << "<tbody>";
+				break;
+			case TABLE_ROW:
+				if (outFormat == HTML)
+					outStream << "<tr>";
+				else
+					outStream << endl;
+				break;
+			case TABLE_ROW_CLASS_SUCCESS:
+				if (outFormat == HTML)
+					outStream << "<tr class='success'>";
+				else
+					outStream << endl;
+				break;
+			case TABLE_ROW_CLASS_WARN:
+				if (outFormat == HTML)
+					outStream << "<tr class='warn'>";
+				else
+					outStream << endl;
+				break;
+			case TABLE_ROW_CLASS_ERROR:
+				if (outFormat == HTML)
+					outStream << "<tr class='error'>";
+				else
+					outStream << endl;
+				break;
+			case TABLE_DATA:
+				if (outFormat == HTML)
+					outStream << "<td>";
+				else
+					outStream  << '\t';
+				break;
+			case TABLE_OPEN:
+				if (outFormat == HTML)
+					outStream << "<table>";
+				break;
+			case TABLE_CLOSE:
+				if (outFormat == HTML)
+					outStream << "</table>";
+				else
+					outStream << endl << endl;
+				break;
+			case LIST_OPEN:
+				if (outFormat == HTML)
+					outStream << "<ul>";
+				break;
+			case LIST_CLOSE:
+				if (outFormat == HTML)
+					outStream << "</ul>";
+				else
+					outStream << endl;
+				break;
+			case HEADING_OPEN:
+				if (outFormat == HTML)
+					outStream << "<h2>";
+				else
+					outStream << endl << endl << "======================================" << endl;
+				break;
+			case HEADING_CLOSE:
+				if (outFormat == HTML)
+					outStream << "</h2>";
+				else
+					outStream << endl << "======================================" << endl << endl;
+				break;
+			case PARAGRAPH:
+				if (outFormat == HTML)
+					outStream << "<p>";
+				else
+					outStream << endl;
+				break;
+			case LIST_ITEM:
+				if (outFormat == HTML)
+					outStream << "<li>";
+				else
+					outStream << endl << endl;
+				break;
+			case LIST_ITEM_CLASS_SUCCESS:
+				if (outFormat == HTML)
+					outStream << "<li class='success'>";
+				else
+					outStream << endl << "*  ";
+				break;
+			case LIST_ITEM_CLASS_WARN:
+				if (outFormat == HTML)
+					outStream << "<li class='warn'>";
+				else
+					outStream << endl << "*  ";
+				break;
+			case LIST_ITEM_CLASS_ERROR:
+				if (outFormat == HTML)
+					outStream << "<li class='error'>";
+				else
+					outStream << endl << "*  ";
+				break;
+			case SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN:
+				if (outFormat == HTML)
+					outStream << "<span id='unrecPluginsSubmitNote'>";
+				break;
+			case SPAN_CLASS_MOD_OPEN:
+				if (outFormat == HTML)
+					outStream << "<span class='mod'>";
+				break;
+			case SPAN_CLASS_VERSION_OPEN:
+				if (outFormat == HTML)
+					outStream << "<span class='version'>&nbsp;";
+				else
+					outStream << " ";
+				break;
+			case SPAN_CLASS_CRC_OPEN:
+				if (outFormat == HTML)
+					outStream << "<span class='crc'>&nbsp;";
+				else
+					outStream << " ";
+				break;
+			case SPAN_CLASS_ACTIVE_OPEN:
+				if (outFormat == HTML)
+					outStream << "<span class='active'>&nbsp;";
+				else
+					outStream << " ";
+				break;
+			case SPAN_CLASS_MESSAGE_OPEN:
+				if (outFormat == HTML)
+					outStream << "<span class='message'>";
+				break;
+			case SPAN_CLOSE:
+				if (outFormat == HTML)
+					outStream << "</span>";
+				break;
+			case ITALIC_OPEN:
+				if (outFormat == HTML)
+					outStream << "<i>";
+				break;
+			case ITALIC_CLOSE:
+				if (outFormat == HTML)
+					outStream << "</i>";
+				break;
+			case BLOCKQUOTE_OPEN:
+				if (outFormat == HTML)
+					outStream << "<blockquote>";
+				else
+					outStream << endl << endl;
+				break;
+			case BLOCKQUOTE_CLOSE:
+				if (outFormat == HTML)
+					outStream << "</blockquote>";
+				else
+					outStream << endl << endl;
+				break;
+			case VAR_OPEN:
+				if (outFormat == HTML)
+					outStream << "<var>";
+				else
+					outStream << "\"";
+				break;
+			case VAR_CLOSE:
+				if (outFormat == HTML)
+					outStream << "</var>";
+				else
+					outStream << "\"";
+				break;
+			default:
+				break;
 		}
 		return *this;
 	}
@@ -448,7 +448,7 @@ namespace boss {
 		//Need to handle web addresses. Recognised are those in the following formats:
 		//"http:someAddress", "http:someAddress label", "https:someAddress", "https:someAddress label", "file:somelocalAddress", "file:someLocalAddress label"
 
-		size_t pos1,pos2,pos3;
+		size_t pos1, pos2, pos3;
 		string link, label, dq;
 		string addressTypes[] = {
 			"http:",
@@ -462,7 +462,7 @@ namespace boss {
 			dq = "\"";
 
 		//Do replacements for all addressTypes.
-		for (uint32_t i=0; i < 2; i++) {
+		for (uint32_t i = 0; i < 2; i++) {
 			pos1 = data.find(dq + addressTypes[i]);
 			while (pos1 != string::npos) {
 				pos1 += dq.length();
@@ -557,8 +557,7 @@ namespace boss {
 		//Need to temporarily turn off escaping of special characters so that <var> and </var> are printed correctly.
 		bool wasEscaped = escapeHTMLSpecialChars;
 
-		for (size_t j=0;j<linesSize;j++) {
-
+		for (size_t j = 0; j < linesSize; j++) {
 			string rObject = varOpen + EscapeHTMLSpecial(r.Object()) + varClose;
 			string lObject = varOpen + EscapeHTMLSpecial(lines[j].Object()) + varClose;
 
@@ -803,14 +802,14 @@ namespace boss {
 			formattedOut << LIST_ITEM_CLASS_SUCCESS << translate("No change in recognised plugin list since last run.");
 
 		size_t size = parsingErrors.size();  //First print parser/syntax error messages.
-		for (size_t i=0; i < size; i++)
+		for (size_t i = 0; i < size; i++)
 			formattedOut << parsingErrors[i];
 
 		formattedOut << criticalError.AsString();		//Print any critical errors.
 
 		formattedOut.SetHTMLSpecialEscape(true);
 		size = globalMessages.size();
-		for (size_t i=0; i < size; i++)
+		for (size_t i = 0; i < size; i++)
 			formattedOut << globalMessages[i];  //Print global messages.
 		formattedOut.SetHTMLSpecialEscape(false);
 

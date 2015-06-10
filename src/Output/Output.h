@@ -102,15 +102,15 @@ namespace boss {
 		Outputter(const uint32_t format, const Rule r);
 		Outputter(const uint32_t format, const logFormatting l);
 
-		void SetFormat(const uint32_t format);	//Sets the formatting type of the output.
-		void SetHTMLSpecialEscape(const bool shouldEscape);	//Set when formatting is set, generally, but this can be used to override.
-		void Clear();			//Erase all current content.
+		void SetFormat(const uint32_t format);  //Sets the formatting type of the output.
+		void SetHTMLSpecialEscape(const bool shouldEscape);  //Set when formatting is set, generally, but this can be used to override.
+		void Clear();  //Erase all current content.
 
 		bool Empty() const;
 		uint32_t GetFormat() const;
 		bool GetHTMLSpecialEscape() const;
 
-		string AsString() const;				//Outputs contents as a string.
+		string AsString() const;  //Outputs contents as a string.
 
 		Outputter& operator= (const Outputter& o);
 		Outputter& operator<< (const string s);
@@ -124,12 +124,13 @@ namespace boss {
 		Outputter& operator<< (const Message m);
 		Outputter& operator<< (const ParsingError e);
 		Outputter& operator<< (const Rule r);
+
 	private:
 		stringstream outStream;
-		uint32_t outFormat;			//The formatting type of the output.
-		bool escapeHTMLSpecialChars;	//Should special characters be escaped from non-formatting input?
+		uint32_t outFormat;  //The formatting type of the output.
+		bool escapeHTMLSpecialChars;  //Should special characters be escaped from non-formatting input?
 
-		string EscapeHTMLSpecial(string text);	//Performs the HTML escaping.
+		string EscapeHTMLSpecial(string text);  //Performs the HTML escaping.
 		string EscapeHTMLSpecial(char c);
 	};
 
@@ -139,7 +140,7 @@ namespace boss {
 		BossLog(const uint32_t format);
 
 		void SetFormat(const uint32_t format);
-		void Save(const fs::path file, const bool overwrite);		//Saves contents to file. Throws boss_error exception on fail.
+		void Save(const fs::path file, const bool overwrite);  //Saves contents to file. Throws boss_error exception on fail.
 		void Clear();
 
 		uint32_t recognised;
@@ -161,6 +162,7 @@ namespace boss {
 
 		vector<ParsingError> parsingErrors;
 		vector<Message> globalMessages;
+
 	private:
 		uint32_t logFormat;
 		bool recognisedHasChanged;

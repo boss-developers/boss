@@ -312,7 +312,7 @@ namespace boss {
 		messages.clear();
 	}
 
-	bool	Item::EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string,uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool * condResult, ParsingError& errorBuffer, const Game& parentGame) {
+	bool	Item::EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string, uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool * condResult, ParsingError& errorBuffer, const Game& parentGame) {
 		if (Type() == ENDGROUP)
 			return true;
 
@@ -408,6 +408,9 @@ namespace boss {
 					}
 				}
 				//Then scan through loadorder, removing any plugins that aren't in the data folder.
+				/* MCP Note: Couldn't we change this to a for-loop instead? Maybe a for-each loop? Would probably look better than a while-loop.
+				 * Requires C++11 but that's already a requirement so should be fine.
+				 */
 				vector<Item>::iterator itemIter = items.begin();
 				while (itemIter != items.end()) {
 					if (!itemIter->Exists(parentGame))
@@ -418,7 +421,7 @@ namespace boss {
 			}
 			max = items.size();
 			//Now scan through Data folder. Add any plugins that aren't already in loadorder to loadorder, at the end.
-			for (fs::directory_iterator itr(path); itr!=fs::directory_iterator(); ++itr) {
+			for (fs::directory_iterator itr(path); itr != fs::directory_iterator(); ++itr) {
 				if (fs::is_regular_file(itr->status())) {
 					fs::path filename = itr->path().filename();
 					string ext = filename.extension().string();
@@ -439,9 +442,8 @@ namespace boss {
 			}
 			LOG_DEBUG("Reading user mods done: %" PRIuS " total mods found.", items.size());
 			itemComparator ic(parentGame);
-			sort(items.begin(),items.end(), ic);
+			sort(items.begin(), items.end(), ic);
 		} else if (path == parentGame.LoadOrderFile() || path == parentGame.ActivePluginsFile()) {
-
 			//loadorder.txt is simple enough that we can avoid needing the full modlist parser which has the crashing issue.
 			//It's just a text file with a plugin filename on each line. Skip lines which are blank or start with '#'.
 
@@ -474,7 +476,7 @@ namespace boss {
 			}
 
 			itemComparator ic(parentGame);
-			sort(items.begin(),items.end(), ic);  //Does this work?
+			sort(items.begin(), items.end(), ic);  //Does this work?
 		} else {
 			Skipper skipper;
 			modlist_grammar grammar;
@@ -490,7 +492,7 @@ namespace boss {
 			if (!fs::exists(path))
 				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, path.string());
 
-			fileToBuffer(path,contents);
+			fileToBuffer(path, contents);
 
 			begin = contents.begin();
 			end = contents.end();
@@ -560,7 +562,7 @@ namespace boss {
 	}
 
 	void	ItemList::SavePluginNames(const Game& parentGame, const fs::path file, const bool activeOnly, const bool doEncodingConversion) {
-		string badFilename = "",  contents;
+		string badFilename = "", contents;
 		ItemList activePlugins;
 		size_t numActivePlugins;
 		if (activeOnly) {
@@ -582,7 +584,7 @@ namespace boss {
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 
 		size_t max = items.size();
-		for (size_t i=0; i < max; i++) {
+		for (size_t i = 0; i < max; i++) {
 			if (items[i].Type() == MOD) {
 				if (activeOnly && (activePlugins.FindItem(items[i].Name(), MOD) == numActivePlugins || (parentGame.Id() == SKYRIM && items[i].Name() == "Skyrim.esm")))
 					continue;
@@ -612,7 +614,7 @@ namespace boss {
 			ItemList active;
 			active.Load(parentGame, parentGame.ActivePluginsFile());
 			vector<Item> items = active.Items();
-			for (size_t i=0, max=items.size(); i < max; i++) {
+			for (size_t i = 0, max = items.size(); i < max; i++) {
 				activePlugins.insert(to_lower_copy(items[i].Name()));
 			}
 		}
@@ -693,7 +695,7 @@ namespace boss {
 		//Store installed mods in a hashset. Case insensitivity not required as regex itself is case-insensitive.
 		boost::unordered_set<string> hashset;
 		boost::unordered_set<string>::iterator setPos;
-		for (fs::directory_iterator itr(parentGame.DataFolder()); itr!=fs::directory_iterator(); ++itr) {
+		for (fs::directory_iterator itr(parentGame.DataFolder()); itr != fs::directory_iterator(); ++itr) {
 			if (fs::is_regular_file(itr->status())) {
 				fs::path filename = itr->path().filename();
 				string ext = filename.extension().string();
@@ -753,7 +755,7 @@ namespace boss {
 
 	size_t		ItemList::FindItem			(const string name, const uint32_t type) const {
 		size_t max = items.size();
-		for (size_t i=0; i < max; i++) {
+		for (size_t i = 0; i < max; i++) {
 			if (items[i].Type() == type && boost::iequals(items[i].Name(), name))
 				return i;
 		}
@@ -762,7 +764,7 @@ namespace boss {
 
 	size_t		ItemList::FindLastItem		(const string name, const uint32_t type) const {
 		size_t max = items.size();
-		for (vector<Item>::const_iterator it=items.end(), begin=items.begin(); it != begin; --it) {
+		for (vector<Item>::const_iterator it = items.end(), begin = items.begin(); it != begin; --it) {
 			if (it->Type() == type && boost::iequals(it->Name(), name))
 				return size_t(it - begin);
 		}
@@ -770,12 +772,12 @@ namespace boss {
 	}
 
 	size_t		ItemList::GetLastMasterPos(const Game& parentGame) const {
-		size_t i=0;
+		size_t i = 0;
 		while (i < items.size() && (items[i].IsGroup() || items[i].IsMasterFile(parentGame))) {  //SLLOOOOOWWWWW probably.
 			i++;
 		}
 		if (i > 0)
-			return i-1;  //i is position of first plugin.
+			return i - 1;  //i is position of first plugin.
 		else
 			return 0;
 	}
@@ -809,7 +811,7 @@ namespace boss {
 		return masterlistVariables;
 	}
 
-	boost::unordered_map<string,uint32_t> ItemList::FileCRCs() const {
+	boost::unordered_map<string, uint32_t> ItemList::FileCRCs() const {
 		return fileCRCs;
 	}
 
@@ -840,7 +842,7 @@ namespace boss {
 		masterlistVariables = variables;
 	}
 
-	void ItemList::FileCRCs(const boost::unordered_map<string,uint32_t> crcs) {
+	void ItemList::FileCRCs(const boost::unordered_map<string, uint32_t> crcs) {
 		fileCRCs = crcs;
 	}
 
@@ -862,11 +864,11 @@ namespace boss {
 	}
 
 	void ItemList::Insert(const size_t pos, const vector<Item> source, const size_t sourceStart, const size_t sourceEnd) {
-		items.insert(items.begin()+pos, source.begin()+sourceStart, source.begin()+sourceEnd);
+		items.insert(items.begin() + pos, source.begin() + sourceStart, source.begin() + sourceEnd);
 	}
 
 	void ItemList::Insert(const size_t pos, const Item item) {
-		items.insert(items.begin()+pos, item);
+		items.insert(items.begin() + pos, item);
 	}
 
 	void ItemList::Move(size_t newPos, const Item item) {
@@ -913,7 +915,7 @@ namespace boss {
 			size_t pos = object.find(':');
 			if (pos == string::npos)
 				return false;
-			string keyString = object.substr(0,pos);
+			string keyString = object.substr(0, pos);
 			if (keyString == "SAY" || keyString == "TAG" || keyString == "REQ" || keyString == "INC" || keyString == "DIRTY" || keyString == "WARN" || keyString == "ERROR")
 				return true;
 			else
@@ -923,67 +925,67 @@ namespace boss {
 
 	string	RuleLine::KeyToString		() const {
 		switch(key) {
-		case ADD:
-			return "ADD";
-		case OVERRIDE:
-			return "OVERRIDE";
-		case FOR:
-			return "FOR";
-		case BEFORE:
-			return "BEFORE";
-		case AFTER:
-			return "AFTER";
-		case TOP:
-			return "TOP";
-		case BOTTOM:
-			return "BOTTOM";
-		case APPEND:
-			return "APPEND";
-		case REPLACE:
-			return "REPLACE";
-		default:
-			return "NONE";
+			case ADD:
+				return "ADD";
+			case OVERRIDE:
+				return "OVERRIDE";
+			case FOR:
+				return "FOR";
+			case BEFORE:
+				return "BEFORE";
+			case AFTER:
+				return "AFTER";
+			case TOP:
+				return "TOP";
+			case BOTTOM:
+				return "BOTTOM";
+			case APPEND:
+				return "APPEND";
+			case REPLACE:
+				return "REPLACE";
+			default:
+				return "NONE";
 		}
 	}
 
 	Message RuleLine::ObjectAsMessage		() const {
 		switch(object[0]) {
-		case '?':
-			return Message(SAY, object.substr(1));
-		case '$':
-			return Message(SAY, object.substr(1));
-		case '^':
-			return Message(SAY, object.substr(1));
-		case '%':
-			return Message(TAG, object.substr(1));
-		case ':':
-			return Message(REQ, object.substr(1));
-		case '"':
-			return Message(INC, object.substr(1));
-		case '*':
-			return Message(ERR, object.substr(1));
-		default:
-			size_t pos = object.find(':');
-			if (pos == string::npos)
-				return Message(NONE, "");
+			case '?':
+				return Message(SAY, object.substr(1));
+			case '$':
+				return Message(SAY, object.substr(1));
+			case '^':
+				return Message(SAY, object.substr(1));
+			case '%':
+				return Message(TAG, object.substr(1));
+			case ':':
+				return Message(REQ, object.substr(1));
+			case '"':
+				return Message(INC, object.substr(1));
+			case '*':
+				return Message(ERR, object.substr(1));
+			default:
+				size_t pos = object.find(':');
+				if (pos == string::npos)
+					return Message(NONE, "");
 
-			string keyString = object.substr(0,pos);
-			if (keyString == "SAY")
-				return Message(SAY, object.substr(pos+1));
-			else if (keyString == "TAG")
-				return Message(TAG, object.substr(pos+1));
-			else if (keyString == "REQ")
-				return Message(REQ, object.substr(pos+1));
-			else if (keyString == "INC")
-				return Message(INC, object.substr(pos+1));
-			else if (keyString == "DIRTY")
-				return Message(DIRTY, object.substr(pos+1));
-			else if (keyString == "WARN")
-				return Message(WARN, object.substr(pos+1));
-			else if (keyString == "ERROR")
-				return Message(ERR, object.substr(pos+1));
-			else
-				return Message(NONE, object.substr(pos+1));
+				string keyString = object.substr(0, pos);
+				if (keyString == "SAY")
+					return Message(SAY, object.substr(pos + 1));
+				else if (keyString == "TAG")
+					return Message(TAG, object.substr(pos + 1));
+				else if (keyString == "REQ")
+					return Message(REQ, object.substr(pos + 1));
+				else if (keyString == "INC")
+					return Message(INC, object.substr(pos + 1));
+				else if (keyString == "DIRTY")
+					return Message(DIRTY, object.substr(pos + 1));
+				else if (keyString == "WARN")
+					return Message(WARN, object.substr(pos + 1));
+				else if (keyString == "ERROR")
+					return Message(ERR, object.substr(pos + 1));
+				else
+					return Message(NONE, object.substr(pos + 1));
 		}
 	}
 
@@ -1024,7 +1026,7 @@ namespace boss {
 		if (pos == 0)
 			return RuleLine(Key(), Object());  //Return sort line.
 		else if (pos - 1 < lines.size())
-			return lines[pos-1];
+			return lines[pos - 1];
 		else
 			return RuleLine();
 	}
@@ -1059,7 +1061,6 @@ namespace boss {
 		grammar.SetErrorBuffer(&errorBuffer);
 
 		if (!fs::exists(file)) {
-
 			//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 			ofstream userlist_file(file.string(), ios_base::binary);
 			if (!userlist_file.fail())
@@ -1070,7 +1071,7 @@ namespace boss {
 			return;
 		}
 
-		fileToBuffer(file,contents);
+		fileToBuffer(file, contents);
 
 		begin = contents.begin();
 		end = contents.end();
@@ -1084,9 +1085,8 @@ namespace boss {
 	}
 
 	void RuleList::Save(const fs::path file) {
-
 		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
-		ofstream outFile(file.string(),ios_base::trunc);
+		ofstream outFile(file.string(), ios_base::trunc);
 
 		if (outFile.fail()) {  //Provide error message if it can't be written.
 			LOG_ERROR("Backup cannot be saved.");
@@ -1108,7 +1108,7 @@ namespace boss {
 
 	void RuleList::CheckSyntax(const Game& parentGame) {
 		// Loop through rules, check syntax of each. If a rule has invalid syntax, remove it.
-		vector<Rule>::iterator it=rules.begin();
+		vector<Rule>::iterator it = rules.begin();
 		while(it != rules.end()) {
 			string ruleKeyString = it->KeyToString();
 			Item ruleObject = Item(it->Object());
@@ -1126,7 +1126,7 @@ namespace boss {
 				}
 				vector<RuleLine> lines = it->Lines();
 				bool hasSortLine = false, hasReplaceLine = false;
-				for (size_t i=0, max=lines.size(); i<max; i++) {
+				for (size_t i = 0, max = lines.size(); i < max; i++) {
 					Item subject = Item(lines[i].Object());
 					if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {
 						if (hasSortLine)
@@ -1187,7 +1187,7 @@ namespace boss {
 
 	size_t RuleList::FindRule(const string ruleObject, const bool onlyEnabled) const {
 		size_t max = rules.size();
-		for (size_t i=0; i<max; i++) {
+		for (size_t i = 0; i < max; i++) {
 			if ((onlyEnabled && rules[i].Enabled()) || !onlyEnabled) {
 				if (boost::iequals(rules[i].Object(), ruleObject))
 					return i;
@@ -1229,7 +1229,7 @@ namespace boss {
 	}
 
 	void RuleList::Insert(const size_t pos, const Rule rule) {
-		rules.insert(rules.begin()+pos, rule);
+		rules.insert(rules.begin() + pos, rule);
 	}
 
 	void RuleList::Replace(const size_t pos, const Rule rule) {
@@ -1251,7 +1251,7 @@ namespace boss {
 		skipper.SkipIniComments(true);
 		grammar.SetErrorBuffer(&errorBuffer);
 
-		fileToBuffer(file,contents);
+		fileToBuffer(file, contents);
 
 		begin = contents.begin();
 		end = contents.end();
@@ -1269,7 +1269,6 @@ namespace boss {
 	}
 
 	void	Settings::Save			(const fs::path file, const uint32_t currentGameId) {
-
 		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 		ofstream ini(file.string(), ios_base::trunc);
 		if (ini.fail())
@@ -1393,8 +1392,7 @@ namespace boss {
 					gl_last_game = FALLOUTNV;
 				else if (iter->second == "Skyrim")
 					gl_last_game = SKYRIM;
-			}
-			else if (iter->first == "sLanguage") {
+			} else if (iter->first == "sLanguage") {
 				if (iter->second == "english")
 					gl_language = ENGLISH;
 				else if (iter->second == "spanish")

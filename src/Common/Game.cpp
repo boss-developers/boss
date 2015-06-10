@@ -47,7 +47,7 @@ namespace boss {
 
 	uint32_t AutodetectGame(vector<uint32_t> detectedGames) {  //Throws exception if error.
 		if (gl_last_game != AUTODETECT) {
-			for (size_t i=0, max = detectedGames.size(); i < max; i++) {
+			for (size_t i = 0, max = detectedGames.size(); i < max; i++) {
 				if (gl_last_game == detectedGames[i])
 					return gl_last_game;
 			}
@@ -72,23 +72,23 @@ namespace boss {
 
 	BOSS_COMMON uint32_t DetectGame(vector<uint32_t>& detectedGames, vector<uint32_t>& undetectedGames) {
 		//Detect all installed games.
-		if (Game(OBLIVION, "", true).IsInstalled()) //Look for Oblivion.
+		if (Game(OBLIVION, "", true).IsInstalled())  //Look for Oblivion.
 			detectedGames.push_back(OBLIVION);
 		else
 			undetectedGames.push_back(OBLIVION);
-		if (Game(NEHRIM, "", true).IsInstalled()) //Look for Nehrim.
+		if (Game(NEHRIM, "", true).IsInstalled())  //Look for Nehrim.
 			detectedGames.push_back(NEHRIM);
 		else
 			undetectedGames.push_back(NEHRIM);
-		if (Game(SKYRIM, "", true).IsInstalled()) //Look for Skyrim.
+		if (Game(SKYRIM, "", true).IsInstalled())  //Look for Skyrim.
 			detectedGames.push_back(SKYRIM);
 		else
 			undetectedGames.push_back(SKYRIM);
-		if (Game(FALLOUT3, "", true).IsInstalled()) //Look for Fallout 3.
+		if (Game(FALLOUT3, "", true).IsInstalled())  //Look for Fallout 3.
 			detectedGames.push_back(FALLOUT3);
 		else
 			undetectedGames.push_back(FALLOUT3);
-		if (Game(FALLOUTNV, "", true).IsInstalled()) //Look for Fallout New Vegas.
+		if (Game(FALLOUTNV, "", true).IsInstalled())  //Look for Fallout New Vegas.
 			detectedGames.push_back(FALLOUTNV);
 		else
 			undetectedGames.push_back(FALLOUTNV);
@@ -123,13 +123,10 @@ namespace boss {
 		explicit ihash(std::locale const& l) : locale_(l) {}
 
 		template <typename String>
-		std::size_t operator()(String const& x) const
-		{
+		std::size_t operator()(String const& x) const {
 			std::size_t seed = 0;
 
-			for(typename String::const_iterator it = x.begin();
-				it != x.end(); ++it)
-			{
+			for(typename String::const_iterator it = x.begin(); it != x.end(); ++it) {
 				boost::hash_combine(seed, std::toupper(*it, locale_));
 			}
 
@@ -395,7 +392,7 @@ namespace boss {
 		LOG_INFO("Populating hashset with modlist.");
 		vector<Item> items = modlist.Items();
 		size_t modlistSize = items.size();
-		for (size_t i=0; i<modlistSize; i++) {
+		for (size_t i = 0; i < modlistSize; i++) {
 			if (items[i].Type() == MOD)
 				mHashset.insert(items[i].Name());
 		}
@@ -403,7 +400,7 @@ namespace boss {
 		LOG_INFO("Populating hashset with userlist.");
 		vector<Rule> rules = userlist.Rules();
 		size_t userlistSize = rules.size();
-		for (size_t i=0; i<userlistSize; i++) {
+		for (size_t i = 0; i < userlistSize; i++) {
 			Item ruleObject(rules[i].Object());
 			if (uHashset.find(ruleObject.Name()) == uHashset.end())  //Mod or group not already in hashset, so add to hashset.
 				uHashset.insert(ruleObject.Name());
@@ -417,7 +414,7 @@ namespace boss {
 		LOG_INFO("Comparing hashset against masterlist.");
 		size_t addedNum = 0;
 		items = masterlist.Items();
-		for (size_t i=0, max = items.size(); i < max; i++) {
+		for (size_t i = 0, max = items.size(); i < max; i++) {
 			if (items[i].Type() == MOD) {
 				//Check to see if the mod is in the hashset. If it is, also check if
 				//the mod is already in the holding vector. If not, add it.
@@ -476,7 +473,7 @@ namespace boss {
 			size_t max = lines.size();
 			Item ruleItem(ruleIter->Object());
 			if (ruleItem.IsPlugin()) {  //Plugin: Can sort or add messages.
-				if (ruleIter->Key() != FOR) { //First non-rule line is a sort line.
+				if (ruleIter->Key() != FOR) {  //First non-rule line is a sort line.
 					if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {
 						Item mod;
 						modlistPos1 = modlist.FindItem(ruleItem.Name(), MOD);
@@ -587,7 +584,7 @@ namespace boss {
 				vector<Item> items = modlist.Items();
 				group.assign(items.begin() + modlistPos1, items.begin() + modlistPos2+1);
 				//Now erase group from modlist.
-				modlist.Erase(modlistPos1,modlistPos2+1);
+				modlist.Erase(modlistPos1, modlistPos2+1);
 				//Find the group to sort relative to and insert it before or after it as appropriate.
 				if (lines[i].Key() == BEFORE)
 					modlistPos2 = modlist.FindItem(lines[i].Object(), BEGINGROUP);  //Find the start.
@@ -607,7 +604,7 @@ namespace boss {
 				//Now insert the group.
 				modlist.Insert(modlistPos2, group, 0, group.size());
 			}
-			if (!messageLineFail) { //Print success message.
+			if (!messageLineFail) {  //Print success message.
 				LOG_DEBUG("Rule #%" PRIuS " applied successfully.", ruleNo);
 				bosslog.userRules << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << *ruleIter << TABLE_DATA << "✓" << TABLE_DATA;
 			}
@@ -653,7 +650,7 @@ namespace boss {
 			if (!fs::is_directory(SEPluginsFolder())) {
 				LOG_DEBUG("Script extender plugins directory not detected.");
 			} else {
-				for (fs::directory_iterator itr(SEPluginsFolder()); itr!=fs::directory_iterator(); ++itr) {
+				for (fs::directory_iterator itr(SEPluginsFolder()); itr != fs::directory_iterator(); ++itr) {
 					const string ext = itr->path().extension().string();
 					if (fs::is_regular_file(itr->status()) && boost::iequals(ext, ".dll")) {
 						string CRC = IntToHexString(GetCrc32(itr->path()));
@@ -685,7 +682,7 @@ namespace boss {
 			vector<Item> pluginsEntries = pluginsList.Items();
 			size_t pluginsMax = pluginsEntries.size();
 			LOG_INFO("Populating hashset with ItemList contents.");
-			for (size_t i=0; i<pluginsMax; i++) {
+			for (size_t i = 0; i < pluginsMax; i++) {
 				if (pluginsEntries[i].Type() == MOD)
 					hashset.insert(boost::to_lower_copy(pluginsEntries[i].Name()));
 			}
@@ -701,7 +698,7 @@ namespace boss {
 		boost::unordered_set<string> unrecognised;
 		vector<Item> items = modlist.Items();
 		size_t max = items.size();
-		for (size_t i=modlist.LastRecognisedPos()+1; i < max; i++)
+		for (size_t i = modlist.LastRecognisedPos() + 1; i < max; i++)
 			unrecognised.insert(items[i].Name());
 
 		LOG_INFO("Enforcing masters before plugins rule...");
@@ -738,7 +735,7 @@ namespace boss {
 			buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
 			string version = itemIter->GetVersion(*this).AsString();
 			if (!version.empty())
-					buffer << SPAN_CLASS_VERSION_OPEN << loc::translate("Version ") << version << SPAN_CLOSE;
+				buffer << SPAN_CLASS_VERSION_OPEN << loc::translate("Version ") << version << SPAN_CLOSE;
 			if (hashset.find(boost::to_lower_copy(itemIter->Name())) != hashset.end())  //Plugin is active.
 				buffer << SPAN_CLASS_ACTIVE_OPEN << loc::translate("Active") << SPAN_CLOSE;
 			else
@@ -768,7 +765,7 @@ namespace boss {
 				vector<Message> messages = itemIter->Messages();
 				size_t jmax = messages.size();
 				buffer << LIST_OPEN;
-				for (size_t j=0; j < jmax; j++) {
+				for (size_t j = 0; j < jmax; j++) {
 					buffer << messages[j];
 					bosslog.messages++;
 					if (messages[j].Key() == WARN)
