@@ -36,29 +36,29 @@ namespace boss {
 	using boost::locale::translate;
 
 	//Return codes, mostly error codes.
-	BOSS_COMMON const uint32_t BOSS_OK											= 0;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_READ_FAIL						= 2;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_WRITE_FAIL						= 3;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_NOT_UTF8							= 4;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_NOT_FOUND						= 5;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_PARSE_FAIL						= 6;
-	BOSS_COMMON const uint32_t BOSS_ERROR_CONDITION_EVAL_FAIL					= 7;
-	BOSS_COMMON const uint32_t BOSS_ERROR_REGEX_EVAL_FAIL						= 8;
-	BOSS_COMMON const uint32_t BOSS_ERROR_NO_GAME_DETECTED						= 9;
-	BOSS_COMMON const uint32_t BOSS_ERROR_ENCODING_CONVERSION_FAIL				= 10;
-	BOSS_COMMON const uint32_t BOSS_ERROR_PLUGIN_BEFORE_MASTER					= 39;
-	BOSS_COMMON const uint32_t BOSS_ERROR_INVALID_SYNTAX						= 40;
+	BOSS_COMMON const uint32_t BOSS_OK                                  = 0;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_READ_FAIL                = 2;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_WRITE_FAIL               = 3;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_NOT_UTF8                 = 4;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_NOT_FOUND                = 5;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_PARSE_FAIL               = 6;
+	BOSS_COMMON const uint32_t BOSS_ERROR_CONDITION_EVAL_FAIL           = 7;
+	BOSS_COMMON const uint32_t BOSS_ERROR_REGEX_EVAL_FAIL               = 8;
+	BOSS_COMMON const uint32_t BOSS_ERROR_NO_GAME_DETECTED              = 9;
+	BOSS_COMMON const uint32_t BOSS_ERROR_ENCODING_CONVERSION_FAIL      = 10;
+	BOSS_COMMON const uint32_t BOSS_ERROR_PLUGIN_BEFORE_MASTER          = 39;
+	BOSS_COMMON const uint32_t BOSS_ERROR_INVALID_SYNTAX                = 40;
 
-	BOSS_COMMON const uint32_t BOSS_ERROR_GIT_ERROR                             = 41;
+	BOSS_COMMON const uint32_t BOSS_ERROR_GIT_ERROR                     = 41;
 
-	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL			= 15;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL			= 16;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_RENAME_FAIL					= 17;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_DELETE_FAIL					= 18;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL				= 19;
-	BOSS_COMMON const uint32_t BOSS_ERROR_FS_ITER_DIRECTORY_FAIL				= 20;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL    = 15;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL   = 16;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_RENAME_FAIL           = 17;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_DELETE_FAIL           = 18;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL      = 19;
+	BOSS_COMMON const uint32_t BOSS_ERROR_FS_ITER_DIRECTORY_FAIL        = 20;
 
-	BOSS_COMMON const uint32_t BOSS_ERROR_GUI_WINDOW_INIT_FAIL					= 30;
+	BOSS_COMMON const uint32_t BOSS_ERROR_GUI_WINDOW_INIT_FAIL          = 30;
 
 	////////////////////////////////
 	// boss_error Class Functions
@@ -91,6 +91,7 @@ namespace boss {
 
 	//Returns the error string for the object.
 	string boss_error::getString() const {
+		// TODO(MCP): Convert this to a switch-statement.
 		if (errCode == BOSS_OK)
 			return translate("No error.");
 		else if (errCode == BOSS_ERROR_FILE_READ_FAIL)

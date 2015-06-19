@@ -42,8 +42,8 @@ namespace boss {
 	namespace loc = boost::locale;
 
 	//DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
-	BOSS_COMMON const uint32_t LOMETHOD_TIMESTAMP	= 0;
-	BOSS_COMMON const uint32_t LOMETHOD_TEXTFILE	= 1;
+	BOSS_COMMON const uint32_t LOMETHOD_TIMESTAMP = 0;
+	BOSS_COMMON const uint32_t LOMETHOD_TEXTFILE  = 1;
 
 	uint32_t AutodetectGame(vector<uint32_t> detectedGames) {  //Throws exception if error.
 		if (gl_last_game != AUTODETECT) {

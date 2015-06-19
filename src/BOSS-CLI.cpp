@@ -116,9 +116,9 @@ int progress(const git_transfer_progress *stats, void *payload) {
 int main(int argc, char *argv[]) {
 	Settings ini;
 	Game game;
-	string gameStr;							// allow for autodetection override
+	string gameStr;  // allow for autodetection override
 	string bosslogFormat;
-	fs::path sortfile;						//modlist/masterlist to sort plugins using.
+	fs::path sortfile;  //modlist/masterlist to sort plugins using.
 
 
 	///////////////////////////////
@@ -150,6 +150,7 @@ int main(int argc, char *argv[]) {
 	gen.add_messages_domain("messages");
 
 	//Set the locale to get encoding and language conversions working correctly.
+	// TODO(MCP): Replace this with a switch statement?
 	string localeId = "";
 	if (gl_language == ENGLISH)
 		localeId = "en.UTF-8";
@@ -173,11 +174,12 @@ int main(int argc, char *argv[]) {
 	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
 	boost::filesystem::path::imbue(loc);
 
+
 	//////////////////////////////
 	// Handle Command Line Args
 	//////////////////////////////
 
-	// declare the supported options
+	// Declare the supported options
 	po::options_description opts("Options");
 	opts.add_options()
 		("help,h", translate("produces this help message").str().c_str())
@@ -220,7 +222,7 @@ int main(int argc, char *argv[]) {
 		("trial-run,t", po::value(&gl_trial_run)->zero_tokens(),
 		translate("run BOSS without actually making any changes to load order").str().c_str());
 
-	// parse command line arguments
+	// Parse command line arguments
 	po::variables_map vm;
 	try {
 		po::store(po::command_line_parser(argc, argv).options(opts).run(), vm);
@@ -233,14 +235,15 @@ int main(int argc, char *argv[]) {
 		Fail();
 	}
 
-	// set alternative output stream for logger and whether to track log statement origins
+	// Set alternative output stream for logger and whether to track log statement origins
+	// MCP Note: Could this be changed to an if-else statement as opposed to two if-statements? Would be more efficient due to the lack of a check.
 	if (gl_debug_verbosity > 0)
 		g_logger.setStream(debug_log_path.string().c_str());
 	if (gl_debug_verbosity < 0) {
 		LOG_ERROR("invalid option for 'verbose' parameter: %d", gl_debug_verbosity);
 		Fail();
 	}
-	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));  // it's ok if this number is too high.  setVerbosity will handle it
+	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));  // It's ok if this number is too high, setVerbosity will handle it
 
 	if (vm.count("help")) {
 		ShowUsage(opts);
@@ -262,12 +265,12 @@ int main(int argc, char *argv[]) {
 		Fail();
 	}
 	if (vm.count("game")) {
-		// sanity check and parse argument
-		if      (boost::iequals("Oblivion",   gameStr))
+		// Sanity check and parse argument
+		if (boost::iequals("Oblivion", gameStr))
 			gl_game = OBLIVION;
-		else if (boost::iequals("Fallout3",   gameStr))
+		else if (boost::iequals("Fallout3", gameStr))
 			gl_game = FALLOUT3;
-		else if (boost::iequals("Nehrim",     gameStr))
+		else if (boost::iequals("Nehrim", gameStr))
 			gl_game = NEHRIM;
 		else if (boost::iequals("FalloutNV", gameStr))
 			gl_game = FALLOUTNV;
@@ -280,7 +283,7 @@ int main(int argc, char *argv[]) {
 		LOG_DEBUG("game ini setting overridden with: '%s' (%d)", gameStr.c_str(), gl_game);
 	}
 	if (vm.count("format")) {
-		// sanity check and parse argument
+		// Sanity check and parse argument
 		string bosslogFormat = vm["format"].as<string>();
 		if (bosslogFormat == "html")
 			gl_log_format = HTML;
@@ -314,7 +317,7 @@ int main(int argc, char *argv[]) {
 				size_t ans;
 				//Ask user to choose game.
 				cout << endl << translate("Please pick which game to run BOSS for:") << endl;
-				for (size_t i=0; i < detected.size(); i++)
+				for (size_t i = 0; i < detected.size(); i++)
 					cout << i << " : " << Game(detected[i], "", true).Name() << endl;
 
 				cin >> ans;
@@ -341,7 +344,7 @@ int main(int argc, char *argv[]) {
 		}
 		if (!gl_silent)
 			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
-		exit(1);  //fail in screaming heap.
+		exit(1);  //Fail in screaming heap.
 	}
 	game.bosslog.SetFormat(gl_log_format);
 	game.bosslog.parsingErrors.push_back(ini.ErrorBuffer());
@@ -379,7 +382,7 @@ int main(int argc, char *argv[]) {
 		}
 		if (!gl_silent)
 			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.
-		return (0);
+		return 0;
 	}
 
 
@@ -406,14 +409,14 @@ int main(int argc, char *argv[]) {
 		}
 		if (!gl_silent)
 			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
-		exit(1);  //fail in screaming heap.
+		exit(1);  //Fail in screaming heap.
 	}
 
 
 	/////////////////////////////////
 	// Parse Master- and Userlists
 	/////////////////////////////////
-	//masterlist parse errors are critical, ini and userlist parse errors are not.
+	//Masterlist parse errors are critical, ini and userlist parse errors are not.
 
 	//Set masterlist path to be used.
 	if (gl_revert == 1)
@@ -450,7 +453,7 @@ int main(int argc, char *argv[]) {
 		}
 		if (!gl_silent)
 			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
-		exit(1);  //fail in screaming heap.
+		exit(1);  //Fail in screaming heap.
 	}
 
 	LOG_INFO("Starting to parse userlist.");
@@ -489,7 +492,7 @@ int main(int argc, char *argv[]) {
 		}
 		if (!gl_silent)
 			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
-		exit(1);  //fail in screaming heap.
+		exit(1);  //Fail in screaming heap.
 	}
 
 	LOG_INFO("Launching boss log in browser.");

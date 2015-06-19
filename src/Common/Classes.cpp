@@ -43,34 +43,34 @@ namespace boss {
 	using boost::algorithm::to_lower_copy;
 
 	//DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
-	BOSS_COMMON const uint32_t NONE		= 0;
+	BOSS_COMMON const uint32_t NONE         = 0;
 	//RuleList keywords.
-	BOSS_COMMON const uint32_t ADD		= 1;
-	BOSS_COMMON const uint32_t OVERRIDE	= 2;
-	BOSS_COMMON const uint32_t FOR		= 3;
-	BOSS_COMMON const uint32_t BEFORE	= 4;
-	BOSS_COMMON const uint32_t AFTER	= 5;
-	BOSS_COMMON const uint32_t TOP		= 6;
-	BOSS_COMMON const uint32_t BOTTOM	= 7;
-	BOSS_COMMON const uint32_t APPEND	= 8;
-	BOSS_COMMON const uint32_t REPLACE	= 9;
+	BOSS_COMMON const uint32_t ADD          = 1;
+	BOSS_COMMON const uint32_t OVERRIDE     = 2;
+	BOSS_COMMON const uint32_t FOR          = 3;
+	BOSS_COMMON const uint32_t BEFORE       = 4;
+	BOSS_COMMON const uint32_t AFTER        = 5;
+	BOSS_COMMON const uint32_t TOP          = 6;
+	BOSS_COMMON const uint32_t BOTTOM       = 7;
+	BOSS_COMMON const uint32_t APPEND       = 8;
+	BOSS_COMMON const uint32_t REPLACE      = 9;
 	//Masterlist keywords.
-	BOSS_COMMON const uint32_t SAY		= 10;
-	BOSS_COMMON const uint32_t TAG		= 11;
-	BOSS_COMMON const uint32_t REQ		= 12;
-	BOSS_COMMON const uint32_t INC		= 13;
-	BOSS_COMMON const uint32_t DIRTY	= 14;
-	BOSS_COMMON const uint32_t WARN		= 15;
-	BOSS_COMMON const uint32_t ERR		= 16;
+	BOSS_COMMON const uint32_t SAY          = 10;
+	BOSS_COMMON const uint32_t TAG          = 11;
+	BOSS_COMMON const uint32_t REQ          = 12;
+	BOSS_COMMON const uint32_t INC          = 13;
+	BOSS_COMMON const uint32_t DIRTY        = 14;
+	BOSS_COMMON const uint32_t WARN         = 15;
+	BOSS_COMMON const uint32_t ERR          = 16;
 
 	//Item types.
-	BOSS_COMMON const uint32_t MOD			= 0;
-	BOSS_COMMON const uint32_t BEGINGROUP	= 1;
-	BOSS_COMMON const uint32_t ENDGROUP		= 2;
-	BOSS_COMMON const uint32_t REGEX		= 3;
+	BOSS_COMMON const uint32_t MOD          = 0;
+	BOSS_COMMON const uint32_t BEGINGROUP   = 1;
+	BOSS_COMMON const uint32_t ENDGROUP     = 2;
+	BOSS_COMMON const uint32_t REGEX        = 3;
 
 	/////////////////////////////////////
-	// conditionalData Class Methods
+	// ConditionalData Class Methods
 	/////////////////////////////////////
 
 	conditionalData::conditionalData() {
@@ -117,10 +117,10 @@ namespace boss {
 			begin = conditions.begin();
 			end = conditions.end();
 
-		//	iterator_type u32b(begin);
-		//	iterator_type u32e(end);
+			//iterator_type u32b(begin);
+			//iterator_type u32e(end);
 
-		//	bool r = phrase_parse(u32b, u32e, grammar, skipper, eval);
+			//bool r = phrase_parse(u32b, u32e, grammar, skipper, eval);
 			bool r = phrase_parse(begin, end, grammar, skipper, eval);
 
 			if (!r || begin != end)
@@ -135,19 +135,17 @@ namespace boss {
 	// MasterlistVar Class Methods
 	/////////////////////////////////////
 
-	MasterlistVar::MasterlistVar() : conditionalData() {};
+	MasterlistVar::MasterlistVar() : conditionalData() {}
 
-	MasterlistVar::MasterlistVar(string inData, string inConditions) : conditionalData(inData, inConditions) {};
+	MasterlistVar::MasterlistVar(string inData, string inConditions) : conditionalData(inData, inConditions) {}
 
 	//////////////////////////////
 	// Message Class Functions
 	//////////////////////////////
 
-	Message::Message	()
-		: conditionalData(), key(SAY) {}
+	Message::Message() : conditionalData(), key(SAY) {}
 
-	Message::Message	(const uint32_t inKey, const string inData)
-		: conditionalData(inData, ""), key(inKey) {}
+	Message::Message(const uint32_t inKey, const string inData) : conditionalData(inData, ""), key(inKey) {}
 
 	uint32_t Message::Key() const {
 		return key;
@@ -157,7 +155,7 @@ namespace boss {
 		key = inKey;
 	}
 
-	string	Message::KeyToString() const {
+	string Message::KeyToString() const {
 		switch(key) {
 			case SAY:
 				return "SAY";
@@ -182,17 +180,13 @@ namespace boss {
 	// Item Class Functions
 	//////////////////////////////
 
-	Item::Item			()
-		: conditionalData(), type(MOD) {}
+	Item::Item() : conditionalData(), type(MOD) {}
 
-	Item::Item			(const string inName)
-		: conditionalData(inName, ""), type(MOD) {}
+	Item::Item(const string inName) : conditionalData(inName, ""), type(MOD) {}
 
-	Item::Item			(const string inName, const uint32_t inType)
-		: conditionalData(inName, ""), type(inType) {}
+	Item::Item(const string inName, const uint32_t inType) : conditionalData(inName, ""), type(inType) {}
 
-	Item::Item			(const string inName, const uint32_t inType, const vector<Message> inMessages)
-		: conditionalData(inName, ""), type(inType), messages(inMessages) {}
+	Item::Item(const string inName, const uint32_t inType, const vector<Message> inMessages) : conditionalData(inName, ""), type(inType), messages(inMessages) {}
 
 	vector<Message> Item::Messages() const {
 		return messages;
@@ -218,31 +212,31 @@ namespace boss {
 		Data(inName);
 	}
 
-	bool	Item::IsPlugin		() const {
+	bool Item::IsPlugin() const {
 		const string ext = boost::algorithm::to_lower_copy(fs::path(Data()).extension().string());
 		return (ext == ".esp" || ext == ".esm");
 	}
 
-	bool	Item::IsGroup		() const {
+	bool Item::IsGroup() const {
 		return (!fs::path(Data()).has_extension() && !Data().empty());
 	}
 
-	bool	Item::Exists		(const Game& parentGame) const {
+	bool Item::Exists(const Game& parentGame) const {
 		return (fs::exists(parentGame.DataFolder() / Data()) || fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost")));
 	}
 
-	bool	Item::IsGameMasterFile	(const Game& parentGame) const {
+	bool Item::IsGameMasterFile(const Game& parentGame) const {
 		return boost::iequals(Data(), parentGame.MasterFile().Name());
 	}
 
-	bool	Item::IsMasterFile(const Game& parentGame) const {
+	bool Item::IsMasterFile(const Game& parentGame) const {
 		if (IsGhosted(parentGame))
 			return IsPluginMaster(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
 		else
 			return IsPluginMaster(parentGame.DataFolder() / Data());
 	}
 
-	bool	Item::IsFalseFlagged(const Game& parentGame) const {
+	bool Item::IsFalseFlagged(const Game& parentGame) const {
 		string ext;
 		if (IsGhosted(parentGame))
 			ext = fs::path(Data()).stem().extension().string();
@@ -251,11 +245,11 @@ namespace boss {
 		return ((IsMasterFile(parentGame) && !boost::iequals(ext, ".esm")) || (!IsMasterFile(parentGame) && boost::iequals(ext, ".esm")));
 	}
 
-	bool	Item::IsGhosted		(const Game& parentGame) const {
+	bool Item::IsGhosted(const Game& parentGame) const {
 		return (fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost")));
 	}
 
-	Version	Item::GetVersion		(const Game& parentGame) const {
+	Version Item::GetVersion(const Game& parentGame) const {
 		if (!IsPlugin())
 			return Version();
 
@@ -271,7 +265,7 @@ namespace boss {
 		return Version(header.Version);
 	}
 
-	void	Item::SetModTime	(const Game& parentGame, const time_t modificationTime) const {
+	void Item::SetModTime(const Game& parentGame, const time_t modificationTime) const {
 		try {
 			if (IsGhosted(parentGame))
 				fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"), modificationTime);
@@ -282,7 +276,7 @@ namespace boss {
 		}
 	}
 
-	void	Item::UnGhost		(const Game& parentGame) const {			//Can throw exception.
+	void Item::UnGhost(const Game& parentGame) const {  //Can throw exception.
 		if (IsGhosted(parentGame)) {
 			try {
 				fs::rename(parentGame.DataFolder() / fs::path(Data() + ".ghost"), parentGame.DataFolder() / Data());
@@ -292,7 +286,7 @@ namespace boss {
 		}
 	}
 
-	time_t	Item::GetModTime	(const Game& parentGame) const {			//Can throw exception.
+	time_t Item::GetModTime(const Game& parentGame) const {  //Can throw exception.
 		try {
 			if (IsGhosted(parentGame))
 				return fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
@@ -305,14 +299,14 @@ namespace boss {
 	}
 
 	void Item::InsertMessage(const size_t pos, const Message message) {
-		messages.insert(messages.begin()+pos, message);
+		messages.insert(messages.begin() + pos, message);
 	}
 
 	void Item::ClearMessages() {
 		messages.clear();
 	}
 
-	bool	Item::EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string, uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool * condResult, ParsingError& errorBuffer, const Game& parentGame) {
+	bool Item::EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string, uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool * condResult, ParsingError& errorBuffer, const Game& parentGame) {
 		if (Type() == ENDGROUP)
 			return true;
 
@@ -353,7 +347,7 @@ namespace boss {
 		const Game& parentGame;
 		itemComparator(const Game& game) : parentGame(game) {}
 
-		bool	operator () (const Item item1, const Item item2) {
+		bool operator () (const Item item1, const Item item2) {
 			//Return true if item1 goes before item2, false otherwise.
 			//Master files should go before other files.
 			//Groups should not change position (but master files should be able to cross groups).
@@ -373,9 +367,9 @@ namespace boss {
 		}
 	};
 
-			ItemList::ItemList			() : lastRecognisedPos(0) {}
+	ItemList::ItemList() : lastRecognisedPos(0) {}
 
-	void	ItemList::Load				(const Game& parentGame, const fs::path path) {
+	void ItemList::Load(const Game& parentGame, const fs::path path) {
 		Clear();
 		if (fs::exists(path) && fs::is_directory(path)) {
 			LOG_DEBUG("Reading user mods...");
@@ -478,6 +472,7 @@ namespace boss {
 			itemComparator ic(parentGame);
 			sort(items.begin(), items.end(), ic);  //Does this work?
 		} else {
+			// MCP Note: Can this be used with conditionalData::EvalConditions to reduce duplication?
 			Skipper skipper;
 			modlist_grammar grammar;
 			string::const_iterator begin, end;
@@ -497,10 +492,10 @@ namespace boss {
 			begin = contents.begin();
 			end = contents.end();
 
-		//	iterator_type u32b(begin);
-		//	iterator_type u32e(end);
+			//iterator_type u32b(begin);
+			//iterator_type u32e(end);
 
-		//	bool r = phrase_parse(u32b, u32e, grammar, skipper, items);
+			//bool r = phrase_parse(u32b, u32e, grammar, skipper, items);
 			bool r = phrase_parse(begin, end, grammar, skipper, items);
 
 			if (!r || begin != end || !errorBuffer.Empty())
@@ -508,7 +503,7 @@ namespace boss {
 		}
 	}
 
-	void	ItemList::Save				(const fs::path file, const fs::path oldFile) {
+	void ItemList::Save(const fs::path file, const fs::path oldFile) {
 		ofstream ofile;
 		//Back up file if it already exists.
 		try {
@@ -561,7 +556,7 @@ namespace boss {
 		return;
 	}
 
-	void	ItemList::SavePluginNames(const Game& parentGame, const fs::path file, const bool activeOnly, const bool doEncodingConversion) {
+	void ItemList::SavePluginNames(const Game& parentGame, const fs::path file, const bool activeOnly, const bool doEncodingConversion) {
 		string badFilename = "", contents;
 		ItemList activePlugins;
 		size_t numActivePlugins;
@@ -605,7 +600,7 @@ namespace boss {
 			throw boss_error(BOSS_ERROR_ENCODING_CONVERSION_FAIL, badFilename, "1252");
 	}
 
-	void		ItemList::EvalConditions	(const Game& parentGame) {
+	void ItemList::EvalConditions(const Game& parentGame) {
 		boost::unordered_set<string> setVars;
 		boost::unordered_set<string> activePlugins;
 		bool res;
@@ -691,7 +686,7 @@ namespace boss {
 		}
 	}
 
-	void		ItemList::EvalRegex(const Game& parentGame) {
+	void ItemList::EvalRegex(const Game& parentGame) {
 		//Store installed mods in a hashset. Case insensitivity not required as regex itself is case-insensitive.
 		boost::unordered_set<string> hashset;
 		boost::unordered_set<string>::iterator setPos;
@@ -739,21 +734,21 @@ namespace boss {
 		}
 	}
 
-	void		ItemList::ApplyMasterPartition(const Game& parentGame) {
+	void ItemList::ApplyMasterPartition(const Game& parentGame) {
 		//Need to iterate through items vector, sorting it according to the rule that master items come before other items.
 		size_t lastMasterPos = GetLastMasterPos(parentGame);
-		size_t pos = GetNextMasterPos(parentGame, lastMasterPos+1);
+		size_t pos = GetNextMasterPos(parentGame, lastMasterPos + 1);
 		while (pos < items.size()) {
 			Item master = items[pos];
 			items.erase(items.begin() + pos);
 			items.insert(items.begin() + lastMasterPos + 1, master);
 			++lastMasterPos;
 			LOG_INFO("Master file \"%s\" moved before non-master plugins.", master.Name().c_str());
-			pos = GetNextMasterPos(parentGame, pos+1);
+			pos = GetNextMasterPos(parentGame, pos + 1);
 		}
 	}
 
-	size_t		ItemList::FindItem			(const string name, const uint32_t type) const {
+	size_t ItemList::FindItem(const string name, const uint32_t type) const {
 		size_t max = items.size();
 		for (size_t i = 0; i < max; i++) {
 			if (items[i].Type() == type && boost::iequals(items[i].Name(), name))
@@ -762,7 +757,7 @@ namespace boss {
 		return max;
 	}
 
-	size_t		ItemList::FindLastItem		(const string name, const uint32_t type) const {
+	size_t ItemList::FindLastItem(const string name, const uint32_t type) const {
 		size_t max = items.size();
 		for (vector<Item>::const_iterator it = items.end(), begin = items.begin(); it != begin; --it) {
 			if (it->Type() == type && boost::iequals(it->Name(), name))
@@ -771,7 +766,7 @@ namespace boss {
 		return max;
 	}
 
-	size_t		ItemList::GetLastMasterPos(const Game& parentGame) const {
+	size_t ItemList::GetLastMasterPos(const Game& parentGame) const {
 		size_t i = 0;
 		while (i < items.size() && (items[i].IsGroup() || items[i].IsMasterFile(parentGame))) {  //SLLOOOOOWWWWW probably.
 			i++;
@@ -782,13 +777,13 @@ namespace boss {
 			return 0;
 	}
 
-	size_t	ItemList::GetNextMasterPos(const Game& parentGame, size_t currPos) const {
+	size_t ItemList::GetNextMasterPos(const Game& parentGame, size_t currPos) const {
 		if (currPos >= items.size())
 			return items.size();
 		while (currPos < items.size() && (items[currPos].IsGroup() || !items[currPos].IsMasterFile(parentGame))) {  //SLLOOOOOWWWWW probably.
 			currPos++;
 		}
-		return currPos;  //position of first master after currPos.
+		return currPos;  //Position of first master after currPos.
 	}
 
 	vector<Item> ItemList::Items() const {
@@ -897,17 +892,17 @@ namespace boss {
 	// RuleLine Class Functions
 	//////////////////////////////
 
-			RuleLine::RuleLine			() {
-				key = NONE;
-				object = "";
-			}
+	RuleLine::RuleLine() {
+		key = NONE;
+		object = "";
+	}
 
-			RuleLine::RuleLine			(const uint32_t inKey, const string inObject) {
-				key = inKey;
-				object = inObject;
-			}
+	RuleLine::RuleLine(const uint32_t inKey, const string inObject) {
+		key = inKey;
+		object = inObject;
+	}
 
-	bool	RuleLine::IsObjectMessage	() const {
+	bool RuleLine::IsObjectMessage() const {
 		//First character of message, must be a message symbol, or part of an MF2 keyword.
 		if (object[0] == '?' || object[0] == '$' || object[0] == '^' || object[0] == '%' || object[0] == ':' || object[0] == '"' || object[0] == '*')
 			return true;
@@ -923,7 +918,7 @@ namespace boss {
 		}
 	}
 
-	string	RuleLine::KeyToString		() const {
+	string RuleLine::KeyToString() const {
 		switch(key) {
 			case ADD:
 				return "ADD";
@@ -948,7 +943,7 @@ namespace boss {
 		}
 	}
 
-	Message RuleLine::ObjectAsMessage		() const {
+	Message RuleLine::ObjectAsMessage() const {
 		switch(object[0]) {
 			case '?':
 				return Message(SAY, object.substr(1));
@@ -1188,6 +1183,7 @@ namespace boss {
 	size_t RuleList::FindRule(const string ruleObject, const bool onlyEnabled) const {
 		size_t max = rules.size();
 		for (size_t i = 0; i < max; i++) {
+			// TODO(MCP): Move !onlyEnabled to front of if-statement to take advantage of short-cirtuit evaluation.
 			if ((onlyEnabled && rules[i].Enabled()) || !onlyEnabled) {
 				if (boost::iequals(rules[i].Object(), ruleObject))
 					return i;
@@ -1242,7 +1238,7 @@ namespace boss {
 	//Settings Class
 	///////////////////////////////
 
-	void	Settings::Load			(const fs::path file) {
+	void Settings::Load(const fs::path file) {
 		Skipper skipper;
 		ini_grammar grammar;
 		string::const_iterator begin, end;
@@ -1256,10 +1252,10 @@ namespace boss {
 		begin = contents.begin();
 		end = contents.end();
 
-	//	iterator_type u32b(begin);
-	//	iterator_type u32e(end);
+		//iterator_type u32b(begin);
+		//iterator_type u32e(end);
 
-	//	bool r = phrase_parse(u32b, u32e, grammar, skipper, iniSettings);
+		//bool r = phrase_parse(u32b, u32e, grammar, skipper, iniSettings);
 		bool r = phrase_parse(begin, end, grammar, skipper, iniSettings);
 
 		if (!r || begin != end || !errorBuffer.Empty())  //This might not work correctly.
@@ -1268,7 +1264,7 @@ namespace boss {
 		ApplyIniSettings();
 	}
 
-	void	Settings::Save			(const fs::path file, const uint32_t currentGameId) {
+	void Settings::Save(const fs::path file, const uint32_t currentGameId) {
 		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 		ofstream ini(file.string(), ios_base::trunc);
 		if (ini.fail())
@@ -1308,7 +1304,8 @@ namespace boss {
 		ini.close();
 	}
 
-	string	Settings::GetIniGameString	(const uint32_t game) const {
+	string Settings::GetIniGameString(const uint32_t game) const {
+		// TODO(MCP): Change this to a switch-statement
 		if (game == AUTODETECT)
 			return "auto";
 		else if (game == OBLIVION)
@@ -1325,7 +1322,8 @@ namespace boss {
 			return "";
 	}
 
-	string	Settings::GetLanguageString	() const {
+	string Settings::GetLanguageString() const {
+		// TODO(MCP): Change this to a switch-statement
 		if (gl_language == ENGLISH)
 			return "english";
 		else if (gl_language == SPANISH)
@@ -1341,6 +1339,7 @@ namespace boss {
 	}
 
 	string Settings::GetLogFormatString() const {
+		// TODO(MCP): Change this to a switch-statement, too?
 		if (gl_log_format == HTML)
 			return "html";
 		else
