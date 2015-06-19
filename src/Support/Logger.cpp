@@ -34,8 +34,7 @@ static const char * LOG_VERBOSITY_NAMES[] =
 	{ "OFF  ", "ERROR", "WARN ", "INFO ", "DEBUG", "TRACE" };
 
 
-namespace boss
-{
+namespace boss {
 	// the global logger instance
 	BOSS_COMMON Logger g_logger;
 
@@ -43,16 +42,13 @@ namespace boss
 	// returns false if the verbosity is beyond LV_OFF
 	// if the verbosity is beyond LV_TRACE, sets the verbosity to LV_TRACE
 	// returns true if, after limiting the upper bound, the verbosity is valid
-	static inline bool _checkVerbosity (LogVerbosity & verbosity)
-	{
-		if (LV_OFF > verbosity)
-		{
+	static inline bool _checkVerbosity(LogVerbosity & verbosity) {
+		if (LV_OFF > verbosity) {
 			LOG_WARN("invalid verbosity: %d", verbosity);
 			return false;
 		}
 
-		if (LV_TRACE < verbosity)
-		{
+		if (LV_TRACE < verbosity) {
 			LOG_DEBUG("verbosity not defined: %d;"
 					  " bumping down to LV_TRACE", verbosity);
 
@@ -63,16 +59,14 @@ namespace boss
 	}
 
 	// sets the default verbosity to WARN and origin tracking off
-	Logger::Logger ()
+	Logger::Logger()
 		: m_verbosity(LV_WARN), m_out(stdout)
 	{ }
 
 	// sets the verbosity to the given value
 	// bounds are checked and boxed by _checkVerbosity (above)
-	void Logger::setVerbosity (LogVerbosity verbosity)
-	{
-		if (!_checkVerbosity(verbosity))
-		{
+	void Logger::setVerbosity(LogVerbosity verbosity) {
+		if (!_checkVerbosity(verbosity)) {
 			return;
 		}
 
@@ -80,10 +74,8 @@ namespace boss
 	}
 
 	// formats the message and prints to stdout
-	void Logger::_log (LogVerbosity verbosity, const char * formatStr, va_list ap)
-	{
-		if (!_checkVerbosity(verbosity))
-		{
+	void Logger::_log(LogVerbosity verbosity, const char * formatStr, va_list ap) {
+		if (!_checkVerbosity(verbosity)) {
 			return;
 		}
 

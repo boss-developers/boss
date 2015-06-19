@@ -47,19 +47,16 @@ namespace boss {
 	//	- Tries to extract the version string value from the given text,
 	//	using the above defined regexes to do the dirty work.
 	//
-	string ParseVersion(const string& text){
-
+	string ParseVersion(const string& text) {
 		string::const_iterator begin, end;
 
 		begin = text.begin();
 		end = text.end();
 
 		for(int i = 0; regex* re = version_checks[i]; i++) {
-
 			smatch what;
 			while (regex_search(begin, end, what, *re)) {
-
-				if (what.empty()){
+				if (what.empty()) {
 					continue;
 				}
 
@@ -70,7 +67,6 @@ namespace boss {
 				}
 
 				return trim_copy(string(match.first, match.second));
-
 			}
 		}
 
@@ -82,7 +78,7 @@ namespace boss {
 	//	- Reads a consecutive array of charactes up to maxsize length and
 	//	returns them as a new string.
 	//
-	string ReadString(char*& bufptr, ushort size){
+	string ReadString(char*& bufptr, ushort size) {
 		string data;
 
 		data.reserve(size + 1);
@@ -128,16 +124,16 @@ namespace boss {
 	//
 
 	bool IsPluginMaster(boost::filesystem::path filename) {
-		char		buffer[MAXLENGTH];
-		char*		bufptr = buffer;
-		ModHeader	modHeader;
+		char buffer[MAXLENGTH];
+		char* bufptr = buffer;
+		ModHeader modHeader;
 
 		if (filename.empty())
 			return false;
 
 		//MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
 		//Note 2: According to Boost docs, c_str() is the same as specifying native().c_str()?
-		ifstream	file(filename.string(), ios_base::binary | ios_base::in);
+		ifstream file(filename.string(), ios_base::binary | ios_base::in);
 
 		if (file.bad())
 			//throw boss_error(BOSS_ERROR_FILE_READ_FAIL, filename.string());
@@ -147,7 +143,7 @@ namespace boss {
 		file.read(&buffer[0], sizeof(buffer));
 
 		// Check for the 'magic' marker at start
-		if (Read<uint>(bufptr) != Record::TES4){
+		if (Read<uint>(bufptr) != Record::TES4) {
 			return false;
 		}
 
@@ -158,16 +154,16 @@ namespace boss {
 		uint flags = Read<uint>(bufptr);
 
 		// LSb of this record's flags is used to indicate if the
-		//	mod is a master or a plugin
+		// mod is a master or a plugin
 		return ((flags & 0x1) != 0);
 	}
 
 	ModHeader ReadHeader(boost::filesystem::path filename) {
-		char		buffer[MAXLENGTH];
-		char*		bufptr = buffer;
-		ModHeader	modHeader;
+		char buffer[MAXLENGTH];
+		char* bufptr = buffer;
+		ModHeader modHeader;
 		//MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
-		ifstream	file(filename.string(), ios_base::binary | ios_base::in);
+		ifstream file(filename.string(), ios_base::binary | ios_base::in);
 
 		modHeader.Name = filename.string();
 
@@ -175,7 +171,7 @@ namespace boss {
 		file.read(&buffer[0], sizeof(buffer));
 
 		// Check for the 'magic' marker at start
-		if (Read<uint>(bufptr) != Record::TES4){
+		if (Read<uint>(bufptr) != Record::TES4) {
 			return modHeader;
 		}
 
@@ -186,19 +182,19 @@ namespace boss {
 		uint flags = Read<uint>(bufptr);
 
 		// LSb of this record's flags is used to indicate if the
-		//	mod is a master or a plugin
+		// mod is a master or a plugin
 		modHeader.IsMaster = (flags & 0x1) != 0;
 
 		// Next comes the FormID...
-		/*uint formId =*/ Read<uint>(bufptr); // skip formID
+		/*uint formId =*/ Read<uint>(bufptr);  // skip formID
 
 		// ...and extra flags
-		/*uint flags2 =*/ Read<uint>(bufptr); // skip flags2
+		/*uint flags2 =*/ Read<uint>(bufptr);  // skip flags2
 
 		// For Oblivion plugins, the Header record starts here, check for its signature 'HEDR'.
-		if (Read<uint>(bufptr) != Record::HEDR){
+		if (Read<uint>(bufptr) != Record::HEDR) {
 			//Check if it's a FO3, FNV or TES5 plugin.
-			if (Read<uint>(bufptr) != Record::HEDR)  { //Nope, exit.
+			if (Read<uint>(bufptr) != Record::HEDR) {  //Nope, exit.
 				return modHeader;
 			}
 		}
@@ -215,30 +211,29 @@ namespace boss {
 
 		// skip optional records
 		bool loop = true;
-		while (loop){
-			switch (signature)
-			{
-			case Record::OFST:
-			case Record::DELE:
-				bufptr += Read<ushort>(bufptr); // skip
-				signature = Read<uint>(bufptr);
-				break;
+		while (loop) {
+			switch (signature) {
+				case Record::OFST:
+				case Record::DELE:
+					bufptr += Read<ushort>(bufptr);  // skip
+					signature = Read<uint>(bufptr);
+					break;
 
-			// extract author name, if present
-			case Record::CNAM:
-				modHeader.Author = ReadString(bufptr, Read<ushort>(bufptr));
-				signature = Read<uint>(bufptr);
-				break;
+				// extract author name, if present
+				case Record::CNAM:
+					modHeader.Author = ReadString(bufptr, Read<ushort>(bufptr));
+					signature = Read<uint>(bufptr);
+					break;
 
-			// extract description and version, if present
-			case Record::SNAM:
-				modHeader.Description = ReadString(bufptr, Read<ushort>(bufptr));
-				modHeader.Version     = ParseVersion(modHeader.Description);
-				signature = Read<uint>(bufptr);
-				break;
+				// extract description and version, if present
+				case Record::SNAM:
+					modHeader.Description = ReadString(bufptr, Read<ushort>(bufptr));
+					modHeader.Version     = ParseVersion(modHeader.Description);
+					signature = Read<uint>(bufptr);
+					break;
 
-			default:
-				loop = false;
+				default:
+					loop = false;
 			}
 		}
 

@@ -39,6 +39,7 @@
 
 #include "alphanum.hpp"
 
+// TODO: Fix these includes so that we're using the C++ standard library and fix extensions
 #include <cstring>
 #include <iostream>
 #include <ctype.h>
@@ -87,7 +88,7 @@ namespace boss {
 		ifstream ifile(file.string());
 		if (ifile.fail())
 			return;
-		ifile.unsetf(ios::skipws); // No white space skipping!
+		ifile.unsetf(ios::skipws);  // No white space skipping!
 		copy(
 			istream_iterator<char>(ifile),
 			istream_iterator<char>(),
@@ -99,7 +100,7 @@ namespace boss {
 	BOSS_COMMON string IntToString(const uint32_t n) {
 		string out;
 		back_insert_iterator<string> sink(out);
-		karma::generate(sink,karma::upper[karma::uint_],n);
+		karma::generate(sink, karma::upper[karma::uint_], n);
 		return out;
 	}
 
@@ -107,7 +108,7 @@ namespace boss {
 	string IntToHexString(const uint32_t n) {
 		string out;
 		back_insert_iterator<string> sink(out);
-		karma::generate(sink,karma::upper[karma::hex],n);
+		karma::generate(sink, karma::upper[karma::hex], n);
 		return out;
 	}
 
@@ -212,9 +213,9 @@ namespace boss {
 			VS_FIXEDFILEINFO *info;
 			string ver;
 
-			GetFileVersionInfo(file.wstring().c_str(),0,size,point);
+			GetFileVersionInfo(file.wstring().c_str(), 0, size, point);
 
-			VerQueryValue(point,L"\\",(LPVOID *)&info,&uLen);
+			VerQueryValue(point, L"\\", (LPVOID *)&info, &uLen);
 
 			DWORD dwLeftMost     = HIWORD(info->dwFileVersionMS);
 			DWORD dwSecondLeft   = LOWORD(info->dwFileVersionMS);
@@ -241,8 +242,7 @@ namespace boss {
 			char buf[BUFSIZE];
 			if (NULL == fgets(buf, BUFSIZE, fp)) {
 				LOG_DEBUG("failed to extract version from '%s'", file.string().c_str());
-			}
-			else {
+			} else {
 				verString = string(buf);
 	   			LOG_DEBUG("extracted version from '%s': %s", file.string().c_str(), retVal.c_str());
 			}

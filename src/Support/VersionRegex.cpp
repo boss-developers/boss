@@ -42,39 +42,32 @@ namespace boss {
 
 	const char* regex1 =
 		"^(?:\\bversion\\b[ ]*(?:[:.\\-]?)|\\brevision\\b(?:[:.\\-]?))[ ]*"
-		"((?:alpha|beta|test|debug)?\\s*[-0-9a-zA-Z._+]+\\s*(?:alpha|beta|test|debug)?\\s*(?:[0-9]*))$"
-		;
+		"((?:alpha|beta|test|debug)?\\s*[-0-9a-zA-Z._+]+\\s*(?:alpha|beta|test|debug)?\\s*(?:[0-9]*))$";
 
 	const char* regex2 =
 		"(?:\\bversion\\b(?:[ :]?)|\\brevision\\b(?:[:.\\-]?))[ ]*"
-		"([0-9][-0-9a-zA-Z._]+\\+?)"
-		;
+		"([0-9][-0-9a-zA-Z._]+\\+?)";
 
 	const char* regex3 =
 		"(?:\\bver(?:[:.]?)|\\brev(?:[:.]?))\\s*"
-		"([0-9][-0-9a-zA-Z._]*\\+?)"
-		;
+		"([0-9][-0-9a-zA-Z._]*\\+?)";
 
 	// Matches "Updated: <date>" for the Bashed patch
 	const char* regex4 =
 		"(?:Updated:)\\s*"
-		"([-0-9aAmMpP/ :]+)$"
-		;
+		"([-0-9aAmMpP/ :]+)$";
 
 	// Matches isolated versions as last resort
 	const char* regex5 =
 		"(?:(?:\\bv|\\br)(?:\\s?)(?:[-.:])?(?:\\s*))"
-		"((?:(?:\\balpha\\b)?|(?:\\bbeta\\b)?)\\s*[0-9][-0-9a-zA-Z._]*\\+?)"
-		;
+		"((?:(?:\\balpha\\b)?|(?:\\bbeta\\b)?)\\s*[0-9][-0-9a-zA-Z._]*\\+?)";
 
 	// Matches isolated versions as last resort
 	const char* regex6 =
-		"((?:(?:\\balpha\\b)?|(?:\\bbeta\\b)?)\\s*\\b[0-9][-0-9a-zA-Z._]*\\+?)$"
-		;
+		"((?:(?:\\balpha\\b)?|(?:\\bbeta\\b)?)\\s*\\b[0-9][-0-9a-zA-Z._]*\\+?)$";
 
 	const char* regex7 =
-		"(^\\bmark\\b\\s*\\b[IVX0-9][-0-9a-zA-Z._+]*\\s*(?:alpha|beta|test|debug)?\\s*(?:[0-9]*)?)$"
-		;
+		"(^\\bmark\\b\\s*\\b[IVX0-9][-0-9a-zA-Z._+]*\\s*(?:alpha|beta|test|debug)?\\s*(?:[0-9]*)?)$";
 
 	/// Array used to try each of the expressions defined above using
 	/// an iteration for each of them.

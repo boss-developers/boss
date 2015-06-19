@@ -145,8 +145,7 @@ namespace boss {
 				head.close();
 				revision.resize(9);
 				return revision;
-			}
-			else {
+			} else {
 				ptrs.free();
 				return "Unknown: Masterlist edited";
 			}
@@ -190,8 +189,7 @@ namespace boss {
 				//Now save change.
 				handle_error(git_remote_save(ptrs.remote), ptrs);
 			}
-		}
-		else {
+		} else {
 			LOG_INFO("Repository doesn't exist, initialising a new repository.");
 			//Repository doesn't exist. Set up a repository.
 			handle_error(git_repository_init(&ptrs.repo, game.Masterlist().parent_path().string().c_str(), false), ptrs);

@@ -34,6 +34,12 @@
 
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
+/*#include <boost/version.hpp>
+#if BOOST_VERSION > 105500
+#	include <boost/phoenix/object/construct.hpp>
+#else
+#	include <boost/spirit/home/phoenix/object/construct.hpp>
+#endif*/
 #include <boost/spirit/home/phoenix/object/construct.hpp>
 #include <boost/spirit/include/phoenix_bind.hpp>
 #include <boost/algorithm/string.hpp>

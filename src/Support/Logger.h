@@ -45,10 +45,8 @@
 #define LOG_TRACE(formatStr, ...) _LOG_IMPL(boss::LV_TRACE, formatStr, ##__VA_ARGS__)
 
 
-namespace boss
-{
-	enum LogVerbosity
-	{
+namespace boss {
+	enum LogVerbosity {
 		LV_OFF   = 0,
 		LV_ERROR = 1,
 		LV_WARN  = 2,
@@ -58,28 +56,30 @@ namespace boss
 	};
 
 	// A simple logging class.  Not implemented to be thread safe.
-	class BOSS_COMMON Logger
-	{
+	class BOSS_COMMON Logger {
 	public:
 		Logger();
 
 		// sets the verbosity limit
-		void setVerbosity (LogVerbosity verbosity);
+		void setVerbosity(LogVerbosity verbosity);
 
 		// sets the output stream
 		inline void setStream(const char * file) {
-			m_out = fopen(file,"w");
+			m_out = fopen(file, "w");
 		}
 
 		// for use when calculating the arguments to a LOG macro would be expensive
-		inline bool isDebugEnabled () { return _isVerbosityEnabled(LV_DEBUG); }
-		inline bool isTraceEnabled () { return _isVerbosityEnabled(LV_TRACE); }
+		inline bool isDebugEnabled() {
+			return _isVerbosityEnabled(LV_DEBUG);
+		}
+		inline bool isTraceEnabled() {
+			return _isVerbosityEnabled(LV_TRACE);
+		}
 
 		// if a message is of a sufficient verbosity, outputs the given message
-		inline void log (LogVerbosity verbosity, const char * formatStr, ...) __attribute__((__format__ (__printf__, 5, 6)))
+		inline void log(LogVerbosity verbosity, const char * formatStr, ...) __attribute__((__format__ (__printf__, 5, 6)))
 		{
-			if (_isVerbosityEnabled(verbosity))
-			{
+			if (_isVerbosityEnabled(verbosity)) {
 				va_list ap;
 				va_start(ap, formatStr);
 				_log(verbosity, formatStr, ap);
@@ -92,16 +92,15 @@ namespace boss
 		FILE * m_out;
 
 	private:
-		inline bool _isVerbosityEnabled (LogVerbosity verbosity)
-		{
+		inline bool _isVerbosityEnabled(LogVerbosity verbosity) {
 			return verbosity <= m_verbosity;
 		}
 
-		void _log (LogVerbosity verbosity, const char * formatStr, va_list ap);
+		void _log(LogVerbosity verbosity, const char * formatStr, va_list ap);
 	};
 
 	// declare global logger
 	BOSS_COMMON extern Logger g_logger;
 }
 
-#endif // __SUPPORT_LOGGER__HPP__
+#endif  // __SUPPORT_LOGGER__HPP__

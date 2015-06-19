@@ -145,7 +145,7 @@ namespace boss {
 		void SetErrorBuffer(ParsingError * inErrorBuffer);
 		void SetGlobalMessageBuffer(vector<Message> * inGlobalMessageBuffer);
 		void SetVarStore(vector<MasterlistVar> * varStore);
-		void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore);
+		void SetCRCStore(boost::unordered_map<string, uint32_t> * CRCStore);
 		void SetParentGame(const Game * game);
 	private:
 		qi::rule<grammarIter, vector<Item>(), Skipper> modList;
@@ -160,7 +160,7 @@ namespace boss {
 		ParsingError * errorBuffer;
 		vector<Message> * globalMessageBuffer;
 		vector<MasterlistVar> * setVars;					//Vars set by masterlist.
-		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
+		boost::unordered_map<string, uint32_t> * fileCRCs;	//CRCs calculated.
 		const Game * parentGame;
 		vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in MF1.
 
@@ -190,7 +190,7 @@ namespace boss {
 		conditional_grammar();
 		void SetErrorBuffer(ParsingError * inErrorBuffer);
 		void SetVarStore(boost::unordered_set<string> * varStore);
-		void SetCRCStore(boost::unordered_map<string,uint32_t> * CRCStore);
+		void SetCRCStore(boost::unordered_map<string, uint32_t> * CRCStore);
 		void SetActivePlugins(boost::unordered_set<string> * plugins);
 		void SetLastConditionalResult(bool * result);
 		void SetParentGame(const Game * game);
@@ -202,7 +202,7 @@ namespace boss {
 		ParsingError * errorBuffer;
 		boost::unordered_set<string> * setVars;				//Vars set by masterlist.
 		boost::unordered_set<string> * activePlugins;		//Active plugins, with lowercase filenames.
-		boost::unordered_map<string,uint32_t> * fileCRCs;	//CRCs calculated.
+		boost::unordered_map<string, uint32_t> * fileCRCs;	//CRCs calculated.
 		const Game * parentGame;
 		bool * lastResult;
 
