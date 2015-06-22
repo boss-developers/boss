@@ -66,23 +66,31 @@ namespace boss {
 
 	//For general errors not referencing specific files.
 	boss_error::boss_error(const uint32_t internalErrCode)
-			: errCode(internalErrCode), errString(""), errSubject("")
-	{}
+	    : errCode(internalErrCode),
+	      errString(""),
+	      errSubject("") {}
 
 	//For general errors referencing specific files.
-	boss_error::boss_error(const uint32_t internalErrCode, const string internalErrSubject)
-			: errCode(internalErrCode), errString(""), errSubject(internalErrSubject)
-	{}
+	boss_error::boss_error(const uint32_t internalErrCode,
+	                       const string internalErrSubject)
+	    : errCode(internalErrCode),
+	      errString(""),
+	      errSubject(internalErrSubject) {}
 
 	//For errors from BOOST Filesystem functions.
-	boss_error::boss_error(const uint32_t internalErrCode, const string internalErrSubject, const string externalErrString)
-			: errCode(internalErrCode), errString(externalErrString), errSubject(internalErrSubject)
-	{}
+	boss_error::boss_error(const uint32_t internalErrCode,
+	                       const string internalErrSubject,
+	                       const string externalErrString)
+	    : errCode(internalErrCode),
+	      errString(externalErrString),
+	      errSubject(internalErrSubject) {}
 
 	//For errors from other external functions.
-	boss_error::boss_error(const string externalErrString, const uint32_t internalErrCode)
-			: errCode(internalErrCode), errString(externalErrString), errSubject("")
-	{}
+	boss_error::boss_error(const string externalErrString,
+	                       const uint32_t internalErrCode)
+	    : errCode(internalErrCode),
+	      errString(externalErrString),
+	      errSubject("") {}
 
 	//Returns the error code for the object.
 	uint32_t boss_error::getCode() const {
@@ -142,21 +150,28 @@ namespace boss {
 	//////////////////////////////////
 
 	ParsingError::ParsingError()
-		: header(""), footer(""), detail(""), wholeMessage("")
-	{}
+	    : header(""),
+	      footer(""),
+	      detail(""),
+	      wholeMessage("") {}
 
 	//For parsing errors.
-	ParsingError::ParsingError(const string inHeader, const string inDetail, const string inFooter)
-		: header(inHeader), detail(inDetail), footer(inFooter)
-	{}
+	ParsingError::ParsingError(const string inHeader,
+	                           const string inDetail,
+	                           const string inFooter)
+	    : header(inHeader),
+	      detail(inDetail),
+	      footer(inFooter) {}
 
 	//For userlist syntax errors.
 	ParsingError::ParsingError(const string inWholeMessage)
-		: wholeMessage(inWholeMessage)
-	{}
+	    : wholeMessage(inWholeMessage) {}
 
 	bool ParsingError::Empty() const {
-		return (header.empty() && footer.empty() && detail.empty() && wholeMessage.empty());
+		return (header.empty() &&
+		        footer.empty() &&
+		        detail.empty() &&
+		        wholeMessage.empty());
 	}
 
 	string ParsingError::Header() const {

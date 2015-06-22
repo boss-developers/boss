@@ -72,13 +72,17 @@ namespace boss {
 		boss_error(const uint32_t internalErrCode);
 
 		//For general errors referencing specific files.
-		boss_error(const uint32_t internalErrCode, const string internalErrSubject);
+		boss_error(const uint32_t internalErrCode,
+		           const string internalErrSubject);
 
 		//For errors from BOOST Filesystem functions.
-		boss_error(const uint32_t internalErrCode, const string internalErrSubject, const string externalErrString);
+		boss_error(const uint32_t internalErrCode,
+		           const string internalErrSubject,
+		           const string externalErrString);
 
 		//For errors from other external functions.
-		boss_error(const string externalErrString, const uint32_t internalErrCode);
+		boss_error(const string externalErrString,
+		           const uint32_t internalErrCode);
 
 		//Returns the error code for the object.
 		uint32_t getCode() const;
@@ -127,7 +131,8 @@ namespace boss {
 		ParsingError();
 
 		//For parsing errors.
-		ParsingError(const string inHeader, const string inDetail, const string inFooter);
+		ParsingError(const string inHeader, const string inDetail,
+		             const string inFooter);
 
 		//For userlist syntax errors.
 		ParsingError(const string inWholeMessage);
