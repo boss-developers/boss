@@ -84,7 +84,8 @@ namespace boss {
 		string conditions;
 	public:
 		conditionalData();
-		conditionalData(const string inData, const string inConditions);
+		conditionalData(const string inData,
+		                const string inConditions);
 
 		string Data() const;
 		string Conditions() const;
@@ -92,7 +93,13 @@ namespace boss {
 		void Data(const string inData);
 		void Conditions(const string inConditions);
 
-		bool EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string, uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool *condResult, ParsingError& errorBuffer, const Game& parentGame);
+		bool EvalConditions(
+		    boost::unordered_set<string>& setVars,
+		    boost::unordered_map<string, uint32_t>& fileCRCs,
+		    boost::unordered_set<string>& activePlugins,
+		    bool *condResult,
+		    ParsingError& errorBuffer,
+		    const Game& parentGame);
 	};
 
 	class BOSS_COMMON MasterlistVar : public conditionalData {
@@ -120,14 +127,16 @@ namespace boss {
 		friend struct boost::fusion::extension::access;
 	private:
 		vector<Message> messages;
-		//string data is now filename (or group name). Trimmed and case-preserved. ".ghost" extensions are removed.
+		//string data is now filename (or group name).
+		//Trimmed and case-preserved. ".ghost" extensions are removed.
 		uint32_t type;
 
 	public:
 		Item();
 		Item(const string inName);
 		Item(const string inName, const uint32_t inType);
-		Item(const string inName, const uint32_t inType, const vector<Message> inMessages);
+		Item(const string inName, const uint32_t inType,
+		     const vector<Message> inMessages);
 
 		vector<Message> Messages() const;
 		uint32_t Type() const;
@@ -140,19 +149,26 @@ namespace boss {
 		bool IsGroup() const;
 		bool IsGameMasterFile(const Game& parentGame) const;
 		bool IsMasterFile(const Game& parentGame) const;
-		bool IsFalseFlagged(const Game& parentGame) const;  //True if IsMasterFile does not match file extension.
-		bool IsGhosted(const Game& parentGame) const;       //Checks if the file exists in ghosted form.
-		bool Exists(const Game& parentGame) const;          //Checks if the file exists in the data folder, ghosted or not.
-		Version GetVersion(const Game& parentGame) const;   //Outputs the file's header.
-		time_t GetModTime(const Game& parentGame) const;    //Can throw exception.
+		bool IsFalseFlagged(const Game& parentGame) const;    //True if IsMasterFile does not match file extension.
+		bool IsGhosted(const Game& parentGame) const;         //Checks if the file exists in ghosted form.
+		bool Exists(const Game& parentGame) const;            //Checks if the file exists in the data folder, ghosted or not.
+		Version GetVersion(const Game& parentGame) const;     //Outputs the file's header.
+		time_t GetModTime(const Game& parentGame) const;      //Can throw exception.
 
-		void UnGhost(const Game& parentGame) const;                                    //Can throw exception.
-		void SetModTime(const Game& parentGame, const time_t modificationTime) const;  //Can throw exception.
+		void UnGhost(const Game& parentGame) const;           //Can throw exception.
+		void SetModTime(const Game& parentGame,
+		                const time_t modificationTime) const;  //Can throw exception.
 
 		void InsertMessage(size_t pos, Message item);
 		void ClearMessages();
 
-		bool EvalConditions(boost::unordered_set<string>& setVars, boost::unordered_map<string, uint32_t>& fileCRCs, boost::unordered_set<string>& activePlugins, bool * condResult, ParsingError& errorBuffer, const Game& parentGame);
+		bool EvalConditions(
+		    boost::unordered_set<string>& setVars,
+		    boost::unordered_map<string, uint32_t>& fileCRCs,
+		    boost::unordered_set<string>& activePlugins,
+		    bool * condResult,
+		    ParsingError& errorBuffer,
+		    const Game& parentGame);
 	};
 
 	class BOSS_COMMON ItemList {
@@ -164,25 +180,35 @@ namespace boss {
 		vector<MasterlistVar> masterlistVariables;
 		boost::unordered_map<string, uint32_t> fileCRCs;
 
-		//Searches a hashset for the first matching string of a regex and returns its iterator position.
-		boost::unordered_set<string>::iterator FindRegexMatch(const boost::unordered_set<string> set, const boost::regex reg, boost::unordered_set<string>::iterator startPos);
+		// Searches a hashset for the first matching string of a
+		// regex and returns its iterator position.
+		boost::unordered_set<string>::iterator FindRegexMatch(
+		    const boost::unordered_set<string> set,
+		    const boost::regex reg,
+		    boost::unordered_set<string>::iterator startPos);
 
 	public:
 		ItemList();
 		void Load(const Game& parentGame, const fs::path path);  //Load by scanning path. If path is a directory, it scans it for plugins.
-																	//If path is a file, it parses it using the modlist grammar.
-																	//May throw exception on fail.
+		                                                         //If path is a file, it parses it using the modlist grammar.
+		                                                         //May throw exception on fail.
 		void Save(const fs::path file, const fs::path oldFile);  //Output to file in MF2. Backs up any existing file to oldFile.
-																	//Throws exception on fail.
-		void SavePluginNames(const Game& parentGame, const fs::path file, const bool activeOnly, const bool doEncodingConversion);  //Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
-		void EvalConditions(const Game& parentGame);  //Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
+		                                                         //Throws exception on fail.
+		void SavePluginNames(const Game& parentGame,
+		                     const fs::path file,
+		                     const bool activeOnly,
+		                     const bool doEncodingConversion);   //Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
+		void EvalConditions(const Game& parentGame);             //Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
 		void EvalRegex(const Game& parentGame);
-		void ApplyMasterPartition(const Game& parentGame);  //Puts all master files before other plugins. Can throw exception.
+		void ApplyMasterPartition(const Game& parentGame);       //Puts all master files before other plugins. Can throw exception.
 
-		size_t FindItem(const string name, const uint32_t type) const;          //Find the position of the item with name 'name'. Case-insensitive.
-		size_t FindLastItem(const string name, const uint32_t type) const;      //Find the last item with the name 'name'. Case-insensitive.
-		size_t GetLastMasterPos(const Game& parentGame) const;                  //Can throw exception.
-		size_t GetNextMasterPos(const Game& parentGame, size_t currPos) const;  //Can throw exception.
+		size_t FindItem(const string name,
+		                const uint32_t type) const;              //Find the position of the item with name 'name'. Case-insensitive.
+		size_t FindLastItem(const string name,
+		                    const uint32_t type) const;          //Find the last item with the name 'name'. Case-insensitive.
+		size_t GetLastMasterPos(const Game& parentGame) const;   //Can throw exception.
+		size_t GetNextMasterPos(const Game& parentGame,
+		                        size_t currPos) const;           //Can throw exception.
 
 		Item ItemAt(size_t pos) const;
 
@@ -203,7 +229,10 @@ namespace boss {
 		void Clear();
 		void Erase(const size_t pos);
 		void Erase(const size_t startPos, const size_t endPos);
-		void Insert(const size_t pos, const vector<Item> source, size_t sourceStart, size_t sourceEnd);
+		void Insert(const size_t pos,
+		            const vector<Item> source,
+		            size_t sourceStart,
+		            size_t sourceEnd);
 		void Insert(const size_t pos, const Item item);
 		void Move(size_t newPos, const Item item);  //Adds the item if it isn't already present.
 	};
@@ -216,7 +245,7 @@ namespace boss {
 		friend struct boost::fusion::extension::access;
 	private:
 		uint32_t key;
-		string	object;
+		string object;
 	public:
 		RuleLine();
 		RuleLine(const uint32_t inKey, const string inObject);
@@ -260,7 +289,8 @@ namespace boss {
 		RuleList();
 		void Load(const Game& parentGame, const fs::path file);  //Throws exception on fail.
 		void Save(const fs::path file);                          //Throws exception on fail.
-		size_t FindRule(const string ruleObject, const bool onlyEnabled) const;
+		size_t FindRule(const string ruleObject,
+		                const bool onlyEnabled) const;
 
 		vector<Rule> Rules() const;
 		vector<ParsingError> ErrorBuffer() const;
