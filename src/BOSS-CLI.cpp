@@ -108,7 +108,10 @@ void Fail() {
 }
 
 int progress(const git_transfer_progress *stats, void *payload) {
-	printf((translate("Downloading masterlist: %i of %i objects (%i KB)").str() + "\r").c_str(), stats->received_objects, stats->total_objects, stats->received_bytes/1024);
+	printf((translate("Downloading masterlist: %i of %i objects (%i KB)").str() + "\r").c_str(),
+	        stats->received_objects,
+	        stats->total_objects,
+	        stats->received_bytes/1024);
 	fflush(stdout);
 	return 0;
 }
@@ -171,7 +174,8 @@ int main(int argc, char *argv[]) {
 		cout << e.what() << endl;
 	}
 	locale global_loc = locale();
-	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
+	locale loc(global_loc,
+	           new boost::filesystem::detail::utf8_codecvt_facet());
 	boost::filesystem::path::imbue(loc);
 
 
@@ -240,7 +244,8 @@ int main(int argc, char *argv[]) {
 	if (gl_debug_verbosity > 0)
 		g_logger.setStream(debug_log_path.string().c_str());
 	if (gl_debug_verbosity < 0) {
-		LOG_ERROR("invalid option for 'verbose' parameter: %d", gl_debug_verbosity);
+		LOG_ERROR("invalid option for 'verbose' parameter: %d",
+		          gl_debug_verbosity);
 		Fail();
 	}
 	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));  // It's ok if this number is too high, setVerbosity will handle it
@@ -261,7 +266,8 @@ int main(int argc, char *argv[]) {
 		Fail();
 	}
 	if (vm.count("revert") && (gl_revert < 1 || gl_revert > 2)) {
-		LOG_ERROR("invalid option for 'revert' parameter: %d", gl_revert);
+		LOG_ERROR("invalid option for 'revert' parameter: %d",
+		          gl_revert);
 		Fail();
 	}
 	if (vm.count("game")) {
@@ -277,10 +283,12 @@ int main(int argc, char *argv[]) {
 		else if (boost::iequals("Skyrim", gameStr))
 			gl_game = SKYRIM;
 		else {
-			LOG_ERROR("invalid option for 'game' parameter: '%s'", gameStr.c_str());
+			LOG_ERROR("invalid option for 'game' parameter: '%s'",
+			          gameStr.c_str());
 			Fail();
 		}
-		LOG_DEBUG("game ini setting overridden with: '%s' (%d)", gameStr.c_str(), gl_game);
+		LOG_DEBUG("game ini setting overridden with: '%s' (%d)",
+		          gameStr.c_str(), gl_game);
 	}
 	if (vm.count("format")) {
 		// Sanity check and parse argument
@@ -290,10 +298,12 @@ int main(int argc, char *argv[]) {
 		else if (bosslogFormat == "text")
 			gl_log_format = PLAINTEXT;
 		else {
-			LOG_ERROR("invalid option for 'format' parameter: '%s'", bosslogFormat.c_str());
+			LOG_ERROR("invalid option for 'format' parameter: '%s'",
+			          bosslogFormat.c_str());
 			Fail();
 		}
-		LOG_DEBUG("BOSSlog format set to: '%s'", bosslogFormat.c_str());
+		LOG_DEBUG("BOSSlog format set to: '%s'",
+		          bosslogFormat.c_str());
 	}
 
 
@@ -365,7 +375,8 @@ int main(int argc, char *argv[]) {
 		} catch (boss_error &e) {
 			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
 				<< (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
-			LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
+			LOG_ERROR("Error: masterlist update failed. Details: %s",
+			          e.getString().c_str());
 		}
 	} else {
 		string revision = GetMasterlistVersion(game);
@@ -398,7 +409,8 @@ int main(int argc, char *argv[]) {
 		if (gl_revert < 1)
 			game.modlist.Save(game.Modlist(), game.OldModlist());
 	} catch (boss_error &e) {
-		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
+		LOG_ERROR("Failed to load/save modlist, error was: %s",
+		          e.getString().c_str());
 		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
 			<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
 			<< translate("Utility will end now.");
@@ -429,9 +441,11 @@ int main(int argc, char *argv[]) {
 
 	//Parse masterlist/modlist backup into data structure.
 	try {
-		LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
+		LOG_INFO("Starting to parse sorting file: %s",
+		         sortfile.string().c_str());
 		game.masterlist.Load(game, sortfile);
-		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
+		LOG_INFO("Starting to parse conditionals from sorting file: %s",
+		         sortfile.string().c_str());
 		game.masterlist.EvalConditions(game);
 		game.masterlist.EvalRegex(game);
 		game.bosslog.globalMessages = game.masterlist.GlobalMessageBuffer();
@@ -460,10 +474,12 @@ int main(int argc, char *argv[]) {
 	try {
 		game.userlist.Load(game, game.Userlist());
 		vector<ParsingError> errs = game.userlist.ErrorBuffer();
-		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(), errs.begin(), errs.end());
+		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(),
+		                                  errs.begin(), errs.end());
 	} catch (boss_error &e) {
 		vector<ParsingError> errs = game.userlist.ErrorBuffer();
-		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(), errs.begin(), errs.end());
+		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(),
+		                                  errs.begin(), errs.end());
 		game.userlist.Clear();  //If userlist has parsing errors, empty it so no rules are applied.
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
