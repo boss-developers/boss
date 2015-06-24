@@ -29,7 +29,7 @@
 #define __BOSS_GLOBALS_H__
 
 #ifndef _UNICODE
-#define _UNICODE	// Tell compiler we're using Unicode, notice the _
+#define _UNICODE  // Tell compiler we're using Unicode, notice the _
 #endif
 
 #include <string>
@@ -91,21 +91,21 @@ namespace boss {
 	//These globals exist for ease-of-use, so that a Settings object doesn't need to be passed in infinity+1 functions.
 
 	//General variables
-	BOSS_COMMON	extern bool		gl_use_user_rules_manager;  // Use the User Rules Editor or edit userlist.txt directly?
-	BOSS_COMMON extern bool		gl_close_gui_after_sorting; //Close the GUI after BOSS has finished running or not.
-	BOSS_COMMON extern uint32_t	gl_language;				// What language to run BOSS in?
+	BOSS_COMMON extern bool gl_use_user_rules_manager;   // Use the User Rules Editor or edit userlist.txt directly?
+	BOSS_COMMON extern bool gl_close_gui_after_sorting;  // Close the GUI after BOSS has finished running or not.
+	BOSS_COMMON extern uint32_t gl_language;             // What language to run BOSS in?
 
 	//Command line variables
-	BOSS_COMMON extern uint32_t	gl_log_format;				// what format the output should be in.  Uses the enums defined above.
-	BOSS_COMMON extern uint32_t	gl_game;					// What game's mods are we sorting? Uses the enums defined above.
-	BOSS_COMMON extern uint32_t	gl_last_game;				// what game was last run? Only affects GUI behaviour.
-	BOSS_COMMON extern uint32_t	gl_revert;					// what level to revert to
-	BOSS_COMMON extern uint32_t	gl_debug_verbosity;			// log levels above INFO to output
-	BOSS_COMMON extern bool		gl_update;					// update the masterlist?
-	BOSS_COMMON extern bool		gl_update_only;				// only update the masterlist and don't sort currently.
-	BOSS_COMMON extern bool		gl_silent;					// silent mode?
-	BOSS_COMMON extern bool		gl_show_CRCs;				// whether or not to show mod CRCs.
-	BOSS_COMMON extern bool		gl_trial_run;				// If true, don't redate files.
+	BOSS_COMMON extern uint32_t gl_log_format;       // What format the output should be in.  Uses the enums defined above.
+	BOSS_COMMON extern uint32_t gl_game;             // What game's mods are we sorting? Uses the enums defined above.
+	BOSS_COMMON extern uint32_t gl_last_game;        // What game was last run? Only affects GUI behaviour.
+	BOSS_COMMON extern uint32_t gl_revert;           // What level to revert to
+	BOSS_COMMON extern uint32_t gl_debug_verbosity;  // Log levels above INFO to output
+	BOSS_COMMON extern bool gl_update;               // Update the masterlist?
+	BOSS_COMMON extern bool gl_update_only;          // Only update the masterlist and don't sort currently.
+	BOSS_COMMON extern bool gl_silent;               // Silent mode?
+	BOSS_COMMON extern bool gl_show_CRCs;            // Whether or not to show mod CRCs.
+	BOSS_COMMON extern bool gl_trial_run;            // If true, don't redate files.
 
 	//Repository URLs
 	BOSS_COMMON extern std::string gl_oblivion_repo_url;
