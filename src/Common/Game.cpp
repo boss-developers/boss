@@ -47,7 +47,8 @@ namespace boss {
 
 	uint32_t AutodetectGame(vector<uint32_t> detectedGames) {  //Throws exception if error.
 		if (gl_last_game != AUTODETECT) {
-			for (size_t i = 0, max = detectedGames.size(); i < max; i++) {
+			for (size_t i = 0, max = detectedGames.size();
+			     i < max; i++) {
 				if (gl_last_game == detectedGames[i])
 					return gl_last_game;
 			}
@@ -70,7 +71,8 @@ namespace boss {
 		}
 	}
 
-	BOSS_COMMON uint32_t DetectGame(vector<uint32_t>& detectedGames, vector<uint32_t>& undetectedGames) {
+	BOSS_COMMON uint32_t DetectGame(vector<uint32_t>& detectedGames,
+	                                vector<uint32_t>& undetectedGames) {
 		//Detect all installed games.
 		if (Game(OBLIVION, "", true).IsInstalled())  //Look for Oblivion.
 			detectedGames.push_back(OBLIVION);
@@ -106,7 +108,8 @@ namespace boss {
 	}
 
 	//Structures necessary for case-insensitive hashsets used in BuildWorkingModlist. Taken from the BOOST docs.
-	struct iequal_to : std::binary_function<std::string, std::string, bool> {
+	struct iequal_to : std::binary_function<std::string, std::string,
+	                                        bool> {
 		iequal_to() {}
 		explicit iequal_to(std::locale const& l) : locale_(l) {}
 
@@ -126,7 +129,8 @@ namespace boss {
 		std::size_t operator()(String const& x) const {
 			std::size_t seed = 0;
 
-			for(typename String::const_iterator it = x.begin(); it != x.end(); ++it) {
+			for (typename String::const_iterator it = x.begin();
+			     it != x.end(); ++it) {
 				boost::hash_combine(seed, std::toupper(*it, locale_));
 			}
 
@@ -141,11 +145,11 @@ namespace boss {
 	// Game Class Functions
 	////////////////////////////
 
-	Game::Game()
-		: id(AUTODETECT) {}
+	Game::Game() : id(AUTODETECT) {}
 
-	Game::Game(const uint32_t gameCode, const string path, const bool noPathInit)
-		: id(gameCode) {
+	Game::Game(const uint32_t gameCode, const string path,
+	           const bool noPathInit) : id(gameCode) {
+		// MCP Note: Possibly turn this into a switch-statement?
 		if (Id() == OBLIVION) {
 			name = "TES IV: Oblivion";
 
@@ -235,8 +239,11 @@ namespace boss {
 				//First look for local install, then look for Registry.
 				if (fs::exists(boss_path / ".." / pluginsFolderName / masterFile))
 					gamePath = boss_path / "..";
-				else if (RegKeyExists("HKEY_LOCAL_MACHINE", registryKey, registrySubKey))
-					gamePath = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE", registryKey, registrySubKey));
+				else if (RegKeyExists("HKEY_LOCAL_MACHINE",
+				                      registryKey, registrySubKey))
+					gamePath = fs::path(RegKeyStringValue("HKEY_LOCAL_MACHINE",
+					                                      registryKey,
+					                                      registrySubKey));
 				else if (gl_update_only)  //Update only games are treated as installed locally if not actually installed.
 					gamePath = boss_path / "..";
 				else
@@ -246,10 +253,12 @@ namespace boss {
 
 			//Check if game master file exists. Requires data path to be set.
 			if (!MasterFile().Exists(*this))
-				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND, MasterFile().Name());
+				throw boss_error(BOSS_ERROR_FILE_NOT_FOUND,
+				                 MasterFile().Name());
 
 			//Requires data path to be set.
-			if (Id() == OBLIVION && fs::exists(GameFolder() / "Oblivion.ini")) {
+			if (Id() == OBLIVION &&
+			    fs::exists(GameFolder() / "Oblivion.ini")) {
 				//Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
 				Settings oblivionIni;
 				oblivionIni.Load(GameFolder() / "Oblivion.ini");  //This also sets the variable up.
@@ -275,7 +284,9 @@ namespace boss {
 	}
 
 	bool Game::IsInstalled() const {
-		return (IsInstalledLocally() || RegKeyExists("HKEY_LOCAL_MACHINE", registryKey, registrySubKey));
+		return (IsInstalledLocally() ||
+		        RegKeyExists("HKEY_LOCAL_MACHINE", registryKey,
+		                     registrySubKey));
 	}
 
 	bool Game::IsInstalledLocally() const {
@@ -363,7 +374,8 @@ namespace boss {
 		HWND owner = NULL;
 		TCHAR path[MAX_PATH];
 
-		HRESULT res = SHGetFolderPath(owner, CSIDL_LOCAL_APPDATA, NULL, SHGFP_TYPE_CURRENT, path);
+		HRESULT res = SHGetFolderPath(owner, CSIDL_LOCAL_APPDATA, NULL,
+		                              SHGFP_TYPE_CURRENT, path);
 
 		if (res == S_OK)
 			return fs::path(path);
@@ -380,7 +392,9 @@ namespace boss {
 			if (!fs::exists(boss_path / bossFolderName))
 				fs::create_directory(boss_path / bossFolderName);
 		} catch (fs::filesystem_error e) {
-			throw boss_error(BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL, fs::path(boss_path / bossFolderName).string(), e.what());
+			throw boss_error(BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL,
+			                 fs::path(boss_path / bossFolderName).string(),
+			                 e.what());
 		}
 	}
 
@@ -424,12 +438,13 @@ namespace boss {
 				else if (uHashset.find(items[i].Name()) == uHashset.end())  //Mod not in modlist or userlist, skip.
 					continue;
 
-				if (addedItems.find(items[i].Name()) == addedItems.end()) {			//The mod is not already in the holding vector.
-					addedItems.insert(items[i].Name());								//Record it in the holding vector.
+				if (addedItems.find(items[i].Name()) == addedItems.end()) {  //The mod is not already in the holding vector.
+					addedItems.insert(items[i].Name());                      //Record it in the holding vector.
 					modlist.Move(addedNum, items[i]);
 					addedNum++;
 				}
-			} else if (items[i].Type() == BEGINGROUP || items[i].Type() == ENDGROUP) {
+			} else if (items[i].Type() == BEGINGROUP ||
+			           items[i].Type() == ENDGROUP) {
 				if (uHashset.find(items[i].Name()) == uHashset.end())  //Mod not in modlist or userlist, skip.
 					continue;
 
@@ -455,7 +470,8 @@ namespace boss {
 		//need to be re-assigned to this item. This only occurs for BEFORE/AFTER plugin sorting rules.
 		Item lastRecognisedItem = modlist.ItemAt(modlist.LastRecognisedPos());
 
-		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.", rules.size());
+		LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.",
+		         rules.size());
 		vector<Rule>::iterator ruleIter = rules.begin();
 		size_t modlistPos1, modlistPos2;
 		uint32_t ruleNo = 0;
@@ -464,7 +480,9 @@ namespace boss {
 			LOG_DEBUG(" -- Processing rule #%" PRIuS ".", ruleNo);
 			if (!ruleIter->Enabled()) {
 				bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << loc::translate("Rule is disabled.");
-				LOG_INFO("Rule beginning \"%s: %s\" is disabled. Rule skipped.", ruleIter->KeyToString().c_str(), ruleIter->Object().c_str());
+				LOG_INFO("Rule beginning \"%s: %s\" is disabled. Rule skipped.",
+				         ruleIter->KeyToString().c_str(),
+				         ruleIter->Object().c_str());
 				continue;
 			}
 			bool messageLineFail = false;
@@ -474,71 +492,94 @@ namespace boss {
 			Item ruleItem(ruleIter->Object());
 			if (ruleItem.IsPlugin()) {  //Plugin: Can sort or add messages.
 				if (ruleIter->Key() != FOR) {  //First non-rule line is a sort line.
-					if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {
+					if (lines[i].Key() == BEFORE ||
+					    lines[i].Key() == AFTER) {
 						Item mod;
-						modlistPos1 = modlist.FindItem(ruleItem.Name(), MOD);
+						modlistPos1 = modlist.FindItem(ruleItem.Name(),
+						                               MOD);
 						//Do checks.
-						if (ruleIter->Key() == ADD && modlistPos1 == modlist.Items().size()) {
+						if (ruleIter->Key() == ADD &&
+						    modlistPos1 == modlist.Items().size()) {
 							bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not installed or in the masterlist.");
-							LOG_WARN(" * \"%s\" is not in the masterlist or installed.", ruleIter->Object().c_str());
+							LOG_WARN(" * \"%s\" is not in the masterlist or installed.",
+							         ruleIter->Object().c_str());
 							continue;
-						} else if (ruleIter->Key() == ADD  && modlistPos1 <= modlist.LastRecognisedPos()) {  //If it adds a mod already sorted, skip the rule.
+						} else if (ruleIter->Key() == ADD  &&
+						           modlistPos1 <= modlist.LastRecognisedPos()) {  //If it adds a mod already sorted, skip the rule.
 							bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is already in the masterlist.");
 							LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->Object().c_str());
 							continue;
-						} else if (ruleIter->Key() == OVERRIDE && (modlistPos1 > modlist.LastRecognisedPos())) {
+						} else if (ruleIter->Key() == OVERRIDE &&
+						          (modlistPos1 > modlist.LastRecognisedPos())) {
 							bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not in the masterlist, cannot override.");
-							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->Object().c_str());
+							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.",
+							         ruleIter->Object().c_str());
 							continue;
 						} else if (modlistPos1 == modlist.LastRecognisedPos())  //The last recognised item is being moved. It can only be moved earlier, so set the previous item as the last recognised item.
 							lastRecognisedItem = modlist.ItemAt(modlistPos1 - 1);
-						modlistPos2 = modlist.FindItem(lines[i].Object(), MOD);  //Find sort mod.
+						modlistPos2 = modlist.FindItem(lines[i].Object(),
+						                               MOD);  //Find sort mod.
 						//Do checks.
 						if (modlistPos2 == modlist.Items().size()) {  //Handle case of mods that don't exist at all.
 							bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << lines[i].Object() << VAR_CLOSE << loc::translate(" is not installed, and is not in the masterlist.");
-							LOG_WARN(" * \"%s\" is not installed or in the masterlist.", lines[i].Object().c_str());
+							LOG_WARN(" * \"%s\" is not installed or in the masterlist.",
+							         lines[i].Object().c_str());
 							continue;
 						} else if (modlistPos2 > modlist.LastRecognisedPos()) {  //Handle the case of a rule sorting a mod into a position in unsorted mod territory.
 							bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << lines[i].Object() << VAR_CLOSE << loc::translate(" is not in the masterlist and has not been sorted by a rule.");
-							LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.", lines[i].Object().c_str());
+							LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.",
+							         lines[i].Object().c_str());
 							continue;
-						} else if (lines[i].Key() == AFTER && modlistPos2 == modlist.LastRecognisedPos())
+						} else if (lines[i].Key() == AFTER &&
+						           modlistPos2 == modlist.LastRecognisedPos())
 							lastRecognisedItem = modlist.ItemAt(modlistPos1);
 						mod = modlist.ItemAt(modlistPos1);  //Record the rule mod in a new variable.
 						modlist.Erase(modlistPos1);  //Now remove the rule mod from its old position. This breaks all modlist iterators active.
 						//Need to find sort mod pos again, to fix iterator.
-						modlistPos2 = modlist.FindItem(lines[i].Object(), MOD);  //Find sort mod.
+						modlistPos2 = modlist.FindItem(lines[i].Object(),
+						                               MOD);  //Find sort mod.
 						//Insert the mod into its new position.
 						if (lines[i].Key() == AFTER)
 							++modlistPos2;
 						modlist.Insert(modlistPos2, mod);
-					} else if (lines[i].Key() == TOP || lines[i].Key() == BOTTOM) {
+					} else if (lines[i].Key() == TOP ||
+					           lines[i].Key() == BOTTOM) {
 						Item mod;
-						modlistPos1 = modlist.FindItem(ruleItem.Name(), MOD);
+						modlistPos1 = modlist.FindItem(ruleItem.Name(),
+						                               MOD);
 						//Do checks.
-						if (ruleIter->Key() == ADD && modlistPos1 == modlist.Items().size()) {
+						if (ruleIter->Key() == ADD &&
+						    modlistPos1 == modlist.Items().size()) {
 							bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not installed or in the masterlist.");
-							LOG_WARN(" * \"%s\" is not installed.", ruleIter->Object().c_str());
+							LOG_WARN(" * \"%s\" is not installed.",
+							         ruleIter->Object().c_str());
 							continue;
 						//If it adds a mod already sorted, skip the rule.
-						} else if (ruleIter->Key() == ADD  && modlistPos1 <= modlist.LastRecognisedPos()) {
+						} else if (ruleIter->Key() == ADD  &&
+						           modlistPos1 <= modlist.LastRecognisedPos()) {
 							bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is already in the masterlist.");
-							LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->Object().c_str());
+							LOG_WARN(" * \"%s\" is already in the masterlist.",
+							         ruleIter->Object().c_str());
 							continue;
-						} else if (ruleIter->Key() == OVERRIDE && (modlistPos1 > modlist.LastRecognisedPos() || modlistPos1 == modlist.Items().size())) {
+						} else if (ruleIter->Key() == OVERRIDE &&
+						          (modlistPos1 > modlist.LastRecognisedPos() ||
+						           modlistPos1 == modlist.Items().size())) {
 							bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not in the masterlist, cannot override.");
-							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.", ruleIter->Object().c_str());
+							LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.",
+							         ruleIter->Object().c_str());
 							continue;
 						}
 						//Find the group to sort relative to.
 						if (lines[i].Key() == TOP)
 							modlistPos2 = modlist.FindItem(lines[i].Object(), BEGINGROUP) + 1;  //Find the start, and increment by 1 so that mod is inserted after start.
 						else
-							modlistPos2 = modlist.FindLastItem(lines[i].Object(), ENDGROUP);  //Find the end.
+							modlistPos2 = modlist.FindLastItem(lines[i].Object(),
+							                                   ENDGROUP);  //Find the end.
 						//Check that the sort group actually exists.
 						if (modlistPos2 == modlist.Items().size()) {
 							bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << loc::translate("The group ") << VAR_OPEN << lines[i].Object() << VAR_CLOSE << loc::translate(" is not in the masterlist or is malformatted.");
-							LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", lines[i].Object().c_str());
+							LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.",
+							         lines[i].Object().c_str());
 							continue;
 						}
 						mod = modlist.ItemAt(modlistPos1);  //Record the rule mod in a new variable.
@@ -547,17 +588,20 @@ namespace boss {
 						if (lines[i].Key() == TOP)
 							modlistPos2 = modlist.FindItem(lines[i].Object(), BEGINGROUP) + 1;  //Find the start, and increment by 1 so that mod is inserted after start.
 						else
-							modlistPos2 = modlist.FindLastItem(lines[i].Object(), ENDGROUP);  //Find the end.
+							modlistPos2 = modlist.FindLastItem(lines[i].Object(),
+							                                   ENDGROUP);  //Find the end.
 						modlist.Insert(modlistPos2, mod);  //Now insert the mod into the group. This breaks all modlist iterators active.
 					}
 					i++;
 				}
 				for (i; i < max; i++) {  //Message lines.
 					//Find the mod which will have its messages edited.
-					modlistPos1 = modlist.FindItem(ruleItem.Name(), MOD);
+					modlistPos1 = modlist.FindItem(ruleItem.Name(),
+					                               MOD);
 					if (modlistPos1 == modlist.Items().size()) {  //Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
 						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not installed or in the masterlist.");
-						LOG_WARN(" * \"%s\" is not installed.", ruleIter->Object().c_str());
+						LOG_WARN(" * \"%s\" is not installed.",
+						         ruleIter->Object().c_str());
 						messageLineFail = true;
 						break;
 					}
@@ -565,39 +609,51 @@ namespace boss {
 					if (lines[i].Key() == REPLACE)  //If the rule is to replace messages, clear existing messages.
 						items[modlistPos1].ClearMessages();
 					//Append message to message list of mod.
-					items[modlistPos1].InsertMessage(items[modlistPos1].Messages().size(), lines[i].ObjectAsMessage());
+					items[modlistPos1].InsertMessage(items[modlistPos1].Messages().size(),
+					                                 lines[i].ObjectAsMessage());
 					modlist.Items(items);
 				}
-			} else if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {  //Group: Can only sort.
+			} else if (lines[i].Key() == BEFORE ||
+			           lines[i].Key() == AFTER) {  //Group: Can only sort.
 				vector<Item> group;
 				//Look for group to sort. Find start and end positions.
-				modlistPos1 = modlist.FindItem(ruleItem.Name(), BEGINGROUP);
-				modlistPos2 = modlist.FindLastItem(ruleItem.Name(), ENDGROUP);
+				modlistPos1 = modlist.FindItem(ruleItem.Name(),
+				                               BEGINGROUP);
+				modlistPos2 = modlist.FindLastItem(ruleItem.Name(),
+				                                   ENDGROUP);
 				//Check to see group actually exists.
-				if (modlistPos1 == modlist.Items().size() || modlistPos2 == modlist.Items().size()) {
+				if (modlistPos1 == modlist.Items().size() ||
+				    modlistPos2 == modlist.Items().size()) {
 					bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << loc::translate("The group ") << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not in the masterlist or is malformatted.");
-					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", ruleIter->Object().c_str());
+					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.",
+					         ruleIter->Object().c_str());
 					continue;
 				} else if (ruleItem.Name() == lastRecognisedItem.Name())  //Last recognised item is being moved. Set the item before the start of this group to the lastRecognisedItem.
 					lastRecognisedItem = modlist.ItemAt(modlistPos1 - 1);
 				//Copy the start, end and everything in between to a new variable.
 				vector<Item> items = modlist.Items();
-				group.assign(items.begin() + modlistPos1, items.begin() + modlistPos2+1);
+				group.assign(items.begin() + modlistPos1,
+				             items.begin() + modlistPos2 + 1);
 				//Now erase group from modlist.
-				modlist.Erase(modlistPos1, modlistPos2+1);
+				modlist.Erase(modlistPos1, modlistPos2 + 1);
 				//Find the group to sort relative to and insert it before or after it as appropriate.
 				if (lines[i].Key() == BEFORE)
-					modlistPos2 = modlist.FindItem(lines[i].Object(), BEGINGROUP);  //Find the start.
+					modlistPos2 = modlist.FindItem(lines[i].Object(),
+					                               BEGINGROUP);  //Find the start.
 				else
-					modlistPos2 = modlist.FindLastItem(lines[i].Object(), ENDGROUP);  //Find the end, and add one, as inserting works before the given element.
+					modlistPos2 = modlist.FindLastItem(lines[i].Object(),
+					                                   ENDGROUP);  //Find the end, and add one, as inserting works before the given element.
 				//Check that the sort group actually exists.
 				if (modlistPos2 == modlist.Items().size()) {
 					modlist.Insert(modlistPos1, group, 0, group.size());  //Insert the group back in its old position.
 					bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << loc::translate("The group ") << VAR_OPEN << lines[i].Object() << VAR_CLOSE << loc::translate(" is not in the masterlist or is malformatted.");
-					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.", lines[i].Object().c_str());
+					LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.",
+					         lines[i].Object().c_str());
 					continue;
-				} else if (lines[i].Key() == AFTER && lines[i].Object() == lastRecognisedItem.Name())  //Sorting after the last recognised item (which is a group). Set the item to be sorted as the last recognised.
-					lastRecognisedItem = Item(ruleItem.Name(), ENDGROUP);
+				} else if (lines[i].Key() == AFTER &&
+				           lines[i].Object() == lastRecognisedItem.Name())  //Sorting after the last recognised item (which is a group). Set the item to be sorted as the last recognised.
+					lastRecognisedItem = Item(ruleItem.Name(),
+					                          ENDGROUP);
 
 				if (lines[i].Key() == AFTER)
 					modlistPos2++;
@@ -605,7 +661,8 @@ namespace boss {
 				modlist.Insert(modlistPos2, group, 0, group.size());
 			}
 			if (!messageLineFail) {  //Print success message.
-				LOG_DEBUG("Rule #%" PRIuS " applied successfully.", ruleNo);
+				LOG_DEBUG("Rule #%" PRIuS " applied successfully.",
+				          ruleNo);
 				bosslog.userRules << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << *ruleIter << TABLE_DATA << "✓" << TABLE_DATA;
 			}
 
@@ -650,9 +707,11 @@ namespace boss {
 			if (!fs::is_directory(SEPluginsFolder())) {
 				LOG_DEBUG("Script extender plugins directory not detected.");
 			} else {
-				for (fs::directory_iterator itr(SEPluginsFolder()); itr != fs::directory_iterator(); ++itr) {
+				for (fs::directory_iterator itr(SEPluginsFolder());
+				     itr != fs::directory_iterator(); ++itr) {
 					const string ext = itr->path().extension().string();
-					if (fs::is_regular_file(itr->status()) && boost::iequals(ext, ".dll")) {
+					if (fs::is_regular_file(itr->status()) &&
+					    boost::iequals(ext, ".dll")) {
 						string CRC = IntToHexString(GetCrc32(itr->path()));
 						string ver = Version(itr->path()).AsString();
 
@@ -709,8 +768,9 @@ namespace boss {
 			size_t size = modlist.Items().size();
 			size_t pos = modlist.GetNextMasterPos(*this, modlist.GetLastMasterPos(*this) + 1);
 			modlist.ApplyMasterPartition(*this);
-			if (pos <= modlist.LastRecognisedPos())   //Masters exist after the initial set of masters in the recognised load order. Not allowed by game.
-				throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER, modlist.ItemAt(pos).Name());
+			if (pos <= modlist.LastRecognisedPos())  //Masters exist after the initial set of masters in the recognised load order. Not allowed by game.
+				throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER,
+				                 modlist.ItemAt(pos).Name());
 		} catch (boss_error /*&e*/) {
 			try {
 				bosslog.globalMessages.push_back(Message(SAY, loc::translate("The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see \"file:../Docs/BOSS%20Readme.html#appendix-c False-Flagged Plugins\".")));
@@ -730,7 +790,9 @@ namespace boss {
 		bosslog.unrecognisedPlugins.SetHTMLSpecialEscape(false);
 
 		LOG_INFO("Applying calculated ordering to user files...");
-		for (vector<Item>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter) {
+		// MCP Note: Look at replacing this with a for-each loop?
+		for (vector<Item>::iterator itemIter = items.begin();
+		     itemIter != items.end(); ++itemIter) {
 			Outputter buffer(gl_log_format);
 			buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
 			string version = itemIter->GetVersion(*this).AsString();
@@ -745,16 +807,18 @@ namespace boss {
 			} else if (gl_show_CRCs)
 				buffer << SPAN_CLASS_CRC_OPEN << loc::translate("Checksum: ") << IntToHexString(GetCrc32(DataFolder() / itemIter->Name())) << SPAN_CLOSE;
 
-	/*		if (itemIter->IsFalseFlagged()) {
+			/*if (itemIter->IsFalseFlagged()) {
 				itemIter->InsertMessage(0, Message(WARN, "This plugin's internal master bit flag value does not match its file extension. This issue should be reported to the mod's author, and can be fixed by changing the file extension from .esp to .esm or vice versa."));
 				counters.warnings++;
-			}
-	*/
-			if (GetLoadOrderMethod() == LOMETHOD_TIMESTAMP && !gl_trial_run && !itemIter->IsGameMasterFile(*this)) {
-				//time_t is an integer number of seconds, so adding 60 on increases it by a minute. Using recModNo instead of i to avoid increases for group entries.
-				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"", itemIter->Name().c_str());
+			}*/
+			if (GetLoadOrderMethod() == LOMETHOD_TIMESTAMP &&
+			    !gl_trial_run && !itemIter->IsGameMasterFile(*this)) {
+				// time_t is an integer number of seconds, so adding 60 on increases it by a minute.
+				// Using recModNo instead of i to avoid increases for group entries.
+				LOG_DEBUG(" -- Setting last modified time for file: \"%s\"",
+				          itemIter->Name().c_str());
 				try {
-					itemIter->SetModTime(*this, esmtime + (bosslog.recognised + bosslog.unrecognised)*60);
+					itemIter->SetModTime(*this, esmtime + (bosslog.recognised + bosslog.unrecognised) * 60);
 				} catch(boss_error &e) {
 					itemIter->InsertMessage(0, Message(ERR, loc::translate("Error: ").str() + e.getString()));
 					LOG_ERROR(" * Error: %s", e.getString().c_str());
@@ -788,8 +852,10 @@ namespace boss {
 		//Now set the load order using Skyrim method.
 		if (GetLoadOrderMethod() == LOMETHOD_TEXTFILE) {
 			try {
-				modlist.SavePluginNames(*this, LoadOrderFile(), false, false);
-				modlist.SavePluginNames(*this, ActivePluginsFile(), true, true);
+				modlist.SavePluginNames(*this, LoadOrderFile(), false,
+				                        false);
+				modlist.SavePluginNames(*this, ActivePluginsFile(),
+				                        true, true);
 			} catch (boss_error &e) {
 				bosslog.criticalError << LIST_ITEM_CLASS_ERROR << loc::translate("Critical Error: ") << e.getString() << LINE_BREAK
 					<< loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK

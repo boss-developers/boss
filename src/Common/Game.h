@@ -43,12 +43,14 @@ namespace boss {
 	BOSS_COMMON extern const uint32_t LOMETHOD_TIMESTAMP;
 	BOSS_COMMON extern const uint32_t LOMETHOD_TEXTFILE;
 
-	BOSS_COMMON uint32_t	DetectGame(vector<uint32_t>& detectedGames, vector<uint32_t>& undetectedGames);  //Throws exception if error.
+	BOSS_COMMON uint32_t DetectGame(vector<uint32_t>& detectedGames,
+	                                vector<uint32_t>& undetectedGames);  //Throws exception if error.
 
 	class BOSS_COMMON Game {  //Constructor depends on gl_update_only.
 	public:
 		Game();  //Sets game to AUTODETECT, with all other vars being empty.
-		Game(const uint32_t gameCode, const string path = "", const bool noPathInit = false);  //Empty path means constructor will detect its location. If noPathInit is true, then the data, active plugins list and loadorder.txt paths will not be set, and the game's BOSS subfolder will not be created.
+		Game(const uint32_t gameCode, const string path = "",
+		     const bool noPathInit = false);  //Empty path means constructor will detect its location. If noPathInit is true, then the data, active plugins list and loadorder.txt paths will not be set, and the game's BOSS subfolder will not be created.
 
 		bool IsInstalled() const;
 		bool IsInstalledLocally() const;
@@ -112,8 +114,8 @@ namespace boss {
 		string pluginsFolderName;
 		string pluginsFileName;
 
-		fs::path gamePath;  //Path to the game's folder.
-		fs::path pluginsPath;  //Path to the file in which active plugins are listed.
+		fs::path gamePath;       //Path to the game's folder.
+		fs::path pluginsPath;    //Path to the file in which active plugins are listed.
 		fs::path loadorderPath;  //Path to the file which lists total load order.
 
 		//Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
