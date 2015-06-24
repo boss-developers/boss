@@ -30,8 +30,8 @@
 
 #include "Support/Platform.h"
 #include "Common/DllDef.h"
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 
 
 #define _LOG_IMPL(verbosity, formatStr, ...) \

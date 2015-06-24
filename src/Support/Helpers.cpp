@@ -39,12 +39,11 @@
 
 #include "alphanum.hpp"
 
-// TODO: Fix these includes so that we're using the C++ standard library and fix extensions
 #include <cstring>
 #include <iostream>
-#include <ctype.h>
-#include <stdio.h>
-#include <time.h>
+#include <cctype>
+#include <cstdio>
+#include <ctime>
 #include <sys/types.h>
 #include <sstream>
 
