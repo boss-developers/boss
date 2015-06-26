@@ -77,6 +77,8 @@ namespace boss {
 	///////////////////////////////
 
 	masterlistMsgKey_::masterlistMsgKey_() {
+		// MCP Note: Look into changing the style on these. Not sure, have never seen syntax like this before...
+		// Need to read up on Boost Spirit
 		add  //New Message keywords.
 			("say", SAY)
 			("tag", TAG)
@@ -157,8 +159,8 @@ namespace boss {
 
 	//Modlist grammar constructor.
 	modlist_grammar::modlist_grammar()
-		: modlist_grammar::base_type(modList, "modlist grammar"),
-		  errorBuffer(NULL) {
+	    : modlist_grammar::base_type(modList, "modlist grammar"),
+	      errorBuffer(NULL) {
 
 		masterlistMsgKey_ masterlistMsgKey;
 		typeKey_ typeKey;
@@ -347,7 +349,7 @@ namespace boss {
 		out << what;
 		string expect = out.str();
 
-		string context(errorpos, min(errorpos +50, last));
+		string context(errorpos, min(errorpos + 50, last));
 		boost::trim_left(context);
 
 		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
@@ -463,7 +465,9 @@ namespace boss {
 	}
 
 	//Evaluate a single conditional.
-	void conditional_grammar::EvaluateConditional(bool& result, const string type, const bool condition) {
+	void conditional_grammar::EvaluateConditional(bool& result,
+	                                              const string type,
+	                                              const bool condition) {
 		if (to_lower_copy(type) == "if")
 			result = condition;
 		else
@@ -472,7 +476,10 @@ namespace boss {
 	}
 
 	//Evaluate the second half of a complex conditional.
-	void conditional_grammar::EvaluateCompoundConditional(bool& lhsCondition, const string andOr, const bool rhsCondition) {
+	void conditional_grammar::EvaluateCompoundConditional(
+	    bool& lhsCondition,
+	    const string andOr,
+	    const bool rhsCondition) {
 		if (andOr == "||" && !lhsCondition && !rhsCondition)
 			lhsCondition = false;
 		else if (andOr == "||" && !lhsCondition && rhsCondition)
@@ -481,7 +488,8 @@ namespace boss {
 			lhsCondition = false;
 	}
 
-	void conditional_grammar::EvalElseConditional(bool& result, bool& ok) {
+	void conditional_grammar::EvalElseConditional(bool& result,
+	                                              bool& ok) {
 		if (lastResult == NULL) {
 			ok = false;
 			result = false;
@@ -515,20 +523,27 @@ namespace boss {
 
 	//Returns the true path based on what type of file or keyword it is.
 	fs::path conditional_grammar::GetPath(const string file) {
-		if (file == "OBSE" || file == "FOSE" || file == "NVSE" || file == "SKSE" || file == "MWSE")
+		if (file == "OBSE" || file == "FOSE" || file == "NVSE" ||
+		    file == "SKSE" || file == "MWSE")
 			return parentGame->SEExecutable();
-		else if (file == "TES3" || file == "TES4" || file == "TES5" || file == "FO3" || file == "FONV")
+		else if (file == "TES3" || file == "TES4" || file == "TES5" ||
+		         file == "FO3" || file == "FONV")
 			return parentGame->Executable();
 		else if (file == "BOSS")
 			return boss_path / "BOSS.exe";
-		else if (boost::iequals(fs::path(file).extension().string(), ".dll") && file.find('/') == string::npos && file.find('\\') == string::npos && fs::exists(parentGame->SEPluginsFolder()))
+		else if (boost::iequals(fs::path(file).extension().string(), ".dll") &&
+		         file.find('/') == string::npos && file.find('\\') == string::npos &&
+		         fs::exists(parentGame->SEPluginsFolder()))
 			return parentGame->SEPluginsFolder() / file;
 		else
 			return parentGame->DataFolder() / file;
 	}
 
 	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
-	void conditional_grammar::CheckVersion(bool& result, const string file, const string version, const char comparator) {
+	void conditional_grammar::CheckVersion(bool& result,
+	                                       const string file,
+	                                       const string version,
+	                                       const char comparator) {
 		result = false;
 		if (parentGame == NULL)
 			return;
@@ -593,7 +608,8 @@ namespace boss {
 			reg = reg.substr(pos1 + 2);
 			boost::algorithm::replace_all(p, "\\\\", "\\");
 			file_path = fs::path(p);
-		} else if (to_lower_copy(fs::path(reg).extension().string()) == ".dll" && fs::exists(parentGame->SEPluginsFolder()))
+		} else if (to_lower_copy(fs::path(reg).extension().string()) == ".dll" &&
+		           fs::exists(parentGame->SEPluginsFolder()))
 			file_path = parentGame->SEPluginsFolder();
 		else
 			file_path = parentGame->DataFolder();
@@ -601,12 +617,14 @@ namespace boss {
 		try {
 			regex = boost::regex(reg, boost::regex::extended|boost::regex::icase);
 		} catch (boost::regex_error e) {
-			LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.", reg.c_str());
+			LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.",
+			          reg.c_str());
 			result = false;  //Fail the check.
 			return;
 		}
 
-		for (fs::directory_iterator itr(file_path); itr != fs::directory_iterator(); ++itr) {
+		for (fs::directory_iterator itr(file_path);
+		     itr != fs::directory_iterator(); ++itr) {
 			if (fs::is_regular_file(itr->status())) {
 				if (boost::regex_match(itr->path().filename().string(), regex)) {
 					result = true;
@@ -617,7 +635,8 @@ namespace boss {
 	}
 
 	//Checks if a masterlist variable is defined.
-	void conditional_grammar::CheckVar(bool& result, const string var) {
+	void conditional_grammar::CheckVar(bool& result,
+	                                   const string var) {
 		if (setVars->find(var) == setVars->end())
 			result = false;
 		else
@@ -626,7 +645,8 @@ namespace boss {
 	}
 
 	//Checks if the given plugin is active.
-	void conditional_grammar::CheckActive(bool& result, const string plugin) {
+	void conditional_grammar::CheckActive(bool& result,
+	                                      const string plugin) {
 		if (activePlugins->find(to_lower_copy(plugin)) != activePlugins->end())
 			result = true;
 		else
@@ -634,7 +654,8 @@ namespace boss {
 	}
 
 	//Checks if the given language is the current language.
-	void conditional_grammar::CheckLanguage(bool& result, const string language) {
+	void conditional_grammar::CheckLanguage(bool& result,
+	                                        const string language) {
 		if (boost::iequals(language, "english"))
 			result = (gl_language == ENGLISH);
 		else if (boost::iequals(language, "russian"))
@@ -650,7 +671,8 @@ namespace boss {
 	}
 
 	//Checks if the given mod has the given checksum.
-	void conditional_grammar::CheckSum(bool& result, string file, const uint32_t sum) {
+	void conditional_grammar::CheckSum(bool& result, string file,
+	                                   const uint32_t sum) {
 		result = false;
 		if (parentGame == NULL)
 			return;
@@ -685,7 +707,7 @@ namespace boss {
 		out << what;
 		string expect = out.str();
 
-		string context(errorpos, min(errorpos +50, last));
+		string context(errorpos, min(errorpos + 50, last));
 		boost::trim_left(context);
 
 		ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
@@ -742,7 +764,7 @@ namespace boss {
 		out << what;
 		string expect = out.str();
 
-		string context(errorpos, min(errorpos +50, last));
+		string context(errorpos, min(errorpos + 50, last));
 		boost::trim_left(context);
 
 		ParsingError e(str(IniParsingErrorHeader % expect), context, IniParsingErrorFooter);
@@ -817,7 +839,7 @@ namespace boss {
 		out << what;
 		string expect = out.str();
 
-		string context(errorpos, min(errorpos +50, last));
+		string context(errorpos, min(errorpos + 50, last));
 		boost::trim_left(context);
 
 		ParsingError e(str(RuleListParsingErrorHeader % expect), context, RuleListParsingErrorFooter);

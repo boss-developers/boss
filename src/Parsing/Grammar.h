@@ -159,8 +159,8 @@ namespace boss {
 		qi::rule<grammarIter, uint32_t(), Skipper> messageKeyword;
 		ParsingError * errorBuffer;
 		vector<Message> * globalMessageBuffer;
-		vector<MasterlistVar> * setVars;					//Vars set by masterlist.
-		boost::unordered_map<string, uint32_t> * fileCRCs;	//CRCs calculated.
+		vector<MasterlistVar> * setVars;                    //Vars set by masterlist.
+		boost::unordered_map<string, uint32_t> * fileCRCs;  //CRCs calculated.
 		const Game * parentGame;
 		vector<string> openGroups;  //Need to keep track of which groups are open to match up endings properly in MF1.
 
@@ -200,9 +200,9 @@ namespace boss {
 		qi::rule<grammarIter, uint32_t(), Skipper> checksum;
 		qi::rule<grammarIter, char(), Skipper> comparator;
 		ParsingError * errorBuffer;
-		boost::unordered_set<string> * setVars;				//Vars set by masterlist.
-		boost::unordered_set<string> * activePlugins;		//Active plugins, with lowercase filenames.
-		boost::unordered_map<string, uint32_t> * fileCRCs;	//CRCs calculated.
+		boost::unordered_set<string> * setVars;             //Vars set by masterlist.
+		boost::unordered_set<string> * activePlugins;       //Active plugins, with lowercase filenames.
+		boost::unordered_map<string, uint32_t> * fileCRCs;  //CRCs calculated.
 		const Game * parentGame;
 		bool * lastResult;
 
