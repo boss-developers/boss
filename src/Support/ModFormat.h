@@ -39,21 +39,21 @@ namespace boss {
 
 	// Structure for grouping the information gathered from each mod's header.
 	struct ModHeader {
-		string		Name;
-		string		Description;
-		string		Author;
-		string		Version;
-		bool		IsMaster;
+		string Name;
+		string Description;
+		string Author;
+		string Version;
+		bool IsMaster;
 	};
 
 
 	struct Record {
-		static const ulong TES4	=	'4SET';
-		static const ulong HEDR	=	'RDEH';
-		static const ulong OFST	=	'TSFO';
-		static const ulong DELE	=	'ELED';
-		static const ulong CNAM	=	'MANC';
-		static const ulong SNAM	=	'MANS';
+		static const ulong TES4 = '4SET';
+		static const ulong HEDR = 'RDEH';
+		static const ulong OFST = 'TSFO';
+		static const ulong DELE = 'ELED';
+		static const ulong CNAM = 'MANC';
+		static const ulong SNAM = 'MANS';
 	};
 
 	ModHeader ReadHeader(boost::filesystem::path filename);

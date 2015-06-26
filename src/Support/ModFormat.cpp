@@ -44,8 +44,8 @@ namespace boss {
 
 	//
 	// string ParseVersion(string&):
-	//	- Tries to extract the version string value from the given text,
-	//	using the above defined regexes to do the dirty work.
+	// - Tries to extract the version string value from the given text,
+	// using the above defined regexes to do the dirty work.
 	//
 	string ParseVersion(const string& text) {
 		string::const_iterator begin, end;
@@ -75,8 +75,8 @@ namespace boss {
 
 	//
 	// string ReadString(pointer&, maxsize):
-	//	- Reads a consecutive array of charactes up to maxsize length and
-	//	returns them as a new string.
+	// - Reads a consecutive array of charactes up to maxsize length and
+	// returns them as a new string.
 	//
 	string ReadString(char*& bufptr, ushort size) {
 		string data;
@@ -91,8 +91,8 @@ namespace boss {
 
 	//
 	// T Peek<T>(pointer&):
-	//	- Peeks into the received buffer and returns the value pointed
-	//	converting it to the type T.
+	// - Peeks into the received buffer and returns the value pointed
+	// converting it to the type T.
 	//
 	template <typename T>
 	T Peek(char* buffer) {
@@ -101,9 +101,9 @@ namespace boss {
 
 	//
 	// T Read<T>(pointer&):
-	//	- Tries to extract a value of the specified type T from the
-	//	received buffer, incrementing the pointer to point past the readen
-	//	value.
+	// - Tries to extract a value of the specified type T from the
+	// received buffer, incrementing the pointer to point past the readen
+	// value.
 	//
 	template <typename T>
 	inline T Read(char*& buffer) {
@@ -114,13 +114,11 @@ namespace boss {
 
 	//-
 	// ModHeader ReadHeader(string):
-	//	- Parses the mod file contents and extract the header information
-	//	returning the most important data using a ModHeader struct.
-	//	--> see:
-	//			http://www.uesp.net/wiki/Tes4Mod:Mod_File_Format,
+	// - Parses the mod file contents and extract the header information
+	// returning the most important data using a ModHeader struct.
+	// --> see: http://www.uesp.net/wiki/Tes4Mod:Mod_File_Format,
 	//
-	//	and in particular this link:
-	//			http://www.uesp.net/wiki/Tes4Mod:Mod_File_Format/TES4
+	// and in particular this link: http://www.uesp.net/wiki/Tes4Mod:Mod_File_Format/TES4
 	//
 
 	bool IsPluginMaster(boost::filesystem::path filename) {
@@ -131,9 +129,10 @@ namespace boss {
 		if (filename.empty())
 			return false;
 
-		//MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
-		//Note 2: According to Boost docs, c_str() is the same as specifying native().c_str()?
-		ifstream file(filename.string(), ios_base::binary | ios_base::in);
+		// MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
+		// Note 2: According to Boost docs, c_str() is the same as specifying native().c_str()?
+		ifstream file(filename.string(),
+		              ios_base::binary | ios_base::in);
 
 		if (file.bad())
 			//throw boss_error(BOSS_ERROR_FILE_READ_FAIL, filename.string());
@@ -148,7 +147,7 @@ namespace boss {
 		}
 
 		// Next field is the total header size
-		/*uint headerSize =*/ Read<uint>(bufptr);
+		/*uint headerSize = */Read<uint>(bufptr);
 
 		// Next comes the header record Flags
 		uint flags = Read<uint>(bufptr);
@@ -162,8 +161,9 @@ namespace boss {
 		char buffer[MAXLENGTH];
 		char* bufptr = buffer;
 		ModHeader modHeader;
-		//MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
-		ifstream file(filename.string(), ios_base::binary | ios_base::in);
+		// MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
+		ifstream file(filename.string(),
+		              ios_base::binary | ios_base::in);
 
 		modHeader.Name = filename.string();
 
@@ -176,7 +176,7 @@ namespace boss {
 		}
 
 		// Next field is the total header size
-		/*uint headerSize =*/ Read<uint>(bufptr);
+		/*uint headerSize = */Read<uint>(bufptr);
 
 		// Next comes the header record Flags
 		uint flags = Read<uint>(bufptr);
@@ -186,10 +186,10 @@ namespace boss {
 		modHeader.IsMaster = (flags & 0x1) != 0;
 
 		// Next comes the FormID...
-		/*uint formId =*/ Read<uint>(bufptr);  // skip formID
+		/*uint formId = */Read<uint>(bufptr);  // Skip formID
 
 		// ...and extra flags
-		/*uint flags2 =*/ Read<uint>(bufptr);  // skip flags2
+		/*uint flags2 = */Read<uint>(bufptr);  // Skip flags2
 
 		// For Oblivion plugins, the Header record starts here, check for its signature 'HEDR'.
 		if (Read<uint>(bufptr) != Record::HEDR) {
@@ -200,32 +200,32 @@ namespace boss {
 		}
 
 		// HEDR record has fields: DataSize, Version (0.8 o 1.0), Record Count
-		//	and Next Object Id
-		/*ushort dataSize =*/ Read<ushort>(bufptr);
-		/*float version =*/ Read<float>(bufptr);
-		/*int numRecords =*/ Read<int>(bufptr);
-		/*uint nextObjId =*/ Read<uint>(bufptr);
+		// and Next Object Id
+		/*ushort dataSize = */Read<ushort>(bufptr);
+		/*float version = */Read<float>(bufptr);
+		/*int numRecords = */Read<int>(bufptr);
+		/*uint nextObjId = */Read<uint>(bufptr);
 
 		// Then comes the sub-records
 		uint signature = Read<uint>(bufptr);
 
-		// skip optional records
+		// Skip optional records
 		bool loop = true;
 		while (loop) {
 			switch (signature) {
 				case Record::OFST:
 				case Record::DELE:
-					bufptr += Read<ushort>(bufptr);  // skip
+					bufptr += Read<ushort>(bufptr);  // Skip
 					signature = Read<uint>(bufptr);
 					break;
 
-				// extract author name, if present
+				// Extract author name, if present
 				case Record::CNAM:
 					modHeader.Author = ReadString(bufptr, Read<ushort>(bufptr));
 					signature = Read<uint>(bufptr);
 					break;
 
-				// extract description and version, if present
+				// Extract description and version, if present
 				case Record::SNAM:
 					modHeader.Description = ReadString(bufptr, Read<ushort>(bufptr));
 					modHeader.Version     = ParseVersion(modHeader.Description);
