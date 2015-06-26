@@ -64,9 +64,10 @@ namespace boss {
 		uint32_t chksum = 0;
 		static const size_t buffer_size = 8192;
 		char buffer[buffer_size];
-		//MCP Note: changed from filename.c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
+		// MCP Note: changed from filename.c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
 		ifstream ifile(filename.string(), ios::binary);
-		LOG_TRACE("calculating CRC for: '%s'", filename.string().c_str());
+		LOG_TRACE("calculating CRC for: '%s'",
+		          filename.string().c_str());
 		boost::crc_32_type result;
 		if (ifile) {
 			do {
@@ -75,24 +76,24 @@ namespace boss {
 			} while (ifile);
 			chksum = result.checksum();
 		} else {
-			LOG_WARN("unable to open file for CRC calculation: '%s'", filename.string().c_str());
+			LOG_WARN("unable to open file for CRC calculation: '%s'",
+			         filename.string().c_str());
 		}
-		LOG_DEBUG("CRC32('%s'): 0x%x", filename.string().c_str(), chksum);
+		LOG_DEBUG("CRC32('%s'): 0x%x",
+		          filename.string().c_str(), chksum);
 		return chksum;
 	}
 
 	//Reads an entire file into a string buffer.
 	void fileToBuffer(const fs::path file, string& buffer) {
-		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 		ifstream ifile(file.string());
 		if (ifile.fail())
 			return;
 		ifile.unsetf(ios::skipws);  // No white space skipping!
-		copy(
-			istream_iterator<char>(ifile),
-			istream_iterator<char>(),
-			back_inserter(buffer)
-		);
+		copy(istream_iterator<char>(ifile),
+		     istream_iterator<char>(),
+		     back_inserter(buffer));
 	}
 
 	//Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
@@ -145,7 +146,8 @@ namespace boss {
 	}
 
 	//Check if registry subkey exists.
-	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey, string value) {
+	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey,
+	                              string value) {
 		if (RegKeyStringValue(keyStr, subkey, value).empty())
 			return false;
 		else
@@ -153,7 +155,8 @@ namespace boss {
 	}
 
 	//Get registry subkey value string.
-	string RegKeyStringValue(string keyStr, string subkey, string value) {
+	string RegKeyStringValue(string keyStr, string subkey,
+	                         string value) {
 #if _WIN32 || _WIN64
 		HKEY hKey, key;
 		DWORD BufferSize = 4096;
@@ -170,10 +173,14 @@ namespace boss {
 		else if (keyStr == "HKEY_USERS")
 			key = HKEY_USERS;
 
-		LONG ret = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(), 0, KEY_READ|KEY_WOW64_32KEY, &hKey);
+		LONG ret = RegOpenKeyEx(key,fs::path(subkey).wstring().c_str(),
+		                        0, KEY_READ|KEY_WOW64_32KEY, &hKey);
 
 		if (ret == ERROR_SUCCESS) {
-			ret = RegQueryValueEx(hKey, fs::path(value).wstring().c_str(), NULL, NULL, (LPBYTE)&val, &BufferSize);
+			ret = RegQueryValueEx(hKey,
+			                      fs::path(value).wstring().c_str(),
+			                      NULL, NULL, (LPBYTE)&val,
+			                      &BufferSize);
 			RegCloseKey(hKey);
 
 			if (ret == ERROR_SUCCESS)
@@ -194,17 +201,17 @@ namespace boss {
 
 	Version::Version() {}
 
-	Version::Version(const char * ver)
-		: verString(ver) {}
+	Version::Version(const char * ver) : verString(ver) {}
 
-	Version::Version(const string ver)
-		: verString(ver) {}
+	Version::Version(const string ver) : verString(ver) {}
 
 	Version::Version(const fs::path file) {
-		LOG_TRACE("extracting version from '%s'", file.string().c_str());
+		LOG_TRACE("extracting version from '%s'",
+		          file.string().c_str());
 #if _WIN32 || _WIN64
 		DWORD dummy = 0;
-		DWORD size = GetFileVersionInfoSize(file.wstring().c_str(), &dummy);
+		DWORD size = GetFileVersionInfoSize(file.wstring().c_str(),
+		                                    &dummy);
 
 		if (size > 0) {
 			LPBYTE point = new BYTE[size];
@@ -226,24 +233,27 @@ namespace boss {
 			verString = IntToString(dwLeftMost) + '.' + IntToString(dwSecondLeft) + '.' + IntToString(dwSecondRight) + '.' + IntToString(dwRightMost);
 		}
 #else
-		// ensure filename has no quote characters in it to avoid command injection attacks
+		// Ensure filename has no quote characters in it to avoid command injection attacks
 		if (string::npos != file.string().find('"')) {
-			LOG_WARN("filename has embedded quotes; skipping to avoid command injection: '%s'", file.string().c_str());
+			LOG_WARN("filename has embedded quotes; skipping to avoid command injection: '%s'",
+			         file.string().c_str());
 		} else {
-			// command mostly borrowed from the gnome-exe-thumbnailer.sh script
+			// Command mostly borrowed from the gnome-exe-thumbnailer.sh script
 			// wrestool is part of the icoutils package
 			string cmd = "wrestool --extract --raw --type=version \"" + file.string() + "\" | tr '\\0, ' '\\t.\\0' | sed 's/\\t\\t/_/g' | tr -c -d '[:print:]' | sed -r 's/.*Version[^0-9]*([0-9]+(\\.[0-9]+)+).*/\\1/'";
 
 			FILE *fp = popen(cmd.c_str(), "r");
 
-			// read out the version string
+			// Read out the version string
 			static const uint32_t BUFSIZE = 32;
 			char buf[BUFSIZE];
 			if (NULL == fgets(buf, BUFSIZE, fp)) {
-				LOG_DEBUG("failed to extract version from '%s'", file.string().c_str());
+				LOG_DEBUG("failed to extract version from '%s'",
+				          file.string().c_str());
 			} else {
 				verString = string(buf);
-	   			LOG_DEBUG("extracted version from '%s': %s", file.string().c_str(), retVal.c_str());
+	   			LOG_DEBUG("extracted version from '%s': %s",
+	   			          file.string().c_str(), retVal.c_str());
 			}
 			pclose(fp);
 		}
@@ -261,7 +271,8 @@ namespace boss {
 
 		//boost::regex reg2("(\\d+\\.?)+([a-zA-Z\\-]+(\\d+\\.?)*)+");  //Matches a mix of letters and numbers - from "0.99.xx", "1.35Alpha2", "0.9.9MB8b1", "10.52EV-D", "1.62EV" to "10.0EV-D1.62EV".
 
-		if (boost::regex_match(verString, reg1) && boost::regex_match(ver.AsString(), reg1)) {
+		if (boost::regex_match(verString, reg1) &&
+		    boost::regex_match(ver.AsString(), reg1)) {
 			//First type: numbers separated by periods. If two versions have a different number of numbers, then the shorter should be padded
 			//with zeros. An arbitrary number of numbers should be supported.
 			istringstream parser1(verString);

@@ -66,7 +66,8 @@ namespace boss {
 	std::string FromUTF8To1252(const std::string& str);
 
 	//Check if registry subkey exists.
-	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey, string value);
+	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey,
+	                              string value);
 
 	//Get registry subkey value string.
 	string RegKeyStringValue(string keyStr, string subkey, string value);
