@@ -42,8 +42,8 @@ namespace boss {
 	////////////////////////////////
 
 	Outputter::Outputter()
-		: outFormat(PLAINTEXT),
-		  escapeHTMLSpecialChars(false) {}
+	    : outFormat(PLAINTEXT),
+	      escapeHTMLSpecialChars(false) {}
 
 	Outputter::Outputter(const Outputter& o) {
 		outStream << o.AsString();
@@ -51,8 +51,7 @@ namespace boss {
 		escapeHTMLSpecialChars = o.GetHTMLSpecialEscape();
 	}
 
-	Outputter::Outputter(const uint32_t format)
-		: outFormat(format) {
+	Outputter::Outputter(const uint32_t format) : outFormat(format) {
 		if (outFormat == HTML)
 			escapeHTMLSpecialChars = true;
 		else
@@ -60,7 +59,7 @@ namespace boss {
 	}
 
 	Outputter::Outputter(const uint32_t format, const ParsingError e)
-		: outFormat(format) {
+	    : outFormat(format) {
 		if (outFormat == HTML)
 			escapeHTMLSpecialChars = true;
 		else
@@ -70,7 +69,7 @@ namespace boss {
 	}
 
 	Outputter::Outputter(const uint32_t format, const Rule r)
-		: outFormat(format) {
+	    : outFormat(format) {
 		if (outFormat == HTML)
 			escapeHTMLSpecialChars = true;
 		else
@@ -80,7 +79,7 @@ namespace boss {
 	}
 
 	Outputter::Outputter(const uint32_t format, const logFormatting l)
-		: outFormat(format) {
+	    : outFormat(format) {
 		if (outFormat == HTML)
 			escapeHTMLSpecialChars = true;
 		else
@@ -138,7 +137,11 @@ namespace boss {
 
 	string Outputter::EscapeHTMLSpecial(char c) {
 		if (escapeHTMLSpecialChars && outFormat == HTML) {
-			switch(c) {
+			// MCP Note: GCC squalls at these due to the copyright character not being ASCII. Look at trying to fix this.
+			// Maybe changing it to a wchar_t would fix it? Need to look into that.
+			// MCP Note 2: For the default, would it be better to leave as-is or change it to a break-statement,
+			// remove the else, and simply return string(1, c)? Or maybe use ints?
+			switch (c) {
 				case '&':
 					return "&amp;";
 				case '"':
@@ -181,7 +184,7 @@ namespace boss {
 	}
 
 	Outputter& Outputter::operator<< (const logFormatting l) {
-		switch(l) {
+		switch (l) {
 			case SECTION_ID_SUMMARY_OPEN:
 				if (outFormat == HTML)
 					outStream << "<section id='summary'>";
@@ -450,11 +453,7 @@ namespace boss {
 
 		size_t pos1, pos2, pos3;
 		string link, label, dq;
-		string addressTypes[] = {
-			"http:",
-			"https:",
-			"file:"
-		};
+		string addressTypes[] = {"http:", "https:", "file:"};
 
 		if (outFormat == HTML)
 			dq = "&quot;";
@@ -470,10 +469,10 @@ namespace boss {
 				//Check if there is a label in the quoted string.
 				pos2 = data.find(' ', pos1);
 				if (pos2 < pos3) {  //Label present.
-					link = data.substr(pos1, pos2-pos1);
-					label = data.substr(pos2+1, pos3-pos2-1);
+					link = data.substr(pos1, pos2 - pos1);
+					label = data.substr(pos2 + 1, pos3 - pos2 - 1);
 				} else {  //Label not present.
-					link = data.substr(pos1, pos3-pos1);
+					link = data.substr(pos1, pos3 - pos1);
 					label = link;
 				}
 				if (outFormat == HTML)
@@ -482,10 +481,11 @@ namespace boss {
 					link = '"' + link + '"';
 				else
 					link = label + " (\"" + link + "\")";
-				data.replace(pos1 - dq.length(), pos3-pos1 + (2 * dq.length()), link);
+				data.replace(pos1 - dq.length(), pos3 - pos1 + (2 * dq.length()), link);
 				pos1 = data.find(dq + addressTypes[i], pos1);
 			}
 		}
+		// TODO(MCP): Look at converting this to a switch-statement.
 		//Select message formatting.
 		if (m.Key() == SAY) {
 			if (outFormat == HTML)
@@ -540,8 +540,8 @@ namespace boss {
 			bool htmlEscape = escapeHTMLSpecialChars;
 			escapeHTMLSpecialChars = true;
 			*this << LIST_ITEM_CLASS_ERROR << e.Header()
-				<< BLOCKQUOTE_OPEN << e.Detail() << BLOCKQUOTE_CLOSE
-				<< e.Footer();
+			      << BLOCKQUOTE_OPEN << e.Detail() << BLOCKQUOTE_CLOSE
+			      << e.Footer();
 			escapeHTMLSpecialChars = htmlEscape;
 		}
 		return *this;
@@ -605,8 +605,11 @@ namespace boss {
 	// BossLog Class Functions
 	////////////////////////////////
 
+	// MCP Note: Condense these two constructors into one using default values for the 'format' parameter?
+	// The default would be HTML. That may help reduce duplication but needs looking into.
 	BossLog::BossLog()
-		: recognised(0), unrecognised(0), inactive(0), messages(0), warnings(0), errors(0), logFormat(HTML) {
+	    : recognised(0), unrecognised(0), inactive(0), messages(0),
+	      warnings(0), errors(0), logFormat(HTML) {
 		updaterOutput.SetFormat(HTML);
 		criticalError.SetFormat(HTML);
 		userRules.SetFormat(HTML);
@@ -616,7 +619,8 @@ namespace boss {
 	}
 
 	BossLog::BossLog(const uint32_t format)
-		: recognised(0), unrecognised(0), inactive(0), messages(0), warnings(0), errors(0), logFormat(format) {
+	    : recognised(0), unrecognised(0), inactive(0), messages(0),
+	      warnings(0), errors(0), logFormat(format) {
 		updaterOutput.SetFormat(format);
 		criticalError.SetFormat(format);
 		userRules.SetFormat(format);
@@ -627,33 +631,35 @@ namespace boss {
 
 	string BossLog::PrintHeaderTop() {
 		stringstream out;
-		if (logFormat == HTML)
+		if (logFormat == HTML) {
 			out << "<!DOCTYPE html>"
-				<< "<meta charset='utf-8'>"
-				<< "<title>BOSS Log</title>"
-				<< "<link rel='stylesheet' href='../resources/style.css' />"
-				<< "<nav>"
-				<< "<header>"
-				<< "	<h1>BOSS</h1>"
-				<< translate("	Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH)
-				<< "</header>";
-		else
+			    << "<meta charset='utf-8'>"
+			    << "<title>BOSS Log</title>"
+			    << "<link rel='stylesheet' href='../resources/style.css' />"
+			    << "<nav>"
+			    << "<header>"
+			    << "	<h1>BOSS</h1>"
+			    << translate("	Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH)
+			    << "</header>";
+		} else {
 			out << "\nBOSS\n"
-				<< translate("Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << endl;
+			    << translate("Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << endl;
+		}
 		return out.str();
 	}
 
 	string BossLog::PrintHeaderBottom() {
 		stringstream out;
-		if (logFormat == HTML)
+		if (logFormat == HTML) {
 			out << "<footer>"
-				<< "	<div class='button' data-section='browserBox' id='supportButtonShow'>" << translate("Log Feature Support") << "</div>"
-				<< "	<div class='button' id='filtersButtonToggle'>" << translate("Filters") << "<span id='arrow'></span></div>"
-				<< "</footer>"
-				<< "</nav>"
-				<< "<noscript>"
-				<< translate("The BOSS Log requires Javascript to be enabled in order to function.")
-				<< "</noscript>";
+			    << "	<div class='button' data-section='browserBox' id='supportButtonShow'>" << translate("Log Feature Support") << "</div>"
+			    << "	<div class='button' id='filtersButtonToggle'>" << translate("Filters") << "<span id='arrow'></span></div>"
+			    << "</footer>"
+			    << "</nav>"
+			    << "<noscript>"
+			    << translate("The BOSS Log requires Javascript to be enabled in order to function.")
+			    << "</noscript>";
+		}
 		return out.str();
 	}
 
@@ -661,68 +667,70 @@ namespace boss {
 		stringstream out;
 		string colourTooltip = translate("Colours must be specified using lowercase hex codes.");
 
-		if (logFormat == HTML)
+		if (logFormat == HTML) {
 			out << "<section id='browserBox'>"
-			<< "<p>" << translate("Support for the BOSS Log's more advanced features varies. Here's what your browser supports:")
-			<< "<h3>" << translate("Functionality") << "</h3>"
-			<< "<table>"
-			<< "	<tbody>"
-			<< "		<tr><td id='pluginSubmitSupport'><td>" << translate("In-Log Plugin Submission") << "<td>" << translate("Allows unrecognised plugins to be anonymously submitted to the BOSS team directly from the BOSS Log.")
-			<< "		<tr><td id='memorySupport'><td>" << translate("Settings Memory") << "<td>" << translate("Allows the BOSS Log to automatically restore the filter configuration last used whenever the BOSS Log is opened.")
-			<< "	    <tr><td id='placeholderSupport'><td>" << translate("Input Placeholders")
-			<< "	    <tr><td id='validationSupport'><td>" << translate("Form Validation")
-			<< "</table>"
-			<< "</section>"
+			    << "<p>" << translate("Support for the BOSS Log's more advanced features varies. Here's what your browser supports:")
+			    << "<h3>" << translate("Functionality") << "</h3>"
+			    << "<table>"
+			    << "	<tbody>"
+			    << "		<tr><td id='pluginSubmitSupport'><td>" << translate("In-Log Plugin Submission") << "<td>" << translate("Allows unrecognised plugins to be anonymously submitted to the BOSS team directly from the BOSS Log.")
+			    << "		<tr><td id='memorySupport'><td>" << translate("Settings Memory") << "<td>" << translate("Allows the BOSS Log to automatically restore the filter configuration last used whenever the BOSS Log is opened.")
+			    // MCP Note: Look at replacing the four spaces with a tab. It looks like a mistake but will need to verify first.
+			    << "	    <tr><td id='placeholderSupport'><td>" << translate("Input Placeholders")
+			    << "	    <tr><td id='validationSupport'><td>" << translate("Form Validation")
+			    << "</table>"
+			    << "</section>"
 
-			<< "<aside>"
-			<< "<label><input type='checkbox' id='hideVersionNumbers' data-class='version'/>" << translate("Hide Version Numbers") << "</label>"
-			<< "<label><input type='checkbox' id='hideActiveLabel' data-class='active'/>" << translate("Hide 'Active' Label") << "</label>"
-			<< "<label><input type='checkbox' id='hideChecksums' data-class='crc'/>" << translate("Hide Checksums") << "</label>"
-			<< "<label><input type='checkbox' id='hideNotes'/>" << translate("Hide Notes") << "</label>"
-			<< "<label><input type='checkbox' id='hideBashTags'/>" << translate("Hide Bash Tag Suggestions") << "</label>"
-			<< "<label><input type='checkbox' id='hideRequirements'/>" << translate("Hide Requirements") << "</label>"
-			<< "<label><input type='checkbox' id='hideIncompatibilities'/>" << translate("Hide Incompatibilities") << "</label>"
-			<< "<label><input type='checkbox' id='hideDoNotCleanMessages'/>" << translate("Hide 'Do Not Clean' Messages") << "</label>"
-			<< "<label><input type='checkbox' id='hideAllPluginMessages'/>" << translate("Hide All Plugin Messages") << "</label>"
-			<< "<label><input type='checkbox' id='hideInactivePlugins'/>" << translate("Hide Inactive Plugins") << "</label>"
-			<< "<label><input type='checkbox' id='hideMessagelessPlugins'/>" << translate("Hide Messageless Plugins") << "</label>"
-			<< "<footer>"
-			<< "	" << (boost::format(translate("%1% of %2% recognised plugins hidden.")) % "<span id='hiddenPluginNo'>0</span>" % recognised).str()
-			<< "	" << (boost::format(translate("%1% of %2% messages hidden.")) % "<span id='hiddenMessageNo'>0</span>" % messages).str()
-			<< "</footer>"
-			<< "</aside>"
+			    << "<aside>"
+			    << "<label><input type='checkbox' id='hideVersionNumbers' data-class='version'/>" << translate("Hide Version Numbers") << "</label>"
+			    << "<label><input type='checkbox' id='hideActiveLabel' data-class='active'/>" << translate("Hide 'Active' Label") << "</label>"
+			    << "<label><input type='checkbox' id='hideChecksums' data-class='crc'/>" << translate("Hide Checksums") << "</label>"
+			    << "<label><input type='checkbox' id='hideNotes'/>" << translate("Hide Notes") << "</label>"
+			    << "<label><input type='checkbox' id='hideBashTags'/>" << translate("Hide Bash Tag Suggestions") << "</label>"
+			    << "<label><input type='checkbox' id='hideRequirements'/>" << translate("Hide Requirements") << "</label>"
+			    << "<label><input type='checkbox' id='hideIncompatibilities'/>" << translate("Hide Incompatibilities") << "</label>"
+			    << "<label><input type='checkbox' id='hideDoNotCleanMessages'/>" << translate("Hide 'Do Not Clean' Messages") << "</label>"
+			    << "<label><input type='checkbox' id='hideAllPluginMessages'/>" << translate("Hide All Plugin Messages") << "</label>"
+			    << "<label><input type='checkbox' id='hideInactivePlugins'/>" << translate("Hide Inactive Plugins") << "</label>"
+			    << "<label><input type='checkbox' id='hideMessagelessPlugins'/>" << translate("Hide Messageless Plugins") << "</label>"
+			    << "<footer>"
+			    << "	" << (boost::format(translate("%1% of %2% recognised plugins hidden.")) % "<span id='hiddenPluginNo'>0</span>" % recognised).str()
+			    << "	" << (boost::format(translate("%1% of %2% messages hidden.")) % "<span id='hiddenMessageNo'>0</span>" % messages).str()
+			    << "</footer>"
+			    << "</aside>"
 
-			<< "<div id='overlay'>"
-			<< "<div id='submitBox'>"
-			<< "<h2>" << translate("Submit Plugin") << "</h2>"
-			<< "<p><span id='pluginLabel'>" << translate("Plugin") << ":</span><span id='plugin'></span>"
-			<< "<form>"
-			<< "<label>" << translate("Download Location") << ":<br /><input type='url' placeholder='" << translate("Label for text box. Do not use a single quote in translation, use '&#x27;' instead", "A link to the plugin&#x27;s download location.") << "' id='link'></label>"
-			<< "<label>" << translate("Additional Notes") << ":<br /><textarea id='notes' placeholder='" << translate("Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.") << "'></textarea></label>"
-			<< "<div id='output'></div>"
-			<< "<p class='last'><button>" << translate("Submit") << "</button>"
-			<< "<button type='reset'>" << translate("Close") << "</button>"
-			<< "</form>"
-			<< "</div>"
-			<< "</div>"
+			    << "<div id='overlay'>"
+			    << "<div id='submitBox'>"
+			    << "<h2>" << translate("Submit Plugin") << "</h2>"
+			    << "<p><span id='pluginLabel'>" << translate("Plugin") << ":</span><span id='plugin'></span>"
+			    << "<form>"
+			    << "<label>" << translate("Download Location") << ":<br /><input type='url' placeholder='" << translate("Label for text box. Do not use a single quote in translation, use '&#x27;' instead", "A link to the plugin&#x27;s download location.") << "' id='link'></label>"
+			    << "<label>" << translate("Additional Notes") << ":<br /><textarea id='notes' placeholder='" << translate("Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.") << "'></textarea></label>"
+			    << "<div id='output'></div>"
+			    << "<p class='last'><button>" << translate("Submit") << "</button>"
+			    << "<button type='reset'>" << translate("Close") << "</button>"
+			    << "</form>"
+			    << "</div>"
+			    << "</div>"
 
-			//Need to define some variables in code.
-			<< "<script>"
-			<< "var gameName = '" << gameName << "';"
-			<< "var txt1 = '" << translate("Checking for existing submission...") << "';"
-			<< "var txt2 = '" << translate("Matching submission already exists.") << "';"
-			<< "var txt3 = '" << translate("Plugin already submitted. Submission updated with new comment.") << "';"
-			<< "var txt4 = '" << translate("Plugin submitted!") << "';"
-			<< "var txt5 = '" << translate("Plugin submission failed! Authorisation failure. Please report this to the BOSS team.") << "';"
-			<< "var txt6 = '" << translate("Plugin submission failed! GitHub API rate limit exceeded. Please try again after %1%.") << "';"
-			<< "var txt7 = '" << translate("Plugin submission failed!") << "';"
-			<< "var txt8 = '" << translate("Web storage quota for this document has been exceeded.Please empty your browser\\'s cache. Note that this will delete all locally stored data.") << "';"
-			<< "var txt9 = '" << translate("Please supply at least a link or some notes.") << "';"
-			<< "var txt10 = '" << translate("Do not clean.") << "';"
-			<< "</script>"
-			<< "<script src='../resources/promise-1.0.0.min.js'></script>"
-			<< "<script src='../resources/octokit.js'></script>"
-			<< "<script src='../resources/script.js'></script>";
+			    //Need to define some variables in code.
+			    << "<script>"
+			    << "var gameName = '" << gameName << "';"
+			    << "var txt1 = '" << translate("Checking for existing submission...") << "';"
+			    << "var txt2 = '" << translate("Matching submission already exists.") << "';"
+			    << "var txt3 = '" << translate("Plugin already submitted. Submission updated with new comment.") << "';"
+			    << "var txt4 = '" << translate("Plugin submitted!") << "';"
+			    << "var txt5 = '" << translate("Plugin submission failed! Authorisation failure. Please report this to the BOSS team.") << "';"
+			    << "var txt6 = '" << translate("Plugin submission failed! GitHub API rate limit exceeded. Please try again after %1%.") << "';"
+			    << "var txt7 = '" << translate("Plugin submission failed!") << "';"
+			    << "var txt8 = '" << translate("Web storage quota for this document has been exceeded.Please empty your browser\\'s cache. Note that this will delete all locally stored data.") << "';"
+			    << "var txt9 = '" << translate("Please supply at least a link or some notes.") << "';"
+			    << "var txt10 = '" << translate("Do not clean.") << "';"
+			    << "</script>"
+			    << "<script src='../resources/promise-1.0.0.min.js'></script>"
+			    << "<script src='../resources/octokit.js'></script>"
+			    << "<script src='../resources/script.js'></script>";
+		}
 		return out.str();
 	}
 
@@ -771,17 +779,17 @@ namespace boss {
 
 		if (recognised != 0 || unrecognised != 0 || messages != 0) {
 			formattedOut << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << translate("Plugin Type") << TABLE_HEADING << translate("Count")
-				<< TABLE_BODY << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Recognised (or sorted by user rules)") << TABLE_DATA << recognised;
+			             << TABLE_BODY << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Recognised (or sorted by user rules)") << TABLE_DATA << recognised;
 			if (unrecognised != 0)
 				formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << translate("Unrecognised") << TABLE_DATA << unrecognised;
 			else
 				formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Unrecognised") << TABLE_DATA << unrecognised;
 			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Inactive") << TABLE_DATA << inactive
-				<< TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("All") << TABLE_DATA << (recognised + unrecognised)
-				<< TABLE_CLOSE
+			             << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("All") << TABLE_DATA << (recognised + unrecognised)
+			             << TABLE_CLOSE
 
-				<< TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << translate("Plugin Message Type") << TABLE_HEADING << translate("Count")
-				<< TABLE_BODY;
+			             << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << translate("Plugin Message Type") << TABLE_HEADING << translate("Count")
+			             << TABLE_BODY;
 			if (warnings != 0)
 				formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << translate("Warning") << TABLE_DATA << warnings;
 			else
@@ -791,7 +799,7 @@ namespace boss {
 			else
 				formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Error") << TABLE_DATA << errors;
 			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("All") << TABLE_DATA << messages
-				<< TABLE_CLOSE;
+			             << TABLE_CLOSE;
 		}
 
 		formattedOut << LIST_OPEN;
@@ -805,7 +813,7 @@ namespace boss {
 		for (size_t i = 0; i < size; i++)
 			formattedOut << parsingErrors[i];
 
-		formattedOut << criticalError.AsString();		//Print any critical errors.
+		formattedOut << criticalError.AsString();  //Print any critical errors.
 
 		formattedOut.SetHTMLSpecialEscape(true);
 		size = globalMessages.size();
@@ -832,7 +840,7 @@ namespace boss {
 			else
 				formattedOut << SECTION_ID_USERLIST_OPEN << HEADING_OPEN << translate("User Rules") << HEADING_CLOSE;
 			formattedOut << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << translate("Rule") << TABLE_HEADING << translate("Applied") << TABLE_HEADING << translate("Details (if applicable)")
-				<< TABLE_BODY << userRules.AsString() << TABLE_CLOSE << SECTION_CLOSE;
+			             << TABLE_BODY << userRules.AsString() << TABLE_CLOSE << SECTION_CLOSE;
 			out << formattedOut.AsString();
 			formattedOut.Clear();
 		}
@@ -847,8 +855,8 @@ namespace boss {
 			else
 				formattedOut << SECTION_ID_SE_OPEN << HEADING_OPEN << scriptExtender << translate(" Plugins") << HEADING_CLOSE;
 			formattedOut << LIST_OPEN
-				<< sePlugins.AsString()
-				<< LIST_CLOSE << SECTION_CLOSE;
+			             << sePlugins.AsString()
+			             << LIST_CLOSE << SECTION_CLOSE;
 			out << formattedOut.AsString();
 			formattedOut.Clear();
 		}
@@ -869,10 +877,10 @@ namespace boss {
 					formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN << translate("Restored Load Order (Using modlist.old)") << HEADING_CLOSE;
 			}
 			formattedOut << PARAGRAPH
-				<< translate("These plugins are recognised by BOSS and have been sorted according to its masterlist. Please read any attached messages and act on any that require action.")
-				<< LIST_OPEN
-				<< recognisedPlugins.AsString()
-				<< LIST_CLOSE << SECTION_CLOSE;
+			             << translate("These plugins are recognised by BOSS and have been sorted according to its masterlist. Please read any attached messages and act on any that require action.")
+			             << LIST_OPEN
+			             << recognisedPlugins.AsString()
+			             << LIST_CLOSE << SECTION_CLOSE;
 			out << formattedOut.AsString();
 			formattedOut.Clear();
 		}
@@ -888,9 +896,9 @@ namespace boss {
 				formattedOut << SECTION_ID_UNRECOGNISED_OPEN << HEADING_OPEN << translate("Unrecognised Plugins") << HEADING_CLOSE;
 
 			formattedOut << PARAGRAPH << translate("The following plugins were not found in the masterlist, and must be positioned manually, using your favourite mod manager or by using BOSS's user rules functionality.")
-				<< SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN << translate(" You can submit unrecognised plugins for addition to the masterlist directly from this log by clicking on a plugin and supplying a link and/or description of its contents in the panel that is displayed.") << SPAN_CLOSE << LIST_OPEN
-				<< unrecognisedPlugins.AsString()
-				<< LIST_CLOSE << SECTION_CLOSE;
+			             << SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN << translate(" You can submit unrecognised plugins for addition to the masterlist directly from this log by clicking on a plugin and supplying a link and/or description of its contents in the panel that is displayed.") << SPAN_CLOSE << LIST_OPEN
+			             << unrecognisedPlugins.AsString()
+			             << LIST_CLOSE << SECTION_CLOSE;
 			out << formattedOut.AsString();
 			formattedOut.Clear();
 		}
@@ -920,10 +928,10 @@ namespace boss {
 
 		ofstream outFile;
 		if (overwrite)
-			//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+			// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 			outFile.open(file.string());
 		else
-			//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+			// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 			outFile.open(file.string(), ios_base::out|ios_base::app);
 		if (outFile.fail())
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
@@ -965,13 +973,13 @@ namespace boss {
 			if (pos1 != string::npos)
 				pos2 = result.find("</section>", pos1);
 			if (pos2 != string::npos)
-				result = result.substr(pos1+4, pos2-pos1-9);
+				result = result.substr(pos1 + 4, pos2 - pos1 - 9);
 		} else {
 			pos1 = result.find(translate("Please read any attached messages and act on any that require action."));
 			if (pos1 != string::npos)
 				pos2 = result.find("======================================", pos1);
 			if (pos2 != string::npos)
-				result = result.substr(pos1+69, pos2-pos1-69-3);
+				result = result.substr(pos1 + 69, pos2 - pos1 - 69 - 3);
 		}
 		return (result == recognisedPlugins.AsString());
 	}
