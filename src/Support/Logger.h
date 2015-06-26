@@ -60,15 +60,15 @@ namespace boss {
 	public:
 		Logger();
 
-		// sets the verbosity limit
+		// Sets the verbosity limit
 		void setVerbosity(LogVerbosity verbosity);
 
-		// sets the output stream
+		// Sets the output stream
 		inline void setStream(const char * file) {
 			m_out = fopen(file, "w");
 		}
 
-		// for use when calculating the arguments to a LOG macro would be expensive
+		// For use when calculating the arguments to a LOG macro would be expensive
 		inline bool isDebugEnabled() {
 			return _isVerbosityEnabled(LV_DEBUG);
 		}
@@ -76,7 +76,7 @@ namespace boss {
 			return _isVerbosityEnabled(LV_TRACE);
 		}
 
-		// if a message is of a sufficient verbosity, outputs the given message
+		// If a message is of a sufficient verbosity, outputs the given message
 		inline void log(LogVerbosity verbosity, const char * formatStr, ...) __attribute__((__format__ (__printf__, 5, 6)))
 		{
 			if (_isVerbosityEnabled(verbosity)) {
@@ -96,10 +96,11 @@ namespace boss {
 			return verbosity <= m_verbosity;
 		}
 
-		void _log(LogVerbosity verbosity, const char * formatStr, va_list ap);
+		void _log(LogVerbosity verbosity, const char * formatStr,
+		          va_list ap);
 	};
 
-	// declare global logger
+	// Declare global logger
 	BOSS_COMMON extern Logger g_logger;
 }
 
