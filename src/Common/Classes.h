@@ -43,8 +43,9 @@ namespace boss {
 	using namespace std;
 	namespace fs = boost::filesystem;
 
+	// MCP Note: Possibly convert these into enums?
 	BOSS_COMMON extern const uint32_t NONE;
-	//RuleList keywords.
+	// RuleList keywords.
 	BOSS_COMMON extern const uint32_t ADD;
 	BOSS_COMMON extern const uint32_t OVERRIDE;
 	BOSS_COMMON extern const uint32_t FOR;
@@ -54,7 +55,7 @@ namespace boss {
 	BOSS_COMMON extern const uint32_t BOTTOM;
 	BOSS_COMMON extern const uint32_t APPEND;
 	BOSS_COMMON extern const uint32_t REPLACE;
-	//Masterlist keywords.
+	// Masterlist keywords.
 	BOSS_COMMON extern const uint32_t SAY;
 	BOSS_COMMON extern const uint32_t TAG;
 	BOSS_COMMON extern const uint32_t REQ;
@@ -63,7 +64,7 @@ namespace boss {
 	BOSS_COMMON extern const uint32_t WARN;
 	BOSS_COMMON extern const uint32_t ERR;
 
-	//Item types.
+	// Item types.
 	BOSS_COMMON extern const uint32_t MOD;
 	BOSS_COMMON extern const uint32_t BEGINGROUP;
 	BOSS_COMMON extern const uint32_t ENDGROUP;
@@ -76,7 +77,7 @@ namespace boss {
 	// Masterlist Classes
 	//////////////////////////////
 
-	//Base class for all conditional data types.
+	// Base class for all conditional data types.
 	class BOSS_COMMON conditionalData {
 		friend struct boost::fusion::extension::access;
 	private:
@@ -120,15 +121,15 @@ namespace boss {
 		uint32_t Key() const;
 		void Key(const uint32_t inKey);
 
-		string KeyToString() const;  //Has HTML-safe output.
+		string KeyToString() const;  // Has HTML-safe output.
 	};
 
 	class BOSS_COMMON Item : public conditionalData {
 		friend struct boost::fusion::extension::access;
 	private:
 		vector<Message> messages;
-		//string data is now filename (or group name).
-		//Trimmed and case-preserved. ".ghost" extensions are removed.
+		// string data is now filename (or group name).
+		// Trimmed and case-preserved. ".ghost" extensions are removed.
 		uint32_t type;
 
 	public:
@@ -149,15 +150,15 @@ namespace boss {
 		bool IsGroup() const;
 		bool IsGameMasterFile(const Game& parentGame) const;
 		bool IsMasterFile(const Game& parentGame) const;
-		bool IsFalseFlagged(const Game& parentGame) const;    //True if IsMasterFile does not match file extension.
-		bool IsGhosted(const Game& parentGame) const;         //Checks if the file exists in ghosted form.
-		bool Exists(const Game& parentGame) const;            //Checks if the file exists in the data folder, ghosted or not.
-		Version GetVersion(const Game& parentGame) const;     //Outputs the file's header.
-		time_t GetModTime(const Game& parentGame) const;      //Can throw exception.
+		bool IsFalseFlagged(const Game& parentGame) const;     // True if IsMasterFile does not match file extension.
+		bool IsGhosted(const Game& parentGame) const;          // Checks if the file exists in ghosted form.
+		bool Exists(const Game& parentGame) const;             // Checks if the file exists in the data folder, ghosted or not.
+		Version GetVersion(const Game& parentGame) const;      // Outputs the file's header.
+		time_t GetModTime(const Game& parentGame) const;       // Can throw exception.
 
-		void UnGhost(const Game& parentGame) const;           //Can throw exception.
+		void UnGhost(const Game& parentGame) const;            // Can throw exception.
 		void SetModTime(const Game& parentGame,
-		                const time_t modificationTime) const;  //Can throw exception.
+		                const time_t modificationTime) const;  // Can throw exception.
 
 		void InsertMessage(size_t pos, Message item);
 		void ClearMessages();
@@ -189,26 +190,26 @@ namespace boss {
 
 	public:
 		ItemList();
-		void Load(const Game& parentGame, const fs::path path);  //Load by scanning path. If path is a directory, it scans it for plugins.
-		                                                         //If path is a file, it parses it using the modlist grammar.
-		                                                         //May throw exception on fail.
-		void Save(const fs::path file, const fs::path oldFile);  //Output to file in MF2. Backs up any existing file to oldFile.
-		                                                         //Throws exception on fail.
+		void Load(const Game& parentGame, const fs::path path);  // Load by scanning path. If path is a directory, it scans it for plugins.
+		                                                         // If path is a file, it parses it using the modlist grammar.
+		                                                         // May throw exception on fail.
+		void Save(const fs::path file, const fs::path oldFile);  // Output to file in MF2. Backs up any existing file to oldFile.
+		                                                         // Throws exception on fail.
 		void SavePluginNames(const Game& parentGame,
 		                     const fs::path file,
 		                     const bool activeOnly,
-		                     const bool doEncodingConversion);   //Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
-		void EvalConditions(const Game& parentGame);             //Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
+		                     const bool doEncodingConversion);   // Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
+		void EvalConditions(const Game& parentGame);             // Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
 		void EvalRegex(const Game& parentGame);
-		void ApplyMasterPartition(const Game& parentGame);       //Puts all master files before other plugins. Can throw exception.
+		void ApplyMasterPartition(const Game& parentGame);       // Puts all master files before other plugins. Can throw exception.
 
 		size_t FindItem(const string name,
-		                const uint32_t type) const;              //Find the position of the item with name 'name'. Case-insensitive.
+		                const uint32_t type) const;              // Find the position of the item with name 'name'. Case-insensitive.
 		size_t FindLastItem(const string name,
-		                    const uint32_t type) const;          //Find the last item with the name 'name'. Case-insensitive.
-		size_t GetLastMasterPos(const Game& parentGame) const;   //Can throw exception.
+		                    const uint32_t type) const;          // Find the last item with the name 'name'. Case-insensitive.
+		size_t GetLastMasterPos(const Game& parentGame) const;   // Can throw exception.
 		size_t GetNextMasterPos(const Game& parentGame,
-		                        size_t currPos) const;           //Can throw exception.
+		                        size_t currPos) const;           // Can throw exception.
 
 		Item ItemAt(size_t pos) const;
 
@@ -234,7 +235,7 @@ namespace boss {
 		            size_t sourceStart,
 		            size_t sourceEnd);
 		void Insert(const size_t pos, const Item item);
-		void Move(size_t newPos, const Item item);  //Adds the item if it isn't already present.
+		void Move(size_t newPos, const Item item);  // Adds the item if it isn't already present.
 	};
 
 	//////////////////////////////
@@ -251,7 +252,7 @@ namespace boss {
 		RuleLine(const uint32_t inKey, const string inObject);
 
 		bool IsObjectMessage() const;
-		string KeyToString() const;  //Has HTML-safe output.
+		string KeyToString() const;  // Has HTML-safe output.
 		Message ObjectAsMessage() const;
 
 		uint32_t Key() const;
@@ -283,12 +284,12 @@ namespace boss {
 		vector<Rule> rules;
 		vector<ParsingError> errorBuffer;
 
-		void CheckSyntax(const Game& parentGame);  //Rule checker function, checks for syntax (not parsing) errors.
+		void CheckSyntax(const Game& parentGame);  // Rule checker function, checks for syntax (not parsing) errors.
 
 	public:
 		RuleList();
-		void Load(const Game& parentGame, const fs::path file);  //Throws exception on fail.
-		void Save(const fs::path file);                          //Throws exception on fail.
+		void Load(const Game& parentGame, const fs::path file);  // Throws exception on fail.
+		void Save(const fs::path file);                          // Throws exception on fail.
 		size_t FindRule(const string ruleObject,
 		                const bool onlyEnabled) const;
 
@@ -309,7 +310,7 @@ namespace boss {
 
 
 	///////////////////////////////
-	//Settings Class
+	// Settings Class
 	///////////////////////////////
 
 	class BOSS_COMMON Settings {
@@ -322,8 +323,8 @@ namespace boss {
 		string GetLanguageString() const;
 		void ApplyIniSettings();
 	public:
-		void Load(const fs::path file);                                //Throws exception on fail.
-		void Save(const fs::path file, const uint32_t currentGameId);  //Throws exception on fail.
+		void Load(const fs::path file);                                // Throws exception on fail.
+		void Save(const fs::path file, const uint32_t currentGameId);  // Throws exception on fail.
 
 		ParsingError ErrorBuffer() const;
 		void ErrorBuffer(const ParsingError buffer);

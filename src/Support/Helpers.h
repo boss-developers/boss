@@ -41,38 +41,38 @@ namespace boss {
 	// Helper functions
 	//////////////////////////////////////////////////////////////////////////
 
-	//Calculate the CRC of the given file for comparison purposes.
+	// Calculate the CRC of the given file for comparison purposes.
 	uint32_t GetCrc32(const fs::path& filename);
 
-	//Reads an entire file into a string buffer.
+	// Reads an entire file into a string buffer.
 	void fileToBuffer(const fs::path file, string& buffer);
 
-	//Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
+	// Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 	BOSS_COMMON string IntToString(const uint32_t n);
 
-	//Converts an integer to a hex string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
+	// Converts an integer to a hex string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 	string IntToHexString(const uint32_t n);
 
-	//Converts a boolean to a string representation (true/false)
+	// Converts a boolean to a string representation (true/false)
 	string BoolToString(bool b);
 
-	//Turns "true", "false", "1", "0" into booleans.
+	// Turns "true", "false", "1", "0" into booleans.
 	bool StringToBool(string str);
 
-	//Convert a Windows-1252 string to UTF-8.
+	// Convert a Windows-1252 string to UTF-8.
 	std::string From1252ToUTF8(const std::string& str);
 
-	//Convert a UTF-8 string to Windows-1252.
+	// Convert a UTF-8 string to Windows-1252.
 	std::string FromUTF8To1252(const std::string& str);
 
-	//Check if registry subkey exists.
+	// Check if registry subkey exists.
 	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey,
 	                              string value);
 
-	//Get registry subkey value string.
+	// Get registry subkey value string.
 	string RegKeyStringValue(string keyStr, string subkey, string value);
 
-	//Version class for more robust version comparisons.
+	// Version class for more robust version comparisons.
 	class Version {
 	private:
 		string verString;

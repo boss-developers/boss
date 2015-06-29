@@ -42,9 +42,9 @@ namespace boss {
 
 	using boost::algorithm::to_lower_copy;
 
-	//DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
+	// DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
 	BOSS_COMMON const uint32_t NONE         = 0;
-	//RuleList keywords.
+	// RuleList keywords.
 	BOSS_COMMON const uint32_t ADD          = 1;
 	BOSS_COMMON const uint32_t OVERRIDE     = 2;
 	BOSS_COMMON const uint32_t FOR          = 3;
@@ -54,7 +54,7 @@ namespace boss {
 	BOSS_COMMON const uint32_t BOTTOM       = 7;
 	BOSS_COMMON const uint32_t APPEND       = 8;
 	BOSS_COMMON const uint32_t REPLACE      = 9;
-	//Masterlist keywords.
+	// Masterlist keywords.
 	BOSS_COMMON const uint32_t SAY          = 10;
 	BOSS_COMMON const uint32_t TAG          = 11;
 	BOSS_COMMON const uint32_t REQ          = 12;
@@ -63,7 +63,7 @@ namespace boss {
 	BOSS_COMMON const uint32_t WARN         = 15;
 	BOSS_COMMON const uint32_t ERR          = 16;
 
-	//Item types.
+	// Item types.
 	BOSS_COMMON const uint32_t MOD          = 0;
 	BOSS_COMMON const uint32_t BEGINGROUP   = 1;
 	BOSS_COMMON const uint32_t ENDGROUP     = 2;
@@ -73,6 +73,7 @@ namespace boss {
 	// ConditionalData Class Methods
 	/////////////////////////////////////
 
+	// TODO(MCP): Maybe change this constructor to use default values for the paramaters?
 	conditionalData::conditionalData() {
 		data = "";
 		conditions = "";
@@ -166,7 +167,7 @@ namespace boss {
 	}
 
 	string Message::KeyToString() const {
-		switch(key) {
+		switch (key) {
 			case SAY:
 				return "SAY";
 			case TAG:
@@ -299,7 +300,7 @@ namespace boss {
 		}
 	}
 
-	void Item::UnGhost(const Game& parentGame) const {  //Can throw exception.
+	void Item::UnGhost(const Game& parentGame) const {  // Can throw exception.
 		if (IsGhosted(parentGame)) {
 			try {
 				fs::rename(parentGame.DataFolder() / fs::path(Data() + ".ghost"),
@@ -311,14 +312,15 @@ namespace boss {
 		}
 	}
 
-	time_t Item::GetModTime(const Game& parentGame) const {  //Can throw exception.
+	time_t Item::GetModTime(const Game& parentGame) const {  // Can throw exception.
 		try {
 			if (IsGhosted(parentGame))
 				return fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
 			else
 				return fs::last_write_time(parentGame.DataFolder() / Data());
 		} catch(fs::filesystem_error e) {
-			LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.", e.what());
+			LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.",
+			         e.what());
 			throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL,
 			                 Data(), e.what());
 		}
@@ -346,23 +348,23 @@ namespace boss {
 
 		if (!conditionalData::EvalConditions(setVars, fileCRCs,
 		                                     activePlugins, condResult,
-		                                     errorBuffer, parentGame))  //Plugin needs to know what previous plugin's condition eval result was.
+		                                     errorBuffer, parentGame))  // Plugin needs to know what previous plugin's condition eval result was.
 			return false;
 
 		if (Type() == BEGINGROUP)
 			return true;
 
-		//Eval attached messages.
+		// Eval attached messages.
 		if (!messages.empty()) {
 			vector<Message>::iterator messageIter = messages.begin();
 			bool res = messageIter->EvalConditions(setVars, fileCRCs,
 			                                       activePlugins, NULL,
-			                                       errorBuffer, parentGame);  //No previous message for this plugin.
+			                                       errorBuffer, parentGame);  // No previous message for this plugin.
 			if (res)
 				++messageIter;
 			else
 				messageIter = messages.erase(messageIter);
-			//Eval the rest of the messages now that res has been initialised.
+			// Eval the rest of the messages now that res has been initialised.
 			while (messageIter != messages.end()) {
 				res = messageIter->EvalConditions(setVars, fileCRCs,
 				                                  activePlugins, &res,
@@ -386,16 +388,16 @@ namespace boss {
 		itemComparator(const Game& game) : parentGame(game) {}
 
 		bool operator () (const Item item1, const Item item2) {
-			//Return true if item1 goes before item2, false otherwise.
-			//Master files should go before other files.
-			//Groups should not change position (but master files should be able to cross groups).
+			// Return true if item1 goes before item2, false otherwise.
+			// Master files should go before other files.
+			// Groups should not change position (but master files should be able to cross groups).
 
 			bool isItem1MasterFile = item1.IsMasterFile(parentGame);
 			bool isItem2MasterFile = item2.IsMasterFile(parentGame);
 
-			if (isItem1MasterFile && !isItem2MasterFile)
+			if (isItem1MasterFile && !isItem2MasterFile) {
 				return true;
-			else if (parentGame.GetLoadOrderMethod() == LOMETHOD_TIMESTAMP) {
+			} else if (parentGame.GetLoadOrderMethod() == LOMETHOD_TIMESTAMP) {
 				if (!isItem1MasterFile && isItem2MasterFile)
 					return false;
 				else
@@ -414,34 +416,36 @@ namespace boss {
 			LOG_DEBUG("Reading user mods...");
 			size_t max;
 			if (parentGame.GetLoadOrderMethod() == LOMETHOD_TEXTFILE) {
-				/*Game uses the new load order system.
-
-				Check if loadorder.txt exists, and read that if it does.
-				If it doesn't exist, then read plugins.txt and scan the given directory for mods,
-				adding those that weren't in the plugins.txt to the end of the load order, in the order they are read.
-
-				There is no sure-fire way of managing such a situation. If no loadorder.txt, then
-				no utilties compatible with that load order method have been installed, so it won't
-				break anything apart from the load order not matching the load order in the Bashed
-				Patch's Masters list if it exists. That isn't something that can be easily accounted
-				for though.
-				*/
+				/* Game uses the new load order system.
+				 *
+				 * Check if loadorder.txt exists, and read that if it does.
+				 * If it doesn't exist, then read plugins.txt and scan the given directory for mods,
+				 * adding those that weren't in the plugins.txt to the end of the load order, in the order they are read.
+				 *
+				 * There is no sure-fire way of managing such a situation. If no loadorder.txt, then
+				 * no utilties compatible with that load order method have been installed, so it won't
+				 * break anything apart from the load order not matching the load order in the Bashed
+				 * Patch's Masters list if it exists. That isn't something that can be easily accounted
+				 * for though.
+				 */
 				LOG_INFO("Using textfile-based load order mechanism.");
-				if (fs::exists(parentGame.LoadOrderFile()))  //If the loadorder.txt exists, get the load order from that.
+				if (fs::exists(parentGame.LoadOrderFile())) {  // If the loadorder.txt exists, get the load order from that.
 					Load(parentGame, parentGame.LoadOrderFile());
-				else {
-					if (fs::exists(parentGame.ActivePluginsFile()))  //If the plugins.txt exists, get the active load order from that.
+				} else {
+					if (fs::exists(parentGame.ActivePluginsFile()))  // If the plugins.txt exists, get the active load order from that.
 						Load(parentGame,
 						     parentGame.ActivePluginsFile());
 					if (parentGame.Id() == SKYRIM) {
-						//Make sure that Skyrim.esm is first.
+						// Make sure that Skyrim.esm is first.
 						Move(0, Item("Skyrim.esm"));
-						//Add Update.esm if not already present.
-						if (Item("Update.esm").Exists(parentGame) && FindItem("Update.esm", MOD) == items.size())
-							Move(GetLastMasterPos(parentGame) + 1, Item("Update.esm"));
+						// Add Update.esm if not already present.
+						if (Item("Update.esm").Exists(parentGame) &&
+						    FindItem("Update.esm", MOD) == items.size())
+							Move(GetLastMasterPos(parentGame) + 1,
+							     Item("Update.esm"));
 					}
 				}
-				//Then scan through loadorder, removing any plugins that aren't in the data folder.
+				// Then scan through loadorder, removing any plugins that aren't in the data folder.
 				/* MCP Note: Couldn't we change this to a for-loop instead? Maybe a for-each loop? Would probably look better than a while-loop.
 				 * Requires C++11 but that's already a requirement so should be fine.
 				 */
@@ -454,7 +458,7 @@ namespace boss {
 				}
 			}
 			max = items.size();
-			//Now scan through Data folder. Add any plugins that aren't already in loadorder to loadorder, at the end.
+			// Now scan through Data folder. Add any plugins that aren't already in loadorder to loadorder, at the end.
 			for (fs::directory_iterator itr(path);
 			     itr != fs::directory_iterator(); ++itr) {
 				if (fs::is_regular_file(itr->status())) {
@@ -468,11 +472,11 @@ namespace boss {
 					    boost::iequals(ext, ".esm")) {
 						LOG_TRACE("-- Found mod: '%s'",
 						          filename.string().c_str());
-						//Add file to modlist. If the filename has a '.ghost' extension, remove it.
+						// Add file to modlist. If the filename has a '.ghost' extension, remove it.
 						const Item tempItem = Item(filename.string());
 						if (parentGame.GetLoadOrderMethod() == LOMETHOD_TIMESTAMP ||
 						   (parentGame.GetLoadOrderMethod() == LOMETHOD_TEXTFILE &&
-						    FindItem(tempItem.Name(), MOD) == max)) {  //If the plugin is not in loadorder, add it.
+						    FindItem(tempItem.Name(), MOD) == max)) {  // If the plugin is not in loadorder, add it.
 							items.push_back(tempItem);
 							max++;
 						}
@@ -485,10 +489,10 @@ namespace boss {
 			sort(items.begin(), items.end(), ic);
 		} else if (path == parentGame.LoadOrderFile() ||
 		           path == parentGame.ActivePluginsFile()) {
-			//loadorder.txt is simple enough that we can avoid needing the full modlist parser which has the crashing issue.
-			//It's just a text file with a plugin filename on each line. Skip lines which are blank or start with '#'.
+			// loadorder.txt is simple enough that we can avoid needing the full modlist parser which has the crashing issue.
+			// It's just a text file with a plugin filename on each line. Skip lines which are blank or start with '#'.
 
-			//MCP Note: changed from path.c_str() to path.string(); needs testing as error was about not being able to convert wchar_t to char
+			// MCP Note: changed from path.c_str() to path.string(); needs testing as error was about not being able to convert wchar_t to char
 			std::ifstream in(path.string());
 			if (in.fail())
 				throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL,
@@ -498,7 +502,7 @@ namespace boss {
 			while (in.good()) {
 				getline(in, line);
 
-				if (line.empty() || line[0] == '#')  //Character comparison is OK because it's ASCII.
+				if (line.empty() || line[0] == '#')  // Character comparison is OK because it's ASCII.
 					continue;
 
 				if (path == parentGame.ActivePluginsFile())
@@ -508,7 +512,7 @@ namespace boss {
 			in.close();
 
 
-			//Then scan through items, removing any plugins that aren't in the data folder.
+			// Then scan through items, removing any plugins that aren't in the data folder.
 			vector<Item>::iterator itemIter = items.begin();
 			while (itemIter != items.end()) {
 				if (!itemIter->Exists(parentGame))
@@ -518,7 +522,7 @@ namespace boss {
 			}
 
 			itemComparator ic(parentGame);
-			sort(items.begin(), items.end(), ic);  //Does this work?
+			sort(items.begin(), items.end(), ic);  // Does this work?
 		} else {
 			// MCP Note: Can this be used with conditionalData::EvalConditions to reduce duplication?
 			Skipper skipper;
@@ -555,36 +559,36 @@ namespace boss {
 
 	void ItemList::Save(const fs::path file, const fs::path oldFile) {
 		ofstream ofile;
-		//Back up file if it already exists.
+		// Back up file if it already exists.
 		try {
 			LOG_DEBUG("Saving backup of current modlist...");
 			if (fs::exists(file))
 				fs::rename(file, oldFile);
 		} catch(fs::filesystem_error e) {
-			//Couldn't rename the file, print an error message.
+			// Couldn't rename the file, print an error message.
 			LOG_ERROR("Backup of modlist failed with error: %s",
 			          e.what());
 			throw boss_error(BOSS_ERROR_FS_FILE_RENAME_FAIL,
 			                 file.string(), e.what());
 		}
-		//Open output file.
+		// Open output file.
 
-		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 		ofile.open(file.string());
-		if (ofile.fail()) {  //Provide error message if it can't be written.
+		if (ofile.fail()) {  // Provide error message if it can't be written.
 			LOG_ERROR("Backup cannot be saved.");
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL,
 			                 file.string());
 		}
 
-		//Iterate through items, printing out all group markers, mods and messsages.
+		// Iterate through items, printing out all group markers, mods and messsages.
 		vector<Item>::iterator itemIter = items.begin();
 		vector<Message>::iterator messageIter;
 		for (itemIter; itemIter != items.end(); ++itemIter) {
 			if (itemIter->Type() == BEGINGROUP)
-				ofile << "BEGINGROUP: " << itemIter->Name() << endl;  //Print the group begin marker
+				ofile << "BEGINGROUP: " << itemIter->Name() << endl;  // Print the group begin marker
 			else if (itemIter->Type() == ENDGROUP)
-				ofile << "ENDGROUP: " << itemIter->Name() << endl;  //Print the group end marker
+				ofile << "ENDGROUP: " << itemIter->Name() << endl;  // Print the group end marker
 			else {
 				if (!itemIter->Conditions().empty()) {
 					ofile << itemIter->Conditions() << ' ';
@@ -593,8 +597,8 @@ namespace boss {
 				}
 				if (itemIter->Type() == REGEX)
 					ofile << "REGEX: ";
-				ofile << itemIter->Name() << endl;  //Print the mod name.
-				//Print the messages with the appropriate syntax.
+				ofile << itemIter->Name() << endl;  // Print the mod name.
+				// Print the messages with the appropriate syntax.
 				vector<Message> messages = itemIter->Messages();
 				for (messageIter = messages.begin();
 				     messageIter != messages.end(); ++messageIter) {
@@ -618,8 +622,8 @@ namespace boss {
 		ItemList activePlugins;
 		size_t numActivePlugins;
 		if (activeOnly) {
-			//To save needing a new parser, load plugins.txt into an ItemList then fill a hashset from that.
-			//Also check if gl_current_game.ActivePluginsFile() then detect encoding if it is and translate outputted text from UTF-8 to the detected encoding.
+			// To save needing a new parser, load plugins.txt into an ItemList then fill a hashset from that.
+			// Also check if gl_current_game.ActivePluginsFile() then detect encoding if it is and translate outputted text from UTF-8 to the detected encoding.
 			LOG_INFO("Loading plugins.txt into ItemList.");
 			if (fs::exists(parentGame.ActivePluginsFile())) {
 				activePlugins.Load(parentGame,
@@ -631,7 +635,7 @@ namespace boss {
 		LOG_INFO("Writing new \"%s\"", file.string().c_str());
 		ofstream outfile;
 
-		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 		outfile.open(file.string(), ios_base::trunc);
 		if (outfile.fail())
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL,
@@ -645,7 +649,7 @@ namespace boss {
 				LOG_DEBUG("Writing \"%s\" to \"%s\"",
 				          items[i].Name().c_str(),
 				          file.string().c_str());
-				if (doEncodingConversion) {  //Not UTF-8.
+				if (doEncodingConversion) {  // Not UTF-8.
 					try {
 						outfile << FromUTF8To1252(items[i].Name()) << endl;
 					} catch (boss_error /*&e*/) {
@@ -676,8 +680,8 @@ namespace boss {
 			}
 		}
 
-		//First eval variables.
-		//Need to convert these from a vector to an unordered set.
+		// First eval variables.
+		// Need to convert these from a vector to an unordered set.
 		if (!masterlistVariables.empty()) {
 			LOG_INFO("Starting to evaluate variable conditionals.");
 			vector<MasterlistVar>::iterator varIter = masterlistVariables.begin();
@@ -689,7 +693,7 @@ namespace boss {
 				++varIter;
 			} else
 				varIter = masterlistVariables.erase(varIter);
-			//Eval the rest of the vars now that res has been initialised.
+			// Eval the rest of the vars now that res has been initialised.
 			while (varIter != masterlistVariables.end()) {
 				res = varIter->EvalConditions(setVars, fileCRCs,
 				                              activePlugins, &res,
@@ -702,7 +706,7 @@ namespace boss {
 			}
 		}
 
-		//Now eval global messages.
+		// Now eval global messages.
 		if (!globalMessageBuffer.empty()) {
 			LOG_INFO("Starting to evaluate global message conditionals.");
 			vector<Message>::iterator messageIter = globalMessageBuffer.begin();
@@ -713,7 +717,7 @@ namespace boss {
 				++messageIter;
 			else
 				messageIter = globalMessageBuffer.erase(messageIter);
-			//Eval the rest of the global messages now that res has been initialised.
+			// Eval the rest of the global messages now that res has been initialised.
 			while (messageIter != globalMessageBuffer.end()) {
 				res = messageIter->EvalConditions(setVars, fileCRCs,
 				                                  activePlugins, &res,
@@ -725,7 +729,7 @@ namespace boss {
 			}
 		}
 
-		//Now eval items. Need to keep track of the previous item.
+		// Now eval items. Need to keep track of the previous item.
 		LOG_INFO("Starting to evaluate item conditionals.");
 		bool wasPlugin = false;
 		vector<Item>::iterator itemIter = items.begin();
@@ -738,7 +742,7 @@ namespace boss {
 				else
 					res = itemIter->EvalConditions(setVars, fileCRCs,
 					                               activePlugins, &res,
-					                               errorBuffer, parentGame);  //Look at previous plugin's conditional eval result.
+					                               errorBuffer, parentGame);  // Look at previous plugin's conditional eval result.
 				if (res)
 					++itemIter;
 				else
@@ -747,10 +751,10 @@ namespace boss {
 			} else if (itemIter->Type() == BEGINGROUP) {
 				if (itemIter->EvalConditions(setVars, fileCRCs,
 				                             activePlugins, NULL,
-				                             errorBuffer, parentGame))  //Don't need to record result as nothing will look at a previous group's conditional.
+				                             errorBuffer, parentGame)) {  // Don't need to record result as nothing will look at a previous group's conditional.
 					++itemIter;
-				else {
-					//Need to remove all the plugins in the group.
+				} else {
+					// Need to remove all the plugins in the group.
 					size_t endPos = FindLastItem(itemIter->Name(),
 					                             ENDGROUP);
 					itemIter = items.erase(itemIter,
@@ -758,14 +762,14 @@ namespace boss {
 				}
 				wasPlugin = false;
 			} else {
-				++itemIter;  //ENDGROUP items should not be conditional, so treat them like they're not.
+				++itemIter;  // ENDGROUP items should not be conditional, so treat them like they're not.
 				wasPlugin = false;
 			}
 		}
 	}
 
 	void ItemList::EvalRegex(const Game& parentGame) {
-		//Store installed mods in a hashset. Case insensitivity not required as regex itself is case-insensitive.
+		// Store installed mods in a hashset. Case insensitivity not required as regex itself is case-insensitive.
 		boost::unordered_set<string> hashset;
 		boost::unordered_set<string>::iterator setPos;
 		for (fs::directory_iterator itr(parentGame.DataFolder());
@@ -784,16 +788,17 @@ namespace boss {
 			}
 		}
 
-		//Now iterate through items vector, working on regex entries.
-		//First remove a regex entry, then look for matches in the hashset.
-		//Add all matches with the messages attached to the regex entry to the items vector in the position the regex entry occupied.
+		/* Now iterate through items vector, working on regex entries.
+		 * First remove a regex entry, then look for matches in the hashset.
+		 * Add all matches with the messages attached to the regex entry to the items vector in the position the regex entry occupied.
+		 */
 		vector<Item>::iterator itemIter = items.begin();
 		while (itemIter != items.end()) {
 			if (itemIter->Type() == REGEX) {
-				boost::regex reg;  //Form a regex.
+				boost::regex reg;  // Form a regex.
 				try {
 					reg = boost::regex(itemIter->Name()+"(\\.ghost)?",
-					                   boost::regex::extended|boost::regex::icase);  //Ghost extension is added so ghosted mods will also be found.
+					                   boost::regex::extended|boost::regex::icase);  // Ghost extension is added so ghosted mods will also be found.
 				} catch (boost::regex_error /*&e*/) {
 					boss_error be = boss_error(BOSS_ERROR_REGEX_EVAL_FAIL,
 					                           itemIter->Name());
@@ -805,9 +810,9 @@ namespace boss {
 				}
 				vector<Message> messages = itemIter->Messages();
 				itemIter = items.erase(itemIter);
-				//Now start looking.
+				// Now start looking.
 				setPos = FindRegexMatch(hashset, reg, hashset.begin());
-				while (setPos != hashset.end()) {  //Now insert the current found mod in the position of the regex mod.
+				while (setPos != hashset.end()) {  // Now insert the current found mod in the position of the regex mod.
 					itemIter = items.insert(itemIter,
 					                        Item(*setPos, MOD, messages));
 					setPos = FindRegexMatch(hashset, reg, ++setPos);
@@ -819,7 +824,7 @@ namespace boss {
 	}
 
 	void ItemList::ApplyMasterPartition(const Game& parentGame) {
-		//Need to iterate through items vector, sorting it according to the rule that master items come before other items.
+		// Need to iterate through items vector, sorting it according to the rule that master items come before other items.
 		size_t lastMasterPos = GetLastMasterPos(parentGame);
 		size_t pos = GetNextMasterPos(parentGame, lastMasterPos + 1);
 		while (pos < items.size()) {
@@ -858,11 +863,11 @@ namespace boss {
 	size_t ItemList::GetLastMasterPos(const Game& parentGame) const {
 		size_t i = 0;
 		while (i < items.size() &&
-		      (items[i].IsGroup() || items[i].IsMasterFile(parentGame))) {  //SLLOOOOOWWWWW probably.
+		      (items[i].IsGroup() || items[i].IsMasterFile(parentGame))) {  // SLLOOOOOWWWWW probably.
 			i++;
 		}
 		if (i > 0)
-			return i - 1;  //i is position of first plugin.
+			return i - 1;  // i is position of first plugin.
 		else
 			return 0;
 	}
@@ -872,10 +877,10 @@ namespace boss {
 		if (currPos >= items.size())
 			return items.size();
 		while (currPos < items.size() &&
-		      (items[currPos].IsGroup() || !items[currPos].IsMasterFile(parentGame))) {  //SLLOOOOOWWWWW probably.
+		      (items[currPos].IsGroup() || !items[currPos].IsMasterFile(parentGame))) {  // SLLOOOOOWWWWW probably.
 			currPos++;
 		}
-		return currPos;  //Position of first master after currPos.
+		return currPos;  // Position of first master after currPos.
 	}
 
 	vector<Item> ItemList::Items() const {
@@ -950,8 +955,10 @@ namespace boss {
 		items.erase(items.begin() + startPos, items.begin() + endPos);
 	}
 
-	void ItemList::Insert(const size_t pos, const vector<Item> source,
-	                      const size_t sourceStart, const size_t sourceEnd) {
+	void ItemList::Insert(const size_t pos,
+	                      const vector<Item> source,
+	                      const size_t sourceStart,
+	                      const size_t sourceEnd) {
 		items.insert(items.begin() + pos, source.begin() + sourceStart,
 		             source.begin() + sourceEnd);
 	}
@@ -962,9 +969,9 @@ namespace boss {
 
 	void ItemList::Move(size_t newPos, const Item item) {
 		size_t itemPos = FindItem(item.Name(), item.Type());
-		if (itemPos == items.size())
+		if (itemPos == items.size()) {
 			Insert(newPos, item);
-		else {
+		} else {
 			if (itemPos < newPos)
 				newPos--;
 			Erase(itemPos);
@@ -972,7 +979,7 @@ namespace boss {
 		}
 	}
 
-	//Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
+	// Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
 	boost::unordered_set<string>::iterator ItemList::FindRegexMatch(
 	    const boost::unordered_set<string> set,
 	    const boost::regex reg,
@@ -989,6 +996,7 @@ namespace boss {
 	// RuleLine Class Functions
 	//////////////////////////////
 
+	// TODO(MCP): Maybe condense these two constructors into one using default values for the paramaters?
 	RuleLine::RuleLine() {
 		key = NONE;
 		object = "";
@@ -1001,16 +1009,16 @@ namespace boss {
 
 	bool RuleLine::IsObjectMessage() const {
 		// MCP Note: Possibly change these if-statments to a switch-statement
-		//First character of message, must be a message symbol, or part of an MF2 keyword.
+		// First character of message, must be a message symbol, or part of an MF2 keyword.
 		if (object[0] == '?' ||
 		    object[0] == '$' ||
 		    object[0] == '^' ||
 		    object[0] == '%' ||
 		    object[0] == ':' ||
 		    object[0] == '"' ||
-		    object[0] == '*')
+		    object[0] == '*') {
 			return true;
-		else {
+		} else {
 			size_t pos = object.find(':');
 			if (pos == string::npos)
 				return false;
@@ -1129,7 +1137,7 @@ namespace boss {
 
 	RuleLine Rule::LineAt(const size_t pos) const {
 		if (pos == 0)
-			return RuleLine(Key(), Object());  //Return sort line.
+			return RuleLine(Key(), Object());  // Return sort line.
 		else if (pos - 1 < lines.size())
 			return lines[pos - 1];
 		else
@@ -1166,10 +1174,10 @@ namespace boss {
 		grammar.SetErrorBuffer(&errorBuffer);
 
 		if (!fs::exists(file)) {
-			//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+			// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 			ofstream userlist_file(file.string(), ios_base::binary);
 			if (!userlist_file.fail())
-				userlist_file << '\xEF' << '\xBB' << '\xBF';  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
+				userlist_file << '\xEF' << '\xBB' << '\xBF';  // Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
 			else
 				throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL,
 				                 file.string());
@@ -1184,7 +1192,7 @@ namespace boss {
 
 		bool r = phrase_parse(begin, end, grammar, skipper, rules);
 
-		if (!r || begin != end)  //This might not work correctly.
+		if (!r || begin != end)  // This might not work correctly.
 			throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL,
 			                 file.string());
 
@@ -1192,10 +1200,10 @@ namespace boss {
 	}
 
 	void RuleList::Save(const fs::path file) {
-		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 		ofstream outFile(file.string(), ios_base::trunc);
 
-		if (outFile.fail()) {  //Provide error message if it can't be written.
+		if (outFile.fail()) {  // Provide error message if it can't be written.
 			LOG_ERROR("Backup cannot be saved.");
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL,
 			                 file.string());
@@ -1361,7 +1369,7 @@ namespace boss {
 
 
 	///////////////////////////////
-	//Settings Class
+	// Settings Class
 	///////////////////////////////
 
 	void Settings::Load(const fs::path file) {
@@ -1385,7 +1393,7 @@ namespace boss {
 		bool r = phrase_parse(begin, end, grammar, skipper,
 		                      iniSettings);
 
-		if (!r || begin != end || !errorBuffer.Empty())  //This might not work correctly.
+		if (!r || begin != end || !errorBuffer.Empty())  // This might not work correctly.
 			throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL,
 			                 file.string());
 
@@ -1394,43 +1402,43 @@ namespace boss {
 
 	void Settings::Save(const fs::path file,
 	                    const uint32_t currentGameId) {
-		//MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 		ofstream ini(file.string(), ios_base::trunc);
 		if (ini.fail())
 			throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL,
 			                 file.string());
-		ini << '\xEF' << '\xBB' << '\xBF'  //Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
-			<< "#---------------" << endl
-			<< "# BOSS Ini File" << endl
-			<< "#---------------" << endl
-			<< loc::translate("# Settings with names starting with 'b' are boolean and accept values of 'true' or 'false'.") << endl
-			<< loc::translate("# Settings with names starting with 'i' are unsigned integers and accept varying ranges of whole numbers.") << endl
-			<< loc::translate("# Settings with names starting with 's' are strings and their accepted values vary.") << endl
-			<< loc::translate("# See the BOSS ReadMe for details on what each setting does and the accepted values for integer and string settings.") << endl << endl
+		ini << '\xEF' << '\xBB' << '\xBF'  // Write UTF-8 BOM to ensure the file is recognised as having the UTF-8 encoding.
+		    << "#---------------" << endl
+		    << "# BOSS Ini File" << endl
+		    << "#---------------" << endl
+		    << loc::translate("# Settings with names starting with 'b' are boolean and accept values of 'true' or 'false'.") << endl
+		    << loc::translate("# Settings with names starting with 'i' are unsigned integers and accept varying ranges of whole numbers.") << endl
+		    << loc::translate("# Settings with names starting with 's' are strings and their accepted values vary.") << endl
+		    << loc::translate("# See the BOSS ReadMe for details on what each setting does and the accepted values for integer and string settings.") << endl << endl
 
-			<< "[General Settings]" << endl
-			<< "bUseUserRulesManager    = " << BoolToString(gl_use_user_rules_manager) << endl
-			<< "bCloseGUIAfterSorting   = " << BoolToString(gl_close_gui_after_sorting) << endl
-			<< "sLanguage               = " << GetLanguageString() << endl << endl
+		    << "[General Settings]" << endl
+		    << "bUseUserRulesManager    = " << BoolToString(gl_use_user_rules_manager) << endl
+		    << "bCloseGUIAfterSorting   = " << BoolToString(gl_close_gui_after_sorting) << endl
+		    << "sLanguage               = " << GetLanguageString() << endl << endl
 
-			<< "[Run Options]" << endl
-			<< "sGame                   = " << GetIniGameString(gl_game) << endl
-			<< "sLastGame               = " << GetIniGameString(currentGameId) << endl  //Writing current game because that's what we want recorded when BOSS writes the ini.
-			<< "sBOSSLogFormat          = " << GetLogFormatString() << endl
-			<< "iDebugVerbosity         = " << IntToString(gl_debug_verbosity) << endl
-			<< "iRevertLevel            = " << IntToString(gl_revert) << endl
-			<< "bUpdateMasterlist       = " << BoolToString(gl_update) << endl
-			<< "bOnlyUpdateMasterlist   = " << BoolToString(gl_update_only) << endl
-			<< "bSilentRun              = " << BoolToString(gl_silent) << endl
-			<< "bDisplayCRCs            = " << BoolToString(gl_show_CRCs) << endl
-			<< "bDoTrialRun             = " << BoolToString(gl_trial_run) << endl << endl
+		    << "[Run Options]" << endl
+		    << "sGame                   = " << GetIniGameString(gl_game) << endl
+		    << "sLastGame               = " << GetIniGameString(currentGameId) << endl  // Writing current game because that's what we want recorded when BOSS writes the ini.
+		    << "sBOSSLogFormat          = " << GetLogFormatString() << endl
+		    << "iDebugVerbosity         = " << IntToString(gl_debug_verbosity) << endl
+		    << "iRevertLevel            = " << IntToString(gl_revert) << endl
+		    << "bUpdateMasterlist       = " << BoolToString(gl_update) << endl
+		    << "bOnlyUpdateMasterlist   = " << BoolToString(gl_update_only) << endl
+		    << "bSilentRun              = " << BoolToString(gl_silent) << endl
+		    << "bDisplayCRCs            = " << BoolToString(gl_show_CRCs) << endl
+		    << "bDoTrialRun             = " << BoolToString(gl_trial_run) << endl << endl
 
-			<< "[Repository URLs]" << endl
-			<< "sOblivionRepoURL        = " << gl_oblivion_repo_url << endl
-			<< "sNehrimRepoURL          = " << gl_nehrim_repo_url << endl
-			<< "sSkyrimRepoURL          = " << gl_skyrim_repo_url << endl
-			<< "sFallout3RepoURL        = " << gl_fallout3_repo_url << endl
-			<< "sFalloutNVRepoURL       = " << gl_falloutnv_repo_url << endl;
+		    << "[Repository URLs]" << endl
+		    << "sOblivionRepoURL        = " << gl_oblivion_repo_url << endl
+		    << "sNehrimRepoURL          = " << gl_nehrim_repo_url << endl
+		    << "sSkyrimRepoURL          = " << gl_skyrim_repo_url << endl
+		    << "sFallout3RepoURL        = " << gl_fallout3_repo_url << endl
+		    << "sFalloutNVRepoURL       = " << gl_falloutnv_repo_url << endl;
 		ini.close();
 	}
 
@@ -1490,7 +1498,7 @@ namespace boss {
 			if (iter->second.empty())
 				continue;
 
-			//String settings.
+			// String settings.
 			if (iter->first == "sBOSSLogFormat") {
 				if (iter->second == "html")
 					gl_log_format = HTML;
@@ -1533,43 +1541,41 @@ namespace boss {
 					gl_language = RUSSIAN;
 				else if (iter->second == "chinese")
 					gl_language = SIMPCHINESE;
-			}
-			else if (iter->first == "sOblivionRepoURL")
+			} else if (iter->first == "sOblivionRepoURL") {
 				gl_oblivion_repo_url = iter->second;
-			else if (iter->first == "sNehrimRepoURL")
+			} else if (iter->first == "sNehrimRepoURL") {
 				gl_nehrim_repo_url = iter->second;
-			else if (iter->first == "sSkyrimRepoURL")
+			} else if (iter->first == "sSkyrimRepoURL") {
 				gl_skyrim_repo_url = iter->second;
-			else if (iter->first == "sFallout3RepoURL")
+			} else if (iter->first == "sFallout3RepoURL") {
 				gl_fallout3_repo_url = iter->second;
-			else if (iter->first == "sFalloutNVRepoURL")
+			} else if (iter->first == "sFalloutNVRepoURL") {
 				gl_falloutnv_repo_url = iter->second;
-			//Now integers.
-			else if (iter->first == "iRevertLevel") {
+			// Now integers.
+			} else if (iter->first == "iRevertLevel") {
 				uint32_t value = atoi(iter->second.c_str());
 				if (value >= 0 && value < 3)
 					gl_revert = value;
-			}
-			else if (iter->first == "iDebugVerbosity") {
+			} else if (iter->first == "iDebugVerbosity") {
 				uint32_t value = atoi(iter->second.c_str());
 				if (value >= 0 && value < 4)
 					gl_debug_verbosity = value;
-				//Now on to boolean settings.
-			}
-			else if (iter->first == "bUseUserRulesEditor")
+				// Now on to boolean settings.
+			} else if (iter->first == "bUseUserRulesEditor") {
 				gl_use_user_rules_manager = StringToBool(iter->second);
-			else if (iter->first == "bCloseGUIAfterSorting")
+			} else if (iter->first == "bCloseGUIAfterSorting") {
 				gl_close_gui_after_sorting = StringToBool(iter->second);
-			else if (iter->first == "bUpdateMasterlist")
+			} else if (iter->first == "bUpdateMasterlist") {
 				gl_update = StringToBool(iter->second);
-			else if (iter->first == "bOnlyUpdateMasterlist")
+			} else if (iter->first == "bOnlyUpdateMasterlist") {
 				gl_update_only = StringToBool(iter->second);
-			else if (iter->first == "bSilentRun")
+			} else if (iter->first == "bSilentRun") {
 				gl_silent = StringToBool(iter->second);
-			else if (iter->first == "bDisplayCRCs")
+			} else if (iter->first == "bDisplayCRCs") {
 				gl_show_CRCs = StringToBool(iter->second);
-			else if (iter->first == "bDoTrialRun")
+			} else if (iter->first == "bDoTrialRun") {
 				gl_trial_run = StringToBool(iter->second);
+			}
 		}
 	}
 

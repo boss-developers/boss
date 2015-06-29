@@ -25,7 +25,7 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-//Contains the various functions/classes required for varied BOSSlog output formattings,etc.
+// Contains the various functions/classes required for varied BOSSlog output formattings,etc.
 
 #ifndef __BOSS_BOSSLOG_H__
 #define __BOSS_BOSSLOG_H__
@@ -102,15 +102,15 @@ namespace boss {
 		Outputter(const uint32_t format, const Rule r);
 		Outputter(const uint32_t format, const logFormatting l);
 
-		void SetFormat(const uint32_t format);  //Sets the formatting type of the output.
-		void SetHTMLSpecialEscape(const bool shouldEscape);  //Set when formatting is set, generally, but this can be used to override.
-		void Clear();  //Erase all current content.
+		void SetFormat(const uint32_t format);               // Sets the formatting type of the output.
+		void SetHTMLSpecialEscape(const bool shouldEscape);  // Set when formatting is set, generally, but this can be used to override.
+		void Clear();                                        // Erase all current content.
 
 		bool Empty() const;
 		uint32_t GetFormat() const;
 		bool GetHTMLSpecialEscape() const;
 
-		string AsString() const;  //Outputs contents as a string.
+		string AsString() const;  // Outputs contents as a string.
 
 		Outputter& operator= (const Outputter& o);
 		Outputter& operator<< (const string s);
@@ -127,10 +127,10 @@ namespace boss {
 
 	private:
 		stringstream outStream;
-		uint32_t outFormat;  //The formatting type of the output.
-		bool escapeHTMLSpecialChars;  //Should special characters be escaped from non-formatting input?
+		uint32_t outFormat;           // The formatting type of the output.
+		bool escapeHTMLSpecialChars;  // Should special characters be escaped from non-formatting input?
 
-		string EscapeHTMLSpecial(string text);  //Performs the HTML escaping.
+		string EscapeHTMLSpecial(string text);  // Performs the HTML escaping.
 		string EscapeHTMLSpecial(char c);
 	};
 
@@ -140,7 +140,7 @@ namespace boss {
 		BossLog(const uint32_t format);
 
 		void SetFormat(const uint32_t format);
-		void Save(const fs::path file, const bool overwrite);  //Saves contents to file. Throws boss_error exception on fail.
+		void Save(const fs::path file, const bool overwrite);  // Saves contents to file. Throws boss_error exception on fail.
 		void Clear();
 
 		uint32_t recognised;

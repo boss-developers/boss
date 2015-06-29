@@ -30,16 +30,16 @@
 
 #if (_WIN32 || _WIN64)
 
-// windows-specific stuff
+// Windows-specific stuff
 
-// for specifying size_t parameters to printf-like functions
+// For specifying size_t parameters to printf-like functions
 #	define PRIuS "Iu"
 
-// ignore gnu __attribute__ specifiers
+// Ignore gnu __attribute__ specifiers
 #	define __attribute__(x)
 
 #else
-// everything other than windows
+// Everything other than windows
 #	define PRIuS "zu"
 #endif
 

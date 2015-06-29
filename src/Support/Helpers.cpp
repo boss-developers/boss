@@ -59,7 +59,7 @@ namespace boss {
 	using boost::algorithm::replace_first;
 	namespace karma = boost::spirit::karma;
 
-	//Calculate the CRC of the given file for comparison purposes.
+	// Calculate the CRC of the given file for comparison purposes.
 	uint32_t GetCrc32(const fs::path& filename) {
 		uint32_t chksum = 0;
 		static const size_t buffer_size = 8192;
@@ -84,7 +84,7 @@ namespace boss {
 		return chksum;
 	}
 
-	//Reads an entire file into a string buffer.
+	// Reads an entire file into a string buffer.
 	void fileToBuffer(const fs::path file, string& buffer) {
 		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 		ifstream ifile(file.string());
@@ -96,7 +96,7 @@ namespace boss {
 		     back_inserter(buffer));
 	}
 
-	//Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
+	// Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
 	BOSS_COMMON string IntToString(const uint32_t n) {
 		string out;
 		back_insert_iterator<string> sink(out);
@@ -104,7 +104,7 @@ namespace boss {
 		return out;
 	}
 
-	//Converts an integer to a hex string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
+	// Converts an integer to a hex string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
 	string IntToHexString(const uint32_t n) {
 		string out;
 		back_insert_iterator<string> sink(out);
@@ -112,7 +112,7 @@ namespace boss {
 		return out;
 	}
 
-	//Converts a boolean to a string representation (true/false)
+	// Converts a boolean to a string representation (true/false)
 	string BoolToString(bool b) {
 		if (b)
 			return "true";
@@ -120,12 +120,12 @@ namespace boss {
 			return "false";
 	}
 
-	//Turns "true", "false", "1", "0" into booleans.
+	// Turns "true", "false", "1", "0" into booleans.
 	bool StringToBool(string str) {
 		return (str == "true" || str == "1");
 	}
 
-	//Convert a Windows-1252 string to UTF-8.
+	// Convert a Windows-1252 string to UTF-8.
 	std::string From1252ToUTF8(const std::string& str) {
 		try {
 			return boost::locale::conv::to_utf<char>(str, "Windows-1252", boost::locale::conv::stop);
@@ -135,7 +135,7 @@ namespace boss {
 		}
 	}
 
-	//Convert a UTF-8 string to Windows-1252.
+	// Convert a UTF-8 string to Windows-1252.
 	std::string FromUTF8To1252(const std::string& str) {
 		try {
 			return boost::locale::conv::from_utf<char>(str, "Windows-1252", boost::locale::conv::stop);
@@ -145,7 +145,7 @@ namespace boss {
 		}
 	}
 
-	//Check if registry subkey exists.
+	// Check if registry subkey exists.
 	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey,
 	                              string value) {
 		if (RegKeyStringValue(keyStr, subkey, value).empty())
@@ -154,7 +154,7 @@ namespace boss {
 			return true;
 	}
 
-	//Get registry subkey value string.
+	// Get registry subkey value string.
 	string RegKeyStringValue(string keyStr, string subkey,
 	                         string value) {
 #if _WIN32 || _WIN64
@@ -173,7 +173,7 @@ namespace boss {
 		else if (keyStr == "HKEY_USERS")
 			key = HKEY_USERS;
 
-		LONG ret = RegOpenKeyEx(key,fs::path(subkey).wstring().c_str(),
+		LONG ret = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(),
 		                        0, KEY_READ|KEY_WOW64_32KEY, &hKey);
 
 		if (ret == ERROR_SUCCESS) {
@@ -184,7 +184,7 @@ namespace boss {
 			RegCloseKey(hKey);
 
 			if (ret == ERROR_SUCCESS)
-				return fs::path(val).string();  //Easiest way to convert from wide to narrow character strings.
+				return fs::path(val).string();  // Easiest way to convert from wide to narrow character strings.
 			else
 				return "";
 		} else
@@ -265,31 +265,33 @@ namespace boss {
 	}
 
 	bool Version::operator < (Version ver) {
-		//Version string could have a wide variety of formats. Use regex to choose specific comparison types.
+		// Version string could have a wide variety of formats. Use regex to choose specific comparison types.
 
-		boost::regex reg1("(\\d+\\.?)+");  //a.b.c.d.e.f.... where the letters are all integers, and 'a' is the shortest possible match.
+		boost::regex reg1("(\\d+\\.?)+");  // a.b.c.d.e.f.... where the letters are all integers, and 'a' is the shortest possible match.
 
 		//boost::regex reg2("(\\d+\\.?)+([a-zA-Z\\-]+(\\d+\\.?)*)+");  //Matches a mix of letters and numbers - from "0.99.xx", "1.35Alpha2", "0.9.9MB8b1", "10.52EV-D", "1.62EV" to "10.0EV-D1.62EV".
 
 		if (boost::regex_match(verString, reg1) &&
 		    boost::regex_match(ver.AsString(), reg1)) {
-			//First type: numbers separated by periods. If two versions have a different number of numbers, then the shorter should be padded
-			//with zeros. An arbitrary number of numbers should be supported.
+			// First type: numbers separated by periods. If two versions have a different number of numbers, then the shorter should be padded
+			// with zeros. An arbitrary number of numbers should be supported.
 			istringstream parser1(verString);
 			istringstream parser2(ver.AsString());
 			while (parser1.good() || parser2.good()) {
-				//Check if each stringstream is OK for i/o before doing anything with it. If not, replace its extracted value with a 0.
+				// Check if each stringstream is OK for i/o before doing anything with it. If not, replace its extracted value with a 0.
 				uint32_t n1, n2;
 				if (parser1.good()) {
 					parser1 >> n1;
 					parser1.get();
-				} else
+				} else {
 					n1 = 0;
+				}
 				if (parser2.good()) {
 					parser2 >> n2;
 					parser2.get();
-				} else
+				} else {
 					n2 = 0;
+				}
 				if (n1 < n2)
 					return true;
 				else if (n1 > n2)
@@ -297,7 +299,7 @@ namespace boss {
 			}
 			return false;
 		} else {
-			//Wacky format. Use the Alphanum Algorithm. (what a name!)
+			// Wacky format. Use the Alphanum Algorithm. (what a name!)
 			return (doj::alphanum_comp(verString, ver.AsString()) < 0);
 		}
 	}

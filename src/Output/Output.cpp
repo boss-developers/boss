@@ -41,6 +41,7 @@ namespace boss {
 	// Outputter Class Functions
 	////////////////////////////////
 
+	// MCP Note: Possibly condense some of these constructors using default values for paramaters? Not sure about that, though...
 	Outputter::Outputter()
 	    : outFormat(PLAINTEXT),
 	      escapeHTMLSpecialChars(false) {}
@@ -130,17 +131,19 @@ namespace boss {
 			replace_all(text, "©", "&copy;");
 			replace_all(text, "✗", "&#x2717;");
 			replace_all(text, "✓", "&#x2713;");
-			replace_all(text, "\n", "<br />");  //Not an HTML special char escape, but this needs to happen here to get the details of parser errors formatted correctly.
+			replace_all(text, "\n", "<br />");  // Not an HTML special char escape, but this needs to happen here to get the details of parser errors formatted correctly.
 		}
 		return text;
 	}
 
 	string Outputter::EscapeHTMLSpecial(char c) {
 		if (escapeHTMLSpecialChars && outFormat == HTML) {
-			// MCP Note: GCC squalls at these due to the copyright character not being ASCII. Look at trying to fix this.
-			// Maybe changing it to a wchar_t would fix it? Need to look into that.
-			// MCP Note 2: For the default, would it be better to leave as-is or change it to a break-statement,
-			// remove the else, and simply return string(1, c)? Or maybe use ints?
+			/*
+			 * MCP Note: GCC squalls at these due to the copyright character not being ASCII. Look at trying to fix this.
+			 * Maybe changing it to a wchar_t would fix it? Need to look into that. Or maybe use ints?
+			 * MCP Note 2: For the default, would it be better to leave as-is or change it to a break-statement,
+			 * remove the else, and simply return string(1, c)?
+			 */
 			switch (c) {
 				case '&':
 					return "&amp;";
@@ -448,8 +451,8 @@ namespace boss {
 
 	Outputter& Outputter::operator<< (const Message m) {
 		string data = EscapeHTMLSpecial(m.Data());
-		//Need to handle web addresses. Recognised are those in the following formats:
-		//"http:someAddress", "http:someAddress label", "https:someAddress", "https:someAddress label", "file:somelocalAddress", "file:someLocalAddress label"
+		// Need to handle web addresses. Recognised are those in the following formats:
+		// "http:someAddress", "http:someAddress label", "https:someAddress", "https:someAddress label", "file:somelocalAddress", "file:someLocalAddress label"
 
 		size_t pos1, pos2, pos3;
 		string link, label, dq;
@@ -460,18 +463,18 @@ namespace boss {
 		else
 			dq = "\"";
 
-		//Do replacements for all addressTypes.
+		// Do replacements for all addressTypes.
 		for (uint32_t i = 0; i < 2; i++) {
 			pos1 = data.find(dq + addressTypes[i]);
 			while (pos1 != string::npos) {
 				pos1 += dq.length();
-				pos3 = data.find(dq, pos1);  //End of quoted string.
-				//Check if there is a label in the quoted string.
+				pos3 = data.find(dq, pos1);  // End of quoted string.
+				// Check if there is a label in the quoted string.
 				pos2 = data.find(' ', pos1);
-				if (pos2 < pos3) {  //Label present.
+				if (pos2 < pos3) {  // Label present.
 					link = data.substr(pos1, pos2 - pos1);
 					label = data.substr(pos2 + 1, pos3 - pos2 - 1);
-				} else {  //Label not present.
+				} else {  // Label not present.
 					link = data.substr(pos1, pos3 - pos1);
 					label = link;
 				}
@@ -486,7 +489,7 @@ namespace boss {
 			}
 		}
 		// TODO(MCP): Look at converting this to a switch-statement.
-		//Select message formatting.
+		// Select message formatting.
 		if (m.Key() == SAY) {
 			if (outFormat == HTML)
 				outStream << "<li class='note'>" << translate("Note") << ": " << data;
@@ -532,11 +535,11 @@ namespace boss {
 	}
 
 	Outputter& Outputter::operator<< (const ParsingError e) {
-		if (e.Empty())
+		if (e.Empty()) {
 			return *this;
-		else if (!e.WholeMessage().empty())
+		} else if (!e.WholeMessage().empty()) {
 			*this << LIST_ITEM_CLASS_ERROR << e.WholeMessage();
-		else {
+		} else {
 			bool htmlEscape = escapeHTMLSpecialChars;
 			escapeHTMLSpecialChars = true;
 			*this << LIST_ITEM_CLASS_ERROR << e.Header()
@@ -554,7 +557,7 @@ namespace boss {
 		string varOpen = Outputter(outFormat, VAR_OPEN).AsString();
 		string varClose = Outputter(outFormat, VAR_CLOSE).AsString();
 
-		//Need to temporarily turn off escaping of special characters so that <var> and </var> are printed correctly.
+		// Need to temporarily turn off escaping of special characters so that <var> and </var> are printed correctly.
 		bool wasEscaped = escapeHTMLSpecialChars;
 
 		for (size_t j = 0; j < linesSize; j++) {
@@ -563,15 +566,16 @@ namespace boss {
 
 			escapeHTMLSpecialChars = false;
 
-			if (lines[j].Key() == BEFORE)
+			// TODO(MCP): Look at converting this to a switch-statement
+			if (lines[j].Key() == BEFORE) {
 				*this << (boost::format(translate("Sort %1% before %2%")) % rObject % lObject).str();
-			else if (lines[j].Key() == AFTER)
+			} else if (lines[j].Key() == AFTER) {
 				*this << (boost::format(translate("Sort %1% after %2%")) % rObject % lObject).str();
-			else if (lines[j].Key() == TOP)
+			} else if (lines[j].Key() == TOP) {
 				*this << (boost::format(translate("Insert %1% at the top of %2%")) % rObject % lObject).str();
-			else if (lines[j].Key() == BOTTOM)
+			} else if (lines[j].Key() == BOTTOM) {
 				*this << (boost::format(translate("Insert %1% at the bottom of %2%")) % rObject % lObject).str();
-			else if (lines[j].Key() == APPEND) {
+			} else if (lines[j].Key() == APPEND) {
 				if (!hasEditedMessages) {
 					if (r.Key() == FOR)
 						*this << (boost::format(translate("Add the following messages to %1%:")) % rObject).str() << LINE_BREAK << LIST_OPEN;
@@ -605,11 +609,18 @@ namespace boss {
 	// BossLog Class Functions
 	////////////////////////////////
 
-	// MCP Note: Condense these two constructors into one using default values for the 'format' parameter?
-	// The default would be HTML. That may help reduce duplication but needs looking into.
+	/*
+	 * MCP Note: Condense these two constructors into one using default values for the 'format' parameter?
+	 * The default would be HTML. That may help reduce duplication but needs looking into.
+	 */
 	BossLog::BossLog()
-	    : recognised(0), unrecognised(0), inactive(0), messages(0),
-	      warnings(0), errors(0), logFormat(HTML) {
+	    : recognised(0),
+	      unrecognised(0),
+	      inactive(0),
+	      messages(0),
+	      warnings(0),
+	      errors(0),
+	      logFormat(HTML) {
 		updaterOutput.SetFormat(HTML);
 		criticalError.SetFormat(HTML);
 		userRules.SetFormat(HTML);
@@ -619,8 +630,13 @@ namespace boss {
 	}
 
 	BossLog::BossLog(const uint32_t format)
-	    : recognised(0), unrecognised(0), inactive(0), messages(0),
-	      warnings(0), errors(0), logFormat(format) {
+	    : recognised(0),
+	      unrecognised(0),
+	      inactive(0),
+	      messages(0),
+	      warnings(0),
+	      errors(0),
+	      logFormat(format) {
 		updaterOutput.SetFormat(format);
 		criticalError.SetFormat(format);
 		userRules.SetFormat(format);
@@ -713,7 +729,7 @@ namespace boss {
 			    << "</div>"
 			    << "</div>"
 
-			    //Need to define some variables in code.
+			    // Need to define some variables in code.
 			    << "<script>"
 			    << "var gameName = '" << gameName << "';"
 			    << "var txt1 = '" << translate("Checking for existing submission...") << "';"
@@ -763,7 +779,7 @@ namespace boss {
 				formattedOut << DIV_UNRECOGNISED_BUTTON_OPEN << translate("Unrecognised Plugins") << DIV_CLOSE;
 
 			out << formattedOut.AsString() << PrintHeaderBottom();
-			formattedOut.Clear();  //Clear formattedOut for re-use.
+			formattedOut.Clear();  // Clear formattedOut for re-use.
 		}
 
 
@@ -804,28 +820,28 @@ namespace boss {
 
 		formattedOut << LIST_OPEN;
 
-		formattedOut << updaterOutput.AsString();  //This contains BOSS & masterlist update strings.
+		formattedOut << updaterOutput.AsString();  // This contains BOSS & masterlist update strings.
 
 		if (recognisedHasChanged)
 			formattedOut << LIST_ITEM_CLASS_SUCCESS << translate("No change in recognised plugin list since last run.");
 
-		size_t size = parsingErrors.size();  //First print parser/syntax error messages.
+		size_t size = parsingErrors.size();  // First print parser/syntax error messages.
 		for (size_t i = 0; i < size; i++)
 			formattedOut << parsingErrors[i];
 
-		formattedOut << criticalError.AsString();  //Print any critical errors.
+		formattedOut << criticalError.AsString();  // Print any critical errors.
 
 		formattedOut.SetHTMLSpecialEscape(true);
 		size = globalMessages.size();
 		for (size_t i = 0; i < size; i++)
-			formattedOut << globalMessages[i];  //Print global messages.
+			formattedOut << globalMessages[i];  // Print global messages.
 		formattedOut.SetHTMLSpecialEscape(false);
 
 		formattedOut << LIST_CLOSE << SECTION_CLOSE;
 		out << formattedOut.AsString();
-		formattedOut.Clear();  //Clear formattedOut for re-use.
+		formattedOut.Clear();  // Clear formattedOut for re-use.
 
-		if (!criticalError.Empty()) {  //Exit early.
+		if (!criticalError.Empty()) {  // Exit early.
 			out << PrintFooter();
 			return out.str();
 		}
@@ -866,9 +882,9 @@ namespace boss {
 		//-------------------------------
 
 		if (!recognisedPlugins.Empty()) {
-			if (logFormat == HTML)
+			if (logFormat == HTML) {
 				formattedOut << SECTION_ID_RECOGNISED_OPEN;
-			else {
+			} else {
 				if (gl_revert < 1)
 					formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN << translate("Recognised Plugins") << HEADING_CLOSE;
 				else if (gl_revert == 1)

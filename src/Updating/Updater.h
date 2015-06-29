@@ -119,20 +119,20 @@ namespace boss {
 
 	// Gets the revision SHA (first 9 characters) for the currently checked-out masterlist, or "unknown".
 	inline std::string GetMasterlistVersion(Game& game) {
-		if (!fs::exists(game.Masterlist().parent_path() / ".git" / "HEAD"))
+		if (!fs::exists(game.Masterlist().parent_path() / ".git" / "HEAD")) {
 			return "Unknown: Git repository missing";
-		else {
+		} else {
 			std::string rev;
 			// Naive check, ignoring working directory changes.
-			/*
-			*/
 
-			/* Better check, which compares HEAD to the working dir.
-			1. Get an object for the masterlist in HEAD.
-			2. Get the blob for that object.
-			3. Open the masterlist file in the working dir in a file buffer.
-			4. Compare the file and blob buffers.
-			*/
+			/*
+			 * Better check, which compares HEAD to the working dir.
+			 * 
+			 * 1. Get an object for the masterlist in HEAD.
+			 * 2. Get the blob for that object.
+			 * 3. Open the masterlist file in the working dir in a file buffer.
+			 * 4. Compare the file and blob buffers.
+			 */
 			pointers_struct ptrs;
 			LOG_INFO("Existing repository found, attempting to open it.");
 			handle_error(git_repository_open(&ptrs.repo, game.Masterlist().parent_path().string().c_str()), ptrs);
@@ -232,9 +232,11 @@ namespace boss {
 		LOG_INFO("Fetching from remote.");
 		handle_error(git_remote_fetch(ptrs.remote), ptrs);
 
-		// Now start the merging. Not entirely sure what's going on here, but it looks like libgit2's merge API is incomplete, you can create some git_merge_head objects, but can't do anything with them...
-		// Thankfully, we don't really need a merge, we just need to replace whatever's in the working directory with the relevant file from FETCH_HEAD, which was updated in the fetching step before.
-		// The porcelain equivalent is `git checkout refs/remotes/origin/gh-pages masterlist.txt`
+		/*
+		 * Now start the merging. Not entirely sure what's going on here, but it looks like libgit2's merge API is incomplete, you can create some git_merge_head objects, but can't do anything with them...
+		 * Thankfully, we don't really need a merge, we just need to replace whatever's in the working directory with the relevant file from FETCH_HEAD, which was updated in the fetching step before.
+		 * The porcelain equivalent is `git checkout refs/remotes/origin/gh-pages masterlist.txt`
+		 */
 
 		LOG_INFO("Setting up checkout parameters.");
 
@@ -246,16 +248,18 @@ namespace boss {
 		opts.paths.count = 1;
 
 		// Next, we need to do a looping checkout / parsing check / roll-back.
-		/* Here's what to do:
-		0. Create a git_signature using git_signature_default.
-		1. Get the git_object for the desired masterlist revision, using git_revparse_single.
-		2. Get the git_oid for that object, using git_object_id.
-		3. Get the git_reference for the HEAD reference using git_reference_lookup.
-		5. Generate a short string for the git_oid, to display in the log.
-		6. (Re)create a HEAD reference to point directly to the desired masterlist revision,
-		   using its git_oid and git_reference_create.
-		7. Perform the checkout of HEAD.
-		*/
+		/*
+		 * Here's what to do:
+		 * 
+		 * 0. Create a git_signature using git_signature_default.
+		 * 1. Get the git_object for the desired masterlist revision, using git_revparse_single.
+		 * 2. Get the git_oid for that object, using git_object_id.
+		 * 3. Get the git_reference for the HEAD reference using git_reference_lookup.
+		 * 5. Generate a short string for the git_oid, to display in the log.
+		 * 6. (Re)create a HEAD reference to point directly to the desired masterlist revision,
+		 *    using its git_oid and git_reference_create.
+		 * 7. Perform the checkout of HEAD.
+		 */
 
 		// Apparently I'm using libgit2's head, not v0.20.0, so I don't need this...
 		//LOG_INFO("Creating a Git signature.");

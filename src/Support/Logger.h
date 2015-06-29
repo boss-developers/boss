@@ -37,7 +37,7 @@
 #define _LOG_IMPL(verbosity, formatStr, ...) \
 	boss::g_logger.log(verbosity, formatStr, ##__VA_ARGS__)
 
-// convenience macros
+// Convenience macros
 #define LOG_ERROR(formatStr, ...) _LOG_IMPL(boss::LV_ERROR, formatStr, ##__VA_ARGS__)
 #define LOG_WARN(formatStr,  ...) _LOG_IMPL(boss::LV_WARN,  formatStr, ##__VA_ARGS__)
 #define LOG_INFO(formatStr,  ...) _LOG_IMPL(boss::LV_INFO,  formatStr, ##__VA_ARGS__)

@@ -30,12 +30,12 @@
 namespace boss {
 	using namespace std;
 
-	//BOSS version number.
+	// BOSS version number.
 	BOSS_COMMON const uint32_t BOSS_VERSION_MAJOR = 2;
 	BOSS_COMMON const uint32_t BOSS_VERSION_MINOR = 3;
 	BOSS_COMMON const uint32_t BOSS_VERSION_PATCH = 0;
 
-	//Supported game values. DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
+	// Supported game values. DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
 	BOSS_COMMON const uint32_t AUTODETECT         = 0;
 	BOSS_COMMON const uint32_t OBLIVION           = 1;
 	BOSS_COMMON const uint32_t NEHRIM             = 2;
@@ -43,11 +43,11 @@ namespace boss {
 	BOSS_COMMON const uint32_t FALLOUT3           = 4;
 	BOSS_COMMON const uint32_t FALLOUTNV          = 5;
 
-	//BOSS Log formatting values.
+	// BOSS Log formatting values.
 	BOSS_COMMON const uint32_t HTML               = 0;
 	BOSS_COMMON const uint32_t PLAINTEXT          = 1;
 
-	//Language values.
+	// Language values.
 	BOSS_COMMON const uint32_t ENGLISH            = 0;
 	BOSS_COMMON const uint32_t SPANISH            = 1;
 	BOSS_COMMON const uint32_t GERMAN             = 2;
@@ -56,7 +56,7 @@ namespace boss {
 
 
 	///////////////////////////////
-	//File/Folder Paths
+	// File/Folder Paths
 	///////////////////////////////
 
 	BOSS_COMMON const fs::path boss_path            = fs::path(".");
@@ -72,15 +72,15 @@ namespace boss {
 
 
 	///////////////////////////////
-	//Ini Settings
+	// Ini Settings
 	///////////////////////////////
 
-	//General variables
+	// General variables
 	BOSS_COMMON bool gl_use_user_rules_manager  = true;
 	BOSS_COMMON bool gl_close_gui_after_sorting = false;
 	BOSS_COMMON uint32_t gl_language            = ENGLISH;
 
-	//Command line variables
+	// Command line variables
 	BOSS_COMMON uint32_t gl_log_format      = HTML;
 	BOSS_COMMON uint32_t gl_game            = AUTODETECT;
 	BOSS_COMMON uint32_t gl_last_game       = AUTODETECT;
@@ -92,7 +92,7 @@ namespace boss {
 	BOSS_COMMON bool gl_show_CRCs           = false;
 	BOSS_COMMON bool gl_trial_run           = false;
 
-	//Repository URLs
+	// Repository URLs
 	BOSS_COMMON std::string gl_oblivion_repo_url  = "https://github.com/boss-developers/oblivion.git";
 	BOSS_COMMON std::string gl_nehrim_repo_url    = "https://github.com/boss-developers/nehrim.git";
 	BOSS_COMMON std::string gl_skyrim_repo_url    = "https://github.com/boss-developers/skyrim.git";

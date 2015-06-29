@@ -42,11 +42,11 @@ namespace boss {
 	using boost::algorithm::trim_copy;
 	using boost::regex;
 
-	//
-	// string ParseVersion(string&):
-	// - Tries to extract the version string value from the given text,
-	// using the above defined regexes to do the dirty work.
-	//
+	/*
+	 * string ParseVersion(string&):
+	 * - Tries to extract the version string value from the given text,
+	 * using the above defined regexes to do the dirty work.
+	 */
 	string ParseVersion(const string& text) {
 		string::const_iterator begin, end;
 
@@ -73,11 +73,11 @@ namespace boss {
 		return string();
 	}
 
-	//
-	// string ReadString(pointer&, maxsize):
-	// - Reads a consecutive array of charactes up to maxsize length and
-	// returns them as a new string.
-	//
+	/*
+	 * string ReadString(pointer&, maxsize):
+	 * - Reads a consecutive array of charactes up to maxsize length and
+	 * returns them as a new string.
+	 */
 	string ReadString(char*& bufptr, ushort size) {
 		string data;
 
@@ -89,22 +89,22 @@ namespace boss {
 		return data;
 	}
 
-	//
-	// T Peek<T>(pointer&):
-	// - Peeks into the received buffer and returns the value pointed
-	// converting it to the type T.
-	//
+	/*
+	 * T Peek<T>(pointer&):
+	 * - Peeks into the received buffer and returns the value pointed
+	 * converting it to the type T.
+	 */
 	template <typename T>
 	T Peek(char* buffer) {
 		return *reinterpret_cast<T*>(buffer);
 	}
 
-	//
-	// T Read<T>(pointer&):
-	// - Tries to extract a value of the specified type T from the
-	// received buffer, incrementing the pointer to point past the readen
-	// value.
-	//
+	/*
+	 * T Read<T>(pointer&):
+	 * - Tries to extract a value of the specified type T from the
+	 * received buffer, incrementing the pointer to point past the readen
+	 * value.
+	 */
 	template <typename T>
 	inline T Read(char*& buffer) {
 		T value = Peek<T>(buffer);
@@ -112,14 +112,14 @@ namespace boss {
 		return value;
 	}
 
-	//-
-	// ModHeader ReadHeader(string):
-	// - Parses the mod file contents and extract the header information
-	// returning the most important data using a ModHeader struct.
-	// --> see: http://www.uesp.net/wiki/Tes4Mod:Mod_File_Format,
-	//
-	// and in particular this link: http://www.uesp.net/wiki/Tes4Mod:Mod_File_Format/TES4
-	//
+	/* -
+	 * ModHeader ReadHeader(string):
+	 * - Parses the mod file contents and extract the header information
+	 * returning the most important data using a ModHeader struct.
+	 * --> see: http://www.uesp.net/wiki/Tes4Mod:Mod_File_Format,
+	 *
+	 * and in particular this link: http://www.uesp.net/wiki/Tes4Mod:Mod_File_Format/TES4
+	 */
 
 	bool IsPluginMaster(boost::filesystem::path filename) {
 		char buffer[MAXLENGTH];
@@ -193,8 +193,8 @@ namespace boss {
 
 		// For Oblivion plugins, the Header record starts here, check for its signature 'HEDR'.
 		if (Read<uint>(bufptr) != Record::HEDR) {
-			//Check if it's a FO3, FNV or TES5 plugin.
-			if (Read<uint>(bufptr) != Record::HEDR) {  //Nope, exit.
+			// Check if it's a FO3, FNV or TES5 plugin.
+			if (Read<uint>(bufptr) != Record::HEDR) {  // Nope, exit.
 				return modHeader;
 			}
 		}

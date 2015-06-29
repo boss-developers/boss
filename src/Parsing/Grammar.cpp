@@ -34,13 +34,15 @@
 
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
-/*#include <boost/version.hpp>
-#if BOOST_VERSION > 105500*/
-#	include <boost/phoenix/object/construct.hpp>
-/*#else
-#	include <boost/spirit/home/phoenix/object/construct.hpp>
-#endif*/
-//#include <boost/spirit/home/phoenix/object/construct.hpp>
+/*
+ * #include <boost/version.hpp>
+ * #if BOOST_VERSION > 105500
+ * #	include <boost/phoenix/object/construct.hpp>
+ * #else
+ * #	include <boost/spirit/home/phoenix/object/construct.hpp>
+ * #endif
+ */
+#include <boost/phoenix/object/construct.hpp>
 #include <boost/spirit/include/phoenix_bind.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
@@ -79,7 +81,7 @@ namespace boss {
 	masterlistMsgKey_::masterlistMsgKey_() {
 		// MCP Note: Look into changing the style on these. Not sure, have never seen syntax like this before...
 		// Need to read up on Boost Spirit
-		add  //New Message keywords.
+		add  // New Message keywords.
 			("say", SAY)
 			("tag", TAG)
 			("req", REQ)
@@ -91,11 +93,11 @@ namespace boss {
 	}
 
 	typeKey_::typeKey_() {
-		add  //Group keywords.
-			("begingroup:", BEGINGROUP)  //Needs the colon there unfortunately.
-			("endgroup:", ENDGROUP)  //Needs the colon there unfortunately.
+		add  // Group keywords.
+			("begingroup:", BEGINGROUP)  // Needs the colon there unfortunately.
+			("endgroup:", ENDGROUP)      // Needs the colon there unfortunately.
 			("endgroup", ENDGROUP)
-			("mod:", MOD)  //Needs the colon there unfortunately.
+			("mod:", MOD)                // Needs the colon there unfortunately.
 			("regex:", REGEX)
 		;
 	}
@@ -120,10 +122,10 @@ namespace boss {
 	}
 
 	///////////////////////////////
-	//Skipper Grammars
+	// Skipper Grammars
 	///////////////////////////////
 
-	//Constructor for modlist and userlist skipper.
+	// Constructor for modlist and userlist skipper.
 	Skipper::Skipper() : Skipper::base_type(start, "skipper grammar") {
 		start =
 			spc
@@ -135,7 +137,7 @@ namespace boss {
 
 		spc = space - eol;
 
-		UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf");  //UTF8 BOM
+		UTF8 = char_("\xef") >> char_("\xbb") >> char_("\xbf");  // UTF8 BOM
 
 		CComment = "/*" >> *(char_ - "*/") >> "*/";
 
@@ -154,17 +156,17 @@ namespace boss {
 	}
 
 	///////////////////////////////
-	//Modlist/Masterlist Grammar
+	// Modlist/Masterlist Grammar
 	///////////////////////////////
 
-	//Modlist grammar constructor.
+	// Modlist grammar constructor.
 	modlist_grammar::modlist_grammar()
 	    : modlist_grammar::base_type(modList, "modlist grammar"),
 	      errorBuffer(NULL) {
 
 		masterlistMsgKey_ masterlistMsgKey;
 		typeKey_ typeKey;
-		const vector<Message> noMessages;  //An empty set of messages.
+		const vector<Message> noMessages;  // An empty set of messages.
 
 		modList =
 			*eol
@@ -216,10 +218,10 @@ namespace boss {
 			conditionals
 			>> messageKeyword
 			>> ':'
-			>> charString  //The double >> matters. A single > doesn't work.
+			>> charString  // The double >> matters. A single > doesn't work.
 			;
 
-		charString %= lexeme[+(char_ - eol)];  //String, with no skipper.
+		charString %= lexeme[+(char_ - eol)];  // String, with no skipper.
 
 		messageKeyword %= no_case[masterlistMsgKey];
 
@@ -244,19 +246,19 @@ namespace boss {
 
 		functCondition %=
 			(
-				no_case[unicode::string("var")] > char_('(') > variable > char_(')')													//Variable condition.
+				no_case[unicode::string("var")] > char_('(') > variable > char_(')')													// Variable condition.
 			) | (
-				no_case[unicode::string("file")] > char_('(') > file > char_(')')														//File condition.
+				no_case[unicode::string("file")] > char_('(') > file > char_(')')														// File condition.
 			) | (
-				no_case[unicode::string("checksum")] > char_('(') > file > char_(',') > checksum > char_(')')							//Checksum condition.
+				no_case[unicode::string("checksum")] > char_('(') > file > char_(',') > checksum > char_(')')							// Checksum condition.
 			) | (
-				no_case[unicode::string("version")] > char_('(') > file > char_(',') > version > char_(',') > comparator > char_(')')	//Version condition.
+				no_case[unicode::string("version")] > char_('(') > file > char_(',') > version > char_(',') > comparator > char_(')')	// Version condition.
 			) | (
-				no_case[unicode::string("regex")] > char_('(') > regex > char_(')')														//Regex condition.
+				no_case[unicode::string("regex")] > char_('(') > regex > char_(')')														// Regex condition.
 			) | (
-				no_case[unicode::string("active")] > char_('(') > file > char_(')')														//Active condition.
+				no_case[unicode::string("active")] > char_('(') > file > char_(')')														// Active condition.
 			) | (
-				no_case[unicode::string("lang")] > char_('(') > language > char_(')')													//Language condition.
+				no_case[unicode::string("lang")] > char_('(') > language > char_(')')													// Language condition.
 			)
 			;
 
@@ -340,8 +342,12 @@ namespace boss {
 		parentGame = game;
 	}
 
-	//Parser error reporter.
-	void modlist_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
+	// Parser error reporter.
+	// MCP Note: Can grammarIter const& first be removed?
+	void modlist_grammar::SyntaxError(grammarIter const& /*first*/,
+	                                  grammarIter const& last,
+	                                  grammarIter const& errorpos,
+	                                  boost::spirit::info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
 
@@ -358,27 +364,27 @@ namespace boss {
 		return;
 	}
 
-	//Stores the given item and records any changes to open groups.
+	// Stores the given item and records any changes to open groups.
 	void modlist_grammar::StoreItem(vector<Item>& list, Item currentItem) {
 		if (currentItem.Type() == BEGINGROUP)
 			openGroups.push_back(currentItem.Name());
 		else if (currentItem.Type() == ENDGROUP)
 			openGroups.pop_back();
-		if (!currentItem.Name().empty())  //A blank line can be confused with a mod entry.
+		if (!currentItem.Name().empty())  // A blank line can be confused with a mod entry.
 			list.push_back(currentItem);
 	}
 
-	//Stores the masterlist variable.
+	// Stores the masterlist variable.
 	void modlist_grammar::StoreVar(const MasterlistVar var) {
 		setVars->push_back(var);
 	}
 
-	//Stores the global message.
+	// Stores the global message.
 	void modlist_grammar::StoreGlobalMessage(const Message message) {
 		globalMessageBuffer->push_back(message);
 	}
 
-	//Turns a given string into a path. Can't be done directly because of the openGroups checks.
+	// Turns a given string into a path. Can't be done directly because of the openGroups checks.
 	void modlist_grammar::ToName(string& p, string itemName) {
 		boost::algorithm::trim(itemName);
 		if (itemName.empty() && !openGroups.empty())
@@ -392,7 +398,7 @@ namespace boss {
 	// Conditional Grammar
 	////////////////////////////
 
-	//Conditional grammar constructor.
+	// Conditional grammar constructor.
 	conditional_grammar::conditional_grammar() : conditional_grammar::base_type(conditionals, "modlist grammar") {
 		conditionals =
 			(conditional[_val = _1]
@@ -464,7 +470,7 @@ namespace boss {
 		on_error<fail>(language,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 	}
 
-	//Evaluate a single conditional.
+	// Evaluate a single conditional.
 	void conditional_grammar::EvaluateConditional(bool& result,
 	                                              const string type,
 	                                              const bool condition) {
@@ -475,7 +481,7 @@ namespace boss {
 		return;
 	}
 
-	//Evaluate the second half of a complex conditional.
+	// Evaluate the second half of a complex conditional.
 	void conditional_grammar::EvaluateCompoundConditional(
 	    bool& lhsCondition,
 	    const string andOr,
@@ -521,7 +527,7 @@ namespace boss {
 		lastResult = result;
 	}
 
-	//Returns the true path based on what type of file or keyword it is.
+	// Returns the true path based on what type of file or keyword it is.
 	fs::path conditional_grammar::GetPath(const string file) {
 		if (file == "OBSE" || file == "FOSE" || file == "NVSE" ||
 		    file == "SKSE" || file == "MWSE")
@@ -539,7 +545,7 @@ namespace boss {
 			return parentGame->DataFolder() / file;
 	}
 
-	//Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
+	// Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
 	void conditional_grammar::CheckVersion(bool& result,
 	                                       const string file,
 	                                       const string version,
@@ -579,7 +585,7 @@ namespace boss {
 		return;
 	}
 
-	//Checks if the given file exists.
+	// Checks if the given file exists.
 	void conditional_grammar::CheckFile(bool& result, string file) {
 		result = false;
 		if (parentGame == NULL)
@@ -587,16 +593,18 @@ namespace boss {
 		result = fs::exists(GetPath(file));
 	}
 
-	//Checks if a file which matches the given regex exists.
-	//This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
-	//so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
-	//In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
-	//be removed when getting the path and filename.
+	/*
+	 * Checks if a file which matches the given regex exists.
+	 * This might not work when the regex specifies a file and a path, eg. "path/to/file.txt", because characters like '.' need to be escaped in regex
+	 * so the regex would be "path/to/file\.txt". boost::filesystem might interpret that as a path of "path / to / file / .txt" though.
+	 * In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
+	 * be removed when getting the path and filename.
+	 */
 	void conditional_grammar::CheckRegex(bool& result, string reg) {
 		result = false;
 		fs::path file_path;
-		//If the regex includes '/' or '\\' then it includes folders. Need to split the regex into the parent path and the filename.
-		//No reason for the regex to include both.
+		// If the regex includes '/' or '\\' then it includes folders. Need to split the regex into the parent path and the filename.
+		// No reason for the regex to include both.
 		if (reg.find("/") != string::npos) {
 			size_t pos1 = reg.rfind("/");
 			string p = reg.substr(0, pos1);
@@ -609,17 +617,18 @@ namespace boss {
 			boost::algorithm::replace_all(p, "\\\\", "\\");
 			file_path = fs::path(p);
 		} else if (to_lower_copy(fs::path(reg).extension().string()) == ".dll" &&
-		           fs::exists(parentGame->SEPluginsFolder()))
+		           fs::exists(parentGame->SEPluginsFolder())) {
 			file_path = parentGame->SEPluginsFolder();
-		else
+		} else {
 			file_path = parentGame->DataFolder();
+		}
 		boost::regex regex;
 		try {
 			regex = boost::regex(reg, boost::regex::extended|boost::regex::icase);
 		} catch (boost::regex_error e) {
 			LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.",
 			          reg.c_str());
-			result = false;  //Fail the check.
+			result = false;  // Fail the check.
 			return;
 		}
 
@@ -634,7 +643,7 @@ namespace boss {
 		}
 	}
 
-	//Checks if a masterlist variable is defined.
+	// Checks if a masterlist variable is defined.
 	void conditional_grammar::CheckVar(bool& result,
 	                                   const string var) {
 		if (setVars->find(var) == setVars->end())
@@ -644,7 +653,7 @@ namespace boss {
 		return;
 	}
 
-	//Checks if the given plugin is active.
+	// Checks if the given plugin is active.
 	void conditional_grammar::CheckActive(bool& result,
 	                                      const string plugin) {
 		if (activePlugins->find(to_lower_copy(plugin)) != activePlugins->end())
@@ -653,7 +662,7 @@ namespace boss {
 			result = false;
 	}
 
-	//Checks if the given language is the current language.
+	// Checks if the given language is the current language.
 	void conditional_grammar::CheckLanguage(bool& result,
 	                                        const string language) {
 		if (boost::iequals(language, "english"))
@@ -670,7 +679,7 @@ namespace boss {
 			result = false;
 	}
 
-	//Checks if the given mod has the given checksum.
+	// Checks if the given mod has the given checksum.
 	void conditional_grammar::CheckSum(bool& result, string file,
 	                                   const uint32_t sum) {
 		result = false;
@@ -698,8 +707,12 @@ namespace boss {
 		return;
 	}
 
-	//Parser error reporter.
-	void conditional_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, boost::spirit::info const& what) {
+	// Parser error reporter.
+	// MCP Note: Can grammarIter const& first be removed?
+	void conditional_grammar::SyntaxError(grammarIter const& /*first*/,
+	                                      grammarIter const& last,
+	                                      grammarIter const& errorpos,
+	                                      boost::spirit::info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
 
@@ -718,7 +731,7 @@ namespace boss {
 
 
 	////////////////////////////
-	//Ini Grammar.
+	// Ini Grammar.
 	////////////////////////////
 
 	ini_grammar::ini_grammar()
@@ -737,14 +750,14 @@ namespace boss {
 
 		stringVal %= lexeme[*(char_ - eol)];
 
-		//Give each rule names.
+		// Give each rule names.
 		ini.name("ini");
 		heading.name("heading");
 		setting.name("setting");
 		var.name("variable");
 		stringVal.name("string value");
 
-		//Error handling.
+		// Error handling.
 		on_error<fail>(ini,			phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(heading,		phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
 		on_error<fail>(setting,		phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
@@ -756,7 +769,11 @@ namespace boss {
 		errorBuffer = inErrorBuffer;
 	}
 
-	void ini_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what) {
+	// MCP Note: Can grammarIter const& first be removed?
+	void ini_grammar::SyntaxError(grammarIter const& /*first*/,
+	                              grammarIter const& last,
+	                              grammarIter const& errorpos,
+	                              info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->Empty())
 			return;
 
@@ -774,7 +791,7 @@ namespace boss {
 	}
 
 	////////////////////////////
-	//RuleList Grammar.
+	// RuleList Grammar.
 	////////////////////////////
 
 	userlist_grammar::userlist_grammar()
@@ -784,12 +801,12 @@ namespace boss {
 		ruleKeys_ ruleKeys;
 		messageKeys_ sortOrMessageKeys;
 
-		//A list is a vector of rules. Rules are separated by line endings.
+		// A list is a vector of rules. Rules are separated by line endings.
 		ruleList %=
 			*eol
 			> (eoi | (userlistRule % eol));
 
-		//A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
+		// A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
 		userlistRule %=
 			*eol
 			> stateKey > ruleKey > ':' > object
@@ -801,7 +818,7 @@ namespace boss {
 			> ':'
 			> object;
 
-		object %= lexeme[+(char_ - eol)];  //String, with no skipper.
+		object %= lexeme[+(char_ - eol)];  // String, with no skipper.
 
 		ruleKey %= no_case[ruleKeys];
 
@@ -809,7 +826,7 @@ namespace boss {
 
 		stateKey = no_case[lit("disable")][_val = false] | eps[_val = true];
 
-		//Give each rule names.
+		// Give each rule names.
 		ruleList.name("rules");
 		userlistRule.name("rule");
 		sortOrMessageLine.name("sort or message line");
@@ -831,7 +848,11 @@ namespace boss {
 		errorBuffer = inErrorBuffer;
 	}
 
-	void userlist_grammar::SyntaxError(grammarIter const& /*first*/, grammarIter const& last, grammarIter const& errorpos, info const& what) {
+	// MCP Note: Can grammarIter const& first be removed?
+	void userlist_grammar::SyntaxError(grammarIter const& /*first*/,
+	                                   grammarIter const& last,
+	                                   grammarIter const& errorpos,
+	                                   info const& what) {
 		if (errorBuffer == NULL || !errorBuffer->empty())
 			return;
 

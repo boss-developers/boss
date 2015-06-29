@@ -35,7 +35,7 @@ namespace boss {
 	using boost::format;
 	using boost::locale::translate;
 
-	//Return codes, mostly error codes.
+	// Return codes, mostly error codes.
 	BOSS_COMMON const uint32_t BOSS_OK                                  = 0;
 	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_READ_FAIL                = 2;
 	BOSS_COMMON const uint32_t BOSS_ERROR_FILE_WRITE_FAIL               = 3;
@@ -64,20 +64,20 @@ namespace boss {
 	// boss_error Class Functions
 	////////////////////////////////
 
-	//For general errors not referencing specific files.
+	// For general errors not referencing specific files.
 	boss_error::boss_error(const uint32_t internalErrCode)
 	    : errCode(internalErrCode),
 	      errString(""),
 	      errSubject("") {}
 
-	//For general errors referencing specific files.
+	// For general errors referencing specific files.
 	boss_error::boss_error(const uint32_t internalErrCode,
 	                       const string internalErrSubject)
 	    : errCode(internalErrCode),
 	      errString(""),
 	      errSubject(internalErrSubject) {}
 
-	//For errors from BOOST Filesystem functions.
+	// For errors from BOOST Filesystem functions.
 	boss_error::boss_error(const uint32_t internalErrCode,
 	                       const string internalErrSubject,
 	                       const string externalErrString)
@@ -85,19 +85,19 @@ namespace boss {
 	      errString(externalErrString),
 	      errSubject(internalErrSubject) {}
 
-	//For errors from other external functions.
+	// For errors from other external functions.
 	boss_error::boss_error(const string externalErrString,
 	                       const uint32_t internalErrCode)
 	    : errCode(internalErrCode),
 	      errString(externalErrString),
 	      errSubject("") {}
 
-	//Returns the error code for the object.
+	// Returns the error code for the object.
 	uint32_t boss_error::getCode() const {
 		return errCode;
 	}
 
-	//Returns the error string for the object.
+	// Returns the error string for the object.
 	string boss_error::getString() const {
 		// TODO(MCP): Convert this to a switch-statement.
 		if (errCode == BOSS_OK)
@@ -155,7 +155,7 @@ namespace boss {
 	      detail(""),
 	      wholeMessage("") {}
 
-	//For parsing errors.
+	// For parsing errors.
 	ParsingError::ParsingError(const string inHeader,
 	                           const string inDetail,
 	                           const string inFooter)
@@ -163,7 +163,7 @@ namespace boss {
 	      detail(inDetail),
 	      footer(inFooter) {}
 
-	//For userlist syntax errors.
+	// For userlist syntax errors.
 	ParsingError::ParsingError(const string inWholeMessage)
 	    : wholeMessage(inWholeMessage) {}
 

@@ -24,7 +24,7 @@
 
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
-//Contains the BOSS exception class.
+// Contains the BOSS exception class.
 
 #ifndef __BOSS_ERROR_H__
 #define __BOSS_ERROR_H__
@@ -40,7 +40,8 @@ namespace boss {
 
 	namespace loc = boost::locale;
 
-	//Return codes, mostly error codes.
+	// MCP Note: Possibly change these to enums?
+	// Return codes, mostly error codes.
 	BOSS_COMMON extern const uint32_t BOSS_OK;
 
 	BOSS_COMMON extern const uint32_t BOSS_ERROR_FILE_READ_FAIL;
@@ -68,14 +69,14 @@ namespace boss {
 
 	class BOSS_COMMON boss_error {
 	public:
-		//For general errors not referencing specific files.
+		// For general errors not referencing specific files.
 		boss_error(const uint32_t internalErrCode);
 
-		//For general errors referencing specific files.
+		// For general errors referencing specific files.
 		boss_error(const uint32_t internalErrCode,
 		           const string internalErrSubject);
 
-		//For errors from BOOST Filesystem functions.
+		// For errors from BOOST Filesystem functions.
 		boss_error(const uint32_t internalErrCode,
 		           const string internalErrSubject,
 		           const string externalErrString);
@@ -84,10 +85,10 @@ namespace boss {
 		boss_error(const string externalErrString,
 		           const uint32_t internalErrCode);
 
-		//Returns the error code for the object.
+		// Returns the error code for the object.
 		uint32_t getCode() const;
 
-		//Returns the error string for the object.
+		// Returns the error string for the object.
 		string getString() const;
 
 	private:
@@ -96,7 +97,7 @@ namespace boss {
 		string errSubject;
 	};
 
-	//Parsing error formats.
+	// Parsing error formats.
 	static boost::format MasterlistParsingErrorHeader(loc::translate("Masterlist Parsing Error: Expected a %1% at:"));
 	static boost::format IniParsingErrorHeader(loc::translate("Ini Parsing Error: Expected a %1% at:"));
 	static boost::format RuleListParsingErrorHeader(loc::translate("Userlist Parsing Error: Expected a %1% at:"));
@@ -105,7 +106,7 @@ namespace boss {
 	static const string IniParsingErrorFooter(loc::translate("Ini parsing aborted. Some or all of the options may not have been set correctly."));
 	static const string RuleListParsingErrorFooter(loc::translate("Userlist parsing aborted. No rules will be applied."));
 
-	//RuleList syntax error strings.
+	// RuleList syntax error strings.
 	static const string ESortLineInForRule(loc::translate("includes a sort line in a rule with a FOR rule keyword."));
 	static const string EAddingModGroup(loc::translate("tries to add a group."));
 	static const string ESortingGroupEsms(loc::translate("tries to sort the group \"ESMs\"."));
@@ -125,16 +126,16 @@ namespace boss {
 	static const string ESortingMasterAfterPlugin(loc::translate("tries to sort a plugin before a master file."));
 	static const string ESortingPluginBeforeMaster(loc::translate("tries to sort a master file before a plugin."));
 
-	//Parsing error class.
+	// Parsing error class.
 	class BOSS_COMMON ParsingError {
 	public:
 		ParsingError();
 
-		//For parsing errors.
+		// For parsing errors.
 		ParsingError(const string inHeader, const string inDetail,
 		             const string inFooter);
 
-		//For userlist syntax errors.
+		// For userlist syntax errors.
 		ParsingError(const string inWholeMessage);
 
 		bool Empty() const;

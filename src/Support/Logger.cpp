@@ -38,10 +38,12 @@ namespace boss {
 	// The global logger instance
 	BOSS_COMMON Logger g_logger;
 
-	// Ensures the given verbosity is within the valid range
-	// Returns false if the verbosity is beyond LV_OFF
-	// If the verbosity is beyond LV_TRACE, sets the verbosity to LV_TRACE
-	// Returns true if, after limiting the upper bound, the verbosity is valid
+	/*
+	 * Ensures the given verbosity is within the valid range
+	 * Returns false if the verbosity is beyond LV_OFF
+	 * If the verbosity is beyond LV_TRACE, sets the verbosity to LV_TRACE
+	 * Returns true if, after limiting the upper bound, the verbosity is valid
+	 */
 	static inline bool _checkVerbosity(LogVerbosity & verbosity) {
 		if (LV_OFF > verbosity) {
 			LOG_WARN("invalid verbosity: %d", verbosity);
