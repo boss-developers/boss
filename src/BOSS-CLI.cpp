@@ -25,7 +25,7 @@
 	$Revision: 1783 $, $Date: 2010-10-31 23:05:28 +0000 (Sun, 31 Oct 2010) $
 */
 
-#define NOMINMAX  // we don't want the dummy min/max macros since they overlap with the std:: algorithms
+#define NOMINMAX  // We don't want the dummy min/max macros since they overlap with the std:: algorithms
 
 #include "BOSS-Common.h"
 
@@ -61,7 +61,7 @@ using boost::locale::translate;
 int Launch(string filename) {
 	if (filename.find(' ') != string::npos) {
 #if _WIN32 || _WIN64
-		filename = "\"\" \"" + filename + '"';  //Need "" "filename" because the first quoted string is the CLI window title and the second is the thing started...
+		filename = "\"\" \"" + filename + '"';  // Need "" "filename" because the first quoted string is the CLI window title and the second is the thing started...
 #else
 		boost::replace_all(filename, " ", "\\ ");
 #endif
@@ -79,24 +79,24 @@ void ShowVersion() {
 void ShowUsage(po::options_description opts) {
 	static string progName =
 #if _WIN32 || _WIN64
-		"BOSS";
+	    "BOSS";
 #else
-		"boss";
+	    "boss";
 #endif
 
 	ShowVersion();
 	cout << endl << translate("Description:") << endl
-	 << translate("  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, Nehrim,"
-				  "  Fallout 3, Fallout: New Vegas and TESV: Skyrim according to a frequently updated"
-				  "  masterlist to minimise incompatibilities between mods.") << endl << endl
-	 << opts << endl
-	 << translate("Examples:") << endl
-	 << "  " << progName << " -u" << endl
-	 << translate("    updates the masterlist, sorts your mods, and shows the log") << endl << endl
-	 << "  " << progName << " -sr" << endl
-	 << translate("    reverts your load order 1 level and skips showing the log") << endl << endl
-	 << "  " << progName << " -r 2" << endl
-	 << translate("    reverts your load order 2 levels and shows the log") << endl << endl;
+	     << translate("  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, Nehrim,"
+	                  "  Fallout 3, Fallout: New Vegas and TESV: Skyrim according to a frequently updated"
+	                  "  masterlist to minimise incompatibilities between mods.") << endl << endl
+	     << opts << endl
+	     << translate("Examples:") << endl
+	     << "  " << progName << " -u" << endl
+	     << translate("    updates the masterlist, sorts your mods, and shows the log") << endl << endl
+	     << "  " << progName << " -sr" << endl
+	     << translate("    reverts your load order 1 level and skips showing the log") << endl << endl
+	     << "  " << progName << " -r 2" << endl
+	     << translate("    reverts your load order 2 levels and shows the log") << endl << endl;
 }
 
 void Fail() {
@@ -119,9 +119,9 @@ int progress(const git_transfer_progress *stats, void *payload) {
 int main(int argc, char *argv[]) {
 	Settings ini;
 	Game game;
-	string gameStr;  // allow for autodetection override
+	string gameStr;  // Allow for autodetection override
 	string bosslogFormat;
-	fs::path sortfile;  //modlist/masterlist to sort plugins using.
+	fs::path sortfile;  // Modlist/masterlist to sort plugins using.
 
 
 	///////////////////////////////
@@ -131,13 +131,13 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("BOSS starting...");
 
 	LOG_INFO("Parsing Ini...");
-	//Parse ini file if found. Can't just use BOOST's program options ini parser because of the CSS syntax and spaces.
+	// Parse ini file if found. Can't just use BOOST's program options ini parser because of the CSS syntax and spaces.
 	if (fs::exists(ini_path)) {
 		try {
 			ini.Load(ini_path);
 		} catch (boss_error &e) {
 			LOG_ERROR("Error: %s", e.getString().c_str());
-			//Error will be added to log once format has been set.
+			// Error will be added to log once format has been set.
 		}
 	} else {
 		try {
@@ -147,12 +147,12 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	//Specify location of language dictionaries
+	// Specify location of language dictionaries
 	boost::locale::generator gen;
 	gen.add_messages_path(l10n_path.string());
 	gen.add_messages_domain("messages");
 
-	//Set the locale to get encoding and language conversions working correctly.
+	// Set the locale to get encoding and language conversions working correctly.
 	// TODO(MCP): Replace this with a switch statement?
 	string localeId = "";
 	if (gl_language == ENGLISH)
@@ -185,6 +185,7 @@ int main(int argc, char *argv[]) {
 
 	// Declare the supported options
 	po::options_description opts("Options");
+	// TODO(MCP): Come up with a good alignment scheme for these lines.
 	opts.add_options()
 		("help,h", translate("produces this help message").str().c_str())
 		("version,V", translate("prints the version banner").str().c_str())
@@ -235,12 +236,13 @@ int main(int argc, char *argv[]) {
 		LOG_ERROR("cannot specify options multiple times; please use the '--help' option to see usage instructions");
 		Fail();
 	} catch (exception & e) {
-		LOG_ERROR("%s; please use the '--help' option to see usage instructions", e.what());
+		LOG_ERROR("%s; please use the '--help' option to see usage instructions",
+		          e.what());
 		Fail();
 	}
 
 	// Set alternative output stream for logger and whether to track log statement origins
-	// MCP Note: Could this be changed to an if-else statement as opposed to two if-statements? Would be more efficient due to the lack of a check.
+	// MCP Note: Could this be changed to an if-else if statement as opposed to two if-statements? Would be more efficient due to the lack of a check.
 	if (gl_debug_verbosity > 0)
 		g_logger.setStream(debug_log_path.string().c_str());
 	if (gl_debug_verbosity < 0) {
@@ -311,21 +313,21 @@ int main(int argc, char *argv[]) {
 	// Check for critical error conditions
 	/////////////////////////////////////////
 
-	//Game checks.
+	// Game checks.
 	LOG_DEBUG("Detecting game...");
 	try {
-		gl_last_game = AUTODETECT;  //Clear this setting in case the GUI was run.
+		gl_last_game = AUTODETECT;  // Clear this setting in case the GUI was run.
 		vector<uint32_t> detected, undetected;
 		uint32_t detectedGame = DetectGame(detected, undetected);
 		if (detectedGame == AUTODETECT) {
-			//Now check what games were found.
-			if (detected.empty())
+			// Now check what games were found.
+			if (detected.empty()) {
 				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
-			else if (detected.size() == 1)
+			} else if (detected.size() == 1) {
 				detectedGame = detected.front();
-			else {
+			} else {
 				size_t ans;
-				//Ask user to choose game.
+				// Ask user to choose game.
 				cout << endl << translate("Please pick which game to run BOSS for:") << endl;
 				for (size_t i = 0; i < detected.size(); i++)
 					cout << i << " : " << Game(detected[i], "", true).Name() << endl;
@@ -345,16 +347,16 @@ int main(int argc, char *argv[]) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		game.bosslog.SetFormat(gl_log_format);
 		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << translate("Critical Error: ") << e.getString() << LINE_BREAK
-			<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-			<< translate("Utility will end now.");
+		                           << translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+		                           << translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if (!gl_silent)
-			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
-		exit(1);  //Fail in screaming heap.
+			Launch(game.Log(gl_log_format).string());  // Displays the BOSSlog.txt.
+		exit(1);  // Fail in screaming heap.
 	}
 	game.bosslog.SetFormat(gl_log_format);
 	game.bosslog.parsingErrors.push_back(ini.ErrorBuffer());
@@ -374,7 +376,7 @@ int main(int argc, char *argv[]) {
 			cout << endl << message << endl;
 		} catch (boss_error &e) {
 			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
-				<< (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
+			                           << (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
 			LOG_ERROR("Error: masterlist update failed. Details: %s",
 			          e.getString().c_str());
 		}
@@ -384,7 +386,7 @@ int main(int argc, char *argv[]) {
 		game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
 	}
 
-	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
+	// If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
 	if (gl_update_only) {
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
@@ -392,7 +394,7 @@ int main(int argc, char *argv[]) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if (!gl_silent)
-			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.
+			Launch(game.Log(gl_log_format).string());  // Displays the BOSSlog.
 		return 0;
 	}
 
@@ -403,7 +405,7 @@ int main(int argc, char *argv[]) {
 
 	cout << endl << translate("BOSS working...") << endl;
 
-	//Build and save modlist.
+	// Build and save modlist.
 	try {
 		game.modlist.Load(game, game.DataFolder());
 		if (gl_revert < 1)
@@ -412,25 +414,25 @@ int main(int argc, char *argv[]) {
 		LOG_ERROR("Failed to load/save modlist, error was: %s",
 		          e.getString().c_str());
 		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-			<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-			<< translate("Utility will end now.");
+		                           << translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+		                           << translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if (!gl_silent)
-			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
-		exit(1);  //Fail in screaming heap.
+			Launch(game.Log(gl_log_format).string());  // Displays the BOSSlog.txt.
+		exit(1);  // Fail in screaming heap.
 	}
 
 
 	/////////////////////////////////
 	// Parse Master- and Userlists
 	/////////////////////////////////
-	//Masterlist parse errors are critical, ini and userlist parse errors are not.
+	// Masterlist parse errors are critical, ini and userlist parse errors are not.
 
-	//Set masterlist path to be used.
+	// Set masterlist path to be used.
 	if (gl_revert == 1)
 		sortfile = game.Modlist();
 	else if (gl_revert == 2)
@@ -439,7 +441,7 @@ int main(int argc, char *argv[]) {
 		sortfile = game.Masterlist();
 	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
 
-	//Parse masterlist/modlist backup into data structure.
+	// Parse masterlist/modlist backup into data structure.
 	try {
 		LOG_INFO("Starting to parse sorting file: %s",
 		         sortfile.string().c_str());
@@ -452,22 +454,23 @@ int main(int argc, char *argv[]) {
 		game.bosslog.parsingErrors.push_back(game.masterlist.ErrorBuffer());
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
-		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
+		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
 			game.bosslog.criticalError << game.masterlist.ErrorBuffer();
-		else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL)
+		} else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
 			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << e.getString();
-		else
+		} else {
 			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-				<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-				<< translate("Utility will end now.");
+			                           << translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+			                           << translate("Utility will end now.");
+		}
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if (!gl_silent)
-			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
-		exit(1);  //Fail in screaming heap.
+			Launch(game.Log(gl_log_format).string());  // Displays the BOSSlog.txt.
+		exit(1);  // Fail in screaming heap.
 	}
 
 	LOG_INFO("Starting to parse userlist.");
@@ -480,7 +483,7 @@ int main(int argc, char *argv[]) {
 		vector<ParsingError> errs = game.userlist.ErrorBuffer();
 		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(),
 		                                  errs.begin(), errs.end());
-		game.userlist.Clear();  //If userlist has parsing errors, empty it so no rules are applied.
+		game.userlist.Clear();  // If userlist has parsing errors, empty it so no rules are applied.
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
 
@@ -499,21 +502,21 @@ int main(int argc, char *argv[]) {
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-			<< translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-			<< translate("Utility will end now.");
+		                           << translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+		                           << translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
 		if (!gl_silent)
-			Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
-		exit(1);  //Fail in screaming heap.
+			Launch(game.Log(gl_log_format).string());  // Displays the BOSSlog.txt.
+		exit(1);  // Fail in screaming heap.
 	}
 
 	LOG_INFO("Launching boss log in browser.");
 	if (!gl_silent)
-		Launch(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
+		Launch(game.Log(gl_log_format).string());  // Displays the BOSSlog.txt.
 	LOG_INFO("BOSS finished.");
 	return 0;
 }
