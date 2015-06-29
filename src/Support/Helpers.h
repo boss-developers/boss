@@ -90,6 +90,5 @@ namespace boss {
 		bool operator == (Version);
 		bool operator != (Version);
 	};
-}
-
+}  // namespace boss
 #endif

@@ -46,6 +46,5 @@ namespace boss {
 
 	// An arbitrary large number. Controls the size of some buffers used to read data from files.
 	const ulong MAXLENGTH = 4096UL;
-}
-
+}  // namespace boss
 #endif

@@ -999,4 +999,4 @@ namespace boss {
 		}
 		return (result == recognisedPlugins.AsString());
 	}
-}
+}  // namespace boss

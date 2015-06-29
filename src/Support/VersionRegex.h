@@ -40,6 +40,5 @@ namespace boss {
 	/// an iteration for each of them.
 	extern regex* version_checks[];
 
-}
-
+}  // namespace boss
 #endif

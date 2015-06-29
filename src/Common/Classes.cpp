@@ -1586,4 +1586,4 @@ namespace boss {
 		else
 			return "";
 	}
-}
+}  // namespace boss

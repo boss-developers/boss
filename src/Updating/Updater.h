@@ -288,5 +288,5 @@ namespace boss {
 
 		return string(revision);
 	}
-}
+}  // namespace boss
 #endif

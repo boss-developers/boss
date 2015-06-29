@@ -196,4 +196,4 @@ namespace boss {
 		detail.clear();
 		wholeMessage.clear();
 	}
-}
+}  // namespace boss

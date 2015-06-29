@@ -98,4 +98,4 @@ namespace boss {
 	BOSS_COMMON std::string gl_skyrim_repo_url    = "https://github.com/boss-developers/skyrim.git";
 	BOSS_COMMON std::string gl_fallout3_repo_url  = "https://github.com/boss-developers/fallout3.git";
 	BOSS_COMMON std::string gl_falloutnv_repo_url = "https://github.com/boss-developers/falloutnv.git";
-}
+}  // namespace boss

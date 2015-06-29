@@ -331,5 +331,5 @@ namespace boss {
 
 		string GetValue(const string setting) const;
 	};
-}
+}  // namespace boss
 #endif

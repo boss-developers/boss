@@ -122,6 +122,5 @@ namespace boss {
 		// Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
 		fs::path GetLocalAppDataPath();
 	};
-}
-
+}  // namespace boss
 #endif

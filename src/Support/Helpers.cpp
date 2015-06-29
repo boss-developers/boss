@@ -319,4 +319,4 @@ namespace boss {
 	bool Version::operator != (Version ver) {
 		return !(*this == ver);
 	}
-}
+}  // namespace boss

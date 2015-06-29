@@ -240,4 +240,4 @@ namespace boss {
 		// We should have all the required information.
 		return modHeader;
 	}
-}
+}  // namespace boss

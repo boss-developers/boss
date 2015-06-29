@@ -107,5 +107,5 @@ namespace boss {
 	wxString FromUTF8(boost::format f);
 
 	int progress(const git_transfer_progress *stats, void *payload);
-}
+}  // namespace boss
 #endif

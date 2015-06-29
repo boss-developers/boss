@@ -874,4 +874,4 @@ namespace boss {
 			}
 		}
 	}
-}
+}  // namespace boss

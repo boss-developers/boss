@@ -66,4 +66,4 @@ namespace boss {
 		}
 		return 0;
 	}
-}
+}  // namespace boss

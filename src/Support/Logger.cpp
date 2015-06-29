@@ -96,4 +96,4 @@ namespace boss {
 			fflush(m_out);
 		}
 	}
-}
+}  // namespace boss

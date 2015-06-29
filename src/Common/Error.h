@@ -152,5 +152,5 @@ namespace boss {
 		string detail;
 		string wholeMessage;
 	};
-}
+}  // namespace boss
 #endif

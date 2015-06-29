@@ -869,4 +869,4 @@ namespace boss {
 		LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
 		return;
 	}
-}
+}  // namespace boss

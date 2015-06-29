@@ -29,7 +29,7 @@
 #define __BOSS_GRAMMAR_H__
 
 #ifndef BOOST_SPIRIT_UNICODE
-#define BOOST_SPIRIT_UNICODE
+#	define BOOST_SPIRIT_UNICODE
 #endif
 
 #include "Common/Classes.h"
@@ -307,5 +307,5 @@ namespace boss {
 		vector<ParsingError> * errorBuffer;
 	};
 
-}
+}  // namespace boss
 #endif

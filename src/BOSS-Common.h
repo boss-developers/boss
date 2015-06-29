@@ -70,4 +70,4 @@ string			FetchReleaseNotes			(const string updateVersion);
 vector<string>	DownloadInstallBOSSUpdate	(uiStruct ui, const uint32_t updateType, const string updateVersion);
 */
 
-#endif
+#endif  // __BOSS_COMMON_H__

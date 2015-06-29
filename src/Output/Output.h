@@ -174,5 +174,5 @@ namespace boss {
 
 		bool HasRecognisedListChanged(const fs::path file);
 	};
-}
+}  // namespace boss
 #endif

@@ -117,5 +117,5 @@ namespace boss {
 	BOSS_COMMON extern std::string gl_skyrim_repo_url;
 	BOSS_COMMON extern std::string gl_fallout3_repo_url;
 	BOSS_COMMON extern std::string gl_falloutnv_repo_url;
-}
+}  // namespace boss
 #endif

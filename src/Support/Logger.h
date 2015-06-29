@@ -102,6 +102,5 @@ namespace boss {
 
 	// Declare global logger
 	BOSS_COMMON extern Logger g_logger;
-}
-
+}  // namespace boss
 #endif  // __SUPPORT_LOGGER__HPP__

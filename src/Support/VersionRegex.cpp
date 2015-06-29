@@ -78,4 +78,4 @@ namespace boss {
 	                           new regex(regex5, regex::icase),  // This incorrectly identifies "OBSE v19" where 19 is any integer.
 	                           new regex(regex6, regex::icase),  // This is responsible for metallicow's false positive.
 	                           new regex(regex7, regex::icase), 0};
-}
+}  // namespace boss
