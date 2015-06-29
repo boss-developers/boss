@@ -35,14 +35,14 @@
 #include <wx/progdlg.h>
 #include <wx/thread.h>
 
-//Program class.
+// Program class.
 class BossGUI : public wxApp {
 public:
 	bool OnInit();
 	wxLocale * wxLoc;
 };
 
-//Main frame class.
+// Main frame class.
 class MainFrame : public wxFrame {
 public:
 	MainFrame(const wxChar *title);
@@ -63,8 +63,10 @@ public:
 	void OnEditUserRules(wxCommandEvent& event);
 	void OnClose(wxCloseEvent& event);
 
-	void SetGames(const boss::Game& inGame, const std::vector<uint32_t> inGames);
+	void SetGames(const boss::Game& inGame,
+	              const std::vector<uint32_t> inGames);
 	void DisableUndetectedGames();
+
 private:
 	wxMenuBar *MenuBar;
 	wxMenu *FileMenu;
@@ -88,10 +90,11 @@ private:
 	bool isStartup;
 	std::vector<uint32_t> detectedGames;
 	boss::Game game;
+
 protected:
-	uint32_t updateCheckCode;  //0 = update, 1 = no update, 2 = error.
-	std::string updateCheckString;  //Holds wxMessageBox text.
-	wxCriticalSection updateData; // protects fields above
+	uint32_t updateCheckCode;       // 0 = update, 1 = no update, 2 = error.
+	std::string updateCheckString;  // Holds wxMessageBox text.
+	wxCriticalSection updateData;   // Protects fields above
 	DECLARE_EVENT_TABLE()
 };
 #endif

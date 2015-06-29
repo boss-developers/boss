@@ -35,40 +35,39 @@ END_EVENT_TABLE()
 using namespace boss;
 using namespace std;
 
-SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(parent, wxID_ANY, title) {
+SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent)
+    : wxFrame(parent, wxID_ANY, title) {
 
-	wxString DebugVerbosity[] = {
-		translate("Standard (0)"),
-		translate("Level 1"),
-		translate("Level 2"),
-		translate("Level 3")
-	};
+	wxString DebugVerbosity[] = {translate("Standard (0)"),
+	                             translate("Level 1"),
+	                             translate("Level 2"),
+	                             translate("Level 3")};
 
-	wxString Game[] = {
-		translate("Autodetect"),
-		wxT("Oblivion"),
-		wxT("Nehrim"),
-		wxT("Skyrim"),
-		wxT("Fallout 3"),
-		wxT("Fallout: New Vegas")
-	};
+	wxString Game[] = {translate("Autodetect"), wxT("Oblivion"),
+	                   wxT("Nehrim"), wxT("Skyrim"), wxT("Fallout 3"),
+	                   wxT("Fallout: New Vegas")};
 
-	wxString Language[] = {
-		wxT("English"),
-		wxString("Español", wxConvUTF8),
-		wxT("Deutsch"),
-		wxString("Русский", wxConvUTF8),
-		wxString("简体中文", wxConvUTF8)
-	};
+	wxString Language[] = {wxT("English"),
+	                       wxString("Español", wxConvUTF8),
+	                       wxT("Deutsch"),
+	                       wxString("Русский", wxConvUTF8),
+	                       wxString("简体中文", wxConvUTF8)};
 
-	//Set up stuff in the frame.
-	SetBackgroundColour(wxColour(255,255,255));
+	// Set up stuff in the frame.
+	SetBackgroundColour(wxColour(255, 255, 255));
 
-	GameChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 6, Game);
-	LanguageChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 5, Language);
-	DebugVerbosityChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, DebugVerbosity);
-	UseUserRuleManagerBox = new wxCheckBox(this, wxID_ANY, translate("Use User Rules Manager"));
-	CloseGUIAfterRunningBox = new wxCheckBox(this, wxID_ANY, translate("Close the GUI after running BOSS"));
+	GameChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition,
+	                          wxDefaultSize, 6, Game);
+	LanguageChoice = new wxChoice(this, wxID_ANY, wxDefaultPosition,
+	                              wxDefaultSize, 5, Language);
+	DebugVerbosityChoice = new wxChoice(this, wxID_ANY,
+	                                    wxDefaultPosition,
+	                                    wxDefaultSize,
+	                                    4, DebugVerbosity);
+	UseUserRuleManagerBox = new wxCheckBox(this, wxID_ANY,
+	                                       translate("Use User Rules Manager"));
+	CloseGUIAfterRunningBox = new wxCheckBox(this, wxID_ANY,
+	                                         translate("Close the GUI after running BOSS"));
 	OblivionRepoURLTxt = new wxTextCtrl(this, wxID_ANY);
 	NehrimRepoURLTxt = new wxTextCtrl(this, wxID_ANY);
 	SkyrimRepoURLTxt = new wxTextCtrl(this, wxID_ANY);
@@ -84,7 +83,7 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 	wxSizerFlags wholeItem(0);
 	wholeItem.Border(wxALL, 10).Expand();
 
-	//Set up layout.
+	// Set up layout.
 	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
 
 	wxGridSizer *GridSizer = new wxGridSizer(2, 0, 0);
@@ -112,29 +111,30 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent) : wxFrame(pa
 	wxString text = translate("Language settings will be applied after the BOSS GUI is restarted.");
 	bigBox->Add(new wxStaticText(this, wxID_ANY, text), 0, wxEXPAND | wxALL, 10);
 
-	//Need to add 'OK' and 'Cancel' buttons.
+	// Need to add 'OK' and 'Cancel' buttons.
 	wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
 	hbox->Add(new wxButton(this, OPTION_OKExitSettings, translate("OK"), wxDefaultPosition, wxSize(70, 30)));
 	hbox->Add(new wxButton(this, OPTION_CancelExitSettings, translate("Cancel"), wxDefaultPosition, wxSize(70, 30)), 0, wxLEFT, 20);
 	bigBox->Add(hbox, 0, wxCENTER|wxALL, 10);
 
-	//Initialise options with values. For checkboxes, they are off by default.
+	// Initialise options with values. For checkboxes, they are off by default.
 	SetDefaultValues();
 
-	//Tooltips.
+	// Tooltips.
 	DebugVerbosityChoice->SetToolTip(translate("The higher the verbosity level, the more information is outputted to BOSSDebugLog.txt."));
 
-	//Now set the layout and sizes.
+	// Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
 }
 
 void SettingsFrame::SetDefaultValues() {
-	//General Settings
+	// General Settings
 	if (gl_use_user_rules_manager)
 		UseUserRuleManagerBox->SetValue(true);
 	if (gl_close_gui_after_sorting)
 		CloseGUIAfterRunningBox->SetValue(true);
 
+	// TODO(MCP): Look at converting this to a switch-statement
 	if (gl_game == AUTODETECT)
 		GameChoice->SetSelection(0);
 	else if (gl_game == OBLIVION)
@@ -148,6 +148,7 @@ void SettingsFrame::SetDefaultValues() {
 	else if (gl_game == FALLOUTNV)
 		GameChoice->SetSelection(5);
 
+	// TODO(MCP): Look at converting this to a switch-statement
 	if (gl_language == ENGLISH)
 		LanguageChoice->SetSelection(0);
 	else if (gl_language == SPANISH)
@@ -159,7 +160,8 @@ void SettingsFrame::SetDefaultValues() {
 	else if (gl_language == SIMPCHINESE)
 		LanguageChoice->SetSelection(4);
 
-	//Debugging Settings
+	// MCP Note: Look at converting this to a switch-statement?
+	// Debugging Settings
 	if (gl_debug_verbosity == 0)
 		DebugVerbosityChoice->SetSelection(0);
 	else if (gl_debug_verbosity == 1)
@@ -169,7 +171,7 @@ void SettingsFrame::SetDefaultValues() {
 	else if (gl_debug_verbosity == 3)
 		DebugVerbosityChoice->SetSelection(3);
 
-	//Masterlist repository URL settings
+	// Masterlist repository URL settings
 	OblivionRepoURLTxt->SetValue(FromUTF8(gl_oblivion_repo_url));
 	NehrimRepoURLTxt->SetValue(FromUTF8(gl_nehrim_repo_url));
 	SkyrimRepoURLTxt->SetValue(FromUTF8(gl_skyrim_repo_url));
@@ -178,58 +180,58 @@ void SettingsFrame::SetDefaultValues() {
 }
 
 void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
-	//Make sure the settings are saved.
+	// Make sure the settings are saved.
 
-	//General
+	// General
 	gl_use_user_rules_manager = UseUserRuleManagerBox->IsChecked();
 	gl_close_gui_after_sorting = CloseGUIAfterRunningBox->IsChecked();
 	switch (GameChoice->GetSelection()) {
-	case 0:
-		gl_game = AUTODETECT;
-		break;
-	case 1:
-		gl_game = OBLIVION;
-		break;
-	case 2:
-		gl_game = NEHRIM;
-		break;
-	case 3:
-		gl_game = SKYRIM;
-		break;
-	case 4:
-		gl_game = FALLOUT3;
-		break;
-	case 5:
-		gl_game = FALLOUTNV;
-		break;
+		case 0:
+			gl_game = AUTODETECT;
+			break;
+		case 1:
+			gl_game = OBLIVION;
+			break;
+		case 2:
+			gl_game = NEHRIM;
+			break;
+		case 3:
+			gl_game = SKYRIM;
+			break;
+		case 4:
+			gl_game = FALLOUT3;
+			break;
+		case 5:
+			gl_game = FALLOUTNV;
+			break;
 	}
 	switch (LanguageChoice->GetSelection()) {
-	case 0:
-		gl_language = ENGLISH;
-		break;
-	case 1:
-		gl_language = SPANISH;
-		break;
-	case 2:
-		gl_language = GERMAN;
-		break;
-	case 3:
-		gl_language = RUSSIAN;
-		break;
-	case 4:
-		gl_language = SIMPCHINESE;
-		break;
+		case 0:
+			gl_language = ENGLISH;
+			break;
+		case 1:
+			gl_language = SPANISH;
+			break;
+		case 2:
+			gl_language = GERMAN;
+			break;
+		case 3:
+			gl_language = RUSSIAN;
+			break;
+		case 4:
+			gl_language = SIMPCHINESE;
+			break;
 	}
 
-	//Debugging
+	// Debugging
 	gl_debug_verbosity = DebugVerbosityChoice->GetSelection();
 
-	//Also set the logger settings now.
+	// Also set the logger settings now.
 	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));
 	if (gl_debug_verbosity > 0)
 		g_logger.setStream(debug_log_path.string().c_str());
 
-	//Masterlist repository URLs
+	// Masterlist repository URLs
 	gl_oblivion_repo_url = string(OblivionRepoURLTxt->GetValue().ToUTF8());
 	gl_nehrim_repo_url = string(NehrimRepoURLTxt->GetValue().ToUTF8());
 	gl_skyrim_repo_url = string(SkyrimRepoURLTxt->GetValue().ToUTF8());

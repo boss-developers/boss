@@ -32,12 +32,12 @@
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
-#       include "wx/wx.h"
+#	include "wx/wx.h"
 #endif
 
 enum {
-	//Main window.
-	OPTION_EditUserRules = wxID_HIGHEST + 1, // declares an id which will be used to call our button
+	// Main window.
+	OPTION_EditUserRules = wxID_HIGHEST + 1,  // Declares an id which will be used to call our button
 	OPTION_OpenBOSSlog,
 	OPTION_Run,
 	MENU_Quit,
@@ -63,12 +63,12 @@ enum {
 	RADIOBUTTON_SortOption,
 	RADIOBUTTON_UpdateOption,
 	RADIOBUTTON_UndoOption,
-	//About window.
+	// About window.
 	OPTION_ExitAbout,
-	//Settings window.
+	// Settings window.
 	OPTION_OKExitSettings,
 	OPTION_CancelExitSettings,
-	//User Rules Manager.
+	// User Rules Manager.
 	LIST_RuleList,
 	BUTTON_NewRule,
 	BUTTON_EditRule,
@@ -95,8 +95,8 @@ enum {
 	BUTTON_MoveRuleDown
 };
 
-//Convenience wrapper function, because wxWidgets's own translation system doesn't work as well as Boost's,
-//but Boost's requires a UTF-8 -> (whatever display encoding) conversion to work with the UI.
+// Convenience wrapper function, because wxWidgets's own translation system doesn't work as well as Boost's,
+// but Boost's requires a UTF-8 -> (whatever display encoding) conversion to work with the UI.
 namespace boss {
 	wxString translate(char * cstr);
 

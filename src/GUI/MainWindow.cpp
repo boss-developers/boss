@@ -25,7 +25,7 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-//We want to ensure that the GUI-specific code in BOSS-Common is included.
+// We want to ensure that the GUI-specific code in BOSS-Common is included.
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
@@ -89,36 +89,36 @@ using namespace std;
 
 using boost::format;
 
-//Draws the main window when program starts.
+// Draws the main window when program starts.
 bool BossGUI::OnInit() {
 	Settings ini;
-	//Set up variable defaults.
+	// Set up variable defaults.
 	if (fs::exists(ini_path)) {
 		try {
 			ini.Load(ini_path);
 		} catch (boss_error &e) {
 			LOG_ERROR("Error: %s", e.getString().c_str());
-			wxMessageBox(
-				FromUTF8(format(loc::translate("Error: %1% Details: %2%")) % e.getString() % Outputter(PLAINTEXT, ini.ErrorBuffer()).AsString()),
-				translate("BOSS: Error"),
-				wxOK | wxICON_ERROR,
-				NULL);
+			wxMessageBox(FromUTF8(format(loc::translate("Error: %1% Details: %2%")) % e.getString() % Outputter(PLAINTEXT, ini.ErrorBuffer()).AsString()),
+			             translate("BOSS: Error"),
+			             wxOK | wxICON_ERROR,
+			             NULL);
 		}
 	}
 
 	if (gl_debug_verbosity > 0)
 		g_logger.setStream(debug_log_path.string().c_str());
-	// it's ok if this number is too high.  setVerbosity will handle it
+	// It's ok if this number is too high, setVerbosity will handle it
 	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));
 
-	//Specify location of language dictionaries
+	// Specify location of language dictionaries
 	boost::locale::generator gen;
 	gen.add_messages_path(l10n_path.string());
 	gen.add_messages_domain("messages");
 
-	//Set the locale to get encoding and language conversions working correctly.
+	// Set the locale to get encoding and language conversions working correctly.
 	string localeId = "";
 	wxLanguage lang;
+	// TODO(MCP): Look at converting this to a switch-statement
 	if (gl_language == ENGLISH) {
 		localeId = "en.UTF-8";
 		lang = wxLANGUAGE_ENGLISH;
@@ -139,7 +139,7 @@ bool BossGUI::OnInit() {
 	try {
 		locale::global(gen(localeId));
 		cout.imbue(locale());
-		//Need to also set up wxWidgets locale so that its default interface text comes out in the right language.
+		// Need to also set up wxWidgets locale so that its default interface text comes out in the right language.
 		wxLoc = new wxLocale();
 		if (!wxLoc->Init(lang, wxLOCALE_LOAD_DEFAULT))
 			throw exception("System GUI text could not be set.");
@@ -147,28 +147,26 @@ bool BossGUI::OnInit() {
 		wxLoc->AddCatalog("wxstd");
 	} catch(exception &e) {
 		LOG_ERROR("could not implement translation: %s", e.what());
-		wxMessageBox(
-			FromUTF8(format(loc::translate("Error: could not apply translation: %1%")) % e.what()),
-			translate("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
+		wxMessageBox(FromUTF8(format(loc::translate("Error: could not apply translation: %1%")) % e.what()),
+		             translate("BOSS: Error"),
+		             wxOK | wxICON_ERROR,
+		             NULL);
 	}
 	locale global_loc = locale();
 	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
 	boost::filesystem::path::imbue(loc);
 
 
-	//Check if GUI is already running.
+	// Check if GUI is already running.
 	wxSingleInstanceChecker *checker = new wxSingleInstanceChecker;
 
 	if (checker->IsAnotherRunning()) {
-		wxMessageBox(
-			translate("Error: The BOSS GUI is already running. This instance will now quit."),
-			translate("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
+		wxMessageBox(translate("Error: The BOSS GUI is already running. This instance will now quit."),
+		             translate("BOSS: Error"),
+		             wxOK | wxICON_ERROR,
+		             NULL);
 
-		delete checker; // OnExit() won't be called if we return false
+		delete checker;  // OnExit() won't be called if we return false
 		checker = NULL;
 
 		return false;
@@ -187,14 +185,17 @@ bool BossGUI::OnInit() {
 			wxArrayString choices;
 
 			for (size_t i=0, max = detected.size(); i < max; i++)
-				choices.Add(Game(detected[i], "", true).Name());  //Don't need to convert name, known to be only ASCII chars.
+				choices.Add(Game(detected[i], "", true).Name());  // Don't need to convert name, known to be only ASCII chars.
 			for (size_t i=0, max = undetected.size(); i < max; i++)
-				choices.Add(Game(undetected[i], "", true).Name() + translate(" (not detected)"));  //Don't need to convert name, known to be only ASCII chars.
+				choices.Add(Game(undetected[i], "", true).Name() + translate(" (not detected)"));  // Don't need to convert name, known to be only ASCII chars.
 
 			size_t ans;
 
-			wxSingleChoiceDialog* choiceDia = new wxSingleChoiceDialog(frame, translate("Please pick which game to run BOSS for:"),
-				translate("BOSS: Select Game"), choices);
+			wxSingleChoiceDialog* choiceDia = new wxSingleChoiceDialog(
+			    frame,
+			    translate("Please pick which game to run BOSS for:"),
+			    translate("BOSS: Select Game"),
+			    choices);
 			choiceDia->SetIcon(wxIconLocation("BOSS GUI.exe"));
 
 			if (choiceDia->ShowModal() != wxID_OK)
@@ -226,104 +227,122 @@ bool BossGUI::OnInit() {
 }
 
 MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxDefaultSize, wxMINIMIZE_BOX|wxSYSTEM_MENU|wxCAPTION|wxCLOSE_BOX|wxCLIP_CHILDREN) {
-
-	//Some variable setup.
+	// Some variable setup.
 	isStartup = true;
 
-	wxString BOSSlogFormat[] = {
-		wxT("HTML"),
-		translate("Plain Text")
-	};
+	wxString BOSSlogFormat[] = {wxT("HTML"), translate("Plain Text")};
 
-	wxString UndoLevel[] = {
-		translate("Last Run"),
-		translate("2nd Last Run")
-	};
+	wxString UndoLevel[] = {translate("Last Run"),
+	                        translate("2nd Last Run")};
 
-	//Set up menu bar first.
+	// Set up menu bar first.
 	MenuBar = new wxMenuBar();
 	// File Menu
 	FileMenu = new wxMenu();
-	FileMenu->Append(OPTION_OpenBOSSlog, translate("&View BOSS Log"), translate("Opens your BOSSlog."));
-	FileMenu->Append(OPTION_Run, translate("&Run BOSS"), translate("Runs BOSS with the options you have chosen."));
+	FileMenu->Append(OPTION_OpenBOSSlog, translate("&View BOSS Log"),
+	                 translate("Opens your BOSSlog."));
+	FileMenu->Append(OPTION_Run, translate("&Run BOSS"),
+	                 translate("Runs BOSS with the options you have chosen."));
 	FileMenu->AppendSeparator();
-	FileMenu->Append(MENU_Quit, translate("&Quit"), translate("Quit BOSS."));
+	FileMenu->Append(MENU_Quit, translate("&Quit"),
+	                 translate("Quit BOSS."));
 	MenuBar->Append(FileMenu, translate("&File"));
-	//Edit Menu
+	// Edit Menu
 	EditMenu = new wxMenu();
-	EditMenu->Append(OPTION_EditUserRules, translate("&User Rules..."), translate("Opens your userlist in your default text editor."));
-	EditMenu->Append(MENU_ShowSettings, translate("&Settings..."), translate("Opens the Settings window."));
+	EditMenu->Append(OPTION_EditUserRules, translate("&User Rules..."),
+	                 translate("Opens your userlist in your default text editor."));
+	EditMenu->Append(MENU_ShowSettings, translate("&Settings..."),
+	                 translate("Opens the Settings window."));
 	MenuBar->Append(EditMenu, translate("&Edit"));
-	//Game menu
+	// Game menu
 	GameMenu = new wxMenu();
-	GameMenu->AppendRadioItem(MENU_Oblivion, wxT("&Oblivion"), translate("Switch to running BOSS for Oblivion."));
-	GameMenu->AppendRadioItem(MENU_Nehrim, wxT("&Nehrim"), translate("Switch to running BOSS for Nehrim."));
-	GameMenu->AppendRadioItem(MENU_Skyrim, wxT("&Skyrim"), translate("Switch to running BOSS for Skyrim."));
-	GameMenu->AppendRadioItem(MENU_Fallout3, wxT("&Fallout 3"), translate("Switch to running BOSS for Fallout 3."));
-	GameMenu->AppendRadioItem(MENU_FalloutNewVegas, wxT("&Fallout: New Vegas"), translate("Switch to running BOSS for Fallout: New Vegas."));
+	GameMenu->AppendRadioItem(MENU_Oblivion, wxT("&Oblivion"),
+	                          translate("Switch to running BOSS for Oblivion."));
+	GameMenu->AppendRadioItem(MENU_Nehrim, wxT("&Nehrim"),
+	                          translate("Switch to running BOSS for Nehrim."));
+	GameMenu->AppendRadioItem(MENU_Skyrim, wxT("&Skyrim"),
+	                          translate("Switch to running BOSS for Skyrim."));
+	GameMenu->AppendRadioItem(MENU_Fallout3, wxT("&Fallout 3"),
+	                          translate("Switch to running BOSS for Fallout 3."));
+	GameMenu->AppendRadioItem(MENU_FalloutNewVegas, wxT("&Fallout: New Vegas"),
+	                          translate("Switch to running BOSS for Fallout: New Vegas."));
 	MenuBar->Append(GameMenu, translate("&Active Game"));
 	// About menu
 	HelpMenu = new wxMenu();
-	HelpMenu->Append(MENU_OpenMainReadMe, translate("Open &Main Readme"), translate("Opens the main BOSS readme in your default web browser."));
-	HelpMenu->Append(MENU_OpenUserlistReadMe, translate("Open &Userlist Syntax Doc"), translate("Opens the BOSS userlist syntax documentation in your default web browser."));
-	HelpMenu->Append(MENU_OpenMasterlistReadMe, translate("Open &Masterlist Syntax Doc"), translate("Opens the BOSS masterlist syntax documentation in your default web browser."));
-	HelpMenu->Append(MENU_OpenVersionHistory, translate("Open &Version History"), translate("Opens the BOSS version history in your default web browser."));
-	HelpMenu->Append(MENU_OpenLicenses, translate("View &Copyright Licenses"), translate("View the GNU General Public License v3.0 and GNU Free Documentation License v1.3."));
+	HelpMenu->Append(MENU_OpenMainReadMe,
+	                 translate("Open &Main Readme"),
+	                 translate("Opens the main BOSS readme in your default web browser."));
+	HelpMenu->Append(MENU_OpenUserlistReadMe,
+	                 translate("Open &Userlist Syntax Doc"),
+	                 translate("Opens the BOSS userlist syntax documentation in your default web browser."));
+	HelpMenu->Append(MENU_OpenMasterlistReadMe,
+	                 translate("Open &Masterlist Syntax Doc"),
+	                 translate("Opens the BOSS masterlist syntax documentation in your default web browser."));
+	HelpMenu->Append(MENU_OpenVersionHistory,
+	                 translate("Open &Version History"),
+	                 translate("Opens the BOSS version history in your default web browser."));
+	HelpMenu->Append(MENU_OpenLicenses,
+	                 translate("View &Copyright Licenses"),
+	                 translate("View the GNU General Public License v3.0 and GNU Free Documentation License v1.3."));
 	HelpMenu->AppendSeparator();
-	HelpMenu->Append(MENU_ShowAbout, translate("&About BOSS..."), translate("Shows information about BOSS."));
+	HelpMenu->Append(MENU_ShowAbout,
+	                 translate("&About BOSS..."),
+	                 translate("Shows information about BOSS."));
 	MenuBar->Append(HelpMenu, translate("&Help"));
 	SetMenuBar(MenuBar);
 
-	//Set up stuff in the frame.
-	SetBackgroundColour(wxColour(255,255,255));
+	// Set up stuff in the frame.
+	SetBackgroundColour(wxColour(255, 255, 255));
 
-	//Contents in one big resizing box.
+	// Contents in one big resizing box.
 	wxBoxSizer *bigBox = new wxBoxSizer(wxHORIZONTAL);
 
-	//Create first column box and add the output options to it.
+	// Create first column box and add the output options to it.
 	wxBoxSizer *columnBox = new wxBoxSizer(wxVERTICAL);
 	wxStaticBoxSizer *outputOptionsBox = new wxStaticBoxSizer(wxVERTICAL, this, translate("Output Options"));
 	wxBoxSizer *formatBox = new wxBoxSizer(wxHORIZONTAL);
 
-	//Add stuff to output options sizer.
-	outputOptionsBox->Add(ShowLogBox = new wxCheckBox(this,CHECKBOX_ShowBOSSlog, translate("Show BOSS Log On Completion")), 0, wxALL, 5);
-	outputOptionsBox->Add(CRCBox = new wxCheckBox(this,CHECKBOX_EnableCRCs, translate("Display File CRCs")), 0, wxLEFT | wxBOTTOM, 5);
+	// Add stuff to output options sizer.
+	outputOptionsBox->Add(ShowLogBox = new wxCheckBox(this, CHECKBOX_ShowBOSSlog, translate("Show BOSS Log On Completion")), 0, wxALL, 5);
+	outputOptionsBox->Add(CRCBox = new wxCheckBox(this, CHECKBOX_EnableCRCs, translate("Display File CRCs")), 0, wxLEFT | wxBOTTOM, 5);
 	formatBox->Add(new wxStaticText(this, wxID_ANY, translate("BOSS Log Format: ")), 1, wxLEFT | wxBOTTOM, 5);
-	formatBox->Add(FormatChoice = new wxChoice(this, DROPDOWN_LogFormat, wxPoint(110,60), wxDefaultSize, 2, BOSSlogFormat, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
-	//Add the verbosityBox to its parent now to preserve layout.
+	formatBox->Add(FormatChoice = new wxChoice(this, DROPDOWN_LogFormat, wxPoint(110, 60), wxDefaultSize, 2, BOSSlogFormat, wxCB_READONLY), 0, wxALIGN_RIGHT | wxRIGHT | wxBOTTOM, 5);
+	// Add the verbosityBox to its parent now to preserve layout.
 	outputOptionsBox->Add(formatBox, 0, wxEXPAND, 0);
 	columnBox->Add(outputOptionsBox, 0, wxBOTTOM, 20);
 
-	//Now add the main buttons to the first column.
+	// Now add the main buttons to the first column.
 	wxBoxSizer *buttonBox = new wxBoxSizer(wxVERTICAL);
-	buttonBox->Add(EditUserRulesButton = new wxButton(this,OPTION_EditUserRules, translate("Edit User Rules")), 0, wxALIGN_CENTRE|wxBOTTOM, 5);
-	buttonBox->Add(RunBOSSButton = new wxButton(this,OPTION_Run, translate("Run BOSS")), 0, wxALIGN_CENTRE);
-	buttonBox->Add(OpenBOSSlogButton = new wxButton(this,OPTION_OpenBOSSlog, translate("View BOSS Log")), 0, wxALIGN_CENTRE|wxTOP, 5);
+	buttonBox->Add(EditUserRulesButton = new wxButton(this, OPTION_EditUserRules, translate("Edit User Rules")), 0, wxALIGN_CENTRE|wxBOTTOM, 5);
+	buttonBox->Add(RunBOSSButton = new wxButton(this, OPTION_Run, translate("Run BOSS")), 0, wxALIGN_CENTRE);
+	buttonBox->Add(OpenBOSSlogButton = new wxButton(this, OPTION_OpenBOSSlog, translate("View BOSS Log")), 0, wxALIGN_CENTRE|wxTOP, 5);
 	columnBox->Add(buttonBox, 0, wxALIGN_CENTER, 20);
 
-	//Add the first column to the big box.
+	// Add the first column to the big box.
 	bigBox->Add(columnBox, 0, wxALL, 20);
 
-	//The second column has a border.
-	wxStaticBoxSizer *runOptionsBox = new wxStaticBoxSizer(wxVERTICAL, this, translate("Run Options"));
+	// The second column has a border.
+	wxStaticBoxSizer *runOptionsBox = new wxStaticBoxSizer(wxVERTICAL,
+	                                                       this,
+	                                                       translate("Run Options"));
 	wxBoxSizer *sortBox = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *undoBox = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer *revertBox = new wxBoxSizer(wxHORIZONTAL);
 
-	//Run Options
+	// Run Options
 	runOptionsBox->Add(SortOption = new wxRadioButton(this, RADIOBUTTON_SortOption, translate("Sort Plugins")), 0, wxALL, 5);
 
-	//Sort option stuff.
-	sortBox->Add(UpdateBox = new wxCheckBox(this,CHECKBOX_Update, translate("Update Masterlist")), 0, wxBOTTOM, 5);
-	sortBox->Add(TrialRunBox = new wxCheckBox(this,CHECKBOX_TrialRun, translate("Perform Trial Run")));
+	// Sort option stuff.
+	sortBox->Add(UpdateBox = new wxCheckBox(this, CHECKBOX_Update, translate("Update Masterlist")), 0, wxBOTTOM, 5);
+	sortBox->Add(TrialRunBox = new wxCheckBox(this, CHECKBOX_TrialRun, translate("Perform Trial Run")));
 	runOptionsBox->Add(sortBox, 0, wxLEFT | wxRIGHT, 20);
 	runOptionsBox->AddSpacer(10);
 
-	//Update only stuff.
+	// Update only stuff.
 	runOptionsBox->Add(UpdateOption = new wxRadioButton(this, RADIOBUTTON_UpdateOption, translate("Update Masterlist Only")), 0, wxALL, 5);
 	runOptionsBox->AddSpacer(10);
 
-	//Undo option stuff.
+	// Undo option stuff.
 	runOptionsBox->Add(UndoOption = new wxRadioButton(this, RADIOBUTTON_UndoOption, translate("Undo Changes")), 0, wxALL, 5);
 	revertBox->Add(RevertText = new wxStaticText(this, wxID_ANY, translate("Undo Level: ")));
 	revertBox->Add(RevertChoice = new wxChoice(this, DROPDOWN_Revert, wxDefaultPosition, wxDefaultSize, 2, UndoLevel));
@@ -333,12 +352,12 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	bigBox->Add(runOptionsBox, 0, wxTOP | wxRIGHT | wxBOTTOM, 20);
 
 
-	//Tooltips
+	// Tooltips
 	FormatChoice->SetToolTip(translate("This decides both the format of BOSSlog generated when you click the \"Run BOSS\" button and the BOSSlog format opened when you click the \"View BOSSlog\" button."));
 	OpenBOSSlogButton->SetToolTip(translate("The format of BOSSlog this opens is decided by the setting of the \"BOSSlog Format\" Output Option above."));
 	TrialRunBox->SetToolTip(translate("Runs BOSS, simulating its changes to your load order, but doesn't actually reorder your mods."));
 
-	//Set option values based on initialised variable values.
+	// Set option values based on initialised variable values.
 	RunBOSSButton->SetDefault();
 
 	if (!gl_silent)
@@ -386,21 +405,21 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 		TrialRunBox->Enable(false);
 	}
 
-	//Now set up the status bar.
+	// Now set up the status bar.
 	CreateStatusBar(1);
 	SetStatusText(translate("Ready"));
 
-	//Now set the layout and sizes.
+	// Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
 }
 
-//Called when program exits.
-void MainFrame::OnQuit( wxCommandEvent& event ) {
-	Close(true); // Tells the OS to quit running this process
+// Called when program exits.
+void MainFrame::OnQuit(wxCommandEvent& event) {
+	Close(true);  // Tells the OS to quit running this process
 }
 
 void MainFrame::OnClose(wxCloseEvent& event) {
-	//Save settings to BOSS.ini before quitting.
+	// Save settings to BOSS.ini before quitting.
 	try {
 		Settings ini;
 		ini.Save(ini_path, game.Id());
@@ -412,25 +431,29 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 				NULL);
 	}
 
-	Destroy();  // you may also do:  event.Skip();
-				// since the default event handler does call Destroy(), too
+	Destroy();  // You may also do:  event.Skip();
+	            // since the default event handler does call Destroy(), too
 }
 
-void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
-	fs::path sortfile;						//Modlist/masterlist to sort plugins using.
+void MainFrame::OnRunBOSS(wxCommandEvent& event) {
+	fs::path sortfile;  // Modlist/masterlist to sort plugins using.
 
-	//Tell the user that stuff is happenining.
-	wxProgressDialog *progDia = new wxProgressDialog(translate("BOSS: Working..."),translate("BOSS working..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
+	// Tell the user that stuff is happenining.
+	wxProgressDialog *progDia = new wxProgressDialog(translate("BOSS: Working..."),
+	                                                 translate("BOSS working..."),
+	                                                 1000,
+	                                                 this,
+	                                                 wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_ELAPSED_TIME|wxPD_CAN_ABORT);
 
 	LOG_INFO("BOSS starting...");
 
-	//Clear modlist, masterlist and userlist in case they were filled by the User Rules Manager but the user has made changes to their game.
+	// Clear modlist, masterlist and userlist in case they were filled by the User Rules Manager but the user has made changes to their game.
 	game.modlist.Clear();
 	game.masterlist.Clear();
 	game.userlist.Clear();
 	game.bosslog.Clear();
 
-	//Set format and some vars for BOSS Log.
+	// Set format and some vars for BOSS Log.
 	game.bosslog.SetFormat(gl_log_format);
 	game.bosslog.scriptExtender = game.ScriptExtender();
 	game.bosslog.gameName = game.Name();
@@ -440,35 +463,37 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	// Update Masterlist
 	/////////////////////////////////////////////////////////
 
-	if (gl_revert<1 && (gl_update || gl_update_only)) {
-		progDia->Update(0, translate("Updating to the latest masterlist from the online repository..."));
+	if (gl_revert < 1 && (gl_update || gl_update_only)) {
+		progDia->Update(0,
+		                translate("Updating to the latest masterlist from the online repository..."));
 		LOG_DEBUG("Updating masterlist...");
 		try {
-			string revision = UpdateMasterlist(game, progress, progDia);
+			string revision = UpdateMasterlist(game, progress,
+			                                   progDia);
 			string message = (boost::format(translate("Masterlist updated; at revision: %1%.")) % revision).str();
 			game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
 		}
 		catch (boss_error &e) {
 			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
-				<< (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
-			LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
+			                           << (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
+			LOG_ERROR("Error: masterlist update failed. Details: %s",
+			          e.getString().c_str());
 		}
-	}
-	else {
+	} else {
 		string revision = GetMasterlistVersion(game);
 		string message = (boost::format(translate("Masterlist updating disabled; at revision: %1%.")) % revision).str();
 		game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
 	}
 
-	//If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
+	// If true, exit BOSS now. Flush earlyBOSSlogBuffer to the bosslog and exit.
 	if (gl_update_only == true) {
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent )
-			wxLaunchDefaultApplication(game.Log(gl_log_format).string());	//Displays the BOSSlog.
+		if (!gl_silent)
+			wxLaunchDefaultApplication(game.Log(gl_log_format).string());  // Displays the BOSSlog.
 		progDia->Destroy();
 		if (gl_close_gui_after_sorting)
 			this->Close(true);
@@ -487,27 +512,27 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	// Resume Error Condition Checks
 	///////////////////////////////////
 
-	//Build and save modlist.
+	// Build and save modlist.
 	try {
 		game.modlist.Load(game, game.DataFolder());
-		if (gl_revert<1)
+		if (gl_revert < 1)
 			game.modlist.Save(game.Modlist(), game.OldModlist());
 	} catch (boss_error &e) {
 		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
 		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-			<< loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-			<< loc::translate("Utility will end now.");
+		                           << loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+		                           << loc::translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent )
-			wxLaunchDefaultApplication(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
+		if (!gl_silent)
+			wxLaunchDefaultApplication(game.Log(gl_log_format).string());  // Displays the BOSSlog.txt.
 		progDia->Destroy();
 		if (gl_close_gui_after_sorting)
 			this->Close(true);
-		return; //fail in screaming heap.
+		return;  // Fail in screaming heap.
 	}
 
 	progDia->Pulse();
@@ -521,59 +546,64 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	/////////////////////////////////
 	// Parse Master- and Userlists
 	/////////////////////////////////
-	//Masterlist parse errors are critical, ini and userlist parse errors are not.
+	// Masterlist parse errors are critical, ini and userlist parse errors are not.
 
 
-	//Set masterlist path to be used.
-	if (gl_revert==1)
+	// Set masterlist path to be used.
+	if (gl_revert == 1)
 		sortfile = game.Modlist();
-	else if (gl_revert==2)
+	else if (gl_revert == 2)
 		sortfile = game.OldModlist();
 	else
 		sortfile = game.Masterlist();
 	LOG_INFO("Using sorting file: %s", sortfile.string().c_str());
 
-	//Parse masterlist/modlist backup into data structure.
+	// Parse masterlist/modlist backup into data structure.
 	try {
-		LOG_INFO("Starting to parse sorting file: %s", sortfile.string().c_str());
+		LOG_INFO("Starting to parse sorting file: %s",
+		         sortfile.string().c_str());
 		game.masterlist.Load(game, sortfile);
-		LOG_INFO("Starting to parse conditionals from sorting file: %s", sortfile.string().c_str());
+		LOG_INFO("Starting to parse conditionals from sorting file: %s",
+		         sortfile.string().c_str());
 		game.masterlist.EvalConditions(game);
 		game.masterlist.EvalRegex(game);
 		game.bosslog.globalMessages = game.masterlist.GlobalMessageBuffer();
 		game.bosslog.parsingErrors.push_back(game.masterlist.ErrorBuffer());
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
-		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL)
+		if (e.getCode() == BOSS_ERROR_FILE_PARSE_FAIL) {
 			game.bosslog.criticalError << game.masterlist.ErrorBuffer();
-		else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL)
+		} else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
 			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << e.getString();
-		else
+		} else {
 			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-				<< loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-				<< loc::translate("Utility will end now.");
+			                           << loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+			                           << loc::translate("Utility will end now.");
+		}
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent )
-			wxLaunchDefaultApplication(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
+		if (!gl_silent)
+			wxLaunchDefaultApplication(game.Log(gl_log_format).string());  // Displays the BOSSlog.txt.
 		progDia->Destroy();
 		if (gl_close_gui_after_sorting)
 			this->Close(true);
-		return; //fail in screaming heap.
+		return;  // Fail in screaming heap.
 	}
 
 	LOG_INFO("Starting to parse userlist.");
 	try {
 		game.userlist.Load(game, game.Userlist());
 		vector<ParsingError> errs = game.userlist.ErrorBuffer();
-		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(), errs.begin(), errs.end());
+		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(),
+		                                  errs.begin(), errs.end());
 	} catch (boss_error &e) {
 		vector<ParsingError> errs = game.userlist.ErrorBuffer();
-		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(), errs.begin(), errs.end());
-		game.userlist.Clear();  //If userlist has parsing errors, empty it so no rules are applied.
+		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(),
+		                                  errs.begin(), errs.end());
+		game.userlist.Clear();  // If userlist has parsing errors, empty it so no rules are applied.
 		LOG_ERROR("Error: %s", e.getString().c_str());
 	}
 
@@ -600,68 +630,70 @@ void MainFrame::OnRunBOSS( wxCommandEvent& event ) {
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-			<< loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-			<< loc::translate("Utility will end now.");
+		                           << loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+		                           << loc::translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
 			LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		}
-		if ( !gl_silent )
-			wxLaunchDefaultApplication(game.Log(gl_log_format).string());  //Displays the BOSSlog.txt.
+		if (!gl_silent)
+			wxLaunchDefaultApplication(game.Log(gl_log_format).string());  // Displays the BOSSlog.txt.
 		progDia->Destroy();
 		if (gl_close_gui_after_sorting)
 			this->Close(true);
-		return; //fail in screaming heap.
+		return;  // Fail in screaming heap.
 	}
 
 	LOG_INFO("Launching boss log in browser.");
-	if ( !gl_silent )
-		wxLaunchDefaultApplication(game.Log(gl_log_format).string());	//Displays the BOSSlog.txt.
+	if (!gl_silent)
+		wxLaunchDefaultApplication(game.Log(gl_log_format).string());  // Displays the BOSSlog.txt.
 	LOG_INFO("BOSS finished.");
 	progDia->Destroy();
 	if (gl_close_gui_after_sorting)
 		this->Close(true);
 }
 
-void MainFrame::OnEditUserRules( wxCommandEvent& event ) {
+void MainFrame::OnEditUserRules(wxCommandEvent& event) {
 	if (gl_use_user_rules_manager) {
-		UserRulesEditorFrame *editor = new UserRulesEditorFrame(translate("BOSS: User Rules Manager"), this, game);
+		UserRulesEditorFrame *editor = new UserRulesEditorFrame(translate("BOSS: User Rules Manager"),
+		                                                        this,
+		                                                        game);
 		editor->SetIcon(wxIconLocation("BOSS GUI.exe"));
 		editor->Show();
 	} else {
-		if (fs::exists(game.Userlist()))
+		if (fs::exists(game.Userlist())) {
 			wxLaunchDefaultApplication(game.Userlist().string());
-		else {
+		} else {
 			try {
 				RuleList userlist;
 				userlist.Save(game.Userlist());
 				wxLaunchDefaultApplication(game.Userlist().string());
 			} catch (boss_error &e) {
-				wxMessageBox(
-					FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
-					translate("BOSS: Error"),
-					wxOK | wxICON_ERROR,
-					this);
+				wxMessageBox(FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
+				             translate("BOSS: Error"),
+				             wxOK | wxICON_ERROR,
+				             this);
 			}
 		}
 	}
 }
 
-//Call when a file is opened. Either readmes or BOSS Logs.
-void MainFrame::OnOpenFile( wxCommandEvent& event ) {
+// Call when a file is opened. Either readmes or BOSS Logs.
+void MainFrame::OnOpenFile(wxCommandEvent& event) {
 	if (event.GetId() == OPTION_OpenBOSSlog) {
-		if (fs::exists(game.Log(gl_log_format)))
+		if (fs::exists(game.Log(gl_log_format))) {
 			wxLaunchDefaultApplication(game.Log(gl_log_format).string());
-		else
-			wxMessageBox(
-			FromUTF8(format(loc::translate("Error: \"%1%\" cannot be found.")) %  game.Log(gl_log_format).string()),
-			translate("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			this);
+		} else {
+			wxMessageBox(FromUTF8(format(loc::translate("Error: \"%1%\" cannot be found.")) %  game.Log(gl_log_format).string()),
+			             translate("BOSS: Error"),
+			             wxOK | wxICON_ERROR,
+			             this);
+		}
 	} else {
-		//Readme files.
+		// Readme files.
 		string file;
+		// TODO(MCP): Look at converting this to a switch-statement
 		if (event.GetId() == MENU_OpenMainReadMe)
 			file = readme_path.string();
 		else if (event.GetId() == MENU_OpenUserlistReadMe)
@@ -672,43 +704,43 @@ void MainFrame::OnOpenFile( wxCommandEvent& event ) {
 			file = version_history_path.string();
 		else if (event.GetId() == MENU_OpenLicenses)
 			file = licenses_path.string();
-		//Look for file.
+		// Look for file.
 		if (fs::exists(file)) {
 			wxLaunchDefaultApplication(file);
-		} else  //No ReadMe exists, show a pop-up message saying so.
-			wxMessageBox(
-				FromUTF8(format(loc::translate("Error: \"%1%\" cannot be found.")) % file),
-				translate("BOSS: Error"),
-				wxOK | wxICON_ERROR,
-				this);
-
+		} else {  // No ReadMe exists, show a pop-up message saying so.
+			wxMessageBox(FromUTF8(format(loc::translate("Error: \"%1%\" cannot be found.")) % file),
+			             translate("BOSS: Error"),
+			             wxOK | wxICON_ERROR,
+			             this);
+		}
 	}
 }
 
 void MainFrame::OnAbout(wxCommandEvent& event) {
 	wxAboutDialogInfo aboutInfo;
 	aboutInfo.SetName("BOSS");
-	aboutInfo.SetVersion(IntToString(BOSS_VERSION_MAJOR)+"."+IntToString(BOSS_VERSION_MINOR)+"."+IntToString(BOSS_VERSION_PATCH));
+	aboutInfo.SetVersion(IntToString(BOSS_VERSION_MAJOR) + "." + IntToString(BOSS_VERSION_MINOR) + "." + IntToString(BOSS_VERSION_PATCH));
 	aboutInfo.SetDescription(translate("Load order sorting for Oblivion, Skyrim, Fallout 3 and Fallout: New Vegas."));
 	aboutInfo.SetCopyright("Copyright (C) 2009-2014 BOSS Development Team.");
 	aboutInfo.SetWebSite("http://boss-developers.github.io");
 	aboutInfo.SetLicence("This program is free software: you can redistribute it and/or modify\n"
-	"it under the terms of the GNU General Public License as published by\n"
-	"the Free Software Foundation, either version 3 of the License, or\n"
-	"(at your option) any later version.\n"
-	"\n"
-	"This program is distributed in the hope that it will be useful,\n"
-	"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-	"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-	"GNU General Public License for more details.\n"
-	"\n"
-	"You should have received a copy of the GNU General Public License\n"
-	"along with this program.  If not, see <http://www.gnu.org/licenses/>.");
+	                     "it under the terms of the GNU General Public License as published by\n"
+	                     "the Free Software Foundation, either version 3 of the License, or\n"
+	                     "(at your option) any later version.\n"
+	                     "\n"
+	                     "This program is distributed in the hope that it will be useful,\n"
+	                     "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+	                     "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+	                     "GNU General Public License for more details.\n"
+	                     "\n"
+	                     "You should have received a copy of the GNU General Public License\n"
+	                     "along with this program.  If not, see <http://www.gnu.org/licenses/>.");
 	aboutInfo.SetIcon(wxIconLocation("BOSS GUI.exe"));
 	wxAboutBox(aboutInfo);
 }
 
 void MainFrame::OnLogDisplayChange(wxCommandEvent& event) {
+	// MCP Note: Can the outside parentheses be removed?
 	gl_silent = (!event.IsChecked());
 }
 
@@ -733,28 +765,28 @@ void MainFrame::OnTrialRunChange(wxCommandEvent& event) {
 
 void MainFrame::OnGameChange(wxCommandEvent& event) {
 	try {
-	switch (event.GetId()) {
-	case MENU_Oblivion:
-		game = Game(OBLIVION);
-		break;
-	case MENU_Nehrim:
-		game = Game(NEHRIM);
-		break;
-	case MENU_Skyrim:
-		game = Game(SKYRIM);
-		break;
-	case MENU_Fallout3:
-		game = Game(FALLOUT3);
-		break;
-	case MENU_FalloutNewVegas:
-		game = Game(FALLOUTNV);
-		break;
-	}
+		switch (event.GetId()) {
+			case MENU_Oblivion:
+				game = Game(OBLIVION);
+				break;
+			case MENU_Nehrim:
+				game = Game(NEHRIM);
+				break;
+			case MENU_Skyrim:
+				game = Game(SKYRIM);
+				break;
+			case MENU_Fallout3:
+				game = Game(FALLOUT3);
+				break;
+			case MENU_FalloutNewVegas:
+				game = Game(FALLOUTNV);
+				break;
+		}
 	} catch (boss_error& e) {
 		wxMessageBox(e.getString());
 	}
 	game.CreateBOSSGameFolder();
-	SetTitle(wxT("BOSS - " + game.Name()));  //Don't need to convert name, known to be only ASCII chars.
+	SetTitle(wxT("BOSS - " + game.Name()));  // Don't need to convert name, known to be only ASCII chars.
 }
 
 void MainFrame::OnRevertChange(wxCommandEvent& event) {
@@ -762,6 +794,7 @@ void MainFrame::OnRevertChange(wxCommandEvent& event) {
 }
 
 void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
+	// TODO(MCP): Look at converting this to a switch-statement
 	if (event.GetId() == RADIOBUTTON_SortOption) {
 		gl_revert = 0;
 		gl_update_only = false;
@@ -789,11 +822,11 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 		UpdateBox->Enable(false);
 		TrialRunBox->Enable(false);
 	}
-	DisableUndetectedGames();  //Doesn't actually disable games if (gl_update_only).
+	DisableUndetectedGames();  // Doesn't actually disable games if (gl_update_only).
 }
 
 void MainFrame::DisableUndetectedGames() {
-	//Also disable the options for undetected games.
+	// Also disable the options for undetected games.
 	bool enabled;
 	if (gl_update_only)
 		enabled = true;
@@ -804,7 +837,8 @@ void MainFrame::DisableUndetectedGames() {
 	GameMenu->FindItem(MENU_Skyrim)->Enable(enabled);
 	GameMenu->FindItem(MENU_Fallout3)->Enable(enabled);
 	GameMenu->FindItem(MENU_FalloutNewVegas)->Enable(enabled);
-	for (size_t i=0; i < detectedGames.size(); i++) {
+	for (size_t i = 0; i < detectedGames.size(); i++) {
+		// TODO(MCP): Look at converting this to a switch-statement
 		if (detectedGames[i] == OBLIVION)
 			GameMenu->FindItem(MENU_Oblivion)->Enable();
 		else if (detectedGames[i] == NEHRIM)
@@ -817,13 +851,14 @@ void MainFrame::DisableUndetectedGames() {
 			GameMenu->FindItem(MENU_FalloutNewVegas)->Enable();
 	}
 
-	//Swapping from gl_update_only to !gl_update_only with undetected game active: need to change game to a detected game.
+	// Swapping from gl_update_only to !gl_update_only with undetected game active: need to change game to a detected game.
 	if ((GameMenu->FindItem(MENU_Oblivion)->IsChecked() && !GameMenu->FindItem(MENU_Oblivion)->IsEnabled())
 		|| (GameMenu->FindItem(MENU_Nehrim)->IsChecked() && !GameMenu->FindItem(MENU_Nehrim)->IsEnabled())
 		|| (GameMenu->FindItem(MENU_Skyrim)->IsChecked() && !GameMenu->FindItem(MENU_Skyrim)->IsEnabled())
 		|| (GameMenu->FindItem(MENU_Fallout3)->IsChecked() && !GameMenu->FindItem(MENU_Fallout3)->IsEnabled())
 		|| (GameMenu->FindItem(MENU_FalloutNewVegas)->IsChecked() && !GameMenu->FindItem(MENU_FalloutNewVegas)->IsEnabled())) {
 			if (!detectedGames.empty()) {
+				// TODO(MCP): Look at converting this to a switch-statement
 				if (detectedGames.front() == OBLIVION) {
 					game = Game(OBLIVION);
 					GameMenu->FindItem(MENU_Oblivion)->Check();
@@ -843,12 +878,14 @@ void MainFrame::DisableUndetectedGames() {
 				game.CreateBOSSGameFolder();
 			}
 	}
-	SetTitle(wxT("BOSS - " + game.Name()));  //Don't need to convert name, known to be only ASCII chars.
+	SetTitle(wxT("BOSS - " + game.Name()));  // Don't need to convert name, known to be only ASCII chars.
 }
 
-void MainFrame::SetGames(const Game& inGame, const vector<uint32_t> inGames) {
+void MainFrame::SetGames(const Game& inGame,
+                         const vector<uint32_t> inGames) {
 	game = inGame;
 	detectedGames = inGames;
+	// TODO(MCP): Look at converting this to a switch-statement
 	if (game.Id() == OBLIVION)
 		GameMenu->FindItem(MENU_Oblivion)->Check();
 	else if (game.Id() == NEHRIM)
@@ -860,12 +897,12 @@ void MainFrame::SetGames(const Game& inGame, const vector<uint32_t> inGames) {
 	else if (game.Id() == FALLOUTNV)
 		GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
 
-	size_t i=0;
-	for (i=0; i < detectedGames.size(); i++) {
+	size_t i = 0;
+	for (i = 0; i < detectedGames.size(); i++) {
 		if (detectedGames[i] == game.Id())
 			break;
 	}
-	if (i == detectedGames.size()) {  //The current game wasn't in the list of detected games. Run in update only mode.
+	if (i == detectedGames.size()) {  // The current game wasn't in the list of detected games. Run in update only mode.
 		gl_update_only = true;
 		UpdateBox->Enable(false);
 		TrialRunBox->Enable(false);
@@ -877,8 +914,9 @@ void MainFrame::SetGames(const Game& inGame, const vector<uint32_t> inGames) {
 }
 
 void MainFrame::OnOpenSettings(wxCommandEvent& event) {
-	//Tell the user that stuff is happenining.
-	SettingsFrame *settings = new SettingsFrame(translate("BOSS: Settings"),this);
+	// Tell the user that stuff is happenining.
+	SettingsFrame *settings = new SettingsFrame(translate("BOSS: Settings"),
+	                                            this);
 	settings->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	settings->Show();
 }

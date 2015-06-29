@@ -74,49 +74,61 @@ using boost::algorithm::trim_copy;
 using boss::translate;
 using boost::format;
 
-UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent, Game& inGame) : wxFrame(parent, wxID_ANY, title), game(inGame) {
+UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
+                                           wxFrame *parent,
+                                           Game& inGame)
+    : wxFrame(parent, wxID_ANY, title), game(inGame) {
 
 	wxProgressDialog * progDia;
 
-	//First check if masterlist is installed, and offer to download it if not.
+	// First check if masterlist is installed, and offer to download it if not.
 	if (!fs::exists(game.Masterlist())) {
-
 		wxMessageDialog *dlg = new wxMessageDialog(this,
-			FromUTF8(format(loc::translate("The User Rules Manager requires the BOSS masterlist for %1% to have been downloaded, but it cannot be detected. Do you wish to download the latest masterlist now?")) % game.Name()),
-			translate("BOSS: User Rules Manager"), wxYES_NO);
+		                                           FromUTF8(format(loc::translate("The User Rules Manager requires the BOSS masterlist for %1% to have been downloaded, but it cannot be detected. Do you wish to download the latest masterlist now?")) % game.Name()),
+		                                           translate("BOSS: User Rules Manager"),
+		                                           wxYES_NO);
 
-		if (dlg->ShowModal() != wxID_YES) {  //User has chosen not to download.
+		if (dlg->ShowModal() != wxID_YES) {  // User has chosen not to download.
 			this->Close();
 			return;
 		} else {
-			progDia = new wxProgressDialog(translate("BOSS: Working..."), translate("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
+			progDia = new wxProgressDialog(translate("BOSS: Working..."),
+			                               translate("Initialising User Rules Manager..."),
+			                               1000, this,
+			                               wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
 
-			progDia->Update(0, translate("Updating to the latest masterlist from the online repository..."));
+			progDia->Update(0,
+			                translate("Updating to the latest masterlist from the online repository..."));
 			LOG_DEBUG("Updating masterlist...");
 			try {
-				string revision = UpdateMasterlist(game, progress, progDia);
+				string revision = UpdateMasterlist(game, progress,
+				                                   progDia);
 				string message = (boost::format(translate("Masterlist revision: %1%.")) % revision).str();
 				game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
 			}
 			catch (boss_error &e) {
 				game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
-					<< (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
-				LOG_ERROR("Error: masterlist update failed. Details: %s", e.getString().c_str());
+				                           << (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
+				LOG_ERROR("Error: masterlist update failed. Details: %s",
+				          e.getString().c_str());
 			}
 		}
-	} else
-		progDia = new wxProgressDialog(translate("BOSS: Working..."), translate("Initialising User Rules Manager..."), 1000, this, wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
+	} else {
+		progDia = new wxProgressDialog(translate("BOSS: Working..."),
+		                               translate("Initialising User Rules Manager..."),
+		                               1000, this,
+		                               wxPD_APP_MODAL|wxPD_AUTO_HIDE|wxPD_CAN_ABORT);
+	}
 
-	try{
+	try {
 		LoadLists();
 	} catch(boss_error &e) {
 		progDia->Destroy();
 		this->Close();
-		wxMessageBox(
-			FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
-			translate("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
+		wxMessageBox(FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
+		             translate("BOSS: Error"),
+		             wxOK | wxICON_ERROR,
+		             NULL);
 		return;
 	}
 
@@ -126,42 +138,35 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 		return;
 	}
 
-	//Some variable setup.
-	wxString BeforeAfter[] = {
-		translate("before"),
-		translate("after")
-	};
+	// Some variable setup.
+	wxString BeforeAfter[] = {translate("before"), translate("after")};
 
-	wxString TopBottom[] = {
-		translate("top"),
-		translate("bottom")
-	};
+	wxString TopBottom[] = {translate("top"), translate("bottom")};
 
-	//Set up stuff in the frame.
-	SetBackgroundColour(wxColour(255,255,255));
+	// Set up stuff in the frame.
+	SetBackgroundColour(wxColour(255, 255, 255));
 
 	////////////////////////
 	// Layout
 	////////////////////////
 
-	//Window
+	// Window
 	wxBoxSizer *bigBox = new wxBoxSizer(wxVERTICAL);
 
-	////Main content
+	// Main content
 	wxBoxSizer *mainBox = new wxBoxSizer(wxHORIZONTAL);
 
-	//////First column
+	// First column
 	wxBoxSizer *rulesBox = new wxBoxSizer(wxVERTICAL);
-	try{
+	try {
 		rulesBox->Add(RulesList = new RuleListFrameClass(this, LIST_RuleList, inGame), 1, wxEXPAND);
 	} catch(boss_error &e) {
 		progDia->Destroy();
 		this->Close();
-		wxMessageBox(
-			FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
-			translate("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
+		wxMessageBox(FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
+		             translate("BOSS: Error"),
+		             wxOK | wxICON_ERROR,
+		             NULL);
 		return;
 	}
 
@@ -171,10 +176,12 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 		return;
 	}
 
-	////////Rule Creator/Editor
+	// Rule Creator/Editor
 	wxBoxSizer *editorMessagesBox = new wxBoxSizer(wxHORIZONTAL);
-	wxStaticBoxSizer *ruleEditorTopBox = new wxStaticBoxSizer(wxVERTICAL, this, translate("Rule Editor"));  //Needs to go in an oulined box.
-	wxBoxSizer *ruleEditorBox = new wxBoxSizer(wxVERTICAL);  //To get internal padding.
+	wxStaticBoxSizer *ruleEditorTopBox = new wxStaticBoxSizer(wxVERTICAL,
+	                                                          this,
+	                                                          translate("Rule Editor"));  // Needs to go in an oulined box.
+	wxBoxSizer *ruleEditorBox = new wxBoxSizer(wxVERTICAL);  // To get internal padding.
 	wxBoxSizer *forBox = new wxBoxSizer(wxHORIZONTAL);
 	forBox->Add(new wxStaticText(ruleEditorTopBox->GetStaticBox(), wxID_ANY, translate("For")));
 	forBox->Add(RuleModBox = new wxTextCtrl(ruleEditorTopBox->GetStaticBox(), TEXT_RuleMod, ""), 1, wxEXPAND|wxLEFT, 10);
@@ -192,44 +199,46 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 	InsertOptionBox->Add(InsertModOption = new wxRadioButton(ruleEditorTopBox->GetStaticBox(), RADIO_InsertMod, translate("Insert at the")));
 	InsertOptionBox->Add(TopBottomChoiceBox = new wxChoice(ruleEditorTopBox->GetStaticBox(), CHOICE_TopBottom, wxDefaultPosition, wxDefaultSize, 2, TopBottom), 0, wxLEFT, 10);
 	InsertOptionBox->Add(new wxStaticText(ruleEditorTopBox->GetStaticBox(), wxID_ANY, translate("of")), 0, wxLEFT, 10);
-	InsertOptionBox->Add(InsertModBox = new wxTextCtrl(ruleEditorTopBox->GetStaticBox(),TEXT_InsertMod), 1, wxEXPAND|wxLEFT, 10);
+	InsertOptionBox->Add(InsertModBox = new wxTextCtrl(ruleEditorTopBox->GetStaticBox(), TEXT_InsertMod), 1, wxEXPAND|wxLEFT, 10);
 	ruleEditorBox->Add(InsertOptionBox, 0, wxEXPAND|wxLEFT, 20);
 	ruleEditorBox->AddSpacer(10);
 	ruleEditorBox->Add(AddMessagesCheckBox = new wxCheckBox(ruleEditorTopBox->GetStaticBox(), CHECKBOX_AddMessages, translate("Add the following messages:")));
 	ruleEditorBox->AddSpacer(10);
-	ruleEditorBox->Add(NewModMessagesBox = new wxTextCtrl(ruleEditorTopBox->GetStaticBox(),TEXT_NewMessages, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), 1, wxEXPAND|wxLEFT, 20);
+	ruleEditorBox->Add(NewModMessagesBox = new wxTextCtrl(ruleEditorTopBox->GetStaticBox(), TEXT_NewMessages, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE), 1, wxEXPAND|wxLEFT, 20);
 	ruleEditorBox->AddSpacer(10);
 	ruleEditorBox->Add(ReplaceMessagesCheckBox = new wxCheckBox(ruleEditorTopBox->GetStaticBox(), CHECKBOX_RemoveMessages, translate("Replace existing messages")));
 	ruleEditorTopBox->Add(ruleEditorBox, 1, wxEXPAND|wxALL, 10);
 	editorMessagesBox->Add(ruleEditorTopBox, 0, wxEXPAND);
 	editorMessagesBox->AddSpacer(10);
-	wxStaticBoxSizer *messBox = new wxStaticBoxSizer(wxVERTICAL, this, translate("Default Plugin Messages"));
-	messBox->Add(ModMessagesBox = new wxTextCtrl(messBox->GetStaticBox(),TEXT_ModMessages,wxT(""),wxDefaultPosition,wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY), 1, wxEXPAND);
+	wxStaticBoxSizer *messBox = new wxStaticBoxSizer(wxVERTICAL, this,
+	                                                 translate("Default Plugin Messages"));
+	messBox->Add(ModMessagesBox = new wxTextCtrl(messBox->GetStaticBox(), TEXT_ModMessages, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY), 1, wxEXPAND);
 	editorMessagesBox->Add(messBox, 1, wxEXPAND);
 	rulesBox->Add(editorMessagesBox, 1, wxEXPAND);
 	mainBox->Add(rulesBox, 3, wxEXPAND);
-	//////Second column.
+	// Second column.
 	TabHolder = new wxNotebook(this, wxID_ANY);
-	////////Modlist tab.
+	// Modlist tab.
 	ModlistTab = new wxPanel(TabHolder);
 	wxBoxSizer *ModlistTabSizer = new wxBoxSizer(wxVERTICAL);
 	ModlistTabSizer->Add(ModlistSearch = new wxSearchCtrl(ModlistTab, SEARCH_Modlist, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER), 0, wxEXPAND);
-	ModlistTabSizer->Add(InstalledModsList = new wxTreeCtrl(ModlistTab, LIST_Modlist, wxDefaultPosition, wxSize(100,550), wxTR_HAS_BUTTONS|wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_FULL_ROW_HIGHLIGHT|wxTR_HIDE_ROOT), 1, wxEXPAND);
+	ModlistTabSizer->Add(InstalledModsList = new wxTreeCtrl(ModlistTab, LIST_Modlist, wxDefaultPosition, wxSize(100, 550), wxTR_HAS_BUTTONS|wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_FULL_ROW_HIGHLIGHT|wxTR_HIDE_ROOT), 1, wxEXPAND);
 	ModlistTab->SetSizer(ModlistTabSizer);
-	////////Masterlist tab.
+	// Masterlist tab.
 	MasterlistTab = new wxPanel(TabHolder);
 	wxBoxSizer *MasterlistTabSizer = new wxBoxSizer(wxVERTICAL);
 	MasterlistTabSizer->Add(MasterlistSearch = new wxSearchCtrl(MasterlistTab, SEARCH_Masterlist, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER), 0, wxEXPAND);
-	MasterlistTabSizer->Add(MasterlistModsList = new wxTreeCtrl(MasterlistTab, LIST_Masterlist, wxDefaultPosition, wxSize(100,550), wxTR_HAS_BUTTONS|wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT), 1, wxEXPAND);
+	MasterlistTabSizer->Add(MasterlistModsList = new wxTreeCtrl(MasterlistTab, LIST_Masterlist, wxDefaultPosition, wxSize(100, 550), wxTR_HAS_BUTTONS|wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT), 1, wxEXPAND);
 	MasterlistTab->SetSizer(MasterlistTabSizer);
-	//Add tabs to window.
-	TabHolder->AddPage(ModlistTab,translate("Installed Plugins"),true);
-	TabHolder->AddPage(MasterlistTab,translate("Masterlist"));
+	// Add tabs to window.
+	TabHolder->AddPage(ModlistTab, translate("Installed Plugins"),
+	                   true);
+	TabHolder->AddPage(MasterlistTab, translate("Masterlist"));
 	mainBox->AddSpacer(10);
 	mainBox->Add(TabHolder, 2, wxEXPAND);
 	bigBox->Add(mainBox, 1, wxALL|wxEXPAND, 10);
 
-	////Window buttons
+	// Window buttons
 	wxBoxSizer *mainButtonBox = new wxBoxSizer(wxHORIZONTAL);
 	mainButtonBox->Add(CreateNewRuleButton = new wxButton(this, BUTTON_NewRule, translate("Create New Rule")));
 	mainButtonBox->Add(SaveEditedRuleButton = new wxButton(this, BUTTON_EditRule, translate("Save Edited Rule")), 0, wxLEFT, 10);
@@ -240,10 +249,10 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 	mainButtonBox->AddStretchSpacer(2);
 	mainButtonBox->Add(new wxButton(this, BUTTON_OKExitEditor, translate("Save and Exit")));
 	mainButtonBox->Add(new wxButton(this, BUTTON_CancelExitEditor, translate("Cancel")), 0, wxLEFT, 10);
-	//Now add buttons to window sizer.
+	// Now add buttons to window sizer.
 	bigBox->Add(mainButtonBox, 0, wxALL|wxEXPAND, 10);
 
-	//Now set defaults.
+	// Now set defaults.
 	SortModOption->SetValue(true);
 	SortModOption->Enable(false);
 	InsertModOption->Enable(false);
@@ -257,10 +266,10 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 	NewModMessagesBox->Enable(false);
 	ReplaceMessagesCheckBox->Enable(false);
 
-	//Tooltips.
+	// Tooltips.
 	NewModMessagesBox->SetToolTip(translate("Messages must be entered in the correct format. See the User Rules Readme for more information."));
 
-	//Set up drag 'n' drop.
+	// Set up drag 'n' drop.
 	ForDropTarget = new TextDropTarget(RuleModBox);
 	SortDropTarget = new TextDropTarget(SortModBox);
 	InsertDropTarget = new TextDropTarget(InsertModBox);
@@ -268,9 +277,9 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 	SortModBox->SetDropTarget(SortDropTarget);
 	InsertModBox->SetDropTarget(InsertDropTarget);
 
-	//Fill modlist and masterlist.
+	// Fill modlist and masterlist.
 	wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
-	for (size_t i=0;i<ModlistMods.size();i++) {
+	for (size_t i = 0; i < ModlistMods.size(); i++) {
 		InstalledModsList->AppendItem(root, ModlistMods[i]);
 	}
 
@@ -278,20 +287,20 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title, wxFrame *parent
 	opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
 	vector<Item> items = game.masterlist.Items();
 	size_t max = items.size();
-	for (size_t i=0;i<max;i++) {
-		if (items[i].Type() == ENDGROUP)
+	for (size_t i = 0; i < max; i++) {
+		if (items[i].Type() == ENDGROUP) {
 			opengroups.pop_back();
-		else {
+		} else {
 			wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), wxString(items[i].Name().c_str(), wxConvUTF8));
 			if (items[i].Type() == BEGINGROUP)
 				opengroups.push_back(item);
 		}
 	}
 
-	//Now set the layout and sizes.
+	// Now set the layout and sizes.
 	SetSizerAndFit(bigBox);
 
-	//Disable buttons if they can do nothing.
+	// Disable buttons if they can do nothing.
 	if (game.userlist.Rules().empty()) {
 		SaveEditedRuleButton->Enable(false);
 		DeleteRuleButton->Enable(false);
@@ -322,9 +331,9 @@ void UserRulesEditorFrame::OnSearchList(wxCommandEvent& event) {
 		size_t length = searchStr.length();
 		InstalledModsList->DeleteAllItems();
 		wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
-		for (size_t i=0;i<ModlistMods.size();i++) {
+		for (size_t i = 0; i < ModlistMods.size(); i++) {
 			string itemStr = ModlistMods[i].ToUTF8();
-			if (boost::iequals(itemStr.substr(0,length), searchStr))
+			if (boost::iequals(itemStr.substr(0, length), searchStr))
 				InstalledModsList->AppendItem(root, ModlistMods[i]);
 		}
 	} else {
@@ -339,8 +348,8 @@ void UserRulesEditorFrame::OnSearchList(wxCommandEvent& event) {
 		vector<wxTreeItemId> opengroups;
 		opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
 		vector<Item> items = game.masterlist.Items();
-		for (size_t i=0, max = items.size();i<max;i++) {
-			if (boost::iequals(items[i].Name().substr(0,length), searchStr)) {
+		for (size_t i = 0, max = items.size(); i < max; i++) {
+			if (boost::iequals(items[i].Name().substr(0, length), searchStr)) {
 					wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), items[i].Name());
 				if (items[i].Type() == BEGINGROUP)
 					opengroups.push_back(item);
@@ -357,7 +366,7 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 		ModlistSearch->SetValue("");
 		InstalledModsList->DeleteAllItems();
 		wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
-		for (size_t i=0, max=ModlistMods.size(); i<max; i++) {
+		for (size_t i = 0, max = ModlistMods.size(); i < max; i++) {
 			InstalledModsList->AppendItem(root, ModlistMods[i]);
 		}
 	} else {
@@ -367,7 +376,7 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 		vector<wxTreeItemId> opengroups;
 		vector<Item> items = game.masterlist.Items();
 		opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
-		for (size_t i=0, max=items.size(); i<max; i++) {
+		for (size_t i = 0, max = items.size(); i < max; i++) {
 			wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), items[i].Name());
 			if (items[i].Type() == BEGINGROUP)
 				opengroups.push_back(item);
@@ -378,7 +387,7 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 }
 
 void UserRulesEditorFrame::OnSelectModInMasterlist(wxTreeEvent& event) {
-	//Need to find item in masterlist. :( Why can't tree lists store index number?
+	// Need to find item in masterlist. :( Why can't tree lists store index number?
 	string itemStr = MasterlistModsList->GetItemText(event.GetItem()).ToUTF8();
 	size_t pos = game.masterlist.FindItem(itemStr, MOD);
 	if (pos != game.masterlist.Items().size()) {
@@ -386,7 +395,7 @@ void UserRulesEditorFrame::OnSelectModInMasterlist(wxTreeEvent& event) {
 		vector<Message> messages = game.masterlist.ItemAt(pos).Messages();
 		for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter)
 			messagesOut += messageIter->KeyToString() + ": " + messageIter->Data() + "\n\n";
-		ModMessagesBox->SetValue(wxString(messagesOut.substr(0,messagesOut.length()-2).c_str(), wxConvUTF8));
+		ModMessagesBox->SetValue(wxString(messagesOut.substr(0, messagesOut.length() - 2).c_str(), wxConvUTF8));
 	}
 }
 
@@ -433,11 +442,10 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 		Rule newRule = GetRuleFromForm();
 		RulesList->AppendRule(newRule);
 	} catch (boss_error &e) {
-		wxMessageBox(
-			FromUTF8(format(loc::translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) % e.getString()),
-			translate("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
+		wxMessageBox(FromUTF8(format(loc::translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) % e.getString()),
+		             translate("BOSS: Error"),
+		             wxOK | wxICON_ERROR,
+		             NULL);
 	}
 
 	if (!game.userlist.Rules().empty()) {
@@ -450,35 +458,35 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 
 void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 	wxMessageDialog *dlg = new wxMessageDialog(this,
-			translate("Are you sure you want to save your changes to the selected rule?"),
-			translate("BOSS: User Rules Manager"), wxYES_NO);
+	                                           translate("Are you sure you want to save your changes to the selected rule?"),
+	                                           translate("BOSS: User Rules Manager"),
+	                                           wxYES_NO);
 
-	if (dlg->ShowModal() != wxID_YES)  //User has chosen not to save.
+	if (dlg->ShowModal() != wxID_YES) {  // User has chosen not to save.
 		return;
-	else {  //User has chosen to save.
+	} else {  // User has chosen to save.
 		try {
 			Rule newRule = GetRuleFromForm();
 			RulesList->SaveEditedRule(newRule);
 		} catch (boss_error &e) {
-			wxMessageBox(
-				FromUTF8(format(loc::translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) % e.getString()),
-				translate("BOSS: Error"),
-				wxOK | wxICON_ERROR,
-				NULL);
+			wxMessageBox(FromUTF8(format(loc::translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) % e.getString()),
+			             translate("BOSS: Error"),
+			             wxOK | wxICON_ERROR,
+			             NULL);
 		}
-
 	}
 }
 
 void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
 	wxMessageDialog *dlg = new wxMessageDialog(this,
-			translate("Are you sure you want to delete the selected rule?"),
-			translate("BOSS: User Rules Manager"), wxYES_NO);
+	                                           translate("Are you sure you want to delete the selected rule?"),
+	                                           translate("BOSS: User Rules Manager"),
+	                                           wxYES_NO);
 
-	if (dlg->ShowModal() != wxID_YES)  //User has chosen not to delete.
+	if (dlg->ShowModal() != wxID_YES)  // User has chosen not to delete.
 		return;
-	else  //User has chosen to delete.
-		RulesList->DeleteSelectedRule();  //This doesn't work.
+	else  // User has chosen to delete.
+		RulesList->DeleteSelectedRule();  // This doesn't work.
 
 	if (game.userlist.Rules().empty()) {
 		SaveEditedRuleButton->Enable(false);
@@ -506,7 +514,8 @@ void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
 	SortModBox->SetValue("");
 	InsertModBox->SetValue("");
 	vector<RuleLine> lines = currentRule.Lines();
-	for (size_t j=0, max=lines.size(); j<max; j++) {
+	for (size_t j = 0, max = lines.size(); j < max; j++) {
+		// TODO(MCP): Look at converting this to a switch-statement
 		if (lines[j].Key() == BEFORE || lines[j].Key() == AFTER) {
 			SortModsCheckBox->SetValue(true);
 			SortModOption->SetValue(true);
@@ -546,85 +555,116 @@ void UserRulesEditorFrame::LoadLists() {
 	// Modlist
 	///////////////
 
-	//Need to parse userlist, masterlist and build modlist.
+	// Need to parse userlist, masterlist and build modlist.
 	try {
 		game.modlist.Load(game, game.DataFolder());
 	} catch (boss_error &e) {
-		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, loc::translate("User Rules Manager"), e.getString());
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL,
+		                 loc::translate("User Rules Manager"),
+		                 e.getString());
 	}
 
 	vector<Item> items = game.modlist.Items();
 	size = items.size();
-	for (size_t i=0;i<size;i++)
+	for (size_t i = 0; i < size; i++)
 		ModlistMods.push_back(wxString(items[i].Name().c_str(), wxConvUTF8));
 
 	////////////////
 	// Masterlist
 	////////////////
 
-	//Parse masterlist/modlist backup into data structure.
-	LOG_INFO("Starting to parse sorting file: %s", game.Masterlist().string().c_str());
+	// Parse masterlist/modlist backup into data structure.
+	LOG_INFO("Starting to parse sorting file: %s",
+	         game.Masterlist().string().c_str());
 	try {
 		game.masterlist.Load(game, game.Masterlist());
 		game.masterlist.EvalConditions(game);
 		game.masterlist.EvalRegex(game);
 	} catch (boss_error &e) {
-		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, loc::translate("User Rules Manager"), e.getString());
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL,
+		                 loc::translate("User Rules Manager"),
+		                 e.getString());
 	}
 }
 
 Rule UserRulesEditorFrame::GetRuleFromForm() {
 	Rule newRule;
-	//First validate.
-	//Calling functions need to check for an enabled = false; rule as a failure.
-	//Failure description is given in ruleObject.
+	/*
+	 * First validate.
+	 * Calling functions need to check for an enabled = false; rule as a failure.
+	 * Failure description is given in ruleObject.
+	 */
 	string ruleItem = RuleModBox->GetValue().ToUTF8();
 	string sortItem = SortModBox->GetValue().ToUTF8();
 	string insertItem = InsertModBox->GetValue().ToUTF8();
 	if (Item(ruleItem).IsPlugin()) {
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
-				if (SortModOption->GetValue() && SortModBox->IsEmpty())
-					throw boss_error(loc::translate("No mod is specified to sort relative to."), BOSS_ERROR_INVALID_SYNTAX);
-				else if (!Item(sortItem).IsPlugin())  //Sort object is a group. Error.
-					throw boss_error(loc::translate("Cannot sort a plugin relative to a group."), BOSS_ERROR_INVALID_SYNTAX);
-			} else if (InsertModOption->GetValue() && !Item(insertItem).IsGroup()) {  //Inserting into a mod. Error.
-				if (InsertModBox->IsEmpty())
-					throw boss_error(loc::translate("No group is specified to insert into."), BOSS_ERROR_INVALID_SYNTAX);
-				else
-					throw boss_error(loc::translate("Cannot insert into a plugin."), BOSS_ERROR_INVALID_SYNTAX);
+				if (SortModOption->GetValue() &&
+				    SortModBox->IsEmpty()) {
+					throw boss_error(loc::translate("No mod is specified to sort relative to."),
+					                 BOSS_ERROR_INVALID_SYNTAX);
+				} else if (!Item(sortItem).IsPlugin()) {  // Sort object is a group. Error.
+					throw boss_error(loc::translate("Cannot sort a plugin relative to a group."),
+					                 BOSS_ERROR_INVALID_SYNTAX);
+				}
+			} else if (InsertModOption->GetValue() &&
+			           !Item(insertItem).IsGroup()) {  // Inserting into a mod. Error.
+				if (InsertModBox->IsEmpty()) {
+					throw boss_error(loc::translate("No group is specified to insert into."),
+					                 BOSS_ERROR_INVALID_SYNTAX);
+				} else {
+					throw boss_error(loc::translate("Cannot insert into a plugin."),
+					                 BOSS_ERROR_INVALID_SYNTAX);
+				}
 			}
 		}
-		if (AddMessagesCheckBox->IsChecked() && NewModMessagesBox->IsEmpty())  //Can't add no messages. Error.
-			throw boss_error(loc::translate("Cannot add messages when none are given."), BOSS_ERROR_INVALID_SYNTAX);
-	} else {  //Rule object is a group, or empty.
-		if (RuleModBox->IsEmpty())
-			throw boss_error(loc::translate("No rule mod is specified."), BOSS_ERROR_INVALID_SYNTAX);
+		if (AddMessagesCheckBox->IsChecked() &&
+		    NewModMessagesBox->IsEmpty()) {  // Can't add no messages. Error.
+			throw boss_error(loc::translate("Cannot add messages when none are given."),
+			                 BOSS_ERROR_INVALID_SYNTAX);
+		}
+	} else {  // Rule object is a group, or empty.
+		if (RuleModBox->IsEmpty()) {
+			throw boss_error(loc::translate("No rule mod is specified."),
+			                 BOSS_ERROR_INVALID_SYNTAX);
+		}
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
-				if (SortModBox->IsEmpty())  //No sort object specified. Error.
-					throw boss_error(loc::translate("No group is specified to sort relative to."), BOSS_ERROR_INVALID_SYNTAX);
-				else if (Item(sortItem).IsPlugin())  //Sort object is a plugin. Error.
-					throw boss_error(loc::translate("Cannot sort a group relative to a plugin."), BOSS_ERROR_INVALID_SYNTAX);
-			} else if (InsertModOption->GetValue())  //Can't insert groups. Error.
-				throw boss_error(loc::translate("Cannot insert groups."), BOSS_ERROR_INVALID_SYNTAX);
+				if (SortModBox->IsEmpty()) {  // No sort object specified. Error.
+					throw boss_error(loc::translate("No group is specified to sort relative to."),
+					                                BOSS_ERROR_INVALID_SYNTAX);
+				} else if (Item(sortItem).IsPlugin()) {  // Sort object is a plugin. Error.
+					throw boss_error(loc::translate("Cannot sort a group relative to a plugin."),
+					                 BOSS_ERROR_INVALID_SYNTAX);
+				}
+			} else if (InsertModOption->GetValue()) {  // Can't insert groups. Error.
+				throw boss_error(loc::translate("Cannot insert groups."),
+				                 BOSS_ERROR_INVALID_SYNTAX);
+			}
 		}
-		if (AddMessagesCheckBox->IsChecked())  //Can't add messages to a group. Error.
-			throw boss_error(loc::translate("Cannot add messages to groups."), BOSS_ERROR_INVALID_SYNTAX);
+		if (AddMessagesCheckBox->IsChecked()) {  // Can't add messages to a group. Error.
+			throw boss_error(loc::translate("Cannot add messages to groups."),
+			                 BOSS_ERROR_INVALID_SYNTAX);
+		}
 	}
-	if (!SortModsCheckBox->IsChecked() && !AddMessagesCheckBox->IsChecked())
-		throw boss_error(loc::translate("The rule mod is not being sorted nor having its attached messages altered."), BOSS_ERROR_INVALID_SYNTAX);
+	if (!SortModsCheckBox->IsChecked() &&
+	    !AddMessagesCheckBox->IsChecked()) {
+		throw boss_error(loc::translate("The rule mod is not being sorted nor having its attached messages altered."),
+		                 BOSS_ERROR_INVALID_SYNTAX);
+	}
 
 	newRule.Enabled(true);
 	newRule.Object(ruleItem);
-	if (!SortModsCheckBox->IsChecked())
+	if (!SortModsCheckBox->IsChecked()) {
 		newRule.Key(FOR);
-	else {
-		if (Item(newRule.Object()).IsGroup())
+	} else {
+		if (Item(newRule.Object()).IsGroup()) {
 			newRule.Key(OVERRIDE);
-		else {
-			size_t pos = game.masterlist.FindItem(newRule.Object(), MOD);
-			if (pos != game.masterlist.Items().size())  //Mod in masterlist.
+		} else {
+			size_t pos = game.masterlist.FindItem(newRule.Object(),
+			                                      MOD);
+			if (pos != game.masterlist.Items().size())  // Mod in masterlist.
 				newRule.Key(OVERRIDE);
 			else
 				newRule.Key(ADD);
@@ -654,35 +694,37 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 		}
 	}
 
-	//Now add message lines.
+	// Now add message lines.
 	if (AddMessagesCheckBox->IsChecked()) {
 		RuleLine newLine;
 		string messages = NewModMessagesBox->GetValue().ToUTF8();
 		if (!messages.empty()) {
-			//Split messages string by \n characters.
+			// Split messages string by \n characters.
 			size_t pos1 = 0, pos2 = string::npos;
 			pos2 = messages.find("\n");
-			if (pos2 == string::npos)  //No \n characters.
+			if (pos2 == string::npos)  // No \n characters.
 				pos2 = messages.length();
 			while (pos2 != string::npos) {
-				newLine.Object(trim_copy(messages.substr(pos1,pos2-pos1)));
+				newLine.Object(trim_copy(messages.substr(pos1, pos2 - pos1)));
 				if (pos1 == 0 && ReplaceMessagesCheckBox->IsChecked())
 					newLine.Key(REPLACE);
 				else
 					newLine.Key(APPEND);
 
-				if (!newLine.IsObjectMessage())  //Message is formatted incorrectly. Error.
-					throw boss_error((format("The message \"%1%\" is formatted incorrectly.") % newLine.Object()).str(), BOSS_ERROR_INVALID_SYNTAX);
+				if (!newLine.IsObjectMessage())  // Message is formatted incorrectly. Error.
+					throw boss_error((format("The message \"%1%\" is formatted incorrectly.") % newLine.Object()).str(),
+					                  BOSS_ERROR_INVALID_SYNTAX);
 
 				vector<RuleLine> lines = newRule.Lines();
 				lines.push_back(newLine);
 				newRule.Lines(lines);
 
-				if (pos2 >= messages.length()-1)
+				if (pos2 >= messages.length() - 1)
 					break;
 				pos1 = pos2 + 1;
 				pos2 = messages.find("\n", pos1);
-				if (pos2 == string::npos && pos1 < messages.length()-1)
+				if (pos2 == string::npos &&
+				    pos1 < messages.length() - 1)
 					pos2 = messages.length();
 			}
 		}
@@ -715,11 +757,12 @@ TextDropTarget::TextDropTarget(wxTextCtrl *owner) {
 	targetOwner = owner;
 }
 
-bool TextDropTarget::OnDropText(wxCoord x, wxCoord y, const wxString &data) {
+bool TextDropTarget::OnDropText(wxCoord x, wxCoord y,
+                                const wxString &data) {
 	wxString originalValue = targetOwner->GetValue();
 	targetOwner->SetValue(data);
 
-	UserRulesEditorFrame *ureFrame = (UserRulesEditorFrame*)targetOwner->GetParent()->GetParent();  //Targets are owned by the static box created by the sizer they're in, which is in turn owned by the URE window.
+	UserRulesEditorFrame *ureFrame = (UserRulesEditorFrame*)targetOwner->GetParent()->GetParent();  // Targets are owned by the static box created by the sizer they're in, which is in turn owned by the URE window.
 	Item sortItem(string(ureFrame->SortModBox->GetValue().ToUTF8()));
 	Item forItem(string(ureFrame->RuleModBox->GetValue().ToUTF8()));
 	Item insertItem(string(ureFrame->InsertModBox->GetValue().ToUTF8()));
@@ -728,38 +771,34 @@ bool TextDropTarget::OnDropText(wxCoord x, wxCoord y, const wxString &data) {
 
 	if (isSorting && !forItem.Name().empty()) {
 		if (forItem.IsPlugin()) {
-			if (!isInserting && sortItem.IsGroup()) {  //Sort object is a group. Error.
-				wxMessageBox(
-					translate("Rule Syntax Error: Cannot sort a plugin relative to a group."),
-					translate("BOSS: Error"),
-					wxOK | wxICON_ERROR,
-					NULL);
+			if (!isInserting && sortItem.IsGroup()) {  // Sort object is a group. Error.
+				wxMessageBox(translate("Rule Syntax Error: Cannot sort a plugin relative to a group."),
+				             translate("BOSS: Error"),
+				             wxOK | wxICON_ERROR,
+				             NULL);
 				targetOwner->SetValue(originalValue);
 				return false;
-			} else if (isInserting && insertItem.IsPlugin()) {  //Inserting into a mod. Error.
-				wxMessageBox(
-					translate("Rule Syntax Error: Cannot insert into a plugin."),
-					translate("BOSS: Error"),
-					wxOK | wxICON_ERROR,
-					NULL);
+			} else if (isInserting && insertItem.IsPlugin()) {  // Inserting into a mod. Error.
+				wxMessageBox(translate("Rule Syntax Error: Cannot insert into a plugin."),
+				             translate("BOSS: Error"),
+				             wxOK | wxICON_ERROR,
+				             NULL);
 				targetOwner->SetValue(originalValue);
 				return false;
 			}
-		} else {  //Rule object is a group.
-			if (!isInserting && sortItem.IsPlugin()) {  //Sort object is a plugin. Error.
-				wxMessageBox(
-					translate("Rule Syntax Error: Cannot sort a group relative to a plugin."),
-					translate("BOSS: Error"),
-					wxOK | wxICON_ERROR,
-					NULL);
+		} else {  // Rule object is a group.
+			if (!isInserting && sortItem.IsPlugin()) {  // Sort object is a plugin. Error.
+				wxMessageBox(translate("Rule Syntax Error: Cannot sort a group relative to a plugin."),
+				             translate("BOSS: Error"),
+				             wxOK | wxICON_ERROR,
+				             NULL);
 				targetOwner->SetValue(originalValue);
 				return false;
-			} else if (isInserting) {  //Can't insert groups. Error.
-				wxMessageBox(
-					translate("Rule Syntax Error: Cannot insert groups."),
-					translate("BOSS: Error"),
-					wxOK | wxICON_ERROR,
-					NULL);
+			} else if (isInserting) {  // Can't insert groups. Error.
+				wxMessageBox(translate("Rule Syntax Error: Cannot insert groups."),
+				             translate("BOSS: Error"),
+				             wxOK | wxICON_ERROR,
+				             NULL);
 				targetOwner->SetValue(originalValue);
 				return false;
 			}
@@ -773,20 +812,24 @@ bool TextDropTarget::OnDropText(wxCoord x, wxCoord y, const wxString &data) {
 // RuleBoxClass functions
 ////////////////////////////
 
-RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, uint32_t index, bool isSelected) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize) {
-	//First get text representation of rule.
+RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent,
+                           Rule currentRule,
+                           uint32_t index,
+                           bool isSelected)
+    : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize) {
+	// First get text representation of rule.
 	string text = Outputter(PLAINTEXT, currentRule).AsString();
 	ruleIndex = index;
 
-	//Now do GUI stuff.
-	SetBackgroundColour(wxColour(255,255,255));
+	// Now do GUI stuff.
+	SetBackgroundColour(wxColour(255, 255, 255));
 
-	wxFlexGridSizer *mainSizer = new wxFlexGridSizer(2,0,0);
+	wxFlexGridSizer *mainSizer = new wxFlexGridSizer(2, 0, 0);
 	mainSizer->SetFlexibleDirection(wxHORIZONTAL);
 	mainSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_NONE);
-	mainSizer->AddGrowableCol(1,0);
-	mainSizer->Add(ruleCheckbox = new wxCheckBox(this, wxID_ANY, ""),0,wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxTOP|wxBOTTOM,10);
-	mainSizer->Add(ruleContent = new wxStaticText(this, wxID_ANY, wxEmptyString),0,wxEXPAND|wxRIGHT|wxTOP,10);  //Need to convert text that is outputted by BOSS-Common from UTF-8.
+	mainSizer->AddGrowableCol(1, 0);
+	mainSizer->Add(ruleCheckbox = new wxCheckBox(this, wxID_ANY, ""), 0, wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxTOP|wxBOTTOM, 10);
+	mainSizer->Add(ruleContent = new wxStaticText(this, wxID_ANY, wxEmptyString), 0, wxEXPAND|wxRIGHT|wxTOP, 10);  // Need to convert text that is outputted by BOSS-Common from UTF-8.
 
 	ruleCheckbox->SetValue(currentRule.Enabled());
 	ruleContent->SetLabelText(wxString(text.c_str(), wxConvUTF8));
@@ -794,7 +837,7 @@ RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, uint32
 	if (!currentRule.Enabled())
 		ruleContent->Enable(false);
 	if (isSelected)
-		SetBackgroundColour(wxColour(240,240,240));
+		SetBackgroundColour(wxColour(240, 240, 240));
 
 	SetSizerAndFit(mainSizer);
 	Show();
@@ -818,9 +861,9 @@ void RuleBoxClass::OnSelect(wxMouseEvent& event) {
 
 void RuleBoxClass::Highlight(bool highlight) {
 	if (highlight)
-		SetBackgroundColour(wxColour(240,240,240));
+		SetBackgroundColour(wxColour(240, 240, 240));
 	else
-		SetBackgroundColour(wxColour(255,255,255));
+		SetBackgroundColour(wxColour(255, 255, 255));
 	Refresh();
 }
 
@@ -828,41 +871,50 @@ void RuleBoxClass::Highlight(bool highlight) {
 // RuleListFrameClass functions
 //////////////////////////////////
 
-RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inGame) : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize), game(inGame), selectedRuleIndex(0) {
-	//Parse userlist.
+RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id,
+                                       Game& inGame)
+    : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize),
+      game(inGame),
+      selectedRuleIndex(0) {
+	// Parse userlist.
 	LOG_INFO("Starting to parse userlist.");
 	try {
 		game.userlist.Load(game, game.Userlist());
-		//Check for parsing errors.
+		// Check for parsing errors.
 		if (!game.userlist.ErrorBuffer().empty())
-			throw boss_error(Outputter(PLAINTEXT, game.userlist.ErrorBuffer().front()).AsString(), BOSS_ERROR_INVALID_SYNTAX);
+			throw boss_error(Outputter(PLAINTEXT, game.userlist.ErrorBuffer().front()).AsString(),
+			                 BOSS_ERROR_INVALID_SYNTAX);
 	} catch (boss_error &e) {
 		game.userlist.Clear();
 		LOG_ERROR("Error: %s", e.getString().c_str());
-		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL, loc::translate("User Rules Manager"), e.getString());
+		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL,
+		                 loc::translate("User Rules Manager"),
+		                 e.getString());
 	}
 
-	//Now disable any ADD rules with rule mods that are in the masterlist.
+	// Now disable any ADD rules with rule mods that are in the masterlist.
 	vector<Rule> rules = game.userlist.Rules();
-	for (size_t i=0, max=rules.size();i<max;i++) {
+	for (size_t i = 0, max=rules.size(); i < max; i++) {
 		if (rules[i].Key() == ADD) {
-			size_t pos = game.masterlist.FindItem(rules[i].Object(), MOD);
-			if (pos != game.masterlist.Items().size()) {  //Mod in masterlist.
+			size_t pos = game.masterlist.FindItem(rules[i].Object(),
+			                                      MOD);
+			if (pos != game.masterlist.Items().size()) {  // Mod in masterlist.
 				rules[i].Enabled(false);
-				wxMessageBox(
-					FromUTF8(format(loc::translate("The rule sorting the unrecognised plugin \"%1%\" has been disabled as the plugin is now recognised. If you wish to override its position in the masterlist, re-enable the rule.")) % rules[i].Object()),
-					translate("BOSS: Rule Disabled"),
-					wxOK | wxICON_ERROR,
-					NULL);
-					}
+				wxMessageBox(FromUTF8(format(loc::translate("The rule sorting the unrecognised plugin \"%1%\" has been disabled as the plugin is now recognised. If you wish to override its position in the masterlist, re-enable the rule.")) % rules[i].Object()),
+				             translate("BOSS: Rule Disabled"),
+				             wxOK | wxICON_ERROR,
+				             NULL);
+			}
 		}
 	}
 	game.userlist.Rules(rules);
 
-	//Now set up GUI layout.
+	// Now set up GUI layout.
 	SetBackgroundColour(*wxWHITE);
 
-	wxStaticBoxSizer *staticListBox = new wxStaticBoxSizer(wxVERTICAL, this, translate("User Rules"));
+	wxStaticBoxSizer *staticListBox = new wxStaticBoxSizer(wxVERTICAL,
+	                                                       this,
+	                                                       translate("User Rules"));
 	staticListBox->Add(RuleListScroller = new wxScrolled<wxPanel>(this, wxID_ANY), 1, wxEXPAND);
 
 	RuleListScroller->SetBackgroundColour(*wxWHITE);
@@ -880,18 +932,17 @@ void RuleListFrameClass::SaveUserlist(const fs::path path) {
 	try {
 		game.userlist.Save(path);
 	} catch (boss_error &e) {
-		wxMessageBox(
-			FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
-			translate("BOSS: Error"),
-			wxOK | wxICON_ERROR,
-			NULL);
+		wxMessageBox(FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
+		             translate("BOSS: Error"),
+		             wxOK | wxICON_ERROR,
+		             NULL);
 	}
 }
 
 void RuleListFrameClass::ReDrawRuleList() {
 	RuleListScroller->DestroyChildren();
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
-	for (size_t i=0,size = game.userlist.Rules().size();i<size;i++) {
+	for (size_t i = 0, size = game.userlist.Rules().size(); i < size; i++) {
 		if (i == selectedRuleIndex)
 			sizer->Add(new RuleBoxClass(RuleListScroller, game.userlist.RuleAt(i), i, true), 0, wxEXPAND);
 		else
@@ -903,14 +954,16 @@ void RuleListFrameClass::ReDrawRuleList() {
 }
 
 void RuleListFrameClass::MoveRule(wxWindowID id) {
-	if (selectedRuleIndex >= 0 && selectedRuleIndex < game.userlist.Rules().size()) {
+	if (selectedRuleIndex >= 0 &&
+	    selectedRuleIndex < game.userlist.Rules().size()) {
 		if (id == BUTTON_MoveRuleUp && selectedRuleIndex != 0) {
 			Rule selectedRule = game.userlist.RuleAt(selectedRuleIndex);
 			game.userlist.Erase(selectedRuleIndex);
 			game.userlist.Insert(selectedRuleIndex - 1, selectedRule);
 			selectedRuleIndex--;
 			ReDrawRuleList();
-		} else if (id == BUTTON_MoveRuleDown && selectedRuleIndex != game.userlist.Rules().size()-1) {
+		} else if (id == BUTTON_MoveRuleDown &&
+		           selectedRuleIndex != game.userlist.Rules().size() - 1) {
 			Rule selectedRule = game.userlist.RuleAt(selectedRuleIndex);
 			game.userlist.Erase(selectedRuleIndex);
 			game.userlist.Insert(selectedRuleIndex + 1, selectedRule);
@@ -921,33 +974,36 @@ void RuleListFrameClass::MoveRule(wxWindowID id) {
 }
 
 void RuleListFrameClass::OnToggleRule(wxCommandEvent& event) {
-	if (event.GetId() >= 0 && event.GetId() < game.userlist.Rules().size()) {
+	if (event.GetId() >= 0 &&
+	    event.GetId() < game.userlist.Rules().size()) {
 		uint32_t id = event.GetId();
 		bool checked = event.IsChecked();
 		Rule rule = game.userlist.RuleAt(id);
 
 		rule.Enabled(checked);
-		if (checked && rule.Key() == ADD && game.masterlist.FindItem(rule.Object(), MOD) != game.masterlist.Items().size())
+		if (checked && rule.Key() == ADD &&
+		    game.masterlist.FindItem(rule.Object(), MOD) != game.masterlist.Items().size())
 			rule.Key(OVERRIDE);
 		game.userlist.Replace(id, rule);
 	}
 }
 
 Rule RuleListFrameClass::GetSelectedRule() {
-	return game.userlist.RuleAt(selectedRuleIndex);  //If >= userlist.Rules().size() the function returns a Rule() anyway.
+	return game.userlist.RuleAt(selectedRuleIndex);  // If >= userlist.Rules().size() the function returns a Rule() anyway.
 }
 
 void RuleListFrameClass::AppendRule(Rule newRule) {
-	//Add the rule to the end of the userlist.
+	// Add the rule to the end of the userlist.
 	selectedRuleIndex = game.userlist.Rules().size();
 	game.userlist.Insert(selectedRuleIndex, newRule);
-	//Now refresh GUI.
+	// Now refresh GUI.
 	ReDrawRuleList();
 	RuleListScroller->Scroll(RuleListScroller->GetChildren().back()->GetPosition());
 }
 
 void RuleListFrameClass::SaveEditedRule(Rule editedRule) {
-	if (selectedRuleIndex >= 0 && selectedRuleIndex < game.userlist.Rules().size()) {
+	if (selectedRuleIndex >= 0 &&
+	    selectedRuleIndex < game.userlist.Rules().size()) {
 		game.userlist.Replace(selectedRuleIndex, editedRule);
 		ReDrawRuleList();
 		RuleListScroller->Scroll(RuleListScroller->GetChildren()[selectedRuleIndex]->GetPosition());
@@ -957,7 +1013,8 @@ void RuleListFrameClass::SaveEditedRule(Rule editedRule) {
 void RuleListFrameClass::DeleteSelectedRule() {
 	if (!game.userlist.Rules().empty())
 		game.userlist.Erase(selectedRuleIndex);
-	if (!game.userlist.Rules().empty() && selectedRuleIndex == game.userlist.Rules().size())  //Just shortened rules by one. Make sure index isn't invalid.
+	if (!game.userlist.Rules().empty() &&
+	    selectedRuleIndex == game.userlist.Rules().size())  // Just shortened rules by one. Make sure index isn't invalid.
 		selectedRuleIndex--;
 	ReDrawRuleList();
 	if (!game.userlist.Rules().empty())
@@ -968,7 +1025,7 @@ void RuleListFrameClass::OnRuleSelection(wxCommandEvent& event) {
 	selectedRuleIndex = event.GetId();
 	size_t size = game.userlist.Rules().size();
 	wxWindowList list = RuleListScroller->GetChildren();
-	for (size_t i=0; i<size; i++) {
+	for (size_t i = 0; i < size; i++) {
 		RuleBoxClass *temp = (RuleBoxClass*)list[i];
 		if (i == selectedRuleIndex)
 			temp->Highlight(true);

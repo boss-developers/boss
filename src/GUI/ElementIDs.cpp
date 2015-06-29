@@ -32,11 +32,13 @@ using boost::format;
 
 namespace boss {
 	wxString translate(char * cstr) {
-		return wxString(boost::locale::translate(cstr).str().c_str(), wxConvUTF8);
+		return wxString(boost::locale::translate(cstr).str().c_str(),
+		                wxConvUTF8);
 	}
 
 	wxString translate(string str) {
-		return wxString(boost::locale::translate(str).str().c_str(), wxConvUTF8);
+		return wxString(boost::locale::translate(str).str().c_str(),
+		                wxConvUTF8);
 	}
 
 	wxString FromUTF8(string str) {
@@ -50,11 +52,14 @@ namespace boss {
 	int progress(const git_transfer_progress *stats, void *payload) {
 		int currentProgress = (int)floor(float(stats->received_objects) / stats->total_objects * 1000);
 		if (currentProgress == 1000)
-			--currentProgress; //Stop the progress bar from closing in case of multiple downloads.
+			--currentProgress;  // Stop the progress bar from closing in case of multiple downloads.
 		wxProgressDialog* progress = (wxProgressDialog*)payload;
-			bool cont = progress->Update(currentProgress, FromUTF8(format(loc::translate("Downloading masterlist: %1% of %2% objects (%3% KB)")) % stats->received_objects % stats->total_objects % (stats->received_bytes / 1024)));
-		if (!cont) {  //the user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
-			uint32_t ans = wxMessageBox(translate("Are you sure you want to cancel?"), translate("BOSS: Updater"), wxYES_NO | wxICON_EXCLAMATION, progress);
+		bool cont = progress->Update(currentProgress, FromUTF8(format(loc::translate("Downloading masterlist: %1% of %2% objects (%3% KB)")) % stats->received_objects % stats->total_objects % (stats->received_bytes / 1024)));
+		if (!cont) {  // The user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
+			uint32_t ans = wxMessageBox(translate("Are you sure you want to cancel?"),
+			                            translate("BOSS: Updater"),
+			                            wxYES_NO | wxICON_EXCLAMATION,
+			                            progress);
 			if (ans == wxYES)
 				return 1;
 			progress->Resume();

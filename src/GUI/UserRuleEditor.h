@@ -39,18 +39,20 @@
 using namespace boss;
 using namespace std;
 
-class TextDropTarget : public wxTextDropTarget {  //Class to override virtual functions.
+class TextDropTarget : public wxTextDropTarget {  // Class to override virtual functions.
 public:
 	TextDropTarget(wxTextCtrl *owner);
-	virtual bool OnDropText(wxCoord x, wxCoord y, const wxString &data);
+	virtual bool OnDropText(wxCoord x, wxCoord y,
+	                        const wxString &data);
 private:
 	wxTextCtrl *targetOwner;
 };
 
 class RuleBoxClass : public wxPanel {
 public:
-	RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule, uint32_t index, bool isSelected);
-	void ToggleEnabled(wxCommandEvent& event);		//Doesn't handle RuleList modification, only greying out of UI element.
+	RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule,
+	             uint32_t index, bool isSelected);
+	void ToggleEnabled(wxCommandEvent& event);  // Doesn't handle RuleList modification, only greying out of UI element.
 	void OnSelect(wxMouseEvent& event);
 	void Highlight(bool highlight);
 	DECLARE_EVENT_TABLE()
@@ -62,18 +64,18 @@ private:
 
 class RuleListFrameClass : public wxPanel {
 public:
-	RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inGame);		//Initialise the RuleListFrameClass object.
-	void SaveUserlist(const fs::path path);	//Save the changes made to the userlist.
-	Rule GetSelectedRule();					//Returns the currently selected rule.
-	void AppendRule(Rule newRule);			//Append to RuleList object and update GUI.
-	void SaveEditedRule(Rule editedRule);   //Get the index from current selection internally. Also update RuleList object.
-	void DeleteSelectedRule();				//Remove from GUI and RuleList object, getting index from current selection internally.
+	RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inGame);  // Initialise the RuleListFrameClass object.
+	void SaveUserlist(const fs::path path);                            // Save the changes made to the userlist.
+	Rule GetSelectedRule();                                            // Returns the currently selected rule.
+	void AppendRule(Rule newRule);                                     // Append to RuleList object and update GUI.
+	void SaveEditedRule(Rule editedRule);                              // Get the index from current selection internally. Also update RuleList object.
+	void DeleteSelectedRule();                                         // Remove from GUI and RuleList object, getting index from current selection internally.
 	void MoveRule(wxWindowID id);
 	void OnToggleRule(wxCommandEvent& event);
 	void OnRuleSelection(wxCommandEvent& event);
 	DECLARE_EVENT_TABLE()
 private:
-	void ReDrawRuleList();					//Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
+	void ReDrawRuleList();                                             // Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
 	size_t selectedRuleIndex;
 	wxScrolled<wxPanel> *RuleListScroller;
 	Game& game;
@@ -81,7 +83,8 @@ private:
 
 class UserRulesEditorFrame : public wxFrame {
 public:
-	UserRulesEditorFrame(const wxString title, wxFrame *parent, Game& inGame);
+	UserRulesEditorFrame(const wxString title, wxFrame *parent,
+	                     Game& inGame);
 	void OnOKQuit(wxCommandEvent& event);
 	void OnCancelQuit(wxCommandEvent& event);
 	void OnSearchList(wxCommandEvent& event);
