@@ -29,6 +29,7 @@
 #define __ELEMENTIDS__HPP__
 
 #include "BOSS-Common.h"
+
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
