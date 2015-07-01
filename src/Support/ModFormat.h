@@ -28,10 +28,11 @@
 #ifndef __SUPPORT_MODFORMAT__HPP__
 #define __SUPPORT_MODFORMAT__HPP__
 
-#include "Support/Types.h"
 #include <cstring>
+
 #include <boost/filesystem.hpp>
 
+#include "Support/Types.h"
 
 namespace boss {
 
