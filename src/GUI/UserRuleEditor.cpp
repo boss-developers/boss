@@ -27,10 +27,10 @@
 
 #include "GUI/UserRuleEditor.h"
 
-#include <wx/progdlg.h>
-
 #include <boost/algorithm/string.hpp>
 #include <boost/locale.hpp>
+
+#include <wx/progdlg.h>
 
 BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
 	EVT_BUTTON ( BUTTON_OKExitEditor, UserRulesEditorFrame::OnOKQuit )
