@@ -29,8 +29,10 @@
 #define __BOSS_GAME_H__
 
 #include <string>
-#include <boost/filesystem.hpp>
+
 #include <boost/cstdint.hpp>
+#include <boost/filesystem.hpp>
+
 #include "Common/Classes.h"
 #include "Output/Output.h"
 #include "Support/Helpers.h"
