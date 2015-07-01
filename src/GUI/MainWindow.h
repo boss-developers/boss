@@ -28,12 +28,13 @@
 #ifndef __MAIN__HPP__
 #define __MAIN__HPP__
 
-
 #include "BOSS-Common.h"
-#include "GUI/ElementIDs.h"
+
 #include <wx/hyperlink.h>
 #include <wx/progdlg.h>
 #include <wx/thread.h>
+
+#include "GUI/ElementIDs.h"
 
 // Program class.
 class BossGUI : public wxApp {
