@@ -28,11 +28,11 @@
 #ifndef __SUPPORT_LOGGER__HPP__
 #define __SUPPORT_LOGGER__HPP__
 
-#include "Support/Platform.h"
-#include "Common/DllDef.h"
 #include <cstdarg>
 #include <cstdio>
 
+#include "Common/DllDef.h"
+#include "Support/Platform.h"
 
 #define _LOG_IMPL(verbosity, formatStr, ...) \
 	boss::g_logger.log(verbosity, formatStr, ##__VA_ARGS__)
