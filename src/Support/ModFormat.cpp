@@ -25,16 +25,18 @@
 	$Revision: 2488 $, $Date: 2011-03-27 14:31:33 +0100 (Sun, 27 Mar 2011) $
 */
 
-
-#include "Support/Types.h"
-#include "Support/Helpers.h"
 #include "Support/ModFormat.h"
-#include "Support/VersionRegex.h"
 
 #include <cstring>
+
 #include <fstream>
-#include <boost/regex.hpp>
+
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/regex.hpp>
+
+#include "Support/Helpers.h"
+#include "Support/Types.h"
+#include "Support/VersionRegex.h"
 
 namespace boss {
 	using namespace std;
