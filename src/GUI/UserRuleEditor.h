@@ -28,13 +28,14 @@
 #ifndef __RULEEDITOR__HPP__
 #define __RULEEDITOR__HPP__
 
-#include "GUI/ElementIDs.h"
-#include <wx/rearrangectrl.h>
-#include <wx/srchctrl.h>
-#include <wx/treectrl.h>
 #include <wx/dataobj.h>
 #include <wx/dnd.h>
 #include <wx/notebook.h>
+#include <wx/rearrangectrl.h>
+#include <wx/srchctrl.h>
+#include <wx/treectrl.h>
+
+#include "GUI/ElementIDs.h"
 
 using namespace boss;
 using namespace std;
