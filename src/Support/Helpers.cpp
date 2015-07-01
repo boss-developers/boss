@@ -25,31 +25,33 @@
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
 */
 
-
-#include "Support/Types.h"
 #include "Support/Helpers.h"
-#include "Support/ModFormat.h"
-#include "Support/Logger.h"
-#include "Common/Globals.h"
 
-#include <boost/spirit/include/karma.hpp>
+#include <sys/types.h>
+
+#include <cctype>
+#include <cstdio>
+#include <cstring>
+#include <ctime>
+
+#include <iostream>
+#include <sstream>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/crc.hpp>
+#include <boost/spirit/include/karma.hpp>
 #include <boost/regex.hpp>
 
 #include "alphanum.hpp"
 
-#include <cstring>
-#include <iostream>
-#include <cctype>
-#include <cstdio>
-#include <ctime>
-#include <sys/types.h>
-#include <sstream>
+#include "Common/Globals.h"
+#include "Support/Logger.h"
+#include "Support/ModFormat.h"
+#include "Support/Types.h"
 
 #if _WIN32 || _WIN64
-#	include <windows.h>
 #	include <shlobj.h>
+#	include <windows.h>
 #endif
 
 namespace boss {
