@@ -27,25 +27,27 @@
 
 // We want to ensure that the GUI-specific code in BOSS-Common is included.
 
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
-#include <boost/exception/get_error_info.hpp>
-#include <boost/unordered_set.hpp>
-#include <boost/regex.hpp>
+#include "GUI/MainWindow.h"
 
 #include <clocale>
 #include <cstdlib>
 #include <ctime>
-#include <iostream>
+
 #include <algorithm>
+#include <iostream>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/exception/get_error_info.hpp>
+#include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
+#include <boost/regex.hpp>
+#include <boost/unordered_set.hpp>
 
 #include <wx/aboutdlg.h>
 #include <wx/snglinst.h>
 
-#include "GUI/MainWindow.h"
+#include "GUI/ElementIDs.h"
 #include "GUI/SettingsWindow.h"
 #include "GUI/UserRuleEditor.h"
-#include "GUI/ElementIDs.h"
 
 wxDEFINE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
 
