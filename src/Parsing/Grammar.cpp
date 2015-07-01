@@ -26,14 +26,22 @@
 */
 
 #include "Parsing/Grammar.h"
-#include "Common/Globals.h"
+
+#include <sstream>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/phoenix/object/construct.hpp>
+#include <boost/regex.hpp>
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_bind.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
+
 #include "Common/Error.h"
+#include "Common/Globals.h"
+#include "Output/Output.h"
 #include "Support/Helpers.h"
 #include "Support/Logger.h"
-#include "Output/Output.h"
 
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
 /*
  * #include <boost/version.hpp>
  * #if BOOST_VERSION > 105500
@@ -42,11 +50,6 @@
  * #	include <boost/spirit/home/phoenix/object/construct.hpp>
  * #endif
  */
-#include <boost/phoenix/object/construct.hpp>
-#include <boost/spirit/include/phoenix_bind.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/regex.hpp>
-#include <sstream>
 
 namespace boss {
 	namespace unicode = boost::spirit::unicode;
