@@ -33,8 +33,10 @@
 #endif
 
 #include <string>
-#include <boost/filesystem.hpp>
+
 #include <boost/cstdint.hpp>
+#include <boost/filesystem.hpp>
+
 #include "Common/DllDef.h"
 #include "Common/Game.h"
 
