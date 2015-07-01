@@ -28,13 +28,14 @@
 #ifndef __BOSS_UPDATER_H__
 #define __BOSS_UPDATER_H__
 
+#include <fstream>
 #include <string>
 #include <vector>
-#include <fstream>
-#include "Common/Game.h"
-#include "Support/Logger.h"
 
 #include <git2.h>
+
+#include "Common/Game.h"
+#include "Support/Logger.h"
 
 namespace boss {
 
