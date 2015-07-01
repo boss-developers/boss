@@ -28,8 +28,9 @@
 #ifndef __SETTINGS__HPP__
 #define __SETTINGS__HPP__
 
-#include "GUI/ElementIDs.h"
 #include <wx/notebook.h>
+
+#include "GUI/ElementIDs.h"
 
 using namespace std;
 
