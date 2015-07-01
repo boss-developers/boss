@@ -26,6 +26,7 @@
 */
 
 #include "GUI/ElementIDs.h"
+
 #include <wx/progdlg.h>
 
 using boost::format;
