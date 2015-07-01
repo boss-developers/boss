@@ -26,14 +26,16 @@
 */
 
 #include "Common/Classes.h"
+
+#include <boost/algorithm/string.hpp>
+
 #include "Common/Game.h"
 #include "Common/Globals.h"
 #include "Output/Output.h"
+#include "Parsing/Grammar.h"
 #include "Support/Logger.h"
 #include "Support/ModFormat.h"
-#include "Parsing/Grammar.h"
 
-#include <boost/algorithm/string.hpp>
 
 namespace boss {
 	using namespace std;
