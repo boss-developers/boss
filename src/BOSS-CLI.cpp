@@ -29,22 +29,22 @@
 
 #include "BOSS-Common.h"
 
-#include <boost/algorithm/string.hpp>
-#include <boost/program_options.hpp>
-#include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
-#include <boost/exception/get_error_info.hpp>
-#include <boost/unordered_set.hpp>
-#include <boost/locale.hpp>
-
 #include <clocale>
 #include <cstdlib>
 #include <ctime>
-#include <string>
-#include <iostream>
+
 #include <algorithm>
+#include <iostream>
+#include <string>
 #include <vector>
 
+#include <boost/algorithm/string.hpp>
+#include <boost/exception/get_error_info.hpp>
+#include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
+#include <boost/locale.hpp>
+#include <boost/program_options.hpp>
 #include <boost/regex.hpp>
+#include <boost/unordered_set.hpp>
 
 
 using namespace boss;
