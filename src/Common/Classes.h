@@ -30,11 +30,13 @@
 
 #include <string>
 #include <vector>
+
 #include <boost/filesystem.hpp>
-#include <boost/unordered_set.hpp>
-#include <boost/unordered_map.hpp>
 #include <boost/fusion/adapted/struct/detail/extension.hpp>
 #include <boost/regex.hpp>
+#include <boost/unordered_set.hpp>
+#include <boost/unordered_map.hpp>
+
 #include "Common/DllDef.h"
 #include "Common/Error.h"
 #include "Support/Helpers.h"
