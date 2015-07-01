@@ -30,9 +30,11 @@
 #define __BOSS_ERROR_H__
 
 #include <string>
+
 #include <boost/cstdint.hpp>
 #include <boost/format.hpp>
 #include <boost/locale.hpp>
+
 #include "Common/DllDef.h"
 
 namespace boss {
