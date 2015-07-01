@@ -30,10 +30,10 @@
 #ifndef __BOSS_BOSSLOG_H__
 #define __BOSS_BOSSLOG_H__
 
-#include <string>
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 #include <boost/format.hpp>
 #include <boost/unordered_set.hpp>
