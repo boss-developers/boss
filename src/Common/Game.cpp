@@ -26,15 +26,17 @@
 */
 
 #include "Common/Game.h"
-#include "Common/Globals.h"
-#include "Support/Helpers.h"
-#include "Support/Logger.h"
+
 #include <boost/algorithm/string.hpp>
 #include <boost/locale.hpp>
 
+#include "Common/Globals.h"
+#include "Support/Helpers.h"
+#include "Support/Logger.h"
+
 #if _WIN32 || _WIN64
-#	include <windows.h>
 #	include <shlobj.h>
+#	include <windows.h>
 #endif
 
 namespace boss {
