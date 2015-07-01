@@ -28,10 +28,10 @@
 #ifndef __BOSS_COMMON_H__
 #define __BOSS_COMMON_H__
 
-#include "Common/Globals.h"
 #include "Common/Classes.h"
-#include "Common/Game.h"
 #include "Common/Error.h"
+#include "Common/Game.h"
+#include "Common/Globals.h"
 #include "Output/Output.h"
 #include "Support/Helpers.h"
 #include "Support/Logger.h"
