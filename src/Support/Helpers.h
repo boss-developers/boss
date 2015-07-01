@@ -28,10 +28,11 @@
 #ifndef __SUPPORT_HELPERS__HPP__
 #define __SUPPORT_HELPERS__HPP__
 
-#include "Common/DllDef.h"
-
 #include <string>
+
 #include <boost/filesystem.hpp>
+
+#include "Common/DllDef.h"
 
 namespace boss {
 	using namespace std;
