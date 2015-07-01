@@ -32,15 +32,17 @@
 #	define BOOST_SPIRIT_UNICODE
 #endif
 
-#include "Common/Classes.h"
-#include "Common/Game.h"
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
+
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
 #include <boost/fusion/include/std_pair.hpp>
 #include <boost/spirit/include/qi.hpp>
+
+#include "Common/Classes.h"
+#include "Common/Game.h"
 
 namespace fs = boost::filesystem;
 
