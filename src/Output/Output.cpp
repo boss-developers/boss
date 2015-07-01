@@ -26,11 +26,13 @@
 */
 
 #include "Output/Output.h"
+
+#include <boost/algorithm/string.hpp>
+#include <boost/locale.hpp>
+
 #include "Common/Error.h"
 #include "Common/Globals.h"
 #include "Support/Helpers.h"
-#include <boost/algorithm/string.hpp>
-#include <boost/locale.hpp>
 
 namespace boss {
 	using namespace std;
