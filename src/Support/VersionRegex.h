@@ -28,9 +28,7 @@
 #ifndef __SUPPORT_VERSIONREGEX__HPP__
 #define __SUPPORT_VERSIONREGEX__HPP__
 
-
 #include <boost/regex.hpp>
-
 
 namespace boss {
 
