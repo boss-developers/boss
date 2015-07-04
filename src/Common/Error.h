@@ -26,8 +26,8 @@
 */
 // Contains the BOSS exception class.
 
-#ifndef __BOSS_ERROR_H__
-#define __BOSS_ERROR_H__
+#ifndef COMMON_ERROR_H_
+#define COMMON_ERROR_H_
 
 #include <string>
 
@@ -154,4 +154,4 @@ private:
 };
 
 }  // namespace boss
-#endif
+#endif  // COMMON_ERROR_H_

@@ -27,8 +27,8 @@
 
 // Contains the various functions/classes required for varied BOSSlog output formattings,etc.
 
-#ifndef __BOSS_BOSSLOG_H__
-#define __BOSS_BOSSLOG_H__
+#ifndef OUTPUT_OUTPUT_H_
+#define OUTPUT_OUTPUT_H_
 
 #include <fstream>
 #include <iostream>
@@ -177,4 +177,4 @@ private:
 };
 
 }  // namespace boss
-#endif
+#endif  // OUTPUT_OUTPUT_H_

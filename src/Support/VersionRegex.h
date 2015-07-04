@@ -25,8 +25,8 @@
 	$Revision: 1681 $, $Date: 2010-10-17 21:01:25 +0100 (Sun, 17 Oct 2010) $
 */
 
-#ifndef __SUPPORT_VERSIONREGEX__HPP__
-#define __SUPPORT_VERSIONREGEX__HPP__
+#ifndef SUPPORT_VERSIONREGEX_H_
+#define SUPPORT_VERSIONREGEX_H_
 
 #include <boost/regex.hpp>
 
@@ -39,4 +39,4 @@ using namespace boost;
 extern regex* version_checks[];
 
 }  // namespace boss
-#endif
+#endif  // SUPPORT_VERSIONREGEX_H_

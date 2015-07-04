@@ -25,8 +25,8 @@
 	$Revision: 3163 $, $Date: 2011-08-21 22:03:18 +0100 (Sun, 21 Aug 2011) $
 */
 
-#ifndef __SUPPORT_HELPERS__HPP__
-#define __SUPPORT_HELPERS__HPP__
+#ifndef SUPPORT_HELPERS_H_
+#define SUPPORT_HELPERS_H_
 
 #include <string>
 
@@ -94,4 +94,4 @@ public:
 };
 
 }  // namespace boss
-#endif
+#endif  // SUPPORT_HELPERS_H_

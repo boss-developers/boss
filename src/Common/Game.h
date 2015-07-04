@@ -25,8 +25,8 @@
 	$Revision: 3135 $, $Date: 2011-08-17 22:01:17 +0100 (Wed, 17 Aug 2011) $
 */
 
-#ifndef __BOSS_GAME_H__
-#define __BOSS_GAME_H__
+#ifndef COMMON_GAME_H_
+#define COMMON_GAME_H_
 
 #include <string>
 
@@ -127,4 +127,4 @@ private:
 };
 
 }  // namespace boss
-#endif
+#endif  // COMMON_GAME_H_

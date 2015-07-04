@@ -25,8 +25,8 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-#ifndef __BOSS_GRAMMAR_H__
-#define __BOSS_GRAMMAR_H__
+#ifndef PARSING_GRAMMAR_H_
+#define PARSING_GRAMMAR_H_
 
 #ifndef BOOST_SPIRIT_UNICODE
 #	define BOOST_SPIRIT_UNICODE
@@ -310,4 +310,4 @@ private:
 };
 
 }  // namespace boss
-#endif
+#endif  // PARSING_GRAMMAR_H_

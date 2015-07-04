@@ -25,8 +25,8 @@
 	$Revision: 1783 $, $Date: 2010-10-31 23:05:28 +0000 (Sun, 31 Oct 2010) $
 */
 
-#ifndef __SUPPORT_LOGGER__HPP__
-#define __SUPPORT_LOGGER__HPP__
+#ifndef SUPPORT_LOGGER_H_
+#define SUPPORT_LOGGER_H_
 
 #include <cstdarg>
 #include <cstdio>
@@ -104,4 +104,4 @@ private:
 BOSS_COMMON extern Logger g_logger;
 
 }  // namespace boss
-#endif  // __SUPPORT_LOGGER__HPP__
+#endif  // SUPPORT_LOGGER_H_

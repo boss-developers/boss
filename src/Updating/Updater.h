@@ -25,8 +25,8 @@
 	$Revision: 3184 $, $Date: 2011-08-26 20:52:13 +0100 (Fri, 26 Aug 2011) $
 */
 
-#ifndef __BOSS_UPDATER_H__
-#define __BOSS_UPDATER_H__
+#ifndef UPDATING_UPDATER_H_
+#define UPDATING_UPDATER_H_
 
 #include <fstream>
 #include <string>
@@ -288,4 +288,4 @@ std::string UpdateMasterlist(Game& game, Progress prog, void * out) {
 }
 
 }  // namespace boss
-#endif
+#endif  // UPDATING_UPDATER_H_

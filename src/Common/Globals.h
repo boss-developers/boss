@@ -25,8 +25,8 @@
 	$Revision: 3135 $, $Date: 2011-08-17 22:01:17 +0100 (Wed, 17 Aug 2011) $
 */
 
-#ifndef __BOSS_GLOBALS_H__
-#define __BOSS_GLOBALS_H__
+#ifndef COMMON_GLOBALS_H_
+#define COMMON_GLOBALS_H_
 
 #ifndef _UNICODE
 #define _UNICODE  // Tell compiler we're using Unicode, notice the _
@@ -122,4 +122,4 @@ BOSS_COMMON extern std::string gl_fallout3_repo_url;
 BOSS_COMMON extern std::string gl_falloutnv_repo_url;
 
 }  // namespace boss
-#endif
+#endif  // COMMON_GLOBALS_H_

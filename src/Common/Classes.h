@@ -25,8 +25,8 @@
 	$Revision: 3135 $, $Date: 2011-08-17 22:01:17 +0100 (Wed, 17 Aug 2011) $
 */
 
-#ifndef __BOSS_CLASSES__
-#define __BOSS_CLASSES__
+#ifndef COMMON_CLASSES_H_
+#define COMMON_CLASSES_H_
 
 #include <string>
 #include <vector>
@@ -327,4 +327,4 @@ public:
 };
 
 }  // namespace boss
-#endif
+#endif  // COMMON_CLASSES_H_

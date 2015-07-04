@@ -25,8 +25,8 @@
 	$Revision: 1679 $, $Date: 2010-10-17 20:41:49 +0100 (Sun, 17 Oct 2010) $
 */
 
-#ifndef __SUPPORT_TYPES__HPP__
-#define __SUPPORT_TYPES__HPP__
+#ifndef SUPPORT_TYPES_H_
+#define SUPPORT_TYPES_H_
 
 namespace boss {
 
@@ -47,4 +47,4 @@ typedef unsigned short ushort;
 const ulong MAXLENGTH = 4096UL;
 
 }  // namespace boss
-#endif
+#endif  // SUPPORT_TYPES_H_

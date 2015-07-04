@@ -25,8 +25,8 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-#ifndef __RULEEDITOR__HPP__
-#define __RULEEDITOR__HPP__
+#ifndef GUI_USERRULEEDITOR_H_
+#define GUI_USERRULEEDITOR_H_
 
 #include <wx/dataobj.h>
 #include <wx/dnd.h>
@@ -150,4 +150,4 @@ private:
 	wxButton * MoveRuleDownButton;
 };
 
-#endif
+#endif  // GUI_USERRULEEDITOR_H_

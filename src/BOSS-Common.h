@@ -25,8 +25,8 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-#ifndef __BOSS_COMMON_H__
-#define __BOSS_COMMON_H__
+#ifndef BOSS_COMMON_H_
+#define BOSS_COMMON_H_
 
 #include "Common/Classes.h"
 #include "Common/Error.h"
@@ -70,4 +70,4 @@ string			FetchReleaseNotes			(const string updateVersion);
 vector<string>	DownloadInstallBOSSUpdate	(uiStruct ui, const uint32_t updateType, const string updateVersion);
 */
 
-#endif  // __BOSS_COMMON_H__
+#endif  // BOSS_COMMON_H_
