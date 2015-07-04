@@ -38,91 +38,93 @@
 #include "Support/Helpers.h"
 
 namespace boss {
-	using namespace std;
-	namespace fs = boost::filesystem;
 
-	// MCP Note: Possibly convert these to enums?
-	// The following are for signifying what load order method is being used:
-	BOSS_COMMON extern const uint32_t LOMETHOD_TIMESTAMP;
-	BOSS_COMMON extern const uint32_t LOMETHOD_TEXTFILE;
+using namespace std;
+namespace fs = boost::filesystem;
 
-	BOSS_COMMON uint32_t DetectGame(vector<uint32_t>& detectedGames,
-	                                vector<uint32_t>& undetectedGames);  // Throws exception if error.
+// MCP Note: Possibly convert these to enums?
+// The following are for signifying what load order method is being used:
+BOSS_COMMON extern const uint32_t LOMETHOD_TIMESTAMP;
+BOSS_COMMON extern const uint32_t LOMETHOD_TEXTFILE;
 
-	class BOSS_COMMON Game {  // Constructor depends on gl_update_only.
-	public:
-		Game();  // Sets game to AUTODETECT, with all other vars being empty.
-		Game(const uint32_t gameCode, const string path = "",
-		     const bool noPathInit = false);  // Empty path means constructor will detect its location. If noPathInit is true, then the data, active plugins list and loadorder.txt paths will not be set, and the game's BOSS subfolder will not be created.
+BOSS_COMMON uint32_t DetectGame(vector<uint32_t>& detectedGames,
+                                vector<uint32_t>& undetectedGames);  // Throws exception if error.
 
-		bool IsInstalled() const;
-		bool IsInstalledLocally() const;
+class BOSS_COMMON Game {  // Constructor depends on gl_update_only.
+public:
+	Game();  // Sets game to AUTODETECT, with all other vars being empty.
+	Game(const uint32_t gameCode, const string path = "",
+	     const bool noPathInit = false);  // Empty path means constructor will detect its location. If noPathInit is true, then the data, active plugins list and loadorder.txt paths will not be set, and the game's BOSS subfolder will not be created.
 
-		uint32_t Id() const;
-		string Name() const;  // Returns the game's name, eg. "TES IV: Oblivion".
-		string ScriptExtender() const;
-		Item MasterFile() const;  // Returns the game's master file. To get its timestamp, use .GetModTime() on it.
+	bool IsInstalled() const;
+	bool IsInstalledLocally() const;
 
-		Version GetVersion() const;
-		uint32_t GetLoadOrderMethod() const;
+	uint32_t Id() const;
+	string Name() const;  // Returns the game's name, eg. "TES IV: Oblivion".
+	string ScriptExtender() const;
+	Item MasterFile() const;  // Returns the game's master file. To get its timestamp, use .GetModTime() on it.
 
-		fs::path Executable() const;
-		fs::path GameFolder() const;
-		fs::path DataFolder() const;
-		fs::path SEPluginsFolder() const;
-		fs::path SEExecutable() const;
-		fs::path ActivePluginsFile() const;
-		fs::path LoadOrderFile() const;
-		fs::path Masterlist() const;
-		fs::path Userlist() const;
-		fs::path Modlist() const;
-		fs::path OldModlist() const;
-		fs::path Log(uint32_t format) const;
+	Version GetVersion() const;
+	uint32_t GetLoadOrderMethod() const;
 
-		// Creates directory in BOSS folder for BOSS's game-specific files.
-		void CreateBOSSGameFolder();
+	fs::path Executable() const;
+	fs::path GameFolder() const;
+	fs::path DataFolder() const;
+	fs::path SEPluginsFolder() const;
+	fs::path SEExecutable() const;
+	fs::path ActivePluginsFile() const;
+	fs::path LoadOrderFile() const;
+	fs::path Masterlist() const;
+	fs::path Userlist() const;
+	fs::path Modlist() const;
+	fs::path OldModlist() const;
+	fs::path Log(uint32_t format) const;
 
-		// Apply the positioning of plugins in the masterlist to the modlist, putting unrecognised plugins after recognised plugins in their original order. Alters modlist.
-		void ApplyMasterlist();
+	// Creates directory in BOSS folder for BOSS's game-specific files.
+	void CreateBOSSGameFolder();
 
-		// Apply any user rules to the modlist. Alters modlist and bosslog.
-		void ApplyUserlist();
+	// Apply the positioning of plugins in the masterlist to the modlist, putting unrecognised plugins after recognised plugins in their original order. Alters modlist.
+	void ApplyMasterlist();
 
-		// Scans the data folder for script extender plugins and outputs their info to the bosslog. Alters bosslog.
-		void ScanSEPlugins();
+	// Apply any user rules to the modlist. Alters modlist and bosslog.
+	void ApplyUserlist();
 
-		// Sorts the plugins in the data folder, changing timestamps or plugins.txt/loadorder.txt as required. Alters bosslog.
-		void SortPlugins();
+	// Scans the data folder for script extender plugins and outputs their info to the bosslog. Alters bosslog.
+	void ScanSEPlugins();
 
-		ItemList modlist;
-		ItemList masterlist;
-		RuleList userlist;
-		BossLog bosslog;
+	// Sorts the plugins in the data folder, changing timestamps or plugins.txt/loadorder.txt as required. Alters bosslog.
+	void SortPlugins();
 
-	private:
-		uint32_t id;
-		uint32_t loMethod;
-		string name;
+	ItemList modlist;
+	ItemList masterlist;
+	RuleList userlist;
+	BossLog bosslog;
 
-		string executable;
-		string masterFile;
-		string scriptExtender;
-		string seExecutable;
+private:
+	uint32_t id;
+	uint32_t loMethod;
+	string name;
 
-		string registryKey;
-		string registrySubKey;
+	string executable;
+	string masterFile;
+	string scriptExtender;
+	string seExecutable;
 
-		string bossFolderName;
-		string appdataFolderName;
-		string pluginsFolderName;
-		string pluginsFileName;
+	string registryKey;
+	string registrySubKey;
 
-		fs::path gamePath;       // Path to the game's folder.
-		fs::path pluginsPath;    // Path to the file in which active plugins are listed.
-		fs::path loadorderPath;  // Path to the file which lists total load order.
+	string bossFolderName;
+	string appdataFolderName;
+	string pluginsFolderName;
+	string pluginsFileName;
 
-		// Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
-		fs::path GetLocalAppDataPath();
-	};
+	fs::path gamePath;       // Path to the game's folder.
+	fs::path pluginsPath;    // Path to the file in which active plugins are listed.
+	fs::path loadorderPath;  // Path to the file which lists total load order.
+
+	// Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
+	fs::path GetLocalAppDataPath();
+};
+
 }  // namespace boss
 #endif
