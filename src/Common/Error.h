@@ -82,7 +82,7 @@ public:
 	boss_error(const uint32_t internalErrCode, const string internalErrSubject,
 	           const string externalErrString);
 
-	//For errors from other external functions.
+	// For errors from other external functions.
 	boss_error(const string externalErrString, const uint32_t internalErrCode);
 
 	// Returns the error code for the object.
