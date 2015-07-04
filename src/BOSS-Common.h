@@ -39,35 +39,35 @@
 
 /* For easy reference, the following functions may throw exceptions (using boss_error) on failure:
 
-bool			Item::operator<				(Item);
+bool Item::operator< (Item);
 
-void			SetModTime					(time_t modificationTime);
+void SetModTime(time_t modificationTime);
 
-void			ItemList::Load				(fs::path path);
+void ItemList::Load(fs::path path);
 
-void			ItemList::Save				(fs::path file);
+void ItemList::Save(fs::path file);
 
-void			RuleList::Load				(fs::path file);
+void RuleList::Load(fs::path file);
 
-void			RuleList::Save				(fs::path file);
+void RuleList::Save(fs::path file);
 
-void			Ini::Load					(fs::path file);
+void Ini::Load(fs::path file);
 
-void			Ini::Save					(fs::path file);
+void Ini::Save(fs::path file);
 
-void			GetGame						();
+void GetGame();
 
-void			Outputter::Save				(fs::path file, bool overwrite);
+void Outputter::Save(fs::path file, bool overwrite);
 
-void			CleanUp						();
+void CleanUp();
 
-void			UpdateMasterlist			(uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate);
+void UpdateMasterlist(uiStruct ui, uint32_t& localRevision, string& localDate, uint32_t& remoteRevision, string& remoteDate);
 
-string			IsBOSSUpdateAvailable		();
+string IsBOSSUpdateAvailable();
 
-string			FetchReleaseNotes			(const string updateVersion);
+string FetchReleaseNotes(const string updateVersion);
 
-vector<string>	DownloadInstallBOSSUpdate	(uiStruct ui, const uint32_t updateType, const string updateVersion);
+vector<string> DownloadInstallBOSSUpdate(uiStruct ui, const uint32_t updateType, const string updateVersion);
 */
 
 #endif  // BOSS_COMMON_H_
