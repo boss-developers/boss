@@ -35,65 +35,66 @@ static const char * LOG_VERBOSITY_NAMES[] = {"OFF  ", "ERROR", "WARN ",
 
 
 namespace boss {
-	// The global logger instance
-	BOSS_COMMON Logger g_logger;
 
-	/*
-	 * Ensures the given verbosity is within the valid range
-	 * Returns false if the verbosity is beyond LV_OFF
-	 * If the verbosity is beyond LV_TRACE, sets the verbosity to LV_TRACE
-	 * Returns true if, after limiting the upper bound, the verbosity is valid
-	 */
-	static inline bool _checkVerbosity(LogVerbosity & verbosity) {
-		if (LV_OFF > verbosity) {
-			LOG_WARN("invalid verbosity: %d", verbosity);
-			return false;
-		}
+// The global logger instance
+BOSS_COMMON Logger g_logger;
 
-		if (LV_TRACE < verbosity) {
-			LOG_DEBUG("verbosity not defined: %d;"
-			          " bumping down to LV_TRACE", verbosity);
-
-			verbosity = LV_TRACE;
-		}
-
-		return true;
+/*
+ * Ensures the given verbosity is within the valid range
+ * Returns false if the verbosity is beyond LV_OFF
+ * If the verbosity is beyond LV_TRACE, sets the verbosity to LV_TRACE
+ * Returns true if, after limiting the upper bound, the verbosity is valid
+ */
+static inline bool _checkVerbosity(LogVerbosity & verbosity) {
+	if (LV_OFF > verbosity) {
+		LOG_WARN("invalid verbosity: %d", verbosity);
+		return false;
 	}
 
-	// Sets the default verbosity to WARN and origin tracking off
-	Logger::Logger() : m_verbosity(LV_WARN), m_out(stdout) {}
+	if (LV_TRACE < verbosity) {
+		LOG_DEBUG("verbosity not defined: %d;"
+		          " bumping down to LV_TRACE", verbosity);
 
-	// Sets the verbosity to the given value
-	// Bounds are checked and boxed by _checkVerbosity (above)
-	void Logger::setVerbosity(LogVerbosity verbosity) {
-		if (!_checkVerbosity(verbosity)) {
-			return;
-		}
-
-		m_verbosity = verbosity;
+		verbosity = LV_TRACE;
 	}
 
-	// Formats the message and prints to stdout
-	void Logger::_log(LogVerbosity verbosity, const char * formatStr,
-	                  va_list ap) {
-		if (!_checkVerbosity(verbosity)) {
-			return;
-		}
+	return true;
+}
 
-		// Assumes single thread -- multithread could interleave the lines below
-		// A thread safe version would use vasprintf to print to a temporary string first
-		printf("%s", LOG_VERBOSITY_NAMES[verbosity]);
+// Sets the default verbosity to WARN and origin tracking off
+Logger::Logger() : m_verbosity(LV_WARN), m_out(stdout) {}
 
-		printf(": ");
-		vprintf(formatStr, ap);
-		printf("\n");
-		fflush(stdout);
-
-		if (m_out != stdout) {
-			fprintf(m_out, "%s: ", LOG_VERBOSITY_NAMES[verbosity]);
-			vfprintf(m_out, formatStr, ap);
-			fprintf(m_out, "\n");
-			fflush(m_out);
-		}
+// Sets the verbosity to the given value
+// Bounds are checked and boxed by _checkVerbosity (above)
+void Logger::setVerbosity(LogVerbosity verbosity) {
+	if (!_checkVerbosity(verbosity)) {
+		return;
 	}
+
+	m_verbosity = verbosity;
+}
+
+// Formats the message and prints to stdout
+void Logger::_log(LogVerbosity verbosity, const char * formatStr, va_list ap) {
+	if (!_checkVerbosity(verbosity)) {
+		return;
+	}
+
+	// Assumes single thread -- multithread could interleave the lines below
+	// A thread safe version would use vasprintf to print to a temporary string first
+	printf("%s", LOG_VERBOSITY_NAMES[verbosity]);
+
+	printf(": ");
+	vprintf(formatStr, ap);
+	printf("\n");
+	fflush(stdout);
+
+	if (m_out != stdout) {
+		fprintf(m_out, "%s: ", LOG_VERBOSITY_NAMES[verbosity]);
+		vfprintf(m_out, formatStr, ap);
+		fprintf(m_out, "\n");
+		fflush(m_out);
+	}
+}
+
 }  // namespace boss
