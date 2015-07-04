@@ -141,8 +141,7 @@ string boss_error::getString() const {
 		return (format(translate("The modification date of \"%1%\" cannot be written! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_GUI_WINDOW_INIT_FAIL)
 		return (format(translate("The window \"%1%\" failed to initialise. Details: \"%2%\".")) % errSubject % errString).str();
-	else
-		return translate("No error.");
+	return translate("No error.");
 }
 
 
