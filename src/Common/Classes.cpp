@@ -136,8 +136,8 @@ bool conditionalData::EvalConditions(boost::unordered_set<string>& setVars,
 			throw boss_error(BOSS_ERROR_CONDITION_EVAL_FAIL, conditions, data);
 
 		return eval;
-	} else
-		return true;
+	}
+	return true;
 }
 
 /////////////////////////////////////
@@ -247,8 +247,7 @@ bool Item::IsGameMasterFile(const Game& parentGame) const {
 bool Item::IsMasterFile(const Game& parentGame) const {
 	if (IsGhosted(parentGame))
 		return IsPluginMaster(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
-	else
-		return IsPluginMaster(parentGame.DataFolder() / Data());
+	return IsPluginMaster(parentGame.DataFolder() / Data());
 }
 
 bool Item::IsFalseFlagged(const Game& parentGame) const {
@@ -312,6 +311,7 @@ time_t Item::GetModTime(const Game& parentGame) const {  // Can throw exception.
 	try {
 		if (IsGhosted(parentGame))
 			return fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
+		// MCP Note: Need to read up on try-catch to see if we can remove the else
 		else
 			return fs::last_write_time(parentGame.DataFolder() / Data());
 	} catch(fs::filesystem_error e) {
@@ -391,11 +391,10 @@ struct itemComparator {
 		} else if (parentGame.GetLoadOrderMethod() == LOMETHOD_TIMESTAMP) {
 			if (!isItem1MasterFile && isItem2MasterFile)
 				return false;
-			else
-				return (difftime(item1.GetModTime(parentGame),
-				        item2.GetModTime(parentGame)) < 0);
-		} else
-			return false;
+			return (difftime(item1.GetModTime(parentGame),
+			        item2.GetModTime(parentGame)) < 0);
+		}
+		return false;
 	}
 };
 
@@ -595,7 +594,6 @@ void ItemList::Save(const fs::path file, const fs::path oldFile) {
 
 	ofile.close();
 	LOG_INFO("Backup saved successfully.");
-	return;
 }
 
 void ItemList::SavePluginNames(const Game& parentGame,
@@ -837,8 +835,7 @@ size_t ItemList::GetLastMasterPos(const Game& parentGame) const {
 	}
 	if (i > 0)
 		return i - 1;  // i is position of first plugin.
-	else
-		return 0;
+	return 0;
 }
 
 size_t ItemList::GetNextMasterPos(const Game& parentGame,
@@ -879,8 +876,7 @@ boost::unordered_map<string, uint32_t> ItemList::FileCRCs() const {
 Item ItemList::ItemAt(const size_t pos) const {
 	if (pos < items.size())
 		return items[pos];
-	else
-		return Item();
+	return Item();
 }
 
 void ItemList::Items(const vector<Item> inItems) {
@@ -981,18 +977,16 @@ bool RuleLine::IsObjectMessage() const {
 	    object[0] == '%' || object[0] == ':' || object[0] == '"' ||
 	    object[0] == '*') {
 		return true;
-	} else {
-		size_t pos = object.find(':');
-		if (pos == string::npos)
-			return false;
-		string keyString = object.substr(0, pos);
-		if (keyString == "SAY" || keyString == "TAG" || keyString == "REQ" ||
-		    keyString == "INC" || keyString == "DIRTY" || keyString == "WARN" ||
-		    keyString == "ERROR")
-			return true;
-		else
-			return false;
 	}
+	size_t pos = object.find(':');
+	if (pos == string::npos)
+		return false;
+	string keyString = object.substr(0, pos);
+	if (keyString == "SAY" || keyString == "TAG" || keyString == "REQ" ||
+	    keyString == "INC" || keyString == "DIRTY" || keyString == "WARN" ||
+	    keyString == "ERROR")
+		return true;
+	return false;
 }
 
 string RuleLine::KeyToString() const {
@@ -1056,8 +1050,7 @@ Message RuleLine::ObjectAsMessage() const {
 				return Message(WARN, object.substr(pos + 1));
 			else if (keyString == "ERROR")
 				return Message(ERR, object.substr(pos + 1));
-			else
-				return Message(NONE, object.substr(pos + 1));
+			return Message(NONE, object.substr(pos + 1));
 	}
 }
 
@@ -1099,8 +1092,7 @@ RuleLine Rule::LineAt(const size_t pos) const {
 		return RuleLine(Key(), Object());  // Return sort line.
 	else if (pos - 1 < lines.size())
 		return lines[pos - 1];
-	else
-		return RuleLine();
+	return RuleLine();
 }
 
 void Rule::Enabled(const bool e) {
@@ -1263,7 +1255,6 @@ void RuleList::CheckSyntax(const Game& parentGame) {
 			LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
 		}
 	}
-	return;
 }
 
 size_t RuleList::FindRule(const string ruleObject,
@@ -1290,8 +1281,7 @@ vector<ParsingError> RuleList::ErrorBuffer() const {
 Rule RuleList::RuleAt(const size_t pos) const {
 	if (pos < rules.size())
 		return rules[pos];
-	else
-		return Rule();
+	return Rule();
 }
 
 void RuleList::Rules(const vector<Rule> inRules) {
@@ -1405,8 +1395,7 @@ string Settings::GetIniGameString(const uint32_t game) const {
 		return "FalloutNV";
 	else if (game == SKYRIM)
 		return "Skyrim";
-	else
-		return "";
+	return "";
 }
 
 string Settings::GetLanguageString() const {
@@ -1421,16 +1410,14 @@ string Settings::GetLanguageString() const {
 		return "russian";
 	else if (gl_language == SIMPCHINESE)
 		return "chinese";
-	else
-		return "";
+	return "";
 }
 
 string Settings::GetLogFormatString() const {
 	// TODO(MCP): Change this to a switch-statement, too?
 	if (gl_log_format == HTML)
 		return "html";
-	else
-		return "text";
+	return "text";
 }
 
 ParsingError Settings::ErrorBuffer() const {
@@ -1532,8 +1519,7 @@ string Settings::GetValue(const string setting) const {
 	boost::unordered_map<string, string>::const_iterator it = iniSettings.find(setting);
 	if (it != iniSettings.end())
 		return it->second;
-	else
-		return "";
+	return "";
 }
 
 }  // namespace boss
