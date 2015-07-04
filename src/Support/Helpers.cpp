@@ -116,8 +116,8 @@ string IntToHexString(const uint32_t n) {
 string BoolToString(bool b) {
 	if (b)
 		return "true";
-	else
-		return "false";
+	return "false";
+	//return b ? "true" : "false";
 }
 
 // Turns "true", "false", "1", "0" into booleans.
@@ -149,8 +149,7 @@ std::string FromUTF8To1252(const std::string& str) {
 BOSS_COMMON bool RegKeyExists(string keyStr, string subkey, string value) {
 	if (RegKeyStringValue(keyStr, subkey, value).empty())
 		return false;
-	else
-		return true;
+	return true;
 }
 
 // Get registry subkey value string.
@@ -181,13 +180,10 @@ string RegKeyStringValue(string keyStr, string subkey, string value) {
 
 		if (ret == ERROR_SUCCESS)
 			return fs::path(val).string();  // Easiest way to convert from wide to narrow character strings.
-		else
-			return "";
-	} else
 		return "";
-#else
-	return "";
+	}
 #endif
+	return "";
 }
 
 
@@ -292,10 +288,9 @@ bool Version::operator < (Version ver) {
 				return false;
 		}
 		return false;
-	} else {
-		// Wacky format. Use the Alphanum Algorithm. (what a name!)
-		return (doj::alphanum_comp(verString, ver.AsString()) < 0);
 	}
+	// Wacky format. Use the Alphanum Algorithm. (what a name!)
+	return (doj::alphanum_comp(verString, ver.AsString()) < 0);
 }
 
 bool Version::operator > (Version ver) {
