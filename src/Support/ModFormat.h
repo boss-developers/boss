@@ -36,29 +36,30 @@
 
 namespace boss {
 
-	using namespace std;
+using namespace std;
 
-	// Structure for grouping the information gathered from each mod's header.
-	struct ModHeader {
-		string Name;
-		string Description;
-		string Author;
-		string Version;
-		bool IsMaster;
-	};
+// Structure for grouping the information gathered from each mod's header.
+struct ModHeader {
+	string Name;
+	string Description;
+	string Author;
+	string Version;
+	bool IsMaster;
+};
 
 
-	struct Record {
-		static const ulong TES4 = '4SET';
-		static const ulong HEDR = 'RDEH';
-		static const ulong OFST = 'TSFO';
-		static const ulong DELE = 'ELED';
-		static const ulong CNAM = 'MANC';
-		static const ulong SNAM = 'MANS';
-	};
+struct Record {
+	static const ulong TES4 = '4SET';
+	static const ulong HEDR = 'RDEH';
+	static const ulong OFST = 'TSFO';
+	static const ulong DELE = 'ELED';
+	static const ulong CNAM = 'MANC';
+	static const ulong SNAM = 'MANS';
+};
 
-	ModHeader ReadHeader(boost::filesystem::path filename);
+ModHeader ReadHeader(boost::filesystem::path filename);
 
-	bool IsPluginMaster(boost::filesystem::path filename);  // Shorter version of the above, to only get master flag.
+bool IsPluginMaster(boost::filesystem::path filename);  // Shorter version of the above, to only get master flag.
+
 }  // namespace boss
 #endif
