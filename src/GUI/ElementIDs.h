@@ -99,14 +99,16 @@ enum {
 // Convenience wrapper function, because wxWidgets's own translation system doesn't work as well as Boost's,
 // but Boost's requires a UTF-8 -> (whatever display encoding) conversion to work with the UI.
 namespace boss {
-	wxString translate(char * cstr);
 
-	wxString translate(string str);
+wxString translate(char * cstr);
 
-	wxString FromUTF8(string str);
+wxString translate(string str);
 
-	wxString FromUTF8(boost::format f);
+wxString FromUTF8(string str);
 
-	int progress(const git_transfer_progress *stats, void *payload);
+wxString FromUTF8(boost::format f);
+
+int progress(const git_transfer_progress *stats, void *payload);
+
 }  // namespace boss
 #endif
