@@ -42,137 +42,139 @@
 #include "Common/DllDef.h"
 
 namespace boss {
-	using namespace std;
 
-	enum logFormatting : uint32_t {
-		SECTION_ID_SUMMARY_OPEN,
-		SECTION_ID_USERLIST_OPEN,
-		SECTION_ID_SE_OPEN,
-		SECTION_ID_RECOGNISED_OPEN,
-		SECTION_ID_UNRECOGNISED_OPEN,
-		SECTION_CLOSE,
-		DIV_OPEN,
-		DIV_SUMMARY_BUTTON_OPEN,
-		DIV_USERLIST_BUTTON_OPEN,
-		DIV_SE_BUTTON_OPEN,
-		DIV_RECOGNISED_BUTTON_OPEN,
-		DIV_UNRECOGNISED_BUTTON_OPEN,
-		DIV_CLOSE,
-		LINE_BREAK,
-		TABLE_OPEN,
-		TABLE_CLOSE,
-		TABLE_HEAD,
-		TABLE_HEADING,
-		TABLE_BODY,
-		TABLE_ROW,
-		TABLE_ROW_CLASS_SUCCESS,
-		TABLE_ROW_CLASS_WARN,
-		TABLE_ROW_CLASS_ERROR,
-		TABLE_DATA,
-		LIST_OPEN,
-		LIST_CLOSE,
-		LIST_ITEM,
-		LIST_ITEM_CLASS_SUCCESS,
-		LIST_ITEM_CLASS_WARN,
-		LIST_ITEM_CLASS_ERROR,
-		HEADING_OPEN,
-		HEADING_CLOSE,
-		PARAGRAPH,
-		SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN,
-		SPAN_CLASS_MOD_OPEN,
-		SPAN_CLASS_VERSION_OPEN,
-		SPAN_CLASS_CRC_OPEN,
-		SPAN_CLASS_ACTIVE_OPEN,
-		SPAN_CLASS_MESSAGE_OPEN,
-		SPAN_CLOSE,
-		ITALIC_OPEN,
-		ITALIC_CLOSE,
-		BLOCKQUOTE_OPEN,
-		BLOCKQUOTE_CLOSE,
-		VAR_OPEN,
-		VAR_CLOSE
-	};
+using namespace std;
 
-	class BOSS_COMMON Outputter {
-	public:
-		Outputter();
-		Outputter(const Outputter& o);
-		Outputter(const uint32_t format);
-		Outputter(const uint32_t format, const ParsingError e);
-		Outputter(const uint32_t format, const Rule r);
-		Outputter(const uint32_t format, const logFormatting l);
+enum logFormatting : uint32_t {
+	SECTION_ID_SUMMARY_OPEN,
+	SECTION_ID_USERLIST_OPEN,
+	SECTION_ID_SE_OPEN,
+	SECTION_ID_RECOGNISED_OPEN,
+	SECTION_ID_UNRECOGNISED_OPEN,
+	SECTION_CLOSE,
+	DIV_OPEN,
+	DIV_SUMMARY_BUTTON_OPEN,
+	DIV_USERLIST_BUTTON_OPEN,
+	DIV_SE_BUTTON_OPEN,
+	DIV_RECOGNISED_BUTTON_OPEN,
+	DIV_UNRECOGNISED_BUTTON_OPEN,
+	DIV_CLOSE,
+	LINE_BREAK,
+	TABLE_OPEN,
+	TABLE_CLOSE,
+	TABLE_HEAD,
+	TABLE_HEADING,
+	TABLE_BODY,
+	TABLE_ROW,
+	TABLE_ROW_CLASS_SUCCESS,
+	TABLE_ROW_CLASS_WARN,
+	TABLE_ROW_CLASS_ERROR,
+	TABLE_DATA,
+	LIST_OPEN,
+	LIST_CLOSE,
+	LIST_ITEM,
+	LIST_ITEM_CLASS_SUCCESS,
+	LIST_ITEM_CLASS_WARN,
+	LIST_ITEM_CLASS_ERROR,
+	HEADING_OPEN,
+	HEADING_CLOSE,
+	PARAGRAPH,
+	SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN,
+	SPAN_CLASS_MOD_OPEN,
+	SPAN_CLASS_VERSION_OPEN,
+	SPAN_CLASS_CRC_OPEN,
+	SPAN_CLASS_ACTIVE_OPEN,
+	SPAN_CLASS_MESSAGE_OPEN,
+	SPAN_CLOSE,
+	ITALIC_OPEN,
+	ITALIC_CLOSE,
+	BLOCKQUOTE_OPEN,
+	BLOCKQUOTE_CLOSE,
+	VAR_OPEN,
+	VAR_CLOSE
+};
 
-		void SetFormat(const uint32_t format);               // Sets the formatting type of the output.
-		void SetHTMLSpecialEscape(const bool shouldEscape);  // Set when formatting is set, generally, but this can be used to override.
-		void Clear();                                        // Erase all current content.
+class BOSS_COMMON Outputter {
+public:
+	Outputter();
+	Outputter(const Outputter& o);
+	Outputter(const uint32_t format);
+	Outputter(const uint32_t format, const ParsingError e);
+	Outputter(const uint32_t format, const Rule r);
+	Outputter(const uint32_t format, const logFormatting l);
 
-		bool Empty() const;
-		uint32_t GetFormat() const;
-		bool GetHTMLSpecialEscape() const;
+	void SetFormat(const uint32_t format);               // Sets the formatting type of the output.
+	void SetHTMLSpecialEscape(const bool shouldEscape);  // Set when formatting is set, generally, but this can be used to override.
+	void Clear();                                        // Erase all current content.
 
-		string AsString() const;  // Outputs contents as a string.
+	bool Empty() const;
+	uint32_t GetFormat() const;
+	bool GetHTMLSpecialEscape() const;
 
-		Outputter& operator= (const Outputter& o);
-		Outputter& operator<< (const string s);
-		Outputter& operator<< (const char * s);
-		Outputter& operator<< (const char c);
-		Outputter& operator<< (const logFormatting l);
-		Outputter& operator<< (const int32_t i);
-		Outputter& operator<< (const uint32_t i);
-		Outputter& operator<< (const bool b);
-		Outputter& operator<< (const fs::path p);
-		Outputter& operator<< (const Message m);
-		Outputter& operator<< (const ParsingError e);
-		Outputter& operator<< (const Rule r);
+	string AsString() const;  // Outputs contents as a string.
 
-	private:
-		stringstream outStream;
-		uint32_t outFormat;           // The formatting type of the output.
-		bool escapeHTMLSpecialChars;  // Should special characters be escaped from non-formatting input?
+	Outputter& operator= (const Outputter& o);
+	Outputter& operator<< (const string s);
+	Outputter& operator<< (const char * s);
+	Outputter& operator<< (const char c);
+	Outputter& operator<< (const logFormatting l);
+	Outputter& operator<< (const int32_t i);
+	Outputter& operator<< (const uint32_t i);
+	Outputter& operator<< (const bool b);
+	Outputter& operator<< (const fs::path p);
+	Outputter& operator<< (const Message m);
+	Outputter& operator<< (const ParsingError e);
+	Outputter& operator<< (const Rule r);
 
-		string EscapeHTMLSpecial(string text);  // Performs the HTML escaping.
-		string EscapeHTMLSpecial(char c);
-	};
+private:
+	stringstream outStream;
+	uint32_t outFormat;           // The formatting type of the output.
+	bool escapeHTMLSpecialChars;  // Should special characters be escaped from non-formatting input?
 
-	class BossLog {
-	public:
-		BossLog();
-		BossLog(const uint32_t format);
+	string EscapeHTMLSpecial(string text);  // Performs the HTML escaping.
+	string EscapeHTMLSpecial(char c);
+};
 
-		void SetFormat(const uint32_t format);
-		void Save(const fs::path file, const bool overwrite);  // Saves contents to file. Throws boss_error exception on fail.
-		void Clear();
+class BossLog {
+public:
+	BossLog();
+	BossLog(const uint32_t format);
 
-		uint32_t recognised;
-		uint32_t unrecognised;
-		uint32_t inactive;
-		uint32_t messages;
-		uint32_t warnings;
-		uint32_t errors;
+	void SetFormat(const uint32_t format);
+	void Save(const fs::path file, const bool overwrite);  // Saves contents to file. Throws boss_error exception on fail.
+	void Clear();
 
-		string scriptExtender;
-		string gameName;
+	uint32_t recognised;
+	uint32_t unrecognised;
+	uint32_t inactive;
+	uint32_t messages;
+	uint32_t warnings;
+	uint32_t errors;
 
-		Outputter updaterOutput;
-		Outputter criticalError;
-		Outputter userRules;
-		Outputter sePlugins;
-		Outputter recognisedPlugins;
-		Outputter unrecognisedPlugins;
+	string scriptExtender;
+	string gameName;
 
-		vector<ParsingError> parsingErrors;
-		vector<Message> globalMessages;
+	Outputter updaterOutput;
+	Outputter criticalError;
+	Outputter userRules;
+	Outputter sePlugins;
+	Outputter recognisedPlugins;
+	Outputter unrecognisedPlugins;
 
-	private:
-		uint32_t logFormat;
-		bool recognisedHasChanged;
+	vector<ParsingError> parsingErrors;
+	vector<Message> globalMessages;
 
-		string PrintLog();
-		string PrintHeaderTop();
-		string PrintHeaderBottom();
-		string PrintFooter();
+private:
+	uint32_t logFormat;
+	bool recognisedHasChanged;
 
-		bool HasRecognisedListChanged(const fs::path file);
-	};
+	string PrintLog();
+	string PrintHeaderTop();
+	string PrintHeaderBottom();
+	string PrintFooter();
+
+	bool HasRecognisedListChanged(const fs::path file);
+};
+
 }  // namespace boss
 #endif
