@@ -32,11 +32,11 @@
 
 namespace boss {
 
-	using namespace boost;
+using namespace boost;
 
-	/// Array used to try each of the expressions defined above using
-	/// an iteration for each of them.
-	extern regex* version_checks[];
+/// Array used to try each of the expressions defined above using
+/// an iteration for each of them.
+extern regex* version_checks[];
 
 }  // namespace boss
 #endif
