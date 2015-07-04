@@ -67,10 +67,8 @@ uint32_t AutodetectGame(vector<uint32_t> detectedGames) {  // Throws exception i
 		return FALLOUTNV;
 	else if (Game(FALLOUT3, "", true).IsInstalledLocally())
 		return FALLOUT3;
-	else {
-		LOG_INFO("No game detected locally. Using Registry paths.");
-		return AUTODETECT;
-	}
+	LOG_INFO("No game detected locally. Using Registry paths.");
+	return AUTODETECT;
 }
 
 BOSS_COMMON uint32_t DetectGame(vector<uint32_t>& detectedGames,
@@ -103,10 +101,9 @@ BOSS_COMMON uint32_t DetectGame(vector<uint32_t>& detectedGames,
 			return gl_game;
 		else if (Game(gl_game, "", true).IsInstalled())
 			return gl_game;
-		else
-			return AutodetectGame(detectedGames);  // Game not found. Autodetect.
-	} else
-		return AutodetectGame(detectedGames);
+		return AutodetectGame(detectedGames);  // Game not found. Autodetect.
+	}
+	return AutodetectGame(detectedGames);
 }
 
 // Structures necessary for case-insensitive hashsets used in BuildWorkingModlist.
@@ -364,8 +361,7 @@ fs::path Game::OldModlist() const {
 fs::path Game::Log(uint32_t format) const {
 	if (format == HTML)
 		return boss_path / bossFolderName / "BOSSlog.html";
-	else
-		return boss_path / bossFolderName / "BOSSlog.txt";
+	return boss_path / bossFolderName / "BOSSlog.txt";
 }
 
 // Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
@@ -379,11 +375,8 @@ fs::path Game::GetLocalAppDataPath() {
 
 	if (res == S_OK)
 		return fs::path(path);
-	else
-		return fs::path("");
-#else
-	return fs::path("");
 #endif
+	return fs::path("");
 }
 
 void Game::CreateBOSSGameFolder() {
