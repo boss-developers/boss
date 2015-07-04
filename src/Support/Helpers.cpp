@@ -55,270 +55,263 @@
 #endif
 
 namespace boss {
-	using namespace std;
-	using namespace boost;
-	using boost::algorithm::replace_all;
-	using boost::algorithm::replace_first;
-	namespace karma = boost::spirit::karma;
 
-	// Calculate the CRC of the given file for comparison purposes.
-	uint32_t GetCrc32(const fs::path& filename) {
-		uint32_t chksum = 0;
-		static const size_t buffer_size = 8192;
-		char buffer[buffer_size];
-		// MCP Note: changed from filename.c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
-		ifstream ifile(filename.string(), ios::binary);
-		LOG_TRACE("calculating CRC for: '%s'",
-		          filename.string().c_str());
-		boost::crc_32_type result;
-		if (ifile) {
-			do {
-				ifile.read(buffer, buffer_size);
-				result.process_bytes(buffer, ifile.gcount());
-			} while (ifile);
-			chksum = result.checksum();
-		} else {
-			LOG_WARN("unable to open file for CRC calculation: '%s'",
-			         filename.string().c_str());
-		}
-		LOG_DEBUG("CRC32('%s'): 0x%x",
-		          filename.string().c_str(), chksum);
-		return chksum;
+using namespace std;
+using namespace boost;
+using boost::algorithm::replace_all;
+using boost::algorithm::replace_first;
+namespace karma = boost::spirit::karma;
+
+// Calculate the CRC of the given file for comparison purposes.
+uint32_t GetCrc32(const fs::path& filename) {
+	uint32_t chksum = 0;
+	static const size_t buffer_size = 8192;
+	char buffer[buffer_size];
+	// MCP Note: changed from filename.c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
+	ifstream ifile(filename.string(), ios::binary);
+	LOG_TRACE("calculating CRC for: '%s'", filename.string().c_str());
+	boost::crc_32_type result;
+	if (ifile) {
+		do {
+			ifile.read(buffer, buffer_size);
+			result.process_bytes(buffer, ifile.gcount());
+		} while (ifile);
+		chksum = result.checksum();
+	} else {
+		LOG_WARN("unable to open file for CRC calculation: '%s'",
+		         filename.string().c_str());
 	}
+	LOG_DEBUG("CRC32('%s'): 0x%x", filename.string().c_str(), chksum);
+	return chksum;
+}
 
-	// Reads an entire file into a string buffer.
-	void fileToBuffer(const fs::path file, string& buffer) {
-		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
-		ifstream ifile(file.string());
-		if (ifile.fail())
-			return;
-		ifile.unsetf(ios::skipws);  // No white space skipping!
-		copy(istream_iterator<char>(ifile),
-		     istream_iterator<char>(),
-		     back_inserter(buffer));
+// Reads an entire file into a string buffer.
+void fileToBuffer(const fs::path file, string& buffer) {
+	// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+	ifstream ifile(file.string());
+	if (ifile.fail())
+		return;
+	ifile.unsetf(ios::skipws);  // No white space skipping!
+	copy(istream_iterator<char>(ifile), istream_iterator<char>(),
+	     back_inserter(buffer));
+}
+
+// Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
+BOSS_COMMON string IntToString(const uint32_t n) {
+	string out;
+	back_insert_iterator<string> sink(out);
+	karma::generate(sink, karma::upper[karma::uint_], n);
+	return out;
+}
+
+// Converts an integer to a hex string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
+string IntToHexString(const uint32_t n) {
+	string out;
+	back_insert_iterator<string> sink(out);
+	karma::generate(sink, karma::upper[karma::hex], n);
+	return out;
+}
+
+// Converts a boolean to a string representation (true/false)
+string BoolToString(bool b) {
+	if (b)
+		return "true";
+	else
+		return "false";
+}
+
+// Turns "true", "false", "1", "0" into booleans.
+bool StringToBool(string str) {
+	return (str == "true" || str == "1");
+}
+
+// Convert a Windows-1252 string to UTF-8.
+std::string From1252ToUTF8(const std::string& str) {
+	try {
+		return boost::locale::conv::to_utf<char>(str, "Windows-1252", boost::locale::conv::stop);
 	}
-
-	// Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
-	BOSS_COMMON string IntToString(const uint32_t n) {
-		string out;
-		back_insert_iterator<string> sink(out);
-		karma::generate(sink, karma::upper[karma::uint_], n);
-		return out;
+	catch (boost::locale::conv::conversion_error& e) {
+		throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
 	}
+}
 
-	// Converts an integer to a hex string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
-	string IntToHexString(const uint32_t n) {
-		string out;
-		back_insert_iterator<string> sink(out);
-		karma::generate(sink, karma::upper[karma::hex], n);
-		return out;
+// Convert a UTF-8 string to Windows-1252.
+std::string FromUTF8To1252(const std::string& str) {
+	try {
+		return boost::locale::conv::from_utf<char>(str, "Windows-1252", boost::locale::conv::stop);
 	}
-
-	// Converts a boolean to a string representation (true/false)
-	string BoolToString(bool b) {
-		if (b)
-			return "true";
-		else
-			return "false";
+	catch (boost::locale::conv::conversion_error& e) {
+		throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
 	}
+}
 
-	// Turns "true", "false", "1", "0" into booleans.
-	bool StringToBool(string str) {
-		return (str == "true" || str == "1");
-	}
+// Check if registry subkey exists.
+BOSS_COMMON bool RegKeyExists(string keyStr, string subkey, string value) {
+	if (RegKeyStringValue(keyStr, subkey, value).empty())
+		return false;
+	else
+		return true;
+}
 
-	// Convert a Windows-1252 string to UTF-8.
-	std::string From1252ToUTF8(const std::string& str) {
-		try {
-			return boost::locale::conv::to_utf<char>(str, "Windows-1252", boost::locale::conv::stop);
-		}
-		catch (boost::locale::conv::conversion_error& e) {
-			throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
-		}
-	}
-
-	// Convert a UTF-8 string to Windows-1252.
-	std::string FromUTF8To1252(const std::string& str) {
-		try {
-			return boost::locale::conv::from_utf<char>(str, "Windows-1252", boost::locale::conv::stop);
-		}
-		catch (boost::locale::conv::conversion_error& e) {
-			throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
-		}
-	}
-
-	// Check if registry subkey exists.
-	BOSS_COMMON bool RegKeyExists(string keyStr, string subkey,
-	                              string value) {
-		if (RegKeyStringValue(keyStr, subkey, value).empty())
-			return false;
-		else
-			return true;
-	}
-
-	// Get registry subkey value string.
-	string RegKeyStringValue(string keyStr, string subkey,
-	                         string value) {
+// Get registry subkey value string.
+string RegKeyStringValue(string keyStr, string subkey, string value) {
 #if _WIN32 || _WIN64
-		HKEY hKey, key;
-		DWORD BufferSize = 4096;
-		wchar_t val[4096];
+	HKEY hKey, key;
+	DWORD BufferSize = 4096;
+	wchar_t val[4096];
 
-		if (keyStr == "HKEY_CLASSES_ROOT")
-			key = HKEY_CLASSES_ROOT;
-		else if (keyStr == "HKEY_CURRENT_CONFIG")
-			key = HKEY_CURRENT_CONFIG;
-		else if (keyStr == "HKEY_CURRENT_USER")
-			key = HKEY_CURRENT_USER;
-		else if (keyStr == "HKEY_LOCAL_MACHINE")
-			key = HKEY_LOCAL_MACHINE;
-		else if (keyStr == "HKEY_USERS")
-			key = HKEY_USERS;
+	if (keyStr == "HKEY_CLASSES_ROOT")
+		key = HKEY_CLASSES_ROOT;
+	else if (keyStr == "HKEY_CURRENT_CONFIG")
+		key = HKEY_CURRENT_CONFIG;
+	else if (keyStr == "HKEY_CURRENT_USER")
+		key = HKEY_CURRENT_USER;
+	else if (keyStr == "HKEY_LOCAL_MACHINE")
+		key = HKEY_LOCAL_MACHINE;
+	else if (keyStr == "HKEY_USERS")
+		key = HKEY_USERS;
 
-		LONG ret = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(),
-		                        0, KEY_READ|KEY_WOW64_32KEY, &hKey);
+	LONG ret = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(),
+	                        0, KEY_READ|KEY_WOW64_32KEY, &hKey);
 
-		if (ret == ERROR_SUCCESS) {
-			ret = RegQueryValueEx(hKey,
-			                      fs::path(value).wstring().c_str(),
-			                      NULL, NULL, (LPBYTE)&val,
-			                      &BufferSize);
-			RegCloseKey(hKey);
+	if (ret == ERROR_SUCCESS) {
+		ret = RegQueryValueEx(hKey, fs::path(value).wstring().c_str(), NULL,
+		                      NULL, (LPBYTE)&val, &BufferSize);
+		RegCloseKey(hKey);
 
-			if (ret == ERROR_SUCCESS)
-				return fs::path(val).string();  // Easiest way to convert from wide to narrow character strings.
-			else
-				return "";
-		} else
+		if (ret == ERROR_SUCCESS)
+			return fs::path(val).string();  // Easiest way to convert from wide to narrow character strings.
+		else
 			return "";
-#else
+	} else
 		return "";
-#endif
-	}
-
-
-	//////////////////////////////
-	// Version Class Functions
-	//////////////////////////////
-
-	Version::Version() {}
-
-	Version::Version(const char * ver) : verString(ver) {}
-
-	Version::Version(const string ver) : verString(ver) {}
-
-	Version::Version(const fs::path file) {
-		LOG_TRACE("extracting version from '%s'",
-		          file.string().c_str());
-#if _WIN32 || _WIN64
-		DWORD dummy = 0;
-		DWORD size = GetFileVersionInfoSize(file.wstring().c_str(),
-		                                    &dummy);
-
-		if (size > 0) {
-			LPBYTE point = new BYTE[size];
-			UINT uLen;
-			VS_FIXEDFILEINFO *info;
-			string ver;
-
-			GetFileVersionInfo(file.wstring().c_str(), 0, size, point);
-
-			VerQueryValue(point, L"\\", (LPVOID *)&info, &uLen);
-
-			DWORD dwLeftMost     = HIWORD(info->dwFileVersionMS);
-			DWORD dwSecondLeft   = LOWORD(info->dwFileVersionMS);
-			DWORD dwSecondRight  = HIWORD(info->dwFileVersionLS);
-			DWORD dwRightMost    = LOWORD(info->dwFileVersionLS);
-
-			delete [] point;
-
-			verString = IntToString(dwLeftMost) + '.' + IntToString(dwSecondLeft) + '.' + IntToString(dwSecondRight) + '.' + IntToString(dwRightMost);
-		}
 #else
-		// Ensure filename has no quote characters in it to avoid command injection attacks
-		if (string::npos != file.string().find('"')) {
-			LOG_WARN("filename has embedded quotes; skipping to avoid command injection: '%s'",
-			         file.string().c_str());
-		} else {
-			// Command mostly borrowed from the gnome-exe-thumbnailer.sh script
-			// wrestool is part of the icoutils package
-			string cmd = "wrestool --extract --raw --type=version \"" + file.string() + "\" | tr '\\0, ' '\\t.\\0' | sed 's/\\t\\t/_/g' | tr -c -d '[:print:]' | sed -r 's/.*Version[^0-9]*([0-9]+(\\.[0-9]+)+).*/\\1/'";
-
-			FILE *fp = popen(cmd.c_str(), "r");
-
-			// Read out the version string
-			static const uint32_t BUFSIZE = 32;
-			char buf[BUFSIZE];
-			if (NULL == fgets(buf, BUFSIZE, fp)) {
-				LOG_DEBUG("failed to extract version from '%s'",
-				          file.string().c_str());
-			} else {
-				verString = string(buf);
-	   			LOG_DEBUG("extracted version from '%s': %s",
-	   			          file.string().c_str(), retVal.c_str());
-			}
-			pclose(fp);
-		}
+	return "";
 #endif
+}
+
+
+//////////////////////////////
+// Version Class Functions
+//////////////////////////////
+
+Version::Version() {}
+
+Version::Version(const char * ver) : verString(ver) {}
+
+Version::Version(const string ver) : verString(ver) {}
+
+Version::Version(const fs::path file) {
+	LOG_TRACE("extracting version from '%s'", file.string().c_str());
+#if _WIN32 || _WIN64
+	DWORD dummy = 0;
+	DWORD size = GetFileVersionInfoSize(file.wstring().c_str(), &dummy);
+
+	if (size > 0) {
+		LPBYTE point = new BYTE[size];
+		UINT uLen;
+		VS_FIXEDFILEINFO *info;
+		string ver;
+
+		GetFileVersionInfo(file.wstring().c_str(), 0, size, point);
+
+		VerQueryValue(point, L"\\", (LPVOID *)&info, &uLen);
+
+		DWORD dwLeftMost     = HIWORD(info->dwFileVersionMS);
+		DWORD dwSecondLeft   = LOWORD(info->dwFileVersionMS);
+		DWORD dwSecondRight  = HIWORD(info->dwFileVersionLS);
+		DWORD dwRightMost    = LOWORD(info->dwFileVersionLS);
+
+		delete [] point;
+
+		verString = IntToString(dwLeftMost) + '.' + IntToString(dwSecondLeft) + '.' + IntToString(dwSecondRight) + '.' + IntToString(dwRightMost);
 	}
+#else
+	// Ensure filename has no quote characters in it to avoid command injection attacks
+	if (string::npos != file.string().find('"')) {
+		LOG_WARN("filename has embedded quotes; skipping to avoid command injection: '%s'",
+		         file.string().c_str());
+	} else {
+		// Command mostly borrowed from the gnome-exe-thumbnailer.sh script
+		// wrestool is part of the icoutils package
+		string cmd = "wrestool --extract --raw --type=version \"" + file.string() + "\" | tr '\\0, ' '\\t.\\0' | sed 's/\\t\\t/_/g' | tr -c -d '[:print:]' | sed -r 's/.*Version[^0-9]*([0-9]+(\\.[0-9]+)+).*/\\1/'";
 
-	string Version::AsString() const {
-		return verString;
-	}
+		FILE *fp = popen(cmd.c_str(), "r");
 
-	bool Version::operator < (Version ver) {
-		// Version string could have a wide variety of formats. Use regex to choose specific comparison types.
-
-		boost::regex reg1("(\\d+\\.?)+");  // a.b.c.d.e.f.... where the letters are all integers, and 'a' is the shortest possible match.
-
-		//boost::regex reg2("(\\d+\\.?)+([a-zA-Z\\-]+(\\d+\\.?)*)+");  //Matches a mix of letters and numbers - from "0.99.xx", "1.35Alpha2", "0.9.9MB8b1", "10.52EV-D", "1.62EV" to "10.0EV-D1.62EV".
-
-		if (boost::regex_match(verString, reg1) &&
-		    boost::regex_match(ver.AsString(), reg1)) {
-			// First type: numbers separated by periods. If two versions have a different number of numbers, then the shorter should be padded
-			// with zeros. An arbitrary number of numbers should be supported.
-			istringstream parser1(verString);
-			istringstream parser2(ver.AsString());
-			while (parser1.good() || parser2.good()) {
-				// Check if each stringstream is OK for i/o before doing anything with it. If not, replace its extracted value with a 0.
-				uint32_t n1, n2;
-				if (parser1.good()) {
-					parser1 >> n1;
-					parser1.get();
-				} else {
-					n1 = 0;
-				}
-				if (parser2.good()) {
-					parser2 >> n2;
-					parser2.get();
-				} else {
-					n2 = 0;
-				}
-				if (n1 < n2)
-					return true;
-				else if (n1 > n2)
-					return false;
-			}
-			return false;
+		// Read out the version string
+		static const uint32_t BUFSIZE = 32;
+		char buf[BUFSIZE];
+		if (NULL == fgets(buf, BUFSIZE, fp)) {
+			LOG_DEBUG("failed to extract version from '%s'",
+			          file.string().c_str());
 		} else {
-			// Wacky format. Use the Alphanum Algorithm. (what a name!)
-			return (doj::alphanum_comp(verString, ver.AsString()) < 0);
+			verString = string(buf);
+			LOG_DEBUG("extracted version from '%s': %s", file.string().c_str(),
+			          retVal.c_str());
 		}
+		pclose(fp);
 	}
+#endif
+}
 
-	bool Version::operator > (Version ver) {
-		return (*this != ver && !(*this < ver));
-	}
+string Version::AsString() const {
+	return verString;
+}
 
-	bool Version::operator >= (Version ver) {
-		return (*this == ver || *this > ver);
-	}
+bool Version::operator < (Version ver) {
+	// Version string could have a wide variety of formats. Use regex to choose specific comparison types.
 
-	bool Version::operator == (Version ver) {
-		return (verString == ver.AsString());
-	}
+	boost::regex reg1("(\\d+\\.?)+");  // a.b.c.d.e.f.... where the letters are all integers, and 'a' is the shortest possible match.
 
-	bool Version::operator != (Version ver) {
-		return !(*this == ver);
+	//boost::regex reg2("(\\d+\\.?)+([a-zA-Z\\-]+(\\d+\\.?)*)+");  // Matches a mix of letters and numbers - from "0.99.xx", "1.35Alpha2", "0.9.9MB8b1", "10.52EV-D", "1.62EV" to "10.0EV-D1.62EV".
+
+	if (boost::regex_match(verString, reg1) &&
+	    boost::regex_match(ver.AsString(), reg1)) {
+		// First type: numbers separated by periods. If two versions have a different number of numbers, then the shorter should be padded
+		// with zeros. An arbitrary number of numbers should be supported.
+		istringstream parser1(verString);
+		istringstream parser2(ver.AsString());
+		while (parser1.good() || parser2.good()) {
+			// Check if each stringstream is OK for i/o before doing anything with it. If not, replace its extracted value with a 0.
+			uint32_t n1, n2;
+			if (parser1.good()) {
+				parser1 >> n1;
+				parser1.get();
+			} else {
+				n1 = 0;
+			}
+			if (parser2.good()) {
+				parser2 >> n2;
+				parser2.get();
+			} else {
+				n2 = 0;
+			}
+			if (n1 < n2)
+				return true;
+			else if (n1 > n2)
+				return false;
+		}
+		return false;
+	} else {
+		// Wacky format. Use the Alphanum Algorithm. (what a name!)
+		return (doj::alphanum_comp(verString, ver.AsString()) < 0);
 	}
+}
+
+bool Version::operator > (Version ver) {
+	return (*this != ver && !(*this < ver));
+}
+
+bool Version::operator >= (Version ver) {
+	return (*this == ver || *this > ver);
+}
+
+bool Version::operator == (Version ver) {
+	return (verString == ver.AsString());
+}
+
+bool Version::operator != (Version ver) {
+	return !(*this == ver);
+}
+
 }  // namespace boss
