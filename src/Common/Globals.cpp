@@ -28,74 +28,76 @@
 #include "Common/Globals.h"
 
 namespace boss {
-	using namespace std;
 
-	// BOSS version number.
-	BOSS_COMMON const uint32_t BOSS_VERSION_MAJOR = 2;
-	BOSS_COMMON const uint32_t BOSS_VERSION_MINOR = 3;
-	BOSS_COMMON const uint32_t BOSS_VERSION_PATCH = 0;
+using namespace std;
 
-	// Supported game values. DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
-	BOSS_COMMON const uint32_t AUTODETECT         = 0;
-	BOSS_COMMON const uint32_t OBLIVION           = 1;
-	BOSS_COMMON const uint32_t NEHRIM             = 2;
-	BOSS_COMMON const uint32_t SKYRIM             = 3;
-	BOSS_COMMON const uint32_t FALLOUT3           = 4;
-	BOSS_COMMON const uint32_t FALLOUTNV          = 5;
+// BOSS version number.
+BOSS_COMMON const uint32_t BOSS_VERSION_MAJOR = 2;
+BOSS_COMMON const uint32_t BOSS_VERSION_MINOR = 3;
+BOSS_COMMON const uint32_t BOSS_VERSION_PATCH = 0;
 
-	// BOSS Log formatting values.
-	BOSS_COMMON const uint32_t HTML               = 0;
-	BOSS_COMMON const uint32_t PLAINTEXT          = 1;
+// Supported game values. DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
+BOSS_COMMON const uint32_t AUTODETECT         = 0;
+BOSS_COMMON const uint32_t OBLIVION           = 1;
+BOSS_COMMON const uint32_t NEHRIM             = 2;
+BOSS_COMMON const uint32_t SKYRIM             = 3;
+BOSS_COMMON const uint32_t FALLOUT3           = 4;
+BOSS_COMMON const uint32_t FALLOUTNV          = 5;
 
-	// Language values.
-	BOSS_COMMON const uint32_t ENGLISH            = 0;
-	BOSS_COMMON const uint32_t SPANISH            = 1;
-	BOSS_COMMON const uint32_t GERMAN             = 2;
-	BOSS_COMMON const uint32_t RUSSIAN            = 3;
-	BOSS_COMMON const uint32_t SIMPCHINESE        = 4;
+// BOSS Log formatting values.
+BOSS_COMMON const uint32_t HTML               = 0;
+BOSS_COMMON const uint32_t PLAINTEXT          = 1;
 
-
-	///////////////////////////////
-	// File/Folder Paths
-	///////////////////////////////
-
-	BOSS_COMMON const fs::path boss_path            = fs::path(".");
-	BOSS_COMMON const fs::path ini_path             = boss_path / "BOSS.ini";
-	BOSS_COMMON const fs::path old_ini_path         = boss_path / "BOSS.ini.old";
-	BOSS_COMMON const fs::path debug_log_path       = boss_path / "BOSSDebugLog.txt";
-	BOSS_COMMON const fs::path readme_path          = boss_path / "Docs" / "BOSS Readme.html";
-	BOSS_COMMON const fs::path rules_readme_path    = boss_path / "Docs" / "BOSS Userlist Syntax.html";
-	BOSS_COMMON const fs::path masterlist_doc_path  = boss_path / "Docs" / "BOSS Masterlist Syntax.html";
-	BOSS_COMMON const fs::path version_history_path = boss_path / "Docs" / "BOSS Version History.html";
-	BOSS_COMMON const fs::path licenses_path        = boss_path / "Docs" / "Licenses.txt";
-	BOSS_COMMON const fs::path l10n_path            = boss_path / "resources" / "l10n";
+// Language values.
+BOSS_COMMON const uint32_t ENGLISH            = 0;
+BOSS_COMMON const uint32_t SPANISH            = 1;
+BOSS_COMMON const uint32_t GERMAN             = 2;
+BOSS_COMMON const uint32_t RUSSIAN            = 3;
+BOSS_COMMON const uint32_t SIMPCHINESE        = 4;
 
 
-	///////////////////////////////
-	// Ini Settings
-	///////////////////////////////
+///////////////////////////////
+// File/Folder Paths
+///////////////////////////////
 
-	// General variables
-	BOSS_COMMON bool gl_use_user_rules_manager  = true;
-	BOSS_COMMON bool gl_close_gui_after_sorting = false;
-	BOSS_COMMON uint32_t gl_language            = ENGLISH;
+BOSS_COMMON const fs::path boss_path            = fs::path(".");
+BOSS_COMMON const fs::path ini_path             = boss_path / "BOSS.ini";
+BOSS_COMMON const fs::path old_ini_path         = boss_path / "BOSS.ini.old";
+BOSS_COMMON const fs::path debug_log_path       = boss_path / "BOSSDebugLog.txt";
+BOSS_COMMON const fs::path readme_path          = boss_path / "Docs" / "BOSS Readme.html";
+BOSS_COMMON const fs::path rules_readme_path    = boss_path / "Docs" / "BOSS Userlist Syntax.html";
+BOSS_COMMON const fs::path masterlist_doc_path  = boss_path / "Docs" / "BOSS Masterlist Syntax.html";
+BOSS_COMMON const fs::path version_history_path = boss_path / "Docs" / "BOSS Version History.html";
+BOSS_COMMON const fs::path licenses_path        = boss_path / "Docs" / "Licenses.txt";
+BOSS_COMMON const fs::path l10n_path            = boss_path / "resources" / "l10n";
 
-	// Command line variables
-	BOSS_COMMON uint32_t gl_log_format      = HTML;
-	BOSS_COMMON uint32_t gl_game            = AUTODETECT;
-	BOSS_COMMON uint32_t gl_last_game       = AUTODETECT;
-	BOSS_COMMON uint32_t gl_revert          = 0;
-	BOSS_COMMON uint32_t gl_debug_verbosity = 0;
-	BOSS_COMMON bool gl_update              = true;
-	BOSS_COMMON bool gl_update_only         = false;
-	BOSS_COMMON bool gl_silent              = false;
-	BOSS_COMMON bool gl_show_CRCs           = false;
-	BOSS_COMMON bool gl_trial_run           = false;
 
-	// Repository URLs
-	BOSS_COMMON std::string gl_oblivion_repo_url  = "https://github.com/boss-developers/oblivion.git";
-	BOSS_COMMON std::string gl_nehrim_repo_url    = "https://github.com/boss-developers/nehrim.git";
-	BOSS_COMMON std::string gl_skyrim_repo_url    = "https://github.com/boss-developers/skyrim.git";
-	BOSS_COMMON std::string gl_fallout3_repo_url  = "https://github.com/boss-developers/fallout3.git";
-	BOSS_COMMON std::string gl_falloutnv_repo_url = "https://github.com/boss-developers/falloutnv.git";
+///////////////////////////////
+// Ini Settings
+///////////////////////////////
+
+// General variables
+BOSS_COMMON bool gl_use_user_rules_manager  = true;
+BOSS_COMMON bool gl_close_gui_after_sorting = false;
+BOSS_COMMON uint32_t gl_language            = ENGLISH;
+
+// Command line variables
+BOSS_COMMON uint32_t gl_log_format      = HTML;
+BOSS_COMMON uint32_t gl_game            = AUTODETECT;
+BOSS_COMMON uint32_t gl_last_game       = AUTODETECT;
+BOSS_COMMON uint32_t gl_revert          = 0;
+BOSS_COMMON uint32_t gl_debug_verbosity = 0;
+BOSS_COMMON bool gl_update              = true;
+BOSS_COMMON bool gl_update_only         = false;
+BOSS_COMMON bool gl_silent              = false;
+BOSS_COMMON bool gl_show_CRCs           = false;
+BOSS_COMMON bool gl_trial_run           = false;
+
+// Repository URLs
+BOSS_COMMON std::string gl_oblivion_repo_url  = "https://github.com/boss-developers/oblivion.git";
+BOSS_COMMON std::string gl_nehrim_repo_url    = "https://github.com/boss-developers/nehrim.git";
+BOSS_COMMON std::string gl_skyrim_repo_url    = "https://github.com/boss-developers/skyrim.git";
+BOSS_COMMON std::string gl_fallout3_repo_url  = "https://github.com/boss-developers/fallout3.git";
+BOSS_COMMON std::string gl_falloutnv_repo_url = "https://github.com/boss-developers/falloutnv.git";
+
 }  // namespace boss
