@@ -46,61 +46,62 @@
 
 
 namespace boss {
-	enum LogVerbosity {
-		LV_OFF   = 0,
-		LV_ERROR = 1,
-		LV_WARN  = 2,
-		LV_INFO  = 3,
-		LV_DEBUG = 4,
-		LV_TRACE = 5
-	};
 
-	// A simple logging class.  Not implemented to be thread safe.
-	class BOSS_COMMON Logger {
-	public:
-		Logger();
+enum LogVerbosity {
+	LV_OFF   = 0,
+	LV_ERROR = 1,
+	LV_WARN  = 2,
+	LV_INFO  = 3,
+	LV_DEBUG = 4,
+	LV_TRACE = 5
+};
 
-		// Sets the verbosity limit
-		void setVerbosity(LogVerbosity verbosity);
+// A simple logging class.  Not implemented to be thread safe.
+class BOSS_COMMON Logger {
+public:
+	Logger();
 
-		// Sets the output stream
-		inline void setStream(const char * file) {
-			m_out = fopen(file, "w");
+	// Sets the verbosity limit
+	void setVerbosity(LogVerbosity verbosity);
+
+	// Sets the output stream
+	inline void setStream(const char * file) {
+		m_out = fopen(file, "w");
+	}
+
+	// For use when calculating the arguments to a LOG macro would be expensive
+	inline bool isDebugEnabled() {
+		return _isVerbosityEnabled(LV_DEBUG);
+	}
+	inline bool isTraceEnabled() {
+		return _isVerbosityEnabled(LV_TRACE);
+	}
+
+	// If a message is of a sufficient verbosity, outputs the given message
+	inline void log(LogVerbosity verbosity, const char * formatStr, ...) __attribute__((__format__ (__printf__, 5, 6)))
+	{
+		if (_isVerbosityEnabled(verbosity)) {
+			va_list ap;
+			va_start(ap, formatStr);
+			_log(verbosity, formatStr, ap);
+			va_end(ap);
 		}
+	}
 
-		// For use when calculating the arguments to a LOG macro would be expensive
-		inline bool isDebugEnabled() {
-			return _isVerbosityEnabled(LV_DEBUG);
-		}
-		inline bool isTraceEnabled() {
-			return _isVerbosityEnabled(LV_TRACE);
-		}
+private:
+	LogVerbosity m_verbosity;
+	FILE * m_out;
 
-		// If a message is of a sufficient verbosity, outputs the given message
-		inline void log(LogVerbosity verbosity, const char * formatStr, ...) __attribute__((__format__ (__printf__, 5, 6)))
-		{
-			if (_isVerbosityEnabled(verbosity)) {
-				va_list ap;
-				va_start(ap, formatStr);
-				_log(verbosity, formatStr, ap);
-				va_end(ap);
-			}
-		}
+private:
+	inline bool _isVerbosityEnabled(LogVerbosity verbosity) {
+		return verbosity <= m_verbosity;
+	}
 
-	private:
-		LogVerbosity m_verbosity;
-		FILE * m_out;
+	void _log(LogVerbosity verbosity, const char * formatStr, va_list ap);
+};
 
-	private:
-		inline bool _isVerbosityEnabled(LogVerbosity verbosity) {
-			return verbosity <= m_verbosity;
-		}
+// Declare global logger
+BOSS_COMMON extern Logger g_logger;
 
-		void _log(LogVerbosity verbosity, const char * formatStr,
-		          va_list ap);
-	};
-
-	// Declare global logger
-	BOSS_COMMON extern Logger g_logger;
 }  // namespace boss
 #endif  // __SUPPORT_LOGGER__HPP__
