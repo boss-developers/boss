@@ -163,8 +163,8 @@ string Outputter::EscapeHTMLSpecial(char c) {
 			default:
 				return string(1, c);
 		}
-	} else
-		return string(1, c);
+	}
+	return string(1, c);
 }
 
 Outputter& Outputter::operator= (const Outputter& o) {
