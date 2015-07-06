@@ -39,6 +39,8 @@
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
 
+#include "common/dll_def.h"
+
 //#include "common/error.h"
 
 namespace boss {

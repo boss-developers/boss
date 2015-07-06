@@ -25,8 +25,8 @@
 	$Revision: 2488 $, $Date: 2011-03-27 14:31:33 +0100 (Sun, 27 Mar 2011) $
 */
 
-#ifndef SUPPORT_MODFORMAT_H_
-#define SUPPORT_MODFORMAT_H_
+#ifndef SUPPORT_MOD_FORMAT_H_
+#define SUPPORT_MOD_FORMAT_H_
 
 #include <cstring>
 
@@ -62,4 +62,4 @@ ModHeader ReadHeader(boost::filesystem::path filename);
 bool IsPluginMaster(boost::filesystem::path filename);  // Shorter version of the above, to only get master flag.
 
 }  // namespace boss
-#endif  // SUPPORT_MODFORMAT_H_
+#endif  // SUPPORT_MOD_FORMAT_H_

@@ -25,8 +25,8 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-#ifndef GUI_MAINWINDOW_H_
-#define GUI_MAINWINDOW_H_
+#ifndef GUI_MAIN_WINDOW_H_
+#define GUI_MAIN_WINDOW_H_
 
 #include "boss_common.h"
 
@@ -98,4 +98,4 @@ protected:
 	wxCriticalSection updateData;   // Protects fields above
 	DECLARE_EVENT_TABLE()
 };
-#endif  // GUI_MAINWINDOW_H_
+#endif  // GUI_MAIN_WINDOW_H_

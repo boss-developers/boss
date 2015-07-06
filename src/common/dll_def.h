@@ -25,8 +25,8 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-#ifndef COMMON_DLLDEF_H_
-#define COMMON_DLLDEF_H_
+#ifndef COMMON_DLL_DEF_H_
+#define COMMON_DLL_DEF_H_
 
 //#include <windows.h>
 
@@ -46,4 +46,4 @@
 #	define BOSS_COMMON
 //#endif
 
-#endif  // COMMON_DLLDEF_H_
+#endif  // COMMON_DLL_DEF_H_

@@ -41,6 +41,7 @@
 
 #include "common/error.h"
 #include "common/game.h"
+#include "common/keywords.h"
 #include "parsing/grammar.h"
 #include "support/logger.h"
 #include "support/mod_format.h"

@@ -25,8 +25,8 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-#ifndef GUI_ELEMENTIDS_H_
-#define GUI_ELEMENTIDS_H_
+#ifndef GUI_ELEMENT_IDS_H_
+#define GUI_ELEMENT_IDS_H_
 
 #include "boss_common.h"
 
@@ -111,4 +111,4 @@ wxString FromUTF8(boost::format f);
 int progress(const git_transfer_progress *stats, void *payload);
 
 }  // namespace boss
-#endif  // GUI_ELEMENTIDS_H_
+#endif  // GUI_ELEMENT_IDS_H_

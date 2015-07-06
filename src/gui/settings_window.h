@@ -25,8 +25,8 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-#ifndef GUI_SETTINGSWINDOW_H_
-#define GUI_SETTINGSWINDOW_H_
+#ifndef GUI_SETTINGS_WINDOW_H_
+#define GUI_SETTINGS_WINDOW_H_
 
 #include <wx/notebook.h>
 
@@ -54,4 +54,4 @@ private:
 	wxTextCtrl *FalloutNVRepoURLTxt;
 };
 
-#endif  // GUI_SETTINGSWINDOW_H_
+#endif  // GUI_SETTINGS_WINDOW_H_
