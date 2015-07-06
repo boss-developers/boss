@@ -34,8 +34,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/fusion/adapted/struct/detail/extension.hpp>
 #include <boost/regex.hpp>
-#include <boost/unordered_set.hpp>
 #include <boost/unordered_map.hpp>
+#include <boost/unordered_set.hpp>
 
 #include "Common/DllDef.h"
 #include "Common/Error.h"
