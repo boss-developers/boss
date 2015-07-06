@@ -45,6 +45,8 @@
 
 namespace boss {
 
+// Forward Declarations
+
 class BOSS_COMMON Game;
 class BOSS_COMMON ParsingError;
 
