@@ -342,7 +342,7 @@ void ItemList::EvalConditions(const Game& parentGame) {
 		active.Load(parentGame, parentGame.ActivePluginsFile());
 		std::vector<Item> items = active.Items();
 		for (std::size_t i = 0, max = items.size(); i < max; i++) {
-			activePlugins.insert(to_lower_copy(items[i].Name()));
+			activePlugins.insert(boost::algorithm::to_lower_copy(items[i].Name()));
 		}
 	}
 
