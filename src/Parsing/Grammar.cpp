@@ -365,7 +365,6 @@ void modlist_grammar::SyntaxError(grammarIter const& /*first*/,
 	ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
 	*errorBuffer = e;
 	LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
-	return;
 }
 
 // Stores the given item and records any changes to open groups.
@@ -482,7 +481,6 @@ void conditional_grammar::EvaluateConditional(bool& result, const string type,
 		result = condition;
 	else
 		result = !condition;
-	return;
 }
 
 // Evaluate the second half of a complex conditional.
@@ -543,8 +541,7 @@ fs::path conditional_grammar::GetPath(const string file) {
 	         file.find('/') == string::npos && file.find('\\') == string::npos &&
 	         fs::exists(parentGame->SEPluginsFolder()))
 		return parentGame->SEPluginsFolder() / file;
-	else
-		return parentGame->DataFolder() / file;
+	return parentGame->DataFolder() / file;
 }
 
 // Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
@@ -584,7 +581,6 @@ void conditional_grammar::CheckVersion(bool& result,
 				result = true;
 			break;
 	}
-	return;
 }
 
 // Checks if the given file exists.
@@ -651,7 +647,6 @@ void conditional_grammar::CheckVar(bool& result, const string var) {
 		result = false;
 	else
 		result = true;
-	return;
 }
 
 // Checks if the given plugin is active.
@@ -703,7 +698,6 @@ void conditional_grammar::CheckSum(bool& result, string file,
 
 	if (sum == CRC)
 		result = true;
-	return;
 }
 
 // Parser error reporter.
@@ -725,7 +719,6 @@ void conditional_grammar::SyntaxError(grammarIter const& /*first*/,
 	ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
 	*errorBuffer = e;
 	LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
-	return;
 }
 
 
@@ -786,7 +779,6 @@ void ini_grammar::SyntaxError(grammarIter const& /*first*/,
 	ParsingError e(str(IniParsingErrorHeader % expect), context, IniParsingErrorFooter);
 	*errorBuffer = e;
 	LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
-	return;
 }
 
 ////////////////////////////
@@ -866,7 +858,6 @@ void userlist_grammar::SyntaxError(grammarIter const& /*first*/,
 	if (errorBuffer != NULL)
 		errorBuffer->push_back(e);
 	LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
-	return;
 }
 
 }  // namespace boss
