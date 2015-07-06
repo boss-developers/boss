@@ -90,6 +90,7 @@ inline void handle_error(int error_code, pointers_struct& pointers) {
 
 inline std::string RepoURL(const Game& game) {
 	// TODO(MCP): Look at converting this to a switch-statement
+	// MCP Note: The last else-statement should be an else-if with a default of invalid or similar
 	if (game.Id() == OBLIVION)
 		return gl_oblivion_repo_url;
 	else if (game.Id() == NEHRIM)
@@ -120,47 +121,45 @@ inline bool are_files_equal(const void * buf1, size_t buf1_size,
 inline std::string GetMasterlistVersion(Game& game) {
 	if (!fs::exists(game.Masterlist().parent_path() / ".git" / "HEAD")) {
 		return "Unknown: Git repository missing";
-	} else {
-		std::string rev;
-		// Naive check, ignoring working directory changes.
-
-		/*
-		 * Better check, which compares HEAD to the working dir.
-		 * 
-		 * 1. Get an object for the masterlist in HEAD.
-		 * 2. Get the blob for that object.
-		 * 3. Open the masterlist file in the working dir in a file buffer.
-		 * 4. Compare the file and blob buffers.
-		 */
-		pointers_struct ptrs;
-		LOG_INFO("Existing repository found, attempting to open it.");
-		handle_error(git_repository_open(&ptrs.repo, game.Masterlist().parent_path().string().c_str()), ptrs);
-
-		LOG_INFO("Getting HEAD masterlist object.");
-		handle_error(git_revparse_single(&ptrs.obj, ptrs.repo, "HEAD:masterlist.txt"), ptrs);
-
-		LOG_INFO("Getting blob for masterlist object.");
-		handle_error(git_blob_lookup(&ptrs.blob, ptrs.repo, git_object_id(ptrs.obj)), ptrs);
-
-		LOG_INFO("Opening masterlist in working directory.");
-		std::string mlist;
-		fileToBuffer(game.Masterlist(), mlist);
-
-		LOG_INFO("Comparing files.");
-		if (are_files_equal(git_blob_rawcontent(ptrs.blob), git_blob_rawsize(ptrs.blob), mlist.data(), mlist.length())) {
-			ptrs.free();
-			// For some reason trying to get the revision of HEAD:masterlist.txt using libgit2 gives me 18efbc9d8 instead.
-			std::string revision;
-			ifstream head((game.Masterlist().parent_path() / ".git" / "HEAD").string());
-			head >> revision;
-			head.close();
-			revision.resize(9);
-			return revision;
-		} else {
-			ptrs.free();
-			return "Unknown: Masterlist edited";
-		}
 	}
+	std::string rev;
+	// Naive check, ignoring working directory changes.
+
+	/*
+	 * Better check, which compares HEAD to the working dir.
+	 *
+	 * 1. Get an object for the masterlist in HEAD.
+	 * 2. Get the blob for that object.
+	 * 3. Open the masterlist file in the working dir in a file buffer.
+	 * 4. Compare the file and blob buffers.
+	 */
+	pointers_struct ptrs;
+	LOG_INFO("Existing repository found, attempting to open it.");
+	handle_error(git_repository_open(&ptrs.repo, game.Masterlist().parent_path().string().c_str()), ptrs);
+
+	LOG_INFO("Getting HEAD masterlist object.");
+	handle_error(git_revparse_single(&ptrs.obj, ptrs.repo, "HEAD:masterlist.txt"), ptrs);
+
+	LOG_INFO("Getting blob for masterlist object.");
+	handle_error(git_blob_lookup(&ptrs.blob, ptrs.repo, git_object_id(ptrs.obj)), ptrs);
+
+	LOG_INFO("Opening masterlist in working directory.");
+	std::string mlist;
+	fileToBuffer(game.Masterlist(), mlist);
+
+	LOG_INFO("Comparing files.");
+	if (are_files_equal(git_blob_rawcontent(ptrs.blob), git_blob_rawsize(ptrs.blob), mlist.data(), mlist.length())) {
+		ptrs.free();
+		// For some reason trying to get the revision of HEAD:masterlist.txt using libgit2 gives me 18efbc9d8 instead.
+		std::string revision;
+		ifstream head((game.Masterlist().parent_path() / ".git" / "HEAD").string());
+		head >> revision;
+		head.close();
+		revision.resize(9);
+		return revision;
+	}
+	ptrs.free();
+	return "Unknown: Masterlist edited";
 }
 
 // Progress has form prog(const char *str, int len, void *data)
@@ -248,7 +247,7 @@ std::string UpdateMasterlist(Game& game, Progress prog, void * out) {
 	// Next, we need to do a looping checkout / parsing check / roll-back.
 	/*
 	 * Here's what to do:
-	 * 
+	 *
 	 * 0. Create a git_signature using git_signature_default.
 	 * 1. Get the git_object for the desired masterlist revision, using git_revparse_single.
 	 * 2. Get the git_oid for that object, using git_object_id.
