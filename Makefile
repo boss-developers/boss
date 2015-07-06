@@ -15,32 +15,33 @@ DIR1 = src
 DIR2 = src
 DIR3 = src
 
-OBJECTS = 							$(DIR1)/BOSS-CLI.o $(DIR2)/Common/Globals.o \
-									$(DIR2)/Common/Classes.o $(DIR2)/Common/Game.o \
-									$(DIR2)/Common/Error.o $(DIR2)/Output/Output.o \
-									$(DIR2)/Support/Helpers.o $(DIR2)/Support/Logger.o \
-									$(DIR2)/Support/ModFormat.o $(DIR2)/Parsing/Grammar.o \
-									$(DIR2)/Support/VersionRegex.o
+OBJECTS = 							$(DIR1)/boss_cli.o $(DIR2)/common/globals.o \
+									$(DIR2)/common/classes.o $(DIR2)/common/game.o \
+									$(DIR2)/common/error.o $(DIR2)/output/output.o \
+									$(DIR2)/support/helpers.o $(DIR2)/support/logger.o \
+									$(DIR2)/support/mod_format.o $(DIR2)/parsing/grammar.o \
+									$(DIR2)/support/version_regex.o
 
 
 bossCLI.exe :						$(OBJECTS)
 									$(CXX) $(CXXFLAGS) $(CPPFLAGS) $^ $(LDFLAGS) $(LDLIBS) -o $@
 
 
-$(DIR1)/BOSS-CLI.o :				$(DIR2)/BOSS-Common.h $(DIR2)/Common/Globals.h $(DIR2)/Common/Classes.h $(DIR2)/Common/Game.h $(DIR2)/Common/Error.h $(DIR2)/Output/Output.h \
-									$(DIR2)/Support/Helpers.h $(DIR2)/Support/Logger.h $(DIR2)/Updating/Updater.h
-$(DIR2)/Common/Globals.o :			$(DIR2)/Common/Globals.h $(DIR2)/Common/Game.h $(DIR2)/Common/DllDef.h
-$(DIR2)/Common/Classes.o :			$(DIR2)/Common/Classes.h $(DIR2)/Common/Game.h $(DIR2)/Common/Globals.h $(DIR2)/Output/Output.h $(DIR2)/Support/Logger.h $(DIR2)/Support/ModFormat.h \
-									$(DIR2)/Parsing/Grammar.h $(DIR2)/Common/DllDef.h $(DIR2)/Common/Error.h $(DIR2)/Support/Helpers.h
-$(DIR2)/Common/Game.o :				$(DIR2)/Common/Game.h $(DIR2)/Common/Globals.h $(DIR2)/Support/Helpers.h $(DIR2)/Support/Logger.h $(DIR2)/Common/Classes.h $(DIR2)/Output/Output.h
-$(DIR2)/Common/Error.o :			$(DIR2)/Common/Error.h $(DIR2)/Common/DllDef.h
-$(DIR2)/Output/Output.o :			$(DIR2)/Output/Output.h $(DIR2)/Common/Error.h $(DIR2)/Common/Globals.h $(DIR2)/Support/Helpers.h $(DIR2)/Common/Classes.h $(DIR2)/Common/DllDef.h
-$(DIR2)/Support/Helpers.o :			$(DIR2)/Support/Helpers.h $(DIR2)/Support/Types.h $(DIR2)/Support/ModFormat.h $(DIR2)/Support/Logger.h $(DIR2)/Common/Globals.h $(DIR2)/alphanum.hpp $(DIR2)/Common/DllDef.h
-$(DIR2)/Support/Logger.o :			$(DIR2)/Support/Logger.h $(DIR2)/Support/Platform.h $(DIR2)/Common/DllDef.h
-$(DIR2)/Support/ModFormat.o :		$(DIR2)/Support/ModFormat.h $(DIR2)/Support/Types.h $(DIR2)/Support/Helpers.h $(DIR2)/Support/VersionRegex.h
-$(DIR2)/Parsing/Grammar.o :			$(DIR2)/Parsing/Grammar.h $(DIR2)/Common/Globals.h $(DIR2)/Common/Error.h $(DIR2)/Support/Helpers.h $(DIR2)/Support/Logger.h \
-									$(DIR2)/Output/Output.h $(DIR2)/Common/Classes.h $(DIR2)/Common/Game.h
-$(DIR2)/Support/VersionRegex.o :	$(DIR2)/Support/VersionRegex.h
+$(DIR1)/boss_cli.o :				$(DIR2)/boss_common.h $(DIR2)/common/globals.h $(DIR2)/common/classes.h $(DIR2)/common/game.h $(DIR2)/common/error.h $(DIR2)/output/output.h \
+									$(DIR2)/support/helpers.h $(DIR2)/support/logger.h $(DIR2)/updating/updater.h
+$(DIR2)/common/globals.o :			$(DIR2)/common/globals.h $(DIR2)/common/game.h $(DIR2)/common/dll_def.h
+$(DIR2)/common/classes.o :			$(DIR2)/common/classes.h $(DIR2)/common/game.h $(DIR2)/common/globals.h $(DIR2)/output/output.h $(DIR2)/support/logger.h $(DIR2)/support/mod_format.h \
+									$(DIR2)/parsing/grammar.h $(DIR2)/common/dll_def.h $(DIR2)/common/error.h $(DIR2)/support/helpers.h
+$(DIR2)/common/game.o :				$(DIR2)/common/game.h $(DIR2)/common/globals.h $(DIR2)/support/helpers.h $(DIR2)/support/logger.h $(DIR2)/common/classes.h $(DIR2)/output/output.h
+$(DIR2)/common/error.o :			$(DIR2)/common/error.h $(DIR2)/common/dll_def.h
+$(DIR2)/output/output.o :			$(DIR2)/output/output.h $(DIR2)/common/error.h $(DIR2)/common/globals.h $(DIR2)/support/helpers.h $(DIR2)/common/classes.h $(DIR2)/common/dll_def.h
+$(DIR2)/support/helpers.o :			$(DIR2)/support/helpers.h $(DIR2)/support/types.h $(DIR2)/support/mod_format.h $(DIR2)/support/logger.h \
+									$(DIR2)/common/globals.h $(DIR2)/alphanum.hpp $(DIR2)/common/dll_def.h
+$(DIR2)/support/logger.o :			$(DIR2)/support/logger.h $(DIR2)/support/platform.h $(DIR2)/common/dll_def.h
+$(DIR2)/support/mod_format.o :		$(DIR2)/support/mod_format.h $(DIR2)/support/types.h $(DIR2)/support/helpers.h $(DIR2)/support/version_regex.h
+$(DIR2)/parsing/grammar.o :			$(DIR2)/parsing/grammar.h $(DIR2)/common/globals.h $(DIR2)/common/error.h $(DIR2)/support/helpers.h $(DIR2)/support/logger.h \
+									$(DIR2)/output/output.h $(DIR2)/common/classes.h $(DIR2)/common/game.h
+$(DIR2)/support/version_regex.o :	$(DIR2)/support/version_regex.h
 
 .PHONY :							clean
 clean :
