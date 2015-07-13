@@ -25,8 +25,10 @@
 	$Revision: 1946 $, $Date: 2010-11-27 23:12:48 +0000 (Sat, 27 Nov 2010) $
 */
 
-
 #include "support/logger.h"
+
+#include <cstdarg>
+#include <cstdio>
 
 
 // The values in the LogVerbosity enum refer to indices in this array
@@ -75,25 +77,25 @@ void Logger::setVerbosity(LogVerbosity verbosity) {
 }
 
 // Formats the message and prints to stdout
-void Logger::_log(LogVerbosity verbosity, const char * formatStr, va_list ap) {
+void Logger::_log(LogVerbosity verbosity, const char * formatStr, std::va_list ap) {
 	if (!_checkVerbosity(verbosity)) {
 		return;
 	}
 
 	// Assumes single thread -- multithread could interleave the lines below
 	// A thread safe version would use vasprintf to print to a temporary string first
-	printf("%s", LOG_VERBOSITY_NAMES[verbosity]);
+	std::printf("%s", LOG_VERBOSITY_NAMES[verbosity]);
 
-	printf(": ");
-	vprintf(formatStr, ap);
-	printf("\n");
-	fflush(stdout);
+	std::printf(": ");
+	std::vprintf(formatStr, ap);
+	std::printf("\n");
+	std::fflush(stdout);
 
 	if (m_out != stdout) {
-		fprintf(m_out, "%s: ", LOG_VERBOSITY_NAMES[verbosity]);
-		vfprintf(m_out, formatStr, ap);
-		fprintf(m_out, "\n");
-		fflush(m_out);
+		std::fprintf(m_out, "%s: ", LOG_VERBOSITY_NAMES[verbosity]);
+		std::vfprintf(m_out, formatStr, ap);
+		std::fprintf(m_out, "\n");
+		std::fflush(m_out);
 	}
 }
 
