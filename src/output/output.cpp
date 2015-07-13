@@ -27,18 +27,31 @@
 
 #include "output/output.h"
 
+#include <cstddef>
+#include <cstdint>
+
+#include <fstream>
+#include <ostream>
+#include <sstream>
+#include <string>
+#include <vector>
+
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 #include <boost/locale.hpp>
 
+#include "common/conditional_data.h"
 #include "common/error.h"
 #include "common/globals.h"
+#include "common/keywords.h"
+#include "common/rule_line.h"
 #include "support/helpers.h"
 
 namespace boss {
 
-using namespace std;
-using boost::algorithm::replace_all;
-using boost::locale::translate;
+namespace fs = boost::filesystem;
+namespace loc = boost::locale;
 
 ////////////////////////////////
 // Outputter Class Functions
@@ -55,14 +68,14 @@ Outputter::Outputter(const Outputter& o) {
 	escapeHTMLSpecialChars = o.GetHTMLSpecialEscape();
 }
 
-Outputter::Outputter(const uint32_t format) : outFormat(format) {
+Outputter::Outputter(const std::uint32_t format) : outFormat(format) {
 	if (outFormat == HTML)
 		escapeHTMLSpecialChars = true;
 	else
 		escapeHTMLSpecialChars = false;
 }
 
-Outputter::Outputter(const uint32_t format, const ParsingError e)
+Outputter::Outputter(const std::uint32_t format, const ParsingError e)
     : outFormat(format) {
 	if (outFormat == HTML)
 		escapeHTMLSpecialChars = true;
@@ -72,7 +85,7 @@ Outputter::Outputter(const uint32_t format, const ParsingError e)
 	*this << e;
 }
 
-Outputter::Outputter(const uint32_t format, const Rule r)
+Outputter::Outputter(const std::uint32_t format, const Rule r)
     : outFormat(format) {
 	if (outFormat == HTML)
 		escapeHTMLSpecialChars = true;
@@ -82,7 +95,7 @@ Outputter::Outputter(const uint32_t format, const Rule r)
 	*this << r;
 }
 
-Outputter::Outputter(const uint32_t format, const logFormatting l)
+Outputter::Outputter(const std::uint32_t format, const logFormatting l)
     : outFormat(format) {
 	if (outFormat == HTML)
 		escapeHTMLSpecialChars = true;
@@ -92,7 +105,7 @@ Outputter::Outputter(const uint32_t format, const logFormatting l)
 	*this << l;
 }
 
-void Outputter::SetFormat(const uint32_t format) {
+void Outputter::SetFormat(const std::uint32_t format) {
 	outFormat = format;
 	if (outFormat == HTML)
 		escapeHTMLSpecialChars = true;
@@ -112,7 +125,7 @@ bool Outputter::Empty() const {
 	return outStream.str().empty();
 }
 
-uint32_t Outputter::GetFormat() const {
+std::uint32_t Outputter::GetFormat() const {
 	return outFormat;
 }
 
@@ -120,26 +133,26 @@ bool Outputter::GetHTMLSpecialEscape() const {
 	return escapeHTMLSpecialChars;
 }
 
-string Outputter::AsString() const {
+std::string Outputter::AsString() const {
 	return outStream.str();
 }
 
-string Outputter::EscapeHTMLSpecial(string text) {
+std::string Outputter::EscapeHTMLSpecial(std::string text) {
 	if (escapeHTMLSpecialChars && outFormat == HTML) {
-		replace_all(text, "&", "&amp;");
-		replace_all(text, "\"", "&quot;");
-		replace_all(text, "'", "&#039;");
-		replace_all(text, "<", "&lt;");
-		replace_all(text, ">", "&gt;");
-		replace_all(text, "©", "&copy;");
-		replace_all(text, "✗", "&#x2717;");
-		replace_all(text, "✓", "&#x2713;");
-		replace_all(text, "\n", "<br />");  // Not an HTML special char escape, but this needs to happen here to get the details of parser errors formatted correctly.
+		boost::replace_all(text, "&", "&amp;");
+		boost::replace_all(text, "\"", "&quot;");
+		boost::replace_all(text, "'", "&#039;");
+		boost::replace_all(text, "<", "&lt;");
+		boost::replace_all(text, ">", "&gt;");
+		boost::replace_all(text, "©", "&copy;");
+		boost::replace_all(text, "✗", "&#x2717;");
+		boost::replace_all(text, "✓", "&#x2713;");
+		boost::replace_all(text, "\n", "<br />");  // Not an HTML special char escape, but this needs to happen here to get the details of parser errors formatted correctly.
 	}
 	return text;
 }
 
-string Outputter::EscapeHTMLSpecial(char c) {
+std::string Outputter::EscapeHTMLSpecial(char c) {
 	if (escapeHTMLSpecialChars && outFormat == HTML) {
 		/*
 		 * MCP Note: GCC squalls at these due to the copyright character not being ASCII. Look at trying to fix this.
@@ -161,10 +174,10 @@ string Outputter::EscapeHTMLSpecial(char c) {
 			case '©':
 				return "&copy;";
 			default:
-				return string(1, c);
+				return std::string(1, c);
 		}
 	}
-	return string(1, c);
+	return std::string(1, c);
 }
 
 Outputter& Outputter::operator= (const Outputter& o) {
@@ -174,7 +187,7 @@ Outputter& Outputter::operator= (const Outputter& o) {
 	return *this;
 }
 
-Outputter& Outputter::operator<< (const string s) {
+Outputter& Outputter::operator<< (const std::string s) {
 	outStream << EscapeHTMLSpecial(s);
 	return *this;
 }
@@ -219,7 +232,7 @@ Outputter& Outputter::operator<< (const logFormatting l) {
 			if (outFormat == HTML)
 				outStream << "<div>";
 			else
-				outStream << endl;
+				outStream << std::endl;
 			break;
 		case DIV_SUMMARY_BUTTON_OPEN:
 			if (outFormat == HTML)
@@ -269,25 +282,25 @@ Outputter& Outputter::operator<< (const logFormatting l) {
 			if (outFormat == HTML)
 				outStream << "<tr>";
 			else
-				outStream << endl;
+				outStream << std::endl;
 			break;
 		case TABLE_ROW_CLASS_SUCCESS:
 			if (outFormat == HTML)
 				outStream << "<tr class='success'>";
 			else
-				outStream << endl;
+				outStream << std::endl;
 			break;
 		case TABLE_ROW_CLASS_WARN:
 			if (outFormat == HTML)
 				outStream << "<tr class='warn'>";
 			else
-				outStream << endl;
+				outStream << std::endl;
 			break;
 		case TABLE_ROW_CLASS_ERROR:
 			if (outFormat == HTML)
 				outStream << "<tr class='error'>";
 			else
-				outStream << endl;
+				outStream << std::endl;
 			break;
 		case TABLE_DATA:
 			if (outFormat == HTML)
@@ -296,14 +309,14 @@ Outputter& Outputter::operator<< (const logFormatting l) {
 				outStream  << '\t';
 			break;
 		case TABLE_OPEN:
-			if (outFormat == HTML)
+			if (outFormat == std::HTML)
 				outStream << "<table>";
 			break;
 		case TABLE_CLOSE:
 			if (outFormat == HTML)
 				outStream << "</table>";
 			else
-				outStream << endl << endl;
+				outStream << std::endl << std::endl;
 			break;
 		case LIST_OPEN:
 			if (outFormat == HTML)
@@ -313,49 +326,49 @@ Outputter& Outputter::operator<< (const logFormatting l) {
 			if (outFormat == HTML)
 				outStream << "</ul>";
 			else
-				outStream << endl;
+				outStream << std::endl;
 			break;
 		case HEADING_OPEN:
 			if (outFormat == HTML)
 				outStream << "<h2>";
 			else
-				outStream << endl << endl << "======================================" << endl;
+				outStream << std::endl << std::endl << "======================================" << std::endl;
 			break;
 		case HEADING_CLOSE:
 			if (outFormat == HTML)
 				outStream << "</h2>";
 			else
-				outStream << endl << "======================================" << endl << endl;
+				outStream << std::endl << "======================================" << std::endl << std::endl;
 			break;
 		case PARAGRAPH:
 			if (outFormat == HTML)
 				outStream << "<p>";
 			else
-				outStream << endl;
+				outStream << std::endl;
 			break;
 		case LIST_ITEM:
-			if (outFormat == HTML)
+			if (outFormat == std::HTML)
 				outStream << "<li>";
 			else
-				outStream << endl << endl;
+				outStream << std::endl << std::endl;
 			break;
 		case LIST_ITEM_CLASS_SUCCESS:
 			if (outFormat == HTML)
 				outStream << "<li class='success'>";
 			else
-				outStream << endl << "*  ";
+				outStream << std::endl << "*  ";
 			break;
 		case LIST_ITEM_CLASS_WARN:
 			if (outFormat == HTML)
 				outStream << "<li class='warn'>";
 			else
-				outStream << endl << "*  ";
+				outStream << std::endl << "*  ";
 			break;
 		case LIST_ITEM_CLASS_ERROR:
 			if (outFormat == HTML)
 				outStream << "<li class='error'>";
 			else
-				outStream << endl << "*  ";
+				outStream << std::endl << "*  ";
 			break;
 		case SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN:
 			if (outFormat == HTML)
@@ -403,13 +416,13 @@ Outputter& Outputter::operator<< (const logFormatting l) {
 			if (outFormat == HTML)
 				outStream << "<blockquote>";
 			else
-				outStream << endl << endl;
+				outStream << std::endl << std::endl;
 			break;
 		case BLOCKQUOTE_CLOSE:
 			if (outFormat == HTML)
 				outStream << "</blockquote>";
 			else
-				outStream << endl << endl;
+				outStream << std::endl << std::endl;
 			break;
 		case VAR_OPEN:
 			if (outFormat == HTML)
@@ -429,12 +442,12 @@ Outputter& Outputter::operator<< (const logFormatting l) {
 	return *this;
 }
 
-Outputter& Outputter::operator<< (const int32_t i) {
+Outputter& Outputter::operator<< (const std::int32_t i) {
 	outStream << i;
 	return *this;
 }
 
-Outputter& Outputter::operator<< (const uint32_t i) {
+Outputter& Outputter::operator<< (const std::uint32_t i) {
 	outStream << i;
 	return *this;
 }
@@ -453,13 +466,13 @@ Outputter& Outputter::operator<< (const fs::path p) {
 }
 
 Outputter& Outputter::operator<< (const Message m) {
-	string data = EscapeHTMLSpecial(m.Data());
+	std::string data = EscapeHTMLSpecial(m.Data());
 	// Need to handle web addresses. Recognised are those in the following formats:
 	// "http:someAddress", "http:someAddress label", "https:someAddress", "https:someAddress label", "file:somelocalAddress", "file:someLocalAddress label"
 
-	size_t pos1, pos2, pos3;
-	string link, label, dq;
-	string addressTypes[] = {"http:", "https:", "file:"};
+	std::size_t pos1, pos2, pos3;
+	std::string link, label, dq;
+	std::string addressTypes[] = {"http:", "https:", "file:"};  // MCP Note: Should this be a const and should it be char**?
 
 	if (outFormat == HTML)
 		dq = "&quot;";
@@ -467,7 +480,7 @@ Outputter& Outputter::operator<< (const Message m) {
 		dq = "\"";
 
 	// Do replacements for all addressTypes.
-	for (uint32_t i = 0; i < 2; i++) {
+	for (std::uint32_t i = 0; i < 2; i++) {
 		pos1 = data.find(dq + addressTypes[i]);
 		while (pos1 != string::npos) {
 			pos1 += dq.length();
@@ -495,44 +508,44 @@ Outputter& Outputter::operator<< (const Message m) {
 	// Select message formatting.
 	if (m.Key() == SAY) {
 		if (outFormat == HTML)
-			outStream << "<li class='note'>" << translate("Note") << ": " << data;
+			outStream << "<li class='note'>" << loc::translate("Note") << ": " << data;
 		else
-			outStream << endl << "*  " << translate("Note") << ": " << data;
+			outStream << std::endl << "*  " << loc::translate("Note") << ": " << data;
 	} else if (m.Key() == TAG) {
 		if (outFormat == HTML)
-			outStream << "<li class='tag'><span class='tagPrefix'>" << translate("Bash Tag suggestion(s)") << ":</span> " << data;
+			outStream << "<li class='tag'><span class='tagPrefix'>" << loc::translate("Bash Tag suggestion(s)") << ":</span> " << data;
 		else
-			outStream << endl << "*  " << translate("Bash Tag suggestion(s)") << ": " << data;
+			outStream << std::endl << "*  " << loc::translate("Bash Tag suggestion(s)") << ": " << data;
 	} else if (m.Key() == REQ) {
 		if (outFormat == HTML)
-			outStream << "<li class='req'>" << translate("Requires") << ": " << data;
+			outStream << "<li class='req'>" << loc::translate("Requires") << ": " << data;
 		else
-			outStream << endl << "*  " << translate("Requires") << ": " << data;
+			outStream << std::endl << "*  " << loc::translate("Requires") << ": " << data;
 	} else if (m.Key() == INC) {
 		if (outFormat == HTML)
-			outStream << "<li class='inc'>" << translate("Incompatible with") << ": " << data;
+			outStream << "<li class='inc'>" << loc::translate("Incompatible with") << ": " << data;
 		else
-			outStream << endl << "*  " << translate("Incompatible with") << ": " << data;
+			outStream << std::endl << "*  " << loc::translate("Incompatible with") << ": " << data;
 	} else if (m.Key() == WARN) {
 		if (outFormat == HTML)
-			outStream << "<li class='warn'>" << translate("Warning") << ": " << data;
+			outStream << "<li class='warn'>" << loc::translate("Warning") << ": " << data;
 		else
-			outStream << endl << "*  " << translate("Warning") << ": " << data;
+			outStream << std::endl << "*  " << loc::translate("Warning") << ": " << data;
 	} else if (m.Key() == ERR) {
 		if (outFormat == HTML)
-			outStream << "<li class='error'>" << translate("Error") << ": " << data;
+			outStream << "<li class='error'>" << loc::translate("Error") << ": " << data;
 		else
-			outStream << endl << "*  " << translate("Error") << ": " << data;
+			outStream << std::endl << "*  " << loc::translate("Error") << ": " << data;
 	} else if (m.Key() == DIRTY) {
 		if (outFormat == HTML)
-			outStream << "<li class='dirty'>" << translate("Contains dirty edits") << ": " << data;
+			outStream << "<li class='dirty'>" << loc::translate("Contains dirty edits") << ": " << data;
 		else
-			outStream << endl << "*  " << translate("Contains dirty edits") << ": " << data;
+			outStream << std::endl << "*  " << loc::translate("Contains dirty edits") << ": " << data;
 	} else {
 		if (outFormat == HTML)
-			outStream << "<li class='note'>" << translate("Note") << ": " << data;
+			outStream << "<li class='note'>" << loc::translate("Note") << ": " << data;
 		else
-			outStream << endl << "*  " << translate("Note") << ": " << data;
+			outStream << std::endl << "*  " << loc::translate("Note") << ": " << data;
 	}
 	return *this;
 }
@@ -555,44 +568,44 @@ Outputter& Outputter::operator<< (const ParsingError e) {
 
 Outputter& Outputter::operator<< (const Rule r) {
 	bool hasEditedMessages = false;
-	vector<RuleLine> lines = r.Lines();
-	size_t linesSize = lines.size();
-	string varOpen = Outputter(outFormat, VAR_OPEN).AsString();
-	string varClose = Outputter(outFormat, VAR_CLOSE).AsString();
+	std::vector<RuleLine> lines = r.Lines();
+	std::size_t linesSize = lines.size();
+	std::string varOpen = Outputter(outFormat, VAR_OPEN).AsString();
+	std::string varClose = Outputter(outFormat, VAR_CLOSE).AsString();
 
 	// Need to temporarily turn off escaping of special characters so that <var> and </var> are printed correctly.
 	bool wasEscaped = escapeHTMLSpecialChars;
 
-	for (size_t j = 0; j < linesSize; j++) {
-		string rObject = varOpen + EscapeHTMLSpecial(r.Object()) + varClose;
-		string lObject = varOpen + EscapeHTMLSpecial(lines[j].Object()) + varClose;
+	for (std::size_t j = 0; j < linesSize; j++) {
+		std::string rObject = varOpen + EscapeHTMLSpecial(r.Object()) + varClose;
+		std::string lObject = varOpen + EscapeHTMLSpecial(lines[j].Object()) + varClose;
 
 		escapeHTMLSpecialChars = false;
 
 		// TODO(MCP): Look at converting this to a switch-statement
 		if (lines[j].Key() == BEFORE) {
-			*this << (boost::format(translate("Sort %1% before %2%")) % rObject % lObject).str();
+			*this << (boost::format(loc::translate("Sort %1% before %2%")) % rObject % lObject).str();
 		} else if (lines[j].Key() == AFTER) {
-			*this << (boost::format(translate("Sort %1% after %2%")) % rObject % lObject).str();
+			*this << (boost::format(loc::translate("Sort %1% after %2%")) % rObject % lObject).str();
 		} else if (lines[j].Key() == TOP) {
-			*this << (boost::format(translate("Insert %1% at the top of %2%")) % rObject % lObject).str();
+			*this << (boost::format(loc::translate("Insert %1% at the top of %2%")) % rObject % lObject).str();
 		} else if (lines[j].Key() == BOTTOM) {
-			*this << (boost::format(translate("Insert %1% at the bottom of %2%")) % rObject % lObject).str();
+			*this << (boost::format(loc::translate("Insert %1% at the bottom of %2%")) % rObject % lObject).str();
 		} else if (lines[j].Key() == APPEND) {
 			if (!hasEditedMessages) {
 				if (r.Key() == FOR)
-					*this << (boost::format(translate("Add the following messages to %1%:")) % rObject).str() << LINE_BREAK << LIST_OPEN;
+					*this << (boost::format(loc::translate("Add the following messages to %1%:")) % rObject).str() << LINE_BREAK << LIST_OPEN;
 				else
-					*this << LINE_BREAK << translate("Add the following messages:") << LINE_BREAK << LIST_OPEN;
+					*this << LINE_BREAK << loc::translate("Add the following messages:") << LINE_BREAK << LIST_OPEN;
 			}
 			*this << lines[j].ObjectAsMessage();
 			hasEditedMessages = true;
 		} else if (lines[j].Key() == REPLACE) {
 			if (!hasEditedMessages) {
 				if (r.Key() == FOR)
-					*this << (boost::format(translate("Replace the messages attached to %1% with:")) % rObject).str() << LINE_BREAK << LIST_OPEN;
+					*this << (boost::format(loc::translate("Replace the messages attached to %1% with:")) % rObject).str() << LINE_BREAK << LIST_OPEN;
 				else
-					*this << LINE_BREAK << translate("Replace the attached messages with:") << LINE_BREAK << LIST_OPEN;
+					*this << LINE_BREAK << loc::translate("Replace the attached messages with:") << LINE_BREAK << LIST_OPEN;
 			}
 			*this << lines[j].ObjectAsMessage();
 			hasEditedMessages = true;
@@ -632,7 +645,7 @@ BossLog::BossLog()
 	unrecognisedPlugins.SetFormat(HTML);
 }
 
-BossLog::BossLog(const uint32_t format)
+BossLog::BossLog(const std::uint32_t format)
     : recognised(0),
       unrecognised(0),
       inactive(0),
@@ -648,8 +661,8 @@ BossLog::BossLog(const uint32_t format)
 	unrecognisedPlugins.SetFormat(format);
 }
 
-string BossLog::PrintHeaderTop() {
-	stringstream out;
+std::string BossLog::PrintHeaderTop() {
+	std::stringstream out;
 	if (logFormat == HTML) {
 		out << "<!DOCTYPE html>"
 		    << "<meta charset='utf-8'>"
@@ -658,76 +671,76 @@ string BossLog::PrintHeaderTop() {
 		    << "<nav>"
 		    << "<header>"
 		    << "	<h1>BOSS</h1>"
-		    << translate("	Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH)
+		    << loc::translate("	Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH)
 		    << "</header>";
 	} else {
 		out << "\nBOSS\n"
-		    << translate("Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << endl;
+		    << loc::translate("Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << std::endl;
 	}
 	return out.str();
 }
 
-string BossLog::PrintHeaderBottom() {
-	stringstream out;
+std::string BossLog::PrintHeaderBottom() {
+	std::stringstream out;
 	if (logFormat == HTML) {
 		out << "<footer>"
-		    << "	<div class='button' data-section='browserBox' id='supportButtonShow'>" << translate("Log Feature Support") << "</div>"
-		    << "	<div class='button' id='filtersButtonToggle'>" << translate("Filters") << "<span id='arrow'></span></div>"
+		    << "	<div class='button' data-section='browserBox' id='supportButtonShow'>" << loc::translate("Log Feature Support") << "</div>"
+		    << "	<div class='button' id='filtersButtonToggle'>" << loc::translate("Filters") << "<span id='arrow'></span></div>"
 		    << "</footer>"
 		    << "</nav>"
 		    << "<noscript>"
-		    << translate("The BOSS Log requires Javascript to be enabled in order to function.")
+		    << loc::translate("The BOSS Log requires Javascript to be enabled in order to function.")
 		    << "</noscript>";
 	}
 	return out.str();
 }
 
-string BossLog::PrintFooter() {
-	stringstream out;
-	string colourTooltip = translate("Colours must be specified using lowercase hex codes.");
+std::string BossLog::PrintFooter() {
+	std::stringstream out;
+	std::string colourTooltip = loc::translate("Colours must be specified using lowercase hex codes.");
 
 	if (logFormat == HTML) {
 		out << "<section id='browserBox'>"
-		    << "<p>" << translate("Support for the BOSS Log's more advanced features varies. Here's what your browser supports:")
-		    << "<h3>" << translate("Functionality") << "</h3>"
+		    << "<p>" << loc::translate("Support for the BOSS Log's more advanced features varies. Here's what your browser supports:")
+		    << "<h3>" << loc::translate("Functionality") << "</h3>"
 		    << "<table>"
 		    << "	<tbody>"
-		    << "		<tr><td id='pluginSubmitSupport'><td>" << translate("In-Log Plugin Submission") << "<td>" << translate("Allows unrecognised plugins to be anonymously submitted to the BOSS team directly from the BOSS Log.")
-		    << "		<tr><td id='memorySupport'><td>" << translate("Settings Memory") << "<td>" << translate("Allows the BOSS Log to automatically restore the filter configuration last used whenever the BOSS Log is opened.")
+		    << "		<tr><td id='pluginSubmitSupport'><td>" << loc::translate("In-Log Plugin Submission") << "<td>" << loc::translate("Allows unrecognised plugins to be anonymously submitted to the BOSS team directly from the BOSS Log.")
+		    << "		<tr><td id='memorySupport'><td>" << loc::translate("Settings Memory") << "<td>" << loc::translate("Allows the BOSS Log to automatically restore the filter configuration last used whenever the BOSS Log is opened.")
 		    // MCP Note: Look at replacing the four spaces with a tab. It looks like a mistake but will need to verify first.
-		    << "	    <tr><td id='placeholderSupport'><td>" << translate("Input Placeholders")
-		    << "	    <tr><td id='validationSupport'><td>" << translate("Form Validation")
+		    << "	    <tr><td id='placeholderSupport'><td>" << loc::translate("Input Placeholders")
+		    << "	    <tr><td id='validationSupport'><td>" << loc::translate("Form Validation")
 		    << "</table>"
 		    << "</section>"
 
 		    << "<aside>"
-		    << "<label><input type='checkbox' id='hideVersionNumbers' data-class='version'/>" << translate("Hide Version Numbers") << "</label>"
-		    << "<label><input type='checkbox' id='hideActiveLabel' data-class='active'/>" << translate("Hide 'Active' Label") << "</label>"
-		    << "<label><input type='checkbox' id='hideChecksums' data-class='crc'/>" << translate("Hide Checksums") << "</label>"
-		    << "<label><input type='checkbox' id='hideNotes'/>" << translate("Hide Notes") << "</label>"
-		    << "<label><input type='checkbox' id='hideBashTags'/>" << translate("Hide Bash Tag Suggestions") << "</label>"
-		    << "<label><input type='checkbox' id='hideRequirements'/>" << translate("Hide Requirements") << "</label>"
-		    << "<label><input type='checkbox' id='hideIncompatibilities'/>" << translate("Hide Incompatibilities") << "</label>"
-		    << "<label><input type='checkbox' id='hideDoNotCleanMessages'/>" << translate("Hide 'Do Not Clean' Messages") << "</label>"
-		    << "<label><input type='checkbox' id='hideAllPluginMessages'/>" << translate("Hide All Plugin Messages") << "</label>"
-		    << "<label><input type='checkbox' id='hideInactivePlugins'/>" << translate("Hide Inactive Plugins") << "</label>"
-		    << "<label><input type='checkbox' id='hideMessagelessPlugins'/>" << translate("Hide Messageless Plugins") << "</label>"
+		    << "<label><input type='checkbox' id='hideVersionNumbers' data-class='version'/>" << loc::translate("Hide Version Numbers") << "</label>"
+		    << "<label><input type='checkbox' id='hideActiveLabel' data-class='active'/>" << loc::translate("Hide 'Active' Label") << "</label>"
+		    << "<label><input type='checkbox' id='hideChecksums' data-class='crc'/>" << loc::translate("Hide Checksums") << "</label>"
+		    << "<label><input type='checkbox' id='hideNotes'/>" << loc::translate("Hide Notes") << "</label>"
+		    << "<label><input type='checkbox' id='hideBashTags'/>" << loc::translate("Hide Bash Tag Suggestions") << "</label>"
+		    << "<label><input type='checkbox' id='hideRequirements'/>" << loc::translate("Hide Requirements") << "</label>"
+		    << "<label><input type='checkbox' id='hideIncompatibilities'/>" << loc::translate("Hide Incompatibilities") << "</label>"
+		    << "<label><input type='checkbox' id='hideDoNotCleanMessages'/>" << loc::translate("Hide 'Do Not Clean' Messages") << "</label>"
+		    << "<label><input type='checkbox' id='hideAllPluginMessages'/>" << loc::translate("Hide All Plugin Messages") << "</label>"
+		    << "<label><input type='checkbox' id='hideInactivePlugins'/>" << loc::translate("Hide Inactive Plugins") << "</label>"
+		    << "<label><input type='checkbox' id='hideMessagelessPlugins'/>" << loc::translate("Hide Messageless Plugins") << "</label>"
 		    << "<footer>"
-		    << "	" << (boost::format(translate("%1% of %2% recognised plugins hidden.")) % "<span id='hiddenPluginNo'>0</span>" % recognised).str()
-		    << "	" << (boost::format(translate("%1% of %2% messages hidden.")) % "<span id='hiddenMessageNo'>0</span>" % messages).str()
+		    << "	" << (boost::format(loc::translate("%1% of %2% recognised plugins hidden.")) % "<span id='hiddenPluginNo'>0</span>" % recognised).str()
+		    << "	" << (boost::format(loc::translate("%1% of %2% messages hidden.")) % "<span id='hiddenMessageNo'>0</span>" % messages).str()
 		    << "</footer>"
 		    << "</aside>"
 
 		    << "<div id='overlay'>"
 		    << "<div id='submitBox'>"
-		    << "<h2>" << translate("Submit Plugin") << "</h2>"
-		    << "<p><span id='pluginLabel'>" << translate("Plugin") << ":</span><span id='plugin'></span>"
+		    << "<h2>" << loc::translate("Submit Plugin") << "</h2>"
+		    << "<p><span id='pluginLabel'>" << loc::translate("Plugin") << ":</span><span id='plugin'></span>"
 		    << "<form>"
-		    << "<label>" << translate("Download Location") << ":<br /><input type='url' placeholder='" << translate("Label for text box. Do not use a single quote in translation, use '&#x27;' instead", "A link to the plugin&#x27;s download location.") << "' id='link'></label>"
-		    << "<label>" << translate("Additional Notes") << ":<br /><textarea id='notes' placeholder='" << translate("Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.") << "'></textarea></label>"
+		    << "<label>" << loc::translate("Download Location") << ":<br /><input type='url' placeholder='" << loc::translate("Label for text box. Do not use a single quote in translation, use '&#x27;' instead", "A link to the plugin&#x27;s download location.") << "' id='link'></label>"
+		    << "<label>" << loc::translate("Additional Notes") << ":<br /><textarea id='notes' placeholder='" << loc::translate("Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.") << "'></textarea></label>"
 		    << "<div id='output'></div>"
-		    << "<p class='last'><button>" << translate("Submit") << "</button>"
-		    << "<button type='reset'>" << translate("Close") << "</button>"
+		    << "<p class='last'><button>" << loc::translate("Submit") << "</button>"
+		    << "<button type='reset'>" << loc::translate("Close") << "</button>"
 		    << "</form>"
 		    << "</div>"
 		    << "</div>"
@@ -735,16 +748,16 @@ string BossLog::PrintFooter() {
 		    // Need to define some variables in code.
 		    << "<script>"
 		    << "var gameName = '" << gameName << "';"
-		    << "var txt1 = '" << translate("Checking for existing submission...") << "';"
-		    << "var txt2 = '" << translate("Matching submission already exists.") << "';"
-		    << "var txt3 = '" << translate("Plugin already submitted. Submission updated with new comment.") << "';"
-		    << "var txt4 = '" << translate("Plugin submitted!") << "';"
-		    << "var txt5 = '" << translate("Plugin submission failed! Authorisation failure. Please report this to the BOSS team.") << "';"
-		    << "var txt6 = '" << translate("Plugin submission failed! GitHub API rate limit exceeded. Please try again after %1%.") << "';"
-		    << "var txt7 = '" << translate("Plugin submission failed!") << "';"
-		    << "var txt8 = '" << translate("Web storage quota for this document has been exceeded.Please empty your browser\\'s cache. Note that this will delete all locally stored data.") << "';"
-		    << "var txt9 = '" << translate("Please supply at least a link or some notes.") << "';"
-		    << "var txt10 = '" << translate("Do not clean.") << "';"
+		    << "var txt1 = '" << loc::translate("Checking for existing submission...") << "';"
+		    << "var txt2 = '" << loc::translate("Matching submission already exists.") << "';"
+		    << "var txt3 = '" << loc::translate("Plugin already submitted. Submission updated with new comment.") << "';"
+		    << "var txt4 = '" << loc::translate("Plugin submitted!") << "';"
+		    << "var txt5 = '" << loc::translate("Plugin submission failed! Authorisation failure. Please report this to the BOSS team.") << "';"
+		    << "var txt6 = '" << loc::translate("Plugin submission failed! GitHub API rate limit exceeded. Please try again after %1%.") << "';"
+		    << "var txt7 = '" << loc::translate("Plugin submission failed!") << "';"
+		    << "var txt8 = '" << loc::translate("Web storage quota for this document has been exceeded.Please empty your browser\\'s cache. Note that this will delete all locally stored data.") << "';"
+		    << "var txt9 = '" << loc::translate("Please supply at least a link or some notes.") << "';"
+		    << "var txt10 = '" << loc::translate("Do not clean.") << "';"
 		    << "</script>"
 		    << "<script src='../resources/promise-1.0.0.min.js'></script>"
 		    << "<script src='../resources/octokit.js'></script>"
@@ -753,8 +766,8 @@ string BossLog::PrintFooter() {
 	return out.str();
 }
 
-string BossLog::PrintLog() {
-	stringstream out;
+std::string BossLog::PrintLog() {
+	std::stringstream out;
 	Outputter formattedOut(logFormat);
 
 	// Print header
@@ -763,23 +776,23 @@ string BossLog::PrintLog() {
 	out << PrintHeaderTop();
 
 	if (logFormat == HTML) {
-		formattedOut << DIV_SUMMARY_BUTTON_OPEN << translate("Summary") << DIV_CLOSE;
+		formattedOut << DIV_SUMMARY_BUTTON_OPEN << loc::translate("Summary") << DIV_CLOSE;
 
 		if (!userRules.Empty())
-			formattedOut << DIV_USERLIST_BUTTON_OPEN << translate("User Rules") << DIV_CLOSE;
+			formattedOut << DIV_USERLIST_BUTTON_OPEN << loc::translate("User Rules") << DIV_CLOSE;
 
 		if (!sePlugins.Empty())
-			formattedOut << DIV_SE_BUTTON_OPEN << (boost::format(translate("%1% Plugins")) % scriptExtender).str() << DIV_CLOSE;
+			formattedOut << DIV_SE_BUTTON_OPEN << (boost::format(loc::translate("%1% Plugins")) % scriptExtender).str() << DIV_CLOSE;
 
 		if (!recognisedPlugins.Empty()) {
 			if (gl_revert < 1)
-				formattedOut << DIV_RECOGNISED_BUTTON_OPEN << translate("Recognised Plugins") << DIV_CLOSE;
+				formattedOut << DIV_RECOGNISED_BUTTON_OPEN << loc::translate("Recognised Plugins") << DIV_CLOSE;
 			else
-				formattedOut << DIV_RECOGNISED_BUTTON_OPEN << translate("Restored Load Order") << DIV_CLOSE;
+				formattedOut << DIV_RECOGNISED_BUTTON_OPEN << loc::translate("Restored Load Order") << DIV_CLOSE;
 		}
 
 		if (!unrecognisedPlugins.Empty())
-			formattedOut << DIV_UNRECOGNISED_BUTTON_OPEN << translate("Unrecognised Plugins") << DIV_CLOSE;
+			formattedOut << DIV_UNRECOGNISED_BUTTON_OPEN << loc::translate("Unrecognised Plugins") << DIV_CLOSE;
 
 		out << formattedOut.AsString() << PrintHeaderBottom();
 		formattedOut.Clear();  // Clear formattedOut for re-use.
@@ -794,30 +807,30 @@ string BossLog::PrintLog() {
 	if (logFormat == HTML)
 		formattedOut << SECTION_ID_SUMMARY_OPEN;
 	else
-		formattedOut << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << translate("Summary") << HEADING_CLOSE;
+		formattedOut << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << loc::translate("Summary") << HEADING_CLOSE;
 
 	if (recognised != 0 || unrecognised != 0 || messages != 0) {
-		formattedOut << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << translate("Plugin Type") << TABLE_HEADING << translate("Count")
-		             << TABLE_BODY << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Recognised (or sorted by user rules)") << TABLE_DATA << recognised;
+		formattedOut << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << loc::translate("Plugin Type") << TABLE_HEADING << loc::translate("Count")
+		             << TABLE_BODY << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Recognised (or sorted by user rules)") << TABLE_DATA << recognised;
 		if (unrecognised != 0)
-			formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << translate("Unrecognised") << TABLE_DATA << unrecognised;
+			formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << loc::translate("Unrecognised") << TABLE_DATA << unrecognised;
 		else
-			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Unrecognised") << TABLE_DATA << unrecognised;
-		formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Inactive") << TABLE_DATA << inactive
-		             << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("All") << TABLE_DATA << (recognised + unrecognised)
+			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Unrecognised") << TABLE_DATA << unrecognised;
+		formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Inactive") << TABLE_DATA << inactive
+		             << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("All") << TABLE_DATA << (recognised + unrecognised)
 		             << TABLE_CLOSE
 
-		             << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << translate("Plugin Message Type") << TABLE_HEADING << translate("Count")
+		             << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << loc::translate("Plugin Message Type") << TABLE_HEADING << loc::translate("Count")
 		             << TABLE_BODY;
 		if (warnings != 0)
-			formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << translate("Warning") << TABLE_DATA << warnings;
+			formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << loc::translate("Warning") << TABLE_DATA << warnings;
 		else
-			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Warning") << TABLE_DATA << warnings;
+			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Warning") << TABLE_DATA << warnings;
 		if (errors != 0)
-			formattedOut << TABLE_ROW_CLASS_ERROR << TABLE_DATA << translate("Error") << TABLE_DATA << errors;
+			formattedOut << TABLE_ROW_CLASS_ERROR << TABLE_DATA << loc::translate("Error") << TABLE_DATA << errors;
 		else
-			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("Error") << TABLE_DATA << errors;
-		formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << translate("All") << TABLE_DATA << messages
+			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("Error") << TABLE_DATA << errors;
+		formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << loc::translate("All") << TABLE_DATA << messages
 		             << TABLE_CLOSE;
 	}
 
@@ -826,17 +839,17 @@ string BossLog::PrintLog() {
 	formattedOut << updaterOutput.AsString();  // This contains BOSS & masterlist update strings.
 
 	if (recognisedHasChanged)
-		formattedOut << LIST_ITEM_CLASS_SUCCESS << translate("No change in recognised plugin list since last run.");
+		formattedOut << LIST_ITEM_CLASS_SUCCESS << loc::translate("No change in recognised plugin list since last run.");
 
-	size_t size = parsingErrors.size();  // First print parser/syntax error messages.
-	for (size_t i = 0; i < size; i++)
+	std::size_t size = parsingErrors.size();  // First print parser/syntax error messages.
+	for (std::size_t i = 0; i < size; i++)
 		formattedOut << parsingErrors[i];
 
 	formattedOut << criticalError.AsString();  // Print any critical errors.
 
 	formattedOut.SetHTMLSpecialEscape(true);
 	size = globalMessages.size();
-	for (size_t i = 0; i < size; i++)
+	for (std::size_t i = 0; i < size; i++)
 		formattedOut << globalMessages[i];  // Print global messages.
 	formattedOut.SetHTMLSpecialEscape(false);
 
@@ -857,8 +870,8 @@ string BossLog::PrintLog() {
 		if (logFormat == HTML)
 			formattedOut << SECTION_ID_USERLIST_OPEN;
 		else
-			formattedOut << SECTION_ID_USERLIST_OPEN << HEADING_OPEN << translate("User Rules") << HEADING_CLOSE;
-		formattedOut << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << translate("Rule") << TABLE_HEADING << translate("Applied") << TABLE_HEADING << translate("Details (if applicable)")
+			formattedOut << SECTION_ID_USERLIST_OPEN << HEADING_OPEN << loc::translate("User Rules") << HEADING_CLOSE;
+		formattedOut << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << loc::translate("Rule") << TABLE_HEADING << loc::translate("Applied") << TABLE_HEADING << loc::translate("Details (if applicable)")
 		             << TABLE_BODY << userRules.AsString() << TABLE_CLOSE << SECTION_CLOSE;
 		out << formattedOut.AsString();
 		formattedOut.Clear();
@@ -872,7 +885,7 @@ string BossLog::PrintLog() {
 		if (logFormat == HTML)
 			formattedOut << SECTION_ID_SE_OPEN;
 		else
-			formattedOut << SECTION_ID_SE_OPEN << HEADING_OPEN << scriptExtender << translate(" Plugins") << HEADING_CLOSE;
+			formattedOut << SECTION_ID_SE_OPEN << HEADING_OPEN << scriptExtender << loc::translate(" Plugins") << HEADING_CLOSE;
 		formattedOut << LIST_OPEN
 		             << sePlugins.AsString()
 		             << LIST_CLOSE << SECTION_CLOSE;
@@ -889,14 +902,14 @@ string BossLog::PrintLog() {
 			formattedOut << SECTION_ID_RECOGNISED_OPEN;
 		} else {
 			if (gl_revert < 1)
-				formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN << translate("Recognised Plugins") << HEADING_CLOSE;
+				formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN << loc::translate("Recognised Plugins") << HEADING_CLOSE;
 			else if (gl_revert == 1)
-				formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN << translate("Restored Load Order (Using modlist.txt)") << HEADING_CLOSE;
+				formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN << loc::translate("Restored Load Order (Using modlist.txt)") << HEADING_CLOSE;
 			else if (gl_revert == 2)
-				formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN << translate("Restored Load Order (Using modlist.old)") << HEADING_CLOSE;
+				formattedOut << SECTION_ID_RECOGNISED_OPEN << HEADING_OPEN << loc::translate("Restored Load Order (Using modlist.old)") << HEADING_CLOSE;
 		}
 		formattedOut << PARAGRAPH
-		             << translate("These plugins are recognised by BOSS and have been sorted according to its masterlist. Please read any attached messages and act on any that require action.")
+		             << loc::translate("These plugins are recognised by BOSS and have been sorted according to its masterlist. Please read any attached messages and act on any that require action.")
 		             << LIST_OPEN
 		             << recognisedPlugins.AsString()
 		             << LIST_CLOSE << SECTION_CLOSE;
@@ -912,10 +925,10 @@ string BossLog::PrintLog() {
 		if (logFormat == HTML)
 			formattedOut << SECTION_ID_UNRECOGNISED_OPEN;
 		else
-			formattedOut << SECTION_ID_UNRECOGNISED_OPEN << HEADING_OPEN << translate("Unrecognised Plugins") << HEADING_CLOSE;
+			formattedOut << SECTION_ID_UNRECOGNISED_OPEN << HEADING_OPEN << loc::translate("Unrecognised Plugins") << HEADING_CLOSE;
 
-		formattedOut << PARAGRAPH << translate("The following plugins were not found in the masterlist, and must be positioned manually, using your favourite mod manager or by using BOSS's user rules functionality.")
-		             << SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN << translate(" You can submit unrecognised plugins for addition to the masterlist directly from this log by clicking on a plugin and supplying a link and/or description of its contents in the panel that is displayed.") << SPAN_CLOSE << LIST_OPEN
+		formattedOut << PARAGRAPH << loc::translate("The following plugins were not found in the masterlist, and must be positioned manually, using your favourite mod manager or by using BOSS's user rules functionality.")
+		             << SPAN_ID_UNRECPLUGINSSUBMITNOTE_OPEN << loc::translate(" You can submit unrecognised plugins for addition to the masterlist directly from this log by clicking on a plugin and supplying a link and/or description of its contents in the panel that is displayed.") << SPAN_CLOSE << LIST_OPEN
 		             << unrecognisedPlugins.AsString()
 		             << LIST_CLOSE << SECTION_CLOSE;
 		out << formattedOut.AsString();
@@ -931,7 +944,7 @@ string BossLog::PrintLog() {
 	return out.str();
 }
 
-void BossLog::SetFormat(const uint32_t format) {
+void BossLog::SetFormat(const std::uint32_t format) {
 	logFormat = format;
 	updaterOutput.SetFormat(format);
 	criticalError.SetFormat(format);
@@ -945,13 +958,13 @@ void BossLog::Save(const fs::path file, const bool overwrite) {
 	if (fs::exists(file))
 		recognisedHasChanged = HasRecognisedListChanged(file);
 
-	ofstream outFile;
+	std::ofstream outFile;
 	if (overwrite)
 		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 		outFile.open(file.string());
 	else
 		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
-		outFile.open(file.string(), ios_base::out|ios_base::app);
+		outFile.open(file.string(), std::ios_base::out|std::ios_base::app);  // MCP Note: May need std::ofstream:: here instead
 	if (outFile.fail())
 		throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
 
@@ -982,22 +995,22 @@ void BossLog::Clear() {
 }
 
 bool BossLog::HasRecognisedListChanged(const fs::path file) {
-	size_t pos1, pos2;
-	string result;
+	std::size_t pos1, pos2;
+	std::string result;
 	fileToBuffer(file, result);
 	if (logFormat == HTML) {
 		pos1 = result.find("<section id='recPlugins'>");
-		if (pos1 != string::npos)
+		if (pos1 != std::string::npos)
 			pos1 = result.find("<ul>", pos1);
-		if (pos1 != string::npos)
+		if (pos1 != std::string::npos)
 			pos2 = result.find("</section>", pos1);
-		if (pos2 != string::npos)
+		if (pos2 != std::string::npos)
 			result = result.substr(pos1 + 4, pos2 - pos1 - 9);
 	} else {
 		pos1 = result.find(translate("Please read any attached messages and act on any that require action."));
-		if (pos1 != string::npos)
+		if (pos1 != std::string::npos)
 			pos2 = result.find("======================================", pos1);
-		if (pos2 != string::npos)
+		if (pos2 != std::string::npos)
 			result = result.substr(pos1 + 69, pos2 - pos1 - 69 - 3);
 	}
 	return (result == recognisedPlugins.AsString());
