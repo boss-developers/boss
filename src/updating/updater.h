@@ -28,16 +28,24 @@
 #ifndef UPDATING_UPDATER_H_
 #define UPDATING_UPDATER_H_
 
+#include <cstddef>
+
 #include <fstream>
 #include <string>
-#include <vector>
+
+#include <boost/filesystem.hpp>
 
 #include <git2.h>
 
+#include "common/error.h"
 #include "common/game.h"
+#include "common/globals.h"
+#include "support/helpers.h"
 #include "support/logger.h"
 
 namespace boss {
+
+namespace fs = boost::filesystem;
 
 struct pointers_struct {
 	pointers_struct()
@@ -103,12 +111,12 @@ inline std::string RepoURL(const Game& game) {
 		return gl_falloutnv_repo_url;
 }
 
-inline bool are_files_equal(const void * buf1, size_t buf1_size,
-                            const void * buf2, size_t buf2_size) {
+inline bool are_files_equal(const void * buf1, std::size_t buf1_size,
+                            const void * buf2, std::size_t buf2_size) {
 	if (buf1_size != buf2_size)
 		return false;
 
-	size_t pos = 0;
+	std::size_t pos = 0;
 	while (pos < buf1_size) {
 		if (*((char*)buf1 + pos) != *((char*)buf2 + pos))
 			return false;
@@ -152,7 +160,7 @@ inline std::string GetMasterlistVersion(Game& game) {
 		ptrs.free();
 		// For some reason trying to get the revision of HEAD:masterlist.txt using libgit2 gives me 18efbc9d8 instead.
 		std::string revision;
-		ifstream head((game.Masterlist().parent_path() / ".git" / "HEAD").string());
+		std::ifstream head((game.Masterlist().parent_path() / ".git" / "HEAD").string());
 		head >> revision;
 		head.close();
 		revision.resize(9);
@@ -237,7 +245,7 @@ std::string UpdateMasterlist(Game& game, Progress prog, void * out) {
 
 	LOG_INFO("Setting up checkout parameters.");
 
-	char * paths[] = {"masterlist.txt"};
+	char * paths[] = {"masterlist.txt"};  // MCP Note: Can this be const?
 
 	git_checkout_opts opts = GIT_CHECKOUT_OPTS_INIT;
 	opts.checkout_strategy = GIT_CHECKOUT_FORCE;  // Make sure the existing file gets overwritten.
@@ -263,7 +271,12 @@ std::string UpdateMasterlist(Game& game, Progress prog, void * out) {
 	//handle_error(git_signature_default(&ptrs.sig, ptrs.repo), ptrs);
 
 	char revision[10];
-	string filespec = "refs/remotes/origin/master~0";
+	/* 
+	 * MCP Note: Can this be const?
+	 * Actually, it can probably be a const char* instead of a string
+	 * as the only time that it's used, it is converted to a char array.
+	 */
+	std::string filespec = "refs/remotes/origin/master~0";
 	LOG_INFO("Getting the Git object for the tree at refs/remotes/origin/master~0.");
 	handle_error(git_revparse_single(&ptrs.obj, ptrs.repo, filespec.c_str()), ptrs);
 
@@ -283,7 +296,7 @@ std::string UpdateMasterlist(Game& game, Progress prog, void * out) {
 	LOG_INFO("Freeing pointers.");
 	ptrs.free();
 
-	return string(revision);
+	return std::string(revision);
 }
 
 }  // namespace boss
