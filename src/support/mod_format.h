@@ -28,38 +28,36 @@
 #ifndef SUPPORT_MOD_FORMAT_H_
 #define SUPPORT_MOD_FORMAT_H_
 
-#include <cstring>
+#include <string>
 
 #include <boost/filesystem.hpp>
 
-#include "support/types.h"
-
 namespace boss {
 
-using namespace std;
+namespace fs = boost::filesystem;
 
 // Structure for grouping the information gathered from each mod's header.
 struct ModHeader {
-	string Name;
-	string Description;
-	string Author;
-	string Version;
+	std::string Name;
+	std::string Description;
+	std::string Author;
+	std::string Version;
 	bool IsMaster;
 };
 
 
 struct Record {
-	static const ulong TES4 = '4SET';
-	static const ulong HEDR = 'RDEH';
-	static const ulong OFST = 'TSFO';
-	static const ulong DELE = 'ELED';
-	static const ulong CNAM = 'MANC';
-	static const ulong SNAM = 'MANS';
+	static const unsigned long TES4 = '4SET';
+	static const unsigned long HEDR = 'RDEH';
+	static const unsigned long OFST = 'TSFO';
+	static const unsigned long DELE = 'ELED';
+	static const unsigned long CNAM = 'MANC';
+	static const unsigned long SNAM = 'MANS';
 };
 
-ModHeader ReadHeader(boost::filesystem::path filename);
+ModHeader ReadHeader(fs::path filename);
 
-bool IsPluginMaster(boost::filesystem::path filename);  // Shorter version of the above, to only get master flag.
+bool IsPluginMaster(fs::path filename);  // Shorter version of the above, to only get master flag.
 
 }  // namespace boss
 #endif  // SUPPORT_MOD_FORMAT_H_
