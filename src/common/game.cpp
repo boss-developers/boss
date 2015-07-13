@@ -27,12 +27,31 @@
 
 #include "common/game.h"
 
-#include <boost/algorithm/string.hpp>
-#include <boost/locale.hpp>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <ctime>
 
+#include <iterator>
+#include <string>
+#include <vector>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/filesytem.hpp>
+#include <boost/locale.hpp>
+#include <boost/unordered_set.hpp>
+
+#include "common/conditional_data.h"
+#include "common/error.h"
 #include "common/globals.h"
+#include "common/item_list.h"
+#include "common/keywords.h"
+#include "common/rule_line.h"
+#include "common/settings.h"
+#include "output/output.h"
 #include "support/helpers.h"
 #include "support/logger.h"
+#include "support/platform.h"
 
 #if _WIN32 || _WIN64
 #	include <shlobj.h>
@@ -41,16 +60,16 @@
 
 namespace boss {
 
-using namespace std;
+namespace fs = boost::filesystem;
 namespace loc = boost::locale;
 
 // DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
-BOSS_COMMON const uint32_t LOMETHOD_TIMESTAMP = 0;
-BOSS_COMMON const uint32_t LOMETHOD_TEXTFILE  = 1;
+BOSS_COMMON const std::uint32_t LOMETHOD_TIMESTAMP = 0;
+BOSS_COMMON const std::uint32_t LOMETHOD_TEXTFILE  = 1;
 
-uint32_t AutodetectGame(vector<uint32_t> detectedGames) {  // Throws exception if error.
+std::uint32_t AutodetectGame(std::vector<std::uint32_t> detectedGames) {  // Throws exception if error.
 	if (gl_last_game != AUTODETECT) {
-		for (size_t i = 0, max = detectedGames.size(); i < max; i++) {
+		for (std::size_t i = 0, max = detectedGames.size(); i < max; i++) {
 			if (gl_last_game == detectedGames[i])
 				return gl_last_game;
 		}
@@ -71,8 +90,8 @@ uint32_t AutodetectGame(vector<uint32_t> detectedGames) {  // Throws exception i
 	return AUTODETECT;
 }
 
-BOSS_COMMON uint32_t DetectGame(vector<uint32_t>& detectedGames,
-                                vector<uint32_t>& undetectedGames) {
+BOSS_COMMON std::uint32_t DetectGame(std::vector<std::uint32_t>& detectedGames,
+                                     std::vector<std::uint32_t>& undetectedGames) {
 	// Detect all installed games.
 	if (Game(OBLIVION, "", true).IsInstalled())  // Look for Oblivion.
 		detectedGames.push_back(OBLIVION);
@@ -109,18 +128,20 @@ BOSS_COMMON uint32_t DetectGame(vector<uint32_t>& detectedGames,
 // Structures necessary for case-insensitive hashsets used in BuildWorkingModlist.
 // Taken from the BOOST docs.
 struct iequal_to : std::binary_function<std::string, std::string, bool> {
+ public:
 	iequal_to() {}
-	explicit iequal_to(std::locale const& l) : locale_(l) {}
+	explicit iequal_to(std::locale const& l) : locale_(l) {}  // May need to include <locale> and functional
 
 	template <typename String1, typename String2>
 	bool operator()(String1 const& x1, String2 const& x2) const {
 		return boost::algorithm::iequals(x1, x2, locale_);
 	}
-private:
+ private:
 	std::locale locale_;
 };
 
 struct ihash : std::unary_function<std::string, std::size_t> {
+ public:
 	ihash() {}
 	explicit ihash(std::locale const& l) : locale_(l) {}
 
@@ -135,7 +156,7 @@ struct ihash : std::unary_function<std::string, std::size_t> {
 
 		return seed;
 	}
-private:
+ private:
 	std::locale locale_;
 };
 
@@ -146,7 +167,7 @@ private:
 
 Game::Game() : id(AUTODETECT) {}
 
-Game::Game(const uint32_t gameCode, const string path, const bool noPathInit)
+Game::Game(const std::uint32_t gameCode, const std::string path, const bool noPathInit)
     : id(gameCode) {
 	// MCP Note: Possibly turn this into a switch-statement?
 	if (Id() == OBLIVION) {
@@ -290,15 +311,15 @@ bool Game::IsInstalledLocally() const {
 	return fs::exists(boss_path / ".." / pluginsFolderName / masterFile);
 }
 
-uint32_t Game::Id() const {
+std::uint32_t Game::Id() const {
 	return id;
 }
 
-string Game::Name() const {
+std::string Game::Name() const {
 	return name;
 }
 
-string Game::ScriptExtender() const {
+std::string Game::ScriptExtender() const {
 	return scriptExtender;
 }
 
@@ -310,7 +331,7 @@ Version Game::GetVersion() const {
 	return Version(Executable());
 }
 
-uint32_t Game::GetLoadOrderMethod() const {
+std::uint32_t Game::GetLoadOrderMethod() const {
 	return loMethod;
 }
 
@@ -358,7 +379,7 @@ fs::path Game::OldModlist() const {
 	return boss_path / bossFolderName / "modlist.old";
 }
 
-fs::path Game::Log(uint32_t format) const {
+fs::path Game::Log(std::uint32_t format) const {
 	if (format == HTML)
 		return boss_path / bossFolderName / "BOSSlog.html";
 	return boss_path / bossFolderName / "BOSSlog.txt";
@@ -393,21 +414,21 @@ void Game::CreateBOSSGameFolder() {
 
 void Game::ApplyMasterlist() {
 	// Add all modlist and userlist mods and groups referenced in userlist to a hashset to optimise comparison against masterlist.
-	boost::unordered_set<string, ihash, iequal_to> mHashset, uHashset, addedItems;  // Holds mods and groups for checking against masterlist.
-	boost::unordered_set<string>::iterator setPos;
+	boost::unordered_set<std::string, ihash, iequal_to> mHashset, uHashset, addedItems;  // Holds mods and groups for checking against masterlist.
+	boost::unordered_set<std::string>::iterator setPos;
 
 	LOG_INFO("Populating hashset with modlist.");
-	vector<Item> items = modlist.Items();
-	size_t modlistSize = items.size();
-	for (size_t i = 0; i < modlistSize; i++) {
+	std::vector<Item> items = modlist.Items();
+	std::size_t modlistSize = items.size();
+	for (std::size_t i = 0; i < modlistSize; i++) {
 		if (items[i].Type() == MOD)
 			mHashset.insert(items[i].Name());
 	}
 
 	LOG_INFO("Populating hashset with userlist.");
-	vector<Rule> rules = userlist.Rules();
-	size_t userlistSize = rules.size();
-	for (size_t i = 0; i < userlistSize; i++) {
+	std::vector<Rule> rules = userlist.Rules();
+	std::size_t userlistSize = rules.size();
+	for (std::size_t i = 0; i < userlistSize; i++) {
 		Item ruleObject(rules[i].Object());
 		if (uHashset.find(ruleObject.Name()) == uHashset.end())  // Mod or group not already in hashset, so add to hashset.
 			uHashset.insert(ruleObject.Name());
@@ -419,9 +440,9 @@ void Game::ApplyMasterlist() {
 	}
 
 	LOG_INFO("Comparing hashset against masterlist.");
-	size_t addedNum = 0;
+	std::size_t addedNum = 0;
 	items = masterlist.Items();
-	for (size_t i = 0, max = items.size(); i < max; i++) {
+	for (std::size_t i = 0, max = items.size(); i < max; i++) {
 		if (items[i].Type() == MOD) {
 			// Check to see if the mod is in the hashset. If it is, also check if
 			// the mod is already in the holding vector. If not, add it.
@@ -454,7 +475,7 @@ void Game::ApplyMasterlist() {
 }
 
 void Game::ApplyUserlist() {
-	vector<Rule> rules = userlist.Rules();
+	std::vector<Rule> rules = userlist.Rules();
 	if (rules.empty())
 		return;
 	/*
@@ -467,9 +488,9 @@ void Game::ApplyUserlist() {
 
 	LOG_INFO("Starting userlist sort process... Total %" PRIuS " user rules statements to process.",
 	         rules.size());
-	vector<Rule>::iterator ruleIter = rules.begin();
-	size_t modlistPos1, modlistPos2;
-	uint32_t ruleNo = 0;
+	std::vector<Rule>::iterator ruleIter = rules.begin();
+	std::size_t modlistPos1, modlistPos2;
+	std::uint32_t ruleNo = 0;
 	for (ruleIter; ruleIter != rules.end(); ++ruleIter) {
 		ruleNo++;
 		LOG_DEBUG(" -- Processing rule #%" PRIuS ".", ruleNo);
@@ -481,9 +502,9 @@ void Game::ApplyUserlist() {
 			continue;
 		}
 		bool messageLineFail = false;
-		size_t i = 0;
-		vector<RuleLine> lines = ruleIter->Lines();
-		size_t max = lines.size();
+		std::size_t i = 0;
+		std::vector<RuleLine> lines = ruleIter->Lines();
+		std::size_t max = lines.size();
 		Item ruleItem(ruleIter->Object());
 		if (ruleItem.IsPlugin()) {  // Plugin: Can sort or add messages.
 			if (ruleIter->Key() != FOR) {  // First non-rule line is a sort line.
@@ -595,7 +616,7 @@ void Game::ApplyUserlist() {
 					messageLineFail = true;
 					break;
 				}
-				vector<Item> items = modlist.Items();
+				std::vector<Item> items = modlist.Items();
 				if (lines[i].Key() == REPLACE)  // If the rule is to replace messages, clear existing messages.
 					items[modlistPos1].ClearMessages();
 				// Append message to message list of mod.
@@ -604,7 +625,7 @@ void Game::ApplyUserlist() {
 				modlist.Items(items);
 			}
 		} else if (lines[i].Key() == BEFORE || lines[i].Key() == AFTER) {  // Group: Can only sort.
-			vector<Item> group;
+			std::vector<Item> group;
 			// Look for group to sort. Find start and end positions.
 			modlistPos1 = modlist.FindItem(ruleItem.Name(), BEGINGROUP);
 			modlistPos2 = modlist.FindLastItem(ruleItem.Name(), ENDGROUP);
@@ -619,7 +640,7 @@ void Game::ApplyUserlist() {
 				lastRecognisedItem = modlist.ItemAt(modlistPos1 - 1);
 			}
 			// Copy the start, end and everything in between to a new variable.
-			vector<Item> items = modlist.Items();
+			std::vector<Item> items = modlist.Items();
 			group.assign(items.begin() + modlistPos1,
 			             items.begin() + modlistPos2 + 1);
 			// Now erase group from modlist.
@@ -658,12 +679,12 @@ void Game::ApplyUserlist() {
 	// Now that all the rules have been applied, there is no need for groups or plugins that are not installed to be listed in
 	// modlist. Scan through it and remove these lines.
 	LOG_INFO("Removing unnecessary items...");
-	vector<Item> items = modlist.Items();
-	vector<Item>::iterator it = items.begin();
-	size_t lastRecPos = modlist.LastRecognisedPos();
+	std::vector<Item> items = modlist.Items();
+	std::vector<Item>::iterator it = items.begin();
+	std::size_t lastRecPos = modlist.LastRecognisedPos();
 	while (it != items.end()) {
 		if (it->Type() != MOD || !it->Exists(*this)) {
-			if ((size_t)abs(std::distance(items.begin(), it)) <= lastRecPos)
+			if ((std::size_t)std::abs(std::distance(items.begin(), it)) <= lastRecPos)  // MCP Note: I think abs is the std::abs? Not sure...
 				lastRecPos--;
 			it = items.erase(it);
 		} else
@@ -679,8 +700,8 @@ void Game::ScanSEPlugins() {
 	if (!fs::exists(SEExecutable())) {
 		LOG_DEBUG("Script Extender not detected.");
 	} else {
-		string CRC = IntToHexString(GetCrc32(SEExecutable()));
-		string ver = Version(SEExecutable()).AsString();
+		std::string CRC = IntToHexString(GetCrc32(SEExecutable()));
+		std::string ver = Version(SEExecutable()).AsString();
 
 		bosslog.sePlugins << LIST_ITEM << SPAN_CLASS_MOD_OPEN << ScriptExtender() << SPAN_CLOSE;
 		if (!ver.empty())
@@ -694,11 +715,11 @@ void Game::ScanSEPlugins() {
 		} else {
 			for (fs::directory_iterator itr(SEPluginsFolder());
 			     itr != fs::directory_iterator(); ++itr) {
-				const string ext = itr->path().extension().string();
+				const std::string ext = itr->path().extension().string();
 				if (fs::is_regular_file(itr->status()) &&
 				    boost::iequals(ext, ".dll")) {
-					string CRC = IntToHexString(GetCrc32(itr->path()));
-					string ver = Version(itr->path()).AsString();
+					std::string CRC = IntToHexString(GetCrc32(itr->path()));
+					std::string ver = Version(itr->path()).AsString();
 
 					bosslog.sePlugins << LIST_ITEM << SPAN_CLASS_MOD_OPEN << itr->path().filename().string() << SPAN_CLOSE;
 					if (!ver.empty())
@@ -714,19 +735,19 @@ void Game::ScanSEPlugins() {
 // Sorts the plugins in the data folder, changing timestamps or plugins.txt/loadorder.txt as required.
 void Game::SortPlugins() {
 	// Get the master esm time.
-	time_t esmtime = MasterFile().GetModTime(*this);
+	std::time_t esmtime = MasterFile().GetModTime(*this);
 
 	LOG_INFO("Filling hashset of unrecognised and active plugins...");
 	// Load active plugin list.
-	boost::unordered_set<string> hashset;
+	boost::unordered_set<std::string> hashset;
 	if (fs::exists(ActivePluginsFile())) {
 		LOG_INFO("Loading plugins.txt into ItemList.");
 		ItemList pluginsList;
 		pluginsList.Load(*this, ActivePluginsFile());
-		vector<Item> pluginsEntries = pluginsList.Items();
-		size_t pluginsMax = pluginsEntries.size();
+		std::vector<Item> pluginsEntries = pluginsList.Items();
+		std::size_t pluginsMax = pluginsEntries.size();
 		LOG_INFO("Populating hashset with ItemList contents.");
-		for (size_t i = 0; i < pluginsMax; i++) {
+		for (std::size_t i = 0; i < pluginsMax; i++) {
 			if (pluginsEntries[i].Type() == MOD)
 				hashset.insert(boost::to_lower_copy(pluginsEntries[i].Name()));
 		}
@@ -739,10 +760,10 @@ void Game::SortPlugins() {
 	}
 
 	// modlist stores recognised mods then unrecognised mods in order. Make a hashset of unrecognised mods.
-	boost::unordered_set<string> unrecognised;
-	vector<Item> items = modlist.Items();
-	size_t max = items.size();
-	for (size_t i = modlist.LastRecognisedPos() + 1; i < max; i++)
+	boost::unordered_set<std::string> unrecognised;
+	std::vector<Item> items = modlist.Items();
+	std::size_t max = items.size();
+	for (std::size_t i = modlist.LastRecognisedPos() + 1; i < max; i++)
 		unrecognised.insert(items[i].Name());
 
 	LOG_INFO("Enforcing masters before plugins rule...");
@@ -752,8 +773,8 @@ void Game::SortPlugins() {
 	 * exception of unrecognised masters, which get put after recognised masters.
 	 */
 	try {
-		size_t size = modlist.Items().size();
-		size_t pos = modlist.GetNextMasterPos(*this, modlist.GetLastMasterPos(*this) + 1);
+		std::size_t size = modlist.Items().size();
+		std::size_t pos = modlist.GetNextMasterPos(*this, modlist.GetLastMasterPos(*this) + 1);
 		modlist.ApplyMasterPartition(*this);
 		if (pos <= modlist.LastRecognisedPos())  // Masters exist after the initial set of masters in the recognised load order. Not allowed by game.
 			throw boss_error(BOSS_ERROR_PLUGIN_BEFORE_MASTER,
@@ -770,19 +791,19 @@ void Game::SortPlugins() {
 
 	// Now loop through items, redating and outputting. Check against unrecognised hashset and treat unrecognised mods appropriately.
 	// Only act on mods that exist. However, all items that aren't installed mods are removed after applying user rules (even if there were no rules), so nothing needs to be checked.
-	time_t modfiletime = 0;
+	std::time_t modfiletime = 0;
 	items = modlist.Items();
-	boost::unordered_set<string>::iterator setPos;
+	boost::unordered_set<std::string>::iterator setPos;
 	bosslog.recognisedPlugins.SetHTMLSpecialEscape(false);
 	bosslog.unrecognisedPlugins.SetHTMLSpecialEscape(false);
 
 	LOG_INFO("Applying calculated ordering to user files...");
 	// MCP Note: Look at replacing this with a for-each loop?
-	for (vector<Item>::iterator itemIter = items.begin();
+	for (std::vector<Item>::iterator itemIter = items.begin();
 	     itemIter != items.end(); ++itemIter) {
 		Outputter buffer(gl_log_format);
 		buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
-		string version = itemIter->GetVersion(*this).AsString();
+		std::string version = itemIter->GetVersion(*this).AsString();
 		if (!version.empty())
 			buffer << SPAN_CLASS_VERSION_OPEN << loc::translate("Version ") << version << SPAN_CLOSE;
 		if (hashset.find(boost::to_lower_copy(itemIter->Name())) != hashset.end())  // Plugin is active.
@@ -814,10 +835,10 @@ void Game::SortPlugins() {
 		}
 		// Print the mod's messages. Unrecognised plugins might have a redate error message.
 		if (!itemIter->Messages().empty()) {
-			vector<Message> messages = itemIter->Messages();
-			size_t jmax = messages.size();
+			std::vector<Message> messages = itemIter->Messages();
+			std::size_t jmax = messages.size();
 			buffer << LIST_OPEN;
-			for (size_t j = 0; j < jmax; j++) {
+			for (std::size_t j = 0; j < jmax; j++) {
 				buffer << messages[j];
 				bosslog.messages++;
 				if (messages[j].Key() == WARN)
