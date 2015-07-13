@@ -27,53 +27,52 @@
 
 #include "support/mod_format.h"
 
-#include <cstring>
-
 #include <fstream>
+#include <string>
 
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 
-#include "support/helpers.h"
+//#include "support/helpers.h"  // MCP Note: Don't think this one is needed. Will delete later after confirmation
 #include "support/types.h"
 #include "support/version_regex.h"
 
 namespace boss {
 
-using namespace std;
+namespace fs = boost::filesystem;
 
-using boost::algorithm::trim_copy;
-using boost::regex;
+// MCP Note: Make function prototypes for these?
 
 /*
  * string ParseVersion(string&):
  * - Tries to extract the version string value from the given text,
  * using the above defined regexes to do the dirty work.
  */
-string ParseVersion(const string& text) {
-	string::const_iterator begin, end;
+std::string ParseVersion(const std::string& text) {
+	std::string::const_iterator begin, end;
 
 	begin = text.begin();
 	end = text.end();
 
-	for(int i = 0; regex* re = version_checks[i]; i++) {
-		smatch what;
-		while (regex_search(begin, end, what, *re)) {
+	for(int i = 0; boost::regex* re = version_checks[i]; i++) {
+		boost::smatch what;
+		while (boost::regex_search(begin, end, what, *re)) {
 			if (what.empty()) {
 				continue;
 			}
 
-			ssub_match match = what[1];
+			boost::ssub_match match = what[1];
 
 			if (!match.matched) {
 				continue;
 			}
 
-			return trim_copy(string(match.first, match.second));
+			return bost::algorithm::trim_copy(std::string(match.first, match.second));
 		}
 	}
 
-	return string();
+	return std::string();
 }
 
 /*
@@ -81,8 +80,8 @@ string ParseVersion(const string& text) {
  * - Reads a consecutive array of charactes up to maxsize length and
  * returns them as a new string.
  */
-string ReadString(char*& bufptr, ushort size) {
-	string data;
+std::string ReadString(char*& bufptr, unsigned short size) {
+	std::string data;
 
 	data.reserve(size + 1);
 	while (char c = *bufptr++) {
@@ -124,7 +123,7 @@ inline T Read(char*& buffer) {
  * and in particular this link: http://www.uesp.net/wiki/Tes4Mod:Mod_File_Format/TES4
  */
 
-bool IsPluginMaster(boost::filesystem::path filename) {
+bool IsPluginMaster(fs::path filename) {
 	char buffer[MAXLENGTH];
 	char* bufptr = buffer;
 	ModHeader modHeader;
@@ -134,7 +133,7 @@ bool IsPluginMaster(boost::filesystem::path filename) {
 
 	// MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
 	// Note 2: According to Boost docs, c_str() is the same as specifying native().c_str()?
-	ifstream file(filename.string(), ios_base::binary | ios_base::in);
+	std::ifstream file(filename.string(), std::ios_base::binary | std::ios_base::in);
 
 	if (file.bad())
 		//throw boss_error(BOSS_ERROR_FILE_READ_FAIL, filename.string());
@@ -144,27 +143,27 @@ bool IsPluginMaster(boost::filesystem::path filename) {
 	file.read(&buffer[0], sizeof(buffer));
 
 	// Check for the 'magic' marker at start
-	if (Read<uint>(bufptr) != Record::TES4) {
+	if (Read<unsigned int>(bufptr) != Record::TES4) {
 		return false;
 	}
 
 	// Next field is the total header size
-	/*uint headerSize = */Read<uint>(bufptr);
+	/*uint headerSize = */Read<unsigned int>(bufptr);
 
 	// Next comes the header record Flags
-	uint flags = Read<uint>(bufptr);
+	unsigned int flags = Read<unsigned int>(bufptr);
 
 	// LSb of this record's flags is used to indicate if the
 	// mod is a master or a plugin
 	return ((flags & 0x1) != 0);
 }
 
-ModHeader ReadHeader(boost::filesystem::path filename) {
+ModHeader ReadHeader(fs::path filename) {
 	char buffer[MAXLENGTH];
 	char* bufptr = buffer;
 	ModHeader modHeader;
 	// MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
-	ifstream file(filename.string(), ios_base::binary | ios_base::in);
+	std::ifstream file(filename.string(), std::ios_base::binary | std::ios_base::in);
 
 	modHeader.Name = filename.string();
 
@@ -172,43 +171,43 @@ ModHeader ReadHeader(boost::filesystem::path filename) {
 	file.read(&buffer[0], sizeof(buffer));
 
 	// Check for the 'magic' marker at start
-	if (Read<uint>(bufptr) != Record::TES4) {
+	if (Read<unsigned int>(bufptr) != Record::TES4) {
 		return modHeader;
 	}
 
 	// Next field is the total header size
-	/*uint headerSize = */Read<uint>(bufptr);
+	/*uint headerSize = */Read<unsigned int>(bufptr);
 
 	// Next comes the header record Flags
-	uint flags = Read<uint>(bufptr);
+	unsigned int flags = Read<unsigned int>(bufptr);
 
 	// LSb of this record's flags is used to indicate if the
 	// mod is a master or a plugin
 	modHeader.IsMaster = (flags & 0x1) != 0;
 
 	// Next comes the FormID...
-	/*uint formId = */Read<uint>(bufptr);  // Skip formID
+	/*uint formId = */Read<unsigned int>(bufptr);  // Skip formID
 
 	// ...and extra flags
-	/*uint flags2 = */Read<uint>(bufptr);  // Skip flags2
+	/*uint flags2 = */Read<unsigned int>(bufptr);  // Skip flags2
 
 	// For Oblivion plugins, the Header record starts here, check for its signature 'HEDR'.
-	if (Read<uint>(bufptr) != Record::HEDR) {
+	if (Read<unsigned int>(bufptr) != Record::HEDR) {
 		// Check if it's a FO3, FNV or TES5 plugin.
-		if (Read<uint>(bufptr) != Record::HEDR) {  // Nope, exit.
+		if (Read<unsigned int>(bufptr) != Record::HEDR) {  // Nope, exit.
 			return modHeader;
 		}
 	}
 
 	// HEDR record has fields: DataSize, Version (0.8 o 1.0), Record Count
 	// and Next Object Id
-	/*ushort dataSize = */Read<ushort>(bufptr);
+	/*ushort dataSize = */Read<unsigned short>(bufptr);
 	/*float version = */Read<float>(bufptr);
 	/*int numRecords = */Read<int>(bufptr);
-	/*uint nextObjId = */Read<uint>(bufptr);
+	/*uint nextObjId = */Read<unsigned int>(bufptr);
 
 	// Then comes the sub-records
-	uint signature = Read<uint>(bufptr);
+	unsigned int signature = Read<unsigned int>(bufptr);
 
 	// Skip optional records
 	bool loop = true;
@@ -216,21 +215,21 @@ ModHeader ReadHeader(boost::filesystem::path filename) {
 		switch (signature) {
 			case Record::OFST:
 			case Record::DELE:
-				bufptr += Read<ushort>(bufptr);  // Skip
-				signature = Read<uint>(bufptr);
+				bufptr += Read<unsigned short>(bufptr);  // Skip
+				signature = Read<unsigned int>(bufptr);
 				break;
 
 			// Extract author name, if present
 			case Record::CNAM:
-				modHeader.Author = ReadString(bufptr, Read<ushort>(bufptr));
+				modHeader.Author = ReadString(bufptr, Read<unsigned short>(bufptr));
 				signature = Read<uint>(bufptr);
 				break;
 
 			// Extract description and version, if present
 			case Record::SNAM:
-				modHeader.Description = ReadString(bufptr, Read<ushort>(bufptr));
+				modHeader.Description = ReadString(bufptr, Read<unsigned short>(bufptr));
 				modHeader.Version     = ParseVersion(modHeader.Description);
-				signature = Read<uint>(bufptr);
+				signature = Read<unsigned int>(bufptr);
 				break;
 
 			default:
