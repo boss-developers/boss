@@ -28,44 +28,49 @@
 #ifndef COMMON_GAME_H_
 #define COMMON_GAME_H_
 
-#include <string>
+#include <cstdint>
 
-#include <boost/cstdint.hpp>
+#include <string>
+#include <vector>
+
 #include <boost/filesystem.hpp>
 
-#include "common/classes.h"
+#include "common/dll_def.h"
+#include "common/item_list.h"
+#include "common/rule_line.h"
 #include "output/output.h"
-#include "support/helpers.h"
 
 namespace boss {
 
-using namespace std;
 namespace fs = boost::filesystem;
+
+class BOSS_COMMON Item;
+class Version;
 
 // MCP Note: Possibly convert these to enums?
 // The following are for signifying what load order method is being used:
-BOSS_COMMON extern const uint32_t LOMETHOD_TIMESTAMP;
-BOSS_COMMON extern const uint32_t LOMETHOD_TEXTFILE;
+BOSS_COMMON extern const std::uint32_t LOMETHOD_TIMESTAMP;
+BOSS_COMMON extern const std::uint32_t LOMETHOD_TEXTFILE;
 
-BOSS_COMMON uint32_t DetectGame(vector<uint32_t>& detectedGames,
-                                vector<uint32_t>& undetectedGames);  // Throws exception if error.
+BOSS_COMMON std::uint32_t DetectGame(std::vector<std::uint32_t>& detectedGames,
+                                     std::vector<std::uint32_t>& undetectedGames);  // Throws exception if error.
 
 class BOSS_COMMON Game {  // Constructor depends on gl_update_only.
-public:
+ public:
 	Game();  // Sets game to AUTODETECT, with all other vars being empty.
-	Game(const uint32_t gameCode, const string path = "",
+	Game(const std::uint32_t gameCode, const std::string path = "",
 	     const bool noPathInit = false);  // Empty path means constructor will detect its location. If noPathInit is true, then the data, active plugins list and loadorder.txt paths will not be set, and the game's BOSS subfolder will not be created.
 
 	bool IsInstalled() const;
 	bool IsInstalledLocally() const;
 
-	uint32_t Id() const;
-	string Name() const;  // Returns the game's name, eg. "TES IV: Oblivion".
-	string ScriptExtender() const;
+	std::uint32_t Id() const;
+	std::string Name() const;  // Returns the game's name, eg. "TES IV: Oblivion".
+	std::string ScriptExtender() const;
 	Item MasterFile() const;  // Returns the game's master file. To get its timestamp, use .GetModTime() on it.
 
 	Version GetVersion() const;
-	uint32_t GetLoadOrderMethod() const;
+	std::uint32_t GetLoadOrderMethod() const;
 
 	fs::path Executable() const;
 	fs::path GameFolder() const;
@@ -78,7 +83,7 @@ public:
 	fs::path Userlist() const;
 	fs::path Modlist() const;
 	fs::path OldModlist() const;
-	fs::path Log(uint32_t format) const;
+	fs::path Log(std::uint32_t format) const;
 
 	// Creates directory in BOSS folder for BOSS's game-specific files.
 	void CreateBOSSGameFolder();
@@ -100,23 +105,23 @@ public:
 	RuleList userlist;
 	BossLog bosslog;
 
-private:
-	uint32_t id;
-	uint32_t loMethod;
-	string name;
+ private:
+	std::uint32_t id;
+	std::uint32_t loMethod;
+	std::string name;
 
-	string executable;
-	string masterFile;
-	string scriptExtender;
-	string seExecutable;
+	std::string executable;
+	std::string masterFile;
+	std::string scriptExtender;
+	std::string seExecutable;
 
-	string registryKey;
-	string registrySubKey;
+	std::string registryKey;
+	std::string registrySubKey;
 
-	string bossFolderName;
-	string appdataFolderName;
-	string pluginsFolderName;
-	string pluginsFileName;
+	std::string bossFolderName;
+	std::string appdataFolderName;
+	std::string pluginsFolderName;
+	std::string pluginsFileName;
 
 	fs::path gamePath;       // Path to the game's folder.
 	fs::path pluginsPath;    // Path to the file in which active plugins are listed.
