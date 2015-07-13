@@ -27,10 +27,29 @@
 
 #include "gui/user_rule_editor.h"
 
+#include <cstddef>
+#include <cstdint>
+
+#include <string>
+#include <vector>
+
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 #include <boost/locale.hpp>
 
 #include <wx/progdlg.h>
+
+#include "common/conditional_data.h"
+#include "common/error.h"
+#include "common/game.h"
+#include "common/globals.h"
+#include "common/keywords.h"
+#include "common/rule_line.h"
+#include "gui/element_ids.h"
+#include "output/output.h"
+#include "support/logger.h"
+#include "updating/updater.h"
 
 BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
 	EVT_BUTTON ( BUTTON_OKExitEditor, UserRulesEditorFrame::OnOKQuit )
@@ -66,13 +85,13 @@ BEGIN_EVENT_TABLE( RuleBoxClass, wxPanel )
 	EVT_LEFT_DOWN ( RuleBoxClass::OnSelect )
 END_EVENT_TABLE()
 
+namespace fs = boost::filesystem;
+namespace loc = boost::locale;
 
-using namespace boss;
-using namespace std;
+using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
 
 using boost::algorithm::trim_copy;
 using boss::translate;
-using boost::format;
 
 UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
                                            wxFrame *parent,
@@ -84,7 +103,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
 	// First check if masterlist is installed, and offer to download it if not.
 	if (!fs::exists(game.Masterlist())) {
 		wxMessageDialog *dlg = new wxMessageDialog(this,
-		                                           FromUTF8(format(loc::translate("The User Rules Manager requires the BOSS masterlist for %1% to have been downloaded, but it cannot be detected. Do you wish to download the latest masterlist now?")) % game.Name()),
+		                                           FromUTF8(boost::format(loc::translate("The User Rules Manager requires the BOSS masterlist for %1% to have been downloaded, but it cannot be detected. Do you wish to download the latest masterlist now?")) % game.Name()),
 		                                           translate("BOSS: User Rules Manager"),
 		                                           wxYES_NO);
 
@@ -101,9 +120,9 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
 			                translate("Updating to the latest masterlist from the online repository..."));
 			LOG_DEBUG("Updating masterlist...");
 			try {
-				string revision = UpdateMasterlist(game, progress,
-				                                   progDia);
-				string message = (boost::format(translate("Masterlist revision: %1%.")) % revision).str();
+				std::string revision = UpdateMasterlist(game, progress,
+				                                        progDia);
+				std::string message = (boost::format(translate("Masterlist revision: %1%.")) % revision).str();
 				game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
 			}
 			catch (boss_error &e) {
@@ -125,7 +144,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
 	} catch(boss_error &e) {
 		progDia->Destroy();
 		this->Close();
-		wxMessageBox(FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
+		wxMessageBox(FromUTF8(boost::format(loc::translate("Error: %1%")) % e.getString()),
 		             translate("BOSS: Error"),
 		             wxOK | wxICON_ERROR,
 		             NULL);
@@ -163,7 +182,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
 	} catch(boss_error &e) {
 		progDia->Destroy();
 		this->Close();
-		wxMessageBox(FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
+		wxMessageBox(FromUTF8(boost::format(loc::translate("Error: %1%")) % e.getString()),
 		             translate("BOSS: Error"),
 		             wxOK | wxICON_ERROR,
 		             NULL);
@@ -279,15 +298,15 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
 
 	// Fill modlist and masterlist.
 	wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
-	for (size_t i = 0; i < ModlistMods.size(); i++) {
+	for (std::size_t i = 0; i < ModlistMods.size(); i++) {
 		InstalledModsList->AppendItem(root, ModlistMods[i]);
 	}
 
-	vector<wxTreeItemId> opengroups;
+	std::vector<wxTreeItemId> opengroups;
 	opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
-	vector<Item> items = game.masterlist.Items();
-	size_t max = items.size();
-	for (size_t i = 0; i < max; i++) {
+	std::vector<Item> items = game.masterlist.Items();
+	std::size_t max = items.size();
+	for (std::size_t i = 0; i < max; i++) {
 		if (items[i].Type() == ENDGROUP) {
 			opengroups.pop_back();
 		} else {
@@ -323,32 +342,32 @@ void UserRulesEditorFrame::OnCancelQuit(wxCommandEvent& event) {
 void UserRulesEditorFrame::OnSearchList(wxCommandEvent& event) {
 	if (event.GetId() == SEARCH_Modlist) {
 		ModlistSearch->ShowCancelButton(true);
-		string searchStr = ModlistSearch->GetValue().ToUTF8();
+		std::string searchStr = ModlistSearch->GetValue().ToUTF8();
 		if (searchStr.empty()) {
 			OnCancelSearch(event);
 			return;
 		}
-		size_t length = searchStr.length();
+		std::size_t length = searchStr.length();
 		InstalledModsList->DeleteAllItems();
 		wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
-		for (size_t i = 0; i < ModlistMods.size(); i++) {
-			string itemStr = ModlistMods[i].ToUTF8();
+		for (std::size_t i = 0; i < ModlistMods.size(); i++) {
+			std::string itemStr = ModlistMods[i].ToUTF8();
 			if (boost::iequals(itemStr.substr(0, length), searchStr))
 				InstalledModsList->AppendItem(root, ModlistMods[i]);
 		}
 	} else {
 		MasterlistSearch->ShowCancelButton(true);
-		string searchStr = MasterlistSearch->GetValue().ToUTF8();
+		std::string searchStr = MasterlistSearch->GetValue().ToUTF8();
 		if (searchStr.empty()) {
 			OnCancelSearch(event);
 			return;
 		}
-		size_t length = searchStr.length();
+		std::size_t length = searchStr.length();
 		MasterlistModsList->DeleteAllItems();
-		vector<wxTreeItemId> opengroups;
+		std::vector<wxTreeItemId> opengroups;
 		opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
-		vector<Item> items = game.masterlist.Items();
-		for (size_t i = 0, max = items.size(); i < max; i++) {
+		std::vector<Item> items = game.masterlist.Items();
+		for (std::size_t i = 0, max = items.size(); i < max; i++) {
 			if (boost::iequals(items[i].Name().substr(0, length), searchStr)) {
 					wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), items[i].Name());
 				if (items[i].Type() == BEGINGROUP)
@@ -366,17 +385,17 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 		ModlistSearch->SetValue("");
 		InstalledModsList->DeleteAllItems();
 		wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
-		for (size_t i = 0, max = ModlistMods.size(); i < max; i++) {
+		for (std::size_t i = 0, max = ModlistMods.size(); i < max; i++) {
 			InstalledModsList->AppendItem(root, ModlistMods[i]);
 		}
 	} else {
 		MasterlistSearch->ShowCancelButton(false);
 		MasterlistSearch->SetValue("");
 		MasterlistModsList->DeleteAllItems();
-		vector<wxTreeItemId> opengroups;
-		vector<Item> items = game.masterlist.Items();
+		std::vector<wxTreeItemId> opengroups;
+		std::vector<Item> items = game.masterlist.Items();
 		opengroups.push_back(MasterlistModsList->AddRoot("Masterlist"));
-		for (size_t i = 0, max = items.size(); i < max; i++) {
+		for (std::size_t i = 0, max = items.size(); i < max; i++) {
 			wxTreeItemId item = MasterlistModsList->AppendItem(opengroups.back(), items[i].Name());
 			if (items[i].Type() == BEGINGROUP)
 				opengroups.push_back(item);
@@ -388,12 +407,12 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 
 void UserRulesEditorFrame::OnSelectModInMasterlist(wxTreeEvent& event) {
 	// Need to find item in masterlist. :( Why can't tree lists store index number?
-	string itemStr = MasterlistModsList->GetItemText(event.GetItem()).ToUTF8();
-	size_t pos = game.masterlist.FindItem(itemStr, MOD);
+	std::string itemStr = MasterlistModsList->GetItemText(event.GetItem()).ToUTF8();
+	std::size_t pos = game.masterlist.FindItem(itemStr, MOD);
 	if (pos != game.masterlist.Items().size()) {
-		string messagesOut = "";
-		vector<Message> messages = game.masterlist.ItemAt(pos).Messages();
-		for (vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter)
+		std::string messagesOut = "";
+		std::vector<Message> messages = game.masterlist.ItemAt(pos).Messages();
+		for (std::vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter)
 			messagesOut += messageIter->KeyToString() + ": " + messageIter->Data() + "\n\n";
 		ModMessagesBox->SetValue(wxString(messagesOut.substr(0, messagesOut.length() - 2).c_str(), wxConvUTF8));
 	}
@@ -442,7 +461,7 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 		Rule newRule = GetRuleFromForm();
 		RulesList->AppendRule(newRule);
 	} catch (boss_error &e) {
-		wxMessageBox(FromUTF8(format(loc::translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) % e.getString()),
+		wxMessageBox(FromUTF8(boost::format(loc::translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) % e.getString()),
 		             translate("BOSS: Error"),
 		             wxOK | wxICON_ERROR,
 		             NULL);
@@ -469,7 +488,7 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 			Rule newRule = GetRuleFromForm();
 			RulesList->SaveEditedRule(newRule);
 		} catch (boss_error &e) {
-			wxMessageBox(FromUTF8(format(loc::translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) % e.getString()),
+			wxMessageBox(FromUTF8(boost::format(loc::translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) % e.getString()),
 			             translate("BOSS: Error"),
 			             wxOK | wxICON_ERROR,
 			             NULL);
@@ -498,7 +517,7 @@ void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
 
 void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
 	Rule currentRule = RulesList->GetSelectedRule();
-	string messages = "";
+	std::string messages = "";
 	SortModOption->Enable(true);
 	InsertModOption->Enable(true);
 	SortModsCheckBox->SetValue(false);
@@ -513,8 +532,8 @@ void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
 	RuleModBox->SetValue(wxString(currentRule.Object().c_str(), wxConvUTF8));
 	SortModBox->SetValue("");
 	InsertModBox->SetValue("");
-	vector<RuleLine> lines = currentRule.Lines();
-	for (size_t j = 0, max = lines.size(); j < max; j++) {
+	std::vector<RuleLine> lines = currentRule.Lines();
+	for (std::size_t j = 0, max = lines.size(); j < max; j++) {
 		// TODO(MCP): Look at converting this to a switch-statement
 		if (lines[j].Key() == BEFORE || lines[j].Key() == AFTER) {
 			SortModsCheckBox->SetValue(true);
@@ -549,7 +568,7 @@ void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
 }
 
 void UserRulesEditorFrame::LoadLists() {
-	size_t size;
+	std::size_t size;
 
 	///////////////
 	// Modlist
@@ -564,9 +583,9 @@ void UserRulesEditorFrame::LoadLists() {
 		                 e.getString());
 	}
 
-	vector<Item> items = game.modlist.Items();
+	std::vector<Item> items = game.modlist.Items();
 	size = items.size();
-	for (size_t i = 0; i < size; i++)
+	for (std::size_t i = 0; i < size; i++)
 		ModlistMods.push_back(wxString(items[i].Name().c_str(), wxConvUTF8));
 
 	////////////////
@@ -594,9 +613,9 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 	 * Calling functions need to check for an enabled = false; rule as a failure.
 	 * Failure description is given in ruleObject.
 	 */
-	string ruleItem = RuleModBox->GetValue().ToUTF8();
-	string sortItem = SortModBox->GetValue().ToUTF8();
-	string insertItem = InsertModBox->GetValue().ToUTF8();
+	std::string ruleItem = RuleModBox->GetValue().ToUTF8();
+	std::string sortItem = SortModBox->GetValue().ToUTF8();
+	std::string insertItem = InsertModBox->GetValue().ToUTF8();
 	if (Item(ruleItem).IsPlugin()) {
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
@@ -662,8 +681,8 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 		if (Item(newRule.Object()).IsGroup()) {
 			newRule.Key(OVERRIDE);
 		} else {
-			size_t pos = game.masterlist.FindItem(newRule.Object(),
-			                                      MOD);
+			std::size_t pos = game.masterlist.FindItem(newRule.Object(),
+			                                           MOD);
 			if (pos != game.masterlist.Items().size())  // Mod in masterlist.
 				newRule.Key(OVERRIDE);
 			else
@@ -678,7 +697,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 				newLine.Key(BEFORE);
 			else
 				newLine.Key(AFTER);
-			vector<RuleLine> lines = newRule.Lines();
+			std::vector<RuleLine> lines = newRule.Lines();
 			lines.push_back(newLine);
 			newRule.Lines(lines);
 		} else if (InsertModOption->GetValue()) {
@@ -688,7 +707,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 				newLine.Key(TOP);
 			else
 				newLine.Key(BOTTOM);
-			vector<RuleLine> lines = newRule.Lines();
+			std::vector<RuleLine> lines = newRule.Lines();
 			lines.push_back(newLine);
 			newRule.Lines(lines);
 		}
@@ -697,25 +716,25 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 	// Now add message lines.
 	if (AddMessagesCheckBox->IsChecked()) {
 		RuleLine newLine;
-		string messages = NewModMessagesBox->GetValue().ToUTF8();
+		std::string messages = NewModMessagesBox->GetValue().ToUTF8();
 		if (!messages.empty()) {
 			// Split messages string by \n characters.
-			size_t pos1 = 0, pos2 = string::npos;
+			std::size_t pos1 = 0, pos2 = std::string::npos;
 			pos2 = messages.find("\n");
-			if (pos2 == string::npos)  // No \n characters.
+			if (pos2 == std::string::npos)  // No \n characters.
 				pos2 = messages.length();
-			while (pos2 != string::npos) {
-				newLine.Object(trim_copy(messages.substr(pos1, pos2 - pos1)));
+			while (pos2 != std::string::npos) {
+				newLine.Object(boost::algorithm::trim_copy(messages.substr(pos1, pos2 - pos1)));
 				if (pos1 == 0 && ReplaceMessagesCheckBox->IsChecked())
 					newLine.Key(REPLACE);
 				else
 					newLine.Key(APPEND);
 
 				if (!newLine.IsObjectMessage())  // Message is formatted incorrectly. Error.
-					throw boss_error((format("The message \"%1%\" is formatted incorrectly.") % newLine.Object()).str(),
+					throw boss_error((boost::format("The message \"%1%\" is formatted incorrectly.") % newLine.Object()).str(),
 					                  BOSS_ERROR_INVALID_SYNTAX);
 
-				vector<RuleLine> lines = newRule.Lines();
+				std::vector<RuleLine> lines = newRule.Lines();
 				lines.push_back(newLine);
 				newRule.Lines(lines);
 
@@ -723,7 +742,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 					break;
 				pos1 = pos2 + 1;
 				pos2 = messages.find("\n", pos1);
-				if (pos2 == string::npos &&
+				if (pos2 == std::string::npos &&
 				    pos1 < messages.length() - 1)
 					pos2 = messages.length();
 			}
@@ -763,9 +782,9 @@ bool TextDropTarget::OnDropText(wxCoord x, wxCoord y,
 	targetOwner->SetValue(data);
 
 	UserRulesEditorFrame *ureFrame = (UserRulesEditorFrame*)targetOwner->GetParent()->GetParent();  // Targets are owned by the static box created by the sizer they're in, which is in turn owned by the URE window.
-	Item sortItem(string(ureFrame->SortModBox->GetValue().ToUTF8()));
-	Item forItem(string(ureFrame->RuleModBox->GetValue().ToUTF8()));
-	Item insertItem(string(ureFrame->InsertModBox->GetValue().ToUTF8()));
+	Item sortItem(std::string(ureFrame->SortModBox->GetValue().ToUTF8()));
+	Item forItem(std::string(ureFrame->RuleModBox->GetValue().ToUTF8()));
+	Item insertItem(std::string(ureFrame->InsertModBox->GetValue().ToUTF8()));
 	bool isSorting = ureFrame->SortModsCheckBox->IsChecked();
 	bool isInserting = ureFrame->InsertModOption->GetValue();
 
@@ -814,11 +833,11 @@ bool TextDropTarget::OnDropText(wxCoord x, wxCoord y,
 
 RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent,
                            Rule currentRule,
-                           uint32_t index,
+                           std::uint32_t index,
                            bool isSelected)
     : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize) {
 	// First get text representation of rule.
-	string text = Outputter(PLAINTEXT, currentRule).AsString();
+	std::string text = Outputter(PLAINTEXT, currentRule).AsString();
 	ruleIndex = index;
 
 	// Now do GUI stuff.
@@ -893,14 +912,14 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id,
 	}
 
 	// Now disable any ADD rules with rule mods that are in the masterlist.
-	vector<Rule> rules = game.userlist.Rules();
-	for (size_t i = 0, max=rules.size(); i < max; i++) {
+	std::vector<Rule> rules = game.userlist.Rules();
+	for (std::size_t i = 0, max=rules.size(); i < max; i++) {
 		if (rules[i].Key() == ADD) {
-			size_t pos = game.masterlist.FindItem(rules[i].Object(),
-			                                      MOD);
+			std::size_t pos = game.masterlist.FindItem(rules[i].Object(),
+			                                           MOD);
 			if (pos != game.masterlist.Items().size()) {  // Mod in masterlist.
 				rules[i].Enabled(false);
-				wxMessageBox(FromUTF8(format(loc::translate("The rule sorting the unrecognised plugin \"%1%\" has been disabled as the plugin is now recognised. If you wish to override its position in the masterlist, re-enable the rule.")) % rules[i].Object()),
+				wxMessageBox(FromUTF8(boost::format(loc::translate("The rule sorting the unrecognised plugin \"%1%\" has been disabled as the plugin is now recognised. If you wish to override its position in the masterlist, re-enable the rule.")) % rules[i].Object()),
 				             translate("BOSS: Rule Disabled"),
 				             wxOK | wxICON_ERROR,
 				             NULL);
@@ -932,7 +951,7 @@ void RuleListFrameClass::SaveUserlist(const fs::path path) {
 	try {
 		game.userlist.Save(path);
 	} catch (boss_error &e) {
-		wxMessageBox(FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
+		wxMessageBox(FromUTF8(boost::format(loc::translate("Error: %1%")) % e.getString()),
 		             translate("BOSS: Error"),
 		             wxOK | wxICON_ERROR,
 		             NULL);
@@ -942,7 +961,7 @@ void RuleListFrameClass::SaveUserlist(const fs::path path) {
 void RuleListFrameClass::ReDrawRuleList() {
 	RuleListScroller->DestroyChildren();
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
-	for (size_t i = 0, size = game.userlist.Rules().size(); i < size; i++) {
+	for (std::size_t i = 0, size = game.userlist.Rules().size(); i < size; i++) {
 		if (i == selectedRuleIndex)
 			sizer->Add(new RuleBoxClass(RuleListScroller, game.userlist.RuleAt(i), i, true), 0, wxEXPAND);
 		else
@@ -976,7 +995,7 @@ void RuleListFrameClass::MoveRule(wxWindowID id) {
 void RuleListFrameClass::OnToggleRule(wxCommandEvent& event) {
 	if (event.GetId() >= 0 &&
 	    event.GetId() < game.userlist.Rules().size()) {
-		uint32_t id = event.GetId();
+		std::uint32_t id = event.GetId();
 		bool checked = event.IsChecked();
 		Rule rule = game.userlist.RuleAt(id);
 
@@ -1023,9 +1042,9 @@ void RuleListFrameClass::DeleteSelectedRule() {
 
 void RuleListFrameClass::OnRuleSelection(wxCommandEvent& event) {
 	selectedRuleIndex = event.GetId();
-	size_t size = game.userlist.Rules().size();
+	std::size_t size = game.userlist.Rules().size();
 	wxWindowList list = RuleListScroller->GetChildren();
-	for (size_t i = 0; i < size; i++) {
+	for (std::size_t i = 0; i < size; i++) {
 		RuleBoxClass *temp = (RuleBoxClass*)list[i];
 		if (i == selectedRuleIndex)
 			temp->Highlight(true);
