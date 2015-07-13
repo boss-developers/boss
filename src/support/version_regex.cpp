@@ -25,6 +25,8 @@
 	$Revision: 1681 $, $Date: 2010-10-17 21:01:25 +0100 (Sun, 17 Oct 2010) $
 */
 
+#include "support/version_regex.h"
+
 #include <boost/regex.hpp>
 
 namespace boss {
