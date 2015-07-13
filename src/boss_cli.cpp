@@ -27,57 +27,66 @@
 
 #define NOMINMAX  // We don't want the dummy min/max macros since they overlap with the std:: algorithms
 
-#include "boss_common.h"
-
-#include <clocale>
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
 #include <cstdlib>
-#include <ctime>
 
-#include <algorithm>
+#include <exception>
 #include <iostream>
+#include <locale>
 #include <string>
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/exception/get_error_info.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
+#include <boost/format.hpp>
 #include <boost/locale.hpp>
 #include <boost/program_options.hpp>
-#include <boost/regex.hpp>
-#include <boost/unordered_set.hpp>
 
+#include <git2.h>
 
-using namespace boss;
-using namespace std;
+#include "common/error.h"
+#include "common/game.h"
+#include "common/globals.h"
+#include "common/settings.h"
+#include "output/output.h"
+#include "support/logger.h"
+#include "updating/updater.h"
+
+using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
+namespace fs = boost::filesystem;
 namespace po = boost::program_options;
-using boost::locale::translate;
+namespace loc = boost::locale;  // MCP Note: Will this interfere with std::locale loc?
 
 #if _WIN32 || _WIN64
-	const string launcher_cmd = "start";
+	const std::string launcher_cmd = "start";
 #else
-	const string launcher_cmd = "xdg-open";
+	const std::string launcher_cmd = "xdg-open";
 #endif
 
-int Launch(string filename) {
-	if (filename.find(' ') != string::npos) {
+int Launch(std::string filename) {
+	if (filename.find(' ') != std::string::npos) {
 #if _WIN32 || _WIN64
 		filename = "\"\" \"" + filename + '"';  // Need "" "filename" because the first quoted string is the CLI window title and the second is the thing started...
 #else
 		boost::replace_all(filename, " ", "\\ ");
 #endif
 	}
-	const string cmd = launcher_cmd + " " + filename;
-	return ::system(cmd.c_str());
+	const std::string cmd = launcher_cmd + " " + filename;
+	return std::system(cmd.c_str());
 }
 
 
 void ShowVersion() {
-	cout << "BOSS" << endl;
-	cout << translate("Version ") << BOSS_VERSION_MAJOR << "." << BOSS_VERSION_MINOR << "." << BOSS_VERSION_PATCH << endl;
+	std::cout << "BOSS" << std::endl;
+	std::cout << loc::translate("Version ") << BOSS_VERSION_MAJOR << "." << BOSS_VERSION_MINOR << "." << BOSS_VERSION_PATCH << std::endl;
 }
 
 void ShowUsage(po::options_description opts) {
-	static string progName =
+	static std::string progName =
 #if _WIN32 || _WIN64
 	    "BOSS";
 #else
@@ -85,42 +94,42 @@ void ShowUsage(po::options_description opts) {
 #endif
 
 	ShowVersion();
-	cout << endl << translate("Description:") << endl
-	     << translate("  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, Nehrim,"
-	                  "  Fallout 3, Fallout: New Vegas and TESV: Skyrim according to a frequently updated"
-	                  "  masterlist to minimise incompatibilities between mods.") << endl << endl
-	     << opts << endl
-	     << translate("Examples:") << endl
-	     << "  " << progName << " -u" << endl
-	     << translate("    updates the masterlist, sorts your mods, and shows the log") << endl << endl
-	     << "  " << progName << " -sr" << endl
-	     << translate("    reverts your load order 1 level and skips showing the log") << endl << endl
-	     << "  " << progName << " -r 2" << endl
-	     << translate("    reverts your load order 2 levels and shows the log") << endl << endl;
+	std::cout << std::endl << loc::translate("Description:") << std::endl
+	          << loc::translate("  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, Nehrim,"
+	                            "  Fallout 3, Fallout: New Vegas and TESV: Skyrim according to a frequently updated"
+	                            "  masterlist to minimise incompatibilities between mods.") << std::endl << std::endl
+	          << opts << std::endl
+	          << loc::translate("Examples:") << std::endl
+	          << "  " << progName << " -u" << std::endl
+	          << loc::translate("    updates the masterlist, sorts your mods, and shows the log") << std::endl << std::endl
+	          << "  " << progName << " -sr" << std::endl
+	          << loc::translate("    reverts your load order 1 level and skips showing the log") << std::endl << std::endl
+	          << "  " << progName << " -r 2" << std::endl
+	          << loc::translate("    reverts your load order 2 levels and shows the log") << std::endl << std::endl;
 }
 
 void Fail() {
-	cout << "Press ENTER to quit...";
-	cin.clear();
-	cin.ignore(1, '\n');
-	cin.get();
-	exit(1);
+	std::cout << "Press ENTER to quit...";
+	std::cin.clear();
+	std::cin.ignore(1, '\n');
+	std::cin.get();
+	std::exit(1);
 }
 
 int progress(const git_transfer_progress *stats, void *payload) {
-	printf((translate("Downloading masterlist: %i of %i objects (%i KB)").str() + "\r").c_str(),
-	        stats->received_objects,
-	        stats->total_objects,
-	        stats->received_bytes/1024);
-	fflush(stdout);
+	std::printf((loc::translate("Downloading masterlist: %i of %i objects (%i KB)").str() + "\r").c_str(),
+	             stats->received_objects,
+	             stats->total_objects,
+	             stats->received_bytes/1024);
+	std::fflush(stdout);
 	return 0;
 }
 
 int main(int argc, char *argv[]) {
 	Settings ini;
 	Game game;
-	string gameStr;  // Allow for autodetection override
-	string bosslogFormat;
+	std::string gameStr;  // Allow for autodetection override
+	std::string bosslogFormat;
 	fs::path sortfile;  // Modlist/masterlist to sort plugins using.
 
 
@@ -148,13 +157,13 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Specify location of language dictionaries
-	boost::locale::generator gen;
+	loc::generator gen;
 	gen.add_messages_path(l10n_path.string());
 	gen.add_messages_domain("messages");
 
 	// Set the locale to get encoding and language conversions working correctly.
 	// TODO(MCP): Replace this with a switch statement?
-	string localeId = "";
+	std::string localeId = "";
 	if (gl_language == ENGLISH)
 		localeId = "en.UTF-8";
 	else if (gl_language == SPANISH)
@@ -167,16 +176,15 @@ int main(int argc, char *argv[]) {
 		localeId = "zh.UTF-8";
 
 	try {
-		locale::global(gen(localeId));
-		cout.imbue(locale());
-	} catch(exception &e) {
+		std::locale::global(gen(localeId));  // MCP Note: Is this std::locale or boost::locale?
+		std::cout.imbue(locale());
+	} catch(std::exception &e) {  // MCP Note: std::exception or boost::exception?
 		LOG_ERROR("could not implement translation: %s", e.what());
-		cout << e.what() << endl;
+		std::cout << e.what() << std::endl;
 	}
-	locale global_loc = locale();
-	locale loc(global_loc,
-	           new boost::filesystem::detail::utf8_codecvt_facet());
-	boost::filesystem::path::imbue(loc);
+	std::locale global_loc = std::locale();  // MCP Note: std::locale or boost::locale?
+	std::locale loc(global_loc, new fs::detail::utf8_codecvt_facet());
+	fs::path::imbue(loc);
 
 
 	//////////////////////////////
@@ -187,45 +195,45 @@ int main(int argc, char *argv[]) {
 	po::options_description opts("Options");
 	// TODO(MCP): Come up with a good alignment scheme for these lines.
 	opts.add_options()
-		("help,h", translate("produces this help message").str().c_str())
-		("version,V", translate("prints the version banner").str().c_str())
+		("help,h", loc::translate("produces this help message").str().c_str())
+		("version,V", loc::translate("prints the version banner").str().c_str())
 		("update,u", po::value(&gl_update)->zero_tokens(),
-		translate("automatically update the local copy of the"
+		loc::translate("automatically update the local copy of the"
 		" masterlist to the latest version"
 		" available on the web before sorting").str().c_str())
-		("no-update,U", translate("inhibit the automatic masterlist updater").str().c_str())
+		("no-update,U", loc::translate("inhibit the automatic masterlist updater").str().c_str())
 		("only-update,o", po::value(&gl_update_only)->zero_tokens(),
-		translate("automatically update the local copy of the"
+		loc::translate("automatically update the local copy of the"
 		" masterlist to the latest version"
 		" available on the web but don't sort right"
 		" now").str().c_str())
 		("silent,s", po::value(&gl_silent)->zero_tokens(),
-		translate("don't launch a browser to show the HTML log"
+		loc::translate("don't launch a browser to show the HTML log"
 		" at program completion").str().c_str())
 		("revert,r", po::value(&gl_revert)->implicit_value(1, ""),
-		translate("revert to a previous load order.  this"
+		loc::translate("revert to a previous load order.  this"
 		" parameter optionally accepts values of 1 or"
 		" 2, indicating how many undo steps to apply."
 		"  if no option value is specified, it"
 		" defaults to 1").str().c_str())
 		("verbose,v", po::value(&gl_debug_verbosity)->implicit_value(1, ""),
-		translate("specify verbosity level (0-3) of the debugging output.  0 is the"
+		loc::translate("specify verbosity level (0-3) of the debugging output.  0 is the"
 		" default, showing only WARN and ERROR messges."
 		" 1 (INFO and above) is implied if this option"
 		" is specified without an argument.  higher"
 		" values increase the verbosity further").str().c_str())
 		("game,g", po::value(&gameStr),
-		translate("override game autodetection.  valid values"
+		loc::translate("override game autodetection.  valid values"
 		" are: 'Oblivion', 'Nehrim', 'Fallout3',"
 		" 'FalloutNV', and 'Skyrim'").str().c_str())
 		("crc-display,c", po::value(&gl_show_CRCs)->zero_tokens(),
-		translate("show mod file CRCs, so that a file's CRC can be"
+		loc::translate("show mod file CRCs, so that a file's CRC can be"
 		" added to the masterlist in a conditional").str().c_str())
 		("format,f", po::value(&bosslogFormat),
-		translate("select output format. valid values"
+		loc::translate("select output format. valid values"
 		" are: 'html', 'text'").str().c_str())
 		("trial-run,t", po::value(&gl_trial_run)->zero_tokens(),
-		translate("run BOSS without actually making any changes to load order").str().c_str());
+		loc::translate("run BOSS without actually making any changes to load order").str().c_str());
 
 	// Parse command line arguments
 	po::variables_map vm;
@@ -235,7 +243,7 @@ int main(int argc, char *argv[]) {
 	} catch (po::multiple_occurrences &) {
 		LOG_ERROR("cannot specify options multiple times; please use the '--help' option to see usage instructions");
 		Fail();
-	} catch (exception & e) {
+	} catch (std::exception & e) {
 		LOG_ERROR("%s; please use the '--help' option to see usage instructions",
 		          e.what());
 		Fail();
@@ -268,8 +276,7 @@ int main(int argc, char *argv[]) {
 		Fail();
 	}
 	if (vm.count("revert") && (gl_revert < 1 || gl_revert > 2)) {
-		LOG_ERROR("invalid option for 'revert' parameter: %d",
-		          gl_revert);
+		LOG_ERROR("invalid option for 'revert' parameter: %d", gl_revert);
 		Fail();
 	}
 	if (vm.count("game")) {
@@ -294,7 +301,7 @@ int main(int argc, char *argv[]) {
 	}
 	if (vm.count("format")) {
 		// Sanity check and parse argument
-		string bosslogFormat = vm["format"].as<string>();
+		std::string bosslogFormat = vm["format"].as<std::string>();
 		if (bosslogFormat == "html")
 			gl_log_format = HTML;
 		else if (bosslogFormat == "text")
@@ -304,8 +311,7 @@ int main(int argc, char *argv[]) {
 			          bosslogFormat.c_str());
 			Fail();
 		}
-		LOG_DEBUG("BOSSlog format set to: '%s'",
-		          bosslogFormat.c_str());
+		LOG_DEBUG("BOSSlog format set to: '%s'", bosslogFormat.c_str());
 	}
 
 
@@ -317,8 +323,8 @@ int main(int argc, char *argv[]) {
 	LOG_DEBUG("Detecting game...");
 	try {
 		gl_last_game = AUTODETECT;  // Clear this setting in case the GUI was run.
-		vector<uint32_t> detected, undetected;
-		uint32_t detectedGame = DetectGame(detected, undetected);
+		std::vector<std::uint32_t> detected, undetected;
+		std::uint32_t detectedGame = DetectGame(detected, undetected);
 		if (detectedGame == AUTODETECT) {
 			// Now check what games were found.
 			if (detected.empty()) {
@@ -326,15 +332,15 @@ int main(int argc, char *argv[]) {
 			} else if (detected.size() == 1) {
 				detectedGame = detected.front();
 			} else {
-				size_t ans;
+				std::size_t ans;
 				// Ask user to choose game.
-				cout << endl << translate("Please pick which game to run BOSS for:") << endl;
-				for (size_t i = 0; i < detected.size(); i++)
-					cout << i << " : " << Game(detected[i], "", true).Name() << endl;
+				std::cout << std::endl << loc::translate("Please pick which game to run BOSS for:") << std::endl;
+				for (std::size_t i = 0; i < detected.size(); i++)
+					std::cout << i << " : " << Game(detected[i], "", true).Name() << std::endl;
 
-				cin >> ans;
+				std::cin >> ans;
 				if (ans < 0 || ans >= detected.size()) {
-					cout << translate("Invalid selection.") << endl;
+					std::cout << loc::translate("Invalid selection.") << std::endl;
 					throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 				}
 				detectedGame = detected[ans];
@@ -346,9 +352,9 @@ int main(int argc, char *argv[]) {
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
 		game.bosslog.SetFormat(gl_log_format);
-		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << translate("Critical Error: ") << e.getString() << LINE_BREAK
-		                           << translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-		                           << translate("Utility will end now.");
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << loc::translate("Critical Error: ") << e.getString() << LINE_BREAK
+		                           << loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+		                           << loc::translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
@@ -367,22 +373,22 @@ int main(int argc, char *argv[]) {
 	/////////////////////////////////////////////////////////
 
 	if (gl_revert < 1 && (gl_update || gl_update_only)) {
-		cout << endl << translate("Updating to the latest masterlist from the online repository...") << endl;
+		std::cout << std::endl << loc::translate("Updating to the latest masterlist from the online repository...") << std::endl;
 		LOG_DEBUG("Updating masterlist...");
 		try {
-			string revision = UpdateMasterlist(game, progress, NULL);
-			string message = (boost::format(translate("Masterlist updated; at revision: %1%.")) % revision).str();
+			std::string revision = UpdateMasterlist(game, progress, NULL);
+			std::string message = (boost::format(loc::translate("Masterlist updated; at revision: %1%.")) % revision).str();
 			game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
-			cout << endl << message << endl;
+			std::cout << std::endl << message << std::endl;
 		} catch (boss_error &e) {
-			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
-			                           << (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
+			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << loc::translate("Error: masterlist update failed.") << LINE_BREAK
+			                           << (boost::format(loc::translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
 			LOG_ERROR("Error: masterlist update failed. Details: %s",
 			          e.getString().c_str());
 		}
 	} else {
-		string revision = GetMasterlistVersion(game);
-		string message = (boost::format(translate("Masterlist updating disabled; at revision: %1%.")) % revision).str();
+		std::string revision = GetMasterlistVersion(game);
+		std::string message = (boost::format(loc::translate("Masterlist updating disabled; at revision: %1%.")) % revision).str();
 		game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
 	}
 
@@ -403,7 +409,7 @@ int main(int argc, char *argv[]) {
 	// Resume Error Condition Checks
 	///////////////////////////////////
 
-	cout << endl << translate("BOSS working...") << endl;
+	std::cout << std::endl << loc::translate("BOSS working...") << std::endl;
 
 	// Build and save modlist.
 	try {
@@ -413,9 +419,9 @@ int main(int argc, char *argv[]) {
 	} catch (boss_error &e) {
 		LOG_ERROR("Failed to load/save modlist, error was: %s",
 		          e.getString().c_str());
-		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-		                           << translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-		                           << translate("Utility will end now.");
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+		                           << loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+		                           << loc::translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
@@ -459,9 +465,9 @@ int main(int argc, char *argv[]) {
 		} else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
 			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << e.getString();
 		} else {
-			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-			                           << translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-			                           << translate("Utility will end now.");
+			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+			                           << loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+			                           << loc::translate("Utility will end now.");
 		}
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
@@ -476,11 +482,11 @@ int main(int argc, char *argv[]) {
 	LOG_INFO("Starting to parse userlist.");
 	try {
 		game.userlist.Load(game, game.Userlist());
-		vector<ParsingError> errs = game.userlist.ErrorBuffer();
+		std::vector<ParsingError> errs = game.userlist.ErrorBuffer();
 		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(),
 		                                  errs.begin(), errs.end());
 	} catch (boss_error &e) {
-		vector<ParsingError> errs = game.userlist.ErrorBuffer();
+		std::vector<ParsingError> errs = game.userlist.ErrorBuffer();
 		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(),
 		                                  errs.begin(), errs.end());
 		game.userlist.Clear();  // If userlist has parsing errors, empty it so no rules are applied.
@@ -501,9 +507,9 @@ int main(int argc, char *argv[]) {
 		game.bosslog.Save(game.Log(gl_log_format), true);
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
-		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-		                           << translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-		                           << translate("Utility will end now.");
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+		                           << loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+		                           << loc::translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
