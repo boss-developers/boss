@@ -30,18 +30,22 @@
 
 #include <wx/notebook.h>
 
-#include "gui/element_ids.h"
+// TODO(MCP): Replace these includes with the ones we need as opposed to including all of them
 
-using namespace std;
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#	include <wx/wx.h>
+#endif
 
 class SettingsFrame : public wxFrame {
-public:
+ public:
 	SettingsFrame(const wxString title, wxFrame *parent);
 	void OnOKQuit(wxCommandEvent& event);
 	void OnCancelQuit(wxCommandEvent& event);
 	void SetDefaultValues();
 	DECLARE_EVENT_TABLE()
-private:
+ private:
 	wxCheckBox *UseUserRuleManagerBox;
 	wxCheckBox *CloseGUIAfterRunningBox;
 	wxChoice *DebugVerbosityChoice;
