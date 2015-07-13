@@ -28,10 +28,13 @@
 #ifndef BOSS_COMMON_H_
 #define BOSS_COMMON_H_
 
-#include "common/classes.h"
+#include "common/conditional_data.h"
 #include "common/error.h"
 #include "common/game.h"
 #include "common/globals.h"
+#inlcude "common/item_list.h"
+#include "common/rule_line.h"
+#inlcude "common/settings.h"
 #include "output/output.h"
 #include "support/helpers.h"
 #include "support/logger.h"
