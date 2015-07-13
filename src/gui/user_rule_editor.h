@@ -28,6 +28,11 @@
 #ifndef GUI_USER_RULE_EDITOR_H_
 #define GUI_USER_RULE_EDITOR_H_
 
+#include <cstddef>
+#include <cstdint>
+
+#include <boost/filesystem.hpp>
+
 #include <wx/dataobj.h>
 #include <wx/dnd.h>
 #include <wx/notebook.h>
@@ -35,57 +40,65 @@
 #include <wx/srchctrl.h>
 #include <wx/treectrl.h>
 
-#include "gui/element_ids.h"
+#include "common/game.h"
+#include "common/rule_line.h"
 
-using namespace boss;
-using namespace std;
+// TODO(MCP): Replace these includes with the ones we need as opposed to including all of them
+
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#	include <wx/wx.h>
+#endif
+
+namespace fs = boost::filesystem;
 
 class TextDropTarget : public wxTextDropTarget {  // Class to override virtual functions.
-public:
+ public:
 	TextDropTarget(wxTextCtrl *owner);
 	virtual bool OnDropText(wxCoord x, wxCoord y,
 	                        const wxString &data);
-private:
+ private:
 	wxTextCtrl *targetOwner;
 };
 
 class RuleBoxClass : public wxPanel {
-public:
-	RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule,
-	             uint32_t index, bool isSelected);
+ public:
+	RuleBoxClass(wxScrolled<wxPanel> *parent, boss::Rule currentRule,
+	             std::uint32_t index, bool isSelected);
 	void ToggleEnabled(wxCommandEvent& event);  // Doesn't handle RuleList modification, only greying out of UI element.
 	void OnSelect(wxMouseEvent& event);
 	void Highlight(bool highlight);
 	DECLARE_EVENT_TABLE()
-private:
+ private:
 	wxStaticText *ruleContent;
 	wxCheckBox *ruleCheckbox;
-	uint32_t ruleIndex;
+	std::uint32_t ruleIndex;
 };
 
 class RuleListFrameClass : public wxPanel {
-public:
-	RuleListFrameClass(wxFrame *parent, wxWindowID id, Game& inGame);  // Initialise the RuleListFrameClass object.
-	void SaveUserlist(const fs::path path);                            // Save the changes made to the userlist.
-	Rule GetSelectedRule();                                            // Returns the currently selected rule.
-	void AppendRule(Rule newRule);                                     // Append to RuleList object and update GUI.
-	void SaveEditedRule(Rule editedRule);                              // Get the index from current selection internally. Also update RuleList object.
-	void DeleteSelectedRule();                                         // Remove from GUI and RuleList object, getting index from current selection internally.
+ public:
+	RuleListFrameClass(wxFrame *parent, wxWindowID id, boss::Game& inGame);  // Initialise the RuleListFrameClass object.
+	void SaveUserlist(const fs::path path);                                  // Save the changes made to the userlist.
+	boss::Rule GetSelectedRule();                                            // Returns the currently selected rule.
+	void AppendRule(boss::Rule newRule);                                     // Append to RuleList object and update GUI.
+	void SaveEditedRule(boss::Rule editedRule);                              // Get the index from current selection internally. Also update RuleList object.
+	void DeleteSelectedRule();                                               // Remove from GUI and RuleList object, getting index from current selection internally.
 	void MoveRule(wxWindowID id);
 	void OnToggleRule(wxCommandEvent& event);
 	void OnRuleSelection(wxCommandEvent& event);
 	DECLARE_EVENT_TABLE()
-private:
-	void ReDrawRuleList();                                             // Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
-	size_t selectedRuleIndex;
+ private:
+	void ReDrawRuleList();                                                   // Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
+	std::size_t selectedRuleIndex;
 	wxScrolled<wxPanel> *RuleListScroller;
-	Game& game;
+	boss::Game& game;
 };
 
 class UserRulesEditorFrame : public wxFrame {
-public:
+ public:
 	UserRulesEditorFrame(const wxString title, wxFrame *parent,
-	                     Game& inGame);
+	                     boss::Game& inGame);
 	void OnOKQuit(wxCommandEvent& event);
 	void OnCancelQuit(wxCommandEvent& event);
 	void OnSearchList(wxCommandEvent& event);
@@ -104,13 +117,12 @@ public:
 
 	DECLARE_EVENT_TABLE()
 
-
 	friend class TextDropTarget;
-private:
+ private:
 	void LoadLists();
-	Rule GetRuleFromForm();
+	boss::Rule GetRuleFromForm();
 
-	Game& game;
+	boss::Game& game;
 
 	wxArrayString ModlistMods;
 
