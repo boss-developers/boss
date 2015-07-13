@@ -28,6 +28,8 @@
 #ifndef SUPPORT_HELPERS_H_
 #define SUPPORT_HELPERS_H_
 
+#include <cstdint>
+
 #include <string>
 
 #include <boost/filesystem.hpp>
@@ -36,7 +38,6 @@
 
 namespace boss {
 
-using namespace std;
 namespace fs = boost::filesystem;
 
 //////////////////////////////////////////////////////////////////////////
@@ -44,22 +45,22 @@ namespace fs = boost::filesystem;
 //////////////////////////////////////////////////////////////////////////
 
 // Calculate the CRC of the given file for comparison purposes.
-uint32_t GetCrc32(const fs::path& filename);
+std::uint32_t GetCrc32(const fs::path& filename);
 
 // Reads an entire file into a string buffer.
-void fileToBuffer(const fs::path file, string& buffer);
+void fileToBuffer(const fs::path file, std::string& buffer);
 
 // Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
-BOSS_COMMON string IntToString(const uint32_t n);
+BOSS_COMMON std::string IntToString(const std::uint32_t n);
 
 // Converts an integer to a hex string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
-string IntToHexString(const uint32_t n);
+std::string IntToHexString(const std::uint32_t n);
 
 // Converts a boolean to a string representation (true/false)
-string BoolToString(bool b);
+std::string BoolToString(bool b);
 
 // Turns "true", "false", "1", "0" into booleans.
-bool StringToBool(string str);
+bool StringToBool(std::string str);
 
 // Convert a Windows-1252 string to UTF-8.
 std::string From1252ToUTF8(const std::string& str);
@@ -68,29 +69,29 @@ std::string From1252ToUTF8(const std::string& str);
 std::string FromUTF8To1252(const std::string& str);
 
 // Check if registry subkey exists.
-BOSS_COMMON bool RegKeyExists(string keyStr, string subkey,
-                              string value);
+BOSS_COMMON bool RegKeyExists(std::string keyStr, std::string subkey,
+                              std::string value);
 
 // Get registry subkey value string.
-string RegKeyStringValue(string keyStr, string subkey, string value);
+std::string RegKeyStringValue(std::string keyStr, std::string subkey, std::string value);
 
 // Version class for more robust version comparisons.
 class Version {
-private:
-	string verString;
-public:
+ public:
 	Version();
 	Version(const char * ver);
-	Version(const string ver);
+	Version(const std::string ver);
 	Version(const fs::path file);
 
-	string AsString() const;
+	std::string AsString() const;
 
 	bool operator > (Version);
 	bool operator < (Version);
 	bool operator >= (Version);
 	bool operator == (Version);
 	bool operator != (Version);
+ private:
+	std::string verString;
 };
 
 }  // namespace boss
