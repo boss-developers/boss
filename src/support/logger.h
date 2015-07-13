@@ -58,7 +58,7 @@ enum LogVerbosity {
 
 // A simple logging class.  Not implemented to be thread safe.
 class BOSS_COMMON Logger {
-public:
+ public:
 	Logger();
 
 	// Sets the verbosity limit
@@ -66,7 +66,7 @@ public:
 
 	// Sets the output stream
 	inline void setStream(const char * file) {
-		m_out = fopen(file, "w");
+		m_out = std::fopen(file, "w");
 	}
 
 	// For use when calculating the arguments to a LOG macro would be expensive
@@ -81,23 +81,22 @@ public:
 	inline void log(LogVerbosity verbosity, const char * formatStr, ...) __attribute__((__format__ (__printf__, 5, 6)))
 	{
 		if (_isVerbosityEnabled(verbosity)) {
-			va_list ap;
+			std::va_list ap;
 			va_start(ap, formatStr);
 			_log(verbosity, formatStr, ap);
 			va_end(ap);
 		}
 	}
 
-private:
+ private:
 	LogVerbosity m_verbosity;
 	FILE * m_out;
 
-private:
 	inline bool _isVerbosityEnabled(LogVerbosity verbosity) {
 		return verbosity <= m_verbosity;
 	}
 
-	void _log(LogVerbosity verbosity, const char * formatStr, va_list ap);
+	void _log(LogVerbosity verbosity, const char * formatStr, std::va_list ap);
 };
 
 // Declare global logger
