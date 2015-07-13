@@ -30,22 +30,27 @@
 #ifndef OUTPUT_OUTPUT_H_
 #define OUTPUT_OUTPUT_H_
 
-#include <fstream>
-#include <iostream>
+#include <cstdint>
+
 #include <sstream>
 #include <string>
+#include <vector>
 
+#include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/unordered_set.hpp>
 
-#include "common/classes.h"
+#include "common/conditional_data.h"
 #include "common/dll_def.h"
+#include "common/error.h"
 
 namespace boss {
 
-using namespace std;
+namespace fs = boost::filesystem;
 
-enum logFormatting : uint32_t {
+class BOSS_COMMON Rule;
+
+enum logFormatting : std::uint32_t {
 	SECTION_ID_SUMMARY_OPEN,
 	SECTION_ID_USERLIST_OPEN,
 	SECTION_ID_SE_OPEN,
@@ -95,64 +100,65 @@ enum logFormatting : uint32_t {
 };
 
 class BOSS_COMMON Outputter {
-public:
+ public:
 	Outputter();
 	Outputter(const Outputter& o);
-	Outputter(const uint32_t format);
-	Outputter(const uint32_t format, const ParsingError e);
-	Outputter(const uint32_t format, const Rule r);
-	Outputter(const uint32_t format, const logFormatting l);
+	Outputter(const std::uint32_t format);
+	Outputter(const std::uint32_t format, const ParsingError e);
+	Outputter(const std::uint32_t format, const Rule r);
+	Outputter(const std::uint32_t format, const logFormatting l);
 
-	void SetFormat(const uint32_t format);               // Sets the formatting type of the output.
-	void SetHTMLSpecialEscape(const bool shouldEscape);  // Set when formatting is set, generally, but this can be used to override.
-	void Clear();                                        // Erase all current content.
+	void SetFormat(const std::uint32_t format);               // Sets the formatting type of the output.
+	void SetHTMLSpecialEscape(const bool shouldEscape);       // Set when formatting is set, generally, but this can be used to override.
+	void Clear();                                             // Erase all current content.
 
 	bool Empty() const;
-	uint32_t GetFormat() const;
+	std::uint32_t GetFormat() const;
 	bool GetHTMLSpecialEscape() const;
 
-	string AsString() const;  // Outputs contents as a string.
+	std::string AsString() const;  // Outputs contents as a string.
 
 	Outputter& operator= (const Outputter& o);
-	Outputter& operator<< (const string s);
+	Outputter& operator<< (const std::string s);
 	Outputter& operator<< (const char * s);
 	Outputter& operator<< (const char c);
 	Outputter& operator<< (const logFormatting l);
-	Outputter& operator<< (const int32_t i);
-	Outputter& operator<< (const uint32_t i);
+	Outputter& operator<< (const std::int32_t i);
+	Outputter& operator<< (const std::uint32_t i);
 	Outputter& operator<< (const bool b);
 	Outputter& operator<< (const fs::path p);
 	Outputter& operator<< (const Message m);
 	Outputter& operator<< (const ParsingError e);
 	Outputter& operator<< (const Rule r);
 
-private:
-	stringstream outStream;
-	uint32_t outFormat;           // The formatting type of the output.
-	bool escapeHTMLSpecialChars;  // Should special characters be escaped from non-formatting input?
+ private:
+	std::stringstream outStream;
+	std::uint32_t outFormat;           // The formatting type of the output.
+	bool escapeHTMLSpecialChars;       // Should special characters be escaped from non-formatting input?
 
-	string EscapeHTMLSpecial(string text);  // Performs the HTML escaping.
-	string EscapeHTMLSpecial(char c);
+	std::string EscapeHTMLSpecial(std::string text);  // Performs the HTML escaping.
+	std::string EscapeHTMLSpecial(char c);
 };
 
+// TODO(MCP): Look at splitting BossLog out into another file.
 class BossLog {
-public:
+ public:
 	BossLog();
-	BossLog(const uint32_t format);
+	BossLog(const std::uint32_t format);
 
-	void SetFormat(const uint32_t format);
+	void SetFormat(const std::uint32_t format);
 	void Save(const fs::path file, const bool overwrite);  // Saves contents to file. Throws boss_error exception on fail.
 	void Clear();
 
-	uint32_t recognised;
-	uint32_t unrecognised;
-	uint32_t inactive;
-	uint32_t messages;
-	uint32_t warnings;
-	uint32_t errors;
+	std::uint32_t recognised;
+	std::uint32_t unrecognised;
+	std::uint32_t inactive;
+	std::uint32_t messages;
+	std::uint32_t warnings;
+	std::uint32_t errors;
 
-	string scriptExtender;
-	string gameName;
+	std::string scriptExtender;
+	std::string gameName;
 
 	Outputter updaterOutput;
 	Outputter criticalError;
@@ -161,17 +167,17 @@ public:
 	Outputter recognisedPlugins;
 	Outputter unrecognisedPlugins;
 
-	vector<ParsingError> parsingErrors;
-	vector<Message> globalMessages;
+	std::vector<ParsingError> parsingErrors;
+	std::vector<Message> globalMessages;
 
-private:
-	uint32_t logFormat;
+ private:
+	std::uint32_t logFormat;
 	bool recognisedHasChanged;
 
-	string PrintLog();
-	string PrintHeaderTop();
-	string PrintHeaderBottom();
-	string PrintFooter();
+	std::string PrintLog();
+	std::string PrintHeaderTop();
+	std::string PrintHeaderBottom();
+	std::string PrintFooter();
 
 	bool HasRecognisedListChanged(const fs::path file);
 };
