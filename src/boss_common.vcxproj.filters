@@ -36,7 +36,19 @@
     <ClCompile Include="output\output.cpp">
       <Filter>output</Filter>
     </ClCompile>
-    <ClCompile Include="common\classes.cpp">
+    <ClCompile Include="common\conditional_data.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\item_list.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\keywords.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\rule_line.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\settings.cpp">
       <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="common\error.cpp">
@@ -83,11 +95,22 @@
     <ClInclude Include="updating\updater.h">
       <Filter>updating</Filter>
     </ClInclude>
-    <ClInclude Include="boss_common.h" />
     <ClInclude Include="common\dll_def.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="common\classes.h">
+    <ClInclude Include="common\conditional_data.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\item_list.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\keywords.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\rule_line.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\settings.h">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="common\game.h">

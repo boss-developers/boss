@@ -19,10 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="common\classes.cpp" />
+    <ClCompile Include="common\conditional_data.cpp" />
     <ClCompile Include="common\error.cpp" />
     <ClCompile Include="common\game.cpp" />
     <ClCompile Include="common\globals.cpp" />
+    <ClCompile Include="common\item_list.cpp" />
+    <ClCompile Include="common\keywords.cpp" />
+    <ClCompile Include="common\rule_line.cpp" />
+    <ClCompile Include="common\settings.cpp" />
     <ClCompile Include="output\output.cpp" />
     <ClCompile Include="parsing\grammar.cpp" />
     <ClCompile Include="support\helpers.cpp" />
@@ -31,12 +35,15 @@
     <ClCompile Include="support\version_regex.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="boss_common.h" />
-    <ClInclude Include="common\classes.h" />
+    <ClInclude Include="common\conditional_data.h" />
     <ClInclude Include="common\dll_def.h" />
     <ClInclude Include="common\error.h" />
     <ClInclude Include="common\game.h" />
     <ClInclude Include="common\globals.h" />
+    <ClInclude Include="common\item_list.h" />
+    <ClInclude Include="common\keywords.h" />
+    <ClInclude Include="common\rule_line.h" />
+    <ClInclude Include="common\settings.h" />
     <ClInclude Include="output\output.h" />
     <ClInclude Include="parsing\grammar.h" />
     <ClInclude Include="support\helpers.h" />
