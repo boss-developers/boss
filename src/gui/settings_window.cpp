@@ -27,13 +27,18 @@
 
 #include "gui/settings_window.h"
 
+#include <string>
+
+#include "common/globals.h"
+#include "gui/element_ids.h"
+#include "support/logger.h"
+
 BEGIN_EVENT_TABLE( SettingsFrame, wxFrame )
 	EVT_BUTTON ( OPTION_OKExitSettings, SettingsFrame::OnOKQuit)
 	EVT_BUTTON ( OPTION_CancelExitSettings, SettingsFrame::OnCancelQuit)
 END_EVENT_TABLE()
 
-using namespace boss;
-using namespace std;
+using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
 
 SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent)
     : wxFrame(parent, wxID_ANY, title) {
@@ -232,11 +237,11 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 		g_logger.setStream(debug_log_path.string().c_str());
 
 	// Masterlist repository URLs
-	gl_oblivion_repo_url = string(OblivionRepoURLTxt->GetValue().ToUTF8());
-	gl_nehrim_repo_url = string(NehrimRepoURLTxt->GetValue().ToUTF8());
-	gl_skyrim_repo_url = string(SkyrimRepoURLTxt->GetValue().ToUTF8());
-	gl_fallout3_repo_url = string(Fallout3RepoURLTxt->GetValue().ToUTF8());
-	gl_falloutnv_repo_url = string(FalloutNVRepoURLTxt->GetValue().ToUTF8());
+	gl_oblivion_repo_url = std::string(OblivionRepoURLTxt->GetValue().ToUTF8());
+	gl_nehrim_repo_url = std::string(NehrimRepoURLTxt->GetValue().ToUTF8());
+	gl_skyrim_repo_url = std::string(SkyrimRepoURLTxt->GetValue().ToUTF8());
+	gl_fallout3_repo_url = std::string(Fallout3RepoURLTxt->GetValue().ToUTF8());
+	gl_falloutnv_repo_url = std::string(FalloutNVRepoURLTxt->GetValue().ToUTF8());
 
 	this->Close();
 }
