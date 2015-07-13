@@ -25,14 +25,9 @@
 	$Revision: 1681 $, $Date: 2010-10-17 21:01:25 +0100 (Sun, 17 Oct 2010) $
 */
 
-#include <string>
-
 #include <boost/regex.hpp>
 
 namespace boss {
-
-using namespace std;
-using namespace boost;
 
 /// REGEX expression definition
 ///  Each expression is composed of three parts:
@@ -70,12 +65,12 @@ const char* regex7 =
 
 /// Array used to try each of the expressions defined above using
 /// an iteration for each of them.
-regex* version_checks[] = {new regex(regex1, regex::icase),
-                           new regex(regex2, regex::icase),
-                           new regex(regex3, regex::icase),
-                           new regex(regex4, regex::icase),
-                           new regex(regex5, regex::icase),  // This incorrectly identifies "OBSE v19" where 19 is any integer.
-                           new regex(regex6, regex::icase),  // This is responsible for metallicow's false positive.
-                           new regex(regex7, regex::icase), 0};
+boost::regex* version_checks[] = {new boost::regex(regex1, boost::regex::icase),
+                                  new boost::regex(regex2, boost::regex::icase),
+                                  new boost::regex(regex3, boost::regex::icase),
+                                  new boost::regex(regex4, boost::regex::icase),
+                                  new boost::regex(regex5, boost::regex::icase),  // This incorrectly identifies "OBSE v19" where 19 is any integer.
+                                  new boost::regex(regex6, boost::regex::icase),  // This is responsible for metallicow's false positive.
+                                  new boost::regex(regex7, boost::regex::icase), 0};
 
 }  // namespace boss
