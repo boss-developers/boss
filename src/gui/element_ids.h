@@ -28,12 +28,18 @@
 #ifndef GUI_ELEMENT_IDS_H_
 #define GUI_ELEMENT_IDS_H_
 
-#include "boss_common.h"
+#include <string>
 
-#include "wx/wxprec.h"
+#include <boost/format.hpp>
+
+#include <git2.h>
+
+// TODO(MCP): Replace these includes with the ones we need as opposed to including all of them
+
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#	include "wx/wx.h"
+#	include <wx/wx.h>
 #endif
 
 enum {
@@ -102,9 +108,9 @@ namespace boss {
 
 wxString translate(char * cstr);
 
-wxString translate(string str);
+wxString translate(std::string str);
 
-wxString FromUTF8(string str);
+wxString FromUTF8(std::string str);
 
 wxString FromUTF8(boost::format f);
 
