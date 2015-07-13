@@ -28,24 +28,35 @@
 #ifndef GUI_MAIN_WINDOW_H_
 #define GUI_MAIN_WINDOW_H_
 
-#include "boss_common.h"
+#include <cstdint>
+
+#include <string>
+#include <vector>
 
 #include <wx/hyperlink.h>
 #include <wx/progdlg.h>
 #include <wx/thread.h>
 
-#include "gui/element_ids.h"
+#include "common/game.h"
+
+// TODO(MCP): Replace these includes with the ones we need as opposed to including all of them
+
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#	include <wx/wx.h>
+#endif
 
 // Program class.
 class BossGUI : public wxApp {
-public:
+ public:
 	bool OnInit();
 	wxLocale * wxLoc;
 };
 
 // Main frame class.
 class MainFrame : public wxFrame {
-public:
+ public:
 	MainFrame(const wxChar *title);
 	void Update(std::string updateVersion);
 	void OnOpenSettings(wxCommandEvent& event);
@@ -65,10 +76,10 @@ public:
 	void OnClose(wxCloseEvent& event);
 
 	void SetGames(const boss::Game& inGame,
-	              const std::vector<uint32_t> inGames);
+	              const std::vector<std::uint32_t> inGames);
 	void DisableUndetectedGames();
 
-private:
+ private:
 	wxMenuBar *MenuBar;
 	wxMenu *FileMenu;
 	wxMenu *EditMenu;
@@ -89,13 +100,13 @@ private:
 	wxStaticText *RevertText;
 
 	bool isStartup;
-	std::vector<uint32_t> detectedGames;
+	std::vector<std::uint32_t> detectedGames;
 	boss::Game game;
 
-protected:
-	uint32_t updateCheckCode;       // 0 = update, 1 = no update, 2 = error.
-	std::string updateCheckString;  // Holds wxMessageBox text.
-	wxCriticalSection updateData;   // Protects fields above
+ protected:
+	std::uint32_t updateCheckCode;       // 0 = update, 1 = no update, 2 = error.
+	std::string updateCheckString;       // Holds wxMessageBox text.
+	wxCriticalSection updateData;        // Protects fields above
 	DECLARE_EVENT_TABLE()
 };
 #endif  // GUI_MAIN_WINDOW_H_
