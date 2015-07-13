@@ -27,121 +27,125 @@
 
 #include "common/error.h"
 
-#include <boost/algorithm/string.hpp>
+#include <cstdint>
+
+#include <string>
+
+#include <boost/format.hpp>
+#include <boost/locale.hpp>
 
 namespace boss {
 
-using namespace std;
-
-using boost::format;
-using boost::locale::translate;
+/*using boost::format;
+using boost::locale::translate;*/
+namespace loc = boost::locale;
 
 // Return codes, mostly error codes.
-BOSS_COMMON const uint32_t BOSS_OK                                  = 0;
-BOSS_COMMON const uint32_t BOSS_ERROR_FILE_READ_FAIL                = 2;
-BOSS_COMMON const uint32_t BOSS_ERROR_FILE_WRITE_FAIL               = 3;
-BOSS_COMMON const uint32_t BOSS_ERROR_FILE_NOT_UTF8                 = 4;
-BOSS_COMMON const uint32_t BOSS_ERROR_FILE_NOT_FOUND                = 5;
-BOSS_COMMON const uint32_t BOSS_ERROR_FILE_PARSE_FAIL               = 6;
-BOSS_COMMON const uint32_t BOSS_ERROR_CONDITION_EVAL_FAIL           = 7;
-BOSS_COMMON const uint32_t BOSS_ERROR_REGEX_EVAL_FAIL               = 8;
-BOSS_COMMON const uint32_t BOSS_ERROR_NO_GAME_DETECTED              = 9;
-BOSS_COMMON const uint32_t BOSS_ERROR_ENCODING_CONVERSION_FAIL      = 10;
-BOSS_COMMON const uint32_t BOSS_ERROR_PLUGIN_BEFORE_MASTER          = 39;
-BOSS_COMMON const uint32_t BOSS_ERROR_INVALID_SYNTAX                = 40;
+BOSS_COMMON const std::uint32_t BOSS_OK                                  = 0;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_FILE_READ_FAIL                = 2;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_FILE_WRITE_FAIL               = 3;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_FILE_NOT_UTF8                 = 4;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_FILE_NOT_FOUND                = 5;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_FILE_PARSE_FAIL               = 6;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_CONDITION_EVAL_FAIL           = 7;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_REGEX_EVAL_FAIL               = 8;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_NO_GAME_DETECTED              = 9;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_ENCODING_CONVERSION_FAIL      = 10;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_PLUGIN_BEFORE_MASTER          = 39;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_INVALID_SYNTAX                = 40;
 
-BOSS_COMMON const uint32_t BOSS_ERROR_GIT_ERROR                     = 41;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_GIT_ERROR                     = 41;
 
-BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL    = 15;
-BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL   = 16;
-BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_RENAME_FAIL           = 17;
-BOSS_COMMON const uint32_t BOSS_ERROR_FS_FILE_DELETE_FAIL           = 18;
-BOSS_COMMON const uint32_t BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL      = 19;
-BOSS_COMMON const uint32_t BOSS_ERROR_FS_ITER_DIRECTORY_FAIL        = 20;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL    = 15;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL   = 16;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_FS_FILE_RENAME_FAIL           = 17;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_FS_FILE_DELETE_FAIL           = 18;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL      = 19;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_FS_ITER_DIRECTORY_FAIL        = 20;
 
-BOSS_COMMON const uint32_t BOSS_ERROR_GUI_WINDOW_INIT_FAIL          = 30;
+BOSS_COMMON const std::uint32_t BOSS_ERROR_GUI_WINDOW_INIT_FAIL          = 30;
 
 ////////////////////////////////
 // boss_error Class Functions
 ////////////////////////////////
 
 // For general errors not referencing specific files.
-boss_error::boss_error(const uint32_t internalErrCode)
+boss_error::boss_error(const std::uint32_t internalErrCode)
     : errCode(internalErrCode),
       errString(""),
       errSubject("") {}
 
 // For general errors referencing specific files.
-boss_error::boss_error(const uint32_t internalErrCode,
-                       const string internalErrSubject)
+boss_error::boss_error(const std::uint32_t internalErrCode,
+                       const std::string internalErrSubject)
     : errCode(internalErrCode),
       errString(""),
       errSubject(internalErrSubject) {}
 
 // For errors from BOOST Filesystem functions.
-boss_error::boss_error(const uint32_t internalErrCode,
-                       const string internalErrSubject,
-                       const string externalErrString)
+boss_error::boss_error(const std::uint32_t internalErrCode,
+                       const std::string internalErrSubject,
+                       const std::string externalErrString)
     : errCode(internalErrCode),
       errString(externalErrString),
       errSubject(internalErrSubject) {}
 
 // For errors from other external functions.
-boss_error::boss_error(const string externalErrString,
-                       const uint32_t internalErrCode)
+boss_error::boss_error(const std::string externalErrString,
+                       const std::uint32_t internalErrCode)
     : errCode(internalErrCode),
       errString(externalErrString),
       errSubject("") {}
 
 // Returns the error code for the object.
-uint32_t boss_error::getCode() const {
+std::uint32_t boss_error::getCode() const {
 	return errCode;
 }
 
 // Returns the error string for the object.
-string boss_error::getString() const {
+std::string boss_error::getString() const {
 	// TODO(MCP): Convert this to a switch-statement.
 	if (errCode == BOSS_OK)
-		return translate("No error.");
+		return loc::translate("No error.");
 	else if (errCode == BOSS_ERROR_FILE_READ_FAIL)
-		return (format(translate("\"%1%\" cannot be read!")) % errSubject).str();
+		return (boost::format(loc::translate("\"%1%\" cannot be read!")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_FILE_WRITE_FAIL)
-		return (format(translate("\"%1%\" cannot be written to!")) % errSubject).str();
+		return (boost::format(loc::translate("\"%1%\" cannot be written to!")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_FILE_NOT_UTF8)
-		return (format(translate("\"%1%\" is not encoded in valid UTF-8!")) % errSubject).str();
+		return (boost::format(loc::translate("\"%1%\" is not encoded in valid UTF-8!")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_FILE_NOT_FOUND)
-		return (format(translate("\"%1%\" cannot be found!")) % errSubject).str();
+		return (boost::format(loc::translate("\"%1%\" cannot be found!")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_CONDITION_EVAL_FAIL)
-		return (format(translate("Evaluation of conditional \"%1%\" for item \"%2%\" failed!")) % errSubject % errString).str();
+		return (boost::format(loc::translate("Evaluation of conditional \"%1%\" for item \"%2%\" failed!")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_REGEX_EVAL_FAIL)
-		return (format(translate("\"%1%\" is not a valid regular expression. Item skipped.")) % errSubject).str();
+		return (boost::format(loc::translate("\"%1%\" is not a valid regular expression. Item skipped.")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_NO_GAME_DETECTED)
-		return translate("No game detected!");
+		return loc::translate("No game detected!");
 	else if (errCode == BOSS_ERROR_ENCODING_CONVERSION_FAIL)
-		return (format(translate("\"%1%\" cannot be converted from UTF-8 to \"%2%\".")) % errSubject % errString).str();
+		return (boost::format(loc::translate("\"%1%\" cannot be converted from UTF-8 to \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_PLUGIN_BEFORE_MASTER)
-		return (format(translate("Master file \"%1%\" loading after non-master plugins!")) % errSubject).str();
+		return (boost::format(loc::translate("Master file \"%1%\" loading after non-master plugins!")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_INVALID_SYNTAX)
 		return errString;
 	else if (errCode == BOSS_ERROR_GIT_ERROR)
-		return (format(translate("Git operation failed. Error: %1%")) % errString).str();
+		return (boost::format(loc::translate("Git operation failed. Error: %1%")) % errString).str();
 	else if (errCode == BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL)
-		return (format(translate("The modification date of \"%1%\" cannot be read! Filesystem response: \"%2%\".")) % errSubject % errString).str();
+		return (boost::format(loc::translate("The modification date of \"%1%\" cannot be read! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_FS_FILE_RENAME_FAIL)
-		return (format(translate("\"%1%\" cannot be renamed! Filesystem response: \"%2%\".")) % errSubject % errString).str();
+		return (boost::format(loc::translate("\"%1%\" cannot be renamed! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_FS_FILE_DELETE_FAIL)
-		return (format(translate("\"%1%\" cannot be deleted! Filesystem response: \"%2%\".")) % errSubject % errString).str();
+		return (boost::format(loc::translate("\"%1%\" cannot be deleted! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL)
-		return (format(translate("\"%1%\" cannot be created! Filesystem response: \"%2%\".")) % errSubject % errString).str();
+		return (boost::format(loc::translate("\"%1%\" cannot be created! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_FS_ITER_DIRECTORY_FAIL)
-		return (format(translate("\"%1%\" cannot be scanned! Filesystem response: \"%2%\".")) % errSubject % errString).str();
+		return (boost::format(loc::translate("\"%1%\" cannot be scanned! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_FILE_PARSE_FAIL)
-		return (format(translate("Parsing of \"%1%\" failed!")) % errSubject).str();
+		return (boost::format(loc::translate("Parsing of \"%1%\" failed!")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL)
-		return (format(translate("The modification date of \"%1%\" cannot be written! Filesystem response: \"%2%\".")) % errSubject % errString).str();
+		return (boost::format(loc::translate("The modification date of \"%1%\" cannot be written! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_GUI_WINDOW_INIT_FAIL)
-		return (format(translate("The window \"%1%\" failed to initialise. Details: \"%2%\".")) % errSubject % errString).str();
-	return translate("No error.");
+		return (boost::format(loc::translate("The window \"%1%\" failed to initialise. Details: \"%2%\".")) % errSubject % errString).str();
+	return loc::translate("No error.");
 }
 
 
@@ -156,14 +160,14 @@ ParsingError::ParsingError()
       wholeMessage("") {}
 
 // For parsing errors.
-ParsingError::ParsingError(const string inHeader, const string inDetail,
-                           const string inFooter)
+ParsingError::ParsingError(const std::string inHeader, const std::string inDetail,
+                           const std::string inFooter)
     : header(inHeader),
       detail(inDetail),
       footer(inFooter) {}
 
 // For userlist syntax errors.
-ParsingError::ParsingError(const string inWholeMessage)
+ParsingError::ParsingError(const std::string inWholeMessage)
     : wholeMessage(inWholeMessage) {}
 
 bool ParsingError::Empty() const {
@@ -171,19 +175,19 @@ bool ParsingError::Empty() const {
 	        wholeMessage.empty());
 }
 
-string ParsingError::Header() const {
+std::string ParsingError::Header() const {
 	return header;
 }
 
-string ParsingError::Footer() const {
+std::string ParsingError::Footer() const {
 	return footer;
 }
 
-string ParsingError::Detail() const {
+std::string ParsingError::Detail() const {
 	return detail;
 }
 
-string ParsingError::WholeMessage() const {
+std::string ParsingError::WholeMessage() const {
 	return wholeMessage;
 }
 
