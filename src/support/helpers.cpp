@@ -27,27 +27,28 @@
 
 #include "support/helpers.h"
 
-#include <sys/types.h>
+#include <sys/types.h>  // MCP Note: Possibly remove this one?
 
-#include <cctype>
+#include <cstddef>
+#include <cstdint>
 #include <cstdio>
-#include <cstring>
-#include <ctime>
 
-#include <iostream>
+#include <algorithm>
+#include <fstream>
+#include <iterator>
 #include <sstream>
+#include <string>
 
-#include <boost/algorithm/string.hpp>
 #include <boost/crc.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/locale.hpp>
 #include <boost/spirit/include/karma.hpp>
 #include <boost/regex.hpp>
 
 #include "alphanum.hpp"
 
-#include "common/globals.h"
+#include "common/error.h"
 #include "support/logger.h"
-#include "support/mod_format.h"
-#include "support/types.h"
 
 #if _WIN32 || _WIN64
 #	include <shlobj.h>
@@ -56,19 +57,17 @@
 
 namespace boss {
 
-using namespace std;
-using namespace boost;
-using boost::algorithm::replace_all;
-using boost::algorithm::replace_first;
+namespace fs = boost::filesystem;
 namespace karma = boost::spirit::karma;
+namespace loc = boost::locale;
 
 // Calculate the CRC of the given file for comparison purposes.
-uint32_t GetCrc32(const fs::path& filename) {
-	uint32_t chksum = 0;
-	static const size_t buffer_size = 8192;
+std::uint32_t GetCrc32(const fs::path& filename) {
+	std::uint32_t chksum = 0;
+	static const std::size_t buffer_size = 8192;
 	char buffer[buffer_size];
 	// MCP Note: changed from filename.c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
-	ifstream ifile(filename.string(), ios::binary);
+	std::ifstream ifile(filename.string(), ios::binary);  // MCP Note: I think this is std::ifstream as it's not using a path argument but I'm not sure
 	LOG_TRACE("calculating CRC for: '%s'", filename.string().c_str());
 	boost::crc_32_type result;
 	if (ifile) {
@@ -86,34 +85,34 @@ uint32_t GetCrc32(const fs::path& filename) {
 }
 
 // Reads an entire file into a string buffer.
-void fileToBuffer(const fs::path file, string& buffer) {
+void fileToBuffer(const fs::path file, std::string& buffer) {
 	// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
-	ifstream ifile(file.string());
+	std::ifstream ifile(file.string());
 	if (ifile.fail())
 		return;
-	ifile.unsetf(ios::skipws);  // No white space skipping!
-	copy(istream_iterator<char>(ifile), istream_iterator<char>(),
-	     back_inserter(buffer));
+	ifile.unsetf(std::ios::skipws);  // No white space skipping!
+	std::copy(std::istream_iterator<char>(ifile), std::istream_iterator<char>(),
+	          std::back_inserter(buffer));
 }
 
 // Converts an integer to a string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
-BOSS_COMMON string IntToString(const uint32_t n) {
-	string out;
-	back_insert_iterator<string> sink(out);
+BOSS_COMMON std::string IntToString(const std::uint32_t n) {
+	std::string out;
+	std::back_insert_iterator<std::string> sink(out);
 	karma::generate(sink, karma::upper[karma::uint_], n);
 	return out;
 }
 
 // Converts an integer to a hex string using BOOST's Spirit.Karma, which is apparently a lot faster than a stringstream conversion...
-string IntToHexString(const uint32_t n) {
-	string out;
-	back_insert_iterator<string> sink(out);
+std::string IntToHexString(const std::uint32_t n) {
+	std::string out;
+	std::back_insert_iterator<std::string> sink(out);
 	karma::generate(sink, karma::upper[karma::hex], n);
 	return out;
 }
 
 // Converts a boolean to a string representation (true/false)
-string BoolToString(bool b) {
+std::string BoolToString(bool b) {
 	if (b)
 		return "true";
 	return "false";
@@ -121,16 +120,16 @@ string BoolToString(bool b) {
 }
 
 // Turns "true", "false", "1", "0" into booleans.
-bool StringToBool(string str) {
+bool StringToBool(std::string str) {
 	return (str == "true" || str == "1");
 }
 
 // Convert a Windows-1252 string to UTF-8.
 std::string From1252ToUTF8(const std::string& str) {
 	try {
-		return boost::locale::conv::to_utf<char>(str, "Windows-1252", boost::locale::conv::stop);
+		return loc::conv::to_utf<char>(str, "Windows-1252", loc::conv::stop);
 	}
-	catch (boost::locale::conv::conversion_error& e) {
+	catch (loc::conv::conversion_error& e) {
 		throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
 	}
 }
@@ -138,22 +137,22 @@ std::string From1252ToUTF8(const std::string& str) {
 // Convert a UTF-8 string to Windows-1252.
 std::string FromUTF8To1252(const std::string& str) {
 	try {
-		return boost::locale::conv::from_utf<char>(str, "Windows-1252", boost::locale::conv::stop);
+		return loc::conv::from_utf<char>(str, "Windows-1252", loc::conv::stop);
 	}
-	catch (boost::locale::conv::conversion_error& e) {
+	catch (loc::conv::conversion_error& e) {
 		throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
 	}
 }
 
 // Check if registry subkey exists.
-BOSS_COMMON bool RegKeyExists(string keyStr, string subkey, string value) {
+BOSS_COMMON bool RegKeyExists(std::string keyStr, std::string subkey, std::string value) {
 	if (RegKeyStringValue(keyStr, subkey, value).empty())
 		return false;
 	return true;
 }
 
 // Get registry subkey value string.
-string RegKeyStringValue(string keyStr, string subkey, string value) {
+std::string RegKeyStringValue(std::string keyStr, std::string subkey, std::string value) {
 #if _WIN32 || _WIN64
 	HKEY hKey, key;
 	DWORD BufferSize = 4096;
@@ -195,7 +194,7 @@ Version::Version() {}
 
 Version::Version(const char * ver) : verString(ver) {}
 
-Version::Version(const string ver) : verString(ver) {}
+Version::Version(const std::string ver) : verString(ver) {}
 
 Version::Version(const fs::path file) {
 	LOG_TRACE("extracting version from '%s'", file.string().c_str());
@@ -207,7 +206,7 @@ Version::Version(const fs::path file) {
 		LPBYTE point = new BYTE[size];
 		UINT uLen;
 		VS_FIXEDFILEINFO *info;
-		string ver;
+		std::string ver;
 
 		GetFileVersionInfo(file.wstring().c_str(), 0, size, point);
 
@@ -224,20 +223,20 @@ Version::Version(const fs::path file) {
 	}
 #else
 	// Ensure filename has no quote characters in it to avoid command injection attacks
-	if (string::npos != file.string().find('"')) {
+	if (std::string::npos != file.string().find('"')) {
 		LOG_WARN("filename has embedded quotes; skipping to avoid command injection: '%s'",
 		         file.string().c_str());
 	} else {
 		// Command mostly borrowed from the gnome-exe-thumbnailer.sh script
 		// wrestool is part of the icoutils package
-		string cmd = "wrestool --extract --raw --type=version \"" + file.string() + "\" | tr '\\0, ' '\\t.\\0' | sed 's/\\t\\t/_/g' | tr -c -d '[:print:]' | sed -r 's/.*Version[^0-9]*([0-9]+(\\.[0-9]+)+).*/\\1/'";
+		std::string cmd = "wrestool --extract --raw --type=version \"" + file.string() + "\" | tr '\\0, ' '\\t.\\0' | sed 's/\\t\\t/_/g' | tr -c -d '[:print:]' | sed -r 's/.*Version[^0-9]*([0-9]+(\\.[0-9]+)+).*/\\1/'";
 
 		FILE *fp = popen(cmd.c_str(), "r");
 
 		// Read out the version string
-		static const uint32_t BUFSIZE = 32;
+		static const std::uint32_t BUFSIZE = 32;
 		char buf[BUFSIZE];
-		if (NULL == fgets(buf, BUFSIZE, fp)) {
+		if (NULL == std::fgets(buf, BUFSIZE, fp)) {
 			LOG_DEBUG("failed to extract version from '%s'",
 			          file.string().c_str());
 		} else {
@@ -250,7 +249,7 @@ Version::Version(const fs::path file) {
 #endif
 }
 
-string Version::AsString() const {
+std::string Version::AsString() const {
 	return verString;
 }
 
@@ -265,11 +264,11 @@ bool Version::operator < (Version ver) {
 	    boost::regex_match(ver.AsString(), reg1)) {
 		// First type: numbers separated by periods. If two versions have a different number of numbers, then the shorter should be padded
 		// with zeros. An arbitrary number of numbers should be supported.
-		istringstream parser1(verString);
-		istringstream parser2(ver.AsString());
+		std::istringstream parser1(verString);
+		std::istringstream parser2(ver.AsString());
 		while (parser1.good() || parser2.good()) {
 			// Check if each stringstream is OK for i/o before doing anything with it. If not, replace its extracted value with a 0.
-			uint32_t n1, n2;
+			std::uint32_t n1, n2;
 			if (parser1.good()) {
 				parser1 >> n1;
 				parser1.get();
