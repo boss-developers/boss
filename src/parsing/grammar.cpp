@@ -27,17 +27,29 @@
 
 #include "parsing/grammar.h"
 
+#include <cstddef>
+#include <cstdint>
+
+#include <algorithm>
 #include <sstream>
+#include <string>
+#include <vector>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/phoenix/object/construct.hpp>
 #include <boost/regex.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_bind.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
+#include <boost/unordered_map.hpp>
+#include <boost/unordered_set.hpp>
 
+#include "common/conditional_data.h"
 #include "common/error.h"
+#include "common/game.h"
 #include "common/globals.h"
+#include "common/keywords.h"
 #include "output/output.h"
 #include "support/helpers.h"
 #include "support/logger.h"
@@ -53,6 +65,7 @@
 
 namespace boss {
 
+namespace fs = boost::filesystem;
 namespace unicode = boost::spirit::unicode;
 namespace phoenix = boost::phoenix;
 
@@ -170,7 +183,7 @@ modlist_grammar::modlist_grammar()
 
 	masterlistMsgKey_ masterlistMsgKey;
 	typeKey_ typeKey;
-	const vector<Message> noMessages;  // An empty set of messages.
+	const std::vector<Message> noMessages;  // An empty set of messages.
 
 	modList =
 		*eol
@@ -330,15 +343,15 @@ void modlist_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
 	errorBuffer = inErrorBuffer;
 }
 
-void modlist_grammar::SetGlobalMessageBuffer(vector<Message> * inGlobalMessageBuffer) {
+void modlist_grammar::SetGlobalMessageBuffer(std::vector<Message> * inGlobalMessageBuffer) {
 	globalMessageBuffer = inGlobalMessageBuffer;
 }
 
-void modlist_grammar::SetVarStore(vector<MasterlistVar> * varStore) {
+void modlist_grammar::SetVarStore(std::vector<MasterlistVar> * varStore) {
 	setVars = varStore;
 }
 
-void modlist_grammar::SetCRCStore(boost::unordered_map<string, uint32_t> * CRCStore) {
+void modlist_grammar::SetCRCStore(boost::unordered_map<std::string, std::uint32_t> * CRCStore) {
 	fileCRCs = CRCStore;
 }
 
@@ -355,11 +368,11 @@ void modlist_grammar::SyntaxError(grammarIter const& /*first*/,
 	if (errorBuffer == NULL || !errorBuffer->Empty())
 		return;
 
-	ostringstream out;
+	std::ostringstream out;
 	out << what;
-	string expect = out.str();
+	std::string expect = out.str();
 
-	string context(errorpos, min(errorpos + 50, last));
+	std::string context(errorpos, std::min(errorpos + 50, last));
 	boost::trim_left(context);
 
 	ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
@@ -368,7 +381,7 @@ void modlist_grammar::SyntaxError(grammarIter const& /*first*/,
 }
 
 // Stores the given item and records any changes to open groups.
-void modlist_grammar::StoreItem(vector<Item>& list, Item currentItem) {
+void modlist_grammar::StoreItem(std::vector<Item>& list, Item currentItem) {
 	if (currentItem.Type() == BEGINGROUP)
 		openGroups.push_back(currentItem.Name());
 	else if (currentItem.Type() == ENDGROUP)
@@ -388,7 +401,7 @@ void modlist_grammar::StoreGlobalMessage(const Message message) {
 }
 
 // Turns a given string into a path. Can't be done directly because of the openGroups checks.
-void modlist_grammar::ToName(string& p, string itemName) {
+void modlist_grammar::ToName(std::string& p, std::string itemName) {
 	boost::algorithm::trim(itemName);
 	if (itemName.empty() && !openGroups.empty())
 		p = openGroups.back();
@@ -475,9 +488,9 @@ conditional_grammar::conditional_grammar()
 }
 
 // Evaluate a single conditional.
-void conditional_grammar::EvaluateConditional(bool& result, const string type,
+void conditional_grammar::EvaluateConditional(bool& result, const std::string type,
                                               const bool condition) {
-	if (to_lower_copy(type) == "if")
+	if (boost::algorithm::to_lower_copy(type) == "if")
 		result = condition;
 	else
 		result = !condition;
@@ -485,7 +498,7 @@ void conditional_grammar::EvaluateConditional(bool& result, const string type,
 
 // Evaluate the second half of a complex conditional.
 void conditional_grammar::EvaluateCompoundConditional(bool& lhsCondition,
-                                                      const string andOr,
+                                                      const std::string andOr,
                                                       const bool rhsCondition) {
 	if (andOr == "||" && !lhsCondition && !rhsCondition)
 		lhsCondition = false;
@@ -507,15 +520,15 @@ void conditional_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
 	errorBuffer = inErrorBuffer;
 }
 
-void conditional_grammar::SetVarStore(boost::unordered_set<string> * varStore) {
+void conditional_grammar::SetVarStore(boost::unordered_set<std::string> * varStore) {
 	setVars = varStore;
 }
 
-void conditional_grammar::SetCRCStore(boost::unordered_map<string, uint32_t> * CRCStore) {
+void conditional_grammar::SetCRCStore(boost::unordered_map<std::string, std::uint32_t> * CRCStore) {
 	fileCRCs = CRCStore;
 }
 
-void conditional_grammar::SetActivePlugins(boost::unordered_set<string> * plugins) {
+void conditional_grammar::SetActivePlugins(boost::unordered_set<std::string> * plugins) {
 	activePlugins = plugins;
 }
 
@@ -528,7 +541,7 @@ void conditional_grammar::SetLastConditionalResult(bool * result) {
 }
 
 // Returns the true path based on what type of file or keyword it is.
-fs::path conditional_grammar::GetPath(const string file) {
+fs::path conditional_grammar::GetPath(const std::string file) {
 	if (file == "OBSE" || file == "FOSE" || file == "NVSE" || file == "SKSE" ||
 	    file == "MWSE")
 		return parentGame->SEExecutable();
@@ -538,7 +551,7 @@ fs::path conditional_grammar::GetPath(const string file) {
 	else if (file == "BOSS")
 		return boss_path / "BOSS.exe";
 	else if (boost::iequals(fs::path(file).extension().string(), ".dll") &&
-	         file.find('/') == string::npos && file.find('\\') == string::npos &&
+	         file.find('/') == std::string::npos && file.find('\\') == std::string::npos &&
 	         fs::exists(parentGame->SEPluginsFolder()))
 		return parentGame->SEPluginsFolder() / file;
 	return parentGame->DataFolder() / file;
@@ -546,8 +559,8 @@ fs::path conditional_grammar::GetPath(const string file) {
 
 // Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
 void conditional_grammar::CheckVersion(bool& result,
-                                       const string file,
-                                       const string version,
+                                       const std::string file,
+                                       const std::string version,
                                        const char comparator) {
 	result = false;
 	if (parentGame == NULL)
@@ -584,7 +597,7 @@ void conditional_grammar::CheckVersion(bool& result,
 }
 
 // Checks if the given file exists.
-void conditional_grammar::CheckFile(bool& result, string file) {
+void conditional_grammar::CheckFile(bool& result, std::string file) {
 	result = false;
 	if (parentGame == NULL)
 		return;
@@ -598,23 +611,23 @@ void conditional_grammar::CheckFile(bool& result, string file) {
  * In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
  * be removed when getting the path and filename.
  */
-void conditional_grammar::CheckRegex(bool& result, string reg) {
+void conditional_grammar::CheckRegex(bool& result, std::string reg) {
 	result = false;
 	fs::path file_path;
 	// If the regex includes '/' or '\\' then it includes folders. Need to split the regex into the parent path and the filename.
 	// No reason for the regex to include both.
-	if (reg.find("/") != string::npos) {
-		size_t pos1 = reg.rfind("/");
-		string p = reg.substr(0, pos1);
+	if (reg.find("/") != std::string::npos) {
+		std::size_t pos1 = reg.rfind("/");
+		std::string p = reg.substr(0, pos1);
 		reg = reg.substr(pos1 + 1);
 		file_path = fs::path(p);
-	} else if (reg.find("\\\\") != string::npos) {
-		size_t pos1 = reg.rfind("\\\\");
-		string p = reg.substr(0, pos1);
+	} else if (reg.find("\\\\") != std::string::npos) {
+		std::size_t pos1 = reg.rfind("\\\\");
+		std::string p = reg.substr(0, pos1);
 		reg = reg.substr(pos1 + 2);
 		boost::algorithm::replace_all(p, "\\\\", "\\");
 		file_path = fs::path(p);
-	} else if (to_lower_copy(fs::path(reg).extension().string()) == ".dll" &&
+	} else if (boost::algorithm::to_lower_copy(fs::path(reg).extension().string()) == ".dll" &&
 	           fs::exists(parentGame->SEPluginsFolder())) {
 		file_path = parentGame->SEPluginsFolder();
 	} else {
@@ -642,7 +655,7 @@ void conditional_grammar::CheckRegex(bool& result, string reg) {
 }
 
 // Checks if a masterlist variable is defined.
-void conditional_grammar::CheckVar(bool& result, const string var) {
+void conditional_grammar::CheckVar(bool& result, const std::string var) {
 	if (setVars->find(var) == setVars->end())
 		result = false;
 	else
@@ -650,15 +663,15 @@ void conditional_grammar::CheckVar(bool& result, const string var) {
 }
 
 // Checks if the given plugin is active.
-void conditional_grammar::CheckActive(bool& result, const string plugin) {
-	if (activePlugins->find(to_lower_copy(plugin)) != activePlugins->end())
+void conditional_grammar::CheckActive(bool& result, const std::string plugin) {
+	if (activePlugins->find(boost::algorithm::to_lower_copy(plugin)) != activePlugins->end())
 		result = true;
 	else
 		result = false;
 }
 
 // Checks if the given language is the current language.
-void conditional_grammar::CheckLanguage(bool& result, const string language) {
+void conditional_grammar::CheckLanguage(bool& result, const std::string language) {
 	if (boost::iequals(language, "english"))
 		result = (gl_language == ENGLISH);
 	else if (boost::iequals(language, "russian"))
@@ -674,14 +687,14 @@ void conditional_grammar::CheckLanguage(bool& result, const string language) {
 }
 
 // Checks if the given mod has the given checksum.
-void conditional_grammar::CheckSum(bool& result, string file,
-                                   const uint32_t sum) {
+void conditional_grammar::CheckSum(bool& result, std::string file,
+                                   const std::uint32_t sum) {
 	result = false;
 	if (parentGame == NULL)
 		return;
-	uint32_t CRC;
+	std::uint32_t CRC;
 	fs::path file_path = GetPath(file);
-	boost::unordered_map<string, uint32_t>::iterator iter = fileCRCs->find(file);
+	boost::unordered_map<std::string, std::uint32_t>::iterator iter = fileCRCs->find(file);
 
 	if (iter != fileCRCs->end()) {
 		CRC = fileCRCs->at(file);
@@ -709,11 +722,11 @@ void conditional_grammar::SyntaxError(grammarIter const& /*first*/,
 	if (errorBuffer == NULL || !errorBuffer->Empty())
 		return;
 
-	ostringstream out;
+	std::ostringstream out;
 	out << what;
-	string expect = out.str();
+	std::string expect = out.str();
 
-	string context(errorpos, min(errorpos + 50, last));
+	std::string context(errorpos, std::min(errorpos + 50, last));
 	boost::trim_left(context);
 
 	ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
@@ -765,15 +778,15 @@ void ini_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
 void ini_grammar::SyntaxError(grammarIter const& /*first*/,
                               grammarIter const& last,
                               grammarIter const& errorpos,
-                              info const& what) {
+                              boost::spirit::info const& what) {
 	if (errorBuffer == NULL || !errorBuffer->Empty())
 		return;
 
-	ostringstream out;
+	std::ostringstream out;
 	out << what;
-	string expect = out.str();
+	std::string expect = out.str();
 
-	string context(errorpos, min(errorpos + 50, last));
+	std::string context(errorpos, std::min(errorpos + 50, last));
 	boost::trim_left(context);
 
 	ParsingError e(str(IniParsingErrorHeader % expect), context, IniParsingErrorFooter);
@@ -835,7 +848,7 @@ userlist_grammar::userlist_grammar()
 	on_error<fail>(stateKey,			phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 }
 
-void userlist_grammar::SetErrorBuffer(vector<ParsingError> * inErrorBuffer) {
+void userlist_grammar::SetErrorBuffer(std::vector<ParsingError> * inErrorBuffer) {
 	errorBuffer = inErrorBuffer;
 }
 
@@ -843,15 +856,15 @@ void userlist_grammar::SetErrorBuffer(vector<ParsingError> * inErrorBuffer) {
 void userlist_grammar::SyntaxError(grammarIter const& /*first*/,
                                    grammarIter const& last,
                                    grammarIter const& errorpos,
-                                   info const& what) {
+                                   boost::spirit::info const& what) {
 	if (errorBuffer == NULL || !errorBuffer->empty())
 		return;
 
-	ostringstream out;
+	std::ostringstream out;
 	out << what;
-	string expect = out.str();
+	std::string expect = out.str();
 
-	string context(errorpos, min(errorpos + 50, last));
+	std::string context(errorpos, std::min(errorpos + 50, last));
 	boost::trim_left(context);
 
 	ParsingError e(str(RuleListParsingErrorHeader % expect), context, RuleListParsingErrorFooter);
