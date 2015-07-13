@@ -29,25 +29,54 @@
 
 #include "gui/main_window.h"
 
+// TODO(MCP): Trim down the includes by removing the unneeded ones.
+
 #include <clocale>
+#include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <ctime>
 
 #include <algorithm>
+#include <exception>
 #include <iostream>
+#include <locale>
+#include <string>
+#include <vector>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/exception/get_error_info.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
+#include <boost/format.hpp>
+#include <boost/locale.hpp>
 #include <boost/regex.hpp>
 #include <boost/unordered_set.hpp>
 
 #include <wx/aboutdlg.h>
 #include <wx/snglinst.h>
 
+#include "common/error.h"
+#include "common/game.h"
+#include "common/globals.h"
+#include "common/rule_line.h"
+#include "common/settings.h"
 #include "gui/element_ids.h"
 #include "gui/settings_window.h"
 #include "gui/user_rule_editor.h"
+#include "output/output.h"
+#include "support/logger.h"
+#include "updating/updater.h"
+
+//namespace {
+
+namespace fs = boost::filesystem;
+namespace loc = boost::locale;  // MCP Note: Will this interfere with std::locale loc?
+//using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
+
+//}  // namespace
+
+using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
 
 wxDEFINE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
 
@@ -86,11 +115,6 @@ END_EVENT_TABLE()
 
 IMPLEMENT_APP(BossGUI)
 
-using namespace boss;
-using namespace std;
-
-using boost::format;
-
 // Draws the main window when program starts.
 bool BossGUI::OnInit() {
 	Settings ini;
@@ -100,7 +124,7 @@ bool BossGUI::OnInit() {
 			ini.Load(ini_path);
 		} catch (boss_error &e) {
 			LOG_ERROR("Error: %s", e.getString().c_str());
-			wxMessageBox(FromUTF8(format(loc::translate("Error: %1% Details: %2%")) % e.getString() % Outputter(PLAINTEXT, ini.ErrorBuffer()).AsString()),
+			wxMessageBox(FromUTF8(boost::format(loc::translate("Error: %1% Details: %2%")) % e.getString() % Outputter(PLAINTEXT, ini.ErrorBuffer()).AsString()),
 			             translate("BOSS: Error"),
 			             wxOK | wxICON_ERROR,
 			             NULL);
@@ -113,12 +137,12 @@ bool BossGUI::OnInit() {
 	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));
 
 	// Specify location of language dictionaries
-	boost::locale::generator gen;
+	loc::generator gen;
 	gen.add_messages_path(l10n_path.string());
 	gen.add_messages_domain("messages");
 
 	// Set the locale to get encoding and language conversions working correctly.
-	string localeId = "";
+	std::string localeId = "";
 	wxLanguage lang;
 	// TODO(MCP): Look at converting this to a switch-statement
 	if (gl_language == ENGLISH) {
@@ -139,24 +163,24 @@ bool BossGUI::OnInit() {
 	}
 
 	try {
-		locale::global(gen(localeId));
-		cout.imbue(locale());
+		std::locale::global(gen(localeId));  // MCP Note: Is #include <locale> needed for this?
+		std::cout.imbue(std::locale());
 		// Need to also set up wxWidgets locale so that its default interface text comes out in the right language.
 		wxLoc = new wxLocale();
 		if (!wxLoc->Init(lang, wxLOCALE_LOAD_DEFAULT))
-			throw exception("System GUI text could not be set.");
+			throw std::exception("System GUI text could not be set.");  // MCP Note: Is this boost::exception or std::exception?
 		wxLocale::AddCatalogLookupPathPrefix(l10n_path.string());
 		wxLoc->AddCatalog("wxstd");
-	} catch(exception &e) {
+	} catch(std::exception &e) {  // MCP Note: Is this std::exception or boost::exception?
 		LOG_ERROR("could not implement translation: %s", e.what());
-		wxMessageBox(FromUTF8(format(loc::translate("Error: could not apply translation: %1%")) % e.what()),
+		wxMessageBox(FromUTF8(boost::format(loc::translate("Error: could not apply translation: %1%")) % e.what()),
 		             translate("BOSS: Error"),
 		             wxOK | wxICON_ERROR,
 		             NULL);
 	}
-	locale global_loc = locale();
-	locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet());
-	boost::filesystem::path::imbue(loc);
+	std::locale global_loc = std::locale();
+	std::locale loc(global_loc, new fs::detail::utf8_codecvt_facet());
+	fs::path::imbue(loc);
 
 
 	// Check if GUI is already running.
@@ -179,19 +203,19 @@ bool BossGUI::OnInit() {
 	LOG_DEBUG("Detecting game...");
 
 	Game game;
-	std::vector<uint32_t> detected;
+	std::vector<std::uint32_t> detected;
 	try {
-		vector<uint32_t> undetected;
-		uint32_t detectedGame = DetectGame(detected, undetected);
+		std::vector<std::uint32_t> undetected;
+		std::uint32_t detectedGame = DetectGame(detected, undetected);
 		if (detectedGame == AUTODETECT) {
 			wxArrayString choices;
 
-			for (size_t i=0, max = detected.size(); i < max; i++)
+			for (std::size_t i = 0, max = detected.size(); i < max; i++)
 				choices.Add(Game(detected[i], "", true).Name());  // Don't need to convert name, known to be only ASCII chars.
-			for (size_t i=0, max = undetected.size(); i < max; i++)
+			for (std::size_t i = 0, max = undetected.size(); i < max; i++)
 				choices.Add(Game(undetected[i], "", true).Name() + translate(" (not detected)"));  // Don't need to convert name, known to be only ASCII chars.
 
-			size_t ans;
+			std::size_t ans;
 
 			wxSingleChoiceDialog* choiceDia = new wxSingleChoiceDialog(
 			    frame,
@@ -427,7 +451,7 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 		ini.Save(ini_path, game.Id());
 	} catch (boss_error &e) {
 			wxMessageBox(
-				FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
+				FromUTF8(boostformat(loc::translate("Error: %1%")) % e.getString()),
 				translate("BOSS: Error"),
 				wxOK | wxICON_ERROR,
 				NULL);
@@ -470,9 +494,9 @@ void MainFrame::OnRunBOSS(wxCommandEvent& event) {
 		                translate("Updating to the latest masterlist from the online repository..."));
 		LOG_DEBUG("Updating masterlist...");
 		try {
-			string revision = UpdateMasterlist(game, progress,
-			                                   progDia);
-			string message = (boost::format(translate("Masterlist updated; at revision: %1%.")) % revision).str();
+			std::string revision = UpdateMasterlist(game, progress,
+			                                        progDia);
+			std::string message = (boost::format(translate("Masterlist updated; at revision: %1%.")) % revision).str();
 			game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
 		}
 		catch (boss_error &e) {
@@ -482,8 +506,8 @@ void MainFrame::OnRunBOSS(wxCommandEvent& event) {
 			          e.getString().c_str());
 		}
 	} else {
-		string revision = GetMasterlistVersion(game);
-		string message = (boost::format(translate("Masterlist updating disabled; at revision: %1%.")) % revision).str();
+		std::string revision = GetMasterlistVersion(game);
+		std::string message = (boost::format(translate("Masterlist updating disabled; at revision: %1%.")) % revision).str();
 		game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
 	}
 
@@ -521,7 +545,7 @@ void MainFrame::OnRunBOSS(wxCommandEvent& event) {
 			game.modlist.Save(game.Modlist(), game.OldModlist());
 	} catch (boss_error &e) {
 		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
-		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
 		                           << loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
 		                           << loc::translate("Utility will end now.");
 		try {
@@ -578,7 +602,7 @@ void MainFrame::OnRunBOSS(wxCommandEvent& event) {
 		} else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
 			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << e.getString();
 		} else {
-			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
 			                           << loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
 			                           << loc::translate("Utility will end now.");
 		}
@@ -598,11 +622,11 @@ void MainFrame::OnRunBOSS(wxCommandEvent& event) {
 	LOG_INFO("Starting to parse userlist.");
 	try {
 		game.userlist.Load(game, game.Userlist());
-		vector<ParsingError> errs = game.userlist.ErrorBuffer();
+		std::vector<ParsingError> errs = game.userlist.ErrorBuffer();
 		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(),
 		                                  errs.begin(), errs.end());
 	} catch (boss_error &e) {
-		vector<ParsingError> errs = game.userlist.ErrorBuffer();
+		std::vector<ParsingError> errs = game.userlist.ErrorBuffer();
 		game.bosslog.parsingErrors.insert(game.bosslog.parsingErrors.end(),
 		                                  errs.begin(), errs.end());
 		game.userlist.Clear();  // If userlist has parsing errors, empty it so no rules are applied.
@@ -631,7 +655,7 @@ void MainFrame::OnRunBOSS(wxCommandEvent& event) {
 		game.bosslog.Save(game.Log(gl_log_format), true);
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
-		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
 		                           << loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
 		                           << loc::translate("Utility will end now.");
 		try {
@@ -672,7 +696,7 @@ void MainFrame::OnEditUserRules(wxCommandEvent& event) {
 				userlist.Save(game.Userlist());
 				wxLaunchDefaultApplication(game.Userlist().string());
 			} catch (boss_error &e) {
-				wxMessageBox(FromUTF8(format(loc::translate("Error: %1%")) % e.getString()),
+				wxMessageBox(FromUTF8(boost::format(loc::translate("Error: %1%")) % e.getString()),
 				             translate("BOSS: Error"),
 				             wxOK | wxICON_ERROR,
 				             this);
@@ -687,14 +711,14 @@ void MainFrame::OnOpenFile(wxCommandEvent& event) {
 		if (fs::exists(game.Log(gl_log_format))) {
 			wxLaunchDefaultApplication(game.Log(gl_log_format).string());
 		} else {
-			wxMessageBox(FromUTF8(format(loc::translate("Error: \"%1%\" cannot be found.")) %  game.Log(gl_log_format).string()),
+			wxMessageBox(FromUTF8(boost::format(loc::translate("Error: \"%1%\" cannot be found.")) %  game.Log(gl_log_format).string()),
 			             translate("BOSS: Error"),
 			             wxOK | wxICON_ERROR,
 			             this);
 		}
 	} else {
 		// Readme files.
-		string file;
+		std::string file;
 		// TODO(MCP): Look at converting this to a switch-statement
 		if (event.GetId() == MENU_OpenMainReadMe)
 			file = readme_path.string();
@@ -710,7 +734,7 @@ void MainFrame::OnOpenFile(wxCommandEvent& event) {
 		if (fs::exists(file)) {
 			wxLaunchDefaultApplication(file);
 		} else {  // No ReadMe exists, show a pop-up message saying so.
-			wxMessageBox(FromUTF8(format(loc::translate("Error: \"%1%\" cannot be found.")) % file),
+			wxMessageBox(FromUTF8(boost::format(loc::translate("Error: \"%1%\" cannot be found.")) % file),
 			             translate("BOSS: Error"),
 			             wxOK | wxICON_ERROR,
 			             this);
@@ -839,7 +863,7 @@ void MainFrame::DisableUndetectedGames() {
 	GameMenu->FindItem(MENU_Skyrim)->Enable(enabled);
 	GameMenu->FindItem(MENU_Fallout3)->Enable(enabled);
 	GameMenu->FindItem(MENU_FalloutNewVegas)->Enable(enabled);
-	for (size_t i = 0; i < detectedGames.size(); i++) {
+	for (std::size_t i = 0; i < detectedGames.size(); i++) {
 		// TODO(MCP): Look at converting this to a switch-statement
 		if (detectedGames[i] == OBLIVION)
 			GameMenu->FindItem(MENU_Oblivion)->Enable();
@@ -884,7 +908,7 @@ void MainFrame::DisableUndetectedGames() {
 }
 
 void MainFrame::SetGames(const Game& inGame,
-                         const vector<uint32_t> inGames) {
+                         const std::vector<std::uint32_t> inGames) {
 	game = inGame;
 	detectedGames = inGames;
 	// TODO(MCP): Look at converting this to a switch-statement
@@ -899,7 +923,7 @@ void MainFrame::SetGames(const Game& inGame,
 	else if (game.Id() == FALLOUTNV)
 		GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
 
-	size_t i = 0;
+	std::size_t i = 0;
 	for (i = 0; i < detectedGames.size(); i++) {
 		if (detectedGames[i] == game.Id())
 			break;
