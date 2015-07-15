@@ -33,6 +33,9 @@
     <ClCompile Include="Support\version_regex.cpp">
       <Filter>support</Filter>
     </ClCompile>
+    <ClCompile Include="output\boss_log.cpp">
+      <Filter>output</Filter>
+    </ClCompile>
     <ClCompile Include="output\output.cpp">
       <Filter>output</Filter>
     </ClCompile>
@@ -88,6 +91,9 @@
     </ClInclude>
     <ClInclude Include="support\version_regex.h">
       <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="output\boss_log.h">
+      <Filter>output</Filter>
     </ClInclude>
     <ClInclude Include="output\output.h">
       <Filter>output</Filter>

@@ -27,6 +27,7 @@
     <ClCompile Include="common\keywords.cpp" />
     <ClCompile Include="common\rule_line.cpp" />
     <ClCompile Include="common\settings.cpp" />
+    <ClCompile Include="output\boss_log.cpp" />
     <ClCompile Include="output\output.cpp" />
     <ClCompile Include="parsing\grammar.cpp" />
     <ClCompile Include="support\helpers.cpp" />
@@ -44,6 +45,7 @@
     <ClInclude Include="common\keywords.h" />
     <ClInclude Include="common\rule_line.h" />
     <ClInclude Include="common\settings.h" />
+    <ClInclude Include="output\boss_log.h" />
     <ClInclude Include="output\output.h" />
     <ClInclude Include="parsing\grammar.h" />
     <ClInclude Include="support\helpers.h" />
