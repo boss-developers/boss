@@ -47,6 +47,7 @@
 #include "common/keywords.h"
 #include "common/rule_line.h"
 #include "gui/element_ids.h"
+#include "output/boss_log.h"
 #include "output/output.h"
 #include "support/logger.h"
 #include "updating/updater.h"
