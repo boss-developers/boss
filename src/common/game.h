@@ -38,7 +38,7 @@
 #include "common/dll_def.h"
 #include "common/item_list.h"
 #include "common/rule_line.h"
-#include "output/output.h"
+#include "output/boss_log.h"
 
 namespace boss {
 

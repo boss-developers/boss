@@ -38,12 +38,11 @@
 #include "common/conditional_data.h"
 #include "common/dll_def.h"
 #include "common/error.h"
+#include "output/output.h"
 
 namespace boss {
 
 namespace fs = boost::filesystem;
-
-class BOSS_COMMON Outputter;
 
 class BossLog {
  public:
