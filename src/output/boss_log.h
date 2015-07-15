@@ -25,8 +25,8 @@
 	$Revision: 2188 $, $Date: 2011-01-20 10:05:16 +0000 (Thu, 20 Jan 2011) $
 */
 
-#ifndef OUTPUT_BOSS_LOG_H
-#define OUTPUT_BOSS_LOG_H
+#ifndef OUTPUT_BOSS_LOG_H_
+#define OUTPUT_BOSS_LOG_H_
 
 #include <cstdint>
 
@@ -86,4 +86,4 @@ class BossLog {
 };
 
 }  // namespace boss
-#endif  // OUTPUT_BOSS_LOG_H
+#endif  // OUTPUT_BOSS_LOG_H_
