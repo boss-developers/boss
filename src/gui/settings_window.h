@@ -38,6 +38,8 @@
 #	include <wx/wx.h>
 #endif
 
+namespace boss {
+
 class SettingsFrame : public wxFrame {
  public:
 	SettingsFrame(const wxString title, wxFrame *parent);
@@ -58,4 +60,5 @@ class SettingsFrame : public wxFrame {
 	wxTextCtrl *FalloutNVRepoURLTxt;
 };
 
+}  // namespace boss
 #endif  // GUI_SETTINGS_WINDOW_H_

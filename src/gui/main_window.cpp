@@ -71,15 +71,16 @@
 
 //namespace {
 
-namespace fs = boost::filesystem;
-namespace loc = boost::locale;  // MCP Note: Will this interfere with std::locale loc?
+
 //using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
 
 //}  // namespace
 
-using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
+//using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
 
 wxDEFINE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
+
+using boss:MainFrame;
 
 BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_CLOSE (MainFrame::OnClose )
@@ -116,6 +117,11 @@ END_EVENT_TABLE()
 
 IMPLEMENT_APP(BossGUI)
 
+namespace boss {
+
+namespace fs = boost::filesystem;
+namespace bloc = boost::locale;  // MCP Note: Will this interfere with std::locale loc?
+
 // Draws the main window when program starts.
 bool BossGUI::OnInit() {
 	Settings ini;
@@ -125,7 +131,7 @@ bool BossGUI::OnInit() {
 			ini.Load(ini_path);
 		} catch (boss_error &e) {
 			LOG_ERROR("Error: %s", e.getString().c_str());
-			wxMessageBox(FromUTF8(boost::format(loc::translate("Error: %1% Details: %2%")) % e.getString() % Outputter(PLAINTEXT, ini.ErrorBuffer()).AsString()),
+			wxMessageBox(FromUTF8(boost::format(bloc::translate("Error: %1% Details: %2%")) % e.getString() % Outputter(PLAINTEXT, ini.ErrorBuffer()).AsString()),
 			             translate("BOSS: Error"),
 			             wxOK | wxICON_ERROR,
 			             NULL);
@@ -138,7 +144,7 @@ bool BossGUI::OnInit() {
 	g_logger.setVerbosity(static_cast<LogVerbosity>(LV_WARN + gl_debug_verbosity));
 
 	// Specify location of language dictionaries
-	loc::generator gen;
+	bloc::generator gen;
 	gen.add_messages_path(l10n_path.string());
 	gen.add_messages_domain("messages");
 
@@ -174,7 +180,7 @@ bool BossGUI::OnInit() {
 		wxLoc->AddCatalog("wxstd");
 	} catch(std::exception &e) {  // MCP Note: Is this std::exception or boost::exception?
 		LOG_ERROR("could not implement translation: %s", e.what());
-		wxMessageBox(FromUTF8(boost::format(loc::translate("Error: could not apply translation: %1%")) % e.what()),
+		wxMessageBox(FromUTF8(boost::format(bloc::translate("Error: could not apply translation: %1%")) % e.what()),
 		             translate("BOSS: Error"),
 		             wxOK | wxICON_ERROR,
 		             NULL);
@@ -452,7 +458,7 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 		ini.Save(ini_path, game.Id());
 	} catch (boss_error &e) {
 			wxMessageBox(
-				FromUTF8(boostformat(loc::translate("Error: %1%")) % e.getString()),
+				FromUTF8(boostformat(bloc::translate("Error: %1%")) % e.getString()),
 				translate("BOSS: Error"),
 				wxOK | wxICON_ERROR,
 				NULL);
@@ -546,9 +552,9 @@ void MainFrame::OnRunBOSS(wxCommandEvent& event) {
 			game.modlist.Save(game.Modlist(), game.OldModlist());
 	} catch (boss_error &e) {
 		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
-		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-		                           << loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-		                           << loc::translate("Utility will end now.");
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(bloc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+		                           << bloc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+		                           << bloc::translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
@@ -603,9 +609,9 @@ void MainFrame::OnRunBOSS(wxCommandEvent& event) {
 		} else if (e.getCode() == BOSS_ERROR_CONDITION_EVAL_FAIL) {
 			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << e.getString();
 		} else {
-			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-			                           << loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-			                           << loc::translate("Utility will end now.");
+			game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(bloc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+			                           << bloc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+			                           << bloc::translate("Utility will end now.");
 		}
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
@@ -656,9 +662,9 @@ void MainFrame::OnRunBOSS(wxCommandEvent& event) {
 		game.bosslog.Save(game.Log(gl_log_format), true);
 	} catch (boss_error &e) {
 		LOG_ERROR("Critical Error: %s", e.getString().c_str());
-		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(loc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
-		                           << loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-		                           << loc::translate("Utility will end now.");
+		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(bloc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
+		                           << bloc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+		                           << bloc::translate("Utility will end now.");
 		try {
 			game.bosslog.Save(game.Log(gl_log_format), true);
 		} catch (boss_error &e) {
@@ -697,7 +703,7 @@ void MainFrame::OnEditUserRules(wxCommandEvent& event) {
 				userlist.Save(game.Userlist());
 				wxLaunchDefaultApplication(game.Userlist().string());
 			} catch (boss_error &e) {
-				wxMessageBox(FromUTF8(boost::format(loc::translate("Error: %1%")) % e.getString()),
+				wxMessageBox(FromUTF8(boost::format(bloc::translate("Error: %1%")) % e.getString()),
 				             translate("BOSS: Error"),
 				             wxOK | wxICON_ERROR,
 				             this);
@@ -712,7 +718,7 @@ void MainFrame::OnOpenFile(wxCommandEvent& event) {
 		if (fs::exists(game.Log(gl_log_format))) {
 			wxLaunchDefaultApplication(game.Log(gl_log_format).string());
 		} else {
-			wxMessageBox(FromUTF8(boost::format(loc::translate("Error: \"%1%\" cannot be found.")) %  game.Log(gl_log_format).string()),
+			wxMessageBox(FromUTF8(boost::format(bloc::translate("Error: \"%1%\" cannot be found.")) %  game.Log(gl_log_format).string()),
 			             translate("BOSS: Error"),
 			             wxOK | wxICON_ERROR,
 			             this);
@@ -735,7 +741,7 @@ void MainFrame::OnOpenFile(wxCommandEvent& event) {
 		if (fs::exists(file)) {
 			wxLaunchDefaultApplication(file);
 		} else {  // No ReadMe exists, show a pop-up message saying so.
-			wxMessageBox(FromUTF8(boost::format(loc::translate("Error: \"%1%\" cannot be found.")) % file),
+			wxMessageBox(FromUTF8(boost::format(bloc::translate("Error: \"%1%\" cannot be found.")) % file),
 			             translate("BOSS: Error"),
 			             wxOK | wxICON_ERROR,
 			             this);
@@ -947,3 +953,5 @@ void MainFrame::OnOpenSettings(wxCommandEvent& event) {
 	settings->SetIcon(wxIconLocation("BOSS GUI.exe"));
 	settings->Show();
 }
+
+}  // namespace boss

@@ -36,6 +36,10 @@
 
 #include "common/dll_def.h"
 
+#ifndef _UNICODE
+#define _UNICODE  // Tell compiler we're using Unicode, notice the _
+#endif
+
 namespace boss {
 
 namespace fs = boost::filesystem;

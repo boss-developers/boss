@@ -37,7 +37,7 @@
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/filesytem.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/locale.hpp>
 #include <boost/unordered_set.hpp>
 
@@ -62,7 +62,7 @@
 namespace boss {
 
 namespace fs = boost::filesystem;
-namespace loc = boost::locale;
+namespace bloc = boost::locale;
 
 // DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
 BOSS_COMMON const std::uint32_t LOMETHOD_TIMESTAMP = 0;
@@ -496,7 +496,7 @@ void Game::ApplyUserlist() {
 		ruleNo++;
 		LOG_DEBUG(" -- Processing rule #%" PRIuS ".", ruleNo);
 		if (!ruleIter->Enabled()) {
-			bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << loc::translate("Rule is disabled.");
+			bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << bloc::translate("Rule is disabled.");
 			LOG_INFO("Rule beginning \"%s: %s\" is disabled. Rule skipped.",
 			         ruleIter->KeyToString().c_str(),
 			         ruleIter->Object().c_str());
@@ -515,18 +515,18 @@ void Game::ApplyUserlist() {
 					// Do checks.
 					if (ruleIter->Key() == ADD &&
 					    modlistPos1 == modlist.Items().size()) {
-						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not installed or in the masterlist.");
+						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << bloc::translate(" is not installed or in the masterlist.");
 						LOG_WARN(" * \"%s\" is not in the masterlist or installed.",
 						         ruleIter->Object().c_str());
 						continue;
 					} else if (ruleIter->Key() == ADD  &&
 					           modlistPos1 <= modlist.LastRecognisedPos()) {  // If it adds a mod already sorted, skip the rule.
-						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is already in the masterlist.");
+						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << bloc::translate(" is already in the masterlist.");
 						LOG_WARN(" * \"%s\" is already in the masterlist.", ruleIter->Object().c_str());
 						continue;
 					} else if (ruleIter->Key() == OVERRIDE &&
 					          (modlistPos1 > modlist.LastRecognisedPos())) {
-						bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not in the masterlist, cannot override.");
+						bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << bloc::translate(" is not in the masterlist, cannot override.");
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.",
 						         ruleIter->Object().c_str());
 						continue;
@@ -536,12 +536,12 @@ void Game::ApplyUserlist() {
 					modlistPos2 = modlist.FindItem(lines[i].Object(), MOD);  // Find sort mod.
 					// Do checks.
 					if (modlistPos2 == modlist.Items().size()) {  // Handle case of mods that don't exist at all.
-						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << lines[i].Object() << VAR_CLOSE << loc::translate(" is not installed, and is not in the masterlist.");
+						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << lines[i].Object() << VAR_CLOSE << bloc::translate(" is not installed, and is not in the masterlist.");
 						LOG_WARN(" * \"%s\" is not installed or in the masterlist.",
 						         lines[i].Object().c_str());
 						continue;
 					} else if (modlistPos2 > modlist.LastRecognisedPos()) {  // Handle the case of a rule sorting a mod into a position in unsorted mod territory.
-						bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << lines[i].Object() << VAR_CLOSE << loc::translate(" is not in the masterlist and has not been sorted by a rule.");
+						bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << lines[i].Object() << VAR_CLOSE << bloc::translate(" is not in the masterlist and has not been sorted by a rule.");
 						LOG_WARN(" * \"%s\" is not in the masterlist and has not been sorted by a rule.",
 						         lines[i].Object().c_str());
 						continue;
@@ -563,21 +563,21 @@ void Game::ApplyUserlist() {
 					// Do checks.
 					if (ruleIter->Key() == ADD &&
 					    modlistPos1 == modlist.Items().size()) {
-						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not installed or in the masterlist.");
+						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << bloc::translate(" is not installed or in the masterlist.");
 						LOG_WARN(" * \"%s\" is not installed.",
 						         ruleIter->Object().c_str());
 						continue;
 					// If it adds a mod already sorted, skip the rule.
 					} else if (ruleIter->Key() == ADD  &&
 					           modlistPos1 <= modlist.LastRecognisedPos()) {
-						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is already in the masterlist.");
+						bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << bloc::translate(" is already in the masterlist.");
 						LOG_WARN(" * \"%s\" is already in the masterlist.",
 						         ruleIter->Object().c_str());
 						continue;
 					} else if (ruleIter->Key() == OVERRIDE &&
 					          (modlistPos1 > modlist.LastRecognisedPos() ||
 					           modlistPos1 == modlist.Items().size())) {
-						bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not in the masterlist, cannot override.");
+						bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << bloc::translate(" is not in the masterlist, cannot override.");
 						LOG_WARN(" * \"%s\" is not in the masterlist, cannot override.",
 						         ruleIter->Object().c_str());
 						continue;
@@ -590,7 +590,7 @@ void Game::ApplyUserlist() {
 						                                   ENDGROUP);  // Find the end.
 					// Check that the sort group actually exists.
 					if (modlistPos2 == modlist.Items().size()) {
-						bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << loc::translate("The group ") << VAR_OPEN << lines[i].Object() << VAR_CLOSE << loc::translate(" is not in the masterlist or is malformatted.");
+						bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << bloc::translate("The group ") << VAR_OPEN << lines[i].Object() << VAR_CLOSE << bloc::translate(" is not in the masterlist or is malformatted.");
 						LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.",
 						         lines[i].Object().c_str());
 						continue;
@@ -611,7 +611,7 @@ void Game::ApplyUserlist() {
 				// Find the mod which will have its messages edited.
 				modlistPos1 = modlist.FindItem(ruleItem.Name(), MOD);
 				if (modlistPos1 == modlist.Items().size()) {  // Rule mod isn't in the modlist (ie. not in masterlist or installed), so can neither add it nor override it.
-					bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not installed or in the masterlist.");
+					bosslog.userRules << TABLE_ROW_CLASS_WARN << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << bloc::translate(" is not installed or in the masterlist.");
 					LOG_WARN(" * \"%s\" is not installed.",
 					         ruleIter->Object().c_str());
 					messageLineFail = true;
@@ -633,7 +633,7 @@ void Game::ApplyUserlist() {
 			// Check to see group actually exists.
 			if (modlistPos1 == modlist.Items().size() ||
 			    modlistPos2 == modlist.Items().size()) {
-				bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << loc::translate("The group ") << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << loc::translate(" is not in the masterlist or is malformatted.");
+				bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << bloc::translate("The group ") << VAR_OPEN << ruleIter->Object() << VAR_CLOSE << bloc::translate(" is not in the masterlist or is malformatted.");
 				LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.",
 				         ruleIter->Object().c_str());
 				continue;
@@ -654,7 +654,7 @@ void Game::ApplyUserlist() {
 			// Check that the sort group actually exists.
 			if (modlistPos2 == modlist.Items().size()) {
 				modlist.Insert(modlistPos1, group, 0, group.size());  // Insert the group back in its old position.
-				bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << loc::translate("The group ") << VAR_OPEN << lines[i].Object() << VAR_CLOSE << loc::translate(" is not in the masterlist or is malformatted.");
+				bosslog.userRules << TABLE_ROW_CLASS_ERROR << TABLE_DATA << *ruleIter << TABLE_DATA << "✗" << TABLE_DATA << bloc::translate("The group ") << VAR_OPEN << lines[i].Object() << VAR_CLOSE << bloc::translate(" is not in the masterlist or is malformatted.");
 				LOG_WARN(" * \"%s\" is not in the masterlist, or is malformatted.",
 				         lines[i].Object().c_str());
 				continue;
@@ -706,9 +706,9 @@ void Game::ScanSEPlugins() {
 
 		bosslog.sePlugins << LIST_ITEM << SPAN_CLASS_MOD_OPEN << ScriptExtender() << SPAN_CLOSE;
 		if (!ver.empty())
-			bosslog.sePlugins << SPAN_CLASS_VERSION_OPEN << loc::translate("Version: ") << ver << SPAN_CLOSE;
+			bosslog.sePlugins << SPAN_CLASS_VERSION_OPEN << bloc::translate("Version: ") << ver << SPAN_CLOSE;
 		if (gl_show_CRCs)
-			bosslog.sePlugins << SPAN_CLASS_CRC_OPEN << loc::translate("Checksum: ") << CRC << SPAN_CLOSE;
+			bosslog.sePlugins << SPAN_CLASS_CRC_OPEN << bloc::translate("Checksum: ") << CRC << SPAN_CLOSE;
 
 		LOG_INFO("Looking for Script Extender plugins...");
 		if (!fs::is_directory(SEPluginsFolder())) {
@@ -724,9 +724,9 @@ void Game::ScanSEPlugins() {
 
 					bosslog.sePlugins << LIST_ITEM << SPAN_CLASS_MOD_OPEN << itr->path().filename().string() << SPAN_CLOSE;
 					if (!ver.empty())
-						bosslog.sePlugins << SPAN_CLASS_VERSION_OPEN << loc::translate("Version: ") << ver << SPAN_CLOSE;
+						bosslog.sePlugins << SPAN_CLASS_VERSION_OPEN << bloc::translate("Version: ") << ver << SPAN_CLOSE;
 					if (gl_show_CRCs)
-						bosslog.sePlugins << SPAN_CLASS_CRC_OPEN << loc::translate("Checksum: ") << CRC << SPAN_CLOSE;
+						bosslog.sePlugins << SPAN_CLASS_CRC_OPEN << bloc::translate("Checksum: ") << CRC << SPAN_CLOSE;
 				}
 			}
 		}
@@ -782,10 +782,10 @@ void Game::SortPlugins() {
 			                 modlist.ItemAt(pos).Name());
 	} catch (boss_error /*&e*/) {
 		try {
-			bosslog.globalMessages.push_back(Message(SAY, loc::translate("The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see \"file:../Docs/BOSS%20Readme.html#appendix-c False-Flagged Plugins\".")));
+			bosslog.globalMessages.push_back(Message(SAY, bloc::translate("The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see \"file:../Docs/BOSS%20Readme.html#appendix-c False-Flagged Plugins\".")));
 			LOG_WARN("The order of plugins set by BOSS differs from their order in its masterlist, as one or more of the installed plugins is false-flagged. For more information, see the readme section on False-Flagged Plugins.");
 		} catch (boss_error &ee) {
-			bosslog.globalMessages.push_back(Message(ERR, loc::translate("Could not enforce load order master/plugin partition. Details: ").str() + ee.getString()));
+			bosslog.globalMessages.push_back(Message(ERR, bloc::translate("Could not enforce load order master/plugin partition. Details: ").str() + ee.getString()));
 			LOG_ERROR("Error: %s", ee.getString().c_str());
 		}
 	}
@@ -806,15 +806,15 @@ void Game::SortPlugins() {
 		buffer << LIST_ITEM << SPAN_CLASS_MOD_OPEN << itemIter->Name() << SPAN_CLOSE;
 		std::string version = itemIter->GetVersion(*this).AsString();
 		if (!version.empty())
-			buffer << SPAN_CLASS_VERSION_OPEN << loc::translate("Version ") << version << SPAN_CLOSE;
+			buffer << SPAN_CLASS_VERSION_OPEN << bloc::translate("Version ") << version << SPAN_CLOSE;
 		if (hashset.find(boost::to_lower_copy(itemIter->Name())) != hashset.end())  // Plugin is active.
-			buffer << SPAN_CLASS_ACTIVE_OPEN << loc::translate("Active") << SPAN_CLOSE;
+			buffer << SPAN_CLASS_ACTIVE_OPEN << bloc::translate("Active") << SPAN_CLOSE;
 		else
 			bosslog.inactive++;
 		if (gl_show_CRCs && itemIter->IsGhosted(*this)) {
-			buffer << SPAN_CLASS_CRC_OPEN << loc::translate("Checksum: ") << IntToHexString(GetCrc32(DataFolder() / fs::path(itemIter->Name() + ".ghost"))) << SPAN_CLOSE;
+			buffer << SPAN_CLASS_CRC_OPEN << bloc::translate("Checksum: ") << IntToHexString(GetCrc32(DataFolder() / fs::path(itemIter->Name() + ".ghost"))) << SPAN_CLOSE;
 		} else if (gl_show_CRCs) {
-			buffer << SPAN_CLASS_CRC_OPEN << loc::translate("Checksum: ") << IntToHexString(GetCrc32(DataFolder() / itemIter->Name())) << SPAN_CLOSE;
+			buffer << SPAN_CLASS_CRC_OPEN << bloc::translate("Checksum: ") << IntToHexString(GetCrc32(DataFolder() / itemIter->Name())) << SPAN_CLOSE;
 		}
 
 		/*if (itemIter->IsFalseFlagged()) {
@@ -830,7 +830,7 @@ void Game::SortPlugins() {
 			try {
 				itemIter->SetModTime(*this, esmtime + (bosslog.recognised + bosslog.unrecognised) * 60);
 			} catch(boss_error &e) {
-				itemIter->InsertMessage(0, Message(ERR, loc::translate("Error: ").str() + e.getString()));
+				itemIter->InsertMessage(0, Message(ERR, bloc::translate("Error: ").str() + e.getString()));
 				LOG_ERROR(" * Error: %s", e.getString().c_str());
 			}
 		}
@@ -865,9 +865,9 @@ void Game::SortPlugins() {
 			modlist.SavePluginNames(*this, LoadOrderFile(), false, false);
 			modlist.SavePluginNames(*this, ActivePluginsFile(), true, true);
 		} catch (boss_error &e) {
-			bosslog.criticalError << LIST_ITEM_CLASS_ERROR << loc::translate("Critical Error: ") << e.getString() << LINE_BREAK
-			                      << loc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
-			                      << loc::translate("Utility will end now.");
+			bosslog.criticalError << LIST_ITEM_CLASS_ERROR << bloc::translate("Critical Error: ") << e.getString() << LINE_BREAK
+			                      << bloc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
+			                      << bloc::translate("Utility will end now.");
 		}
 	}
 }

@@ -30,34 +30,36 @@
 
 #include "common/dll_def.h"
 
+#include <cstdint>
+
 namespace boss {
 
 // MCP Note: Possibly convert these into enums?
-BOSS_COMMON extern const uint32_t NONE;
+BOSS_COMMON extern const std::uint32_t NONE;
 // RuleList keywords.
-BOSS_COMMON extern const uint32_t ADD;
-BOSS_COMMON extern const uint32_t OVERRIDE;
-BOSS_COMMON extern const uint32_t FOR;
-BOSS_COMMON extern const uint32_t BEFORE;
-BOSS_COMMON extern const uint32_t AFTER;
-BOSS_COMMON extern const uint32_t TOP;
-BOSS_COMMON extern const uint32_t BOTTOM;
-BOSS_COMMON extern const uint32_t APPEND;
-BOSS_COMMON extern const uint32_t REPLACE;
+BOSS_COMMON extern const std::uint32_t ADD;
+BOSS_COMMON extern const std::uint32_t OVERRIDE;
+BOSS_COMMON extern const std::uint32_t FOR;
+BOSS_COMMON extern const std::uint32_t BEFORE;
+BOSS_COMMON extern const std::uint32_t AFTER;
+BOSS_COMMON extern const std::uint32_t TOP;
+BOSS_COMMON extern const std::uint32_t BOTTOM;
+BOSS_COMMON extern const std::uint32_t APPEND;
+BOSS_COMMON extern const std::uint32_t REPLACE;
 // Masterlist keywords.
-BOSS_COMMON extern const uint32_t SAY;
-BOSS_COMMON extern const uint32_t TAG;
-BOSS_COMMON extern const uint32_t REQ;
-BOSS_COMMON extern const uint32_t INC;
-BOSS_COMMON extern const uint32_t DIRTY;
-BOSS_COMMON extern const uint32_t WARN;
-BOSS_COMMON extern const uint32_t ERR;
+BOSS_COMMON extern const std::uint32_t SAY;
+BOSS_COMMON extern const std::uint32_t TAG;
+BOSS_COMMON extern const std::uint32_t REQ;
+BOSS_COMMON extern const std::uint32_t INC;
+BOSS_COMMON extern const std::uint32_t DIRTY;
+BOSS_COMMON extern const std::uint32_t WARN;
+BOSS_COMMON extern const std::uint32_t ERR;
 
 // Item types.
-BOSS_COMMON extern const uint32_t MOD;
-BOSS_COMMON extern const uint32_t BEGINGROUP;
-BOSS_COMMON extern const uint32_t ENDGROUP;
-BOSS_COMMON extern const uint32_t REGEX;
+BOSS_COMMON extern const std::uint32_t MOD;
+BOSS_COMMON extern const std::uint32_t BEGINGROUP;
+BOSS_COMMON extern const std::uint32_t ENDGROUP;
+BOSS_COMMON extern const std::uint32_t REGEX;
 
 }  // namespace boss
 #endif  // COMMON_KEYWORDS_H_

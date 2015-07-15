@@ -47,6 +47,8 @@
 #	include <wx/wx.h>
 #endif
 
+namespace boss {
+
 // Program class.
 class BossGUI : public wxApp {
  public:
@@ -75,7 +77,7 @@ class MainFrame : public wxFrame {
 	void OnEditUserRules(wxCommandEvent& event);
 	void OnClose(wxCloseEvent& event);
 
-	void SetGames(const boss::Game& inGame,
+	void SetGames(const /*boss::*/Game& inGame,
 	              const std::vector<std::uint32_t> inGames);
 	void DisableUndetectedGames();
 
@@ -101,7 +103,7 @@ class MainFrame : public wxFrame {
 
 	bool isStartup;
 	std::vector<std::uint32_t> detectedGames;
-	boss::Game game;
+	/*boss::*/Game game;
 
  protected:
 	std::uint32_t updateCheckCode;       // 0 = update, 1 = no update, 2 = error.
@@ -109,4 +111,6 @@ class MainFrame : public wxFrame {
 	wxCriticalSection updateData;        // Protects fields above
 	DECLARE_EVENT_TABLE()
 };
+
+}  // namespace boss
 #endif  // GUI_MAIN_WINDOW_H_

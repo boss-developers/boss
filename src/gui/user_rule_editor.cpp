@@ -52,6 +52,8 @@
 #include "support/logger.h"
 #include "updating/updater.h"
 
+using boss::UserRulesEditorFrame;
+
 BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
 	EVT_BUTTON ( BUTTON_OKExitEditor, UserRulesEditorFrame::OnOKQuit )
 	EVT_BUTTON ( BUTTON_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit )
@@ -76,23 +78,29 @@ BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
 	EVT_TEXT_ENTER ( SEARCH_Modlist, UserRulesEditorFrame::OnSearchList )
 END_EVENT_TABLE()
 
+using boss::RuleListFrameClass;
+
 BEGIN_EVENT_TABLE( RuleListFrameClass, wxPanel )
 	EVT_CHECKBOX ( wxID_ANY, RuleListFrameClass::OnToggleRule )
 	EVT_LISTBOX ( wxID_ANY, RuleListFrameClass::OnRuleSelection )
 END_EVENT_TABLE()
+
+using boss::RuleBoxClass;
 
 BEGIN_EVENT_TABLE( RuleBoxClass, wxPanel )
 	EVT_CHECKBOX ( wxID_ANY, RuleBoxClass::ToggleEnabled )
 	EVT_LEFT_DOWN ( RuleBoxClass::OnSelect )
 END_EVENT_TABLE()
 
-namespace fs = boost::filesystem;
-namespace loc = boost::locale;
+namespace boss {
 
-using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
+namespace fs = boost::filesystem;
+namespace bloc = boost::locale;
+
+//using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
 
 using boost::algorithm::trim_copy;
-using boss::translate;
+//using boss::translate;
 
 UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
                                            wxFrame *parent,
@@ -104,7 +112,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
 	// First check if masterlist is installed, and offer to download it if not.
 	if (!fs::exists(game.Masterlist())) {
 		wxMessageDialog *dlg = new wxMessageDialog(this,
-		                                           FromUTF8(boost::format(loc::translate("The User Rules Manager requires the BOSS masterlist for %1% to have been downloaded, but it cannot be detected. Do you wish to download the latest masterlist now?")) % game.Name()),
+		                                           FromUTF8(boost::format(bloc::translate("The User Rules Manager requires the BOSS masterlist for %1% to have been downloaded, but it cannot be detected. Do you wish to download the latest masterlist now?")) % game.Name()),
 		                                           translate("BOSS: User Rules Manager"),
 		                                           wxYES_NO);
 
@@ -145,7 +153,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
 	} catch(boss_error &e) {
 		progDia->Destroy();
 		this->Close();
-		wxMessageBox(FromUTF8(boost::format(loc::translate("Error: %1%")) % e.getString()),
+		wxMessageBox(FromUTF8(boost::format(bloc::translate("Error: %1%")) % e.getString()),
 		             translate("BOSS: Error"),
 		             wxOK | wxICON_ERROR,
 		             NULL);
@@ -183,7 +191,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
 	} catch(boss_error &e) {
 		progDia->Destroy();
 		this->Close();
-		wxMessageBox(FromUTF8(boost::format(loc::translate("Error: %1%")) % e.getString()),
+		wxMessageBox(FromUTF8(boost::format(bloc::translate("Error: %1%")) % e.getString()),
 		             translate("BOSS: Error"),
 		             wxOK | wxICON_ERROR,
 		             NULL);
@@ -462,7 +470,7 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 		Rule newRule = GetRuleFromForm();
 		RulesList->AppendRule(newRule);
 	} catch (boss_error &e) {
-		wxMessageBox(FromUTF8(boost::format(loc::translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) % e.getString()),
+		wxMessageBox(FromUTF8(boost::format(bloc::translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) % e.getString()),
 		             translate("BOSS: Error"),
 		             wxOK | wxICON_ERROR,
 		             NULL);
@@ -489,7 +497,7 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 			Rule newRule = GetRuleFromForm();
 			RulesList->SaveEditedRule(newRule);
 		} catch (boss_error &e) {
-			wxMessageBox(FromUTF8(boost::format(loc::translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) % e.getString()),
+			wxMessageBox(FromUTF8(boost::format(bloc::translate("Rule Syntax Error: %1% Please correct the mistake before continuing.")) % e.getString()),
 			             translate("BOSS: Error"),
 			             wxOK | wxICON_ERROR,
 			             NULL);
@@ -580,7 +588,7 @@ void UserRulesEditorFrame::LoadLists() {
 		game.modlist.Load(game, game.DataFolder());
 	} catch (boss_error &e) {
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL,
-		                 loc::translate("User Rules Manager"),
+		                 bloc::translate("User Rules Manager"),
 		                 e.getString());
 	}
 
@@ -602,7 +610,7 @@ void UserRulesEditorFrame::LoadLists() {
 		game.masterlist.EvalRegex(game);
 	} catch (boss_error &e) {
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL,
-		                 loc::translate("User Rules Manager"),
+		                 bloc::translate("User Rules Manager"),
 		                 e.getString());
 	}
 }
@@ -622,55 +630,55 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 			if (SortModOption->GetValue()) {
 				if (SortModOption->GetValue() &&
 				    SortModBox->IsEmpty()) {
-					throw boss_error(loc::translate("No mod is specified to sort relative to."),
+					throw boss_error(bloc::translate("No mod is specified to sort relative to."),
 					                 BOSS_ERROR_INVALID_SYNTAX);
 				} else if (!Item(sortItem).IsPlugin()) {  // Sort object is a group. Error.
-					throw boss_error(loc::translate("Cannot sort a plugin relative to a group."),
+					throw boss_error(bloc::translate("Cannot sort a plugin relative to a group."),
 					                 BOSS_ERROR_INVALID_SYNTAX);
 				}
 			} else if (InsertModOption->GetValue() &&
 			           !Item(insertItem).IsGroup()) {  // Inserting into a mod. Error.
 				if (InsertModBox->IsEmpty()) {
-					throw boss_error(loc::translate("No group is specified to insert into."),
+					throw boss_error(bloc::translate("No group is specified to insert into."),
 					                 BOSS_ERROR_INVALID_SYNTAX);
 				} else {
-					throw boss_error(loc::translate("Cannot insert into a plugin."),
+					throw boss_error(bloc::translate("Cannot insert into a plugin."),
 					                 BOSS_ERROR_INVALID_SYNTAX);
 				}
 			}
 		}
 		if (AddMessagesCheckBox->IsChecked() &&
 		    NewModMessagesBox->IsEmpty()) {  // Can't add no messages. Error.
-			throw boss_error(loc::translate("Cannot add messages when none are given."),
+			throw boss_error(bloc::translate("Cannot add messages when none are given."),
 			                 BOSS_ERROR_INVALID_SYNTAX);
 		}
 	} else {  // Rule object is a group, or empty.
 		if (RuleModBox->IsEmpty()) {
-			throw boss_error(loc::translate("No rule mod is specified."),
+			throw boss_error(bloc::translate("No rule mod is specified."),
 			                 BOSS_ERROR_INVALID_SYNTAX);
 		}
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
 				if (SortModBox->IsEmpty()) {  // No sort object specified. Error.
-					throw boss_error(loc::translate("No group is specified to sort relative to."),
+					throw boss_error(bloc::translate("No group is specified to sort relative to."),
 					                                BOSS_ERROR_INVALID_SYNTAX);
 				} else if (Item(sortItem).IsPlugin()) {  // Sort object is a plugin. Error.
-					throw boss_error(loc::translate("Cannot sort a group relative to a plugin."),
+					throw boss_error(bloc::translate("Cannot sort a group relative to a plugin."),
 					                 BOSS_ERROR_INVALID_SYNTAX);
 				}
 			} else if (InsertModOption->GetValue()) {  // Can't insert groups. Error.
-				throw boss_error(loc::translate("Cannot insert groups."),
+				throw boss_error(bloc::translate("Cannot insert groups."),
 				                 BOSS_ERROR_INVALID_SYNTAX);
 			}
 		}
 		if (AddMessagesCheckBox->IsChecked()) {  // Can't add messages to a group. Error.
-			throw boss_error(loc::translate("Cannot add messages to groups."),
+			throw boss_error(bloc::translate("Cannot add messages to groups."),
 			                 BOSS_ERROR_INVALID_SYNTAX);
 		}
 	}
 	if (!SortModsCheckBox->IsChecked() &&
 	    !AddMessagesCheckBox->IsChecked()) {
-		throw boss_error(loc::translate("The rule mod is not being sorted nor having its attached messages altered."),
+		throw boss_error(bloc::translate("The rule mod is not being sorted nor having its attached messages altered."),
 		                 BOSS_ERROR_INVALID_SYNTAX);
 	}
 
@@ -908,7 +916,7 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id,
 		game.userlist.Clear();
 		LOG_ERROR("Error: %s", e.getString().c_str());
 		throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL,
-		                 loc::translate("User Rules Manager"),
+		                 bloc::translate("User Rules Manager"),
 		                 e.getString());
 	}
 
@@ -920,7 +928,7 @@ RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id,
 			                                           MOD);
 			if (pos != game.masterlist.Items().size()) {  // Mod in masterlist.
 				rules[i].Enabled(false);
-				wxMessageBox(FromUTF8(boost::format(loc::translate("The rule sorting the unrecognised plugin \"%1%\" has been disabled as the plugin is now recognised. If you wish to override its position in the masterlist, re-enable the rule.")) % rules[i].Object()),
+				wxMessageBox(FromUTF8(boost::format(bloc::translate("The rule sorting the unrecognised plugin \"%1%\" has been disabled as the plugin is now recognised. If you wish to override its position in the masterlist, re-enable the rule.")) % rules[i].Object()),
 				             translate("BOSS: Rule Disabled"),
 				             wxOK | wxICON_ERROR,
 				             NULL);
@@ -952,7 +960,7 @@ void RuleListFrameClass::SaveUserlist(const fs::path path) {
 	try {
 		game.userlist.Save(path);
 	} catch (boss_error &e) {
-		wxMessageBox(FromUTF8(boost::format(loc::translate("Error: %1%")) % e.getString()),
+		wxMessageBox(FromUTF8(boost::format(bloc::translate("Error: %1%")) % e.getString()),
 		             translate("BOSS: Error"),
 		             wxOK | wxICON_ERROR,
 		             NULL);
@@ -1054,3 +1062,5 @@ void RuleListFrameClass::OnRuleSelection(wxCommandEvent& event) {
 	}
 	GetParent()->ProcessWindowEvent(event);
 }
+
+}  // namespace boss

@@ -40,7 +40,7 @@
 
 namespace boss {
 
-namespace loc = boost::locale;
+namespace bloc = boost::locale;
 
 // MCP Note: Possibly change these to enums?
 // Return codes, mostly error codes.
@@ -97,33 +97,33 @@ class BOSS_COMMON boss_error {
 };
 
 // Parsing error formats.
-static boost::format MasterlistParsingErrorHeader(loc::translate("Masterlist Parsing Error: Expected a %1% at:"));
-static boost::format IniParsingErrorHeader(loc::translate("Ini Parsing Error: Expected a %1% at:"));
-static boost::format RuleListParsingErrorHeader(loc::translate("Userlist Parsing Error: Expected a %1% at:"));
-static boost::format RuleListSyntaxErrorMessage(loc::translate("Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"));
-static const std::string MasterlistParsingErrorFooter(loc::translate("Masterlist parsing aborted. Utility will end now."));
-static const std::string IniParsingErrorFooter(loc::translate("Ini parsing aborted. Some or all of the options may not have been set correctly."));
-static const std::string RuleListParsingErrorFooter(loc::translate("Userlist parsing aborted. No rules will be applied."));
+static boost::format MasterlistParsingErrorHeader(bloc::translate("Masterlist Parsing Error: Expected a %1% at:"));
+static boost::format IniParsingErrorHeader(bloc::translate("Ini Parsing Error: Expected a %1% at:"));
+static boost::format RuleListParsingErrorHeader(bloc::translate("Userlist Parsing Error: Expected a %1% at:"));
+static boost::format RuleListSyntaxErrorMessage(bloc::translate("Userlist Syntax Error: The rule beginning \"%1%: %2%\" %3%"));
+static const std::string MasterlistParsingErrorFooter(bloc::translate("Masterlist parsing aborted. Utility will end now."));
+static const std::string IniParsingErrorFooter(bloc::translate("Ini parsing aborted. Some or all of the options may not have been set correctly."));
+static const std::string RuleListParsingErrorFooter(bloc::translate("Userlist parsing aborted. No rules will be applied."));
 
 // RuleList syntax error strings.
-static const std::string ESortLineInForRule(loc::translate("includes a sort line in a rule with a FOR rule keyword."));
-static const std::string EAddingModGroup(loc::translate("tries to add a group."));
-static const std::string ESortingGroupEsms(loc::translate("tries to sort the group \"ESMs\"."));
-static const std::string ESortingMasterEsm(loc::translate("tries to sort the master .ESM file."));
-static const std::string EReferencingModAndGroup(loc::translate("references a mod and a group."));
-static const std::string ESortingGroupBeforeEsms(loc::translate("tries to sort a group before the group \"ESMs\"."));
-static const std::string ESortingModBeforeGameMaster(loc::translate("tries to sort a mod before the master .ESM file."));
-static const std::string EInsertingToTopOfEsms(loc::translate("tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file."));
-static const std::string EInsertingGroupOrIntoMod(loc::translate("tries to insert a group or insert something into a mod."));
-static const std::string EAttachingMessageToGroup(loc::translate("tries to attach a message to a group."));
-static const std::string EMultipleSortLines(loc::translate("has more than one sort line."));
-static const std::string EMultipleReplaceLines(loc::translate("has more than one REPLACE-using message line."));
-static const std::string EReplaceNotFirst(loc::translate("has a REPLACE-using message line that is not the first message line."));
-static const std::string ESortNotSecond(loc::translate("has a sort line that is not the second line of the rule."));
-static const std::string ESortingToItself(loc::translate("tries to sort a mod or group relative to itself."));
-static const std::string EAttachingNonMessage(loc::translate("tries to attach an malformatted message."));
-static const std::string ESortingMasterAfterPlugin(loc::translate("tries to sort a plugin before a master file."));
-static const std::string ESortingPluginBeforeMaster(loc::translate("tries to sort a master file before a plugin."));
+static const std::string ESortLineInForRule(bloc::translate("includes a sort line in a rule with a FOR rule keyword."));
+static const std::string EAddingModGroup(bloc::translate("tries to add a group."));
+static const std::string ESortingGroupEsms(bloc::translate("tries to sort the group \"ESMs\"."));
+static const std::string ESortingMasterEsm(bloc::translate("tries to sort the master .ESM file."));
+static const std::string EReferencingModAndGroup(bloc::translate("references a mod and a group."));
+static const std::string ESortingGroupBeforeEsms(bloc::translate("tries to sort a group before the group \"ESMs\"."));
+static const std::string ESortingModBeforeGameMaster(bloc::translate("tries to sort a mod before the master .ESM file."));
+static const std::string EInsertingToTopOfEsms(bloc::translate("tries to insert a mod into the top of the group \"ESMs\", before the master .ESM file."));
+static const std::string EInsertingGroupOrIntoMod(bloc::translate("tries to insert a group or insert something into a mod."));
+static const std::string EAttachingMessageToGroup(bloc::translate("tries to attach a message to a group."));
+static const std::string EMultipleSortLines(bloc::translate("has more than one sort line."));
+static const std::string EMultipleReplaceLines(bloc::translate("has more than one REPLACE-using message line."));
+static const std::string EReplaceNotFirst(bloc::translate("has a REPLACE-using message line that is not the first message line."));
+static const std::string ESortNotSecond(bloc::translate("has a sort line that is not the second line of the rule."));
+static const std::string ESortingToItself(bloc::translate("tries to sort a mod or group relative to itself."));
+static const std::string EAttachingNonMessage(bloc::translate("tries to attach an malformatted message."));
+static const std::string ESortingMasterAfterPlugin(bloc::translate("tries to sort a plugin before a master file."));
+static const std::string ESortingPluginBeforeMaster(bloc::translate("tries to sort a master file before a plugin."));
 
 // Parsing error class.
 class BOSS_COMMON ParsingError {

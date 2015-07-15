@@ -41,7 +41,9 @@
 #include "common/conditional_data.h"
 #include "common/error.h"
 #include "common/game.h"
+#include "common/globals.h"
 #include "common/keywords.h"
+#include "output/output.h"
 #include "parsing/grammar.h"
 #include "support/helpers.h"
 #include "support/logger.h"
@@ -85,7 +87,7 @@ bool RuleLine::IsObjectMessage() const {
 }
 
 std::string RuleLine::KeyToString() const {
-	switch (key) {
+	/*switch (key) {
 		case ADD:
 			return "ADD";
 		case OVERRIDE:
@@ -106,7 +108,27 @@ std::string RuleLine::KeyToString() const {
 			return "REPLACE";
 		default:
 			return "NONE";
-	}
+	}*/
+	if (key== ADD)
+			return "ADD";
+		else if (key== OVERRIDE)
+			return "OVERRIDE";
+		else if (key== FOR)
+			return "FOR";
+		else if (key== BEFORE)
+			return "BEFORE";
+		else if (key== AFTER)
+			return "AFTER";
+		else if (key== TOP)
+			return "TOP";
+		else if (key== BOTTOM)
+			return "BOTTOM";
+		else if (key== APPEND)
+			return "APPEND";
+		else if (key== REPLACE)
+			return "REPLACE";
+		else
+			return "NONE";
 }
 
 Message RuleLine::ObjectAsMessage() const {

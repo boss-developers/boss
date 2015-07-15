@@ -43,12 +43,13 @@
 #include "common/game.h"
 #include "common/keywords.h"
 #include "parsing/grammar.h"
+#include "support/helpers.h"
 #include "support/logger.h"
 #include "support/mod_format.h"
 
 namespace boss {
 
-namespace fs = bost::filesystem;
+namespace fs = boost::filesystem;
 
 /////////////////////////////////////
 // ConditionalData Class Methods
@@ -146,7 +147,7 @@ void Message::Key(const std::uint32_t inKey) {
 }
 
 std::string Message::KeyToString() const {
-	switch (key) {
+	/*switch (key) {
 		case SAY:
 			return "SAY";
 		case TAG:
@@ -163,7 +164,23 @@ std::string Message::KeyToString() const {
 			return "DIRTY";
 		default:
 			return "NONE";
-	}
+	}*/
+	if (key== SAY)
+			return "SAY";
+		else if (key== TAG)
+			return "TAG";
+		else if (key==  REQ)
+			return "REQ";
+		else if (key==  WARN)
+			return "WARN";
+		else if (key==  ERR)
+			return "ERROR";
+		else if (key==  INC)
+			return "INC";
+		else if (key==  DIRTY)
+			return "DIRTY";
+		else
+			return "NONE";
 }
 
 //////////////////////////////

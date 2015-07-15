@@ -33,12 +33,16 @@
 #include "gui/element_ids.h"
 #include "support/logger.h"
 
+using boss::SettingsFrame;
+
 BEGIN_EVENT_TABLE( SettingsFrame, wxFrame )
 	EVT_BUTTON ( OPTION_OKExitSettings, SettingsFrame::OnOKQuit)
 	EVT_BUTTON ( OPTION_CancelExitSettings, SettingsFrame::OnCancelQuit)
 END_EVENT_TABLE()
 
-using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
+//using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
+
+namespace boss {
 
 SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent)
     : wxFrame(parent, wxID_ANY, title) {
@@ -249,3 +253,5 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 void SettingsFrame::OnCancelQuit(wxCommandEvent& event) {
 	this->Close();
 }
+
+}  // namespace boss

@@ -36,12 +36,13 @@
 #include <boost/unordered_map.hpp>
 
 #include "common/dll_def.h"
+#include "common/error.h"
 
 namespace boss {
 
 namespace fs = boost::filesystem;
 
-class BOSS_COMMON ParsingError;
+//class BOSS_COMMON ParsingError;
 
 ///////////////////////////////
 // Settings Class

@@ -52,6 +52,7 @@ $(DIR2)/common/conditional_data.o :	$(DIR2)/common/conditional_data.h \
 									$(DIR2)/common/game.h \
 									$(DIR2)/common/keywords.h \
 									$(DIR2)/parsing/grammar.h \
+									$(DIR2)/support/helpers.h \
 									$(DIR2)/support/logger.h \
 									$(DIR2)/support/mod_format.h
 
@@ -96,7 +97,10 @@ $(DIR2)/common/rule_line.o :		$(DIR2)/common/rule_line.h \
 									$(DIR2)/common/dll_def.h \
 									$(DIR2)/common/error.h \
 									$(DIR2)/common/game.h \
+									$(DIR2)/common/globals.h \
 									$(DIR2)/common/keywords.h \
+									$(DIR2)/output/output.h \
+									$(DIR2)/parsing/grammar.h \
 									$(DIR2)/support/helpers.h \
 									$(DIR2)/support/logger.h
 
@@ -116,7 +120,7 @@ $(DIR2)/output/boss_log.o :			$(DIR2)/output/boss_log.h \
 									$(DIR2)/support/helpers.h
 
 $(DIR2)/output/output.o :			$(DIR2)/output/output.h \
-									$(DIR2)/common/condtional_data.h \
+									$(DIR2)/common/conditional_data.h \
 									$(DIR2)/common/dll_def.h \
 									$(DIR2)/common/error.h \
 									$(DIR2)/common/globals.h \

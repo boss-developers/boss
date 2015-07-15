@@ -27,33 +27,35 @@
 
 #include "common/keywords.h"
 
+#include <cstdint>
+
 namespace boss {
 
 // DO NOT CHANGE THESE VALUES. THEY MUST BE CONSTANT FOR API USERS.
-BOSS_COMMON const uint32_t NONE         = 0;
+BOSS_COMMON const std::uint32_t NONE         = 0;
 // RuleList keywords.
-BOSS_COMMON const uint32_t ADD          = 1;
-BOSS_COMMON const uint32_t OVERRIDE     = 2;
-BOSS_COMMON const uint32_t FOR          = 3;
-BOSS_COMMON const uint32_t BEFORE       = 4;
-BOSS_COMMON const uint32_t AFTER        = 5;
-BOSS_COMMON const uint32_t TOP          = 6;
-BOSS_COMMON const uint32_t BOTTOM       = 7;
-BOSS_COMMON const uint32_t APPEND       = 8;
-BOSS_COMMON const uint32_t REPLACE      = 9;
+BOSS_COMMON const std::uint32_t ADD          = 1;
+BOSS_COMMON const std::uint32_t OVERRIDE     = 2;
+BOSS_COMMON const std::uint32_t FOR          = 3;
+BOSS_COMMON const std::uint32_t BEFORE       = 4;
+BOSS_COMMON const std::uint32_t AFTER        = 5;
+BOSS_COMMON const std::uint32_t TOP          = 6;
+BOSS_COMMON const std::uint32_t BOTTOM       = 7;
+BOSS_COMMON const std::uint32_t APPEND       = 8;
+BOSS_COMMON const std::uint32_t REPLACE      = 9;
 // Masterlist keywords.
-BOSS_COMMON const uint32_t SAY          = 10;
-BOSS_COMMON const uint32_t TAG          = 11;
-BOSS_COMMON const uint32_t REQ          = 12;
-BOSS_COMMON const uint32_t INC          = 13;
-BOSS_COMMON const uint32_t DIRTY        = 14;
-BOSS_COMMON const uint32_t WARN         = 15;
-BOSS_COMMON const uint32_t ERR          = 16;
+BOSS_COMMON const std::uint32_t SAY          = 10;
+BOSS_COMMON const std::uint32_t TAG          = 11;
+BOSS_COMMON const std::uint32_t REQ          = 12;
+BOSS_COMMON const std::uint32_t INC          = 13;
+BOSS_COMMON const std::uint32_t DIRTY        = 14;
+BOSS_COMMON const std::uint32_t WARN         = 15;
+BOSS_COMMON const std::uint32_t ERR          = 16;
 
 // Item types.
-BOSS_COMMON const uint32_t MOD          = 0;
-BOSS_COMMON const uint32_t BEGINGROUP   = 1;
-BOSS_COMMON const uint32_t ENDGROUP     = 2;
-BOSS_COMMON const uint32_t REGEX        = 3;
+BOSS_COMMON const std::uint32_t MOD          = 0;
+BOSS_COMMON const std::uint32_t BEGINGROUP   = 1;
+BOSS_COMMON const std::uint32_t ENDGROUP     = 2;
+BOSS_COMMON const std::uint32_t REGEX        = 3;
 
 }  // namespace boss

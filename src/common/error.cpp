@@ -38,7 +38,7 @@ namespace boss {
 
 /*using boost::format;
 using boost::locale::translate;*/
-namespace loc = boost::locale;
+namespace bloc = boost::locale;
 
 // Return codes, mostly error codes.
 BOSS_COMMON const std::uint32_t BOSS_OK                                  = 0;
@@ -106,46 +106,46 @@ std::uint32_t boss_error::getCode() const {
 std::string boss_error::getString() const {
 	// TODO(MCP): Convert this to a switch-statement.
 	if (errCode == BOSS_OK)
-		return loc::translate("No error.");
+		return bloc::translate("No error.");
 	else if (errCode == BOSS_ERROR_FILE_READ_FAIL)
-		return (boost::format(loc::translate("\"%1%\" cannot be read!")) % errSubject).str();
+		return (boost::format(bloc::translate("\"%1%\" cannot be read!")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_FILE_WRITE_FAIL)
-		return (boost::format(loc::translate("\"%1%\" cannot be written to!")) % errSubject).str();
+		return (boost::format(bloc::translate("\"%1%\" cannot be written to!")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_FILE_NOT_UTF8)
-		return (boost::format(loc::translate("\"%1%\" is not encoded in valid UTF-8!")) % errSubject).str();
+		return (boost::format(bloc::translate("\"%1%\" is not encoded in valid UTF-8!")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_FILE_NOT_FOUND)
-		return (boost::format(loc::translate("\"%1%\" cannot be found!")) % errSubject).str();
+		return (boost::format(bloc::translate("\"%1%\" cannot be found!")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_CONDITION_EVAL_FAIL)
-		return (boost::format(loc::translate("Evaluation of conditional \"%1%\" for item \"%2%\" failed!")) % errSubject % errString).str();
+		return (boost::format(bloc::translate("Evaluation of conditional \"%1%\" for item \"%2%\" failed!")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_REGEX_EVAL_FAIL)
-		return (boost::format(loc::translate("\"%1%\" is not a valid regular expression. Item skipped.")) % errSubject).str();
+		return (boost::format(bloc::translate("\"%1%\" is not a valid regular expression. Item skipped.")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_NO_GAME_DETECTED)
-		return loc::translate("No game detected!");
+		return bloc::translate("No game detected!");
 	else if (errCode == BOSS_ERROR_ENCODING_CONVERSION_FAIL)
-		return (boost::format(loc::translate("\"%1%\" cannot be converted from UTF-8 to \"%2%\".")) % errSubject % errString).str();
+		return (boost::format(bloc::translate("\"%1%\" cannot be converted from UTF-8 to \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_PLUGIN_BEFORE_MASTER)
-		return (boost::format(loc::translate("Master file \"%1%\" loading after non-master plugins!")) % errSubject).str();
+		return (boost::format(bloc::translate("Master file \"%1%\" loading after non-master plugins!")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_INVALID_SYNTAX)
 		return errString;
 	else if (errCode == BOSS_ERROR_GIT_ERROR)
-		return (boost::format(loc::translate("Git operation failed. Error: %1%")) % errString).str();
+		return (boost::format(bloc::translate("Git operation failed. Error: %1%")) % errString).str();
 	else if (errCode == BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL)
-		return (boost::format(loc::translate("The modification date of \"%1%\" cannot be read! Filesystem response: \"%2%\".")) % errSubject % errString).str();
+		return (boost::format(bloc::translate("The modification date of \"%1%\" cannot be read! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_FS_FILE_RENAME_FAIL)
-		return (boost::format(loc::translate("\"%1%\" cannot be renamed! Filesystem response: \"%2%\".")) % errSubject % errString).str();
+		return (boost::format(bloc::translate("\"%1%\" cannot be renamed! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_FS_FILE_DELETE_FAIL)
-		return (boost::format(loc::translate("\"%1%\" cannot be deleted! Filesystem response: \"%2%\".")) % errSubject % errString).str();
+		return (boost::format(bloc::translate("\"%1%\" cannot be deleted! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_FS_CREATE_DIRECTORY_FAIL)
-		return (boost::format(loc::translate("\"%1%\" cannot be created! Filesystem response: \"%2%\".")) % errSubject % errString).str();
+		return (boost::format(bloc::translate("\"%1%\" cannot be created! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_FS_ITER_DIRECTORY_FAIL)
-		return (boost::format(loc::translate("\"%1%\" cannot be scanned! Filesystem response: \"%2%\".")) % errSubject % errString).str();
+		return (boost::format(bloc::translate("\"%1%\" cannot be scanned! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_FILE_PARSE_FAIL)
-		return (boost::format(loc::translate("Parsing of \"%1%\" failed!")) % errSubject).str();
+		return (boost::format(bloc::translate("Parsing of \"%1%\" failed!")) % errSubject).str();
 	else if (errCode == BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL)
-		return (boost::format(loc::translate("The modification date of \"%1%\" cannot be written! Filesystem response: \"%2%\".")) % errSubject % errString).str();
+		return (boost::format(bloc::translate("The modification date of \"%1%\" cannot be written! Filesystem response: \"%2%\".")) % errSubject % errString).str();
 	else if (errCode == BOSS_ERROR_GUI_WINDOW_INIT_FAIL)
-		return (boost::format(loc::translate("The window \"%1%\" failed to initialise. Details: \"%2%\".")) % errSubject % errString).str();
-	return loc::translate("No error.");
+		return (boost::format(bloc::translate("The window \"%1%\" failed to initialise. Details: \"%2%\".")) % errSubject % errString).str();
+	return bloc::translate("No error.");
 }
 
 

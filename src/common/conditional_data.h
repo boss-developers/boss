@@ -40,6 +40,7 @@
 #include <boost/unordered_set.hpp>
 
 #include "common/dll_def.h"
+#include "support/helpers.h"
 
 //#include "common/error.h"
 
@@ -49,6 +50,7 @@ namespace boss {
 
 class BOSS_COMMON Game;
 class BOSS_COMMON ParsingError;
+//class Version;
 
 //////////////////////////////
 // Masterlist Classes

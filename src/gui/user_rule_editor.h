@@ -51,6 +51,8 @@
 #	include <wx/wx.h>
 #endif
 
+namespace boss {
+
 namespace fs = boost::filesystem;
 
 class TextDropTarget : public wxTextDropTarget {  // Class to override virtual functions.
@@ -64,7 +66,7 @@ class TextDropTarget : public wxTextDropTarget {  // Class to override virtual f
 
 class RuleBoxClass : public wxPanel {
  public:
-	RuleBoxClass(wxScrolled<wxPanel> *parent, boss::Rule currentRule,
+	RuleBoxClass(wxScrolled<wxPanel> *parent, /*boss::*/Rule currentRule,
 	             std::uint32_t index, bool isSelected);
 	void ToggleEnabled(wxCommandEvent& event);  // Doesn't handle RuleList modification, only greying out of UI element.
 	void OnSelect(wxMouseEvent& event);
@@ -78,11 +80,11 @@ class RuleBoxClass : public wxPanel {
 
 class RuleListFrameClass : public wxPanel {
  public:
-	RuleListFrameClass(wxFrame *parent, wxWindowID id, boss::Game& inGame);  // Initialise the RuleListFrameClass object.
+	RuleListFrameClass(wxFrame *parent, wxWindowID id, /*boss::*/Game& inGame);  // Initialise the RuleListFrameClass object.
 	void SaveUserlist(const fs::path path);                                  // Save the changes made to the userlist.
-	boss::Rule GetSelectedRule();                                            // Returns the currently selected rule.
-	void AppendRule(boss::Rule newRule);                                     // Append to RuleList object and update GUI.
-	void SaveEditedRule(boss::Rule editedRule);                              // Get the index from current selection internally. Also update RuleList object.
+	/*boss::*/Rule GetSelectedRule();                                            // Returns the currently selected rule.
+	void AppendRule(/*boss::*/Rule newRule);                                     // Append to RuleList object and update GUI.
+	void SaveEditedRule(/*boss::*/Rule editedRule);                              // Get the index from current selection internally. Also update RuleList object.
 	void DeleteSelectedRule();                                               // Remove from GUI and RuleList object, getting index from current selection internally.
 	void MoveRule(wxWindowID id);
 	void OnToggleRule(wxCommandEvent& event);
@@ -92,13 +94,13 @@ class RuleListFrameClass : public wxPanel {
 	void ReDrawRuleList();                                                   // Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
 	std::size_t selectedRuleIndex;
 	wxScrolled<wxPanel> *RuleListScroller;
-	boss::Game& game;
+	/*boss::*/Game& game;
 };
 
 class UserRulesEditorFrame : public wxFrame {
  public:
 	UserRulesEditorFrame(const wxString title, wxFrame *parent,
-	                     boss::Game& inGame);
+	                     /*boss::*/Game& inGame);
 	void OnOKQuit(wxCommandEvent& event);
 	void OnCancelQuit(wxCommandEvent& event);
 	void OnSearchList(wxCommandEvent& event);
@@ -120,9 +122,9 @@ class UserRulesEditorFrame : public wxFrame {
 	friend class TextDropTarget;
  private:
 	void LoadLists();
-	boss::Rule GetRuleFromForm();
+	/*boss::*/Rule GetRuleFromForm();
 
-	boss::Game& game;
+	/*boss::*/Game& game;
 
 	wxArrayString ModlistMods;
 
@@ -162,4 +164,5 @@ class UserRulesEditorFrame : public wxFrame {
 	wxButton * MoveRuleDownButton;
 };
 
+}  // namespace boss
 #endif  // GUI_USER_RULE_EDITOR_H_

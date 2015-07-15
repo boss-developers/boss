@@ -46,7 +46,7 @@
 namespace boss {
 
 namespace fs = boost::filesystem;
-namespace loc = boost::locale;
+namespace bloc = boost::locale;
 
 ///////////////////////////////
 // Settings Class
@@ -87,17 +87,17 @@ void Settings::Save(const fs::path file, const std::uint32_t currentGameId) {
 	    << "#---------------" << std::endl
 	    << "# BOSS Ini File" << std::endl
 	    << "#---------------" << std::endl
-	    << loc::translate("# Settings with names starting with 'b' are boolean and accept values of 'true' or 'false'.") << std::endl
-	    << loc::translate("# Settings with names starting with 'i' are unsigned integers and accept varying ranges of whole numbers.") << std::endl
-	    << loc::translate("# Settings with names starting with 's' are strings and their accepted values vary.") << std::endl
-	    << loc::translate("# See the BOSS ReadMe for details on what each setting does and the accepted values for integer and string settings.") << std::endl << std::endl
+	    << bloc::translate("# Settings with names starting with 'b' are boolean and accept values of 'true' or 'false'.") << std::endl
+	    << bloc::translate("# Settings with names starting with 'i' are unsigned integers and accept varying ranges of whole numbers.") << std::endl
+	    << bloc::translate("# Settings with names starting with 's' are strings and their accepted values vary.") << std::endl
+	    << bloc::translate("# See the BOSS ReadMe for details on what each setting does and the accepted values for integer and string settings.") << std::endl << std::endl
 
 	    << "[General Settings]" << std::endl
 	    << "bUseUserRulesManager    = " << BoolToString(gl_use_user_rules_manager) << std::endl
 	    << "bCloseGUIAfterSorting   = " << BoolToString(gl_close_gui_after_sorting) << std::endl
 	    << "sLanguage               = " << GetLanguageString() << std::endl << std::endl
 
-	    << "[Run Options]" << endl
+	    << "[Run Options]" << std::endl
 	    << "sGame                   = " << GetIniGameString(gl_game) << std::endl
 	    << "sLastGame               = " << GetIniGameString(currentGameId) << std::endl  // Writing current game because that's what we want recorded when BOSS writes the ini.
 	    << "sBOSSLogFormat          = " << GetLogFormatString() << std::endl
@@ -109,7 +109,7 @@ void Settings::Save(const fs::path file, const std::uint32_t currentGameId) {
 	    << "bDisplayCRCs            = " << BoolToString(gl_show_CRCs) << std::endl
 	    << "bDoTrialRun             = " << BoolToString(gl_trial_run) << std::endl << std::endl
 
-	    << "[Repository URLs]" << endl
+	    << "[Repository URLs]" << std::endl
 	    << "sOblivionRepoURL        = " << gl_oblivion_repo_url << std::endl
 	    << "sNehrimRepoURL          = " << gl_nehrim_repo_url << std::endl
 	    << "sSkyrimRepoURL          = " << gl_skyrim_repo_url << std::endl

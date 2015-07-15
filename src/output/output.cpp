@@ -51,7 +51,7 @@
 namespace boss {
 
 namespace fs = boost::filesystem;
-namespace loc = boost::locale;
+namespace bloc = boost::locale;
 
 ////////////////////////////////
 // Outputter Class Functions
@@ -262,7 +262,7 @@ Outputter& Outputter::operator<< (const logFormatting l) {
 			if (outFormat == HTML)
 				outStream << "<br />";
 			else
-				outStream << endl;
+				outStream << std::endl;
 			break;
 		case TABLE_HEAD:
 			if (outFormat == HTML)
@@ -309,7 +309,7 @@ Outputter& Outputter::operator<< (const logFormatting l) {
 				outStream  << '\t';
 			break;
 		case TABLE_OPEN:
-			if (outFormat == std::HTML)
+			if (outFormat == HTML)
 				outStream << "<table>";
 			break;
 		case TABLE_CLOSE:
@@ -347,7 +347,7 @@ Outputter& Outputter::operator<< (const logFormatting l) {
 				outStream << std::endl;
 			break;
 		case LIST_ITEM:
-			if (outFormat == std::HTML)
+			if (outFormat == HTML)
 				outStream << "<li>";
 			else
 				outStream << std::endl << std::endl;
@@ -482,7 +482,7 @@ Outputter& Outputter::operator<< (const Message m) {
 	// Do replacements for all addressTypes.
 	for (std::uint32_t i = 0; i < 2; i++) {
 		pos1 = data.find(dq + addressTypes[i]);
-		while (pos1 != string::npos) {
+		while (pos1 != std::string::npos) {
 			pos1 += dq.length();
 			pos3 = data.find(dq, pos1);  // End of quoted string.
 			// Check if there is a label in the quoted string.
@@ -508,44 +508,44 @@ Outputter& Outputter::operator<< (const Message m) {
 	// Select message formatting.
 	if (m.Key() == SAY) {
 		if (outFormat == HTML)
-			outStream << "<li class='note'>" << loc::translate("Note") << ": " << data;
+			outStream << "<li class='note'>" << bloc::translate("Note") << ": " << data;
 		else
-			outStream << std::endl << "*  " << loc::translate("Note") << ": " << data;
+			outStream << std::endl << "*  " << bloc::translate("Note") << ": " << data;
 	} else if (m.Key() == TAG) {
 		if (outFormat == HTML)
-			outStream << "<li class='tag'><span class='tagPrefix'>" << loc::translate("Bash Tag suggestion(s)") << ":</span> " << data;
+			outStream << "<li class='tag'><span class='tagPrefix'>" << bloc::translate("Bash Tag suggestion(s)") << ":</span> " << data;
 		else
-			outStream << std::endl << "*  " << loc::translate("Bash Tag suggestion(s)") << ": " << data;
+			outStream << std::endl << "*  " << bloc::translate("Bash Tag suggestion(s)") << ": " << data;
 	} else if (m.Key() == REQ) {
 		if (outFormat == HTML)
-			outStream << "<li class='req'>" << loc::translate("Requires") << ": " << data;
+			outStream << "<li class='req'>" << bloc::translate("Requires") << ": " << data;
 		else
-			outStream << std::endl << "*  " << loc::translate("Requires") << ": " << data;
+			outStream << std::endl << "*  " << bloc::translate("Requires") << ": " << data;
 	} else if (m.Key() == INC) {
 		if (outFormat == HTML)
-			outStream << "<li class='inc'>" << loc::translate("Incompatible with") << ": " << data;
+			outStream << "<li class='inc'>" << bloc::translate("Incompatible with") << ": " << data;
 		else
-			outStream << std::endl << "*  " << loc::translate("Incompatible with") << ": " << data;
+			outStream << std::endl << "*  " << bloc::translate("Incompatible with") << ": " << data;
 	} else if (m.Key() == WARN) {
 		if (outFormat == HTML)
-			outStream << "<li class='warn'>" << loc::translate("Warning") << ": " << data;
+			outStream << "<li class='warn'>" << bloc::translate("Warning") << ": " << data;
 		else
-			outStream << std::endl << "*  " << loc::translate("Warning") << ": " << data;
+			outStream << std::endl << "*  " << bloc::translate("Warning") << ": " << data;
 	} else if (m.Key() == ERR) {
 		if (outFormat == HTML)
-			outStream << "<li class='error'>" << loc::translate("Error") << ": " << data;
+			outStream << "<li class='error'>" << bloc::translate("Error") << ": " << data;
 		else
-			outStream << std::endl << "*  " << loc::translate("Error") << ": " << data;
+			outStream << std::endl << "*  " << bloc::translate("Error") << ": " << data;
 	} else if (m.Key() == DIRTY) {
 		if (outFormat == HTML)
-			outStream << "<li class='dirty'>" << loc::translate("Contains dirty edits") << ": " << data;
+			outStream << "<li class='dirty'>" << bloc::translate("Contains dirty edits") << ": " << data;
 		else
-			outStream << std::endl << "*  " << loc::translate("Contains dirty edits") << ": " << data;
+			outStream << std::endl << "*  " << bloc::translate("Contains dirty edits") << ": " << data;
 	} else {
 		if (outFormat == HTML)
-			outStream << "<li class='note'>" << loc::translate("Note") << ": " << data;
+			outStream << "<li class='note'>" << bloc::translate("Note") << ": " << data;
 		else
-			outStream << std::endl << "*  " << loc::translate("Note") << ": " << data;
+			outStream << std::endl << "*  " << bloc::translate("Note") << ": " << data;
 	}
 	return *this;
 }
@@ -584,28 +584,28 @@ Outputter& Outputter::operator<< (const Rule r) {
 
 		// TODO(MCP): Look at converting this to a switch-statement
 		if (lines[j].Key() == BEFORE) {
-			*this << (boost::format(loc::translate("Sort %1% before %2%")) % rObject % lObject).str();
+			*this << (boost::format(bloc::translate("Sort %1% before %2%")) % rObject % lObject).str();
 		} else if (lines[j].Key() == AFTER) {
-			*this << (boost::format(loc::translate("Sort %1% after %2%")) % rObject % lObject).str();
+			*this << (boost::format(bloc::translate("Sort %1% after %2%")) % rObject % lObject).str();
 		} else if (lines[j].Key() == TOP) {
-			*this << (boost::format(loc::translate("Insert %1% at the top of %2%")) % rObject % lObject).str();
+			*this << (boost::format(bloc::translate("Insert %1% at the top of %2%")) % rObject % lObject).str();
 		} else if (lines[j].Key() == BOTTOM) {
-			*this << (boost::format(loc::translate("Insert %1% at the bottom of %2%")) % rObject % lObject).str();
+			*this << (boost::format(bloc::translate("Insert %1% at the bottom of %2%")) % rObject % lObject).str();
 		} else if (lines[j].Key() == APPEND) {
 			if (!hasEditedMessages) {
 				if (r.Key() == FOR)
-					*this << (boost::format(loc::translate("Add the following messages to %1%:")) % rObject).str() << LINE_BREAK << LIST_OPEN;
+					*this << (boost::format(bloc::translate("Add the following messages to %1%:")) % rObject).str() << LINE_BREAK << LIST_OPEN;
 				else
-					*this << LINE_BREAK << loc::translate("Add the following messages:") << LINE_BREAK << LIST_OPEN;
+					*this << LINE_BREAK << bloc::translate("Add the following messages:") << LINE_BREAK << LIST_OPEN;
 			}
 			*this << lines[j].ObjectAsMessage();
 			hasEditedMessages = true;
 		} else if (lines[j].Key() == REPLACE) {
 			if (!hasEditedMessages) {
 				if (r.Key() == FOR)
-					*this << (boost::format(loc::translate("Replace the messages attached to %1% with:")) % rObject).str() << LINE_BREAK << LIST_OPEN;
+					*this << (boost::format(bloc::translate("Replace the messages attached to %1% with:")) % rObject).str() << LINE_BREAK << LIST_OPEN;
 				else
-					*this << LINE_BREAK << loc::translate("Replace the attached messages with:") << LINE_BREAK << LIST_OPEN;
+					*this << LINE_BREAK << bloc::translate("Replace the attached messages with:") << LINE_BREAK << LIST_OPEN;
 			}
 			*this << lines[j].ObjectAsMessage();
 			hasEditedMessages = true;

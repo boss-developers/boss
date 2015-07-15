@@ -68,7 +68,7 @@ std::string ParseVersion(const std::string& text) {
 				continue;
 			}
 
-			return bost::algorithm::trim_copy(std::string(match.first, match.second));
+			return boost::algorithm::trim_copy(std::string(match.first, match.second));
 		}
 	}
 

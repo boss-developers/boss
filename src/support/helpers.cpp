@@ -59,7 +59,7 @@ namespace boss {
 
 namespace fs = boost::filesystem;
 namespace karma = boost::spirit::karma;
-namespace loc = boost::locale;
+namespace bloc = boost::locale;
 
 // Calculate the CRC of the given file for comparison purposes.
 std::uint32_t GetCrc32(const fs::path& filename) {
@@ -67,7 +67,7 @@ std::uint32_t GetCrc32(const fs::path& filename) {
 	static const std::size_t buffer_size = 8192;
 	char buffer[buffer_size];
 	// MCP Note: changed from filename.c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
-	std::ifstream ifile(filename.string(), ios::binary);  // MCP Note: I think this is std::ifstream as it's not using a path argument but I'm not sure
+	std::ifstream ifile(filename.string(), std::ios::binary);  // MCP Note: I think this is std::ifstream as it's not using a path argument but I'm not sure
 	LOG_TRACE("calculating CRC for: '%s'", filename.string().c_str());
 	boost::crc_32_type result;
 	if (ifile) {
@@ -127,9 +127,9 @@ bool StringToBool(std::string str) {
 // Convert a Windows-1252 string to UTF-8.
 std::string From1252ToUTF8(const std::string& str) {
 	try {
-		return loc::conv::to_utf<char>(str, "Windows-1252", loc::conv::stop);
+		return bloc::conv::to_utf<char>(str, "Windows-1252", bloc::conv::stop);
 	}
-	catch (loc::conv::conversion_error& e) {
+	catch (bloc::conv::conversion_error& e) {
 		throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
 	}
 }
@@ -137,9 +137,9 @@ std::string From1252ToUTF8(const std::string& str) {
 // Convert a UTF-8 string to Windows-1252.
 std::string FromUTF8To1252(const std::string& str) {
 	try {
-		return loc::conv::from_utf<char>(str, "Windows-1252", loc::conv::stop);
+		return bloc::conv::from_utf<char>(str, "Windows-1252", bloc::conv::stop);
 	}
-	catch (loc::conv::conversion_error& e) {
+	catch (bloc::conv::conversion_error& e) {
 		throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
 	}
 }
@@ -169,10 +169,16 @@ std::string RegKeyStringValue(std::string keyStr, std::string subkey, std::strin
 	else if (keyStr == "HKEY_USERS")
 		key = HKEY_USERS;
 
+	// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
+	// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
+	// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
 	LONG ret = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(),
 	                        0, KEY_READ|KEY_WOW64_32KEY, &hKey);
 
 	if (ret == ERROR_SUCCESS) {
+		// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
+		// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
+		// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
 		ret = RegQueryValueEx(hKey, fs::path(value).wstring().c_str(), NULL,
 		                      NULL, (LPBYTE)&val, &BufferSize);
 		RegCloseKey(hKey);
@@ -200,6 +206,9 @@ Version::Version(const fs::path file) {
 	LOG_TRACE("extracting version from '%s'", file.string().c_str());
 #if _WIN32 || _WIN64
 	DWORD dummy = 0;
+	// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
+	// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
+	// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
 	DWORD size = GetFileVersionInfoSize(file.wstring().c_str(), &dummy);
 
 	if (size > 0) {
@@ -208,8 +217,14 @@ Version::Version(const fs::path file) {
 		VS_FIXEDFILEINFO *info;
 		std::string ver;
 
+		// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
+		// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
+		// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
 		GetFileVersionInfo(file.wstring().c_str(), 0, size, point);
 
+		// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
+		// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
+		// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
 		VerQueryValue(point, L"\\", (LPVOID *)&info, &uLen);
 
 		DWORD dwLeftMost     = HIWORD(info->dwFileVersionMS);
