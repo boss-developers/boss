@@ -64,6 +64,7 @@
 #include "gui/element_ids.h"
 #include "gui/settings_window.h"
 #include "gui/user_rule_editor.h"
+#include "output/boss_log.h"
 #include "output/output.h"
 #include "support/logger.h"
 #include "updating/updater.h"
