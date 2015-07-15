@@ -52,6 +52,7 @@
 #include "common/game.h"
 #include "common/globals.h"
 #include "common/settings.h"
+#include "output/boss_log.h"
 #include "output/output.h"
 #include "support/logger.h"
 #include "updating/updater.h"
