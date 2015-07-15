@@ -443,4 +443,4 @@ bool BossLog::HasRecognisedListChanged(const fs::path file) {
 	return (result == recognisedPlugins.AsString());
 }
 
-}  // namespace boss;
+}  // namespace boss
