@@ -85,5 +85,5 @@ class BossLog {
 	bool HasRecognisedListChanged(const fs::path file);
 };
 
-}  // namespace boss;
+}  // namespace boss
 #endif  // OUTPUT_BOSS_LOG_H
