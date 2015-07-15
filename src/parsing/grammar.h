@@ -166,7 +166,7 @@ class modlist_grammar : public grammar<grammarIter, std::vector<Item>(), Skipper
 	qi::rule<grammarIter, std::uint32_t(), Skipper> messageKeyword;
 	ParsingError * errorBuffer;
 	std::vector<Message> * globalMessageBuffer;
-	std::vector<MasterlistVar> * setVars;                    // Vars set by masterlist.
+	std::vector<MasterlistVar> * setVars;                         // Vars set by masterlist.
 	boost::unordered_map<std::string, std::uint32_t> * fileCRCs;  // CRCs calculated.
 	const Game * parentGame;
 	std::vector<std::string> openGroups;                          // Need to keep track of which groups are open to match up endings properly in MF1.
