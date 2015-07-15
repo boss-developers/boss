@@ -140,47 +140,5 @@ class BOSS_COMMON Outputter {
 	std::string EscapeHTMLSpecial(char c);
 };
 
-// TODO(MCP): Look at splitting BossLog out into another file.
-class BossLog {
- public:
-	BossLog();
-	BossLog(const std::uint32_t format);
-
-	void SetFormat(const std::uint32_t format);
-	void Save(const fs::path file, const bool overwrite);  // Saves contents to file. Throws boss_error exception on fail.
-	void Clear();
-
-	std::uint32_t recognised;
-	std::uint32_t unrecognised;
-	std::uint32_t inactive;
-	std::uint32_t messages;
-	std::uint32_t warnings;
-	std::uint32_t errors;
-
-	std::string scriptExtender;
-	std::string gameName;
-
-	Outputter updaterOutput;
-	Outputter criticalError;
-	Outputter userRules;
-	Outputter sePlugins;
-	Outputter recognisedPlugins;
-	Outputter unrecognisedPlugins;
-
-	std::vector<ParsingError> parsingErrors;
-	std::vector<Message> globalMessages;
-
- private:
-	std::uint32_t logFormat;
-	bool recognisedHasChanged;
-
-	std::string PrintLog();
-	std::string PrintHeaderTop();
-	std::string PrintHeaderBottom();
-	std::string PrintFooter();
-
-	bool HasRecognisedListChanged(const fs::path file);
-};
-
 }  // namespace boss
 #endif  // OUTPUT_OUTPUT_H_
