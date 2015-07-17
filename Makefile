@@ -1,4 +1,5 @@
 CXXFLAGS = -O3 -Isrc -I../libgit2/include -std=c++11
+#CXXFLAGS += -Weffc++ -Wall -Wpedantic -Wextra
 #CFLAGS += -O3 -Iboss-common -I../../../libgit2/include -std=c++11
 #CPPFLAGS += -I boss-common -I ../../../libgit2/include
 LDFLAGS += -static -Llib

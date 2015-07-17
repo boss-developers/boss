@@ -34,6 +34,10 @@
 #include "common/dll_def.h"
 #include "support/platform.h"
 
+/*
+ * TODO(MCP): Look at replacing this with a portable version so it's not relying on extensions.
+ * Possibly make formatStr part of the variable arguments?
+ */
 #define _LOG_IMPL(verbosity, formatStr, ...) \
 	boss::g_logger.log(verbosity, formatStr, ##__VA_ARGS__)
 
