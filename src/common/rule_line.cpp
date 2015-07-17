@@ -109,26 +109,25 @@ std::string RuleLine::KeyToString() const {
 		default:
 			return "NONE";
 	}*/
-	if (key== ADD)
-			return "ADD";
-		else if (key== OVERRIDE)
-			return "OVERRIDE";
-		else if (key== FOR)
-			return "FOR";
-		else if (key== BEFORE)
-			return "BEFORE";
-		else if (key== AFTER)
-			return "AFTER";
-		else if (key== TOP)
-			return "TOP";
-		else if (key== BOTTOM)
-			return "BOTTOM";
-		else if (key== APPEND)
-			return "APPEND";
-		else if (key== REPLACE)
-			return "REPLACE";
-		else
-			return "NONE";
+	if (key == ADD)
+		return "ADD";
+	else if (key == OVERRIDE)
+		return "OVERRIDE";
+	else if (key == FOR)
+		return "FOR";
+	else if (key == BEFORE)
+		return "BEFORE";
+	else if (key == AFTER)
+		return "AFTER";
+	else if (key == TOP)
+		return "TOP";
+	else if (key == BOTTOM)
+		return "BOTTOM";
+	else if (key == APPEND)
+		return "APPEND";
+	else if (key == REPLACE)
+		return "REPLACE";
+	return "NONE";
 }
 
 Message RuleLine::ObjectAsMessage() const {

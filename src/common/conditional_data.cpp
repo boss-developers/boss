@@ -165,22 +165,21 @@ std::string Message::KeyToString() const {
 		default:
 			return "NONE";
 	}*/
-	if (key== SAY)
-			return "SAY";
-		else if (key== TAG)
-			return "TAG";
-		else if (key==  REQ)
-			return "REQ";
-		else if (key==  WARN)
-			return "WARN";
-		else if (key==  ERR)
-			return "ERROR";
-		else if (key==  INC)
-			return "INC";
-		else if (key==  DIRTY)
-			return "DIRTY";
-		else
-			return "NONE";
+	if (key == SAY)
+		return "SAY";
+	else if (key == TAG)
+		return "TAG";
+	else if (key == REQ)
+		return "REQ";
+	else if (key == WARN)
+		return "WARN";
+	else if (key == ERR)
+		return "ERROR";
+	else if (key == INC)
+		return "INC";
+	else if (key == DIRTY)
+		return "DIRTY";
+	return "NONE";
 }
 
 //////////////////////////////
