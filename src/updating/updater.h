@@ -249,7 +249,7 @@ std::string UpdateMasterlist(Game& game, Progress prog, void * out) {
 
 	git_checkout_opts opts = GIT_CHECKOUT_OPTS_INIT;
 	opts.checkout_strategy = GIT_CHECKOUT_FORCE;  // Make sure the existing file gets overwritten.
-	opts.paths.strings = paths;
+	opts.paths.strings = paths;  // MCP Note: May need strcpy here
 	opts.paths.count = 1;
 
 	// Next, we need to do a looping checkout / parsing check / roll-back.
