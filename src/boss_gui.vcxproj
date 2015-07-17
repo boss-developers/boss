@@ -169,7 +169,7 @@
     <ClInclude Include="gui\user_rule_editor.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gui\elemen_tids.cpp" />
+    <ClCompile Include="gui\element_ids.cpp" />
     <ClCompile Include="gui\main_window.cpp" />
     <ClCompile Include="gui\settings_window.cpp" />
     <ClCompile Include="gui\user_rule_editor.cpp" />

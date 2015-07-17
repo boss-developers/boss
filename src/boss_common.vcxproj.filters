@@ -30,7 +30,7 @@
     <ClCompile Include="support\mod_format.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="Support\version_regex.cpp">
+    <ClCompile Include="support\version_regex.cpp">
       <Filter>support</Filter>
     </ClCompile>
     <ClCompile Include="output\boss_log.cpp">
