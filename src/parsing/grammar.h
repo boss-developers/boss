@@ -32,6 +32,8 @@
 #	define BOOST_SPIRIT_UNICODE
 #endif
 
+//#define BOOST_SPIRIT_USE_PHOENIX_V3 1
+
 #include <cstdint>
 
 #include <string>
