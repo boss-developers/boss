@@ -64,7 +64,7 @@ int progress(const git_transfer_progress *stats, void *payload) {
 	if (currentProgress == 1000)
 		--currentProgress;  // Stop the progress bar from closing in case of multiple downloads.
 	wxProgressDialog* progress = (wxProgressDialog*)payload;
-	bool cont = progress->Update(currentProgress, FromUTF8(format(bloc::translate("Downloading masterlist: %1% of %2% objects (%3% KB)")) % stats->received_objects % stats->total_objects % (stats->received_bytes / 1024)));
+	bool cont = progress->Update(currentProgress, FromUTF8(boost::format(bloc::translate("Downloading masterlist: %1% of %2% objects (%3% KB)")) % stats->received_objects % stats->total_objects % (stats->received_bytes / 1024)));
 	if (!cont) {  // The user decided to cancel. Slightly temperamental, the progDia seems to hang a little sometimes and keypresses don't get registered. Can't do much about that.
 		std::uint32_t ans = wxMessageBox(translate("Are you sure you want to cancel?"),
 		                                 translate("BOSS: Updater"),

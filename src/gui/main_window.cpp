@@ -80,7 +80,7 @@
 
 wxDEFINE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
 
-using boss:MainFrame;
+using boss::MainFrame;
 
 BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_CLOSE (MainFrame::OnClose )
