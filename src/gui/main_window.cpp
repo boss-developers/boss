@@ -115,7 +115,7 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_RADIOBUTTON ( RADIOBUTTON_UndoOption, MainFrame::OnRunTypeChange )
 END_EVENT_TABLE()
 
-IMPLEMENT_APP(BossGUI)
+IMPLEMENT_APP(boss::BossGUI)
 
 namespace boss {
 
@@ -458,7 +458,7 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 		ini.Save(ini_path, game.Id());
 	} catch (boss_error &e) {
 			wxMessageBox(
-				FromUTF8(boostformat(bloc::translate("Error: %1%")) % e.getString()),
+				FromUTF8(boost::format(bloc::translate("Error: %1%")) % e.getString()),
 				translate("BOSS: Error"),
 				wxOK | wxICON_ERROR,
 				NULL);
