@@ -32,6 +32,7 @@
 
 
 // The values in the LogVerbosity enum refer to indices in this array
+// MCP Note: Are the spaces inside the quotes supposed to be there?
 static const char * LOG_VERBOSITY_NAMES[] = {"OFF  ", "ERROR", "WARN ",
                                              "INFO ", "DEBUG", "TRACE"};
 

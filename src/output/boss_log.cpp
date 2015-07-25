@@ -136,9 +136,8 @@ std::string BossLog::PrintFooter() {
 		    << "	<tbody>"
 		    << "		<tr><td id='pluginSubmitSupport'><td>" << bloc::translate("In-Log Plugin Submission") << "<td>" << bloc::translate("Allows unrecognised plugins to be anonymously submitted to the BOSS team directly from the BOSS Log.")
 		    << "		<tr><td id='memorySupport'><td>" << bloc::translate("Settings Memory") << "<td>" << bloc::translate("Allows the BOSS Log to automatically restore the filter configuration last used whenever the BOSS Log is opened.")
-		    // MCP Note: Look at replacing the four spaces with a tab. It looks like a mistake but will need to verify first.
-		    << "	    <tr><td id='placeholderSupport'><td>" << bloc::translate("Input Placeholders")
-		    << "	    <tr><td id='validationSupport'><td>" << bloc::translate("Form Validation")
+		    << "		<tr><td id='placeholderSupport'><td>" << bloc::translate("Input Placeholders")
+		    << "		<tr><td id='validationSupport'><td>" << bloc::translate("Form Validation")
 		    << "</table>"
 		    << "</section>"
 
