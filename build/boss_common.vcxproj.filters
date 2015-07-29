@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="updating">
+      <UniqueIdentifier>{a64503d7-38d4-427d-9848-44dd691beccb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{50e9bd28-0666-4962-a1de-432d300dc71d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="parsing">
+      <UniqueIdentifier>{48769a97-fc08-42b7-b771-d56606502be0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="support">
+      <UniqueIdentifier>{b2c9e196-2fe4-401d-8aa2-d83fc1709e22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="output">
+      <UniqueIdentifier>{07560db6-fd46-4380-900b-5eb2ce63fbe3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="parsing\grammar.cpp">
+      <Filter>parsing</Filter>
+    </ClCompile>
+    <ClCompile Include="support\helpers.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="support\logger.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="support\mod_format.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="support\version_regex.cpp">
+      <Filter>support</Filter>
+    </ClCompile>
+    <ClCompile Include="output\boss_log.cpp">
+      <Filter>output</Filter>
+    </ClCompile>
+    <ClCompile Include="output\output.cpp">
+      <Filter>output</Filter>
+    </ClCompile>
+    <ClCompile Include="common\conditional_data.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\item_list.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\keywords.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\rule_line.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\settings.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\error.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\game.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\globals.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common\error.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\globals.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="parsing\grammar.h">
+      <Filter>parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="support\helpers.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="support\logger.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="support\mod_format.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="support\platform.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="support\types.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="support\version_regex.h">
+      <Filter>support</Filter>
+    </ClInclude>
+    <ClInclude Include="output\boss_log.h">
+      <Filter>output</Filter>
+    </ClInclude>
+    <ClInclude Include="output\output.h">
+      <Filter>output</Filter>
+    </ClInclude>
+    <ClInclude Include="updating\updater.h">
+      <Filter>updating</Filter>
+    </ClInclude>
+    <ClInclude Include="common\dll_def.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\conditional_data.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\item_list.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\keywords.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\rule_line.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\settings.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\game.h">
+      <Filter>common</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
