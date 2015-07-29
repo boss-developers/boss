@@ -72,17 +72,20 @@ BOSS_COMMON extern const std::uint32_t BOSS_ERROR_GUI_WINDOW_INIT_FAIL;
 class BOSS_COMMON boss_error {
  public:
 	// For general errors not referencing specific files.
-	boss_error(const std::uint32_t internalErrCode);
+	explicit boss_error(const std::uint32_t internalErrCode);
 
 	// For general errors referencing specific files.
-	boss_error(const std::uint32_t internalErrCode, const std::string internalErrSubject);
+	boss_error(const std::uint32_t internalErrCode,
+	           const std::string internalErrSubject);
 
 	// For errors from BOOST Filesystem functions.
-	boss_error(const std::uint32_t internalErrCode, const std::string internalErrSubject,
+	boss_error(const std::uint32_t internalErrCode,
+	           const std::string internalErrSubject,
 	           const std::string externalErrString);
 
 	// For errors from other external functions.
-	boss_error(const std::string externalErrString, const std::uint32_t internalErrCode);
+	boss_error(const std::string externalErrString,
+	           const std::uint32_t internalErrCode);
 
 	// Returns the error code for the object.
 	std::uint32_t getCode() const;
@@ -135,7 +138,7 @@ class BOSS_COMMON ParsingError {
 	             const std::string inFooter);
 
 	// For userlist syntax errors.
-	ParsingError(const std::string inWholeMessage);
+	explicit ParsingError(const std::string inWholeMessage);
 
 	bool Empty() const;
 	std::string Header() const;
