@@ -11,17 +11,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="boss_cli.cpp">
+    <ClCompile Include="$(SolutionDir)src\boss_cli.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\BOSS.ico">
+    <None Include="$(SolutionDir)BOSS.ico">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\BOSS_version.rc">
+    <ResourceCompile Include="$(SolutionDir)BOSS_version.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

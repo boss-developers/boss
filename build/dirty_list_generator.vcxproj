@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="$(SolutionDir)dirty_list_generator\main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5414EFAE-A1AB-477F-8897-3C99131B634D}</ProjectGuid>
@@ -93,12 +93,12 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\src\common;$(ProjectDir)..\lib\boost;$(ProjectDir)..\lib\libgit2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\common;$(SolutionDir)lib\boost;$(SolutionDir)lib\libgit2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\bin\Release-$(PlatformArchitecture);$(ProjectDir)..\lib\boost\stage-$(PlatformArchitecture)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\Release-$(PlatformArchitecture);$(SolutionDir)lib\boost\stage-$(PlatformArchitecture)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>BOSS-Common.lib;advapi32.lib;shell32.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -106,12 +106,12 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\src\common;$(ProjectDir)..\lib\boost;$(ProjectDir)..\lib\libgit2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\common;$(SolutionDir)lib\boost;$(SolutionDir)lib\libgit2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\bin\Release-$(PlatformArchitecture);$(ProjectDir)..\lib\boost\stage-$(PlatformArchitecture)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\Release-$(PlatformArchitecture);$(SolutionDir)lib\boost\stage-$(PlatformArchitecture)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>BOSS-Common.lib;advapi32.lib;shell32.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -124,14 +124,14 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\src\common;$(ProjectDir)..\lib\boost;$(ProjectDir)..\lib\libgit2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\common;$(SolutionDir)lib\boost;$(SolutionDir)lib\libgit2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\bin\Release-$(PlatformArchitecture);$(ProjectDir)..\lib\boost\stage-$(PlatformArchitecture)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\Release-$(PlatformArchitecture);$(SolutionDir)lib\boost\stage-$(PlatformArchitecture)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Version>1.7</Version>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
@@ -148,14 +148,14 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\src\common;$(ProjectDir)..\lib\boost;$(ProjectDir)..\lib\libgit2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\common;$(SolutionDir)lib\boost;$(SolutionDir)lib\libgit2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\bin\Release-$(PlatformArchitecture);$(ProjectDir)..\lib\boost\stage-$(PlatformArchitecture)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\Release-$(PlatformArchitecture);$(SolutionDir)lib\boost\stage-$(PlatformArchitecture)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <Version>1.7</Version>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>

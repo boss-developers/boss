@@ -18,108 +18,108 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="parsing\grammar.cpp">
+    <ClCompile Include="$(SolutionDir)src\parsing\grammar.cpp">
       <Filter>parsing</Filter>
     </ClCompile>
-    <ClCompile Include="support\helpers.cpp">
+    <ClCompile Include="$(SolutionDir)src\support\helpers.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="support\logger.cpp">
+    <ClCompile Include="$(SolutionDir)src\support\logger.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="support\mod_format.cpp">
+    <ClCompile Include="$(SolutionDir)src\support\mod_format.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="support\version_regex.cpp">
+    <ClCompile Include="$(SolutionDir)src\support\version_regex.cpp">
       <Filter>support</Filter>
     </ClCompile>
-    <ClCompile Include="output\boss_log.cpp">
+    <ClCompile Include="$(SolutionDir)src\output\boss_log.cpp">
       <Filter>output</Filter>
     </ClCompile>
-    <ClCompile Include="output\output.cpp">
+    <ClCompile Include="$(SolutionDir)src\output\output.cpp">
       <Filter>output</Filter>
     </ClCompile>
-    <ClCompile Include="common\conditional_data.cpp">
+    <ClCompile Include="$(SolutionDir)src\common\conditional_data.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="common\item_list.cpp">
+    <ClCompile Include="$(SolutionDir)src\common\item_list.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="common\keywords.cpp">
+    <ClCompile Include="$(SolutionDir)src\common\keywords.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="common\rule_line.cpp">
+    <ClCompile Include="$(SolutionDir)src\common\rule_line.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="common\settings.cpp">
+    <ClCompile Include="$(SolutionDir)src\common\settings.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="common\error.cpp">
+    <ClCompile Include="$(SolutionDir)src\common\error.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="common\game.cpp">
+    <ClCompile Include="$(SolutionDir)src\common\game.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="common\globals.cpp">
+    <ClCompile Include="$(SolutionDir)src\common\globals.cpp">
       <Filter>common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="common\error.h">
+    <ClInclude Include="$(SolutionDir)src\common\error.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="common\globals.h">
+    <ClInclude Include="$(SolutionDir)src\common\globals.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="parsing\grammar.h">
+    <ClInclude Include="$(SolutionDir)src\parsing\grammar.h">
       <Filter>parsing</Filter>
     </ClInclude>
-    <ClInclude Include="support\helpers.h">
+    <ClInclude Include="$(SolutionDir)src\support\helpers.h">
       <Filter>support</Filter>
     </ClInclude>
-    <ClInclude Include="support\logger.h">
+    <ClInclude Include="$(SolutionDir)src\support\logger.h">
       <Filter>support</Filter>
     </ClInclude>
-    <ClInclude Include="support\mod_format.h">
+    <ClInclude Include="$(SolutionDir)src\support\mod_format.h">
       <Filter>support</Filter>
     </ClInclude>
-    <ClInclude Include="support\platform.h">
+    <ClInclude Include="$(SolutionDir)src\support\platform.h">
       <Filter>support</Filter>
     </ClInclude>
-    <ClInclude Include="support\types.h">
+    <ClInclude Include="$(SolutionDir)src\support\types.h">
       <Filter>support</Filter>
     </ClInclude>
-    <ClInclude Include="support\version_regex.h">
+    <ClInclude Include="$(SolutionDir)src\support\version_regex.h">
       <Filter>support</Filter>
     </ClInclude>
-    <ClInclude Include="output\boss_log.h">
+    <ClInclude Include="$(SolutionDir)src\output\boss_log.h">
       <Filter>output</Filter>
     </ClInclude>
-    <ClInclude Include="output\output.h">
+    <ClInclude Include="$(SolutionDir)src\output\output.h">
       <Filter>output</Filter>
     </ClInclude>
-    <ClInclude Include="updating\updater.h">
+    <ClInclude Include="$(SolutionDir)src\updating\updater.h">
       <Filter>updating</Filter>
     </ClInclude>
-    <ClInclude Include="common\dll_def.h">
+    <ClInclude Include="$(SolutionDir)src\common\dll_def.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="common\conditional_data.h">
+    <ClInclude Include="$(SolutionDir)src\common\conditional_data.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="common\item_list.h">
+    <ClInclude Include="$(SolutionDir)src\common\item_list.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="common\keywords.h">
+    <ClInclude Include="$(SolutionDir)src\common\keywords.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="common\rule_line.h">
+    <ClInclude Include="$(SolutionDir)src\common\rule_line.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="common\settings.h">
+    <ClInclude Include="$(SolutionDir)src\common\settings.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="common\game.h">
+    <ClInclude Include="$(SolutionDir)src\common\game.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,40 +9,40 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="gui\element_ids.h">
+    <ClInclude Include="$(SolutionDir)src\gui\element_ids.h">
       <Filter>gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\main_window.h">
+    <ClInclude Include="$(SolutionDir)src\gui\main_window.h">
       <Filter>gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\settings_window.h">
+    <ClInclude Include="$(SolutionDir)src\gui\settings_window.h">
       <Filter>gui</Filter>
     </ClInclude>
-    <ClInclude Include="gui\user_rule_editor.h">
+    <ClInclude Include="$(SolutionDir)src\gui\user_rule_editor.h">
       <Filter>gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gui\main_window.cpp">
+    <ClCompile Include="$(SolutionDir)src\gui\main_window.cpp">
       <Filter>gui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\settings_window.cpp">
+    <ClCompile Include="$(SolutionDir)src\gui\settings_window.cpp">
       <Filter>gui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\user_rule_editor.cpp">
+    <ClCompile Include="$(SolutionDir)src\gui\user_rule_editor.cpp">
       <Filter>gui</Filter>
     </ClCompile>
-    <ClCompile Include="gui\element_ids.cpp">
+    <ClCompile Include="$(SolutionDir)src\gui\element_ids.cpp">
       <Filter>gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\BOSS.ico">
+    <None Include="$(SolutionDir)BOSS.ico">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\BOSS_version.rc">
+    <ResourceCompile Include="$(SolutionDir)BOSS_version.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
