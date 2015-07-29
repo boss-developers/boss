@@ -332,8 +332,9 @@ void RuleList::CheckSyntax(const Game& parentGame) {
 						         subject.IsMasterFile(parentGame))
 							throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingPluginBeforeMaster).str());
 					} else if (ruleObject.IsMasterFile(parentGame) &&
-					           !subject.IsMasterFile(parentGame))
+					           !subject.IsMasterFile(parentGame)) {
 						throw ParsingError((RuleListSyntaxErrorMessage % ruleKeyString % ruleObject.Name() % ESortingMasterAfterPlugin).str());
+					}
 					hasSortLine = true;
 				} else if (lines[i].Key() == TOP || lines[i].Key() == BOTTOM) {
 					if (hasSortLine)
