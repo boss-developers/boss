@@ -54,53 +54,48 @@
 
 using boss::UserRulesEditorFrame;
 
-BEGIN_EVENT_TABLE( UserRulesEditorFrame, wxFrame )
-	EVT_BUTTON ( BUTTON_OKExitEditor, UserRulesEditorFrame::OnOKQuit )
-	EVT_BUTTON ( BUTTON_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit )
-	EVT_BUTTON ( BUTTON_NewRule, UserRulesEditorFrame::OnRuleCreate )
-	EVT_BUTTON ( BUTTON_EditRule, UserRulesEditorFrame::OnRuleEdit )
-	EVT_BUTTON ( BUTTON_DeleteRule, UserRulesEditorFrame::OnRuleDelete )
-	EVT_BUTTON ( BUTTON_MoveRuleUp, UserRulesEditorFrame::OnRuleOrderChange )
-	EVT_BUTTON ( BUTTON_MoveRuleDown, UserRulesEditorFrame::OnRuleOrderChange )
-	EVT_CHECKBOX ( CHECKBOX_SortMods, UserRulesEditorFrame::OnSortingCheckToggle )
-	EVT_CHECKBOX ( CHECKBOX_AddMessages, UserRulesEditorFrame::OnMessageAddToggle )
-	EVT_TREE_SEL_CHANGED ( LIST_Masterlist, UserRulesEditorFrame::OnSelectModInMasterlist )
-	EVT_TREE_BEGIN_DRAG ( LIST_Masterlist, UserRulesEditorFrame::OnDragStart )
-	EVT_TREE_BEGIN_DRAG ( LIST_Modlist, UserRulesEditorFrame::OnDragStart )
-	EVT_LISTBOX ( wxID_ANY, UserRulesEditorFrame::OnRuleSelection )
-	EVT_RADIOBUTTON ( RADIO_SortMod, UserRulesEditorFrame::OnSortInsertChange )
-	EVT_RADIOBUTTON ( RADIO_InsertMod, UserRulesEditorFrame::OnSortInsertChange )
-	EVT_SEARCHCTRL_SEARCH_BTN ( SEARCH_Masterlist, UserRulesEditorFrame::OnSearchList )
-	EVT_SEARCHCTRL_SEARCH_BTN ( SEARCH_Modlist, UserRulesEditorFrame::OnSearchList )
-	EVT_SEARCHCTRL_CANCEL_BTN ( SEARCH_Masterlist, UserRulesEditorFrame::OnCancelSearch )
-	EVT_SEARCHCTRL_CANCEL_BTN ( SEARCH_Modlist, UserRulesEditorFrame::OnCancelSearch )
-	EVT_TEXT_ENTER ( SEARCH_Masterlist, UserRulesEditorFrame::OnSearchList )
-	EVT_TEXT_ENTER ( SEARCH_Modlist, UserRulesEditorFrame::OnSearchList )
+BEGIN_EVENT_TABLE(UserRulesEditorFrame, wxFrame)
+	EVT_BUTTON(BUTTON_OKExitEditor, UserRulesEditorFrame::OnOKQuit)
+	EVT_BUTTON(BUTTON_CancelExitEditor, UserRulesEditorFrame::OnCancelQuit)
+	EVT_BUTTON(BUTTON_NewRule, UserRulesEditorFrame::OnRuleCreate)
+	EVT_BUTTON(BUTTON_EditRule, UserRulesEditorFrame::OnRuleEdit)
+	EVT_BUTTON(BUTTON_DeleteRule, UserRulesEditorFrame::OnRuleDelete)
+	EVT_BUTTON(BUTTON_MoveRuleUp, UserRulesEditorFrame::OnRuleOrderChange)
+	EVT_BUTTON(BUTTON_MoveRuleDown, UserRulesEditorFrame::OnRuleOrderChange)
+	EVT_CHECKBOX(CHECKBOX_SortMods, UserRulesEditorFrame::OnSortingCheckToggle)
+	EVT_CHECKBOX(CHECKBOX_AddMessages, UserRulesEditorFrame::OnMessageAddToggle)
+	EVT_TREE_SEL_CHANGED(LIST_Masterlist, UserRulesEditorFrame::OnSelectModInMasterlist)
+	EVT_TREE_BEGIN_DRAG(LIST_Masterlist, UserRulesEditorFrame::OnDragStart)
+	EVT_TREE_BEGIN_DRAG(LIST_Modlist, UserRulesEditorFrame::OnDragStart)
+	EVT_LISTBOX(wxID_ANY, UserRulesEditorFrame::OnRuleSelection)
+	EVT_RADIOBUTTON(RADIO_SortMod, UserRulesEditorFrame::OnSortInsertChange)
+	EVT_RADIOBUTTON(RADIO_InsertMod, UserRulesEditorFrame::OnSortInsertChange)
+	EVT_SEARCHCTRL_SEARCH_BTN(SEARCH_Masterlist, UserRulesEditorFrame::OnSearchList)
+	EVT_SEARCHCTRL_SEARCH_BTN(SEARCH_Modlist, UserRulesEditorFrame::OnSearchList)
+	EVT_SEARCHCTRL_CANCEL_BTN(SEARCH_Masterlist, UserRulesEditorFrame::OnCancelSearch)
+	EVT_SEARCHCTRL_CANCEL_BTN(SEARCH_Modlist, UserRulesEditorFrame::OnCancelSearch)
+	EVT_TEXT_ENTER(SEARCH_Masterlist, UserRulesEditorFrame::OnSearchList)
+	EVT_TEXT_ENTER(SEARCH_Modlist, UserRulesEditorFrame::OnSearchList)
 END_EVENT_TABLE()
 
 using boss::RuleListFrameClass;
 
-BEGIN_EVENT_TABLE( RuleListFrameClass, wxPanel )
-	EVT_CHECKBOX ( wxID_ANY, RuleListFrameClass::OnToggleRule )
-	EVT_LISTBOX ( wxID_ANY, RuleListFrameClass::OnRuleSelection )
+BEGIN_EVENT_TABLE(RuleListFrameClass, wxPanel)
+	EVT_CHECKBOX(wxID_ANY, RuleListFrameClass::OnToggleRule)
+	EVT_LISTBOX(wxID_ANY, RuleListFrameClass::OnRuleSelection)
 END_EVENT_TABLE()
 
 using boss::RuleBoxClass;
 
-BEGIN_EVENT_TABLE( RuleBoxClass, wxPanel )
-	EVT_CHECKBOX ( wxID_ANY, RuleBoxClass::ToggleEnabled )
-	EVT_LEFT_DOWN ( RuleBoxClass::OnSelect )
+BEGIN_EVENT_TABLE(RuleBoxClass, wxPanel)
+	EVT_CHECKBOX(wxID_ANY, RuleBoxClass::ToggleEnabled)
+	EVT_LEFT_DOWN(RuleBoxClass::OnSelect)
 END_EVENT_TABLE()
 
 namespace boss {
 
 namespace fs = boost::filesystem;
 namespace bloc = boost::locale;
-
-//using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
-
-using boost::algorithm::trim_copy;
-//using boss::translate;
 
 UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
                                            wxFrame *parent,
@@ -733,7 +728,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 			if (pos2 == std::string::npos)  // No \n characters.
 				pos2 = messages.length();
 			while (pos2 != std::string::npos) {
-				newLine.Object(boost::algorithm::trim_copy(messages.substr(pos1, pos2 - pos1)));
+				newLine.Object(boost::trim_copy(messages.substr(pos1, pos2 - pos1)));
 				if (pos1 == 0 && ReplaceMessagesCheckBox->IsChecked())
 					newLine.Key(REPLACE);
 				else
