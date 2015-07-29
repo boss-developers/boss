@@ -110,6 +110,7 @@ bool conditionalData::EvalConditions(boost::unordered_set<std::string>& setVars,
 		//iterator_type u32e(end);
 
 		//bool r = phrase_parse(u32b, u32e, grammar, skipper, eval);
+		// MCP Note: Where does phrase_parse come from? boost::spirit::qi?
 		bool r = phrase_parse(begin, end, grammar, skipper, eval);
 
 		if (!r || begin != end)
@@ -230,10 +231,10 @@ bool Item::IsGroup() const {
 	return (!fs::path(Data()).has_extension() && !Data().empty());
 }
 
-bool Item::Exists(const Game& parentGame) const {
+/*bool Item::Exists(const Game& parentGame) const {
 	return (fs::exists(parentGame.DataFolder() / Data()) ||
 	        fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost")));
-}
+}*/
 
 bool Item::IsGameMasterFile(const Game& parentGame) const {
 	return boost::iequals(Data(), parentGame.MasterFile().Name());
@@ -259,6 +260,11 @@ bool Item::IsGhosted(const Game& parentGame) const {
 	return (fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost")));
 }
 
+bool Item::Exists(const Game& parentGame) const {
+	return (fs::exists(parentGame.DataFolder() / Data()) ||
+	        fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost")));
+}
+
 Version Item::GetVersion(const Game& parentGame) const {
 	if (!IsPlugin())
 		return Version();
@@ -273,6 +279,48 @@ Version Item::GetVersion(const Game& parentGame) const {
 
 	// The current mod's version if found, or empty otherwise.
 	return Version(header.Version);
+}
+
+std::time_t Item::GetModTime(const Game& parentGame) const {  // Can throw exception.
+	try {
+		if (IsGhosted(parentGame))
+			return fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
+		// MCP Note: Need to read up on try-catch to see if we can remove the else
+		else
+			return fs::last_write_time(parentGame.DataFolder() / Data());
+	} catch(fs::filesystem_error e) {
+		LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.",
+		         e.what());
+		throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, Data(),
+		                 e.what());
+	}
+}
+
+/*void Item::SetModTime(const Game& parentGame,
+                      const std::time_t modificationTime) const {
+	try {
+		if (IsGhosted(parentGame))
+			fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"),
+			                    modificationTime);
+		else
+			fs::last_write_time(parentGame.DataFolder() / Data(),
+			                    modificationTime);
+	} catch(fs::filesystem_error e) {
+		throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL, Data(),
+		                 e.what());
+	}
+}*/
+
+void Item::UnGhost(const Game& parentGame) const {  // Can throw exception.
+	if (IsGhosted(parentGame)) {
+		try {
+			fs::rename(parentGame.DataFolder() / fs::path(Data() + ".ghost"),
+			           parentGame.DataFolder() / Data());
+		} catch (fs::filesystem_error e) {
+			throw boss_error(BOSS_ERROR_FS_FILE_RENAME_FAIL, Data() + ".ghost",
+			                 e.what());
+		}
+	}
 }
 
 void Item::SetModTime(const Game& parentGame,
@@ -290,19 +338,7 @@ void Item::SetModTime(const Game& parentGame,
 	}
 }
 
-void Item::UnGhost(const Game& parentGame) const {  // Can throw exception.
-	if (IsGhosted(parentGame)) {
-		try {
-			fs::rename(parentGame.DataFolder() / fs::path(Data() + ".ghost"),
-			           parentGame.DataFolder() / Data());
-		} catch (fs::filesystem_error e) {
-			throw boss_error(BOSS_ERROR_FS_FILE_RENAME_FAIL, Data() + ".ghost",
-			                 e.what());
-		}
-	}
-}
-
-std::time_t Item::GetModTime(const Game& parentGame) const {  // Can throw exception.
+/*std::time_t Item::GetModTime(const Game& parentGame) const {  // Can throw exception.
 	try {
 		if (IsGhosted(parentGame))
 			return fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
@@ -315,7 +351,7 @@ std::time_t Item::GetModTime(const Game& parentGame) const {  // Can throw excep
 		throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, Data(),
 		                 e.what());
 	}
-}
+}*/
 
 void Item::InsertMessage(const std::size_t pos, const Message message) {
 	messages.insert(messages.begin() + pos, message);
