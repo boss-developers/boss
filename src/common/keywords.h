@@ -28,9 +28,9 @@
 #ifndef COMMON_KEYWORDS_H_
 #define COMMON_KEYWORDS_H_
 
-#include "common/dll_def.h"
-
 #include <cstdint>
+
+#include "common/dll_def.h"
 
 namespace boss {
 
