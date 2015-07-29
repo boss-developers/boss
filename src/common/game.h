@@ -106,6 +106,9 @@ class BOSS_COMMON Game {  // Constructor depends on gl_update_only.
 	BossLog bosslog;
 
  private:
+	// Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
+	fs::path GetLocalAppDataPath();
+
 	std::uint32_t id;
 	std::uint32_t loMethod;
 	std::string name;
@@ -126,9 +129,6 @@ class BOSS_COMMON Game {  // Constructor depends on gl_update_only.
 	fs::path gamePath;       // Path to the game's folder.
 	fs::path pluginsPath;    // Path to the file in which active plugins are listed.
 	fs::path loadorderPath;  // Path to the file which lists total load order.
-
-	// Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
-	fs::path GetLocalAppDataPath();
 };
 
 }  // namespace boss
