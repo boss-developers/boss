@@ -69,50 +69,41 @@
 #include "support/logger.h"
 #include "updating/updater.h"
 
-//namespace {
-
-
-//using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
-
-//}  // namespace
-
-//using namespace boss;  // MCP Note: Temporary solution, need to come up with a better one.
-
 wxDEFINE_EVENT(wxEVT_COMMAND_MYTHREAD_UPDATE, wxThreadEvent);
 
 using boss::MainFrame;
 
-BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
-	EVT_CLOSE (MainFrame::OnClose )
-	EVT_MENU ( MENU_Quit, MainFrame::OnQuit )
-	EVT_MENU ( OPTION_EditUserRules, MainFrame::OnEditUserRules )
-	EVT_MENU ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
-	EVT_MENU ( OPTION_Run, MainFrame::OnRunBOSS )
-	EVT_MENU ( MENU_OpenMainReadMe, MainFrame::OnOpenFile )
-	EVT_MENU ( MENU_OpenUserlistReadMe, MainFrame::OnOpenFile )
-	EVT_MENU ( MENU_OpenMasterlistReadMe, MainFrame::OnOpenFile )
-	EVT_MENU ( MENU_OpenVersionHistory, MainFrame::OnOpenFile )
-	EVT_MENU ( MENU_OpenLicenses, MainFrame::OnOpenFile )
-	EVT_MENU ( MENU_ShowAbout, MainFrame::OnAbout )
-	EVT_MENU ( MENU_ShowSettings, MainFrame::OnOpenSettings )
-	EVT_MENU ( MENU_Oblivion, MainFrame::OnGameChange )
-	EVT_MENU ( MENU_Nehrim, MainFrame::OnGameChange )
-	EVT_MENU ( MENU_Skyrim, MainFrame::OnGameChange )
-	EVT_MENU ( MENU_Fallout3, MainFrame::OnGameChange )
-	EVT_MENU ( MENU_FalloutNewVegas, MainFrame::OnGameChange )
-	EVT_BUTTON ( OPTION_Run, MainFrame::OnRunBOSS )
-	EVT_BUTTON ( OPTION_EditUserRules, MainFrame::OnEditUserRules )
-	EVT_BUTTON ( OPTION_OpenBOSSlog, MainFrame::OnOpenFile )
-	EVT_CHOICE ( DROPDOWN_LogFormat, MainFrame::OnFormatChange )
-	EVT_CHOICE ( DROPDOWN_Game, MainFrame::OnGameChange )
-	EVT_CHOICE ( DROPDOWN_Revert, MainFrame::OnRevertChange )
-	EVT_CHECKBOX ( CHECKBOX_ShowBOSSlog, MainFrame::OnLogDisplayChange )
-	EVT_CHECKBOX ( CHECKBOX_Update, MainFrame::OnUpdateChange )
-	EVT_CHECKBOX ( CHECKBOX_EnableCRCs, MainFrame::OnCRCDisplayChange )
-	EVT_CHECKBOX ( CHECKBOX_TrialRun, MainFrame::OnTrialRunChange )
-	EVT_RADIOBUTTON ( RADIOBUTTON_SortOption, MainFrame::OnRunTypeChange )
-	EVT_RADIOBUTTON ( RADIOBUTTON_UpdateOption, MainFrame::OnRunTypeChange )
-	EVT_RADIOBUTTON ( RADIOBUTTON_UndoOption, MainFrame::OnRunTypeChange )
+BEGIN_EVENT_TABLE(MainFrame, wxFrame)
+	EVT_CLOSE(MainFrame::OnClose)
+	EVT_MENU(MENU_Quit, MainFrame::OnQuit)
+	EVT_MENU(OPTION_EditUserRules, MainFrame::OnEditUserRules)
+	EVT_MENU(OPTION_OpenBOSSlog, MainFrame::OnOpenFile)
+	EVT_MENU(OPTION_Run, MainFrame::OnRunBOSS)
+	EVT_MENU(MENU_OpenMainReadMe, MainFrame::OnOpenFile)
+	EVT_MENU(MENU_OpenUserlistReadMe, MainFrame::OnOpenFile)
+	EVT_MENU(MENU_OpenMasterlistReadMe, MainFrame::OnOpenFile)
+	EVT_MENU(MENU_OpenVersionHistory, MainFrame::OnOpenFile)
+	EVT_MENU(MENU_OpenLicenses, MainFrame::OnOpenFile)
+	EVT_MENU(MENU_ShowAbout, MainFrame::OnAbout)
+	EVT_MENU(MENU_ShowSettings, MainFrame::OnOpenSettings)
+	EVT_MENU(MENU_Oblivion, MainFrame::OnGameChange)
+	EVT_MENU(MENU_Nehrim, MainFrame::OnGameChange)
+	EVT_MENU(MENU_Skyrim, MainFrame::OnGameChange)
+	EVT_MENU(MENU_Fallout3, MainFrame::OnGameChange)
+	EVT_MENU(MENU_FalloutNewVegas, MainFrame::OnGameChange)
+	EVT_BUTTON(OPTION_Run, MainFrame::OnRunBOSS)
+	EVT_BUTTON(OPTION_EditUserRules, MainFrame::OnEditUserRules)
+	EVT_BUTTON(OPTION_OpenBOSSlog, MainFrame::OnOpenFile)
+	EVT_CHOICE(DROPDOWN_LogFormat, MainFrame::OnFormatChange)
+	EVT_CHOICE(DROPDOWN_Game, MainFrame::OnGameChange)
+	EVT_CHOICE(DROPDOWN_Revert, MainFrame::OnRevertChange)
+	EVT_CHECKBOX(CHECKBOX_ShowBOSSlog, MainFrame::OnLogDisplayChange)
+	EVT_CHECKBOX(CHECKBOX_Update, MainFrame::OnUpdateChange)
+	EVT_CHECKBOX(CHECKBOX_EnableCRCs, MainFrame::OnCRCDisplayChange)
+	EVT_CHECKBOX(CHECKBOX_TrialRun, MainFrame::OnTrialRunChange)
+	EVT_RADIOBUTTON(RADIOBUTTON_SortOption, MainFrame::OnRunTypeChange)
+	EVT_RADIOBUTTON(RADIOBUTTON_UpdateOption, MainFrame::OnRunTypeChange)
+	EVT_RADIOBUTTON(RADIOBUTTON_UndoOption, MainFrame::OnRunTypeChange)
 END_EVENT_TABLE()
 
 IMPLEMENT_APP(boss::BossGUI)
