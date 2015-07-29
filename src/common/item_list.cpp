@@ -63,7 +63,7 @@ namespace fs = boost::filesystem;
 
 struct itemComparator {
 	const Game& parentGame;
-	itemComparator(const Game& game) : parentGame(game) {}
+	explicit itemComparator(const Game& game) : parentGame(game) {}
 
 	bool operator() (const Item item1, const Item item2) {
 		// Return true if item1 goes before item2, false otherwise.
@@ -255,11 +255,11 @@ void ItemList::Save(const fs::path file, const fs::path oldFile) {
 	std::vector<Item>::iterator itemIter = items.begin();
 	std::vector<Message>::iterator messageIter;
 	for (itemIter; itemIter != items.end(); ++itemIter) {
-		if (itemIter->Type() == BEGINGROUP)
+		if (itemIter->Type() == BEGINGROUP) {
 			ofile << "BEGINGROUP: " << itemIter->Name() << std::endl;  // Print the group begin marker
-		else if (itemIter->Type() == ENDGROUP)
+		} else if (itemIter->Type() == ENDGROUP) {
 			ofile << "ENDGROUP: " << itemIter->Name() << std::endl;  // Print the group end marker
-		else {
+		} else {
 			if (!itemIter->Conditions().empty()) {
 				ofile << itemIter->Conditions() << ' ';
 				if (itemIter->Type() == MOD)
@@ -321,8 +321,9 @@ void ItemList::SavePluginNames(const Game& parentGame,
 				} catch (boss_error /*&e*/) {
 					badFilename = items[i].Name();
 				}
-			} else
+			} else {
 				outfile << items[i].Name() << std::endl;
+			}
 		}
 	}
 	outfile.close();
@@ -356,8 +357,9 @@ void ItemList::EvalConditions(const Game& parentGame) {
 		if (res) {
 			setVars.insert(varIter->Data());
 			++varIter;
-		} else
+		} else {
 			varIter = masterlistVariables.erase(varIter);
+		}
 		// Eval the rest of the vars now that res has been initialised.
 		while (varIter != masterlistVariables.end()) {
 			res = varIter->EvalConditions(setVars, fileCRCs, activePlugins,
@@ -365,8 +367,9 @@ void ItemList::EvalConditions(const Game& parentGame) {
 			if (res) {
 				setVars.insert(varIter->Data());
 				++varIter;
-			} else
+			} else {
 				varIter = masterlistVariables.erase(varIter);
+			}
 		}
 	}
 
@@ -476,8 +479,9 @@ void ItemList::EvalRegex(const Game& parentGame) {
 				setPos = FindRegexMatch(hashset, reg, ++setPos);
 				++itemIter;
 			}
-		} else
+		} else {
 			++itemIter;
+		}
 	}
 }
 
