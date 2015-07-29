@@ -65,9 +65,9 @@ namespace po = boost::program_options;
 namespace bloc = boost::locale;  // MCP Note: Will this interfere with std::locale loc?
 
 #if _WIN32 || _WIN64
-	const std::string launcher_cmd = "start";
+const std::string launcher_cmd = "start";
 #else
-	const std::string launcher_cmd = "xdg-open";
+const std::string launcher_cmd = "xdg-open";
 #endif
 
 int Launch(std::string filename) {
@@ -99,8 +99,8 @@ void ShowUsage(po::options_description opts) {
 	ShowVersion();
 	std::cout << std::endl << bloc::translate("Description:") << std::endl
 	          << bloc::translate("  BOSS is a utility that sorts the mod load order of TESIV: Oblivion, Nehrim,"
-	                            "  Fallout 3, Fallout: New Vegas and TESV: Skyrim according to a frequently updated"
-	                            "  masterlist to minimise incompatibilities between mods.") << std::endl << std::endl
+	                             "  Fallout 3, Fallout: New Vegas and TESV: Skyrim according to a frequently updated"
+	                             "  masterlist to minimise incompatibilities between mods.") << std::endl << std::endl
 	          << opts << std::endl
 	          << bloc::translate("Examples:") << std::endl
 	          << "  " << progName << " -u" << std::endl
@@ -283,17 +283,17 @@ int bossMain(int argc, char *argv[]) {
 	}
 	if (vm.count("game")) {
 		// Sanity check and parse argument
-		if (boost::iequals("Oblivion", gameStr))
+		if (boost::iequals("Oblivion", gameStr)) {
 			gl_game = OBLIVION;
-		else if (boost::iequals("Fallout3", gameStr))
+		} else if (boost::iequals("Fallout3", gameStr)) {
 			gl_game = FALLOUT3;
-		else if (boost::iequals("Nehrim", gameStr))
+		} else if (boost::iequals("Nehrim", gameStr)) {
 			gl_game = NEHRIM;
-		else if (boost::iequals("FalloutNV", gameStr))
+		} else if (boost::iequals("FalloutNV", gameStr)) {
 			gl_game = FALLOUTNV;
-		else if (boost::iequals("Skyrim", gameStr))
+		} else if (boost::iequals("Skyrim", gameStr)) {
 			gl_game = SKYRIM;
-		else {
+		} else {
 			LOG_ERROR("invalid option for 'game' parameter: '%s'",
 			          gameStr.c_str());
 			Fail();
@@ -304,11 +304,11 @@ int bossMain(int argc, char *argv[]) {
 	if (vm.count("format")) {
 		// Sanity check and parse argument
 		std::string bosslogFormat = vm["format"].as<std::string>();
-		if (bosslogFormat == "html")
+		if (bosslogFormat == "html") {
 			gl_log_format = HTML;
-		else if (bosslogFormat == "text")
+		} else if (bosslogFormat == "text") {
 			gl_log_format = PLAINTEXT;
-		else {
+		} else {
 			LOG_ERROR("invalid option for 'format' parameter: '%s'",
 			          bosslogFormat.c_str());
 			Fail();
