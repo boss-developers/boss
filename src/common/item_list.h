@@ -57,23 +57,26 @@ class BOSS_COMMON Message;
 class BOSS_COMMON ItemList {
  public:
 	ItemList();
-	void Load(const Game& parentGame, const fs::path path);                                // Load by scanning path. If path is a directory, it scans it for plugins.
-	                                                                                       // If path is a file, it parses it using the modlist grammar.
-	                                                                                       // May throw exception on fail.
-	void Save(const fs::path file, const fs::path oldFile);                                // Output to file in MF2. Backs up any existing file to oldFile.
-	                                                                                       // Throws exception on fail.
+	void Load(const Game& parentGame, const fs::path path);        // Load by scanning path. If path is a directory, it scans it for plugins.
+	                                                               // If path is a file, it parses it using the modlist grammar.
+	                                                               // May throw exception on fail.
+	void Save(const fs::path file, const fs::path oldFile);        // Output to file in MF2. Backs up any existing file to oldFile.
+	                                                               // Throws exception on fail.
 	void SavePluginNames(const Game& parentGame,
 	                     const fs::path file,
 	                     const bool activeOnly,
-	                     const bool doEncodingConversion);                                 // Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
-	void EvalConditions(const Game& parentGame);                                           // Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
+	                     const bool doEncodingConversion);         // Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
+	void EvalConditions(const Game& parentGame);                   // Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
 	void EvalRegex(const Game& parentGame);
-	void ApplyMasterPartition(const Game& parentGame);                                     // Puts all master files before other plugins. Can throw exception.
+	void ApplyMasterPartition(const Game& parentGame);             // Puts all master files before other plugins. Can throw exception.
 
-	std::size_t FindItem(const std::string name, const std::uint32_t type) const;          // Find the position of the item with name 'name'. Case-insensitive.
-	std::size_t FindLastItem(const std::string name, const std::uint32_t type) const;      // Find the last item with the name 'name'. Case-insensitive.
-	std::size_t GetLastMasterPos(const Game& parentGame) const;                            // Can throw exception.
-	std::size_t GetNextMasterPos(const Game& parentGame, std::size_t currPos) const;       // Can throw exception.
+	std::size_t FindItem(const std::string name,
+	                     const std::uint32_t type) const;          // Find the position of the item with name 'name'. Case-insensitive.
+	std::size_t FindLastItem(const std::string name,
+	                         const std::uint32_t type) const;      // Find the last item with the name 'name'. Case-insensitive.
+	std::size_t GetLastMasterPos(const Game& parentGame) const;    // Can throw exception.
+	std::size_t GetNextMasterPos(const Game& parentGame,
+	                             std::size_t currPos) const;       // Can throw exception.
 
 	Item ItemAt(std::size_t pos) const;
 
@@ -100,19 +103,19 @@ class BOSS_COMMON ItemList {
 	void Move(std::size_t newPos, const Item item);  // Adds the item if it isn't already present.
 
  private:
-	std::vector<Item> items;
-	ParsingError errorBuffer;
-	std::vector<Message> globalMessageBuffer;
-	std::size_t lastRecognisedPos;
-	std::vector<MasterlistVar> masterlistVariables;
-	boost::unordered_map<std::string, std::uint32_t> fileCRCs;
-
 	// Searches a hashset for the first matching string of a
 	// regex and returns its iterator position.
 	boost::unordered_set<std::string>::iterator FindRegexMatch(
 	    const boost::unordered_set<std::string> set,
 	    const boost::regex reg,
 	    boost::unordered_set<std::string>::iterator startPos);
+
+	std::vector<Item> items;
+	ParsingError errorBuffer;
+	std::vector<Message> globalMessageBuffer;
+	std::size_t lastRecognisedPos;
+	std::vector<MasterlistVar> masterlistVariables;
+	boost::unordered_map<std::string, std::uint32_t> fileCRCs;
 };
 
 }  // namespace boss
