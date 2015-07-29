@@ -59,7 +59,7 @@ class BossGUI : public wxApp {
 // Main frame class.
 class MainFrame : public wxFrame {
  public:
-	MainFrame(const wxChar *title);
+	explicit MainFrame(const wxChar *title);
 	void Update(std::string updateVersion);
 	void OnOpenSettings(wxCommandEvent& event);
 	void OnQuit(wxCommandEvent& event);
