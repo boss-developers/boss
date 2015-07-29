@@ -93,7 +93,8 @@ class BOSS_COMMON RuleList {
 	RuleList();
 	void Load(const Game& parentGame, const fs::path file);  // Throws exception on fail.
 	void Save(const fs::path file);                          // Throws exception on fail.
-	std::size_t FindRule(const std::string ruleObject, const bool onlyEnabled) const;
+	std::size_t FindRule(const std::string ruleObject,
+	                     const bool onlyEnabled) const;
 
 	std::vector<Rule> Rules() const;
 	std::vector<ParsingError> ErrorBuffer() const;
@@ -110,10 +111,10 @@ class BOSS_COMMON RuleList {
 	void Clear();
 
  private:
+	void CheckSyntax(const Game& parentGame);  // Rule checker function, checks for syntax (not parsing) errors.
+
 	std::vector<Rule> rules;
 	std::vector<ParsingError> errorBuffer;
-
-	void CheckSyntax(const Game& parentGame);  // Rule checker function, checks for syntax (not parsing) errors.
 };
 
 }  // namespace boss
