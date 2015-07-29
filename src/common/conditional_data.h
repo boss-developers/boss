@@ -105,7 +105,7 @@ class BOSS_COMMON Message : public conditionalData {
 class BOSS_COMMON Item : public conditionalData {
  public:
 	Item();
-	Item(const std::string inName);
+	explicit Item(const std::string inName);
 	Item(const std::string inName, const std::uint32_t inType);
 	Item(const std::string inName, const std::uint32_t inType,
 	     const std::vector<Message> inMessages);
