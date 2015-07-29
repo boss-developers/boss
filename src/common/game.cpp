@@ -270,8 +270,9 @@ Game::Game(const std::uint32_t gameCode, const std::string path, const bool noPa
 				gamePath = boss_path / "..";
 			else
 				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
-		} else
+		} else {
 			gamePath = fs::path(path);
+		}
 
 		// Check if game master file exists. Requires data path to be set.
 		if (!MasterFile().Exists(*this))
@@ -688,8 +689,9 @@ void Game::ApplyUserlist() {
 			if ((std::size_t)std::abs(std::distance(items.begin(), it)) <= lastRecPos)  // MCP Note: I think abs is the std::abs? Not sure...
 				lastRecPos--;
 			it = items.erase(it);
-		} else
+		} else {
 			++it;
+		}
 	}
 	modlist.Items(items);
 	modlist.LastRecognisedPos(lastRecPos);
