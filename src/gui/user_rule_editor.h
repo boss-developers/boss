@@ -55,6 +55,7 @@ namespace boss {
 
 namespace fs = boost::filesystem;
 
+// TODO(MCP): Look at splitting some of these classes out into separate files.
 class TextDropTarget : public wxTextDropTarget {  // Class to override virtual functions.
  public:
 	explicit TextDropTarget(wxTextCtrl *owner);
