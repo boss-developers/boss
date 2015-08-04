@@ -125,41 +125,6 @@ inline T Read(char*& buffer) {
  * and in particular this link: http://www.uesp.net/wiki/Tes4Mod:Mod_File_Format/TES4
  */
 
-bool IsPluginMaster(fs::path filename) {
-	char buffer[MAXLENGTH];
-	char* bufptr = buffer;
-	ModHeader modHeader;
-
-	if (filename.empty())
-		return false;
-
-	// MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
-	// Note 2: According to Boost docs, c_str() is the same as specifying native().c_str()?
-	std::ifstream file(filename.string(), std::ios_base::binary | std::ios_base::in);
-
-	if (file.bad())
-		//throw boss_error(BOSS_ERROR_FILE_READ_FAIL, filename.string());
-		return false;
-
-	// Reads the first MAXLENGTH bytes into the buffer
-	file.read(&buffer[0], sizeof(buffer));
-
-	// Check for the 'magic' marker at start
-	if (Read<unsigned int>(bufptr) != Record::TES4) {
-		return false;
-	}
-
-	// Next field is the total header size
-	/*uint headerSize = */Read<unsigned int>(bufptr);
-
-	// Next comes the header record Flags
-	unsigned int flags = Read<unsigned int>(bufptr);
-
-	// LSb of this record's flags is used to indicate if the
-	// mod is a master or a plugin
-	return ((flags & 0x1) != 0);
-}
-
 ModHeader ReadHeader(fs::path filename) {
 	char buffer[MAXLENGTH];
 	char* bufptr = buffer;
@@ -241,6 +206,41 @@ ModHeader ReadHeader(fs::path filename) {
 
 	// We should have all the required information.
 	return modHeader;
+}
+
+bool IsPluginMaster(fs::path filename) {
+	char buffer[MAXLENGTH];
+	char* bufptr = buffer;
+	ModHeader modHeader;
+
+	if (filename.empty())
+		return false;
+
+	// MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
+	// Note 2: According to Boost docs, c_str() is the same as specifying native().c_str()?
+	std::ifstream file(filename.string(), std::ios_base::binary | std::ios_base::in);
+
+	if (file.bad())
+		//throw boss_error(BOSS_ERROR_FILE_READ_FAIL, filename.string());
+		return false;
+
+	// Reads the first MAXLENGTH bytes into the buffer
+	file.read(&buffer[0], sizeof(buffer));
+
+	// Check for the 'magic' marker at start
+	if (Read<unsigned int>(bufptr) != Record::TES4) {
+		return false;
+	}
+
+	// Next field is the total header size
+	/*uint headerSize = */Read<unsigned int>(bufptr);
+
+	// Next comes the header record Flags
+	unsigned int flags = Read<unsigned int>(bufptr);
+
+	// LSb of this record's flags is used to indicate if the
+	// mod is a master or a plugin
+	return ((flags & 0x1) != 0);
 }
 
 }  // namespace boss
