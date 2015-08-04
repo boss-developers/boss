@@ -28,6 +28,8 @@
 #ifndef SUPPORT_MOD_FORMAT_H_
 #define SUPPORT_MOD_FORMAT_H_
 
+#include <cstdint>
+
 #include <string>
 
 #include <boost/filesystem.hpp>
@@ -47,12 +49,13 @@ struct ModHeader {
 
 
 struct Record {
-	static const unsigned long TES4 = '4SET';
-	static const unsigned long HEDR = 'RDEH';
-	static const unsigned long OFST = 'TSFO';
-	static const unsigned long DELE = 'ELED';
-	static const unsigned long CNAM = 'MANC';
-	static const unsigned long SNAM = 'MANS';
+	// MCP Note: Changed from unsigned long to std::uint32_t
+	static const std::uint32_t TES4 = '4SET';
+	static const std::uint32_t HEDR = 'RDEH';
+	static const std::uint32_t OFST = 'TSFO';
+	static const std::uint32_t DELE = 'ELED';
+	static const std::uint32_t CNAM = 'MANC';
+	static const std::uint32_t SNAM = 'MANS';
 };
 
 ModHeader ReadHeader(fs::path filename);

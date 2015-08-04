@@ -83,9 +83,9 @@ std::string RegKeyStringValue(std::string keyStr, std::string subkey, std::strin
 class Version {
  public:
 	Version();
-	Version(const char * ver);
-	Version(const std::string ver);
-	Version(const fs::path file);
+	explicit Version(const char * ver);
+	explicit Version(const std::string ver);
+	explicit Version(const fs::path file);
 
 	std::string AsString() const;
 

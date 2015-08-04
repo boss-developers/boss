@@ -27,6 +27,8 @@
 
 #include "support/mod_format.h"
 
+#include <cstdint>
+
 #include <fstream>
 #include <string>
 
@@ -80,7 +82,7 @@ std::string ParseVersion(const std::string& text) {
  * - Reads a consecutive array of charactes up to maxsize length and
  * returns them as a new string.
  */
-std::string ReadString(char*& bufptr, unsigned short size) {
+std::string ReadString(char*& bufptr, std::uint16_t size) {
 	std::string data;
 
 	data.reserve(size + 1);
@@ -201,7 +203,7 @@ ModHeader ReadHeader(fs::path filename) {
 
 	// HEDR record has fields: DataSize, Version (0.8 o 1.0), Record Count
 	// and Next Object Id
-	/*ushort dataSize = */Read<unsigned short>(bufptr);
+	/*ushort dataSize = */Read<std::uint16_t>(bufptr);
 	/*float version = */Read<float>(bufptr);
 	/*int numRecords = */Read<int>(bufptr);
 	/*uint nextObjId = */Read<unsigned int>(bufptr);
@@ -215,19 +217,19 @@ ModHeader ReadHeader(fs::path filename) {
 		switch (signature) {
 			case Record::OFST:
 			case Record::DELE:
-				bufptr += Read<unsigned short>(bufptr);  // Skip
+				bufptr += Read<std::uint16_t>(bufptr);  // Skip
 				signature = Read<unsigned int>(bufptr);
 				break;
 
 			// Extract author name, if present
 			case Record::CNAM:
-				modHeader.Author = ReadString(bufptr, Read<unsigned short>(bufptr));
+				modHeader.Author = ReadString(bufptr, Read<std::uint16_t>(bufptr));
 				signature = Read<uint>(bufptr);
 				break;
 
 			// Extract description and version, if present
 			case Record::SNAM:
-				modHeader.Description = ReadString(bufptr, Read<unsigned short>(bufptr));
+				modHeader.Description = ReadString(bufptr, Read<std::uint16_t>(bufptr));
 				modHeader.Version     = ParseVersion(modHeader.Description);
 				signature = Read<unsigned int>(bufptr);
 				break;

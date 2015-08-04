@@ -57,7 +57,7 @@ namespace fs = boost::filesystem;
 
 class TextDropTarget : public wxTextDropTarget {  // Class to override virtual functions.
  public:
-	TextDropTarget(wxTextCtrl *owner);
+	explicit TextDropTarget(wxTextCtrl *owner);
 	virtual bool OnDropText(wxCoord x, wxCoord y,
 	                        const wxString &data);
  private:

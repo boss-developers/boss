@@ -102,8 +102,9 @@ enum logFormatting : std::uint32_t {
 class BOSS_COMMON Outputter {
  public:
 	Outputter();
+	// MCP Note: Mark this as explicit?
 	Outputter(const Outputter& o);
-	Outputter(const std::uint32_t format);
+	explicit Outputter(const std::uint32_t format);
 	Outputter(const std::uint32_t format, const ParsingError e);
 	Outputter(const std::uint32_t format, const Rule r);
 	Outputter(const std::uint32_t format, const logFormatting l);

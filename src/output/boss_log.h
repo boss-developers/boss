@@ -47,7 +47,7 @@ namespace fs = boost::filesystem;
 class BossLog {
  public:
 	BossLog();
-	BossLog(const std::uint32_t format);
+	explicit BossLog(const std::uint32_t format);
 
 	void SetFormat(const std::uint32_t format);
 	void Save(const fs::path file, const bool overwrite);  // Saves contents to file. Throws boss_error exception on fail.
