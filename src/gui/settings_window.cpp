@@ -134,58 +134,6 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent)
 	SetSizerAndFit(bigBox);
 }
 
-void SettingsFrame::SetDefaultValues() {
-	// General Settings
-	if (gl_use_user_rules_manager)
-		UseUserRuleManagerBox->SetValue(true);
-	if (gl_close_gui_after_sorting)
-		CloseGUIAfterRunningBox->SetValue(true);
-
-	// TODO(MCP): Look at converting this to a switch-statement
-	if (gl_game == AUTODETECT)
-		GameChoice->SetSelection(0);
-	else if (gl_game == OBLIVION)
-		GameChoice->SetSelection(1);
-	else if (gl_game == NEHRIM)
-		GameChoice->SetSelection(2);
-	else if (gl_game == SKYRIM)
-		GameChoice->SetSelection(3);
-	else if (gl_game == FALLOUT3)
-		GameChoice->SetSelection(4);
-	else if (gl_game == FALLOUTNV)
-		GameChoice->SetSelection(5);
-
-	// TODO(MCP): Look at converting this to a switch-statement
-	if (gl_language == ENGLISH)
-		LanguageChoice->SetSelection(0);
-	else if (gl_language == SPANISH)
-		LanguageChoice->SetSelection(1);
-	else if (gl_language == GERMAN)
-		LanguageChoice->SetSelection(2);
-	else if (gl_language == RUSSIAN)
-		LanguageChoice->SetSelection(3);
-	else if (gl_language == SIMPCHINESE)
-		LanguageChoice->SetSelection(4);
-
-	// MCP Note: Look at converting this to a switch-statement?
-	// Debugging Settings
-	if (gl_debug_verbosity == 0)
-		DebugVerbosityChoice->SetSelection(0);
-	else if (gl_debug_verbosity == 1)
-		DebugVerbosityChoice->SetSelection(1);
-	else if (gl_debug_verbosity == 2)
-		DebugVerbosityChoice->SetSelection(2);
-	else if (gl_debug_verbosity == 3)
-		DebugVerbosityChoice->SetSelection(3);
-
-	// Masterlist repository URL settings
-	OblivionRepoURLTxt->SetValue(FromUTF8(gl_oblivion_repo_url));
-	NehrimRepoURLTxt->SetValue(FromUTF8(gl_nehrim_repo_url));
-	SkyrimRepoURLTxt->SetValue(FromUTF8(gl_skyrim_repo_url));
-	Fallout3RepoURLTxt->SetValue(FromUTF8(gl_fallout3_repo_url));
-	FalloutNVRepoURLTxt->SetValue(FromUTF8(gl_falloutnv_repo_url));
-}
-
 void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	// Make sure the settings are saved.
 
@@ -250,6 +198,58 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 
 void SettingsFrame::OnCancelQuit(wxCommandEvent& event) {
 	this->Close();
+}
+
+void SettingsFrame::SetDefaultValues() {
+	// General Settings
+	if (gl_use_user_rules_manager)
+		UseUserRuleManagerBox->SetValue(true);
+	if (gl_close_gui_after_sorting)
+		CloseGUIAfterRunningBox->SetValue(true);
+
+	// TODO(MCP): Look at converting this to a switch-statement
+	if (gl_game == AUTODETECT)
+		GameChoice->SetSelection(0);
+	else if (gl_game == OBLIVION)
+		GameChoice->SetSelection(1);
+	else if (gl_game == NEHRIM)
+		GameChoice->SetSelection(2);
+	else if (gl_game == SKYRIM)
+		GameChoice->SetSelection(3);
+	else if (gl_game == FALLOUT3)
+		GameChoice->SetSelection(4);
+	else if (gl_game == FALLOUTNV)
+		GameChoice->SetSelection(5);
+
+	// TODO(MCP): Look at converting this to a switch-statement
+	if (gl_language == ENGLISH)
+		LanguageChoice->SetSelection(0);
+	else if (gl_language == SPANISH)
+		LanguageChoice->SetSelection(1);
+	else if (gl_language == GERMAN)
+		LanguageChoice->SetSelection(2);
+	else if (gl_language == RUSSIAN)
+		LanguageChoice->SetSelection(3);
+	else if (gl_language == SIMPCHINESE)
+		LanguageChoice->SetSelection(4);
+
+	// MCP Note: Look at converting this to a switch-statement?
+	// Debugging Settings
+	if (gl_debug_verbosity == 0)
+		DebugVerbosityChoice->SetSelection(0);
+	else if (gl_debug_verbosity == 1)
+		DebugVerbosityChoice->SetSelection(1);
+	else if (gl_debug_verbosity == 2)
+		DebugVerbosityChoice->SetSelection(2);
+	else if (gl_debug_verbosity == 3)
+		DebugVerbosityChoice->SetSelection(3);
+
+	// Masterlist repository URL settings
+	OblivionRepoURLTxt->SetValue(FromUTF8(gl_oblivion_repo_url));
+	NehrimRepoURLTxt->SetValue(FromUTF8(gl_nehrim_repo_url));
+	SkyrimRepoURLTxt->SetValue(FromUTF8(gl_skyrim_repo_url));
+	Fallout3RepoURLTxt->SetValue(FromUTF8(gl_fallout3_repo_url));
+	FalloutNVRepoURLTxt->SetValue(FromUTF8(gl_falloutnv_repo_url));
 }
 
 }  // namespace boss
