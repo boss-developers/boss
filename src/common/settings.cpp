@@ -118,6 +118,21 @@ void Settings::Save(const fs::path file, const std::uint32_t currentGameId) {
 	ini.close();
 }
 
+ParsingError Settings::ErrorBuffer() const {
+	return errorBuffer;
+}
+
+void Settings::ErrorBuffer(const ParsingError buffer) {
+	errorBuffer = buffer;
+}
+
+std::string Settings::GetValue(const std::string setting) const {
+	boost::unordered_map<std::string, std::string>::const_iterator it = iniSettings.find(setting);
+	if (it != iniSettings.end())
+		return it->second;
+	return "";
+}
+
 std::string Settings::GetIniGameString(const std::uint32_t game) const {
 	// TODO(MCP): Change this to a switch-statement
 	if (game == AUTODETECT)
@@ -135,6 +150,13 @@ std::string Settings::GetIniGameString(const std::uint32_t game) const {
 	return "";
 }
 
+std::string Settings::GetLogFormatString() const {
+	// TODO(MCP): Change this to a switch-statement, too?
+	if (gl_log_format == HTML)
+		return "html";
+	return "text";
+}
+
 std::string Settings::GetLanguageString() const {
 	// TODO(MCP): Change this to a switch-statement
 	if (gl_language == ENGLISH)
@@ -148,21 +170,6 @@ std::string Settings::GetLanguageString() const {
 	else if (gl_language == SIMPCHINESE)
 		return "chinese";
 	return "";
-}
-
-std::string Settings::GetLogFormatString() const {
-	// TODO(MCP): Change this to a switch-statement, too?
-	if (gl_log_format == HTML)
-		return "html";
-	return "text";
-}
-
-ParsingError Settings::ErrorBuffer() const {
-	return errorBuffer;
-}
-
-void Settings::ErrorBuffer(const ParsingError buffer) {
-	errorBuffer = buffer;
 }
 
 void Settings::ApplyIniSettings() {
@@ -250,13 +257,6 @@ void Settings::ApplyIniSettings() {
 			gl_trial_run = StringToBool(iter->second);
 		}
 	}
-}
-
-std::string Settings::GetValue(const std::string setting) const {
-	boost::unordered_map<std::string, std::string>::const_iterator it = iniSettings.find(setting);
-	if (it != iniSettings.end())
-		return it->second;
-	return "";
 }
 
 }  // namespace boss
