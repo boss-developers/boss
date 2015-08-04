@@ -72,6 +72,7 @@ namespace fs = boost::filesystem;
 namespace unicode = boost::spirit::unicode;
 namespace phoenix = boost::phoenix;
 
+// TODO(MCP): Fine out what qi::labels contains so we can remove the using namespace directive
 using namespace qi::labels;
 using boost::algorithm::to_lower_copy;
 
@@ -98,6 +99,25 @@ using unicode::xdigit;
 // Keyword structures
 ///////////////////////////////
 
+ruleKeys_::ruleKeys_() {
+	add
+		("add", ADD)
+		("override", OVERRIDE)
+		("for", FOR)
+	;
+}
+
+messageKeys_::messageKeys_() {
+	add
+		("append", APPEND)
+		("replace", REPLACE)
+		("before", BEFORE)
+		("after", AFTER)
+		("top", TOP)
+		("bottom", BOTTOM)
+	;
+}
+
 masterlistMsgKey_::masterlistMsgKey_() {
 	// MCP Note: Look into changing the style on these. Not sure, have never seen syntax like this before...
 	// Need to read up on Boost Spirit
@@ -119,25 +139,6 @@ typeKey_::typeKey_() {
 		("endgroup", ENDGROUP)
 		("mod:", MOD)                // Needs the colon there unfortunately.
 		("regex:", REGEX)
-	;
-}
-
-ruleKeys_::ruleKeys_() {
-	add
-		("add", ADD)
-		("override", OVERRIDE)
-		("for", FOR)
-	;
-}
-
-messageKeys_::messageKeys_() {
-	add
-		("append", APPEND)
-		("replace", REPLACE)
-		("before", BEFORE)
-		("after", AFTER)
-		("top", TOP)
-		("bottom", BOTTOM)
 	;
 }
 
@@ -490,6 +491,30 @@ conditional_grammar::conditional_grammar()
 	on_error<fail>(language,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 }
 
+void conditional_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
+	errorBuffer = inErrorBuffer;
+}
+
+void conditional_grammar::SetVarStore(boost::unordered_set<std::string> * varStore) {
+	setVars = varStore;
+}
+
+void conditional_grammar::SetCRCStore(boost::unordered_map<std::string, std::uint32_t> * CRCStore) {
+	fileCRCs = CRCStore;
+}
+
+void conditional_grammar::SetActivePlugins(boost::unordered_set<std::string> * plugins) {
+	activePlugins = plugins;
+}
+
+void conditional_grammar::SetLastConditionalResult(bool * result) {
+	lastResult = result;
+}
+
+void conditional_grammar::SetParentGame(const Game * game) {
+	parentGame = game;
+}
+
 // Evaluate a single conditional.
 void conditional_grammar::EvaluateConditional(bool& result, const std::string type,
                                               const bool condition) {
@@ -519,32 +544,9 @@ void conditional_grammar::EvalElseConditional(bool& result, bool& ok) {
 		result = !(*lastResult);
 }
 
-void conditional_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
-	errorBuffer = inErrorBuffer;
-}
-
-void conditional_grammar::SetVarStore(boost::unordered_set<std::string> * varStore) {
-	setVars = varStore;
-}
-
-void conditional_grammar::SetCRCStore(boost::unordered_map<std::string, std::uint32_t> * CRCStore) {
-	fileCRCs = CRCStore;
-}
-
-void conditional_grammar::SetActivePlugins(boost::unordered_set<std::string> * plugins) {
-	activePlugins = plugins;
-}
-
-void conditional_grammar::SetParentGame(const Game * game) {
-	parentGame = game;
-}
-
-void conditional_grammar::SetLastConditionalResult(bool * result) {
-	lastResult = result;
-}
-
 // Returns the true path based on what type of file or keyword it is.
 fs::path conditional_grammar::GetPath(const std::string file) {
+	// MCP Note: May need platform conditionals here
 	if (file == "OBSE" || file == "FOSE" || file == "NVSE" || file == "SKSE" ||
 	    file == "MWSE")
 		return parentGame->SEExecutable();
@@ -554,7 +556,8 @@ fs::path conditional_grammar::GetPath(const std::string file) {
 	else if (file == "BOSS")
 		return boss_path / "BOSS.exe";
 	else if (boost::iequals(fs::path(file).extension().string(), ".dll") &&
-	         file.find('/') == std::string::npos && file.find('\\') == std::string::npos &&
+	         file.find('/') == std::string::npos &&
+	         file.find('\\') == std::string::npos &&
 	         fs::exists(parentGame->SEPluginsFolder()))
 		return parentGame->SEPluginsFolder() / file;
 	return parentGame->DataFolder() / file;
