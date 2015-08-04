@@ -268,6 +268,10 @@ std::string Version::AsString() const {
 	return verString;
 }
 
+bool Version::operator > (Version ver) {
+	return (*this != ver && !(*this < ver));
+}
+
 bool Version::operator < (Version ver) {
 	// Version string could have a wide variety of formats. Use regex to choose specific comparison types.
 
@@ -305,10 +309,6 @@ bool Version::operator < (Version ver) {
 	}
 	// Wacky format. Use the Alphanum Algorithm. (what a name!)
 	return (doj::alphanum_comp(verString, ver.AsString()) < 0);
-}
-
-bool Version::operator > (Version ver) {
-	return (*this != ver && !(*this < ver));
 }
 
 bool Version::operator >= (Version ver) {
