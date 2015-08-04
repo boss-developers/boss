@@ -387,21 +387,6 @@ fs::path Game::Log(std::uint32_t format) const {
 	return boss_path / bossFolderName / "BOSSlog.txt";
 }
 
-// Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
-fs::path Game::GetLocalAppDataPath() {
-#if _WIN32 || _WIN64
-	HWND owner = NULL;
-	TCHAR path[MAX_PATH];
-
-	HRESULT res = SHGetFolderPath(owner, CSIDL_LOCAL_APPDATA, NULL,
-	                              SHGFP_TYPE_CURRENT, path);
-
-	if (res == S_OK)
-		return fs::path(path);
-#endif
-	return fs::path("");
-}
-
 void Game::CreateBOSSGameFolder() {
 	// Make sure that the BOSS game path exists.
 	try {
@@ -872,6 +857,21 @@ void Game::SortPlugins() {
 			                      << bloc::translate("Utility will end now.");
 		}
 	}
+}
+
+// Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
+fs::path Game::GetLocalAppDataPath() {
+#if _WIN32 || _WIN64
+	HWND owner = NULL;
+	TCHAR path[MAX_PATH];
+
+	HRESULT res = SHGetFolderPath(owner, CSIDL_LOCAL_APPDATA, NULL,
+	                              SHGFP_TYPE_CURRENT, path);
+
+	if (res == S_OK)
+		return fs::path(path);
+#endif
+	return fs::path("");
 }
 
 }  // namespace boss
