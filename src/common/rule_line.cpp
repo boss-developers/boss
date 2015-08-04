@@ -288,6 +288,59 @@ void RuleList::Save(const fs::path file) {
 	outFile.close();
 }
 
+std::size_t RuleList::FindRule(const std::string ruleObject,
+                               const bool onlyEnabled) const {
+	std::size_t max = rules.size();
+	for (std::size_t i = 0; i < max; i++) {
+		// TODO(MCP): Move !onlyEnabled to front of if-statement to take advantage of short-cirtuit evaluation.
+		if ((onlyEnabled && rules[i].Enabled()) || !onlyEnabled) {
+			if (boost::iequals(rules[i].Object(), ruleObject))
+				return i;
+		}
+	}
+	return max;
+}
+
+std::vector<Rule> RuleList::Rules() const {
+	return rules;
+}
+
+std::vector<ParsingError> RuleList::ErrorBuffer() const {
+	return errorBuffer;
+}
+
+Rule RuleList::RuleAt(const std::size_t pos) const {
+	if (pos < rules.size())
+		return rules[pos];
+	return Rule();
+}
+
+void RuleList::Rules(const std::vector<Rule> inRules) {
+	rules = inRules;
+}
+
+void RuleList::ErrorBuffer(const std::vector<ParsingError> buffer) {
+	errorBuffer = buffer;
+}
+
+void RuleList::Erase(const std::size_t pos) {
+	rules.erase(rules.begin() + pos);
+}
+
+void RuleList::Insert(const std::size_t pos, const Rule rule) {
+	rules.insert(rules.begin() + pos, rule);
+}
+
+void RuleList::Replace(const std::size_t pos, const Rule rule) {
+	if (pos < rules.size())
+		rules[pos] = rule;
+}
+
+void RuleList::Clear() {
+	rules.clear();
+	errorBuffer.clear();
+}
+
 void RuleList::CheckSyntax(const Game& parentGame) {
 	// Loop through rules, check syntax of each. If a rule has invalid syntax, remove it.
 	std::vector<Rule>::iterator it = rules.begin();
@@ -372,59 +425,6 @@ void RuleList::CheckSyntax(const Game& parentGame) {
 			LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
 		}
 	}
-}
-
-std::size_t RuleList::FindRule(const std::string ruleObject,
-                               const bool onlyEnabled) const {
-	std::size_t max = rules.size();
-	for (std::size_t i = 0; i < max; i++) {
-		// TODO(MCP): Move !onlyEnabled to front of if-statement to take advantage of short-cirtuit evaluation.
-		if ((onlyEnabled && rules[i].Enabled()) || !onlyEnabled) {
-			if (boost::iequals(rules[i].Object(), ruleObject))
-				return i;
-		}
-	}
-	return max;
-}
-
-std::vector<Rule> RuleList::Rules() const {
-	return rules;
-}
-
-std::vector<ParsingError> RuleList::ErrorBuffer() const {
-	return errorBuffer;
-}
-
-Rule RuleList::RuleAt(const std::size_t pos) const {
-	if (pos < rules.size())
-		return rules[pos];
-	return Rule();
-}
-
-void RuleList::Rules(const std::vector<Rule> inRules) {
-	rules = inRules;
-}
-
-void RuleList::ErrorBuffer(const std::vector<ParsingError> buffer) {
-	errorBuffer = buffer;
-}
-
-void RuleList::Clear() {
-	rules.clear();
-	errorBuffer.clear();
-}
-
-void RuleList::Erase(const std::size_t pos) {
-	rules.erase(rules.begin() + pos);
-}
-
-void RuleList::Insert(const std::size_t pos, const Rule rule) {
-	rules.insert(rules.begin() + pos, rule);
-}
-
-void RuleList::Replace(const std::size_t pos, const Rule rule) {
-	if (pos < rules.size())
-		rules[pos] = rule;
 }
 
 }  // namespace boss

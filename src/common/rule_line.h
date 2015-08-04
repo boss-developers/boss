@@ -102,7 +102,7 @@ class BOSS_COMMON RuleList {
 	Rule RuleAt(const std::size_t pos) const;
 
 	void Rules(const std::vector<Rule> inRules);
-	void ErrorBuffer(const std::vector<ParsingError>);
+	void ErrorBuffer(const std::vector<ParsingError> buffer);
 
 	void Erase(const std::size_t pos);
 	void Insert(const std::size_t pos, const Rule rule);
