@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)dirty_list_generator\main.cpp" />
+    <ClCompile Include="..\dirty_list_generator\main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5414EFAE-A1AB-477F-8897-3C99131B634D}</ProjectGuid>

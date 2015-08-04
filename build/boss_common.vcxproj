@@ -19,42 +19,42 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)src\common\conditional_data.cpp" />
-    <ClCompile Include="$(SolutionDir)src\common\error.cpp" />
-    <ClCompile Include="$(SolutionDir)src\common\game.cpp" />
-    <ClCompile Include="$(SolutionDir)src\common\globals.cpp" />
-    <ClCompile Include="$(SolutionDir)src\common\item_list.cpp" />
-    <ClCompile Include="$(SolutionDir)src\common\keywords.cpp" />
-    <ClCompile Include="$(SolutionDir)src\common\rule_line.cpp" />
-    <ClCompile Include="$(SolutionDir)src\common\settings.cpp" />
-    <ClCompile Include="$(SolutionDir)src\output\boss_log.cpp" />
-    <ClCompile Include="$(SolutionDir)src\output\output.cpp" />
-    <ClCompile Include="$(SolutionDir)src\parsing\grammar.cpp" />
-    <ClCompile Include="$(SolutionDir)src\support\helpers.cpp" />
-    <ClCompile Include="$(SolutionDir)src\support\logger.cpp" />
-    <ClCompile Include="$(SolutionDir)src\support\mod_format.cpp" />
-    <ClCompile Include="$(SolutionDir)src\support\version_regex.cpp" />
+    <ClCompile Include="..\src\common\conditional_data.cpp" />
+    <ClCompile Include="..\src\common\error.cpp" />
+    <ClCompile Include="..\src\common\game.cpp" />
+    <ClCompile Include="..\src\common\globals.cpp" />
+    <ClCompile Include="..\src\common\item_list.cpp" />
+    <ClCompile Include="..\src\common\keywords.cpp" />
+    <ClCompile Include="..\src\common\rule_line.cpp" />
+    <ClCompile Include="..\src\common\settings.cpp" />
+    <ClCompile Include="..\src\output\boss_log.cpp" />
+    <ClCompile Include="..\src\output\output.cpp" />
+    <ClCompile Include="..\src\parsing\grammar.cpp" />
+    <ClCompile Include="..\src\support\helpers.cpp" />
+    <ClCompile Include="..\src\support\logger.cpp" />
+    <ClCompile Include="..\src\support\mod_format.cpp" />
+    <ClCompile Include="..\src\support\version_regex.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(SolutionDir)src\common\conditional_data.h" />
-    <ClInclude Include="$(SolutionDir)src\common\dll_def.h" />
-    <ClInclude Include="$(SolutionDir)src\common\error.h" />
-    <ClInclude Include="$(SolutionDir)src\common\game.h" />
-    <ClInclude Include="$(SolutionDir)src\common\globals.h" />
-    <ClInclude Include="$(SolutionDir)src\common\item_list.h" />
-    <ClInclude Include="$(SolutionDir)src\common\keywords.h" />
-    <ClInclude Include="$(SolutionDir)src\common\rule_line.h" />
-    <ClInclude Include="$(SolutionDir)src\common\settings.h" />
-    <ClInclude Include="$(SolutionDir)src\output\boss_log.h" />
-    <ClInclude Include="$(SolutionDir)src\output\output.h" />
-    <ClInclude Include="$(SolutionDir)src\parsing\grammar.h" />
-    <ClInclude Include="$(SolutionDir)src\support\helpers.h" />
-    <ClInclude Include="$(SolutionDir)src\support\logger.h" />
-    <ClInclude Include="$(SolutionDir)src\support\mod_format.h" />
-    <ClInclude Include="$(SolutionDir)src\support\platform.h" />
-    <ClInclude Include="$(SolutionDir)src\support\types.h" />
-    <ClInclude Include="$(SolutionDir)src\support\version_regex.h" />
-    <ClInclude Include="$(SolutionDir)src\updating\updater.h" />
+    <ClInclude Include="..\src\common\conditional_data.h" />
+    <ClInclude Include="..\src\common\dll_def.h" />
+    <ClInclude Include="..\src\common\error.h" />
+    <ClInclude Include="..\src\common\game.h" />
+    <ClInclude Include="..\src\common\globals.h" />
+    <ClInclude Include="..\src\common\item_list.h" />
+    <ClInclude Include="..\src\common\keywords.h" />
+    <ClInclude Include="..\src\common\rule_line.h" />
+    <ClInclude Include="..\src\common\settings.h" />
+    <ClInclude Include="..\src\output\boss_log.h" />
+    <ClInclude Include="..\src\output\output.h" />
+    <ClInclude Include="..\src\parsing\grammar.h" />
+    <ClInclude Include="..\src\support\helpers.h" />
+    <ClInclude Include="..\src\support\logger.h" />
+    <ClInclude Include="..\src\support\mod_format.h" />
+    <ClInclude Include="..\src\support\platform.h" />
+    <ClInclude Include="..\src\support\types.h" />
+    <ClInclude Include="..\src\support\version_regex.h" />
+    <ClInclude Include="..\src\updating\updater.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2418BCC4-4F44-4508-82E2-6FAD862BC44C}</ProjectGuid>

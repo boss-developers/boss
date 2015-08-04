@@ -187,13 +187,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)src\boss_cli.cpp" />
+    <ClCompile Include="..\src\boss_cli.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(SolutionDir)BOSS.ico" />
+    <None Include="..\BOSS.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="$(SolutionDir)BOSS_version.rc" />
+    <ResourceCompile Include="..\BOSS_version.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

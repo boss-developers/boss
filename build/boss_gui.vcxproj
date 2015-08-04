@@ -163,22 +163,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="$(SolutionDir)src\gui\element_ids.h" />
-    <ClInclude Include="$(SolutionDir)src\gui\main_window.h" />
-    <ClInclude Include="$(SolutionDir)src\gui\settings_window.h" />
-    <ClInclude Include="$(SolutionDir)src\gui\user_rule_editor.h" />
+    <ClInclude Include="..\src\gui\element_ids.h" />
+    <ClInclude Include="..\src\gui\main_window.h" />
+    <ClInclude Include="..\src\gui\settings_window.h" />
+    <ClInclude Include="..\src\gui\user_rule_editor.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)src\gui\element_ids.cpp" />
-    <ClCompile Include="$(SolutionDir)src\gui\main_window.cpp" />
-    <ClCompile Include="$(SolutionDir)src\gui\settings_window.cpp" />
-    <ClCompile Include="$(SolutionDir)src\gui\user_rule_editor.cpp" />
+    <ClCompile Include="..\src\gui\element_ids.cpp" />
+    <ClCompile Include="..\src\gui\main_window.cpp" />
+    <ClCompile Include="..\src\gui\settings_window.cpp" />
+    <ClCompile Include="..\src\gui\user_rule_editor.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(SolutionDir)BOSS.ico" />
+    <None Include="..\BOSS.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="$(SolutionDir)BOSS_version.rc" />
+    <ResourceCompile Include="..\BOSS_version.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
