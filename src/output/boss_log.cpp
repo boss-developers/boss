@@ -90,108 +90,54 @@ BossLog::BossLog(const std::uint32_t format)
 	unrecognisedPlugins.SetFormat(format);
 }
 
-std::string BossLog::PrintHeaderTop() {
-	std::stringstream out;
-	if (logFormat == HTML) {
-		out << "<!DOCTYPE html>"
-		    << "<meta charset='utf-8'>"
-		    << "<title>BOSS Log</title>"
-		    << "<link rel='stylesheet' href='../resources/style.css' />"
-		    << "<nav>"
-		    << "<header>"
-		    << "	<h1>BOSS</h1>"
-		    << bloc::translate("	Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH)
-		    << "</header>";
-	} else {
-		out << "\nBOSS\n"
-		    << bloc::translate("Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << std::endl;
-	}
-	return out.str();
+void BossLog::SetFormat(const std::uint32_t format) {
+	logFormat = format;
+	updaterOutput.SetFormat(format);
+	criticalError.SetFormat(format);
+	userRules.SetFormat(format);
+	sePlugins.SetFormat(format);
+	recognisedPlugins.SetFormat(format);
+	unrecognisedPlugins.SetFormat(format);
 }
 
-std::string BossLog::PrintHeaderBottom() {
-	std::stringstream out;
-	if (logFormat == HTML) {
-		out << "<footer>"
-		    << "	<div class='button' data-section='browserBox' id='supportButtonShow'>" << bloc::translate("Log Feature Support") << "</div>"
-		    << "	<div class='button' id='filtersButtonToggle'>" << bloc::translate("Filters") << "<span id='arrow'></span></div>"
-		    << "</footer>"
-		    << "</nav>"
-		    << "<noscript>"
-		    << bloc::translate("The BOSS Log requires Javascript to be enabled in order to function.")
-		    << "</noscript>";
-	}
-	return out.str();
+void BossLog::Save(const fs::path file, const bool overwrite) {
+	if (fs::exists(file))
+		recognisedHasChanged = HasRecognisedListChanged(file);
+
+	std::ofstream outFile;
+	if (overwrite)
+		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+		outFile.open(file.string());
+	else
+		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+		outFile.open(file.string(), std::ios_base::out|std::ios_base::app);  // MCP Note: May need std::ofstream:: here instead
+	if (outFile.fail())
+		throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
+
+	outFile << PrintLog();
+	outFile.close();
 }
 
-std::string BossLog::PrintFooter() {
-	std::stringstream out;
-	std::string colourTooltip = bloc::translate("Colours must be specified using lowercase hex codes.");
+void BossLog::Clear() {
+	recognised = 0;
+	unrecognised = 0;
+	inactive = 0;
+	messages = 0;
+	warnings = 0;
+	errors = 0;
 
-	if (logFormat == HTML) {
-		out << "<section id='browserBox'>"
-		    << "<p>" << bloc::translate("Support for the BOSS Log's more advanced features varies. Here's what your browser supports:")
-		    << "<h3>" << bloc::translate("Functionality") << "</h3>"
-		    << "<table>"
-		    << "	<tbody>"
-		    << "		<tr><td id='pluginSubmitSupport'><td>" << bloc::translate("In-Log Plugin Submission") << "<td>" << bloc::translate("Allows unrecognised plugins to be anonymously submitted to the BOSS team directly from the BOSS Log.")
-		    << "		<tr><td id='memorySupport'><td>" << bloc::translate("Settings Memory") << "<td>" << bloc::translate("Allows the BOSS Log to automatically restore the filter configuration last used whenever the BOSS Log is opened.")
-		    << "		<tr><td id='placeholderSupport'><td>" << bloc::translate("Input Placeholders")
-		    << "		<tr><td id='validationSupport'><td>" << bloc::translate("Form Validation")
-		    << "</table>"
-		    << "</section>"
+	scriptExtender.clear();
+	gameName.clear();
 
-		    << "<aside>"
-		    << "<label><input type='checkbox' id='hideVersionNumbers' data-class='version'/>" << bloc::translate("Hide Version Numbers") << "</label>"
-		    << "<label><input type='checkbox' id='hideActiveLabel' data-class='active'/>" << bloc::translate("Hide 'Active' Label") << "</label>"
-		    << "<label><input type='checkbox' id='hideChecksums' data-class='crc'/>" << bloc::translate("Hide Checksums") << "</label>"
-		    << "<label><input type='checkbox' id='hideNotes'/>" << bloc::translate("Hide Notes") << "</label>"
-		    << "<label><input type='checkbox' id='hideBashTags'/>" << bloc::translate("Hide Bash Tag Suggestions") << "</label>"
-		    << "<label><input type='checkbox' id='hideRequirements'/>" << bloc::translate("Hide Requirements") << "</label>"
-		    << "<label><input type='checkbox' id='hideIncompatibilities'/>" << bloc::translate("Hide Incompatibilities") << "</label>"
-		    << "<label><input type='checkbox' id='hideDoNotCleanMessages'/>" << bloc::translate("Hide 'Do Not Clean' Messages") << "</label>"
-		    << "<label><input type='checkbox' id='hideAllPluginMessages'/>" << bloc::translate("Hide All Plugin Messages") << "</label>"
-		    << "<label><input type='checkbox' id='hideInactivePlugins'/>" << bloc::translate("Hide Inactive Plugins") << "</label>"
-		    << "<label><input type='checkbox' id='hideMessagelessPlugins'/>" << bloc::translate("Hide Messageless Plugins") << "</label>"
-		    << "<footer>"
-		    << "	" << (boost::format(bloc::translate("%1% of %2% recognised plugins hidden.")) % "<span id='hiddenPluginNo'>0</span>" % recognised).str()
-		    << "	" << (boost::format(bloc::translate("%1% of %2% messages hidden.")) % "<span id='hiddenMessageNo'>0</span>" % messages).str()
-		    << "</footer>"
-		    << "</aside>"
+	updaterOutput.Clear();
+	criticalError.Clear();
+	userRules.Clear();
+	sePlugins.Clear();
+	recognisedPlugins.Clear();
+	unrecognisedPlugins.Clear();
 
-		    << "<div id='overlay'>"
-		    << "<div id='submitBox'>"
-		    << "<h2>" << bloc::translate("Submit Plugin") << "</h2>"
-		    << "<p><span id='pluginLabel'>" << bloc::translate("Plugin") << ":</span><span id='plugin'></span>"
-		    << "<form>"
-		    << "<label>" << bloc::translate("Download Location") << ":<br /><input type='url' placeholder='" << bloc::translate("Label for text box. Do not use a single quote in translation, use '&#x27;' instead", "A link to the plugin&#x27;s download location.") << "' id='link'></label>"
-		    << "<label>" << bloc::translate("Additional Notes") << ":<br /><textarea id='notes' placeholder='" << bloc::translate("Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.") << "'></textarea></label>"
-		    << "<div id='output'></div>"
-		    << "<p class='last'><button>" << bloc::translate("Submit") << "</button>"
-		    << "<button type='reset'>" << bloc::translate("Close") << "</button>"
-		    << "</form>"
-		    << "</div>"
-		    << "</div>"
-
-		    // Need to define some variables in code.
-		    << "<script>"
-		    << "var gameName = '" << gameName << "';"
-		    << "var txt1 = '" << bloc::translate("Checking for existing submission...") << "';"
-		    << "var txt2 = '" << bloc::translate("Matching submission already exists.") << "';"
-		    << "var txt3 = '" << bloc::translate("Plugin already submitted. Submission updated with new comment.") << "';"
-		    << "var txt4 = '" << bloc::translate("Plugin submitted!") << "';"
-		    << "var txt5 = '" << bloc::translate("Plugin submission failed! Authorisation failure. Please report this to the BOSS team.") << "';"
-		    << "var txt6 = '" << bloc::translate("Plugin submission failed! GitHub API rate limit exceeded. Please try again after %1%.") << "';"
-		    << "var txt7 = '" << bloc::translate("Plugin submission failed!") << "';"
-		    << "var txt8 = '" << bloc::translate("Web storage quota for this document has been exceeded.Please empty your browser\\'s cache. Note that this will delete all locally stored data.") << "';"
-		    << "var txt9 = '" << bloc::translate("Please supply at least a link or some notes.") << "';"
-		    << "var txt10 = '" << bloc::translate("Do not clean.") << "';"
-		    << "</script>"
-		    << "<script src='../resources/promise-1.0.0.min.js'></script>"
-		    << "<script src='../resources/octokit.js'></script>"
-		    << "<script src='../resources/script.js'></script>";
-	}
-	return out.str();
+	parsingErrors.clear();
+	globalMessages.clear();
 }
 
 std::string BossLog::PrintLog() {
@@ -372,54 +318,108 @@ std::string BossLog::PrintLog() {
 	return out.str();
 }
 
-void BossLog::SetFormat(const std::uint32_t format) {
-	logFormat = format;
-	updaterOutput.SetFormat(format);
-	criticalError.SetFormat(format);
-	userRules.SetFormat(format);
-	sePlugins.SetFormat(format);
-	recognisedPlugins.SetFormat(format);
-	unrecognisedPlugins.SetFormat(format);
+std::string BossLog::PrintHeaderTop() {
+	std::stringstream out;
+	if (logFormat == HTML) {
+		out << "<!DOCTYPE html>"
+		    << "<meta charset='utf-8'>"
+		    << "<title>BOSS Log</title>"
+		    << "<link rel='stylesheet' href='../resources/style.css' />"
+		    << "<nav>"
+		    << "<header>"
+		    << "	<h1>BOSS</h1>"
+		    << bloc::translate("	Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH)
+		    << "</header>";
+	} else {
+		out << "\nBOSS\n"
+		    << bloc::translate("Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << std::endl;
+	}
+	return out.str();
 }
 
-void BossLog::Save(const fs::path file, const bool overwrite) {
-	if (fs::exists(file))
-		recognisedHasChanged = HasRecognisedListChanged(file);
-
-	std::ofstream outFile;
-	if (overwrite)
-		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
-		outFile.open(file.string());
-	else
-		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
-		outFile.open(file.string(), std::ios_base::out|std::ios_base::app);  // MCP Note: May need std::ofstream:: here instead
-	if (outFile.fail())
-		throw boss_error(BOSS_ERROR_FILE_WRITE_FAIL, file.string());
-
-	outFile << PrintLog();
-	outFile.close();
+std::string BossLog::PrintHeaderBottom() {
+	std::stringstream out;
+	if (logFormat == HTML) {
+		out << "<footer>"
+		    << "	<div class='button' data-section='browserBox' id='supportButtonShow'>" << bloc::translate("Log Feature Support") << "</div>"
+		    << "	<div class='button' id='filtersButtonToggle'>" << bloc::translate("Filters") << "<span id='arrow'></span></div>"
+		    << "</footer>"
+		    << "</nav>"
+		    << "<noscript>"
+		    << bloc::translate("The BOSS Log requires Javascript to be enabled in order to function.")
+		    << "</noscript>";
+	}
+	return out.str();
 }
 
-void BossLog::Clear() {
-	recognised = 0;
-	unrecognised = 0;
-	inactive = 0;
-	messages = 0;
-	warnings = 0;
-	errors = 0;
+std::string BossLog::PrintFooter() {
+	std::stringstream out;
+	std::string colourTooltip = bloc::translate("Colours must be specified using lowercase hex codes.");
 
-	scriptExtender.clear();
-	gameName.clear();
+	if (logFormat == HTML) {
+		out << "<section id='browserBox'>"
+		    << "<p>" << bloc::translate("Support for the BOSS Log's more advanced features varies. Here's what your browser supports:")
+		    << "<h3>" << bloc::translate("Functionality") << "</h3>"
+		    << "<table>"
+		    << "	<tbody>"
+		    << "		<tr><td id='pluginSubmitSupport'><td>" << bloc::translate("In-Log Plugin Submission") << "<td>" << bloc::translate("Allows unrecognised plugins to be anonymously submitted to the BOSS team directly from the BOSS Log.")
+		    << "		<tr><td id='memorySupport'><td>" << bloc::translate("Settings Memory") << "<td>" << bloc::translate("Allows the BOSS Log to automatically restore the filter configuration last used whenever the BOSS Log is opened.")
+		    << "		<tr><td id='placeholderSupport'><td>" << bloc::translate("Input Placeholders")
+		    << "		<tr><td id='validationSupport'><td>" << bloc::translate("Form Validation")
+		    << "</table>"
+		    << "</section>"
 
-	updaterOutput.Clear();
-	criticalError.Clear();
-	userRules.Clear();
-	sePlugins.Clear();
-	recognisedPlugins.Clear();
-	unrecognisedPlugins.Clear();
+		    << "<aside>"
+		    << "<label><input type='checkbox' id='hideVersionNumbers' data-class='version'/>" << bloc::translate("Hide Version Numbers") << "</label>"
+		    << "<label><input type='checkbox' id='hideActiveLabel' data-class='active'/>" << bloc::translate("Hide 'Active' Label") << "</label>"
+		    << "<label><input type='checkbox' id='hideChecksums' data-class='crc'/>" << bloc::translate("Hide Checksums") << "</label>"
+		    << "<label><input type='checkbox' id='hideNotes'/>" << bloc::translate("Hide Notes") << "</label>"
+		    << "<label><input type='checkbox' id='hideBashTags'/>" << bloc::translate("Hide Bash Tag Suggestions") << "</label>"
+		    << "<label><input type='checkbox' id='hideRequirements'/>" << bloc::translate("Hide Requirements") << "</label>"
+		    << "<label><input type='checkbox' id='hideIncompatibilities'/>" << bloc::translate("Hide Incompatibilities") << "</label>"
+		    << "<label><input type='checkbox' id='hideDoNotCleanMessages'/>" << bloc::translate("Hide 'Do Not Clean' Messages") << "</label>"
+		    << "<label><input type='checkbox' id='hideAllPluginMessages'/>" << bloc::translate("Hide All Plugin Messages") << "</label>"
+		    << "<label><input type='checkbox' id='hideInactivePlugins'/>" << bloc::translate("Hide Inactive Plugins") << "</label>"
+		    << "<label><input type='checkbox' id='hideMessagelessPlugins'/>" << bloc::translate("Hide Messageless Plugins") << "</label>"
+		    << "<footer>"
+		    << "	" << (boost::format(bloc::translate("%1% of %2% recognised plugins hidden.")) % "<span id='hiddenPluginNo'>0</span>" % recognised).str()
+		    << "	" << (boost::format(bloc::translate("%1% of %2% messages hidden.")) % "<span id='hiddenMessageNo'>0</span>" % messages).str()
+		    << "</footer>"
+		    << "</aside>"
 
-	parsingErrors.clear();
-	globalMessages.clear();
+		    << "<div id='overlay'>"
+		    << "<div id='submitBox'>"
+		    << "<h2>" << bloc::translate("Submit Plugin") << "</h2>"
+		    << "<p><span id='pluginLabel'>" << bloc::translate("Plugin") << ":</span><span id='plugin'></span>"
+		    << "<form>"
+		    << "<label>" << bloc::translate("Download Location") << ":<br /><input type='url' placeholder='" << bloc::translate("Label for text box. Do not use a single quote in translation, use '&#x27;' instead", "A link to the plugin&#x27;s download location.") << "' id='link'></label>"
+		    << "<label>" << bloc::translate("Additional Notes") << ":<br /><textarea id='notes' placeholder='" << bloc::translate("Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.") << "'></textarea></label>"
+		    << "<div id='output'></div>"
+		    << "<p class='last'><button>" << bloc::translate("Submit") << "</button>"
+		    << "<button type='reset'>" << bloc::translate("Close") << "</button>"
+		    << "</form>"
+		    << "</div>"
+		    << "</div>"
+
+		    // Need to define some variables in code.
+		    << "<script>"
+		    << "var gameName = '" << gameName << "';"
+		    << "var txt1 = '" << bloc::translate("Checking for existing submission...") << "';"
+		    << "var txt2 = '" << bloc::translate("Matching submission already exists.") << "';"
+		    << "var txt3 = '" << bloc::translate("Plugin already submitted. Submission updated with new comment.") << "';"
+		    << "var txt4 = '" << bloc::translate("Plugin submitted!") << "';"
+		    << "var txt5 = '" << bloc::translate("Plugin submission failed! Authorisation failure. Please report this to the BOSS team.") << "';"
+		    << "var txt6 = '" << bloc::translate("Plugin submission failed! GitHub API rate limit exceeded. Please try again after %1%.") << "';"
+		    << "var txt7 = '" << bloc::translate("Plugin submission failed!") << "';"
+		    << "var txt8 = '" << bloc::translate("Web storage quota for this document has been exceeded.Please empty your browser\\'s cache. Note that this will delete all locally stored data.") << "';"
+		    << "var txt9 = '" << bloc::translate("Please supply at least a link or some notes.") << "';"
+		    << "var txt10 = '" << bloc::translate("Do not clean.") << "';"
+		    << "</script>"
+		    << "<script src='../resources/promise-1.0.0.min.js'></script>"
+		    << "<script src='../resources/octokit.js'></script>"
+		    << "<script src='../resources/script.js'></script>";
+	}
+	return out.str();
 }
 
 bool BossLog::HasRecognisedListChanged(const fs::path file) {

@@ -74,15 +74,15 @@ class BossLog {
 	std::vector<Message> globalMessages;
 
  private:
-	std::uint32_t logFormat;
-	bool recognisedHasChanged;
-
 	std::string PrintLog();
 	std::string PrintHeaderTop();
 	std::string PrintHeaderBottom();
 	std::string PrintFooter();
 
 	bool HasRecognisedListChanged(const fs::path file);
+
+	std::uint32_t logFormat;
+	bool recognisedHasChanged;
 };
 
 }  // namespace boss
