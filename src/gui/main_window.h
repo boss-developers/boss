@@ -60,6 +60,7 @@ class BossGUI : public wxApp {
 class MainFrame : public wxFrame {
  public:
 	explicit MainFrame(const wxChar *title);
+	// MCP Note: Update doesn't seem to exist in main_window.cpp; need to find out what it was
 	void Update(std::string updateVersion);
 	void OnOpenSettings(wxCommandEvent& event);
 	void OnQuit(wxCommandEvent& event);
@@ -80,6 +81,12 @@ class MainFrame : public wxFrame {
 	void SetGames(const /*boss::*/Game& inGame,
 	              const std::vector<std::uint32_t> inGames);
 	void DisableUndetectedGames();
+
+ protected:
+	std::uint32_t updateCheckCode;       // 0 = update, 1 = no update, 2 = error.
+	std::string updateCheckString;       // Holds wxMessageBox text.
+	wxCriticalSection updateData;        // Protects fields above
+	DECLARE_EVENT_TABLE()
 
  private:
 	wxMenuBar *MenuBar;
@@ -104,12 +111,6 @@ class MainFrame : public wxFrame {
 	bool isStartup;
 	std::vector<std::uint32_t> detectedGames;
 	/*boss::*/Game game;
-
- protected:
-	std::uint32_t updateCheckCode;       // 0 = update, 1 = no update, 2 = error.
-	std::string updateCheckString;       // Holds wxMessageBox text.
-	wxCriticalSection updateData;        // Protects fields above
-	DECLARE_EVENT_TABLE()
 };
 
 }  // namespace boss

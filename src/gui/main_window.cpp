@@ -437,26 +437,17 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	SetSizerAndFit(bigBox);
 }
 
+void MainFrame::OnOpenSettings(wxCommandEvent& event) {
+	// Tell the user that stuff is happenining.
+	SettingsFrame *settings = new SettingsFrame(translate("BOSS: Settings"),
+	                                            this);
+	settings->SetIcon(wxIconLocation("BOSS GUI.exe"));
+	settings->Show();
+}
+
 // Called when program exits.
 void MainFrame::OnQuit(wxCommandEvent& event) {
 	Close(true);  // Tells the OS to quit running this process
-}
-
-void MainFrame::OnClose(wxCloseEvent& event) {
-	// Save settings to BOSS.ini before quitting.
-	try {
-		Settings ini;
-		ini.Save(ini_path, game.Id());
-	} catch (boss_error &e) {
-			wxMessageBox(
-				FromUTF8(boost::format(bloc::translate("Error: %1%")) % e.getString()),
-				translate("BOSS: Error"),
-				wxOK | wxICON_ERROR,
-				NULL);
-	}
-
-	Destroy();  // You may also do:  event.Skip();
-	            // since the default event handler does call Destroy(), too
 }
 
 void MainFrame::OnRunBOSS(wxCommandEvent& event) {
@@ -678,31 +669,6 @@ void MainFrame::OnRunBOSS(wxCommandEvent& event) {
 		this->Close(true);
 }
 
-void MainFrame::OnEditUserRules(wxCommandEvent& event) {
-	if (gl_use_user_rules_manager) {
-		UserRulesEditorFrame *editor = new UserRulesEditorFrame(translate("BOSS: User Rules Manager"),
-		                                                        this,
-		                                                        game);
-		editor->SetIcon(wxIconLocation("BOSS GUI.exe"));
-		editor->Show();
-	} else {
-		if (fs::exists(game.Userlist())) {
-			wxLaunchDefaultApplication(game.Userlist().string());
-		} else {
-			try {
-				RuleList userlist;
-				userlist.Save(game.Userlist());
-				wxLaunchDefaultApplication(game.Userlist().string());
-			} catch (boss_error &e) {
-				wxMessageBox(FromUTF8(boost::format(bloc::translate("Error: %1%")) % e.getString()),
-				             translate("BOSS: Error"),
-				             wxOK | wxICON_ERROR,
-				             this);
-			}
-		}
-	}
-}
-
 // Call when a file is opened. Either readmes or BOSS Logs.
 void MainFrame::OnOpenFile(wxCommandEvent& event) {
 	if (event.GetId() == OPTION_OpenBOSSlog) {
@@ -763,9 +729,36 @@ void MainFrame::OnAbout(wxCommandEvent& event) {
 	wxAboutBox(aboutInfo);
 }
 
-void MainFrame::OnLogDisplayChange(wxCommandEvent& event) {
-	// MCP Note: Can the outside parentheses be removed?
-	gl_silent = (!event.IsChecked());
+void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
+	// TODO(MCP): Look at converting this to a switch-statement
+	if (event.GetId() == RADIOBUTTON_SortOption) {
+		gl_revert = 0;
+		gl_update_only = false;
+
+		UpdateBox->Enable(true);
+		TrialRunBox->Enable(true);
+
+		RevertText->Enable(false);
+		RevertChoice->Enable(false);
+	} else if (event.GetId() == RADIOBUTTON_UpdateOption) {
+		gl_revert = 0;
+		gl_update_only = true;
+
+		UpdateBox->Enable(false);
+		TrialRunBox->Enable(false);
+		RevertText->Enable(false);
+		RevertChoice->Enable(false);
+	} else {
+		gl_revert = RevertChoice->GetSelection() + 1;
+		gl_update_only = false;
+
+		RevertText->Enable(true);
+		RevertChoice->Enable(true);
+
+		UpdateBox->Enable(false);
+		TrialRunBox->Enable(false);
+	}
+	DisableUndetectedGames();  // Doesn't actually disable games if (gl_update_only).
 }
 
 void MainFrame::OnFormatChange(wxCommandEvent& event) {
@@ -773,18 +766,6 @@ void MainFrame::OnFormatChange(wxCommandEvent& event) {
 		gl_log_format = HTML;
 	else
 		gl_log_format = PLAINTEXT;
-}
-
-void MainFrame::OnCRCDisplayChange(wxCommandEvent& event) {
-	gl_show_CRCs = event.IsChecked();
-}
-
-void MainFrame::OnUpdateChange(wxCommandEvent& event) {
-	gl_update = event.IsChecked();
-}
-
-void MainFrame::OnTrialRunChange(wxCommandEvent& event) {
-	gl_trial_run = event.IsChecked();
 }
 
 void MainFrame::OnGameChange(wxCommandEvent& event) {
@@ -817,36 +798,95 @@ void MainFrame::OnRevertChange(wxCommandEvent& event) {
 	gl_revert = event.GetInt() + 1;
 }
 
-void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
-	// TODO(MCP): Look at converting this to a switch-statement
-	if (event.GetId() == RADIOBUTTON_SortOption) {
-		gl_revert = 0;
-		gl_update_only = false;
+void MainFrame::OnLogDisplayChange(wxCommandEvent& event) {
+	// MCP Note: Can the outside parentheses be removed?
+	gl_silent = (!event.IsChecked());
+}
 
-		UpdateBox->Enable(true);
-		TrialRunBox->Enable(true);
+void MainFrame::OnUpdateChange(wxCommandEvent& event) {
+	gl_update = event.IsChecked();
+}
 
-		RevertText->Enable(false);
-		RevertChoice->Enable(false);
-	} else if (event.GetId() == RADIOBUTTON_UpdateOption) {
-		gl_revert = 0;
-		gl_update_only = true;
+void MainFrame::OnCRCDisplayChange(wxCommandEvent& event) {
+	gl_show_CRCs = event.IsChecked();
+}
 
-		UpdateBox->Enable(false);
-		TrialRunBox->Enable(false);
-		RevertText->Enable(false);
-		RevertChoice->Enable(false);
+void MainFrame::OnTrialRunChange(wxCommandEvent& event) {
+	gl_trial_run = event.IsChecked();
+}
+
+void MainFrame::OnEditUserRules(wxCommandEvent& event) {
+	if (gl_use_user_rules_manager) {
+		UserRulesEditorFrame *editor = new UserRulesEditorFrame(translate("BOSS: User Rules Manager"),
+		                                                        this,
+		                                                        game);
+		editor->SetIcon(wxIconLocation("BOSS GUI.exe"));
+		editor->Show();
 	} else {
-		gl_revert = RevertChoice->GetSelection() + 1;
-		gl_update_only = false;
+		if (fs::exists(game.Userlist())) {
+			wxLaunchDefaultApplication(game.Userlist().string());
+		} else {
+			try {
+				RuleList userlist;
+				userlist.Save(game.Userlist());
+				wxLaunchDefaultApplication(game.Userlist().string());
+			} catch (boss_error &e) {
+				wxMessageBox(FromUTF8(boost::format(bloc::translate("Error: %1%")) % e.getString()),
+				             translate("BOSS: Error"),
+				             wxOK | wxICON_ERROR,
+				             this);
+			}
+		}
+	}
+}
 
-		RevertText->Enable(true);
-		RevertChoice->Enable(true);
+void MainFrame::OnClose(wxCloseEvent& event) {
+	// Save settings to BOSS.ini before quitting.
+	try {
+		Settings ini;
+		ini.Save(ini_path, game.Id());
+	} catch (boss_error &e) {
+			wxMessageBox(
+				FromUTF8(boost::format(bloc::translate("Error: %1%")) % e.getString()),
+				translate("BOSS: Error"),
+				wxOK | wxICON_ERROR,
+				NULL);
+	}
 
+	Destroy();  // You may also do:  event.Skip();
+	            // since the default event handler does call Destroy(), too
+}
+
+void MainFrame::SetGames(const Game& inGame,
+                         const std::vector<std::uint32_t> inGames) {
+	game = inGame;
+	detectedGames = inGames;
+	// TODO(MCP): Look at converting this to a switch-statement
+	if (game.Id() == OBLIVION)
+		GameMenu->FindItem(MENU_Oblivion)->Check();
+	else if (game.Id() == NEHRIM)
+		GameMenu->FindItem(MENU_Nehrim)->Check();
+	else if (game.Id() == SKYRIM)
+		GameMenu->FindItem(MENU_Skyrim)->Check();
+	else if (game.Id() == FALLOUT3)
+		GameMenu->FindItem(MENU_Fallout3)->Check();
+	else if (game.Id() == FALLOUTNV)
+		GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
+
+	std::size_t i = 0;
+	for (i = 0; i < detectedGames.size(); i++) {
+		if (detectedGames[i] == game.Id())
+			break;
+	}
+	if (i == detectedGames.size()) {  // The current game wasn't in the list of detected games. Run in update only mode.
+		gl_update_only = true;
 		UpdateBox->Enable(false);
 		TrialRunBox->Enable(false);
+		SortOption->Enable(false);
+		UpdateOption->SetValue(true);
+		UndoOption->Enable(false);
 	}
-	DisableUndetectedGames();  // Doesn't actually disable games if (gl_update_only).
+	DisableUndetectedGames();
 }
 
 void MainFrame::DisableUndetectedGames() {
@@ -903,46 +943,6 @@ void MainFrame::DisableUndetectedGames() {
 			}
 	}
 	SetTitle(wxT("BOSS - " + game.Name()));  // Don't need to convert name, known to be only ASCII chars.
-}
-
-void MainFrame::SetGames(const Game& inGame,
-                         const std::vector<std::uint32_t> inGames) {
-	game = inGame;
-	detectedGames = inGames;
-	// TODO(MCP): Look at converting this to a switch-statement
-	if (game.Id() == OBLIVION)
-		GameMenu->FindItem(MENU_Oblivion)->Check();
-	else if (game.Id() == NEHRIM)
-		GameMenu->FindItem(MENU_Nehrim)->Check();
-	else if (game.Id() == SKYRIM)
-		GameMenu->FindItem(MENU_Skyrim)->Check();
-	else if (game.Id() == FALLOUT3)
-		GameMenu->FindItem(MENU_Fallout3)->Check();
-	else if (game.Id() == FALLOUTNV)
-		GameMenu->FindItem(MENU_FalloutNewVegas)->Check();
-
-	std::size_t i = 0;
-	for (i = 0; i < detectedGames.size(); i++) {
-		if (detectedGames[i] == game.Id())
-			break;
-	}
-	if (i == detectedGames.size()) {  // The current game wasn't in the list of detected games. Run in update only mode.
-		gl_update_only = true;
-		UpdateBox->Enable(false);
-		TrialRunBox->Enable(false);
-		SortOption->Enable(false);
-		UpdateOption->SetValue(true);
-		UndoOption->Enable(false);
-	}
-	DisableUndetectedGames();
-}
-
-void MainFrame::OnOpenSettings(wxCommandEvent& event) {
-	// Tell the user that stuff is happenining.
-	SettingsFrame *settings = new SettingsFrame(translate("BOSS: Settings"),
-	                                            this);
-	settings->SetIcon(wxIconLocation("BOSS GUI.exe"));
-	settings->Show();
 }
 
 }  // namespace boss
