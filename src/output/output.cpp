@@ -137,49 +137,6 @@ std::string Outputter::AsString() const {
 	return outStream.str();
 }
 
-std::string Outputter::EscapeHTMLSpecial(std::string text) {
-	if (escapeHTMLSpecialChars && outFormat == HTML) {
-		boost::replace_all(text, "&", "&amp;");
-		boost::replace_all(text, "\"", "&quot;");
-		boost::replace_all(text, "'", "&#039;");
-		boost::replace_all(text, "<", "&lt;");
-		boost::replace_all(text, ">", "&gt;");
-		boost::replace_all(text, "©", "&copy;");
-		boost::replace_all(text, "✗", "&#x2717;");
-		boost::replace_all(text, "✓", "&#x2713;");
-		boost::replace_all(text, "\n", "<br />");  // Not an HTML special char escape, but this needs to happen here to get the details of parser errors formatted correctly.
-	}
-	return text;
-}
-
-std::string Outputter::EscapeHTMLSpecial(char c) {
-	if (escapeHTMLSpecialChars && outFormat == HTML) {
-		/*
-		 * MCP Note: GCC squalls at these due to the copyright character not being ASCII. Look at trying to fix this.
-		 * Maybe changing it to a wchar_t would fix it? Need to look into that. Or maybe use ints?
-		 * MCP Note 2: For the default, would it be better to leave as-is or change it to a break-statement,
-		 * remove the else, and simply return string(1, c)?
-		 */
-		switch (c) {
-			case '&':
-				return "&amp;";
-			case '"':
-				return "&quot;";
-			case '\'':
-				return "&#039;";
-			case '<':
-				return "&lt;";
-			case '>':
-				return "&gt;";
-			case '©':
-				return "&copy;";
-			default:
-				return std::string(1, c);
-		}
-	}
-	return std::string(1, c);
-}
-
 Outputter& Outputter::operator= (const Outputter& o) {
 	outStream << o.AsString();
 	outFormat = o.GetFormat();
@@ -192,13 +149,13 @@ Outputter& Outputter::operator<< (const std::string s) {
 	return *this;
 }
 
-Outputter& Outputter::operator<< (const char c) {
-	outStream << EscapeHTMLSpecial(c);
+Outputter& Outputter::operator<< (const char * s) {
+	outStream << EscapeHTMLSpecial(s);
 	return *this;
 }
 
-Outputter& Outputter::operator<< (const char * s) {
-	outStream << EscapeHTMLSpecial(s);
+Outputter& Outputter::operator<< (const char c) {
+	outStream << EscapeHTMLSpecial(c);
 	return *this;
 }
 
@@ -619,6 +576,49 @@ Outputter& Outputter::operator<< (const Rule r) {
 	escapeHTMLSpecialChars = wasEscaped;
 
 	return *this;
+}
+
+std::string Outputter::EscapeHTMLSpecial(std::string text) {
+	if (escapeHTMLSpecialChars && outFormat == HTML) {
+		boost::replace_all(text, "&", "&amp;");
+		boost::replace_all(text, "\"", "&quot;");
+		boost::replace_all(text, "'", "&#039;");
+		boost::replace_all(text, "<", "&lt;");
+		boost::replace_all(text, ">", "&gt;");
+		boost::replace_all(text, "©", "&copy;");
+		boost::replace_all(text, "✗", "&#x2717;");
+		boost::replace_all(text, "✓", "&#x2713;");
+		boost::replace_all(text, "\n", "<br />");  // Not an HTML special char escape, but this needs to happen here to get the details of parser errors formatted correctly.
+	}
+	return text;
+}
+
+std::string Outputter::EscapeHTMLSpecial(char c) {
+	if (escapeHTMLSpecialChars && outFormat == HTML) {
+		/*
+		 * MCP Note: GCC squalls at these due to the copyright character not being ASCII. Look at trying to fix this.
+		 * Maybe changing it to a wchar_t would fix it? Need to look into that. Or maybe use ints?
+		 * MCP Note 2: For the default, would it be better to leave as-is or change it to a break-statement,
+		 * remove the else, and simply return string(1, c)?
+		 */
+		switch (c) {
+			case '&':
+				return "&amp;";
+			case '"':
+				return "&quot;";
+			case '\'':
+				return "&#039;";
+			case '<':
+				return "&lt;";
+			case '>':
+				return "&gt;";
+			case '©':
+				return "&copy;";
+			default:
+				return std::string(1, c);
+		}
+	}
+	return std::string(1, c);
 }
 
 }  // namespace boss

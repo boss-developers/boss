@@ -133,12 +133,12 @@ class BOSS_COMMON Outputter {
 	Outputter& operator<< (const Rule r);
 
  private:
+	std::string EscapeHTMLSpecial(std::string text);  // Performs the HTML escaping.
+	std::string EscapeHTMLSpecial(char c);
+
 	std::stringstream outStream;
 	std::uint32_t outFormat;           // The formatting type of the output.
 	bool escapeHTMLSpecialChars;       // Should special characters be escaped from non-formatting input?
-
-	std::string EscapeHTMLSpecial(std::string text);  // Performs the HTML escaping.
-	std::string EscapeHTMLSpecial(char c);
 };
 
 }  // namespace boss
