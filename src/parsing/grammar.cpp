@@ -118,6 +118,7 @@ masterlistMsgKey_::masterlistMsgKey_() {
 	/*
 	 * MCP Note: Look into changing the style on these. Not sure, have never seen syntax like this before...
 	 * Need to read up on Boost Spirit
+	 * MCP Note 2: Where does the add function come from? Which part of Qi is it in?
 	 */
 	// New Message keywords.
 	add("say", SAY)
@@ -145,12 +146,12 @@ typeKey_::typeKey_() {
 // Constructor for modlist and userlist skipper.
 Skipper::Skipper() : Skipper::base_type(start, "skipper grammar") {
 	start =
-		spc
-		| UTF8
-		| CComment
-		| CPlusPlusComment
-		| iniComment
-		| eof;
+	    spc
+	    | UTF8
+	    | CComment
+	    | CPlusPlusComment
+	    | iniComment
+	    | eof;
 
 	spc = space - eol;
 
@@ -186,98 +187,98 @@ modlist_grammar::modlist_grammar()
 	const std::vector<Message> noMessages;  // An empty set of messages.
 
 	modList =
-		*eol
-		>
-		(
-			listVar			[phoenix::bind(&modlist_grammar::StoreVar, this, _1)]
-			| globalMessage	[phoenix::bind(&modlist_grammar::StoreGlobalMessage, this, _1)]
-			| listItem		[phoenix::bind(&modlist_grammar::StoreItem, this, _val, _1)]
-		) % +eol;
+	    *eol
+	    >
+	    (
+	        listVar        [phoenix::bind(&modlist_grammar::StoreVar, this, _1)]
+	        | globalMessage[phoenix::bind(&modlist_grammar::StoreGlobalMessage, this, _1)]
+	        | listItem     [phoenix::bind(&modlist_grammar::StoreItem, this, _val, _1)]
+	    ) % +eol;
 
 	listVar %=
-		conditionals
-		>> no_case[lit("set")]
-		>>	(
-				':'
-				> charString
-			);
+	    conditionals
+	    >> no_case[lit("set")]
+	    >>  (
+	            ':'
+	            > charString
+	        );
 
 	globalMessage =
-		conditionals
-		>> no_case[lit("global")]
-		>>	(
-				messageKeyword
-				>> ':'
-				>> charString
-			);
+	    conditionals
+	    >> no_case[lit("global")]
+	    >>  (
+	            messageKeyword
+	            >> ':'
+	            >> charString
+	        );
 
 	listItem %=
-		conditionals
-		> ItemType
-		> itemName
-		> itemMessages;
+	    conditionals
+	    > ItemType
+	    > itemName
+	    > itemMessages;
 
 	ItemType %=
-		no_case[typeKey]
-		| eps		[_val = MOD];
+	    no_case[typeKey]
+	    | eps  [_val = MOD];
 
 	itemName =
-		charString	[phoenix::bind(&modlist_grammar::ToName, this, _val, _1)]
-		| eps		[phoenix::bind(&modlist_grammar::ToName, this, _val, "")];
+	    charString[phoenix::bind(&modlist_grammar::ToName, this, _val, _1)]
+	    | eps     [phoenix::bind(&modlist_grammar::ToName, this, _val, "")];
 
 	itemMessages %=
-		(
-			+eol
-			>> itemMessage % +eol
-		) | eps		[_1 = noMessages];
+	    (
+	        +eol
+	        >> itemMessage % +eol
+	    ) | eps[_1 = noMessages];
 
 	itemMessage %=
-		conditionals
-		>> messageKeyword
-		>> ':'
-		>> charString  // The double >> matters. A single > doesn't work.
-		;
+	    conditionals
+	    >> messageKeyword
+	    >> ':'
+	    >> charString  // The double >> matters. A single > doesn't work.
+	    ;
 
 	charString %= lexeme[+(char_ - eol)];  // String, with no skipper.
 
 	messageKeyword %= no_case[masterlistMsgKey];
 
 	conditionals =
-		(
-			conditional								[_val = _1]
-			> *((andOr > conditional)				[_val += _1 + _2])
-		)
-		| no_case[unicode::string("else")][_val = _1]
-		| eps [_val = ""];
+	    (
+	        conditional              [_val = _1]
+	        > *((andOr > conditional)[_val += _1 + _2])
+	    )
+	    | no_case[unicode::string("else")][_val = _1]
+	    | eps    [_val = ""];
 
 	andOr %=
-		unicode::string("&&")
-		| unicode::string("||");
+	    unicode::string("&&")
+	    | unicode::string("||");
 
 	conditional %=
-		(
-			no_case[unicode::string("ifnot")
-			| unicode::string("if")]
-		)
-		> functCondition;
+	    (
+	        no_case[unicode::string("ifnot")
+	        | unicode::string("if")]
+	    )
+	    > functCondition;
 
 	functCondition %=
-		(
-			no_case[unicode::string("var")] > char_('(') > variable > char_(')')													// Variable condition.
-		) | (
-			no_case[unicode::string("file")] > char_('(') > file > char_(')')														// File condition.
-		) | (
-			no_case[unicode::string("checksum")] > char_('(') > file > char_(',') > checksum > char_(')')							// Checksum condition.
-		) | (
-			no_case[unicode::string("version")] > char_('(') > file > char_(',') > version > char_(',') > comparator > char_(')')	// Version condition.
-		) | (
-			no_case[unicode::string("regex")] > char_('(') > regex > char_(')')														// Regex condition.
-		) | (
-			no_case[unicode::string("active")] > char_('(') > file > char_(')')														// Active condition.
-		) | (
-			no_case[unicode::string("lang")] > char_('(') > language > char_(')')													// Language condition.
-		)
-		;
+	    (
+	        no_case[unicode::string("var")] > char_('(') > variable > char_(')')                                                   // Variable condition.
+	    ) | (
+	        no_case[unicode::string("file")] > char_('(') > file > char_(')')                                                      // File condition.
+	    ) | (
+	        no_case[unicode::string("checksum")] > char_('(') > file > char_(',') > checksum > char_(')')                          // Checksum condition.
+	    ) | (
+	        no_case[unicode::string("version")] > char_('(') > file > char_(',') > version > char_(',') > comparator > char_(')')  // Version condition.
+	    ) | (
+	        no_case[unicode::string("regex")] > char_('(') > regex > char_(')')                                                    // Regex condition.
+	    ) | (
+	        no_case[unicode::string("active")] > char_('(') > file > char_(')')                                                    // Active condition.
+	    ) | (
+	        no_case[unicode::string("lang")] > char_('(') > language > char_(')')                                                  // Language condition.
+	    )
+	    ;
 
 	variable %= +(char_ - (')' | eol));
 
@@ -316,27 +317,27 @@ modlist_grammar::modlist_grammar()
 	regex.name("regex file");
 	file.name("language");
 
-	on_error<fail>(modList,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(listVar,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(listItem,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(ItemType,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(itemName,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(itemMessages,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(itemMessage,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(charString,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(messageKeyword,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(conditionals,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(andOr,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(conditional,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(functCondition,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(shortCondition,	phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(variable,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(file,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(checksum,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(version,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(comparator,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(regex,			phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(language,		phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(modList,        phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(listVar,        phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(listItem,       phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(ItemType,       phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(itemName,       phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(itemMessages,   phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(itemMessage,    phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(charString,     phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(messageKeyword, phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(conditionals,   phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(andOr,          phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(conditional,    phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(functCondition, phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(shortCondition, phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(variable,       phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(file,           phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(checksum,       phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(version,        phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(comparator,     phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(regex,          phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(language,       phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 }
 
 void modlist_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
@@ -418,32 +419,32 @@ void modlist_grammar::ToName(std::string& p, std::string itemName) {
 conditional_grammar::conditional_grammar()
     : conditional_grammar::base_type(conditionals, "modlist grammar") {
 	conditionals =
-		(conditional[_val = _1]
-		> *((andOr > conditional)			[phoenix::bind(&conditional_grammar::EvaluateCompoundConditional, this, _val, _1, _2)]))
-		| no_case[unicode::string("else")]	[phoenix::bind(&conditional_grammar::EvalElseConditional, this, _val, _pass)]
-		| eps[_val = true];
+	    (conditional[_val = _1]
+	    > *((andOr > conditional)         [phoenix::bind(&conditional_grammar::EvaluateCompoundConditional, this, _val, _1, _2)]))
+	    | no_case[unicode::string("else")][phoenix::bind(&conditional_grammar::EvalElseConditional, this, _val, _pass)]
+	    | eps[_val = true];
 
 	andOr %= unicode::string("&&") | unicode::string("||");
 
 	ifIfNot %= no_case[unicode::string("ifnot") | unicode::string("if")];
 
-	conditional = (ifIfNot > condition)									[phoenix::bind(&conditional_grammar::EvaluateConditional, this, _val, _1, _2)];
+	conditional = (ifIfNot > condition)[phoenix::bind(&conditional_grammar::EvaluateConditional, this, _val, _1, _2)];
 
 	condition =
-		(no_case[lit("var")] > '(' > variable > ')')									[phoenix::bind(&conditional_grammar::CheckVar, this, _val, _1)]
-		|
-		(no_case[lit("file")] > '(' > file > ')')										[phoenix::bind(&conditional_grammar::CheckFile, this, _val, _1)]
-		|
-		(no_case[lit("checksum")] > '(' > file > ',' > checksum > ')')					[phoenix::bind(&conditional_grammar::CheckSum, this, _val, _1, _2)]
-		|
-		(no_case[lit("version")] > '(' > file > ',' > version > ',' > comparator > ')')	[phoenix::bind(&conditional_grammar::CheckVersion, this, _val, _1, _2, _3)]
-		|
-		(no_case[lit("regex")] > '(' > regex > ')')										[phoenix::bind(&conditional_grammar::CheckRegex, this, _val, _1)]
-		|
-		(no_case[lit("active")] > '(' > file > ')')										[phoenix::bind(&conditional_grammar::CheckActive, this, _val, _1)]
-		|
-		(no_case[lit("lang")] > '(' > language > ')')									[phoenix::bind(&conditional_grammar::CheckLanguage, this, _val, _1)]
-		;
+	    (no_case[lit("var")] > '(' > variable > ')')                                   [phoenix::bind(&conditional_grammar::CheckVar, this, _val, _1)]
+	    |
+	    (no_case[lit("file")] > '(' > file > ')')                                      [phoenix::bind(&conditional_grammar::CheckFile, this, _val, _1)]
+	    |
+	    (no_case[lit("checksum")] > '(' > file > ',' > checksum > ')')                 [phoenix::bind(&conditional_grammar::CheckSum, this, _val, _1, _2)]
+	    |
+	    (no_case[lit("version")] > '(' > file > ',' > version > ',' > comparator > ')')[phoenix::bind(&conditional_grammar::CheckVersion, this, _val, _1, _2, _3)]
+	    |
+	    (no_case[lit("regex")] > '(' > regex > ')')                                    [phoenix::bind(&conditional_grammar::CheckRegex, this, _val, _1)]
+	    |
+	    (no_case[lit("active")] > '(' > file > ')')                                    [phoenix::bind(&conditional_grammar::CheckActive, this, _val, _1)]
+	    |
+	    (no_case[lit("lang")] > '(' > language > ')')                                  [phoenix::bind(&conditional_grammar::CheckLanguage, this, _val, _1)]
+	    ;
 
 	variable %= +(char_ - (')' | eol));
 
@@ -473,18 +474,18 @@ conditional_grammar::conditional_grammar()
 	regex.name("regex file");
 	language.name("language");
 
-	on_error<fail>(conditionals,	phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(andOr,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(conditional,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(functCondition,	phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(shortCondition,	phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(variable,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(file,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(checksum,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(version,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(comparator,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(regex,			phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(language,		phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(conditionals,   phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(andOr,          phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(conditional,    phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(functCondition, phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(shortCondition, phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(variable,       phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(file,           phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(checksum,       phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(version,        phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(comparator,     phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(regex,          phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(language,       phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 }
 
 void conditional_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
@@ -746,8 +747,8 @@ ini_grammar::ini_grammar()
       errorBuffer(NULL) {
 
 	ini %= *eol
-			> (omit[heading] | (!lit('[') >> setting)) % +eol
-			> *eol;
+	        > (omit[heading] | (!lit('[') >> setting)) % +eol
+	        > *eol;
 
 	heading = '[' > +(char_ - ']') > ']';
 
@@ -765,11 +766,11 @@ ini_grammar::ini_grammar()
 	stringVal.name("string value");
 
 	// Error handling.
-	on_error<fail>(ini,			phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(heading,		phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(setting,		phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(var,			phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(stringVal,	phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(ini,       phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(heading,   phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(setting,   phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(var,       phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(stringVal, phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
 }
 
 void ini_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
@@ -809,20 +810,20 @@ userlist_grammar::userlist_grammar()
 
 	// A list is a vector of rules. Rules are separated by line endings.
 	ruleList %=
-		*eol
-		> (eoi | (userlistRule % eol));
+	    *eol
+	    > (eoi | (userlistRule % eol));
 
 	// A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
 	userlistRule %=
-		*eol
-		> stateKey > ruleKey > ':' > object
-		> +eol
-		> sortOrMessageLine % +eol;
+	    *eol
+	    > stateKey > ruleKey > ':' > object
+	    > +eol
+	    > sortOrMessageLine % +eol;
 
 	sortOrMessageLine %=
-		sortOrMessageKey
-		> ':'
-		> object;
+	    sortOrMessageKey
+	    > ':'
+	    > object;
 
 	object %= lexeme[+(char_ - eol)];  // String, with no skipper.
 
@@ -841,13 +842,13 @@ userlist_grammar::userlist_grammar()
 	sortOrMessageKey.name("sort or message keyword");
 	stateKey.name("state keyword");
 
-	on_error<fail>(ruleList,			phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(userlistRule,		phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(sortOrMessageLine,	phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(object,				phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(ruleKey,				phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(sortOrMessageKey,	phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
-	on_error<fail>(stateKey,			phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(ruleList,          phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(userlistRule,      phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(sortOrMessageLine, phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(object,            phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(ruleKey,           phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(sortOrMessageKey,  phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
+	on_error<fail>(stateKey,          phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 }
 
 void userlist_grammar::SetErrorBuffer(std::vector<ParsingError> * inErrorBuffer) {
