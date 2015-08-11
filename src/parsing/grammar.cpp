@@ -290,32 +290,34 @@ modlist_grammar::modlist_grammar()
 	on_error<fail>(language,       phoenix::bind(&modlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 }
 
-void modlist_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
+void modlist_grammar::SetErrorBuffer(ParsingError *inErrorBuffer) {
 	errorBuffer = inErrorBuffer;
 }
 
-void modlist_grammar::SetGlobalMessageBuffer(std::vector<Message> * inGlobalMessageBuffer) {
+void modlist_grammar::SetGlobalMessageBuffer(
+    std::vector<Message> *inGlobalMessageBuffer) {
 	globalMessageBuffer = inGlobalMessageBuffer;
 }
 
-void modlist_grammar::SetVarStore(std::vector<MasterlistVar> * varStore) {
+void modlist_grammar::SetVarStore(std::vector<MasterlistVar> *varStore) {
 	setVars = varStore;
 }
 
-void modlist_grammar::SetCRCStore(boost::unordered_map<std::string, std::uint32_t> * CRCStore) {
+void modlist_grammar::SetCRCStore(
+    boost::unordered_map<std::string, std::uint32_t> *CRCStore) {
 	fileCRCs = CRCStore;
 }
 
-void modlist_grammar::SetParentGame(const Game * game) {
+void modlist_grammar::SetParentGame(const Game *game) {
 	parentGame = game;
 }
 
 // Parser error reporter.
 // MCP Note: Can grammarIter const& first be removed?
-void modlist_grammar::SyntaxError(grammarIter const& /*first*/,
-                                  grammarIter const& last,
-                                  grammarIter const& errorpos,
-                                  boost::spirit::info const& what) {
+void modlist_grammar::SyntaxError(const grammarIter /*&first*/,
+                                  const grammarIter &last,
+                                  const grammarIter &errorpos,
+                                  const boost::spirit::info &what) {
 	if (errorBuffer == NULL || !errorBuffer->Empty())
 		return;
 
@@ -326,13 +328,14 @@ void modlist_grammar::SyntaxError(grammarIter const& /*first*/,
 	std::string context(errorpos, std::min(errorpos + 50, last));
 	boost::trim_left(context);
 
-	ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
+	ParsingError e(str(MasterlistParsingErrorHeader % expect), context,
+	               MasterlistParsingErrorFooter);
 	*errorBuffer = e;
 	LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
 }
 
 // Stores the given item and records any changes to open groups.
-void modlist_grammar::StoreItem(std::vector<Item>& list, Item currentItem) {
+void modlist_grammar::StoreItem(std::vector<Item> &list, Item currentItem) {
 	if (currentItem.Type() == BEGINGROUP)
 		openGroups.push_back(currentItem.Name());
 	else if (currentItem.Type() == ENDGROUP)
@@ -352,7 +355,7 @@ void modlist_grammar::StoreGlobalMessage(const Message message) {
 }
 
 // Turns a given string into a path. Can't be done directly because of the openGroups checks.
-void modlist_grammar::ToName(std::string& p, std::string itemName) {
+void modlist_grammar::ToName(std::string &p, std::string itemName) {
 	boost::algorithm::trim(itemName);
 	if (itemName.empty() && !openGroups.empty())
 		p = openGroups.back();
@@ -434,32 +437,36 @@ conditional_grammar::conditional_grammar()
 	on_error<fail>(language,       phoenix::bind(&conditional_grammar::SyntaxError, this, _1, _2, _3, _4));
 }
 
-void conditional_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
+void conditional_grammar::SetErrorBuffer(ParsingError *inErrorBuffer) {
 	errorBuffer = inErrorBuffer;
 }
 
-void conditional_grammar::SetVarStore(boost::unordered_set<std::string> * varStore) {
+void conditional_grammar::SetVarStore(
+    boost::unordered_set<std::string> *varStore) {
 	setVars = varStore;
 }
 
-void conditional_grammar::SetCRCStore(boost::unordered_map<std::string, std::uint32_t> * CRCStore) {
+void conditional_grammar::SetCRCStore(
+    boost::unordered_map<std::string, std::uint32_t> *CRCStore) {
 	fileCRCs = CRCStore;
 }
 
-void conditional_grammar::SetActivePlugins(boost::unordered_set<std::string> * plugins) {
+void conditional_grammar::SetActivePlugins(
+    boost::unordered_set<std::string> *plugins) {
 	activePlugins = plugins;
 }
 
-void conditional_grammar::SetLastConditionalResult(bool * result) {
+void conditional_grammar::SetLastConditionalResult(bool *result) {
 	lastResult = result;
 }
 
-void conditional_grammar::SetParentGame(const Game * game) {
+void conditional_grammar::SetParentGame(const Game *game) {
 	parentGame = game;
 }
 
 // Evaluate a single conditional.
-void conditional_grammar::EvaluateConditional(bool& result, const std::string type,
+void conditional_grammar::EvaluateConditional(bool &result,
+                                              const std::string type,
                                               const bool condition) {
 	if (boost::algorithm::to_lower_copy(type) == "if")
 		result = condition;
@@ -468,7 +475,7 @@ void conditional_grammar::EvaluateConditional(bool& result, const std::string ty
 }
 
 // Evaluate the second half of a complex conditional.
-void conditional_grammar::EvaluateCompoundConditional(bool& lhsCondition,
+void conditional_grammar::EvaluateCompoundConditional(bool &lhsCondition,
                                                       const std::string andOr,
                                                       const bool rhsCondition) {
 	if (andOr == "||" && !lhsCondition && !rhsCondition)
@@ -479,12 +486,13 @@ void conditional_grammar::EvaluateCompoundConditional(bool& lhsCondition,
 		lhsCondition = false;
 }
 
-void conditional_grammar::EvalElseConditional(bool& result, bool& ok) {
+void conditional_grammar::EvalElseConditional(bool &result, bool &ok) {
 	if (lastResult == NULL) {
 		ok = false;
 		result = false;
-	} else
+	} else {
 		result = !(*lastResult);
+	}
 }
 
 // Returns the true path based on what type of file or keyword it is.
@@ -507,7 +515,7 @@ fs::path conditional_grammar::GetPath(const std::string file) {
 }
 
 // Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
-void conditional_grammar::CheckVersion(bool& result,
+void conditional_grammar::CheckVersion(bool &result,
                                        const std::string file,
                                        const std::string version,
                                        const char comparator) {
@@ -546,7 +554,7 @@ void conditional_grammar::CheckVersion(bool& result,
 }
 
 // Checks if the given file exists.
-void conditional_grammar::CheckFile(bool& result, std::string file) {
+void conditional_grammar::CheckFile(bool &result, std::string file) {
 	result = false;
 	if (parentGame == NULL)
 		return;
@@ -560,7 +568,7 @@ void conditional_grammar::CheckFile(bool& result, std::string file) {
  * In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
  * be removed when getting the path and filename.
  */
-void conditional_grammar::CheckRegex(bool& result, std::string reg) {
+void conditional_grammar::CheckRegex(bool &result, std::string reg) {
 	result = false;
 	fs::path file_path;
 	// If the regex includes '/' or '\\' then it includes folders. Need to split the regex into the parent path and the filename.
@@ -604,7 +612,7 @@ void conditional_grammar::CheckRegex(bool& result, std::string reg) {
 }
 
 // Checks if a masterlist variable is defined.
-void conditional_grammar::CheckVar(bool& result, const std::string var) {
+void conditional_grammar::CheckVar(bool &result, const std::string var) {
 	if (setVars->find(var) == setVars->end())
 		result = false;
 	else
@@ -612,7 +620,7 @@ void conditional_grammar::CheckVar(bool& result, const std::string var) {
 }
 
 // Checks if the given plugin is active.
-void conditional_grammar::CheckActive(bool& result, const std::string plugin) {
+void conditional_grammar::CheckActive(bool &result, const std::string plugin) {
 	if (activePlugins->find(boost::algorithm::to_lower_copy(plugin)) != activePlugins->end())
 		result = true;
 	else
@@ -620,7 +628,8 @@ void conditional_grammar::CheckActive(bool& result, const std::string plugin) {
 }
 
 // Checks if the given language is the current language.
-void conditional_grammar::CheckLanguage(bool& result, const std::string language) {
+void conditional_grammar::CheckLanguage(bool &result,
+                                        const std::string language) {
 	if (boost::iequals(language, "english"))
 		result = (gl_language == ENGLISH);
 	else if (boost::iequals(language, "russian"))
@@ -636,7 +645,7 @@ void conditional_grammar::CheckLanguage(bool& result, const std::string language
 }
 
 // Checks if the given mod has the given checksum.
-void conditional_grammar::CheckSum(bool& result, std::string file,
+void conditional_grammar::CheckSum(bool &result, std::string file,
                                    const std::uint32_t sum) {
 	result = false;
 	if (parentGame == NULL)
@@ -664,10 +673,10 @@ void conditional_grammar::CheckSum(bool& result, std::string file,
 
 // Parser error reporter.
 // MCP Note: Can grammarIter const& first be removed?
-void conditional_grammar::SyntaxError(grammarIter const& /*first*/,
-                                      grammarIter const& last,
-                                      grammarIter const& errorpos,
-                                      boost::spirit::info const& what) {
+void conditional_grammar::SyntaxError(const grammarIter /*&first*/,
+                                      const grammarIter &last,
+                                      const grammarIter &errorpos,
+                                      const boost::spirit::info &what) {
 	if (errorBuffer == NULL || !errorBuffer->Empty())
 		return;
 
@@ -678,7 +687,8 @@ void conditional_grammar::SyntaxError(grammarIter const& /*first*/,
 	std::string context(errorpos, std::min(errorpos + 50, last));
 	boost::trim_left(context);
 
-	ParsingError e(str(MasterlistParsingErrorHeader % expect), context, MasterlistParsingErrorFooter);
+	ParsingError e(str(MasterlistParsingErrorHeader % expect), context,
+	               MasterlistParsingErrorFooter);
 	*errorBuffer = e;
 	LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
 }
@@ -717,15 +727,15 @@ ini_grammar::ini_grammar()
 	on_error<fail>(stringVal, phoenix::bind(&ini_grammar::SyntaxError, this, _1, _2, _3, _4));
 }
 
-void ini_grammar::SetErrorBuffer(ParsingError * inErrorBuffer) {
+void ini_grammar::SetErrorBuffer(ParsingError *inErrorBuffer) {
 	errorBuffer = inErrorBuffer;
 }
 
 // MCP Note: Can grammarIter const& first be removed?
-void ini_grammar::SyntaxError(grammarIter const& /*first*/,
-                              grammarIter const& last,
-                              grammarIter const& errorpos,
-                              boost::spirit::info const& what) {
+void ini_grammar::SyntaxError(const grammarIter /*&first*/,
+                              const grammarIter &last,
+                              const grammarIter &errorpos,
+                              const boost::spirit::info &what) {
 	if (errorBuffer == NULL || !errorBuffer->Empty())
 		return;
 
@@ -736,7 +746,8 @@ void ini_grammar::SyntaxError(grammarIter const& /*first*/,
 	std::string context(errorpos, std::min(errorpos + 50, last));
 	boost::trim_left(context);
 
-	ParsingError e(str(IniParsingErrorHeader % expect), context, IniParsingErrorFooter);
+	ParsingError e(str(IniParsingErrorHeader % expect), context,
+	               IniParsingErrorFooter);
 	*errorBuffer = e;
 	LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
 }
@@ -787,15 +798,16 @@ userlist_grammar::userlist_grammar()
 	on_error<fail>(stateKey,          phoenix::bind(&userlist_grammar::SyntaxError, this, _1, _2, _3, _4));
 }
 
-void userlist_grammar::SetErrorBuffer(std::vector<ParsingError> * inErrorBuffer) {
+void userlist_grammar::SetErrorBuffer(
+    std::vector<ParsingError> *inErrorBuffer) {
 	errorBuffer = inErrorBuffer;
 }
 
 // MCP Note: Can grammarIter const& first be removed?
-void userlist_grammar::SyntaxError(grammarIter const& /*first*/,
-                                   grammarIter const& last,
-                                   grammarIter const& errorpos,
-                                   boost::spirit::info const& what) {
+void userlist_grammar::SyntaxError(const grammarIter /*&first*/,
+                                   const grammarIter &last,
+                                   const grammarIter &errorpos,
+                                   const boost::spirit::info &what) {
 	if (errorBuffer == NULL || !errorBuffer->empty())
 		return;
 
@@ -806,7 +818,8 @@ void userlist_grammar::SyntaxError(grammarIter const& /*first*/,
 	std::string context(errorpos, std::min(errorpos + 50, last));
 	boost::trim_left(context);
 
-	ParsingError e(str(RuleListParsingErrorHeader % expect), context, RuleListParsingErrorFooter);
+	ParsingError e(str(RuleListParsingErrorHeader % expect), context,
+	               RuleListParsingErrorFooter);
 	if (errorBuffer != NULL)
 		errorBuffer->push_back(e);
 	LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
