@@ -100,46 +100,42 @@ using unicode::xdigit;
 ///////////////////////////////
 
 ruleKeys_::ruleKeys_() {
-	add
-		("add", ADD)
-		("override", OVERRIDE)
-		("for", FOR)
-	;
+	add("add", ADD)
+	   ("override", OVERRIDE)
+	   ("for", FOR);
 }
 
 messageKeys_::messageKeys_() {
-	add
-		("append", APPEND)
-		("replace", REPLACE)
-		("before", BEFORE)
-		("after", AFTER)
-		("top", TOP)
-		("bottom", BOTTOM)
-	;
+	add("append", APPEND)
+	   ("replace", REPLACE)
+	   ("before", BEFORE)
+	   ("after", AFTER)
+	   ("top", TOP)
+	   ("bottom", BOTTOM);
 }
 
 masterlistMsgKey_::masterlistMsgKey_() {
-	// MCP Note: Look into changing the style on these. Not sure, have never seen syntax like this before...
-	// Need to read up on Boost Spirit
-	add  // New Message keywords.
-		("say", SAY)
-		("tag", TAG)
-		("req", REQ)
-		("inc", INC)
-		("dirty", DIRTY)
-		("warn", WARN)
-		("error", ERR)
-	;
+	/*
+	 * MCP Note: Look into changing the style on these. Not sure, have never seen syntax like this before...
+	 * Need to read up on Boost Spirit
+	 */
+	// New Message keywords.
+	add("say", SAY)
+	   ("tag", TAG)
+	   ("req", REQ)
+	   ("inc", INC)
+	   ("dirty", DIRTY)
+	   ("warn", WARN)
+	   ("error", ERR);
 }
 
 typeKey_::typeKey_() {
-	add  // Group keywords.
-		("begingroup:", BEGINGROUP)  // Needs the colon there unfortunately.
-		("endgroup:", ENDGROUP)      // Needs the colon there unfortunately.
-		("endgroup", ENDGROUP)
-		("mod:", MOD)                // Needs the colon there unfortunately.
-		("regex:", REGEX)
-	;
+	// Group keywords.
+	add("begingroup:", BEGINGROUP)  // Needs the colon there unfortunately.
+	   ("endgroup:", ENDGROUP)      // Needs the colon there unfortunately.
+	   ("endgroup", ENDGROUP)
+	   ("mod:", MOD)                // Needs the colon there unfortunately.
+	   ("regex:", REGEX);
 }
 
 ///////////////////////////////
