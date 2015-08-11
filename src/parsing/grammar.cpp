@@ -145,13 +145,7 @@ typeKey_::typeKey_() {
 
 // Constructor for modlist and userlist skipper.
 Skipper::Skipper() : Skipper::base_type(start, "skipper grammar") {
-	start =
-	    spc
-	    | UTF8
-	    | CComment
-	    | CPlusPlusComment
-	    | iniComment
-	    | eof;
+	start = spc | UTF8 | CComment | CPlusPlusComment | iniComment | eof;
 
 	spc = space - eol;
 
@@ -186,99 +180,55 @@ modlist_grammar::modlist_grammar()
 	typeKey_ typeKey;
 	const std::vector<Message> noMessages;  // An empty set of messages.
 
-	modList =
-	    *eol
-	    >
-	    (
-	        listVar        [phoenix::bind(&modlist_grammar::StoreVar, this, _1)]
-	        | globalMessage[phoenix::bind(&modlist_grammar::StoreGlobalMessage, this, _1)]
-	        | listItem     [phoenix::bind(&modlist_grammar::StoreItem, this, _val, _1)]
-	    ) % +eol;
+	modList = *eol > (listVar      [phoenix::bind(&modlist_grammar::StoreVar, this, _1)] |
+	                  globalMessage[phoenix::bind(&modlist_grammar::StoreGlobalMessage, this, _1)] |
+	                  listItem     [phoenix::bind(&modlist_grammar::StoreItem, this, _val, _1)])
+	          % +eol;
 
-	listVar %=
-	    conditionals
-	    >> no_case[lit("set")]
-	    >>  (
-	            ':'
-	            > charString
-	        );
+	listVar %= conditionals >> no_case[lit("set")] >> (':' > charString);
 
-	globalMessage =
-	    conditionals
-	    >> no_case[lit("global")]
-	    >>  (
-	            messageKeyword
-	            >> ':'
-	            >> charString
-	        );
+	globalMessage = conditionals >> no_case[lit("global")]
+	                             >> (messageKeyword >> ':' >> charString);
 
-	listItem %=
-	    conditionals
-	    > ItemType
-	    > itemName
-	    > itemMessages;
+	listItem %= conditionals > ItemType > itemName > itemMessages;
 
-	ItemType %=
-	    no_case[typeKey]
-	    | eps  [_val = MOD];
+	ItemType %= no_case[typeKey] | eps[_val = MOD];
 
-	itemName =
-	    charString[phoenix::bind(&modlist_grammar::ToName, this, _val, _1)]
-	    | eps     [phoenix::bind(&modlist_grammar::ToName, this, _val, "")];
+	itemName = charString[phoenix::bind(&modlist_grammar::ToName, this, _val, _1)] |
+	           eps       [phoenix::bind(&modlist_grammar::ToName, this, _val, "")];
 
-	itemMessages %=
-	    (
-	        +eol
-	        >> itemMessage % +eol
-	    ) | eps[_1 = noMessages];
+	itemMessages %= (+eol >> itemMessage % +eol) | eps[_1 = noMessages];
 
-	itemMessage %=
-	    conditionals
-	    >> messageKeyword
-	    >> ':'
-	    >> charString  // The double >> matters. A single > doesn't work.
-	    ;
+	itemMessage %= conditionals >> messageKeyword >> ':' >> charString;  // The double >> matters. A single > doesn't work.
 
 	charString %= lexeme[+(char_ - eol)];  // String, with no skipper.
 
 	messageKeyword %= no_case[masterlistMsgKey];
 
-	conditionals =
-	    (
-	        conditional              [_val = _1]
-	        > *((andOr > conditional)[_val += _1 + _2])
-	    )
-	    | no_case[unicode::string("else")][_val = _1]
-	    | eps    [_val = ""];
+	conditionals = (conditional[_val = _1] > *((andOr > conditional)[_val += _1 + _2])) |
+	               no_case[unicode::string("else")][_val = _1] |
+	               eps[_val = ""];
 
-	andOr %=
-	    unicode::string("&&")
-	    | unicode::string("||");
+	andOr %= unicode::string("&&") | unicode::string("||");
 
-	conditional %=
-	    (
-	        no_case[unicode::string("ifnot")
-	        | unicode::string("if")]
-	    )
-	    > functCondition;
+	conditional %= (no_case[unicode::string("ifnot") | unicode::string("if")]) >
+	               functCondition;
 
-	functCondition %=
-	    (
-	        no_case[unicode::string("var")] > char_('(') > variable > char_(')')                                                   // Variable condition.
-	    ) | (
-	        no_case[unicode::string("file")] > char_('(') > file > char_(')')                                                      // File condition.
-	    ) | (
-	        no_case[unicode::string("checksum")] > char_('(') > file > char_(',') > checksum > char_(')')                          // Checksum condition.
-	    ) | (
-	        no_case[unicode::string("version")] > char_('(') > file > char_(',') > version > char_(',') > comparator > char_(')')  // Version condition.
-	    ) | (
-	        no_case[unicode::string("regex")] > char_('(') > regex > char_(')')                                                    // Regex condition.
-	    ) | (
-	        no_case[unicode::string("active")] > char_('(') > file > char_(')')                                                    // Active condition.
-	    ) | (
-	        no_case[unicode::string("lang")] > char_('(') > language > char_(')')                                                  // Language condition.
-	    )
-	    ;
+	functCondition %= (no_case[unicode::string("var")] > char_('(') >       // Variable condition.
+	                   variable > char_(')')) |
+	                  (no_case[unicode::string("file")] > char_('(') >      // File condition.
+	                   file > char_(')')) |
+	                  (no_case[unicode::string("checksum")] > char_('(') >  // Checksum condition.
+	                   file > char_(',') > checksum > char_(')')) |
+	                  (no_case[unicode::string("version")] > char_('(') >   // Version condition.
+	                   file > char_(',') > version > char_(',') >
+	                   comparator > char_(')')) |
+	                  (no_case[unicode::string("regex")] > char_('(') >     // Regex condition.
+	                   regex > char_(')')) |
+	                  (no_case[unicode::string("active")] > char_('(') >    // Active condition.
+	                   file > char_(')')) |
+	                  (no_case[unicode::string("lang")] > char_('(') >      // Language condition.
+	                   language > char_(')'));
 
 	variable %= +(char_ - (')' | eol));
 
@@ -418,6 +368,10 @@ void modlist_grammar::ToName(std::string& p, std::string itemName) {
 // Conditional grammar constructor.
 conditional_grammar::conditional_grammar()
     : conditional_grammar::base_type(conditionals, "modlist grammar") {
+	/*
+	 * TODO(MCP): Need to come up with a way of prettying these
+	 * sort of lines up more.
+	 */
 	conditionals =
 	    (conditional[_val = _1]
 	    > *((andOr > conditional)         [phoenix::bind(&conditional_grammar::EvaluateCompoundConditional, this, _val, _1, _2)]))
@@ -430,21 +384,13 @@ conditional_grammar::conditional_grammar()
 
 	conditional = (ifIfNot > condition)[phoenix::bind(&conditional_grammar::EvaluateConditional, this, _val, _1, _2)];
 
-	condition =
-	    (no_case[lit("var")] > '(' > variable > ')')                                   [phoenix::bind(&conditional_grammar::CheckVar, this, _val, _1)]
-	    |
-	    (no_case[lit("file")] > '(' > file > ')')                                      [phoenix::bind(&conditional_grammar::CheckFile, this, _val, _1)]
-	    |
-	    (no_case[lit("checksum")] > '(' > file > ',' > checksum > ')')                 [phoenix::bind(&conditional_grammar::CheckSum, this, _val, _1, _2)]
-	    |
-	    (no_case[lit("version")] > '(' > file > ',' > version > ',' > comparator > ')')[phoenix::bind(&conditional_grammar::CheckVersion, this, _val, _1, _2, _3)]
-	    |
-	    (no_case[lit("regex")] > '(' > regex > ')')                                    [phoenix::bind(&conditional_grammar::CheckRegex, this, _val, _1)]
-	    |
-	    (no_case[lit("active")] > '(' > file > ')')                                    [phoenix::bind(&conditional_grammar::CheckActive, this, _val, _1)]
-	    |
-	    (no_case[lit("lang")] > '(' > language > ')')                                  [phoenix::bind(&conditional_grammar::CheckLanguage, this, _val, _1)]
-	    ;
+	condition = (no_case[lit("var")] > '(' > variable > ')')                                   [phoenix::bind(&conditional_grammar::CheckVar, this, _val, _1)] |
+	            (no_case[lit("file")] > '(' > file > ')')                                      [phoenix::bind(&conditional_grammar::CheckFile, this, _val, _1)] |
+	            (no_case[lit("checksum")] > '(' > file > ',' > checksum > ')')                 [phoenix::bind(&conditional_grammar::CheckSum, this, _val, _1, _2)] |
+	            (no_case[lit("version")] > '(' > file > ',' > version > ',' > comparator > ')')[phoenix::bind(&conditional_grammar::CheckVersion, this, _val, _1, _2, _3)] |
+	            (no_case[lit("regex")] > '(' > regex > ')')                                    [phoenix::bind(&conditional_grammar::CheckRegex, this, _val, _1)] |
+	            (no_case[lit("active")] > '(' > file > ')')                                    [phoenix::bind(&conditional_grammar::CheckActive, this, _val, _1)] |
+	            (no_case[lit("lang")] > '(' > language > ')')                                  [phoenix::bind(&conditional_grammar::CheckLanguage, this, _val, _1)];
 
 	variable %= +(char_ - (')' | eol));
 
@@ -746,9 +692,7 @@ ini_grammar::ini_grammar()
     : ini_grammar::base_type(ini, "ini grammar"),
       errorBuffer(NULL) {
 
-	ini %= *eol
-	        > (omit[heading] | (!lit('[') >> setting)) % +eol
-	        > *eol;
+	ini %= *eol > (omit[heading] | (!lit('[') >> setting)) % +eol > *eol;
 
 	heading = '[' > +(char_ - ']') > ']';
 
@@ -809,21 +753,13 @@ userlist_grammar::userlist_grammar()
 	messageKeys_ sortOrMessageKeys;
 
 	// A list is a vector of rules. Rules are separated by line endings.
-	ruleList %=
-	    *eol
-	    > (eoi | (userlistRule % eol));
+	ruleList %= *eol > (eoi | (userlistRule % eol));
 
 	// A rule consists of a rule line containing a rule keyword and a rule object, followed by one or more message or sort lines.
-	userlistRule %=
-	    *eol
-	    > stateKey > ruleKey > ':' > object
-	    > +eol
-	    > sortOrMessageLine % +eol;
+	userlistRule %= *eol > stateKey > ruleKey > ':' > object > +eol >
+	                sortOrMessageLine % +eol;
 
-	sortOrMessageLine %=
-	    sortOrMessageKey
-	    > ':'
-	    > object;
+	sortOrMessageLine %= sortOrMessageKey > ':' > object;
 
 	object %= lexeme[+(char_ - eol)];  // String, with no skipper.
 
