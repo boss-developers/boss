@@ -189,7 +189,7 @@ class modlist_grammar : public grammar<grammarIter, std::vector<Item>(), Skipper
 	std::vector<MasterlistVar> *setVars;                         // Vars set by masterlist.
 	boost::unordered_map<std::string, std::uint32_t> *fileCRCs;  // CRCs calculated.
 	const Game *parentGame;
-	std::vector<std::string> openGroups;                          // Need to keep track of which groups are open to match up endings properly in MF1.
+	std::vector<std::string> openGroups;                         // Need to keep track of which groups are open to match up endings properly in MF1.
 };
 
 
@@ -212,7 +212,8 @@ class conditional_grammar : public grammar<grammarIter, bool(), Skipper> {
 	                         const bool condition);
 
 	// Evaluate the second half of a complex conditional.
-	void EvaluateCompoundConditional(bool &lhsCondition, const std::string andOr,
+	void EvaluateCompoundConditional(bool &lhsCondition,
+	                                 const std::string andOr,
 	                                 const bool rhsCondition);
 
 	void EvalElseConditional(bool &result, bool &ok);
@@ -221,8 +222,8 @@ class conditional_grammar : public grammar<grammarIter, bool(), Skipper> {
 	fs::path GetPath(const std::string file);
 
 	// Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
-	void CheckVersion(bool &result, const std::string file, const std::string version,
-	                  const char comparator);
+	void CheckVersion(bool &result, const std::string file,
+	                  const std::string version, const char comparator);
 
 	// Checks if the given file exists.
 	void CheckFile(bool &result, std::string file);
