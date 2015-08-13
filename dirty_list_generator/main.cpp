@@ -54,7 +54,7 @@
 namespace boss {
 
 // Save the formatted output list of dirty mods.
-void SaveDirtyList(std::vector<Item> list, std::ofstream& out) {
+void SaveDirtyList(std::vector<Item> list, std::ofstream &out) {
 	char x = ' ';
 
 	for (std::size_t i = 0; i < list.size(); i++) {
