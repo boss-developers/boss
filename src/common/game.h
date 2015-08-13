@@ -52,8 +52,8 @@ class Version;
 BOSS_COMMON extern const std::uint32_t LOMETHOD_TIMESTAMP;
 BOSS_COMMON extern const std::uint32_t LOMETHOD_TEXTFILE;
 
-BOSS_COMMON std::uint32_t DetectGame(std::vector<std::uint32_t>& detectedGames,
-                                     std::vector<std::uint32_t>& undetectedGames);  // Throws exception if error.
+BOSS_COMMON std::uint32_t DetectGame(std::vector<std::uint32_t> &detectedGames,
+                                     std::vector<std::uint32_t> &undetectedGames);  // Throws exception if error.
 
 class BOSS_COMMON Game {  // Constructor depends on gl_update_only.
  public:
