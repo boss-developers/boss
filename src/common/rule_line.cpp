@@ -229,7 +229,7 @@ RuleList::RuleList() {
 	errorBuffer.clear();
 }
 
-void RuleList::Load(const Game& parentGame, const fs::path file) {
+void RuleList::Load(const Game &parentGame, const fs::path file) {
 	Skipper skipper;
 	userlist_grammar grammar;
 	std::string::const_iterator begin, end;
@@ -341,7 +341,7 @@ void RuleList::Clear() {
 	errorBuffer.clear();
 }
 
-void RuleList::CheckSyntax(const Game& parentGame) {
+void RuleList::CheckSyntax(const Game &parentGame) {
 	// Loop through rules, check syntax of each. If a rule has invalid syntax, remove it.
 	std::vector<Rule>::iterator it = rules.begin();
 	while(it != rules.end()) {
@@ -419,7 +419,7 @@ void RuleList::CheckSyntax(const Game& parentGame) {
 				}
 			}
 			++it;
-		} catch (ParsingError & e) {
+		} catch (ParsingError &e) {
 			it = rules.erase(it);
 			errorBuffer.push_back(e);
 			LOG_ERROR(Outputter(PLAINTEXT, e).AsString().c_str());
