@@ -69,7 +69,7 @@ class BOSS_COMMON Logger {
 	void setVerbosity(LogVerbosity verbosity);
 
 	// Sets the output stream
-	inline void setStream(const char * file) {
+	inline void setStream(const char *file) {
 		m_out = std::fopen(file, "w");
 	}
 
@@ -82,7 +82,7 @@ class BOSS_COMMON Logger {
 	}
 
 	// If a message is of a sufficient verbosity, outputs the given message
-	inline void log(LogVerbosity verbosity, const char * formatStr, ...) __attribute__((__format__ (__printf__, 5, 6)))
+	inline void log(LogVerbosity verbosity, const char *formatStr, ...) __attribute__((__format__ (__printf__, 5, 6)))
 	{
 		if (_isVerbosityEnabled(verbosity)) {
 			std::va_list ap;
@@ -94,13 +94,13 @@ class BOSS_COMMON Logger {
 
  private:
 	LogVerbosity m_verbosity;
-	FILE * m_out;
+	FILE *m_out;
 
 	inline bool _isVerbosityEnabled(LogVerbosity verbosity) {
 		return verbosity <= m_verbosity;
 	}
 
-	void _log(LogVerbosity verbosity, const char * formatStr, std::va_list ap);
+	void _log(LogVerbosity verbosity, const char *formatStr, std::va_list ap);
 };
 
 // Declare global logger
