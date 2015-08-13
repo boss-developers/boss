@@ -69,21 +69,21 @@ struct pointers_struct {
 		git_blob_free(blob);
 	}
 
-	git_repository * repo;
-	git_remote * remote;
-	git_config * cfg;
-	git_object * obj;
-	git_commit * commit;
-	git_reference * ref;
-	git_signature * sig;
-	git_blob * blob;
+	git_repository *repo;
+	git_remote *remote;
+	git_config *cfg;
+	git_object *obj;
+	git_commit *commit;
+	git_reference *ref;
+	git_signature *sig;
+	git_blob *blob;
 };
 
-inline void handle_error(int error_code, pointers_struct& pointers) {
+inline void handle_error(int error_code, pointers_struct &pointers) {
 	if (!error_code)
 		return;
 
-	const git_error * error = giterr_last();
+	const git_error *error = giterr_last();
 	std::string error_message;
 	if (error == NULL)
 		error_message = IntToString(error_code) + ".";
@@ -96,7 +96,7 @@ inline void handle_error(int error_code, pointers_struct& pointers) {
 	throw boss_error(error_message, BOSS_ERROR_GIT_ERROR);
 }
 
-inline std::string RepoURL(const Game& game) {
+inline std::string RepoURL(const Game &game) {
 	// TODO(MCP): Look at converting this to a switch-statement
 	// MCP Note: The last else-statement should be an else-if with a default of invalid or similar
 	if (game.Id() == OBLIVION)
@@ -111,8 +111,8 @@ inline std::string RepoURL(const Game& game) {
 		return gl_falloutnv_repo_url;
 }
 
-inline bool are_files_equal(const void * buf1, std::size_t buf1_size,
-                            const void * buf2, std::size_t buf2_size) {
+inline bool are_files_equal(const void *buf1, std::size_t buf1_size,
+                            const void *buf2, std::size_t buf2_size) {
 	if (buf1_size != buf2_size)
 		return false;
 
@@ -126,7 +126,7 @@ inline bool are_files_equal(const void * buf1, std::size_t buf1_size,
 }
 
 // Gets the revision SHA (first 9 characters) for the currently checked-out masterlist, or "unknown".
-inline std::string GetMasterlistVersion(Game& game) {
+inline std::string GetMasterlistVersion(Game &game) {
 	if (!fs::exists(game.Masterlist().parent_path() / ".git" / "HEAD")) {
 		return "Unknown: Git repository missing";
 	}
@@ -172,9 +172,9 @@ inline std::string GetMasterlistVersion(Game& game) {
 
 // Progress has form prog(const char *str, int len, void *data)
 template<class Progress>
-std::string UpdateMasterlist(Game& game, Progress prog, void * out) {
+std::string UpdateMasterlist(Game &game, Progress prog, void *out) {
 	pointers_struct ptrs;
-	const git_transfer_progress * stats = NULL;
+	const git_transfer_progress *stats = NULL;
 
 	LOG_INFO("Checking for a Git repository.");
 
@@ -192,7 +192,7 @@ std::string UpdateMasterlist(Game& game, Progress prog, void * out) {
 		LOG_INFO("Getting the remote URL.");
 
 		// Get the remote URL.
-		const char * url = git_remote_url(ptrs.remote);
+		const char *url = git_remote_url(ptrs.remote);
 
 		LOG_INFO("Checking to see if remote URL matches URL in settings.");
 
@@ -245,7 +245,7 @@ std::string UpdateMasterlist(Game& game, Progress prog, void * out) {
 
 	LOG_INFO("Setting up checkout parameters.");
 
-	char * paths[] = {"masterlist.txt"};  // MCP Note: Can this be const?
+	char *paths[] = {"masterlist.txt"};  // MCP Note: Can this be const?
 
 	git_checkout_opts opts = GIT_CHECKOUT_OPTS_INIT;
 	opts.checkout_strategy = GIT_CHECKOUT_FORCE;  // Make sure the existing file gets overwritten.
@@ -281,7 +281,7 @@ std::string UpdateMasterlist(Game& game, Progress prog, void * out) {
 	handle_error(git_revparse_single(&ptrs.obj, ptrs.repo, filespec.c_str()), ptrs);
 
 	LOG_INFO("Getting the Git object ID.");
-	const git_oid * oid = git_object_id(ptrs.obj);
+	const git_oid *oid = git_object_id(ptrs.obj);
 
 	LOG_INFO("Generating hex string for Git object ID.");
 	git_oid_tostr(revision, 10, oid);
