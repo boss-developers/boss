@@ -62,7 +62,7 @@ Outputter::Outputter()
     : outFormat(PLAINTEXT),
       escapeHTMLSpecialChars(false) {}
 
-Outputter::Outputter(const Outputter& o) {
+Outputter::Outputter(const Outputter &o) {
 	outStream << o.AsString();
 	outFormat = o.GetFormat();
 	escapeHTMLSpecialChars = o.GetHTMLSpecialEscape();
@@ -137,7 +137,7 @@ std::string Outputter::AsString() const {
 	return outStream.str();
 }
 
-Outputter& Outputter::operator= (const Outputter& o) {
+Outputter& Outputter::operator= (const Outputter &o) {
 	outStream << o.AsString();
 	outFormat = o.GetFormat();
 	escapeHTMLSpecialChars = o.GetHTMLSpecialEscape();
@@ -149,7 +149,7 @@ Outputter& Outputter::operator<< (const std::string s) {
 	return *this;
 }
 
-Outputter& Outputter::operator<< (const char * s) {
+Outputter& Outputter::operator<< (const char *s) {
 	outStream << EscapeHTMLSpecial(s);
 	return *this;
 }
