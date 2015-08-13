@@ -148,7 +148,8 @@ class Skipper : public grammar<grammarIter> {
 ///////////////////////////////
 
 // Modlist/Masterlist grammar
-class modlist_grammar : public grammar<grammarIter, std::vector<Item>(), Skipper> {
+class modlist_grammar
+    : public grammar<grammarIter, std::vector<Item>(), Skipper> {
  public:
 	modlist_grammar();
 	void SetErrorBuffer(ParsingError *inErrorBuffer);
