@@ -83,12 +83,12 @@ void conditionalData::Conditions(const std::string inConditions) {
 	conditions = inConditions;
 }
 
-bool conditionalData::EvalConditions(boost::unordered_set<std::string>& setVars,
-                                     boost::unordered_map<std::string, std::uint32_t>& fileCRCs,
-                                     boost::unordered_set<std::string>& activePlugins,
-                                     bool * condResult,
-                                     ParsingError& errorBuffer,
-                                     const Game& parentGame) {
+bool conditionalData::EvalConditions(boost::unordered_set<std::string> &setVars,
+                                     boost::unordered_map<std::string, std::uint32_t> &fileCRCs,
+                                     boost::unordered_set<std::string> &activePlugins,
+                                     bool *condResult,
+                                     ParsingError &errorBuffer,
+                                     const Game &parentGame) {
 	if (!conditions.empty()) {
 		Skipper skipper;
 		conditional_grammar grammar;
@@ -236,17 +236,17 @@ bool Item::IsGroup() const {
 	        fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost")));
 }*/
 
-bool Item::IsGameMasterFile(const Game& parentGame) const {
+bool Item::IsGameMasterFile(const Game &parentGame) const {
 	return boost::iequals(Data(), parentGame.MasterFile().Name());
 }
 
-bool Item::IsMasterFile(const Game& parentGame) const {
+bool Item::IsMasterFile(const Game &parentGame) const {
 	if (IsGhosted(parentGame))
 		return IsPluginMaster(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
 	return IsPluginMaster(parentGame.DataFolder() / Data());
 }
 
-bool Item::IsFalseFlagged(const Game& parentGame) const {
+bool Item::IsFalseFlagged(const Game &parentGame) const {
 	std::string ext;
 	if (IsGhosted(parentGame))
 		ext = fs::path(Data()).stem().extension().string();
@@ -256,16 +256,16 @@ bool Item::IsFalseFlagged(const Game& parentGame) const {
 	        (!IsMasterFile(parentGame) && boost::iequals(ext, ".esm")));
 }
 
-bool Item::IsGhosted(const Game& parentGame) const {
+bool Item::IsGhosted(const Game &parentGame) const {
 	return (fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost")));
 }
 
-bool Item::Exists(const Game& parentGame) const {
+bool Item::Exists(const Game &parentGame) const {
 	return (fs::exists(parentGame.DataFolder() / Data()) ||
 	        fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost")));
 }
 
-Version Item::GetVersion(const Game& parentGame) const {
+Version Item::GetVersion(const Game &parentGame) const {
 	if (!IsPlugin())
 		return Version();
 
@@ -281,7 +281,7 @@ Version Item::GetVersion(const Game& parentGame) const {
 	return Version(header.Version);
 }
 
-std::time_t Item::GetModTime(const Game& parentGame) const {  // Can throw exception.
+std::time_t Item::GetModTime(const Game &parentGame) const {  // Can throw exception.
 	try {
 		if (IsGhosted(parentGame))
 			return fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
@@ -311,7 +311,7 @@ std::time_t Item::GetModTime(const Game& parentGame) const {  // Can throw excep
 	}
 }*/
 
-void Item::UnGhost(const Game& parentGame) const {  // Can throw exception.
+void Item::UnGhost(const Game &parentGame) const {  // Can throw exception.
 	if (IsGhosted(parentGame)) {
 		try {
 			fs::rename(parentGame.DataFolder() / fs::path(Data() + ".ghost"),
@@ -323,7 +323,7 @@ void Item::UnGhost(const Game& parentGame) const {  // Can throw exception.
 	}
 }
 
-void Item::SetModTime(const Game& parentGame,
+void Item::SetModTime(const Game &parentGame,
                       const std::time_t modificationTime) const {
 	try {
 		if (IsGhosted(parentGame))
@@ -361,11 +361,11 @@ void Item::ClearMessages() {
 	messages.clear();
 }
 
-bool Item::EvalConditions(boost::unordered_set<std::string>& setVars,
-                          boost::unordered_map<std::string, std::uint32_t>& fileCRCs,
-                          boost::unordered_set<std::string>& activePlugins,
-                          bool * condResult,
-                          ParsingError& errorBuffer, const Game& parentGame) {
+bool Item::EvalConditions(boost::unordered_set<std::string> &setVars,
+                          boost::unordered_map<std::string, std::uint32_t> &fileCRCs,
+                          boost::unordered_set<std::string> &activePlugins,
+                          bool *condResult,
+                          ParsingError &errorBuffer, const Game &parentGame) {
 	if (Type() == ENDGROUP)
 		return true;
 

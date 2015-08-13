@@ -68,12 +68,12 @@ class BOSS_COMMON conditionalData {
 	void Data(const std::string inData);
 	void Conditions(const std::string inConditions);
 
-	bool EvalConditions(boost::unordered_set<std::string>& setVars,
-	                    boost::unordered_map<std::string, std::uint32_t>& fileCRCs,
-	                    boost::unordered_set<std::string>& activePlugins,
+	bool EvalConditions(boost::unordered_set<std::string> &setVars,
+	                    boost::unordered_map<std::string, std::uint32_t> &fileCRCs,
+	                    boost::unordered_set<std::string> &activePlugins,
 	                    bool *condResult,
-	                    ParsingError& errorBuffer,
-	                    const Game& parentGame);
+	                    ParsingError &errorBuffer,
+	                    const Game &parentGame);
  private:
 	friend struct boost::fusion::extension::access;
 	std::string data;
@@ -119,27 +119,27 @@ class BOSS_COMMON Item : public conditionalData {
 
 	bool IsPlugin() const;
 	bool IsGroup() const;
-	bool IsGameMasterFile(const Game& parentGame) const;
-	bool IsMasterFile(const Game& parentGame) const;
-	bool IsFalseFlagged(const Game& parentGame) const;          // True if IsMasterFile does not match file extension.
-	bool IsGhosted(const Game& parentGame) const;               // Checks if the file exists in ghosted form.
-	bool Exists(const Game& parentGame) const;                  // Checks if the file exists in the data folder, ghosted or not.
-	Version GetVersion(const Game& parentGame) const;           // Outputs the file's header.
-	std::time_t GetModTime(const Game& parentGame) const;       // Can throw exception.
+	bool IsGameMasterFile(const Game &parentGame) const;
+	bool IsMasterFile(const Game &parentGame) const;
+	bool IsFalseFlagged(const Game &parentGame) const;          // True if IsMasterFile does not match file extension.
+	bool IsGhosted(const Game &parentGame) const;               // Checks if the file exists in ghosted form.
+	bool Exists(const Game &parentGame) const;                  // Checks if the file exists in the data folder, ghosted or not.
+	Version GetVersion(const Game &parentGame) const;           // Outputs the file's header.
+	std::time_t GetModTime(const Game &parentGame) const;       // Can throw exception.
 
-	void UnGhost(const Game& parentGame) const;                 // Can throw exception.
-	void SetModTime(const Game& parentGame,
+	void UnGhost(const Game &parentGame) const;                 // Can throw exception.
+	void SetModTime(const Game &parentGame,
 	                const std::time_t modificationTime) const;  // Can throw exception.
 
 	void InsertMessage(std::size_t pos, Message item);
 	void ClearMessages();
 
-	bool EvalConditions(boost::unordered_set<std::string>& setVars,
-	                    boost::unordered_map<std::string, std::uint32_t>& fileCRCs,
-	                    boost::unordered_set<std::string>& activePlugins,
-	                    bool * condResult,
-	                    ParsingError& errorBuffer,
-	                    const Game& parentGame);
+	bool EvalConditions(boost::unordered_set<std::string> &setVars,
+	                    boost::unordered_map<std::string, std::uint32_t> &fileCRCs,
+	                    boost::unordered_set<std::string> &activePlugins,
+	                    bool *condResult,
+	                    ParsingError &errorBuffer,
+	                    const Game &parentGame);
 
  private:
 	friend struct boost::fusion::extension::access;
