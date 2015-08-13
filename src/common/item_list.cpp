@@ -62,8 +62,8 @@ namespace fs = boost::filesystem;
 //////////////////////////////
 
 struct itemComparator {
-	const Game& parentGame;
-	explicit itemComparator(const Game& game) : parentGame(game) {}
+	const Game &parentGame;
+	explicit itemComparator(const Game &game) : parentGame(game) {}
 
 	bool operator() (const Item item1, const Item item2) {
 		// Return true if item1 goes before item2, false otherwise.
@@ -87,7 +87,7 @@ struct itemComparator {
 
 ItemList::ItemList() : lastRecognisedPos(0) {}
 
-void ItemList::Load(const Game& parentGame, const fs::path path) {
+void ItemList::Load(const Game &parentGame, const fs::path path) {
 	Clear();
 	if (fs::exists(path) && fs::is_directory(path)) {
 		LOG_DEBUG("Reading user mods...");
@@ -283,7 +283,7 @@ void ItemList::Save(const fs::path file, const fs::path oldFile) {
 	LOG_INFO("Backup saved successfully.");
 }
 
-void ItemList::SavePluginNames(const Game& parentGame,
+void ItemList::SavePluginNames(const Game &parentGame,
                                const fs::path file,
                                const bool activeOnly,
                                const bool doEncodingConversion) {
@@ -333,7 +333,7 @@ void ItemList::SavePluginNames(const Game& parentGame,
 		                 "1252");
 }
 
-void ItemList::EvalConditions(const Game& parentGame) {
+void ItemList::EvalConditions(const Game &parentGame) {
 	boost::unordered_set<std::string> setVars;
 	boost::unordered_set<std::string> activePlugins;
 	bool res;
@@ -430,7 +430,7 @@ void ItemList::EvalConditions(const Game& parentGame) {
 	}
 }
 
-void ItemList::EvalRegex(const Game& parentGame) {
+void ItemList::EvalRegex(const Game &parentGame) {
 	// Store installed mods in a hashset. Case insensitivity not required as regex itself is case-insensitive.
 	boost::unordered_set<std::string> hashset;
 	boost::unordered_set<std::string>::iterator setPos;
@@ -485,7 +485,7 @@ void ItemList::EvalRegex(const Game& parentGame) {
 	}
 }
 
-void ItemList::ApplyMasterPartition(const Game& parentGame) {
+void ItemList::ApplyMasterPartition(const Game &parentGame) {
 	// Need to iterate through items vector, sorting it according to the rule that master items come before other items.
 	std::size_t lastMasterPos = GetLastMasterPos(parentGame);
 	std::size_t pos = GetNextMasterPos(parentGame, lastMasterPos + 1);
@@ -519,7 +519,7 @@ std::size_t ItemList::FindLastItem(const std::string name, const std::uint32_t t
 	return max;
 }
 
-std::size_t ItemList::GetLastMasterPos(const Game& parentGame) const {
+std::size_t ItemList::GetLastMasterPos(const Game &parentGame) const {
 	std::size_t i = 0;
 	while (i < items.size() &&
 	      (items[i].IsGroup() || items[i].IsMasterFile(parentGame))) {  // SLLOOOOOWWWWW probably.
@@ -530,7 +530,7 @@ std::size_t ItemList::GetLastMasterPos(const Game& parentGame) const {
 	return 0;
 }
 
-std::size_t ItemList::GetNextMasterPos(const Game& parentGame,
+std::size_t ItemList::GetNextMasterPos(const Game &parentGame,
                                        std::size_t currPos) const {
 	if (currPos >= items.size())
 		return items.size();
