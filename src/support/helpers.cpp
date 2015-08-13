@@ -62,7 +62,7 @@ namespace karma = boost::spirit::karma;
 namespace bloc = boost::locale;
 
 // Calculate the CRC of the given file for comparison purposes.
-std::uint32_t GetCrc32(const fs::path& filename) {
+std::uint32_t GetCrc32(const fs::path &filename) {
 	std::uint32_t chksum = 0;
 	static const std::size_t buffer_size = 8192;
 	char buffer[buffer_size];
@@ -85,7 +85,7 @@ std::uint32_t GetCrc32(const fs::path& filename) {
 }
 
 // Reads an entire file into a string buffer.
-void fileToBuffer(const fs::path file, std::string& buffer) {
+void fileToBuffer(const fs::path file, std::string &buffer) {
 	// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
 	std::ifstream ifile(file.string());
 	if (ifile.fail())
@@ -125,21 +125,21 @@ bool StringToBool(std::string str) {
 }
 
 // Convert a Windows-1252 string to UTF-8.
-std::string From1252ToUTF8(const std::string& str) {
+std::string From1252ToUTF8(const std::string &str) {
 	try {
 		return bloc::conv::to_utf<char>(str, "Windows-1252", bloc::conv::stop);
 	}
-	catch (bloc::conv::conversion_error& e) {
+	catch (bloc::conv::conversion_error &e) {
 		throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
 	}
 }
 
 // Convert a UTF-8 string to Windows-1252.
-std::string FromUTF8To1252(const std::string& str) {
+std::string FromUTF8To1252(const std::string &str) {
 	try {
 		return bloc::conv::from_utf<char>(str, "Windows-1252", bloc::conv::stop);
 	}
-	catch (bloc::conv::conversion_error& e) {
+	catch (bloc::conv::conversion_error &e) {
 		throw boss_error(BOSS_ERROR_FILE_NOT_UTF8, "\"" + str + "\" cannot be encoded in Windows-1252.");
 	}
 }
@@ -198,7 +198,7 @@ std::string RegKeyStringValue(std::string keyStr, std::string subkey, std::strin
 
 Version::Version() {}
 
-Version::Version(const char * ver) : verString(ver) {}
+Version::Version(const char *ver) : verString(ver) {}
 
 Version::Version(const std::string ver) : verString(ver) {}
 
