@@ -69,8 +69,8 @@ class RuleBoxClass : public wxPanel {
  public:
 	RuleBoxClass(wxScrolled<wxPanel> *parent, /*boss::*/Rule currentRule,
 	             std::uint32_t index, bool isSelected);
-	void ToggleEnabled(wxCommandEvent& event);  // Doesn't handle RuleList modification, only greying out of UI element.
-	void OnSelect(wxMouseEvent& event);
+	void ToggleEnabled(wxCommandEvent &event);  // Doesn't handle RuleList modification, only greying out of UI element.
+	void OnSelect(wxMouseEvent &event);
 	void Highlight(bool highlight);
 	DECLARE_EVENT_TABLE()
  private:
@@ -81,42 +81,42 @@ class RuleBoxClass : public wxPanel {
 
 class RuleListFrameClass : public wxPanel {
  public:
-	RuleListFrameClass(wxFrame *parent, wxWindowID id, /*boss::*/Game& inGame);  // Initialise the RuleListFrameClass object.
+	RuleListFrameClass(wxFrame *parent, wxWindowID id, /*boss::*/Game &inGame);  // Initialise the RuleListFrameClass object.
 	void SaveUserlist(const fs::path path);                                  // Save the changes made to the userlist.
 	/*boss::*/Rule GetSelectedRule();                                            // Returns the currently selected rule.
 	void AppendRule(/*boss::*/Rule newRule);                                     // Append to RuleList object and update GUI.
 	void SaveEditedRule(/*boss::*/Rule editedRule);                              // Get the index from current selection internally. Also update RuleList object.
 	void DeleteSelectedRule();                                               // Remove from GUI and RuleList object, getting index from current selection internally.
 	void MoveRule(wxWindowID id);
-	void OnToggleRule(wxCommandEvent& event);
-	void OnRuleSelection(wxCommandEvent& event);
+	void OnToggleRule(wxCommandEvent &event);
+	void OnRuleSelection(wxCommandEvent &event);
 	DECLARE_EVENT_TABLE()
  private:
 	void ReDrawRuleList();                                                   // Empties the RuleListScroller and then re-populates it with RuleBoxClass objects for the rules in the RuleList object.
 	std::size_t selectedRuleIndex;
 	wxScrolled<wxPanel> *RuleListScroller;
-	/*boss::*/Game& game;
+	/*boss::*/Game &game;
 };
 
 class UserRulesEditorFrame : public wxFrame {
  public:
 	UserRulesEditorFrame(const wxString title, wxFrame *parent,
-	                     /*boss::*/Game& inGame);
-	void OnOKQuit(wxCommandEvent& event);
-	void OnCancelQuit(wxCommandEvent& event);
-	void OnSearchList(wxCommandEvent& event);
-	void OnCancelSearch(wxCommandEvent& event);
-	void OnSelectModInMasterlist(wxTreeEvent& event);
-	void OnSortingCheckToggle(wxCommandEvent& event);
-	void OnMessageAddToggle(wxCommandEvent& event);
-	void OnSortInsertChange(wxCommandEvent& event);
-	void OnRuleCreate(wxCommandEvent& event);
-	void OnRuleEdit(wxCommandEvent& event);
-	void OnRuleDelete(wxCommandEvent& event);
-	void OnRuleOrderChange(wxCommandEvent& event);
-	void OnRuleSelection(wxCommandEvent& event);
+	                     /*boss::*/Game &inGame);
+	void OnOKQuit(wxCommandEvent &event);
+	void OnCancelQuit(wxCommandEvent &event);
+	void OnSearchList(wxCommandEvent &event);
+	void OnCancelSearch(wxCommandEvent &event);
+	void OnSelectModInMasterlist(wxTreeEvent &event);
+	void OnSortingCheckToggle(wxCommandEvent &event);
+	void OnMessageAddToggle(wxCommandEvent &event);
+	void OnSortInsertChange(wxCommandEvent &event);
+	void OnRuleCreate(wxCommandEvent &event);
+	void OnRuleEdit(wxCommandEvent &event);
+	void OnRuleDelete(wxCommandEvent &event);
+	void OnRuleOrderChange(wxCommandEvent &event);
+	void OnRuleSelection(wxCommandEvent &event);
 
-	void OnDragStart(wxTreeEvent& event);
+	void OnDragStart(wxTreeEvent &event);
 
 	DECLARE_EVENT_TABLE()
 
@@ -125,7 +125,7 @@ class UserRulesEditorFrame : public wxFrame {
 	void LoadLists();
 	/*boss::*/Rule GetRuleFromForm();
 
-	/*boss::*/Game& game;
+	/*boss::*/Game &game;
 
 	wxArrayString ModlistMods;
 
@@ -158,11 +158,11 @@ class UserRulesEditorFrame : public wxFrame {
 	wxPanel *ModlistTab;
 	wxPanel *MasterlistTab;
 
-	wxButton * CreateNewRuleButton;
-	wxButton * SaveEditedRuleButton;
-	wxButton * DeleteRuleButton;
-	wxButton * MoveRuleUpButton;
-	wxButton * MoveRuleDownButton;
+	wxButton *CreateNewRuleButton;
+	wxButton *SaveEditedRuleButton;
+	wxButton *DeleteRuleButton;
+	wxButton *MoveRuleUpButton;
+	wxButton *MoveRuleDownButton;
 };
 
 }  // namespace boss
