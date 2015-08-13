@@ -106,7 +106,7 @@ enum {
 // but Boost's requires a UTF-8 -> (whatever display encoding) conversion to work with the UI.
 namespace boss {
 
-wxString translate(char * cstr);
+wxString translate(char *cstr);
 
 wxString translate(std::string str);
 
