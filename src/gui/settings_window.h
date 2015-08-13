@@ -43,8 +43,8 @@ namespace boss {
 class SettingsFrame : public wxFrame {
  public:
 	SettingsFrame(const wxString title, wxFrame *parent);
-	void OnOKQuit(wxCommandEvent& event);
-	void OnCancelQuit(wxCommandEvent& event);
+	void OnOKQuit(wxCommandEvent &event);
+	void OnCancelQuit(wxCommandEvent &event);
 	void SetDefaultValues();
 	DECLARE_EVENT_TABLE()
  private:
