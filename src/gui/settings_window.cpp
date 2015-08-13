@@ -134,7 +134,7 @@ SettingsFrame::SettingsFrame(const wxString title, wxFrame *parent)
 	SetSizerAndFit(bigBox);
 }
 
-void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
+void SettingsFrame::OnOKQuit(wxCommandEvent &event) {
 	// Make sure the settings are saved.
 
 	// General
@@ -196,7 +196,7 @@ void SettingsFrame::OnOKQuit(wxCommandEvent& event) {
 	this->Close();
 }
 
-void SettingsFrame::OnCancelQuit(wxCommandEvent& event) {
+void SettingsFrame::OnCancelQuit(wxCommandEvent &event) {
 	this->Close();
 }
 
