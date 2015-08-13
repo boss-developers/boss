@@ -33,6 +33,7 @@
 #include <ctime>
 
 #include <iterator>
+#include <locale>
 #include <string>
 #include <vector>
 
@@ -91,8 +92,8 @@ std::uint32_t AutodetectGame(std::vector<std::uint32_t> detectedGames) {  // Thr
 	return AUTODETECT;
 }
 
-BOSS_COMMON std::uint32_t DetectGame(std::vector<std::uint32_t>& detectedGames,
-                                     std::vector<std::uint32_t>& undetectedGames) {
+BOSS_COMMON std::uint32_t DetectGame(std::vector<std::uint32_t> &detectedGames,
+                                     std::vector<std::uint32_t> &undetectedGames) {
 	// Detect all installed games.
 	if (Game(OBLIVION, "", true).IsInstalled())  // Look for Oblivion.
 		detectedGames.push_back(OBLIVION);
@@ -131,10 +132,10 @@ BOSS_COMMON std::uint32_t DetectGame(std::vector<std::uint32_t>& detectedGames,
 struct iequal_to : std::binary_function<std::string, std::string, bool> {
  public:
 	iequal_to() {}
-	explicit iequal_to(std::locale const& l) : locale_(l) {}  // May need to include <locale> and functional
+	explicit iequal_to(const std::locale &l) : locale_(l) {}  // May need to include <locale> and functional
 
 	template <typename String1, typename String2>
-	bool operator()(String1 const& x1, String2 const& x2) const {
+	bool operator()(const String1 &x1, const String2 &x2) const {
 		return boost::algorithm::iequals(x1, x2, locale_);
 	}
  private:
@@ -144,10 +145,10 @@ struct iequal_to : std::binary_function<std::string, std::string, bool> {
 struct ihash : std::unary_function<std::string, std::size_t> {
  public:
 	ihash() {}
-	explicit ihash(std::locale const& l) : locale_(l) {}
+	explicit ihash(const std::locale &l) : locale_(l) {}
 
 	template <typename String>
-	std::size_t operator()(String const& x) const {
+	std::size_t operator()(const String &x) const {
 		std::size_t seed = 0;
 
 		for (typename String::const_iterator it = x.begin(); it != x.end();
