@@ -49,10 +49,10 @@ namespace fs = boost::filesystem;
 //////////////////////////////////////////////////////////////////////////
 
 // Calculate the CRC of the given file for comparison purposes.
-std::uint32_t GetCrc32(const fs::path& filename);
+std::uint32_t GetCrc32(const fs::path &filename);
 
 // Reads an entire file into a string buffer.
-void fileToBuffer(const fs::path file, std::string& buffer);
+void fileToBuffer(const fs::path file, std::string &buffer);
 
 // Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 BOSS_COMMON std::string IntToString(const std::uint32_t n);
@@ -67,10 +67,10 @@ std::string BoolToString(bool b);
 bool StringToBool(std::string str);
 
 // Convert a Windows-1252 string to UTF-8.
-std::string From1252ToUTF8(const std::string& str);
+std::string From1252ToUTF8(const std::string &str);
 
 // Convert a UTF-8 string to Windows-1252.
-std::string FromUTF8To1252(const std::string& str);
+std::string FromUTF8To1252(const std::string &str);
 
 // Check if registry subkey exists.
 BOSS_COMMON bool RegKeyExists(std::string keyStr, std::string subkey,
@@ -83,7 +83,7 @@ std::string RegKeyStringValue(std::string keyStr, std::string subkey, std::strin
 class Version {
  public:
 	Version();
-	explicit Version(const char * ver);
+	explicit Version(const char *ver);
 	explicit Version(const std::string ver);
 	explicit Version(const fs::path file);
 
