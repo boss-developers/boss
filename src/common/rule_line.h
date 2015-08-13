@@ -91,7 +91,7 @@ class BOSS_COMMON Rule : public RuleLine {
 class BOSS_COMMON RuleList {
  public:
 	RuleList();
-	void Load(const Game& parentGame, const fs::path file);  // Throws exception on fail.
+	void Load(const Game &parentGame, const fs::path file);  // Throws exception on fail.
 	void Save(const fs::path file);                          // Throws exception on fail.
 	std::size_t FindRule(const std::string ruleObject,
 	                     const bool onlyEnabled) const;
@@ -111,7 +111,7 @@ class BOSS_COMMON RuleList {
 	void Clear();
 
  private:
-	void CheckSyntax(const Game& parentGame);  // Rule checker function, checks for syntax (not parsing) errors.
+	void CheckSyntax(const Game &parentGame);  // Rule checker function, checks for syntax (not parsing) errors.
 
 	std::vector<Rule> rules;
 	std::vector<ParsingError> errorBuffer;
