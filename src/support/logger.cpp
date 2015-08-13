@@ -33,7 +33,7 @@
 
 // The values in the LogVerbosity enum refer to indices in this array
 // MCP Note: Are the spaces inside the quotes supposed to be there?
-static const char * LOG_VERBOSITY_NAMES[] = {"OFF  ", "ERROR", "WARN ",
+static const char *LOG_VERBOSITY_NAMES[] = {"OFF  ", "ERROR", "WARN ",
                                              "INFO ", "DEBUG", "TRACE"};
 
 
@@ -48,7 +48,7 @@ BOSS_COMMON Logger g_logger;
  * If the verbosity is beyond LV_TRACE, sets the verbosity to LV_TRACE
  * Returns true if, after limiting the upper bound, the verbosity is valid
  */
-static inline bool _checkVerbosity(LogVerbosity & verbosity) {
+static inline bool _checkVerbosity(LogVerbosity &verbosity) {
 	if (LV_OFF > verbosity) {
 		LOG_WARN("invalid verbosity: %d", verbosity);
 		return false;
@@ -78,7 +78,7 @@ void Logger::setVerbosity(LogVerbosity verbosity) {
 }
 
 // Formats the message and prints to stdout
-void Logger::_log(LogVerbosity verbosity, const char * formatStr, std::va_list ap) {
+void Logger::_log(LogVerbosity verbosity, const char *formatStr, std::va_list ap) {
 	if (!_checkVerbosity(verbosity)) {
 		return;
 	}
