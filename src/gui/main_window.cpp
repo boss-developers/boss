@@ -215,7 +215,7 @@ bool BossGUI::OnInit() {
 
 			std::size_t ans;
 
-			wxSingleChoiceDialog* choiceDia = new wxSingleChoiceDialog(
+			wxSingleChoiceDialog *choiceDia = new wxSingleChoiceDialog(
 			    frame,
 			    translate("Please pick which game to run BOSS for:"),
 			    translate("BOSS: Select Game"),
@@ -437,7 +437,7 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	SetSizerAndFit(bigBox);
 }
 
-void MainFrame::OnOpenSettings(wxCommandEvent& event) {
+void MainFrame::OnOpenSettings(wxCommandEvent &event) {
 	// Tell the user that stuff is happenining.
 	SettingsFrame *settings = new SettingsFrame(translate("BOSS: Settings"),
 	                                            this);
@@ -446,11 +446,11 @@ void MainFrame::OnOpenSettings(wxCommandEvent& event) {
 }
 
 // Called when program exits.
-void MainFrame::OnQuit(wxCommandEvent& event) {
+void MainFrame::OnQuit(wxCommandEvent &event) {
 	Close(true);  // Tells the OS to quit running this process
 }
 
-void MainFrame::OnRunBOSS(wxCommandEvent& event) {
+void MainFrame::OnRunBOSS(wxCommandEvent &event) {
 	fs::path sortfile;  // Modlist/masterlist to sort plugins using.
 
 	// Tell the user that stuff is happenining.
@@ -670,7 +670,7 @@ void MainFrame::OnRunBOSS(wxCommandEvent& event) {
 }
 
 // Call when a file is opened. Either readmes or BOSS Logs.
-void MainFrame::OnOpenFile(wxCommandEvent& event) {
+void MainFrame::OnOpenFile(wxCommandEvent &event) {
 	if (event.GetId() == OPTION_OpenBOSSlog) {
 		if (fs::exists(game.Log(gl_log_format))) {
 			wxLaunchDefaultApplication(game.Log(gl_log_format).string());
@@ -706,7 +706,7 @@ void MainFrame::OnOpenFile(wxCommandEvent& event) {
 	}
 }
 
-void MainFrame::OnAbout(wxCommandEvent& event) {
+void MainFrame::OnAbout(wxCommandEvent &event) {
 	wxAboutDialogInfo aboutInfo;
 	aboutInfo.SetName("BOSS");
 	aboutInfo.SetVersion(IntToString(BOSS_VERSION_MAJOR) + "." + IntToString(BOSS_VERSION_MINOR) + "." + IntToString(BOSS_VERSION_PATCH));
@@ -729,7 +729,7 @@ void MainFrame::OnAbout(wxCommandEvent& event) {
 	wxAboutBox(aboutInfo);
 }
 
-void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
+void MainFrame::OnRunTypeChange(wxCommandEvent &event) {
 	// TODO(MCP): Look at converting this to a switch-statement
 	if (event.GetId() == RADIOBUTTON_SortOption) {
 		gl_revert = 0;
@@ -761,14 +761,14 @@ void MainFrame::OnRunTypeChange(wxCommandEvent& event) {
 	DisableUndetectedGames();  // Doesn't actually disable games if (gl_update_only).
 }
 
-void MainFrame::OnFormatChange(wxCommandEvent& event) {
+void MainFrame::OnFormatChange(wxCommandEvent &event) {
 	if (event.GetInt() == 0)
 		gl_log_format = HTML;
 	else
 		gl_log_format = PLAINTEXT;
 }
 
-void MainFrame::OnGameChange(wxCommandEvent& event) {
+void MainFrame::OnGameChange(wxCommandEvent &event) {
 	try {
 		switch (event.GetId()) {
 			case MENU_Oblivion:
@@ -787,35 +787,35 @@ void MainFrame::OnGameChange(wxCommandEvent& event) {
 				game = Game(FALLOUTNV);
 				break;
 		}
-	} catch (boss_error& e) {
+	} catch (boss_error &e) {
 		wxMessageBox(e.getString());
 	}
 	game.CreateBOSSGameFolder();
 	SetTitle(wxT("BOSS - " + game.Name()));  // Don't need to convert name, known to be only ASCII chars.
 }
 
-void MainFrame::OnRevertChange(wxCommandEvent& event) {
+void MainFrame::OnRevertChange(wxCommandEvent &event) {
 	gl_revert = event.GetInt() + 1;
 }
 
-void MainFrame::OnLogDisplayChange(wxCommandEvent& event) {
+void MainFrame::OnLogDisplayChange(wxCommandEvent &event) {
 	// MCP Note: Can the outside parentheses be removed?
 	gl_silent = (!event.IsChecked());
 }
 
-void MainFrame::OnUpdateChange(wxCommandEvent& event) {
+void MainFrame::OnUpdateChange(wxCommandEvent &event) {
 	gl_update = event.IsChecked();
 }
 
-void MainFrame::OnCRCDisplayChange(wxCommandEvent& event) {
+void MainFrame::OnCRCDisplayChange(wxCommandEvent &event) {
 	gl_show_CRCs = event.IsChecked();
 }
 
-void MainFrame::OnTrialRunChange(wxCommandEvent& event) {
+void MainFrame::OnTrialRunChange(wxCommandEvent &event) {
 	gl_trial_run = event.IsChecked();
 }
 
-void MainFrame::OnEditUserRules(wxCommandEvent& event) {
+void MainFrame::OnEditUserRules(wxCommandEvent &event) {
 	if (gl_use_user_rules_manager) {
 		UserRulesEditorFrame *editor = new UserRulesEditorFrame(translate("BOSS: User Rules Manager"),
 		                                                        this,
@@ -840,7 +840,7 @@ void MainFrame::OnEditUserRules(wxCommandEvent& event) {
 	}
 }
 
-void MainFrame::OnClose(wxCloseEvent& event) {
+void MainFrame::OnClose(wxCloseEvent &event) {
 	// Save settings to BOSS.ini before quitting.
 	try {
 		Settings ini;
@@ -857,7 +857,7 @@ void MainFrame::OnClose(wxCloseEvent& event) {
 	            // since the default event handler does call Destroy(), too
 }
 
-void MainFrame::SetGames(const Game& inGame,
+void MainFrame::SetGames(const Game &inGame,
                          const std::vector<std::uint32_t> inGames) {
 	game = inGame;
 	detectedGames = inGames;
