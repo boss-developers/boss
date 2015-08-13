@@ -191,7 +191,7 @@ RuleBoxClass::RuleBoxClass(wxScrolled<wxPanel> *parent,
 	Show();
 }
 
-void RuleBoxClass::ToggleEnabled(wxCommandEvent& event) {
+void RuleBoxClass::ToggleEnabled(wxCommandEvent &event) {
 	if (event.IsChecked())
 		ruleContent->Enable(true);
 	else
@@ -201,7 +201,7 @@ void RuleBoxClass::ToggleEnabled(wxCommandEvent& event) {
 	GetGrandParent()->ProcessWindowEvent(event);
 }
 
-void RuleBoxClass::OnSelect(wxMouseEvent& event) {
+void RuleBoxClass::OnSelect(wxMouseEvent &event) {
 	event.SetId(ruleIndex);
 	event.SetEventType(wxEVT_COMMAND_LISTBOX_SELECTED);
 	GetGrandParent()->ProcessWindowEvent(event);
@@ -220,7 +220,7 @@ void RuleBoxClass::Highlight(bool highlight) {
 //////////////////////////////////
 
 RuleListFrameClass::RuleListFrameClass(wxFrame *parent, wxWindowID id,
-                                       Game& inGame)
+                                       Game &inGame)
     : wxPanel(parent, id, wxDefaultPosition, wxDefaultSize),
       game(inGame),
       selectedRuleIndex(0) {
@@ -340,7 +340,7 @@ void RuleListFrameClass::MoveRule(wxWindowID id) {
 	}
 }
 
-void RuleListFrameClass::OnToggleRule(wxCommandEvent& event) {
+void RuleListFrameClass::OnToggleRule(wxCommandEvent &event) {
 	if (event.GetId() >= 0 &&
 	    event.GetId() < game.userlist.Rules().size()) {
 		std::uint32_t id = event.GetId();
@@ -355,7 +355,7 @@ void RuleListFrameClass::OnToggleRule(wxCommandEvent& event) {
 	}
 }
 
-void RuleListFrameClass::OnRuleSelection(wxCommandEvent& event) {
+void RuleListFrameClass::OnRuleSelection(wxCommandEvent &event) {
 	selectedRuleIndex = event.GetId();
 	std::size_t size = game.userlist.Rules().size();
 	wxWindowList list = RuleListScroller->GetChildren();
@@ -389,10 +389,10 @@ void RuleListFrameClass::ReDrawRuleList() {
 
 UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
                                            wxFrame *parent,
-                                           Game& inGame)
+                                           Game &inGame)
     : wxFrame(parent, wxID_ANY, title), game(inGame) {
 
-	wxProgressDialog * progDia;
+	wxProgressDialog *progDia;
 
 	// First check if masterlist is installed, and offer to download it if not.
 	if (!fs::exists(game.Masterlist())) {
@@ -624,16 +624,16 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
 	progDia->Destroy();
 }
 
-void UserRulesEditorFrame::OnOKQuit(wxCommandEvent& event) {
+void UserRulesEditorFrame::OnOKQuit(wxCommandEvent &event) {
 	RulesList->SaveUserlist(game.Userlist());
 	this->Close();
 }
 
-void UserRulesEditorFrame::OnCancelQuit(wxCommandEvent& event) {
+void UserRulesEditorFrame::OnCancelQuit(wxCommandEvent &event) {
 	this->Close();
 }
 
-void UserRulesEditorFrame::OnSearchList(wxCommandEvent& event) {
+void UserRulesEditorFrame::OnSearchList(wxCommandEvent &event) {
 	if (event.GetId() == SEARCH_Modlist) {
 		ModlistSearch->ShowCancelButton(true);
 		std::string searchStr = ModlistSearch->GetValue().ToUTF8();
@@ -673,7 +673,7 @@ void UserRulesEditorFrame::OnSearchList(wxCommandEvent& event) {
 	}
 }
 
-void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
+void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent &event) {
 	if (event.GetId() == SEARCH_Modlist) {
 		ModlistSearch->ShowCancelButton(false);
 		ModlistSearch->SetValue("");
@@ -699,7 +699,7 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent& event) {
 	}
 }
 
-void UserRulesEditorFrame::OnSelectModInMasterlist(wxTreeEvent& event) {
+void UserRulesEditorFrame::OnSelectModInMasterlist(wxTreeEvent &event) {
 	// Need to find item in masterlist. :( Why can't tree lists store index number?
 	std::string itemStr = MasterlistModsList->GetItemText(event.GetItem()).ToUTF8();
 	std::size_t pos = game.masterlist.FindItem(itemStr, MOD);
@@ -712,7 +712,7 @@ void UserRulesEditorFrame::OnSelectModInMasterlist(wxTreeEvent& event) {
 	}
 }
 
-void UserRulesEditorFrame::OnSortingCheckToggle(wxCommandEvent& event) {
+void UserRulesEditorFrame::OnSortingCheckToggle(wxCommandEvent &event) {
 	if (event.IsChecked()) {
 		SortModOption->Enable(true);
 		InsertModOption->Enable(true);
@@ -731,12 +731,12 @@ void UserRulesEditorFrame::OnSortingCheckToggle(wxCommandEvent& event) {
 	}
 }
 
-void UserRulesEditorFrame::OnMessageAddToggle(wxCommandEvent& event) {
+void UserRulesEditorFrame::OnMessageAddToggle(wxCommandEvent &event) {
 	NewModMessagesBox->Enable(event.IsChecked());
 	ReplaceMessagesCheckBox->Enable(event.IsChecked());
 }
 
-void UserRulesEditorFrame::OnSortInsertChange(wxCommandEvent& event) {
+void UserRulesEditorFrame::OnSortInsertChange(wxCommandEvent &event) {
 	if (event.GetId() == RADIO_SortMod) {
 		BeforeAfterChoiceBox->Enable(true);
 		SortModBox->Enable(true);
@@ -750,7 +750,7 @@ void UserRulesEditorFrame::OnSortInsertChange(wxCommandEvent& event) {
 	}
 }
 
-void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
+void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent &event) {
 	try {
 		Rule newRule = GetRuleFromForm();
 		RulesList->AppendRule(newRule);
@@ -769,7 +769,7 @@ void UserRulesEditorFrame::OnRuleCreate(wxCommandEvent& event) {
 	}
 }
 
-void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
+void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent &event) {
 	wxMessageDialog *dlg = new wxMessageDialog(this,
 	                                           translate("Are you sure you want to save your changes to the selected rule?"),
 	                                           translate("BOSS: User Rules Manager"),
@@ -790,7 +790,7 @@ void UserRulesEditorFrame::OnRuleEdit(wxCommandEvent& event) {
 	}
 }
 
-void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
+void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent &event) {
 	wxMessageDialog *dlg = new wxMessageDialog(this,
 	                                           translate("Are you sure you want to delete the selected rule?"),
 	                                           translate("BOSS: User Rules Manager"),
@@ -809,11 +809,11 @@ void UserRulesEditorFrame::OnRuleDelete(wxCommandEvent& event) {
 	}
 }
 
-void UserRulesEditorFrame::OnRuleOrderChange(wxCommandEvent& event) {
+void UserRulesEditorFrame::OnRuleOrderChange(wxCommandEvent &event) {
 	RulesList->MoveRule(event.GetId());
 }
 
-void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
+void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent &event) {
 	Rule currentRule = RulesList->GetSelectedRule();
 	std::string messages = "";
 	SortModOption->Enable(true);
@@ -865,7 +865,7 @@ void UserRulesEditorFrame::OnRuleSelection(wxCommandEvent& event) {
 	NewModMessagesBox->SetValue(wxString(messages.c_str(), wxConvUTF8));
 }
 
-void UserRulesEditorFrame::OnDragStart(wxTreeEvent& event) {
+void UserRulesEditorFrame::OnDragStart(wxTreeEvent &event) {
 	if (event.GetId() == LIST_Modlist) {
 		dragData = new wxTextDataObject(InstalledModsList->GetItemText(event.GetItem()));
 		dragSource = new wxDropSource(InstalledModsList);
