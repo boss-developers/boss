@@ -51,13 +51,13 @@ namespace fs = boost::filesystem;
  * - Tries to extract the version string value from the given text,
  * using the above defined regexes to do the dirty work.
  */
-std::string ParseVersion(const std::string& text) {
+std::string ParseVersion(const std::string &text) {
 	std::string::const_iterator begin, end;
 
 	begin = text.begin();
 	end = text.end();
 
-	for(int i = 0; boost::regex* re = version_checks[i]; i++) {
+	for(int i = 0; boost::regex *re = version_checks[i]; i++) {
 		boost::smatch what;
 		while (boost::regex_search(begin, end, what, *re)) {
 			if (what.empty()) {
@@ -82,6 +82,7 @@ std::string ParseVersion(const std::string& text) {
  * - Reads a consecutive array of charactes up to maxsize length and
  * returns them as a new string.
  */
+// TODO(MCP): Look at changing this to char *&bufptr
 std::string ReadString(char*& bufptr, std::uint16_t size) {
 	std::string data;
 
@@ -99,7 +100,7 @@ std::string ReadString(char*& bufptr, std::uint16_t size) {
  * converting it to the type T.
  */
 template <typename T>
-T Peek(char* buffer) {
+T Peek(char *buffer) {
 	return *reinterpret_cast<T*>(buffer);
 }
 
@@ -109,6 +110,7 @@ T Peek(char* buffer) {
  * received buffer, incrementing the pointer to point past the readen
  * value.
  */
+// TODO(MCP): Look at changing this to char *&bufptr
 template <typename T>
 inline T Read(char*& buffer) {
 	T value = Peek<T>(buffer);
@@ -127,7 +129,7 @@ inline T Read(char*& buffer) {
 
 ModHeader ReadHeader(fs::path filename) {
 	char buffer[MAXLENGTH];
-	char* bufptr = buffer;
+	char *bufptr = buffer;
 	ModHeader modHeader;
 	// MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
 	std::ifstream file(filename.string(), std::ios_base::binary | std::ios_base::in);
@@ -210,7 +212,7 @@ ModHeader ReadHeader(fs::path filename) {
 
 bool IsPluginMaster(fs::path filename) {
 	char buffer[MAXLENGTH];
-	char* bufptr = buffer;
+	char *bufptr = buffer;
 	ModHeader modHeader;
 
 	if (filename.empty())
