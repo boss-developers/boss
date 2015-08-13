@@ -53,7 +53,7 @@ namespace boss {
 class BossGUI : public wxApp {
  public:
 	bool OnInit();
-	wxLocale * wxLoc;
+	wxLocale *wxLoc;
 };
 
 // Main frame class.
@@ -62,23 +62,23 @@ class MainFrame : public wxFrame {
 	explicit MainFrame(const wxChar *title);
 	// MCP Note: Update doesn't seem to exist in main_window.cpp; need to find out what it was
 	void Update(std::string updateVersion);
-	void OnOpenSettings(wxCommandEvent& event);
-	void OnQuit(wxCommandEvent& event);
-	void OnRunBOSS(wxCommandEvent& event);
-	void OnOpenFile(wxCommandEvent& event);
-	void OnAbout(wxCommandEvent& event);
-	void OnRunTypeChange(wxCommandEvent& event);
-	void OnFormatChange(wxCommandEvent& event);
-	void OnGameChange(wxCommandEvent& event);
-	void OnRevertChange(wxCommandEvent& event);
-	void OnLogDisplayChange(wxCommandEvent& event);
-	void OnUpdateChange(wxCommandEvent& event);
-	void OnCRCDisplayChange(wxCommandEvent& event);
-	void OnTrialRunChange(wxCommandEvent& event);
-	void OnEditUserRules(wxCommandEvent& event);
-	void OnClose(wxCloseEvent& event);
+	void OnOpenSettings(wxCommandEvent &event);
+	void OnQuit(wxCommandEvent &event);
+	void OnRunBOSS(wxCommandEvent &event);
+	void OnOpenFile(wxCommandEvent &event);
+	void OnAbout(wxCommandEvent &event);
+	void OnRunTypeChange(wxCommandEvent &event);
+	void OnFormatChange(wxCommandEvent &event);
+	void OnGameChange(wxCommandEvent &event);
+	void OnRevertChange(wxCommandEvent &event);
+	void OnLogDisplayChange(wxCommandEvent &event);
+	void OnUpdateChange(wxCommandEvent &event);
+	void OnCRCDisplayChange(wxCommandEvent &event);
+	void OnTrialRunChange(wxCommandEvent &event);
+	void OnEditUserRules(wxCommandEvent &event);
+	void OnClose(wxCloseEvent &event);
 
-	void SetGames(const /*boss::*/Game& inGame,
+	void SetGames(const /*boss::*/Game &inGame,
 	              const std::vector<std::uint32_t> inGames);
 	void DisableUndetectedGames();
 
