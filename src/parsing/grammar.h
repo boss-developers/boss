@@ -41,6 +41,8 @@
 
 #include <string>
 #include <utility>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include <boost/filesystem.hpp>
@@ -48,8 +50,8 @@
 #include <boost/fusion/include/io.hpp>
 #include <boost/fusion/include/std_pair.hpp>
 #include <boost/spirit/include/qi.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
+/*#include <boost/unordered_map.hpp>
+#include <boost/unordered_set.hpp>*/
 
 #include "common/conditional_data.h"
 #include "common/error.h"
@@ -158,7 +160,7 @@ class modlist_grammar
 	void SetErrorBuffer(ParsingError *inErrorBuffer);
 	void SetGlobalMessageBuffer(std::vector<Message> *inGlobalMessageBuffer);
 	void SetVarStore(std::vector<MasterlistVar> *varStore);
-	void SetCRCStore(boost::unordered_map<std::string, std::uint32_t> *CRCStore);
+	void SetCRCStore(std::unordered_map<std::string, std::uint32_t> *CRCStore);
 	void SetParentGame(const Game *game);
  private:
 	// Parser error reporter.
@@ -191,7 +193,7 @@ class modlist_grammar
 	ParsingError *errorBuffer;
 	std::vector<Message> *globalMessageBuffer;
 	std::vector<MasterlistVar> *setVars;                         // Vars set by masterlist.
-	boost::unordered_map<std::string, std::uint32_t> *fileCRCs;  // CRCs calculated.
+	std::unordered_map<std::string, std::uint32_t> *fileCRCs;  // CRCs calculated.
 	const Game *parentGame;
 	std::vector<std::string> openGroups;                         // Need to keep track of which groups are open to match up endings properly in MF1.
 };
@@ -205,9 +207,9 @@ class conditional_grammar : public grammar<grammarIter, bool(), Skipper> {
  public:
 	conditional_grammar();
 	void SetErrorBuffer(ParsingError *inErrorBuffer);
-	void SetVarStore(boost::unordered_set<std::string> *varStore);
-	void SetCRCStore(boost::unordered_map<std::string, std::uint32_t> *CRCStore);
-	void SetActivePlugins(boost::unordered_set<std::string> *plugins);
+	void SetVarStore(std::unordered_set<std::string> *varStore);
+	void SetCRCStore(std::unordered_map<std::string, std::uint32_t> *CRCStore);
+	void SetActivePlugins(std::unordered_set<std::string> *plugins);
 	void SetLastConditionalResult(bool *result);
 	void SetParentGame(const Game *game);
  private:
@@ -264,9 +266,9 @@ class conditional_grammar : public grammar<grammarIter, bool(), Skipper> {
 	qi::rule<grammarIter, std::uint32_t(), Skipper> checksum;
 	qi::rule<grammarIter, char(), Skipper> comparator;
 	ParsingError *errorBuffer;
-	boost::unordered_set<std::string> *setVars;                  // Vars set by masterlist.
-	boost::unordered_set<std::string> *activePlugins;            // Active plugins, with lowercase filenames.
-	boost::unordered_map<std::string, std::uint32_t> *fileCRCs;  // CRCs calculated.
+	std::unordered_set<std::string> *setVars;                  // Vars set by masterlist.
+	std::unordered_set<std::string> *activePlugins;            // Active plugins, with lowercase filenames.
+	std::unordered_map<std::string, std::uint32_t> *fileCRCs;  // CRCs calculated.
 	const Game *parentGame;
 	bool *lastResult;
 };
@@ -277,7 +279,7 @@ class conditional_grammar : public grammar<grammarIter, bool(), Skipper> {
 ////////////////////////////
 
 // Ini grammar
-class ini_grammar : public grammar<grammarIter, boost::unordered_map<std::string, std::string>(), Skipper> {
+class ini_grammar : public grammar<grammarIter, std::unordered_map<std::string, std::string>(), Skipper> {
  public:
 	ini_grammar();
 	void SetErrorBuffer(ParsingError *inErrorBuffer);
@@ -288,7 +290,7 @@ class ini_grammar : public grammar<grammarIter, boost::unordered_map<std::string
 	                 const boost::spirit::info &what);
 
 	qi::rule<grammarIter, Skipper> heading;
-	qi::rule<grammarIter, boost::unordered_map<std::string, std::string>(), Skipper> ini;
+	qi::rule<grammarIter, std::unordered_map<std::string, std::string>(), Skipper> ini;
 	qi::rule<grammarIter, std::pair<std::string, std::string>(), Skipper> setting;
 	qi::rule<grammarIter, std::string(), Skipper> var, stringVal;
 

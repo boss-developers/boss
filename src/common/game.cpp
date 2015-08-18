@@ -35,12 +35,13 @@
 #include <iterator>
 #include <locale>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/locale.hpp>
-#include <boost/unordered_set.hpp>
+//#include <boost/unordered_set.hpp>
 
 #include "common/conditional_data.h"
 #include "common/error.h"
@@ -402,8 +403,8 @@ void Game::CreateBOSSGameFolder() {
 
 void Game::ApplyMasterlist() {
 	// Add all modlist and userlist mods and groups referenced in userlist to a hashset to optimise comparison against masterlist.
-	boost::unordered_set<std::string, ihash, iequal_to> mHashset, uHashset, addedItems;  // Holds mods and groups for checking against masterlist.
-	boost::unordered_set<std::string>::iterator setPos;
+	std::unordered_set<std::string, ihash, iequal_to> mHashset, uHashset, addedItems;  // Holds mods and groups for checking against masterlist.
+	std::unordered_set<std::string>::iterator setPos;
 
 	LOG_INFO("Populating hashset with modlist.");
 	std::vector<Item> items = modlist.Items();
@@ -728,7 +729,7 @@ void Game::SortPlugins() {
 
 	LOG_INFO("Filling hashset of unrecognised and active plugins...");
 	// Load active plugin list.
-	boost::unordered_set<std::string> hashset;
+	std::unordered_set<std::string> hashset;
 	if (fs::exists(ActivePluginsFile())) {
 		LOG_INFO("Loading plugins.txt into ItemList.");
 		ItemList pluginsList;
@@ -749,7 +750,7 @@ void Game::SortPlugins() {
 	}
 
 	// modlist stores recognised mods then unrecognised mods in order. Make a hashset of unrecognised mods.
-	boost::unordered_set<std::string> unrecognised;
+	std::unordered_set<std::string> unrecognised;
 	std::vector<Item> items = modlist.Items();
 	std::size_t max = items.size();
 	for (std::size_t i = modlist.LastRecognisedPos() + 1; i < max; i++)
@@ -782,7 +783,7 @@ void Game::SortPlugins() {
 	// Only act on mods that exist. However, all items that aren't installed mods are removed after applying user rules (even if there were no rules), so nothing needs to be checked.
 	std::time_t modfiletime = 0;
 	items = modlist.Items();
-	boost::unordered_set<std::string>::iterator setPos;
+	std::unordered_set<std::string>::iterator setPos;
 	bosslog.recognisedPlugins.SetHTMLSpecialEscape(false);
 	bosslog.unrecognisedPlugins.SetHTMLSpecialEscape(false);
 

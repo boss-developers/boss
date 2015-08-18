@@ -38,7 +38,7 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
-#include <boost/unordered_set.hpp>
+//#include <boost/unordered_set.hpp>
 
 #include "common/conditional_data.h"
 #include "common/dll_def.h"

@@ -33,11 +33,15 @@
 #include <ctime>
 
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include <boost/fusion/adapted/struct/detail/extension.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
+/*
+ * #include <boost/unordered_map.hpp>
+ * #include <boost/unordered_set.hpp>
+ */
 
 #include "common/dll_def.h"
 #include "support/helpers.h"
@@ -68,9 +72,9 @@ class BOSS_COMMON conditionalData {
 	void Data(const std::string inData);
 	void Conditions(const std::string inConditions);
 
-	bool EvalConditions(boost::unordered_set<std::string> &setVars,
-	                    boost::unordered_map<std::string, std::uint32_t> &fileCRCs,
-	                    boost::unordered_set<std::string> &activePlugins,
+	bool EvalConditions(std::unordered_set<std::string> &setVars,
+	                    std::unordered_map<std::string, std::uint32_t> &fileCRCs,
+	                    std::unordered_set<std::string> &activePlugins,
 	                    bool *condResult,
 	                    ParsingError &errorBuffer,
 	                    const Game &parentGame);
@@ -134,9 +138,9 @@ class BOSS_COMMON Item : public conditionalData {
 	void InsertMessage(std::size_t pos, Message item);
 	void ClearMessages();
 
-	bool EvalConditions(boost::unordered_set<std::string> &setVars,
-	                    boost::unordered_map<std::string, std::uint32_t> &fileCRCs,
-	                    boost::unordered_set<std::string> &activePlugins,
+	bool EvalConditions(std::unordered_set<std::string> &setVars,
+	                    std::unordered_map<std::string, std::uint32_t> &fileCRCs,
+	                    std::unordered_set<std::string> &activePlugins,
 	                    bool *condResult,
 	                    ParsingError &errorBuffer,
 	                    const Game &parentGame);

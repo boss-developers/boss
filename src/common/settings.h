@@ -31,9 +31,12 @@
 #include <cstdint>
 
 #include <string>
+#include <unordered_map>
 
 #include <boost/filesystem.hpp>
-#include <boost/unordered_map.hpp>
+/*
+ * #include <boost/unordered_map.hpp>
+ */
 
 #include "common/dll_def.h"
 #include "common/error.h"
@@ -59,7 +62,7 @@ class BOSS_COMMON Settings {
 	std::string GetValue(const std::string setting) const;
  private:
 	ParsingError errorBuffer;
-	boost::unordered_map<std::string, std::string> iniSettings;
+	std::unordered_map<std::string, std::string> iniSettings;
 
 	std::string GetIniGameString(const std::uint32_t game) const;
 	std::string GetLogFormatString() const;

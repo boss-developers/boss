@@ -33,6 +33,8 @@
 #include <algorithm>
 #include <sstream>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
@@ -45,8 +47,8 @@
 /*#include <boost/spirit/include/phoenix_bind.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>*/
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
+/*#include <boost/unordered_map.hpp>
+#include <boost/unordered_set.hpp>*/
 
 #include "common/conditional_data.h"
 #include "common/error.h"
@@ -304,7 +306,7 @@ void modlist_grammar::SetVarStore(std::vector<MasterlistVar> *varStore) {
 }
 
 void modlist_grammar::SetCRCStore(
-    boost::unordered_map<std::string, std::uint32_t> *CRCStore) {
+    std::unordered_map<std::string, std::uint32_t> *CRCStore) {
 	fileCRCs = CRCStore;
 }
 
@@ -442,17 +444,17 @@ void conditional_grammar::SetErrorBuffer(ParsingError *inErrorBuffer) {
 }
 
 void conditional_grammar::SetVarStore(
-    boost::unordered_set<std::string> *varStore) {
+    std::unordered_set<std::string> *varStore) {
 	setVars = varStore;
 }
 
 void conditional_grammar::SetCRCStore(
-    boost::unordered_map<std::string, std::uint32_t> *CRCStore) {
+    std::unordered_map<std::string, std::uint32_t> *CRCStore) {
 	fileCRCs = CRCStore;
 }
 
 void conditional_grammar::SetActivePlugins(
-    boost::unordered_set<std::string> *plugins) {
+    std::unordered_set<std::string> *plugins) {
 	activePlugins = plugins;
 }
 
@@ -652,7 +654,7 @@ void conditional_grammar::CheckSum(bool &result, std::string file,
 		return;
 	std::uint32_t CRC;
 	fs::path file_path = GetPath(file);
-	boost::unordered_map<std::string, std::uint32_t>::iterator iter = fileCRCs->find(file);
+	std::unordered_map<std::string, std::uint32_t>::iterator iter = fileCRCs->find(file);
 
 	if (iter != fileCRCs->end()) {
 		CRC = fileCRCs->at(file);

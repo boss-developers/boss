@@ -32,12 +32,16 @@
 #include <cstdint>
 
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
+/*
+ * #include <boost/unordered_map.hpp>
+ * #include <boost/unordered_set.hpp>
+ */
 
 #include "common/dll_def.h"
 #include "common/error.h"
@@ -85,14 +89,14 @@ class BOSS_COMMON ItemList {
 	std::vector<Message> GlobalMessageBuffer() const;
 	std::size_t LastRecognisedPos() const;
 	std::vector<MasterlistVar> Variables() const;
-	boost::unordered_map<std::string, std::uint32_t> FileCRCs() const;
+	std::unordered_map<std::string, std::uint32_t> FileCRCs() const;
 
 	void Items(const std::vector<Item> items);
 	void ErrorBuffer(const ParsingError buffer);
 	void GlobalMessageBuffer(const std::vector<Message> buffer);
 	void LastRecognisedPos(const std::size_t pos);
 	void Variables(const std::vector<MasterlistVar> variables);
-	void FileCRCs(const boost::unordered_map<std::string, std::uint32_t> crcs);
+	void FileCRCs(const std::unordered_map<std::string, std::uint32_t> crcs);
 
 	void Clear();
 	void Erase(const std::size_t pos);
@@ -105,17 +109,17 @@ class BOSS_COMMON ItemList {
  private:
 	// Searches a hashset for the first matching string of a
 	// regex and returns its iterator position.
-	boost::unordered_set<std::string>::iterator FindRegexMatch(
-	    const boost::unordered_set<std::string> set,
+	std::unordered_set<std::string>::iterator FindRegexMatch(
+	    const std::unordered_set<std::string> set,
 	    const boost::regex reg,
-	    boost::unordered_set<std::string>::iterator startPos);
+	    std::unordered_set<std::string>::iterator startPos);
 
 	std::vector<Item> items;
 	ParsingError errorBuffer;
 	std::vector<Message> globalMessageBuffer;
 	std::size_t lastRecognisedPos;
 	std::vector<MasterlistVar> masterlistVariables;
-	boost::unordered_map<std::string, std::uint32_t> fileCRCs;
+	std::unordered_map<std::string, std::uint32_t> fileCRCs;
 };
 
 }  // namespace boss

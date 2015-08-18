@@ -32,12 +32,16 @@
 #include <ctime>
 
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
+/*
+ * #include <boost/unordered_map.hpp>
+ * #include <boost/unordered_set.hpp>
+ */
 
 #include "common/error.h"
 #include "common/game.h"
@@ -83,9 +87,9 @@ void conditionalData::Conditions(const std::string inConditions) {
 	conditions = inConditions;
 }
 
-bool conditionalData::EvalConditions(boost::unordered_set<std::string> &setVars,
-                                     boost::unordered_map<std::string, std::uint32_t> &fileCRCs,
-                                     boost::unordered_set<std::string> &activePlugins,
+bool conditionalData::EvalConditions(std::unordered_set<std::string> &setVars,
+                                     std::unordered_map<std::string, std::uint32_t> &fileCRCs,
+                                     std::unordered_set<std::string> &activePlugins,
                                      bool *condResult,
                                      ParsingError &errorBuffer,
                                      const Game &parentGame) {
@@ -361,9 +365,9 @@ void Item::ClearMessages() {
 	messages.clear();
 }
 
-bool Item::EvalConditions(boost::unordered_set<std::string> &setVars,
-                          boost::unordered_map<std::string, std::uint32_t> &fileCRCs,
-                          boost::unordered_set<std::string> &activePlugins,
+bool Item::EvalConditions(std::unordered_set<std::string> &setVars,
+                          std::unordered_map<std::string, std::uint32_t> &fileCRCs,
+                          std::unordered_set<std::string> &activePlugins,
                           bool *condResult,
                           ParsingError &errorBuffer, const Game &parentGame) {
 	if (Type() == ENDGROUP)

@@ -42,6 +42,7 @@
 #include <iostream>
 #include <locale>
 #include <string>
+//#include <unordered_set>
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
@@ -51,7 +52,7 @@
 #include <boost/format.hpp>
 #include <boost/locale.hpp>
 #include <boost/regex.hpp>
-#include <boost/unordered_set.hpp>
+//#include <boost/unordered_set.hpp>
 
 #include <wx/aboutdlg.h>
 #include <wx/snglinst.h>

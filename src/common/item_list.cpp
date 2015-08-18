@@ -35,13 +35,17 @@
 #include <fstream>
 #include <ostream>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
+/*
+ * #include <boost/unordered_map.hpp>
+ * #include <boost/unordered_set.hpp>
+ */
 
 #include "common/conditional_data.h"
 #include "common/error.h"
@@ -334,8 +338,8 @@ void ItemList::SavePluginNames(const Game &parentGame,
 }
 
 void ItemList::EvalConditions(const Game &parentGame) {
-	boost::unordered_set<std::string> setVars;
-	boost::unordered_set<std::string> activePlugins;
+	std::unordered_set<std::string> setVars;
+	std::unordered_set<std::string> activePlugins;
 	bool res;
 
 	if (fs::exists(parentGame.ActivePluginsFile())) {
@@ -432,8 +436,8 @@ void ItemList::EvalConditions(const Game &parentGame) {
 
 void ItemList::EvalRegex(const Game &parentGame) {
 	// Store installed mods in a hashset. Case insensitivity not required as regex itself is case-insensitive.
-	boost::unordered_set<std::string> hashset;
-	boost::unordered_set<std::string>::iterator setPos;
+	std::unordered_set<std::string> hashset;
+	std::unordered_set<std::string>::iterator setPos;
 	for (fs::directory_iterator itr(parentGame.DataFolder());
 	     itr != fs::directory_iterator(); ++itr) {
 		if (fs::is_regular_file(itr->status())) {
@@ -561,7 +565,7 @@ std::vector<MasterlistVar> ItemList::Variables() const {
 	return masterlistVariables;
 }
 
-boost::unordered_map<std::string, std::uint32_t> ItemList::FileCRCs() const {
+std::unordered_map<std::string, std::uint32_t> ItemList::FileCRCs() const {
 	return fileCRCs;
 }
 
@@ -591,7 +595,7 @@ void ItemList::Variables(const std::vector<MasterlistVar> variables) {
 	masterlistVariables = variables;
 }
 
-void ItemList::FileCRCs(const boost::unordered_map<std::string, std::uint32_t> crcs) {
+void ItemList::FileCRCs(const std::unordered_map<std::string, std::uint32_t> crcs) {
 	fileCRCs = crcs;
 }
 
@@ -635,10 +639,10 @@ void ItemList::Move(std::size_t newPos, const Item item) {
 }
 
 // Searches a hashset for the first matching string of a regex and returns its iterator position. Usage internal to BOSS-Common.
-boost::unordered_set<std::string>::iterator ItemList::FindRegexMatch(
-    const boost::unordered_set<std::string> set,
+std::unordered_set<std::string>::iterator ItemList::FindRegexMatch(
+    const std::unordered_set<std::string> set,
     const boost::regex reg,
-    boost::unordered_set<std::string>::iterator startPos) {
+    std::unordered_set<std::string>::iterator startPos) {
 	while(startPos != set.end()) {
 		if (boost::regex_match(*startPos, reg))
 			break;

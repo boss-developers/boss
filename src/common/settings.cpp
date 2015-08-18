@@ -33,10 +33,11 @@
 #include <fstream>
 #include <ostream>
 #include <string>
+#include <unordered_map>
 
 #include <boost/filesystem.hpp>
 #include <boost/locale.hpp>
-#include <boost/unordered_map.hpp>
+//#include <boost/unordered_map.hpp>
 
 #include "common/error.h"
 #include "common/globals.h"
@@ -127,7 +128,7 @@ void Settings::ErrorBuffer(const ParsingError buffer) {
 }
 
 std::string Settings::GetValue(const std::string setting) const {
-	boost::unordered_map<std::string, std::string>::const_iterator it = iniSettings.find(setting);
+	std::unordered_map<std::string, std::string>::const_iterator it = iniSettings.find(setting);
 	if (it != iniSettings.end())
 		return it->second;
 	return "";
@@ -174,7 +175,7 @@ std::string Settings::GetLanguageString() const {
 
 void Settings::ApplyIniSettings() {
 	// MCP Note: Change this to a range-based for-loop?
-	for (boost::unordered_map<std::string, std::string>::iterator iter = iniSettings.begin(); iter != iniSettings.end(); ++iter) {
+	for (std::unordered_map<std::string, std::string>::iterator iter = iniSettings.begin(); iter != iniSettings.end(); ++iter) {
 		if (iter->second.empty())
 			continue;
 
