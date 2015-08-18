@@ -148,23 +148,24 @@ class Skipper : public grammar<grammarIter> {
 ///////////////////////////////
 
 // Modlist/Masterlist grammar
-class modlist_grammar : public grammar<grammarIter, std::vector<Item>(), Skipper> {
+class modlist_grammar
+    : public grammar<grammarIter, std::vector<Item>(), Skipper> {
  public:
 	modlist_grammar();
-	void SetErrorBuffer(ParsingError * inErrorBuffer);
-	void SetGlobalMessageBuffer(std::vector<Message> * inGlobalMessageBuffer);
-	void SetVarStore(std::vector<MasterlistVar> * varStore);
-	void SetCRCStore(boost::unordered_map<std::string, std::uint32_t> * CRCStore);
-	void SetParentGame(const Game * game);
+	void SetErrorBuffer(ParsingError *inErrorBuffer);
+	void SetGlobalMessageBuffer(std::vector<Message> *inGlobalMessageBuffer);
+	void SetVarStore(std::vector<MasterlistVar> *varStore);
+	void SetCRCStore(boost::unordered_map<std::string, std::uint32_t> *CRCStore);
+	void SetParentGame(const Game *game);
  private:
 	// Parser error reporter.
-	void SyntaxError(grammarIter const& /*first*/,
-	                 grammarIter const& last,
-	                 grammarIter const& errorpos,
-	                 boost::spirit::info const& what);
+	void SyntaxError(const grammarIter /*&first*/,
+	                 const grammarIter &last,
+	                 const grammarIter &errorpos,
+	                 const boost::spirit::info &what);
 
 	// Stores the given item and records any changes to open groups.
-	void StoreItem(std::vector<Item>& list, Item currentItem);
+	void StoreItem(std::vector<Item> &list, Item currentItem);
 
 	// Stores the masterlist variable.
 	void StoreVar(const MasterlistVar var);
@@ -173,7 +174,7 @@ class modlist_grammar : public grammar<grammarIter, std::vector<Item>(), Skipper
 	void StoreGlobalMessage(const Message message);
 
 	// Turns a given string into a path. Can't be done directly because of the openGroups checks.
-	void ToName(std::string& p, std::string itemName);
+	void ToName(std::string &p, std::string itemName);
 
 	qi::rule<grammarIter, std::vector<Item>(), Skipper> modList;
 	qi::rule<grammarIter, Item(), Skipper> listItem;
@@ -184,12 +185,12 @@ class modlist_grammar : public grammar<grammarIter, std::vector<Item>(), Skipper
 	qi::rule<grammarIter, MasterlistVar(), Skipper> listVar;
 	qi::rule<grammarIter, std::string(), Skipper> charString, andOr, conditional, conditionals, functCondition, shortCondition, variable, file, checksum, version, comparator, regex, language;
 	qi::rule<grammarIter, std::uint32_t(), Skipper> messageKeyword;
-	ParsingError * errorBuffer;
-	std::vector<Message> * globalMessageBuffer;
-	std::vector<MasterlistVar> * setVars;                         // Vars set by masterlist.
-	boost::unordered_map<std::string, std::uint32_t> * fileCRCs;  // CRCs calculated.
-	const Game * parentGame;
-	std::vector<std::string> openGroups;                          // Need to keep track of which groups are open to match up endings properly in MF1.
+	ParsingError *errorBuffer;
+	std::vector<Message> *globalMessageBuffer;
+	std::vector<MasterlistVar> *setVars;                         // Vars set by masterlist.
+	boost::unordered_map<std::string, std::uint32_t> *fileCRCs;  // CRCs calculated.
+	const Game *parentGame;
+	std::vector<std::string> openGroups;                         // Need to keep track of which groups are open to match up endings properly in MF1.
 };
 
 
@@ -200,32 +201,33 @@ class modlist_grammar : public grammar<grammarIter, std::vector<Item>(), Skipper
 class conditional_grammar : public grammar<grammarIter, bool(), Skipper> {
  public:
 	conditional_grammar();
-	void SetErrorBuffer(ParsingError * inErrorBuffer);
-	void SetVarStore(boost::unordered_set<std::string> * varStore);
-	void SetCRCStore(boost::unordered_map<std::string, std::uint32_t> * CRCStore);
-	void SetActivePlugins(boost::unordered_set<std::string> * plugins);
-	void SetLastConditionalResult(bool * result);
-	void SetParentGame(const Game * game);
+	void SetErrorBuffer(ParsingError *inErrorBuffer);
+	void SetVarStore(boost::unordered_set<std::string> *varStore);
+	void SetCRCStore(boost::unordered_map<std::string, std::uint32_t> *CRCStore);
+	void SetActivePlugins(boost::unordered_set<std::string> *plugins);
+	void SetLastConditionalResult(bool *result);
+	void SetParentGame(const Game *game);
  private:
 	// Evaluate a single conditional.
-	void EvaluateConditional(bool& result, const std::string type,
+	void EvaluateConditional(bool &result, const std::string type,
 	                         const bool condition);
 
 	// Evaluate the second half of a complex conditional.
-	void EvaluateCompoundConditional(bool& lhsCondition, const std::string andOr,
+	void EvaluateCompoundConditional(bool &lhsCondition,
+	                                 const std::string andOr,
 	                                 const bool rhsCondition);
 
-	void EvalElseConditional(bool& result, bool& ok);
+	void EvalElseConditional(bool &result, bool &ok);
 
 	// Returns the true path based on what type of file or keyword it is.
 	fs::path GetPath(const std::string file);
 
 	// Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
-	void CheckVersion(bool& result, const std::string file, const std::string version,
-	                  const char comparator);
+	void CheckVersion(bool &result, const std::string file,
+	                  const std::string version, const char comparator);
 
 	// Checks if the given file exists.
-	void CheckFile(bool& result, std::string file);
+	void CheckFile(bool &result, std::string file);
 
 	/*
 	 * Checks if a file which matches the given regex exists.
@@ -234,36 +236,36 @@ class conditional_grammar : public grammar<grammarIter, bool(), Skipper> {
 	 * In windows, the above path would be "path\to\file.txt", which would become "path\\to\\file\.txt" in regex. Basically, the extra backslashes need to
 	 * be removed when getting the path and filename.
 	 */
-	void CheckRegex(bool& result, std::string reg);
+	void CheckRegex(bool &result, std::string reg);
 
 	// Checks if a masterlist variable is defined.
-	void CheckVar(bool& result, const std::string var);
+	void CheckVar(bool &result, const std::string var);
 
 	// Checks if the given plugin is active.
-	void CheckActive(bool& result, const std::string plugin);
+	void CheckActive(bool &result, const std::string plugin);
 
 	// Checks if the given language is the current language.
-	void CheckLanguage(bool& result, const std::string language);
+	void CheckLanguage(bool &result, const std::string language);
 
 	// Checks if the given mod has the given checksum.
-	void CheckSum(bool& result, std::string file, const std::uint32_t sum);
+	void CheckSum(bool &result, std::string file, const std::uint32_t sum);
 
 	// Parser error reporter.
-	void SyntaxError(grammarIter const& /*first*/,
-	                 grammarIter const& last,
-	                 grammarIter const& errorpos,
-	                 boost::spirit::info const& what);
+	void SyntaxError(const grammarIter /*&first*/,
+	                 const grammarIter &last,
+	                 const grammarIter &errorpos,
+	                 const boost::spirit::info &what);
 
 	qi::rule<grammarIter, std::string(), Skipper> ifIfNot, andOr, variable, file, version, regex, language;
 	qi::rule<grammarIter, bool(), Skipper> conditional, conditionals, condition, shortCondition, functCondition;
 	qi::rule<grammarIter, std::uint32_t(), Skipper> checksum;
 	qi::rule<grammarIter, char(), Skipper> comparator;
-	ParsingError * errorBuffer;
-	boost::unordered_set<std::string> * setVars;                  // Vars set by masterlist.
-	boost::unordered_set<std::string> * activePlugins;            // Active plugins, with lowercase filenames.
-	boost::unordered_map<std::string, std::uint32_t> * fileCRCs;  // CRCs calculated.
-	const Game * parentGame;
-	bool * lastResult;
+	ParsingError *errorBuffer;
+	boost::unordered_set<std::string> *setVars;                  // Vars set by masterlist.
+	boost::unordered_set<std::string> *activePlugins;            // Active plugins, with lowercase filenames.
+	boost::unordered_map<std::string, std::uint32_t> *fileCRCs;  // CRCs calculated.
+	const Game *parentGame;
+	bool *lastResult;
 };
 
 
@@ -275,19 +277,19 @@ class conditional_grammar : public grammar<grammarIter, bool(), Skipper> {
 class ini_grammar : public grammar<grammarIter, boost::unordered_map<std::string, std::string>(), Skipper> {
  public:
 	ini_grammar();
-	void SetErrorBuffer(ParsingError * inErrorBuffer);
+	void SetErrorBuffer(ParsingError *inErrorBuffer);
  private:
-	void SyntaxError(grammarIter const& /*first*/,
-	                 grammarIter const& last,
-	                 grammarIter const& errorpos,
-	                 info const& what);
+	void SyntaxError(const grammarIter /*&first*/,
+	                 const grammarIter &last,
+	                 const grammarIter &errorpos,
+	                 const boost::spirit::info &what);
 
 	qi::rule<grammarIter, Skipper> heading;
 	qi::rule<grammarIter, boost::unordered_map<std::string, std::string>(), Skipper> ini;
 	qi::rule<grammarIter, std::pair<std::string, std::string>(), Skipper> setting;
 	qi::rule<grammarIter, std::string(), Skipper> var, stringVal;
 
-	ParsingError * errorBuffer;
+	ParsingError *errorBuffer;
 };
 
 ////////////////////////////
@@ -298,12 +300,12 @@ class ini_grammar : public grammar<grammarIter, boost::unordered_map<std::string
 class userlist_grammar : public qi::grammar<grammarIter, std::vector<Rule>(), Skipper> {
  public:
 	userlist_grammar();
-	void SetErrorBuffer(std::vector<ParsingError> * inErrorBuffer);
+	void SetErrorBuffer(std::vector<ParsingError> *inErrorBuffer);
  private:
-	void SyntaxError(grammarIter const& /*first*/,
-	                 grammarIter const& last,
-	                 grammarIter const& errorpos,
-	                 info const& what);
+	void SyntaxError(const grammarIter /*&first*/,
+	                 const grammarIter &last,
+	                 const grammarIter &errorpos,
+	                 const boost::spirit::info &what);
 
 	qi::rule<grammarIter, std::vector<Rule>(), Skipper> ruleList;
 	qi::rule<grammarIter, Rule(), Skipper> userlistRule;
@@ -312,7 +314,7 @@ class userlist_grammar : public qi::grammar<grammarIter, std::vector<Rule>(), Sk
 	qi::rule<grammarIter, std::string(), Skipper> object;
 	qi::rule<grammarIter, bool(), Skipper> stateKey;
 
-	std::vector<ParsingError> * errorBuffer;
+	std::vector<ParsingError> *errorBuffer;
 };
 
 }  // namespace boss
