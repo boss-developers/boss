@@ -174,7 +174,7 @@ std::string RegKeyStringValue(std::string keyStr, std::string subkey, std::strin
 	// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
 	// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
 	// TODO(MCP): Error seems to be back after swapping Boost Regex for STL Regex in all files.
-	// TODO(MCP): Fixed, I think. Had to force the Unicode version to be used. Still not sure about the other mismatches that don't deal with the Windows API
+	// TODO(MCP): Fixed, I think. Had to force the Unicode version to be used. Still not sure about the other mismatches that don't deal with the Windows API. May need to use UNICODE for Windows and _UNICODE. That fixes it, need to investigate.
 	LONG ret = RegOpenKeyExW(key, fs::path(subkey).wstring().c_str(),
 	                        0, KEY_READ|KEY_WOW64_32KEY, &hKey);
 

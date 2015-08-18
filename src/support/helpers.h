@@ -39,6 +39,11 @@
 #ifndef _UNICODE
 #define _UNICODE  // Tell compiler we're using Unicode, notice the _
 #endif
+// For UNICODE on Windows. Investigate if it fixes other mismatches
+/*
+#ifndef UNICODE
+#define UNICODE
+#endif*/
 
 namespace boss {
 
