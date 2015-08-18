@@ -32,7 +32,10 @@
 #	define BOOST_SPIRIT_UNICODE
 #endif
 
-//#define BOOST_SPIRIT_USE_PHOENIX_V3 1
+#include <boost/version.hpp>
+#if BOOST_VERSION == 105500
+#	define BOOST_SPIRIT_USE_PHOENIX_V3 1
+#endif
 
 #include <cstdint>
 

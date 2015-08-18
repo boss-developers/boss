@@ -255,9 +255,9 @@ Version::Version(const fs::path file) {
 			LOG_DEBUG("failed to extract version from '%s'",
 			          file.string().c_str());
 		} else {
-			verString = string(buf);
+			verString = std::string(buf);
 			LOG_DEBUG("extracted version from '%s': %s", file.string().c_str(),
-			          retVal.c_str());
+			          verString.c_str());
 		}
 		pclose(fp);
 	}

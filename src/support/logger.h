@@ -82,7 +82,8 @@ class BOSS_COMMON Logger {
 	}
 
 	// If a message is of a sufficient verbosity, outputs the given message
-	inline void log(LogVerbosity verbosity, const char *formatStr, ...) __attribute__((__format__ (__printf__, 5, 6)))
+	// MCP Note: Changed from ((__format__ (__printf__, 5, 6)))
+	inline void log(LogVerbosity verbosity, const char *formatStr, ...) __attribute__((format (printf, 3, 4)))
 	{
 		if (_isVerbosityEnabled(verbosity)) {
 			std::va_list ap;
