@@ -41,6 +41,7 @@
 #include <exception>
 #include <iostream>
 #include <locale>
+//#include <regex>
 #include <string>
 //#include <unordered_set>
 #include <vector>
@@ -51,7 +52,7 @@
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 #include <boost/format.hpp>
 #include <boost/locale.hpp>
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
 //#include <boost/unordered_set.hpp>
 
 #include <wx/aboutdlg.h>

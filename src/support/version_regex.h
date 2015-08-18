@@ -28,13 +28,15 @@
 #ifndef SUPPORT_VERSION_REGEX_H_
 #define SUPPORT_VERSION_REGEX_H_
 
-#include <boost/regex.hpp>
+#include <regex>
+
+//#include <boost/regex.hpp>
 
 namespace boss {
 
 /// Array used to try each of the expressions defined above using
 /// an iteration for each of them.
-extern boost::regex *version_checks[];
+extern std::regex *version_checks[];
 
 }  // namespace boss
 #endif  // SUPPORT_VERSION_REGEX_H_

@@ -31,6 +31,7 @@
 #include <cstdint>
 
 #include <algorithm>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -43,7 +44,7 @@
 #include <boost/phoenix/core.hpp>
 #include <boost/phoenix/object/construct.hpp>
 #include <boost/phoenix/operator.hpp>
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
 /*#include <boost/spirit/include/phoenix_bind.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>*/
@@ -592,10 +593,10 @@ void conditional_grammar::CheckRegex(bool &result, std::string reg) {
 	} else {
 		file_path = parentGame->DataFolder();
 	}
-	boost::regex regex;
+	std::regex regex;
 	try {
-		regex = boost::regex(reg, boost::regex::extended|boost::regex::icase);
-	} catch (boost::regex_error e) {
+		regex = std::regex(reg, std::regex::extended|std::regex::icase);
+	} catch (std::regex_error e) {
 		LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.",
 		          reg.c_str());
 		result = false;  // Fail the check.
@@ -605,7 +606,7 @@ void conditional_grammar::CheckRegex(bool &result, std::string reg) {
 	for (fs::directory_iterator itr(file_path);
 	     itr != fs::directory_iterator(); ++itr) {
 		if (fs::is_regular_file(itr->status())) {
-			if (boost::regex_match(itr->path().filename().string(), regex)) {
+			if (std::regex_match(itr->path().filename().string(), regex)) {
 				result = true;
 				break;
 			}

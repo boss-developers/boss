@@ -40,6 +40,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/functional/hash.hpp>
 #include <boost/locale.hpp>
 //#include <boost/unordered_set.hpp>
 

@@ -8,7 +8,7 @@ CXXFLAGS = -O3 -Isrc -I../libgit2/include -std=c++11
 #CPPFLAGS += -I boss-common -I ../../../libgit2/include
 #LDFLAGS += -static
 LDFLAGS += -Llib
-LDLIBS += -lboost_filesystem -lboost_regex -lboost_program_options -lboost_system -lboost_locale -lgit2 -lssl -lcrypto
+LDLIBS += -lboost_filesystem -lboost_program_options -lboost_system -lboost_locale -lgit2 -lssl -lcrypto
 
 #%.d: %.cpp
 #		@set -e; rm -f $@; \

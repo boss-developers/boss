@@ -30,11 +30,12 @@
 #include <cstdint>
 
 #include <fstream>
+#include <regex>
 #include <string>
 
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
 
 //#include "support/helpers.h"  // MCP Note: Don't think this one is needed. Will delete later after confirmation
 #include "support/types.h"
@@ -57,14 +58,14 @@ std::string ParseVersion(const std::string &text) {
 	begin = text.begin();
 	end = text.end();
 
-	for(int i = 0; boost::regex *re = version_checks[i]; i++) {
-		boost::smatch what;
-		while (boost::regex_search(begin, end, what, *re)) {
+	for(int i = 0; std::regex *re = version_checks[i]; i++) {
+		std::smatch what;
+		while (std::regex_search(begin, end, what, *re)) {
 			if (what.empty()) {
 				continue;
 			}
 
-			boost::ssub_match match = what[1];
+			std::ssub_match match = what[1];
 
 			if (!match.matched) {
 				continue;

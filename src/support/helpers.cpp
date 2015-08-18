@@ -36,6 +36,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iterator>
+#include <regex>
 #include <sstream>
 #include <string>
 
@@ -43,7 +44,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/locale.hpp>
 #include <boost/spirit/include/karma.hpp>
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
 
 #include "alphanum.hpp"
 
@@ -172,14 +173,16 @@ std::string RegKeyStringValue(std::string keyStr, std::string subkey, std::strin
 	// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
 	// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
 	// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
-	LONG ret = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(),
+	// TODO(MCP): Error seems to be back after swapping Boost Regex for STL Regex in all files.
+	// TODO(MCP): Fixed, I think. Had to force the Unicode version to be used. Still not sure about the other mismatches that don't deal with the Windows API
+	LONG ret = RegOpenKeyExW(key, fs::path(subkey).wstring().c_str(),
 	                        0, KEY_READ|KEY_WOW64_32KEY, &hKey);
 
 	if (ret == ERROR_SUCCESS) {
 		// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
 		// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
 		// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
-		ret = RegQueryValueEx(hKey, fs::path(value).wstring().c_str(), NULL,
+		ret = RegQueryValueExW(hKey, fs::path(value).wstring().c_str(), NULL,
 		                      NULL, (LPBYTE)&val, &BufferSize);
 		RegCloseKey(hKey);
 
@@ -209,7 +212,7 @@ Version::Version(const fs::path file) {
 	// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
 	// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
 	// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
-	DWORD size = GetFileVersionInfoSize(file.wstring().c_str(), &dummy);
+	DWORD size = GetFileVersionInfoSizeW(file.wstring().c_str(), &dummy);
 
 	if (size > 0) {
 		LPBYTE point = new BYTE[size];
@@ -220,12 +223,12 @@ Version::Version(const fs::path file) {
 		// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
 		// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
 		// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
-		GetFileVersionInfo(file.wstring().c_str(), 0, size, point);
+		GetFileVersionInfoW(file.wstring().c_str(), 0, size, point);
 
 		// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
 		// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
 		// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
-		VerQueryValue(point, L"\\", (LPVOID *)&info, &uLen);
+		VerQueryValueW(point, L"\\", (LPVOID *)&info, &uLen);
 
 		DWORD dwLeftMost     = HIWORD(info->dwFileVersionMS);
 		DWORD dwSecondLeft   = LOWORD(info->dwFileVersionMS);
@@ -275,12 +278,12 @@ bool Version::operator > (Version ver) {
 bool Version::operator < (Version ver) {
 	// Version string could have a wide variety of formats. Use regex to choose specific comparison types.
 
-	boost::regex reg1("(\\d+\\.?)+");  // a.b.c.d.e.f.... where the letters are all integers, and 'a' is the shortest possible match.
+	std::regex reg1("(\\d+\\.?)+");  // a.b.c.d.e.f.... where the letters are all integers, and 'a' is the shortest possible match.
 
-	//boost::regex reg2("(\\d+\\.?)+([a-zA-Z\\-]+(\\d+\\.?)*)+");  // Matches a mix of letters and numbers - from "0.99.xx", "1.35Alpha2", "0.9.9MB8b1", "10.52EV-D", "1.62EV" to "10.0EV-D1.62EV".
+	//std::regex reg2("(\\d+\\.?)+([a-zA-Z\\-]+(\\d+\\.?)*)+");  // Matches a mix of letters and numbers - from "0.99.xx", "1.35Alpha2", "0.9.9MB8b1", "10.52EV-D", "1.62EV" to "10.0EV-D1.62EV".
 
-	if (boost::regex_match(verString, reg1) &&
-	    boost::regex_match(ver.AsString(), reg1)) {
+	if (std::regex_match(verString, reg1) &&
+	    std::regex_match(ver.AsString(), reg1)) {
 		// First type: numbers separated by periods. If two versions have a different number of numbers, then the shorter should be padded
 		// with zeros. An arbitrary number of numbers should be supported.
 		std::istringstream parser1(verString);
