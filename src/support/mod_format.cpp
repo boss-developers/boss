@@ -35,6 +35,7 @@
 
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/filesystem.hpp>
+//#include <boost/filesystem/fstream.hpp>
 //#include <boost/regex.hpp>
 
 //#include "support/helpers.h"  // MCP Note: Don't think this one is needed. Will delete later after confirmation
@@ -133,7 +134,9 @@ ModHeader ReadHeader(fs::path filename) {
 	char *bufptr = buffer;
 	ModHeader modHeader;
 	// MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
+	//ifstream file(filename.native().c_str(), ios_base::binary | ios_base::in);
 	std::ifstream file(filename.string(), std::ios_base::binary | std::ios_base::in);
+	//fs::ifstream file(filename, std::ios_base::binary | std::ios_base::in);
 
 	modHeader.Name = filename.string();
 
@@ -221,7 +224,9 @@ bool IsPluginMaster(fs::path filename) {
 
 	// MCP Note: changed from filename.native().c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
 	// Note 2: According to Boost docs, c_str() is the same as specifying native().c_str()?
+	//ifstream file(filename.native().c_str(), ios_base::binary | ios_base::in);
 	std::ifstream file(filename.string(), std::ios_base::binary | std::ios_base::in);
+	//fs::ifstream file(filename, std::ios_base::binary | std::ios_base::in);
 
 	if (file.bad())
 		//throw boss_error(BOSS_ERROR_FILE_READ_FAIL, filename.string());

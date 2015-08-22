@@ -42,6 +42,7 @@
 
 #include <boost/crc.hpp>
 #include <boost/filesystem.hpp>
+//#include <boost/filesystem/fstream.hpp>
 #include <boost/locale.hpp>
 #include <boost/spirit/include/karma.hpp>
 //#include <boost/regex.hpp>
@@ -52,6 +53,12 @@
 #include "support/logger.h"
 
 #if _WIN32 || _WIN64
+#	ifndef _UNICODE
+#		define _UNICODE  // Tell compiler we're using Unicode, notice the _
+#	endif
+#	ifndef UNICODE
+#		define UNICODE
+#	endif
 #	include <shlobj.h>
 #	include <windows.h>
 #endif
@@ -68,7 +75,9 @@ std::uint32_t GetCrc32(const fs::path &filename) {
 	static const std::size_t buffer_size = 8192;
 	char buffer[buffer_size];
 	// MCP Note: changed from filename.c_str() to filename.string(); needs testing as error was about not being able to convert wchar_t to char
-	std::ifstream ifile(filename.string(), std::ios::binary);  // MCP Note: I think this is std::ifstream as it's not using a path argument but I'm not sure
+	//ifstream ifile(filename.c_str(), ios::binary);
+	std::ifstream ifile(filename.string(), std::ios::binary);
+	//fs::ifstream ifile(filename, std::ios::binary);  // MCP Note: I think this is std::ifstream as it's not using a path argument but I'm not sure
 	LOG_TRACE("calculating CRC for: '%s'", filename.string().c_str());
 	boost::crc_32_type result;
 	if (ifile) {
@@ -88,7 +97,9 @@ std::uint32_t GetCrc32(const fs::path &filename) {
 // Reads an entire file into a string buffer.
 void fileToBuffer(const fs::path file, std::string &buffer) {
 	// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
+	//ifstream ifile(file.c_str());
 	std::ifstream ifile(file.string());
+	//fs::ifstream ifile(file);
 	if (ifile.fail())
 		return;
 	ifile.unsetf(std::ios::skipws);  // No white space skipping!
@@ -175,14 +186,14 @@ std::string RegKeyStringValue(std::string keyStr, std::string subkey, std::strin
 	// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
 	// TODO(MCP): Error seems to be back after swapping Boost Regex for STL Regex in all files.
 	// TODO(MCP): Fixed, I think. Had to force the Unicode version to be used. Still not sure about the other mismatches that don't deal with the Windows API. May need to use UNICODE for Windows and _UNICODE. That fixes it, need to investigate.
-	LONG ret = RegOpenKeyExW(key, fs::path(subkey).wstring().c_str(),
+	LONG ret = RegOpenKeyEx(key, fs::path(subkey).wstring().c_str(),
 	                        0, KEY_READ|KEY_WOW64_32KEY, &hKey);
 
 	if (ret == ERROR_SUCCESS) {
 		// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
 		// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
 		// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
-		ret = RegQueryValueExW(hKey, fs::path(value).wstring().c_str(), NULL,
+		ret = RegQueryValueEx(hKey, fs::path(value).wstring().c_str(), NULL,
 		                      NULL, (LPBYTE)&val, &BufferSize);
 		RegCloseKey(hKey);
 
@@ -212,7 +223,7 @@ Version::Version(const fs::path file) {
 	// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
 	// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
 	// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
-	DWORD size = GetFileVersionInfoSizeW(file.wstring().c_str(), &dummy);
+	DWORD size = GetFileVersionInfoSize(file.wstring().c_str(), &dummy);
 
 	if (size > 0) {
 		LPBYTE point = new BYTE[size];
@@ -223,12 +234,12 @@ Version::Version(const fs::path file) {
 		// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
 		// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
 		// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
-		GetFileVersionInfoW(file.wstring().c_str(), 0, size, point);
+		GetFileVersionInfo(file.wstring().c_str(), 0, size, point);
 
 		// TODO(MCP): This worked before the file-split and namespace qualification but now refuses to compile, complaining of a type mismatch. Figure out why it's now broken.
 		// TODO(MCP): Master still doesn't spit this out so something in the changes broke it. Changes to this file were removing using namespace std and using namespace boost.
 		// TODO(MCP): Fixed, I think. Had to define _UNICODE. May fix some of the mismatches. Will test.
-		VerQueryValueW(point, L"\\", (LPVOID *)&info, &uLen);
+		VerQueryValue(point, L"\\", (LPVOID *)&info, &uLen);
 
 		DWORD dwLeftMost     = HIWORD(info->dwFileVersionMS);
 		DWORD dwSecondLeft   = LOWORD(info->dwFileVersionMS);

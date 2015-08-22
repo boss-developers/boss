@@ -104,6 +104,7 @@ void BossLog::Save(const fs::path file, const bool overwrite) {
 	if (fs::exists(file))
 		recognisedHasChanged = HasRecognisedListChanged(file);
 
+	//ofstream outFile;
 	std::ofstream outFile;
 	if (overwrite)
 		// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char

@@ -173,6 +173,7 @@ void ItemList::Load(const Game &parentGame, const fs::path path) {
 		// It's just a text file with a plugin filename on each line. Skip lines which are blank or start with '#'.
 
 		// MCP Note: changed from path.c_str() to path.string(); needs testing as error was about not being able to convert wchar_t to char
+		//std::ifstream in(path.c_str());
 		std::ifstream in(path.string());
 		if (in.fail())
 			throw boss_error(BOSS_ERROR_FILE_PARSE_FAIL, path.string());
@@ -235,6 +236,7 @@ void ItemList::Load(const Game &parentGame, const fs::path path) {
 }
 
 void ItemList::Save(const fs::path file, const fs::path oldFile) {
+	//ofstream ofile;
 	std::ofstream ofile;  // Not sure if it's using the one from std:: or boost::filesystem::
 	// Back up file if it already exists.
 	try {
@@ -306,6 +308,7 @@ void ItemList::SavePluginNames(const Game &parentGame,
 	}
 
 	LOG_INFO("Writing new \"%s\"", file.string().c_str());
+	//ofstream outfile;
 	std::ofstream outfile;
 
 	// MCP Note: changed from file.c_str() to file.string(); needs testing as error was about not being able to convert wchar_t to char
