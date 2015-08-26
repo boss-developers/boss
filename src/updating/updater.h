@@ -45,8 +45,6 @@
 
 namespace boss {
 
-namespace fs = boost::filesystem;
-
 struct pointers_struct {
 	pointers_struct()
 	    : repo(NULL),
@@ -127,7 +125,7 @@ inline bool are_files_equal(const void *buf1, std::size_t buf1_size,
 
 // Gets the revision SHA (first 9 characters) for the currently checked-out masterlist, or "unknown".
 inline std::string GetMasterlistVersion(Game &game) {
-	if (!fs::exists(game.Masterlist().parent_path() / ".git" / "HEAD")) {
+	if (!boost::filesystem::exists(game.Masterlist().parent_path() / ".git" / "HEAD")) {
 		return "Unknown: Git repository missing";
 	}
 	std::string rev;
@@ -156,7 +154,10 @@ inline std::string GetMasterlistVersion(Game &game) {
 	fileToBuffer(game.Masterlist(), mlist);
 
 	LOG_INFO("Comparing files.");
-	if (are_files_equal(git_blob_rawcontent(ptrs.blob), git_blob_rawsize(ptrs.blob), mlist.data(), mlist.length())) {
+	if (are_files_equal(git_blob_rawcontent(ptrs.blob),
+	                    git_blob_rawsize(ptrs.blob),
+	                    mlist.data(),
+	                    mlist.length())) {
 		ptrs.free();
 		// For some reason trying to get the revision of HEAD:masterlist.txt using libgit2 gives me 18efbc9d8 instead.
 		std::string revision;
@@ -179,7 +180,7 @@ std::string UpdateMasterlist(Game &game, Progress prog, void *out) {
 	LOG_INFO("Checking for a Git repository.");
 
 	// Checking for a ".git" folder.
-	if (fs::exists(game.Masterlist().parent_path() / ".git")) {
+	if (boost::filesystem::exists(game.Masterlist().parent_path() / ".git")) {
 		// Repository exists. Open it.
 		LOG_INFO("Existing repository found, attempting to open it.");
 		handle_error(git_repository_open(&ptrs.repo, game.Masterlist().parent_path().string().c_str()), ptrs);

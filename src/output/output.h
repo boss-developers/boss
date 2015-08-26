@@ -38,15 +38,12 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
-//#include <boost/unordered_set.hpp>
 
 #include "common/conditional_data.h"
 #include "common/dll_def.h"
 #include "common/error.h"
 
 namespace boss {
-
-namespace fs = boost::filesystem;
 
 class BOSS_COMMON Rule;
 
@@ -127,7 +124,7 @@ class BOSS_COMMON Outputter {
 	Outputter& operator<< (const std::int32_t i);
 	Outputter& operator<< (const std::uint32_t i);
 	Outputter& operator<< (const bool b);
-	Outputter& operator<< (const fs::path p);
+	Outputter& operator<< (const boost::filesystem::path p);
 	Outputter& operator<< (const Message m);
 	Outputter& operator<< (const ParsingError e);
 	Outputter& operator<< (const Rule r);

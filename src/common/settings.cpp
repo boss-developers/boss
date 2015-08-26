@@ -37,7 +37,6 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/locale.hpp>
-//#include <boost/unordered_map.hpp>
 
 #include "common/error.h"
 #include "common/globals.h"

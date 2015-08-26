@@ -28,8 +28,9 @@
 #ifndef COMMON_GLOBALS_H_
 #define COMMON_GLOBALS_H_
 
+// MCP Note: May be able to remove this, not sure yet.
 #ifndef _UNICODE
-#define _UNICODE  // Tell compiler we're using Unicode, notice the _
+#	define _UNICODE  // Tell compiler we're using Unicode, notice the _
 #endif
 
 #include <cstdint>
@@ -41,8 +42,6 @@
 #include "common/dll_def.h"
 
 namespace boss {
-
-namespace fs = boost::filesystem;
 
 // BOSS version number.
 BOSS_COMMON extern const std::uint32_t BOSS_VERSION_MAJOR;
@@ -78,17 +77,17 @@ BOSS_COMMON extern const std::uint32_t SIMPCHINESE;
 ///////////////////////////////
 
 // Paths that are game-invariant.
-BOSS_COMMON extern const fs::path boss_path;  // Path to the BOSS folder, relative to executable (ie. '.').
-BOSS_COMMON extern const fs::path ini_path;
-BOSS_COMMON extern const fs::path old_ini_path;
-BOSS_COMMON extern const fs::path debug_log_path;
-BOSS_COMMON extern const fs::path readme_path;
-BOSS_COMMON extern const fs::path rules_readme_path;
-BOSS_COMMON extern const fs::path masterlist_doc_path;
-BOSS_COMMON extern const fs::path api_doc_path;
-BOSS_COMMON extern const fs::path version_history_path;
-BOSS_COMMON extern const fs::path licenses_path;
-BOSS_COMMON extern const fs::path l10n_path;
+BOSS_COMMON extern const boost::filesystem::path boss_path;  // Path to the BOSS folder, relative to executable (ie. '.').
+BOSS_COMMON extern const boost::filesystem::path ini_path;
+BOSS_COMMON extern const boost::filesystem::path old_ini_path;
+BOSS_COMMON extern const boost::filesystem::path debug_log_path;
+BOSS_COMMON extern const boost::filesystem::path readme_path;
+BOSS_COMMON extern const boost::filesystem::path rules_readme_path;
+BOSS_COMMON extern const boost::filesystem::path masterlist_doc_path;
+BOSS_COMMON extern const boost::filesystem::path api_doc_path;
+BOSS_COMMON extern const boost::filesystem::path version_history_path;
+BOSS_COMMON extern const boost::filesystem::path licenses_path;
+BOSS_COMMON extern const boost::filesystem::path l10n_path;
 
 
 ///////////////////////////////

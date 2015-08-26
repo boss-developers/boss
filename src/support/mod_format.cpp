@@ -36,7 +36,6 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/filesystem.hpp>
 //#include <boost/filesystem/fstream.hpp>
-//#include <boost/regex.hpp>
 
 //#include "support/helpers.h"  // MCP Note: Don't think this one is needed. Will delete later after confirmation
 #include "support/types.h"
@@ -72,7 +71,7 @@ std::string ParseVersion(const std::string &text) {
 				continue;
 			}
 
-			return boost::algorithm::trim_copy(std::string(match.first, match.second));
+			return boost::trim_copy(std::string(match.first, match.second));
 		}
 	}
 

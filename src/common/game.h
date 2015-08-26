@@ -42,8 +42,6 @@
 
 namespace boss {
 
-namespace fs = boost::filesystem;
-
 class BOSS_COMMON Item;
 class Version;
 
@@ -72,18 +70,18 @@ class BOSS_COMMON Game {  // Constructor depends on gl_update_only.
 	Version GetVersion() const;
 	std::uint32_t GetLoadOrderMethod() const;
 
-	fs::path Executable() const;
-	fs::path GameFolder() const;
-	fs::path DataFolder() const;
-	fs::path SEPluginsFolder() const;
-	fs::path SEExecutable() const;
-	fs::path ActivePluginsFile() const;
-	fs::path LoadOrderFile() const;
-	fs::path Masterlist() const;
-	fs::path Userlist() const;
-	fs::path Modlist() const;
-	fs::path OldModlist() const;
-	fs::path Log(std::uint32_t format) const;
+	boost::filesystem::path Executable() const;
+	boost::filesystem::path GameFolder() const;
+	boost::filesystem::path DataFolder() const;
+	boost::filesystem::path SEPluginsFolder() const;
+	boost::filesystem::path SEExecutable() const;
+	boost::filesystem::path ActivePluginsFile() const;
+	boost::filesystem::path LoadOrderFile() const;
+	boost::filesystem::path Masterlist() const;
+	boost::filesystem::path Userlist() const;
+	boost::filesystem::path Modlist() const;
+	boost::filesystem::path OldModlist() const;
+	boost::filesystem::path Log(std::uint32_t format) const;
 
 	// Creates directory in BOSS folder for BOSS's game-specific files.
 	void CreateBOSSGameFolder();
@@ -107,7 +105,7 @@ class BOSS_COMMON Game {  // Constructor depends on gl_update_only.
 
  private:
 	// Can be used to get the location of the LOCALAPPDATA folder (and its Windows XP equivalent).
-	fs::path GetLocalAppDataPath();
+	boost::filesystem::path GetLocalAppDataPath();
 
 	std::uint32_t id;
 	std::uint32_t loMethod;
@@ -126,9 +124,9 @@ class BOSS_COMMON Game {  // Constructor depends on gl_update_only.
 	std::string pluginsFolderName;
 	std::string pluginsFileName;
 
-	fs::path gamePath;       // Path to the game's folder.
-	fs::path pluginsPath;    // Path to the file in which active plugins are listed.
-	fs::path loadorderPath;  // Path to the file which lists total load order.
+	boost::filesystem::path gamePath;       // Path to the game's folder.
+	boost::filesystem::path pluginsPath;    // Path to the file in which active plugins are listed.
+	boost::filesystem::path loadorderPath;  // Path to the file which lists total load order.
 };
 
 }  // namespace boss

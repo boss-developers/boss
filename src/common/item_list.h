@@ -38,18 +38,11 @@
 #include <vector>
 
 #include <boost/filesystem.hpp>
-//#include <boost/regex.hpp>
-/*
- * #include <boost/unordered_map.hpp>
- * #include <boost/unordered_set.hpp>
- */
 
 #include "common/dll_def.h"
 #include "common/error.h"
 
 namespace boss {
-
-namespace fs = boost::filesystem;
 
 // Forward Declarations
 
@@ -62,13 +55,14 @@ class BOSS_COMMON Message;
 class BOSS_COMMON ItemList {
  public:
 	ItemList();
-	void Load(const Game &parentGame, const fs::path path);        // Load by scanning path. If path is a directory, it scans it for plugins.
-	                                                               // If path is a file, it parses it using the modlist grammar.
-	                                                               // May throw exception on fail.
-	void Save(const fs::path file, const fs::path oldFile);        // Output to file in MF2. Backs up any existing file to oldFile.
-	                                                               // Throws exception on fail.
+	void Load(const Game &parentGame, const boost::filesystem::path path);  // Load by scanning path. If path is a directory, it scans it for plugins.
+	                                                                        // If path is a file, it parses it using the modlist grammar.
+	                                                                        // May throw exception on fail.
+	void Save(const boost::filesystem::path file,
+	          const boost::filesystem::path oldFile);                       // Output to file in MF2. Backs up any existing file to oldFile.
+	                                                                        // Throws exception on fail.
 	void SavePluginNames(const Game &parentGame,
-	                     const fs::path file,
+	                     const boost::filesystem::path file,
 	                     const bool activeOnly,
 	                     const bool doEncodingConversion);         // Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
 	void EvalConditions(const Game &parentGame);                   // Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.

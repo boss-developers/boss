@@ -41,9 +41,7 @@
 #include <exception>
 #include <iostream>
 #include <locale>
-//#include <regex>
 #include <string>
-//#include <unordered_set>
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
@@ -52,8 +50,6 @@
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 #include <boost/format.hpp>
 #include <boost/locale.hpp>
-//#include <boost/regex.hpp>
-//#include <boost/unordered_set.hpp>
 
 #include <wx/aboutdlg.h>
 #include <wx/snglinst.h>
@@ -535,7 +531,8 @@ void MainFrame::OnRunBOSS(wxCommandEvent &event) {
 		if (gl_revert < 1)
 			game.modlist.Save(game.Modlist(), game.OldModlist());
 	} catch (boss_error &e) {
-		LOG_ERROR("Failed to load/save modlist, error was: %s", e.getString().c_str());
+		LOG_ERROR("Failed to load/save modlist, error was: %s",
+		          e.getString().c_str());
 		game.bosslog.criticalError << LIST_ITEM_CLASS_ERROR << (boost::format(bloc::translate("Critical Error: %1%")) % e.getString()).str() << LINE_BREAK
 		                           << bloc::translate("Check the Troubleshooting section of the ReadMe for more information and possible solutions.") << LINE_BREAK
 		                           << bloc::translate("Utility will end now.");
@@ -918,11 +915,11 @@ void MainFrame::DisableUndetectedGames() {
 	}
 
 	// Swapping from gl_update_only to !gl_update_only with undetected game active: need to change game to a detected game.
-	if ((GameMenu->FindItem(MENU_Oblivion)->IsChecked() && !GameMenu->FindItem(MENU_Oblivion)->IsEnabled())
-		|| (GameMenu->FindItem(MENU_Nehrim)->IsChecked() && !GameMenu->FindItem(MENU_Nehrim)->IsEnabled())
-		|| (GameMenu->FindItem(MENU_Skyrim)->IsChecked() && !GameMenu->FindItem(MENU_Skyrim)->IsEnabled())
-		|| (GameMenu->FindItem(MENU_Fallout3)->IsChecked() && !GameMenu->FindItem(MENU_Fallout3)->IsEnabled())
-		|| (GameMenu->FindItem(MENU_FalloutNewVegas)->IsChecked() && !GameMenu->FindItem(MENU_FalloutNewVegas)->IsEnabled())) {
+	if ((GameMenu->FindItem(MENU_Oblivion)->IsChecked() && !GameMenu->FindItem(MENU_Oblivion)->IsEnabled()) ||
+	    (GameMenu->FindItem(MENU_Nehrim)->IsChecked() && !GameMenu->FindItem(MENU_Nehrim)->IsEnabled()) ||
+	    (GameMenu->FindItem(MENU_Skyrim)->IsChecked() && !GameMenu->FindItem(MENU_Skyrim)->IsEnabled()) ||
+	    (GameMenu->FindItem(MENU_Fallout3)->IsChecked() && !GameMenu->FindItem(MENU_Fallout3)->IsEnabled()) ||
+	    (GameMenu->FindItem(MENU_FalloutNewVegas)->IsChecked() && !GameMenu->FindItem(MENU_FalloutNewVegas)->IsEnabled())) {
 			if (!detectedGames.empty()) {
 				// TODO(MCP): Look at converting this to a switch-statement
 				if (detectedGames.front() == OBLIVION) {

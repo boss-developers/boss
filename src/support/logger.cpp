@@ -34,7 +34,7 @@
 // The values in the LogVerbosity enum refer to indices in this array
 // MCP Note: Are the spaces inside the quotes supposed to be there?
 static const char *LOG_VERBOSITY_NAMES[] = {"OFF  ", "ERROR", "WARN ",
-                                             "INFO ", "DEBUG", "TRACE"};
+                                            "INFO ", "DEBUG", "TRACE"};
 
 
 namespace boss {
@@ -78,7 +78,8 @@ void Logger::setVerbosity(LogVerbosity verbosity) {
 }
 
 // Formats the message and prints to stdout
-void Logger::_log(LogVerbosity verbosity, const char *formatStr, std::va_list ap) {
+void Logger::_log(LogVerbosity verbosity, const char *formatStr,
+                  std::va_list ap) {
 	if (!_checkVerbosity(verbosity)) {
 		return;
 	}

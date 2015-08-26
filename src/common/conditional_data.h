@@ -38,15 +38,9 @@
 #include <vector>
 
 #include <boost/fusion/adapted/struct/detail/extension.hpp>
-/*
- * #include <boost/unordered_map.hpp>
- * #include <boost/unordered_set.hpp>
- */
 
 #include "common/dll_def.h"
 #include "support/helpers.h"
-
-//#include "common/error.h"
 
 namespace boss {
 
@@ -148,8 +142,6 @@ class BOSS_COMMON Item : public conditionalData {
  private:
 	friend struct boost::fusion::extension::access;
 	std::vector<Message> messages;
-	// string data is now filename (or group name).
-	// Trimmed and case-preserved. ".ghost" extensions are removed.
 	std::uint32_t type;
 };
 

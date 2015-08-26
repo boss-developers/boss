@@ -50,8 +50,6 @@
 #include <boost/fusion/include/io.hpp>
 #include <boost/fusion/include/std_pair.hpp>
 #include <boost/spirit/include/qi.hpp>
-/*#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>*/
 
 #include "common/conditional_data.h"
 #include "common/error.h"
@@ -104,7 +102,6 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 namespace boss {
 
-namespace fs = boost::filesystem;
 namespace qi = boost::spirit::qi;
 
 using qi::grammar;
@@ -225,7 +222,7 @@ class conditional_grammar : public grammar<grammarIter, bool(), Skipper> {
 	void EvalElseConditional(bool &result, bool &ok);
 
 	// Returns the true path based on what type of file or keyword it is.
-	fs::path GetPath(const std::string file);
+	boost::filesystem::path GetPath(const std::string file);
 
 	// Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
 	void CheckVersion(bool &result, const std::string file,

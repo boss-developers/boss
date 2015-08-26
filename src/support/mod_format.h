@@ -36,8 +36,6 @@
 
 namespace boss {
 
-namespace fs = boost::filesystem;
-
 // Structure for grouping the information gathered from each mod's header.
 struct ModHeader {
 	std::string Name;
@@ -58,9 +56,9 @@ struct Record {
 	static const std::uint32_t SNAM = 'MANS';
 };
 
-ModHeader ReadHeader(fs::path filename);
+ModHeader ReadHeader(boost::filesystem::path filename);
 
-bool IsPluginMaster(fs::path filename);  // Shorter version of the above, to only get master flag.
+bool IsPluginMaster(boost::filesystem::path filename);  // Shorter version of the above, to only get master flag.
 
 }  // namespace boss
 #endif  // SUPPORT_MOD_FORMAT_H_

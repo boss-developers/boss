@@ -32,6 +32,7 @@
 #include <cstdlib>
 #include <ctime>
 
+#include <functional>
 #include <iterator>
 #include <locale>
 #include <string>
@@ -42,7 +43,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/functional/hash.hpp>
 #include <boost/locale.hpp>
-//#include <boost/unordered_set.hpp>
 
 #include "common/conditional_data.h"
 #include "common/error.h"
@@ -134,11 +134,11 @@ BOSS_COMMON std::uint32_t DetectGame(std::vector<std::uint32_t> &detectedGames,
 struct iequal_to : std::binary_function<std::string, std::string, bool> {
  public:
 	iequal_to() {}
-	explicit iequal_to(const std::locale &l) : locale_(l) {}  // May need to include <locale> and functional
+	explicit iequal_to(const std::locale &l) : locale_(l) {}
 
 	template <typename String1, typename String2>
 	bool operator()(const String1 &x1, const String2 &x2) const {
-		return boost::algorithm::iequals(x1, x2, locale_);
+		return boost::iequals(x1, x2, locale_);
 	}
  private:
 	std::locale locale_;
@@ -171,7 +171,8 @@ struct ihash : std::unary_function<std::string, std::size_t> {
 
 Game::Game() : id(AUTODETECT) {}
 
-Game::Game(const std::uint32_t gameCode, const std::string path, const bool noPathInit)
+Game::Game(const std::uint32_t gameCode, const std::string path,
+           const bool noPathInit)
     : id(gameCode) {
 	// MCP Note: Possibly turn this into a switch-statement?
 	if (Id() == OBLIVION) {

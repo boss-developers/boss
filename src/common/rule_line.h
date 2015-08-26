@@ -41,8 +41,6 @@
 
 namespace boss {
 
-namespace fs = boost::filesystem;
-
 class BOSS_COMMON Game;
 class BOSS_COMMON Message;
 class BOSS_COMMON ParsingError;
@@ -91,8 +89,8 @@ class BOSS_COMMON Rule : public RuleLine {
 class BOSS_COMMON RuleList {
  public:
 	RuleList();
-	void Load(const Game &parentGame, const fs::path file);  // Throws exception on fail.
-	void Save(const fs::path file);                          // Throws exception on fail.
+	void Load(const Game &parentGame, const boost::filesystem::path file);  // Throws exception on fail.
+	void Save(const boost::filesystem::path file);                          // Throws exception on fail.
 	std::size_t FindRule(const std::string ruleObject,
 	                     const bool onlyEnabled) const;
 

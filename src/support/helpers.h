@@ -38,17 +38,15 @@
 
 namespace boss {
 
-namespace fs = boost::filesystem;
-
 //////////////////////////////////////////////////////////////////////////
 // Helper functions
 //////////////////////////////////////////////////////////////////////////
 
 // Calculate the CRC of the given file for comparison purposes.
-std::uint32_t GetCrc32(const fs::path &filename);
+std::uint32_t GetCrc32(const boost::filesystem::path &filename);
 
 // Reads an entire file into a string buffer.
-void fileToBuffer(const fs::path file, std::string &buffer);
+void fileToBuffer(const boost::filesystem::path file, std::string &buffer);
 
 // Converts an integer to a string using BOOST's Spirit.Karma. Faster than a stringstream conversion.
 BOSS_COMMON std::string IntToString(const std::uint32_t n);
@@ -73,7 +71,8 @@ BOSS_COMMON bool RegKeyExists(std::string keyStr, std::string subkey,
                               std::string value);
 
 // Get registry subkey value string.
-std::string RegKeyStringValue(std::string keyStr, std::string subkey, std::string value);
+std::string RegKeyStringValue(std::string keyStr, std::string subkey,
+                              std::string value);
 
 // Version class for more robust version comparisons.
 class Version {
@@ -81,7 +80,7 @@ class Version {
 	Version();
 	explicit Version(const char *ver);
 	explicit Version(const std::string ver);
-	explicit Version(const fs::path file);
+	explicit Version(const boost::filesystem::path file);
 
 	std::string AsString() const;
 

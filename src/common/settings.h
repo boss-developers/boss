@@ -34,16 +34,11 @@
 #include <unordered_map>
 
 #include <boost/filesystem.hpp>
-/*
- * #include <boost/unordered_map.hpp>
- */
 
 #include "common/dll_def.h"
 #include "common/error.h"
 
 namespace boss {
-
-namespace fs = boost::filesystem;
 
 //class BOSS_COMMON ParsingError;
 
@@ -53,8 +48,9 @@ namespace fs = boost::filesystem;
 
 class BOSS_COMMON Settings {
  public:
-	void Load(const fs::path file);                                     // Throws exception on fail.
-	void Save(const fs::path file, const std::uint32_t currentGameId);  // Throws exception on fail.
+	void Load(const boost::filesystem::path file);  // Throws exception on fail.
+	void Save(const boost::filesystem::path file,
+	          const std::uint32_t currentGameId);   // Throws exception on fail.
 
 	ParsingError ErrorBuffer() const;
 	void ErrorBuffer(const ParsingError buffer);

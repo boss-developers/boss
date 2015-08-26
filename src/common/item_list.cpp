@@ -42,11 +42,6 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
-//#include <boost/regex.hpp>
-/*
- * #include <boost/unordered_map.hpp>
- * #include <boost/unordered_set.hpp>
- */
 
 #include "common/conditional_data.h"
 #include "common/error.h"
@@ -351,7 +346,7 @@ void ItemList::EvalConditions(const Game &parentGame) {
 		active.Load(parentGame, parentGame.ActivePluginsFile());
 		std::vector<Item> items = active.Items();
 		for (std::size_t i = 0, max = items.size(); i < max; i++) {
-			activePlugins.insert(boost::algorithm::to_lower_copy(items[i].Name()));
+			activePlugins.insert(boost::to_lower_copy(items[i].Name()));
 		}
 	}
 
@@ -483,7 +478,8 @@ void ItemList::EvalRegex(const Game &parentGame) {
 			// Now start looking.
 			setPos = FindRegexMatch(hashset, reg, hashset.begin());
 			while (setPos != hashset.end()) {  // Now insert the current found mod in the position of the regex mod.
-				itemIter = items.insert(itemIter, Item(*setPos, MOD, messages));
+				itemIter = items.insert(itemIter,
+				                        Item(*setPos, MOD, messages));
 				setPos = FindRegexMatch(hashset, reg, ++setPos);
 				++itemIter;
 			}
@@ -508,7 +504,8 @@ void ItemList::ApplyMasterPartition(const Game &parentGame) {
 	}
 }
 
-std::size_t ItemList::FindItem(const std::string name, const std::uint32_t type) const {
+std::size_t ItemList::FindItem(const std::string name,
+                               const std::uint32_t type) const {
 	std::size_t max = items.size();
 	for (std::size_t i = 0; i < max; i++) {
 		if (items[i].Type() == type && boost::iequals(items[i].Name(), name))
@@ -517,7 +514,8 @@ std::size_t ItemList::FindItem(const std::string name, const std::uint32_t type)
 	return max;
 }
 
-std::size_t ItemList::FindLastItem(const std::string name, const std::uint32_t type) const {
+std::size_t ItemList::FindLastItem(const std::string name,
+                                   const std::uint32_t type) const {
 	std::size_t max = items.size();
 	for (std::vector<Item>::const_iterator it = items.end(), begin = items.begin();
 	     it != begin; --it) {
@@ -599,7 +597,8 @@ void ItemList::Variables(const std::vector<MasterlistVar> variables) {
 	masterlistVariables = variables;
 }
 
-void ItemList::FileCRCs(const std::unordered_map<std::string, std::uint32_t> crcs) {
+void ItemList::FileCRCs(
+    const std::unordered_map<std::string, std::uint32_t> crcs) {
 	fileCRCs = crcs;
 }
 
@@ -620,8 +619,10 @@ void ItemList::Erase(const std::size_t startPos, const std::size_t endPos) {
 	items.erase(items.begin() + startPos, items.begin() + endPos);
 }
 
-void ItemList::Insert(const std::size_t pos, const std::vector<Item> source,
-                      const std::size_t sourceStart, const std::size_t sourceEnd) {
+void ItemList::Insert(const std::size_t pos,
+                      const std::vector<Item> source,
+                      const std::size_t sourceStart,
+                      const std::size_t sourceEnd) {
 	items.insert(items.begin() + pos, source.begin() + sourceStart,
 	             source.begin() + sourceEnd);
 }

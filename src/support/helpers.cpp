@@ -45,7 +45,6 @@
 //#include <boost/filesystem/fstream.hpp>
 #include <boost/locale.hpp>
 #include <boost/spirit/include/karma.hpp>
-//#include <boost/regex.hpp>
 
 #include "alphanum.hpp"
 
@@ -157,14 +156,16 @@ std::string FromUTF8To1252(const std::string &str) {
 }
 
 // Check if registry subkey exists.
-BOSS_COMMON bool RegKeyExists(std::string keyStr, std::string subkey, std::string value) {
+BOSS_COMMON bool RegKeyExists(std::string keyStr, std::string subkey,
+                              std::string value) {
 	if (RegKeyStringValue(keyStr, subkey, value).empty())
 		return false;
 	return true;
 }
 
 // Get registry subkey value string.
-std::string RegKeyStringValue(std::string keyStr, std::string subkey, std::string value) {
+std::string RegKeyStringValue(std::string keyStr, std::string subkey,
+                              std::string value) {
 #if _WIN32 || _WIN64
 	HKEY hKey, key;
 	DWORD BufferSize = 4096;

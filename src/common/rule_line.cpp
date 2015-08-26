@@ -279,12 +279,12 @@ void RuleList::Save(const fs::path file) {
 	     ruleIter != rules.end(); ++ruleIter) {
 		if (!ruleIter->Enabled())
 			outFile << "DISABLE ";
-		outFile << boost::algorithm::to_upper_copy(ruleIter->KeyToString()) << ": " << ruleIter->Object() << std::endl;
+		outFile << boost::to_upper_copy(ruleIter->KeyToString()) << ": " << ruleIter->Object() << std::endl;
 
 		std::vector<RuleLine> lines = ruleIter->Lines();
 		for (std::vector<RuleLine>::iterator lineIter = lines.begin();
 		     lineIter != lines.end(); ++lineIter)
-			outFile << boost::algorithm::to_upper_copy(lineIter->KeyToString()) << ": " << lineIter->Object() << std::endl;
+			outFile << boost::to_upper_copy(lineIter->KeyToString()) << ": " << lineIter->Object() << std::endl;
 		outFile << std::endl;
 	}
 	outFile.close();

@@ -36,8 +36,6 @@
 
 namespace boss {
 
-/*using boost::format;
-using boost::locale::translate;*/
 namespace bloc = boost::locale;
 
 // Return codes, mostly error codes.
@@ -160,7 +158,8 @@ ParsingError::ParsingError()
       wholeMessage("") {}
 
 // For parsing errors.
-ParsingError::ParsingError(const std::string inHeader, const std::string inDetail,
+ParsingError::ParsingError(const std::string inHeader,
+                           const std::string inDetail,
                            const std::string inFooter)
     : header(inHeader),
       detail(inDetail),

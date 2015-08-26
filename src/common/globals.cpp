@@ -35,8 +35,6 @@
 
 namespace boss {
 
-namespace fs = boost ::filesystem;
-
 // BOSS version number.
 BOSS_COMMON const std::uint32_t BOSS_VERSION_MAJOR = 2;
 BOSS_COMMON const std::uint32_t BOSS_VERSION_MINOR = 3;
@@ -66,16 +64,16 @@ BOSS_COMMON const std::uint32_t SIMPCHINESE        = 4;
 // File/Folder Paths
 ///////////////////////////////
 
-BOSS_COMMON const fs::path boss_path            = fs::path(".");
-BOSS_COMMON const fs::path ini_path             = boss_path / "BOSS.ini";
-BOSS_COMMON const fs::path old_ini_path         = boss_path / "BOSS.ini.old";
-BOSS_COMMON const fs::path debug_log_path       = boss_path / "BOSSDebugLog.txt";
-BOSS_COMMON const fs::path readme_path          = boss_path / "Docs" / "BOSS Readme.html";
-BOSS_COMMON const fs::path rules_readme_path    = boss_path / "Docs" / "BOSS Userlist Syntax.html";
-BOSS_COMMON const fs::path masterlist_doc_path  = boss_path / "Docs" / "BOSS Masterlist Syntax.html";
-BOSS_COMMON const fs::path version_history_path = boss_path / "Docs" / "BOSS Version History.html";
-BOSS_COMMON const fs::path licenses_path        = boss_path / "Docs" / "Licenses.txt";
-BOSS_COMMON const fs::path l10n_path            = boss_path / "resources" / "l10n";
+BOSS_COMMON const boost::filesystem::path boss_path            = boost::filesystem::path(".");
+BOSS_COMMON const boost::filesystem::path ini_path             = boss_path / "BOSS.ini";
+BOSS_COMMON const boost::filesystem::path old_ini_path         = boss_path / "BOSS.ini.old";
+BOSS_COMMON const boost::filesystem::path debug_log_path       = boss_path / "BOSSDebugLog.txt";
+BOSS_COMMON const boost::filesystem::path readme_path          = boss_path / "Docs" / "BOSS Readme.html";
+BOSS_COMMON const boost::filesystem::path rules_readme_path    = boss_path / "Docs" / "BOSS Userlist Syntax.html";
+BOSS_COMMON const boost::filesystem::path masterlist_doc_path  = boss_path / "Docs" / "BOSS Masterlist Syntax.html";
+BOSS_COMMON const boost::filesystem::path version_history_path = boss_path / "Docs" / "BOSS Version History.html";
+BOSS_COMMON const boost::filesystem::path licenses_path        = boss_path / "Docs" / "Licenses.txt";
+BOSS_COMMON const boost::filesystem::path l10n_path            = boss_path / "resources" / "l10n";
 
 
 ///////////////////////////////
@@ -83,21 +81,21 @@ BOSS_COMMON const fs::path l10n_path            = boss_path / "resources" / "l10
 ///////////////////////////////
 
 // General variables
-BOSS_COMMON bool gl_use_user_rules_manager       = true;
-BOSS_COMMON bool gl_close_gui_after_sorting      = false;
-BOSS_COMMON std::uint32_t gl_language            = ENGLISH;
+BOSS_COMMON bool gl_use_user_rules_manager    = true;
+BOSS_COMMON bool gl_close_gui_after_sorting   = false;
+BOSS_COMMON std::uint32_t gl_language         = ENGLISH;
 
 // Command line variables
-BOSS_COMMON std::uint32_t gl_log_format      = HTML;
-BOSS_COMMON std::uint32_t gl_game            = AUTODETECT;
-BOSS_COMMON std::uint32_t gl_last_game       = AUTODETECT;
-BOSS_COMMON std::uint32_t gl_revert          = 0;
-BOSS_COMMON std::uint32_t gl_debug_verbosity = 0;
-BOSS_COMMON bool gl_update                   = true;
-BOSS_COMMON bool gl_update_only              = false;
-BOSS_COMMON bool gl_silent                   = false;
-BOSS_COMMON bool gl_show_CRCs                = false;
-BOSS_COMMON bool gl_trial_run                = false;
+BOSS_COMMON std::uint32_t gl_log_format       = HTML;
+BOSS_COMMON std::uint32_t gl_game             = AUTODETECT;
+BOSS_COMMON std::uint32_t gl_last_game        = AUTODETECT;
+BOSS_COMMON std::uint32_t gl_revert           = 0;
+BOSS_COMMON std::uint32_t gl_debug_verbosity  = 0;
+BOSS_COMMON bool gl_update                    = true;
+BOSS_COMMON bool gl_update_only               = false;
+BOSS_COMMON bool gl_silent                    = false;
+BOSS_COMMON bool gl_show_CRCs                 = false;
+BOSS_COMMON bool gl_trial_run                 = false;
 
 // Repository URLs
 BOSS_COMMON std::string gl_oblivion_repo_url  = "https://github.com/boss-developers/oblivion.git";

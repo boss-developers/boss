@@ -29,8 +29,6 @@
 
 #include <regex>
 
-//#include <boost/regex.hpp>
-
 namespace boss {
 
 /// REGEX expression definition

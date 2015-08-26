@@ -38,10 +38,6 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
-/*
- * #include <boost/unordered_map.hpp>
- * #include <boost/unordered_set.hpp>
- */
 
 #include "common/error.h"
 #include "common/game.h"
@@ -193,7 +189,8 @@ std::string Message::KeyToString() const {
 
 Item::Item() : conditionalData(), type(MOD) {}
 
-Item::Item(const std::string inName) : conditionalData(inName, ""), type(MOD) {}
+Item::Item(const std::string inName)
+    : conditionalData(inName, ""), type(MOD) {}
 
 Item::Item(const std::string inName, const std::uint32_t inType)
     : conditionalData(inName, ""), type(inType) {}
@@ -227,18 +224,13 @@ void Item::Name(const std::string inName) {
 }
 
 bool Item::IsPlugin() const {
-	const std::string ext = boost::algorithm::to_lower_copy(fs::path(Data()).extension().string());
+	const std::string ext = boost::to_lower_copy(fs::path(Data()).extension().string());
 	return (ext == ".esp" || ext == ".esm");
 }
 
 bool Item::IsGroup() const {
 	return (!fs::path(Data()).has_extension() && !Data().empty());
 }
-
-/*bool Item::Exists(const Game& parentGame) const {
-	return (fs::exists(parentGame.DataFolder() / Data()) ||
-	        fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost")));
-}*/
 
 bool Item::IsGameMasterFile(const Game &parentGame) const {
 	return boost::iequals(Data(), parentGame.MasterFile().Name());
@@ -261,7 +253,7 @@ bool Item::IsFalseFlagged(const Game &parentGame) const {
 }
 
 bool Item::IsGhosted(const Game &parentGame) const {
-	return (fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost")));
+	return fs::exists(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
 }
 
 bool Item::Exists(const Game &parentGame) const {
@@ -300,21 +292,6 @@ std::time_t Item::GetModTime(const Game &parentGame) const {  // Can throw excep
 	}
 }
 
-/*void Item::SetModTime(const Game& parentGame,
-                      const std::time_t modificationTime) const {
-	try {
-		if (IsGhosted(parentGame))
-			fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"),
-			                    modificationTime);
-		else
-			fs::last_write_time(parentGame.DataFolder() / Data(),
-			                    modificationTime);
-	} catch(fs::filesystem_error e) {
-		throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_WRITE_FAIL, Data(),
-		                 e.what());
-	}
-}*/
-
 void Item::UnGhost(const Game &parentGame) const {  // Can throw exception.
 	if (IsGhosted(parentGame)) {
 		try {
@@ -341,21 +318,6 @@ void Item::SetModTime(const Game &parentGame,
 		                 e.what());
 	}
 }
-
-/*std::time_t Item::GetModTime(const Game& parentGame) const {  // Can throw exception.
-	try {
-		if (IsGhosted(parentGame))
-			return fs::last_write_time(parentGame.DataFolder() / fs::path(Data() + ".ghost"));
-		// MCP Note: Need to read up on try-catch to see if we can remove the else
-		else
-			return fs::last_write_time(parentGame.DataFolder() / Data());
-	} catch(fs::filesystem_error e) {
-		LOG_WARN("%s; Report the mod in question with a download link to an official BOSS thread.",
-		         e.what());
-		throw boss_error(BOSS_ERROR_FS_FILE_MOD_TIME_READ_FAIL, Data(),
-		                 e.what());
-	}
-}*/
 
 void Item::InsertMessage(const std::size_t pos, const Message message) {
 	messages.insert(messages.begin() + pos, message);

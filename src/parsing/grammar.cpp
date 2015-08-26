@@ -45,12 +45,6 @@
 #include <boost/phoenix/core.hpp>
 #include <boost/phoenix/object/construct.hpp>
 #include <boost/phoenix/operator.hpp>
-//#include <boost/regex.hpp>
-/*#include <boost/spirit/include/phoenix_bind.hpp>
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>*/
-/*#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>*/
 
 #include "common/conditional_data.h"
 #include "common/error.h"
@@ -61,15 +55,6 @@
 #include "support/helpers.h"
 #include "support/logger.h"
 
-/*
- * #include <boost/version.hpp>
- * #if BOOST_VERSION > 105500
- * #	include <boost/phoenix/object/construct.hpp>
- * #else
- * #	include <boost/spirit/home/phoenix/object/construct.hpp>
- * #endif
- */
-
 namespace boss {
 
 namespace fs = boost::filesystem;
@@ -78,7 +63,6 @@ namespace phoenix = boost::phoenix;
 
 // TODO(MCP): Fine out what qi::labels contains so we can remove the using namespace directive
 using namespace qi::labels;
-using boost::algorithm::to_lower_copy;
 
 using qi::skip;
 using qi::eol;
@@ -360,7 +344,7 @@ void modlist_grammar::StoreGlobalMessage(const Message message) {
 
 // Turns a given string into a path. Can't be done directly because of the openGroups checks.
 void modlist_grammar::ToName(std::string &p, std::string itemName) {
-	boost::algorithm::trim(itemName);
+	boost::trim(itemName);
 	if (itemName.empty() && !openGroups.empty())
 		p = openGroups.back();
 	else
@@ -472,7 +456,7 @@ void conditional_grammar::SetParentGame(const Game *game) {
 void conditional_grammar::EvaluateConditional(bool &result,
                                               const std::string type,
                                               const bool condition) {
-	if (boost::algorithm::to_lower_copy(type) == "if")
+	if (boost::to_lower_copy(type) == "if")
 		result = condition;
 	else
 		result = !condition;
@@ -586,9 +570,9 @@ void conditional_grammar::CheckRegex(bool &result, std::string reg) {
 		std::size_t pos1 = reg.rfind("\\\\");
 		std::string p = reg.substr(0, pos1);
 		reg = reg.substr(pos1 + 2);
-		boost::algorithm::replace_all(p, "\\\\", "\\");
+		boost::replace_all(p, "\\\\", "\\");
 		file_path = fs::path(p);
-	} else if (boost::algorithm::to_lower_copy(fs::path(reg).extension().string()) == ".dll" &&
+	} else if (boost::to_lower_copy(fs::path(reg).extension().string()) == ".dll" &&
 	           fs::exists(parentGame->SEPluginsFolder())) {
 		file_path = parentGame->SEPluginsFolder();
 	} else {
@@ -625,7 +609,7 @@ void conditional_grammar::CheckVar(bool &result, const std::string var) {
 
 // Checks if the given plugin is active.
 void conditional_grammar::CheckActive(bool &result, const std::string plugin) {
-	if (activePlugins->find(boost::algorithm::to_lower_copy(plugin)) != activePlugins->end())
+	if (activePlugins->find(boost::to_lower_copy(plugin)) != activePlugins->end())
 		result = true;
 	else
 		result = false;

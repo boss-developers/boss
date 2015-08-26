@@ -78,14 +78,14 @@ class MainFrame : public wxFrame {
 	void OnEditUserRules(wxCommandEvent &event);
 	void OnClose(wxCloseEvent &event);
 
-	void SetGames(const /*boss::*/Game &inGame,
+	void SetGames(const Game &inGame,
 	              const std::vector<std::uint32_t> inGames);
 	void DisableUndetectedGames();
 
  protected:
-	std::uint32_t updateCheckCode;       // 0 = update, 1 = no update, 2 = error.
-	std::string updateCheckString;       // Holds wxMessageBox text.
-	wxCriticalSection updateData;        // Protects fields above
+	std::uint32_t updateCheckCode;  // 0 = update, 1 = no update, 2 = error.
+	std::string updateCheckString;  // Holds wxMessageBox text.
+	wxCriticalSection updateData;   // Protects fields above
 	DECLARE_EVENT_TABLE()
 
  private:
@@ -110,7 +110,7 @@ class MainFrame : public wxFrame {
 
 	bool isStartup;
 	std::vector<std::uint32_t> detectedGames;
-	/*boss::*/Game game;
+	Game game;
 };
 
 }  // namespace boss

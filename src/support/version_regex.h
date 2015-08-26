@@ -30,8 +30,6 @@
 
 #include <regex>
 
-//#include <boost/regex.hpp>
-
 namespace boss {
 
 /// Array used to try each of the expressions defined above using

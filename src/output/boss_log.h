@@ -42,15 +42,13 @@
 
 namespace boss {
 
-namespace fs = boost::filesystem;
-
 class BossLog {
  public:
 	BossLog();
 	explicit BossLog(const std::uint32_t format);
 
 	void SetFormat(const std::uint32_t format);
-	void Save(const fs::path file, const bool overwrite);  // Saves contents to file. Throws boss_error exception on fail.
+	void Save(const boost::filesystem::path file, const bool overwrite);  // Saves contents to file. Throws boss_error exception on fail.
 	void Clear();
 
 	std::uint32_t recognised;
@@ -79,7 +77,7 @@ class BossLog {
 	std::string PrintHeaderBottom();
 	std::string PrintFooter();
 
-	bool HasRecognisedListChanged(const fs::path file);
+	bool HasRecognisedListChanged(const boost::filesystem::path file);
 
 	std::uint32_t logFormat;
 	bool recognisedHasChanged;
