@@ -122,7 +122,7 @@ class UserRulesEditorFrame : public wxFrame {
  private:
 	void LoadLists();
 	Rule GetRuleFromForm();
-    
+
 	Game &game;
 
 	wxArrayString ModlistMods;
