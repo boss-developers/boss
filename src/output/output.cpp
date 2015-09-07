@@ -68,7 +68,8 @@ Outputter::Outputter(const Outputter &o) {
 	escapeHTMLSpecialChars = o.GetHTMLSpecialEscape();
 }
 
-Outputter::Outputter(const std::uint32_t format) : outFormat(format) {
+Outputter::Outputter(const std::uint32_t format)
+    : outFormat(format) {
 	if (outFormat == HTML)
 		escapeHTMLSpecialChars = true;
 	else

@@ -83,12 +83,13 @@ void conditionalData::Conditions(const std::string inConditions) {
 	conditions = inConditions;
 }
 
-bool conditionalData::EvalConditions(std::unordered_set<std::string> &setVars,
-                                     std::unordered_map<std::string, std::uint32_t> &fileCRCs,
-                                     std::unordered_set<std::string> &activePlugins,
-                                     bool *condResult,
-                                     ParsingError &errorBuffer,
-                                     const Game &parentGame) {
+bool conditionalData::EvalConditions(
+    std::unordered_set<std::string> &setVars,
+    std::unordered_map<std::string, std::uint32_t> &fileCRCs,
+    std::unordered_set<std::string> &activePlugins,
+    bool *condResult,
+    ParsingError &errorBuffer,
+    const Game &parentGame) {
 	if (!conditions.empty()) {
 		Skipper skipper;
 		conditional_grammar grammar;
@@ -327,11 +328,13 @@ void Item::ClearMessages() {
 	messages.clear();
 }
 
-bool Item::EvalConditions(std::unordered_set<std::string> &setVars,
-                          std::unordered_map<std::string, std::uint32_t> &fileCRCs,
-                          std::unordered_set<std::string> &activePlugins,
-                          bool *condResult,
-                          ParsingError &errorBuffer, const Game &parentGame) {
+bool Item::EvalConditions(
+    std::unordered_set<std::string> &setVars,
+    std::unordered_map<std::string, std::uint32_t> &fileCRCs,
+    std::unordered_set<std::string> &activePlugins,
+    bool *condResult,
+    ParsingError &errorBuffer,
+    const Game &parentGame) {
 	if (Type() == ENDGROUP)
 		return true;
 

@@ -40,9 +40,9 @@
 #include <cstdint>
 
 #include <string>
-#include <utility>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include <boost/filesystem.hpp>
@@ -189,10 +189,10 @@ class modlist_grammar
 	qi::rule<grammarIter, std::uint32_t(), Skipper> messageKeyword;
 	ParsingError *errorBuffer;
 	std::vector<Message> *globalMessageBuffer;
-	std::vector<MasterlistVar> *setVars;                         // Vars set by masterlist.
+	std::vector<MasterlistVar> *setVars;                       // Vars set by masterlist.
 	std::unordered_map<std::string, std::uint32_t> *fileCRCs;  // CRCs calculated.
 	const Game *parentGame;
-	std::vector<std::string> openGroups;                         // Need to keep track of which groups are open to match up endings properly in MF1.
+	std::vector<std::string> openGroups;                       // Need to keep track of which groups are open to match up endings properly in MF1.
 };
 
 
@@ -225,8 +225,10 @@ class conditional_grammar : public grammar<grammarIter, bool(), Skipper> {
 	boost::filesystem::path GetPath(const std::string file);
 
 	// Checks if the given file (plugin or dll/exe) has a version for which the comparison holds true.
-	void CheckVersion(bool &result, const std::string file,
-	                  const std::string version, const char comparator);
+	void CheckVersion(bool &result,
+	                  const std::string file,
+	                  const std::string version,
+	                  const char comparator);
 
 	// Checks if the given file exists.
 	void CheckFile(bool &result, std::string file);
@@ -299,7 +301,8 @@ class ini_grammar : public grammar<grammarIter, std::unordered_map<std::string, 
 ////////////////////////////
 
 // RuleList grammar
-class userlist_grammar : public qi::grammar<grammarIter, std::vector<Rule>(), Skipper> {
+class userlist_grammar
+    : public qi::grammar<grammarIter, std::vector<Rule>(), Skipper> {
  public:
 	userlist_grammar();
 	void SetErrorBuffer(std::vector<ParsingError> *inErrorBuffer);

@@ -94,8 +94,9 @@ std::uint32_t AutodetectGame(std::vector<std::uint32_t> detectedGames) {  // Thr
 	return AUTODETECT;
 }
 
-BOSS_COMMON std::uint32_t DetectGame(std::vector<std::uint32_t> &detectedGames,
-                                     std::vector<std::uint32_t> &undetectedGames) {
+BOSS_COMMON std::uint32_t DetectGame(
+    std::vector<std::uint32_t> &detectedGames,
+    std::vector<std::uint32_t> &undetectedGames) {
 	// Detect all installed games.
 	if (Game(OBLIVION, "", true).IsInstalled())  // Look for Oblivion.
 		detectedGames.push_back(OBLIVION);
@@ -176,80 +177,80 @@ Game::Game(const std::uint32_t gameCode, const std::string path,
     : id(gameCode) {
 	// MCP Note: Possibly turn this into a switch-statement?
 	if (Id() == OBLIVION) {
-		name = "TES IV: Oblivion";
+		name              = "TES IV: Oblivion";
 
-		executable = "Oblivion.exe";
-		masterFile = "Oblivion.esm";
-		scriptExtender = "OBSE";
-		seExecutable = "obse_1_2_416.dll";
+		executable        = "Oblivion.exe";
+		masterFile        = "Oblivion.esm";
+		scriptExtender    = "OBSE";
+		seExecutable      = "obse_1_2_416.dll";
 
-		registryKey = "Software\\Bethesda Softworks\\Oblivion";
-		registrySubKey = "Installed Path";
+		registryKey       = "Software\\Bethesda Softworks\\Oblivion";
+		registrySubKey    = "Installed Path";
 
-		bossFolderName = "Oblivion";
+		bossFolderName    = "Oblivion";
 		appdataFolderName = "Oblivion";
 		pluginsFolderName = "Data";
-		pluginsFileName = "plugins.txt";
+		pluginsFileName   = "plugins.txt";
 	} else if (Id() == NEHRIM) {
-		name = "Nehrim - At Fate's Edge";
+		name              = "Nehrim - At Fate's Edge";
 
-		executable = "Oblivion.exe";
-		masterFile = "Nehrim.esm";
-		scriptExtender = "OBSE";
-		seExecutable = "obse_1_2_416.dll";
+		executable        = "Oblivion.exe";
+		masterFile        = "Nehrim.esm";
+		scriptExtender    = "OBSE";
+		seExecutable      = "obse_1_2_416.dll";
 
-		registryKey = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1";
-		registrySubKey = "InstallLocation";
+		registryKey       = "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nehrim - At Fate's Edge_is1";
+		registrySubKey    = "InstallLocation";
 
-		bossFolderName = "Nehrim";
+		bossFolderName    = "Nehrim";
 		appdataFolderName = "Oblivion";
 		pluginsFolderName = "Data";
-		pluginsFileName = "plugins.txt";
+		pluginsFileName   = "plugins.txt";
 	} else if (Id() == SKYRIM) {
-		name = "TES V: Skyrim";
+		name              = "TES V: Skyrim";
 
-		executable = "TESV.exe";
-		masterFile = "Skyrim.esm";
-		scriptExtender = "SKSE";
-		seExecutable = "skse_loader.exe";
+		executable        = "TESV.exe";
+		masterFile        = "Skyrim.esm";
+		scriptExtender    = "SKSE";
+		seExecutable      = "skse_loader.exe";
 
-		registryKey = "Software\\Bethesda Softworks\\Skyrim";
-		registrySubKey = "Installed Path";
+		registryKey       = "Software\\Bethesda Softworks\\Skyrim";
+		registrySubKey    = "Installed Path";
 
-		bossFolderName = "Skyrim";
+		bossFolderName    = "Skyrim";
 		appdataFolderName = "Skyrim";
 		pluginsFolderName = "Data";
-		pluginsFileName = "plugins.txt";
+		pluginsFileName   = "plugins.txt";
 	} else if (Id() == FALLOUT3) {
-		name = "Fallout 3";
+		name              = "Fallout 3";
 
-		executable = "Fallout3.exe";
-		masterFile = "Fallout3.esm";
-		scriptExtender = "FOSE";
-		seExecutable = "fose_loader.exe";
+		executable        = "Fallout3.exe";
+		masterFile        = "Fallout3.esm";
+		scriptExtender    = "FOSE";
+		seExecutable      = "fose_loader.exe";
 
-		registryKey = "Software\\Bethesda Softworks\\Fallout3";
-		registrySubKey = "Installed Path";
+		registryKey       = "Software\\Bethesda Softworks\\Fallout3";
+		registrySubKey    = "Installed Path";
 
-		bossFolderName = "Fallout 3";
+		bossFolderName    = "Fallout 3";
 		appdataFolderName = "Fallout3";
 		pluginsFolderName = "Data";
-		pluginsFileName = "plugins.txt";
+		pluginsFileName   = "plugins.txt";
 	} else if (Id() == FALLOUTNV) {
-		name = "Fallout: New Vegas";
+		name              = "Fallout: New Vegas";
 
-		executable = "FalloutNV.exe";
-		masterFile = "FalloutNV.esm";
-		scriptExtender = "NVSE";
-		seExecutable = "nvse_loader.exe";
+		executable        = "FalloutNV.exe";
+		masterFile        = "FalloutNV.esm";
+		scriptExtender    = "NVSE";
+		seExecutable      = "nvse_loader.exe";
 
-		registryKey = "Software\\Bethesda Softworks\\FalloutNV";
-		registrySubKey = "Installed Path";
+		registryKey       = "Software\\Bethesda Softworks\\FalloutNV";
+		registrySubKey    = "Installed Path";
 
-		bossFolderName = "Fallout New Vegas";
+		bossFolderName    = "Fallout New Vegas";
 		appdataFolderName = "FalloutNV";
 		pluginsFolderName = "Data";
-		pluginsFileName = "plugins.txt";
+		pluginsFileName   = "plugins.txt";
 	} else {
 		throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
 	}
@@ -284,7 +285,7 @@ Game::Game(const std::uint32_t gameCode, const std::string path,
 
 		// Requires data path to be set.
 		if (Id() == OBLIVION && fs::exists(GameFolder() / "Oblivion.ini")) {
-			// Looking up bUseMyGamesDirectory, which only has effect if =0 and exists in Oblivion folder.
+			// Looking up bUseMyGamesDirectory, which only has effect if = 0 and exists in Oblivion folder.
 			Settings oblivionIni;
 			oblivionIni.Load(GameFolder() / "Oblivion.ini");  // This also sets the variable up.
 

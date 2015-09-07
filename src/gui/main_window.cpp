@@ -261,19 +261,24 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 	MenuBar = new wxMenuBar();
 	// File Menu
 	FileMenu = new wxMenu();
-	FileMenu->Append(OPTION_OpenBOSSlog, translate("&View BOSS Log"),
+	FileMenu->Append(OPTION_OpenBOSSlog,
+	                 translate("&View BOSS Log"),
 	                 translate("Opens your BOSSlog."));
-	FileMenu->Append(OPTION_Run, translate("&Run BOSS"),
+	FileMenu->Append(OPTION_Run,
+	                 translate("&Run BOSS"),
 	                 translate("Runs BOSS with the options you have chosen."));
 	FileMenu->AppendSeparator();
-	FileMenu->Append(MENU_Quit, translate("&Quit"),
+	FileMenu->Append(MENU_Quit,
+	                 translate("&Quit"),
 	                 translate("Quit BOSS."));
 	MenuBar->Append(FileMenu, translate("&File"));
 	// Edit Menu
 	EditMenu = new wxMenu();
-	EditMenu->Append(OPTION_EditUserRules, translate("&User Rules..."),
+	EditMenu->Append(OPTION_EditUserRules,
+	                 translate("&User Rules..."),
 	                 translate("Opens your userlist in your default text editor."));
-	EditMenu->Append(MENU_ShowSettings, translate("&Settings..."),
+	EditMenu->Append(MENU_ShowSettings,
+	                 translate("&Settings..."),
 	                 translate("Opens the Settings window."));
 	MenuBar->Append(EditMenu, translate("&Edit"));
 	// Game menu
@@ -321,9 +326,12 @@ MainFrame::MainFrame(const wxChar *title) : wxFrame(NULL, wxID_ANY, title, wxDef
 
 	// Create first column box and add the output options to it.
 	wxBoxSizer *columnBox = new wxBoxSizer(wxVERTICAL);
-	wxStaticBoxSizer *outputOptionsBox = new wxStaticBoxSizer(wxVERTICAL, this, translate("Output Options"));
+	wxStaticBoxSizer *outputOptionsBox = new wxStaticBoxSizer(wxVERTICAL,
+	                                                          this,
+	                                                          translate("Output Options"));
 	wxBoxSizer *formatBox = new wxBoxSizer(wxHORIZONTAL);
 
+	// MCP Note: Maybe separate out the variable declarations so that they're not inside of a function call?
 	// Add stuff to output options sizer.
 	outputOptionsBox->Add(ShowLogBox = new wxCheckBox(this, CHECKBOX_ShowBOSSlog, translate("Show BOSS Log On Completion")), 0, wxALL, 5);
 	outputOptionsBox->Add(CRCBox = new wxCheckBox(this, CHECKBOX_EnableCRCs, translate("Display File CRCs")), 0, wxLEFT | wxBOTTOM, 5);
@@ -481,8 +489,7 @@ void MainFrame::OnRunBOSS(wxCommandEvent &event) {
 		                translate("Updating to the latest masterlist from the online repository..."));
 		LOG_DEBUG("Updating masterlist...");
 		try {
-			std::string revision = UpdateMasterlist(game, progress,
-			                                        progDia);
+			std::string revision = UpdateMasterlist(game, progress, progDia);
 			std::string message = (boost::format(translate("Masterlist updated; at revision: %1%.")) % revision).str();
 			game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
 		}
@@ -845,11 +852,10 @@ void MainFrame::OnClose(wxCloseEvent &event) {
 		Settings ini;
 		ini.Save(ini_path, game.Id());
 	} catch (boss_error &e) {
-			wxMessageBox(
-				FromUTF8(boost::format(bloc::translate("Error: %1%")) % e.getString()),
-				translate("BOSS: Error"),
-				wxOK | wxICON_ERROR,
-				NULL);
+			wxMessageBox(FromUTF8(boost::format(bloc::translate("Error: %1%")) % e.getString()),
+			             translate("BOSS: Error"),
+			             wxOK | wxICON_ERROR,
+			             NULL);
 	}
 
 	Destroy();  // You may also do:  event.Skip();

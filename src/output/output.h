@@ -106,9 +106,9 @@ class BOSS_COMMON Outputter {
 	Outputter(const std::uint32_t format, const Rule r);
 	Outputter(const std::uint32_t format, const logFormatting l);
 
-	void SetFormat(const std::uint32_t format);               // Sets the formatting type of the output.
-	void SetHTMLSpecialEscape(const bool shouldEscape);       // Set when formatting is set, generally, but this can be used to override.
-	void Clear();                                             // Erase all current content.
+	void SetFormat(const std::uint32_t format);          // Sets the formatting type of the output.
+	void SetHTMLSpecialEscape(const bool shouldEscape);  // Set when formatting is set, generally, but this can be used to override.
+	void Clear();                                        // Erase all current content.
 
 	bool Empty() const;
 	std::uint32_t GetFormat() const;
@@ -134,8 +134,8 @@ class BOSS_COMMON Outputter {
 	std::string EscapeHTMLSpecial(char c);
 
 	std::stringstream outStream;
-	std::uint32_t outFormat;           // The formatting type of the output.
-	bool escapeHTMLSpecialChars;       // Should special characters be escaped from non-formatting input?
+	std::uint32_t outFormat;      // The formatting type of the output.
+	bool escapeHTMLSpecialChars;  // Should special characters be escaped from non-formatting input?
 };
 
 }  // namespace boss

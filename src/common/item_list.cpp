@@ -459,7 +459,6 @@ void ItemList::EvalRegex(const Game &parentGame) {
 	std::vector<Item>::iterator itemIter = items.begin();
 	while (itemIter != items.end()) {
 		if (itemIter->Type() == REGEX) {
-			// TODO(MCP): Replace this with the standard library version
 			std::regex reg;  // Form a regex.
 			try {
 				reg = std::regex(itemIter->Name()+"(\\.ghost)?",

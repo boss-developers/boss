@@ -195,47 +195,46 @@ int bossMain(int argc, char *argv[]) {
 
 	// Declare the supported options
 	po::options_description opts("Options");
-	// TODO(MCP): Come up with a good alignment scheme for these lines.
 	opts.add_options()
-		("help,h", bloc::translate("produces this help message").str().c_str())
-		("version,V", bloc::translate("prints the version banner").str().c_str())
-		("update,u", po::value(&gl_update)->zero_tokens(),
-		bloc::translate("automatically update the local copy of the"
-		" masterlist to the latest version"
-		" available on the web before sorting").str().c_str())
-		("no-update,U", bloc::translate("inhibit the automatic masterlist updater").str().c_str())
-		("only-update,o", po::value(&gl_update_only)->zero_tokens(),
-		bloc::translate("automatically update the local copy of the"
-		" masterlist to the latest version"
-		" available on the web but don't sort right"
-		" now").str().c_str())
-		("silent,s", po::value(&gl_silent)->zero_tokens(),
-		bloc::translate("don't launch a browser to show the HTML log"
-		" at program completion").str().c_str())
-		("revert,r", po::value(&gl_revert)->implicit_value(1, ""),
-		bloc::translate("revert to a previous load order.  this"
-		" parameter optionally accepts values of 1 or"
-		" 2, indicating how many undo steps to apply."
-		"  if no option value is specified, it"
-		" defaults to 1").str().c_str())
-		("verbose,v", po::value(&gl_debug_verbosity)->implicit_value(1, ""),
-		bloc::translate("specify verbosity level (0-3) of the debugging output.  0 is the"
-		" default, showing only WARN and ERROR messges."
-		" 1 (INFO and above) is implied if this option"
-		" is specified without an argument.  higher"
-		" values increase the verbosity further").str().c_str())
-		("game,g", po::value(&gameStr),
-		bloc::translate("override game autodetection.  valid values"
-		" are: 'Oblivion', 'Nehrim', 'Fallout3',"
-		" 'FalloutNV', and 'Skyrim'").str().c_str())
-		("crc-display,c", po::value(&gl_show_CRCs)->zero_tokens(),
-		bloc::translate("show mod file CRCs, so that a file's CRC can be"
-		" added to the masterlist in a conditional").str().c_str())
-		("format,f", po::value(&bosslogFormat),
-		bloc::translate("select output format. valid values"
-		" are: 'html', 'text'").str().c_str())
-		("trial-run,t", po::value(&gl_trial_run)->zero_tokens(),
-		bloc::translate("run BOSS without actually making any changes to load order").str().c_str());
+	                ("help,h", bloc::translate("produces this help message").str().c_str())
+	                ("version,V", bloc::translate("prints the version banner").str().c_str())
+	                ("update,u", po::value(&gl_update)->zero_tokens(),
+	                 bloc::translate("automatically update the local copy of the"
+	                                 " masterlist to the latest version"
+	                                 " available on the web before sorting").str().c_str())
+	                ("no-update,U", bloc::translate("inhibit the automatic masterlist updater").str().c_str())
+	                ("only-update,o", po::value(&gl_update_only)->zero_tokens(),
+	                 bloc::translate("automatically update the local copy of the"
+	                                 " masterlist to the latest version"
+	                                 " available on the web but don't sort right"
+	                                 " now").str().c_str())
+	                ("silent,s", po::value(&gl_silent)->zero_tokens(),
+	                 bloc::translate("don't launch a browser to show the HTML log"
+	                                 " at program completion").str().c_str())
+	                ("revert,r", po::value(&gl_revert)->implicit_value(1, ""),
+	                 bloc::translate("revert to a previous load order.  this"
+	                                 " parameter optionally accepts values of 1 or"
+	                                 " 2, indicating how many undo steps to apply."
+	                                 "  if no option value is specified, it"
+	                                 " defaults to 1").str().c_str())
+	                ("verbose,v", po::value(&gl_debug_verbosity)->implicit_value(1, ""),
+	                 bloc::translate("specify verbosity level (0-3) of the debugging output.  0 is the"
+	                                 " default, showing only WARN and ERROR messges."
+	                                 " 1 (INFO and above) is implied if this option"
+	                                 " is specified without an argument.  higher"
+	                                 " values increase the verbosity further").str().c_str())
+	                ("game,g", po::value(&gameStr),
+	                 bloc::translate("override game autodetection.  valid values"
+	                                 " are: 'Oblivion', 'Nehrim', 'Fallout3',"
+	                                 " 'FalloutNV', and 'Skyrim'").str().c_str())
+	                ("crc-display,c", po::value(&gl_show_CRCs)->zero_tokens(),
+	                 bloc::translate("show mod file CRCs, so that a file's CRC can be"
+	                                 " added to the masterlist in a conditional").str().c_str())
+	                ("format,f", po::value(&bosslogFormat),
+	                 bloc::translate("select output format. valid values"
+	                                 " are: 'html', 'text'").str().c_str())
+	                ("trial-run,t", po::value(&gl_trial_run)->zero_tokens(),
+	                 bloc::translate("run BOSS without actually making any changes to load order").str().c_str());
 
 	// Parse command line arguments
 	po::variables_map vm;

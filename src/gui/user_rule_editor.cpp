@@ -105,8 +105,7 @@ TextDropTarget::TextDropTarget(wxTextCtrl *owner) {
 	targetOwner = owner;
 }
 
-bool TextDropTarget::OnDropText(wxCoord x, wxCoord y,
-                                const wxString &data) {
+bool TextDropTarget::OnDropText(wxCoord x, wxCoord y, const wxString &data) {
 	wxString originalValue = targetOwner->GetValue();
 	targetOwner->SetValue(data);
 
@@ -372,7 +371,8 @@ void RuleListFrameClass::OnRuleSelection(wxCommandEvent &event) {
 void RuleListFrameClass::ReDrawRuleList() {
 	RuleListScroller->DestroyChildren();
 	wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
-	for (std::size_t i = 0, size = game.userlist.Rules().size(); i < size; i++) {
+	for (std::size_t i = 0, size = game.userlist.Rules().size();
+	     i < size; i++) {
 		if (i == selectedRuleIndex)
 			sizer->Add(new RuleBoxClass(RuleListScroller, game.userlist.RuleAt(i), i, true), 0, wxEXPAND);
 		else
@@ -544,8 +544,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
 	MasterlistTabSizer->Add(MasterlistModsList = new wxTreeCtrl(MasterlistTab, LIST_Masterlist, wxDefaultPosition, wxSize(100, 550), wxTR_HAS_BUTTONS|wxTR_TWIST_BUTTONS|wxTR_NO_LINES|wxTR_HIDE_ROOT), 1, wxEXPAND);
 	MasterlistTab->SetSizer(MasterlistTabSizer);
 	// Add tabs to window.
-	TabHolder->AddPage(ModlistTab, translate("Installed Plugins"),
-	                   true);
+	TabHolder->AddPage(ModlistTab, translate("Installed Plugins"), true);
 	TabHolder->AddPage(MasterlistTab, translate("Masterlist"));
 	mainBox->AddSpacer(10);
 	mainBox->Add(TabHolder, 2, wxEXPAND);
@@ -706,7 +705,8 @@ void UserRulesEditorFrame::OnSelectModInMasterlist(wxTreeEvent &event) {
 	if (pos != game.masterlist.Items().size()) {
 		std::string messagesOut = "";
 		std::vector<Message> messages = game.masterlist.ItemAt(pos).Messages();
-		for (std::vector<Message>::iterator messageIter = messages.begin(); messageIter != messages.end(); ++messageIter)
+		for (std::vector<Message>::iterator messageIter = messages.begin();
+		     messageIter != messages.end(); ++messageIter)
 			messagesOut += messageIter->KeyToString() + ": " + messageIter->Data() + "\n\n";
 		ModMessagesBox->SetValue(wxString(messagesOut.substr(0, messagesOut.length() - 2).c_str(), wxConvUTF8));
 	}
@@ -962,7 +962,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 			if (SortModOption->GetValue()) {
 				if (SortModBox->IsEmpty()) {  // No sort object specified. Error.
 					throw boss_error(bloc::translate("No group is specified to sort relative to."),
-					                                BOSS_ERROR_INVALID_SYNTAX);
+					                 BOSS_ERROR_INVALID_SYNTAX);
 				} else if (Item(sortItem).IsPlugin()) {  // Sort object is a plugin. Error.
 					throw boss_error(bloc::translate("Cannot sort a group relative to a plugin."),
 					                 BOSS_ERROR_INVALID_SYNTAX);
@@ -991,8 +991,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 		if (Item(newRule.Object()).IsGroup()) {
 			newRule.Key(OVERRIDE);
 		} else {
-			std::size_t pos = game.masterlist.FindItem(newRule.Object(),
-			                                           MOD);
+			std::size_t pos = game.masterlist.FindItem(newRule.Object(), MOD);
 			if (pos != game.masterlist.Items().size())  // Mod in masterlist.
 				newRule.Key(OVERRIDE);
 			else

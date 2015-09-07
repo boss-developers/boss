@@ -102,7 +102,8 @@ void fileToBuffer(const fs::path file, std::string &buffer) {
 	if (ifile.fail())
 		return;
 	ifile.unsetf(std::ios::skipws);  // No white space skipping!
-	std::copy(std::istream_iterator<char>(ifile), std::istream_iterator<char>(),
+	std::copy(std::istream_iterator<char>(ifile),
+	          std::istream_iterator<char>(),
 	          std::back_inserter(buffer));
 }
 

@@ -66,12 +66,13 @@ class BOSS_COMMON conditionalData {
 	void Data(const std::string inData);
 	void Conditions(const std::string inConditions);
 
-	bool EvalConditions(std::unordered_set<std::string> &setVars,
-	                    std::unordered_map<std::string, std::uint32_t> &fileCRCs,
-	                    std::unordered_set<std::string> &activePlugins,
-	                    bool *condResult,
-	                    ParsingError &errorBuffer,
-	                    const Game &parentGame);
+	bool EvalConditions(
+	    std::unordered_set<std::string> &setVars,
+	    std::unordered_map<std::string, std::uint32_t> &fileCRCs,
+	    std::unordered_set<std::string> &activePlugins,
+	    bool *condResult,
+	    ParsingError &errorBuffer,
+	    const Game &parentGame);
  private:
 	friend struct boost::fusion::extension::access;
 	std::string data;
@@ -132,12 +133,13 @@ class BOSS_COMMON Item : public conditionalData {
 	void InsertMessage(std::size_t pos, Message item);
 	void ClearMessages();
 
-	bool EvalConditions(std::unordered_set<std::string> &setVars,
-	                    std::unordered_map<std::string, std::uint32_t> &fileCRCs,
-	                    std::unordered_set<std::string> &activePlugins,
-	                    bool *condResult,
-	                    ParsingError &errorBuffer,
-	                    const Game &parentGame);
+	bool EvalConditions(
+	    std::unordered_set<std::string> &setVars,
+	    std::unordered_map<std::string, std::uint32_t> &fileCRCs,
+	    std::unordered_set<std::string> &activePlugins,
+	    bool *condResult,
+	    ParsingError &errorBuffer,
+	    const Game &parentGame);
 
  private:
 	friend struct boost::fusion::extension::access;

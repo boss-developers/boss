@@ -61,7 +61,7 @@ namespace fs = boost::filesystem;
 namespace unicode = boost::spirit::unicode;
 namespace phoenix = boost::phoenix;
 
-// TODO(MCP): Fine out what qi::labels contains so we can remove the using namespace directive
+// TODO(MCP): Find out what qi::labels contains so we can remove the using namespace directive
 using namespace qi::labels;
 
 using qi::skip;

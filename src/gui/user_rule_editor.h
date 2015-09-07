@@ -57,16 +57,17 @@ namespace boss {
 class TextDropTarget : public wxTextDropTarget {  // Class to override virtual functions.
  public:
 	explicit TextDropTarget(wxTextCtrl *owner);
-	virtual bool OnDropText(wxCoord x, wxCoord y,
-	                        const wxString &data);
+	virtual bool OnDropText(wxCoord x, wxCoord y, const wxString &data);
  private:
 	wxTextCtrl *targetOwner;
 };
 
 class RuleBoxClass : public wxPanel {
  public:
-	RuleBoxClass(wxScrolled<wxPanel> *parent, Rule currentRule,
-	             std::uint32_t index, bool isSelected);
+	RuleBoxClass(wxScrolled<wxPanel> *parent,
+	             Rule currentRule,
+	             std::uint32_t index,
+	             bool isSelected);
 	void ToggleEnabled(wxCommandEvent &event);  // Doesn't handle RuleList modification, only greying out of UI element.
 	void OnSelect(wxMouseEvent &event);
 	void Highlight(bool highlight);
@@ -98,8 +99,7 @@ class RuleListFrameClass : public wxPanel {
 
 class UserRulesEditorFrame : public wxFrame {
  public:
-	UserRulesEditorFrame(const wxString title, wxFrame *parent,
-	                     Game &inGame);
+	UserRulesEditorFrame(const wxString title, wxFrame *parent, Game &inGame);
 	void OnOKQuit(wxCommandEvent &event);
 	void OnCancelQuit(wxCommandEvent &event);
 	void OnSearchList(wxCommandEvent &event);

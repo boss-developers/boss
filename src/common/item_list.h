@@ -64,18 +64,18 @@ class BOSS_COMMON ItemList {
 	void SavePluginNames(const Game &parentGame,
 	                     const boost::filesystem::path file,
 	                     const bool activeOnly,
-	                     const bool doEncodingConversion);         // Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
-	void EvalConditions(const Game &parentGame);                   // Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
+	                     const bool doEncodingConversion);       // Save only a list of plugin filenames to the given file. For use with Skyrim. Throws exception on fail.
+	void EvalConditions(const Game &parentGame);                 // Evaluates the conditionals for each item, discarding those items whose conditionals evaluate to false. Also evaluates global message conditionals.
 	void EvalRegex(const Game &parentGame);
-	void ApplyMasterPartition(const Game &parentGame);             // Puts all master files before other plugins. Can throw exception.
+	void ApplyMasterPartition(const Game &parentGame);           // Puts all master files before other plugins. Can throw exception.
 
 	std::size_t FindItem(const std::string name,
-	                     const std::uint32_t type) const;          // Find the position of the item with name 'name'. Case-insensitive.
+	                     const std::uint32_t type) const;        // Find the position of the item with name 'name'. Case-insensitive.
 	std::size_t FindLastItem(const std::string name,
-	                         const std::uint32_t type) const;      // Find the last item with the name 'name'. Case-insensitive.
-	std::size_t GetLastMasterPos(const Game &parentGame) const;    // Can throw exception.
+	                         const std::uint32_t type) const;    // Find the last item with the name 'name'. Case-insensitive.
+	std::size_t GetLastMasterPos(const Game &parentGame) const;  // Can throw exception.
 	std::size_t GetNextMasterPos(const Game &parentGame,
-	                             std::size_t currPos) const;       // Can throw exception.
+	                             std::size_t currPos) const;     // Can throw exception.
 
 	Item ItemAt(std::size_t pos) const;
 
