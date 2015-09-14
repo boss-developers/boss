@@ -151,25 +151,25 @@ std::string BossLog::PrintLog() {
 	out << PrintHeaderTop();
 
 	if (logFormat == HTML) {
-		formattedOut << DIV_SUMMARY_BUTTON_OPEN << bloc::translate("Summary") << DIV_CLOSE;
+		formattedOut << "	" << DIV_SUMMARY_BUTTON_OPEN << bloc::translate("Summary") << DIV_CLOSE << "\n";
 
 		if (!userRules.Empty())
-			formattedOut << DIV_USERLIST_BUTTON_OPEN << bloc::translate("User Rules") << DIV_CLOSE;
+			formattedOut << "	" << DIV_USERLIST_BUTTON_OPEN << bloc::translate("User Rules") << DIV_CLOSE << "\n";
 
 		if (!sePlugins.Empty())
-			formattedOut << DIV_SE_BUTTON_OPEN << (boost::format(bloc::translate("%1% Plugins")) % scriptExtender).str() << DIV_CLOSE;
+			formattedOut << "	" << DIV_SE_BUTTON_OPEN << (boost::format(bloc::translate("%1% Plugins")) % scriptExtender).str() << DIV_CLOSE << "\n";
 
 		if (!recognisedPlugins.Empty()) {
 			if (gl_revert < 1)
-				formattedOut << DIV_RECOGNISED_BUTTON_OPEN << bloc::translate("Recognised Plugins") << DIV_CLOSE;
+				formattedOut << "	" << DIV_RECOGNISED_BUTTON_OPEN << bloc::translate("Recognised Plugins") << DIV_CLOSE << "\n";
 			else
-				formattedOut << DIV_RECOGNISED_BUTTON_OPEN << bloc::translate("Restored Load Order") << DIV_CLOSE;
+				formattedOut << "	" << DIV_RECOGNISED_BUTTON_OPEN << bloc::translate("Restored Load Order") << DIV_CLOSE << "\n";
 		}
 
 		if (!unrecognisedPlugins.Empty())
-			formattedOut << DIV_UNRECOGNISED_BUTTON_OPEN << bloc::translate("Unrecognised Plugins") << DIV_CLOSE;
+			formattedOut << "	" << DIV_UNRECOGNISED_BUTTON_OPEN << bloc::translate("Unrecognised Plugins") << DIV_CLOSE << "\n";
 
-		out << formattedOut.AsString() << PrintHeaderBottom();
+		out << formattedOut.AsString() << "\n" << PrintHeaderBottom();
 		formattedOut.Clear();  // Clear formattedOut for re-use.
 	}
 
@@ -180,41 +180,84 @@ std::string BossLog::PrintLog() {
 	formattedOut.SetHTMLSpecialEscape(false);
 
 	if (logFormat == HTML)
-		formattedOut << SECTION_ID_SUMMARY_OPEN;
+		formattedOut << SECTION_ID_SUMMARY_OPEN << "\n";
 	else
 		formattedOut << SECTION_ID_SUMMARY_OPEN << HEADING_OPEN << bloc::translate("Summary") << HEADING_CLOSE;
 
 	if (recognised != 0 || unrecognised != 0 || messages != 0) {
-		formattedOut << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << bloc::translate("Plugin Type") << TABLE_HEADING << bloc::translate("Count")
-		             << TABLE_BODY << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << bloc::translate("Recognised (or sorted by user rules)") << TABLE_DATA << recognised;
-		if (unrecognised != 0)
-			formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << bloc::translate("Unrecognised") << TABLE_DATA << unrecognised;
-		else
-			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << bloc::translate("Unrecognised") << TABLE_DATA << unrecognised;
-		formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << bloc::translate("Inactive") << TABLE_DATA << inactive
-		             << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << bloc::translate("All") << TABLE_DATA << (recognised + unrecognised)
-		             << TABLE_CLOSE
+		/*
+		 * TODO(MCP)
+		 *
+		 * Need to replace the added tabs with the HT enum and
+		 * the \n with the NEWLINE enum to keep extra characters from being written to the text-based log.
+		 * Not exactly elegant so investigate other solutions later.
+		 *
+		 * It's pretty ugly so a better solution is probably desired sooner rather than later.
+		 *
+		 * May need to split things up into two different functions: one for the HTML log, one for the text-based log
+		 */
+		formattedOut << HT << TABLE_OPEN << NEWLINE
+		             << HT << HT << TABLE_HEAD << NEWLINE
+		             << HT << HT << HT << TABLE_ROW << NEWLINE
+		             << HT << HT << HT << HT << TABLE_HEADING << bloc::translate("Plugin Type") << NEWLINE
+		             << HT << HT << HT << HT << TABLE_HEADING << bloc::translate("Count") << NEWLINE
+		             << HT << HT << HT << HT << TABLE_BODY << NEWLINE
+		             << HT << HT << HT << TABLE_ROW_CLASS_SUCCESS << NEWLINE
+		             << HT << HT << HT << HT << TABLE_DATA << bloc::translate("Recognised (or sorted by user rules)") << NEWLINE
+		             << HT << HT << HT << HT << TABLE_DATA << recognised << NEWLINE;
+		if (unrecognised != 0) {
+			formattedOut << HT << HT << HT << TABLE_ROW_CLASS_WARN << NEWLINE
+			             << HT << HT << HT << HT << TABLE_DATA << bloc::translate("Unrecognised") << NEWLINE
+			             << HT << HT << HT << HT << TABLE_DATA << unrecognised << NEWLINE;
+		} else {
+			formattedOut << HT << HT << HT << TABLE_ROW_CLASS_SUCCESS << NEWLINE
+			             << HT << HT << HT << HT << TABLE_DATA << bloc::translate("Unrecognised") << NEWLINE
+			             << HT << HT << HT << HT << TABLE_DATA << unrecognised << NEWLINE;
+		}
+		formattedOut << HT << HT << HT << TABLE_ROW_CLASS_SUCCESS << NEWLINE
+		             << HT << HT << HT << HT << TABLE_DATA << bloc::translate("Inactive") << NEWLINE
+		             << HT << HT << HT << HT << TABLE_DATA << inactive << NEWLINE
+		             << HT << HT << HT << TABLE_ROW_CLASS_SUCCESS << NEWLINE
+		             << HT << HT << HT << HT << TABLE_DATA << bloc::translate("All") << NEWLINE
+		             << HT << HT << HT << HT << TABLE_DATA << (recognised + unrecognised) << NEWLINE
+		             << HT << TABLE_CLOSE << NEWLINE
 
-		             << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << bloc::translate("Plugin Message Type") << TABLE_HEADING << bloc::translate("Count")
-		             << TABLE_BODY;
-		if (warnings != 0)
-			formattedOut << TABLE_ROW_CLASS_WARN << TABLE_DATA << bloc::translate("Warning") << TABLE_DATA << warnings;
-		else
-			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << bloc::translate("Warning") << TABLE_DATA << warnings;
-		if (errors != 0)
-			formattedOut << TABLE_ROW_CLASS_ERROR << TABLE_DATA << bloc::translate("Error") << TABLE_DATA << errors;
-		else
-			formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << bloc::translate("Error") << TABLE_DATA << errors;
-		formattedOut << TABLE_ROW_CLASS_SUCCESS << TABLE_DATA << bloc::translate("All") << TABLE_DATA << messages
-		             << TABLE_CLOSE;
+		             << HT << TABLE_OPEN << NEWLINE
+		             << HT << HT << TABLE_HEAD << NEWLINE
+		             << HT << HT << HT << TABLE_ROW << NEWLINE
+		             << HT << HT << HT << HT << TABLE_HEADING << bloc::translate("Plugin Message Type") << NEWLINE
+		             << HT << HT << HT << HT << TABLE_HEADING << bloc::translate("Count") << NEWLINE
+		             << HT << HT << TABLE_BODY << NEWLINE;
+		if (warnings != 0) {
+			formattedOut << HT << HT << HT << TABLE_ROW_CLASS_WARN << NEWLINE
+			             << HT << HT << HT << HT << TABLE_DATA << bloc::translate("Warning") << NEWLINE
+			             << HT << HT << HT << HT << TABLE_DATA << warnings << NEWLINE;
+		} else {
+			formattedOut << HT << HT << HT << TABLE_ROW_CLASS_SUCCESS << NEWLINE
+			             << HT << HT << HT << HT << TABLE_DATA << bloc::translate("Warning") << NEWLINE
+			             << HT << HT << HT << HT << TABLE_DATA << warnings << NEWLINE;
+		}
+		if (errors != 0) {
+			formattedOut << HT << HT << HT << TABLE_ROW_CLASS_ERROR << NEWLINE
+			             << HT << HT << HT << HT << TABLE_DATA << bloc::translate("Error") << NEWLINE
+			             << HT << HT << HT << HT << TABLE_DATA << errors << NEWLINE;
+		} else {
+			formattedOut << HT << HT << HT << TABLE_ROW_CLASS_SUCCESS << NEWLINE
+			             << HT << HT << HT << HT << TABLE_DATA << bloc::translate("Error") << NEWLINE
+			             << HT << HT << HT << HT << TABLE_DATA << errors << NEWLINE;
+		}
+		formattedOut << HT << HT << HT << TABLE_ROW_CLASS_SUCCESS << NEWLINE
+		             << HT << HT << HT << HT << TABLE_DATA << bloc::translate("All") << NEWLINE
+		             << HT << HT << HT << HT << TABLE_DATA << messages << NEWLINE
+		             << HT << TABLE_CLOSE << NEWLINE;
 	}
 
-	formattedOut << LIST_OPEN;
+	formattedOut << HT << LIST_OPEN << NEWLINE;
 
 	formattedOut << updaterOutput.AsString();  // This contains BOSS & masterlist update strings.
 
 	if (recognisedHasChanged)
-		formattedOut << LIST_ITEM_CLASS_SUCCESS << bloc::translate("No change in recognised plugin list since last run.");
+		formattedOut << HT << HT << LIST_ITEM_CLASS_SUCCESS << bloc::translate("No change in recognised plugin list since last run.") << NEWLINE;
 
 	std::size_t size = parsingErrors.size();  // First print parser/syntax error messages.
 	for (std::size_t i = 0; i < size; i++)
@@ -228,7 +271,8 @@ std::string BossLog::PrintLog() {
 		formattedOut << globalMessages[i];  // Print global messages.
 	formattedOut.SetHTMLSpecialEscape(false);
 
-	formattedOut << LIST_CLOSE << SECTION_CLOSE;
+	formattedOut << HT << LIST_CLOSE << NEWLINE
+	             << SECTION_CLOSE << NEWLINE;
 	out << formattedOut.AsString();
 	formattedOut.Clear();  // Clear formattedOut for re-use.
 
@@ -243,11 +287,19 @@ std::string BossLog::PrintLog() {
 
 	if (!userRules.Empty()) {
 		if (logFormat == HTML)
-			formattedOut << SECTION_ID_USERLIST_OPEN;
+			formattedOut << SECTION_ID_USERLIST_OPEN << "\n";
 		else
 			formattedOut << SECTION_ID_USERLIST_OPEN << HEADING_OPEN << bloc::translate("User Rules") << HEADING_CLOSE;
-		formattedOut << TABLE_OPEN << TABLE_HEAD << TABLE_ROW << TABLE_HEADING << bloc::translate("Rule") << TABLE_HEADING << bloc::translate("Applied") << TABLE_HEADING << bloc::translate("Details (if applicable)")
-		             << TABLE_BODY << userRules.AsString() << TABLE_CLOSE << SECTION_CLOSE;
+		formattedOut << HT << TABLE_OPEN << NEWLINE
+		             << HT << HT << TABLE_HEAD << NEWLINE
+		             << HT << HT << HT << TABLE_ROW << NEWLINE
+		             << HT << HT << HT << HT << TABLE_HEADING << bloc::translate("Rule") << NEWLINE
+		             << HT << HT << HT << HT << TABLE_HEADING << bloc::translate("Applied") << NEWLINE
+		             << HT << HT << HT << HT << TABLE_HEADING << bloc::translate("Details (if applicable)") << NEWLINE
+		             << HT << HT << TABLE_BODY << NEWLINE
+		             << userRules.AsString()
+		             << HT << TABLE_CLOSE << NEWLINE
+		             << SECTION_CLOSE << NEWLINE;
 		out << formattedOut.AsString();
 		formattedOut.Clear();
 	}
@@ -258,12 +310,13 @@ std::string BossLog::PrintLog() {
 
 	if (!sePlugins.Empty()) {
 		if (logFormat == HTML)
-			formattedOut << SECTION_ID_SE_OPEN;
+			formattedOut << SECTION_ID_SE_OPEN << "\n";
 		else
 			formattedOut << SECTION_ID_SE_OPEN << HEADING_OPEN << scriptExtender << bloc::translate(" Plugins") << HEADING_CLOSE;
-		formattedOut << LIST_OPEN
+		formattedOut << HT << LIST_OPEN << NEWLINE
 		             << sePlugins.AsString()
-		             << LIST_CLOSE << SECTION_CLOSE;
+		             << HT << LIST_CLOSE << NEWLINE
+		             << SECTION_CLOSE << NEWLINE;
 		out << formattedOut.AsString();
 		formattedOut.Clear();
 	}
@@ -322,15 +375,15 @@ std::string BossLog::PrintLog() {
 std::string BossLog::PrintHeaderTop() {
 	std::stringstream out;
 	if (logFormat == HTML) {
-		out << "<!DOCTYPE html>"
-		    << "<meta charset='utf-8'>"
-		    << "<title>BOSS Log</title>"
-		    << "<link rel='stylesheet' href='../resources/style.css' />"
-		    << "<nav>"
-		    << "<header>"
-		    << "	<h1>BOSS</h1>"
-		    << bloc::translate("	Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH)
-		    << "</header>";
+		out << "<!DOCTYPE html>\n"
+		    << "<meta charset='utf-8'>\n"
+		    << "<title>BOSS Log</title>\n"
+		    << "<link rel='stylesheet' href='../resources/style.css' />\n"
+		    << "<nav>\n"
+		    << "	<header>\n"
+		    << "		<h1>BOSS</h1>\n"
+		    << "		" << bloc::translate("Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << "\n"
+		    << "	</header>\n";
 	} else {
 		out << "\nBOSS\n"
 		    << bloc::translate("Version ") << IntToString(BOSS_VERSION_MAJOR) << "." << IntToString(BOSS_VERSION_MINOR) << "." << IntToString(BOSS_VERSION_PATCH) << std::endl;
@@ -341,14 +394,12 @@ std::string BossLog::PrintHeaderTop() {
 std::string BossLog::PrintHeaderBottom() {
 	std::stringstream out;
 	if (logFormat == HTML) {
-		out << "<footer>"
-		    << "	<div class='button' data-section='browserBox' id='supportButtonShow'>" << bloc::translate("Log Feature Support") << "</div>"
-		    << "	<div class='button' id='filtersButtonToggle'>" << bloc::translate("Filters") << "<span id='arrow'></span></div>"
-		    << "</footer>"
-		    << "</nav>"
-		    << "<noscript>"
-		    << bloc::translate("The BOSS Log requires Javascript to be enabled in order to function.")
-		    << "</noscript>";
+		out << "	<footer>\n"
+		    << "		<div class='button' data-section='browserBox' id='supportButtonShow'>" << bloc::translate("Log Feature Support") << "</div>\n"
+		    << "		<div class='button' id='filtersButtonToggle'>" << bloc::translate("Filters") << "<span id='arrow'></span></div>\n"
+		    << "	</footer>\n"
+		    << "</nav>\n"
+		    << "<noscript>" << bloc::translate("The BOSS Log requires Javascript to be enabled in order to function.") << "</noscript>\n";
 	}
 	return out.str();
 }
@@ -358,66 +409,76 @@ std::string BossLog::PrintFooter() {
 	std::string colourTooltip = bloc::translate("Colours must be specified using lowercase hex codes.");
 
 	if (logFormat == HTML) {
-		out << "<section id='browserBox'>"
-		    << "<p>" << bloc::translate("Support for the BOSS Log's more advanced features varies. Here's what your browser supports:")
-		    << "<h3>" << bloc::translate("Functionality") << "</h3>"
-		    << "<table>"
-		    << "	<tbody>"
-		    << "		<tr><td id='pluginSubmitSupport'><td>" << bloc::translate("In-Log Plugin Submission") << "<td>" << bloc::translate("Allows unrecognised plugins to be anonymously submitted to the BOSS team directly from the BOSS Log.")
-		    << "		<tr><td id='memorySupport'><td>" << bloc::translate("Settings Memory") << "<td>" << bloc::translate("Allows the BOSS Log to automatically restore the filter configuration last used whenever the BOSS Log is opened.")
-		    << "		<tr><td id='placeholderSupport'><td>" << bloc::translate("Input Placeholders")
-		    << "		<tr><td id='validationSupport'><td>" << bloc::translate("Form Validation")
-		    << "</table>"
-		    << "</section>"
+		out << "<section id='browserBox'>\n"
+		    << "	<p>" << bloc::translate("Support for the BOSS Log's more advanced features varies. Here's what your browser supports:") << "\n"
+		    << "	<h3>" << bloc::translate("Functionality") << "</h3>\n"
+		    << "	<table>\n"
+		    << "		<tbody>\n"
+		    << "			<tr>\n"
+		    << "				<td id='pluginSubmitSupport'>\n"
+		    << "				<td>" << bloc::translate("In-Log Plugin Submission") << "\n"
+		    << "				<td>" << bloc::translate("Allows unrecognised plugins to be anonymously submitted to the BOSS team directly from the BOSS Log.") << "\n"
+		    << "			<tr>\n"
+		    << "				<td id='memorySupport'>\n"
+		    << "				<td>" << bloc::translate("Settings Memory") << "\n"
+		    << "				<td>" << bloc::translate("Allows the BOSS Log to automatically restore the filter configuration last used whenever the BOSS Log is opened.") << "\n"
+		    << "			<tr>\n"
+		    << "				<td id='placeholderSupport'>\n"
+		    << "				<td>" << bloc::translate("Input Placeholders") << "\n"
+		    << "			<tr>\n"
+		    << "				<td id='validationSupport'>\n"
+		    << "				<td>" << bloc::translate("Form Validation") << "\n"
+		    << "	</table>\n"
+		    << "</section>\n"
 
-		    << "<aside>"
-		    << "<label><input type='checkbox' id='hideVersionNumbers' data-class='version'/>" << bloc::translate("Hide Version Numbers") << "</label>"
-		    << "<label><input type='checkbox' id='hideActiveLabel' data-class='active'/>" << bloc::translate("Hide 'Active' Label") << "</label>"
-		    << "<label><input type='checkbox' id='hideChecksums' data-class='crc'/>" << bloc::translate("Hide Checksums") << "</label>"
-		    << "<label><input type='checkbox' id='hideNotes'/>" << bloc::translate("Hide Notes") << "</label>"
-		    << "<label><input type='checkbox' id='hideBashTags'/>" << bloc::translate("Hide Bash Tag Suggestions") << "</label>"
-		    << "<label><input type='checkbox' id='hideRequirements'/>" << bloc::translate("Hide Requirements") << "</label>"
-		    << "<label><input type='checkbox' id='hideIncompatibilities'/>" << bloc::translate("Hide Incompatibilities") << "</label>"
-		    << "<label><input type='checkbox' id='hideDoNotCleanMessages'/>" << bloc::translate("Hide 'Do Not Clean' Messages") << "</label>"
-		    << "<label><input type='checkbox' id='hideAllPluginMessages'/>" << bloc::translate("Hide All Plugin Messages") << "</label>"
-		    << "<label><input type='checkbox' id='hideInactivePlugins'/>" << bloc::translate("Hide Inactive Plugins") << "</label>"
-		    << "<label><input type='checkbox' id='hideMessagelessPlugins'/>" << bloc::translate("Hide Messageless Plugins") << "</label>"
-		    << "<footer>"
-		    << "	" << (boost::format(bloc::translate("%1% of %2% recognised plugins hidden.")) % "<span id='hiddenPluginNo'>0</span>" % recognised).str()
-		    << "	" << (boost::format(bloc::translate("%1% of %2% messages hidden.")) % "<span id='hiddenMessageNo'>0</span>" % messages).str()
-		    << "</footer>"
-		    << "</aside>"
+		    << "<aside>\n"
+		    << "	<label><input type='checkbox' id='hideVersionNumbers' data-class='version'/>" << bloc::translate("Hide Version Numbers") << "</label>\n"
+		    << "	<label><input type='checkbox' id='hideActiveLabel' data-class='active'/>" << bloc::translate("Hide 'Active' Label") << "</label>\n"
+		    << "	<label><input type='checkbox' id='hideChecksums' data-class='crc'/>" << bloc::translate("Hide Checksums") << "</label>\n"
+		    << "	<label><input type='checkbox' id='hideNotes'/>" << bloc::translate("Hide Notes") << "</label>\n"
+		    << "	<label><input type='checkbox' id='hideBashTags'/>" << bloc::translate("Hide Bash Tag Suggestions") << "</label>\n"
+		    << "	<label><input type='checkbox' id='hideRequirements'/>" << bloc::translate("Hide Requirements") << "</label>\n"
+		    << "	<label><input type='checkbox' id='hideIncompatibilities'/>" << bloc::translate("Hide Incompatibilities") << "</label>\n"
+		    << "	<label><input type='checkbox' id='hideDoNotCleanMessages'/>" << bloc::translate("Hide 'Do Not Clean' Messages") << "</label>\n"
+		    << "	<label><input type='checkbox' id='hideAllPluginMessages'/>" << bloc::translate("Hide All Plugin Messages") << "</label>\n"
+		    << "	<label><input type='checkbox' id='hideInactivePlugins'/>" << bloc::translate("Hide Inactive Plugins") << "</label>\n"
+		    << "	<label><input type='checkbox' id='hideMessagelessPlugins'/>" << bloc::translate("Hide Messageless Plugins") << "</label>\n"
+		    << "	<footer>\n"
+		    << "			" << (boost::format(bloc::translate("%1% of %2% recognised plugins hidden.")) % "<span id='hiddenPluginNo'>0</span>" % recognised).str() << "\n"
+		    << "			" << (boost::format(bloc::translate("%1% of %2% messages hidden.")) % "<span id='hiddenMessageNo'>0</span>" % messages).str() << "\n"
+		    << "	</footer>\n"
+		    << "</aside>\n"
 
-		    << "<div id='overlay'>"
-		    << "<div id='submitBox'>"
-		    << "<h2>" << bloc::translate("Submit Plugin") << "</h2>"
-		    << "<p><span id='pluginLabel'>" << bloc::translate("Plugin") << ":</span><span id='plugin'></span>"
-		    << "<form>"
-		    << "<label>" << bloc::translate("Download Location") << ":<br /><input type='url' placeholder='" << bloc::translate("Label for text box. Do not use a single quote in translation, use '&#x27;' instead", "A link to the plugin&#x27;s download location.") << "' id='link'></label>"
-		    << "<label>" << bloc::translate("Additional Notes") << ":<br /><textarea id='notes' placeholder='" << bloc::translate("Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.") << "'></textarea></label>"
-		    << "<div id='output'></div>"
-		    << "<p class='last'><button>" << bloc::translate("Submit") << "</button>"
-		    << "<button type='reset'>" << bloc::translate("Close") << "</button>"
-		    << "</form>"
-		    << "</div>"
-		    << "</div>"
+		    << "<div id='overlay'>\n"
+		    << "	<div id='submitBox'>\n"
+		    << "		<h2>" << bloc::translate("Submit Plugin") << "</h2>\n"
+		    << "		<p><span id='pluginLabel'>" << bloc::translate("Plugin") << ":</span><span id='plugin'></span>\n"
+		    << "		<form>\n"
+		    << "			<label>" << bloc::translate("Download Location") << ":<br /><input type='url' placeholder='" << bloc::translate("Label for text box. Do not use a single quote in translation, use '&#x27;' instead", "A link to the plugin&#x27;s download location.") << "' id='link'></label>\n"
+		    << "			<label>" << bloc::translate("Additional Notes") << ":<br /><textarea id='notes' placeholder='" << bloc::translate("Any additional information, such as recommended Bash Tags, load order suggestions, ITM/UDR counts and dirty CRCs, can be supplied here. If no download link is available, this information is crucial.") << "'></textarea></label>\n"
+		    << "			<div id='output'></div>\n"
+		    << "			<p class='last'><button>" << bloc::translate("Submit") << "</button>\n"
+		    << "			<button type='reset'>" << bloc::translate("Close") << "</button>\n"
+		    << "		</form>\n"
+		    << "	</div>\n"
+		    << "</div>\n"
 
 		    // Need to define some variables in code.
-		    << "<script>"
-		    << "var gameName = '" << gameName << "';"
-		    << "var txt1 = '" << bloc::translate("Checking for existing submission...") << "';"
-		    << "var txt2 = '" << bloc::translate("Matching submission already exists.") << "';"
-		    << "var txt3 = '" << bloc::translate("Plugin already submitted. Submission updated with new comment.") << "';"
-		    << "var txt4 = '" << bloc::translate("Plugin submitted!") << "';"
-		    << "var txt5 = '" << bloc::translate("Plugin submission failed! Authorisation failure. Please report this to the BOSS team.") << "';"
-		    << "var txt6 = '" << bloc::translate("Plugin submission failed! GitHub API rate limit exceeded. Please try again after %1%.") << "';"
-		    << "var txt7 = '" << bloc::translate("Plugin submission failed!") << "';"
-		    << "var txt8 = '" << bloc::translate("Web storage quota for this document has been exceeded.Please empty your browser\\'s cache. Note that this will delete all locally stored data.") << "';"
-		    << "var txt9 = '" << bloc::translate("Please supply at least a link or some notes.") << "';"
-		    << "var txt10 = '" << bloc::translate("Do not clean.") << "';"
-		    << "</script>"
-		    << "<script src='../resources/promise-1.0.0.min.js'></script>"
-		    << "<script src='../resources/octokit.js'></script>"
+		    << "<script>\n"
+		    << "	var gameName = '" << gameName << "';\n"
+		    << "	var txt1 = '" << bloc::translate("Checking for existing submission...") << "';\n"
+		    << "	var txt2 = '" << bloc::translate("Matching submission already exists.") << "';\n"
+		    << "	var txt3 = '" << bloc::translate("Plugin already submitted. Submission updated with new comment.") << "';\n"
+		    << "	var txt4 = '" << bloc::translate("Plugin submitted!") << "';\n"
+		    << "	var txt5 = '" << bloc::translate("Plugin submission failed! Authorisation failure. Please report this to the BOSS team.") << "';\n"
+		    << "	var txt6 = '" << bloc::translate("Plugin submission failed! GitHub API rate limit exceeded. Please try again after %1%.") << "';\n"
+		    << "	var txt7 = '" << bloc::translate("Plugin submission failed!") << "';\n"
+		    << "	var txt8 = '" << bloc::translate("Web storage quota for this document has been exceeded.Please empty your browser\\'s cache. Note that this will delete all locally stored data.") << "';\n"
+		    << "	var txt9 = '" << bloc::translate("Please supply at least a link or some notes.") << "';\n"
+		    << "	var txt10 = '" << bloc::translate("Do not clean.") << "';\n"
+		    << "</script>\n"
+		    << "<script src='../resources/promise-1.0.0.min.js'></script>\n"
+		    << "<script src='../resources/octokit.js'></script>\n"
 		    << "<script src='../resources/script.js'></script>";
 	}
 	return out.str();

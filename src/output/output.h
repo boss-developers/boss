@@ -48,6 +48,8 @@ namespace boss {
 class BOSS_COMMON Rule;
 
 enum logFormatting : std::uint32_t {
+	HT,
+	NEWLINE,
 	SECTION_ID_SUMMARY_OPEN,
 	SECTION_ID_USERLIST_OPEN,
 	SECTION_ID_SE_OPEN,

@@ -162,6 +162,14 @@ Outputter& Outputter::operator<< (const char c) {
 
 Outputter& Outputter::operator<< (const logFormatting l) {
 	switch (l) {
+		case HT:
+			if (outFormat == HTML)
+				outStream << "	";
+			break;
+		case NEWLINE:
+			if (outFormat == HTML)
+				outStream << "\n";
+			break;
 		case SECTION_ID_SUMMARY_OPEN:
 			if (outFormat == HTML)
 				outStream << "<section id='summary'>";
