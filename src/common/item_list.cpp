@@ -456,20 +456,22 @@ void ItemList::EvalRegex(const Game &parentGame) {
 	 * First remove a regex entry, then look for matches in the hashset.
 	 * Add all matches with the messages attached to the regex entry to the items vector in the position the regex entry occupied.
 	 */
-	std::vector<Item>::iterator itemIter = items.begin();
-	while (itemIter != items.end()) {
+	std::vector<Item>::iterator itemIter;// = items.begin();
+	// MCP Note: Possible itemIter never hits the end or goes past the end, but never equals the end position? Maybe do a for-each loop to try and correct it? Or do a < items.end()?
+	//while (itemIter != items.end()) {
+	for (itemIter = items.begin(); itemIter < items.end(); ++itemIter) {
 		if (itemIter->Type() == REGEX) {
 			std::regex reg;  // Form a regex.
 			try {
 				reg = std::regex(itemIter->Name()+"(\\.ghost)?",
-				                   std::regex::extended|std::regex::icase);  // Ghost extension is added so ghosted mods will also be found.
+				                 std::regex::extended|std::regex::icase);  // Ghost extension is added so ghosted mods will also be found.
 			} catch (std::regex_error /*&e*/) {
 				boss_error be = boss_error(BOSS_ERROR_REGEX_EVAL_FAIL,
 				                           itemIter->Name());
 				LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.",
 				          be.getString().c_str());
 				errorBuffer = ParsingError(be.getString());
-				++itemIter;
+				//++itemIter;
 				continue;
 			}
 			std::vector<Message> messages = itemIter->Messages();
@@ -483,7 +485,7 @@ void ItemList::EvalRegex(const Game &parentGame) {
 				++itemIter;
 			}
 		} else {
-			++itemIter;
+			//++itemIter;
 		}
 	}
 }
