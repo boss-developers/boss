@@ -580,7 +580,7 @@ void conditional_grammar::CheckRegex(bool &result, std::string reg) {
 	}
 	std::regex regex;
 	try {
-		regex = std::regex(reg, std::regex::extended|std::regex::icase);
+		regex = std::regex(reg, std::regex::ECMAScript|std::regex::icase);
 	} catch (std::regex_error e) {
 		LOG_ERROR("\"%s\" is not a valid regular expression. Item skipped.",
 		          reg.c_str());

@@ -462,7 +462,7 @@ void ItemList::EvalRegex(const Game &parentGame) {
 			std::regex reg;  // Form a regex.
 			try {
 				reg = std::regex(itemIter->Name()+"(\\.ghost)?",
-				                   std::regex::extended|std::regex::icase);  // Ghost extension is added so ghosted mods will also be found.
+				                   std::regex::ECMAScript|std::regex::icase);  // Ghost extension is added so ghosted mods will also be found.
 			} catch (std::regex_error /*&e*/) {
 				boss_error be = boss_error(BOSS_ERROR_REGEX_EVAL_FAIL,
 				                           itemIter->Name());
