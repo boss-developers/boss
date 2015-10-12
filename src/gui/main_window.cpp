@@ -164,7 +164,8 @@ bool BossGUI::OnInit() {
 		// Need to also set up wxWidgets locale so that its default interface text comes out in the right language.
 		wxLoc = new wxLocale();
 		if (!wxLoc->Init(lang, wxLOCALE_LOAD_DEFAULT))
-			throw std::exception("System GUI text could not be set.");  // MCP Note: Is this boost::exception or std::exception?
+			//throw std::exception("System GUI text could not be set.");  // MCP Note: Is this boost::exception or std::exception?
+			throw boss_error(BOSS_ERROR_GUI_WINDOW_INIT_FAIL);
 		wxLocale::AddCatalogLookupPathPrefix(l10n_path.string());
 		wxLoc->AddCatalog("wxstd");
 	} catch(std::exception &e) {  // MCP Note: Is this std::exception or boost::exception?
@@ -218,7 +219,7 @@ bool BossGUI::OnInit() {
 			    translate("Please pick which game to run BOSS for:"),
 			    translate("BOSS: Select Game"),
 			    choices);
-			choiceDia->SetIcon(wxIconLocation("BOSS GUI.exe"));
+			choiceDia->SetIcon(wxIconLocation("BOSS.ico"));
 
 			if (choiceDia->ShowModal() != wxID_OK)
 				throw boss_error(BOSS_ERROR_NO_GAME_DETECTED);
@@ -241,7 +242,7 @@ bool BossGUI::OnInit() {
 	}
 	frame->SetGames(game, detected);
 
-	frame->SetIcon(wxIconLocation("BOSS GUI.exe"));
+	frame->SetIcon(wxIconLocation("BOSS.ico"));
 	frame->Show(TRUE);
 	SetTopWindow(frame);
 
@@ -447,7 +448,7 @@ void MainFrame::OnOpenSettings(wxCommandEvent &event) {
 	// Tell the user that stuff is happenining.
 	SettingsFrame *settings = new SettingsFrame(translate("BOSS: Settings"),
 	                                            this);
-	settings->SetIcon(wxIconLocation("BOSS GUI.exe"));
+	settings->SetIcon(wxIconLocation("BOSS.ico"));
 	settings->Show();
 }
 
@@ -494,7 +495,7 @@ void MainFrame::OnRunBOSS(wxCommandEvent &event) {
 			game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
 		}
 		catch (boss_error &e) {
-			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
+			game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.").ToStdString() << LINE_BREAK
 			                           << (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
 			LOG_ERROR("Error: masterlist update failed. Details: %s",
 			          e.getString().c_str());
@@ -731,7 +732,7 @@ void MainFrame::OnAbout(wxCommandEvent &event) {
 	                     "\n"
 	                     "You should have received a copy of the GNU General Public License\n"
 	                     "along with this program.  If not, see <http://www.gnu.org/licenses/>.");
-	aboutInfo.SetIcon(wxIconLocation("BOSS GUI.exe"));
+	aboutInfo.SetIcon(wxIconLocation("BOSS.ico"));
 	wxAboutBox(aboutInfo);
 }
 
@@ -826,7 +827,7 @@ void MainFrame::OnEditUserRules(wxCommandEvent &event) {
 		UserRulesEditorFrame *editor = new UserRulesEditorFrame(translate("BOSS: User Rules Manager"),
 		                                                        this,
 		                                                        game);
-		editor->SetIcon(wxIconLocation("BOSS GUI.exe"));
+		editor->SetIcon(wxIconLocation("BOSS.ico"));
 		editor->Show();
 	} else {
 		if (fs::exists(game.Userlist())) {

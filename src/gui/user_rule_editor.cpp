@@ -420,7 +420,7 @@ UserRulesEditorFrame::UserRulesEditorFrame(const wxString title,
 				game.bosslog.updaterOutput << LIST_ITEM_CLASS_SUCCESS << message;
 			}
 			catch (boss_error &e) {
-				game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.") << LINE_BREAK
+				game.bosslog.updaterOutput << LIST_ITEM_CLASS_ERROR << translate("Error: masterlist update failed.").ToStdString() << LINE_BREAK
 				                           << (boost::format(translate("Details: %1%")) % e.getString()).str() << LINE_BREAK;
 				LOG_ERROR("Error: masterlist update failed. Details: %s",
 				          e.getString().c_str());
@@ -635,7 +635,7 @@ void UserRulesEditorFrame::OnCancelQuit(wxCommandEvent &event) {
 void UserRulesEditorFrame::OnSearchList(wxCommandEvent &event) {
 	if (event.GetId() == SEARCH_Modlist) {
 		ModlistSearch->ShowCancelButton(true);
-		std::string searchStr = ModlistSearch->GetValue().ToUTF8();
+		std::string searchStr = ModlistSearch->GetValue().ToUTF8().data();
 		if (searchStr.empty()) {
 			OnCancelSearch(event);
 			return;
@@ -644,13 +644,13 @@ void UserRulesEditorFrame::OnSearchList(wxCommandEvent &event) {
 		InstalledModsList->DeleteAllItems();
 		wxTreeItemId root = InstalledModsList->AddRoot("Installed Mods");
 		for (std::size_t i = 0; i < ModlistMods.size(); i++) {
-			std::string itemStr = ModlistMods[i].ToUTF8();
+			std::string itemStr = ModlistMods[i].ToUTF8().data();
 			if (boost::iequals(itemStr.substr(0, length), searchStr))
 				InstalledModsList->AppendItem(root, ModlistMods[i]);
 		}
 	} else {
 		MasterlistSearch->ShowCancelButton(true);
-		std::string searchStr = MasterlistSearch->GetValue().ToUTF8();
+		std::string searchStr = MasterlistSearch->GetValue().ToUTF8().data();
 		if (searchStr.empty()) {
 			OnCancelSearch(event);
 			return;
@@ -700,7 +700,7 @@ void UserRulesEditorFrame::OnCancelSearch(wxCommandEvent &event) {
 
 void UserRulesEditorFrame::OnSelectModInMasterlist(wxTreeEvent &event) {
 	// Need to find item in masterlist. :( Why can't tree lists store index number?
-	std::string itemStr = MasterlistModsList->GetItemText(event.GetItem()).ToUTF8();
+	std::string itemStr = MasterlistModsList->GetItemText(event.GetItem()).ToUTF8().data();
 	std::size_t pos = game.masterlist.FindItem(itemStr, MOD);
 	if (pos != game.masterlist.Items().size()) {
 		std::string messagesOut = "";
@@ -923,9 +923,9 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 	 * Calling functions need to check for an enabled = false; rule as a failure.
 	 * Failure description is given in ruleObject.
 	 */
-	std::string ruleItem = RuleModBox->GetValue().ToUTF8();
-	std::string sortItem = SortModBox->GetValue().ToUTF8();
-	std::string insertItem = InsertModBox->GetValue().ToUTF8();
+	std::string ruleItem = RuleModBox->GetValue().ToUTF8().data();
+	std::string sortItem = SortModBox->GetValue().ToUTF8().data();
+	std::string insertItem = InsertModBox->GetValue().ToUTF8().data();
 	if (Item(ruleItem).IsPlugin()) {
 		if (SortModsCheckBox->IsChecked()) {
 			if (SortModOption->GetValue()) {
@@ -1025,7 +1025,7 @@ Rule UserRulesEditorFrame::GetRuleFromForm() {
 	// Now add message lines.
 	if (AddMessagesCheckBox->IsChecked()) {
 		RuleLine newLine;
-		std::string messages = NewModMessagesBox->GetValue().ToUTF8();
+		std::string messages = NewModMessagesBox->GetValue().ToUTF8().data();
 		if (!messages.empty()) {
 			// Split messages string by \n characters.
 			std::size_t pos1 = 0, pos2 = std::string::npos;
