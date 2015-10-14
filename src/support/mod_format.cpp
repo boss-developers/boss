@@ -30,12 +30,13 @@
 #include <cstdint>
 
 #include <fstream>
-#include <regex>
+//#include <regex>
 #include <string>
 
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/filesystem.hpp>
 //#include <boost/filesystem/fstream.hpp>
+#include <boost/regex.hpp>
 
 //#include "support/helpers.h"  // MCP Note: Don't think this one is needed. Will delete later after confirmation
 #include "support/types.h"
@@ -58,14 +59,19 @@ std::string ParseVersion(const std::string &text) {
 	begin = text.begin();
 	end = text.end();
 
-	for(int i = 0; std::regex *re = version_checks[i]; i++) {
-		std::smatch what;
-		while (std::regex_search(begin, end, what, *re)) {
+	// TODO(MCP): Swap out Boost Regex for STL Regex once the infinite loop that occurs with VS is sorted out
+	//for(int i = 0; std::regex *re = version_checks[i]; i++) {
+	for(int i = 0; boost::regex *re = version_checks[i]; i++) {
+		//std::smatch what;
+		boost::smatch what;
+		//while (std::regex_search(begin, end, what, *re)) {
+		while (boost::regex_search(begin, end, what, *re)) {
 			if (what.empty()) {
 				continue;
 			}
 
-			std::ssub_match match = what[1];
+			//std::ssub_match match = what[1];
+			boost::ssub_match match = what[1];
 
 			if (!match.matched) {
 				continue;
