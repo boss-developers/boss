@@ -2,10 +2,13 @@ cmake_minimum_required(VERSION 2.6)
 project(boss)
 
 option(BUILD_GUI "Build the BOSS GUI" ON)
+#option(BUILD_SHARED_LIBS "Build Shared Library (OFF for Static)" OFF)
 
 set (LIBGIT2_ROOT "../libgit2")
 
-set(SRC_H       src/common/conditional_data.h
+# Main Header Files
+
+set(BOSS_H      src/common/conditional_data.h
                 src/common/dll_def.h
                 src/common/error.h
                 src/common/game.h
@@ -24,8 +27,10 @@ set(SRC_H       src/common/conditional_data.h
                 src/support/types.h
                 src/support/version_regex.h
                 src/updating/updater.h)
-                
-set(SRC_BOSS    src/common/conditional_data.cpp
+
+# Main Source Files
+
+set(BOSS_SRC    src/common/conditional_data.cpp
                 src/common/error.cpp
                 src/common/game.cpp
                 src/common/globals.cpp
@@ -41,13 +46,17 @@ set(SRC_BOSS    src/common/conditional_data.cpp
                 src/support/mod_format.cpp
                 src/support/version_regex.cpp)
 
-set(SRC_GUI_H   ${SRC_H}
+# GUI Header Files
+
+set(GUI_H       ${BOSS_H}
                 src/gui/element_ids.h
                 src/gui/main_window.h
                 src/gui/settings_window.h
                 src/gui/user_rule_editor.h)
 
-set(SRC_GUI     ${SRC_BOSS}
+# GUI Source Files
+
+set(GUI_SRC     ${BOSS_SRC}
                 src/gui/element_ids.cpp
                 src/gui/main_window.cpp
                 src/gui/settings_window.cpp
@@ -55,8 +64,16 @@ set(SRC_GUI     ${SRC_BOSS}
 
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
+# Find Boost
 if (WIN32)
+	# For Windows, only build static builds
+	#set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build Shared Library (OFF for Static)")
 	set(BUILD_SHARED_LIBS OFF)
+	if (MINGW)
+		set(CMAKE_EXE_LINKER_FLAGS "-static")
+		set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+	endif ()
+	# Set up the Boost options for Windows
 	set(Boost_USE_STATIC_LIBS ON)
 	set(Boost_USE_STATIC_RUNTIME ON)
 	find_package(Boost REQUIRED filesystem regex program_options locale system exception)
@@ -64,42 +81,62 @@ else ()
 	find_package(Boost REQUIRED filesystem regex program_options locale system)
 endif ()
 
-include_directories(src ${Boost_INCLUDE_DIRS} ${LIBGIT2_ROOT}/include)
+add_executable(boss src/boss_cli.cpp ${BOSS_SRC})
 
-#add_executable(boss src/boss_cli.cpp ${SRC_H} ${SRC_BOSS})
-add_executable(boss src/boss_cli.cpp ${SRC_BOSS})
+target_include_directories(boss PUBLIC src ${Boost_INCLUDE_DIRS} ${LIBGIT2_ROOT}/include)
 
-target_compile_options(boss PUBLIC "-O3" "-std=c++11")
-
+# If building for Windows, add in the resource file
 if (WIN32)
-	target_link_libraries(boss ${Boost_LIBRARIES} version git2 gdi32 ws2_32)
-else ()
-	target_link_libraries(boss ${Boost_LIBRARIES} git2)
+	target_sources(boss PUBLIC BOSS_version.rc)
 endif ()
 
+# For MinGW and GCC
+if (CMAKE_COMPILER_IS_GNUCXX)
+	target_compile_options(boss PUBLIC "-O3" "-std=c++11")
+endif ()
 
+target_link_libraries(boss ${Boost_LIBRARIES} git2)
 
+# Add Windows specific libraries
+if (WIN32)
+	target_link_libraries(boss version gdi32 ws2_32)
+endif ()
+
+# GUI Build
 if (BUILD_GUI)
+	# Set up and find wxWidgets
 	if (WIN32)
 		set(wxWidgets_CONFIGURATION mswu)
 		set(wxWidgets_USE_STATIC ON)
 	endif ()
+
 	if (wxWidgets_FOUND)
 		include(${wxWidgets_USE_FILE})
 	endif ()
 	set(wxWidgets_USE_UNICODE ON)
 	find_package(wxWidgets COMPONENTS core base adv)
-	include_directories(${wxWidgets_INCLUDE_DIRS})
-	add_executable(boss_gui ${SRC_GUI_H} ${SRC_GUI})
-	target_compile_options(boss_gui PUBLIC "-O3" "-std=c++11" ${wxWidgets_CXX_FLAGS})
-	target_compile_definitions(boss_gui PUBLIC ${wxWidgets_DEFINITIONS})
+
+	add_executable(boss_gui ${GUI_SRC})
+	target_include_directories(boss_gui PUBLIC src ${Boost_INCLUDE_DIRS} ${LIBGIT2_ROOT}/include ${wxWidgets_INCLUDE_DIRS})
+
+	# If building for Windows, add in the resource file
 	if (WIN32)
-		target_link_libraries(boss_gui ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} version git2 gdi32 ws2_32)
-	else ()
-		target_link_libraries(boss_gui ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} git2)
+		target_sources(boss_gui PUBLIC BOSS_version.rc)
+	endif ()
+
+	# For MinGW and GCC
+	if (CMAKE_COMPILER_IS_GNUCXX)
+		target_compile_options(boss_gui PUBLIC "-O3" "-std=c++11")
+	endif ()
+
+	target_compile_definitions(boss_gui PUBLIC ${wxWidgets_DEFINITIONS})
+	target_link_libraries(boss_gui ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} git2)
+	if (WIN32)
+		target_link_libraries(boss_gui version gdi32 ws2_32)
 	endif ()
 endif ()
 
+# MinGW needs to link in zlib for libgit2 (v0.20.0)
 if (MINGW)
 	find_package(ZLIB REQUIRED)
 	target_link_libraries(boss ${ZLIB_LIBRARIES})
@@ -108,6 +145,7 @@ if (MINGW)
 	endif ()
 endif ()
 
+# MinGW and *nix platforms need to link in the OpenSSL libraries for libgit2 (v0.20.0)
 if (MINGW OR NOT WIN32)
 	find_package(OpenSSL REQUIRED)
 	target_link_libraries(boss ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
@@ -115,6 +153,3 @@ if (MINGW OR NOT WIN32)
 		target_link_libraries(boss_gui ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
 	endif ()
 endif ()
-
-#target_link_libraries(boss boost_filesystem boost_program_options boost_system boost_locale git2 ssl crypto)
-#target_link_libraries(boss_gui ${wxWidgets_LIBRARIES} ${Boost_LIBRARIES} git2 ssl crypto)
